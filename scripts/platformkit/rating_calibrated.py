@@ -24,7 +24,7 @@ from typing import Dict, List, Optional
 import numpy as np
 
 from scripts.platformkit.generic_rating import (
-    GenericRatingModel, Loader, _brier, _default_loader, _ece, _logloss,
+    _SPORT_HFA, GenericRatingModel, Loader, _brier, _default_loader, _ece, _logloss,
 )
 from scripts.platformkit.calibrator_zoo import select_calibrator
 
@@ -42,7 +42,7 @@ def run_sport(sport: str, *, min_history: int = 200, refit_every: int = 25,
               model: Optional[GenericRatingModel] = None) -> Dict:
     """Compose generic Elo -> best calibrator; OOS-score raw/calibrated/baseline."""
     load = loader or _default_loader
-    mdl = model or GenericRatingModel()
+    mdl = model or GenericRatingModel(hfa=_SPORT_HFA.get(sport, 65.0))
     try:
         games, base_p, base_y = load(sport)
     except Exception as exc:  # noqa: BLE001
