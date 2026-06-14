@@ -48,21 +48,32 @@ _CAVEAT_RE = re.compile(
     re.IGNORECASE,
 )
 _CAVEAT_WINDOW = 260  # chars on each side of an edge token
+# A negation directly before the token makes it a DENIAL, not a claim
+# (e.g. "none of this beats the market", "never beats", "not profitable").
+# negation word, then up to 3 words, then the edge token (anchored at window end):
+# matches "none of this <beats>", "never <beats>", "not <guaranteed>".
+_NEGATION_RE = re.compile(
+    r"\b(?:no|not|none|never|nothing|n't|without)\b(?:\s+\w+){0,3}\s*\W*$",
+    re.IGNORECASE)
+_NEGATION_WINDOW = 36  # chars immediately before an edge token
 
 
 def scan_text(text: str) -> List[str]:
-    """Return UNCAVEATED forbidden edge-claim substrings (empty = clean).
+    """Return UNCAVEATED, UN-NEGATED forbidden edge-claim substrings (empty = clean).
 
-    A match is dropped if an honest caveat appears within ``_CAVEAT_WINDOW`` chars —
-    distinguishing a fabricated claim from a caveated/documented mention.
+    A match is dropped if (a) an honest caveat appears within ``_CAVEAT_WINDOW`` chars,
+    or (b) a negation word sits just before it (a denial) — distinguishing a fabricated
+    claim from a caveated/documented mention or an explicit denial.
     """
     hits: List[str] = []
     for pat in _AUDIT_PATTERNS:
         for m in pat.finditer(text):
             lo = max(0, m.start() - _CAVEAT_WINDOW)
             hi = m.end() + _CAVEAT_WINDOW
-            if not _CAVEAT_RE.search(text[lo:hi]):
-                hits.append(m.group(0))
+            before = text[max(0, m.start() - _NEGATION_WINDOW):m.start()]
+            if _CAVEAT_RE.search(text[lo:hi]) or _NEGATION_RE.search(before):
+                continue
+            hits.append(m.group(0))
     return hits
 
 
