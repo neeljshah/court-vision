@@ -381,6 +381,9 @@ data/domains/*/forward_lines/
 data/domains/*/paper_book/
 data/domains/*/clv/
 data/domains/*/odds_snapshots/
+# -- ESPN free-API box score parquets (realized post-game data, local-only) ----
+data/domains/*/espn_boxscores.parquet
+data/domains/*/espn_matchstats.parquet
 # -- planning/platform master plan (internal strategy — never public) ----------
 .planning/platform/
 # -- internal maintainer / strategy docs (name the private repo; private-only) --

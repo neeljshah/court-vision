@@ -172,6 +172,17 @@ def _run_model_stages(organized_root: Path) -> Dict:
             models.setdefault("_transfer", {})["cross_sport"] = "written"
     except Exception:  # noqa: BLE001
         pass
+    # per-sport KEY-STATS: which realized box stats most separate WINS from LOSSES
+    # (standardized mean difference over the gitignored ESPN box parquets). DESCRIPTIVE
+    # realized knowledge, person-free, NOT a leak-free signal; sparse/missing parquet is
+    # skipped honestly. Real-data path -> default-OFF (with_models). Audit-clean.
+    try:
+        from scripts.platformkit.brain_keystats import build_keystats  # noqa: PLC0415
+        ks = build_keystats(organized_root, write=True)
+        if ks.get("n_sports", 0) > 0:
+            models.setdefault("_keystats", {})["key_stats"] = "written"
+    except Exception:  # noqa: BLE001
+        pass
     return models
 
 
@@ -204,6 +215,14 @@ def run_pipeline(vault_dir: Optional[Path] = None,
     from scripts.platformkit.brain_audit import audit_tree  # noqa: PLC0415
     audit = audit_tree(organized_root)
     gates = compute_gates(organized_root)
+    # Make _Organized openable as its OWN clean Obsidian vault (graph = only the brain;
+    # the full vault/ stays untouched). Seeded after the gates so the .obsidian config
+    # never affects the person-free/graph scans. Skipped honestly on any error.
+    try:
+        from scripts.platformkit.brain_vault import ensure_brain_graph_config  # noqa: PLC0415
+        ensure_brain_graph_config(organized_root)
+    except Exception:  # noqa: BLE001
+        pass
 
     per_sport = organize.get("per_sport", {})
     summary = {
