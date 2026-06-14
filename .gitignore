@@ -457,3 +457,6 @@ docs/OUTREACH_KIT.md
 /MASTER_PLAN.md
 # -- internal Claude tooling (agent configs, bot-loop commands, prompts, styles) ---
 .claude/
+
+# Legacy vault sprawl archived out of the Obsidian graph (reversible; local working memory)
+_vault_legacy_archive/
