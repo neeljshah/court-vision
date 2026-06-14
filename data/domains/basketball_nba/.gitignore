@@ -1,0 +1,7 @@
+# Local leak-guard: ALL NBA domain data (schedule/ESPN-odds downloads, parquets,
+# price-bearing odds.parquet + odds_snapshots, generated catalogs) stays
+# private/untracked. Avoids touching the human-gated root .gitignore (P0-A-001).
+# Mirrors the mlb/soccer/tennis nested guards so NBA is protected identically and
+# this stays effective independent of the root .gitignore -> nothing here goes public.
+*
+!.gitignore
