@@ -86,6 +86,15 @@ def _run_model_stages(organized_root: Path) -> Dict:
             models.setdefault("_drivers", {})["what_wins"] = "written"
     except Exception:  # noqa: BLE001
         pass
+    # per-sport factor-interaction MECHANISMS notes (cross-cutting "why" intelligence
+    # from the DESCRIPTIVE post-mortems; person-free, audit-clean). Default-OFF path.
+    try:
+        from scripts.platformkit.brain_mechanisms import build_mechanisms  # noqa: PLC0415
+        mech = build_mechanisms(organized_root=organized_root, write=True)
+        if any(not sp.startswith("_") for sp in mech):
+            models.setdefault("_mechanisms", {})["mechanisms"] = "written"
+    except Exception:  # noqa: BLE001
+        pass
     # green-cell coverage map (light filesystem walk; accurate after the artifacts above)
     try:
         from scripts.platformkit.brain_coverage import (  # noqa: PLC0415
