@@ -74,3 +74,14 @@ def test_validate_no_baseline_ok():
 def test_unwired_sport_errors():
     res = validate_sport("cricket")
     assert "error" in res and "not wired" in res["error"]
+
+
+def test_tennis_wired_and_per_sport_hfa():
+    from scripts.platformkit.generic_rating import _SPORT_CFG, _SPORT_HFA
+    # tennis is a wired (player-schema) sport with zero home advantage
+    assert "tennis" in _SPORT_CFG and _SPORT_CFG["tennis"].get("kind") == "player"
+    assert _SPORT_HFA["tennis"] == 0.0 and _SPORT_HFA["mlb"] < _SPORT_HFA["nba"]
+    # validate_sport("tennis", ...) uses the hfa=0 default model on injected games
+    games = _make_games(n=500)
+    res = validate_sport("tennis", min_history=100, loader=lambda s: (games, None, None))
+    assert "generic_elo" in res and res["n_eval"] == 400

@@ -31,7 +31,13 @@ _SPORT_CFG: Dict[str, Dict[str, str]] = {
     "mlb": {"path": "data/domains/mlb/games.parquet",
             "team_a": "home_team", "team_b": "away_team",
             "win_col": "target_home_win", "season": "season"},
+    "tennis": {"path": "data/domains/tennis/matches.parquet", "kind": "player",
+               "team_a": "p1_id", "team_b": "p2_id", "winner": "winner",
+               "date": "date"},  # winner==1 -> p1 won; season = year(date); hfa=0
 }
+# Per-sport pinned constants (the 03 design: the adapter supplies these).  Home
+# advantage in Elo points: NBA strong, MLB modest, tennis none (no home court).
+_SPORT_HFA: Dict[str, float] = {"nba": 65.0, "mlb": 24.0, "tennis": 0.0}
 _NOTE = ("One generic Elo across sports; CALIBRATION/ACCURACY != EDGE. A competitive "
          "match with the per-sport baseline validates the abstraction, not a market edge.")
 
@@ -108,9 +114,16 @@ def _default_loader(sport: str) -> Tuple[List[Dict], Optional[np.ndarray], Optio
 
     cfg = _SPORT_CFG[sport]
     df = pd.read_parquet(_REPO_ROOT / cfg["path"])
-    a, b, w, s = cfg["team_a"], cfg["team_b"], cfg["win_col"], cfg["season"]
-    games = [{"home": str(r_a), "away": str(r_b), "season": str(r_s), "home_win": float(r_w)}
-             for r_a, r_b, r_s, r_w in zip(df[a], df[b], df[s], df[w])]
+    a, b = cfg["team_a"], cfg["team_b"]
+    if cfg.get("kind") == "player":  # tennis: p1/p2, winner in {1,2}, season=year(date)
+        yr = pd.to_datetime(df[cfg["date"]]).dt.year.astype(str)
+        games = [{"home": str(r_a), "away": str(r_b), "season": str(r_s),
+                  "home_win": 1.0 if int(r_w) == 1 else 0.0}
+                 for r_a, r_b, r_s, r_w in zip(df[a], df[b], yr, df[cfg["winner"]])]
+    else:
+        w, s = cfg["win_col"], cfg["season"]
+        games = [{"home": str(r_a), "away": str(r_b), "season": str(r_s), "home_win": float(r_w)}
+                 for r_a, r_b, r_s, r_w in zip(df[a], df[b], df[s], df[w])]
     base_p = base_y = None
     try:
         from scripts.platformkit.recalibration import _ADAPTER_REGISTRY  # noqa: PLC0415
@@ -132,7 +145,7 @@ def validate_sport(sport: str, *, min_history: int = 200,
     if sport not in _SPORT_CFG:
         return {"sport": sport, "error": f"sport not wired (have {list(_SPORT_CFG)})", "note": _NOTE}
     load = loader or _default_loader
-    mdl = model or GenericRatingModel()
+    mdl = model or GenericRatingModel(hfa=_SPORT_HFA.get(sport, 65.0))
     try:
         games, base_p, base_y = load(sport)
     except Exception as exc:  # noqa: BLE001
