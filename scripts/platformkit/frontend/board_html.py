@@ -275,7 +275,9 @@ def render_board_html(
         "</head>\n"
         "<body>\n"
         '<h1>Platform Board</h1>\n'
-        '<p class="subtitle">Sortable — click any column header</p>\n'
+        '<p class="subtitle">Sortable — click any column header · '
+        '<a href="/api/intel">per-sport intelligence panels</a> '
+        '(brain: archetypes / schemes / trends — understanding only, no edge)</p>\n'
         f"{banner}\n"
         f"{body_content}\n"
         f"<script>{_SORT_JS}</script>\n"
