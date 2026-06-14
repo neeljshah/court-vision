@@ -275,3 +275,48 @@ def test_capture_never_writes_registry(tmp_path: Path) -> None:
     capture_once(sports=["basketball_nba"], feed=feed, root=tmp_path,
                  ts_utc="2026-06-14T21:00:00+00:00")
     assert not (tmp_path / "data" / "registry").exists()
+
+
+# ------------------------------------------------------------------ 5. capture with sport filter
+
+def test_capture_once_single_sport_arg(tmp_path: Path) -> None:
+    """capture_once with sports=['basketball_nba'] only writes that sport."""
+    feed = _StubFeed([_make_game("basketball_nba")])
+    manifest = capture_once(sports=["basketball_nba"], feed=feed, root=tmp_path,
+                            ts_utc="2026-06-14T22:00:00+00:00")
+    assert "basketball_nba" in manifest["sports"]
+    assert manifest["sports"]["basketball_nba"]["rows"] > 0
+    # Other sports not in the sports arg must not appear in manifest
+    assert "mlb_sbro" not in manifest["sports"]
+
+
+# ------------------------------------------------------------------ 6. line-movement CLI dispatch
+
+def test_line_movement_cli_command(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """'line-movement <sport>' CLI command returns valid JSON with honest_note."""
+    import sys
+    from scripts.platformkit.frontend import snapshot_scheduler
+
+    sport = "basketball_nba"
+    feed = _StubFeed([_make_game(sport, home_ml=1.85, away_ml=2.05)])
+    # Write two snapshots at different times so line_movement has records
+    capture_once(sports=[sport], feed=feed, root=tmp_path, ts_utc="2026-06-14T12:00:00+00:00")
+    feed2 = _StubFeed([_make_game(sport, home_ml=1.80, away_ml=2.10)])
+    capture_once(sports=[sport], feed=feed2, root=tmp_path, ts_utc="2026-06-14T14:00:00+00:00")
+
+    # Monkeypatch _repo_root so line_movement reads from tmp_path
+    import scripts.platformkit.frontend.odds_snapshot as os_mod
+    monkeypatch.setattr(os_mod, "_repo_root", lambda: tmp_path)
+
+    output_lines: list = []
+    monkeypatch.setattr("builtins.print", lambda *a, **k: output_lines.append(" ".join(str(x) for x in a)))
+
+    rc = snapshot_scheduler._main(["line-movement", sport])
+    assert rc == 0
+
+    # Collect printed JSON (skip the banner lines)
+    json_text = "\n".join(l for l in output_lines if l.strip().startswith("{"))
+    result = json.loads(json_text)
+    assert result["sport"] == sport
+    assert "movements" in result
+    assert "honest_note" in result

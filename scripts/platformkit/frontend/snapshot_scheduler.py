@@ -203,8 +203,9 @@ def _main(argv: Optional[List[str]] = None) -> int:
 
     Usage::
 
-        python -m scripts.platformkit.frontend.snapshot_scheduler capture
+        python -m scripts.platformkit.frontend.snapshot_scheduler capture [<sport>]
         python -m scripts.platformkit.frontend.snapshot_scheduler candidates <sport>
+        python -m scripts.platformkit.frontend.snapshot_scheduler line-movement <sport>
     """
     logging.basicConfig(
         level=logging.INFO,
@@ -216,14 +217,18 @@ def _main(argv: Optional[List[str]] = None) -> int:
 
     if not args:
         print("usage:")
-        print("  snapshot_scheduler capture")
+        print("  snapshot_scheduler capture [<sport>]")
         print("  snapshot_scheduler candidates <sport>")
+        print("  snapshot_scheduler line-movement <sport>")
         return 2
 
     cmd = args[0].lower()
 
     if cmd == "capture":
-        manifest = capture_once()
+        sports: Sequence[str] = SPORTS
+        if len(args) >= 2:
+            sports = [args[1]]
+        manifest = capture_once(sports=sports)
         print(json.dumps(manifest, indent=2))
         return 0
 
@@ -233,6 +238,16 @@ def _main(argv: Optional[List[str]] = None) -> int:
             return 2
         sport = args[1]
         result = forward_clv_candidates(sport)
+        print(json.dumps(result, indent=2))
+        return 0
+
+    if cmd in ("line-movement", "line_movement"):
+        if len(args) < 2:
+            print("error: line-movement requires a <sport> argument")
+            return 2
+        sport = args[1]
+        from scripts.platformkit.frontend.odds_snapshot import line_movement
+        result = line_movement(sport)
         print(json.dumps(result, indent=2))
         return 0
 

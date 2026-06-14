@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from scripts.platformkit.frontend.board import _SPORT_REGISTRY, _safe_float
+from scripts.platformkit.frontend.book_norm import normalize_book
 
 logger = logging.getLogger(__name__)
 
@@ -245,7 +246,7 @@ class TheOddsApiFeed(OddsFeed):
         commence = payload.get("commence_time")
         quotes: List[Quote] = []
         for bk in payload.get("bookmakers", []) or []:
-            book = str(bk.get("key") or bk.get("title") or "unknown").lower()
+            book = normalize_book(bk.get("key") or bk.get("title"))
             for mkt in bk.get("markets", []) or []:
                 mkey = str(mkt.get("key") or "h2h")
                 for oc in mkt.get("outcomes", []) or []:
@@ -285,6 +286,7 @@ def get_feed(repo_root: Optional[Path] = None, *, force_stub: bool = False) -> O
 
 __all__ = [
     "american_to_decimal",
+    "normalize_book",
     "Quote",
     "GameOdds",
     "OddsFeed",
