@@ -34,10 +34,13 @@ _SPORT_CFG: Dict[str, Dict[str, str]] = {
     "tennis": {"path": "data/domains/tennis/matches.parquet", "kind": "player",
                "team_a": "p1_id", "team_b": "p2_id", "winner": "winner",
                "date": "date"},  # winner==1 -> p1 won; season = year(date); hfa=0
+    "soccer": {"path": "data/domains/soccer/matches.parquet", "kind": "score",
+               "team_a": "home_team", "team_b": "away_team", "result": "ftr",
+               "season": "season"},  # ftr H/D/A -> home result-score 1/0.5/0 (draws)
 }
 # Per-sport pinned constants (the 03 design: the adapter supplies these).  Home
-# advantage in Elo points: NBA strong, MLB modest, tennis none (no home court).
-_SPORT_HFA: Dict[str, float] = {"nba": 65.0, "mlb": 24.0, "tennis": 0.0}
+# advantage in Elo points: NBA strong, MLB modest, soccer moderate, tennis none.
+_SPORT_HFA: Dict[str, float] = {"nba": 65.0, "mlb": 24.0, "soccer": 46.0, "tennis": 0.0}
 _NOTE = ("One generic Elo across sports; CALIBRATION/ACCURACY != EDGE. A competitive "
          "match with the per-sport baseline validates the abstraction, not a market edge.")
 
@@ -115,11 +118,18 @@ def _default_loader(sport: str) -> Tuple[List[Dict], Optional[np.ndarray], Optio
     cfg = _SPORT_CFG[sport]
     df = pd.read_parquet(_REPO_ROOT / cfg["path"])
     a, b = cfg["team_a"], cfg["team_b"]
-    if cfg.get("kind") == "player":  # tennis: p1/p2, winner in {1,2}, season=year(date)
+    kind = cfg.get("kind")
+    if kind == "player":  # tennis: p1/p2, winner in {1,2}, season=year(date)
         yr = pd.to_datetime(df[cfg["date"]]).dt.year.astype(str)
         games = [{"home": str(r_a), "away": str(r_b), "season": str(r_s),
                   "home_win": 1.0 if int(r_w) == 1 else 0.0}
                  for r_a, r_b, r_s, r_w in zip(df[a], df[b], yr, df[cfg["winner"]])]
+    elif kind == "score":  # soccer: ftr H/D/A -> home result-score 1/0.5/0 (draws)
+        _M = {"H": 1.0, "D": 0.5, "A": 0.0}
+        games = [{"home": str(r_a), "away": str(r_b), "season": str(r_s),
+                  "home_win": _M.get(str(r_r), 0.5)}
+                 for r_a, r_b, r_s, r_r in zip(df[a], df[b], df[cfg["season"]], df[cfg["result"]])]
+        return games, None, None  # adapter baseline is O/U-2.5, not result-score
     else:
         w, s = cfg["win_col"], cfg["season"]
         games = [{"home": str(r_a), "away": str(r_b), "season": str(r_s), "home_win": float(r_w)}
@@ -156,11 +166,23 @@ def validate_sport(sport: str, *, min_history: int = 200,
     probs = mdl.walkforward(games)
     y = np.array([g["home_win"] for g in games], dtype=float)
     sl = slice(min_history, None)
+    out: Dict = {"sport": sport, "n_games": len(games),
+                 "n_eval": int(len(y) - min_history), "note": _NOTE}
+    if _SPORT_CFG[sport].get("kind") == "score":
+        # fractional outcome (W/D/L = 1/.5/0): RMSE of expected-score vs a leak-free
+        # naive expanding-mean predictor (binary log-loss/ECE don't apply).
+        cum = np.cumsum(y)
+        idx = np.arange(len(y))
+        naive = (cum - y) / np.maximum(idx, 1)  # mean of strictly-prior results
+        rmse = float(np.sqrt(np.mean((probs[sl] - y[sl]) ** 2)))
+        n_rmse = float(np.sqrt(np.mean((naive[sl] - y[sl]) ** 2)))
+        out["generic_elo"] = {"rmse": round(rmse, 5), "naive_rmse": round(n_rmse, 5),
+                              "beats_naive": bool(rmse < n_rmse)}
+        return out
     gen = {"brier": round(_brier(probs[sl], y[sl]), 5),
            "logloss": round(_logloss(probs[sl], y[sl]), 5),
            "ece": round(_ece(probs[sl], y[sl]), 5)}
-    out: Dict = {"sport": sport, "n_games": len(games), "n_eval": int(len(y) - min_history),
-                 "generic_elo": gen, "note": _NOTE}
+    out["generic_elo"] = gen
     if base_p is not None and base_y is not None and len(base_p) > min_history:
         bsl = slice(min_history, None)
         out["baseline"] = {"brier": round(_brier(base_p[bsl], base_y[bsl]), 5),
@@ -191,6 +213,10 @@ def _main(argv: Optional[List[str]] = None) -> int:
             continue
         g = r["generic_elo"]
         print(f"\n[{s}] n={r['n_games']} n_eval={r['n_eval']}")
+        if "rmse" in g:  # score kind (soccer expected-score W/D/L)
+            print(f"  generic Elo : expected-score rmse={g['rmse']} "
+                  f"naive_rmse={g['naive_rmse']} beats_naive={g['beats_naive']}")
+            continue
         print(f"  generic Elo : brier={g['brier']} logloss={g['logloss']} ece={g['ece']}")
         if "baseline" in r:
             b = r["baseline"]

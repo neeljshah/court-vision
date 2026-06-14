@@ -76,6 +76,28 @@ def test_unwired_sport_errors():
     assert "error" in res and "not wired" in res["error"]
 
 
+def test_soccer_score_kind_rmse():
+    """Soccer expected-score Elo (W/D/L = 1/.5/0) is validated by RMSE vs naive mean."""
+    rng = np.random.default_rng(3)
+    strong = [f"S{i}" for i in range(5)]
+    weak = [f"W{i}" for i in range(5)]
+    teams = strong + weak
+    games = []
+    for i in range(700):
+        h, a = rng.choice(teams, size=2, replace=False)
+        # strong home vs weak away -> more wins; reverse -> more losses; else mixed
+        p_w, p_d = (0.6, 0.25) if (h in strong and a in weak) else (
+            (0.2, 0.25) if (h in weak and a in strong) else (0.4, 0.27))
+        u = rng.random()
+        res = 1.0 if u < p_w else (0.5 if u < p_w + p_d else 0.0)
+        games.append({"home": str(h), "away": str(a),
+                      "season": "2020" if i < 350 else "2021", "home_win": res})
+    res = validate_sport("soccer", min_history=150, loader=lambda s: (games, None, None))
+    g = res["generic_elo"]
+    assert {"rmse", "naive_rmse", "beats_naive"} <= set(g)
+    assert 0.0 < g["rmse"] < 1.0 and g["rmse"] <= g["naive_rmse"] + 1e-6
+
+
 def test_tennis_wired_and_per_sport_hfa():
     from scripts.platformkit.generic_rating import _SPORT_CFG, _SPORT_HFA
     # tennis is a wired (player-schema) sport with zero home advantage
