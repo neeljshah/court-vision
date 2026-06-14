@@ -60,6 +60,20 @@ def _run_model_stages(organized_root: Path) -> Dict:
             models.setdefault("_scoreboard", {})["platform_scoreboard"] = "written"
     except Exception:  # noqa: BLE001
         pass
+    # per-sport calibration scoreboard (baseline vs improved ECE/Brier; surfaces the
+    # W93/W94 calibration wins as a browsable artifact). Real per-sport providers are
+    # heavy (full-corpus WF) -> only on the with_models real-data path. Audit-clean.
+    try:
+        from scripts.platformkit.calibration_scoreboard import (  # noqa: PLC0415
+            build_calibration_scoreboard,
+        )
+        cal_rows = build_calibration_scoreboard(
+            vault_root=organized_root / "_Index", write=True,
+        )
+        if any("error" not in r for r in cal_rows):
+            models.setdefault("_calibration", {})["calibration_scoreboard"] = "written"
+    except Exception:  # noqa: BLE001
+        pass
     # green-cell coverage map (light filesystem walk; accurate after the artifacts above)
     try:
         from scripts.platformkit.brain_coverage import (  # noqa: PLC0415
