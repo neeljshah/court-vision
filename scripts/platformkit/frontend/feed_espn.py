@@ -215,12 +215,28 @@ class EspnFreeFeed(OddsFeed):
         return quotes
 
 
-def get_feed_auto(repo_root: Optional[Path] = None, *, force_stub: bool = False) -> OddsFeed:
-    """Default feed selector: paid key -> TheOddsApiFeed; else free live ESPN.
+def get_free_multi_feed(repo_root: Optional[Path] = None) -> OddsFeed:
+    """Compose all FREE no-key books into one MultiFeed (ESPN + Bovada).
 
-    Order: ODDS_API_KEY/THE_ODDS_API_KEY -> TheOddsApiFeed (multi-book) ; else
-    EspnFreeFeed (free live, ~1 book) ; force_stub -> on-disk StubFeed.  The app
-    lights up FREE by default — no paid key required.
+    With >=2 free books quoting the same game, cross-book arbitrage /
+    line-shopping / CLV light up AUTOMATICALLY (markets efficient — NO model
+    edge; the only value is line-shop/devig/CLV).  Lazy imports keep import-time
+    light and avoid any import cycle.  A book that returns nothing (e.g. Bovada
+    while network egress is blocked) degrades the merge gracefully to whatever
+    books DID return — no rewrite needed when a 2nd source comes online.
+    """
+    from scripts.platformkit.frontend.feed_multi import MultiFeed
+    from scripts.platformkit.frontend.feed_bovada import BovadaFreeFeed
+    return MultiFeed([EspnFreeFeed(), BovadaFreeFeed()])
+
+
+def get_feed_auto(repo_root: Optional[Path] = None, *, force_stub: bool = False) -> OddsFeed:
+    """Default feed selector: paid key -> TheOddsApiFeed; else FREE multi-book.
+
+    Order: force_stub -> on-disk StubFeed ; ODDS_API_KEY/THE_ODDS_API_KEY ->
+    TheOddsApiFeed (multi-book) ; else get_free_multi_feed() (ESPN + Bovada,
+    free live).  The app lights up FREE by default — no paid key required, and
+    cross-book arb/line-shop/CLV activate the moment >=2 books return live data.
     """
     if force_stub:
         from scripts.platformkit.frontend.feed import StubFeed
@@ -229,7 +245,7 @@ def get_feed_auto(repo_root: Optional[Path] = None, *, force_stub: bool = False)
     if key:
         from scripts.platformkit.frontend.feed import TheOddsApiFeed
         return TheOddsApiFeed(api_key=key)
-    return EspnFreeFeed()
+    return get_free_multi_feed(repo_root)
 
 
-__all__ = ["EspnFreeFeed", "get_feed_auto", "ESPN_NOTE", "_SPORT_PATHS"]
+__all__ = ["EspnFreeFeed", "get_feed_auto", "get_free_multi_feed", "ESPN_NOTE", "_SPORT_PATHS"]
