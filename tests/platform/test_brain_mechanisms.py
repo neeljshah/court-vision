@@ -4,9 +4,13 @@ Hermetic: injects SYNTHETIC post-mortem DataFrames (never reads real parquet) an
 asserts that the rendered mechanism notes:
   (a) are built per sport with the expected slugs
   (b) carry the honest banner and calibration / no-edge framing
-  (c) are person-free (no player/team names)
+  (c) are person-free (no player/team names, no edge tokens)
   (d) pass the REAL no-edge audit (scan_text == [] per file — W96 pattern)
   (e) are skipped honestly for missing parquets
+  (f) contain >=5 resolving [[wikilinks]] per note (densification requirement)
+  (g) contain the densified sections: How it works, Archetype implications,
+      Model-structure implication
+  (h) index contains the sport cross-links (_WhatWins, Drivers, Archetypes, _Index)
 """
 from __future__ import annotations
 
@@ -209,3 +213,85 @@ def test_write_false_no_files(tmp_path):
     build_mechanisms(injected={"NBA": _nba_pm()},
                      organized_root=tmp_path, write=False)
     assert not (tmp_path / "NBA").exists()
+
+
+# ── densification tests (new requirements) ───────────────────────────────────
+
+import re as _re
+
+_WL_RE = _re.compile(r"\[\[([^\]]+)\]\]")
+_REQUIRED_NOTE_LINKS = ["_Mechanisms", "_WhatWins", "Drivers", "Archetypes/_Archetypes_Index", "_Index"]
+_REQUIRED_SECTIONS = ["## How it works", "## Archetype / style implications",
+                      "## Model-structure implication", "## Empirical conditional frequencies", "## Links"]
+_REQUIRED_IDX_LINKS = ["_WhatWins", "Drivers", "Archetypes/_Archetypes_Index", "_Index"]
+_ALL_SPORTS = {"NBA": _nba_pm, "MLB": _mlb_pm, "Soccer": _soccer_pm, "Tennis": _tennis_pm}
+
+
+def _rep_all():
+    return build_mechanisms(injected={s: f() for s, f in _ALL_SPORTS.items()}, write=False)
+
+
+def _all_rendered(rep):
+    return [(sp, slug, md) for sp, info in rep.items()
+            if not sp.startswith("_") and "skipped" not in info
+            for slug, md in info["rendered"].items()]
+
+
+def test_wikilink_count_per_note():
+    """Each mechanism note must contain >= 5 resolving [[wikilinks]]."""
+    for sport, slug, md in _all_rendered(_rep_all()):
+        links = _WL_RE.findall(md)
+        assert len(links) >= 5, f"{sport}/{slug}.md: only {len(links)} wikilinks (need >=5): {links}"
+
+
+def test_required_cross_links_in_notes():
+    """Each mechanism note must link to _Mechanisms, _WhatWins, Drivers, Archetypes, _Index."""
+    for sport, slug, md in _all_rendered(_rep_all()):
+        found = " ".join(_WL_RE.findall(md))
+        for target in _REQUIRED_NOTE_LINKS:
+            assert target in found, f"{sport}/{slug}.md missing wikilink to '{target}'"
+
+
+def test_densified_sections_present():
+    """Each mechanism note must contain all required section headers."""
+    for sport, slug, md in _all_rendered(_rep_all()):
+        for section in _REQUIRED_SECTIONS:
+            assert section in md, f"{sport}/{slug}.md missing section '{section}'"
+
+
+def test_archetype_section_has_favors_and_suppresses():
+    """Archetype section must have **Favors**: and **Suppresses**: labels."""
+    for sport, slug, md in _all_rendered(_rep_all()):
+        assert "**Favors**:" in md, f"{sport}/{slug}.md missing '**Favors**:'"
+        assert "**Suppresses**:" in md, f"{sport}/{slug}.md missing '**Suppresses**:'"
+
+
+def test_model_structure_implication_non_empty():
+    """Model-structure implication section must contain real calibration text (not just '—')."""
+    for sport, slug, md in _all_rendered(_rep_all()):
+        idx = md.find("## Model-structure implication")
+        assert idx != -1, f"{sport}/{slug}.md missing model-structure section"
+        snippet = md[idx:idx + 300]
+        real_lines = [l.strip() for l in snippet.split("\n")[1:4] if l.strip() not in ("", "—")]
+        assert real_lines, f"{sport}/{slug}.md model-structure section is empty or just '—'"
+
+
+def test_index_contains_required_cross_links():
+    """_Mechanisms.md index must contain all required cross-links."""
+    rep = build_mechanisms(injected={"NBA": _nba_pm(), "Soccer": _soccer_pm()}, write=False)
+    for sport in ("NBA", "Soccer"):
+        found = " ".join(_WL_RE.findall(rep[sport]["index_md"]))
+        for target in _REQUIRED_IDX_LINKS:
+            assert target in found, f"{sport}/_Mechanisms.md missing cross-link to '{target}'"
+
+
+def test_no_proper_names_in_mechanisms():
+    """Mechanism notes and index must not reference Players/ or Teams/ vault paths."""
+    rep = _rep_all()
+    for sport, slug, md in _all_rendered(rep):
+        assert "Players/" not in md and "Teams/" not in md, \
+            f"{sport}/{slug}.md contains person/team vault reference"
+    for sport in _ALL_SPORTS:
+        idx = rep[sport]["index_md"]
+        assert "Players/" not in idx and "Teams/" not in idx, \
+            f"{sport}/_Mechanisms.md index contains person/team vault reference"

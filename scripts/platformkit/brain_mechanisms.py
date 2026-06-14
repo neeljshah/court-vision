@@ -42,7 +42,6 @@ _SPORTS: Dict[str, Dict] = {
     ]},
 }
 
-
 _PCS = ["slow","medium","fast"]
 
 
@@ -59,47 +58,39 @@ def _ct_rows(df, row_col, row_vals, col_vals, aliases: Dict = {}) -> str:
 
 
 def _grp_rows(df, grp_col, val_col) -> str:
-    if grp_col not in df.columns or val_col not in df.columns:
-        return "(no data)"
+    if grp_col not in df.columns or val_col not in df.columns: return "(no data)"
     g = df.groupby(grp_col)[val_col].agg(["mean", "std"])
-    return "\n".join(f"- **{i}**: mean {g.loc[i,'mean']:.1f}, std {g.loc[i,'std']:.1f}"
-                     for i in g.index)
+    return "\n".join(f"- **{i}**: mean {g.loc[i,'mean']:.1f}, std {g.loc[i,'std']:.1f}" for i in g.index)
 
 
 def _pace_df(df):
     import pandas as pd  # noqa
-    if "pace" not in df.columns:
-        return None
+    if "pace" not in df.columns: return None
     try:
         d = df.copy(); d["_pc"] = pd.qcut(d["pace"], 3, labels=_PCS); return d
-    except ValueError:
-        return None
+    except ValueError: return None
+
 
 def _nba_pace_shoot(df) -> Tuple[str, str]:
     df2 = _pace_df(df)
-    if df2 is None:
-        return "(insufficient pace data)", ""
+    if df2 is None: return "(insufficient pace data)", ""
     emp = _ct_rows(df2, "_pc", _PCS, ["SHOOTING","REBOUNDING","TURNOVERS"])
     body = ("Pace modulates which factor decides the game but does not dominate it.  "
             "Shooting efficiency (eFG differential) is the #1 driver across all pace "
             "tertiles; at slow pace the shooting-decided share dips slightly (fewer "
-            "possessions, more contested half-court offense).  Pace bucket should be a "
-            "conditioning variable, not a raw feature.\n\n"
-            "**Leak-free as-of signal:** as-of rolling eFG conditioned on pace context.")
+            "possessions, more contested half-court offense).  Pace bucket is a "
+            "conditioning variable, not a raw feature.")
     return emp, body
 
 
 def _nba_pace_reb(df) -> Tuple[str, str]:
     df2 = _pace_df(df)
-    if df2 is None:
-        return "(insufficient pace data)", ""
+    if df2 is None: return "(insufficient pace data)", ""
     emp = _ct_rows(df2, "_pc", _PCS, ["REBOUNDING"])
     body = ("Slow-pace games amplify the rebounding mechanism: fewer possessions make "
-            "each offensive rebound more valuable.  As pace rises, transition attempts "
-            "reduce the crashing value; rebounding-decided frequency falls.  Apply a "
-            "pace-bucket weight to OREB priors: high-weight in slow tempo, downweighted "
-            "in running styles.\n\n"
-            "**Leak-free as-of signal:** as-of OREB% conditioned on pace bucket.")
+            "each OREB more valuable.  As pace rises, transition attempts reduce the "
+            "crashing value; rebounding-decided frequency falls.  The interaction "
+            "direction: pace UP → OREB weight DOWN.")
     return emp, body
 
 
@@ -107,10 +98,9 @@ def _nba_margin(df) -> Tuple[str, str]:
     emp = _grp_rows(df, "decided_by", "margin") if "margin" in df.columns else "(no data)"
     body = ("Shooting-decided games produce a wider raw margin distribution.  "
             "Turnover/free-throw games are closer (fewer total swing points); BALANCED "
-            "games centre near zero with the highest two-sided variance.\n\n"
-            "**Leak-free as-of signal:** when pre-game priors suggest a large shooting-"
-            "efficiency gap, widen the spread distribution prior.  Do NOT use the "
-            "realized margin as a feature.")
+            "games centre near zero with the highest two-sided variance.  The mechanism: "
+            "shooting efficiency creates compounding leads; other factors produce tighter "
+            "score lines.  Implication: decided_by predicts spread shape, not just mean.")
     return emp, body
 
 
@@ -118,22 +108,20 @@ def _mlb_sp_hand(df) -> Tuple[str, str]:
     emp = _ct_rows(df, "sp_hand_matchup", ["RR","LL","RL","LR"],
                    ["BIG_INNING","SP_DUEL","BLOWOUT"])
     body = ("SP-handedness matchup shows surprisingly flat conditional distributions: "
-            "BIG_INNING accounts for ~67–69% of games regardless of matchup — run-"
-            "scoring is structurally bursty.  SP_DUEL rate (~11–12%) indicates a "
-            "pitchers duel depends more on individual starter quality than handedness.\n\n"
-            "**Leak-free as-of signal:** SP quality and park factors dominate; "
-            "handedness is secondary context.  Do not over-weight it as a total modifier.")
+            "BIG_INNING accounts for ~67–69% regardless of matchup — run-scoring is "
+            "structurally bursty.  SP_DUEL rate (~11–12%) shows pitching duels depend "
+            "more on individual starter quality than on handedness.  SP quality + park "
+            "factors dominate; handedness is secondary context.")
     return emp, body
 
 
 def _mlb_big_inn(df) -> Tuple[str, str]:
     emp = _grp_rows(df, "decided_by", "total_runs") if "total_runs" in df.columns else "(no data)"
     body = ("BIG_INNING and SP_DUEL are structural opposites: big-inning games cluster "
-            "at ~8.8 runs; SP_DUEL games are capped at ≤4 runs by construction; BLOWOUT "
-            "reaches ~13.  Game-mode distribution is strongly informative about total range.\n\n"
-            "**Leak-free as-of signal:** SP quality + bullpen priors set the game-mode "
-            "prior (duel vs big-inning vs blowout); that prior sets the total distribution.  "
-            "Strong SP on both sides → elevated SP_DUEL prior → compress total prior left.")
+            "at ~8.8 runs; SP_DUEL games are capped at ≤4 by construction; BLOWOUT "
+            "reaches ~13.  Game-mode prior (set by SP quality + bullpen) determines the "
+            "total-run distribution shape — not just the mean.  Strong SP both sides → "
+            "elevated SP_DUEL prior → compress total prior left-ward.")
     return emp, body
 
 
@@ -144,11 +132,8 @@ def _soc_redcard(df) -> Tuple[str, str]:
     body = ("A red card converts a finishing-variance or routine match into RED_CARD_SWING "
             "with high probability (~76% of red-card games).  This is a conditional "
             "independence break: finishing luck matters far less than structural "
-            "man-advantage.  A dismissal should reprice finishing-variance expectations "
-            "toward the territorial-control / man-up outcome path.\n\n"
-            "**Leak-free as-of signal:** as-of foul/card propensity × referee strictness "
-            "prior.  In-game: a red-card event triggers repricing that collapses the "
-            "finishing-variance prior.")
+            "man-advantage.  A dismissal triggers repricing that collapses the finishing-"
+            "variance prior toward territorial-control / man-up outcome path.")
     return emp, body
 
 
@@ -156,13 +141,11 @@ def _soc_ht_flip(df) -> Tuple[str, str]:
     aliases = {False: "Leader holds (no flip)", True: "Leader did NOT hold (flip)"}
     emp = _ct_rows(df, "ht_flip", [False, True],
                    ["ROUTINE","FINISHING_VARIANCE","HT_COMEBACK","DOMINANT_BUT_DREW"], aliases)
-    body = ("When the half-time leader also wins (no ht_flip), ROUTINE and TERRITORIAL_"
-            "CONTROL dominate.  When a flip occurs, the distribution shifts toward "
-            "HT_COMEBACK and DOMINANT_BUT_DREW; ROUTINE is zero in the ht_flip=True "
-            "stratum by construction.\n\n"
-            "**Leak-free as-of signal:** closing-strength × in-game-state conditional "
-            "prior.  After a half-time lead, downweight finishing-variance and upweight "
-            "hold-lead prior.  Do NOT use the realized ht_flip column as a feature.")
+    body = ("When the ht-leader also wins (no flip), ROUTINE and TERRITORIAL_CONTROL "
+            "dominate.  When a flip occurs, distribution shifts toward HT_COMEBACK and "
+            "DOMINANT_BUT_DREW; ROUTINE is zero in the ht_flip=True stratum by "
+            "construction.  At half-time lead, downweight finishing-variance prior; "
+            "realized ht_flip is a target, never a feature.")
     return emp, body
 
 
@@ -171,17 +154,14 @@ def _ten_serve(df) -> Tuple[str, str]:
     if "surface" in df.columns:
         for sfc in ["Grass","Hard","Clay"]:
             sub = df[df["surface"] == sfc]
-            parts = ([f"mean aces {sub['p1_aces'].mean():.1f}"] if len(sub) and "p1_aces" in sub.columns else [])
-            parts += ([f"mean tiebreaks {sub['n_tiebreaks'].mean():.2f}"] if len(sub) and "n_tiebreaks" in sub.columns else [])
-            if parts: rows.append(f"- **{sfc}**: " + ", ".join(parts))
+            p = ([f"mean aces {sub['p1_aces'].mean():.1f}"] if len(sub) and "p1_aces" in sub else [])
+            p += ([f"mean tiebreaks {sub['n_tiebreaks'].mean():.2f}"] if len(sub) and "n_tiebreaks" in sub else [])
+            if p: rows.append(f"- **{sfc}**: " + ", ".join(p))
     emp = "\n".join(rows) or "(no data)"
     body = ("Surface is the primary conditioner on serve-dominance.  Grass produces far "
             "more aces and tiebreaks than clay; clay breaks serve more frequently, "
             "amplifying break-point conversion.  Serve-hold% is NOT surface-transferable "
-            "— surface must be the conditioning variable.\n\n"
-            "**Leak-free as-of signal:** surface-specific serve-hold% priors (never "
-            "cross-surface transfer).  Grass → high tiebreak prior; Clay → high "
-            "break-frequency prior; Hard → intermediate.")
+            "— surface must always be the conditioning variable, never pooled.")
     return emp, body
 
 
@@ -191,10 +171,8 @@ def _ten_bp(df) -> Tuple[str, str]:
     body = ("BP conversion rates and BP_CONVERSION_EDGE frequency are surface-conditional.  "
             "On clay, service is harder to hold so conversion rates rise.  BLOWOUT rate "
             "also varies: clay (skill gap via sustained baseline); grass blowouts less "
-            "common (serve equalises levels).  Cross-surface BP% pooling is miscalibrated.\n\n"
-            "**Leak-free as-of signal:** surface-specific BP-conversion% priors with "
-            "separate shrinkage per surface.  Do NOT pool cross-surface BP stats.  "
-            "Clay prior: higher baseline break frequency.")
+            "common (serve equalises levels).  Cross-surface BP% pooling is "
+            "miscalibrated; separate shrinkage per surface is required.")
     return emp, body
 
 
@@ -207,30 +185,56 @@ _COMPUTE = {
 }
 
 
+# slug -> (favors_archetype, suppresses_archetype, model_implication). No player/team names.
+_META: Dict[str, Tuple[str, str, str]] = {
+    "pace_x_shooting_dominance": ("half-court / set-offense archetypes", "transition-volume styles", "Condition eFG priors per pace tertile; never pool across pace buckets."),
+    "pace_x_rebounding_weight":  ("grind-tempo / paint-dominant archetypes at slow pace", "run-and-gun styles (OREB value collapses in open transition)", "Apply pace-bucket weights to OREB priors: high at slow tempo, downweighted at fast."),
+    "shooting_margin_structure": ("spread-offense / spacing archetypes (wider margin dist.)", "grind / foul-draw styles (tighter margin → narrower spread prior)", "Pre-game eFG gap widens spread-distribution shape — a calibration adjustment, not a mean shift."),
+    "sp_hand_x_game_mode":       ("neutral-matchup SP quality archetypes", "handedness-specialist narratives (flat conditional dist.)", "SP quality + park factors dominate the game-mode prior; handedness adds minimal conditioning lift."),
+    "big_inning_x_total_runs":   ("explosive-offense / weak-bullpen archetypes", "SP-duel archetypes (hard total cap by construction)", "Game-mode prior (duel/big-inning/blowout) controls total-run distribution shape, not just the mean."),
+    "red_card_x_finishing":      ("pressing / high-defensive-line archetypes", "finishing-variance styles (luck collapses after dismissal)", "Red-card event collapses finishing-variance prior; shifts mass toward territorial-control path."),
+    "ht_lead_x_result_stability":("low-block / defensive-shape archetypes", "high-press / comeback archetypes (flip probability drops sharply)", "After ht-lead, downweight finishing-variance prior; realized ht_flip is a target, never a feature."),
+    "surface_x_serve_hold":      ("big-serve archetypes on Grass; baseline grinders on Clay", "cross-surface style transfer (priors are NOT surface-portable)", "Fit surface-specific serve-hold% priors; no cross-surface pooling. Grass → high tiebreak prior."),
+    "surface_x_bp_conversion":   ("sustained-baseline archetypes on Clay", "serve-dominant archetypes on Clay (serve equaliser weakens)", "Separate shrinkage per surface for BP-conversion%; pooled cross-surface BP% is miscalibrated."),
+}
+_LINKS = "[[_Mechanisms|Mechanisms index]] · [[_WhatWins|What Wins]] · [[Drivers|Drivers]] · [[Archetypes/_Archetypes_Index|Archetypes]] · [[_Index|Index]]"
+
+
 def _render_mech(sport: str, slug: str, title: str, emp: str, body: str) -> str:
+    fav, sup, model_impl = _META.get(slug, ("—", "—", "—"))
+    wikilinks = "\n".join([
+        f"- [[_Mechanisms|{sport} Mechanisms index]]",
+        f"- [[_WhatWins|{sport} What Wins & Why]]",
+        f"- [[Drivers|{sport} Drivers]]",
+        f"- [[Archetypes/_Archetypes_Index|{sport} Computed Archetypes]]",
+        f"- [[_Index|{sport} Intelligence Index]]",
+    ])
     return "\n".join([
         f"---\ntags: [organized, {sport.lower()}, mechanisms, intelligence, person-free]\n---",
         f"# {sport} Mechanism — {title}\n",
         _BANNER + "\n",
-        "## Interaction", body, "",
+        "## How it works", body, "",
+        "## Archetype / style implications (structural labels only, no names)",
+        f"- **Favors**: {fav}",
+        f"- **Suppresses**: {sup}", "",
+        "## Model-structure implication (calibration, NOT edge)",
+        model_impl, "",
         "## Empirical conditional frequencies / magnitudes", emp, "",
-        "## Links",
-        f"- [[_Mechanisms|{sport} Mechanisms index]]",
-        f"- [[_WhatWins|{sport} What Wins & Why]]",
+        "## Links", wikilinks,
     ]) + "\n"
 
 
 def _render_index(sport: str, mechs: List[Tuple]) -> str:
-    rows = "\n".join(f"| {t} | [[{s}]] |" for s, t, _ in mechs)
+    rows = "\n".join(f"| {t} | {_META.get(s,('','',''))[2][:68]}… | [[{s}]] |" for s,t,_ in mechs)
     return "\n".join([
         f"---\ntags: [organized, {sport.lower()}, mechanisms, index, person-free]\n---",
         f"# {sport} — Mechanisms Index\n",
         _BANNER + "\n",
-        f"Dense cross-cutting FACTOR INTERACTIONS for {sport}: how decided-by "
-        "drivers co-occur or condition on context, and what each implies for calibration.  "
-        "All frequencies are from REALIZED post-mortems (descriptive).\n",
-        "| Mechanism | File |",
-        "|-----------|------|",
+        f"Dense FACTOR INTERACTIONS for {sport}: how decided-by drivers co-occur or condition "
+        "on context, and what each implies for calibration.  "
+        f"All frequencies are REALIZED post-mortems (descriptive).  See also: {_LINKS}\n",
+        "| Mechanism | Calibration implication | File |",
+        "|-----------|------------------------|------|",
         rows, "",
         "_Calibration is not edge.  No edge is claimed._",
     ]) + "\n"
@@ -286,12 +290,10 @@ def _main(argv: Optional[List[str]] = None) -> int:
                    if isinstance(v, dict) and "rendered" in v else v)
                for k, v in rep.items()}
         print(json.dumps(out, indent=2)); return 0
-    for sport, info in rep.items():
-        if not sport.startswith("_"):
-            if "skipped" in info:
-                print(f"[SKIP] {sport}: {info['skipped']}")
-            else:
-                print(f"[OK]   {sport}: {info['n_mechanisms']} — {', '.join(info['slugs'])}")
+    for sp, info in rep.items():
+        if sp.startswith("_"): continue
+        if "skipped" in info: print(f"[SKIP] {sp}: {info['skipped']}")
+        else: print(f"[OK]   {sp}: {info['n_mechanisms']} — {', '.join(info['slugs'])}")
     return 0
 
 if __name__ == "__main__":

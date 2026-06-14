@@ -23,6 +23,8 @@ from vault_person_free_lint import (  # noqa: E402
     inventory_only,
     lint_vault,
     _is_allowlisted_title,
+    _vs_pair_is_allowlisted,
+    _word_is_concept,
 )
 
 
@@ -121,7 +123,8 @@ class TestNamedTitle:
 
 class TestMatchupVs:
     def test_player_vs_player_file(self, tmp_path: Path) -> None:
-        _write(tmp_path, "matchup.md", "Player One vs Player Two\n")
+        # Two proper-noun surnames (NOT concept tokens) -> a real person matchup.
+        _write(tmp_path, "matchup.md", "Curry vs Doncic\n")
         report = lint_vault(tmp_path)
         assert any(l["kind"] == "matchup_vs" for l in report["leaks"]), report["leaks"]
 
@@ -134,6 +137,80 @@ class TestMatchupVs:
         _write(tmp_path, "game.md", "Tonight: LAL@BOS tip-off.\n")
         report = lint_vault(tmp_path)
         assert any(l["kind"] == "matchup_vs" for l in report["leaks"]), report["leaks"]
+
+
+# --- Concept false positives — the bug this fix closes (must NOT flag) --------
+
+# Archetype concept titles that previously tripped named_title.
+_ARCHETYPE_TITLES = [
+    "# Bench Contributor", "# Floor-Spacing Specialist", "# Role Player",
+    "# Defensive Low-Block", "# High-Scoring Attacking",
+]
+# Concept "X vs Y" comparisons that previously tripped matchup_vs.
+_CONCEPT_VS = [
+    "Drop vs Switch", "over-dispersed vs Poisson", "Run-scoring vs. run-prevention",
+]
+
+
+class TestConceptNotFlagged:
+    def test_archetype_titles_not_flagged(self, tmp_path: Path) -> None:
+        for i, title in enumerate(_ARCHETYPE_TITLES):
+            _write(tmp_path, f"arch_{i}.md", f"{title}\n\nbody\n")
+        report = lint_vault(tmp_path)
+        assert not any(l["kind"] == "named_title" for l in report["leaks"]), report["leaks"]
+        assert report["person_free"] is True
+
+    def test_concept_vs_not_flagged(self, tmp_path: Path) -> None:
+        for i, phrase in enumerate(_CONCEPT_VS):
+            _write(tmp_path, f"cmp_{i}.md", f"We contrast {phrase} here.\n")
+        report = lint_vault(tmp_path)
+        assert not any(l["kind"] == "matchup_vs" for l in report["leaks"]), report["leaks"]
+        assert report["person_free"] is True
+
+    def test_allowlisted_title_helper(self) -> None:
+        assert _is_allowlisted_title("Bench", "Contributor") is True
+        assert _is_allowlisted_title("Floor-Spacing", "Specialist") is True
+        assert _is_allowlisted_title("Role", "Player") is True
+        assert _is_allowlisted_title("Defensive", "Low-Block") is True
+        assert _is_allowlisted_title("High-Scoring", "Attacking") is True
+
+    def test_vs_pair_helper_suppresses_concepts(self) -> None:
+        assert _vs_pair_is_allowlisted("Drop", "Switch") is True
+        assert _vs_pair_is_allowlisted("over-dispersed", "Poisson") is True
+        assert _vs_pair_is_allowlisted("Run-scoring", "run-prevention") is True
+        assert _vs_pair_is_allowlisted("accuracy", "edge") is True
+
+    def test_word_is_concept_hyphen_subtokens(self) -> None:
+        assert _word_is_concept("Floor-Spacing") is True
+        assert _word_is_concept("Low-Block") is True
+        assert _word_is_concept("High-Scoring") is True
+        assert _word_is_concept("Doncic") is False
+
+
+# --- Synthetic REAL names still flag (must NOT be over-suppressed) ------------
+
+class TestRealNamesStillFlag:
+    def test_real_named_title_flags(self, tmp_path: Path) -> None:
+        _write(tmp_path, "n.md", "# Luka Doncic\n\nbody\n")
+        report = lint_vault(tmp_path)
+        assert any(l["kind"] == "named_title" for l in report["leaks"]), report["leaks"]
+        assert report["person_free"] is False
+
+    def test_real_team_matchup_flags(self, tmp_path: Path) -> None:
+        _write(tmp_path, "m.md", "Tonight: Lakers vs Celtics.\n")
+        report = lint_vault(tmp_path)
+        assert any(l["kind"] == "matchup_vs" for l in report["leaks"]), report["leaks"]
+        assert report["person_free"] is False
+
+    def test_real_tricode_matchup_flags(self, tmp_path: Path) -> None:
+        _write(tmp_path, "g.md", "Slate: LAL vs BOS.\n")
+        report = lint_vault(tmp_path)
+        assert any(l["kind"] == "matchup_vs" for l in report["leaks"]), report["leaks"]
+
+    def test_vs_pair_helper_flags_real(self) -> None:
+        assert _vs_pair_is_allowlisted("Lakers", "Celtics") is False
+        assert _vs_pair_is_allowlisted("LAL", "BOS") is False
+        assert _vs_pair_is_allowlisted("Luka", "Doncic") is False
 
 
 # ---------------------------------------------------------------------------

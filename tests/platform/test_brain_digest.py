@@ -1,20 +1,23 @@
-"""tests/platform/test_brain_digest.py — unit tests for brain_digest.
+"""tests/platform/test_brain_digest.py — unit tests for brain_digest MOC digests.
 
-Builds a tmp fixture _Organized with 2 sports (NBA, Tennis), calls
+Builds a tmp _Organized fixture with 2 sports (NBA, Tennis), calls
 build_digests(organized_root=fixture, write=True) and asserts:
-  1. Each sport's _Digest.md is written and contains archetype titles + counts line.
-  2. _Index/_Cross_Sport_Digest.md is written and names both sports + has an
-     analogue column.
-  3. No digest contains a probability/odds/'edge'/ROI token.
-  4. The report dict counts match the fixture.
+  1. Per-sport _Digest.md exists, contains archetype titles as wikilinks,
+     hub links to _WhatWins/_Mechanisms/_Archetypes_Index/_Index/_Brain.
+  2. _Cross_Sport_Digest.md names both sports, has analogue shape table,
+     links each sport's _WhatWins + each archetype wikilinked.
+  3. No digest contains probability/odds/edge/ROI/player-name tokens.
+  4. Report dict counts match the fixture. >= N resolving wikilinks.
+  5. moc tag present in frontmatter. Drivers/Mechanisms counts present.
 
-Pure stdlib only.
+Hermetic — no live vault access. Pure stdlib + pytest.
 """
 from __future__ import annotations
 
 import re
 import sys
 from pathlib import Path
+from typing import List
 
 import pytest
 
@@ -24,17 +27,31 @@ if str(_REPO_ROOT) not in sys.path:
 
 from scripts.platformkit.brain_digest import build_digests  # noqa: E402
 
-# ---------------------------------------------------------------------------
-# forbidden tokens — must NOT appear in any generated digest
-# ---------------------------------------------------------------------------
 _FORBIDDEN = re.compile(
     r"\b(probability|odds|\bedge\b|ROI|roi|kelly|kelly_fraction|vig)\b",
     re.IGNORECASE,
 )
+# Detect "Firstname Lastname" on plain content lines (not headings/#/|/wikilinks/frontmatter)
+_PERSON_LINE = re.compile(r"\b([A-Z][a-z]{2,}\s+[A-Z][a-z]{2,})\b")
+# Known-safe structural Title-Case compound phrases from the digest template
+_PERSON_SAFE = re.compile(
+    r"\b(High.Usage|Fast.Court|Clay.Court|What.Wins|Cross.Sport|Transfer.Note|"
+    r"Stat.Signature|Honest.Verdict|Trend.Notes|Intelligence.MOC|Dense.Intelligence|"
+    r"Analogue.Map|Per.Sport|Archetype.Taxonomy|Hub.Links|Sport.Hubs|Sport.Brain|"
+    r"Schemes?.Tactics|Switch.Heavy|Pace.Trend|Surface.Shift|Defensive.Anchor|"
+    r"Digest.Note|Archetype.Transfer|Mechanisms.Hub|Archetypes?.Index|Sport.Index|"
+    r"What.Works|Poisson.NegBinom|Analogue.Shapes|Base.Rates|"
+    r"Run.Prevention|Big.Server|Usage.Creator|Run.Scoring|"
+    r"Archetype.Inventory|Transfer.Scope|Honest.Verdict|"
+    r"Market.Lines|Market.Prices|Market.Advantage|Market.Efficiency|"
+    r"Model.Family|Calibration.Approach|Statistical.Reasoning)\b",
+    re.IGNORECASE,
+)
+_WIKILINK = re.compile(r"\[\[([^\]]+)\]\]")
 
 
 # ---------------------------------------------------------------------------
-# fixture builder
+# fixture helpers
 # ---------------------------------------------------------------------------
 
 def _mkfile(path: Path, content: str) -> None:
@@ -43,85 +60,54 @@ def _mkfile(path: Path, content: str) -> None:
 
 
 def _build_fixture(root: Path) -> None:
-    """Create a minimal 2-sport _Organized fixture."""
-
-    # ---- NBA ----
     nba = root / "NBA"
-
-    # Archetypes: 2 notes with **Key:** value stat lines
-    _mkfile(
-        nba / "Archetypes" / "High_Usage_Creator.md",
-        "---\ntags: [sport/nba, archetype]\n---\n\n"
-        "# High-Usage Creator\n\n"
-        "## Signature\n\n"
-        "- **usage%**: >= 0.22\n"
-        "- **ast%**: >= 0.20\n"
-        "- **position**: Guard\n\n"
-        "## Population\n\n"
-        "- **Players fitting this archetype:** 59\n",
-    )
-    _mkfile(
-        nba / "Archetypes" / "Defensive_Anchor.md",
-        "---\ntags: [sport/nba, archetype]\n---\n\n"
-        "# Defensive Anchor\n\n"
-        "## Signature\n\n"
-        "- **position**: Center\n"
-        "- **def_rtg**: <= 110\n"
-        "- **reb%**: >= 0.10\n\n"
-        "## Population\n\n"
-        "- **Players fitting this archetype:** 30\n",
-    )
-
-    # Schemes: 1 note
-    _mkfile(
-        nba / "Schemes" / "switch_heavy.md",
-        "---\ntags: [sport/nba, scheme]\n---\n\n# Switch-Heavy Defense\n\n"
-        "Defensive scheme using universal switching.\n",
-    )
-
-    # Teams: 1 subdir (counts as 1 team)
+    # hub notes
+    _mkfile(nba / "_WhatWins.md", "# NBA — What Wins\n\nCalibration choices.\n")
+    _mkfile(nba / "_Index.md", "# NBA — Index\n\nSport index.\n")
+    _mkfile(nba / "Mechanisms" / "_Mechanisms.md", "# NBA Mechanisms\n\nHub.\n")
+    _mkfile(nba / "Archetypes" / "_Archetypes_Index.md", "# NBA Archetypes Index\n\n")
+    # archetypes
+    _mkfile(nba / "Archetypes" / "High_Usage_Creator.md",
+            "# High-Usage Creator\n\n**usage%**: >= 0.22\n**ast%**: >= 0.20\n"
+            "**position**: Guard\n**Count**: 59\n")
+    _mkfile(nba / "Archetypes" / "Defensive_Anchor.md",
+            "# Defensive Anchor\n\n**position**: Center\n**def_rtg**: <= 110\n"
+            "**reb%**: >= 0.10\n**Count**: 30\n")
+    # drivers, mechanisms, schemes, trends, teams
+    _mkfile(nba / "Drivers" / "shooting.md", "# Shooting Driver\n\nShooting margin drives outcomes.\n")
+    _mkfile(nba / "Mechanisms" / "pace_x_shooting.md", "# Pace × Shooting\n\nInteraction.\n")
+    _mkfile(nba / "Schemes" / "switch_heavy.md", "# Switch-Heavy Defense\n\nUniversal switching.\n")
+    _mkfile(nba / "Trends" / "pace_trend.md", "# Pace Trend\n\nPace increased.\n")
     (nba / "Teams" / "GSW").mkdir(parents=True, exist_ok=True)
 
-    # Trends: 1 note
-    _mkfile(
-        nba / "Trends" / "pace_trend.md",
-        "# Pace Trend\n\nLeague pace increased season-over-season.\n",
-    )
-
-    # ---- Tennis ----
     tennis = root / "Tennis"
-
-    _mkfile(
-        tennis / "Archetypes" / "Fast_Court_Big_Server.md",
-        "---\ntags: [sport/tennis, playstyle]\n---\n\n"
-        "# Fast Court Big Server\n\n"
-        "## Stat Signature\n\n"
-        "- **Players in archetype:** 63\n"
-        "- **corpus_share_pct:** 15.4\n"
-        "- **height**: >= 190 cm\n\n",
-    )
-    _mkfile(
-        tennis / "Archetypes" / "Clay_Court_Specialist.md",
-        "---\ntags: [sport/tennis, playstyle]\n---\n\n"
-        "# Clay Court Specialist\n\n"
-        "## Stat Signature\n\n"
-        "- **clay_win_rate**: > overall\n"
-        "- **Players in archetype:** 45\n\n",
-    )
-
-    # Tennis has no Schemes subdir (like real Tennis in the vault)
-    # Trends: 1 note
-    _mkfile(
-        tennis / "Trends" / "surface_shift.md",
-        "# Surface Shift Trend\n\nHard-court dominance growing.\n",
-    )
-
-    # _Index dir must exist (the organizer normally creates it)
+    _mkfile(tennis / "_WhatWins.md", "# Tennis — What Wins\n\nCalibration choices.\n")
+    _mkfile(tennis / "_Index.md", "# Tennis — Index\n\nSport index.\n")
+    _mkfile(tennis / "Archetypes" / "_Archetypes_Index.md", "# Tennis Archetypes Index\n\n")
+    _mkfile(tennis / "Archetypes" / "Fast_Court_Big_Server.md",
+            "# Fast Court Big Server\n\n**Count**: 63\n**corpus_share_pct**: 15.4\n**height**: >= 190\n")
+    _mkfile(tennis / "Archetypes" / "Clay_Court_Specialist.md",
+            "# Clay Court Specialist\n\n**clay_win_rate**: > overall\n**Count**: 45\n")
+    _mkfile(tennis / "Trends" / "surface_shift.md", "# Surface Shift Trend\n\nHard-court dominance.\n")
     (root / "_Index").mkdir(parents=True, exist_ok=True)
 
 
+def _wikilinks(text: str) -> List[str]:
+    return _WIKILINK.findall(text)
+
+
+def _resolved(text: str, root: Path) -> List[str]:
+    """Wikilink targets whose stem file exists anywhere under root."""
+    found = []
+    for target in _wikilinks(text):
+        stem = target.split("|")[0].split("/")[-1]
+        if list(root.rglob(f"{stem}.md")):
+            found.append(target)
+    return found
+
+
 # ---------------------------------------------------------------------------
-# tests
+# fixtures
 # ---------------------------------------------------------------------------
 
 @pytest.fixture()
@@ -130,101 +116,132 @@ def fixture_root(tmp_path: Path) -> Path:
     return tmp_path
 
 
-def test_sport_digests_written(fixture_root: Path) -> None:
-    """Assert each sport's _Digest.md is written."""
+@pytest.fixture()
+def digests(fixture_root: Path):
     report = build_digests(organized_root=fixture_root, write=True)
-
-    for sport in ("NBA", "Tennis"):
-        digest_path = fixture_root / sport / "_Digest.md"
-        assert digest_path.exists(), f"_Digest.md missing for {sport}"
-
-        text = digest_path.read_text(encoding="utf-8")
-
-        # must contain archetype titles
-        if sport == "NBA":
-            assert "High-Usage Creator" in text, "NBA archetype title missing"
-            assert "Defensive Anchor" in text, "NBA archetype title missing"
-        else:
-            assert "Fast Court Big Server" in text or "Fast_Court_Big_Server" in text
-            assert "Clay Court Specialist" in text or "Clay_Court_Specialist" in text
-
-        # must contain a counts line
-        assert "Teams" in text or "teams" in text, "counts section missing"
-        assert "Archetypes" in text or "archetypes" in text, "archetype count missing"
+    nba = (fixture_root / "NBA" / "_Digest.md").read_text(encoding="utf-8")
+    ten = (fixture_root / "Tennis" / "_Digest.md").read_text(encoding="utf-8")
+    cross = (fixture_root / "_Index" / "_Cross_Sport_Digest.md").read_text(encoding="utf-8")
+    return report, nba, ten, cross
 
 
-def test_cross_sport_digest_written(fixture_root: Path) -> None:
-    """Assert _Cross_Sport_Digest.md is written and names both sports."""
+# ---------------------------------------------------------------------------
+# tests
+# ---------------------------------------------------------------------------
+
+def test_sport_digests_written(digests, fixture_root: Path) -> None:
+    _, nba, ten, _ = digests
+    assert (fixture_root / "NBA" / "_Digest.md").exists()
+    assert (fixture_root / "Tennis" / "_Digest.md").exists()
+    assert "High-Usage Creator" in nba and "Defensive Anchor" in nba
+    assert "Fast Court Big Server" in ten or "Fast_Court_Big_Server" in ten
+    assert "Clay Court Specialist" in ten or "Clay_Court_Specialist" in ten
+    assert "Teams" in nba and "Archetypes" in nba
+
+
+def test_hub_wikilinks_present(digests) -> None:
+    _, nba, ten, _ = digests
+    for text, sport in [(nba, "NBA"), (ten, "Tennis")]:
+        flat = " ".join(_wikilinks(text))
+        assert "_WhatWins" in flat, f"{sport}: missing _WhatWins link"
+        assert "_Index" in flat, f"{sport}: missing _Index link"
+        assert "_Brain" in flat, f"{sport}: missing _Brain link"
+        assert "_Archetypes_Index" in flat, f"{sport}: missing _Archetypes_Index link"
+    assert "_Mechanisms" in " ".join(_wikilinks(nba)), "NBA: missing _Mechanisms link"
+
+
+def test_archetype_names_are_wikilinked(digests) -> None:
+    _, nba, ten, _ = digests
+    assert "[[High_Usage_Creator|High-Usage Creator]]" in nba
+    assert "[[Defensive_Anchor|Defensive Anchor]]" in nba
+    assert "[[Fast_Court_Big_Server|" in ten
+    assert "[[Clay_Court_Specialist|" in ten
+
+
+def test_resolving_wikilinks_count(digests, fixture_root: Path) -> None:
+    _, nba, ten, _ = digests
+    nba_res = _resolved(nba, fixture_root)
+    ten_res = _resolved(ten, fixture_root)
+    assert len(nba_res) >= 4, f"NBA: only {len(nba_res)} resolving wikilinks: {nba_res}"
+    assert len(ten_res) >= 4, f"Tennis: only {len(ten_res)} resolving wikilinks: {ten_res}"
+
+
+def test_cross_sport_digest_written(digests, fixture_root: Path) -> None:
+    _, _, _, cross = digests
+    assert (fixture_root / "_Index" / "_Cross_Sport_Digest.md").exists()
+    assert "NBA" in cross and "Tennis" in cross
+    assert "primary" in cross.lower() or "grinder" in cross.lower()
+    assert "Shape" in cross
+
+
+def test_cross_sport_whatwins_links(digests) -> None:
+    _, _, _, cross = digests
+    links = _wikilinks(cross)
+    flat = " ".join(links)
+    assert "_WhatWins" in flat, "cross digest missing _WhatWins links"
+    assert sum(1 for lnk in links if "_WhatWins" in lnk) >= 2
+
+
+def test_cross_sport_archetype_links(digests) -> None:
+    _, _, _, cross = digests
+    assert "[[High_Usage_Creator|" in cross or "[[Defensive_Anchor|" in cross
+    assert "[[Fast_Court_Big_Server|" in cross or "[[Clay_Court_Specialist|" in cross
+
+
+def test_no_forbidden_tokens(digests, fixture_root: Path) -> None:
     build_digests(organized_root=fixture_root, write=True)
-
-    cross_path = fixture_root / "_Index" / "_Cross_Sport_Digest.md"
-    assert cross_path.exists(), "_Cross_Sport_Digest.md not found"
-
-    text = cross_path.read_text(encoding="utf-8")
-    assert "NBA" in text, "NBA missing from cross-sport digest"
-    assert "Tennis" in text, "Tennis missing from cross-sport digest"
-
-    # analogue column / shape table must be present
-    assert "primary" in text.lower() or "grinder" in text.lower(), \
-        "no analogue shape column found"
-    assert "Shape" in text or "shape" in text.lower(), \
-        "no analogue header found"
-
-
-def test_no_forbidden_tokens(fixture_root: Path) -> None:
-    """Assert no probability/odds/edge/ROI tokens appear in any digest."""
-    build_digests(organized_root=fixture_root, write=True)
-
-    # gather all generated digest files
     digest_files = list(fixture_root.rglob("_Digest.md"))
     cross_path = fixture_root / "_Index" / "_Cross_Sport_Digest.md"
     if cross_path.exists():
         digest_files.append(cross_path)
-
-    assert digest_files, "no digest files found"
-
     for path in digest_files:
         text = path.read_text(encoding="utf-8")
         m = _FORBIDDEN.search(text)
-        assert m is None, (
-            f"Forbidden token '{m.group()}' found in {path.name}; "
-            "digests must not contain probability/odds/edge/ROI numbers."
-        )
+        assert m is None, f"Forbidden token '{m.group()}' in {path.name}"
 
 
-def test_report_counts_match_fixture(fixture_root: Path) -> None:
-    """Assert the returned report dict counts match what we built."""
-    report = build_digests(organized_root=fixture_root, write=True)
+def test_no_player_team_proper_names(digests) -> None:
+    """Digest must be PERSON-FREE: no player/team proper names on content lines."""
+    _, nba, ten, cross = digests
+    # Only inspect plain content lines — skip headings, table rows, wikilinks, frontmatter
+    def _plain_lines(text: str) -> List[str]:
+        return [ln for ln in text.splitlines()
+                if ln.strip() and not ln.strip().startswith(("#", "|", "-", ">", "!", "[", "---"))]
+    for text, label in [(nba, "NBA"), (ten, "Tennis"), (cross, "Cross")]:
+        for line in _plain_lines(text):
+            for m in _PERSON_LINE.finditer(line):
+                phrase = m.group(1)
+                if not _PERSON_SAFE.search(phrase):
+                    pytest.fail(f"{label} digest: possible proper name '{phrase}' in: {line!r}")
 
+
+def test_report_counts_match_fixture(digests) -> None:
+    report, _, _, _ = digests
     ps = report["per_sport"]
-    assert "NBA" in ps, "NBA missing from report"
-    assert "Tennis" in ps, "Tennis missing from report"
-
-    nba_info = ps["NBA"]
-    assert nba_info["archetypes"] == 2, f"expected 2 NBA archetypes, got {nba_info['archetypes']}"
-    assert nba_info["schemes"] == 1, f"expected 1 NBA scheme, got {nba_info['schemes']}"
-    assert nba_info["trends"] == 1, f"expected 1 NBA trend, got {nba_info['trends']}"
-    assert nba_info["teams"] == 1, f"expected 1 NBA team, got {nba_info['teams']}"
-
-    tennis_info = ps["Tennis"]
-    assert tennis_info["archetypes"] == 2, \
-        f"expected 2 Tennis archetypes, got {tennis_info['archetypes']}"
-    assert tennis_info["schemes"] == 0, \
-        f"expected 0 Tennis schemes, got {tennis_info['schemes']}"
-    assert tennis_info["trends"] == 1, \
-        f"expected 1 Tennis trend, got {tennis_info['trends']}"
-
-    # n_written: 2 sport digests + 1 cross-sport = 3
-    assert report["n_written"] == 3, f"expected 3 files written, got {report['n_written']}"
-
-    # cross_sport_path must be set
+    assert "NBA" in ps and "Tennis" in ps
+    nba = ps["NBA"]
+    assert nba["archetypes"] == 2 and nba["schemes"] == 1
+    assert nba["trends"] == 1 and nba["teams"] == 1
+    assert nba["drivers"] == 1 and nba["mechanisms"] == 1
+    tennis = ps["Tennis"]
+    assert tennis["archetypes"] == 2 and tennis["schemes"] == 0 and tennis["trends"] == 1
+    assert report["n_written"] == 3
     assert report["cross_sport_path"] is not None
 
 
-def test_digest_paths_in_report(fixture_root: Path) -> None:
-    """Assert report digest_path values point to existing files."""
-    report = build_digests(organized_root=fixture_root, write=True)
+def test_digest_paths_in_report(digests) -> None:
+    report, _, _, _ = digests
     for sport, info in report["per_sport"].items():
         dp = info.get("digest_path")
-        assert dp is not None, f"digest_path None for {sport}"
-        assert Path(dp).exists(), f"digest_path does not exist: {dp}"
+        assert dp is not None and Path(dp).exists(), f"digest_path invalid for {sport}"
+
+
+def test_counts_section_present(digests) -> None:
+    _, nba, _, _ = digests
+    assert "Drivers" in nba and "Mechanisms" in nba
+
+
+def test_moc_tag_present(digests) -> None:
+    _, nba, ten, cross = digests
+    for text, label in [(nba, "NBA"), (ten, "Tennis"), (cross, "Cross")]:
+        assert "moc" in text, f"{label} digest missing 'moc' tag"
