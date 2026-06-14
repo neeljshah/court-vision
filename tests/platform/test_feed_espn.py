@@ -219,14 +219,23 @@ def test_to_board_books_h2h_shape() -> None:
 
 
 # --------------------------------------------------------------------------- #
-# 10. get_feed_auto: no key -> EspnFreeFeed; key -> TheOddsApiFeed; stub force #
+# 10. get_feed_auto: no key -> free MultiFeed(ESPN+Bovada); key -> TheOddsApi;  #
+#     force_stub -> StubFeed                                                     #
 # --------------------------------------------------------------------------- #
 
 def test_get_feed_auto_selection(monkeypatch: pytest.MonkeyPatch) -> None:
     from scripts.platformkit.frontend.feed import StubFeed, TheOddsApiFeed
+    from scripts.platformkit.frontend.feed_multi import MultiFeed
+    from scripts.platformkit.frontend.feed_bovada import BovadaFreeFeed
     monkeypatch.delenv("ODDS_API_KEY", raising=False)
     monkeypatch.delenv("THE_ODDS_API_KEY", raising=False)
-    assert isinstance(get_feed_auto(), EspnFreeFeed)  # free live default
+    # free default = MultiFeed composing the free books (ESPN + Bovada) so >=2
+    # books can light up cross-book arb/CLV with no paid key.
+    auto = get_feed_auto()
+    assert isinstance(auto, MultiFeed)
+    assert any(isinstance(f, EspnFreeFeed) for f in auto._feeds)
+    assert any(isinstance(f, BovadaFreeFeed) for f in auto._feeds)
+    assert auto.is_live() is True  # ESPN is live
 
     monkeypatch.setenv("ODDS_API_KEY", "abc123")
     assert isinstance(get_feed_auto(), TheOddsApiFeed)  # paid key -> multi-book

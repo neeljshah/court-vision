@@ -32,8 +32,10 @@ from scripts.platformkit.frontend.board import (
     build_all_board,
 )
 from scripts.platformkit.frontend.board_html import render_board_html
-from scripts.platformkit.frontend.feed import OddsFeed, get_feed
+from scripts.platformkit.frontend.feed import OddsFeed
+from scripts.platformkit.frontend.feed_espn import get_feed_auto
 from scripts.platformkit.frontend.intel_panel import attach_intel_routes
+from scripts.platformkit.frontend.arb_panel import attach_money_routes
 
 APP_BANNER = (
     "Honest multi-sport board. Markets are efficient — NO model edge claimed. "
@@ -58,6 +60,8 @@ _INDEX_HTML = (
     "<li><a href='/board.html'>/board.html</a> — rendered board</li>"
     "<li><a href='/api/board'>/api/board</a> — full board JSON</li>"
     "<li><a href='/api/feed/status'>/api/feed/status</a> — feed status</li>"
+    "<li><a href='/api/arb'>/api/arb</a> — cross-book arb / line-shop (NOT model edge)</li>"
+    "<li><a href='/api/clv'>/api/clv</a> — forward CLV candidates (opener→closer)</li>"
     "<li><a href='/api/intel'>/api/intel</a> — per-sport intelligence panels (brain)</li>"
     "<li><a href='/healthz'>/healthz</a> — health</li>"
     "</ul></body></html>"
@@ -72,7 +76,7 @@ def create_app(
 ) -> FastAPI:
     """Build a self-contained FastAPI app.  Inject `feed` for fast network-free tests."""
     app = FastAPI(title="Honest Board (platformkit)", version="0.1.0")
-    _feed: OddsFeed = feed or get_feed(repo_root)
+    _feed: OddsFeed = feed or get_feed_auto(repo_root)
 
     def _banner() -> str:
         return APP_BANNER + _feed.note
@@ -129,23 +133,12 @@ def create_app(
             )
         return {"_banner": _banner(), "rows": rows, "note": note}
 
-    @app.get("/api/arb")
-    def api_arb() -> Dict[str, Any]:
-        return {
-            "_banner": _banner(),
-            "rows": [],
-            "status": "dormant",
-            "note": "needs live multi-book feed",
-        }
-
-    @app.get("/api/clv")
-    def api_clv() -> Dict[str, Any]:
-        return {
-            "_banner": _banner(),
-            "rows": [],
-            "status": "dormant",
-            "note": "needs live multi-book feed (forward CLV requires real captured prices)",
-        }
+    # Honest money panel — cross-book arb / line-shop + forward CLV. ACTIVE: lights
+    # up the moment >=2 books quote a game (free ESPN+Bovada multi-feed); degrades
+    # to "dormant" with a single book / no snapshots. Value = line-shop/devig/CLV
+    # ONLY, NEVER a model edge. /api/arb, /api/arb/{sport}, /arb/{sport}.html,
+    # /api/clv, /api/clv/{sport}
+    attach_money_routes(app, _feed, root=repo_root)
 
     # Per-sport intelligence panels (organized brain + reads). Understanding +
     # provenance only — NEVER an un-gated number. /api/intel, /api/intel/{sport},
