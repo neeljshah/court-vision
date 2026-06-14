@@ -173,7 +173,18 @@ def run_pipeline(vault_dir: Optional[Path] = None,
     summary.  Stages run in dependency order; digest/export read the freshly
     written ``_Organized`` tree.
     """
-    organize = organize_all(vault_dir=vault_dir, out_dir=out_dir)
+    # Source = live vault, or the legacy archive if its source dirs were moved OUT of
+    # the graph (vault_archive_legacy). Output ALWAYS to the live vault/_Organized (the
+    # graph) unless explicit source/out is given (hermetic tests keep their tmp paths).
+    _live = _REPO_ROOT / "vault"
+    _arch = _REPO_ROOT / "_vault_legacy_archive"
+    if vault_dir is not None:
+        src = Path(vault_dir)
+        out = Path(out_dir) if out_dir is not None else src / "_Organized"
+    else:
+        src = _arch if (not (_live / "Sports").is_dir() and (_arch / "Sports").is_dir()) else _live
+        out = Path(out_dir) if out_dir is not None else _live / "_Organized"
+    organize = organize_all(vault_dir=src, out_dir=out)
     organized_root = Path(organize["out_dir"])
     digest = build_digests(organized_root=organized_root, write=True)
     export = export_reads(organized_root=organized_root, write=True)
