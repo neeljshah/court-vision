@@ -150,10 +150,12 @@ def _build_hit(path: Path, root: Path) -> Optional[BrainHit]:
     try:
         rel = path.relative_to(root)
     except ValueError:
-        rel = path.name  # type: ignore[assignment]
+        rel = Path(path.name)
+    # Infer sport/kind from the ROOT-RELATIVE path only: an absolute root under a
+    # repo dir like "nba-ai-system" would otherwise leak "nba" into every note.
     return BrainHit(
-        sport=_infer_sport(path, text),
-        kind=_infer_kind(path, text),
+        sport=_infer_sport(rel, text),
+        kind=_infer_kind(rel, text),
         title=title,
         path=str(path),
         stat_signature=_parse_stat_sig(text),

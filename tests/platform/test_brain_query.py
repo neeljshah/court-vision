@@ -247,3 +247,32 @@ def test_module_importable():
     from scripts.platformkit import brain_query as bq  # noqa: F401
     assert all(callable(getattr(bq, s)) for s in ("brain_query", "prior_verdicts", "is_number_free"))
     assert hasattr(bq, "_NO_NUMBER_CONTRACT")
+
+
+# ── Regression: absolute root under a repo dir named like a sport ──────────────
+
+def test_sport_inferred_from_root_relative_path(tmp_path):
+    """Regression: a root whose ABSOLUTE path contains a sport substring (e.g. the
+    repo dir 'nba-ai-system') must NOT leak that sport into every note's inference.
+    Sport is inferred from the ROOT-RELATIVE path only.
+    """
+    # Root nested under a parent literally containing the 'nba' substring.
+    root = tmp_path / "nba-ai-system" / "vault" / "_Organized"
+    _w(root / "Tennis" / "Archetypes" / "big_server.md",
+       "# Big Server\n\nDominant first serve.\n\n**Serve pct:** 68%\n")
+    _w(root / "Soccer" / "Archetypes" / "high_press.md",
+       "# High Press\n\nAggressive forward pressing.\n\n**PPDA:** low\n")
+    _w(root / "MLB" / "Archetypes" / "power_bats.md",
+       "# Power Run-Scoring\n\nHigh slugging offense.\n\n**ISO:** high\n")
+
+    # Each sport's note must infer ITS OWN sport, not 'nba' from the parent dir.
+    tennis = brain_query("serve archetype", sport="tennis", root=root, top_k=10)
+    assert tennis, "tennis note not found under nba-* root (abs-root sport leak)"
+    assert all(h.sport == "tennis" for h in tennis)
+
+    soccer = brain_query("press archetype", sport="soccer", root=root, top_k=10)
+    assert soccer and all(h.sport == "soccer" for h in soccer)
+
+    # And an nba-filtered query must NOT return the tennis/soccer/mlb notes.
+    nba = brain_query("archetype", sport="nba", root=root, top_k=10)
+    assert all(h.sport in ("nba", "") for h in nba)
