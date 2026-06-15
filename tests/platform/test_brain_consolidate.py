@@ -89,28 +89,21 @@ def _make_season_fixture(tmp_path: Path):
     (tmp_path / "SeasonSport" / "_Index.md").write_text("".join(idx_lines), encoding="utf-8")
     return ref, stubs_a, stubs_b, hub / "_Identity.md", tmp_path / "SeasonSport" / "_Index.md"
 
-# ---------------------------------------------------------------------------
-# Unit helpers
-# ---------------------------------------------------------------------------
+# unit helpers
 def test_tokenize_returns_frozenset():
     t = _tokenize("Hello World 2025"); assert isinstance(t, frozenset) and "hello" in t and "2025" in t
 def test_jaccard_identical():
     a = frozenset(["x","y","z"]); assert _jaccard(a, a) == 1.0
 def test_jaccard_disjoint(): assert _jaccard(frozenset(["a"]), frozenset(["b"])) == 0.0
-def test_jaccard_partial():
-    assert 0.0 < _jaccard(frozenset(["a","b","c"]), frozenset(["a","b","d"])) < 1.0
-def test_title_extraction():
-    assert _title("---\ntags:[t]\n---\n\n# My Venue\n\nBody.\n", "fb") == "My Venue"
+def test_jaccard_partial(): assert 0.0 < _jaccard(frozenset(["a","b","c"]), frozenset(["a","b","d"])) < 1.0
+def test_title_extraction(): assert _title("---\ntags:[t]\n---\n\n# My Venue\n\nBody.\n", "fb") == "My Venue"
 def test_title_fallback(): assert _title("no heading", "fallback_stem") == "fallback_stem"
 def test_facts_extracts_numeric_lines():
     txt = "---\neditions:7\ntags:[t]\n---\n\n- **Corpus matches:** 500\n- Rate: 55%\n"
     assert any("500" in f or "55" in f for f in _facts(txt, "Venue"))
-def test_clean_fact_strips_bullets_and_bold():
-    assert _clean_fact("- **Level:** ATP 500") == "Level: ATP 500"
-def test_clean_fact_drops_parenthetical_code():
-    assert _clean_fact("- **Level:** ATP 500 (A)") == "Level: ATP 500"
-def test_clean_fact_drops_histogram_only():
-    assert _clean_fact("/ Surface-specialist / 0% / ░░░░░░░░░░ /") is None
+def test_clean_fact_strips_bullets_and_bold(): assert _clean_fact("- **Level:** ATP 500") == "Level: ATP 500"
+def test_clean_fact_drops_parenthetical_code(): assert _clean_fact("- **Level:** ATP 500 (A)") == "Level: ATP 500"
+def test_clean_fact_drops_histogram_only(): assert _clean_fact("/ Surface-specialist / 0% / ░░░░░░░░░░ /") is None
 def test_facts_deduplicates_same_key():
     txt = ("---\nlevel_label: ATP 500\neditions: 5\ntags:[t]\n---\n\n"
            "- **Level:** ATP 500 (A)\n- **Editions in corpus:** 5 (2020-2025)\n")
@@ -126,9 +119,7 @@ def test_facts_retains_distinct_values():
            "- **Typical format:** Best of 3\n- **Total corpus matches:** 341\n")
     joined = " ".join(_facts(txt, "Venue")); assert "341" in joined and "11" in joined
 
-# ---------------------------------------------------------------------------
-# Integration: basic consolidation
-# ---------------------------------------------------------------------------
+# integration: basic consolidation
 
 def test_consolidated_file_created(tmp_path):
     rep, cat_dir, _, _ = _run(tmp_path)
@@ -178,10 +169,7 @@ def test_return_dict_keys(tmp_path):
     assert set(rep) >= {"n_families","n_notes_merged","n_files_removed","by_sport","_note"}
     assert "no edge claimed" in rep["_note"].lower()
 
-# ---------------------------------------------------------------------------
-# Link repair
-# ---------------------------------------------------------------------------
-
+# link repair
 def test_link_repair_no_dangling_stubs(tmp_path):
     sport_dir, cat_dir, stubs, idx = _make_link_fixture(tmp_path)
     consolidate(organized_root=tmp_path, write=True,
@@ -227,10 +215,7 @@ def test_link_repair_idempotent(tmp_path):
                                     "name": "Venues", "members": [], "description": ""}])
     assert idx.read_text(encoding="utf-8") == after_first
 
-# ---------------------------------------------------------------------------
-# Fact-cell cleanliness
-# ---------------------------------------------------------------------------
-
+# fact-cell cleanliness
 def test_fact_cell_no_histogram_glyphs(tmp_path):
     cat_dir = tmp_path / "CleanSport" / "Reference"; stubs = _make_dirty_stubs(cat_dir)
     consolidate(organized_root=tmp_path, write=True,
@@ -258,10 +243,7 @@ def test_fact_cell_retains_distinct_values(tmp_path):
     text = (cat_dir / "_Dirty_Consolidated.md").read_text(encoding="utf-8")
     for i in range(len(stubs)): assert f"unique-dirty-{i}" in text, f"unique-dirty-{i} lost"
 
-# ---------------------------------------------------------------------------
-# Season-stub family detection
-# ---------------------------------------------------------------------------
-
+# season-stub family detection
 def test_season_stubs_merged(tmp_path):
     ref, _, _, _, _ = _make_season_fixture(tmp_path)
     consolidate(organized_root=tmp_path, write=True)
@@ -296,3 +278,21 @@ def test_season_stubs_idempotent(tmp_path):
     con = ref / "_LeagueA_Seasons_Consolidated.md"; first = con.read_text(encoding="utf-8")
     consolidate(organized_root=tmp_path, write=True)
     assert con.read_text(encoding="utf-8") == first
+
+def test_best_of_format_collapse_to_single_fact():
+    from scripts.platformkit.brain_consolidate import _facts, _norm_key
+    txt = "---\nbest_of: 3\ntags:[t]\n---\n\n- **Typical format:** Best of 3\n- **Editions:** 5\n"
+    facts = _facts(txt, "Venue")
+    keys = [_norm_key(f[:f.find(":")].strip()) if ":" in f else f for f in facts]
+    assert keys.count("format") <= 1, f"best_of/format duplicated: {facts}"
+
+def test_interleaved_links_collapse_to_one(tmp_path):
+    cat = tmp_path / "IL" / "Cat"; cat.mkdir(parents=True, exist_ok=True)
+    stubs = [cat / f"S{i:02d}.md" for i in range(8)]
+    [p.write_text(f"---\neditions:{i+1}\n---\n- count: {(i+1)*10}\n", encoding="utf-8") for i, p in enumerate(stubs)]
+    idx = tmp_path / "IL" / "_Index.md"
+    idx.write_text("# IL\n\n- [[S00]]\n- [[S01]]\n- [[_O|O]]\n- [[S02]]\n- [[S03]]\n- [[_M|M]]\n- [[S04]]\n- [[S05]]\n- [[S06]]\n- [[S07]]\n", encoding="utf-8")
+    consolidate(organized_root=tmp_path, write=True, injected_families=[{"sport":"IL","category":"Cat","name":"SFam","members":stubs,"description":""}])
+    text = idx.read_text(encoding="utf-8")
+    hits = re.findall(r"\[\[[^\]]*SFam[_\s]Consolidated[^\]]*\]\]", text, re.IGNORECASE)
+    assert len(hits) == 1, f"Expected 1 consolidated link, got {len(hits)}: {text!r}"

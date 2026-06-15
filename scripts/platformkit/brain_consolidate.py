@@ -52,12 +52,16 @@ def _clean_fact(raw: str) -> Optional[str]:
     s = re.sub(r"\s+\([A-Z]\)$", "", s).strip()
     return re.sub(r"\s{2,}", " ", s) or None
 
+_KEY_SYNONYMS = {"best_of": "format", "rounds": "format", "best of": "format",
+                 "total_matches": "matches", "corpus_matches": "matches"}
+
 def _norm_key(k: str) -> str:
     k = k.lower().strip()
     for pat, repl in [(r"_(label|count|total)$",""), (r"^total_",""),
                       (r"\s+in\s+corpus$",""), (r"^(typical\s+)?","")]:
         k = re.sub(pat, repl, k)
-    return k.strip()
+    k = k.strip()
+    return _KEY_SYNONYMS.get(k, k)
 
 def _facts(text: str, stem: str) -> List[str]:
     raw: List[str] = []
@@ -110,19 +114,17 @@ def _repair_file(fp: Path, stems: Set[str], cons_rel: str, cons_name: str) -> in
     except OSError: return 0
     pats = {s: _link_pattern(s) for s in stems}
     cons_link = f"[[{cons_rel}|{cons_name}]]"
-    changed = False; new_lines: List[str] = []; last_was_cons = False
+    changed = False; new_lines: List[str] = []; seen_cons = False
     for line in text.splitlines(keepends=True):
-        nl = line; hit = False
+        nl = line
         for pat in pats.values():
-            if pat.search(nl): nl = pat.sub(cons_link, nl); hit = True
-        if hit:
-            stripped = nl.strip().lstrip("- ").strip()
-            only_cons = stripped == cons_link
-            if only_cons and last_was_cons: changed = True; continue
-            last_was_cons = only_cons
-            if nl != line: changed = True
-        else:
-            last_was_cons = False
+            if pat.search(nl): nl = pat.sub(cons_link, nl)
+        if nl != line: changed = True
+        # drop all but the FIRST occurrence of a cons-only line (any position)
+        stripped = nl.strip().lstrip("- ").strip()
+        if stripped == cons_link:
+            if seen_cons: changed = True; continue
+            seen_cons = True
         new_lines.append(nl)
     if not changed: return 0
     fp.write_text("".join(new_lines), encoding="utf-8")
