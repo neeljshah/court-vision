@@ -13,31 +13,62 @@ HONEST: an intelligence map; markets efficient; calibration is not edge; no edge
 """
 from __future__ import annotations
 
+import colorsys
 import json
 from pathlib import Path
-from typing import Dict
+from typing import Dict, List
 
 _CORE_PLUGINS = ["graph", "backlink", "outline", "page-preview", "tag-pane", "search"]
 
-# Graph view for the brain-only vault: colour by sport + causal-spine + hubs.
+# Concept-node families (batch 1 + 2). The graph is COLOUR-CODED BY FAMILY: each family
+# gets a distinct hue from an even HSV sweep, queried by the node's exact frontmatter
+# family TAG (e.g. ``tag:#tactics``) — exact tags avoid substring collisions that a
+# ``path:`` query would hit (e.g. "Schemes" inside "DefensiveSchemes", "Archetypes"
+# inside "SubArchetypes"). Sport is read from the CLUSTERING (each sport is its own
+# connected component via its _Concept_Map), so one colour channel encodes family.
+_CONCEPT_FAMILIES = [
+    "Situational", "Tactics", "StatSignatures", "Mechanisms", "MatchupConcepts",
+    "SubArchetypes", "GamePhases", "Environment", "RiskProfiles", "FormDynamics",
+    "ShotProfiles", "DefensiveSchemes", "SpecialSituations", "OfficiatingDynamics",
+    "WorkloadFatigue", "RosterConstruction", "ProgressionDynamics", "TempoControl",
+    "SpacingGeometry", "ConversionEfficiency",
+]
+# legacy structural categories without a substring clash -> coloured by path.
+_LEGACY_PATHS = {"Drivers": 16007990, "Trends": 8754687,
+                 "Reference": 9145227, "Archetypes": 5028096, "Schemes": 16770304}
+
+
+def _rgb(h: float, s: float, v: float) -> int:
+    """HSV (0..1) -> packed 24-bit int Obsidian expects for a colour."""
+    r, g, b = colorsys.hsv_to_rgb(h, s, v)
+    return (round(r * 255) << 16) | (round(g * 255) << 8) | round(b * 255)
+
+
+def _color_groups() -> List[Dict]:
+    """Per-family colour groups (exact tag) + legacy paths + hubs. Family groups are
+    listed FIRST so an exact family tag wins over a broader legacy path match."""
+    groups: List[Dict] = []
+    n = len(_CONCEPT_FAMILIES)
+    for i, fam in enumerate(_CONCEPT_FAMILIES):
+        groups.append({"query": f"tag:#{fam.lower()}",
+                       "color": {"a": 1, "rgb": _rgb(i / n, 0.62, 0.95)}})
+    for name, rgb in _LEGACY_PATHS.items():
+        groups.append({"query": f"path:{name}", "color": {"a": 1, "rgb": rgb}})
+    # hubs pop white; team identity hubs grey.
+    groups.append({"query": ("file:_Concept_Map OR file:_Brain OR file:_WhatWins OR "
+                             "file:_Digest OR file:_Cross_Sport"),
+                   "color": {"a": 1, "rgb": 16777215}})
+    groups.append({"query": "file:_Identity", "color": {"a": 1, "rgb": 12632256}})
+    return groups
+
+
+# Graph view for the brain-only vault: colour BY FAMILY (+ legacy paths + hubs).
 # No "search" scope filter is needed — every node in this vault is brain.
 _GRAPH: Dict = {
     "collapse-filter": False, "search": "", "showTags": False,
     "showAttachments": False, "hideUnresolved": True, "showOrphans": True,
     "collapse-color-groups": False,
-    "colorGroups": [
-        {"query": "path:NBA", "color": {"a": 1, "rgb": 16753920}},
-        {"query": "path:MLB", "color": {"a": 1, "rgb": 5025616}},
-        {"query": "path:Soccer", "color": {"a": 1, "rgb": 52479}},
-        {"query": "path:Tennis", "color": {"a": 1, "rgb": 12597497}},
-        {"query": "path:Drivers", "color": {"a": 1, "rgb": 16007990}},
-        {"query": "path:Mechanisms", "color": {"a": 1, "rgb": 16738740}},
-        {"query": "path:Archetypes OR path:Playstyles", "color": {"a": 1, "rgb": 5028096}},
-        {"query": "path:Schemes OR path:Tactics", "color": {"a": 1, "rgb": 16770304}},
-        {"query": "file:_Identity", "color": {"a": 1, "rgb": 8421504}},
-        {"query": "path:_Index OR file:_Brain OR file:_WhatWins OR file:_Digest",
-         "color": {"a": 1, "rgb": 16777215}},
-    ],
+    "colorGroups": _color_groups(),
     "collapse-display": False, "showArrow": False, "textFadeMultiplier": -0.5,
     "nodeSizeMultiplier": 1.15, "lineSizeMultiplier": 0.6, "collapse-forces": False,
     "centerStrength": 0.5, "repelStrength": 9.5, "linkStrength": 0.6,

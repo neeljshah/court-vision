@@ -16,14 +16,19 @@ def test_seeds_valid_obsidian_vault(tmp_path):
     assert "graph" in json.loads((obs / "core-plugins.json").read_text())
 
 
-def test_graph_has_brain_colorgroups_no_search_filter(tmp_path):
+def test_graph_colorgroups_by_family_no_search_filter(tmp_path):
     ensure_brain_graph_config(tmp_path)
     g = json.loads((tmp_path / ".obsidian" / "graph.json").read_text(encoding="utf-8"))
     # all content in _Organized is brain -> no scope filter needed
     assert g["search"] == ""
     queries = " ".join(cg["query"] for cg in g["colorGroups"])
-    for token in ("NBA", "MLB", "Soccer", "Tennis", "Drivers", "Mechanisms", "_Identity"):
+    # coloured BY FAMILY via exact tags (collision-free) + legacy paths + hub/identity
+    assert len(g["colorGroups"]) >= 20
+    for token in ("tag:#tactics", "tag:#situational", "tag:#shotprofiles",
+                  "path:Drivers", "file:_Identity", "_Concept_Map"):
         assert token in queries
+    # exact tags avoid the substring clash a bare path: query would hit
+    assert "tag:#defensiveschemes" in queries and "tag:#subarchetypes" in queries
 
 
 def test_idempotent(tmp_path):
