@@ -31,6 +31,14 @@ def run_extra_stages(organized_root: Path) -> Dict:
             out.setdefault("_form_profiles", {})["form_profiles"] = "written"
     except Exception:  # noqa: BLE001
         pass
+    # Tennis serve/return STYLE-ARCHETYPE depth (maps as-of bands -> style concepts)
+    try:
+        from scripts.platformkit.brain_tennis_depth import build_tennis_depth  # noqa: PLC0415
+        td = build_tennis_depth(organized_root=organized_root, write=True)
+        if isinstance(td, dict) and td.get("styles"):
+            out.setdefault("_tennis_depth", {})["serve_return_archetypes"] = "written"
+    except Exception:  # noqa: BLE001
+        pass
     # CONSOLIDATE redundant stub families -> dense notes (+ repair dangling wikilinks)
     try:
         from scripts.platformkit.brain_consolidate import consolidate  # noqa: PLC0415
