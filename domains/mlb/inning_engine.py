@@ -2,7 +2,9 @@
 
 Poisson run-rate lambdas → joint runs matrix → ML/RL/totals/F5 markets.
 HONEST: WIN = coherent RL/totals/F5 surface Elo can't emit. NO edge claimed.
-LIVE-WIRED parts: RunRateState (lambda estimation) + runs_matrix (the joint).
+LIVE-WIRED: only RunRateState (per-game lambda estimation) is wired into the
+production path; runs_matrix (the Poisson joint) is reused externally just by the
+sgp_pricer __main__ demo (hardcoded lambdas), so it is research/demo-only here.
 RESEARCH-ONLY: markets_from_matrix builds a Poisson market surface that is
 SUPERSEDED by domains/mlb/negbinom_engine.py (over-dispersed); anchor_lambdas_to_winprob
 (Elo-anchor, default OFF) tilts the lambda ratio to match target P(home win) while
