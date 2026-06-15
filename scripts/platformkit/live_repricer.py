@@ -241,10 +241,11 @@ def get_repricer(sport: str) -> Repricer:
     soccer  : SoccerRepricer (full bivariate-Poisson in-game engine)
     mlb     : MLBRepricer (over-dispersed NegBinom run engine, W101)
     nba     : NBARepricer (Gaussian score-anchor remaining-points model)
+    tennis  : TennisRepricer (set-level race-to-N-sets conditional)
 
     Stubs (return graceful not-wired dict)
     ---------------------------------------
-    tennis, and any other sport string.
+    any other sport string.
     """
     if sport == "soccer":
         return SoccerRepricer()
@@ -254,4 +255,7 @@ def get_repricer(sport: str) -> Repricer:
     if sport == "nba":
         from domains.basketball_nba.repricer import NBARepricer  # noqa: PLC0415
         return NBARepricer()
+    if sport == "tennis":
+        from domains.tennis.repricer import TennisRepricer  # noqa: PLC0415
+        return TennisRepricer()
     return _SportStub(sport)
