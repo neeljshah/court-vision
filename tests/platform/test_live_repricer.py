@@ -238,7 +238,7 @@ def test_factory_soccer_satisfies_protocol():
     assert isinstance(r, Repricer)
 
 
-@pytest.mark.parametrize("sport", ["nba", "tennis", "mlb"])
+@pytest.mark.parametrize("sport", ["nba", "tennis"])
 def test_factory_unwired_sport_returns_stub(sport: str):
     """get_repricer for unwired sports returns a stub that doesn't crash."""
     r = get_repricer(sport)
