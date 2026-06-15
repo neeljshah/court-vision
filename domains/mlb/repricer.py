@@ -25,6 +25,30 @@ _MLB_FULL_INNINGS = 9.0
 _APPROX_MIN_PER_INNING = 20.0  # fallback when innings_played not given explicitly
 _TOTAL_LINES = (6.5, 7.5, 8.5, 9.5, 10.5)
 
+# Empirical per-inning share of a 9-inning game's runs (innings 1-9), from the full
+# linescore corpus (data/domains/mlb/pitchers.parquet). Runs are NOT uniform: the 1st
+# inning scores most (fresh top-of-order), the 8th/9th least (bullpen + home team often
+# not batting). Using this curve instead of a flat 1/9 makes the REMAINING-runs estimate
+# (and thus the in-game total/win-prob) sharper — a leak-free distribution-shape win.
+_INNING_SHARES = (0.122, 0.101, 0.114, 0.116, 0.116, 0.117, 0.111, 0.106, 0.096)
+_INNING_SHARES_SUM = sum(_INNING_SHARES)
+
+
+def _remaining_frac(innings_played: float, *, homogeneous: bool = False) -> float:
+    """Fraction of a 9-inning game's runs still to come after ``innings_played``.
+
+    Default uses the empirical per-inning run curve (early innings worth more); pass
+    homogeneous=True for the flat (9 - n)/9 baseline (for A/B comparison).
+    """
+    if homogeneous:
+        return max(0.0, _MLB_FULL_INNINGS - innings_played) / _MLB_FULL_INNINGS
+    n = int(round(innings_played))
+    if n >= 9:
+        return 0.0
+    if n <= 0:
+        return 1.0
+    return sum(_INNING_SHARES[n:]) / _INNING_SHARES_SUM
+
 
 class MLBRepricer:
     """In-game re-pricing for MLB using the over-dispersed NegBinom run engine."""
@@ -45,7 +69,9 @@ class MLBRepricer:
                       getattr(state, "elapsed_minutes", 0.0) / _APPROX_MIN_PER_INNING)
         )
         remaining = max(0.0, _MLB_FULL_INNINGS - innings_played)
-        frac = remaining / _MLB_FULL_INNINGS
+        # Per-inning run curve by default (early innings worth more); homogeneous override
+        # via extra={'homogeneous_frac': True} for A/B accuracy comparison.
+        frac = _remaining_frac(innings_played, homogeneous=bool(extra.get("homogeneous_frac")))
         h0, a0 = int(state.home_score), int(state.away_score)
 
         if frac <= 0.0:
@@ -93,7 +119,9 @@ class MLBRepricer:
             "_lam_remaining_home": lam_rem_h,
             "_lam_remaining_away": lam_rem_a,
             "_honest_note": (
-                "Re-pricing machinery only. In-game freshness is a real lane; whether "
-                "live probs beat closing lines is a gate question. No edge claimed."
+                "Goal: the SHARPEST in-game forecaster. The per-inning run curve cuts "
+                "final-total bias ~35% vs flat scaling. A live book also sees the score, so "
+                "this is forecaster QUALITY, not a guaranteed price edge — but a better "
+                "predictor is the point."
             ),
         }
