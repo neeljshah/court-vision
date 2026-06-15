@@ -22,6 +22,7 @@ _MAX_RUNS_DEFAULT = 25
 _TOTAL_LINES: Tuple[float, ...] = (6.5, 7.5, 8.5, 9.5, 10.5)
 _MIN_R = 0.5       # floor on dispersion to avoid degenerate PMFs
 _FALLBACK_R = 4.0  # default when fewer than 10 observations
+_UNDERDISP_R = 1e6  # ~Poisson: returned when sample is under-dispersed (var<=mu)
 
 
 # --- PMFs -------------------------------------------------------------------
@@ -56,13 +57,21 @@ def _poisson_pmf(lam: float, max_k: int) -> np.ndarray:
 # --- Dispersion estimation (Method of Moments, leak-free) -------------------
 
 def fit_r_mom(runs: np.ndarray) -> float:
-    """MoM dispersion: r = mean²/(variance-mean). Returns _FALLBACK_R if <10 obs."""
+    """MoM dispersion: r = mean²/(variance-mean). Returns _FALLBACK_R if <10 obs.
+
+    When the sample is UNDER-dispersed vs Poisson (var<=mu) the MoM estimate of
+    over-dispersion is undefined / negative. NegBinom cannot represent under-dispersion,
+    so we collapse toward Poisson by returning a LARGE r (_UNDERDISP_R, var→lam as r→∞).
+    Returning the _MIN_R floor here would be the WRONG direction (maximal over-dispersion).
+    """
     if len(runs) < 10:
         return _FALLBACK_R
     mu = float(np.mean(runs))
+    if mu <= 0:
+        return _FALLBACK_R
     var = float(np.var(runs, ddof=1))
-    if var <= mu or mu <= 0:
-        return float(_MIN_R)
+    if var <= mu:
+        return _UNDERDISP_R  # under-dispersed: nearest NegBinom is ~Poisson (large r)
     return max(mu ** 2 / (var - mu), _MIN_R)
 
 
@@ -139,9 +148,20 @@ def markets_from_matrix_nb(
     out["rl_away_plus15"] = 1.0 - out["rl_home_minus15"]
     d = _total_dist(P)
     for line in total_lines:
-        po = float(d[int(line + 0.5):].sum())
+        # CONTRACT: lines are X.5 (half-integer), the only shape every caller passes
+        # (_TOTAL_LINES + predictor/repricer). For a half-integer line there is no push
+        # bucket, so over = P(total >= ceil(line)) and over+under == 1 exactly.
+        # For an INTEGER line, total==line is a PUSH: it must be EXCLUDED from over so
+        # that over + push + under == 1 (the old int(line+0.5) silently folded the push
+        # into over). We compute the push explicitly and report under as the remainder.
+        cutoff = int(math.ceil(line))           # first total strictly above an integer line
+        po = float(d[cutoff:].sum())            # P(total > line)
+        is_half = (line != math.floor(line))    # True for X.5 lines (no push)
+        push = 0.0 if is_half else float(d[int(round(line))])
         out[f"over_{line:g}"] = po
-        out[f"under_{line:g}"] = 1.0 - po
+        out[f"under_{line:g}"] = 1.0 - po - push
+        if not is_half:
+            out[f"push_{line:g}"] = push
     return out
 
 

@@ -1,14 +1,19 @@
-"""domains.mlb.negbinom_sim — Wire the validated NegBinom run engine into the
-production JointDistribution.sample() path.
+"""domains.mlb.negbinom_sim — Make the validated NegBinom run engine available
+as a sampling ScoringProcessModel for the JointDistribution.sample() path.
 
 THE GAP this closes: domains/mlb/negbinom_engine.py validated an over-dispersed
 (Negative-Binomial) run marginal — O/U Brier -0.014..-0.022 vs Poisson (W101) —
-but it lived ONLY as analytic PMF matrices. The production read-off
+but it lived ONLY as analytic PMF matrices. The read-off
 (scripts/platformkit/pipeline_integration.assemble_read) consumes a
-JointDistribution built from an (n_sims, 2) SAMPLE matrix, and MLB was still
-sampling a Gaussian / independent-Poisson. This module supplies a
-ScoringProcessModel whose .sample() draws over-dispersed runs, so the
-calibration win actually reaches the live totals/RL/ML/F5 surface.
+JointDistribution built from an (n_sims, 2) SAMPLE matrix. This module supplies a
+ScoringProcessModel whose .sample() draws over-dispersed runs.
+
+WHERE THIS IS ACTUALLY REACHED (honest, no overclaim): build_mlb_jd is called by
+(1) scripts/platformkit/pipeline_integration._build_demo_jd — a DEMO read-off,
+guarded by try/except with a Gaussian fallback — and (2) domains/mlb/predictor.py
+(built this wave), the usable MLB predictor's to_jd() surface. There is NO live
+cohesive_read / system_map / production caller wiring this in today; do not claim
+one. The calibration win reaches a surface only through those two call sites.
 
 HONEST: calibration/accuracy only — NO edge claimed. Markets are efficient.
 The win is tail-shape fidelity, mean-preserving by construction.
