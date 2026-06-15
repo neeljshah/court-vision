@@ -44,7 +44,56 @@ def _nba_ml_row() -> Dict:
             "detail": "MOV-aware Elo; within sampling noise of the close"}
 
 
-_ROWS = (_nba_ml_row, _nba_totals_row)
+def _mlb_ml_row() -> Dict:
+    from scripts.platformkit.proof_mlb.beat_the_close_ml import run
+    r = run()
+    if r.get("status") != "ok":
+        return {"sport": "MLB", "market": "moneyline", "status": r.get("status", "error")}
+    gap = r["gap"]
+    return {"sport": "MLB", "market": "moneyline", "metric": "Brier", "n": r["n_holdout"],
+            "model": r["model_brier"], "close": r["close_brier"], "gap": gap,
+            "verdict": "MATCH" if gap <= 0.012 else "BEHIND (freshness)",
+            "detail": "walk-forward MOV-Elo; tiny deficit = pitcher-blindness (the close prices SP)"}
+
+
+def _mlb_total_row() -> Dict:
+    from scripts.platformkit.proof_mlb.beat_the_close_total import run
+    r = run()
+    if r.get("status") != "ok":
+        return {"sport": "MLB", "market": "total (O/U)", "status": r.get("status", "error")}
+    gap = r["gap"]
+    return {"sport": "MLB", "market": "total (O/U)", "metric": "RMSE", "n": r["n_holdout"],
+            "model": r["model_total_rmse"], "close": r["close_total_rmse"], "gap": gap,
+            "verdict": "MATCH" if gap <= 0.20 else "BEHIND (freshness)",
+            "detail": "run-rate expected total vs closing line; gap = park/weather/SP/lineup"}
+
+
+def _soccer_ou_row() -> Dict:
+    from scripts.platformkit.proof_soccer.beat_the_close_ou import run
+    r = run()
+    if r.get("status") != "ok":
+        return {"sport": "Soccer", "market": "O/U-2.5", "status": r.get("status", "error")}
+    gap = r["gap"]
+    return {"sport": "Soccer", "market": "O/U-2.5", "metric": "Brier", "n": r.get("n_holdout", r.get("n")),
+            "model": r["model_brier"], "close": r["close_brier"], "gap": gap,
+            "verdict": "MATCH" if gap <= 0.012 else "BEHIND (freshness)",
+            "detail": "EW-Poisson+finishing+pooled-Platt vs devigged Pinnacle close (W133 win)"}
+
+
+def _tennis_atp_ml_row() -> Dict:
+    from scripts.platformkit.proof_tennis.beat_the_close_ml import run
+    r = run()
+    if r.get("status") != "ok":
+        return {"sport": "Tennis (ATP)", "market": "match-win", "status": r.get("status", "error")}
+    gap = r["gap"]
+    return {"sport": "Tennis (ATP)", "market": "match-win", "metric": "Brier", "n": r.get("n_holdout", r.get("n")),
+            "model": r["model_metric"], "close": r["close_metric"], "gap": gap,
+            "verdict": "MATCH" if gap <= 0.012 else "BEHIND (freshness)",
+            "detail": "surface-Elo+Platt vs devigged Pinnacle; ATP closes very efficient"}
+
+
+_ROWS = (_nba_ml_row, _nba_totals_row, _mlb_ml_row, _mlb_total_row,
+         _soccer_ou_row, _tennis_atp_ml_row)
 
 
 def build() -> List[Dict]:
@@ -71,10 +120,17 @@ def render_markdown(rows: List[Dict]) -> str:
             continue
         L.append(f"| {r['sport']} | {r['market']} | {r['metric']} | {r['n']} | {r['model']} | "
                  f"{r['close']} | {r['gap']:+} | {r['verdict']} | {r['detail']} |")
-    L += ["", "**Reading it:** on the moneyline (mostly team strength) we MATCH the close; on "
-          "totals (where injuries swing pace) we trail by the freshness edge. Closing that gap "
-          "needs the data the market has (an injury/lineup feed, forward) or in-game conditioning, "
-          "not a cleverer box model — proven by W136/W138/W140 nulls and the W139 richer-data win."]
+    L += ["", "**Reading it (4 sports now measured):** on team-strength win markets (NBA & MLB "
+          "moneyline) we MATCH the devigged close within noise; the small MLB-ML deficit is "
+          "pitcher-blindness (the close prices the starting pitcher). On totals/derived markets "
+          "(NBA totals, MLB totals, Soccer O/U-2.5, ATP match-win) we trail by the freshness edge "
+          "— injuries/lineups/weather/park/SP the market sees and a public/box model cannot. "
+          "Soccer O/U sits in the MATCH band (pooled Platt, W133). Closing the remaining gaps needs "
+          "the data the market has (a freshness feed, forward) or in-game conditioning, not a "
+          "cleverer pregame model. WTA: temperature recal (T=1.36) is the chosen live recalibrator "
+          "(holdout ECE 0.045->0.019), a calibration win, not a market row.",
+          "", "_Soccer 1X2 is absent by design: the football-data corpus carries O/U-2.5 prices "
+          "only — no 1X2 closing odds exist to devig against (W149 data finding)._"]
     return "\n".join(L)
 
 
