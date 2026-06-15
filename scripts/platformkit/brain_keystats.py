@@ -27,7 +27,7 @@ if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
 _BANNER = ("> **Descriptive intelligence; markets efficient; calibration is not edge; "
-           "no edge claimed.** Realized post-game box stats over WINS vs LOSSES — "
+           "no edge claimed.** Realized post-game box stats over WINS versus LOSSES — "
            "AGGREGATE knowledge of what separates outcomes, NOT a leak-free signal and "
            "NOT a bet. Must be joined as-of before any model may use it.")
 
@@ -36,7 +36,7 @@ _BANNER = ("> **Descriptive intelligence; markets efficient; calibration is not 
 _SPORTS: Dict[str, Dict] = {
     "MLB":    {"parquet": "data/domains/mlb/espn_boxscores.parquet",
                "stat_label": "box stat (per team-game)"},
-    "NBA":    {"parquet": "data/domains/nba/espn_boxscores.parquet",
+    "NBA":    {"parquet": "data/domains/basketball_nba/espn_boxscores.parquet",
                "stat_label": "box stat (per team-game)"},
     "Soccer": {"parquet": "data/domains/soccer/espn_matchstats.parquet",
                "stat_label": "match stat (per team-game)"},

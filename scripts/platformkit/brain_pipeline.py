@@ -183,6 +183,13 @@ def _run_model_stages(organized_root: Path) -> Dict:
             models.setdefault("_keystats", {})["key_stats"] = "written"
     except Exception:  # noqa: BLE001
         pass
+    # W112 additive stages (form profiles -> stub consolidation+link-repair -> redundancy
+    # audit). Kept in brain_extra_stages to hold this orchestrator under the LOC cap.
+    try:
+        from scripts.platformkit.brain_extra_stages import run_extra_stages  # noqa: PLC0415
+        models.update(run_extra_stages(organized_root))
+    except Exception:  # noqa: BLE001
+        pass
     return models
 
 
