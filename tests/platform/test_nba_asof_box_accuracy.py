@@ -33,9 +33,11 @@ def test_run_structure():
         return
     assert rep["n_overlap"] >= 40
     assert 5.0 < rep["close_rmse_vs_realized"] < 40.0   # NBA totals errors live in this band
-    for key in ("pooled_model", "split_model"):
+    for key in ("pooled_model", "split_model", "poss_model"):
         d = rep[key]
         assert 5.0 < d["rmse"] < 40.0
         assert 0.0 <= d["ece"] <= 0.3
+    # richer possessions/efficiency data should not be WORSE than the crude pooled model
+    assert rep["poss_model"]["rmse"] <= rep["pooled_model"]["rmse"] + 0.5
     assert isinstance(rep["gap_to_close_rmse"], float)
     assert isinstance(rep["verdict"], str)
