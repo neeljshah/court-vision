@@ -62,11 +62,15 @@ def _sorted(df: pd.DataFrame) -> pd.DataFrame:
     """Return ``df`` sorted by pinned chronological order.
 
     Key: (date, home_team, away_team) — mergesort-stable so ties within the
-    same game-day retain deterministic order.
+    same game-day retain deterministic order.  The date key is parsed via
+    ``pd.to_datetime`` so ordering is dtype-robust: datetime64 columns and
+    non-zero-padded date strings sort chronologically, not lexically.  (For
+    the zero-padded ISO strings used by the current callers this is order-
+    preserving; it only fixes the datetime64 / non-padded cases.)
     """
     sort_df = pd.DataFrame(
         {
-            "k0": df["date"].astype(str).values,
+            "k0": pd.to_datetime(df["date"]).values,
             "k1": df["home_team"].astype(str).values,
             "k2": df["away_team"].astype(str).values,
         },
@@ -122,6 +126,8 @@ def replay(games: pd.DataFrame, until: Optional[dt.date] = None) -> EloState:
     games:
         DataFrame with columns: ``date`` (date-like), ``season`` (int),
         ``home_team`` (str), ``away_team`` (str), ``home_win`` (1.0/0.0).
+        ``season`` must be int (callers map the NBA "YYYY-YY" string via
+        ``_season_to_int``); ``int(df['season'])`` is consumed directly here.
     until:
         If provided, process only games with ``date < until`` (strictly before).
         This is the AsOfContext.decision_time contract: the date D itself is
@@ -192,6 +198,8 @@ def walk_forward_elo(games_df: pd.DataFrame) -> pd.DataFrame:
     games_df:
         DataFrame with columns: ``date``, ``season``, ``home_team``,
         ``away_team``, ``home_win`` (1.0/0.0).
+        ``season`` must be int (callers map the NBA "YYYY-YY" string via
+        ``_season_to_int``); ``int(df['season'])`` is consumed directly here.
         Extra columns are preserved.
 
     Returns
@@ -270,11 +278,13 @@ def elo_state_asof(games_df: pd.DataFrame, date: dt.date) -> EloState:
     adapter API contract.
 
     Truncation-invariance guarantee:
-        ``elo_state_asof(full_df, D)`` is bitwise-identical to the EloState
-        you would obtain by replaying only the subset of rows with ``date < D``
-        through a fresh ``replay()`` call.  Both paths execute the same sorted
-        iteration in the same order — identical float operations => identical
-        bits.  Same-day games never feed each other because the cut is
-        date-granular strict-before: all games ON date D are excluded.
+        For integer-season inputs in the pinned sort order,
+        ``elo_state_asof(full_df, D)`` produces an EloState identical to the
+        one you would obtain by replaying only the subset of rows with
+        ``date < D`` through a fresh ``replay()`` call.  Both paths execute
+        the same sorted iteration in the same order — the same float
+        operations in the same sequence.  Same-day games never feed each
+        other because the cut is date-granular strict-before: all games ON
+        date D are excluded.
     """
     return replay(games_df, until=date)

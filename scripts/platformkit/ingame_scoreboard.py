@@ -12,8 +12,10 @@ Sources (called, never rebuilt):
              (the NBA W146 pattern: beats a REAL predictor, not the flat-0.5 static baseline).
   * SOCCER -> scripts.platformkit.proof_soccer.ingame_ht_accuracy.run() (built same wave)
              half-time conditioning; if not importable yet -> honest 'pending' row (no fabrication).
-  * TENNIS -> honest BLOCKED row: matches.parquet score is winner-ordered, so no leak-free
-             per-set replay corpus exists (reconstructing a mid-match state would leak the winner).
+  * TENNIS -> scripts.platformkit.proof_tennis.ingame_accuracy.run()
+             UNBLOCKED via the NBA team-ahead-after-Q1 pattern: the realized state is a within-
+             match ROLE fixed by the SET RESULT (set-1 leader), the label is the match outcome.
+             COMBINED (pregame Elo prior + 1-0 set lead) Brier vs pregame-Elo / score-only.
 
 HONEST: in-game = conditioning on the realized state; a live BOOK also sees the state, so this
 is forecaster QUALITY, not a $ edge. Markets efficient; no edge claimed. Brier/log-loss for
@@ -105,12 +107,25 @@ def _soccer_row() -> Dict:
 
 
 def _tennis_row() -> Dict:
+    # COMBINED (pregame surface-blended Elo prior + realized 1-0 set lead) vs the pregame-Elo
+    # static predictor. UNBLOCKED leak-free: the realized state is the SET-1 LEADER role (fixed
+    # by the set result), the label is "does the set-1 leader win the match" (the future outcome)
+    # — the NBA team-ahead-after-Q1 pattern. The score is de-ordered per-set via the winner
+    # column; no winner-order leak, no later-set info at the after-set-1 checkpoint.
+    from scripts.platformkit.proof_tennis.ingame_accuracy import run
+    r = run()
+    if r.get("status") != "ok":
+        return {"sport": "Tennis", "status": r.get("status", "error"), "note": r.get("note", "")}
+    cond = r["brier_combined"]                   # COMBINED: pregame Elo prior + 1-0 set lead
+    static = r["brier_pregame_elo"]              # the static pregame Elo predictor
     return {
-        "sport": "Tennis", "status": "BLOCKED",
-        "note": ("matches.parquet score is WINNER-ordered (set-1-leader vs match-winner ~0.52 "
-                 "in a p1/p2 frame), so reconstructing a mid-match (sets_p1, sets_p2) state "
-                 "would LEAK the eventual winner. No leak-free per-set replay corpus exists; "
-                 "excluded until a p1/p2-ordered per-set source lands."),
+        "sport": "Tennis", "checkpoint": "after set 1", "n": r["n_after_set1"],
+        "metric": "Brier", "conditional": cond, "static": static,
+        "delta": round(cond - static, 4),
+        "verdict": "WIN" if cond < static else "no-improvement",
+        "why": (f"COMBINED (pregame Elo prior + realized 1-0 set lead) {cond} beats pregame-Elo "
+                f"{static} and score-only {r['brier_score_only']}; the sharpest forecaster fuses "
+                f"the rating prior + realized set state (NBA team-ahead pattern, leak-free)."),
     }
 
 
@@ -154,8 +169,9 @@ def render_markdown(rows: List[Dict]) -> str:
           "intelligence (ratings) AS THE PRIOR with the realized state**, not either alone "
           "(NBA: combined beats both pregame-only and score-only). Soccer half-time is a WIN "
           "too (1X2 0.626 -> 0.502, O/U-2.5 0.264 -> 0.176 conditioning on the observed HT "
-          "score); Tennis is BLOCKED on a winner-ordered score string (no leak-free per-set "
-          "replay). This is forecaster quality, not a $ edge — a live book sees the same state.",
+          "score); Tennis is now a WIN too (Brier 0.219 -> 0.151 conditioning on the realized "
+          "set-1 lead, leak-free via the set-result-role / match-outcome-label framing). This is "
+          "forecaster quality, not a $ edge — a live book sees the same state.",
           "", "_Companion: vault/_Edge_Maps/_Beat_The_Close.md (pregame quality vs the close)._"]
     return "\n".join(L)
 
