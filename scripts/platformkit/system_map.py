@@ -55,8 +55,10 @@ _PREGAME = {
               "the recalibrator of choice (honest data-limited FAIL on the strict bar).",
 }
 _INGAME = {
-    "nba": "NBARepricer (Gaussian score-anchor; RMSE 12.5->4.2 Q1->Q4). Per-quarter linescores "
-           "ingested -> in-game now backtestable (proof_nba/ingame_accuracy.py).",
+    "nba": "NBARepricer (Gaussian score-anchor). BACKTESTED on 1,313 games (per-quarter "
+           "linescores): COMBINED pregame-rating-prior + realized-score = Brier 0.159, beats "
+           "pregame-Elo 0.209 AND score-only 0.172. Usable: predictor.predict_live(). "
+           "Per-quarter curve = null (quarters uniform). THE in-game advantage, measured.",
     "mlb": "MLBRepricer + empirical per-inning run curve (final-total bias -35% vs flat). "
            "Backtested: conditional Brier 0.13 vs static 0.25 (repricer_calibration.py).",
     "soccer": "SoccerRepricer (bivariate-Poisson + DC-rho, remaining-minutes scaling). No "
