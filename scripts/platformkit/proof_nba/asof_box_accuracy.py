@@ -116,21 +116,33 @@ def _walk_forward_split(df: pd.DataFrame) -> np.ndarray:
     return pred
 
 
-def run() -> Dict:
-    box_p, odds_p = _NBA / "espn_boxscores.parquet", _NBA / "odds.parquet"
-    if not box_p.is_file() or not odds_p.is_file():
-        return {"error": "espn_boxscores or odds parquet missing"}
-    box = pd.read_parquet(box_p)
+def load_box() -> pd.DataFrame:
+    """Cleaned, date-sorted ESPN box: canon abbrs, home/away_pts from the final score
+    (populated for all games, unlike the box-stats points row), total filtered to a sane
+    range. Shared by the rest-aware model module."""
+    box = pd.read_parquet(_NBA / "espn_boxscores.parquet")
     box["date"] = pd.to_datetime(box["date"], format="mixed", errors="coerce")
     box = box.dropna(subset=["date"]).sort_values("date").reset_index(drop=True)
     box["home_abbr"] = _canon(box["home_abbr"])
     box["away_abbr"] = _canon(box["away_abbr"])
-    # Use home_score/away_score (the final score == points, populated for ALL games);
-    # home_pts/away_pts come from the box-stats table which the 2026 parse leaves null.
     box["home_pts"] = box["home_score"].astype(float)
     box["away_pts"] = box["away_score"].astype(float)
     box["total"] = box["home_pts"] + box["away_pts"]
-    box = box[(box["total"] >= 150) & (box["total"] <= 350)].reset_index(drop=True)
+    return box[(box["total"] >= 150) & (box["total"] <= 350)].reset_index(drop=True)
+
+
+def load_close() -> pd.DataFrame:
+    od = pd.read_parquet(_NBA / "odds.parquet").rename(
+        columns={"home_team": "home_abbr", "away_team": "away_abbr"})
+    od["date"] = pd.to_datetime(od["date"])
+    return od[["date", "home_abbr", "away_abbr", "total"]].rename(columns={"total": "close_total"})
+
+
+def run() -> Dict:
+    box_p, odds_p = _NBA / "espn_boxscores.parquet", _NBA / "odds.parquet"
+    if not box_p.is_file() or not odds_p.is_file():
+        return {"error": "espn_boxscores or odds parquet missing"}
+    box = load_box()
     box["pred_pooled"] = _walk_forward_total(box)
     box["pred_split"] = _walk_forward_split(box)
     box["pred_poss"] = _walk_forward_poss(box)
