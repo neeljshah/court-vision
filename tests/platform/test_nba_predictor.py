@@ -46,3 +46,16 @@ def test_home_court_edge(predictor):
 def test_unknown_team_falls_back(predictor):
     s = predictor.predict("ZZZ", "BOS")
     assert 0.0 < s["p_home_win"] < 1.0     # league-prior fallback, no crash
+
+
+def test_to_jd_coherent_with_predict(predictor):
+    """The JointDistribution's moneyline/total must match the predict() surface (anchored)."""
+    from scripts.platformkit.sim_framework import market_surface
+
+    jd = predictor.to_jd("BOS", "LAL", n_sims=60_000, seed=1)
+    surf = market_surface(jd, {"home_idx": 0, "away_idx": 1, "total_lines": [220.5]})
+    pr = predictor.predict("BOS", "LAL")
+    # JD win-prob anchored to the Elo win-prob within MC noise
+    assert abs(surf["win_home"] - pr["p_home_win"]) < 0.02
+    # JD total mean matches the possessions-model total within MC noise
+    assert abs((surf["home_mean"] + surf["away_mean"]) - pr["total_mean"]) < 1.5

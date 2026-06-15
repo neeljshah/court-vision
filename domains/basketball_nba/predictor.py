@@ -86,6 +86,29 @@ class NBAPredictor:
             self.offp[at] += al * (api / p - self.offp[at]); self.defp[at] += al * (hpi / p - self.defp[at])
 
     # ------------------------------------------------------------------
+    def to_jd(self, home: str, away: str, *, n_sims: int = 20_000, seed: int = 0):
+        """Coherent JointDistribution of (home_score, away_score) for the kernel surface.
+
+        total ~ N(total_mean, total_sigma), margin ~ N(margin_home, margin_sigma) (≈indep in
+        basketball); home=(total+margin)/2, away=(total-margin)/2 -> ML/spread/total all
+        read off ONE sample matrix. Plugs into sim_framework.market_surface / sgp_pricer.
+        """
+        from scripts.platformkit.sim_framework import JointDistribution  # noqa: PLC0415
+
+        from scipy.special import ndtri  # noqa: PLC0415
+
+        s = self.predict(home, away)
+        rng = np.random.default_rng(seed)
+        total = rng.normal(s["total_mean"], self.total_sigma, n_sims)
+        # Anchor the margin mean so P(margin>0) == the Elo win-prob (our validated win model
+        # that matches the close); keeps ML/spread coherent with the Elo, total from the
+        # possessions model. Mirrors the MLB anchor_lambdas_to_winprob pattern.
+        anchored_mean = float(ndtri(min(max(s["p_home_win"], 1e-4), 1 - 1e-4)) * self.margin_sigma)
+        margin = rng.normal(anchored_mean, self.margin_sigma, n_sims)
+        hs = np.clip((total + margin) / 2.0, 0, None)
+        as_ = np.clip((total - margin) / 2.0, 0, None)
+        return JointDistribution(np.stack([hs, as_], axis=1), joint_quality="simulated")
+
     def predict(self, home: str, away: str,
                 total_lines: Sequence[float] = _DEFAULT_LINES) -> Dict:
         """Calibrated surface for home vs away. Unknown teams fall back to league priors."""
