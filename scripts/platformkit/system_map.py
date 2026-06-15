@@ -43,6 +43,36 @@ def _beat_close() -> List[Dict]:
         return []
 
 
+# Sane per-sport mid-event demo states (mirror live_read CLI's _SANE/demo_params):
+# (elapsed_minutes, home_score, away_score, pregame_params, extra).
+_DEMO_STATE = {
+    "nba":    (24.0, 58, 50, {"mu_home": 114, "mu_away": 112}, {}),
+    "mlb":    (5.0, 3, 2, {"lam_home": 4.6, "lam_away": 4.3}, {"innings_played": 5.0}),
+    "soccer": (60.0, 1, 1, {"lam_home": 1.6, "lam_away": 1.2}, {}),
+    "tennis": (1.0, 1, 0, {"best_of": 3, "p_set": 0.55}, {"sets_1": 1, "sets_2": 0}),
+}
+
+
+def _ingame_reads() -> Dict[str, Dict]:
+    """Exercise live_read (the in-game concept-fusion layer) per sport on a sane demo
+    state. This is what wires the orphaned in-game read into the real rebuild. The
+    repricer-direct predictor path (predict_live) is unchanged — this is the brain
+    concept-fusion view, not the validated predictor."""
+    from scripts.platformkit.live_repricer import GameState
+    from scripts.platformkit.live_read import build_live_read
+    out: Dict[str, Dict] = {}
+    for s in _SPORTS:
+        try:
+            elapsed, home, away, pp, extra = _DEMO_STATE[s]
+            state = GameState(sport=s, elapsed_minutes=elapsed, home_score=home,
+                              away_score=away, pregame_params=pp, extra=extra)
+            out[s] = build_live_read(s, state)
+        except Exception as exc:  # noqa: BLE001
+            out[s] = {"sport": s, "surface": {"status": f"error: {exc}"},
+                      "ingame_concepts": []}
+    return out
+
+
 # Curated per-sport state (kept honest + in sync with the edge maps / commits).
 _PREGAME = {
     "nba": "MOV-Elo win-prob MATCHES the close (Brier +0.006); possessions/eff totals trail "
@@ -78,6 +108,7 @@ _DATA = {
 def build() -> Dict:
     reps = _repricer_status()
     btc = {f"{r.get('sport','?')}:{r.get('market','?')}".lower(): r for r in _beat_close()}
+    live = _ingame_reads()
     rows = []
     for s in _SPORTS:
         rows.append({
@@ -87,7 +118,25 @@ def build() -> Dict:
             "ingame": _INGAME[s],
             "data": _DATA[s],
         })
-    return {"rows": rows, "repricers": reps, "beat_the_close": btc}
+    return {"rows": rows, "repricers": reps, "beat_the_close": btc, "live_reads": live}
+
+
+def _summarize_live(read: Dict) -> str:
+    """One-line summary of a live_read: top win/match prob + concept count."""
+    surf = read.get("surface", {}) or {}
+    if surf.get("status"):
+        prob = f"_({surf['status']})_"
+    else:
+        prob = "—"
+        for kh, ka, lbl in (("win_home", "win_away", "win"),
+                            ("ml_home", "ml_away", "ML"),
+                            ("match_win_p1", "match_win_p2", "match"),
+                            ("1X2_home", "1X2_away", "1X2")):
+            if kh in surf:
+                prob = f"{lbl} home/p1={surf[kh]:.3f} away/p2={surf[ka]:.3f}"
+                break
+    n_concepts = len(read.get("ingame_concepts", []))
+    return f"re-priced surface [{prob}] + {n_concepts} in-game brain concepts"
 
 
 def render_markdown(m: Dict) -> str:
@@ -110,6 +159,24 @@ def render_markdown(m: Dict) -> str:
               f"- **Pregame:** {r['pregame']}",
               f"- **In-game** (`{r['ingame_repricer']}`): {r['ingame']}",
               f"- **Data:** {r['data']}", ""]
+    # In-game concept-fusion layer (live_read), exercised on a sane per-sport demo.
+    live = m.get("live_reads", {})
+    if live:
+        L += ["## In-game read (live_read concept-fusion, demo state)",
+              "",
+              "> The in-game counterpart of the cohesive read: each sport's repricer "
+              "re-prices the remaining markets (gate-owned engine) and the brain's "
+              "relevant IN-GAME concepts are fused in (descriptive only). Demo mid-event "
+              "state; not the validated `predict_live` predictor path (that stays "
+              "repricer-direct). No edge claimed.", ""]
+        for s in _SPORTS:
+            rd = live.get(s)
+            if not rd:
+                continue
+            ds = _DEMO_STATE.get(s)
+            state_str = (f"score=({ds[1]},{ds[2]}) elapsed={ds[0]}" if ds else "?")
+            L.append(f"- **{s.upper()}** _(demo {state_str})_: {_summarize_live(rd)}")
+        L += [""]
     L += ["## The honest bottom line",
           "- We MATCH the market on team-strength markets (NBA moneyline); we trail on "
           "totals only by the FRESHNESS edge (injuries/lineups).",
