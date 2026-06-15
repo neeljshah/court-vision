@@ -31,10 +31,28 @@ from scripts.platformkit.concept_landscape import (
 from scripts.platformkit.brain_query import _resolve_root
 
 _SPORTS = ("nba", "mlb", "soccer", "tennis")
+_SPORT_DIRS = {"nba": "NBA", "mlb": "MLB", "soccer": "Soccer", "tennis": "Tennis"}
 _SCOREBOARDS = {
     "platform": "_Index/_Platform_Scoreboard.md",
     "calibration": "_Index/_Calibration_Scoreboard.md",
 }
+# Per-sport knowledge hubs the rebuild writes (label, filename within <SPORT>/).
+_PER_SPORT_HUBS = [
+    ("Digest", "_Digest.md"),
+    ("What Wins — drivers", "_WhatWins.md"),
+    ("Form Profiles — as-of bands", "_Form_Profiles.md"),
+    ("Key Stats — win/loss separation", "_KeyStats.md"),
+    ("Validated Improvements", "_Validated_Improvements.md"),
+    ("Concept Map", "_Concept_Map.md"),
+    ("Model Card", "_Model_Card.md"),
+    ("Team Base Rates (EB)", "_Team_Base_Rates_EB.md"),
+]
+# Cross-sport hubs (label, path within _Organized/).
+_CROSS_SPORT_HUBS = [
+    ("Cross-Sport Transfer", "_Index/_Cross_Sport_Transfer.md"),
+    ("Cross-Sport Digest", "_Index/_Cross_Sport_Digest.md"),
+    ("Coverage Map", "_Index/_Coverage.md"),
+]
 _BANNER = ("COHESIVE READ — one system: brain understanding + concept graph + "
            "calibrated engine + self-checked narrative. No edge; markets efficient.")
 
@@ -49,6 +67,38 @@ def _scoreboard_pointer(root: Optional[Path]) -> Dict[str, str]:
         p = eff / rel
         if p.is_file():
             out[key] = f"brain:{rel}"
+    return out
+
+
+def _excerpt(path: Path) -> str:
+    """First substantive prose line of a hub note (skips frontmatter/headings/tables)."""
+    try:
+        for raw in path.read_text(encoding="utf-8", errors="replace").splitlines():
+            ln = raw.strip()
+            if not ln or ln.startswith(("#", "---", "|", ">", "tags:", "- [[", "![")):
+                continue
+            return ln[:140]
+    except OSError:
+        pass
+    return ""
+
+
+def _knowledge_layers(sport: str, root: Optional[Path]) -> List[Dict[str, str]]:
+    """Link every per-sport + cross-sport knowledge hub that exists (consumed, not recomputed)."""
+    eff = _resolve_root(Path(root) if root else None)
+    if eff is None:
+        return []
+    sp_dir = eff / _SPORT_DIRS.get(sport.lower(), sport.upper())
+    out: List[Dict[str, str]] = []
+    for label, fn in _PER_SPORT_HUBS:
+        p = sp_dir / fn
+        if p.is_file():
+            out.append({"label": label, "provenance": f"brain:{_SPORT_DIRS.get(sport.lower(), sport.upper())}/{fn}",
+                        "excerpt": _excerpt(p)})
+    for label, rel in _CROSS_SPORT_HUBS:
+        p = eff / rel
+        if p.is_file():
+            out.append({"label": label, "provenance": f"brain:{rel}", "excerpt": _excerpt(p)})
     return out
 
 
@@ -68,6 +118,7 @@ def build_cohesive_read(
         "banner": _BANNER,
         "read": read,
         "concept_landscape": landscape,
+        "knowledge_layers": _knowledge_layers(sport_l, root),
         "scoreboards": _scoreboard_pointer(root),
         "edge_claimed": False,
     }
@@ -82,6 +133,13 @@ def render_markdown(cr: Dict[str, Any]) -> str:
         _read_md(cr["read"]), "",
         _land_md(cr["concept_landscape"]),
     ]
+    layers = cr.get("knowledge_layers", [])
+    if layers:
+        L.append("### Knowledge Layers _(every artifact the rebuild produced — descriptive)_")
+        for k in layers:
+            ex = f" — _{k['excerpt']}_" if k.get("excerpt") else ""
+            L.append(f"- **{k['label']}**  `{k['provenance']}`{ex}")
+        L.append("")
     sb = cr.get("scoreboards", {})
     L.append("### Engine Quality _(calibration, not edge)_")
     if sb:
