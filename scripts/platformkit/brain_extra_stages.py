@@ -39,6 +39,14 @@ def run_extra_stages(organized_root: Path) -> Dict:
             out.setdefault("_tennis_depth", {})["serve_return_archetypes"] = "written"
     except Exception:  # noqa: BLE001
         pass
+    # MLB PITCHING SCHEMES depth (fills MLB's empty Schemes category; from as-of+park data)
+    try:
+        from scripts.platformkit.brain_mlb_schemes import build_mlb_schemes  # noqa: PLC0415
+        ms = build_mlb_schemes(organized_root=organized_root, write=True)
+        if isinstance(ms, dict) and not ms.get("skipped"):
+            out.setdefault("_mlb_schemes", {})["pitching_schemes"] = "written"
+    except Exception:  # noqa: BLE001
+        pass
     # CONSOLIDATE redundant stub families -> dense notes (+ repair dangling wikilinks)
     try:
         from scripts.platformkit.brain_consolidate import consolidate  # noqa: PLC0415
