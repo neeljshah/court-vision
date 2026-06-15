@@ -99,15 +99,16 @@ def _sort_key(df: pd.DataFrame) -> pd.Series:
     """Stable chronological sort key matching §3.1 pinned order.
 
     Primary: date.  Secondary: tour, tourney_id, round order, match_num.
-    Unknown rounds map to the mid-value (6) so they slot between Q rounds and
-    later-stage matches rather than silently floating to the top or bottom.
+    Unknown rounds map to a sentinel (99) so they sort AFTER all known rounds
+    (F == 13) rather than colliding with R128 (== 6) in the intra-day tiebreak.
+    Keys are zero-padded so the sentinel orders correctly as a string.
     """
     ROUND_ORDER: dict[str, int] = {
         "ER": 0, "Q1": 1, "Q2": 2, "Q3": 3, "Q4": 4,
         "RR": 5, "R128": 6, "R64": 7, "R32": 8, "R16": 9,
         "QF": 10, "SF": 11, "BR": 12, "F": 13,
     }
-    round_col = df["round"].map(ROUND_ORDER).fillna(6).astype(int)
+    round_col = df["round"].map(ROUND_ORDER).fillna(99).astype(int)
     tour_col = df["tour"] if "tour" in df.columns else pd.Series([""] * len(df), index=df.index)
     tourney_col = df["tourney_id"] if "tourney_id" in df.columns else pd.Series([""] * len(df), index=df.index)
     match_num_col = df["match_num"] if "match_num" in df.columns else pd.Series(0, index=df.index)

@@ -23,7 +23,10 @@ from domains.soccer.ratings import _p_over, walk_forward_goals  # read-only
 # Constants
 # ---------------------------------------------------------------------------
 
-_MAX_GOALS_DEFAULT = 12   # inclusive; 13x13 matrix captures >99.9% mass for lam_t <= ~3.5
+_MAX_GOALS_DEFAULT = 12   # inclusive 13x13 grid. scoreline_matrix renormalises (P/=P.sum()),
+                          # so any truncated tail mass is benignly redistributed for markets.
+                          # RATE_CLIP lets lam_total reach ~8.0; closed-form O/U parity to <1e-6
+                          # at high lambda would need max_goals>=25 (override via the kwarg).
 _OU_LINES: Tuple[float, ...] = (0.5, 1.5, 2.5, 3.5, 4.5)
 
 
@@ -85,6 +88,18 @@ def scoreline_matrix(
 # Market read-offs
 # ---------------------------------------------------------------------------
 
+def _total_dist(P: np.ndarray) -> np.ndarray:
+    """Total-goals marginal: out[t] = sum of P over all (i, j) with i + j == t.
+
+    Each anti-diagonal of P holds a fixed total t = i + j, so the marginal is the
+    vector of anti-diagonal sums (length 2n-1).  Equivalent to the naive double
+    loop ``out[i + j] += P[i, j]`` but vectorised via np.trace over offsets.
+    """
+    n = P.shape[0]
+    Pf = np.fliplr(P)  # anti-diagonal i+j==t maps to a diagonal of the flipped matrix
+    return np.array([np.trace(Pf, offset=k) for k in range(n - 1, -n, -1)], dtype=float)
+
+
 def markets_from_matrix(P: np.ndarray, *, top_n: int = 8) -> Dict[str, float]:
     """Full market surface from a scoreline matrix.
 
@@ -105,10 +120,7 @@ def markets_from_matrix(P: np.ndarray, *, top_n: int = 8) -> Dict[str, float]:
     }
 
     # O/U lines — build total-goals marginal distribution first
-    total_dist = np.zeros(2 * n - 1, dtype=float)
-    for i in range(n):
-        for j in range(n):
-            total_dist[i + j] += P[i, j]
+    total_dist = _total_dist(P)
 
     for line in _OU_LINES:
         threshold = int(line + 0.5)  # e.g. 2.5 -> 3
@@ -142,12 +154,7 @@ def engine_over25(
 ) -> float:
     """P(total goals >= 3) via the scoreline matrix.  At rho=0 equals _p_over(lam_h+lam_a)."""
     P = scoreline_matrix(lam_home, lam_away, rho=rho, max_goals=max_goals)
-    n = P.shape[0]
-    total_dist = np.zeros(2 * n - 1, dtype=float)
-    for i in range(n):
-        for j in range(n):
-            total_dist[i + j] += P[i, j]
-    return float(total_dist[3:].sum())
+    return float(_total_dist(P)[3:].sum())
 
 
 # ---------------------------------------------------------------------------
