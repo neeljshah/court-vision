@@ -177,6 +177,15 @@ def render_markdown(m: Dict) -> str:
             state_str = (f"score=({ds[1]},{ds[2]}) elapsed={ds[0]}" if ds else "?")
             L.append(f"- **{s.upper()}** _(demo {state_str})_: {_summarize_live(rd)}")
         L += [""]
+    L += ["## In-game scoreboard (measured, conditional vs static)", "",
+          "> The in-game counterpart of beat-the-close: where a leak-free per-period corpus "
+          "exists, the conditional-on-realized-state forecaster vs the static/pregame line "
+          "(lower Brier = sharper). Full table + numbers in `_Ingame_Scoreboard.md` "
+          "(`scripts.platformkit.ingame_scoreboard`).",
+          "- **NBA** (per-quarter): Brier 0.209 -> **0.159** (combined rating prior + score) = WIN",
+          "- **MLB** (per-inning): Brier 0.250 -> **0.128** = WIN",
+          "- **Soccer** (half-time): 1X2 Brier 0.626 -> **0.502**, O/U-2.5 0.264 -> **0.176** = WIN",
+          "- **Tennis**: BLOCKED (winner-ordered score -> no leak-free per-set replay corpus)", ""]
     L += ["## The honest bottom line",
           "- We MATCH the market on team-strength markets (NBA moneyline); we trail on "
           "totals only by the FRESHNESS edge (injuries/lineups).",

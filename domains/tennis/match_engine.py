@@ -21,8 +21,12 @@ import numpy as np
 from scripts.platformkit.sim_framework import JointDistribution  # read-only
 
 _BASE_HOLD_PROB: float = 0.62   # typical ATP serve-hold rate
+# DEPRECATED absolute tolerance: kept only for the match_engine_holds import.
+# It is intentionally NOT used by serve_probs_from_winprob anymore — see the
+# MC-noise-aware tol computed inside that function. 1e-6 can never fire against
+# a step function with ~1/n_sims granularity, so all iters would run wastefully.
 _BISECT_TOL: float = 1e-6
-_BISECT_MAX_ITER: int = 60
+_BISECT_MAX_ITER: int = 25      # cap: bisection halves the bracket each iter
 _N_SIMS_DEFAULT: int = 3000
 
 
@@ -75,6 +79,12 @@ def _sim_matches(
                 if mx >= 6 and mx - mn >= 2: break
                 if mx == 7: break
                 if mx == 6 and mn == 6:
+                    # DELIBERATE SIMPLIFICATION (documented limitation): the 6-6
+                    # tiebreak is modeled as 50/50 regardless of server strength.
+                    # Real TBs slightly favor the stronger server, so this
+                    # compresses total-games tails for lopsided matchups. We keep
+                    # the 50/50 model intentionally (set/games coverage is the
+                    # value; match-win is anchored to Elo elsewhere).
                     if rng.random() < 0.5: g1 += 1  # tiebreak ≈ 50/50
                     else:                  g2 += 1
                     srv ^= 1
@@ -105,6 +115,12 @@ def serve_probs_from_winprob(
     margin = base_hold - 0.01
     lo, hi = -margin, margin
 
+    # _sim_win is a step function with granularity ~1/n_sims (MC noise), so a
+    # 1e-6 tolerance can never fire — every bisection iter would run wastefully.
+    # Stop once we're finer than half the MC step (~1/(2*n_sims)); also capped
+    # by _BISECT_MAX_ITER since each iter halves the bracket anyway.
+    tol = 0.5 / max(n_sims, 1)
+
     def _sim_win(delta: float) -> float:
         p1 = float(np.clip(base_hold + delta, 0.01, 0.99))
         p2 = float(np.clip(base_hold - delta, 0.01, 0.99))
@@ -114,7 +130,7 @@ def serve_probs_from_winprob(
     for _ in range(_BISECT_MAX_ITER):
         mid = (lo + hi) / 2.0
         pw = _sim_win(mid)
-        if abs(pw - target_match_p) < _BISECT_TOL:
+        if abs(pw - target_match_p) < tol:
             break
         if pw < target_match_p: lo = mid
         else:                   hi = mid
