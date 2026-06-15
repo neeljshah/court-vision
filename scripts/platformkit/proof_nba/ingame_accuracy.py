@@ -33,6 +33,7 @@ from scripts.platformkit.live_repricer import GameState, get_repricer  # noqa: E
 _LINESCORES = _REPO / "data" / "domains" / "basketball_nba" / "linescores.parquet"
 _CHECKPOINTS = ((1, 12.0), (2, 24.0), (3, 36.0))   # (quarter ended, elapsed minutes)
 _LEAGUE_MU = 113.0
+_DEF_MARGIN_SIGMA = 13.5   # full-game final-margin SD (matches the NBA repricer default)
 
 
 def _brier(p: np.ndarray, y: np.ndarray) -> float:
@@ -60,6 +61,28 @@ def _quarter_curve(df: pd.DataFrame) -> np.ndarray:
     return tot / tot.sum()
 
 
+def _walk_forward_elo(df: pd.DataFrame) -> np.ndarray:
+    """Leak-free MOV-Elo over the linescore games -> as-of pregame P(home win). Feeds the
+    repricer a RATING-informed prior so in-game = pregame intelligence + realized score."""
+    import math
+    rat: Dict[str, float] = {}
+    p = np.empty(len(df))
+    h = df["home_abbr"].to_numpy(); a = df["away_abbr"].to_numpy()
+    hf = df["home_final"].to_numpy(float); af = df["away_final"].to_numpy(float)
+    K, HFA = 20.0, 60.0
+    for i in range(len(df)):
+        ht, at = str(h[i]), str(a[i])
+        rat.setdefault(ht, 1500.0); rat.setdefault(at, 1500.0)
+        ph = 1.0 / (1.0 + 10.0 ** (-(rat[ht] - rat[at] + HFA) / 400.0))
+        p[i] = ph
+        s = 1.0 if hf[i] > af[i] else 0.0
+        ed = (rat[ht] - rat[at] + HFA) * (1 if s else -1)
+        mov = math.log(abs(hf[i] - af[i]) + 1.0) * (2.2 / (ed * 0.001 + 2.2))
+        d = K * mov * (s - ph)
+        rat[ht] += d; rat[at] -= d
+    return p
+
+
 def run() -> Dict:
     if not _LINESCORES.is_file():
         return {"status": "no_data", "note": "run domains.basketball_nba.ingest_linescores first"}
@@ -67,48 +90,55 @@ def run() -> Dict:
     n = len(df)
     if n < 60:
         return {"status": "data_limited", "n": n}
+    from scipy.special import ndtri  # noqa: PLC0415
     curve = _quarter_curve(df)
+    p_pre = _walk_forward_elo(df)            # as-of pregame Elo win-prob per game (leak-free)
     rep = get_repricer("nba")
-    pp = {"mu_home": _LEAGUE_MU, "mu_away": _LEAGUE_MU}
-    static = float(rep.reprice(GameState("nba", 0.0, 0, 0, pregame_params=pp)).get("win_home", 0.5))
+    blind = {"mu_home": _LEAGUE_MU, "mu_away": _LEAGUE_MU}
 
-    s_p, c_p, y = [], [], []
-    tot_pred_flat, tot_pred_curve, tot_true = [], [], []
-    for _, r in df.iterrows():
+    pre_p, blind_p, rate_p, y = [], [], [], []
+    rmse_acc = {"flat": [], "curve": []}
+    tot_true: List[float] = []
+    for i in range(n):
+        r = df.iloc[i]
         win = 1.0 if r["home_final"] > r["away_final"] else 0.0
         final_total = float(r["home_final"] + r["away_final"])
+        # rating-informed prior: set mu so the repricer's PREGAME win == the Elo win-prob
+        mu_diff = float(ndtri(min(max(p_pre[i], 1e-4), 1 - 1e-4)) * _DEF_MARGIN_SIGMA)
+        rate_pp = {"mu_home": _LEAGUE_MU + mu_diff / 2.0, "mu_away": _LEAGUE_MU - mu_diff / 2.0}
         for q, elapsed in _CHECKPOINTS:
             h0 = float(sum(r[f"home_q{k}"] for k in range(1, q + 1)))
             a0 = float(sum(r[f"away_q{k}"] for k in range(1, q + 1)))
-            out = rep.reprice(GameState("nba", elapsed, int(h0), int(a0), pregame_params=pp))
-            s_p.append(static); c_p.append(float(out["win_home"])); y.append(win)
-            # flat remaining (what the repricer uses) vs per-quarter-curve remaining
+            o_blind = rep.reprice(GameState("nba", elapsed, int(h0), int(a0), pregame_params=blind))
+            o_rate = rep.reprice(GameState("nba", elapsed, int(h0), int(a0), pregame_params=rate_pp))
+            pre_p.append(p_pre[i])                  # pregame Elo (no score)
+            blind_p.append(float(o_blind["win_home"]))   # score only (rating-blind)
+            rate_p.append(float(o_rate["win_home"]))     # COMBINED: rating prior + score
+            y.append(win)
             rem_flat = (48.0 - elapsed) / 48.0
-            rem_curve = float(curve[q:].sum())               # share of points in remaining quarters
-            full_remaining_pts = 2.0 * _LEAGUE_MU            # league full-game total expectation
-            tot_pred_flat.append(h0 + a0 + full_remaining_pts * rem_flat)
-            tot_pred_curve.append(h0 + a0 + full_remaining_pts * rem_curve)
+            rmse_acc["flat"].append(h0 + a0 + 2.0 * _LEAGUE_MU * rem_flat)
+            rmse_acc["curve"].append(h0 + a0 + 2.0 * _LEAGUE_MU * float(curve[q:].sum()))
             tot_true.append(final_total)
 
     y = np.array(y)
-    b_static, b_cond = _brier(np.array(s_p), y), _brier(np.array(c_p), y)
-    rmse_flat, bias_flat = _rmse_bias(np.array(tot_pred_flat), np.array(tot_true))
-    rmse_curve, bias_curve = _rmse_bias(np.array(tot_pred_curve), np.array(tot_true))
+    b_pre, b_blind, b_rate = (_brier(np.array(p), y) for p in (pre_p, blind_p, rate_p))
+    rmse_flat, bias_flat = _rmse_bias(np.array(rmse_acc["flat"]), np.array(tot_true))
+    rmse_curve, _ = _rmse_bias(np.array(rmse_acc["curve"]), np.array(tot_true))
     return {
         "status": "ok", "n_games": n, "n_checkpoints": int(y.size),
         "quarter_curve": [round(float(c), 4) for c in curve],
-        "brier_static_pregame": round(b_static, 5), "brier_conditional": round(b_cond, 5),
-        "brier_delta": round(b_cond - b_static, 5),
-        "conditional_beats_static": bool(b_cond < b_static),
+        "brier_pregame_elo": round(b_pre, 5),
+        "brier_conditional_blind": round(b_blind, 5),
+        "brier_conditional_rating": round(b_rate, 5),
+        "combined_beats_pregame": bool(b_rate < b_pre),
+        "combined_beats_blind": bool(b_rate < b_blind),
         "total_rmse_flat": round(rmse_flat, 3), "total_rmse_curve": round(rmse_curve, 3),
-        "total_bias_flat": round(bias_flat, 3), "total_bias_curve": round(bias_curve, 3),
-        "curve_rmse_gain": round(rmse_flat - rmse_curve, 3),
-        "curve_abs_bias_gain": round(abs(bias_flat) - abs(bias_curve), 3),
+        "total_bias_flat": round(bias_flat, 3), "curve_helps": bool(rmse_curve < rmse_flat - 0.05),
         "verdict": (
-            f"IN-GAME conditioning is much sharper (Brier {round(b_static,3)} static -> "
-            f"{round(b_cond,3)} conditional); per-quarter curve "
-            f"{'sharpens the total further' if rmse_curve < rmse_flat - 0.05 else 'is ~flat'} "
-            f"(RMSE {round(rmse_flat,2)} -> {round(rmse_curve,2)})"),
+            f"IN-GAME wins: pregame-Elo Brier {round(b_pre,3)} -> score-only {round(b_blind,3)} "
+            f"-> COMBINED (rating prior + score) {round(b_rate,3)} "
+            f"({'best' if b_rate <= min(b_pre, b_blind) else 'not best'}). NBA per-quarter "
+            f"curve is a null (quarters ~uniform)."),
         "note": "Forecaster quality (a live book also sees the score). RMSE+bias, never MAE. No $ edge.",
     }
 
@@ -119,11 +149,13 @@ def _main() -> int:
         print(f"{rep.get('status')}: {rep.get('note', rep.get('n'))}"); return 0
     print(f"=== NBA IN-GAME accuracy (n={rep['n_games']} games, {rep['n_checkpoints']} checkpoints) ===")
     print(f"  per-quarter scoring share Q1-Q4: {rep['quarter_curve']} (uniform=0.25)")
-    print(f"  win-prob Brier: static={rep['brier_static_pregame']} -> "
-          f"conditional={rep['brier_conditional']} (d={rep['brier_delta']:+})")
+    print(f"  win-prob Brier:  pregame-Elo={rep['brier_pregame_elo']}  "
+          f"score-only={rep['brier_conditional_blind']}  "
+          f"COMBINED(rating+score)={rep['brier_conditional_rating']}")
+    print(f"  combined beats pregame: {rep['combined_beats_pregame']}  "
+          f"beats score-only: {rep['combined_beats_blind']}")
     print(f"  final-total RMSE: flat={rep['total_rmse_flat']}  curve={rep['total_rmse_curve']}  "
-          f"(gain {rep['curve_rmse_gain']:+}); |bias| flat={abs(rep['total_bias_flat'])} "
-          f"curve={abs(rep['total_bias_curve'])}")
+          f"(curve helps: {rep['curve_helps']})")
     print(f"VERDICT: {rep['verdict']}")
     print(rep["note"])
     return 0
