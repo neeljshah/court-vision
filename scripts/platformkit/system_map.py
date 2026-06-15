@@ -186,7 +186,9 @@ def render_markdown(m: Dict) -> str:
           "- **MLB** (per-inning): vs a REAL pregame-Elo prior 0.241 -> combined **0.126** "
           "(pregame prior + realized runs; > score-only 0.128) = WIN",
           "- **Soccer** (half-time): 1X2 Brier 0.626 -> **0.502**, O/U-2.5 0.264 -> **0.176** = WIN",
-          "- **Tennis**: BLOCKED (winner-ordered score -> no leak-free per-set replay corpus)", ""]
+          "- **Tennis (ATP)** (after set 1): Brier 0.219 -> **0.151** (combined: Elo prior + "
+          "1-0 set lead; > score-only 0.162) = WIN -- UNBLOCKED W155 via the set-1-leader "
+          "framing (scoreboard now 4/4)", ""]
     L += ["## The honest bottom line",
           "- We MATCH the market on team-strength markets (NBA moneyline); we trail on "
           "totals only by the FRESHNESS edge (injuries/lineups).",

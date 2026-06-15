@@ -32,6 +32,18 @@ _TOTAL_LINES = (6.5, 7.5, 8.5, 9.5, 10.5)
 # (and thus the in-game total/win-prob) sharper — a leak-free distribution-shape win.
 _INNING_SHARES = (0.122, 0.101, 0.114, 0.116, 0.116, 0.117, 0.111, 0.106, 0.096)
 _INNING_SHARES_SUM = sum(_INNING_SHARES)
+# Cumulative fraction of a game's runs still to come AFTER inning n (n = innings played).
+# _REMAINING_CUM[n] == sum(_INNING_SHARES[n:]) / sum, so _REMAINING_CUM[0] == 1.0 and
+# _REMAINING_CUM[9] == 0.0. Used to LINEARLY INTERPOLATE the remaining fraction at a
+# fractional innings_played (e.g. 5.5 -> halfway between the inning-5 and inning-6 nodes),
+# so a mid-inning state no longer snaps to the wrong slice via banker's rounding.
+_REMAINING_CUM = tuple(
+    sum(_INNING_SHARES[n:]) / _INNING_SHARES_SUM for n in range(int(_MLB_FULL_INNINGS) + 1)
+)
+# One extra inning's worth of the full-game run rate (1/9 of the 9-inning lambda) — used to
+# keep a regulation TIE live with a small residual lambda instead of freezing the markets
+# (a tie goes to EXTRA INNINGS where more runs WILL score, so the over must not be frozen).
+_EXTRA_INNING_FRAC = 1.0 / _MLB_FULL_INNINGS
 
 
 def _remaining_frac(innings_played: float, *, homogeneous: bool = False) -> float:
@@ -39,15 +51,23 @@ def _remaining_frac(innings_played: float, *, homogeneous: bool = False) -> floa
 
     Default uses the empirical per-inning run curve (early innings worth more); pass
     homogeneous=True for the flat (9 - n)/9 baseline (for A/B comparison).
+
+    For a FRACTIONAL innings_played the per-inning-curve remaining fraction is LINEARLY
+    INTERPOLATED between the integer-inning nodes of the cumulative-remaining curve (so e.g.
+    5.5 sits halfway between the inning-5 and inning-6 remaining levels). At an INTEGER
+    innings_played this reduces EXACTLY to sum(_INNING_SHARES[n:]) / _INNING_SHARES_SUM, so
+    the backtested integer-inning path is byte-for-byte unchanged.
     """
     if homogeneous:
         return max(0.0, _MLB_FULL_INNINGS - innings_played) / _MLB_FULL_INNINGS
-    n = int(round(innings_played))
-    if n >= 9:
+    if innings_played >= _MLB_FULL_INNINGS:
         return 0.0
-    if n <= 0:
+    if innings_played <= 0.0:
         return 1.0
-    return sum(_INNING_SHARES[n:]) / _INNING_SHARES_SUM
+    lo = int(innings_played)                 # floor: integer inning node below the state
+    hi = lo + 1
+    w = innings_played - lo                   # fractional part in [0, 1)
+    return _REMAINING_CUM[lo] * (1.0 - w) + _REMAINING_CUM[hi] * w
 
 
 class MLBRepricer:
@@ -68,14 +88,24 @@ class MLBRepricer:
             extra.get("innings_played",
                       getattr(state, "elapsed_minutes", 0.0) / _APPROX_MIN_PER_INNING)
         )
-        remaining = max(0.0, _MLB_FULL_INNINGS - innings_played)
         # Per-inning run curve by default (early innings worth more); homogeneous override
-        # via extra={'homogeneous_frac': True} for A/B accuracy comparison.
-        frac = _remaining_frac(innings_played, homogeneous=bool(extra.get("homogeneous_frac")))
+        # via extra={'homogeneous_frac': True} for A/B accuracy comparison. frac is now
+        # linearly interpolated at fractional innings (P2), and the _innings_remaining
+        # metadata / lambda-scale horizon both derive from THIS same frac (P3) so they stay
+        # consistent. remaining is expressed back in inning-units (frac * 9 innings).
+        homogeneous = bool(extra.get("homogeneous_frac"))
+        frac = _remaining_frac(innings_played, homogeneous=homogeneous)
+        remaining = frac * _MLB_FULL_INNINGS
         h0, a0 = int(state.home_score), int(state.away_score)
 
         if frac <= 0.0:
-            return self._final_state_surface(h0, a0, state)
+            # Regulation over. If the game is DECIDED (h0 != a0) the markets are deterministic.
+            # If it is TIED it goes to EXTRA INNINGS where more runs WILL score, so DON'T freeze
+            # the over / pin the run-line: simulate one extra inning's worth of residual runs.
+            if h0 != a0:
+                return self._final_state_surface(h0, a0, state)
+            frac = _EXTRA_INNING_FRAC
+            remaining = frac * _MLB_FULL_INNINGS
 
         P_rem = runs_matrix_nb(max(1e-6, lam_home * frac), max(1e-6, lam_away * frac),
                                r_home, r_away)
@@ -95,7 +125,11 @@ class MLBRepricer:
 
     @staticmethod
     def _final_state_surface(h0: int, a0: int, state: Any) -> Dict[str, Any]:
-        """Deterministic surface once regulation is complete (ties -> extra innings TBD)."""
+        """Deterministic surface once regulation is over AND the game is DECIDED (h0 != a0).
+
+        A regulation TIE never reaches here — reprice() keeps it live with a residual
+        extra-inning lambda — so the 0.5 ML branch below is a defensive fallback only.
+        """
         out: Dict[str, Any] = {
             "ml_home": 1.0 if h0 > a0 else (0.5 if h0 == a0 else 0.0),
             "ml_away": 1.0 if a0 > h0 else (0.5 if h0 == a0 else 0.0),
