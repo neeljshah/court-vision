@@ -93,7 +93,12 @@ def runs_matrix_nb(
     lam_home: float, lam_away: float, r_home: float, r_away: float,
     *, max_runs: int = _MAX_RUNS_DEFAULT,
 ) -> np.ndarray:
-    """Independent-NegBinom joint P[i,j]=P(home=i,away=j). Renormalized."""
+    """Independent-NegBinom joint P[i,j]=P(home=i,away=j). Renormalized.
+
+    HONESTY NOTE: callers that scale the remaining-innings lambda (e.g. the repricer)
+    scale lambda, NOT r -- thinning NB(r,lam) by a fraction f is not exactly NB(r, lam*f),
+    so the partial-inning tail shape is approximate.
+    """
     if lam_home <= 0 or lam_away <= 0:
         raise ValueError(f"lambdas must be positive; got {lam_home}, {lam_away}")
     P = np.outer(_negbinom_pmf(lam_home, r_home, max_runs),

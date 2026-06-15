@@ -4,8 +4,9 @@ Turns per-point serve-win probabilities into a coherent full market surface:
 match win, set betting, total games O/U, straight-sets / correct-set scores.
 
 HONEST: engine ADDS market coverage (set/games/straight-sets). Match-win
-calibration == Elo baseline by construction (serve_probs_from_winprob bisects
-so simulated match-win ≈ Elo target). PARITY is the win. NO edge claimed.
+calibration ~= Elo baseline up to MC noise (serve_probs_from_winprob bisects
+serve probs to tol~0.5/n_sims and re-sims on a different seed, so it is
+MC-approximate, NOT exact parity by construction). PARITY is the win. NO edge claimed.
 
 INVARIANTS: never edit src/ or kernel/; <=300 LOC.
 """
@@ -39,6 +40,9 @@ def game_win_prob(p_serve: float) -> float:
 
     Exact closed form (Barnett & Clarke 2005):
       P_hold = P(win, no-deuce) + P(reach 3-3) * p^2 / (p^2 + q^2)
+
+    NOTE: analytic reference/validation helper, not used by _sim_matches
+    (which resolves games via rng); exported/tested for cross-checking only.
     """
     if not (0.0 <= p_serve <= 1.0):
         raise ValueError(f"p_serve must be in [0,1]; got {p_serve}")

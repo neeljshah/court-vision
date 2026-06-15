@@ -30,6 +30,9 @@ _TOTAL_LINES = (6.5, 7.5, 8.5, 9.5, 10.5)
 # inning scores most (fresh top-of-order), the 8th/9th least (bullpen + home team often
 # not batting). Using this curve instead of a flat 1/9 makes the REMAINING-runs estimate
 # (and thus the in-game total/win-prob) sharper — a leak-free distribution-shape win.
+# HONESTY: this curve is GLOBAL and IN-SAMPLE to the backtest corpus (fit on the same
+# linescores it is then scored against) — the leak-free OOS verdict lives in
+# proof_mlb/curve_oos.py (built this wave), not here.
 _INNING_SHARES = (0.122, 0.101, 0.114, 0.116, 0.116, 0.117, 0.111, 0.106, 0.096)
 _INNING_SHARES_SUM = sum(_INNING_SHARES)
 # Cumulative fraction of a game's runs still to come AFTER inning n (n = innings played).
@@ -74,6 +77,10 @@ class MLBRepricer:
     """In-game re-pricing for MLB using the over-dispersed NegBinom run engine."""
 
     def reprice(self, state: Any) -> Dict[str, Any]:
+        # HONESTY: the NegBinom thinning here is an APPROXIMATION — reprice scales the run
+        # rate (lam *= frac) but REUSES the full-game dispersion r, so the remaining-runs
+        # tail shape is slightly mis-specified for a partial inning (a thinned NegBinom does
+        # not stay a NegBinom with the same r). This is a modeling assumption, NOT a leak.
         from domains.mlb.negbinom_engine import (  # noqa: PLC0415
             runs_matrix_nb, markets_from_matrix_nb, _FALLBACK_R,
         )
