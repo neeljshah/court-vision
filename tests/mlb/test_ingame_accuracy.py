@@ -53,6 +53,76 @@ def test_reprice_winhome_responds_to_score_and_prior():
     assert p_strong > p_weak
 
 
+def test_ece10_is_zero_for_perfectly_calibrated():
+    # 200 events at p=0.5 with exactly half positive -> bin-mean == outcome-mean -> ECE 0.
+    p = np.full(200, 0.5)
+    y = np.array([1.0, 0.0] * 100)
+    assert M._ece10(p, y) < 1e-9
+    # A confidently-wrong forecaster has large ECE.
+    p_bad = np.full(100, 0.9)
+    y_bad = np.zeros(100)
+    assert M._ece10(p_bad, y_bad) > 0.5
+
+
+def test_reliability_slope_detects_overconfidence():
+    rng = np.random.default_rng(0)
+    true_p = rng.uniform(0.2, 0.8, 4000)
+    y = rng.binomial(1, true_p).astype(float)
+    # over-confident: push probabilities away from 0.5 (logit * 1.8) -> slope < 1.
+    lt = np.log(true_p / (1 - true_p))
+    p_over = 1.0 / (1.0 + np.exp(-(lt * 1.8)))
+    slope_over = M._reliability_slope(p_over, y)
+    slope_cal = M._reliability_slope(true_p, y)
+    assert slope_over < slope_cal               # over-confident reads as lower slope
+    assert 0.8 < slope_cal < 1.2                # calibrated input ~ slope 1
+
+
+def test_fit_apply_recal_is_leakfree_and_helps_overconfident():
+    rng = np.random.default_rng(1)
+    true_p = rng.uniform(0.2, 0.8, 3000)
+    y = rng.binomial(1, true_p).astype(float)
+    lt = np.log(true_p / (1 - true_p))
+    p_over = 1.0 / (1.0 + np.exp(-(lt * 2.0)))  # over-confident raw forecaster
+    half = len(p_over) // 2
+    p_tr, y_tr = p_over[:half], y[:half]
+    p_ho = p_over[half:]
+    recal_ho, method = M._fit_apply_recal(p_tr, y_tr, p_ho)
+    assert recal_ho.shape == p_ho.shape
+    assert method in ("temperature", "platt", "identity")
+    assert (recal_ho >= 0).all() and (recal_ho <= 1).all()
+    # recalibrating an over-confident forecaster should lower held-out ECE.
+    ece_raw = M._ece10(p_ho, y[half:])
+    ece_recal = M._ece10(recal_ho, y[half:])
+    assert ece_recal <= ece_raw + 1e-6
+
+
+def test_run_exposes_calibration_keys(tmp_path):
+    import pathlib
+    g = pd.read_parquet(M._GAMES)
+    pit = pd.read_parquet(M._PITCHERS)[["event_id", "home_innings", "away_innings"]]
+    g = g.iloc[::12].reset_index(drop=True)
+    pit = pit[pit["event_id"].isin(g["event_id"])].reset_index(drop=True)
+    d = tmp_path / "data" / "domains" / "mlb"
+    d.mkdir(parents=True)
+    g.to_parquet(d / "games.parquet")
+    pit.to_parquet(d / "pitchers.parquet")
+    orig_g, orig_p = M._GAMES, M._PITCHERS
+    try:
+        M._GAMES = pathlib.Path(d / "games.parquet")
+        M._PITCHERS = pathlib.Path(d / "pitchers.parquet")
+        r = M.run()
+    finally:
+        M._GAMES, M._PITCHERS = orig_g, orig_p
+    assert r["status"] == "ok"
+    for k in ("ece_raw", "ece_recal", "recal_method", "reliability_slope",
+              "reliability_slope_recal", "recal_brier_not_worse", "calibration_verdict"):
+        assert k in r
+    assert 0.0 <= r["ece_raw"] <= 1.0 and 0.0 <= r["ece_recal"] <= 1.0
+    assert r["recal_method"] in ("temperature", "platt", "identity", "none")
+    # leak-free recal must never worsen Brier (the gate we report).
+    assert r["recal_brier_not_worse"] is True
+
+
 def test_run_smoke_on_full_corpus_pattern(tmp_path):
     """End-to-end on the real corpus is slow; instead assert run() returns the documented
     shape and the in-game pattern on a SUBSAMPLED corpus written to a temp dir."""

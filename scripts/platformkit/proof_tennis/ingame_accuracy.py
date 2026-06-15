@@ -44,6 +44,7 @@ if str(_REPO) not in sys.path:
 from domains.tennis.elo_core import SURFACE_BLEND  # noqa: E402
 from domains.tennis.elo_tune import _walk_forward_blend  # noqa: E402
 from scripts.platformkit.live_repricer import GameState, get_repricer  # noqa: E402
+from scripts.platformkit.proof_tennis.ingame_calib import recalibrate_holdout  # noqa: E402
 
 _MATCHES = _REPO / "data" / "domains" / "tennis" / "matches.parquet"
 _TRAIN_YEAR_MAX = 2022  # train (Elo warm-up) <= this; held-out test > this
@@ -190,6 +191,11 @@ def run() -> Dict:
     y1 = np.array(a1_y)
     b1_pre, b1_blind, b1_comb = (_brier(np.array(p), y1) for p in (a1_pre, a1_blind, a1_comb))
 
+    # --- in-game CALIBRATION of the COMBINED after-set-1 forecaster (leak-free) ---
+    # Split the chronological held-out preds into TRAIN/EVAL halves; fit the recalibrator
+    # on TRAIN only, apply to EVAL. (a1_* are appended in chronological held-out order.)
+    recal = recalibrate_holdout(np.array(a1_comb), y1)
+
     out = {
         "status": "ok",
         "n_after_set1": n1,
@@ -200,6 +206,17 @@ def run() -> Dict:
         "combined_beats_pregame": bool(b1_comb < b1_pre),
         "combined_beats_score_only": bool(b1_comb <= b1_blind),
         "base_rate_set1_leader_wins": round(float(y1.mean()), 4),
+        # in-game calibration of the COMBINED forecaster (held-out EVAL half):
+        "combined_calib_n_eval": recal["n_eval"],
+        "ece_raw": recal["ece_raw"],
+        "ece_recal": recal["ece_recal"],
+        "recal_method": recal["recal_method"],
+        "recal_params": recal["recal_params"],
+        "reliability_slope": recal["reliability_slope"],
+        "combined_calib_brier_raw": recal["brier_raw"],
+        "combined_calib_brier_recal": recal["brier_recal"],
+        "recal_brier_not_worse": bool(recal["brier_recal"] <= recal["brier_raw"] + 1e-4),
+        "combined_well_calibrated": bool(recal["ece_raw"] < 0.025),
     }
 
     n2 = len(a2_y)
@@ -242,6 +259,17 @@ def _main() -> int:
           f"score-only={rep['brier_score_only']}  COMBINED={rep['brier_combined']}")
     print(f"    combined beats pregame: {rep['combined_beats_pregame']}  "
           f"beats score-only: {rep['combined_beats_score_only']}")
+    print(f"  COMBINED in-game CALIBRATION (held-out EVAL n={rep['combined_calib_n_eval']}, "
+          f"leak-free TRAIN/EVAL split):")
+    print(f"    ECE raw={rep['ece_raw']} -> recal={rep['ece_recal']}  "
+          f"({rep['recal_method']} {rep['recal_params']})  "
+          f"reliability slope={rep['reliability_slope']}")
+    print(f"    Brier raw={rep['combined_calib_brier_raw']} -> "
+          f"recal={rep['combined_calib_brier_recal']}  "
+          f"(brier not worse: {rep['recal_brier_not_worse']})")
+    print("    " + ("already well-calibrated (ECE<0.025): recal adds little"
+                    if rep['combined_well_calibrated']
+                    else "meaningfully miscalibrated: recal applied"))
     if rep.get("n_after_set2_decider", 0) >= 60:
         print(f"  after set 2 @ 1-1  (n={rep['n_after_set2_decider']}, base-rate "
               f"{rep['base_rate_set2_leader_wins']}):")

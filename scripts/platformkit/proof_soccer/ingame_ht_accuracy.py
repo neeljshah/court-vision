@@ -45,6 +45,10 @@ import pandas as pd  # noqa: E402
 
 from domains.soccer.ratings import walk_forward_goals  # noqa: E402
 from scripts.platformkit.live_repricer import GameState, get_repricer  # noqa: E402
+from scripts.platformkit.calibration_ladder import reliability, _logit  # noqa: E402
+from scripts.platformkit.calibrator_zoo import _fit_temperature, _sigmoid  # noqa: E402
+
+_EPS = 1e-12
 
 _MATCHES = _REPO / "data" / "domains" / "soccer" / "matches.parquet"
 _STATS = _REPO / "data" / "domains" / "soccer" / "match_stats.parquet"
@@ -81,6 +85,51 @@ def _surface(rep, lam_h: float, lam_a: float, elapsed: float,
         float(o["1X2_away"]),
         float(o["over_2.5"]),
     )
+
+
+def _fit_platt(p_tr: np.ndarray, y_tr: np.ndarray) -> Tuple[float, float]:
+    """Fit Platt a*logit(p)+b on TRAIN via numpy Newton-IRLS. Returns (a, b)."""
+    z = _logit(np.clip(p_tr, _EPS, 1 - _EPS))
+    X = np.column_stack([z, np.ones_like(z)])
+    w = np.zeros(2)
+    for _ in range(25):
+        mu = np.clip(_sigmoid(X @ w), _EPS, 1 - _EPS)
+        grad = X.T @ (mu - y_tr)
+        H = (X.T * (mu * (1 - mu))) @ X + 1e-6 * np.eye(2)
+        try:
+            step = np.linalg.solve(H, grad)
+        except np.linalg.LinAlgError:
+            break
+        w -= step
+        if np.linalg.norm(step) < 1e-9:
+            break
+    return float(w[0]), float(w[1])
+
+
+def _calibrate(p_tr: np.ndarray, y_tr: np.ndarray, p_te: np.ndarray,
+               y_te: np.ndarray) -> Dict:
+    """Fit temperature AND Platt on TRAIN ONLY, apply to HELD-OUT, and SELECT the
+    method by TRAIN log-loss (tie -> temperature). Strictly leak-free: neither the
+    recal params NOR the method choice see held-out outcomes (y_te accepted for
+    caller symmetry; unused). Returns recalibrated held-out probs + diagnostics."""
+    z_tr = _logit(np.clip(p_tr, _EPS, 1 - _EPS))
+    z_te = _logit(np.clip(p_te, _EPS, 1 - _EPS))
+
+    T = _fit_temperature(p_tr, y_tr)
+    a, b = _fit_platt(p_tr, y_tr)
+
+    def _ll(p: np.ndarray, y: np.ndarray) -> float:
+        pc = np.clip(p, _EPS, 1 - _EPS)
+        return float(np.mean(-(y * np.log(pc) + (1 - y) * np.log(1 - pc))))
+
+    # Method selection uses TRAIN log-loss ONLY (no held-out peeking).
+    ll_temp = _ll(np.clip(_sigmoid(z_tr / T), 0.0, 1.0), y_tr)
+    ll_platt = _ll(np.clip(_sigmoid(a * z_tr + b), 0.0, 1.0), y_tr)
+    if ll_platt < ll_temp - 1e-9:
+        probs = np.clip(_sigmoid(a * z_te + b), 0.0, 1.0)
+        return {"method": "platt", "probs": probs, "T": T, "platt_a": a, "platt_b": b}
+    probs = np.clip(_sigmoid(z_te / T), 0.0, 1.0)
+    return {"method": "temperature", "probs": probs, "T": T, "platt_a": a, "platt_b": b}
 
 
 def run() -> Dict:
@@ -145,6 +194,35 @@ def run() -> Dict:
     b_static_ou = _brier_2c(sh_o, y_over)
     b_cond_ou = _brier_2c(co_o, y_over)
 
+    # ----- IN-GAME CALIBRATION (ECE) of the COMBINED (HT-conditional) forecaster -----
+    # Binary calibration target = the combined O/U-2.5 over-prob (a clean two-class
+    # event; 1X2 is multiclass so Platt/temperature don't apply). Recalibrator is
+    # fit on the TRAIN half (first half of history) ONLY and applied to the HELD-OUT
+    # half -> strictly leak-free (recal params never see held-out outcomes).
+    tr = m.iloc[:mid].reset_index(drop=True)
+    n_tr = len(tr)
+    tr_lam_h = tr["lam_home"].to_numpy(float)
+    tr_lam_a = tr["lam_away"].to_numpy(float)
+    tr_hthg = tr["hthg"].to_numpy(int)
+    tr_htag = tr["htag"].to_numpy(int)
+    tr_over = ((tr["fthg"].to_numpy(float) + tr["ftag"].to_numpy(float)) >= 3).astype(float)
+    tr_o = np.empty(n_tr)
+    for i in range(n_tr):
+        _, _, _, tr_o[i] = _surface(
+            rep, tr_lam_h[i], tr_lam_a[i], _HT_MINUTE, int(tr_hthg[i]), int(tr_htag[i]))
+
+    rel_raw = reliability(co_o, y_over)
+    ece_raw = float(rel_raw["ece"])
+    slope_raw = float(rel_raw["reliability_slope"])
+    cal = _calibrate(tr_o, tr_over, co_o, y_over)
+    rel_recal = reliability(cal["probs"], y_over)
+    ece_recal = float(rel_recal["ece"])
+    brier_recal_ou = float(rel_recal["brier"])  # combined O/U Brier after recal
+    recal_method = cal["method"]
+    # Honest: well-calibrated already if raw ECE < ~0.025 (recal adds nothing).
+    miscalibrated = bool(ece_raw > 0.025)
+    brier_not_worse = bool(brier_recal_ou <= b_cond_ou + 1e-6)
+
     d_1x2 = round(b_cond_1x2 - b_static_1x2, 5)   # <0 => conditional sharper
     d_ou = round(b_cond_ou - b_static_ou, 5)
 
@@ -172,6 +250,15 @@ def run() -> Dict:
         "brier_ou25_delta": d_ou,
         "conditional_beats_static": cond_wins,
         "base_rate_over25": round(float(np.mean(y_over)), 4),
+        # In-game CALIBRATION of the COMBINED (HT-conditional) O/U-2.5 forecaster.
+        "ece_raw": round(ece_raw, 5),
+        "ece_recal": round(ece_recal, 5),
+        "recal_method": recal_method,
+        "reliability_slope": round(slope_raw, 4),
+        "brier_ou25_recal": round(brier_recal_ou, 5),
+        "brier_not_worse_after_recal": brier_not_worse,
+        "miscalibrated_raw": miscalibrated,
+        "n_train_calib": n_tr,
         "verdict": verdict,
         "note": ("Leak-free: pregame lambdas are a strict pre-match EW-Poisson snapshot; the "
                  "minute-45 HT score (hthg/htag) is an OBSERVED in-game state; the full-time "
@@ -194,6 +281,15 @@ def _main() -> int:
           f"{rep['brier_ou25_conditional']:>9}  {rep['brier_ou25_delta']:>+9}")
     print(f"  base-rate(over2.5)={rep['base_rate_over25']}  "
           f"dropped(HT>FT)={rep['n_dropped_ht_gt_ft']}")
+    print("--- IN-GAME CALIBRATION (COMBINED HT-conditional O/U-2.5 forecaster) ---")
+    cal_state = ("MISCALIBRATED (ECE>0.025)" if rep["miscalibrated_raw"]
+                 else "already well-calibrated (ECE<=0.025)")
+    print(f"  ECE_raw={rep['ece_raw']} -> ECE_recal={rep['ece_recal']} "
+          f"(method={rep['recal_method']}, fit on TRAIN n={rep['n_train_calib']})")
+    print(f"  reliability_slope(raw)={rep['reliability_slope']}  "
+          f"Brier {rep['brier_ou25_conditional']} -> {rep['brier_ou25_recal']} "
+          f"(not_worse={rep['brier_not_worse_after_recal']})")
+    print(f"  raw forecaster: {cal_state}")
     print(f"VERDICT: {rep['verdict']}")
     print(rep["note"])
     return 0
