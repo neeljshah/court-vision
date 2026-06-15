@@ -244,7 +244,8 @@ class TestIngestRange:
     def test_date_column_stored(self, tmp_path):
         out = tmp_path / "espn.parquet"
         ingest_range(["20260610"], http_get=_mock_get(["901"]), out_path=out)
-        assert pd.read_parquet(out).iloc[0]["date"] == "20260610"
+        # date normalised to datetime64 so appends merge cleanly (see ingest_range fix)
+        assert pd.Timestamp(pd.read_parquet(out).iloc[0]["date"]) == pd.Timestamp("2026-06-10")
 
 
 # ---------------------------------------------------------------------------

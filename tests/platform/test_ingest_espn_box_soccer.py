@@ -264,7 +264,8 @@ class TestIngestRange:
         out = tmp_path / "soccer.parquet"
         ingest_range(["20260518"], leagues=["eng.1"],
                      http_get=_mock_get(["901"]), out_path=out)
-        assert pd.read_parquet(out).iloc[0]["date"] == "20260518"
+        # date normalised to datetime64 so appends merge cleanly (see ingest_range fix)
+        assert pd.Timestamp(pd.read_parquet(out).iloc[0]["date"]) == pd.Timestamp("2026-05-18")
 
     def test_all_leagues_off_season_no_parquet(self, tmp_path):
         out = tmp_path / "soccer.parquet"
