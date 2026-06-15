@@ -165,13 +165,13 @@ def render_markdown(m: Dict) -> str:
     # In-game concept-fusion layer (live_read), exercised on a sane per-sport demo.
     live = m.get("live_reads", {})
     if live:
-        L += ["## In-game read (live_read concept-fusion, demo state)",
+        L += ["## In-game read (live_read, calibrated predict_live, demo state)",
               "",
-              "> The in-game counterpart of the cohesive read: each sport's repricer "
-              "re-prices the remaining markets (gate-owned engine) and the brain's "
-              "relevant IN-GAME concepts are fused in (descriptive only). Demo mid-event "
-              "state; not the validated `predict_live` predictor path (that stays "
-              "repricer-direct). No edge claimed.", ""]
+              "> The in-game counterpart of the cohesive read: each sport's read is priced via "
+              "`predictor.predict_live` (W158) -- the VALIDATED calibrated path (rating prior + "
+              "realized state + the W156 in-game recalibrator), with a graceful raw-repricer "
+              "fallback -- and the brain's relevant IN-GAME concepts are fused in (descriptive). "
+              "Demo mid-event state. No edge claimed.", ""]
         for s in _SPORTS:
             rd = live.get(s)
             if not rd:
