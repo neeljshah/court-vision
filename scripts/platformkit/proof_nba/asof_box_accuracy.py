@@ -64,6 +64,37 @@ def _walk_forward_total(df: pd.DataFrame) -> np.ndarray:
     return pred
 
 
+def _possessions(df: pd.DataFrame, side: str) -> np.ndarray:
+    """Estimate possessions: FGA + 0.44*FTA - OREB + TOV (NaN where box detail missing)."""
+    return (df[f"{side}_fg_attempted"].astype(float)
+            + 0.44 * df[f"{side}_ft_attempted"].astype(float)
+            - df[f"{side}_oreb"].astype(float) + df[f"{side}_tov"].astype(float)).to_numpy()
+
+
+def _walk_forward_poss(df: pd.DataFrame) -> np.ndarray:
+    """Richer model on the UNLOCKED 2026 box detail: as-of EW pace (possessions) +
+    offensive/defensive points-per-possession. total = pace * (off_ppp + def_ppp).
+    Pace is stable/predictable; ppp is team quality. Falls back to EW state when a
+    game's box detail is missing (prediction always uses prior state — leak-free)."""
+    pace: Dict[str, float] = {}; offp: Dict[str, float] = {}; defp: Dict[str, float] = {}
+    pred = np.empty(len(df))
+    h = df["home_abbr"].to_numpy(); a = df["away_abbr"].to_numpy()
+    hp = df["home_pts"].to_numpy(float); ap = df["away_pts"].to_numpy(float)
+    gp = 0.5 * (_possessions(df, "home") + _possessions(df, "away"))   # game possessions
+    for i in range(len(df)):
+        ht, at = str(h[i]), str(a[i])
+        for d, init in ((pace, 100.5), (offp, 1.13), (defp, 1.13)):
+            d.setdefault(ht, init); d.setdefault(at, init)
+        ppace = 0.5 * (pace[ht] + pace[at])
+        pred[i] = ppace * (0.5 * (offp[ht] + defp[at]) + 0.5 * (offp[at] + defp[ht]))
+        p = gp[i]
+        if np.isfinite(p) and p > 50:                 # update only on valid box detail
+            pace[ht] += _ALPHA * (p - pace[ht]); pace[at] += _ALPHA * (p - pace[at])
+            offp[ht] += _ALPHA * (hp[i] / p - offp[ht]); defp[ht] += _ALPHA * (ap[i] / p - defp[ht])
+            offp[at] += _ALPHA * (ap[i] / p - offp[at]); defp[at] += _ALPHA * (hp[i] / p - defp[at])
+    return pred
+
+
 def _walk_forward_split(df: pd.DataFrame) -> np.ndarray:
     """Home/away-SPLIT model: separate EW offence/defence for home vs road context
     (teams score ~differently at home), used in the matchup-correct slots."""
@@ -102,6 +133,7 @@ def run() -> Dict:
     box = box[(box["total"] >= 150) & (box["total"] <= 350)].reset_index(drop=True)
     box["pred_pooled"] = _walk_forward_total(box)
     box["pred_split"] = _walk_forward_split(box)
+    box["pred_poss"] = _walk_forward_poss(box)
 
     od = pd.read_parquet(odds_p).rename(columns={"home_team": "home_abbr", "away_team": "away_abbr"})
     od["date"] = pd.to_datetime(od["date"])
@@ -134,13 +166,15 @@ def run() -> Dict:
 
     pooled = _score(m["pred_pooled"].to_numpy(float))
     split = _score(m["pred_split"].to_numpy(float))
-    best = min(pooled, split, key=lambda d: d["rmse"])
+    poss = _score(m["pred_poss"].to_numpy(float))
+    best = min(pooled, split, poss, key=lambda d: d["rmse"])
     gap = round(best["rmse"] - rm_close, 3)        # >0 => close is sharper
     return {
         "status": "ok", "n_overlap": n, "n_holdout": n - mid,
         "close_rmse_vs_realized": round(rm_close, 3), "close_mae_vs_realized": round(mae_close, 3),
-        "pooled_model": pooled, "split_model": split,
+        "pooled_model": pooled, "split_model": split, "poss_model": poss,
         "best_model_rmse": best["rmse"], "gap_to_close_rmse": gap,
+        "poss_beats_pooled": poss["rmse"] < pooled["rmse"] - 1e-3,
         "split_beats_pooled": split["rmse"] < pooled["rmse"] - 1e-3,
         "verdict": (
             f"OUR best model BEATS the close on RMSE ({best['rmse']} vs {rm_close})" if gap < -0.1 else
@@ -164,10 +198,11 @@ def _main() -> int:
     print(f"  {'predictor':>14}  {'RMSE':>7} {'MAE':>7} {'ECE':>7}")
     print(f"  {'market close':>14}  {rep['close_rmse_vs_realized']:>7} "
           f"{rep['close_mae_vs_realized']:>7} {'-':>7}")
-    for nm, key in (("pooled model", "pooled_model"), ("split model", "split_model")):
+    for nm, key in (("pooled model", "pooled_model"), ("split model", "split_model"),
+                    ("poss model", "poss_model")):
         d = rep[key]
         print(f"  {nm:>14}  {d['rmse']:>7} {d['mae']:>7} {d['ece']:>7}")
-    print(f"\nsplit beats pooled: {rep['split_beats_pooled']}  |  "
+    print(f"\nposs beats pooled: {rep['poss_beats_pooled']}  |  "
           f"best gap to close: {rep['gap_to_close_rmse']:+} RMSE")
     print(f"VERDICT: {rep['verdict']}")
     print(rep["note"])
