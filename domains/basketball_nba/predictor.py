@@ -109,6 +109,34 @@ class NBAPredictor:
         as_ = np.clip((total - margin) / 2.0, 0, None)
         return JointDistribution(np.stack([hs, as_], axis=1), joint_quality="simulated")
 
+    def predict_live(self, home: str, away: str, elapsed_minutes: float,
+                     home_score: int, away_score: int) -> Dict:
+        """In-game prediction = pregame intelligence (Elo/possessions mu) fed into the NBA
+        repricer + the realized score. Proven sharpest (W146: Brier 0.159 combined vs 0.209
+        pregame, 0.172 score-only). The win-prob anchors to the pregame model early and to the
+        realized margin late."""
+        from scripts.platformkit.live_repricer import GameState, get_repricer  # noqa: PLC0415
+
+        s = self.predict(home, away)
+        # mu so that mu_home-mu_away == pregame expected margin and the sum == pregame total
+        mu_home = (s["total_mean"] + s["margin_home"]) / 2.0
+        mu_away = (s["total_mean"] - s["margin_home"]) / 2.0
+        pp = {"mu_home": mu_home, "mu_away": mu_away,
+              "margin_sigma": self.margin_sigma, "total_sigma": self.total_sigma}
+        out = get_repricer("nba").reprice(GameState(
+            "nba", float(elapsed_minutes), int(home_score), int(away_score), pregame_params=pp))
+        return {
+            "sport": "nba", "home": home.upper(), "away": away.upper(),
+            "elapsed_minutes": elapsed_minutes, "score": (home_score, away_score),
+            "p_home_win": round(float(out["win_home"]), 4),
+            "p_away_win": round(float(out["win_away"]), 4),
+            "proj_total": round(float(out["proj_total"]), 1),
+            "proj_margin_home": round(float(out["proj_margin_home"]), 1),
+            "pregame_p_home": s["p_home_win"],
+            "honest_note": ("In-game = pregame intelligence prior + realized score (W146: the "
+                            "sharpest forecaster). A live book also sees the score. No $ edge."),
+        }
+
     def predict(self, home: str, away: str,
                 total_lines: Sequence[float] = _DEFAULT_LINES) -> Dict:
         """Calibrated surface for home vs away. Unknown teams fall back to league priors."""
