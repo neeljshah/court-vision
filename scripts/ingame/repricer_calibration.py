@@ -96,6 +96,7 @@ def _eval_mlb(limit: Optional[int]) -> Optional[Dict[str, Any]]:
         "mlb", 0.0, 0, 0, pregame_params=pp, extra={"innings_played": 0})).get("ml_home", 0.5))
 
     s_p, c_p, y, tot_pred, tot_true = [], [], [], [], []
+    tot_pred_homo = []   # homogeneous (9-n)/9 baseline, for the per-inning-curve A/B
     n = 0
     for hi, ai in zip(df["home_innings"], df["away_innings"]):
         h, a = _parse_innings(hi), _parse_innings(ai)
@@ -112,20 +113,31 @@ def _eval_mlb(limit: Optional[int]) -> Optional[Dict[str, Any]]:
             out = rep.reprice(GameState(
                 "mlb", 0.0, h0, a0, pregame_params=pp,
                 extra={"innings_played": float(ck)}))
+            homo = rep.reprice(GameState(
+                "mlb", 0.0, h0, a0, pregame_params=pp,
+                extra={"innings_played": float(ck), "homogeneous_frac": True}))
             s_p.append(static_p)
             c_p.append(float(out.get("ml_home", 0.5)))
             y.append(win)
             lam_h = float(out.get("_lam_remaining_home", 0.0))
             lam_a = float(out.get("_lam_remaining_away", 0.0))
-            tot_pred.append(h0 + a0 + lam_h + lam_a)   # E[final total | state]
+            tot_pred.append(h0 + a0 + lam_h + lam_a)   # E[final total | state], per-inning curve
+            tot_pred_homo.append(h0 + a0 + float(homo.get("_lam_remaining_home", 0.0))
+                                 + float(homo.get("_lam_remaining_away", 0.0)))
             tot_true.append(float(fh + fa))
         n += 1
         if limit and n >= limit:
             break
     if not y:
         return None
-    return _summary("mlb", np.array(s_p), np.array(c_p), np.array(y),
-                    np.array(tot_pred), np.array(tot_true), n)
+    res = _summary("mlb", np.array(s_p), np.array(c_p), np.array(y),
+                   np.array(tot_pred), np.array(tot_true), n)
+    rmse_h, bias_h = _rmse_bias(np.array(tot_pred_homo), np.array(tot_true))
+    res["final_total_rmse_homogeneous"] = round(rmse_h, 4)
+    res["final_total_bias_homogeneous"] = round(bias_h, 4)
+    res["per_inning_curve_rmse_gain"] = round(rmse_h - res["final_total_rmse"], 4)
+    res["per_inning_curve_bias_gain"] = round(abs(bias_h) - abs(res["final_total_bias"]), 4)
+    return res
 
 
 # ---------------------------------------------------------------------------
@@ -181,8 +193,10 @@ def main() -> None:
     args = ap.parse_args()
     print("=" * 74)
     print("REPRICER CALIBRATION — leak-free conditional vs static-pregame (RMSE+bias, not MAE)")
-    print("HONEST: conditional-beats-static is a CALIBRATION fact, NOT a market edge. "
-          "Markets are efficient; no edge claimed.")
+    print("GOAL: the sharpest in-game forecaster. Conditioning on realized state makes a "
+          "much better predictor than the static line; the per-inning curve sharpens it further. "
+          "A live book also sees the score, so this is forecaster QUALITY, not a guaranteed "
+          "price edge — but better predictions are the point.")
     print("=" * 74)
     for r in run(args.sport, args.limit):
         if r.get("status"):
@@ -194,6 +208,12 @@ def main() -> None:
               f"(d={r['brier_delta']:+.5f}) {verdict}")
         print(f"           final-total  RMSE={r['final_total_rmse']:.4f}  "
               f"bias={r['final_total_bias']:+.4f}  (MAE deliberately NOT reported)")
+        if "per_inning_curve_rmse_gain" in r:
+            print(f"           per-inning curve vs homogeneous: "
+                  f"RMSE {r['final_total_rmse_homogeneous']:.4f} -> {r['final_total_rmse']:.4f} "
+                  f"(gain {r['per_inning_curve_rmse_gain']:+.4f}), "
+                  f"|bias| {abs(r['final_total_bias_homogeneous']):.4f} -> "
+                  f"{abs(r['final_total_bias']):.4f} (gain {r['per_inning_curve_bias_gain']:+.4f})")
 
 
 if __name__ == "__main__":
