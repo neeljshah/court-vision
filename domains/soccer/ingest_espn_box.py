@@ -241,9 +241,15 @@ def ingest_range(
                     log.debug("event_id=%s league=%s: empty parse (may be in-progress)", eid, league)
 
     new_df = pd.DataFrame(rows) if rows else pd.DataFrame()
+    # Normalise date to datetime64 so appends merge cleanly with a datetime-typed parquet
+    # (a mixed str/datetime column makes pyarrow refuse the write).
+    if not new_df.empty and "date" in new_df.columns:
+        new_df["date"] = pd.to_datetime(new_df["date"], format="mixed", errors="coerce")
     if out.exists() and not new_df.empty:
         try:
             existing = pd.read_parquet(out)
+            if "date" in existing.columns:
+                existing["date"] = pd.to_datetime(existing["date"], format="mixed", errors="coerce")
             new_df = (
                 pd.concat([existing, new_df], ignore_index=True)
                 .drop_duplicates(subset=["event_id", "league"], keep="last")
