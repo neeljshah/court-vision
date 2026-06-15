@@ -8,7 +8,8 @@ system should OUTPUT its best predictions, not only measure them in proof module
         rho_fit.py        Dixon-Coles low-score correction rho (fit prior-only)
         scoreline_engine  bivariate-Poisson scoreline matrix -> 1X2 / O/U / BTTS / CS
   * O/U-2.5 is then passed through the LEAK-FREE POOLED PLATT recalibration (the
-    W133/W149 win, slope ~0.29) fit on the FIRST chronological half and applied
+    W133/W149 win, slope ~0.27 on the full corpus; proof reports 0.29 on the
+    odds-overlap subset) fit on the FIRST chronological half and applied
     forward — exactly the recalibrator used in proof_soccer.beat_the_close_ou.
 
 predict() COHERENCE: 1X2 and O/U-2.5 both read off ONE Dixon-Coles scoreline matrix
