@@ -6,6 +6,8 @@ Given a live GameState, fuses the two layers into ONE honest in-game read:
     Execution, MomentumSwings, PressureResponse, LeadManagement, ... — person-free)
 
 This makes the funnel work BOTH ways: cohesive_read (pregame) + live_read (in-game).
+Exercised in the real rebuild by scripts.platformkit.system_map (per-sport in-game
+section, sane demo state) — no longer orphaned to its own test+CLI.
 The Repricer owns every number; concept retrieval is descriptive understanding only.
 No un-gated pick, no edge — markets are efficient; calibration is not edge.
 

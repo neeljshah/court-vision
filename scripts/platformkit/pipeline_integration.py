@@ -27,8 +27,8 @@ _PROVENANCE = [
     "scripts.platformkit.sgp_pricer.price_parlay",
     "scripts.platformkit.sgp_pricer.leg_over_total",
     "scripts.platformkit.sgp_pricer.leg_side_win",
-    "scripts.platformkit.dist_metrics (calibration tagging)",
-    "scripts.platformkit.recalibration (calibration tagging)",
+    "calibration supplied by caller dict; not computed here "
+    "(see scripts.platformkit.recalibration.measure_recal / dist_metrics upstream)",
 ]
 _H, _A = 0, 1  # column indices: home=0, away=1
 
@@ -201,7 +201,10 @@ def _build_demo_jd(sport: str, n: int = 5000, seed: int = 42) -> JointDistributi
     p = _DEMO_PARAMS.get(sport.lower(), {"home_mu": 100.0, "away_mu": 97.0, "sigma": 12.0})
     home = np.clip(rng.normal(p["home_mu"], p["sigma"], n), 0, None)
     away = np.clip(rng.normal(p["away_mu"], p["sigma"], n), 0, None)
-    return JointDistribution(np.stack([home, away], axis=1), joint_quality="simulated")
+    # home/away drawn from INDEPENDENT Gaussians here -> no joint structure.
+    # Label it 'independent' so the kernel honestly refuses SGP correlation pricing
+    # (labelling this 'simulated' would falsely claim joint-capability).
+    return JointDistribution(np.stack([home, away], axis=1), joint_quality="independent")
 
 
 def _build_demo_legs(sport: str) -> List[Any]:

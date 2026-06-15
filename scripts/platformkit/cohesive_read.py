@@ -160,7 +160,15 @@ def write_reads(sports: Optional[List[str]] = None,
         return []
     written: List[str] = []
     for sp in (sports or _SPORTS):
-        cr = build_cohesive_read(sp, root=root, use_llm=False)
+        # Pass the validated predictor's demo JointDistribution so assemble_read runs and the
+        # read carries a REAL calibrated surface (the central cohesion fix). Guarded -> None.
+        jd = None
+        try:
+            from scripts.platformkit.predictor_jd import get_demo_jd  # noqa: PLC0415
+            jd = get_demo_jd(sp)
+        except Exception:  # noqa: BLE001 — degrade gracefully to surface=None
+            jd = None
+        cr = build_cohesive_read(sp, jd=jd, root=root, use_llm=False)
         out = eff / _SPORT_DIRS.get(sp, sp.upper()) / "_Cohesive_Read.md"
         if not out.parent.is_dir():
             continue
