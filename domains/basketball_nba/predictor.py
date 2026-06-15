@@ -207,9 +207,12 @@ class NBAPredictor:
 
         COHERENCE: the win-prob prior fed into the repricer is the SAME MOV-Elo win-prob that
         predict()/to_jd() report -- the margin mu is ANCHORED so the repricer's PREGAME win
-        (at elapsed=0) equals predict()'s p_home_win (the W146/W147 validated combined method,
-        mirroring the to_jd anchor). This guarantees the in-game and pregame win-probs agree
-        rather than the in-game number drifting toward the possessions margin.
+        (at elapsed=0) approximates predict()'s p_home_win (the W146/W147 validated combined
+        method, mirroring the to_jd anchor). NOTE: the value returned as p_home_win is the
+        CALIBRATED p (after the temperature map below), so at elapsed=0 it tracks -- but does
+        not exactly equal -- predict()'s p_home_win, differing within the repricer/recal
+        mapping. The intent is that the in-game and pregame win-probs agree rather than the
+        in-game number drifting toward the possessions margin.
 
         CALIBRATION: the raw combined forecaster is over-confident; the validated W156
         temperature recalibrator (fit at __init__ on all-prior history, ECE 0.059 -> 0.012)

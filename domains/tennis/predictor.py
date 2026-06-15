@@ -8,14 +8,20 @@ not just measure them), mirroring domains/basketball_nba/predictor.py:
   * total games -> the point-by-point match engine, the per-point serve prob bisected to the
                    Elo match-win anchor, hold level SHAPED by the as-of hold% prior.
   * predict_live -> pregame Elo set-strength -> race-to-N repricer + realized set score, then
-                   the W156 leak-free in-game Platt recal (ECE 0.043->0.006) -> CALIBRATED live prob.
+                   the W156 in-game Platt recal -> CALIBRATED live prob.
 
 State is built as-of the latest match; predict()/predict_live() emit calibrated surfaces.
 
 HONEST: match-win calibration is the Elo (trails the efficient Pinnacle ATP close). No $ edge.
 LEAK TRAP: score/winner are winner-ordered; predict() NEVER touches them. The corpus is
-symmetric (p1_id < p2_id); any fit uses id-order + the winner==1 label only as a TARGET. The
-in-game recal fits on ALL-PRIOR history (leak-free for the future live match).
+symmetric (p1_id < p2_id); any fit uses id-order + the winner==1 label only as a TARGET.
+CALIBRATION-FIT HONESTY: the build-time in-game Platt is fit on the WHOLE corpus (every match,
+not a held-out tail). That is leak-free ONLY for a genuinely FUTURE live match -- the predictor's
+intended use, where no fitted match overlaps the one being priced -- and is NOT a held-out
+evaluation. The ECE 0.043->0.006 figure is NOT produced by this build-time refit; it comes from
+the SEPARATE chronological TRAIN/EVAL split in proof_tennis.ingame_calib (fit on the train era,
+scored on the held-out future era). Quoting it here describes the recalibrator's validated
+behavior, not a property re-measured at build time.
 
 INVARIANTS: never edit src/ or kernel/; reuse the domain builders; <=300 LOC.
 """
@@ -111,11 +117,17 @@ class TennisPredictor:
         return float(clf.intercept_[0]), float(clf.coef_[0, 0])
 
     def _fit_ingame_recal(self) -> tuple:
-        """Refit the W156 leak-free in-game recalibrator (Platt-on-logit) on ALL-PRIOR history.
+        """Refit the W156 in-game recalibrator (Platt-on-logit) on the WHOLE corpus.
         Reconstructs the SAME COMBINED after-set-1 forecaster proof_tennis.ingame_accuracy
         validated (walk-forward Elo prior -> race-to-N repricer + realized 1-0 set lead) paired
-        with the match outcome; fits Platt (a,b) so p_cal=sigmoid(a*logit(p)+b). Leak-free for
-        FORWARD prediction; reference fallback if data-limited (<200 rows)."""
+        with the match outcome; fits Platt (a,b) so p_cal=sigmoid(a*logit(p)+b).
+        FIT SCOPE: this walks EVERY row of the corpus (not an as-of / held-out tail), so the
+        Platt params see all historical matches. That is leak-free ONLY for a genuinely FUTURE
+        live match (the predictor's intended use -- none of the fitted matches is the one being
+        priced); it is NOT a held-out evaluation, and the ECE 0.043->0.006 claim is NOT measured
+        here -- that comes from the separate chronological train/eval split in
+        proof_tennis.ingame_calib. Reference fallback (_W156_INGAME_PLATT) if data-limited
+        (<200 rows) or helpers are unavailable."""
         try:
             from scripts.platformkit.proof_tennis.ingame_accuracy import (  # noqa: PLC0415
                 _parse_sets, _p_set_from_match, _reprice_leader)
@@ -216,8 +228,11 @@ class TennisPredictor:
     def to_jd(self, p1: str, p2: str, surface: str = "Hard", *, best_of: int = 3,
               use_wta_temp: bool = False, n_sims: int = 20_000, seed: int = 0):
         """Coherent JointDistribution (sets_p1, sets_p2, total_games) from the engine: each row
-        is a finished match, so prob_side_win(0,1) on sets == the Elo-anchored match-win (serve
-        probs bisected to it). Plugs into sim_framework.market_surface (home_idx=0, away_idx=1)."""
+        is a finished match, so prob_side_win(0,1) on sets ~= the Elo-anchored match-win (serve
+        probs bisected to it). COHERENCE IS MC-APPROXIMATE, NOT an analytic equality: the JD is
+        n_sims simulated matches, so prob_side_win vs the recalibrated match-win agree only up to
+        Monte-Carlo noise (|diff| ~ MC noise, < 0.05 at the default n_sims=20000); raising n_sims
+        tightens it. Plugs into sim_framework.market_surface (home_idx=0, away_idx=1)."""
         from scripts.platformkit.sim_framework import JointDistribution  # noqa: PLC0415
         id1, id2 = self._resolve(p1), self._resolve(p2)
         p_match = self._recal(self._raw_winprob(id1, id2, surface), use_wta_temp=use_wta_temp)

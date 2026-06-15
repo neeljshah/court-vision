@@ -165,6 +165,9 @@ class MLBPredictor:
         win-prob from Elo; expected runs from RunRateState; O/U from the fitted-dispersion
         NegBinom run matrix. The NegBinom expected total == lam_home+lam_away (mean-preserving),
         matching proof_mlb.beat_the_close_total's point forecast.
+        CAVEAT: expected_total is the ANALYTIC lambda sum (lam_home+lam_away). The NegBinom
+        matrix used for the O/U read-offs is truncated at 25 runs/side and renormalized, so the
+        matrix-implied mean is ~mean-preserving but not exactly equal to the analytic sum.
         """
         ht, au = home.upper(), away.upper()
         p_home = _mov_p_home(self._elo_of(ht), self._elo_of(au))

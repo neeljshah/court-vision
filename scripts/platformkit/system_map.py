@@ -54,10 +54,11 @@ _DEMO_STATE = {
 
 
 def _ingame_reads() -> Dict[str, Dict]:
-    """Exercise live_read (the in-game concept-fusion layer) per sport on a sane demo
-    state. This is what wires the orphaned in-game read into the real rebuild. The
-    repricer-direct predictor path (predict_live) is unchanged — this is the brain
-    concept-fusion view, not the validated predictor."""
+    """Exercise live_read (the in-game read) per sport on a sane demo state. As of W158 the
+    in-game read prices via each sport's predictor.predict_live (the VALIDATED calibrated path:
+    Elo/rating prior + realized state + the W156 in-game recalibrator), with a graceful raw-
+    repricer fallback; surface['_calibrated'] records which path ran. The brain's in-game
+    concepts are fused in as descriptive context."""
     from scripts.platformkit.live_repricer import GameState
     from scripts.platformkit.live_read import build_live_read
     out: Dict[str, Dict] = {}
@@ -134,6 +135,8 @@ def _summarize_live(read: Dict) -> str:
                             ("1X2_home", "1X2_away", "1X2")):
             if kh in surf:
                 prob = f"{lbl} home/p1={surf[kh]:.3f} away/p2={surf[ka]:.3f}"
+                if lbl == "1X2" and "1X2_draw" in surf:   # 3-outcome market: show the draw
+                    prob += f" draw={surf['1X2_draw']:.3f}"
                 break
     n_concepts = len(read.get("ingame_concepts", []))
     return f"re-priced surface [{prob}] + {n_concepts} in-game brain concepts"
