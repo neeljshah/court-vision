@@ -79,8 +79,10 @@ def render_markdown(rows: List[Dict]) -> str:
 
 
 def write_report(root: Path = None) -> Path:
+    # Write to _Edge_Maps (LOCAL, not rmtree'd by the brain rebuild), NOT _Organized
+    # (which the rebuild wipes — the report would vanish there).
     eff = root or _REPO
-    out = eff / "vault" / "_Organized" / "_Index" / "_Beat_The_Close.md"
+    out = eff / "vault" / "_Edge_Maps" / "_Beat_The_Close.md"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(render_markdown(build()), encoding="utf-8")
     return out
