@@ -82,7 +82,7 @@ def _build_base_bundle_with_ids(
         has_odds = False
         odds_df = pd.DataFrame()
 
-    _ODDS_COLS = ["event_id", "ou_open_over", "ou_open_under",
+    _ODDS_COLS = ["event_id", "ou_prematch_over", "ou_prematch_under",
                   "ou_close_over", "ou_close_under"]
     if has_odds:
         _odds_sel = odds_df[[c for c in _ODDS_COLS if c in odds_df.columns]].copy()
@@ -105,7 +105,7 @@ def _build_base_bundle_with_ids(
         tgt_raw = row.get("target_over25", np.nan)
         if pd.isna(tgt_raw):
             continue
-        line_val = _devig_over(row.get("ou_open_over"), row.get("ou_open_under"))
+        line_val = _devig_over(row.get("ou_prematch_over"), row.get("ou_prematch_under"))
         close_val = _devig_over(row.get("ou_close_over"), row.get("ou_close_under"))
         rows_base.append([
             float(row["lam_home"]), float(row["lam_away"]),
