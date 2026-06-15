@@ -135,16 +135,18 @@ def _calibrated_surface(sport: str, state: GameState) -> Optional[Dict[str, Any]
 
     Maps the sport-agnostic GameState to each predictor's distinct predict_live signature
     (NBA: elapsed/score; MLB: inning/half/runs; soccer: minute/goals; tennis: set state).
-    Returns None on any failure so build_live_read can fall back to the raw repricer.
+    Returns None on any failure -- including predictor construction (_get_predictor) and
+    demo-matchup selection (_demo_matchup, e.g. a malformed teams attr) -- so
+    build_live_read can fall back to the raw repricer (W159 belt-and-suspenders).
     """
-    pred = _get_predictor(sport)
-    if pred is None:
-        return None
-    teams = _demo_matchup(sport, pred)
-    if teams is None:
-        return None
-    h, a = teams
     try:
+        pred = _get_predictor(sport)
+        if pred is None:
+            return None
+        teams = _demo_matchup(sport, pred)
+        if teams is None:
+            return None
+        h, a = teams
         if sport == "nba":
             live = pred.predict_live(h, a, float(state.elapsed_minutes),
                                      int(state.home_score), int(state.away_score))

@@ -8,10 +8,18 @@ the repricers and pulls the beat-the-close numbers. Writes vault/_Edge_Maps/_Sys
 
 HONEST: prediction-QUALITY map, not a $-edge claim. INVARIANTS: never edit src/ or kernel/;
 read-only on the system; <=300 LOC.
-Run: python -m scripts.platformkit.system_map
+
+ANTI-DRIFT (W159): the in-game scoreboard section is NO LONGER a hardcoded literal table (which
+would silently drift from scripts.platformkit.ingame_scoreboard.build()). By DEFAULT the section
+renders a SHORT pointer to the canonical _Ingame_Scoreboard.md (kept fast — ingame_scoreboard
+recomputes all 4 in-game proofs, minutes). Pass build(live_ingame=True) / write_report(
+live_ingame=True) / `--live-ingame` / SYSTEM_MAP_LIVE_INGAME=1 to live-pull the real rows so the
+numbers can never drift. Beat-the-close + repricer status + live_read demos stay live by default
+(cheap). Run: python -m scripts.platformkit.system_map [--live-ingame]
 """
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 from typing import Dict, List
@@ -21,6 +29,10 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 _SPORTS = ("nba", "mlb", "soccer", "tennis")
+
+
+def _fmt_num(x) -> str:
+    return f"{x:.3f}" if isinstance(x, (int, float)) else str(x)
 
 
 def _repricer_status() -> Dict[str, str]:
@@ -38,6 +50,17 @@ def _repricer_status() -> Dict[str, str]:
 def _beat_close() -> List[Dict]:
     try:
         from scripts.platformkit.beat_the_close_scoreboard import build
+        return build()
+    except Exception:  # noqa: BLE001
+        return []
+
+
+def _ingame_score() -> List[Dict]:
+    """Live-pull the in-game scoreboard rows (mirrors _beat_close). HEAVY: recomputes all 4
+    in-game proofs (minutes) -> only called when build(live_ingame=True). Default-OFF keeps the
+    System Map regen fast; the canonical numbers live in _Ingame_Scoreboard.md."""
+    try:
+        from scripts.platformkit.ingame_scoreboard import build
         return build()
     except Exception:  # noqa: BLE001
         return []
@@ -106,10 +129,18 @@ _DATA = {
 }
 
 
-def build() -> Dict:
+def build(live_ingame: bool = False) -> Dict:
+    """Assemble the System Map data. By DEFAULT (live_ingame=False) the in-game scoreboard is a
+    SHORT pointer to _Ingame_Scoreboard.md, keeping regen fast — beat-the-close + repricer status
+    + live_read demos are all cheap. Pass live_ingame=True (or set SYSTEM_MAP_LIVE_INGAME=1) to
+    live-pull ingame_scoreboard.build() so the rendered numbers can never silently drift; this is
+    HEAVY (recomputes all 4 in-game proofs, minutes). W159 anti-drift fix."""
+    if live_ingame is None:  # explicit None -> consult the env flag
+        live_ingame = os.environ.get("SYSTEM_MAP_LIVE_INGAME", "").strip() in ("1", "true", "TRUE")
     reps = _repricer_status()
     btc = {f"{r.get('sport','?')}:{r.get('market','?')}".lower(): r for r in _beat_close()}
     live = _ingame_reads()
+    ingame_score = _ingame_score() if live_ingame else []
     rows = []
     for s in _SPORTS:
         rows.append({
@@ -119,7 +150,8 @@ def build() -> Dict:
             "ingame": _INGAME[s],
             "data": _DATA[s],
         })
-    return {"rows": rows, "repricers": reps, "beat_the_close": btc, "live_reads": live}
+    return {"rows": rows, "repricers": reps, "beat_the_close": btc, "live_reads": live,
+            "ingame_scoreboard": ingame_score}
 
 
 def _summarize_live(read: Dict) -> str:
@@ -180,18 +212,38 @@ def render_markdown(m: Dict) -> str:
             state_str = (f"score=({ds[1]},{ds[2]}) elapsed={ds[0]}" if ds else "?")
             L.append(f"- **{s.upper()}** _(demo {state_str})_: {_summarize_live(rd)}")
         L += [""]
+    # In-game scoreboard. ANTI-DRIFT (W159): when live-pulled (build(live_ingame=True)) the rows
+    # come straight from ingame_scoreboard.build() so they can never silently drift; by DEFAULT
+    # (fast regen) we render a SHORT pointer to the canonical _Ingame_Scoreboard.md instead of a
+    # hardcoded literal table (which used to drift from the proofs).
     L += ["## In-game scoreboard (measured, conditional vs static)", "",
           "> The in-game counterpart of beat-the-close: where a leak-free per-period corpus "
           "exists, the conditional-on-realized-state forecaster vs the static/pregame line "
-          "(lower Brier = sharper). Full table + numbers in `_Ingame_Scoreboard.md` "
-          "(`scripts.platformkit.ingame_scoreboard`).",
-          "- **NBA** (per-quarter): Brier 0.209 -> **0.159** (combined rating prior + score) = WIN",
-          "- **MLB** (per-inning): vs a REAL pregame-Elo prior 0.241 -> combined **0.126** "
-          "(pregame prior + realized runs; > score-only 0.128) = WIN",
-          "- **Soccer** (half-time): 1X2 Brier 0.626 -> **0.502**, O/U-2.5 0.264 -> **0.176** = WIN",
-          "- **Tennis (ATP)** (after set 1): Brier 0.219 -> **0.151** (combined: Elo prior + "
-          "1-0 set lead; > score-only 0.162) = WIN -- UNBLOCKED W155 via the set-1-leader "
-          "framing (scoreboard now 4/4)", ""]
+          "(lower Brier = sharper)."]
+    isb = m.get("ingame_scoreboard", [])
+    if isb:
+        L += ["",
+              "| Sport | Checkpoint | n | Metric | Conditional | Static | Delta | Verdict |",
+              "|---|---|---|---|---|---|---|---|"]
+        for r in isb:
+            if r.get("status"):
+                L.append(f"| {r.get('sport','?')} | - | - | - | - | - | - | "
+                         f"{r['status']} |")
+                continue
+            d = r.get("delta")
+            ds = f"{d:+}" if isinstance(d, (int, float)) else str(d)
+            L.append(f"| {r['sport']} | {r['checkpoint']} | {r['n']} | {r['metric']} | "
+                     f"{_fmt_num(r['conditional'])} | {_fmt_num(r['static'])} | {ds} | "
+                     f"{r['verdict']} |")
+        L += ["", "_Live-pulled from `scripts.platformkit.ingame_scoreboard.build()`; full why-"
+              "text in `_Ingame_Scoreboard.md`._", ""]
+    else:
+        L += ["> **Canonical numbers + full why-text live in `_Ingame_Scoreboard.md`**, "
+              "regenerated by the in-game CLI: `python -m scripts.platformkit.ingame_scoreboard` "
+              "(or `build(live_ingame=True)` here / `SYSTEM_MAP_LIVE_INGAME=1`). Kept as a pointer "
+              "by default because the proofs are HEAVY (minutes); the System Map no longer carries "
+              "a hardcoded copy that could drift. Headline: NBA/MLB/Soccer/Tennis in-game "
+              "conditioning each beats the static pregame line (all 4 WIN).", ""]
     L += ["## The honest bottom line",
           "- We MATCH the market on team-strength markets (NBA moneyline); we trail on "
           "totals only by the FRESHNESS edge (injuries/lineups).",
@@ -203,17 +255,21 @@ def render_markdown(m: Dict) -> str:
     return "\n".join(L)
 
 
-def write_report(root: Path = None) -> Path:
+def write_report(root: Path = None, live_ingame: bool = False) -> Path:
     out = (root or _REPO) / "vault" / "_Edge_Maps" / "_System_Map.md"
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(render_markdown(build()), encoding="utf-8")
+    out.write_text(render_markdown(build(live_ingame=live_ingame)), encoding="utf-8")
     return out
 
 
 def _main() -> int:
-    print(render_markdown(build()))
+    # Default FAST: in-game scoreboard is a pointer to _Ingame_Scoreboard.md. Opt into the HEAVY
+    # live-pull (recomputes all 4 in-game proofs) with --live-ingame or SYSTEM_MAP_LIVE_INGAME=1.
+    live = ("--live-ingame" in sys.argv or
+            os.environ.get("SYSTEM_MAP_LIVE_INGAME", "").strip() in ("1", "true", "TRUE"))
+    print(render_markdown(build(live_ingame=live)))
     try:
-        print(f"\n(written -> {write_report()})")
+        print(f"\n(written -> {write_report(live_ingame=live)})")
     except Exception as exc:  # noqa: BLE001
         print(f"\n(not written: {exc})")
     return 0
