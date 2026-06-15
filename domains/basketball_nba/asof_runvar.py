@@ -1,16 +1,15 @@
-"""domains.basketball_nba.asof_runvar — leak-free AS-OF trailing per-team quarter-scoring variance.
+"""domains.basketball_nba.asof_runvar — calibration PROBE (NOT a wired feature):
+does leak-free trailing per-team quarter-scoring variance recalibrate base Elo win-prob?
 
-For each game, computes strictly-prior trailing variance of per-quarter points
-over each team's last N=10 games (snapshot-before-update; NaN when n_prior==0).
-
-Output: data/domains/basketball_nba/asof_runvar.parquet
-  Columns: game_id, home_var, away_var, combined_var, n_prior
-
-EVAL (--eval): fits scalar alpha on train split (first 65%) so that
-  logit_new = logit_base / (1 + alpha * combined_var)
-then evaluates Brier/LogLoss/ECE vs base Elo on held-out 35%.
-
-HONESTY: calibration != edge. NO edge claimed here.
+A measured calibration PROOF/probe (sibling of scripts/platformkit/proof_nba/*). NO live
+path consumes its output (predictor/repricer/JointDistribution/cohesive_read/live_read do
+NOT read combined_var/asof_runvar.parquet); only __main__ + tests/platform/test_nba_runvar.py
+import it. For each game: strictly-prior trailing variance of per-quarter points over each
+team's last N=10 games (snapshot-before-update; NaN when n_prior==0). --eval fits scalar alpha
+on train (first 65%): logit_new = logit_base/(1+alpha*combined_var), evals Brier/LogLoss/ECE
+vs base Elo on held-out 35%. W102 result = recalibration NULL (no held-out value), which is
+why nothing downstream is wired. Probe artifact cols: game_id, home_var, away_var,
+combined_var, n_prior. HONESTY: calibration != edge; NO edge claimed.
 CLI: python -m domains.basketball_nba.asof_runvar [--eval] [--force]
 """
 from __future__ import annotations
@@ -34,10 +33,7 @@ TRAIN_FRAC: float = 0.65
 OUTPUT_COLS: Tuple[str, ...] = ("game_id", "home_var", "away_var", "combined_var", "n_prior")
 HONEST_NOTE = "DISCIPLINE: calibration != edge. NO edge claimed vs closing line."
 
-
-# ---------------------------------------------------------------------------
 # Step 1: per-(team, game) quarter-point lists
-# ---------------------------------------------------------------------------
 
 def _team_game_pts(qpts: pd.DataFrame) -> pd.DataFrame:
     """Aggregate quarter rows into (game_id, team_id, team_abbr, q_list) per team-game."""
@@ -47,10 +43,7 @@ def _team_game_pts(qpts: pd.DataFrame) -> pd.DataFrame:
         .reset_index()
     )
 
-
-# ---------------------------------------------------------------------------
 # Step 2: walk-forward per-team trailing variance (leak-free)
-# ---------------------------------------------------------------------------
 
 def _walk_forward_variance(
     team_game: pd.DataFrame,
@@ -95,10 +88,7 @@ def _walk_forward_variance(
     tg["n_prior"] = n_prior_vals
     return tg[["game_id", "team_id", "var_q_pts", "n_prior"]]
 
-
-# ---------------------------------------------------------------------------
 # Step 3: pivot to home/away per game_id
-# ---------------------------------------------------------------------------
 
 def _pivot_home_away(team_var: pd.DataFrame, games: pd.DataFrame) -> pd.DataFrame:
     """Join variance to home/away sides using team_abbr == home_team/away_team."""
@@ -126,10 +116,7 @@ def _pivot_home_away(team_var: pd.DataFrame, games: pd.DataFrame) -> pd.DataFram
     return out[["game_id", "home_var", "away_var", "combined_var", "n_prior"]].sort_values(
         "game_id", kind="mergesort").reset_index(drop=True)
 
-
-# ---------------------------------------------------------------------------
 # Public build function
-# ---------------------------------------------------------------------------
 
 def build_asof_runvar(
     qpts_df: Optional[pd.DataFrame] = None,
@@ -172,10 +159,7 @@ def build_asof_runvar(
     logger.info("Wrote %d rows to %s", len(out), dest)
     return dest
 
-
-# ---------------------------------------------------------------------------
 # Metric helpers + eval
-# ---------------------------------------------------------------------------
 
 def _brier(p: np.ndarray, y: np.ndarray) -> float:
     m = np.isfinite(p) & np.isfinite(y)
@@ -208,7 +192,6 @@ def _logit(p: np.ndarray, eps: float = 1e-6) -> np.ndarray:
 def _sigmoid(x: np.ndarray) -> np.ndarray:
     return 1.0 / (1.0 + np.exp(-x))
 
-
 def run_eval() -> None:
     """Fit alpha on train split; report Brier/LogLoss/ECE base vs recal."""
     from domains.basketball_nba.ingest_quarter_box import build_quarter_points
@@ -235,7 +218,7 @@ def run_eval() -> None:
         return
 
     joined = pd.DataFrame({"game_id": game_ids, "base_p": base_p, "target": target})
-    rv_s = rv[["game_id", "combined_var"]].copy()
+    rv_s = rv[["game_id", "combined_var", "n_prior"]].copy()
     rv_s["game_id"] = rv_s["game_id"].astype(str)
     joined = joined.merge(rv_s, on="game_id", how="left")
     mask = np.isfinite(joined["base_p"].values) & np.isfinite(joined["target"].values)
@@ -243,20 +226,40 @@ def run_eval() -> None:
 
     n = len(joined); n_train = int(n * TRAIN_FRAC)
     train, test = joined.iloc[:n_train], joined.iloc[n_train:]
+
+    # Cold-start fill: combined_var is NaN/0 when a side has n_prior==0. Filling
+    # with 0 would give the LEAST-informed games NO shrink (var=0 => full
+    # confidence in logit/(1+alpha*var)) — i.e. cold-start rows masquerade as the
+    # most confident. Instead, impute cold-start (n_prior_min==0) variance with
+    # the TRAIN warm-row median variance (computed once, leak-free), so the
+    # least-informed games get at least a typical amount of shrink rather than
+    # the most confident treatment. n_prior is the carried min(home, away).
+    def _fill_var(df: pd.DataFrame, warm_median: float) -> np.ndarray:
+        v = df["combined_var"].astype(float).values.copy()
+        n_p = pd.to_numeric(df.get("n_prior"), errors="coerce").fillna(0).values
+        cold = (n_p <= 0) | ~np.isfinite(v)
+        v[cold] = warm_median
+        return np.clip(v, 0, None)
+
+    t_n_prior = pd.to_numeric(train.get("n_prior"), errors="coerce").fillna(0).values
+    warm_var = train["combined_var"].astype(float).values[
+        (t_n_prior > 0) & np.isfinite(train["combined_var"].astype(float).values)]
+    warm_median = float(np.median(warm_var)) if warm_var.size else 0.0
+
     t_base, t_y = train["base_p"].values, train["target"].values
-    t_var = train["combined_var"].fillna(0).values
+    t_var = _fill_var(train, warm_median)
     t_logit = _logit(t_base)
 
     best_alpha, best_b = 0.0, float("inf")
     for alpha in np.linspace(0.0, 2.0, 41):
-        recal_p = _sigmoid(t_logit / (1.0 + alpha * np.clip(t_var, 0, None)))
+        recal_p = _sigmoid(t_logit / (1.0 + alpha * t_var))
         b = _brier(recal_p, t_y)
         if b < best_b:
             best_b, best_alpha = b, alpha
 
     test_base = test["base_p"].values; test_y = test["target"].values
-    test_var = test["combined_var"].fillna(0).values
-    recal_p = _sigmoid(_logit(test_base) / (1.0 + best_alpha * np.clip(test_var, 0, None)))
+    test_var = _fill_var(test, warm_median)
+    recal_p = _sigmoid(_logit(test_base) / (1.0 + best_alpha * test_var))
 
     print(f"\n{'='*65}\n  asof_runvar EVAL — quarter-variance recalibration\n{'='*65}")
     print(f"  n={n} | train={n_train} | test={n-n_train} | alpha={best_alpha:.4f}")
@@ -277,10 +280,7 @@ def run_eval() -> None:
         verdict = "MARGINAL — within noise. No meaningful improvement; no edge claimed."
     print(f"\n  VERDICT: {verdict}\n  {HONEST_NOTE}\n")
 
-
-# ---------------------------------------------------------------------------
 # CLI
-# ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
     import argparse
