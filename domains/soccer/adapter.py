@@ -120,7 +120,11 @@ class SoccerAdapter:
     def market_snapshot(
         self, event: EventRef, kind: Literal["open", "close"]
     ) -> Optional[MarketSnapshot]:
-        """O/U 2.5 price snapshot. kind='open'→ou_open_*; kind='close'→ou_close_*.
+        """O/U 2.5 price snapshot. kind='open'->ou_prematch_*; kind='close'->ou_close_*.
+
+        NOTE: kind='open' maps to the football-data PRE-MATCH price (a weekly/latest
+        snapshot, NOT a true exchange opener). Treat it as 'earliest available price',
+        not a genuine opener; do not derive CLV as close-minus-prematch from it.
         Returns None when row absent or any price <= 1.0."""
         try:
             odds = self._get_odds()
@@ -131,7 +135,7 @@ class SoccerAdapter:
             return None
         row = row_df.iloc[0]
         if kind == "open":
-            op_col, up_col, bk_col = "ou_open_over", "ou_open_under", "book_open"
+            op_col, up_col, bk_col = "ou_prematch_over", "ou_prematch_under", "book_prematch"
         else:
             op_col, up_col, bk_col = "ou_close_over", "ou_close_under", "book_close"
         try:
@@ -186,7 +190,7 @@ class SoccerAdapter:
             [lam_home, lam_away, lam_total, rest_days_home, rest_days_away]
         signal_col = p_over25 (Poisson O/U model probability).
         target     = target_over25 ∈ {0.0, 1.0}.
-        lines      = devigged open P(over); closing = devigged close P(over).
+        lines      = devigged pre-match P(over); closing = devigged close P(over).
         """
         matches_df = self._get_matches()
         if seasons:
@@ -205,7 +209,7 @@ class SoccerAdapter:
         # Pre-merge odds: one left-merge before the loop (O(N+M) vs O(N*M)).
         # Only select the columns _devig_over reads to avoid name collisions.
         # drop_duplicates(keep="first") replicates the original .iloc[0] behaviour.
-        _ODDS_COLS = ["event_id", "ou_open_over", "ou_open_under",
+        _ODDS_COLS = ["event_id", "ou_prematch_over", "ou_prematch_under",
                       "ou_close_over", "ou_close_under"]
         if has_odds and not odds_df.empty:
             _odds_sel = odds_df[[c for c in _ODDS_COLS if c in odds_df.columns]].copy()
@@ -228,7 +232,7 @@ class SoccerAdapter:
             if pd.isna(tgt_raw):
                 continue
             # Odds columns already merged onto row (NaN when no match)
-            line_val = _devig_over(row.get("ou_open_over"), row.get("ou_open_under"))
+            line_val = _devig_over(row.get("ou_prematch_over"), row.get("ou_prematch_under"))
             close_val = _devig_over(row.get("ou_close_over"), row.get("ou_close_under"))
             rows_base.append([float(row["lam_home"]), float(row["lam_away"]),
                                float(row["lam_total"]),

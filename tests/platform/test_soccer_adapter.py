@@ -87,7 +87,7 @@ def _make_odds(matches_df: pd.DataFrame) -> pd.DataFrame:
     for _, m in matches_df.iterrows():
         open_over = round(float(rng.uniform(1.5, 2.5)), 2)
         open_under = round(float(rng.uniform(1.5, 2.5)), 2)
-        # Close prices slightly shifted from open
+        # Close prices slightly shifted from pre-match
         close_over = round(open_over * float(rng.uniform(0.9, 1.1)), 2)
         close_under = round(open_under * float(rng.uniform(0.9, 1.1)), 2)
         rows.append(
@@ -95,11 +95,11 @@ def _make_odds(matches_df: pd.DataFrame) -> pd.DataFrame:
                 event_id=m["event_id"],
                 div=m["div"],
                 date=m["date"],
-                ou_open_over=open_over,
-                ou_open_under=open_under,
+                ou_prematch_over=open_over,
+                ou_prematch_under=open_under,
                 ou_close_over=close_over,
                 ou_close_under=close_under,
-                book_open="bet365",
+                book_prematch="bet365",
                 book_close="pinnacle",
             )
         )
@@ -367,11 +367,11 @@ def test_market_snapshot_invalid_prices_returns_none(matches_df):
                 event_id="ev_bad",
                 div="E0",
                 date="2022-08-06",
-                ou_open_over=0.9,
-                ou_open_under=1.2,
+                ou_prematch_over=0.9,
+                ou_prematch_under=1.2,
                 ou_close_over=1.8,
                 ou_close_under=2.0,
-                book_open="bad",
+                book_prematch="bad",
                 book_close="ok",
             )
         ]

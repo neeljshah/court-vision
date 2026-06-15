@@ -7,8 +7,9 @@ the static pregame line. Lower Brier = sharper win-prob forecaster.
 Sources (called, never rebuilt):
   * NBA    -> scripts.platformkit.proof_nba.ingame_accuracy.run()
              COMBINED (pregame rating prior + realized score) Brier vs pregame-Elo / score-only.
-  * MLB    -> scripts.ingame.repricer_calibration.run("mlb", None)
-             conditional-on-realized-runs Brier vs static-pregame, + final-total RMSE/bias.
+  * MLB    -> scripts.platformkit.proof_mlb.ingame_accuracy.run()
+             COMBINED (pregame MOV-Elo prior + realized runs) Brier vs pregame-Elo / score-only
+             (the NBA W146 pattern: beats a REAL predictor, not the flat-0.5 static baseline).
   * SOCCER -> scripts.platformkit.proof_soccer.ingame_ht_accuracy.run() (built same wave)
              half-time conditioning; if not importable yet -> honest 'pending' row (no fabrication).
   * TENNIS -> honest BLOCKED row: matches.parquet score is winner-ordered, so no leak-free
@@ -54,21 +55,22 @@ def _nba_row() -> Dict:
 
 
 def _mlb_row() -> Dict:
-    from scripts.ingame.repricer_calibration import run
-    rows = run("mlb", None)
-    r = rows[0] if rows else {}
-    if r.get("status"):
+    # COMBINED (pregame MOV-Elo prior + realized runs) vs the pregame-Elo static predictor —
+    # a REAL predictor, not the old flat-0.5 baseline (the NBA W146 pattern, MLB analog).
+    from scripts.platformkit.proof_mlb.ingame_accuracy import run
+    r = run()
+    if r.get("status") != "ok":
         return {"sport": "MLB", "status": r.get("status", "error"), "note": r.get("note", "")}
-    cond = r["brier_conditional"]
-    static = r["brier_static_pregame"]
+    cond = r["brier_combined"]                  # COMBINED: pregame Elo prior + realized runs
+    static = r["brier_pregame"]                 # the static pregame Elo predictor
     return {
         "sport": "MLB", "checkpoint": "after inning 3/5/7", "n": r["n_checkpoints"],
         "metric": "Brier", "conditional": cond, "static": static,
         "delta": round(cond - static, 4),
-        "verdict": "WIN" if r["conditional_beats_static"] else "no-improvement",
-        "why": (f"conditioning on realized per-inning runs {cond} beats static pregame "
-                f"{static}; final-total RMSE {r['final_total_rmse']} bias "
-                f"{r['final_total_bias']:+} (per-inning curve, NOT MAE)."),
+        "verdict": "WIN" if cond < static else "no-improvement",
+        "why": (f"COMBINED (pregame MOV-Elo prior + realized runs) {cond} beats pregame-Elo "
+                f"{static} and score-only {r['brier_scoreonly']}; the sharpest forecaster "
+                f"fuses rating prior + realized state (NBA W146 pattern, MLB)."),
     }
 
 

@@ -56,7 +56,6 @@ _PITCHER_COLS = (
     "home_sp_present", "away_sp_present",
     "home_innings", "away_innings",
 )
-_GAME_COLS = ("event_id", "home_runs", "away_runs")
 OUT_COLS = (
     "event_id",
     "home_sp_first6_ew", "away_sp_first6_ew", "sp_first6_diff_ew",
@@ -174,7 +173,17 @@ def build_sp_form_features(
 ) -> pd.DataFrame:
     """Return a DataFrame of leak-free EW first-6-innings SP form, one row per event_id.
 
-    Parameters accept DataFrames or fall back to the default corpus paths.
+    Everything derives from the *pitchers* corpus alone: the per-inning line-score
+    strings (home_innings / away_innings) carry all the first-6 runs-allowed signal,
+    so no game-level final-score data is needed.
+
+    Parameters
+    ----------
+    pitchers : optional DataFrame; falls back to the default pitchers.parquet corpus.
+    games    : currently UNUSED. Retained only for backward-compatible call signatures
+               (callers historically passed games=); it is accepted and ignored. No
+               game-level columns are read or validated.
+
     Walk-forward, snapshot-before-update (see module docstring).
 
     Returns
@@ -182,22 +191,16 @@ def build_sp_form_features(
     pd.DataFrame with columns OUT_COLS (see top of module).
     """
     pit_path = _REPO_ROOT / "data/domains/mlb/pitchers.parquet"
-    gm_path = _REPO_ROOT / "data/domains/mlb/games.parquet"
 
     pf = pitchers.copy() if isinstance(pitchers, pd.DataFrame) else pd.read_parquet(str(pit_path))
-    gf = games.copy() if isinstance(games, pd.DataFrame) else pd.read_parquet(str(gm_path))
 
-    # Validate columns
+    # Validate columns (pitchers only — `games` is unused, so nothing is read from it).
     for col in _PITCHER_COLS:
         if col not in pf.columns:
             raise KeyError(f"pitchers DataFrame missing column: {col!r}")
-    for col in _GAME_COLS:
-        if col not in gf.columns:
-            raise KeyError(f"games DataFrame missing column: {col!r}")
 
-    # Merge home_innings / away_innings into games via pitchers (both keyed event_id)
-    # pitchers has home_innings / away_innings; games has the final score (unused here
-    # — we use the per-inning strings to compute first-6).
+    # All computation runs off the pitchers corpus: the per-inning line-score strings
+    # (home_innings / away_innings) supply the first-6 runs-allowed signal.
     df = _sorted_df(pf)
 
     # Per-pitcher EW state

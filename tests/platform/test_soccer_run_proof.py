@@ -90,11 +90,11 @@ def _make_synthetic_corpus(n_per_season: int = 60) -> tuple[pd.DataFrame, pd.Dat
             under_price = float(_NP_RNG.uniform(1.75, 2.25))
             odds_rows.append({
                 "event_id": event_id,
-                "ou_open_over": round(over_price + _NP_RNG.uniform(-0.05, 0.05), 3),
-                "ou_open_under": round(under_price + _NP_RNG.uniform(-0.05, 0.05), 3),
+                "ou_prematch_over": round(over_price + _NP_RNG.uniform(-0.05, 0.05), 3),
+                "ou_prematch_under": round(under_price + _NP_RNG.uniform(-0.05, 0.05), 3),
                 "ou_close_over": over_price,
                 "ou_close_under": under_price,
-                "book_open": "fd",
+                "book_prematch": "fd",
                 "book_close": "fd",
             })
 

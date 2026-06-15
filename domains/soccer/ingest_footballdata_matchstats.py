@@ -113,6 +113,20 @@ def build_match_stats_frame(frames: Iterable[FrameTuple]) -> pd.DataFrame:
         df = raw.copy()
         df["_div"] = str(div)
         df["date"] = pd.to_datetime(df.get("Date"), dayfirst=True, errors="coerce")
+        # P4: make silent date-parse loss visible. df.get("Date") returns all-None
+        # when the Date column is absent, so the whole frame's rows would vanish at
+        # the dropna below WITHOUT any signal (build_matches KeyErrors loudly in the
+        # same situation). Warn per-frame when an input contributes 0 valid-date
+        # rows, or loses a large fraction of its rows to date-parse failures.
+        n_in = len(df)
+        n_valid = int(df["date"].notna().sum())
+        if n_in > 0 and n_valid == 0:
+            print(f"[warn] {div} ({_season_yr}): 0 of {n_in} rows have a parseable "
+                  f"Date (column missing or unparseable) -- frame contributes "
+                  f"NOTHING; this would silently desync from matches.parquet")
+        elif n_valid < n_in:
+            print(f"[warn] {div} ({_season_yr}): dropped {n_in - n_valid} of {n_in} "
+                  f"rows with an unparseable Date")
         parts.append(df)
     if not parts:
         return pd.DataFrame(columns=list(MATCH_STATS_COLS))
@@ -149,7 +163,12 @@ def build_match_stats_frame(frames: Iterable[FrameTuple]) -> pd.DataFrame:
     out["total_shots"] = out["home_shots"] + out["away_shots"]
     out["total_sot"] = out["home_sot"] + out["away_sot"]
 
+    # P5: a fixture cached under two overlapping season codes (e.g. it appears in
+    # both the 2425 and 2526 files near a season boundary) emits the SAME event_id
+    # twice. Duplicate keys would fan out the 1:1 as-of join onto matches.parquet.
+    # Dedupe on event_id (keep last) before the final ordering so the key is unique.
     return (out[list(MATCH_STATS_COLS)]
+            .drop_duplicates(subset=["event_id"], keep="last")
             .sort_values(["date", "div", "home_team", "away_team"], kind="mergesort")
             .reset_index(drop=True))
 

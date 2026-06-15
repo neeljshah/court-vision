@@ -212,11 +212,21 @@ def ingest_range(
         for ev in events:
             eid = ev["event_id"]
             row = fetch_box(eid, http_get=getter)
-            if row:
-                row["date"] = date
-                rows.append(row)
-            else:
+            if not row:
                 log.debug("event_id=%s: empty parse (may be in-progress)", eid)
+                continue
+            # DATA-INTEGRITY GATE: only persist a game whose ESPN status is FINAL.
+            # An in-progress/suspended/postponed summary still carries a partial
+            # boxscore + a live header score; appending it would pollute the
+            # realized-box parquet (consumed as realized truth) until a later
+            # final re-ingest. Skip until truly final. (ESPN type name e.g.
+            # 'STATUS_FINAL'; covers STATUS_FINAL / *_FINAL_* variants ending FINAL.)
+            if not str(row.get("status", "")).upper().endswith("FINAL"):
+                log.debug("event_id=%s: status=%r not FINAL -- skipped",
+                          eid, row.get("status"))
+                continue
+            row["date"] = date
+            rows.append(row)
 
     new_df = pd.DataFrame(rows) if rows else pd.DataFrame()
     # Normalise date to datetime64 so appends merge cleanly with a datetime-typed parquet

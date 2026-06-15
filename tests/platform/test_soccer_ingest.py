@@ -361,22 +361,22 @@ class TestOddsFallbackChain:
         return build_odds(frames)
 
     def test_pinnacle_used_when_present(self) -> None:
-        """Rows with P>2.5 present → book_open == 'pinnacle'."""
+        """Rows with P>2.5 present → book_prematch == 'pinnacle'."""
         o = self._get_odds()
         # Arsenal v Chelsea has Pinnacle prices (P>2.5=1.72)
         row = o[(o["event_id"].str.contains("arsenal")) & (o["event_id"].str.contains("chelsea"))]
         assert len(row) >= 1
-        assert row.iloc[0]["book_open"] == "pinnacle"
+        assert row.iloc[0]["book_prematch"] == "pinnacle"
 
     def test_fallback_when_pinnacle_missing(self) -> None:
-        """Rows without Pinnacle prices → book_open != 'pinnacle'."""
+        """Rows without Pinnacle prices → book_prematch != 'pinnacle'."""
         o = self._get_odds()
         # Brighton v Fulham: P>2.5 is empty in fixture → should fallback
         row = o[o["event_id"].str.contains("brighton") & o["event_id"].str.contains("fulham")]
         assert len(row) >= 1
-        assert row.iloc[0]["book_open"] != "pinnacle"
+        assert row.iloc[0]["book_prematch"] != "pinnacle"
         # Must be one of the valid fallback labels
-        assert row.iloc[0]["book_open"] in ("market_avg", "bet365", "none")
+        assert row.iloc[0]["book_prematch"] in ("market_avg", "bet365", "none")
 
     def test_close_pinnacle_when_present(self) -> None:
         """Arsenal v Chelsea has PC>2.5 → book_close == 'pinnacle'."""
@@ -421,7 +421,7 @@ class TestBuildReport:
         frames = [("E0", 2023, raw[raw["Div"] == "E0"].copy())]
         r = build_report(frames)
         for key in ("rows_in", "rows_out_matches", "rows_dropped", "odds_rows",
-                    "open_coverage_pct", "close_coverage_pct", "by_div_season"):
+                    "prematch_coverage_pct", "close_coverage_pct", "by_div_season"):
             assert key in r, f"Missing report key: {key}"
 
     def test_rows_dropped_equals_missing_fthg(self) -> None:

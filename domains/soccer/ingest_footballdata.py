@@ -36,8 +36,8 @@ MATCHES_COLS: Tuple[str, ...] = (
 )
 ODDS_COLS: Tuple[str, ...] = (
     "event_id", "div", "date",
-    "ou_open_over", "ou_open_under", "ou_close_over", "ou_close_under",
-    "book_open", "book_close",
+    "ou_prematch_over", "ou_prematch_under", "ou_close_over", "ou_close_under",
+    "book_prematch", "book_close",
     "p_over", "p_under", "pc_over", "pc_under",
     "avg_over", "avg_under", "avgc_over", "avgc_under",
     "b365_over", "b365_under", "b365c_over", "b365c_under",
@@ -181,7 +181,17 @@ def build_matches(frames: Iterable[FrameTuple]) -> pd.DataFrame:
 def build_odds(frames: Iterable[FrameTuple]) -> pd.DataFrame:
     """(div, season_start_year, raw_df) iterable → odds.parquet contract.
 
-    Open fallback: Pinnacle P>2.5 → Avg>2.5 → B365>2.5.
+    DATA CONTRACT — column semantics (read before any CLV / line-movement work):
+      * ``ou_prematch_*`` / ``book_prematch`` come from the football-data NON-C
+        columns (P>2.5, Avg>2.5, B365>2.5). These are the scraped PRE-MATCH price
+        (a near-close / latest weekly snapshot), NOT a true exchange OPENER.
+      * ``ou_close_*`` / ``book_close`` come from the explicit *C series
+        (PC>2.5, AvgC>2.5, B365C>2.5) — the closing price.
+      * DO NOT compute CLV / line movement as (close - prematch): the prematch leg
+        is not a genuine opener, so any such delta would be FABRICATED. CLV needs a
+        real captured opener from a live feed.
+
+    Pre-match fallback: Pinnacle P>2.5 → Avg>2.5 → B365>2.5.
     Close fallback: PC>2.5 → AvgC>2.5 → B365C>2.5.
     Missing cols (older seasons) → NA. Only rows with ≥1 price kept.
     """
@@ -214,17 +224,17 @@ def build_odds(frames: Iterable[FrameTuple]) -> pd.DataFrame:
         combined[out_col] = _safe_float(combined[raw_col]) if raw_col in combined.columns else np.nan
 
     ov, un, bk = _best_price(combined, "P>2.5", "P<2.5", "Avg>2.5", "Avg<2.5", "B365>2.5", "B365<2.5")
-    combined["ou_open_over"], combined["ou_open_under"], combined["book_open"] = ov, un, bk
+    combined["ou_prematch_over"], combined["ou_prematch_under"], combined["book_prematch"] = ov, un, bk
 
     cv, cu, ck = _best_price(combined, "PC>2.5", "PC<2.5", "AvgC>2.5", "AvgC<2.5", "B365C>2.5", "B365C<2.5")
     combined["ou_close_over"], combined["ou_close_under"], combined["book_close"] = cv, cu, ck
 
-    has_price = combined[["ou_open_over", "ou_open_under", "ou_close_over", "ou_close_under"]].notna().any(axis=1)
+    has_price = combined[["ou_prematch_over", "ou_prematch_under", "ou_close_over", "ou_close_under"]].notna().any(axis=1)
     out = (combined.loc[has_price, list(ODDS_COLS)]
            .sort_values(["date", "div", "event_id"], kind="mergesort")
            .reset_index(drop=True))
 
-    float_cols = [c for c in ODDS_COLS if c not in ("event_id", "div", "date", "book_open", "book_close")]
+    float_cols = [c for c in ODDS_COLS if c not in ("event_id", "div", "date", "book_prematch", "book_close")]
     for col in float_cols:
         out[col] = out[col].astype("float32")
 
@@ -242,14 +252,14 @@ def build_report(frames: Iterable[FrameTuple]) -> dict:
                         "rows_out": int(((m_df["div"] == div) & (m_df["season"] == yr)).sum())}
         for div, yr, raw in frames_list
     }
-    open_cov = (o_df["ou_open_over"].notna().sum() / len(o_df) * 100) if len(o_df) else 0.0
+    prematch_cov = (o_df["ou_prematch_over"].notna().sum() / len(o_df) * 100) if len(o_df) else 0.0
     close_cov = (o_df["ou_close_over"].notna().sum() / len(o_df) * 100) if len(o_df) else 0.0
     return {
         "rows_in": total_in,
         "rows_out_matches": len(m_df),
         "rows_dropped": total_in - len(m_df),
         "odds_rows": len(o_df),
-        "open_coverage_pct": round(open_cov, 2),
+        "prematch_coverage_pct": round(prematch_cov, 2),
         "close_coverage_pct": round(close_cov, 2),
         "by_div_season": by_div_season,
     }
@@ -293,7 +303,7 @@ def main() -> None:
         pq.write_table(pa.Table.from_pandas(o_df, preserve_index=False), out_root / "odds.parquet")
         r = build_report(iter(raw_frames))
         print(f"build: {len(m_df)} matches, {len(o_df)} odds | dropped={r['rows_dropped']} | "
-              f"open={r['open_coverage_pct']:.1f}% close={r['close_coverage_pct']:.1f}%")
+              f"prematch={r['prematch_coverage_pct']:.1f}% close={r['close_coverage_pct']:.1f}%")
 
 
 if __name__ == "__main__":

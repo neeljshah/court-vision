@@ -111,8 +111,8 @@ SPEC = ProofSpec(
     # ---- market geometry (verbatim column names from run_v1/_market_brier/run_v2) --
     close_a_col="ou_close_over",
     close_b_col="ou_close_under",
-    open_a_col="ou_open_over",
-    open_b_col="ou_open_under",
+    open_a_col="ou_prematch_over",
+    open_b_col="ou_prematch_under",
     model_prob_col="p_over25",
 
     # ---- V1 result-dict key names (verbatim from run_v1 corpus_results dict) -
