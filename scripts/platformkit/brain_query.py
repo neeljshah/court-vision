@@ -36,7 +36,12 @@ _NUM_PAT = re.compile(
 _KIND_MAP = {"archetypes": "archetype", "schemes": "scheme", "trends": "trend",
              "teams": "team", "_index": "reference", "intelligence": "reference",
              "sports": "reference"}
-VALID_KINDS = frozenset({"team", "archetype", "scheme", "trend", "reference", "player"})
+VALID_KINDS = frozenset({"team", "archetype", "scheme", "trend", "reference",
+                         "player", "concept"})
+# Concept-family dirs make the 2k+ node concept graph first-class (else -> "reference").
+try:
+    from scripts.platformkit.concept_dirs import CONCEPT_DIRS as _CONCEPT_DIRS
+except Exception:  _CONCEPT_DIRS = frozenset()  # noqa: BLE001,E701
 _FALLBACK_SUBDIRS = ("Intelligence", "Sports")
 _STAT_SKIP = re.compile(
     r"^(?:metric|feature|stat|name|team|rank|player|verdict|sport|position|-+)$",
@@ -106,6 +111,8 @@ def _infer_kind(path: Path, text: str) -> str:
     for p in [x.lower() for x in path.parts]:
         if p in _KIND_MAP:
             return _KIND_MAP[p]
+        if p in _CONCEPT_DIRS:
+            return "concept"
     if re.search(r"^archetype\s*:", text, re.MULTILINE | re.IGNORECASE): return "archetype"
     if re.search(r"^scheme\s*:", text, re.MULTILINE | re.IGNORECASE): return "scheme"
     if re.match(r"^\d+_", path.name): return "player"
