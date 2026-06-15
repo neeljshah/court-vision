@@ -47,10 +47,13 @@ def _p_home(r_h: float, r_a: float) -> float:
     return 1.0 / (1.0 + 10.0 ** (-(r_h - r_a + _HFA) / 400.0))
 
 
-def _walk_forward_elo(games) -> np.ndarray:
-    """Leak-free MOV-aware Elo. Returns pre-game P(home win). Update AFTER the snapshot.
+def _replay(games) -> Tuple[np.ndarray, Dict[str, float]]:
+    """Leak-free MOV-aware Elo replay. Returns (pre-game P(home win) array, FINAL ratings).
 
-    Ratings carry across seasons (light); rows must be in chronological order.
+    Update AFTER each snapshot (leak-free); ratings carry across seasons (light); rows must
+    be in chronological order. The final ratings dict is the as-of rating for the NEXT matchup
+    of each team — reused by domains/mlb/predictor.py so the predictor's win-prob is the SAME
+    engine this proof scores against the close (parity).
     """
     rat: Dict[str, float] = {}
     p = np.empty(len(games))
@@ -71,7 +74,22 @@ def _walk_forward_elo(games) -> np.ndarray:
         delta = _K * mov * (s - ph)
         rat[ht] += delta
         rat[at] -= delta
-    return p
+    return p, rat
+
+
+def _walk_forward_elo(games) -> np.ndarray:
+    """Pre-game P(home win) array (chronological order assumed). See _replay."""
+    return _replay(games)[0]
+
+
+def final_ratings(games) -> Dict[str, float]:
+    """Final as-of MOV-Elo ratings after replaying the full corpus (sorts internally).
+
+    The single source of truth for MLB win-prob: domains/mlb/predictor.py imports this so
+    predict() and the beat-the-close measurement use the IDENTICAL engine (W150 parity fix).
+    """
+    g = games.sort_values(["date", "game_seq", "event_id"]).reset_index(drop=True)
+    return _replay(g)[1]
 
 
 def _brier_logloss(p: np.ndarray, y: np.ndarray) -> Tuple[float, float]:

@@ -2,9 +2,13 @@
 
 Poisson run-rate lambdas → joint runs matrix → ML/RL/totals/F5 markets.
 HONEST: WIN = coherent RL/totals/F5 surface Elo can't emit. NO edge claimed.
-Elo-anchor (default OFF): anchor_lambdas_to_winprob tilts the lambda ratio to
-match target P(home win) while preserving lambda SUM (totals/RL stay coherent).
-build_engine_forecast(anchor_to_elo=True) wires this per-game; False=original.
+LIVE-WIRED parts: RunRateState (lambda estimation) + runs_matrix (the joint).
+RESEARCH-ONLY: markets_from_matrix builds a Poisson market surface that is
+SUPERSEDED by domains/mlb/negbinom_engine.py (over-dispersed); anchor_lambdas_to_winprob
+(Elo-anchor, default OFF) tilts the lambda ratio to match target P(home win) while
+preserving lambda SUM. build_engine_forecast is an EVAL HARNESS (walk-forward
+back-test of engine vs Elo), NOT a per-game live wiring; anchor_to_elo=True is its
+research toggle, False=original.
 INVARIANTS: never edit src/kernel; imports read-only; <=300 LOC.
 """
 from __future__ import annotations
