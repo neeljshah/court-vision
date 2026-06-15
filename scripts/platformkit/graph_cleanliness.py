@@ -71,15 +71,10 @@ _KNOWN_TEAM_TRICODES = frozenset((
 # Generated concept directories: files here are person-free CONCEPT notes by
 # construction (Driver/Mechanism/Archetype/Scheme slugs, _Index hubs, Trends/
 # Reference). Their two-lowercase-word stems must NOT be read as player filenames.
-_CONCEPT_DIRS = frozenset((
-    "drivers", "mechanisms", "archetypes", "schemes",
-    "trends", "reference", "_index",
-))
-
-
-def _under_concept_dir(rel: str) -> bool:
-    """True if a vault-relative path lives under any generated concept directory."""
-    return any(p.lower() in _CONCEPT_DIRS for p in rel.split("/")[:-1])
+# Generated concept dirs (single source of truth in concept_dirs.py). Files here are
+# person-free CONCEPT notes by construction; the id-prefixed player guard below still
+# ALWAYS flags real player nodes regardless of directory.
+from scripts.platformkit.concept_dirs import under_concept_dir as _under_concept_dir  # noqa: E402
 
 
 # Date-like patterns in filenames: YYYY-MM-DD or YYYYMMDD
