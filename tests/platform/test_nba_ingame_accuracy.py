@@ -25,11 +25,13 @@ def test_run_ingame_is_sharper_than_static():
         assert rep["status"] in ("no_data", "data_limited")
         return
     assert rep["n_games"] >= 60
-    # the per-quarter curve is a distribution that is NOT uniform 0.25
     qc = rep["quarter_curve"]
     assert len(qc) == 4 and abs(sum(qc) - 1.0) < 0.02
-    # THE in-game point: conditioning on realized score is much sharper than the static line
-    assert rep["conditional_beats_static"] is True
-    assert rep["brier_conditional"] < rep["brier_static_pregame"]
-    # totals graded on RMSE/bias (both finite, plausible NBA scale)
-    assert 0.0 < rep["total_rmse_curve"] < 60.0
+    # THE result: COMBINED (pregame rating prior + in-game score) is the sharpest forecaster —
+    # it beats BOTH pregame-Elo-alone and score-only-conditional.
+    assert rep["combined_beats_pregame"] is True
+    assert rep["combined_beats_blind"] is True
+    assert rep["brier_conditional_rating"] < rep["brier_pregame_elo"]
+    assert rep["brier_conditional_rating"] < rep["brier_conditional_blind"]
+    # totals graded on RMSE/bias (plausible NBA scale)
+    assert 0.0 < rep["total_rmse_flat"] < 60.0
