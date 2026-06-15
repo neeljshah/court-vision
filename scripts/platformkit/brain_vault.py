@@ -32,6 +32,9 @@ _CONCEPT_FAMILIES = [
     "ShotProfiles", "DefensiveSchemes", "SpecialSituations", "OfficiatingDynamics",
     "WorkloadFatigue", "RosterConstruction", "ProgressionDynamics", "TempoControl",
     "SpacingGeometry", "ConversionEfficiency",
+    "TransitionDynamics", "PossessionControl", "PressureResponse", "InGameAdaptation",
+    "ChainSequences", "MomentumSwings", "EfficiencyCurves", "DisciplineControl",
+    "ClosingExecution", "PredictabilityTendencies",
 ]
 # legacy structural categories without a substring clash -> coloured by path.
 _LEGACY_PATHS = {"Drivers": 16007990, "Trends": 8754687,
