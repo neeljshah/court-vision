@@ -13,8 +13,13 @@ from __future__ import annotations
 
 CONCEPT_DIRS = frozenset((
     "drivers mechanisms archetypes schemes trends reference _index "
+    # batch 1 concept families
     "situational tactics statsignatures matchupconcepts subarchetypes gamephases "
-    "environment riskprofiles formdynamics").split())
+    "environment riskprofiles formdynamics "
+    # batch 2 concept families
+    "shotprofiles defensiveschemes specialsituations officiatingdynamics workloadfatigue "
+    "rosterconstruction progressiondynamics tempocontrol spacinggeometry "
+    "conversionefficiency").split())
 
 
 def under_concept_dir(rel: str) -> bool:
