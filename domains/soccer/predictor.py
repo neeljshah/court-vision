@@ -11,6 +11,18 @@ system should OUTPUT its best predictions, not only measure them in proof module
     W133/W149 win, slope ~0.29) fit on the FIRST chronological half and applied
     forward — exactly the recalibrator used in proof_soccer.beat_the_close_ou.
 
+predict() COHERENCE: 1X2 and O/U-2.5 both read off ONE Dixon-Coles scoreline matrix
+(markets_from_matrix), so the reported win-prob, the draw/away probs, O/U, BTTS and
+correct-scores all agree by construction; only the O/U-2.5 over-prob is then nudged
+by the leak-free pooled Platt (its raw companion over_2.5_raw is also reported).
+
+predict_live() CALIBRATION: the W156 in-game win (proof_soccer.ingame_ht_accuracy)
+showed the HT-conditional O/U-2.5 surface is MISCALIBRATED raw (ECE 0.0429) and that
+a Platt recalibrator fixes it (ECE 0.0429 -> 0.0165) without worsening Brier. That
+recalibrator is fit HERE at build/__init__ on ALL-PRIOR history (HT-conditional
+over-prob vs full-time over outcome) and applied FORWARD to the live O/U-2.5, so the
+live prediction is CALIBRATED, not merely measured. Same Platt method/form as W156.
+
 State is built as-of the latest match in the ingested football-data.co.uk corpus;
 predict(home, away) emits a calibrated surface for the next fixture. Honest: soccer
 pregame markets are efficient (Pinnacle is sharp); we MATCH the devigged close on
@@ -80,6 +92,14 @@ class SoccerPredictor:
         mid = max(1, len(wf) // 2)
         self.platt_a, self.platt_b = _fit_platt(p_raw[:mid], y[:mid])
 
+        # --- leak-free IN-GAME (W156) Platt on the HT-conditional O/U-2.5 ---
+        # The W156 proof (proof_soccer.ingame_ht_accuracy) showed the halftime-conditional
+        # O/U-2.5 over-prob is over/under-dispersed (raw ECE 0.0429) and that PLATT recals
+        # it (ECE -> 0.0165, Brier not worse). We REPRODUCE that fit here on ALL-PRIOR
+        # history so predict_live() is CALIBRATED forward, not just measured. Leak-free:
+        # the recalibrator is fit on the corpus, never refit on a forward fixture.
+        self.live_platt_a, self.live_platt_b = self._fit_ingame_platt(wf, s)
+
         # --- as-of team states for predict(): replay GF/GA + carry latest finishing residual ---
         self.state = GoalsState()
         self._replay_state(m)
@@ -96,6 +116,42 @@ class SoccerPredictor:
         self.rho = fit_rho(hist)
         self.n_matches = len(wf)
         self.teams = sorted(self.state.gf_ew)
+
+    # ------------------------------------------------------------------
+    def _fit_ingame_platt(self, wf, stats):
+        """W156 recalibrator: fit Platt on the HT-conditional O/U-2.5 over-prob vs the
+        full-time over outcome over ALL-PRIOR history. Reprices each match at minute=45
+        with its OBSERVED halftime score through the SoccerRepricer (the exact surface
+        predict_live emits) and fits a*logit(p)+b to the full-time over label. Leak-free
+        for forward prediction (the fixture being predicted is not in this corpus)."""
+        from scripts.platformkit.live_repricer import GameState, get_repricer  # noqa: PLC0415
+
+        if stats is None or "hthg" not in getattr(stats, "columns", []):
+            return 1.0, 0.0
+        ht = stats.dropna(subset=["hthg", "htag"])[["event_id", "hthg", "htag"]]
+        d = wf.dropna(subset=["lam_home_adj", "lam_away_adj", "fthg", "ftag"]).merge(
+            ht, on="event_id", how="inner")
+        # HT goals cannot exceed FT goals (guard a corrupt join).
+        d = d[(d["hthg"] <= d["fthg"]) & (d["htag"] <= d["ftag"])]
+        if len(d) < 200:
+            return 1.0, 0.0
+
+        rep = get_repricer("soccer")
+        lo, hi = RATE_CLIP
+        p_over = np.empty(len(d))
+        for i, r in enumerate(d.itertuples()):
+            lh = float(min(max(r.lam_home_adj, lo), hi))
+            la = float(min(max(r.lam_away_adj, lo), hi))
+            # rho=0.0 here MATCHES the W156 proof surface exactly (it fits the recal on
+            # the rho=0.0 HT-conditional over-prob); predict_live uses the same value.
+            out = rep.reprice(GameState("soccer", 45.0, int(r.hthg), int(r.htag),
+                                        pregame_params={"lam_home": lh, "lam_away": la,
+                                                        "rho": 0.0}))
+            p_over[i] = float(out["over_2.5"])
+        y_over = ((d["fthg"].to_numpy(float) + d["ftag"].to_numpy(float)) >= 3).astype(float)
+        a, b = _fit_platt(p_over, y_over)
+        self.live_platt_n = int(len(d))
+        return a, b
 
     # ------------------------------------------------------------------
     def _replay_state(self, m) -> None:
@@ -178,20 +234,29 @@ class SoccerPredictor:
         from scripts.platformkit.live_repricer import GameState, get_repricer  # noqa: PLC0415
 
         lam_h, lam_a = self._matchup_lambdas(home, away)
-        pp = {"lam_home": lam_h, "lam_away": lam_a, "rho": self.rho}
+        # rho=0.0 to MATCH the W156 in-game recalibrator fit (which is on the rho=0.0
+        # HT-conditional surface); keeps the live over-prob calibrated by that Platt.
+        pp = {"lam_home": lam_h, "lam_away": lam_a, "rho": 0.0}
         out = get_repricer("soccer").reprice(GameState(
             "soccer", float(minute), int(home_goals), int(away_goals), pregame_params=pp))
+
+        # Apply the leak-free W156 in-game Platt to the live O/U-2.5 over-prob so the
+        # LIVE prediction is CALIBRATED (raw HT-conditional ECE 0.0429 -> 0.0165).
+        over_raw = float(out["over_2.5"])
+        over_cal = round(_apply_platt(over_raw, self.live_platt_a, self.live_platt_b), 4)
         return {
             "sport": "soccer", "home": home, "away": away,
             "minute": minute, "score": (home_goals, away_goals),
             "p_home_win": round(float(out["1X2_home"]), 4),
             "p_draw": round(float(out["1X2_draw"]), 4),
             "p_away_win": round(float(out["1X2_away"]), 4),
-            "over_2.5": round(float(out["over_2.5"]), 4),
-            "under_2.5": round(float(out["under_2.5"]), 4),
+            "over_2.5": over_cal, "under_2.5": round(1.0 - over_cal, 4),
+            "over_2.5_raw": round(over_raw, 4),
             "remaining_minutes": out.get("_remaining_minutes"),
             "honest_note": ("In-game = pregame lambdas scaled to remaining minutes + realized "
-                            "score (SoccerRepricer). A live book also sees the score. No $ edge."),
+                            "score (SoccerRepricer), with the LEAK-FREE W156 in-game Platt "
+                            "applied to O/U-2.5 (HT-conditional ECE 0.0429->0.0165). A live "
+                            "book also sees the score. Calibration only; no $ edge."),
         }
 
 

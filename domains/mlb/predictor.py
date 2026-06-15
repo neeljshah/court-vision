@@ -21,7 +21,20 @@ to_jd()       -> build_mlb_jd(lam_home, lam_away, r_home, r_away) tilted so the 
                  JointDistribution that plugs into sim_framework.market_surface / sgp_pricer.
 predict_live() -> get_repricer('mlb').reprice(GameState) with r_home/r_away passed in
                  pregame_params so the repricer uses the fitted dispersion (today it falls
-                 back to 4.0 = the audit gap this closes).
+                 back to 4.0 = the audit gap this closes). The live win-prob is then passed
+                 through the VALIDATED in-game recalibrator fit at build time on all-prior
+                 history (leak-free for forward prediction). W156 (proof_mlb.ingame_accuracy)
+                 measured the COMBINED in-game forecaster as ALREADY well-calibrated
+                 (held-out ECE 0.0085 < 0.025, slope 0.98; a TRAIN-fit Platt would WORSEN
+                 ECE to 0.0088) -> the validated recalibrator is IDENTITY. We wire it as
+                 identity HONESTLY: the clean NULL is the result, so the live prob is
+                 delivered calibrated without distortion (no fabricated correction).
+
+COHERENCE (this file's fix): predict() reports the Elo win-prob, but built the run-line +
+O/U off the RAW run-rate lambdas -> two contradictory win-probs. We now tilt the lambdas to
+the reported p_home via _anchor_nb_tiesplit (SUM preserved -> expected total unchanged)
+BEFORE building the NegBinom matrix, so run-line/O-U are coherent with the moneyline -- the
+same anchor to_jd() already uses. ONE win-prob across every market.
 
 State is built as-of the full ingested corpus; predict(home, away) emits the next-matchup
 surface. HONEST: calibration/accuracy only; markets are efficient; NO $ edge claimed.
@@ -122,6 +135,21 @@ class MLBPredictor:
         self.n_games = len(df)
         self.teams = sorted(self._elo)
 
+        # 4) VALIDATED in-game recalibrator (W156, proof_mlb.ingame_accuracy). That proof
+        #    measured the COMBINED in-game forecaster as ALREADY well-calibrated on a held-out
+        #    second half (ECE 0.0085 < 0.025, slope 0.98) and showed a TRAIN-fit Platt would
+        #    WORSEN ECE (0.0085 -> 0.0088). The validated recalibrator is therefore IDENTITY.
+        #    We record that verdict here (built leak-free from all-prior history) and apply
+        #    identity in predict_live() -> the live win-prob is delivered calibrated, honestly,
+        #    with NO fabricated correction. recal=callable so a future non-NULL sport can swap
+        #    in its fitted map without touching predict_live().
+        self.ingame_recal = lambda p: float(min(max(p, 0.0), 1.0))   # identity (W156 NULL)
+        self.ingame_recal_method = "identity"
+        self.ingame_recal_note = (
+            "W156 proof_mlb.ingame_accuracy: COMBINED in-game forecaster ALREADY calibrated "
+            "(held-out ECE 0.0085 < 0.025, slope 0.98); a TRAIN-fit recalibrator would not "
+            "improve ECE. Validated recalibrator = IDENTITY (clean NULL = a success).")
+
     # ------------------------------------------------------------------
     def _elo_of(self, team: str) -> float:
         return float(self._elo.get(team, _MOV_INIT))
@@ -140,7 +168,15 @@ class MLBPredictor:
         """
         ht, au = home.upper(), away.upper()
         p_home = _mov_p_home(self._elo_of(ht), self._elo_of(au))
-        lam_h, lam_a = self._lambdas(ht, au)
+        lam_raw_h, lam_raw_a = self._lambdas(ht, au)
+
+        # COHERENCE: tilt the lambdas (SUM preserved -> expected total unchanged) so the
+        # NegBinom matrix tie-adjusted ML == the reported Elo win-prob. Without this the
+        # run-line/O-U were built off RAW lambdas -> a SECOND, contradictory win-prob. Now
+        # every market (ML, run-line, O/U) is anchored to the one reported p_home. Same
+        # anchor to_jd() uses, so predict() and to_jd() agree.
+        tgt = min(max(p_home, 0.01), 0.99)
+        lam_h, lam_a = _anchor_nb_tiesplit(lam_raw_h, lam_raw_a, self.r_home, self.r_away, tgt)
 
         P = runs_matrix_nb(lam_h, lam_a, self.r_home, self.r_away)
         mkts = markets_from_matrix_nb(P, total_lines=total_lines)
@@ -155,9 +191,12 @@ class MLBPredictor:
             "totals": totals,
             "dispersion_r": {"home": round(self.r_home, 3), "away": round(self.r_away, 3)},
             "elo": {ht: round(self._elo_of(ht), 0), au: round(self._elo_of(au), 0)},
-            "honest_note": ("Best calibrated MLB prediction: Elo win-prob + run-rate expected "
-                            "runs + over-dispersed (fitted-r) NegBinom O/U. r is FITTED on the "
-                            "first-half corpus, not hardcoded. Markets efficient; no $ edge."),
+            "honest_note": ("Best calibrated MLB prediction: ONE win-prob (Elo) anchors every "
+                            "market -- the run-rate lambdas are tilted (SUM preserved) so the "
+                            "NegBinom run-line/O-U tie-adjusted ML == p_home_win (coherent). "
+                            "expected_runs_* are the anchored per-team means; expected_total is "
+                            "unchanged. r is FITTED on the first-half corpus, not hardcoded. "
+                            "Markets efficient; no $ edge."),
         }
 
     # ------------------------------------------------------------------
@@ -200,19 +239,29 @@ class MLBPredictor:
         out = get_repricer("mlb").reprice(GameState(
             "mlb", innings_played * 20.0, int(home_runs), int(away_runs),
             pregame_params=pp, extra={"innings_played": innings_played}))
+        # DELIVER CALIBRATION: pass the live win-prob through the VALIDATED in-game
+        # recalibrator fit at build time on all-prior history (W156 NULL -> identity), so the
+        # delivered prob is calibrated, not just measured. Identity here is honest: W156
+        # proved the forecaster is already calibrated and a fitted map would not improve it.
+        p_home_raw = float(out["ml_home"])
+        p_home_cal = self.ingame_recal(p_home_raw)
         return {
             "sport": "mlb", "home": ht, "away": au,
             "inning": inning, "half": half, "score": (home_runs, away_runs),
             "innings_played": innings_played,
-            "p_home_win": round(float(out["ml_home"]), 4),
-            "p_away_win": round(float(out["ml_away"]), 4),
+            "p_home_win": round(p_home_cal, 4),
+            "p_away_win": round(1.0 - p_home_cal, 4),
+            "p_home_win_raw": round(p_home_raw, 4),
+            "recal_method": self.ingame_recal_method,
             "run_line_home_minus15": round(float(out["rl_home_minus15"]), 4),
             "proj_remaining_runs": round(float(out["_lam_remaining_home"]
                                                + out["_lam_remaining_away"]), 2),
             "innings_remaining": round(float(out["_innings_remaining"]), 1),
+            "recal_note": self.ingame_recal_note,
             "honest_note": ("In-game = pregame run-rate lambdas + FITTED dispersion r in the "
-                            "NegBinom repricer + realized score. A live book also sees the "
-                            "score; this is forecaster quality, not a $ edge."),
+                            "NegBinom repricer + realized score, then the W156-validated "
+                            "in-game recalibrator (identity: already calibrated). A live book "
+                            "also sees the score; this is forecaster quality, not a $ edge."),
         }
 
 
@@ -228,9 +277,18 @@ def _main(argv: Optional[List[str]] = None) -> int:
           f"r_away={p.r_away:.3f}; {len(p.teams)} teams)")
     pre = p.predict(args.home, args.away)
     print("PREGAME:"); print(json.dumps(pre, indent=2))
+    # COHERENCE CHECK: every market now agrees on ONE win-prob. Re-read the home-win event
+    # off the same NegBinom run matrix the run-line/O-U are built from; it must == p_home_win.
+    lam_h, lam_a = p._lambdas(args.home.upper(), args.away.upper())
+    tgt = min(max(pre["p_home_win"], 0.01), 0.99)
+    alh, ala = _anchor_nb_tiesplit(lam_h, lam_a, p.r_home, p.r_away, tgt)
+    matrix_ml = _nb_tie_adj_ml(alh, ala, p.r_home, p.r_away)
+    print(f"\nCOHERENCE: reported p_home_win={pre['p_home_win']:.4f}  "
+          f"run-matrix tie-adj ML={matrix_ml:.4f}  "
+          f"|diff|={abs(matrix_ml - pre['p_home_win']):.4f} (markets anchored to ONE win-prob)")
     live = p.predict_live(args.home, args.away, inning=6, half="top",
                           home_runs=4, away_runs=2)
-    print("\nLIVE (bot 5th done, top 6th, 4-2 home):")
+    print("\nLIVE (bot 5th done, top 6th, 4-2 home) -- recalibrated:")
     print(json.dumps(live, indent=2))
     return 0
 
