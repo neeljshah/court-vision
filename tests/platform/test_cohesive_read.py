@@ -117,8 +117,20 @@ class TestBuildCohesiveRead:
         """(1) Required keys present in result."""
         root = _make_minimal_brain(tmp_path)
         cr = build_cohesive_read("nba", root=root, use_llm=False)
-        for key in ("sport", "banner", "read", "concept_landscape", "scoreboards", "edge_claimed"):
+        for key in ("sport", "banner", "read", "concept_landscape",
+                    "knowledge_layers", "scoreboards", "edge_claimed"):
             assert key in cr, f"Missing required key: {key!r}"
+
+    def test_knowledge_layers_link_real_artifacts(self):
+        """knowledge_layers links the per-sport + cross-sport hubs the rebuild wrote."""
+        cr = build_cohesive_read("nba", use_llm=False)
+        layers = cr["knowledge_layers"]
+        assert isinstance(layers, list)
+        if not layers:
+            pytest.skip("real vault/_Organized hubs not populated")
+        for k in layers:
+            assert k["provenance"].startswith("brain:")
+            assert set(k) >= {"label", "provenance", "excerpt"}
 
     def test_sport_key_lowercase(self, tmp_path):
         """sport is returned as lowercase."""
