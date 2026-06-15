@@ -1,16 +1,10 @@
 """vault_person_free_lint.py — Person-free linter + size inventory for the vault.
 
-The vault is a graph of PLAYSTYLES / ARCHETYPES — never people. Measures (1) SIZE/
-SHAPE: file/byte counts per subdir; (2) PERSON LEAKS: specific player names or
-"X vs Y" matchups violating the person-free rule. Pure stdlib (no pandas/src/kernel).
-
-Leak KINDS (regex over .md content + filenames, conservative re: archetype words):
-  - ``named_title``    : a ``# First Last`` heading not in the archetype allowlist.
-  - ``named_filename`` : ``<digits>_<word>_<word>.md`` or a matchup in the filename.
-  - ``matchup_vs``     : ``<Word> vs <Word>`` / ``<TEAM>@<TEAM>`` (concept pairs OK).
-
-Usage: ``python -m scripts.platformkit.vault_person_free_lint [vault_dir]``
-Default vault_dir = repo_root/vault.
+The vault is a graph of PLAYSTYLES / ARCHETYPES — never people. Measures SIZE/SHAPE
+(file/byte counts per subdir) + PERSON LEAKS: ``named_title`` (``# First Last`` heading,
+archetype-allowlisted + concept-dir-exempt), ``named_filename`` (``<digits>_<word>_<word>``
+or filename matchup), ``matchup_vs`` (``<Word> vs <Word>`` / ``<TEAM>@<TEAM>``, concept
+pairs OK). Pure stdlib. CLI: ``python -m scripts.platformkit.vault_person_free_lint [dir]``.
 """
 from __future__ import annotations
 
@@ -20,6 +14,9 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Tuple
+
+# concept dirs (person-free by construction) -> named_title exempt; see concept_dirs.py
+from scripts.platformkit.concept_dirs import under_concept_dir as _under_concept_dir
 
 # === Configuration ===
 # Cap on the reported leaks list (inventory totals are always exact).
@@ -205,7 +202,8 @@ def _scan_content(rel: str, text: str) -> List[Leak]:
     for raw in text.splitlines():
         line = raw.strip()
         mt = _NAMED_TITLE_RE.match(line)
-        if mt and not _is_allowlisted_title(mt.group(1), mt.group(2)):
+        if (mt and not _is_allowlisted_title(mt.group(1), mt.group(2))
+                and not _under_concept_dir(rel)):
             leaks.append(Leak(rel, "named_title", line))
         mv = _MATCHUP_VS_RE.search(line)
         if mv and not _vs_pair_is_allowlisted(mv.group(1), mv.group(2)):
