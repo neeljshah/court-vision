@@ -52,7 +52,11 @@ def run_sport(sport: str, *, min_history: int = 200, refit_every: int = 25,
 
     elo = mdl.walkforward(games)
     y = np.array([g["home_win"] for g in games], dtype=float)
-    sel = select_calibrator(elo, y, min_history=min_history, refit_every=refit_every)
+    # Calibrators with a classifier path (Platt/LR) reject soft labels with
+    # "Unknown label type: continuous" (soccer draws are encoded 0.5 by
+    # generic_rating.py). Binarize for fitting; keep soft y for Brier/ECE below.
+    y_cls = (y > 0.5).astype(float)
+    sel = select_calibrator(elo, y_cls, min_history=min_history, refit_every=refit_every)
     cal = sel["chosen_probs"]
     sl = slice(min_history, None)
 

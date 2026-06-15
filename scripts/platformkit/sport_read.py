@@ -30,6 +30,7 @@ _PROVENANCE_MODULES = [
 _QUERY_SPECS = [
     ("{sport} archetype playstyle style", "archetype"),
     ("{sport} scheme coverage defense tactic", "scheme"),
+    ("{sport} scheme coverage defense tactic", "concept"),  # routed by _classify_hits
     ("{sport} trend season pattern", "trend"),
 ]
 _SAFE_TEMPLATE = (
@@ -48,9 +49,15 @@ _DEFAULT_PRIORS: Dict[str, Any] = {
 def _classify_hits(hits: list) -> Dict[str, List[Dict[str, Any]]]:
     out: Dict[str, List[Dict[str, Any]]] = {"archetypes": [], "schemes": [], "trends": []}
     kind_map = {"archetype": "archetypes", "scheme": "schemes", "trend": "trends"}
+    seen: set = set()
     for h in hits:
         bucket = kind_map.get(h.kind)
-        if bucket:
+        # MLB/Tennis tag their scheme notes 'concept' (DefensiveSchemes/), so they
+        # never reach the 'schemes' bucket via kind alone — route them by provenance.
+        if bucket is None and h.kind == "concept" and "scheme" in (h.provenance or "").lower():
+            bucket = "schemes"
+        if bucket and h.provenance not in seen:
+            seen.add(h.provenance)
             out[bucket].append({"title": h.title, "provenance": h.provenance,
                                  "prevalence": h.prevalence})
     return out
