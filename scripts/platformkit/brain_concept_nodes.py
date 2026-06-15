@@ -85,12 +85,15 @@ def _discover_specs() -> Tuple[List[Tuple[str, str, list]], List[str]]:
     return triples, skipped
 
 
-def _collect(triples) -> Tuple[Dict[str, _Entry], List[Tuple[str, str, dict]], List[str]]:
+def _collect(
+    triples,
+) -> Tuple[Dict[str, _Entry], List[Tuple[str, str, dict]], List[str], Dict[str, List[_Entry]]]:
     """Validate concepts; build the GLOBAL slug map + the ordered emit list.
 
-    Returns (global_map, emit, skipped). ``global_map`` maps each unique slug to ONE
-    canonical entry, but link resolution also consults the full per-slug index for
-    same-SPORT preference (kept on the function via the ``by_slug`` closure below).
+    Returns (global_map, emit, skipped, by_slug). ``global_map`` maps each unique slug
+    to ONE canonical entry; ``by_slug`` is the full per-slug index that link resolution
+    consults for same-SPORT preference. ``by_slug`` is RETURNED (not stashed on the
+    function object) so concurrent calls never clobber each other's state.
     """
     from scripts.platformkit.specs import validate_concept
 
@@ -115,8 +118,7 @@ def _collect(triples) -> Tuple[Dict[str, _Entry], List[Tuple[str, str, dict]], L
             emit.append((sport, family, c))
     # Flatten to a deterministic canonical map (first-seen wins) for the public report.
     global_map = {s: entries[0] for s, entries in by_slug.items()}
-    _collect.by_slug = by_slug  # type: ignore[attr-defined]
-    return global_map, emit, skipped
+    return global_map, emit, skipped, by_slug
 
 
 def _resolve(link_slug: str, from_rel: str, from_sport: str, by_slug) -> Optional[str]:
@@ -198,8 +200,7 @@ def build_concept_nodes(
         triples, skipped = _discover_specs()
     n_modules = len(triples)
 
-    _global_map, emit, collect_skips = _collect(triples)
-    by_slug = _collect.by_slug  # type: ignore[attr-defined]
+    _global_map, emit, collect_skips, by_slug = _collect(triples)
     skipped = skipped + collect_skips
 
     # Group emitted concepts by (sport, family), preserving first-seen order.

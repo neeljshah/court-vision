@@ -171,12 +171,16 @@ class MLBAdapter:
         lines/closing = devigged open/close P(home); None when all-NaN.
         """
         games_df = self._get_games()
-        if seasons:
-            games_df = games_df[games_df["season"].isin(seasons)]
-        if league_filter is not None:
-            games_df = games_df[games_df["home_league"] == league_filter]
 
+        # WARM REPLAY: replay Elo (and rest/h2h context) over the FULL corpus
+        # so a non-prefix season subset (e.g. seasons=[2015]) inherits the
+        # carried-forward Elo/rest/h2h history instead of replaying from a cold
+        # 1500. Filter to the requested seasons / league AFTER the replay.
         wf = _add_context(walk_forward_elo(games_df))
+        if seasons:
+            wf = wf[wf["season"].isin(seasons)]
+        if league_filter is not None:
+            wf = wf[wf["home_league"] == league_filter]
 
         try:
             odds_df = self._get_odds()

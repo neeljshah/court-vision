@@ -183,7 +183,8 @@ def render_markdown(m: Dict) -> str:
           "(lower Brier = sharper). Full table + numbers in `_Ingame_Scoreboard.md` "
           "(`scripts.platformkit.ingame_scoreboard`).",
           "- **NBA** (per-quarter): Brier 0.209 -> **0.159** (combined rating prior + score) = WIN",
-          "- **MLB** (per-inning): Brier 0.250 -> **0.128** = WIN",
+          "- **MLB** (per-inning): vs a REAL pregame-Elo prior 0.241 -> combined **0.126** "
+          "(pregame prior + realized runs; > score-only 0.128) = WIN",
           "- **Soccer** (half-time): 1X2 Brier 0.626 -> **0.502**, O/U-2.5 0.264 -> **0.176** = WIN",
           "- **Tennis**: BLOCKED (winner-ordered score -> no leak-free per-set replay corpus)", ""]
     L += ["## The honest bottom line",

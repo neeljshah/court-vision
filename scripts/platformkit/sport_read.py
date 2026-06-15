@@ -139,11 +139,17 @@ def build_sport_read(
                     seen.add(h.path); hits.append(h)
         scout = _classify_hits(hits)
         priors = prior_verdicts(sport=sport_lower, root=rp)
-        from scripts.platformkit.model_card import parse_card_metrics  # noqa: PLC0415
-        competence = parse_card_metrics(sport_lower, _resolve_root(rp))
     except Exception:  # noqa: BLE001
         scout = {"archetypes": [], "schemes": [], "trends": []}
         priors = dict(_DEFAULT_PRIORS)
+    # COMPETENCE (isolated: a card-parse error must NOT discard good scout/priors)
+    try:
+        from scripts.platformkit.brain_query import _resolve_root  # noqa: PLC0415
+        from scripts.platformkit.model_card import parse_card_metrics  # noqa: PLC0415
+        rp2 = root if isinstance(root, Path) else (Path(root) if root else None)
+        competence = parse_card_metrics(sport_lower, _resolve_root(rp2))
+    except Exception:  # noqa: BLE001
+        competence = None
     # SURFACE
     surface: Optional[Dict[str, Any]] = None
     if jd is not None:
