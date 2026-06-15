@@ -134,13 +134,16 @@ def markets_from_engine(
     """Full market surface: match win, sets, straight-sets, total games O/U."""
     rng = np.random.default_rng(seed)
     sims = _sim_matches(p_serve_p1, p_serve_p2, best_of, n_sims, rng)
-    JointDistribution(sims.astype(float), joint_quality="simulated")  # coherence wrap
+    # Bind the kernel JointDistribution and read every market through its coherent
+    # read-offs (cols: 0=sets_p1, 1=sets_p2, 2=total_games). Exercises the cross-sport
+    # coherence guarantee instead of counting raw. Every sim is a finished match (winner
+    # at stw sets, loser < stw), so prob_side_win == the old `>= stw` counting exactly.
+    jd = JointDistribution(sims.astype(float), joint_quality="simulated")
 
     stw = (best_of + 1) // 2
-    mw_p1 = float((sims[:, 0] >= stw).mean())
-    mw_p2 = float((sims[:, 1] >= stw).mean())
-    ss_p1 = float(((sims[:, 0] == stw) & (sims[:, 1] == 0)).mean())
-    ss_p2 = float(((sims[:, 1] == stw) & (sims[:, 0] == 0)).mean())
+    mw_p1, mw_p2, _ = jd.prob_side_win(0, 1)  # P(sets_p1>sets_p2), P(p2), tie(=0)
+    ss_p1 = jd.prob_event(lambda s: (s[:, 0] == stw) & (s[:, 1] == 0))
+    ss_p2 = jd.prob_event(lambda s: (s[:, 1] == stw) & (s[:, 0] == 0))
 
     set_mkt = {
         f"sets_{int(s1)}_{int(s2)}": c / n_sims
@@ -150,7 +153,7 @@ def markets_from_engine(
     med = int(round(float(np.median(tg))))
     ou = {}
     for line in [float(med + d) for d in (-3.5, -1.5, 0.5, 2.5, 4.5)]:
-        po = float((tg > line).mean())
+        po = jd.prob_event(lambda s, L=line: s[:, 2] > L)  # total games O/U via JD
         ou[f"over_{line:g}"] = po
         ou[f"under_{line:g}"] = 1.0 - po
 
