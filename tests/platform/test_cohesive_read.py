@@ -24,6 +24,8 @@ if str(REPO_ROOT) not in sys.path:
 from scripts.platformkit.cohesive_read import (
     build_cohesive_read,
     render_markdown,
+    render_index,
+    write_index,
     write_reads,
 )
 from scripts.platformkit.brain_audit import scan_text
@@ -278,3 +280,26 @@ class TestWriteReads:
         """write_reads on absent root returns []."""
         result = write_reads(sports=["tennis"], root=tmp_path / "no_such_dir")
         assert result == []
+
+
+# ---------------------------------------------------------------------------
+# Tests: cross-sport index
+# ---------------------------------------------------------------------------
+
+class TestCohesiveIndex:
+
+    def test_render_index_audit_clean_and_headed(self):
+        """The cross-sport index is person-free/no-edge and has the system heading."""
+        md = render_index()
+        assert "Cohesive Brain — System Index" in md
+        assert scan_text(md) == [], f"index has audit flags: {scan_text(md)}"
+
+    def test_write_index_writes_under_index_dir(self, tmp_path):
+        """write_index writes _Cohesive_Index.md when an _Index dir exists; else None."""
+        assert write_index(root=tmp_path / "no_such") is None
+        root = tmp_path / "brain"
+        (root / "_Index").mkdir(parents=True)
+        out = write_index(root=root)
+        assert out is not None and out.endswith("_Cohesive_Index.md")
+        assert Path(out).exists()
+        assert scan_text(Path(out).read_text(encoding="utf-8")) == []
