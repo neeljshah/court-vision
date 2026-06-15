@@ -186,6 +186,17 @@ _DEMO_PARAMS: Dict[str, Dict[str, float]] = {
 
 
 def _build_demo_jd(sport: str, n: int = 5000, seed: int = 42) -> JointDistribution:
+    # MLB: use the VALIDATED over-dispersed NegBinom run engine (domains/mlb/negbinom_sim.py)
+    # instead of a Gaussian — runs are non-negative integer counts with var/mean ~2.1.
+    # This routes the W101 O/U-Brier calibration win (-0.014..-0.021) into the read surface.
+    if sport.lower() == "mlb":
+        try:
+            from domains.mlb.negbinom_sim import build_mlb_jd  # noqa: PLC0415
+            p = _DEMO_PARAMS["mlb"]
+            return build_mlb_jd(p["home_mu"], p["away_mu"], 4.2, 3.4,
+                                n_sims=n, seed=seed, dispersion="negbinom")
+        except Exception:  # noqa: BLE001 — degrade gracefully to the Gaussian fallback
+            pass
     rng = np.random.default_rng(seed)
     p = _DEMO_PARAMS.get(sport.lower(), {"home_mu": 100.0, "away_mu": 97.0, "sigma": 12.0})
     home = np.clip(rng.normal(p["home_mu"], p["sigma"], n), 0, None)
@@ -235,9 +246,12 @@ def _main(argv: Optional[List[str]] = None) -> int:
         print(f"  {sp['line']:+g}: cover_home={sp['cover_home']:.4f}")
     if read["sgp_lifts"]:
         e = read["sgp_lifts"][0]
-        print(f"\nSGP lift: joint={e.get('joint','n/a'):.4f}"
-              f"  indep={e.get('independent','n/a'):.4f}"
-              f"  lift={e.get('lift','n/a'):.4f}  ({e.get('correlation_sign','')})")
+        if "error" in e:  # SGP honestly refused (e.g. independent marginals)
+            print(f"\nSGP lift: refused — {e['error']}")
+        else:
+            print(f"\nSGP lift: joint={e['joint']:.4f}"
+                  f"  indep={e['independent']:.4f}"
+                  f"  lift={e['lift']:.4f}  ({e.get('correlation_sign','')})")
         print(f"  NOTE: {e['note']}")
     print(f"\nCalibration: status={read['calibration']['status']}")
     print("\nProvenance:")
