@@ -21,8 +21,11 @@ CONCEPT_DIRS = frozenset((
     "rosterconstruction progressiondynamics tempocontrol spacinggeometry conversionefficiency "
     # batch 3 concept families
     "transitiondynamics possessioncontrol pressureresponse ingameadaptation chainsequences "
-    "momentumswings efficiencycurves disciplinecontrol closingexecution "
-    "predictabilitytendencies").split())
+    "momentumswings efficiencycurves disciplinecontrol closingexecution predictabilitytendencies "
+    # batch 4 concept families
+    "matchupexploitation decisionquality spacecreation zonecontrol recoveryresilience "
+    "tempovariation threatbalance initiationprofiles dueloutcomes "
+    "anticipationreads").split())
 
 
 def under_concept_dir(rel: str) -> bool:
