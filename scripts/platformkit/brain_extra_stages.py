@@ -95,10 +95,12 @@ def run_extra_stages(organized_root: Path) -> Dict:
     # brain understanding + the concept graph + calibrated-engine pointers + a self-checked
     # narrative into ONE read.  Deterministic (LLM-OFF); descriptive; no edge claimed.
     try:
-        from scripts.platformkit.cohesive_read import write_reads  # noqa: PLC0415
+        from scripts.platformkit.cohesive_read import write_reads, write_index  # noqa: PLC0415
         paths = write_reads(root=organized_root)
         if paths:
             out.setdefault("_cohesive_read", {})["per_sport_reads"] = f"{len(paths)} written"
+        if write_index(root=organized_root):
+            out.setdefault("_cohesive_read", {})["index"] = "written"
     except Exception:  # noqa: BLE001
         pass
     return out

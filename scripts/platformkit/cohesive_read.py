@@ -158,16 +158,51 @@ def write_reads(sports: Optional[List[str]] = None,
     eff = _resolve_root(Path(root) if root else None)
     if eff is None:
         return []
-    sport_dirs = {"nba": "NBA", "mlb": "MLB", "soccer": "Soccer", "tennis": "Tennis"}
     written: List[str] = []
     for sp in (sports or _SPORTS):
         cr = build_cohesive_read(sp, root=root, use_llm=False)
-        out = eff / sport_dirs.get(sp, sp.upper()) / "_Cohesive_Read.md"
+        out = eff / _SPORT_DIRS.get(sp, sp.upper()) / "_Cohesive_Read.md"
         if not out.parent.is_dir():
             continue
         out.write_text(render_markdown(cr), encoding="utf-8")
         written.append(str(out))
     return written
+
+
+def render_index(root: Optional[Path] = None) -> str:
+    """Render the ONE cross-sport landing page linking every per-sport cohesive read."""
+    eff = _resolve_root(Path(root) if root else None)
+    L: List[str] = [
+        "---\ntags: [organized, cohesive-index]\n---",
+        "# Cohesive Brain — System Index", "",
+        f"> **{_BANNER}**", "",
+        "One honest read per sport tying brain understanding + the concept graph + the "
+        "calibrated engine + a self-checked narrative into a single document.", "",
+        "## Per-Sport Cohesive Reads",
+    ]
+    for sp in _SPORTS:
+        d = _SPORT_DIRS[sp]
+        if eff is not None and (eff / d / "_Cohesive_Read.md").is_file():
+            land = build_concept_landscape(sp, root=root)
+            L.append(f"- [[{d}/_Cohesive_Read|{d} — Cohesive Read]]  "
+                     f"_({land['n_nodes']} concept nodes · {land['n_families']} families)_")
+    L += ["", "## Engine Quality _(calibration, not edge)_"]
+    for key, rel in _SCOREBOARDS.items():
+        if eff is not None and (eff / rel).is_file():
+            L.append(f"- [[{Path(rel).stem}|{key} scoreboard]]")
+    L += ["", "> The LLM scouts/synthesizes/explains; the GATE owns every number. "
+          "No un-gated pick; no edge — markets are efficient; calibration is not edge.", ""]
+    return "\n".join(L)
+
+
+def write_index(root: Optional[Path] = None) -> Optional[str]:
+    """Write the cross-sport _Cohesive_Index.md landing page; return its path or None."""
+    eff = _resolve_root(Path(root) if root else None)
+    if eff is None or not (eff / "_Index").is_dir():
+        return None
+    out = eff / "_Index" / "_Cohesive_Index.md"
+    out.write_text(render_index(root), encoding="utf-8")
+    return str(out)
 
 
 def _cli(argv: Optional[List[str]] = None) -> int:
@@ -184,6 +219,9 @@ def _cli(argv: Optional[List[str]] = None) -> int:
         paths = write_reads(None if a.all else [a.sport])
         for p in paths:
             print(f"wrote {p}")
+        idx = write_index()
+        if idx:
+            print(f"wrote {idx}")
         return 0
     sports = _SPORTS if a.all else [a.sport]
     for sp in sports:
