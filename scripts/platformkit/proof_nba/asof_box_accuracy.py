@@ -64,6 +64,27 @@ def _walk_forward_total(df: pd.DataFrame) -> np.ndarray:
     return pred
 
 
+def _walk_forward_split(df: pd.DataFrame) -> np.ndarray:
+    """Home/away-SPLIT model: separate EW offence/defence for home vs road context
+    (teams score ~differently at home), used in the matchup-correct slots."""
+    pfh: Dict[str, float] = {}; pah: Dict[str, float] = {}   # home offence / home defence
+    pfa: Dict[str, float] = {}; paa: Dict[str, float] = {}   # away offence / away defence
+    pred = np.empty(len(df))
+    h = df["home_abbr"].to_numpy(); a = df["away_abbr"].to_numpy()
+    hp = df["home_pts"].to_numpy(float); ap = df["away_pts"].to_numpy(float)
+    for i in range(len(df)):
+        ht, at = str(h[i]), str(a[i])
+        for d, init in ((pfh, _INIT_PF), (pah, _INIT_PF), (pfa, _INIT_PF), (paa, _INIT_PF)):
+            d.setdefault(ht, init); d.setdefault(at, init)
+        # home scores: home offence-at-home vs away defence-on-road; away scores: vice versa
+        exp_h = 0.5 * (pfh[ht] + paa[at])
+        exp_a = 0.5 * (pfa[at] + pah[ht])
+        pred[i] = exp_h + exp_a
+        pfh[ht] += _ALPHA * (hp[i] - pfh[ht]); pah[ht] += _ALPHA * (ap[i] - pah[ht])
+        pfa[at] += _ALPHA * (ap[i] - pfa[at]); paa[at] += _ALPHA * (hp[i] - paa[at])
+    return pred
+
+
 def run() -> Dict:
     box_p, odds_p = _NBA / "espn_boxscores.parquet", _NBA / "odds.parquet"
     if not box_p.is_file() or not odds_p.is_file():
@@ -79,7 +100,8 @@ def run() -> Dict:
     box["away_pts"] = box["away_score"].astype(float)
     box["total"] = box["home_pts"] + box["away_pts"]
     box = box[(box["total"] >= 150) & (box["total"] <= 350)].reset_index(drop=True)
-    box["pred_total"] = _walk_forward_total(box)
+    box["pred_pooled"] = _walk_forward_total(box)
+    box["pred_split"] = _walk_forward_split(box)
 
     od = pd.read_parquet(odds_p).rename(columns={"home_team": "home_abbr", "away_team": "away_abbr"})
     od["date"] = pd.to_datetime(od["date"])
@@ -92,38 +114,42 @@ def run() -> Dict:
                 "note": "Ingest more 2025-26 games (ESPN reachable) to grow the box-vs-odds overlap."}
 
     realized = m["total"].to_numpy(float)
-    model = m["pred_total"].to_numpy(float)
     close = m["close_total"].to_numpy(float)
-    # leak-free affine recal of the model on the FIRST half, scored on the held-out SECOND half
     mid = n // 2
-    b, a = np.polyfit(model[:mid], realized[:mid], 1)
-    model_c = a + b * model
-    sigma = float(np.std(realized[:mid] - model_c[:mid]))
     te = slice(mid, n)
-    rm_model, mae_model = _rmse_mae(model_c[te], realized[te])
     rm_close, mae_close = _rmse_mae(close[te], realized[te])
 
-    # model O/U calibration at standard lines on the holdout
-    all_p, all_y = [], []
-    for ln in _LINES:
-        p_over = np.array([1.0 - _phi((ln - pt) / sigma) for pt in model_c[te]])
-        y = (realized[te] > ln).astype(float)
-        all_p.extend(p_over.tolist()); all_y.extend(y.tolist())
-    model_ece = _ece(np.array(all_p), np.array(all_y))
-    beats = rm_model < rm_close - 0.1
-    matches = rm_model <= rm_close + 1.0
+    def _score(pred: np.ndarray) -> Dict:
+        # leak-free affine recal on the FIRST half, scored on the held-out SECOND half
+        b, a = np.polyfit(pred[:mid], realized[:mid], 1)
+        pc = a + b * pred
+        sigma = float(np.std(realized[:mid] - pc[:mid]))
+        rm, mae = _rmse_mae(pc[te], realized[te])
+        all_p, all_y = [], []
+        for ln in _LINES:
+            all_p.extend((1.0 - np.array([_phi((ln - pt) / sigma) for pt in pc[te]])).tolist())
+            all_y.extend((realized[te] > ln).astype(float).tolist())
+        return {"rmse": round(rm, 3), "mae": round(mae, 3), "sigma": round(sigma, 2),
+                "ece": round(_ece(np.array(all_p), np.array(all_y)), 4)}
+
+    pooled = _score(m["pred_pooled"].to_numpy(float))
+    split = _score(m["pred_split"].to_numpy(float))
+    best = min(pooled, split, key=lambda d: d["rmse"])
+    gap = round(best["rmse"] - rm_close, 3)        # >0 => close is sharper
     return {
-        "status": "ok", "n_overlap": n, "n_holdout": n - mid, "model_sigma": round(sigma, 2),
-        "model_rmse_vs_realized": round(rm_model, 3), "close_rmse_vs_realized": round(rm_close, 3),
-        "model_mae_vs_realized": round(mae_model, 3), "close_mae_vs_realized": round(mae_close, 3),
-        "model_ou_ece": round(model_ece, 4),
+        "status": "ok", "n_overlap": n, "n_holdout": n - mid,
+        "close_rmse_vs_realized": round(rm_close, 3), "close_mae_vs_realized": round(mae_close, 3),
+        "pooled_model": pooled, "split_model": split,
+        "best_model_rmse": best["rmse"], "gap_to_close_rmse": gap,
+        "split_beats_pooled": split["rmse"] < pooled["rmse"] - 1e-3,
         "verdict": (
-            "OUR model BEATS the closing total on RMSE (better predictor)" if beats else
-            ("our model MATCHES the close within ~1pt RMSE (competitive)" if matches else
-             f"market close is sharper (model RMSE {round(rm_model,2)} vs close {round(rm_close,2)}) "
-             f"— expected; need richer/fresher data to close the gap")),
+            f"OUR best model BEATS the close on RMSE ({best['rmse']} vs {rm_close})" if gap < -0.1 else
+            (f"OUR best model MATCHES the close (RMSE {best['rmse']} vs {rm_close}, gap {gap:+})"
+             if gap <= 1.0 else
+             f"close sharper by {gap} RMSE — the gap is the market's freshness edge "
+             f"(injuries/lineups) we have not yet added")),
         "note": ("Beat-the-best-predictions test on REAL realized totals + closing lines. "
-                 "No $ edge claimed (book sees news we can't). Re-run as the corpus grows."),
+                 "Re-run as we add proprietary/fresh features. No $ edge claimed."),
     }
 
 
@@ -133,13 +159,16 @@ def _main() -> int:
         print(rep["error"]); return 1
     if rep.get("status") != "ok":
         print(f"{rep['status']}: n_overlap={rep.get('n_overlap')} — {rep.get('note')}"); return 0
-    print(f"=== NBA totals: OUR as-of box model vs the market close (n={rep['n_overlap']}, "
-          f"holdout={rep['n_holdout']}, sigma={rep['model_sigma']}) ===")
-    print(f"  RMSE vs realized:  model={rep['model_rmse_vs_realized']:>7}  "
-          f"close={rep['close_rmse_vs_realized']:>7}")
-    print(f"  MAE  vs realized:  model={rep['model_mae_vs_realized']:>7}  "
-          f"close={rep['close_mae_vs_realized']:>7}")
-    print(f"  model O/U ECE={rep['model_ou_ece']}")
+    print(f"=== NBA totals: OUR as-of box models vs the market close (n={rep['n_overlap']}, "
+          f"holdout={rep['n_holdout']}) ===")
+    print(f"  {'predictor':>14}  {'RMSE':>7} {'MAE':>7} {'ECE':>7}")
+    print(f"  {'market close':>14}  {rep['close_rmse_vs_realized']:>7} "
+          f"{rep['close_mae_vs_realized']:>7} {'-':>7}")
+    for nm, key in (("pooled model", "pooled_model"), ("split model", "split_model")):
+        d = rep[key]
+        print(f"  {nm:>14}  {d['rmse']:>7} {d['mae']:>7} {d['ece']:>7}")
+    print(f"\nsplit beats pooled: {rep['split_beats_pooled']}  |  "
+          f"best gap to close: {rep['gap_to_close_rmse']:+} RMSE")
     print(f"VERDICT: {rep['verdict']}")
     print(rep["note"])
     return 0

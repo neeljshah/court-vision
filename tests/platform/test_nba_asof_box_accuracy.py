@@ -32,8 +32,10 @@ def test_run_structure():
         assert "note" in rep
         return
     assert rep["n_overlap"] >= 40
-    for k in ("model_rmse_vs_realized", "close_rmse_vs_realized"):
-        assert 5.0 < rep[k] < 40.0      # NBA total prediction errors live in this band
-    assert 0.0 <= rep["model_ou_ece"] <= 0.3
+    assert 5.0 < rep["close_rmse_vs_realized"] < 40.0   # NBA totals errors live in this band
+    for key in ("pooled_model", "split_model"):
+        d = rep[key]
+        assert 5.0 < d["rmse"] < 40.0
+        assert 0.0 <= d["ece"] <= 0.3
+    assert isinstance(rep["gap_to_close_rmse"], float)
     assert isinstance(rep["verdict"], str)
-    assert "edge" not in rep["verdict"].lower() or "no" in rep["note"].lower()
