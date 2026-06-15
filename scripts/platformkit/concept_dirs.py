@@ -28,7 +28,10 @@ CONCEPT_DIRS = frozenset((
     # batch 5 concept families
     "deceptiondisguise routineconsistency adaptabilityversatility volatilityprofiles "
     "leadmanagement adjustmentspeed startquality resourceallocation errorcascades "
-    "experiencecomposure").split())
+    "experiencecomposure "
+    # batch 6 concept families (to 10x)
+    "opponentscouting psychologicalwarfare venuetraveleffects officialadaptation "
+    "techniquemechanics").split())
 
 
 def under_concept_dir(rel: str) -> bool:

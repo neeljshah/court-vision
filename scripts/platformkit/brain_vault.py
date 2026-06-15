@@ -41,6 +41,8 @@ _CONCEPT_FAMILIES = [
     "DeceptionDisguise", "RoutineConsistency", "AdaptabilityVersatility",
     "VolatilityProfiles", "LeadManagement", "AdjustmentSpeed", "StartQuality",
     "ResourceAllocation", "ErrorCascades", "ExperienceComposure",
+    "OpponentScouting", "PsychologicalWarfare", "VenueTravelEffects",
+    "OfficialAdaptation", "TechniqueMechanics",
 ]
 # legacy structural categories without a substring clash -> coloured by path.
 _LEGACY_PATHS = {"Drivers": 16007990, "Trends": 8754687,
