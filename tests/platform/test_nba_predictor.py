@@ -48,6 +48,21 @@ def test_unknown_team_falls_back(predictor):
     assert 0.0 < s["p_home_win"] < 1.0     # league-prior fallback, no crash
 
 
+def test_predict_live_evolves_with_state(predictor):
+    """In-game win-prob anchors to pregame early and to the realized lead late."""
+    pre = predictor.predict("BOS", "LAL")["p_home_win"]
+    early = predictor.predict_live("BOS", "LAL", 12, 30, 25)   # +5 early
+    late = predictor.predict_live("BOS", "LAL", 36, 88, 80)    # +8 late
+    for s in (early, late):
+        assert 0.0 < s["p_home_win"] < 1.0
+        assert s["proj_total"] > 150.0
+        assert s["pregame_p_home"] == pre
+    # a held lead is worth MORE late (less time to lose it) than the same edge early
+    assert late["p_home_win"] > early["p_home_win"]
+    # leading home team is more likely to win than its pregame number
+    assert early["p_home_win"] > pre
+
+
 def test_to_jd_coherent_with_predict(predictor):
     """The JointDistribution's moneyline/total must match the predict() surface (anchored)."""
     from scripts.platformkit.sim_framework import market_surface
