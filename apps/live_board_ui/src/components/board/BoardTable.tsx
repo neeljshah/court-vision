@@ -2,6 +2,7 @@
  * BoardTable -- virtualized, sectioned list of BoardRow items.
  * Sections: Live > Upcoming > Finished (collapsible when >12).
  * Uses @tanstack/react-virtual for performance with 300+ tennis rows.
+ * Dynamic columns: Odds and Total tracks appear only when data is present.
  */
 import { useRef, useState, useMemo, type CSSProperties } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
@@ -10,6 +11,7 @@ import type { BoardRow, Sport } from "@/types/board";
 import { sortRows } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { BoardRowItem } from "@/components/board/BoardRowItem";
+import { computeColumns, rowGridClass } from "@/components/board/columns";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -33,22 +35,17 @@ const FINISHED_COLLAPSE_THRESHOLD = 12;
 const HEADER_HEIGHT = 34;
 const ROW_HEIGHT_ESTIMATE = 96;
 
-// Single source of truth for the desktop column tracks; the header bar and every
-// BoardRowItem grid use the SAME template so headers align exactly with cells.
-const GRID_TEMPLATE =
-  "md:grid-cols-[110px_minmax(180px,1fr)_90px_150px_110px_70px_110px_90px]";
-
-// Column header labels (mirrors BoardRowItem grid)
-const COL_HEADERS = [
-  { label: "Status",  cls: "" },
-  { label: "Matchup", cls: "" },
-  { label: "Score",   cls: "" },
-  { label: "Win %",   cls: "" },
-  { label: "Odds",    cls: "hidden lg:block" },
-  { label: "Total",   cls: "hidden lg:block" },
-  { label: "Source",  cls: "" },
-  { label: "Updated", cls: "hidden lg:block" },
-];
+// Static column header definitions; optional entries are filtered at render time.
+const COL_HEADERS_BASE = [
+  { label: "Status",  always: true,  cls: "" },
+  { label: "Matchup", always: true,  cls: "" },
+  { label: "Score",   always: true,  cls: "" },
+  { label: "Win %",   always: true,  cls: "" },
+  { label: "Odds",    always: false, cls: "hidden lg:block", key: "odds" },
+  { label: "Total",   always: false, cls: "hidden lg:block", key: "total" },
+  { label: "Source",  always: true,  cls: "" },
+  { label: "Updated", always: true,  cls: "hidden lg:block" },
+] as const;
 
 // ---------------------------------------------------------------------------
 // Component
@@ -58,11 +55,14 @@ export function BoardTable({ rows, sport, generatedAt }: BoardTableProps) {
   const [showFinished, setShowFinished] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Derive dynamic column visibility from the live row set.
+  const columns = useMemo(() => computeColumns(rows), [rows]);
+
   // 1. Sort and partition into sections
   const sorted = useMemo(() => sortRows(rows), [rows]);
 
-  const liveRows    = useMemo(() => sorted.filter((r) => r.state === "in"),   [sorted]);
-  const upcomingRows = useMemo(() => sorted.filter((r) => r.state === "pre"), [sorted]);
+  const liveRows     = useMemo(() => sorted.filter((r) => r.state === "in"),   [sorted]);
+  const upcomingRows = useMemo(() => sorted.filter((r) => r.state === "pre"),  [sorted]);
   const finishedRows = useMemo(() => sorted.filter((r) => r.state === "post"), [sorted]);
 
   const collapsible = finishedRows.length > FINISHED_COLLAPSE_THRESHOLD;
@@ -87,7 +87,6 @@ export function BoardTable({ rows, sport, generatedAt }: BoardTableProps) {
 
     if (finishedRows.length > 0) {
       if (collapsible) {
-        // The toggle header is rendered as a special header item
         items.push({
           type: "header",
           label: showFinished ? "Hide Finished" : `Show ${finishedRows.length} Finished`,
@@ -130,6 +129,18 @@ export function BoardTable({ rows, sport, generatedAt }: BoardTableProps) {
   const virtualItems = virtualizer.getVirtualItems();
   const totalSize = virtualizer.getTotalSize();
 
+  // Resolve the grid template from the dynamic column set.
+  const gridTemplate = rowGridClass(columns);
+
+  // Filter column headers to only those that are always-shown or toggled on.
+  const visibleHeaders = COL_HEADERS_BASE.filter((col) => {
+    if (col.always) return true;
+    if ("key" in col) {
+      return col.key === "odds" ? columns.odds : columns.total;
+    }
+    return false;
+  });
+
   return (
     <div className="flex flex-col gap-2">
       {/* Column header bar -- desktop only. Purely visual: each row carries its
@@ -138,11 +149,11 @@ export function BoardTable({ rows, sport, generatedAt }: BoardTableProps) {
         aria-hidden="true"
         className={cn(
           "hidden md:grid items-center gap-2 px-3 py-1",
-          GRID_TEMPLATE,
+          gridTemplate,
           "text-[10.5px] uppercase tracking-wide font-bold text-muted select-none"
         )}
       >
-        {COL_HEADERS.map(({ label, cls }) => (
+        {visibleHeaders.map(({ label, cls }) => (
           <span key={label} className={cls}>
             {label}
           </span>
@@ -196,7 +207,6 @@ export function BoardTable({ rows, sport, generatedAt }: BoardTableProps) {
                           "transition-colors"
                         )}
                         aria-expanded={showFinished}
-                        aria-controls="finished-section"
                       >
                         {showFinished ? (
                           <ChevronUp
@@ -240,13 +250,11 @@ export function BoardTable({ rows, sport, generatedAt }: BoardTableProps) {
                   ref={virtualizer.measureElement}
                   style={itemStyle}
                   role="listitem"
-                  id={
-                    item.key.startsWith("finished") ? "finished-section" : undefined
-                  }
                 >
                   <BoardRowItem
                     row={item.row}
                     generatedAt={generatedAt}
+                    columns={columns}
                     style={{ position: "relative" } as CSSProperties}
                   />
                 </div>

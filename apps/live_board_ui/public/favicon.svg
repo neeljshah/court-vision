@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- dark card background -->
+  <rect x="2" y="4" width="28" height="24" rx="4" ry="4" fill="#0d1117"/>
+  <!-- win-prob bar track 1 -->
+  <rect x="6" y="11" width="16" height="3" rx="1.5" fill="#1e2a38"/>
+  <!-- win-prob bar fill 1 (accent blue) -->
+  <rect x="6" y="11" width="10" height="3" rx="1.5" fill="#3da9fc"/>
+  <!-- win-prob bar track 2 -->
+  <rect x="6" y="18" width="16" height="3" rx="1.5" fill="#1e2a38"/>
+  <!-- win-prob bar fill 2 (green) -->
+  <rect x="6" y="18" width="13" height="3" rx="1.5" fill="#2ea043"/>
+  <!-- live dot -->
+  <circle cx="25" cy="9" r="3" fill="#ff4d4f"/>
+</svg>
