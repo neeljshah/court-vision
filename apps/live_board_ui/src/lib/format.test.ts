@@ -1,7 +1,7 @@
-/** Vitest unit tests for @/lib/format -- pct, winnerSide, setsWon, sortRows. */
+/** Vitest unit tests for @/lib/format -- pct, winnerSide, setsWon, sortRows, localTime, localClock. */
 import { describe, it, expect } from "vitest";
 import type { BoardRow } from "@/types/board";
-import { pct, winnerSide, setsWon, sortRows } from "@/lib/format";
+import { pct, winnerSide, setsWon, sortRows, localTime, localClock } from "@/lib/format";
 
 // Minimal partial helper -- cast so we don't repeat every field.
 function row(overrides: Partial<BoardRow>): BoardRow {
@@ -175,5 +175,94 @@ describe("sortRows", () => {
     const original = [a, b];
     sortRows(original);
     expect(original[0].state).toBe("post");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// localTime
+// ---------------------------------------------------------------------------
+
+// A fixed UTC instant used across all localTime / localClock tests.
+// Using a well-known date so month tokens are predictable regardless of TZ.
+const FIXED_ISO = "2026-06-15T20:00:00Z";
+
+describe("localTime", () => {
+  it("returns empty string for null", () => {
+    expect(localTime(null)).toBe("");
+  });
+
+  it("returns empty string for undefined", () => {
+    expect(localTime(undefined)).toBe("");
+  });
+
+  it("returns the raw input string for an unparseable date", () => {
+    expect(localTime("not-a-date")).toBe("not-a-date");
+  });
+
+  it("returns a non-empty string for a valid ISO timestamp", () => {
+    expect(localTime(FIXED_ISO).length).toBeGreaterThan(0);
+  });
+
+  it("contains a month abbreviation (e.g. Jun) for a valid ISO timestamp", () => {
+    // The date 2026-06-15 is June in every timezone, or at worst still a named month.
+    expect(localTime(FIXED_ISO)).toMatch(/[A-Z][a-z]{2}/);
+  });
+
+  it("contains a HH:MM time component for a valid ISO timestamp", () => {
+    expect(localTime(FIXED_ISO)).toMatch(/\d{1,2}:\d{2}/);
+  });
+
+  it("includes a timezone token (abbreviation, GMT offset, or UTC) for a valid ISO timestamp", () => {
+    // Examples of valid tokens: "EST", "PDT", "GMT+5", "UTC", "+05:30", "GMT-8"
+    expect(localTime(FIXED_ISO)).toMatch(/[A-Z]{2,5}|GMT|UTC|[+-]\d/);
+  });
+
+  it("produces more content than the same call without timeZoneName", () => {
+    // A format without timeZoneName is strictly shorter -- the TZ token adds characters.
+    const withTz = localTime(FIXED_ISO);
+    const withoutTz = new Date(FIXED_ISO).toLocaleString([], {
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+    expect(withTz.length).toBeGreaterThan(withoutTz.length);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// localClock
+// ---------------------------------------------------------------------------
+describe("localClock", () => {
+  it("returns a non-empty string for a valid ISO timestamp", () => {
+    expect(localClock(FIXED_ISO).length).toBeGreaterThan(0);
+  });
+
+  it("contains a HH:MM time component for a valid ISO timestamp", () => {
+    expect(localClock(FIXED_ISO)).toMatch(/\d{1,2}:\d{2}/);
+  });
+
+  it("includes a timezone token for a valid ISO timestamp", () => {
+    expect(localClock(FIXED_ISO)).toMatch(/[A-Z]{2,5}|GMT|UTC|[+-]\d/);
+  });
+
+  it("returns the raw input string for an unparseable date", () => {
+    expect(localClock("not-a-date")).toBe("not-a-date");
+  });
+
+  it("returns a non-empty string when called with null (falls back to current time)", () => {
+    const result = localClock(null);
+    expect(result.length).toBeGreaterThan(0);
+    // Current-time fallback should also carry a TZ token.
+    expect(result).toMatch(/[A-Z]{2,5}|GMT|UTC|[+-]\d/);
+  });
+
+  it("produces more content than the same call without timeZoneName", () => {
+    const withTz = localClock(FIXED_ISO);
+    const withoutTz = new Date(FIXED_ISO).toLocaleTimeString([], {
+      hour: "numeric",
+      minute: "2-digit",
+    });
+    expect(withTz.length).toBeGreaterThan(withoutTz.length);
   });
 });
