@@ -1,8 +1,10 @@
 /** Thin status bar: game counts, last-updated timestamp, and a manual refresh button.
  * Only the changing "updated <time>" is in a polite live region, so screen readers
- * are not spammed by the full count string on every 25s poll. */
+ * are not spammed by the full count string on every 25s poll.
+ * When stale=true, shows an amber "delayed" pill and tints the timestamp; wording is
+ * neutral freshness-only ("data may be delayed") -- no money/edge/value language. */
 
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, AlertTriangle } from "lucide-react";
 import { localClock } from "@/lib/format";
 import { useRelativeTime } from "@/hooks/useRelativeTime";
 
@@ -13,6 +15,7 @@ interface StampBarProps {
   finishedCount: number;
   refreshing: boolean;
   onRefresh: () => void;
+  stale?: boolean;
 }
 
 export function StampBar({
@@ -22,6 +25,7 @@ export function StampBar({
   finishedCount,
   refreshing,
   onRefresh,
+  stale = false,
 }: StampBarProps) {
   const parts: string[] = [];
   if (upcomingCount > 0) parts.push(`${upcomingCount} upcoming`);
@@ -51,10 +55,22 @@ export function StampBar({
         aria-live="polite"
         aria-atomic="true"
         title={generatedAt ? localClock(generatedAt) : undefined}
+        className={stale ? "text-draw" : undefined}
       >
         updated {displayTime}
       </span>
       <span aria-hidden="true">- auto 25s</span>
+
+      {stale && (
+        <span
+          className="inline-flex items-center gap-1 text-draw bg-draw/15 border border-draw/40 rounded px-1.5 py-0.5 text-[10px] font-bold uppercase"
+          title="Data may be delayed; trying to refresh."
+          aria-label="Data may be delayed; trying to refresh."
+        >
+          <AlertTriangle className="w-3 h-3" aria-hidden="true" />
+          delayed
+        </span>
+      )}
 
       <button
         type="button"

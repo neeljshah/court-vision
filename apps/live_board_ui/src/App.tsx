@@ -50,7 +50,7 @@ export default function App() {
     setLiveOnly(false);
   }, [sport]);
 
-  const { data, error, loading, refreshing, refresh } = useBoard(
+  const { data, error, loading, refreshing, refresh, stale } = useBoard(
     sport,
     sport === "soccer" ? league : undefined,
   );
@@ -102,6 +102,7 @@ export default function App() {
               finishedCount={filteredFinishedCount}
               refreshing={refreshing}
               onRefresh={refresh}
+              stale={stale}
             />
           </div>
         </div>

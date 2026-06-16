@@ -2,7 +2,7 @@
  * Unit tests for useBoard hook: verifies initial fetch, loading state transitions,
  * and cleanup of the 25s polling interval to prevent timer leaks.
  */
-import { renderHook, waitFor } from "@testing-library/react";
+import { act, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { BoardResponse } from "@/types/board";
 import { useBoard } from "./useBoard";
@@ -136,6 +136,85 @@ describe("useBoard", () => {
     // Advance past the 25s mark -- second poll fires
     vi.advanceTimersByTime(2_000);
     expect(fetchSpy).toHaveBeenCalledTimes(2);
+
+    unmount();
+    vi.runOnlyPendingTimers();
+  });
+
+  it("reports stale=false right after a fresh load, and stale=true once the data ages past 90s", async () => {
+    // Build a response whose generated_at is effectively "now" so stale starts false.
+    const freshGeneratedAt = new Date(Date.now()).toISOString();
+    const FRESH_RESPONSE: BoardResponse = {
+      ...MLB_RESPONSE,
+      generated_at: freshGeneratedAt,
+    };
+    fetchSpy.mockResolvedValueOnce({
+      ok: true,
+      json: async () => FRESH_RESPONSE,
+    } as unknown as Response);
+
+    const { result, unmount } = renderHook(() => useBoard("mlb"));
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    // stale must be a boolean and false immediately after a fresh load
+    expect(typeof result.current.stale).toBe("boolean");
+    expect(result.current.stale).toBe(false);
+
+    unmount();
+    vi.runOnlyPendingTimers();
+  });
+
+  it("flips stale=true once the data ages past 90s (via the 15s tick)", async () => {
+    const FRESH_RESPONSE: BoardResponse = {
+      ...MLB_RESPONSE,
+      generated_at: new Date(Date.now()).toISOString(),
+    };
+    fetchSpy.mockResolvedValueOnce({
+      ok: true,
+      json: async () => FRESH_RESPONSE,
+    } as unknown as Response);
+
+    const { result, unmount } = renderHook(() => useBoard("mlb"));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.stale).toBe(false);
+
+    // Advance past the 90s staleness window; the 15s tick refreshes `now`.
+    await act(async () => {
+      vi.advanceTimersByTime(91_000);
+    });
+    await waitFor(() => expect(result.current.stale).toBe(true));
+
+    unmount();
+    vi.runOnlyPendingTimers();
+  });
+
+  it("pauses polling while hidden and refreshes immediately on return to visible", async () => {
+    let hidden = false;
+    Object.defineProperty(document, "hidden", {
+      configurable: true,
+      get: () => hidden,
+    });
+
+    const { unmount } = renderHook(() => useBoard("mlb"));
+    await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(1));
+
+    // Hide the tab: the 25s poll must stop firing.
+    hidden = true;
+    act(() => {
+      document.dispatchEvent(new Event("visibilitychange"));
+    });
+    vi.advanceTimersByTime(30_000);
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+
+    // Return to visible: an immediate refresh fires.
+    hidden = false;
+    act(() => {
+      document.dispatchEvent(new Event("visibilitychange"));
+    });
+    await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(2));
 
     unmount();
     vi.runOnlyPendingTimers();
