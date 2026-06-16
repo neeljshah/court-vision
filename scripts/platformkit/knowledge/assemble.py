@@ -46,10 +46,14 @@ HONEST_REJECT = "No relevant intel found."
 # A claim line in a successful bundle must end with a [[note_id]] citation.
 _CITE_RE = re.compile(r"\[\[[^\]]+\]\]\s*$")
 
-# Numeric-as-prediction tokens that must NEVER appear in a bundle.
+# Numeric-as-prediction tokens that must NEVER appear in a bundle. The first branch
+# swallows the FULL decimal percent (so "18.38%" scrubs whole, not just "38%"); the
+# final branch hard-blocks the specific RETRACTED figures even when they appear bare
+# (no % sign): +18.38 ROI, endQ3 0.119, +54.57, 78.11, 8.94 (see docs/JOB_EVIDENCE_PACKET).
 _FORBIDDEN_RE = re.compile(
-    r"\b\d{1,3}\s?%|\bprob|\bodds|\b[+-]\d+(?:\.\d+)?%|\bROI"
-    r"|\bedge\b|\bkelly\b|[+-]\d{3,}\b",
+    r"\b\d{1,3}(?:\.\d+)?\s?%|\bprob|\bodds|\b[+-]\d+(?:\.\d+)?%|\bROI"
+    r"|\bedge\b|\bkelly\b|[+-]\d{3,}\b"
+    r"|\b(?:18\.38|0\.119|54\.57|78\.11|8\.94)\b",
     re.IGNORECASE,
 )
 

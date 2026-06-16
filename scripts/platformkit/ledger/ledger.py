@@ -116,12 +116,19 @@ def append_prediction(sport: str, layer: str, market: str, home: str, away: str,
 def _iter_binary_markets(sport: str, block: dict):
     """Yield (market, prob) binary forecasts from a build_result() layer block.
 
-    Defensive: only emits keys present + in [0,1]. Never invents a number.
+    Keys MATCH what predict_matchup emits: `p_home_win` for every sport (tennis labels
+    the market `p1_match_win`, others `ml`) and soccer's `over_2.5`. `home_win_prob` is
+    kept as a harmless alias. Defensive: only emits values in [0,1]; dedupes by market so
+    an alias never double-logs. Never invents a number.
     """
-    for key, market in (("home_win_prob", "ml"), ("over_prob", "total"),
-                        ("p1_win_prob", "p1_match_win"), ("cover_prob", "spread")):
+    ml_label = "p1_match_win" if sport == "tennis" else "ml"
+    seen = set()
+    for key, market in (("p_home_win", ml_label), ("home_win_prob", ml_label),
+                        ("over_2.5", "total_o2.5"), ("over_prob", "total_o2.5"),
+                        ("cover_prob", "spread")):
         v = block.get(key)
-        if isinstance(v, (int, float)) and 0.0 <= float(v) <= 1.0:
+        if market not in seen and isinstance(v, (int, float)) and 0.0 <= float(v) <= 1.0:
+            seen.add(market)
             yield market, float(v)
 
 

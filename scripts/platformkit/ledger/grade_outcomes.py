@@ -33,10 +33,21 @@ def _now_iso() -> str:
 
 
 def _vintage_ok(pred_ts, game_date) -> bool:
-    """True if the prediction was made strictly before the game (leak-free by timestamp)."""
+    """True if the prediction is leak-free by vintage: made on the game day or earlier.
+
+    game_date is date-only; a same-day pre-tip prediction is leak-free (we have no tip
+    time to prove otherwise). Only a prediction stamped AFTER the game day is a leak.
+    Parse to dates -- NEVER string-compare a full timestamp to a date-only value (that
+    drops legitimate same-day rows because the longer string sorts after).
+    """
     if game_date is None or (isinstance(game_date, float) and pd.isna(game_date)):
         return True  # unknown game_date -> cannot prove a leak; keep but do not assert
-    return str(pred_ts) < str(game_date)
+    try:
+        pred_day = pd.to_datetime(pred_ts).date()
+        game_day = pd.to_datetime(game_date).date()
+    except Exception:
+        return True  # unparseable -> cannot prove a leak; keep
+    return pred_day <= game_day
 
 
 def devig_home_prob(home_odds: float, away_odds: float) -> Optional[float]:
