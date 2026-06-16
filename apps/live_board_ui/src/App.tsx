@@ -96,6 +96,14 @@ export default function App() {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-bg text-txt">
+      {/* Skip link -- visible on focus, hidden otherwise (sr-only / focus:not-sr-only). */}
+      <a
+        href="#board-list"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded-md focus:bg-accent focus:px-3 focus:py-1.5 focus:text-bg focus:shadow-lg"
+      >
+        Skip to games
+      </a>
+
       <Header>
         <div className="flex items-center gap-1">
           <DensityToggle density={density} onToggle={toggleDensity} />
@@ -105,30 +113,32 @@ export default function App() {
 
       <main className="mx-auto max-w-5xl px-3 pb-20 pt-3">
         {/* Controls -- stack on mobile, single row from sm up. */}
-        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
-          <SportTabs sport={sport} onChange={setSport} />
+        <section aria-label="Board controls">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+            <SportTabs sport={sport} onChange={setSport} />
 
-          <LegendDialog />
+            <LegendDialog />
 
-          {sport === "soccer" && (
-            <LeagueSelect league={league} onChange={setLeague} />
-          )}
+            {sport === "soccer" && (
+              <LeagueSelect league={league} onChange={setLeague} />
+            )}
 
-          <SortSelect value={sortMode} onChange={setSortMode} />
+            <SortSelect value={sortMode} onChange={setSortMode} />
 
-          <div className="sm:ml-auto">
-            <StampBar
-              generatedAt={data?.generated_at ?? null}
-              liveCount={filteredLiveCount}
-              upcomingCount={filteredUpcomingCount}
-              finishedCount={filteredFinishedCount}
-              refreshing={refreshing}
-              onRefresh={refresh}
-              stale={stale}
-              connectionIssue={Boolean(error && data)}
-            />
+            <div className="sm:ml-auto">
+              <StampBar
+                generatedAt={data?.generated_at ?? null}
+                liveCount={filteredLiveCount}
+                upcomingCount={filteredUpcomingCount}
+                finishedCount={filteredFinishedCount}
+                refreshing={refreshing}
+                onRefresh={refresh}
+                stale={stale}
+                connectionIssue={Boolean(error && data)}
+              />
+            </div>
           </div>
-        </div>
+        </section>
 
         {/* Search + live-only filter row (only when rows exist) */}
         {showFilterBar && (
@@ -151,7 +161,7 @@ export default function App() {
         </div>
 
         {/* Main content -- animate-fade-in on swap */}
-        <div key={`${sport}-${league}`} className="mt-4 animate-fade-in">
+        <div id="board-list" key={`${sport}-${league}`} className="mt-4 animate-fade-in">
           {loading && <LoadingState />}
           {error && !data && <ErrorState message={error} onRetry={refresh} />}
           {showEmpty && <EmptyState />}

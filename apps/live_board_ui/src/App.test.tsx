@@ -217,6 +217,19 @@ describe("App integration smoke tests", () => {
     });
   });
 
+  it("5. a 'Skip to games' skip-link is present after load and targets #board-list", async () => {
+    render(<App />);
+
+    // Wait for the board to hydrate so all nav landmarks are mounted.
+    await waitFor(() => {
+      expect(screen.getAllByText(/HomeTeam0/i).length).toBeGreaterThan(0);
+    });
+
+    const skipLink = screen.getByRole("link", { name: /skip to games/i });
+    expect(skipLink).toBeInTheDocument();
+    expect(skipLink).toHaveAttribute("href", "#board-list");
+  });
+
   it("4. legend trigger is present; clicking it opens the dialog with in-corpus text", async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime.bind(vi) });
     render(<App />);

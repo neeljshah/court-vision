@@ -187,7 +187,8 @@ export function BoardTable({
         ))}
       </div>
 
-      {/* Scroll container */}
+      {/* Scroll container (skip-link target id lives on the always-present App
+          wrapper so it stays valid across loading/empty/table states). */}
       <div
         ref={scrollRef}
         role="list"
