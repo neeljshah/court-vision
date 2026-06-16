@@ -168,7 +168,10 @@ The CLI returns an explicit no-edge contract. Real output (NBA, BOS vs LAL, preg
   do not confirm headlines - they are built to refute them.
 - **Honest nulls are successes.** "BEHIND by freshness" and "MATCH within noise" are stated
   plainly. The full-season backtest that proves the pregame market is efficient is reported as
-  a result, not buried.
+  a result, not buried. Every candidate pregame edge was REJECTED across >=2 independent corpora
+  -- including catching my own full-sample signals that sign-flip out-of-sample -- in the 4-sport
+  real-data edge hunt: [docs/MARKET_EFFICIENCY_PROOF.md](MARKET_EFFICIENCY_PROOF.md)
+  (reproduced by `scripts/platformkit/edge_hunt_scoreboard.py`).
 - **Self-caught retractions = proof of discipline.** The same person who built the system built
   the instruments that caught and retracted his own over-claims (a market-follow ROI artifact, a
   Q4 lookahead leak, an L5-proxy ceiling mislabeled as edge). Those retractions live, in full

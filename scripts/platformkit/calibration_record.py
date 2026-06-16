@@ -1,19 +1,14 @@
 """scripts.platformkit.calibration_record -- the PUBLIC calibration-record generator.
 
-Assembles a calibration-record page from the TWO committed, offline fixtures:
-  1. the eval-gate golden anchor (run_gate.run_gate_in_process + a raw walk_forward
-     pass for per-row probs/outcomes) -> per-corpus reliability table + Brier-vs-close.
-  2. the track-record ledger fixture (ledger.replay_proof.replay_proof) -> per-sport
-     Brier/ECE vs the Shin-devigged close + DM verdict.
+Assembles a calibration-record page from the committed, offline fixtures: (1) the eval-gate
+golden anchor (reliability table + Brier-vs-close), (2) the track-record ledger fixture
+(per-sport Brier/ECE vs the Shin-devigged close), and (3) the in-game static->conditional
+Brier win (the one measured calibration win, real-corpus OOS, scoped honestly). It ADDS a
+>=10-bin reliability table (n per bin, SPARSE flag at n<30) and a per-source BADGE on every row.
 
-It ADDS only what the existing modules do not: a >=10-bin reliability table
-(predicted vs observed, n per bin, SPARSE flag when n<30) and an explicit per-source
-BADGE on every numeric row (model-in-corpus / devigged-market / score-only-anchor).
-
-'MARKET-EFFICIENT HERE' is a FIRST-CLASS verdict, front and centre -- a feature, not a
-failure. This is DECISION-SUPPORT, not a picks/ROI product: edge_claimed is always
-False, no $ number is ever produced, and the retracted measurement artifacts are never
-printed. Offline + deterministic on the committed fixtures, < 60s.
+'MARKET-EFFICIENT HERE' is a FIRST-CLASS verdict -- a feature, not a failure. DECISION-SUPPORT,
+not a picks/ROI product: edge_claimed is always False, no $ number is produced, the retracted
+artifacts are never printed. Offline + deterministic on the committed fixtures, < 60s.
 
 Usage:
   python -m scripts.platformkit.calibration_record           # ASCII/markdown to stdout
@@ -49,6 +44,19 @@ from scripts.platformkit.ledger.replay_proof import replay_proof  # noqa: E402
 BADGE_MODEL = "[model-in-corpus]"      # our calibrated forecaster, in its own corpus
 BADGE_MARKET = "[devigged-market]"     # the Shin-devigged closing line
 BADGE_ANCHOR = "[score-only-anchor]"   # synthetic golden anchor, not a real claim
+BADGE_INGAME = "[model in-corpus, real-corpus]"   # real-PRIVATE-corpus OOS, not a fixture number
+
+# In-game static->conditional Brier gains -- the ONE measured calibration win. real-corpus OOS
+# numbers (data/domains/<sport>), reproduced by proof_<sport>/ingame_accuracy.py; the synthetic
+# fixture prints NO-IMPROVEMENT for NBA (synthetic-anchor artifact, NOT a refutation). FORECASTER
+# QUALITY, NOT a $ edge -- a live book sees the score, so no DM-vs-close applies, edge_claimed=False.
+# (sport, checkpoint, static_brier, conditional_brier, corpus scope)
+_INGAME_ROWS = [
+    ("NBA", "end Q1/Q2/Q3", "0.209", "0.159",
+     "real-corpus OOS = the win; committed fixture prints no-improvement (synthetic-anchor)"),
+    ("MLB", "after inning 3/5/7", "0.241", "0.126",
+     "real-corpus OOS; reproduces on the committed fixture"),
+]
 
 SPARSE_N = 30          # bins with fewer than this are flagged UNRELIABLE
 N_BINS = 10            # >=10 equal-width reliability bins
@@ -119,16 +127,13 @@ def _gate_verdict(rows: List[dict], name: str) -> Tuple[str, str]:
     if row is None:
         return ("CORPUS_ABSENT", "")
     v = row["verdict"]
-    # brier_model is OUR forecaster's score (model-in-corpus); the SYNTHETIC-anchor caveat
-    # lives in the section header, not on the model number itself. The bin tables below carry
-    # the score-only-anchor badge because those observed frequencies ARE the synthetic golden
-    # outcomes.
+    # brier_model is OUR forecaster's score (model-in-corpus); the synthetic-anchor caveat lives
+    # in the section header. The bin tables carry the score-only-anchor badge (synthetic outcomes).
     detail = (f"brier_model={row['brier_model']:.4f} {BADGE_MODEL}  vs  "
               f"brier_close={row['brier_close']:.4f} {BADGE_MARKET}  "
               f"bss={row['bss']:.4f}  dm_p={row['dm_p']:.4f}  "
               f"(golden anchor {BADGE_ANCHOR}: synthetic, not a real claim)")
-    # MATCHES_CLOSE -> the first-class "market-efficient" state. BEHIND is stated HONESTLY
-    # (we trail the close on this slice); never dressed up as a match.
+    # MATCHES_CLOSE -> the first-class "market-efficient" state; BEHIND is stated honestly.
     if v == "MATCHES_CLOSE":
         v = "MARKET-EFFICIENT HERE (MATCHES_CLOSE)"
     elif v == "BEHIND":
@@ -136,34 +141,48 @@ def _gate_verdict(rows: List[dict], name: str) -> Tuple[str, str]:
     return (v, detail)
 
 
+def _ingame_section() -> List[str]:
+    """In-game static->conditional Brier gain -- the ONE measured CALIBRATION win. Badged
+    [model in-corpus, real-corpus]; honest caveat + synthetic-fixture/real-corpus scoping."""
+    out = ["## 3. In-game conditioning -- the one measured CALIBRATION win " + BADGE_INGAME, "",
+           "Conditioning the SAME pregame intelligence prior on the realized mid-game state "
+           "sharpens the win-prob forecaster (lower Brier = sharper). FORECASTER QUALITY / "
+           "calibration, NOT a $ edge -- a live book also sees the score, so no DM-vs-close "
+           "applies and edge_claimed stays False. SCOPING: real-PRIVATE-corpus OOS numbers; "
+           "on the committed SYNTHETIC fixture the NBA row prints no-improvement (a synthetic-"
+           "anchor artifact, not a refutation). Reproduced by "
+           "scripts/platformkit/proof_<sport>/ingame_accuracy.py, rolled up in "
+           "scripts/platformkit/ingame_scoreboard.py.", "",
+           "| sport | checkpoint | static Brier | conditional Brier | gain | source | corpus scope |",
+           "|-------|-----------|--------------|-------------------|------|--------|--------------|"]
+    for sport, ckpt, static, cond, scope in _INGAME_ROWS:
+        gain = float(static) - float(cond)
+        out.append(f"| {sport} | {ckpt} | {static} | {cond} | -{gain:.3f} | {BADGE_INGAME} "
+                   f"| {scope} |")
+    out += ["", "MLB/Soccer/Tennis in-game wins reproduce on the committed fixture; the NBA win "
+            "is real-corpus-only (VALIDATION_PENDING on a fresh clone). The sharpest forecaster "
+            "FUSES the pregame rating prior with the realized state -- not either alone. No $ "
+            "edge; edge_claimed = False.", ""]
+    return out
+
+
 def build_sections() -> List[str]:
     """Assemble the full ASCII/markdown CALIBRATION_RECORD body."""
-    lines: List[str] = []
-    lines.append("# Calibration Record")
-    lines.append("")
-    lines.append("> " + DISCLAIMER)
-    lines.append("")
-    lines.append("Source badges: " + BADGE_MODEL + " our calibrated forecaster in its own "
-                 "corpus; " + BADGE_MARKET + " the Shin-devigged closing line; "
-                 + BADGE_ANCHOR + " the synthetic golden regression anchor (not a real "
-                 "calibration claim).")
-    lines.append("")
-    lines.append("## Headline state")
-    lines.append("")
-    lines.append("**MARKET-EFFICIENT HERE** on team-strength markets: where we have power, "
-                 "the calibrated forecast MATCHES the devigged close within noise -- the "
-                 "expected, honest success state for a calibrated predictor, never an edge. "
-                 "Where a slice trails the close it is stated as BEHIND; where rows are thin "
-                 "it ABSTAINS. The decisive measured/calibrated value is in-game state "
-                 "conditioning (see the predictor's `--state` path), not a pregame $ edge.")
-    lines.append("")
-
-    # ---- Section 1: eval-gate golden anchor ----
-    lines.append("## 1. Eval-gate golden anchor (reliability)")
-    lines.append("")
-    lines.append("Synthetic regression anchor scored leak-free / walk-forward. BSS<=0 / "
-                 "MATCHES is the HONEST result vs a near-oracle close.")
-    lines.append("")
+    lines: List[str] = [
+        "# Calibration Record", "", "> " + DISCLAIMER, "",
+        "Source badges: " + BADGE_MODEL + " our calibrated forecaster in its own corpus; "
+        + BADGE_MARKET + " the Shin-devigged closing line; " + BADGE_ANCHOR + " the synthetic "
+        "golden regression anchor (not a real calibration claim).", "",
+        "## Headline state", "",
+        "**MARKET-EFFICIENT HERE** on team-strength markets: where we have power, the "
+        "calibrated forecast MATCHES the devigged close within noise -- the expected, honest "
+        "success state for a calibrated predictor, never an edge. Where a slice trails the "
+        "close it is stated as BEHIND; where rows are thin it ABSTAINS. The decisive "
+        "measured/calibrated value is in-game state conditioning (see section 3 and the "
+        "predictor's `--state` path), not a pregame $ edge.", "",
+        "## 1. Eval-gate golden anchor (reliability)", "",
+        "Synthetic regression anchor scored leak-free / walk-forward. BSS<=0 / MATCHES is "
+        "the HONEST result vs a near-oracle close.", ""]
     gate_rows = _gate.run_gate_in_process(offline_predict_fn)
     recs = _gate_records()
     for name in _gate.CORPORA:
@@ -178,14 +197,12 @@ def build_sections() -> List[str]:
         lines.append("")
 
     # ---- Section 2: track-record ledger fixture ----
-    lines.append("## 2. Track-record ledger (Brier / ECE vs devigged close)")
-    lines.append("")
-    lines.append("Committed fixture ledger; per-sport calibration vs the Shin-devigged "
-                 "close. Each slice has n=30 < the n>=50 report threshold, so the honest "
-                 "verdict is ABSTAIN (too few rows to claim a result) -- surfaced, never "
-                 "buried. On a powered real corpus a non-significant DM would read "
-                 "MARKET-EFFICIENT HERE; that measurement is VALIDATION_PENDING.")
-    lines.append("")
+    lines += ["## 2. Track-record ledger (Brier / ECE vs devigged close)", "",
+              "Committed fixture ledger; per-sport calibration vs the Shin-devigged close. "
+              "Each slice has n=30 < the n>=50 report threshold, so the honest verdict is "
+              "ABSTAIN (too few rows to claim a result) -- surfaced, never buried. On a "
+              "powered real corpus a non-significant DM would read MARKET-EFFICIENT HERE; "
+              "that measurement is VALIDATION_PENDING.", ""]
     led = replay_proof()
     lines.append(f"Fixture rows (graded): {led['n_rows']} {BADGE_MODEL}")
     lines.append("")
@@ -194,9 +211,8 @@ def build_sections() -> List[str]:
     for sport, e in sorted(led["by_sport"].items()):
         mb = e.get("market_brier")
         dmp = e.get("dm_p_value")
-        # Honest mapping: matches_close -> the first-class market-efficient state;
-        # insufficient_data (n<50) -> an honest ABSTENTION, never dressed up as a result;
-        # a lower-Brier slice stays OOS-PENDING, never an edge claim.
+        # matches_close -> market-efficient; insufficient_data -> honest ABSTAIN; lower-Brier
+        # slice stays OOS-PENDING, never an edge claim.
         verdict = e.get("verdict", "reported")
         if verdict == "matches_close":
             verdict = "MARKET-EFFICIENT HERE (matches_close)"
@@ -212,21 +228,21 @@ def build_sections() -> List[str]:
                      f"| {e['ece']:.4f} | {mb_s} | {dmp_s} | {verdict} |")
     lines.append("")
 
-    # ---- Section 3: reproduce + pending ----
-    lines.append("## 3. Reproduce (offline, < 60s each)")
-    lines.append("")
-    lines.append("```")
-    lines.append("python -m scripts.platformkit.eval_gate.run_gate --golden")
-    lines.append("python -m scripts.platformkit.ledger.replay_proof")
-    lines.append("python -m scripts.platformkit.calibration_record --write")
-    lines.append("```")
-    lines.append("")
-    lines.append("## 4. VALIDATION_PENDING (human-run)")
-    lines.append("")
-    lines.append("The numbers above reproduce the COMMITTED FIXTURES only. A real-corpus "
-                 "OOS-vs-close calibration result is a human-run step on local/gitignored "
-                 "corpora; no real-data win is claimed here. See docs/SELL-READINESS.md "
-                 "and docs/JOB_EVIDENCE_PACKET.md.")
+    # ---- Section 3: in-game conditioning (the one measured calibration win) ----
+    lines.extend(_ingame_section())
+
+    # ---- Section 4: reproduce + pending ----
+    lines += ["## 4. Reproduce (offline, < 60s each)", "", "```",
+              "python -m scripts.platformkit.eval_gate.run_gate --golden",
+              "python -m scripts.platformkit.ledger.replay_proof",
+              "python -m scripts.platformkit.calibration_record --write",
+              "python -m scripts.platformkit.ingame_scoreboard --corpus tests/fixtures/proof",
+              "```", "", "## 5. VALIDATION_PENDING (human-run)", "",
+              "The numbers above reproduce the COMMITTED FIXTURES only. A real-corpus "
+              "OOS-vs-close calibration result is a human-run step on local/gitignored corpora; "
+              "no real-data win is claimed here. The in-game section 3 numbers are real-corpus "
+              "OOS (NBA VALIDATION_PENDING on a fresh clone). See docs/SELL-READINESS.md and "
+              "docs/JOB_EVIDENCE_PACKET.md."]
     return lines
 
 

@@ -44,6 +44,17 @@ collapses.
 - [x] **Honest framing baked in** -- every numeric surface is badged by SOURCE
       (model in-corpus / devigged-market / score-only-anchor); a visible disclaimer; the
       retracted measurement artifacts are never printed as current results.
+- [x] **Market-efficiency / self-audit proof** -- [docs/MARKET_EFFICIENCY_PROOF.md](MARKET_EFFICIENCY_PROOF.md)
+      + `python -m scripts.platformkit.edge_hunt_scoreboard` reject every candidate pregame
+      edge across >=2 independent corpora (4 sports / 6 corpora), and the H1/H2 sign-flip
+      self-audit catches my own full-sample overfits. The pregame model MATCHES the
+      Shin-devigged close within noise on team-strength markets -- the rigorously-proven,
+      honest result. "No edge / market efficient" is the FEATURE.
+- [x] **In-game conditioning lever surfaced as a calibration win** -- the static->conditional
+      Brier gain (NBA 0.209 -> 0.159, MLB 0.241 -> 0.126) is presented in
+      [docs/CALIBRATION_RECORD.md](CALIBRATION_RECORD.md) badged `[model in-corpus, real-corpus]`,
+      with the honest "not a $ edge; a live book sees the score" caveat and the
+      synthetic-fixture (no-improvement) vs real-corpus (the win) scoping. `edge_claimed=False`.
 
 ## HUMAN-CONFIRM / PENDING (do NOT claim as done; cannot be automated)
 

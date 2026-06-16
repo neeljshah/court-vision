@@ -6,7 +6,7 @@ Source badges: [model-in-corpus] our calibrated forecaster in its own corpus; [d
 
 ## Headline state
 
-**MARKET-EFFICIENT HERE** on team-strength markets: where we have power, the calibrated forecast MATCHES the devigged close within noise -- the expected, honest success state for a calibrated predictor, never an edge. Where a slice trails the close it is stated as BEHIND; where rows are thin it ABSTAINS. The decisive measured/calibrated value is in-game state conditioning (see the predictor's `--state` path), not a pregame $ edge.
+**MARKET-EFFICIENT HERE** on team-strength markets: where we have power, the calibrated forecast MATCHES the devigged close within noise -- the expected, honest success state for a calibrated predictor, never an edge. Where a slice trails the close it is stated as BEHIND; where rows are thin it ABSTAINS. The decisive measured/calibrated value is in-game state conditioning (see section 3 and the predictor's `--state` path), not a pregame $ edge.
 
 ## 1. Eval-gate golden anchor (reliability)
 
@@ -56,14 +56,26 @@ Fixture rows (graded): 120 [model-in-corpus]
 | soccer | over_2.5 | 30 | 0.2055 [model-in-corpus] | 0.1643 | 0.2030 [devigged-market] | 0.4228 | ABSTAIN (insufficient_data, n<50) |
 | tennis | p1_match_win | 30 | 0.1970 [model-in-corpus] | 0.1302 | 0.1957 [devigged-market] | 0.6765 | ABSTAIN (insufficient_data, n<50) |
 
-## 3. Reproduce (offline, < 60s each)
+## 3. In-game conditioning -- the one measured CALIBRATION win [model in-corpus, real-corpus]
+
+Conditioning the SAME pregame intelligence prior on the realized mid-game state sharpens the win-prob forecaster (lower Brier = sharper). FORECASTER QUALITY / calibration, NOT a $ edge -- a live book also sees the score, so no DM-vs-close applies and edge_claimed stays False. SCOPING: real-PRIVATE-corpus OOS numbers; on the committed SYNTHETIC fixture the NBA row prints no-improvement (a synthetic-anchor artifact, not a refutation). Reproduced by scripts/platformkit/proof_<sport>/ingame_accuracy.py, rolled up in scripts/platformkit/ingame_scoreboard.py.
+
+| sport | checkpoint | static Brier | conditional Brier | gain | source | corpus scope |
+|-------|-----------|--------------|-------------------|------|--------|--------------|
+| NBA | end Q1/Q2/Q3 | 0.209 | 0.159 | -0.050 | [model in-corpus, real-corpus] | real-corpus OOS = the win; committed fixture prints no-improvement (synthetic-anchor) |
+| MLB | after inning 3/5/7 | 0.241 | 0.126 | -0.115 | [model in-corpus, real-corpus] | real-corpus OOS; reproduces on the committed fixture |
+
+MLB/Soccer/Tennis in-game wins reproduce on the committed fixture; the NBA win is real-corpus-only (VALIDATION_PENDING on a fresh clone). The sharpest forecaster FUSES the pregame rating prior with the realized state -- not either alone. No $ edge; edge_claimed = False.
+
+## 4. Reproduce (offline, < 60s each)
 
 ```
 python -m scripts.platformkit.eval_gate.run_gate --golden
 python -m scripts.platformkit.ledger.replay_proof
 python -m scripts.platformkit.calibration_record --write
+python -m scripts.platformkit.ingame_scoreboard --corpus tests/fixtures/proof
 ```
 
-## 4. VALIDATION_PENDING (human-run)
+## 5. VALIDATION_PENDING (human-run)
 
-The numbers above reproduce the COMMITTED FIXTURES only. A real-corpus OOS-vs-close calibration result is a human-run step on local/gitignored corpora; no real-data win is claimed here. See docs/SELL-READINESS.md and docs/JOB_EVIDENCE_PACKET.md.
+The numbers above reproduce the COMMITTED FIXTURES only. A real-corpus OOS-vs-close calibration result is a human-run step on local/gitignored corpora; no real-data win is claimed here. The in-game section 3 numbers are real-corpus OOS (NBA VALIDATION_PENDING on a fresh clone). See docs/SELL-READINESS.md and docs/JOB_EVIDENCE_PACKET.md.

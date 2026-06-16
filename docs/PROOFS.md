@@ -99,6 +99,14 @@ Leak-guard column shows HOW each stays honest. All modules: never edit `src/` or
 |---|---|---|---|---|
 | `scripts/platformkit/beat_the_close_scoreboard.py` | All 6 pregame rows: our model vs devigged close | Delegates to the per-market harnesses below (each leak-free) | fast (fixture) / heavy (real) | `python -m scripts.platformkit.beat_the_close_scoreboard --corpus tests/fixtures/proof` |
 | `scripts/platformkit/ingame_scoreboard.py` | All in-game rows: conditional vs static | Delegates to the per-sport in-game harnesses (each leak-free) | fast (fixture) / heavy (real) | `python -m scripts.platformkit.ingame_scoreboard --corpus tests/fixtures/proof` |
+| `scripts/platformkit/edge_hunt_scoreboard.py` | Market efficient / every candidate pregame edge rejected across >=2 corpora (the consolidated REJECT table + the H1/H2 sign-flip self-audit) | Recorded canonical table; `--live` re-runs the real `edge_hunt_schedule` harness (leak-free) and falls back to VALIDATION_PENDING + recorded with no corpus | fast (recorded) / heavy (`--live` real) | `python -m scripts.platformkit.edge_hunt_scoreboard` |
+
+### Market-efficiency / edge-hunt (the self-audit -- every candidate REJECTED)
+
+| Module | Claim it backs | Leak guard | Runtime | Reproduce |
+|---|---|---|---|---|
+| `scripts/platformkit/edge_hunt_schedule.py` | NBA schedule/fatigue signals (b2b / 3-in-4 / rest / travel / altitude / HCA) all REJECT vs the devigged close; full-sample lifts SIGN-FLIP across H1/H2 = overfit signature | Schedule facts are deterministic from the released calendar -> known LONG before any line move -> the whole scored sample is confirmed-before by construction; walk-forward + purge + embargo; H1/H2 independent sub-corpora; clustered DM | heavy (real NBA corpus) | `python -m scripts.platformkit.edge_hunt_schedule` |
+| `scripts/platformkit/hunt_line_movement.py` | open->close CLV exists as a MARKET phenomenon (close sharper than open) but a leak-free open-time model has ~0 corr with the move -> CLV-capture REJECT (NL/AL sign disagree) | Open precedes close (leak-free by snapshot order); the result is never used in the CLV quantity; walk-forward logistic on as-of features; >=2 corpora (MLB NL/AL + soccer) | heavy (real MLB + soccer corpora) | `python -m scripts.platformkit.hunt_line_movement` |
 
 ### NBA
 
