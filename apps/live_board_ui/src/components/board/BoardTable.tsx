@@ -4,14 +4,15 @@
  * Uses @tanstack/react-virtual for performance with 300+ tennis rows.
  * Dynamic columns: Odds and Total tracks appear only when data is present.
  * flashKeys: optional Set of gameKey strings whose rows should animate on score change.
+ * sortMode: optional per-section sort order ("default" | "favorite" | "soonest").
  */
 import { useRef, useState, useMemo, type CSSProperties } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import type { BoardRow, Sport } from "@/types/board";
 import type { Density } from "@/hooks/useDensity";
-import { sortRows } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { sortSection, type SortMode } from "@/lib/sort";
 import { BoardRowItem } from "@/components/board/BoardRowItem";
 import { computeColumns, rowGridClass } from "@/components/board/columns";
 import { gameKey } from "@/lib/gameKey";
@@ -55,21 +56,41 @@ interface BoardTableProps {
   onSelect?: (row: BoardRow) => void;
   flashKeys?: Set<string>;
   density?: Density;
+  sortMode?: SortMode;
 }
 
-export function BoardTable({ rows, sport, generatedAt, onSelect, flashKeys, density = "comfortable" }: BoardTableProps) {
+export function BoardTable({
+  rows,
+  sport,
+  generatedAt,
+  onSelect,
+  flashKeys,
+  density = "comfortable",
+  sortMode = "default",
+}: BoardTableProps) {
   const [showFinished, setShowFinished] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Derive dynamic column visibility from the live row set.
   const columns = useMemo(() => computeColumns(rows), [rows]);
 
-  // 1. Sort and partition into sections
-  const sorted = useMemo(() => sortRows(rows), [rows]);
-
-  const liveRows     = useMemo(() => sorted.filter((r) => r.state === "in"),   [sorted]);
-  const upcomingRows = useMemo(() => sorted.filter((r) => r.state === "pre"),  [sorted]);
-  const finishedRows = useMemo(() => sorted.filter((r) => r.state === "post"), [sorted]);
+  // 1. Partition rows by state, then sort each section independently.
+  //    Memoized on [rows, sortMode] so a mode change re-sorts without re-fetching.
+  const { liveRows, upcomingRows, finishedRows } = useMemo(() => {
+    const live: BoardRow[]     = [];
+    const upcoming: BoardRow[] = [];
+    const finished: BoardRow[] = [];
+    for (const r of rows) {
+      if (r.state === "in")   live.push(r);
+      else if (r.state === "pre")  upcoming.push(r);
+      else                         finished.push(r);
+    }
+    return {
+      liveRows:     sortSection(live,     sortMode),
+      upcomingRows: sortSection(upcoming, sortMode),
+      finishedRows: sortSection(finished, sortMode),
+    };
+  }, [rows, sortMode]);
 
   const collapsible = finishedRows.length > FINISHED_COLLAPSE_THRESHOLD;
 

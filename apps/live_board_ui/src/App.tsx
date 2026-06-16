@@ -12,6 +12,7 @@ import { useBoard } from "@/hooks/useBoard";
 import { filterRows } from "@/lib/filter";
 import { useScoreFlash } from "@/hooks/useScoreFlash";
 import { useDensity } from "@/hooks/useDensity";
+import type { SortMode } from "@/lib/sort";
 
 import { Header } from "@/components/board/Header";
 import { ThemeToggle } from "@/components/board/ThemeToggle";
@@ -27,6 +28,7 @@ import { EmptyState } from "@/components/board/EmptyState";
 import { BoardTable } from "@/components/board/BoardTable";
 import { LegendDialog } from "@/components/board/LegendDialog";
 import { GameDetailDialog } from "@/components/board/GameDetailDialog";
+import { SortSelect } from "@/components/board/SortSelect";
 
 const VALID_SPORTS = SPORTS.map((s) => s.value);
 
@@ -43,6 +45,7 @@ export default function App() {
   const [query, setQuery] = useState<string>("");
   const [liveOnly, setLiveOnly] = useState<boolean>(false);
   const [selected, setSelected] = useState<BoardRow | null>(null);
+  const [sortMode, setSortMode] = useState<SortMode>("default");
 
   const { density, toggle: toggleDensity } = useDensity();
 
@@ -111,6 +114,8 @@ export default function App() {
             <LeagueSelect league={league} onChange={setLeague} />
           )}
 
+          <SortSelect value={sortMode} onChange={setSortMode} />
+
           <div className="sm:ml-auto">
             <StampBar
               generatedAt={data?.generated_at ?? null}
@@ -160,6 +165,7 @@ export default function App() {
               onSelect={setSelected}
               flashKeys={flashKeys}
               density={density}
+              sortMode={sortMode}
             />
           )}
         </div>
