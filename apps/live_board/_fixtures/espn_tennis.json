@@ -1,0 +1,63 @@
+{
+  "events": [
+    {
+      "id": "tour-001",
+      "date": "2026-06-15T10:00Z",
+      "name": "Wimbledon",
+      "shortName": "Wimbledon",
+      "groupings": [
+        {
+          "grouping": {"slug": "mens-singles"},
+          "competitions": [
+            {
+              "id": "m-101",
+              "date": "2026-06-15T12:00Z",
+              "status": {
+                "period": 2,
+                "type": {"state": "in", "completed": false, "shortDetail": "Set 2", "detail": "In Progress"}
+              },
+              "competitors": [
+                {
+                  "homeAway": "home",
+                  "score": null,
+                  "athlete": {"displayName": "Carlos Alcaraz"},
+                  "linescores": [{"value": 6.0, "winner": true}, {"value": 4.0, "winner": false}]
+                },
+                {
+                  "homeAway": "away",
+                  "score": null,
+                  "athlete": {"displayName": "Jannik Sinner"},
+                  "linescores": [{"value": 4.0, "winner": false}, {"value": 5.0, "winner": false}]
+                }
+              ],
+              "odds": []
+            },
+            {
+              "id": "m-102",
+              "date": "2026-06-15T15:00Z",
+              "status": {
+                "period": 0,
+                "type": {"state": "pre", "completed": false, "shortDetail": "11:00 AM ET", "detail": "Scheduled"}
+              },
+              "competitors": [
+                {
+                  "homeAway": "home",
+                  "score": null,
+                  "athlete": {"displayName": "Novak Djokovic"},
+                  "linescores": []
+                },
+                {
+                  "homeAway": "away",
+                  "score": null,
+                  "athlete": {"displayName": "Daniil Medvedev"},
+                  "linescores": []
+                }
+              ],
+              "odds": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

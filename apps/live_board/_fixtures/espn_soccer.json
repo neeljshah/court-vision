@@ -1,0 +1,84 @@
+{
+  "events": [
+    {
+      "id": "730001",
+      "date": "2026-06-15T14:00Z",
+      "name": "Arsenal vs Chelsea",
+      "shortName": "ARS vs CHE",
+      "status": {
+        "period": 2,
+        "clock": 3900.0,
+        "displayClock": "65'",
+        "type": {"state": "in", "completed": false, "shortDetail": "65'", "detail": "2nd Half"}
+      },
+      "competitions": [
+        {
+          "id": "730001",
+          "date": "2026-06-15T14:00Z",
+          "competitors": [
+            {
+              "homeAway": "home",
+              "score": "2",
+              "team": {"abbreviation": "ARS", "displayName": "Arsenal", "shortDisplayName": "Arsenal"}
+            },
+            {
+              "homeAway": "away",
+              "score": "1",
+              "team": {"abbreviation": "CHE", "displayName": "Chelsea", "shortDisplayName": "Chelsea"}
+            }
+          ],
+          "odds": [
+            {
+              "provider": {"name": "ESPN BET"},
+              "details": "ARS -150",
+              "overUnder": 3.5,
+              "homeTeamOdds": {"moneyLine": -150},
+              "awayTeamOdds": {"moneyLine": 380},
+              "drawOdds": {"moneyLine": 290}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "730002",
+      "date": "2026-06-15T19:30Z",
+      "name": "Barcelona vs Real Madrid",
+      "shortName": "BAR vs RM",
+      "status": {
+        "period": 0,
+        "clock": 0.0,
+        "displayClock": "0'",
+        "type": {"state": "pre", "completed": false, "shortDetail": "3:30 PM ET", "detail": "Scheduled"}
+      },
+      "competitions": [
+        {
+          "id": "730002",
+          "date": "2026-06-15T19:30Z",
+          "competitors": [
+            {
+              "homeAway": "home",
+              "score": "0",
+              "team": {"abbreviation": "BAR", "displayName": "Barcelona", "shortDisplayName": "Barcelona"}
+            },
+            {
+              "homeAway": "away",
+              "score": "0",
+              "team": {"abbreviation": "RM", "displayName": "Real Madrid", "shortDisplayName": "Madrid"}
+            }
+          ],
+          "odds": [
+            {
+              "provider": {"name": "ESPN BET"},
+              "details": "BAR -110",
+              "overUnder": 2.5,
+              "homeTeamOdds": {"moneyLine": -110},
+              "awayTeamOdds": {"moneyLine": 270},
+              "drawOdds": {"moneyLine": 250}
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
