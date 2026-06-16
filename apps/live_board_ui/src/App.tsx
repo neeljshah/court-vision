@@ -125,6 +125,7 @@ export default function App() {
               refreshing={refreshing}
               onRefresh={refresh}
               stale={stale}
+              connectionIssue={Boolean(error && data)}
             />
           </div>
         </div>
