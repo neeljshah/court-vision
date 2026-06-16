@@ -1,0 +1,2388 @@
+{
+ "_synthetic": true,
+ "n": 103,
+ "schema": 1,
+ "states": [
+  {
+   "away": "ATL",
+   "devig_close_prob": 0.689229,
+   "feature_avail": {
+    "home_edge": "2025-02-11T00:00:00",
+    "rest": "2025-02-11T00:00:00",
+    "strength": "2025-02-11T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.704904,
+    "rest": 0.240744,
+    "strength": 0.420447
+   },
+   "game_date": "2025-02-12",
+   "game_id": "g0000",
+   "home": "BOS",
+   "outcome": 1,
+   "regime": "pregame",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2025-02-12T19:00:00",
+   "truth_wp": 0.707903
+  },
+  {
+   "away": "GSW",
+   "devig_close_prob": 0.845287,
+   "feature_avail": {
+    "home_edge": "2025-03-06T00:00:00",
+    "rest": "2025-03-06T00:00:00",
+    "strength": "2025-03-06T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.35688,
+    "rest": 0.842872,
+    "strength": 0.883452
+   },
+   "game_date": "2025-03-07",
+   "game_id": "g0001",
+   "home": "DAL",
+   "outcome": 1,
+   "regime": "pregame",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2025-03-07T19:00:00",
+   "truth_wp": 0.851636
+  },
+  {
+   "away": "GSW",
+   "devig_close_prob": 0.73078,
+   "feature_avail": {
+    "home_edge": "2024-12-27T00:00:00",
+    "rest": "2024-12-27T00:00:00",
+    "strength": "2024-12-27T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.356395,
+    "rest": 1.426385,
+    "strength": 0.118735
+   },
+   "game_date": "2024-12-28",
+   "game_id": "g0002",
+   "home": "DEN",
+   "outcome": 1,
+   "regime": "pregame",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2024-12-28T19:00:00",
+   "truth_wp": 0.724825
+  },
+  {
+   "away": "NYK",
+   "devig_close_prob": 0.624228,
+   "feature_avail": {
+    "home_edge": "2024-11-29T00:00:00",
+    "rest": "2024-11-29T00:00:00",
+    "strength": "2024-11-29T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.469876,
+    "rest": -1.049406,
+    "strength": 0.779296
+   },
+   "game_date": "2024-11-30",
+   "game_id": "g0003",
+   "home": "DAL",
+   "outcome": 1,
+   "regime": "pregame",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2024-11-30T19:00:00",
+   "truth_wp": 0.664582
+  },
+  {
+   "away": "MIL",
+   "devig_close_prob": 0.687418,
+   "feature_avail": {
+    "home_edge": "2025-03-04T00:00:00",
+    "rest": "2025-03-04T00:00:00",
+    "strength": "2025-03-04T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.982667,
+    "rest": 0.578826,
+    "strength": 0.272206
+   },
+   "game_date": "2025-03-05",
+   "game_id": "g0004",
+   "home": "DEN",
+   "outcome": 1,
+   "regime": "pregame",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2025-03-05T19:00:00",
+   "truth_wp": 0.714261
+  },
+  {
+   "away": "PHX",
+   "devig_close_prob": 0.425393,
+   "feature_avail": {
+    "home_edge": "2024-11-16T00:00:00",
+    "rest": "2024-11-16T00:00:00",
+    "strength": "2024-11-16T00:00:00"
+   },
+   "features": {
+    "home_edge": -0.361652,
+    "rest": 0.048634,
+    "strength": -0.203885
+   },
+   "game_date": "2024-11-17",
+   "game_id": "g0005",
+   "home": "SAS",
+   "outcome": 1,
+   "regime": "pregame",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2024-11-17T19:00:00",
+   "truth_wp": 0.41301
+  },
+  {
+   "away": "DAL",
+   "devig_close_prob": 0.486079,
+   "feature_avail": {
+    "home_edge": "2024-11-08T00:00:00",
+    "rest": "2024-11-08T00:00:00",
+    "strength": "2024-11-08T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.377667,
+    "rest": 0.448653,
+    "strength": -0.149169
+   },
+   "game_date": "2024-11-09",
+   "game_id": "g0006",
+   "home": "DEN",
+   "outcome": 1,
+   "regime": "pregame",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2024-11-09T19:00:00",
+   "truth_wp": 0.527449
+  },
+  {
+   "away": "PHX",
+   "devig_close_prob": 0.652751,
+   "feature_avail": {
+    "home_edge": "2025-03-07T00:00:00",
+    "rest": "2025-03-07T00:00:00",
+    "strength": "2025-03-07T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.419183,
+    "rest": 0.874085,
+    "strength": -0.037361
+   },
+   "game_date": "2025-03-08",
+   "game_id": "g0007",
+   "home": "BOS",
+   "outcome": 1,
+   "regime": "pregame",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2025-03-08T19:00:00",
+   "truth_wp": 0.619996
+  },
+  {
+   "away": "GSW",
+   "devig_close_prob": 0.644841,
+   "feature_avail": {
+    "home_edge": "2024-12-02T00:00:00",
+    "rest": "2024-12-02T00:00:00",
+    "strength": "2024-12-02T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.184879,
+    "rest": 0.157912,
+    "strength": 0.355599
+   },
+   "game_date": "2024-12-03",
+   "game_id": "g0008",
+   "home": "DAL",
+   "outcome": 1,
+   "regime": "pregame",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2024-12-03T19:00:00",
+   "truth_wp": 0.650904
+  },
+  {
+   "away": "DEN",
+   "devig_close_prob": 0.912086,
+   "feature_avail": {
+    "home_edge": "2025-02-07T00:00:00",
+    "rest": "2025-02-07T00:00:00",
+    "strength": "2025-02-07T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.573611,
+    "rest": 1.1858,
+    "strength": 1.324726
+   },
+   "game_date": "2025-02-08",
+   "game_id": "g0009",
+   "home": "PHX",
+   "outcome": 1,
+   "regime": "pregame",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2025-02-08T19:00:00",
+   "truth_wp": 0.930275
+  },
+  {
+   "away": "DAL",
+   "devig_close_prob": 0.23158,
+   "feature_avail": {
+    "home_edge": "2025-01-25T00:00:00",
+    "rest": "2025-01-25T00:00:00",
+    "strength": "2025-01-25T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.888656,
+    "rest": -2.524389,
+    "strength": -0.051387
+   },
+   "game_date": "2025-01-26",
+   "game_id": "g0010",
+   "home": "MIA",
+   "outcome": 0,
+   "regime": "pregame",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2025-01-26T19:00:00",
+   "truth_wp": 0.247503
+  },
+  {
+   "away": "SAS",
+   "devig_close_prob": 0.788845,
+   "feature_avail": {
+    "home_edge": "2024-11-21T00:00:00",
+    "rest": "2024-11-21T00:00:00",
+    "strength": "2024-11-21T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.659747,
+    "rest": 0.834529,
+    "strength": 0.659131
+   },
+   "game_date": "2024-11-22",
+   "game_id": "g0011",
+   "home": "LAL",
+   "outcome": 1,
+   "regime": "pregame",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2024-11-22T19:00:00",
+   "truth_wp": 0.818317
+  },
+  {
+   "away": "NYK",
+   "devig_close_prob": 0.547044,
+   "feature_avail": {
+    "home_edge": "2025-02-10T00:00:00",
+    "rest": "2025-02-10T00:00:00",
+    "strength": "2025-02-10T00:00:00"
+   },
+   "features": {
+    "home_edge": -0.021491,
+    "rest": 0.320305,
+    "strength": 0.086622
+   },
+   "game_date": "2025-02-11",
+   "game_id": "g0012",
+   "home": "LAL",
+   "outcome": 0,
+   "regime": "pregame",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2025-02-11T19:00:00",
+   "truth_wp": 0.568578
+  },
+  {
+   "away": "GSW",
+   "devig_close_prob": 0.438967,
+   "feature_avail": {
+    "home_edge": "2025-03-04T00:00:00",
+    "rest": "2025-03-04T00:00:00",
+    "strength": "2025-03-04T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.335797,
+    "rest": -1.03946,
+    "strength": 0.103704
+   },
+   "game_date": "2025-03-05",
+   "game_id": "g0013",
+   "home": "SAS",
+   "outcome": 1,
+   "regime": "pregame",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2025-03-05T19:00:00",
+   "truth_wp": 0.427858
+  },
+  {
+   "away": "PHX",
+   "devig_close_prob": 0.518029,
+   "feature_avail": {
+    "home_edge": "2024-11-12T00:00:00",
+    "rest": "2024-11-12T00:00:00",
+    "strength": "2024-11-12T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.300561,
+    "rest": -0.871026,
+    "strength": 0.331376
+   },
+   "game_date": "2024-11-13",
+   "game_id": "g0014",
+   "home": "SAS",
+   "outcome": 0,
+   "regime": "pregame",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2024-11-13T19:00:00",
+   "truth_wp": 0.525865
+  },
+  {
+   "away": "GSW",
+   "devig_close_prob": 0.530365,
+   "feature_avail": {
+    "home_edge": "2024-10-31T00:00:00",
+    "rest": "2024-10-31T00:00:00",
+    "strength": "2024-10-31T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.063879,
+    "rest": -0.600146,
+    "strength": 0.152265
+   },
+   "game_date": "2024-11-01",
+   "game_id": "g0015",
+   "home": "MIL",
+   "outcome": 1,
+   "regime": "pregame",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2024-11-01T19:00:00",
+   "truth_wp": 0.482274
+  },
+  {
+   "away": "PHX",
+   "devig_close_prob": 0.860595,
+   "feature_avail": {
+    "home_edge": "2024-11-20T00:00:00",
+    "rest": "2024-11-20T00:00:00",
+    "strength": "2024-11-20T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.559123,
+    "rest": 0.078469,
+    "strength": 1.215426
+   },
+   "game_date": "2024-11-21",
+   "game_id": "g0016",
+   "home": "DEN",
+   "outcome": 1,
+   "regime": "pregame",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2024-11-21T19:00:00",
+   "truth_wp": 0.867681
+  },
+  {
+   "away": "BOS",
+   "devig_close_prob": 0.166076,
+   "feature_avail": {
+    "home_edge": "2025-02-12T00:00:00",
+    "rest": "2025-02-12T00:00:00",
+    "strength": "2025-02-12T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.752812,
+    "rest": -0.738013,
+    "strength": -1.046479
+   },
+   "game_date": "2025-02-13",
+   "game_id": "g0017",
+   "home": "SAS",
+   "outcome": 0,
+   "regime": "pregame",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2025-02-13T19:00:00",
+   "truth_wp": 0.161667
+  },
+  {
+   "away": "LAL",
+   "devig_close_prob": 0.463519,
+   "feature_avail": {
+    "home_edge": "2025-01-14T00:00:00",
+    "rest": "2025-01-14T00:00:00",
+    "strength": "2025-01-14T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.327299,
+    "rest": 1.657582,
+    "strength": -0.767809
+   },
+   "game_date": "2025-01-15",
+   "game_id": "g0018",
+   "home": "GSW",
+   "outcome": 0,
+   "regime": "pregame",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2025-01-15T19:00:00",
+   "truth_wp": 0.459013
+  },
+  {
+   "away": "DAL",
+   "devig_close_prob": 0.617079,
+   "feature_avail": {
+    "home_edge": "2025-01-31T00:00:00",
+    "rest": "2025-01-31T00:00:00",
+    "strength": "2025-01-31T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.750525,
+    "rest": -0.509801,
+    "strength": 0.267384
+   },
+   "game_date": "2025-02-01",
+   "game_id": "g0019",
+   "home": "GSW",
+   "outcome": 0,
+   "regime": "pregame",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2025-02-01T19:00:00",
+   "truth_wp": 0.576169
+  },
+  {
+   "away": "BOS",
+   "devig_close_prob": 0.585572,
+   "feature_avail": {
+    "home_edge": "2024-11-06T00:00:00",
+    "rest": "2024-11-06T00:00:00",
+    "strength": "2024-11-06T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.134326,
+    "rest": -0.869505,
+    "strength": 0.496925
+   },
+   "game_date": "2024-11-07",
+   "game_id": "g0020",
+   "home": "CHI",
+   "outcome": 0,
+   "regime": "pregame",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2024-11-07T19:00:00",
+   "truth_wp": 0.573103
+  },
+  {
+   "away": "MIL",
+   "devig_close_prob": 0.500001,
+   "feature_avail": {
+    "home_edge": "2024-12-27T00:00:00",
+    "rest": "2024-12-27T00:00:00",
+    "strength": "2024-12-27T00:00:00"
+   },
+   "features": {
+    "home_edge": -0.145869,
+    "rest": -0.154145,
+    "strength": 0.186243
+   },
+   "game_date": "2024-12-28",
+   "game_id": "g0021",
+   "home": "DAL",
+   "outcome": 0,
+   "regime": "pregame",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2024-12-28T19:00:00",
+   "truth_wp": 0.536734
+  },
+  {
+   "away": "DEN",
+   "devig_close_prob": 0.310242,
+   "feature_avail": {
+    "home_edge": "2025-01-23T00:00:00",
+    "rest": "2025-01-23T00:00:00",
+    "strength": "2025-01-23T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.404293,
+    "rest": -0.135946,
+    "strength": -0.477081
+   },
+   "game_date": "2025-01-24",
+   "game_id": "g0022",
+   "home": "GSW",
+   "outcome": 0,
+   "regime": "pregame",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2025-01-24T19:00:00",
+   "truth_wp": 0.34642
+  },
+  {
+   "away": "NYK",
+   "devig_close_prob": 0.40449,
+   "feature_avail": {
+    "home_edge": "2025-01-23T00:00:00",
+    "rest": "2025-01-23T00:00:00",
+    "strength": "2025-01-23T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.203595,
+    "rest": -0.345251,
+    "strength": -0.322213
+   },
+   "game_date": "2025-01-24",
+   "game_id": "g0023",
+   "home": "CHI",
+   "outcome": 1,
+   "regime": "pregame",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2025-01-24T19:00:00",
+   "truth_wp": 0.360585
+  },
+  {
+   "away": "SAS",
+   "devig_close_prob": 0.099553,
+   "feature_avail": {
+    "home_edge": "2025-01-04T00:00:00",
+    "rest": "2025-01-04T00:00:00",
+    "strength": "2025-01-04T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.934745,
+    "rest": -1.197139,
+    "strength": -1.636613
+   },
+   "game_date": "2025-01-05",
+   "game_id": "g0024",
+   "home": "PHX",
+   "outcome": 0,
+   "regime": "pregame",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2025-01-05T19:00:00",
+   "truth_wp": 0.065611
+  },
+  {
+   "away": "MIA",
+   "devig_close_prob": 0.569152,
+   "feature_avail": {
+    "home_edge": "2025-01-07T00:00:00",
+    "rest": "2025-01-07T00:00:00",
+    "strength": "2025-01-07T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.588665,
+    "rest": -1.905256,
+    "strength": 0.83573
+   },
+   "game_date": "2025-01-08",
+   "game_id": "g0025",
+   "home": "BOS",
+   "outcome": 0,
+   "regime": "pregame",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2025-01-08T19:00:00",
+   "truth_wp": 0.590144
+  },
+  {
+   "away": "DEN",
+   "devig_close_prob": 0.594351,
+   "feature_avail": {
+    "home_edge": "2024-11-16T00:00:00",
+    "rest": "2024-11-16T00:00:00",
+    "strength": "2024-11-16T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.768413,
+    "rest": -0.082151,
+    "strength": 0.159842
+   },
+   "game_date": "2024-11-17",
+   "game_id": "g0026",
+   "home": "GSW",
+   "outcome": 0,
+   "regime": "pregame",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2024-11-17T19:00:00",
+   "truth_wp": 0.59262
+  },
+  {
+   "away": "MIA",
+   "devig_close_prob": 0.446349,
+   "feature_avail": {
+    "home_edge": "2024-11-23T00:00:00",
+    "rest": "2024-11-23T00:00:00",
+    "strength": "2024-11-23T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.068403,
+    "rest": -0.384201,
+    "strength": -0.059594
+   },
+   "game_date": "2024-11-24",
+   "game_id": "g0027",
+   "home": "NYK",
+   "outcome": 1,
+   "regime": "pregame",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2024-11-24T19:00:00",
+   "truth_wp": 0.435749
+  },
+  {
+   "away": "GSW",
+   "devig_close_prob": 0.364513,
+   "feature_avail": {
+    "home_edge": "2024-12-19T00:00:00",
+    "rest": "2024-12-19T00:00:00",
+    "strength": "2024-12-19T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.515428,
+    "rest": -0.451219,
+    "strength": -0.263675
+   },
+   "game_date": "2024-12-20",
+   "game_id": "g0028",
+   "home": "SAS",
+   "outcome": 0,
+   "regime": "pregame",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2024-12-20T19:00:00",
+   "truth_wp": 0.385588
+  },
+  {
+   "away": "BOS",
+   "devig_close_prob": 0.390612,
+   "feature_avail": {
+    "home_edge": "2025-01-01T00:00:00",
+    "rest": "2025-01-01T00:00:00",
+    "strength": "2025-01-01T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.313783,
+    "rest": 0.386735,
+    "strength": -0.485368
+   },
+   "game_date": "2025-01-02",
+   "game_id": "g0029",
+   "home": "ATL",
+   "outcome": 0,
+   "regime": "pregame",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2025-01-02T19:00:00",
+   "truth_wp": 0.399463
+  },
+  {
+   "away": "CHI",
+   "devig_close_prob": 0.506985,
+   "feature_avail": {
+    "home_edge": "2025-01-14T00:00:00",
+    "rest": "2025-01-14T00:00:00",
+    "strength": "2025-01-14T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.455821,
+    "rest": -1.19173,
+    "strength": 0.374559
+   },
+   "game_date": "2025-01-15",
+   "game_id": "g0030",
+   "home": "LAL",
+   "outcome": 1,
+   "regime": "pregame",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2025-01-15T19:00:00",
+   "truth_wp": 0.510617
+  },
+  {
+   "away": "LAL",
+   "devig_close_prob": 0.739051,
+   "feature_avail": {
+    "home_edge": "2025-01-15T00:00:00",
+    "rest": "2025-01-15T00:00:00",
+    "strength": "2025-01-15T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.90212,
+    "rest": -0.212381,
+    "strength": 0.510559
+   },
+   "game_date": "2025-01-16",
+   "game_id": "g0031",
+   "home": "ATL",
+   "outcome": 1,
+   "regime": "pregame",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2025-01-16T19:00:00",
+   "truth_wp": 0.697226
+  },
+  {
+   "away": "DAL",
+   "devig_close_prob": 0.754885,
+   "feature_avail": {
+    "home_edge": "2025-03-13T00:00:00",
+    "rest": "2025-03-13T00:00:00",
+    "strength": "2025-03-13T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.742032,
+    "rest": 0.13573,
+    "strength": 0.724612
+   },
+   "game_date": "2025-03-14",
+   "game_id": "g0032",
+   "home": "CHI",
+   "outcome": 0,
+   "regime": "pregame",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2025-03-14T19:00:00",
+   "truth_wp": 0.780371
+  },
+  {
+   "away": "DAL",
+   "devig_close_prob": 0.727768,
+   "feature_avail": {
+    "home_edge": "2024-11-18T00:00:00",
+    "rest": "2024-11-18T00:00:00",
+    "strength": "2024-11-18T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.818965,
+    "rest": -0.421168,
+    "strength": 0.689136
+   },
+   "game_date": "2024-11-19",
+   "game_id": "g0033",
+   "home": "MIL",
+   "outcome": 1,
+   "regime": "pregame",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2024-11-19T19:00:00",
+   "truth_wp": 0.722911
+  },
+  {
+   "away": "MIA",
+   "devig_close_prob": 0.608263,
+   "feature_avail": {
+    "home_edge": "2024-11-23T00:00:00",
+    "rest": "2024-11-23T00:00:00",
+    "strength": "2024-11-23T00:00:00"
+   },
+   "features": {
+    "home_edge": -0.049882,
+    "rest": 0.117225,
+    "strength": 0.27452
+   },
+   "game_date": "2024-11-24",
+   "game_id": "g0034",
+   "home": "CHI",
+   "outcome": 0,
+   "regime": "pregame",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2024-11-24T19:00:00",
+   "truth_wp": 0.605986
+  },
+  {
+   "away": "DAL",
+   "devig_close_prob": 0.332228,
+   "feature_avail": {
+    "home_edge": "2024-11-25T00:00:00",
+    "rest": "2024-11-25T00:00:00",
+    "strength": "2024-11-25T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.646269,
+    "rest": -0.779021,
+    "strength": -0.331203
+   },
+   "game_date": "2024-11-26",
+   "game_id": "g0035",
+   "home": "LAL",
+   "outcome": 0,
+   "regime": "q1",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2024-11-26T19:08:00",
+   "truth_wp": 0.333671
+  },
+  {
+   "away": "PHX",
+   "devig_close_prob": 0.443069,
+   "feature_avail": {
+    "home_edge": "2025-01-08T00:00:00",
+    "rest": "2025-01-08T00:00:00",
+    "strength": "2025-01-08T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.660578,
+    "rest": -1.542093,
+    "strength": 0.374458
+   },
+   "game_date": "2025-01-09",
+   "game_id": "g0036",
+   "home": "CHI",
+   "outcome": 0,
+   "regime": "q1",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2025-01-09T19:08:00",
+   "truth_wp": 0.479596
+  },
+  {
+   "away": "MIL",
+   "devig_close_prob": 0.204302,
+   "feature_avail": {
+    "home_edge": "2024-11-22T00:00:00",
+    "rest": "2024-11-22T00:00:00",
+    "strength": "2024-11-22T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.255126,
+    "rest": 1.058502,
+    "strength": -1.26273
+   },
+   "game_date": "2024-11-23",
+   "game_id": "g0037",
+   "home": "DEN",
+   "outcome": 0,
+   "regime": "q1",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2024-11-23T19:08:00",
+   "truth_wp": 0.23599
+  },
+  {
+   "away": "DEN",
+   "devig_close_prob": 0.373981,
+   "feature_avail": {
+    "home_edge": "2025-01-07T00:00:00",
+    "rest": "2025-01-07T00:00:00",
+    "strength": "2025-01-07T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.615453,
+    "rest": 0.510412,
+    "strength": -0.857192
+   },
+   "game_date": "2025-01-08",
+   "game_id": "g0038",
+   "home": "ATL",
+   "outcome": 0,
+   "regime": "q1",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2025-01-08T19:08:00",
+   "truth_wp": 0.311954
+  },
+  {
+   "away": "CHI",
+   "devig_close_prob": 0.773861,
+   "feature_avail": {
+    "home_edge": "2025-01-12T00:00:00",
+    "rest": "2025-01-12T00:00:00",
+    "strength": "2025-01-12T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.897015,
+    "rest": -1.088169,
+    "strength": 1.18936
+   },
+   "game_date": "2025-01-13",
+   "game_id": "g0039",
+   "home": "SAS",
+   "outcome": 1,
+   "regime": "q1",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2025-01-13T19:08:00",
+   "truth_wp": 0.793356
+  },
+  {
+   "away": "SAS",
+   "devig_close_prob": 0.692881,
+   "feature_avail": {
+    "home_edge": "2025-03-10T00:00:00",
+    "rest": "2025-03-10T00:00:00",
+    "strength": "2025-03-10T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.571405,
+    "rest": 0.240941,
+    "strength": 0.472056
+   },
+   "game_date": "2025-03-11",
+   "game_id": "g0040",
+   "home": "PHX",
+   "outcome": 0,
+   "regime": "q1",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2025-03-11T19:08:00",
+   "truth_wp": 0.715897
+  },
+  {
+   "away": "PHX",
+   "devig_close_prob": 0.61427,
+   "feature_avail": {
+    "home_edge": "2024-12-18T00:00:00",
+    "rest": "2024-12-18T00:00:00",
+    "strength": "2024-12-18T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.156406,
+    "rest": -0.043003,
+    "strength": 0.522868
+   },
+   "game_date": "2024-12-19",
+   "game_id": "g0041",
+   "home": "CHI",
+   "outcome": 0,
+   "regime": "q1",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2024-12-19T19:08:00",
+   "truth_wp": 0.679095
+  },
+  {
+   "away": "MIA",
+   "devig_close_prob": 0.56201,
+   "feature_avail": {
+    "home_edge": "2025-01-17T00:00:00",
+    "rest": "2025-01-17T00:00:00",
+    "strength": "2025-01-17T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.314913,
+    "rest": 0.168005,
+    "strength": 0.091497
+   },
+   "game_date": "2025-01-18",
+   "game_id": "g0042",
+   "home": "DEN",
+   "outcome": 1,
+   "regime": "q1",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2025-01-18T19:08:00",
+   "truth_wp": 0.572199
+  },
+  {
+   "away": "MIL",
+   "devig_close_prob": 0.575545,
+   "feature_avail": {
+    "home_edge": "2025-01-16T00:00:00",
+    "rest": "2025-01-16T00:00:00",
+    "strength": "2025-01-16T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.231877,
+    "rest": 0.014139,
+    "strength": 0.065754
+   },
+   "game_date": "2025-01-17",
+   "game_id": "g0043",
+   "home": "DAL",
+   "outcome": 0,
+   "regime": "q1",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2025-01-17T19:08:00",
+   "truth_wp": 0.539193
+  },
+  {
+   "away": "GSW",
+   "devig_close_prob": 0.508487,
+   "feature_avail": {
+    "home_edge": "2024-12-07T00:00:00",
+    "rest": "2024-12-07T00:00:00",
+    "strength": "2024-12-07T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.272211,
+    "rest": 0.349616,
+    "strength": -0.23113
+   },
+   "game_date": "2024-12-08",
+   "game_id": "g0044",
+   "home": "MIL",
+   "outcome": 0,
+   "regime": "q1",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2024-12-08T19:08:00",
+   "truth_wp": 0.479831
+  },
+  {
+   "away": "LAL",
+   "devig_close_prob": 0.566178,
+   "feature_avail": {
+    "home_edge": "2024-11-24T00:00:00",
+    "rest": "2024-11-24T00:00:00",
+    "strength": "2024-11-24T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.151641,
+    "rest": -0.281634,
+    "strength": 0.201441
+   },
+   "game_date": "2024-11-25",
+   "game_id": "g0045",
+   "home": "MIA",
+   "outcome": 0,
+   "regime": "q1",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2024-11-25T19:08:00",
+   "truth_wp": 0.544658
+  },
+  {
+   "away": "GSW",
+   "devig_close_prob": 0.174976,
+   "feature_avail": {
+    "home_edge": "2024-12-14T00:00:00",
+    "rest": "2024-12-14T00:00:00",
+    "strength": "2024-12-14T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.2175,
+    "rest": -1.131897,
+    "strength": -0.673836
+   },
+   "game_date": "2024-12-15",
+   "game_id": "g0046",
+   "home": "CHI",
+   "outcome": 0,
+   "regime": "q1",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2024-12-15T19:08:00",
+   "truth_wp": 0.189242
+  },
+  {
+   "away": "PHX",
+   "devig_close_prob": 0.637298,
+   "feature_avail": {
+    "home_edge": "2024-11-12T00:00:00",
+    "rest": "2024-11-12T00:00:00",
+    "strength": "2024-11-12T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.392679,
+    "rest": -0.676948,
+    "strength": 0.604896
+   },
+   "game_date": "2024-11-13",
+   "game_id": "g0047",
+   "home": "BOS",
+   "outcome": 1,
+   "regime": "q2",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2024-11-13T19:32:00",
+   "truth_wp": 0.647153
+  },
+  {
+   "away": "ATL",
+   "devig_close_prob": 0.548643,
+   "feature_avail": {
+    "home_edge": "2024-12-15T00:00:00",
+    "rest": "2024-12-15T00:00:00",
+    "strength": "2024-12-15T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.843256,
+    "rest": -0.193934,
+    "strength": -0.003993
+   },
+   "game_date": "2024-12-16",
+   "game_id": "g0048",
+   "home": "SAS",
+   "outcome": 1,
+   "regime": "q2",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2024-12-16T19:32:00",
+   "truth_wp": 0.527038
+  },
+  {
+   "away": "NYK",
+   "devig_close_prob": 0.70982,
+   "feature_avail": {
+    "home_edge": "2025-01-19T00:00:00",
+    "rest": "2025-01-19T00:00:00",
+    "strength": "2025-01-19T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.966139,
+    "rest": -0.521739,
+    "strength": 0.590991
+   },
+   "game_date": "2025-01-20",
+   "game_id": "g0049",
+   "home": "DEN",
+   "outcome": 1,
+   "regime": "q2",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2025-01-20T19:32:00",
+   "truth_wp": 0.691694
+  },
+  {
+   "away": "MIA",
+   "devig_close_prob": 0.358564,
+   "feature_avail": {
+    "home_edge": "2024-12-23T00:00:00",
+    "rest": "2024-12-23T00:00:00",
+    "strength": "2024-12-23T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.141445,
+    "rest": 0.197032,
+    "strength": -0.613297
+   },
+   "game_date": "2024-12-24",
+   "game_id": "g0050",
+   "home": "MIL",
+   "outcome": 0,
+   "regime": "q2",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2024-12-24T19:32:00",
+   "truth_wp": 0.32635
+  },
+  {
+   "away": "BOS",
+   "devig_close_prob": 0.368138,
+   "feature_avail": {
+    "home_edge": "2025-03-02T00:00:00",
+    "rest": "2025-03-02T00:00:00",
+    "strength": "2025-03-02T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.678447,
+    "rest": 0.667072,
+    "strength": -0.695662
+   },
+   "game_date": "2025-03-03",
+   "game_id": "g0051",
+   "home": "NYK",
+   "outcome": 0,
+   "regime": "q2",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2025-03-03T19:32:00",
+   "truth_wp": 0.384432
+  },
+  {
+   "away": "DAL",
+   "devig_close_prob": 0.437548,
+   "feature_avail": {
+    "home_edge": "2025-01-29T00:00:00",
+    "rest": "2025-01-29T00:00:00",
+    "strength": "2025-01-29T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.288497,
+    "rest": -0.331807,
+    "strength": 0.037457
+   },
+   "game_date": "2025-01-30",
+   "game_id": "g0052",
+   "home": "LAL",
+   "outcome": 0,
+   "regime": "q2",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2025-01-30T19:32:00",
+   "truth_wp": 0.489667
+  },
+  {
+   "away": "MIA",
+   "devig_close_prob": 0.324864,
+   "feature_avail": {
+    "home_edge": "2025-01-30T00:00:00",
+    "rest": "2025-01-30T00:00:00",
+    "strength": "2025-01-30T00:00:00"
+   },
+   "features": {
+    "home_edge": 1.1301,
+    "rest": -0.472539,
+    "strength": -0.430089
+   },
+   "game_date": "2025-01-31",
+   "game_id": "g0053",
+   "home": "NYK",
+   "outcome": 0,
+   "regime": "q2",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2025-01-31T19:32:00",
+   "truth_wp": 0.364504
+  },
+  {
+   "away": "DAL",
+   "devig_close_prob": 0.820176,
+   "feature_avail": {
+    "home_edge": "2025-03-10T00:00:00",
+    "rest": "2025-03-10T00:00:00",
+    "strength": "2025-03-10T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.583435,
+    "rest": 0.360777,
+    "strength": 0.778504
+   },
+   "game_date": "2025-03-11",
+   "game_id": "g0054",
+   "home": "SAS",
+   "outcome": 1,
+   "regime": "q2",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2025-03-11T19:32:00",
+   "truth_wp": 0.804735
+  },
+  {
+   "away": "ATL",
+   "devig_close_prob": 0.414396,
+   "feature_avail": {
+    "home_edge": "2024-12-03T00:00:00",
+    "rest": "2024-12-03T00:00:00",
+    "strength": "2024-12-03T00:00:00"
+   },
+   "features": {
+    "home_edge": -0.316627,
+    "rest": -0.122493,
+    "strength": -0.11324
+   },
+   "game_date": "2024-12-04",
+   "game_id": "g0055",
+   "home": "DAL",
+   "outcome": 0,
+   "regime": "q2",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2024-12-04T19:32:00",
+   "truth_wp": 0.425817
+  },
+  {
+   "away": "LAL",
+   "devig_close_prob": 0.23501,
+   "feature_avail": {
+    "home_edge": "2025-01-24T00:00:00",
+    "rest": "2025-01-24T00:00:00",
+    "strength": "2025-01-24T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.818589,
+    "rest": -1.269309,
+    "strength": -0.519654
+   },
+   "game_date": "2025-01-25",
+   "game_id": "g0056",
+   "home": "MIL",
+   "outcome": 0,
+   "regime": "q2",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2025-01-25T19:32:00",
+   "truth_wp": 0.239118
+  },
+  {
+   "away": "DAL",
+   "devig_close_prob": 0.404857,
+   "feature_avail": {
+    "home_edge": "2024-11-04T00:00:00",
+    "rest": "2024-11-04T00:00:00",
+    "strength": "2024-11-04T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.47334,
+    "rest": -0.388231,
+    "strength": -0.272154
+   },
+   "game_date": "2024-11-05",
+   "game_id": "g0057",
+   "home": "CHI",
+   "outcome": 1,
+   "regime": "q2",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2024-11-05T19:32:00",
+   "truth_wp": 0.387746
+  },
+  {
+   "away": "DEN",
+   "devig_close_prob": 0.402217,
+   "feature_avail": {
+    "home_edge": "2024-11-04T00:00:00",
+    "rest": "2024-11-04T00:00:00",
+    "strength": "2024-11-04T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.522285,
+    "rest": -1.17747,
+    "strength": -0.016959
+   },
+   "game_date": "2024-11-05",
+   "game_id": "g0058",
+   "home": "SAS",
+   "outcome": 0,
+   "regime": "q2",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2024-11-05T19:32:00",
+   "truth_wp": 0.381802
+  },
+  {
+   "away": "ATL",
+   "devig_close_prob": 0.658659,
+   "feature_avail": {
+    "home_edge": "2024-12-15T00:00:00",
+    "rest": "2024-12-15T00:00:00",
+    "strength": "2024-12-15T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.442983,
+    "rest": 0.021294,
+    "strength": 0.31453
+   },
+   "game_date": "2024-12-16",
+   "game_id": "g0059",
+   "home": "MIL",
+   "outcome": 1,
+   "regime": "q3",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2024-12-16T19:56:00",
+   "truth_wp": 0.636854
+  },
+  {
+   "away": "DEN",
+   "devig_close_prob": 0.339013,
+   "feature_avail": {
+    "home_edge": "2025-02-22T00:00:00",
+    "rest": "2025-02-22T00:00:00",
+    "strength": "2025-02-22T00:00:00"
+   },
+   "features": {
+    "home_edge": 1.005607,
+    "rest": -1.273033,
+    "strength": -0.162828
+   },
+   "game_date": "2025-02-23",
+   "game_id": "g0060",
+   "home": "LAL",
+   "outcome": 0,
+   "regime": "q3",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2025-02-23T19:56:00",
+   "truth_wp": 0.351358
+  },
+  {
+   "away": "PHX",
+   "devig_close_prob": 0.637328,
+   "feature_avail": {
+    "home_edge": "2025-02-15T00:00:00",
+    "rest": "2025-02-15T00:00:00",
+    "strength": "2025-02-15T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.733181,
+    "rest": -0.171181,
+    "strength": 0.23466
+   },
+   "game_date": "2025-02-16",
+   "game_id": "g0061",
+   "home": "DEN",
+   "outcome": 1,
+   "regime": "q3",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2025-02-16T19:56:00",
+   "truth_wp": 0.604973
+  },
+  {
+   "away": "BOS",
+   "devig_close_prob": 0.656086,
+   "feature_avail": {
+    "home_edge": "2024-11-29T00:00:00",
+    "rest": "2024-11-29T00:00:00",
+    "strength": "2024-11-29T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.134433,
+    "rest": -0.230191,
+    "strength": 0.517307
+   },
+   "game_date": "2024-11-30",
+   "game_id": "g0062",
+   "home": "LAL",
+   "outcome": 1,
+   "regime": "q3",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2024-11-30T19:56:00",
+   "truth_wp": 0.655373
+  },
+  {
+   "away": "MIL",
+   "devig_close_prob": 0.736251,
+   "feature_avail": {
+    "home_edge": "2024-12-27T00:00:00",
+    "rest": "2024-12-27T00:00:00",
+    "strength": "2024-12-27T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.783026,
+    "rest": -1.395356,
+    "strength": 1.149127
+   },
+   "game_date": "2024-12-28",
+   "game_id": "g0063",
+   "home": "CHI",
+   "outcome": 0,
+   "regime": "q3",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2024-12-28T19:56:00",
+   "truth_wp": 0.751543
+  },
+  {
+   "away": "PHX",
+   "devig_close_prob": 0.102828,
+   "feature_avail": {
+    "home_edge": "2024-12-29T00:00:00",
+    "rest": "2024-12-29T00:00:00",
+    "strength": "2024-12-29T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.227235,
+    "rest": -0.260206,
+    "strength": -1.695696
+   },
+   "game_date": "2024-12-30",
+   "game_id": "g0064",
+   "home": "NYK",
+   "outcome": 0,
+   "regime": "q3",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2024-12-30T19:56:00",
+   "truth_wp": 0.079638
+  },
+  {
+   "away": "SAS",
+   "devig_close_prob": 0.589,
+   "feature_avail": {
+    "home_edge": "2025-02-09T00:00:00",
+    "rest": "2025-02-09T00:00:00",
+    "strength": "2025-02-09T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.498476,
+    "rest": 0.606583,
+    "strength": -0.007656
+   },
+   "game_date": "2025-02-10",
+   "game_id": "g0065",
+   "home": "LAL",
+   "outcome": 1,
+   "regime": "q3",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2025-02-10T19:56:00",
+   "truth_wp": 0.602811
+  },
+  {
+   "away": "MIA",
+   "devig_close_prob": 0.44649,
+   "feature_avail": {
+    "home_edge": "2025-02-13T00:00:00",
+    "rest": "2025-02-13T00:00:00",
+    "strength": "2025-02-13T00:00:00"
+   },
+   "features": {
+    "home_edge": -0.414553,
+    "rest": -0.762721,
+    "strength": 0.091844
+   },
+   "game_date": "2025-02-14",
+   "game_id": "g0066",
+   "home": "NYK",
+   "outcome": 1,
+   "regime": "q3",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2025-02-14T19:56:00",
+   "truth_wp": 0.411827
+  },
+  {
+   "away": "NYK",
+   "devig_close_prob": 0.883905,
+   "feature_avail": {
+    "home_edge": "2025-02-19T00:00:00",
+    "rest": "2025-02-19T00:00:00",
+    "strength": "2025-02-19T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.7367,
+    "rest": 2.060467,
+    "strength": 0.415963
+   },
+   "game_date": "2025-02-20",
+   "game_id": "g0067",
+   "home": "LAL",
+   "outcome": 1,
+   "regime": "q3",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2025-02-20T19:56:00",
+   "truth_wp": 0.857754
+  },
+  {
+   "away": "MIL",
+   "devig_close_prob": 0.875435,
+   "feature_avail": {
+    "home_edge": "2024-11-29T00:00:00",
+    "rest": "2024-11-29T00:00:00",
+    "strength": "2024-11-29T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.618255,
+    "rest": 1.249052,
+    "strength": 0.603242
+   },
+   "game_date": "2024-11-30",
+   "game_id": "g0068",
+   "home": "GSW",
+   "outcome": 1,
+   "regime": "q3",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2024-11-30T19:56:00",
+   "truth_wp": 0.835295
+  },
+  {
+   "away": "DEN",
+   "devig_close_prob": 0.213705,
+   "feature_avail": {
+    "home_edge": "2025-01-31T00:00:00",
+    "rest": "2025-01-31T00:00:00",
+    "strength": "2025-01-31T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.398232,
+    "rest": -0.776058,
+    "strength": -0.604937
+   },
+   "game_date": "2025-02-01",
+   "game_id": "g0069",
+   "home": "BOS",
+   "outcome": 1,
+   "regime": "q3",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2025-02-01T19:56:00",
+   "truth_wp": 0.243169
+  },
+  {
+   "away": "LAL",
+   "devig_close_prob": 0.626334,
+   "feature_avail": {
+    "home_edge": "2025-02-10T00:00:00",
+    "rest": "2025-02-10T00:00:00",
+    "strength": "2025-02-10T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.274619,
+    "rest": 0.436767,
+    "strength": 0.215418
+   },
+   "game_date": "2025-02-11",
+   "game_id": "g0000",
+   "home": "ATL",
+   "outcome": 1,
+   "regime": "q3",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2025-02-11T19:56:00",
+   "truth_wp": 0.643049
+  },
+  {
+   "away": "MIA",
+   "devig_close_prob": 0.572992,
+   "feature_avail": {
+    "home_edge": "2025-03-02T00:00:00",
+    "rest": "2025-03-02T00:00:00",
+    "strength": "2025-03-02T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.373316,
+    "rest": -0.943161,
+    "strength": 0.490593
+   },
+   "game_date": "2025-03-03",
+   "game_id": "g0001",
+   "home": "GSW",
+   "outcome": 0,
+   "regime": "q4",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2025-03-03T20:24:00",
+   "truth_wp": 0.576538
+  },
+  {
+   "away": "DEN",
+   "devig_close_prob": 0.285126,
+   "feature_avail": {
+    "home_edge": "2024-11-28T00:00:00",
+    "rest": "2024-11-28T00:00:00",
+    "strength": "2024-11-28T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.398643,
+    "rest": -0.659489,
+    "strength": -0.541697
+   },
+   "game_date": "2024-11-29",
+   "game_id": "g0002",
+   "home": "ATL",
+   "outcome": 0,
+   "regime": "q4",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2024-11-29T20:24:00",
+   "truth_wp": 0.271217
+  },
+  {
+   "away": "SAS",
+   "devig_close_prob": 0.672443,
+   "feature_avail": {
+    "home_edge": "2025-02-12T00:00:00",
+    "rest": "2025-02-12T00:00:00",
+    "strength": "2025-02-12T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.378152,
+    "rest": -0.151357,
+    "strength": 0.594487
+   },
+   "game_date": "2025-02-13",
+   "game_id": "g0003",
+   "home": "MIL",
+   "outcome": 1,
+   "regime": "q4",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2025-02-13T20:24:00",
+   "truth_wp": 0.700807
+  },
+  {
+   "away": "LAL",
+   "devig_close_prob": 0.276368,
+   "feature_avail": {
+    "home_edge": "2024-11-09T00:00:00",
+    "rest": "2024-11-09T00:00:00",
+    "strength": "2024-11-09T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.593382,
+    "rest": -0.232993,
+    "strength": -0.940642
+   },
+   "game_date": "2024-11-10",
+   "game_id": "g0004",
+   "home": "GSW",
+   "outcome": 0,
+   "regime": "q4",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2024-11-10T20:24:00",
+   "truth_wp": 0.216692
+  },
+  {
+   "away": "DEN",
+   "devig_close_prob": 0.642087,
+   "feature_avail": {
+    "home_edge": "2025-01-15T00:00:00",
+    "rest": "2025-01-15T00:00:00",
+    "strength": "2025-01-15T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.866844,
+    "rest": 0.740488,
+    "strength": 0.161967
+   },
+   "game_date": "2025-01-16",
+   "game_id": "g0005",
+   "home": "CHI",
+   "outcome": 1,
+   "regime": "q4",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2025-01-16T20:24:00",
+   "truth_wp": 0.692899
+  },
+  {
+   "away": "SAS",
+   "devig_close_prob": 0.256574,
+   "feature_avail": {
+    "home_edge": "2025-01-16T00:00:00",
+    "rest": "2025-01-16T00:00:00",
+    "strength": "2025-01-16T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.722857,
+    "rest": -1.714903,
+    "strength": -0.370869
+   },
+   "game_date": "2025-01-17",
+   "game_id": "g0006",
+   "home": "BOS",
+   "outcome": 0,
+   "regime": "q4",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2025-01-17T20:24:00",
+   "truth_wp": 0.232196
+  },
+  {
+   "away": "MIL",
+   "devig_close_prob": 0.443595,
+   "feature_avail": {
+    "home_edge": "2024-12-21T00:00:00",
+    "rest": "2024-12-21T00:00:00",
+    "strength": "2024-12-21T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.496334,
+    "rest": 1.320962,
+    "strength": -0.726944
+   },
+   "game_date": "2024-12-22",
+   "game_id": "g0007",
+   "home": "DEN",
+   "outcome": 0,
+   "regime": "q4",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2024-12-22T20:24:00",
+   "truth_wp": 0.441973
+  },
+  {
+   "away": "MIL",
+   "devig_close_prob": 0.389072,
+   "feature_avail": {
+    "home_edge": "2024-11-29T00:00:00",
+    "rest": "2024-11-29T00:00:00",
+    "strength": "2024-11-29T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.273569,
+    "rest": -1.110382,
+    "strength": -0.169893
+   },
+   "game_date": "2024-11-30",
+   "game_id": "g0008",
+   "home": "NYK",
+   "outcome": 0,
+   "regime": "q4",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2024-11-30T20:24:00",
+   "truth_wp": 0.32637
+  },
+  {
+   "away": "GSW",
+   "devig_close_prob": 0.430569,
+   "feature_avail": {
+    "home_edge": "2025-03-05T00:00:00",
+    "rest": "2025-03-05T00:00:00",
+    "strength": "2025-03-05T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.41375,
+    "rest": 0.22343,
+    "strength": -0.343538
+   },
+   "game_date": "2025-03-06",
+   "game_id": "g0009",
+   "home": "ATL",
+   "outcome": 0,
+   "regime": "q4",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2025-03-06T20:24:00",
+   "truth_wp": 0.433938
+  },
+  {
+   "away": "ATL",
+   "devig_close_prob": 0.660973,
+   "feature_avail": {
+    "home_edge": "2024-12-26T00:00:00",
+    "rest": "2024-12-26T00:00:00",
+    "strength": "2024-12-26T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.742397,
+    "rest": -0.652379,
+    "strength": 0.510827
+   },
+   "game_date": "2024-12-27",
+   "game_id": "g0010",
+   "home": "SAS",
+   "outcome": 1,
+   "regime": "q4",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2024-12-27T20:24:00",
+   "truth_wp": 0.639816
+  },
+  {
+   "away": "BOS",
+   "devig_close_prob": 0.667095,
+   "feature_avail": {
+    "home_edge": "2024-11-18T00:00:00",
+    "rest": "2024-11-18T00:00:00",
+    "strength": "2024-11-18T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.368165,
+    "rest": -0.898064,
+    "strength": 0.773275
+   },
+   "game_date": "2024-11-19",
+   "game_id": "g0011",
+   "home": "DEN",
+   "outcome": 1,
+   "regime": "q4",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2024-11-19T20:24:00",
+   "truth_wp": 0.673838
+  },
+  {
+   "away": "LAL",
+   "devig_close_prob": 0.416798,
+   "feature_avail": {
+    "home_edge": "2024-12-28T00:00:00",
+    "rest": "2024-12-28T00:00:00",
+    "strength": "2024-12-28T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.888395,
+    "rest": 0.441231,
+    "strength": -0.585024
+   },
+   "game_date": "2024-12-29",
+   "game_id": "g0012",
+   "home": "BOS",
+   "outcome": 0,
+   "regime": "q4",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2024-12-29T20:24:00",
+   "truth_wp": 0.407015
+  },
+  {
+   "away": "MIL",
+   "devig_close_prob": 0.951936,
+   "feature_avail": {
+    "home_edge": "2025-02-23T00:00:00",
+    "rest": "2025-02-23T00:00:00",
+    "strength": "2025-02-23T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.60787,
+    "rest": 1.612824,
+    "strength": 3.16236
+   },
+   "game_date": "2025-02-24",
+   "game_id": "g0013",
+   "home": "ATL",
+   "outcome": 1,
+   "regime": "blowout",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2025-02-24T19:00:00",
+   "truth_wp": 0.95
+  },
+  {
+   "away": "MIL",
+   "devig_close_prob": 0.952971,
+   "feature_avail": {
+    "home_edge": "2025-01-02T00:00:00",
+    "rest": "2025-01-02T00:00:00",
+    "strength": "2025-01-02T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.456659,
+    "rest": -0.371511,
+    "strength": 2.89676
+   },
+   "game_date": "2025-01-03",
+   "game_id": "g0014",
+   "home": "NYK",
+   "outcome": 1,
+   "regime": "blowout",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2025-01-03T19:00:00",
+   "truth_wp": 0.95
+  },
+  {
+   "away": "SAS",
+   "devig_close_prob": 0.950379,
+   "feature_avail": {
+    "home_edge": "2024-11-26T00:00:00",
+    "rest": "2024-11-26T00:00:00",
+    "strength": "2024-11-26T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.677038,
+    "rest": -0.278051,
+    "strength": 3.017436
+   },
+   "game_date": "2024-11-27",
+   "game_id": "g0015",
+   "home": "PHX",
+   "outcome": 1,
+   "regime": "blowout",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2024-11-27T19:00:00",
+   "truth_wp": 0.95
+  },
+  {
+   "away": "MIL",
+   "devig_close_prob": 0.121147,
+   "feature_avail": {
+    "home_edge": "2025-01-30T00:00:00",
+    "rest": "2025-01-30T00:00:00",
+    "strength": "2025-01-30T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.568403,
+    "rest": -0.884325,
+    "strength": -3.080999
+   },
+   "game_date": "2025-01-31",
+   "game_id": "g0016",
+   "home": "MIA",
+   "outcome": 0,
+   "regime": "blowout",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2025-01-31T19:00:00",
+   "truth_wp": 0.05
+  },
+  {
+   "away": "DEN",
+   "devig_close_prob": 0.924564,
+   "feature_avail": {
+    "home_edge": "2025-01-17T00:00:00",
+    "rest": "2025-01-17T00:00:00",
+    "strength": "2025-01-17T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.044058,
+    "rest": 0.113003,
+    "strength": 2.943398
+   },
+   "game_date": "2025-01-18",
+   "game_id": "g0017",
+   "home": "BOS",
+   "outcome": 1,
+   "regime": "blowout",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2025-01-18T19:00:00",
+   "truth_wp": 0.95
+  },
+  {
+   "away": "SAS",
+   "devig_close_prob": 0.022529,
+   "feature_avail": {
+    "home_edge": "2025-01-31T00:00:00",
+    "rest": "2025-01-31T00:00:00",
+    "strength": "2025-01-31T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.637212,
+    "rest": -1.158092,
+    "strength": -2.650576
+   },
+   "game_date": "2025-02-01",
+   "game_id": "g0018",
+   "home": "MIL",
+   "outcome": 0,
+   "regime": "blowout",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2025-02-01T19:00:00",
+   "truth_wp": 0.05
+  },
+  {
+   "away": "CHI",
+   "devig_close_prob": 0.700617,
+   "feature_avail": {
+    "foul_diff": "2024-12-05T00:00:00",
+    "home_edge": "2024-12-05T00:00:00",
+    "rest": "2024-12-05T00:00:00",
+    "strength": "2024-12-05T00:00:00"
+   },
+   "features": {
+    "foul_diff": -1.668601,
+    "home_edge": 0.039757,
+    "rest": 0.839033,
+    "strength": 0.740117
+   },
+   "game_date": "2024-12-06",
+   "game_id": "g0019",
+   "home": "ATL",
+   "outcome": 1,
+   "regime": "foul_trouble",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2024-12-06T19:00:00",
+   "truth_wp": 0.689585
+  },
+  {
+   "away": "PHX",
+   "devig_close_prob": 0.735914,
+   "feature_avail": {
+    "foul_diff": "2025-01-20T00:00:00",
+    "home_edge": "2025-01-20T00:00:00",
+    "rest": "2025-01-20T00:00:00",
+    "strength": "2025-01-20T00:00:00"
+   },
+   "features": {
+    "foul_diff": 0.979189,
+    "home_edge": 0.229218,
+    "rest": 1.735316,
+    "strength": -0.123833
+   },
+   "game_date": "2025-01-21",
+   "game_id": "g0020",
+   "home": "SAS",
+   "outcome": 1,
+   "regime": "foul_trouble",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2025-01-21T19:00:00",
+   "truth_wp": 0.75828
+  },
+  {
+   "away": "ATL",
+   "devig_close_prob": 0.362712,
+   "feature_avail": {
+    "foul_diff": "2025-02-11T00:00:00",
+    "home_edge": "2025-02-11T00:00:00",
+    "rest": "2025-02-11T00:00:00",
+    "strength": "2025-02-11T00:00:00"
+   },
+   "features": {
+    "foul_diff": -0.33559,
+    "home_edge": 0.162069,
+    "rest": 1.181893,
+    "strength": -0.799231
+   },
+   "game_date": "2025-02-12",
+   "game_id": "g0021",
+   "home": "CHI",
+   "outcome": 1,
+   "regime": "foul_trouble",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2025-02-12T19:00:00",
+   "truth_wp": 0.349396
+  },
+  {
+   "away": "GSW",
+   "devig_close_prob": 0.482334,
+   "feature_avail": {
+    "foul_diff": "2025-03-04T00:00:00",
+    "home_edge": "2025-03-04T00:00:00",
+    "rest": "2025-03-04T00:00:00",
+    "strength": "2025-03-04T00:00:00"
+   },
+   "features": {
+    "foul_diff": -0.801361,
+    "home_edge": 0.953336,
+    "rest": -0.603348,
+    "strength": 0.182412
+   },
+   "game_date": "2025-03-05",
+   "game_id": "g0022",
+   "home": "DEN",
+   "outcome": 0,
+   "regime": "foul_trouble",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2025-03-05T19:00:00",
+   "truth_wp": 0.467917
+  },
+  {
+   "away": "SAS",
+   "devig_close_prob": 0.189391,
+   "feature_avail": {
+    "foul_diff": "2025-01-28T00:00:00",
+    "home_edge": "2025-01-28T00:00:00",
+    "rest": "2025-01-28T00:00:00",
+    "strength": "2025-01-28T00:00:00"
+   },
+   "features": {
+    "foul_diff": -1.277362,
+    "home_edge": 0.185663,
+    "rest": -1.573134,
+    "strength": -0.327191
+   },
+   "game_date": "2025-01-29",
+   "game_id": "g0023",
+   "home": "PHX",
+   "outcome": 1,
+   "regime": "foul_trouble",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2025-01-29T19:00:00",
+   "truth_wp": 0.153272
+  },
+  {
+   "away": "SAS",
+   "devig_close_prob": 0.135833,
+   "feature_avail": {
+    "foul_diff": "2025-01-29T00:00:00",
+    "home_edge": "2025-01-29T00:00:00",
+    "rest": "2025-01-29T00:00:00",
+    "strength": "2025-01-29T00:00:00"
+   },
+   "features": {
+    "foul_diff": -1.704695,
+    "home_edge": 0.541127,
+    "rest": -1.160632,
+    "strength": -0.56021
+   },
+   "game_date": "2025-01-30",
+   "game_id": "g0024",
+   "home": "NYK",
+   "outcome": 0,
+   "regime": "foul_trouble",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2025-01-30T19:00:00",
+   "truth_wp": 0.128845
+  },
+  {
+   "away": "MIL",
+   "devig_close_prob": 0.86283,
+   "feature_avail": {
+    "home_edge": "2024-10-02T00:00:00",
+    "rest": "2024-10-02T00:00:00",
+    "strength": "2024-10-02T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.204971,
+    "rest": 1.092414,
+    "strength": 0.677051
+   },
+   "game_date": "2024-10-03",
+   "game_id": "g0025",
+   "home": "GSW",
+   "outcome": 1,
+   "regime": "early_season",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2024-10-03T19:00:00",
+   "truth_wp": 0.824237
+  },
+  {
+   "away": "DEN",
+   "devig_close_prob": 0.50898,
+   "feature_avail": {
+    "home_edge": "2024-10-06T00:00:00",
+    "rest": "2024-10-06T00:00:00",
+    "strength": "2024-10-06T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.475911,
+    "rest": 0.49646,
+    "strength": -0.170646
+   },
+   "game_date": "2024-10-07",
+   "game_id": "g0026",
+   "home": "GSW",
+   "outcome": 0,
+   "regime": "early_season",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2024-10-07T19:00:00",
+   "truth_wp": 0.532032
+  },
+  {
+   "away": "SAS",
+   "devig_close_prob": 0.491106,
+   "feature_avail": {
+    "home_edge": "2024-10-06T00:00:00",
+    "rest": "2024-10-06T00:00:00",
+    "strength": "2024-10-06T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.466514,
+    "rest": -0.088093,
+    "strength": -0.149176
+   },
+   "game_date": "2024-10-07",
+   "game_id": "g0027",
+   "home": "MIA",
+   "outcome": 0,
+   "regime": "early_season",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2024-10-07T19:00:00",
+   "truth_wp": 0.465987
+  },
+  {
+   "away": "MIA",
+   "devig_close_prob": 0.568114,
+   "feature_avail": {
+    "home_edge": "2024-10-04T00:00:00",
+    "rest": "2024-10-04T00:00:00",
+    "strength": "2024-10-04T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.489951,
+    "rest": 0.914184,
+    "strength": -0.21802
+   },
+   "game_date": "2024-10-05",
+   "game_id": "g0028",
+   "home": "GSW",
+   "outcome": 0,
+   "regime": "early_season",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2024-10-05T19:00:00",
+   "truth_wp": 0.568161
+  },
+  {
+   "away": "GSW",
+   "devig_close_prob": 0.079413,
+   "feature_avail": {
+    "home_edge": "2025-01-22T00:00:00",
+    "rest": "2025-01-22T00:00:00",
+    "strength": "2025-01-22T00:00:00"
+   },
+   "features": {
+    "home_edge": -0.23131,
+    "rest": 1.296391,
+    "strength": -1.965382
+   },
+   "game_date": "2025-01-23",
+   "game_id": "g0029",
+   "home": "LAL",
+   "outcome": 0,
+   "regime": "longshot",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2025-01-23T19:00:00",
+   "truth_wp": 0.06
+  },
+  {
+   "away": "ATL",
+   "devig_close_prob": 0.043954,
+   "feature_avail": {
+    "home_edge": "2025-01-30T00:00:00",
+    "rest": "2025-01-30T00:00:00",
+    "strength": "2025-01-30T00:00:00"
+   },
+   "features": {
+    "home_edge": 1.185895,
+    "rest": 0.660357,
+    "strength": -1.965382
+   },
+   "game_date": "2025-01-31",
+   "game_id": "g0030",
+   "home": "LAL",
+   "outcome": 0,
+   "regime": "longshot",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2025-01-31T19:00:00",
+   "truth_wp": 0.06
+  },
+  {
+   "away": "PHX",
+   "devig_close_prob": 0.917432,
+   "feature_avail": {
+    "home_edge": "2025-01-09T00:00:00",
+    "rest": "2025-01-09T00:00:00",
+    "strength": "2025-01-09T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.186181,
+    "rest": 0.874114,
+    "strength": 1.965382
+   },
+   "game_date": "2025-01-10",
+   "game_id": "g0031",
+   "home": "CHI",
+   "outcome": 1,
+   "regime": "longshot",
+   "season": "2023-24",
+   "sport": "nba",
+   "state_ts": "2025-01-10T19:00:00",
+   "truth_wp": 0.94
+  },
+  {
+   "away": "MIA",
+   "devig_close_prob": 0.063794,
+   "feature_avail": {
+    "home_edge": "2024-12-11T00:00:00",
+    "rest": "2024-12-11T00:00:00",
+    "strength": "2024-12-11T00:00:00"
+   },
+   "features": {
+    "home_edge": 0.416459,
+    "rest": 0.121557,
+    "strength": -1.965382
+   },
+   "game_date": "2024-12-12",
+   "game_id": "g0032",
+   "home": "CHI",
+   "outcome": 0,
+   "regime": "longshot",
+   "season": "2024-25",
+   "sport": "nba",
+   "state_ts": "2024-12-12T19:00:00",
+   "truth_wp": 0.06
+  }
+ ]
+}
