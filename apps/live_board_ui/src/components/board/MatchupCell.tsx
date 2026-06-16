@@ -21,7 +21,8 @@ function TeamName({ name, isWinner, isBold }: TeamNameProps) {
       <span
         title={name}
         className={cn(
-          "truncate max-w-[110px] text-sm leading-tight text-txt",
+          "truncate text-sm leading-tight text-txt",
+          "max-w-[90px] sm:max-w-[130px] lg:max-w-[190px]",
           isBold && "font-semibold",
         )}
       >
@@ -50,8 +51,8 @@ export function MatchupCell({ row, showLeague = false }: MatchupCellProps) {
 
   return (
     <div className="flex flex-col gap-0.5 min-w-0">
-      {/* Team names row */}
-      <div className="flex items-center flex-wrap gap-x-0.5 min-w-0">
+      {/* Team names row: min-w-0 ensures truncation works inside flex parents */}
+      <div className="flex items-center min-w-0 gap-x-0.5">
         <TeamName name={row.away} isWinner={awayWon} isBold={false} />
 
         <span
@@ -66,14 +67,14 @@ export function MatchupCell({ row, showLeague = false }: MatchupCellProps) {
 
       {/* Meta row: league chip + note */}
       {hasMeta && (
-        <div className="flex items-start gap-1.5 max-w-[240px] leading-snug">
+        <div className="flex items-start gap-1.5 min-w-0 leading-snug">
           {showLeague && row.league && (
             <span className="text-[10px] text-muted uppercase tracking-wide shrink-0">
               {row.league}
             </span>
           )}
           {hasNote && (
-            <span className="text-[11px] text-muted leading-snug line-clamp-2">
+            <span className="text-[11px] text-muted leading-snug line-clamp-2 min-w-0">
               {row.note}
             </span>
           )}

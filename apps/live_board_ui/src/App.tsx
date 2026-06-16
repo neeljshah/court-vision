@@ -1,19 +1,21 @@
 /**
  * App.tsx -- Root composition for the live sports decision-support board.
- * Wires sport/league state, the polling hook, and all panel components.
+ * Wires sport/league state, polling hook, search + live-only filter, and all panel components.
  * Sport is deep-linkable via ?sport= so a view can be shared / bookmarked.
  * No $ edge, ROI, or retracted numbers appear here or in any child import.
  */
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Sport } from "@/types/board";
 import { SOCCER_LEAGUES, SPORTS } from "@/types/board";
 import { useBoard } from "@/hooks/useBoard";
+import { filterRows } from "@/lib/filter";
 
 import { Header } from "@/components/board/Header";
 import { ThemeToggle } from "@/components/board/ThemeToggle";
 import { SportTabs } from "@/components/board/SportTabs";
 import { LeagueSelect } from "@/components/board/LeagueSelect";
 import { StampBar } from "@/components/board/StampBar";
+import { FilterBar } from "@/components/board/FilterBar";
 import { Disclaimer } from "@/components/board/Disclaimer";
 import { LoadingState } from "@/components/board/LoadingState";
 import { ErrorState } from "@/components/board/ErrorState";
@@ -32,6 +34,8 @@ function initialSport(): Sport {
 export default function App() {
   const [sport, setSport] = useState<Sport>(initialSport);
   const [league, setLeague] = useState<string>(SOCCER_LEAGUES[0].value);
+  const [query, setQuery] = useState<string>("");
+  const [liveOnly, setLiveOnly] = useState<boolean>(false);
 
   // Keep the URL in sync so the current sport is shareable/bookmarkable.
   useEffect(() => {
@@ -40,15 +44,40 @@ export default function App() {
     window.history.replaceState(null, "", url);
   }, [sport]);
 
+  // Reset filter state whenever sport changes.
+  useEffect(() => {
+    setQuery("");
+    setLiveOnly(false);
+  }, [sport]);
+
   const { data, error, loading, refreshing, refresh } = useBoard(
     sport,
     sport === "soccer" ? league : undefined,
   );
 
-  const rows = data?.rows ?? [];
-  const liveCount = rows.filter((r) => r.state === "in").length;
-  const upcomingCount = rows.filter((r) => r.state === "pre").length;
-  const finishedCount = rows.filter((r) => r.state === "post").length;
+  const allRows = useMemo(() => data?.rows ?? [], [data]);
+  const liveCount = useMemo(
+    () => allRows.filter((r) => r.state === "in").length,
+    [allRows],
+  );
+
+  // Single memoized pass: filter once, derive section counts from the result so
+  // typing in search / each 25s poll does not trigger 5 redundant O(n) scans.
+  const { filtered, filteredLiveCount, filteredUpcomingCount, filteredFinishedCount } =
+    useMemo(() => {
+      const f = filterRows(allRows, query, liveOnly);
+      return {
+        filtered: f,
+        filteredLiveCount: f.filter((r) => r.state === "in").length,
+        filteredUpcomingCount: f.filter((r) => r.state === "pre").length,
+        filteredFinishedCount: f.filter((r) => r.state === "post").length,
+      };
+    }, [allRows, query, liveOnly]);
+
+  const showFilterBar = Boolean(data) && allRows.length > 0;
+  const showEmpty = !loading && !error && data && allRows.length === 0;
+  const showFilterEmpty = data && allRows.length > 0 && filtered.length === 0;
+  const showTable = data && allRows.length > 0 && filtered.length > 0;
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-bg text-txt">
@@ -68,14 +97,29 @@ export default function App() {
           <div className="sm:ml-auto">
             <StampBar
               generatedAt={data?.generated_at ?? null}
-              liveCount={liveCount}
-              upcomingCount={upcomingCount}
-              finishedCount={finishedCount}
+              liveCount={filteredLiveCount}
+              upcomingCount={filteredUpcomingCount}
+              finishedCount={filteredFinishedCount}
               refreshing={refreshing}
               onRefresh={refresh}
             />
           </div>
         </div>
+
+        {/* Search + live-only filter row (only when rows exist) */}
+        {showFilterBar && (
+          <div className="mt-3">
+            <FilterBar
+              query={query}
+              onQuery={setQuery}
+              liveOnly={liveOnly}
+              onLiveOnly={setLiveOnly}
+              shown={filtered.length}
+              total={allRows.length}
+              liveCount={liveCount}
+            />
+          </div>
+        )}
 
         {/* Honesty banner */}
         <div className="mt-3">
@@ -86,10 +130,13 @@ export default function App() {
         <div key={`${sport}-${league}`} className="mt-4 animate-fade-in">
           {loading && <LoadingState />}
           {error && !data && <ErrorState message={error} onRetry={refresh} />}
-          {!loading && !error && data && rows.length === 0 && <EmptyState />}
-          {data && rows.length > 0 && (
+          {showEmpty && <EmptyState />}
+          {showFilterEmpty && (
+            <EmptyState message="No games match your filter." />
+          )}
+          {showTable && (
             <BoardTable
-              rows={data.rows}
+              rows={filtered}
               sport={sport}
               generatedAt={data.generated_at}
             />
