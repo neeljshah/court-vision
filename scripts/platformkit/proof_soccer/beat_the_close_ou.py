@@ -21,9 +21,10 @@ Run: python -m scripts.platformkit.proof_soccer.beat_the_close_ou
 """
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
-from typing import Dict, Tuple
+from typing import Dict, Optional, Tuple
 
 import numpy as np
 
@@ -38,6 +39,27 @@ from domains.soccer.finishing_prior import walk_forward_finishing_prior  # noqa:
 _MATCHES = _REPO / "data/domains/soccer/matches.parquet"
 _STATS = _REPO / "data/domains/soccer/match_stats.parquet"
 _ODDS = _REPO / "data/domains/soccer/odds.parquet"
+
+
+def _corpus_from_env() -> Optional[Path]:
+    """Return $PROOF_CORPUS_ROOT/soccer if the env var is set, else None.
+
+    Shared corpus-override contract: the scoreboard sets PROOF_CORPUS_ROOT before
+    calling run() with no args; setting it must make every proof read the tiny
+    committed fixtures under tests/fixtures/proof/soccer/.
+    """
+    root = os.environ.get("PROOF_CORPUS_ROOT")
+    return Path(root) / "soccer" if root else None
+
+
+def _paths(corpus: Optional[Path]) -> Tuple[Path, Path, Path]:
+    """Resolve (matches, stats, odds) paths by precedence:
+    explicit corpus arg > $PROOF_CORPUS_ROOT/soccer > real data/domains default."""
+    root = corpus or _corpus_from_env()
+    if root is not None:
+        return (root / "matches.parquet", root / "match_stats.parquet",
+                root / "odds.parquet")
+    return _MATCHES, _STATS, _ODDS
 
 
 def devig_two_way(odds_a: np.ndarray, odds_b: np.ndarray) -> np.ndarray:
@@ -74,14 +96,14 @@ def _apply_platt(p: np.ndarray, a: float, b: float) -> np.ndarray:
     return 1.0 / (1.0 + np.exp(-(a * z + b)))
 
 
-def _build_model_forecast() -> pd.DataFrame:
+def _build_model_forecast(matches_path: Path, stats_path: Path) -> pd.DataFrame:
     """Walk-forward composed forecaster: ratings -> finishing prior -> scoreline engine.
 
     Returns a DataFrame with event_id, date, p_over25 (the finishing-adjusted engine prob),
     and the realized over-2.5 target.  All probabilities are STRICTLY pre-match (leak-free).
     """
-    matches = pd.read_parquet(_MATCHES)
-    stats = pd.read_parquet(_STATS)
+    matches = pd.read_parquet(matches_path)
+    stats = pd.read_parquet(stats_path)
     wf = walk_forward_finishing_prior(matches, stats, rho=0.0)
     # p_over25_adj = finishing-residual-shrunk lambdas through the bivariate-Poisson engine.
     wf = wf.copy()
@@ -92,13 +114,14 @@ def _build_model_forecast() -> pd.DataFrame:
     return wf[["event_id", "date", "p_model_raw", "target_over25"]]
 
 
-def run() -> Dict:
-    if not (_MATCHES.exists() and _ODDS.exists()):
+def run(corpus: Optional[Path] = None) -> Dict:
+    matches_path, stats_path, odds_path = _paths(corpus)
+    if not (matches_path.exists() and odds_path.exists()):
         return {"status": "data_missing", "n": 0}
 
-    model = _build_model_forecast()
+    model = _build_model_forecast(matches_path, stats_path)
 
-    odds = pd.read_parquet(_ODDS)
+    odds = pd.read_parquet(odds_path)
     # Pinnacle CLOSE O/U 2.5 (pc_over / pc_under = decimal closing odds).
     odds = odds.dropna(subset=["pc_over", "pc_under"]).copy()
     odds = odds[(odds["pc_over"] > 1.0) & (odds["pc_under"] > 1.0)]

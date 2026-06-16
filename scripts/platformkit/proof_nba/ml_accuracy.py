@@ -15,9 +15,10 @@ Run: python -m scripts.platformkit.proof_nba.ml_accuracy
 """
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
-from typing import Dict, Tuple
+from typing import Dict, Optional, Tuple
 
 import numpy as np
 
@@ -25,7 +26,14 @@ _REPO = Path(__file__).resolve().parents[3]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
-from scripts.platformkit.proof_nba.asof_box_accuracy import load_box, load_close  # noqa: E402
+from scripts.platformkit.proof_nba.asof_box_accuracy import (  # noqa: E402
+    _NBA, load_box, load_close)
+
+
+def _corpus_from_env() -> Optional[Path]:
+    """Shared corpus-override contract: $PROOF_CORPUS_ROOT/nba if set, else None."""
+    r = os.environ.get("PROOF_CORPUS_ROOT")
+    return Path(r) / "nba" if r else None
 
 _K = 20.0
 _HFA = 60.0       # home-court advantage in Elo points (~2.7 pts -> ~60 Elo)
@@ -67,12 +75,12 @@ def _brier_logloss(p: np.ndarray, y: np.ndarray) -> Tuple[float, float]:
     return float(np.mean((p - y) ** 2)), float(-np.mean(y * np.log(p) + (1 - y) * np.log(1 - p)))
 
 
-def run() -> Dict:
-    box = load_box()
+def run(corpus: Optional[Path] = None) -> Dict:
+    root = corpus or _corpus_from_env() or _NBA   # arg > env > real data/domains path
+    box = load_box(root)
     box["p_model"] = _walk_forward_elo(box)
-    od = load_close()                      # date, home_abbr, away_abbr, close_total
     import pandas as pd
-    raw = pd.read_parquet(_REPO / "data/domains/basketball_nba/odds.parquet").rename(
+    raw = pd.read_parquet(root / "odds.parquet").rename(
         columns={"home_team": "home_abbr", "away_team": "away_abbr"})
     raw["date"] = pd.to_datetime(raw["date"])
     raw = raw.dropna(subset=["home_ml", "away_ml"])

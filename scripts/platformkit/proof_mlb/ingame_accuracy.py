@@ -1,23 +1,22 @@
 """scripts.platformkit.proof_mlb.ingame_accuracy — MLB in-game with a REAL pregame prior.
 
 MLB analog of proof_nba/ingame_accuracy.py (W146): the SHARPEST in-game forecaster fuses the
-PREGAME MOV-Elo prior AS THE PRIOR with the realized state, beating pregame-only and score-only.
-LEAK-FREE: pregame = walk-forward Elo snapshot recorded BEFORE the rating update; mid-game =
-cumulative runs through inning k (innings>k NEVER seen). THREE forecasters of final home-win,
-Brier-scored on a held-out SECOND HALF: (a) pregame-Elo-static; (b) score-only (neutral
-4.5/4.5 prior + runs); (c) COMBINED (Elo-anchored lambdas, SUM preserved, + runs).
-
-CALIBRATION: 10-bin ECE + reliability slope of the COMBINED forecaster on held-out; a
-recalibrator (temperature/Platt, selected on TRAIN log-loss) is fit on the TRAIN half ONLY
-and applied to held-out (never refit on eval) -> ECE_raw -> ECE_recal, confirming Brier does
-not worsen. If already well-calibrated (ECE < 0.025) -> clean NULL (a success).
-
+PREGAME MOV-Elo prior with the realized state, beating pregame-only and score-only. LEAK-FREE:
+pregame = walk-forward Elo snapshot recorded BEFORE the rating update; mid-game = cumulative
+runs through inning k (innings>k NEVER seen). THREE forecasters of final home-win, Brier-scored
+on a held-out SECOND HALF: (a) pregame-Elo-static; (b) score-only (neutral 4.5/4.5 prior +
+runs); (c) COMBINED (Elo-anchored lambdas, SUM preserved, + runs). CALIBRATION: 10-bin ECE +
+reliability slope of the COMBINED on held-out; a recalibrator (temperature/Platt, selected on
+TRAIN log-loss) fit on the TRAIN half ONLY, applied to held-out (never refit on eval) ->
+ECE_raw -> ECE_recal, confirming Brier does not worsen; ECE < 0.025 -> clean NULL (a success).
 HONEST: a live BOOK also sees the score -> forecaster QUALITY, not a $ edge. Markets efficient;
-no edge. Brier/log-loss never MAE. INVARIANTS: never edit src/ or kernel/; <=300 LOC.
+Brier/log-loss never MAE. INVARIANTS: never edit src/ or kernel/; <=300 LOC.
+Corpus override: run(corpus=) or $PROOF_CORPUS_ROOT/mlb > real data/domains (default unchanged).
 Run: python -m scripts.platformkit.proof_mlb.ingame_accuracy
 """
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -40,6 +39,11 @@ _GAMES = _REPO / "data" / "domains" / "mlb" / "games.parquet"
 _PITCHERS = _REPO / "data" / "domains" / "mlb" / "pitchers.parquet"
 _CHECKPOINTS = (3, 5, 7)            # innings at which to reconstruct a mid-game state
 _LEAGUE_LAMBDA = 4.5               # neutral pregame run-rate prior (engine default)
+
+
+def _corpus_from_env() -> Optional[Path]:  # $PROOF_CORPUS_ROOT/mlb if set else None
+    root = os.environ.get("PROOF_CORPUS_ROOT")
+    return (Path(root) / "mlb") if root else None
 
 
 def _brier(p: np.ndarray, y: np.ndarray) -> float:
@@ -143,12 +147,15 @@ def _reprice_winhome(rep, h0: int, a0: int, ck: int, lam_h: float, lam_a: float,
     return float(out.get("ml_home", 0.5))
 
 
-def run() -> Dict:
+def run(corpus: Optional[Path] = None) -> Dict:
     import pandas as pd  # noqa: PLC0415
-    if not _GAMES.is_file() or not _PITCHERS.is_file():
+    root = corpus or _corpus_from_env()
+    games_path = (root / "games.parquet") if root else _GAMES
+    pit_path = (root / "pitchers.parquet") if root else _PITCHERS
+    if not games_path.is_file() or not pit_path.is_file():
         return {"status": "no_data", "note": "games.parquet / pitchers.parquet missing"}
-    games = pd.read_parquet(_GAMES)
-    pit = pd.read_parquet(_PITCHERS)[["event_id", "home_innings", "away_innings"]]
+    games = pd.read_parquet(games_path)
+    pit = pd.read_parquet(pit_path)[["event_id", "home_innings", "away_innings"]]
     df = games.merge(pit, on="event_id", how="inner")
     df = df.sort_values(["date", "game_seq", "event_id"]).reset_index(drop=True)
     df["p_pre"] = _walk_forward_elo(df)            # leak-free pregame Elo prior per game
@@ -192,7 +199,6 @@ def run() -> Dict:
 
     if not y:
         return {"status": "no_data", "note": "no reconstructable checkpoints"}
-
     y_arr = np.array(y)
     mask = np.array(is_holdout)
     if mask.sum() < 60:                            # held-out too thin -> score everything
@@ -205,9 +211,7 @@ def run() -> Dict:
     yh = y_arr[mask]
     b_pre, b_score, b_comb = (_brier(p, yh) for p in (pre_a, sc_a, cb_a))
     ll_pre, ll_score, ll_comb = (_logloss(p, yh) for p in (pre_a, sc_a, cb_a))
-
-    # ---- CALIBRATION of the COMBINED forecaster (leak-free): ECE + reliability slope on
-    # held-out; recalibrator fit on the TRAIN half (~mask) ONLY, applied to held-out. ----
+    # CALIBRATION of COMBINED (leak-free): ECE+slope on held-out; recal fit on TRAIN half only.
     ece_raw = _ece10(cb_a, yh)
     slope_raw = _reliability_slope(cb_a, yh)
     cb_train = np.array(comb_p)[~mask]
@@ -228,7 +232,6 @@ def run() -> Dict:
     d_vs_pre = round(b_comb - b_pre, 5)            # <0 => combined sharper than pregame
     d_vs_score = round(b_comb - b_score, 5)        # <=0 => combined ties/beats score-only
     combined_best = bool(b_comb <= min(b_pre, b_score) + 1e-9)
-
     if combined_best and b_comb < b_pre:
         verdict = (f"COMBINED sharpest: pregame {b_pre:.4f} -> score-only {b_score:.4f} -> "
                    f"COMBINED {b_comb:.4f}; fusing prior + realized state beats both (W146).")
@@ -238,7 +241,6 @@ def run() -> Dict:
     else:
         verdict = (f"HONEST mixed: pregame {b_pre:.4f}, score-only {b_score:.4f}, combined "
                    f"{b_comb:.4f}; combined NOT strictly best.")
-
     if well_calibrated:
         cal_verdict = (f"COMBINED ALREADY well-calibrated (ECE {ece_raw:.4f} < 0.025, slope "
                        f"{slope_raw:.2f}); recal ({recal_method}) -> {ece_recal:.4f} adds "
@@ -250,17 +252,15 @@ def run() -> Dict:
                        f"{b_comb:.4f} -> {b_comb_recal:.4f} (brier_ok={brier_ok}).")
 
     return {
-        "status": "ok",
+        "status": "ok",  # in-game CALIBRATION (COMBINED, held-out, leak-free) below
         "n_games": used_games, "n_checkpoints": int(yh.size),
-        # ---- in-game CALIBRATION (COMBINED forecaster, held-out, leak-free) ----
         "ece_raw": round(ece_raw, 5), "ece_recal": round(ece_recal, 5),
         "recal_method": recal_method, "n_train_calib": int(cb_train.size),
         "reliability_slope": round(slope_raw, 4),
         "reliability_slope_recal": round(slope_recal, 4),
         "combined_well_calibrated": well_calibrated, "recal_improves_ece": recal_helps,
         "recal_brier_not_worse": brier_ok, "brier_combined_recal": round(b_comb_recal, 5),
-        "calibration_verdict": cal_verdict,
-        # ---- sharpness (Brier / log-loss) ----
+        "calibration_verdict": cal_verdict,  # ---- sharpness (Brier / log-loss) ----
         "brier_pregame": round(b_pre, 5), "brier_scoreonly": round(b_score, 5),
         "brier_combined": round(b_comb, 5), "logloss_pregame": round(ll_pre, 5),
         "logloss_scoreonly": round(ll_score, 5), "logloss_combined": round(ll_comb, 5),

@@ -1,39 +1,29 @@
 """scripts.platformkit.proof_soccer.ingame_ht_accuracy — soccer in-game: the halftime win.
 
-Soccer in-game was un-backtestable (no leak-free per-minute timeline on disk), BUT the
-halftime goal split IS on disk: data/domains/soccer/match_stats.parquet carries hthg/htag
-(half-time home/away goals) at >99.95% coverage. A halftime score is a LEAK-FREE in-game
-state observed at minute=45 — the full-time result (FTHG/FTAG) is the future outcome.
+Soccer in-game was un-backtestable (no per-minute timeline on disk), BUT the halftime goal
+split IS on disk: match_stats.parquet carries hthg/htag at >99.95% coverage. A halftime score
+is a LEAK-FREE minute-45 in-game state — the full-time result (FTHG/FTAG) is the future outcome.
+Scores the full-time outcome with 1X2 multiclass Brier sum_{H,D,A}(p-y)^2 and O/U-2.5 two-class
+Brier (p_over-y_over)^2, comparing the HT-CONDITIONAL repricer surface (pregame lambdas +
+observed HT score) vs the PREGAME-STATIC surface (same lambdas, 0-0 state), on a held-out split.
 
-This reconstructs the leak-free minute-45 state and scores the full-time outcome:
-  * 1X2     -> multiclass Brier  sum_{H,D,A} (p - y)^2     (lower = sharper)
-  * O/U-2.5 -> two-class  Brier  (p_over - y_over)^2
-comparing the HT-CONDITIONAL repricer surface (pregame lambdas + observed HT score) vs the
-PREGAME-STATIC surface (same lambdas, kick-off 0-0 state), on a held-out chronological split.
-
-Pipeline (all leak-free):
-  (1) pregame lambdas via domains/soccer/ratings.walk_forward_goals — EW Poisson attack/
-      defense, STRICTLY pre-match snapshot recorded BEFORE the EW update (the same path
-      proof_soccer/beat_the_close_ou uses through finishing_prior/walk_forward_goals).
-  (2) reprice at minute=45 with the observed HT score via the SoccerRepricer
-      (scripts/platformkit/live_repricer.get_repricer('soccer')): it scales the pregame
-      Poisson lambdas to the remaining 45 minutes and shifts the remaining-goals matrix by
-      the goals already scored — so the surface is conditioned on the realized HT score.
-  (3) score the FULL-TIME outcome on a held-out second-half-of-history split.
-
+Pipeline (all leak-free): (1) pregame lambdas via domains/soccer/ratings.walk_forward_goals
+(EW Poisson, strict pre-match snapshot before the EW update); (2) reprice at minute=45 with
+the observed HT score via the SoccerRepricer (live_repricer.get_repricer('soccer')) — scales
+the lambdas to the remaining 45 min and shifts the goals matrix by goals already scored;
+(3) score the FULL-TIME outcome on a held-out second-half-of-history split.
 Expect conditional < static: conditioning on the realized HT score MECHANICALLY sharpens the
-final-outcome forecast. That is the soccer in-game win, measured leak-free.
-
-HONEST: a sharper in-game forecaster is the goal; a live book also sees the HT score, so this
-is forecaster QUALITY not a guaranteed price edge. Brier for win-prob (1X2, O/U). No $ edge.
+final-outcome forecast. HONEST: forecaster QUALITY not a guaranteed price edge (a live book
+also sees the HT score). Brier for win-prob (1X2, O/U). No $ edge.
 INVARIANTS: never edit src/ or kernel/; <=300 LOC.
 Run: python -m scripts.platformkit.proof_soccer.ingame_ht_accuracy
 """
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
-from typing import Dict, Tuple
+from typing import Dict, Optional, Tuple
 
 import numpy as np
 
@@ -56,6 +46,20 @@ _FULL_MINUTES = 90.0
 _HT_MINUTE = 45.0
 
 
+def _corpus_from_env() -> Optional[Path]:
+    """$PROOF_CORPUS_ROOT/soccer if the env var is set else None (override contract)."""
+    root = os.environ.get("PROOF_CORPUS_ROOT")
+    return Path(root) / "soccer" if root else None
+
+
+def _paths(corpus: Optional[Path]) -> Tuple[Path, Path]:
+    """(matches, match_stats) by precedence: arg > $PROOF_CORPUS_ROOT/soccer > real default."""
+    root = corpus or _corpus_from_env()
+    if root is not None:
+        return root / "matches.parquet", root / "match_stats.parquet"
+    return _MATCHES, _STATS
+
+
 def _brier_1x2(p_h: np.ndarray, p_d: np.ndarray, p_a: np.ndarray,
                y_h: np.ndarray, y_d: np.ndarray, y_a: np.ndarray) -> float:
     """Multiclass Brier = mean over matches of sum_{H,D,A} (p - y)^2."""
@@ -63,8 +67,7 @@ def _brier_1x2(p_h: np.ndarray, p_d: np.ndarray, p_a: np.ndarray,
 
 
 def _brier_2c(p_over: np.ndarray, y_over: np.ndarray) -> float:
-    """Two-class (O/U) Brier on the over side; sum of both sides = 2*(p-y)^2/... ; we
-    report the standard single-event Brier (p_over - y_over)^2 mean."""
+    """Standard single-event O/U Brier: mean of (p_over - y_over)^2."""
     return float(np.mean((p_over - y_over) ** 2))
 
 
@@ -108,10 +111,9 @@ def _fit_platt(p_tr: np.ndarray, y_tr: np.ndarray) -> Tuple[float, float]:
 
 def _calibrate(p_tr: np.ndarray, y_tr: np.ndarray, p_te: np.ndarray,
                y_te: np.ndarray) -> Dict:
-    """Fit temperature AND Platt on TRAIN ONLY, apply to HELD-OUT, and SELECT the
-    method by TRAIN log-loss (tie -> temperature). Strictly leak-free: neither the
-    recal params NOR the method choice see held-out outcomes (y_te accepted for
-    caller symmetry; unused). Returns recalibrated held-out probs + diagnostics."""
+    """Fit temperature AND Platt on TRAIN ONLY, apply to HELD-OUT, SELECT by TRAIN log-loss
+    (tie -> temperature). Leak-free: neither recal params nor the method choice see held-out
+    outcomes (y_te accepted for caller symmetry; unused). Returns held-out probs + diagnostics."""
     z_tr = _logit(np.clip(p_tr, _EPS, 1 - _EPS))
     z_te = _logit(np.clip(p_te, _EPS, 1 - _EPS))
 
@@ -132,13 +134,14 @@ def _calibrate(p_tr: np.ndarray, y_tr: np.ndarray, p_te: np.ndarray,
     return {"method": "temperature", "probs": probs, "T": T, "platt_a": a, "platt_b": b}
 
 
-def run() -> Dict:
-    if not (_MATCHES.is_file() and _STATS.is_file()):
+def run(corpus: Optional[Path] = None) -> Dict:
+    matches_path, stats_path = _paths(corpus)
+    if not (matches_path.is_file() and stats_path.is_file()):
         return {"status": "data_missing",
                 "note": "need matches.parquet + match_stats.parquet"}
 
-    matches = pd.read_parquet(_MATCHES)
-    stats = pd.read_parquet(_STATS)
+    matches = pd.read_parquet(matches_path)
+    stats = pd.read_parquet(stats_path)
 
     # Leak-free pre-match lambdas (snapshot-before-update EW Poisson).
     wf = walk_forward_goals(matches)
@@ -194,11 +197,9 @@ def run() -> Dict:
     b_static_ou = _brier_2c(sh_o, y_over)
     b_cond_ou = _brier_2c(co_o, y_over)
 
-    # ----- IN-GAME CALIBRATION (ECE) of the COMBINED (HT-conditional) forecaster -----
-    # Binary calibration target = the combined O/U-2.5 over-prob (a clean two-class
-    # event; 1X2 is multiclass so Platt/temperature don't apply). Recalibrator is
-    # fit on the TRAIN half (first half of history) ONLY and applied to the HELD-OUT
-    # half -> strictly leak-free (recal params never see held-out outcomes).
+    # IN-GAME CALIBRATION (ECE) of the COMBINED (HT-conditional) O/U-2.5 forecaster.
+    # Recalibrator fit on the TRAIN half ONLY and applied to the HELD-OUT half ->
+    # strictly leak-free (recal params never see held-out outcomes; 1X2 is multiclass).
     tr = m.iloc[:mid].reset_index(drop=True)
     n_tr = len(tr)
     tr_lam_h = tr["lam_home"].to_numpy(float)

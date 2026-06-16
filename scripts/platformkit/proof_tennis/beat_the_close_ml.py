@@ -24,9 +24,10 @@ Run: python -m scripts.platformkit.proof_tennis.beat_the_close_ml
 """
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
-from typing import Dict, Tuple
+from typing import Dict, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -41,6 +42,12 @@ from domains.tennis.elo_tune import _walk_forward_blend, platt_recalibrate  # no
 _MATCHES = _REPO / "data/domains/tennis/matches.parquet"
 _ODDS = _REPO / "data/domains/tennis/odds.parquet"
 _TRAIN_YEAR_MAX = 2022  # train (Elo warm-up + Platt fit) <= this; held-out test > this
+
+
+def _corpus_from_env() -> Optional[Path]:
+    """$PROOF_CORPUS_ROOT/tennis if set, else None (real data/domains default)."""
+    root = os.environ.get("PROOF_CORPUS_ROOT")
+    return Path(root) / "tennis" if root else None
 
 
 def _brier_logloss(p: np.ndarray, y: np.ndarray) -> Tuple[float, float]:
@@ -59,9 +66,13 @@ def _devig_market(odds: pd.DataFrame) -> pd.DataFrame:
     return o[["event_id", "p_market"]]
 
 
-def run() -> Dict:
-    matches = pd.read_parquet(_MATCHES)
-    odds = pd.read_parquet(_ODDS)
+def run(corpus: Optional[Path] = None) -> Dict:
+    # precedence: explicit corpus arg > $PROOF_CORPUS_ROOT/tennis > real data/domains path
+    root = corpus or _corpus_from_env()
+    matches_path = (root / "matches.parquet") if root is not None else _MATCHES
+    odds_path = (root / "odds.parquet") if root is not None else _ODDS
+    matches = pd.read_parquet(matches_path)
+    odds = pd.read_parquet(odds_path)
 
     # --- leak-free walk-forward surface-blended Elo (win_prob_p1 = P(lower-id wins)) ---
     wf = _walk_forward_blend(matches, blend=SURFACE_BLEND)

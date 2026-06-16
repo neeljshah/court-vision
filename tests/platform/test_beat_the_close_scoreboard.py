@@ -29,3 +29,15 @@ def test_render_markdown_table():
 def test_render_handles_status_rows():
     md = mod.render_markdown([{"sport": "NBA", "market": "x", "status": "data_limited"}])
     assert "data_limited" in md
+
+
+def test_all_non_ok_detects_corpus_missing():
+    # every row carries a status -> treated as "no corpus resolved" -> banner condition True
+    assert mod._all_non_ok([{"sport": "NBA", "status": "error"},
+                            {"sport": "MLB", "status": "data_limited"}]) is True
+    # any measured (ok) row -> banner condition False
+    assert mod._all_non_ok([{"sport": "NBA", "model": 0.24, "close": 0.23,
+                            "gap": 0.01, "verdict": "MATCH"},
+                            {"sport": "MLB", "status": "error"}]) is False
+    assert mod._all_non_ok([]) is False
+    assert "CORPUS NOT PRESENT" in mod._NO_CORPUS_BANNER

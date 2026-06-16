@@ -1,0 +1,9 @@
+# Slim dependency surface for the 4-sport CALIBRATED PREDICTOR product only.
+# This is all you need to run domains/<sport>/predictor.py, the cohesive/live reads,
+# the predict_matchup CLI, and the beat-the-close / in-game proofs on fixtures.
+# (The heavy CV / web / daemon stack lives in requirements.txt and is NOT needed here.)
+numpy>=1.24
+pandas>=2.0
+pyarrow>=14.0
+scipy>=1.10
+scikit-learn>=1.3

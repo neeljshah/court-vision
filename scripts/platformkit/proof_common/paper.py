@@ -9,6 +9,7 @@ Numeric loop order (§4.2 pinned):
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -31,8 +32,40 @@ def _filter_seasons(df: pd.DataFrame, seasons: List[int]) -> pd.DataFrame:
 
 
 _V4_DISCLAIMER = (
-    "paper P&L is a market-follow artifact, not realized edge; no real money; markets efficient"
+    "paper/simulated, market-follow-artifact risk, NOT realized edge; "
+    "no real money; markets efficient"
 )
+
+# EXPLICIT opt-in env var. The V4 paper-Kelly path emits a $ bankroll P&L whose SHAPE is
+# exactly the retracted +ROI artifact. It is OFF by default and must never run inside the
+# scoreboards. Enable it only deliberately: env PROOF_ALLOW_PAPER_KELLY=1 or allow=True.
+_PAPER_KELLY_ENV = "PROOF_ALLOW_PAPER_KELLY"
+
+
+def _paper_kelly_allowed(allow: Optional[bool]) -> bool:
+    """True only on explicit opt-in: allow=True kwarg OR env PROOF_ALLOW_PAPER_KELLY=1."""
+    if allow is True:
+        return True
+    if allow is False:
+        return False
+    return os.environ.get(_PAPER_KELLY_ENV, "").strip() in ("1", "true", "True", "TRUE")
+
+
+def _gated_noop(reason: str) -> Dict[str, Any]:
+    """No-op return when the paper-Kelly $ path is not explicitly enabled."""
+    return {
+        "ok": True,
+        "gated": True,
+        "note": reason,
+        "detail": {
+            "gated": True,
+            "paper_kelly_allowed": False,
+            "n_bets": 0,
+            "paper_pnl_units": 0.0,
+            "paper_return_pct": 0.0,
+            "disclaimer": _V4_DISCLAIMER,
+        },
+    }
 
 
 def run_v4(
@@ -40,8 +73,20 @@ def run_v4(
     adapter: Any,
     paper_book_dir: Optional[Path] = None,
     ctx: Optional[str] = None,
+    allow: Optional[bool] = None,
 ) -> Dict[str, Any]:
-    """V4: paper Kelly walk-forward exercising the sport-agnostic decision kernel."""
+    """V4: paper Kelly walk-forward exercising the sport-agnostic decision kernel.
+
+    GATED: this path emits a $ bankroll P&L (the SHAPE of the retracted +ROI artifact). It
+    NO-OPS unless explicitly opted-in via allow=True or env PROOF_ALLOW_PAPER_KELLY=1. Every
+    printed/returned $ number carries _V4_DISCLAIMER. No scoreboard imports or runs this.
+    """
+    if not _paper_kelly_allowed(allow):
+        return _gated_noop(
+            "V4 paper-Kelly $ P&L is gated OFF (paper/simulated, market-follow-artifact "
+            "risk, NOT realized edge). Set allow=True or env "
+            f"{_PAPER_KELLY_ENV}=1 to run it deliberately."
+        )
     inject_fired = not check_drawdown_ok(1000.0, 800.0)
     results: Dict[str, Any] = {"ok": False, "note": "", "detail": {}}
 

@@ -1,4 +1,4 @@
-.PHONY: test lint train predict pipeline api
+.PHONY: test lint train predict pipeline api proofs proofs-fast
 
 PYTHON = python
 PYTEST = python -m pytest
@@ -29,3 +29,17 @@ pipeline:
 # Start FastAPI server
 api:
 	$(UVICORN) api.main:app --reload --port 8000
+
+# Reproducible proof scoreboards on the REAL local corpora (data/domains/, gitignored).
+# Beat-the-close (pregame quality) + in-game (conditional-vs-static) -- both call run()
+# with no --corpus, so each per-sport proof resolves its real data/domains path.
+proofs:
+	$(PYTHON) -m scripts.platformkit.beat_the_close_scoreboard
+	$(PYTHON) -m scripts.platformkit.ingame_scoreboard
+
+# Fast, byte-committed reproducibility: run both scoreboards on the tiny fixture corpora
+# (tests/fixtures/proof/<sport>/). Finishes in seconds; prints non-empty NBA+MLB rows. The
+# --corpus flag sets PROOF_CORPUS_ROOT before build() per the shared corpus-override contract.
+proofs-fast:
+	$(PYTHON) -m scripts.platformkit.beat_the_close_scoreboard --corpus tests/fixtures/proof
+	$(PYTHON) -m scripts.platformkit.ingame_scoreboard --corpus tests/fixtures/proof
