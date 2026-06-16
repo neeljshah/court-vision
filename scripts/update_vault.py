@@ -368,7 +368,18 @@ def _refresh_schemes() -> None:
         print(f"[update_vault] render_schemes skipped — {exc}")
 
 
+def _brain_only() -> bool:
+    """True when the vault was archived to the clean brain (vault_archive_legacy):
+    only _Organized remains and the working Intelligence/ sprawl is gone. In that
+    mode the session hooks must NOT re-create Home/Sessions/Intelligence -- doing so
+    re-pollutes the person-free graph. Restoring the archive re-enables them."""
+    return (VAULT / "_Organized").exists() and not (VAULT / "Intelligence").exists()
+
+
 def update(notes: str = "") -> None:
+    if _brain_only():
+        print("[update_vault] brain-only vault detected -- skipping Home/Sessions/scheme writes.")
+        return
     VAULT.mkdir(exist_ok=True)
     SESSIONS.mkdir(exist_ok=True)
 
