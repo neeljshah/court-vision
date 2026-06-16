@@ -57,6 +57,8 @@ def build_parser() -> argparse.ArgumentParser:
     fmt = ap.add_mutually_exclusive_group()
     fmt.add_argument("--json", action="store_true", help="JSON output (default)")
     fmt.add_argument("--markdown", action="store_true", help="Markdown output")
+    ap.add_argument("--no-banner", action="store_true",
+                    help="suppress the startup calibration-context banner (stderr)")
     return ap
 
 
@@ -206,6 +208,13 @@ def _md(result: Dict[str, Any]) -> str:
 
 def main(argv: Optional[List[str]] = None) -> int:
     a = build_parser().parse_args(argv)
+    if not a.no_banner:
+        # banner -> stderr so --json stdout stays machine-parseable; never fabricates.
+        try:
+            from scripts.platformkit.calibration_banner import print_banner
+            print_banner()
+        except Exception:
+            pass  # banner is context-only; never block a prediction on it
     sport = _norm_sport(a.sport)
     pred = _build_predictor(sport)
     if pred is None:
