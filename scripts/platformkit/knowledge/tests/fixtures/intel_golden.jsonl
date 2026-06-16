@@ -1,0 +1,140 @@
+{"sport": "NBA", "query": "explosive first step off a rip through move to create space", "expected_note_id": "NBA/SpaceCreation/rip_through_first_step_burst"}
+{"sport": "NBA", "query": "how arena backdrop and depth perception affect shooters", "expected_note_id": "NBA/Environment/shooting_background_sightlines"}
+{"sport": "NBA", "query": "drawing fouls by selling a shot fake", "expected_note_id": "NBA/DeceptionDisguise/pump_fake_foul_harvest"}
+{"sport": "NBA", "query": "getting back on defense to stop the fast break", "expected_note_id": "NBA/TransitionDynamics/getback_and_transition_defense_matchup"}
+{"sport": "NBA", "query": "backdoor cut when the defender overplays the passing lane", "expected_note_id": "NBA/DeceptionDisguise/back_cut_disguise_overplay"}
+{"sport": "NBA", "query": "does pregame warmup shooting carry over to the game", "expected_note_id": "NBA/RoutineConsistency/warmup_to_game_carryover"}
+{"sport": "NBA", "query": "assist to turnover as a measure of decision making", "expected_note_id": "NBA/StatSignatures/assist_to_turnover_signature"}
+{"sport": "NBA", "query": "balancing veterans and young players on the roster", "expected_note_id": "NBA/RosterConstruction/veteran_youth_age_balance"}
+{"sport": "NBA", "query": "the expected value geometry of where a player takes shots", "expected_note_id": "NBA/ShotProfiles/shot_diet_efficiency_geometry"}
+{"sport": "NBA", "query": "floor spacing big man attacking a deep drop defender", "expected_note_id": "NBA/MatchupConcepts/stretch_big_against_traditional_drop_anchor"}
+{"sport": "NBA", "query": "how a rim protector deters drives without blocking", "expected_note_id": "NBA/PsychologicalWarfare/rim_protector_deterrence_shadow"}
+{"sport": "NBA", "query": "varying tempo across different lineup combinations", "expected_note_id": "NBA/TempoVariation/stagger_tempo_within_lineup_units"}
+{"sport": "NBA", "query": "and one continuation possession after a made basket and foul", "expected_note_id": "NBA/SpecialSituations/and_one_continuation_state"}
+{"sport": "NBA", "query": "geometry of a sideline inbounds play", "expected_note_id": "NBA/SpecialSituations/slob_sideline_inbounds_geometry"}
+{"sport": "NBA", "query": "executing late game possessions by running down the clock", "expected_note_id": "NBA/ClosingExecution/milk_the_clock_execution"}
+{"sport": "NBA", "query": "how closely contested are a player's shot attempts", "expected_note_id": "NBA/ShotProfiles/contested_versus_open_shot_quality"}
+{"sport": "NBA", "query": "opponent telegraphs their pick and roll tendencies", "expected_note_id": "NBA/PredictabilityTendencies/pick_and_roll_tendency_telegraphing"}
+{"sport": "NBA", "query": "cumulative fatigue from a long road trip", "expected_note_id": "NBA/Situational/road_trip_length_drag"}
+{"sport": "NBA", "query": "true shooting percentage as a scoring efficiency measure", "expected_note_id": "NBA/StatSignatures/true_shooting_pct_signature"}
+{"sport": "NBA", "query": "how often reach in fouls happen on the perimeter", "expected_note_id": "NBA/DisciplineControl/reach_in_perimeter_foul_rate"}
+{"sport": "NBA", "query": "milking the shot clock down late in the game", "expected_note_id": "NBA/TempoVariation/shot_clock_milking_late_game"}
+{"sport": "NBA", "query": "staying composed when officiating gets erratic", "expected_note_id": "NBA/ExperienceComposure/officiating_volatility_emotional_control"}
+{"sport": "NBA", "query": "reading the short roll out of a pick and roll", "expected_note_id": "NBA/ChainSequences/pick_and_roll_into_short_roll_read"}
+{"sport": "NBA", "query": "weighting recent games more than total sample", "expected_note_id": "NBA/FormDynamics/recency_over_volume_tradeoff"}
+{"sport": "NBA", "query": "body clock effect of a late tip after traveling west", "expected_note_id": "NBA/VenueTravelEffects/westbound_late_tip_lift"}
+{"sport": "NBA", "query": "being in the bonus and shooting free throws on fouls", "expected_note_id": "NBA/SpecialSituations/free_throw_bonus_threshold_state"}
+{"sport": "NBA", "query": "consistency of a player's shooting hand follow through", "expected_note_id": "NBA/TechniqueMechanics/shooting_hand_follow_through"}
+{"sport": "NBA", "query": "deliberately fouling a bad free throw shooter off the ball", "expected_note_id": "NBA/SpecialSituations/intentional_foul_hack_strategy"}
+{"sport": "NBA", "query": "volume and range stress of above the break threes", "expected_note_id": "NBA/ShotProfiles/above_break_three_volume"}
+{"sport": "NBA", "query": "how big is the halftime adjustment swing", "expected_note_id": "NBA/GamePhases/halftime_reset_magnitude"}
+{"sport": "NBA", "query": "vertical spacing of cutting and backdoor lanes", "expected_note_id": "NBA/SpacingGeometry/cutting_lane_vertical_spacing"}
+{"sport": "NBA", "query": "timing of when a coach uses a replay challenge", "expected_note_id": "NBA/ResourceAllocation/challenge_leverage_timing_curve"}
+{"sport": "MLB", "query": "changing the hitter's eye level by sequencing pitch heights", "expected_note_id": "MLB/DeceptionDisguise/eye_level_change_sequencing"}
+{"sport": "MLB", "query": "stranding runners in high leverage innings", "expected_note_id": "MLB/Mechanisms/high_leverage_strand_prevention"}
+{"sport": "MLB", "query": "scouting how aggressive a hitter is on the first pitch", "expected_note_id": "MLB/OpponentScouting/first_pitch_aggression_scouting"}
+{"sport": "MLB", "query": "inducing grounders and turning double plays to limit damage", "expected_note_id": "MLB/Mechanisms/ground_ball_double_play_suppression"}
+{"sport": "MLB", "query": "catcher anticipating the pitch sequence", "expected_note_id": "MLB/AnticipationReads/catcher_sequence_anticipation"}
+{"sport": "MLB", "query": "boom or bust high variance offensive playstyle", "expected_note_id": "MLB/Archetypes/high_variance_offense"}
+{"sport": "MLB", "query": "handling the automatic runner in extra innings", "expected_note_id": "MLB/PressureResponse/ghost_runner_extra_inning_response"}
+{"sport": "MLB", "query": "spread of platoon threat against lefties and righties", "expected_note_id": "MLB/ThreatBalance/platoon_handedness_threat_spread"}
+{"sport": "MLB", "query": "compressing the strike zone when the stakes are high", "expected_note_id": "MLB/ZoneControl/high_leverage_zone_compression"}
+{"sport": "MLB", "query": "pitcher leaking mechanical tells that tip pitches", "expected_note_id": "MLB/PredictabilityTendencies/pitch_tipping_mechanical_leakage"}
+{"sport": "MLB", "query": "how rain makes the field wet and changes play", "expected_note_id": "MLB/Environment/rain_field_wetness"}
+{"sport": "MLB", "query": "the very first pitch of the game setting the tone", "expected_note_id": "MLB/GamePhases/first_pitch_of_game_tone"}
+{"sport": "MLB", "query": "home pitcher comfort on a familiar mound", "expected_note_id": "MLB/VenueTravelEffects/home_pitcher_mound_familiarity"}
+{"sport": "MLB", "query": "setting infield depth in or back for the double play", "expected_note_id": "MLB/SpacingGeometry/infield_depth_in_back_geometry"}
+{"sport": "MLB", "query": "walks inflating the number of baserunners", "expected_note_id": "MLB/DisciplineControl/free_pass_baserunner_inflation"}
+{"sport": "MLB", "query": "commanding the backdoor and front door edges of the plate", "expected_note_id": "MLB/Tactics/backdoor_frontdoor_command"}
+{"sport": "MLB", "query": "defending the bunt with a charging corner", "expected_note_id": "MLB/DuelOutcomes/bunt_coverage_charge_duel"}
+{"sport": "MLB", "query": "controlling hit by pitches and inside misses", "expected_note_id": "MLB/DisciplineControl/hit_by_pitch_control"}
+{"sport": "MLB", "query": "strikeout minus walk rate as a pitcher command stat", "expected_note_id": "MLB/StatSignatures/strikeout_minus_walk_rate_signature"}
+{"sport": "MLB", "query": "pressuring catchers who hold runners poorly", "expected_note_id": "MLB/MatchupExploitation/baserunner_pressure_against_poor_holds"}
+{"sport": "MLB", "query": "how the shift restriction boundaries change positioning", "expected_note_id": "MLB/SpacingGeometry/shift_restriction_boundary_geometry"}
+{"sport": "MLB", "query": "hitter discipline at swinging at pitches out of the zone", "expected_note_id": "MLB/DecisionQuality/chase_rate_discipline"}
+{"sport": "MLB", "query": "a walk followed by a hit compounding into a rally", "expected_note_id": "MLB/ErrorCascades/walk_then_hit_compounding_chain"}
+{"sport": "MLB", "query": "managing the base out state and run expectancy", "expected_note_id": "MLB/PossessionControl/base_state_run_expectancy_control"}
+{"sport": "MLB", "query": "a fly ball pull hitter profile", "expected_note_id": "MLB/SubArchetypes/fly_ball_pull_hitter"}
+{"sport": "MLB", "query": "a pitcher's command falling apart and the inning spiraling", "expected_note_id": "MLB/DisciplineControl/command_collapse_inning_spiral"}
+{"sport": "MLB", "query": "step off the rubber and reset the tempo", "expected_note_id": "MLB/TempoVariation/step_off_and_reset_tempo"}
+{"sport": "MLB", "query": "ballpark dimensions and the run scoring environment", "expected_note_id": "MLB/Situational/ballpark_dimensions_environment"}
+{"sport": "MLB", "query": "chase and whiff rates describing swing decisions", "expected_note_id": "MLB/StatSignatures/chase_and_whiff_rate_signature"}
+{"sport": "MLB", "query": "outfield positioning to defend a sacrifice fly tag up", "expected_note_id": "MLB/DefensiveSchemes/tag_up_sac_fly_outfield_positioning"}
+{"sport": "Soccer", "query": "how much value a keeper adds by stopping shots", "expected_note_id": "Soccer/Mechanisms/goalkeeping_shot_stopping_value"}
+{"sport": "Soccer", "query": "goalkeeper getting involved early in build up", "expected_note_id": "Soccer/StartQuality/goalkeeper_early_involvement"}
+{"sport": "Soccer", "query": "winning the ball back quickly with a counter press", "expected_note_id": "Soccer/Mechanisms/counter_press_recovery"}
+{"sport": "Soccer", "query": "morphing from a back three into a back four in possession", "expected_note_id": "Soccer/AdaptabilityVersatility/three_at_back_to_four_morphing"}
+{"sport": "Soccer", "query": "how lucky a team has been to keep clean sheets", "expected_note_id": "Soccer/RiskProfiles/clean_sheet_luck"}
+{"sport": "Soccer", "query": "recycling possession and circulating the ball", "expected_note_id": "Soccer/ChainSequences/possession_recycling_circulation_chain"}
+{"sport": "Soccer", "query": "a side telegraphing which channel they attack", "expected_note_id": "Soccer/PredictabilityTendencies/attacking_channel_preference_telegraphing"}
+{"sport": "Soccer", "query": "defenders delaying and jockeying instead of diving in", "expected_note_id": "Soccer/DefensiveSchemes/delay_and_jockey_principle"}
+{"sport": "Soccer", "query": "using a cover shadow to cut a passing lane", "expected_note_id": "Soccer/DefensiveSchemes/cover_shadow_passing_lane_denial"}
+{"sport": "Soccer", "query": "overlapping fullbacks beating man marked wingers", "expected_note_id": "Soccer/MatchupConcepts/overlapping_fullbacks_against_man_marking_wingers"}
+{"sport": "Soccer", "query": "entropy of how a team enters the final third", "expected_note_id": "Soccer/PredictabilityTendencies/final_third_entry_pattern_entropy"}
+{"sport": "Soccer", "query": "small niggling fouls used to unsettle opponents", "expected_note_id": "Soccer/PsychologicalWarfare/dark_arts_niggling_fouls"}
+{"sport": "Soccer", "query": "chasing a late deficit without overcommitting", "expected_note_id": "Soccer/RecoveryResilience/late_goal_chasing_resilience"}
+{"sport": "Soccer", "query": "situational leverage of set pieces", "expected_note_id": "Soccer/Situational/set_piece_leverage"}
+{"sport": "Soccer", "query": "creating and converting big chances", "expected_note_id": "Soccer/ShotProfiles/big_chance_conversion_profile"}
+{"sport": "Soccer", "query": "how a team responds after a goalkeeping mistake", "expected_note_id": "Soccer/RecoveryResilience/goalkeeper_error_aftermath"}
+{"sport": "Soccer", "query": "rate of committing fouls in dangerous areas", "expected_note_id": "Soccer/DisciplineControl/foul_in_dangerous_area_rate"}
+{"sport": "Soccer", "query": "shifting creativity from wide areas into central zones", "expected_note_id": "Soccer/AdaptabilityVersatility/wide_to_central_creative_shift"}
+{"sport": "Soccer", "query": "form discontinuity after a managerial change", "expected_note_id": "Soccer/FormDynamics/manager_change_form_discontinuity"}
+{"sport": "Soccer", "query": "playing with a man advantage after a red card", "expected_note_id": "Soccer/Situational/numerical_advantage_red_card"}
+{"sport": "Soccer", "query": "miscontrol and poor first touch turnovers", "expected_note_id": "Soccer/DisciplineControl/miscontrol_turnover_rate"}
+{"sport": "Soccer", "query": "having personnel who can resist a press", "expected_note_id": "Soccer/RosterConstruction/press_resistance_personnel"}
+{"sport": "Soccer", "query": "physical load from playing in heat and humidity", "expected_note_id": "Soccer/Environment/heat_humidity_load"}
+{"sport": "Soccer", "query": "bringing fresh legs to reinforce the press", "expected_note_id": "Soccer/InGameAdaptation/fresh_legs_pressing_reinforcement"}
+{"sport": "Soccer", "query": "imposing tempo early in the match", "expected_note_id": "Soccer/StartQuality/early_tempo_imposition"}
+{"sport": "Soccer", "query": "generating turnovers through pressing", "expected_note_id": "Soccer/Mechanisms/pressing_turnover_generation"}
+{"sport": "Soccer", "query": "discipline collapsing late in games", "expected_note_id": "Soccer/DisciplineControl/late_game_discipline_collapse"}
+{"sport": "Soccer", "query": "overloading one side then switching play", "expected_note_id": "Soccer/MatchupExploitation/side_overload_then_switch"}
+{"sport": "Soccer", "query": "keeping a stable rest defense behind the attack", "expected_note_id": "Soccer/Mechanisms/rest_defense_stability"}
+{"sport": "Tennis", "query": "predictability of a server's serve plus one pattern", "expected_note_id": "Tennis/PredictabilityTendencies/serve_plus_one_pattern_predictability"}
+{"sport": "Tennis", "query": "footwork to recover and cover the open court", "expected_note_id": "Tennis/TechniqueMechanics/open_court_recovery_footwork"}
+{"sport": "Tennis", "query": "reading the direction of an opponent's groundstroke", "expected_note_id": "Tennis/AnticipationReads/groundstroke_direction_read"}
+{"sport": "Tennis", "query": "how often a returner seizes break chances", "expected_note_id": "Tennis/PossessionControl/return_break_seizure_rate"}
+{"sport": "Tennis", "query": "drag from cold dense air on the ball", "expected_note_id": "Tennis/Environment/cold_dense_air_drag"}
+{"sport": "Tennis", "query": "approaching the net with serve and volley", "expected_note_id": "Tennis/Tactics/serve_and_volley_approach"}
+{"sport": "Tennis", "query": "momentum carrying over after winning a set", "expected_note_id": "Tennis/GamePhases/momentum_after_set_won"}
+{"sport": "Tennis", "query": "exchanges at the net trading volleys", "expected_note_id": "Tennis/DuelOutcomes/volley_exchange_duel"}
+{"sport": "Tennis", "query": "converting on match point", "expected_note_id": "Tennis/SpecialSituations/match_point_conversion_state"}
+{"sport": "Tennis", "query": "controlling serve placement patterns", "expected_note_id": "Tennis/PossessionControl/serve_location_pattern_control"}
+{"sport": "Tennis", "query": "saving break points under pressure", "expected_note_id": "Tennis/Mechanisms/break_point_saving_resilience"}
+{"sport": "Tennis", "query": "tightening up in the late stages of a set", "expected_note_id": "Tennis/GamePhases/late_set_tightening_phase"}
+{"sport": "Tennis", "query": "deciding point in no advantage scoring", "expected_note_id": "Tennis/SpecialSituations/deciding_point_no_ad_state"}
+{"sport": "Tennis", "query": "how efficiently a player wins tiebreaks", "expected_note_id": "Tennis/ConversionEfficiency/tiebreak_conversion_efficiency"}
+{"sport": "Tennis", "query": "disrupting pace between points", "expected_note_id": "Tennis/TempoVariation/between_point_pace_disruption"}
+{"sport": "Tennis", "query": "conversion dropping off late in a match due to fatigue", "expected_note_id": "Tennis/ConversionEfficiency/fatigue_late_match_conversion_decay"}
+{"sport": "Tennis", "query": "behavior of a player two sets to love ahead", "expected_note_id": "Tennis/LeadManagement/two_sets_to_love_cushion_behavior"}
+{"sport": "Tennis", "query": "how court surface speed interacts with tempo", "expected_note_id": "Tennis/TempoControl/court_speed_tempo_interaction"}
+{"sport": "Tennis", "query": "balance of forehand and backhand winners", "expected_note_id": "Tennis/ThreatBalance/forehand_backhand_winner_balance"}
+{"sport": "Tennis", "query": "calibrating the serve in the first few games", "expected_note_id": "Tennis/StartQuality/first_few_games_serve_calibration"}
+{"sport": "Tennis", "query": "serve routine drifting when under pressure", "expected_note_id": "Tennis/RoutineConsistency/serve_routine_drift_under_pressure"}
+{"sport": "Tennis", "query": "return depth and recovering court position", "expected_note_id": "Tennis/TransitionDynamics/return_depth_and_court_recovery"}
+{"sport": "Tennis", "query": "composure when consolidating a break of serve", "expected_note_id": "Tennis/ExperienceComposure/consolidation_break_composure"}
+{"sport": "Tennis", "query": "spike in unforced errors during a tiebreak", "expected_note_id": "Tennis/DisciplineControl/tiebreak_error_spike"}
+{"sport": "Tennis", "query": "controlling court position from the baseline", "expected_note_id": "Tennis/PossessionControl/court_position_baseline_control"}
+{"sport": "Tennis", "query": "opening the court with a wide serve", "expected_note_id": "Tennis/Tactics/wide_serve_court_opening"}
+{"sport": "Tennis", "query": "speed of countering a drop shot", "expected_note_id": "Tennis/AdjustmentSpeed/drop_shot_counter_speed"}
+{"sport": "Tennis", "query": "high percentage choice of serve", "expected_note_id": "Tennis/DecisionQuality/high_percentage_serve_choice"}
+{"sport": "Tennis", "query": "inspecting the ball mark on clay courts", "expected_note_id": "Tennis/OfficiatingDynamics/ball_mark_inspection_clay"}
+{"sport": "MEMORY", "query": "why minimizing prediction error is not the same as a betting edge", "expected_note_id": "MEMORY/feedback_accuracy_is_not_edge"}
+{"sport": "MEMORY", "query": "the assist prop edge that is real and not underbias", "expected_note_id": "MEMORY/feedback_ast_edge_is_real_not_underbias"}
+{"sport": "MEMORY", "query": "the pregame roi number is a market follow artifact", "expected_note_id": "MEMORY/feedback_pregame_edge_is_market_follow_artifact"}
+{"sport": "MEMORY", "query": "weighting recent games over total volume for nba", "expected_note_id": "MEMORY/feedback_nba_recency_beats_volume"}
+{"sport": "MEMORY", "query": "the possession level monte carlo simulation engine", "expected_note_id": "MEMORY/project_monte_carlo_engine_2026-06-06"}
+{"sport": "MEMORY", "query": "the vacated load feature for absent players", "expected_note_id": "MEMORY/project_vacated_load_feature_2026-06-01"}
+{"sport": "MEMORY", "query": "closing line value matters more than realized roi", "expected_note_id": "MEMORY/feedback_clv_over_roi"}
+{"sport": "MEMORY", "query": "running the whole pytest suite freezes the local machine", "expected_note_id": "MEMORY/feedback_local_machine_pytest_freeze"}
+{"sport": "MEMORY", "query": "the role aware two thousand player ratings rebuild", "expected_note_id": "MEMORY/project_role_aware_ratings_2026-06-06"}
+{"sport": "MEMORY", "query": "do not use season final features that leak", "expected_note_id": "MEMORY/feedback_no_season_final_features"}
+{"sport": "MEMORY", "query": "the signal factory pipeline giving entities many signals", "expected_note_id": "MEMORY/project_signal_factory_2026-06-06"}
+{"sport": "MEMORY", "query": "single fold improvements are usually artifacts", "expected_note_id": "MEMORY/feedback_single_fold_lifts_are_artifacts"}
+{"sport": "MEMORY", "query": "the pregame model is at the data and feature ceiling", "expected_note_id": "MEMORY/project_pregame_model_ceiling_2026-06-04"}
+{"sport": "MEMORY", "query": "do not start two brain rebuilds at the same time", "expected_note_id": "MEMORY/feedback-no-concurrent-brain-rebuilds"}
+{"sport": "MEMORY", "query": "training and inference feature parity must match", "expected_note_id": "MEMORY/feedback_train_inference_parity"}
+{"sport": "MEMORY", "query": "checking pickle artifact integrity before serving", "expected_note_id": "MEMORY/feedback_pkl_integrity_check"}
+{"sport": "MEMORY", "query": "the platform kernel and adapter architecture was built", "expected_note_id": "MEMORY/project-platform-kernel-built-2026-06-12"}
+{"sport": "MEMORY", "query": "the graph notes should be playstyles not people", "expected_note_id": "MEMORY/feedback-graph-playstyles-not-people"}
+{"sport": "Soccer", "query": "shielding the ball with back to goal in a hold up duel", "expected_note_id": "Soccer/DuelOutcomes/shielding_back_to_goal_hold_duel"}
+{"sport": "Tennis", "query": "assertiveness on serve when holding a set lead", "expected_note_id": "Tennis/LeadManagement/set_lead_serve_assertiveness"}
