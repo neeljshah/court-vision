@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Live Board - Calibrated Predictions + Market Context</title>
+<style>
+  :root{
+    --bg:#0e1217; --panel:#161c24; --panel2:#1b232d; --line:#222c38;
+    --txt:#e6edf3; --muted:#8b97a6; --accent:#3da9fc;
+    --model:#2ea043; --model-bg:#10331c; --market:#5b6675; --market-bg:#20262e;
+    --live:#ff4d4f; --live-bg:#2a1416; --row-hover:#1d2630;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:14px;-webkit-font-smoothing:antialiased;}
+  header{padding:16px 18px 8px;border-bottom:1px solid var(--line);}
+  h1{margin:0;font-size:18px;font-weight:650;letter-spacing:.2px;}
+  .sub{color:var(--muted);font-size:12px;margin-top:3px;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 12px 60px;}
+  .tabs{display:flex;gap:6px;margin:14px 0 6px;flex-wrap:wrap;}
+  .tab{padding:8px 16px;border:1px solid var(--line);background:var(--panel);
+    color:var(--muted);border-radius:8px;cursor:pointer;font-weight:600;font-size:13px;
+    user-select:none;transition:all .12s;}
+  .tab:hover{background:var(--panel2);color:var(--txt);}
+  .tab.active{background:var(--accent);border-color:var(--accent);color:#03121f;}
+  .controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0 4px;}
+  .controls label{color:var(--muted);font-size:12px;}
+  select{background:var(--panel);color:var(--txt);border:1px solid var(--line);
+    border-radius:7px;padding:6px 9px;font-size:13px;cursor:pointer;}
+  .stamp{margin-left:auto;color:var(--muted);font-size:11.5px;}
+  .tablewrap{border:1px solid var(--line);border-radius:10px;overflow:hidden;
+    background:var(--panel);margin-top:8px;}
+  table{width:100%;border-collapse:collapse;}
+  thead th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px;
+    color:var(--muted);padding:10px 12px;background:var(--panel2);
+    border-bottom:1px solid var(--line);font-weight:650;white-space:nowrap;}
+  tbody td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:middle;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:var(--row-hover);}
+  tr.live{background:var(--live-bg);}
+  tr.live:hover{background:#33191b;}
+  .status{font-size:12px;font-weight:600;white-space:nowrap;}
+  .status .dot{display:inline-block;width:7px;height:7px;border-radius:50%;
+    background:var(--live);margin-right:6px;animation:pulse 1.4s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+  .status.pre{color:var(--muted);} .status.post{color:var(--muted);}
+  .status.in{color:var(--live);}
+  .match{line-height:1.5;}
+  .match .away{color:var(--txt);} .match .home{color:var(--txt);font-weight:600;}
+  .match .at{color:var(--muted);font-size:11px;padding:0 4px;}
+  .match .chk{color:var(--model);font-weight:700;margin-left:4px;}
+  .score{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap;
+    text-align:center;min-width:54px;}
+  .score .dash{color:var(--muted);}
+  .setline{font-variant-numeric:tabular-nums;letter-spacing:1px;line-height:1.5;
+    white-space:nowrap;text-align:center;}
+  .setline.win{color:var(--txt);font-weight:700;} .setline.lose{color:var(--muted);}
+  .wp{font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .wp.final{opacity:.5;}
+  .wp .row{display:flex;justify-content:space-between;gap:10px;line-height:1.5;}
+  .wp .lbl{color:var(--muted);font-size:11px;} .wp .val{font-weight:600;}
+  .wp .row.won .lbl,.wp .row.won .val{color:var(--model);}
+  .wp .bar{height:4px;border-radius:2px;background:var(--line);margin-top:2px;overflow:hidden;}
+  .wp .bar > i{display:block;height:100%;background:var(--accent);}
+  .wp .row.won + .bar > i{background:var(--model);}
+  .total{font-variant-numeric:tabular-nums;color:var(--txt);white-space:nowrap;}
+  .badge{display:inline-block;padding:3px 8px;border-radius:6px;font-size:10.5px;
+    font-weight:700;letter-spacing:.4px;text-transform:uppercase;white-space:nowrap;}
+  .badge.model{background:var(--model-bg);color:var(--model);border:1px solid #1f5a32;}
+  .badge.market{background:var(--market-bg);color:var(--market);border:1px solid #3a4452;}
+  .badge.unavailable{background:#20262e;color:#6b7480;border:1px solid #333c48;}
+  .upd{color:var(--muted);font-size:11px;white-space:nowrap;}
+  .note{color:var(--muted);font-size:11px;margin-top:3px;max-width:220px;}
+  tr.divider td{text-align:center;color:var(--muted);font-size:10.5px;font-weight:700;
+    letter-spacing:.6px;text-transform:uppercase;background:var(--panel2);padding:7px 12px;}
+  tr.divider.toggle td{cursor:pointer;user-select:none;}
+  tr.divider.toggle td:hover{color:var(--txt);background:#222c38;}
+  .empty,.errbox{padding:34px 16px;text-align:center;color:var(--muted);}
+  .errbox{color:#e5837f;}
+  .muted{color:var(--muted);}
+  footer{position:fixed;bottom:0;left:0;right:0;background:rgba(14,18,23,.94);
+    border-top:1px solid var(--line);padding:8px 14px;text-align:center;
+    color:var(--muted);font-size:11px;backdrop-filter:blur(4px);}
+  @media (max-width:640px){
+    .hide-sm{display:none;}
+    thead th,tbody td{padding:9px 8px;}
+    .note{max-width:140px;}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap" style="padding-bottom:0;">
+    <h1>Live Board</h1>
+    <div class="sub">Calibrated predictions + live market context across MLB, Soccer and Tennis.</div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="tabs" id="tabs">
+    <div class="tab active" data-sport="mlb">MLB</div>
+    <div class="tab" data-sport="soccer">Soccer</div>
+    <div class="tab" data-sport="tennis">Tennis</div>
+  </div>
+
+  <div class="controls">
+    <div id="leagueWrap" style="display:none;">
+      <label for="leagueSel">League</label>
+      <select id="leagueSel">
+        <option value="fifa.world">World Cup</option>
+        <option value="uefa.champions">Champions League</option>
+        <option value="eng.1">Premier League</option>
+        <option value="esp.1">La Liga</option>
+        <option value="ita.1">Serie A</option>
+        <option value="ger.1">Bundesliga</option>
+        <option value="usa.1">MLS</option>
+      </select>
+    </div>
+    <div class="stamp" id="stamp">Loading...</div>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Status</th>
+          <th>Matchup</th>
+          <th class="score" style="text-align:center;">Score</th>
+          <th>Win %</th>
+          <th class="hide-sm">Total</th>
+          <th>Source</th>
+          <th class="hide-sm">Updated</th>
+        </tr>
+      </thead>
+      <tbody id="rows">
+        <tr><td colspan="7" class="empty">Loading games...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<footer>
+  Calibrated predictions + live market context. Model where in-corpus, market-implied otherwise. No $ edge claimed.
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var POLL_MS = 25000;
+  var COLLAPSE_OVER = 12;          // collapse finished games when more than this
+  var state = { sport:"mlb", league:"fifa.world", showFinished:false };
+  var timer = null;
+  var lastData = null;
+
+  function $(id){ return document.getElementById(id); }
+
+  function pct(x){
+    if (x === null || x === undefined || isNaN(x)) return null;
+    var v = x <= 1 ? x*100 : x;
+    return Math.round(v);
+  }
+  function fmtTotal(t){
+    if (t === null || t === undefined || isNaN(t)) return '<span class="muted">--</span>';
+    return Number(t).toFixed(1);
+  }
+  function esc(s){
+    if (s === null || s === undefined) return '';
+    return String(s).replace(/[&<>"]/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];
+    });
+  }
+  function isNum(v){
+    return typeof v === 'number' || (typeof v === 'string' && v.trim() !== '' && !isNaN(v));
+  }
+
+  // Winner of a finished game: 'home' | 'away' | null (tie / undecidable).
+  function setsWon(aStr, hStr){
+    if (typeof aStr !== 'string' || typeof hStr !== 'string') return null;
+    var ap = aStr.trim().split(/\s+/), hp = hStr.trim().split(/\s+/);
+    var n = Math.min(ap.length, hp.length), aw = 0, hw = 0;
+    for (var i=0;i<n;i++){
+      var av = Number(ap[i]), hv = Number(hp[i]);
+      if (isNaN(av) || isNaN(hv)) continue;
+      if (av > hv) aw++; else if (hv > av) hw++;
+    }
+    if (aw > hw) return 'away';
+    if (hw > aw) return 'home';
+    return null;
+  }
+  function winnerSide(r){
+    if (r.state !== 'post') return null;
+    var a = r.away_score, h = r.home_score;
+    if (isNum(a) && isNum(h)){
+      var na = Number(a), nh = Number(h);
+      if (nh > na) return 'home';
+      if (na > nh) return 'away';
+      return null;
+    }
+    return setsWon(a, h);   // tennis set strings
+  }
+
+  function scoreCell(r){
+    var a = r.away_score, h = r.home_score;
+    if ((a === null || a === undefined) && (h === null || h === undefined))
+      return '<span class="dash">--</span>';
+    // Tennis: per-player set strings -> stack away over home, bold the winner.
+    if (r.sport === 'tennis' && (typeof a === 'string' || typeof h === 'string')){
+      var w = winnerSide(r);
+      var ac = (w === 'away') ? 'setline win' : 'setline lose';
+      var hc = (w === 'home') ? 'setline win' : 'setline lose';
+      if (w === null){ ac = 'setline'; hc = 'setline'; }
+      return '<div class="' + ac + '">' + esc(a || '-') + '</div>'
+           + '<div class="' + hc + '">' + esc(h || '-') + '</div>';
+    }
+    return esc(a) + ' <span class="dash">-</span> ' + esc(h);
+  }
+
+  function statusCell(row){
+    var st = row.state || 'pre';
+    var txt = esc(row.clock_text || '');
+    if (st === 'in'){
+      return '<span class="status in"><span class="dot"></span>' + (txt || 'Live') + '</span>';
+    }
+    if (st === 'post'){
+      return '<span class="status post">' + (txt || 'Final') + '</span>';
+    }
+    var when = row.start_time ? localTime(row.start_time) : (txt || 'Scheduled');
+    return '<span class="status pre">' + esc(when) + '</span>';
+  }
+
+  function localTime(iso){
+    try {
+      var d = new Date(iso);
+      if (isNaN(d.getTime())) return iso;
+      return d.toLocaleString([], {month:'short', day:'numeric',
+        hour:'numeric', minute:'2-digit'});
+    } catch(e){ return iso; }
+  }
+
+  function winCell(row, isSoccer){
+    var wh = pct(row.win_home), wa = pct(row.win_away), dr = pct(row.draw);
+    if (wh === null && wa === null && dr === null){
+      return '<span class="muted">--</span>';
+    }
+    var w = winnerSide(row);
+    var out = '<div class="wp' + (row.state === 'post' ? ' final' : '') + '">';
+    out += rowLine('Home', wh, w === 'home');
+    out += rowLine('Away', wa, w === 'away');
+    if (isSoccer && dr !== null){ out += rowLine('Draw', dr, false); }
+    out += '</div>';
+    return out;
+  }
+  function rowLine(lbl, p, won){
+    var pv = (p === null) ? '--' : (p + '%');
+    var w = (p === null) ? 0 : Math.max(0, Math.min(100, p));
+    return '<div class="row' + (won ? ' won' : '') + '"><span class="lbl">' + lbl + '</span>'
+      + '<span class="val">' + pv + '</span></div>'
+      + '<div class="bar"><i style="width:' + w + '%"></i></div>';
+  }
+
+  function sourceBadge(row){
+    var s = (row.source || 'unavailable');
+    if (s === 'unavailable'){
+      return '<span class="badge unavailable">Score only</span>';
+    }
+    var isModel = (s.indexOf('model') !== -1);
+    var cls = isModel ? 'model' : 'market';
+    var label = isModel ? 'MODEL' : 'MARKET';
+    var live = (s.indexOf('live') !== -1) ? ' - LIVE' : '';
+    return '<span class="badge ' + cls + '">' + label + live + '</span>';
+  }
+
+  function rowHtml(r, isSoccer, data){
+    var liveCls = (r.state === 'in') ? ' class="live"' : '';
+    var w = winnerSide(r);
+    var away = '<span class="away">' + esc(r.away || '--')
+      + (w === 'away' ? '<span class="chk">&#10003;</span>' : '') + '</span>';
+    var home = '<span class="home">' + esc(r.home || '--')
+      + (w === 'home' ? '<span class="chk">&#10003;</span>' : '') + '</span>';
+    var h = '<tr' + liveCls + '>';
+    h += '<td>' + statusCell(r) + '</td>';
+    h += '<td><div class="match">' + away + '<span class="at">@</span>' + home + '</div>'
+      + (r.note ? '<div class="note">' + esc(r.note) + '</div>' : '') + '</td>';
+    h += '<td class="score">' + scoreCell(r) + '</td>';
+    h += '<td>' + winCell(r, isSoccer) + '</td>';
+    h += '<td class="hide-sm total">' + fmtTotal(r.total) + '</td>';
+    h += '<td>' + sourceBadge(r) + '</td>';
+    h += '<td class="hide-sm upd">' + (data.generated_at ? localTime(data.generated_at) : '') + '</td>';
+    h += '</tr>';
+    return h;
+  }
+
+  // live first, then upcoming (by start time), then finished.
+  function rank(s){ return s === 'in' ? 0 : (s === 'post' ? 2 : 1); }
+  function sortRows(rows){
+    return rows.slice().sort(function(a, b){
+      var ra = rank(a.state), rb = rank(b.state);
+      if (ra !== rb) return ra - rb;
+      if (ra === 1){
+        var ta = a.start_time ? Date.parse(a.start_time) : 0;
+        var tb = b.start_time ? Date.parse(b.start_time) : 0;
+        return (ta || 0) - (tb || 0);
+      }
+      return 0;
+    });
+  }
+
+  function render(data){
+    lastData = data;
+    var tbody = $('rows');
+    var rows = sortRows((data && data.rows) || []);
+    var isSoccer = state.sport === 'soccer';
+    if (!rows.length){
+      tbody.innerHTML = '<tr><td colspan="7" class="empty">No games right now for this selection.</td></tr>';
+      setStamp(stampText(data, 0, 0, 0));
+      return;
+    }
+    var live = [], pre = [], fin = [];
+    for (var i=0;i<rows.length;i++){
+      var st = rows[i].state;
+      if (st === 'in') live.push(rows[i]);
+      else if (st === 'post') fin.push(rows[i]);
+      else pre.push(rows[i]);
+    }
+    var html = '', active = live.concat(pre);
+    for (i=0;i<active.length;i++){ html += rowHtml(active[i], isSoccer, data); }
+
+    if (fin.length){
+      var collapse = fin.length > COLLAPSE_OVER;
+      if (collapse){
+        var arrow = state.showFinished ? '&#9662; Hide ' : '&#9656; Show ';
+        html += '<tr class="divider toggle"><td colspan="7" id="finToggle">'
+          + arrow + fin.length + ' finished</td></tr>';
+        if (state.showFinished){
+          for (i=0;i<fin.length;i++){ html += rowHtml(fin[i], isSoccer, data); }
+        }
+      } else {
+        if (active.length){
+          html += '<tr class="divider"><td colspan="7">Finished</td></tr>';
+        }
+        for (i=0;i<fin.length;i++){ html += rowHtml(fin[i], isSoccer, data); }
+      }
+    }
+    tbody.innerHTML = html;
+    var ft = $('finToggle');
+    if (ft){
+      ft.addEventListener('click', function(){
+        state.showFinished = !state.showFinished;
+        render(lastData);
+      });
+    }
+    setStamp(stampText(data, live.length, pre.length, fin.length));
+  }
+
+  function stampText(data, nLive, nPre, nFin){
+    var t = (data && data.generated_at) ? localTime(data.generated_at)
+      : new Date().toLocaleTimeString();
+    var bits = [];
+    if (nLive) bits.push(nLive + ' live');
+    if (nPre) bits.push(nPre + ' upcoming');
+    if (nFin) bits.push(nFin + ' final');
+    var cnt = bits.length ? bits.join(' / ') + ' - ' : '';
+    return cnt + 'updated ' + t + ' - auto 25s';
+  }
+  function setStamp(txt){ $('stamp').textContent = txt; }
+
+  function load(){
+    var sport = state.sport;
+    var url = '/api/board?sport=' + encodeURIComponent(sport);
+    if (sport === 'soccer'){ url += '&leagues=' + encodeURIComponent(state.league); }
+    setStamp('Refreshing...');
+    fetch(url, {cache:'no-store'})
+      .then(function(res){
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(function(data){
+        if (data.sport && data.sport !== state.sport) return; // stale tab switch
+        render(data);
+      })
+      .catch(function(err){
+        $('rows').innerHTML = '<tr><td colspan="7" class="errbox">Could not load board ('
+          + esc(err.message) + '). Retrying...</td></tr>';
+        setStamp('Connection issue - retrying');
+      });
+  }
+
+  function schedule(){
+    if (timer) clearInterval(timer);
+    timer = setInterval(load, POLL_MS);
+  }
+
+  function switchSport(sport){
+    state.sport = sport;
+    state.showFinished = false;
+    var tabs = document.querySelectorAll('.tab');
+    for (var i=0;i<tabs.length;i++){
+      tabs[i].classList.toggle('active', tabs[i].getAttribute('data-sport') === sport);
+    }
+    $('leagueWrap').style.display = (sport === 'soccer') ? '' : 'none';
+    $('rows').innerHTML = '<tr><td colspan="7" class="empty">Loading games...</td></tr>';
+    load();
+    schedule();
+  }
+
+  // wire events
+  $('tabs').addEventListener('click', function(e){
+    var t = e.target.closest('.tab');
+    if (t) switchSport(t.getAttribute('data-sport'));
+  });
+  $('leagueSel').addEventListener('change', function(e){
+    state.league = e.target.value;
+    state.showFinished = false;
+    $('rows').innerHTML = '<tr><td colspan="7" class="empty">Loading games...</td></tr>';
+    load();
+    schedule();
+  });
+
+  // boot
+  switchSport('mlb');
+})();
+</script>
+</body>
+</html>

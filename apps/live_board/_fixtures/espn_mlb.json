@@ -1,0 +1,70 @@
+{
+  "events": [
+    {
+      "id": "401815700",
+      "date": "2026-06-15T17:10Z",
+      "name": "New York Mets at Cincinnati Reds",
+      "shortName": "NYM @ CIN",
+      "status": {
+        "period": 7,
+        "type": {"state": "in", "completed": false, "shortDetail": "Bot 7th", "detail": "Bottom 7th"}
+      },
+      "competitions": [
+        {
+          "id": "401815700",
+          "date": "2026-06-15T17:10Z",
+          "competitors": [
+            {
+              "homeAway": "home",
+              "score": "4",
+              "team": {"abbreviation": "CIN", "displayName": "Cincinnati Reds", "shortDisplayName": "Reds"}
+            },
+            {
+              "homeAway": "away",
+              "score": "2",
+              "team": {"abbreviation": "NYM", "displayName": "New York Mets", "shortDisplayName": "Mets"}
+            }
+          ],
+          "odds": []
+        }
+      ]
+    },
+    {
+      "id": "401815701",
+      "date": "2026-06-15T23:05Z",
+      "name": "Boston Red Sox at New York Yankees",
+      "shortName": "BOS @ NYY",
+      "status": {
+        "period": 0,
+        "type": {"state": "pre", "completed": false, "shortDetail": "7:05 PM ET", "detail": "Scheduled"}
+      },
+      "competitions": [
+        {
+          "id": "401815701",
+          "date": "2026-06-15T23:05Z",
+          "competitors": [
+            {
+              "homeAway": "home",
+              "score": "0",
+              "team": {"abbreviation": "NYY", "displayName": "New York Yankees", "shortDisplayName": "Yankees"}
+            },
+            {
+              "homeAway": "away",
+              "score": "0",
+              "team": {"abbreviation": "BOS", "displayName": "Boston Red Sox", "shortDisplayName": "Red Sox"}
+            }
+          ],
+          "odds": [
+            {
+              "provider": {"name": "ESPN BET"},
+              "details": "NYY -135",
+              "overUnder": 8.5,
+              "homeTeamOdds": {"moneyLine": -135},
+              "awayTeamOdds": {"moneyLine": 115}
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
