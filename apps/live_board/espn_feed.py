@@ -74,9 +74,16 @@ def _g(d, *keys, default=None):
     return cur
 
 
+def _ml_str(v):
+    """American moneyline int -> display string ('-115' / '+120')."""
+    if v is None:
+        return None
+    return ("+%d" % v) if v > 0 else ("%d" % v)
+
+
 def _parse_market(competition):
     out = {"ml_home": None, "ml_away": None, "draw": None,
-           "total": None, "provider": None}
+           "total": None, "provider": None, "details": None, "odds_text": None}
     odds = competition.get("odds") if isinstance(competition, dict) else None
     if not odds or not isinstance(odds, list):
         return out
@@ -87,7 +94,18 @@ def _parse_market(competition):
     out["ml_away"] = _as_int(_g(o, "awayTeamOdds", "moneyLine"))
     out["draw"] = _as_int(_g(o, "drawOdds", "moneyLine"))
     out["total"] = _as_float(o.get("overUnder"))
-    out["provider"] = _g(o, "provider", "name") or o.get("details")
+    out["details"] = o.get("details") if isinstance(o.get("details"), str) else None
+    out["provider"] = _g(o, "provider", "name")
+    # Compact market-line display for the board: full moneylines if present, else the
+    # raw ESPN 'details' favorite string (e.g. 'IRN -115'), else the total only.
+    mls = [_ml_str(out["ml_home"]), _ml_str(out["draw"]), _ml_str(out["ml_away"])]
+    mls = [m for m in mls if m]
+    if len(mls) >= 2:
+        out["odds_text"] = " / ".join(mls)
+    elif out["details"]:
+        out["odds_text"] = out["details"]
+    elif out["total"] is not None:
+        out["odds_text"] = "O/U %.1f" % out["total"]
     return out
 
 

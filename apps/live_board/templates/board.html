@@ -66,6 +66,9 @@
   .wp .bar > i{display:block;height:100%;background:var(--accent);}
   .wp .row.won + .bar > i{background:var(--model);}
   .total{font-variant-numeric:tabular-nums;color:var(--txt);white-space:nowrap;}
+  .odds{white-space:nowrap;}
+  .oddsline{font-variant-numeric:tabular-nums;color:var(--txt);font-weight:600;}
+  .odds .prov{display:block;color:var(--muted);font-size:10px;margin-top:1px;}
   .badge{display:inline-block;padding:3px 8px;border-radius:6px;font-size:10.5px;
     font-weight:700;letter-spacing:.4px;text-transform:uppercase;white-space:nowrap;}
   .badge.model{background:var(--model-bg);color:var(--model);border:1px solid #1f5a32;}
@@ -129,13 +132,14 @@
           <th>Matchup</th>
           <th class="score" style="text-align:center;">Score</th>
           <th>Win %</th>
+          <th class="hide-sm">Market Odds</th>
           <th class="hide-sm">Total</th>
           <th>Source</th>
           <th class="hide-sm">Updated</th>
         </tr>
       </thead>
       <tbody id="rows">
-        <tr><td colspan="7" class="empty">Loading games...</td></tr>
+        <tr><td colspan="8" class="empty">Loading games...</td></tr>
       </tbody>
     </table>
   </div>
@@ -164,6 +168,11 @@
   function fmtTotal(t){
     if (t === null || t === undefined || isNaN(t)) return '<span class="muted">--</span>';
     return Number(t).toFixed(1);
+  }
+  function oddsCell(r){
+    if (!r.market_odds) return '<span class="muted">--</span>';
+    var prov = r.provider ? '<span class="prov">' + esc(r.provider) + '</span>' : '';
+    return '<span class="oddsline">' + esc(r.market_odds) + '</span>' + prov;
   }
   function esc(s){
     if (s === null || s === undefined) return '';
@@ -263,6 +272,8 @@
   function sourceBadge(row){
     var s = (row.source || 'unavailable');
     if (s === 'unavailable'){
+      // We have no in-corpus model number; if a raw market line is present, say so.
+      if (row.market_odds) return '<span class="badge market">Market line</span>';
       return '<span class="badge unavailable">Score only</span>';
     }
     var isModel = (s.indexOf('model') !== -1);
@@ -285,6 +296,7 @@
       + (r.note ? '<div class="note">' + esc(r.note) + '</div>' : '') + '</td>';
     h += '<td class="score">' + scoreCell(r) + '</td>';
     h += '<td>' + winCell(r, isSoccer) + '</td>';
+    h += '<td class="hide-sm odds">' + oddsCell(r) + '</td>';
     h += '<td class="hide-sm total">' + fmtTotal(r.total) + '</td>';
     h += '<td>' + sourceBadge(r) + '</td>';
     h += '<td class="hide-sm upd">' + (data.generated_at ? localTime(data.generated_at) : '') + '</td>';
@@ -292,18 +304,19 @@
     return h;
   }
 
-  // live first, then upcoming (by start time), then finished.
+  // live first, then upcoming, then finished; within a group, rows we actually
+  // have a prediction for float above score-only rows, then by start time.
   function rank(s){ return s === 'in' ? 0 : (s === 'post' ? 2 : 1); }
+  function hasPred(r){ return (r.source && r.source !== 'unavailable') ? 0 : 1; }
   function sortRows(rows){
     return rows.slice().sort(function(a, b){
       var ra = rank(a.state), rb = rank(b.state);
       if (ra !== rb) return ra - rb;
-      if (ra === 1){
-        var ta = a.start_time ? Date.parse(a.start_time) : 0;
-        var tb = b.start_time ? Date.parse(b.start_time) : 0;
-        return (ta || 0) - (tb || 0);
-      }
-      return 0;
+      var pa = hasPred(a), pb = hasPred(b);
+      if (pa !== pb) return pa - pb;
+      var ta = a.start_time ? Date.parse(a.start_time) : 0;
+      var tb = b.start_time ? Date.parse(b.start_time) : 0;
+      return (ta || 0) - (tb || 0);
     });
   }
 
@@ -313,7 +326,7 @@
     var rows = sortRows((data && data.rows) || []);
     var isSoccer = state.sport === 'soccer';
     if (!rows.length){
-      tbody.innerHTML = '<tr><td colspan="7" class="empty">No games right now for this selection.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" class="empty">No games right now for this selection.</td></tr>';
       setStamp(stampText(data, 0, 0, 0));
       return;
     }
@@ -331,14 +344,14 @@
       var collapse = fin.length > COLLAPSE_OVER;
       if (collapse){
         var arrow = state.showFinished ? '&#9662; Hide ' : '&#9656; Show ';
-        html += '<tr class="divider toggle"><td colspan="7" id="finToggle">'
+        html += '<tr class="divider toggle"><td colspan="8" id="finToggle">'
           + arrow + fin.length + ' finished</td></tr>';
         if (state.showFinished){
           for (i=0;i<fin.length;i++){ html += rowHtml(fin[i], isSoccer, data); }
         }
       } else {
         if (active.length){
-          html += '<tr class="divider"><td colspan="7">Finished</td></tr>';
+          html += '<tr class="divider"><td colspan="8">Finished</td></tr>';
         }
         for (i=0;i<fin.length;i++){ html += rowHtml(fin[i], isSoccer, data); }
       }
@@ -381,7 +394,7 @@
         render(data);
       })
       .catch(function(err){
-        $('rows').innerHTML = '<tr><td colspan="7" class="errbox">Could not load board ('
+        $('rows').innerHTML = '<tr><td colspan="8" class="errbox">Could not load board ('
           + esc(err.message) + '). Retrying...</td></tr>';
         setStamp('Connection issue - retrying');
       });
@@ -400,7 +413,7 @@
       tabs[i].classList.toggle('active', tabs[i].getAttribute('data-sport') === sport);
     }
     $('leagueWrap').style.display = (sport === 'soccer') ? '' : 'none';
-    $('rows').innerHTML = '<tr><td colspan="7" class="empty">Loading games...</td></tr>';
+    $('rows').innerHTML = '<tr><td colspan="8" class="empty">Loading games...</td></tr>';
     load();
     schedule();
   }
@@ -413,7 +426,7 @@
   $('leagueSel').addEventListener('change', function(e){
     state.league = e.target.value;
     state.showFinished = false;
-    $('rows').innerHTML = '<tr><td colspan="7" class="empty">Loading games...</td></tr>';
+    $('rows').innerHTML = '<tr><td colspan="8" class="empty">Loading games...</td></tr>';
     load();
     schedule();
   });

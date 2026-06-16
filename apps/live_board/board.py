@@ -98,6 +98,8 @@ def _row(g: Dict[str, Any], **over: Any) -> Dict[str, Any]:
         "win_away": None,
         "draw": None,
         "total": mkt.get("total"),
+        "market_odds": mkt.get("odds_text"),   # raw market line (always shown if present)
+        "provider": mkt.get("provider"),
         "source": "unavailable",
         "market_implied": True,
         "note": _NOTES["unavailable"],
@@ -105,7 +107,11 @@ def _row(g: Dict[str, Any], **over: Any) -> Dict[str, Any]:
     row.update(over)
     src = row.get("source", "unavailable")
     row["market_implied"] = src in ("market", "live-market", "unavailable")
-    row["note"] = _NOTES.get(src, _NOTES["unavailable"])
+    # If we have no probability but DO have a market line, say so honestly (not a dead end).
+    if src == "unavailable" and row.get("market_odds"):
+        row["note"] = "No in-corpus model; showing the raw market line (vig-included) + live score."
+    else:
+        row["note"] = _NOTES.get(src, _NOTES["unavailable"])
     return row
 
 
