@@ -33,30 +33,16 @@ from typing import Dict, List, Optional
 import numpy as np
 import pandas as pd
 
-from domains.tennis.elo_core import SURFACE_BLEND, BASE_RATING, replay, prob
-from domains.tennis.elo_tune import _walk_forward_blend, _SCALE
+from domains.tennis.elo_core import BASE_RATING, replay, prob
+from domains.tennis.elo_tune import _SCALE
 from domains.tennis.match_engine import serve_probs_from_winprob, markets_from_engine, _sim_matches
 from domains.tennis.asof_hold import _PlayerHistory  # noqa: F401  (documented input source)
+from domains.tennis.predictor_helpers import (
+    _BASE_HOLD, fit_platt, fit_ingame_recal, recal, recal_ingame)
 
 _REPO = Path(__file__).resolve().parents[2]
 _MATCHES = _REPO / "data" / "domains" / "tennis" / "matches.parquet"
 _ASOF_HOLD = _REPO / "data" / "domains" / "tennis" / "asof_hold.parquet"
-_TRAIN_YEAR_MAX = 2022          # Platt/temperature fit window (matches the proof modules)
-_BASE_HOLD = 0.62               # match_engine's typical ATP hold; we shape around it
-_WTA_T = 1.36                   # proof_tennis.wta_temp_live fitted temperature (T>1 = overconfident)
-_EPS = 1e-6
-# W156 reference in-game recalibrator (leak-free Platt-on-logit from proof_tennis.ingame_accuracy,
-# ECE 0.043->0.006). We REFIT on ALL-PRIOR history at build time; this is the data-limited fallback.
-_W156_INGAME_PLATT = (0.7324, 0.5517)
-
-
-def _logit(p: np.ndarray) -> np.ndarray:
-    p = np.clip(p, _EPS, 1.0 - _EPS)
-    return np.log(p / (1.0 - p))
-
-
-def _sigmoid(z: np.ndarray) -> np.ndarray:
-    return 1.0 / (1.0 + np.exp(-z))
 
 
 class TennisPredictor:
@@ -82,10 +68,10 @@ class TennisPredictor:
         except (FileNotFoundError, OSError):
             pass
         # Leak-free ATP pregame Platt recalibrator (train window; id-order, winner label).
-        self._platt = self._fit_platt() if self.tour == "ATP" else None
+        self._platt = fit_platt(self.matches) if self.tour == "ATP" else None
         # W156 in-game recalibrator (Platt-on-logit) for the live after-set match-win, fit on
         # ALL-PRIOR history at build time (leak-free for the NEXT, unseen live match).
-        self._ingame_platt = self._fit_ingame_recal()
+        self._ingame_platt = fit_ingame_recal(self.matches)
 
     def _index_hold(self, ah: pd.DataFrame) -> None:
         """Latest non-NaN as-of hold% per player id, keyed via the matches spine."""
@@ -96,83 +82,13 @@ class TennisPredictor:
             for pid, h in zip(sub[f"{side}_id"], sub[f"{side}_hold_pct_asof"]):
                 self.hold_by_id[int(pid)] = float(h)  # last write = latest chronological
 
-    def _fit_platt(self) -> Optional[tuple]:
-        """Leak-free pregame Platt (a,b) on the Elo logit, fit on year<=TRAIN_YEAR_MAX rows.
-        p_cal=sigmoid(a+b*logit(p_raw)); None if data-limited. Uses id-order win_prob_p1 +
-        winner==1 as a TARGET only (NO winner-order feature)."""
-        try:
-            from sklearn.linear_model import LogisticRegression
-        except ImportError:
-            return None
-        wf = _walk_forward_blend(self.matches, SURFACE_BLEND)
-        yr = pd.to_datetime(wf["date"]).dt.year
-        tr = wf[yr <= _TRAIN_YEAR_MAX]
-        if len(tr) < 200:
-            return None
-        x = _logit(tr["win_prob_p1"].to_numpy(float)).reshape(-1, 1)
-        y = (tr["winner"] == 1).to_numpy(float)
-        if y.sum() == 0 or y.sum() == len(y):
-            return None
-        clf = LogisticRegression(C=1e6, solver="lbfgs", max_iter=500).fit(x, y)
-        return float(clf.intercept_[0]), float(clf.coef_[0, 0])
-
-    def _fit_ingame_recal(self) -> tuple:
-        """Refit the W156 in-game recalibrator (Platt-on-logit) on the WHOLE corpus.
-        Reconstructs the SAME COMBINED after-set-1 forecaster proof_tennis.ingame_accuracy
-        validated (walk-forward Elo prior -> race-to-N repricer + realized 1-0 set lead) paired
-        with the match outcome; fits Platt (a,b) so p_cal=sigmoid(a*logit(p)+b).
-        FIT SCOPE: this walks EVERY row of the corpus (not an as-of / held-out tail), so the
-        Platt params see all historical matches. That is leak-free ONLY for a genuinely FUTURE
-        live match (the predictor's intended use -- none of the fitted matches is the one being
-        priced); it is NOT a held-out evaluation, and the ECE 0.043->0.006 claim is NOT measured
-        here -- that comes from the separate chronological train/eval split in
-        proof_tennis.ingame_calib. Reference fallback (_W156_INGAME_PLATT) if data-limited
-        (<200 rows) or helpers are unavailable."""
-        try:
-            from scripts.platformkit.proof_tennis.ingame_accuracy import (  # noqa: PLC0415
-                _parse_sets, _p_set_from_match, _reprice_leader)
-            from scripts.platformkit.proof_tennis.ingame_calib import _fit_platt  # noqa: PLC0415
-            wf = _walk_forward_blend(self.matches, SURFACE_BLEND).reset_index(drop=True)
-        except Exception:  # noqa: BLE001 - missing helper / data-limited -> reference params
-            return _W156_INGAME_PLATT
-        preds: List[float] = []; labels: List[float] = []; cache: Dict[tuple, float] = {}
-        for i in range(len(wf)):
-            r = wf.iloc[i]
-            sets = None if bool(r.get("retirement", False)) else _parse_sets(r["score"])
-            if not sets:
-                continue
-            bo = int(r["best_of"]) if r["best_of"] in (3, 5) else 3
-            won = int(r["winner"]) == 1                 # p1 (lower id) won the MATCH
-            wg, lg = sets[0]
-            p1_g, p2_g = (wg, lg) if won else (lg, wg)
-            if p1_g == p2_g:
-                continue
-            lead_p1 = p1_g > p2_g                        # set-1 leader role (set result, not match)
-            p_pre = float(r["win_prob_p1"]) if lead_p1 else (1.0 - float(r["win_prob_p1"]))
-            key = (int(round(p_pre * 1000)), bo)
-            if key not in cache:
-                cache[key] = _p_set_from_match(p_pre, bo)
-            preds.append(_reprice_leader(bo, 1, 0, cache[key]))
-            labels.append(1.0 if (lead_p1 == won) else 0.0)
-        if len(preds) < 200:
-            return _W156_INGAME_PLATT
-        a, b = _fit_platt(np.array(preds), np.array(labels))
-        return (float(a), float(b)) if (np.isfinite(a) and np.isfinite(b)) else _W156_INGAME_PLATT
-
     def _recal_ingame(self, p_leader: float) -> float:
         """Apply the build-time W156 Platt-on-logit in-game recalibrator to a leader prob."""
-        a, b = self._ingame_platt
-        return float(_sigmoid(a * _logit(np.array([p_leader])) + b)[0])
+        return recal_ingame(p_leader, self._ingame_platt)
 
     def _recal(self, p_raw: float, *, use_wta_temp: bool) -> float:
         """Apply the tour's leak-free recalibration to a raw Elo match-win prob."""
-        z = _logit(np.array([p_raw]))
-        if use_wta_temp or self.tour == "WTA":
-            return float(_sigmoid(z / _WTA_T)[0])
-        if self._platt is not None:
-            a, b = self._platt
-            return float(_sigmoid(a + b * z)[0])
-        return float(p_raw)
+        return recal(p_raw, tour=self.tour, platt=self._platt, use_wta_temp=use_wta_temp)
 
     def _resolve(self, name: str) -> Optional[int]:
         return self.name_to_id.get(name) or self.name_to_id.get(name.strip())

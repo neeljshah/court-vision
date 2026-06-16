@@ -15,35 +15,13 @@ import argparse, json, os, sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-_HONEST_BANNER = (
-    "HONEST: markets efficient; tested signals REJECT; no edge claimed; "
-    "calibration NOT edge; surface shows understanding only."
+from scripts.platformkit.sport_read_specs import (
+    HONEST_BANNER as _HONEST_BANNER,
+    PROVENANCE_MODULES as _PROVENANCE_MODULES,
+    QUERY_SPECS as _QUERY_SPECS,
+    SAFE_TEMPLATE as _SAFE_TEMPLATE,
+    DEFAULT_PRIORS as _DEFAULT_PRIORS,
 )
-_PROVENANCE_MODULES = [
-    "scripts.platformkit.brain_query.brain_query",
-    "scripts.platformkit.brain_query.prior_verdicts",
-    "scripts.platformkit.brain_critic.critique_finding",
-    "scripts.platformkit.pipeline_integration.assemble_read",
-]
-# (query template, kind) — the kind filter guarantees each bucket retrieves notes
-# of that kind even when keyword overlap is low (brain_query path-sorts score ties).
-_QUERY_SPECS = [
-    ("{sport} archetype playstyle style", "archetype"),
-    ("{sport} scheme coverage defense tactic", "scheme"),
-    ("{sport} scheme coverage defense tactic", "concept"),  # routed by _classify_hits
-    ("{sport} trend season pattern", "trend"),
-]
-_SAFE_TEMPLATE = (
-    "Brain scout for {sport}: style landscape reflects {n_archetypes} archetype(s) "
-    "and {n_schemes} scheme(s) in the organized vault. "
-    "Empirical market verdict: markets efficient; all tested signals REJECT; NO betting edge. "
-    "{surface_note}"
-    "This read is understanding only — calibrated structure, not an actionable pick."
-)
-_DEFAULT_PRIORS: Dict[str, Any] = {
-    "edge_claimed": False, "market_efficiency": "efficient",
-    "tested_signals": "REJECT", "note": "markets efficient; calibration not edge",
-}
 
 
 def _classify_hits(hits: list) -> Dict[str, List[Dict[str, Any]]]:

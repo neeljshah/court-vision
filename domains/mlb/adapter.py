@@ -38,7 +38,6 @@ def _verify_kernel_import_weight() -> None:
 
 _verify_kernel_import_weight()
 
-
 class MLBAdapter:
     """MARKET_ONLY MLB two-way moneyline adapter (sportsbookreviewsonline archive)."""
 
@@ -247,9 +246,7 @@ class MLBAdapter:
         )
 
 
-# ---------------------------------------------------------------------------
-# Module-level helpers
-# ---------------------------------------------------------------------------
+# --- module-level helpers ---
 
 def _add_context(wf: pd.DataFrame) -> pd.DataFrame:
     """Append leak-free context cols (snapshot pre-game, update post-game).
