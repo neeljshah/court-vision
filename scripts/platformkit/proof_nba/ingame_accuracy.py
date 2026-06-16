@@ -1,16 +1,12 @@
 """scripts.platformkit.proof_nba.ingame_accuracy — NBA in-game: the real edge, now backtestable.
 
 In-game is the huge advantage: conditioning on the realized score makes a far sharper
-forecaster than the static pregame line. NBA was un-backtestable (no per-quarter data) until
-the linescore ingest (domains/basketball_nba/ingest_linescores.py). This reconstructs leak-free
-mid-game states at the end of Q1/Q2/Q3, reprices via the NBA repricer, and scores:
-  * win prob -> Brier(conditional) vs Brier(static pregame) + ECE/reliability slope (sharp
-    AND calibrated: a sharp-but-miscalibrated forecaster gives WRONG confidence)
-  * final total-> RMSE + signed bias (NEVER MAE)
-A leak-free recalibrator (temperature / Platt-on-logit) is fit on TRAIN games ONLY and applied
-to held-out games -> ECE_raw vs ECE_recal (Brier guarded not to worsen). It also derives the
-per-quarter scoring CURVE and A/Bs curve-weighted vs flat remaining points (like MLB innings).
-
+forecaster than the static pregame line. The linescore ingest unlocked per-quarter data; this
+reconstructs leak-free mid-game states at the end of Q1/Q2/Q3, reprices via the NBA repricer,
+and scores: win prob -> Brier(conditional) vs Brier(pregame) + ECE/reliability slope (sharp
+AND calibrated); final total -> RMSE + signed bias (NEVER MAE). A leak-free recalibrator
+(temperature / Platt-on-logit) is fit on TRAIN games ONLY and applied to held-out games ->
+ECE_raw vs ECE_recal (Brier guarded). Also derives the per-quarter scoring CURVE (vs flat).
 HONEST: a sharper, calibrated in-game forecaster is the goal; a live book also sees the score,
 so this is forecaster QUALITY not a guaranteed price edge. RMSE+bias never MAE. If the raw
 forecaster is already calibrated, recal is a null. INVARIANTS: never edit src/ or kernel/; <=300.
@@ -18,9 +14,10 @@ Run: python -m scripts.platformkit.proof_nba.ingame_accuracy
 """
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -32,6 +29,15 @@ if str(_REPO) not in sys.path:
 from scripts.platformkit.live_repricer import GameState, get_repricer  # noqa: E402
 
 _LINESCORES = _REPO / "data" / "domains" / "basketball_nba" / "linescores.parquet"
+
+
+def _linescores_path(corpus: Optional[Path]) -> Path:
+    # Corpus precedence: explicit arg > $PROOF_CORPUS_ROOT/nba > real data/domains (unchanged).
+    env = os.environ.get("PROOF_CORPUS_ROOT")
+    root = corpus or (Path(env) / "nba" if env else None)
+    return (root / "linescores.parquet") if root is not None else _LINESCORES
+
+
 _CHECKPOINTS = ((1, 12.0), (2, 24.0), (3, 36.0))   # (quarter ended, elapsed minutes)
 _LEAGUE_MU = 113.0
 _DEF_MARGIN_SIGMA = 13.5   # full-game final-margin SD (matches the NBA repricer default)
@@ -143,8 +149,8 @@ def _recalibrate(train_p: np.ndarray, train_y: np.ndarray,
         return _sig(_logit(eval_p) / t), f"temperature(T={round(t, 3)})"
     return _sig(a * _logit(eval_p) + b), f"platt_logit(a={round(a, 3)},b={round(b, 3)})"
 
-def _load() -> pd.DataFrame:
-    df = pd.read_parquet(_LINESCORES)
+def _load(path: Optional[Path] = None) -> pd.DataFrame:
+    df = pd.read_parquet(path or _LINESCORES)
     qcols = [f"{s}_q{q}" for s in ("home", "away") for q in range(1, 5)]
     df = df.dropna(subset=qcols)
     df["home_final"] = df[[f"home_q{q}" for q in range(1, 5)]].sum(axis=1)
@@ -178,10 +184,11 @@ def _walk_forward_elo(df: pd.DataFrame) -> np.ndarray:
         rat[ht] += d; rat[at] -= d
     return p
 
-def run() -> Dict:
-    if not _LINESCORES.is_file():
+def run(corpus: Optional[Path] = None) -> Dict:
+    ls_path = _linescores_path(corpus)
+    if not ls_path.is_file():
         return {"status": "no_data", "note": "run domains.basketball_nba.ingest_linescores first"}
-    df = _load()
+    df = _load(ls_path)
     n = len(df)
     if n < 60:
         return {"status": "data_limited", "n": n}
@@ -193,12 +200,10 @@ def run() -> Dict:
 
     pre_p, blind_p, rate_p, y = [], [], [], []
     rmse_acc = {"flat": [], "curve": []}
-    tot_true: List[float] = []
-    game_idx: List[int] = []   # game index per checkpoint -> leak-free split-by-game
+    tot_true: List[float] = []; game_idx: List[int] = []   # per checkpoint -> split-by-game
     for i in range(n):
         r = df.iloc[i]
         win = 1.0 if r["home_final"] > r["away_final"] else 0.0
-        final_total = float(r["home_final"] + r["away_final"])
         # rating-informed prior: set mu so the repricer's PREGAME win == the Elo win-prob
         mu_diff = float(ndtri(min(max(p_pre[i], 1e-4), 1 - 1e-4)) * _DEF_MARGIN_SIGMA)
         rate_pp = {"mu_home": _LEAGUE_MU + mu_diff / 2.0, "mu_away": _LEAGUE_MU - mu_diff / 2.0}
@@ -214,7 +219,7 @@ def run() -> Dict:
             rem_flat = (48.0 - elapsed) / 48.0
             rmse_acc["flat"].append(h0 + a0 + 2.0 * _LEAGUE_MU * rem_flat)
             rmse_acc["curve"].append(h0 + a0 + 2.0 * _LEAGUE_MU * float(curve[q:].sum()))
-            tot_true.append(final_total)
+            tot_true.append(float(r["home_final"] + r["away_final"]))
             game_idx.append(i)
 
     y = np.array(y)
@@ -243,30 +248,27 @@ def run() -> Dict:
             "recal_method": method, "reliability_slope": round(_reliability_slope(ev_p, ev_y), 4),
             "brier_raw_eval": round(b_raw_ev, 5), "brier_recal_eval": round(b_recal_ev, 5),
             "brier_not_worse": bool(b_recal_ev <= b_raw_ev + 1e-4),
-            "well_calibrated_raw": bool(ece_raw < 0.025),
-        }
+            "well_calibrated_raw": bool(ece_raw < 0.025)}
     else:
         cal = {"cal_status": "data_limited", "cal_n_eval": int(ev_m.sum())}
 
     out = {
         "status": "ok", "n_games": n, "n_checkpoints": int(y.size),
         "quarter_curve": [round(float(c), 4) for c in curve],
-        "brier_pregame_elo": round(b_pre, 5),
-        "brier_conditional_blind": round(b_blind, 5),
+        "brier_pregame_elo": round(b_pre, 5), "brier_conditional_blind": round(b_blind, 5),
         "brier_conditional_rating": round(b_rate, 5),
-        "combined_beats_pregame": bool(b_rate < b_pre),
-        "combined_beats_blind": bool(b_rate < b_blind),
+        "combined_beats_pregame": bool(b_rate < b_pre), "combined_beats_blind": bool(b_rate < b_blind),
         "total_rmse_flat": round(rmse_flat, 3), "total_rmse_curve": round(rmse_curve, 3),
         "total_bias_flat": round(bias_flat, 3), "curve_helps": bool(rmse_curve < rmse_flat - 0.05),
         "verdict": (
             f"IN-GAME wins: pregame-Elo Brier {round(b_pre,3)} -> score-only {round(b_blind,3)} "
-            f"-> COMBINED (rating prior + score) {round(b_rate,3)} "
-            f"({'best' if b_rate <= min(b_pre, b_blind) else 'not best'}). NBA per-quarter "
-            f"curve is a null (quarters ~uniform)."),
+            f"-> COMBINED {round(b_rate,3)} "
+            f"({'best' if b_rate <= min(b_pre, b_blind) else 'not best'}). NBA quarter curve null."),
         "note": "Forecaster quality (a live book also sees the score). RMSE+bias, never MAE. No $ edge.",
     }
     out.update(cal)
     return out
+
 
 def _main() -> int:
     rep = run()
@@ -275,20 +277,18 @@ def _main() -> int:
     print(f"=== NBA IN-GAME accuracy (n={rep['n_games']} games, {rep['n_checkpoints']} checkpoints) ===")
     print(f"  per-quarter scoring share Q1-Q4: {rep['quarter_curve']} (uniform=0.25)")
     print(f"  win-prob Brier:  pregame-Elo={rep['brier_pregame_elo']}  "
-          f"score-only={rep['brier_conditional_blind']}  "
-          f"COMBINED(rating+score)={rep['brier_conditional_rating']}")
+          f"score-only={rep['brier_conditional_blind']}  COMBINED={rep['brier_conditional_rating']}")
     print(f"  combined beats pregame: {rep['combined_beats_pregame']}  "
           f"beats score-only: {rep['combined_beats_blind']}")
     print(f"  final-total RMSE: flat={rep['total_rmse_flat']}  curve={rep['total_rmse_curve']}  "
           f"(curve helps: {rep['curve_helps']})")
     if "ece_raw" in rep:
-        print(f"  CALIBRATION (COMBINED, leak-free split-by-game, train n={rep['cal_n_train']} "
-              f"eval n={rep['cal_n_eval']}):")
-        print(f"    ECE_raw={rep['ece_raw']} -> ECE_recal={rep['ece_recal']} "
-              f"via {rep['recal_method']}  (reliability slope={rep['reliability_slope']})")
+        print(f"  CALIBRATION (COMBINED, split-by-game, train n={rep['cal_n_train']} "
+              f"eval n={rep['cal_n_eval']}):  ECE_raw={rep['ece_raw']} -> "
+              f"ECE_recal={rep['ece_recal']} via {rep['recal_method']} "
+              f"(rel-slope={rep['reliability_slope']})")
         print(f"    Brier raw={rep['brier_raw_eval']} -> recal={rep['brier_recal_eval']} "
-              f"(not worse: {rep['brier_not_worse']});  "
-              f"raw well-calibrated (ECE<0.025): {rep['well_calibrated_raw']}")
+              f"(not worse: {rep['brier_not_worse']}); raw well-cal: {rep['well_calibrated_raw']}")
     else:
         print(f"  CALIBRATION: {rep.get('cal_status', 'n/a')} (eval n={rep.get('cal_n_eval')})")
     print(f"VERDICT: {rep['verdict']}")

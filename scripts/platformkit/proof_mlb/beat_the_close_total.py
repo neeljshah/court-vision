@@ -26,9 +26,10 @@ Run: python -m scripts.platformkit.proof_mlb.beat_the_close_total
 """
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
-from typing import Dict, Tuple
+from typing import Dict, Optional, Tuple
 
 import numpy as np
 
@@ -39,6 +40,21 @@ if str(_REPO) not in sys.path:
 from domains.mlb.inning_engine import RunRateState  # noqa: E402
 
 
+def _corpus_from_env() -> Optional[Path]:
+    """$PROOF_CORPUS_ROOT/mlb if set else None (shared corpus-override contract)."""
+    root = os.environ.get("PROOF_CORPUS_ROOT")
+    return (Path(root) / "mlb") if root else None
+
+
+def _resolve(corpus: Optional[Path]) -> Tuple[Path, Path]:
+    """(games_path, odds_path): explicit arg > env > real data/domains (unchanged default)."""
+    root = corpus or _corpus_from_env()
+    if root is not None:
+        return root / "games.parquet", root / "odds.parquet"
+    return (_REPO / "data/domains/mlb/games.parquet",
+            _REPO / "data/domains/mlb/odds.parquet")
+
+
 def _rmse(pred: np.ndarray, y: np.ndarray) -> float:
     return float(np.sqrt(np.mean((pred - y) ** 2)))
 
@@ -47,11 +63,11 @@ def _bias(pred: np.ndarray, y: np.ndarray) -> float:
     return float(np.mean(pred - y))
 
 
-def _load_overlap():
+def _load_overlap(games_path: Path, odds_path: Path):
     """Merge games with closeou rows; date-sorted. Returns a DataFrame."""
     import pandas as pd
-    g = pd.read_parquet(_REPO / "data/domains/mlb/games.parquet")
-    o = pd.read_parquet(_REPO / "data/domains/mlb/odds.parquet")
+    g = pd.read_parquet(games_path)
+    o = pd.read_parquet(odds_path)
     o = o.dropna(subset=["closeou"])
     m = g.merge(o[["event_id", "closeou"]], on="event_id", how="inner")
     m = m.dropna(subset=["home_runs", "away_runs", "closeou"])
@@ -83,10 +99,11 @@ def _walk_forward_lambdas(games_all) -> Dict[str, Tuple[float, float]]:
     return out
 
 
-def run() -> Dict:
-    games_all = __import__("pandas").read_parquet(_REPO / "data/domains/mlb/games.parquet")
+def run(corpus: Optional[Path] = None) -> Dict:
+    games_path, odds_path = _resolve(corpus)
+    games_all = __import__("pandas").read_parquet(games_path)
     lam_map = _walk_forward_lambdas(games_all)
-    m = _load_overlap()
+    m = _load_overlap(games_path, odds_path)
     n = len(m)
     if n < 60:
         return {"status": "data_limited", "n": n}

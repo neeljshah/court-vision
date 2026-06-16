@@ -25,6 +25,8 @@ Run: python -m scripts.platformkit.ingame_scoreboard
 """
 from __future__ import annotations
 
+import argparse
+import os
 import sys
 from pathlib import Path
 from typing import Dict, List
@@ -32,6 +34,15 @@ from typing import Dict, List
 _REPO = Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
+
+_NO_CORPUS_BANNER = (
+    "CORPUS NOT PRESENT -- run with --corpus tests/fixtures/proof or provide data/domains/ "
+    "(every row is non-ok; no real or fixture corpus resolved).")
+
+
+def _all_non_ok(rows: List[Dict]) -> bool:
+    """True when EVERY row failed to produce a measured number (status set on all)."""
+    return bool(rows) and all(r.get("status") for r in rows)
 
 
 def _fmt(x) -> str:
@@ -185,9 +196,22 @@ def write_report(root: Path = None) -> Path:
     return out
 
 
-def _main() -> int:
+def _main(argv: List[str] = None) -> int:
+    ap = argparse.ArgumentParser(description="In-game scoreboard (forecaster quality).")
+    ap.add_argument("--corpus", default=None,
+                    help="corpus root (e.g. tests/fixtures/proof); sets PROOF_CORPUS_ROOT "
+                         "BEFORE build() so each per-sport run() picks up its fixtures.")
+    args = ap.parse_args(argv)
+    if args.corpus:
+        os.environ["PROOF_CORPUS_ROOT"] = args.corpus
     rows = build()
     print(render_markdown(rows))
+    if _all_non_ok(rows):
+        print("\n" + _NO_CORPUS_BANNER)
+    # Fixture/demo mode (--corpus) is PRINT-ONLY: never clobber the canonical report.
+    if args.corpus:
+        print("\n(fixture/demo mode -- canonical report NOT written; run with no --corpus to refresh it)")
+        return 0
     try:
         p = write_report()
         print(f"\n(written -> {p})")

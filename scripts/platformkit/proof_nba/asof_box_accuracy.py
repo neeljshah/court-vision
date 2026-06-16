@@ -17,9 +17,10 @@ Run: python -m scripts.platformkit.proof_nba.asof_box_accuracy
 """
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
-from typing import Dict, Tuple
+from typing import Dict, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -37,6 +38,17 @@ _LINES: Tuple[float, ...] = (215.5, 220.5, 225.5, 230.5, 235.5)
 # ESPN emits inconsistent team abbreviations (GS/GSW, NY/NYK, NO/NOP, SA/SAS, UTAH/UTA,
 # WSH/WAS) + All-Star junk; canonicalise to the odds-feed convention so the join lands.
 _CANON = {"GS": "GSW", "NY": "NYK", "NO": "NOP", "SA": "SAS", "UTAH": "UTA", "WSH": "WAS"}
+
+
+def _corpus_from_env() -> Optional[Path]:
+    """Shared corpus-override contract: $PROOF_CORPUS_ROOT/nba if set, else None."""
+    r = os.environ.get("PROOF_CORPUS_ROOT")
+    return Path(r) / "nba" if r else None
+
+
+def _resolve_root(corpus: Optional[Path]) -> Path:
+    """Precedence: explicit corpus arg > $PROOF_CORPUS_ROOT/nba > real data/domains path."""
+    return corpus or _corpus_from_env() or _NBA
 
 
 def _canon(s: pd.Series) -> pd.Series:
@@ -116,11 +128,11 @@ def _walk_forward_split(df: pd.DataFrame) -> np.ndarray:
     return pred
 
 
-def load_box() -> pd.DataFrame:
+def load_box(root: Optional[Path] = None) -> pd.DataFrame:
     """Cleaned, date-sorted ESPN box: canon abbrs, home/away_pts from the final score
     (populated for all games, unlike the box-stats points row), total filtered to a sane
     range. Shared by the rest-aware model module."""
-    box = pd.read_parquet(_NBA / "espn_boxscores.parquet")
+    box = pd.read_parquet(_resolve_root(root) / "espn_boxscores.parquet")
     box["date"] = pd.to_datetime(box["date"], format="mixed", errors="coerce")
     box = box.dropna(subset=["date"]).sort_values("date").reset_index(drop=True)
     box["home_abbr"] = _canon(box["home_abbr"])
@@ -131,23 +143,25 @@ def load_box() -> pd.DataFrame:
     return box[(box["total"] >= 150) & (box["total"] <= 350)].reset_index(drop=True)
 
 
-def load_close() -> pd.DataFrame:
-    od = pd.read_parquet(_NBA / "odds.parquet").rename(
+def load_close(root: Optional[Path] = None) -> pd.DataFrame:
+    od = pd.read_parquet(_resolve_root(root) / "odds.parquet").rename(
         columns={"home_team": "home_abbr", "away_team": "away_abbr"})
     od["date"] = pd.to_datetime(od["date"])
     return od[["date", "home_abbr", "away_abbr", "total"]].rename(columns={"total": "close_total"})
 
 
-def run() -> Dict:
-    box_p, odds_p = _NBA / "espn_boxscores.parquet", _NBA / "odds.parquet"
+def run(corpus: Optional[Path] = None) -> Dict:
+    root = _resolve_root(corpus)
+    box_p, odds_p = root / "espn_boxscores.parquet", root / "odds.parquet"
     if not box_p.is_file() or not odds_p.is_file():
         return {"error": "espn_boxscores or odds parquet missing"}
-    box = load_box()
+    box = load_box(root)
     box["pred_pooled"] = _walk_forward_total(box)
     box["pred_split"] = _walk_forward_split(box)
     box["pred_poss"] = _walk_forward_poss(box)
 
-    od = pd.read_parquet(odds_p).rename(columns={"home_team": "home_abbr", "away_team": "away_abbr"})
+    od = pd.read_parquet(odds_p).rename(  # noqa: E501
+        columns={"home_team": "home_abbr", "away_team": "away_abbr"})
     od["date"] = pd.to_datetime(od["date"])
     m = box.merge(od[["date", "home_abbr", "away_abbr", "total"]].rename(columns={"total": "close_total"}),
                   on=["date", "home_abbr", "away_abbr"], how="inner")

@@ -29,6 +29,7 @@ Run: python -m scripts.platformkit.proof_tennis.ingame_accuracy
 """
 from __future__ import annotations
 
+import os
 import re
 import sys
 from pathlib import Path
@@ -49,6 +50,12 @@ from scripts.platformkit.proof_tennis.ingame_calib import recalibrate_holdout  #
 _MATCHES = _REPO / "data" / "domains" / "tennis" / "matches.parquet"
 _TRAIN_YEAR_MAX = 2022  # train (Elo warm-up) <= this; held-out test > this
 _SET_TOKEN = re.compile(r"^(\d+)-(\d+)$")
+
+
+def _corpus_from_env() -> Optional[Path]:
+    """$PROOF_CORPUS_ROOT/tennis if set, else None (real data/domains default)."""
+    root = os.environ.get("PROOF_CORPUS_ROOT")
+    return Path(root) / "tennis" if root else None
 
 
 def _brier(p: np.ndarray, y: np.ndarray) -> float:
@@ -110,10 +117,13 @@ def _reprice_leader(best_of: int, sets_lead: int, sets_trail: int, p_set_leader:
     return float(rep.reprice(gs)["match_win_p1"])
 
 
-def run() -> Dict:
-    if not _MATCHES.is_file():
+def run(corpus: Optional[Path] = None) -> Dict:
+    # precedence: explicit corpus arg > $PROOF_CORPUS_ROOT/tennis > real data/domains path
+    root = corpus or _corpus_from_env()
+    matches_path = (root / "matches.parquet") if root is not None else _MATCHES
+    if not matches_path.is_file():
         return {"status": "no_data", "note": "tennis matches.parquet not found"}
-    matches = pd.read_parquet(_MATCHES)
+    matches = pd.read_parquet(matches_path)
 
     # leak-free walk-forward surface-blended Elo -> win_prob_p1 = P(lower-id wins), as-of.
     wf = _walk_forward_blend(matches, blend=SURFACE_BLEND)

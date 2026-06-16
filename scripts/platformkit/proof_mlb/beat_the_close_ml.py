@@ -17,9 +17,10 @@ Run: python -m scripts.platformkit.proof_mlb.beat_the_close_ml
 """
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
-from typing import Dict, Tuple
+from typing import Dict, Optional, Tuple
 
 import numpy as np
 
@@ -29,6 +30,17 @@ if str(_REPO) not in sys.path:
 
 _GAMES = _REPO / "data/domains/mlb/games.parquet"
 _ODDS = _REPO / "data/domains/mlb/odds.parquet"
+
+
+def _corpus_from_env() -> Optional[Path]:
+    """Shared corpus-override contract: $PROOF_CORPUS_ROOT/mlb if set, else None.
+
+    Precedence in run(): explicit corpus arg > $PROOF_CORPUS_ROOT/mlb > real data/domains
+    path (unchanged default). The scoreboard sets the env var before calling run() with no
+    args, so this proof must honor it by itself.
+    """
+    root = os.environ.get("PROOF_CORPUS_ROOT")
+    return (Path(root) / "mlb") if root else None
 
 # MLB Elo: baseball has a SMALL home edge (~54% home win rate -> modest HFA), low MOV
 # multiplier (run margins are small), and a gentle K (162-game seasons, ~even teams).
@@ -98,10 +110,13 @@ def _brier_logloss(p: np.ndarray, y: np.ndarray) -> Tuple[float, float]:
             float(-np.mean(y * np.log(p) + (1 - y) * np.log(1 - p))))
 
 
-def run() -> Dict:
+def run(corpus: Optional[Path] = None) -> Dict:
     import pandas as pd
-    games = pd.read_parquet(_GAMES)
-    odds = pd.read_parquet(_ODDS)[
+    root = corpus or _corpus_from_env()
+    games_path = (root / "games.parquet") if root is not None else _GAMES
+    odds_path = (root / "odds.parquet") if root is not None else _ODDS
+    games = pd.read_parquet(games_path)
+    odds = pd.read_parquet(odds_path)[
         ["event_id", "ml_close_home_am", "ml_close_away_am"]]
 
     # chronological order so the walk-forward Elo is genuinely leak-free

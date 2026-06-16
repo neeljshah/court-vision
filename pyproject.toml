@@ -1,0 +1,54 @@
+# pyproject.toml -- packaging for the 4-sport CALIBRATED PREDICTOR product.
+#
+# The sellable product is the multi-sport (NBA / MLB / Soccer / Tennis) calibrated
+# prediction platform: one win-prob per sport anchors a coherent pregame surface
+# (predict / to_jd) + an in-game repricer (predict_live), exposed via the
+# `cv-matchup` CLI and the cohesive / live reads. The selling point is the RIGOR +
+# in-game edge + honest calibration -- never a fabricated $ edge.
+#
+# `pip install -e .` installs ONLY the slim predictor surface (domains/, kernel/,
+# scripts.platformkit/). The heavy CV / FastAPI / daemon stack is intentionally NOT
+# packaged here (see requirements.txt for that legacy "Origin" stack).
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "court-vision-predictor"
+version = "0.18.0"
+description = "4-sport (NBA/MLB/Soccer/Tennis) calibrated pre-game + in-game prediction platform -- matches the devigged close, in-game conditioning is the measured edge, honest calibration (no fabricated $ edge)."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { file = "LICENSE" }
+authors = [{ name = "Neel Shah", email = "neeljshah22@gmail.com" }]
+keywords = ["sports-prediction", "calibration", "in-game", "nba", "mlb", "soccer", "tennis", "leak-free", "walk-forward"]
+dependencies = [
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "pyarrow>=14.0",
+    "scipy>=1.10",
+    "scikit-learn>=1.3",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+# The full legacy CV / web / daemon stack is NOT a pip extra -- install it from
+# requirements.txt ("Origin" stack). The predictor product needs only the base deps.
+
+[project.scripts]
+cv-matchup = "scripts.platformkit.predict_matchup:main"
+cv-predict = "scripts.platformkit.cohesive_read:_cli"
+cv-live = "scripts.platformkit.live_read_cli:_cli"
+
+[project.urls]
+Homepage = "https://github.com/neeljshah/court-vision"
+
+[tool.setuptools.packages.find]
+# Package ONLY the predictor surface; exclude the heavy legacy trees (src/, api/,
+# apps/, webapp/) and the human-gated scripts (team_system/, intel/).
+include = ["domains*", "kernel*", "scripts", "scripts.platformkit*"]
+exclude = ["tests*", "src*", "api*", "apps*", "webapp*", "data*", "vault*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.json"]
