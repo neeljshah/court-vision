@@ -79,6 +79,9 @@ recruiter or interviewer can check them directly.
 | Fractional-Kelly sizing with correlation penalty, drawdown breaker, isotonic-calibrated input | `src/prediction/betting_portfolio.py::kelly_corr` (quarter-Kelly, persisted prop-correlation matrix shrink, drawdown halt, cap, isotonic win-prob override) | "Implemented fractional-Kelly bankroll management wired to calibrated probabilities — correlation-aware, drawdown-gated, capped." |
 | Self-caught overfit, hard-corrected | `src/prediction/prop_cv_split.py` documents a leaky grid-search (train R² ~0.79 vs honest holdout ~0.06 on stl/blk) and applies corrective regularization that takes precedence over the stale tuned params | "Caught a real leakage-driven overfit in my own pipeline — 0.79 CV R² vs 0.06 leak-free holdout — and hard-coded the corrective regularization so the mistake can't silently reappear." |
 | Written validation doctrine (CLV over ROI, null hypothesis, no K-fold on time series) | `docs/research/validation-methodology.md` | "Documented a disciplined methodology that treats beating the sharp closing line (CLV, significance-tested) as the proof of edge above noisy ROI, and bans K-fold CV on time-ordered data." |
+| 4-sport real-data edge hunt: pregame MATCHES the Shin-devigged close within noise on team-strength markets across 6 independent corpora (NBA/MLB moneyline, soccer O/U); totals/ATP trail only by the freshness gap | `scripts/platformkit/edge_hunt_scoreboard.py`, `scripts/platformkit/beat_the_close_scoreboard.py`, `docs/MARKET_EFFICIENCY_PROOF.md` (recorded table reproduces `docs/research/organization-sprint/EDGE-HUNT-RESULTS.md`) | "Ran a real-data forecasting edge hunt across four sports and six independent corpora and showed my own calibrated model MATCHES the efficient closing line within noise on team-strength markets -- the honest best case for an efficient market. Calibration/sharpness, not a $ edge." |
+| Every candidate signal REJECTED across >=2 independent corpora; positive full-sample lifts SIGN-FLIP across calendar halves = caught overfit signature | `scripts/platformkit/edge_hunt_schedule.py` (NBA H1/H2 sub-corpora output), `scripts/platformkit/hunt_line_movement.py` (MLB NL/AL CLV-capture), `scripts/platformkit/edge_hunt_scoreboard.py` | "Scored every schedule/fatigue/totals/CLV candidate through the real leak-free gate; all rejected on >=2 corpora, and I caught my own signals that looked positive full-sample then reversed sign out-of-sample -- the overfit signature. The market is efficient on price; the self-audit is the result." |
+| In-game conditioning is the one measured calibration win (NBA Brier 0.209 -> 0.159, MLB 0.241 -> 0.126), scoped real-corpus-only, edge_claimed=False | `scripts/platformkit/ingame_scoreboard.py`, `scripts/platformkit/proof_nba/ingame_accuracy.py`, `scripts/platformkit/proof_mlb/ingame_accuracy.py` | "The one measured win is in-game conditioning -- fusing the pregame rating prior with the realized mid-game state sharpens the win-prob forecaster (calibration, not a $ edge; a live book sees the score too). Scoped honestly: real-corpus OOS is the win, the committed synthetic fixture prints no-improvement." |
 
 ### D. Full-stack surfaces (founding-engineer / generalist breadth)
 
@@ -178,6 +181,12 @@ Frame every item above as evidence of senior judgment:
   "CV signal at scale — SHAP ≈ 0 in production today."
 - Ran a **full-season walk-forward + PBP replay** that produced two clean negative results (market
   efficiency), then documented those negative results as the system's most credible outputs.
+- Ran a **4-sport / 6-corpus real-data edge hunt** (the newest, cleanest market-efficiency self-audit):
+  the calibrated model MATCHES the devigged close within noise on team-strength markets and EVERY
+  candidate signal rejected across >=2 corpora -- including signals that looked positive full-sample
+  then SIGN-FLIPPED out-of-sample (the overfit signature I caught). See `docs/MARKET_EFFICIENCY_PROOF.md`,
+  reproduced by `scripts/platformkit/edge_hunt_scoreboard.py`. These are calibration/sharpness numbers
+  only (Brier/BSS vs the close), edge_claimed=False -- no $ claim and none of the retracted figures.
 
 **The pitch:** "I build ambitious systems and then build the instruments to disprove my own
 hype. Here is exactly what works and exactly what I have not yet validated." That is a rare and

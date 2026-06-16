@@ -84,6 +84,9 @@ dollar edge.
   Building the instrument that disproves your own hype is the strongest signal here.
 - **Honest nulls are successes.** A full-season leak-free backtest proved the pregame model is
   well-calibrated but does not beat the sharp close -- documented as a headline result, not buried.
+  Every candidate pregame edge was REJECTED across >=2 corpora -- including catching my own
+  full-sample signals that sign-flip out-of-sample -- in the 4-sport real-data edge hunt:
+  [`MARKET_EFFICIENCY_PROOF.md`](MARKET_EFFICIENCY_PROOF.md).
 
 Honesty truth-source (the single place numbers are reconciled, including the explicit list of
 retracted figures): [`JOB_EVIDENCE_PACKET.md`](JOB_EVIDENCE_PACKET.md) and
