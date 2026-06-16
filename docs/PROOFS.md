@@ -15,7 +15,13 @@
 
 ## How to reproduce in under 60s (fresh clone)
 
-The whole scoreboard reproduces on committed fixtures -- no private corpus needed:
+The PREGAME scoreboard and the MLB/Soccer/Tennis in-game rows reproduce on committed
+fixtures -- no private corpus needed. **EXCEPTION: the NBA in-game row prints
+no-improvement on the committed fixture** (the synthetic pregame Elo in the fixture
+already anchors near the realized outcome -- a SYNTHETIC ANCHOR ARTIFACT). The canonical
+NBA in-game number (0.209 -> 0.159 Brier) is a real-corpus measurement; reproducing it
+requires the full private corpus (data/domains/basketball_nba). The fixture run is
+still useful: it confirms the harness runs end-to-end and is leak-free.
 
 ```
 # slim install
@@ -62,20 +68,23 @@ Thesis: pregame MATCHES the devigged close on team-strength markets and is BEHIN
 totals / ATP ONLY by freshness data the market sees and we cannot. That gap is data-bound,
 not a model defect.
 
-### In-game (CONDITIONAL on realized state beats the static pregame line; all 4 WIN)
+### In-game (CONDITIONAL on realized state vs the static pregame line)
 Source: `vault/_Edge_Maps/_Ingame_Scoreboard.md`. Lower Brier = sharper.
+**NOTE: NBA row is real-corpus-only (VALIDATION_PENDING on a fresh clone -- see fixture caveat above).**
 
-| Sport | Checkpoint | Static (pregame) -> Conditional | Verdict |
-|---|---|---|---|
-| NBA | end Q1/Q2/Q3 | 0.209 -> 0.159 Brier | WIN |
-| MLB | after inning 3/5/7 | 0.241 -> 0.126 Brier | WIN |
-| Soccer 1X2 | half-time | 0.626 -> 0.502 Brier | WIN |
-| Soccer O/U-2.5 | half-time | 0.264 -> 0.176 Brier | WIN |
-| Tennis | after set 1 | 0.219 -> 0.151 Brier | WIN |
+| Sport | Checkpoint | Static (pregame) -> Conditional | Verdict | Corpus |
+|---|---|---|---|---|
+| NBA | end Q1/Q2/Q3 | 0.209 -> 0.159 Brier | WIN (real-corpus) | VALIDATION_PENDING on committed fixture (prints no-improvement / SYNTHETIC ANCHOR ARTIFACT) |
+| MLB | after inning 3/5/7 | 0.241 -> 0.126 Brier | WIN | reproduces on committed fixture |
+| Soccer 1X2 | half-time | 0.626 -> 0.502 Brier | WIN | reproduces on committed fixture |
+| Soccer O/U-2.5 | half-time | 0.264 -> 0.176 Brier | WIN | reproduces on committed fixture |
+| Tennis | after set 1 | 0.219 -> 0.151 Brier | WIN | reproduces on committed fixture |
 
 The sharpest forecaster FUSES the pregame intelligence (ratings) AS THE PRIOR with the
-realized state -- not either alone. This is the decisive measured + calibrated + delivered
-edge, 4/4 sports. A live book also sees the state, so this is forecaster QUALITY, not a $ edge.
+realized state -- not either alone. MLB/Soccer/Tennis wins reproduce on the committed fixture.
+NBA in-game win is a real-corpus measurement (VALIDATION_PENDING for buyers without the full
+private corpus); the fixture's no-improvement result is a SYNTHETIC ANCHOR ARTIFACT, not a
+refutation of the real-data result. No $ edge claimed; edge_claimed = False.
 
 ---
 
@@ -99,7 +108,7 @@ Leak-guard column shows HOW each stays honest. All modules: never edit `src/` or
 | `proof_nba/asof_box_accuracy.py` | NBA totals RMSE-vs-close (the BEHIND-by-freshness row) | EW points-for/against snapshot-before-update; close used only as comparison | heavy | `python -m scripts.platformkit.proof_nba.asof_box_accuracy` |
 | `proof_nba/totals_calibration.py` | NBA O/U totals calibration (ECE/Brier + Gaussian sigma) | Walk-forward EW model, snapshot-before-update; sigma fit on 1st half, applied to 2nd | heavy | `python -m scripts.platformkit.proof_nba.totals_calibration` |
 | `proof_nba/totals_with_availability.py` | Tests whether AVAILABILITY closes the totals gap (freshness attribution) | Uses only WHO is a pre-game-known 0-min scratch + their PRIOR ppg; strict 0-min filter excludes in-game injuries | heavy | `python -m scripts.platformkit.proof_nba.totals_with_availability` |
-| `proof_nba/ingame_accuracy.py` | NBA in-game WIN (0.209 -> 0.159 Brier) + ECE recal | Mid-game state at end Q1/Q2/Q3 reconstructed leak-free (later quarters never seen); recalibrator fit on TRAIN games only | heavy | `python -m scripts.platformkit.proof_nba.ingame_accuracy` |
+| `proof_nba/ingame_accuracy.py` | NBA in-game (0.209 -> 0.159 Brier on real corpus; committed fixture prints no-improvement = SYNTHETIC ANCHOR ARTIFACT) + ECE recal | Mid-game state at end Q1/Q2/Q3 reconstructed leak-free (later quarters never seen); recalibrator fit on TRAIN games only; real-corpus verdict = VALIDATION_PENDING on a fresh clone | heavy (real-corpus only) | `python -m scripts.platformkit.proof_nba.ingame_accuracy` |
 | `proof_basketball_nba/run_proof.py` | NBA adapter calibration + structure (V1 report) | Walk-forward; F5 import-isolation (zero other-sport / src.data) | heavy | `python -m scripts.platformkit.proof_basketball_nba.run_proof --corpus data/domains/basketball_nba` |
 
 Supporting NBA totals studies (calibration / ablation, all leak-free walk-forward):

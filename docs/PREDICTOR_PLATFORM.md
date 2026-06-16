@@ -24,10 +24,13 @@ Three honest claims, all calibration/sharpness, never a dollar edge:
    match-win) and only by the **freshness data we cannot see** - injuries, lineups, weather,
    park, starting pitcher - that the market prices and a public/box model cannot. The gap is
    data-bound, not model-bound: a cleverer pregame model does not close it.
-3. **In-game conditioning is the decisive, measured, calibrated, delivered edge - 4/4 sports.**
+3. **In-game conditioning is the decisive, measured, calibrated, delivered edge.**
    Conditioning the same pregame intelligence prior on the realized mid-game state is sharper
-   than the static pregame line in every sport. (A live book also sees the state, so this is
-   forecaster QUALITY, not a tradeable dollar edge - we never claim one.)
+   than the static pregame line. MLB/Soccer/Tennis WIN rows reproduce on the committed fixture;
+   the NBA in-game WIN is a real-corpus measurement (VALIDATION_PENDING on a fresh clone -- the
+   committed fixture prints no-improvement for NBA, a SYNTHETIC ANCHOR ARTIFACT). (A live book
+   also sees the state, so this is forecaster QUALITY, not a tradeable dollar edge - we never
+   claim one; edge_claimed = False.)
 
 **We never claim:** a dollar edge / ROI / profitable betting edge; beating the close; a
 computer-vision predictive moat (CV SHAP is ~0 in production today). Honest framings we DO
@@ -82,20 +85,24 @@ Conditioning on the **realized mid-game state** vs the **static pregame** predic
 SAME real outcomes. Lower Brier = sharper. WIN = the conditional forecaster is sharper - the
 sharpest forecaster fuses the pregame intelligence (ratings) AS THE PRIOR with the realized
 state, not either alone. Forecaster quality, NOT a dollar edge (a live book sees the state too).
-Source: `vault/_Edge_Maps/_Ingame_Scoreboard.md`. **All 4 sports WIN.**
+Source: `vault/_Edge_Maps/_Ingame_Scoreboard.md`.
+**NOTE: NBA row is real-corpus-only (VALIDATION_PENDING on a fresh clone). The committed
+fixture prints no-improvement for NBA -- a SYNTHETIC ANCHOR ARTIFACT, not a refutation of the
+real-data result. MLB, Soccer, and Tennis WIN rows reproduce on the committed fixture.**
 
-| Sport | Checkpoint | Metric | Conditional | Static | Verdict | Why |
+| Sport | Checkpoint | Metric | Conditional | Static | Verdict | Corpus |
 |---|---|---|---|---|---|---|
-| NBA | end Q1/Q2/Q3 | Brier | **0.159** | 0.209 | WIN | combined (Elo prior + realized score) beats prior-only and score-only |
-| MLB | after inning 3/5/7 | Brier | **0.126** | 0.241 | WIN | combined (MOV-Elo prior + realized runs) beats both alone |
-| Soccer | half-time | Brier (1X2) | **0.502** | 0.626 | WIN | HT-conditional; O/U-2.5 also sharpens 0.264 -> 0.176 |
-| Tennis | after set 1 | Brier | **0.151** | 0.219 | WIN | combined (Elo prior + realized set lead), leak-free leader framing |
+| NBA | end Q1/Q2/Q3 | Brier | **0.159** | 0.209 | WIN (real-corpus) | VALIDATION_PENDING -- fixture prints no-improvement (SYNTHETIC ANCHOR ARTIFACT); edge_claimed = False |
+| MLB | after inning 3/5/7 | Brier | **0.126** | 0.241 | WIN | reproduces on committed fixture |
+| Soccer | half-time | Brier (1X2) | **0.502** | 0.626 | WIN | reproduces on committed fixture; O/U-2.5 0.264 -> 0.176 also WIN |
+| Tennis | after set 1 | Brier | **0.151** | 0.219 | WIN | reproduces on committed fixture (leak-free leader framing) |
 
-**Reading it:** where a leak-free per-period corpus exists (NBA per-quarter linescores, MLB
-per-inning runs, soccer half-time, tennis set-1), the conditional-on-state forecaster is
-decisively sharper than the static pregame line. The strongest forecaster fuses the pregame
-prior with the realized state. This is the decisive, measured, calibrated, delivered edge -
-forecaster quality, not a dollar edge.
+**Reading it:** where a leak-free per-period corpus exists, the conditional-on-state forecaster
+is decisively sharper than the static pregame line. The strongest forecaster fuses the pregame
+prior with the realized state. MLB/Soccer/Tennis wins reproduce on the committed fixture in under
+60 seconds. The NBA in-game win is a real-corpus measurement -- VALIDATION_PENDING for anyone
+without the full private corpus (data/domains/basketball_nba). Forecaster quality, not a dollar
+edge; edge_claimed = False across all rows.
 
 ---
 
@@ -167,7 +174,8 @@ The CLI returns an explicit no-edge contract. Real output (NBA, BOS vs LAL, preg
   Q4 lookahead leak, an L5-proxy ceiling mislabeled as edge). Those retractions live, in full
   context, in [docs/JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) and
   [docs/KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md). This doc cites the honest numbers only.
-- **The in-game edge is the one measured, calibrated, delivered advantage**, proven 4/4 sports
+- **The in-game edge is the one measured, calibrated, delivered advantage** (MLB/Soccer/Tennis
+  reproduce on the committed fixture; NBA is real-corpus, VALIDATION_PENDING on a fresh clone)
   and shipped through `predict_live` / `cv-live`.
 
 ---

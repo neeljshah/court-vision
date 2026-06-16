@@ -168,7 +168,10 @@ gitignored (real prices and outcomes). The canonical numbers live in:
   all 4 sports / 6 markets (NBA moneyline + total, MLB moneyline + total, Soccer O/U-2.5,
   Tennis ATP match-win).
 - `vault/_Edge_Maps/_Ingame_Scoreboard.md` -- in-game conditional-vs-static quality,
-  all 4 sports (NBA, MLB, Soccer 1X2 + O/U-2.5, Tennis), all 4 WIN.
+  all 4 sports (NBA, MLB, Soccer 1X2 + O/U-2.5, Tennis). MLB/Soccer/Tennis WIN rows
+  reproduce on the committed fixture. NBA in-game WIN (0.209->0.159 Brier) is
+  real-corpus-only (VALIDATION_PENDING on a fresh clone -- committed fixture prints
+  no-improvement for NBA = SYNTHETIC ANCHOR ARTIFACT); edge_claimed = False.
 - `docs/JOB_EVIDENCE_PACKET.md` -- the SINGLE honesty truth-source. Every prediction
   number is cited there, adversarially audited, with self-caught retractions documented.
   Cite this for any number; do not restate retracted figures.
