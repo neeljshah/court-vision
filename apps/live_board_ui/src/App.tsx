@@ -21,6 +21,7 @@ import { LoadingState } from "@/components/board/LoadingState";
 import { ErrorState } from "@/components/board/ErrorState";
 import { EmptyState } from "@/components/board/EmptyState";
 import { BoardTable } from "@/components/board/BoardTable";
+import { LegendDialog } from "@/components/board/LegendDialog";
 
 const VALID_SPORTS = SPORTS.map((s) => s.value);
 
@@ -89,6 +90,8 @@ export default function App() {
         {/* Controls -- stack on mobile, single row from sm up. */}
         <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
           <SportTabs sport={sport} onChange={setSport} />
+
+          <LegendDialog />
 
           {sport === "soccer" && (
             <LeagueSelect league={league} onChange={setLeague} />
