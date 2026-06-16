@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Design tokens for the live decision-support board. Channels are space-separated
+  RGB triplets so Tailwind's `rgb(var(--x) / <alpha>)` opacity modifiers work.
+  Dark-first (matches the sportsbook aesthetic) with a full light theme; the app
+  follows prefers-color-scheme unless the user overrides via the theme toggle.
+*/
+:root {
+  --bg: 248 250 252;        /* slate-50  */
+  --surface: 255 255 255;
+  --surface2: 241 245 249;  /* slate-100 */
+  --line: 226 232 240;      /* slate-200 */
+  --txt: 15 23 42;          /* slate-900 */
+  --muted: 71 85 105;       /* slate-600 (>=5.9:1 on white for small text) */
+  --accent: 37 99 235;      /* blue-600  */
+  --model: 21 128 61;       /* green-700 (AA on light chip bg) */
+  --market: 71 85 105;      /* slate-600 */
+  --live: 220 38 38;        /* red-600   */
+  --win: 22 163 74;
+  --draw: 217 119 6;        /* amber-600 */
+  color-scheme: light;
+}
+
+.dark {
+  --bg: 13 17 23;
+  --surface: 22 28 36;
+  --surface2: 27 35 45;
+  --line: 34 44 56;
+  --txt: 230 237 243;
+  --muted: 139 151 166;
+  --accent: 61 169 252;
+  --model: 46 160 67;
+  --market: 123 134 148;
+  --live: 255 77 79;
+  --win: 46 160 67;
+  --draw: 245 158 11;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --bg: 13 17 23;
+    --surface: 22 28 36;
+    --surface2: 27 35 45;
+    --line: 34 44 56;
+    --txt: 230 237 243;
+    --muted: 139 151 166;
+    --accent: 61 169 252;
+    --model: 46 160 67;
+    --market: 123 134 148;
+    --live: 255 77 79;
+    --win: 46 160 67;
+    --draw: 245 158 11;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root { height: 100%; }
+
+body {
+  margin: 0;
+  background: rgb(var(--bg));
+  color: rgb(var(--txt));
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Respect reduced-motion: kill the live pulse + shimmer for sensitive users. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid rgb(var(--accent));
+  outline-offset: 2px;
+  border-radius: 4px;
+}
