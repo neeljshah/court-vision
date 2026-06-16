@@ -72,6 +72,8 @@ STATS = ("blk", "fg3m", "stl")
 SCALE = {"blk": 1.5, "fg3m": 2.0, "stl": 1.0}
 
 # iter-10 baseline numbers (Strategy D flat $100 over BLK/FG3M/STL).
+# PAPER backtest, in-sample OOS slice -- NOT a realized/deployable edge; real-money
+# expectation vs efficient closes is break-even-minus-vig (docs/KNOWN_LIMITATIONS.md).
 ITER10_BASELINE = {
     "n_bets": 418,
     "roi_pct": 28.80,
