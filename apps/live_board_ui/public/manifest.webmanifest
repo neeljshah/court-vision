@@ -1,0 +1,16 @@
+{
+  "name": "Live Board - Calibrated Predictions",
+  "short_name": "Live Board",
+  "description": "Calibrated multi-sport live decision-support board. Model where in-corpus, market-implied otherwise. No edge claimed.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d1117",
+  "theme_color": "#0d1117",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    }
+  ]
+}

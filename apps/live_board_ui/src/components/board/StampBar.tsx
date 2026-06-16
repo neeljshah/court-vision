@@ -4,6 +4,7 @@
 
 import { RefreshCw } from "lucide-react";
 import { localClock } from "@/lib/format";
+import { useRelativeTime } from "@/hooks/useRelativeTime";
 
 interface StampBarProps {
   generatedAt: string | null;
@@ -26,7 +27,9 @@ export function StampBar({
   if (upcomingCount > 0) parts.push(`${upcomingCount} upcoming`);
   if (finishedCount > 0) parts.push(`${finishedCount} final`);
   const tailStr = parts.join(" / ");
-  const clockStr = localClock(generatedAt);
+
+  const rel = useRelativeTime(generatedAt);
+  const displayTime = rel !== "" ? rel : (localClock(generatedAt) ?? "");
 
   return (
     <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11.5px] text-muted tabular-nums select-none">
@@ -44,8 +47,12 @@ export function StampBar({
       </span>
 
       {/* Only the timestamp is a live region (atomic), so polls stay quiet. */}
-      <span aria-live="polite" aria-atomic="true">
-        updated {clockStr}
+      <span
+        aria-live="polite"
+        aria-atomic="true"
+        title={generatedAt ? localClock(generatedAt) : undefined}
+      >
+        updated {displayTime}
       </span>
       <span aria-hidden="true">- auto 25s</span>
 
