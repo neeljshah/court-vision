@@ -46,8 +46,14 @@ _CONCEPT_FAMILIES = [
     "OfficialAdaptation", "TechniqueMechanics",
 ]
 # legacy structural categories without a substring clash -> coloured by path.
-_LEGACY_PATHS = {"Drivers": 16007990, "Trends": 8754687,
-                 "Reference": 9145227, "Archetypes": 5028096, "Schemes": 16770304}
+_LEGACY_PATHS = {"Drivers": 16007990, "Trends": 8754687, "Reference": 9145227,
+                 "Archetypes": 5028096, "Schemes": 16770304, "Teams": 0x5B6675}
+
+# Full-coverage fallbacks so NOTHING renders default-grey. Keyed by PATH -- every note
+# lives under MLB/NBA/Soccer/Tennis/_Index -- so a node with no family tag (MOC/index
+# files, team identity, archetypes) still colours by its sport. _Index is the catch-all.
+_SPORT_FALLBACK = {"MLB": 0x2E6FE0, "NBA": 0xE8743B, "Soccer": 0x2EA043, "Tennis": 0xE0C020}
+_CATCH_ALL = 0x8B97A6
 
 
 def _rgb(h: float, s: float, v: float) -> int:
@@ -84,6 +90,10 @@ def _color_groups() -> List[Dict]:
                              "file:_Digest OR file:_Cross_Sport"),
                    "color": {"a": 1, "rgb": 16777215}})
     groups.append({"query": "file:_Identity", "color": {"a": 1, "rgb": 12632256}})
+    # Sport fallbacks by path (nodes with no family tag) + _Index catch-all -> 100%.
+    for sport_path, rgb in _SPORT_FALLBACK.items():
+        groups.append({"query": f"path:{sport_path}", "color": {"a": 1, "rgb": rgb}})
+    groups.append({"query": "path:_Index", "color": {"a": 1, "rgb": _CATCH_ALL}})
     return groups
 
 
@@ -95,9 +105,12 @@ _GRAPH: Dict = {
     "collapse-color-groups": False,
     "colorGroups": _color_groups(),
     "collapse-display": False, "showArrow": False, "textFadeMultiplier": -0.5,
-    "nodeSizeMultiplier": 1.15, "lineSizeMultiplier": 0.6, "collapse-forces": False,
-    "centerStrength": 0.5, "repelStrength": 9.5, "linkStrength": 0.6,
-    "linkDistance": 200, "scale": 0.18, "close": True,
+    # Perf-tuned for a ~4.5k-node graph: smaller nodes/lines render lighter, and a
+    # stronger centre/link pull with lower repel lets the force sim settle fast
+    # (continuous jitter is the main source of graph lag at this node count).
+    "nodeSizeMultiplier": 0.75, "lineSizeMultiplier": 0.4, "collapse-forces": False,
+    "centerStrength": 0.85, "repelStrength": 7.0, "linkStrength": 0.9,
+    "linkDistance": 110, "scale": 0.18, "close": True,
 }
 
 
