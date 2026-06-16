@@ -9,13 +9,12 @@ name: Injury Feed Scrape (R15_W1)
 # the latest data/cache/injury_status_<date>.json straight from origin/
 # master on RunPod between scheduled retrains.
 
+# DISABLED 2026-06-15 (productization W10): this scheduled job pushed scraped injury
+# data to the PUBLIC origin every 30 min -- a violation of the never-auto-push +
+# data-is-local-only invariants. The cron triggers are removed (dispatch-only) and the
+# commit/push step below is neutered. Re-enabling any CI push is HUMAN-GATED.
 on:
-  schedule:
-    # Every 30 min from 15:00–23:59 UTC (covers 10:00 AM – 18:59 ET)
-    - cron: "*/30 15-23 * * *"
-    # Every 30 min from 00:00–04:59 UTC (covers 19:00 ET – 23:59 ET overlap)
-    - cron: "*/30 0-4 * * *"
-  workflow_dispatch: {}     # also manually triggerable from the Actions UI
+  workflow_dispatch: {}     # manual only -- the 30-min cron auto-push is disabled
 
 jobs:
   scrape:
@@ -40,15 +39,8 @@ jobs:
         run: |
           python scripts/probe_R14_H4_injury_feed.py
 
-      - name: Commit refreshed snapshot
+      - name: Report snapshot (no commit / no push -- data/ is local-only)
         run: |
-          git config user.name  "injury-bot"
-          git config user.email "injury-bot@users.noreply.github.com"
-          git add data/cache/injury_status_*.json data/nba/injury_report.json \
-                  data/cache/probe_R14_H4_injury_feed_results.json || true
-          if ! git diff --cached --quiet; then
-            git commit -m "chore(injury): R15_W1 30-min ESPN snapshot refresh"
-            git push
-          else
-            echo "no snapshot change"
-          fi
+          echo "Injury snapshot refreshed locally on the runner."
+          echo "(CI auto-commit/push intentionally disabled -- data/ is gitignored/local-only;"
+          echo " re-enabling a CI push to the public origin is a HUMAN-GATED decision.)"
