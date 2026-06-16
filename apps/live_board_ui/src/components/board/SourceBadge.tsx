@@ -1,9 +1,11 @@
 /** SourceBadge: honest provenance pill for each board row.
- * Maps row.source -> Badge variant + tooltip explaining exactly what the number is.
+ * Maps row.source -> Badge variant + a plain-language explanation exposed via the
+ * native title + aria-label. Non-interactive on purpose: board rows are clickable
+ * (open the detail dialog), so a nested focusable trigger here would be invalid;
+ * the legend dialog + game-detail dialog carry the full provenance accessibly.
  * Never implies edge, value, or profit. */
 import type { BoardRow } from "@/types/board";
 import { Badge } from "@/components/ui/badge";
-import { InfoTooltip } from "@/components/ui/tooltip";
 
 interface SourceBadgeProps {
   row: BoardRow;
@@ -71,16 +73,8 @@ export function SourceBadge({ row }: SourceBadgeProps) {
   const { variant, label, tooltip } = getConfig(row);
 
   return (
-    <InfoTooltip label={tooltip} side="top">
-      {/* tabIndex + role make the trigger keyboard-focusable as required */}
-      <button
-        type="button"
-        tabIndex={0}
-        className="cursor-default focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md"
-        aria-label={`Source: ${label}. ${tooltip}`}
-      >
-        <Badge variant={variant}>{label}</Badge>
-      </button>
-    </InfoTooltip>
+    <Badge variant={variant} title={tooltip} aria-label={`Source: ${label}. ${tooltip}`}>
+      {label}
+    </Badge>
   );
 }

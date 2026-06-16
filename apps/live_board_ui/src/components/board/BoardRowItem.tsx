@@ -1,4 +1,4 @@
-/** One board row. Desktop grid driven by ColumnVis; mobile card unchanged. */
+/** One board row. Desktop grid via ColumnVis; mobile card; optional score-flash highlight. */
 import type { CSSProperties } from "react";
 import type { BoardRow } from "@/types/board";
 import type { ColumnVis } from "@/components/board/columns";
@@ -20,6 +20,8 @@ interface BoardRowItemProps {
   style?: CSSProperties;
   columns?: ColumnVis;
   onSelect?: (row: BoardRow) => void;
+  /** When true, applies animate-score-flash to the outer wrapper briefly. */
+  flashing?: boolean;
 }
 
 export function BoardRowItem({
@@ -28,18 +30,43 @@ export function BoardRowItem({
   style,
   columns = DEFAULT_COLUMNS,
   onSelect,
+  flashing = false,
 }: BoardRowItemProps) {
   const isLive = row.state === "in";
   const updatedLabel = localClock(generatedAt);
+  const interactive = !!onSelect;
 
   const liveClasses = isLive
     ? "border-l-2 border-live bg-live/5"
     : "border-l-2 border-transparent";
 
+  const interactiveClasses = interactive
+    ? "cursor-pointer hover:bg-surface2/40"
+    : undefined;
+
   return (
     <div
       style={style}
-      className={cn("border-b border-line transition-colors", liveClasses)}
+      role={interactive ? "button" : undefined}
+      tabIndex={interactive ? 0 : undefined}
+      aria-label={interactive ? `View details: ${row.away} at ${row.home}` : undefined}
+      onClick={interactive ? () => onSelect(row) : undefined}
+      onKeyDown={
+        interactive
+          ? (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onSelect(row);
+              }
+            }
+          : undefined
+      }
+      className={cn(
+        "border-b border-line transition-colors",
+        liveClasses,
+        interactiveClasses,
+        flashing && "animate-score-flash"
+      )}
     >
       {/* ---- MOBILE: stacked card (hidden at md+) ---- */}
       <div className="md:hidden px-3 py-2.5 space-y-1.5">
@@ -54,7 +81,7 @@ export function BoardRowItem({
         </div>
 
         {/* Matchup */}
-        <MatchupCell row={row} onSelect={onSelect ? () => onSelect(row) : undefined} />
+        <MatchupCell row={row} />
 
         {/* Score + WinProb side by side */}
         <div className="flex items-center gap-3">
@@ -74,7 +101,7 @@ export function BoardRowItem({
         <StatusCell row={row} />
 
         {/* 2: Matchup */}
-        <MatchupCell row={row} onSelect={onSelect ? () => onSelect(row) : undefined} />
+        <MatchupCell row={row} />
 
         {/* 3: Score */}
         <ScoreCell row={row} />

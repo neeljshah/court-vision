@@ -10,6 +10,7 @@ import type { BoardRow, Sport } from "@/types/board";
 import { SOCCER_LEAGUES, SPORTS } from "@/types/board";
 import { useBoard } from "@/hooks/useBoard";
 import { filterRows } from "@/lib/filter";
+import { useScoreFlash } from "@/hooks/useScoreFlash";
 
 import { Header } from "@/components/board/Header";
 import { ThemeToggle } from "@/components/board/ThemeToggle";
@@ -78,6 +79,8 @@ export default function App() {
         filteredFinishedCount: f.filter((r) => r.state === "post").length,
       };
     }, [allRows, query, liveOnly]);
+
+  const flashKeys = useScoreFlash(allRows);
 
   const showFilterBar = Boolean(data) && allRows.length > 0;
   const showEmpty = !loading && !error && data && allRows.length === 0;
@@ -148,6 +151,7 @@ export default function App() {
               sport={sport}
               generatedAt={data.generated_at}
               onSelect={setSelected}
+              flashKeys={flashKeys}
             />
           )}
         </div>

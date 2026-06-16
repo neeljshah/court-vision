@@ -3,6 +3,7 @@
  * Sections: Live > Upcoming > Finished (collapsible when >12).
  * Uses @tanstack/react-virtual for performance with 300+ tennis rows.
  * Dynamic columns: Odds and Total tracks appear only when data is present.
+ * flashKeys: optional Set of gameKey strings whose rows should animate on score change.
  */
 import { useRef, useState, useMemo, type CSSProperties } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
@@ -12,6 +13,7 @@ import { sortRows } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { BoardRowItem } from "@/components/board/BoardRowItem";
 import { computeColumns, rowGridClass } from "@/components/board/columns";
+import { gameKey } from "@/lib/gameKey";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -22,6 +24,7 @@ interface BoardTableProps {
   sport: Sport;
   generatedAt: string | null;
   onSelect?: (row: BoardRow) => void;
+  flashKeys?: Set<string>;
 }
 
 type DisplayItem =
@@ -52,7 +55,7 @@ const COL_HEADERS_BASE = [
 // Component
 // ---------------------------------------------------------------------------
 
-export function BoardTable({ rows, sport, generatedAt, onSelect }: BoardTableProps) {
+export function BoardTable({ rows, sport, generatedAt, onSelect, flashKeys }: BoardTableProps) {
   const [showFinished, setShowFinished] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -243,7 +246,8 @@ export function BoardTable({ rows, sport, generatedAt, onSelect }: BoardTablePro
                 );
               }
 
-              // Row item
+              // Row item -- compute the stable game key and forward flashing state.
+              const key = gameKey(item.row);
               return (
                 <div
                   key={item.key}
@@ -258,6 +262,7 @@ export function BoardTable({ rows, sport, generatedAt, onSelect }: BoardTablePro
                     columns={columns}
                     style={{ position: "relative" } as CSSProperties}
                     onSelect={onSelect}
+                    flashing={flashKeys?.has(key) ?? false}
                   />
                 </div>
               );
