@@ -505,3 +505,16 @@ data/nba/*
 # vault/ is the local Obsidian working memory -- never tracked (12 in-play notes
 # were tracked on the public origin before this; now untracked, kept on disk).
 vault/
+
+# =============================================================================
+# 2026-06-15 INTERNAL/SCRATCH DOC SCRUB -- keep the public docs/ a clean product
+#   + engineering showcase. These tracked docs are internal round/wave audit
+#   scratch and generated snapshots (worktree hashes, probe scripts, R/W codenames,
+#   stale generated HTML) -- not buyer-facing. Untracked from the public repo and
+#   kept on disk. Genuine public docs (PREDICTOR_*, PROOFS, PRODUCT_ONE_PAGER,
+#   JOB_EVIDENCE_PACKET, KNOWN_LIMITATIONS, DEMO, research/validation-methodology)
+#   stay tracked.
+# =============================================================================
+docs/model_deployment_audit_R20_M7.md
+docs/m2_family_mlp_rollout.md
+docs/system_metrics.html

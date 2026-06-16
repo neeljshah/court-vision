@@ -1,115 +1,136 @@
-# Project Index — Navigation Hub
+# Project Index -- Navigation Hub
 
-This is the canonical navigation map for the CourtVision repository. For the full strategic vision, start with [MASTER_PLAN.md](../MASTER_PLAN.md). For system design, start with [docs/architecture/system-overview.md](architecture/system-overview.md).
+The product is a converged **4-sport (NBA / MLB / Soccer / Tennis) calibrated
+prediction platform**: one win-probability per sport anchors a coherent pregame
+surface plus an in-game repricer, behind one unified CLI. The selling point is
+RIGOR (leak-free / walk-forward / OOS discipline, with self-caught retractions),
+the measured IN-GAME conditioning edge, and honest CALIBRATION -- never a
+fabricated dollar edge.
+
+**Single honesty truth-source for every number:** [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md).
+Cite it; this repo does not restate retracted figures outside of it and
+[KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md).
 
 ---
 
-## Research
+## Start here -- the honest product
 
-| Document | Description |
-|----------|-------------|
-| [edge-taxonomy.md](research/edge-taxonomy.md) | All 164 enumerated edges — CV-spatial, context, model, execution, structural — with academic backing and build estimates |
-| [competitive-landscape.md](research/competitive-landscape.md) | Why SIG, Jump, Citadel, and IMC cannot enter player prop markets; the structural argument |
-| [market-microstructure.md](research/market-microstructure.md) | How books price props, where they're systematically wrong, venue comparison |
-| [precedent-analysis.md](research/precedent-analysis.md) | Voulgaris, Benter, Thorp — solo operators who proved the template |
-| [data-sources.md](research/data-sources.md) | Complete data architecture — free tier, paid tier, proprietary CV pipeline |
-| [validation-methodology.md](research/validation-methodology.md) | CLV framework — how to prove edge exists before deploying capital |
+| Document | What it is |
+|----------|------------|
+| **[JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md)** | **TRUTH-SOURCE.** Every claim's proof artifact, adversarially audited, plus the explicit do-not-claim / retraction list. Read this first. |
+| **[PREDICTOR_PLATFORM.md](PREDICTOR_PLATFORM.md)** | The product, in full: the thesis, the two scorecards (beat-the-close + in-game), the kernel/adapter architecture, why the rigor is the sell. |
+| **[PREDICTOR_QUICKSTART.md](PREDICTOR_QUICKSTART.md)** | Run a calibrated prediction in minutes: slim install, one matchup (pregame + in-game), reproduce the scoreboards on committed fixtures. |
+| **[PRODUCT_ONE_PAGER.md](PRODUCT_ONE_PAGER.md)** | The one-page pitch: what it predicts, how good vs the market, why trust it, run-it-in-60-seconds. |
+| **[PROOFS.md](PROOFS.md)** | The provability index: every prediction claim mapped to its runnable, leak-free / OOS proof module + the exact reproduce command. |
+| **[KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md)** | Explicit validation gaps, unvalidated claims, and the retraction context. |
+
+### Run commands a buyer uses
+
+```
+# slim install (predictor only; no CV / web / daemon stack)
+pip install -r requirements-predictor.txt        # or: pip install -e .  -> cv-matchup / cv-predict / cv-live
+
+# one matchup, pregame + in-game, unified CLI
+python -m scripts.platformkit.predict_matchup --sport nba --home BOS --away LAL \
+    --elapsed 0 --home-score 0 --away-score 0
+
+# reproduce the leak-free scoreboards on committed fixtures (proof in under 60s, fresh clone)
+python -m scripts.platformkit.beat_the_close_scoreboard --corpus tests/fixtures/proof
+python -m scripts.platformkit.ingame_scoreboard         --corpus tests/fixtures/proof
+```
+
+All numbers these emit are calibration / sharpness (Brier / RMSE / ECE), never a
+dollar edge. The canonical full-corpus numbers live in `vault/_Edge_Maps/_Beat_The_Close.md`
+and `vault/_Edge_Maps/_Ingame_Scoreboard.md` (local, gitignored); the fixture
+commands run the SAME code on a small committed slice.
 
 ---
 
 ## Architecture
 
-| Document | Description |
-|----------|-------------|
-| [system-overview.md](architecture/system-overview.md) | The 5 core systems and how they interconnect |
-| [cv-pipeline.md](architecture/cv-pipeline.md) | YOLO → homography → Kalman → OSNet → features — full CV layer |
-| [possession-simulator.md](architecture/possession-simulator.md) | Monte Carlo engine design — why distributions beat point estimates |
-| [execution-engine.md](architecture/execution-engine.md) | Multi-book routing, account health, P2P adapters, circuit breakers |
-| [dashboard-spec.md](architecture/dashboard-spec.md) | Bloomberg-terminal-grade panel specifications (10 panels) |
-
----
-
-## Strategy
+One sport-blind kernel + per-sport adapters. Adding a sport is an adapter, not a
+kernel rewrite.
 
 | Document | Description |
 |----------|-------------|
-| [timing-layer.md](strategy/timing-layer.md) | When to bet throughout the day — event timeline from 6am to post-game |
-| [account-longevity.md](strategy/account-longevity.md) | Anti-limiting tactics — heat score model, rotation strategy, P2P migration |
-| [learning-loop.md](strategy/learning-loop.md) | Nightly improvement cycle — residuals → calibration → drift detection |
-| [multi-sport-expansion.md](strategy/multi-sport-expansion.md) | NFL/MLB/Soccer expansion plan — infrastructure reuse by component |
-| [revenue-streams.md](strategy/revenue-streams.md) | Beyond bankroll — picks service, API licensing, dashboard SaaS |
-
----
-
-## Models
-
-| Document | Description |
-|----------|-------------|
-| [feature-inventory.md](models/feature-inventory.md) | All ~70 features across 7 classes — API, CV spatial, temporal, market microstructure |
-| [model-registry.md](models/model-registry.md) | 85 models, tiers, algorithms, current R² / ECE, production gates |
-| [calibration.md](models/calibration.md) | Probability calibration — Platt scaling, isotonic regression, ECE, Shin devig |
-
----
-
-## Operations
-
-| Document | Description |
-|----------|-------------|
-| [runpod-runbook.md](operations/runpod-runbook.md) | GPU cloud operations — CFS quota, OMP cap, VRAM flush, data sync |
-| [data-pipeline.md](operations/data-pipeline.md) | Ingest system — download, queue, processing, quality scoring, sync |
-| [deployment.md](operations/deployment.md) | API serving, execution router, VPS deployment plan, environment config |
-
----
-
-## Canonical Source Documents
-
-| Document | Purpose |
-|----------|---------|
-| **[PUBLIC_EVIDENCE.md](PUBLIC_EVIDENCE.md)** | **Canonical 60-second evidence packet — headline numbers, verification commands, validation matrix** |
-| **[INTELLIGENCE.md](INTELLIGENCE.md)** | **Canonical 80-artifact intelligence-layer manifest (between CV tracking + models)** |
-| [README.md](../README.md) | **Canonical** github entry point — overview, results, methodology |
-| [CLAUDE.md](../CLAUDE.md) | **Canonical** AI-agent runbook (visitor framing + maintainer routing tables) |
-| [CLAUDE-state.md](CLAUDE-state.md) | **Canonical** live state snapshot — updated per-session |
-| [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) | Explicit validation gaps + caveats |
-| [VISION.md](../VISION.md) | Full strategic vision (Renaissance thesis) |
-| [ARCHITECTURE.md](../ARCHITECTURE.md) | System architecture (six core systems) |
-| [ROADMAP.md](../ROADMAP.md) | Forward build sequence (Gate 1 → 80-game run → agentic system) |
-| [docs/ROADMAP.md](ROADMAP.md) | Historical phase log (phases 1–13.5) |
-| [MASTER_PLAN.md](../MASTER_PLAN.md) | Long-form strategic context (canonical-facts table) |
-| [CHANGELOG.md](../CHANGELOG.md) | Versioned ship log |
-| [START_HERE.md](START_HERE.md) | Human onboarding shortcut |
-| `.planning/ROADMAP.md` | Full internal phase roadmap (167KB; gitignored — present only in the maintainer's local working copy, not on GitHub) |
-
----
-
-## Source Code Map
+| [PLATFORM.md](PLATFORM.md) | The kernel/adapter split: `kernel/` (validated machinery) + `domains/<sport>/` adapters. |
+| [PLATFORM_TOOLING.md](PLATFORM_TOOLING.md) | The platformkit CLI surface and proof-module tooling. |
+| [architecture/system-overview.md](architecture/system-overview.md) | The core systems and how they interconnect. |
+| [architecture/possession-simulator.md](architecture/possession-simulator.md) | Possession Monte Carlo engine design -- why distributions beat point estimates. |
 
 | Path | Contents |
 |------|----------|
-| `src/tracking/` | YOLOv8 detection, re-ID (OSNet, color), homography, Kalman/Hungarian |
-| `src/features/` | Feature engineering — CV spatial + API derived features |
-| `src/prediction/` | 85 models, calibration, Kelly sizer, CLV, backtester |
-| `src/pipeline/` | unified_pipeline.py — the orchestrator |
-| `src/ingest/` | SQLite queue, yt-dlp wrapper, B2 sync |
-| `src/data/` | NBA API connectors, line monitor, injury scraper |
-| `src/execution/` | Book adapters, exchange connectors |
-| `api/` | FastAPI — ~49 endpoints across 7 routers (main, predictions, models, analytics, dashboard, execution, stitch) |
-| `scripts/` | Operational scripts — ingest, batch, setup, validation, daily ops chain (`daily_run.py`), live daemons |
-| `tests/` | 2,661 pass on RunPod (~26 known failures: tracking suite + pyarrow-missing transients) |
+| `domains/<sport>/predictor.py` | Per-sport adapter: one calibrated win-prob anchors `predict()` / `to_jd()` (pregame) and `predict_live()` (in-game). Adapters for `basketball_nba`, `mlb`, `soccer`, `tennis`. |
+| `scripts/platformkit/cohesive_read.py` (`cv-predict`) | The coherent pregame surface off the anchor: moneyline, totals, margin. |
+| `scripts/platformkit/live_read.py` (`cv-live`) | The in-game repricer: conditions the same prior on the realized state. |
+| `scripts/platformkit/predict_matchup.py` (`cv-matchup`) | The unified CLI: pregame surface + in-game reprice in one JSON read, `edge_claimed: false` baked in. |
+| `scripts/platformkit/proof_*` | ~25 leak-free / OOS proof modules (`proof_nba`, `proof_mlb`, `proof_soccer`, `proof_tennis`, shared `proof_common`) that regenerate every scorecard number. |
+| `kernel/` | The sport-blind validated machinery shared by all adapters. |
 
 ---
 
-## Historical Documentation (Legacy — Still Accurate)
+## Methodology and validation (the rigor that is the sell)
 
-| Document | Notes |
-|----------|-------|
-| [docs/CV_TRACKING.md](CV_TRACKING.md) | Original CV pipeline writeup |
-| [docs/ML_MODELS.md](ML_MODELS.md) | Pre-restructure model documentation |
-| [docs/BETTING.md](BETTING.md) | Betting methodology (predates MASTER_PLAN) |
-| [docs/API.md](API.md) | API reference (kept current) |
-| [docs/PRODUCTION_RUNBOOK.md](PRODUCTION_RUNBOOK.md) | Operational runbook (superseded by [LIVE_OPERATOR_RUNBOOK.md](LIVE_OPERATOR_RUNBOOK.md) for live game-day ops) |
-| [docs/operations/runpod_video_sync_notes.md](operations/runpod_video_sync_notes.md) | Raw session notes from RunPod runs |
-| [docs/SYSTEM_OVERVIEW.md](SYSTEM_OVERVIEW.md) | Stub — superseded by [ARCHITECTURE.md](../ARCHITECTURE.md) |
+| Document | Description |
+|----------|-------------|
+| [research/validation-methodology.md](research/validation-methodology.md) | CLV-over-ROI doctrine, null-hypothesis discipline, no K-fold on time series. |
+| [quant-methodology.md](quant-methodology.md) | Walk-forward CV, leak guards, multi-corpus calibration acceptance gate. |
+| [backtest-methodology.md](backtest-methodology.md) | Leak-free backtest construction and the market-efficiency findings. |
+| [models/calibration.md](models/calibration.md) | Probability calibration -- Platt / isotonic / temperature, ECE, Shin devig. |
+| [risk-framework.md](risk-framework.md) | Decision-layer guardrails (kill-switch, drawdown) as an engineering demonstration. |
 
 ---
-*Last verified: 2026-05-25*
+
+## Demo and contribution
+
+| Document | Description |
+|----------|-------------|
+| [DEMO.md](DEMO.md) | Deterministic walkthrough: environment, prediction CLIs, FastAPI app, CV pipeline. |
+| [../CONTRIBUTING.md](../CONTRIBUTING.md) | Setup, branch/PR workflow, the ML/prediction ship-gate, repo hygiene. |
+| [START_HERE.md](START_HERE.md) | Human onboarding shortcut. |
+| [../README.md](../README.md) | GitHub entry point -- funnel narrative with honest numbers. |
+| [../CLAUDE.md](../CLAUDE.md) | AI-agent runbook (truth-source routing). |
+
+---
+
+## Origin / NBA computer-vision lineage (engineering history, not the product)
+
+The platform grew out of **CourtVision**, an NBA broadcast-video computer-vision
+pipeline. This is real, substantial engineering and the origin of the validation
+machinery -- but it is **lineage, not the headline**. The CV-derived features
+carry ~0 measured predictive value in production today (SHAP ~0); there is NO CV
+moat / edge claim. The product is the converged 4-sport predictor above. These
+docs document the CV pipeline as engineering evidence:
+
+| Document | Description |
+|----------|-------------|
+| [CV_TRACKING.md](CV_TRACKING.md) | The CV pipeline: YOLOv8n -> SIFT homography -> Kalman + Hungarian -> OSNet re-ID. |
+| [architecture/cv-pipeline.md](architecture/cv-pipeline.md) | Full CV layer design. |
+| [ML_MODELS.md](ML_MODELS.md) | The NBA prop / win-prob model stack. |
+| [INTELLIGENCE.md](INTELLIGENCE.md) | The 80-artifact NBA intelligence-layer manifest. |
+| [PLAYER_INTELLIGENCE.md](PLAYER_INTELLIGENCE.md) | Per-player statistical dossiers (showcase + honest scope). |
+| [DATA.md](DATA.md) | Data sources and ingest pipeline. |
+| [API.md](API.md) | FastAPI reference. |
+| [BETTING.md](BETTING.md) | Decision-layer engineering (de-vig, Kelly, CLV) -- an engineering demonstration, not a claimed edge. |
+
+---
+
+## Source code map
+
+| Path | Contents |
+|------|----------|
+| `domains/` | Per-sport predictor adapters (the product). |
+| `scripts/platformkit/` | Unified CLI + proof modules. |
+| `kernel/` | Sport-blind validated machinery. |
+| `src/tracking/` | CV: YOLOv8 detection, re-ID (OSNet, color), homography, Kalman/Hungarian. |
+| `src/features/` | Feature engineering -- CV spatial + API-derived features. |
+| `src/prediction/` | NBA prop / win-prob models, calibration, devig, backtester (large research surface; small load-bearing graph). |
+| `src/sim/` | Possession Monte Carlo simulator. |
+| `src/loop/` | LLM-free signal-discovery loop + the honest ship gate. |
+| `api/` | FastAPI serving layer (NBA lineage demonstration). |
+| `tests/` | Per-file test suite; `tests/fixtures/proof/` holds the committed proof fixtures. |
+
+---
+
+*Numbers are calibration / sharpness only, never a dollar edge. The single honesty
+truth-source is [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md).*
