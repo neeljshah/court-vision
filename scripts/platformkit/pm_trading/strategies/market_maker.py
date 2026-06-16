@@ -11,16 +11,19 @@ fills. No edge is claimed.
 """
 from __future__ import annotations
 
+import pathlib
+import sys
 from typing import List
 
-try:
-    from ..risk import RiskManager
-    from ..venues.base import Order, OrderType, Side
-    from .base import Strategy, TradeIntent
-except ImportError:  # pragma: no cover
-    from risk import RiskManager  # type: ignore
-    from venues.base import Order, OrderType, Side  # type: ignore
-    from base import Strategy, TradeIntent  # type: ignore
+_PKG = pathlib.Path(__file__).resolve().parents[1]   # pm_trading
+_DIR = pathlib.Path(__file__).resolve().parent       # strategies
+for _p in (str(_PKG), str(_DIR)):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
+
+from base import Strategy, TradeIntent  # noqa: E402
+from risk import RiskManager  # noqa: E402
+from venues.base import Order, OrderType, Side  # noqa: E402
 
 
 class MarketMaker(Strategy):

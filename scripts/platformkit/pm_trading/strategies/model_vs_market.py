@@ -11,16 +11,19 @@ Kelly + exposure caps), using the Signal's calibrated fair_prob vs price.
 """
 from __future__ import annotations
 
+import pathlib
+import sys
 from typing import Dict, List, Optional, Sequence
 
-try:
-    from ..risk import RiskManager
-    from ..edge_signal import Signal
-    from .base import Strategy, TradeIntent
-except ImportError:  # pragma: no cover
-    from risk import RiskManager  # type: ignore
-    from edge_signal import Signal  # type: ignore
-    from base import Strategy, TradeIntent  # type: ignore
+_PKG = pathlib.Path(__file__).resolve().parents[1]   # pm_trading
+_DIR = pathlib.Path(__file__).resolve().parent       # strategies
+for _p in (str(_PKG), str(_DIR)):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
+
+from base import Strategy, TradeIntent  # noqa: E402
+from edge_signal import Signal  # noqa: E402
+from risk import RiskManager  # noqa: E402
 
 # Only this gate verdict authorizes model-vs-market trading.
 GATE_TRADE_VERDICTS = frozenset({"BEATS_CLOSE"})
