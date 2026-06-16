@@ -6,14 +6,18 @@ gate (sized by RiskManager.approve / cap_quantity), so the runner just routes.
 """
 from __future__ import annotations
 
+import pathlib
+import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import List
 
-try:
-    from ..venues.base import MarketVenue, Order
-except ImportError:  # pragma: no cover  (flat import for hermetic tests)
-    from venues.base import MarketVenue, Order  # type: ignore
+# Make imports context-independent (flat test / strategies-package / subpackage).
+_PKG = pathlib.Path(__file__).resolve().parents[1]   # pm_trading
+if str(_PKG) not in sys.path:
+    sys.path.insert(0, str(_PKG))
+
+from venues.base import MarketVenue, Order  # noqa: E402
 
 
 @dataclass
