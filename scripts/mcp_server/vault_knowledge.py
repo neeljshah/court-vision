@@ -38,7 +38,7 @@ if str(_REPO) not in sys.path:
 
 from scripts.platformkit.knowledge import config  # noqa: E402
 from scripts.platformkit.knowledge.assemble import (  # noqa: E402
-    NO_EDGE_DISCLAIMER, assemble, check_bundle)
+    NO_EDGE_DISCLAIMER, _scrub, assemble, check_bundle)
 from scripts.platformkit.knowledge import retrieve as _retrieve  # noqa: E402
 
 # The ONLY tool names this server is allowed to register. The boundary test asserts
@@ -56,8 +56,10 @@ def vault_search(sport: str, query: str, category: Optional[str] = None,
     res = _retrieve.retrieve(query, sport=sport, category=category, top_k=top_k)
     if res.reject:
         return []
+    # BOUNDARY: scrub every returned token -- a raw note snippet can quote a forbidden
+    # number (incl. a retracted figure); this surface must never leak it to an LLM client.
     return [{"note_id": h.note_id, "sport": h.sport, "category": h.category,
-             "title": h.title, "snippet": h.snippet, "citation": h.citation,
+             "title": _scrub(h.title), "snippet": _scrub(h.snippet), "citation": h.citation,
              "relevance": round(h.score, 4)} for h in res.hits]
 
 
@@ -78,7 +80,7 @@ def related_nodes(note_id: str, hops: int = 1) -> List[dict]:
     nodes with [[note_id]] citations. Graph context only; no numbers."""
     hits = _retrieve.related_nodes(note_id, hops=hops)
     return [{"note_id": h.note_id, "sport": h.sport, "category": h.category,
-             "title": h.title, "snippet": h.snippet, "citation": h.citation}
+             "title": _scrub(h.title), "snippet": _scrub(h.snippet), "citation": h.citation}
             for h in hits]
 
 
@@ -110,7 +112,8 @@ def build_server():  # pragma: no cover - exercised only when mcp is installed
         sub = st.df[st.df["note_id"] == note_id]
         if sub.empty:
             return "Note not found."
-        return str(sub.iloc[0]["body"])
+        # BOUNDARY: scrub the raw body so a retracted/forbidden number cannot leak.
+        return _scrub(str(sub.iloc[0]["body"]))
 
     return mcp
 
