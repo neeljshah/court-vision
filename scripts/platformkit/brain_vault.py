@@ -21,7 +21,8 @@ from typing import Dict, List
 _CORE_PLUGINS = ["graph", "backlink", "outline", "page-preview", "tag-pane", "search"]
 
 # Concept-node families (batch 1 + 2). The graph is COLOUR-CODED BY FAMILY: each family
-# gets a distinct hue from an even HSV sweep, queried by the node's exact frontmatter
+# gets a distinct colour from a golden-angle HSV sweep + lightness tiers (consecutive
+# families land ~222 deg apart, never near-identical), by the node's exact frontmatter
 # family TAG (e.g. ``tag:#tactics``) — exact tags avoid substring collisions that a
 # ``path:`` query would hit (e.g. "Schemes" inside "DefensiveSchemes", "Archetypes"
 # inside "SubArchetypes"). Sport is read from the CLUSTERING (each sport is its own
@@ -55,14 +56,27 @@ def _rgb(h: float, s: float, v: float) -> int:
     return (round(r * 255) << 16) | (round(g * 255) << 8) | round(b * 255)
 
 
+# Golden-angle hue stepping: each successive family lands ~222.5 deg around the wheel,
+# so no two adjacent families share a near-identical hue (the old even i/n sweep put 55
+# families ~6.5 deg apart -> indistinguishable). Three sat/val tiers separate the hues
+# that eventually wrap, giving 55 legibly-distinct colours.
+_GOLDEN = 0.6180339887498949
+_SAT_TIERS = (0.80, 0.62, 0.93)
+_VAL_TIERS = (0.96, 0.82, 0.70)
+
+
+def _family_color(i: int) -> int:
+    """Distinct, legible colour for the i-th concept family (golden-angle + tiers)."""
+    return _rgb((i * _GOLDEN) % 1.0, _SAT_TIERS[i % 3], _VAL_TIERS[i % 3])
+
+
 def _color_groups() -> List[Dict]:
     """Per-family colour groups (exact tag) + legacy paths + hubs. Family groups are
     listed FIRST so an exact family tag wins over a broader legacy path match."""
     groups: List[Dict] = []
-    n = len(_CONCEPT_FAMILIES)
     for i, fam in enumerate(_CONCEPT_FAMILIES):
         groups.append({"query": f"tag:#{fam.lower()}",
-                       "color": {"a": 1, "rgb": _rgb(i / n, 0.62, 0.95)}})
+                       "color": {"a": 1, "rgb": _family_color(i)}})
     for name, rgb in _LEGACY_PATHS.items():
         groups.append({"query": f"path:{name}", "color": {"a": 1, "rgb": rgb}})
     # hubs pop white; team identity hubs grey.
