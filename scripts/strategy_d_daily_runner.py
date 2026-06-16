@@ -1,8 +1,11 @@
 """strategy_d_daily_runner.py — operational daily runner for Strategy D.
 
 Strategy D (iter-9 / iter-10 OOS finding): bet only BLK + FG3M + STL props at
-flat $100 stake. Yielded +28.80% ROI / +$12,036 PnL / PnL-to-DD 38.94 — the
-optimal risk-adjusted strategy from the OOS analysis. This script automates
+flat $100 stake. The +28.80% ROI / +$12,036 PnL / PnL-to-DD 38.94 figure is a
+PAPER backtest on an in-sample OOS slice -- NOT a realized or deployable edge.
+Against efficient closing lines the honest expectation is break-even-minus-vig
+(see docs/KNOWN_LIMITATIONS.md / docs/JOB_EVIDENCE_PACKET.md). This script writes
+DRY-RUN recommendations only (no real bets). This script automates
 running it daily by:
 
     1. Loading model predictions for the slate from

@@ -87,7 +87,6 @@ kernel rewrite.
 |----------|-------------|
 | [DEMO.md](DEMO.md) | Deterministic walkthrough: environment, prediction CLIs, FastAPI app, CV pipeline. |
 | [../CONTRIBUTING.md](../CONTRIBUTING.md) | Setup, branch/PR workflow, the ML/prediction ship-gate, repo hygiene. |
-| [START_HERE.md](START_HERE.md) | Human onboarding shortcut. |
 | [../README.md](../README.md) | GitHub entry point -- funnel narrative with honest numbers. |
 | [../CLAUDE.md](../CLAUDE.md) | AI-agent runbook (truth-source routing). |
 

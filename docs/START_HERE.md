@@ -1,11 +1,18 @@
 # CourtVision — Start Here
 
+> **STALE / ORIGIN DOC (2026-06).** This page describes the original NBA
+> computer-vision + betting system, which is now the *Origin lineage*, not the
+> headline product. The current product is the converged 4-sport calibrated
+> predictor, and no $ edge is claimed. Start with the buyer docs instead:
+> - [PREDICTOR_PLATFORM.md](PREDICTOR_PLATFORM.md) — the product
+> - [PREDICTOR_QUICKSTART.md](PREDICTOR_QUICKSTART.md) — run a prediction in minutes
+> - [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) — the honesty truth-source
+
 New to this project? Read this first.
 
 > **Canonical references:**
 > - [README.md](../README.md) — github landing + headline results
 > - [CLAUDE.md](../CLAUDE.md) — AI-agent runbook
-> - [CLAUDE-state.md](CLAUDE-state.md) — live state snapshot
 > - [PROJECT_INDEX.md](PROJECT_INDEX.md) — navigation map
 
 ---

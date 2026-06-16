@@ -1,5 +1,12 @@
 """fullsend_pregame_validation.py — STEP 2+3 pregame hardening validation.
 
+RETRACTION NOTICE (2026-06): the "+18.38% KB+ISO ROI / +8.94pp CLV" figures this
+script references are a RETRACTED market-follow grading artifact (the grader bet the
+market's own devigged direction, never read the model; in-sample-tuned filters). See
+docs/JOB_EVIDENCE_PACKET.md. This script is an IN-SAMPLE REGRESSION/IDENTITY check that
+the historical artifact reproduces unchanged — it does NOT establish that any $ edge
+exists. Against efficient closing lines the honest read is break-even-minus-vig.
+
 Proves:
   (a) CV_PROP_EXTRA_FEATURES flag is a SERVE-TIME NO-OP:
       predictions are byte-identical under flag=0 vs flag=1, because the
@@ -98,7 +105,7 @@ def step1_canonical_numbers() -> dict:
             "n_bets_total":             g1.get("n_bets_total_combined"),
             "source":                   "data/cache/gate1_full_analysis.json",
             "note": ("gate1_full_analysis uses raw OOF without the post-Iter-57 filter stack "
-                     "that produces the +18.38% headline. Canonical +18.38%/1535 bets lives in "
+                     "that produced the RETRACTED +18.38% headline artifact. That value lives in "
                      "holdout_baseline.json[__iter61__][canonical_roi_post_iter57]."),
         }
     else:
@@ -285,7 +292,8 @@ def step3_artifact_sanity() -> dict:
 # ── STEP 4: Pregame ceiling assessment ───────────────────────────────────────
 
 def step4_ceiling_assessment() -> dict:
-    """Honest assessment of whether pregame is at its optimum today."""
+    """Regression guard: the retracted +18.38% in-sample artifact reproduces unchanged, and
+    no READY/VALIDATED non-CV pregame feature is available today. NOT an edge claim."""
     # Read atlas_lift if it exists
     atlas_lift_path = ROOT / ".planning" / "loop" / "atlas_lift.json"
     atlas_lift = None
@@ -310,8 +318,11 @@ def step4_ceiling_assessment() -> dict:
             "scoreboard_ocr.py fix → PBP-anchoring → real quarter signals (currently ~5% coverage)",
         ],
         "verdict": (
-            "Pregame is genuinely at its current optimum. The +18.38% KB+ISO ROI on 1,535 "
-            "walk-forward bets sits at the theoretical Kelly ceiling for +8.94pp aggregate CLV. "
+            "The +18.38% KB+ISO / +8.94pp CLV figures are a RETRACTED in-sample market-follow "
+            "grading artifact (see docs/JOB_EVIDENCE_PACKET.md), NOT a current or realized edge; "
+            "this step only confirms the historical artifact reproduces unchanged (a regression "
+            "guard), not that any edge exists. The honest read vs efficient closes is "
+            "break-even-minus-vig. "
             "The CV_PROP_EXTRA_FEATURES wiring is a correct no-op preserve: atlas and PLM keys "
             "are injected into the feature dict but stripped by _predict_with_models because "
             "they are absent from _ALL_FEATS (220 cols). No READY, VALIDATED, non-CV feature "
@@ -337,12 +348,13 @@ def main() -> int:
     canon = s1.get("iter61_canonical", {})
     print(f"  Canonical: n={canon.get('n_bets')} flat={canon.get('flat_1u_pct')}% "
           f"KB+ISO={canon.get('kb_iso_pct')}%")
-    print(f"  Reference claim: n=1535 flat=15.04% KB+ISO=18.38%")
+    print(f"  RETRACTED in-sample artifact (NOT a current edge): n=1535 flat=15.04% KB+ISO=18.38%")
     intact = (
         canon.get("n_bets") == 1535 and
         abs((canon.get("kb_iso_pct") or 0) - 18.38) < 0.01
     )
-    print(f"  Edge intact: {'YES' if intact else 'DELTA — check numbers above'}")
+    print(f"  Historical artifact reproduces (regression guard, not an edge): "
+          f"{'YES' if intact else 'DELTA — check numbers above'}")
 
     print("\n[STEP 2] Flag serve-time no-op proof ...")
     s2 = step2_flag_noop_proof()
@@ -384,15 +396,18 @@ def main() -> int:
         "step3_artifacts":    s3,
         "step4_ceiling":      s4,
         "summary": {
-            "edge_intact":              intact,
-            "canonical_n_bets":         canon.get("n_bets"),
-            "canonical_flat_roi_pct":   canon.get("flat_1u_pct"),
-            "canonical_kb_iso_roi_pct": canon.get("kb_iso_pct"),
-            "reference_kb_iso_pct":     18.38,
+            # NOTE: the *_roi_pct figures below are a RETRACTED in-sample market-follow
+            # artifact (docs/JOB_EVIDENCE_PACKET.md), NOT a current/realized edge. This
+            # summary is a regression guard that the historical numbers reproduce unchanged.
+            "historical_artifact_reproduces": intact,
+            "retracted_in_sample_n_bets":     canon.get("n_bets"),
+            "retracted_flat_roi_pct":         canon.get("flat_1u_pct"),
+            "retracted_kb_iso_roi_pct":       canon.get("kb_iso_pct"),
+            "retracted_reference_kb_iso_pct": 18.38,
             "flag_is_noop":             s2["all_predictions_identical"],
             "all_feats_count":          s2["ALL_FEATS_count"],
             "artifacts_load_clean":     s3["artifacts_load_clean"],
-            "pregame_at_optimum":       True,
+            "no_ready_validated_pregame_feature": True,
         },
     }
     _OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
