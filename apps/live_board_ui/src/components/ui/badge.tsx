@@ -25,13 +25,21 @@ interface BadgeProps extends VariantProps<typeof badgeVariants> {
   children: ReactNode;
   className?: string;
   title?: string;
+  "aria-label"?: string;
 }
 
-export function Badge({ variant, children, className, title }: BadgeProps) {
+export function Badge({
+  variant,
+  children,
+  className,
+  title,
+  "aria-label": ariaLabel,
+}: BadgeProps) {
   return (
     <span
       className={cn(badgeVariants({ variant }), className)}
       title={title}
+      aria-label={ariaLabel}
     >
       {children}
     </span>

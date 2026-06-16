@@ -41,7 +41,7 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
 // Main export
 // ---------------------------------------------------------------------------
 
-/** Named export: LegendDialog — no required props. */
+/** Named export: LegendDialog -- no required props. */
 export function LegendDialog() {
   return (
     <Dialog>
@@ -81,7 +81,7 @@ export function LegendDialog() {
               MODEL-LIVE / MARKET-LIVE
             </span>
           }
-          meaning='Either source, updating live during the game. The "-LIVE" suffix means the number is refreshing as play proceeds.'
+          meaning={'Either source, updating live during the game. The "-LIVE" suffix means the number is refreshing as play proceeds.'}
         />
         <LegendRow
           label={<Badge variant="muted">SCORE ONLY</Badge>}
@@ -112,6 +112,16 @@ export function LegendDialog() {
             </span>
           }
           meaning={`Pulsing red dot = game in progress. "delayed" next to it means the data feed may be lagging and we are trying to refresh.`}
+        />
+
+        {/* ---- Details ---- */}
+        <SectionHeading>Details</SectionHeading>
+
+        <LegendRow
+          label={
+            <span className="text-xs font-semibold text-txt">Tap a game</span>
+          }
+          meaning="Tap any matchup to open full details -- all win probabilities, market context, exact start time, and notes. Live scores briefly highlight when they change."
         />
 
         {/* ---- Disclaimer ---- */}
