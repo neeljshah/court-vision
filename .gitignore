@@ -224,6 +224,8 @@ scripts/_*
 # -- Internal docs (session state, profile snapshots) -------------------------
 docs/CLAUDE-state.md
 docs/neeljshah_profile*.md
+docs/SECURITY_REMEDIATION.md
+docs/PRODUCTIZATION_PLAN.md
 
 # -- Benchmark / Diagnostic outputs -------------------------------------------
 bus.jpg
