@@ -320,6 +320,12 @@ def update_decision_log() -> None:
 
 
 def main():
+    # If the vault was archived to the clean person-free brain (vault_archive_legacy),
+    # do NOT re-create Home/Tracking/Data/Models/Sessions/Strategy -- it re-pollutes the
+    # graph. Restoring the archive (Intelligence/ returns) re-enables these writes.
+    if (VAULT / "_Organized").exists() and not (VAULT / "Intelligence").exists():
+        print("vault_session_close: brain-only vault detected -- skipping vault writes.")
+        return
     print("vault_session_close: updating vault...")
     update_home()
     update_open_issues()
