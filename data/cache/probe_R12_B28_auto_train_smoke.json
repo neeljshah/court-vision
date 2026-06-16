@@ -1,9 +1,0 @@
-{
-  "no_auto_correctly_errors": true,
-  "auto_train_succeeded": true,
-  "auto_train_seconds": 43.0,
-  "predict_via_auto_trained": true,
-  "reload_post_auto_train": true,
-  "elapsed_s": 47.3,
-  "all_pass": true
-}

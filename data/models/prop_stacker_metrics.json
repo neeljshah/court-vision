@@ -1,0 +1,112 @@
+{
+  "model": "linear_stacker",
+  "trained_at": "2026-05-21T20:38:07.299625",
+  "catboost_available": false,
+  "stats": {
+    "pts": {
+      "meta_r2": 0.9945,
+      "best_base_r2": 0.9943,
+      "r2_gain": 0.0002,
+      "base_r2s": {
+        "xgboost": 0.9943,
+        "lightgbm": 0.993
+      },
+      "learners_used": [
+        "xgboost",
+        "lightgbm"
+      ],
+      "n_train": 845,
+      "n_holdout": 169
+    },
+    "reb": {
+      "meta_r2": 0.9931,
+      "best_base_r2": 0.9931,
+      "r2_gain": -0.0001,
+      "base_r2s": {
+        "xgboost": 0.9931,
+        "lightgbm": 0.9911
+      },
+      "learners_used": [
+        "xgboost",
+        "lightgbm"
+      ],
+      "n_train": 845,
+      "n_holdout": 169
+    },
+    "ast": {
+      "meta_r2": 0.9911,
+      "best_base_r2": 0.9957,
+      "r2_gain": -0.0047,
+      "base_r2s": {
+        "xgboost": 0.9925,
+        "lightgbm": 0.9957
+      },
+      "learners_used": [
+        "xgboost",
+        "lightgbm"
+      ],
+      "n_train": 845,
+      "n_holdout": 169
+    },
+    "fg3m": {
+      "meta_r2": 0.9734,
+      "best_base_r2": 0.9744,
+      "r2_gain": -0.0009,
+      "base_r2s": {
+        "xgboost": 0.9733,
+        "lightgbm": 0.9744
+      },
+      "learners_used": [
+        "xgboost",
+        "lightgbm"
+      ],
+      "n_train": 845,
+      "n_holdout": 169
+    },
+    "stl": {
+      "meta_r2": 0.9675,
+      "best_base_r2": 0.9662,
+      "r2_gain": 0.0013,
+      "base_r2s": {
+        "xgboost": 0.9662,
+        "lightgbm": 0.9635
+      },
+      "learners_used": [
+        "xgboost",
+        "lightgbm"
+      ],
+      "n_train": 845,
+      "n_holdout": 169
+    },
+    "blk": {
+      "meta_r2": 0.9626,
+      "best_base_r2": 0.9699,
+      "r2_gain": -0.0073,
+      "base_r2s": {
+        "xgboost": 0.9699,
+        "lightgbm": 0.953
+      },
+      "learners_used": [
+        "xgboost",
+        "lightgbm"
+      ],
+      "n_train": 845,
+      "n_holdout": 169
+    },
+    "tov": {
+      "meta_r2": 0.9803,
+      "best_base_r2": 0.9795,
+      "r2_gain": 0.0008,
+      "base_r2s": {
+        "xgboost": 0.9795,
+        "lightgbm": 0.9769
+      },
+      "learners_used": [
+        "xgboost",
+        "lightgbm"
+      ],
+      "n_train": 845,
+      "n_holdout": 169
+    }
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "cycle": "101c",
+  "ship": false,
+  "coverage_holdout": {
+    "n_rows": 19964,
+    "opp_team_def_rtg_l5_pct": 100.0,
+    "opp_team_pace_l5_pct": 100.0,
+    "opp_team_ts_pct_l5_pct": 100.0,
+    "opp_def_fg3m_l5_pct": 100.0,
+    "q1_fg3m_l5_pct": 85.11,
+    "home_spread_pct": 99.92,
+    "position_pct": 100.0
+  },
+  "candidate_features": [
+    "opp_team_def_rtg_l5",
+    "opp_team_pace_l5",
+    "opp_team_ts_pct_l5",
+    "opp_def_fg3m_l5",
+    "q1_fg3m_l5",
+    "home_spread",
+    "position_C",
+    "position_F",
+    "position_G"
+  ],
+  "selected_features": [
+    "opp_team_def_rtg_l5",
+    "opp_team_pace_l5",
+    "opp_team_ts_pct_l5",
+    "opp_def_fg3m_l5",
+    "q1_fg3m_l5",
+    "home_spread",
+    "position_C",
+    "position_F",
+    "position_G"
+  ],
+  "dropped_features": [],
+  "single_split": {
+    "n_rows": 99818,
+    "n_train": 64881,
+    "n_val": 14973,
+    "n_holdout": 19964,
+    "mae_baseline_85": 0.8959531447746366,
+    "mae_wide": 0.8940980252243816,
+    "delta_mae": -0.0018551195502549689,
+    "mae_vs_cycle27": -1.9747756183630116e-06
+  },
+  "walk_forward": {
+    "folds": [
+      {
+        "fold": 1,
+        "mae_base": 0.8297578736396228,
+        "mae_wide": 0.8271956367900335,
+        "delta_mae": -0.002562236849589339
+      },
+      {
+        "fold": 2,
+        "mae_base": 0.8411798053980247,
+        "mae_wide": 0.8414623223128496,
+        "delta_mae": 0.00028251691482483743
+      },
+      {
+        "fold": 3,
+        "mae_base": 0.8734721623680426,
+        "mae_wide": 0.8734948939211261,
+        "delta_mae": 2.2731553083521483e-05
+      },
+      {
+        "fold": 4,
+        "mae_base": 0.8938295822842826,
+        "mae_wide": 0.8924422657601482,
+        "delta_mae": -0.0013873165241343743
+      }
+    ],
+    "n_folds": 4,
+    "n_folds_negative": 2,
+    "wf_4_of_4_negative": false,
+    "delta_mae_mean": -0.0009110762264538386,
+    "delta_mae_std": 0.001145621859576716
+  },
+  "baseline_cycle27": 0.8941,
+  "reason": "wf_failed"
+}

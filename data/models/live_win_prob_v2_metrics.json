@@ -1,0 +1,35 @@
+{
+  "version": "v2_gbm",
+  "n_train": 3267,
+  "n_val": 816,
+  "val_auc": 0.9062,
+  "val_brier": 0.1187,
+  "logloss": 0.3769,
+  "features": [
+    "seconds_remaining",
+    "score_margin_home",
+    "home_net_rtg_l10",
+    "away_net_rtg_l10",
+    "home_off_rtg_l10",
+    "away_off_rtg_l10",
+    "home_def_rtg_l10",
+    "away_def_rtg_l10",
+    "period",
+    "time_left_in_period",
+    "pace_remaining_estimate",
+    "net_rtg_diff",
+    "home_form_l5",
+    "away_form_l5",
+    "home_court_advantage"
+  ],
+  "tick_interval_sec": 30,
+  "calibration_bins": [
+    10
+  ],
+  "sources": {
+    "pbp_ticks": 2671,
+    "quarter_boundary": 1412
+  },
+  "computed_at": "2026-05-22T22:43:18.555192Z",
+  "note": "Training states: quarter-boundary snapshots from 324 linescores games plus per-event ticks from 59 PBP games. Limitations: L10 ratings at game-day (not mid-game); no timeout/foul-bonus/lineup features (absent from cached data)."
+}

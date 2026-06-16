@@ -1,0 +1,108 @@
+{
+  "cycle": "101b",
+  "ship": false,
+  "coverage_holdout": {
+    "n_rows": 19964,
+    "opp_team_pace_l5_pct": 100.0,
+    "opp_team_def_rtg_l5_pct": 100.0,
+    "opp_team_oreb_pct_l5_pct": 100.0,
+    "opp_def_blk_l5_pct": 100.0,
+    "q1_blk_l5_pct": 85.11,
+    "position_C_pct": 100.0,
+    "position_F_pct": 100.0,
+    "position_G_pct": 100.0
+  },
+  "candidate_features": [
+    "opp_team_pace_l5",
+    "opp_team_def_rtg_l5",
+    "opp_team_oreb_pct_l5",
+    "opp_def_blk_l5",
+    "q1_blk_l5",
+    "position_C",
+    "position_F",
+    "position_G"
+  ],
+  "selected_features": [
+    "opp_team_pace_l5",
+    "opp_team_def_rtg_l5",
+    "opp_team_oreb_pct_l5",
+    "opp_def_blk_l5",
+    "q1_blk_l5",
+    "position_C",
+    "position_F",
+    "position_G"
+  ],
+  "dropped_features": [],
+  "single_split": {
+    "n_rows": 99818,
+    "n_train": 64881,
+    "n_val": 14973,
+    "n_holdout": 19964,
+    "mae_baseline_85": 0.4391159616590313,
+    "mae_wide": 0.43905426973364914,
+    "delta_mae": -6.169192538213464e-05,
+    "mae_vs_cycle27": -0.0007457302663508858,
+    "wide_pred_sample": [
+      0.0,
+      0.0,
+      0.0,
+      0.2330426025769988,
+      0.0,
+      0.0,
+      0.6265592002857534,
+      0.0,
+      0.0,
+      0.30249176136906425,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0087813327843538,
+      0.0,
+      0.43357155695594185,
+      0.0,
+      0.0,
+      0.0,
+      0.8128167666085493,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "walk_forward": {
+    "folds": [
+      {
+        "fold": 1,
+        "mae_base": 0.4391493434115529,
+        "mae_wide": 0.43910849809468366,
+        "delta_mae": -4.0845316869209114e-05
+      },
+      {
+        "fold": 2,
+        "mae_base": 0.44313720530248635,
+        "mae_wide": 0.44305655617429196,
+        "delta_mae": -8.064912819438774e-05
+      },
+      {
+        "fold": 3,
+        "mae_base": 0.41174199023938224,
+        "mae_wide": 0.41174199023938224,
+        "delta_mae": 0.0
+      },
+      {
+        "fold": 4,
+        "mae_base": 0.4442748526051491,
+        "mae_wide": 0.44545183348474865,
+        "delta_mae": 0.001176980879599554
+      }
+    ],
+    "n_folds": 4,
+    "n_folds_negative": 2,
+    "wf_4_of_4_negative": false,
+    "delta_mae_mean": 0.0002638716086339893,
+    "delta_mae_std": 0.0005279544746849021
+  },
+  "baseline_cycle27": 0.4398,
+  "reason": "wf_failed"
+}

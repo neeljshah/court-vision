@@ -1,0 +1,96 @@
+{
+  "cycle": "100b",
+  "ship": false,
+  "coverage_holdout": {
+    "n_rows": 19964,
+    "opp_team_pace_l5_pct": 100.0,
+    "opp_team_def_rtg_l5_pct": 100.0,
+    "opp_team_oreb_pct_l5_pct": 100.0,
+    "opp_def_blk_l5_pct": 100.0
+  },
+  "candidate_features": [
+    "opp_team_pace_l5",
+    "opp_team_def_rtg_l5",
+    "opp_team_oreb_pct_l5",
+    "opp_def_blk_l5"
+  ],
+  "selected_features": [
+    "opp_team_pace_l5",
+    "opp_team_def_rtg_l5",
+    "opp_team_oreb_pct_l5",
+    "opp_def_blk_l5"
+  ],
+  "dropped_features": [],
+  "single_split": {
+    "n_rows": 99818,
+    "n_train": 64881,
+    "n_val": 14973,
+    "n_holdout": 19964,
+    "mae_baseline_85": 0.4391159616590313,
+    "mae_wide": 0.43913787299031637,
+    "delta_mae": 2.1911331285096036e-05,
+    "mae_vs_cycle27": -0.0006621270096836551,
+    "wide_pred_sample": [
+      0.0,
+      0.0,
+      0.0,
+      0.21558678143553822,
+      0.0,
+      0.0,
+      0.6460238295064427,
+      0.0,
+      0.0,
+      0.2988525380921535,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0018286807143095,
+      0.0,
+      0.4188326568269398,
+      0.0,
+      0.0,
+      0.0,
+      0.805280626482207,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "walk_forward": {
+    "folds": [
+      {
+        "fold": 1,
+        "mae_base": 0.4391493434115529,
+        "mae_wide": 0.43910849809468366,
+        "delta_mae": -4.0845316869209114e-05
+      },
+      {
+        "fold": 2,
+        "mae_base": 0.44313720530248635,
+        "mae_wide": 0.4430550611701734,
+        "delta_mae": -8.21441323129446e-05
+      },
+      {
+        "fold": 3,
+        "mae_base": 0.41174199023938224,
+        "mae_wide": 0.41174199023938224,
+        "delta_mae": 0.0
+      },
+      {
+        "fold": 4,
+        "mae_base": 0.4442748526051491,
+        "mae_wide": 0.44545183348474865,
+        "delta_mae": 0.001176980879599554
+      }
+    ],
+    "n_folds": 4,
+    "n_folds_negative": 2,
+    "wf_4_of_4_negative": false,
+    "delta_mae_mean": 0.00026349785760435007,
+    "delta_mae_std": 0.0005281987091706593
+  },
+  "baseline_cycle27": 0.4398,
+  "reason": "wf_failed"
+}
