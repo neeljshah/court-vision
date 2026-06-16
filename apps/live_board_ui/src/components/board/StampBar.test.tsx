@@ -1,4 +1,4 @@
-/** RTL tests for StampBar: stale indicator, counts, and refresh button. */
+/** RTL tests for StampBar: stale indicator, connectionIssue chip, counts, and refresh button. */
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi } from "vitest";
@@ -15,6 +15,7 @@ interface HelperProps {
   refreshing?: boolean;
   onRefresh?: ReturnType<typeof vi.fn>;
   stale?: boolean;
+  connectionIssue?: boolean;
 }
 
 function renderStampBar({
@@ -25,10 +26,14 @@ function renderStampBar({
   refreshing = false,
   onRefresh = vi.fn(),
   stale,
+  connectionIssue,
 }: HelperProps = {}) {
-  // Only spread stale when it is explicitly provided so we can test the
-  // omitted-prop (default-false) case separately from stale=false.
-  const extraProps = stale !== undefined ? { stale } : {};
+  // Only spread optional props when explicitly provided so we can test the
+  // omitted-prop (default-false) case separately from the explicit false case.
+  const extraProps = {
+    ...(stale !== undefined ? { stale } : {}),
+    ...(connectionIssue !== undefined ? { connectionIssue } : {}),
+  };
   const result = render(
     <StampBar
       generatedAt={generatedAt}
@@ -94,6 +99,35 @@ describe("StampBar - stale indicator when stale=true", () => {
         stale={false}
       />
     );
+    expect(screen.queryByText(/delayed/i)).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// connectionIssue chip: priority over the stale "delayed" chip
+// ---------------------------------------------------------------------------
+describe("StampBar - connectionIssue chip", () => {
+  it("renders a reconnecting indicator when connectionIssue=true", () => {
+    renderStampBar({ connectionIssue: true });
+    expect(screen.getByText(/reconnecting/i)).toBeInTheDocument();
+  });
+
+  it("does NOT render the delayed chip when connectionIssue=true, even if stale=true", () => {
+    // connectionIssue takes priority; only one chip should appear
+    renderStampBar({ connectionIssue: true, stale: true });
+    expect(screen.getByText(/reconnecting/i)).toBeInTheDocument();
+    expect(screen.queryByText(/delayed/i)).toBeNull();
+  });
+
+  it("renders delayed (not reconnecting) when connectionIssue=false and stale=true", () => {
+    renderStampBar({ connectionIssue: false, stale: true });
+    expect(screen.getByText(/delayed/i)).toBeInTheDocument();
+    expect(screen.queryByText(/reconnecting/i)).toBeNull();
+  });
+
+  it("renders neither chip when connectionIssue=false and stale=false", () => {
+    renderStampBar({ connectionIssue: false, stale: false });
+    expect(screen.queryByText(/reconnecting/i)).toBeNull();
     expect(screen.queryByText(/delayed/i)).toBeNull();
   });
 });
