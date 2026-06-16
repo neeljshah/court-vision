@@ -2,10 +2,11 @@
  * App.tsx -- Root composition for the live sports decision-support board.
  * Wires sport/league state, polling hook, search + live-only filter, and all panel components.
  * Sport is deep-linkable via ?sport= so a view can be shared / bookmarked.
+ * Tap-to-detail: clicking a row opens GameDetailDialog for that BoardRow.
  * No $ edge, ROI, or retracted numbers appear here or in any child import.
  */
 import { useEffect, useMemo, useState } from "react";
-import type { Sport } from "@/types/board";
+import type { BoardRow, Sport } from "@/types/board";
 import { SOCCER_LEAGUES, SPORTS } from "@/types/board";
 import { useBoard } from "@/hooks/useBoard";
 import { filterRows } from "@/lib/filter";
@@ -22,6 +23,7 @@ import { ErrorState } from "@/components/board/ErrorState";
 import { EmptyState } from "@/components/board/EmptyState";
 import { BoardTable } from "@/components/board/BoardTable";
 import { LegendDialog } from "@/components/board/LegendDialog";
+import { GameDetailDialog } from "@/components/board/GameDetailDialog";
 
 const VALID_SPORTS = SPORTS.map((s) => s.value);
 
@@ -37,6 +39,7 @@ export default function App() {
   const [league, setLeague] = useState<string>(SOCCER_LEAGUES[0].value);
   const [query, setQuery] = useState<string>("");
   const [liveOnly, setLiveOnly] = useState<boolean>(false);
+  const [selected, setSelected] = useState<BoardRow | null>(null);
 
   // Keep the URL in sync so the current sport is shareable/bookmarkable.
   useEffect(() => {
@@ -45,10 +48,11 @@ export default function App() {
     window.history.replaceState(null, "", url);
   }, [sport]);
 
-  // Reset filter state whenever sport changes.
+  // Reset filter state and selected row whenever sport changes.
   useEffect(() => {
     setQuery("");
     setLiveOnly(false);
+    setSelected(null);
   }, [sport]);
 
   const { data, error, loading, refreshing, refresh, stale } = useBoard(
@@ -143,6 +147,7 @@ export default function App() {
               rows={filtered}
               sport={sport}
               generatedAt={data.generated_at}
+              onSelect={setSelected}
             />
           )}
         </div>
@@ -152,6 +157,13 @@ export default function App() {
       <footer className="mx-auto max-w-5xl px-3 pb-6">
         <Disclaimer variant="footer" />
       </footer>
+
+      {/* Tap-to-detail overlay -- rendered once outside main to avoid layout shift */}
+      <GameDetailDialog
+        row={selected}
+        open={selected !== null}
+        onOpenChange={(o) => { if (!o) setSelected(null); }}
+      />
     </div>
   );
 }

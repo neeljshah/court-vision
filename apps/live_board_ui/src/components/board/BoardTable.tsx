@@ -21,6 +21,7 @@ interface BoardTableProps {
   rows: BoardRow[];
   sport: Sport;
   generatedAt: string | null;
+  onSelect?: (row: BoardRow) => void;
 }
 
 type DisplayItem =
@@ -51,7 +52,7 @@ const COL_HEADERS_BASE = [
 // Component
 // ---------------------------------------------------------------------------
 
-export function BoardTable({ rows, sport, generatedAt }: BoardTableProps) {
+export function BoardTable({ rows, sport, generatedAt, onSelect }: BoardTableProps) {
   const [showFinished, setShowFinished] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -256,6 +257,7 @@ export function BoardTable({ rows, sport, generatedAt }: BoardTableProps) {
                     generatedAt={generatedAt}
                     columns={columns}
                     style={{ position: "relative" } as CSSProperties}
+                    onSelect={onSelect}
                   />
                 </div>
               );
