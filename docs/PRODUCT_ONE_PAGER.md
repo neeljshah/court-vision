@@ -50,22 +50,26 @@ the market's injury / lineup / weather freshness a public + box-score model cann
 
 Source: `vault/_Edge_Maps/_Beat_The_Close.md`.
 
-**In-game -- conditioning on the realized state beats the static pregame line. All 4 sports WIN.**
+**In-game -- conditioning on the realized state vs the static pregame line.**
 A live book also sees the state, so this is forecaster QUALITY, not a dollar edge.
+NOTE: NBA row is real-corpus-only (VALIDATION_PENDING on a fresh clone -- committed fixture
+prints no-improvement for NBA = SYNTHETIC ANCHOR ARTIFACT). MLB/Soccer/Tennis reproduce.
 
-| Sport  | Static -> Conditional Brier  | When                              |
-|--------|------------------------------|-----------------------------------|
-| NBA    | 0.209 -> 0.159               | end Q1/Q2/Q3 (rating prior + score)|
-| MLB    | 0.241 -> 0.126               | after inning 3/5/7                |
-| Soccer | 1X2 0.626 -> 0.502; O/U 0.264 -> 0.176 | half-time              |
-| Tennis | 0.219 -> 0.151               | after set 1 (leak-free leader)    |
+| Sport  | Static -> Conditional Brier  | When                               | Corpus |
+|--------|------------------------------|------------------------------------|--------|
+| NBA    | 0.209 -> 0.159               | end Q1/Q2/Q3 (rating prior + score)| VALIDATION_PENDING (real-corpus only; fixture = no-improvement) |
+| MLB    | 0.241 -> 0.126               | after inning 3/5/7                 | reproduces on committed fixture |
+| Soccer | 1X2 0.626 -> 0.502; O/U 0.264 -> 0.176 | half-time               | reproduces on committed fixture |
+| Tennis | 0.219 -> 0.151               | after set 1 (leak-free leader)     | reproduces on committed fixture |
 
-Source: `vault/_Edge_Maps/_Ingame_Scoreboard.md`.
+Source: `vault/_Edge_Maps/_Ingame_Scoreboard.md`. edge_claimed = False.
 
 **The thesis.** Pregame MATCHES the devigged close on team-strength markets and is BEHIND on
 totals / ATP only by freshness data the market sees and we cannot. IN-GAME conditioning -- the
 pregame intelligence prior fused with the realized state -- is the decisive, measured, calibrated,
-and delivered improvement, 4 sports out of 4. We never claim a dollar edge.
+and delivered improvement. MLB/Soccer/Tennis wins reproduce on committed fixtures; NBA in-game
+win is real-corpus (VALIDATION_PENDING for buyers without the private corpus). We never claim a
+dollar edge.
 
 ## WHY TRUST IT (the rigor IS the product)
 

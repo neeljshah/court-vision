@@ -7,6 +7,10 @@
 # The LLM never emits a probability here -- promptfoo only drives the numeric
 # Python gate as a CI assertion; no model_graded / judge step is involved.
 #
+# HOW TO INSTALL promptfoo (if not present): npm install -g promptfoo
+# HOW TO INVOKE (from repo root):
+#   promptfoo eval -c scripts/platformkit/eval_gate/promptfoo.yaml
+#
 # HONEST CONTRACT:
 #   - The offline golden fixture is a SYNTHETIC reproducibility/regression ANCHOR
 #     (see tests/fixtures/golden/SCHEMA.md). It is NOT a real calibration claim.
@@ -14,9 +18,6 @@
 #   - The gate BLOCKS only on regression-vs-frozen-baseline or a leak-guard
 #     assertion. It NEVER blocks on "fails to beat the close".
 #   - NEVER retract / reprint: +18.38% / 0.119 / +54% / 78.11 / 8.94 / 54.57.
-#
-# HOW TO INVOKE (from repo root):
-#   promptfoo eval -c scripts/platformkit/eval_gate/promptfoo.yaml
 #
 # Same 0/1 exit contract as the bare CLI. No network, no data/, no flag flips.
 # Wiring into .claude/settings.json PreToolUse/CI is DEFERRED to roadmap N4
@@ -28,31 +29,23 @@ description: >-
   never on 'fails to beat the close'. BSS<=0 / MATCHES_CLOSE = honest success.
 
 providers:
-  - id: exec
-    config:
-      # Run from REPO ROOT so the -m module path and editable kernel import
-      # both resolve. The gate is offline: no network, no data/ reads.
-      command: "python -m scripts.platformkit.eval_gate.run_gate --golden"
+  # exec provider: command is embedded in the id string after "exec: ".
+  # promptfoo spawns the process from the repo root; exit 0 = pass, exit 1 = fail.
+  # The gate is offline: no network, no data/ reads.
+  - id: "exec: C:/Users/neelj/anaconda3/envs/basketball_ai/python.exe -m scripts.platformkit.eval_gate.run_gate --golden"
 
 prompts:
-  - "{{input}}"
+  - "run"
 
 tests:
-  - vars:
-      input: "run"
-    assert:
-      # Primary gate: pass iff the Python process exited 0.
-      # exit 1 -> regression-vs-frozen-baseline on EITHER corpus, OR a leak
-      # assertion fired (vintage / purge / embargo / feature-selection-outside-window).
-      # BSS<=0 / MATCHES_CLOSE / BEHIND do NOT exit 1; only regression/leak does.
-      - type: javascript
-        value: "output.exitCode === 0"
-
-      # Presence guards: the scoreboard must contain these strings.
-      # "verdict" confirms the per-corpus scoreboard line was printed.
+  - assert:
+      # Presence guards on stdout: the scoreboard must contain these strings.
+      # "verdict" confirms a per-corpus scoreboard line was printed.
       # "SYNTHETIC ANCHOR" guards the honesty banner stays in the output
       #   (ensures the golden fixture is correctly labelled as a synthetic
       #   reproducibility anchor, not a real calibration claim).
+      # Pass/fail from the process exit code is handled natively by promptfoo:
+      #   exit 0 -> test passes, exit 1 -> test fails (regression or leak fired).
       - type: contains
         value: "verdict"
       - type: contains

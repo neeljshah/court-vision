@@ -118,16 +118,22 @@ All numbers are calibration/sharpness (lower Brier/RMSE = sharper). They are NOT
 | Soccer O/U-2.5 (Brier) | 0.2465 | 0.2390 | MATCH (pooled Platt) |
 | Tennis ATP ml (Brier) | 0.2177 | 0.2028 | BEHIND (ATP closes very efficient) |
 
-**In-game -- conditioning on realized state beats the static pregame line (all 4 WIN):**
+**In-game -- conditioning on realized state vs the static pregame line:**
+NOTE: NBA row is real-corpus-only (VALIDATION_PENDING on a fresh clone -- committed fixture
+prints no-improvement for NBA due to SYNTHETIC ANCHOR ARTIFACT; MLB/Soccer/Tennis reproduce).
 
-| Sport | Static -> conditional (Brier) |
-|---|---|
-| NBA (end Q1/Q2/Q3) | 0.209 -> 0.159 |
-| MLB (after inning 3/5/7) | 0.241 -> 0.126 |
-| Soccer 1X2 (half-time) | 0.626 -> 0.502 ; O/U-2.5 0.264 -> 0.176 |
-| Tennis (after set 1) | 0.219 -> 0.151 |
+| Sport | Static -> conditional (Brier) | Corpus |
+|---|---|---|
+| NBA (end Q1/Q2/Q3) | 0.209 -> 0.159 | real-corpus only; VALIDATION_PENDING on fixture |
+| MLB (after inning 3/5/7) | 0.241 -> 0.126 | reproduces on committed fixture |
+| Soccer 1X2 (half-time) | 0.626 -> 0.502 ; O/U-2.5 0.264 -> 0.176 | reproduces on committed fixture |
+| Tennis (after set 1) | 0.219 -> 0.151 | reproduces on committed fixture |
 
-**The thesis:** pregame MATCHES the devigged close on team-strength markets and is BEHIND on totals/ATP ONLY by freshness data a box model cannot see. IN-GAME conditioning (a pregame intelligence prior fused with realized state) is the decisive measured, calibrated, and delivered edge -- 4/4 sports. No fabricated $ edge.
+**The thesis:** pregame MATCHES the devigged close on team-strength markets and is BEHIND on
+totals/ATP ONLY by freshness data a box model cannot see. IN-GAME conditioning (a pregame
+intelligence prior fused with realized state) is the decisive measured, calibrated, and delivered
+edge -- MLB/Soccer/Tennis WIN reproduced on committed fixtures; NBA in-game WIN is real-corpus
+(VALIDATION_PENDING), edge_claimed = False. No fabricated $ edge.
 
 ---
 

@@ -66,6 +66,35 @@ def test_planted_late_row_trips_assert_vintage():
     assert "LEAK" in str(e.value)
 
 
+def test_tz_aware_late_row_raises_assertion_not_type_error():
+    """Bug #5: tz-aware extracted_at must raise AssertionError('LEAK'), not TypeError."""
+    asof = "2024-01-15T19:30:00"
+    # tz-aware string with Z suffix; this row is after asof
+    late_tz = _row(extracted_at="2024-01-15T20:00:00Z")
+    with pytest.raises(AssertionError) as e:
+        assert_vintage(late_tz, asof)
+    assert "LEAK" in str(e.value)
+    # also confirm as_of_out_ids filters it out rather than crashing
+    out = as_of_out_ids("t1", asof, [late_tz, _row(player_id="early",
+                                                    extracted_at="2024-01-15T17:00:00")])
+    assert out == {"early"}
+    assert "p1" not in out
+
+
+def test_tie_break_is_deterministic_and_conservative():
+    """Bug #6: equal extracted_at with conflicting status -> OUT wins regardless of order."""
+    asof = "2024-01-15T19:30:00"
+    same_ts = "2024-01-15T18:00:00"
+    row_out = _row(player_id="star", status="OUT", extracted_at=same_ts)
+    row_avail = _row(player_id="star", status="AVAILABLE", extracted_at=same_ts)
+    # order 1: OUT first
+    out1 = as_of_out_ids("t1", asof, [row_out, row_avail])
+    # order 2: AVAILABLE first
+    out2 = as_of_out_ids("t1", asof, [row_avail, row_out])
+    assert out1 == out2, "tie-break must be input-order-independent"
+    assert "star" in out1, "OUT must win the tie (conservative/leak-safe choice)"
+
+
 def test_supersede_picks_latest_pre_asof():
     asof = "2024-01-15T19:30:00"
     deltas = [
