@@ -1,0 +1,33 @@
+{
+  "cycle": "99b",
+  "ship": false,
+  "reason": "single_split_failed",
+  "coverage_holdout": {
+    "n_rows": 19964,
+    "q1_fg3m_l5_pct": 0.0,
+    "home_spread_pct": 99.92,
+    "position_pct": 100.0
+  },
+  "selected_features": [
+    "home_spread",
+    "position_C",
+    "position_F",
+    "position_G"
+  ],
+  "dropped_features": [
+    [
+      "q1_fg3m_l5",
+      0.0
+    ]
+  ],
+  "single_split": {
+    "n_rows": 99818,
+    "n_train": 64881,
+    "n_val": 14973,
+    "n_holdout": 19964,
+    "mae_baseline_85": 0.8959531447746366,
+    "mae_wide_90": 0.8964606145126904,
+    "delta_mae": 0.0005074697380538229,
+    "mae_vs_cycle27": 0.0023606145126904288
+  }
+}

@@ -463,3 +463,43 @@ docs/OUTREACH_KIT.md
 
 # Legacy vault sprawl archived out of the Obsidian graph (reversible; local working memory)
 _vault_legacy_archive/
+
+# =============================================================================
+# 2026-06-15 PRODUCTIZATION SCRUB -- data/ + vault/ are LOCAL-ONLY.
+#   Betting ledgers / bankroll / CLV / live-bets / scraped odds were tracked on
+#   the public origin before this; they are now untracked (kept on disk) and
+#   these wholesale ignores stop any future `git add data/` from re-publishing
+#   them. Only a short, audited, NON-betting whitelist stays tracked:
+#   data/models/*metrics*.json + meta + hyperparams (model-quality evidence),
+#   data/nba/{team_stats,player_avgs}_*.json (seed stats), data/{jersey_name_map,
+#   team_colors}.json (reference maps), data/README.md, data/__init__.py.
+#   Real per-sport corpora live local under data/domains/ (gitignored); tiny
+#   committed proof fixtures live under tests/fixtures/ (NOT data/).
+# =============================================================================
+# Ignore the entire data/ tree, then re-include ONLY the audited non-betting whitelist.
+# (Last-match-wins; this block is authoritative over the sprawling rules above.)
+data/*
+!data/README.md
+!data/__init__.py
+!data/jersey_name_map.json
+!data/team_colors.json
+!data/models/
+data/models/*
+!data/models/.gitkeep
+!data/models/model_registry.json
+!data/models/*_metrics.json
+!data/models/hyperparams_*.json
+!data/models/prop_corr_matrix.json
+!data/models/props_stl_v2_metrics.json
+!data/models/matchup_model_meta.json
+!data/models/dnp_model_meta.json
+!data/models/probe_defender_feature.json
+!data/models/load_management.json
+!data/nba/
+data/nba/*
+!data/nba/team_stats_*.json
+!data/nba/player_avgs_*.json
+
+# vault/ is the local Obsidian working memory -- never tracked (12 in-play notes
+# were tracked on the public origin before this; now untracked, kept on disk).
+vault/

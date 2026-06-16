@@ -1,7 +1,0 @@
-# Local leak-guard: internal research churn (belief store, calibrator sweeps,
-# forecast/ledger JSONL) stays private/untracked. Written by scripts/research_harness
-# + scripts/platformkit; LOCAL-only by design (matches the curate-only posture).
-# Nested guard avoids touching the human-gated root .gitignore (P0-A-001) and stays
-# effective independently -> nothing here goes public.
-*
-!.gitignore

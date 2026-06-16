@@ -1,0 +1,59 @@
+{
+  "cycle": "104e",
+  "ship": false,
+  "reason": "single_split_failed",
+  "bucket_counts": {
+    "big": 19703,
+    "forward": 40064,
+    "guard": 40051,
+    "unknown": 0
+  },
+  "train_bucket_counts": {
+    "big": 12875,
+    "forward": 26470,
+    "guard": 25536,
+    "unknown": 0
+  },
+  "single_split": {
+    "n_rows": 99818,
+    "n_train": 64881,
+    "n_val": 14973,
+    "n_holdout": 19964,
+    "mae_global_baseline": 4.615171191082012,
+    "mae_dispatched": 4.631324258225982,
+    "delta_mae": 0.016153067143970468,
+    "mae_vs_anchor": 0.010324258225981708,
+    "per_bucket_train_meta": {
+      "big": {
+        "n_train": 12875,
+        "n_val": 2908,
+        "trained": true,
+        "skip_reason": null
+      },
+      "forward": {
+        "n_train": 26470,
+        "n_val": 5975,
+        "trained": true,
+        "skip_reason": null
+      },
+      "guard": {
+        "n_train": 25536,
+        "n_val": 6090,
+        "trained": true,
+        "skip_reason": null
+      }
+    },
+    "per_bucket_holdout_mae": {
+      "big": 4.435124036928051,
+      "forward": 4.618904705448447,
+      "guard": 4.733844073074641
+    },
+    "dispatch_counts": {
+      "big": 3920,
+      "forward": 7619,
+      "guard": 8425,
+      "fallback_global": 0
+    }
+  },
+  "baseline_anchor": 4.621
+}

@@ -1,0 +1,86 @@
+{
+  "game_total": {
+    "mae": 15.18,
+    "r2": 0.147,
+    "holdout_mae": 14.64,
+    "holdout_r2": 0.146
+  },
+  "spread": {
+    "mae": 11.42,
+    "r2": 0.18,
+    "holdout_mae": 11.26,
+    "holdout_r2": 0.178
+  },
+  "blowout": {
+    "acc": 0.6897,
+    "brier": 0.2141,
+    "holdout_acc": 0.6963,
+    "holdout_brier": 0.211
+  },
+  "first_half": {
+    "mae": 7.09,
+    "r2": 0.166,
+    "holdout_mae": 7.0,
+    "holdout_r2": 0.139,
+    "label": "first_half_proxy"
+  },
+  "pace": {
+    "mae": 3.032,
+    "r2": 0.32,
+    "holdout_mae": 3.187,
+    "holdout_r2": 0.282
+  },
+  "version": "v3_integration",
+  "n_features": 147,
+  "baseline_v2": {
+    "game_total": {
+      "mae": 14.08,
+      "r2": 0.173
+    },
+    "spread": {
+      "mae": 11.23,
+      "r2": 0.239
+    },
+    "blowout": {
+      "acc": 0.6201,
+      "brier": 0.2395
+    },
+    "first_half": {
+      "mae": 6.66,
+      "r2": 0.182
+    },
+    "pace": {
+      "mae": "LEAKAGE",
+      "r2": 1.0,
+      "note": "v2 had leakage"
+    }
+  },
+  "top25_features": {
+    "away_tov_l10": 196,
+    "away_ftr_l10": 191,
+    "away_travel_miles": 181,
+    "home_miles_traveled_last_14d": 181,
+    "away_strength_of_schedule_l10": 177,
+    "home_pace_l10": 176,
+    "home_miles_traveled_last_7d": 176,
+    "away_orb_l10": 174,
+    "away_quality_of_wins_l10": 174,
+    "srs_diff": 173,
+    "home_ftr_l10": 172,
+    "home_def_rtg_L10": 170,
+    "pace_avg": 165,
+    "home_strength_of_schedule_l10": 164,
+    "home_tov_l10": 162,
+    "away_miles_traveled_last_7d": 155,
+    "v3_elo_diff_v2": 155,
+    "home_quality_of_wins_l10": 154,
+    "home_off_rtg_L10": 145,
+    "off_rtg_sum_l10": 143,
+    "home_efg_l10": 142,
+    "away_def_rtg_L10": 141,
+    "pace_expectation": 137,
+    "home_orb_l10": 136,
+    "def_rtg_sum": 136
+  },
+  "wall_time_sec": 21.0
+}

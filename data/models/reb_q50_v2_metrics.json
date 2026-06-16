@@ -1,0 +1,81 @@
+{
+  "cycle": "100d",
+  "ship": false,
+  "coverage_holdout": {
+    "n_rows": 19964,
+    "opp_team_oreb_pct_l5_pct": 100.0,
+    "opp_team_dreb_pct_l5_pct": 100.0,
+    "opp_team_pace_l5_pct": 100.0,
+    "opp_def_reb_l5_pct": 100.0
+  },
+  "candidate_features": [
+    "opp_team_oreb_pct_l5",
+    "opp_team_dreb_pct_l5",
+    "opp_team_pace_l5",
+    "opp_def_reb_l5"
+  ],
+  "selected_features": [
+    "opp_team_oreb_pct_l5",
+    "opp_team_dreb_pct_l5",
+    "opp_team_pace_l5",
+    "opp_def_reb_l5"
+  ],
+  "dropped_features": [],
+  "single_split": {
+    "n_rows": 99818,
+    "n_train": 64881,
+    "n_val": 14973,
+    "n_holdout": 19964,
+    "mae_baseline_85": 1.903589055687245,
+    "mae_wide": 1.901460648971232,
+    "delta_mae": -0.0021284067160129982,
+    "mae_vs_cycle29": -0.0008393510287680872
+  },
+  "walk_forward": {
+    "folds": [
+      {
+        "fold": 1,
+        "n_tr": 19963,
+        "n_val": 7985,
+        "n_ho": 11979,
+        "mae_base": 1.8343850836458035,
+        "mae_wide": 1.8343588152977135,
+        "delta_mae": -2.626834809005274e-05
+      },
+      {
+        "fold": 2,
+        "n_tr": 39927,
+        "n_val": 7985,
+        "n_ho": 11978,
+        "mae_base": 1.875852121936,
+        "mae_wide": 1.8774864235006437,
+        "delta_mae": 0.0016343015646436143
+      },
+      {
+        "fold": 3,
+        "n_tr": 59890,
+        "n_val": 7985,
+        "n_ho": 11979,
+        "mae_base": 1.9766299500560607,
+        "mae_wide": 1.9769527315340485,
+        "delta_mae": 0.0003227814779878102
+      },
+      {
+        "fold": 4,
+        "n_tr": 79854,
+        "n_val": 7985,
+        "n_ho": 11979,
+        "mae_base": 1.891854174056447,
+        "mae_wide": 1.8916753809371736,
+        "delta_mae": -0.00017879311927337938
+      }
+    ],
+    "n_folds": 4,
+    "n_folds_negative": 2,
+    "wf_4_of_4_negative": false,
+    "delta_mae_mean": 0.0004380053938169981,
+    "delta_mae_std": 0.0007142113819256018
+  },
+  "baseline_cycle29": 1.9023,
+  "reason": "wf_failed"
+}
