@@ -107,4 +107,49 @@ describe("WinProbCell", () => {
       screen.getByRole("group", { name: /win probability/i })
     ).toBeInTheDocument();
   });
+
+  // ---------------------------------------------------------------------------
+  // Favorite emphasis (data-favorite attribute)
+  // ---------------------------------------------------------------------------
+
+  it("marks the Home side as favorite when win_home > win_away in a non-post row", () => {
+    const row = buildRow({ sport: "mlb", state: "in", win_home: 0.61, win_away: 0.39 });
+    const { container } = render(<WinProbCell row={row} />);
+
+    const favEl = container.querySelector('[data-favorite="true"]');
+    expect(favEl).not.toBeNull();
+    // The favorite element must contain the Home label text.
+    expect(favEl?.textContent).toContain("Home");
+    // And must show the 61% figure.
+    expect(favEl?.textContent).toContain("61%");
+    // Away side must NOT be marked favorite.
+    const allFav = container.querySelectorAll('[data-favorite="true"]');
+    expect(allFav.length).toBe(1);
+  });
+
+  it("does not apply data-favorite on a post-game row (winner emphasis path)", () => {
+    // Post-game row with a clear winner -- must render without error and show winner text.
+    const row = buildRow({
+      sport: "mlb",
+      state: "post",
+      win_home: 0.61,
+      win_away: 0.39,
+      home_score: 5,
+      away_score: 3,
+    });
+    const { container } = render(<WinProbCell row={row} />);
+
+    // No favorite attribute in post-game path.
+    expect(container.querySelector('[data-favorite="true"]')).toBeNull();
+    // Component still renders Home/Away labels without throwing.
+    expect(screen.getByText("Home")).toBeInTheDocument();
+    expect(screen.getByText("Away")).toBeInTheDocument();
+  });
+
+  it("marks no element data-favorite when win_home === win_away (exact tie)", () => {
+    const row = buildRow({ sport: "mlb", state: "in", win_home: 0.5, win_away: 0.5 });
+    const { container } = render(<WinProbCell row={row} />);
+
+    expect(container.querySelector('[data-favorite="true"]')).toBeNull();
+  });
 });

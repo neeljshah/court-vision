@@ -9,6 +9,7 @@ import { useRef, useState, useMemo, type CSSProperties } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import type { BoardRow, Sport } from "@/types/board";
+import type { Density } from "@/hooks/useDensity";
 import { sortRows } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { BoardRowItem } from "@/components/board/BoardRowItem";
@@ -18,14 +19,6 @@ import { gameKey } from "@/lib/gameKey";
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
-
-interface BoardTableProps {
-  rows: BoardRow[];
-  sport: Sport;
-  generatedAt: string | null;
-  onSelect?: (row: BoardRow) => void;
-  flashKeys?: Set<string>;
-}
 
 type DisplayItem =
   | { type: "header"; label: string; key: string; toggle?: boolean; count?: number }
@@ -37,7 +30,7 @@ type DisplayItem =
 
 const FINISHED_COLLAPSE_THRESHOLD = 12;
 const HEADER_HEIGHT = 34;
-const ROW_HEIGHT_ESTIMATE = 96;
+const ROW_HEIGHT_BY_DENSITY: Record<Density, number> = { comfortable: 96, compact: 64 };
 
 // Static column header definitions; optional entries are filtered at render time.
 const COL_HEADERS_BASE = [
@@ -55,7 +48,16 @@ const COL_HEADERS_BASE = [
 // Component
 // ---------------------------------------------------------------------------
 
-export function BoardTable({ rows, sport, generatedAt, onSelect, flashKeys }: BoardTableProps) {
+interface BoardTableProps {
+  rows: BoardRow[];
+  sport: Sport;
+  generatedAt: string | null;
+  onSelect?: (row: BoardRow) => void;
+  flashKeys?: Set<string>;
+  density?: Density;
+}
+
+export function BoardTable({ rows, sport, generatedAt, onSelect, flashKeys, density = "comfortable" }: BoardTableProps) {
   const [showFinished, setShowFinished] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -120,7 +122,7 @@ export function BoardTable({ rows, sport, generatedAt, onSelect, flashKeys }: Bo
     getScrollElement: () => scrollRef.current,
     estimateSize: (index) => {
       const item = displayItems[index];
-      return item?.type === "header" ? HEADER_HEIGHT : ROW_HEIGHT_ESTIMATE;
+      return item?.type === "header" ? HEADER_HEIGHT : ROW_HEIGHT_BY_DENSITY[density];
     },
     measureElement:
       typeof window !== "undefined" &&
@@ -263,6 +265,7 @@ export function BoardTable({ rows, sport, generatedAt, onSelect, flashKeys }: Bo
                     style={{ position: "relative" } as CSSProperties}
                     onSelect={onSelect}
                     flashing={flashKeys?.has(key) ?? false}
+                    density={density}
                   />
                 </div>
               );
