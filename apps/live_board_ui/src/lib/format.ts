@@ -32,6 +32,7 @@ export function localTime(iso: string | null | undefined): string {
       day: "numeric",
       hour: "numeric",
       minute: "2-digit",
+      timeZoneName: "short",
     });
   } catch {
     return iso;
@@ -40,11 +41,20 @@ export function localTime(iso: string | null | undefined): string {
 
 /** Localized time-of-day only (for the "updated" stamp). */
 export function localClock(iso: string | null | undefined): string {
-  if (!iso) return new Date().toLocaleTimeString();
+  if (!iso)
+    return new Date().toLocaleTimeString([], {
+      hour: "numeric",
+      minute: "2-digit",
+      timeZoneName: "short",
+    });
   try {
     const d = new Date(iso);
     if (Number.isNaN(d.getTime())) return iso;
-    return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    return d.toLocaleTimeString([], {
+      hour: "numeric",
+      minute: "2-digit",
+      timeZoneName: "short",
+    });
   } catch {
     return iso;
   }
