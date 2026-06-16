@@ -148,34 +148,23 @@ class RiskManager:
         self.halt_reason = ""
 
     # -- the approval gate ----------------------------------------------
-    def approve(self, market_id: str, side: Side, fair_prob: float, price: float,
-                event_id: str = "", corr: float = 0.0,
-                limit_price: Optional[float] = None) -> Optional[Order]:
-        """Size + risk-check a desired trade. Returns a risk-checked Order or
-        None when blocked (with the reason available via last_block_reason)."""
-        self.last_block_reason = ""
+    def _enter_ok(self) -> bool:
+        """Halt + global-ENABLED + live-venue checks shared by every entry."""
         if self.check_kill_switch():
             self.last_block_reason = "halted: " + self.halt_reason
-            return None
+            return False
         if self.venue.is_live() and not (self.cfg.enabled and _global_enabled()):
             self.last_block_reason = "live trading disabled (ENABLED OFF)"
-            return None
+            return False
+        return True
 
-        frac = kelly_fraction_binary(fair_prob, price, side, corr,
-                                     self.cfg.kelly_fraction)
-        if frac <= 0.0:
-            self.last_block_reason = "no positive edge / zero Kelly"
-            return None
-
+    def _apply_caps(self, market_id: str, side: Side, price: float,
+                    want: int, event_id: str) -> int:
+        """Trim a desired qty to per-market/event/total max-loss headroom."""
         rpc = _risk_per_contract(price, side)
         if rpc <= 0.0:
             self.last_block_reason = "degenerate price"
-            return None
-        # +eps absorbs float noise (e.g. 0.05*10000 == 499.999...) so a clean
-        # integer count doesn't round down to N-1.
-        want = int((frac * self.cfg.bankroll_start) / rpc + 1e-9)
-
-        # exposure caps (max-loss dollars), each leaves headroom for this trade
+            return 0
         if event_id:
             self._market_event[market_id] = event_id
         caps = [
@@ -190,11 +179,44 @@ class RiskManager:
             if allowed < want:
                 want = allowed
                 self.last_block_reason = "capped by %s exposure" % label
+        return max(want, 0)
+
+    def cap_quantity(self, market_id: str, side: Side, price: float,
+                     want: int, event_id: str = "") -> int:
+        """Risk-check a NON-Kelly desired size (arb / market-making quotes):
+        applies halt/ENABLED/exposure caps only. Returns approved int >= 0."""
+        self.last_block_reason = ""
+        if want <= 0:
+            return 0
+        if not self._enter_ok():
+            return 0
+        return self._apply_caps(market_id, side, price, int(want), event_id)
+
+    def approve(self, market_id: str, side: Side, fair_prob: float, price: float,
+                event_id: str = "", corr: float = 0.0,
+                limit_price: Optional[float] = None) -> Optional[Order]:
+        """Kelly-size + risk-check a desired trade. Returns a risk-checked
+        Order or None when blocked (reason via last_block_reason)."""
+        self.last_block_reason = ""
+        if not self._enter_ok():
+            return None
+        frac = kelly_fraction_binary(fair_prob, price, side, corr,
+                                     self.cfg.kelly_fraction)
+        if frac <= 0.0:
+            self.last_block_reason = "no positive edge / zero Kelly"
+            return None
+        rpc = _risk_per_contract(price, side)
+        if rpc <= 0.0:
+            self.last_block_reason = "degenerate price"
+            return None
+        # +eps absorbs float noise (e.g. 0.05*10000 == 499.999...) so a clean
+        # integer count doesn't round down to N-1.
+        want = int((frac * self.cfg.bankroll_start) / rpc + 1e-9)
+        want = self._apply_caps(market_id, side, price, want, event_id)
         if want <= 0:
             if not self.last_block_reason:
                 self.last_block_reason = "exposure cap leaves no room"
             return None
-
         return Order(market_id=market_id, side=side, qty=want,
                      order_type=OrderType.LIMIT if limit_price is not None
                      else OrderType.MARKET, limit_price=limit_price)

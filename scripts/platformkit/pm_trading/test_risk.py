@@ -165,6 +165,31 @@ def test_paper_venue_allowed():
     assert rm.approve("M", Side.BUY, 0.60, 0.50) is not None
 
 
+# --------------------------------------------------------------------------
+# cap_quantity: non-Kelly sizing path (arb / market-making quotes)
+# --------------------------------------------------------------------------
+def test_cap_quantity_passes_through_under_caps():
+    v, rm = _rm()
+    assert rm.cap_quantity("M", Side.BUY, 0.50, 300) == 300
+
+
+def test_cap_quantity_trims_to_market_cap():
+    v, rm = _rm(max_market_exposure=100.0)
+    assert rm.cap_quantity("M", Side.BUY, 0.50, 1000) == 200  # 100/0.50
+    assert "market" in rm.last_block_reason
+
+
+def test_cap_quantity_zero_when_halted():
+    v, rm = _rm(cash=8_000.0, bankroll_start=10_000.0)  # drawdown trip
+    assert rm.cap_quantity("M", Side.BUY, 0.50, 300) == 0
+    assert "halted" in rm.last_block_reason
+
+
+def test_cap_quantity_zero_for_nonpositive_want():
+    v, rm = _rm()
+    assert rm.cap_quantity("M", Side.BUY, 0.50, 0) == 0
+
+
 if __name__ == "__main__":
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     for fn in fns:
