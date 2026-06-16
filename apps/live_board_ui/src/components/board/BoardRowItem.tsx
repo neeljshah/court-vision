@@ -19,6 +19,7 @@ interface BoardRowItemProps {
   generatedAt: string | null;
   style?: CSSProperties;
   columns?: ColumnVis;
+  onSelect?: (row: BoardRow) => void;
 }
 
 export function BoardRowItem({
@@ -26,6 +27,7 @@ export function BoardRowItem({
   generatedAt,
   style,
   columns = DEFAULT_COLUMNS,
+  onSelect,
 }: BoardRowItemProps) {
   const isLive = row.state === "in";
   const updatedLabel = localClock(generatedAt);
@@ -52,7 +54,7 @@ export function BoardRowItem({
         </div>
 
         {/* Matchup */}
-        <MatchupCell row={row} />
+        <MatchupCell row={row} onSelect={onSelect ? () => onSelect(row) : undefined} />
 
         {/* Score + WinProb side by side */}
         <div className="flex items-center gap-3">
@@ -72,7 +74,7 @@ export function BoardRowItem({
         <StatusCell row={row} />
 
         {/* 2: Matchup */}
-        <MatchupCell row={row} />
+        <MatchupCell row={row} onSelect={onSelect ? () => onSelect(row) : undefined} />
 
         {/* 3: Score */}
         <ScoreCell row={row} />

@@ -1,4 +1,5 @@
-/** MatchupCell -- displays away @ home matchup with optional winner badge, note, and league chip. */
+/** MatchupCell -- displays away @ home matchup with optional winner badge, note, and league chip.
+ *  When onSelect is provided, wraps the team-names row in an accessible button. */
 import { Check } from "lucide-react";
 import type { BoardRow } from "@/types/board";
 import { cn } from "@/lib/utils";
@@ -7,6 +8,7 @@ import { winnerSide } from "@/lib/format";
 interface MatchupCellProps {
   row: BoardRow;
   showLeague?: boolean;
+  onSelect?: () => void;
 }
 
 interface TeamNameProps {
@@ -40,7 +42,54 @@ function TeamName({ name, isWinner, isBold }: TeamNameProps) {
   );
 }
 
-export function MatchupCell({ row, showLeague = false }: MatchupCellProps) {
+/** Inner team-names row -- rendered as-is or wrapped in a button depending on onSelect. */
+function NamesRow({
+  row,
+  awayWon,
+  homeWon,
+  onSelect,
+}: {
+  row: BoardRow;
+  awayWon: boolean;
+  homeWon: boolean;
+  onSelect?: () => void;
+}) {
+  const inner = (
+    <>
+      <TeamName name={row.away} isWinner={awayWon} isBold={false} />
+      <span
+        className="text-muted text-[11px] px-1 shrink-0 select-none"
+        aria-hidden="true"
+      >
+        @
+      </span>
+      <TeamName name={row.home} isWinner={homeWon} isBold={true} />
+    </>
+  );
+
+  if (onSelect) {
+    return (
+      <button
+        type="button"
+        onClick={onSelect}
+        aria-label={`View details: ${row.away} at ${row.home}`}
+        className={cn(
+          "flex items-center min-w-0 gap-x-0.5",
+          "text-left hover:underline underline-offset-2 rounded",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+        )}
+      >
+        {inner}
+      </button>
+    );
+  }
+
+  return (
+    <div className="flex items-center min-w-0 gap-x-0.5">{inner}</div>
+  );
+}
+
+export function MatchupCell({ row, showLeague = false, onSelect }: MatchupCellProps) {
   const winner = winnerSide(row);
 
   const awayWon = winner === "away";
@@ -51,21 +100,8 @@ export function MatchupCell({ row, showLeague = false }: MatchupCellProps) {
 
   return (
     <div className="flex flex-col gap-0.5 min-w-0">
-      {/* Team names row: min-w-0 ensures truncation works inside flex parents */}
-      <div className="flex items-center min-w-0 gap-x-0.5">
-        <TeamName name={row.away} isWinner={awayWon} isBold={false} />
+      <NamesRow row={row} awayWon={awayWon} homeWon={homeWon} onSelect={onSelect} />
 
-        <span
-          className="text-muted text-[11px] px-1 shrink-0 select-none"
-          aria-hidden="true"
-        >
-          @
-        </span>
-
-        <TeamName name={row.home} isWinner={homeWon} isBold={true} />
-      </div>
-
-      {/* Meta row: league chip + note */}
       {hasMeta && (
         <div className="flex items-start gap-1.5 min-w-0 leading-snug">
           {showLeague && row.league && (
