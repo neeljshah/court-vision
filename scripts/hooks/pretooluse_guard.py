@@ -1,0 +1,95 @@
+#!/usr/bin/env python
+"""PreToolUse guard hook (NOT wired -- proposed).
+
+Reads the Claude Code PreToolUse stdin JSON contract:
+  {session_id, cwd, hook_event_name, tool_name, tool_input:{command|file_path|...}}
+
+BLOCK mechanism (documented): exit code 2 with the reason on stderr.
+
+Blocks dangerous Bash commands per repo invariants:
+  - `git push` to origin (origin is PUBLIC -- LOCAL commits only)
+  - any `--force`
+  - a full `pytest tests/` (freezes the box) -- a single test file is allowed
+Also emits non-blocking guidance (exit 0 + stderr) when a bash command
+lacks the required `cd /c/Users/neelj/nba-ai-system &&` cwd prefix.
+
+ASCII only. Idempotent: pure function of stdin, no side effects.
+"""
+import json
+import re
+import sys
+
+REQUIRED_CWD_PREFIX = "cd /c/Users/neelj/nba-ai-system"
+
+
+def _block(reason):
+    sys.stderr.write("BLOCKED: " + reason + "\n")
+    sys.exit(2)
+
+
+def _warn(msg):
+    sys.stderr.write("GUIDANCE: " + msg + "\n")
+    sys.exit(0)
+
+
+def _is_push_to_origin(cmd):
+    # `git push` with no explicit non-origin remote, or push ... origin
+    if not re.search(r"\bgit\s+push\b", cmd):
+        return False
+    m = re.search(r"\bgit\s+push\b\s*(?:--\S+\s+)*(\S+)?", cmd)
+    remote = (m.group(1) if m and m.group(1) else "").strip()
+    if remote == "" or remote.startswith("-"):
+        # bare `git push` defaults to the tracked remote (origin/public)
+        return True
+    return remote == "origin"
+
+
+def _is_full_pytest(cmd):
+    # `pytest tests/` (the whole dir) freezes the box; a single file is OK.
+    for m in re.finditer(r"\bpytest\b([^\n;&|]*)", cmd):
+        args = m.group(1)
+        # collect non-flag tokens (test targets)
+        targets = [t for t in args.split() if not t.startswith("-")]
+        for t in targets:
+            # a bare `tests` or `tests/` (dir, no file) -> full suite
+            if re.fullmatch(r"tests/?", t):
+                return True
+        # bare `pytest` with no target also runs the whole suite
+        if not targets:
+            return True
+    return False
+
+
+def main():
+    raw = sys.stdin.read()
+    try:
+        data = json.loads(raw) if raw.strip() else {}
+    except (ValueError, TypeError):
+        # malformed input -> do not block; let the tool proceed
+        sys.exit(0)
+
+    if data.get("tool_name") != "Bash":
+        sys.exit(0)
+
+    cmd = (data.get("tool_input") or {}).get("command", "") or ""
+
+    if _is_push_to_origin(cmd):
+        _block("`git push` to origin -- origin is PUBLIC. LOCAL commits only. "
+               "Push only to an explicit private remote after human review.")
+
+    if "--force" in cmd:
+        _block("`--force` detected -- destructive. Human-gated; refusing.")
+
+    if _is_full_pytest(cmd):
+        _block("full `pytest tests/` freezes this box. Run a single test "
+               "file instead, e.g. `pytest tests/path/test_one.py`.")
+
+    if REQUIRED_CWD_PREFIX not in cmd:
+        _warn("bash cwd is FLAKY -- prefix commands with "
+              "`cd /c/Users/neelj/nba-ai-system &&` for reliable cwd.")
+
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()
