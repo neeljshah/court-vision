@@ -87,8 +87,20 @@ def test_cli_unavailable_corpus_prints_message_and_returns_zero(monkeypatch, cap
     h, aw = ("Djokovic", "Alcaraz") if sport == "tennis" else ("AAA", "BBB")
     rc = pm.main(["--sport", sport, "--home", h, "--away", aw])
     assert rc == 0
-    out = capsys.readouterr().out
-    assert "corpus unavailable on this clone" in out
+    cap = capsys.readouterr()
+    assert "corpus unavailable on this clone" in cap.out
+    # banner is context-only and must live on stderr, keeping stdout machine-parseable
+    assert "CALIBRATION CONTEXT" in cap.err
+    assert "CALIBRATION CONTEXT" not in cap.out
+
+
+def test_no_banner_flag_suppresses_banner(monkeypatch, capsys):
+    monkeypatch.setattr(pm, "_build_predictor", lambda s: None)
+    rc = pm.main(["--sport", "nba", "--home", "AAA", "--away", "BBB", "--no-banner"])
+    assert rc == 0
+    cap = capsys.readouterr()
+    assert "CALIBRATION CONTEXT" not in cap.err
+    assert "CALIBRATION CONTEXT" not in cap.out
 
 
 def _home_away(sport: str):

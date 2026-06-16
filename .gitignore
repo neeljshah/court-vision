@@ -33,6 +33,10 @@ data/cache/crypto_forecaster/
 *.pth
 models/weights/
 
+# -- RAG knowledge index (local-only; rebuilt by scripts/platformkit/knowledge/index.py) ----
+data/index/vault/
+data/cache/intel_warm/
+
 # -- Trained model artifacts (large; re-trained locally) ----------------------
 data/models/
 !data/models/.gitkeep
@@ -333,6 +337,9 @@ scripts/**/_*
 #    only 5 of ~243 _audits docs were ever published; the rest are internal brain,
 #    like vault/ and .planning/). Already-tracked audits stay tracked.
 docs/_audits/
+
+# generated calibration reliability PNGs (regenerated offline; not committed)
+docs/_calibration_png/
 
 # =============================================================================
 # 2026-06-11 EDGE QUARANTINE — keep betting/edge artifacts OFF the public repo.
