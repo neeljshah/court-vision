@@ -11,9 +11,11 @@ import { SOCCER_LEAGUES, SPORTS } from "@/types/board";
 import { useBoard } from "@/hooks/useBoard";
 import { filterRows } from "@/lib/filter";
 import { useScoreFlash } from "@/hooks/useScoreFlash";
+import { useDensity } from "@/hooks/useDensity";
 
 import { Header } from "@/components/board/Header";
 import { ThemeToggle } from "@/components/board/ThemeToggle";
+import { DensityToggle } from "@/components/board/DensityToggle";
 import { SportTabs } from "@/components/board/SportTabs";
 import { LeagueSelect } from "@/components/board/LeagueSelect";
 import { StampBar } from "@/components/board/StampBar";
@@ -41,6 +43,8 @@ export default function App() {
   const [query, setQuery] = useState<string>("");
   const [liveOnly, setLiveOnly] = useState<boolean>(false);
   const [selected, setSelected] = useState<BoardRow | null>(null);
+
+  const { density, toggle: toggleDensity } = useDensity();
 
   // Keep the URL in sync so the current sport is shareable/bookmarkable.
   useEffect(() => {
@@ -90,7 +94,10 @@ export default function App() {
   return (
     <div className="min-h-screen overflow-x-hidden bg-bg text-txt">
       <Header>
-        <ThemeToggle />
+        <div className="flex items-center gap-1">
+          <DensityToggle density={density} onToggle={toggleDensity} />
+          <ThemeToggle />
+        </div>
       </Header>
 
       <main className="mx-auto max-w-5xl px-3 pb-20 pt-3">
@@ -152,6 +159,7 @@ export default function App() {
               generatedAt={data.generated_at}
               onSelect={setSelected}
               flashKeys={flashKeys}
+              density={density}
             />
           )}
         </div>
