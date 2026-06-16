@@ -173,16 +173,27 @@ def render_markdown(rows: List[Dict]) -> str:
         L.append(f"| {r['sport']} | {r['checkpoint']} | {r['n']} | {r['metric']} | "
                  f"{_fmt(r['conditional'])} | {_fmt(r['static'])} | {ds} | {r['verdict']} | "
                  f"{r['why']} |")
-    L += ["", "**Reading it:** where a leak-free per-period corpus exists (NBA per-quarter "
-          "linescores, MLB per-inning runs) the conditional-on-state forecaster is decisively "
-          "sharper than the static pregame line — NBA Brier 0.209 -> 0.159 (combined rating "
-          "prior + score), MLB 0.250 -> 0.128. The strongest forecaster fuses the **pregame "
-          "intelligence (ratings) AS THE PRIOR with the realized state**, not either alone "
-          "(NBA: combined beats both pregame-only and score-only). Soccer half-time is a WIN "
-          "too (1X2 0.626 -> 0.502, O/U-2.5 0.264 -> 0.176 conditioning on the observed HT "
-          "score); Tennis is now a WIN too (Brier 0.219 -> 0.151 conditioning on the realized "
-          "set-1 lead, leak-free via the set-result-role / match-outcome-label framing). This is "
-          "forecaster quality, not a $ edge — a live book sees the same state.",
+    # Derive the reading-it summary from the live row data, not hardcoded numbers.
+    win_rows = [r for r in rows if not r.get("status") and r.get("verdict") == "WIN"]
+    null_rows = [r for r in rows if not r.get("status") and r.get("verdict") != "WIN"]
+    win_sports = ", ".join(r["sport"] for r in win_rows) if win_rows else "none"
+    null_sports = ", ".join(r["sport"] for r in null_rows) if null_rows else "none"
+    reading_it = (
+        "**Reading it:** results are derived from the corpus supplied at runtime. "
+        "On the FULL PRIVATE corpora (vault/_Edge_Maps/_Ingame_Scoreboard.md) the "
+        "conditional-on-state forecaster wins on MLB, Soccer, and Tennis; the NBA row "
+        "is VALIDATION_PENDING on real-corpus OOS (the committed fixture, which uses "
+        "SYNTHETIC game snapshots, prints no-improvement for NBA because the synthetic "
+        "pregame Elo already anchors near the realized outcome -- this is a SYNTHETIC "
+        "ANCHOR ARTIFACT, not a claim that NBA in-game fails on real data). "
+        f"On this corpus: WIN sports = [{win_sports}]; "
+        f"no-improvement sports = [{null_sports}]. "
+        "The strongest forecaster fuses the pregame intelligence (ratings) AS THE PRIOR "
+        "with the realized state. This is forecaster quality, not a $ edge -- a live book "
+        "sees the same state. NBA in-game real-corpus OOS = VALIDATION_PENDING (human-run "
+        "on full data/domains/basketball_nba corpus); edge_claimed = False."
+    )
+    L += ["", reading_it,
           "", "_Companion: vault/_Edge_Maps/_Beat_The_Close.md (pregame quality vs the close)._"]
     return "\n".join(L)
 
