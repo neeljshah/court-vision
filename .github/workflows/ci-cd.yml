@@ -1,3 +1,6 @@
+# LEGACY pipeline (NBA CV stack + security scan). The PRODUCT gate is ci.yml
+# (Predictor CI). This file keeps lint + Trivy security-scan + optional model
+# training/daily-pipeline. It NEVER commits or pushes (see the disabled step below).
 name: NBA AI System CI/CD
 
 on:
@@ -130,14 +133,16 @@ jobs:
         echo "$RESULT"
         python scripts/compare_models.py --stat all --threshold 0.02
 
-    - name: Commit models with metrics
+    # DISABLED 2026-06-15 (productization W10): this step used to `git add data/models/`
+    # + `git commit` + `git push` from CI -- a violation of the binding invariants
+    # (never auto-push to the public origin; never commit data/). data/ is now local-only
+    # and gitignored. Re-enabling any CI push is a HUMAN-GATED decision (see
+    # docs/SECURITY_REMEDIATION.md). The training metrics are reported, not committed.
+    - name: Report model metrics (no commit / no push)
       run: |
         METRICS=$(python scripts/compare_models.py --stat all --threshold 0.02 2>&1 | grep -E "\[PASS\]|\[FAIL\]|\[FIRST RUN\]" | tr '\n' ' ')
-        git config user.name "GSD Executor"
-        git config user.email "noreply@courtvision.io"
-        git add data/models/
-        git commit -m "retrain: ${METRICS}" || echo "No model changes to commit"
-        git push || echo "Nothing to push"
+        echo "Model metrics: ${METRICS}"
+        echo "(CI auto-commit/push intentionally disabled -- data/ is local-only)"
 
   daily-pipeline:
     runs-on: ubuntu-latest

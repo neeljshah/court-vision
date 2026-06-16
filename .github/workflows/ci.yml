@@ -1,60 +1,62 @@
-name: CI
+# Predictor CI -- the product gate for the 4-sport calibrated prediction platform.
+#
+# Installs ONLY the slim predictor deps and exercises the predictor surface:
+# per-file tests for the proofs/CLI/leak-guard, a reproduce-on-fixtures run of both
+# scoreboards, and a clone-safe smoke of the predict_matchup CLI for all 4 sports.
+# It NEVER runs the full pytest suite (the heavy CV/web tests need GPU/data) and it
+# NEVER commits or pushes anything. The legacy CV/security pipeline is ci-cd.yml.
+name: Predictor CI
 
 on:
   push:
-    branches: [master, main, "docs/**", "feat/**", "fix/**"]
+    branches: [master, main, "docs/**", "feat/**", "fix/**", "chore/**", "test/**"]
   pull_request:
     branches: [master, main]
+  workflow_dispatch:
 
 jobs:
-  test:
+  predictor:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.12"]
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.9"
+          python-version: ${{ matrix.python-version }}
           cache: pip
 
-      - name: Install dependencies
-        run: pip install -r requirements.txt || pip install -e ".[dev]" || true
-
-      - name: Lint (ruff)
+      - name: Install slim predictor deps + the package
         run: |
-          pip install ruff
-          ruff check src/ api/ tests/ --ignore E501 || true
+          python -m pip install --upgrade pip
+          pip install -r requirements-predictor.txt
+          pip install -e ".[dev]"
 
-      - name: Test with coverage (pytest-cov)
+      - name: Per-file predictor + proof tests (never the full suite)
         run: |
-          pip install pytest pytest-cov
-          python -m pytest tests/ -q --ignore=tests/cv --ignore=tests/gpu -x \
-            --cov=src --cov=scripts \
-            --cov-report=term-missing \
-            --cov-fail-under=30
+          python -m pytest -q \
+            tests/platform/test_predict_matchup.py \
+            tests/platform/test_no_leak_paths_staged.py \
+            tests/platform/test_proof_nba_fixture.py \
+            tests/platform/test_proof_mlb_fixture.py \
+            tests/platform/test_proof_soccer_fixture.py \
+            tests/platform/test_proof_tennis_fixture.py \
+            tests/platform/test_ingame_scoreboard.py \
+            tests/platform/test_totals_ensemble.py \
+            tests/platform/test_beat_the_close_scoreboard.py
 
-      - name: Upload coverage report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: .coverage
-
-  cv-quality:
-    runs-on: ubuntu-latest
-    continue-on-error: true  # non-blocking — CV tests may need GPU/data
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.9"
-          cache: pip
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt || pip install -e ".[dev]" || true
-
-      - name: Run CV quality tests (non-blocking)
+      - name: Reproduce both scoreboards on committed fixtures (proof in <60s)
         run: |
-          pip install pytest
-          python -m pytest tests/cv/ -v --tb=short || true
+          python -m scripts.platformkit.beat_the_close_scoreboard --corpus tests/fixtures/proof
+          python -m scripts.platformkit.ingame_scoreboard --corpus tests/fixtures/proof
+
+      - name: Clone-safe predict_matchup smoke for all 4 sports (exit 0, no edge claimed)
+        run: |
+          for s in nba mlb soccer tennis; do
+            echo "== $s =="
+            python -m scripts.platformkit.predict_matchup --sport "$s" --home A --away B
+          done
+          # The product never claims a $ edge -- assert the honest flag is present.
+          python -m scripts.platformkit.predict_matchup --sport nba --home A --away B | grep -q '"edge_claimed": false'
