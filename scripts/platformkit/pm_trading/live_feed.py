@@ -57,6 +57,12 @@ class Game:
     game_id: str = ""
     game_date: str = ""
     start_iso: str = ""
+    # live in-game state (None for pregame); MLB: inning/half/runs
+    inning: Optional[int] = None
+    half: str = ""              # "top" | "bottom"
+    home_runs: Optional[int] = None
+    away_runs: Optional[int] = None
+    state: str = ""            # "Preview" | "Live" | "Final"
 
 
 class GameSource(ABC):
