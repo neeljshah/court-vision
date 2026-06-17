@@ -53,6 +53,20 @@ def status_report(ledger_dir: Optional[str] = None,
                        - gg["devig_close_prob"].astype(float)).mean()
                 # model prob vs devigged close -- a gap, NOT realized CLV
                 rep["model_vs_devigclose_gap"] = round(float(gap), 4)
+        # honest split: in-game predictions on decided games are EASY (inflate
+        # accuracy); pregame is the hard call. Never report them conflated only.
+        if "layer" in df:
+            rep["by_layer"] = {}
+            for layer in ("pregame", "ingame"):
+                ld = df[df["layer"] == layer]
+                lg = ld[ld["outcome"].notna()]
+                entry = {"n": int(len(ld)), "settled": int(len(lg))}
+                if len(lg):
+                    yy = lg["outcome"].astype(float)
+                    pp = lg["calibrated_prob"].astype(float)
+                    entry["accuracy"] = round(float((((pp > 0.5).astype(float)) == yy).mean()), 4)
+                    entry["brier"] = round(float(((pp - yy) ** 2).mean()), 4)
+                rep["by_layer"][layer] = entry
 
     try:
         from pnl import PnLBlotter
@@ -91,6 +105,14 @@ def format_report(rep: dict) -> str:
     if "accuracy" in rep:
         lines.append("  accuracy / brier : %s / %s (calibration, not $)"
                      % (rep.get("accuracy"), rep.get("brier")))
+    for layer, e in (rep.get("by_layer") or {}).items():
+        if e.get("settled"):
+            note = " (decided games -- EASY)" if layer == "ingame" else " (the hard call)"
+            lines.append("    %-7s %d/%d settled: acc=%s brier=%s%s"
+                         % (layer, e["settled"], e["n"], e.get("accuracy"),
+                            e.get("brier"), note))
+        else:
+            lines.append("    %-7s %d logged, 0 settled" % (layer, e["n"]))
     if "model_vs_devigclose_gap" in rep:
         lines.append("  model vs devig-close gap : %s (a gap, not realized CLV)"
                      % rep["model_vs_devigclose_gap"])
