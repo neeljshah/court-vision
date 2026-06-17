@@ -72,6 +72,22 @@ def test_fetch_mlb_finals_offline_returns_empty():
     assert isinstance(out, dict)
 
 
+def test_dates_to_scan_includes_prior_day():
+    s = G._dates_to_scan(["2026-06-17", "", "2026-06-17"])
+    assert "2026-06-17" in s and "2026-06-16" in s
+
+
+def test_ingame_after_midnight_row_not_leak_dropped():
+    # in-game pred stamped 06-17 carrying its OWN date grades fine (not a leak)
+    from scripts.platformkit.ledger.ledger import append_prediction
+    led = tempfile.mkdtemp(prefix="pm_ig_grade_")
+    append_prediction("mlb", "ingame", "ml", "NYY", "CWS", 0.99, {"inning": 7},
+                      "2026-06-17T01:37:00+00:00", game_date="2026-06-17",
+                      game_id="GX", base_dir=led)
+    s = G.grade_from_ledger(base_dir=led, finals={"GX": 1})
+    assert s.get("filled") == 1 and s.get("leak_dropped", 0) == 0
+
+
 if __name__ == "__main__":
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     for fn in fns:

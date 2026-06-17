@@ -35,13 +35,18 @@ def test_source_name():
 
 
 def test_build_ingame_shapes_and_layer():
+    # pred stamped AFTER midnight UTC for a game on the prior US date
     preds = LI.build_ingame_predictions(_live_games(), _fake_live,
-                                        pred_ts="2026-06-16T23:00:00+00:00")
+                                        pred_ts="2026-06-17T01:37:00+00:00")
     assert len(preds) == 2
     p0 = preds[0]
     assert p0["layer"] == "ingame" and p0["market"] == "ml"
     assert p0["inputs"]["inning"] == 7 and p0["inputs"]["half"] == "bottom"
     assert p0["calibrated_prob"] > 0.9   # NYY up 9 runs
+    # vintage-safe: game_date = the prediction's own UTC date (not the prior
+    # schedule date), so the ledger leak guard keeps it; sched_date preserved.
+    assert p0["game_date"] == "2026-06-17"
+    assert p0["inputs"]["sched_date"] == "2026-06-16"
 
 
 def test_build_ingame_skips_games_without_state():
