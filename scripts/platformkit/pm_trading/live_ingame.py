@@ -106,9 +106,16 @@ def build_ingame_predictions(games: Sequence[Game],
         out.append({
             "sport": g.sport, "layer": "ingame", "market": market,
             "home": g.home, "away": g.away, "calibrated_prob": float(p),
-            "game_id": g.game_id, "game_date": g.game_date, "pred_ts": pred_ts,
+            "game_id": g.game_id,
+            # game_date = the prediction's own (UTC) date: an in-game prediction
+            # is made in real time during play, so it is leak-free by construction
+            # and must satisfy the ledger vintage guard (pred_ts date <= game_date)
+            # even when the live game runs past midnight UTC. grade_live matches by
+            # game_id and scans the prior day too, so settlement still finds it.
+            "game_date": (pred_ts or "")[:10] or g.game_date,
+            "pred_ts": pred_ts,
             "inputs": {"source": "live_feed_ingame", "inning": g.inning,
                        "half": g.half, "home_runs": g.home_runs,
-                       "away_runs": g.away_runs},
+                       "away_runs": g.away_runs, "sched_date": g.game_date},
         })
     return out

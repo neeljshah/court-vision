@@ -51,6 +51,24 @@ def fetch_mlb_finals(date: str = "") -> Dict[str, int]:
     return out
 
 
+def _dates_to_scan(game_dates) -> set:
+    """Each row's game_date PLUS the prior day -- in-game predictions stamped
+    after midnight UTC carry the next day's date, but the game settles on the
+    schedule (prior) day. Scanning both, then matching by game_id, settles them."""
+    from datetime import datetime, timedelta
+    out = set()
+    for x in game_dates:
+        if not x:
+            continue
+        out.add(str(x))
+        try:
+            out.add((datetime.fromisoformat(str(x)).date()
+                     - timedelta(days=1)).isoformat())
+        except Exception:
+            continue
+    return out
+
+
 def grade_from_ledger(base_dir: Optional[str] = None, date: str = "",
                       finals: Optional[Dict[str, int]] = None,
                       sport: str = "mlb") -> dict:
@@ -74,7 +92,7 @@ def grade_from_ledger(base_dir: Optional[str] = None, date: str = "",
 
     if finals is None:
         finals = {}
-        for d in {str(x) for x in ungraded["game_date"].tolist() if x}:
+        for d in _dates_to_scan(ungraded["game_date"].tolist()):
             finals.update(fetch_mlb_finals(d))
     base["finals_available"] = len(finals)
 
