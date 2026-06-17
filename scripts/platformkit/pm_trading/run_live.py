@@ -28,6 +28,7 @@ if str(_HERE) not in sys.path:
     sys.path.insert(0, str(_HERE))
 
 import live_feed as LF  # noqa: E402
+import live_ingame as LI  # noqa: E402
 from pnl import log_prediction  # noqa: E402
 
 
@@ -68,22 +69,54 @@ def run_once(sources: Sequence[LF.GameSource],
     }
 
 
+def run_ingame_once(sources: Sequence[LF.GameSource],
+                    predict_live_fn=None, pred_ts: Optional[str] = None,
+                    ledger_dir: Optional[str] = None) -> dict:
+    """IN-GAME tick: collect LIVE games' state -> predict_live -> forward-log
+    layer='ingame'. This exercises the model's measured strength (the in-game
+    conditioning layer) on games happening right now. Paper, no money."""
+    predict_live_fn = predict_live_fn or LI.make_default_predict_live_fn()
+    pred_ts = pred_ts or _now_iso()
+    games = LF.collect_games(sources)
+    preds = LI.build_ingame_predictions(games, predict_live_fn, pred_ts)
+    pred_ids: List[str] = []
+    for p in preds:
+        try:
+            pid = log_prediction(
+                p["sport"], p["market"], p["home"], p["away"],
+                p["calibrated_prob"], p["pred_ts"], layer="ingame",
+                strategy="live_feed_ingame", base_dir=ledger_dir,
+                inputs=p["inputs"], game_id=p["game_id"],
+                game_date=p["game_date"])
+            pred_ids.append(pid)
+        except Exception:
+            continue
+    return {"pred_ts": pred_ts, "mode": "ingame", "live_games": len(games),
+            "predictions_logged": len(pred_ids),
+            "note": "in-game forward predictions (predict_live on live state); "
+                    "paper, no money, no edge claimed."}
+
+
 def loop(sources: Sequence[LF.GameSource], interval: int = 1800,
          max_ticks: int = 0, ledger_dir: Optional[str] = None,
-         predict_fn: Optional[Callable[[str, str, str], dict]] = None,
-         verbose: bool = True) -> int:
+         predict_fn=None, ingame: bool = False, verbose: bool = True) -> int:
     if predict_fn is None:
-        predict_fn = LF.make_default_predict_fn()  # build corpus ONCE, reuse
+        predict_fn = (LI.make_default_predict_live_fn() if ingame
+                      else LF.make_default_predict_fn())  # build corpus ONCE
     if verbose:
-        print("LIVE FORWARD-LOGGER -- PAPER/HONEST. Sources: %s | interval %ds"
-              % (",".join(s.name for s in sources), interval))
+        print("LIVE %s-LOGGER -- PAPER/HONEST. Sources: %s | interval %ds"
+              % ("INGAME" if ingame else "PREGAME",
+                 ",".join(s.name for s in sources), interval))
     i = 0
     while max_ticks == 0 or i < max_ticks:
-        s = run_once(sources, predict_fn=predict_fn, ledger_dir=ledger_dir)
+        s = (run_ingame_once(sources, predict_live_fn=predict_fn,
+                             ledger_dir=ledger_dir) if ingame
+             else run_once(sources, predict_fn=predict_fn, ledger_dir=ledger_dir))
         if verbose:
+            cnt = s.get("games_found", s.get("live_games", 0))
             print("[%s] games=%d logged=%d  %s"
-                  % (s["pred_ts"], s["games_found"], s["predictions_logged"],
-                     s["note"] if s["games_found"] == 0 else ""))
+                  % (s["pred_ts"], cnt, s["predictions_logged"],
+                     s["note"] if cnt == 0 else ""))
         i += 1
         if max_ticks and i >= max_ticks:
             break
@@ -108,11 +141,16 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     ap.add_argument("--interval", type=int, default=1800, help="seconds")
     ap.add_argument("--once", action="store_true", help="single tick then exit")
     ap.add_argument("--max-ticks", type=int, default=0, help="0 = forever")
+    ap.add_argument("--ingame", action="store_true",
+                    help="forward-log IN-GAME predictions on live games")
     a = ap.parse_args(argv)
-    sports = [s.strip().lower() for s in a.sports.split(",") if s.strip()]
-    sources = _build_sources(sports, a.date)
     ticks = 1 if a.once else a.max_ticks
-    loop(sources, interval=a.interval, max_ticks=ticks)
+    if a.ingame:
+        sources = [LI.MLBLiveStateSource(date=a.date)]
+        loop(sources, interval=a.interval, max_ticks=ticks, ingame=True)
+    else:
+        sports = [s.strip().lower() for s in a.sports.split(",") if s.strip()]
+        loop(_build_sources(sports, a.date), interval=a.interval, max_ticks=ticks)
     return 0
 
 
