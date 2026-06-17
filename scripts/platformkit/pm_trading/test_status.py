@@ -37,6 +37,24 @@ def test_accumulating_after_predictions():
     assert "ACCUMULATING" in rep["standing"]
 
 
+def test_by_layer_breakdown_separates_pregame_and_ingame():
+    from scripts.platformkit.ledger.ledger import append_prediction
+    led = tempfile.mkdtemp(prefix="pm_st_layer_")
+    append_prediction("mlb", "pregame", "ml", "NYY", "BOS", 0.55, {"i": 1},
+                      "2026-06-16T15:00:00+00:00", game_date="2026-06-16",
+                      game_id="P1", base_dir=led)
+    append_prediction("mlb", "ingame", "ml", "LAD", "SFG", 0.95, {"i": 2},
+                      "2026-06-16T22:00:00+00:00", game_date="2026-06-16",
+                      game_id="I1", base_dir=led)
+    rep = S.status_report(ledger_dir=led, blotter_dir=tempfile.mkdtemp())
+    assert rep["by_layer"]["pregame"]["n"] == 1
+    assert rep["by_layer"]["ingame"]["n"] == 1
+    # not settled yet -> no accuracy key, just counts
+    assert rep["by_layer"]["pregame"]["settled"] == 0
+    out = S.format_report(rep)
+    assert "pregame" in out and "ingame" in out
+
+
 def test_paper_blotter_surfaced():
     bdir = tempfile.mkdtemp(prefix="pm_st_blot_")
     b = PnLBlotter(base_dir=bdir)
