@@ -28,6 +28,8 @@ _DEMO_MATCHUPS: Dict[str, Dict[str, Any]] = {
     "nba": {"label": "BOS vs LAL", "args": ("BOS", "LAL"), "kwargs": {}},
     "mlb": {"label": "NYY vs BOS", "args": ("NYY", "BOS"), "kwargs": {}},
     "soccer": {"label": "Arsenal vs Man City", "args": ("Arsenal", "Man City"), "kwargs": {}},
+    "soccer_intl": {"label": "England vs Croatia (WC, neutral)",
+                    "args": ("England", "Croatia"), "kwargs": {"neutral": True}},
     "tennis": {"label": "Novak Djokovic vs Carlos Alcaraz",
                "args": ("Novak Djokovic", "Carlos Alcaraz"),
                "kwargs": {"surface": "Hard", "best_of": 3}},
@@ -56,11 +58,21 @@ def _build_predictor(sport: str) -> Optional[Any]:
             from domains.basketball_nba.predictor import NBAPredictor  # noqa: PLC0415
             pred = NBAPredictor()
         elif s == "mlb":
+            # Prefer ratings refreshed to the current season (domains/mlb/refresh_ratings);
+            # fall back to the frozen-2021 predictor if the current corpus is absent
+            # (fresh clone) so a missing local file never fabricates or crashes.
             from domains.mlb.predictor import MLBPredictor  # noqa: PLC0415
-            pred = MLBPredictor()
+            try:
+                from domains.mlb.refresh_ratings import refreshed_predictor  # noqa: PLC0415
+                pred = refreshed_predictor()
+            except Exception:  # noqa: BLE001 — current corpus absent -> frozen ratings
+                pred = MLBPredictor()
         elif s == "soccer":
             from domains.soccer.predictor import SoccerPredictor  # noqa: PLC0415
             pred = SoccerPredictor()
+        elif s == "soccer_intl":
+            from domains.soccer_intl.predictor import IntlSoccerPredictor  # noqa: PLC0415
+            pred = IntlSoccerPredictor()
         elif s == "tennis":
             from domains.tennis.predictor import TennisPredictor  # noqa: PLC0415
             pred = TennisPredictor()

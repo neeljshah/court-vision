@@ -6,7 +6,10 @@ Proves the math + the leak guard + the cluster-robust DM behavior the gate relie
 from __future__ import annotations
 import numpy as np
 
-from scoring import brier, log_loss, brier_skill_score, ece, resolution, sharpness
+from scoring import (
+    brier, log_loss, brier_skill_score, ece, resolution, sharpness,
+    crps_gaussian, crps_ensemble, pinball_loss,
+)
 from dm_test import diebold_mariano
 from schema import validate_golden
 
@@ -100,6 +103,49 @@ def test_validate_golden_fires_on_coverage_gap():
         raise SystemExit("FAIL: coverage gap not caught")
     except AssertionError as e:
         assert "coverage gap" in str(e)
+
+
+def test_crps_gaussian_reduces_to_mae_as_sigma_shrinks():
+    # As sigma -> 0 a Gaussian predictive collapses to a point mass at mu, so
+    # CRPS -> mean |mu - y| (MAE), not Brier (that identity is for the two-point
+    # Bernoulli CDF, not this closed form).
+    mu = np.array([100.0, 110.0, 95.0, 105.0])
+    y = np.array([103.0, 108.0, 90.0, 105.0])
+    tiny = np.full(4, 1e-6)
+    mae = float(np.mean(np.abs(mu - y)))
+    assert abs(crps_gaussian(mu, tiny, y) - mae) < 1e-3
+
+
+def test_crps_gaussian_rewards_accurate_sharp():
+    y = np.array([100.0, 110.0, 95.0, 105.0])
+    accurate = crps_gaussian(y, np.full(4, 5.0), y)          # mean on target
+    biased = crps_gaussian(y + 15.0, np.full(4, 5.0), y)     # systematically off
+    assert accurate < biased
+
+
+def test_crps_ensemble_matches_gaussian_samples():
+    # An ensemble drawn from N(mu, sigma) should give ~ the closed-form CRPS.
+    rng = np.random.default_rng(0)
+    mu, sigma, n = 100.0, 8.0, 4000
+    samples = mu + sigma * rng.standard_normal((1, n))
+    y = np.array([103.0])
+    emp = crps_ensemble(samples, y)
+    closed = crps_gaussian([mu], [sigma], y)
+    assert abs(emp - closed) < 0.5, (emp, closed)
+
+
+def test_pinball_asymmetry_and_quantile_guard():
+    y = np.array([10.0, 10.0])
+    # for the 0.9 quantile, under-prediction is penalized ~9x harder than over.
+    under = pinball_loss(y, np.full(2, 8.0), 0.9)
+    over = pinball_loss(y, np.full(2, 12.0), 0.9)
+    assert under > over
+    assert abs(under - 0.9 * 2.0) < 1e-9 and abs(over - 0.1 * 2.0) < 1e-9
+    try:
+        pinball_loss(y, y, 1.5)
+        raise SystemExit("FAIL: out-of-range quantile not caught")
+    except ValueError:
+        pass
 
 
 if __name__ == "__main__":

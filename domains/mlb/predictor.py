@@ -20,15 +20,12 @@ to_jd()       -> build_mlb_jd(lam_home, lam_away, r_home, r_away) tilted so the 
                  == the Elo win-prob (anchor_lambdas_to_winprob, SUM preserved) -> a coherent
                  JointDistribution that plugs into sim_framework.market_surface / sgp_pricer.
 predict_live() -> get_repricer('mlb').reprice(GameState) with r_home/r_away passed in
-                 pregame_params so the repricer uses the fitted dispersion (today it falls
-                 back to 4.0 = the audit gap this closes). The live win-prob is then passed
-                 through the VALIDATED in-game recalibrator fit at build time on all-prior
-                 history (leak-free for forward prediction). W156 (proof_mlb.ingame_accuracy)
-                 measured the COMBINED in-game forecaster as ALREADY well-calibrated
-                 (held-out ECE 0.0085 < 0.025, slope 0.98; a TRAIN-fit Platt would WORSEN
-                 ECE to 0.0088) -> the validated recalibrator is IDENTITY. We wire it as
-                 identity HONESTLY: the clean NULL is the result, so the live prob is
-                 delivered calibrated without distortion (no fabricated correction).
+                 pregame_params for the fitted dispersion (else it falls back to 4.0 = the
+                 audit gap this closes). Lambdas are Elo-ANCHORED first (as predict()/to_jd())
+                 so live ML at the start agrees with pregame ML. The live win-prob then goes
+                 through the VALIDATED in-game recalibrator (W156 proof_mlb.ingame_accuracy:
+                 COMBINED forecaster ALREADY calibrated, held-out ECE 0.0085 < 0.025, slope
+                 0.98; a TRAIN-fit Platt WORSENS it) -> IDENTITY, an honest clean NULL.
 
 COHERENCE (this file's fix): predict() reports the Elo win-prob, but built the run-line +
 O/U off the RAW run-rate lambdas -> two contradictory win-probs. We now tilt the lambdas to
@@ -185,6 +182,12 @@ class MLBPredictor:
         mkts = markets_from_matrix_nb(P, total_lines=total_lines)
         totals = [{"line": ln, "over": round(mkts[f"over_{ln:g}"], 4),
                    "under": round(mkts[f"under_{ln:g}"], 4)} for ln in total_lines]
+        # COMPLETE derivable market surface (run line + alternates, team totals, F5,
+        # any-line game totals) -- a PURE read-off of the SAME anchored NegBinom run
+        # distribution, so every market shares this one p_home and expected total.
+        from domains.mlb.markets import full_market_surface  # noqa: PLC0415
+        markets = full_market_surface(lam_h, lam_a, self.r_home, self.r_away,
+                                      total_lines=total_lines)
         return {
             "sport": "mlb", "home": ht, "away": au,
             "p_home_win": round(p_home, 4), "p_away_win": round(1.0 - p_home, 4),
@@ -192,6 +195,7 @@ class MLBPredictor:
             "expected_total": round(lam_h + lam_a, 2),
             "run_line_home_minus15": round(mkts["rl_home_minus15"], 4),
             "totals": totals,
+            "markets": markets,
             "dispersion_r": {"home": round(self.r_home, 3), "away": round(self.r_away, 3)},
             "elo": {ht: round(self._elo_of(ht), 0), au: round(self._elo_of(au), 0)},
             "honest_note": ("Best calibrated MLB prediction: ONE win-prob (Elo) anchors every "
@@ -224,28 +228,29 @@ class MLBPredictor:
     # ------------------------------------------------------------------
     def predict_live(self, home: str, away: str, inning: int, half: str,
                      home_runs: int, away_runs: int) -> Dict:
-        """In-game surface = pregame run-rate lambdas + FITTED dispersion fed into the MLB
-        repricer, conditioned on the realized score. r_home/r_away are passed in
-        pregame_params so the repricer uses the fitted dispersion (it falls back to 4.0
-        otherwise — the W149 gap this closes).
-
-        inning: 1-9 (or more for extras); half in {'top','bottom'}. innings_played is the
-        completed-inning count the repricer scales remaining runs by.
+        """In-game surface = ANCHORED run-rate lambdas + FITTED dispersion fed into the MLB
+        repricer, conditioned on the realized score. r_home/r_away are passed in pregame_params
+        so the repricer uses the fitted dispersion (else it falls back to 4.0 -- the W149 gap).
+        inning: 1-9+ ; half in {'top','bottom'}; innings_played = completed-inning count.
         """
         from scripts.platformkit.live_repricer import GameState, get_repricer  # noqa: PLC0415
 
         ht, au = home.upper(), away.upper()
-        lam_h, lam_a = self._lambdas(ht, au)
+        lam_raw_h, lam_raw_a = self._lambdas(ht, au)
+        # COHERENCE: anchor lambdas to the Elo win-prob BEFORE the repricer -- as predict()/
+        # to_jd() do -- so live ML at the start agrees with the pregame Elo ML (e.g. NYY/BOS
+        # pregame 0.5462 vs un-anchored live@1-top-0-0 0.5022). SUM preserved (total unchanged).
+        tgt = min(max(_mov_p_home(self._elo_of(ht), self._elo_of(au)), 0.01), 0.99)
+        lam_h, lam_a = _anchor_nb_tiesplit(lam_raw_h, lam_raw_a, self.r_home, self.r_away, tgt)
         innings_played = max(0.0, float(inning) - 1.0 + (0.5 if str(half).lower() == "bottom" else 0.0))
         pp = {"lam_home": lam_h, "lam_away": lam_a,
               "r_home": self.r_home, "r_away": self.r_away}
         out = get_repricer("mlb").reprice(GameState(
             "mlb", innings_played * 20.0, int(home_runs), int(away_runs),
             pregame_params=pp, extra={"innings_played": innings_played}))
-        # DELIVER CALIBRATION: pass the live win-prob through the VALIDATED in-game
-        # recalibrator fit at build time on all-prior history (W156 NULL -> identity), so the
-        # delivered prob is calibrated, not just measured. Identity here is honest: W156
-        # proved the forecaster is already calibrated and a fitted map would not improve it.
+        # DELIVER CALIBRATION: pass the live win-prob through the VALIDATED in-game recalibrator
+        # fit at build time on all-prior history (W156 NULL -> identity); honest since W156
+        # proved the forecaster already calibrated and a fitted map would not improve it.
         p_home_raw = float(out["ml_home"])
         p_home_cal = self.ingame_recal(p_home_raw)
         return {
@@ -261,10 +266,9 @@ class MLBPredictor:
                                                + out["_lam_remaining_away"]), 2),
             "innings_remaining": round(float(out["_innings_remaining"]), 1),
             "recal_note": self.ingame_recal_note,
-            "honest_note": ("In-game = pregame run-rate lambdas + FITTED dispersion r in the "
-                            "NegBinom repricer + realized score, then the W156-validated "
-                            "in-game recalibrator (identity: already calibrated). A live book "
-                            "also sees the score; this is forecaster quality, not a $ edge."),
+            "honest_note": ("In-game = Elo-ANCHORED run-rate lambdas + FITTED dispersion r in the "
+                            "NegBinom repricer + realized score, then the W156 in-game recalibrator "
+                            "(identity: already calibrated). Forecaster quality, not a $ edge."),
         }
 
 
@@ -280,19 +284,15 @@ def _main(argv: Optional[List[str]] = None) -> int:
           f"r_away={p.r_away:.3f}; {len(p.teams)} teams)")
     pre = p.predict(args.home, args.away)
     print("PREGAME:"); print(json.dumps(pre, indent=2))
-    # COHERENCE CHECK: every market now agrees on ONE win-prob. Re-read the home-win event
-    # off the same NegBinom run matrix the run-line/O-U are built from; it must == p_home_win.
+    # COHERENCE: re-read the home-win event off the same NegBinom matrix the run-line/O-U use.
     lam_h, lam_a = p._lambdas(args.home.upper(), args.away.upper())
-    tgt = min(max(pre["p_home_win"], 0.01), 0.99)
-    alh, ala = _anchor_nb_tiesplit(lam_h, lam_a, p.r_home, p.r_away, tgt)
+    alh, ala = _anchor_nb_tiesplit(lam_h, lam_a, p.r_home, p.r_away,
+                                   min(max(pre["p_home_win"], 0.01), 0.99))
     matrix_ml = _nb_tie_adj_ml(alh, ala, p.r_home, p.r_away)
-    print(f"\nCOHERENCE: reported p_home_win={pre['p_home_win']:.4f}  "
-          f"run-matrix tie-adj ML={matrix_ml:.4f}  "
-          f"|diff|={abs(matrix_ml - pre['p_home_win']):.4f} (markets anchored to ONE win-prob)")
-    live = p.predict_live(args.home, args.away, inning=6, half="top",
-                          home_runs=4, away_runs=2)
-    print("\nLIVE (bot 5th done, top 6th, 4-2 home) -- recalibrated:")
-    print(json.dumps(live, indent=2))
+    print(f"\nCOHERENCE: p_home_win={pre['p_home_win']:.4f} run-matrix ML={matrix_ml:.4f} "
+          f"|diff|={abs(matrix_ml - pre['p_home_win']):.4f}")
+    live = p.predict_live(args.home, args.away, inning=6, half="top", home_runs=4, away_runs=2)
+    print("\nLIVE (top 6th, 4-2 home):"); print(json.dumps(live, indent=2))
     return 0
 
 

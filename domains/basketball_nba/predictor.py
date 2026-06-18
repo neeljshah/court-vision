@@ -232,7 +232,13 @@ class NBAPredictor:
         out = get_repricer("nba").reprice(GameState(
             "nba", float(elapsed_minutes), int(home_score), int(away_score), pregame_params=pp))
         p_raw = float(out["win_home"])
-        p_cal = self._apply_temp(p_raw, self.live_temp)
+        # FIX: skip the temperature recal on a DETERMINED game (raw prob exactly 0/1, or
+        # no time remaining) -- recalibrating the deterministic final-buzzer surface would
+        # report 0.9999 for a decided win or perturb a buzzer tie off 0.5. A finished result
+        # is not a probabilistic forecast, so it must pass through untouched.
+        remaining_frac = max(0.0, 48.0 - float(elapsed_minutes))
+        p_cal = p_raw if (p_raw in (0.0, 1.0) or remaining_frac <= 0) \
+            else self._apply_temp(p_raw, self.live_temp)
         return {
             "sport": "nba", "home": home.upper(), "away": away.upper(),
             "elapsed_minutes": elapsed_minutes, "score": (home_score, away_score),

@@ -24,8 +24,8 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from scripts.platformkit.predictor_jd import _build_predictor
 
-_SPORTS = ("nba", "mlb", "soccer", "tennis")
-_ALIASES = {"basketball_nba": "nba"}
+_SPORTS = ("nba", "mlb", "soccer", "soccer_intl", "tennis")
+_ALIASES = {"basketball_nba": "nba", "worldcup": "soccer_intl", "wc": "soccer_intl"}
 
 _UNAVAILABLE = (
     "corpus unavailable on this clone (real per-sport corpora are local/gitignored); "
@@ -84,6 +84,12 @@ def live_kwargs(sport: str, a: argparse.Namespace) -> Optional[Dict[str, Any]]:
         if a.elapsed is None or hs is None or as_ is None:
             return None
         return {"minute": float(a.elapsed), "home_goals": int(hs), "away_goals": int(as_)}
+    if s == "soccer_intl":
+        # mirror the club soccer branch: minute / home_goals / away_goals route the
+        # realized in-game state into IntlSoccerPredictor.predict_live (neutral default).
+        if a.elapsed is None or hs is None or as_ is None:
+            return None
+        return {"minute": float(a.elapsed), "home_goals": int(hs), "away_goals": int(as_)}
     if s == "mlb":
         if a.inning is None or a.half is None or hs is None or as_ is None:
             return None
@@ -109,6 +115,51 @@ def _p_home_of(d: Dict[str, Any]) -> Optional[float]:
     return None
 
 
+def _jsonsafe(obj: Any) -> Any:
+    """Recursively coerce numpy scalars/arrays to plain Python so json.dumps never chokes.
+
+    The domain market modules round/cast at the boundary, but a stray numpy float/int or
+    array would break the strict JSON dump. We coerce at the surfacing boundary WITHOUT
+    editing the domain modules: numpy -> float/int/list, dict/list walked recursively.
+    """
+    try:
+        import numpy as _np  # noqa: PLC0415
+    except Exception:  # noqa: BLE001 -- numpy always present, but never block on it
+        _np = None  # type: ignore
+    if isinstance(obj, dict):
+        return {str(k): _jsonsafe(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [_jsonsafe(v) for v in obj]
+    if _np is not None:
+        if isinstance(obj, _np.ndarray):
+            return [_jsonsafe(v) for v in obj.tolist()]
+        if isinstance(obj, _np.integer):
+            return int(obj)
+        if isinstance(obj, _np.floating):
+            return float(obj)
+        if isinstance(obj, _np.bool_):
+            return bool(obj)
+    return obj
+
+
+def _surface_nba(pred: Any, home: str, away: str) -> Optional[Dict[str, Any]]:
+    """Full NBA game-level market surface; None on any error (never breaks the prediction)."""
+    try:
+        from domains.basketball_nba.markets import full_surface  # noqa: PLC0415
+        return _jsonsafe(full_surface(pred, home, away))
+    except Exception:  # noqa: BLE001 -- a markets failure must never break the core prediction
+        return None
+
+
+def _surface_tennis(pred: Any, p1: str, p2: str, surface: str) -> Optional[Dict[str, Any]]:
+    """Full tennis market surface; None on any error (never breaks the prediction)."""
+    try:
+        from domains.tennis.markets import markets_for_matchup  # noqa: PLC0415
+        return _jsonsafe(markets_for_matchup(pred, p1, p2, surface))
+    except Exception:  # noqa: BLE001 -- a markets failure must never break the core prediction
+        return None
+
+
 def _pregame_block(sport: str, pred: Any, home: str, away: str,
                    surface: str) -> Dict[str, Any]:
     s = _norm_sport(sport)
@@ -121,17 +172,34 @@ def _pregame_block(sport: str, pred: Any, home: str, away: str,
     if s == "nba":
         block["total_mean"] = raw.get("total_mean")
         block["margin_home"] = raw.get("margin_home")
+        # FULL game-level market surface (spread/total ladders, team totals, 1H/quarters)
+        # read off the SAME calibrated distribution. Guarded: a markets failure must NEVER
+        # break the core prediction -- on any error the key is present but None.
+        block["markets"] = _surface_nba(pred, home, away)
     elif s == "mlb":
         block["expected_total"] = raw.get("expected_total")
         block["expected_runs_home"] = raw.get("expected_runs_home")
         block["expected_runs_away"] = raw.get("expected_runs_away")
-    elif s == "soccer":
+        # predict() already emits the complete MLB surface (run line + alternates, team
+        # totals, F5, any-line totals); just ride it along, JSON-coerced.
+        block["markets"] = _jsonsafe(raw.get("markets"))
+    elif s in ("soccer", "soccer_intl"):
+        # Club soccer now emits a real 1X2 MONEYLINE (p_away_win + the draw above) plus
+        # the full coherent market surface, identical in shape to soccer_intl -- both read
+        # off ONE scoreline matrix via domains/soccer/markets.full_surface.
+        block["p_away_win"] = raw.get("p_away_win")
         block["over_2.5"] = raw.get("over_2.5")
         block["lam_home"] = raw.get("lam_home")
         block["lam_away"] = raw.get("lam_away")
+        block["btts_yes"] = raw.get("btts_yes")
+        block["top_correct_scores"] = raw.get("top_correct_scores")
+        block["markets"] = raw.get("markets")  # DC / DNB / AH / EH / team-totals / margin / ...
     elif s == "tennis":
         block["total_games_mean"] = raw.get("total_games_mean")
         block["straight_sets_p1"] = raw.get("straight_sets_p1")
+        # FULL tennis surface (set betting, set/game handicaps, total games/sets, per-set)
+        # off the SAME serve holds predict() bisects. Guarded -> None on any error.
+        block["markets"] = _surface_tennis(pred, home, away, surface)
     block["honest_note"] = raw.get("honest_note")
     return block
 

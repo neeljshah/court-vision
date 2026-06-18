@@ -12,17 +12,14 @@
 
 Read these files in order, nothing else, before doing anything else:
 
-1. **[docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md)** — the honest, adversarially-audited account: every claim's proof artifact + the do-not-claim list. **This is the truth source.**
+0. **[.planning/NOW.md](.planning/NOW.md)** — the SINGLE SOURCE OF TRUTH for what's done / what's next (read first, 30s; update before you finish). Don't re-derive state from scattered docs.
+1. **[docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md)** — the honest, adversarially-audited account: every claim's proof artifact + the do-not-claim list. **This is the truth source for any number.**
 2. **[README.md](README.md)** — funnel narrative end-to-end with honest numbers + architecture.
 3. **[docs/PUBLIC_EVIDENCE.md](docs/PUBLIC_EVIDENCE.md)** — 60-second funnel scan · **[docs/INTELLIGENCE.md](docs/INTELLIGENCE.md)** — 80-artifact intelligence-layer manifest.
 
-**TL;DR (HONEST numbers — inflated ones are retracted, see JOB_EVIDENCE_PACKET):**
-- **Defensible core:** broadcast video → court coordinates at **~$0.10/game** vs six-/seven-figure Sportradar/Second Spectrum; leak-free prop MAE **PTS ~4.58 / REB ~1.90 / AST ~1.34 / FG3M ~0.88**; win-prob **0.709 acc / 0.193 Brier**; 430 modules, ~38% already sport-agnostic kernel.
-- **Betting read (honest):** vs real closing lines the **market is efficient** — break-even-minus-vig overall; **AST ~+4–5% ROI** is the one durable edge (breaks in playoffs). In-play 78%/+54% is an **L5-proxy ceiling**, not realized edge; first real CLV Oct 2026; zero real money placed.
-- **The headline is the discipline:** built the harnesses that caught and retracted his own inflated numbers (+18.38% ROI = market-follow artifact; endQ3 0.119 = Q4 leak; +54% = L5 proxy).
-- Open gaps: [docs/KNOWN_LIMITATIONS.md](docs/KNOWN_LIMITATIONS.md).
+**Numbers/claims live in [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md), not here** (so this file can't drift). Market is efficient; honest calibration wins only. **Never re-print the retracted +18.38% / endQ3-0.119 / +54%-as-edge / 78.11 numbers as current** — full list + framing in @.claude/rules/no-edge-claims.md.
 
-**Don't:** full-read `ROADMAP.md` (167KB) or walk `src/prediction/` (~130 modules — most are research surface). Read `docs/JOB_EVIDENCE_PACKET.md` first; load specific files from the *Task → Files* table below only when actually editing. **Never re-print the retracted +18.38% / endQ3-0.119 / +54%-as-edge numbers as current.**
+**Don't:** full-read `ROADMAP.md` (167KB) or walk `src/prediction/` (~130 modules — most research surface). Load files from the *Task → Files* table below only when actually editing.
 
 ---
 
@@ -81,28 +78,20 @@ database/schema.sql                   # PostgreSQL
 ```
 
 ### Rules
-- Py3.9 | conda: `basketball_ai` | CUDA 11.8 | RTX 4060 8GB local
-- Max 300 LOC/file | type hints | docstrings on public API only
-- Models → `data/models/` | Logs → `vault/Improvements/`
-- `# ... existing code ...` for unchanged blocks
-- Never re-read data dirs unless asked
-- Never run: `run.py`, `loop_processor.py`
-- Video: headless only (`--no-show`), never `cv2.imshow`
-- No permission prompts — execute autonomously
-- Tests: `python -m pytest tests/ -q`
+Binding invariants live in `.claude/rules/` and load via these imports (do not restate them here):
+@.claude/rules/no-edge-claims.md
+@.claude/rules/data-vault-nocommit.md
+@.claude/rules/human-gated-paths.md
+@.claude/rules/bash-cwd-prefix.md
+
+- Py3.9 local (conda `basketball_ai`, CUDA 11.8, RTX 4060 8GB) | **RunPod is Py3.12** | type hints | docstrings on public API only
+- Max 300 LOC/file | `# ... existing code ...` for unchanged blocks | Models → `data/models/` | Logs → `vault/Improvements/`
+- Never re-read data dirs unless asked | Never run: `run.py`, `loop_processor.py` | Video headless only (`--no-show`), never `cv2.imshow`
+- **Tests: PER-FILE ONLY** (`python -m pytest tests/path/test_one.py -q`); a full `pytest tests/` FREEZES the box — never run it
+- Permissions: execute autonomously, but human-gated paths (see rule) need confirmation; a PreToolUse hook hard-blocks push-to-origin + full-pytest + `--force`
+- On `/compact` or auto-compaction, PRESERVE: modified-file list, test commands run, which flags stay OFF, and the no-edge + human-gated invariants
 - Full plan: `.planning/ROADMAP.md` (167KB — grep/section-read only, NEVER full-read) | Session log: `vault/Sessions/Decision Log.md`
 - `_VRAM_FLUSH_INTERVAL` in `unified_pipeline.py` must be **3000** (not 100)
 
-### Vault Auto-Maintenance (Obsidian Brain)
-When you make changes that affect any of these, update the corresponding vault note:
-- Model metrics changed → update `vault/Models/Model Performance.md`
-- New CV pipeline fix → append to `vault/Tracking/Tracker Improvements.md`
-- Issue resolved or found → update `vault/Tracking/Open Issues.md`
-- Phase status changed → update `vault/Strategy/Build Phases.md`
-- New feature wired → update `vault/Features/Signal Inventory.md`
-- R² or Brier improved → update `vault/Models/Model Performance.md` + relevant model note
-- New gotcha / design decision / non-obvious learning → `vault/Improvements/Engineering Knowledge.md` — **dedup**: sharpen the existing entry, never duplicate
-
-Keep updates minimal — change the metric value or add a one-liner. Don't rewrite entire notes.
-The `Stop` hook runs `scripts/vault_session_close.py` to append one line to Decision Log + refresh Home.md.
-The `SessionStart` hook runs `scripts/update_vault.py` to refresh Home.md.
+### Vault (Obsidian Brain) — auto-maintenance RETIRED
+`vault/` is brain-only + gitignored now; the old per-note targets (Model Performance / Open Issues / Build Phases / Signal Inventory) are ARCHIVED and the Stop/SessionStart hooks SKIP these writes ("brain-only vault detected"). Don't hand-update vault notes — durable learnings go to auto-memory instead.

@@ -126,6 +126,34 @@ def test_cli_pregame_block_when_corpus_present(capsys, sport):
     assert ph is not None and 0.0 < float(ph) < 1.0
 
 
+# expected market sub-keys per sport (the full surface that now rides along on pregame).
+_MARKET_SUBKEYS = {
+    "nba": ("moneyline", "spread_main", "total_ladder", "team_total_home", "first_half"),
+    "mlb": ("run_line", "team_totals", "game_total", "first_5_innings"),
+    "tennis": ("match_winner", "set_score", "total_games", "set_handicap"),
+}
+
+
+@pytest.mark.parametrize("sport", ("nba", "mlb", "tennis"))
+def test_cli_pregame_carries_full_market_surface(capsys, sport):
+    """nba/mlb/tennis now surface a non-null pregame['markets'] block with the expected
+    sub-keys, and the whole result stays strict-JSON serializable (no numpy leakage)."""
+    if _build_predictor(sport) is None:
+        pytest.skip(f"{sport}: corpus absent on this clone (gitignored)")
+    h, aw = _home_away(sport)
+    rc = pm.main(["--sport", sport, "--home", h, "--away", aw])
+    assert rc == 0
+    raw = capsys.readouterr().out
+    out = json.loads(raw)  # would raise if numpy types leaked into the dump
+    mkts = out["pregame"].get("markets")
+    assert mkts is not None, f"{sport}: pregame markets should be present"
+    assert isinstance(mkts, dict)
+    present = [k for k in _MARKET_SUBKEYS[sport] if k in mkts]
+    assert present, f"{sport}: expected one of {_MARKET_SUBKEYS[sport]} in {list(mkts)[:8]}"
+    # re-dump WITHOUT the default=str fallback: proves it is genuinely JSON-clean.
+    json.dumps(mkts)
+
+
 def test_cli_nba_ingame_coherent_with_pregame_at_tipoff(capsys):
     if _build_predictor("nba") is None:
         pytest.skip("nba corpus absent on this clone (gitignored)")
