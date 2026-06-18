@@ -42,6 +42,7 @@ from domains.soccer.config import MATCHES_PARQUET, RATE_CLIP
 from domains.soccer.ratings import GoalsState, _lambdas, _sorted
 from domains.soccer.finishing_prior import _adjust_lambda, walk_forward_finishing_prior
 from domains.soccer.scoreline_engine import markets_from_matrix, scoreline_matrix
+from domains.soccer.markets import full_surface
 from domains.soccer.rho_fit import fit_rho
 
 _REPO = Path(__file__).resolve().parents[2]
@@ -67,6 +68,12 @@ def _apply_platt(p: float, a: float, b: float) -> float:
     eps = 1e-6
     z = np.log(min(max(p, eps), 1 - eps) / min(max(1 - p, eps), 1 - eps))
     return float(1.0 / (1.0 + np.exp(-(a * z + b))))
+
+
+def _is_correct_score(key: str) -> bool:
+    """True for exact-scoreline keys 'cs_<int>_<int>' (NOT 'cs_home_clean' etc.)."""
+    parts = key.split("_")
+    return len(parts) == 3 and parts[0] == "cs" and parts[1].isdigit() and parts[2].isdigit()
 
 
 class SoccerPredictor:
@@ -182,16 +189,24 @@ class SoccerPredictor:
 
     # ------------------------------------------------------------------
     def predict(self, home: str, away: str) -> Dict:
-        """Calibrated surface for home vs away (1X2 + O/U-2.5 + BTTS + top correct scores)."""
+        """Calibrated FULL market surface for home vs away off ONE scoreline matrix.
+
+        Emits the entire standard catalog (1X2 moneyline, double-chance, draw-no-bet,
+        BTTS, totals at every line, team totals, Asian + European handicap, odd/even,
+        clean sheets, winning margin, top correct scores) -- all coherent read-offs of
+        the same Dixon-Coles matrix.  Only the O/U-2.5 over-prob is then nudged by the
+        leak-free pooled Platt (W133/W149); its raw companion is also reported.
+        """
         lam_h, lam_a = self._matchup_lambdas(home, away)
         P = scoreline_matrix(lam_h, lam_a, rho=self.rho)
-        mk = markets_from_matrix(P, top_n=5)
+        mk = full_surface(P, top_n=5)
 
         # Apply the leak-free pooled Platt to the engine's raw O/U-2.5 over prob (W133/W149).
         over_raw = float(mk["over_2.5"])
         over_cal = round(_apply_platt(over_raw, self.platt_a, self.platt_b), 4)
 
-        cs = {k: round(v, 4) for k, v in mk.items() if k.startswith("cs_")}
+        surface = {k: round(float(v), 4) for k, v in mk.items()}
+        cs = {k: surface.pop(k) for k in list(surface) if _is_correct_score(k)}
         return {
             "sport": "soccer", "home": home, "away": away,
             "lam_home": round(lam_h, 3), "lam_away": round(lam_a, 3),
@@ -199,15 +214,19 @@ class SoccerPredictor:
             "p_home_win": round(float(mk["1X2_home"]), 4),
             "p_draw": round(float(mk["1X2_draw"]), 4),
             "p_away_win": round(float(mk["1X2_away"]), 4),
+            # O/U-2.5 is the ONE calibrated leg; raw companion + raw full surface below.
             "over_2.5": over_cal, "under_2.5": round(1.0 - over_cal, 4),
             "over_2.5_raw": round(over_raw, 4),
             "btts_yes": round(float(mk["btts_yes"]), 4),
             "btts_no": round(float(mk["btts_no"]), 4),
             "top_correct_scores": cs,
+            "markets": surface,  # full coherent catalog (raw engine read-offs)
             "honest_note": ("Best calibrated soccer prediction (composed walk-forward engine + "
-                            "leak-free pooled Platt on O/U-2.5). Pregame soccer markets are "
-                            "efficient; we MATCH the devigged close within noise, never beat it. "
-                            "No $ edge claimed."),
+                            "leak-free pooled Platt on O/U-2.5). Full market surface (1X2 moneyline, "
+                            "DC/DNB/BTTS/AH/EH/totals/team-totals/odd-even/clean-sheet/margin/CS) is "
+                            "a coherent read-off of ONE scoreline matrix; only O/U-2.5 is recalibrated. "
+                            "Pregame soccer markets are efficient; we MATCH the devigged close within "
+                            "noise, never beat it. No $ edge claimed."),
         }
 
     def to_jd(self, home: str, away: str, *, n_sims: int = 20_000, seed: int = 0):

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bettor Decision-Support (platformkit)</title>
+<style>
+  body { font-family: system-ui, Arial, sans-serif; margin: 0; background:#0f1115; color:#e6e6e6; }
+  header { padding: 16px 24px; background:#171a21; border-bottom:1px solid #2a2f3a; }
+  h1 { margin:0 0 6px; font-size:20px; }
+  .honest { font-size:12px; color:#f0b429; max-width:900px; }
+  .controls { padding:12px 24px; display:flex; gap:12px; align-items:center; }
+  select, button { background:#222633; color:#e6e6e6; border:1px solid #3a4150; border-radius:6px; padding:6px 10px; font-size:14px; }
+  button { cursor:pointer; }
+  table { width:calc(100% - 48px); margin:0 24px 24px; border-collapse:collapse; font-size:14px; }
+  th, td { text-align:left; padding:8px 10px; border-bottom:1px solid #232734; }
+  th { color:#9aa4b2; font-weight:600; }
+  .v-MATCH { color:#7bd88f; }
+  .v-BEHIND { color:#ff6b6b; }
+  .v-AHEAD { color:#7bd88f; }
+  .v-CALIBRATED { color:#7bd88f; }
+  .v-UNAVAILABLE, .v-UNKNOWN { color:#9aa4b2; }
+  .note { font-size:11px; color:#7c8595; max-width:420px; }
+  .edge-pos { color:#7bd88f; }
+  .edge-neg { color:#ff6b6b; }
+  a.book { color:#5aa9ff; text-decoration:none; }
+  #status { padding:0 24px 8px; font-size:12px; color:#7c8595; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Bettor Decision-Support &mdash; multi-sport board</h1>
+  <div class="honest" id="honest">Loading honest note...</div>
+</header>
+<div class="controls">
+  <label>Sport:
+    <select id="sport">
+      <option value="soccer_intl">World Cup</option>
+      <option value="nba">NBA</option>
+      <option value="mlb">MLB</option>
+      <option value="soccer">Soccer (club)</option>
+      <option value="tennis">Tennis</option>
+    </select>
+  </label>
+  <button id="refresh">Refresh now</button>
+  <label style="font-size:12px;"><input type="checkbox" id="autopoll" checked> auto-poll 30s</label>
+</div>
+<div id="status">&nbsp;</div>
+<table>
+  <thead>
+    <tr><th>Matchup</th><th>Model</th><th>Market line</th><th>Edge*</th><th>Verdict</th><th>Note</th><th>Action</th></tr>
+  </thead>
+  <tbody id="rows"><tr><td colspan="7">Loading...</td></tr></tbody>
+</table>
+
+<script>
+"use strict";
+var pollTimer = null;
+
+function fmtEdge(e) {
+  if (e === null || e === undefined) return "<span class='note'>n/a</span>";
+  var pct = (e * 100).toFixed(1) + "%";
+  var cls = e >= 0 ? "edge-pos" : "edge-neg";
+  return "<span class='" + cls + "'>" + (e >= 0 ? "+" : "") + pct + "</span>";
+}
+
+function bookUrl(sport, matchup) {
+  // External link to the human's own book search -- NO auto-execution, just a convenience link.
+  var q = encodeURIComponent(sport + " " + matchup + " odds");
+  return "https://www.google.com/search?q=" + q;
+}
+
+function logIntent(sport, row) {
+  fetch("/api/intent", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      sport: sport, matchup: row.matchup, model: row.model,
+      market: row.market, edge: row.edge, verdict: row.verdict
+    })
+  }).then(function(r){ return r.json(); }).then(function(d){
+    document.getElementById("status").textContent =
+      "Logged intent (paper only, no bet placed): " + row.matchup;
+  });
+}
+
+function render(payload) {
+  document.getElementById("honest").textContent = payload.honest_note || "";
+  var tbody = document.getElementById("rows");
+  tbody.innerHTML = "";
+  if (!payload.rows || payload.rows.length === 0) {
+    tbody.innerHTML = "<tr><td colspan='7'>No matchups. status=" + payload.status + "</td></tr>";
+    return;
+  }
+  payload.rows.forEach(function(row) {
+    var tr = document.createElement("tr");
+    var market = row.market === null || row.market === undefined ? "<span class='note'>unavailable</span>" : row.market;
+    var model = row.model === null || row.model === undefined ? "<span class='note'>" + (row.status || "n/a") + "</span>" : row.model;
+    var chk = "<input type='checkbox' title='Log I placed this (paper only)'>";
+    tr.innerHTML =
+      "<td>" + row.matchup + "</td>" +
+      "<td>" + model + "</td>" +
+      "<td>" + market + "</td>" +
+      "<td>" + fmtEdge(row.edge) + "</td>" +
+      "<td class='v-" + (row.verdict || "UNKNOWN") + "'>" + (row.verdict || "UNKNOWN") + "</td>" +
+      "<td class='note'>" + (row.note || "") + "</td>" +
+      "<td><a class='book' target='_blank' rel='noopener' href='" + bookUrl(payload.sport, row.matchup) + "'>Place on my book &#8599;</a> " + chk + "</td>";
+    var cb = tr.querySelector("input[type=checkbox]");
+    cb.addEventListener("change", function() { if (cb.checked) logIntent(payload.sport, row); });
+    tbody.appendChild(tr);
+  });
+}
+
+function load() {
+  var sport = document.getElementById("sport").value;
+  document.getElementById("status").textContent = "Fetching slate for " + sport + "...";
+  fetch("/api/slate?sport=" + sport)
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      render(d);
+      document.getElementById("status").textContent =
+        "Updated " + new Date().toLocaleTimeString() + " (status=" + d.status + ")";
+    })
+    .catch(function(e){
+      document.getElementById("status").textContent = "Error: " + e;
+    });
+}
+
+function setupPoll() {
+  if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+  if (document.getElementById("autopoll").checked) {
+    pollTimer = setInterval(load, 30000);
+  }
+}
+
+document.getElementById("refresh").addEventListener("click", load);
+document.getElementById("sport").addEventListener("change", load);
+document.getElementById("autopoll").addEventListener("change", setupPoll);
+load();
+setupPoll();
+</script>
+<p class="note" style="padding:0 24px 24px;">*Edge = model P(home) minus market-implied P(home), shown for decision support only.
+Markets are efficient &mdash; NO money edge is claimed. This tool never connects to a sportsbook
+and never places a bet; you place every wager manually on your own book.</p>
+</body>
+</html>

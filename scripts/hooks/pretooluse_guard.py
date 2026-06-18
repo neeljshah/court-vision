@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""PreToolUse guard hook (NOT wired -- proposed).
+"""PreToolUse guard hook (WIRED -- live as PreToolUse:Bash in ~/.claude/settings.json).
 
 Reads the Claude Code PreToolUse stdin JSON contract:
   {session_id, cwd, hook_event_name, tool_name, tool_input:{command|file_path|...}}
