@@ -3,6 +3,151 @@
 > FastAPI backend serving the full prediction, analytics, and dashboard surface.
 > For the model layer backing these endpoints see [`docs/ML_MODELS.md`](ML_MODELS.md).
 > For system architecture see [`ARCHITECTURE.md`](../ARCHITECTURE.md).
+> For the frontend surfaces that consume these endpoints see
+> [`docs/FRONTEND_OVERVIEW.md`](FRONTEND_OVERVIEW.md).
+
+There are **two API surfaces** in this repo, by design:
+
+| Surface | Entry | Port | Role |
+|---|---|---|---|
+| **Predict-service Auto-API** | `predict_service.app:app` | 8099 | The canonical, multi-sport, read-mostly decision-support API. Serves **one canonical snapshot per sport** out of an atomic store. Honest-by-construction: no `$` field anywhere. **Documented first below.** |
+| Legacy CourtVision FastAPI | `api.main:app` / `api.live_v2_app:app` | 8000 | The original ~99-endpoint NBA research/dashboard surface (simulation, props, de-vig, CLV pages, risk). Documented from [Router Map](#router-map) down. |
+
+---
+
+## Predict-service Auto-API (port 8099) — the canonical surface
+
+**Module:** `predict_service/app.py` (`predict_service.app:app`). Run:
+`python -m predict_service.app` (port via `PREDICT_SERVICE_PORT`, default `8099`).
+
+This is the single source of truth the React panel and the paper-trading engine
+both read. It consolidates and supersedes the M1 stopgap `frontend/serve.py`. Every
+read goes through `predict_service.store` (the one canonical store); every response
+field is **real or the explicit `unavailable` sentinel** — never fabricated.
+
+### The honest contract (binding, enforced by shape)
+
+The wire schema lives in `predict_service/contracts.py` (`SCHEMA_VERSION = "1.0.0"`).
+Its dataclasses make the honesty rails structural, not a convention:
+
+- **No `$` / `roi` / `pnl` / `profit` / `bankroll` / `stake_dollars` field exists
+  anywhere** in `MarketRow`, `EdgeRow`, `PredictionRecord`, or `SnapshotEnvelope`.
+  An `EdgeRow` carries `model_prob`, `market_prob`, and `ev` (a pure probability-space
+  ratio, *not* a dollar amount) — and that is all the money-adjacent data there is.
+- `edge_claimed` is stamped **`false`** on the deep edge/bestbets views. Markets are
+  efficient; this is calibrated decision-support, not a profit claim.
+- CLV ("better-number-than-close") is the only honest yardstick and is computed
+  downstream by the vetted `scripts.platformkit.clv_ledger` — never reimplemented
+  or stored here as a money edge. Proxy closes are surfaced as `clv_is_proxy=true`,
+  never hidden.
+- Every envelope carries an `honest_note` string repeating the above.
+- Stake *sizing* (flat unit + quarter-Kelly **units**) is recorded later by the paper
+  engine, in units only; the snapshot only carries what the engine needs to size.
+
+### Canonical store + the `unavailable` sentinel
+
+**Module:** `predict_service/store.py`. One writer, many readers, under
+`data/frontend/predict_service/<sport>/`:
+
+| Artifact | Write discipline | Purpose |
+|---|---|---|
+| `latest.json` | **Atomic** (`tmp` file → `fsync` → `os.replace`) | Current snapshot. A concurrent reader sees either the OLD file or the COMPLETE new one — never a torn read. |
+| `history.jsonl` | **Append-only** (one line per save, never overwritten) | The immutable record of what was predicted. |
+
+`read_latest(sport)` **NEVER raises and NEVER returns a partial object.** A missing,
+empty, truncated, corrupt, or malformed-shape file all degrade to the
+`status="unavailable"` sentinel envelope (`SnapshotEnvelope.unavailable(...)`).
+A reader can therefore always trust the result is *either* a complete `"ok"` snapshot
+*or* an explicit `"unavailable"` one. `data/` is gitignored — this is a local cache,
+never committed.
+
+```
+  predict_service.produce  ──(atomic save)──▶  data/frontend/predict_service/<sport>/
+                                                  ├─ latest.json   (atomic, 1 writer)
+                                                  └─ history.jsonl (append-only)
+                                                          │
+                  ┌───────────────────────────────────────┼───────────────────────────┐
+                  ▼                                         ▼                           ▼
+        predict_service.app                       scripts/.../frontend/serve   paper-trading engine
+        (Auto-API :8099, read-only)               (legacy :8098, prefers store)  (reads same store)
+```
+
+### SnapshotEnvelope shape
+
+```jsonc
+{
+  "schema_version": "1.0.0",
+  "sport": "nba",
+  "generated_at": "2026-06-18T00:00:00+00:00",  // ISO-8601 UTC
+  "status": "ok",                                 // or "unavailable"
+  "predictions": [ /* PredictionRecord */ ],
+  "markets":     [ /* MarketRow */ ],
+  "edges":       [ /* EdgeRow (NO $ field) */ ],
+  "honest_note": "Calibrated decision-support only. Markets are efficient; no $ edge...",
+  "note": ""
+}
+```
+
+| Dataclass | Key fields (no `$` anywhere) |
+|---|---|
+| `PredictionRecord` | `sport, game_id, home, away, tipoff, pregame_probs{}, markets[], leak_guard{in_sample}, produced_at, note` |
+| `MarketRow` | `sport, game_id, market_type(moneyline/spread/total), side, line, odds(decimal), book, devigged_prob, captured_at, is_close, clv_is_proxy` |
+| `EdgeRow` | `game_id, market_type, side, model_prob, market_prob, ev, tier(A/B/C\|null), book, line, clv_is_proxy` |
+
+`leak_guard.in_sample` flags an honest in-sample prediction so it is never mistaken
+for OOS. `tier` is an evidence label, not a money figure.
+
+### Endpoints
+
+| Method · Path | Returns |
+|---|---|
+| `GET /health` | `{"status": "ok"}` — liveness only. |
+| `GET /api/sports` | `{status, active:[<sport>...], capabilities:{<sport>:{has_predictor, markets[], produce, note}}, honest_note}`. `active` is the sports whose predictor built on **this** machine (a fresh clone with no corpus returns `[]` — never crashes). |
+| `GET /api/predict/{sport}` | `store.read_latest(sport).to_dict()` verbatim — the full `SnapshotEnvelope`, including the `status="unavailable"` sentinel as-is. |
+| `GET /api/predict/{sport}/{game_id}` | The single `PredictionRecord` for `game_id` plus its `markets`/`edges`, or the `unavailable` sentinel when the snapshot or game is missing. |
+
+Known sports (from `predict_service/registry.py`): `nba`, `mlb`, `soccer`,
+`soccer_intl` (World Cup), `tennis`. Each entry declares its market catalog and an
+honest one-line note (every note ends `; no $ edge`). The registry delegates to the
+guarded/cached `scripts.platformkit.predictor_jd._build_predictor`, so a sport whose
+parquets are absent simply drops out of `active`.
+
+### Mounted routers (all guarded — a boot failure degrades to a 503 sentinel)
+
+Every `include_router` in `app.py` is wrapped in `try/except`: if a router module
+fails to import, its paths are replaced with a degraded **503 `status:"unavailable"`**
+stub (carrying `edge_claimed:false`) so the rest of the API still boots. A bad module
+can never silently 404 or sink the service.
+
+| Mounted paths | Module | Purpose |
+|---|---|---|
+| `GET /api/v1/edges/{sport}[/{game_id}]` | `frontend/edge_routes.py` → `edge_api.py` | Deep lines-vs-predictions comparison over the store. **ETag / `If-None-Match` → 304** on an unchanged snapshot (cache key = `generated_at`). `edge_claimed:false`; `edge = model_prob - market_prob` (probability space). |
+| `GET /api/v1/bestbets/{sport}[/{game_id}]` | `frontend/bestbets_routes.py` → `exec_decision.py` | EXECUTION API: edge view (line-shopped, **Shin**-devigged) run through the tier-floor / no-bet / **units-only** decision layer (`flat_unit` + capped quarter-Kelly **units**, never `$`), with the in-game number + CLV beat-scoreboard attached. Below-floor candidates kept as `decision:"no_bet"` for transparency. |
+| `GET /api/report/{sport}` | `frontend/report_routes.py` | Light browse list: `{status, game_ids[], count, generated_at, honest_note}` so the React grid enumerates games without downloading the full envelope. |
+| `GET /api/report/{sport}/{game_id}` | `frontend/report.py` | Full per-game report: `{pregame, markets[], edges[] (no $), live{}, intel, meta}`. Each optional section (live, intel, freshness) is independently guarded — a miss nulls THAT section only. |
+| `GET /api/paper/trail`, `GET /api/paper/clv` | `frontend/paper_routes.py` | Paper-trade trail + CLV summary (units/probability only). |
+| `POST /api/paper/place`, `GET /api/paper/open` | `frontend/exec_routes.py` | MANUAL paper execution — `executed` is **always `false`**; no sportsbook connection. |
+| `GET /api/stream/game/{sport}/{game_id}`, `GET /api/stream/paper` | `frontend/sse.py` | SSE streams (see [SSE](#sse-predict-service-streams) below). |
+| `GET /api/ops/status`, `/api/ops/metrics`, `/api/ops/doctor` | `ops/status_endpoint.py` | Supervised always-on status page; metrics are CLV + liveness, no `$`. |
+| `GET /api/improve/status`, `GET /api/parity` | `frontend/status_routes.py` | Self-improve ratchet FSM + cross-sport parity grid; `edge_claimed:false`. |
+
+### SSE (predict-service streams)
+
+**Module:** `frontend/sse.py`. Two `text/event-stream` endpoints whose payloads are
+**byte-identical to the corresponding REST bodies** — no new data, no new claims, no
+fabricated field. The stream is just periodic re-delivery of the same honest snapshot.
+
+- `GET /api/stream/game/{sport}/{game_id}` — emits `build_report(sport, game_id)` (==
+  the `GET /api/report/...` body) immediately, then every `SSE_INTERVAL_SEC` (default 5s).
+- `GET /api/stream/paper` — emits the paper trail merged with the CLV summary on the
+  same interval.
+
+Both send an initial event with no first-tick delay, emit a `: heartbeat` comment
+every `SSE_HEARTBEAT_SEC` (default 15s) to keep proxies from closing idle connections,
+and auto-close after `SSE_MAX_DURATION_SEC` (default 3600s; `0` = unlimited). A per-tick
+build error emits `{"status":"unavailable", ...}` rather than killing the stream. This
+is the SSE half of the **SSE-with-poll-fallback** pattern (the React client polls every
+30s when a stream is not used).
 
 ---
 

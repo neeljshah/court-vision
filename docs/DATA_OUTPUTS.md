@@ -199,6 +199,55 @@ Computed from the above for model input:
 - Strength-of-schedule adjustment
 - Clutch performance metrics (last 5 minutes, ≤5 point game)
 
+---
+
+## Multi-Sport Platform Outputs
+
+The sport-blind platform (`domains/<sport>/` adapters +
+`scripts/platformkit/odds_provider/`) produces, in addition to the NBA outputs
+above, per-sport parquet corpora and captured market price-history. All outputs
+are PAPER / measurement only and local-only (gitignored); no $-edge is claimed and
+no price is ever fabricated.
+
+### Per-sport feature-store parquet -- `data/domains/<sport>/`
+
+One parquet per corpus stem named in `domains/<sport>/ingest_manifest.py`, tagged
+with a `leak_class`:
+
+- **Schedule / ratings spine** -- `games` / `matches` / `wta_matches` (carries the
+  post-game label column: `home_win` / `target_home_win` / `target_over25` /
+  `winner`).
+- **Odds** -- keyless moneyline / O/U prices for devig + CLV join.
+- **As-of features** (`asof_*`) -- leak-free by construction (snapshot-before-
+  update): NBA box-extra + run-variance; MLB starting-pitcher form + park factor;
+  soccer shots/SoT + xG-proxy; tennis serve hold% + return% per surface.
+- **Post-game** -- player gamelogs / box scores (prop labels) + `postmortem`
+  settlement artifact.
+
+### Captured market price-history -- `data/cache/`
+
+- **Pregame line history** -- `line_history/<sport>/<date>.jsonl`: per-tick decimal
+  odds, Shin-devigged fair prob, `captured_at`, `commence_time`, and an
+  `is_true_close` flag for ticks inside the lock window before tip.
+- **In-play tick history** -- `inplay_history/<sport>/<date>.jsonl`: flat YES-prob
+  ticks `{sport, game_id, venue, market_type, side, ticker, prob, ts, phase}`
+  captured every few seconds while a game is live; `_freshness.json` sidecar per
+  sport.
+
+### Normalized in-memory records (provider output)
+
+- **`OddsEvent`** -- one team-market event: `{event_id, sport, home, away,
+  commence_time, prices{venue:{home,away,[spread],[total]}}, source, as_of}`.
+- **`PropLine`** -- one player prop: `{sport, event_id, match, player, team, stat,
+  line, over_price, under_price, payout_type, source, as_of}`.
+
+Full field tables: [data_schema.md](data_schema.md). Sources, SLAs, and the
+ID-crosswalk landmine: [DATA.md](DATA.md).
+
+See also: [DATA.md](DATA.md) - [data_schema.md](data_schema.md) -
+[operations/data-pipeline.md](operations/data-pipeline.md) -
+[KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) - [INDEX.md](INDEX.md)
+
 
 ---
 <!-- nav-footer -->

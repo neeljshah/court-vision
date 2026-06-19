@@ -460,6 +460,39 @@ over synchronous decode.
 
 ---
 
+## Known Failure Modes (per stage)
+
+A consolidated map of where the pipeline is observed to break, so a reader can
+calibrate trust per stage rather than per headline. These are documented in code
+comments and the audit packet, not aspirational.
+
+| Stage | Failure mode | Effect | Mitigation in code |
+|---|---|---|---|
+| 1 Homography | Broadcast graphic overlay or single-frame replay corrupts M | Every downstream court coord wrong | 2-frame confirmation gate; EMA blend; `is_replay=True` suspension; drift re-anchor at align < 0.35 |
+| 1 Homography | Wide-angle / close panorama breaks SIFT keypoints | Degraded or rejected M; silent spatial corruption | Inlier-count tiers (`<8` reject, `8-39` blend, `>=40` reset); fall back to last valid M |
+| 2 Ball | `ball_valid_pct = 0%` on some games (`ball_track_suspended` stuck True) | Events fire on degraded ball signal | EventDetector falls back to last-known possessor coords; ~8% of games degrade to imputed means (triage queued at 80 games) |
+| 3 Tracking | Re-ID creates stationary "ghost" slots near stars (pass frame-count, fail motion) | Phantom players / mis-attributed positions | Phantom-slot eviction at `FREEZE_AGE=20`; physical-validity speed caps; `MAX_2D_JUMP=250` |
+| 3 Tracking | 10-slot ceiling; subs collapse players via mode-jersey vote | Only ~5-6 stable slots on broadcast | Documented; full 10-player tracking not yet demonstrated |
+| 4 Identity | Jersey OCR noise wall (occlusion, rotation, overlay graphics) | ~4% per-player attribution accuracy | Dual-pass crop + 3-frame majority vote; aggregate team/position features are ship-ready, per-player is not |
+| 5 Events | EventDetector perimeter-calibrated; center-paint shots missed | Ghost / missed shot events | PBP fallback anchoring (gated on scoreboard-clock OCR) |
+| 6 Scoreboard | Per-quarter `scoreboard_period` NaN / percentile-filled | Per-quarter signals defeated | Confidence = fraction of 5 primary fields read; last-known caching on skip |
+| 7 Features | Pixel-vs-feet unit confusion when M is wrong | Silently corrupted spatial features | ~10 documented sentinel-leak guards (`Bug 30/31/34/...`); auto-rescale + validity caps |
+
+These are lineage notes, **not** a reason to claim a CV edge — see below.
+
+## Artifact Flow (lineage, not edge)
+
+```
+broadcast.mp4  ->  tracking_data.csv  ->  cv_features (data/nba_ai.db)  ->  prop models
+                       (Stage 1-6)            (Stage 7)                       (SHAP ~ 0.0)
+```
+
+The CV features are correctly *plumbed all the way through* to the production prop
+models and are correctly assigned **SHAP importance ~ 0.0** there
+(`cv_lift_report.json: has_cv_data: false`). The honest read: the lineage is real and
+complete; the predictive lift is unproven. This is engineering provenance, **not** a
+predictive moat — do not infer one.
+
 ## Honest Limitations
 
 | Claim | Honest status |
@@ -468,7 +501,7 @@ over synchronous decode.
 | Re-ID accuracy ~91% | Not reproduced. OSNet ships with ImageNet weights; production appearance model is the HSV histogram. |
 | Ball tracking valid % | Known issue: `ball_valid_pct = 0%` on some games. |
 | 10-player tracking at 15fps | Not reproduced. Observed ~5–7 fps end-to-end; ~5–6 stable slots on calibration clip. |
-| CV features = predictive edge | CV features are wired into prop models; SHAP importance ≈ 0.0 in production. Complete plumbing, not a demonstrated advantage. |
+| CV features = predictive edge | CV features are wired into prop models; SHAP importance ≈ 0.0 in production. Complete plumbing, not a demonstrated advantage. No CV predictive-moat claim is made. |
 
 ---
 

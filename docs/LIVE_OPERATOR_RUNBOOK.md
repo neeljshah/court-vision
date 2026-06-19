@@ -4,6 +4,19 @@ Single source of truth for game-day operations. Walk top-to-bottom on a slate da
 
 Assumes `conda activate basketball_ai` and `cd C:\Users\neelj\nba-ai-system`.
 
+> **What you are operating:** the pregame numbers come from the
+> [possession Monte-Carlo simulator](architecture/possession-simulator.md); during a
+> game they are repriced by the in-game engine (pregame prior x realized state,
+> elapsed-weighted) documented in [LIVE_ENGINE_V2.md](LIVE_ENGINE_V2.md). The
+> always-on browser UI is [LIVE_ENGINE_V2_WEB.md](LIVE_ENGINE_V2_WEB.md). Full doc
+> map: [INDEX.md](INDEX.md).
+>
+> **HONESTY RAIL:** every live number is forecaster CALIBRATION, not a dollar edge --
+> a live book sees the same game state you do. The in-game grade loop below measures
+> CLV in probability space only (`edge_claimed=False`); no `$`/ROI/edge is claimed.
+> Truth source for any number: [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) /
+> [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md).
+
 ---
 
 ## Pre-game (morning of game day)
@@ -56,6 +69,39 @@ python scripts/live_hedge_calc.py --stake 25 --open-odds -110 --live-odds +145
 ```
 
 ---
+
+## What the halftime / endQ3 recommender is doing
+
+`recommend_endQ2_bets.py` and the post-Q3 rerun are not new models -- they call the
+same in-game repricer at a snapshot BOUNDARY. The engine blends the pregame prior
+with realized box state, elapsed-weighted, and stacks only the boundary-specific
+detail layers that PASSED the held-out-Brier gate
+(`scripts/platformkit/ingame/ingame_layer_gate_nba.py`). Practical consequences:
+
+- Viable at halftime (endQ2): REB, AST, FG3M, STL, BLK -- 24 minutes of remaining
+  signal is enough for these.
+- PTS and TOV need end-of-Q3 info -- rerun the recommender after Q3 (12 minutes
+  remaining, where linear extrapolation of the box is already near-optimal).
+- `q50` is the point; the q10/q90 bands are advisory and never move it.
+
+## In-game grade loop (measure CALIBRATION, never claim edge)
+
+Closing the honesty loop on live games: at each tick `live_grade.capture_pair_once`
+pairs OUR model's P(home win) with the REAL captured venue in-play implied P(home)
+for the SAME side (HOME), and stores the pair. Both probs were computed live from
+state-as-of-that-tick, so replaying the stored model prob at grade time is leak-free.
+
+The capture + grade entry points live in
+`scripts/platformkit/ingame/live_grade.py` (`capture_pair_once` per tick,
+`grade_game` over a settled game's `data/cache/ingame_grade/<sport>/<game_id>.jsonl`),
+driven by `scripts/platformkit/ingame/live_loop.py`.
+
+Binding rules the loop enforces (do not work around them):
+- A SINGLE partial game is NEVER a beat -- below `min_ticks` pairs the verdict is
+  `INSUFFICIENT_DATA`. The real test is aggregating MANY settled games.
+- A missing or misaligned (wrong-side / out-of-range) prob is SKIPPED, not graded --
+  a misaligned pair manufactures fake CLV.
+- Output is CLV in probability space with `edge_claimed=False`. No `$`/ROI/stake.
 
 ## Post-game / settlement
 

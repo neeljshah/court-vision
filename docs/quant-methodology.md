@@ -238,6 +238,91 @@ See [vault/Research/Renaissance Methodology.md](../vault/Research/Renaissance%20
 
 ---
 
+## The Validation Toolkit -- each technique, what it catches, how it is implemented
+
+> Every claim in this repo is a CALIBRATION / SHARPNESS measurement (Brier, RMSE, ECE),
+> never a $ edge or ROI. The techniques below are the instruments that decide whether a
+> candidate is a real lift or an artifact. An honest REJECT / NULL is a SUCCESS: it is the
+> correct output of the framework on an efficient market. Path refs are to the real,
+> read-only code that implements each test. See [docs/PROOFS.md](PROOFS.md) for the
+> claim -> runnable-proof index and [docs/MARKET_EFFICIENCY_PROOF.md](MARKET_EFFICIENCY_PROOF.md)
+> for the full efficiency result.
+
+| Technique | What it catches | How it is implemented | Path |
+|---|---|---|---|
+| **Expanding-window walk-forward** | Lookahead / future leakage; in-sample R^2 inflation; over-fit that does not survive out-of-time | Sort states by timestamp; for each test state, train only on states strictly earlier; collect per-state probabilities for scoring. The harness never trains a model -- it orchestrates the leak-free split. | `scripts/platformkit/eval_gate/walkforward.py`; `src/loop/gate.py::_fold_bounds` / `walk_forward_delta` |
+| **Purge + embargo** | Same-team back-to-back autocorrelation; rolling-window spillover across the train/test boundary | Drop same-team games within `PURGE_HOURS=48` of the test game; drop the same matchup within `EMBARGO_DAYS=3` of the boundary | `scripts/platformkit/eval_gate/walkforward.py` (`_same_team`, `_same_matchup`) |
+| **Vintage / availability assertion** | A feature secretly known only after the prediction time (the most common silent leak) | `assert_vintage` asserts every feature's availability timestamp is strictly before the prediction `state_ts`; raises an `AssertionError("LEAK: ...")` that the gate converts into a hard FAIL | `scripts/platformkit/eval_gate/walkforward.py::assert_vintage` |
+| **Truncation-invariance leak test** | Streaming / in-game features that peek at future events -- a feature at time T must be byte-identical with or without later events | Re-featurize a truncated event stream and assert past rows are byte-identical | `tests/test_ingame_leak_free.py` (per JOB_EVIDENCE_PACKET) |
+| **Permutation null-shuffle (G3)** | A signal whose lift is coincidental row-alignment rather than real predictive content | Permute the signal column (breaks alignment, preserves marginal distribution); re-run the ablation; require the real (negative) delta to beat the null cloud by `z >= 3.0` standard deviations | `src/loop/gate.py::null_shuffle_control` |
+| **Noise / p0 control** | A pipeline that "improves" even on pure noise (a broken harness) | The null-shuffle's permuted column is the noise control: a correct harness produces ~0 mean delta on shuffled input; a positive shuffled delta exposes a leak in the harness itself | `src/loop/gate.py::null_shuffle_control` (the `null_deltas` cloud) |
+| **Ablation vs full** | A signal that looks predictive alone but adds nothing once the full production feature matrix already explains it | Train FULL vs FULL+signal on a single chronological holdout (last 25%); require relative holdout improvement `<= -_ABLATION_REL_EPS`. NEVER scores the signal in isolation. | `src/loop/gate.py::ablation_vs_full` |
+| **Benjamini-Hochberg FDR** | False discoveries from testing many candidates (multiple-comparisons inflation) | Rank all tested p-values; reject only those with `p <= (rank/m) * q`, `q=0.10`, across the FULL experiment history bookkept by the ledger | `src/loop/gate.py::benjamini_hochberg` |
+| **Cluster-robust Diebold-Mariano** | Fake significance from i.i.d. SE when many states within one game are correlated (a naive SE runs ~3x too narrow) | DM on per-state loss differences `d_t = loss_close - loss_model`, clustering the variance by `game_id` with a `G/(G-1)` finite-cluster correction; two-tailed p via `erf` (no scipy) | `scripts/platformkit/eval_gate/dm_test.py::diebold_mariano` |
+| **>=2-corpora replication** | A single-corpus / single-fold lift masquerading as durable (single-fold lifts are artifacts) | Require the lift to hold across `min_folds` folds in the primary corpus AND in `min_corpora >= 2` independent corpora; a loss on any fold/metric is a hard REJECT | `improve/multifold_guard.py::replicated` |
+| **Multi-seed bootstrap stability** | A metric jump driven by one lucky random seed | Bootstrap-resample under 8 seeds x `n_boot` draws; `stable=True` only when the p10 lower bound of the improvement distribution is `>= 0` (the lift survives the unlucky tail) | `improve/seed_stability.py::stable` |
+| **All-proper-scores unanimity** | Shipping a candidate that wins one proper score while silently regressing another (the most expensive self-improvement bug) | `score_gate` compares Brier+log-loss (prob) or CRPS+pinball (interval); ships ONLY if the candidate does not regress ANY applicable proper score beyond `_EPS`; names the dissenting score on reject | `improve/proper_score_gate.py::score_gate` |
+| **RMSE + signed bias, never MAE** | MAE rewards shrink-to-median artifacts (predicting the conditional median lowers MAE without sharpening) | Point forecasts are graded on RMSE and signed bias, never MAE | enforced across the `proof_<sport>/` harnesses (see PROOFS) |
+| **CLV over ROI** | ROI's huge small-N standard error hiding (or manufacturing) an apparent edge | CLV against the Shin-devigged sharp close is approximately unbiased and converges ~5x faster than ROI; CLV is measured FORWARD, never claimed retrospectively. When no captured close exists yet, CLV is NON-BLOCKING (recorded pending), never a false fail. | [docs/backtest-methodology.md](backtest-methodology.md); `src/loop/gate.py::clv_check` |
+| **Import-isolation (F5)** | A sport adapter that secretly depends on another sport's code or on `src.data`/`src.sim` | Each sport's `run_proof.py` imports zero other-sport domain code and zero `src.data`/`src.sim`/`src.tracking`/`src.pipeline` | `scripts/platformkit/proof_<sport>/run_proof.py` |
+
+### Why these compose, not just stack
+
+The instruments are layered so that an artifact must defeat ALL of them to ship. A signal
+that overfits one calendar half is caught by the >=2-corpora replication guard; one that
+rides a lucky seed is caught by the bootstrap p10 floor; one that wins Brier but loses
+log-loss is caught by the all-proper-scores unanimity rule; one that wins in isolation but
+adds nothing to the full model is caught by ablation-vs-full; one that survives by chance
+across many tests is caught by Benjamini-Hochberg. The documented track record is that the
+candidates correctly REJECT -- the framework's job is to refute, not to confirm.
+
+---
+
+## The honest gatekeeper -- SHIP / VARIANCE_ONLY / DEFER / REJECT
+
+`src/loop/gate.py::evaluate(signal)` runs a candidate through five criteria, evaluated
+JOINTLY (criterion 3 measures the marginal delta of adding the signal column to the FULL
+production matrix, never the signal alone), and returns one of four verdicts:
+
+| Criterion | Test | Pass condition |
+|---|---|---|
+| 1. Walk-forward | `walk_forward_delta` -- expanding folds, FULL+signal vs FULL | ALL evaluated folds have `delta_score < 0` (improvement) |
+| 2. Null-shuffle | `null_shuffle_control` -- real delta vs shuffled-signal null | real delta beats the null cloud by `z >= 3.0` |
+| 3. Ablation vs full | `ablation_vs_full` -- marginal holdout delta on last 25% | relative improvement `<= -_ABLATION_REL_EPS` |
+| 4. Calibration | `calibration_check` -- ECE (winprob), 80% coverage (sigma), or residual non-degeneracy (point) | ECE `< 0.10` / coverage in `[0.70, 0.90]` / `|bias| < spread` |
+| 5. CLV | `clv_check` vs the sharpest close | `clv >= _CLV_FLOOR`, or NON-BLOCKING `(None, True)` when no close is captured yet |
+
+Plus a multiple-comparisons guard: a per-signal Benjamini-Hochberg p (recomputed across the
+full ledger history) and a final held-out set touched EXACTLY ONCE.
+
+**Verdict policy** (from `evaluate`):
+
+| Verdict | When | Meaning |
+|---|---|---|
+| **SHIP** | `wf_all & null_pass & ablation_pass & calibration_ok & clv_pass & fdr_pass` | Real, replicated, calibrated lift -- promote |
+| **VARIANCE_ONLY** | sigma target with calibration+null pass, OR point estimate fails but calibration improves + null + clv pass | The point estimate is not the lever; the interval / Kelly sizing improves -- ship for sizing only |
+| **DEFER** | No leak-safe feature matrix could be built, or no evaluable walk-forward fold (rows too few) | INSUFFICIENT DATA -- never a false SHIP; coverage is the blocker, not the signal |
+| **REJECT** | Otherwise; `_reject_reason` names every failed criterion | The honest, expected outcome on an efficient market -- recorded as a SUCCESS |
+
+DEFER is the system's INSUFFICIENT_DATA state: the gate fails closed (returns DEFER rather
+than guessing) whenever it cannot construct a leak-safe `(base_matrix, signal_column, target,
+dates)` bundle or cannot fill a single fold. A thin slice ABSTAINS rather than printing a
+result -- see the n<50 ABSTAIN rows in [docs/CALIBRATION_RECORD.md](CALIBRATION_RECORD.md).
+
+### The eval-gate offline contract (regression / leak only)
+
+`scripts/platformkit/eval_gate/run_gate.py --golden` runs the same machinery end-to-end
+OFFLINE on the committed SYNTHETIC golden fixture and labels each corpus
+`BEATS_CLOSE` / `MATCHES_CLOSE` / `BEHIND` (`_verdict`: BEATS requires `bss>0` AND DM
+`p<0.05` AND `n>=200`; MATCHES when the 95% CI on the loss difference overlaps 0; BEHIND
+otherwise -- honest, recorded, NON-blocking). Crucially the gate BLOCKS only on a
+regression vs the frozen baseline (`brier_model > baseline + 0.005` AND a significant DM
+of model-vs-baseline per-game losses) or a leak-guard assertion -- NEVER on "fails to beat
+the close". The golden fixture is a synthetic reproducibility anchor, not a real calibration
+claim; `BSS <= 0 / MATCHES_CLOSE` is an honest success.
+
+---
+
 ## References
 
 - Kelly, J.L. (1956). *A New Interpretation of Information Rate.* Bell System Technical Journal.
@@ -250,6 +335,15 @@ See [vault/Research/Renaissance Methodology.md](../vault/Research/Renaissance%20
 - Venn, A. et al. (2018). *A Unified Theory of Conformal Prediction.*
 - Cervone, D. et al. (2016). *A Multiresolution Stochastic Process Model for Predicting
   Basketball Possession Outcomes.* JASA.
+- Diebold, F.X. & Mariano, R.S. (1995). *Comparing Predictive Accuracy.* Journal of
+  Business & Economic Statistics. (The clustered-SE variant is in `eval_gate/dm_test.py`.)
+- Benjamini, Y. & Hochberg, Y. (1995). *Controlling the False Discovery Rate.* JRSS-B.
+
+**Sibling docs:** [backtest-methodology](backtest-methodology.md) (harness construction) -
+[PROOFS](PROOFS.md) (claim -> proof index) - [MARKET_EFFICIENCY_PROOF](MARKET_EFFICIENCY_PROOF.md)
+(the efficiency result) - [CALIBRATION_RECORD](CALIBRATION_RECORD.md) (per-sport audit) -
+[CEILING](CEILING.md) (realistic bounds) - [KNOWN_LIMITATIONS](KNOWN_LIMITATIONS.md) -
+[full doc map](INDEX.md).
 
 
 ---

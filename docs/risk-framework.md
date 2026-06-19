@@ -45,6 +45,46 @@ When the portfolio drawdown exceeds 10% of the high-water mark, all stake multip
 are reduced by 0.5 until the drawdown recovers. This is enforced by the QP optimizer
 and the daily orchestrator (Phase 16).
 
+### Kelly math as implemented
+
+The greedy fractional-Kelly path that backs these soft constraints is
+`src/prediction/betting_portfolio.py::kelly_corr`. The numeric chain:
+
+```
+full_kelly  = (p * b - q) / b          # b = net payout per unit, q = 1 - p
+f           = full_kelly * 0.25         # KELLY_FRACTION = quarter-Kelly
+f           = f * max(0, 1 - corr_with_open * existing_exposure / bankroll)
+f           = min(f, 0.04)              # MAX_BET_PCT cap
+stake       = f * bankroll
+```
+
+| Constant (`betting_portfolio.py`) | Value | Role |
+|---|---|---|
+| `KELLY_FRACTION` | 0.25 | quarter-Kelly de-risking of noisy edges |
+| `MAX_BET_PCT` | 0.04 | hard per-bet cap (fraction of bankroll) |
+| `KELLY_PCT_MAX` | 0.25 | absolute clamp on any reported Kelly fraction |
+| `MAX_OPEN_BETS` | 20 | portfolio in-flight cap |
+| `MAX_DRAWDOWN_PCT` | 0.15 | `check_drawdown_ok` returns False past this -> stake 0 |
+
+**Win probability source.** When a calibrated `win_prob_override` is supplied
+(isotonic-calibrated `P(win)`), Kelly uses it directly; otherwise it falls back to
+`implied_prob + edge`, clamped to `[0.05, 0.95]`. **Correlation** is resolved from
+the persisted residual matrix `data/models/prop_corr_matrix.json` (residual, not
+raw-prediction, correlations -- to avoid the inflated `pts-tov=0.80` artifact).
+
+**Drawdown guard is a real-money behavior gate.** When the caller omits
+`bankroll_start`, the drawdown guard is **skipped by default** (byte-identical to
+the original behavior). Inferring a start from realized PnL -- which can silently
+flip a live stake to 0 -- is opt-in behind `CV_INFER_BANKROLL_START=1`. This
+default-off posture is deliberate: a silent stake change is a real-money risk, so
+it is never enabled autonomously.
+
+> **Units, not dollars, in the public layer.** The pure decision layer
+> (`frontend/exec_decision.py`) and the in-game ranker
+> (`src/prediction/decision_engine.py`) size in **unit counts / bankroll
+> fractions**, never `$`. The dollar-denominated `kelly_corr` path is for the
+> internal paper ledger only; nothing here is a dollar edge or ROI claim.
+
 ---
 
 ## Circuit Breakers
@@ -58,15 +98,15 @@ bet_selector output is executed.
 | Trigger | Action |
 |---------|--------|
 | Ensemble spread > 3 stat units on any prediction | Skip that market for the day |
-| `data_quality: degraded` tag (fallback vendor active) | Apply 0.5× Kelly multiplier; log alert |
-| Stale-line classifier fires (Phase 14.7) | Reduce to 0.1× Kelly or skip |
+| `data_quality: degraded` tag (fallback vendor active) | Apply 0.5x Kelly multiplier; log alert |
+| Stale-line classifier fires (Phase 14.7) | Reduce to 0.1x Kelly or skip |
 | DNP probability > 40% | Remove player from slate before bet_selector runs |
 
 ### Intraday circuit breakers
 
 | Trigger | Action | Reset |
 |---------|--------|-------|
-| Daily loss ≥ 5% of bankroll | Halt all new bets for 24 hours | Midnight reset |
+| Daily loss >= 5% of bankroll | Halt all new bets for 24 hours | Midnight reset |
 | Drawdown > 10% below high-water mark | Paper-only mode | 24-hour cooldown + manual review |
 | 3 consecutive losses | 50% stake multiplier | Resets after 2 consecutive wins |
 | 5 consecutive losses | Paper-only mode | Resets after 3 consecutive wins |
@@ -94,7 +134,7 @@ Computed on the open portfolio at end-of-day and written to
 | Conditional VaR (CVaR) | Expected value beyond VaR threshold | Daily |
 | Expected Shortfall (ES) | Mean loss in worst 5% of scenarios | Daily |
 | Max drawdown (rolling 30 days) | HWM − current P&L | Daily |
-| Sharpe ratio (annualized) | Daily P&L mean / std × √252 | Weekly |
+| Sharpe ratio (annualized) | Daily P&L mean / std x √252 | Weekly |
 | CLV beat rate | % bets with positive CLV vs Pinnacle close | Per settled bet |
 | Per-bet risk contribution | Each bet's % contribution to portfolio VaR | Per slate |
 
@@ -127,15 +167,15 @@ by market, and stress test results.
 
 ### Factor identification
 
-PCA on the 7×7 prop residual covariance matrix identifies latent factors that drive
+PCA on the 7x7 prop residual covariance matrix identifies latent factors that drive
 correlated performance across props. Expected factors include:
 
 | Factor | Interpretation |
 |--------|---------------|
-| pace_factor | Tempo — high-pace games inflate all counting stats |
-| defense_factor | Opponent defensive quality — suppresses all offensive props |
-| foul_factor | Ref-driven foul rate — affects FT, pts distribution |
-| garbage_time_factor | Blowout probability — bench players absorb volume |
+| pace_factor | Tempo -- high-pace games inflate all counting stats |
+| defense_factor | Opponent defensive quality -- suppresses all offensive props |
+| foul_factor | Ref-driven foul rate -- affects FT, pts distribution |
+| garbage_time_factor | Blowout probability -- bench players absorb volume |
 | momentum_factor | Hot-hand or cold-streak regime |
 
 ### Factor hedging
@@ -160,14 +200,30 @@ The following conditions must all be met before `LIVE_BETTING=1` is set:
 
 | Condition | Threshold |
 |-----------|-----------|
-| Paper bets settled | ≥ 50 |
-| CLV beat rate | ≥ 55% |
-| Paper ROI | ≥ 3% |
+| Paper bets settled | >= 50 |
+| CLV beat rate | >= 55% |
+| Paper ROI | >= 3% |
 | Calibration drift (any stat) | < 10% probability error |
-| Backtest ROI vs paper ROI | Backtest ≥ 0.7 × paper |
+| Backtest ROI vs paper ROI | Backtest >= 0.7 x paper |
 | Circuit breaker events (last 7 days) | 0 |
 
 All six must pass simultaneously. Partial passes do not unlock live capital.
+
+The gate is **default-deny and human-gated**: `LIVE_BETTING=0` is hard-enforced
+in `src/prediction/bet_selector.py` (it exits non-zero otherwise), and flipping
+the flag is a human action taken only after all six conditions hold. The
+load-bearing condition is **CLV beat rate**, not ROI: CLV (holding a better
+number than the close, scored by `src/betting/clv.py`) is the honest edge
+yardstick; ROI inflates from small-sample variance and is reported for
+diagnostics only. No real money has been placed.
+
+---
+
+See also: [BETTING](BETTING.md) (edge/EV/CLV math, paper loop)  - 
+[decisions](decisions.md) (tier floors, no-bet, dual gate)  - 
+[EXECUTION_GUIDE](EXECUTION_GUIDE.md) (sized-bet runbook)  - 
+[architecture/execution-engine](architecture/execution-engine.md) (venue routing,
+account health).
 
 
 ---

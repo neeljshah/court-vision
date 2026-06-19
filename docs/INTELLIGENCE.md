@@ -75,6 +75,107 @@ accuracy gain does not translate to a betting edge (market efficient on closing 
 value of this layer is at the joint/in-game/freshness frontier — and as a basketball-understanding
 and scouting resource. See [CEILING.md](CEILING.md) for the ceiling analysis.
 
+> **Measured-lift honesty (read this first).** The descriptive/atlas intelligence is a deep
+> **scouting + correlation asset**. Its measured **point-accuracy lift on the served model is
+> ~0 today** — CV-derived features carry SHAP ~= 0 in production and the full-season walk-forward
+> confirms the model is well-calibrated but does **not** beat the close (CLV ~= 0). Every number
+> on this page is a **calibration / sharpness / coverage** statistic, **never a dollar edge**. No
+> betting edge is claimed anywhere in this layer. The single truth source for what may be claimed
+> is [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md); the retracted figures it lists are never
+> reprinted as current.
+
+---
+
+## The artifact classes (what each one *is*)
+
+The 80 artifacts cluster into a small number of *classes*, each answering a different question.
+This taxonomy is the conceptual map under the 10-section inventory below.
+
+| Artifact class | Question it answers | Representative artifacts | Persistence |
+|---|---|---|---|
+| **Identity / archetype** | *Who is this player, structurally?* | `player_fingerprints`, `player_archetype_definitions`, `similarity_matrix` | parquet vector + JSON dict |
+| **Form / trend** | *Who are they right now (vs. baseline)?* | `current_form_profiles`, `rolling_trends`, `anomaly_log` | half-life-weighted parquet |
+| **Matchup / scheme** | *What is the opponent imposing?* | `defensive_schemes`, `matchup_deviations`, `archetype_scheme_interactions` | per-team / per-pair parquet + t-stat JSON |
+| **Lineup / chemistry** | *Who else is on the floor?* | `lineup_chemistry`, `pair_chemistry`, `bench_starter_split` | with-vs-without delta parquet |
+| **Situational / contextual** | *What state is the game in?* | `clutch_cv_split`, `quarter_profiles`, `ingame_momentum` | per-bucket parquet |
+| **Schedule / rest / officials** | *What surrounds the game?* | `rest_cv_impact`, `pace_adjusted_cv`, `officials_cv_impact` | per-condition parquet + ANOVA JSON |
+| **Retrieval** | *What game is this most like?* | `game_similarity_index`, `game_neighbors` | k-NN neighbor lists |
+| **Quality / calibration** | *How much should we trust this?* | `cv_quality_per_game`, `per_player_confidence`, `confidence_curves` | gate + decile-reliability tables |
+
+Each artifact is one of three persisted shapes: a **vector** (PCA / k-best fingerprints), a
+**conditional delta** (behavior under a condition minus the player's own baseline, with a
+significance test), or a **reliability curve** (an EV/quality bucket mapped to a realized
+outcome — the honesty layer). No artifact stores a raw future value; deltas and curves are
+computed against history only.
+
+---
+
+## How an atlas section is built (leak-free)
+
+The 48 deep atlas-section builders live under `intel/` (30 `player_*` + 18 `team_*`), and they all
+subclass the single `AtlasSection` contract in `src/loop/atlas.py`. The contract is what makes the
+"intelligence is leak-free" claim mechanical rather than aspirational:
+
+```
+intel/player_clutch_scoring.py        # one section = one slice of a dossier
+    class PlayerClutchScoring(AtlasSection):
+        name = "clutch_scoring"; entity = "player"
+        build(entity_id, as_of)  ->  AtlasArtifact | None   # leak-safe, as-of-dated
+        validate(artifact)       ->  bool                   # face-validity / range check
+        cv_fields()              ->  {name: CVSlot}          # reserved null slots for CV branch
+```
+
+The leak-free guarantees, all enforced in code:
+
+1. **As-of boundary.** `build(entity_id, as_of)` may only read rows with `game_date <= as_of`.
+   In `player_clutch_scoring.py`, for example, the season-context and PBP sources are explicitly
+   filtered (`rows[rows["game_date"] <= pd.Timestamp(as_of)]`) before any aggregate is taken.
+2. **Sample-size -> confidence ladder.** `confidence_from_n(n)` maps coverage to a stamped level
+   (`high` if n>=20, `med` if n>=5, else `low`); CV-derived fields are capped at `med` via
+   `conf_cap`. `n` is the count of *real games observed* (e.g. `clutch_gp`), never the row count.
+3. **DEFER over invent.** When a source parquet lacks a raw count, the sub-field is set to `None`
+   and tagged `DEFER` with the reason and the script that would unblock it — the builder never
+   fabricates a value. (Clutch `ft_rate` / `tov_under_pressure` are live DEFER examples.)
+4. **Reserved CV slots.** `cv_fields()` returns named slots with `value=None`. The CV branch fills
+   them later **without** a profile-factory rebuild; `validate()` *fails* if any CV slot is
+   non-null at build time (CV must not leak into the descriptive substrate prematurely).
+5. **Provenance stamp.** Every artifact carries `{source, n, confidence, as_of}`. Validation
+   happens twice: the section's own cheap `validate()`, then the full leak / coverage / dedup gate
+   in `src.loop.intel_validator`. Only artifacts that pass both are persisted (via
+   `profile_factory_bridge.register_section` -> one disjoint parquet + one `sec_<name>` function).
+
+This is the ARM-B half of the self-improving loop: ARM-B writes new `intel/*.py` sections back into
+the dossiers; ARM-A writes new `signals/<name>.py` leaf signals. Both are gated; **most candidates
+are correctly rejected**, which is the honest success criterion (see [signal-inventory.md](signal-inventory.md)).
+
+---
+
+## The archetype & shrinkage-prior mechanism
+
+The identity class is built on an unsupervised **fingerprint -> archetype -> prior** pipeline:
+
+1. **Fingerprint.** Each player's per-game tracking + box features are reduced to a low-dimensional
+   vector (`player_fingerprints.parquet`, PCA; `player_fingerprints_kbest.parquet`, a k-best
+   variant robust to missing CV games). The vector is the player's structural signature.
+2. **Archetype assignment.** Fingerprints are clustered into the 12 labelled archetypes
+   (*Playmaking Big*, *3&D Wing*, *Primary Initiator*, ...). Each player gets a label **plus a
+   distance-from-centroid**, so "how prototypical" is itself a feature. `archetype_drift.parquet`
+   flags players mid-transition between clusters.
+3. **Shrinkage prior.** A thin-sample player (few games, or few CV games) is shrunk toward the
+   **archetype centroid** rather than toward the league mean — a small-n player inherits the
+   behavioral prior of players who play like them. The `confidence_from_n` ladder controls the
+   shrinkage weight: `low`-confidence sections lean hardest on the archetype prior; `high`
+   (n>=20) sections trust the player's own observed rates.
+
+> **Selector discipline (gotcha).** Downstream consumers must select on **archetype *names* /
+> player_id**, never on raw KMeans cluster IDs — cluster IDs are not stable across refits, so a
+> filter keyed on a cluster index silently breaks on the next rebuild. The label dictionary
+> (`player_archetype_definitions.json`) is the stable contract.
+
+Honest scope: archetype shrinkage measurably improves **calibration on thin-sample players**
+(sharper, better-ranked intervals); it has **not** produced a measured point-accuracy edge on the
+served model, and produces **no** betting edge versus closing lines.
+
 ---
 
 ## Layer inventory
@@ -203,6 +304,24 @@ and scouting resource. See [CEILING.md](CEILING.md) for the ceiling analysis.
 - **SHAP = 0 in production today.** The artifacts are correct and complete; they do not yet produce
   measurable lift in the prop models. This is the current honest state — do not overclaim.
 
+## How (and how little) it plugs into prediction today
+
+A candid accounting of the wiring, end to end, so the gap between *plumbed* and *paying off* is legible:
+
+| Path | Wired? | Measured effect today |
+|---|---|---|
+| Dossier fields -> prop model features (PTS/REB/AST/FG3M...) | Yes | Competitive leak-free WF accuracy; **point-accuracy lift attributable to the intelligence layer ~= 0** |
+| CV behavioral features -> prop models | Yes (imputed for non-CV games) | **SHAP ~= 0** (`cv_lift_report.json: has_cv_data: false`); lift gated on the 80-game retrain |
+| Scheme / clutch / rest tables -> possession Monte Carlo rate multipliers | Yes | Structure validated (teammate-rho emerges ~= -0.10); **no SGP / totals dollar edge claimed** |
+| `cv_quality_per_game` -> bet-construction gate | Yes | Real: low-homography games are downweighted regardless of model confidence |
+| Intelligence features -> vs. devigged closing line | Yes (graded) | **CLV ~= 0** — market efficient; the model matches but does not beat the close |
+| In-game / freshness frontier | Partial | The *thesis* (this is where the gap is) — calibration gains only, **not yet a measured vs-close edge** |
+
+The one-line summary: the layer is a **fully-plumbed, leak-free scouting + correlation substrate**.
+It demonstrably sharpens *understanding* and gates bets on data quality; it has **not** demonstrated
+a predictive edge on the served model, and claims to the contrary are retracted in
+[KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md).
+
 ## Limitations
 
 1. **Officials player-sensitivity is empty (0 rows).** Per-player ref-tightness deltas aren't
@@ -230,6 +349,12 @@ out of git both because they're large and because they encode the proprietary de
 **schema and counts on this page are the public commitment**.
 
 *Last verified: 2026-06-11.*
+
+**Siblings:** [PLAYER_INTELLIGENCE.md](PLAYER_INTELLIGENCE.md) (dossier showcase + scope) ·
+[MEMORY_GRAPH.md](MEMORY_GRAPH.md) (person-free knowledge graph) ·
+[signal-inventory.md](signal-inventory.md) (feature catalog + SHIP/REJECT verdicts) ·
+[KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) · [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) ·
+[full doc map](INDEX.md).
 
 
 ---

@@ -7,6 +7,15 @@ grouped by data source tier. "Wired" means the feature is in the current trainin
 set for at least one prop model. Feature counts are approximate; exact column lists
 are in [src/features/feature_engineering.py](../src/features/feature_engineering.py).
 
+> **Honesty banner.** "Wired" and SHAP numbers below describe **accuracy / calibration**, not a
+> dollar edge. Against devigged closing lines the market is efficient (CLV ~= 0); the descriptive
+> intelligence/atlas layer that feeds many of these features carries a **measured point-accuracy
+> lift of ~0 on the served model today**. No betting edge is claimed here. The single truth source
+> for any number is [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md); retracted figures listed
+> there are never reprinted as current. Sibling docs:
+> [INTELLIGENCE.md](INTELLIGENCE.md) - [PLAYER_INTELLIGENCE.md](PLAYER_INTELLIGENCE.md) -
+> [MEMORY_GRAPH.md](MEMORY_GRAPH.md) - [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md).
+
 ---
 
 ## 1. API Box-Score Features
@@ -176,6 +185,52 @@ production-ready NLP model.**
 
 ---
 
+## 8. Discovered Signals — the SHIP / REJECT verdict catalog
+
+The features above are the *engineered* inputs. Separately, the self-improving loop's **ARM-A**
+proposes **candidate signals** — pure transforms of proof-validated leak-free features (base
+signals) and >=2-column algebraic interactions (joint signals) — and runs each through the **real
+leak-free gate** before it may enter a model. This is the honest-verdict layer.
+
+### The gate (how a verdict is reached, leak-free)
+
+A candidate must clear, in order:
+
+1. **Expanding walk-forward** — trained only on the past, scored on the held-out future; no
+   in-sample peeking.
+2. **Null-shuffle permutation** — the label is permuted many times; the real lift must beat the
+   permuted-null distribution, not just zero.
+3. **Benjamini-Hochberg FDR** — across the whole candidate batch, controlling false-discovery rate
+   so one lucky candidate in a large sweep is not mistaken for signal.
+4. **>=2 independent corpora** — single-fold lifts are treated as artifacts (see
+   `feedback_single_fold_lifts_are_artifacts.md`), not promotions.
+
+### Verdict vocabulary
+
+| Verdict | Meaning |
+|---|---|
+| **REJECT** | No lift survives the gate. **This is the honest success criterion** — it confirms the gate works and that markets are efficient. The expected and observed outcome. |
+| **DEFER** | The source data is not yet available (a builder is named that would unblock it); no claim either way. |
+| **VARIANCE_ONLY** | Moves interval width / volatility, not the central prediction — display-only, never a Kelly signal. |
+| **SHIP** | Lift survived this stage. **Still an UNVERIFIED CANDIDATE, not a claimed edge** — requires multi-fold WF, independent corpus, CLV grading, and cross-season hold-out before any edge language is permitted. |
+
+### Observed verdicts (honest)
+
+- **Cross-sport platform signal catalogs (NBA / MLB / soccer / tennis):** the systematic sweeps
+  through this gate are **REJECT-first — all REJECT across the four sports** (aggregated in the
+  graph's `_Signals_Hub.md`). Markets are efficient; no edge is claimed.
+- **NBA prop-model signals (qualitative):** the durable findings are narrow and conditional, not a
+  broad edge. **AST** carries the one repeatedly-measured small model edge and it **breaks in the
+  playoffs** (size conservatively; do not bet AST in playoffs). A BLK over->under-only segment
+  filter survived as a narrow segment effect. Most point-feature additions **REJECT** (a long run
+  of feature-add reverts), and momentum-aligned signals performed **worse than random**. CV
+  behavioral features sit at **SHAP ~= 0** in production (lift gated on the 80-game retrain).
+
+These are reported qualitatively where an exact figure would risk reprinting a retracted artifact.
+The discipline: record honest rejects; never fabricate a dollar ROI.
+
+---
+
 ## Feature Count Summary
 
 | Class | Count | Status |
@@ -188,6 +243,12 @@ production-ready NLP model.**
 | Market microstructure | ~6 | Partial (filter only) |
 | Sentiment / NLP | ~5 | Partial |
 | **Total** | **~69** | |
+
+**Siblings:** [INTELLIGENCE.md](INTELLIGENCE.md) (80-artifact manifest + build mechanism) ·
+[PLAYER_INTELLIGENCE.md](PLAYER_INTELLIGENCE.md) (dossier showcase + scope) ·
+[MEMORY_GRAPH.md](MEMORY_GRAPH.md) (person-free knowledge graph) ·
+[KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) · [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) ·
+[full doc map](INDEX.md).
 
 
 ---

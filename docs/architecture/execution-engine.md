@@ -12,30 +12,54 @@ No live capital is deployed until all circuit breakers are coded, tested, and th
 
 ---
 
+## Upstream Contract -- what reaches the router
+
+The router never sees a raw prediction. By the time a bet arrives it has already
+passed the decision contract in `frontend/exec_decision.py` /
+`src/prediction/bet_selector.py`:
+
+```
+edge        = model_prob - shin_devig(best price)     # bet on DIVERGENCE
+EV          = model_prob * decimal_odds - 1
+tier        = A (EV>=0.08) | B (>=0.04) | C (>=0.02)  # +0.01 each if proxy close
+below C     -> NO BET (never routed)
+dual gate   -> require |edge|>edge_min AND predicted_CLV>clv_min
+stake       -> flat 1u (CLV) + capped quarter-Kelly u  (UNITS, never $)
+```
+
+So the routing table below sizes and places **only** tier-A/B/C rows that already
+cleared the floors and the dual gate. A below-floor candidate is `decision="no_bet"`
+upstream and is never handed to a venue. Stakes carried into routing are unit
+counts / bankroll fractions, not dollars; the venue layer converts to a real
+order amount only under live capital, which is human-gated (below). Full math:
+[decisions](decisions.md) DEC-014..017 and [BETTING](BETTING.md).
+
+---
+
 ## Routing Logic
 
 For each bet received from the Kelly sizer:
 
 ```
 Priority 1: Best available price
-    → Compare devigged implied probability across all healthy books
-    → Route to the book offering the highest probability at acceptable vig
+    -> Compare devigged implied probability across all healthy books
+    -> Route to the book offering the highest probability at acceptable vig
 
 Priority 2: Account health
-    → Skip any book where heat score ≥ threshold
-    → Skip any book where bet count approaching ~300
+    -> Skip any book where heat score >= threshold
+    -> Skip any book where bet count approaching ~300
 
 Priority 3: Book-level max bet limit
-    → If Kelly says $200 but book caps props at $50:
-      → Split remaining $150 across next-best books
+    -> If Kelly says $200 but book caps props at $50:
+      -> Split remaining $150 across next-best books
 
 Priority 4: Correlation with existing bets at same book
-    → Don't concentrate correlated bets at same account
+    -> Don't concentrate correlated bets at same account
       (limits detect correlated prop betting faster)
 
 Priority 5: P2P preference
-    → If Novig/ProphetX price within 0.5 points of best sportsbook price:
-      → Route to P2P (zero vig makes up the difference over volume)
+    -> If Novig/ProphetX price within 0.5 points of best sportsbook price:
+      -> Route to P2P (zero vig makes up the difference over volume)
 ```
 
 ---
@@ -58,7 +82,7 @@ Current implementation: manual queue for DraftKings and FanDuel; Playwright path
 
 | Exchange | API | Adapter | Notes |
 |----------|-----|---------|-------|
-| Kalshi | REST (CFTC-regulated) | `src/execution/kalshi.py` | Limit orders preferred — captures maker rebates |
+| Kalshi | REST (CFTC-regulated) | `src/execution/kalshi.py` | Limit orders preferred -- captures maker rebates |
 | Polymarket | CLOB order placement | `src/execution/polymarket.py` | USDC; US residents technically prohibited |
 | Sporttrade | Connect Trade REST | `src/execution/sporttrade.py` | Exchange-model sportsbook |
 | Novig | API (sweepstakes) | Planned | Zero vig; no limiting |
@@ -86,7 +110,7 @@ Each book tracked separately:
 
 **Heat score** = weighted composite. Traffic light system:
 - Green (< 0.4): no restriction
-- Yellow (0.4–0.7): reduce routing frequency by 50%
+- Yellow (0.4-0.7): reduce routing frequency by 50%
 - Red (> 0.7): stop routing; alert for manual review
 
 **Auto-rotation:** When heat exceeds threshold, router stops sending to that book without manual intervention. Volume shifts to next-healthiest book.
@@ -101,9 +125,9 @@ All must be coded and tested before live capital is deployed:
 |---------|---------|----------|
 | Daily loss cap | −5% of bankroll in one day | Halt all new bets; 24-hour cooldown |
 | Drawdown kill switch | > 10% below high-water mark | Paper-only mode + 24hr cooldown |
-| Consecutive losing streak | 3 losses → 50% stake; 5 → paper only | Automatic stake reduction |
+| Consecutive losing streak | 3 losses -> 50% stake; 5 -> paper only | Automatic stake reduction |
 | Model disagreement halt | Ensemble spread > 3 stat units | Skip market |
-| Data quality degradation | Fallback vendor active | 0.5× Kelly multiplier |
+| Data quality degradation | Fallback vendor active | 0.5x Kelly multiplier |
 
 **Global dry-run gate:** `LIVE_BETTING=0` flag in `scripts/daily_run.sh` forces all adapters to log intent and skip real orders. This flag is hard-coded until the paper-trading gate is passed.
 
@@ -117,10 +141,20 @@ Before live capital:
 3. Record actual outcome for each settled bet
 4. Compute CLV (closing line at tip-off vs model probability at recommendation)
 5. Compute paper ROI (would have been returned if bets were placed)
-6. **Gate:** ≥50 paper bets, CLV beat rate ≥55%, paper ROI ≥3%
-7. If gate passes: manual review → flip `LIVE_BETTING=1`
+6. **Gate:** >=50 paper bets, CLV beat rate >=55%, paper ROI >=3%
+7. If gate passes: manual review -> flip `LIVE_BETTING=1`
 
 Paper trading catches real issues that backtests cannot simulate: API timeouts, stale lineup data, race conditions between injury announcements and line updates.
+
+**Where the paper loop actually lives.** The recorded loop is manual-placement
+and API-free: `src/prediction/bet_selector.py` writes `bets_YYYYMMDD.json`
+(status `paper`); `src/betting/pnl_ledger.py` records placements atomically to
+`data/pnl_ledger.csv` (tmpfile + `os.replace`, sidecar lockfile) and settles
+won/lost/push from line vs actual; `src/betting/clv.py::enrich_pnl_with_clv`
+joins each settled bet to its closing snapshot and `aggregate_clv` reports the
+beat-close rate and the `clv_vs_roi_corr` honesty check. CLV is positive when you
+held a better number than the close (side-aware sign -- see [BETTING](BETTING.md)).
+Operational runbook: [EXECUTION_GUIDE](EXECUTION_GUIDE.md).
 
 ---
 
@@ -156,6 +190,12 @@ On Novig and ProphetX, the router can post lines rather than match them. Mechani
 ---
 
 *See [system-overview.md](system-overview.md) for routing context. See [account-longevity.md](../strategy/account-longevity.md) for limiting avoidance strategy. See [timing-layer.md](../strategy/timing-layer.md) for when to bet throughout the day.*
+
+See also: [BETTING](../BETTING.md) (edge/EV/CLV math, line-shopping)  - 
+[decisions](../decisions.md) (tier floors, no-bet, dual gate)  - 
+[EXECUTION_GUIDE](../EXECUTION_GUIDE.md) (paper select -> ledger -> CLV)  - 
+[risk-framework](../risk-framework.md) (sizing caps, circuit breakers, live gate)  - 
+[label_strategy](../label_strategy.md) (prop reliability + CLV tiering).
 
 
 ---

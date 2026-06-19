@@ -193,6 +193,115 @@ Your data will be ready for:
 - Safe to interrupt (scripts skip already-processed games)
 - Results are **reproducible** (same code + same video = same output)
 
+---
+
+# Predictions -> Sized Bets (Execution Pipeline)
+
+The second half of this guide is the **execution** path: how a calibrated
+prediction becomes a sized, recorded *paper* bet. It is paper-only and
+units-only by construction; real money is human-gated (see the gate at the end).
+The math and decision rules live in [BETTING](BETTING.md) and
+[decisions](decisions.md); this section is the operational runbook.
+
+## The pipeline at a glance
+
+```
+prediction  ->  devig + line-shop  ->  edge/EV  ->  tier floor + dual gate
+            ->  units-only Kelly    ->  ledger (paper)  ->  settle  ->  CLV
+```
+
+| Stage | Module | Output |
+|---|---|---|
+| Edge rows from the slate | `run_daily_slate.py` | `slate_YYYYMMDD.json` (`top_edges`) |
+| Select + size | `src/prediction/bet_selector.py::select` | `bets_YYYYMMDD.json` (status `paper`) |
+| Pure decision (units only) | `frontend/exec_decision.py::decide_game` | per-row `decision`, `tier`, `stake_units` |
+| Record placement | `src/betting/pnl_ledger.py::place_bet` | row in `data/pnl_ledger.csv` |
+| Settle | `pnl_ledger.settle_bet` / `auto_settle_date` | won/lost/push + bankroll move |
+| Enrich + score CLV | `src/betting/clv.py::enrich_pnl_with_clv` | `data/pnl_ledger_clv.csv` |
+| Aggregate | `clv.aggregate_clv` / `pnl_summary` | beat-close rate, CLV vs ROI corr |
+
+## Step 1 -- Select and size (paper)
+
+```bash
+# LIVE_BETTING must be 0 -- bet_selector exits non-zero otherwise.
+LIVE_BETTING=0 python -m src.prediction.bet_selector --date 2026-06-18 --dry-run
+```
+
+What the selector enforces, in order (`bet_selector.select`):
+
+1. **Edge threshold** -- `|edge| >= edge_min` (default `0.04`).
+2. **Stat-direction / policy filters** -- drop zero-edge directions (e.g. BLK
+   OVER) and apply the active `CV_BET_POLICY` per-stat floors, closing-line caps,
+   and the **playoff-AST regime guard**.
+3. **Dual CLV gate** -- also require predicted CLV > `clv_min` (~1.5%); skipped
+   gracefully if `clv_predictor.pkl` is untrained.
+4. **Exposure caps** -- `max_bets_per_game`, per-player combined cap
+   (`max_combined_pct`), correlation-aware quarter-Kelly via `kelly_corr`.
+5. **Timing** -- bets the timing optimiser says to delay are diverted to
+   `bet_timing_queue.json` rather than emitted now.
+
+Below any floor the candidate is simply **not selected** -- no-bet is the common,
+intended result.
+
+## Step 2 -- Record the placement (no API)
+
+The operator places any real wager manually, then records it. No sportsbook API
+is touched.
+
+```bash
+python -c "from src.betting.pnl_ledger import place_bet; \
+print(place_bet(game_id='0022501001', player='Role Player', stat='ast', \
+line=4.5, side='OVER', book='DK', odds=-110, stake=1.0, model_pred=5.2))"
+```
+
+`stake` here is a **unit count**, not dollars. Writes are atomic (tmpfile +
+`os.replace`) under a sidecar lockfile, so concurrent writers cannot corrupt
+`data/pnl_ledger.csv`.
+
+## Step 3 -- Settle and score CLV
+
+```bash
+# Settle every open bet placed on a date, using cached gamelog actuals:
+python -c "from src.betting.pnl_ledger import auto_settle_date; \
+print(auto_settle_date('2026-06-18'))"
+
+# Join settled bets to closing-line snapshots and write the CLV-enriched ledger:
+python -c "from src.betting.clv import enrich_pnl_with_clv; \
+rows = enrich_pnl_with_clv(); \
+from src.betting.clv import aggregate_clv; print(aggregate_clv(rows))"
+```
+
+CLV is **positive when you held a better number than the close** (side-aware;
+see [BETTING](BETTING.md) for the sign convention and the `CV_CLV_LINE_SIGN_FIX`
+gate). The honesty metric to watch is `clv_vs_roi_corr` -- CLV should predict
+realized ROI; if it does not, the "edge" is variance.
+
+## Success criteria (execution layer)
+
+```
+- bets_YYYYMMDD.json written with status=paper (never pending/live)
+- every emitted row carries a tier in {A,B,C} and stake_units > 0
+- below-floor candidates absent from the file (no-bet, not a token bet)
+- pnl_ledger.csv rows balance against pnl_bankroll.csv
+- pnl_ledger_clv.csv has a closing snapshot for the bulk of settled bets
+- aggregate_clv reports beat_close_rate and a non-null clv_vs_roi_corr
+```
+
+## The real-money gate (human-gated)
+
+`LIVE_BETTING=0` is hard-enforced in `bet_selector.py`. Live capital is unlocked
+**only by a human**, and only after the full evidence gate in
+[risk-framework](risk-framework.md) passes simultaneously: >=50 settled paper
+bets, CLV beat rate >=55%, paper ROI >=3%, calibration drift <10% per stat,
+backtest ROI >= 0.7x paper, and zero circuit-breaker events in the last 7 days.
+A partial pass unlocks nothing. The defensible win is a recorded positive-CLV
+track record -- not a dollar ROI claim.
+
+See also: [BETTING](BETTING.md)  -  [decisions](decisions.md)  - 
+[risk-framework](risk-framework.md)  - 
+[architecture/execution-engine](architecture/execution-engine.md)  - 
+[label_strategy](label_strategy.md).
+
 
 ---
 <!-- nav-footer -->

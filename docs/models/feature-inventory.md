@@ -162,6 +162,61 @@ These features enter the pipeline as bet-selector filters rather than model inpu
 
 ---
 
+## How the Prop Feature Stack Is Built (and what the gate rejected)
+
+The prop feature vector is assembled in order by
+`src/prediction/prop_pergame.py::feature_columns()`. The *served* root/q50 model
+artifacts slice the first **85 columns**; the full enumerated surface grows past
+**~190 columns** once every wired block and the iter-wave additions are counted.
+The order is load-bearing - artifacts are sliced positionally, so a re-order is a
+silent train/inference parity bug (see the `_BBREF_REORDER_FIX` note below).
+
+### Wired blocks (in emission order)
+
+| Block | Columns | Description |
+|-------|---------|-------------|
+| Form | `l5_*, l10_*, std_*, ewma_*, prev_*` per form-stat | 5 rolling/EWMA/lag views per stat |
+| Schedule | `rest_days, is_home, games_played, days_since_last_game, games_since_long_absence` | basic context |
+| Opponent defence | `opp_def_{stat}` for all 7 stats | per-stat defensive factor |
+| Travel / fatigue | `is_b2b, is_b3b, miles_traveled, altitude_ft` | rest + travel |
+| Play-type freq | `pt_{playtype}_freq` | offensive role mix |
+| BBRef advanced | `bbref_{key}` (base) | Basketball-Reference advanced |
+| Contracts / ratios | `contract_{key}`, ratio keys | motivation + derived ratios |
+| BBRef extra | `bbref_{orb_pct, drb_pct, trb_pct, bpm, ws}` | slots 80-84 (legacy) / 85-89 (fix) |
+| Defender matchup | `_DMATCH_KEYS` (7) | wave-2b matchup context |
+| Player profile | `_PROF_KEYS` (12) | wave-2b archetype/profile |
+
+### Leak-free walk-forward verdicts per candidate block
+
+Most feature ideas are **rejected** by the walk-forward gate - the gate is built
+to refute, and a recorded reject is a success, not a failure. The blocks below are
+present in the code as infrastructure but **disabled** because they regressed on
+walk-forward (all values from the `prop_pergame.py` cycle comments):
+
+| Candidate block | Verdict | Evidence |
+|-----------------|---------|----------|
+| Advanced-stat L5/L10/EWMA/prev (~20 cols, 77k rows) | **REJECT** | Even at full coverage, 5/7 stats regress (PTS R^2 -0.0054, TOV -0.0089 worst); form features span the same signal |
+| Prior-season player tracking (Drives/Passing/CatchShoot) | **REJECT** | 5/7 stats regress (PTS R^2 -0.0023, AST -0.0064); YoY role change makes prior-season tracking a noisy proxy |
+| Officials crew tendency (avg fouls/fta/home_win_pct) | **REJECT** | Single-split MAE wins were a holdout-slice artifact; walk-forward regressed all 7 (PTS +0.0111 WF MAE) |
+| PTS `log1p` transform | **REJECT** | Per-fold MAE sign-flipped (-0.021..+0.027); `sqrt`+Huber shipped instead |
+| FG3M Huber-on-`log1p` | **SHIP** | Only the 6 log1p stats tested; FG3M cleanly 4/4 folds |
+| REB LGB-q50 backend | **SHIP** | XGB-q50 was 3/4 folds (failed dual gate); LGB-q50 4/4 + -0.0051 single-split MAE |
+| CV spatial features (all) | **DEFER** | SHAP ~= 0.0 in production today (`cv_lift_report.json: has_cv_data: false`); plumbing complete, lift unproven until the 80-CLEAN-game retrain |
+
+The pattern is the discipline: a single good fold, or a single-split MAE win, is
+treated as a selection artifact until **all** walk-forward folds agree. The
+`_USE_Q50_STATS` dispatch, the per-stat objective switch (Poisson on raw counts;
+squared-error/Huber under `log1p`/`sqrt`), and these rejects are all consequences
+of the same gate — see [`../ML_MODELS.md`](../ML_MODELS.md) "How the Prop Models
+Work" for the modeling side.
+
+> **Honesty rail.** Feature work here improves *accuracy/calibration*, never a
+> demonstrated $ edge. The CV-spatial "moat" is wired in as a future thesis with
+> complete plumbing and **zero measured predictive value today** (SHAP ~= 0). Do
+> not represent it as a current advantage.
+
+---
+
 ## Feature Lineage and Timestamping
 
 Every feature in the store is stamped with its ingestion time. The walk-forward harness uses this timestamp to reconstruct "what was known at tip-off" for any game in the training set:

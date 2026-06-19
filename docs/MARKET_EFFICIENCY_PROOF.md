@@ -108,6 +108,47 @@ and [docs/PREDICTOR_PLATFORM.md](PREDICTOR_PLATFORM.md) section 4.
 
 ---
 
+## 4a. HOW each REJECT was reached -- the proof in full
+
+The REJECT table above is not a vibe; every row passed through the SAME leak-free gate, and
+the verdict is the conjunction of independent tests. A candidate had to clear ALL of them to
+ship -- none did. This is the full chain:
+
+1. **Leak-free walk-forward (expanding window).** Sort states by timestamp; train only on
+   strictly-earlier states. Purge same-team games within 48h and embargo the same matchup
+   within 3 days of the boundary; assert every feature is vintage-valid (available before the
+   prediction time) or FAIL. Code: `eval_gate/walkforward.py`, `src/loop/gate.py`.
+2. **Feature selection / slope fit INSIDE the training window.** A candidate that selects on
+   full history (`select_inside=False`) is surfaced and the run FAILS -- this is exactly the
+   over-fit channel that inflates full-sample lifts.
+3. **Ablation vs the FULL model, not in isolation.** The signal column is added to the full
+   production matrix; only its MARGINAL holdout delta counts (`ablation_vs_full`). A signal
+   the market already prices adds nothing on top of the base features.
+4. **Permutation null-shuffle + noise control.** The real delta must beat a shuffled-signal
+   null cloud by `z >= 3.0`; the shuffled column is also the noise/p0 control that would
+   expose a broken harness (`null_shuffle_control`).
+5. **Cluster-robust Diebold-Mariano vs the close.** `d_t = loss_close - loss_model` clustered
+   by `game_id` (a naive i.i.d. SE runs ~3x too narrow and manufactures fake significance).
+   SHIP requires `BSS>0` AND DM `p<0.05` AND `N>=200`. Code: `eval_gate/dm_test.py`.
+6. **>=2 independent corpora + Benjamini-Hochberg FDR.** A single-corpus / single-fold lift
+   is an artifact; the lift must replicate (`multifold_guard.replicated`) and survive
+   multiple-comparisons correction (`benjamini_hochberg`).
+
+| Self-audit signature | What it means | Where it shows |
+|---|---|---|
+| **Sign-flip H1<->H2** | A positive full-season NBA schedule lift reverses sign on the held-out calendar half -> over-fit, not edge. Schedule facts are deterministic and known LONG before any line move, so the whole sample is confirmed-before by construction -- a clean test bed. | NBA b2b / 3-in-4 / rest / travel rows |
+| **Sign disagreement NL vs AL** | A CLV-capture signal that is +0.108pp on NL but -0.017pp on AL is not replicable across independent corpora -> REJECT. | MLB open->close CLV row |
+| **Close BEATS us (DM significant)** | On the MLB totals slice the close is significantly sharper (BSS negative, DM p<0.01) -> the freshness the market sees (park/weather/SP) we cannot. | MLB totals (NL/AL) rows |
+| **Fails null-shuffle / BH-FDR** | A soccer/tennis form/h2h candidate cannot beat its own permuted null or survive FDR -> coincidental, not predictive. | soccer + tennis form/h2h rows |
+
+The headline is therefore a CONJUNCTION result: nothing cleared (BSS>0 AND DM p<0.05 AND
+N>=200 AND replication AND FDR) on any pregame slice across 6 corpora. An efficient market
+proven efficient -- by the instrument that also catches the author's own inflated full-sample
+lifts -- is the credential. See [docs/quant-methodology.md](quant-methodology.md) for the full
+toolkit table and [docs/PROOFS.md](PROOFS.md) for the per-module index.
+
+---
+
 ## 5. Reproduce (offline)
 
 ```
@@ -136,6 +177,13 @@ never fabricates a number.
 *edge_claimed = False. All numbers here are calibration / sharpness / BSS vs the devigged
 close, never a $ edge. Honesty truth-source: [docs/JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md).
 The retracted measurement artifacts listed there appear nowhere on this page.*
+
+---
+
+**Sibling docs:** [quant-methodology](quant-methodology.md) (validation toolkit + gate logic) -
+[backtest-methodology](backtest-methodology.md) - [PROOFS](PROOFS.md) (claim -> proof index) -
+[CALIBRATION_RECORD](CALIBRATION_RECORD.md) - [CEILING](CEILING.md) -
+[KNOWN_LIMITATIONS](KNOWN_LIMITATIONS.md) - [full doc map](INDEX.md).
 
 
 ---

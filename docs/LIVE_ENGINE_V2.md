@@ -3,6 +3,12 @@
 > **Web dashboard:** the always-on browser UI (Next.js + Tailwind) is
 > documented separately in [LIVE_ENGINE_V2_WEB.md](LIVE_ENGINE_V2_WEB.md).
 > Backend: `api/live_v2_app.py` (FastAPI WS bridge). Frontend: `webapp/`.
+>
+> **Related:** the pregame distribution this engine reprices comes from the
+> [possession Monte-Carlo simulator](architecture/possession-simulator.md);
+> the game-day operating sequence is in
+> [LIVE_OPERATOR_RUNBOOK.md](LIVE_OPERATOR_RUNBOOK.md). Full doc map:
+> [INDEX.md](INDEX.md).
 
 Event-driven in-play intelligence engine. Replaces the 5-minute polling
 cadence of `scripts/live_inplay_daemon.py` with sub-30-second reactive
@@ -106,6 +112,79 @@ Tiers:
 - **S** EV ≥ 8% AND |projection delta| ≥ 1.0 stat units
 - **A** EV ≥ 4%
 - **B** EV ≥ 1% (display-only — below auto-bet threshold)
+
+## The in-game repricer: pregame prior x realized state
+
+What `reactive_projector` calls on each event is the in-game projection core
+(`src.prediction.live_engine.project_from_snapshot`). Conceptually it FUSES two
+sources of truth:
+
+```
+   PREGAME PRIOR                          REALIZED STATE
+   (the possession sim /                  (this snapshot: score, clock, each
+    rating distribution,                   player's box line, fouls, pace,
+    "what we believed at tip")             who is on the floor)
+        |                                        |
+        |                                        |
+        +------------------+   blend   +---------+
+                           |  w(time, margin)    |
+                           v                     v
+            projected_final = prior_remaining * w  +  state_extrapolation * (1-w)
+                           (q50 = the served point; q10/q90 bands around it)
+```
+
+The blend is **elapsed-weighted**: early in the game `w` leans on the prior (one
+snapshot of a 6-minute Q1 is mostly noise); late in the game it leans on realized
+state (at 36 minutes observed, linear extrapolation of the box is already near
+optimal). This is exactly why the pregame-prior detail layer is measured to help
+MOST at end-Q1 and LEAST at end-Q3 -- the tell that the gain is a real early-game
+team-strength signal, not a shrink-to-current artifact (see Gating below).
+
+In the consolidated path the engine stacks transforms keyed on snapshot BOUNDARIES
+(endQ1 / endQ2 / endQ3), each one validated independently and applied only at the
+boundary it was trained against. The canonical fully-parametric form is the
+Bayesian repricer (`CV_INGAME_STATE` -> `src/ingame/live_state_hook.py`), whose
+DEFAULT trust curve is the IDENTITY: trust_w = 0 -> posterior == prior -> every row
+is left untouched -> byte-identical to OFF. It only re-prices once a trust curve is
+GATED on held-out RMSE+bias. Default-OFF, the served numbers are the validated
+cycle-88 core.
+
+## Gating each in-game detail layer vs base (held-out Brier)
+
+No detail layer ships on intuition. Each is gated by
+`scripts/platformkit/ingame/ingame_layer_gate_nba.py`, which asks one question:
+
+> Does adding this layer beat a simpler BASE in-game model on held-out Brier?
+
+```
+   BASE    = p_live(score_diff, frac_elapsed)        # (margin, time) only
+   +PRIOR  = blend(p0_elo, p_live, w(time, margin))  # BASE + leak-free pregame Elo
+```
+
+Discipline (hard-learned -- single-fold lifts are artifacts):
+- `p0` is a STRICTLY-pregame Elo snapshot (a game never sees its own or any later
+  outcome); the weight surface `w` is fit on the TRAIN fold ONLY, never the test fold.
+- >= 3 expanding-window walk-forward cutoffs, pooled OOS Brier + per-fold stability.
+- Diebold-Mariano clustered by `game_id` (an iid SE manufactures fake significance).
+- SHIP iff Brier(+PRIOR) < Brier(BASE) AND DM p < 0.05 AND the sign holds on >= 2/3
+  folds. Otherwise REJECT -- a valid, honest result.
+
+| layer / boundary | what it adds | verdict basis |
+|------------------|--------------|---------------|
+| pregame Elo prior | BASE + leak-free p0, w fit on train | held-out Brier, DM clustered |
+| period-specific heads (endQ1/endQ2) | LightGBM remaining-stat vs linear | per-stat WF MAE, 4/4 folds |
+| endQ3 learned-Q4 minutes | learned remaining min vs heuristic foul factor | WF MAE, 7/7 stats |
+| residual heads (endQ2/endQ3) | per-stat learned correction | WF MAE, 4/4 folds |
+
+**HONESTY RAIL (non-negotiable):** every number here is forecaster QUALITY
+(calibration / sharpness), NOT a dollar edge. A live book sees the same game state
+we do; in-game conditioning is a measured CALIBRATION win across all 4 sports
+(NBA static->conditional Brier ~0.209 -> ~0.159; leak-free walk-forward endQ3 Brier
+~0.141), and the "vs the close" verdict is UNPROVEN -- there is no in-play odds
+archive to grade against. No `$` / ROI / edge is claimed anywhere in this engine.
+See the retraction list and proof artifacts in
+[../docs/JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) and
+[KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md).
 
 ## Alert dedup
 

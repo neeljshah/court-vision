@@ -154,6 +154,42 @@ Gate 1 pending (Oct 2026).
 
 ---
 
+## The realistic-ceiling argument, stated formally
+
+The ceiling is not "the model could be smarter." It is an information-theoretic bound set by
+what the public + box-score substrate can know versus what the sharp close already prices.
+
+1. **The pregame close is (approximately) the efficient price.** Across 4 sports / 6 corpora
+   our leak-free OOS forecaster MATCHES the Shin-devigged close within sampling noise on
+   team-strength markets and is BEHIND ONLY on totals/ATP by a measurable freshness gap. No
+   candidate signal cleared the gate (BSS>0 AND DM p<0.05 AND N>=200 AND >=2-corpora AND FDR).
+   See [MARKET_EFFICIENCY_PROOF.md](MARKET_EFFICIENCY_PROOF.md).
+2. **Therefore a better model on the SAME features cannot beat the close** -- it can only
+   converge to it. Six independent experiments (architectures, signal levers, full-season WF,
+   PBP replay, CV SHAP, the agentic loop) reached the same boundary. Adding point features is
+   correctly REJECTED by the gate; that is the framework working, not failing.
+3. **The remaining headroom is OUTSIDE the model's current information set**, in three places
+   the feature ceiling does NOT bind:
+
+| Frontier | Why the ceiling does not bind it | Status |
+|---|---|---|
+| **In-game conditioning** | Conditioning the pregame prior on the realized mid-game state is NEW information the static pregame line never had; it is the one measured calibration win (4/4 sports). It is forecaster QUALITY, not a $ edge -- a live book also sees the score. | MEASURED (real-corpus OOS; NBA VALIDATION_PENDING on a fresh clone) |
+| **Freshness / same-day speed** | Betting an opener before a roster move shifts the line is a speed edge on information the market has not yet absorbed, not a cleverer closing-line feature. A retrospective open-time model has ~0 corr with the open->close move. | UNCAPTURED (needs a live feed; not ours to harvest retrospectively) |
+| **Joint / SGP correlation structure** | Same-game-parlay correlation is a market that may be mispriced even when each leg's mainline is efficient; the possession sim prices it off joint samples. | UNMEASURED (needs real SGP price capture; edge_claimed=False) |
+
+4. **Honesty bound.** Every number on this page is calibration / sharpness or
+   break-even-minus-vig vs efficient closes. AST ~+4-5% is the one durable, book-robust ROI
+   slice (breaks in playoffs; size conservative). The inflated +18.38% / +8.94pp CLV figures
+   are RETRACTED market-follow artifacts and appear only in their retraction context in
+   [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) / [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md).
+
+**Conclusion:** the realistic ceiling on existing features and pregame mainlines is MATCH the
+efficient close (calibration win) -- not beat it. The only directions that raise the ceiling
+are in-game state, same-day freshness, and joint pricing. An efficient market proven efficient
+is the honest result, recorded as a success.
+
+---
+
 ## The Path From Here to Ceiling
 
 ```
@@ -178,6 +214,14 @@ is already running — and it already correctly caught the inflated numbers.
 *For Gate 1 step-by-step: [vault/Plans/Gate 1 Validation.md](../vault/Plans/Gate%201%20Validation.md)*
 
 *Last verified: 2026-06-11*
+
+---
+
+**Sibling docs:** [MARKET_EFFICIENCY_PROOF](MARKET_EFFICIENCY_PROOF.md) (the efficiency result) -
+[PROOFS](PROOFS.md) (claim -> proof index) - [CALIBRATION_RECORD](CALIBRATION_RECORD.md) -
+[quant-methodology](quant-methodology.md) - [backtest-methodology](backtest-methodology.md) -
+[KNOWN_LIMITATIONS](KNOWN_LIMITATIONS.md) - [JOB_EVIDENCE_PACKET](JOB_EVIDENCE_PACKET.md) -
+[full doc map](INDEX.md).
 
 
 ---

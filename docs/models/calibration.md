@@ -146,6 +146,90 @@ Implementation: [`src/prediction/betting_edge.py`](../../src/prediction/betting_
 
 ---
 
+## The Full Calibration Pipeline (deep dive)
+
+The system layers four calibration mechanisms, each chosen for a different
+failure mode. None is assumed to help — every layer ships only if it beats the
+uncalibrated baseline out-of-fold or on >=2 independent corpora.
+
+### 1. Cross-fitted isotonic on the win-prob blend
+
+The pregame win-probability model (`src/prediction/win_probability.py`) calibrates
+the **blended** probability, not each base learner. The procedure:
+
+```
+1. Build the NNLS-blended probability p_blend on the validation rows.
+2. 5-fold CROSS-FIT an IsotonicRegression: for each fold, fit on the other
+   4 folds and predict the held-out fold (out-of-fold predictions only).
+3. Measure cross-fitted Brier vs uncalibrated Brier.
+4. SHIP the calibrator (refit on all val rows) ONLY IF cal_brier < brier.
+```
+
+Cross-fitting is the key honesty move: fitting isotonic on the same rows you then
+score makes any monotone calibrator look like an improvement (it can memorize the
+empirical frequencies). The out-of-fold measurement removes that optimism, so a
+deployed calibrator reflects a *real* gain. In practice the calibrator is often
+**not** deployed because a well-trained blend is already close to calibrated.
+
+### 2. Isotonic vs Platt vs temperature - when each is used
+
+| Method | Form | Parameters | Use when |
+|--------|------|-----------|----------|
+| Platt | `sigma(a*z + b)` | 2 (logistic fit) | Calibration curve is monotone-sigmoid; **low data** (Tier 3-4, segments) |
+| Isotonic | nonparametric monotone step fn | ~n_bins | Non-sigmoid / kinked curve; **high data** (Tier 1 props, win-prob blend) |
+| Temperature | `softmax(z / T)`, scalar `T` | 1 | Multi-class / logit rescaling where only sharpness (not shape) is off |
+
+The trade-off is bias vs variance: Platt's 2-parameter sigmoid is stable on small
+samples but cannot fix a non-sigmoid kink; isotonic fits any monotone shape but
+needs enough data per bin or it overfits the calibration set. This is exactly why
+the tier table below assigns **isotonic to Tier 1** (high volume) and **Platt to
+Tiers 2-5** (limited samples).
+
+### 3. Per-segment Platt calibration
+
+`src/prediction/segment_calibrator.py` (`SegmentCalibrator`) fits a **separate
+logistic Platt curve per contextual segment** (e.g. star players, back-to-back
+games) — a global calibrator can be well-calibrated on average yet biased inside
+a segment. `calibrate(y_proba, segment_name)` returns the segment curve's output,
+or the raw probability unchanged if that segment was never fit (safe passthrough).
+
+### 4. Prop over/under win-probability calibration
+
+`prop_model_stack.CalibrationLayer.train_win_prob()` maps the **edge** signal
+`edge = pred/line - 1` to `P(actual > line)` via isotonic regression, one model
+per stat (`calibration_win_{stat}.joblib`). When unfitted it falls back to a
+sigmoid `1 / (1 + exp(-edge/0.15))`, always clamped to `[0.05, 0.95]`. A
+`CohortCalibrator` can further condition the probability on minutes/usage/rest
+when available, falling back to the global layer otherwise.
+
+### Worked example: Shin devig end-to-end
+
+Given a market of `-115 / -105` (over/under) on a points prop:
+
+```
+1. American -> implied:  p_over_imp = 115/215 = 0.5349   p_under_imp = 105/205 = 0.5122
+2. Overround:            sum = 1.0471  (4.71% hold to remove)
+3. Shin solves z s.t. the z-corrected probs sum to 1:
+      p_true = (sqrt(z^2 + 4*(1-z)*p_imp^2 / sum) - z) / (2*(1-z))
+   For this market z ~ 0.012 -> p_over_fair ~ 0.513, p_under_fair ~ 0.487.
+4. Edge vs model:  if the model says P(over) = 0.55, edge = 0.55 - 0.513 = +3.7pp.
+```
+
+Shin is preferred over the symmetric power-sum (just dividing by the sum) because
+the favourite-longshot bias systematically overprices long shots; Shin's
+insider-trading `z` corrects that asymmetry and yields less biased fair
+probabilities. On NBA mainline props `z ~ 0.02-0.04`; on low-liquidity alternates
+it is higher. Implemented from scratch with a numerically stable bisection solver
+in `src/prediction/devig.py`, verified against published Shin theory by 7 unit
+tests.
+
+> **Honesty rail.** Calibration makes the probabilities *trustworthy*; it does
+> not manufacture an edge. The full-season backtest shows a well-calibrated model
+> that still does not beat the close. Calibration is the prerequisite for honest
+> Kelly sizing, not a profit claim.
+
+---
+
 ## Calibration Requirements by Model Tier
 
 | Tier | Calibration method | Minimum sample | Current status |

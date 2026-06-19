@@ -57,6 +57,31 @@ None of that belongs to basketball. It belongs to the infrastructure layer. The 
 
 Each domain exposes a `predictor.py` with `cohesive_read` (pregame surface: `predict` / `to_jd`) and `live_read` (in-game repricer: `predict_live`). One win-prob per sport anchors the whole surface so the moneyline, the totals, and the in-game repricer stay mutually coherent.
 
+### How "one win-prob anchors the whole surface" is realized
+
+A single calibrated number per matchup is the spine; every other market is derived from it, never fit independently. The mechanism, traced through the tennis adapter (`domains/tennis/predictor.py`) as the cleanest reference:
+
+```
+   raw rating model           leak-free recalibration         the anchor
+  (Elo / Poisson /     -->   (Platt / temperature /     -->   p(win)
+   NegBinom / NNLS)           isotonic, per sport)            ONE number
+                                                                  |
+                          +---------------------+-----------------+-------------------+
+                          v                     v                 v                   v
+                   moneyline / 1X2        totals (O/U)      spreads / sets       SGP / props
+                   = the anchor itself    serve/poss prob   bisected to the      joint samples
+                                          bisected so the   same anchor          drawn from the
+                                          MC engine's       (coherent margin)    SAME MC paths
+                                          marginal == anchor
+```
+
+- The rating model emits a *raw* probability; a per-sport leak-free recalibrator (`fit_platt` / temperature / isotonic) maps it to the calibrated anchor (`domains/tennis/predictor.py:89-91, 116`).
+- The Monte-Carlo / possession engine is then *bisected* so its match-win marginal equals the anchor (`serve_probs_from_winprob`, `domains/tennis/predictor.py:118-120`). Totals, set scores, and props fall out of the same paths, so they cannot disagree with the moneyline.
+- `to_jd()` returns one `JointDistribution` (`kernel.sim_framework`) over the coherent outcome space; `prob_side_win()` on it reproduces the anchor up to Monte-Carlo noise (`domains/tennis/predictor.py:144-159`). Coherence is MC-approximate, not an analytic identity -- the docstring states this honestly.
+- `predict_live()` re-prices the *same* anchor against realized state (race-to-N / inning / period repricer) and re-applies a leak-free in-game recalibrator (`domains/tennis/predictor.py:161-206`).
+
+This is what makes the surface auditable: there is exactly one place a probability can be wrong, and every market inherits it.
+
 ### Kernel vs. Adapter Responsibility Split
 
 | Concern | kernel/ | domains/<sport>/ |
@@ -73,6 +98,75 @@ Each domain exposes a `predictor.py` with `cohesive_read` (pregame surface: `pre
 | Stat definitions (props) | interface | per-stat schema |
 | Market structure (O/U lines, formats) | interface | book-specific adapter |
 | CV pipeline (origin/NBA lineage) | -- | NBA-specific (broadcast video) |
+
+### The kernel/adapter contract (what a NEW sport must implement)
+
+A new sport plugs into three frozen seams. Nothing in `kernel/` changes; the adapter is the only new code. The contract is enforced mechanically -- not by convention -- by `kernel.testing.conformance.check_sport_context()` and the cross-sport parity matrix.
+
+**Seam 1 -- `SportContext` (the runtime contract).** A domain supplies a `SportContext` (`kernel/config/context.py`) carrying nine typed sub-configs. `check_sport_context(ctx)` (`kernel/testing/conformance.py:40`) returns a list of human-readable violations; an empty list means conformant. Required pieces:
+
+| Field | Type | Hard requirement (conformance check) |
+|---|---|---|
+| `stats` | `SportStatRegistry` | non-empty `target_names()`; `loop_targets` ends with `("minutes","total","winprob","usage","sigma")`; `priced_order() subset of target_names()`; non-empty `sport_id` |
+| `clock` | `GameClockConfig` | `regulation_sec() > 0` unless `untimed=True` (tennis is untimed) |
+| `roster` | `RosterConfig` | `on_field_count >= 1`; `roster_size >= on_field_count` |
+| `game_state` | `GameStateConfig` | must expose `blowout_margin`, `clutch_margin`, `garbage_margin`, `final_margin_sigma`, `winprob_promotion_period`, ... |
+| `entities` | `EntityRegistry` protocol | runtime-checkable; must implement the protocol methods |
+| `pbp_mapper` | `PBPEventMapper` protocol | runtime-checkable |
+| `league_client` | `LeagueClient` protocol | runtime-checkable |
+| `atlas_schema` | `AtlasSchema` | present (empty sections allowed) |
+| `court` / `speed` | `CourtConfig` / `SpeedConfig` or `None` | optional; type-checked if present |
+
+**Seam 2 -- `feature_spec.py` (the train==inference contract).** A frozen `FeatureSpec` (`scripts/platformkit/feature_spec_core.py`) declares the base feature matrix as an ordered tuple of `FeatureField(name, source, default, cast, source2, op)`. `build_base_matrix(spec, df)` is the single derivation point, so the same columns are produced at train and at inference -- this closes the most expensive bug class (a feature wired at train that silently reads `0.0` at inference; see `improve/parity_check.py`). Tennis's full spec is five fields (`domains/tennis/feature_spec.py`): two `OP_DIFF` Elo diffs plus `best_of` / `rest_days_a` / `rest_days_b`.
+
+**Seam 3 -- `ingest_manifest.py` (the provenance / leak contract).** An `IngestManifest` (`scripts/platformkit/ingest_manifest_core.py`) tags every corpus with a `leak_class` and a freshness SLA. The four classes are load-bearing for leak-safety:
+
+- `LEAK_PRE_GAME` -- known before tip; safe as a pregame feature.
+- `LEAK_IN_GAME` -- accrues during play; in-game conditioning only.
+- `LEAK_POST_GAME` -- only known after the final whistle; settlement labels and training *targets*, never pregame features.
+- `LEAK_REFERENCE` -- static reference (parks, surfaces, rosters).
+
+The honesty anchor: a post-game box (e.g. tennis `match_stats`) is `LEAK_POST_GAME`, but the as-of features *derived* from it (`asof_features` / `asof_hold` / `asof_return`) are `LEAK_PRE_GAME` by construction, because `scripts.platformkit.asof_common` snapshots **before** updating (`domains/tennis/ingest_manifest.py`).
+
+**The 9-step playbook** (codified in `scripts/platformkit/new_sport_scaffold.py`) to add a sport, e.g. NFL:
+
+```
+1. Ingest corpora to data/domains/<sport>/ (games, odds, ...).
+2. python -m data_registry.inventory scan        # census sees non-empty corpora
+3. python -m scripts.platformkit.new_sport_scaffold <sport> --write
+4. Edit domains/<sport>/feature_spec.py fields to match the adapter base matrix.
+5. Edit domains/<sport>/ingest_manifest.py sources + leak_class + SLA.
+6. Add <sport> to scripts.platformkit.parity_matrix.SPORTS; run it -> all cells green.
+7. Write a guarded real-adapter parity test (byte-equal base matrix).
+8. Build a depth as-of builder via scripts.platformkit.asof_common; eval + gate it.
+9. Record the honest gate verdict (REJECT / MATCH) in the reject ledger.
+```
+
+The scaffolder stamps valid-out-of-the-box `__init__` / `feature_spec` / `ingest_manifest` stubs (a toy rating-diff + rest field, a games + odds source); you then edit them to the real adapter and prove byte-equal parity. Steps 8-9 are where the honesty discipline lives: most depth signals are expected to REJECT, and a recorded REJECT is a first-class result.
+
+### The parity-matrix mechanism
+
+`scripts/platformkit/parity_matrix.py` is one fail-closed green/red grid over `SPORTS x {census, manifest, feature_spec}`. It is pure-offline (imports only the domain decl modules + `data_registry`) and runs in under a few seconds with no torch and no app boot.
+
+```
+                 census          manifest        feature_spec
+basketball_nba   green           green           green
+mlb              green           green           green
+soccer           green           green           green
+soccer_intl      green           n/a             n/a          <- census-only (no decl seam yet)
+tennis           green           green           green
+                 -------------------------------------------
+PARITY: GREEN (0 red cells)
+```
+
+Each cell is computed independently (`parity_matrix.py:65-116`):
+- **census** -- `scan_corpora` finds the sport's corpora and `check_drift` confirms none required is 0-row (RED on missing/empty).
+- **manifest** -- `domains.<sport>.ingest_manifest` both validates structurally (`man.validate()`) AND every declared source exists + is non-empty in the live census (`man.validate_against_inventory(inv)`).
+- **feature_spec** -- `domains.<sport>.feature_spec` loads, has a non-empty frozen catalog (`catalog_hash()`), and `build_base_matrix` produces exactly `n_features()` columns with matching names (structural parity; byte-equal-to-adapter parity is proven separately per-sport in `tests/platformkit/`).
+
+The grid is **fail-closed with a tri-state**: a dimension a sport has *not built yet* is `n/a` (gray) and does NOT fail the gate; a dimension that is PRESENT-but-broken is `red` and DOES (`is_green()` returns True only if no resolvable cell is RED -- CLI exit 2 otherwise, `parity_matrix.py:131-163`). `soccer_intl` is intentionally census-only (a thin international-fixtures predictor without the full decl seam), so its manifest/feature_spec cells are `n/a`, not red.
+
+Two AST-only guards keep the seams honest at the import layer (`scripts/platformkit/check_import_contract.py`): **kernel purity** (`kernel/` may not import `src.*` / `domains.*` / `api.*` / `scripts.*`) and the **cross-adapter ban** (`domains/<a>/` may not import `domains/<b>/`). These never execute the inspected files.
 
 ---
 
@@ -151,6 +245,31 @@ The hard-won lessons compound too:
 - **Honest nulls and self-caught retractions are successes:** the rigor IS the product
 
 Each lesson is encoded in the kernel as a hard gate or a documented invariant. A new adapter inherits all of them on day one.
+
+---
+
+## Module Map (path -> responsibility)
+
+| Layer | Module(s) | Responsibility |
+|---|---|---|
+| kernel / config | `kernel/config/{context,stats,clock,roster,game_state,entities,pbp,roster,court,speed}.py` | The nine typed sub-configs of `SportContext` -- the runtime contract |
+| kernel / conformance | `kernel/testing/conformance.py` | `check_sport_context()` -- mechanical adapter validation |
+| kernel / sim | `kernel/sim_framework/` (+ `joint/`) | Sport-blind Monte-Carlo path framework; `JointDistribution` |
+| kernel / validation | `kernel/validation/proof_metrics.py` | Brier / RMSE / ECE proof metrics, sport-blind |
+| feature seam | `scripts/platformkit/feature_spec_core.py` | `FeatureSpec` / `FeatureField` / `build_base_matrix` (train==inference) |
+| provenance seam | `scripts/platformkit/ingest_manifest_core.py` | `IngestManifest` / leak-class constants / freshness SLA |
+| parity gate | `scripts/platformkit/parity_matrix.py` | Fail-closed census x manifest x feature_spec grid |
+| import guards | `scripts/platformkit/check_import_contract.py` | Kernel-purity + cross-adapter-ban (AST-only) |
+| new-sport codegen | `scripts/platformkit/new_sport_scaffold.py` | Stamp the three decl seams; the 9-step playbook |
+| train/infer parity | `improve/parity_check.py` | `parity_ok()` -- catch silent zero-read feature wiring bugs |
+| per-sport adapter | `domains/<sport>/{predictor,feature_spec,ingest_manifest,adapter}.py` | The only new code per sport |
+| always-on stack | `supervisor/manifest.py`, `boot.ps1` | Process inventory + DAG-ordered boot (see PLATFORM_TOOLING) |
+| serving | `predict_service/{app,produce,assemble,scheduler,store,contracts}.py` | Auto-API (:8099) + producer; one calibrated envelope per sport |
+
+For the tooling CLIs, proof-module surface, supervisor process table, and the
+robustness test matrix see **[PLATFORM_TOOLING.md](PLATFORM_TOOLING.md)**. For the
+end-to-end CV-origin map see **[../ARCHITECTURE.md](../ARCHITECTURE.md)**; for the six
+core decision systems see **[architecture/system-overview.md](architecture/system-overview.md)**.
 
 ---
 
