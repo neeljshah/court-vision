@@ -295,3 +295,8 @@ _fetch_gsw_pbp.py   → scripts/debug/
 | Trained model artifacts | `data/models/` |
 | NBA API cache | `data/nba/` |
 | External data | `data/external/` |
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

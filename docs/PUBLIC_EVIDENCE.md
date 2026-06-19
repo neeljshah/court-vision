@@ -128,3 +128,8 @@ Full do-not-claim list with source-code root causes: **[JOB_EVIDENCE_PACKET.md](
 | CV pipeline deep-dive | [CV_TRACKING.md](CV_TRACKING.md) |
 
 *Last verified: 2026-06-11. Numbers reconciled to the leak-free audited figures in JOB_EVIDENCE_PACKET.md.*
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

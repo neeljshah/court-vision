@@ -39,3 +39,8 @@ Historical scratch lists included:
 - Pod temp diffs for missing/candidate game IDs
 
 These are archived here for reference and removed from repository root to keep the project clean.
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](../INDEX.md) - [Home](../../README.md) - [Glossary](../GLOSSARY.md)

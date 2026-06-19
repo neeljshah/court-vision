@@ -240,3 +240,8 @@ python -c "from src.prediction.win_probability import train; train()"
 
 See also: [docs/DATA.md](docs/DATA.md) · [docs/BETTING.md](docs/BETTING.md) ·
 [docs/DEMO.md](docs/DEMO.md) · [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md)
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](docs/INDEX.md) - [Home](README.md) - [Glossary](docs/GLOSSARY.md)

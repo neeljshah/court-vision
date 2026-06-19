@@ -213,3 +213,8 @@ Release v0.14.0-80g ships the game list, seeds, pod config, and SHA256 of every 
 ---
 
 *See [data-pipeline.md](data-pipeline.md) for the ingest system. See [system-overview.md](../architecture/system-overview.md) for the full system architecture that the API serves.*
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](../INDEX.md) - [Home](../../README.md) - [Glossary](../GLOSSARY.md)

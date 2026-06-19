@@ -152,3 +152,8 @@ replays the complete daily flow including:
 
 This becomes a regression test: run after every model change to catch P&L regressions
 before deploy.
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

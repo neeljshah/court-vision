@@ -136,3 +136,8 @@ never fabricates a number.
 *edge_claimed = False. All numbers here are calibration / sharpness / BSS vs the devigged
 close, never a $ edge. Honesty truth-source: [docs/JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md).
 The retracted measurement artifacts listed there appear nowhere on this page.*
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

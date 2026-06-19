@@ -4,3 +4,8 @@
 > Archived original: `docs/_archive/SYSTEM_OVERVIEW_archived_2026-05-18.md`
 
 See [ARCHITECTURE.md](../ARCHITECTURE.md) for the current system architecture.
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

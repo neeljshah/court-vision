@@ -178,3 +178,8 @@ is already running — and it already correctly caught the inflated numbers.
 *For Gate 1 step-by-step: [vault/Plans/Gate 1 Validation.md](../vault/Plans/Gate%201%20Validation.md)*
 
 *Last verified: 2026-06-11*
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

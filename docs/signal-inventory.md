@@ -188,3 +188,8 @@ production-ready NLP model.**
 | Market microstructure | ~6 | Partial (filter only) |
 | Sentiment / NLP | ~5 | Partial |
 | **Total** | **~69** | |
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

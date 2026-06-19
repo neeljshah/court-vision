@@ -438,3 +438,8 @@ host, captured CLV), not predictive accuracy [01][02][06][12].
 genuinely strong; the project is honestly AT its calibration ceiling on efficient pregame
 markets, and the work that remains is structural maturity + forward CLV accrual -- not a
 hunt for an edge that the system has correctly proven is mostly not there.
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](../../INDEX.md) - [Home](../../../README.md) - [Glossary](../../GLOSSARY.md)

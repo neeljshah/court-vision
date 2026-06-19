@@ -92,3 +92,8 @@ RULES
 ## Related
 - `docs/models/MODEL_UNIVERSE.md` — the 350-model master index this prompt consumes
 - `docs/ML_MODELS.md` — current trained-artifact reference
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](../INDEX.md) - [Home](../../README.md) - [Glossary](../GLOSSARY.md)

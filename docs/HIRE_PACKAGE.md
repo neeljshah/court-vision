@@ -184,3 +184,8 @@ Contact: [neeljshah22@gmail.com](mailto:neeljshah22@gmail.com)
 edge; `edge_claimed = False`. The single honesty truth-source is
 [docs/JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md); the retracted measurement artifacts
 listed there appear on this page only in explicit retraction context (section 2D).*
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

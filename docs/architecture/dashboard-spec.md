@@ -229,3 +229,8 @@ Mobile: panels stack vertically with tab navigation. Opportunity Feed as default
 ---
 
 *See [system-overview.md](system-overview.md) for how data flows into the dashboard. See [execution-engine.md](execution-engine.md) for the book router the dashboard monitors.*
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](../INDEX.md) - [Home](../../README.md) - [Glossary](../GLOSSARY.md)

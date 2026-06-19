@@ -230,3 +230,8 @@ out of git both because they're large and because they encode the proprietary de
 **schema and counts on this page are the public commitment**.
 
 *Last verified: 2026-06-11.*
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

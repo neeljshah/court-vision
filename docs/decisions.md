@@ -237,3 +237,8 @@ Layer 7: Live state (current score, fatigue, momentum)    — real-time
 | Storing video frames in DB | 30fps × 48min = 86,400 frames per game — disk prohibitive, CVs read from file |
 | Neural net for props at current data scale | XGBoost consistently wins on tabular data at <100K rows |
 | Using only box-score features | No edge vs. public tools; spatial CV data is the entire moat |
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

@@ -755,3 +755,8 @@ Coverage floor enforced at 30%; core betting-math tests always required to pass.
 *Related: [`ARCHITECTURE.md`](../ARCHITECTURE.md) · [`docs/ML_MODELS.md`](ML_MODELS.md) · [`docs/CV_TRACKING.md`](CV_TRACKING.md) · [`docs/JOB_EVIDENCE_PACKET.md`](JOB_EVIDENCE_PACKET.md)*
 
 *Last verified: 2026-06-11*
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

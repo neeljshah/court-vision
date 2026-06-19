@@ -286,3 +286,8 @@ Updated continuously during the season:
 4. **PBP coverage**: 3,627/3,685 games (98.4%) have play-by-play data. Remaining 58 are preseason games.
 
 5. **Shot chart coverage**: 221,866 shots from 569 players across 3 seasons. Each shot has: zone, distance, shot type, action type, and made/missed label — ready for xFG v1 training.
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

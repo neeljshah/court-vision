@@ -231,3 +231,8 @@ webapp
 *.pyc
 __pycache__
 ```
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

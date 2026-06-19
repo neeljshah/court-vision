@@ -224,3 +224,8 @@ rigor came from.
 honesty truth-source is [docs/JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md); retracted numbers
 appear only there and in [docs/KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md), in explicit retraction
 context, and never here.*
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

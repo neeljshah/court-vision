@@ -162,3 +162,8 @@ The joint probability naturally captures game-level correlation (all legs that d
 ---
 
 *See [system-overview.md](system-overview.md) for the full system context. See [calibration.md](../models/calibration.md) for probability calibration methodology.*
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](../INDEX.md) - [Home](../../README.md) - [Glossary](../GLOSSARY.md)

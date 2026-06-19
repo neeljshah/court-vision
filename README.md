@@ -25,6 +25,23 @@ validation methodology are mine. Open to **ML / data / quant / founding-engineer
 
 ---
 
+## Explore the whole system, link by link
+
+This README is the front door. **[docs/INDEX.md](docs/INDEX.md) is the full map** -- every tracked
+document, organized by role and by funnel stage, so you can follow links from the raw data feeds
+all the way through the models, the simulator, the calibration gates, line-shopping and execution,
+the live in-game repricer, and the autonomous self-improvement loop. It is deep on purpose: a
+thorough read is a multi-day tour.
+
+- **New here?** -> [docs/INDEX.md](docs/INDEX.md) (the map) and the [GLOSSARY](docs/GLOSSARY.md)
+  (CLV, leak-free, walk-forward, Shin devig, Brier, Kelly, ...)
+- **Want the honest numbers first?** -> [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md)
+- **Want the guided tour?** -> [docs/research/project-deep-dive/00-MASTER.md](docs/research/project-deep-dive/00-MASTER.md)
+  (13-chapter end-to-end walkthrough)
+- **How AI built it?** -> [docs/BUILT_WITH_CLAUDE.md](docs/BUILT_WITH_CLAUDE.md)
+
+---
+
 ## How the whole brain works together
 
 Everything is one funnel, and every stage feeds the next. A model change in one place
@@ -273,6 +290,9 @@ CV internals: [docs/CV_TRACKING.md](docs/CV_TRACKING.md).
 
 | Document | What it covers |
 |----------|----------------|
+| [docs/INDEX.md](docs/INDEX.md) | **The full map** -- every document, by role and by funnel stage (start here to go deep) |
+| [docs/BUILT_WITH_CLAUDE.md](docs/BUILT_WITH_CLAUDE.md) | The agentic build pipeline -- Opus orchestrator + Sonnet executors under hard ship-gates |
+| [docs/GLOSSARY.md](docs/GLOSSARY.md) | Every term defined once (CLV, leak-free, walk-forward, Shin devig, Brier, Kelly, ...) |
 | [docs/research/edge-intelligence/README.md](docs/research/edge-intelligence/README.md) | The deep-intelligence corpus index -- the brain's map of every edge, source, and lever |
 | [docs/PREDICTOR_PLATFORM.md](docs/PREDICTOR_PLATFORM.md) | Full platform: thesis, scorecards, architecture, why it sells |
 | [docs/PROOFS.md](docs/PROOFS.md) | The provability index -- every claim -> the runnable leak-free proof |
@@ -292,7 +312,9 @@ leak tests, CLV ledger. **CV lineage:** YOLOv8n, OpenCV, SIFT homography, OSNet 
 **Serving:** FastAPI, uvicorn, SSE, parquet feature store, compute-once snapshot service.
 **AI agents:** Claude Code -- Opus orchestrator + parallel Sonnet/Opus executors under hard ship
 gates (this codebase, including the ~100-file intelligence corpus, was built by that pipeline
-under human direction).
+under human direction). The runtime is **Claude-free** -- classical models + a deterministic
+self-improve loop, no LLM on the prediction path. Full account:
+[docs/BUILT_WITH_CLAUDE.md](docs/BUILT_WITH_CLAUDE.md).
 
 ---
 

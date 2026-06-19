@@ -132,3 +132,8 @@ When filing issues, include:
 ---
 
 *Last verified: 2026-06-15*
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](docs/INDEX.md) - [Home](README.md) - [Glossary](docs/GLOSSARY.md)

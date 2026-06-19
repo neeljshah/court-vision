@@ -231,3 +231,8 @@ the repo will catch each one — which is disqualifying for a no-degree candidat
 4060) — pipeline run on real video, FastAPI app booted to count routes, ~170+ tests executed,
 schemas/artifacts read directly, headline graders read line-by-line. No repo files were edited
 during the audit. Last reconciled: 2026-06-11.*
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

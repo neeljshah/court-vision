@@ -242,3 +242,8 @@ def get_data(season: str, force: bool = False) -> dict:
 
 See also: [docs/BETTING.md](BETTING.md) · [docs/DEMO.md](DEMO.md) ·
 [PREDICTIONS_QUICKSTART.md](../PREDICTIONS_QUICKSTART.md)
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

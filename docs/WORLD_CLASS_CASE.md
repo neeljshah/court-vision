@@ -145,3 +145,8 @@ If execution remains focused on prediction quality and evidence quality, CourtVi
 - one of the strongest NBA prediction engines in the market,
 - a fund-grade analytics and decision system,
 - and a platform that can eventually extend to additional sports from a proven core.
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

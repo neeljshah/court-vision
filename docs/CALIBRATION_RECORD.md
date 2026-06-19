@@ -79,3 +79,8 @@ python -m scripts.platformkit.ingame_scoreboard --corpus tests/fixtures/proof
 ## 5. VALIDATION_PENDING (human-run)
 
 The numbers above reproduce the COMMITTED FIXTURES only. A real-corpus OOS-vs-close calibration result is a human-run step on local/gitignored corpora; no real-data win is claimed here. The in-game section 3 numbers are real-corpus OOS (NBA VALIDATION_PENDING on a fresh clone). See docs/SELL-READINESS.md and docs/JOB_EVIDENCE_PACKET.md.
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

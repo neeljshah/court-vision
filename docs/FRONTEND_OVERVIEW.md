@@ -103,3 +103,8 @@ Claude-powered assistant with tool access to all model outputs and analytics.
 | Real-time updates | WebSocket (live win probability) |
 | AI Chat | Claude API with tool use |
 | Database | PostgreSQL |
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

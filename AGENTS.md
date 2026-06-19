@@ -82,3 +82,8 @@ Most candidates are correctly rejected. A correct reject is not a failure — it
 - Multi-sport `kernel/` refactor is planned but not started; current code is NBA-only
 
 Full gap inventory: [docs/KNOWN_LIMITATIONS.md](docs/KNOWN_LIMITATIONS.md).
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](docs/INDEX.md) - [Home](README.md) - [Glossary](docs/GLOSSARY.md)

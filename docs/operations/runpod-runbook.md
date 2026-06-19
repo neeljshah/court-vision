@@ -330,3 +330,8 @@ Next steps (see Phase 1 in [MASTER_PLAN.md](../../MASTER_PLAN.md)):
 ---
 
 *See [data-pipeline.md](data-pipeline.md) for the ingest system architecture. See [cv-pipeline.md](../architecture/cv-pipeline.md) for the pipeline being run on the pod.*
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](../INDEX.md) - [Home](../../README.md) - [Glossary](../GLOSSARY.md)

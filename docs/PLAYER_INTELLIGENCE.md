@@ -179,3 +179,8 @@ python scripts/intelligence/build_all.py  # ~25 min on dev box
 Data inputs required: `data/tracking/*` (CV tracking), `data/nba/*` (gamelogs), `data/cache/profiles/PLAYER_REPORTS.json`, `data/cache/profiles/TEAM_REPORTS.json`.
 
 The per-player vault notes (1,249 `.md` files) are gitignored — regenerable from `PLAYER_REPORTS.json`. See [vault/Intelligence/Players_Index.md](../vault/Intelligence/Players_Index.md) for the full browsable index (grouped by team and by archetype) in the local Obsidian vault.
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

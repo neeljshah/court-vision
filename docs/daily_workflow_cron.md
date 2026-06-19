@@ -192,3 +192,8 @@ yesterday in one invocation. Each writes its own log entry.
 - Logging is append-only and idempotent: re-running an evening on the
   same date overwrites the snapshot file (deterministic name) but
   always appends a fresh log entry so you have an audit trail.
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

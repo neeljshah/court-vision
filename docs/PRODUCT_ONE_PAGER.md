@@ -137,3 +137,8 @@ platform -- but the CV-derived features carry roughly zero measured predictive v
 (SHAP ~ 0 in production), so the CV layer is not sold as an edge. The product is the converged
 calibrated predictor above. See [`JOB_EVIDENCE_PACKET.md`](JOB_EVIDENCE_PACKET.md) for the full
 audited account of the CV pipeline as engineering evidence.
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

@@ -87,3 +87,8 @@ python -m scripts.platformkit.predict_matchup --sport nba --home BOS --away LAL
 
 All four run with no network and no `data/`. A BSS<=0 / MATCHES / market-efficient result
 is the HONEST, expected outcome -- not a failure.
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

@@ -183,3 +183,8 @@ team-strength markets and is BEHIND on totals / ATP only by freshness data we ca
 IN-GAME conditioning (pregame intelligence prior + realized state) is the decisive,
 measured, calibrated, and delivered edge across all 4 sports -- and no $ edge is ever
 claimed.
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

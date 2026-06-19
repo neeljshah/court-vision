@@ -269,3 +269,8 @@ Self-improving data collection loop for player statistics:
 | Wire PostgreSQL writes (ISSUE-010) | Stop overwriting tracking_data.csv | 2 days |
 | Shot enrichment via NBA PBP (ISSUE-009) | Enable xFG v2 training | 3 days |
 | Build event_aggregator.py | Unlock CV behavioral features | 2 days |
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

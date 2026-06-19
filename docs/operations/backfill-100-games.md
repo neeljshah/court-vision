@@ -165,3 +165,8 @@ If any of these are off across multiple games → file an issue + investigate be
 | 4× A100 40G | $4.40 | $220 | $660 |
 
 Add ~$2-5 for B2 storage of the output archive (per 100 games).
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](../INDEX.md) - [Home](../../README.md) - [Glossary](../GLOSSARY.md)

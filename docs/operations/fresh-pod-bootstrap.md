@@ -111,3 +111,8 @@ All 3 should succeed. If any fails, the bootstrap left something out — file a 
 | New CUDA on RunPod base image breaks pinned torch wheel | Medium | Update `requirements.txt` torch line + re-test. |
 | ONNX runtime version mismatch (osnet_x025.onnx) | Low | Pinned in requirements.txt. |
 | YouTube blocks fetch_games.py | Already happened (Android player workaround) | Keep B2 as primary video source. |
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](../INDEX.md) - [Home](../../README.md) - [Glossary](../GLOSSARY.md)

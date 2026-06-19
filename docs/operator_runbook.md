@@ -357,3 +357,8 @@ python scripts/mobile_html_server.py --port 8766
   inspecting the output.
 - **Always** check `vault/Improvements/alerts.md` before running anything
   marked "force / rebuild / recover".
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

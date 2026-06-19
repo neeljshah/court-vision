@@ -231,3 +231,8 @@ python src/prediction/player_props.py --train
 # 5. Run tests to verify nothing broke
 python -m pytest tests/ -q
 ```
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

@@ -219,3 +219,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ---
 *Last verified: 2026-05-25*
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](docs/INDEX.md) - [Home](README.md) - [Glossary](docs/GLOSSARY.md)

@@ -210,3 +210,8 @@ Every harness obeys the same binding rules, and they are visible in the code, no
   inflated numbers are listed there (and in `docs/KNOWN_LIMITATIONS.md`) in explicit
   retraction context and appear nowhere else. The strongest signal in this repo is that the
   instruments above caught and retracted their own over-claims.
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

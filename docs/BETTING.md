@@ -233,3 +233,8 @@ win-probability inputs.
 See also: [docs/DATA.md](DATA.md) · [docs/DEMO.md](DEMO.md) ·
 [PREDICTIONS_QUICKSTART.md](../PREDICTIONS_QUICKSTART.md) ·
 [docs/JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md)
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

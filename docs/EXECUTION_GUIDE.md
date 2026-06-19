@@ -192,3 +192,8 @@ Your data will be ready for:
 - Can run multiple instances in parallel if needed (they coordinate via file locks)
 - Safe to interrupt (scripts skip already-processed games)
 - Results are **reproducible** (same code + same video = same output)
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

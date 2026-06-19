@@ -215,3 +215,8 @@ inflated claim is harder. That's what CourtVision is.
 *For the honest numbers and do-not-claim list: [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md)*
 *For the platform roadmap: [docs/PLATFORM.md](docs/PLATFORM.md)*
 *For open gaps and limitations: [docs/KNOWN_LIMITATIONS.md](docs/KNOWN_LIMITATIONS.md)*
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](docs/INDEX.md) - [Home](README.md) - [Glossary](docs/GLOSSARY.md)
