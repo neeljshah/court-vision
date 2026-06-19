@@ -250,3 +250,8 @@ See [vault/Research/Renaissance Methodology.md](../vault/Research/Renaissance%20
 - Venn, A. et al. (2018). *A Unified Theory of Conformal Prediction.*
 - Cervone, D. et al. (2016). *A Multiresolution Stochastic Process Model for Predicting
   Basketball Possession Outcomes.* JASA.
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

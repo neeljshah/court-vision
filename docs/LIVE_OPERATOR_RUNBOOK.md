@@ -117,3 +117,8 @@ python scripts/fetch_season_games_2025_26.py --refresh
 - `scripts/operator_settle_eod.sh DATE` — stops daemons, settles, and prints P&L + CLV.
 
 Both accept `--dry-run` to print the planned command sequence without executing.
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

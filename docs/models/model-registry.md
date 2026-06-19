@@ -163,3 +163,8 @@ All Tier 1–2B models are registered in `data/models/model_registry.json` and s
 ---
 
 *See [feature-inventory.md](feature-inventory.md) for what goes into each model. See [calibration.md](calibration.md) for how model outputs are calibrated. See [cv-pipeline.md](../architecture/cv-pipeline.md) for how CV features are generated.*
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](../INDEX.md) - [Home](../../README.md) - [Glossary](../GLOSSARY.md)

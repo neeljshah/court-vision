@@ -460,3 +460,8 @@ These constraints are load-bearing. Violating them causes silent failures or OOM
 *Related: [`README.md`](README.md) · [`docs/CV_TRACKING.md`](docs/CV_TRACKING.md) · [`docs/ML_MODELS.md`](docs/ML_MODELS.md) · [`docs/API.md`](docs/API.md) · [`docs/JOB_EVIDENCE_PACKET.md`](docs/JOB_EVIDENCE_PACKET.md)*
 
 *Last verified: 2026-06-11*
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](docs/INDEX.md) - [Home](README.md) - [Glossary](docs/GLOSSARY.md)

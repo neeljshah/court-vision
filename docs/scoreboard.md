@@ -41,3 +41,8 @@ Use this file as the single weekly execution snapshot. Update once per week (sam
 ## Change Log
 
 - `YYYY-MM-DD`: initialized scoreboard template
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

@@ -328,3 +328,8 @@ Features that appear in top-5 importance for 3+ models:
 | ts_pct / efg_pct | Props (pts, 3pm) | 8% |
 
 **Interpretation:** Rolling form (last5) is the strongest predictor for props. Team quality metrics dominate game-level predictions. Rest/travel has consistent 4-9% contribution across all models — underrated feature in public tools.
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

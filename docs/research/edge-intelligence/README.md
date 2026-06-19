@@ -73,3 +73,8 @@ For a sport: read <sport>/00-edge-map.md -> get-to-edge-plan.md -> the relevant 
 _framework/inefficiencies/ recipe. For a build: _wiring/ + _scrapers/deep/ are the specs.
 For the proof bar: _framework/proof-standards.md + _proof/edge-ledger.md. Every claim is
 tiered; nothing is a $-edge until CLV proves it on paper. Cut where the ledger says no edge.
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](../../INDEX.md) - [Home](../../../README.md) - [Glossary](../../GLOSSARY.md)

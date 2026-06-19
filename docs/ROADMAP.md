@@ -180,3 +180,8 @@ bash scripts/watch_and_sync.sh
 
 ---
 *Last verified: 2026-05-25*
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

@@ -107,3 +107,8 @@ The **graph layer**  -  Obsidian vault structure, per-sport playstyle / archetyp
 style-matchup / scouting notes, cross-sport taxonomy, and graph dimensions
 (`world_model`, `base_rates`, `calibration_segments`)  -  is documented in
 [docs/MEMORY_GRAPH.md](MEMORY_GRAPH.md).
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

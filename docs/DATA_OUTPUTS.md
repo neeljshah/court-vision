@@ -198,3 +198,8 @@ Computed from the above for model input:
 - Fatigue index (minutes load, schedule density)
 - Strength-of-schedule adjustment
 - Clutch performance metrics (last 5 minutes, ≤5 point game)
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

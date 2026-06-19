@@ -276,3 +276,8 @@ Next.js frontend (webapp/)
 
 See also: [docs/PREDICTOR_PLATFORM.md](PREDICTOR_PLATFORM.md) |
 [docs/PROOFS.md](PROOFS.md) | [docs/PROJECT_INDEX.md](PROJECT_INDEX.md)
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

@@ -95,3 +95,8 @@ Binding invariants live in `.claude/rules/` and load via these imports (do not r
 
 ### Vault (Obsidian Brain) — auto-maintenance RETIRED
 `vault/` is brain-only + gitignored now; the old per-note targets (Model Performance / Open Issues / Build Phases / Signal Inventory) are ARCHIVED and the Stop/SessionStart hooks SKIP these writes ("brain-only vault detected"). Don't hand-update vault notes — durable learnings go to auto-memory instead.
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](docs/INDEX.md) - [Home](README.md) - [Glossary](docs/GLOSSARY.md)

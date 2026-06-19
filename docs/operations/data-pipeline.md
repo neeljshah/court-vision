@@ -245,3 +245,8 @@ After 80 games complete:
 ---
 
 *See [runpod-runbook.md](runpod-runbook.md) for pod-specific setup. See [cv-pipeline.md](../architecture/cv-pipeline.md) for what the pipeline does with each video.*
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](../INDEX.md) - [Home](../../README.md) - [Glossary](../GLOSSARY.md)

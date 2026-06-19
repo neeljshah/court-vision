@@ -223,3 +223,8 @@ remain green — **0 regressions**.
 | `scripts/setup_discord_webhook.ps1` | webhook helper |
 | `scripts/live_orchestrator.py`   | entry point |
 | `scripts/daemon_registry.json`   | watchdog registration (edited) |
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

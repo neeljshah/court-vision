@@ -133,3 +133,8 @@ docs document the CV pipeline as engineering evidence:
 
 *Numbers are calibration / sharpness only, never a dollar edge. The single honesty
 truth-source is [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md).*
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

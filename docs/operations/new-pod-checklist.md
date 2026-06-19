@@ -203,3 +203,8 @@ Plus storage. Total $10-50 for the 100-game push.
 - [ ] `python scripts/diagnose_tracking_quality.py --from-log` shows ≥80 games at B+
 - [ ] `data/player_cv_per_game.parquet` has ≥1,500 player-game rows
 - [ ] `python scripts/prop_pergame_walk_forward.py` against `cvb_*` columns produces a result file
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](../INDEX.md) - [Home](../../README.md) - [Glossary](../GLOSSARY.md)

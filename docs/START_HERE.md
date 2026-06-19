@@ -214,3 +214,8 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for code style, PR workflow, and no-to
 
 ---
 *Last verified: 2026-05-28 against CHANGELOG.md [0.17.0] + iter61 sim-reconciliation.*
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

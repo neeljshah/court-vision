@@ -227,3 +227,8 @@ When discussing CourtVision publicly:
 ---
 
 *Last verified: 2026-06-11. Audit trail: [`../CHANGELOG.md`](../CHANGELOG.md).*
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

@@ -175,3 +175,8 @@ This prevents any future-game information from leaking into training features â€
 ---
 
 *See [model-registry.md](model-registry.md) for which models use which feature classes. See [cv-pipeline.md](../architecture/cv-pipeline.md) for how CV features are computed. See [edge-taxonomy.md](../research/edge-taxonomy.md) for the competitive context of each feature class.*
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](../INDEX.md) - [Home](../../README.md) - [Glossary](../GLOSSARY.md)

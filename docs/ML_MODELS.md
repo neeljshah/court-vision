@@ -405,3 +405,8 @@ coverage exists. Current SHAP ≈ 0 reflects data scarcity, not model exclusion.
 *Related: [`ARCHITECTURE.md`](../ARCHITECTURE.md) · [`docs/CV_TRACKING.md`](CV_TRACKING.md) · [`docs/API.md`](API.md) · [`docs/JOB_EVIDENCE_PACKET.md`](JOB_EVIDENCE_PACKET.md)*
 
 *Last verified: 2026-06-11*
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

@@ -190,3 +190,8 @@ See [runpod-runbook.md](../operations/runpod-runbook.md) for full pod configurat
 ---
 
 *See [system-overview.md](system-overview.md) for where CV features fit in the full pipeline. See [feature-inventory.md](../models/feature-inventory.md) for all features including non-CV signals.*
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](../INDEX.md) - [Home](../../README.md) - [Glossary](../GLOSSARY.md)

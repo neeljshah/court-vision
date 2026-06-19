@@ -69,3 +69,8 @@ These briefs were assembled by AI agents from web sources on 2026-06-16. The str
 are sound and grounded in the project's own measured state, but **verify volatile specifics** (exact CLI
 flags, version numbers, pricing, API field names) against current official docs before acting on them.
 Effort estimates are rough order-of-magnitude.
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](../../INDEX.md) - [Home](../../../README.md) - [Glossary](../../GLOSSARY.md)

@@ -177,3 +177,8 @@ Running `--build-residuals` then `--compute-corr` on the full dataset will fix t
 ---
 
 *See [model-registry.md](model-registry.md) for which models need calibration. See [validation-methodology.md](../research/validation-methodology.md) for how calibration fits into the overall edge-validation framework.*
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](../INDEX.md) - [Home](../../README.md) - [Glossary](../GLOSSARY.md)

@@ -168,3 +168,8 @@ The following conditions must all be met before `LIVE_BETTING=1` is set:
 | Circuit breaker events (last 7 days) | 0 |
 
 All six must pass simultaneously. Partial passes do not unlock live capital.
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

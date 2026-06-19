@@ -189,3 +189,8 @@ Cache: raw API responses saved to `data/nba/` — not re-fetched on subsequent r
 | `EMA_ALPHA` | 0.35 | Homography smoothing factor |
 | Kalman Q | 1e-2 | Process noise (position uncertainty) |
 | Kalman R | 0.1 | Measurement noise |
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

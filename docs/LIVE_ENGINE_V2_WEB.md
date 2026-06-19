@@ -216,3 +216,8 @@ return 200 from your backend.
 | `fly.toml`                     | Fly.io config |
 | `railway.json`                 | Railway config |
 | `Dockerfile.live_v2`           | container image |
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

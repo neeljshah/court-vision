@@ -49,3 +49,8 @@ In weekly triage, review all open issues by:
 1. `prio:p0` first,
 2. then `gate:*` coverage gaps,
 3. then unblock `state:blocked` items.
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

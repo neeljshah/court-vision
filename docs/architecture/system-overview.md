@@ -265,3 +265,8 @@ NBA API ────────────┼──→ Feature store (timestam
 ---
 
 *See [cv-pipeline.md](cv-pipeline.md) for the CV layer. See [possession-simulator.md](possession-simulator.md) for simulator mechanics. See [execution-engine.md](execution-engine.md) for book adapters and routing.*
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](../INDEX.md) - [Home](../../README.md) - [Glossary](../GLOSSARY.md)

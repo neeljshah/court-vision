@@ -182,3 +182,8 @@ The value of the platform is two things: engineering compounding (shared infrast
 ---
 
 *CourtVision is built by [Neel Shah](https://neelshahportfolio.netlify.app). Contact: [neeljshah22@gmail.com](mailto:neeljshah22@gmail.com)*
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)

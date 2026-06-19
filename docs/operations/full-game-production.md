@@ -118,3 +118,8 @@ cat data/phase_g_metrics.csv | tail -5
 | `PHASE_G_GAME_TIMEOUT` | 10800 | Per-game timeout in seconds (3 hours) |
 | `PHASE_G_STAGGER_S` | 60 | Seconds between worker starts |
 | `DECORD_ENABLE` | 0 | Set to 1 to use decord GPU decode (leaks — keep at 0) |
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](../INDEX.md) - [Home](../../README.md) - [Glossary](../GLOSSARY.md)

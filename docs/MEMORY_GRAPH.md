@@ -288,3 +288,8 @@ vault/Sports/
 `python scripts/platformkit/atlas/build_all.py --sport all --full`
 to refresh the vault. This doc describes the generators; the vault output is
 gitignored and local-only.*
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](INDEX.md) - [Home](../README.md) - [Glossary](GLOSSARY.md)
