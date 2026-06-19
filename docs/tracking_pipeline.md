@@ -1,5 +1,21 @@
 # Tracking Pipeline
 
+> Operational runbook for the per-frame tracking loop. For the stage-by-stage
+> deep dive with real algorithms + failure modes see
+> [`docs/CV_TRACKING.md`](CV_TRACKING.md) and
+> [`docs/architecture/cv-pipeline.md`](architecture/cv-pipeline.md). Honest numbers:
+> [`docs/JOB_EVIDENCE_PACKET.md`](JOB_EVIDENCE_PACKET.md).
+
+## Honest framing
+
+This pipeline outputs court coordinates, identities, and events from broadcast
+video at **~$0.10-0.13 per full game** on one consumer GPU. The downstream spatial
+features it produces are wired into the prop models but carry **SHAP importance
+~ 0.0** in production — real plumbing, not a demonstrated predictive edge. Position
+accuracy is **not** benchmarked against ground truth (no MOTA/IDF1); the active
+appearance model is the **HSV histogram**, not domain-adapted OSNet. Do not infer a
+CV moat from the schema below — it is lineage.
+
 ## Entry Points
 
 ```bash
@@ -189,6 +205,30 @@ Cache: raw API responses saved to `data/nba/` — not re-fetched on subsequent r
 | `EMA_ALPHA` | 0.35 | Homography smoothing factor |
 | Kalman Q | 1e-2 | Process noise (position uncertainty) |
 | Kalman R | 0.1 | Measurement noise |
+
+---
+
+## Known Failure Modes
+
+| Stage | Failure | Effect / mitigation |
+|---|---|---|
+| Homography | replay/graphic overlay or close panorama corrupts M | every court coord wrong; 2-frame confirm gate + EMA blend + drift re-anchor + last-valid fallback |
+| Ball | `ball_valid_pct = 0%` (`ball_track_suspended` stuck True, ~8% of games) | events fall back to last-known possessor coords; below 80% valid -> API-only features |
+| Tracking | ghost slots near stars; 10-slot ceiling | only ~5-6 stable slots; phantom eviction at `FREEZE_AGE=20`, speed/jump caps |
+| Identity | jersey-OCR noise wall (occlusion/rotation/overlay) | ~4% per-player attribution; aggregate team/position features ship-ready, per-player not |
+| Scoreboard | per-quarter `scoreboard_period` NaN / percentile-filled | per-quarter signals defeated; last-known caching on skipped frames |
+
+## Data Quality Gates
+
+| Gate | Threshold | Failure behavior |
+|---|---|---|
+| `ball_valid_pct` | >= 80% | fall back to API-only features |
+| Player re-ID coverage | >= 8 of 10 | excluded from spatial feature training set |
+| Homography error | below keypoint RMS threshold | fall back to last valid M; flag game |
+
+---
+
+*Related: [`docs/CV_TRACKING.md`](CV_TRACKING.md) - [`docs/architecture/cv-pipeline.md`](architecture/cv-pipeline.md) - [`docs/JOB_EVIDENCE_PACKET.md`](JOB_EVIDENCE_PACKET.md) - [`docs/INDEX.md`](INDEX.md)*
 
 
 ---

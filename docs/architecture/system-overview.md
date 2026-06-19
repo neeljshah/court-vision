@@ -226,6 +226,56 @@ See [MASTER_PLAN.md](../../MASTER_PLAN.md) (§ The 6 Core Systems) and [VISION.m
 
 ---
 
+## The Sport-Blind Kernel + Per-Sport Adapters
+
+The six systems above describe the original NBA decision instrument. The shipped
+platform generalizes it: the hard, compounding machinery (walk-forward gating,
+calibration, the Monte-Carlo framework, the discovery loop, devig/shadow logging)
+is sport-blind and lives in `kernel/`; the sport-specific pieces (data connectors,
+event taxonomy, stat definitions, market structures) are thin adapters under
+`domains/<sport>/`. Four sports — NBA, MLB, soccer, tennis — share one kernel and
+one prediction surface; adding a sport means writing the adapter, not rebuilding
+the machinery.
+
+```
+                         kernel/  (sport-blind)
+   loop  |  sim_framework  |  validation  |  decision  |  config  |  testing/conformance
+                                   ^  consumes the interface
+        +--------------+-----------+-----------+--------------+
+        |              |           |           |              |
+  domains/nba   domains/mlb  domains/soccer  domains/tennis  domains/soccer_intl
+   predictor.py    ...           ...            ...          (census-only)
+   feature_spec    feature_spec  feature_spec   feature_spec
+   ingest_manifest ingest_manif. ingest_manif.  ingest_manif.
+```
+
+**One calibrated win-prob anchors every market.** Each adapter's `predictor.py`
+emits a single calibrated win probability per matchup; the moneyline IS that
+number, and totals / spreads / set scores / props / SGP are all *derived* from it
+(the Monte-Carlo engine's marginal is bisected to the anchor, and the joint
+distribution is drawn from the same paths). There is exactly one place a
+probability can be wrong, and every market inherits it. `predict_live()`
+re-prices that same anchor against realized in-game state and re-applies a
+leak-free in-game recalibrator.
+
+**A new sport implements only three frozen seams** — `SportContext` (runtime
+contract, validated by `kernel/testing/conformance.py`), `feature_spec.py`
+(train==inference base matrix), and `ingest_manifest.py` (per-corpus leak-class +
+freshness SLA). A single fail-closed grid, `scripts/platformkit/parity_matrix.py`,
+keeps all sports green across `{census, manifest, feature_spec}`; a not-yet-built
+dimension is `n/a` and does not fail. The full contract, the 9-step new-sport
+playbook, and the parity mechanism are in [`../PLATFORM.md`](../PLATFORM.md); the
+tooling + supervisor process table are in
+[`../PLATFORM_TOOLING.md`](../PLATFORM_TOOLING.md).
+
+**Honest read:** pregame MATCHES the devigged close on team-strength markets and
+trails on totals/ATP only by freshness data a box model cannot see; in-game
+conditioning is a *calibration* win (lower Brier), not a dollar edge. No $ edge /
+ROI is claimed — the truth source is
+[`../JOB_EVIDENCE_PACKET.md`](../JOB_EVIDENCE_PACKET.md).
+
+---
+
 ## Data Flow Summary
 
 ```

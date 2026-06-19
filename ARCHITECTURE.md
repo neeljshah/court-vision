@@ -367,7 +367,45 @@ domains/
   └─ <sport>/      ← adding a sport = only the adapter layer
 ```
 
-Detailed plan: `.planning/platform/` (private). High-level vision: `docs/PLATFORM.md`.
+### Realized today — `kernel/` + `domains/<sport>/`, four sports
+
+The direction above is now built. Four domain adapters
+(`basketball_nba`, `mlb`, `soccer`, `tennis`) run on one sport-blind kernel; a
+fifth (`soccer_intl`) is a thin census-only international predictor. Each domain
+exposes a `predictor.py` with a pregame surface (`predict` / `to_jd`) and an
+in-game repricer (`predict_live`), and one calibrated win-prob per sport anchors
+the whole market surface (moneyline / totals / spreads / props / SGP stay mutually
+coherent because they are all derived from that one number — see
+[`docs/PLATFORM.md`](docs/PLATFORM.md) §"How one win-prob anchors the surface").
+
+A new sport implements only three frozen seams; nothing in `kernel/` changes:
+
+| Seam | Module | Contract |
+|------|--------|----------|
+| `SportContext` (runtime) | `kernel/config/context.py` + `kernel/testing/conformance.py` | nine typed sub-configs; `check_sport_context()` returns violations, empty == conformant |
+| `feature_spec.py` (train==inference) | `scripts/platformkit/feature_spec_core.py` | frozen `FeatureSpec`; `build_base_matrix` is the single derivation point |
+| `ingest_manifest.py` (provenance/leak) | `scripts/platformkit/ingest_manifest_core.py` | every corpus tagged `LEAK_{PRE,IN,POST}_GAME` / `REFERENCE` + freshness SLA |
+
+The whole thing is held green by one fail-closed grid,
+`scripts/platformkit/parity_matrix.py` (`SPORTS x {census, manifest,
+feature_spec}`): a not-yet-built dimension is `n/a` (does not fail), a
+present-but-broken dimension is `red` (CLI exit 2). Two AST-only import guards
+keep the layering honest — kernel purity (`kernel/` imports no
+`src`/`domains`/`api`/`scripts`) and the cross-adapter ban. The always-on stack
+(`predict_service` Auto-API on :8099 + a DAG-ordered supervisor) serves one
+calibrated envelope per sport.
+
+**Honest read on the platform numbers:** pregame MATCHES the devigged close on
+team-strength markets and is BEHIND on totals/ATP only by freshness data a box
+model cannot see; in-game conditioning is a *calibration* win (lower Brier), not
+a dollar edge. No $ edge / ROI is claimed for any sport — full per-sport detail
+and the do-not-claim list live in [`docs/JOB_EVIDENCE_PACKET.md`](docs/JOB_EVIDENCE_PACKET.md)
+and [`docs/KNOWN_LIMITATIONS.md`](docs/KNOWN_LIMITATIONS.md).
+
+Detailed plan: `.planning/platform/` (private). High-level vision + the full
+kernel/adapter contract and 9-step new-sport playbook:
+[`docs/PLATFORM.md`](docs/PLATFORM.md). Tooling + supervisor process table +
+robustness test matrix: [`docs/PLATFORM_TOOLING.md`](docs/PLATFORM_TOOLING.md).
 
 ---
 

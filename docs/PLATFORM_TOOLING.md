@@ -71,6 +71,64 @@ explicitly noted.
 
 ---
 
+## The Always-On Stack: Supervisor + Boot
+
+`boot.ps1` brings up the full local product; `supervisor/` owns the *inventory*
+and DAG ordering of what it launches. The supervisor describes (it does NOT
+spawn) the processes; each is a `ProcSpec` (`supervisor/manifest.py`) carrying a
+launch shape, an optional listen port, `depends_on` edges, a readiness probe, a
+restart policy, and env. `manifest(profile)` returns a topologically-sorted list
+(Kahn's algorithm, stable on insertion order); a cyclic `depends_on` graph is a
+config error and raises `CycleError`. Sport-blind: nothing in `supervisor/`
+imports a sport adapter.
+
+**Readiness probes** decide a process is READY (not merely alive): `tcp-port-open`,
+`http-200` (on a path), `heartbeat-file-fresh` (mtime within `fresh_sec`), or
+`none` (alive == ready). **Restart policy** is a capped exponential backoff
+(`min(cap, base * 2**(attempt-1))`); long-lived loops retry forever.
+
+| Process (ProcSpec) | Module | Port | depends_on | Readiness | Role |
+|---|---|---|---|---|---|
+| `m1_producer` | `predict_service.scheduler` | -- | -- | none (alive) | Produces every active sport's envelope; writes the predict heartbeat |
+| `m1_api_paper` | `predict_service.app` | 8099 | m1_producer | http `/health` | Auto-API: serves the calibrated envelopes (read-only) |
+| `m1_api_boards` | `scripts.platformkit.frontend.serve` | 8098 | m1_api_paper | tcp | Boards API for the UI |
+| `m1_ui` | `npm run dev` (Next.js) | 3000 | m1_api_boards | tcp | Dashboard (skipped in `backend` profile / `-NoUI`) |
+| `m1_paper` | `scripts.platformkit.pm_trading.auto_loop --forever` | -- | m1_api_paper | none | Paper-trading loop (paper only) |
+| `m1_line_daemon` | `scripts.platformkit.odds_provider.line_snapshot_daemon` | -- | -- | none | Captures closing-line snapshots for CLV |
+| `m6_ingame_loop` | `scripts.platformkit.ingame.live_loop` | -- | -- | heartbeat | In-game repricer loop |
+| `m2_inplay` | `scripts.platformkit.odds_provider.inplay_runner` | -- | -- | heartbeat | Venue-native in-play capture (independent branch) |
+| `m4_selfimprove` | `scripts.platformkit.improve.selfimprove_runner` | -- | -- | heartbeat | Self-improve ratchet (measurement-only by default) |
+
+The capture / in-game / self-improve daemons are deliberately **independent
+branches** (no `depends_on`): a dead feed is one red status entry, and the rest
+of the stack keeps running. The `backend` profile drops the node UI and prunes
+it from every `depends_on` edge so the DAG stays well-formed.
+
+**Governance preflight (runs BEFORE the supervisor).** `boot.ps1` first runs a
+fail-closed governance check (honesty linter, provenance, concurrency, pkl
+integrity, leak audit, parity). It is **decision-only**: it never authorizes a
+bet and never moves money. Real-money placement is **default-DENY** and requires
+a separate explicit human flip plus a signed token regardless of the preflight
+result; a clean preflight only sets boot eligibility. A failing preflight still
+boots the paper stack (unless strict-governance is requested).
+
+**The calibrated envelope (one win-prob anchors every market).** The producer
+builds one `SnapshotEnvelope` per sport (`predict_service/contracts.py`):
+schema-versioned, with a `status` sentinel (`ok` / `unavailable`), a list of
+per-game `PredictionRecord`s (each carrying the model's calibrated `pregame_probs`
+and a `leak_guard.in_sample == False` flag), market rows, and `EdgeRow`s. By
+construction an `EdgeRow` carries one model probability and one market probability
+and **no dollar field** -- `ev` is a probability-space quantity, not a stake, and
+a `clv_is_proxy` flag marks when "close" is a pre-tip proxy rather than a settled
+number. The store writes `latest.json` atomically (tmp + replace) and appends to
+`history.jsonl`; a missing or torn read degrades to the `unavailable` sentinel and
+never raises. The Auto-API (`:8099`) exposes read-only `GET /health`,
+`/api/sports`, `/api/predict/{sport}`, `/api/predict/{sport}/{game_id}`, plus
+guarded edge / bestbets / paper / report / SSE / ops routers that fail to 503
+rather than fabricate a value.
+
+---
+
 ## Verification
 
 The table below lists the CORE robustness invariants. The full test surface is

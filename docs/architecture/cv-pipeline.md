@@ -4,9 +4,23 @@
 
 ---
 
+> Deeper, code-grounded companion to [`docs/CV_TRACKING.md`](../CV_TRACKING.md)
+> (stage-by-stage with constants + failure modes) and the honest-numbers source
+> [`docs/JOB_EVIDENCE_PACKET.md`](../JOB_EVIDENCE_PACKET.md).
+
+## Honest framing (read first)
+
+The CV layer is **real, running plumbing** at **~$0.10-0.13 per full game on one
+consumer GPU** (vs ~$10k-$100k+ for Sportradar / Second Spectrum). But the
+CV-derived features carry **SHAP importance ~ 0.0** in the production prop models
+today (`cv_lift_report.json: has_cv_data: false`). They are wired end-to-end; the
+predictive lift is unproven. Treat the spatial features below as **lineage, not a
+moat** — there is no CV predictive-edge claim. (The phrase "primary model moat"
+elsewhere in this file is the original engineering intent, not a measured result.)
+
 ## Pipeline Overview
 
-The CV pipeline transforms raw broadcast video into per-frame, per-player position data in court coordinates, with player identities resolved via re-identification. The output feeds the feature engineering layer which computes the spatial features (defender_distance, spacing_score, legs_fatigue) that constitute the primary model moat.
+The CV pipeline transforms raw broadcast video into per-frame, per-player position data in court coordinates, with player identities resolved via re-identification. The output feeds the feature engineering layer which computes the spatial features (defender_distance, spacing_score, legs_fatigue) — wired into the prop models, SHAP ~ 0.0.
 
 ```
 Broadcast video (H.264, ~30fps)
@@ -117,6 +131,38 @@ Implementation: [`src/features/feature_engineering.py`](../../src/features/featu
 
 ---
 
+## Real Algorithms + Constants (per stage)
+
+The stages above are not black-box wrappers — the tracker is built from primitives.
+Verified constants from `src/tracking/advanced_tracker.py` and the pipeline:
+
+| Stage | Algorithm (real) | Key constants |
+|---|---|---|
+| 1 Decode | decord/NVDEC → PyAV CPU fallback; background prefetch queue | prefetch queue size 8; `_VRAM_FLUSH_INTERVAL=3000` (never 100) |
+| 2 Detect | YOLOv8n (`yolov8n.pt`), class 0 = person; ball: YOLOv8n-ball → Hough circles → Lucas-Kanade | conf 0.35; 640×640 input; Hough `param1=50, param2=30, r=8..25` |
+| 3 Homography | HSV line mask → `HoughLinesP` → `getPerspectiveTransform`; 3-tier SIFT acceptance + drift re-anchor | `_SIFT_INTERVAL=15`, `_H_RESET_INLIERS=40`, `_REANCHOR_INTERVAL=30`, `_REANCHOR_ALIGN_MIN=0.35` |
+| 4 Track | Kalman (state `[cx,cy,vx,vy,w,h]`, constant-velocity) + Hungarian (`scipy.linear_sum_assignment`); ByteTrack-style 2-stage when lap available | `COST_GATE=0.80`, `APPEARANCE_W=0.25` (0.35 similar-color), `MAX_LOST=90`, `MAX_2D_JUMP=250` |
+| 5 Re-ID | **Production: 96-dim L1 HSV histogram** + EMA; OSNet-x0.25 (256-dim L2) structurally complete but **ImageNet weights, not domain-adapted** | `REID_THRESH=0.45`, `REID_TIE_BAND=0.05`, `APPEAR_ALPHA=0.70`, `GALLERY_TTL=300`, `HIST_BINS=32` |
+| 6 OCR | EasyOCR (PaddleOCR when available); dual-pass crop + `JerseyVotingBuffer(maxlen=3)` majority vote | confidence = fraction of 5 primary scoreboard fields read |
+| 7 Events | EventDetector: parabola-fit shot arc, displacement-threshold pass, y-minimum dribble | pass displacement > 200px/frame |
+| 8 Features | convex-hull spacing, min-distance defender, season-baseline fatigue proxy | ~10 sentinel-leak guards (pixel/feet auto-rescale, speed > 30 ft/frame reject) |
+
+**Re-ID caveat (load-bearing):** despite the "512-dim OSNet embeddings" framing in
+the stage detail above, the **active appearance model in production is the HSV
+histogram**. OSNet is reimplemented and runnable but ships with ImageNet-pretrained
+weights (no NBA fine-tune) and is the secondary backend. Do not cite an OSNet re-ID
+accuracy number — none is reproduced.
+
+## Known Failure Modes
+
+| Stage | Failure | Mitigation |
+|---|---|---|
+| Homography | Replay/graphic overlay or close panorama corrupts M | 2-frame confirm gate, EMA blend, replay suspension, drift re-anchor |
+| Ball | `ball_valid_pct = 0%` / `ball_track_suspended` stuck True (~8% of games) | last-known-possessor fallback; below-80% games fall back to API-only features |
+| Tracking | ghost slots near stars; 10-slot ceiling; ~5-6 stable slots | phantom eviction (`FREEZE_AGE=20`), validity caps |
+| Identity | jersey-OCR noise wall → ~4% per-player attribution | aggregate team/position features ship-ready; per-player not |
+| Features | unit confusion / silent corruption when M wrong | `Bug 30/31/34/...` sentinel guards |
+
 ## Performance Characteristics
 
 | Config | Aggregate fps | Bottleneck |
@@ -189,7 +235,14 @@ See [runpod-runbook.md](../operations/runpod-runbook.md) for full pod configurat
 
 ---
 
-*See [system-overview.md](system-overview.md) for where CV features fit in the full pipeline. See [feature-inventory.md](../models/feature-inventory.md) for all features including non-CV signals.*
+The Edge # column above tracks engineering intent for richer spatial features.
+None of these is a demonstrated betting edge; they are extraction targets. The
+honest status of any CV predictive lift remains SHAP ~ 0.0 until the 80-clean-game
+retrain clears (see [`docs/KNOWN_LIMITATIONS.md`](../KNOWN_LIMITATIONS.md)).
+
+---
+
+*See [system-overview.md](system-overview.md) for where CV features fit in the full pipeline. See [feature-inventory.md](../models/feature-inventory.md) for all features including non-CV signals. Companion: [`docs/CV_TRACKING.md`](../CV_TRACKING.md) · honest numbers: [`docs/JOB_EVIDENCE_PACKET.md`](../JOB_EVIDENCE_PACKET.md).*
 
 
 ---

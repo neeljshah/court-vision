@@ -2,6 +2,45 @@
 
 *Design specification for the real-time monitoring interface.*
 
+> This is an **aspirational design spec**, not a description of shipped behavior.
+> For what actually ships today, see [`docs/FRONTEND_OVERVIEW.md`](../FRONTEND_OVERVIEW.md)
+> (the React + shadcn/ui decision-support panel) and [`docs/API.md`](../API.md)
+> (the Auto-API contract that backs it).
+
+---
+
+## Reconciliation with the shipped contract (honesty rails)
+
+Several panels below describe **P&L, ROI, bankroll curve, and at-risk capital**.
+Those are design ambitions. The **shipped** API and panel are honest-by-construction
+and do **not** expose any of that:
+
+| Spec panel mentions | Shipped reality |
+|---|---|
+| P&L / ROI / Sharpe / bankroll curve | **No `$` / `roi` / `pnl` / `profit` / `bankroll` field exists** in the Auto-API contract (`predict_service/contracts.py`). `EdgeRow` carries `model_prob`, `market_prob`, and probability-space `ev` only. |
+| "Your prob − book implied" Edge % | Shipped as `edge = model_prob - market_prob` (probability space), with `edge_claimed` stamped **`false`**. |
+| Recommended Kelly **bet amount** ($) | Shipped as **units only** (`flat_unit` + capped quarter-Kelly **units**) via `/api/v1/bestbets/*`; never a dollar stake. |
+| Realized-edge / profit framing | The only money-adjacent yardstick is **CLV** ("better-number-than-close"), from the vetted `clv_ledger`, flagged `clv_is_proxy` where the close is a proxy. Markets are efficient; this is calibrated decision-support. |
+| "Execute / place bet" | **Paper only.** `executed` is always `false`; `/api/intent` logs a non-binding manual record; there is no sportsbook connection. |
+
+Read every dollar figure in the panels below as design intent superseded by the
+no-`$` contract. When this spec and the API contract disagree, **the contract wins.**
+
+### What is actually wired today
+
+The shipped panel implements a focused subset of the vision, against real endpoints:
+
+| Shipped capability | Endpoint(s) | Spec panel it maps to |
+|---|---|---|
+| Slate board (per-sport games + model-vs-market verdict) | `/api/slate`, `/api/predict/{sport}` | Panel 1 (opportunity feed), Panel 3 (heatmap) |
+| Per-game bet board drill-down (every market, EV vs best price) | `/api/game`, `/api/report/{sport}/{game_id}`, `/api/v1/bestbets/*` | Panel 4 (distribution / drill-down) |
+| Live in-game number (keyless ESPN / ingame snapshot) | `/api/live`, `/api/stream/game/*` | Panel 2 (odds/live stream) |
+| Paper trail + CLV scoreboard (units / probability only) | `/api/paper/*`, `/api/clv` | Panel 8 (CLV tracker) |
+| Ops / liveness + self-improve ratchet + parity grid | `/api/ops/*`, `/api/improve/status`, `/api/parity` | Panel 10 (system health), Panel 9 (model performance) |
+
+Real-time delivery uses **SSE (`/api/stream/*`) with a 30s poll fallback**
+(`useSlate.ts`), not Socket.IO/Redis as the stack table below proposes.
+
 ---
 
 ## Design Philosophy
@@ -33,6 +72,11 @@ The goal: an integrated quant betting terminal. Dense information, no wasted spa
 **Latency targets:**
 - Pre-game opportunity feed: sub-5s from data change to screen
 - Live odds stream: sub-1s cell update
+
+> *Shipped note:* the real panel uses Vite + React + Tailwind + **shadcn/ui** (not
+> Next.js), plain hooks (not Zustand/Jotai), and **SSE + 30s poll** (not
+> Socket.IO + Redis). The table above is the target stack; see
+> [`docs/FRONTEND_OVERVIEW.md`](../FRONTEND_OVERVIEW.md) for the shipped one.
 
 ---
 
@@ -228,7 +272,7 @@ Mobile: panels stack vertically with tab navigation. Opportunity Feed as default
 
 ---
 
-*See [system-overview.md](system-overview.md) for how data flows into the dashboard. See [execution-engine.md](execution-engine.md) for the book router the dashboard monitors.*
+*See [system-overview.md](system-overview.md) for how data flows into the dashboard. See [execution-engine.md](execution-engine.md) for the book router the dashboard monitors. Shipped reality: [`docs/FRONTEND_OVERVIEW.md`](../FRONTEND_OVERVIEW.md) · contract: [`docs/API.md`](../API.md) · doc map: [`docs/INDEX.md`](../INDEX.md).*
 
 
 ---

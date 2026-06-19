@@ -261,6 +261,89 @@ players (player_id PK)
 
 ---
 
+## 9b. Multi-Sport Platform Corpora -- `data/domains/<sport>/`
+
+The sport-blind platform stores one parquet per corpus stem named in
+`domains/<sport>/ingest_manifest.py`. Each source carries a `leak_class` (when it
+becomes known relative to the event) and an `sla_minutes` freshness target. These
+are the provenance contract -- a builder asserts a feature only ever reads a
+`pre_game` / `reference` source.
+
+### Leak classes (the as-of contract)
+
+| leak_class | Meaning | May feed a pregame feature? |
+|---|---|---|
+| `pre_game` | known before tip/first-pitch/kickoff | yes |
+| `reference` | slowly-updated static (e.g. park factor, player registry) | yes |
+| `in_game` | revealed during play (e.g. per-quarter linescores) | in-game conditioning only |
+| `post_game` | only known after the event (final box, settlement) | NO -- training labels only |
+
+`asof_*` corpora are derived from `post_game` raw box but are themselves
+`pre_game` **by construction** (snapshot-before-update; see
+`scripts/platformkit/asof_common.py`). The label columns (`home_win`,
+`target_home_win`, `target_over25`, `winner`) are `post_game` labels, never
+features.
+
+### Per-sport corpus stems (file = `data/domains/<sport>/<stem>.parquet`)
+
+| Sport | pre_game / reference stems | post_game / in_game stems |
+|---|---|---|
+| `basketball_nba` | games, odds, asof_features, asof_box_extra, asof_runvar | linescores (in_game), player_boxscores, espn_boxscores, postmortem |
+| `mlb` | games, games_current, odds, pitchers, asof_features, asof_park (ref) | player_gamelogs, espn_boxscores, postmortem |
+| `soccer` | matches, odds, asof_features, asof_xg_proxy, espn_club_priors (ref) | match_stats, espn_matchstats, espn_player_stats, postmortem |
+| `tennis` | matches, wta_matches, odds, asof_features, asof_hold, asof_return, players (ref) | match_stats, postmortem |
+
+### Normalized team-odds event -- `OddsEvent` (`odds_provider/base.py`)
+
+| Field | Type | Description |
+|---|---|---|
+| `event_id` | str | venue-native id (ESPN event id / Kalshi `event_ticker` / Polymarket id) -- NOT the NBA `game_id` |
+| `sport` | str | sport key (nba / mlb / soccer / soccer_intl / tennis) |
+| `home`, `away` | str | team / player display names |
+| `commence_time` | str | ISO start (or venue close_time) -- the key for true-close certification |
+| `prices` | dict | `{venue: {home, away, [spread], [total]}}`; decimal odds > 1.0 |
+| `source` | str | provider name (espn / kalshi / polymarket) |
+| `as_of` | str | ISO-8601 UTC capture timestamp |
+
+### Normalized player prop -- `PropLine` (`odds_provider/prop_base.py`)
+
+| Field | Type | Description |
+|---|---|---|
+| `sport`, `event_id`, `match` | str | sport key, venue event id, match label |
+| `player`, `team` | str | player name, team (nullable) |
+| `stat` | str | canonical stat (via `canon_stat()`; unknown labels pass through) |
+| `line` | float | over/under line value |
+| `over_price`, `under_price` | float | DECIMAL odds (> 1.0) -- both `None` for DFS pick'em |
+| `payout_type` | str | `"sportsbook"` (true two-sided) or `"dfs_pickem"` (flat multiple) |
+| `source`, `as_of` | str | provider name, ISO-8601 UTC capture timestamp |
+
+### Price-history tick schemas -- `data/cache/`
+
+**Pregame line tick** (`line_history/<sport>/<date>.jsonl`, via
+`snapshot.write_quotes`): the captured `MarketQuote` rows carry `game_id`,
+`market_type`, `side`, `odds` (decimal), `devigged_prob` (Shin no-vig fair prob),
+`captured_at` (ISO UTC), `commence_time`, and an `is_true_close` flag set when the
+tick landed inside the 30-min lock window before tip.
+
+**In-play tick** (`inplay_history/<sport>/<date>.jsonl`, canonical flat YES-prob):
+
+| Field | Type | Description |
+|---|---|---|
+| `sport` | str | sport key |
+| `game_id` | str | venue-native game id |
+| `venue` | str | kalshi / polymarket / espn |
+| `market_type` | str | "moneyline" (default) etc. |
+| `side` | str | which team/outcome the YES prob is for |
+| `ticker` | str | venue contract ticker |
+| `prob` | float | implied probability in `[0, 1]` (out-of-range -> skipped) |
+| `ts` | str | ISO-8601 UTC capture timestamp |
+| `phase` | str | always `"in_play"` |
+
+A `_freshness.json` sidecar per sport carries `{last_capture_ts, last_n_ticks}`,
+advanced only on a successful poll.
+
+---
+
 ## 10. Live Data Feeds
 
 Updated continuously during the season:
@@ -277,15 +360,21 @@ Updated continuously during the season:
 
 ## Key Data Quality Notes
 
-1. **Shot enrichment gap**: 0 of 17 tracked shots have been enriched with NBA PBP outcomes yet — requires running `run_clip.py --game-id [id]` on a real game clip. Planned for Phase 6.
+1. **Shot enrichment gap**: 0 of 17 tracked shots have been enriched with NBA PBP outcomes yet -- requires running `run_clip.py --game-id [id]` on a real game clip. Planned for Phase 6.
 
 2. **Identity resolution**: Jersey OCR resolves ~70% of players per clip in good lighting. Unknown players are tracked with anonymous IDs (`unknown_N`) and linked to rosters manually in `data/player_identity_map.json`.
 
-3. **Court coordinate accuracy**: Current SIFT homography gives ±12-15 inches spatial accuracy. Phase 2.5 pose estimation (ankle keypoints) will improve this to ±6-8 inches.
+3. **Court coordinate accuracy**: Current SIFT homography gives +/-12-15 inches spatial accuracy. Phase 2.5 pose estimation (ankle keypoints) will improve this to +/-6-8 inches.
 
 4. **PBP coverage**: 3,627/3,685 games (98.4%) have play-by-play data. Remaining 58 are preseason games.
 
-5. **Shot chart coverage**: 221,866 shots from 569 players across 3 seasons. Each shot has: zone, distance, shot type, action type, and made/missed label — ready for xFG v1 training.
+5. **Shot chart coverage**: 221,866 shots from 569 players across 3 seasons. Each shot has: zone, distance, shot type, action type, and made/missed label -- ready for xFG v1 training.
+
+6. **ID crosswalk is not assumed**: ESPN `event_id` != NBA-stats `game_id`; MLB `game_pk` != book `event_id`; ESPN `event_id` != Kalshi/Polymarket ids. Cross-feed joins are done by team-name + commence-time resolution and their coverage must be verified; in-play liveness is decided venue-natively, never via an ESPN id cross-join. Unmatched rows are omitted, never force-joined.
+
+7. **Prices are captured, never fabricated**: a missing line or odds field yields an omitted node / skipped row (never a guessed number). All capture is PAPER / measurement only; no $-edge is claimed. `data/` is local-only and gitignored.
+
+See also: [DATA.md](DATA.md) - [DATA_OUTPUTS.md](DATA_OUTPUTS.md) - [operations/data-pipeline.md](operations/data-pipeline.md) - [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) - [INDEX.md](INDEX.md)
 
 
 ---

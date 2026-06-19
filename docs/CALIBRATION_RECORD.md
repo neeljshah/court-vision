@@ -67,6 +67,56 @@ Conditioning the SAME pregame intelligence prior on the realized mid-game state 
 
 MLB/Soccer/Tennis in-game wins reproduce on the committed fixture; the NBA win is real-corpus-only (VALIDATION_PENDING on a fresh clone). The sharpest forecaster FUSES the pregame rating prior with the realized state -- not either alone. No $ edge; edge_claimed = False.
 
+## 3a. Per-sport calibration record (consolidated, vs the devigged close)
+
+Pregame calibration/sharpness per sport+market, leak-free OOS, vs the Shin-devigged close
+(lower Brier/RMSE = sharper). MATCH = within sampling noise of the close (the honest best
+case); BEHIND = a measurable freshness gap (data-bound, not a defect). Source: the
+`proof_<sport>/` harnesses rolled up in `vault/_Edge_Maps/_Beat_The_Close.md`. Calibration
+only; edge_claimed=False.
+
+| Sport | Market | Metric | model | close | verdict | freshness gap explanation |
+|-------|--------|--------|-------|-------|---------|---------------------------|
+| NBA | moneyline | Brier | 0.1735 | 0.1672 | MATCH | MOV-aware Elo matches the devigged close |
+| NBA | total O/U | RMSE | 19.17 | 18.11 | BEHIND | injuries / lineups a box model cannot see |
+| MLB | moneyline | Brier | 0.2429 | 0.2390 | MATCH | tiny deficit = pitcher-blindness (close prices the SP) |
+| MLB | total O/U | RMSE | 4.72 | 4.44 | BEHIND | park / weather / SP freshness |
+| Soccer | O/U-2.5 | Brier | 0.2465 | 0.2390 | MATCH | pooled Platt recalibration |
+| Tennis (ATP) | match-win | Brier | 0.2177 | 0.2028 | BEHIND | ATP closes are very efficient |
+
+### In-game conditioning gain, per sport (the measured calibration win)
+
+Static pregame -> conditional-on-state Brier (lower = sharper). FORECASTER QUALITY, not a $
+edge. MLB/Soccer/Tennis reproduce on the committed fixture; NBA is real-corpus OOS
+(VALIDATION_PENDING on a fresh clone -- the fixture prints no-improvement, a synthetic-anchor
+artifact). Source: `proof_<sport>/ingame_accuracy.py` rolled up in `ingame_scoreboard.py`.
+
+| Sport | Checkpoint | static -> conditional | gain | corpus scope |
+|-------|-----------|------------------------|------|--------------|
+| NBA | end Q1/Q2/Q3 | 0.209 -> 0.159 | -0.050 | real-corpus OOS; fixture = no-improvement (synthetic-anchor) |
+| MLB | after inning 3/5/7 | 0.241 -> 0.126 | -0.115 | reproduces on committed fixture |
+| Soccer 1X2 | half-time | 0.626 -> 0.502 | -0.124 | reproduces on committed fixture |
+| Soccer O/U-2.5 | half-time | 0.264 -> 0.176 | -0.088 | reproduces on committed fixture |
+| Tennis | after set 1 | 0.219 -> 0.151 | -0.068 | reproduces on committed fixture |
+
+### How each verdict is computed (the labels are not editorial)
+
+| Verdict | Rule | Code |
+|---|---|---|
+| **BEATS_CLOSE** | `BSS > 0` AND DM `p < 0.05` AND `n >= 200` | `eval_gate/run_gate.py::_verdict` |
+| **MATCHES_CLOSE** | 95% CI on `(loss_close - loss_model)` overlaps 0 | `_verdict` + `dm_test.py` |
+| **BEHIND** | otherwise (honest, recorded, NON-blocking) | `_verdict` |
+| **ABSTAIN (insufficient_data)** | `n < 50` -> too few rows to claim a result; surfaced, never buried | the n=30 fixture rows in section 2 |
+| **VARIANCE_ONLY** | point estimate fails but interval/coverage improves | `src/loop/gate.py::evaluate` |
+| **DEFER** | no leak-safe matrix / no evaluable fold (INSUFFICIENT_DATA, fails closed) | `src/loop/gate.py::evaluate` |
+
+DM is cluster-robust by `game_id` (a naive i.i.d. SE runs ~3x too narrow); BSS is the Brier
+skill score of model over close. See [docs/quant-methodology.md](quant-methodology.md) for the
+full toolkit and [docs/MARKET_EFFICIENCY_PROOF.md](MARKET_EFFICIENCY_PROOF.md) for the REJECT
+self-audit.
+
+---
+
 ## 4. Reproduce (offline, < 60s each)
 
 ```
@@ -79,6 +129,13 @@ python -m scripts.platformkit.ingame_scoreboard --corpus tests/fixtures/proof
 ## 5. VALIDATION_PENDING (human-run)
 
 The numbers above reproduce the COMMITTED FIXTURES only. A real-corpus OOS-vs-close calibration result is a human-run step on local/gitignored corpora; no real-data win is claimed here. The in-game section 3 numbers are real-corpus OOS (NBA VALIDATION_PENDING on a fresh clone). See docs/SELL-READINESS.md and docs/JOB_EVIDENCE_PACKET.md.
+
+---
+
+**Sibling docs:** [PROOFS](PROOFS.md) (claim -> proof index) -
+[MARKET_EFFICIENCY_PROOF](MARKET_EFFICIENCY_PROOF.md) - [CEILING](CEILING.md) -
+[quant-methodology](quant-methodology.md) - [backtest-methodology](backtest-methodology.md) -
+[KNOWN_LIMITATIONS](KNOWN_LIMITATIONS.md) - [full doc map](INDEX.md).
 
 
 ---

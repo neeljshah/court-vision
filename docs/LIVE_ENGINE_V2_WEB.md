@@ -96,6 +96,37 @@ Sections are emitted only when there is real signal — if no PBP
 buffer or no line ticks have been ingested yet, those sections are
 omitted (rather than empty).
 
+### What the `projection_path` is actually narrating
+
+The `projection_path` section is the human-readable trace of the
+**pregame-prior x realized-state** blend the engine just ran. Each row's
+`projection_source` tag records which boundary head produced the point projection
+(e.g. `endQ2_head`, `learned_q4_minutes_v1`, `cycle_88_linear`) plus any stacked
+multiplicative factors (foul / blowout / heat_check / matchup). The drawer reads as
+a left-to-right pipeline:
+
+```
+  endQ2_head  ->  endQ2 residual  ->  defender matchup  ->  served q50
+   (prior x       (learned per-       (Jokic vs AGordon     (with q10/q90
+    state blend     stat correction)    PPP tilt)            bands around it)
+    at this boundary)
+```
+
+`q50` always equals the served `projected_final` -- the bands are additive and never
+move the point. The blend is elapsed-weighted: early snapshots lean on the pregame
+prior (one snapshot is mostly noise), late snapshots lean on realized box state. See
+[LIVE_ENGINE_V2.md](LIVE_ENGINE_V2.md#the-in-game-repricer-pregame-prior-x-realized-state)
+for the blend and the per-layer held-out-Brier gate, and
+[possession-simulator.md](architecture/possession-simulator.md) for the pregame
+distribution being repriced.
+
+> **HONESTY RAIL:** the "Why" drawer explains forecaster QUALITY, not a betting edge.
+> A live book sees the same state. In-game conditioning is a measured CALIBRATION win
+> (NBA static->conditional Brier ~0.209 -> ~0.159; leak-free endQ3 Brier ~0.141);
+> "vs the close" is UNPROVEN (no in-play odds archive). The `edge_claimed` field on
+> graded output is always `False`. Truth source for any number:
+> [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) / [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md).
+
 ## Deployment — Vercel + Railway
 
 ### Backend → Railway (free tier, ~$0-5/mo)

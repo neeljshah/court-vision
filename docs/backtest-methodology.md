@@ -134,6 +134,53 @@ any intermediate representation.
 
 ---
 
+## Leak-free construction -- the four guarantees, enforced in code
+
+The harness does not *assume* leak-freeness; it ASSERTS it. The reference walk-forward
+(`scripts/platformkit/eval_gate/walkforward.py`) and the gate's per-fold builder
+(`src/loop/gate.py`) enforce the same four guarantees, and a failing assertion is a hard
+FAIL, not a warning.
+
+| Guarantee | Failure it prevents | Enforced by |
+|---|---|---|
+| **Expanding window** | training on states later than the test state | sort by `state_ts`; train only on strictly-earlier states (tie-safe `>=` skip) |
+| **Purge (48h)** | same-team back-to-back autocorrelation crossing the boundary | drop same-team games within `PURGE_HOURS=48` of the test game |
+| **Embargo (3d)** | rolling-window spillover from the same matchup near the split | drop the same matchup within `EMBARGO_DAYS=3` |
+| **Vintage assertion** | a feature secretly available only after the prediction time | `assert_vintage`: every feature availability `< state_ts`, else `AssertionError("LEAK: ...")` |
+
+In the gate the same discipline appears as expanding `_fold_bounds`, per-column TRAIN-median
+imputation (`_impute`, no leakage), and feature selection that must happen INSIDE the window
+(`select_inside`); a caller that selects on full history (`select_inside=False`) is surfaced
+so the gate FAILS the run. Point forecasts are graded RMSE + signed bias, never MAE (MAE
+rewards shrink-to-median). See [docs/quant-methodology.md](quant-methodology.md) for the full
+validation-toolkit table and the SHIP/REJECT/DEFER verdict policy.
+
+---
+
+## CLV over ROI -- why, and how the gate treats unmeasurable CLV
+
+ROI on a few hundred settled bets has a standard error of ~3-4%; it cannot distinguish a
+small real edge from noise. CLV against the Shin-devigged sharp close is approximately
+unbiased and converges to the edge ~5x faster than ROI. Two binding rules follow:
+
+1. **CLV is measured FORWARD, never claimed retrospectively.** A retrospective open-time
+   model has ~0 correlation with the realized open->close move (corr +0.0038, CI95
+   [-0.046, +0.055] = zero); the move is the market's own sharpening, not ours to harvest
+   (see [docs/MARKET_EFFICIENCY_PROOF.md](MARKET_EFFICIENCY_PROOF.md) section 3).
+2. **Unmeasurable CLV is NON-BLOCKING, never a false fail.** When no captured closing line
+   exists yet (the common pre-Oct-2026 case) `clv_check` returns `(None, True)` so the
+   ledger records CLV as pending rather than failing the gate on absent data
+   (`src/loop/gate.py::clv_check`).
+
+The full-season walk-forward is the cleanest efficiency proof in the system: well-calibrated
+(Brier 0.208 model vs 0.198 close) but CLV ~ 0 (corr-with-outcome 0.001). "Well-calibrated
+but does not beat the close" is the correct, honest output of the framework -- not a defect.
+No $ ROI is fabricated; the retracted +18.38% / +8.94pp figures appear ONLY in their
+retraction context in [docs/JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) and
+[docs/KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md).
+
+---
+
 ## Full-System Backtester (Phase 18.5)
 
 The historical backtest in `src/prediction/prop_backtester.py` operates at the model
@@ -152,6 +199,14 @@ replays the complete daily flow including:
 
 This becomes a regression test: run after every model change to catch P&L regressions
 before deploy.
+
+---
+
+**Sibling docs:** [quant-methodology](quant-methodology.md) (validation toolkit + gate logic) -
+[PROOFS](PROOFS.md) (every claim -> runnable proof) -
+[MARKET_EFFICIENCY_PROOF](MARKET_EFFICIENCY_PROOF.md) (the efficiency result) -
+[CALIBRATION_RECORD](CALIBRATION_RECORD.md) - [CEILING](CEILING.md) -
+[KNOWN_LIMITATIONS](KNOWN_LIMITATIONS.md) - [full doc map](INDEX.md).
 
 
 ---

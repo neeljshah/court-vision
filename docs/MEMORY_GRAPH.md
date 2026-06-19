@@ -74,6 +74,87 @@ These live directly in `vault/Sports/` rather than inside a sport subfolder.
 
 ---
 
+## Node / Edge Schema
+
+The graph is an Obsidian note graph: every `.md` file is a **node**; every `[[wikilink]]` is a
+directed **edge**. The schema is deliberately thin and uniform so it is queryable by plain text
+tooling and by Obsidian's own graph view.
+
+### Node anatomy
+
+Each note carries YAML frontmatter (the node's typed attributes) and a body of sections and links:
+
+```
+---
+tags: [sport, archetype, ...]     # node-type discriminator(s)
+updated: 2026-06-18               # freshness stamp
+generated: 2026-06-18             # build date (meta notes)
+---
+# <Title>                         # node label (a scheme / archetype / theme — never a person)
+> framing line                    # honest-scope / person-free / no-edge disclaimer
+... sections, tables ...
+[[Other/Note]] · [[_Hub]]         # outbound edges
+```
+
+| Node type | `tags` discriminator | Example node label |
+|---|---|---|
+| Sport index | `sport, index` | `Tennis/_Index` |
+| Archetype / Playstyle | `archetype` / `playstyle` | `3_and_D_Wing`, `Drop_Coverage` |
+| Team (composition, not roster) | `team` | a team note keyed by tricode |
+| Scheme / Position (cross-sport) | `scheme` / `position` | `Schemes/...`, `Positions/...` |
+| Meta synthesis | `meta` / `hub` | `_World_Model`, `_Base_Rates` |
+| Signal catalog | `signals, honest` | `<Sport>/Signals/_Catalog` |
+
+### Edge types
+
+| Edge | Direction | Meaning |
+|---|---|---|
+| `[[<Sport>/_Index]]` | node -> sport hub | "belongs to this sport" |
+| `[[_Hub]]` / `Up: [[...]]` | node -> parent | breadcrumb / containment |
+| `[[Archetype]]` inside a theme note | taxonomy -> member | "this archetype is in this theme" |
+| `[[<Sport>/<Dim>/_..._Index]]` | overview -> dimension index | tactical-dimension drill-down |
+| Cross-vault shortcut | node -> outside `vault/Sports/` | intentional dangling (`[[Home]]`, `[[MOC-*]]`) |
+
+### Two graphs, one discipline
+
+There are two related graphs, and the **person-free** invariant applies to the platform graph:
+
+- **`vault/Sports/`** — the multi-sport platform graph: **PERSON-FREE by default**
+  (`hub_data.PERSON_FREE`). NAMED generators (Teams / Matchups / Seasons / Tournaments / Scouting)
+  are gated OFF unless `--with-named`; only archetype/scheme/style families are emitted.
+- **`vault/` (NBA Intelligence)** — the pre-platform NBA brain: the **~690-node knowledge graph
+  (660 player + 30 team)** plus the **44 NBA atlases (28 player + 16 team)** referenced from
+  [INTELLIGENCE.md](INTELLIGENCE.md). The cross-sport `_Hub.md` links to it but does not import
+  its person-bearing notes into the person-free `Sports/` graph.
+
+The highest-level **person-free MOC** that stitches the platform families together is
+`vault/_Index/_Brain.md`, emitted by `build_brain_index.py`. It links only playstyles, archetypes,
+schemes, positions, style-matchups and trends; any `<player-id>_name` or bare `firstname_lastname`
+note found while scanning is **skipped and counted** as "skipped (non-person-free)", so the
+person-free property is measured on every build, not assumed.
+
+---
+
+## How the Graph Is Queried
+
+The graph is consumed three ways, in increasing structure:
+
+1. **Obsidian graph view / backlinks** — open `_Hub.md` or `_Brain.md` and traverse. Dense hubs
+   (the brain MOC + each sport family) keep the constellation legible instead of a 3,000-note hairball.
+2. **Meta-note synthesis (build-time queries).** The cross-sport meta generators *are* the query
+   layer: they parse the markdown tables out of sibling notes and re-aggregate. For example
+   `intelligence_overview.build_intelligence_overview()` parses `_GraphStats.md` (per-sport note
+   counts), `_Archetype_Taxonomy.md` (theme link counts), and `_Signals_Hub.md` (REJECT/DEFER/SHIP
+   tallies) into one synthesis note — a deterministic, regex-driven read over the graph's own tables.
+3. **Grounded LLM access (NBA brain).** `ai_chat_facts.json` + `ai_chat_index.json` (see
+   [INTELLIGENCE.md](INTELLIGENCE.md) section 9) route a topic to the right artifact so an LLM
+   answers from pre-extracted facts rather than free-associating.
+
+All build-time queries are **read-only over the emitted markdown** and re-derivable; nothing in the
+query path asserts a market lift.
+
+---
+
 ## How to (Re)Build
 
 One command rebuilds the entire graph from the committed corpora:
@@ -214,6 +295,12 @@ If the hub ever shows a SHIP verdict, it is flagged as an **unverified
 candidate** requiring multi-fold walk-forward, independent corpus, CLV grading,
 and cross-season holdout before any edge claim is permitted.
 
+**Measured-lift honesty.** This graph — like the NBA atlas/intelligence layer it links — is a
+**descriptive scouting + correlation asset**. Its measured point-accuracy lift on the served
+predictor is **~0 today**, and against devigged closing lines CLV is **~0** (markets are
+efficient). Every count, density, and base-rate on these notes is a **descriptive / calibration**
+statistic; none is a dollar edge. The graph models playstyles and schemes, **never people**.
+
 ---
 
 ## Adding a Fifth Sport
@@ -288,6 +375,12 @@ vault/Sports/
 `python scripts/platformkit/atlas/build_all.py --sport all --full`
 to refresh the vault. This doc describes the generators; the vault output is
 gitignored and local-only.*
+
+**Siblings:** [INTELLIGENCE.md](INTELLIGENCE.md) (80-artifact NBA manifest) ·
+[PLAYER_INTELLIGENCE.md](PLAYER_INTELLIGENCE.md) (dossier showcase + scope) ·
+[signal-inventory.md](signal-inventory.md) (feature catalog + SHIP/REJECT verdicts) ·
+[KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) · [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) ·
+[full doc map](INDEX.md).
 
 
 ---

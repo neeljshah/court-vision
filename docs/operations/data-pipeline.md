@@ -244,6 +244,89 @@ After 80 games complete:
 
 ---
 
+---
+
+## Multi-Sport Platform Ingest and Capture Daemons
+
+The sections above cover Track 1 (CV video ingest). The sport-blind platform adds
+a second ingest surface: keyless statistical + market data for NBA, MLB, soccer,
+and tennis, plus two always-on price-capture daemons. All of it is PAPER /
+measurement only -- the daemons record prices, never place orders, and no $-edge
+is claimed. `data/` is gitignored and local-only.
+
+### Source provenance contract
+
+Each `domains/<sport>/ingest_manifest.py` maps every corpus stem to a `leak_class`
+(pre_game / in_game / post_game / reference) and an `sla_minutes` freshness
+target. This is the authoritative ingest contract; a builder asserts a feature
+only reads a `pre_game` / `reference` source. Derived `asof_*` corpora are
+leak-free by construction (snapshot-before-update,
+`scripts/platformkit/asof_common.py`). Full per-sport tables:
+[../DATA.md](../DATA.md) and [../data_schema.md](../data_schema.md).
+
+### Freshness SLA and staleness handling
+
+- **Manifest SLA** -- refresh-recency target per source (schedule 1440 min, odds
+  120 min, MLB pitchers 240 min, NBA in-game linescores 10 min; `None` for
+  derived/reference corpora).
+- **Runtime guard** (`odds_provider/freshness.py`) -- a quote is FRESH within
+  `max_age_sec` of capture; per-market defaults: moneyline/spread 900 s, total
+  1800 s, prop 3600 s. An unknown/unparseable timestamp degrades to "unknown" and
+  is treated as NOT fresh (conservative). Pure functions, never raise.
+
+### Pregame line/close capture daemon
+
+```bash
+# phase-aware cadence (FAST near tip, SLOW otherwise)
+python -m scripts.platformkit.odds_provider.line_snapshot_daemon
+
+# fixed interval / explicit sports
+python -m scripts.platformkit.odds_provider.line_snapshot_daemon --interval 60 --sports nba,mlb
+```
+
+Cadence: 60 s while any game is within 45 min of tip (so a tick lands inside the
+30-min lock window = the true close), 900 s otherwise. Output:
+`data/cache/line_history/<sport>/<date>.jsonl`. The last at-lock tick IS the
+close -- there is no separate "mark" step.
+
+### In-play (live) capture daemon
+
+```bash
+# liveness-aware cadence over keyless venues
+python -m scripts.platformkit.odds_provider.inplay_snapshot_daemon
+
+# explicit sports / fast interval
+python -m scripts.platformkit.odds_provider.inplay_snapshot_daemon --sports nba,mlb,soccer_intl --interval 5
+```
+
+Cadence: 5 s while >= 1 game is live (any sport), 120 s idle, exponential backoff
+(capped 300 s) on repeated all-sport errors. Liveness is decided venue-natively
+from each tick's own commence/close stamps -- **never** via an ESPN id cross-join
+(ESPN `event_id` != Kalshi/Polymarket ids; that join previously gated out every
+real live tick). Output:
+`data/cache/inplay_history/<sport>/<date>.jsonl` + a `_freshness.json` sidecar.
+
+### Operational invariants (binding)
+
+- **Atomic writes** -- both daemons write to a tmp file then `os.replace` over the
+  target, so a reader never sees a partial line and a mid-write crash leaves the
+  prior file intact.
+- **Per-sport isolation** -- a feed/parse error on one sport is caught and logged;
+  the loop keeps capturing the other sports. The daemons never raise out of their
+  public API.
+- **Never fabricate** -- a missing/out-of-range price is skipped, never guessed.
+- **Freshness advances only on success** -- a failed poll leaves `_freshness.json`
+  untouched so a supervisor/UI can detect a dead feed.
+- **ID crosswalk verified, not assumed** -- cross-feed joins (team-name +
+  commence-time, `team_resolver.py` / `market_join.py`) must have coverage
+  verified; unmatched rows are omitted.
+
+See also: [../DATA.md](../DATA.md) - [../DATA_OUTPUTS.md](../DATA_OUTPUTS.md) -
+[../data_schema.md](../data_schema.md) -
+[../KNOWN_LIMITATIONS.md](../KNOWN_LIMITATIONS.md) - [../INDEX.md](../INDEX.md)
+
+---
+
 *See [runpod-runbook.md](runpod-runbook.md) for pod-specific setup. See [cv-pipeline.md](../architecture/cv-pipeline.md) for what the pipeline does with each video.*
 
 

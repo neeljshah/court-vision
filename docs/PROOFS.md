@@ -88,6 +88,42 @@ refutation of the real-data result. No $ edge claimed; edge_claimed = False.
 
 ---
 
+## The provability index -- claim -> runnable proof (one row per headline claim)
+
+Every claim below is CALIBRATION / SHARPNESS only (no $, no ROI, no beat-the-close). Each
+points at the exact module + command that regenerates it. "REJECT" and "NULL" rows are
+SUCCESSES (the correct result for an efficient market), not failures.
+
+| Claim (calibration only) | Runnable proof | Reproduce |
+|---|---|---|
+| NBA moneyline MATCHES the devigged close within noise | `proof_nba/ml_accuracy.py` | `python -m scripts.platformkit.proof_nba.ml_accuracy` |
+| MLB / Soccer moneyline+O/U MATCH the close | `proof_mlb/beat_the_close_ml.py`, `proof_soccer/beat_the_close_ou.py` | `python -m scripts.platformkit.proof_mlb.beat_the_close_ml` |
+| NBA/MLB totals + ATP are BEHIND ONLY by freshness (data-bound, not a defect) | `proof_nba/asof_box_accuracy.py`, `proof_nba/totals_with_availability.py`, `proof_tennis/beat_the_close_ml.py` | `python -m scripts.platformkit.proof_nba.totals_with_availability` |
+| Every candidate pregame edge REJECTS across >=2 corpora; full-sample lifts SIGN-FLIP OOS | `edge_hunt_schedule.py`, `edge_hunt_scoreboard.py` | `python -m scripts.platformkit.edge_hunt_scoreboard` |
+| CLV exists as a MARKET phenomenon but is NOT ours to harvest (CLV-capture REJECT) | `hunt_line_movement.py` | `python -m scripts.platformkit.hunt_line_movement` |
+| In-game conditioning sharpens the forecaster (4/4 sports; calibration, not $) | `ingame_scoreboard.py`, `proof_<sport>/ingame_accuracy.py` | `python -m scripts.platformkit.ingame_scoreboard --corpus tests/fixtures/proof` |
+| The gate REJECTS / DEFERS correctly (the framework refutes, not confirms) | `src/loop/gate.py::evaluate` (read-only) | exercised by per-file tests; see verdict policy in quant-methodology |
+| A recalibration ships only on UNANIMOUS proper-score non-regression | `improve/proper_score_gate.py::score_gate` | unanimity gate (Brier+log-loss / CRPS+pinball) |
+| A lift replicates across >=2 corpora AND survives the bootstrap p10 tail | `improve/multifold_guard.py`, `improve/seed_stability.py` | replication + multi-seed stability guards |
+| The offline golden gate blocks ONLY on regression / leak, never on "fails to beat close" | `scripts/platformkit/eval_gate/run_gate.py` | `python -m scripts.platformkit.eval_gate.run_gate --golden` |
+
+### Validation technique -> code (the rigor is visible, not asserted)
+
+| Technique | Code |
+|---|---|
+| Expanding-window walk-forward | `eval_gate/walkforward.py`; `src/loop/gate.py::walk_forward_delta` |
+| Purge (48h) + embargo (3d) + vintage leak assertion | `eval_gate/walkforward.py` (`assert_vintage`) |
+| Truncation-invariance leak test | `tests/test_ingame_leak_free.py` |
+| Permutation null-shuffle + noise/p0 control | `src/loop/gate.py::null_shuffle_control` |
+| Ablation vs full model | `src/loop/gate.py::ablation_vs_full` |
+| Benjamini-Hochberg FDR | `src/loop/gate.py::benjamini_hochberg` |
+| Cluster-robust Diebold-Mariano | `eval_gate/dm_test.py::diebold_mariano` |
+| >=2-corpora replication | `improve/multifold_guard.py::replicated` |
+| Multi-seed bootstrap stability (p10 floor) | `improve/seed_stability.py::stable` |
+| All-proper-scores unanimity | `improve/proper_score_gate.py::score_gate` |
+
+---
+
 ## The proof modules
 
 Leak-guard column shows HOW each stays honest. All modules: never edit `src/` or `kernel/`;
@@ -210,6 +246,14 @@ Every harness obeys the same binding rules, and they are visible in the code, no
   inflated numbers are listed there (and in `docs/KNOWN_LIMITATIONS.md`) in explicit
   retraction context and appear nowhere else. The strongest signal in this repo is that the
   instruments above caught and retracted their own over-claims.
+
+---
+
+**Sibling docs:** [quant-methodology](quant-methodology.md) (validation toolkit + gate logic) -
+[backtest-methodology](backtest-methodology.md) - [MARKET_EFFICIENCY_PROOF](MARKET_EFFICIENCY_PROOF.md) -
+[CALIBRATION_RECORD](CALIBRATION_RECORD.md) - [CEILING](CEILING.md) -
+[KNOWN_LIMITATIONS](KNOWN_LIMITATIONS.md) - [JOB_EVIDENCE_PACKET](JOB_EVIDENCE_PACKET.md) -
+[full doc map](INDEX.md).
 
 
 ---

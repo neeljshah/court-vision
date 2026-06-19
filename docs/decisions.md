@@ -227,6 +227,103 @@ Layer 7: Live state (current score, fatigue, momentum)    — real-time
 
 ---
 
+## Execution Decision Logic
+
+### DEC-014: Bet on divergence, not on the prediction
+
+**Decision:** A bet candidate is a *divergence* between the calibrated model
+probability and the Shin-devigged market probability -- never the raw prediction.
+
+**Why:** A confident model number that agrees with the market is not bettable;
+there is no edge to harvest. The unit of decision is therefore
+`edge = model_prob - market_prob`, and the thing that gets sized is the
+divergence, not the projection. This is enforced structurally in
+`frontend/exec_decision.py::decide_row` and `src/prediction/bet_selector.py`.
+
+**Reference math (`exec_decision.py`):**
+
+```
+market_prob = shin_devig(best two-way price)      # odds_shop.devig_twoway
+edge        = model_prob - market_prob
+EV          = model_prob * decimal_odds - 1        # odds_shop.ev_vs_price
+```
+
+EV is recomputed against the **best bettable price across books**, not a flat
+fiction. (Reading the market's own devigged lean instead of the model, and
+pricing at a flat -110, is precisely the artifact behind the retracted pregame
+figure -- see `docs/JOB_EVIDENCE_PACKET.md`.)
+
+---
+
+### DEC-015: Tier floors on EV, with a no-bet default
+
+**Decision:** EV is bucketed into tiers by hard floors; anything below the lowest
+floor is **not a bet**.
+
+| Tier | EV floor (true close) | EV floor (proxy close) |
+|---|---|---|
+| A | >= 0.08 | >= 0.09 |
+| B | >= 0.04 | >= 0.05 |
+| C | >= 0.02 | >= 0.03 |
+| (none) | < 0.02 -> `decision="no_bet"`, `stake_units=0` | < 0.03 -> no bet |
+
+`assign_tier()` returns the **strongest** tier whose floor the EV clears, or
+`None`. When the settle line is only a proxy (not a true settled close) every
+floor is raised by `PROXY_FLOOR_BUMP = 0.01`, so a proxy line must clear a
+stricter bar and its CLV is flagged `clv_is_proxy`.
+
+**Why a no-bet default:** the market is efficient; most candidates do not clear a
+floor, and the correct action is to pass. Emitting a "best available" bet every
+slate is how a system manufactures a fake edge. No-bet is the modal, intended
+outcome.
+
+**Layered policy floors.** On top of the EV tier, `bet_selector.py` applies
+per-policy guards (`src/prediction/bet_policy.py`): a per-stat raw-unit edge
+floor, a closing-line cap, a stat-direction filter (e.g. BLK OVER is dropped as
+zero-edge), and a **playoff-AST regime guard** (AST bets on playoff game ids are
+skipped unless explicitly allowed, because gated playoff AST does not hold up).
+These only ever *remove* bets or shrink stakes -- they never invent one.
+
+---
+
+### DEC-016: Dual edge + CLV gate before sizing
+
+**Decision:** A candidate must clear **both** an edge bar and a predicted-CLV bar
+before it is sized.
+
+```
+keep iff  |edge| > edge_min (~0.04)   AND   predicted_CLV > clv_min (~1.5%)
+```
+
+**Why:** edge alone is the in-sample optimist's filter; predicted CLV is the
+out-of-sample reality check. Requiring both drops bets the model expects to lose
+closing-line value even when the nominal edge looks fine. The CLV predictor
+**degrades gracefully** -- if `clv_predictor.pkl` has not been trained yet (no
+settled history), the gate is skipped and the pipeline falls back to edge-only
+filtering rather than crashing the slate.
+
+---
+
+### DEC-017: Units-only sizing, paper-only, human-gated live
+
+**Decision:** Stakes are emitted as **unit counts**, never dollars; live capital
+is off by default and human-gated.
+
+- Two units per accepted bet: a flat `1.0u` (for unbiased CLV tracking) plus a
+  capped quarter-Kelly `kelly_units = min(0.25 * f*, 4.0)`.
+- `exec_decision.py` has **no `$` field by construction**; the in-game
+  `decision_engine.py` Kelly is a bankroll *fraction* (capped at 0.25), again not
+  a dollar amount.
+- `LIVE_BETTING=0` is enforced in `bet_selector.py` (non-zero exit otherwise);
+  real money is unlocked only by a human after the recorded-CLV evidence gate in
+  [risk-framework](risk-framework.md) passes in full.
+
+**Why:** units make CLV the scoreboard and keep the public artifact free of any
+dollar edge/ROI claim. CLV (holding a better number than the close) is the only
+money-adjacent yardstick the system reports.
+
+---
+
 ## Rejected Approaches
 
 | Approach | Why Rejected |
@@ -234,9 +331,17 @@ Layer 7: Live state (current score, fatigue, momentum)    — real-time
 | Detectron2 for detection | Not installable on Python 3.9 + PyTorch 2.0 |
 | REST API polling during live games | WebSocket is more efficient for real-time win prob |
 | SQLite instead of PostgreSQL | SQLite has no concurrent write support; multi-process pipeline needs PostgreSQL |
-| Storing video frames in DB | 30fps × 48min = 86,400 frames per game — disk prohibitive, CVs read from file |
+| Storing video frames in DB | 30fps x 48min = 86,400 frames per game -- disk prohibitive, CVs read from file |
 | Neural net for props at current data scale | XGBoost consistently wins on tabular data at <100K rows |
 | Using only box-score features | No edge vs. public tools; spatial CV data is the entire moat |
+
+---
+
+See also: [BETTING](BETTING.md) (edge/EV/CLV math, line-shopping, paper loop)  - 
+[EXECUTION_GUIDE](EXECUTION_GUIDE.md) (sized-bet pipeline)  - 
+[risk-framework](risk-framework.md) (sizing caps, circuit breakers, live gate)  - 
+[architecture/execution-engine](architecture/execution-engine.md) (venue routing)  - 
+[label_strategy](label_strategy.md) (prop tiering).
 
 
 ---

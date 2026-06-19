@@ -25,6 +25,50 @@ Data completeness score: median 0.82 across all 1,249 players (24/28 sections po
 
 ---
 
+## The section builders (how a dossier is assembled, leak-free)
+
+A dossier is not one monolithic file — it is the merge of many independent **atlas sections**, each
+built by one module under `intel/` and each stamped with its own provenance and confidence. There
+are **48 section builders today: 30 `player_*` + 18 `team_*`**. A sample of the player sections:
+
+| Section module | Dossier slice it populates |
+|---|---|
+| `player_scoring_creation.py` | unassisted rate, self-creation rank, drives, shot-zone mix |
+| `player_clutch_scoring.py` | last-5-min / <=5-pt scoring efficiency, volume, +/- |
+| `player_playmaking_network.py` | passes made, potential assists, AST pts created, AST:TOV |
+| `player_rebounding_profile.py` | OREB/DREB rates, box-outs, OREB:DREB ratio |
+| `player_pick_and_roll_profile.py` | PnR handler / roll-man frequency + PPP |
+| `player_vs_scheme_splits.py` | stat deltas faced vs each defensive scheme |
+| `player_quarter_shape_fatigue.py` | per-quarter velocity / usage shape |
+| `player_rest_b2b_splits.py` | rest-day and back-to-back behavioral deltas |
+| `player_archetype_classification.py` | fingerprint -> archetype label + distance-from-centroid |
+| `team_defensive_scheme.py` | dominant scheme tag + drop/paint/perimeter sub-scores |
+| `team_lineup_synergy.py` | 5-man unit with-vs-without deltas |
+| `team_matchup_adjustments.py` | H1->H2 adjustment score + top feature shifted |
+
+Every one of the 48 subclasses the single `AtlasSection` contract in `src/loop/atlas.py` and obeys
+the same leak-free discipline:
+
+1. **As-of-dated build.** `build(entity_id, as_of)` reads only rows with `game_date <= as_of`
+   (explicit timestamp filter in each builder). A dossier "as of January 12" never sees January 13.
+2. **Confidence ladder, by real games observed.** `confidence_from_n(n)` -> `high` (n>=20) /
+   `med` (n>=5) / `low`; CV-derived fields are capped at `med`. `n` counts *games the player was
+   actually observed in that situation* (e.g. clutch games), never parquet row counts.
+3. **DEFER, never invent.** A sub-field with no source becomes `None` + a `DEFER` note naming the
+   script that would unblock it. The 0.82 median completeness reflects honest DEFERs, not gaps
+   filled with guesses.
+4. **Reserved CV slots.** `cv_fields()` declares named `value=None` slots the CV branch fills later;
+   `validate()` *rejects* the artifact if a CV slot is already populated at build time.
+5. **Two-stage validation + single-writer persist.** The section's own `validate()` (range /
+   schema / monotonicity) runs first, then the full leak / coverage / dedup gate in
+   `src.loop.intel_validator`; survivors persist via `profile_factory_bridge` as one disjoint
+   parquet + one `sec_<name>` function (never a factory rebuild). Re-runs are idempotent.
+
+This is why the 1,249 dossiers are reproducible from raw data and carry no future leakage: the
+mechanism, not a promise, enforces it.
+
+---
+
 ## Three dossier examples
 
 ### Nikola Jokić — Playmaking Big (DEN, DROP COVERAGE scheme)
@@ -151,6 +195,21 @@ and high paint dwell share (z=+0.73 vs league avg).
 
 ---
 
+## How a dossier reaches a prediction (and how little it currently moves it)
+
+| Stage | What the dossier contributes | Measured effect |
+|---|---|---|
+| Feature assembly | Archetype label, scheme tags, percentile ranks, situational splits become model feature inputs | Read by the prop stack as inputs |
+| Thin-sample shrinkage | Low-confidence sections are shrunk toward the **archetype centroid**, not the league mean | Sharper, better-ranked intervals on small-n players (calibration) |
+| Prop point prediction | Feeds PTS/REB/AST/FG3M models | Competitive leak-free WF accuracy; **lift attributable to intelligence ~= 0** |
+| CV behavioral fields | Defender distance / spacing / fatigue (where CV games exist) | **SHAP ~= 0** in production; lift gated on the 80-game retrain |
+| Possession sim | Scheme / clutch / rest tables become per-possession rate multipliers | Structure validated; **no dollar edge claimed** |
+| Vs. closing line | All of the above, graded against devigged closes | **CLV ~= 0** — matches, does not beat, the close |
+
+So the honest one-liner: dossiers make the *predictions explainable and the thin-sample intervals
+sharper*; they do **not** add measured point-accuracy on the served model and produce **no** edge
+versus the market.
+
 ## Honest scope
 
 **What this is:** A descriptive intelligence substrate — structured profiles that encode player-level behavioral patterns deterministically from public data. It feeds the prop models and in-play projection heads as feature inputs, not as standalone predictions.
@@ -179,6 +238,12 @@ python scripts/intelligence/build_all.py  # ~25 min on dev box
 Data inputs required: `data/tracking/*` (CV tracking), `data/nba/*` (gamelogs), `data/cache/profiles/PLAYER_REPORTS.json`, `data/cache/profiles/TEAM_REPORTS.json`.
 
 The per-player vault notes (1,249 `.md` files) are gitignored — regenerable from `PLAYER_REPORTS.json`. See [vault/Intelligence/Players_Index.md](../vault/Intelligence/Players_Index.md) for the full browsable index (grouped by team and by archetype) in the local Obsidian vault.
+
+**Siblings:** [INTELLIGENCE.md](INTELLIGENCE.md) (80-artifact manifest + build mechanism) ·
+[MEMORY_GRAPH.md](MEMORY_GRAPH.md) (the person-free knowledge graph) ·
+[signal-inventory.md](signal-inventory.md) (feature catalog + SHIP/REJECT verdicts) ·
+[KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) · [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) ·
+[full doc map](INDEX.md).
 
 
 ---

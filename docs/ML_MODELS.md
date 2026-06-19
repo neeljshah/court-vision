@@ -279,6 +279,162 @@ closes (8,360 bets); Pinnacle CLV data pending (first archive Oct 2026).
 
 ---
 
+## How the Win-Probability Stack Works (deep dive)
+
+Source of truth: `src/prediction/win_probability.py`. The pregame win-prob
+model is a **5-way stacked ensemble** combined by a non-negative least-squares
+(NNLS) meta-learner. Reading the trainer end-to-end, the pipeline is:
+
+1. **Five heterogeneous base learners** are trained on the same chronologically
+   sorted feature matrix (80/20 forward split - the validation rows are strictly
+   later games than training, enforced by `df.sort_values("game_date")`):
+
+   | Base learner | Library / class | Inductive bias it contributes |
+   |--------------|-----------------|-------------------------------|
+   | XGB | `XGBClassifier` (logloss, early stop 20) | Primary GBDT; axis-aligned splits |
+   | LGB | `LGBMClassifier` (`num_leaves = 2^max_depth - 1`) | Leaf-wise GBDT; decorrelated trees |
+   | LR  | `LogisticRegression` on `StandardScaler` features | Linear combinations the trees fragment |
+   | MLP | **ensemble of 5** `MLPClassifier(64,)`, seeds `[1,7,42,100,2024]`, probs averaged | Smooth nonlinear interactions |
+   | NB  | `GaussianNB` on scaled features | Errors uncorrelated with the rest (diversity) |
+
+   The MLP being a 5-seed average is deliberate: cycle-12 shipped a single
+   `random_state=42` MLP that showed a +1.76pp accuracy gain, but the stability
+   screen found that gain was idiosyncratic to seed 42 (other seeds gave +0.0pp).
+   The ensemble trades the headline lift for a stable ~+0.5pp that survives seed
+   permutation - the [seed-stability discipline](JOB_EVIDENCE_PACKET.md) in action.
+
+2. **NNLS meta-stacker.** A `LinearRegression(positive=True, fit_intercept=False)`
+   is fit on the column stack of the five base learners' validation probabilities
+   against the realized outcomes. Positivity + no intercept makes the learned
+   coefficients behave like non-negative blend weights. A guard rejects degenerate
+   fits (`w_sum` outside `[0.5, 1.5]` falls back to equal 0.2 weights). This is
+   why the published note says **"NNLS autonomously zeroed the XGB weight in one
+   trained version"** - when XGB and LGB are near-collinear, NNLS can drive one
+   GBDT weight to exactly 0 rather than double-counting it. The weights are not
+   hand-set; they are read off `data/models/win_prob_metrics.json`
+   (`w_xgb / w_lgb / w_lr / w_mlp / w_nb`).
+
+3. **Cross-fitted isotonic calibration (opt-in).** The blended probability is
+   passed through a 5-fold cross-fitted `IsotonicRegression(out_of_bounds="clip")`.
+   The calibrator only ships if the **cross-fitted** Brier is strictly lower than
+   the uncalibrated blend (`if cal_brier < brier`). If it does not improve
+   out-of-fold, no calibrator is attached - calibration is never assumed to help.
+
+**Worked example (predict path, `WinProbModel._blend_prob`):**
+
+```
+# Each base learner returns P(home win); blend is the weighted sum.
+p = w_xgb*P_xgb + w_lgb*P_lgb + w_lr*P_lr + w_mlp*mean(P_mlp_i) + w_nb*P_nb
+# Suppose weights (0.45, 0.20, 0.10, 0.15, 0.10) and base probs
+#   (0.64, 0.61, 0.58, 0.60, 0.55):
+p = 0.45*0.64 + 0.20*0.61 + 0.10*0.58 + 0.15*0.60 + 0.10*0.55  = 0.6055
+p = isotonic.predict(0.6055)            # only if calibrator deployed
+margin_est = (p - 0.5) * 30  -> ~3.2    # heuristic point-spread surface
+```
+
+**Training data window is a tuned decision, not an accident.** The default is
+`["2023-24","2024-25"]` (2 seasons). The docstring records the sweep: 2 seasons
+gave the best validation Brier (~0.190) and the walk-forward mean corroborated
+(2-season 0.198 +/- 0.007 vs 4-season 0.206 +/- 0.006). More history injected
+distribution drift (rule/pace/roster changes) that hurt the recent window - the
+[recency-beats-volume](KNOWN_LIMITATIONS.md) finding, measured.
+
+> **Honesty rail.** The ~0.193 walk-forward Brier and 0.709 accuracy are
+> *calibration/sharpness* numbers. On the full-season leak-free backtest the
+> model's Brier (0.208) **trails the closing line (0.198)** and pregame
+> spread/total CLV is approximately 0 (corr-with-outcome 0.001). The market is
+> efficient on closing lines; we match it within noise and do not beat it.
+
+---
+
+## How the Prop Models Work (deep dive)
+
+Source of truth: `src/prediction/prop_pergame.py` (training + dispatch),
+`src/prediction/prop_model_stack.py` (stacking + gating + calibration),
+`src/prediction/quantile_calibration.py` (interval calibration).
+
+### Per-stat label transform + objective
+
+Right-skewed count stats are not modeled on the raw scale. Each base learner's
+**objective switches with the label transform** so the loss matches the target
+distribution (`prop_pergame.py`):
+
+| Transform | Stats | XGB objective | LGB objective | Back-transform |
+|-----------|-------|---------------|---------------|----------------|
+| raw count | (default) | `count:poisson` | `poisson` | identity |
+| `log1p`   | REB, FG3M, STL, BLK, TOV | squared error | squared error | `expm1` |
+| `sqrt` + Huber | PTS | `reg:pseudohubererror` (sqrt label) | Huber | square |
+
+The rule is explicit in the code: **Poisson only makes sense on raw counts**, so
+once a `log1p`/`sqrt` transform is in play the learners move to squared-error or
+Huber and the output is inverted back to the count scale. PTS uses `sqrt` rather
+than `log1p` because for a mean ~12-per-game target, sqrt compresses less
+aggressively; combined with Huber (smooth L1) it is robust to blow-up games.
+`log1p` was tested for PTS in cycle 17 and **rejected** (per-fold MAE sign-flipped,
+range -0.021..+0.027) - a single-fold-lift-is-an-artifact catch.
+
+### q50 (quantile-median) dispatch
+
+The decisive prop discovery: a sportsbook prop line is scored against the
+**median**, not the mean, so a quantile-median (q50) head minimizes the metric
+that actually pays. `prop_pergame._USE_Q50_STATS = {reb, fg3m, stl, blk, tov}`
+dispatch to a persisted q50 model and **bypass the squared-error blend entirely**;
+PTS and AST keep the NNLS-stacked ensemble.
+
+- q50 R^2 is *lower* than the blend's R^2 by construction - q50 minimizes MAE
+  (median-optimal), not MSE. Lower R^2 here is correct, not a regression.
+- The q50 **backend** is itself per-stat: REB uses the LGB q50 model on disk
+  (`quantile_pergame_lgb_reb_q50.pkl`) because walk-forward showed XGB-q50 passed
+  only 3/4 folds (failing the dual gate) while LGB-q50 passed 4/4 and confirmed
+  -0.0051 MAE on the production single split.
+
+### Interval / dispersion calibration
+
+The q10/q90 bands out of the cycle-26 quantile models are mis-calibrated (raw
+coverage measured at 80% target): PTS 74.7% and AST 76.2% are **too tight**;
+FG3M/STL/BLK 87-90% and TOV 85.1% are **too wide** (the `log1p` + clip-at-0 floor
+squeezes the low tail). `quantile_calibration.py` computes a per-stat scale `s`:
+
+```
+calibrated_q90 = q50 + s * (q90 - q50)
+calibrated_q10 = q50 - s * (q50 - q10)
+```
+
+`s` is grid-searched to drive empirical coverage to 80%, with an **asymmetric**
+branch (q10 floor preserved, only q90 scales) for the stats whose q10 is heavily
+clipped at zero - symmetric scaling has a coverage discontinuity at `s=1.0` there.
+BLK additionally has a q10>q50 crossing on ~2.3% of rows, fixed by monotone
+ordering without expanding the band. This matches the [prop-sigma-too-tight](KNOWN_LIMITATIONS.md)
+note: the fix is to *inflate the interval*, not to swap in a NegBinom.
+
+### The stack, gating, and micro-signal layer
+
+`prop_model_stack.stack_predict()` wraps the base predictions with:
+
+- a **Ridge meta-correction** per stat (`prop_stack_meta.json`: `coef*pred +
+  intercept`) to remove residual systematic bias;
+- a **confidence gate** that suppresses a play when `dnp_prob >= 0.30`,
+  `injury_mult <= 0.70`, or the edge vs the line is below `_MIN_EDGE_PCT = 0.04`;
+- a **scalar micro-signal multiplier** (rest, travel, altitude, home/away, shot
+  type, per-stat back-to-back) applied once - injury availability is applied
+  exactly once upstream in `predict_player_pergame` to avoid the prior
+  triple-application bug;
+- a **quarantine list** (`quarantine_state.json`) that can null out a stat the
+  monitoring loop has flagged.
+
+> **Honesty rail.** Per-stat OOS MAE (leak-free walk-forward, ~51k held-out
+> player-games), the figures published in the evidence packet: PTS ~4.58,
+> REB ~1.90, AST ~1.34, FG3M ~0.88, with a small consistent under-bias
+> (~-0.45 PTS); STL/BLK/TOV are modeled on the same footing (see the per-stat
+> pregame-MAE table earlier in this doc; they are not separately published in
+> the evidence packet, so no standalone figure is asserted here). These
+> are accuracy/sharpness numbers competitive with published prop benchmarks -
+> **not** an ROI or beat-the-close claim. Against real closing lines the prop
+> book is roughly break-even-minus-vig; assists is the one small, durable,
+> regime-dependent exception and breaks in the playoffs.
+
+---
+
 ## Validation Discipline
 
 This section documents the methodology that governs all model evaluation.
@@ -402,7 +558,9 @@ coverage exists. Current SHAP ≈ 0 reflects data scarcity, not model exclusion.
 
 ---
 
-*Related: [`ARCHITECTURE.md`](../ARCHITECTURE.md) · [`docs/CV_TRACKING.md`](CV_TRACKING.md) · [`docs/API.md`](API.md) · [`docs/JOB_EVIDENCE_PACKET.md`](JOB_EVIDENCE_PACKET.md)*
+*Related: [`ARCHITECTURE.md`](../ARCHITECTURE.md) · [`docs/CV_TRACKING.md`](CV_TRACKING.md) · [`docs/API.md`](API.md) · [`docs/JOB_EVIDENCE_PACKET.md`](JOB_EVIDENCE_PACKET.md) · [`docs/KNOWN_LIMITATIONS.md`](KNOWN_LIMITATIONS.md)*
+
+*Deep dives: [`models/model-registry.md`](models/model-registry.md) (artifact inventory) · [`models/calibration.md`](models/calibration.md) (calibration math + Shin) · [`models/feature-inventory.md`](models/feature-inventory.md) (feature stack + WF verdicts) · [full doc map](INDEX.md)*
 
 *Last verified: 2026-06-11*
 

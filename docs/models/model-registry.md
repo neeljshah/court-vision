@@ -145,6 +145,48 @@ These require 200+ CV games for meaningful LSTM sequence training. Code is scaff
 
 ---
 
+## Artifact Inventory - files on disk, by role
+
+The central manifest is `data/models/model_registry.json` (lineage, data windows,
+metrics). The load-bearing artifacts the serving graph actually reads:
+
+| Role | Artifact path(s) | Produced by | Read by |
+|------|------------------|-------------|---------|
+| Win-prob 5-way stack | `data/models/win_probability.pkl` (XGB raw bytes + LGB/LR/MLP-list/NB + NNLS weights + isotonic calibrator) | `win_probability.train()` | `win_probability.load()` / `predict()` |
+| Win-prob metrics | `data/models/win_prob_metrics.json` (acc, Brier, per-base Brier, `w_xgb..w_nb`, `meta_fit_source`, seasons) | `_save_metrics()` | dashboards / docs |
+| Prop root models | `data/models/props_{stat}.json` (XGB), `props_lgb_{stat}.pkl`, `props_cb_{stat}.cbm` | `prop_pergame` trainers | `prop_model_stack.predict_base_learner()` |
+| Prop q50 backends | `quantile_pergame_{stat}_q50.json` (XGB), `quantile_pergame_lgb_{stat}_q50.pkl` (LGB) | `prop_quantiles` | `prop_pergame._load_q50_model()` |
+| Prop WF metrics | `quantile_pergame_metrics.json` (MAE + coverage_80 per stat) | walk-forward eval | docs / monitoring |
+| Interval calibration | `quantile_calibration.json` (per-stat q10/q90 scale `s`) | `quantile_calibration` grid search | `quantile_calibration.apply()` |
+| Ridge meta-correction | `prop_stack_meta.json` (`coef`, `intercept` per stat) | `prop_model_stack.train_meta()` | `stack_predict()` |
+| Over/under win-prob calib | `calibration_win_{stat}.joblib` | `CalibrationLayer.train_win_prob()` | `CalibrationLayer.win_prob()` |
+| Cohort calibrator | `cohort_calibrator.pkl` | `train_cohort_calibration()` | `_get_cohort_calibrator()` |
+| Segment Platt | `segment_calibrator.pkl` | `SegmentCalibrator.save()` | `SegmentCalibrator.calibrate()` |
+| Edge isotonic | `edge_isotonic_*.joblib` (per-stat, iter-34) | edge calibration | `betting_edge` |
+| Quarantine state | `quarantine_state.json` | monitoring loop | `stack_predict()` |
+| xFG | `xfg_v1.pkl`, `xfg_cv_stack.pkl` (CV-gated) | xFG trainer | shot-prob endpoint |
+| OOF predictions | `data/cache/pregame_oof.parquet` (byte-identical to calibration frame) | walk-forward | MAE verification |
+
+**Honest artifact caveats (do not gloss over):**
+
+- `prop_residuals.json` is the missing keystone. The Ridge meta, the isotonic
+  over/under calibrators, and the Kelly correlation matrix all train from it, and
+  it must be regenerated from the held-out tracking corpus before those layers are
+  fully populated. Until then, calibration runs largely as identity passthrough
+  and Kelly assumes a diagonal (independent-bet) covariance.
+- The `live_win_prob_lstm.pt` (Tier 6) is a **placeholder**, not a trained model.
+- Tier 3-5 R^2 values are on the 29-game CV subset (9 CLEAN + 20 PARTIAL) and CV
+  features carry **SHAP ~= 0** in production. They retrain at the 80-CLEAN gate;
+  none enters live sizing until a CV A/B confirms delta R^2 >= +0.05 on holdout.
+
+> **Honesty rail.** Registry counts and R^2 values are model-quality / calibration
+> metrics. They are not edge or ROI claims, and several headline figures (the
+> retracted +18.38% ROI, endQ3 Brier 0.119, +54% in-play) are documented
+> measurement artifacts - see [`../ML_MODELS.md`](../ML_MODELS.md) "Self-Caught
+> Leaks" and [`../JOB_EVIDENCE_PACKET.md`](../JOB_EVIDENCE_PACKET.md).
+
+---
+
 ## Model Serving
 
 All Tier 1–2B models are registered in `data/models/model_registry.json` and served via [`api/main.py`](../../api/main.py).
