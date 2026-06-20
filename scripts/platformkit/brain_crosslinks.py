@@ -77,17 +77,18 @@ def _overlap(a: NoteInfo, b: NoteInfo) -> float:
     return len(a.tokens & b.tokens) / len(u) if u else 0.0
 
 
-def _safe_link(from_path: Path, target: Path) -> str | None:
+def _safe_link(target: Path, vault_root: Path) -> str | None:
+    # Obsidian [[...]] cannot follow ../ relative paths or a .md suffix, so emit a
+    # canonical vault-root-relative link (e.g. [[_Organized/NBA/Schemes/x|x]]),
+    # which resolves unambiguously even when note names repeat across sports.
     if _EDGE_RE.search(target.stem):
         return None
     try:
-        rel = target.relative_to(from_path.parent).as_posix()
+        rel = target.resolve().relative_to(vault_root.resolve()).as_posix()
     except ValueError:
-        # Compute manual relative path when parents diverge.
-        common_len = sum(1 for a, b in zip(from_path.parent.parts, target.parts)
-                        if a == b)
-        up = len(from_path.parent.parts) - common_len
-        rel = "../" * up + "/".join(target.parts[common_len:])
+        rel = target.stem
+    if rel.lower().endswith(".md"):
+        rel = rel[:-3]
     return f"[[{rel}|{target.stem}]]"
 
 
@@ -132,10 +133,10 @@ def _pick_links(note: NoteInfo, pool: list[NoteInfo]) -> list[Path]:
     return picked[:6]
 
 
-def _related_block(note: NoteInfo, link_paths: list[Path]) -> str:
+def _related_block(note: NoteInfo, link_paths: list[Path], vault_root: Path) -> str:
     lines = [_RELATED_HDR, ""]
     for lp in link_paths:
-        lk = _safe_link(note.path, lp)
+        lk = _safe_link(lp, vault_root)
         if lk:
             lines.append(f"- {lk}")
     lines.append("")
@@ -185,6 +186,7 @@ def build_crosslinks(organized_root, write: bool = True) -> dict:
         {"n_files_scanned", "n_linked", "by_sport": {...}, "note"}
     """
     root = Path(organized_root)
+    vault_root = root.parent
     by_sport: dict[str, dict] = {}
     total_scanned = total_linked = 0
 
@@ -197,7 +199,7 @@ def build_crosslinks(organized_root, write: bool = True) -> dict:
         for note in notes:
             lp = _pick_links(note, notes)
             if lp:
-                changed = _apply(note.path, _related_block(note, lp), write)
+                changed = _apply(note.path, _related_block(note, lp, vault_root), write)
                 if changed or not write:
                     linked += 1
         by_sport[sport] = {"scanned": len(notes), "linked": linked}

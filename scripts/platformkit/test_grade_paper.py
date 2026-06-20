@@ -40,13 +40,14 @@ def _fetch_factory(games_by_sport):
 def test_grade_one_home_win_and_loss():
     g = _game("New York Mets", "NYM", "Cincinnati Reds", "CIN", 5, 3)
     home_bet = {"sport": "mlb", "matchup": "CIN @ NYM", "side": "home",
-                "taken_decimal": 2.0, "stake": 10.0, "ts": "t1"}
+                "taken_decimal": 2.0, "stake_units": 10.0, "ts": "t1"}
     away_bet = {**home_bet, "side": "away", "ts": "t2"}
     sh = grade_one(home_bet, g)
     sa = grade_one(away_bet, g)
-    # home scored more -> home win, away loss
-    assert sh["outcome"] == "win" and sh["pnl"] == 10.0   # (2.0-1)*10
-    assert sa["outcome"] == "loss" and sa["pnl"] == -10.0
+    # home scored more -> home win, away loss (UNITS, never $)
+    assert sh["outcome"] == "win" and sh["unit_result"] == 10.0   # (2.0-1)*10u
+    assert sa["outcome"] == "loss" and sa["unit_result"] == -10.0
+    assert "pnl" not in sh and "stake" not in sh  # no $ field
     assert sh["executed"] is False and sa["executed"] is False
     assert sh["graded"] is True
 
@@ -55,19 +56,31 @@ def test_grade_one_away_win_other_direction():
     # away team scores more -> away bet wins, home bet loses (opposite direction)
     g = _game("New York Mets", "NYM", "Cincinnati Reds", "CIN", 2, 7)
     away_bet = {"sport": "mlb", "matchup": "CIN @ NYM", "side": "away",
-                "taken_decimal": 1.5, "stake": 20.0, "ts": "t3"}
+                "taken_decimal": 1.5, "stake_units": 20.0, "ts": "t3"}
     home_bet = {**away_bet, "side": "home", "ts": "t4"}
     assert grade_one(away_bet, g)["outcome"] == "win"
-    assert grade_one(away_bet, g)["pnl"] == 10.0          # (1.5-1)*20
+    assert grade_one(away_bet, g)["unit_result"] == 10.0          # (1.5-1)*20u
     assert grade_one(home_bet, g)["outcome"] == "loss"
 
 
-def test_grade_one_draw_is_push():
+def test_grade_one_draw_is_push_only_for_draw_sport():
     g = _game("A", "AAA", "B", "BBB", 1, 1)
     bet = {"sport": "soccer_intl", "matchup": "A vs B", "side": "home",
-           "taken_decimal": 2.0, "stake": 10.0, "ts": "t5"}
+           "taken_decimal": 2.0, "stake_units": 10.0, "ts": "t5"}
     s = grade_one(bet, g)
-    assert s["outcome"] == "push" and s["pnl"] == 0.0
+    assert s["outcome"] == "push" and s["unit_result"] == 0.0
+
+
+def test_grade_one_equal_score_non_draw_sport_is_void(tmp_path):
+    """PE-P1-11: an equal 'final' score for NBA/MLB cannot be a push/win -> VOID."""
+    g = {"sport": "nba", "home": "A", "home_abbr": "AAA", "away": "B",
+         "away_abbr": "BBB", "state": "post", "home_score": 100, "away_score": 100}
+    bet = {"sport": "nba", "matchup": "B @ A", "side": "home",
+           "taken_decimal": 2.0, "stake_units": 1.0, "ts": "t8"}
+    s = grade_one(bet, g)
+    assert s["outcome"] == "void"
+    assert s["unit_result"] is None  # void -> no fabricated unit result
+    assert s.get("void_reason")
 
 
 def test_grade_one_clv_sign_beat_close_positive():
@@ -83,13 +96,17 @@ def test_grade_one_clv_sign_beat_close_positive():
     assert s["clv_is_proxy"] is True   # used last-observed price -> labelled proxy
 
 
-def test_grade_one_no_close_grades_winloss_only():
+def test_grade_one_no_close_is_void_not_proxy():
+    """PE-P0-03: no close -> clv_pct=None, clv_is_proxy EXPLICITLY False (never an
+    inferred proxy that fabricates confidence), clv_status='no_close'."""
     g = _game("Home", "HHH", "Away", "AAA", 4, 2)
     bet = {"sport": "mlb", "matchup": "Away @ Home", "side": "home",
-           "taken_decimal": 2.0, "stake": 10.0, "ts": "t7"}
+           "taken_decimal": 2.0, "stake_units": 10.0, "ts": "t7"}
     s = grade_one(bet, g)
     assert s["outcome"] == "win"
     assert s["clv_pct"] is None        # no price -> no CLV, win/loss only
+    assert s["clv_is_proxy"] is False  # NOT proxy: there is no close at all
+    assert s["clv_status"] == "no_close"
 
 
 # --------------------------------------------------------------------------- #
@@ -161,18 +178,20 @@ def test_grade_summary_math(tmp_path):
     }
     grade_open_bets(ledger, None, fetch_finals=_fetch_factory(games))
     s = grade_summary(ledger)
-    assert s["n"] == 3 and s["n_decided"] == 3
+    assert s["n_total"] == 3 and s["n_decided"] == 3
     # 2 wins (mlb home win + nba away win), 1 loss -> 66.67% hit rate
     assert abs(s["hit_rate"] - (100.0 * 2 / 3)) < 1e-3
-    # pnl: +10 (2.0 win) -10 (loss) +5 (1.5 win) = +5 on 30 staked -> ROI 16.67%
-    assert abs(s["total_pnl"] - 5.0) < 1e-6
-    assert abs(s["paper_roi"] - (100.0 * 5.0 / 30.0)) < 1e-3
+    # UNITS, never $: +10 (2.0 win) -10 (loss) +5 (1.5 win) = +5 net units.
+    assert abs(s["net_units"] - 5.0) < 1e-6
+    # no dollar pnl / roi / stake key anywhere in the summary card.
+    for banned in ("pnl", "total_pnl", "total_stake", "paper_roi", "roi"):
+        assert banned not in s
     # breakdowns present
-    assert s["by_sport"]["mlb"]["n"] == 2 and s["by_sport"]["nba"]["n"] == 1
+    assert s["by_sport"]["mlb"]["n_total"] == 2 and s["by_sport"]["nba"]["n_total"] == 1
     assert "moneyline" in s["by_market"]  # default market label
 
 
 def test_grade_summary_empty(tmp_path):
     out = grade_summary(tmp_path / "does_not_exist.jsonl")
-    assert out["n"] == 0
+    assert out["n_total"] == 0
     assert out["hit_rate"] is None and out["by_sport"] == {}

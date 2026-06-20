@@ -36,6 +36,21 @@ PROVEN_BSS = 0.05
 PROVEN_N = 100
 
 
+def current_settle_version() -> Optional[str]:
+    """The live soccer settlement-logic version, or None if unavailable.
+
+    Stamped into the calibration cache so a result measured under OLD settlement
+    logic can be detected and refused the PROVEN tier. None -> the guard is
+    inert (no soccer settle module here), which keeps non-soccer paths unchanged.
+    Never raises.
+    """
+    try:
+        from domains.soccer.prop_settle import SETTLE_LOGIC_VERSION
+        return SETTLE_LOGIC_VERSION
+    except Exception:  # noqa: BLE001 -- never raise
+        return None
+
+
 def write_calibration_cache_json(payload: Dict[str, Any], out_path: str) -> bool:
     """Atomically write the calibration payload JSON. False on failure; no raise."""
     try:
@@ -69,6 +84,7 @@ def build_calibration_payload(res: Dict[str, Any]) -> Dict[str, Any]:
     ov = (res or {}).get("overall", {}) or {}
     return {
         "as_of": datetime.now(timezone.utc).isoformat(),
+        "settle_logic_version": current_settle_version(),
         "mode": (res or {}).get("mode"),
         "overall": {"bss": ov.get("brier_skill_score"), "brier": ov.get("brier"),
                     "ece": ov.get("ece"), "n": ov.get("n", 0)},
@@ -92,10 +108,26 @@ def load_calibration(path: Optional[str] = None) -> Dict[str, Dict[str, Any]]:
         per_stat = (payload or {}).get("per_stat")
         if not isinstance(per_stat, dict):
             return {}
+        # STALENESS GUARD: a calibration result computed under OLD settlement
+        # logic must NEVER drive a PROVEN label. We compare the version stamped
+        # into the cache against the live settle-logic version. On mismatch (or a
+        # cache that predates stamping -> None), we flag every record _stale so
+        # classify() downgrades it (proven -> unmeasured). The bss/n stay visible
+        # so the board still shows the (now-untrusted) number, just never PROVEN.
+        cur = current_settle_version()
+        cached = (payload or {}).get("settle_logic_version")
+        stale = cur is not None and cached != cur
+        if stale:
+            logger.warning(
+                "calibration cache stale: stamped=%r live=%r -> refusing "
+                "PROVEN tier (treating as unmeasured)", cached, cur)
         out: Dict[str, Dict[str, Any]] = {}
         for stat, d in per_stat.items():
             if isinstance(d, dict):
-                out[stat] = d
+                rec = dict(d)
+                if stale:
+                    rec["_stale_version"] = True
+                out[stat] = rec
         return out
     except Exception as exc:  # noqa: BLE001 -- never raise
         logger.warning("calibration cache load failed: %s", exc)
@@ -119,6 +151,10 @@ def classify(stat: str, calibration: Dict[str, Dict[str, Any]]):
     rec = (calibration or {}).get(stat)
     if not isinstance(rec, dict):
         return "unmeasured", None, None
+    # A record flagged stale (computed under OLD settlement logic) is UNMEASURED:
+    # its bss cannot be trusted to drive a PROVEN label, so we refuse to tier it.
+    if rec.get("_stale_version"):
+        return "unmeasured", None, rec.get("n")
     bss = _coerce_float(rec.get("bss"))
     n = rec.get("n")
     try:

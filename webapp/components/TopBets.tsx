@@ -18,7 +18,7 @@ export function TopBets() {
           Top bets
         </h2>
         <p className="mt-4 text-sm text-slate-500">
-          No qualifying bets yet — waiting for first projection + line refresh.
+          No qualifying bets yet -- waiting for first projection + line refresh.
         </p>
       </section>
     );
@@ -28,7 +28,7 @@ export function TopBets() {
     <section className="rounded-xl border border-slate-800 bg-bg-panel">
       <header className="border-b border-slate-800 px-5 py-3">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-400">
-          Top bets · live
+          Top bets &middot; live
         </h2>
       </header>
       <ul className="divide-y divide-slate-800">
@@ -72,15 +72,15 @@ function BetRow({ bet, onClick }: { bet: Bet; onClick: () => void }) {
           <span className="font-medium">{bet.name}</span>
           <span className="text-slate-400">
             {" "}
-            · {bet.stat.toUpperCase()} {bet.side.toUpperCase()} {bet.line}
+            &middot; {bet.stat.toUpperCase()} {bet.side.toUpperCase()} {bet.line}
           </span>
           <span className="text-slate-500">
             {" "}
-            · {bet.book} {fmtOdds(bet.odds)}
+            &middot; {bet.book} {fmtOdds(bet.odds)}
           </span>
         </div>
         <div className="mt-0.5 text-xs text-slate-500 tabular">
-          proj {bet.projected_final?.toFixed(1)} · cur {(bet.current ?? 0).toFixed(0)}
+          proj {bet.projected_final?.toFixed(1)} &middot; cur {(bet.current ?? 0).toFixed(0)}
           {typeof bet.delta === "number" && bet.delta !== 0 ? (
             <span className={bet.delta > 0 ? " text-tier-a" : " text-red-400"}>
               {" "}({bet.delta > 0 ? "+" : ""}{bet.delta.toFixed(1)})

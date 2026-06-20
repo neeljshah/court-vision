@@ -19,6 +19,7 @@ from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
 from .base import OddsEvent, is_unavailable
 from .espn import EspnProvider
 from .kalshi import KalshiProvider
+from .pinnacle import PinnacleProvider
 from .polymarket import PolymarketProvider
 from .team_resolver import canonical
 
@@ -144,12 +145,13 @@ def merge_events(event_lists: Sequence[List[OddsEvent]]) -> List[OddsEvent]:
 
 def default_providers(http_get: Optional[Callable[[str], Any]] = None,
                        *, use_cache: bool = True) -> List[Any]:
-    """The standard provider stack: ESPN (keyless) + Kalshi + Polymarket."""
+    """The standard provider stack: ESPN (keyless) + Kalshi + Polymarket + Pinnacle."""
     kw = {} if http_get is None else {"http_get": http_get}
     return [
         EspnProvider(use_cache=use_cache, **kw),
         KalshiProvider(use_cache=use_cache, **kw),
         PolymarketProvider(use_cache=use_cache, **kw),
+        PinnacleProvider(use_cache=use_cache, **kw),
     ]
 
 
@@ -162,7 +164,7 @@ def aggregate(sport: str, providers: Optional[Sequence[Any]] = None,
     is up, else "unavailable". Never raises; never fabricates a price.
     """
     provs = list(providers) if providers is not None else default_providers()
-    as_of = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    wall_now = datetime.now(timezone.utc).isoformat(timespec="seconds")
     sources: Dict[str, str] = {}
     lists: List[List[OddsEvent]] = []
     for p in provs:
@@ -180,8 +182,36 @@ def aggregate(sport: str, providers: Optional[Sequence[Any]] = None,
             sources[getattr(p, "name", "?")] = "unexpected result"
     events = merge_events(lists)
     status = "ok" if any(v == "ok" for v in sources.values()) else "unavailable"
+    # STALE-NEVER-GREEN: the slate as_of is the OLDEST per-source fetched-at across
+    # ALL providers (the true freshness floor), NOT now(). Read from the RAW provider
+    # lists (pre-merge) so a venue folded into a merged event still counts -- a
+    # cached/dead source cannot hide behind another venue's fresh now() stamp.
+    as_of = _slate_as_of(lists, wall_now)
     return {"sport": sport.lower(), "status": status, "as_of": as_of,
             "sources": sources, "events": [e.to_dict() for e in events]}
+
+
+def _slate_as_of(event_lists: Sequence[List[OddsEvent]], fallback: str) -> str:
+    """The OLDEST event as_of across every provider list (freshness floor).
+
+    Using the oldest stamp means a dashboard reading slate-level freshness sees the
+    age of the STALEST source -- a cached/dead source cannot hide behind a now()
+    stamp. Unparseable / missing stamps are ignored (never invented).
+    """
+    parsed = []
+    for events in event_lists:
+        for e in events:
+            s = getattr(e, "as_of", None)
+            if not s:
+                continue
+            try:
+                parsed.append(
+                    (datetime.fromisoformat(str(s).replace("Z", "+00:00")), s))
+            except (TypeError, ValueError):
+                continue
+    if not parsed:
+        return fallback
+    return min(parsed, key=lambda t: t[0])[1]
 
 
 def to_odds_lookup(sport: str, providers: Optional[Sequence[Any]] = None,

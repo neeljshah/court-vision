@@ -231,6 +231,20 @@ def run_pipeline(vault_dir: Optional[Path] = None,
     except Exception:  # noqa: BLE001
         pass
 
+    # FINAL graph-navigability pass: make the whole brain ONE reachable, enriched,
+    # coherent graph (folder/sport indexes -> system map -> crosslinks -> enrich ->
+    # fix links -> reachability). Runs ONLY on the live vault layout
+    # (organized_root == vault/_Organized) so the hermetic fixture pipeline is
+    # untouched. Best-effort; a graph hiccup never aborts the rebuild (the standalone
+    # brain_graph_finalize CLI is the fail-closed gate). MUST be the last write.
+    graph_finalize: Dict = {}
+    if organized_root.name == "_Organized":
+        try:
+            from scripts.platformkit.brain_graph_finalize import finalize as _gfin  # noqa: PLC0415
+            graph_finalize = _gfin(organized_root.parent, write=True, do_assert=False)
+        except Exception:  # noqa: BLE001
+            graph_finalize = {}
+
     per_sport = organize.get("per_sport", {})
     summary = {
         "sports": sorted(per_sport.keys()),
@@ -244,10 +258,12 @@ def run_pipeline(vault_dir: Optional[Path] = None,
         "edge_flagged": audit.get("n_flagged"),
         "person_free": gates["person_free"],
         "graph_clean": gates["graph_clean"],
+        "fully_reachable": graph_finalize.get("fully_reachable"),
     }
     return {
         "organized_root": str(organized_root),
         "summary": summary,
+        "graph_finalize": graph_finalize,
         "stages": {"organize": organize, "digest": digest, "export": export,
                    "models": models, "audit": audit},
         "note": ("intelligence MAP, not a betting edge; markets efficient; "

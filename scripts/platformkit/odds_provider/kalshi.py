@@ -22,10 +22,10 @@ import logging
 import os
 import urllib.parse
 from datetime import datetime, timezone
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from .base import OddsEvent, prob_to_decimal, unavailable
-from .http_cache import disk_cache_get, http_get_json
+from .http_cache import disk_cache_get_meta, http_get_json
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +39,7 @@ _SERIES_HINT: Dict[str, str] = {
     "mlb": "KXMLB",
     "soccer": "KXEPL",
     "soccer_intl": "KXWC",
+    "tennis": "KXATP",
 }
 
 
@@ -85,6 +86,7 @@ def _team_label(market: Dict[str, Any]) -> str:
 
 
 def parse_events(markets: List[Dict[str, Any]], sport: str,
+                 as_of: Optional[str] = None,
                  ) -> List[OddsEvent]:
     """Turn a flat Kalshi market list into normalized two-team OddsEvents.
 
@@ -93,8 +95,12 @@ def parse_events(markets: List[Dict[str, Any]], sport: str,
     are surfaced as the two sides under venue "kalshi". Home/away here is the
     market order (caller matches by team name to fix orientation); a one-sided or
     >2-leg event is skipped (never guessed into a line).
+
+    *as_of* is the TRUE fetched-at time of the source body (the original fetch
+    time on a cache hit, never now()) so a cached/dead feed cannot read fresh.
+    Defaults to now() only when the caller has no fetched-at (pure-test path).
     """
-    as_of = _now_iso()
+    as_of = as_of or _now_iso()
     out: List[OddsEvent] = []
     for ev_ticker, legs in group_markets(markets).items():
         if len(legs) != 2:
@@ -107,9 +113,14 @@ def parse_events(markets: List[Dict[str, Any]], sport: str,
         if dec_a is None or dec_b is None:
             continue
         home, away = _team_label(m_a), _team_label(m_b)
+        # Kalshi's close_time is a SETTLEMENT/expiry bound (at or after game end),
+        # NOT the tip-off time. Putting it in commence_time would let a near-final
+        # in-play price be labeled is_true_close=True by line_store._within_lock,
+        # inflating CLV. Leave commence_time=None so a Kalshi-only game can never
+        # satisfy the lock window and is always honestly marked clv_is_proxy=True.
         out.append(OddsEvent(
             event_id=ev_ticker, sport=sport, home=home, away=away,
-            commence_time=m_a.get("close_time"),
+            commence_time=None,
             prices={"kalshi": {"home": dec_a, "away": dec_b, "draw": None}},
             source="kalshi", as_of=as_of))
     return out
@@ -127,10 +138,14 @@ class KalshiProvider:
         self._use_cache = use_cache
         self._page_limit = page_limit
 
-    def _get(self, url: str) -> Any:
+    def _get(self, url: str) -> Tuple[Any, str]:
+        """Return (body, fetched_at_iso) -- the TRUE network fetch time of the body
+        (original fetch time on a cache hit, never now()) so a cached/dead Kalshi
+        body cannot re-stamp itself fresh within the freshness TTL."""
         if self._use_cache:
-            return disk_cache_get(url, http_get=self._http_get)
-        return self._http_get(url)
+            body, fetched_at, _hit = disk_cache_get_meta(url, http_get=self._http_get)
+            return body, fetched_at
+        return self._http_get(url), _now_iso()
 
     def fetch(self, sport: str) -> Union[List[OddsEvent], Dict[str, str]]:
         sport = sport.lower()
@@ -140,7 +155,7 @@ class KalshiProvider:
         params = {"limit": self._page_limit, "status": "open"}
         url = f"{_BASE}/markets?" + urllib.parse.urlencode(params)
         try:
-            body = self._get(url)
+            body, fetched_at = self._get(url)
         except Exception as exc:  # noqa: BLE001 -- degrade, never bubble
             logger.warning("kalshi markets failed for %s: %s", sport, exc)
             return unavailable(f"kalshi call failed ({type(exc).__name__})")
@@ -149,7 +164,7 @@ class KalshiProvider:
             return unavailable("kalshi: unexpected markets shape")
         relevant = [m for m in markets
                     if str(m.get("event_ticker", "")).startswith(prefix)]
-        return parse_events(relevant, sport)
+        return parse_events(relevant, sport, fetched_at)
 
 
 __all__ = ["KalshiProvider", "parse_events", "group_markets"]

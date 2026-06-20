@@ -1,0 +1,29 @@
+{
+  "_doc": "SEED in-game blend surface for NBA -- HAND-SEEDED, NOT a proven edge.",
+  "_honest_note": "These weights are a reasonable prior for how much realized live state (score + clock) should pull the calibrated pregame prior. They are a STARTING POINT to be validated / refit out-of-sample by scripts/platformkit/ingame fit_w_surface (the proof agent), fit on one season and evaluated on a DIFFERENT season. No dollar edge is claimed. Markets are efficient; the only validated in-game lever is FRESHNESS (variance must shrink as fraction_elapsed rises). A correct reprice trusts the live state MORE as the game progresses (w rises toward late/large-margin cells).",
+  "sport": "nba",
+  "version": "seed-0",
+  "edge_claimed": false,
+  "regulation_min": 48.0,
+  "regulation_sec": 2880.0,
+  "n_time": 4,
+  "n_margin": 5,
+  "time_edges_sec": [2880.0, 2160.0, 1440.0, 720.0, 0.0],
+  "margin_edges_abs": [4.0, 8.0, 14.0, 22.0],
+  "default_w": 0.0,
+  "_grid_doc": "grid keyed 'time_bucket,margin_bucket'. time_bucket 0=Q1 (early) -> 3=Q4 (late). margin_bucket 0=tight -> 4=blowout. w in [0,1]: 0 trusts pregame prior, 1 trusts realized live state. SEED rises with both elapsed time and |margin| -- the validated freshness shape, deliberately under-resolved.",
+  "grid": {
+    "0,0": 0.10, "0,1": 0.12, "0,2": 0.15, "0,3": 0.20, "0,4": 0.25,
+    "1,0": 0.22, "1,1": 0.26, "1,2": 0.32, "1,3": 0.42, "1,4": 0.52,
+    "2,0": 0.40, "2,1": 0.46, "2,2": 0.55, "2,3": 0.66, "2,4": 0.78,
+    "3,0": 0.62, "3,1": 0.70, "3,2": 0.80, "3,3": 0.90, "3,4": 0.97
+  },
+  "variance_floor": 0.0001,
+  "_variance_doc": "Live-state variance scales with remaining fraction (Brownian score anchor): var ~ var_pregame * remaining_frac. As fraction_elapsed rises, remaining_frac falls, so the repriced variance SHRINKS (Q1 wide -> Q4 tight). This monotone shrink is an asserted invariant, not a fitted target.",
+  "garbage_clamp": {
+    "margin_abs": 18.0,
+    "seconds_remaining": 120.0,
+    "lo": 0.02,
+    "hi": 0.98
+  }
+}

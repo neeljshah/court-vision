@@ -21,6 +21,15 @@ from typing import Any, Dict, Optional
 
 from domains.soccer.player_rates import CANON_TO_COLS
 
+# Settlement-logic version. BUMP this whenever the realized_stat / settle_prop
+# grading semantics change in a way that can move a calibration result (e.g. the
+# all-NaN VOID fix that stopped fabricating realized 0.0 for unscraped stats).
+# A calibration cache is stamped with the version it was computed under; the
+# tiering path REFUSES to emit CALIBRATION_PROVEN from a cache whose stamp does
+# not match this value (a result measured under OLD settlement logic must NEVER
+# drive a PROVEN label). v2 = post all-NaN VOID fix (no fillna(0.0) fabrication).
+SETTLE_LOGIC_VERSION = "v2-void-nan"
+
 
 def realized_stat(
     realized_df, player_id, event_id, stat_canonical: str
@@ -28,8 +37,10 @@ def realized_stat(
     """Sum the CANON_TO_COLS raw columns for one player's row in one match.
 
     Returns the realized count (float) or None when the canonical stat is unknown,
-    the (player_id, event_id) row is absent, or no mapped column is present.
-    Never raises.
+    the (player_id, event_id) row is absent, no mapped column is present, OR every
+    mapped column value for the matched row(s) is NaN (stat genuinely MISSING --
+    a DNP / unscraped stat, which must VOID, never be fabricated as a realized 0).
+    A genuinely-recorded 0 returns 0.0. Never raises.
     """
     cols = CANON_TO_COLS.get(stat_canonical)
     if cols is None:
@@ -53,9 +64,21 @@ def realized_stat(
         present = [c for c in cols if c in rows.columns]
         if not present:
             return None
+        # HONESTY: distinguish a genuinely-recorded 0 from a MISSING stat. A
+        # player can have a box-score row (match final, player listed) yet have
+        # NaN in the mapped stat column (DNP / not scraped). We must NOT fillna(0)
+        # such a NaN -- that fabricates a realized 0.0 and an UNDER on a positive
+        # line then always "wins". We only sum NON-NaN values; if EVERY mapped
+        # value across the matched row(s) is NaN, the stat is unknown -> None.
+        any_real = False
         total = 0.0
         for col in present:
-            total += pd.to_numeric(rows[col], errors="coerce").fillna(0.0).sum()
+            num = pd.to_numeric(rows[col], errors="coerce")
+            if num.notna().any():
+                any_real = True
+                total += float(num.fillna(0.0).sum())
+        if not any_real:
+            return None  # row exists but stat is genuinely missing -> VOID/None
         return float(total)
     except Exception:  # noqa: BLE001 -- public fn must never raise
         return None
@@ -90,4 +113,4 @@ def settle_prop(
     return {"result": result, "realized": rv}
 
 
-__all__ = ["realized_stat", "settle_prop"]
+__all__ = ["realized_stat", "settle_prop", "SETTLE_LOGIC_VERSION"]

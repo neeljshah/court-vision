@@ -7,6 +7,7 @@
   "env": {
     "NEXT_PUBLIC_API_BASE": "@live-v2-api-base",
     "NEXT_PUBLIC_WS_BASE": "@live-v2-ws-base",
-    "NEXT_PUBLIC_AUTH_TOKEN": "@live-v2-auth-token"
+    "NEXT_PUBLIC_AUTH_TOKEN": "@live-v2-auth-token",
+    "NEXT_PUBLIC_P5_BASE": "@live-v2-p5-base"
   }
 }

@@ -8,22 +8,33 @@ NOT scrape the sportsbook. No key, no auth.
 Flow per sport:
   1. GET scoreboard -> list of event ids + home/away names.
   2. GET summary?event=<id> -> pickcenter[].{provider.name, homeTeamOdds.moneyLine,
-     awayTeamOdds.moneyLine} -> normalize to decimal odds.
+     awayTeamOdds.moneyLine, spread, overUnder, overOdds, underOdds}
+     -> normalize to decimal odds.
 Each summary call is wrapped in the TTL cache. A scoreboard/summary failure
 degrades to UNAVAILABLE (scoreboard) or a skipped event (summary) -- never a fake.
 
 Mapping our sport keys -> ESPN league paths:
   nba -> basketball/nba ; mlb -> baseball/mlb ;
   soccer -> soccer/eng.1 (EPL) ; soccer_intl -> soccer/fifa.world.
+
+SPREAD SOURCE: pickcenter[].spread is the home-team handicap (e.g. -5.5). The
+away line is its negation. Per-provider spread ODDS are sourced from
+homeTeamOdds.spreadOdds / awayTeamOdds.spreadOdds (American, present only on
+some books). When those fields are absent the spread is OMITTED rather than
+assumed -- we NEVER fabricate a price.
+
+TOTAL SOURCE: pickcenter[].overUnder is the O/U line. Prices come from the
+top-level overOdds / underOdds fields (American, present on some books). When
+those fields are absent the total is OMITTED -- never assumed.
 """
 from __future__ import annotations
 
 import logging
 from datetime import datetime, timezone
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from .base import OddsEvent, american_to_decimal, unavailable
-from .http_cache import disk_cache_get, http_get_json
+from .http_cache import disk_cache_get_meta, http_get_json
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +44,7 @@ _LEAGUE_PATH: Dict[str, str] = {
     "mlb": "baseball/mlb",
     "soccer": "soccer/eng.1",
     "soccer_intl": "soccer/fifa.world",
+    "tennis": "tennis/atp",
 }
 
 
@@ -46,29 +58,105 @@ def _team_name(competitor: Dict[str, Any]) -> str:
             or team.get("abbreviation") or "").strip()
 
 
-def parse_pickcenter(summary: Dict[str, Any], home: str, away: str,
-                     ) -> Dict[str, Dict[str, Optional[float]]]:
-    """Extract {provider_name: {"home": dec, "away": dec}} from a summary payload.
+def _safe_float(value: Any) -> Optional[float]:
+    """Parse a float from an ESPN field; None on missing / non-numeric."""
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
 
-    Pure: safe to unit-test on a canned summary. Each pickcenter entry is a
-    distinct sportsbook (a venue). American moneylines -> decimal; missing /
-    unparseable sides are skipped, never guessed. Draw is omitted (ESPN
-    pickcenter moneyline is two-way home/away).
+
+def _spread_node(pc: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """Build a spread sub-node if BOTH the line AND per-side odds are present.
+
+    ESPN pickcenter carries the home spread line at pc["spread"] (a float,
+    e.g. -5.5). The per-provider spread prices live at:
+      pc["homeTeamOdds"]["spreadOdds"]  (American, e.g. -110)
+      pc["awayTeamOdds"]["spreadOdds"]
+    When EITHER the line or EITHER side's price is absent the whole spread
+    node is omitted -- we NEVER fabricate a line or a price.
     """
-    out: Dict[str, Dict[str, Optional[float]]] = {}
+    line_home = _safe_float(pc.get("spread"))
+    if line_home is None:
+        return None
+    line_away = -line_home
+    hto = pc.get("homeTeamOdds") or {}
+    ato = pc.get("awayTeamOdds") or {}
+    odds_h = american_to_decimal(hto.get("spreadOdds"))
+    odds_a = american_to_decimal(ato.get("spreadOdds"))
+    if odds_h is None or odds_a is None:
+        return None
+    return {
+        "home": {"line": line_home, "odds": odds_h},
+        "away": {"line": line_away, "odds": odds_a},
+    }
+
+
+def _total_node(pc: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """Build a total sub-node if BOTH the line AND per-side odds are present.
+
+    ESPN pickcenter carries the O/U line at pc["overUnder"] (a float,
+    e.g. 220.5). The prices live at the top-level fields:
+      pc["overOdds"]  (American, e.g. -110)
+      pc["underOdds"]
+    When EITHER the line or EITHER price is absent the whole total node is
+    omitted -- we NEVER fabricate a line or a price.
+    """
+    line = _safe_float(pc.get("overUnder"))
+    if line is None:
+        return None
+    odds_o = american_to_decimal(pc.get("overOdds"))
+    odds_u = american_to_decimal(pc.get("underOdds"))
+    if odds_o is None or odds_u is None:
+        return None
+    return {
+        "over":  {"line": line, "odds": odds_o},
+        "under": {"line": line, "odds": odds_u},
+    }
+
+
+def parse_pickcenter(summary: Dict[str, Any], home: str, away: str,
+                     ) -> Dict[str, Dict[str, Any]]:
+    """Extract per-venue price dicts from a summary payload.
+
+    Each pickcenter entry maps to one sportsbook (venue) keyed
+    "espn:<ProviderName>". The returned dict has the extended shape that
+    markets.quotes_from_aggregate expects:
+
+      {venue: {"home": dec, "away": dec,         # moneyline (always present when ML quoted)
+               "spread": {...} | absent,          # only when line+odds both present
+               "total":  {...} | absent}}         # only when line+odds both present
+
+    Moneyline behaviour is byte-identical to before. Spread/total nodes are
+    ADDED only when ESPN provides all required fields (line + both-side odds).
+    A malformed pickcenter never contaminates existing moneyline output.
+    Pure: safe to unit-test on a canned summary.
+    """
+    out: Dict[str, Dict[str, Any]] = {}
     for pc in summary.get("pickcenter", []) or []:
-        provider = (pc.get("provider") or {}).get("name")
-        if not provider:
+        try:
+            provider = (pc.get("provider") or {}).get("name")
+            if not provider:
+                continue
+            h = american_to_decimal((pc.get("homeTeamOdds") or {}).get("moneyLine"))
+            a = american_to_decimal((pc.get("awayTeamOdds") or {}).get("moneyLine"))
+            side: Dict[str, Any] = {}
+            if h is not None:
+                side["home"] = h
+            if a is not None:
+                side["away"] = a
+            # Spread and total: additive, guarded -- a missing/malformed field
+            # never touches the moneyline path above.
+            spread = _spread_node(pc)
+            if spread is not None:
+                side["spread"] = spread
+            total = _total_node(pc)
+            if total is not None:
+                side["total"] = total
+            if side:
+                out[f"espn:{provider}"] = side
+        except Exception:  # noqa: BLE001 -- one bad pc entry must not abort the rest
             continue
-        h = american_to_decimal((pc.get("homeTeamOdds") or {}).get("moneyLine"))
-        a = american_to_decimal((pc.get("awayTeamOdds") or {}).get("moneyLine"))
-        side: Dict[str, Optional[float]] = {}
-        if h is not None:
-            side["home"] = h
-        if a is not None:
-            side["away"] = a
-        if side:
-            out[f"espn:{provider}"] = side
     return out
 
 
@@ -84,10 +172,14 @@ class EspnProvider:
         self._use_cache = use_cache
         self._max_events = max_events
 
-    def _get(self, url: str) -> Any:
+    def _get(self, url: str) -> Tuple[Any, str]:
+        """Return (body, fetched_at_iso). fetched_at is the TRUE network fetch time
+        of the body -- the ORIGINAL fetch time on a cache hit, never now() -- so a
+        cached/dead feed cannot re-stamp itself fresh (stale-never-green)."""
         if self._use_cache:
-            return disk_cache_get(url, http_get=self._http_get)
-        return self._http_get(url)
+            body, fetched_at, _hit = disk_cache_get_meta(url, http_get=self._http_get)
+            return body, fetched_at
+        return self._http_get(url), _now_iso()
 
     def fetch(self, sport: str) -> Union[List[OddsEvent], Dict[str, str]]:
         sport = sport.lower()
@@ -95,14 +187,14 @@ class EspnProvider:
         if not path:
             return unavailable(f"espn: unsupported sport '{sport}'")
         try:
-            board = self._get(f"{_SITE}/{path}/scoreboard")
+            board, as_of = self._get(f"{_SITE}/{path}/scoreboard")
         except Exception as exc:  # noqa: BLE001 -- degrade, never bubble
             logger.warning("espn scoreboard failed for %s: %s", sport, exc)
             return unavailable(f"espn scoreboard call failed ({type(exc).__name__})")
         events = board.get("events", []) if isinstance(board, dict) else None
         if not isinstance(events, list):
             return unavailable("espn: unexpected scoreboard shape")
-        as_of = _now_iso()
+        # as_of is the scoreboard's TRUE fetched-at (cache-honest), NOT now().
         out: List[OddsEvent] = []
         for ev in events[: self._max_events]:
             comp = (ev.get("competitions") or [{}])[0]
@@ -126,7 +218,7 @@ class EspnProvider:
                       ) -> Dict[str, Dict[str, Optional[float]]]:
         url = f"{_SITE}/{path}/summary?event={eid}"
         try:
-            summary = self._get(url)
+            summary, _fetched_at = self._get(url)
         except Exception as exc:  # noqa: BLE001 -- one bad event must not sink the slate
             logger.debug("espn summary failed for %s: %s", eid, exc)
             return {}

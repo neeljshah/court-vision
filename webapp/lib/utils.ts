@@ -14,6 +14,20 @@ export function fmtOdds(o: number): string {
   return o > 0 ? `+${o}` : `${o}`;
 }
 
+/**
+ * fmtDecimalOdds -- convert decimal odds to American format string.
+ *
+ * Examples:
+ *   2.50 -> "+150"    (>= 2.0: positive)
+ *   1.00 -> "evens"   (<= 1.0)
+ *   1.91 -> "-110"    (< 2.0 and > 1.0)
+ */
+export function fmtDecimalOdds(o: number): string {
+  if (o >= 2.0) return `+${Math.round((o - 1) * 100)}`;
+  if (o <= 1.0) return "evens";
+  return `-${Math.round(100 / (o - 1))}`;
+}
+
 export function tierClass(tier?: string): string {
   switch (tier) {
     case "S": return "bg-tier-s/20 text-tier-s border-tier-s/40";

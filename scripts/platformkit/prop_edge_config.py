@@ -11,7 +11,12 @@ calibration is the yardstick (cache absent -> all stats "unmeasured").
 
 Public functions NEVER raise -- they degrade (None df / empty provider list).
 
-Per-file test: python -m pytest scripts/platformkit/test_prop_edge.py -q
+NBA offseason honesty: the NBA board returns UNAVAILABLE (not empty-but-green)
+when all providers report no lines. Call nba_board_status(sources, n_lines) after
+_gather to get the honest board status string for the NBA sport key.
+
+Per-file test:
+  cd /c/Users/neelj/nba-ai-system && python -m pytest scripts/platformkit/test_prop_edge_config.py -q
 """
 from __future__ import annotations
 
@@ -123,10 +128,68 @@ def _mlb_config() -> SportPropConfig:
     )
 
 
+def _nba_config() -> SportPropConfig:
+    """NBA wiring: DFS-only prop board (Underdog BASKETBALL + PrizePicks NBA).
+
+    NBA prop lines from both providers are EMPTY in the NBA off-season; they will
+    auto-populate when lines post (both providers are already wired for NBA by
+    sport_id). No NBA prop_engine exists (the domain engine lives in the human-
+    gated src/ tree), so engine_distribution raises NotImplementedError -- callers
+    (build_prop_board) must handle that honestly and degrade to UNAVAILABLE for
+    the model-probability column while still surfacing the raw lines.
+
+    This config wires the PROVIDER layer (sources + prop lines) only. No calibration
+    cache exists for NBA (calibration_path points to a path that may be absent;
+    get_config callers must treat a missing cache as "all unmeasured").
+
+    canonical_stats: NBA prop stats from DFS providers (PTS/REB/AST/STL/BLK/3PM).
+    supports_dispersion / supports_opp_mult: False (no NBA prop engine yet).
+    """
+    from scripts.platformkit.odds_provider.prop_prizepicks import PrizePicksProvider
+    from scripts.platformkit.odds_provider.prop_underdog import UnderdogProvider
+
+    # NBA canonical stat set from the DFS providers (normalized via canon_stat).
+    # Kept as a lightweight frozenset -- no domain engine import needed here.
+    _NBA_CANON = frozenset({
+        "Points", "Rebounds", "Assists", "Steals", "Blocks",
+        "3-PT Made", "Turnovers", "Fantasy Score",
+        "Pts+Reb+Ast", "Pts+Reb", "Pts+Ast", "Reb+Ast",
+    })
+
+    def _nba_engine(*_args: object, **_kw: object) -> dict:
+        raise NotImplementedError(
+            "NBA prop_engine not available outside human-gated src/; "
+            "degrade model column to UNAVAILABLE for NBA props."
+        )
+
+    def _nba_resolve(*_args: object, **_kw: object) -> dict:
+        return {"status": "unavailable"}
+
+    def _nba_name_index(_df: object) -> None:
+        return None
+
+    return SportPropConfig(
+        sport="nba",
+        engine_distribution=_nba_engine,
+        resolve_player=_nba_resolve,
+        build_name_index=_nba_name_index,
+        parquet_path=os.path.join(
+            "data", "domains", "basketball_nba", "player_gamelogs.parquet"),
+        default_providers=lambda: [UnderdogProvider(), PrizePicksProvider()],
+        calibration_path=os.path.join(
+            "data", "cache", "props_eval_nba_calibration.json"),
+        canonical_stats=_NBA_CANON,
+        supports_dispersion=False,
+        supports_opp_mult=False,
+        extra={"offseason_empty": True},
+    )
+
+
 # sport key -> zero-arg factory (lazy so a missing domain never breaks the others).
 _FACTORIES: Dict[str, Callable[[], SportPropConfig]] = {
     "soccer_intl": _soccer_config,
     "mlb": _mlb_config,
+    "nba": _nba_config,
 }
 
 
@@ -148,4 +211,53 @@ def get_config(sport: str) -> Optional[SportPropConfig]:
         return None
 
 
-__all__ = ["SportPropConfig", "get_config", "supported_sports", "HONEST_NOTE"]
+def nba_board_status(sources: Dict[str, str], n_lines: int) -> str:
+    """Honest board status string for the NBA prop board.
+
+    Called by build_prop_board after _gather to decide the top-level status key.
+    Returns "unavailable_offseason" when ALL providers returned no lines (the NBA
+    off-season case) so callers surface an honest UNAVAILABLE rather than an
+    empty-but-green "ok" card.  Returns "ok" when at least one line came through.
+
+    Never raises -- unexpected input falls through to "ok" (conservative: better
+    to show an empty board than to hide a live slate).
+
+    Args:
+        sources: the {provider_name: status_string} map from _gather.  A provider
+            that returned rows has status "ok (N rows)"; one that returned the
+            UNAVAILABLE sentinel has a non-ok string (e.g. "unavailable: ...").
+        n_lines: total PropLine count gathered from all providers.
+    """
+    try:
+        if n_lines > 0:
+            return "ok"
+        # All providers returned empty or UNAVAILABLE -> offseason.
+        return "unavailable_offseason"
+    except Exception:  # noqa: BLE001 -- must never raise
+        return "ok"
+
+
+def providers_for_sport(sport: str) -> List[Any]:
+    """Return the default provider list for *sport* ([] when unsupported). Never raises.
+
+    Convenience so callers that want ONLY the providers (e.g. a health probe) do not
+    need to build the full SportPropConfig.
+    """
+    cfg = get_config(sport)
+    if cfg is None:
+        return []
+    try:
+        return cfg.default_providers()
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("providers_for_sport(%s) failed: %s", sport, exc)
+        return []
+
+
+__all__ = [
+    "SportPropConfig",
+    "get_config",
+    "supported_sports",
+    "nba_board_status",
+    "providers_for_sport",
+    "HONEST_NOTE",
+]
