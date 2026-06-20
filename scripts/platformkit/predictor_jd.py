@@ -1,4 +1,4 @@
-"""scripts.platformkit.predictor_jd — demo JointDistribution per sport from the validated predictors.
+"""scripts.platformkit.predictor_jd -- demo JointDistribution per sport from the validated predictors.
 
 The central cohesion seam: each sport ships a validated domains/<sport>/predictor.py with a
 to_jd() that emits a coherent JointDistribution (ML/spread/total all read off ONE sample
@@ -7,20 +7,26 @@ matchup and returns that JD, so the cohesive read's assemble_read can run on the
 distribution our best predictor produces (instead of carrying surface=None).
 
 GUARDED: every call is wrapped try/except -> None; building a Predictor reads gitignored
-parquet corpora, so a fresh clone (no data/) degrades gracefully to None (no surface, no
-fabricated numbers). Predictors are lazily built and cached per sport so repeated reads do
+parquet corpora, so a fresh clone (no data/) degrades gracefully to None (no fabricated
+numbers). Predictors are lazily built and cached per sport so repeated reads do
 not replay the corpus.
+
+DEGENERACY GUARD (P0 MLB flat-prior fix): _validate_predictor_for_slate() checks that a
+freshly-built predictor has >2 distinct Elo ratings across the slate's teams. A warm-up
+race (corpus absent -> init-rating collapse -> all teams rated identically) is detected and
+REFUSED from the cache so a constant-prior snapshot can never persist as status='ok'.
 
 No edge is implied: the JD is the predictor's calibrated structure; markets are efficient.
 
 Public API:
     get_demo_jd(sport) -> JointDistribution | None
     demo_matchup(sport) -> dict (the representative matchup label, for provenance)
+    validate_predictor_for_slate(sport, teams) -> bool
 INVARIANTS: never edit src/ or kernel/; reuse the domain predictors; <=300 LOC; no secrets.
 """
 from __future__ import annotations
 
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 # Representative demo matchups per sport (two strong sides / top players present in the corpus).
 # Each value is the positional args to the predictor's to_jd(...).
@@ -35,11 +41,16 @@ _DEMO_MATCHUPS: Dict[str, Dict[str, Any]] = {
                "kwargs": {"surface": "Hard", "best_of": 3}},
 }
 
-# Lazily-built, cached predictor instances (corpus replay is expensive — do it once per sport).
+# Lazily-built, cached predictor instances (corpus replay is expensive -- do it once per sport).
 _PREDICTOR_CACHE: Dict[str, Any] = {}
 # Cached JDs (None is a valid cached value meaning "tried and failed/unavailable").
 _JD_CACHE: Dict[str, Any] = {}
 _JD_CACHE_SET: set = set()
+
+# Minimum distinct Elo ratings required across a slate's teams before the predictor is
+# accepted into the cache. <= this threshold means the predictor has not replayed a real
+# corpus (all teams share the init rating -> flat prior collapse -> degenerate probs).
+_MIN_DISTINCT_RATINGS = 2
 
 
 def demo_matchup(sport: str) -> Optional[Dict[str, Any]]:
@@ -47,8 +58,66 @@ def demo_matchup(sport: str) -> Optional[Dict[str, Any]]:
     return _DEMO_MATCHUPS.get(sport.lower())
 
 
+def _elo_ratings(pred: Any) -> Optional[Dict[str, float]]:
+    """Extract the Elo ratings dict from a predictor instance, or None if not present.
+
+    Covers the MLBPredictor (_elo attribute) used by the MLB degeneracy guard. Other
+    sports do not have a flat-prior failure mode so returning None is safe.
+    """
+    elo = getattr(pred, "_elo", None)
+    if isinstance(elo, dict):
+        return elo
+    return None
+
+
+def validate_predictor_for_slate(sport: str, teams: List[str]) -> bool:
+    """Return True iff the cached predictor for *sport* has >_MIN_DISTINCT_RATINGS across *teams*.
+
+    A predictor that has NOT replayed a real corpus (fresh clone, warm-up race, or
+    corpus-absent fallback) will assign every unknown team the init rating, producing
+    identical p_home_win for every game. We detect this by checking the number of
+    distinct Elo ratings across the slate's teams in the cached predictor.
+
+    Returns True (safe) when:
+      - the predictor is not cached yet (nothing to validate)
+      - the predictor has no _elo dict (non-MLB sport; not subject to this collapse)
+      - the slate's teams collectively map to >_MIN_DISTINCT_RATINGS distinct rating values
+    Returns False (degenerate) when <=_MIN_DISTINCT_RATINGS distinct ratings are found for
+    at least one pair of teams on the slate (flat prior collapse).
+    """
+    s = sport.lower()
+    pred = _PREDICTOR_CACHE.get(s)
+    if pred is None:
+        return True  # not cached yet; nothing to invalidate
+    elo = _elo_ratings(pred)
+    if elo is None:
+        return True  # sport has no _elo dict; degeneracy guard not applicable
+    if not teams:
+        return True  # no slate teams to check
+
+    # Collect the Elo values for the slate teams (resolve best-effort: corpus key first,
+    # then strip + upper; init rating is the fallback inside _elo_of so we can't call it
+    # directly here without importing the predictor module. We read _elo directly instead).
+    ratings: List[float] = []
+    for team in teams:
+        # Try corpus key directly, then uppercase form.
+        val = elo.get(team) or elo.get(str(team).strip().upper())
+        if val is not None:
+            ratings.append(float(val))
+    if len(ratings) < 2:
+        return True  # too few resolved teams to judge; allow through
+
+    distinct = len(set(round(r, 4) for r in ratings))
+    return distinct > _MIN_DISTINCT_RATINGS
+
+
 def _build_predictor(sport: str) -> Optional[Any]:
-    """Instantiate (and cache) the sport's Predictor. Returns None on any failure."""
+    """Instantiate (and cache) the sport's Predictor. Returns None on any failure.
+
+    DEGENERACY GUARD: for MLB, after building, if the predictor's _elo dict has
+    <=_MIN_DISTINCT_RATINGS distinct values across ALL known teams (init-rating collapse)
+    the predictor is cached as None so a flat-prior snapshot is never emitted.
+    """
     s = sport.lower()
     if s in _PREDICTOR_CACHE:
         return _PREDICTOR_CACHE[s]
@@ -65,7 +134,7 @@ def _build_predictor(sport: str) -> Optional[Any]:
             try:
                 from domains.mlb.refresh_ratings import refreshed_predictor  # noqa: PLC0415
                 pred = refreshed_predictor()
-            except Exception:  # noqa: BLE001 — current corpus absent -> frozen ratings
+            except Exception:  # noqa: BLE001 -- current corpus absent -> frozen ratings
                 pred = MLBPredictor()
         elif s == "soccer":
             from domains.soccer.predictor import SoccerPredictor  # noqa: PLC0415
@@ -76,8 +145,21 @@ def _build_predictor(sport: str) -> Optional[Any]:
         elif s == "tennis":
             from domains.tennis.predictor import TennisPredictor  # noqa: PLC0415
             pred = TennisPredictor()
-    except Exception:  # noqa: BLE001 — gitignored corpus absent / import error -> degrade
+    except Exception:  # noqa: BLE001 -- gitignored corpus absent / import error -> degrade
         pred = None
+
+    # DEGENERACY GUARD (MLB flat-prior): refuse to cache a predictor whose Elo ratings
+    # dict is nearly constant across all known teams (init-rating collapse). This catches
+    # the warm-up race where corpus replay fails silently and every team gets _INIT.
+    if pred is not None and s == "mlb":
+        elo = _elo_ratings(pred)
+        if elo is not None and len(elo) >= 2:
+            all_vals = [round(v, 4) for v in elo.values()]
+            distinct_all = len(set(all_vals))
+            if distinct_all <= _MIN_DISTINCT_RATINGS:
+                # Flat prior across ALL corpus teams: this predictor is unusable.
+                pred = None
+
     _PREDICTOR_CACHE[s] = pred
     return pred
 
@@ -98,7 +180,7 @@ def get_demo_jd(sport: str) -> Optional[Any]:
         pred = _build_predictor(s)
         if spec is not None and pred is not None and hasattr(pred, "to_jd"):
             jd = pred.to_jd(*spec["args"], **spec["kwargs"])
-    except Exception:  # noqa: BLE001 — never let a predictor failure break the read
+    except Exception:  # noqa: BLE001 -- never let a predictor failure break the read
         jd = None
     _JD_CACHE[s] = jd
     _JD_CACHE_SET.add(s)

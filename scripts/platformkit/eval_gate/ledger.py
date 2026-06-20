@@ -48,12 +48,18 @@ def settled(rows: List[LedgerRow]) -> List[LedgerRow]:
     return [r for r in rows if r.outcome in (0, 1)]
 
 
-def _window(rows: List[LedgerRow], end: datetime, days: float) -> List[LedgerRow]:
+def _window(rows: List[LedgerRow], end: datetime, days: float,
+            exclude_end: Optional[datetime] = None) -> List[LedgerRow]:
+    """Return settled rows in [end-days, end).  If exclude_end is set, the upper
+    bound becomes exclude_end (exclusive) instead of end -- used so the baseline
+    and recent windows are DISJOINT and baseline is not contaminated by recent rows.
+    """
     start = end - timedelta(days=days)
+    upper = exclude_end if exclude_end is not None else end
     out = []
     for r in settled(rows):
         t = datetime.fromisoformat(r.ts)
-        if start <= t <= end:
+        if start <= t < upper:
             out.append(r)
     return out
 
@@ -81,11 +87,21 @@ def drift_report(rows: List[LedgerRow], now_iso: str, recent_days: float = 7.0,
                  baseline_days: float = 30.0, k_sigma: float = 1.0) -> DriftReport:
     """Alert if recent Brier exceeds the rolling baseline by > k_sigma * SE(baseline).
 
-    Conservative by design: needs both windows populated, else no alert (fail-quiet, not fail-loud).
+    Windows are DISJOINT:
+      recent   = [now - recent_days,   now)               -- the last 7 days
+      baseline = [now - baseline_days, now - recent_days) -- the prior 23 days
+
+    This prevents the baseline Brier from being contaminated by the very recent
+    rows it is compared against (which would dampen / miss real drift).
+
+    Conservative by design: needs both windows populated, else no alert.
     """
     now = datetime.fromisoformat(now_iso)
-    recent = _window(rows, now, recent_days)
-    baseline = _window(rows, now, baseline_days)
+    recent_start = now - timedelta(days=recent_days)
+    # recent: [now - recent_days, now)
+    recent = _window(rows, now, recent_days, exclude_end=now)
+    # baseline: [now - baseline_days, now - recent_days)  -- excludes recent window
+    baseline = _window(rows, recent_start, baseline_days - recent_days)
     rb, bb = brier_of(recent), brier_of(baseline)
     if rb is None or bb is None or len(baseline) < 2:
         return DriftReport(rb, bb, None, 0.0, False, len(recent), len(baseline))

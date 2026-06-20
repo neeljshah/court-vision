@@ -33,8 +33,8 @@ from domains.soccer.player_resolver import build_name_index, resolve_player
 from domains.soccer.prop_settle import realized_stat, settle_prop
 from scripts.platformkit import prop_line_history
 from scripts.platformkit.prop_paper_store import (
-    DEFAULT_LEDGER, append, identity, load_ledger, now_iso, paper_pnl,
-    prop_summary,
+    DEFAULT_LEDGER, append, identity, load_ledger, now_iso, prop_summary,
+    unit_result,
 )
 
 logger = logging.getLogger(__name__)
@@ -191,7 +191,7 @@ def grade_open(
     clv_pct attached from its CLOSING-line snapshot in the line history (pick'em
     bets stay calibration-only, clv_pct None). Never raises."""
     target = Path(ledger_path) if ledger_path is not None else DEFAULT_LEDGER
-    out = {"graded": 0, "still_open": 0, "already_settled": 0}
+    out = {"graded": 0, "still_open": 0, "already_settled": 0, "voided": 0}
     try:
         df = realized_df if realized_df is not None else _load_parquet()
         if df is None:
@@ -215,6 +215,27 @@ def grade_open(
                 continue
             pid, eid = ev
             realized = realized_stat(df, pid, eid, bet.get("stat"))
+            # The match IS final here (the player has a box-score row dated on/
+            # after as_of). If the realized stat is still None, the stat is
+            # genuinely MISSING (NaN/DNP/not scraped) -- it is NOT a realized 0.
+            # Grading it as 0 would fabricate a result (an UNDER always "wins").
+            # Record a VOID settled twin: kept for audit, EXCLUDED from hit_rate /
+            # paper_roi / CLV by prop_summary. A real recorded 0 -> normal grade.
+            if realized is None:
+                twin = dict(bet)
+                twin["status"] = "settled"
+                twin["settled_at"] = now_iso()
+                twin["event_id"] = eid
+                twin["player_id"] = pid
+                twin["result"] = "void"
+                twin["realized"] = None
+                twin["void_reason"] = "missing_realized_stat"
+                twin["unit_result"] = None
+                twin["clv_pct"] = None
+                append(target, twin)
+                settled_keys.add(key)
+                out["voided"] = out.get("voided", 0) + 1
+                continue
             graded = settle_prop(realized, bet.get("line"), bet.get("side"))
             if graded["result"] == "pending":
                 out["still_open"] += 1
@@ -226,7 +247,7 @@ def grade_open(
             twin["player_id"] = pid
             twin["result"] = graded["result"]
             twin["realized"] = graded["realized"]
-            twin["paper_pnl"] = paper_pnl(graded["result"], bet.get("taken_price"))
+            twin["unit_result"] = unit_result(graded["result"], bet.get("taken_price"))
             twin["clv_pct"] = _attach_clv(bet, history_rows)
             append(target, twin)
             settled_keys.add(key)

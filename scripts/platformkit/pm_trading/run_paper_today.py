@@ -2,19 +2,19 @@
 
 Pulls today's REAL games + state (live_board.todays_live_games), builds each game's
 bet board (bet_board.game_bet_board) priced off the aggregated odds slate, and:
-  * PRICED row (real book price, mainly moneyline) -> EV, size via paper_autobet,
+  * PRICED row (real book price, mainly moneyline) -> EV, POLICY TIER + STAKE UNITS
+    stamped via pm_trading.policy; below-floor (tier None) rows are skipped.
     RECORD to the CLV ledger (clv_ledger.record_bet) executed=False/channel="paper",
     with the as_of price/book + event_id + commence_time for later settling.
   * UNPRICED row (derived markets) -> never fabricate a price; LOG the model view +
     a closing-line PROXY target to data/frontend/paper_predictions.jsonl for grading.
 
 HONEST RAILS (binding -- can NEVER move real money): every ledger row is
-executed=False / channel="paper"; PERMISSIVE policy (record picks to GATHER CLV
-data, do NOT require BEATS_CLOSE) but each row is TAGGED would_pass_real_gate (EV>0
-at a book price); idempotent per (sport, matchup, side/selection, day); markets are
-efficient -- NO $ edge claimed. <=300 LOC; no secrets; no network in tests (the
-live feed / board / odds index are all injectable). Pure helpers + Ctx live in the
-sibling paper_today_support module.
+executed=False / channel="paper"; policy tiers gate below-floor picks (tier=None);
+each recorded row carries tier + flat_unit + quarter_kelly units (NOT dollars);
+idempotent per (sport, matchup, side/selection, day); markets are efficient --
+NO $ edge claimed. <=300 LOC; no secrets; no network in tests. Pure helpers + Ctx
+live in the sibling paper_today_support module.
 """
 from __future__ import annotations
 
@@ -34,12 +34,89 @@ from scripts.platformkit.pm_trading import paper_today_support as S
 from scripts.platformkit.pm_trading.paper_today_support import (
     Ctx, DEFAULT_PREDICTIONS, DEFAULT_SPORTS, PAPER_EV_FLOOR)
 
+# Policy tiering -- guarded so a missing import never breaks the paper cycle.
+try:
+    from scripts.platformkit.pm_trading import policy as _policy
+    _POLICY_AVAILABLE = True
+except Exception:  # noqa: BLE001
+    _policy = None  # type: ignore[assignment]
+    _POLICY_AVAILABLE = False
+
 logger = logging.getLogger(__name__)
+
+try:  # predict_service.store: canonical envelope source for board_fn
+    from predict_service import store as _ps_store
+except Exception:  # pragma: no cover - optional
+    _ps_store = None
+
+
+def make_store_board_fn(sport: str) -> Callable[..., Dict[str, Any]]:
+    """Return a board_fn that reads from predict_service.store for *sport*.
+
+    The returned callable has the same signature as game_bet_board
+    (sport, home, away, *, odds_lookup=None, live=None) and returns a board
+    dict in the same shape (status='ok', best_bets=[], groups=[], ...).  When
+    the store envelope is unavailable or the game is not found, falls back to
+    game_bet_board so the paper cycle degrades gracefully. NEVER raises.
+    """
+    env = None
+    if _ps_store is not None:
+        try:
+            _env = _ps_store.read_latest(sport)
+            if _env.status == "ok" and _env.predictions:
+                env = _env
+        except Exception:  # noqa: BLE001
+            pass
+
+    def _board_fn(sp: str, home: str, away: str,
+                  odds_lookup: Any = None, live: Any = None,
+                  **kw: Any) -> Dict[str, Any]:
+        if env is not None:
+            h_low, a_low = home.lower(), away.lower()
+            for pred in env.predictions:
+                if pred.home.lower() == h_low and pred.away.lower() == a_low:
+                    rows = [{"group": "pregame", "selection": side,
+                             "model_prob": prob, "best_price": None,
+                             "best_book": None, "line": None, "fair_odds": None}
+                            for side, prob in pred.pregame_probs.items()]
+                    # Attach market prices from matching EdgeRows
+                    emap = {e.side: e for e in env.edges
+                            if e.game_id == pred.game_id}
+                    for row in rows:
+                        er = emap.get(row["selection"])
+                        if er is not None and er.ev is not None:
+                            row["best_price"] = round(1.0 / er.market_prob, 4) \
+                                if er.market_prob else None
+                            row["best_book"] = er.book
+                    return {"sport": sp, "home": home, "away": away,
+                            "status": "ok", "best_bets": rows, "groups": rows,
+                            "served_from": "predict_service_store"}
+        # Fallback: live bet_board (default behavior unchanged)
+        return game_bet_board(sp, home, away, odds_lookup=odds_lookup,
+                              live=live, **kw)
+
+    return _board_fn
+
+
+def _policy_tier_and_stake(ev: float, model_prob: float, price: float,
+                            market_prob: Optional[float],
+                            clv_is_proxy: bool = False,
+                            ) -> Tuple[Optional[str], float, float]:
+    """(tier, flat_unit, quarter_kelly); fallback to permissive if policy absent."""
+    if _POLICY_AVAILABLE and _policy is not None:
+        t = _policy.tier(ev=ev, model_prob=model_prob, market_prob=market_prob,
+                         clv_is_proxy=clv_is_proxy)
+        s = _policy.stake_units(ev=ev, model_prob=model_prob,
+                                taken_decimal=price, tier=t,
+                                clv_is_proxy=clv_is_proxy)
+        return t, s["flat_unit"], s["quarter_kelly"]
+    t_fb: Optional[str] = "C" if ev > 0.0 else None
+    return t_fb, (1.0 if t_fb else 0.0), 0.0
 
 
 def _record_priced(row, sport, matchup, meta, side, price, prob, selection,
                    ctx: Ctx) -> Optional[Dict[str, Any]]:
-    """Record a priced two-way pick as a paper bet. None if dedup/-EV."""
+    """Record a priced two-way pick as a paper bet. None if dedup/below-floor."""
     bet_key = (sport, matchup, side, ctx.day)
     if bet_key in ctx.ledger_keys:
         return None
@@ -47,6 +124,16 @@ def _record_priced(row, sport, matchup, meta, side, price, prob, selection,
     if ev <= PAPER_EV_FLOOR:
         return None
     book = row.get("best_book") or "aggregate"
+
+    # Policy gate: tier + dual-stake units (no $/dollar fields)
+    market_prob: Optional[float] = row.get("market_prob")
+    clv_is_proxy: bool = bool(row.get("clv_is_proxy", False))
+    tier_label, flat_unit, quarter_kelly = _policy_tier_and_stake(
+        ev, float(prob), float(price), market_prob, clv_is_proxy)
+    # Below-floor (tier None) -> do not place this paper record.
+    if tier_label is None:
+        return None
+
     cand = EdgeCandidate(sport, matchup, side, float(price), float(prob),
                          taken_book=book, event_id=meta["event_id"])
     stake = size_stake(cand, ctx.cfg) if ev > 0 else 0.0
@@ -61,6 +148,10 @@ def _record_priced(row, sport, matchup, meta, side, price, prob, selection,
         "would_pass_real_gate": bool(ev > 0.0), "executed": False,
         "channel": CHANNEL_PAPER, "event_id": meta["event_id"],
         "commence_time": meta["commence_time"],
+        # Policy stamps: tier and unit-based sizing (NOT dollars)
+        "tier": tier_label,
+        "flat_unit": flat_unit,
+        "quarter_kelly": round(quarter_kelly, 8),
     }
     return {"kind": "bet", "row": bet_row, "stake": stake}
 

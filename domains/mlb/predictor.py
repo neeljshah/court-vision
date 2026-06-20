@@ -1,41 +1,22 @@
-"""domains.mlb.predictor — the system's best calibrated MLB game predictor.
+"""domains.mlb.predictor -- best calibrated MLB game predictor.
 
-Mirrors domains/basketball_nba/predictor.py: turns the validated MLB proof work into a
-single USABLE predictor that emits its best calibrated per-matchup surface (the system
-should OUTPUT its best predictions, not only measure them in proof modules).
+WIRING (validated modules only, no new modelling):
+  * win prob    -> MOV-Elo (same engine proof_mlb.beat_the_close_ml scores; W150 parity)
+  * runs        -> RunRateState lambdas (EW off/def rate state)
+  * O/U surface -> NegBinom with leak-free FITTED dispersion r (first-half corpus, not
+                   hardcoded); closes W149 audit HIGH #1/#3.
+  * coherence   -> lambdas tilted (SUM preserved -> total unchanged) so NegBinom
+                   tie-adj ML == Elo win-prob across every market (ML/RL/O-U).
+  * live        -> Elo-anchored lambdas + fitted r -> repricer -> W156 recal (identity:
+                   forecaster already calibrated; a fitted Platt worsens ECE).
 
-WIRING (every number comes from an already-validated MLB module — no new modelling here):
-  * win probability  -> leak-free walk-forward MOV-aware Elo (the SAME engine
-                        proof_mlb.beat_the_close_ml scores vs the close — imported, so
-                        predict() and the beat-the-close measurement agree; W150 parity fix)
-  * expected runs    -> RunRateState lambdas (domains/mlb/inning_engine.py): lam_home,
-                        lam_away snapshot from the EW off/def run-rate state
-  * O/U surface      -> the over-dispersed NegBinom engine with the LEAK-FREE FITTED
-                        dispersion r (domains/mlb/negbinom_engine.fit_dispersion_first_half
-                        on the corpus ONCE, cached) — NOT a hardcoded 4.0/4.2/3.4. This
-                        closes the W149 audit HIGH #1/#3 (hardcoded r). The expected total
-                        is lam_home+lam_away, matching proof_mlb.beat_the_close_total.
+P0 NAME-RESOLUTION FIX: predict()/to_jd()/predict_live() now call _resolve_or_upper()
+before Elo + run-rate lookups so ESPN display names ("New York Yankees") and
+non-corpus abbreviations (KC->KAN, TB->TAM, SF->SFG, SD->SDG, WSH->WAS) produce
+game-specific calibrated probs instead of the uniform init-rating collapse (0.5345).
 
-to_jd()       -> build_mlb_jd(lam_home, lam_away, r_home, r_away) tilted so the matrix ML
-                 == the Elo win-prob (anchor_lambdas_to_winprob, SUM preserved) -> a coherent
-                 JointDistribution that plugs into sim_framework.market_surface / sgp_pricer.
-predict_live() -> get_repricer('mlb').reprice(GameState) with r_home/r_away passed in
-                 pregame_params for the fitted dispersion (else it falls back to 4.0 = the
-                 audit gap this closes). Lambdas are Elo-ANCHORED first (as predict()/to_jd())
-                 so live ML at the start agrees with pregame ML. The live win-prob then goes
-                 through the VALIDATED in-game recalibrator (W156 proof_mlb.ingame_accuracy:
-                 COMBINED forecaster ALREADY calibrated, held-out ECE 0.0085 < 0.025, slope
-                 0.98; a TRAIN-fit Platt WORSENS it) -> IDENTITY, an honest clean NULL.
-
-COHERENCE (this file's fix): predict() reports the Elo win-prob, but built the run-line +
-O/U off the RAW run-rate lambdas -> two contradictory win-probs. We now tilt the lambdas to
-the reported p_home via _anchor_nb_tiesplit (SUM preserved -> expected total unchanged)
-BEFORE building the NegBinom matrix, so run-line/O-U are coherent with the moneyline -- the
-same anchor to_jd() already uses. ONE win-prob across every market.
-
-State is built as-of the full ingested corpus; predict(home, away) emits the next-matchup
-surface. HONEST: calibration/accuracy only; markets are efficient; NO $ edge claimed.
-INVARIANTS: never edit src/ or kernel/; reuse the validated builders; <=300 LOC.
+HONEST: calibration/accuracy only; markets efficient; NO $ edge.
+INVARIANTS: never edit src/ or kernel/; reuse validated builders; <=300 LOC.
 """
 from __future__ import annotations
 
@@ -49,8 +30,9 @@ from domains.mlb.negbinom_engine import (
     fit_dispersion_first_half, markets_from_matrix_nb, runs_matrix_nb,
 )
 from domains.mlb.negbinom_sim import build_mlb_jd
+from domains.mlb.team_name_resolver import resolve as _resolve_mlb
 # Single source of truth for MLB win-prob: the SAME MOV-Elo the beat-the-close proof scores
-# against the devigged close (W150 parity fix — predict() and the measurement now agree).
+# against the devigged close (W150 parity fix -- predict() and the measurement now agree).
 from scripts.platformkit.proof_mlb.beat_the_close_ml import (
     _INIT as _MOV_INIT, _p_home as _mov_p_home, final_ratings as _mov_final_ratings,
 )
@@ -112,14 +94,9 @@ class MLBPredictor:
         df["date"] = pd.to_datetime(df["date"])
         df = df.sort_values(["date", "home_team", "away_team"]).reset_index(drop=True)
 
-        # 1) leak-free FITTED dispersion (first 50% only) -> cached, NOT hardcoded
+        # 1) fitted dispersion (first 50% only); 2) final MOV-Elo; 3) run-rate state
         self.r_home, self.r_away, self._n_train = fit_dispersion_first_half(df)
-
-        # 2) final MOV-Elo ratings — the SAME engine the beat-the-close proof scores (parity)
         self._elo = _mov_final_ratings(df)
-
-        # 3) latest RunRateState (walk the full corpus, snapshot-then-update; the END state
-        #    gives the run-rate priors for the NEXT matchup of any pair of teams)
         self._rr = RunRateState()
         self._last_season = int(df["season"].iloc[-1])
         h = df["home_team"].to_numpy(); a = df["away_team"].to_numpy()
@@ -132,22 +109,35 @@ class MLBPredictor:
         self.n_games = len(df)
         self.teams = sorted(self._elo)
 
-        # 4) VALIDATED in-game recalibrator (W156, proof_mlb.ingame_accuracy). That proof
-        #    measured the COMBINED in-game forecaster as ALREADY well-calibrated on a held-out
-        #    second half (ECE 0.0085 < 0.025, slope 0.98) and showed a TRAIN-fit Platt would
-        #    WORSEN ECE (0.0085 -> 0.0088). The validated recalibrator is therefore IDENTITY.
-        #    We record that verdict here (built leak-free from all-prior history) and apply
-        #    identity in predict_live() -> the live win-prob is delivered calibrated, honestly,
-        #    with NO fabricated correction. recal=callable so a future non-NULL sport can swap
-        #    in its fitted map without touching predict_live().
-        self.ingame_recal = lambda p: float(min(max(p, 0.0), 1.0))   # identity (W156 NULL)
+        # W156: forecaster already calibrated (ECE 0.0085, slope 0.98); Platt WORSENS -> identity.
+        self.ingame_recal = lambda p: float(min(max(p, 0.0), 1.0))  # identity (W156 NULL)
         self.ingame_recal_method = "identity"
-        self.ingame_recal_note = (
-            "W156 proof_mlb.ingame_accuracy: COMBINED in-game forecaster ALREADY calibrated "
-            "(held-out ECE 0.0085 < 0.025, slope 0.98); a TRAIN-fit recalibrator would not "
-            "improve ECE. Validated recalibrator = IDENTITY (clean NULL = a success).")
+        self.ingame_recal_note = "W156: in-game forecaster calibrated (ECE 0.0085, slope 0.98); recal=identity."
 
     # ------------------------------------------------------------------
+    def _resolve(self, name: str) -> Optional[str]:
+        """Resolve a slate team name (ESPN displayName or abbreviation) to a corpus key.
+
+        Returns the corpus key on success, or None if the name cannot be resolved
+        to any known MLB franchise.  None MUST be treated as unmatched by callers
+        (no init-rating fallback).
+        """
+        # Try corpus key directly (fast path for callers already using corpus keys)
+        candidate = name.strip().upper() if isinstance(name, str) else ""
+        if candidate in self._elo:
+            return candidate
+        return _resolve_mlb(name)
+
+    def _resolve_or_upper(self, name: str) -> str:
+        """Map ESPN display name / abbreviation to corpus key; else return name.upper().
+
+        Fixes the P0 bug: without this, non-corpus names caused _elo_of to return
+        _MOV_INIT for both sides -> uniform p_home=0.5345 for every matchup.
+        Genuinely unknown names fall back to uppercase (league-prior) as before.
+        """
+        resolved = self._resolve(name)
+        return resolved if resolved is not None else name.strip().upper()
+
     def _elo_of(self, team: str) -> float:
         return float(self._elo.get(team, _MOV_INIT))
 
@@ -157,16 +147,14 @@ class MLBPredictor:
 
     def predict(self, home: str, away: str,
                 total_lines: Sequence[float] = _DEFAULT_LINES) -> Dict:
-        """Calibrated surface for home vs away. Unknown teams fall back to league priors.
+        """Calibrated surface for home vs away (corpus keys, ESPN abbrs, or displayNames ok).
 
-        win-prob from Elo; expected runs from RunRateState; O/U from the fitted-dispersion
-        NegBinom run matrix. The NegBinom expected total == lam_home+lam_away (mean-preserving),
-        matching proof_mlb.beat_the_close_total's point forecast.
-        CAVEAT: expected_total is the ANALYTIC lambda sum (lam_home+lam_away). The NegBinom
-        matrix used for the O/U read-offs is truncated at 25 runs/side and renormalized, so the
-        matrix-implied mean is ~mean-preserving but not exactly equal to the analytic sum.
+        P0 fix: _resolve_or_upper() maps all name forms to corpus keys before Elo and
+        run-rate lookups; without it non-corpus names collapsed to uniform 0.5345.
+        Unknown teams still fall back to league priors (init-rating pair).
         """
-        ht, au = home.upper(), away.upper()
+        ht = self._resolve_or_upper(home)
+        au = self._resolve_or_upper(away)
         p_home = _mov_p_home(self._elo_of(ht), self._elo_of(au))
         lam_raw_h, lam_raw_a = self._lambdas(ht, au)
 
@@ -198,29 +186,49 @@ class MLBPredictor:
             "markets": markets,
             "dispersion_r": {"home": round(self.r_home, 3), "away": round(self.r_away, 3)},
             "elo": {ht: round(self._elo_of(ht), 0), au: round(self._elo_of(au), 0)},
-            "honest_note": ("Best calibrated MLB prediction: ONE win-prob (Elo) anchors every "
-                            "market -- the run-rate lambdas are tilted (SUM preserved) so the "
-                            "NegBinom run-line/O-U tie-adjusted ML == p_home_win (coherent). "
-                            "expected_runs_* are the anchored per-team means; expected_total is "
-                            "unchanged. r is FITTED on the first-half corpus, not hardcoded. "
-                            "Markets efficient; no $ edge."),
+            "honest_note": ("ONE Elo win-prob anchors all markets (NegBinom tie-adj ML == "
+                            "p_home_win, SUM preserved). r FITTED first-half corpus. No $ edge."),
         }
 
     # ------------------------------------------------------------------
-    def to_jd(self, home: str, away: str, *, n_sims: int = 20_000, seed: int = 0):
-        """Coherent JointDistribution of (home_runs, away_runs) for the kernel surface.
+    def predict_safe(self, home_raw: str, away_raw: str,
+                     total_lines: Sequence[float] = _DEFAULT_LINES) -> Dict:
+        """Resolve ESPN slate names then predict; unmatched=True when a name is unknown.
 
-        The run-rate lambdas are tilted (SUM preserved) so the NegBinom matrix ML == the Elo
-        win-prob — i.e. the JD's P(home win) is anchored to our validated win model, while the
-        total stays the run-rate expected total. build_mlb_jd draws the fitted-dispersion
-        NegBinom marginals. Plugs into sim_framework.market_surface + sgp_pricer.
+        Delegates to predict() on success. On any unresolved name returns an honest
+        unmatched dict rather than emitting a fabricated init-rating probability.
         """
-        ht, au = home.upper(), away.upper()
+        h_key = self._resolve(home_raw)
+        a_key = self._resolve(away_raw)
+        unmatched_names = []
+        if h_key is None:
+            unmatched_names.append(home_raw)
+        if a_key is None:
+            unmatched_names.append(away_raw)
+        if unmatched_names:
+            return {
+                "sport": "mlb",
+                "home_raw": home_raw, "away_raw": away_raw,
+                "unmatched": True,
+                "unmatched_names": unmatched_names,
+                "home_key": h_key, "away_key": a_key,
+                "honest_note": (
+                    "Team name(s) could not be resolved to the MLB Elo corpus. "
+                    "No prediction emitted -- init-rating fabrication suppressed. "
+                    "Calibration only; no $ edge."),
+            }
+        return {**self.predict(h_key, a_key, total_lines),
+                "home_raw": home_raw, "away_raw": away_raw,
+                "unmatched": False}
+
+    # ------------------------------------------------------------------
+    def to_jd(self, home: str, away: str, *, n_sims: int = 20_000, seed: int = 0):
+        """Coherent JD (home_runs, away_runs): lambdas tilted so NegBinom ML == Elo win-prob."""
+        ht = self._resolve_or_upper(home)
+        au = self._resolve_or_upper(away)
         lam_h, lam_a = self._lambdas(ht, au)
         p_home = _mov_p_home(self._elo_of(ht), self._elo_of(au))
         tgt = min(max(p_home, 0.01), 0.99)
-        # anchor on the SAME NegBinom matrix to_jd returns (tie-adjusted ML == Elo win-prob),
-        # SUM preserved so the expected total is unchanged -> coherent with market_surface.
         lam_h, lam_a = _anchor_nb_tiesplit(lam_h, lam_a, self.r_home, self.r_away, tgt)
         return build_mlb_jd(lam_h, lam_a, self.r_home, self.r_away,
                             n_sims=n_sims, seed=seed, dispersion="negbinom")
@@ -228,18 +236,15 @@ class MLBPredictor:
     # ------------------------------------------------------------------
     def predict_live(self, home: str, away: str, inning: int, half: str,
                      home_runs: int, away_runs: int) -> Dict:
-        """In-game surface = ANCHORED run-rate lambdas + FITTED dispersion fed into the MLB
-        repricer, conditioned on the realized score. r_home/r_away are passed in pregame_params
-        so the repricer uses the fitted dispersion (else it falls back to 4.0 -- the W149 gap).
+        """In-game = Elo-ANCHORED lambdas + fitted r -> repricer -> W156 recal (identity).
         inning: 1-9+ ; half in {'top','bottom'}; innings_played = completed-inning count.
         """
         from scripts.platformkit.live_repricer import GameState, get_repricer  # noqa: PLC0415
 
-        ht, au = home.upper(), away.upper()
+        ht = self._resolve_or_upper(home)
+        au = self._resolve_or_upper(away)
         lam_raw_h, lam_raw_a = self._lambdas(ht, au)
-        # COHERENCE: anchor lambdas to the Elo win-prob BEFORE the repricer -- as predict()/
-        # to_jd() do -- so live ML at the start agrees with the pregame Elo ML (e.g. NYY/BOS
-        # pregame 0.5462 vs un-anchored live@1-top-0-0 0.5022). SUM preserved (total unchanged).
+        # Anchor lambdas to Elo win-prob so live ML@tip agrees with pregame ML.
         tgt = min(max(_mov_p_home(self._elo_of(ht), self._elo_of(au)), 0.01), 0.99)
         lam_h, lam_a = _anchor_nb_tiesplit(lam_raw_h, lam_raw_a, self.r_home, self.r_away, tgt)
         innings_played = max(0.0, float(inning) - 1.0 + (0.5 if str(half).lower() == "bottom" else 0.0))
@@ -248,9 +253,6 @@ class MLBPredictor:
         out = get_repricer("mlb").reprice(GameState(
             "mlb", innings_played * 20.0, int(home_runs), int(away_runs),
             pregame_params=pp, extra={"innings_played": innings_played}))
-        # DELIVER CALIBRATION: pass the live win-prob through the VALIDATED in-game recalibrator
-        # fit at build time on all-prior history (W156 NULL -> identity); honest since W156
-        # proved the forecaster already calibrated and a fitted map would not improve it.
         p_home_raw = float(out["ml_home"])
         p_home_cal = self.ingame_recal(p_home_raw)
         return {
@@ -266,9 +268,7 @@ class MLBPredictor:
                                                + out["_lam_remaining_away"]), 2),
             "innings_remaining": round(float(out["_innings_remaining"]), 1),
             "recal_note": self.ingame_recal_note,
-            "honest_note": ("In-game = Elo-ANCHORED run-rate lambdas + FITTED dispersion r in the "
-                            "NegBinom repricer + realized score, then the W156 in-game recalibrator "
-                            "(identity: already calibrated). Forecaster quality, not a $ edge."),
+            "honest_note": "In-game = Elo-anchored lambdas + fitted r + repricer + W156 recal (id). No $ edge.",
         }
 
 
@@ -285,7 +285,7 @@ def _main(argv: Optional[List[str]] = None) -> int:
     pre = p.predict(args.home, args.away)
     print("PREGAME:"); print(json.dumps(pre, indent=2))
     # COHERENCE: re-read the home-win event off the same NegBinom matrix the run-line/O-U use.
-    lam_h, lam_a = p._lambdas(args.home.upper(), args.away.upper())
+    lam_h, lam_a = p._lambdas(p._resolve_or_upper(args.home), p._resolve_or_upper(args.away))
     alh, ala = _anchor_nb_tiesplit(lam_h, lam_a, p.r_home, p.r_away,
                                    min(max(pre["p_home_win"], 0.01), 0.99))
     matrix_ml = _nb_tie_adj_ml(alh, ala, p.r_home, p.r_away)

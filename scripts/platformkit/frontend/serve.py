@@ -28,6 +28,8 @@ except Exception as exc:  # pragma: no cover - dependency guard
                       "(pip install fastapi uvicorn).") from exc
 
 from scripts.platformkit.frontend import slate as slate_mod
+from scripts.platformkit.frontend import slate_dead_market_filter as _dead_filter
+from scripts.platformkit.frontend import slate_recency_gate as _recency_gate
 
 # All optional collaborators are GUARDED (try/except -> None): bet_board (per-game
 # board), live_board (today's games + in-game preds), our keyless odds API + CLV
@@ -58,6 +60,19 @@ try:
     from scripts.platformkit.prop_edge import build_prop_board as _build_prop_board
 except Exception:  # pragma: no cover - optional
     _build_prop_board = None
+
+try:  # predict_service.store: ONE canonical store; preferred over snapshot_writer
+    from predict_service import store as _ps_store
+except Exception:  # pragma: no cover - optional
+    _ps_store = None
+
+# M6 in-game spine snapshot reader (PREFERRED for /api/live when files exist).
+# Guarded like every other optional collaborator: a missing or broken ingame
+# snapshot is just a cache miss; /api/live falls back unchanged to live_board.
+try:
+    from scripts.platformkit.ingame import snapshot as _igsnap
+except Exception:  # pragma: no cover - optional
+    _igsnap = None
 
 # Live odds on the board are ON by default; FRONTEND_LIVE_ODDS=0 disables (model-only).
 _LIVE_ODDS = os.environ.get("FRONTEND_LIVE_ODDS", "1") != "0"
@@ -123,6 +138,29 @@ def _read_snapshot_part(sport: str, key: str) -> Optional[Dict[str, Any]]:
     return payload
 
 
+def _read_ps_store_slate(sport: str) -> Optional[Dict[str, Any]]:
+    """Preferred slate: predict_service.store canonical envelope. None on any miss."""
+    if _ps_store is None:
+        return None
+    try:
+        env = _ps_store.read_latest(sport)
+    except Exception:  # noqa: BLE001
+        return None
+    if env.status != "ok" or not env.predictions:
+        return None
+    edgemap = {}
+    for e in env.edges:
+        edgemap.setdefault(e.game_id, []).append(e.to_dict())
+    games = [{"game_id": p.game_id, "home": p.home, "away": p.away, "tipoff": p.tipoff,
+              "pregame_probs": dict(p.pregame_probs), "note": p.note,
+              "markets": [m.to_dict() for m in p.markets],
+              "edges": edgemap.get(p.game_id, [])} for p in env.predictions]
+    return {"sport": sport, "status": "ok", "games": games, "as_of": env.generated_at,
+            "honest_note": env.honest_note,
+            "freshness": {"as_of": env.generated_at, "source": "predict_service_store"},
+            "served_from": "predict_service_store"}
+
+
 def log_intent(record: Dict[str, Any], *, path: Optional[Path] = None) -> Dict[str, Any]:
     """Append a paper/intent record to the local JSONL; returns the stored record.
     Pure local I/O -- NO network, NO book API. Stamps server time + a hard flag that
@@ -154,24 +192,45 @@ def create_app(*, intent_log: Optional[Path] = None) -> "FastAPI":
 
     @app.get("/api/slate")
     def api_slate(sport: str = Query("nba")) -> JSONResponse:  # noqa: ANN202
-        # PREFER the precomputed snapshot (one compute, many cheap reads); a miss
-        # falls back to a synchronous build so a cold cache never dark-screens.
-        snap = _read_snapshot_part(sport, "slate")
-        if snap is not None:
-            return JSONResponse(snap)
+        # Read precedence: predict_service.store (canonical) -> snapshot_writer
+        # (legacy) -> live compute.  Each miss is a transparent fallthrough.
+        # Each path is sanitized: dead-market filter first, then recency gate
+        # (drops past-tipoff games; stale-never-green invariant).
+        for payload in (_read_ps_store_slate(sport), _read_snapshot_part(sport, "slate")):
+            if payload is not None:
+                sanitized = _dead_filter.sanitize_slate(payload)
+                return JSONResponse(_recency_gate.apply_recency_gate(sanitized))
         odds_lookup = _odds_or_none(sport)
         payload = (slate_mod.build_slate(sport, odds_lookup=odds_lookup)
                    if odds_lookup is not None else slate_mod.build_slate(sport))
         if isinstance(payload, dict):
             payload["served_from"] = "live_compute"
-        return JSONResponse(payload)
+        sanitized = _dead_filter.sanitize_slate(payload)
+        return JSONResponse(_recency_gate.apply_recency_gate(sanitized))
 
     @app.get("/api/live")
     def api_live(sport: str = Query("nba")) -> JSONResponse:  # noqa: ANN202
         """Today's real games + LIVE in-game predictions from ESPN's keyless scoreboard.
         Guarded -> status='unavailable' on a down feed/missing module (never fabricates
-        a score). Never raises -- always 200."""
-        # Prefer the snapshot's live board; fall back to live compute on miss.
+        a score). Never raises -- always 200.
+
+        Read precedence:
+          1. M6 ingame spine snapshot (data/frontend/ingame/<sport>/) -- PREFERRED.
+             read_live_part returns a "live" block, or None on miss (cache miss).
+          2. Legacy snapshot_writer live block (_read_snapshot_part).
+          3. live_board.todays_live_games (keyless ESPN, live compute).
+        Each miss is a transparent fallthrough; the ingame path is additive + guarded.
+        """
+        # M6 preferred: ingame spine snapshot (None -> transparent fall-through).
+        if _igsnap is not None:
+            try:
+                ig_live = _igsnap.read_live_part(sport)
+            except Exception:  # noqa: BLE001 - a corrupt snapshot is a cache miss
+                ig_live = None
+            if ig_live is not None:
+                return JSONResponse(ig_live)
+
+        # Legacy snapshot_writer live board.
         snap_live = _read_snapshot_part(sport, "live")
         if snap_live is not None:
             return JSONResponse(snap_live)

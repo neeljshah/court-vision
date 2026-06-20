@@ -30,8 +30,7 @@ gotcha, so this is deliberate):
   Equivalently in price space: fair decimal at the close is 1/fair_close; you beat
   it when your taken decimal > that fair decimal. Same sign, by construction.
 
-INVARIANTS: build only under scripts/platformkit/; <=300 LOC; no secrets; reuse
-the vetted devig; never claim a money edge.
+INVARIANTS: scripts/platformkit/ only; <=300 LOC; no secrets; reuse vetted devig.
 """
 from __future__ import annotations
 
@@ -55,6 +54,55 @@ def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _append_line(record: Dict[str, Any], target: Path) -> None:
+    """Append one JSON record via lock-guarded IO; falls back through dedup guard.
+
+    Import order (all lazy -- clv_ledger_dedup imports this module, so they
+    must be deferred to break the cycle):
+      1. clv_ledger_io.append_row     -- lock-guarded, preferred.
+      2. clv_ledger_dedup.append_if_new -- status-folded dedup guard (fallback 1).
+      3. open("a")                    -- bare write, last resort; never loses a row.
+    """
+    target.parent.mkdir(parents=True, exist_ok=True)
+    # 1. Lock-guarded path (preferred).
+    try:
+        from scripts.platformkit.clv_ledger_io import append_row as _append_row
+        _append_row(record, path=target)
+        return
+    except Exception:  # noqa: BLE001
+        pass
+    # 2. Status-folded dedup guard (lazy import breaks circular dep).
+    try:
+        from scripts.platformkit.clv_ledger_dedup import append_if_new as _aifn
+        _aifn(record, target)
+        return
+    except Exception:  # noqa: BLE001
+        pass
+    # 3. Bare write: last resort.
+    with target.open("a", encoding="utf-8") as fh:
+        fh.write(json.dumps(record, default=str) + "\n")
+
+
+def _game_date(record: Dict[str, Any]) -> str:
+    """Stable game-date token for a bet: explicit game_date, else ts date (UTC)."""
+    gd = str(record.get("game_date") or "").strip()
+    if gd:
+        return gd[:10]
+    ts = str(record.get("ts") or "")
+    return ts[:10]
+
+
+def bet_id(record: Dict[str, Any]) -> str:
+    """Durable identity: sport|event_id-or-matchup|market|side|book|game_date.
+    Excludes ts and taken_price so open/settled twins collapse to the same id.
+    """
+    anchor = str(record.get("event_id") or record.get("matchup") or "")
+    market = str(record.get("market") or record.get("market_type") or "moneyline")
+    book = str(record.get("taken_book") or record.get("book") or "")
+    return "|".join([str(record.get("sport") or ""), anchor, market,
+                     str(record.get("side") or ""), book, _game_date(record)])
+
+
 def record_bet(
     sport: str,
     matchup: str,
@@ -62,15 +110,18 @@ def record_bet(
     taken_book: str,
     taken_decimal: float,
     model_prob: Optional[float] = None,
-    stake: float = 0.0,
+    stake_units: float = 1.0,
     *,
+    market: Optional[str] = None,
+    event_id: Optional[str] = None,
+    game_date: Optional[str] = None,
     path: Optional[Path] = None,
+    stake: Optional[float] = None,  # deprecated alias -> treated as UNITS, never $
 ) -> Dict[str, Any]:
     """Append one open bet to the CLV ledger and return the stored record.
 
-    *side* must be 'home' or 'away' (the two-way side you backed). *taken_decimal*
-    is the decimal price you actually got. Pure I/O on a local JSONL file -- NO
-    network, NO book API, never overwrites an existing line.
+    UNITS ONLY -- no dollar/bankroll/pnl field. side must be 'home' or 'away'.
+    The legacy stake kwarg is treated as units; a dollar stake field is NEVER written.
     """
     s = str(side).strip().lower()
     if s not in (_SIDE_HOME, _SIDE_AWAY):
@@ -78,6 +129,7 @@ def record_bet(
     dec = float(taken_decimal)
     if dec <= 1.0:
         raise ValueError("taken_decimal must be > 1.0, got %r" % (taken_decimal,))
+    units = float(stake if stake is not None else stake_units)
     record: Dict[str, Any] = {
         "ts": _now_iso(),
         "sport": str(sport),
@@ -86,14 +138,19 @@ def record_bet(
         "taken_book": str(taken_book),
         "taken_decimal": dec,
         "model_prob": (float(model_prob) if model_prob is not None else None),
-        "stake": float(stake),
+        "stake_units": units,
         "status": "open",
         "executed": False,  # invariant: this tool NEVER places a real bet
     }
+    if market is not None:
+        record["market"] = str(market)
+    if event_id is not None:
+        record["event_id"] = str(event_id)
+    if game_date is not None:
+        record["game_date"] = str(game_date)
+    record["bet_id"] = bet_id(record)
     target = Path(path) if path is not None else DEFAULT_LEDGER
-    target.parent.mkdir(parents=True, exist_ok=True)
-    with target.open("a", encoding="utf-8") as fh:
-        fh.write(json.dumps(record, default=str) + "\n")
+    _append_line(record, target)
     return record
 
 
@@ -105,11 +162,7 @@ def compute_clv(
 ) -> Dict[str, Any]:
     """Pure CLV math for one two-way bet. No I/O.
 
-    Devigs the closing line (home, away) to no-vig fair probabilities via the
-    vetted Shin solver, then compares your taken price's implied prob against the
-    fair closing prob FOR THE SIDE YOU BET. See module docstring for the sign:
-    positive CLV = you got a better number than the close.
-
+    Devigs via Shin solver; positive CLV = better number than the close.
     Returns {taken_p, fair_close, clv_pct, fair_close_decimal, beat_close}.
     """
     s = str(side).strip().lower()
@@ -136,12 +189,7 @@ def settle_closing_line(
     closing_decimal_home: float,
     closing_decimal_away: float,
 ) -> Dict[str, Any]:
-    """Return a SETTLED twin of *bet* with CLV fields filled in.
-
-    Pure (no I/O): the caller decides where to persist (use append_settlement to
-    write the settled twin as a new append-only line). The original open record is
-    never mutated. *bet* must carry 'side' and 'taken_decimal'.
-    """
+    """Return a settled twin of *bet* with CLV fields filled in. Pure, no I/O."""
     clv = compute_clv(
         bet["side"], bet["taken_decimal"],
         closing_decimal_home, closing_decimal_away,
@@ -163,14 +211,34 @@ def append_settlement(
 ) -> Dict[str, Any]:
     """Append a settled record to the ledger (append-only; never overwrites)."""
     target = Path(path) if path is not None else DEFAULT_LEDGER
-    target.parent.mkdir(parents=True, exist_ok=True)
-    with target.open("a", encoding="utf-8") as fh:
-        fh.write(json.dumps(settled, default=str) + "\n")
+    _append_line(settled, target)
     return settled
 
 
+_MIN_GAME_ID_LEN = 3  # e.g. "gg" (len=2) is malformed; real IDs are e.g. "401859967"
+
+
+def _is_synthetic_row(row: Dict[str, Any]) -> bool:
+    """True for synthetic (test_*) or malformed (short game_id) rows.
+
+    Read-time only -- the on-disk ledger is never mutated.
+    """
+    sport = str(row.get("sport") or "")
+    bet_id_val = str(row.get("bet_id") or "")
+    if sport.startswith("test_") or bet_id_val.startswith("test_"):
+        return True
+    game_id = row.get("game_id")
+    if game_id is not None and len(str(game_id)) < _MIN_GAME_ID_LEN:
+        return True
+    return False
+
+
 def load_ledger(path: Optional[Path] = None) -> List[Dict[str, Any]]:
-    """Read every JSONL line from the ledger. Missing file -> empty list."""
+    """Read every JSONL line from the ledger. Missing file -> empty list.
+
+    Applies _is_synthetic_row at read time: test-sport rows and short game_id
+    rows are dropped before returning. On-disk file is never mutated.
+    """
     target = Path(path) if path is not None else DEFAULT_LEDGER
     if not target.exists():
         return []
@@ -181,19 +249,17 @@ def load_ledger(path: Optional[Path] = None) -> List[Dict[str, Any]]:
             if not line:
                 continue
             try:
-                out.append(json.loads(line))
+                row = json.loads(line)
             except json.JSONDecodeError:
                 continue  # tolerate a partial trailing write, never crash
+            if _is_synthetic_row(row):
+                continue  # read-time filter: synthetic/malformed rows never reach consumers
+            out.append(row)
     return out
 
 
 def clv_summary(ledger: Sequence[Dict[str, Any]]) -> Dict[str, Any]:
-    """Aggregate CLV over SETTLED bets in *ledger*.
-
-    Returns n_bets (settled), pct_beat_close, mean_clv_pct, and a by_sport
-    breakdown. Open/unsettled rows (no clv_pct) are ignored. CLV is the honest
-    yardstick -- this is a track record, not an edge claim.
-    """
+    """Aggregate CLV over settled bets: n_bets, pct_beat_close, mean_clv_pct, by_sport."""
     settled = [
         b for b in ledger
         if b.get("status") == "settled" and b.get("clv_pct") is not None
@@ -225,10 +291,6 @@ def clv_summary(ledger: Sequence[Dict[str, Any]]) -> Dict[str, Any]:
 
 
 __all__ = [
-    "record_bet",
-    "compute_clv",
-    "settle_closing_line",
-    "append_settlement",
-    "load_ledger",
-    "clv_summary",
+    "record_bet", "bet_id", "compute_clv", "settle_closing_line",
+    "append_settlement", "load_ledger", "clv_summary",
 ]

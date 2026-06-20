@@ -91,3 +91,91 @@ def test_write_cache_bad_input_never_raises(tmp_path):
     # empty df -> backtest yields no predictions; still returns a payload, no raise
     assert "per_stat" in payload
     assert payload["overall"]["n"] == 0
+
+
+# ---- Staleness guard: a cache computed under OLD settlement logic must NEVER
+# ---- drive a PROVEN label (the void-fix regression that fabricated Saves).
+
+def _write_payload(path, payload):
+    with open(path, "w", encoding="ascii") as fh:
+        json.dump(payload, fh)
+
+
+def test_stale_cache_does_not_yield_proven(tmp_path):
+    """A cache stamped with a DIFFERENT settle-logic version is refused PROVEN.
+
+    Reproduces the live honesty bug: a genuine proven-grade stat (bss=0.34,
+    n=662 -- the OLD fabricated Saves) computed under stale settlement logic must
+    downgrade to unmeasured/MODEL_VIEW, never CALIBRATION_PROVEN.
+    """
+    out = os.path.join(str(tmp_path), "stale.json")
+    _write_payload(out, {
+        "settle_logic_version": "v0-OLD-fabricated",
+        "per_stat": {"Saves": {"bss": 0.3365, "n": 662, "brier": 0.0175}},
+    })
+    cal = load_calibration(out)
+    # Visible but flagged, and classify refuses to promote it.
+    assert cal["Saves"].get("_stale_version") is True
+    assert prop_tiering.classify("Saves", cal)[0] == "unmeasured"
+    edge = prop_tiering.apply_tier(
+        {"stat": "Saves", "reliable": True, "ev_flag": "ok"}, cal)
+    assert edge["tier"] == "MODEL_VIEW"
+    assert edge["calibration"] == "unmeasured"
+
+
+def test_missing_version_stamp_is_treated_stale(tmp_path):
+    """A pre-stamping cache (no settle_logic_version) cannot earn PROVEN either.
+
+    The ORIGINAL bad cache had no version field; the guard must treat a missing
+    stamp as a mismatch (None != live) so it can't slip a PROVEN through.
+    """
+    out = os.path.join(str(tmp_path), "nostamp.json")
+    _write_payload(out, {
+        "per_stat": {"Saves": {"bss": 0.3365, "n": 662}},
+    })
+    cal = load_calibration(out)
+    assert cal["Saves"].get("_stale_version") is True
+    assert prop_tiering.classify("Saves", cal)[0] == "unmeasured"
+
+
+def test_fresh_cache_with_genuine_skill_still_proven(tmp_path):
+    """A CURRENT-version cache with bss>=0.05, n>=100 still earns proven.
+
+    The guard must not over-fire: a real, current proven-grade stat is promoted.
+    """
+    out = os.path.join(str(tmp_path), "fresh.json")
+    _write_payload(out, {
+        "settle_logic_version": prop_tiering.current_settle_version(),
+        "per_stat": {"GoodStat": {"bss": 0.20, "n": 300}},
+    })
+    cal = load_calibration(out)
+    assert not cal["GoodStat"].get("_stale_version")
+    assert prop_tiering.classify("GoodStat", cal)[0] == "proven"
+    edge = prop_tiering.apply_tier(
+        {"stat": "GoodStat", "reliable": True, "ev_flag": "ok"}, cal)
+    assert edge["tier"] == "CALIBRATION_PROVEN"
+
+
+def test_void_fixed_eval_yields_no_fabricated_proven(tmp_path):
+    """End-to-end: the void-fixed eval, freshly cached + reloaded, has NO proven.
+
+    write_calibration_cache stamps the live version, so the reload is NOT stale;
+    the absence of proven here is the HONEST post-void-fix result, not the guard.
+    """
+    out = os.path.join(str(tmp_path), "e2e.json")
+    write_calibration_cache(_canned_df(), out_path=out)
+    cal = load_calibration(out)
+    # Not stale (freshly stamped), yet no stat clears proven on the canned data.
+    assert not any(d.get("_stale_version") for d in cal.values())
+    proven = [s for s in cal if prop_tiering.classify(s, cal)[0] == "proven"]
+    assert proven == []
+
+
+def test_payload_carries_version_stamp(tmp_path):
+    """The written cache records the live settle-logic version."""
+    out = os.path.join(str(tmp_path), "v.json")
+    write_calibration_cache(_canned_df(), out_path=out)
+    with open(out, "r", encoding="ascii") as fh:
+        on_disk = json.load(fh)
+    assert on_disk["settle_logic_version"] == prop_tiering.current_settle_version()
+    assert on_disk["settle_logic_version"] is not None

@@ -2,11 +2,169 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body {
-  background: #0a0a0f;
-  color: #e5e7eb;
-  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+@layer base {
+  :root {
+    /* ------------------------------------------------------------------ */
+    /* shadcn/ui structural tokens (dark-first; all in HSL channel triples) */
+    /* ------------------------------------------------------------------ */
+    --background:        240 10%  4%;   /* #0a0a0f  page base             */
+    --foreground:        213 27% 84%;   /* #cfd8e3  body text             */
+
+    --card:              240 10%  8%;   /* #13131a  card surface           */
+    --card-foreground:   213 27% 84%;
+
+    --popover:           240 10%  8%;
+    --popover-foreground: 213 27% 84%;
+
+    --primary:           217 91% 60%;   /* blue accent                     */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary:         240  6% 15%;   /* #1c1c25  secondary surface      */
+    --secondary-foreground: 213 27% 84%;
+
+    --muted:             240  6% 15%;
+    --muted-foreground:  215 16% 47%;   /* slate-500                       */
+
+    --accent:            240  6% 18%;   /* slightly lighter than muted     */
+    --accent-foreground: 213 27% 84%;
+
+    --destructive:         0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border:            240  6% 20%;
+    --input:             240  6% 20%;
+    --ring:              217 91% 60%;   /* focus ring matches primary      */
+
+    --radius: 0.5rem;
+
+    /* ------------------------------------------------------------------ */
+    /* Semantic status tokens                                               */
+    /* ------------------------------------------------------------------ */
+    --success:           142 71% 45%;   /* green-500 equivalent            */
+    --success-foreground: 0 0% 100%;
+
+    --warning:            38 92% 50%;   /* amber-500                       */
+    --warning-foreground:  0 0% 100%;
+
+    --danger:              0 72% 51%;   /* same as destructive             */
+    --danger-foreground:   0 0% 100%;
+
+    --info:              199 89% 48%;   /* sky-500                         */
+    --info-foreground:     0 0% 100%;
+
+    /* ------------------------------------------------------------------ */
+    /* Tier tokens (S=gold, A=green, B=slate-mid, C=slate-dark)           */
+    /* ------------------------------------------------------------------ */
+    --tier-s:             43 96% 56%;   /* amber/gold #fbbf24              */
+    --tier-a:            142 71% 45%;   /* green      #22c55e              */
+    --tier-b:            215 20% 65%;   /* slate-400  #94a3b8              */
+    --tier-c:            215 25% 37%;   /* slate-600  #475569              */
+
+    /* ------------------------------------------------------------------ */
+    /* Surface elevation steps                                              */
+    /* ------------------------------------------------------------------ */
+    --surface-0:         240 10%  4%;   /* page base                       */
+    --surface-1:         240 10%  8%;   /* card                            */
+    --surface-2:         240  8% 12%;   /* raised panel / popover base     */
+    --surface-3:         240  6% 18%;   /* input / subtle highlight        */
+  }
+
+  /* Reset border color to token everywhere */
+  * {
+    @apply border-border;
+  }
+
+  /* Base typography driven by tokens, no hardcoded hex */
+  html, body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Scrollbar (dark theme) */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--surface-0));
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
+  }
+
+  /* Global focus-visible ring -- visible on every interactive element */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-radius: calc(var(--radius) - 2px);
+  }
+
+  /* Remove focus outline for mouse users only */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
 }
 
-/* sparkline glyphs */
-.tabular { font-variant-numeric: tabular-nums; }
+/* ------------------------------------------------------------------ */
+/* Skeleton shimmer keyframes + utility                                 */
+/* ------------------------------------------------------------------ */
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Reduced-motion: freeze shimmer for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  @keyframes skeleton-shimmer {
+    0%, 100% { background-position: 0 0; }
+  }
+}
+
+@layer utilities {
+  /* Apply to any div/span to get a shimmer loading effect */
+  .skeleton-shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--surface-1)) 25%,
+      hsl(var(--surface-2)) 50%,
+      hsl(var(--surface-1)) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+    border-radius: calc(var(--radius) - 2px);
+  }
+
+  /* Tabular numbers for aligned numeric columns */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Tier color utilities (text) */
+  .text-tier-s { color: hsl(var(--tier-s)); }
+  .text-tier-a { color: hsl(var(--tier-a)); }
+  .text-tier-b { color: hsl(var(--tier-b)); }
+  .text-tier-c { color: hsl(var(--tier-c)); }
+
+  /* Semantic status text utilities */
+  .text-success  { color: hsl(var(--success));  }
+  .text-warning  { color: hsl(var(--warning));  }
+  .text-danger   { color: hsl(var(--danger));   }
+  .text-info     { color: hsl(var(--info));     }
+
+  /* Surface background utilities */
+  .bg-surface-0 { background-color: hsl(var(--surface-0)); }
+  .bg-surface-1 { background-color: hsl(var(--surface-1)); }
+  .bg-surface-2 { background-color: hsl(var(--surface-2)); }
+  .bg-surface-3 { background-color: hsl(var(--surface-3)); }
+}

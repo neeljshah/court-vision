@@ -19,13 +19,13 @@ _HERE = Path(__file__).resolve().parent
 DEFAULT_LEDGER = _HERE.parents[1] / "data" / "frontend" / "prop_ledger.jsonl"
 
 _SUMMARY_NOTE = (
-    "PAPER prop record. Calibration is the yardstick (mean model_p_over vs "
-    "realized hit_rate); paper_roi is small-N paper P&L at the taken price, NOT a "
-    "proven $-edge. CLV-vs-close (mean_clv_pct / pct_beat_close) is now captured "
-    "from the line history: the CLOSING line is APPROXIMATED by the LAST logged "
-    "line before kickoff, so CLV is only as honest as the cadence. TODO/accrual: "
-    "the loop must run up to kickoff over the tournament for the history to fill in "
-    "-- CLV is the yardstick, still no beat-the-close $-edge claim is made here."
+    "PAPER prop record, UNITS ONLY (no $ / pnl / roi). Calibration is the yardstick "
+    "(mean model_p_over vs realized hit_rate); net_units is a small-N unit record at "
+    "the taken price, NOT a proven edge. CLV-vs-close (mean_clv_pct / pct_beat_close) "
+    "is captured from the line history: the CLOSING line is APPROXIMATED by the LAST "
+    "logged line before kickoff, so CLV is only as honest as the cadence. TODO: the "
+    "loop must run up to kickoff over the tournament for the history to fill in -- "
+    "CLV is the yardstick, still no beat-the-close $-edge claim is made here."
 )
 
 
@@ -50,7 +50,17 @@ def identity(row: Dict[str, Any]) -> tuple:
 
 
 def append(target: Path, record: Dict[str, Any]) -> None:
+    """Append one prop row. Routed through the SAME lock-guarded primitive the team
+    ledger uses (P1-3) so the record loop + grader cannot splice lines. The import
+    is guarded: any failure falls back to a direct append (a single newline-
+    terminated write is itself near-atomic on local filesystems)."""
     target.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        from scripts.platformkit.clv_ledger_io import append_row as _append_row
+        _append_row(record, path=target)
+        return
+    except Exception:  # noqa: BLE001 -- lock layer is an aid, never a hard dep
+        pass
     with target.open("a", encoding="utf-8") as fh:
         fh.write(json.dumps(record, default=str) + "\n")
 
@@ -76,8 +86,8 @@ def load_ledger(ledger_path: Optional[Path] = None) -> List[Dict[str, Any]]:
     return out
 
 
-def paper_pnl(result: str, taken_price: Optional[float]) -> Optional[float]:
-    """Unit-stake paper P&L at the taken decimal price. None for pick'em; 0 push."""
+def unit_result(result: str, taken_price: Optional[float]) -> Optional[float]:
+    """Unit record at the taken decimal price (UNITS, never $). None pick'em; 0 push."""
     if taken_price is None:
         return None
     if result == "win":
@@ -91,8 +101,9 @@ def paper_pnl(result: str, taken_price: Optional[float]) -> Optional[float]:
 
 
 def _bucket() -> Dict[str, Any]:
-    return {"n": 0, "_wins": 0, "_decisive": 0, "_pnl": 0.0, "_priced": 0,
-            "_p_sum": 0.0, "_clv_sum": 0.0, "_clv_n": 0, "_clv_beats": 0}
+    return {"n": 0, "_void": 0, "_wins": 0, "_decisive": 0, "_pnl": 0.0,
+            "_priced": 0, "_p_sum": 0.0, "_clv_sum": 0.0, "_clv_n": 0,
+            "_clv_beats": 0}
 
 
 def _finalize(b: Dict[str, Any]) -> Dict[str, Any]:
@@ -104,10 +115,13 @@ def _finalize(b: Dict[str, Any]) -> Dict[str, Any]:
     clv_sum = b.pop("_clv_sum")
     clv_n = b.pop("_clv_n")
     clv_beats = b.pop("_clv_beats")
+    void = b.pop("_void")
     return {
         "n": b["n"],
+        "n_void": void,
         "hit_rate": round(wins / decisive, 4) if decisive else None,
-        "paper_roi": round(pnl / priced, 4) if priced else None,
+        # UNITS ONLY (no $ / roi): net unit record at the taken price over priced bets.
+        "net_units": round(pnl, 6) if priced else None,
         "n_priced": priced,
         "mean_model_p_over": round(p_sum / b["n"], 4) if b["n"] else None,
         # CLV-vs-close over PRICED settled bets only (pick'em rows have clv None).
@@ -119,8 +133,8 @@ def _finalize(b: Dict[str, Any]) -> Dict[str, Any]:
 
 def prop_summary(ledger_path: Optional[Path] = None) -> Dict[str, Any]:
     """Per-stat and overall summary over SETTLED prop bets. hit_rate excludes
-    pushes; paper_roi is over priced bets only. Honest small-N framing. Never
-    raises."""
+    pushes; net_units is over priced bets only (UNITS, no $/roi). Honest small-N
+    framing. Never raises."""
     overall = _bucket()
     by_stat: Dict[str, Any] = {}
     try:
@@ -129,6 +143,14 @@ def prop_summary(ledger_path: Optional[Path] = None) -> Dict[str, Any]:
                 continue
             result = r.get("result")
             buckets = (overall, by_stat.setdefault(str(r.get("stat")), _bucket()))
+            # VOID rows (realized stat genuinely missing) are EXCLUDED from the
+            # graded sample entirely: not in n, hit_rate, paper_roi, or CLV. They
+            # are only counted as n_void so the void rate is auditable. This is
+            # what keeps a NaN/DNP from fabricating an UNDER "win".
+            if result == "void":
+                for b in buckets:
+                    b["_void"] += 1
+                continue
             for b in buckets:
                 b["n"] += 1
                 try:
@@ -138,7 +160,7 @@ def prop_summary(ledger_path: Optional[Path] = None) -> Dict[str, Any]:
                 if result in ("win", "loss"):
                     b["_decisive"] += 1
                     b["_wins"] += 1 if result == "win" else 0
-                pnl = r.get("paper_pnl")
+                pnl = r.get("unit_result")
                 if pnl is not None:
                     try:
                         b["_pnl"] += float(pnl)
@@ -168,5 +190,5 @@ def prop_summary(ledger_path: Optional[Path] = None) -> Dict[str, Any]:
 
 __all__ = [
     "DEFAULT_LEDGER", "now_iso", "identity", "append", "load_ledger",
-    "paper_pnl", "prop_summary",
+    "unit_result", "prop_summary",
 ]

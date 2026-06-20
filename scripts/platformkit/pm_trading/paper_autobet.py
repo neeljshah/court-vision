@@ -28,6 +28,10 @@ from typing import Any, Dict, List, Optional, Sequence
 
 from scripts.platformkit import clv_ledger as _clv
 from scripts.platformkit.odds_shop import ev_vs_price
+from scripts.platformkit.pm_trading.stake_units_normalize import (
+    normalize as _normalize_units,
+    DEFAULT_UNIT_SIZE,
+)
 
 # channel marker proving these are paper records, never a placed/executed bet.
 CHANNEL_PAPER = "paper"
@@ -60,15 +64,23 @@ class AutoBetConfig:
         kelly_cap, then dollar-capped by max_stake.
     sizing="flat":  a flat unit_stake on every +EV candidate.
     Either way, total staked across the slate is capped at max_total_exposure.
+
+    Dollar amounts (bankroll, max_stake, max_total_exposure, unit_stake) are
+    used ONLY for internal exposure-cap math and are NEVER recorded in the
+    ledger.  The ledger receives normalized stake_units in [0, 10] computed by
+    dividing the dollar stake by unit_size before passing to record_bet.
     """
     bankroll: float = 10_000.0
     sizing: str = "kelly"           # "kelly" | "flat"
     kelly_fraction: float = 0.25    # quarter-Kelly
     kelly_cap: float = 0.05         # never risk > 5% of bankroll on one bet
-    unit_stake: float = 100.0       # flat-sizing stake
-    max_stake: float = 1_000.0      # per-bet dollar cap (kelly mode)
-    max_total_exposure: float = 5_000.0  # total $ staked across the slate
+    unit_stake: float = 100.0       # flat-sizing stake (dollars, internal only)
+    max_stake: float = 1_000.0      # per-bet dollar cap (internal exposure math)
+    max_total_exposure: float = 5_000.0  # total dollars staked cap (internal)
     min_ev: float = 0.0             # require EV per $1 strictly above this
+    # Base dollar value of one unit for ledger normalization.  Default $100 so
+    # a $100 flat unit records as 1.0u, a $1000 kelly cap records as 10.0u.
+    unit_size: float = DEFAULT_UNIT_SIZE
 
 
 def _kelly_fraction_decimal(prob: float, decimal_odds: float) -> float:
@@ -120,19 +132,23 @@ def run_slate(
         stake = size_stake(cand, cfg)
         if stake <= 0.0:
             bets.append({"matchup": cand.matchup, "side": cand.side,
-                         "stake": 0.0, "status": "skipped_no_edge"})
+                         "stake_units": 0.0, "status": "skipped_no_edge"})
             continue
         # total-exposure cap: trim, and stop once there is no room left.
         room = cfg.max_total_exposure - staked_total
         if room <= 0.0:
             bets.append({"matchup": cand.matchup, "side": cand.side,
-                         "stake": 0.0, "status": "skipped_exposure_cap"})
+                         "stake_units": 0.0, "status": "skipped_exposure_cap"})
             continue
         stake = min(stake, room)
+        # Normalize dollars -> units before recording; internal $ is kept for
+        # exposure-cap math above (staked_total, room) but NEVER written to the
+        # ledger.  stake_units_normalize.normalize clamps to [0, 10].
+        units = _normalize_units(stake, unit_size=cfg.unit_size)
         rec = _clv.record_bet(
             cand.sport, cand.matchup, cand.side, cand.taken_book,
-            cand.taken_decimal, model_prob=cand.model_prob, stake=stake,
-            path=path)
+            cand.taken_decimal, model_prob=cand.model_prob,
+            stake_units=units, path=path)
         # mark the paper channel WITHOUT mutating the appended open row: we add
         # the marker to our in-memory copy for the summary only. The ledger row
         # already carries executed=False (record_bet's invariant).
@@ -143,7 +159,7 @@ def run_slate(
         n_recorded += 1
         row: Dict[str, Any] = {"matchup": cand.matchup, "side": cand.side,
                                "taken_decimal": cand.taken_decimal,
-                               "stake": round(stake, 6), "executed": False,
+                               "stake_units": round(units, 6), "executed": False,
                                "channel": CHANNEL_PAPER, "status": "recorded"}
         # settle immediately if a closing line was supplied
         if (cand.closing_decimal_home is not None

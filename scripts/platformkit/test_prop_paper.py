@@ -104,10 +104,10 @@ def test_grade_settles_a_win(tmp_path):
     assert g["graded"] == 1
     settled = [r for r in load_ledger(led) if r.get("status") == "settled"]
     assert len(settled) == 1
-    # 3 shots > 1.5 over -> win; paper P&L at 1.91 = +0.91.
+    # 3 shots > 1.5 over -> win; unit record at 1.91 = +0.91.
     assert settled[0]["result"] == "win"
     assert settled[0]["realized"] == 3.0
-    assert abs(settled[0]["paper_pnl"] - 0.91) < 1e-6
+    assert abs(settled[0]["unit_result"] - 0.91) < 1e-6
 
 
 def test_grade_is_idempotent(tmp_path):
@@ -172,6 +172,77 @@ def test_clv_none_without_history(tmp_path):
     s = prop_summary(ledger_path=led)
     assert s["overall"]["n_clv"] == 0
     assert s["overall"]["mean_clv_pct"] is None
+
+
+def _realized_df_missing_stat():
+    # Match IS final (player has a box-score row dated after as_of) but the mapped
+    # stat column (totalShots) is NaN -> genuinely MISSING, must NOT become a 0.
+    return pd.DataFrame(
+        [
+            {"event_id": "E9", "player_id": "P1", "player": "Test Player",
+             "team_abbr": "AAA", "date": "2026-06-02",
+             "totalShots": float("nan"), "shotsOnTarget": float("nan"),
+             "yellowCards": 0.0, "redCards": 0.0},
+        ]
+    )
+
+
+def _realized_df_genuine_zero():
+    # Player played and recorded a TRUE 0 shots -> grades as a real 0 (under wins
+    # vs a 1.5 line, but as a GENUINE graded result, not a fabricated void).
+    return pd.DataFrame(
+        [
+            {"event_id": "E9", "player_id": "P1", "player": "Test Player",
+             "team_abbr": "AAA", "date": "2026-06-02", "totalShots": 0.0,
+             "shotsOnTarget": 0.0, "yellowCards": 0.0, "redCards": 0.0},
+        ]
+    )
+
+
+def test_missing_realized_stat_voids_not_win(tmp_path):
+    # THE HONESTY BUG: a NaN realized stat must VOID (excluded), never settle as a
+    # fabricated 0 that an UNDER would "win" (or that an OVER would "loss").
+    led = tmp_path / "prop_ledger.jsonl"
+    record_board(_board(), only_reliable=True, ledger_path=led)
+    g = grade_open(realized_df=_realized_df_missing_stat(), ledger_path=led)
+    assert g["status"] == "ok"
+    assert g["graded"] == 0          # nothing graded as win/loss/push
+    assert g["voided"] == 1          # the prop is voided
+    settled = [r for r in load_ledger(led) if r.get("status") == "settled"]
+    assert len(settled) == 1
+    assert settled[0]["result"] == "void"
+    assert settled[0]["realized"] is None
+    assert settled[0]["unit_result"] is None
+
+
+def test_void_excluded_from_hit_rate(tmp_path):
+    # A void must not count in n, hit_rate, net_units, or CLV -- only n_void.
+    led = tmp_path / "prop_ledger.jsonl"
+    record_board(_board(), only_reliable=True, ledger_path=led)
+    grade_open(realized_df=_realized_df_missing_stat(), ledger_path=led)
+    s = prop_summary(ledger_path=led)
+    assert s["overall"]["n"] == 0
+    assert s["overall"]["n_void"] == 1
+    assert s["overall"]["hit_rate"] is None   # zero decisive -> undefined, not 1.0
+    assert s["overall"]["net_units"] is None
+    # UNITS ONLY: no $ / roi key in the prop summary.
+    assert "paper_roi" not in s["overall"] and "roi" not in s["overall"]
+
+
+def test_genuine_zero_grades_not_voided(tmp_path):
+    # A genuinely-recorded 0 IS a real graded result (here: over 1.5 -> loss).
+    led = tmp_path / "prop_ledger.jsonl"
+    record_board(_board(), only_reliable=True, ledger_path=led)
+    g = grade_open(realized_df=_realized_df_genuine_zero(), ledger_path=led)
+    assert g["graded"] == 1
+    assert g["voided"] == 0
+    settled = [r for r in load_ledger(led) if r.get("status") == "settled"]
+    assert settled[0]["result"] == "loss"   # 0 shots, over 1.5 -> loss
+    assert settled[0]["realized"] == 0.0
+    s = prop_summary(ledger_path=led)
+    assert s["overall"]["n"] == 1
+    assert s["overall"]["n_void"] == 0
+    assert s["overall"]["hit_rate"] == 0.0
 
 
 def test_public_fns_never_raise_on_garbage(tmp_path):

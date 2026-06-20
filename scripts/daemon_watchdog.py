@@ -12,8 +12,8 @@ considered dead.  The watchdog then:
 
   * Appends a row to ``vault/Improvements/daemon_restarts.md``.
   * Fires a Discord ``WARN`` alert via ``src.alerts.discord_webhook.post_alert``.
-  * Re-launches the daemon by shelling out ``restart_cmd`` (already wrapped in
-    nohup/tmux by the registry).
+  * Re-launches the daemon by shelling out the appropriate restart command
+    (``restart_cmd_win`` on Windows, ``restart_cmd`` on posix).
   * Records the restart timestamp in an in-memory bucket so the daemon
     can't be restarted more than ``--max-restarts-per-hour`` (default 3)
     times per rolling 60-min window.
@@ -25,12 +25,16 @@ Design rules
   never crash the watchdog itself.
 * ``--once`` does a single pass and exits (used by the unit test + probe).
 * ``--dry-run`` logs what it WOULD restart without actually shelling out.
+* ``--platform auto|win|posix`` selects restart_cmd_win (win) or restart_cmd
+  (posix).  Default ``auto`` detects the runtime OS.  Posix behaviour is
+  identical to the original when ``auto`` or ``posix`` are used on posix.
 
 CLI
 ---
     python scripts/daemon_watchdog.py --once
     python scripts/daemon_watchdog.py --check-interval-sec 60
     python scripts/daemon_watchdog.py --once --dry-run
+    python scripts/daemon_watchdog.py --once --platform win
 """
 from __future__ import annotations
 
@@ -72,6 +76,12 @@ DEFAULT_RESTART_LOG = os.path.join(_PROJECT_DIR, "vault", "Improvements", "daemo
 
 _RUNNING = True
 
+# Platform constants for --platform flag.
+PLATFORM_AUTO = "auto"
+PLATFORM_WIN  = "win"
+PLATFORM_POSIX = "posix"
+_VALID_PLATFORMS = {PLATFORM_AUTO, PLATFORM_WIN, PLATFORM_POSIX}
+
 
 def _handle_sig(signum: int, _frame: Any) -> None:  # pragma: no cover
     global _RUNNING
@@ -81,6 +91,26 @@ def _handle_sig(signum: int, _frame: Any) -> None:  # pragma: no cover
 
 def _iso_now() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _pick_restart_cmd(daemon: Mapping[str, Any], platform: str = PLATFORM_AUTO,
+                      _sys_platform: Optional[str] = None) -> Optional[str]:
+    """Return the correct restart command for the given platform.
+
+    ``platform`` is one of 'auto' | 'win' | 'posix'.
+    When 'auto', the runtime ``sys.platform`` (or the injected ``_sys_platform``
+    override for tests) decides: 'win32' / 'cygwin' -> win, else posix.
+    Falls back to ``restart_cmd`` when ``restart_cmd_win`` is absent.
+    """
+    effective = platform
+    if effective == PLATFORM_AUTO:
+        p = _sys_platform if _sys_platform is not None else sys.platform
+        effective = PLATFORM_WIN if p in ("win32", "cygwin") else PLATFORM_POSIX
+    if effective == PLATFORM_WIN:
+        cmd = daemon.get("restart_cmd_win") or daemon.get("restart_cmd")
+    else:
+        cmd = daemon.get("restart_cmd") or daemon.get("restart_cmd_win")
+    return cmd
 
 
 # ---------------------------------------------------------------------------
@@ -228,9 +258,14 @@ def _append_restart_log(log_path: str, name: str, reason: str,
 
 
 def restart_daemon(daemon: Mapping[str, Any], *, dry_run: bool = False,
-                   shell_runner: Optional[Any] = None) -> Tuple[bool, Optional[int]]:
-    """Shell out the daemon's ``restart_cmd``.  Returns (success, rc)."""
-    cmd = daemon.get("restart_cmd")
+                   shell_runner: Optional[Any] = None,
+                   platform: str = PLATFORM_AUTO) -> Tuple[bool, Optional[int]]:
+    """Shell out the platform-appropriate restart command.  Returns (success, rc).
+
+    Selects ``restart_cmd_win`` on Windows (or when ``platform='win'``) and
+    ``restart_cmd`` on posix.  Falls back to whichever key is present.
+    """
+    cmd = _pick_restart_cmd(daemon, platform=platform)
     if not cmd:
         log.error("daemon %s has no restart_cmd in registry", daemon.get("name"))
         return False, None
@@ -282,10 +317,12 @@ def sweep(registry: List[Dict[str, Any]], limiter: RestartRateLimiter, *,
           dry_run: bool = False, restart_log_path: str = DEFAULT_RESTART_LOG,
           ps_runner: Optional[Any] = None, shell_runner: Optional[Any] = None,
           post_alert_fn: Optional[Any] = None,
+          platform: str = PLATFORM_AUTO,
           now: Optional[float] = None) -> Dict[str, Any]:
     """One sweep across every registered daemon.
 
     Returns a summary dict so callers (probe + tests) can assert behaviour.
+    ``platform`` is forwarded to ``restart_daemon`` to select the right cmd.
     """
     statuses: List[Dict[str, Any]] = []
     restarts: List[Dict[str, Any]] = []
@@ -300,12 +337,14 @@ def sweep(registry: List[Dict[str, Any]], limiter: RestartRateLimiter, *,
             log.warning("RATE-LIMIT: %s already restarted %s times in last hour",
                         status["name"], limiter.restarts_in_window(status["name"], now=now))
             continue
-        ok, rc = restart_daemon(daemon, dry_run=dry_run, shell_runner=shell_runner)
+        ok, rc = restart_daemon(daemon, dry_run=dry_run, shell_runner=shell_runner,
+                                platform=platform)
         discord_ok = fire_discord_alert(status["name"], status["reason"], rc,
                                         post_alert_fn=post_alert_fn)
+        used_cmd = _pick_restart_cmd(daemon, platform=platform) or ""
         try:
             _append_restart_log(restart_log_path, status["name"], status["reason"],
-                                rc, daemon.get("restart_cmd", ""))
+                                rc, used_cmd)
         except Exception as exc:  # noqa: BLE001
             log.warning("failed to append restart log: %r", exc)
         restarts.append({
@@ -339,6 +378,16 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap.add_argument("--dry-run", action="store_true",
                     help="log restarts without shelling out")
     ap.add_argument("--log-level", type=str, default="INFO")
+    ap.add_argument(
+        "--platform",
+        type=str,
+        default=PLATFORM_AUTO,
+        choices=sorted(_VALID_PLATFORMS),
+        help=(
+            "restart_cmd selection: 'win' uses restart_cmd_win, 'posix' uses "
+            "restart_cmd, 'auto' (default) picks by runtime OS."
+        ),
+    )
     args = ap.parse_args(argv)
 
     logging.basicConfig(
@@ -363,7 +412,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         t0 = time.time()
         try:
             summary = sweep(registry, limiter, dry_run=args.dry_run,
-                            restart_log_path=args.restart_log)
+                            restart_log_path=args.restart_log,
+                            platform=args.platform)
             log.info("tick=%d checked=%d dead=%s restarted=%d rate_limited=%d",
                      tick, summary["checked"], summary["dead"],
                      len(summary["restarted"]), len(summary["rate_limited"]))

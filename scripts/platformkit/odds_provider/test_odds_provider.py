@@ -16,7 +16,8 @@ from scripts.platformkit.odds_provider import base, aggregate
 from scripts.platformkit.odds_provider.espn import EspnProvider, parse_pickcenter
 from scripts.platformkit.odds_provider.kalshi import KalshiProvider, parse_events
 from scripts.platformkit.odds_provider.polymarket import (
-    PolymarketProvider, parse_market)
+    PolymarketProvider, parse_market, parse_market_binary,
+    parse_markets_with_binaries)
 
 
 # --------------------------------------------------------------------------- #
@@ -59,6 +60,16 @@ POLY_MARKET = {
     "question": "NBA: Celtics vs Lakers",
     "outcomes": "[\"Boston Celtics\", \"Los Angeles Lakers\"]",
     "outcomePrices": "[\"0.58\", \"0.42\"]",
+    "startDate": "2026-06-17T23:00Z",
+}
+
+# Single-sided YES/NO gamma binary: "Will the Celtics win the NBA title?"
+POLY_BINARY_MARKET = {
+    "id": "1001",
+    "slug": "nba-celtics-win-title",
+    "question": "Will the Boston Celtics win the NBA championship?",
+    "outcomes": "[\"Yes\", \"No\"]",
+    "outcomePrices": "[\"0.62\", \"0.38\"]",
     "startDate": "2026-06-17T23:00Z",
 }
 
@@ -155,6 +166,64 @@ def test_poly_fetch_list_shape():
     http = _stub({"markets": [POLY_MARKET]})
     events = PolymarketProvider(http_get=http, use_cache=False).fetch("nba")
     assert isinstance(events, list) and len(events) == 1
+
+
+# --------------------------------------------------------------------------- #
+# Polymarket single-sided YES/NO binary contract parsing.
+# --------------------------------------------------------------------------- #
+def test_poly_yesno_market_rejected_by_parse_market():
+    # A YES/NO contract must NOT be mapped to home="Yes"/away="No".
+    result = parse_market(POLY_BINARY_MARKET, "nba")
+    assert result is None, "YES/NO binary must not produce a two-leg OddsEvent"
+
+
+def test_poly_parse_market_binary_single_binary_shape():
+    row = parse_market_binary(POLY_BINARY_MARKET, "nba")
+    assert row is not None, "parse_market_binary must parse a YES/NO market"
+    # Shape must match single-binary: home/away/pm_prob all None.
+    assert row["home"] is None
+    assert row["away"] is None
+    assert row["pm_prob"] is None
+    assert row["binary_title"] == "Will the Boston Celtics win the NBA championship?"
+    assert math.isclose(row["binary_yes_prob"], 0.62)
+    assert row["market_id"] == "1001"
+    assert row["sport"] == "nba"
+
+
+def test_poly_parse_market_binary_rejects_non_yesno():
+    # A regular two-team market must be rejected by parse_market_binary.
+    assert parse_market_binary(POLY_MARKET, "nba") is None
+
+
+def test_poly_parse_markets_with_binaries_splits_correctly():
+    markets = [POLY_MARKET, POLY_BINARY_MARKET]
+    events, binaries = parse_markets_with_binaries(markets, "nba")
+    # Two-leg event parsed correctly.
+    assert len(events) == 1
+    assert events[0].home == "Boston Celtics"
+    # Binary parsed into separate list.
+    assert len(binaries) == 1
+    b = binaries[0]
+    assert b["home"] is None and b["away"] is None and b["pm_prob"] is None
+    assert "Boston Celtics" in b["binary_title"]
+    assert math.isclose(b["binary_yes_prob"], 0.62)
+
+
+def test_poly_fetch_with_binaries_returns_both_shapes():
+    http = _stub({"markets": [POLY_MARKET, POLY_BINARY_MARKET]})
+    result = PolymarketProvider(http_get=http, use_cache=False).fetch_with_binaries("nba")
+    assert isinstance(result, tuple), "fetch_with_binaries must return a tuple"
+    events, binaries = result
+    assert len(events) == 1 and events[0].home == "Boston Celtics"
+    assert len(binaries) == 1 and binaries[0]["binary_title"] is not None
+
+
+def test_poly_fetch_still_returns_only_events():
+    # fetch() (two-leg only) still works; binaries are silently excluded.
+    http = _stub({"markets": [POLY_MARKET, POLY_BINARY_MARKET]})
+    events = PolymarketProvider(http_get=http, use_cache=False).fetch("nba")
+    assert isinstance(events, list) and len(events) == 1
+    assert events[0].home == "Boston Celtics"
 
 
 # --------------------------------------------------------------------------- #

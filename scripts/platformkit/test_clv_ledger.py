@@ -107,3 +107,69 @@ def test_empty_summary():
     assert s["n_bets"] == 0
     assert s["pct_beat_close"] is None
     assert s["by_sport"] == {}
+
+
+# --- M4 lock-guarded write retrofit -----------------------------------------
+
+def test_record_bet_funnels_through_locked_append_row(tmp_path, monkeypatch):
+    """record_bet must write via clv_ledger_io.append_row (the locked primitive),
+    not its own open('a'). We spy on append_row and assert it received the exact
+    open-row dict and the same target path."""
+    import scripts.platformkit.clv_ledger_io as io_mod
+
+    seen = []
+    real = io_mod.append_row
+
+    def spy(row, *, path=None):
+        seen.append((dict(row), path))
+        return real(row, path=path)
+
+    monkeypatch.setattr(io_mod, "append_row", spy)
+    ledger = tmp_path / "clv_ledger.jsonl"
+    rec = record_bet("nba", "A @ B", "home", "FD", 2.50, stake=7.0, path=ledger)
+    assert len(seen) == 1
+    seen_row, seen_path = seen[0]
+    assert seen_path == ledger
+    # row shape unchanged: the dict handed to append_row IS the stored record.
+    assert seen_row == rec
+    on_disk = [json.loads(ln) for ln in
+               ledger.read_text(encoding="utf-8").splitlines() if ln.strip()]
+    assert on_disk == [rec]
+
+
+def test_append_settlement_funnels_through_locked_append_row(tmp_path, monkeypatch):
+    import scripts.platformkit.clv_ledger_io as io_mod
+
+    seen = []
+    real = io_mod.append_row
+
+    def spy(row, *, path=None):
+        seen.append((dict(row), path))
+        return real(row, path=path)
+
+    monkeypatch.setattr(io_mod, "append_row", spy)
+    ledger = tmp_path / "clv_ledger.jsonl"
+    bet = record_bet("nba", "A @ B", "home", "FD", 2.50, path=ledger)
+    settled = settle_closing_line(bet, 1.80, 2.20)
+    out = append_settlement(settled, path=ledger)
+    # second append_row call is the settled twin (first was the open record).
+    assert len(seen) == 2
+    seen_row, seen_path = seen[1]
+    assert seen_path == ledger
+    assert seen_row == settled == out
+
+
+def test_write_falls_back_when_lock_layer_broken(tmp_path, monkeypatch):
+    """If clv_ledger_io.append_row raises, the row must still land via the
+    original direct-write fallback (placing/grading never breaks)."""
+    import scripts.platformkit.clv_ledger_io as io_mod
+
+    def boom(row, *, path=None):
+        raise RuntimeError("lock layer down")
+
+    monkeypatch.setattr(io_mod, "append_row", boom)
+    ledger = tmp_path / "clv_ledger.jsonl"
+    rec = record_bet("nba", "A @ B", "home", "FD", 2.50, stake=3.0, path=ledger)
+    on_disk = [json.loads(ln) for ln in
+               ledger.read_text(encoding="utf-8").splitlines() if ln.strip()]
+    assert on_disk == [rec]  # fallback wrote the identical row

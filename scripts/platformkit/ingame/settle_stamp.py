@@ -1,0 +1,168 @@
+"""scripts.platformkit.ingame.settle_stamp -- settled-OUTCOME stamp for the grade store (W3).
+
+THE GAP THIS CLOSES: inplay_aggregate_grade's OUTCOME arm needs a settled binary label
+(home_win in {0,1}) on each game's grade rows; without it the pool stays
+INSUFFICIENT_DATA FOREVER, no matter how many games are captured. This module stamps that
+label ONCE, at FINAL, onto the per-game grade store:
+  data/cache/ingame_grade/<sport>/<game_id>.jsonl
+
+  stamp_final(sport, game_id, *, home_win=None, ev=None, grade_dir=None) -> dict
+     Append ONE settle row {"sport","game_id","ts","settled":True,"home_win":0|1,...} to
+     the game's grade file IFF the game is FINAL and not already stamped. home_win may be
+     given directly (0/1) or derived from a FINAL ESPN event dict `ev` (final scores). If
+     the game is not final / the outcome is unreadable, NOTHING is written (status='skipped').
+     IDEMPOTENT: a second call for an already-stamped game is a no-op (status='already').
+
+LEAK-FREE (binding): the outcome is a LABEL stamped ONLY at settle (ESPN FINAL). It is
+NEVER a feature -- the captured model_prob / market_prob rows are written live, before the
+outcome is known, and the aggregate grader scores them against this held-out label. The
+final close tick is excluded from scoring upstream. We never infer a label from a non-final
+score state (that would risk grading against a fabricated outcome).
+
+REUSES live_grade's atomic append discipline + grade-path convention so the stamp row lands
+in the SAME file the aggregate OUTCOME arm reads (_OUTCOME_KEYS includes 'home_win').
+
+INVARIANTS: build only under scripts/platformkit/ingame/; <=300 LOC; ASCII only; no network
+at import; no data/registry write, no flag flip, no autostart; never edits live_grade
+(reuses its helpers) / inplay_aggregate_grade / odds_provider / predict_service / domains /
+src / kernel.
+
+Per-file test:
+  cd /c/Users/neelj/nba-ai-system && python -m pytest tests/platformkit/ingame/test_settle_stamp.py -q
+"""
+from __future__ import annotations
+
+import json
+import logging
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Dict, Optional
+
+from scripts.platformkit.ingame import live_grade as _lg
+from scripts.platformkit.ingame import settled_finals as _sf
+
+logger = logging.getLogger(__name__)
+
+
+def _iso(now: Optional[datetime]) -> str:
+    d = now if now is not None else datetime.now(timezone.utc)
+    if d.tzinfo is None:
+        d = d.replace(tzinfo=timezone.utc)
+    return d.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _grade_path(sport: str, game_id: str, grade_dir: Optional[Path]) -> Path:
+    base = Path(grade_dir) if grade_dir is not None else _lg.DEFAULT_GRADE_DIR
+    return _lg._grade_path(sport, game_id, base)  # same convention the grader reads
+
+
+def already_stamped(path: Path) -> bool:
+    """True iff any row in the grade file already carries a settled home_win label.
+
+    Idempotency guard: scans for a row with settled==True OR a home_win in {0,1}. Never
+    raises (an unreadable / missing file -> not stamped).
+    """
+    if not path.is_file():
+        return False
+    try:
+        with path.open("r", encoding="utf-8") as fh:
+            for raw in fh:
+                raw = raw.strip()
+                if not raw:
+                    continue
+                try:
+                    rec = json.loads(raw)
+                except json.JSONDecodeError:
+                    continue
+                if not isinstance(rec, dict):
+                    continue
+                if rec.get("settled") is True:
+                    return True
+                hw = rec.get("home_win")
+                try:
+                    if hw is not None and float(hw) in (0.0, 1.0):
+                        return True
+                except (TypeError, ValueError):
+                    continue
+    except Exception as exc:  # noqa: BLE001 -- unreadable file -> treat as not stamped
+        logger.debug("already_stamped read failed %s: %s", path, exc)
+    return False
+
+
+def _home_win_from_event(ev: Dict[str, Any]) -> Optional[float]:
+    """Derive binary home_win from a FINAL ESPN event dict, or None.
+
+    Only returns a label when the event is FINAL (settled_finals._is_final) AND both final
+    scores are readable AND not a tie. A non-final / tied / unreadable event -> None (we
+    never stamp a fabricated or premature label).
+    """
+    if not isinstance(ev, dict) or not _sf._is_final(ev):
+        return None
+    comp = (ev.get("competitions") or [{}])[0]
+    hs = as_ = None
+    for c in comp.get("competitors", []) or []:
+        try:
+            sc = float(c.get("score"))
+        except (TypeError, ValueError):
+            return None
+        if c.get("homeAway") == "home":
+            hs = sc
+        elif c.get("homeAway") == "away":
+            as_ = sc
+    if hs is None or as_ is None or hs == as_:
+        return None
+    return 1.0 if hs > as_ else 0.0
+
+
+def _coerce_home_win(home_win: Any) -> Optional[float]:
+    try:
+        v = float(home_win)
+    except (TypeError, ValueError):
+        return None
+    return v if v in (0.0, 1.0) else None
+
+
+def stamp_final(sport: str, game_id: str, *,
+                home_win: Optional[Any] = None,
+                ev: Optional[Dict[str, Any]] = None,
+                now: Optional[datetime] = None,
+                grade_dir: Optional[Path] = None) -> Dict[str, Any]:
+    """Stamp the settled binary home_win label onto a game's grade file ONCE, at FINAL.
+
+    The label comes from `home_win` (0/1) if given, else is derived from a FINAL ESPN event
+    dict `ev`. If neither yields a {0,1} label (game not final / unreadable / tie) NOTHING is
+    written (status='skipped'). IDEMPOTENT: an already-stamped game is a no-op
+    (status='already'). On a fresh stamp, appends one settle row carrying 'home_win' (which
+    inplay_aggregate_grade's OUTCOME arm reads) and 'settled':True. NEVER raises. Returns a
+    summary dict; UNITS / label only -- no $ field, edge_claimed False, leak-free (label-only).
+    """
+    path = _grade_path(sport, game_id, grade_dir)
+    summary: Dict[str, Any] = {
+        "sport": str(sport).lower(), "game_id": str(game_id), "path": str(path),
+        "status": "skipped", "home_win": None, "edge_claimed": False,
+    }
+    try:
+        hw = _coerce_home_win(home_win) if home_win is not None else None
+        if hw is None and ev is not None:
+            hw = _home_win_from_event(ev)
+        if hw is None:
+            summary["reason"] = "no_settled_outcome"
+            return summary
+        if already_stamped(path):
+            summary.update({"status": "already", "home_win": hw,
+                            "reason": "idempotent_no_op"})
+            return summary
+        row = {
+            "sport": str(sport).lower(), "game_id": str(game_id), "ts": _iso(now),
+            "settled": True, "home_win": float(hw),
+            "state_summary": "FINAL", "edge_claimed": False,
+        }
+        _lg._append_atomic(path, json.dumps(row, ensure_ascii=True))
+        summary.update({"status": "stamped", "home_win": float(hw)})
+    except Exception as exc:  # noqa: BLE001 -- a stamp failure must never sink the loop
+        logger.warning("stamp_final(%s/%s) failed: %s", sport, game_id, exc)
+        summary["reason"] = "error: %s" % type(exc).__name__
+    return summary
+
+
+__all__ = ["already_stamped", "stamp_final"]

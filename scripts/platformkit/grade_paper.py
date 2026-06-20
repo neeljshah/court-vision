@@ -1,41 +1,55 @@
 """scripts.platformkit.grade_paper -- auto-settle/grade PAPER bets once games end.
 
-Takes the OPEN paper bets in the CLV ledger, fetches each game's FINAL result from
-the keyless ESPN scoreboard (reusing live_board), and -- ONLY for genuinely final
-games -- appends a SETTLED twin carrying the actual win/loss, paper P&L, and CLV.
-grade_summary() is the honest scoreboard (hit-rate, paper ROI, mean CLV,
-%-beat-close, by sport + market) of whether the paper strategy actually works.
+HONESTY CONTRACT: NEVER fabricates an outcome or close. Games settled ONLY when
+state in {post,final} + both scores present. Append-only + settle_key => idempotent.
+Paper only (executed=False). CLV via clv_ledger, never re-derived.
 
-HONESTY CONTRACT (binding): NEVER fabricates an outcome or close -- a game is settled
-ONLY when feed state is in {"post","final"} AND both scores are present; else SKIPPED
-as pending. Append-only + a settle_key guard => IDEMPOTENT (no double-settle). Paper
-only (every twin executed=False; no money/book API). CLV reuses
-clv_ledger.settle_closing_line/devig -- never re-derived; a true close is rarely
-stored, so we use the LAST-OBSERVED price as a LABELLED proxy (clv_is_proxy=True), and
-with no price grade win/loss only (clv_pct=None). No $-edge claim; paper ROI is a
-small-N hypothesis, CLV is the honest yardstick.
+CLOSE RESOLUTION PRECEDENCE (grade_one):
+  1. closing_decimal_* on bet         -> clv_is_proxy=False (true close)
+  2. line_store TRUE close            -> clv_is_proxy=False
+  3. line_store PROXY close           -> clv_is_proxy=True
+  4. last_decimal_* / close_proxy_*   -> clv_is_proxy=True
+  5. Nothing -> clv_pct=None, clv_is_proxy=False (EXPLICIT), clv_status="no_close":
+     CLV genuinely unavailable -> row renders VOID/pending, NEVER an inferred
+     "(proxy)" label (that would fabricate confidence). win/loss still set.
 
+UNITS ONLY: no dollar pnl / roi / stake field is ever written; the unit record is
+``unit_result`` (a pure unit count at the taken price). An equal "final" score for
+a sport that cannot draw (NBA/MLB) -> outcome="void", never a fabricated push/win.
 Build only under scripts/platformkit/; <=300 LOC; no secrets; no $-edge claim.
 """
 from __future__ import annotations
 
 import json
+import logging
 import re
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from scripts.platformkit import clv_ledger as _clv
+from scripts.platformkit.clv_settle_write import write_settlement as _write_settlement
 from scripts.platformkit.frontend import live_board as _lb
+from scripts.platformkit.grade_paper_close import close_from_store as _close_from_store
+from scripts.platformkit.grade_paper_close import fetch_boards as _fetch_boards
+from scripts.platformkit.grade_paper_close import load_predictions as _load_predictions
+from scripts.platformkit.grade_paper_summary import grade_summary
 
-# Sports we know how to fetch finals for (ESPN keyless scoreboard via live_board).
-_KNOWN_SPORTS = ("mlb", "nba", "soccer_intl", "soccer")
+logger = logging.getLogger(__name__)
+
 _FINAL_STATES = ("post", "final")
 
 
 def _settle_key(bet: Dict[str, Any]) -> str:
-    """Stable identity for one open bet, used to dedupe settlements (idempotency)."""
-    return "|".join(str(bet.get(k, "")) for k in
-                    ("sport", "matchup", "side", "taken_book", "taken_decimal", "ts"))
+    """Stable identity for one open bet, used to dedupe settlements (idempotency).
+
+    Prefers the durable ``bet_id`` (independent of the write ts) so a same-bet
+    re-record across a tick / UTC-midnight boundary settles ONCE. Falls back to
+    the legacy ts-bearing tuple only for rows minted before bet_id existed.
+    """
+    if bet.get("bet_id"):
+        return str(bet["bet_id"])
+    keys = ("sport", "matchup", "side", "taken_book", "taken_decimal", "ts")
+    return "|".join(str(bet.get(k, "")) for k in keys)
 
 
 def _norm_tokens(text: str) -> List[str]:
@@ -90,89 +104,104 @@ def _find_final_game(bet: Dict[str, Any], games: List[Dict[str, Any]]
     return None
 
 
-def _outcome(side: str, home_score: int, away_score: int) -> Optional[str]:
-    """Moneyline win/loss for the backed two-way *side*. None on a draw (push)."""
+# Sports that can draw in regulation (real push). NBA/MLB cannot -> equal final = void.
+_CAN_DRAW = ("soccer", "soccer_intl")
+
+
+def _outcome(sport: str, side: str, home_score: int, away_score: int) -> Optional[str]:
+    """Moneyline result for the backed two-way *side*.
+
+    Returns "win" / "loss"; "push" only for a sport that can draw (soccer 90-min);
+    "void" when an equal final score appears for a sport that CANNOT draw (a data
+    glitch / not-actually-final feed -- never fabricated into a push or a win).
+    """
     if home_score == away_score:
-        return None  # draw -> push (refund); soccer 90-min can draw
+        if str(sport).lower() in _CAN_DRAW:
+            return "push"  # legitimate draw -> refund
+        return "void"  # NBA/MLB cannot tie: contradictory data, not a result
     home_won = home_score > away_score
     if side == "home":
         return "win" if home_won else "loss"
     return "win" if not home_won else "loss"
 
 
-def _paper_pnl(outcome: Optional[str], taken_decimal: float, stake: float) -> float:
-    """Paper P&L for a settled moneyline bet. Push -> 0.0 (stake returned)."""
-    if outcome == "win":
-        return round((float(taken_decimal) - 1.0) * float(stake), 6)
-    if outcome == "loss":
-        return round(-float(stake), 6)
-    return 0.0  # push
+def _unit_result(outcome: Optional[str], taken_decimal: float,
+                 stake_units: float) -> Optional[float]:
+    """UNITS won/lost at the taken price (NOT dollars). Push -> 0.0; void -> None.
 
-
-def grade_one(bet: Dict[str, Any], game: Dict[str, Any]) -> Dict[str, Any]:
-    """Build a SETTLED twin of *bet* from a FINAL *game*. Pure (no I/O).
-
-    Win/loss is the actual final score vs the bet's home/away side. CLV reuses
-    clv_ledger.settle_closing_line against a (proxy) close when a price is available;
-    otherwise clv_pct is left None (win/loss only).
+    win -> +(decimal-1)*stake_units; loss -> -stake_units; push -> 0.0. A pure unit
+    count -- NO bankroll, NO money -- so history shows a unit record, never dollars.
     """
-    hs, as_ = int(game["home_score"]), int(game["away_score"])
-    side = str(bet.get("side", "")).strip().lower()
-    outcome = _outcome(side, hs, as_)
-    stake = float(bet.get("stake", 0.0) or 0.0)
-    taken_decimal = float(bet["taken_decimal"])
+    if outcome == "win":
+        return round((float(taken_decimal) - 1.0) * float(stake_units), 6)
+    if outcome == "loss":
+        return round(-float(stake_units), 6)
+    if outcome == "push":
+        return 0.0
+    return None  # void / undecided -> no unit result
 
+
+def grade_one(
+    bet: Dict[str, Any],
+    game: Dict[str, Any],
+    *,
+    _line_store_base: Optional[Path] = None,
+) -> Dict[str, Any]:
+    """SETTLED twin of *bet* from FINAL *game* (see module CLOSE RESOLUTION
+    PRECEDENCE). *_line_store_base* overrides the history dir for tests."""
+    hs, as_ = int(game["home_score"]), int(game["away_score"])
+    sport = str(bet.get("sport", "")).strip().lower()
+    side = str(bet.get("side", "")).strip().lower()
+    outcome = _outcome(sport, side, hs, as_)
+    stake_units = float(bet.get("stake_units", 1.0) or 1.0)
+    taken_decimal = float(bet["taken_decimal"])
     settled = dict(bet)
-    # CLV: use a stored closing line if present, else the last-observed market price
-    # as a labelled proxy. clv_ledger fills fair_close / clv_pct / beat_close.
+
+    # Level 1: closing decimals already on the bet. clv_is_proxy is EXPLICIT.
     ch = bet.get("closing_decimal_home")
     ca = bet.get("closing_decimal_away")
-    is_proxy = False
-    if ch is None or ca is None:
+    is_proxy: bool = False
+
+    if ch is None or ca is None:  # Levels 2+3: line_store captured close.
+        sr = _close_from_store(bet, base=_line_store_base)
+        if sr is not None:
+            ch, ca, is_true = sr
+            is_proxy = not is_true
+
+    if ch is None or ca is None:  # Level 4: explicit last-observed proxy on bet.
         ch = bet.get("last_decimal_home") or bet.get("close_proxy_home")
         ca = bet.get("last_decimal_away") or bet.get("close_proxy_away")
-        is_proxy = ch is not None and ca is not None
+        if ch is not None and ca is not None:
+            is_proxy = True
+
     if ch is not None and ca is not None:
         settled = _clv.settle_closing_line(settled, float(ch), float(ca))
         settled["clv_is_proxy"] = bool(is_proxy)
+        settled["clv_status"] = "proxy" if is_proxy else "true_close"
     else:
+        # Level 5 (PE-P0-03): NO close -> CLV genuinely unavailable. clv_pct=None,
+        # clv_is_proxy EXPLICITLY False (proxy=True would fabricate confidence) +
+        # clv_status="no_close" so the UI renders VOID/pending, not "(proxy)".
         settled["status"] = "settled"
         settled["settled_at"] = _clv._now_iso()
         settled["clv_pct"] = None
         settled["beat_close"] = None
-        settled["clv_note"] = "no closing line or last-observed price; win/loss only"
+        settled["clv_is_proxy"] = False
+        settled["clv_status"] = "no_close"
+        settled["clv_note"] = "no closing line captured; CLV unavailable (win/loss only)"
 
     settled["graded"] = True
-    settled["outcome"] = outcome if outcome is not None else "push"
+    settled["outcome"] = outcome  # win | loss | push | void (never fabricated)
+    if outcome == "void":
+        settled["void_reason"] = "equal_final_score_for_non_draw_sport"
     settled["home_score"] = hs
     settled["away_score"] = as_
-    settled["pnl"] = _paper_pnl(outcome, taken_decimal, stake)
-    settled["executed"] = False  # paper invariant preserved
+    # UNITS ONLY -- never a dollar pnl. None for void/undecided.
+    settled["unit_result"] = _unit_result(outcome, taken_decimal, stake_units)
+    settled["executed"] = False
     settled["settle_key"] = _settle_key(bet)
+    settled["bet_id"] = bet.get("bet_id") or _clv.bet_id(bet)
     return settled
-
-
-def _load_predictions(predictions_path: Optional[Path]) -> Dict[str, Dict[str, Any]]:
-    """Optional predictions store -> {matchup: row}. Tolerant: missing file -> {}."""
-    if predictions_path is None:
-        predictions_path = (_clv.DEFAULT_LEDGER.parent / "paper_predictions.jsonl")
-    p = Path(predictions_path)
-    if not p.exists():
-        return {}
-    out: Dict[str, Dict[str, Any]] = {}
-    with p.open("r", encoding="utf-8") as fh:
-        for line in fh:
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                row = json.loads(line)
-            except json.JSONDecodeError:
-                continue
-            mk = str(row.get("matchup", ""))
-            if mk:
-                out[mk] = row
-    return out
 
 
 def grade_open_bets(
@@ -191,27 +220,21 @@ def grade_open_bets(
     ledger_path = Path(ledger_path) if ledger_path else _clv.DEFAULT_LEDGER
     rows = _clv.load_ledger(ledger_path)
     open_bets = [r for r in rows if r.get("status") == "open"]
-    already = {r.get("settle_key") for r in rows if r.get("settle_key")}
-    # Optional enrichment: pull a stored closing-line proxy from the predictions store.
-    preds = _load_predictions(predictions_path)
+    # Dedup on the durable settle identity AND bet_id of already-settled rows, so a
+    # re-record settles ONCE regardless of which key a prior twin used.
+    settled_rows = [r for r in rows if r.get("status") == "settled"]
+    already = {r.get("settle_key") for r in settled_rows if r.get("settle_key")}
+    already |= {r.get("bet_id") for r in settled_rows if r.get("bet_id")}
+    preds = _load_predictions(predictions_path)  # optional proxy-close enrichment
 
     fetch = fetch_finals if fetch_finals is not None else _lb.todays_live_games
-    # Fetch each needed sport's scoreboard once.
     sports = sorted({str(b.get("sport", "")).lower() for b in open_bets})
-    boards: Dict[str, List[Dict[str, Any]]] = {}
-    feed_status: Dict[str, str] = {}
-    for sp in sports:
-        if not sp:
-            continue
-        try:
-            payload = fetch(sp)
-        except Exception:  # noqa: BLE001 - one bad feed never sinks the pass
-            payload = {"status": "unavailable", "games": []}
-        feed_status[sp] = str(payload.get("status", "unknown"))
-        boards[sp] = list(payload.get("games") or [])
+    boards, feed_status = _fetch_boards(fetch, sports)
 
     settled_now: List[Dict[str, Any]] = []
     pending: List[Dict[str, Any]] = []
+    # Pre-load the seen-set once so write_settlement need not re-scan per row.
+    _seen_keys: set = set()
     for bet in open_bets:
         key = _settle_key(bet)
         if key in already:
@@ -230,11 +253,18 @@ def grade_open_bets(
                             "reason": "no final game matched"})
             continue
         settled = grade_one(bet, game)
-        _clv.append_settlement(settled, path=ledger_path)
+        # Route through the status-aware dedup wrapper (be-r2-w1-clv-writer-dedup):
+        # a tick-overlap or daemon-restart double-fire on the same (bet_id|settled)
+        # pair is now a no-op instead of appending a second identical row.
+        _write_settlement(settled, path=ledger_path, _seen=_seen_keys)
         already.add(key)
+        if settled.get("bet_id"):
+            already.add(settled["bet_id"])
         settled_now.append({"matchup": settled.get("matchup"), "sport": sp,
                             "side": settled.get("side"), "outcome": settled["outcome"],
-                            "pnl": settled["pnl"], "clv_pct": settled.get("clv_pct"),
+                            "unit_result": settled.get("unit_result"),
+                            "clv_pct": settled.get("clv_pct"),
+                            "clv_status": settled.get("clv_status"),
                             "clv_is_proxy": settled.get("clv_is_proxy", False)})
 
     return {
@@ -244,50 +274,10 @@ def grade_open_bets(
         "feed_status": feed_status,
         "settled": settled_now,
         "pending": pending,
-        "honest_note": ("Only genuinely FINAL games are settled; no outcome or close "
-                        "is fabricated. Paper only (executed=False); CLV may be a "
-                        "labelled last-price proxy. No $-edge is claimed."),
+        "honest_note": ("Only FINAL games settled; no outcome/close fabricated. Paper "
+                        "only (executed=False); CLV may be a labelled proxy. UNITS "
+                        "ONLY -- no $-edge claimed."),
     }
-
-
-def _grade_bucket(rows_in: List[Dict[str, Any]]) -> Dict[str, Any]:
-    """Hit-rate / paper-ROI / CLV stats over a set of graded rows. Pure."""
-    dec = [r for r in rows_in if r.get("outcome") in ("win", "loss")]
-    w = sum(1 for r in dec if r.get("outcome") == "win")
-    st = sum(float(r.get("stake", 0.0) or 0.0) for r in rows_in)
-    pl = sum(float(r.get("pnl", 0.0) or 0.0) for r in rows_in)
-    cv = [float(r["clv_pct"]) for r in rows_in if r.get("clv_pct") is not None]
-    return {
-        "n": len(rows_in),
-        "n_decided": len(dec),
-        "hit_rate": round(100.0 * w / len(dec), 4) if dec else None,
-        "paper_roi": round(100.0 * pl / st, 4) if st > 0 else None,
-        "total_stake": round(st, 6),
-        "total_pnl": round(pl, 6),
-        "n_with_clv": len(cv),
-        "mean_clv_pct": round(sum(cv) / len(cv), 6) if cv else None,
-        "pct_beat_close": (round(100.0 * sum(1 for c in cv if c > 0) / len(cv), 4)
-                           if cv else None),
-    }
-
-
-def grade_summary(ledger_path: Optional[Path] = None) -> Dict[str, Any]:
-    """Honest scoreboard over GRADED rows (graded=True): hit-rate, paper ROI, CLV,
-    %-beat-close, by sport + market. ROI = total pnl / total stake (paper)."""
-    ledger_path = Path(ledger_path) if ledger_path else _clv.DEFAULT_LEDGER
-    rows = [r for r in _clv.load_ledger(ledger_path) if r.get("graded")]
-    if not rows:
-        return {"n": 0, "hit_rate": None, "paper_roi": None, "mean_clv_pct": None,
-                "pct_beat_close": None, "by_sport": {}, "by_market": {}}
-    out = dict(_grade_bucket(rows))
-    out["by_sport"] = {sp: _grade_bucket([r for r in rows if str(r.get("sport")) == sp])
-                       for sp in sorted({str(r.get("sport", "unknown")) for r in rows})}
-    out["by_market"] = {mk: _grade_bucket([r for r in rows
-                                           if str(r.get("market", "moneyline")) == mk])
-                        for mk in sorted({str(r.get("market", "moneyline")) for r in rows})}
-    out["honest_note"] = ("Paper track record. ROI is small-N + paper, a hypothesis to "
-                          "forward-test -- NOT a proven edge. CLV is the honest yardstick.")
-    return out
 
 
 def _main(argv: Optional[List[str]] = None) -> int:
@@ -299,23 +289,17 @@ def _main(argv: Optional[List[str]] = None) -> int:
     a = ap.parse_args(argv)
     ledger = Path(a.ledger) if a.ledger else None
     graded = grade_open_bets(ledger, Path(a.predictions) if a.predictions else None)
-    print("GRADE PASS (paper, executed_any=False):")
-    print("  open=%d settled_now=%d pending=%d"
+    print("GRADE PASS (paper, executed_any=False): open=%d settled_now=%d pending=%d"
           % (graded["n_open"], graded["n_settled_now"], graded["n_pending"]))
-    print("  feed_status=%s" % json.dumps(graded["feed_status"]))
     for s in graded["settled"]:
-        print("  SETTLED %s [%s] %s pnl=%s clv=%s%s"
-              % (s["matchup"], s["side"], s["outcome"], s["pnl"], s["clv_pct"],
-                 " (proxy)" if s.get("clv_is_proxy") else ""))
+        print("  SETTLED %s [%s] %s units=%s clv=%s%s"
+              % (s["matchup"], s["side"], s["outcome"], s.get("unit_result"),
+                 s["clv_pct"], " (proxy)" if s.get("clv_is_proxy") else ""))
     print("SUMMARY:", json.dumps(grade_summary(ledger), indent=2, default=str))
     return 0
 
 
-__all__ = [
-    "grade_open_bets",
-    "grade_summary",
-    "grade_one",
-]
+__all__ = ["grade_open_bets", "grade_summary", "grade_one"]
 
 
 if __name__ == "__main__":

@@ -23,6 +23,7 @@ from typing import Dict, List, Optional, Sequence
 
 import numpy as np
 
+from domains.basketball_nba.team_name_resolver import resolve as _resolve_nba
 from scripts.platformkit.proof_nba.ml_accuracy import _HFA, _INIT, _K, _p_home
 from scripts.platformkit.proof_nba.asof_box_accuracy import _possessions, load_box
 
@@ -153,6 +154,19 @@ class NBAPredictor:
         z = math.log(pc / (1.0 - pc)) / t
         return 1.0 / (1.0 + math.exp(-z)) if z >= 0 else math.exp(z) / (1.0 + math.exp(z))
 
+    # ------------------------------------------------------------------
+    def _resolve(self, name: str) -> Optional[str]:
+        """Resolve a slate team name (ESPN displayName or abbreviation) to a corpus key.
+
+        Returns the corpus key on success, or None if the name cannot be resolved
+        to any known NBA franchise.  None MUST be treated as unmatched by callers
+        (no init-rating fallback).
+        """
+        candidate = name.strip().upper() if isinstance(name, str) else ""
+        if candidate in self.elo:
+            return candidate
+        return _resolve_nba(name)
+
     def _init(self, t: str) -> None:
         self.elo.setdefault(t, _INIT); self.pace.setdefault(t, _PACE0)
         self.offp.setdefault(t, _PPP0); self.defp.setdefault(t, _PPP0)
@@ -254,6 +268,40 @@ class NBAPredictor:
                             "temperature recalibrator (ECE 0.059->0.012). A live book also sees "
                             "the score. Forecaster quality, no $ edge."),
         }
+
+    def predict_safe(self, home_raw: str, away_raw: str,
+                     total_lines: Sequence[float] = _DEFAULT_LINES) -> Dict:
+        """Resolve slate names then predict; signal unmatched=True when name unknown.
+
+        Accepts ESPN displayName or abbreviation (e.g. "Boston Celtics", "BOS",
+        "GS", "NY", "SA").  When a name cannot be resolved to a corpus key the
+        response carries unmatched=True so the producer can skip/mark unavailable
+        rather than emit a fabricated init-rating probability.
+
+        When both names resolve, delegates to predict() with the corpus keys.
+        """
+        h_key = self._resolve(home_raw)
+        a_key = self._resolve(away_raw)
+        unmatched_names = []
+        if h_key is None:
+            unmatched_names.append(home_raw)
+        if a_key is None:
+            unmatched_names.append(away_raw)
+        if unmatched_names:
+            return {
+                "sport": "nba",
+                "home_raw": home_raw, "away_raw": away_raw,
+                "unmatched": True,
+                "unmatched_names": unmatched_names,
+                "home_key": h_key, "away_key": a_key,
+                "honest_note": (
+                    "Team name(s) could not be resolved to the NBA Elo corpus. "
+                    "No prediction emitted -- init-rating fabrication suppressed. "
+                    "Calibration only; no $ edge."),
+            }
+        return {**self.predict(h_key, a_key, total_lines),
+                "home_raw": home_raw, "away_raw": away_raw,
+                "unmatched": False}
 
     def predict(self, home: str, away: str,
                 total_lines: Sequence[float] = _DEFAULT_LINES) -> Dict:

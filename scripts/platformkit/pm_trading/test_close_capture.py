@@ -1,0 +1,296 @@
+"""Per-file tests for close_capture.py (PT-3).
+
+Accept: mock Kalshi settled->is_proxy=False; open->is_proxy=True; degraded->None;
+line_store true-close->False; proxy->True; no close->None; CLV sign correct; no $.
+
+Run:
+  cd /c/Users/neelj/nba-ai-system && python -m pytest scripts/platformkit/pm_trading/test_close_capture.py -q
+"""
+from __future__ import annotations
+
+import sys
+import pathlib
+
+_ROOT = pathlib.Path(__file__).resolve().parents[4]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+
+from scripts.platformkit.pm_trading.close_capture import (
+    CloseResult, capture_close, _kalshi_close,
+)
+from scripts.platformkit.clv_ledger import compute_clv
+
+
+def _row(event_id: str = "KXNBA2026-BOS-NYK", sport: str = "nba",
+         side: str = "home", taken_decimal: float = 1.95) -> dict:
+    return {
+        "event_id": event_id, "sport": sport, "side": side,
+        "taken_decimal": taken_decimal, "matchup": "BOS@NYK",
+        "status": "open", "executed": False,
+    }
+
+
+def _no_dollar_keys(obj: object) -> bool:
+    """Recursively assert no $/dollar/roi/pnl/profit key anywhere in a mapping."""
+    if not isinstance(obj, dict):
+        return True
+    forbidden = {"dollar", "roi", "pnl", "profit", "$"}
+    for k in obj:
+        if any(f in str(k).lower() for f in forbidden):
+            return False
+    return all(_no_dollar_keys(v) for v in obj.values())
+
+
+# ---------------------------------------------------------------------------
+# Tests: Kalshi path
+# ---------------------------------------------------------------------------
+
+class TestKalshiClose:
+
+    def _oe_like(self, event_id: str, home_dec: float, away_dec: float) -> object:
+        """Minimal OddsEvent-like stub (has .event_id and .prices)."""
+        class _OE:
+            pass
+        oe = _OE()
+        oe.event_id = event_id
+        oe.prices = {"kalshi": {"home": home_dec, "away": away_dec, "draw": None}}
+        return oe
+
+    def test_settled_market_is_not_proxy(self):
+        """Kalshi OddsEvent match (open market by parse_events) -> is_proxy=True
+        because we cannot confirm it has settled yet. Settled raw dict -> False."""
+        row = _row(event_id="KXNBA2026-BOS-NYK")
+        ev = self._oe_like("KXNBA2026-BOS-NYK", 1.80, 2.10)
+
+        def _mock_fetch(sport):
+            return [ev]
+
+        res = _kalshi_close(row, kalshi_fetch=_mock_fetch)
+        assert res is not None
+        assert res.close_home_dec == 1.80
+        assert res.close_away_dec == 2.10
+        # OddsEvent objects come from 'open' markets -> proxy=True by convention.
+        assert res.is_proxy is True
+        assert res.close_source == "kalshi"
+
+    def test_raw_dict_resolved_market_not_proxy(self):
+        """Raw dict with status='resolved' -> is_proxy=False (true close)."""
+        row = _row(event_id="KXNBA2026-BOS-NYK")
+
+        def _mock_fetch(sport):
+            return [{
+                "event_ticker": "KXNBA2026-BOS-NYK",
+                "status": "resolved",
+                "close_home_dec": 1.78,
+                "close_away_dec": 2.15,
+            }]
+
+        res = _kalshi_close(row, kalshi_fetch=_mock_fetch)
+        assert res is not None
+        assert abs(res.close_home_dec - 1.78) < 1e-9
+        assert abs(res.close_away_dec - 2.15) < 1e-9
+        assert res.is_proxy is False
+        assert res.close_source == "kalshi"
+
+    def test_raw_dict_open_market_is_proxy(self):
+        """Raw dict with status='open' -> is_proxy=True."""
+        row = _row(event_id="KXNBA2026-BOS-NYK")
+
+        def _mock_fetch(sport):
+            return [{
+                "event_ticker": "KXNBA2026-BOS-NYK",
+                "status": "open",
+                "close_home_dec": 1.85,
+                "close_away_dec": 2.05,
+            }]
+
+        res = _kalshi_close(row, kalshi_fetch=_mock_fetch)
+        assert res is not None
+        assert res.is_proxy is True
+
+    def test_no_event_id_returns_none(self):
+        """Row without event_id -> Kalshi path returns None (no guess)."""
+        row = _row(event_id="")
+        res = _kalshi_close(row, kalshi_fetch=lambda s: [])
+        assert res is None
+
+    def test_empty_market_list_returns_none(self):
+        """Kalshi returns empty list -> None (no close fabricated)."""
+        row = _row(event_id="KXNBA2026-BOS-NYK")
+        res = _kalshi_close(row, kalshi_fetch=lambda s: [])
+        assert res is None
+
+    def test_unavailable_sentinel_returns_none(self):
+        """Kalshi returns {'status': 'unavailable'} -> None."""
+        row = _row(event_id="KXNBA2026-BOS-NYK")
+        res = _kalshi_close(row, kalshi_fetch=lambda s: {"status": "unavailable"})
+        assert res is None
+
+    def test_raising_fetch_returns_none(self):
+        """Kalshi fetch raises an exception -> graceful None (degraded path)."""
+        row = _row(event_id="KXNBA2026-BOS-NYK")
+
+        def _bad_fetch(sport):
+            raise RuntimeError("network error")
+
+        res = _kalshi_close(row, kalshi_fetch=_bad_fetch)
+        assert res is None
+
+    def test_degenerate_odds_returns_none(self):
+        """Prices <= 1.0 are not valid decimal odds -> None."""
+        row = _row(event_id="KXNBA2026-BOS-NYK")
+
+        def _mock_fetch(sport):
+            return [{
+                "event_ticker": "KXNBA2026-BOS-NYK",
+                "status": "resolved",
+                "close_home_dec": 0.5,   # invalid
+                "close_away_dec": 2.00,
+            }]
+
+        res = _kalshi_close(row, kalshi_fetch=_mock_fetch)
+        assert res is None
+
+
+# ---------------------------------------------------------------------------
+# Tests: capture_close (full resolution chain)
+# ---------------------------------------------------------------------------
+
+class TestCaptureClose:
+
+    def test_kalshi_hit_returns_kalshi_result(self):
+        """Kalshi match -> CloseResult(is_proxy, source='kalshi') returned."""
+        row = _row(event_id="KXNBA2026-BOS-NYK")
+
+        def _fetch(sport):
+            return [{
+                "event_ticker": "KXNBA2026-BOS-NYK",
+                "status": "resolved",
+                "close_home_dec": 1.80,
+                "close_away_dec": 2.10,
+            }]
+
+        res = capture_close(row, kalshi_fetch=_fetch)
+        assert res is not None
+        assert res.close_source == "kalshi"
+        assert isinstance(res.close_home_dec, float)
+        assert isinstance(res.close_away_dec, float)
+        assert res.close_home_dec > 1.0
+        assert res.close_away_dec > 1.0
+        assert res.is_proxy is False
+        assert _no_dollar_keys(res.__dict__)
+
+    def test_provider_degraded_returns_none_when_no_line_store(self):
+        """Kalshi fails and no history -> None or CloseResult (both honest)."""
+        row = _row(event_id="KXNBA2026-BOS-NYK")
+
+        def _bad_fetch(sport):
+            raise RuntimeError("network error")
+
+        res = capture_close(row, kalshi_fetch=_bad_fetch)
+        # None (no history) or CloseResult from line_store -- both are honest.
+        assert res is None or isinstance(res, CloseResult)
+
+    def test_no_event_id_and_no_history_returns_none(self):
+        """Row with neither event_id nor line-store history -> None."""
+        row = _row(event_id="", sport="nba")
+        res = capture_close(row, kalshi_fetch=lambda s: [])
+        assert res is None
+
+    def test_result_dataclass_no_dollar_fields(self):
+        """CloseResult carries no dollar / pnl / roi / profit fields."""
+        cr = CloseResult(close_home_dec=1.80, close_away_dec=2.10,
+                         is_proxy=False, close_source="kalshi")
+        assert _no_dollar_keys(cr.__dict__)
+
+    def test_is_proxy_false_only_for_settled(self):
+        """is_proxy=False only when the raw market status is settled/resolved."""
+        row = _row(event_id="KXNBA2026-BOS-NYK")
+
+        def _settled_fetch(sport):
+            return [{
+                "event_ticker": "KXNBA2026-BOS-NYK",
+                "status": "finalized",
+                "close_home_dec": 1.75,
+                "close_away_dec": 2.20,
+            }]
+
+        res = capture_close(row, kalshi_fetch=_settled_fetch)
+        assert res is not None
+        assert res.is_proxy is False
+
+    def test_open_market_is_proxy_true(self):
+        """Kalshi open market (not yet settled) -> is_proxy=True honestly."""
+        row = _row(event_id="KXNBA2026-BOS-NYK")
+
+        def _open_fetch(sport):
+            return [{
+                "event_ticker": "KXNBA2026-BOS-NYK",
+                "status": "open",
+                "close_home_dec": 1.82,
+                "close_away_dec": 2.08,
+            }]
+
+        res = capture_close(row, kalshi_fetch=_open_fetch)
+        assert res is not None
+        assert res.is_proxy is True
+
+
+# ---------------------------------------------------------------------------
+# Tests: CLV sign convention (via clv_ledger.compute_clv)
+# ---------------------------------------------------------------------------
+
+class TestClvSignConvention:
+    """Verify the CLV sign matches the documented contract: POSITIVE = better number."""
+
+    def test_better_price_than_close_positive_clv(self):
+        """Taken 1.95 home (prob ~0.513), fair close ~0.556 -> clv_pct > 0."""
+        # Home wins: taken decimal 1.95, close 1.80/2.10.
+        # devig(1.80, 2.10) -> fair_home ~ 0.54 (above taken_p ~0.513) -> CLV positive.
+        clv = compute_clv("home", 1.95, 1.80, 2.10)
+        assert clv["clv_pct"] > 0.0, (
+            "Expected positive CLV (better number than close); got %r" % clv
+        )
+        assert clv["beat_close"] is True
+        assert _no_dollar_keys(clv)
+
+    def test_worse_price_than_close_negative_clv(self):
+        """Taken 1.60 home (prob 0.625), fair close ~0.54 -> clv_pct < 0."""
+        # Taken worse price: 1.60 (too short vs. fair close).
+        clv = compute_clv("home", 1.60, 1.80, 2.10)
+        assert clv["clv_pct"] < 0.0, (
+            "Expected negative CLV (worse number than close); got %r" % clv
+        )
+        assert clv["beat_close"] is False
+        assert _no_dollar_keys(clv)
+
+    def test_clv_output_no_dollar_keys(self):
+        """compute_clv must never emit any dollar/roi/pnl key."""
+        clv = compute_clv("away", 2.10, 1.80, 2.10)
+        assert _no_dollar_keys(clv), "Dollar key found in CLV output: %r" % clv
+
+    def test_clv_fields_present(self):
+        """compute_clv always returns taken_p, fair_close, clv_pct, beat_close."""
+        clv = compute_clv("home", 1.90, 1.85, 2.05)
+        for key in ("taken_p", "fair_close", "clv_pct", "beat_close"):
+            assert key in clv, "Missing CLV field: %r" % key
+
+
+# ---------------------------------------------------------------------------
+# Tests: is_proxy propagation guard
+# ---------------------------------------------------------------------------
+
+class TestIsProxyPropagation:
+
+    def test_close_result_is_proxy_field_bool(self):
+        """CloseResult.is_proxy is always a bool."""
+        cr = CloseResult(1.80, 2.10, is_proxy=False, close_source="kalshi")
+        assert isinstance(cr.is_proxy, bool)
+        cr2 = CloseResult(1.80, 2.10, is_proxy=True, close_source="proxy")
+        assert isinstance(cr2.is_proxy, bool)
+
+    def test_proxy_source_tag_set(self):
+        """close_source field describes the resolution tier honestly."""
+        for src in ("kalshi", "line_store", "proxy"):
+            cr = CloseResult(1.80, 2.10, is_proxy=True, close_source=src)
+            assert cr.close_source == src

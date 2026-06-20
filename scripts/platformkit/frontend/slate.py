@@ -1,30 +1,35 @@
 """scripts.platformkit.frontend.slate -- honest slate-shaping for the bettor front end.
 
-Reuses the REAL predictor end to end: builds each matchup via
-scripts.platformkit.predict_matchup.build_result on a predictor from
-predictor_jd._build_predictor. NO prediction math is reimplemented here -- this
-module only RESHAPES the predictor's output into a flat row for the table UI and
-derives an HONEST calibration verdict string from the predictor's own honest_note.
+Reshapes domain-predictor output into flat rows for the table UI. No math here.
 
-If a sport's corpus is unavailable (fresh clone, gitignored data), the row carries
-status="unavailable" with a clear note and NO fabricated numbers. Market lines, when
-present, come from the on-disk OddsFeed corpus; absent -> market=None (never faked).
+HONEST: markets are efficient -- NO model edge claimed. The "edge" field is the
+raw prob-vs-line gap (decision support only). Human places every bet manually.
 
-HONEST: markets are efficient -- NO model edge is claimed. Pregame MATCHES the
-devigged close (calibration/sharpness); the "edge" shown is the raw prob-vs-line
-gap for decision support only, NOT a claimed money edge. The human places bets
-manually -- there is no auto-execution anywhere.
+RECENCY + DEAD-MARKET GATE (QA iter 9/10 P1+P2): build_slate drops rows where:
+  tipoff > 6 h past | matchup is 'Yes vs No' binary | market_prob < 0.001 (dead
+  market) | best_odds > 50 (no liquid market). Tipoff 0-6 h past -> stamped
+  stale=True + hours_old=N + status='stale'. Predicates live in board_sanitizer.
 
-INVARIANTS: never edit src/ or kernel/; reuse the domain predictors; <=300 LOC; no secrets.
+INVARIANTS: never edit src/ or kernel/; reuse domain predictors; <=300 LOC.
 """
 from __future__ import annotations
 
 import argparse
 import logging
+from datetime import datetime, timezone
 from typing import Any, Callable, Dict, List, Optional
 
 from scripts.platformkit import odds_shop
 from scripts.platformkit import predict_matchup as pm
+from scripts.platformkit.bestbets.board_sanitizer import (
+    _is_non_sports_binary,
+    _market_dead,
+    _odds_too_extreme,
+)
+from scripts.platformkit.frontend.slate_recency_gate import (
+    STALE_DROP_HOURS,
+    _recency_verdict,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -36,21 +41,14 @@ HONEST_NOTE = (
     "Decision-support only: YOU place every bet manually on your own book."
 )
 
-# Default demo matchups per sport, sourced from the real predictor's demo registry so the
-# slate always references matchups the corpus actually contains.
 _DEFAULT_MATCHUPS: Dict[str, List[Dict[str, str]]] = {
     "nba": [{"home": "BOS", "away": "LAL"}, {"home": "DEN", "away": "GSW"}],
-    # today's real MLB slate (home = host; refreshed-to-2026 ratings serve these)
     "mlb": [{"home": "CIN", "away": "NYM"}, {"home": "BOS", "away": "TOR"},
             {"home": "HOU", "away": "DET"}, {"home": "NYY", "away": "CWS"},
             {"home": "SEA", "away": "BAL"}],
-    "soccer": [{"home": "Arsenal", "away": "Man City"},
-               {"home": "Liverpool", "away": "Chelsea"}],
-    # today's real 2026 World Cup slate (neutral-site national teams)
-    "soccer_intl": [{"home": "England", "away": "Croatia"},
-                    {"home": "Portugal", "away": "DR Congo"},
-                    {"home": "Uzbekistan", "away": "Colombia"},
-                    {"home": "Ghana", "away": "Panama"}],
+    "soccer": [{"home": "Arsenal", "away": "Man City"}, {"home": "Liverpool", "away": "Chelsea"}],
+    "soccer_intl": [{"home": "England", "away": "Croatia"}, {"home": "Portugal", "away": "DR Congo"},
+                    {"home": "Uzbekistan", "away": "Colombia"}, {"home": "Ghana", "away": "Panama"}],
     "tennis": [{"home": "Novak Djokovic", "away": "Carlos Alcaraz"}],
 }
 
@@ -70,11 +68,7 @@ def _ns(sport: str, home: str, away: str, surface: str = "Hard") -> argparse.Nam
 
 
 def _verdict(honest_note: Optional[str]) -> str:
-    """Derive an HONEST calibration verdict tag from the predictor's own honest_note.
-
-    The predictors describe their standing vs the market in plain English; we read it,
-    never invent it. Unknown -> "UNKNOWN" (we do not guess).
-    """
+    """Calibration verdict tag from predictor's own honest_note (never invented)."""
     if not honest_note:
         return "UNKNOWN"
     low = honest_note.lower()
@@ -88,7 +82,7 @@ def _verdict(honest_note: Optional[str]) -> str:
 
 
 def _model_summary(sport: str, pregame: Dict[str, Any]) -> str:
-    """A compact, sport-appropriate model-output string off the REAL pregame block."""
+    """Compact sport-appropriate model-output string from the REAL pregame block."""
     p = pregame.get("p_home_win")
     p_txt = f"P(home)={p:.1%}" if isinstance(p, (int, float)) else "P(home)=n/a"
     s = sport.lower()
@@ -98,23 +92,17 @@ def _model_summary(sport: str, pregame: Dict[str, Any]) -> str:
     elif s == "mlb" and pregame.get("expected_total") is not None:
         extra = f", total~{pregame['expected_total']:.1f}"
     elif s in ("soccer", "soccer_intl"):
-        # Club soccer now carries a real 1X2 moneyline too -> show draw + O2.5 + BTTS.
-        draw = pregame.get("p_draw")
-        o25 = pregame.get("over_2.5")
-        btts = pregame.get("btts_yes")
-        if isinstance(draw, (int, float)):
-            extra += f", P(draw)={draw:.1%}"
-        if isinstance(o25, (int, float)):
-            extra += f", O2.5={o25:.1%}"
-        if isinstance(btts, (int, float)):
-            extra += f", BTTS={btts:.1%}"
+        for label, key in (("P(draw)", "p_draw"), ("O2.5", "over_2.5"), ("BTTS", "btts_yes")):
+            v = pregame.get(key)
+            if isinstance(v, (int, float)):
+                extra += f", {label}={v:.1%}"
     elif s == "tennis" and pregame.get("total_games_mean") is not None:
         extra = f", games~{pregame['total_games_mean']:.1f}"
     return p_txt + extra
 
 
 def _edge(pregame: Dict[str, Any], market: Optional[Dict[str, Any]]) -> Optional[float]:
-    """prob-vs-line gap for decision support (NOT a claimed money edge); None if no market."""
+    """Prob-vs-line gap (decision support only, NOT a money edge); None if no market."""
     if not market:
         return None
     p = pregame.get("p_home_win")
@@ -124,9 +112,7 @@ def _edge(pregame: Dict[str, Any], market: Optional[Dict[str, Any]]) -> Optional
     return None
 
 
-# Null multi-book block: present on every row so the UI shape is stable. When no
-# multi-book odds are supplied the fields are None (NEVER fabricated) and the row
-# still shows the model number.
+# Null multi-book block: stable UI shape when no odds supplied (never fabricated).
 _NULL_BOOK_FIELDS: Dict[str, Any] = {
     "best_home_book": None, "best_home_price": None,
     "best_away_book": None, "best_away_price": None,
@@ -136,9 +122,7 @@ _NULL_BOOK_FIELDS: Dict[str, Any] = {
 }
 
 
-# Three-way markets (a draw exists): a HOME/AWAY-only arb calc is invalid here -- it
-# ignores the draw's probability mass and reports phantom arbs. Suppress arb_pct for
-# these sports (best-line + EV remain valid). A true 3-way arb needs best_draw too.
+# Three-way markets: HOME/AWAY-only arb is invalid (phantom arb without draw leg).
 _THREE_WAY = {"soccer", "soccer_intl"}
 
 
@@ -146,22 +130,11 @@ def _book_fields(book_prices: Optional[Dict[str, Dict[str, float]]],
                  home: str, away: str,
                  p_home: Optional[float],
                  sport: str = "") -> Dict[str, Any]:
-    """Best-line + arb + model-EV-vs-best-price fields from raw multi-book odds.
-
-    *book_prices* maps book -> {home_label: decimal, away_label: decimal}. Absent
-    or unusable -> the all-None block (no fabricated price). model_ev_best is the
-    model's EV at the BEST available home price (decision support, NOT a claimed
-    beat-the-close edge -- line-shopping is an execution edge only). arb_pct is
-    suppressed for three-way markets (see _THREE_WAY) to avoid phantom arbs.
-    """
+    """Best-line + arb + model-EV fields; absent/unusable -> all-None (never fabricated)."""
     if not book_prices:
         return dict(_NULL_BOOK_FIELDS)
     try:
-        # HONESTY: restrict the bettable best line + arb to SPORTSBOOK venues so a
-        # thin prediction-market YES price is never surfaced as a bettable best /
-        # arb leg. PM prices still come back separately (pm_*_*) as a divergence
-        # signal -- a signal, never a bettable line.
-        s = odds_shop.summarise_twoway(
+        s = odds_shop.summarise_twoway(  # SPORTSBOOK-restricted; PM prices come back pm_*
             book_prices, home, away, model_prob_a=p_home,
             bettable_restrict=odds_shop.VENUE_SPORTSBOOK)
     except Exception as exc:  # noqa: BLE001 -- odds must never sink a row
@@ -173,22 +146,51 @@ def _book_fields(book_prices: Optional[Dict[str, Dict[str, float]]],
         "best_away_book": s["best_b_book"], "best_away_price": s["best_b_price"],
         "arb_pct": arb,
         "model_ev_best": s["model_ev_a"],
-        # PM line surfaced separately (divergence signal, NOT bettable).
         "pm_home_book": s["pm_a_book"], "pm_home_price": s["pm_a_price"],
         "pm_away_book": s["pm_b_book"], "pm_away_price": s["pm_b_price"],
     }
+
+
+def _apply_recency_gate(
+    row: Dict[str, Any],
+    matchup_meta: Dict[str, Any],
+    *,
+    now: Optional[datetime] = None,
+    stale_drop_hours: float = STALE_DROP_HOURS,
+) -> Dict[str, Any]:
+    """Recency + dead-market gate. Returns NEW dict; caller drops on _drop=True."""
+    if now is None:
+        now = datetime.now(tz=timezone.utc)
+    out = dict(row)
+
+    # 1. Non-sports binary (both orderings: "Yes vs No" and "No vs Yes").
+    matchup_str = out.get("matchup", "") or ""
+    _hset = {str(matchup_meta.get(k, "") or "").strip().lower() for k in ("home", "away")}
+    if _is_non_sports_binary(matchup_str) or _hset == {"yes", "no"}:
+        out["_drop"] = True; out["_drop_reason"] = "non_sports_binary"; return out
+
+    # 2. Dead-market / extreme-odds (board_sanitizer predicates; never duplicated).
+    if _market_dead(matchup_meta.get("market_prob")):
+        out["_drop"] = True; out["_drop_reason"] = "dead_market"; return out
+    if _odds_too_extreme(matchup_meta.get("best_odds")):
+        out["_drop"] = True; out["_drop_reason"] = "extreme_odds"; return out
+
+    # 3. Recency: stamp (0-6 h) or drop (>6 h past tipoff).
+    verdict, hours_old = _recency_verdict(matchup_meta, now, stale_drop_hours)
+    _ho = round(hours_old, 2) if hours_old is not None else None
+    if verdict == "drop":
+        out["_drop"] = True; out["_drop_reason"] = "tipoff_too_old"; out["hours_old"] = _ho
+        return out
+    if verdict == "stamp":
+        out["stale"] = True; out["hours_old"] = _ho; out["status"] = "stale"
+    return out
 
 
 def build_row(sport: str, home: str, away: str, *, predictor: Any,
               market: Optional[Dict[str, Any]] = None,
               surface: str = "Hard",
               book_prices: Optional[Dict[str, Dict[str, float]]] = None) -> Dict[str, Any]:
-    """Shape ONE honest slate row from the REAL predictor (or mark it unavailable).
-
-    *predictor* is the built domain predictor (or None). *market* is an optional dict
-    with at least {"line": str, "p_home_implied": float}; absent -> market unavailable.
-    Never raises and never fabricates a number.
-    """
+    """Shape ONE honest slate row from the REAL predictor (or mark it unavailable)."""
     sport = sport.lower()
     label = f"{home} vs {away}"
     if predictor is None:
@@ -230,17 +232,12 @@ def build_slate(sport: str, *,
                 predictor_factory: Callable[[str], Any] = pm._build_predictor,
                 market_lookup: Optional[Callable[[str, str, str], Optional[Dict[str, Any]]]] = None,
                 odds_lookup: Optional[Callable[[str, str, str], Optional[Dict[str, Dict[str, float]]]]] = None,
+                now: Optional[datetime] = None,
                 ) -> Dict[str, Any]:
-    """Build the honest slate payload for *sport*.
+    """Build the honest slate payload for *sport*. All factories are injectable (tests).
 
-    *predictor_factory*, *market_lookup*, and *odds_lookup* are injectable so tests
-    can stub them with no live data. Real defaults: the cached domain-predictor
-    factory, no single market (None), and no multi-book odds (None).
-
-    *odds_lookup(sport, home, away)* returns a {book: {home_label: decimal,
-    away_label: decimal}} dict (or None). When present, each row gains best_*_book/
-    best_*_price, arb_pct, and model_ev_best; absent -> those fields are null and
-    the row still shows the model number.
+    *now* is injectable for deterministic recency-gate tests. Each built row passes
+    through _apply_recency_gate (drop/stamp); gate_dropped count added when non-zero.
     """
     sport = sport.lower()
     if sport not in SPORTS:
@@ -253,7 +250,9 @@ def build_slate(sport: str, *,
         predictor = predictor_factory(sport)
     except Exception as exc:  # noqa: BLE001
         logger.warning("predictor factory failed for %s: %s", sport, exc)
+    _now = now if now is not None else datetime.now(tz=timezone.utc)
     rows: List[Dict[str, Any]] = []
+    n_dropped = 0
     for g in games:
         home, away = g.get("home", ""), g.get("away", "")
         market = None
@@ -268,10 +267,29 @@ def build_slate(sport: str, *,
                 book_prices = odds_lookup(sport, home, away)
             except Exception:  # noqa: BLE001 -- an odds miss is never fatal
                 book_prices = None
-        rows.append(build_row(sport, home, away, predictor=predictor,
-                              market=market, surface=g.get("surface", "Hard"),
-                              book_prices=book_prices))
+        row = build_row(sport, home, away, predictor=predictor,
+                        market=market, surface=g.get("surface", "Hard"),
+                        book_prices=book_prices)
+        _mp = (float(market["p_home_implied"])
+               if market and isinstance(market.get("p_home_implied"), (int, float)) else None)
+        meta: Dict[str, Any] = {
+            "matchup": row.get("matchup", ""), "home": home, "away": away,
+            "tipoff_utc": g.get("tipoff_utc"), "tipoff": g.get("tipoff"),
+            "game_datetime": g.get("game_datetime"), "commence_time": g.get("commence_time"),
+            "market_prob": _mp, "best_odds": row.get("best_home_price"),
+        }
+        gated = _apply_recency_gate(row, meta, now=_now)
+        if gated.get("_drop"):
+            n_dropped += 1
+            logger.debug("gate dropped %s: %s", gated.get("matchup"), gated.get("_drop_reason"))
+            continue
+        gated.pop("_drop", None)
+        gated.pop("_drop_reason", None)
+        rows.append(gated)
     status = "ok" if predictor is not None else "unavailable"
-    return {"sport": sport, "status": status, "rows": rows,
-            "honest_note": HONEST_NOTE,
-            "predictor_available": predictor is not None}
+    out: Dict[str, Any] = {"sport": sport, "status": status, "rows": rows,
+                            "honest_note": HONEST_NOTE,
+                            "predictor_available": predictor is not None}
+    if n_dropped:
+        out["gate_dropped"] = n_dropped
+    return out

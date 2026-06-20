@@ -62,3 +62,35 @@ def test_realized_stat_missing_returns_none():
     assert realized_stat(df, "NOPE", "E1", "Shots") is None
     assert realized_stat(df, "P1", "NOPE", "Shots") is None
     assert realized_stat(df, "P1", "E1", "BogusStat") is None
+
+
+def test_realized_stat_nan_column_is_missing_not_zero():
+    # HONESTY: a row that EXISTS but whose mapped stat column is NaN (DNP / not
+    # scraped) must be treated as MISSING (None), NOT fabricated as a realized 0.
+    df = pd.DataFrame(
+        [{"event_id": "E1", "player_id": "P1", "totalShots": float("nan")}]
+    )
+    assert realized_stat(df, "P1", "E1", "Shots") is None
+
+
+def test_realized_stat_genuine_zero_grades_as_zero():
+    # A genuinely-recorded 0 (player played, took 0 shots) is a REAL 0, not None.
+    df = pd.DataFrame(
+        [{"event_id": "E1", "player_id": "P1", "totalShots": 0.0}]
+    )
+    assert realized_stat(df, "P1", "E1", "Shots") == 0.0
+
+
+def test_realized_stat_all_nan_multicol_is_missing():
+    # Cards = yellowCards + redCards; if BOTH are NaN -> missing (None).
+    df = pd.DataFrame(
+        [{"event_id": "E1", "player_id": "P1",
+          "yellowCards": float("nan"), "redCards": float("nan")}]
+    )
+    assert realized_stat(df, "P1", "E1", "Cards") is None
+    # But if ONE column has a real value, that real value is the realized count.
+    df2 = pd.DataFrame(
+        [{"event_id": "E1", "player_id": "P1",
+          "yellowCards": 1.0, "redCards": float("nan")}]
+    )
+    assert realized_stat(df2, "P1", "E1", "Cards") == 1.0
