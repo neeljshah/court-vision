@@ -43,9 +43,10 @@ logger = logging.getLogger(__name__)
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_STORE_DIR = _REPO_ROOT / "data" / "frontend" / "predict_service"
 
-# The two honest source labels (so a caller / test can tell prior from degrade).
-SRC_PRIOR = "PRIOR"
-SRC_BASE = "BASE_FALLBACK"
+# The honest source labels (so a caller / test can tell prior from degrade).
+SRC_PRIOR = "PRIOR"              # exact game_id match in the pregame snapshot
+SRC_PRIOR_TEAMS = "PRIOR_TEAMS"  # exact id missed; resolved by UNIQUE leak-free team match
+SRC_BASE = "BASE_FALLBACK"       # no usable prior on disk -> caller degrades to BASE
 
 ReadJsonFn = Callable[[Path], Optional[Dict[str, Any]]]
 
@@ -74,6 +75,17 @@ def _prob01(value: Any) -> Optional[float]:
     except (TypeError, ValueError):
         return None
     return v if 0.0 <= v <= 1.0 else None
+
+
+def _norm_team(name: Any) -> str:
+    """Normalize a team name for cross-provider matching: lowercase, alnum+space only.
+
+    The live ESPN feed and the producer snapshot may key the same game under different
+    provider id namespaces but carry the SAME ESPN-style team display names, so a
+    normalized full-name compare bridges them without a brittle abbreviation map.
+    """
+    s = "".join(ch if ch.isalnum() else " " for ch in str(name or "").lower())
+    return " ".join(s.split())
 
 
 def _home_prior_from_pred(pred: Dict[str, Any]) -> Optional[float]:
@@ -131,6 +143,57 @@ def live_p0(sport: str, game_id: str, *,
     return out
 
 
+def live_p0_resolved(sport: str, game_id: str, *,
+                     home: Optional[str] = None, away: Optional[str] = None,
+                     store_dir: Optional[Path] = None,
+                     read_json: Optional[ReadJsonFn] = None) -> Dict[str, Any]:
+    """Like live_p0, but on an exact game_id MISS fall back to a UNIQUE leak-free team match.
+
+    THE GAP THIS CLOSES: the live ESPN feed keys a game by an ESPN id (401...) while the
+    producer snapshot may key the SAME game under a different provider's id (a 10-digit
+    fallback) -> live_p0's exact-id compare degrades to BASE even though the leak-free
+    pregame prior IS on disk. When the live home/away team names are supplied we resolve
+    by NORMALIZED team names instead.
+
+    SAFETY (never trades on the wrong game): exact id ALWAYS wins first. The team fallback
+    requires EXACTLY ONE snapshot record matching both normalized (home, away); 0 or >1
+    matches (e.g. an MLB doubleheader -- same teams, two games) -> BASE_FALLBACK, never a
+    guess. LEAK-FREE: only pregame team names + pregame_probs are read; no score/close/outcome.
+
+    Returns {sport, game_id, p0, source} where source is PRIOR (exact id), PRIOR_TEAMS
+    (unique team match) or BASE_FALLBACK. NEVER raises, NEVER fabricates a 0.5 prior.
+    """
+    exact = live_p0(sport, game_id, store_dir=store_dir, read_json=read_json)
+    if exact.get("source") == SRC_PRIOR:
+        return exact
+    out: Dict[str, Any] = dict(exact)  # carries sport/game_id, p0=None, source=BASE
+    nh, na = _norm_team(home), _norm_team(away)
+    if not nh or not na:
+        return out
+    base_dir = Path(store_dir) if store_dir is not None else DEFAULT_STORE_DIR
+    reader = read_json if read_json is not None else _read_json
+    try:
+        env = reader(_latest_path(sport, base_dir))
+        if not isinstance(env, dict) or not isinstance(env.get("predictions"), list):
+            return out
+        if str(env.get("status", "ok")).lower() not in ("ok", ""):
+            return out
+        matches = []
+        for pred in env["predictions"]:
+            if not isinstance(pred, dict):
+                continue
+            if _norm_team(pred.get("home")) == nh and _norm_team(pred.get("away")) == na:
+                p0 = _home_prior_from_pred(pred)
+                if p0 is not None:
+                    matches.append(float(p0))
+        if len(matches) == 1:  # unique-or-BASE: ambiguity (doubleheader) -> BASE, never guess
+            out["p0"] = matches[0]
+            out["source"] = SRC_PRIOR_TEAMS
+    except Exception as exc:  # noqa: BLE001 -- a store miss is just "no prior"
+        logger.debug("live_p0_resolved(%s/%s) failed: %s", sport, game_id, exc)
+    return out
+
+
 def p0_for(sport: str, game_id: str, *,
            store_dir: Optional[Path] = None,
            read_json: Optional[ReadJsonFn] = None) -> Optional[float]:
@@ -155,4 +218,5 @@ if __name__ == "__main__":
     raise SystemExit(main())
 
 
-__all__ = ["DEFAULT_STORE_DIR", "SRC_PRIOR", "SRC_BASE", "live_p0", "p0_for"]
+__all__ = ["DEFAULT_STORE_DIR", "SRC_PRIOR", "SRC_PRIOR_TEAMS", "SRC_BASE",
+           "live_p0", "live_p0_resolved", "p0_for"]

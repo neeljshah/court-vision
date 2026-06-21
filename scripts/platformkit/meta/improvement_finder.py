@@ -135,16 +135,37 @@ def _md_rows(md: str, header_substr: str) -> List[List[str]]:
     return out
 
 
+def _funnel_closed(sport: str, point: str, vidx) -> bool:
+    """True iff a recorded funnel GATE verdict already covers this data point.
+
+    Reconciles the COVERAGE prose against verdicts written to data/frontend/funnel/*.json
+    (folded into the reject-ledger). PRECISE + sport-scoped so an unsure row stays OPEN.
+    Read-only; any import/IO error -> treat as NOT closed (never falsely claim coverage).
+    """
+    if vidx is None:
+        return False
+    try:
+        from scripts.platformkit.meta.funnel_verdict_reconcile import is_data_point_closed
+        return is_data_point_closed(sport, point, vidx)
+    except Exception:  # noqa: BLE001 -- a reconcile miss is "still open", never a crash
+        return False
+
+
 def scan_untested_and_priors(closed: set) -> List[Candidate]:
     cov = FUNNEL / "COVERAGE.md"
     if not cov.exists():
         return []
     md = cov.read_text(encoding="utf-8", errors="ignore")
     cands: List[Candidate] = []
+    try:  # READ-ONLY index of data points that already have a recorded funnel verdict
+        from scripts.platformkit.meta.funnel_verdict_reconcile import verdict_index
+        vidx = verdict_index()
+    except Exception:  # noqa: BLE001
+        vidx = None
     # TYPE A -- UNTESTED_DATA (sport|data point|source|honest prior)
     for r in _md_rows(md, "honest prior"):
         sport, point, source, prior = r[0], r[1], r[2], r[-1]
-        if _is_closed(point, closed):
+        if _is_closed(point, closed) or _funnel_closed(sport, point, vidx):
             continue
         cands.append(Candidate(
             id="UNTESTED_" + _slug(f"{sport}_{point}"), category="UNTESTED_DATA",
@@ -168,6 +189,9 @@ def scan_untested_and_priors(closed: set) -> List[Candidate]:
     # TYPE C -- ENGINE_COHERENCE_GAP (sport|market|gap|fix)
     for r in _md_rows(md, "| gap |"):
         sport, market, gap, fix = r[0], r[1], r[2], r[-1]
+        if re.search(r"resolved|now exposed|already exposed|\bdone\b",
+                     (gap + " " + fix).lower()):
+            continue  # a gap marked resolved in the coverage map is closed, not a candidate
         is_expose = "expos" in (gap + fix).lower() or "registry" in fix.lower()
         cat = "EXPOSE_COHERENT_MARKET" if is_expose else "COHERENCE_GAP"
         cands.append(Candidate(
@@ -184,12 +208,19 @@ def scan_tier3() -> List[Candidate]:
     pri = DEEPDATA / "PRIORITIZED.md"
     if not pri.exists():
         return []
+    try:  # exclude deep-data layers that already carry a recorded verdict (any location)
+        from scripts.platformkit.meta.funnel_verdict_reconcile import verdict_index
+        vidx = verdict_index()
+    except Exception:  # noqa: BLE001
+        vidx = None
     cands: List[Candidate] = []
     for r in _md_rows(pri.read_text(encoding="utf-8", errors="ignore"), "build target"):
         # rank|sport|layer|zero-net|gate|expected|why
         if len(r) < 6:
             continue
         sport, layer, zeronet, gate, expected = r[1], r[2], r[3], r[4], r[5]
+        if _funnel_closed(sport, layer, vidx):
+            continue
         is_net = "network" in zeronet.lower() and "zero" not in zeronet.lower()[:6]
         cat = "TIER3_ACQUISITION" if is_net else "UNTESTED_DATA"
         cands.append(Candidate(
