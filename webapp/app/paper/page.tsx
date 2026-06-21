@@ -27,6 +27,7 @@ import {
   isUnavailable,
   type PaperTrail,
   type ClvScoreboard,
+  type PnlSeries,
 } from "@/lib/p5api";
 import { useLiveData } from "@/lib/useLiveData";
 import type { Unavailable } from "@/lib/types";
@@ -44,6 +45,21 @@ import { EMPTY_CELL } from "@/lib/tokens";
 interface PaperPageData {
   trail: PaperTrail | null;
   clv: ClvScoreboard | null;
+  series: PnlSeries | null;
+}
+
+// The capped quarter-Kelly overlay fields the bankroll daemon adds to the series
+// (UNITS only; reconciles to the placed bets at their Kelly sizes; no $ field).
+interface KellyOverlay {
+  kelly_current_units?: number;
+  kelly_net_units?: number;
+  kelly_n_sized?: number;
+  kelly_reconciles?: boolean;
+}
+
+function fmtUnits(u: number | null | undefined): string {
+  if (u == null || Number.isNaN(u)) return EMPTY_CELL;
+  return `${u >= 0 ? "+" : ""}${u.toFixed(2)}u`;
 }
 
 // ---------------------------------------------------------------------------
@@ -120,9 +136,10 @@ export default function PaperPage() {
   // Primary fetch: real paper trail + CLV scoreboard.
   const fetcher = useCallback(
     async (signal: AbortSignal): Promise<PaperPageData | Unavailable> => {
-      const [t, c] = await Promise.all([
+      const [t, c, s] = await Promise.all([
         api.getPaperTrail({ limit: 2000 }, signal),
         api.getPaperClv(signal),
+        api.getPaperPnlSeries(signal),
       ]);
       if (isUnavailable(t)) {
         return {
@@ -133,6 +150,7 @@ export default function PaperPage() {
       return {
         trail: t as PaperTrail,
         clv: isUnavailable(c) ? null : (c as ClvScoreboard),
+        series: isUnavailable(s) ? null : (s as PnlSeries),
       };
     },
     [],
@@ -153,6 +171,18 @@ export default function PaperPage() {
   const trail = data?.trail ?? null;
   const clv = data?.clv ?? null;
   const rows = trail?.trail ?? [];
+
+  // Execution engine -> paper bankroll: the FLAT-1u curve (conservative, CLV-reconciling)
+  // and the edge-proportional capped quarter-Kelly OVERLAY ("try to make the most -- in
+  // UNITS"). Both reconcile to the same placed bets; neither is proven profit.
+  const series = data?.series ?? null;
+  const kelly = (series ?? {}) as KellyOverlay;
+  const flatNet = series?.summary?.total_units ?? null;
+  const flatCur = series?.summary?.current_units ?? null;
+  const kellyBetter =
+    kelly.kelly_net_units != null && flatNet != null
+      ? kelly.kelly_net_units > flatNet
+      : false;
 
   // Settled rows are the primary display (win/loss/push graded).
   const settledRows = rows.filter((r) => r.graded && r.status !== "open");
@@ -258,6 +288,67 @@ export default function PaperPage() {
           </>
         )}
       </div>
+
+      {/* Execution engine: paper bankroll -- flat (CLV record) vs edge-proportional Kelly */}
+      {series ? (
+        <Panel
+          title="Paper bankroll (UNITS only)"
+          right={
+            <span className="font-mono text-[10px] text-slate-500">
+              {kelly.kelly_n_sized != null
+                ? `${kelly.kelly_n_sized} sized`
+                : "reconciles"}
+            </span>
+          }
+        >
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-lg border border-slate-800 bg-bg-subtle/30 px-4 py-3">
+              <div className="text-[10px] uppercase tracking-wide text-slate-500">
+                Flat 1u (conservative · CLV record)
+              </div>
+              <div className="mt-1 font-mono text-lg text-slate-100">
+                {fmtUnits(flatCur)}
+              </div>
+              <div
+                className={`text-[11px] ${
+                  flatNet != null && flatNet < 0 ? "text-danger" : "text-success"
+                }`}
+              >
+                net {fmtUnits(flatNet)}
+              </div>
+            </div>
+            <div
+              className={`rounded-lg border px-4 py-3 ${
+                kellyBetter
+                  ? "border-success/40 bg-success/5"
+                  : "border-slate-800 bg-bg-subtle/30"
+              }`}
+            >
+              <div className="text-[10px] uppercase tracking-wide text-slate-500">
+                Edge-proportional (capped 1/4-Kelly)
+              </div>
+              <div className="mt-1 font-mono text-lg text-slate-100">
+                {fmtUnits(kelly.kelly_current_units)}
+              </div>
+              <div
+                className={`text-[11px] ${
+                  kelly.kelly_net_units != null && kelly.kelly_net_units < 0
+                    ? "text-danger"
+                    : "text-success"
+                }`}
+              >
+                net {fmtUnits(kelly.kelly_net_units)}
+              </div>
+            </div>
+          </div>
+          <p className="mt-3 text-[10px] leading-relaxed text-slate-500">
+            Both curves reconcile to the same placed bets (one position per market). The
+            Kelly overlay sizes each bet by conviction to maximise expected UNIT growth --
+            it is a paper track record, NOT proven profit and NOT a realized-money figure.
+            CLV is the yardstick; no edge is claimed; real money stays default-DENY.
+          </p>
+        </Panel>
+      ) : null}
 
       {/* Honest empty state -- neutral, never red, no fabricated edge claim */}
       {!showSkeleton && !hasSettled && settledClvCount === 0 ? (
