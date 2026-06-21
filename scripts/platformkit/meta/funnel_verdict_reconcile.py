@@ -50,6 +50,7 @@ _ALIASES: Dict[str, Set[str]] = {
 _EXTRA_SOURCES: Dict[Tuple[str, ...], str] = {
     ("defender_matchup_gate.json",): "nba_defender_matchup",
     ("ingame", "pitch_layer_gate_mlb.json"): "mlb_pitch_states",
+    ("ingame", "finegrid_gate_nba.json"): "nba_finegrid_blend",
 }
 # Cadence re-check spam + non-gate artifacts to skip.
 _SKIP_SUBSTR = ("survivor", "ci_", "parity", "coherence")

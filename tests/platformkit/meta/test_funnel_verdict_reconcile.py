@@ -64,3 +64,26 @@ def test_index_and_closure_are_precise_and_sport_scoped():
 def test_basketball_nba_sport_alias_resolves():
     idx = {"nba": {"travel"}}
     assert F.is_data_point_closed("basketball_nba", "travel_home/away", idx) is True
+
+
+def test_extra_source_finegrid_picked_up(tmp_path, monkeypatch):
+    """A gate verdict outside funnel/ (data/frontend/ingame/finegrid_gate_nba.json) is
+    folded via _EXTRA_SOURCES so the finer-grid REJECT is recognized as CLOSED."""
+    frontend = tmp_path / "frontend"
+    fd = frontend / "funnel"
+    fd.mkdir(parents=True, exist_ok=True)
+    ingame = frontend / "ingame"
+    ingame.mkdir(parents=True, exist_ok=True)
+    (ingame / "finegrid_gate_nba.json").write_text(json.dumps(
+        {"verdict": "REJECT",
+         "vs_close": "UNPROVEN -- calibration vs coarse grid, not a market edge"}),
+        encoding="utf-8")
+    monkeypatch.setattr(F, "FUNNEL", fd)  # FUNNEL.parent == frontend -> ingame/ resolvable
+    slugs = {slug for slug, _v, _d in F.iter_funnel_verdicts()}
+    assert "nba_finegrid_blend" in slugs
+    # folds into the ledger as a recognized nba REJECT (source funnel_gate)
+    ledger = tmp_path / "reject_ledger.jsonl"
+    assert F.fold_into_ledger(ledger_path=ledger) == 1
+    rows = [json.loads(l) for l in ledger.read_text(encoding="utf-8").splitlines() if l.strip()]
+    assert rows[0]["signal"] == "nba_finegrid_blend"
+    assert F._norm(rows[0]["sport"]) == "nba"
