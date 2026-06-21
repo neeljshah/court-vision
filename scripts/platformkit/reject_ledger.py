@@ -27,7 +27,8 @@ CALIBRATION_NOTE = ("A REJECT is honest market-efficiency evidence, not a failur
 
 # Verdicts that mean "this signal did NOT survive the gate" -> graveyard members.
 REJECT_VERDICTS = {"REJECT", "DEFER", "BUNDLE_ERROR", "GATE_ERROR"}
-VALID_SOURCES = {"signal_proof", "recal_ratchet", "signal_discovery", "manual"}
+VALID_SOURCES = {"signal_proof", "recal_ratchet", "signal_discovery",
+                 "funnel_gate", "manual"}
 
 _PROOF_METRIC_KEYS = (  # run_v3 verdict-row metric keys carried into the ledger
     "p_value", "wf_folds", "wf_all_improve", "ablation_delta", "ablation_pass",

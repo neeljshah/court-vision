@@ -177,16 +177,18 @@ def _build_tick(state: Dict[str, Any], model_p: float,
     """Assemble the LiveTick the day-trader's on_tick consumes (UNITS only, no $).
 
     calibration_justified=True iff the live state carries the PROVEN prior (p0_source in
-    {CALLER, PRIOR}) -- a BASE-fallback (no pregame snapshot) lean is NOT prior-justified, so
-    it is captured for the grade series but NEVER traded. is_liquid=True (the price came from
-    the is_liquid-gated fetch). model_prob is as-of this tick (leak-free).
+    {CALLER, PRIOR, PRIOR_TEAMS}) -- PRIOR_TEAMS is the SAME leak-free pregame prior, resolved
+    by a unique team match when the live/snapshot ids differ. A BASE-fallback (no pregame
+    snapshot) lean is NOT prior-justified, so it is captured for the grade series but NEVER
+    traded. is_liquid=True (the price came from the is_liquid-gated fetch). model_prob is
+    as-of this tick (leak-free).
     """
     p0_src = str(state.get("p0_source") or "")
     return {
         "model_prob": model_p,
         "yes_home_prob": pair.get("yes_home"),
         "yes_away_prob": pair.get("yes_away"),
-        "calibration_justified": p0_src in ("CALLER", "PRIOR"),
+        "calibration_justified": p0_src in ("CALLER", "PRIOR", "PRIOR_TEAMS"),
         "is_liquid": True,   # the price already cleared inplay_kalshi.is_liquid upstream
         "is_fresh": True,    # in-play ticks are fresh by construction; stale feeds emit []
         "clv_is_proxy": True,

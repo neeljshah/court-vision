@@ -70,6 +70,11 @@ def _name(c: Optional[dict]) -> str:
         ((c or {}).get("team") or {}).get("displayName", "")
 
 
+def _display(c: Optional[dict]) -> str:
+    """Full display name (for cross-provider team matching), abbreviation as fallback."""
+    return ((c or {}).get("team") or {}).get("displayName") or _name(c)
+
+
 def _score(c: Optional[dict]) -> Optional[float]:
     try:
         return float((c or {}).get("score"))
@@ -113,28 +118,35 @@ def _frac_elapsed(sport: str, ev: dict) -> Optional[float]:
 
 
 def _resolve_p0(sport: str, game_id: str, p0: Optional[float],
-                p0_provider: Optional[Callable]) -> Tuple[Optional[float], str]:
+                p0_provider: Optional[Callable],
+                home: Optional[str] = None,
+                away: Optional[str] = None) -> Tuple[Optional[float], str]:
     """Resolve the leak-free pregame prior + its honest source label.
 
-    If the caller passed an explicit p0 it WINS (source 'CALLER'). Otherwise consult the
-    injectable p0_provider (default: live_p0.p0_for, which reads the pregame snapshot
-    READ-only -> leak-free). A found prior -> ('PRIOR'); absent -> (None, 'BASE_FALLBACK')
-    so serve_ingame degrades to BASE honestly. Never raises (a provider error -> BASE).
+    If the caller passed an explicit p0 it WINS (source 'CALLER'). If a p0_provider is
+    INJECTED (tests) it is consulted by exact game_id -> 'PRIOR'/'BASE_FALLBACK' (unchanged).
+    Otherwise (production) we use live_p0.live_p0_resolved, which matches the pregame
+    snapshot by exact game_id first ('PRIOR') and, on a miss, by a UNIQUE leak-free team
+    match ('PRIOR_TEAMS') -- bridging the ESPN-vs-fallback-provider id gap so the served
+    number carries the PROVEN prior for more games. Absent -> (None, 'BASE_FALLBACK') so
+    serve_ingame degrades to BASE honestly. Never raises (any error -> BASE).
     """
     if p0 is not None:
         return float(p0), "CALLER"
     if not game_id:
         return None, "BASE_FALLBACK"
     try:
-        provider = p0_provider
-        if provider is None:
-            from scripts.platformkit.ingame.live_p0 import p0_for as provider  # type: ignore
-        val = provider(sport, game_id)
+        if p0_provider is not None:
+            val = p0_provider(sport, game_id)
+            return (None, "BASE_FALLBACK") if val is None else (float(val), "PRIOR")
+        from scripts.platformkit.ingame.live_p0 import live_p0_resolved
+        res = live_p0_resolved(sport, game_id, home=home, away=away)
+        val = res.get("p0")
+        if val is None:
+            return None, "BASE_FALLBACK"
+        return float(val), str(res.get("source") or "PRIOR")
     except Exception:  # noqa: BLE001 -- a prior miss is BASE, never a crash
         return None, "BASE_FALLBACK"
-    if val is None:
-        return None, "BASE_FALLBACK"
-    return float(val), "PRIOR"
 
 
 def _extract(sport: str, ev: dict, p0: Optional[float],
@@ -146,7 +158,8 @@ def _extract(sport: str, ev: dict, p0: Optional[float],
     frac = _frac_elapsed(sport, ev)
     st = ((ev.get("status") or {}).get("type") or {})
     game_id = str(ev.get("id", ""))
-    p0v, p0_src = _resolve_p0(sport, game_id, p0, p0_provider)
+    p0v, p0_src = _resolve_p0(sport, game_id, p0, p0_provider,
+                              home=_display(home), away=_display(away))
     out = {
         "sport": sport, "game_id": game_id,
         "home": _name(home), "away": _name(away),
