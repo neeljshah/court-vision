@@ -47,9 +47,10 @@ def _synth_box(n_games: int = 760, n_teams: int = 30, seed: int = 7) -> pd.DataF
     return df.sort_values("date", kind="mergesort").reset_index(drop=True)
 
 
-def test_gateable_path_runs_and_planted_null_rejects():
+def test_gateable_path_runs_and_planted_null_rejects(tmp_path):
     box = _synth_box()
-    res = G.run(box=box, seed=1)
+    # out_path -> tmp so a SYNTHETIC run never overwrites the real on-disk verdict
+    res = G.run(box=box, seed=1, out_path=tmp_path / "v.json")
     assert res["verdict"] != "INSUFFICIENT_DATA"      # the gate actually ran
     assert res["null_rejects"] is True                # the noise tripwire fired
     # pure-noise box stats must NOT ship through a trustworthy gate

@@ -100,8 +100,14 @@ def _sufficiency(corp_a: pd.DataFrame, corp_b: pd.DataFrame) -> Dict[str, object
 
 
 def run(eps: float = 0.05, seed: int = 0,
-        box: Optional[pd.DataFrame] = None) -> Dict[str, object]:
-    """Build 2 chronological corpora, check sufficiency, gate every diff + the null."""
+        box: Optional[pd.DataFrame] = None,
+        out_path: Optional[Path] = None) -> Dict[str, object]:
+    """Build 2 chronological corpora, check sufficiency, gate every diff + the null.
+
+    out_path defaults to the real verdict JSON; tests pass a tmp path so a SYNTHETIC
+    corpus NEVER overwrites the real on-disk verdict (which would fabricate a result).
+    """
+    dest = out_path if out_path is not None else _VERDICT_OUT
     if box is None:
         box = pd.read_parquet(_BOX) if _BOX.exists() else pd.DataFrame()
     feats = [f"diff_{f}_asof" for f in _TEST_FEATS]
@@ -120,7 +126,7 @@ def run(eps: float = 0.05, seed: int = 0,
             "honest_expectation": "REJECT-scouting once materialized (defensive efficiency "
                                   "subsumed by team strength + run-margin; noisy)",
         }
-        _write(out)
+        _write(out, dest)
         return out
     # --- gateable path (runs once >=2 seasons are materialized) ---
     box = box.sort_values("date", kind="mergesort").reset_index(drop=True)
@@ -141,13 +147,13 @@ def run(eps: float = 0.05, seed: int = 0,
            "sufficiency": _sufficiency(corp_a, corp_b), "base_skillful": base_ok,
            "proposal_only": True, "force_fed": False, "scouting_only": verdict != "SHIP",
            "vs_close": "UNPROVEN -- CALIBRATION only (held-out home-win Brier), not edge"}
-    _write(out)
+    _write(out, dest)
     return out
 
 
-def _write(out: Dict[str, object]) -> None:
-    _VERDICT_OUT.parent.mkdir(parents=True, exist_ok=True)
-    with open(_VERDICT_OUT, "w", encoding="ascii") as f:
+def _write(out: Dict[str, object], dest: Path = _VERDICT_OUT) -> None:
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    with open(dest, "w", encoding="ascii") as f:
         json.dump(out, f, indent=2, sort_keys=True)
 
 
