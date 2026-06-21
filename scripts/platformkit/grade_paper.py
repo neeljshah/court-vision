@@ -14,9 +14,9 @@ CLOSE RESOLUTION PRECEDENCE (grade_one):
      "(proxy)" label (that would fabricate confidence). win/loss still set.
 
 UNITS ONLY: no dollar pnl / roi / stake field is ever written; the unit record is
-``unit_result`` (a pure unit count at the taken price). An equal "final" score for
-a sport that cannot draw (NBA/MLB) -> outcome="void", never a fabricated push/win.
-Build only under scripts/platformkit/; <=300 LOC; no secrets; no $-edge claim.
+``unit_result`` (a pure unit count at the taken price). An equal "final" score for a
+sport that cannot draw (NBA/MLB) -> outcome="void". Build only under
+scripts/platformkit/; <=300 LOC; no secrets; no $-edge claim.
 """
 from __future__ import annotations
 
@@ -31,12 +31,31 @@ from scripts.platformkit.clv_settle_write import write_settlement as _write_sett
 from scripts.platformkit.frontend import live_board as _lb
 from scripts.platformkit.grade_paper_close import close_from_store as _close_from_store
 from scripts.platformkit.grade_paper_close import fetch_boards as _fetch_boards
+from scripts.platformkit.grade_paper_close import game_key_for_bet as _game_key_for_bet
 from scripts.platformkit.grade_paper_close import load_predictions as _load_predictions
 from scripts.platformkit.grade_paper_summary import grade_summary
 
 logger = logging.getLogger(__name__)
 
 _FINAL_STATES = ("post", "final")
+
+
+def _is_game_ml_bet(bet: Dict[str, Any]) -> bool:
+    """True only for a two-way GAME moneyline bet that THIS grader can settle.
+
+    A player-prop row (market_type=="prop" / market="prop|...") settles on its own
+    stat outcome (player over/under a line), NOT the game's home/away result -- so it
+    must be SKIPPED here or it would be mis-settled as a moneyline. (PM/Kalshi rows are
+    settled by their own venue grader, never re-derived from a game score.) The honest
+    error direction is to skip an ambiguous row (it stays pending) rather than settle it
+    as a moneyline it is not.
+    """
+    mt = str(bet.get("market_type") or "").strip().lower()
+    if mt == "prop":
+        return False
+    if str(bet.get("market") or "").strip().lower().startswith("prop"):
+        return False
+    return str(bet.get("side", "")).strip().lower() in ("home", "away")
 
 
 def _settle_key(bet: Dict[str, Any]) -> str:
@@ -219,7 +238,10 @@ def grade_open_bets(
     """
     ledger_path = Path(ledger_path) if ledger_path else _clv.DEFAULT_LEDGER
     rows = _clv.load_ledger(ledger_path)
-    open_bets = [r for r in rows if r.get("status") == "open"]
+    # Only GAME moneyline rows settle here; prop rows settle on their own stat
+    # outcome (see _is_game_ml_bet) and would be MIS-settled as a moneyline otherwise.
+    open_bets = [r for r in rows
+                 if r.get("status") == "open" and _is_game_ml_bet(r)]
     # Dedup on the durable settle identity AND bet_id of already-settled rows, so a
     # re-record settles ONCE regardless of which key a prior twin used.
     settled_rows = [r for r in rows if r.get("status") == "settled"]
