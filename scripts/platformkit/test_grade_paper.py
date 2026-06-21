@@ -128,6 +128,30 @@ def test_open_bets_append_only_and_settle(tmp_path):
     assert settled[0]["executed"] is False
 
 
+def test_prop_row_is_not_settled_as_moneyline(tmp_path):
+    """A prop row (market_type='prop', side encodes over/under) must be SKIPPED by the
+    game-moneyline settler even when its game is FINAL -- else it would be mis-graded
+    as a home/away ML bet. It stays open (pending its own stat-outcome settler)."""
+    ledger = tmp_path / "clv_ledger.jsonl"
+    # A real game ML bet (settles) + a prop row on the SAME final game (must NOT settle).
+    record_bet("mlb", "CIN @ NYM", "home", "paper_book", 2.0, stake=1.0, path=ledger)
+    prop_row = {"sport": "mlb", "matchup": "CIN @ NYM", "side": "home",
+                "market_type": "prop", "market": "prop|Player X|hits|1.5|over",
+                "taken_book": "underdog", "taken_decimal": 1.9, "model_prob": 0.6,
+                "stake_units": 1.0, "status": "open", "executed": False,
+                "bet_id": "prop|x", "ts": "tp"}
+    with ledger.open("a", encoding="utf-8") as fh:
+        fh.write(json.dumps(prop_row) + "\n")
+    games = {"mlb": [_game("New York Mets", "NYM", "Cincinnati Reds", "CIN", 6, 3)]}
+    out = grade_open_bets(ledger, None, fetch_finals=_fetch_factory(games))
+    # Only the ML bet is graded; the prop row is invisible to this settler.
+    assert out["n_open"] == 1 and out["n_settled_now"] == 1
+    rows = [json.loads(ln) for ln in ledger.read_text(encoding="utf-8").splitlines() if ln.strip()]
+    prop_rows = [r for r in rows if r.get("market_type") == "prop"]
+    assert len(prop_rows) == 1 and prop_rows[0]["status"] == "open"  # never settled
+    assert not any(r.get("graded") and r.get("market_type") == "prop" for r in rows)
+
+
 def test_open_bets_idempotent_no_double_settle(tmp_path):
     ledger = tmp_path / "clv_ledger.jsonl"
     record_bet("mlb", "CIN @ NYM", "home", "paper_book", 2.0, stake=10.0, path=ledger)
