@@ -24,7 +24,7 @@ from __future__ import annotations
 
 import json
 import urllib.request
-from typing import Callable, Dict, Optional, Tuple
+from typing import Callable, Dict, List, Optional, Tuple
 
 _UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
 
@@ -33,8 +33,16 @@ _SPORTS: Dict[str, Dict] = {
     "nba": {"path": "basketball/nba", "kind": "clock", "reg_sec": 2880.0},
     "mlb": {"path": "baseball/mlb", "kind": "innings", "denom_half": 18.0},
     "soccer": {"path": "soccer/{league}", "kind": "minutes", "total_min": 90.0},
+    # soccer_intl = the in-play capture loop's WC/international sport id; same ESPN soccer
+    # scoreboard + minutes semantics, but the league defaults to fifa.world (World Cup) so
+    # the in-game daytrader can pair the calibrated 1X2 model (p_home_win) with the live
+    # Kalshi WC moneyline. Without this key live_state returned None -> "no_live_state".
+    "soccer_intl": {"path": "soccer/{league}", "kind": "minutes", "total_min": 90.0},
     "tennis": {"path": "tennis/atp", "kind": "tennis"},
 }
+
+# default ESPN league per soccer sport id when the caller omits an explicit league.
+_SOCCER_DEFAULT_LEAGUE: Dict[str, str] = {"soccer": "eng.1", "soccer_intl": "fifa.world"}
 
 
 def _http_get(url: str) -> dict:
@@ -48,8 +56,8 @@ def _http_get(url: str) -> dict:
 
 def _scoreboard_url(sport: str, league: Optional[str]) -> str:
     path = _SPORTS[sport]["path"]
-    if sport == "soccer":
-        path = path.format(league=league or "eng.1")
+    if sport in _SOCCER_DEFAULT_LEAGUE:
+        path = path.format(league=league or _SOCCER_DEFAULT_LEAGUE[sport])
     return f"https://site.api.espn.com/apis/site/v2/sports/{path}/scoreboard"
 
 
@@ -101,7 +109,7 @@ def _frac_elapsed(sport: str, ev: dict) -> Optional[float]:
             return None
         half = (1 if str(typ.get("shortDetail", "")).lower().startswith("top") else 2)
         return max(0.0, min(1.0, (2 * (period - 1) + half) / cfg["denom_half"]))
-    if sport == "soccer":
+    if sport in ("soccer", "soccer_intl"):
         # displayClock like "57'" -> minute elapsed
         disp = str(st.get("displayClock") or "").replace("'", "").strip()
         try:
@@ -163,6 +171,12 @@ def _extract(sport: str, ev: dict, p0: Optional[float],
     out = {
         "sport": sport, "game_id": game_id,
         "home": _name(home), "away": _name(away),
+        # full display names + absolute scores are ADDITIVE (existing consumers read
+        # state_diff/frac_elapsed): they let the in-game model_fn resolve corpus team ids
+        # and feed predict_live the absolute score (a 2-2 and a 0-0 share a diff of 0 but
+        # price very differently), not just the differential.
+        "home_display": _display(home), "away_display": _display(away),
+        "home_goals": hs, "away_goals": as_,
         "state_diff": float(hs - as_),  # signed toward home, matches offline ingest
         "frac_elapsed": frac,
         "p0": p0v,            # leak-free pregame prior (auto-supplied when caller omits it)
@@ -201,6 +215,30 @@ def live_state(sport: str, event_id: Optional[str] = None, *,
             if res is not None:
                 return res
     return None
+
+
+def live_states(sport: str, *, league: Optional[str] = None,
+                http_get: Optional[Callable] = None,
+                p0_provider: Optional[Callable] = None) -> List[Dict]:
+    """ALL in-progress games for *sport* (each a full live_state dict), [] if none.
+
+    The single-game live_state matches by ESPN event id; the in-play capture loop instead
+    keys games by their Kalshi ticker, which never equals the ESPN id -> it needs to bridge
+    by TEAM. This returns every in-progress state so the caller can pick the one whose teams
+    match a Kalshi market's legs. Leak-free + never raises (any error -> [])."""
+    try:
+        getter = http_get or _http_get
+        payload = getter(_scoreboard_url(sport, league)) if sport in _SPORTS else {}
+        out: List[Dict] = []
+        for ev in (payload.get("events") or []):
+            if not _is_live(ev):
+                continue
+            res = _extract(sport, ev, None, p0_provider)
+            if res is not None:
+                out.append(res)
+        return out
+    except Exception:  # noqa: BLE001 -- a scan error is no live games, never a crash
+        return []
 
 
 def main() -> None:
