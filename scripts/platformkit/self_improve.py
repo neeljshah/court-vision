@@ -124,6 +124,12 @@ def load_settled(sport: str,
     for r in raw:
         if str(r.get("sport", "")).lower() != sp:
             continue
+        # DO-NO-HARM: a player-prop row carries model_prob=P(over) + outcome=over/under,
+        # NOT a game home/away result -- ingesting it would CONTAMINATE the game-win-prob
+        # calibration corpus. Props recalibrate on their own (separate) track, never here.
+        if str(r.get("market_type") or "") == "prop" or \
+                str(r.get("market") or "").lower().startswith("prop"):
+            continue
         y = _outcome_to_binary(r)
         p = _raw_prob(r)
         if y is None or p is None:
