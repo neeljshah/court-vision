@@ -52,7 +52,9 @@ def _stub_prop_steps():
                       MagicMock(return_value={"status": "ok", "n_placed": 0})), \
          patch.object(mod, "_settle_props",
                       MagicMock(return_value={"status": "ok", "n_settled_now": 0,
-                                              "n_pending": 0})):
+                                              "n_pending": 0})), \
+         patch.object(mod, "_prop_improve",
+                      MagicMock(return_value={"verdicts": {"mlb": "INSUFFICIENT_DATA"}})):
         yield
 
 
@@ -298,6 +300,24 @@ def test_prop_steps_are_wired_into_run_once():
     settle.assert_called_once()
     assert out["place_props"]["n_placed"] == 3
     assert out["settle_props"]["n_settled_now"] == 1
+
+
+def test_prop_improve_is_wired_into_run_once():
+    """run_once must run the PROP calibration ratchet as a guarded step and surface its
+    verdicts -- props 'get better' independently each cycle in the live m1_paper loop."""
+    mod = _import_loop()
+    paper_s, grade_s, improve_s, summary_s = _core_stubs()
+    prop_improve = MagicMock(return_value={"verdicts": {"mlb": "SHIP"}})
+    with patch.object(mod, "run_paper_cycle", paper_s), \
+         patch.object(mod, "grade_open_bets", grade_s), \
+         patch.object(mod, "improve_all", improve_s), \
+         patch.object(mod, "grade_summary", summary_s), \
+         patch.object(mod, "_prop_improve", prop_improve), \
+         patch.object(mod, "_line_tick", MagicMock(return_value={"status": "ok", "sports": []})), \
+         patch.object(mod, "_write_scoreboard", MagicMock(return_value={"status": "ok"})):
+        out = mod.run_once()
+    prop_improve.assert_called_once()
+    assert out["prop_improve"]["verdicts"]["mlb"] == "SHIP"
 
 
 def test_print_cycle_has_no_ratchet_field(capsys):

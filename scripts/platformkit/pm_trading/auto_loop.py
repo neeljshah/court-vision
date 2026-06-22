@@ -68,6 +68,21 @@ def _settle_props() -> Dict[str, Any]:
     except Exception as exc:  # noqa: BLE001
         return {"status": "error", "reason": "%s: %s" % (type(exc).__name__, exc)}
 
+
+def _prop_improve() -> Dict[str, Any]:
+    """Run the leak-free PROP CALIBRATION ratchet on the accumulated settled props -- the
+    props 'gets better' loop, the prop twin of the game self-improve ratchet (step 3).
+
+    SHIP only when the eval-gate passes, the planted-null rejects, AND the walk-forward
+    isotonic recal beats held-out Brier; else HOLD/REJECT; cold start = INSUFFICIENT_DATA.
+    PROPOSE/RECORD ONLY: appends to prop_improve_ledger.jsonl, NEVER arms serving / flips
+    a flag / writes data/registry/. Guarded so a ratchet error never sinks the loop."""
+    try:
+        from scripts.platformkit.improve.prop_calibration_ratchet import improve_all as _pi
+        return _pi()
+    except Exception as exc:  # noqa: BLE001
+        return {"status": "error", "reason": "%s: %s" % (type(exc).__name__, exc)}
+
 # Liveness heartbeat (RB-P0-03): this loop is supervised as m1_paper. It MUST beat
 # its declared heartbeat every cycle so the supervisor's HEARTBEAT readiness reads
 # this service not-ready when the heartbeat is absent (fresh boot) OR stale (a hung
@@ -123,7 +138,8 @@ def run_once(line_sports: tuple = _LINE_SPORTS) -> Dict[str, Any]:
                      ("place_props", _place_props),
                      ("grade", grade_open_bets),
                      ("settle_props", _settle_props),
-                     ("improve", improve_all)):
+                     ("improve", improve_all),
+                     ("prop_improve", _prop_improve)):
         try:
             out[name] = fn()
         except Exception as exc:  # noqa: BLE001 -- a step must never crash the loop
@@ -169,10 +185,11 @@ def _print_cycle(out: Dict[str, Any]) -> None:
     print("[auto_loop] cycle done | "
           "paper_recorded=%s | "
           "graded_n=%s hit_rate=%s mean_clv=%s | "
-          "improve=%s | line_tick=%s | scoreboard=%s"
+          "improve=%s | prop_improve=%s | line_tick=%s | scoreboard=%s"
           % (paper.get("recorded", paper.get("status", "?")),
              n, s.get("hit_rate"), s.get("mean_clv_pct"),
              _improve_brief(out.get("improve")),
+             _improve_brief(out.get("prop_improve")),
              lt.get("status", "?"), sb.get("status", "?")))
     print("HONEST: paper only (executed=False); calibration/CLV is the yardstick, NOT a $ edge.")
 
