@@ -98,9 +98,16 @@ def _color_groups() -> List[Dict]:
 
 
 # Graph view for the brain-only vault: colour BY FAMILY (+ legacy paths + hubs).
-# No "search" scope filter is needed — every node in this vault is brain.
+# DEFAULT SCOPE FILTER (perf): the global graph renders the HUB BACKBONE only -- the root
+# _Index MOCs + the per-sport top hubs (_Index/_Concept_Map/_Digest/_KeyStats/_WhatWins/...).
+# That is ~52 connected nodes that open INSTANTLY and link down into every section + leaf, vs
+# the full ~5k-node graph that was slow to open. NOTHING is removed: every note still exists
+# and is reachable by clicking a hub (its local graph / links) -- and CLEARING the graph
+# search box restores the full graph. Typing e.g. "path:NBA" expands to one sport's cluster.
+_GRAPH_BACKBONE_SEARCH = ('path:"_Index/" OR path:"NBA/_" OR path:"MLB/_" '
+                          'OR path:"Soccer/_" OR path:"Tennis/_"')
 _GRAPH: Dict = {
-    "collapse-filter": False, "search": "", "showTags": False,
+    "collapse-filter": False, "search": _GRAPH_BACKBONE_SEARCH, "showTags": False,
     "showAttachments": False, "hideUnresolved": True, "showOrphans": True,
     "collapse-color-groups": False,
     "colorGroups": _color_groups(),
@@ -114,6 +121,49 @@ _GRAPH: Dict = {
 }
 
 
+# The note the vault lands on. Must be a REAL note INSIDE _Organized (the master
+# vault/_Index.md lives in the PARENT and is NOT in this vault). _Index/_Brain.md is
+# the brain map -- it links every sport index + every cross-sport hub (calibration,
+# validated improvements, coverage, system map), so opening straight to it renders
+# INSTANTLY (markdown) and reaches everything by one click.
+_LANDING_NOTE = "_Index/_Brain.md"
+
+
+def _workspace() -> Dict:
+    """Deterministic Obsidian layout: open the brain-map hub as MARKDOWN + the file
+    tree -- and NO graph pane, so a ~5k-node vault opens instantly.
+
+    The graph is the expensive part to paint, so it is OFF by default: the global
+    Graph view is one toolbar click, and "Open local graph" on any leaf note gives a
+    small, fast map on demand. Fixed ids keep it idempotent; if a newer Obsidian
+    rejects the schema it regenerates a default -- non-destructive (generated view).
+    """
+    md_leaf = {
+        "id": "brain-landing", "type": "leaf",
+        "state": {"type": "markdown",
+                  "state": {"file": _LANDING_NOTE, "mode": "preview", "source": False},
+                  "title": "Brain Map"},
+    }
+    fe_leaf = {
+        "id": "brain-files", "type": "leaf",
+        "state": {"type": "file-explorer", "state": {}},
+    }
+    return {
+        "main": {"id": "brain-main", "type": "split", "direction": "vertical",
+                 "children": [{"id": "brain-tabs", "type": "tabs",
+                               "children": [md_leaf]}]},
+        "left": {"id": "brain-left", "type": "split", "direction": "horizontal",
+                 "children": [{"id": "brain-left-tabs", "type": "tabs",
+                               "children": [fe_leaf]}], "width": 280},
+        # No right graph pane: the global/local graph stays OFF until explicitly opened.
+        "right": {"id": "brain-right", "type": "split", "direction": "horizontal",
+                  "children": [{"id": "brain-right-tabs", "type": "tabs",
+                                "children": []}], "width": 300, "collapsed": True},
+        "active": "brain-landing",
+        "lastOpenFiles": [_LANDING_NOTE],
+    }
+
+
 def _w(path: Path, text: str) -> None:
     path.write_text(text, encoding="utf-8")
 
@@ -121,16 +171,21 @@ def _w(path: Path, text: str) -> None:
 def ensure_brain_graph_config(organized_root: Path) -> Dict:
     """Seed/refresh organized_root/.obsidian so _Organized opens as a clean vault.
 
+    Seeds the graph colouring AND a workspace that lands on the _Index hub with a
+    shallow local graph (NOT the heavy global graph) so the vault opens fast.
     Idempotent + deterministic. Returns {"obsidian_dir","files"}.
     """
     organized_root = Path(organized_root)
     obs = organized_root / ".obsidian"
     obs.mkdir(parents=True, exist_ok=True)
     files = {
-        "app.json": json.dumps({"alwaysUpdateLinks": True}, indent=2),
+        # defaultViewMode=preview so the landing hub renders read-only + instant.
+        "app.json": json.dumps(
+            {"alwaysUpdateLinks": True, "defaultViewMode": "preview"}, indent=2),
         "appearance.json": json.dumps({"accentColor": "", "theme": "obsidian"}, indent=2),
         "core-plugins.json": json.dumps(_CORE_PLUGINS, indent=2),
         "graph.json": json.dumps(_GRAPH, indent=2),
+        "workspace.json": json.dumps(_workspace(), indent=2),
     }
     for name, text in files.items():
         _w(obs / name, text)
