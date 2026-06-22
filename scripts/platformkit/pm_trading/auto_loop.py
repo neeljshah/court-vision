@@ -2,7 +2,8 @@
 
 One honest cycle = (1) PAPER-trade today's real games -> CLV ledger (executed=False),
 (2) GRADE finished games (win/loss + CLV vs close), (3) SELF-IMPROVE: recalibrate on
-the accumulated REAL outcomes, gated by the eval-gate (only ever improve or hold),
+the accumulated REAL outcomes, gated by the eval-gate (only ever improve or hold) --
+this IS the live self-improvement ratchet (scripts.platformkit.self_improve.improve_all),
 (4) LINE TICK: capture a line/close snapshot via line_snapshot_daemon.poll_once for
 each active sport, (5) SCOREBOARD: write grade_summary.json atomically so the UI and
 the real-money gate always have a fresh view.
@@ -43,6 +44,29 @@ logger = logging.getLogger("auto_loop")
 
 # Active sports for the line/close capture tick (matches odds_provider defaults).
 _LINE_SPORTS: tuple = ("nba", "mlb", "soccer", "tennis")
+
+# Per-tick cap on NEW prop placements per sport (highest-EV first). Bounds the daily
+# prop volume so the loop never floods the ledger; dedup keeps it idempotent within a day.
+_PROP_MAX_PER_SPORT: int = 8
+
+
+def _place_props() -> Dict[str, Any]:
+    """Paper-place today's priced player props into the unified ledger (UNITS, capped).
+    Guarded + lazy import so a prop-feed error never sinks the loop. Idempotent per day."""
+    try:
+        from scripts.platformkit.bestbets.props_paper_placer import run as _place
+        return _place(max_per_sport=_PROP_MAX_PER_SPORT)
+    except Exception as exc:  # noqa: BLE001
+        return {"status": "error", "reason": "%s: %s" % (type(exc).__name__, exc)}
+
+
+def _settle_props() -> Dict[str, Any]:
+    """Settle OPEN props on their real post-game stat outcome (UNITS). Guarded."""
+    try:
+        from scripts.platformkit.bestbets.prop_settler import settle_open_props as _settle
+        return _settle()
+    except Exception as exc:  # noqa: BLE001
+        return {"status": "error", "reason": "%s: %s" % (type(exc).__name__, exc)}
 
 # Liveness heartbeat (RB-P0-03): this loop is supervised as m1_paper. It MUST beat
 # its declared heartbeat every cycle so the supervisor's HEARTBEAT readiness reads
@@ -92,49 +116,13 @@ def _write_scoreboard() -> Dict[str, Any]:
         return {"status": "error", "reason": "%s: %s" % (type(exc).__name__, exc)}
 
 
-def _ratchet_tick() -> Dict[str, Any]:
-    """Run the Milestone-8 self-improvement ratchet on any PENDING candidate.
-
-    Fully import-guarded + isolated: if the ratchet (improve.ratchet_state) or a
-    candidate provider is absent, or anything inside raises, this returns a status
-    and the loop continues exactly as before -- the ratchet is purely additive.
-
-    A candidate provider is any callable resolvable as
-    `scripts.platformkit.pm_trading.ratchet_candidate.pending_candidate()` that
-    returns either None (nothing to evaluate this tick) or a dict
-    {"fingerprint": str, "eval_kwargs": {...}} matching evaluate_candidate's API.
-    Backoff on a repeatedly-rejecting candidate is enforced inside run_cycle, so
-    a bad candidate is NOT re-evaluated every tick. SHIP promotes atomically; a
-    partial pass is an honest REJECT (no $ edge, no flag flip here).
-    """
-    try:
-        from improve.ratchet_state import run_cycle
-    except Exception as exc:  # noqa: BLE001 -- ratchet unavailable -> today's behavior
-        return {"status": "unavailable", "reason": "%s: %s" % (type(exc).__name__, exc)}
-    try:
-        from scripts.platformkit.pm_trading.ratchet_candidate import pending_candidate
-    except Exception:  # noqa: BLE001 -- no producer wired yet -> nothing to do
-        return {"status": "no_candidate_provider"}
-    try:
-        cand = pending_candidate()
-    except Exception as exc:  # noqa: BLE001
-        return {"status": "error", "reason": "provider: %s" % type(exc).__name__}
-    if not cand:
-        return {"status": "idle"}
-    try:
-        res = run_cycle(cand["fingerprint"], cand["eval_kwargs"])
-        return {"status": res.get("status", "decided"),
-                "decision": res.get("decision"),
-                "shipped_version": res.get("shipped_version")}
-    except Exception as exc:  # noqa: BLE001 -- isolated: never sink the loop
-        return {"status": "error", "reason": "%s: %s" % (type(exc).__name__, exc)}
-
-
 def run_once(line_sports: tuple = _LINE_SPORTS) -> Dict[str, Any]:
     """Run one full cycle. Each step is guarded so one failure never sinks the loop."""
     out: Dict[str, Any] = {}
     for name, fn in (("paper", run_paper_cycle),
+                     ("place_props", _place_props),
                      ("grade", grade_open_bets),
+                     ("settle_props", _settle_props),
                      ("improve", improve_all)):
         try:
             out[name] = fn()
@@ -155,13 +143,12 @@ def run_once(line_sports: tuple = _LINE_SPORTS) -> Dict[str, Any]:
         out["scoreboard"] = _write_scoreboard()
     except Exception as exc:  # noqa: BLE001 -- must not stop the loop
         out["scoreboard"] = {"status": "error", "reason": "%s: %s" % (type(exc).__name__, exc)}
-    # Guarded step (6): Milestone-8 self-improvement ratchet (after grading +
-    # scoreboard so it evaluates on the freshly settled outcomes). Isolated +
-    # import-guarded: absent ratchet/provider or any error -> today's behavior.
-    try:
-        out["ratchet"] = _ratchet_tick()
-    except Exception as exc:  # noqa: BLE001 -- must not stop the loop
-        out["ratchet"] = {"status": "error", "reason": "%s: %s" % (type(exc).__name__, exc)}
+    # NOTE: there is NO separate "ratchet" step. The live self-improvement ratchet
+    # IS step (3) improve_all above (out["improve"]) -- the eval-gate-gated
+    # recalibration that only ever improves or holds. An earlier _ratchet_tick that
+    # imported a never-built ratchet_candidate.pending_candidate provider was a
+    # permanent no-op and has been removed so the cycle's reported steps match what
+    # actually runs (honesty: don't advertise a step that never executes).
     return out
 
 
@@ -170,17 +157,23 @@ def _print_cycle(out: Dict[str, Any]) -> None:
     paper = out.get("paper") or {}
     lt = out.get("line_tick") or {}
     sb = out.get("scoreboard") or {}
-    rt = out.get("ratchet") or {}
+    pp = out.get("place_props") or {}
+    sp = out.get("settle_props") or {}
     n = s.get("n", 0)
+    print("[auto_loop] props | placed=%s settled=%s pending=%s"
+          % (pp.get("n_placed", pp.get("status", "?")),
+             sp.get("n_settled_now", sp.get("status", "?")),
+             sp.get("n_pending", "?")))
+    # improve=<verdicts> IS the live self-improvement ratchet (step 3, improve_all);
+    # there is no separate ratchet field because no separate ratchet step runs.
     print("[auto_loop] cycle done | "
           "paper_recorded=%s | "
           "graded_n=%s hit_rate=%s mean_clv=%s | "
-          "improve=%s | line_tick=%s | scoreboard=%s | ratchet=%s"
+          "improve=%s | line_tick=%s | scoreboard=%s"
           % (paper.get("recorded", paper.get("status", "?")),
              n, s.get("hit_rate"), s.get("mean_clv_pct"),
              _improve_brief(out.get("improve")),
-             lt.get("status", "?"), sb.get("status", "?"),
-             rt.get("decision") or rt.get("status", "?")))
+             lt.get("status", "?"), sb.get("status", "?")))
     print("HONEST: paper only (executed=False); calibration/CLV is the yardstick, NOT a $ edge.")
 
 

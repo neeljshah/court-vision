@@ -88,6 +88,27 @@ def test_insufficient_data_on_tiny_input(tmp_path):
     assert "recal_brier" not in rec
 
 
+def test_prop_rows_excluded_from_game_calibration_corpus(tmp_path):
+    """DO-NO-HARM: settled player-prop rows (market_type='prop', outcome=over/under) must
+    NOT enter the game-win-prob calibration corpus -- they carry a different probability
+    semantics and would contaminate the recalibration."""
+    clv = tmp_path / "clv.jsonl"
+    with clv.open("w", encoding="utf-8") as fh:
+        # one real GAME settled row (kept) ...
+        fh.write(json.dumps({"sport": "mlb", "status": "settled", "graded": True,
+                             "matchup": "A vs B", "side": "home", "model_prob": 0.6,
+                             "outcome": "win", "ts": "2026-01-01T00:00:00+00:00"}) + "\n")
+        # ... and a settled PROP row that must be SKIPPED
+        fh.write(json.dumps({"sport": "mlb", "status": "settled", "graded": True,
+                             "matchup": "A vs B", "side": "home", "market_type": "prop",
+                             "market": "prop|Player|Hits|1.5|over", "model_prob": 0.7,
+                             "outcome": "win", "ts": "2026-01-01T00:01:00+00:00"}) + "\n")
+    settled = SI.load_settled("mlb", clv_path=clv,
+                              predictions_path=tmp_path / "none.jsonl")
+    assert len(settled) == 1  # only the game row; the prop row is excluded
+    assert settled[0]["p_raw"] == 0.6
+
+
 def test_insufficient_data_when_no_files(tmp_path):
     rec = SI.improve_cycle("tennis", clv_path=tmp_path / "nope.jsonl",
                            predictions_path=tmp_path / "nope2.jsonl",

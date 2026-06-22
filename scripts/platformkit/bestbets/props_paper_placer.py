@@ -106,6 +106,7 @@ def placement_from_edge(edge: Dict[str, Any], sport: str,
     line = edge.get("line")
     book = str(edge.get("source") or "prop").strip().lower() or "prop"
     market = "prop|%s|%s|%s|%s" % (player, stat, line, side)
+    day = today or _today_et()
     return {
         "sport": sport,
         "matchup": str(edge.get("match") or ""),
@@ -123,8 +124,10 @@ def placement_from_edge(edge: Dict[str, Any], sport: str,
         "flat_unit": float(stakes["flat_unit"]),
         "quarter_kelly": float(stakes["quarter_kelly"]),
         "market": market,
-        "bet_id": "prop|%s|%s|%s|%s|%s|%s" % (sport, player, stat, line, side, book),
-        "game_date": today or _today_et(),
+        # date in the bet_id -> idempotent WITHIN a day, but a new slate day re-places
+        # the same player/stat/line as a fresh position (one prop position per day).
+        "bet_id": "prop|%s|%s|%s|%s|%s|%s|%s" % (day, sport, player, stat, line, side, book),
+        "game_date": day,
     }
 
 
