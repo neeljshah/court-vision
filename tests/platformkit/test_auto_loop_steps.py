@@ -54,7 +54,10 @@ def _stub_prop_steps():
                       MagicMock(return_value={"status": "ok", "n_settled_now": 0,
                                               "n_pending": 0})), \
          patch.object(mod, "_prop_improve",
-                      MagicMock(return_value={"verdicts": {"mlb": "INSUFFICIENT_DATA"}})):
+                      MagicMock(return_value={"verdicts": {"mlb": "INSUFFICIENT_DATA"}})), \
+         patch.object(mod, "_prop_history_improve",
+                      MagicMock(return_value={"verdict": "HOLD", "source": "history",
+                                              "n_rows": 0})):
         yield
 
 
@@ -318,6 +321,25 @@ def test_prop_improve_is_wired_into_run_once():
         out = mod.run_once()
     prop_improve.assert_called_once()
     assert out["prop_improve"]["verdicts"]["mlb"] == "SHIP"
+
+
+def test_prop_history_improve_is_wired_into_run_once():
+    """run_once must run the HISTORICAL prop backtest fold (props get better from OLD games,
+    no live games needed) as a guarded step and surface its verdict."""
+    mod = _import_loop()
+    paper_s, grade_s, improve_s, summary_s = _core_stubs()
+    hist = MagicMock(return_value={"verdict": "HOLD", "source": "history", "n_rows": 3000})
+    with patch.object(mod, "run_paper_cycle", paper_s), \
+         patch.object(mod, "grade_open_bets", grade_s), \
+         patch.object(mod, "improve_all", improve_s), \
+         patch.object(mod, "grade_summary", summary_s), \
+         patch.object(mod, "_prop_history_improve", hist), \
+         patch.object(mod, "_line_tick", MagicMock(return_value={"status": "ok", "sports": []})), \
+         patch.object(mod, "_write_scoreboard", MagicMock(return_value={"status": "ok"})):
+        out = mod.run_once()
+    hist.assert_called_once()
+    assert out["prop_history_improve"]["source"] == "history"
+    assert out["prop_history_improve"]["n_rows"] == 3000
 
 
 def test_print_cycle_has_no_ratchet_field(capsys):
