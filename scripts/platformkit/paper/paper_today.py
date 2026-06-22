@@ -228,11 +228,12 @@ def build_today(
         "settled_today": [_view_row(r, placed=True) for r in settled_today_rows],
         "day_units": day_units,
         "cumulative_units": rec["cumulative_units"],
-        "bankroll": {
-            "start_units": rec["start_units"],
-            "current_units": rec["current_units"],
-            "net_units": rec["cumulative_units"],
-        },
+        # UNITS-rail: flat *_units keys (matches the clean paper_bankroll.json
+        # schema). The 'bankroll' token is banned by the honesty linter even with a
+        # 'units' suffix, so we never emit it; net is cumulative_units (above).
+        "start_units": rec["start_units"],
+        "current_units": rec["current_units"],
+        "net_units": rec["cumulative_units"],
         "n_placed_alltime": len(placed_rows),
         "n_settled_alltime": rec["n_settled"],
         "n_open": len(open_rows),
