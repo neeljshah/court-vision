@@ -83,6 +83,19 @@ def _prop_improve() -> Dict[str, Any]:
     except Exception as exc:  # noqa: BLE001
         return {"status": "error", "reason": "%s: %s" % (type(exc).__name__, exc)}
 
+
+def _prop_history_improve() -> Dict[str, Any]:
+    """Run ONE historical prop-calibration fold from the on-disk gamelogs (leak-free) so
+    props get better from OLD games -- no live games needed. A FRESH random player sample
+    each cycle (rotating seed) -> accumulating independent folds = honest replication
+    (single-fold lifts are artifacts). PROPOSE/RECORD only (own corpus file + tagged verdict
+    in prop_improve_ledger; never the units ledger / a flag / data/registry/). Guarded."""
+    try:
+        from scripts.platformkit.improve.prop_history_backtest import run_history_fold
+        return run_history_fold(seed=int(time.time()) % 100000)
+    except Exception as exc:  # noqa: BLE001
+        return {"status": "error", "reason": "%s: %s" % (type(exc).__name__, exc)}
+
 # Liveness heartbeat (RB-P0-03): this loop is supervised as m1_paper. It MUST beat
 # its declared heartbeat every cycle so the supervisor's HEARTBEAT readiness reads
 # this service not-ready when the heartbeat is absent (fresh boot) OR stale (a hung
@@ -139,7 +152,8 @@ def run_once(line_sports: tuple = _LINE_SPORTS) -> Dict[str, Any]:
                      ("grade", grade_open_bets),
                      ("settle_props", _settle_props),
                      ("improve", improve_all),
-                     ("prop_improve", _prop_improve)):
+                     ("prop_improve", _prop_improve),
+                     ("prop_history_improve", _prop_history_improve)):
         try:
             out[name] = fn()
         except Exception as exc:  # noqa: BLE001 -- a step must never crash the loop
@@ -191,6 +205,10 @@ def _print_cycle(out: Dict[str, Any]) -> None:
              _improve_brief(out.get("improve")),
              _improve_brief(out.get("prop_improve")),
              lt.get("status", "?"), sb.get("status", "?")))
+    ph = out.get("prop_history_improve") or {}
+    print("[auto_loop] prop_history (from old games) | verdict=%s n_rows=%s delta_brier=%s"
+          % (ph.get("verdict", ph.get("status", "?")), ph.get("n_rows", "?"),
+             ph.get("delta_brier", "?")))
     print("HONEST: paper only (executed=False); calibration/CLV is the yardstick, NOT a $ edge.")
 
 
