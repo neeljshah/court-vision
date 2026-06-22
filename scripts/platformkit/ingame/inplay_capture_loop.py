@@ -172,24 +172,58 @@ def _align_home_yes(home_name: str, away_name: str,
     return {"yes_home": yes_home, "yes_away": yes_away}
 
 
+def _team_in_legs(team: str, legs: Dict[str, float]) -> bool:
+    """True iff a team name aligns with some leg label (case-insensitive, either direction)."""
+    t = str(team or "").strip().lower()
+    if not t:
+        return False
+    return any(t in str(lab).strip().lower() or str(lab).strip().lower() in t
+               for lab in legs)
+
+
 def _scan_live_by_legs(sport: str, legs: Dict[str, float]) -> Optional[Dict[str, Any]]:
     """Bridge a Kalshi-keyed game to its ESPN live state by TEAM.
 
-    The capture loop keys games by their Kalshi ticker (e.g. KXWCGAME-26JUN22NORSEN), which
+    The capture loop keys games by their Kalshi ticker (e.g. KXWCGAME-26JUN22ARGAUT), which
     never equals the ESPN numeric event id -> live_state(sport, ticker) always misses. This
-    scans every in-progress ESPN game for the sport and returns the one whose home/away
-    display names align with the legs' team-name labels. No match -> None (the caller skips;
-    a misaligned pair would manufacture fake CLV, so we never guess). Never raises."""
+    scans every in-progress ESPN game and returns the one whose BOTH teams align with the
+    legs' team-name labels. BOTH must match: a single shared team (e.g. a live ARG-AUT vs a
+    future JOR-ARG market) would otherwise mis-bind two different games. No full match ->
+    None (the caller skips; a misaligned pair manufactures fake CLV). Never raises."""
     try:
         for st in _ls.live_states(sport):
             if not isinstance(st, dict):
                 continue
-            if _align_home_yes(str(st.get("home_display") or st.get("home") or ""),
-                               str(st.get("away_display") or st.get("away") or ""), legs):
+            home = str(st.get("home_display") or st.get("home") or "")
+            away = str(st.get("away_display") or st.get("away") or "")
+            if _team_in_legs(home, legs) and _team_in_legs(away, legs):
                 return st
     except Exception as exc:  # noqa: BLE001 -- a scan error is no match, never a crash
         logger.debug("inplay_capture_loop scan-by-legs(%s) failed: %s", sport, exc)
     return None
+
+
+def _draw_leg(legs: Dict[str, float]) -> Optional[float]:
+    """The draw/tie leg prob of a 3-way (soccer) market, or None for a 2-way market."""
+    for label, prob in legs.items():
+        lab = str(label).strip().lower()
+        if lab in ("tie", "draw", "x") or "draw" in lab or "tie" in lab:
+            return _prob01(prob)
+    return None
+
+
+def _fold_draw_into_field(pair: Dict[str, Optional[float]],
+                          legs: Dict[str, float]) -> Dict[str, Optional[float]]:
+    """Soccer is 3-way (home/draw/away); the day-trader prices a 2-way home-WIN binary.
+
+    Fold the draw leg into the not-home complement so yes_home + yes_field has a real
+    overround and the 2-way devig yields the correct fair P(home win) = home/(home+draw+
+    away). A 2-way market (no draw leg) is unchanged. Never raises."""
+    draw = _draw_leg(legs)
+    if draw is None:
+        return pair
+    yes_away = (pair.get("yes_away") or 0.0) + draw
+    return {"yes_home": pair.get("yes_home"), "yes_away": yes_away}
 
 
 def _build_tick(state: Dict[str, Any], model_p: float,
@@ -310,6 +344,7 @@ def _process_game(sport: str, gid: str, legs: Dict[str, float],
         if pair is None:
             row["reason"] = "no_home_leg"
             return row
+        pair = _fold_draw_into_field(pair, legs)  # 3-way (soccer) -> 2-way home-vs-field
         tick = _build_tick(state, model_p, pair)
         pkey = "%s/%s" % (sport, gid)
         dec = _dt.on_tick(sport, gid, tick, position=pos_map.get(pkey),
