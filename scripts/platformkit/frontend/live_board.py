@@ -100,6 +100,45 @@ def resolve_team(sport: str, abbr: Optional[str], display: Optional[str]) -> Opt
     return None
 
 
+_PREDICTOR_CACHE: Dict[str, Any] = {}
+
+
+def _cached_predictor(sport: str) -> Any:
+    """Build (once) + cache the domain predictor; building is corpus-heavy."""
+    s = _norm_sport(sport)
+    if s not in _PREDICTOR_CACHE:
+        _PREDICTOR_CACHE[s] = _build_predictor(s)
+    return _PREDICTOR_CACHE[s]
+
+
+def live_model_home_prob(sport: str, state: Dict[str, Any]) -> Optional[float]:
+    """P(home win) as-of this live tick -- the seam the in-play capture loop's default
+    model_fn calls. Reuses the domain predictor's CALIBRATED, leak-free predict_live
+    (read-only) on the realized live state (absolute score + minute + pregame lambdas).
+
+    SOCCER / WORLD CUP ONLY for now (the 1X2 in-game model is wired + calibrated there);
+    any other sport returns None so the caller SKIPS the pair cleanly -- it NEVER fabricates
+    a number. Never raises (a model miss is a clean skip, not a crashed tick)."""
+    try:
+        s = _norm_sport(sport)
+        if s not in ("soccer", "soccer_intl") or not isinstance(state, dict):
+            return None
+        home = resolve_team(s, state.get("home"), state.get("home_display"))
+        away = resolve_team(s, state.get("away"), state.get("away_display"))
+        frac = state.get("frac_elapsed")
+        if not home or not away or frac is None:
+            return None
+        minute = max(0.0, min(90.0, float(frac) * 90.0))
+        hg = int(round(float(state.get("home_goals") or 0)))
+        ag = int(round(float(state.get("away_goals") or 0)))
+        res = _cached_predictor(s).predict_live(home, away, minute, hg, ag)
+        p = res.get("p_home_win") if isinstance(res, dict) else None
+        return float(p) if isinstance(p, (int, float)) else None
+    except Exception as exc:  # noqa: BLE001 -- a model miss is a clean skip, never a crash
+        logger.debug("live_model_home_prob(%s) failed: %s", sport, exc)
+        return None
+
+
 def _nba_elapsed(period: Optional[int], clock: Optional[str]) -> Optional[float]:
     """NBA minutes ELAPSED from period (quarter) + displayClock (time REMAINING in period)."""
     if not period:

@@ -172,6 +172,26 @@ def _align_home_yes(home_name: str, away_name: str,
     return {"yes_home": yes_home, "yes_away": yes_away}
 
 
+def _scan_live_by_legs(sport: str, legs: Dict[str, float]) -> Optional[Dict[str, Any]]:
+    """Bridge a Kalshi-keyed game to its ESPN live state by TEAM.
+
+    The capture loop keys games by their Kalshi ticker (e.g. KXWCGAME-26JUN22NORSEN), which
+    never equals the ESPN numeric event id -> live_state(sport, ticker) always misses. This
+    scans every in-progress ESPN game for the sport and returns the one whose home/away
+    display names align with the legs' team-name labels. No match -> None (the caller skips;
+    a misaligned pair would manufacture fake CLV, so we never guess). Never raises."""
+    try:
+        for st in _ls.live_states(sport):
+            if not isinstance(st, dict):
+                continue
+            if _align_home_yes(str(st.get("home_display") or st.get("home") or ""),
+                               str(st.get("away_display") or st.get("away") or ""), legs):
+                return st
+    except Exception as exc:  # noqa: BLE001 -- a scan error is no match, never a crash
+        logger.debug("inplay_capture_loop scan-by-legs(%s) failed: %s", sport, exc)
+    return None
+
+
 def _build_tick(state: Dict[str, Any], model_p: float,
                 pair: Dict[str, Optional[float]]) -> Dict[str, Any]:
     """Assemble the LiveTick the day-trader's on_tick consumes (UNITS only, no $).
@@ -276,14 +296,17 @@ def _process_game(sport: str, gid: str, legs: Dict[str, float],
     try:
         state = ls_fn(sport, gid)
         if not isinstance(state, dict):
+            # gid is a Kalshi ticker, not an ESPN id -> bridge to the live game by team.
+            state = _scan_live_by_legs(sport, legs)
+        if not isinstance(state, dict):
             row["reason"] = "no_live_state"
             return row
         model_p = _prob01(md_fn(sport, state))
         if model_p is None:
             row["reason"] = "no_model_prob"
             return row
-        pair = _align_home_yes(str(state.get("home") or ""),
-                               str(state.get("away") or ""), legs)
+        pair = _align_home_yes(str(state.get("home_display") or state.get("home") or ""),
+                               str(state.get("away_display") or state.get("away") or ""), legs)
         if pair is None:
             row["reason"] = "no_home_leg"
             return row

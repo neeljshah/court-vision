@@ -197,3 +197,37 @@ def test_resolve_team_paths():
     assert lb.resolve_team("soccer_intl", None, "England") == "England"
     assert lb.resolve_team("soccer_intl", None, "Congo DR") == "DR Congo"
     assert lb.resolve_team("nba", None, "Some Team") is None   # no abbr -> unresolved
+
+
+# --------------------------------------------------- live_model_home_prob (in-game seam)
+class _StubLiveIntlPredictor:
+    """Soccer-shaped predictor: predict_live(home,away,minute,hg,ag) -> p_home_win."""
+    def predict_live(self, home, away, minute, hg, ag, **kw):  # noqa: ANN001
+        # monotone in score diff so the test can assert the sign is carried through
+        base = 0.5 + 0.1 * (hg - ag) + 0.001 * minute
+        return {"p_home_win": max(0.0, min(1.0, base)), "home": home, "away": away}
+
+
+def test_live_model_home_prob_soccer(monkeypatch):
+    monkeypatch.setitem(lb._PREDICTOR_CACHE, "soccer_intl", _StubLiveIntlPredictor())
+    st = {"home": "ARG", "away": "AUT", "home_display": "Argentina",
+          "away_display": "Austria", "home_goals": 1.0, "away_goals": 0.0,
+          "frac_elapsed": 0.5}
+    p = lb.live_model_home_prob("soccer_intl", st)
+    assert p is not None and 0.5 < p < 1.0  # home leading -> > coin flip
+    st_down = dict(st, home_goals=0.0, away_goals=1.0)
+    assert lb.live_model_home_prob("soccer_intl", st_down) < 0.5  # trailing -> < coin flip
+
+
+def test_live_model_home_prob_skips_unsupported_and_unresolved(monkeypatch):
+    monkeypatch.setitem(lb._PREDICTOR_CACHE, "soccer_intl", _StubLiveIntlPredictor())
+    # unsupported sport -> None (never fabricates a number)
+    assert lb.live_model_home_prob("nba", {"home": "BOS", "frac_elapsed": 0.5}) is None
+    # missing frac_elapsed -> None
+    assert lb.live_model_home_prob("soccer_intl",
+                                   {"home": "ARG", "home_display": "Argentina",
+                                    "away": "AUT", "away_display": "Austria"}) is None
+    # unresolved team (no display for a national team) -> None
+    assert lb.live_model_home_prob("soccer_intl",
+                                   {"home": "ARG", "away": "AUT",
+                                    "frac_elapsed": 0.5}) is None

@@ -45,9 +45,12 @@ logger = logging.getLogger("auto_loop")
 # Active sports for the line/close capture tick (matches odds_provider defaults).
 _LINE_SPORTS: tuple = ("nba", "mlb", "soccer", "tennis")
 
-# Per-tick cap on NEW prop placements per sport (highest-EV first). Bounds the daily
-# prop volume so the loop never floods the ledger; dedup keeps it idempotent within a day.
-_PROP_MAX_PER_SPORT: int = 8
+# Per-tick cap on NEW prop placements per sport (highest-EV first). The placer ALREADY
+# gates to reliable + ev_flag ok + proxy-floor-clearing edges (placement_from_edge -> tier),
+# so this is just a per-day flood-bound, not a quality gate. Raised 8 -> 100 so a full live
+# slate (e.g. ~80 floor-clearing World Cup player props today) all gets paper-placed the
+# same day instead of dribbling 8/cycle; per-day dedup keeps it idempotent. UNITS only.
+_PROP_MAX_PER_SPORT: int = 100
 
 
 def _place_props() -> Dict[str, Any]:
