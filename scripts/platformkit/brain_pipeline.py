@@ -183,6 +183,18 @@ def _run_model_stages(organized_root: Path) -> Dict:
             models.setdefault("_keystats", {})["key_stats"] = "written"
     except Exception:  # noqa: BLE001
         pass
+    # LIVE-ACTIVITY hubs: read-only snapshot of what the AI is DOING (services up,
+    # per-sport prediction status, CLV track record, SHIP/HOLD/REJECT ledgers, live
+    # paper trading, signal registry) -> _Index/_Whats_Happening + per-sport _Activity.
+    # Person-free counts/verdicts only; units, no $; honest-empty. Real-store path ->
+    # default-OFF (with_models). Never writes data/registry. Audit-clean.
+    try:
+        from scripts.platformkit.brain_activity import build_activity  # noqa: PLC0415
+        actv = build_activity(organized_root=organized_root, write=True)
+        if actv.get("n_written", 0) > 0 and "error" not in actv:
+            models.setdefault("_activity", {})["whats_happening"] = "written"
+    except Exception:  # noqa: BLE001
+        pass
     # W112 additive stages (form profiles -> stub consolidation+link-repair -> redundancy
     # audit). Kept in brain_extra_stages to hold this orchestrator under the LOC cap.
     try:
