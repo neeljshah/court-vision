@@ -96,6 +96,38 @@ def _prop_history_improve() -> Dict[str, Any]:
     except Exception as exc:  # noqa: BLE001
         return {"status": "error", "reason": "%s: %s" % (type(exc).__name__, exc)}
 
+
+def _prop_history_multisport() -> Dict[str, Any]:
+    """Run ONE historical prop-calibration fold for a NON-NBA sport (MLB / tennis / soccer)
+    from the on-disk per-player gamelogs (leak-free), rotating the sport each cycle so all
+    three accumulate independent folds overnight. Same SHIP/HOLD/REJECT/INSUFFICIENT ratchet
+    + planted-null do-no-harm as NBA. Each sport writes its OWN corpus file; verdict tagged
+    source=history + sport in prop_improve_ledger (never the units ledger / a flag /
+    data/registry/). Honest INSUFFICIENT_DATA where the data is thin. Guarded."""
+    try:
+        from scripts.platformkit.improve.prop_history_multisport import (
+            run_history_fold as _mf, MULTISPORT_SPORTS)
+        sport = MULTISPORT_SPORTS[(int(time.time()) // 60) % len(MULTISPORT_SPORTS)]
+        return _mf(sport, seed=int(time.time()) % 100000)
+    except Exception as exc:  # noqa: BLE001
+        return {"status": "error", "reason": "%s: %s" % (type(exc).__name__, exc)}
+
+
+def _prop_history_meta() -> Dict[str, Any]:
+    """READ-ONLY meta-aggregator: re-read the accumulated source=history folds and write the
+    replicated-verdict-per-(sport,stat) read surface (prop_history_meta.json). A SHIP only
+    counts when it replicates across >= 2 folds (single-fold lift = artifact); any reject or
+    planted-null leak blocks the group. Never recalibrates / serves / flips a flag. Guarded."""
+    try:
+        from scripts.platformkit.improve.prop_history_meta import run as _meta_run
+        rep = _meta_run(write=True)
+        return {"status": "ok", "n_history_folds": rep.get("n_history_folds"),
+                "groups": [{"sport": g["sport"], "stat": g["stat"],
+                            "replicated_verdict": g["replicated_verdict"]}
+                           for g in rep.get("groups", [])]}
+    except Exception as exc:  # noqa: BLE001
+        return {"status": "error", "reason": "%s: %s" % (type(exc).__name__, exc)}
+
 # Liveness heartbeat (RB-P0-03): this loop is supervised as m1_paper. It MUST beat
 # its declared heartbeat every cycle so the supervisor's HEARTBEAT readiness reads
 # this service not-ready when the heartbeat is absent (fresh boot) OR stale (a hung
@@ -153,7 +185,9 @@ def run_once(line_sports: tuple = _LINE_SPORTS) -> Dict[str, Any]:
                      ("settle_props", _settle_props),
                      ("improve", improve_all),
                      ("prop_improve", _prop_improve),
-                     ("prop_history_improve", _prop_history_improve)):
+                     ("prop_history_improve", _prop_history_improve),
+                     ("prop_history_multisport", _prop_history_multisport),
+                     ("prop_history_meta", _prop_history_meta)):
         try:
             out[name] = fn()
         except Exception as exc:  # noqa: BLE001 -- a step must never crash the loop
@@ -209,6 +243,15 @@ def _print_cycle(out: Dict[str, Any]) -> None:
     print("[auto_loop] prop_history (from old games) | verdict=%s n_rows=%s delta_brier=%s"
           % (ph.get("verdict", ph.get("status", "?")), ph.get("n_rows", "?"),
              ph.get("delta_brier", "?")))
+    pm = out.get("prop_history_multisport") or {}
+    print("[auto_loop] prop_history multisport | sport=%s verdict=%s n_rows=%s delta_brier=%s"
+          % (pm.get("sport", "?"), pm.get("verdict", pm.get("status", "?")),
+             pm.get("n_rows", "?"), pm.get("delta_brier", "?")))
+    mta = out.get("prop_history_meta") or {}
+    reps = ", ".join("%s/%s=%s" % (g["sport"], g["stat"], g["replicated_verdict"])
+                     for g in (mta.get("groups") or [])) or "?"
+    print("[auto_loop] prop_history meta (replicated) | folds=%s | %s"
+          % (mta.get("n_history_folds", "?"), reps))
     print("HONEST: paper only (executed=False); calibration/CLV is the yardstick, NOT a $ edge.")
 
 
