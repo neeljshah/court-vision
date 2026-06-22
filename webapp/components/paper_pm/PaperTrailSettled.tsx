@@ -94,12 +94,20 @@ function SettledTableRow({ row }: { row: PaperTrailRow }) {
         <span className="ml-1.5 font-mono text-[10px] text-slate-500">
           {row.sport?.toUpperCase()}
         </span>
+        {row.prop_player ? (
+          <span className="block font-mono text-[10px] text-sky-400/80" data-testid="settled-prop-selection">
+            {row.prop_player}
+            {row.prop_stat ? ` · ${row.prop_stat}` : ""}
+          </span>
+        ) : null}
       </td>
       <td className="px-2 py-1.5 font-mono text-[11px] text-slate-400">
         {row.market_type || EMPTY_CELL}
       </td>
       <td className="px-2 py-1.5 font-mono text-[11px] text-slate-400">
-        {row.side || EMPTY_CELL}
+        {row.prop_side
+          ? `${row.prop_side}${row.line != null ? ` ${row.line}` : ""}`
+          : row.side || EMPTY_CELL}
       </td>
       <td className="px-2 py-1.5">
         {row.tier ? (
@@ -236,18 +244,18 @@ export function PaperTrailSettled({ rows, loading, error, settledOnly }: Props) 
             </caption>
             <thead className="sticky top-0 z-10 bg-bg-panel text-[10px] uppercase tracking-wide text-slate-400">
               <tr className="border-b border-slate-800">
-                <th className="px-2 py-2">Matchup</th>
-                <th className="px-2 py-2">Market</th>
-                <th className="px-2 py-2">Side</th>
-                <th className="px-2 py-2">Tier</th>
-                <th className="px-2 py-2 text-right">Model P</th>
-                <th className="px-2 py-2 text-right">Entry</th>
-                <th className="px-2 py-2">Book</th>
-                <th className="px-2 py-2 text-right">Model EV</th>
-                <th className="px-2 py-2 text-right">CLV</th>
-                <th className="px-2 py-2">CLV status</th>
-                <th className="px-2 py-2">Result</th>
-                <th className="px-2 py-2 text-right">Units</th>
+                <th scope="col" className="px-2 py-2">Matchup</th>
+                <th scope="col" className="px-2 py-2">Market</th>
+                <th scope="col" className="px-2 py-2">Side</th>
+                <th scope="col" className="px-2 py-2">Tier</th>
+                <th scope="col" className="px-2 py-2 text-right">Model P</th>
+                <th scope="col" className="px-2 py-2 text-right">Entry</th>
+                <th scope="col" className="px-2 py-2">Book</th>
+                <th scope="col" className="px-2 py-2 text-right">Model EV</th>
+                <th scope="col" className="px-2 py-2 text-right">CLV</th>
+                <th scope="col" className="px-2 py-2">CLV status</th>
+                <th scope="col" className="px-2 py-2">Result</th>
+                <th scope="col" className="px-2 py-2 text-right">Units</th>
               </tr>
             </thead>
             <tbody>

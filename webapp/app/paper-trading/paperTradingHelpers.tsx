@@ -8,9 +8,51 @@
 //
 // HONESTY RAILS: units only; no $ edge; CLV = honest calibration yardstick.
 
-import type { PaperTrailRow, PmTrailRow, ClvScoreboard } from "@/lib/p5api";
+import type { PaperTrail, PaperTrailRow, PmTrail, PmTrailRow, ClvScoreboard } from "@/lib/p5api";
 import type { PaperTrailRow as PaperTrailRowType } from "@/lib/p5api";
+import type { PnlSeries, PaperBankroll, Unavailable as UnavailableSentinel } from "@/lib/types";
+import { api, isUnavailable } from "@/lib/p5api";
 import { EMPTY_CELL } from "@/lib/tokens";
+
+// ---------------------------------------------------------------------------
+// Combined fetcher for the paper-trading page -- one useLiveData fetch pulls the
+// trail + PM trail + CLV scoreboard + P&L equity series + bankroll in parallel.
+// Trail is the PRIMARY feed: if it is unavailable the whole payload degrades to
+// the Unavailable sentinel. Every secondary feed degrades to null independently.
+// ---------------------------------------------------------------------------
+
+export interface CombinedPayload {
+  trail: PaperTrail | null;
+  pmTrail: PmTrail | null;
+  clv: ClvScoreboard | null;
+  pnl: PnlSeries | null;
+  bankroll: PaperBankroll | null;
+}
+
+export async function fetchPaperCombined(
+  signal: AbortSignal,
+): Promise<CombinedPayload | UnavailableSentinel> {
+  const [t, pt, c, pnl, bank] = await Promise.all([
+    api.getPaperTrail({ limit: 2000 }, signal),
+    api.pmTrail(undefined, signal),
+    api.getPaperClv(signal),
+    api.getPaperPnlSeries(signal),
+    api.getPaperBankroll(signal),
+  ]);
+  if (isUnavailable(t)) {
+    return {
+      status: "unavailable",
+      reason: (t as { reason?: string }).reason ?? "unavailable",
+    } as UnavailableSentinel;
+  }
+  return {
+    trail: t as PaperTrail,
+    pmTrail: isUnavailable(pt) ? null : (pt as PmTrail),
+    clv: isUnavailable(c) ? null : (c as ClvScoreboard),
+    pnl: isUnavailable(pnl) ? null : (pnl as PnlSeries),
+    bankroll: isUnavailable(bank) ? null : (bank as PaperBankroll),
+  };
+}
 
 // ---------------------------------------------------------------------------
 // StatTile -- shared tile for tally + CLV. Neutral loading state; never red.
@@ -155,6 +197,25 @@ export function meanClvClass(clv: ClvScoreboard | null): string {
   if (clv.mean_clv_pct > 0) return "text-success";
   if (clv.mean_clv_pct < 0) return "text-danger";
   return "text-slate-100";
+}
+
+// mergeVenueRows -- the row set the per-venue execution breakdown aggregates: the
+// main paper trail (scope-filtered) UNION the separate Kalshi/Polymarket PM trail,
+// deduped by a stable key so a bet recorded in both sources counts once. Surfaces
+// sportsbooks + DFS prop books + Kalshi/Polymarket + in-game in one breakdown.
+export function mergeVenueRows(
+  trailRows: PaperTrailRowType[],
+  pmRows: PaperTrailRowType[],
+): PaperTrailRowType[] {
+  const seen = new Set<string>();
+  const merged: PaperTrailRowType[] = [];
+  for (const r of [...trailRows, ...pmRows]) {
+    const key = `${r.game_id}|${r.side}|${r.taken_book}|${r.taken_decimal}|${r.ts}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    merged.push(r);
+  }
+  return merged;
 }
 
 // Re-export for callers that need to pass EMPTY_CELL without importing tokens.

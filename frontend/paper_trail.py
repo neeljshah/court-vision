@@ -162,15 +162,18 @@ def _build_trail_row(raw: Dict[str, Any]) -> Dict[str, Any]:
     market_type = raw.get("market_type") or raw.get("market")
     line = raw.get("line")
     stake_units = raw.get("stake_units")
+    # prop selection identity -- renders a prop as "<player> <stat> <over/under>"
+    # instead of an opaque "prop / home". Absent (None) on non-prop rows.
+    prop_player = raw.get("prop_player")
+    prop_stat = raw.get("prop_stat")
+    prop_side = raw.get("prop_side")
 
     # PE-P0-03: read clv_is_proxy as a FIRST-CLASS field the grader wrote -- do NOT
-    # infer proxy from clv_pct=None (that mislabels a NO-close bet as proxy). The
-    # producer sets clv_is_proxy=False on a no-close settle; we trust it. Legacy
+    # infer proxy from clv_pct=None (that mislabels a NO-close bet as proxy). Legacy
     # rows (no explicit field) default to False, never an inferred True.
     clv_is_proxy = bool(raw.get("clv_is_proxy", False))
-    # clv_status: explicit lifecycle of the CLV grade ("true_close" | "proxy" |
-    # "no_close" | None-when-open). A settled row with no clv_pct and no explicit
-    # status is treated as "no_close" (CLV unavailable -> VOID/pending), NOT proxy.
+    # clv_status: explicit lifecycle ("true_close" | "proxy" | "no_close" | None).
+    # A settled row with no clv_pct and no explicit status -> "no_close", NOT proxy.
     clv_status = raw.get("clv_status")
     if clv_status is None and status == "settled":
         clv_status = "proxy" if clv_is_proxy else (
@@ -196,6 +199,9 @@ def _build_trail_row(raw: Dict[str, Any]) -> Dict[str, Any]:
         "sport": sport,
         "side": side,
         "market_type": (str(market_type) if market_type is not None else None),
+        "prop_player": (str(prop_player) if prop_player is not None else None),
+        "prop_stat": (str(prop_stat) if prop_stat is not None else None),
+        "prop_side": (str(prop_side) if prop_side is not None else None),
         "line": (float(line) if isinstance(line, (int, float)) else line),
         "taken_book": str(raw.get("taken_book", "")),
         "taken_decimal": (float(taken_decimal) if taken_decimal is not None else None),
@@ -213,8 +219,7 @@ def _build_trail_row(raw: Dict[str, Any]) -> Dict[str, Any]:
         "clv_unavailable": clv_unavailable,
         "clv_note": (str(clv_note) if clv_note is not None else None),
         "executed": False,  # INVARIANT: paper-only, never a real bet
-        # preserve the source channel ("paper_ingame" for live in-game positions, else the
-        # default paper channel) so the UI can isolate in-game bets from props/pregame.
+        # source channel ("paper_ingame" for live in-game, else paper) -> UI isolates in-game.
         "channel": (str(raw.get("channel")) if raw.get("channel") is not None else None),
         "ts": ts,
         "settled_at": (str(settled_at) if settled_at is not None else None),
@@ -292,8 +297,4 @@ def clv_summary(ledger_path: Optional[Path] = None) -> Dict[str, Any]:
     return summary
 
 
-__all__ = [
-    "DEFAULT_LEDGER_PATH",
-    "read_trail",
-    "clv_summary",
-]
+__all__ = ["DEFAULT_LEDGER_PATH", "read_trail", "clv_summary"]
