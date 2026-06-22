@@ -113,6 +113,7 @@ def on_tick(sport: str, game_id: str, tick: LiveTick, *,
             is_liquid=bool(tick.get("is_liquid", False)),
             is_fresh=bool(tick.get("is_fresh", True)),
             clv_is_proxy=bool(tick.get("clv_is_proxy", True)),
+            min_ev=tick.get("min_ev_floor"),  # opt-in relaxed in-game floor (None = strict)
         )
         decision.update({"tier": ev["tier"], "edge": ev["edge"],
                          "reason": ev["reason"]})

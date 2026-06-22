@@ -373,3 +373,14 @@ def test_settled_before_open_still_holds_with_recency(tmp_path):
     p = _write_ledger(tmp_path / "ledger.jsonl", [open_new, settled_old])
     trail = read_trail(ledger_path=p)
     assert trail[0]["status"] == "settled" and trail[1]["status"] == "open"
+
+
+def test_trail_preserves_channel_for_ingame_filter(tmp_path):
+    """The trail must surface channel so the UI can isolate in-game (paper_ingame) bets."""
+    ingame = _open_row("KXWCGAME-26JUN22ARGAUT", "soccer_intl", "2026-06-22T17:30:00+00:00")
+    ingame["channel"] = "paper_ingame"
+    ingame["market"] = "win_home"
+    p = _write_ledger(tmp_path / "ledger.jsonl", [ingame])
+    trail = read_trail(ledger_path=p)
+    assert len(trail) == 1
+    assert trail[0]["channel"] == "paper_ingame"

@@ -47,10 +47,10 @@ _LINE_SPORTS: tuple = ("nba", "mlb", "soccer", "tennis")
 
 # Per-tick cap on NEW prop placements per sport (highest-EV first). The placer ALREADY
 # gates to reliable + ev_flag ok + proxy-floor-clearing edges (placement_from_edge -> tier),
-# so this is just a per-day flood-bound, not a quality gate. Raised 8 -> 100 so a full live
-# slate (e.g. ~80 floor-clearing World Cup player props today) all gets paper-placed the
-# same day instead of dribbling 8/cycle; per-day dedup keeps it idempotent. UNITS only.
-_PROP_MAX_PER_SPORT: int = 100
+# so this is just a per-day flood-bound, not a quality gate. Set to 25: the day's highest-EV
+# floor-clearing props (incl. World Cup) still place, but the trail is not flooded into a
+# ~900-row firehose that buries live in-game positions. Per-day dedup keeps it idempotent.
+_PROP_MAX_PER_SPORT: int = 25
 
 
 def _place_props() -> Dict[str, Any]:

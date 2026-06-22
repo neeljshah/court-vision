@@ -213,6 +213,9 @@ def _build_trail_row(raw: Dict[str, Any]) -> Dict[str, Any]:
         "clv_unavailable": clv_unavailable,
         "clv_note": (str(clv_note) if clv_note is not None else None),
         "executed": False,  # INVARIANT: paper-only, never a real bet
+        # preserve the source channel ("paper_ingame" for live in-game positions, else the
+        # default paper channel) so the UI can isolate in-game bets from props/pregame.
+        "channel": (str(raw.get("channel")) if raw.get("channel") is not None else None),
         "ts": ts,
         "settled_at": (str(settled_at) if settled_at is not None else None),
     }

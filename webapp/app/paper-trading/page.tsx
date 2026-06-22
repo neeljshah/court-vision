@@ -8,60 +8,29 @@
 // Per-venue VenueSummary: only renders rows that exist.
 // UNITS/prob only. NO '$'. Real-money DENY. stale-never-green LiveBadge.
 
-import { useCallback, useState } from "react";
-import { api, isUnavailable } from "@/lib/p5api";
-import type { PaperTrail, PaperTrailRow, PmTrail, ClvScoreboard } from "@/lib/p5api";
+import { useCallback, useMemo, useState } from "react";
+import type { PaperTrailRow } from "@/lib/p5api";
 import { useLiveData } from "@/lib/useLiveData";
-import type { Unavailable as UnavailableSentinel } from "@/lib/types";
 import { Panel, Badge, Unavailable } from "@/components/p6/Primitives";
+import { PaperEquityPanel } from "@/components/paper/PaperEquityPanel";
 import { LiveBadge } from "@/components/live/LiveBadge";
 import { PmTrailTable } from "@/components/paper_pm/PmTrailTable";
 import { PaperTrailSettled } from "@/components/paper_pm/PaperTrailSettled";
 import { OpenPositions } from "@/components/paper_pm/OpenPositions";
 import { VenueSummary } from "@/components/paper_pm/VenueSummary";
 import { PanelErrorBoundary } from "@/components/p6/PanelErrorBoundary";
-import { fmtPct } from "@/lib/utils";
+import { fmtPct, cn } from "@/lib/utils";
 import {
   StatTile, deriveTally, deriveDoneSummary, toPaperTrailRows,
-  meanClvClass, EMPTY_CELL,
+  meanClvClass, EMPTY_CELL, fetchPaperCombined, type CombinedPayload,
 } from "./paperTradingHelpers";
-
-// ---------------------------------------------------------------------------
-// Combined fetcher payload
-// ---------------------------------------------------------------------------
-
-interface CombinedPayload {
-  trail: PaperTrail | null;
-  pmTrail: PmTrail | null;
-  clv: ClvScoreboard | null;
-}
 
 // ---------------------------------------------------------------------------
 // Page component
 // ---------------------------------------------------------------------------
 
 export default function PaperTradingPage() {
-  const fetcher = useCallback(
-    async (signal: AbortSignal): Promise<CombinedPayload | UnavailableSentinel> => {
-      const [t, pt, c] = await Promise.all([
-        api.getPaperTrail({ limit: 2000 }, signal),
-        api.pmTrail(undefined, signal),
-        api.getPaperClv(signal),
-      ]);
-      if (isUnavailable(t)) {
-        return {
-          status: "unavailable",
-          reason: (t as { reason?: string }).reason ?? "unavailable",
-        } as UnavailableSentinel;
-      }
-      return {
-        trail: t as PaperTrail,
-        pmTrail: isUnavailable(pt) ? null : (pt as PmTrail),
-        clv: isUnavailable(c) ? null : (c as ClvScoreboard),
-      };
-    },
-    [],
-  );
+  const fetcher = useCallback(fetchPaperCombined, []);
 
   const {
     data, ageSec, isStale, error, isLoading: loading,
@@ -72,9 +41,26 @@ export default function PaperTradingPage() {
   const trail = data?.trail ?? null;
   const pmTrail = data?.pmTrail ?? null;
   const clv = data?.clv ?? null;
+  const pnl = data?.pnl ?? null;
+  const bankroll = data?.bankroll ?? null;
 
-  // All trail rows (54 total: 46 settled + 8 open from /api/paper/trail).
+  // All trail rows from /api/paper/trail (open + settled, newest-first within bucket).
   const trailRows: PaperTrailRow[] = trail?.trail ?? [];
+
+  // Scope filter: the full trail can be a firehose (hundreds of open props). "wc" isolates
+  // World Cup activity (sport=soccer_intl: props + live in-game), "ingame" isolates live
+  // in-game positions (channel=paper_ingame across sports). Pure client-side, no refetch.
+  const [scope, setScope] = useState<"all" | "wc" | "ingame">("all");
+  const viewRows: PaperTrailRow[] = useMemo(() => {
+    if (scope === "wc") return trailRows.filter((r) => r.sport === "soccer_intl");
+    if (scope === "ingame") return trailRows.filter((r) => r.channel === "paper_ingame");
+    return trailRows;
+  }, [trailRows, scope]);
+  const scopeCounts = useMemo(() => ({
+    all: trailRows.length,
+    wc: trailRows.filter((r) => r.sport === "soccer_intl").length,
+    ingame: trailRows.filter((r) => r.channel === "paper_ingame").length,
+  }), [trailRows]);
   const pmTrades = pmTrail?.trades ?? [];
   const totalPm = pmTrail?.count ?? pmTrades.length;
   const tally = deriveTally(pmTrades);
@@ -135,6 +121,11 @@ export default function PaperTradingPage() {
         No dollar edge is claimed. CLV (beat-the-close) is the only honest calibration yardstick.
       </div>
 
+      {/* BANKROLL + EQUITY CURVE -- "how much I would have made" in UNITS */}
+      <PanelErrorBoundary label="bankroll and equity curve">
+        <PaperEquityPanel series={pnl} bankroll={bankroll} loading={loading && !data} />
+      </PanelErrorBoundary>
+
       {/* PM tally strip (running paper tally from PM trades) */}
       <div
         aria-label="Running paper tally"
@@ -166,6 +157,35 @@ export default function PaperTradingPage() {
         />
       </div>
 
+      {/* SCOPE FILTER: All / World Cup / In-game -- de-noise the trail firehose */}
+      <div
+        data-testid="scope-filter"
+        role="group"
+        aria-label="Filter paper trail by scope"
+        className="mb-4 flex flex-wrap items-center gap-2"
+      >
+        {([
+          ["all", "All", scopeCounts.all],
+          ["wc", "World Cup", scopeCounts.wc],
+          ["ingame", "In-game (live)", scopeCounts.ingame],
+        ] as const).map(([key, label, n]) => (
+          <button
+            key={key}
+            type="button"
+            data-testid={`scope-${key}`}
+            onClick={() => setScope(key)}
+            className={cn(
+              "rounded-full border px-3 py-1 text-[11px] font-mono transition-colors",
+              scope === key
+                ? "border-amber-500/70 bg-amber-950/40 text-amber-300"
+                : "border-slate-700 text-slate-400 hover:bg-slate-800/40"
+            )}
+          >
+            {label} ({n})
+          </button>
+        ))}
+      </div>
+
       {/* OPEN POSITIONS: trail rows, OpenPositions filters status=open||!graded */}
       <section
         data-testid="open-positions-section"
@@ -173,10 +193,10 @@ export default function PaperTradingPage() {
         className="mb-6"
       >
         <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-slate-500">
-          Open positions ({loading ? "..." : doneSummary.nOpen})
+          Open positions{scope !== "all" ? ` -- ${scope === "wc" ? "World Cup" : "in-game"}` : ""}
         </h2>
         <PanelErrorBoundary label="open positions">
-          <OpenPositions rows={trailRows} loading={loading && !trail} error={error} />
+          <OpenPositions rows={viewRows} loading={loading && !trail} error={error} />
         </PanelErrorBoundary>
       </section>
 
@@ -195,7 +215,7 @@ export default function PaperTradingPage() {
           {error && !trail ? (
             <Unavailable reason={error} />
           ) : (
-            <PaperTrailSettled rows={trailRows} loading={loading && !trail} error={error} settledOnly />
+            <PaperTrailSettled rows={viewRows} loading={loading && !trail} error={error} settledOnly />
           )}
         </PanelErrorBoundary>
       </Panel>

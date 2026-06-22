@@ -93,7 +93,8 @@ def evaluate(*, model_prob: Any,
              calibration_justified: bool,
              is_liquid: bool,
              is_fresh: bool = True,
-             clv_is_proxy: bool = True) -> Dict[str, Any]:
+             clv_is_proxy: bool = True,
+             min_ev: Any = None) -> Dict[str, Any]:
     """PURE: evaluate ONE live in-play tick into a tiered, gated paper signal.
 
     Computes the devigged home price, the edge = model_prob - devigged_price, and the EV
@@ -152,12 +153,24 @@ def evaluate(*, model_prob: Any,
     out["obtainable_decimal"] = dec
 
     tier = _tier(ev=ev, model_prob=mp, market_prob=devig_p, clv_is_proxy=clv_is_proxy)
+    # RELAXED in-game floor (opt-in via min_ev): when the pre-registered policy floor is not
+    # cleared but the EV still beats an explicit lower floor, assign the marginal tier "C".
+    # This is a LOWER-CONFIDENCE, honestly-graded paper bet (CLV will tell the truth) -- it is
+    # NOT a claim of edge. Default min_ev=None -> behaviour is identical to the strict floor.
+    relaxed = False
+    if tier is None and min_ev is not None:
+        try:
+            if ev >= float(min_ev) and ev > 0.0:
+                tier, relaxed = "C", True
+        except (TypeError, ValueError):
+            pass
     out["tier"] = tier
+    out["relaxed_floor"] = relaxed
     if tier is None:
         out["reason"] = "below_floor"
         return out
     out["action"] = "bet"
-    out["reason"] = "ok"
+    out["reason"] = "ok_relaxed" if relaxed else "ok"
     return out
 
 
