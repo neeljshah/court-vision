@@ -106,9 +106,10 @@ def _prop_history_multisport() -> Dict[str, Any]:
     data/registry/). Honest INSUFFICIENT_DATA where the data is thin. Guarded."""
     try:
         from scripts.platformkit.improve.prop_history_multisport import (
-            run_history_fold as _mf, MULTISPORT_SPORTS)
-        sport = MULTISPORT_SPORTS[(int(time.time()) // 60) % len(MULTISPORT_SPORTS)]
-        return _mf(sport, seed=int(time.time()) % 100000)
+            run_history_fold as _mf, sport_stat_pairs)
+        pairs = sport_stat_pairs()
+        sport, stat = pairs[(int(time.time()) // 60) % len(pairs)]  # rotate (sport,stat)
+        return _mf(sport, seed=int(time.time()) % 100000, only_stat=stat)
     except Exception as exc:  # noqa: BLE001
         return {"status": "error", "reason": "%s: %s" % (type(exc).__name__, exc)}
 

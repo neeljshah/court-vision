@@ -110,6 +110,21 @@ def test_planted_null_rejects_on_shuffled_signal(synth_cfg, tmp_path):
         assert rec.get("null_shipped") is False
 
 
+def test_sport_stat_pairs_cover_all_configs():
+    pairs = M.sport_stat_pairs()
+    # every (sport, stat) in the real configs appears exactly once
+    expect = {(sp, st) for sp, cfg in M.SPORT_CONFIGS.items() for st in cfg["stats"]}
+    assert set(pairs) == expect
+    assert len(pairs) == len(expect)  # no duplicates
+
+
+def test_only_stat_fold_tags_stat(synth_cfg, tmp_path):
+    rec = M.run_history_fold("demo", seed=1, max_rows=500, only_stat="pts",
+                             corpus_path=tmp_path / "c.jsonl",
+                             ledger_path=tmp_path / "l.jsonl", append=True)
+    assert rec.get("stat") == "pts"  # per-stat folds carry the stat for the meta-aggregator
+
+
 def test_run_fold_never_raises_on_bad_loader(monkeypatch, tmp_path):
     def boom(stats):
         raise RuntimeError("disk gone")

@@ -149,6 +149,16 @@ SPORT_CONFIGS: Dict[str, Dict[str, Any]] = {
 MULTISPORT_SPORTS = tuple(SPORT_CONFIGS.keys())
 
 
+def sport_stat_pairs() -> List[tuple]:
+    """Flat (sport, stat) list across all configs -- the per-stat fold rotation for the loop
+    so the meta-aggregator can report a replicated verdict per (sport, stat), not just ALL."""
+    pairs: List[tuple] = []
+    for sport, cfg in SPORT_CONFIGS.items():
+        for stat in cfg["stats"]:
+            pairs.append((sport, stat))
+    return pairs
+
+
 def _player_rows(sport: str, player_id: str, dated: List[tuple],
                  stats: Sequence[str], min_history: int,
                  only_stat: Optional[str] = None) -> List[Dict[str, Any]]:
@@ -273,7 +283,7 @@ def _main(argv: Optional[List[str]] = None) -> int:
 
 __all__ = [
     "build_history_corpus", "write_corpus", "run_history_fold",
-    "SPORT_CONFIGS", "MULTISPORT_SPORTS",
+    "SPORT_CONFIGS", "MULTISPORT_SPORTS", "sport_stat_pairs",
 ]
 
 
