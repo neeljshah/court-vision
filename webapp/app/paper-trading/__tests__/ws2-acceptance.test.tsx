@@ -461,14 +461,16 @@ describe("WS2-4 -- Per-venue VenueSummary renders only real rows", () => {
     expect(screen.getByTestId("venue-summary-section")).toBeInTheDocument();
   });
 
-  it("VenueSummary shows 'no venue data' when PM trail is empty (no fabricated tiles)", async () => {
-    mockWith54RowTrail(); // PM trail = 0, so no venue data
+  it("VenueSummary renders venue tiles from the REAL trail (not just the PM trail)", async () => {
+    // The per-venue breakdown now sources the real paper trail (sportsbooks / prop
+    // books / in-game) UNION the PM trail -- so a 54-row main trail surfaces its
+    // venue even when the PM trail is empty. taken_book "espn:DraftKings" -> "DraftKings".
+    mockWith54RowTrail(); // 54 main-trail rows @ espn:DraftKings, PM trail = 0
     await renderPage();
     await waitFor(() => {
-      // VenueSummary renders "No venue data yet -- no paper trades" when rows=[]
-      const section = screen.getByTestId("venue-summary-section");
-      expect(section.textContent).toMatch(/no venue data|no paper trades/i);
+      expect(screen.getAllByTestId("venue-tile").length).toBeGreaterThan(0);
     });
+    expect(screen.getByText("DraftKings")).toBeInTheDocument();
   });
 });
 

@@ -181,6 +181,26 @@ def test_trail_row_has_expected_fields(tmp_path):
     assert not missing, "Missing fields: %s" % missing
 
 
+def test_prop_selection_fields_carried(tmp_path):
+    """A prop ledger row surfaces prop_player/prop_stat/prop_side on the trail row
+    so the UI renders "<player> <stat> <over/under>" instead of an opaque prop."""
+    prop = _open_row(matchup="NYY @ DET", sport="mlb")
+    prop.update({
+        "market_type": "prop", "side": "home", "line": 0.5,
+        "taken_book": "underdog", "taken_decimal": 2.93,
+        "prop_player": "Jose Caballero", "prop_stat": "RBIs", "prop_side": "over",
+    })
+    p = _write_ledger(tmp_path / "ledger.jsonl", [prop])
+    row = read_trail(ledger_path=p)[0]
+    assert row["prop_player"] == "Jose Caballero"
+    assert row["prop_stat"] == "RBIs"
+    assert row["prop_side"] == "over"
+    # non-prop rows carry None for these (never a fabricated player/stat).
+    p2 = _write_ledger(tmp_path / "ledger2.jsonl", [_open_row()])
+    ml = read_trail(ledger_path=p2)[0]
+    assert ml["prop_player"] is None and ml["prop_stat"] is None and ml["prop_side"] is None
+
+
 def test_no_dollar_fields(tmp_path):
     """HONESTY: no dollar / roi / profit / pnl / bankroll / bare-stake key on rows.
 

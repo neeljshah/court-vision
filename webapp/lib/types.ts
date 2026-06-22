@@ -392,6 +392,11 @@ export type PaperTrailRow = {
   sport: string;
   side: string; // "home" | "away"
   market_type: string | null;
+  // prop selection identity (market_type==="prop" only; null otherwise) -- lets the
+  // trail render "<player> <stat> <over/under>" instead of an opaque "prop / home".
+  prop_player?: string | null;
+  prop_stat?: string | null;
+  prop_side?: string | null; // "over" | "under"
   line: number | null;
   taken_book: string;
   taken_decimal: number | null;
@@ -909,11 +914,68 @@ export type PaperPredictions = {
 };
 
 // ---------------------------------------------------------------------------
+// Paper P&L equity-curve series -- GET /api/paper/pnl/series.
+// UNITS only -- NO $ field. mean_clv_pct_or_INSUFFICIENT is a number when proven
+// or the literal string "INSUFFICIENT_DATA" otherwise (surfaced verbatim).
+// edge_claimed ALWAYS false; executed ALWAYS false (paper simulation).
+// ---------------------------------------------------------------------------
+export type PnlSeriesPoint = {
+  ts: string | null;
+  day: string | null;
+  balance_units: number;       // running bankroll in UNITS
+  daily_units: number;         // that day's net P&L in UNITS
+  cumulative_units: number;    // cumulative net P&L vs start (UNITS)
+  n_bets: number;
+  n_win: number;
+  n_loss: number;
+};
+
+export type PnlDailyPoint = {
+  day: string;
+  daily_units: number;
+};
+
+export type PnlSummary = {
+  total_units: number;         // cumulative net P&L (UNITS) vs start
+  n_bets: number;
+  n_win: number;
+  n_loss: number;
+  n_push: number;
+  win_rate: number | null;     // [0,1] or null when no settled bets
+  // number when proven, or the literal "INSUFFICIENT_DATA"
+  mean_clv_pct_or_INSUFFICIENT: number | string | null;
+  current_units: number;       // current bankroll balance in UNITS
+};
+
+export type PnlSeries = {
+  start_units: number;
+  points: PnlSeriesPoint[];
+  daily: PnlDailyPoint[];
+  summary: PnlSummary;
+  honest_note?: string;
+  edge_claimed: boolean;       // ALWAYS false
+  executed: boolean;           // ALWAYS false (paper simulation)
+  status?: string;             // "ok" | "unavailable"
+  reason?: string;
+};
+
+// Paper bankroll snapshot -- GET /api/paper/bankroll. UNITS only; no $.
+export type PaperBankroll = {
+  start_units: number;
+  current_units: number;
+  updated_at: string | null;
+  honest_note?: string;
+  status?: string;             // "ok" | "unavailable"
+  reason?: string;
+};
+
+// ---------------------------------------------------------------------------
 // W12 new endpoint types -- extracted to types_w12.ts to stay under the
 // DATA-module LOC ceiling (~600-750). Re-exported here so existing callers
 // of "@/lib/types" continue to work without any import-path change.
 // ---------------------------------------------------------------------------
 export type {
+  BookShopEntry,
   BestBetsCard,
   BestBetsBoard,
   PlayerPropRow,

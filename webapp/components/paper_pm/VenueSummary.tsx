@@ -177,7 +177,7 @@ export function VenueSummary({ rows, loading, error }: Props) {
   if (venues.length === 0) {
     return (
       <div className="rounded-lg border border-slate-800 bg-bg-subtle/40 px-4 py-10 text-center text-sm text-slate-500">
-        No venue data yet -- no paper trades in the PM trail.
+        No venue data yet -- no paper trades in the trail.
       </div>
     );
   }
@@ -190,6 +190,7 @@ export function VenueSummary({ rows, loading, error }: Props) {
         ))}
       </div>
       <p className="mt-3 text-[11px] text-slate-600">
+        One tile per venue the system executed on -- best available price per market.
         Paper mode -- stakes are units (no $). CLV (better-number-than-close) is
         the only honest calibration yardstick; shown as INSUFFICIENT_DATA when no
         settled closing line is captured. No edge is claimed.

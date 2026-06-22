@@ -21,7 +21,7 @@ import { VenueSummary } from "@/components/paper_pm/VenueSummary";
 import { PanelErrorBoundary } from "@/components/p6/PanelErrorBoundary";
 import { fmtPct, cn } from "@/lib/utils";
 import {
-  StatTile, deriveTally, deriveDoneSummary, toPaperTrailRows,
+  StatTile, deriveTally, deriveDoneSummary, toPaperTrailRows, mergeVenueRows,
   meanClvClass, EMPTY_CELL, fetchPaperCombined, type CombinedPayload,
 } from "./paperTradingHelpers";
 
@@ -65,6 +65,11 @@ export default function PaperTradingPage() {
   const totalPm = pmTrail?.count ?? pmTrades.length;
   const tally = deriveTally(pmTrades);
   const pmRows = toPaperTrailRows(pmTrades);
+
+  // venueRows: rows the per-venue execution breakdown aggregates -- the scope-filtered
+  // trail UNION the PM trail, deduped (see mergeVenueRows). Shows sportsbooks + DFS prop
+  // books + Kalshi/Polymarket + in-game, not just the PM trail.
+  const venueRows = useMemo(() => mergeVenueRows(viewRows, pmRows), [viewRows, pmRows]);
   const isPmEmpty = !loading && pmTrail !== null && totalPm === 0;
   const doneSummary = deriveDoneSummary(trailRows);
 
@@ -249,17 +254,22 @@ export default function PaperTradingPage() {
         </div>
       </section>
 
-      {/* Per-venue summary -- renders only venues with real rows */}
+      {/* Per-venue execution breakdown -- real trail across every venue (sportsbooks +
+          DFS prop books + Kalshi/Polymarket + live in-game). venueRows = mergeVenueRows. */}
       <section
         data-testid="venue-summary-section"
         aria-label="Per-venue paper trading summary"
         className="mb-5 mt-2"
       >
-        <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-slate-500">
-          Per-venue breakdown
+        <h2 className="mb-1 text-[11px] font-semibold uppercase tracking-widest text-slate-500">
+          Per-venue breakdown{scope !== "all" ? ` -- ${scope === "wc" ? "World Cup" : "in-game"}` : ""}
         </h2>
+        <p className="mb-3 text-[11px] text-slate-600">
+          Where each paper bet executed -- best available price per market across
+          sportsbooks, DFS prop books, Kalshi / Polymarket, and live in-game. Units only.
+        </p>
         <PanelErrorBoundary label="venue summary">
-          <VenueSummary rows={pmRows} loading={loading} error={error ?? null} />
+          <VenueSummary rows={venueRows} loading={loading && !trail} error={error ?? null} />
         </PanelErrorBoundary>
       </section>
 
