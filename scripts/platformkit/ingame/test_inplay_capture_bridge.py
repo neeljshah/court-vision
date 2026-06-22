@@ -42,6 +42,49 @@ def test_scan_returns_none_when_no_team_match(monkeypatch):
     assert L._scan_live_by_legs("soccer_intl", {"Brazil": 0.6, "Spain": 0.5}) is None
 
 
+def test_scan_requires_both_teams_not_one(monkeypatch):
+    """A market sharing ONE team with the live game (e.g. live ARG-AUT vs a future JOR-ARG
+    market, both containing Argentina) must NOT bind -- both teams are required."""
+    monkeypatch.setattr(L._ls, "live_states", lambda sport, **kw: [_LIVE_USA_MEX])
+    # United States is live (USA-MEX) but this market is USA-Canada -> only one team shared
+    assert L._scan_live_by_legs("soccer_intl",
+                                {"United States": 0.6, "Canada": 0.5}) is None
+    # both teams present (order-independent) -> binds
+    assert L._scan_live_by_legs("soccer_intl",
+                                {"Mexico": 0.47, "United States": 0.58}) is not None
+
+
+def test_draw_leg_folds_into_field():
+    # 3-way soccer market: the draw leg is detected and folded into the not-home complement
+    legs = {"Argentina": 0.84, "Tie": 0.12, "Austria": 0.05}
+    assert L._draw_leg(legs) == 0.12
+    folded = L._fold_draw_into_field({"yes_home": 0.84, "yes_away": 0.05}, legs)
+    assert folded["yes_home"] == 0.84
+    assert abs(folded["yes_away"] - 0.17) < 1e-9   # 0.05 away + 0.12 draw = field
+    # a 2-way market (no draw leg) is unchanged
+    legs2 = {"NYY": 0.55, "BOS": 0.50}
+    assert L._draw_leg(legs2) is None
+    assert L._fold_draw_into_field({"yes_home": 0.55, "yes_away": 0.50}, legs2) == \
+        {"yes_home": 0.55, "yes_away": 0.50}
+
+
+def test_threeway_market_pairs_not_bad_price(monkeypatch, tmp_path):
+    """A live soccer game on a 3-way Kalshi market (home/draw/away) must PAIR (devig folds
+    the draw into the field), not throw bad_price as a naive 2-way devig would."""
+    monkeypatch.setattr(L._ls, "live_states",
+                        lambda sport, **kw: [_LIVE_USA_MEX])
+    ticks = [{"game_id": "KXWCGAME-26JUN22USAMEX", "side": "United States", "prob": 0.60},
+             {"game_id": "KXWCGAME-26JUN22USAMEX", "side": "Tie", "prob": 0.25},
+             {"game_id": "KXWCGAME-26JUN22USAMEX", "side": "Mexico", "prob": 0.20}]
+    hb = L.poll_once(sports=["soccer_intl"], inplay_fetch_fn=lambda s: ticks,
+                     live_state_fn=lambda s, g: None, model_fn=lambda s, st: 0.55,
+                     finals_fn=lambda s: [], grade_dir=tmp_path / "g",
+                     ledger_path=tmp_path / "l.jsonl")
+    g = hb["games"][0]
+    assert g["paired"] is True and g["reason"] != "bad_price"
+    assert g["devigged_price"] is not None  # 0.60/(0.60+0.25+0.20) ~ 0.571
+
+
 def test_bridge_enables_ingame_bet(monkeypatch, tmp_path):
     """Full chain: Kalshi-id miss -> bridge by team -> calibrated model -> gates -> tier bet."""
     monkeypatch.setattr(L._ls, "live_states",
