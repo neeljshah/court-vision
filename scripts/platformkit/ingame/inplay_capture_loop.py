@@ -62,6 +62,13 @@ DEFAULT_HEARTBEAT = _REPO_ROOT / "data" / "cache" / "ingame_grade" / "_capture_h
 # Sports that have BOTH a KX<league>GAME in-play series (W2) and a predict_live model.
 DEFAULT_SPORTS: List[str] = ["mlb", "soccer_intl"]
 
+# RELAXED in-game EV floor per sport (opt-in): the strict pre-registered floor (policy tier C
+# = +0.02 EV, +0.01 proxy = +0.03) rarely fires in-game because the calibrated model tracks
+# an efficient market. A lower floor surfaces genuine smaller divergences (e.g. right after a
+# goal, before the market fully re-prices) as LOWER-CONFIDENCE, honestly-CLV-graded paper
+# bets -- NOT an edge claim. None/absent -> strict floor. Soccer/WC = +1% EV.
+_INGAME_RELAXED_EV_FLOOR: Dict[str, float] = {"soccer_intl": 0.01, "soccer": 0.01}
+
 # Phase-aware cadence (seconds): poll fast while in-play games are live, slow when quiet.
 LIVE_INTERVAL_SEC = 20.0
 IDLE_INTERVAL_SEC = 120.0
@@ -246,6 +253,8 @@ def _build_tick(state: Dict[str, Any], model_p: float,
         "is_liquid": True,   # the price already cleared inplay_kalshi.is_liquid upstream
         "is_fresh": True,    # in-play ticks are fresh by construction; stale feeds emit []
         "clv_is_proxy": True,
+        # opt-in relaxed floor for this sport (None -> strict policy floor in evaluate).
+        "min_ev_floor": _INGAME_RELAXED_EV_FLOOR.get(str(state.get("sport") or "").lower()),
         "state": {k: state.get(k) for k in ("home", "away", "state_diff",
                                             "frac_elapsed", "status", "p0", "p0_source")},
     }
