@@ -1,0 +1,118 @@
+"""Per-file test for pm_game_placer -- paper-trade Kalshi/Polymarket GAME markets.
+
+Run ONLY this file (the full suite freezes the box):
+    python -m pytest scripts/platformkit/pm_trading/test_pm_game_placer.py -q
+"""
+from __future__ import annotations
+
+import json
+
+from scripts.platformkit.pm_trading import pm_game_placer as G
+
+
+def _kalshi_rows():
+    # MLB 2-way: model is "Toronto Blue Jays" @ "Houston Astros" -- Kalshi uses cities.
+    return [
+        {"sport": "mlb", "game_id": "KX-HOUTOR", "venue": "kalshi",
+         "side": "Houston", "ticker": "KX-HOUTOR-HOU", "prob": 0.40},
+        {"sport": "mlb", "game_id": "KX-HOUTOR", "venue": "kalshi",
+         "side": "Toronto", "ticker": "KX-HOUTOR-TOR", "prob": 0.55},
+    ]
+
+
+def _model_games(sport):
+    # our model strongly favors Houston (home) -> edge vs the 0.40 Kalshi price.
+    return [{"sport": "mlb", "game_id": "401999", "home": "Houston Astros",
+             "away": "Toronto Blue Jays",
+             "pregame_probs": {"home_ml": 0.62, "away_ml": 0.38}}]
+
+
+def test_group_by_game():
+    g = G.group_by_game(_kalshi_rows())
+    assert "KX-HOUTOR" in g
+    assert set(g["KX-HOUTOR"]["sides"]) == {"Houston", "Toronto"}
+
+
+def test_name_matches_city_to_fullname():
+    assert G._name_matches("Houston", "Houston Astros")
+    assert G._name_matches("Toronto", "Toronto Blue Jays")
+    assert not G._name_matches("Houston", "Toronto Blue Jays")
+
+
+def test_match_model_game_unique():
+    m = G.match_model_game(["Houston", "Toronto"], _model_games("mlb"))
+    assert m is not None
+    assert m["_roles"]["Houston"] == "home" and m["_roles"]["Toronto"] == "away"
+    # no-match -> None
+    assert G.match_model_game(["Seattle", "Pittsburgh"], _model_games("mlb")) is None
+
+
+def test_devig_2way_and_3way():
+    # 2-way: 0.40 vs 0.55 normalize -> 0.4211
+    assert abs(G._devig(0.40, 0.55, None) - 0.40 / 0.95) < 1e-6
+    # 3-way: fold tie into the field
+    assert abs(G._devig(0.50, 0.30, 0.25) - 0.50 / 1.05) < 1e-6
+
+
+def test_placements_have_edge_and_units_only():
+    g = G.group_by_game(_kalshi_rows())["KX-HOUTOR"]
+    g["venue"] = "kalshi"
+    placements = G.placements_from_game(g, G.match_model_game(["Houston", "Toronto"],
+                                                              _model_games("mlb")))
+    assert placements, "expected at least the +EV Houston side to clear the floor"
+    home = [p for p in placements if p["side"] == "home"][0]
+    # model 0.62 vs devigged market 0.421 -> positive edge
+    assert home["model_prob"] == 0.62
+    assert home["market_prob"] < home["model_prob"]
+    assert home["ev"] > 0
+    assert home["tier"] in ("A", "B", "C")
+    assert "$" not in json.dumps(home)
+
+
+def test_run_places_pm_rows_units_only(tmp_path):
+    ledger = tmp_path / "l.jsonl"
+    out = G.run(("mlb",), ledger_path=ledger, feed_fn=lambda s: _kalshi_rows(),
+                model_fn=_model_games, place=True)
+    assert out["n_matched"] == 1 and out["n_placed"] >= 1
+    rows = [json.loads(ln) for ln in ledger.read_text().splitlines() if ln.strip()]
+    assert rows and all(r["is_pm"] is True for r in rows)
+    assert all(r["venue"] == "kalshi" and r["channel"] == "paper_pm" for r in rows)
+    assert all(r["executed"] is False and r["edge_claimed"] is False for r in rows)
+    assert all(r["bet_id"].startswith("pm|kalshi|") for r in rows)
+    # honesty: no banned dollar keys on any row
+    banned = {"pnl", "roi", "profit", "bankroll", "usd", "dollar"}
+    assert not any(k.lower() in banned for r in rows for k in r)
+
+
+def test_run_is_idempotent(tmp_path):
+    ledger = tmp_path / "l.jsonl"
+    a = G.run(("mlb",), ledger_path=ledger, feed_fn=lambda s: _kalshi_rows(),
+              model_fn=_model_games, place=True)
+    b = G.run(("mlb",), ledger_path=ledger, feed_fn=lambda s: _kalshi_rows(),
+              model_fn=_model_games, place=True)
+    assert b["n_placed"] == 0 and b["n_dup_skipped"] >= a["n_placed"]
+
+
+def test_implausible_stale_price_is_skipped():
+    # A 2% home YES (untraded/stale thin quote) -> market_prob below the band -> NO bet,
+    # even though the model disagrees hugely (that fake edge is a data artifact, not real).
+    rows = [
+        {"sport": "mlb", "game_id": "KX-STALE", "venue": "kalshi",
+         "side": "Houston", "ticker": "t1", "prob": 0.02},
+        {"sport": "mlb", "game_id": "KX-STALE", "venue": "kalshi",
+         "side": "Toronto", "ticker": "t2", "prob": 0.99},
+    ]
+    g = G.group_by_game(rows)["KX-STALE"]
+    g["venue"] = "kalshi"
+    placements = G.placements_from_game(g, G.match_model_game(["Houston", "Toronto"],
+                                                              _model_games("mlb")))
+    assert all(p["market_prob"] >= 0.05 for p in placements)  # the 0.02 side is dropped
+
+
+def test_outright_no_homeaway_is_skipped(tmp_path):
+    # a futures/outright row (single side, no opponent) -> no 2-team match -> no bet.
+    rows = [{"sport": "soccer_intl", "game_id": "KX-WC-WINNER", "venue": "kalshi",
+             "side": "Spain", "ticker": "KX-SPAIN", "prob": 0.14}]
+    out = G.run(("soccer_intl",), ledger_path=tmp_path / "l.jsonl",
+                feed_fn=lambda s: rows, model_fn=lambda s: [], place=True)
+    assert out["n_placed"] == 0
