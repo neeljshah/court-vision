@@ -53,12 +53,19 @@ _LINE_SPORTS: tuple = ("nba", "mlb", "soccer", "tennis")
 _PROP_MAX_PER_SPORT: int = 25
 
 
+# Discipline floor: place only higher-conviction props (tier A/B), DROP marginal tier-C
+# (its proxy-adjusted EV is swamped by vig). Fewer/sharper = less bleed on an efficient
+# market. EV is MODEL_VIEW only, NOT a proven edge; CLV is the honest judge.
+_PROP_MIN_TIER: str = "B"
+
+
 def _place_props() -> Dict[str, Any]:
     """Paper-place today's priced player props into the unified ledger (UNITS, capped).
-    Guarded + lazy import so a prop-feed error never sinks the loop. Idempotent per day."""
+    Guarded + lazy import so a prop-feed error never sinks the loop. Idempotent per day.
+    min_tier='B' concentrates the slate on conviction picks (no tier-C marginal flood)."""
     try:
         from scripts.platformkit.bestbets.props_paper_placer import run as _place
-        return _place(max_per_sport=_PROP_MAX_PER_SPORT)
+        return _place(max_per_sport=_PROP_MAX_PER_SPORT, min_tier=_PROP_MIN_TIER)
     except Exception as exc:  # noqa: BLE001
         return {"status": "error", "reason": "%s: %s" % (type(exc).__name__, exc)}
 
