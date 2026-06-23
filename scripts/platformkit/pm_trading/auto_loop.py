@@ -46,11 +46,11 @@ logger = logging.getLogger("auto_loop")
 _LINE_SPORTS: tuple = ("nba", "mlb", "soccer", "tennis")
 
 # Per-tick cap on NEW prop placements per sport (highest-EV first). The placer ALREADY
-# gates to reliable + ev_flag ok + proxy-floor-clearing edges (placement_from_edge -> tier),
-# so this is just a per-day flood-bound, not a quality gate. Set to 25: the day's highest-EV
-# floor-clearing props (incl. World Cup) still place, but the trail is not flooded into a
-# ~900-row firehose that buries live in-game positions. Per-day dedup keeps it idempotent.
-_PROP_MAX_PER_SPORT: int = 25
+# gates to reliable + ev_flag ok + tier A/B (min_tier='B'), so every placed bet clears the
+# QUALITY bar; this cap is only a flood-bound. Raised to 50 (from 25) to record AS MANY of
+# the A/B-quality bets as possible per the directive, while still bounding a single-day
+# firehose. Per-day dedup keeps it idempotent. (Quality is positive-MODEL-EV, not proven $.)
+_PROP_MAX_PER_SPORT: int = 50
 
 
 # Discipline floor: place only higher-conviction props (tier A/B), DROP marginal tier-C
@@ -70,8 +70,9 @@ def _place_props() -> Dict[str, Any]:
         return {"status": "error", "reason": "%s: %s" % (type(exc).__name__, exc)}
 
 
-# Per-tick cap on NEW Kalshi/Polymarket GAME (moneyline) placements per sport.
-_PM_GAME_MAX_PER_SPORT: int = 12
+# Per-tick cap on NEW Kalshi/Polymarket GAME (moneyline) placements per sport (flood-bound;
+# every placement already clears the A/B tier + plausibility guard). 25 covers a full slate.
+_PM_GAME_MAX_PER_SPORT: int = 25
 
 
 def _place_pm_games() -> Dict[str, Any]:
