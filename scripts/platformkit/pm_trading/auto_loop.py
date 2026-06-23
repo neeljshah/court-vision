@@ -70,6 +70,21 @@ def _place_props() -> Dict[str, Any]:
         return {"status": "error", "reason": "%s: %s" % (type(exc).__name__, exc)}
 
 
+# Per-tick cap on NEW Kalshi/Polymarket GAME (moneyline) placements per sport.
+_PM_GAME_MAX_PER_SPORT: int = 12
+
+
+def _place_pm_games() -> Dict[str, Any]:
+    """Paper-place live Kalshi/Polymarket GAME moneyline (is_pm=True, venue-tagged): devig
+    the exchange price, bet the +EV side vs our calibrated pregame prob. The real PM paper
+    system. Guarded; min_tier='B'; idempotent per game/side; UNITS only; real-money DENY."""
+    try:
+        from scripts.platformkit.pm_trading.pm_game_placer import run as _place
+        return _place(max_per_sport=_PM_GAME_MAX_PER_SPORT, min_tier=_PROP_MIN_TIER)
+    except Exception as exc:  # noqa: BLE001
+        return {"status": "error", "reason": "%s: %s" % (type(exc).__name__, exc)}
+
+
 def _settle_props() -> Dict[str, Any]:
     """Settle OPEN props on their real post-game stat outcome (UNITS). Guarded."""
     try:
@@ -192,6 +207,7 @@ def run_once(line_sports: tuple = _LINE_SPORTS) -> Dict[str, Any]:
     out: Dict[str, Any] = {}
     for name, fn in (("paper", run_paper_cycle),
                      ("place_props", _place_props),
+                     ("place_pm_games", _place_pm_games),
                      ("grade", grade_open_bets),
                      ("settle_props", _settle_props),
                      ("improve", improve_all),
