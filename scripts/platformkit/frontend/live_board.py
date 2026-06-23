@@ -121,7 +121,14 @@ def live_model_home_prob(sport: str, state: Dict[str, Any]) -> Optional[float]:
     a number. Never raises (a model miss is a clean skip, not a crashed tick)."""
     try:
         s = _norm_sport(sport)
-        if s not in ("soccer", "soccer_intl") or not isinstance(state, dict):
+        if not isinstance(state, dict):
+            return None
+        # MLB in-game: blend the proven pregame prior toward the realized run-diff via the
+        # verified freshness surface (carries p0; calibration, not edge). Daily slate -> live.
+        if s == "mlb":
+            from scripts.platformkit.ingame.mlb_live_model import mlb_home_prob
+            return mlb_home_prob(state)
+        if s not in ("soccer", "soccer_intl"):
             return None
         home = resolve_team(s, state.get("home"), state.get("home_display"))
         away = resolve_team(s, state.get("away"), state.get("away_display"))
