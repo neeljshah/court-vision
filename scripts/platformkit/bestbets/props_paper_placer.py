@@ -41,6 +41,11 @@ _HONEST_NOTE = (
     "game moneyline. edge_claimed=False; real-money DENY."
 )
 
+# Tier evidence rank (A strongest). min_tier discipline: drop the marginal lower tiers
+# (their EV is swamped by the proxy-close penalty + vig) so the paper slate concentrates
+# on the model's higher-conviction picks. EV here is MODEL_VIEW, never a proven edge.
+_TIER_RANK = {"A": 0, "B": 1, "C": 2}
+
 
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -63,13 +68,15 @@ def _f(v: Any) -> Optional[float]:
 
 
 def placement_from_edge(edge: Dict[str, Any], sport: str,
-                        *, today: Optional[str] = None) -> Optional[Dict[str, Any]]:
+                        *, today: Optional[str] = None,
+                        min_tier: Optional[str] = None) -> Optional[Dict[str, Any]]:
     """One PRICED prop board edge -> a tiered placement dict, or None (skip).
 
-    Skips: non-priced (model-only) edges, unparseable probs/EV, and edges below the
-    proxy-adjusted EV floor (tier is None). The model-backed side is the higher-EV side
-    the board already chose (best_side). The raw taken decimal is reconstructed from the
-    board's ev_side + model_prob so we place at the real vig-inclusive line.
+    Skips: non-priced (model-only) edges, unparseable probs/EV, edges below the
+    proxy-adjusted EV floor (tier is None), and -- when *min_tier* is set -- edges weaker
+    than that tier (e.g. min_tier='B' drops tier C). The model-backed side is the higher-EV
+    side the board already chose (best_side). The raw taken decimal is reconstructed from
+    the board's ev_side + model_prob so we place at the real vig-inclusive line.
     """
     if not isinstance(edge, dict):
         return None
@@ -95,6 +102,8 @@ def placement_from_edge(edge: Dict[str, Any], sport: str,
                         clv_is_proxy=True)
     if tier is None:
         return None  # below the proxy-adjusted EV floor -> NO bet (honest)
+    if min_tier is not None and _TIER_RANK.get(str(tier), 9) > _TIER_RANK.get(str(min_tier), -1):
+        return None  # weaker than the discipline floor -> skip the marginal pick
     stakes = _policy.stake_units(ev=ev, model_prob=model_prob,
                                  taken_decimal=taken_decimal, tier=tier,
                                  clv_is_proxy=True)
@@ -221,6 +230,7 @@ def run(sports: Sequence[str] = DEFAULT_PROP_SPORTS, *,
         board_fn: Optional[Callable[[str], Any]] = None,
         place: bool = True,
         max_per_sport: Optional[int] = None,
+        min_tier: Optional[str] = None,
         today: Optional[str] = None) -> Dict[str, Any]:
     """Place priced prop bets for each sport into the unified ledger. Never raises.
 
@@ -245,7 +255,7 @@ def run(sports: Sequence[str] = DEFAULT_PROP_SPORTS, *,
         edges = _board_edges(sport, _board)
         n_edges += len(edges)
         # Build all placements first, then take highest-EV first under the cap.
-        cands = [p for p in (placement_from_edge(e, sport, today=_today)
+        cands = [p for p in (placement_from_edge(e, sport, today=_today, min_tier=min_tier)
                              for e in edges) if p is not None]
         cands.sort(key=lambda c: float(c.get("ev", 0.0)), reverse=True)
         s_priced = len(cands)

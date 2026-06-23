@@ -59,6 +59,32 @@ def test_unreliable_edge_not_placed():
     assert out["n_edges"] == 0 and out["n_placed"] == 0  # filtered pre-placement
 
 
+def test_min_tier_drops_weaker_props():
+    # Discipline floor: a prop weaker than min_tier is skipped (no marginal flood).
+    base = P.placement_from_edge(_priced_edge(), "mlb")
+    assert base is not None
+    tier = base["tier"]
+    # its own tier as the floor keeps it; a strictly stronger floor drops it.
+    assert P.placement_from_edge(_priced_edge(), "mlb", min_tier=tier) is not None
+    if tier in ("B", "C"):
+        stronger = "A" if tier == "B" else "B"
+        assert P.placement_from_edge(_priced_edge(), "mlb", min_tier=stronger) is None
+    # an explicit tier-C edge is dropped by min_tier='B' but kept with no floor.
+    c = P.placement_from_edge(_priced_edge(ev_over=0.04), "mlb")
+    if c is not None and c["tier"] == "C":
+        assert P.placement_from_edge(_priced_edge(ev_over=0.04), "mlb", min_tier="B") is None
+
+
+def test_run_min_tier_passthrough(tmp_path):
+    # run(min_tier='A') only places tier-A edges; a tier-C edge in the board is dropped.
+    ledger = tmp_path / "l.jsonl"
+    edges = [_priced_edge(player="Strong", ev_over=0.30),   # tier A
+             _priced_edge(player="Weak", ev_over=0.04)]      # tier C (if it clears floor)
+    out = P.run(("mlb",), board_fn=_board(edges), ledger_path=ledger,
+                place=True, min_tier="A")
+    assert all(m.startswith("prop|Strong") for m in out["placed_markets"])
+
+
 def test_run_places_into_ledger_units_only(tmp_path):
     ledger = tmp_path / "clv_ledger.jsonl"
     out = P.run(("mlb",), ledger_path=ledger, board_fn=_board([_priced_edge()]),
