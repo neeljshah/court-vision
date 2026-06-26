@@ -55,7 +55,7 @@ def _mov_mult(run_diff: float, elo_diff_hfa: float, mov_scale: float,
     margin = abs(float(run_diff))
     damp = mov_offset + abs(float(elo_diff_hfa)) * 0.001
     if damp <= 0.0:
-        damp = mov_offset
+        return 1.0
     return math.log(margin + 1.0) * mov_scale / damp
 
 
