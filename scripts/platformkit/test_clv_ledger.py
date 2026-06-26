@@ -159,6 +159,29 @@ def test_append_settlement_funnels_through_locked_append_row(tmp_path, monkeypat
     assert seen_row == settled == out
 
 
+def test_record_bet_labels_market_type_when_market_omitted(tmp_path):
+    """A game-ML placer that omits market= must still yield a row whose market
+    AND market_type are 'moneyline' (the value bet_id already resolves to), never
+    an unlabelled '?' that breaks the board / settler / grade summary."""
+    ledger = tmp_path / "clv_ledger.jsonl"
+    rec = record_bet("mlb", "Rangers @ Blue Jays", "home", "pinnacle", 1.99,
+                     model_prob=0.55, event_id="401815912", path=ledger)
+    assert rec["market"] == "moneyline"
+    assert rec["market_type"] == "moneyline"
+    # bet_id already classified it moneyline; the persisted row now matches.
+    assert "|moneyline|" in rec["bet_id"]
+    on_disk = json.loads(ledger.read_text(encoding="utf-8").splitlines()[0])
+    assert on_disk["market_type"] == "moneyline"
+
+
+def test_record_bet_preserves_explicit_market(tmp_path):
+    """An explicit market= (e.g. 'prop') is preserved on both fields, not coerced."""
+    ledger = tmp_path / "clv_ledger.jsonl"
+    rec = record_bet("mlb", "A @ B", "home", "DK", 1.90, market="prop", path=ledger)
+    assert rec["market"] == "prop"
+    assert rec["market_type"] == "prop"
+
+
 def test_write_falls_back_when_lock_layer_broken(tmp_path, monkeypatch):
     """If clv_ledger_io.append_row raises, the row must still land via the
     original direct-write fallback (placing/grading never breaks)."""
