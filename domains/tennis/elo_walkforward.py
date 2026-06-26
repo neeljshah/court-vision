@@ -1,8 +1,8 @@
-"""domains.tennis.elo_walkforward — walk-forward Elo layer for tennis.
+"""domains.tennis.elo_walkforward -- walk-forward Elo layer for tennis.
 
 Contains the heavier walk-forward functions that consume the core replay/prob
 primitives from ``domains.tennis.elo_core``.  Split from elo.py for LOC-discipline
-(≤300 LOC/file rule); elo.py re-exports everything so existing callers are unaffected.
+(<=300 LOC/file rule); elo.py re-exports everything so existing callers are unaffected.
 
 PRIVATE: outputs are price-bearing or license-restricted when combined with odds.
 F5-clean: stdlib + numpy/pandas + domains.tennis.* only.
@@ -130,14 +130,14 @@ def walk_forward_elo(matches_df: pd.DataFrame) -> pd.DataFrame:
 def elo_state_asof(matches_df: pd.DataFrame, date: dt.date) -> EloState:
     """Return the Elo rating table using only matches strictly before ``date``.
 
-    Equivalent to ``replay(matches_df, until=date)`` — alias kept for the
-    adapter API contract described in SECOND_DOMAIN_PROOF.md §3.2.
+    Equivalent to ``replay(matches_df, until=date)`` -- alias kept for the
+    adapter API contract described in SECOND_DOMAIN_PROOF.md section 3.2.
 
     Truncation-invariance guarantee:
         ``elo_state_asof(full_df, D)`` is **bitwise-identical** to the EloState
         you would obtain by replaying only the subset of rows with ``date < D``
         through a fresh ``replay()`` call.  Both paths execute the same sorted
-        iteration in the same order — identical float operations ⇒ identical bits.
+        iteration in the same order -- identical float operations => identical bits.
     """
     from domains.tennis.elo_core import replay
     return replay(matches_df, until=date)
@@ -150,7 +150,7 @@ def replay_with_snapshots(
     """Replay matches once and capture EloState snapshots at each requested date.
 
     Each snapshot is taken at the moment the cursor first encounters a match
-    with ``date >= snapshot_date`` — i.e. the state built from all strictly-prior
+    with ``date >= snapshot_date`` -- i.e. the state built from all strictly-prior
     matches, which is exactly ``replay(matches, until=snapshot_date)``.
 
     Parameters
@@ -162,7 +162,7 @@ def replay_with_snapshots(
 
     Returns
     -------
-    dict mapping each requested date → EloState snapshot at that date.
+    dict mapping each requested date -> EloState snapshot at that date.
     """
     df = _sorted(matches)
     dates_col = pd.to_datetime(df["date"]).dt.date
