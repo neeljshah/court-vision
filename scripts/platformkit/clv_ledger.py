@@ -49,9 +49,36 @@ DEFAULT_LEDGER = _HERE.parents[1] / "data" / "frontend" / "clv_ledger.jsonl"
 _SIDE_HOME = "home"
 _SIDE_AWAY = "away"
 
+# Dollar / pnl / roi / bankroll($) keys that must NEVER reach the canonical ledger.
+# UNITS ONLY is the binding rail; stripping HERE closes EVERY settlement path
+# (including the manual/grade path that historically wrote a `pnl` field) at the
+# single raw write primitive, not just the dedup-guarded wrappers.
+_BANNED_KEYS = (
+    "stake", "pnl", "total_pnl", "total_stake", "paper_roi", "roi",
+    "bankroll", "profit", "dollars",
+)
+
 
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def _strip_banned(record: Dict[str, Any]) -> Dict[str, Any]:
+    """Return a copy of *record* with every banned dollar/pnl/roi key removed.
+
+    ``stake`` is relabelled to ``stake_units`` (the magnitude is a unit count -- we
+    never stored a bankroll) when no explicit stake_units is present, so a legacy
+    caller passing a dollar ``stake`` still yields a units row, never a dollar one.
+    """
+    out = dict(record)
+    if "stake" in out and out.get("stake_units") is None:
+        try:
+            out["stake_units"] = float(out["stake"])
+        except (TypeError, ValueError):
+            pass
+    for k in _BANNED_KEYS:
+        out.pop(k, None)
+    return out
 
 
 def _append_line(record: Dict[str, Any], target: Path) -> None:
@@ -64,6 +91,7 @@ def _append_line(record: Dict[str, Any], target: Path) -> None:
       3. open("a")                    -- bare write, last resort; never loses a row.
     """
     target.parent.mkdir(parents=True, exist_ok=True)
+    record = _strip_banned(record)  # UNITS ONLY -- close the $ leak on every path
     # 1. Lock-guarded path (preferred).
     try:
         from scripts.platformkit.clv_ledger_io import append_row as _append_row
@@ -142,8 +170,11 @@ def record_bet(
         "status": "open",
         "executed": False,  # invariant: this tool NEVER places a real bet
     }
-    if market is not None:
-        record["market"] = str(market)
+    # ML placers (run_paper_today / the /api/clv/record endpoint) omit market ->
+    # persist bet_id()'s resolved value (default 'moneyline') as market + market_type
+    # so the row is never an unlabelled '?' in the board / settler / grade summary.
+    resolved_market = str(market) if market is not None else "moneyline"
+    record["market"] = record["market_type"] = resolved_market
     if event_id is not None:
         record["event_id"] = str(event_id)
     if game_date is not None:
