@@ -1,11 +1,11 @@
-"""domains.tennis.elo_core — core Elo primitives for tennis.
+"""domains.tennis.elo_core -- core Elo primitives for tennis.
 
 Constants, EloState dataclass, internal helpers, and the ``replay`` / ``prob``
-functions.  Split from elo.py for LOC-discipline (≤300 LOC/file rule); elo.py
+functions.  Split from elo.py for LOC-discipline (<=300 LOC/file rule); elo.py
 re-exports everything so existing callers are unaffected.
 
-PRIVATE: F5-clean — stdlib + numpy/pandas only; no src.* / kernel.* imports.
-Sackmann data is CC BY-NC-SA — private research use only.
+PRIVATE: F5-clean -- stdlib + numpy/pandas only; no src.* / kernel.* imports.
+Sackmann data is CC BY-NC-SA -- private research use only.
 """
 from __future__ import annotations
 
@@ -38,10 +38,10 @@ SURFACE_BLEND: float = 0.3
 class EloState:
     """Immutable snapshot of Elo ratings at a point in time.
 
-    ``ratings``        : player_id → overall Elo
-    ``surface``        : (player_id, surface) → surface-specific Elo
-    ``counts``         : player_id → number of matches processed
-    ``surface_counts`` : (player_id, surface) → surface matches processed
+    ``ratings``        : player_id -> overall Elo
+    ``surface``        : (player_id, surface) -> surface-specific Elo
+    ``counts``         : player_id -> number of matches processed
+    ``surface_counts`` : (player_id, surface) -> surface matches processed
     ``last_date``      : date of the last processed match (None if empty)
     ``n_processed``    : total matches processed
     """
@@ -96,7 +96,7 @@ def _is_walkover(score: object) -> bool:
 # ---------------------------------------------------------------------------
 
 def _sort_key(df: pd.DataFrame) -> pd.Series:
-    """Stable chronological sort key matching §3.1 pinned order.
+    """Stable chronological sort key matching section3.1 pinned order.
 
     Primary: date.  Secondary: tour, tourney_id, round order, match_num.
     Unknown rounds map to a sentinel (99) so they sort AFTER all known rounds
@@ -108,7 +108,8 @@ def _sort_key(df: pd.DataFrame) -> pd.Series:
         "RR": 5, "R128": 6, "R64": 7, "R32": 8, "R16": 9,
         "QF": 10, "SF": 11, "BR": 12, "F": 13,
     }
-    round_col = df["round"].map(ROUND_ORDER).fillna(99).astype(int)
+    round_src = df["round"] if "round" in df.columns else pd.Series(["?"] * len(df), index=df.index)
+    round_col = round_src.map(ROUND_ORDER).fillna(99).astype(int)
     tour_col = df["tour"] if "tour" in df.columns else pd.Series([""] * len(df), index=df.index)
     tourney_col = df["tourney_id"] if "tourney_id" in df.columns else pd.Series([""] * len(df), index=df.index)
     match_num_col = df["match_num"] if "match_num" in df.columns else pd.Series(0, index=df.index)
@@ -123,7 +124,7 @@ def _sort_key(df: pd.DataFrame) -> pd.Series:
 
 
 def _sorted(matches: pd.DataFrame) -> pd.DataFrame:
-    """Return ``matches`` sorted by the §3.1 pinned chronological order."""
+    """Return ``matches`` sorted by the section3.1 pinned chronological order."""
     keys = _sort_key(matches)
     sort_df = pd.DataFrame(
         {
@@ -177,7 +178,7 @@ def replay(matches: pd.DataFrame, until: Optional[dt.date] = None) -> EloState:
 
         p1_id = int(df["p1_id"].iloc[i])
         p2_id = int(df["p2_id"].iloc[i])
-        winner = int(df["winner"].iloc[i])  # 1 → p1 won, 2 → p2 won
+        winner = int(df["winner"].iloc[i])  # 1 -> p1 won, 2 -> p2 won
         surface = str(df["surface"].iloc[i]) if pd.notna(df["surface"].iloc[i]) else "Unknown"
         score = df["score"].iloc[i] if "score" in df.columns else ""
 
