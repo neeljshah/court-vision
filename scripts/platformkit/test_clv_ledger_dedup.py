@@ -37,7 +37,9 @@ from scripts.platformkit.clv_ledger_dedup import (
     _row_key,
     _strip_dollar_keys,
     append_if_new,
+    count_open_unsettled,
     dedup_ledger,
+    open_unsettled_rows,
     sanitize_rows,
 )
 from scripts.platformkit.clv_ledger_migrate import BANNED_KEYS
@@ -362,3 +364,71 @@ def test_sanitize_rows_d_pure_function_never_touches_default_ledger(tmp_path, mo
 
     # The sentinel file must not have been touched.
     assert not sentinel.exists(), "sanitize_rows must never write to DEFAULT_LEDGER"
+
+
+# ===========================================================================
+# open_unsettled_rows / count_open_unsettled tests
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+# (a) Plain open bet with no twin -> counted
+# ---------------------------------------------------------------------------
+def test_open_unsettled_a_plain_open_counted():
+    """(a) A plain open bet with no settled twin must appear in open_unsettled_rows."""
+    rows = [_open_row()]
+    result = open_unsettled_rows(rows)
+    assert len(result) == 1
+    assert result[0]["status"] == "open"
+    assert count_open_unsettled(rows) == 1
+
+
+# ---------------------------------------------------------------------------
+# (b) Open bet with a settled twin -> EXCLUDED
+# ---------------------------------------------------------------------------
+def test_open_unsettled_b_open_with_settled_twin_excluded():
+    """(b) An open bet whose bet_id also has a settled row must be excluded."""
+    rows = [_open_row(), _settled_row()]  # same bet_id, both statuses
+    result = open_unsettled_rows(rows)
+    assert result == [], "open row must be excluded when a settled twin exists"
+    assert count_open_unsettled(rows) == 0
+
+
+# ---------------------------------------------------------------------------
+# (c) Settled-only bet -> excluded
+# ---------------------------------------------------------------------------
+def test_open_unsettled_c_settled_only_excluded():
+    """(c) A settled-only bet must not appear in open_unsettled_rows."""
+    rows = [_settled_row()]
+    result = open_unsettled_rows(rows)
+    assert result == []
+    assert count_open_unsettled(rows) == 0
+
+
+# ---------------------------------------------------------------------------
+# (d) Mix of bets -> correct count
+# ---------------------------------------------------------------------------
+def test_open_unsettled_d_mixed_bets_correct_count():
+    """(d) Mixed bets: only truly-open (no settled twin) are counted."""
+    bid_a = "nba|A|ml|home|dk|2026-06-20"
+    bid_b = "nba|B|ml|away|fd|2026-06-20"
+    bid_c = "nba|C|ml|home|mgm|2026-06-20"
+
+    rows = [
+        _open_row(bid_a),       # open, has settled twin -> excluded
+        _settled_row(bid_a),    # settled twin of A
+        _open_row(bid_b),       # truly open -> counted
+        _settled_row(bid_c),    # settled only -> excluded
+    ]
+    result = open_unsettled_rows(rows)
+    assert len(result) == 1
+    assert result[0]["bet_id"] == bid_b
+    assert count_open_unsettled(rows) == 1
+
+
+# ---------------------------------------------------------------------------
+# (e) Empty list -> 0
+# ---------------------------------------------------------------------------
+def test_open_unsettled_e_empty_list():
+    """(e) Empty input must return empty list and count of 0."""
+    assert open_unsettled_rows([]) == []
+    assert count_open_unsettled([]) == 0
