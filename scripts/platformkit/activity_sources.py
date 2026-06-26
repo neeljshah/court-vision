@@ -22,6 +22,8 @@ from collections import Counter
 from pathlib import Path
 from typing import Dict, List, Optional
 
+from scripts.platformkit.clv_ledger_dedup import count_open_unsettled
+
 _HERE = Path(__file__).resolve()
 _REPO_ROOT = _HERE.parents[2]
 
@@ -173,7 +175,7 @@ def _paper(fe: Path) -> Dict:
     return {
         "present": True,
         "n_total": len(rows),
-        "n_open": status.get("open", 0),
+        "n_open": count_open_unsettled(rows),
         "n_settled": status.get("settled", 0),
         "n_ingame": chan.get("paper_ingame", 0),
         "by_channel": dict(chan),
