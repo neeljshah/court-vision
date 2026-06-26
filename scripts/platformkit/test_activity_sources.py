@@ -133,3 +133,54 @@ def test_all_have_settled_twins(tmp_path):
     result = _paper(fe)
     assert result["n_open"] == 0
     assert result["n_settled"] == 2
+
+
+def test_by_sport_open_twin_aware(tmp_path):
+    """per-sport status:open must be twin-aware, matching the headline n_open.
+
+    Setup:
+      - nba: one open WITH a settled twin (bet_id "nba-twin-A") + one plain open
+        ("nba-plain-B")  -> by_sport["nba"]["status:open"] must be 1
+      - mlb: one open + its settled twin only
+        ("mlb-twin-C")   -> by_sport["mlb"]["status:open"] must be 0
+
+    Headline n_open must stay 1 (only nba-plain-B is truly open).
+    Headline n_settled must stay 3 (three settled rows total).
+    """
+    rows = [
+        # nba: open with settled twin -- NOT truly open
+        {"bet_id": "nba-twin-A", "status": "open",    "sport": "nba",
+         "channel": "paper", "market_type": "spread"},
+        {"bet_id": "nba-twin-A", "status": "settled",  "sport": "nba",
+         "channel": "paper", "market_type": "spread"},
+        # nba: plain open -- truly open
+        {"bet_id": "nba-plain-B", "status": "open",   "sport": "nba",
+         "channel": "paper", "market_type": "total"},
+        # mlb: open with settled twin -- NOT truly open
+        {"bet_id": "mlb-twin-C", "status": "open",    "sport": "mlb",
+         "channel": "paper", "market_type": "moneyline"},
+        {"bet_id": "mlb-twin-C", "status": "settled", "sport": "mlb",
+         "channel": "paper", "market_type": "moneyline"},
+    ]
+    fe = _fe(tmp_path)
+    _write_ledger(fe / "clv_ledger.jsonl", rows)
+    result = _paper(fe)
+
+    # Headline counts (unchanged by per-sport fix)
+    assert result["n_open"] == 1, (
+        "headline n_open should be 1 (only nba-plain-B); got %d" % result["n_open"]
+    )
+    assert result["n_settled"] == 2, (
+        "headline n_settled should be 2; got %d" % result["n_settled"]
+    )
+
+    # Per-sport twin-aware open counts
+    nba_open = result["by_sport"]["nba"]["status:open"]
+    mlb_open = result["by_sport"]["mlb"]["status:open"]
+    assert nba_open == 1, (
+        "nba by_sport status:open should be 1 (only nba-plain-B); got %d" % nba_open
+    )
+    assert mlb_open == 0, (
+        "mlb by_sport status:open should be 0 (mlb-twin-C has settled twin); got %d"
+        % mlb_open
+    )
