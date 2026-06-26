@@ -119,6 +119,18 @@ def _edge_field(edge: Any, name: str, default: Any = None) -> Any:
         return default
 
 
+def _safe_float(value: Any, default: Optional[float] = None) -> Optional[float]:
+    """Convert *value* to float, returning *default* on TypeError or ValueError.
+
+    Unlike bare float(), this handles present-but-None fields and non-numeric
+    strings without raising -- so a single malformed row does not abort a join.
+    """
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+
 # --------------------------------------------------------------------------- #
 # Public API
 # --------------------------------------------------------------------------- #
@@ -170,14 +182,17 @@ def join_quotes_to_edges(
         if not matched:
             continue  # no quote for this edge -> omit (never fabricate)
         for q in matched:
+            odds = _safe_float(q.odds)
+            if odds is None or odds <= 1.0:
+                continue  # no usable decimal price -- skip this (edge, quote) pair
             out.append(JoinedRow(
                 # edge fields
                 game_id=key[0],
                 market_type=key[1],
                 side=key[2],
-                model_prob=float(_edge_field(edge, "model_prob", 0.0)),
-                market_prob=float(_edge_field(edge, "market_prob", 0.0)),
-                ev=float(_edge_field(edge, "ev", 0.0)),
+                model_prob=_safe_float(_edge_field(edge, "model_prob", 0.0), 0.0),
+                market_prob=_safe_float(_edge_field(edge, "market_prob", 0.0), 0.0),
+                ev=_safe_float(_edge_field(edge, "ev", 0.0), 0.0),
                 tier=_edge_field(edge, "tier", None),
                 edge_book=str(_edge_field(edge, "book", "")),
                 edge_line=_edge_field(edge, "line", None),
@@ -185,7 +200,7 @@ def join_quotes_to_edges(
                 # quote fields
                 quote_book=str(q.book),
                 quote_line=q.line,
-                quote_odds=float(q.odds),
+                quote_odds=odds,
                 quote_devigged_prob=q.devigged_prob,
                 quote_captured_at=str(q.captured_at),
             ))
