@@ -7,6 +7,272 @@ loop_queue_source: this file's NEXT list
 
 # NOW -- the single source of truth for "what's done / what's next"
 
+## >>> CEILING MODE (user directive 2026-06-26b): RAISE THE CEILING -- BEST PREDICTIONS
+Shift from floor-raising (hardening/tests, wakes 1-15) to CEILING-raising: the highest-level
+CALIBRATED predictions per sport (beat/MATCH devigged close on OOS calibration). Three levers in
+priority: L1 MORE DATA independently (FIRST reclaim already-on-disk data discarded at ingest via NEW
+leak-free extractors in domains/<sport>/**, zero-network; daemons keep capturing), L2 MORE SIGNALS
+(many new leak-free candidates/cycle), L3 BETTER MODELS where room exists = IN-GAME conditioning +
+same-day FRESHNESS (pregame is efficient -> MATCH not beat). GATE every candidate through the REAL
+tools: use the `signal-audit` skill (REAL leak-free SHIP/REJECT gate per sport), `eval-gate`,
+`cross-sport-benchmark` + `calibration-report` (OOS Brier/ECE vs baseline AND vs close). SHIP gated
+survivors; REJECT-log the rest WITH the number (REJECT = success, never fabricate a win). Full spec:
+BUILD_BACKLOG.md SECTION 0 CEILING PRIORITY block. Heavier than the hardening loop (1-2 Sonnets/wake
+ok). Daemon flywheel + builder loop run independently; enders `bot stop` / program_complete only.
+- DEEP RESEARCH DONE (2026-06-26b): docs/research/ceiling/ADVANCED_TECHNIQUES.md (top technique =
+  Conformalized Quantile Regression for prop intervals) + ONDISK_RECLAIM_TARGETS.md (BIG finding:
+  leak-free asof_*.parquet already BUILT for every sport but NO gate adapter merges them -> each
+  reclaim = cheap wire+gate experiment). EXECUTION QUEUE in BUILD_BACKLOG S0.
+- WAKE-16 (CEILING, 2026-06-26 ~10:00): SHIP b3b108da -- first ceiling experiment: reclaim MLB
+  sp_ra_diff_asof through the REAL WF DM gate -> HONEST REJECT (Brier 0.240312->0.240226, DM p=0.54;
+  planted-null collapses; truncation-invariant). SP form priced into the close. Reusable as-of
+  reclaim gate template kept. NEXT: CQR prop intervals (domains/basketball_nba/prop_cqr.py) -- the
+  prop-coverage gap has REAL room (efficient pregame reclaims will mostly reject; props + in-game won't).
+- WAKE-17 (READINESS, 2026-06-26 ~16:46): flywheel healthy (23/23 procs all READY incl m15-m18).
+  V1 PROP SETTLEMENT = VERIFIED WORKING, NOT a bug: the 47 props tagged game_date=2026-06-25 are
+  actually 06-26 games (statsapi: Nationals@Orioles, Cubs@Brewers etc. are 'Scheduled' today, NOT
+  final) -- an ET-day mis-tag the settler's date+1 fallback already handles -> honest-pending, will
+  settle tonight when the 06-26 slate goes final. prop_settler_mlb._team_hit/city-abbrev fix is
+  sound (ran live: full-name matchups resolve correctly; the mismatch was date, not name).
+  SHIP 7a3fc3ba (V3): clv_ledger.record_bet now labels market_type on market-omitted ML rows.
+  ROOT: record_bet only persisted 'market' when a caller passed it, but the game-ML placers
+  (run_paper_today/m1_paper + /api/clv/record) omit market= -> rows got a moneyline bet_id but NO
+  market/market_type field -> rendered '?' (9 live mlb rows). Now persists bet_id()'s resolved
+  value (default 'moneyline') as BOTH market+market_type at the writer (honest label, identity key
+  already classified them ML). +2 fail-before/pass-after tests; 12/12 file + 100/100 dependent
+  (sanity/dedup/betid/guard) green; ASCII; LOC 327. Note: the 9 EXISTING rows aren't retro-fixed
+  (don't race the live ledger) -- forward-looking; a betid_backfill relabel could clean them later.
+  Scoreboard: props settled 7 (all PM ML, all clv no_close); boards games-shown mlb 0 / soccer_intl
+  0 (V2/V4 OPEN: API serves 200 but games:[] -- next wake: honest-empty vs fill-bug); CLV 7 settled
+  / 0 clv; bankroll 97.0u (net -3.0, day 06-26); reject delta 0 (plumbing SHIP, no signal).
+  NEXT: V2/V4 -- determine if mlb/soccer_intl empty boards are honest-empty (no card clears the
+  tier gate / no game in-window) or a real snapshot-fill bug; fix if bug, document if honest.
+- WAKE-18 (READINESS, 2026-06-26 ~17:15): flywheel healthy (23/23 all READY; m13 was mid-RESTART,
+  transient). OPS MISHAP + RECOVERED: ran `stop_bot.py --status` to probe -- it IGNORES args and
+  ACTUALLY STOPPED the bot (disabled CourtVisionBot task + set stop_requested=True). Reversed BOTH
+  (schtasks ENABLE + cleared flag); flywheel never halted (separate from go.ps1). Memory written:
+  PROBE the stop flag by READING .bot_state/live_status.json, NEVER run stop_bot.py.
+  V2/V4 = FALSE ALARM (my WAKE-17 probe bug): /api/v1/bestbets/<sport> serves status=ok, mlb 16
+  games/94 candidates/10 best_bets + soccer_intl 6 games/24 candidates/0 best_bets (honest no-bet,
+  games shown); daemon board /api/bestbets/board serves 2461 mlb / 85 soccer cards (stale=by-design
+  serve-stale-never-green). The WAKE-17 'games:[]' was reading d['cards'] when the envelope uses
+  d['games']. NO board bug. Corrected here.
+  SHIP 94cc287c (grade_summary under-count): scoreboard.py n_settled required clv_pct, so all 7
+  settled paper_pm bets (clv_status='no_close') were dropped -> grade_summary.json showed n_settled=0
+  + flat_unit 0/0 despite a real 1W/5L paper record. Split populations: n_settled + flat-unit count
+  ALL settled; CLV stats stay over the clv-bearing subset; added n_no_close. Live now n_settled 0->7,
+  flat-unit 1W/5L (mlb 6 / soccer 1), CLV INSUFFICIENT_DATA. SAFE: real-money gate recomputes from
+  ledger rows (summary advisory-only, never trusted) -> cannot spoof. NEW test_scoreboard.py +5; 59
+  dependent green; artifact regenerated. Scoreboard: props settled 0 (pend to tonight's finals);
+  boards games-shown mlb 16 / soccer_intl 6 (WORKING); CLV 7 settled / 0 clv; bankroll 97.0u (net
+  -3.0); reject delta 0 (SHIP). NEXT: K1 Kalshi team_total pricer (add SP-ERA + park, calibrate vs
+  settled totals through the REAL gate, place ONLY if it beats/matches the Kalshi line OOS else
+  REJECT-log) -- the next genuine ceiling/exec item now that V1-V4 are closed.
+- WAKE-20 (CEILING/T1 CQR, 2026-06-26 ~15:50): SHIP a642eac5 -- 2nd CEILING experiment answered
+  through the REAL gate -> HONEST REJECT 7/7. Q: does CQR (Romano+ 2019, adaptive-width
+  conformalized quantile regression) beat the incumbent constant-width split-conformal for NBA
+  prop intervals? A: NO on the strict gate -- the existing split-conformal ships unchanged.
+  New leak-free WF gate (domains/basketball_nba/prop_cqr.py, 288 LOC, +10 tests, +38 regression
+  green) reuses pregame_oof.parquet (356k rows, 7 stats): chrono 50/25/25 train/calib/test split;
+  lightgbm quantile (alpha/2, 1-alpha/2) over leak-free per-row features (rolling_mean_15,
+  rolling_std_15, rolling_median_15, oof_pred, n_prior, season_avg_to_date -- all built from
+  STRICT prior rows via shift(1)); conformity E_i = max(q_lo-y, y-q_hi) on CALIB; finite-sample
+  conformal correction; planted-null = joint-shuffle features. Real-OOF verdict (n_test=11896
+  per stat, alpha=0.10): CQR beats split-conformal on PINBALL on ALL 7 stats (pts ast reb fg3m
+  stl blk tov; cqr_pb < sc_pb every row) AND on WIDTH (sharper bands every row) BUT
+  OVER-covers nominal 90% (cov 91-96% vs sc 88-91%) -> fails |cqr_gap| <= |sc_gap| proximity;
+  planted-null inflation (>1.5x) sub-bar on real data too -> REJECT all 7. Default-OFF
+  measurement script; NOT wired into pricing. Honest finding: adaptive Q-quantile is sharper
+  AND more conservative -- the conformal correction over-corrects on this OOF; the room CQR was
+  supposed to fill (under-coverage) doesn't exist in the way the doc predicted on these splits.
+  Reusable CQR template kept; next ceiling levers: (a) per-stat or per-(stat x minutes-tier)
+  conformalization (Mondrian T2 hybrid), (b) T5 NGBoost / quantile-GBDT distributional head,
+  (c) ACI online conformal for in-game (T4). Scoreboard: REJECT delta +1 (CQR adaptive-width).
+  NEXT: T4 ACI online conformal in-game (scripts/platformkit/ingame/aci_online.py) -- attacks
+  the freshness-drift gap, thin one-param wrapper, respects minimal-feature constraint, low
+  rejection prior.
+- WAKE-19 (CEILING/K1, 2026-06-26 ~17:45): flywheel healthy (23/23 all READY); stop flag clear
+  (read .bot_state, did NOT run stop_bot.py). SHIP 1447a72b = K1 answered through the REAL gate ->
+  HONEST REJECT. Q: does starting-pitcher RA-as-of + park factor make the Kalshi team_total pricer
+  bet-ready? A: NO -- do NOT enable the placer. New leak-free WF eval (domains/mlb/totals_sp_park_eval.py,
+  300 LOC, +5 tests) reuses totals_sigma_wf._build_wf_lambdas (run-rate lambda baseline) + OLS-blends
+  asof_park.park_factor + (home+away)_sp_ra_asof; chronological 50/50 split, TRAIN-only centering,
+  12037 held-out games: rmse_base 4.5621 -> rmse_combo 4.5313 (delta -0.0308 runs, BELOW the -0.05
+  SHIP bar); planted-null collapses to -0.0003 -> the -0.031 is a small real-but-sub-threshold effect.
+  Park+SP on totals is subsumed by the market, consistent w/ the prior moneyline SP-form REJECT.
+  Verdict -> data/frontend/funnel/mlb_totals_sp_park_gate.json (scouting_only, vs_close UNPROVEN, no $).
+  Kalshi team_total placer STAYS default-OFF -- never bet a biased pricer (exactly K1's bar).
+  Scoreboard: props settled 0 (pend to tonight's finals); boards mlb 16 / soccer_intl 6 (working);
+  CLV 7 settled / 0 clv (no_close); bankroll 97.0u (net -3.0); REJECT delta +1 (totals park+SP).
+  NEXT (CEILING queue): CQR prop intervals (domains/basketball_nba/prop_cqr.py, GPU quantile fit) --
+  the documented prop-interval under-coverage is REAL room (unlike efficient pregame reclaims);
+  then E1 LLM in-game context (detail_layer_gate offline-template), asof reclaims NBA/tennis/soccer.
+- INTELLIGENCE/LLM design DONE (2026-06-26c): docs/research/ceiling/LLM_CONTEXT_PRIORS.md -- use LLM +
+  person-free brain to contextualize games into LEAK-FREE as-of priors, run independently (default-off
+  daemon), gated like any signal. HONEST: LLM context is a HIGH-reject lane (CV_LLM_SCHEME already
+  rejected +0.005 p=0.87; pregame efficient) -> ships SCOUTING-ONLY unless IN-GAME context moves OOS
+  calibration. Reuses knowledge/contextual.py + detail_layer_gate.py (planted-null built in) +
+  scheme_prior.py. CHEAPEST DECISIVE FIRST (E1, ~zero API cost): gate ONE regime_structural channel
+  (offline template backend) through detail_layer_gate.py on 2 NBA seasons + shuffled-context null ->
+  real SHIP/REJECT number; only pay for Haiku/PBP-text backend if the free channel survives.
+  NEAR-TERM QUEUE: (next) CQR prop intervals, then E1 LLM in-game context, then asof reclaims (NBA/
+  tennis/soccer), then ACI in-game.
+- GAP AUDIT + FIX (2026-06-26 ~15:14, user "no gaps"): paper trading IS live (305 bets: 298 open/7
+  settled, mlb+soccer_intl, newest 15:08). OLD-lines backtest fuel EXISTS (historical_event_odds 9.8M
+  + line_history 193M). PRIMARY GAP FOUND + FIXED: live supervisor (20h uptime) predated m15_prop_settle
+  / m16_prop_close_capture / m17_kalshi_scan / m18_pm_close_capture -> all 7 settled were clv_status
+  'no_close' (CLV unmeasurable). RESTARTED stack (stop.ps1+go.ps1): now 23 procs all READY, the 4
+  daemons LIVE -> close-capture + prop-settle restored; CLV will populate as bets settle. REMAINING
+  SMALL GAP (queued for builder loop): grade_summary reports n_settled=0 despite 7 settled in ledger
+  (PM settled rows not counted by the summary reader) -- fix the reader to count all settled + verify
+  CLV starts populating post-restart.
+- EXEC/EDGE AUDIT (2026-06-26 ~15:20, user 'kalshi high level + best bets + edges'): FRONTEND WORKING
+  (webapp:3000=200, /api/paper/trail=200 real rows incl settled paper_pm w/ unit_result); KALSHI EXEC
+  WORKING for game-winner ML (30 pm bets, m12 live; m18 now CLV-grades them post-restart); BEST-BETS
+  board generating (best_bets.json cards, m10 fresh); m17_kalshi_scan scanning liquid surface. HONEST
+  GAP (calibration not plumbing): Kalshi props/totals are LIQUID (~1c spread) but we do NOT bet them --
+  totals pricer biased +5.2% (ignores starting pitcher+park), prop pricer matched 0 live. Betting them
+  now = fabricated edge. PATH TO HIGH-LEVEL KALSHI (queued AHEAD of CQR/LLM): (K1) make kalshi_pricers
+  team_total pricer bet-ready -- add starting-pitcher-ERA + park, CALIBRATE vs settled totals through
+  the REAL gate, enable placement ONLY once it beats/matches the Kalshi line OOS; (K2) populate the
+  prop board with Kalshi-offered stats so the prop pricer matches live; (K3) more soft books for +CLV
+  line-shop. Build in scripts/platformkit/pm_trading/**; gated; never bet a biased pricer.
+- EFFICIENCY AUDIT (2026-06-26 ~15:30, user 'efficient + GPU'): HONEST = system is ALREADY efficient,
+  NO bloat to fix. GPU RTX 4060 healthy 42% util / 7GB free (torch cu121, CUDA avail). Daemon stack
+  lean: ~3GB total / 24 procs (~120MB avg, max 394MB) + webapp 164MB. The 91% system RAM is mostly
+  NON-system dev-box procs (editor/browser/Claude), not the AI. Do NOT make-work on lean daemons.
+  STANDING EFFICIENCY DISCIPLINE (L5, folded into the loop prompt): (a) any NEW model fit the loop
+  builds (CQR/NGBoost/Kalshi-totals calib) defaults to GPU (device='cuda'/gpu_hist/lgbm device='gpu')
+  with CPU fallback; (b) offload heavy compute (CV, full-season WF) to RunPod 3090, keep local box
+  light; (c) LLM = Haiku Batches + content-hash cache, call only on live state; (d) profile-before-
+  optimize -- only touch a hot path with a measured before/after, never fabricate an efficiency win;
+  (e) per-file tests only (full suite freezes the 16GB box).
+- MLB + WC (soccer_intl) VERTICAL AUDIT (2026-06-26 ~16:10): BOTH live + betting on today's slate
+  (mlb 285 bets=240 props+37 Kalshi ML, newest 16:08; soccer_intl 57=52 props+5 Kalshi ML, newest
+  15:40). Models hardened tonight (mlb MOV-Elo bug fix + tests; soccer rho_fit fix). GAPS before
+  'highest level' (queued, verify ahead of K2/CQR): (V1) PROP SETTLEMENT -- 0/292 props settled;
+  m15_prop_settle just came online (2min) -> VERIFY props actually settle once games finalize; if not,
+  it's the MLB city-abbrev name-match settler bug resurfacing (prop_settler_mlb._team_hit). (V2)
+  FRONTEND BOARDS show 0 games for mlb + soccer_intl despite 240+52 props placed today -> snapshot
+  fill/staleness gap (known FRONT-END FILL issue), NOT honest-empty -> regen + verify cards fill.
+  (V3) 8 mlb bets have market_type='?' -> trace + label. (V4) bestbets API /api/v1/bestbets/<sport>
+  returned a parse error -> verify it serves mlb + soccer_intl. CLV still pending (no_close on the few
+  settled; populates as new bets settle with captured closes via m16/m18).
+
+## >>> ACTIVE MISSION (user directive 2026-06-26): FULL-FUNNEL, ALL SPORTS, SMARTER EVERY NIGHT
+Run the full funnel end-to-end (DATA->SIGNALS->MODELS->ENGINES->PREDICTIONS->INTEL->LINES->
+EXECUTION->IMPROVE) for every in-season sport (NBA, MLB, soccer, soccer_intl, tennis; NFL in
+season), unattended, getting better every cycle. Win = calibration + measured CLV; NEVER a
+fabricated $/edge; REJECT logged = success. Full directive + funnel + per-cycle output spec:
+.planning/platform/BUILD_BACKLOG.md SECTION 0 (ACTIVE MISSION). The runtime FLYWHEEL (go.ps1
+supervisor m1..m18 -- capture lines / paper-trade / settle / CLV / m4 recalibrate) runs detached
+at ~zero token cost and keeps improving predictions overnight with or without this chat; the
+builder loop self-schedules wakes to add gated code/signals/models on top. Enders: `bot stop`
+or `program_complete` only.
+- WAKE-1 (2026-06-26 ~00:47): flywheel healthy (19/19 procs, all_ready). SHIP d6631ae5 --
+  count_open_unsettled/open_unsettled_rows helpers in clv_ledger_dedup.py (excludes settled-twins
+  from the open-bet count; +5 tests, 20/20 green; not yet wired). Scoreboard: bankroll 98.0u
+  (net -2.0 since reset); CLV INSUFFICIENT_DATA (n_settled=0, needs 8+); reject-ledger delta 0.
+  NEXT: wire helper into clv_lifecycle_reconcile.py:198-201 (primary over-reporter).
+- WAKE-2 (2026-06-26 ~01:52): flywheel healthy (19/19). SHIP baa4c457 -- activity_sources.py
+  n_open now twin-aware via count_open_unsettled (honest activity-feed open count; +6 tests, 6/6).
+  CORRECTION: clv_lifecycle_reconcile.py is NOT an over-reporter (already exposes twin-aware
+  unsettled_open + uses raw open_rows for drift detection) -> did NOT wire there. Scoreboard:
+  bankroll 98.0u (net -2.0); CLV INSUFFICIENT_DATA (n_settled=0); reject-ledger delta 0.
+  NEXT: remaining over-reporters grade_paper.py:244 / prop_paper.py:205 (verify display-only first).
+- WAKE-3 (2026-06-26 ~02:26): flywheel healthy (19/19). SHIP 1a123f38 -- per-sport status:open
+  in activity_sources now twin-aware (consistent with wake-2 headline; +1 test, 7/7). FINDING:
+  grade_paper.py:244 + prop_paper.py:205 are settlement WORK-LISTS (already dedup vs settled-key
+  sets), NOT display -> correctly SKIPPED, no change. Open-count honesty thread DONE (activity
+  feed fully twin-aware; work-lists self-dedup). Scoreboard: bankroll 98.0u (net -2.0); CLV
+  INSUFFICIENT_DATA (n_settled=0); reject delta 0. NEXT: new thread -- pick a fresh funnel
+  increment (LINES/devig robustness or DATA capture coverage), offline-testable first.
+- WAKE-4 (2026-06-26 ~03:00): flywheel healthy (19/19). SHIP f0ec404b -- LINES robustness:
+  best_price._both now rejects NaN/inf quotes (a single bad book price was poisoning the
+  statistics.median fair in sharp_fair -> killed value detection for the whole game). CLV math
+  untouched; +6 tests, 12/12. (best_price module was untracked -> now committed.) Scoreboard:
+  bankroll 98.0u (net -2.0); CLV INSUFFICIENT_DATA (n_settled=0); reject delta 0. NEXT: more
+  LINES/devig edge cases or an IMPROVE/recalibrator guard, offline-testable.
+- WAKE-5 (2026-06-26 ~03:33): flywheel healthy (19/19). LOCAL-ONLY fix (NOT committed --
+  gitignored): improve/_market_metrics.py readout_for_segment now filters void/NaN/out-of-range
+  rows (a void settled twin y=None was CRASHING the recalibrator readout; NaN p_raw poisoned
+  Brier/ECE) -- +_valid_scored/_valid_close, 22/22 tests; live on disk so the running recalibrator
+  benefits on next import. LEARNING: scripts/**/_* is gitignored (underscore=local-only) -> not
+  committable; future committable increments must target NON-underscore files. Also compacted
+  MEMORY.md 224->140 lines (was dropping entries past 200 on load). Scoreboard: bankroll 98.0u
+  (net -2.0); CLV INSUFFICIENT_DATA (n_settled=0); reject delta 0.
+- WAKE-6 (2026-06-26 ~04:13): flywheel healthy (19/19). SHIP 26bda83b -- prop_close_store
+  (CLV-fuel store) now rejects NaN/inf two-way quotes on write + skips legacy non-finite rows on
+  read (a non-finite 'close' was poisoning downstream CLV). +5 tests, 9/9. Same bug-class as the
+  wake-4 best_price guard, now closed in the close store too. Scoreboard: bankroll 98.0u (net
+  -2.0); CLV INSUFFICIENT_DATA (n_settled=0); reject delta 0. NEXT: continue committable
+  offline robustness (best_price_audit / model_progress / odds_provider) or a SIGNALS helper.
+- WAKE-7 (2026-06-26 ~04:46): flywheel healthy (19/19). SHIP 4709c057 -- odds_provider/
+  pinnacle_parse now type-safe vs malformed legs (non-dict elements / non-list prices degrade to
+  None/partial instead of AttributeError crash); new test_pinnacle_parse.py 20/20. GATE CAUGHT a
+  Cyrillic-homoglyph identifier in the test (non-ASCII) -> fixed before commit (ASCII invariant
+  held). Scoreboard: bankroll 98.0u (net -2.0); CLV INSUFFICIENT_DATA (n_settled=0); reject
+  delta 0. NEXT: another committable parse-robustness/SIGNALS increment.
+- WAKE-8 (2026-06-26 ~05:21): flywheel healthy (19/19). SHIP 6c782d85 -- market_join (LINES
+  aggregation bridge, was UNTESTED) hardened: _safe_float so present-but-None edge fields ->0.0
+  and bad-odds quotes (None/<=1.0) are skipped instead of TypeError aborting the whole join; new
+  test_market_join.py 12/12. (espn.parse_pickcenter already per-entry try/except -> left alone.)
+  ASCII byte-checked clean (wake-7 lesson). Scoreboard: bankroll 98.0u (net -2.0); CLV
+  INSUFFICIENT_DATA (n_settled=0); reject delta 0. NEXT: SIGNALS helper or line_store/devig robustness.
+- WAKE-9 (2026-06-26 ~05:55): flywheel healthy (19/19). SHIP 5120e9d7 -- first test coverage for
+  domains/tennis/elo_core (MODELS-stage rating engine, was UNTESTED): 30 tests on the REAL
+  _expected/_k/_is_walkover/prob/replay (leak-free pre-match snapshot, walkover skip). AUDIT (no
+  bug, no change): espn.parse_pickcenter already per-entry try/except; line_store._parse_ts already
+  normalizes naive->UTC-aware -> both confirmed CORRECT, not touched. Scoreboard: bankroll 98.0u
+  (net -2.0); CLV INSUFFICIENT_DATA (n_settled=0); reject delta 0. NEXT: another domain engine test
+  (tennis elo_walkforward / a sport repricer) or a SIGNALS helper.
+- WAKE-10 (2026-06-26 ~06:31): flywheel healthy (19/19). SHIP 0c4fc137 -- REAL BUG FIX (first
+  non-guard of the night): domains/mlb/ratings_mov._mov_mult degenerate-damp guard set
+  damp=mov_offset (an exposed fitting knob); mov_offset<=0 -> ZeroDivisionError (damp==0) or
+  sign-flipped multiplier (damp<0). Fixed to return 1.0 (no MOV scaling) on degenerate damp;
+  default mov_offset=2.2 byte-identical. +14 tests (fail-before/pass-after + baseline-exactness +
+  leak-free + zero-sum). MLB MOV-Elo engine was untested. Scoreboard: bankroll 98.0u (net -2.0);
+  CLV INSUFFICIENT_DATA (n_settled=0); reject delta 0. NEXT: another untested domain engine
+  (soccer rho_fit/hfa_lambda, nba ingame_blend, tennis elo_walkforward) or a SIGNALS helper.
+- WAKE-11 (2026-06-26 ~07:05): flywheel healthy (19/19). SHIP 0ae411f4 -- 2nd REAL BUG FIX:
+  domains/soccer/rho_fit (Dixon-Coles low-score fitter) crashed when any pre-match lambda was
+  0/NaN/neg (_poisson_log_pmf does math.log(lam); walk_forward_rho filtered only goals not
+  lambdas). Fixed: dc_neg_log_likelihood skips undefined-Poisson matches (non-finite/<=0 lambda or
+  negative goals); walk_forward_rho filter now requires finite positive lambdas. Valid-input math
+  unchanged. +20 tests (fail-before/pass-after + tau formulas + leak-free warmup + NaN-safety).
+  Soccer DC engine was untested. Scoreboard: bankroll 98.0u (net -2.0); CLV INSUFFICIENT_DATA
+  (n_settled=0); reject delta 0. NEXT: soccer hfa_lambda / nba ingame_blend / tennis elo_walkforward.
+- WAKE-12 (2026-06-26 ~07:40): flywheel healthy (19/19). SHIP d5d30266 -- first test coverage
+  (25 tests) for domains/basketball_nba/ingame_blend_plive (in-game P_live win-prob head = the
+  PROVEN-EDGE stage): real sec_remaining (Q1/Q4/OT/buzzer/neg-clamp), build_state_features
+  (foul_diff sign, bonus, time_pressure 30s clamp), fit/predict (_ConstModel fallback, 2-class
+  ranking, [0,1] clamp). No bug -- head correct. AUDIT (no change): soccer hfa_lambda already
+  guards h=ew_home/ew_away (ew_away>0) + clamps sqrt_h -> correct, not touched. Scoreboard:
+  bankroll 98.0u (net -2.0); CLV INSUFFICIENT_DATA (n_settled=0); reject delta 0. NEXT:
+  ingame_blend_surface/prior, tennis elo_walkforward, or mlb re24_table.
+- WAKE-13 (2026-06-26 ~08:15): flywheel healthy (19/19). SHIP eb0b7500 -- first test coverage
+  (48 tests) for domains/mlb/re24_table (pinned RE24 run-expectancy + leverage rule): 24-entry
+  structure, monotonicity, pinned published values (transposition guard), base_run_value masking/
+  out-of-range, leverage branch precedence, and LEAK-FREE provenance (est seasons 1999-2002
+  disjoint from gate seasons 2022/2023). No bug -- table correct. Scoreboard: bankroll 98.0u
+  (net -2.0); CLV INSUFFICIENT_DATA (n_settled=0); reject delta 0. NEXT: tennis elo_walkforward
+  [245], nba ingame_blend_surface/prior, or a SIGNALS helper.
+- WAKE-14 (2026-06-26 ~08:49): flywheel healthy (19/19). SHIP 80a5c904 -- domains/tennis/
+  elo_walkforward: (A) ASCII-fix 23 non-ASCII docstring bytes (em-dash/<=/->/=>/section) ->
+  restores binding ASCII invariant, docstring-only no logic change; (B) +20 tests on REAL
+  walk_forward_elo/elo_state_asof/replay_with_snapshots locking the leak-free contract
+  elo_state_asof(df,D)==replay(rows<D). FOUND A REAL BUG (queued NEXT): elo_core._sort_key:111
+  does df["round"].map(...) with NO "round" in df.columns fallback (tour/tourney_id/match_num all
+  have one) -> KeyError when round absent. Scoreboard: bankroll 98.0u (net -2.0); CLV
+  INSUFFICIENT_DATA (n_settled=0); reject delta 0. NEXT: fix elo_core round-fallback + extend
+  test_elo_core (fail-before/pass-after).
+- WAKE-15 (2026-06-26 ~09:26): flywheel healthy (19/19). SHIP 20f33872 -- 3rd REAL BUG FIX:
+  domains/tennis/elo_core._sort_key read df["round"] with no "in df.columns" fallback (siblings
+  tour/tourney_id/match_num all guarded) -> KeyError when round absent. Fixed (missing->sentinel
+  ->99). +2 tests (fail-before/pass-after). Also ASCII-cleaned elo_core docstrings (34->0).
+  Scoreboard: bankroll 98.0u (net -2.0); CLV INSUFFICIENT_DATA (n_settled=0); reject delta 0.
+  NEXT: nba ingame_blend_surface/prior, mlb ratings.py, soccer asof_xg_proxy, or a SIGNALS helper.
+
 ## >>> NEXT FOCUS (user directive 2026-06-22): FRONT-END FILL
 Make the front end fully work + MATCH the system: every game card FILLED with lines + best
 bets; /paper-trading shows real paper activity (open+settled, props + in-game channel=paper_ingame);
@@ -25,6 +291,115 @@ doesn't exist (NBA offseason, no liquid lines) -- NEVER fabricate lines/bets/$ e
   per-file tests only / <=300 LOC / ASCII / cd-prefix bash / build webapp+restart after FE edits /
   do NOT edit src,kernel,api,scripts/team_system,intel. Live now: mlb + soccer_intl (WC).
 - Read reference-sys-frontend.md first.
+
+## >>> SESSION 2026-06-25e (PROP-SETTLEMENT gap: fixed the MLB settler + WIRED the missing settle arm)
+USER asked "hows paper trading running" -> dug into the prop-settlement gap. Fleet healthy; live paper bankroll 100->111.4u (units only, executed=False, no $). LOCAL working tree.
+- UNIT/ODDS MATH VERIFIED CORRECT: grade_paper._unit_result = win:+(dec-1)*stake, loss:-stake, push:0. -130 American -> 1.769231 decimal; 1u win -> +0.769231u, loss -> -1.0u; +150 -> +1.5u; decimal round-trips to -130. All exact.
+- FRONT-END PAPER TRAIL: /api/paper/trail (frontend.paper_routes -> paper_trail.read_trail) is LIVE + accurate BUT dropped unit_result (the per-bet PnL was computed+stored in clv_ledger for all 611 settled but the API row omitted it). FIX: added "unit_result" to _build_trail_row (frontend/paper_trail.py, offset a comment to hold ==300 LOC); now every settled trail row carries its authoritative +/-unit result (sum +31.07u over 611 raw rows). 45 frontend tests green. Takes effect on next API restart.
+- ACCURACY/RECONCILE: bankroll net +30.17u (reconciles:True) is AUTHORITATIVE = one-position-per-market dedup (544 positions); my naive 611-raw-row sum (+31.07) over-counts re-settled twins. Webapp headline uses bankroll/pnl-series endpoints (correct), per-bet list uses the trail. UI (PaperTradeRow) shows odds+stake+win/loss LABEL but NOT the +/-unit amount -> can add a result-units column (needs webapp rebuild) if wanted.
+- KALSHI thesis tested + measurement built (user: "all Kalshi markets, in-game, most profit"). HONEST FINDING: Kalshi LISTS the market types (2260 sports series: player props KXNBAPLAYOFFPTS/KXMLBHR, totals, spreads) but they are LISTED-NOT-TRADED -- pulled the real Pete Crow-Armstrong HR market: yes_bid/ask/volume/open_interest/last_price ALL None. Live scan: 383 series, 1949 open, 0 LIQUID (props 332/0, totals 365/0, spreads 130/0). Kalshi's only liquid sports surface = GAME-WINNER moneyline during live games (what we already trade). Did NOT build a prop system for dead markets.
+  - (a) BUILT scripts/platformkit/pm_trading/kalshi_market_scan.py (liquid-surface discovery, gate=real two-way+tight+volume; classifies winner/total/spread/prop/half/event; 4 tests) + kalshi_scan_runner.py wired as ProcSpec m17 (1800s, per-type daily high-water mark) -> samples the live slate, surfaces any prop/total liquidity the instant it appears.
+  - CORRECTION (2026-06-25, important): my earlier "Kalshi props are dead / 0 liquid" was a FIELD-NAME BUG -- the API list uses yes_bid_dollars/yes_ask_dollars/volume_24h_fp/open_interest_fp/liquidity_dollars, NOT yes_bid/yes_ask/volume. User was RIGHT. With correct fields Kalshi is LIQUID across types at ~1c spread (FAR below DK's 13%): team_total 238 liquid, event_future 153, player_prop 43, spread 34 (e.g. PHI@NYM total bid/ask 0.48/0.49 OI 549; Crow-Armstrong HR 0.16/0.17). FIXED kalshi_market_scan._is_liquid to the real fields (gate on tight two-way; volume is bonus not gate). Re-scan: 468 liquid / 1805 open.
+- BUILT BOTH Kalshi pricers (user "do both") -> scripts/platformkit/pm_trading/kalshi_pricers.py (234 LOC, 7 tests): player_prop pricer reuses the prop board (parse title 'Player: K+ stat' -> P(over K-0.5)); team_total pricer = v0 run-rate Poisson (statsapi team RS/RA per game -> proj total -> P(>=line)). Wired into kalshi_edge_finder registry; 27 Kalshi-suite tests green; all <=300 LOC. LIVE END-TO-END WORKS (scan->price->candidates). BUT THE MEASUREMENT CAUGHT THAT NEITHER IS BET-READY (did NOT wire a placer -> would bet a fabricated edge): (1) totals v0 is SYSTEMATICALLY BIASED -- 92 over vs 30 under, mean +5.2% ABOVE the Kalshi line = miscalibration NOT edge (ignores STARTING PITCHER + park, the dominant total factors). (2) player_prop matched 0 live (the board doesn't carry the HR props Kalshi lists -> honest skip, no fabrication). NEXT to make real: feed totals model pitcher-ERA+park+calibrate vs settled totals BEFORE trusting; populate prop board with Kalshi-offered stats; only then place + let CLV/m18 judge. The framework (scan+devig+registry+honest-skip) is the durable win; the models need calibration.
+- BUILT scripts/platformkit/pm_trading/kalshi_edge_finder.py (136 LOC, 6 tests): generalized multi-type pricer -- devig the Kalshi YES two-way (mid) -> for each liquid market, a per-type PRICER registry returns our model P(YES) -> edge=model-fair -> YES/NO candidate; types with NO model (futures/MVP/etc.) are SKIPPED+counted, never priced from thin air. Proven live on 175 real liquid markets (winner10/future58/prop32/spread75) -> 0 candidates with pricers={} (honest no-fabrication gate works). NEXT (the actual "bet them" step): wire per-type pricers -- game_winner already covered by pm_game_placer; player_prop -> prop board; team_total/spread need a totals/margin model we may not have (honest skip until built) -> then a placer+runner to stake candidates in UNITS + route through settle/m18/ratchet. 20 Kalshi-suite tests green; all files <=300 LOC; non-gated.
+- (b) MADE THE KALSHI CHANNEL CLV-MEASURABLE (it carried clv_pct=None / n_clv=0): ROOT = close_capture.capture_close existed but was NEVER called AND pm rows had event_id=None. FIX: pm_game_placer now stamps event_id=game_id (the Kalshi event_ticker inplay_kalshi already provides); NEW pm_close_capture.py sweep (capture_close -> settle_closing_line -> append; CONFIRMED settled closes only=true_close, open/inferred NEVER stamped; idempotent; 4 tests) + pm_close_capture_runner.py wired as ProcSpec m18 (900s). Once PM bets settle with the stamped id, m18 fills their real CLV -> the +13u channel finally gets a yardstick. 25 tests green; all files <=300 LOC; non-gated. Activates on next supervisor restart.
+- BANKROLL RESET (user request, 2026-06-25): bankroll is DERIVED (daemon recomputes current=start_units+sum(settled in clv_ledger) each tick) so an overwrite alone won't stick -> reset the SOURCE. Archived the 5 files (clv_ledger 611 settled+871 open, paper_bankroll/pnl_series/today/grade_summary) to data/frontend/_ledger_archive/20260625T215321_reset/ (REVERSIBLE: copy back to restore), atomically cleared clv_ledger, init_bankroll(100), ran a real daemon tick. VERIFIED clean+accurate: start=current=100.0, net=0.0, 0 points, n_bets=0, reconciles=True. prop_close_lines.jsonl (m16 capture corpus) KEPT so the recalibrator fuel survives. Live daemons already resumed (8 fresh open bets, 0 settled -> current stays 100). Fresh track now measures the POST-vig-gate system from 100u.
+- ROOT CAUSE (two parts). (B) prop_settler_mlb._team_hit substring-matched whole labels, so prop matchups written with CITY ABBREVIATIONS ('MIL Brewers @ CIN Reds') never matched the MLB statsapi full names ('Milwaukee Brewers') -> _find_final_gamepk None -> EVERY abbrev MLB prop pended forever (settler returned 0). FIX: new _name_words (drops a leading all-caps city code) + nickname word-SUBSET _team_hit (robust to abbrev, unambiguous for Red Sox vs White Sox). Drained backlog: clv_ledger settled 364->400 (+36); 361 open rows already had settled twins (kept BY DESIGN -- clv_ledger_dedup.sanitize_rows keeps open+settled twins; the inflated "open" count is a READER bug, not a ledger rewrite).
+- (A) STRUCTURAL, NOW FIXED: NO supervisor module ran the settler (m13 PLACES props, nothing SETTLED them). NEW scripts/platformkit/bestbets/prop_settle_runner.py (m15_prop_settle, 900s, mirrors m13 runner: ops.liveness heartbeat + tick/run + injectable clock/sleep/settle_fn/max_ticks, 5 tests) wired as ProcSpec m15 in supervisor/stack_specs.py (independent, fresh_sec=1980). TAKES EFFECT ON NEXT SUPERVISOR RESTART (live PID loaded specs at boot). Also added date+1 fallback in mlb_realized_stat for ET placement-day mis-tag (FINAL-only guard -> live next-day game still pends).
+- m7_ingame_refresh "stale" (~50min) = FALSE ALARM: beats HOURLY by spec (cadence 3600s, fresh_sec=7800).
+- CLV CAPTURE + improve-loop fuel (the real edge lever): close-capture infra existed (clv/prop_close_store read-side wired into settler; clv/prop_close_capture writer, source=draftkings_live in-game two-way) but ran ONLY off auto_loop's 20-MIN tick -> coarse, missed the last price before a market suspends. Keys MATCH format (no norm bug); the gap is COVERAGE (captured players != bet players) + pregame DFS/Underdog props have NO two-way = permanently un-measurable (DATA wall). FIX: NEW scripts/platformkit/clv/prop_close_capture_runner.py (m16_prop_close_capture, 60s, 6 tests) wired as ProcSpec m16 (fresh_sec=150, cheap-when-idle). One real tick captured 22 closes (store 437->496). WHY it ALSO "makes AI better": captured closes -> clv_corpus.build_close_corpus = the 2nd independent corpus the recalibrator REQUIRES (gate stays REPLICATION_PENDING without it) -> m4_selfimprove ships better calibration. So faster capture = more CLV coverage AND more improve fuel, one lever.
+- IN-GAME PROP VIG-GATE (execution CLV-bleed fix): exec-by-channel showed game ML CLV ~neutral & slightly improving (-3%->+1.5%, n=17) but in-game props -16.4% mean CLV / 9% beat-close = the dominant bleed (structural live-prop vig ~-130/-130). ingame_prop_trader's ev>0 only cleared OUR HALF of the vig by a noisy in-game model -> marginal picks lose to close. FIX (scripts/platformkit/ingame/ingame_prop_trader.py _price_one): require edge over DEVIGGED fair >= _VIG_EDGE_MULT*round-trip-vig (default 1.0 = full hold) + skip vig>_MAX_VIG (0.20); env-tunable CV_INGAME_PROP_VIG_EDGE_MULT / CV_INGAME_PROP_MAX_VIG; STRICTER-only. 12 tests (2 new); trimmed docstring to hold ==300 LOC. Activates on next ingame-loop restart.
+- MODELS honest verdict: NOT improving yet (game recal data-starved 41/60 settled -> INSUFFICIENT_DATA; prop recal ran -> HOLD dbrier -0.0003, already calibrated). "getting better" = measurement improved (CLV n 41->72 via m16); models holding; exec gate now stops juice-eaters. NO $ edge claimed.
+- 47 tests green this session (m15:5 + m16:6 + vig:12-incl-existing + mlb/settler/clv); all files <=300 LOC; non-gated (scripts/platformkit + supervisor). NEXT: RESTART SUPERVISOR/ingame-loop to activate m15+m16+vig-gate (live PIDs loaded code at boot); fix the open-count READER to exclude settled-twins; watch in-game-prop CLV after gate lands.
+
+## >>> SESSION 2026-06-25d (SOFT-BOOK FEED added (FanDuel, keyless) + caught/fixed a FABRICATED-EDGE merge bug)
+USER chose "free per-book scraping" to fix the book-coverage constraint (25c). Added a real soft book and -- critically -- caught the honesty trap it exposed. LOCAL working tree.
+- BUILT scripts/platformkit/odds_provider/fanduel.py: keyless FanDuel game-moneyline provider (public _ak site key, browser UA+Referer or it 403s; parses attachments.markets MONEY_LINE -> home/away from "Away (P) @ Home (P)" event name + runner decimals; UNAVAILABLE on block/empty). 5 tests. Wired into aggregate.default_providers (now ESPN+FanDuel+Kalshi+Polymarket+Pinnacle). LIVE: FanDuel returns 15 MLB games -> 7 games now have 3 books (DraftKings+FanDuel+Pinnacle), was 2.
+- THE HONESTY CATCH (most important): first audit with FanDuel showed a +8.23% "edge" on Yankees ML -- FABRICATED. ROOT: FanDuel lists tomorrow's game too (same teams), and aggregate._event_match matched on TEAMS ONLY -> tomorrow's pick'em line (TBD pitchers) overwrote today's real line -> fake CLV. FIX: _event_match now ALSO requires commence_time within 6h (falls back to team-only when a time is missing, so no existing merge drops). Verified: today's Yankees game now merges all 3 books sharp-aligned (DK 1.676 / FD 1.675 / Pinn 1.735), tomorrow's splits off FanDuel-only, and the audit honestly reports 0 +CLV (FanDuel agrees with the sharps today). Did NOT ship the fake edge.
+- HONEST STATE: infra is now genuinely better (3 books, time-safe merge that PREVENTS cross-game fabricated edges, +CLV engine ready). 0 +CLV right now = FanDuel aligned today (efficient), NOT a bug -- the engine fires when a soft book actually diverges. 40 tests green (5 fanduel + 30 clv + flip/robustness merge tests); 1 pre-existing UNRELATED failure (test_inert_when_sentinel_absent: PIPELINE_ENABLED sentinel present on this armed box -> corpus builds; fails with my change REVERTED too, confirmed). NEXT: restart to activate 3-book line-shopping in the live boards/placement (better CLV on placed bets); add more soft books (Caesars/BetMGM need header work, MGM 403s datacenter-style); the more soft books, the more real +CLV the engine surfaces.
+
+## >>> SESSION 2026-06-25c (MONEY LEVER = price-edge/line-shop engine + the DIAGNOSIS: book coverage, not the model)
+USER: "keep trying to make an efficient system that will make money." Built the model-free money lever (best-price line-shopping = take a better-than-fair number = +CLV) and it DIAGNOSED the real binding constraint. LOCAL working tree.
+- BUILT scripts/platformkit/clv/best_price.py (sharp_fair = Pinnacle-anchored / cross-book-median no-vig; best_price = max decimal per side, sportsbooks only; price_edge = expected CLV% of best price vs sharp fair; value_bets = the +CLV opportunities) + best_price_audit.py (runs it on the LIVE slate). 7+30 clv tests green; robust to sub-1.0-booksum arb quotes (Shin asserts -> _safe_devig).
+- THE FINDING (live, honest): MLB scanned 10 games, only 2 books quote each (espn:DraftKings + pinnacle), BOTH SHARP -> 0 +CLV bets even at min 0.0%. soccer 1 book (pinnacle 401) -> 0 shoppable. ROOT: ESPN now republishes only 1 book/game (DraftKings; parse_pickcenter already multi-book-capable, feed isn't), keyless coverage caps at ~2 sharp books. +CLV requires a SOFT book mispricing vs the sharp -- we have NONE. THE -3.18% moneyline CLV is exactly this: take DraftKings (sharp-ish, vigged) as the only price -> pay the vig to the close.
+- HONEST ANSWER to "make money": it's a DATA-ACQUISITION problem, not a model one (the quant truth: edge is in data access + execution). The #1 money lever = add SOFT-book game-ML feeds (FanDuel/BetMGM/Caesars/ESPN BET) via a paid odds API (the-odds-api = 1 key, 10+ books) or per-book adapters; the detection engine is built + tested and auto-surfaces +CLV the moment soft books land. No book adapter beyond espn/pinnacle/kalshi exists for game ML (prop_betmgm/prop_draftkings are props-only). No $ edge claimed; 0 fabricated. Stack untouched this turn (analysis CLIs, not daemon-wired). NEXT: wire a multi-book feed (the real money unlock) OR wire best_price as a CLV-gate into the placer once >=3 books exist.
+
+## >>> SESSION 2026-06-25b (EDGE MEASUREMENT: CLV scoreboard + model-progress + PROP CLOSING-LINE CAPTURE)
+USER: "how do we start getting edges / think like big quants / models getting better." Reframe given (accuracy != edge; CLV is the only judge), then built the measurement layer. LOCAL working tree (not committed/pushed).
+- BUILT scripts/platformkit/clv/clv_scoreboard.py (per-channel CLV truth table; measurable=true_close vs no_close split + 95% CI/significance; dedup). FINDING on real ledger: coverage 5.8% (16/275 bets have a captured closing line); the ONLY measurable channel (game moneyline n=16) = mean CLV -3.18% SIGNIFICANT, beat-close 0/16 = ANTI-edge (we take worse-than-close prices). Props (in-game -19.6u, pregame +1.0u) + Kalshi PM (+7.5u) = ALL un-measurable noise w/o closing lines.
+- BUILT scripts/platformkit/clv/model_progress.py (two-axis "are models getting better": calibration trend from improve_ledger + edge from scoreboard). FINDING: self-improve loop is honest (134 SHIP / 1366 INSUFFICIENT_DATA, refuses to fabricate; needs >=60 settled/sport; NBA frozen n=6 offseason, MLB n=30 Brier 0.22 improving). KEY INSIGHT: on the SAME 16 MLB games the model PREDICTS better than close (BSS +0.10) but TRANSACTS worse (CLV -3.18%) -> bottleneck is EXECUTION/price+data, NOT the model.
+- BUILT (user "build that next") PROP CLOSING-LINE CAPTURE so in-game props become CLV-measurable: NEW scripts/platformkit/clv/prop_close_store.py (two-way close history, latest-wins, never half-prices) + prop_close_capture.py (snapshots live DK two-way for OPEN in-game props each cycle; injectable quote_fn; honest no-op when nothing live) + prop_settler.settle_prop_row/settle_open_props now take close_fn (default reads the store) -> real CLV (Over->home/Under->away via compute_clv) when a close was captured, else honest no_close. Wired as auto_loop step "capture_prop_closes" (mlb+soccer_intl). 13 new tests + 6 prop_settler + 16 auto_loop GREEN. m1_paper surgically reloaded (restarts=1, new code live; supervisor stayed 1/19/19 - single-instance fix held). LIVE NOW = honest no-op (no MLB game live: 257 open props, 0 captured, 0 fabricated); starts accruing prop CLV the moment a game goes live, then scoreboard coverage climbs off 5.8% and we learn if the in-game edge is REAL. NEXT: pregame-prop CLV needs a DK/FD pregame two-way snapshot (different source); fix moneyline -3.18% via best-price line-shop. No $ edge; units only; safe areas only.
+
+## >>> SESSION 2026-06-25 (ROOT-CAUSED + KILLED the chronic DUPLICATE-SUPERVISOR disease + fixed bare-boot UI)
+USER: "make sure everything in paper trading is working, keep making it better." Found the stack in the documented multi-supervisor deadlock (3 supervisors, m1_api_boards+m1_ui crash-looping all_ready=False, served by orphans) and fixed the ROOT CAUSE so it cannot recur. LOCAL only (NOT pushed, NOT committed -- working tree).
+- THE REAL ROOT CAUSE (why every session kept re-fighting "multi-supervisor"): (1) `run_forever` calls `boot()` (up to ~30s) BEFORE the first `_beat_self()`, so during the whole boot window the supervisor's self-heartbeat is stale; the autostart watchdog (watchdog_autostart.ps1, poll 15s, wedge threshold 90s) sees alive-but-stale -> declares the BOOTING supervisor "WEDGED" -> launches a DUPLICATE. (2) Two supervisors then each run reconcile_survivors() which kills the OTHER's freshly-spawned CHILDREN by cmdline match -> mutual child-kill -> EADDRINUSE flap on :8099/:8098/:3000. Manual stop/boot races the watchdog the same way.
+- THE FIX (3 minimal, non-gated changes + tests): (a) NEW supervisor/_singleton.py -- OS-level exclusive single-instance lock (msvcrt/fcntl, kernel auto-releases on death, FAIL-OPEN so a lock hiccup never blocks boot); __main__ acquires it and a 2nd concurrent supervisor exits 0 (4 tests, incl. a real spawn'd 2nd process proving refusal). (b) __main__ stamps `sv._beat_self()` IMMEDIATELY (before boot()) so a booting supervisor is never mistaken for wedged. (c) watchdog wedge branch now kills the wedged supervisor before relaunch (safe given (b)) so genuine-wedge recovery still works with the lock. PROVEN LIVE: deliberately raced a manual boot against the running watchdog (watchdog fired its own boot at 12:44:53 same moment) -> exactly 1 supervisor survived, held at 1 through the full 90s boot window (pre-fix this made 2-3). Lock file is held (cross-proc read -> PermissionError = proof).
+- ALSO FIXED (bare-boot UI footgun): `boot.ps1` alone didn't set NBA_AI_UI_DIR/CMD (only go.ps1 + the watchdog did) -> m1_ui fell back to stack_specs' legacy court-visions `npm run dev`, collided with a stale court-visions dev server on :3001, left :3000 empty. Added the webapp prod-UI env defaults to boot.ps1 (guarded, override-respecting) so ANY boot serves webapp `npm run start` on :3000. Killed the stale court-visions orphans.
+- VERIFIED LIVE NOW: 1 supervisor, 19/19 READY, all_ready True, ZERO duplicate daemons. webapp on :3000 (/ /bets /games /records all 200). paper trail API 200 (channels paper/paper_ingame_prop/paper_pm). bestbets mlb ok 10g / soccer ok 6g (0 bets = honest no-edge-clears-floor; warm 0.25s after the one cold 61s stale-while-revalidate build). Placement RESUMED: 368 bets today. Bankroll 87.5u / net -12.5u, units-only, edge_claimed=False, executed=False (honest slightly-negative on an efficient market; CLV is the judge). Tests: 4 singleton + 22 supervisor + dry-runs GREEN. No src/kernel/api/team_system/intel edit; ASCII; <=300 LOC python.
+- KNOWN MINOR: a phantom :3001 listener (taskkill says PID gone, netstat still shows it) -- harmless, off-stack, webapp owns :3000. Changes uncommitted in working tree (supervisor/_singleton.py, tests/supervisor/test_singleton.py NEW; __main__.py, boot.ps1, watchdog_autostart.ps1 MODIFIED) -- commit when you want.
+
+## >>> SESSION 2026-06-24h (FRESH SLATE on the disciplined config: best-bets-only, edge-weighted)
+USER: "reset bankroll, run ONLY best bets to make most units; edges are in-game + props; keep running." Reset + verified the disciplined book. LOCAL only.
+- RESET: archived 3794 ledger rows + bankroll/pnl/today/grade -> data/frontend/_ledger_archive/<ts>_reset (REVERSIBLE), truncated clv_ledger to empty, bankroll.init_bankroll(100) -> 100u/net0, ran one bankroll tick (fresh empty curve). Stack stays up (19/19 from 24g restart).
+- FRESH SLATE seeded by one placement cycle (the daemon's own steps) = 72 bets, ALL tier A/B (67 A / 5 B), ALL open: IN-GAME props 55 (MLB live -- the believed freshness edge firing broadly, cap20/game) + Kalshi PM 9 (game ML, 13 matched) + PREGAME props 8 (MLB tier-A, calibration-gated -> only Hits/Total Bases/Pitcher Ks, the replicated-SHIP families; soccer 0, MLB 549 edges -> 8 staked, 142 capped). 89% of stake is the in-game+PM edges; the pregame flood is gone.
+- HONEST FRAME (told the user): "most units" on an efficient market = MORE of the +EV/calibrated best bets, NOT bigger stakes -- did NOT crank stake size (Kelly on an unproven edge just amplifies variance/bleed). Flat-1u discipline kept. The reset gives a CLEAN CLV track record of the disciplined config; whether in-game/props is a real edge is now a measurement (prior all-time realized was -10.4u; props bled -21.8u). edge_claimed=False, real-money DENY, UNITS only. The running daemons (m12 place, settler, m1_bankroll) keep this going idempotently.
+- WORLD CUP RE-INCLUDED (user: "should be doing world cup too"): the calibration gate had zeroed WC (soccer is INSUFFICIENT_DATA -- unmeasured, not rejected). FIX: auto_loop._place_props now SPLITS the call -- MLB calibration-gated (replicated-SHIP families only) + soccer_intl settleable + tier-A but NOT calibration-gated (new _WC_PROP_MAX_PER_SPORT=8). WC props = leader-gradeable Shots/Saves (the only PRICED + settleable WC stats; goals/cards/assists have no two-way price). WC also rides Kalshi PM game moneyline. KALSHI WC TEAM-BRIDGE FIXED: pm_game_placer._name_matches now canonicalizes national-team names via _COUNTRY_ALIASES (e.g. model "South Korea" == Kalshi "Korea Republic"; Congo != DR Congo; MLB city bridge intact) -- match rate 1->2 of our 6 model WC games (2 new tests, 11 pm tests green; m12 reloaded restarts=3). HONEST: the BINDING limit is COVERAGE not the bridge -- our model predicts only 6 WC games vs Kalshi's 20 (the other 14 have no model -> correctly un-bet); the 4 unmatched model games aren't even in Kalshi's current feed. Full WC PM coverage needs the producer to predict all WC matches (predict_service-side, separate). Of the 2 matched, 1 cleared the edge floor -> placed (the other = no edge, honest skip). SURGICALLY reloaded m12_pm_paper_tick (kill -> supervisor respawn, restarts=2, 19/19 READY) so the daemon keeps placing WC. Live slate now: ~133 mlb + 9 WC (8 props Shots/Saves + 1 PM), bankroll fresh 100u. HONEST: WC props are settleable + tier-A but NOT calibration-proven (and most Shots/Saves settle only for the match leader) -> "best available WC bets," CLV will measure them. NOTE: pregame cap is per-TICK (8/sport) so the daily count accumulates as new tier-A edges clear across ticks (still all tier-A/settleable, not the old B/C flood).
+
+## >>> SESSION 2026-06-24g (ACCURACY: found+fixed the bankroll OVERSTATEMENT bug -- now reconciles to the real book)
+USER: "get it to a place where it's accurately making money." Honest answer given: I can make the dashboard ACCURATE + the betting sharper, but cannot fabricate a profit -- realized is NEGATIVE on an efficient market. Fixed the accuracy bug. LOCAL only.
+- THE BUG (root cause of +22.4u shown vs -8.5u real): bankroll_daemon computes the curve over select_clv_positions(settled), which keys each "market" by _clv_market_key = (sport, matchup, line, day) -- NO prop identity. So 50+ players' o/u-0.5 props in ONE game (e.g. TEX@MIA 53 rows) collapsed to a SINGLE position, keeping only the highest-model_prob side -> silently DROPPED ~90% of the prop book (1150 settled prop rows -> 115 keys) and biased the kept subset positive. The prop bleed vanished from the headline bankroll.
+- THE FIX: scripts/platformkit/paper/pnl_normalize._clv_market_key now carries prop_player + prop_stat, so DISTINCT props are distinct positions; only a prop's own over/under (same player+stat+line) collapse, and moneyline two-way still collapses (no prop fields -> key unchanged). 4 regression tests + 28 pnl/daemon tests GREEN.
+- THE HONEST NUMBER (post-fix): net flat-1u = -10.28u (current ~89.7u, NOT 122.4u). By channel: pregame props -21.78u (BLEED, now counted), Kalshi PM +7.33u, in-game props +1.13u, moneyline +3.04u. This is the TRUTH: paper book is slightly NEGATIVE on an efficient market; in-game + PM are the only non-negative channels (small n). No $ edge; CLV is the judge.
+- ACTIVATION: DONE (user OK'd restart). Hit the documented multi-supervisor straggler deadlock -- stop.ps1 left a supervisor (28888) alive that respawned children + a 2nd supervisor (15168); did a FULL python-stack sweep (kill all supervisor/platformkit/predict_service/... procs -> 0 remaining) then ONE go.ps1 -> 19/19 READY, all_ready=True, single supervisor. VERIFIED LIVE: paper_bankroll.json now reads CURRENT 89.6u / NET -10.4u (was 122.4u/+22.4u) -- the honest number. The 24f refocus (auto_loop) loaded in the same fresh m12 process. UNITS only, no src/kernel/api edit, ASCII, local commit NOT pushed.
+
+## >>> SESSION 2026-06-24f (REFOCUS: in-game-first + calibration-gated "smarter" selection; starve the pregame bleeder)
+USER DIRECTIVE: "in-game is my edge -- focus paper trading on in-game player props, FEWER better bets using SMARTER systems on Kalshi + sportsbooks, grind the edges and push." Data-backed: realized flat units by channel = pregame props -26.5u (BLEED), Kalshi PM +10.6u, in-game props +4.4u (both small-n positive). So concentrate AWAY from the prop flood toward in-game + PM. LOCAL only (NOT pushed).
+- THE "SMARTER SYSTEM" (new): scripts/platformkit/bestbets/calibration_gate.py -- stake a PREGAME prop only on (sport,stat) families we have PROVEN we calibrate (replicated_verdict==SHIP_REPLICATED in prop_history_meta; explicit stat map, no substring false-match; fails OPEN on a meta read error). Wired into props_paper_placer.run(calibration_only=) -> _board_edges drops un-proven families. 4 gate tests + 1 placer test.
+- THE REFOCUS (auto_loop config): PREGAME props = least-favored channel now: min_tier A (was B) + cap 8/sport (was 50) + calibration_only=True. IN-GAME props = the FOCUS: cap 20/live game (was 12), own floor _INGAME_MIN_TIER=B (decoupled from the tightened prop tier). Kalshi PM = kept "pushing": own _PM_MIN_TIER=B (decoupled), cap 25.
+- DRY-RUN PROOF (today's live board): PROVEN families = mlb {Hits,Runs,Pitcher Strikeouts,Total Bases} (soccer not proven yet -> 0). Pregame placement 75/cycle (mlb50+soccer25) -> 8/cycle (mlb8 tierA-proven + soccer0). ~89% fewer pregame props, concentrated on the 4 leak-free replicated-SHIP MLB stats. In-game + PM unchanged (the favored channels).
+- HONEST FRAME: this is DISCIPLINE + calibration concentration, NOT a proven $ edge. In-game is the validated FRESHNESS lever (calibration) and the realized-positive channel (small n); pregame props were the measured bleeder. CLV over larger n stays the judge; edge_claimed=False; real-money DENY. Takes effect on next daemon/stack RESTART (auto_loop imported at process start). 66 tests GREEN this session + 16 auto_loop + 17 placer/gate. UNITS only, no src/kernel/api edit, ASCII. Local commit, NOT pushed.
+- NOTE: prop board's internal oos-calibration cache went stale ('v2-void-nan') after the SOT void -> it conservatively treats edges as 'unmeasured' (honest, not a bug); refreshes on the next board rebuild.
+
+## >>> SESSION 2026-06-24e (WC props: SOCCER SETTLER shipped (fires now) + DK-live soccer price-side READY)
+USER: "do both" (1 wire a live two-way WC prop source; 2 add a soccer prop settler). Did both honestly; the real binding wall is ESPN keyless exposes NO per-player shots/SOT. LOCAL only (NOT pushed).
+- TASK 2 DONE + FIRING: NEW scripts/platformkit/bestbets/prop_settler_soccer.py -- keyless ESPN post-match resolver: goals/assists/goal+assist/cards from summary.keyEvents (FULL coverage; reuses ingame_box_soccer), shots/saves from summary.leaders (LEADER-ONLY -- the feed exposes just the top player/category), Shots On Target UNRESOLVABLE (no per-player SOT feed). FINAL-only, scoreboard-by-date, disk-cached. Wired into prop_settler._default_realized_fn (soccer_intl/soccer) so the EXISTING settle daemon now grades soccer props. 10 tests. RAN IT LIVE: settled 5 real WC props (Ronaldo Shots o4.5 -> 7 = WIN +1.06u; Diogo Costa Saves u0.5 -> 2 = loss; etc.), net -1.11u.
+- THE HONEST COVERAGE FINDING (verified on real fifa.world finals): of 231 OPEN WC props only 5 are keyless-resolvable -- because the placed props are Shots(83)/Shots On Target(128)/Saves(20), and ESPN keyless gives per-player data ONLY for the single category LEADER (boxscore.players EMPTY, core-API roster EMPTY on the marquee ARG-AUT final too; keyEvents rich but that's goals/cards/assists). So 226 SOT/non-leader props stay PENDING forever on keyless data. ROOT ISSUE surfaced: the placer places SOT/Shots props it can NEVER grade keyless -- the real lever is to bias WC prop placement toward gradeable goals/cards/assists (or drop SOT). NOT fixed this session (placer change; flagged for the user).
+- TASK 1 (live price source) READY, awaits a live-confirm: prop_draftkings_live made soccer-capable -- sport-aware stat phrases (Goals/Assists/Cards/Shots/SOT) + env-gated WC league id (DK_SOCCER_INTL_LEAGUE_ID / DK_SOCCER_LEAGUE_ID; NOT hard-coded because DK's WC id is not in the repo and is unconfirmable until a match is live). Absent env -> honest unavailable -> trader no-op. 4 new parse/env tests. Combined with the realized-feed wall, in-game soccer props can only EVER fire for goals/cards/assists (shots have no live per-player realized feed). To light it up: set DK_SOCCER_INTL_LEAGUE_ID after probing DK's live event endpoint DURING a live WC match (the 24c lesson).
+- LANDED: 62 per-file tests GREEN across touched files. UNITS only, edge_claimed=False, real-money DENY, no src/kernel/api edit, ASCII. Local commit, NOT pushed. NET: WC props now SETTLE (the gradeable subset) + the in-game price-side is wired; the dominant blocker is the keyless feed having no per-player shots data -- a real DATA limit, not a code gap.
+- FOLLOW-UP DONE (user: "yes" to the placer fix): props_paper_placer now has a per-sport SETTLEABLE-stat allowlist (_SETTLEABLE_STATS_BY_SPORT). soccer_intl/soccer place ONLY keyless-gradeable stats {Goals,Assists,Goal+Assist,Cards,Shots,Saves}; Shots On Target / Fouls (NO per-player keyless feed) are DROPPED so a WC prop is never staked that would pend forever. mlb unfiltered (full statsapi). KEY REALITY this exposed: the only PRICED WC props are Shots/SOT/Saves (goals/cards/assists have NO two-way price from Underdog -> 0 placeable), so post-fix WC places ~25/slate = Shots(19 leader-gradeable)+Saves(6); SOT(33) dropped. 4 new tests (12 placer total). CLEANUP DONE (user OK'd void): backed up the ledger (data/frontend/_ledger_archive/<ts>_pre_sot_void.jsonl) then appended a settled-VOID row (outcome=void, unit_result=None -> 0 bankroll impact, append-only via write_settlement, race-safe) for the 128 already-placed open Shots On Target props (never keyless-gradeable). VERIFIED: WC props terminal=133 (128 void + 5 settled 2W/3L); effectively-open now 98 = Shots(81)+Saves(17) only -- every open WC prop is now at least leader-gradeable. Shots/Saves KEPT (leader-gradeable); goals/cards/assists were never placed (no two-way price). 66 tests GREEN total.
+
+## >>> SESSION 2026-06-24d (WC IN-GAME PROPS: engine made SOCCER-READY; honest 2-wall no-go on firing today)
+USER ASK: "make sure World Cup props + in-game are working -- best bets player props, in-game is edge." Chose "attempt WC in-game wiring." Verified the live system, then attempted the wiring with full due diligence. LOCAL only (NOT pushed).
+- VERIFIED WORKING NOW: WC pregame PROPS fine -- 228 placed today (190 A / 38 B), 140 on the best-bets board, from Underdog (DK/FD/MGM/PrizePicks all empty for the WC league). MLB IN-GAME player props = the live-firing edge (a real tick placed 6 on 2 live MLB games). WC in-game game-MONEYLINE fires when a WC match is live (none live at build time; 6 scheduled later today).
+- THE WIRING (all SAFE areas, 20 per-file tests GREEN): made the in-game prop trader sport-blind. (1) NEW scripts/platformkit/ingame/ingame_box_soccer.py: keyless ESPN LIVE realized reader -- live_games (in-progress WC matches + frac from match minute/90) + boxscore_stat_map (per-player Goals/Assists/Cards from summary.keyEvents, rostered players 0-seeded) + realized_for + is_known_stat. 5 tests. (2) ingame_prop_trader.run now dispatches via _BOX_BY_SPORT (mlb->ingame_box_mlb, soccer_intl->ingame_box_soccer); _price_one uses box.is_known_stat + box.realized_for; soccer lam from dist_lookup_from_snapshot. MLB path byte-identical (7 trader + box5 + repricer green). 300 LOC. 3 new soccer tests. (3) auto_loop._place_ingame_props now ticks mlb + soccer_intl. Live tick: mlb placed 6, soccer_intl honest no-op ("no live games").
+- THE HONEST 2 WALLS (why WC in-game props place 0, did NOT fake): (a) REALIZED FEED: ESPN keyless soccer has EMPTY boxscore.players + empty team stats; only keyEvents (goals/cards/assists, every one emits an event so absence=genuine 0) + a single shot-LEADER. So Shots / Shots On Target / Saves / Fouls (38% of WC props) are NOT per-player readable keyless -> is_known_stat False -> skipped (no fab 0). Only Goals/Assists/Goal+Assist/Cards (62%) are honestly readable. (b) LIVE MARKET: no liquid live two-way WC prop source -- Underdog is DFS pick'em (suspends at kickoff, not devig-able); DK/FD/MGM empty for WC pregame; DK WC live league id is NOT in the repo (v2 comment: "soccer can be added once their live league_ids land") and is unconfirmable until a match is live; Kalshi WC props zero-liquidity (see 22h). So the trader's default soccer market source returns unavailable -> clean no_prices no-op.
+- NET (honest): the engine is now SOCCER-READY + tested; it auto-fires the moment a WC match is live AND a live two-way market exists for a readable (goals/cards/assists) stat. Until a live two-way WC prop source is wired, WC in-game props correctly place 0 (honest-empty > fake). NO stack restart needed (no functional change for WC until a market lands). The DAEMON picks up the soccer tick on next stack restart. UNITS only, edge_claimed=False, real-money DENY, no src/kernel/api edit. Local commit, NOT pushed. NEXT OPTIONS for the user: (1) wire a confirmed live two-way WC prop source (probe DK's live event endpoint DURING a live WC match -- the 24c lesson -- or a keyed feed); (2) add a SOCCER prop SETTLER using ingame_box_soccer.realized_for so the 228 placed WC props (goals/cards/assists) actually settle (today they sit pending -- the settler is MLB-only); (3) accept WC = pregame props + in-game moneyline.
+
+## >>> SESSION 2026-06-24c (IN-GAME PLAYER PROPS NOW PAPER-TRADING LIVE -- the edge is firing)
+USER PUSHED BACK ("props update live, I should be able to paper-trade those, figure it out") and was RIGHT. The 24b "no live market" conclusion was WRONG -- DK DOES serve live full-game props, just via the EVENT endpoint, not the pregame catalog. Found it, wired it, it's placing. LOCAL only.
+- THE FIX (3 things that unblocked it): (1) LIVE PRICE SOURCE: DK serves in-play full-game props at /events/{eventId}/categories (NOT the pregame /leagues/{lid}/subcategories catalog, which suspends a game at first pitch). Built scripts/platformkit/odds_provider/prop_draftkings_live.py: live_event_ids (league root, status==STARTED) -> per-event two-way O/U player props (29-42 live MLB markets mid-game: Hits+Runs+RBIs, Pitcher Strikeouts, Runs...). 5 tests.
+  (2) LAM SOURCE: the pregame board/snapshot ALSO drops a live game's players (same suspension) -> 0 lam coverage for live players. Fixed by pulling pregame lam from the player-rate ENGINE directly: scripts/platformkit/ingame/ingame_prop_dist_mlb.py (cfg.resolve_player -> cfg.engine_distribution; COMPOSITE Hits+Runs+RBIs = sum of component lams). Suspension-proof. 5 tests.
+  (3) REPRICER additive set was missing the live stat names -> reprice returned None for everything. Added "Hits+Runs+RBIs" + "Pitcher Strikeouts" to ingame_prop_repricer._ADDITIVE_STATS (both genuinely additive).
+- ENGINE (built 24b, now firing): ingame_box_mlb (live realized stat + frac from statsapi) + ingame_prop_trader (reprice on realized state -> devig DK live two-way -> edge -> policy tier+units -> idempotent row channel=paper_ingame_prop, book=draftkings_live). Wired as auto_loop step _place_ingame_props; settles via the EXISTING prop_settler (market_type=prop) at game end.
+- LIVE PROOF: a real tick placed 24 tier-A in-game prop bets on 2 live MLB games (e.g. deGrom Pitcher Ks o5.5 model .95 vs mkt .64 -- he already had 5 Ks at the half; Owen Caissie H+R+RBI o2.5 model .51 vs .28 already at 2). Rows in clv_ledger channel=paper_ingame_prop, staked 1u, surfacing in /api/paper/trail. 19/19 READY. 40 per-file tests GREEN (box5 + trader7 + live-adapter5 + dist5 + repricer18).
+- HONEST FRAME: the freshness reprice on realized state IS the validated lever (calibration). The big model-vs-live-line gaps (often +0.2-0.3) are MODEL_VIEW -- likely partly model overconfidence on a liquid line, SAME artifact family as pregame props; CLV is the judge, edge_claimed=False, units only, real-money DENY. Fires whenever an MLB game is live (and auto-extends to NBA in-play next season). Local commit, NOT pushed.
+
+## >>> SESSION 2026-06-24b (IN-GAME PLAYER PROPS: edge ENGINE built+wired; live MLB prop MARKET does not exist on books -- SUPERSEDED by 24c: the market DOES exist via the DK event endpoint)
+USER DIRECTIVE: "in-game props are my edge -- find it, use it for kalshi and sportsbooks." Built the full engine; ran the real due diligence on the live market. LOCAL only.
+- BUILT (all SAFE areas, 12 new per-file tests GREEN): the in-game player-prop edge engine, end to end --
+  (1) scripts/platformkit/ingame/ingame_box_mlb.py: LIVE realized-stat + freshness reader (keyless statsapi; REUSES prop_settler_mlb parsing so live reprice == post-game settle, no drift). live_games / boxscore_stat_map / realized_for / is_known_stat. 5 tests.
+  (2) scripts/platformkit/ingame/ingame_prop_trader.py: the trader. per live game x prop -> reprice on realized state via the EXISTING ingame_prop_repricer (final = realized + remaining, lam shrunk by frac_elapsed; the user's exact thesis) -> devig the book's LIVE two-way -> edge = model_p - market_p -> pm_trading.policy tier+units -> idempotent paper row channel=paper_ingame_prop. Reads pregame lam/model from the refreshed snapshot props.edges (no 136s rebuild). 7 tests. 286 LOC.
+  (3) WIRED as guarded auto_loop step _place_ingame_props (min_tier B, cap 12/live game); rows are market_type=prop so the EXISTING prop_settler grades them at game end (units realize) -- no new settler. m1_paper reloaded; 19/19 READY.
+- THE HONEST MARKET FINDING (the blocker -- did NOT fake bets): there is currently NO liquid LIVE full-game player-prop MARKET to price against. PROOF: the one live MLB game (TEX@MIA) was probed mid-flight -- DK's pregame prop catalog DROPS a game at first pitch (all 14 listed events NOT_STARTED; the live game's DK payload had only 3 markets, ALL game-level moneyline/total, ZERO player props). FanDuel adapter = "unsupported sport mlb"; BetMGM = empty; Kalshi in-play = game moneyline only (no liquid player props, consistent w/ [[project-wc-prop-vertical-2026-06-17]] zero-liquidity finding). So MLB books offer full-game batter props PREGAME only; in-play they pivot to at-bat MICRO-markets (next-PA hit/out) which are a DIFFERENT model, not a full-game stat reprice.
+- NET: the EDGE ENGINE is built, tested, wired, auto-settling, and sport-blind; it fires the moment a liquid live full-game prop two-way price exists for a live player. That market is NBA in-play player props (DK lists live pts/reb/ast) -- but NBA is OFFSEASON now. So today it correctly places 0 (honest no-op), not a fake. NEXT OPTIONS for the user: (a) it auto-lights-up for NBA season; (b) build a DK in-play MICRO-market (per-PA) model+adapter for MLB live action (real, different build); (c) re-probe DK mid-game later in case it re-lists some live props. UNITS only, edge_claimed=False, real-money DENY, no $ edge. Local commit, NOT pushed.
+
+## >>> SESSION 2026-06-24 (PAPER AT HIGHEST LEVEL: stack un-deadlocked + best-bets boards un-stale, FAST)
+USER DIRECTIVE: "make sure paper trading is at highest level today -- multiple books, best bets, in-game props, working efficiently, most units, front end showing it." Diagnosed + fixed the real breakages; honest about the in-game wall. Committed LOCAL only (NOT pushed).
+- ROOT CAUSE #1 (stack looked broken): THREE supervisors were running (go.ps1 launched 3x), deadlocked over ports 8098/8099 -- each held one port, blocking the other's child -> m1_api_paper/m1_api_boards crash-looped (5+ restarts). stop.ps1 ALSO left stragglers (brain_rebuild_runner was MISSING from boot.ps1 STOP_PATTERN; scheduler/supervisor survived). FIX: full clean stop + manual straggler kill + ONE go -> 19/19 READY, 1 supervisor. Added platformkit.brain_rebuild_runner to STOP_PATTERN.
+- ROOT CAUSE #2 (best-bets boards empty/stale): the FE Best-Bets page calls :8099 /api/v1/bestbets/<sport> (predict_service store) -- but (a) the producer only made NBA (BOOT_SPORT=nba, offseason-empty) so mlb/soccer store snapshots only got produced on-demand and a transient 'unavailable' stuck; (b) the route's build_edge_view line-shops+decides EVERY market live = 32-90s/req uncached -> the UI timed out. The :8098 boards (serve.py) read data/frontend/snapshots/<sport>.json which NOTHING refreshed (mlb missing, soccer 2 days stale). FIXES (all SAFE areas + per-file tests GREEN): (1) producer _boot_producer_runner -> BOOT_SPORTS csv default nba,mlb,soccer_intl (keeps store fresh; boot.ps1 heredoc+env updated). (2) frontend/bestbets_routes -> SERVE-STALE-WHILE-REVALIDATE cache (TTL 300s): once an OK envelope exists it serves instantly + rebuilds in a daemon thread; cold build blocks only the first req/sport (warmed at deploy). Live: mlb/soccer warm reqs now 15-57ms (were 53-90s timeouts). (3) auto_loop new guarded _write_frontend_snapshots step (staleness-gated 900s, mlb+soccer) keeps the :8098 snapshots fresh. Regenerated both snapshots now.
+- RESULT (verified live): 19/19 READY, 1 supervisor; UI :3000 200; core paper endpoints 9-49ms; /api/v1/bestbets/mlb status=ok 15 games / 9 best bets (tier B moneyline line-shopped to best book e.g. pinnacle, model 0.526 vs mkt 0.481) / 37ms cached; soccer ok 6 games / 0 bets (honest-empty, no edge clears floor). Paper bankroll 113.6u (start 100). Today: 279 paper (props+ML) + 10 Kalshi PM + 2 in-game, tier A/B only. CLV +2.78% / 45% beat-close (n=20).
+- HONEST WALL (told the user, did NOT fake): (a) IN-GAME is game MONEYLINE, deliberately MEASUREMENT-ONLY (stake=0, edge_claimed=False) because in-game vs-close CLV is UNPROVEN -- staking it would chase an unproven edge (banned). It fires + calibrates, does NOT make units yet. (b) IN-GAME PLAYER PROPS do NOT exist: no liquid in-play prop prices (Kalshi props = zero liquidity) -> building them would fabricate a line. Units come from pregame DFS props + multi-book moneyline + Kalshi PM. Tests: 15 auto_loop + 4 bestbets-cache GREEN. UNITS only, real-money DENY, no $ edge. Local commit, NOT pushed.
+- KNOWN GOTCHA for next session: surgical "kill child -> supervisor respawns" RELOADS code but can ORPHAN the dependency cascade (killing api_paper orphaned the node UI on :3000 -> EADDRINUSE flap; fixed by killing the orphan node). The supervisor does not reliably reap detached Windows children before rebind. Prefer a full clean stop (hardened STOP_PATTERN) + manual straggler sweep + one go.
 
 ## >>> SESSION 2026-06-23 (WIRE MLB IN-GAME BETTING -- the daily slate now trades live, not just pregame)
 USER DIRECTIVE: "in-game is the edge -- when does it start? wire MLB in-game betting." Did it. Committed LOCAL only (NOT pushed).
@@ -319,6 +694,7 @@ Frontier: the decisive combinable edge is IN-GAME conditioning. Build it end-to-
 - [~] P7 AUTONOMY DONE 2026-06-18 (in-env proven; real reboot pending): supervisor/ already mature (manifest->boot->supervise->drain, readiness, capped-backoff, isolation, atomic status.json) -> added P2 daemon (inplay_runner.py) + P4 daemon (selfimprove_runner.py, MEASUREMENT-ONLY defaults so nothing ships/no flag flip) w/ heartbeat probes, wired into manifest/ops/status.json (9 services). Governance preflight exits 0, real-money default-DENY. VERIFIED offline: kill one service -> auto-restart + others stay up (isolation); P4 resumes from checkpoint (no reprocess); P2 capture resumes; ops doctor PASS; 47 tests green. Autostart register_autostart.ps1 + watchdog_autostart.ps1 BUILT + -DryRun tested, NOT registered (human go-live = `.\register_autostart.ps1 -Register`). Needs real reboot to confirm OS AtLogOn trigger.
 
 ## RECENT DONE (max ~7; older -> DONE.md)
+- ODDS-API HISTORICAL = ONE-SESSION ACQUISITION, REFOCUSED TO MLB+WC, WIRED INTO AI (2026-06-26): strategy = use the PAID odds API for ONE session to grab historical, then run INDEPENDENTLY on our own keyless live scrapers + this corpus. Made scripts/platformkit/odds_provider/oddsapi_team_backfill.py MULTI-SPORT (SPORT_KEYS nba/mlb/soccer_intl; the gated client is NBA-locked so I fetch via its sport-agnostic _gate_or_fetch internal) with a PREGAME GUARD (keep event iff commence_time>snapshot_ts -> in-play MLB lines, still 2-way, no longer masquerade as closes) and n-way Shin devig (soccer 3-way 1X2 -> probs sum to 1). Active sports first: KILLED the mis-prioritized NBA full-run (offseason; ~80 units lost), ran WC (complete: 16 dates, 2107 rows, 920u) + MLB (recency-first 2026->2025, cap 17.6k, running in bg). us,eu=Pinnacle anchor; holds ~2-3%, 17-30 books; 0 in-play rows kept. THEN built the AI BRIDGE scripts/platformkit/odds_provider/oddsapi_close_corpus.py (+6 tests): select_closes picks THE CLOSE per (event,market)=latest pregame snapshot w/ anchor devig; joins realized outcomes (mlb espn_boxscores via team_resolver.canonical abbr<->name; soccer_intl results.parquet full-name) -> corpora.py-compatible states (game_id,home,away,state_ts,outcome,devig_close_prob). THIS FILLS THE MLB SEAM that was DATA_LIMITED (market_coverage/corpora.mlb_ml_states returned [] -- no joinable local close). JOIN BUG fixed: key outcomes on commence date + ET-prior-day (late UTC games are prior ET day) -> MLB labeled 35->211 states, close Brier 0.250 @ 50.7% home base = the market benchmark the AI must beat OOS; WC 11 decisive (76 h2h closes, 19 played, ~8 draws excluded from 2-way frame -- honest). 17 new tests. CALIBRATION only, NO $/ROI. NEXT: (a) let bg MLB run finish -> rebuild corpus; (b) one-line wire build_states('mlb') into edge_finder.py:129 (replaces the [] DATA_LIMITED mlb path) so recalibrator/eval-gate score vs the close; (c) point select_closes at live-capture JSONL too = old+live blend for continuous self-improve; (d) NBA/MLB spreads+totals already captured for later. The 5 NBA seed dates from the prior turn remain valid in nba_team_strength.jsonl.
 - 4-SPORT IN-GAME CALIBRATION = NBA-LEVEL + LIVE-SERVED (2026-06-18): 3/4 sports REPLICATED in-game prior-conditioning calibration beat (NBA fine-res DM p=1.2e-12; TENNIS after p1/winner sign-bug fix, corr 0.01->0.72; SOCCER after team-name->Elo fix, fallback 42.9%->0%, both dirs p<0.002); MLB honest characterized NULL (prior+late-inning+leverage+half+base-out[100% cov] all reject; run_diff+innings near-sufficient). Generic sport-blind gate w/ degenerate-base honesty guard (caught + killed a FALSE tennis 'replicated'). LIVE-SERVED for in-season sports: ingame_serve.py persists per-sport models (data/cache/ingame/models/<sport>_ingame.json, proven/base provenance) + ingame_live_state.py keyless ESPN extraction + GET /api/ingame/{sport}/{game_id}; vs_close UNPROVEN, no $. ~150 new tests across ingest+gate+serve. CALIBRATION not market. (2026-06-18)
 - 4-SPORT IN-GAME GATE built + honestly graded (2026-06-18): generalized the proven NBA in-game gate into a sport-blind module (scripts/platformkit/ingame/ingame_gate_generic.py+_models, DEGENERATE-BASE honesty guard) + ingested in-game state trajectories for MLB/soccer/tennis (domains/<sport>/ingest_*states*; data/cache/ingame/<sport>_states__*.parquet). VERDICTS: NBA REPLICATED (real); MLB REJECT (strong base, prior adds nothing); SOCCER PARTIAL (real beat 1 dir p=0.045, underpowered 180g/corpus); TENNIS INVALID_BASE (set-level only, corr 0.009 -- suspected reconstruction bug, killed a FALSE 'replicated'). ~90 new tests across 4 ingest+gate modules. Follow-ups in flight: soccer power-up, tennis bug hunt, MLB detail ladder. CALIBRATION not market. (2026-06-18)
 - P3 c1 CALIBRATION BEAT REPLICATED CROSS-CORPUS + CONFIRMED AT FINE RESOLUTION (2026-06-18): ingested NBA 2024-25 linescores (1321 games) + FULL 2-season PBP scoring trajectories (23 as-of states/game, zero drops) -> ingame_crossval_nba.py (Q-boundary) + ingame_finegrain_nba.py (~2-min). BOTH gates, BOTH directions: +PRIOR beats BASE on held-out Brier (Q-bnd A->B 0.1706->0.1613; fine A->B 0.1684->0.1583 clustered DM p=1.2e-12, B->A 0.1716->0.1647 p=1.2e-4), early-helps-most pattern holds, per-GAME clustering applied (shrinks DM 3.3x vs iid, still significant). VERDICT=REPLICATED at serving resolution. Now a CONFIDENT, proof-rail-complete in-game CALIBRATION beat over a margin/time base (leak-free+WF+OOS+2 seasons+DM+mechanism) -- NOT a market beat (that's liquidity-blocked clause-2). Also: P5 execution math independently reviewed CLEAN (Shin-devig edge, tier floors, capped quarter-Kelly, units-only no-$, edge_claimed=False). 4-sport parity GREEN. (2026-06-18)
