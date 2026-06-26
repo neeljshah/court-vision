@@ -30,12 +30,7 @@ _DEFAULT_STATUS = "open"
 
 
 def _row_key(row: Dict[str, Any]) -> str:
-    """Return the dedup key for *row*: "<bet_id>|<status>".
-
-    Two rows sharing the same bet_id but with DIFFERENT status ("open" vs
-    "settled") produce DISTINCT keys -> both are retained.
-    Two rows with the SAME bet_id AND SAME status -> same key -> second is a dup.
-
+    """Return "<bet_id>|<status>" dedup key. Different status -> distinct keys.
     Falls back to _DEFAULT_STATUS ("open") when "status" is absent.
     """
     bid = str(row.get("bet_id") or bet_id(row))
@@ -269,11 +264,36 @@ def _main(argv=None) -> int:
     return 0 if status in ("ok", "no_change", "no_file", "dry_run") else 1
 
 
+# Public surface 4: truly-open bet helpers (pure, zero I/O)
+
+def open_unsettled_rows(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Return rows that are "open" AND have no "settled" twin in *rows*.
+    Preserves input order.  Pure; zero I/O.
+    """
+    settled_bids: Set[str] = {
+        str(r.get("bet_id") or bet_id(r))
+        for r in rows
+        if str(r.get("status") or _DEFAULT_STATUS).strip().lower() == "settled"
+    }
+    return [
+        r for r in rows
+        if str(r.get("status") or _DEFAULT_STATUS).strip().lower() == "open"
+        and str(r.get("bet_id") or bet_id(r)) not in settled_bids
+    ]
+
+
+def count_open_unsettled(rows: List[Dict[str, Any]]) -> int:
+    """Return len(open_unsettled_rows(rows)).  Pure; zero I/O."""
+    return len(open_unsettled_rows(rows))
+
+
 __all__ = [
     "sanitize_rows",
     "append_if_new",
     "dedup_ledger",
     "_row_key",
+    "open_unsettled_rows",
+    "count_open_unsettled",
 ]
 
 if __name__ == "__main__":
