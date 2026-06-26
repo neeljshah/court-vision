@@ -208,3 +208,34 @@ class TestReplay:
     def test_last_date_is_most_recent(self):
         state = replay(_make_matches())
         assert state.last_date == dt.date(2024, 1, 3)
+
+    def test_replay_no_round_column_no_keyerror(self):
+        # FAIL-BEFORE fix: missing 'round' column used to raise KeyError in _sort_key.
+        # All rounds treated as sentinel 99; replay must complete without error.
+        df = pd.DataFrame([
+            {"date": dt.date(2024, 3, 1), "p1_id": 10, "p2_id": 20,
+             "winner": 1, "surface": "Hard", "score": "6-3 6-4"},
+            {"date": dt.date(2024, 3, 2), "p1_id": 10, "p2_id": 20,
+             "winner": 2, "surface": "Clay", "score": "4-6 7-5 6-3"},
+        ])
+        assert "round" not in df.columns
+        state = replay(df)
+        assert state.n_processed == 2
+        assert state.counts[10] == 2 and state.counts[20] == 2
+
+    def test_replay_with_round_column_preserves_round_order(self):
+        # PASS-AFTER: when 'round' IS present, R32 (order 8) must sort before F (order 13)
+        # on the same date and tourney, even if F appears first in the input DataFrame.
+        df = pd.DataFrame([
+            {"date": dt.date(2024, 4, 1), "p1_id": 30, "p2_id": 40,
+             "winner": 1, "surface": "Grass", "score": "6-0 6-0",
+             "tourney_id": "T1", "match_num": 2, "round": "F"},
+            {"date": dt.date(2024, 4, 1), "p1_id": 50, "p2_id": 60,
+             "winner": 1, "surface": "Grass", "score": "6-1 6-1",
+             "tourney_id": "T1", "match_num": 1, "round": "R32"},
+        ])
+        # After sort, R32 row (p1_id=50) must come before F row (p1_id=30)
+        from domains.tennis.elo_core import _sorted
+        sorted_df = _sorted(df)
+        assert sorted_df.iloc[0]["round"] == "R32"
+        assert sorted_df.iloc[1]["round"] == "F"
