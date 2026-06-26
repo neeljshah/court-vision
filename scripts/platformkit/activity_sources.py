@@ -22,7 +22,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from scripts.platformkit.clv_ledger_dedup import count_open_unsettled
+from scripts.platformkit.clv_ledger_dedup import count_open_unsettled, open_unsettled_rows
 
 _HERE = Path(__file__).resolve()
 _REPO_ROOT = _HERE.parents[2]
@@ -172,6 +172,15 @@ def _paper(fe: Path) -> Dict:
         d[f"status:{st}"] += 1
         d[f"channel:{c}"] += 1
         d[f"market:{m}"] += 1
+    # Overwrite per-sport "status:open" with twin-aware counts so it matches the
+    # headline n_open.  Total, settled, channel, and market counts stay unchanged.
+    truly_open = open_unsettled_rows(rows)
+    open_per_sport: Dict[str, int] = {}
+    for r in truly_open:
+        sp = str(r.get("sport") or "NOT_SET")
+        open_per_sport[sp] = open_per_sport.get(sp, 0) + 1
+    for sp, d in per_sport.items():
+        d["status:open"] = open_per_sport.get(sp, 0)
     return {
         "present": True,
         "n_total": len(rows),
