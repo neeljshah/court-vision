@@ -1,4 +1,4 @@
-"""domains.soccer.rho_fit — Leak-free Dixon-Coles rho (low-score correction) fitter.
+"""domains.soccer.rho_fit - Leak-free Dixon-Coles rho (low-score correction) fitter.
 
 Fits the DC correlation parameter rho in [-0.2, 0.0] walk-forward (strictly prior-only).
 Core logic only: tau, NLL, fit_rho, walk_forward_rho.
@@ -62,6 +62,12 @@ def dc_neg_log_likelihood(
     """
     nll = 0.0
     for lam_h, lam_a, h, a in history:
+        # Skip matches with unusable lambdas or negative goal counts.
+        if not (math.isfinite(lam_h) and lam_h > 0.0
+                and math.isfinite(lam_a) and lam_a > 0.0):
+            continue
+        if h < 0 or a < 0:
+            continue
         t = tau(h, a, lam_h, lam_a, rho)
         if t <= 0.0:
             return float("inf")
@@ -115,7 +121,7 @@ def walk_forward_rho(
 
     For match i: rho[i] is fit on history[0..i-1]. Warmup (i < refit_every) uses rho=0.
     Rho is re-computed only every `refit_every` steps for speed; held constant between
-    refits (still prior-only — the history at the refit point contains no future data).
+    refits (still prior-only - the history at the refit point contains no future data).
 
     Parameters
     ----------
@@ -143,7 +149,12 @@ def walk_forward_rho(
                 (float(lam_home_arr[j]), float(lam_away_arr[j]),
                  int(fthg_arr[j]), int(ftag_arr[j]))
                 for j in range(i)  # strictly prior: 0..i-1
-                if math.isfinite(float(fthg_arr[j])) and math.isfinite(float(ftag_arr[j]))
+                if (math.isfinite(float(fthg_arr[j]))
+                    and math.isfinite(float(ftag_arr[j]))
+                    and math.isfinite(float(lam_home_arr[j]))
+                    and float(lam_home_arr[j]) > 0.0
+                    and math.isfinite(float(lam_away_arr[j]))
+                    and float(lam_away_arr[j]) > 0.0)
             ]
             current_rho = fit_rho(history, bounds=bounds)
 
