@@ -207,10 +207,15 @@ def improve_cycle(sport: str,
                   clv_path: Optional[Path] = None,
                   ledger_path: Optional[Path] = None,
                   append: bool = True,
-                  null_seed: int = 12345) -> Dict[str, Any]:
-    """Run one leak-free prop-calibration cycle for one sport; return + log the verdict."""
+                  null_seed: int = 12345,
+                  settled: Optional[List[Dict[str, Any]]] = None) -> Dict[str, Any]:
+    """Run one leak-free prop-calibration cycle for one sport; return + log the verdict.
+
+    *settled* (default None -> load for the sport): a pre-loaded row list lets a caller
+    (e.g. the in-game frac-bucketed ratchet) score a curated subset through this SAME gate."""
     ledger_path = Path(ledger_path) if ledger_path else DEFAULT_PROP_LEDGER
-    settled = load_settled_props(sport, clv_path)
+    if settled is None:
+        settled = load_settled_props(sport, clv_path)
     readout = honest_readout(settled)
     rec: Dict[str, Any] = {
         "ts": _now_iso(), "sport": str(sport).lower(), "market_type": "prop",
