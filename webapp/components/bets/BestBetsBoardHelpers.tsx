@@ -67,6 +67,9 @@ export function cardToBetCardData(
     line: b.line,
     is_best: false,
   }));
+  // best_odds may be 0/undefined for model-only props -- guard the best pill so
+  // we never fabricate a price entry.
+  const hasBest = card.best_book != null && card.best_odds != null;
   return {
     game_id: card.game_id,
     sport: card.sport,
@@ -77,7 +80,9 @@ export function cardToBetCardData(
     market_prob: card.market_prob,
     best_book: card.best_book,
     best_odds: card.best_odds,
-    all_books: allBooks.length > 0 ? allBooks : [bestEntry],
+    all_books: allBooks.length > 0 ? allBooks : hasBest ? [bestEntry] : [],
+    // books[] line-shopping array surfaced verbatim (price/line/as_of/fresh/is_pm).
+    books: card.books ?? undefined,
     edge_vs_market: card.edge_vs_market,
     units: card.units,
     tier: card.tier,
@@ -85,8 +90,14 @@ export function cardToBetCardData(
     clv: clvNum,
     clv_is_proxy: card.clv_is_proxy,
     status: classifyStatus(card.status),
-    line: null,
+    line: card.line ?? null,
     tipoff_utc: card.tipoff_utc ?? null,
+    // prop fields
+    prop_player: card.prop_player ?? null,
+    prop_stat: card.prop_stat ?? null,
+    proj: card.proj ?? null,
+    model_only: card.model_only ?? false,
+    honest_note: card.honest_note ?? null,
     suppress_reason: suppressReason,
   };
 }

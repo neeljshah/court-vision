@@ -12,6 +12,9 @@ from __future__ import annotations
 import logging
 from typing import Any, Dict, List, Optional
 
+from predict_service.bestbets_model_only import model_only_cards as _model_only_cards
+from predict_service.bestbets_props import cards_from_props as _props_cards
+
 logger = logging.getLogger(__name__)
 
 _HONEST_NOTE = (
@@ -114,7 +117,7 @@ def _cards_from_game(game: Dict[str, Any], sport: str) -> List[Dict[str, Any]]:
         cards.append({
             "game_id": game_id, "matchup": matchup, "sport": sport,
             "market_type": mt, "prop_player": None, "prop_stat": None,
-            "side": side,
+            "side": side, "line": cand.get("line") or bet.get("line"),
             "model_prob": round(mp, 6), "market_prob": round(mkt, 6),
             "best_book": str(cand.get("best_book") or bet.get("book") or ""),
             "best_odds": (round(float(bo), 6) if bo is not None else None),
@@ -122,66 +125,25 @@ def _cards_from_game(game: Dict[str, Any], sport: str) -> List[Dict[str, Any]]:
             "edge_vs_market": round(mp - mkt, 6) if mkt else 0.0,
             "units": float(bet.get("flat_unit") or cand.get("flat_unit") or 0.0),
             "tier": tier, "confidence": round(mp, 6),
+            "decision": "bet",
             "clv": clv, "clv_is_proxy": bool(clv.get("clv_is_proxy", True)),
             "status": status, "honest_note": _HONEST_NOTE,
             "tipoff_utc": tipoff_utc,
         })
+
+    # MODEL-ONLY / LINE-ONLY cards: a fresh book line the model does not price
+    # (e.g. total / run-line). Surfaced honestly by bestbets_model_only -- the line
+    # + best book are shown, but NO model_prob/tier/units/edge is fabricated.
+    cards.extend(_model_only_cards(
+        game, sport, cand_lookup, game_id=game_id, matchup=matchup,
+        status=status, tipoff_utc=tipoff_utc, clv_empty=_CLV_EMPTY))
     return cards
 
 
 def _cards_from_props(sport: str, status_filter: Optional[str]) -> List[Dict[str, Any]]:
-    """BestBetCards from W2 prop_surface rows; NBA offseason -> []. Never raises."""
-    prop_status = "pregame"
-    if status_filter and prop_status != status_filter:
-        return []
-    try:
-        from predict_service import store as _store  # noqa: PLC0415
-        env = _store.read_latest(sport)
-    except Exception:  # noqa: BLE001
-        return []
-    if not env or getattr(env, "status", "unavailable") != "ok":
-        return []
-    try:
-        from predict_service.frontend.props_routes import (  # noqa: PLC0415
-            _prop_lines_from_markets,
-        )
-        from predict_service.prop_surface import build_prop_rows  # noqa: PLC0415
-    except Exception:  # noqa: BLE001
-        return []
-    from datetime import datetime, timezone
-    prop_date = datetime.now(tz=timezone.utc).date().isoformat()
-    cards: List[Dict[str, Any]] = []
-    for pred in getattr(env, "predictions", []) or []:
-        lines = _prop_lines_from_markets(getattr(pred, "markets", []) or [])
-        for row in build_prop_rows(sport, prop_date, lines):
-            if not isinstance(row, dict):
-                continue
-            try:
-                p_over = float(row["p_over"])
-                edge_f = float(row["edge_vs_market"])
-            except (TypeError, ValueError, KeyError):
-                continue
-            if not (0.0 <= p_over <= 1.0) or edge_f <= 0:
-                continue
-            cards.append({
-                "game_id": str(getattr(pred, "game_id", "")),
-                "matchup": (f"{getattr(pred,'home','')} vs "
-                            f"{getattr(pred,'away','')}"),
-                "sport": sport, "market_type": "player_prop",
-                "prop_player": str(row.get("player", "")),
-                "prop_stat": str(row.get("stat", "")),
-                "side": "over",
-                "model_prob": round(p_over, 6),
-                "market_prob": round(p_over - edge_f, 6),
-                "best_book": str(row.get("book", "")),
-                "best_odds": None, "all_books": [],
-                "edge_vs_market": round(edge_f, 6),
-                "units": 1.0, "tier": "C",
-                "confidence": round(p_over, 6),
-                "clv": dict(_CLV_EMPTY), "clv_is_proxy": True,
-                "status": prop_status, "honest_note": _HONEST_NOTE,
-            })
-    return cards
+    """BestBetCards from W2 prop_surface rows (delegated). Never raises."""
+    return _props_cards(sport, status_filter, honest_note=_HONEST_NOTE,
+                        clv_empty=_CLV_EMPTY)
 
 
 def _mark_degenerate_sports(cards: List[Dict[str, Any]]) -> List[Dict[str, Any]]:

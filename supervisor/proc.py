@@ -63,6 +63,24 @@ else:
         write_pid_file,
     )
 
+def to_spawn_spec(spec: Any, global_env: Optional[Dict[str, str]] = None) -> Dict[str, Any]:
+    """Translate a ProcSpec into the dict shape spawn() expects.
+
+    RB-P0-02: thread the env EXPLICITLY into the spawn dict so a governance flag
+    (GOVERNANCE_ELIGIBLE) + per-child env reach the child by VALUE, not fragile
+    shell inheritance. Precedence (low -> high): os.environ < global_env < spec.env.
+    """
+    merged: Dict[str, str] = {}
+    for k, v in os.environ.items():
+        merged[str(k)] = str(v)
+    for src in (global_env or {}, getattr(spec, "env", None) or {}):
+        for k, v in src.items():
+            merged[str(k)] = str(v)
+    return {"name": spec.name, "kind": spec.kind, "module": spec.module or "",
+            "args": list(spec.argv or []), "cmd": spec.cmd or "",
+            "cwd": spec.cwd or "", "env": merged}
+
+
 __all__ = [
     "ProcHandle",
     "spawn",
@@ -71,4 +89,5 @@ __all__ = [
     "write_pid_file",
     "read_pid_file",
     "find_by_match",
+    "to_spawn_spec",
 ]

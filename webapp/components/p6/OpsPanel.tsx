@@ -87,6 +87,7 @@ export function OpsPanel() {
   const {
     data: autData,
     isLoading: autLoading,
+    isStale: autStale,
     error: autErr,
   } = useLiveData<AutonomyStatus>(autFetcher, { intervalMs: 15_000, staleAfterSec: 30 });
 
@@ -107,11 +108,20 @@ export function OpsPanel() {
   const feedsDisagree =
     autLoaded && opsData != null && opsOverall != null && autOverall !== opsOverall;
 
+  // Either feed going stale must downgrade an otherwise-green overall: a
+  // persistently-returned-but-stale doc cannot read green.
+  const anyStale = opsStale || autStale;
+
   // Header badge: 'checking' before first load, 'stale' (amber) on poll staleness.
   function headerBadge() {
     if ((!opsLoaded || !autLoaded) && !combined) return <Badge tone="slate">checking</Badge>;
     if (opsStale && !opsData) return <Badge tone="amber">stale</Badge>;
-    if (combined) return <Badge tone={overallTone(combined)}>{combined}</Badge>;
+    if (combined) {
+      const tone = overallTone(combined);
+      // Stale-green guard: show amber 'stale' instead of a stale green overall.
+      if (anyStale && tone === "green") return <Badge tone="amber">stale</Badge>;
+      return <Badge tone={tone}>{combined}</Badge>;
+    }
     return <Badge tone="slate">checking</Badge>;
   }
 
@@ -168,7 +178,13 @@ export function OpsPanel() {
       <div className="mt-4 border-t border-slate-800 pt-3">
         <div className="mb-2 flex items-center justify-between">
           <span className="text-[10px] uppercase tracking-wide text-slate-500">Autonomy status</span>
-          {autData ? <Badge tone={overallTone(autData.overall)}>{autData.overall}</Badge> : null}
+          {autData ? (
+            autStale && overallTone(autData.overall) === "green" ? (
+              <Badge tone="amber">stale</Badge>
+            ) : (
+              <Badge tone={overallTone(autData.overall)}>{autData.overall}</Badge>
+            )
+          ) : null}
         </div>
         {autErr || (!autLoading && !autData) ? (
           <Unavailable reason={autErr || "autonomy_status.json missing or stale"} />

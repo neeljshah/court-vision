@@ -90,6 +90,7 @@ function BookLinesTable({
             {["book", "decimal odds", "line", "best"].map((h) => (
               <th
                 key={h}
+                scope="col"
                 className={cn(
                   "py-1 text-[10px] font-medium uppercase tracking-wide text-slate-500",
                   h === "book" ? "pr-3 text-left" : "px-2 text-right",

@@ -33,6 +33,7 @@ import { BookMatrixTable } from "./BookMatrixTable";
 import { RationalePanel } from "./RationalePanel";
 import { LiveBoxPanel } from "./LiveBoxPanel";
 import { SettleGradePanel } from "./SettleGradePanel";
+import { PlacedBetsForGamePanel } from "./PlacedBetsForGamePanel";
 import { ExecutionTrail } from "@/components/execution/ExecutionTrail";
 import { linesMatrixToExecutionTrail } from "./executionTrailAdapter";
 
@@ -281,6 +282,11 @@ export function CardDetailView({ sport, gameId }: CardDetailViewProps) {
 
         {/* Right column */}
         <div className="col-span-12 flex flex-col gap-4 lg:col-span-5">
+          {/* Execution hand-in-hand: what the system ACTUALLY staked for this
+              game in the paper ledger (units / tier / outcome / CLV) -- the
+              money-makers, each linking to its full per-bet execution detail.
+              Sits above the would-do trail so "what we did" reads first. */}
+          <PlacedBetsForGamePanel sport={resolvedSport} gameId={gameId} />
           {/* Live boxscore + win-prob (W4). */}
           <LiveBoxPanel ingame={ingame} />
           {/* Settlement grade + CLV. */}

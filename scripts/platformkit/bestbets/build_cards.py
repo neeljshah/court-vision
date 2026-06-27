@@ -78,6 +78,36 @@ def _call_mark_degenerate(
         return cards
 
 
+def _call_build_prop_cards(now: Optional[float]) -> List[Dict[str, Any]]:
+    """Read the DECOUPLED prop-card cache; falls back to []. Never raises. FAST.
+
+    Player-prop cards (market_type="prop") are produced by the live prop board --
+    a SLOW computation (thousands of player/stat model evaluations). Running that
+    inline made this fast m10 board tick hang >240 s, so it never finished and
+    best_bets.json stayed moneyline-only. The slow build now runs ONCE per m13
+    props cycle (300 s cadence) and writes prop_cards_cache.json; here we only
+    READ that cache with a freshness/SLA gate -- a pure JSON read, no model compute.
+
+    Honest degradation (stale-never-green): a MISSING or STALE cache yields []
+    here, so game cards still emit normally and props are simply OMITTED for that
+    tick -- never a hang, never a stale prop served as live. The cards are
+    appended AFTER the game-market sanitizer because a model-only prop legitimately
+    has a null market_prob (no line/price exists) and must not be dropped by the
+    market_prob<0.02 game-card rule. The prop builder applied its own stale-event
+    guard at write time.
+    """
+    try:
+        from scripts.platformkit.bestbets import prop_cards_cache  # noqa: PLC0415
+        env = prop_cards_cache.read(now_epoch=now)
+        cards = env.get("cards") if isinstance(env, dict) else None
+        if isinstance(cards, list):
+            return [c for c in cards if isinstance(c, dict)]
+        return []
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("prop_cards_cache.read failed: %s", exc)
+        return []
+
+
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
@@ -145,15 +175,24 @@ def _build_cards_inner(
             logger.debug("build_cards sport=%s error: %s", sport, exc)
             continue
 
-    if not all_cards:
-        return []
+    # Game-market path may be empty (offseason); prop path can still produce cards,
+    # so do NOT early-return on empty game cards -- props "come together" here too.
 
-    # QA1: stale-tipoff + binary + degenerate-market sanitization.
+    # QA1: stale-tipoff + binary + degenerate-market sanitization (GAME markets).
     # Pass ref_dt so tests that pin `now` get deterministic stale-tipoff results.
-    all_cards = _call_sanitize(all_cards, now=ref_dt)
+    if all_cards:
+        all_cards = _call_sanitize(all_cards, now=ref_dt)
+        # QA2: demote any sport whose model_probs collapse to a flat prior.
+        all_cards = _call_mark_degenerate(all_cards)
 
-    # QA2: demote any sport whose model_probs collapse to a flat prior.
-    all_cards = _call_mark_degenerate(all_cards)
+    # PROP path: append player-prop cards (market_type="prop") so EVERY market --
+    # ML / totals / spreads AND player props -- shows up on one unified board.
+    # Built AFTER the game sanitizer: model-only props carry a null market_prob by
+    # design and must not be dropped by the market_prob<0.02 game-card rule. The
+    # prop builder applies its own stale-event guard.
+    prop_cards = _call_build_prop_cards(now)
+    if prop_cards:
+        all_cards = list(all_cards) + prop_cards
 
     return all_cards
 

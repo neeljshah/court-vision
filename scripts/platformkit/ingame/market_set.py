@@ -110,7 +110,9 @@ def build(game_id: str, sport: str, reprice_output: Dict[str, Any], *,
     -------
     dict -- the live market set (see module docstring for the canonical shape).
     Guaranteed keys: game_id, sport, status, available, basis, as_of, edge_claimed,
-    probs, markets, variance, remaining_frac, _honest_note.
+    reprice, is_carry, probs, markets, variance, remaining_frac, _honest_note.
+    reprice=False / is_carry=True flags an UNCHANGED pregame-carry prior (not a
+    fresh in-game reprice) WITHOUT needing to read _honest_note.
     Never raises.
     """
     try:
@@ -152,6 +154,18 @@ def _build_inner(game_id: str, sport: str, rp: Dict[str, Any],
         except (TypeError, ValueError):
             pass
 
+    # Carry markers (pass-through, additive). A 'pregame_carry' reprice carries the
+    # UNCHANGED pregame prior forward (reprice=False / is_carry=True) instead of a
+    # fresh in-game reprice. We surface these as top-level flags so a consumer can
+    # tell a carried prior from a real reprice WITHOUT reading _honest_note. status
+    # stays "live" (the game is live; the webapp /live classifier keys on
+    # status=="live"), so these flags are ADDITIVE and break no status filter.
+    # The basis itself is the authority: anything labelled 'pregame_carry' is a carry;
+    # otherwise a real reprice. An explicit rp flag (if the repricer ever sets one)
+    # is honored too.
+    is_carry = bool(rp.get("is_carry", basis == "pregame_carry"))
+    reprice_flag = bool(rp.get("reprice", not is_carry))
+
     out: Dict[str, Any] = {
         "game_id": gid,
         "sport": rep_sport,
@@ -160,6 +174,8 @@ def _build_inner(game_id: str, sport: str, rp: Dict[str, Any],
         "basis": basis,
         "as_of": ts,
         "edge_claimed": EDGE_CLAIMED,
+        "reprice": reprice_flag,
+        "is_carry": is_carry,
         "probs": probs,
         "markets": markets,
         "variance": variance,
@@ -187,6 +203,8 @@ def _unavailable(game_id: str, sport: str, reason: str) -> Dict[str, Any]:
         "basis": "unavailable",
         "as_of": _utc_iso(),
         "edge_claimed": EDGE_CLAIMED,
+        "reprice": False,
+        "is_carry": False,
         "probs": {},
         "markets": [],
         "variance": None,

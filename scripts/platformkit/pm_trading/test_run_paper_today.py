@@ -86,11 +86,20 @@ def test_priced_pick_recorded_paper_only(tmp_path):
     assert bet["side"] == "home"
     assert bet["executed"] is False
     assert bet["channel"] == "paper"
-    assert bet["would_pass_real_gate"] is True   # +EV at the book price
+    # HONEST: paper-only, real money stays default-DENY -> never a gate-pass claim.
+    assert bet["would_pass_real_gate"] is False
     assert bet["price"] == 1.95
-    # the ledger row itself is unexecuted / paper
+    # UNITS-ONLY STAKE: a tiered bet stakes exactly the flat 1.0 unit (NOT a dollar
+    # Kelly amount). tier is stamped; quarter_kelly is a separate measurement field.
+    assert bet["tier"] in ("A", "B", "C")
+    assert bet["stake_units"] == 1.0
+    assert bet["flat_unit"] == 1.0
+    assert "stake" not in bet  # no dollar stake field on the summary row
+    # the ledger row itself is unexecuted / paper, staked in UNITS not $.
     rows = L.load_ledger(tmp_path / "ledger.jsonl")
     assert rows and all(r.get("executed") is False for r in rows)
+    assert rows[0]["stake_units"] == 1.0   # ledger faithfully stores 1 unit
+    assert "stake" not in rows[0]          # no dollar field ever written
 
 
 def test_idempotent_second_run_adds_nothing(tmp_path):
@@ -133,20 +142,48 @@ def test_no_games_degrades_cleanly(tmp_path):
     assert L.load_ledger(tmp_path / "ledger.jsonl") == []
 
 
-def test_negative_ev_recorded_but_flagged_not_gate_passing(tmp_path):
-    """A priced but -EV pick is still recorded (permissive paper policy) yet
-    tagged would_pass_real_gate=False with zero stake."""
+def test_below_tier_floor_pick_not_recorded(tmp_path):
+    """A priced pick below the tier-C EV floor is REJECTED by the policy gate.
+
+    0.51 * 1.95 - 1 = -0.0055 (> the permissive PAPER_EV_FLOOR=-0.02 but BELOW the
+    tier-C floor of +0.02), so policy.tier returns None and nothing is placed -- the
+    money-makers (best bets) are exactly the tier-clearing staked bets, nothing else.
+    """
     def _board_neg(sport, home, away, *, odds_lookup=None, live=None, **_):
         b = _board_priced(sport, home, away)
-        # MILD -EV within the permissive floor: 0.51 * 1.95 - 1 = -0.0055 (> -0.02),
-        # so it is recorded (paper measurement) but flagged not gate-passing.
         b["groups"][0]["bets"][0]["model_prob"] = 0.51
         return b
     out = _run(tmp_path, board_fn=_board_neg)
+    assert out["n_recorded"] == 0
+    assert out["bets"] == []
+    # nothing staked -> the ledger gained no placed bet for this below-floor pick
+    assert L.load_ledger(tmp_path / "ledger.jsonl") == []
+
+
+def test_symmetric_two_way_records_only_model_backed_side(tmp_path):
+    """BOTH sides of a symmetric two-way market priced + EV-positive -> ONE bet placed.
+
+    The model backs HOME (prob 0.58 >= 0.5); AWAY (0.42 < 0.5) is the side the model
+    does not back. Recording both is nonsensical (win/loss cancel minus vig) and would
+    double-count the market as two bets. Only the home side is recorded; dedup is per
+    MARKET (sport, matchup, line, day), not per side, so away cannot also land.
+    """
+    def _board_both_priced(sport, home, away, *, odds_lookup=None, live=None, **_):
+        return {"sport": sport, "home": home, "away": away, "status": "ok",
+                "groups": [{"name": "Moneyline", "bets": [
+                    {"group": "Moneyline", "selection": home, "model_prob": 0.58,
+                     "line": None, "fair_odds": 1.72, "best_book": "stub_book",
+                     "best_price": 1.95, "verdict": "PRICED+EV"},
+                    {"group": "Moneyline", "selection": away, "model_prob": 0.42,
+                     "line": None, "fair_odds": 2.38, "best_book": "stub_book",
+                     "best_price": 2.60, "verdict": "PRICED+EV"},
+                ]}]}
+    out = _run(tmp_path, board_fn=_board_both_priced)
+    # Exactly ONE position for the market -- the model-backed home side -- never both.
     assert out["n_recorded"] == 1
-    bet = out["bets"][0]
-    assert bet["would_pass_real_gate"] is False
-    assert bet["stake"] == 0.0
+    assert [b["side"] for b in out["bets"]] == ["home"]
+    rows = L.load_ledger(tmp_path / "ledger.jsonl")
+    assert len(rows) == 1 and rows[0]["side"] == "home"
 
 
 def test_event_metadata_attached(tmp_path):

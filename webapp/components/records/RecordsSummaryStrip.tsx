@@ -40,7 +40,14 @@ export function RecordsSummaryStrip({ rows, total, loading = false }: RecordsSum
   const losses     = settled.filter((r) => r.outcome === "loss").length;
   const winPct     = settled.length > 0 ? (wins / settled.length) * 100 : null;
   const winPctStr  = winPct != null ? `${winPct.toFixed(1)}%` : "--";
-  const winTone    = winPct != null && winPct >= 52 ? "green" : winPct != null && winPct < 48 ? "red" : "slate";
+  // Sample-size guard: only color win-rate as a result once N is meaningful.
+  // Below 30 settled, win-rate is small-N noise -- show it neutral (no green/red).
+  const winRateHasN = settled.length >= 30;
+  const winTone: "slate" | "green" | "red" | "amber" =
+    !winRateHasN ? "slate"
+    : winPct != null && winPct >= 52 ? "green"
+    : winPct != null && winPct < 48 ? "red"
+    : "slate";
   const totalUnits = rows.reduce((s, r) => s + (r.stake_units ?? 0), 0);
   const unitsStr   = totalUnits > 0 ? `${totalUnits.toFixed(2)}u` : "--";
 
@@ -56,11 +63,6 @@ export function RecordsSummaryStrip({ rows, total, loading = false }: RecordsSum
     ? `${meanDiv >= 0 ? "+" : ""}${(meanDiv * 100).toFixed(1)}pp`
     : "--";
   const maxDivStr = maxDiv != null ? `${(maxDiv * 100).toFixed(1)}pp` : "--";
-  const divTone: "green" | "red" | "amber" | "slate" =
-    meanDiv == null ? "slate"
-    : meanDiv > 0.02 ? "green"
-    : meanDiv < -0.02 ? "red"
-    : "amber";
 
   if (loading) {
     return (
@@ -87,6 +89,11 @@ export function RecordsSummaryStrip({ rows, total, loading = false }: RecordsSum
       <StatCell label="wins" value={wins} tone="green" />
       <StatCell label="losses" value={losses} tone="red" />
       <StatCell label="win rate" value={winPctStr} tone={winTone} />
+      {!winRateHasN && settled.length > 0 && (
+        <span className="self-end font-mono text-[8px] text-slate-700">
+          small sample (n&lt;30)
+        </span>
+      )}
       <StatCell label="page units" value={unitsStr} />
 
       {/* model_prob vs market_prob divergence -- W1-records-clv-analytics */}
@@ -95,20 +102,16 @@ export function RecordsSummaryStrip({ rows, total, loading = false }: RecordsSum
           <div className="w-px self-stretch bg-slate-800" aria-hidden />
           <div className="flex flex-col gap-0.5">
             <span className="font-mono text-[9px] uppercase tracking-widest text-slate-600">
-              avg model edge
+              avg model vs market (prob)
             </span>
+            {/* NEUTRAL tone: a signed divergence is not good/bad. Calibration, not edge. */}
             <span
               data-testid="summary-avg-model-edge"
-              className={cn("font-mono text-[14px] font-semibold tabular-nums", {
-                "text-emerald-400": divTone === "green",
-                "text-rose-400":    divTone === "red",
-                "text-amber-400":   divTone === "amber",
-                "text-slate-200":   divTone === "slate",
-              })}
+              className="font-mono text-[14px] font-semibold tabular-nums text-slate-200"
             >
               {divStr}
             </span>
-            <span className="font-mono text-[8px] text-slate-700">prob-space, not edge</span>
+            <span className="font-mono text-[8px] text-slate-700">prob-space divergence, not edge</span>
           </div>
           <div className="flex flex-col gap-0.5">
             <span className="font-mono text-[9px] uppercase tracking-widest text-slate-600">

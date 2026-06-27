@@ -76,6 +76,17 @@ def _team(comp: Dict[str, Any], side: str) -> str:
     return ""
 
 
+def _side_score(comp: Dict[str, Any], side: str) -> Optional[float]:
+    """Final score for one side, or None when absent/unparseable (NEVER fabricated)."""
+    for c in comp.get("competitors", []) or []:
+        if c.get("homeAway") == side:
+            try:
+                return float(c.get("score"))
+            except (TypeError, ValueError):
+                return None
+    return None
+
+
 def _final_games_from_board(board: Any, sport: str) -> List[Dict[str, Any]]:
     """Parse a scoreboard payload into settled-final game dicts (ascending by key)."""
     if not isinstance(board, dict):
@@ -95,6 +106,10 @@ def _final_games_from_board(board: Any, sport: str) -> List[Dict[str, Any]]:
             "sport": sport, "game_id": eid,
             "commence": str(ev.get("date") or ""),
             "home": _team(comp, "home"), "away": _team(comp, "away"),
+            # final scores when present (None never fabricated) -- the settled_ingest
+            # adapter derives the realized home_win OUTCOME from these leak-free.
+            "home_score": _side_score(comp, "home"),
+            "away_score": _side_score(comp, "away"),
         }
         g["key"] = game_key(g)
         out.append(g)

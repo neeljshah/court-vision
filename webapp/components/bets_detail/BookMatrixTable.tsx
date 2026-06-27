@@ -151,7 +151,7 @@ function MarketBlock({
 export function BookMatrixTable({ matrix, className }: BookMatrixTableProps) {
   if (!matrix) {
     return (
-      <Panel title="Book lines" className={className}>
+      <Panel title="All markets (line shopping)" className={className}>
         <p className="text-xs text-slate-600">Loading lines...</p>
       </Panel>
     );
@@ -159,7 +159,7 @@ export function BookMatrixTable({ matrix, className }: BookMatrixTableProps) {
 
   if (isExtUnavailable(matrix) || matrix.status === "unavailable") {
     return (
-      <Panel title="Book lines" className={className}>
+      <Panel title="All markets (line shopping)" className={className}>
         <Unavailable reason={(matrix as { reason?: string }).reason ?? "lines feed unavailable"} />
       </Panel>
     );
@@ -170,10 +170,10 @@ export function BookMatrixTable({ matrix, className }: BookMatrixTableProps) {
 
   return (
     <Panel
-      title="Book lines"
+      title="All markets (line shopping)"
       right={
         <span className="font-mono text-[10px] text-slate-500">
-          odds only -- no $
+          ML / total / spread -- odds only, no $
         </span>
       }
       className={className}

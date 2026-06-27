@@ -80,6 +80,28 @@ def supervisor_status(
     }
 
 
+def render_rows(specs: List[Any], states: Dict[str, Any],
+                breaker_tripped: Dict[str, bool]) -> List[Dict[str, Any]]:
+    """Build the per-proc status rows from the supervisor's live state maps.
+
+    Pulled out of Supervisor for the <=300 LOC rail. *states* maps name -> a
+    _ProcState (state/pid/attempts/ready/detail); *breaker_tripped* maps name ->
+    bool (C7 crash-rate breaker). A tripped spec gets detail["crash_breaker"] =
+    "DEGRADED" so the status doc + UI show the honest chronically-broken state.
+    """
+    rows: List[Dict[str, Any]] = []
+    for spec in specs:
+        st = states[spec.name]
+        detail = dict(st.detail) if isinstance(st.detail, dict) else {}
+        if breaker_tripped.get(spec.name):
+            detail["crash_breaker"] = "DEGRADED"
+        rows.append({
+            "name": spec.name, "state": st.state, "pid": st.pid,
+            "restarts": st.attempts, "ready": st.ready, "detail": detail,
+        })
+    return rows
+
+
 def write_status(
     doc: Dict[str, Any],
     *,
@@ -109,4 +131,4 @@ def status_path() -> str:
     return str(_STATUS_PATH)
 
 
-__all__ = ["supervisor_status", "write_status", "status_path"]
+__all__ = ["supervisor_status", "write_status", "status_path", "render_rows"]

@@ -2,19 +2,14 @@
 
 Assembles ONE canonical snapshot for a sport: build_result (pregame numbers) +
 keyless odds aggregate + devig/EV helpers -> PredictionRecord + MarketRow + EdgeRow.
-
-INJECTABLE FEEDS (offline/test): schedule_feed / odds_feed / predict_fn.
-
-CORPUS WARMUP: produce_sport() pre-warms the predictor ONCE (via _try_warm_predictor)
-before the per-game loop. For the default predict_fn, corpus absent or degenerate ->
-status='unavailable' before any per-game call; never a fabricated constant-prior slate.
-
-DEGENERACY GUARD (P0 MLB flat-prior): detects <=2 distinct pregame_probs on a
->=MIN_CARDS-game slate. On detection: clear cache + single rebuild. Still flat ->
-status='unavailable'; NEVER status='ok' with constant probs. _build_predictor also
-refuses a predictor whose _elo is nearly constant across all corpus teams.
-
-HONESTY: no $ edge; leak_guard in_sample=False; CLV computed downstream.
+INJECTABLE FEEDS (offline/test): schedule_feed / odds_feed / predict_fn / now.
+CORPUS WARMUP: produce_sport() pre-warms ONCE; absent/degenerate -> 'unavailable'.
+DEGENERACY GUARD (P0 MLB flat-prior): <=2 distinct pregame_probs on a >=MIN_CARDS
+slate -> clear cache + single rebuild; still flat -> status='unavailable'.
+STALE DROP (BE-R3-2): finished/past-tipoff games dropped via stale_drop; a started
+game is 'live' (NOT 'post') so its prior survives for the in-game carry reprice; an
+all-stale slate -> status='unavailable' (stale-never-green).
+HONESTY: no $ edge; leak_guard in_sample=False; CLV downstream.
 INVARIANTS: predict_service/ only; <=300 LOC; ASCII only; no secrets.
 """
 from __future__ import annotations
@@ -39,19 +34,22 @@ from predict_service.contracts import (
     PredictionRecord,
     SnapshotEnvelope,
 )
+from predict_service.stale_drop import drop_stale_records as _drop_stale_records
 
 ScheduleFeed = Callable[[str], List[Dict[str, Any]]]
 OddsFeed = Callable[[str], Dict[str, Any]]
 PredictFn = Callable[[str, str, str], Dict[str, Any]]
 
-# A slate is considered "real" (not an empty/off-day slate) when it has at least this
-# many games. Below this threshold the flat-prior check is skipped (a 1-game slate with
-# one unique p_home is fine; we only care when many games all share the same prob).
+# A slate is "real" (not off-day) at >= MIN_CARDS games; below it the flat-prior
+# check is skipped (a 1-game slate with one unique p_home is fine).
 MIN_CARDS = 3
 
-# When <=_MAX_DISTINCT_PROBS distinct pregame_probs values are found across a real slate
-# (>= MIN_CARDS games), the snapshot is flagged as degenerate (flat-prior collapse).
+# <=_MAX_DISTINCT_PROBS distinct pregame_probs on a real slate -> degenerate.
 _MAX_DISTINCT_PROBS = 2
+
+# Tipoff-only POST threshold: a started game stays 'live' until its tipoff is older
+# than this (2x typical = stale_drop's grace), else (no feed signal) it is 'post'.
+_POST_TIPOFF_SECONDS = 2 * _TYPICAL_GAME_DURATION_SECONDS
 
 
 def _now_iso() -> str:
@@ -59,8 +57,10 @@ def _now_iso() -> str:
 
 
 def _derive_game_state(tipoff: Optional[str],
-                       live_state: Optional[str] = None) -> str:
-    """Derive 'pre'|'live'|'post'. live_state wins if present; else tipoff heuristic."""
+                       live_state: Optional[str] = None,
+                       now: Optional[datetime] = None) -> str:
+    """Derive 'pre'|'live'|'post'. live_state wins if present; else tipoff heuristic.
+    *now* (UTC) injectable so game_state uses the SAME clock handed to stale_drop."""
     if live_state is not None:
         ls = str(live_state).strip().lower()
         if ls in ("post", "final", "ft", "complete", "finished", "closed"):
@@ -75,13 +75,16 @@ def _derive_game_state(tipoff: Optional[str],
         tip_dt = datetime.fromisoformat(str(tipoff).replace("Z", "+00:00"))
     except (ValueError, TypeError):
         return GAME_STATE_PRE
-    now = datetime.now(timezone.utc)
+    now = now if now is not None else datetime.now(timezone.utc)
+    now = now if now.tzinfo else now.replace(tzinfo=timezone.utc)
     if tip_dt.tzinfo is None:
         tip_dt = tip_dt.replace(tzinfo=timezone.utc)
     elapsed = (now - tip_dt).total_seconds()
     if elapsed < 0:
         return GAME_STATE_PRE
-    return GAME_STATE_LIVE if elapsed <= _TYPICAL_GAME_DURATION_SECONDS else GAME_STATE_POST
+    # Stays 'live' well beyond a real game's duration so a long-but-live game (extra
+    # innings/OT) is not called 'post' and have its prior purged (breaking the carry).
+    return GAME_STATE_LIVE if elapsed <= _POST_TIPOFF_SECONDS else GAME_STATE_POST
 
 
 def _default_odds_feed(sport: str) -> Dict[str, Any]:
@@ -98,10 +101,8 @@ def _try_warm_predictor(sport: str) -> Optional[str]:
     try:
         from scripts.platformkit.predictor_jd import _build_predictor  # noqa: PLC0415
         if _build_predictor(sport) is None:
-            return (
-                f"{sport} corpus unavailable or init-rating collapse; "
-                "snapshot withheld to prevent fabricated constant-prior cards."
-            )
+            return (f"{sport} corpus unavailable or init-rating collapse; "
+                    "snapshot withheld (no fabricated constant-prior cards).")
         return None
     except Exception as exc:  # noqa: BLE001 -- never block produce on a warmup error
         return f"{sport} predictor warmup error: {type(exc).__name__}: {exc}"
@@ -114,10 +115,10 @@ def _default_predict_fn(sport: str, home: str, away: str) -> Dict[str, Any]:
     pred = _build_predictor(sport)
     if pred is None:
         return {}
-    args = argparse.Namespace(home=home, away=away, surface="Hard", elapsed=None,
-                              inning=None, half=None, home_score=None, away_score=None,
-                              sets_home=None, sets_away=None, games_home=None,
-                              games_away=None)
+    args = argparse.Namespace(
+        home=home, away=away, surface="Hard", elapsed=None, inning=None, half=None,
+        home_score=None, away_score=None, sets_home=None, sets_away=None,
+        games_home=None, games_away=None)
     return build_result(sport, pred, args)
 
 
@@ -130,9 +131,7 @@ def games_from_odds(payload: Dict[str, Any]) -> List[Dict[str, Any]]:
             continue
         games.append({
             "game_id": str(ev.get("event_id") or f"{away}@{home}"),
-            "home": home, "away": away,
-            "tipoff": ev.get("commence_time"),
-        })
+            "home": home, "away": away, "tipoff": ev.get("commence_time")})
     return games
 
 
@@ -157,8 +156,8 @@ def _live_state_for(payload: Dict[str, Any], home: str, away: str
 
 
 def _record_for_game(sport: str, game: Dict[str, Any], payload: Dict[str, Any],
-                     predict_fn: PredictFn, produced_at: str
-                     ) -> Optional[Dict[str, Any]]:
+                     predict_fn: PredictFn, produced_at: str,
+                     now: Optional[datetime] = None) -> Optional[Dict[str, Any]]:
     """Build {record, markets, edges} for one game; None if no usable prediction."""
     home, away = game["home"], game["away"]
     result = predict_fn(sport, home, away) or {}
@@ -167,27 +166,25 @@ def _record_for_game(sport: str, game: Dict[str, Any], payload: Dict[str, Any],
     if not record_probs:
         return None  # no model number -> skip; never fabricate
     if "home_ml" in record_probs and pregame.get("p_home_win") is not None:
-        assert record_probs["home_ml"] == float(pregame["p_home_win"]), \
-            "pregame home prob drifted from build_result"
+        assert record_probs["home_ml"] == float(pregame["p_home_win"]), "home drift"
     if "draw" in record_probs and pregame.get("p_draw") is not None:
-        assert record_probs["draw"] == float(pregame["p_draw"]), \
-            "pregame draw prob drifted from build_result"
+        assert record_probs["draw"] == float(pregame["p_draw"]), "draw drift"
     game_id = game["game_id"]
     prices = _prices_for(payload, home, away)
     mkts = market_rows(sport, game_id, prices, captured_at=(payload or {}).get("as_of"))
     edges = edge_rows(game_id, model_probs_from_pregame(pregame), mkts)
-    game_state = _derive_game_state(game.get("tipoff"),
-                                    live_state=_live_state_for(payload, home, away))
+    live_state = _live_state_for(payload, home, away)
+    game_state = _derive_game_state(game.get("tipoff"), live_state, now)
     record = PredictionRecord(
         sport=sport, game_id=game_id, home=home, away=away,
-        tipoff=game.get("tipoff"), pregame_probs=record_probs,
-        markets=mkts, leak_guard={"in_sample": False},
-        produced_at=produced_at, game_state=game_state, note="")
+        tipoff=game.get("tipoff"), pregame_probs=record_probs, markets=mkts,
+        leak_guard={"in_sample": False}, produced_at=produced_at,
+        game_state=game_state, note="")
     return {"record": record, "markets": mkts, "edges": edges}
 
 
 def _is_degenerate(records: List[PredictionRecord]) -> bool:
-    """True when >=MIN_CARDS-game slate has <=_MAX_DISTINCT_PROBS distinct home_ml values."""
+    """True when a >=MIN_CARDS slate has <=_MAX_DISTINCT_PROBS distinct home_ml."""
     if len(records) < MIN_CARDS:
         return False  # off-day / small slate: not degenerate by this test
     probs = [round(r.pregame_probs.get("home_ml", 0.0), 4) for r in records
@@ -198,14 +195,15 @@ def _is_degenerate(records: List[PredictionRecord]) -> bool:
 
 
 def _build_records(sport: str, games: List[Dict[str, Any]], payload: Dict[str, Any],
-                   predict_fn: PredictFn, produced_at: str
+                   predict_fn: PredictFn, produced_at: str,
+                   now: Optional[datetime] = None
                    ) -> tuple[List[PredictionRecord], list, list]:
     """Build all (records, markets, edges) for the slate in one pass."""
     records: List[PredictionRecord] = []
     all_markets: list = []
     all_edges: list = []
     for game in games:
-        built = _record_for_game(sport, game, payload, predict_fn, produced_at)
+        built = _record_for_game(sport, game, payload, predict_fn, produced_at, now)
         if built is None:
             continue
         records.append(built["record"])
@@ -217,8 +215,9 @@ def _build_records(sport: str, games: List[Dict[str, Any]], payload: Dict[str, A
 def produce_sport(sport: str, *,
                   schedule_feed: Optional[ScheduleFeed] = None,
                   odds_feed: Optional[OddsFeed] = None,
-                  predict_fn: Optional[PredictFn] = None) -> SnapshotEnvelope:
-    """Build (not persist) SnapshotEnvelope for *sport*. Warmup + degeneracy guard."""
+                  predict_fn: Optional[PredictFn] = None,
+                  now: Optional[datetime] = None) -> SnapshotEnvelope:
+    """Build SnapshotEnvelope for *sport*. *now* (UTC) injectable for stale-drop tests."""
     sport = sport.lower()
     _using_default_fn = predict_fn is None
     odds_feed = odds_feed or _default_odds_feed
@@ -226,8 +225,7 @@ def produce_sport(sport: str, *,
     predict_fn = predict_fn or _default_predict_fn
     produced_at = _now_iso()
 
-    # CORPUS WARMUP: pre-load once on the real corpus path. Corpus absent or
-    # degenerate -> honest 'unavailable' before any per-game loop.
+    # CORPUS WARMUP: pre-load once; absent/degenerate -> honest 'unavailable'.
     if _using_default_fn:
         warm_reason = _try_warm_predictor(sport)
         if warm_reason is not None:
@@ -237,7 +235,7 @@ def produce_sport(sport: str, *,
     payload = odds_feed(sport) or {}
     games = schedule_feed(sport) or []
     records, all_markets, all_edges = _build_records(
-        sport, games, payload, predict_fn, produced_at)
+        sport, games, payload, predict_fn, produced_at, now)
 
     # DEGENERACY GUARD: flat-prior collapse -> cache clear + single rebuild.
     if _is_degenerate(records):
@@ -248,16 +246,18 @@ def produce_sport(sport: str, *,
             pass
         produced_at = _now_iso()
         records, all_markets, all_edges = _build_records(
-            sport, games, payload, predict_fn, produced_at)
+            sport, games, payload, predict_fn, produced_at, now)
         if _is_degenerate(records):
             return SnapshotEnvelope.unavailable(
                 sport, generated_at=produced_at,
-                reason=(
-                    f"flat-prior collapse: {len(records)} games share "
-                    f"<={_MAX_DISTINCT_PROBS} distinct pregame_probs after rebuild. "
-                    "Corpus absent or init-rating fallback active. "
-                    "Snapshot withheld; never status=ok with constant-prior cards."
-                ))
+                reason=(f"flat-prior collapse: {len(records)} games share "
+                        f"<={_MAX_DISTINCT_PROBS} distinct pregame_probs after "
+                        "rebuild; withheld (never status=ok with constant probs)."))
+
+    # STALE-NEVER-GREEN: drop finished/past-tipoff games (see stale_drop); live
+    # games are kept so their prior survives for the in-game carry reprice.
+    records, all_markets, all_edges = _drop_stale_records(
+        records, all_markets, all_edges, now=now)
 
     if not records:
         return SnapshotEnvelope.unavailable(
@@ -290,9 +290,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     a = ap.parse_args(argv)
     path = produce_once(a.sport, out_dir=a.out_dir)
     env = store.read_latest(a.sport, out_dir=a.out_dir)
-    print("sport=%s status=%s predictions=%d edges=%d" % (
-        a.sport, env.status, len(env.predictions), len(env.edges)))
-    print("saved=%s" % path)
+    print("sport=%s status=%s predictions=%d edges=%d saved=%s" % (
+        a.sport, env.status, len(env.predictions), len(env.edges), path))
     return 0
 
 

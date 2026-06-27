@@ -53,35 +53,50 @@ def _beat(now_epoch: Optional[float] = None) -> None:
 def _default_settled_games_fn(name: str, *, since: Any = "",
                               seen_ids: Optional[Sequence[str]] = None,
                               **_kw) -> List[Dict[str, Any]]:
-    """New settled games for ``name`` not yet folded (DEFECT C wiring).
+    """New settled games for ``name`` not yet folded -- AUDITED + STATE-BEARING (FIX A).
 
-    Wired to the REAL keyless-ESPN provider
-    scripts.platformkit.ingame.settled_finals.settled_since (NOT the missing
-    scripts.platformkit.improve.settled_provider, whose absent import made the M9
-    ratchet permanently inert -- [] every cycle). DEDUP is by game_id via ``seen_ids``
-    (the primary guard the daemon threads through), so an out-of-order late final is
-    surfaced, never key-skipped. A dead feed degrades to [] (NO_CANDIDATE). NEVER raises.
+    Wired to scripts.platformkit.improve.settled_ingest.settled_games_fn (the richer
+    provider that fetches+classifies the keyless-ESPN boards, runs the MF3 anti-0-fill
+    audit, AND reconstructs leak-free {p0, outcome} state rows per final via
+    settled_ingest.states_for_game). The earlier default delegated to the bare
+    settled_finals.settled_since, which returned STATELESS game dicts -> the audit
+    quarantined every one as empty_states -> FeedDegradedError -> recalibrator None ->
+    perpetual NO_CANDIDATE (the gate never ran). This provider hands the recalibrator
+    state-bearing games so build_candidate + the 5-gate ratchet actually RUN (ship OR
+    honest reject). DEDUP is by game_id via ``seen_ids`` (the primary guard the daemon
+    threads through). A dead feed / degraded batch / offseason -> [] (NO_CANDIDATE).
+    NEVER raises.
     """
-    try:  # the real, present provider (keyless ESPN scoreboard finals)
-        from scripts.platformkit.ingame import settled_finals as _sf  # type: ignore
+    try:  # the richer, state-bearing, MF3-audited provider
+        from scripts.platformkit.improve import settled_ingest as _si  # type: ignore
     except Exception:  # noqa: BLE001 -- provider import failed -> safe empty
         return []
     try:
-        return list(_sf.settled_since(name, since=since, seen_ids=seen_ids))
+        return list(_si.settled_games_fn(name, since=str(since or ""), seen_ids=seen_ids))
     except Exception as exc:  # noqa: BLE001
         logger.debug("settled_games_fn(%s) unavailable: %s", name, exc)
         return []
 
 
 def _default_recalibrate_fn(name: str, settled: Sequence[Dict[str, Any]],
-                            *_a, **_kw) -> Optional[Dict[str, Any]]:
+                            *_a, report: Optional[Dict[str, Any]] = None,
+                            **_kw) -> Optional[Dict[str, Any]]:
     """Build a gate CANDIDATE from newly settled games, or None (NO_CANDIDATE).
 
     Default is None: with no real recalibrator wired the loop ships nothing and
     flips no flag (measurement-only). A real recalibrator is injected by a caller
     WITHOUT editing this runner. NEVER raises.
+
+    ``report`` (optional, threaded by the daemon): records {reason, transient} so the
+    daemon advances the cursor ONLY on a GENUINE evaluated decline, never on a TRANSIENT
+    failure (an import error / a recalibrator raise -> transient -> games retried).
     """
+    def _mark(reason: str, transient: bool) -> None:
+        if isinstance(report, dict):
+            report["reason"], report["transient"] = reason, transient
+
     if not settled:
+        _mark("empty_batch", False)
         return None
     # MF1 defense-in-depth (layer B): stay inert even if recalibrator.py is importable.
     # With the human-only PIPELINE_ENABLED sentinel absent the runner returns None BEFORE
@@ -89,17 +104,22 @@ def _default_recalibrate_fn(name: str, settled: Sequence[Dict[str, Any]],
     try:
         from scripts.platformkit.improve.pipeline_flag import pipeline_enabled
         if not pipeline_enabled():
+            _mark("inert", False)  # inert (flag-off): daemon preserves via the inert branch
             return None
     except Exception:  # noqa: BLE001 -- flag helper missing -> fail safe (inert)
+        _mark("inert", False)
         return None
     try:  # optional real recalibrator
         from scripts.platformkit.improve import recalibrator as _rc  # type: ignore
-    except Exception:  # noqa: BLE001
+    except Exception:  # noqa: BLE001 -- import failed -> TRANSIENT (retry, never skip)
+        _mark("recalibrator_import_failed", True)
         return None
     try:
-        return _rc.build_candidate(name, settled)  # type: ignore[attr-defined]
-    except Exception as exc:  # noqa: BLE001
+        # Forward the SAME report so the recalibrator's own {reason, transient} wins.
+        return _rc.build_candidate(name, settled, report=report)  # type: ignore[attr-defined]
+    except Exception as exc:  # noqa: BLE001 -- a raise here is TRANSIENT
         logger.debug("recalibrate_fn(%s) unavailable: %s", name, exc)
+        _mark("recalibrate_exception", True)
         return None
 
 

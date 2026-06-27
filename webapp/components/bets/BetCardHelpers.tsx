@@ -167,7 +167,7 @@ export function SuppressedCard({ card }: { card: BetCardData }) {
         <div className="flex gap-3 items-center flex-wrap">
           <span className="font-mono text-[9px] uppercase tracking-widest text-slate-600">Calibrated divergence (context only)</span>
           <span className="font-mono text-xs text-slate-500 tabular-nums">
-            {fmtPct(card.edge_vs_market)}
+            {card.edge_vs_market != null ? fmtPct(card.edge_vs_market) : "--"}
           </span>
         </div>
         {/* edge_vs_market label -- always "calibrated divergence", never profit */}

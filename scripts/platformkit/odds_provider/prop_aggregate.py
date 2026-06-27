@@ -71,12 +71,34 @@ def _better_price(current: Optional[float], candidate: Optional[float],
     return c if c > cur else cur
 
 
+def _winner_source(base: PropLine, other: PropLine,
+                   new_over: Optional[float],
+                   new_under: Optional[float]) -> str:
+    """Source of the row owning the merged over_price (preferred) or under_price.
+
+    The downstream board reports a card's `best_book` from this source, so it must
+    name the book that ACTUALLY quoted the winning decimal -- not the merge base.
+    Ties (both rows posted the same price) and pure-context merges (both sides
+    None) fall back to base.source so a sportsbook never loses attribution.
+    """
+    if new_over is not None:
+        if base.over_price == new_over:
+            return base.source
+        return other.source
+    if new_under is not None:
+        if base.under_price == new_under:
+            return base.source
+        return other.source
+    return base.source
+
+
 def _merge_row(base: PropLine, other: PropLine) -> PropLine:
     """Merge *other* into *base*, keeping the best over_price/under_price.
 
     payout_type upgrades from "dfs_pickem" to "sportsbook" when the winning
-    price comes from a sportsbook-priced source. source is kept as the original
-    base source (first seen); as_of keeps the most-recent stamp.
+    price comes from a sportsbook-priced source. source is set to whichever row
+    quoted the winning over/under price (see _winner_source) so a merged card
+    truthfully reports the book that owns the line. as_of keeps the freshest stamp.
     """
     new_over = _better_price(base.over_price, other.over_price, "over")
     new_under = _better_price(base.under_price, other.under_price, "under")
@@ -99,7 +121,7 @@ def _merge_row(base: PropLine, other: PropLine) -> PropLine:
         over_price=new_over,
         under_price=new_under,
         payout_type=pt,
-        source=base.source,
+        source=_winner_source(base, other, new_over, new_under),
         as_of=as_of,
     )
 
@@ -196,8 +218,39 @@ def prop_best_line_summary(row: PropLine) -> Dict[str, Any]:
     }
 
 
+def merge_multi_source(rows: Sequence[PropLine]) -> List[PropLine]:
+    """Dedup raw multi-source PropLines into best-price-per-key rows.
+
+    Public seam for the prop board: takes the concatenated output of
+    `prop_edge._gather` (one row per provider, possibly N for the same prop) and
+    collapses it so each (player, stat, event_id, line) survives once with the
+    HIGHEST decimal on each side. The winning row's source is owned by the book
+    that actually quoted that price (see `_winner_source`). Source-input order
+    only matters for ties (base wins) -- the highest decimal always wins.
+
+    Returns a list sorted by (player, stat, line). Never raises; returns [] when
+    given no rows. Empty / non-PropLine inputs are silently skipped.
+    """
+    safe = [r for r in (rows or []) if isinstance(r, PropLine)]
+    if not safe:
+        return []
+    merged: Dict[Tuple[str, str, str, float], PropLine] = {}
+    for row in safe:
+        k = _key(row)
+        if k not in merged:
+            merged[k] = row
+        else:
+            merged[k] = _merge_row(merged[k], row)
+    return sorted(merged.values(), key=lambda r: (
+        str(r.player or "").lower(),
+        str(r.stat or "").lower(),
+        float(r.line),
+    ))
+
+
 __all__ = [
     "gather_props",
     "best_line_props",
+    "merge_multi_source",
     "prop_best_line_summary",
 ]

@@ -7,8 +7,22 @@ no auth -- the same endpoint the legacy pinnacle_scraper.py uses.
 Flow:
   1. GET /leagues/{league_id}/matchups -> parent game matchups with team names.
   2. GET /leagues/{league_id}/markets/straight -> moneyline/spread/total markets.
-  3. Join on matchupId; keep only period=0 moneyline markets; convert American
-     price field -> decimal odds; emit one OddsEvent per game tagged venue='pinnacle'.
+  3. Join on matchupId; keep only period=0 (full-game) markets; convert American
+     price field -> decimal odds; emit one OddsEvent per game tagged venue='pinnacle'
+     carrying moneyline AND (when quoted) spread AND total nodes.
+
+Markets parsed (all period=0 / full-game only):
+  * moneyline -> prices['pinnacle']['home'/'away'] (decimal).
+  * spread    -> prices['pinnacle']['spread'] = {'home': {'line','odds'},
+                 'away': {'line','odds'}}. Each price leg carries its own `points`
+                 handicap (home negative when favoured); `designation` maps the leg.
+  * total     -> prices['pinnacle']['total']  = {'over': {'line','odds'},
+                 'under': {'line','odds'}}. `points` is the O/U line. Pinnacle
+                 totals omit `designation`, so legs are paired by index (over=0,
+                 under=1) per the legacy scraper convention.
+A spread/total node is emitted ONLY when both legs have a usable line AND price;
+a partial market is dropped (never fabricated). This mirrors the extended per-venue
+shape that markets.quotes_from_aggregate consumes (same as the ESPN provider).
 
 Price convention: Pinnacle's `price` field is American odds (e.g. -110, +150).
 We convert to decimal (>1.0) via american_to_decimal before emitting.
@@ -29,8 +43,13 @@ import logging
 from datetime import datetime, timezone
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
-from .base import OddsEvent, american_to_decimal, unavailable, VENUE_SPORTSBOOK
+from .base import OddsEvent, unavailable, VENUE_SPORTSBOOK
 from .http_cache import disk_cache_get_meta, http_get_json
+from .pinnacle_parse import moneyline_sides, spread_node, total_node
+
+# Backward-compatible private aliases (tests / callers may import these names).
+_spread_node = spread_node
+_total_node = total_node
 
 logger = logging.getLogger(__name__)
 
@@ -68,17 +87,9 @@ def _team_names(participants: List[Dict[str, Any]]) -> Tuple[str, str]:
     return home, away
 
 
-def _safe_american(value: Any) -> Optional[float]:
-    """Parse an American moneyline int from a Pinnacle price record -> decimal.
-
-    Pinnacle's prices[].price field is an integer American odds value (e.g. -110,
-    +150). None on any conversion failure.
-    """
-    return american_to_decimal(value)
-
-
 # ---------------------------------------------------------------------------
-# Pure parsers -- no I/O; unit-testable on canned payloads.
+# Pure parsers -- no I/O; unit-testable on canned payloads. The per-market leg
+# parsers (moneyline_sides / spread_node / total_node) live in pinnacle_parse.
 # ---------------------------------------------------------------------------
 
 def parse_games(
@@ -94,7 +105,10 @@ def parse_games(
     Rules applied:
     - Only parent matchups (those without type='special' and without parentId)
       produce game entries; special/prop matchups are skipped.
-    - Only period=0 (full-game) moneyline markets are included in prices.
+    - Only period=0 (full-game) moneyline/spread/total markets are included.
+    - Moneyline -> sides['home'/'away']; spread -> sides['spread']; total ->
+      sides['total'] (extended node shape consumed by markets.quotes_from_aggregate).
+      A spread/total node is added ONLY when both legs have a line AND a price.
     - A game with no usable moneyline is still emitted (empty prices dict) when
       team names are present -- the event is real, just no price to show yet.
     - Games with empty home OR empty away name are skipped.
@@ -117,18 +131,23 @@ def parse_games(
         if mid is not None:
             parent_by_id[mid] = mu
 
-    # Build a matchupId -> moneyline market map (period=0 only; keep first seen).
+    # Build matchupId -> market maps (period=0 / full-game only; first seen wins)
+    # for each of moneyline, spread, total.
     ml_by_matchup: Dict[int, Dict[str, Any]] = {}
+    spread_by_matchup: Dict[int, Dict[str, Any]] = {}
+    total_by_matchup: Dict[int, Dict[str, Any]] = {}
+    _index = {"moneyline": ml_by_matchup, "spread": spread_by_matchup,
+              "total": total_by_matchup}
     for mk in markets or []:
-        if mk.get("type") != "moneyline":
+        target = _index.get(mk.get("type"))
+        if target is None:
             continue
         if mk.get("period") != 0:
             continue
         mid = mk.get("matchupId")
-        if mid is None:
+        if mid is None or mid in target:
             continue
-        if mid not in ml_by_matchup:
-            ml_by_matchup[mid] = mk
+        target[mid] = mk
 
     out: List[OddsEvent] = []
     for game_id, mu in parent_by_id.items():
@@ -137,32 +156,24 @@ def parse_games(
             continue
         start_time = mu.get("startTime")
 
-        # Build the prices dict for the 'pinnacle' venue.
-        prices: Dict[str, Dict[str, Optional[float]]] = {}
+        # Build the prices dict for the 'pinnacle' venue: moneyline + spread + total.
+        prices: Dict[str, Dict[str, Any]] = {}
+        sides: Dict[str, Any] = {}
         mk = ml_by_matchup.get(game_id)
         if mk:
-            prs = mk.get("prices") or []
-            h_dec: Optional[float] = None
-            a_dec: Optional[float] = None
-            for pr in prs:
-                desig = (pr.get("designation") or "").lower()
-                dec = _safe_american(pr.get("price"))
-                if desig == "home":
-                    h_dec = dec
-                elif desig == "away":
-                    a_dec = dec
-            # Fallback: when designation is absent, use index order (home, away).
-            if h_dec is None and a_dec is None and len(prs) >= 2:
-                h_dec = _safe_american(prs[0].get("price"))
-                a_dec = _safe_american(prs[1].get("price"))
-            # Emit only sides that are genuinely present (never fabricate).
-            sides: Dict[str, Optional[float]] = {}
-            if h_dec is not None:
-                sides["home"] = h_dec
-            if a_dec is not None:
-                sides["away"] = a_dec
-            if sides:
-                prices["pinnacle"] = sides
+            sides.update(moneyline_sides(mk.get("prices") or []))
+        spread_mk = spread_by_matchup.get(game_id)
+        if spread_mk:
+            spread = spread_node(spread_mk.get("prices") or [])
+            if spread is not None:
+                sides["spread"] = spread
+        total_mk = total_by_matchup.get(game_id)
+        if total_mk:
+            total = total_node(total_mk.get("prices") or [])
+            if total is not None:
+                sides["total"] = total
+        if sides:
+            prices["pinnacle"] = sides
 
         out.append(OddsEvent(
             event_id=str(game_id),
@@ -270,6 +281,8 @@ def _oldest_as_of(a: str, b: str) -> str:
 __all__ = [
     "PinnacleProvider",
     "parse_games",
+    "_spread_node",
+    "_total_node",
     "_LEAGUE_ID",
     "VENUE_SPORTSBOOK",
 ]

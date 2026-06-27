@@ -1,13 +1,11 @@
 """supervisor._restart -- restart/backoff + survivor-reconcile + stale-heartbeat
 reaping helpers extracted from supervisor.supervisor (behavior-preserving move).
 
-These were Supervisor methods; they are pulled out VERBATIM (logic-identical) as
-module-level functions that take the live Supervisor ``sv`` as their first arg so
-``supervisor.py`` stays under the <=300 LOC rail. Supervisor keeps thin wrapper
-methods that delegate here, so the public/internal method API the tests drive
-(``_arm_backoff`` / ``_reap_and_restart`` / ``_heartbeat_age`` /
-``_reap_stale_heartbeat`` / ``_match_pattern`` / ``_reconcile_survivors``) is
-unchanged. Stdlib-only, ASCII-only, no spawn at import, no flag flip.
+Module-level functions take the live Supervisor ``sv`` as their first arg so
+``supervisor.py`` stays under the <=300 LOC rail; Supervisor keeps thin wrapper
+methods that delegate here (the internal API the tests drive is unchanged).
+Also hosts the C1 self-heartbeat (``beat_self``) and C7 crash-rate breaker
+(``note_relaunch``). Stdlib-only, ASCII-only, no spawn at import, no flag flip.
 """
 from __future__ import annotations
 
@@ -35,27 +33,30 @@ STOPPED = "STOPPED"
 def match_pattern(spec: ProcSpec) -> str:
     """The cmdline substring identifying a running instance of *spec*.
 
-    For a py spec the module name is unique enough (e.g. predict_service.app);
-    for a node spec the cmd (e.g. "npm run dev") is matched. Empty => skip.
+    For a py spec the module name is unique enough (e.g. predict_service.app).
+
+    H1 NODE FIX: a node UI is launched via ``npm run dev`` / ``npm run start`` but
+    the npm wrapper EXITS and the REAL long-lived listener (the process actually
+    holding :3000) is ``next-server`` (spawned by ``next/dist/bin/next``). Matching
+    the launch cmd ("npm run dev") therefore matches NOTHING -- so a supervisor
+    restart never reaped the orphaned next-server -> EADDRINUSE restart-loop /
+    orphaned child. We match ``next-server`` instead so reconcile/kill targets the
+    real listener. Empty => skip.
     """
-    return (spec.module or spec.cmd or "").strip()
+    if spec.kind == "node":
+        return "next-server"
+    return (spec.module or "").strip()
 
 
 def reconcile_survivors(sv: "Supervisor") -> None:
     """Kill any ALREADY-RUNNING child of each spec BEFORE the launch loop.
 
-    On a crash/kill of a PREVIOUS supervisor its children keep running
-    (port :8099/:8098/:3000 + the headless loops). A fresh Supervisor that
-    re-launched every spec unconditionally would duplicate those daemons and
-    collide on the listen ports (EADDRINUSE restart-loop) + double-write the
-    CLV ledger / line snapshots / inplay history.
-
-    So before launching anything we adopt-by-removal: find every survivor by
-    cmdline match (proc.find_by_match) and kill it, so the subsequent
-    _launch() is the SOLE instance. This makes boot idempotent -- running
-    boot twice never leaves two copies of a daemon. Best-effort + never
-    raises: a backend without find_by_match (or a match failure) just falls
-    through to a normal launch.
+    A PREVIOUS supervisor's children keep running on its crash/kill (ports
+    :8099/:8098/:3000 + headless loops). Re-launching every spec unconditionally
+    would duplicate those daemons and collide on ports (EADDRINUSE) + double-write
+    ledgers. So we adopt-by-removal: find every survivor by cmdline match and kill
+    it, making boot idempotent. Best-effort + never raises (a backend without
+    find_by_match falls through to a normal launch).
     """
     finder = getattr(sv._proc, "find_by_match", None)
     if not callable(finder):
@@ -84,9 +85,8 @@ def reconcile_survivors(sv: "Supervisor") -> None:
 def arm_backoff(sv: "Supervisor", st: "_ProcState") -> None:
     """Arm the next relaunch window using the spec's backoff envelope.
 
-    ``attempts`` counts relaunches that have been *scheduled*; the delay is
-    keyed off the (about-to-be) attempt number so the first restart waits
-    backoff_for(1), the second backoff_for(2), etc.
+    ``attempts`` counts scheduled relaunches; the delay keys off the about-to-be
+    attempt number (first restart waits backoff_for(1), second backoff_for(2)).
     """
     delay = st.spec.restart_policy.backoff_for(st.attempts + 1)
     st.next_start_at = sv._clock() + delay
@@ -97,7 +97,7 @@ def arm_backoff(sv: "Supervisor", st: "_ProcState") -> None:
 
 def reap_and_restart(sv: "Supervisor", st: "_ProcState") -> None:
     """If a proc died, restart per policy (backoff) or mark it FAILED."""
-    alive = bool(st.handle and sv._proc.is_alive(st.handle))
+    alive = bool(st.handle and sv._is_alive(st.handle))
     if alive:
         sv._refresh_ready(st)
         if st.ready and st.state in (STARTING, RESTARTING):
@@ -124,10 +124,56 @@ def reap_and_restart(sv: "Supervisor", st: "_ProcState") -> None:
     if sv._clock() >= st.next_start_at:
         st.attempts += 1
         sv._launch(st)
+        # C7: record the relaunch for the crash-rate breaker (flap escalation).
+        sv._note_relaunch(st)
         # Re-probe immediately so a process that comes back healthy on the
         # same tick is reported READY (not stuck RESTARTING).
         if sv._refresh_ready(st):
             st.state = READY
+
+
+# -- C1 supervisor self-liveness heartbeat --------------------------------- #
+def beat_self(sv: "Supervisor") -> None:
+    """Stamp the supervisor's OWN liveness heartbeat (never raises).
+
+    Lets the watchdog tell a WEDGED run_forever (alive, loop stopped ticking) from
+    a healthy one and re-boot the stale-but-alive supervisor.
+    """
+    from supervisor.supervisor import SELF_HEARTBEAT_COMPONENT
+    try:
+        from ops.liveness import heartbeat
+        heartbeat(SELF_HEARTBEAT_COMPONENT, _now=sv._clock())
+    except Exception as exc:  # noqa: BLE001 -- self-beat must not crash the loop
+        logger.debug("supervisor: self-heartbeat skipped (%s)", type(exc).__name__)
+
+
+# -- C7 crash-rate breaker (distinct from per-spec backoff) ---------------- #
+def note_relaunch(sv: "Supervisor", st: "_ProcState") -> None:
+    """Record one relaunch of *st*; trip a DEGRADED breaker on a flap storm.
+
+    > ``_CRASH_MAX`` relaunches inside ``_CRASH_WINDOW_SEC`` for ONE spec means it
+    is chronically broken (config error) flapping at the backoff cap with NO
+    escalation -> trip a breaker (ERROR-logged ONCE) so the status surface shows
+    DEGRADED, not silent flapping. The per-spec backoff still paces each relaunch;
+    recovery (rate back under the cap) clears the breaker.
+    """
+    from supervisor.supervisor import _CRASH_MAX, _CRASH_WINDOW_SEC
+    name = st.spec.name
+    now = sv._clock()
+    epochs = sv._restart_epochs.setdefault(name, [])
+    epochs.append(now)
+    cutoff = now - _CRASH_WINDOW_SEC
+    epochs[:] = [t for t in epochs if t >= cutoff]
+    tripped = sv._breaker_tripped.get(name)
+    if len(epochs) > _CRASH_MAX and not tripped:
+        sv._breaker_tripped[name] = True
+        logger.error(
+            "supervisor: %s CRASH-RATE BREAKER tripped -- %d relaunches in %.0fs "
+            "(chronically broken; DEGRADED, still restarting)",
+            name, len(epochs), _CRASH_WINDOW_SEC)
+    elif len(epochs) <= _CRASH_MAX and tripped:
+        sv._breaker_tripped[name] = False
+        logger.info("supervisor: %s crash-rate recovered -- breaker cleared", name)
 
 
 # -- stale-heartbeat reaping (hung != crashed) ----------------------------- #
@@ -169,7 +215,7 @@ def reap_stale_heartbeat(sv: "Supervisor", st: "_ProcState") -> None:
     rd = st.spec.readiness
     if rd.kind != HEARTBEAT and not rd.heartbeat_path:
         return
-    alive = bool(st.handle and sv._proc.is_alive(st.handle))
+    alive = bool(st.handle and sv._is_alive(st.handle))
     if not alive or st.state in (FAILED, STOPPED, RESTARTING):
         return
     age = heartbeat_age(sv, st)
@@ -198,18 +244,11 @@ def reap_stale_heartbeat(sv: "Supervisor", st: "_ProcState") -> None:
 def restart_predict_service(log_dir: str = "logs") -> Dict[str, Any]:
     """Kill and relaunch the predict_service.app process (m1_api_paper).
 
-    Idempotent and standalone -- does NOT require a running Supervisor instance.
-    Finds any existing predict_service.app process by cmdline match, kills it,
-    then launches a fresh instance so the new route table (including routes
-    that were added after the previous start) is picked up from the current
-    app.py. Returns a result dict::
-
-        {"killed_pids": [...], "new_pid": <int|None>, "ok": bool}
-
-    ``ok=True`` means a new process was spawned (pid obtained). The supervisor's
-    existing restart/backoff loop will then take over health-tracking via its
-    normal supervise() tick. Never raises -- all errors are caught and surfaced
-    in the returned dict.
+    Idempotent + standalone (no running Supervisor needed): finds the existing
+    predict_service.app by cmdline match, kills it, then launches a fresh instance
+    so the new route table is picked up. Returns
+    ``{"killed_pids": [...], "new_pid": <int|None>, "ok": bool}``; ok=True iff a
+    new pid was obtained. Never raises -- all errors surface in the dict.
     """
     import sys  # noqa: PLC0415 -- local import; stdlib-only; avoids circular at module level
     from supervisor import proc as _p  # noqa: PLC0415
@@ -257,5 +296,5 @@ def restart_predict_service(log_dir: str = "logs") -> Dict[str, Any]:
 __all__ = [
     "match_pattern", "reconcile_survivors", "arm_backoff",
     "reap_and_restart", "heartbeat_age", "reap_stale_heartbeat",
-    "restart_predict_service",
+    "beat_self", "note_relaunch", "restart_predict_service",
 ]

@@ -308,7 +308,10 @@ def append_snapshot(snap: Optional[Dict[str, Any]] = None,
     kept.append(snap)
     kept.sort(key=lambda o: o.get("ts", 0))
     body = "\n".join(json.dumps(o, ensure_ascii=True) for o in kept) + "\n"
-    _LEDGER.write_text(body, encoding="ascii")
+    # Atomic full-file rewrite (tmp + os.replace): a crash mid-write can never
+    # leave a torn ledger for read_series() / the daily loop to choke on.
+    from scripts.platformkit.io_atomic import write_text_atomic
+    write_text_atomic(_LEDGER, body, encoding="ascii")
     return snap
 
 

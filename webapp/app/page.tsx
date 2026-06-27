@@ -21,6 +21,7 @@ import Link from "next/link";
 import { FUNNEL_STAGES, HONEST_FINDINGS, PRODUCT_NAME, HONEST_DISCLAIMER } from "@/lib/api";
 import { HomeStatusRow } from "@/components/home/HomeStatusRow";
 import { HomeRecordsHero } from "@/components/home/HomeRecordsHero";
+import { HomeTodayCard } from "@/components/home/HomeTodayCard";
 
 export const metadata: Metadata = {
   title: "Home",
@@ -142,6 +143,8 @@ function Findings() {
 export default function Home() {
   return (
     <div className="pb-12">
+      {/* TODAY digest -- "wake up and SEE everything for today" at the very top. */}
+      <Suspense fallback={null}><HomeTodayCard /></Suspense>
       <Hero />
       <Suspense fallback={null}><HomeStatusRow /></Suspense>
       <Suspense fallback={null}><HomeRecordsHero /></Suspense>

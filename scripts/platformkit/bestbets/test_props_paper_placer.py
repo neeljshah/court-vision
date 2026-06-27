@@ -47,6 +47,48 @@ def test_model_only_edge_is_skipped():
     assert P.placement_from_edge(e, "mlb") is None
 
 
+def test_soccer_ungradeable_stat_is_dropped(tmp_path):
+    # WC Shots On Target has NO per-player keyless feed -> must not be placed (would pend
+    # forever); Shots IS keyless-gradeable (leader) -> placed. mlb is unfiltered.
+    board = _board([
+        _priced_edge(player="Kylian Mbappe", stat="Shots", line=2.5, match="FRA @ ESP"),
+        _priced_edge(player="Kylian Mbappe", stat="Shots On Target", line=1.5,
+                     match="FRA @ ESP"),
+    ])
+    out = P.run(("soccer_intl",), board_fn=board, place=False)
+    placed = out["placed_markets"]
+    assert any("|Shots|" in m for m in placed)
+    assert not any("Shots On Target" in m for m in placed)
+    assert out["by_sport"]["soccer_intl"]["placed"] == 1
+
+
+def test_calibration_only_gates_to_proven_families(tmp_path, monkeypatch):
+    # calibration_only must drop a not-proven (sport,stat) and keep a proven one.
+    import scripts.platformkit.bestbets.calibration_gate as CG
+    monkeypatch.setattr(CG, "proven_families",
+                        lambda **k: {"mlb": {"Hits"}})  # only mlb Hits is proven
+    board = _board([
+        _priced_edge(player="Aaron Judge", stat="Hits", line=1.5),
+        _priced_edge(player="Aaron Judge", stat="RBIs", line=0.5),  # not proven -> dropped
+    ])
+    out = P.run(("mlb",), board_fn=board, place=False, calibration_only=True)
+    placed = out["placed_markets"]
+    assert any("|Hits|" in m for m in placed)
+    assert not any("|RBIs|" in m for m in placed)
+    assert out["by_sport"]["mlb"]["placed"] == 1
+    # without the gate, BOTH place
+    out2 = P.run(("mlb",), board_fn=board, place=False, calibration_only=False)
+    assert out2["by_sport"]["mlb"]["placed"] == 2
+
+
+def test_is_settleable_allowlist():
+    assert P._is_settleable("mlb", "anything") is True          # no allowlist -> all pass
+    assert P._is_settleable("soccer_intl", "Goals") is True
+    assert P._is_settleable("soccer_intl", "Shots") is True     # leader-gradeable
+    assert P._is_settleable("soccer_intl", "Shots On Target") is False
+    assert P._is_settleable("soccer_intl", "Fouls") is False
+
+
 def test_below_floor_is_skipped():
     # tiny EV below the proxy-adjusted C floor (0.02 + 0.01) -> no tier -> no bet
     e = _priced_edge(ev_over=0.005)

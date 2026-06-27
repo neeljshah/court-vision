@@ -1,18 +1,14 @@
 "use client";
-// /bets/[sport] -- sport-filtered best-bets board.
+// /bets/[sport] -- sport-filtered best-bets board. Fetches GET
+// /api/bestbets/board?sport=<sport> via api.bestbetsBoard and renders ranked
+// calibrated divergence cards (tier / confidence / units / CLV). Uses
+// useLiveData for auto-refresh (no bespoke setInterval).
 //
-// Fetches GET /api/bestbets/board?sport=<sport> via api.bestbetsBoard and
-// renders ranked calibrated divergence cards (tier / confidence / units / CLV).
-// Uses useLiveData for auto-refresh (no bespoke setInterval).
-//
-// HONESTY RAILS:
-//   - UNITS only -- NO $ field anywhere
-//   - Cards ranked by tier then confidence (calibrated divergence + signal proxy)
-//   - CLV null -> INSUFFICIENT_DATA (never greened, never fabricated)
-//   - Stale-never-green: badge amber when generated_at > 15m old
-//   - Honest empty state when 0 cards clear the tier floor -- no fake cards
-//   - Real money is default-DENY (paper only)
-//   - edge_claimed always false -- never a profit or ROI claim
+// HONESTY RAILS: UNITS only (NO $); ranked by tier then confidence (calibrated
+// divergence + signal proxy); CLV null -> INSUFFICIENT_DATA (never greened);
+// stale-never-green (amber when generated_at > 15m old); honest empty state when
+// 0 cards clear the tier floor; real money default-DENY; edge_claimed always
+// false (never a profit/ROI claim).
 
 import { useParams } from "next/navigation";
 import { useCallback, useMemo } from "react";
@@ -53,6 +49,15 @@ function cardToBetCardData(c: BestBetsCard): BetCardData {
     clv: c.clv?.clv_pct ?? null,
     clv_is_proxy: c.clv?.clv_is_proxy ?? c.clv_is_proxy,
     status: (c.status as BetCardData["status"]) ?? "pregame",
+    // Pass line/tipoff/prop fields through so prop cards render (not empty).
+    line: c.line ?? null,
+    tipoff_utc: c.tipoff_utc ?? null,
+    prop_player: c.prop_player ?? null,
+    prop_stat: c.prop_stat ?? null,
+    proj: c.proj ?? null,
+    model_only: c.model_only,
+    honest_note: c.honest_note ?? null,
+    books: c.books,
   };
 }
 
@@ -79,18 +84,16 @@ function AgeBadge({ asOf }: { asOf: string | null }) {
 }
 
 // EmptyReason: no_slate=no games today; suppressed=0 cleared tier floor;
-// unavailable=fetch error; empty=0 cards no context.
+// unavailable=fetch error; empty=0 cards no context. deriveEmptyReason reads
+// board.reason / board.honest_note to classify.
 type EmptyReason = "no_slate" | "suppressed" | "unavailable" | "empty";
 
-// deriveEmptyReason: reads board.reason / board.honest_note to classify.
 function deriveEmptyReason(board: BestBetsBoard | null, fetchError: string | null): EmptyReason {
   if (fetchError && !board) return "unavailable";
   if (!board) return "empty";
   const hint = (board.reason ?? board.honest_note ?? "").toLowerCase();
-  if (hint.includes("no game") || hint.includes("no slate") || hint.includes("offseason") || hint.includes("off season")) {
-    return "no_slate";
-  }
-  // count > 0 means games were evaluated; 0 cards means all suppressed by tier floor.
+  if (hint.includes("no game") || hint.includes("no slate") || hint.includes("offseason") || hint.includes("off season")) return "no_slate";
+  // count > 0 = games evaluated; 0 cards = all suppressed by tier floor.
   if (board.cards.length === 0 && board.count != null && board.count > 0) return "suppressed";
   return "empty";
 }

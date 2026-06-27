@@ -53,21 +53,41 @@ export type BestBetsCLV = {
 // edge_vs_market and units are probability/unit-space only; no $ field.
 // Cards with status "post" or "final" are EXCLUDED from rendered bet cards
 // (skip_reason surfaced in honest state).
+// BookShopEntry -- one row of the per-card line-shopping array (board `books[]`).
+// price is decimal odds; line is the spread/total line (null for moneyline/prop
+// with no line). fresh=false demotes the row out of stale-never-green; is_pm
+// flags a prediction-market book (Kalshi/Polymarket) which is NEVER shown as the
+// "best bettable" price. No $ field.
+export type BookShopEntry = {
+  book: string;
+  price: number | null;
+  line: number | null;
+  as_of: string | null;
+  fresh: boolean;
+  is_pm: boolean;
+};
+
 export type BestBetsCard = {
   game_id: string;
   matchup: string;
   sport: string;
+  // market_type in {moneyline, total, spread, prop}
   market_type: string;
   side: string;
   model_prob: number;
-  market_prob: number;
+  market_prob: number | null;
   best_book: string;
   best_odds: number;
   all_books: Array<{ book: string; odds: number; line: number | null }>;
-  edge_vs_market: number;
+  // books[] -- richer line-shopping array (W-wave). Optional; falls back to
+  // all_books when absent. Each entry carries freshness + is_pm provenance.
+  books?: BookShopEntry[];
+  edge_vs_market: number | null;
   units: number;
   tier: string | null;
   confidence: number;
+  // line -- the market line (spread/total points, or prop line). null for ML.
+  line?: number | null;
   // clv is an object from the board endpoint (not a bare number).
   // clv_is_proxy is also surfaced at the card top level for convenience.
   clv: BestBetsCLV | null;
@@ -75,8 +95,15 @@ export type BestBetsCard = {
   status: string;
   tipoff_utc?: string | null;   // ISO timestamp; null/absent = not yet scheduled
   honest_note?: string;
+  // -- prop-card fields (market_type === "prop") -----------------------------
   prop_player?: string | null;
   prop_stat?: string | null;
+  // proj -- model point projection for the prop stat (e.g. projected PTS). null
+  // for game markets.
+  proj?: number | null;
+  // model_only=true -> the prop has NO market line; render a "model-only (no
+  // line)" badge and make NO edge claim (edge_vs_market is null).
+  model_only?: boolean;
   // UI-side guard fields (optional -- backend may not send them)
   // degenerate_model: true -> render as decision=no_bet explicitly (not silently bet)
   degenerate_model?: boolean;

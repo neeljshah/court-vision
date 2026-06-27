@@ -16,15 +16,37 @@ Calibration, not edge. ASCII; <=300 LOC.
 """
 from __future__ import annotations
 
-import json
 import pathlib
 from typing import Any, Callable, Dict, Optional, Sequence, Tuple
 
 
 def append_jsonl(path: pathlib.Path, rec: Dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "a", encoding="ascii") as fh:
-        fh.write(json.dumps(rec, sort_keys=True, default=str) + "\n")
+    # Crash-safe append (read-modify-write + os.replace): a partial reject/proposal
+    # line can never be left for the next loop read.
+    from scripts.platformkit.io_atomic import append_jsonl_atomic
+    append_jsonl_atomic(path, rec, encoding="ascii", sort_keys=True, default=str)
+
+
+def call_recal(fn: Callable[..., Optional[Dict[str, Any]]], name: str,
+               settled: Sequence[Dict[str, Any]], window: int,
+               report: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """Call recalibrate_fn, threading the out-of-band ``report`` dict when it is accepted.
+
+    ``report`` lets the recalibrator distinguish a GENUINE no-candidate (evaluated -> declined)
+    from a TRANSIENT failure (FeedDegradedError / exception -> bailed BEFORE evaluation). A fn
+    that does not accept ``report`` is called exactly as before (report stays empty -> the
+    daemon's fail-SAFE default treats an armed None as transient PRESERVE, never a silent skip).
+    Return contract is UNCHANGED: still Optional[dict].
+    """
+    import inspect
+    try:
+        params = inspect.signature(fn).parameters
+    except (TypeError, ValueError):
+        params = {}
+    if "report" in params or any(
+            p.kind == inspect.Parameter.VAR_KEYWORD for p in params.values()):
+        return fn(name, settled, window, report=report)
+    return fn(name, settled, window)
 
 
 def default_gate_fn(candidate: Dict[str, Any]) -> Dict[str, Any]:
@@ -129,6 +151,6 @@ def emit_proposal(proposals_path: pathlib.Path, *, ts: float, name: str,
 
 
 __all__ = [
-    "append_jsonl", "default_gate_fn", "count_replicated_corpora", "stage_ship",
-    "emit_reject", "emit_proposal",
+    "append_jsonl", "call_recal", "default_gate_fn", "count_replicated_corpora",
+    "stage_ship", "emit_reject", "emit_proposal",
 ]

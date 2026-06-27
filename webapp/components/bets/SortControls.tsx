@@ -33,7 +33,7 @@ const OPTIONS: { key: SortKey; label: string; tip: string }[] = [
 
 export function SortControls({ value, onChange }: SortControlsProps) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2" role="group" aria-label="Sort best bets">
       <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500">
         Sort
       </span>
@@ -42,7 +42,9 @@ export function SortControls({ value, onChange }: SortControlsProps) {
         return (
           <button
             key={opt.key}
+            type="button"
             title={opt.tip}
+            aria-label={`Sort by ${opt.label}`}
             onClick={() => onChange(opt.key)}
             className={cn(
               "rounded border px-2.5 py-1 font-mono text-[10px] uppercase tracking-wide",

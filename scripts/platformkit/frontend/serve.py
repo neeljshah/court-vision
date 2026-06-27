@@ -116,11 +116,37 @@ def _odds_or_none(sport: str) -> Any:
         return None
 
 
+# STALE-NEVER-GREEN: the legacy data/frontend/snapshots/<sport>.json cache is
+# written by snapshot_writer, which is NOT on the supervised daemon roster -- a
+# stale file (yesterday's slate) must NOT serve as current. A snapshot older than
+# this TTL is a CACHE MISS -> canonical predict_service store (m1_producer-refreshed
+# + stale-purged) or fresh live compute.
+_SNAPSHOT_TTL_SECONDS = 3600.0
+
+
+def _snapshot_is_stale(generated_at: Any, now: Optional[datetime] = None) -> bool:
+    """True when *generated_at* (ISO UTC) is older than the TTL, or absent/bad.
+
+    A missing/unparseable timestamp is STALE -- never serve unproven-fresh data.
+    """
+    now = now or datetime.now(tz=timezone.utc)
+    if not generated_at:
+        return True
+    try:
+        dt = datetime.fromisoformat(str(generated_at).replace("Z", "+00:00"))
+    except (ValueError, TypeError):
+        return True
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return (now - dt).total_seconds() > _SNAPSHOT_TTL_SECONDS
+
+
 def _read_snapshot_part(sport: str, key: str) -> Optional[Dict[str, Any]]:
     """Return the *key* ('slate'|'live'|'props'|...) sub-payload from *sport*'s
-    snapshot, else None. Serves only an ok-envelope carrying a non-empty dict at
-    *key*; anything else -> None so the caller falls back to live compute (a cache
-    miss must never dark-screen). Stamps 'freshness' + "served_from":"snapshot". NEVER raises."""
+    snapshot, else None. Serves only a FRESH ok-envelope carrying a non-empty dict
+    at *key*; anything else (incl. a stale snapshot past the TTL) -> None so the
+    caller falls back to the canonical store / live compute (a cache miss must
+    never dark-screen, a stale cache must never read green). NEVER raises."""
     if _snapshot_writer is None:
         return None
     try:
@@ -129,6 +155,8 @@ def _read_snapshot_part(sport: str, key: str) -> Optional[Dict[str, Any]]:
         return None
     if not isinstance(envelope, dict) or envelope.get("status") != "ok":
         return None
+    if _snapshot_is_stale(envelope.get("generated_at")):
+        return None  # stale-never-green: past TTL -> miss -> canonical/live fallback
     part = envelope.get(key)
     if not isinstance(part, dict) or not part:
         return None

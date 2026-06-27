@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback } from "react";
 import { Panel, Unavailable, Badge } from "@/components/p6/Primitives";
 import { InfoTip } from "@/components/depth";
-import { systemApi, isUnavailable, type ClvOverTime } from "./systemApi";
+import { useLiveData } from "@/lib/useLiveData";
+import { systemApi, type ClvOverTime } from "./systemApi";
 
 // ClvOverTimePanel -- the MULTI-GAME aggregate CLV-over-time read from
 // /api/clv/over-time. MEASUREMENT-ONLY: CLV lives in PROBABILITY space, never $.
@@ -17,21 +18,16 @@ function verdictTone(v: string): "green" | "amber" | "slate" {
 }
 
 export function ClvOverTimePanel() {
-  const [data, setData] = useState<ClvOverTime | null>(null);
-  const [err, setErr] = useState<string | null>(null);
-
-  useEffect(() => {
-    const ac = new AbortController();
-    systemApi.clvOverTime(ac.signal).then((d) => {
-      if (isUnavailable(d)) {
-        setErr((d as { reason?: string }).reason || "clv-over-time unavailable");
-      } else {
-        setData(d as ClvOverTime);
-        setErr(null);
-      }
-    });
-    return () => ac.abort();
-  }, []);
+  // Poll the multi-game CLV aggregate (was a one-shot fetch). useLiveData keeps
+  // last-good data, backs off on failure, and pauses when the tab is hidden.
+  const fetcher = useCallback(
+    (signal: AbortSignal) => systemApi.clvOverTime(signal),
+    [],
+  );
+  const { data, error: err, isLoading } = useLiveData<ClvOverTime>(fetcher, {
+    intervalMs: 60_000,
+    staleAfterSec: 15 * 60,
+  });
 
   const verdict = data?.pool_verdict || "INSUFFICIENT_DATA";
 
@@ -45,10 +41,12 @@ export function ClvOverTimePanel() {
         </span>
       }
     >
-      {err ? (
+      {!data && err ? (
         <Unavailable reason={err} />
-      ) : !data ? (
+      ) : !data && isLoading ? (
         <p className="text-sm text-slate-500">loading...</p>
+      ) : !data ? (
+        <Unavailable reason="clv-over-time unavailable" />
       ) : (
         <div className="flex flex-col gap-3">
           <div className="grid grid-cols-3 gap-3 text-xs">

@@ -150,8 +150,46 @@ except Exception as _hon_exc:  # noqa: BLE001
 
 @app.get("/health")
 def health() -> Dict[str, Any]:
-    """Liveness probe."""
+    """Liveness probe. Stable contract: 200 + {"status":"ok"} iff the app is up.
+
+    Kept deliberately shallow (does NOT inspect the route table) so the supervisor's
+    m1_api_paper HTTP readiness contract never changes. Route-table depth lives on
+    /ready below; a future ProcSpec may point its http_path at /ready.
+    """
     return {"status": "ok"}
+
+
+@app.get("/ready")
+def ready() -> JSONResponse:
+    """Readiness probe WITH route-table depth (additive; does not touch /health).
+
+    Runs supervisor.health.mount_selfcheck against THIS app so a broken/stale route
+    table (a required router failed to import or mount) reads HTTP 503 not-ready
+    instead of green. A healthy app reads 200 {"status":"ready", ...}.
+
+    The m1_api_paper ProcSpec currently uses readiness http_path="/health" (a bare
+    200 liveness check). To get this deeper readiness, change that ProcSpec to
+    http_path="/ready" in supervisor/stack_specs.py (gated file -- propose, do not
+    edit autonomously). Until then /ready is available for manual/ops probing and
+    never alters the existing /health contract the supervisor depends on.
+
+    Guarded: if mount_selfcheck is unavailable or raises, we fall back to a 200
+    liveness-only body (selfcheck="unavailable") so /ready can never be *more*
+    fragile than /health -- it only ever ADDS the not-ready signal, never removes
+    liveness. Required-route set is owned by supervisor.health._REQUIRED_ROUTES.
+    """
+    try:
+        from supervisor.health import mount_selfcheck  # noqa: PLC0415
+
+        res = mount_selfcheck(app)
+    except Exception as exc:  # noqa: BLE001 -- selfcheck unavailable -> liveness only
+        logger.warning("/ready: mount_selfcheck unavailable (%s: %s); "
+                       "liveness-only response", type(exc).__name__, exc)
+        return JSONResponse({"status": "ready", "selfcheck": "unavailable",
+                             "reason": "%s" % type(exc).__name__})
+    if res.get("ok"):
+        return JSONResponse({"status": "ready", "selfcheck": res})
+    return JSONResponse({"status": "not_ready", "selfcheck": res}, status_code=503)
 
 
 @app.get("/api/sports")
@@ -496,6 +534,28 @@ except Exception as _clv_exc:  # noqa: BLE001
     logger.warning(
         "predict_service.app: clv_corpus_routes mount failed (%s: %s)",
         type(_clv_exc).__name__, _clv_exc,
+    )
+
+
+# -- WAVE: paper P&L series + bankroll (GET /api/paper/pnl/series, /api/paper/bankroll) --
+# Serves the daemon-written data/frontend/paper_pnl_series.json and
+# paper_bankroll.json verbatim so the webapp can render the paper track-record
+# panel. UNITS only (no $ field); a missing/unreadable file yields an honest
+# {status:'unavailable'} sentinel with HTTP 200 -- never a fabricated curve or
+# balance. edge_claimed=False; executed=False. A mount failure is caught + logged
+# so the rest of the API still boots; the paths then 404 rather than green-on-missing.
+try:
+    from predict_service.frontend.paper_series_routes import (  # noqa: PLC0415
+        router as _paper_series_router,
+    )
+
+    app.include_router(_paper_series_router)
+    logger.info("predict_service.app: paper_series_routes mounted "
+                "(/api/paper/pnl/series, /api/paper/bankroll)")
+except Exception as _psr_exc:  # noqa: BLE001
+    logger.warning(
+        "predict_service.app: paper_series_routes mount failed (%s: %s)",
+        type(_psr_exc).__name__, _psr_exc,
     )
 
 

@@ -55,10 +55,31 @@ def _f(v: Any) -> Optional[float]:
     return x if x == x else None
 
 
+# National-team naming differs Kalshi vs model/ESPN (e.g. "Korea Republic" vs "South Korea").
+# Each variant -> a UNIQUE code so two known countries match ONLY when the same nation (never
+# cross-match by substring, e.g. Congo vs DR Congo). Keys are _norm()'d (lower alphanumeric).
+_COUNTRY_ALIASES: Dict[str, str] = {
+    "southkorea": "kr", "korearepublic": "kr", "korea": "kr", "republicofkorea": "kr",
+    "northkorea": "kp", "koreadpr": "kp", "dprkorea": "kp", "usa": "us", "us": "us",
+    "unitedstates": "us", "unitedstatesofamerica": "us", "iran": "ir", "iriran": "ir",
+    "islamicrepublicofiran": "ir", "turkey": "tr", "turkiye": "tr", "czechia": "cz",
+    "czechrepublic": "cz", "bosnia": "ba", "bosniaherzegovina": "ba", "china": "cn",
+    "bosniaandherzegovina": "ba", "congodr": "cd", "drcongo": "cd", "drcgo": "cd",
+    "democraticrepublicofcongo": "cd", "congo": "cg", "congorepublic": "cg", "chinapr": "cn",
+    "republicofthecongo": "cg", "ivorycoast": "ci", "cotedivoire": "ci",
+    "capeverde": "cv", "caboverde": "cv",
+}
+
+
 def _name_matches(a: str, b: str) -> bool:
-    """Loose match: one normalized name is a substring of the other (>=3 chars).
-    Bridges Kalshi city sides ('Toronto') to model full names ('Toronto Blue Jays')."""
+    """Loose team match. When BOTH names are known national teams, require the SAME nation
+    (exact canonical code) so 'South Korea' == 'Korea Republic' but Congo != DR Congo.
+    Otherwise fall back to substring so Kalshi city sides ('Toronto') still bridge to model
+    full names ('Toronto Blue Jays')."""
     na, nb = _norm(a), _norm(b)
+    ca, cb = _COUNTRY_ALIASES.get(na), _COUNTRY_ALIASES.get(nb)
+    if ca is not None and cb is not None:
+        return ca == cb
     if len(na) < 3 or len(nb) < 3:
         return na == nb and bool(na)
     return na in nb or nb in na
@@ -184,6 +205,10 @@ def _ledger_row(p: Dict[str, Any]) -> Dict[str, Any]:
         "stake_units": float(p["flat_unit"]), "quarter_kelly": float(p["quarter_kelly"]),
         "status": "open", "executed": False, "channel": "paper_pm", "is_pm": True,
         "venue": venue, "market_id": mid, "market_type": "moneyline",
+        # game_id IS the Kalshi event_ticker (inplay_kalshi sets it so); stamp it as
+        # event_id so close_capture._kalshi_close can resolve this row's settled close
+        # -> the paper_pm channel finally becomes CLV-measurable (was event_id=None).
+        "event_id": str(p.get("game_id") or ""),
         "ev": float(p["ev"]), "tier": str(p["tier"]),
         "edge": round(float(p["model_prob"]) - float(p["market_prob"]), 6),
         "clv_is_proxy": True, "clv_status": "INSUFFICIENT_DATA",

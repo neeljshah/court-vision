@@ -178,8 +178,36 @@ def build_props_response(
     return result
 
 
+def build_prop_cards_surface(
+    now: Optional[float] = None,
+) -> List[Dict[str, Any]]:
+    """Surface live player-prop CARDS for the unified board (W-PROP-SURFACE). FAST.
+
+    Reads the DECOUPLED prop-card cache (prop_cards_cache.json) that the m13 props
+    daemon computes ONCE per 300 s cycle -- the BOUNDED/RANKED set: ALL priced
+    props + top-N reliable model-only per sport. This is a pure JSON read with a
+    freshness/SLA gate, so the surface never triggers the SLOW full prop-board
+    build inline (which hung >240 s).
+
+    MODEL-ONLY props carry model_only=True with NO edge/CLV; PRICED props carry
+    edge_vs_market (a prob diff, NOT $). A missing/stale cache degrades honestly to
+    [] (props omitted, never a hang, never stale-served-as-live). Never raises.
+    """
+    try:
+        from scripts.platformkit.bestbets import prop_cards_cache  # noqa: PLC0415
+        env = prop_cards_cache.read(now_epoch=now)
+        cards = env.get("cards") if isinstance(env, dict) else None
+        if isinstance(cards, list):
+            return [c for c in cards if isinstance(c, dict)]
+        return []
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("prop_surface: build_prop_cards_surface unavailable (%s)", exc)
+        return []
+
+
 __all__ = [
     "unavailable_response",
     "build_prop_rows",
     "build_props_response",
+    "build_prop_cards_surface",
 ]

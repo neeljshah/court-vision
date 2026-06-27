@@ -15,16 +15,16 @@ Calibration (held-out Brier), NEVER a market edge. No $ anywhere.
 from __future__ import annotations
 
 import inspect
-import json
 import pathlib
 import time
 from typing import Any, Callable, Dict, List, Optional, Sequence
 
 
 def append_jsonl(path: pathlib.Path, rec: Dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "a", encoding="ascii") as fh:
-        fh.write(json.dumps(rec, sort_keys=True, default=str) + "\n")
+    # Crash-safe append (read-modify-write + os.replace): a crash mid-write can
+    # never leave a partial trailing line for the forever loop to choke on.
+    from scripts.platformkit.io_atomic import append_jsonl_atomic
+    append_jsonl_atomic(path, rec, encoding="ascii", sort_keys=True, default=str)
 
 
 def call_feed(fn: Callable[..., Sequence[Dict[str, Any]]], sport: str,

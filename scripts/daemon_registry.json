@@ -75,15 +75,6 @@
       "process_match": "auto_settle_daemon.py"
     },
     {
-      "name": "auto_place_daemon",
-      "command": "python scripts/auto_place_daemon.py --slate sas_okc_2026-05-26 --interval-sec 60 --max-daily-bets 5 --confidence-floor 0.08",
-      "expected_interval_sec": 60,
-      "heartbeat_file": "data/cache/daemon_heartbeats/auto_place_daemon.txt",
-      "restart_cmd": "cd /workspace/nba-ai-system && nohup python scripts/auto_place_daemon.py --slate sas_okc_2026-05-26 --interval-sec 60 --max-daily-bets 5 --confidence-floor 0.08 > logs/auto_place.log 2>&1 &",
-      "restart_cmd_win": "cd /d C:\\Users\\neelj\\nba-ai-system && if not exist logs mkdir logs && start \"\" /b cmd /c \"python scripts\\auto_place_daemon.py --slate sas_okc_2026-05-26 --interval-sec 60 --max-daily-bets 5 --confidence-floor 0.08 >> logs\\auto_place.log 2>&1\"",
-      "process_match": "auto_place_daemon.py"
-    },
-    {
       "name": "unified_scraper_orchestrator",
       "command": "python scripts/unified_scraper_orchestrator.py --books fd,bov,pin --fd-interval-sec 60 --bov-interval-sec 60 --pin-interval-sec 30 --health-port 8765",
       "expected_interval_sec": 60,
@@ -93,24 +84,6 @@
       "process_match": "unified_scraper_orchestrator.py",
       "heartbeat_optional": true,
       "_note": "async orchestrator; not auto-patched. process-alive check only."
-    },
-    {
-      "name": "live_bet_ranker",
-      "command": "python scripts/live_bet_ranker.py --slate sas_okc_2026-05-26 --interval-sec 30 --bankroll 1000 --no-stop-at-tip",
-      "expected_interval_sec": 30,
-      "heartbeat_file": "data/cache/daemon_heartbeats/live_bet_ranker.txt",
-      "restart_cmd": "cd /workspace/nba-ai-system && nohup python scripts/live_bet_ranker.py --slate sas_okc_2026-05-26 --interval-sec 30 --bankroll 1000 --no-stop-at-tip >> vault/Improvements/live_bet_ranker.stdout.log 2>&1 &",
-      "restart_cmd_win": "cd /d C:\\Users\\neelj\\nba-ai-system && if not exist vault\\Improvements mkdir vault\\Improvements && start \"\" /b cmd /c \"python scripts\\live_bet_ranker.py --slate sas_okc_2026-05-26 --interval-sec 30 --bankroll 1000 --no-stop-at-tip >> vault\\Improvements\\live_bet_ranker.stdout.log 2>&1\"",
-      "process_match": "live_bet_ranker.py"
-    },
-    {
-      "name": "inplay_bet_ranker",
-      "command": "python scripts/inplay_bet_ranker.py --game-id 0042400317 --date 2026-05-26 --interval-sec 30 --bankroll 1000",
-      "expected_interval_sec": 30,
-      "heartbeat_file": "data/cache/daemon_heartbeats/inplay_bet_ranker.txt",
-      "restart_cmd": "cd /workspace/nba-ai-system && nohup python scripts/inplay_bet_ranker.py --game-id 0042400317 --date 2026-05-26 --interval-sec 30 --bankroll 1000 --pregame-win-prob 0.55 --season 2024-25 --max-wait-sec 14400 --log vault/Improvements/inplay_bet_ranker.log >> logs/inplay_bet_ranker.stdout.log 2>&1 &",
-      "restart_cmd_win": "cd /d C:\\Users\\neelj\\nba-ai-system && if not exist logs mkdir logs && start \"\" /b cmd /c \"python scripts\\inplay_bet_ranker.py --game-id 0042400317 --date 2026-05-26 --interval-sec 30 --bankroll 1000 --pregame-win-prob 0.55 --season 2024-25 --max-wait-sec 14400 --log vault\\Improvements\\inplay_bet_ranker.log >> logs\\inplay_bet_ranker.stdout.log 2>&1\"",
-      "process_match": "inplay_bet_ranker.py"
     },
     {
       "name": "fd_scraper",

@@ -68,7 +68,7 @@ New-Item -ItemType Directory -Force -Path $LOGDIR | Out-Null
 $PROFILE_NAME = if ($NoUI) { "backend" } else { "default" }
 
 # Match pattern used by -Stop to find supervisor + every child.
-$STOP_PATTERN = "-m supervisor\b|supervisor\.supervisor|predict_service\._boot_producer_runner|predict_service\.produce|predict_service\.scheduler|predict_service\.app|frontend\.serve|platformkit\.frontend\.serve|pm_trading\.auto_loop|line_snapshot_daemon|ingame\.live_loop|odds_provider\.inplay_runner|improve\.selfimprove_runner|ingame\.ingame_refresh_runner_svc|autonomy\.autonomy_monitor_runner|progress\.ci_cadence_runner|ingame\.inplay_capture_runner|next-server|next start|next/dist/bin/next"
+$STOP_PATTERN = "-m supervisor\b|supervisor\.supervisor|predict_service\._boot_producer_runner|predict_service\.produce|predict_service\.scheduler|predict_service\.app|frontend\.serve|platformkit\.frontend\.serve|pm_trading\.auto_loop|line_snapshot_daemon|ingame\.live_loop|odds_provider\.inplay_runner|improve\.selfimprove_runner|ingame\.ingame_refresh_runner_svc|autonomy\.autonomy_monitor_runner|progress\.ci_cadence_runner|ingame\.inplay_capture_runner|paper\.bankroll_daemon|bestbets\.bestbets_compute_runner|ingame\.ingame_pred_tick_runner|pm_trading\.pm_paper_tick_runner|props\.props_pred_tick_runner|platformkit\.brain_rebuild_runner|next-server|next start|next/dist/bin/next"
 $STOP_PORTS   = @(8098, 8099, 3000)
 
 # --------------------------------------------------------------------------- #
@@ -166,9 +166,11 @@ if (-not (Test-Path $RUNNER)) {
     $runner_src = @'
 """predict_service._boot_producer_runner -- repeating producer cadence.
 
-Runs produce_once(sport='nba') each cycle, sleeping BOOT_INTERVAL seconds
-between runs (default 1200 = 20 min).  Written by boot.ps1 on first launch;
-safe to delete (regenerated on next boot).
+Runs produce_once(sport) for EACH sport in BOOT_SPORTS (csv, default
+"nba,mlb,soccer_intl") each cycle, sleeping BOOT_INTERVAL seconds between cycles
+(default 1200 = 20 min). Producing every live sport keeps the canonical store fresh
+for /api/v1/bestbets/<sport>; nba alone is offseason-empty. BOOT_SPORT (singular) is
+still honored. Written by boot.ps1 on first launch; safe to delete (regenerated).
 """
 from __future__ import annotations
 import os, sys, time, traceback
@@ -181,20 +183,31 @@ if str(_REPO) not in sys.path:
 from predict_service.produce import produce_once
 
 _INTERVAL = max(60, int(os.environ.get("BOOT_INTERVAL", "1200")))
-_SPORT    = os.environ.get("BOOT_SPORT", "nba")
+
+
+def _sports():
+    raw = os.environ.get("BOOT_SPORTS") or os.environ.get("BOOT_SPORT") \
+        or "nba,mlb,soccer_intl"
+    seen, out = set(), []
+    for s in raw.split(","):
+        s = s.strip().lower()
+        if s and s not in seen:
+            seen.add(s); out.append(s)
+    return out
 
 
 def _cycle() -> None:
-    try:
-        path = produce_once(_SPORT)
-        print("producer | saved=%s" % path, flush=True)
-    except Exception as exc:
-        traceback.print_exc()
-        print("producer | error: %s" % exc, flush=True)
+    for sport in _sports():
+        try:
+            path = produce_once(sport)
+            print("producer | %s saved=%s" % (sport, path), flush=True)
+        except Exception as exc:
+            traceback.print_exc()
+            print("producer | %s error: %s" % (sport, exc), flush=True)
 
 
 if __name__ == "__main__":
-    print("producer | started sport=%s interval=%ss" % (_SPORT, _INTERVAL), flush=True)
+    print("producer | started sports=%s interval=%ss" % (",".join(_sports()), _INTERVAL), flush=True)
     _cycle()
     while True:
         time.sleep(_INTERVAL)
@@ -212,7 +225,17 @@ if __name__ == "__main__":
 # parent that "just always runs".
 # --------------------------------------------------------------------------- #
 $env:BOOT_INTERVAL = "$Interval"
-$env:BOOT_SPORT    = "nba"
+# Produce EVERY live sport each cycle so the canonical store stays fresh for the
+# per-sport best-bets boards (nba alone is offseason-empty -> mlb/soccer went stale).
+$env:BOOT_SPORTS   = "nba,mlb,soccer_intl"
+
+# Serve the PRODUCTION webapp/ dashboard on :3000 (parity with go.ps1 + the
+# autostart watchdog). Without this, a BARE `boot.ps1` falls back to stack_specs'
+# legacy default (court-visions `npm run dev`), which collides with any stale
+# court-visions dev server and leaves :3000 empty. Only default if the operator
+# has not already pinned a UI, so an explicit override still wins.
+if (-not $env:NBA_AI_UI_DIR) { $env:NBA_AI_UI_DIR = "webapp" }
+if (-not $env:NBA_AI_UI_CMD) { $env:NBA_AI_UI_CMD = "npm run start" }
 
 Write-Output ""
 Write-Output "=== M9 supervised boot -- $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') ==="
