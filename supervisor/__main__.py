@@ -24,6 +24,7 @@ import logging
 import signal
 from typing import Any, List, Optional
 
+from supervisor import _singleton
 from supervisor.config import load_profile
 from supervisor.health import real_fetcher
 from supervisor.supervisor import Supervisor
@@ -103,7 +104,28 @@ def main(argv: Optional[List[str]] = None) -> int:
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+
+    # SINGLE-INSTANCE GUARD: never run two supervisors at once. Each one's
+    # reconcile_survivors() kills the other's freshly-spawned children, so a
+    # racing boot (watchdog poll + manual boot, or overlapping launchers) flaps
+    # forever on ports :8099/:8098/:3000. The OS lock makes the race
+    # deterministic -- the loser exits; the winner owns the stack. A dead
+    # predecessor releases its lock automatically, so a normal reboot is clean.
+    # Keep _lock referenced so the fd stays open (= lock held) for the run.
+    _lock = _singleton.acquire()  # noqa: F841 -- held for process lifetime
+    if _lock is None:
+        logger.warning(
+            "supervisor: another live supervisor holds the single-instance "
+            "lock -- exiting (refusing to boot a duplicate)")
+        return 0
+
     sv = Supervisor(args.profile, fetcher=real_fetcher)
+    # Stamp self-liveness IMMEDIATELY, before the (up-to-~30s) boot() inside
+    # run_forever. Otherwise the autostart watchdog -- which declares a supervisor
+    # WEDGED when its heartbeat is stale > 90s -- false-fires during the boot
+    # window (the first _beat_self only runs AFTER boot completes) and launches a
+    # duplicate. An early beat makes a booting supervisor look alive + ticking.
+    sv._beat_self()
 
     def _graceful(_signum: int, _frame: Any) -> None:
         logger.info("supervisor: signal received -- draining")

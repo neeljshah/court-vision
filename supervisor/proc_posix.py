@@ -127,24 +127,52 @@ def spawn(
 # is_alive
 # ---------------------------------------------------------------------------
 
-def is_alive(handle: ProcHandle) -> bool:
+def _posix_cmd_token(handle: ProcHandle) -> Optional[str]:
+    """Distinctive cmdline token for *handle* (python -m module / next-server)."""
+    cmd = handle.get("cmd")
+    if isinstance(cmd, (list, tuple)):
+        parts = [str(p) for p in cmd]
+        for i, p in enumerate(parts):
+            if p == "-m" and i + 1 < len(parts):
+                return parts[i + 1]
+        joined = " ".join(parts)
+        if "next-server" in joined or "next" in joined.lower():
+            return "next-server"
+    return None
+
+
+def is_alive(handle: ProcHandle, *, verify_cmdline: bool = False) -> bool:
     """Return True if the process with handle['pid'] is still running.
 
     Uses os.kill(pid, 0) -- the lightest POSIX check (no signal sent).
+
+    PID-REUSE GUARD: with ``verify_cmdline=True`` the alive pid's
+    /proc/<pid>/cmdline is checked for the handle's distinctive token; a recycled
+    pid (different process) reads False. Parity with the Windows backend.
     """
     pid = handle.get("pid")
     if not pid:
         return False
     try:
         os.kill(pid, 0)
-        return True
+        alive = True
     except ProcessLookupError:
         return False
     except PermissionError:
-        # Process exists but we don't have permission to signal it.
-        return True
+        alive = True  # exists, just not signallable by us
     except Exception:  # noqa: BLE001
         return False
+    if not alive or not verify_cmdline:
+        return alive
+    token = _posix_cmd_token(handle)
+    if not token:
+        return True
+    try:
+        raw = Path("/proc/%d/cmdline" % pid).read_bytes()
+        live_cmd = raw.replace(b"\x00", b" ").decode("utf-8", "replace")
+    except Exception:  # noqa: BLE001 -- /proc absent or unreadable -> trust pid
+        return True
+    return token in live_cmd
 
 
 # ---------------------------------------------------------------------------

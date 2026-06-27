@@ -14,6 +14,7 @@ Per-file test: python -m pytest scripts/platformkit/test_prop_edge.py -q
 """
 from __future__ import annotations
 
+import concurrent.futures
 import logging
 import os
 from datetime import datetime, timezone
@@ -42,6 +43,21 @@ _MLB_RELIABLE_N = 30
 _HONEST_NOTE = prop_edge_config.HONEST_NOTE
 
 
+def _env_float(name: str, default: float) -> float:
+    try:
+        return float(os.environ.get(name, "") or default)
+    except (TypeError, ValueError):
+        return default
+
+
+# Bounded prop fetch. Dead/blocked book scrapers (DraftKings 404, PrizePicks 403,
+# BetMGM 400) must never hang the props prediction tick past its cadence -- that is
+# what was flapping the m13 tick (supervisor restart loop). Providers are fetched
+# CONCURRENTLY under one wall-clock deadline; a provider that exceeds it is recorded
+# as "timeout" and skipped, never blocking the board. Tune via PROP_FETCH_DEADLINE_S.
+_PROP_FETCH_DEADLINE_S = _env_float("PROP_FETCH_DEADLINE_S", 30.0)
+
+
 def _today_utc() -> str:
     return datetime.now(timezone.utc).date().isoformat()
 
@@ -64,13 +80,46 @@ def _load_df(parquet_path: str):
 
 
 def _gather(providers: List[Any], sport: str) -> (List[PropLine], Dict[str, str]):
-    """Call each provider's fetch_props; collect PropLines + per-source health."""
-    lines: List[PropLine] = []
+    """Call each provider's fetch_props; multi-source dedup -> best price per key.
+
+    Raw rows are concatenated across providers (keeps the source-health map honest:
+    each provider's "ok (N rows)" is the count BEFORE dedup), then collapsed via
+    `prop_aggregate.merge_multi_source` so each (player, stat, event_id, line)
+    survives once with the HIGHEST decimal on each side. The merged row's source
+    is owned by the book whose price actually won -- so a card's `best_book` names
+    the real winning book, not the first provider in iteration order. This is what
+    enables genuine multi-book best-line for props once sportsbook adapters
+    (DraftKings / BetMGM / FanDuel) are wired alongside the DFS pick'em sources.
+    """
+    provs = list(providers or [])
+    raw: List[PropLine] = []
     sources: Dict[str, str] = {}
-    for prov in providers or []:
-        name = getattr(prov, "name", prov.__class__.__name__)
+    names = [getattr(p, "name", p.__class__.__name__) for p in provs]
+
+    # Fetch every provider concurrently under ONE wall-clock deadline so a single
+    # hung/blocked scraper can never stall the tick. Futures that miss the deadline
+    # are abandoned (their threads finish on their own urllib timeout in the
+    # background) and recorded as "timeout"; the board proceeds with what arrived.
+    futs: Dict[concurrent.futures.Future, int] = {}
+    done: set = set()
+    if provs:
+        ex = concurrent.futures.ThreadPoolExecutor(max_workers=len(provs))
         try:
-            res = prov.fetch_props(sport)
+            futs = {ex.submit(p.fetch_props, sport): i for i, p in enumerate(provs)}
+            done, _not_done = concurrent.futures.wait(
+                futs, timeout=_PROP_FETCH_DEADLINE_S)
+        finally:
+            ex.shutdown(wait=False)
+    fut_by_idx = {idx: fut for fut, idx in futs.items()}
+
+    for i, _prov in enumerate(provs):
+        name = names[i]
+        fut = fut_by_idx.get(i)
+        if fut is None or fut not in done:
+            sources[name] = "timeout (>%.0fs deadline)" % _PROP_FETCH_DEADLINE_S
+            continue
+        try:
+            res = fut.result()
         except Exception as exc:  # noqa: BLE001 -- a bad provider must not sink the board
             sources[name] = "error: %s" % type(exc).__name__
             continue
@@ -80,8 +129,17 @@ def _gather(providers: List[Any], sport: str) -> (List[PropLine], Dict[str, str]
         if not isinstance(res, list):
             sources[name] = "unexpected result shape"
             continue
-        lines.extend(p for p in res if isinstance(p, PropLine))
-        sources[name] = "ok (%d rows)" % len(res)
+        rows = [p for p in res if isinstance(p, PropLine)]
+        raw.extend(rows)
+        sources[name] = "ok (%d rows)" % len(rows)
+    if not raw:
+        return [], sources
+    try:
+        from scripts.platformkit.odds_provider.prop_aggregate import merge_multi_source
+        lines = merge_multi_source(raw)
+    except Exception as exc:  # noqa: BLE001 -- a merge bug must never sink the board
+        logger.warning("prop_edge: merge_multi_source failed (%s); using raw rows", exc)
+        lines = raw
     return lines, sources
 
 

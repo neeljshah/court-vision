@@ -253,16 +253,16 @@ export function RecordsTable({ rows }: RecordsTableProps) {
       <table className="w-full min-w-[860px]">
         <thead>
           <tr className="border-b border-slate-800 text-[9px] uppercase tracking-wide text-slate-600">
-            <th className="pb-1.5 pr-3 pl-2 text-left font-medium">Matchup</th>
-            <th className="pb-1.5 pr-3 text-left font-medium">Market / Side</th>
-            <th className="pb-1.5 pr-3 text-left font-medium">Model %</th>
-            <th className="pb-1.5 pr-3 text-left font-medium">Mkt %</th>
-            <th className="pb-1.5 pr-3 text-left font-medium">Divergence</th>
-            <th className="pb-1.5 pr-3 text-left font-medium">Line</th>
-            <th className="pb-1.5 pr-3 text-left font-medium">Tier</th>
-            <th className="pb-1.5 pr-3 text-left font-medium">Units</th>
-            <th className="pb-1.5 pr-3 text-left font-medium">Result</th>
-            <th className="pb-1.5 pr-2 text-left font-medium">CLV</th>
+            <th scope="col" className="pb-1.5 pr-3 pl-2 text-left font-medium">Matchup</th>
+            <th scope="col" className="pb-1.5 pr-3 text-left font-medium">Market / Side</th>
+            <th scope="col" className="pb-1.5 pr-3 text-left font-medium">Model %</th>
+            <th scope="col" className="pb-1.5 pr-3 text-left font-medium">Mkt %</th>
+            <th scope="col" className="pb-1.5 pr-3 text-left font-medium">Divergence</th>
+            <th scope="col" className="pb-1.5 pr-3 text-left font-medium">Line</th>
+            <th scope="col" className="pb-1.5 pr-3 text-left font-medium">Tier</th>
+            <th scope="col" className="pb-1.5 pr-3 text-left font-medium">Units</th>
+            <th scope="col" className="pb-1.5 pr-3 text-left font-medium">Result</th>
+            <th scope="col" className="pb-1.5 pr-2 text-left font-medium">CLV</th>
           </tr>
         </thead>
         <tbody>

@@ -111,7 +111,7 @@ export function GameCard({
         >
           {markets.map((m, i) => (
             <li
-              key={i}
+              key={`${m.market_type ?? "m"}|${m.side ?? "s"}|${m.line ?? ""}|${i}`}
               className="flex items-center justify-between px-3 py-2 font-mono text-[11px]"
             >
               <span className="truncate text-slate-400">

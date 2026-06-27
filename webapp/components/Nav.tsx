@@ -19,6 +19,9 @@ import { ProductStatusBadges } from "./ProductStatusBadges";
 // Progress: replaced by Models (/models) which is the honest "getting better" view.
 const NAV_LINKS = [
   { href: "/",             label: "Home",         short: "Home",   exact: true,  also: [] as string[] },
+  // Today = the "wake up and SEE everything for today" morning digest: best bets,
+  // PLACED (staked) bets, settled W-L, day P&L, bankroll + the paper equity curve.
+  { href: "/today",        label: "Today",        short: "Today",  exact: false, also: [] as string[] },
   // Games = the slate-of-cards funnel (/games). The /p6 dashboard is the same
   // product area (reachable from the /games page), so it lights up "Games" too.
   { href: "/games",        label: "Games",        short: "Games",  exact: false, also: ["/p6"] },

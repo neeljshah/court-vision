@@ -14,6 +14,7 @@ Per-file test: scripts/platformkit/bestbets/test_prop_settler_mlb.py
 """
 from __future__ import annotations
 
+import datetime as _dt
 import json
 import logging
 import urllib.request
@@ -38,6 +39,15 @@ def _http_get_json(url: str) -> Dict[str, Any]:
 def _norm(name: Any) -> str:
     """Case/space/punct-insensitive name key ('J.T. Realmuto' -> 'jtrealmuto')."""
     return "".join(ch for ch in str(name or "").lower() if ch.isalnum())
+
+
+def _next_day(game_date: str) -> Optional[str]:
+    """YYYY-MM-DD -> the next calendar day (same format), or None if unparseable."""
+    try:
+        d = _dt.datetime.strptime(str(game_date)[:10], "%Y-%m-%d").date()
+        return (d + _dt.timedelta(days=1)).isoformat()
+    except Exception:  # noqa: BLE001
+        return None
 
 
 def _matchup_teams(matchup: Any) -> Optional[tuple]:
@@ -88,7 +98,6 @@ def _find_final_gamepk(teams: tuple, game_date: str,
     """The FINAL game's gamePk whose two teams match *teams*; None if absent/not final."""
     url = _SCHEDULE + ("&date=%s" % game_date if game_date else "")
     data = http_get(url)
-    want = {_norm(teams[0]), _norm(teams[1])}
     for d in data.get("dates", []) or []:
         for g in d.get("games", []) or []:
             state = str((g.get("status", {}) or {}).get("abstractGameState", "")).lower()
@@ -96,21 +105,39 @@ def _find_final_gamepk(teams: tuple, game_date: str,
             if state not in ("final",) and detailed not in _FINAL_STATES:
                 continue
             t = g.get("teams", {}) or {}
-            hn = _norm((t.get("home", {}) or {}).get("team", {}).get("name"))
-            an = _norm((t.get("away", {}) or {}).get("team", {}).get("name"))
-            # token-subset match: prop matchup may use abbr / short names
-            if _team_hit(want, hn, an):
+            hn = (t.get("home", {}) or {}).get("team", {}).get("name")
+            an = (t.get("away", {}) or {}).get("team", {}).get("name")
+            # nickname-word match: prop matchup may use a city ABBREVIATION
+            if _team_hit(teams, hn, an):
                 gp = g.get("gamePk")
                 if gp is not None:
                     return str(gp)
     return None
 
 
-def _team_hit(want: set, home_norm: str, away_norm: str) -> bool:
-    """True when both prop-matchup team tokens map onto the game's two teams."""
-    def _one(label: str) -> bool:
-        return any(label and (label in gn or gn in label) for gn in (home_norm, away_norm))
-    return all(_one(w) for w in want if w)
+def _name_words(label: Any) -> set:
+    """Distinctive nickname word-set for a team label. Drops a leading city
+    ABBREVIATION (an all-caps alpha token like 'MIL'/'BOS'/'NY'/'CHC') so an
+    abbreviated prop matchup ('MIL Brewers') still maps onto the schedule's full
+    name ('Milwaukee Brewers'); full-name labels keep every word."""
+    toks = str(label or "").split()
+    if len(toks) >= 2 and toks[0].isalpha() and toks[0].isupper():
+        toks = toks[1:]
+    return {_norm(t) for t in toks if _norm(t)}
+
+
+def _team_hit(teams: tuple, home_name: Any, away_name: Any) -> bool:
+    """True when the two prop-matchup teams map onto the game's two teams (in
+    either home/away orientation). A prop side matches a schedule team when ALL
+    its nickname words are present in that team -- robust to city abbreviations
+    and unambiguous for shared-suffix nicknames (Red Sox vs White Sox)."""
+    a, b = _name_words(teams[0]), _name_words(teams[1])
+    h, w = _name_words(home_name), _name_words(away_name)
+
+    def hit(side: set, team: set) -> bool:
+        return bool(side) and side <= team
+
+    return (hit(a, w) and hit(b, h)) or (hit(a, h) and hit(b, w))
 
 
 def _player_stats(box: Dict[str, Any], player: str) -> Optional[tuple]:
@@ -145,6 +172,14 @@ def mlb_realized_stat(row: Dict[str, Any],
         return None
     game_date = str(row.get("game_date") or "")[:10]
     gamepk = _find_final_gamepk(teams, game_date, get)
+    if not gamepk:
+        # A bet placed late on the placement ET-day can carry game_date = day-before
+        # the ACTUAL (next-day) game. If the exact date has NO final for these teams,
+        # try date+1 ONLY. _find_final_gamepk's FINAL-only guard means an in-progress
+        # next-day game still returns None (stays pending), so this never mis-settles a
+        # live game -- it only resolves the one-day mis-tag once that game is final.
+        nxt = _next_day(game_date)
+        gamepk = _find_final_gamepk(teams, nxt, get) if nxt else None
     if not gamepk:
         return None
     box = get(_BOXSCORE % gamepk)

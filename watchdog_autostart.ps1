@@ -97,6 +97,25 @@ function Start-Boot {
         -ArgumentList $bootArgs -WorkingDirectory $ROOT -WindowStyle Hidden | Out-Null
 }
 
+# C1+: a genuinely WEDGED supervisor (alive but its run_forever loop stopped
+# ticking) still HOLDS the OS single-instance lock, so a fresh boot would refuse
+# to start a duplicate and the wedge would never recover. Kill the wedged
+# instance FIRST; the OS releases its lock, the relaunch acquires it cleanly, and
+# the new boot's reconcile_survivors() reaps the orphaned children. This is only
+# reached on a real wedge -- a booting supervisor now stamps its heartbeat
+# immediately, so it is never mistaken for wedged.
+function Stop-WedgedSupervisor {
+    Get-CimInstance Win32_Process -ErrorAction SilentlyContinue |
+        Where-Object { $_.CommandLine -and $_.CommandLine -match "-m supervisor\b" } |
+        ForEach-Object {
+            try {
+                Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue
+                Write-WLog "WARN" "killed WEDGED supervisor pid=$($_.ProcessId) (release single-instance lock for a clean relaunch)"
+            } catch { }
+        }
+    Start-Sleep -Seconds 2  # let the OS release the lock before relaunch
+}
+
 if ($DryRun) {
     Write-Output ""
     Write-Output "watchdog_autostart -- DRY RUN (nothing launched)"
@@ -137,6 +156,10 @@ while ($true) {
         } else {
             Write-WLog "WARN" "supervisor $why -- (re)starting it"
         }
+        # A wedged (alive-but-stale) supervisor holds the single-instance lock;
+        # kill it first so the relaunch can acquire the lock. A DOWN supervisor
+        # already released its lock, so no kill is needed there.
+        if ($alive -and (-not $ticking)) { Stop-WedgedSupervisor }
         Start-Boot
         Start-Sleep -Seconds 10  # give boot.ps1 time to spawn the supervisor
     } else {

@@ -174,8 +174,11 @@ def _write_diagnostic(reason: str, now_iso: str, raw_count: int,
             "raw_count": int(raw_count), "coerced_count": int(coerced_count),
             "is_pm_active": coerced_count > 0,
         }
-        with _path.open("w", encoding="utf-8") as fh:
-            fh.write(json.dumps(diag, ensure_ascii=True, sort_keys=True) + "\n")
+        # Atomic full-file write (tmp + os.replace): a crash mid-write can never
+        # leave a torn pm_last_capture.json for the next loop read.
+        from scripts.platformkit.io_atomic import write_json_atomic
+        write_json_atomic(_path, diag, encoding="utf-8", ensure_ascii=True,
+                          sort_keys=True, trailing_newline=True)
     except Exception as exc:  # noqa: BLE001
         logger.debug("pm_paper_tick diagnostic write failed: %s", exc)
 

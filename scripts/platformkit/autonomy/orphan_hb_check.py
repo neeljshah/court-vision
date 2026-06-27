@@ -37,9 +37,17 @@ _REPO = pathlib.Path(__file__).resolve().parents[3]
 _HB_DIR = _REPO / "data" / "cache" / "daemon_heartbeats"
 _REPORT_PATH = _REPO / "data" / "cache" / "ops" / "orphan_hb_report.json"
 
-# Stems owned by the autonomy_monitor_runner spec (always in the owned set even
-# if the manifest import partially fails) -- added as a safety fallback only.
-_KNOWN_AUTONOMY_STEMS = frozenset({"m5_autonomy_monitor"})
+# Stems that are LEGITIMATELY owned by a live process that is NOT a supervised
+# ProcSpec in supervisor.manifest(), so the manifest scan alone cannot see them:
+#   * m5_autonomy_monitor -- the monitor's own liveness beat (safety fallback even
+#     if the manifest import partially fails).
+#   * m9_supervisor -- the supervisor stamps its OWN heartbeat each run_forever
+#     tick (supervisor.SELF_HEARTBEAT_COMPONENT). The supervisor does not supervise
+#     itself, so it is absent from manifest() -- but a fresh m9_supervisor.txt is a
+#     HEALTHY live beat, NOT an orphan. Excluding it here keeps a genuinely-running
+#     supervisor from reading as a spurious orphan (its staleness is the watchdog's
+#     job, not this ownership check's).
+_KNOWN_AUTONOMY_STEMS = frozenset({"m5_autonomy_monitor", "m9_supervisor"})
 
 
 # ---------------------------------------------------------------------------

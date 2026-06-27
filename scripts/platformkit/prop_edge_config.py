@@ -78,9 +78,18 @@ class SportPropConfig:
 
 
 def _soccer_config() -> SportPropConfig:
-    """soccer_intl wiring (unchanged behavior -- the original board path)."""
+    """soccer_intl wiring: sportsbook books (BetMGM/FanDuel) FIRST so
+    merge_multi_source keeps the bettable two-sided source as the merge base; then
+    Underdog + PrizePicks for DFS pick'em context coverage. prop_edge._gather +
+    prop_aggregate.merge_multi_source collapse same-prop rows so each survives
+    once with the HIGHEST decimal on each side -- real multi-book best line.
+    NOTE: DraftKingsProvider (old /sites/US-IL-SB/api/2 endpoint) removed --
+    returns 404 for every soccer call; re-add DraftKingsV2Provider once the
+    soccer league_id lands in prop_draftkings_v2._SPORT_IDS."""
     from domains.soccer import prop_engine as _se
     from domains.soccer.player_resolver import build_name_index, resolve_player
+    from scripts.platformkit.odds_provider.prop_betmgm import BetMGMProvider
+    from scripts.platformkit.odds_provider.prop_fanduel import FanDuelProvider
     from scripts.platformkit.odds_provider.prop_prizepicks import PrizePicksProvider
     from scripts.platformkit.odds_provider.prop_underdog import UnderdogProvider
     from scripts.platformkit import prop_tiering
@@ -92,7 +101,9 @@ def _soccer_config() -> SportPropConfig:
         build_name_index=build_name_index,
         parquet_path=os.path.join(
             "data", "domains", "soccer", "espn_player_stats.parquet"),
-        default_providers=lambda: [UnderdogProvider(), PrizePicksProvider()],
+        default_providers=lambda: [BetMGMProvider(),
+                                   FanDuelProvider(),
+                                   UnderdogProvider(), PrizePicksProvider()],
         calibration_path=prop_tiering.CALIBRATION_PATH,
         canonical_stats=frozenset(),  # soccer accepts any canon stat (legacy)
         supports_dispersion=True,
@@ -105,14 +116,28 @@ def _mlb_config() -> SportPropConfig:
 
     The MLB engine PROJECTS exposure itself (exposure=None) and models its own
     width, so the soccer dispersion / opponent levers are OFF for MLB.
+
+    Providers: DraftKings + BetMGM (sportsbook, two-sided, real decimal odds)
+    FIRST so they own the merge base; then Underdog + PrizePicks for DFS pick'em
+    coverage on lines no book quotes. prop_aggregate.merge_multi_source collapses
+    to highest-decimal-per-side -- a worse DK price loses to a better BetMGM one.
+    FanDuel intentionally omitted: its keyless adapter is currently soccer-only
+    (no MLB pageId) and would return UNAVAILABLE every tick.
     """
     from domains.mlb import prop_engine_mlb as _me
     from domains.mlb.player_resolver_mlb import build_name_index, resolve_player
     from domains.mlb.player_rates_mlb import MLB_CANON
+    from scripts.platformkit.odds_provider.prop_betmgm import BetMGMProvider
+    from scripts.platformkit.odds_provider.prop_draftkings_v2 import (
+        DraftKingsV2Provider)
     from scripts.platformkit.odds_provider.prop_prizepicks import PrizePicksProvider
     from scripts.platformkit.odds_provider.prop_underdog import UnderdogProvider
     from scripts.platformkit.props_eval_mlb import CALIBRATION_PATH_MLB
 
+    # DraftKingsV2Provider: live MLB props via sportsbook-nash /api/sportscontent
+    # endpoint (curl_cffi chrome120). The legacy DraftKingsProvider's
+    # /sites/US-IL-SB/api/2 URL is Akamai-403 dead -- we use the v2 adapter that
+    # the existing scripts/draftkings_scraper.py also proved works for NBA.
     return SportPropConfig(
         sport="mlb",
         engine_distribution=_me.prop_distribution,
@@ -120,7 +145,8 @@ def _mlb_config() -> SportPropConfig:
         build_name_index=build_name_index,
         parquet_path=os.path.join(
             "data", "domains", "mlb", "player_gamelogs.parquet"),
-        default_providers=lambda: [UnderdogProvider(), PrizePicksProvider()],
+        default_providers=lambda: [DraftKingsV2Provider(), BetMGMProvider(),
+                                   UnderdogProvider(), PrizePicksProvider()],
         calibration_path=CALIBRATION_PATH_MLB,
         canonical_stats=frozenset(MLB_CANON.keys()),
         supports_dispersion=False,
@@ -145,6 +171,8 @@ def _nba_config() -> SportPropConfig:
     canonical_stats: NBA prop stats from DFS providers (PTS/REB/AST/STL/BLK/3PM).
     supports_dispersion / supports_opp_mult: False (no NBA prop engine yet).
     """
+    from scripts.platformkit.odds_provider.prop_betmgm import BetMGMProvider
+    from scripts.platformkit.odds_provider.prop_draftkings import DraftKingsProvider
     from scripts.platformkit.odds_provider.prop_prizepicks import PrizePicksProvider
     from scripts.platformkit.odds_provider.prop_underdog import UnderdogProvider
 
@@ -175,7 +203,8 @@ def _nba_config() -> SportPropConfig:
         build_name_index=_nba_name_index,
         parquet_path=os.path.join(
             "data", "domains", "basketball_nba", "player_gamelogs.parquet"),
-        default_providers=lambda: [UnderdogProvider(), PrizePicksProvider()],
+        default_providers=lambda: [DraftKingsProvider(), BetMGMProvider(),
+                                   UnderdogProvider(), PrizePicksProvider()],
         calibration_path=os.path.join(
             "data", "cache", "props_eval_nba_calibration.json"),
         canonical_stats=_NBA_CANON,

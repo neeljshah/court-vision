@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Panel, Unavailable, Badge } from "@/components/p6/Primitives";
 import { cn } from "@/lib/utils";
+import { useLiveData } from "@/lib/useLiveData";
 import {
   InfoTip,
   Legend,
@@ -11,7 +12,6 @@ import {
 } from "@/components/depth";
 import {
   systemApi,
-  isUnavailable,
   type FunnelArtifacts,
   type RichLedgerRow,
 } from "./systemApi";
@@ -126,22 +126,18 @@ function HeaderCell({
 }
 
 export function GateLedgerPanel() {
-  const [data, setData] = useState<FunnelArtifacts | null>(null);
-  const [err, setErr] = useState<string | null>(null);
   const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 }>({ key: "verdict", dir: 1 });
 
-  useEffect(() => {
-    const ac = new AbortController();
-    systemApi.artifacts(ac.signal).then((d) => {
-      if (isUnavailable(d)) {
-        setErr((d as { reason?: string }).reason || "artifacts unavailable");
-      } else {
-        setData(d as FunnelArtifacts);
-        setErr(null);
-      }
-    });
-    return () => ac.abort();
-  }, []);
+  // Poll the funnel-artifacts ledger (was one-shot). useLiveData retains
+  // last-good rows and backs off on failure; the gate ledger refreshes slowly.
+  const fetcher = useCallback(
+    (signal: AbortSignal) => systemApi.artifacts(signal),
+    [],
+  );
+  const { data, error: err } = useLiveData<FunnelArtifacts>(fetcher, {
+    intervalMs: 120_000,
+    staleAfterSec: 30 * 60,
+  });
 
   // Wrap in its own useMemo so the array identity is stable across renders
   // (a bare `?? []` makes a fresh [] every render and churns the sorted memo).

@@ -59,6 +59,7 @@ from typing import Any, Callable, Dict, Optional
 from scripts.platformkit.autonomy._monitor_merge_helpers import (
     _apply_m5fix,
     _apply_orphan_surface,
+    _apply_orphan_sweep,
     _apply_reaper_merge,
 )
 
@@ -129,6 +130,10 @@ def _compose_status(now: float, *,
         return _degraded_envelope(now, type(exc).__name__)
     doc = _apply_reaper_merge(doc, reaper_path=reaper_path)
     doc = _apply_m5fix(doc, now=now, m5_hb_path=m5_hb_path)
+    # Self-heal: prune STALE + manifest-unowned heartbeat stems BEFORE surfacing
+    # the orphan note, so a dead-daemon leftover is reaped (not nagged forever).
+    # Conservative + fail-closed; never touches a live/fresh stem or data/registry.
+    doc = _apply_orphan_sweep(doc, hb_dir=orphan_hb_dir, now=now)
     doc = _apply_orphan_surface(
         doc, hb_dir=orphan_hb_dir, orphan_report_path=orphan_report_path, now=now
     )
@@ -221,17 +226,34 @@ def run(*, compose: Optional[Callable[..., Dict[str, Any]]] = None,
             now = float(_clock())
         except Exception:  # noqa: BLE001
             now = _time.time()
-        tick(
-            now=now,
-            compose=compose,
-            status_path=status_path,
-            profile=profile,
-            breakers=breakers,
-            reaper_path=reaper_path,
-            m5_hb_path=m5_hb_path,
-            orphan_hb_dir=orphan_hb_dir,
-            orphan_report_path=orphan_report_path,
-        )
+        # C4 HEALTH-MONITOR GUARD: tick() is MOSTLY defensive, but its lazy
+        # status_composer import (and any future eager import) lives OUTSIDE the
+        # inner compose try -- so an import-time failure could raise out of the
+        # loop and silently KILL the daemon that reports fleet health. Wrap the
+        # whole tick: on ANY failure publish a DEGRADED envelope (never green) +
+        # beat the heartbeat, then keep looping. The loop NEVER dies on a tick.
+        try:
+            tick(
+                now=now,
+                compose=compose,
+                status_path=status_path,
+                profile=profile,
+                breakers=breakers,
+                reaper_path=reaper_path,
+                m5_hb_path=m5_hb_path,
+                orphan_hb_dir=orphan_hb_dir,
+                orphan_report_path=orphan_report_path,
+            )
+        except Exception as exc:  # noqa: BLE001 -- tick must never sink the loop
+            logger.warning("autonomy_monitor tick raised (%s) -> "
+                           "publishing degraded envelope + beating heartbeat",
+                           type(exc).__name__)
+            try:
+                path = status_path if status_path is not None else _STATUS_PATH
+                _atomic_write_json(path, _degraded_envelope(now, type(exc).__name__))
+            except Exception:  # noqa: BLE001 -- degraded write best-effort
+                pass
+            _beat(now)
         ticks += 1
         if max_ticks is not None and ticks >= max_ticks:
             break
@@ -272,5 +294,6 @@ __all__ = [
     "run",
     "_apply_reaper_merge",
     "_apply_m5fix",
+    "_apply_orphan_sweep",
     "_apply_orphan_surface",
 ]

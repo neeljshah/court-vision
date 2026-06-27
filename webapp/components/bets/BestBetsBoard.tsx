@@ -24,6 +24,7 @@ import { SPORTS } from "@/lib/p5api";
 import { Unavailable } from "@/components/p6/Primitives";
 import { useLiveData } from "@/lib/useLiveData";
 import { StatusTabs, type BetStatus } from "./StatusTabs";
+import { MarketTypeTabs, marketBucket, type MarketFilter } from "./MarketTypeTabs";
 import { SortControls, type SortKey } from "./SortControls";
 import { BetCard } from "./BetCard";
 import { PanelErrorBoundary } from "@/components/p6/PanelErrorBoundary";
@@ -47,6 +48,7 @@ const AUTO_REFRESH_MS = 30_000; // 30 seconds -- W3 live refresh spec
 // BestBetsBoard -- useLiveData-backed board. No bespoke data setInterval remains.
 export function BestBetsBoard() {
   const [tab, setTab] = useState<BetStatus>("pregame");
+  const [market, setMarket] = useState<MarketFilter>("all");
   const [sort, setSort] = useState<SortKey>("confidence");
 
   const fetcher = useCallback((signal: AbortSignal) => fetchAllSports(signal), []);
@@ -113,6 +115,19 @@ export function BestBetsBoard() {
     pregame: allCards.filter((c) => c.status === "pregame").length,
     done: allCards.filter((c) => c.status === "done").length,
   };
+
+  // Market-type counts within the active status tab (drives the filter badges).
+  const tabCards = allCards.filter((c) => c.status === tab);
+  const marketCounts: Partial<Record<MarketFilter, number>> = {
+    all: tabCards.length,
+    moneyline: tabCards.filter((c) => marketBucket(c.market_type) === "moneyline").length,
+    total: tabCards.filter((c) => marketBucket(c.market_type) === "total").length,
+    spread: tabCards.filter((c) => marketBucket(c.market_type) === "spread").length,
+    prop: tabCards.filter((c) => marketBucket(c.market_type) === "prop").length,
+  };
+  // Total prop count across ALL sports/statuses -- surfaced as a cap note since
+  // the board API caps/ranks the (potentially large) prop set.
+  const totalPropCount = allCards.filter((c) => marketBucket(c.market_type) === "prop").length;
   const anyFetched = result !== null;
   const showError = error !== null && !anyFetched;
 
@@ -129,6 +144,19 @@ export function BestBetsBoard() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <StatusTabs value={tab} onChange={setTab} counts={counts} panelId="bets-board-panel" />
           <SortControls value={sort} onChange={setSort} />
+        </div>
+        {/* Market-type filter: every market (ML/total/spread/prop) as its own bet */}
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <MarketTypeTabs value={market} onChange={setMarket} counts={marketCounts} panelId="bets-board-panel" />
+          {totalPropCount > 0 && (
+            <span
+              data-testid="prop-cap-note"
+              className="font-mono text-[10px] text-slate-600"
+            >
+              {totalPropCount} prop card{totalPropCount !== 1 ? "s" : ""} -- board API
+              caps/ranks props; filter by sport / tier / Props tab
+            </span>
+          )}
         </div>
         <RefreshAffordance onRefresh={refresh} loading={isLoading} lastFetchedAt={lastUpdatedAt}
           asOf={asOf} ageSec={ageSec} isStale={isStale} intervalMs={AUTO_REFRESH_MS} />
@@ -172,7 +200,9 @@ export function BestBetsBoard() {
           ) : (
             <div className="flex flex-col gap-6" data-testid="cards-grid">
               {activeSports.map((sport) => {
-                const sportCards = (perSportCards[sport] ?? []).filter((c) => c.status === tab);
+                const sportCards = (perSportCards[sport] ?? [])
+                  .filter((c) => c.status === tab)
+                  .filter((c) => market === "all" || marketBucket(c.market_type) === market);
                 const sorted = sortCards(sportCards, sort);
                 const reason = unavailableReasons[sport] ?? null;
                 return (

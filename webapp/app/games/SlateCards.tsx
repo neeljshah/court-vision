@@ -32,35 +32,55 @@ export function SlateCards() {
   );
 
   useEffect(() => {
-    const ac = new AbortController();
-    GAME_SPORTS.forEach((sport) => {
-      // Predict envelope (matchups + the coherent prediction).
-      api.getPredict(sport, ac.signal).then((d) => {
-        setStates((prev) =>
-          prev.map((row) =>
-            row.sport === sport
-              ? isUnavailable(d)
-                ? { ...row, err: d.reason }
-                : { ...row, env: d as PredictEnvelope }
-              : row,
-          ),
-        );
+    // Live polling: fan out the per-sport predict + best-bets fetches on an
+    // interval. Each tick uses its own AbortController so an unmount / re-tick
+    // cancels the prior in-flight requests. Failures degrade per-sport (honest
+    // empty state); a failed poll never blanks a previously-good slate.
+    const SLATE_POLL_MS = 120_000;
+    let cancelled = false;
+    let ac = new AbortController();
+
+    const runOnce = () => {
+      ac.abort();
+      ac = new AbortController();
+      const signal = ac.signal;
+      GAME_SPORTS.forEach((sport) => {
+        // Predict envelope (matchups + the coherent prediction).
+        api.getPredict(sport, signal).then((d) => {
+          if (cancelled) return;
+          setStates((prev) =>
+            prev.map((row) =>
+              row.sport === sport
+                ? isUnavailable(d)
+                  ? { ...row, err: d.reason }
+                  : { ...row, env: d as PredictEnvelope, err: undefined }
+                : row,
+            ),
+          );
+        });
+        // Best-bets envelope (per-game best-bet chip). Failures are non-fatal:
+        // the card just shows an honest NO BET rather than a fabricated tier.
+        api.bestbets(sport, signal).then((d) => {
+          if (cancelled || isUnavailable(d)) return;
+          const env = d as BestBetsEnvelope;
+          const byId: Record<string, GameEdge> = {};
+          for (const g of env.games || []) if (g.game_id) byId[g.game_id] = g;
+          setStates((prev) =>
+            prev.map((row) =>
+              row.sport === sport ? { ...row, edges: byId } : row,
+            ),
+          );
+        });
       });
-      // Best-bets envelope (per-game best-bet chip). Failures are non-fatal:
-      // the card just shows an honest NO BET rather than a fabricated tier.
-      api.bestbets(sport, ac.signal).then((d) => {
-        if (isUnavailable(d)) return;
-        const env = d as BestBetsEnvelope;
-        const byId: Record<string, GameEdge> = {};
-        for (const g of env.games || []) if (g.game_id) byId[g.game_id] = g;
-        setStates((prev) =>
-          prev.map((row) =>
-            row.sport === sport ? { ...row, edges: byId } : row,
-          ),
-        );
-      });
-    });
-    return () => ac.abort();
+    };
+
+    runOnce();
+    const id = setInterval(runOnce, SLATE_POLL_MS);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+      ac.abort();
+    };
   }, []);
 
   const totalLive = states.reduce(

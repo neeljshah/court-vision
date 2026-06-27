@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Panel, Unavailable, Badge } from "@/components/p6/Primitives";
 import { InfoTip } from "@/components/depth";
+import { useLiveData } from "@/lib/useLiveData";
 import {
   systemApi,
-  isUnavailable,
   type FunnelArtifacts,
   type RichBacklogCandidate,
 } from "./systemApi";
@@ -82,23 +82,19 @@ function Candidate({ c }: { c: RichBacklogCandidate }) {
 }
 
 export function BacklogPanel() {
-  const [data, setData] = useState<FunnelArtifacts | null>(null);
-  const [err, setErr] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
   const [cat, setCat] = useState<string>("ALL");
 
-  useEffect(() => {
-    const ac = new AbortController();
-    systemApi.artifacts(ac.signal).then((d) => {
-      if (isUnavailable(d)) {
-        setErr((d as { reason?: string }).reason || "backlog unavailable");
-      } else {
-        setData(d as FunnelArtifacts);
-        setErr(null);
-      }
-    });
-    return () => ac.abort();
-  }, []);
+  // Poll the funnel-artifacts backlog (was one-shot). useLiveData keeps the
+  // last-good ranked list and backs off on failure; the backlog refreshes slowly.
+  const fetcher = useCallback(
+    (signal: AbortSignal) => systemApi.artifacts(signal),
+    [],
+  );
+  const { data, error: err } = useLiveData<FunnelArtifacts>(fetcher, {
+    intervalMs: 120_000,
+    staleAfterSec: 30 * 60,
+  });
 
   const backlog = data?.backlog ?? null;
   // Wrap in its own useMemo so the array identity is stable across renders

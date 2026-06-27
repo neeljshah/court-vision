@@ -12,8 +12,9 @@
 //
 // NO $ field. Honest empty/unknown states. <= 300 LOC.
 
-import { useEffect, useState } from "react";
+import { useCallback } from "react";
 import { getProductStatus, type ProductStatus } from "@/lib/api";
+import { useLiveData } from "@/lib/useLiveData";
 import { cn } from "@/lib/utils";
 
 type Tone = "green" | "amber" | "red" | "grey";
@@ -49,47 +50,50 @@ function honestTone(s: ProductStatus): Tone {
  * Compact variant for the Nav (3 pills). `compact` hides the live-sports pill.
  */
 export function ProductStatusBadges({ compact = false }: { compact?: boolean }) {
-  const [status, setStatus] = useState<ProductStatus | null>(null);
-
-  useEffect(() => {
-    const ctrl = new AbortController();
-    getProductStatus(ctrl.signal)
-      .then(setStatus)
-      .catch(() => setStatus(null));
-    return () => ctrl.abort();
-  }, []);
+  // Poll + freshness-gate so the green "live:" pill cannot persist after the
+  // predict endpoints go dead. getProductStatus degrades internally (never
+  // throws), so it is a safe useLiveData fetcher.
+  const fetcher = useCallback((signal: AbortSignal) => getProductStatus(signal), []);
+  const { data: status, isStale, isLoading } = useLiveData<ProductStatus>(fetcher, {
+    intervalMs: 30_000,
+    staleAfterSec: 90,
+  });
 
   if (!status) {
     return (
       <div className="flex items-center gap-1.5" aria-label="product status loading">
-        <Pill tone="grey" label="status ..." />
+        <Pill tone="grey" label={isLoading ? "status ..." : "status unavailable"} />
       </div>
     );
   }
 
-  const honest = honestTone(status);
+  // Stale data must never read green. Downgrade an otherwise-green honest bit to
+  // amber when the feed is stale, and never show a green "live:" pill on stale.
+  const honest = isStale && honestTone(status) === "green" ? "amber" : honestTone(status);
   const honestLabel =
     status.allHonest === null
       ? "all_honest: unknown"
       : status.allHonest
-      ? "all_honest: TRUE"
+      ? isStale
+        ? "all_honest: stale"
+        : "all_honest: TRUE"
       : "all_honest: FALSE";
+
+  const hasLive = status.liveSports.length > 0;
+  // Green only when fresh AND live; stale-but-live shows amber "live: stale".
+  const liveTone: Tone = hasLive ? (isStale ? "amber" : "green") : "grey";
+  const liveLabel = !hasLive
+    ? "live: none right now"
+    : isStale
+    ? `live: ${status.liveSports.join(" / ")} (stale)`
+    : `live: ${status.liveSports.join(" / ")}`;
 
   return (
     <div className="flex flex-wrap items-center gap-1.5" aria-label="product status">
       <Pill tone={honest} label={honestLabel} />
       <Pill tone="amber" label={status.selfImproveLabel} />
       <Pill tone="amber" label={status.realMoney === "DENY" ? "real-money: DENY" : "real-money"} />
-      {!compact && (
-        <Pill
-          tone={status.liveSports.length > 0 ? "green" : "grey"}
-          label={
-            status.liveSports.length > 0
-              ? `live: ${status.liveSports.join(" / ")}`
-              : "live: none right now"
-          }
-        />
-      )}
+      {!compact && <Pill tone={liveTone} label={liveLabel} />}
     </div>
   );
 }

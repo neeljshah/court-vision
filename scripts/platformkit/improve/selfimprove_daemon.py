@@ -3,22 +3,21 @@ self-improvement DAEMON. Glue only: it orchestrates the existing 5-gate ratchet 
 recalibration; it adds NO new math.
 
 ONE CYCLE (run_cycle, idempotent):
-  1. settled_games_fn(name, since=high_water) -> NEW settled games (the cursor is an
-     id/date HIGH-WATER key, not a count, + game_id dedup; a restart never reprocesses
-     and never SKIPS an unseen game).
-  2. recalibrate_fn(name, settled, window) -> a CANDIDATE dict the gate consumes:
-     {base_preds, cand_preds, y, kind, fold_results, corpora, stability_*,
-      train_features, infer_features, artifact, payload, oos_improves(bool),
-      held_out_check(callable)}.
+  1. settled_games_fn(name, since=high_water) -> NEW settled games (cursor = id/date
+     HIGH-WATER key + game_id dedup; a restart never reprocesses or SKIPS an unseen game).
+  2. recalibrate_fn(name, settled, window[, report]) -> a CANDIDATE dict the gate consumes,
+     or None. The optional out-of-band `report` {reason, transient} tells an EVALUATED
+     decline apart from a pre-evaluation TRANSIENT bail (see step 6).
   3. gate_fn(candidate) -> a VERDICT dict {ship, gate_results, reasons}. Defaults to
      the real improve.ratchet_state.evaluate_candidate (the 5 gates, no promotion).
-  4. SHIP iff: gate ship==True AND candidate OOS improves AND replicated on >= 2
-     corpora. Else if exactly one corpus replicates -> REPLICATION_PENDING (never
-     SHIP on one corpus). Else REJECT.
-  5. On SHIP: stage a versioned artifact + atomic-swap `current`; then run the
-     held-out check and AUTO-ROLLBACK if it regressed. On non-SHIP: append a
-     reject_ledger row. Always emit a PROPOSAL row (data/cache/improve/proposals.jsonl).
-  6. Advance + persist the checkpoint cursor.
+  4. SHIP iff: gate ship==True AND OOS improves AND replicated on >= 2 corpora. One
+     corpus -> REPLICATION_PENDING (never SHIP on one corpus). Else REJECT.
+  5. On SHIP: stage a versioned artifact + atomic-swap `current`; held-out AUTO-ROLLBACK if
+     it regressed. On non-SHIP: append a reject_ledger row. Always emit a PROPOSAL row.
+  6. Advance + persist the cursor -- but ONLY on a real fold: a SHIP/REJECT, or an armed
+     GENUINE no-candidate (evaluated then declined). An INERT (flag-off) or TRANSIENT
+     (FeedDegradedError / exception -> bailed before evaluation) cycle PRESERVES the cursor
+     so the games retry, never silently skipped.
 
 INVARIANTS: never edits MEMORY.md, never writes data/registry/, never flips a flag.
 Per-source error isolation -- a dead source or a raising gate logs ONE status entry
@@ -36,13 +35,16 @@ from scripts.platformkit.improve import selfimprove_stage as _stage
 from scripts.platformkit.improve.checkpoint import (
     load_checkpoint, save_checkpoint,
 )
+from scripts.platformkit.improve.cursor_util import (
+    advance as _advance, game_id as _game_id, key as _key,
+)
 
-# Staging / ledger / proposal I/O + the corpus-replication count live in the sibling
-# selfimprove_stage module (keeps this file <=300 LOC). Re-exported here so callers
-# and tests that reach for daemon._count_replicated_corpora / _append_jsonl still work.
+# Staging / ledger / I/O / corpus-count / recal-call live in the sibling selfimprove_stage
+# module (keeps this file <=300 LOC). Re-exported so callers/tests still reach them here.
 _append_jsonl = _stage.append_jsonl
 _count_replicated_corpora = _stage.count_replicated_corpora
 _default_gate_fn = _stage.default_gate_fn
+_call_recal = _stage.call_recal
 
 _REPO = pathlib.Path(__file__).resolve().parents[3]
 _IMPROVE_DIR = _REPO / "data" / "cache" / "improve"
@@ -70,25 +72,31 @@ class CycleResult:
     def to_dict(self) -> Dict[str, Any]:
         return {
             "name": self.name, "decision": self.decision, "reasons": self.reasons,
-            "shipped_version": self.shipped_version,
-            "rolled_back_to": self.rolled_back_to, "n_new": self.n_new,
-            "n_corpora_replicated": self.n_corpora_replicated,
-        }
+            "shipped_version": self.shipped_version, "n_new": self.n_new,
+            "rolled_back_to": self.rolled_back_to,
+            "n_corpora_replicated": self.n_corpora_replicated}
 
 
-from scripts.platformkit.improve.cursor_util import (  # noqa: E402
-    advance as _advance, game_id as _game_id, key as _key,
-)
+def _pipeline_armed() -> bool:
+    """True iff the human-only PIPELINE_ENABLED sentinel is present (FIX B cursor gate).
+
+    Decides whether an armed GENUINE-decline NO_CANDIDATE may advance the cursor or PRESERVE
+    it (inert -> re-surface once armed). Fail-SAFE: any error -> False (preserve). Never raises.
+    """
+    try:
+        from scripts.platformkit.improve.pipeline_flag import pipeline_enabled
+        return bool(pipeline_enabled())
+    except Exception:  # noqa: BLE001 -- flag helper missing -> treat as inert (preserve)
+        return False
 
 
 def _call_source(fn: Callable[..., Sequence[Dict[str, Any]]], name: str,
                  high_water: str, seen_ids: set) -> Sequence[Dict[str, Any]]:
     """Call the settled-games source, passing seen_ids when it accepts it.
 
-    The PRIMARY dedup is seen_ids, so a source that supports it (the real
-    settled_finals.settled_since provider) gets the full seen set and can surface an
-    out-of-order late final. Older/injected sources that take only `since` still work
-    (we fall back), and the daemon re-dedups by seen_ids afterwards regardless.
+    PRIMARY dedup is seen_ids: a source that supports it gets the full seen set and can
+    surface an out-of-order late final; older/injected `since`-only sources still work (we
+    fall back), and the daemon re-dedups by seen_ids afterwards regardless.
     """
     import inspect
     try:
@@ -113,8 +121,7 @@ def run_cycle(*, name: str, settled_games_fn: Callable[..., Sequence[Dict[str, A
               min_corpora: int = 2) -> CycleResult:
     """Run ONE idempotent self-improvement cycle for `name`. Never raises.
 
-    Every dependency is injectable for offline testing; defaults use the real
-    ratchet + artifact store + checkpoint.
+    Every dependency is injectable for offline testing; defaults use the real ratchet/store.
     """
     t = time.time() if now is None else float(now)
     gate_fn = gate_fn or _default_gate_fn
@@ -123,10 +130,9 @@ def run_cycle(*, name: str, settled_games_fn: Callable[..., Sequence[Dict[str, A
     status_path = status_path or DEFAULT_STATUS
     ck = load_checkpoint(ckpt_path)
     cur = ck.cursor(name)
-    # PRIMARY fold guard = seen_ids (game_ids already folded), NOT the high-water key:
-    # that key encodes SCHEDULED commence time, so a game that finals OUT OF ORDER
-    # (earlier commence + later final) has key < high-water and a key filter would
-    # WRONGLY SKIP it. We fold iff game_id not in seen_ids; high_water is display/order.
+    # PRIMARY fold guard = seen_ids (game_ids folded), NOT the high-water key (which encodes
+    # SCHEDULED commence -> an out-of-order late final would be WRONGLY SKIPPED). high_water
+    # is display/order only.
     high_water = str(cur.get("high_water", "") or "")
     seen_ids = set(cur.get("seen_ids", []) or [])
 
@@ -153,32 +159,38 @@ def run_cycle(*, name: str, settled_games_fn: Callable[..., Sequence[Dict[str, A
     window = n_new  # window descriptor for recalibrate_fn (count of NEW games)
     folded_ids = [_game_id(g) for g in settled]
 
-    # --- 2. recalibrate -> candidate -----------------------------------------
+    recal_report: Dict[str, Any] = {}  # 2. recalibrate; report = {reason, transient} channel
     try:
-        candidate = recalibrate_fn(name, settled, window)
-    except Exception as exc:  # noqa: BLE001
+        candidate = _call_recal(recalibrate_fn, name, settled, window, recal_report)
+    except Exception as exc:  # noqa: BLE001 -- recalibrate_fn raised: TRANSIENT (wave-2 fix)
         _status("recalibrate_error", error=str(exc)[:200])
-        # advance the cursor anyway so a permanently-bad batch is not retried forever
-        _advance(cur, new_hw, folded_ids)
+        # Bailed BEFORE evaluation -> PRESERVE cursor, retry (was: advance -> silent skip).
         cur["last_decision"] = ERROR
         save_checkpoint(ck, ckpt_path)
+        _status("recalibrate_transient", n_new=n_new, reason="recalibrate_fn raised")
         return CycleResult(name, ERROR, ["recalibrate_fn raised: %s" % exc], n_new=n_new)
 
-    if not candidate:  # cold start / inert (flag-off) / not enough data -> NO_CANDIDATE
-        # SI-P0-03: a NO_CANDIDATE / INERT cycle must NOT advance the cursor. These games
-        # were never actually folded into any candidate, so marking them consumed (seen_ids
-        # AND/OR the high-water `since` the feed filters by) would PERMANENTLY skip them once
-        # the recalibrator lands + the human PIPELINE_ENABLED sentinel is created -- the very
-        # games consumed while inert would never be re-considered. We persist last_decision
-        # only and leave BOTH seen_ids and high_water untouched so the batch re-surfaces next
-        # cycle. (An ALL-deduped/empty batch is handled by the n_new==0 branch above, which
-        # safely advances high_water; here n_new>0 so we must not.)
+    if not candidate:  # cold start / inert (flag-off) / degraded feed -> NO_CANDIDATE
+        # SI-P0-03 + FIX B + wave-2 transient fix (see step 6 of the module docstring):
+        # advance ONLY on an armed GENUINE evaluated decline; INERT and ARMED+TRANSIENT preserve.
+        armed = _pipeline_armed()
+        # ONLY a report POSITIVELY flagging transient=True blocks an armed advance (the REAL
+        # recalibrators always set it); a report-less None keeps the prior FIX-B advance.
+        transient = bool(recal_report.get("transient")) if recal_report else False
+        genuine_decline = not transient
+        rcode = str(recal_report.get("reason", "unknown"))
+        if armed and genuine_decline:
+            _advance(cur, new_hw, folded_ids)
+            reason = "no candidate built (processed, declined: %s)" % rcode
+        elif armed:  # transient OR unknown -> preserve + retry next cycle
+            reason = "no candidate built (TRANSIENT: %s -- cursor preserved, retry)" % rcode
+        else:
+            reason = "no candidate built (inert: PIPELINE_ENABLED sentinel absent)"
         cur["last_decision"] = NO_CANDIDATE
         save_checkpoint(ck, ckpt_path)
-        _status("no_candidate", n_new=n_new)
-        return CycleResult(name, NO_CANDIDATE,
-                           ["recalibrate produced no candidate (cold start/inert)"],
-                           n_new=n_new)
+        _status("no_candidate", n_new=n_new, armed=bool(armed),
+                transient=bool(armed and not genuine_decline), reason=rcode)
+        return CycleResult(name, NO_CANDIDATE, [reason], n_new=n_new)
 
     # --- 3. 5-gate verdict (isolated) ----------------------------------------
     try:
@@ -196,7 +208,6 @@ def run_cycle(*, name: str, settled_games_fn: Callable[..., Sequence[Dict[str, A
     reasons = list(verdict.get("reasons", []))
     oos_improves = bool(candidate.get("oos_improves", False))
     n_rep = _count_replicated_corpora(candidate)
-
     # --- 4. SHIP decision: 5-gate unanimous AND OOS-improves AND >=2 corpora --
     decision = REJECT
     if gate_ship and oos_improves and n_rep >= min_corpora:
@@ -214,7 +225,6 @@ def run_cycle(*, name: str, settled_games_fn: Callable[..., Sequence[Dict[str, A
 
     shipped_version: Optional[int] = None
     rolled_to: Optional[int] = None
-
     if decision == SHIP:
         # --- 5. stage + atomic-swap + auto-rollback (sibling selfimprove_stage) --
         shipped_version, rolled_to, sd, reason = _stage.stage_ship(
@@ -236,9 +246,7 @@ def run_cycle(*, name: str, settled_games_fn: Callable[..., Sequence[Dict[str, A
     cur["last_version"] = shipped_version if shipped_version is not None else cur.get("last_version")
     save_checkpoint(ck, ckpt_path)
     _status("cycle_done", decision=decision, n_new=n_new, n_corpora=n_rep)
-
-    return CycleResult(name, decision, reasons, shipped_version, rolled_to,
-                       n_new, n_rep)
+    return CycleResult(name, decision, reasons, shipped_version, rolled_to, n_new, n_rep)
 
 
 def run_forever(*, names: Sequence[str],
@@ -255,9 +263,8 @@ def run_forever(*, names: Sequence[str],
                 **cycle_kwargs: Any) -> List[CycleResult]:
     """Always-on loop. RESUMES from the checkpoint; interruptible; lossless.
 
-    Runs run_cycle for each name per tick. `max_cycles` (per name) bounds offline
-    tests; `should_stop()` brakes cleanly. A per-name run_cycle never raises, so one
-    dead source can never stop the loop. Returns the CycleResults gathered.
+    Runs run_cycle per name/tick. `max_cycles` bounds offline tests; `should_stop()` brakes
+    cleanly; a per-name run_cycle never raises. Returns the CycleResults gathered.
     """
     clock = clock or time.time
     sleep = sleep or time.sleep

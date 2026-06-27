@@ -15,3 +15,5 @@ export { LiveBoxPanel } from "./LiveBoxPanel";
 export type { LiveBoxPanelProps } from "./LiveBoxPanel";
 export { SettleGradePanel } from "./SettleGradePanel";
 export type { SettleGradePanelProps } from "./SettleGradePanel";
+export { PlacedBetsForGamePanel } from "./PlacedBetsForGamePanel";
+export type { PlacedBetsForGamePanelProps } from "./PlacedBetsForGamePanel";

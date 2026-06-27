@@ -39,6 +39,16 @@ from typing import Any, Dict, Optional
 # enough runway for a polling cycle to complete before the next tip-off.
 DEFAULT_MAX_AGE_SEC: float = 900.0  # 15 minutes
 
+# Future-skew tolerance (seconds).  A captured_at slightly AHEAD of our clock is a
+# legitimate, benign clock skew between the source/cache box and ours -- treat it as
+# fresh (age ~0).  But a timestamp WILDLY in the future (corrupt feed, bad parse, a
+# clock-skewed source stamping hours/days ahead) must NOT read green forever: its
+# negative age would otherwise always satisfy age <= max_age.  Anything more than
+# this tolerance into the future is UNTRUSTED -> classified "unknown" (fail-closed),
+# so best_line_fresh excludes it, book_table marks it not-fresh, and the serving
+# guard reads it not-green.  This is the future half of the stale-never-green rail.
+FUTURE_SKEW_TOLERANCE_SEC: float = 120.0  # 2 minutes of tolerated clock skew
+
 # Per-market-type defaults (seconds).  These are the built-in overrides; a
 # caller may supply their own map to is_fresh / freshness_status.
 MARKET_MAX_AGE: Dict[str, float] = {
@@ -132,6 +142,14 @@ def freshness_status(
         return {"status": "unknown", "age_sec": None}
     reference = _utc_now(now)
     age_sec = (reference - dt).total_seconds()
+    # Future-skew guard (the future half of stale-never-green): a timestamp more
+    # than FUTURE_SKEW_TOLERANCE_SEC AHEAD of our clock is not a real recent capture
+    # -- it is a corrupt/clock-skewed feed whose negative age would otherwise read
+    # fresh forever.  Treat it as UNTRUSTED -> "unknown" (fail-closed), never green.
+    # Mild skew (within tolerance) stays fresh so a benign source/box clock offset
+    # does not flap a legitimately-current line to stale.
+    if age_sec < -FUTURE_SKEW_TOLERANCE_SEC:
+        return {"status": "unknown", "age_sec": age_sec}
     effective = _resolve_max_age(market_type, max_age_sec, max_age_override)
     status = "fresh" if age_sec <= effective else "stale"
     return {"status": status, "age_sec": age_sec}
@@ -266,6 +284,7 @@ def serve_ok(
 
 __all__ = [
     "DEFAULT_MAX_AGE_SEC",
+    "FUTURE_SKEW_TOLERANCE_SEC",
     "MARKET_MAX_AGE",
     "freshness_status",
     "is_fresh",

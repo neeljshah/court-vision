@@ -31,18 +31,49 @@ except Exception:  # noqa: BLE001
     _LINE_STORE_OK = False
 
 
+def _split_matchup(matchup: str) -> Tuple[Optional[str], Optional[str]]:
+    """Split a 'Away@Home' / 'Away vs Home' matchup -> (away_label, home_label).
+
+    The frontend/paper rows store the game ONLY as a 'matchup' string (no separate
+    home/away fields), so the close resolver MUST recover the two team labels from
+    it. The repo convention is AWAY first ('San Francisco Giants@Atlanta Braves' =>
+    away=Giants, home=Braves), confirmed against settled scores. Returns
+    (None, None) when no separator is present.
+    """
+    s = str(matchup or "")
+    for sep in (" @ ", "@", " vs. ", " vs ", " v ", " at ", " - "):
+        if sep in s:
+            away, _, home = s.partition(sep)
+            away, home = away.strip(), home.strip()
+            if away and home:
+                return away, home
+    return None, None
+
+
 def game_key_for_bet(bet: Dict[str, Any]) -> Optional[str]:
-    """line_store game_key from bet: event_id first, else sport|home|away|date."""
+    """line_store game_key from bet: event_id first, else sport|home|away[|date].
+
+    home/away are taken from explicit fields when present, else recovered from the
+    'matchup' string (the paper rows carry only a matchup). The date component is
+    appended ONLY when an explicit game_date is given: the write ts is NOT the
+    game's UTC date (a bet recorded the day before tip buckets the close under the
+    GAME date), so a ts-derived date narrows to the wrong file and misses the close.
+    Omitting it lets line_store scan the sport's files and match exactly on
+    home/away -- still leak-free (get_close only returns pre-commence quotes).
+    """
     eid = str(bet.get("event_id") or "").strip()
     if eid:
         return eid
     sp = str(bet.get("sport") or "").strip()
     h = str(bet.get("home") or "").strip()
     a = str(bet.get("away") or "").strip()
+    if not (h and a):
+        a2, h2 = _split_matchup(bet.get("matchup", ""))
+        if h2 and a2:
+            h, a = h2, a2
     if not (sp and h and a):
         return None
-    ts = str(bet.get("ts") or "")
-    d = ts[:10] if len(ts) >= 10 else ""
+    d = str(bet.get("game_date") or "").strip()[:10]
     return ("%s|%s|%s|%s" % (sp, h, a, d)) if d else ("%s|%s|%s" % (sp, h, a))
 
 

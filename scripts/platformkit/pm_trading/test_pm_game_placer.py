@@ -39,6 +39,29 @@ def test_name_matches_city_to_fullname():
     assert not G._name_matches("Houston", "Toronto Blue Jays")
 
 
+def test_name_matches_world_cup_country_aliases():
+    # Kalshi vs model national-team naming variants must bridge...
+    assert G._name_matches("South Korea", "Korea Republic")
+    assert G._name_matches("Czechia", "Czech Republic")
+    assert G._name_matches("USA", "United States")
+    assert G._name_matches("IR Iran", "Iran")
+    assert G._name_matches("Turkiye", "Turkey")
+    # ...but distinct nations must NOT cross-match (Congo vs DR Congo) and a country must
+    # not substring-match an unrelated one.
+    assert not G._name_matches("Congo", "Congo DR")
+    assert not G._name_matches("South Korea", "South Africa")
+
+
+def test_world_cup_game_matches_with_alias():
+    # South Africa (home) vs South Korea (away); Kalshi lists "Korea Republic".
+    model = [{"home": "South Africa", "away": "South Korea",
+              "pregame_probs": {"home": 0.5, "away": 0.5}}]
+    m = G.match_model_game(["South Africa", "Korea Republic"], model)
+    assert m is not None
+    assert m["_roles"]["South Africa"] == "home"
+    assert m["_roles"]["Korea Republic"] == "away"
+
+
 def test_match_model_game_unique():
     m = G.match_model_game(["Houston", "Toronto"], _model_games("mlb"))
     assert m is not None

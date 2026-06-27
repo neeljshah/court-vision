@@ -46,6 +46,21 @@ _HONEST_NOTE = (
 # on the model's higher-conviction picks. EV here is MODEL_VIEW, never a proven edge.
 _TIER_RANK = {"A": 0, "B": 1, "C": 2}
 
+# Per-sport SETTLEABLE-stat allowlist: only place a prop we can grade from a keyless feed
+# (else it PENDS forever = a phantom placement). Soccer/WC (prop_settler_soccer): goals/
+# assists/cards resolve per player, shots/saves for the leader; Shots On Target / Fouls have
+# NO keyless feed -> dropped. Sports ABSENT here (mlb: full statsapi boxscore) place all stats.
+_SETTLEABLE_STATS_BY_SPORT: Dict[str, frozenset] = {
+    "soccer_intl": frozenset({"Goals", "Assists", "Goal+Assist", "Cards", "Shots", "Saves"}),
+}
+_SETTLEABLE_STATS_BY_SPORT["soccer"] = _SETTLEABLE_STATS_BY_SPORT["soccer_intl"]
+
+
+def _is_settleable(sport: str, stat: Any) -> bool:
+    """True unless *sport* has an allowlist and *stat* is outside it (ungradeable keyless)."""
+    allow = _SETTLEABLE_STATS_BY_SPORT.get(str(sport).lower())
+    return True if allow is None else (str(stat or "").strip() in allow)
+
 
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -204,8 +219,13 @@ def _append(row: Dict[str, Any], ledger_path: Path) -> bool:
             return False
 
 
-def _board_edges(sport: str, board_fn: Callable[[str], Any]) -> List[Dict[str, Any]]:
-    """Priced + reliable edges from the sport's prop board; [] on any failure."""
+def _board_edges(sport: str, board_fn: Callable[[str], Any],
+                 *, calibration_only: bool = False) -> List[Dict[str, Any]]:
+    """Priced + reliable edges from the sport's prop board; [] on any failure.
+
+    When *calibration_only*, also drop any (sport, stat) whose calibration is NOT proven
+    (replicated SHIP) -- the smarter-selection floor that concentrates stake on families we
+    have earned the right to bet (calibration, not a $ edge)."""
     try:
         board = board_fn(sport)
     except Exception as exc:  # noqa: BLE001
@@ -213,6 +233,10 @@ def _board_edges(sport: str, board_fn: Callable[[str], Any]) -> List[Dict[str, A
         return []
     if not isinstance(board, dict) or not str(board.get("status", "")).startswith("ok"):
         return []
+    proven = None
+    if calibration_only:
+        from scripts.platformkit.bestbets.calibration_gate import proven_families
+        proven = proven_families()
     out: List[Dict[str, Any]] = []
     for e in board.get("edges") or []:
         if not isinstance(e, dict):
@@ -221,6 +245,15 @@ def _board_edges(sport: str, board_fn: Callable[[str], Any]) -> List[Dict[str, A
         # reliable_only) so a weak-stat prop can never be staked.
         if not bool(e.get("reliable")) or str(e.get("ev_flag", "")) != "ok":
             continue
+        # honesty: never stake a prop we cannot grade from a keyless feed (it would pend
+        # forever). Drops e.g. WC Shots On Target (no per-player keyless realized stat).
+        if not _is_settleable(sport, e.get("stat")):
+            continue
+        # smarter selection: stake pregame props only where calibration is PROVEN.
+        if calibration_only:
+            from scripts.platformkit.bestbets.calibration_gate import is_calibration_proven
+            if not is_calibration_proven(sport, str(e.get("stat") or ""), proven=proven):
+                continue
         out.append(e)
     return out
 
@@ -231,6 +264,7 @@ def run(sports: Sequence[str] = DEFAULT_PROP_SPORTS, *,
         place: bool = True,
         max_per_sport: Optional[int] = None,
         min_tier: Optional[str] = None,
+        calibration_only: bool = False,
         today: Optional[str] = None) -> Dict[str, Any]:
     """Place priced prop bets for each sport into the unified ledger. Never raises.
 
@@ -252,7 +286,7 @@ def run(sports: Sequence[str] = DEFAULT_PROP_SPORTS, *,
     placed: List[str] = []
     n_edges = n_priced = n_placed = n_dup = n_capped = 0
     for sport in sports:
-        edges = _board_edges(sport, _board)
+        edges = _board_edges(sport, _board, calibration_only=calibration_only)
         n_edges += len(edges)
         # Build all placements first, then take highest-EV first under the cap.
         cands = [p for p in (placement_from_edge(e, sport, today=_today, min_tier=min_tier)

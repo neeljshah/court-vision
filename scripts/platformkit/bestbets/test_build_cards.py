@@ -22,7 +22,30 @@ from unittest.mock import patch
 
 import pytest
 
+import scripts.platformkit.bestbets.build_cards as _bc_mod
 from scripts.platformkit.bestbets.build_cards import build_cards
+
+# Capture the REAL _call_build_prop_cards BEFORE the autouse fixture patches it,
+# so the decoupling tests can exercise the genuine cache-read path.
+_REAL_CALL_BUILD_PROP_CARDS = _bc_mod._call_build_prop_cards
+
+
+@pytest.fixture(autouse=True)
+def _no_live_prop_board():
+    """Isolate the GAME-market assertions from the live prop board.
+
+    build_cards now also appends player-prop cards via _call_build_prop_cards,
+    which calls the real build_prop_board (loads parquets / providers -- slow and
+    nondeterministic). These game-market tests must stay fast and deterministic, so
+    we stub the prop append to []. The prop path has its OWN per-file test
+    (test_prop_cards.py). One test below overrides this to assert the wiring.
+    """
+    with patch(
+        "scripts.platformkit.bestbets.build_cards._call_build_prop_cards",
+        return_value=[],
+    ):
+        yield
+
 
 # ---------------------------------------------------------------------------
 # Helpers: minimal valid BestBetCard factory
@@ -344,3 +367,146 @@ class TestEmptyUpstreamReturnsEmptyList:
         ):
             result = build_cards(now=time.time())
         assert isinstance(result, list)
+
+
+# ---------------------------------------------------------------------------
+# Prop wiring: player-prop cards are appended to the unified board
+# ---------------------------------------------------------------------------
+
+class TestPropCardsWiredIn:
+    """build_cards appends market_type='prop' cards from the prop path."""
+
+    def _prop_card(self):
+        return {
+            "game_id": "", "matchup": "A vs B", "sport": "soccer_intl",
+            "market_type": "prop", "prop_player": "P", "prop_stat": "Shots",
+            "line": 1.5, "side": "over", "model_prob": 0.62, "proj": 2.1,
+            "market_prob": None, "best_book": "underdog", "best_odds": None,
+            "all_books": [], "edge_vs_market": None, "units": 1.0,
+            "tier": "MODEL_VIEW", "confidence": 0.62, "model_only": True,
+            "edge_claimed": False, "status": "pregame", "as_of": "2026-06-21",
+            "honest_note": "model-only", "clv_is_proxy": True,
+        }
+
+    def test_prop_card_appended_even_with_no_game_cards(self):
+        """No game cards but live props -> board still has the prop cards."""
+        with patch(
+            "scripts.platformkit.bestbets.build_cards._call_compute_best_bets",
+            side_effect=lambda s: {"status": "ok", "sport": s, "cards": []},
+        ), patch(
+            "scripts.platformkit.bestbets.build_cards._call_build_prop_cards",
+            return_value=[self._prop_card()],
+        ):
+            result = build_cards(now=time.time())
+        props = [c for c in result if c.get("market_type") == "prop"]
+        assert len(props) == 1
+        assert props[0]["model_only"] is True
+        assert props[0]["edge_vs_market"] is None  # model-only: no edge claimed
+
+    def test_model_only_prop_not_dropped_by_market_prob_guard(self):
+        """A null-market_prob model-only prop survives (appended AFTER sanitize)."""
+        with patch(
+            "scripts.platformkit.bestbets.build_cards._call_compute_best_bets",
+            side_effect=lambda s: {"status": "ok", "sport": s,
+                                   "cards": [_make_card()]},
+        ), patch(
+            "scripts.platformkit.bestbets.build_cards._call_build_prop_cards",
+            return_value=[self._prop_card()],
+        ):
+            result = build_cards(now=time.time())
+        assert any(c.get("market_type") == "prop" for c in result)
+        assert any(c.get("market_type") == "moneyline" for c in result)
+
+
+# ---------------------------------------------------------------------------
+# Decoupled cache: m10 reads the prop cache; it NEVER runs the slow build inline
+# ---------------------------------------------------------------------------
+
+class TestPropCacheDecoupling:
+    """The fast m10 board reads prop_cards_cache; it must not build inline."""
+
+    def _prop_card(self):
+        return {
+            "game_id": "", "matchup": "A vs B", "sport": "soccer_intl",
+            "market_type": "prop", "prop_player": "P", "prop_stat": "Shots",
+            "line": 1.5, "side": "over", "model_prob": 0.62, "proj": 2.1,
+            "market_prob": None, "best_book": "underdog", "best_odds": None,
+            "all_books": [], "edge_vs_market": None, "units": 1.0,
+            "tier": "MODEL_VIEW", "confidence": 0.62, "model_only": True,
+            "edge_claimed": False, "status": "pregame", "as_of": "2099-01-01",
+            "honest_note": "model-only", "clv_is_proxy": True,
+        }
+
+    def test_reads_cache_not_slow_build(self, tmp_path):
+        """build_cards reads the prop cache and NEVER calls build_prop_cards.
+
+        build_prop_cards is the >240s full-board build. If build_cards ever calls
+        it, the board tick hangs -- so we assert it is NOT invoked.
+        """
+        import scripts.platformkit.bestbets.prop_cards_cache as cache
+        import scripts.platformkit.bestbets.prop_cards as pc
+
+        p = tmp_path / "prop_cards_cache.json"
+        now = 1000.0
+        cache.write([self._prop_card()], now, n_more_model_only={"mlb": 3},
+                    path=p)
+
+        called = {"slow": False}
+
+        def _boom_slow(*a, **k):
+            called["slow"] = True
+            raise AssertionError("slow build_prop_cards must NOT run inline")
+
+        with patch.object(pc, "build_prop_cards", _boom_slow), patch.object(
+            cache, "_DEFAULT_PATH", p
+        ), patch(
+            "scripts.platformkit.bestbets.build_cards._call_compute_best_bets",
+            side_effect=lambda s: {"status": "ok", "sport": s, "cards": []},
+        ):
+            # Undo the autouse stub so the REAL _call_build_prop_cards runs.
+            with patch.object(
+                _bc_mod, "_call_build_prop_cards", _REAL_CALL_BUILD_PROP_CARDS,
+            ):
+                result = build_cards(now=now)
+        assert called["slow"] is False
+        props = [c for c in result if c.get("market_type") == "prop"]
+        assert len(props) == 1
+
+    def test_missing_cache_degrades_honestly(self, tmp_path):
+        """Missing cache -> game cards still emit, props omitted, no hang/raise."""
+        import scripts.platformkit.bestbets.prop_cards_cache as cache
+        import scripts.platformkit.bestbets.build_cards as bc
+
+        missing = tmp_path / "nope.json"
+        with patch.object(cache, "_DEFAULT_PATH", missing), patch(
+            "scripts.platformkit.bestbets.build_cards._call_compute_best_bets",
+            side_effect=lambda s: {"status": "ok", "sport": s,
+                                   "cards": [_make_card(
+                                       tipoff_utc=_future_tipoff(1))]},
+        ):
+            # Real prop path (reads the missing cache) -- override the autouse stub.
+            with patch.object(
+                bc, "_call_build_prop_cards", _REAL_CALL_BUILD_PROP_CARDS,
+            ):
+                result = build_cards(now=time.time(), sports=("nba",))
+        # Game cards present; NO prop cards (cache missing -> honest omit).
+        assert any(c.get("market_type") == "moneyline" for c in result)
+        assert not any(c.get("market_type") == "prop" for c in result)
+
+    def test_stale_cache_omits_props(self, tmp_path):
+        """A cache older than the SLA -> props omitted (stale-never-green)."""
+        import scripts.platformkit.bestbets.prop_cards_cache as cache
+        import scripts.platformkit.bestbets.build_cards as bc
+
+        p = tmp_path / "prop_cards_cache.json"
+        cache.write([self._prop_card()], 1000.0, path=p)
+        now = 1000.0 + cache.DEFAULT_SLA_SEC + 9999.0
+        with patch.object(cache, "_DEFAULT_PATH", p), patch(
+            "scripts.platformkit.bestbets.build_cards._call_compute_best_bets",
+            side_effect=lambda s: {"status": "ok", "sport": s, "cards": []},
+        ):
+            with patch.object(
+                bc, "_call_build_prop_cards", _REAL_CALL_BUILD_PROP_CARDS,
+            ):
+                result = build_cards(now=now)
+        assert not any(c.get("market_type") == "prop" for c in result)

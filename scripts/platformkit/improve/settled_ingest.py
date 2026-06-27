@@ -15,16 +15,15 @@ CLASSIFIES the fetch:
   * FRESH_NEW -- a board parsed OK and surfaced >=1 clean foldable unseen final.
 
 NEVER-SKIP / NEVER-DOUBLE-COUNT: dedup by game_id against the UNION of the caller's seen_ids
-and the loop checkpoint's seen_ids (PRIMARY guard, never a key filter -- an out-of-order late
-final is surfaced). A season-aware MULTI-DAY window means a late/next-day final never rolls off
-a single-day board; overlapping windows dedup by id for free. The high-water key advances
-forward-only (display/order only). Must call settle_audit on what it returns (MF3 anti-0-fill);
-an audit-degraded batch downgrades to DEGRADED rather than 0-fill a missing outcome.
+and the loop checkpoint's seen_ids (PRIMARY guard, never a key filter). A season-aware
+MULTI-DAY window means a late/next-day final never rolls off a single-day board. Must call
+settle_audit (MF3 anti-0-fill); an audit-degraded batch downgrades to DEGRADED, never 0-fills.
 
-Returns a structured IngestSummary (counts + status + clean games + advanced cursor). No
-$/pnl/roi/edge anywhere -- feeds a CALIBRATION gate; vs_close UNPROVEN. Never edits MEMORY.md,
-never writes data/registry/, never flips a flag, never creates the PIPELINE_ENABLED sentinel.
-NEVER raises. Stdlib + repo-internal; ASCII; <=300 LOC.
+The leak-free {p0, outcome} state reconstruction (FIX A) lives in the sibling settled_states.
+Returns a structured IngestSummary (counts + status + clean games + cursor). No $/pnl/roi/edge
+-- feeds a CALIBRATION gate; vs_close UNPROVEN. Never edits MEMORY.md, never writes
+data/registry/, never flips a flag, never creates PIPELINE_ENABLED. NEVER raises. Stdlib +
+repo-internal; ASCII; <=300 LOC.
 """
 from __future__ import annotations
 
@@ -35,6 +34,9 @@ from typing import Any, Callable, Dict, List, Optional, Sequence
 
 from scripts.platformkit.improve.cursor_util import SEEN_CAP, game_id as _gid, key as _key
 from scripts.platformkit.improve.settle_audit import audit_settled, AuditSummary
+from scripts.platformkit.improve.settled_states import (
+    attach_game_outcome, states_for_game,
+)
 
 logger = logging.getLogger("settled_ingest")
 
@@ -113,9 +115,8 @@ def date_window(*, days: int = DEFAULT_WINDOW_DAYS,
 def _parse_board_finals(board: Any, sport: str) -> Optional[List[Dict[str, Any]]]:
     """Parse ONE board into its final-game dicts, or None when the board is UNPARSEABLE.
 
-    None signals a STALE fetch (exception upstream, non-dict body, or no `events` list) --
-    the caller FREEZES the clock for it. An empty list signals a parsed-OK board with zero
-    finals (contributes to IDLE, clock may advance). Never raises.
+    None signals a STALE fetch (exception, non-dict body, or no `events` list) -> the caller
+    FREEZES the clock. An empty list is a parsed-OK board with zero finals (IDLE). Never raises.
     """
     if not isinstance(board, dict):
         return None
@@ -141,11 +142,10 @@ def ingest_settled(sport: str, *,
                    degrade_fraction: float = 0.5) -> IngestSummary:
     """Reconstruct the newly-SETTLED games to fold for `sport`. NEVER raises.
 
-    Per-(sport,corpus) id/date HIGH-WATER MARK: dedup by game_id against the UNION of
-    `seen_ids` and `checkpoint_seen_ids` (PRIMARY guard, monotonic -- two runs never
-    double-count); season-aware multi-day window so nothing rolls off unseen; CLASSIFIES the
-    fetch STALE/IDLE/FRESH_NEW so a dead feed surfaces DEGRADED not green; runs settle_audit
-    (MF3 anti-0-fill) and returns ONLY clean games for folding."""
+    id/date HIGH-WATER MARK: dedup by game_id against the UNION of `seen_ids` +
+    `checkpoint_seen_ids` (PRIMARY guard, monotonic); season-aware multi-day window;
+    CLASSIFIES the fetch STALE/IDLE/FRESH_NEW so a dead feed surfaces DEGRADED not green; runs
+    settle_audit (MF3 anti-0-fill) and returns ONLY clean games for folding."""
     sp = str(sport).lower()
     ref = now or datetime.now(timezone.utc)
     if ref.tzinfo is None:
@@ -220,10 +220,9 @@ def ingest_settled(sport: str, *,
         summary.clock_advances = True
         return summary
 
-    # --- enrich each new final into frozen-schema state rows (reconstruct for folding) --
-    # A raw ESPN final carries NO states/outcome; the sport's ingest adapter reconstructs
-    # them. If NO adapter is wired yet, enrichment yields zero states for every game -- that
-    # is a WIRING gap (honest IDLE), NOT a dead feed (STALE) and NOT a fabricated row.
+    # Enrich each new final into frozen-schema state rows (settled_states reconstructs the
+    # leak-free {p0, outcome}). No adapter / no prior -> zero states (honest IDLE wiring gap),
+    # NOT a dead feed (STALE) and NEVER a fabricated row.
     enriched = _enrich(sp, fresh, states_for_game)
     any_states = any(g.get("states") for g in enriched)
     if not any_states:
@@ -238,8 +237,8 @@ def ingest_settled(sport: str, *,
     summary.quarantine_reasons = [r for _, r in audit.quarantined]
 
     if audit.degraded:
-        # A batch that HAD states but is mostly unfoldable (the ingest attached no real
-        # labels) -- 0-fill territory. DEGRADED: surface zero clean games, FREEZE the clock.
+        # HAD states but mostly unfoldable (no real labels) -- 0-fill territory. DEGRADED:
+        # surface zero clean games, FREEZE the clock.
         summary.status = DEGRADED
         summary.degraded = True
         summary.clock_advances = False
@@ -257,10 +256,9 @@ def ingest_settled(sport: str, *,
 def _enrich(sport: str, games: Sequence[Dict[str, Any]],
             states_for_game: Optional[Callable[..., Sequence[Dict[str, Any]]]]
             ) -> List[Dict[str, Any]]:
-    """Attach reconstructed in-game state rows to each final via the sport's adapter (injected
-    `states_for_game` else settled_finals.states_for_game; absent -> []). A game whose
-    enrichment yields no states keeps `states=[]`, later audited as empty-states -- NEVER
-    fabricated. NEVER raises."""
+    """Attach reconstructed state rows to each final via the adapter (injected
+    `states_for_game` else settled_finals.states_for_game; absent -> []). No states ->
+    `states=[]`, later audited as empty-states -- NEVER fabricated. NEVER raises."""
     getter = states_for_game
     if getter is None:
         try:
@@ -285,16 +283,18 @@ def _enrich(sport: str, games: Sequence[Dict[str, Any]],
 def settled_games_fn(name: str, *, since: str = "",
                      seen_ids: Optional[Sequence[str]] = None,
                      **kw: Any) -> List[Dict[str, Any]]:
-    """Daemon-shaped adapter matching selfimprove_daemon's settled_games_fn(name, since=,
-    seen_ids=): returns ONLY the clean foldable games (the richer status/degraded verdict is
-    on ingest_settled()'s IngestSummary). Dead feed / degraded batch / offseason -> []. NEVER
-    raises."""
+    """Daemon-shaped adapter (name, since=, seen_ids=): returns ONLY the clean foldable,
+    STATE-BEARING games (richer status/degraded verdict is on ingest_settled()'s
+    IngestSummary). Leak-free {p0, outcome} reconstruction lives in settled_states (FIX A).
+    Dead feed / degraded batch / offseason -> []. NEVER raises."""
     try:
-        s = ingest_settled(name, seen_ids=seen_ids, high_water=str(since or ""), **kw)
-        return list(s.clean_games)
+        sfg = kw.pop("states_for_game", states_for_game)  # default to the real reconstructor
+        s = ingest_settled(name, seen_ids=seen_ids, high_water=str(since or ""),
+                           states_for_game=sfg, **kw)
+        return attach_game_outcome(s.clean_games)
     except Exception as exc:  # noqa: BLE001 -- purity: any failure -> empty (NO_CANDIDATE)
         logger.debug("settled_games_fn(%s) failed: %s", name, exc)
         return []
 
-__all__ = ["IngestSummary", "ingest_settled", "settled_games_fn", "date_window",
-           "STALE", "IDLE", "FRESH_NEW", "DEGRADED", "DEFAULT_WINDOW_DAYS"]
+__all__ = ["IngestSummary", "ingest_settled", "settled_games_fn", "states_for_game",
+           "date_window", "STALE", "IDLE", "FRESH_NEW", "DEGRADED", "DEFAULT_WINDOW_DAYS"]

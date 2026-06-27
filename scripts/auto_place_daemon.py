@@ -649,8 +649,10 @@ def evaluate_tick(
 # --------------------------------------------------------------------------- #
 def _build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--slate", default="sas_okc_2026-05-26",
-                    help="Slate id (matches live_bet_ranker.SLATES).")
+    ap.add_argument("--slate", default=None,
+                    help="Slate id (matches live_bet_ranker.SLATES). When omitted, "
+                         "resolves to a dynamic today-based id so a frozen past slate "
+                         "is never resurrected on a bare run.")
     ap.add_argument("--interval-sec", type=int, default=DEFAULT_INTERVAL_SEC)
     ap.add_argument("--max-daily-bets", type=int, default=DEFAULT_MAX_DAILY)
     ap.add_argument("--confidence-floor", type=float, default=DEFAULT_CONFIDENCE_FLOOR,
@@ -676,6 +678,9 @@ def _build_parser() -> argparse.ArgumentParser:
 
 def run_daemon(args: argparse.Namespace) -> Dict[str, Any]:
     pid = os.getpid()
+    # Dynamic-default slate: never resurrect a frozen past slate on a bare run.
+    if not getattr(args, "slate", None):
+        args.slate = "auto_%s" % _now_utc().date().isoformat()
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)s [auto_place pid=%(process)d] %(message)s",

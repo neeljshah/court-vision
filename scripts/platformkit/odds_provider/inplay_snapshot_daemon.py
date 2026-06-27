@@ -44,6 +44,12 @@ FAST_INTERVAL_SEC = 5
 IDLE_INTERVAL_SEC = 120
 MAX_BACKOFF_SEC = 300
 
+# Retention: keep this many recent UTC day-buckets of in-play history per sport.
+# The sweep itself is a cheap dir-listing folded into the loop (see _maybe_sweep)
+# at most ONCE per UTC day change -- no new always-on daemon. Generous on purpose:
+# keeping MORE days is always the safe error (a wrong delete overnight is not).
+RETENTION_KEEP_DAYS = 7
+
 
 def _as_utc(dt: Optional[datetime]) -> datetime:
     d = dt if dt is not None else datetime.now(timezone.utc)
@@ -211,11 +217,20 @@ def serve_inplay_forever(*, sports: Sequence[str] = DEFAULT_SPORTS,
     """
     _clock = clock or (lambda: datetime.now(timezone.utc))
     _sleep = sleep or _real_sleep
+    base = Path(out_dir) if out_dir is not None else DEFAULT_INPLAY_DIR
     ticks: List[Dict[str, Any]] = []
     n = 0
     err_streak = 0
+    last_sweep_day: Optional[str] = None
     while True:
         now = _as_utc(_clock())
+        # Cheap retention sweep: at most ONCE per UTC day change (and once at start),
+        # not on the hot poll path. Prunes only clearly-old dated files; keeps the
+        # last RETENTION_KEEP_DAYS day-buckets incl. today's active file.
+        today = _date_of(now)
+        if today != last_sweep_day:
+            _maybe_sweep(base, now)
+            last_sweep_day = today
         tick: Dict[str, Any] = {"as_of": _iso(now), "sports": []}
         any_live = False
         all_error = True
@@ -253,9 +268,27 @@ def _real_sleep(seconds: float) -> None:
     time.sleep(seconds)
 
 
+def _maybe_sweep(base: Path, now: datetime) -> None:
+    """Run the conservative in-play history retention sweep. NEVER raises.
+
+    Delegates to inplay_retention.sweep_all (keep last RETENTION_KEEP_DAYS UTC
+    day-buckets per sport; prune only clearly-older dated files; never touch the
+    freshness sidecar or today's active file). A sweep failure must never sink the
+    capture loop, so any exception is swallowed.
+    """
+    try:
+        from .inplay_retention import sweep_all
+        res = sweep_all(base, keep_days=RETENTION_KEEP_DAYS, now=now)
+        if res.get("total_pruned", 0):
+            logger.info("inplay_retention: pruned %d old day-bucket file(s) "
+                        "(keep_days=%d)", res["total_pruned"], RETENTION_KEEP_DAYS)
+    except Exception as exc:  # noqa: BLE001 -- retention must never sink the loop
+        logger.warning("inplay_retention sweep failed: %s", exc)
+
+
 __all__ = [
     "DEFAULT_INPLAY_DIR", "DEFAULT_SPORTS", "FAST_INTERVAL_SEC",
-    "IDLE_INTERVAL_SEC", "MAX_BACKOFF_SEC",
+    "IDLE_INTERVAL_SEC", "MAX_BACKOFF_SEC", "RETENTION_KEEP_DAYS",
     "poll_inplay_once", "serve_inplay_forever",
 ]
 

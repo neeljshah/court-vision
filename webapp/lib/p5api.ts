@@ -50,6 +50,9 @@ import type {
   // WS4: prediction history
   PaperPredictions,
   RawPaperEnvelope,
+  // Paper equity-curve + bankroll
+  PnlSeries,
+  PaperBankroll,
 } from "./types";
 
 // Re-export every P5 API type (including W12 types re-exported by types.ts from
@@ -182,6 +185,15 @@ export const api = {
   },
   // Aggregate CLV scoreboard (units/probability only; no $).
   getPaperClv: (s?: AbortSignal) => getJson<ClvScoreboard>(`/api/paper/clv`, s),
+  // Paper P&L equity-curve series ("how much I would have made" in UNITS).
+  // points[] = cumulative-units curve; daily[] = per-day net; summary carries
+  // mean_clv_pct_or_INSUFFICIENT (number or "INSUFFICIENT_DATA"). No $ field.
+  // edge_claimed/executed ALWAYS false. Degrades to Unavailable sentinel.
+  getPaperPnlSeries: (s?: AbortSignal) =>
+    getJson<PnlSeries>(`/api/paper/pnl/series`, s),
+  // Paper bankroll snapshot (start_units / current_units in UNITS). No $.
+  getPaperBankroll: (s?: AbortSignal) =>
+    getJson<PaperBankroll>(`/api/paper/bankroll`, s),
   // CLV-over-time series for the trend chart (settled-with-close bets only).
   getPaperClvSeries: (params?: { sport?: string }, s?: AbortSignal) => {
     const q = new URLSearchParams();

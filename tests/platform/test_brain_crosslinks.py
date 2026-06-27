@@ -104,6 +104,8 @@ def test_related_section_added(org):
 
 
 def test_at_least_one_resolving_link(org):
+    # Links are vault-root-relative (the form Obsidian resolves), so resolve them
+    # against the vault root (= _Organized's parent) + ".md", not the note folder.
     root, paths = org
     build_crosslinks(root, write=True)
     link_re = re.compile(r"\[\[([^\]|]+)\|")
@@ -112,7 +114,7 @@ def test_at_least_one_resolving_link(org):
         rel_txt = txt[txt.find(RELATED_HEADER):]
         targets = link_re.findall(rel_txt)
         assert any(
-            (p.parent / Path(t)).resolve().exists() for t in targets
+            (root.parent / (t + ".md")).exists() for t in targets
         ), f"{p.name}: no resolving wikilink — targets={targets}"
 
 
@@ -124,7 +126,7 @@ def test_no_self_links(org):
         txt = p.read_text(encoding="utf-8")
         rel_txt = txt[txt.find(RELATED_HEADER):]
         for t in link_re.findall(rel_txt):
-            resolved = (p.parent / Path(t)).resolve()
+            resolved = (root.parent / (t + ".md")).resolve()
             assert resolved != p.resolve(), f"{p.name} self-links via {t}"
 
 

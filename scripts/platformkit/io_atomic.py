@@ -1,0 +1,146 @@
+"""scripts.platformkit.io_atomic -- shared crash-safe atomic write helpers.
+
+Several ledger / append / state writers across platformkit used bare
+``write_text`` / ``open(..., "w"|"a")``. A crash mid-write then leaves a torn
+JSON / JSONL file (a half-written line, or a truncated object), and the
+autonomous daily loop -- which reads these every cycle -- breaks until a human
+repairs the file. That defeats the "zero flaws, no Claude" rail.
+
+This module centralises the SAME tmp+os.replace discipline the served-board
+writers already use, so the four torn-write call sites can reuse one helper
+instead of each growing its own copy:
+
+  write_json_atomic(path, obj, ...)   -- full-file JSON write, tmp + os.replace.
+  write_text_atomic(path, text, ...)  -- full-file text write, tmp + os.replace.
+  append_jsonl_atomic(path, row, ...) -- append one JSONL row crash-safely.
+
+ATOMIC APPROACH
+---------------
+* Full-file (write_json_atomic / write_text_atomic): serialise -> write to a
+  sibling ``*.tmp`` in the SAME directory -> ``os.replace`` over the target.
+  ``os.replace`` is atomic on POSIX and on Windows (same volume), so a reader
+  sees either the OLD complete file or the NEW complete file -- never a torn one.
+  A crash before the replace leaves only the tmp; the target is untouched.
+
+* Append (append_jsonl_atomic): READ the existing file -> concat the existing
+  bytes + the one new ``json.dumps(row) + "\n"`` -> write the whole thing to a
+  sibling tmp -> ``os.replace``. This is the STRONGEST append guarantee: a crash
+  can NEVER leave a partial line in the target (a bare ``O_APPEND`` write can
+  lose its tail on a crash mid-write). Cost is O(file) per append; these ledgers
+  are small daily/forever rows where correctness beats micro-throughput.
+
+The data SHAPE is preserved exactly: callers pass the same dicts and the same
+encoding / json kwargs they used before, so existing readers parse unchanged.
+
+INVARIANTS: stdlib only; ASCII source; <=300 LOC; no $; calibration not edge.
+Never writes data/registry/, never flips a flag.
+"""
+from __future__ import annotations
+
+import json
+import os
+import pathlib
+import tempfile
+from typing import Any, Union
+
+PathLike = Union[str, "os.PathLike[str]"]
+
+
+def _as_path(path: PathLike) -> pathlib.Path:
+    return path if isinstance(path, pathlib.Path) else pathlib.Path(os.fspath(path))
+
+
+def _replace_via_tmp(target: pathlib.Path, data: str, encoding: str) -> None:
+    """Write *data* to a sibling tmp in target's dir, then os.replace over target.
+
+    A new tempfile in the SAME directory guarantees os.replace stays on one
+    volume (atomic on Windows too). On any failure the tmp is removed and the
+    existing target is left untouched -- no torn file is ever visible.
+    """
+    target = target.resolve() if not target.is_absolute() else target
+    parent = target.parent
+    parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp_name = tempfile.mkstemp(dir=str(parent), prefix=".tmp_", suffix=".swap")
+    tmp = pathlib.Path(tmp_name)
+    try:
+        with os.fdopen(fd, "w", encoding=encoding, newline="") as fh:
+            fh.write(data)
+            fh.flush()
+            os.fsync(fh.fileno())
+        os.replace(str(tmp), str(target))
+    except BaseException:
+        # Best-effort cleanup; never leave a stray tmp masquerading as state.
+        try:
+            if tmp.exists():
+                tmp.unlink()
+        except OSError:
+            pass
+        raise
+
+
+def write_text_atomic(path: PathLike, text: str, *, encoding: str = "utf-8") -> None:
+    """Atomically write *text* to *path* (tmp + os.replace). Crash-safe full write."""
+    _replace_via_tmp(_as_path(path), text, encoding)
+
+
+def write_json_atomic(
+    path: PathLike,
+    obj: Any,
+    *,
+    encoding: str = "utf-8",
+    ensure_ascii: bool = True,
+    sort_keys: bool = True,
+    indent: Any = None,
+    trailing_newline: bool = False,
+    default: Any = None,
+) -> None:
+    """Atomically write *obj* as JSON to *path* (tmp + os.replace).
+
+    The json kwargs mirror what the call sites already passed so the on-disk
+    SHAPE is byte-identical to the prior bare write -- only the write is now
+    crash-safe. ``trailing_newline`` appends a final "\n" when the original
+    writer did (some diagnostics were written as a single-line "json + \\n").
+    """
+    body = json.dumps(
+        obj,
+        ensure_ascii=ensure_ascii,
+        sort_keys=sort_keys,
+        indent=indent,
+        default=default,
+    )
+    if trailing_newline:
+        body += "\n"
+    _replace_via_tmp(_as_path(path), body, encoding)
+
+
+def append_jsonl_atomic(
+    path: PathLike,
+    row: Any,
+    *,
+    encoding: str = "ascii",
+    ensure_ascii: bool = True,
+    sort_keys: bool = True,
+    default: Any = None,
+) -> None:
+    """Append one JSONL *row* to *path* crash-safely (read-modify-write + replace).
+
+    Reads the current file, appends ``json.dumps(row) + "\\n"``, writes the whole
+    result to a sibling tmp, then os.replace over the target. A crash can never
+    leave a partial trailing line: the target is only ever swapped for a file
+    whose every line (including the new one) is complete.
+
+    The serialised row is identical to the prior ``open(path, "a")`` writers, so
+    readers that split on newlines and ``json.loads`` each line parse unchanged.
+    """
+    target = _as_path(path)
+    existing = ""
+    if target.is_file():
+        existing = target.read_text(encoding=encoding, errors="replace")
+        if existing and not existing.endswith("\n"):
+            # A pre-existing torn tail would otherwise glue onto our new row.
+            existing += "\n"
+    line = json.dumps(row, ensure_ascii=ensure_ascii, sort_keys=sort_keys, default=default)
+    _replace_via_tmp(target, existing + line + "\n", encoding)
+
+
+__all__ = ["write_text_atomic", "write_json_atomic", "append_jsonl_atomic"]

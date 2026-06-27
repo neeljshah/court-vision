@@ -150,10 +150,20 @@ def _classify(game: Dict[str, Any]) -> Optional[str]:
     if not game_label_present and not any_state_outcome_present:
         return R_MISSING_OUTCOME
 
+    # PROVENANCE escape hatch: a label explicitly flagged CONFIRMED (e.g. derived from the
+    # realized FINAL score by the settled-ingest reconstructor) is a REAL observation -- a
+    # genuine home-loss (outcome==0) is NOT a 0-fill. We trust it iff the label is PRESENT
+    # (absent is still quarantined below -- the anti-0-fill invariant stays intact: only a
+    # present, confirmed label clears the all-zero guard).
+    confirmed = bool(game.get("outcome_confirmed")) or any(
+        bool(s.get("outcome_confirmed")) for s in states)
+    if confirmed and (game_label_present or any_state_outcome_present):
+        return None
+
     # All-zero / absent outcome: nothing in the game is a confirmed positive AND the
     # game-level label is not a confirmed positive. A genuine all-loss game that the
-    # ingest actually labelled would still trip this -- by design we refuse to fold a
-    # batch we cannot distinguish from a 0-fill, rather than fabricate observations.
+    # ingest actually labelled (without provenance) still trips this -- by design we refuse
+    # to fold a batch we cannot distinguish from a 0-fill, rather than fabricate observations.
     if not any_state_outcome_one and not game_label_one:
         return R_ALL_ZERO_OUTCOME
 

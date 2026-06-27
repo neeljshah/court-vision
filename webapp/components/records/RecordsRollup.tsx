@@ -126,7 +126,6 @@ function SportRow({ b }: { b: SportBucket }) {
   return (
     <div
       data-testid={`rollup-sport-${b.sport}`}
-      role="row"
       className="flex flex-wrap items-start gap-4 rounded border border-slate-800 bg-slate-900/40 px-4 py-2.5"
     >
       {/* sport label */}

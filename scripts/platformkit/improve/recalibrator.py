@@ -41,12 +41,37 @@ from scripts.platformkit.eval_gate.scoring import brier
 
 logger = logging.getLogger("recalibrator")
 
-# Minimum clean observations to fit a recal variant at all. Below this a fit is noise;
-# we honestly return None (cold start) rather than ship a spurious candidate.
+# Minimum clean observations to fit a recal variant; below this a fit is noise (cold start).
 _MIN_OBS = 8
-
 # A stable id for the primary corpus so the daemon's >=2-corpora counter dedups it.
 _PRIMARY_CORPUS_ID = "recal_primary"
+
+
+# Outcome codes for the optional out-of-band ``report`` dict: GENUINE no-candidate (evaluated
+# -> ADVANCE) vs TRANSIENT failure (bailed before evaluation -> PRESERVE + retry). See _note.
+_R_INERT = "inert"                      # sentinel absent (daemon treats as inert)
+_R_EMPTY_BATCH = "empty_batch"          # genuine: nothing to fold
+_R_FEED_DEGRADED = "feed_degraded"      # TRANSIENT: audit tripped FeedDegradedError
+_R_NO_CLEAN = "no_clean_games"          # TRANSIENT: degraded ingest left nothing foldable
+_R_COLD_START = "cold_start"            # genuine: too few clean obs to fit honestly
+_R_NONFINITE = "nonfinite"              # genuine: degenerate inputs
+_R_NONBINARY = "nonbinary_outcome"      # genuine: outcomes not {0,1}
+_R_FIT_FAILED = "fit_did_not_converge"  # genuine: Platt GD did not converge
+_R_DEGENERATE = "degenerate_base"       # genuine: no-op candidate (MF2)
+_R_EVALUATED = "evaluated"              # a real candidate was packaged
+_R_EXCEPTION = "exception"              # TRANSIENT: unexpected error before evaluation
+_TRANSIENT_REASONS = frozenset({_R_FEED_DEGRADED, _R_NO_CLEAN, _R_EXCEPTION})
+
+
+def _note(report: Optional[Dict[str, Any]], reason: str) -> None:
+    """Record (reason, transient) into the optional out-of-band report dict. Never raises."""
+    if report is None:
+        return
+    try:
+        report["reason"] = reason
+        report["transient"] = reason in _TRANSIENT_REASONS
+    except Exception:  # noqa: BLE001 -- a bad report container never sinks the build
+        pass  # pragma: no cover
 
 
 def _clip01(p: np.ndarray) -> np.ndarray:
@@ -135,12 +160,19 @@ def build_candidate(name: str, settled: Sequence[Dict[str, Any]],
     absent this returns None unconditionally, so the daemon stays byte-identical to its
     pre-recalibrator NO_CANDIDATE baseline even on a non-empty settled batch.
 
+    ``report`` (optional kw, out-of-band): if a dict is supplied, records {'reason','transient'}
+    so the daemon can tell a GENUINE evaluated decline (advance the cursor) from a TRANSIENT
+    failure (FeedDegradedError / exception -> preserve cursor, retry). Return value is unchanged.
+
     NEVER raises: any internal failure returns None (NO_CANDIDATE).
     """
+    report = kw.get("report") if isinstance(kw.get("report"), dict) else None
     if not pipeline_enabled():  # MF1 -- inert when the human sentinel is absent.
+        _note(report, _R_INERT)
         return None
     try:
         if not settled:
+            _note(report, _R_EMPTY_BATCH)
             return None
 
         # --- MF3: quarantine unfoldable games; degrade -> NO_CANDIDATE, never 0-fill --
@@ -148,24 +180,30 @@ def build_candidate(name: str, settled: Sequence[Dict[str, Any]],
             audit = audit_settled(settled)
         except FeedDegradedError:
             logger.debug("recalibrator(%s): feed degraded -> NO_CANDIDATE", name)
+            _note(report, _R_FEED_DEGRADED)  # TRANSIENT: bailed BEFORE a real evaluation
             return None
         clean = audit.clean_games
         if not clean:
+            _note(report, _R_NO_CLEAN)  # TRANSIENT: degraded ingest left nothing foldable
             return None
 
         base_list, y_list = _extract_obs(clean)
         if len(base_list) < _MIN_OBS:
+            _note(report, _R_COLD_START)
             return None  # cold start: too few clean observations to fit honestly.
 
         base = _clip01(np.asarray(base_list, dtype=float))
         y = np.asarray(y_list, dtype=float)
         if not (np.all(np.isfinite(base)) and np.all(np.isfinite(y))):
+            _note(report, _R_NONFINITE)
             return None
         if set(np.unique(y).tolist()) - {0.0, 1.0}:
+            _note(report, _R_NONBINARY)
             return None  # outcomes must be {0,1}; never fabricate.
 
         ab = _fit_platt(base, y)
         if ab is None:
+            _note(report, _R_FIT_FAILED)
             return None
         cand = _apply_platt(base, ab)
 
@@ -173,6 +211,7 @@ def build_candidate(name: str, settled: Sequence[Dict[str, Any]],
         reason = degenerate_base_reason(cand.tolist(), base.tolist(), y.tolist())
         if reason is not None:
             logger.debug("recalibrator(%s): degenerate base -> REJECT (%s)", name, reason)
+            _note(report, _R_DEGENERATE)  # GENUINE evaluated decline (honest null)
             return None
 
         # Folds + stability rows from the clean window (the candidate must beat base).
@@ -194,7 +233,10 @@ def build_candidate(name: str, settled: Sequence[Dict[str, Any]],
             "y": y.tolist(),
             "kind": "prob",
             "fold_results": fold_results,
-            "corpora": [],  # a 2nd independent corpus is wired later; gate -> REPLICATION_PENDING
+            # FIX E: the 2nd independent corpus is wired below via _inject_clv_corpus. It
+            # stays [] (gate -> REPLICATION_PENDING) UNLESS a REAL model-beats-close corpus
+            # exists -- honest: no phantom corpus is ever fabricated to clear the gate.
+            "corpora": [],
             "primary_corpus_id": _PRIMARY_CORPUS_ID,
             "stability_metric_fn": _stability_metric_fn,
             "stability_data": stability_data,
@@ -211,10 +253,48 @@ def build_candidate(name: str, settled: Sequence[Dict[str, Any]],
             "n_clean": int(audit.n_clean),
             "n_quarantined": int(audit.n_quarantined),
         }
+        # FIX E: wire the CLV second corpus. This appends an INDEPENDENT model-beats-close
+        # corpus to candidate['corpora'] ONLY when one genuinely exists (and only when the
+        # human PIPELINE_ENABLED sentinel is present -- the bridge is sentinel-guarded). With
+        # no real 2nd corpus the candidate is returned UNCHANGED (corpora stays [] -> the gate
+        # honestly stalls at REPLICATION_PENDING). Honest by construction: never fabricated.
+        candidate = _inject_clv_corpus(name, candidate, kw)
+        _note(report, _R_EVALUATED)  # a real candidate was packaged (gate decides ship/reject)
         return candidate
     except Exception as exc:  # noqa: BLE001 -- purity: any failure -> NO_CANDIDATE.
         logger.debug("recalibrator(%s) failed -> NO_CANDIDATE: %s", name, exc)
+        _note(report, _R_EXCEPTION)  # TRANSIENT: an unexpected error before evaluation
         return None
+
+
+def _inject_clv_corpus(name: str, candidate: Dict[str, Any],
+                       kw: Dict[str, Any]) -> Dict[str, Any]:
+    """Append the CLV second corpus to ``candidate`` iff a real one exists, else UNCHANGED.
+
+    The settled-CLV close corpus (model-BEATS-close on held-out OUTCOME-Brier) is the
+    legitimate 2nd independent corpus the >=2-corpora rule wants. We route the candidate
+    through aggregate_clv_to_corpus.inject_grades_corpus, which:
+      * is sentinel-guarded (INERT -> candidate UNCHANGED when PIPELINE_ENABLED is absent);
+      * appends the corpus ONLY when build_close_corpus finds a genuine beats-close window
+        (a shrink-toward-close / market-copy pool earns NOTHING -> UNCHANGED);
+      * never upgrades vs_close (stays UNPROVEN).
+    A test may inject a ready-made ``clv_corpus`` via kw to exercise the >=2 path offline.
+    NEVER raises: any failure leaves the candidate UNCHANGED (corpora stays []).
+    """
+    try:
+        injected = kw.get("clv_corpus")
+        if isinstance(injected, dict):  # offline/test hook: a ready 2nd corpus
+            existing = list(candidate.get("corpora") or [])
+            existing.append(injected)
+            candidate["corpora"] = existing
+            return candidate
+        from scripts.platformkit.ingame.aggregate_clv_to_corpus import inject_grades_corpus
+        out = inject_grades_corpus(candidate, grade_dir=kw.get("grade_dir"),
+                                   sport=kw.get("sport", name))
+        return out if isinstance(out, dict) else candidate
+    except Exception as exc:  # noqa: BLE001 -- purity: leave candidate UNCHANGED
+        logger.debug("recalibrator(%s) clv-corpus wire skipped: %s", name, exc)
+        return candidate
 
 
 __all__ = ["build_candidate"]

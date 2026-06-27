@@ -3,16 +3,16 @@
 Pulls today's REAL games + state (live_board.todays_live_games), builds each game's
 bet board (bet_board.game_bet_board) priced off the aggregated odds slate, and:
   * PRICED row (real book price, mainly moneyline) -> EV, POLICY TIER + STAKE UNITS
-    stamped via pm_trading.policy; below-floor (tier None) rows are skipped.
-    RECORD to the CLV ledger (clv_ledger.record_bet) executed=False/channel="paper",
-    with the as_of price/book + event_id + commence_time for later settling.
+    via pm_trading.policy; below-floor (tier None) rows skipped. RECORD to the CLV
+    ledger (clv_ledger.record_bet) executed=False/channel="paper" for later settling.
   * UNPRICED row (derived markets) -> never fabricate a price; LOG the model view +
     a closing-line PROXY target to data/frontend/paper_predictions.jsonl for grading.
 
 HONEST RAILS (binding -- can NEVER move real money): every ledger row is
 executed=False / channel="paper"; policy tiers gate below-floor picks (tier=None);
 each recorded row carries tier + flat_unit + quarter_kelly units (NOT dollars);
-idempotent per (sport, matchup, side/selection, day); markets are efficient --
+idempotent per MARKET (sport, matchup, line, day) -- only the model-backed side of a
+symmetric two-way market records, never both; markets are efficient --
 NO $ edge claimed. <=300 LOC; no secrets; no network in tests. Pure helpers + Ctx
 live in the sibling paper_today_support module.
 """
@@ -29,7 +29,7 @@ from scripts.platformkit.frontend.live_board import todays_live_games
 from scripts.platformkit.odds_provider.base import OddsEvent
 from scripts.platformkit.odds_shop import devig_twoway, ev_vs_price
 from scripts.platformkit.pm_trading.paper_autobet import (
-    AutoBetConfig, CHANNEL_PAPER, EdgeCandidate, size_stake)
+    AutoBetConfig, CHANNEL_PAPER)
 from scripts.platformkit.pm_trading import paper_today_support as S
 from scripts.platformkit.pm_trading.paper_today_support import (
     Ctx, DEFAULT_PREDICTIONS, DEFAULT_SPORTS, PAPER_EV_FLOOR)
@@ -53,11 +53,8 @@ except Exception:  # pragma: no cover - optional
 def make_store_board_fn(sport: str) -> Callable[..., Dict[str, Any]]:
     """Return a board_fn that reads from predict_service.store for *sport*.
 
-    The returned callable has the same signature as game_bet_board
-    (sport, home, away, *, odds_lookup=None, live=None) and returns a board
-    dict in the same shape (status='ok', best_bets=[], groups=[], ...).  When
-    the store envelope is unavailable or the game is not found, falls back to
-    game_bet_board so the paper cycle degrades gracefully. NEVER raises.
+    Same signature/shape as game_bet_board; falls back to game_bet_board when the store
+    envelope is unavailable or the game is not found. NEVER raises.
     """
     env = None
     if _ps_store is not None:
@@ -116,10 +113,17 @@ def _policy_tier_and_stake(ev: float, model_prob: float, price: float,
 
 def _record_priced(row, sport, matchup, meta, side, price, prob, selection,
                    ctx: Ctx) -> Optional[Dict[str, Any]]:
-    """Record a priced two-way pick as a paper bet. None if dedup/below-floor."""
-    bet_key = (sport, matchup, side, ctx.day)
-    if bet_key in ctx.ledger_keys:
-        return None
+    """Record a priced two-way pick as a paper bet. None if dedup/below-floor.
+
+    ONE POSITION PER MARKET: a symmetric two-way market (home ML AND away ML) must NOT
+    record both sides (flat-staking both is nonsensical -- win/loss cancel minus vig --
+    and double-counts as two bets). We record only the MODEL-BACKED side (model_prob
+    >= 0.5) and dedup per market (sport, matchup, line, day), NOT per side, so the
+    opposing side cannot also land. A distinct market (different line) keeps its key.
+    """
+    market_key = (sport, matchup, row.get("line"), ctx.day)
+    if market_key in ctx.ledger_keys or float(prob) < 0.5:
+        return None  # already placed this market, or the side the model does not back
     ev = ev_vs_price(prob, price)
     if ev <= PAPER_EV_FLOOR:
         return None
@@ -134,26 +138,31 @@ def _record_priced(row, sport, matchup, meta, side, price, prob, selection,
     if tier_label is None:
         return None
 
-    cand = EdgeCandidate(sport, matchup, side, float(price), float(prob),
-                         taken_book=book, event_id=meta["event_id"])
-    stake = size_stake(cand, ctx.cfg) if ev > 0 else 0.0
+    # UNITS-ONLY STAKE (the accuracy fix): stake at exactly the policy flat_unit (1.0
+    # for any tiered bet), NOT the legacy dollar-Kelly size_stake magnitude that leaked
+    # in as stake_units and produced e.g. -500u losses. unit_result then settles in
+    # [-1, dec-1] and the bankroll curve reconciles. quarter_kelly is a measurement
+    # field only (never the staked magnitude here).
+    stake_units = float(flat_unit)  # 1.0 for any A/B/C tier, else 0.0 (already gated)
     saved = _clv.record_bet(sport, matchup, side, book, float(price),
-                            model_prob=float(prob), stake=stake, path=ctx.lpath)
+                            model_prob=float(prob), stake_units=stake_units,
+                            event_id=meta["event_id"], path=ctx.lpath)
     assert saved["executed"] is False  # honesty invariant, belt-and-braces
-    ctx.ledger_keys.add(bet_key)
+    assert float(saved.get("stake_units", 0.0)) == stake_units  # units, never $
+    ctx.ledger_keys.add(market_key)
     bet_row = {
         "sport": sport, "matchup": matchup, "selection": selection, "side": side,
         "model_prob": round(float(prob), 6), "price": round(float(price), 4),
-        "book": book, "ev_pct": round(ev * 100.0, 3), "stake": round(stake, 2),
-        "would_pass_real_gate": bool(ev > 0.0), "executed": False,
-        "channel": CHANNEL_PAPER, "event_id": meta["event_id"],
+        "book": book, "ev_pct": round(ev * 100.0, 3),
+        "stake_units": round(stake_units, 6),
+        "would_pass_real_gate": False,  # paper-only; real money stays default-DENY
+        "executed": False, "channel": CHANNEL_PAPER, "event_id": meta["event_id"],
         "commence_time": meta["commence_time"],
-        # Policy stamps: tier and unit-based sizing (NOT dollars)
-        "tier": tier_label,
-        "flat_unit": flat_unit,
+        # Policy stamps: tier + unit sizing (NOT dollars)
+        "tier": tier_label, "flat_unit": flat_unit,
         "quarter_kelly": round(quarter_kelly, 8),
     }
-    return {"kind": "bet", "row": bet_row, "stake": stake}
+    return {"kind": "bet", "row": bet_row, "stake_units": stake_units}
 
 
 def _log_unpriced(row, sport, matchup, home, away, meta, close, prob, selection,
@@ -201,6 +210,20 @@ def _handle_row(row, sport, matchup, home, away, meta, close, ctx: Ctx
                          selection, ctx)
 
 
+def _market_ledger_keys(rows: Sequence[Dict[str, Any]]) -> set:
+    """Per-MARKET (sport, matchup, line, day) keys already in the CLV ledger.
+
+    The placement dedup is now per market, NOT per side (S.ledger_keys keys on side and
+    would let both sides of a symmetric two-way market record). One market that already
+    has a placed side blocks the opposing side from also landing.
+    """
+    out: set = set()
+    for r in rows:
+        day = str(r.get("settled_at") or r.get("ts") or "")[:10]
+        out.add((str(r.get("sport")), str(r.get("matchup")), r.get("line"), day))
+    return out
+
+
 def run_paper_cycle(
     sports: Sequence[str] = DEFAULT_SPORTS,
     ledger_path: Optional[Path] = None,
@@ -214,20 +237,21 @@ def run_paper_cycle(
     """Run one PAPER cycle on TODAY's real slate across *sports*.
 
     Pulls each sport's games + state, builds each priced bet board, RECORDS priced
-    picks to the CLV ledger (executed=False, channel="paper") and LOGS unpriced
-    model predictions. Idempotent per (sport, matchup, side/selection, day). Never
-    raises on a single bad game/sport.
+    picks to the CLV ledger (executed=False, channel="paper") and LOGS unpriced model
+    predictions. Idempotent per MARKET (sport, matchup, line, day) for placed bets (only
+    the model-backed side of a symmetric two-way market records, never both) and per
+    (sport, matchup, selection, day) for predictions. Never raises on a bad game/sport.
     """
     lpath = Path(ledger_path) if ledger_path is not None else _clv.DEFAULT_LEDGER
     ppath = Path(predictions_path) if predictions_path is not None else DEFAULT_PREDICTIONS
     ctx = Ctx(cfg=cfg or AutoBetConfig(), day=S.today_key(), lpath=lpath, ppath=ppath,
-              ledger_keys=S.ledger_keys(_clv.load_ledger(lpath)),
+              ledger_keys=_market_ledger_keys(_clv.load_ledger(lpath)),
               pred_keys=S.prediction_keys(S.load_predictions(ppath)))
 
     out: Dict[str, Any] = {
         "as_of": S.now_iso(), "channel": CHANNEL_PAPER, "executed_any": False,
         "day": ctx.day, "sports": {}, "bets": [], "predictions": [],
-        "n_recorded": 0, "n_logged": 0, "staked_total": 0.0,
+        "n_recorded": 0, "n_logged": 0, "staked_total_units": 0.0,
         "honest_note": ("PAPER measurement only -- executed=False, channel=paper, "
                         "no real orders, no $ edge claimed. Markets efficient."),
     }
@@ -265,7 +289,7 @@ def run_paper_cycle(
                 if rec is None:
                     continue
                 if rec["kind"] == "bet":
-                    staked += rec["stake"]
+                    staked += rec["stake_units"]
                     out["bets"].append(rec["row"])
                     n_rec += 1
                 else:
@@ -275,7 +299,7 @@ def run_paper_cycle(
                             "n_recorded": n_rec, "n_logged": n_log}
         out["n_recorded"] += n_rec
         out["n_logged"] += n_log
-    out["staked_total"] = round(staked, 6)
+    out["staked_total_units"] = round(staked, 6)
     out["clv_summary"] = _clv.clv_summary(_clv.load_ledger(lpath))
     return out
 
@@ -289,8 +313,8 @@ def _main(argv: Optional[Sequence[str]] = None) -> int:
     out = run_paper_cycle(sports)
     print("PAPER CYCLE (NOT a real result -- executed_any=%s, channel=%s)"
           % (out["executed_any"], out["channel"]))
-    print("  recorded=%d logged=%d staked=$%.2f"
-          % (out["n_recorded"], out["n_logged"], out["staked_total"]))
+    print("  recorded=%d logged=%d staked=%.2fu (UNITS, never $)"
+          % (out["n_recorded"], out["n_logged"], out["staked_total_units"]))
     for sport, info in out["sports"].items():
         print("  %-12s %s" % (sport, info))
     return 0

@@ -12,13 +12,16 @@ ignored -- the merge proceeds with whatever venues ARE up. No fabricated prices.
 from __future__ import annotations
 
 import logging
+import os
 import re
 from datetime import datetime, timezone
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
 
 from .base import OddsEvent, is_unavailable
 from .espn import EspnProvider
+from .fanduel import FanDuelProvider
 from .kalshi import KalshiProvider
+from .oddsapi_provider import OddsApiProvider
 from .pinnacle import PinnacleProvider
 from .polymarket import PolymarketProvider
 from .team_resolver import canonical
@@ -26,6 +29,30 @@ from .team_resolver import canonical
 logger = logging.getLogger(__name__)
 
 _TEAM_STOP = {"the", "fc", "afc", "cf", "sc"}
+
+# The keyed OddsAPI feed (DraftKings/FanDuel/BetMGM/Caesars/... in one call) is
+# folded into the live stack ONLY when its scarce monthly quota is healthy -- i.e.
+# above this reserve floor. This keeps paper trading pulling EVERY book it can when
+# units are plentiful, while never draining the reserve we keep for grading closes.
+# Below the floor (or with no key) it stays dormant; it re-activates automatically
+# when the monthly budget resets. Tune via ODDSAPI_RESERVE_FLOOR.
+_ODDSAPI_RESERVE_FLOOR = int(os.environ.get("ODDSAPI_RESERVE_FLOOR", "1500") or 1500)
+
+
+def _oddsapi_affordable() -> bool:
+    """True only when ODDS_API_KEY is set AND enough monthly units remain above the
+    reserve floor. Never raises (a budget-read failure -> keep OddsAPI dormant)."""
+    if not os.environ.get("ODDS_API_KEY", "").strip():
+        return False
+    try:
+        from src.data.odds_api_client import get_budget  # type: ignore
+        b = get_budget()
+        rem = b.get("remaining_from_header")
+        if not isinstance(rem, int):
+            rem = int(b.get("max_units", 0) or 0) - int(b.get("used_units", 0) or 0)
+        return int(rem) > _ODDSAPI_RESERVE_FLOOR
+    except Exception:  # noqa: BLE001 -- budget read must never sink the slate
+        return False
 
 
 def _resolved_code_key(sport: Optional[str], name: str) -> Optional[str]:
@@ -99,25 +126,78 @@ def teams_match(a: str, b: str, sport: Optional[str] = None) -> bool:
     return len(ta & tb) / len(ta | tb) >= 0.5
 
 
+# Two books quoting the SAME teams within this many seconds are the same game; a
+# wider gap is a different fixture (next-day series / doubleheader) and must NOT
+# merge -- else a future game's line overwrites today's and manufactures a fake CLV
+# edge. Time is only used to DISAMBIGUATE: if either side lacks a parseable
+# commence_time we fall back to team-only matching (no merge is dropped).
+_SAME_GAME_WINDOW_SEC = 6 * 3600
+
+
+def _commence_epoch(value: Any) -> Optional[float]:
+    """ISO commence_time -> epoch seconds, tolerant of 'Z' / missing seconds. None
+    on absent/unparseable (caller then falls back to team-only matching)."""
+    if not value:
+        return None
+    s = str(value).strip().replace("Z", "+00:00")
+    try:
+        return datetime.fromisoformat(s).timestamp()
+    except (ValueError, TypeError):
+        return None
+
+
+def _times_compatible(e1: OddsEvent, e2: OddsEvent) -> bool:
+    """True if the two events' commence times are close, OR either is unknown."""
+    t1, t2 = _commence_epoch(e1.commence_time), _commence_epoch(e2.commence_time)
+    if t1 is None or t2 is None:
+        return True  # unknown time -> do not block a team match (legacy behaviour)
+    return abs(t1 - t2) <= _SAME_GAME_WINDOW_SEC
+
+
 def _event_match(e1: OddsEvent, e2: OddsEvent) -> bool:
-    """Same game iff both home and away plausibly match (either orientation)."""
+    """Same game iff both teams plausibly match (either orientation) AND the
+    commence times are compatible (so a next-day/series game with the same teams
+    never merges into today's slate)."""
     sp = e1.sport or e2.sport  # both share a sport in practice
     straight = (teams_match(e1.home, e2.home, sp)
                 and teams_match(e1.away, e2.away, sp))
     flipped = (teams_match(e1.home, e2.away, sp)
                and teams_match(e1.away, e2.home, sp))
-    return straight or flipped
+    if not (straight or flipped):
+        return False
+    return _times_compatible(e1, e2)
+
+
+def _flip_spread(spread: Any) -> Any:
+    """Swap home/away legs of an extended spread node when orientation flips.
+
+    A spread node is {'home': {'line','odds'}, 'away': {'line','odds'}}; flipping
+    the game orientation swaps which side is home/away. The handicap LINE already
+    lives with its leg (home line is the negative of away), so swapping the leg
+    dicts preserves correctness -- no number is recomputed or fabricated.
+    """
+    if not isinstance(spread, dict):
+        return spread
+    return {"home": spread.get("away"), "away": spread.get("home")}
 
 
 def _merge_into(target: OddsEvent, other: OddsEvent) -> None:
-    """Fold *other*'s venues into *target*, flipping sides if orientation differs."""
+    """Fold *other*'s venues into *target*, flipping sides if orientation differs.
+
+    Carries ALL markets a venue quotes: the flat moneyline keys (home/away/draw)
+    AND the extended spread/total nodes. On a flip the moneyline home/away swap and
+    the spread node's legs swap; the total node (over/under) is orientation-agnostic
+    and is carried unchanged. A None / empty leg is dropped (never fabricated).
+    """
     sp = target.sport or other.sport
     flip = not (teams_match(target.home, other.home, sp)
                 and teams_match(target.away, other.away, sp))
     for venue, sides in other.prices.items():
         if flip:
             sides = {"home": sides.get("away"), "away": sides.get("home"),
-                     "draw": sides.get("draw")}
+                     "draw": sides.get("draw"),
+                     "spread": _flip_spread(sides.get("spread")),
+                     "total": sides.get("total")}
         target.prices[venue] = {k: v for k, v in sides.items() if v is not None}
 
 
@@ -145,14 +225,23 @@ def merge_events(event_lists: Sequence[List[OddsEvent]]) -> List[OddsEvent]:
 
 def default_providers(http_get: Optional[Callable[[str], Any]] = None,
                        *, use_cache: bool = True) -> List[Any]:
-    """The standard provider stack: ESPN (keyless) + Kalshi + Polymarket + Pinnacle."""
+    """The standard provider stack: ESPN + FanDuel (soft) + Kalshi + Polymarket +
+    Pinnacle (sharp), plus the keyed OddsAPI multi-book feed when its quota is
+    healthy (see _oddsapi_affordable). FanDuel adds the soft-book dispersion that
+    makes line-shopping +CLV possible -- ESPN (DraftKings) + Pinnacle are both sharp
+    + tightly aligned; OddsAPI widens venue coverage (Caesars/BetMGM/...) for free
+    line-shopping when units allow."""
     kw = {} if http_get is None else {"http_get": http_get}
-    return [
+    provs: List[Any] = [
         EspnProvider(use_cache=use_cache, **kw),
+        FanDuelProvider(use_cache=use_cache, **kw),
         KalshiProvider(use_cache=use_cache, **kw),
         PolymarketProvider(use_cache=use_cache, **kw),
         PinnacleProvider(use_cache=use_cache, **kw),
     ]
+    if _oddsapi_affordable():
+        provs.append(OddsApiProvider(use_cache=use_cache, **kw))
+    return provs
 
 
 def aggregate(sport: str, providers: Optional[Sequence[Any]] = None,

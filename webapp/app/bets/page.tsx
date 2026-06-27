@@ -15,6 +15,8 @@
 //   - Paper mode only; local only
 
 import { BestBetsBoard } from "@/components/bets/BestBetsBoard";
+import { BetsMoneyHeadline } from "@/components/bets/BetsMoneyHeadline";
+import { TodayPlacedBets } from "@/components/bets/TodayPlacedBets";
 import { HONEST_DISCLAIMER } from "@/lib/api";
 
 export const metadata = {
@@ -56,6 +58,18 @@ export default function BetsPage() {
           exist -- shown honestly, never fabricated.
         </span>
       </section>
+
+      {/* MONEY HEADLINE: paper equity curve -- frames the best bets below as the
+          money-makers (how much you WOULD have made, units only). */}
+      <BetsMoneyHeadline />
+
+      {/* PLACED (staked) bets today -- distinct from the candidate board below. */}
+      <TodayPlacedBets />
+
+      {/* Divider note: candidate board = ALL divergence, not necessarily staked. */}
+      <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-slate-500">
+        candidate board -- all calibrated divergence (not necessarily staked)
+      </p>
 
       {/* Main board: Live / Pregame / Done sections with bet cards */}
       <BestBetsBoard />

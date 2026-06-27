@@ -322,6 +322,7 @@ export default function RecordsPage() {
       <p
         className="text-right font-mono text-[9px] text-slate-700"
         aria-live="off"
+        suppressHydrationWarning
       >
         {lastUpdatedAt
           ? `last refreshed: ${new Date(lastUpdatedAt).toLocaleTimeString()} -- auto-refreshes every 30s`

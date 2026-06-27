@@ -28,19 +28,24 @@ import {
 } from "./BetCardHelpers";
 import { ModelVsMarketBar } from "./ModelVsMarketBar";
 import { formatDivergence, isDivergenceSignal } from "./cardDepth";
+import { PropCard } from "./PropCard";
+import { LineShopPanel } from "./LineShopPanel";
+import type { BookShopEntry } from "@/lib/types";
 
 export interface BetCardData {
   game_id: string;
   sport: string;
   matchup: string;           // e.g. "NYK @ SAS"
-  market_type: string;       // e.g. "moneyline", "total", "spread", "prop:pts"
+  market_type: string;       // "moneyline" | "total" | "spread" | "prop"
   side: string;              // e.g. "home", "over", "NYK +3.5"
   model_prob: number;        // [0,1] calibrated model probability
-  market_prob: number;       // [0,1] devigged market probability
+  market_prob: number | null; // [0,1] devigged market prob; null for model-only props
   best_book: string;
   best_odds: number;         // decimal odds
   all_books: BookOddsEntry[];
-  edge_vs_market: number;    // model_prob - market_prob (display as divergence, not profit claim)
+  // edge_vs_market: model_prob - market_prob (display as divergence, NOT profit).
+  // null for model-only props (no market line -> no edge claim).
+  edge_vs_market: number | null;
   units: number;             // stake in units
   tier: string | null;       // "S"|"A"|"B"|"C"
   confidence: number;        // [0,1] confidence in the calibrated signal
@@ -49,6 +54,14 @@ export interface BetCardData {
   status: "live" | "pregame" | "done";
   line?: number | null;
   tipoff_utc?: string | null; // ISO timestamp -- shown as "Tipoff: HH:MM ET" when present
+  // -- prop fields (market_type === "prop") ---------------------------------
+  prop_player?: string | null;
+  prop_stat?: string | null;
+  proj?: number | null;       // model point projection for the prop stat
+  model_only?: boolean;       // true -> no market line; "model-only" badge, no edge
+  honest_note?: string | null;
+  // books[] -- richer line-shopping array (price/line/as_of/fresh/is_pm).
+  books?: BookShopEntry[];
   // UI-side guard: non-null means the card must NOT render as an actionable bet.
   // "degenerate_model" -> render decision=no_bet EXPLICITLY (not silently suppressed).
   // "live_state_settled" / "status_settled" -> render settled/no-bet label.
@@ -65,10 +78,21 @@ export function BetCard({ card }: BetCardProps) {
     return <SuppressedCard card={card} />;
   }
 
-  const divergence = card.edge_vs_market; // signed: model_prob - market_prob
-  const divergenceLabel = formatDivergence(divergence);
-  const divergenceIsSignal = isDivergenceSignal(divergence);
+  // Prop cards take a dedicated layout (player/stat/line/proj + model-only badge).
+  if (card.market_type === "prop") {
+    return <PropCard card={card} books={card.books} />;
+  }
 
+  // Game markets: edge_vs_market may be null (rare); fall back to a 0 divergence.
+  const divergence = card.edge_vs_market ?? 0; // signed: model_prob - market_prob
+  const marketProb = card.market_prob ?? 0;
+  const divergenceLabel = formatDivergence(divergence);
+  const divergenceIsSignal = card.edge_vs_market != null && isDivergenceSignal(divergence);
+
+  // Card-link guard: only link to a detail route when game_id is real. An empty
+  // / missing game_id would build /bets/<sport>/ which 308-redirects back to the
+  // board -- so we DISABLE the link instead of rendering a dead one.
+  const hasGameId = typeof card.game_id === "string" && card.game_id.trim() !== "";
   const detailHref = `/bets/${encodeURIComponent(card.sport)}/${encodeURIComponent(card.game_id)}`;
   const detailLinkLabel = `View details: ${card.matchup} ${card.market_type} ${card.side}`;
 
@@ -128,7 +152,7 @@ export function BetCard({ card }: BetCardProps) {
         <div className="mt-3">
           <ModelVsMarketBar
             model_prob={card.model_prob}
-            market_prob={card.market_prob}
+            market_prob={marketProb}
             divergence={divergence}
             divergence_label={divergenceLabel}
             divergence_is_signal={divergenceIsSignal}
@@ -166,8 +190,15 @@ export function BetCard({ card }: BetCardProps) {
           </div>
         </div>
 
-        {/* Multi-book shopping row (collapsed if none) */}
-        {card.all_books.length > 0 ? (
+        {/* Line shopping -- prefer richer books[] (price/fresh/is_pm), else all_books */}
+        {card.books && card.books.length > 0 ? (
+          <div className="mt-3">
+            <span className="mb-1 block font-mono text-[9px] uppercase tracking-widest text-slate-500">
+              Line shopping
+            </span>
+            <LineShopPanel books={card.books} side={card.side} />
+          </div>
+        ) : card.all_books.length > 0 ? (
           <div className="mt-3">
             <span className="mb-1 block font-mono text-[9px] uppercase tracking-widest text-slate-500">
               All books
@@ -186,24 +217,41 @@ export function BetCard({ card }: BetCardProps) {
           <Badge tone="slate">units only -- no $</Badge>
         </div>
 
-        {/* Detail link -- accessible name via sr-only text; visible focus ring */}
+        {/* Detail link -- accessible name via sr-only text; visible focus ring.
+            Guarded: when game_id is missing we render a disabled, non-clickable
+            placeholder so a click can't 308-redirect back to the board. */}
         <div className="mt-3">
-          <Link
-            href={detailHref}
-            className={cn(
-              "group inline-flex w-full items-center justify-center gap-1.5 rounded-lg border",
-              "border-slate-700 bg-slate-900/60 px-3 py-2",
-              "font-mono text-[11px] text-slate-400 transition-colors",
-              "hover:border-slate-500 hover:text-slate-200",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-1 focus-visible:ring-offset-bg-panel",
-            )}
-            aria-label={detailLinkLabel}
-            data-testid="bet-card-detail-link"
-          >
-            <span aria-hidden="true">View detail</span>
-            {/* sr-only span provides explicit accessible name for non-visual context */}
-            <span className="sr-only">{detailLinkLabel}</span>
-          </Link>
+          {hasGameId ? (
+            <Link
+              href={detailHref}
+              className={cn(
+                "group inline-flex w-full items-center justify-center gap-1.5 rounded-lg border",
+                "border-slate-700 bg-slate-900/60 px-3 py-2",
+                "font-mono text-[11px] text-slate-400 transition-colors",
+                "hover:border-slate-500 hover:text-slate-200",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-1 focus-visible:ring-offset-bg-panel",
+              )}
+              aria-label={detailLinkLabel}
+              data-testid="bet-card-detail-link"
+            >
+              <span aria-hidden="true">View detail</span>
+              {/* sr-only span provides explicit accessible name for non-visual context */}
+              <span className="sr-only">{detailLinkLabel}</span>
+            </Link>
+          ) : (
+            <span
+              className={cn(
+                "inline-flex w-full cursor-not-allowed items-center justify-center gap-1.5 rounded-lg border",
+                "border-slate-800 bg-slate-900/30 px-3 py-2",
+                "font-mono text-[11px] text-slate-600",
+              )}
+              aria-disabled="true"
+              data-testid="bet-card-detail-link-disabled"
+              title="No game id yet -- detail view unavailable"
+            >
+              detail unavailable
+            </span>
+          )}
         </div>
       </div>
     </article>

@@ -20,6 +20,12 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+# Capture the REAL _write_frontend_snapshots before the autouse fixture stubs the module
+# attribute, so the direct unit tests below can exercise the genuine function (it still
+# reads the live module globals, so per-test patches of _SNAPSHOT_SPORTS etc. apply).
+import scripts.platformkit.pm_trading.auto_loop as _al_mod  # noqa: E402
+_REAL_WRITE_SNAPSHOTS = _al_mod._write_frontend_snapshots
+
 
 # ---------------------------------------------------------------------------
 # Helpers: stub out the mandatory core steps (paper / grade / improve /
@@ -50,6 +56,12 @@ def _stub_prop_steps():
     import scripts.platformkit.pm_trading.auto_loop as mod
     with patch.object(mod, "_place_props",
                       MagicMock(return_value={"status": "ok", "n_placed": 0})), \
+         patch.object(mod, "_place_pm_games",
+                      MagicMock(return_value={"status": "ok", "placed": 0})), \
+         patch.object(mod, "_place_ingame_props",
+                      MagicMock(return_value={"status": "ok", "placed": 0})), \
+         patch.object(mod, "_write_frontend_snapshots",
+                      MagicMock(return_value={"mlb": "fresh"})), \
          patch.object(mod, "_settle_props",
                       MagicMock(return_value={"status": "ok", "n_settled_now": 0,
                                               "n_pending": 0})), \
@@ -305,6 +317,26 @@ def test_prop_steps_are_wired_into_run_once():
     assert out["settle_props"]["n_settled_now"] == 1
 
 
+def test_ingame_props_wired_into_run_once():
+    """run_once runs the IN-GAME prop trader as a guarded step and surfaces its result --
+    in-game props execute independently each cycle in the live m1_paper loop."""
+    mod = _import_loop()
+    paper_s, grade_s, improve_s, summary_s = _core_stubs()
+    ingame = MagicMock(return_value={"status": "ok", "placed": 4, "live_games": 3,
+                                     "channel": "paper_ingame_prop"})
+    with patch.object(mod, "run_paper_cycle", paper_s), \
+         patch.object(mod, "grade_open_bets", grade_s), \
+         patch.object(mod, "improve_all", improve_s), \
+         patch.object(mod, "grade_summary", summary_s), \
+         patch.object(mod, "_place_ingame_props", ingame), \
+         patch.object(mod, "_line_tick", MagicMock(return_value={"status": "ok", "sports": []})), \
+         patch.object(mod, "_write_scoreboard", MagicMock(return_value={"status": "ok"})):
+        out = mod.run_once()
+    ingame.assert_called_once()
+    assert out["place_ingame_props"]["placed"] == 4
+    assert out["place_ingame_props"]["channel"] == "paper_ingame_prop"
+
+
 def test_prop_improve_is_wired_into_run_once():
     """run_once must run the PROP calibration ratchet as a guarded step and surface its
     verdicts -- props 'get better' independently each cycle in the live m1_paper loop."""
@@ -340,6 +372,69 @@ def test_prop_history_improve_is_wired_into_run_once():
     hist.assert_called_once()
     assert out["prop_history_improve"]["source"] == "history"
     assert out["prop_history_improve"]["n_rows"] == 3000
+
+
+def test_snapshots_rebuild_when_missing(tmp_path):
+    """A missing snapshot file triggers build_snapshot and is reported 'written'."""
+    mod = _import_loop()
+    import scripts.platformkit.frontend.snapshot_writer as sw
+    build = MagicMock(return_value={"status": "ok"})
+    with patch.object(sw, "DEFAULT_OUT_DIR", tmp_path), \
+         patch.object(sw, "build_snapshot", build), \
+         patch.object(mod, "_SNAPSHOT_SPORTS", ("mlb",)):
+        out = _REAL_WRITE_SNAPSHOTS()
+    build.assert_called_once_with("mlb")
+    assert out["mlb"] == "written"
+
+
+def test_snapshots_skip_fresh(tmp_path):
+    """A recently-written snapshot is left alone (no rebuild) and reported 'fresh'."""
+    mod = _import_loop()
+    import scripts.platformkit.frontend.snapshot_writer as sw
+    (tmp_path / "mlb.json").write_text("{}", encoding="ascii")  # just-written -> fresh
+    build = MagicMock(return_value={"status": "ok"})
+    with patch.object(sw, "DEFAULT_OUT_DIR", tmp_path), \
+         patch.object(sw, "build_snapshot", build), \
+         patch.object(mod, "_SNAPSHOT_SPORTS", ("mlb",)), \
+         patch.object(mod, "_SNAPSHOT_MAX_AGE_SEC", 9999.0):
+        out = _REAL_WRITE_SNAPSHOTS()
+    build.assert_not_called()
+    assert out["mlb"] == "fresh"
+
+
+def test_snapshots_per_sport_error_isolated(tmp_path):
+    """One sport's build raising never stops the other; the failure is captured per-sport."""
+    mod = _import_loop()
+    import scripts.platformkit.frontend.snapshot_writer as sw
+
+    def _build(sport):
+        if sport == "mlb":
+            raise RuntimeError("feed down")
+        return {"status": "ok"}
+
+    with patch.object(sw, "DEFAULT_OUT_DIR", tmp_path), \
+         patch.object(sw, "build_snapshot", MagicMock(side_effect=_build)), \
+         patch.object(mod, "_SNAPSHOT_SPORTS", ("mlb", "soccer_intl")):
+        out = _REAL_WRITE_SNAPSHOTS()
+    assert out["mlb"].startswith("error:")
+    assert out["soccer_intl"] == "written"
+
+
+def test_snapshots_wired_into_run_once():
+    """run_once runs the frontend-snapshot refresh as a guarded step and surfaces it."""
+    mod = _import_loop()
+    paper_s, grade_s, improve_s, summary_s = _core_stubs()
+    snaps = MagicMock(return_value={"mlb": "written", "soccer_intl": "fresh"})
+    with patch.object(mod, "run_paper_cycle", paper_s), \
+         patch.object(mod, "grade_open_bets", grade_s), \
+         patch.object(mod, "improve_all", improve_s), \
+         patch.object(mod, "grade_summary", summary_s), \
+         patch.object(mod, "_write_frontend_snapshots", snaps), \
+         patch.object(mod, "_line_tick", MagicMock(return_value={"status": "ok", "sports": []})), \
+         patch.object(mod, "_write_scoreboard", MagicMock(return_value={"status": "ok"})):
+        out = mod.run_once()
+    snaps.assert_called_once()
+    assert out["snapshots"]["mlb"] == "written"
 
 
 def test_print_cycle_has_no_ratchet_field(capsys):

@@ -145,7 +145,7 @@ export function InGameNumber({
           <summary className="cursor-pointer select-none">provenance</summary>
           <ul className="mt-1 space-y-0.5 font-mono">
             {provenance.map((p, i) => (
-              <li key={i}>{p}</li>
+              <li key={`${p}-${i}`}>{p}</li>
             ))}
           </ul>
         </details>

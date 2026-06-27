@@ -209,6 +209,7 @@ def _build_trail_row(raw: Dict[str, Any]) -> Dict[str, Any]:
         "model_ev": model_ev,
         "tier": (str(tier) if tier is not None else None),
         "stake_units": (float(stake_units) if stake_units is not None else None),
+        "unit_result": (float(raw["unit_result"]) if raw.get("unit_result") is not None else None),
         "status": status,
         "graded": graded,
         "outcome": (str(outcome) if outcome is not None else None),
@@ -219,7 +220,6 @@ def _build_trail_row(raw: Dict[str, Any]) -> Dict[str, Any]:
         "clv_unavailable": clv_unavailable,
         "clv_note": (str(clv_note) if clv_note is not None else None),
         "executed": False,  # INVARIANT: paper-only, never a real bet
-        # source channel ("paper_ingame" for live in-game, else paper) -> UI isolates in-game.
         "channel": (str(raw.get("channel")) if raw.get("channel") is not None else None),
         "ts": ts,
         "settled_at": (str(settled_at) if settled_at is not None else None),

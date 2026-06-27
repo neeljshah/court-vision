@@ -194,10 +194,26 @@ def _mount_ops(app) -> None:  # noqa: ANN001
         """Pipe services[] through normalize_rows; fresh=null->stale; no $."""
         try:
             from ops import health_aggregator as _agg  # noqa: PLC0415
+            from predict_service.ops_port_liveness import (  # noqa: PLC0415
+                apply_heartbeat_liveness,
+                apply_port_liveness,
+                build_sla_map,
+            )
             from predict_service.status_freshness_normalizer import normalize_rows  # noqa: PLC0415
             raw = _agg.aggregate()
             raw_rows = raw.get("services") or []
-            norm = normalize_rows(raw_rows, default_sla_sec=300.0)
+            # Port-probed servers (m1_api_paper, m1_ui, ...) carry no heartbeat by
+            # design; their liveness source is the listening socket. Probe it so a
+            # healthy API does not read false-stale. Heartbeat-only daemons that drop
+            # a data/cache/daemon_heartbeats/<name>.txt file but are not registered in
+            # daemon_registry.json (m1_bankroll, m5_autonomy_monitor, ...) are resolved
+            # by their heartbeat file. Then judge every service against its OWN declared
+            # fresh_sec instead of a blanket 300s default.
+            raw_rows = apply_port_liveness(raw_rows)
+            raw_rows = apply_heartbeat_liveness(raw_rows)
+            norm = normalize_rows(
+                raw_rows, default_sla_sec=300.0, sla_map=build_sla_map(raw_rows)
+            )
             out = dict(raw)
             out["services"] = norm.get("rows") or raw_rows
             out["overall"] = norm.get("overall") or raw.get("overall")

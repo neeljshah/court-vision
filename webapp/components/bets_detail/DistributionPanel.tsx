@@ -73,13 +73,13 @@ function PropRow({ row }: { row: PlayerPropRow }) {
         <UncertaintyBar
           prob={row.p_over ?? null}
           low={
-            row.proj_sigma != null && row.proj_mean != null
-              ? Math.max(0, row.p_over! - row.proj_sigma * 0.1)
+            row.p_over != null && row.proj_sigma != null && row.proj_mean != null
+              ? Math.max(0, row.p_over - row.proj_sigma * 0.1)
               : undefined
           }
           high={
-            row.proj_sigma != null && row.proj_mean != null
-              ? Math.min(1, row.p_over! + row.proj_sigma * 0.1)
+            row.p_over != null && row.proj_sigma != null && row.proj_mean != null
+              ? Math.min(1, row.p_over + row.proj_sigma * 0.1)
               : undefined
           }
           label="P(over)"
