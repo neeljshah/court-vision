@@ -45,34 +45,47 @@ logger = logging.getLogger("auto_loop")
 # Active sports for the line/close capture tick (matches odds_provider defaults).
 _LINE_SPORTS: tuple = ("nba", "mlb", "soccer", "tennis")
 
-# Per-tick cap on NEW prop placements per sport (highest-EV first). The placer ALREADY
-# gates to reliable + ev_flag ok + tier A/B (min_tier='B'), so every placed bet clears the
-# QUALITY bar; this cap is only a flood-bound. Raised to 50 (from 25) to record AS MANY of
-# the A/B-quality bets as possible per the directive, while still bounding a single-day
-# firehose. Per-day dedup keeps it idempotent. (Quality is positive-MODEL-EV, not proven $.)
-_PROP_MAX_PER_SPORT: int = 50
-
-
-# Discipline floor: place only higher-conviction props (tier A/B), DROP marginal tier-C
-# (its proxy-adjusted EV is swamped by vig). Fewer/sharper = less bleed on an efficient
-# market. EV is MODEL_VIEW only, NOT a proven edge; CLV is the honest judge.
-_PROP_MIN_TIER: str = "B"
+# PREGAME prop discipline (REFOCUS 2026-06-24: fewer/better, in-game-first). The pregame
+# prop channel is the realized BLEEDER on an efficient market (model-view flood vs vig), so
+# it is now the LEAST-favored channel: tier-A only, calibration-gated (stake only families
+# we have PROVEN we calibrate -- replicated SHIP), and a small cap. The EDGE focus is the
+# in-game channel below. EV is MODEL_VIEW, never a proven $ edge; CLV is the judge.
+_PROP_MAX_PER_SPORT: int = 8
+_PROP_MIN_TIER: str = "A"
+# World Cup pregame props: settleable + tier-A best bets, capped small. NOT calibration-gated
+# -- soccer is UNMEASURED (no leak-free verdict yet), not rejected, so we include its best
+# settleable props (leader-gradeable shots/saves) and let CLV measure whether WC has an edge.
+_WC_PROP_MAX_PER_SPORT: int = 8
+# in-game (the believed/validated freshness edge) stays at the A/B floor so it fires broadly.
+_INGAME_MIN_TIER: str = "B"
 
 
 def _place_props() -> Dict[str, Any]:
-    """Paper-place today's priced player props into the unified ledger (UNITS, capped).
-    Guarded + lazy import so a prop-feed error never sinks the loop. Idempotent per day.
-    min_tier='B' concentrates the slate on conviction picks (no tier-C marginal flood)."""
+    """Paper-place today's PREGAME props as BEST BETS (UNITS, tightly capped). MLB is
+    calibration-gated (only replicated-SHIP families) so the efficient-market flood can no
+    longer bleed; World Cup (soccer_intl) is settleable + tier-A but NOT calibration-gated
+    (unmeasured, not rejected). Guarded; idempotent per day."""
+    out: Dict[str, Any] = {"status": "ok", "n_placed": 0, "by_sport": {}}
     try:
         from scripts.platformkit.bestbets.props_paper_placer import run as _place
-        return _place(max_per_sport=_PROP_MAX_PER_SPORT, min_tier=_PROP_MIN_TIER)
+        mlb = _place(sports=("mlb",), max_per_sport=_PROP_MAX_PER_SPORT,
+                     min_tier=_PROP_MIN_TIER, calibration_only=True)
+        wc = _place(sports=("soccer_intl",), max_per_sport=_WC_PROP_MAX_PER_SPORT,
+                    min_tier=_PROP_MIN_TIER, calibration_only=False)
+        for r in (mlb, wc):
+            out["n_placed"] += int(r.get("n_placed", 0) or 0)
+            out["by_sport"].update(r.get("by_sport", {}))
+        return out
     except Exception as exc:  # noqa: BLE001
         return {"status": "error", "reason": "%s: %s" % (type(exc).__name__, exc)}
 
 
 # Per-tick cap on NEW Kalshi/Polymarket GAME (moneyline) placements per sport (flood-bound;
 # every placement already clears the A/B tier + plausibility guard). 25 covers a full slate.
+# Kalshi PM is a realized-POSITIVE channel (small n) -> kept at the A/B floor (own constant,
+# NOT coupled to the tightened pregame-prop tier) so we keep "pushing" it per the directive.
 _PM_GAME_MAX_PER_SPORT: int = 25
+_PM_MIN_TIER: str = "B"
 
 
 def _place_pm_games() -> Dict[str, Any]:
@@ -81,7 +94,81 @@ def _place_pm_games() -> Dict[str, Any]:
     system. Guarded; min_tier='B'; idempotent per game/side; UNITS only; real-money DENY."""
     try:
         from scripts.platformkit.pm_trading.pm_game_placer import run as _place
-        return _place(max_per_sport=_PM_GAME_MAX_PER_SPORT, min_tier=_PROP_MIN_TIER)
+        return _place(max_per_sport=_PM_GAME_MAX_PER_SPORT, min_tier=_PM_MIN_TIER)
+    except Exception as exc:  # noqa: BLE001
+        return {"status": "error", "reason": "%s: %s" % (type(exc).__name__, exc)}
+
+
+# Frontend per-sport board snapshots the UI reads (data/frontend/snapshots/<sport>.json,
+# served by /api/v1/bestbets/<sport>). Nothing else regenerates them, so without this step
+# they go stale (the prop board build is heavy ~2min/sport). Live sports only -- the FE shows
+# these. Staleness-gated so rapid restarts don't hammer the build; a sport already fresh is
+# skipped. UNITS only / calibration not edge -- this just refreshes what the loop already knows.
+_SNAPSHOT_SPORTS: tuple = ("mlb", "soccer_intl")
+_SNAPSHOT_MAX_AGE_SEC: float = 900.0
+
+
+def _write_frontend_snapshots() -> Dict[str, Any]:
+    """Rebuild each live sport's frontend board snapshot IFF missing or stale (> max age).
+
+    Guarded + lazy import: a snapshot-build failure (slow feed, etc.) never sinks the loop.
+    Returns a per-sport map of 'written' / 'fresh' / 'error: <type>'."""
+    try:
+        from scripts.platformkit.frontend import snapshot_writer as _sw
+    except Exception as exc:  # noqa: BLE001
+        return {"status": "unavailable", "reason": "%s: %s" % (type(exc).__name__, exc)}
+    now = time.time()
+    out: Dict[str, Any] = {}
+    for sport in _SNAPSHOT_SPORTS:
+        path = _sw.DEFAULT_OUT_DIR / ("%s.json" % sport)
+        try:
+            fresh = path.exists() and (now - path.stat().st_mtime) < _SNAPSHOT_MAX_AGE_SEC
+            if fresh:
+                out[sport] = "fresh"
+                continue
+            _sw.build_snapshot(sport)
+            out[sport] = "written"
+        except Exception as exc:  # noqa: BLE001 -- one sport must not stop the rest
+            out[sport] = "error: %s" % type(exc).__name__
+    return out
+
+
+# Per-tick cap on NEW in-game prop placements per live game (flood-bound; each already
+# clears the tier floor + freshness band). A position re-opens only on a new slate day.
+# REFOCUS 2026-06-24: in-game is the FOCUS channel (the validated freshness lever) -> raised
+# from 12 so a live game's edges are captured broadly, while pregame props are starved above.
+_INGAME_PROP_MAX_PER_GAME: int = 20
+
+
+def _place_ingame_props() -> Dict[str, Any]:
+    """Paper-place IN-GAME player props: re-price each live prop on realized state +
+    freshness, compare to the book's LIVE two-way line, record the +edge side (tier-gated,
+    channel=paper_ingame_prop). Guarded + lazy import; settles via the SAME prop settler.
+    Ticks mlb + soccer_intl (World Cup); each is an honest no-op unless that sport has a
+    live game AND a live two-way prop source. UNITS only, no $ edge."""
+    out: Dict[str, Any] = {"status": "ok", "placed": 0, "by_sport": {}}
+    try:
+        from scripts.platformkit.ingame.ingame_prop_trader import run as _run
+        from scripts.platformkit.improve.ingame_prop_gate import gate_if_enabled
+        gate = gate_if_enabled()  # None unless CV_INGAME_CALIB_GATE truthy (default OFF)
+        for sp in ("mlb", "soccer_intl"):
+            r = _run(sp, max_per_game=_INGAME_PROP_MAX_PER_GAME,
+                     min_tier=_INGAME_MIN_TIER, gate=gate)
+            out["by_sport"][sp] = r
+            out["placed"] += int(r.get("placed", 0) or 0)
+        return out
+    except Exception as exc:  # noqa: BLE001
+        return {"status": "error", "reason": "%s: %s" % (type(exc).__name__, exc)}
+
+
+def _capture_prop_closes() -> Dict[str, Any]:
+    """Snapshot the LIVE two-way price of every open in-game prop so its CLOSE (the
+    last quote before the market suspends) is captured -- this is what finally makes
+    in-game props CLV-measurable (the prop settler reads prop_close_store at settle).
+    Guarded + lazy import; honest no-op when nothing is live. UNITS/measurement only."""
+    try:
+        from scripts.platformkit.clv.prop_close_capture import capture_all as _cap
+        return _cap(sports=("mlb", "soccer_intl"))
     except Exception as exc:  # noqa: BLE001
         return {"status": "error", "reason": "%s: %s" % (type(exc).__name__, exc)}
 
@@ -105,7 +192,13 @@ def _prop_improve() -> Dict[str, Any]:
     a flag / writes data/registry/. Guarded so a ratchet error never sinks the loop."""
     try:
         from scripts.platformkit.improve.prop_calibration_ratchet import improve_all as _pi
-        return _pi()
+        out = _pi()
+        try:  # in-game prop ratchet (frac-bucketed) -> refreshes the calib-gate read-surface
+            from scripts.platformkit.improve.ingame_prop_ratchet import improve_all_ingame
+            out["ingame"] = improve_all_ingame().get("meta", {}).get("groups")
+        except Exception as exc:  # noqa: BLE001 -- in-game arm must not sink the pregame arm
+            out["ingame_error"] = "%s: %s" % (type(exc).__name__, exc)
+        return out
     except Exception as exc:  # noqa: BLE001
         return {"status": "error", "reason": "%s: %s" % (type(exc).__name__, exc)}
 
@@ -209,6 +302,9 @@ def run_once(line_sports: tuple = _LINE_SPORTS) -> Dict[str, Any]:
     for name, fn in (("paper", run_paper_cycle),
                      ("place_props", _place_props),
                      ("place_pm_games", _place_pm_games),
+                     ("place_ingame_props", _place_ingame_props),
+                     ("capture_prop_closes", _capture_prop_closes),
+                     ("snapshots", _write_frontend_snapshots),
                      ("grade", grade_open_bets),
                      ("settle_props", _settle_props),
                      ("improve", improve_all),
