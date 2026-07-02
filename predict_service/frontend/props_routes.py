@@ -39,6 +39,7 @@ except ImportError as exc:  # pragma: no cover
 
 from predict_service import store
 from predict_service.prop_surface import build_props_response, unavailable_response
+from predict_service.prop_surface_scraped import build_scraped_props_response
 from predict_service.contracts import HONEST_NOTE
 
 logger = logging.getLogger(__name__)
@@ -134,6 +135,15 @@ def get_props_for_sport(
     for pred in getattr(env, "predictions", []) or []:
         markets = getattr(pred, "markets", []) or []
         all_lines.extend(_prop_lines_from_markets(markets))
+
+    if not all_lines:
+        # No domain-model prop market rows in THIS sport's own game snapshot (the
+        # NBA-pricer path never gets fed for mlb/soccer_intl) -- fall back to the
+        # real scraped-book prop board before reporting UNAVAILABLE.
+        scraped = build_scraped_props_response(sport)
+        if scraped is not None:
+            scraped["generated_at"] = getattr(env, "generated_at", None)
+            return JSONResponse(scraped)
 
     body = build_props_response(sport, prop_date, all_lines)
     body["generated_at"] = getattr(env, "generated_at", None)
