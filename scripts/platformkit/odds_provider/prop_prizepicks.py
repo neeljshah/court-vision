@@ -32,7 +32,7 @@ import json
 import logging
 import urllib.request
 from datetime import datetime, timezone
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from .base import is_unavailable, unavailable
 from .prop_base import PropLine, canon_stat
@@ -61,7 +61,10 @@ def _now_iso() -> str:
 
 
 def _default_http_get(url: str) -> Dict[str, Any]:
-    """One keyless GET with a browser UA; returns parsed JSON or {} on any error."""
+    """One keyless GET with a browser UA; returns parsed JSON or an honest
+    unavailable() sentinel carrying the real failure reason on any error (never a
+    bare {} -- that silently reads as "0 leagues found" downstream and mislabels a
+    network/WAF block as a missing league, per the 2026-07-02 feed_health lesson)."""
     req = urllib.request.Request(
         url, headers={"User-Agent": _UA, "Accept": "application/json"})
     try:
@@ -69,7 +72,7 @@ def _default_http_get(url: str) -> Dict[str, Any]:
             return json.loads(resp.read().decode("utf-8", "replace"))
     except Exception as exc:  # noqa: BLE001 -- never bubble a network error
         logger.warning("prizepicks GET failed: %s", exc)
-        return {}
+        return unavailable("prizepicks GET failed (%s)" % type(exc).__name__)
 
 
 def _to_float(val: Any) -> Optional[float]:
@@ -182,13 +185,20 @@ class PrizePicksProvider:
         self._use_cache = use_cache  # reserved; live fetch is light + keyless
         self._league_id_cache: Dict[str, Optional[str]] = {}  # name -> id
 
-    def _resolve_league_id(self, name: str) -> Optional[str]:
+    def _resolve_league_id(self, name: str) -> Tuple[Optional[str], Optional[str]]:
+        """Return (league_id, unavailable_reason). league_id is None on either a
+        genuine name-miss (leagues list fetched fine, no match) or a fetch failure
+        (leagues list itself unreachable) -- unavailable_reason distinguishes them
+        so the caller never mislabels a network/WAF block as "league not found"."""
         if name in self._league_id_cache:
-            return self._league_id_cache[name]
+            return self._league_id_cache[name], None
         body = self._http_get(_LEAGUES_URL)
-        lid = None if is_unavailable(body) else find_league_id(body, name)
+        if is_unavailable(body):
+            reason = "prizepicks: leagues lookup failed (%s)" % body.get("reason", "unavailable")
+            return None, reason
+        lid = find_league_id(body, name)
         self._league_id_cache[name] = lid
-        return lid
+        return lid, None
 
     def fetch_props(self, sport: str,
                     ) -> Union[List[PropLine], Dict[str, str]]:
@@ -197,10 +207,10 @@ class PrizePicksProvider:
         if not league_name:
             return unavailable("prizepicks: unsupported sport '%s'" % sport)
         try:
-            lid = self._resolve_league_id(league_name)
+            lid, fetch_reason = self._resolve_league_id(league_name)
             if not lid:
-                return unavailable(
-                    "prizepicks: league '%s' not found" % league_name)
+                return unavailable(fetch_reason or (
+                    "prizepicks: league '%s' not found" % league_name))
             body = self._http_get(_PROJ_URL.format(lid=lid))
         except Exception as exc:  # noqa: BLE001 -- degrade, never bubble
             logger.warning("prizepicks fetch failed: %s", exc)
