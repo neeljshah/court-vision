@@ -404,10 +404,25 @@ def _process_game(sport: str, gid: str, legs: Dict[str, float],
             "model_prob": model_p, "devigged_price": _devig_of(tick),
             "p0_source": state.get("p0_source"), "reason": dec.get("reason") or "ok",
         })
+        # SHADOW MEASUREMENT ONLY, added AFTER dec is final -- never read by on_tick.
+        row["model_prob_sp_shadow"] = _sp_shadow(sport, state.get("home_display") or state.get("home"),
+            state.get("away_display") or state.get("away"), model_p, state.get("game_pk"))
     except Exception as exc:  # noqa: BLE001 -- one bad game never stops the others
         logger.warning("inplay_capture_loop game %s/%s failed: %s", sport, gid, exc)
         row["reason"] = "error:%s" % type(exc).__name__
     return row
+
+
+def _sp_shadow(sport: str, home: Any, away: Any, model_p: float, game_pk: Any = None) -> Optional[float]:
+    """SHADOW MEASUREMENT ONLY (logged, never decided on). All logic lives in
+    ingame_sp_shadow.py; this wrapper only guarantees an exception here can never reach
+    the capture path. None-safe."""
+    try:
+        from scripts.platformkit.ingame.ingame_sp_shadow import get_shadow
+        return get_shadow().shadow_prob(sport, str(home or ""), str(away or ""), model_p,
+                                        int(game_pk) if game_pk is not None else None)
+    except Exception:  # noqa: BLE001 -- shadow measurement never affects the capture path
+        return None
 
 
 def _devig_of(tick: Dict[str, Any]) -> Optional[float]:
