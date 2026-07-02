@@ -34,8 +34,16 @@ Honesty:
   * No $ or P&L field. No edge claim.
 
 Sport -> Pinnacle league ID mapping (the IDs that have game markets on the API):
-  nba: 487,  mlb: 246,  soccer: 1980 (EPL),  soccer_intl: 2764 (FIFA WC),
+  nba: 487,  mlb: 246,  soccer: 1980 (EPL),  soccer_intl: 2686 (FIFA WC),
   tennis: 12 (ATP)
+
+Pinnacle rotates a tournament's league id when the event moves from qualifying/
+futures into the live tournament proper -- soccer_intl was 2764 pre-kickoff and
+became 2686 once the 2026 World Cup proper started (live-verified 2026-07-02 via
+GET /sports/29/leagues: 2764 no longer appears in the live league list at all,
+which is why matchups/2764 401s rather than 404s -- a delisted league id, not an
+auth/rate-limit issue). If soccer_intl goes RED again with a 401, re-check that
+listing for a "FIFA - World Cup" entry before assuming it is transient.
 """
 from __future__ import annotations
 
@@ -60,7 +68,7 @@ _LEAGUE_ID: Dict[str, int] = {
     "nba":         487,
     "mlb":         246,
     "soccer":      1980,
-    "soccer_intl": 2764,
+    "soccer_intl": 2686,
     "tennis":      12,
 }
 
