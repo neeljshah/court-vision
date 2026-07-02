@@ -1,0 +1,9 @@
+{
+  "_comment": "Milestone-9 backend boot profile: the headless server stack with NO Next.js UI (the m1_ui node process is dropped from the manifest and from every depends_on edge). Use on RunPod / a headless host. Consumed by supervisor.config.load_profile('backend').",
+  "profile": "backend",
+  "include_ui": false,
+  "log_dir": "logs",
+  "global_env": {
+    "NBA_AI_SUPERVISED": "1"
+  }
+}

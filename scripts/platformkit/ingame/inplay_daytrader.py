@@ -18,10 +18,15 @@ ENTER / HOLD / EXIT (day-trader decision, per captured tick):
   * ENTER when inplay_edge_signal.evaluate -> action="bet" (justified + liquid + fresh +
     a tier floor) AND we are FLAT -> size + paper-place (idempotent: a 2nd ENTER for the
     same game/side/day is a no-op).
-  * HOLD when we already hold the same side and the edge persists -> capture the tick,
+  * RE-ENTER on a side FLIP: if we hold one side and the live edge has flipped to the
+    OTHER side and that side independently clears the same gate, ENTER the new side (a
+    genuinely new +EV opportunity as the line moved). The old position stays open and
+    grades at settle; the new side is a distinct edge_key. Bounded to one position PER
+    SIDE per day by the ledger idempotency, so a thrashing tick stream cannot churn.
+  * HOLD when we already hold the SAME side the edge still favours -> capture the tick,
     place nothing new (idempotent).
   * EXIT is PASSIVE in paper: the in-play "close" is a PROXY (clv_is_proxy=True); the
-    position is GRADED at settle, never actively unwound. A sign flip / below-floor tick
+    position is GRADED at settle, never actively unwound. A below-floor / same-side tick
     is captured (for the grade series) but adds no new bet.
 
 HONESTY (binding): PAPER-only -- executed is ALWAYS False; the real-money gate is a
@@ -134,22 +139,37 @@ def on_tick(sport: str, game_id: str, tick: LiveTick, *,
         if ev["action"] != "bet":
             return decision  # no_bet: captured (for grading) but nothing placed
         if position is not None and position.get("status") == "open":
-            decision["action"] = "hold"  # already in this side -> HOLD, no new placement
-            decision["reason"] = "hold_existing"
-            return decision
+            # HOLD only while the gated edge stays on the SAME side we already hold. If the
+            # live edge has FLIPPED to the OTHER side (e.g. after a goal the market over-
+            # reacts and the model now favours the opponent) and that side INDEPENDENTLY
+            # clears the same gate (justified + liquid + fresh + tier floor), that is a
+            # genuinely NEW +EV opportunity, not the same bet -> fall through and ENTER it.
+            # The old position stays open and grades at settle; the new side is a distinct
+            # edge_key, and the ledger's one-per-(game,side,day) idempotency BOUNDS this to
+            # at most one position PER SIDE per day (so a thrashing tick stream cannot churn).
+            if str(position.get("side")) == str(ev.get("side")):
+                decision["action"] = "hold"  # same side -> HOLD, no new placement
+                decision["reason"] = "hold_existing"
+                return decision
+            decision["reason"] = "edge_flipped_reenter"  # observable: a flip-side re-entry
 
         # ENTER: size (UNITS only) then paper-place (idempotent, executed=False).
+        # Bet the side the (now two-sided) signal chose -- may be AWAY, not just home --
+        # using THAT side's model prob + obtainable decimal. The grade pair captured above
+        # stays home-aligned; only the placed bet's side/odds/prob reflect the chosen leg.
+        bet_side = ev.get("side", _sig.SIDE)
+        bet_mp = ev.get("bet_model_prob", mp)
         dec_odds = ev.get("obtainable_decimal")
-        units = _policy.stake_units(ev=ev["ev"], model_prob=mp,
+        units = _policy.stake_units(ev=ev["ev"], model_prob=bet_mp,
                                     taken_decimal=dec_odds, tier=ev["tier"],
                                     clv_is_proxy=ev["clv_is_proxy"])
         placement = _paper.record_ingame_bet(
-            sport, game_id, MARKET, _sig.SIDE, float(dec_odds),
-            model_prob=mp, stake=0.0, path=ledger_path)  # stake$ stays 0.0 -- units only
+            sport, game_id, MARKET, bet_side, float(dec_odds),
+            model_prob=bet_mp, stake=0.0, path=ledger_path)  # stake$ stays 0.0 -- units only
         decision.update({
-            "action": "bet", "units": units, "placement": placement,
-            "position": {"status": "open", "side": _sig.SIDE, "tier": ev["tier"],
-                         "model_prob": mp, "devigged_price": dp,
+            "action": "bet", "side": bet_side, "units": units, "placement": placement,
+            "position": {"status": "open", "side": bet_side, "tier": ev["tier"],
+                         "model_prob": bet_mp, "devigged_price": ev.get("bet_devigged_price", dp),
                          "edge_key": placement.get("edge_key"), "opened_ts": _now_iso()},
         })
     except Exception as exc:  # noqa: BLE001 -- one bad tick must never sink the loop

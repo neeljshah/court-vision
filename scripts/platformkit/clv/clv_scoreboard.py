@@ -35,7 +35,8 @@ _REPO = os.path.dirname(os.path.dirname(os.path.dirname(_HERE)))
 if _REPO not in sys.path:
     sys.path.insert(0, _REPO)
 
-from scripts.platformkit.clv_ledger import load_ledger  # canonical reader
+from scripts.platformkit.clv_ledger import (  # canonical reader + suspect guard
+    is_clv_suspect, load_ledger)
 
 # Friendly channel labels; an absent channel that still carries a closing line is
 # the legacy game-moneyline book (the '?' rows).
@@ -62,8 +63,13 @@ def _channel_of(row: Dict[str, Any]) -> str:
 
 
 def _is_measurable(row: Dict[str, Any]) -> bool:
+    # An off-market / misparsed taken price fabricates a fake CLV -> it is NOT a
+    # measurable edge row (it would dishonestly inflate the channel mean, e.g. a
+    # "taken" 12.0 on a pick'em close -> +497%). Excluded here so the scoreboard
+    # mirrors clv_ledger.clv_summary's suspect filter.
     return (row.get("clv_status") == "true_close"
-            and row.get("clv_pct") is not None)
+            and row.get("clv_pct") is not None
+            and not is_clv_suspect(row))
 
 
 def _dedup_settled(ledger: Sequence[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -129,17 +135,20 @@ def scoreboard(ledger: Optional[Sequence[Dict[str, Any]]] = None) -> Dict[str, A
     by_ch: Dict[str, Dict[str, Any]] = {}
     for r in settled:
         ch = _channel_of(r)
-        b = by_ch.setdefault(ch, {"rows": [], "measurable": []})
+        b = by_ch.setdefault(ch, {"rows": [], "measurable": [], "n_suspect": 0})
         b["rows"].append(r)
+        if is_clv_suspect(r):
+            b["n_suspect"] += 1          # off-market line: counted, never measured
         if _is_measurable(r):
             b["measurable"].append(r)
 
     channels: Dict[str, Any] = {}
-    tot_settled = tot_measurable = 0
+    tot_settled = tot_measurable = tot_suspect = 0
     for ch, b in by_ch.items():
         rows, meas = b["rows"], b["measurable"]
         tot_settled += len(rows)
         tot_measurable += len(meas)
+        tot_suspect += b["n_suspect"]
         clvs = [float(m["clv_pct"]) for m in meas]
         ci = _mean_ci(clvs)
         beats = sum(1 for c in clvs if c > 0.0)
@@ -147,6 +156,7 @@ def scoreboard(ledger: Optional[Sequence[Dict[str, Any]]] = None) -> Dict[str, A
             "label": _CHANNEL_LABEL.get(ch, ch),
             "n_settled": len(rows),
             "n_measurable": len(meas),
+            "n_suspect_excluded": b["n_suspect"],
             "coverage_pct": round(100.0 * len(meas) / len(rows), 1) if rows else 0.0,
             "mean_clv_pct": ci["mean"],
             "clv_ci95": [ci["lo95"], ci["hi95"]],
@@ -158,6 +168,7 @@ def scoreboard(ledger: Optional[Sequence[Dict[str, Any]]] = None) -> Dict[str, A
     return {
         "total_settled": tot_settled,
         "total_measurable": tot_measurable,
+        "total_suspect_excluded": tot_suspect,
         "coverage_pct": (round(100.0 * tot_measurable / tot_settled, 1)
                          if tot_settled else 0.0),
         "channels": channels,
@@ -194,6 +205,9 @@ def render(board: Dict[str, Any]) -> str:
     lines.append("settled=%d  measurable(true close)=%d  coverage=%.1f%%"
                  % (board["total_settled"], board["total_measurable"],
                     board["coverage_pct"]))
+    if board.get("total_suspect_excluded"):
+        lines.append("excluded %d off-market/misparsed row(s) from CLV (fabricated "
+                     "edge guard)" % board["total_suspect_excluded"])
     lines.append("")
     hdr = ("%-18s %5s %6s %8s %9s %7s  %s"
            % ("channel", "n", "meas", "covg%", "meanCLV%", "beat%", "W-L-P / units"))

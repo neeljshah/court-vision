@@ -160,6 +160,37 @@ def test_world_cup_per_game_market_parses_liquid_tick():
     assert "commence_time" not in t
 
 
+def test_future_dated_game_excluded_as_not_inplay():
+    # A LIQUID contract for a game DAYS out (the next tournament days, traded pre-match)
+    # must NOT be emitted as in-play -- it would let a pregame price masquerade as live.
+    # KXWCGAME-26JUL04CANMAR is Jul 4; with now=Jun 30 it is 4 days out -> dropped.
+    future = dict(_LIQUID_WC, ticker="KXWCGAME-26JUL04CANMAR-MAR",
+                  event_ticker="KXWCGAME-26JUL04CANMAR")
+    ticks = fetch_inplay("soccer_intl", http=_fake_http([future]),
+                         now_iso="2026-06-30T19:00:00Z")
+    assert ticks == []
+
+
+def test_today_and_tomorrow_games_kept_timezone_tolerant():
+    # Today (Jun 30) AND tomorrow (Jul 01) are within the 1-day grace -> KEPT (their true
+    # liveness is the downstream score-state bridge's call); only multi-day futures drop.
+    for d in ("26JUN30", "26JUL01"):
+        m = dict(_LIQUID_WC, ticker="KXWCGAME-%sXYZABC-XYZ" % d,
+                 event_ticker="KXWCGAME-%sXYZABC" % d)
+        ticks = fetch_inplay("soccer_intl", http=_fake_http([m]),
+                             now_iso="2026-06-30T19:00:00Z")
+        assert len(ticks) == 1, "today/tomorrow game must be kept (%s)" % d
+
+
+def test_unparseable_ticker_date_is_kept_not_dropped():
+    # A ticker with no parseable date is KEPT -- never drop a market on a parse miss.
+    m = dict(_LIQUID_WC, ticker="KXWCGAME-WEIRDFORMAT-XYZ",
+             event_ticker="KXWCGAME-WEIRDFORMAT")
+    ticks = fetch_inplay("soccer_intl", http=_fake_http([m]),
+                         now_iso="2026-06-30T19:00:00Z")
+    assert len(ticks) == 1
+
+
 def test_illiquid_and_deprecated_excluded_not_faked():
     # A slate of ONLY untradeable markets emits NOTHING (VOID), never a 0-fill.
     ticks = fetch_inplay(

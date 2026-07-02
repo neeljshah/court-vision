@@ -11,6 +11,7 @@ from scripts.platformkit.clv_ledger import (
     append_settlement,
     clv_summary,
     compute_clv,
+    is_clv_suspect,
     load_ledger,
     record_bet,
     settle_closing_line,
@@ -107,6 +108,45 @@ def test_empty_summary():
     assert s["n_bets"] == 0
     assert s["pct_beat_close"] is None
     assert s["by_sport"] == {}
+    assert s["median_clv_pct"] is None
+    assert s["n_suspect_excluded"] == 0
+
+
+def test_offmarket_taken_price_is_clv_suspect():
+    # A "taken" 12.0 on a game that CLOSED ~pick'em (1.95/1.95) is off-market: no book
+    # offered +1100 on a coin flip -> it is a misparsed line, flagged suspect so it
+    # never fabricates a fake +CLV. A normal underdog price (3.0 vs a 1.8 close) is NOT
+    # suspect (ratio 1.67 < 2.5) -- a real, kept bet.
+    assert is_clv_suspect({"side": "away", "taken_decimal": 12.0,
+                           "closing_decimal_home": 1.95, "closing_decimal_away": 1.95})
+    assert not is_clv_suspect({"side": "home", "taken_decimal": 3.0,
+                               "closing_decimal_home": 1.80, "closing_decimal_away": 2.20})
+    # Missing the side's close -> cannot judge -> NOT flagged (kept).
+    assert not is_clv_suspect({"side": "home", "taken_decimal": 12.0})
+
+
+def test_summary_excludes_suspect_and_reports_robust_median(tmp_path):
+    # Three honest near-pickem bets + ONE off-market garbage row. The garbage row's
+    # +497% CLV must NOT inflate the headline mean: it is excluded (n_suspect_excluded=1),
+    # n_bets counts only the trustworthy rows, and the median is the robust yardstick.
+    ledger = tmp_path / "clv_ledger.jsonl"
+    b1 = record_bet("mlb", "A @ B", "home", "FD", 2.00, path=ledger)
+    b2 = record_bet("mlb", "C @ D", "away", "FD", 2.00, path=ledger)
+    b3 = record_bet("mlb", "E @ F", "home", "FD", 1.95, path=ledger)
+    bad = record_bet("mlb", "G @ H", "away", "FD", 12.00, path=ledger)  # off-market
+    append_settlement(settle_closing_line(b1, 1.95, 1.95), path=ledger)
+    append_settlement(settle_closing_line(b2, 1.95, 1.95), path=ledger)
+    append_settlement(settle_closing_line(b3, 1.95, 1.95), path=ledger)
+    append_settlement(settle_closing_line(bad, 1.95, 1.95), path=ledger)  # fabricates +CLV
+
+    s = clv_summary(load_ledger(ledger))
+    assert s["n_suspect_excluded"] == 1          # the garbage row is flagged + dropped
+    assert s["n_bets"] == 3                       # only the 3 trustworthy rows count
+    assert s["mean_clv_pct"] < 5.0                # NOT dragged to +100%+ by the garbage
+    assert s["median_clv_pct"] is not None
+    # The suspect row's clv_pct is real on disk but never reaches the aggregate.
+    rows = [r for r in load_ledger(ledger) if r.get("status") == "settled"]
+    assert any(float(r["clv_pct"]) > 100.0 for r in rows)  # garbage row IS still on disk
 
 
 # --- M4 lock-guarded write retrofit -----------------------------------------

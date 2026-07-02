@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from scripts.platformkit.odds_provider.markets import MONEYLINE, MarketQuote
 from scripts.platformkit.odds_provider.snapshot import write_quotes
 from scripts.platformkit.odds_provider.line_store import (
-    get_close, get_latest, get_open, parse_game_key,
+    get_close, get_latest, get_latest_batch, get_open, parse_game_key,
 )
 
 TIP = "2026-06-18T23:00:00+00:00"  # tipoff / lock time
@@ -55,6 +55,31 @@ def test_latest_is_most_recent(tmp_path):
     ])
     lat = get_latest("G1", base=tmp_path)
     assert lat[(MONEYLINE, "home")]["odds"] == 2.00
+
+
+def test_latest_batch_one_pass_matches_per_game(tmp_path):
+    # Two games in one sport; batch must return the latest quote per game in one
+    # pass and agree with the per-game get_latest() for each.
+    def _q2(gid, captured_at, odds):
+        return MarketQuote(
+            sport="nba", game_id=gid, home="A", away="B", market_type=MONEYLINE,
+            side="home", line=None, odds=odds, book="espn:DraftKings",
+            captured_at=captured_at, devigged_prob=None)
+    write_quotes([_q2("G1", "2026-06-18T18:00:00+00:00", 1.80)], out_dir=tmp_path)
+    write_quotes([_q2("G1", "2026-06-18T22:00:00+00:00", 2.00)], out_dir=tmp_path)
+    write_quotes([_q2("G2", "2026-06-18T19:00:00+00:00", 1.50)], out_dir=tmp_path)
+
+    batch = get_latest_batch("nba", ["G1", "G2", "G3"], base=tmp_path)
+    assert batch["G1"][(MONEYLINE, "home")]["odds"] == 2.00  # latest of the two
+    assert batch["G2"][(MONEYLINE, "home")]["odds"] == 1.50
+    assert "G3" not in batch  # no history -> absent, never fabricated
+    # parity with the per-game reader
+    assert batch["G1"] == get_latest("G1", base=tmp_path)
+
+
+def test_latest_batch_empty_inputs(tmp_path):
+    assert get_latest_batch("nba", [], base=tmp_path) == {}
+    assert get_latest_batch("nba", ["G1"], base=tmp_path) == {}  # no files yet
 
 
 def test_close_within_window_is_true_close(tmp_path):

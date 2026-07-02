@@ -50,6 +50,7 @@ from typing import Any, Callable, Dict, List, Optional
 
 from scripts.platformkit.ingame import inplay_daytrader as _dt
 from scripts.platformkit.ingame import ingame_live_state as _ls
+from scripts.platformkit.ingame import ingame_segment_trust as _segment_trust
 from scripts.platformkit.ingame import settle_stamp as _settle
 
 logger = logging.getLogger(__name__)
@@ -67,7 +68,13 @@ DEFAULT_SPORTS: List[str] = ["mlb", "soccer_intl"]
 # an efficient market. A lower floor surfaces genuine smaller divergences (e.g. right after a
 # goal, before the market fully re-prices) as LOWER-CONFIDENCE, honestly-CLV-graded paper
 # bets -- NOT an edge claim. None/absent -> strict floor. Soccer/WC = +1% EV.
-_INGAME_RELAXED_EV_FLOOR: Dict[str, float] = {"soccer_intl": 0.01, "soccer": 0.01}
+# Opt-in relaxed in-game EV floor per sport (paper/measurement; CLV grades the truth, never
+# a $ edge claim). In-game model-vs-market divergences are small, so the strict pre-registered
+# +2%/+3% policy floor rejects almost everything -> the channel placed ~nothing. A modest
+# relaxed floor surfaces the marginal in-game edges (tier C) so the CLV corpus actually fills.
+# MLB added 2026-06-29 (was soccer-only) so in-game places across sports, not just the WC.
+_INGAME_RELAXED_EV_FLOOR: Dict[str, float] = {
+    "soccer_intl": 0.01, "soccer": 0.01, "mlb": 0.01}
 
 # Phase-aware cadence (seconds): poll fast while in-play games are live, slow when quiet.
 LIVE_INTERVAL_SEC = 20.0
@@ -253,10 +260,26 @@ def _build_tick(state: Dict[str, Any], model_p: float,
         "is_liquid": True,   # the price already cleared inplay_kalshi.is_liquid upstream
         "is_fresh": True,    # in-play ticks are fresh by construction; stale feeds emit []
         "clv_is_proxy": True,
-        # opt-in relaxed floor for this sport (None -> strict policy floor in evaluate).
-        "min_ev_floor": _INGAME_RELAXED_EV_FLOOR.get(str(state.get("sport") or "").lower()),
-        "state": {k: state.get(k) for k in ("home", "away", "state_diff",
-                                            "frac_elapsed", "status", "p0", "p0_source")},
+        # opt-in relaxed floor for this sport (None -> strict policy floor in evaluate),
+        # routed through the CROSS-CORPUS segment-trust gate: a segment PROVEN worse than
+        # the venue price across independent corpora reverts to the strict floor (suppress
+        # its marginal relaxed bets); trusted/neutral/unknown keep the relaxed floor. The
+        # gate acts ONLY on replicated proof and is reversible (CV_INGAME_SEGMENT_TRUST=0),
+        # so thin/unreplicated data changes nothing -- do-no-harm.
+        "min_ev_floor": _segment_trust.floor_for_segment(
+            str(state.get("sport") or "").lower(), state,
+            _INGAME_RELAXED_EV_FLOOR.get(str(state.get("sport") or "").lower())),
+        # Pass the FULL resolved state through to the grade row's state_summary: the score,
+        # the segment fields (inning/half/period/minute/clock) AND the DEEP MLB base-out
+        # (outs/base/bos/re/count, game_pk) the resolver merges in.  The old 7-key projection
+        # dropped all of these -> every captured tick logged a bare "live".  These keys feed
+        # ONLY live_grade._state_summary (the label); model/price/sizing read top-level tick
+        # fields, so widening this is label-only and cannot change a decision.
+        "state": {k: state.get(k) for k in (
+            "home", "away", "state_diff", "frac_elapsed", "status", "p0", "p0_source",
+            "home_score", "away_score", "inning", "half", "period", "minute", "clock",
+            "outs", "base", "bos", "re", "count", "pitch_count", "tto",
+            "game_pk") if k in state},
     }
 
 
@@ -265,6 +288,7 @@ def poll_once(*, sports: Optional[List[str]] = None,
               model_fn: Optional[ModelFn] = None,
               inplay_fetch_fn: Optional[InplayFetchFn] = None,
               finals_fn: Optional[FinalsFn] = None,
+              deep_state_fn: Optional[Callable[[str], Dict[str, Any]]] = None,
               grade_dir: Optional[Path] = None,
               ledger_path: Optional[Path] = None,
               heartbeat_path: Optional[Path] = None,
@@ -294,9 +318,11 @@ def poll_once(*, sports: Optional[List[str]] = None,
             logger.warning("inplay_capture_loop fetch error %s: %s", sport, exc)
             ticks = []
         legs_by_game = _yes_pair(list(ticks) if ticks else [])
+        # DEEP enrichment is MLB-only (the base-out resolver); other sports pass through.
+        sport_deep_fn = deep_state_fn if str(sport).lower() == "mlb" else None
         for gid, legs in legs_by_game.items():
             row = _process_game(sport, gid, legs, ls_fn, md_fn, pos_map,
-                                grade_dir, ledger_path, nowdt)
+                                grade_dir, ledger_path, nowdt, sport_deep_fn)
             games_seen.append(row)
             if row.get("paired"):
                 n_live += 1
@@ -332,7 +358,9 @@ def _process_game(sport: str, gid: str, legs: Dict[str, float],
                   ls_fn: LiveStateFn, md_fn: ModelFn,
                   pos_map: Dict[str, Dict[str, Any]],
                   grade_dir: Optional[Path], ledger_path: Optional[Path],
-                  nowdt: datetime) -> Dict[str, Any]:
+                  nowdt: datetime,
+                  deep_state_fn: Optional[Callable[[str], Dict[str, Any]]] = None
+                  ) -> Dict[str, Any]:
     """Capture + paper-decide ONE live game's tick. Per-game guarded: never raises."""
     row: Dict[str, Any] = {"sport": sport, "game_id": gid, "paired": False,
                            "bet": False, "reason": ""}
@@ -344,6 +372,17 @@ def _process_game(sport: str, gid: str, legs: Dict[str, float],
         if not isinstance(state, dict):
             row["reason"] = "no_live_state"
             return row
+        state.setdefault("sport", sport)  # segment-trust floor lookup needs the sport
+        # DEEP base-out enrichment (MLB): resolve gid (Kalshi ticker) -> statsapi gamePk ->
+        # authoritative linescore base-out, MERGED onto the ESPN-resolved state so the active
+        # series carries outs/base/bos/re/count + game_pk every tick (additive; never raises).
+        if deep_state_fn is not None:
+            try:
+                deep = deep_state_fn(gid)
+                if isinstance(deep, dict) and deep:
+                    state = {**state, **deep}
+            except Exception as exc:  # noqa: BLE001 -- deep state is additive, never fatal
+                logger.debug("inplay_capture_loop deep(%s/%s) failed: %s", sport, gid, exc)
         model_p = _prob01(md_fn(sport, state))
         if model_p is None:
             row["reason"] = "no_model_prob"
@@ -413,6 +452,22 @@ def _write_heartbeat(heartbeat: Dict[str, Any], heartbeat_path: Optional[Path]) 
         logger.warning("inplay_capture_loop heartbeat write failed: %s", exc)
 
 
+def _make_mlb_deep_fn(deep_state_fn: Optional[Callable[[str], Dict[str, Any]]]
+                      ) -> Optional[Callable[[str], Dict[str, Any]]]:
+    """Build the per-tick MLB deep-state enricher (LAZY: no candidate fetch until a game
+    actually needs enriching, so a dead-feed tick stays offline).  An explicit
+    deep_state_fn wins (tests inject an offline stub); otherwise the real statsapi resolver.
+    Returns None if the resolver cannot be imported -- enrichment is then simply skipped."""
+    if deep_state_fn is not None:
+        return deep_state_fn
+    try:
+        from scripts.platformkit.ingame import ingame_id_resolver_mlb as _res
+        return _res.make_tick_deep_fn()
+    except Exception as exc:  # noqa: BLE001 -- no resolver -> shallow capture, never a crash
+        logger.debug("inplay_capture_loop deep enricher unavailable: %s", exc)
+        return None
+
+
 def serve_forever(interval: Optional[float] = None, *,
                   clock: Optional[Callable[[float], None]] = None,
                   max_ticks: Optional[int] = None,
@@ -421,6 +476,8 @@ def serve_forever(interval: Optional[float] = None, *,
                   model_fn: Optional[ModelFn] = None,
                   inplay_fetch_fn: Optional[InplayFetchFn] = None,
                   finals_fn: Optional[FinalsFn] = None,
+                  mlb_deep: bool = False,
+                  deep_state_fn: Optional[Callable[[str], Dict[str, Any]]] = None,
                   grade_dir: Optional[Path] = None,
                   ledger_path: Optional[Path] = None,
                   heartbeat_path: Optional[Path] = None) -> int:
@@ -428,14 +485,24 @@ def serve_forever(interval: Optional[float] = None, *,
 
     BOUNDED runs ALWAYS stop (max_ticks). *clock* is injectable so the tested path NEVER
     calls time.sleep. Positions are threaded across ticks. Never raises on a per-tick error.
+
+    *mlb_deep* (default OFF) enables the statsapi base-out enricher so the captured MLB
+    series carries the deep in-game state every tick; the production runner turns it ON.
+    The enricher is rebuilt per tick (fresh live candidates) and LAZY (no fetch on a tick
+    with no MLB game to enrich), so leaving it OFF -- or running with a dead feed -- needs
+    no network.  *deep_state_fn* injects an offline enricher for the tested path.
     """
     sleep = clock if clock is not None else time.sleep
     positions: Dict[str, Dict[str, Any]] = {}
     ticks = 0
     while max_ticks is None or ticks < max_ticks:
+        # Fresh per-tick enricher so the live candidate set tracks the slate (LAZY: built
+        # only when mlb_deep is on; no candidate fetch until a real MLB game is enriched).
+        tick_deep_fn = _make_mlb_deep_fn(deep_state_fn) if mlb_deep else None
         try:
             hb = poll_once(sports=sports, live_state_fn=live_state_fn, model_fn=model_fn,
                            inplay_fetch_fn=inplay_fetch_fn, finals_fn=finals_fn,
+                           deep_state_fn=tick_deep_fn,
                            grade_dir=grade_dir, ledger_path=ledger_path,
                            heartbeat_path=heartbeat_path, positions=positions)
         except Exception as exc:  # noqa: BLE001 -- a tick error never stops the loop

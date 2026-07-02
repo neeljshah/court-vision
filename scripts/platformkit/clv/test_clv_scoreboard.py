@@ -75,6 +75,31 @@ def test_significant_positive_clv_flagged():
     assert "SIGNAL" in b["verdict"]
 
 
+def test_offmarket_row_excluded_from_measurable():
+    # A row whose taken price (12.0) is wildly longer than its side's close (1.95) is
+    # off-market -> excluded from the measurable set + counted as suspect, so its
+    # fabricated +497% CLV never inflates the channel mean (the dishonesty guard).
+    led = [
+        {"bet_id": "good", "channel": "moneyline", "status": "settled",
+         "clv_status": "true_close", "clv_pct": -1.0, "unit_result": -1.0,
+         "settled_at": "2026-06-25T01:00:00Z", "sport": "mlb", "side": "home",
+         "taken_decimal": 1.95, "closing_decimal_home": 1.95,
+         "closing_decimal_away": 1.95},
+        {"bet_id": "bad", "channel": "moneyline", "status": "settled",
+         "clv_status": "true_close", "clv_pct": 497.0, "unit_result": 1.0,
+         "settled_at": "2026-06-25T02:00:00Z", "sport": "mlb", "side": "away",
+         "taken_decimal": 12.0, "closing_decimal_home": 1.95,
+         "closing_decimal_away": 1.95},
+    ]
+    b = S.scoreboard(led)
+    ml = b["channels"]["moneyline"]
+    assert ml["n_settled"] == 2            # both are real placed bets
+    assert ml["n_measurable"] == 1         # only the on-market row is measurable
+    assert ml["n_suspect_excluded"] == 1
+    assert b["total_suspect_excluded"] == 1
+    assert ml["mean_clv_pct"] == -1.0      # NOT dragged toward +497 by the garbage row
+
+
 def test_render_runs():
     led = [_row("m1", "moneyline", clv_status="true_close", clv_pct=1.0,
                 unit_result=1.0, closing=2.0)]

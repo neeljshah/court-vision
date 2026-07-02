@@ -197,6 +197,51 @@ def get_latest(game_key: str, *, base: Optional[Path] = None
     return _pick_per_market_side(rows, latest=True)
 
 
+def get_latest_batch(sport: str, game_ids: Any, *, base: Optional[Path] = None
+                     ) -> Dict[str, Dict[Tuple[str, str], Dict[str, Any]]]:
+    """MOST RECENT quote per (market_type, side) for MANY game_ids in ONE pass.
+
+    Like calling get_latest() once per bare game_id, but scans the sport's files a
+    SINGLE time instead of once-per-game -- bare-id get_latest() (no sport hint)
+    re-globs+re-parses EVERY sport's files per game (O(games x corpus) -> a
+    full-slate board hang). This is O(corpus): one pass, indexed by game_id.
+    Returns {game_id: {(market_type, side): row}}, games with no history absent.
+    Pure on-disk read, no network; never raises."""
+    want = {str(g) for g in (game_ids or [])}
+    root = Path(base) if base is not None else DEFAULT_HISTORY_DIR
+    sport_dir = root / str(sport).lower()
+    best: Dict[Tuple[str, str, str], Dict[str, Any]] = {}
+    if want and sport_dir.exists():
+        for f in sorted(sport_dir.glob("*.jsonl")):
+            try:
+                with f.open("r", encoding="utf-8") as fh:
+                    for line in fh:
+                        line = line.strip()
+                        if not line:
+                            continue
+                        try:
+                            row = json.loads(line)
+                        except json.JSONDecodeError:
+                            continue
+                        gid = str(row.get("game_id", "")) if isinstance(row, dict) else ""
+                        if gid not in want:
+                            continue
+                        ts = _parse_ts(row.get("captured_at"))
+                        if ts is None:
+                            continue
+                        row["_ts"] = ts
+                        k = (gid, str(row.get("market_type", "")), str(row.get("side", "")))
+                        cur = best.get(k)
+                        if cur is None or ts >= cur["_ts"]:
+                            best[k] = row
+            except OSError:
+                continue
+    out: Dict[str, Dict[Tuple[str, str], Dict[str, Any]]] = {}
+    for (gid, mtype, side), row in best.items():
+        out.setdefault(gid, {})[(mtype, side)] = _strip(row)
+    return out
+
+
 def _within_lock(row: Dict[str, Any], window_min: int) -> bool:
     """True iff *row* was captured within window_min minutes BEFORE its tipoff."""
     commence = _parse_ts(row.get("commence_time"))
@@ -247,4 +292,5 @@ __all__ = [
     "get_open",
     "get_close",
     "get_latest",
+    "get_latest_batch",
 ]

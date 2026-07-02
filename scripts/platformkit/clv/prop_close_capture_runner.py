@@ -64,13 +64,25 @@ def _beat(now_epoch: Optional[float] = None) -> None:
 # ---------------------------------------------------------------------------
 
 def _default_capture(sports: Sequence[str]) -> Dict[str, Any]:
-    """Run the real two-way close-capture sweep over open in-game props. Never raises."""
-    try:
-        from scripts.platformkit.clv.prop_close_capture import capture_all
-        return dict(capture_all(sports=tuple(sports)) or {})
-    except Exception as exc:  # noqa: BLE001
-        logger.debug("prop_close_capture sweep raised: %s", exc)
-        return {"by_sport": {}, "captured": 0, "error": str(exc)}
+    """Run the real two-way close-capture sweep. Covers BOTH open in-game props
+    (live DK O/U) AND open pregame props (DK pregame two-way, captured near tip so
+    pregame props become CLV-measurable too). Counts are summed. Never raises."""
+    merged: Dict[str, Any] = {"by_sport": {}, "captured": 0}
+    for label, modpath in (("ingame", "scripts.platformkit.clv.prop_close_capture"),
+                           ("pregame", "scripts.platformkit.clv.prop_close_capture_pregame")):
+        try:
+            mod = __import__(modpath, fromlist=["capture_all"])
+            res = dict(mod.capture_all(sports=tuple(sports)) or {})
+        except Exception as exc:  # noqa: BLE001 -- one channel must not sink the other
+            logger.debug("prop_close_capture %s sweep raised: %s", label, exc)
+            continue
+        merged["captured"] += int(res.get("captured", 0) or 0)
+        for sp, v in (res.get("by_sport", {}) or {}).items():
+            slot = merged["by_sport"].setdefault(sp, {"open_props": 0, "captured": 0,
+                                                       "no_live_price": 0})
+            for k in ("open_props", "captured", "no_live_price"):
+                slot[k] = int(slot.get(k, 0) or 0) + int((v or {}).get(k, 0) or 0)
+    return merged
 
 
 def _status_doc(result: Dict[str, Any], now: float, sports: Sequence[str]) -> Dict[str, Any]:

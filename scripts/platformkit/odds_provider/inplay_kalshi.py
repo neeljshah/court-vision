@@ -43,8 +43,10 @@ repo-internal only. Per-file test:
 from __future__ import annotations
 
 import logging
+import re
 import time
 import urllib.parse
+from datetime import date, datetime, timedelta, timezone
 from typing import Any, Callable, Dict, List, Optional
 
 from .http_cache import http_get_json
@@ -81,6 +83,50 @@ MIN_SIZE = 1.0      # both bid_size_fp and ask_size_fp must be above this floor
 
 Tick = Dict[str, Any]
 HttpGet = Callable[[str], Any]
+
+# A Kalshi GAME ticker embeds the scheduled DATE (KXWCGAME-26JUL04CANMAR -> 2026-07-04).
+# Kalshi exposes NO commence_time on the live markets list, so a liquid FUTURE-dated
+# contract (the next days' games, traded pre-tournament) would otherwise read as "in_play"
+# and could pollute the in-play CLV corpus with a pregame price. We parse the date and drop
+# a clearly-future game. The 1-day grace is deliberate: a today/tomorrow game (any
+# timezone) is KEPT (its true liveness is decided downstream), so a live game is NEVER
+# dropped -- only multi-day-out futures. An UNPARSEABLE ticker is kept (no drop on a miss).
+_FUTURE_GRACE_DAYS = 1
+_TICKER_DATE_RE = re.compile(r"-(\d{2})([A-Z]{3})(\d{2})")
+_TICKER_MONTHS = {"JAN": 1, "FEB": 2, "MAR": 3, "APR": 4, "MAY": 5, "JUN": 6,
+                  "JUL": 7, "AUG": 8, "SEP": 9, "OCT": 10, "NOV": 11, "DEC": 12}
+
+
+def _ticker_game_date(ref: Any) -> Optional[date]:
+    """Scheduled game date from a Kalshi GAME ticker ('...-26JUL04...' -> 2026-07-04), or
+    None if absent. Pure; never raises (a malformed ticker -> None -> the market is kept)."""
+    try:
+        m = _TICKER_DATE_RE.search(str(ref or "").upper())
+        mo = _TICKER_MONTHS.get(m.group(2)) if m else None
+        if mo is None:
+            return None
+        return date(2000 + int(m.group(1)), mo, int(m.group(3)))
+    except (ValueError, TypeError):
+        return None
+
+
+def _is_future_game(ref: Any, now_dt: datetime) -> bool:
+    """True iff the ticker's game date is clearly FUTURE (> now + _FUTURE_GRACE_DAYS).
+    Timezone-tolerant: only a game >1 day out is dropped, so today/tomorrow is always kept."""
+    gd = _ticker_game_date(ref)
+    return gd is not None and gd > (now_dt.date() + timedelta(days=_FUTURE_GRACE_DAYS))
+
+
+def _parse_iso_now(s: Any) -> datetime:
+    """Best-effort parse of an ISO 'now' stamp -> aware UTC; falls back to now() on miss."""
+    try:
+        v = str(s).strip()
+        if v.endswith("Z"):
+            v = v[:-1] + "+00:00"
+        dt = datetime.fromisoformat(v)
+        return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
+    except (ValueError, TypeError):
+        return datetime.now(timezone.utc)
 
 
 def _fp(market: Dict[str, Any], key: str) -> Optional[float]:
@@ -204,12 +250,19 @@ def fetch_inplay(sport: str, *, http: HttpGet = http_get_json,
     if not isinstance(markets, list):
         return []
     ts = now_iso or _now_iso()
+    now_dt = _parse_iso_now(ts)
     out: List[Tick] = []
     # The series_ticker filter is server-side; the startswith is a cheap defensive
     # guard so a stray cross-series market (a mixed page) can never leak through.
     relevant = [m for m in markets if isinstance(m, dict)
                 and str(m.get("event_ticker", "")).startswith(series)]
     for m in relevant:
+        # FUTURE-GAME guard: a liquid contract for a game days out (the next days' slate,
+        # actively traded pre-tournament) is NOT in-play -- emitting it would let a pregame
+        # price masquerade as live. Drop only the clearly-future games (today/tomorrow kept;
+        # their true liveness is the downstream score-state bridge's call).
+        if _is_future_game(m.get("event_ticker") or m.get("ticker"), now_dt):
+            continue
         if not is_liquid(m, max_spread=max_spread, min_volume=min_volume,
                          min_size=min_size):
             continue  # illiquid / untraded -> VOID, never a fake in-play price

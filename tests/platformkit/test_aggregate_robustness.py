@@ -44,6 +44,19 @@ class _UnavailableProvider:
         return unavailable("down: maintenance")
 
 
+class _HangingProvider:
+    """A pathological source that hangs far longer than the slate deadline."""
+    name = "hang"
+
+    def __init__(self, seconds=30.0):
+        self._seconds = seconds
+
+    def fetch(self, sport):
+        import time
+        time.sleep(self._seconds)
+        return []
+
+
 def test_one_venue_raising_does_not_abort_the_others():
     out = agg.aggregate("nba", providers=[
         _RaisingProvider(), _GoodProvider("2026-06-18T23:00:00+00:00"),
@@ -74,3 +87,41 @@ def test_all_venues_down_is_unavailable_not_fabricated():
         _RaisingProvider(), _UnavailableProvider()])
     assert out["status"] == "unavailable"
     assert out["events"] == []  # no fabricated lines from a dead slate
+
+
+def test_hanging_source_is_bounded_by_the_deadline(monkeypatch):
+    # A source that hangs 30s must NOT stall the slate: providers fetch concurrently
+    # under a shared deadline, so the slate returns AT the deadline with the hung
+    # source recorded as a timeout error and the healthy source's game intact.
+    import time
+    monkeypatch.setattr(agg, "_AGG_FETCH_DEADLINE_S", 1.0)
+    t0 = time.monotonic()
+    out = agg.aggregate("nba", providers=[
+        _HangingProvider(30.0), _GoodProvider("2026-06-18T23:00:00+00:00")])
+    elapsed = time.monotonic() - t0
+    assert elapsed < 5.0  # bounded by the 1s deadline, not the 30s hang
+    assert out["status"] == "ok"
+    assert len(out["events"]) == 1 and out["events"][0]["event_id"] == "G1"
+    assert "error" in out["sources"]["hang"].lower()  # honest timeout, not silent drop
+    assert out["sources"]["good"] == "ok"
+
+
+def test_concurrent_fetch_preserves_provider_order_for_merge():
+    # The merge's "first provider owns orientation" contract must survive concurrency:
+    # provider A lists the game home=Knicks; provider B (flipped) lists home=Spurs.
+    # Gathering in PROVIDER ORDER means A wins orientation -> merged home stays Knicks.
+    from scripts.platformkit.odds_provider.base import OddsEvent
+
+    class _Flipped:
+        name = "flipped"
+
+        def fetch(self, sport):
+            return [OddsEvent(
+                event_id="G1b", sport=sport, home="Spurs", away="Knicks",
+                commence_time=None,
+                prices={"fanduel": {"home": 2.1, "away": 1.8}}, source="flipped")]
+
+    out = agg.aggregate("nba", providers=[
+        _GoodProvider("2026-06-18T23:00:00+00:00"), _Flipped()])
+    assert len(out["events"]) == 1
+    assert out["events"][0]["home"] == "Knicks"  # first provider owns orientation

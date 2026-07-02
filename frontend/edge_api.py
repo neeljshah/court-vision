@@ -72,6 +72,19 @@ def _fresh_line_quotes(game_id: str) -> Dict[Any, Dict[str, Any]]:
         return {}
 
 
+def _batch_fresh_quotes(sport: str, game_ids: List[str]
+                        ) -> Optional[Dict[str, Dict[Any, Dict[str, Any]]]]:
+    """One-pass {game_id: latest-quotes} for the whole slate (NO network). Returns
+    None on any failure so the caller falls back to the per-game read; an empty
+    dict is a valid 'ran, nothing matched' result."""
+    try:
+        from scripts.platformkit.odds_provider.line_store import get_latest_batch
+        return get_latest_batch(sport, game_ids) or {}
+    except Exception as exc:  # noqa: BLE001 -- line history is advisory; degrade per-game
+        logger.debug("edge_api: batch fresh quotes failed sport=%s: %s", sport, exc)
+        return None
+
+
 def _market_view(m: Any) -> Dict[str, Any]:
     """Project one MarketRow to its quote view (every book line, verbatim)."""
     d = m.to_dict() if hasattr(m, "to_dict") else dict(m)
@@ -103,13 +116,18 @@ def _quote_view(mtype: str, side: str, q: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def _collect_markets(record: Any, env: Any, game_id: str) -> List[Dict[str, Any]]:
+def _collect_markets(record: Any, env: Any, game_id: str,
+                     fresh_quotes: Optional[Dict[Any, Dict[str, Any]]] = None
+                     ) -> List[Dict[str, Any]]:
     """Every MarketRow for this game (record-level + envelope-level), deduped, PLUS
     the freshest captured TOTAL / SPREAD (and any other) book quote that the
     snapshot itself did not carry. The snapshot's own rows always win (vetted
     upstream); a line_store quote is only added for a (market_type, side) the
     snapshot lacked -- so moneyline stays exactly as before while total/spread
-    surface as their own rows. No fabricated lines; never raises."""
+    surface as their own rows. No fabricated lines; never raises.
+
+    *fresh_quotes* is the pre-fetched line-history map for this game (from the
+    one-pass batch read); when None we fall back to the per-game on-disk read."""
     seen = set()
     snapshot_ms: set = set()
     out: List[Dict[str, Any]] = []
@@ -122,8 +140,9 @@ def _collect_markets(record: Any, env: Any, game_id: str) -> List[Dict[str, Any]
             continue
         seen.add(key)
         out.append(_market_view(m))
+    fresh = fresh_quotes if fresh_quotes is not None else _fresh_line_quotes(game_id)
     # Merge fresh captured quotes for market/side pairs the snapshot did not carry.
-    for ms_key, q in (_fresh_line_quotes(game_id) or {}).items():
+    for ms_key, q in (fresh or {}).items():
         if not isinstance(q, dict):
             continue
         try:
@@ -140,10 +159,15 @@ def _collect_markets(record: Any, env: Any, game_id: str) -> List[Dict[str, Any]
     return out
 
 
-def _game_edge(record: Any, env: Any) -> Dict[str, Any]:
-    """Assemble the deep edge object for one PredictionRecord (no $ key)."""
+def _game_edge(record: Any, env: Any,
+               fresh_quotes: Optional[Dict[Any, Dict[str, Any]]] = None
+               ) -> Dict[str, Any]:
+    """Assemble the deep edge object for one PredictionRecord (no $ key).
+
+    *fresh_quotes* is this game's pre-fetched line-history map (one-pass batch);
+    None -> per-game on-disk read (single-game path)."""
     game_id = str(record.game_id)
-    markets = _collect_markets(record, env, game_id)
+    markets = _collect_markets(record, env, game_id, fresh_quotes)
     probs = dict(getattr(record, "pregame_probs", {}) or {})
     edges = _edge_lookup(env, game_id)
     comparison = _comparison(markets, probs, edges)
@@ -206,10 +230,21 @@ def build_edge_view(sport: str, *, store_out_dir: Any = None) -> Dict[str, Any]:
             sport, getattr(env, "generated_at", "") or "",
             "snapshot unavailable (%s)" % (getattr(env, "note", "") or "no snapshot"))
 
+    # ONE pass over the sport's captured line history for the whole slate, indexed
+    # by game_id -- vs the per-game bare-id read that re-scans EVERY sport's files
+    # for each game (O(games x corpus) -> a full-slate hang). Falls back per-game on
+    # any miss so the board never depends on this optimization.
+    fresh_by_game = _batch_fresh_quotes(
+        sport, [str(getattr(p, "game_id", "")) for p in env.predictions])
+
     games: List[Dict[str, Any]] = []
     for record in env.predictions:
         try:
-            games.append(_game_edge(record, env))
+            # When the batch ran, an absent game means "no history" -> pass {} so we
+            # do NOT fall back to a full per-game re-scan. None only on batch failure.
+            fq = (fresh_by_game.get(str(record.game_id), {})
+                  if fresh_by_game is not None else None)
+            games.append(_game_edge(record, env, fq))
         except Exception as exc:  # noqa: BLE001 -- one bad game must not sink all
             logger.warning("edge_api: game assembly failed gid=%s: %s",
                            getattr(record, "game_id", "?"), exc)

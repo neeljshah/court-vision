@@ -179,3 +179,57 @@ def test_down_feed_zero_games_clean_heartbeat(tmp_path):
                         heartbeat_path=tmp_path / "hb.json")
     assert hb["n_live"] == 0 and hb["n_pairs"] == 0 and hb["games"] == []
     assert hb["edge_claimed"] is False
+
+
+# --------------------------------------------------------------------------------------- #
+# 6. DEEP enrichment: the resolver's base-out reaches the captured state_summary (the       #
+#    fix for the bare "live" series). MLB-only; a non-mlb sport never calls the resolver.   #
+# --------------------------------------------------------------------------------------- #
+def _deep_fn(gid):
+    # The statsapi resolver's deep state for the live game (Bottom 7, runner on 2nd, 1-1).
+    return {"inning": 7, "half": "bottom", "outs": 1, "base": 2, "bos": 7,
+            "re": 0.664, "count": "1-1", "game_pk": "822960"}
+
+
+def test_deep_state_flows_into_captured_series(tmp_path):
+    grade_dir = tmp_path / "grade"
+    hb = loop.poll_once(sports=["mlb"], live_state_fn=_state_fn_prior, model_fn=_model_fn,
+                        inplay_fetch_fn=_inplay_fetch, finals_fn=_finals_none,
+                        deep_state_fn=_deep_fn,
+                        grade_dir=grade_dir, ledger_path=tmp_path / "l.jsonl",
+                        heartbeat_path=tmp_path / "hb.json")
+    assert hb["n_pairs"] == 1
+    path = grade_dir / "mlb" / "KXMLBGAME-26JUN191840CWSDET.jsonl"
+    rows = [json.loads(x) for x in path.read_text(encoding="ascii").splitlines() if x.strip()]
+    summ = rows[0]["state_summary"]
+    # The deep base-out state DEEPENS the captured series (was a bare "live").
+    assert summ != "live"
+    for token in ("inning=7", "half=bottom", "outs=1", "base=2",
+                  "bos=7", "re=0.664", "count=1-1"):
+        assert token in summ
+
+
+def _soccer_fetch(sport):
+    return [
+        {"sport": sport, "game_id": "KXWCGAME-26JUN271810ARGAUS", "venue": "kalshi",
+         "market_type": "moneyline", "side": "Argentina", "prob": 0.55, "phase": "in_play"},
+        {"sport": sport, "game_id": "KXWCGAME-26JUN271810ARGAUS", "venue": "kalshi",
+         "market_type": "moneyline", "side": "Australia", "prob": 0.47, "phase": "in_play"},
+    ]
+
+
+def test_deep_enrichment_is_mlb_only(tmp_path):
+    # Even with a live soccer game processed, the MLB base-out resolver is NEVER invoked for
+    # a non-mlb sport (it would mis-key a soccer ticker). poll_once gates by sport.
+    seen = []
+
+    def _spy(gid):
+        seen.append(gid)
+        return {"inning": 1}
+
+    loop.poll_once(sports=["soccer_intl"], live_state_fn=_state_fn_prior, model_fn=_model_fn,
+                   inplay_fetch_fn=_soccer_fetch, finals_fn=_finals_none,
+                   deep_state_fn=_spy,
+                   grade_dir=tmp_path / "grade", ledger_path=tmp_path / "l.jsonl",
+                   heartbeat_path=tmp_path / "hb.json")
+    assert seen == []  # mlb-only gating: soccer never invokes the base-out resolver

@@ -47,7 +47,14 @@ def grade_bucket(rows_in: List[Dict[str, Any]]) -> Dict[str, Any]:
     w = sum(1 for r in dec if r.get("outcome") == "win")
     units = [float(r["unit_result"]) for r in rows_in
              if r.get("unit_result") is not None]
-    cv = [float(r["clv_pct"]) for r in rows_in if r.get("clv_pct") is not None]
+    # CLV stats EXCLUDE off-market/misparsed rows (clv_ledger.is_clv_suspect): a "taken"
+    # 12.0 on a pick'em close fabricates +497% CLV and would dishonestly inflate the
+    # mean. Mirrors clv_ledger.clv_summary / clv_scoreboard -- the suspect filter lives
+    # at every CLV aggregation path so no headline number can be poisoned by one bad row.
+    n_suspect = sum(1 for r in rows_in
+                    if r.get("clv_pct") is not None and _clv.is_clv_suspect(r))
+    cv = [float(r["clv_pct"]) for r in rows_in
+          if r.get("clv_pct") is not None and not _clv.is_clv_suspect(r)]
     return {
         "n_total": len(rows_in),
         "n_void": len(void),
@@ -59,6 +66,7 @@ def grade_bucket(rows_in: List[Dict[str, Any]]) -> Dict[str, Any]:
         "net_units": round(sum(units), 6) if units else None,
         "n_priced_units": len(units),
         "n_with_clv": len(cv),
+        "n_clv_suspect_excluded": n_suspect,
         "mean_clv_pct": round(sum(cv) / len(cv), 6) if cv else None,
         "pct_beat_close": (round(100.0 * sum(1 for c in cv if c > 0) / len(cv), 4)
                            if cv else None),

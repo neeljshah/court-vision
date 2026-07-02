@@ -157,6 +157,54 @@ def _resolve_p0(sport: str, game_id: str, p0: Optional[float],
         return None, "BASE_FALLBACK"
 
 
+def _segment_fields(sport: str, ev: dict) -> Dict[str, object]:
+    """Sport-aware game-state fields for the grade-row state_summary (period/inning/half/
+    minute/set). These are the keys live_grade._state_summary and ingame_clv_per_segment.
+    _infer_segment read -- without them every captured tick falls into the UNK bucket and
+    score-margin / phase CLV cannot be measured. Best-effort; never raises."""
+    status = (ev.get("status") or {})
+    typ = (status.get("type") or {})
+    out: Dict[str, object] = {}
+    try:
+        period = int(status.get("period") or 0)
+    except (TypeError, ValueError):
+        period = 0
+    detail = str(typ.get("shortDetail") or typ.get("detail") or "").lower()
+    if sport == "nba" and period > 0:
+        out["period"] = period
+    elif sport == "mlb" and period > 0:
+        out["inning"] = period
+        if detail.startswith("top") or " top" in detail:
+            out["half"] = "top"
+        elif "bot" in detail:
+            out["half"] = "bottom"
+    elif sport in ("soccer", "soccer_intl"):
+        disp = str(status.get("displayClock") or "").replace("'", "").strip()
+        try:
+            out["minute"] = int(float(disp))
+        except (TypeError, ValueError):
+            pass
+    elif sport == "tennis" and period > 0:
+        out["set"] = period
+    return out
+
+
+def _neutral_site(sport: str, ev: dict) -> bool:
+    """True iff the game is at a NEUTRAL venue (no home tilt). International soccer
+    (World Cup / national-team tournaments) is neutral by default -- the intl predictor
+    already prices it neutral=True, so the home/away labels are only pairing tags, NOT a
+    home advantage. ESPN's competition.neutralSite is honored when present (it is often
+    None for these), else soccer_intl defaults True. Other sports default False."""
+    try:
+        comp = (ev.get("competitions") or [{}])[0]
+        flag = comp.get("neutralSite")
+        if isinstance(flag, bool):
+            return flag
+    except Exception:  # noqa: BLE001
+        pass
+    return str(sport).lower() == "soccer_intl"
+
+
 def _extract(sport: str, ev: dict, p0: Optional[float],
              p0_provider: Optional[Callable] = None) -> Optional[Dict]:
     home, away = _competitors(ev)
@@ -177,12 +225,29 @@ def _extract(sport: str, ev: dict, p0: Optional[float],
         # price very differently), not just the differential.
         "home_display": _display(home), "away_display": _display(away),
         "home_goals": hs, "away_goals": as_,
+        # home_score/away_score ALIAS the goals under the names live_grade._state_summary
+        # reads, so the captured state_summary carries real score (margin) instead of "live".
+        "home_score": hs, "away_score": as_,
         "state_diff": float(hs - as_),  # signed toward home, matches offline ingest
+        # neutral-site flag: True = no home advantage (World Cup / intl is neutral by
+        # default). The home/away labels stay only as pairing tags; the intl model already
+        # prices neutral=True, so this just makes that EXPLICIT instead of an implied home.
+        "neutral": _neutral_site(sport, ev),
         "frac_elapsed": frac,
         "p0": p0v,            # leak-free pregame prior (auto-supplied when caller omits it)
         "p0_source": p0_src,  # 'CALLER' | 'PRIOR' | 'BASE_FALLBACK' (honest label)
         "status": str(st.get("shortDetail") or st.get("detail") or st.get("name", "")),
     }
+    out.update(_segment_fields(sport, ev))  # period/inning/half/minute/set for segment CLV
+    # DEEP in-game state (MLB): base-out + run-expectancy from the live situation block.
+    # ADDITIVE (outs/base/bos/re keys); makes the captured series carry the high-signal
+    # in-game variables a score+inning summary discards, so the data deepens every tick.
+    # Best-effort, leak-free, never raises; {} for non-MLB or when no situation is present.
+    try:
+        from scripts.platformkit.ingame.ingame_baseout_mlb import baseout_summary_fields
+        out.update(baseout_summary_fields(sport, ev))
+    except Exception:  # noqa: BLE001 -- deep state is additive; never break capture
+        pass
     return out
 
 
