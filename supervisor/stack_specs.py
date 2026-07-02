@@ -79,6 +79,10 @@ _OUTPUT_FRESHNESS_HB = "data/cache/daemon_heartbeats/m29_output_freshness.txt"
 # NO $ field, NO flag flip, NO data/registry/ write, NO real-money action.
 _FEED_HEALTH_HB = "data/cache/daemon_heartbeats/m30_feed_health.txt"
 
+# M31 -- MLB pregame-context snapshotter (probables/weather/umps + injuries + edge
+# facts, 6h cadence). Heartbeat freshness gates readiness; see mlb_context_runner.
+_MLB_CONTEXT_HB = "data/cache/daemon_heartbeats/m31_mlb_context.txt"
+
 # M14 -- the brain-rebuild cadence (brain_rebuild_runner loop-wrapper): rebuilds the
 # organized, person-free Obsidian brain (vault/_Organized) from the deep
 # _vault_legacy_archive source on a slow (default 6h) cadence so the knowledge graph
@@ -607,6 +611,20 @@ def base_specs() -> List[ProcSpec]:
             argv=["--interval", "600"],
             readiness=ReadinessSpec(
                 kind=HEARTBEAT, heartbeat_path=_FEED_HEALTH_HB, fresh_sec=1320.0),
+            restart_policy=_FOREVER,
+        ),
+        # M31 -- MLB pregame-context snapshotter: probable pitchers + weather + HP
+        # umpire (statsapi, today+tomorrow) and the ESPN injury report + deterministic
+        # edge-fact extraction, every 6h. Snapshot-append parquets with captured_at
+        # vintages (as-of joins only). KNOWLEDGE/SUBSTRATE, not a model feed; no $
+        # field, no flag flip, no data/registry/ write. fresh_sec = 2x the 21600s
+        # cadence + margin so a healthy tick stays fresh while a hung one ages out.
+        ProcSpec(
+            name="m31_mlb_context", kind="py",
+            module="scripts.platformkit.mlb_context_runner",
+            argv=["--interval", "21600"],
+            readiness=ReadinessSpec(
+                kind=HEARTBEAT, heartbeat_path=_MLB_CONTEXT_HB, fresh_sec=45000.0),
             restart_policy=_FOREVER,
         ),
     ]
