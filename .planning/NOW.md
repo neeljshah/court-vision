@@ -67,6 +67,38 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   DIRTY (dup=210, settled_without_clv=235) and improve_ledger_reconcile ORPHAN_SHIPS
   (49/49) are REPORTED-not-gating and unchanged from baseline -- noted, not chased
   this cycle. Paper-only; no $ claim; no flag flipped; local commit only, not pushed.
+- WAKE-30 CONTINUED (FRONT-END PLAYER PROPS -- route collision + missing bridge FOUND+
+  FIXED, PropsPanel SHIPPED, 2026-07-02): user asked to get front-end props/scraping/
+  paper-trading/AI all genuinely working for mlb+soccer_intl. Found GET /api/predict/
+  props/{sport} (the exact route the webapp calls) was PERMANENTLY dead: Starlette
+  matches routes by REGISTRATION ORDER, and app.py's generic /api/predict/{sport}/
+  {game_id} (registered at module scope) beat extra_mounts' later-mounted /api/
+  predict/props/{sport} for any 2-segment request -- every call landed on the generic
+  handler with sport='props', game_id=<real sport>, returning a bogus "no snapshot for
+  sport 'props'". FIX: extra_mounts._prioritize_props_routes moves the props routes to
+  the front of app.router.routes post-mount; +4 tests proving the bug existed pre-fix
+  (460fd0cb). SEPARATELY found the route, even fixed, had NO data bridge: it only ever
+  read player_prop MarketRows from predict_service's OWN snapshot, which nothing writes
+  for mlb/soccer_intl (NBA-domain-pricer-only) -- the REAL scraped-book props (Draft
+  Kings/Underdog/PrizePicks/FanDuel, Poisson/NB priced, 1639 mlb / 506 soccer_intl
+  edges) already existed on a separate :8098 endpoint. NEW predict_service/
+  prop_surface_scraped.py bridges the SAME on-disk snapshot read-only (no network, no
+  re-pricing) as a fallback when the domain snapshot has zero prop rows; NBA untouched.
+  Also fixed PrizePicks masking a real 403 WAF block (external, not evadable -- same
+  class as the documented BetMGM block) as a misleading "league not found" (b9e9ee76).
+  DELEGATED the actual UI panel to a Sonnet executor agent (self-contained brief: live
+  API shape, LiveLinesPanel.tsx pattern to mirror) -> built PropsPanel.tsx, fixed a
+  stale TS type (types_w12.ts expected 'props' key + non-nullable numbers; real API is
+  'rows' + nullable), wired into /p6, npm build clean, committed (9bc820d4). Then hit a
+  NEW deploy gotcha: webapp runs `next start` (prod, not dev) and its persistent .next/
+  cache/ survives rebuilds+restarts -- had to shutil.rmtree the cache dir (rm -rf got
+  permission-hook-blocked) THEN restart m1_ui before the live page reflected the new
+  panel; memory: gotcha-nextjs-static-cache-serves-stale-after-rebuild. LIVE-VERIFIED
+  end-to-end: /api/predict/props/{mlb,soccer_intl} both source=scraped_book_snapshot
+  with real counts; /p6 raw HTML now contains the panel's P(over)/Poisson markers (was
+  byte-identical to pre-session baseline before the cache clear). All 3 ports 200,
+  34/34 procs READY, bankroll live (79.25u). Paper-only; no $ claim; no flag flipped;
+  local commits only, not pushed.
 - WAKE-29 (PAPER TRADING AUDIT -> FOUND+FIXED the in-game channel never SETTLED, 2026-07-01):
   user "make sure paper trading is working." Audited live: stack 29/29 up, bankroll live-updating
   (68.4u of 100 = the measured bleed), PREGAME channels healthy (today props=105, paper_pm=42,
