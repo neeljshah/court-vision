@@ -126,6 +126,26 @@ def _mount_progress(app) -> None:  # noqa: ANN001
                 status_code=503)
 
 
+def _prioritize_props_routes(app) -> None:  # noqa: ANN001
+    """Move the just-mounted /api/predict/props/* routes to the FRONT of
+    app.router.routes.
+
+    Starlette matches routes in REGISTRATION order, first structural match wins.
+    predict_service.app registers the generic '/api/predict/{sport}/{game_id}'
+    route at module scope BEFORE extra_mounts.register() runs, so without this,
+    a request for '/api/predict/props/mlb' structurally matches the earlier
+    generic route first (sport='props', game_id='mlb') instead of the props
+    router -- silently returning a bogus "latest.json missing" (there is no sport
+    named 'props') instead of real prop predictions. Live-diagnosed 2026-07-02:
+    this made /api/predict/props/{mlb,soccer_intl} permanently unavailable even
+    though the underlying prop data pipeline was fully populated.
+    """
+    routes = app.router.routes
+    props = [r for r in routes if getattr(r, "path", "").startswith("/api/predict/props/")]
+    rest = [r for r in routes if r not in props]
+    app.router.routes[:] = props + rest
+
+
 def _mount_props(app) -> None:  # noqa: ANN001
     """W2 (api-props): player-prop prediction endpoints.
 
@@ -137,6 +157,7 @@ def _mount_props(app) -> None:  # noqa: ANN001
     try:
         from predict_service.frontend.props_routes import router  # noqa: PLC0415
         app.include_router(router)
+        _prioritize_props_routes(app)
         logger.info("extra_mounts: props_routes mounted at /api/predict/props/*")
     except Exception as exc:  # noqa: BLE001
         logger.warning("extra_mounts: props_routes not mounted (%s: %s)",
