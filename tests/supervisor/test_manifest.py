@@ -54,12 +54,39 @@ def test_default_manifest_is_acyclic_and_ordered():
     specs = manifest("default")
     assert {s.name for s in specs} == {
         "m1_producer", "m1_api_paper", "m1_api_boards", "m1_ui",
-        "m1_paper", "m1_line_daemon", "m6_ingame_loop",
+        "m1_paper", "m1_line_daemon", "m1_bankroll", "m6_ingame_loop",
         "m2_inplay", "m4_selfimprove", "m7_ingame_refresh",
         "m5_autonomy_monitor", "m8_ci_cadence", "m2_inplay_capture",
         # W12 new measurement-only daemons
         "m10_best_bets_compute", "m11_ingame_pred_tick",
         "m12_pm_paper_tick", "m13_props_pred_tick",
+        # later measurement-only daemons (brain rebuild + settle + CLV/PM capture)
+        "m14_brain_rebuild", "m15_prop_settle", "m16_prop_close_capture",
+        "m17_kalshi_scan", "m18_pm_close_capture",
+        # m19 -- ceiling asof-reclaim gate daemon (candidate-only, flips no flag)
+        "m19_asof_reclaim",
+        # m20 -- in-game CLV verdict daemon (continuous in-play-close anticipation)
+        "m20_ingame_clv_verdict",
+        # m21 -- in-game base-out anticipation trigger gate (candidate-only, flips no flag)
+        "m21_ingame_baseout_gate",
+        # m22 -- best-price scan daemon (continuous model-free +CLV gap scan, no bet)
+        "m22_best_price_scan",
+        # m23 -- scraped-line gap daemon (our own DK/FD/Pinnacle feed, freshness-gated)
+        "m23_scraped_line_gaps",
+        # m24 -- in-game placement funnel diagnostic (where in-game volume is lost)
+        "m24_ingame_placement_funnel",
+        # m25 -- in-game outcome-gated verdict (per-segment Brier vs truth, no bet)
+        "m25_ingame_outcome_verdict",
+        # m26 -- in-game segment-trust gate (cross-corpus proof-gated execution floor)
+        "m26_ingame_segment_trust",
+        # m27 -- in-game paper settle arm (settles open paper_ingame bets vs final score)
+        "m27_ingame_paper_settle",
+        # m29 -- output-freshness sentinel (GREEN/RED per readiness=NONE daemon m19-27;
+        # read-only, no restart authority)
+        "m29_output_freshness",
+        # m30 -- feed-health sentinel (GREEN/RED per live odds-provider/sport probe;
+        # read-only, no restart authority)
+        "m30_feed_health",
     }
     _assert_topo(specs)
     # producer precedes the Auto-API which precedes the boards API which precedes UI.

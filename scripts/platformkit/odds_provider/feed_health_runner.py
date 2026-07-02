@@ -1,0 +1,115 @@
+"""scripts.platformkit.odds_provider.feed_health_runner -- supervised M30 entry.
+
+Every ~600s: live-probes every (provider, sport) pair the real slate uses
+(feed_health.scan), atomically writes the GREEN/RED verdict doc, then beats
+the M30 heartbeat. Independent branch (no depends_on) so a dead sentinel tick
+is itself just one red status entry -- it never blocks the rest of the stack.
+Read-only network probes only; NO $ field, NO flag flip, NO data/registry/
+write, NO real-money action, NO restart authority (visibility only -- a human
+or the autonomy monitor acts on a RED row).
+
+Heartbeat: m30_feed_health -> data/cache/daemon_heartbeats/m30_feed_health.txt
+Cadence: DEFAULT_INTERVAL_SEC = 600 s. Report: data/frontend/ops/feed_health.json.
+stdlib + repo-internal; ASCII only; <=300 LOC.
+"""
+from __future__ import annotations
+
+import logging
+from typing import Any, Callable, Dict, Optional
+
+logger = logging.getLogger("feed_health_runner")
+
+HEARTBEAT_COMPONENT = "m30_feed_health"
+DEFAULT_INTERVAL_SEC = 600.0
+
+
+def _beat(now_epoch: Optional[float] = None) -> None:
+    """Write the M30 liveness heartbeat. Never raises."""
+    try:
+        from ops.liveness import heartbeat
+        heartbeat(HEARTBEAT_COMPONENT, _now=now_epoch)
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("feed_health heartbeat skipped: %s", exc)
+
+
+def tick(*, now: float,
+         scan_fn: Optional[Callable[..., Dict[str, Any]]] = None,
+         write_fn: Optional[Callable[..., bool]] = None) -> Dict[str, Any]:
+    """One sentinel tick: live-probe every provider -> write the verdict doc ->
+    heartbeat. Never raises."""
+    from scripts.platformkit.odds_provider.feed_health import scan, write_status
+    _scan = scan_fn if scan_fn is not None else scan
+    _write = write_fn if write_fn is not None else write_status
+    try:
+        doc = dict(_scan() or {})
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("feed_health scan raised: %s", exc)
+        doc = {"rows": [], "n_red": 0, "overall": "GREEN"}
+    try:
+        _write(doc, now=now)
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("feed_health write raised: %s", exc)
+    _beat(now)
+    return doc
+
+
+def run(*, interval_sec: float = DEFAULT_INTERVAL_SEC,
+        scan_fn: Optional[Callable[..., Dict[str, Any]]] = None,
+        write_fn: Optional[Callable[..., bool]] = None,
+        clock: Optional[Callable[[], float]] = None,
+        sleep: Optional[Callable[[float], None]] = None,
+        max_ticks: Optional[int] = None,
+        should_stop: Optional[Callable[[], bool]] = None) -> int:
+    """Run the sentinel loop forever (or max_ticks). Never raises out. Everything
+    injectable for offline tests. Returns ticks executed."""
+    import time as _time
+    _clock = clock if clock is not None else _time.time
+    _sleep = sleep if sleep is not None else _time.sleep
+    ticks = 0
+    try:
+        _beat(float(_clock()))
+    except Exception:  # noqa: BLE001
+        _beat()
+    while True:
+        if should_stop is not None:
+            try:
+                if should_stop():
+                    break
+            except Exception:  # noqa: BLE001
+                break
+        try:
+            now = float(_clock())
+        except Exception:  # noqa: BLE001
+            now = _time.time()
+        doc = tick(now=now, scan_fn=scan_fn, write_fn=write_fn)
+        print("%s | tick=%d probed=%d red=%d" % (
+            HEARTBEAT_COMPONENT, ticks, doc.get("n_probed", 0), doc.get("n_red", 0)),
+            flush=True)
+        ticks += 1
+        if max_ticks is not None and ticks >= max_ticks:
+            break
+        try:
+            _sleep(float(interval_sec))
+        except Exception:  # noqa: BLE001
+            break
+    return ticks
+
+
+def _main() -> int:  # pragma: no cover
+    import argparse
+    p = argparse.ArgumentParser(
+        description="Supervised feed-health sentinel (M30): every 600 s live-probes "
+                    "every odds-provider/sport pair the real slate uses. Read-only, no $.")
+    p.add_argument("--interval", type=float, default=DEFAULT_INTERVAL_SEC)
+    a = p.parse_args()
+    print("feed_health_runner | started interval=%ss component=%s"
+          % (a.interval, HEARTBEAT_COMPONENT), flush=True)
+    try:
+        run(interval_sec=a.interval)
+    except KeyboardInterrupt:
+        print("feed_health_runner | stopped by KeyboardInterrupt", flush=True)
+    return 0
+
+
+if __name__ == "__main__":  # pragma: no cover
+    raise SystemExit(_main())

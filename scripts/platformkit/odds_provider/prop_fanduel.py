@@ -51,14 +51,25 @@ _EVENT_URL = _HOST + "/event-page?_ak=" + _AK + "&eventId={eid}"
 _UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
        "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
 
-# Our sport key -> FanDuel customPageId.
-_PAGE_ID: Dict[str, str] = {"soccer_intl": "fifa-world-cup"}
+# Our sport key -> FanDuel customPageId. "mlb" probed 2026-07-02: the page lists
+# real MLB events, but games ~8h+ out carry ONLY team/inning markets (Moneyline,
+# Run Line, Total Runs, "Nth Inning ..."); player props were not yet posted (same
+# post-closer-to-tip pattern already documented above for soccer_intl). The parser
+# below is ready the moment FanDuel posts them.
+_PAGE_ID: Dict[str, str] = {"soccer_intl": "fifa-world-cup", "mlb": "mlb"}
 
 # Market-name fragments that identify a PLAYER prop (vs team/match markets). The
 # market title carries the stat; the runner carries Over/Under + the line.
+# MLB fragments are deliberately the multi-word, player-specific phrasings (never
+# bare "hits"/"runs"/"strikeouts"/"outs" -- those collide with the real team/inning
+# market titles observed live, e.g. "1st Inning Hits", "Total Runs", "Runs Odd/Even",
+# which would otherwise be mis-parsed as fabricated player props).
 _PLAYER_STATS = (
     "shots on target", "shots", "saves", "tackles", "assists", "passes",
     "fouls", "cards", "offsides", "clearances", "crosses",
+    "total bases", "rbis", "rbi", "home runs", "stolen bases",
+    "earned runs allowed", "hits allowed", "walks allowed",
+    "batter strikeouts", "pitcher strikeouts", "hits + runs + rbis",
 )
 
 
@@ -207,7 +218,7 @@ class FanDuelProvider:
                 return page
             event_ids = list_event_ids(page)
             if not event_ids:
-                return unavailable("fanduel: no World Cup events listed")
+                return unavailable("fanduel: no %s events listed" % sport)
             rows: List[PropLine] = []
             for eid in event_ids:
                 body = self._http_get(_EVENT_URL.format(eid=eid))

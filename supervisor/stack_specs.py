@@ -59,6 +59,26 @@ _CI_CADENCE_HB = "data/cache/daemon_heartbeats/m8_ci_cadence.txt"
 # per tick captures (model, devigged-price) pairs + paper UNIT decisions + FINAL labels,
 # beating this heartbeat on every phase-aware (live/idle) poll boundary. PAPER-ONLY.
 _INPLAY_CAPTURE_HB = "data/cache/daemon_heartbeats/m2_inplay_capture.txt"
+# M29 -- the OUTPUT-FRESHNESS sentinel. m19-m27 all use readiness=NONE (a daily/
+# slow-batch loop has no useful HEARTBEAT window), so a WEDGED tick -- process still
+# alive, but its scoreboard/verdict/status file silently stopped advancing -- is
+# INVISIBLE to the supervisor's own health view today. Every ~300s this checks each
+# of those 9 daemons' declared output artifact mtime against its expected cadence and
+# writes GREEN/RED per daemon to data/frontend/ops/output_freshness.json. NO restart
+# authority (read-only visibility only; the supervisor + heartbeat_reaper still own
+# restarts). Independent branch (no depends_on) so a dead sentinel tick is itself ONE
+# red status entry. NO $ field, NO flag flip, NO data/registry/ write, NO real-money
+# action.
+_OUTPUT_FRESHNESS_HB = "data/cache/daemon_heartbeats/m29_output_freshness.txt"
+# M30 -- the FEED-HEALTH sentinel. aggregate.default_providers() silently drops a
+# down/blocked odds-book venue from the merged slate (a 401/403/timeout just vanishes
+# -- nobody notices without reading logs). Every ~600s this live-probes every real
+# (provider, sport) pair and writes GREEN/RED per venue to
+# data/frontend/ops/feed_health.json. Read-only visibility only, NO restart authority.
+# Independent branch (no depends_on) so a dead sentinel tick is itself ONE red row.
+# NO $ field, NO flag flip, NO data/registry/ write, NO real-money action.
+_FEED_HEALTH_HB = "data/cache/daemon_heartbeats/m30_feed_health.txt"
+
 # M14 -- the brain-rebuild cadence (brain_rebuild_runner loop-wrapper): rebuilds the
 # organized, person-free Obsidian brain (vault/_Organized) from the deep
 # _vault_legacy_archive source on a slow (default 6h) cadence so the knowledge graph
@@ -403,6 +423,190 @@ def base_specs() -> List[ProcSpec]:
                 kind=HEARTBEAT,
                 heartbeat_path="data/cache/daemon_heartbeats/m18_pm_close_capture.txt",
                 fresh_sec=1980.0),   # 2x cadence (900s) + margin
+            restart_policy=_FOREVER,
+        ),
+        # M19 -- the CEILING asof-reclaim GATE daemon. Daily it re-gates every on-disk
+        # leak-free *_diff_asof candidate (NBA ast/dreb/fg3m/stl/blk + MLB sp_ra_diff)
+        # through the REAL single-corpus walk-forward DM gate vs leak-free Elo, appends
+        # a scoreboard row, and logs each SHIP/REJECT to the reject_ledger. This is the
+        # "getting better" search running on the flywheel with NO Claude in the loop:
+        # the ingest daemons refresh the asof parquets, this re-gates them. CANDIDATE-
+        # ONLY -- reads parquets additively, flips NO flag, touches NO predictor, makes
+        # NO real-money action; a control-failing SHIP is downgraded to SHIP_REVIEW for
+        # a human (never auto-shipped). REJECT is the expected, honest verdict. Readiness
+        # NONE (a daily batch is ready when alive; a daily heartbeat window is useless).
+        # Independent branch (no depends_on).
+        ProcSpec(
+            name="m19_asof_reclaim", kind="py",
+            module="scripts.platformkit.ceiling.asof_reclaim_daemon",
+            argv=["--interval", "86400"],
+            restart_policy=_FOREVER,
+        ),
+        # M20 -- the IN-GAME CLV VERDICT daemon. Every ~10min it replays the captured
+        # M11 model/market tick series (data/cache/ingame_grade/<sport>/) through
+        # ingame_clv_grade.grade_sport and writes the honest in-play-close anticipation
+        # verdict to data/frontend/ops/ingame_clv_verdict.json. This makes the in-game
+        # gap-hunt CONTINUOUS + measurable on the flywheel (it was only ever a manual CLI
+        # run). The in-game GAME engine is the project's validated freshness lever and the
+        # one channel that MATCHES the in-play close with a faint positive CLV tilt; this
+        # daemon keeps that verdict live. CLV is PROBABILITY space (calibration), NOT a $
+        # edge; places NO bet, flips NO flag, no real-money action. Readiness NONE.
+        ProcSpec(
+            name="m20_ingame_clv_verdict", kind="py",
+            module="scripts.platformkit.ingame.ingame_clv_verdict_daemon",
+            argv=["--interval", "600"],
+            restart_policy=_FOREVER,
+        ),
+        # M21 -- the IN-GAME BASE-OUT TRIGGER. The in-game GAME channel MATCHES the
+        # in-play close; to cross from MATCH to BEAT we need a conditioning signal the
+        # live model is NOT already using. The deep MLB base-out / RE24 / count / pitch
+        # state only began flowing into the paired tick series after the ESPN<->Kalshi
+        # id gap closed, so the corpus that could prove (or kill) that lever is only now
+        # accumulating. Hourly this gate asks, leak-free, "does deep state anticipate the
+        # in-play close BEYOND model_prob?" and writes INSUFFICIENT until the corpus is
+        # large enough, then SHIP_REVIEW (two-corpus replicated lift + null collapse, for
+        # a human) or REJECT (already priced -- the expected, honest verdict). It crosses
+        # on its OWN -> no date-guessing. CANDIDATE-ONLY: reads the captured cache, flips
+        # NO flag, touches NO predictor, places NO bet. Probability space, NOT a $ edge.
+        # Readiness NONE (slow batch). Independent branch (no depends_on).
+        ProcSpec(
+            name="m21_ingame_baseout_gate", kind="py",
+            module="scripts.platformkit.improve.ingame_baseout_gate_daemon",
+            argv=["--interval", "3600"],
+            restart_policy=_FOREVER,
+        ),
+        # M22 -- the BEST-PRICE SCAN daemon. The honest, model-free "use more books to
+        # find gaps" lever: best_price.value_bets takes the BEST sportsbook price per
+        # side across every wired book and asks whether it beats the SHARP fair
+        # (Pinnacle / cross-book median). A manual run sees only one instant, but
+        # cross-book mispricings are TRANSIENT (a book lags ~60-120s then corrects), so
+        # the only way more books actually pays off is to POLL them continuously. Every
+        # ~4min this writes the live scan to data/frontend/ops/best_price_scan.json and
+        # appends a catch-log row ONLY when a real +CLV gap appears -- so the rare
+        # transient gaps accumulate into evidence (data/frontend/ops/best_price_catches
+        # .jsonl). The common, honest result is an empty scan on an efficient slate.
+        # +CLV is PROBABILITY space, NOT a $ edge; reads aggregated public odds only,
+        # flips NO flag, places NO bet, no real-money action. Readiness NONE. Independent
+        # branch (no depends_on).
+        ProcSpec(
+            name="m22_best_price_scan", kind="py",
+            module="scripts.platformkit.clv.best_price_scan_daemon",
+            argv=["--interval", "240"],
+            restart_policy=_FOREVER,
+        ),
+        # M23 -- the SCRAPED-LINE GAP daemon. Same model-free line-shop hunt as m22 but
+        # sourced from OUR OWN scraped feed (data/cache/line_history/<sport>/<date>.jsonl
+        # -- DraftKings + FanDuel + Pinnacle, ML/spread/total), NOT OddsAPI and NOT a
+        # live re-fetch. Every ~4min it scans every sport for a best-book price that
+        # beats the sharp fair, FRESHNESS-GATED so a stale quote can never manufacture a
+        # fake edge (the classic stale-line mirage: a 30-min-old soft line showing +CLV
+        # on both sides). Writes data/frontend/ops/scraped_line_gaps.json + appends a
+        # catch-log row ONLY when a real, contemporaneous +CLV gap appears. The common,
+        # honest result is an empty scan on an efficient slate. +CLV is PROBABILITY
+        # space, NOT a $ edge; reads our own files only, flips NO flag, places NO bet,
+        # no real-money action. Readiness NONE. Independent branch (no depends_on).
+        ProcSpec(
+            name="m23_scraped_line_gaps", kind="py",
+            module="scripts.platformkit.clv.scraped_line_gaps_daemon",
+            argv=["--interval", "240"],
+            restart_policy=_FOREVER,
+        ),
+        # M24 -- the IN-GAME PLACEMENT FUNNEL diagnostic. The ledger shows the in-game
+        # day-trader channel STARVED (1 paper_ingame bet vs 136 pregame) even though the
+        # engine is fully wired -- but WHY is invisible: each live tick that fails to bet
+        # returns a one-word reason and nothing aggregates them. Every ~5min this folds
+        # the per-game decisions inplay_capture_loop.poll_once already returns into a
+        # stage funnel (markets->live_state->model_prob->home_leg->priced->tier_floor->
+        # bet) + reason histogram and writes data/frontend/ops/ingame_placement_funnel
+        # .json, so during a live slate we SEE exactly which stage drops the volume and
+        # tune the real cause instead of guessing. Diagnostic only: it does its own read-
+        # only poll, places NO bet, flips NO flag, no $ field, no edge. Readiness NONE.
+        ProcSpec(
+            name="m24_ingame_placement_funnel", kind="py",
+            module="scripts.platformkit.ingame.ingame_placement_funnel",
+            argv=["--interval", "300"],
+            restart_policy=_FOREVER,
+        ),
+        # M25 -- the IN-GAME OUTCOME-GATED VERDICT. The in-game CLV verdict (m20) can only
+        # compare model_prob vs the CONTEMPORANEOUS venue price; it cannot say whether a
+        # per-segment lean is the model being wrong (lag) or right (the thin venue quote
+        # lagging). This resolves the held-out OUTCOME directly from the Kalshi ticker
+        # (ticker encodes date + away+home abbrs -> join to the local realized-box parquet)
+        # and every ~15min computes, per inning segment, the Brier of the live model vs the
+        # OUTCOME against the Brier of the venue in-play price, with a game-clustered
+        # bootstrap CI. Writes data/frontend/ops/ingame_outcome_verdict.json. A
+        # BETTER_THAN_VENUE segment means better-calibrated-to-truth than the (thin, laggy)
+        # Kalshi in-play quote -- NOT an efficient-close beat, NOT a $ edge. Diagnostic
+        # only: reads local files + a labeled corpus, places NO bet, flips NO flag, no $
+        # field. Running it continuously accrues games across slates so a single-window
+        # lift can replicate (or wash out) honestly. Readiness NONE. Independent branch.
+        ProcSpec(
+            name="m25_ingame_outcome_verdict", kind="py",
+            module="scripts.platformkit.ingame.ingame_outcome_verdict",
+            argv=["--interval", "900"],
+            restart_policy=_FOREVER,
+        ),
+        # M26 -- the IN-GAME SEGMENT-TRUST gate (the self-improving-execution loop). m25's
+        # full-corpus verdict can be a single-fold artifact (the I5-I9 lift did NOT replicate
+        # across an even/odd-day split). This every ~30min splits the labeled corpus into >=2
+        # INDEPENDENT corpora, runs the outcome verdict on each, and marks a segment TRUSTED
+        # (BETTER_THAN_VENUE in EVERY non-insufficient corpus) or ADVERSE (WORSE in every)
+        # else NEUTRAL, writing data/frontend/ops/ingame_segment_trust.json. The in-game
+        # capture loop reads it: an ADVERSE segment reverts to the STRICT pre-registered floor
+        # (suppress its marginal relaxed bets), everything else keeps today's relaxed floor.
+        # So execution improves on its own as games accrue, but changes ONLY on cross-corpus
+        # PROOF -- thin/unreplicated data changes nothing (do-no-harm) and it is reversible
+        # (CV_INGAME_SEGMENT_TRUST=0). Diagnostic+gate: flips NO flag, places NO bet, no $
+        # field, edge_claimed=False; venue=thin Kalshi in-play (NOT an efficient close).
+        # Readiness NONE. Independent branch (no depends_on).
+        ProcSpec(
+            name="m26_ingame_segment_trust", kind="py",
+            module="scripts.platformkit.ingame.ingame_segment_trust",
+            argv=["--interval", "1800"],
+            restart_policy=_FOREVER,
+        ),
+        # M27 -- the IN-GAME PAPER SETTLE arm (the MISSING settle counterpart to the in-game
+        # PLACE arm). inplay_daytrader placed in-game paper bets (channel=paper_ingame) but
+        # NOTHING ever settled them: 82 placed, 0 ever graded -> no outcome, no CLV, no
+        # bankroll impact. Root = the same id gap: in-game rows are keyed by the KALSHI
+        # TICKER, so an ESPN-id settler never matched. Every ~15min this loads OPEN
+        # paper_ingame rows, resolves each MLB bet's final score DIRECTLY from the ticker
+        # (ingame_outcome_label.final_score -> local realized-box parquet) and calls
+        # paper_ingame.grade_live so the row settles with a real outcome + unit_result.
+        # Idempotent (already-settled edge_keys skipped); a game not yet final stays OPEN
+        # (never force-settled); soccer stays open pending a soccer resolver. UNITS /
+        # probability only, executed=False, flips NO flag, no $ field. Readiness NONE.
+        # Independent branch (no depends_on) so a dead settle arm is ONE red status entry.
+        ProcSpec(
+            name="m27_ingame_paper_settle", kind="py",
+            module="scripts.platformkit.ingame.ingame_paper_settle",
+            argv=["--interval", "900"],
+            restart_policy=_FOREVER,
+        ),
+        # M29 -- the OUTPUT-FRESHNESS sentinel (see the module-level comment above
+        # _OUTPUT_FRESHNESS_HB). Every ~300s checks each of the 9 readiness=NONE
+        # daemons' (m19-m27) declared output artifact against its expected cadence
+        # and writes GREEN/RED per daemon. Read-only, NO restart authority -- it only
+        # makes a wedged (alive-but-silent) tick VISIBLE; the supervisor +
+        # heartbeat_reaper still own restarts. Independent branch (no depends_on) so
+        # a dead sentinel tick is itself ONE red status entry. m29 beats at boot +
+        # every tick; fresh_sec=660 (>2x the 300s cadence + margin) keeps a healthy
+        # runner fresh while a genuinely dead/hung tick ages out. NO $ field, NO flag
+        # flip, NO data/registry/ write, NO real-money action.
+        ProcSpec(
+            name="m29_output_freshness", kind="py",
+            module="scripts.platformkit.ops_sentinel.output_freshness_runner",
+            argv=["--interval", "300"],
+            readiness=ReadinessSpec(
+                kind=HEARTBEAT, heartbeat_path=_OUTPUT_FRESHNESS_HB, fresh_sec=660.0),
+            restart_policy=_FOREVER,
+        ),
+        ProcSpec(
+            name="m30_feed_health", kind="py",
+            module="scripts.platformkit.odds_provider.feed_health_runner",
+            argv=["--interval", "600"],
+            readiness=ReadinessSpec(
+                kind=HEARTBEAT, heartbeat_path=_FEED_HEALTH_HB, fresh_sec=1320.0),
             restart_policy=_FOREVER,
         ),
     ]

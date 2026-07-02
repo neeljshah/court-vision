@@ -123,7 +123,13 @@ def _mlb_result_fn(root: Path) -> Callable[[Dict[str, Any]], Optional[int]]:
     import pandas as pd
     box = pd.read_parquet(root / "espn_boxscores.parquet")
     box = box.dropna(subset=["home_score", "away_score"]).copy()
-    box["d"] = box["date"].astype(str).str[:8]            # YYYYMMDD int -> str
+    # box["date"] is datetime64 (domains.mlb.ingest_espn_box normalises it that way);
+    # parse-then-format so the key is robust whether the column is datetime64, a plain
+    # YYYYMMDD int, or an ISO string -- a bare str(...)[:8] slice on a datetime64 value
+    # yields "2026-06-" (month-only, dashes) which NEVER matches _game_dates()'s
+    # "YYYYMMDD" key and silently zeroed the whole join (mirrors the already-correct
+    # pattern in _soccer_result_fn below).
+    box["d"] = pd.to_datetime(box["date"], errors="coerce").dt.strftime("%Y%m%d")
     idx: Dict[tuple, int] = {}
     for _, r in box.iterrows():
         k = (r["d"], canonical("mlb", str(r["home_abbr"])), canonical("mlb", str(r["away_abbr"])))

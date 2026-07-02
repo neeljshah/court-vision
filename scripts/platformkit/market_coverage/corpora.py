@@ -87,39 +87,18 @@ def nba_ml_states(root: Path) -> List[dict]:
 
 
 def mlb_ml_states(root: Path) -> List[dict]:
-    """MLB moneyline -- declared has-close, but the local box/odds id-spaces do not join
-    (ESPN numeric event_id vs date-team odds id) -> returns [] -> honest DATA_LIMITED."""
-    import pandas as pd
-    odds = pd.read_parquet(root / "odds.parquet")
-    box = pd.read_parquet(root / "espn_boxscores.parquet")
-    if not {"ml_close_home_am", "ml_close_away_am"}.issubset(odds.columns):
-        return []
-    if "event_id" not in odds.columns or "event_id" not in box.columns:
-        return []
-    odds = odds.dropna(subset=["ml_close_home_am", "ml_close_away_am"]).copy()
-    bc = {c.lower(): c for c in box.columns}
-    hp = bc.get("home_pts") or bc.get("home_score") or bc.get("home_runs")
-    ap = bc.get("away_pts") or bc.get("away_score") or bc.get("away_runs")
-    ha = bc.get("home_abbr") or bc.get("home_team")
-    aa = bc.get("away_abbr") or bc.get("away_team")
-    if not all([hp, ap, ha, aa]):
-        return []
-    box = box.dropna(subset=[hp, ap]).copy()
-    m = box.merge(odds, on="event_id", how="inner", suffixes=("", "_o")).reset_index(drop=True)
-    if len(m) == 0:
-        return []
-    states: List[dict] = []
-    for i, r in m.iterrows():
-        try:
-            pc = devig_two_way(r["ml_close_home_am"], r["ml_close_away_am"], american=True)
-        except Exception:
-            continue
-        ts = (pd.Timestamp("2010-01-01") + pd.Timedelta(minutes=int(i))).isoformat()
-        states.append({
-            "game_id": f"mlb-{r[ha]}-{r[aa]}-{i}", "home": str(r[ha]), "away": str(r[aa]),
-            "state_ts": ts, "outcome": int(float(r[hp]) > float(r[ap])), "devig_close_prob": pc,
-        })
-    return states
+    """MLB moneyline -- real close via the OddsAPI backfill bridge.
+
+    The local box/odds id-spaces do NOT join (ESPN numeric event_id vs a date-team
+    odds id) -> a naive event_id merge always returned [] (honest DATA_LIMITED).
+    odds_provider.oddsapi_close_corpus.build_states fills that seam by resolving the
+    close via (date, canonical team) instead of event_id, joined against the SAME
+    realized-box parquet, and already emits this exact corpora.py state shape. *root*
+    is accepted for signature compatibility with the other builders here (unused --
+    build_states reads its own fixed paths under data/external/historical_lines/ and
+    data/domains/mlb/, not *root*)."""
+    from scripts.platformkit.odds_provider.oddsapi_close_corpus import build_states
+    return build_states("mlb")
 
 
 def soccer_ou25_states(root: Path) -> List[dict]:

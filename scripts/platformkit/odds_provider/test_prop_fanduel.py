@@ -117,6 +117,92 @@ def test_unsupported_sport_unavailable():
     assert is_unavailable(prov.fetch_props("cricket"))
 
 
+# MLB events (probed 2026-07-02): real events posted, but only team/inning
+# markets so far -- player props not yet up (games hours out).
+MLB_PAGE = {
+    "attachments": {"events": {
+        "35778806": {"name": "Tampa Bay Rays @ Kansas City Royals",
+                     "openDate": "2026-07-02T23:41:00.000Z", "eventTypeId": 1},
+    }}
+}
+
+MLB_EVENT_TEAM_MARKETS_ONLY = {
+    "attachments": {
+        "events": {"35778806": {"name": "Tampa Bay Rays @ Kansas City Royals"}},
+        "markets": {
+            "T1": {"marketId": "T1", "eventId": "35778806",
+                   "marketName": "1st Inning Hits",
+                   "runners": [
+                       {"runnerName": "Over", "handicap": 0.5,
+                        "winRunnerOdds": {"americanDisplayOdds": {
+                            "americanOdds": -110}}},
+                       {"runnerName": "Under", "handicap": 0.5,
+                        "winRunnerOdds": {"americanDisplayOdds": {
+                            "americanOdds": -110}}}]},
+            "T2": {"marketId": "T2", "eventId": "35778806",
+                   "marketName": "Total Runs",
+                   "runners": [
+                       {"runnerName": "Over", "handicap": 8.5,
+                        "winRunnerOdds": {"americanDisplayOdds": {
+                            "americanOdds": -105}}},
+                       {"runnerName": "Under", "handicap": 8.5,
+                        "winRunnerOdds": {"americanDisplayOdds": {
+                            "americanOdds": -115}}}]},
+        },
+    }
+}
+
+MLB_EVENT_WITH_PLAYER_PROP = {
+    "attachments": {
+        "events": {"35778806": {"name": "Tampa Bay Rays @ Kansas City Royals"}},
+        "markets": {
+            "P1": {"marketId": "P1", "eventId": "35778806",
+                   "marketName": "Sonny Gray - Pitcher Strikeouts",
+                   "runners": [
+                       {"runnerName": "Over", "handicap": 5.5,
+                        "winRunnerOdds": {"americanDisplayOdds": {
+                            "americanOdds": -120}}},
+                       {"runnerName": "Under", "handicap": 5.5,
+                        "winRunnerOdds": {"americanDisplayOdds": {
+                            "americanOdds": 100}}}]},
+        },
+    }
+}
+
+
+def test_mlb_page_id_mapped():
+    prov = FanDuelProvider(http_get=lambda url: MLB_PAGE)
+    res = prov.fetch_props("mlb")
+    # No player-prop markets fetched yet (http_get only stubs the page here),
+    # but the sport must resolve past "unsupported sport" -> a real page id.
+    assert not (is_unavailable(res) and "unsupported sport" in res.get("reason", ""))
+
+
+def test_mlb_team_inning_markets_never_parsed_as_player_props():
+    # Bare "hits"/"runs" fragments must NOT match team/inning market titles --
+    # they would otherwise fabricate fake player props off a team market.
+    assert parse_event_props(MLB_EVENT_TEAM_MARKETS_ONLY, "mlb") == []
+
+
+def test_mlb_real_player_prop_parses():
+    rows = parse_event_props(MLB_EVENT_WITH_PLAYER_PROP, "mlb")
+    assert len(rows) == 1
+    r = rows[0]
+    assert r.stat == "Pitcher Strikeouts"
+    assert r.line == 5.5
+    assert r.payout_type == "sportsbook"
+
+
+def test_mlb_provider_end_to_end_props_posted():
+    def http_get(url):
+        return MLB_PAGE if "content-managed-page" in url else MLB_EVENT_WITH_PLAYER_PROP
+
+    prov = FanDuelProvider(http_get=http_get)
+    rows = prov.fetch_props("mlb")
+    assert isinstance(rows, list)
+    assert rows[0].stat == "Pitcher Strikeouts"
+
+
 def test_injected_failure_degrades_no_raise():
     def boom(url):
         raise RuntimeError("network down")
