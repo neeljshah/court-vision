@@ -182,10 +182,14 @@ def capture_pair_once(sport: str, game_id: str, *,
 
 
 def _state_summary(state: Dict[str, Any]) -> str:
-    """Compact ASCII state label for the row (score/clock/inning), best-effort."""
+    """Compact ASCII state label for the row (score/clock/inning + DEEP MLB base-out),
+    best-effort.  The outs/base/bos/re/count keys are ADDITIVE (present only on MLB ticks
+    via ingame_baseout_mlb) so the captured series carries the high-signal in-game
+    variables a score+inning summary discards -- the data deepens every tick."""
     parts: List[str] = []
     for k in ("home_score", "away_score", "elapsed", "elapsed_minutes",
-              "minute", "inning", "half", "clock", "period"):
+              "minute", "inning", "half", "clock", "period",
+              "outs", "base", "bos", "re", "count", "pitch_count", "tto"):
         if state.get(k) not in (None, ""):
             parts.append("%s=%s" % (k, state.get(k)))
     return " ".join(parts) if parts else "live"

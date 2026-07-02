@@ -140,19 +140,36 @@ def evaluate(*, model_prob: Any,
         out["reason"] = "not_calibration_justified"
         return out
 
-    # EV at the obtainable price (default = the no-vig fair line you can take). EV>0 means
-    # the model's home lean is +EV at that price; tier() applies the pre-registered floors.
-    dec = _to_decimal(obtainable_decimal)
-    if dec is None:
-        dec = 1.0 / devig_p if devig_p > 0.0 else None
-    if dec is None or dec <= 1.0:
+    # TWO-SIDED EV. The model_prob / devigged_price kept above stay HOME-aligned (the grade
+    # series is always home-aligned -- a misaligned pair manufactures fake edge). But the BET
+    # may be on EITHER side: when the model's lean is on the AWAY team (mp < devig_p) the home
+    # EV is negative while the away EV is positive. The old code evaluated ONLY home and so
+    # silently discarded every away-side edge (~half the opportunity space) -- the dominant
+    # reason the in-game channel placed almost nothing. We now price both legs at the no-vig
+    # fair line and take the +EV side. (A LARGE EV here usually means the in-game MODEL is
+    # miscalibrated, not a real edge; CLV grades the truth -- paper/measurement, never a $ claim.)
+    dec_home = _to_decimal(obtainable_decimal)
+    if dec_home is None:
+        dec_home = 1.0 / devig_p if devig_p > 0.0 else None
+    away_fair = 1.0 - devig_p
+    dec_away = 1.0 / away_fair if away_fair > 0.0 else None
+    if dec_home is None or dec_home <= 1.0 or dec_away is None or dec_away <= 1.0:
         out["reason"] = "bad_price"
         return out
-    ev = _shop.ev_vs_price(mp, dec)
+    ev_home = _shop.ev_vs_price(mp, dec_home)
+    ev_away = _shop.ev_vs_price(1.0 - mp, dec_away)
+    # Take the side with the higher EV (exactly one is positive when mp != devig_p).
+    if ev_away > ev_home:
+        side, ev, bet_mp, bet_fair, dec = "away", ev_away, 1.0 - mp, away_fair, dec_away
+    else:
+        side, ev, bet_mp, bet_fair, dec = "home", ev_home, mp, devig_p, dec_home
+    out["side"] = side
     out["ev"] = ev
     out["obtainable_decimal"] = dec
+    out["bet_model_prob"] = bet_mp
+    out["bet_devigged_price"] = bet_fair
 
-    tier = _tier(ev=ev, model_prob=mp, market_prob=devig_p, clv_is_proxy=clv_is_proxy)
+    tier = _tier(ev=ev, model_prob=bet_mp, market_prob=bet_fair, clv_is_proxy=clv_is_proxy)
     # RELAXED in-game floor (opt-in via min_ev): when the pre-registered policy floor is not
     # cleared but the EV still beats an explicit lower floor, assign the marginal tier "C".
     # This is a LOWER-CONFIDENCE, honestly-graded paper bet (CLV will tell the truth) -- it is

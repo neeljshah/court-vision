@@ -35,6 +35,8 @@ INVARIANTS: scripts/platformkit/ only; <=300 LOC; no secrets; reuse vetted devig
 from __future__ import annotations
 
 import json
+import os
+import statistics
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence
@@ -248,6 +250,39 @@ def append_settlement(
 
 _MIN_GAME_ID_LEN = 3  # e.g. "gg" (len=2) is malformed; real IDs are e.g. "401859967"
 
+# A taken price more than this many times longer (in DECIMAL odds) than where its
+# OWN side actually closed is OFF-MARKET: no book offered it, so it is a misparsed /
+# stale line. Computing CLV from it fabricates a huge fake +CLV (a "taken" 12.0 on a
+# game that closed ~1.95 -> +497% CLV), which would dishonestly inflate the headline
+# mean. Such rows are EXCLUDED from the CLV aggregate (read-time only -- the on-disk
+# ledger is never mutated, mirroring _is_synthetic_row) and counted as suspect so the
+# exclusion stays transparent. Tune via CLV_MAX_TAKEN_CLOSE_RATIO.
+_MAX_TAKEN_CLOSE_RATIO = float(
+    os.environ.get("CLV_MAX_TAKEN_CLOSE_RATIO", "2.5") or 2.5)
+
+
+def is_clv_suspect(row: Dict[str, Any]) -> bool:
+    """True iff a settled row's taken price is implausibly longer than its side's
+    close -- an off-market / misparsed line that would fabricate a fake CLV.
+
+    Judged ONLY when the bet side's closing decimal is present and valid; otherwise
+    we cannot tell, so the row is NOT flagged (kept). Pure; never raises.
+    """
+    try:
+        taken = float(row.get("taken_decimal"))
+        side = str(row.get("side", "")).strip().lower()
+        if side == _SIDE_HOME:
+            close_dec = float(row.get("closing_decimal_home"))
+        elif side == _SIDE_AWAY:
+            close_dec = float(row.get("closing_decimal_away"))
+        else:
+            return False
+    except (TypeError, ValueError):
+        return False
+    if not (taken > 1.0 and close_dec > 1.0):
+        return False
+    return taken > close_dec * _MAX_TAKEN_CLOSE_RATIO
+
 
 def _is_synthetic_row(row: Dict[str, Any]) -> bool:
     """True for synthetic (test_*) or malformed (short game_id) rows.
@@ -290,38 +325,53 @@ def load_ledger(path: Optional[Path] = None) -> List[Dict[str, Any]]:
 
 
 def clv_summary(ledger: Sequence[Dict[str, Any]]) -> Dict[str, Any]:
-    """Aggregate CLV over settled bets: n_bets, pct_beat_close, mean_clv_pct, by_sport."""
-    settled = [
+    """Aggregate CLV over settled bets: n_bets, pct_beat_close, mean/median, by_sport.
+
+    Off-market / misparsed rows (is_clv_suspect -- a taken price implausibly longer
+    than its side's close, which fabricates a fake +CLV) are EXCLUDED from every
+    statistic and reported as ``n_suspect_excluded`` so the headline mean can never
+    be inflated by a corrupt line. ``median_clv_pct`` is reported alongside the mean
+    as the outlier-robust central tendency. ``n_bets`` is the trustworthy count.
+    """
+    settled_all = [
         b for b in ledger
         if b.get("status") == "settled" and b.get("clv_pct") is not None
     ]
+    settled = [b for b in settled_all if not is_clv_suspect(b)]
+    n_suspect = len(settled_all) - len(settled)
     n = len(settled)
     if n == 0:
         return {"n_bets": 0, "pct_beat_close": None, "mean_clv_pct": None,
+                "median_clv_pct": None, "n_suspect_excluded": n_suspect,
                 "by_sport": {}}
     clvs = [float(b["clv_pct"]) for b in settled]
     beats = sum(1 for c in clvs if c > 0.0)
     by_sport: Dict[str, Any] = {}
     for b in settled:
         sport = str(b.get("sport", "unknown"))
-        bucket = by_sport.setdefault(sport, {"n": 0, "_sum": 0.0, "_beats": 0})
+        bucket = by_sport.setdefault(sport, {"n": 0, "_sum": 0.0, "_beats": 0,
+                                             "_clvs": []})
         c = float(b["clv_pct"])
         bucket["n"] += 1
         bucket["_sum"] += c
         bucket["_beats"] += 1 if c > 0.0 else 0
+        bucket["_clvs"].append(c)
     for sport, bucket in by_sport.items():
         cnt = bucket["n"]
         bucket["mean_clv_pct"] = round(bucket.pop("_sum") / cnt, 6)
+        bucket["median_clv_pct"] = round(statistics.median(bucket.pop("_clvs")), 6)
         bucket["pct_beat_close"] = round(100.0 * bucket.pop("_beats") / cnt, 4)
     return {
         "n_bets": n,
         "pct_beat_close": round(100.0 * beats / n, 4),
         "mean_clv_pct": round(sum(clvs) / n, 6),
+        "median_clv_pct": round(statistics.median(clvs), 6),
+        "n_suspect_excluded": n_suspect,
         "by_sport": by_sport,
     }
 
 
 __all__ = [
     "record_bet", "bet_id", "compute_clv", "settle_closing_line",
-    "append_settlement", "load_ledger", "clv_summary",
+    "append_settlement", "load_ledger", "clv_summary", "is_clv_suspect",
 ]

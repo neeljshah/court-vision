@@ -30,9 +30,33 @@ def test_relaxed_floor_surfaces_marginal_edge():
 
 
 def test_relaxed_floor_still_requires_positive_edge():
-    # model == market -> ev ~ 0 -> NO bet even with a relaxed floor (never bets noise<=0)
-    out = sig.evaluate(model_prob=0.50, min_ev=0.0, **_BASE)
+    # model == the DEVIGGED FAIR -> ev ~ 0 on BOTH sides -> NO bet even with a relaxed
+    # floor (never bets noise<=0). (Two-sided: model==fair is the true no-edge point;
+    # model==0.50 is NOT no-edge here because the market fair is ~0.53.)
+    fair = sig.devig_home_price(0.55, 0.49)
+    out = sig.evaluate(model_prob=fair, min_ev=0.0, **_BASE)
     assert out["action"] == "no_bet" and out["reason"] == "below_floor"
+
+
+def test_two_sided_bets_the_away_edge():
+    # model favors AWAY vs the market (model home 0.40 < devigged fair ~0.53): the +EV is
+    # on the AWAY side. The old home-only signal discarded this (home edge negative ->
+    # below_floor); two-sided takes it.
+    out = sig.evaluate(model_prob=0.40, min_ev=0.01, **_BASE)
+    assert out["action"] == "bet"
+    assert out["side"] == "away"
+    assert out["ev"] > 0.0
+    assert out["bet_model_prob"] == 0.60          # 1 - model home prob
+    # the graded pair stays HOME-aligned regardless of bet side
+    assert abs(out["model_prob"] - 0.40) < 1e-9
+    assert out["devigged_price"] > 0.5            # home fair from a 0.55/0.49 book
+
+
+def test_two_sided_picks_home_when_model_bullish_home():
+    # model strongly home (0.80) -> home is the +EV side
+    out = sig.evaluate(model_prob=0.80, min_ev=0.01, **_BASE)
+    assert out["action"] == "bet" and out["side"] == "home"
+    assert out["bet_model_prob"] == 0.80
 
 
 def test_relaxed_floor_does_not_override_gates():

@@ -139,7 +139,11 @@ def test_unjustified_divergence_is_noise_no_bet():
 def test_enter_places_paper_bet_units_only(tmp_path):
     ledger = tmp_path / "ledger.jsonl"
     grade_dir = tmp_path / "grade"
-    d = dt.on_tick("mlb", "G1",
+    # Use a realistic game_id (>= _MIN_GAME_ID_LEN=3); a 2-char synthetic id would be
+    # silently rejected by the paper_ingame write-guard before placement, so this also
+    # exercises the REAL placement path the live daemon hits with 9-char ESPN ids.
+    gid = "401859967"
+    d = dt.on_tick("mlb", gid,
                    _tick(0.80, 0.55, yes_away=0.50, home_score=3, away_score=1, inning=5),
                    grade_dir=grade_dir, ledger_path=ledger)
     assert d["action"] == "bet"
@@ -152,7 +156,7 @@ def test_enter_places_paper_bet_units_only(tmp_path):
     assert 0.0 <= d["units"]["quarter_kelly"] <= 0.25
     _no_dollar_field(d)
     # The grade pair was captured for the leak-free CLV series.
-    path = grade_dir / "mlb" / "G1.jsonl"
+    path = grade_dir / "mlb" / ("%s.jsonl" % gid)
     rows = [json.loads(ln) for ln in path.read_text(encoding="ascii").splitlines() if ln.strip()]
     assert len(rows) == 1 and rows[0]["side"] == "home"
 
@@ -160,10 +164,12 @@ def test_enter_places_paper_bet_units_only(tmp_path):
 def test_second_enter_same_game_side_day_is_idempotent(tmp_path):
     ledger = tmp_path / "ledger.jsonl"
     grade_dir = tmp_path / "grade"
+    gid = "401859968"  # realistic id -> clears the write-guard, so idempotency is what's tested
     t = _tick(0.80, 0.55, yes_away=0.50)
-    d1 = dt.on_tick("mlb", "G2", t, grade_dir=grade_dir, ledger_path=ledger)
-    # 2nd ENTER from FLAT (position not threaded) -> the ledger idempotency drops it.
-    d2 = dt.on_tick("mlb", "G2", t, grade_dir=grade_dir, ledger_path=ledger)
+    d1 = dt.on_tick("mlb", gid, t, grade_dir=grade_dir, ledger_path=ledger)
+    # 2nd ENTER from FLAT (position not threaded) -> the (sport,game,market,side,day)
+    # edge_key already has an OPEN row -> the ledger idempotency check drops the duplicate.
+    d2 = dt.on_tick("mlb", gid, t, grade_dir=grade_dir, ledger_path=ledger)
     assert d1["placement"]["added_new"] is True
     assert d2["placement"]["added_new"] is False  # no duplicate open row
     rows = [json.loads(ln) for ln in ledger.read_text(encoding="ascii").splitlines() if ln.strip()]
@@ -178,6 +184,35 @@ def test_hold_when_already_in_position_places_nothing_new(tmp_path):
     d = dt.on_tick("mlb", "G3", _tick(0.80, 0.55, yes_away=0.50),
                    position=pos, grade_dir=grade_dir, ledger_path=ledger)
     assert d["action"] == "hold"
+
+
+def test_edge_flip_to_other_side_reenters(tmp_path):
+    # We HOLD an open HOME position, but the live edge has flipped: model_prob (home) is
+    # now far BELOW the fair home price, so AWAY is the +EV side. That is a genuinely new
+    # opportunity (the line moved) -> the day-trader RE-ENTERS on the away side, not holds.
+    ledger = tmp_path / "ledger.jsonl"
+    grade_dir = tmp_path / "grade"
+    pos = {"status": "open", "side": "home", "edge_key": "home-key"}
+    d = dt.on_tick("mlb", "401859970",
+                   _tick(0.20, 0.55, yes_away=0.50),  # home model 0.20 << fair -> away +EV
+                   position=pos, grade_dir=grade_dir, ledger_path=ledger)
+    assert d["action"] == "bet"
+    assert d["side"] == "away"
+    assert d["reason"] == "edge_flipped_reenter"
+    assert d["placement"]["added_new"] is True       # a real new placement on the new side
+    assert d["placement"]["executed"] is False        # still paper-only
+    _no_dollar_field(d)
+
+
+def test_same_side_edge_still_holds_not_reenter(tmp_path):
+    # The edge still favours the side we already hold -> HOLD, never a duplicate same-side bet.
+    ledger = tmp_path / "ledger.jsonl"
+    grade_dir = tmp_path / "grade"
+    pos = {"status": "open", "side": "home", "edge_key": "home-key"}
+    d = dt.on_tick("mlb", "401859971", _tick(0.80, 0.55, yes_away=0.50),
+                   position=pos, grade_dir=grade_dir, ledger_path=ledger)
+    assert d["action"] == "hold"
+    assert d["reason"] == "hold_existing"
     assert d["captured"] is True  # still captured for the grade series
     assert d["placement"] is None
     # No bet ledger row was written on a HOLD.

@@ -81,3 +81,46 @@ def test_live_states_returns_all_in_progress():
 def test_live_states_empty_when_none_live():
     payload = {"events": [_wc_event(live=False)]}
     assert S.live_states("soccer_intl", http_get=lambda url: payload) == []
+
+
+# --------------------------------------------------------------------------------------- #
+# state_summary parity fix: _extract must emit the keys live_grade._state_summary and      #
+# ingame_clv_per_segment._infer_segment read, so captured ticks carry real game state      #
+# (score margin + period/inning/half/minute) instead of falling back to "live"/UNK.        #
+# --------------------------------------------------------------------------------------- #
+def _mlb_event(period=5, detail="Bottom 5th", hs="7", as_="1"):
+    return {"id": "G1",
+            "status": {"period": period, "type": {"state": "in",
+                       "name": "STATUS_IN_PROGRESS", "shortDetail": detail}},
+            "competitions": [{"competitors": [
+                {"homeAway": "home", "score": hs, "team": {"abbreviation": "DET"}},
+                {"homeAway": "away", "score": as_, "team": {"abbreviation": "CWS"}}]}]}
+
+
+def test_extract_emits_score_and_segment_keys_mlb():
+    st = S._extract("mlb", _mlb_event(), None, p0_provider=lambda s, g: None)
+    assert st["home_score"] == 7.0 and st["away_score"] == 1.0   # margin available
+    assert st["inning"] == 5 and st["half"] == "bottom"          # segment available
+
+
+def test_extract_segment_fields_nba_and_soccer():
+    nba = {"id": "G2", "status": {"period": 3, "clock": 300,
+           "type": {"state": "in", "name": "STATUS_IN_PROGRESS", "shortDetail": "Q3"}},
+           "competitions": [{"competitors": [
+               {"homeAway": "home", "score": "70", "team": {"abbreviation": "BOS"}},
+               {"homeAway": "away", "score": "66", "team": {"abbreviation": "NYK"}}]}]}
+    st = S._extract("nba", nba, None, p0_provider=lambda s, g: None)
+    assert st["period"] == 3 and st["home_score"] == 70.0
+    soc = S._extract("soccer_intl", _wc_event(live=True, clock="57'"),
+                     None, p0_provider=lambda s, g: None)
+    assert soc["minute"] == 57
+
+
+def test_state_summary_and_segment_roundtrip():
+    # The real downstream chain: _extract -> live_grade._state_summary -> _infer_segment.
+    from scripts.platformkit.ingame import live_grade as lg
+    from scripts.platformkit.ingame import ingame_clv_per_segment as ps
+    st = S._extract("mlb", _mlb_event(), None, p0_provider=lambda s, g: None)
+    ss = lg._state_summary(st)
+    assert "inning=5" in ss and "home_score" in ss and ss != "live"
+    assert ps._infer_segment("mlb", ss) == "I5"

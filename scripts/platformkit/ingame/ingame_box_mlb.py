@@ -106,13 +106,18 @@ def live_games(*, http_get: Optional[Callable[[str], Dict[str, Any]]] = None,
             teams = g.get("teams", {}) or {}
             home = ((teams.get("home", {}) or {}).get("team", {}) or {}).get("name")
             away = ((teams.get("away", {}) or {}).get("team", {}) or {}).get("name")
-            frac = _frac_from_linescore(get(_LINESCORE % gp))
+            ls = get(_LINESCORE % gp) or {}
+            frac = _frac_from_linescore(ls)
             if frac is None:
                 frac = 0.0
             out.append({
                 "game_pk": str(gp), "home": home, "away": away,
                 "frac_elapsed": frac,
                 "state": str(status.get("detailedState", "")),
+                # ATTACH the already-fetched linescore so a downstream consumer (the id
+                # resolver's deep_state_for_ticker) REUSES it instead of re-GETting the same
+                # endpoint per game per tick -- additive key, existing callers ignore it.
+                "linescore": ls,
             })
     return out
 

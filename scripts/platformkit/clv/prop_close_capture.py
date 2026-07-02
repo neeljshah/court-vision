@@ -81,17 +81,27 @@ def _open_ingame_props(ledger: Sequence[Dict[str, Any]], sport: str
 def capture_once(sport: str = "mlb", *,
                  ledger: Optional[Sequence[Dict[str, Any]]] = None,
                  quote_fn: Optional[QuoteFn] = None,
+                 open_fn: Optional[Callable[[Sequence[Dict[str, Any]], str],
+                                            List[Dict[str, Any]]]] = None,
+                 default_quote_fn: Optional[QuoteFn] = None,
+                 source: str = "draftkings_live",
                  store_path: str = _store.DEFAULT_STORE,
                  now: Optional[str] = None) -> Dict[str, Any]:
-    """Snapshot the current two-way price of every open in-game prop for *sport*."""
+    """Snapshot the current two-way price of every open prop for *sport*.
+
+    Defaults capture OPEN IN-GAME props off the live DK feed (the original M16
+    behavior). Pass ``open_fn`` (e.g. open PREGAME props), ``default_quote_fn``
+    (e.g. the pregame DK two-way feed) and ``source`` to capture another channel.
+    """
     rows = list(ledger) if ledger is not None else load_ledger()
-    opens = _open_ingame_props(rows, sport)
+    _open = open_fn or _open_ingame_props
+    opens = _open(rows, sport)
     result = {"sport": sport, "open_props": len(opens), "captured": 0,
               "no_live_price": 0}
     if not opens:
         return result  # nothing open -> skip the network fetch entirely
 
-    qf = quote_fn or _default_quote_fn
+    qf = quote_fn or default_quote_fn or _default_quote_fn
     quotes = qf(sport) or []
     lookup: Dict[str, Tuple[float, float]] = {}
     for q in quotes:
@@ -110,7 +120,7 @@ def capture_once(sport: str = "mlb", *,
             continue
         key = _store.key_for_row(r)
         if key and _store.record_quote(key, price[0], price[1], ts,
-                                       source="draftkings_live",
+                                       source=source,
                                        store_path=store_path):
             result["captured"] += 1
         else:

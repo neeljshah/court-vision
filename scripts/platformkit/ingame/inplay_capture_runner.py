@@ -101,6 +101,11 @@ def run(*, sports: Optional[List[str]] = None,
     # Beat once at boot so the service is "live" before the first poll completes.
     _beat()
     wrapped_sleep = _heartbeat_sleep(base_sleep, clock=clock)
+    # PRODUCTION default: enrich the captured MLB series with the authoritative statsapi
+    # base-out state (resolver maps the Kalshi ticker -> gamePk -> linescore).  LAZY, so a
+    # dead-feed / offline test tick makes NO network call; a test can still inject
+    # mlb_deep=False or an offline deep_state_fn via **kwargs to override.
+    kwargs.setdefault("mlb_deep", True)
     return serve_forever(
         interval=interval,
         clock=wrapped_sleep,

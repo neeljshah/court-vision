@@ -31,7 +31,16 @@ import logging
 import os
 import threading
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import TimeoutError as _FuturesTimeout
 from typing import Any, Dict, List, Optional, Tuple
+
+# Per-game in-game reads (_live_for) hit keyless ESPN (~1.3s each); a full slate run
+# sequentially (~20s+ for MLB) blows the first (cold) request past the client timeout.
+# Fetch them CONCURRENTLY (bounded pool + wall-clock deadline) so the cold path is
+# ~max(one read) not sum; slow games degrade to 'unavailable' rather than holding all.
+_LIVE_POOL_WORKERS = 12
+_LIVE_DEADLINE_SEC = 8.0
 
 logger = logging.getLogger(__name__)
 
@@ -178,14 +187,51 @@ def _compute_envelope(sport: str, store_dir: Optional[str]) -> Dict[str, Any]:
     if view.get("status") != "ok":
         return _unavailable(sport, view.get("generated_at", "") or "",
                             view.get("reason", "snapshot unavailable"))
-    games: List[Dict[str, Any]] = []
-    for g in view.get("games", []) or []:
+    games = _decide_and_decorate(sport, view.get("games", []) or [])
+    return _envelope(sport, games, view.get("generated_at", "") or "")
+
+
+def _decide_and_decorate(sport: str,
+                         view_games: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Decision layer for every game + the in-game number, the latter fetched
+    CONCURRENTLY (bounded pool + wall-clock deadline). decide_game is pure/instant;
+    only the per-game live ESPN read is slow, so we parallelize just that. A game
+    whose live read errors or misses the deadline gets a clean 'unavailable' live
+    sentinel -- never fabricated, never holds the whole slate."""
+    decisions: List[Tuple[Dict[str, Any], Dict[str, Any]]] = []
+    for g in view_games:
         try:
-            games.append(_decorate(decide_game(g), sport, g))
+            decisions.append((decide_game(g), g))
         except Exception as exc:  # noqa: BLE001 -- one bad game never sinks all
             logger.warning("bestbets_routes: decide failed gid=%s: %s",
                            g.get("game_id"), exc)
-    return _envelope(sport, games, view.get("generated_at", "") or "")
+    live_by_idx: Dict[int, Dict[str, Any]] = {}
+    if decisions:
+        # NB: NOT `with ThreadPoolExecutor(...)` -- its __exit__ does shutdown(wait=True),
+        # which BLOCKS until every live read finishes even after our as_completed deadline
+        # fires (a live box-score read can take 20s+), defeating the deadline. Manage the
+        # pool explicitly + shutdown non-blocking so the response returns at the deadline.
+        pool = ThreadPoolExecutor(max_workers=_LIVE_POOL_WORKERS)
+        fut_idx = {pool.submit(_live_for, sport, g): i
+                   for i, (_, g) in enumerate(decisions)}
+        try:
+            for fut in as_completed(fut_idx, timeout=_LIVE_DEADLINE_SEC):
+                i = fut_idx[fut]
+                try:
+                    live_by_idx[i] = fut.result()
+                except Exception as exc:  # noqa: BLE001
+                    logger.debug("bestbets_routes: live fut failed: %s", exc)
+        except _FuturesTimeout:
+            logger.warning("bestbets_routes: %s live reads hit %.0fs deadline "
+                           "(%d/%d done)", sport, _LIVE_DEADLINE_SEC,
+                           len(live_by_idx), len(decisions))
+        pool.shutdown(wait=False, cancel_futures=True)
+    games: List[Dict[str, Any]] = []
+    for i, (decision, _) in enumerate(decisions):
+        decision["live"] = live_by_idx.get(
+            i, {"status": "unavailable", "reason": "live read deadline"})
+        games.append(decision)
+    return games
 
 
 def _kick_refresh(sport: str) -> None:

@@ -1,36 +1,18 @@
 """scripts.platformkit.improve.ingame_recal_segments -- in-game segment recal candidates.
 
-Builds LEAK-FREE Platt recalibration CANDIDATES conditioned on the proven in-game
-state segmentation: margin x period x time_bucket. Each segment is a separate
-candidate routed through the recalibrator.build_candidate choke (MF1/MF2/MF3/MF4)
-and the 5-gate ratchet before any swap.
+Builds LEAK-FREE Platt recalibration CANDIDATES conditioned on the in-game state
+segmentation margin x period x time_bucket, routed through recalibrator.build_candidate
+(MF1/MF2/MF3/MF4) + the 5-gate ratchet. SPORT-AWARE thresholds (_SPORT_THRESHOLDS): nba is
+byte-identical to before; mlb/soccer/tennis use native units.
+  1. load_ingame_settled(sport) reads settled rows (margin, period, seconds_remaining) from
+     settled_<sport>.jsonl (produced by settled_corpus_build). Missing -> [] -> NO_CANDIDATE.
+  2. segment_settled(rows, m, p, t, sport) buckets by the sport's thresholds.
+  3. build_ingame_segment_candidate: MF1 sentinel kill-switch first; audit_settled quarantine;
+     Platt fit on the clean segment. None on absent sentinel / <_MIN_OBS / diverged / degenerate.
 
-The proven conditioning lever (Brier 0.21 -> 0.0085 late-sim; map_improve L113)
-is the motivation. A "segment" is a bucket triple:
-  margin_bucket : close | mid | blowout  (score diff thresholds)
-  period_bucket : early | late           (game-quarter boundary)
-  time_bucket   : ample | scarce         (possession-time remaining)
-
-HOW IT WORKS (leak-free):
-  1. load_ingame_settled(sport) reads settled in-game state rows that carry the
-     required feature fields (margin, period, seconds_remaining) from the ingame
-     cache dir. Missing dir/file -> [] -> NO_CANDIDATE (honest cold start).
-  2. segment_settled(rows, spec_params) buckets rows by the margin x period x
-     time_bucket split described by a CandidateSpec.params dict.
-  3. build_ingame_segment_candidate(name, settled, spec_params) is the builder:
-     MF1 kill-switch first; then quarantine via audit_settled; then fit a Platt
-     on the clean segmented observations. Returns None (NO_CANDIDATE) whenever:
-       * the sentinel is absent (MF1 -- always inert without the human sentinel)
-       * <_MIN_OBS clean observations after segmentation (honest cold-start)
-       * Platt fit diverges (degenerate numerical)
-       * degenerate_base_guard fires (no-op / collapse)
-     Packages the exact candidate dict build_candidate builds (same keys).
-
-INVARIANTS: never edits MEMORY.md, never writes data/registry/, never flips a
-flag, never creates the PIPELINE_ENABLED sentinel; calibration NOT edge (no $/
-pnl/roi field anywhere); vs_close UNPROVEN; MF1 kill-switch on the first line
-of build_ingame_segment_candidate. Per-source purity: NEVER raises -- any
-failure returns None. Stdlib + numpy; ASCII; <=300 LOC.
+INVARIANTS: never edits MEMORY.md / data/registry/, never flips a flag, never creates the
+PIPELINE_ENABLED sentinel; calibration NOT edge (no $/pnl/roi); vs_close UNPROVEN; NEVER
+raises (-> None). Stdlib + numpy; ASCII; <=300 LOC.
 """
 from __future__ import annotations
 
@@ -67,6 +49,25 @@ _TIME_THRESHOLDS: Dict[str, Tuple[float, float]] = {
     "ample":  (300.0, 9999.0),   # > 5 min remaining in period
     "scarce": (0.0,   300.0),
 }
+
+# Sport-aware thresholds; "nba" reuses the NBA tables byte-for-byte. Others use native units
+# (mlb runs/innings, soccer goals/minute, tennis setdiff/set); clockless -> one "any" time bucket.
+_ANY = {"any": (-1.0, 9.0e9)}
+_SPORT_THRESHOLDS: Dict[str, Dict[str, Dict[str, Tuple[float, float]]]] = {
+    "nba": {"margin": _MARGIN_THRESHOLDS, "period": _PERIOD_THRESHOLDS, "time": _TIME_THRESHOLDS},
+    "mlb": {"margin": {"close": (0., 2.), "mid": (2., 5.), "blowout": (5., 999.)},
+            "period": {"early": (1, 5), "late": (6, 99)}, "time": _ANY},
+    "soccer": {"margin": {"close": (0., 1.), "mid": (1., 2.), "blowout": (2., 999.)},
+               "period": {"early": (0, 60), "late": (60, 200)}, "time": _ANY},
+    "tennis": {"margin": {"close": (0., 1.), "mid": (1., 2.), "blowout": (2., 99.)},
+               "period": {"early": (1, 2), "late": (3, 5)}, "time": _ANY},
+}
+_SPORT_THRESHOLDS["soccer_intl"] = _SPORT_THRESHOLDS["soccer"]
+
+
+def _thresholds_for(sport: Optional[str]) -> Dict[str, Dict[str, Tuple[float, float]]]:
+    """Per-sport thresholds; unknown / None -> NBA default (backward compat)."""
+    return _SPORT_THRESHOLDS.get(str(sport).lower() if sport else "nba", _SPORT_THRESHOLDS["nba"])
 
 _PRIMARY_CORPUS_ID = "ingame_segment_primary"
 
@@ -118,15 +119,17 @@ def _load_ingame_settled(sport: str) -> List[Dict[str, Any]]:
 def segment_settled(rows: Sequence[Dict[str, Any]],
                     margin_bucket: str,
                     period_bucket: str,
-                    time_bucket: str) -> List[Dict[str, Any]]:
-    """Return rows matching the margin x period x time_bucket segment.
-
-    Rows missing the required fields are silently skipped (they would fail
-    audit_settled anyway). Never raises.
-    """
-    m_lo, m_hi = _MARGIN_THRESHOLDS.get(margin_bucket, (0.0, 999.0))
-    p_lo, p_hi = _PERIOD_THRESHOLDS.get(period_bucket, (1, 4))
-    t_lo, t_hi = _TIME_THRESHOLDS.get(time_bucket, (0.0, 9999.0))
+                    time_bucket: str,
+                    sport: Optional[str] = None) -> List[Dict[str, Any]]:
+    """Return rows matching the margin x period x time_bucket segment. SPORT-AWARE:
+    thresholds via _thresholds_for(sport); sport=None -> rows' 'sport' field -> NBA default
+    (existing NBA callers unchanged). Rows missing fields are skipped. Never raises."""
+    if sport is None and rows:
+        sport = str(rows[0].get("sport", "")) or None
+    th = _thresholds_for(sport)
+    m_lo, m_hi = th["margin"].get(margin_bucket, (0.0, 999.0))
+    p_lo, p_hi = th["period"].get(period_bucket, (1, 4))
+    t_lo, t_hi = th["time"].get(time_bucket, (-1.0, 9.0e9))
 
     out: List[Dict[str, Any]] = []
     for r in rows:
@@ -210,7 +213,8 @@ def build_ingame_segment_candidate(
         if not all_rows:
             return None
 
-        seg_rows = segment_settled(all_rows, margin_bucket, period_bucket, time_bucket)
+        seg_rows = segment_settled(all_rows, margin_bucket, period_bucket, time_bucket,
+                                   sport=sport)
         if not seg_rows:
             return None
 

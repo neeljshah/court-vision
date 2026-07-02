@@ -1,12 +1,13 @@
 """scripts.platformkit.improve.ingame_segment_emit -- in-game segment recal SHIP-readout
 emitter (SI-05).  margin x period x time_bucket -> graded ledger rows.
 
-Each segment -> one row with market="ingame:<seg>". CLV always INSUFFICIENT_DATA (no
-liquid in-play prices). Under-N -> INSUFFICIENT_DATA. No $/roi/pnl/profit key anywhere.
-MF1 kill-switch delegated to build_ingame_segment_candidate. NEVER raises. ASCII; <=300 LOC.
+Each segment -> one row with market="ingame:<seg>". CLV is now DATA-DRIVEN: graded from
+the sport's captured in-play series via ingame_clv_grade.grade_sport (honest BEAT/BEHIND/
+MATCH/INSUFFICIENT_DATA, market-majority guarded), falling back to INSUFFICIENT_DATA when
+no liquid in-play data exists. No $/roi/pnl/profit key. NEVER raises. ASCII; <=300 LOC.
 
 Public API:
-  emit_ingame_segments(sport, segments, ledger_path=None, ts=None) -> List[Dict]
+  emit_ingame_segments(sport, segments, ledger_path=None, ts=None, clv_summary=None) -> List
 """
 from __future__ import annotations
 
@@ -29,11 +30,12 @@ from scripts.platformkit.eval_gate.scoring import brier, ece
 
 logger = logging.getLogger("ingame_segment_emit")
 
-# In-game CLV is always INSUFFICIENT_DATA -- no liquid in-play closing prices available.
+# Default when a sport has no captured in-play data to grade against (e.g. NBA offseason).
+# When data DOES exist, CLV is graded data-driven via _resolve_sport_clv below.
 CLV_STATUS = "INSUFFICIENT_DATA"
 CLV_REASON = (
-    "in-game CLV INSUFFICIENT_DATA: live in-play closing prices unavailable "
-    "(NBA offseason; no liquid in-play market to grade against)"
+    "in-game CLV INSUFFICIENT_DATA: no captured liquid in-play series to grade "
+    "against for this sport (e.g. offseason / no live games)"
 )
 
 # Minimum clean obs to produce a Brier readout (mirrors ingame_recal_segments._MIN_OBS).
@@ -63,6 +65,18 @@ _VALID_TIMES = frozenset(_TIME_THRESHOLDS)
 
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def _resolve_sport_clv(
+    sport: str, summary: Optional[Dict[str, Any]] = None
+) -> Tuple[str, str]:
+    """Data-driven (clv_status, clv_reason) via ingame_clv_grade. NEVER raises."""
+    try:
+        from scripts.platformkit.improve.ingame_clv_grade import resolve_clv_status
+        return resolve_clv_status(sport, summary)
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("_resolve_sport_clv(%s) failed: %s", sport, exc)
+        return CLV_STATUS, CLV_REASON
 
 
 def _all_keys(obj: Any) -> List[str]:
@@ -98,17 +112,20 @@ def _validate_segment(mb: str, pb: str, tb: str) -> Optional[str]:
     return None
 
 
-def _build_insufficient_row(market: str, reason: str, ts: str, n: int = 0) -> Dict[str, Any]:
+def _build_insufficient_row(
+    market: str, reason: str, ts: str, n: int = 0,
+    clv: str = CLV_STATUS, clv_reason: str = CLV_REASON,
+) -> Dict[str, Any]:
     return {
         "ts": ts,
         "market": market,
         "status": "INSUFFICIENT_DATA",
         "n": n,
-        "clv": CLV_STATUS,
-        "clv_reason": CLV_REASON,
+        "clv": clv,
+        "clv_reason": clv_reason,
         "reason": reason,
         "note": CALIBRATION_NOTE,
-        "vs_close": "UNPROVEN",
+        "vs_close": "UNPROVEN" if clv in (CLV_STATUS, "MATCH") else clv,
     }
 
 
@@ -139,14 +156,20 @@ def _brier_readout(
 def _grade_segment(
     sport: str, margin_bucket: str, period_bucket: str, time_bucket: str,
     ts: str, candidate_name: str,
+    clv_status: str = CLV_STATUS, clv_reason: str = CLV_REASON,
 ) -> Dict[str, Any]:
-    """Build + grade one segment candidate. NEVER raises; returns a ledger row."""
+    """Build + grade one segment candidate. NEVER raises; returns a ledger row.
+
+    clv_status/clv_reason carry the sport-level data-driven in-play CLV verdict.
+    """
     seg = _seg_label(margin_bucket, period_bucket, time_bucket)
     market = "ingame:%s" % seg
 
     err = _validate_segment(margin_bucket, period_bucket, time_bucket)
     if err:
-        return _build_insufficient_row(market, "invalid segment: %s" % err, ts)
+        return _build_insufficient_row(
+            market, "invalid segment: %s" % err, ts,
+            clv=clv_status, clv_reason=clv_reason)
 
     try:
         cand = build_ingame_segment_candidate(
@@ -162,7 +185,7 @@ def _grade_segment(
         return _build_insufficient_row(
             market,
             "NO_CANDIDATE for '%s' (sentinel absent, under-N, feed degraded, degenerate)" % seg,
-            ts,
+            ts, clv=clv_status, clv_reason=clv_reason,
         )
 
     y = cand.get("y", [])
@@ -170,7 +193,7 @@ def _grade_segment(
         return _build_insufficient_row(
             market,
             "segment '%s' has only %d clean obs (need >= %d)" % (seg, len(y), _MIN_OBS),
-            ts, n=len(y),
+            ts, n=len(y), clv=clv_status, clv_reason=clv_reason,
         )
 
     readout = _brier_readout(
@@ -191,10 +214,10 @@ def _grade_segment(
         "readout": readout,
         "platt_a": payload.get("a"),
         "platt_b": payload.get("b"),
-        "clv": CLV_STATUS,
-        "clv_reason": CLV_REASON,
+        "clv": clv_status,
+        "clv_reason": clv_reason,
         "oos_improves": bool(cand.get("oos_improves", False)),
-        "vs_close": "UNPROVEN",
+        "vs_close": "UNPROVEN" if clv_status in (CLV_STATUS, "MATCH") else clv_status,
         "note": CALIBRATION_NOTE,
     }
 
@@ -209,23 +232,22 @@ def emit_ingame_segments(
     segments: Sequence[Tuple[str, str, str]],
     ledger_path: Optional[Path] = None,
     ts: Optional[str] = None,
+    clv_summary: Optional[Dict[str, Any]] = None,
 ) -> List[Dict[str, Any]]:
     """Grade a batch of in-game segments and append rows to the per-market ledger.
 
-    Parameters
-    ----------
-    sport: Sport key (e.g. "nba").
-    segments: Sequence of (margin_bucket, period_bucket, time_bucket) triples.
-      margin: close|mid|blowout   period: early|late   time: ample|scarce
-    ledger_path: Override ledger path (tests use tmp_path).
-    ts: ISO timestamp override (default: now UTC).
+    segments: (margin_bucket, period_bucket, time_bucket) triples
+      (margin: close|mid|blowout, period: early|late, time: ample|scarce).
+    clv_summary: optional precomputed grade_sport() result (tests inject for hermetic
+      runs); when None the sport's captured in-play series are graded once here.
 
-    Returns one ledger row dict per segment (market="ingame:<seg>"). NEVER raises.
-    CLV is always INSUFFICIENT_DATA. Under-N -> INSUFFICIENT_DATA. No $/roi keys.
+    Returns one row per segment (market="ingame:<seg>"). NEVER raises. CLV is
+    DATA-DRIVEN (INSUFFICIENT_DATA when no in-play data). No $/roi keys.
     """
     ts = ts or _now_iso()
     lpath = Path(ledger_path) if ledger_path else _DEFAULT_LEDGER
     rows: List[Dict[str, Any]] = []
+    clv_status, clv_reason = _resolve_sport_clv(sport, clv_summary)
 
     for seg_triple in segments:
         try:
@@ -235,7 +257,7 @@ def emit_ingame_segments(
             rows.append(_build_insufficient_row(
                 "ingame:invalid",
                 "malformed segment triple: %r" % (seg_triple,),
-                ts,
+                ts, clv=clv_status, clv_reason=clv_reason,
             ))
             continue
 
@@ -243,12 +265,14 @@ def emit_ingame_segments(
             str(sport).lower(), margin_bucket, period_bucket, time_bucket
         )
         try:
-            row = _grade_segment(sport, margin_bucket, period_bucket, time_bucket, ts, name)
+            row = _grade_segment(sport, margin_bucket, period_bucket, time_bucket, ts, name,
+                                 clv_status=clv_status, clv_reason=clv_reason)
         except Exception as exc:  # noqa: BLE001
             seg = _seg_label(margin_bucket, period_bucket, time_bucket)
             logger.debug("ingame_segment_emit: _grade_segment(%s) failed: %s", seg, exc)
             row = _build_insufficient_row(
-                "ingame:%s" % seg, "internal error: %s" % exc, ts
+                "ingame:%s" % seg, "internal error: %s" % exc, ts,
+                clv=clv_status, clv_reason=clv_reason,
             )
 
         _assert_no_banned_keys(row)

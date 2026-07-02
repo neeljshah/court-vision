@@ -22,6 +22,7 @@ INVARIANTS: build only under scripts/platformkit/; paper-only; ASCII; no edge cl
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 import time
 import traceback
@@ -50,12 +51,18 @@ _LINE_SPORTS: tuple = ("nba", "mlb", "soccer", "tennis")
 # it is now the LEAST-favored channel: tier-A only, calibration-gated (stake only families
 # we have PROVEN we calibrate -- replicated SHIP), and a small cap. The EDGE focus is the
 # in-game channel below. EV is MODEL_VIEW, never a proven $ edge; CLV is the judge.
-_PROP_MAX_PER_SPORT: int = 8
+# STARVE 2026-06-28: settled record shows the prop model OVERCONFIDENT (mean model_prob ~0.61
+# realizes ~0.50) and props are the bulk of the realized losses -> cut the flood 8->2 to stop
+# placing the systematically-overconfident bets. Reversible: CV_PROP_MAX=8 restores. This
+# REDUCES losses; it does NOT create profit -- no $ edge is claimed. UNITS only.
+_PROP_MAX_PER_SPORT: int = max(0, int(os.environ.get("CV_PROP_MAX", "2") or 2))
 _PROP_MIN_TIER: str = "A"
-# World Cup pregame props: settleable + tier-A best bets, capped small. NOT calibration-gated
-# -- soccer is UNMEASURED (no leak-free verdict yet), not rejected, so we include its best
-# settleable props (leader-gradeable shots/saves) and let CLV measure whether WC has an edge.
-_WC_PROP_MAX_PER_SPORT: int = 8
+# World Cup pregame props: settleable + tier-A best bets. NOT calibration-gated -- soccer is
+# UNMEASURED (no leak-free verdict yet), not rejected. PRECAUTION 2026-06-28: this is the LAST
+# ungated prop channel; rather than flood it while its CLV is unproven, starve it to a token
+# cap (2) so the corpus still fills (we can measure later) without paying the efficient-market
+# flood. Reversible: CV_WC_PROP_MAX=8 restores the prior cap. UNITS only, no $ edge claim.
+_WC_PROP_MAX_PER_SPORT: int = max(0, int(os.environ.get("CV_WC_PROP_MAX", "2") or 2))
 # in-game (the believed/validated freshness edge) stays at the A/B floor so it fires broadly.
 _INGAME_MIN_TIER: str = "B"
 
@@ -150,7 +157,12 @@ def _place_ingame_props() -> Dict[str, Any]:
     try:
         from scripts.platformkit.ingame.ingame_prop_trader import run as _run
         from scripts.platformkit.improve.ingame_prop_gate import gate_if_enabled
-        gate = gate_if_enabled()  # None unless CV_INGAME_CALIB_GATE truthy (default OFF)
+        from scripts.platformkit.improve.ingame_prop_clv_guard import clv_guard
+        # CLV guard (default ON): the in-game prop channel is MEASURED CLV-adverse
+        # (mean -31%, edge anti-correlated; see ingame_prop_clv_guard) -> suppress-only,
+        # composes over the optional calib gate. CV_INGAME_PROP_CLV_GUARD=0 restores
+        # the prior broad-capture behavior. Stops a measured bleed; claims no edge.
+        gate = clv_guard(gate_if_enabled())
         for sp in ("mlb", "soccer_intl"):
             r = _run(sp, max_per_game=_INGAME_PROP_MAX_PER_GAME,
                      min_tier=_INGAME_MIN_TIER, gate=gate)

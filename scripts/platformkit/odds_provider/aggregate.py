@@ -244,31 +244,76 @@ def default_providers(http_get: Optional[Callable[[str], Any]] = None,
     return provs
 
 
+# A SLOW source must not serialize behind (or stall) the whole slate. Providers are
+# fetched CONCURRENTLY and gathered in PROVIDER ORDER (so the merge's "first provider
+# owns orientation" contract is byte-identical to a sequential fetch), under a shared
+# wall-clock deadline: a provider that has not returned by the deadline is recorded as
+# an error and abandoned (its thread is left to finish + die), exactly like the
+# bestbets-route deadline -- the slate returns AT the deadline, never hangs on one
+# pathological source. Each HTTP fetch already has its own timeout+retry (http_cache);
+# this deadline is the outer backstop. Tune via ODDS_AGG_FETCH_DEADLINE_S.
+_AGG_FETCH_DEADLINE_S = float(os.environ.get("ODDS_AGG_FETCH_DEADLINE_S", "25") or 25)
+
+
+def _classify(name: str, res: Any, sources: Dict[str, str],
+              lists: List[List[OddsEvent]]) -> None:
+    """Fold one provider result into (sources, lists) -- the shared ok/down/odd rule."""
+    if is_unavailable(res):
+        sources[name] = res.get("reason", "unavailable")
+    elif isinstance(res, list):
+        sources[name] = "ok"
+        lists.append(res)
+    else:
+        sources[name] = "unexpected result"
+
+
+def _fetch_all(provs: Sequence[Any], sport: str,
+               ) -> Tuple[Dict[str, str], List[List[OddsEvent]]]:
+    """Fetch every provider concurrently under a shared deadline; gather in order.
+
+    Returns (sources, lists) identical in shape to the old sequential loop. A
+    provider that raises -> 'error (<Type>)'; one that overruns the shared deadline
+    -> 'error (Timeout)'. Order is preserved (lists appended provider-by-provider)
+    so merge_events' orientation-ownership is unchanged. Never raises.
+    """
+    import time as _time
+    from concurrent.futures import ThreadPoolExecutor, TimeoutError as _FTimeout
+    sources: Dict[str, str] = {}
+    lists: List[List[OddsEvent]] = []
+    pool = ThreadPoolExecutor(max_workers=min(8, max(1, len(provs))))
+    try:
+        futs = [(getattr(p, "name", "?"), pool.submit(p.fetch, sport)) for p in provs]
+        deadline = _time.monotonic() + _AGG_FETCH_DEADLINE_S
+        for name, fut in futs:  # gather IN PROVIDER ORDER (deterministic merge)
+            remaining = max(0.0, deadline - _time.monotonic())
+            try:
+                res = fut.result(timeout=remaining)
+            except _FTimeout:
+                sources[name] = "error (Timeout)"
+                fut.cancel()
+                continue
+            except Exception as exc:  # noqa: BLE001 -- a provider must never sink the slate
+                sources[name] = "error (%s)" % type(exc).__name__
+                continue
+            _classify(name, res, sources, lists)
+    finally:
+        pool.shutdown(wait=False, cancel_futures=True)  # return AT the deadline
+    return sources, lists
+
+
 def aggregate(sport: str, providers: Optional[Sequence[Any]] = None,
               ) -> Dict[str, Any]:
     """Fetch + merge all providers for *sport* into one honest slate payload.
 
     Returns {"sport", "status", "as_of", "sources": {name: "ok"|reason},
     "events": [OddsEvent.to_dict(), ...]}. status="ok" if at least one provider
-    is up, else "unavailable". Never raises; never fabricates a price.
+    is up, else "unavailable". Providers are fetched CONCURRENTLY under a shared
+    deadline (one slow source can neither serialize nor stall the slate) and merged
+    in provider order. Never raises; never fabricates a price.
     """
     provs = list(providers) if providers is not None else default_providers()
     wall_now = datetime.now(timezone.utc).isoformat(timespec="seconds")
-    sources: Dict[str, str] = {}
-    lists: List[List[OddsEvent]] = []
-    for p in provs:
-        try:
-            res = p.fetch(sport)
-        except Exception as exc:  # noqa: BLE001 -- a provider must never sink the slate
-            sources[getattr(p, "name", "?")] = f"error ({type(exc).__name__})"
-            continue
-        if is_unavailable(res):
-            sources[getattr(p, "name", "?")] = res.get("reason", "unavailable")
-        elif isinstance(res, list):
-            sources[getattr(p, "name", "?")] = "ok"
-            lists.append(res)
-        else:
-            sources[getattr(p, "name", "?")] = "unexpected result"
+    sources, lists = _fetch_all(provs, sport)
     events = merge_events(lists)
     status = "ok" if any(v == "ok" for v in sources.values()) else "unavailable"
     # STALE-NEVER-GREEN: the slate as_of is the OLDEST per-source fetched-at across

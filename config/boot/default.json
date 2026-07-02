@@ -1,0 +1,9 @@
+{
+  "_comment": "Milestone-9 default boot profile: the full always-on stack WITH the CourtVision UI. Consumed by supervisor.config.load_profile('default'). Editing this file is safe -- a missing/garbage profile falls back to the same built-in default and never crashes the supervisor. This file never flips a flag ON.",
+  "profile": "default",
+  "include_ui": true,
+  "log_dir": "logs",
+  "global_env": {
+    "NBA_AI_SUPERVISED": "1"
+  }
+}

@@ -39,6 +39,11 @@ except Exception:  # noqa: BLE001
 
 # CLV compute reuse (vetted Shin devig inside clv_ledger.compute_clv).
 try:
+    from scripts.platformkit.clv_close_lookup import lookup_close_legs as _lookup_close_legs
+except Exception:  # noqa: BLE001 -- optional history bridge; absence = old behavior
+    _lookup_close_legs = None  # type: ignore[assignment]
+
+try:
     from scripts.platformkit.clv_ledger import compute_clv as _compute_clv
     _CLV_OK = True
 except Exception:  # noqa: BLE001
@@ -180,6 +185,12 @@ def _compute_clv_fields(row: Dict[str, Any]) -> Dict[str, Any]:
         }
 
     legs = _extract_closing_decimals(row)
+    history_proxy: Optional[bool] = None
+    if legs is None and _lookup_close_legs is not None:
+        hl = _lookup_close_legs(row)
+        if hl is not None:
+            legs = (hl[0], hl[1])
+            history_proxy = not hl[2]  # at-lock=True -> real; else proxy
     if legs is None:
         return dict(_NO_CLOSE,
                     clv_note="no closing line captured; CLV unavailable (win/loss only)")
@@ -201,15 +212,18 @@ def _compute_clv_fields(row: Dict[str, Any]) -> Dict[str, Any]:
     except Exception as exc:  # noqa: BLE001
         return dict(_NO_CLOSE, clv_note="compute_clv error: %s" % type(exc).__name__)
 
-    is_proxy = bool(row.get("clv_is_proxy", False))
+    is_proxy = (history_proxy if history_proxy is not None
+                else bool(row.get("clv_is_proxy", False)))
+    src = "line history" if history_proxy is not None else "row"
     return {
         "clv_pct":    clv["clv_pct"],
         "beat_close": clv["beat_close"],
         "clv_status": "clv_proxy" if is_proxy else "clv_real",
+        "clv_is_proxy": is_proxy,
         "clv_note": (
-            "CLV computed from closing line (enrich); "
+            "CLV computed from closing line (%s enrich); "
             "%s side; taken=%.4f home=%.4f away=%.4f"
-            % (side, taken, close_home, close_away)
+            % (src, side, taken, close_home, close_away)
         ),
     }
 
@@ -253,6 +267,9 @@ def enrich_row(row: Dict[str, Any]) -> Dict[str, Any]:
         new_status = cf.get("clv_status", "no_close")
         if current_status in (None, "no_close", "INSUFFICIENT_DATA"):
             enriched["clv_status"] = new_status
+        # clv_is_proxy: stamp it when the close came from the line-history bridge.
+        if "clv_is_proxy" in cf:
+            enriched["clv_is_proxy"] = cf["clv_is_proxy"]
         # clv_note: fill gap.
         if not enriched.get("clv_note"):
             enriched["clv_note"] = cf.get("clv_note", "")
