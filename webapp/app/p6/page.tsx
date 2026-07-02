@@ -5,6 +5,7 @@ import { ParityGrid } from "@/components/p6/ParityGrid";
 import { RatchetPanel } from "@/components/p6/RatchetPanel";
 import { PaperTrail } from "@/components/p6/PaperTrail";
 import { LiveLinesPanel } from "@/components/p6/LiveLinesPanel";
+import { PropsPanel } from "@/components/p6/PropsPanel";
 import { InGamePanel } from "@/components/p6/InGamePanel";
 import { OpsPanel } from "@/components/p6/OpsPanel";
 import { SelfImprovePanel } from "@/components/p6/SelfImprovePanel";
@@ -78,8 +79,17 @@ export default function P6Dashboard() {
         </div>
       </div>
 
-      {/* Row 2: live lines (captured odds/lines with venue + freshness) */}
-      <LiveLinesPanel />
+      {/* Row 2: live lines (captured odds/lines with venue + freshness) +
+          player props (calibrated P(over) vs real scraped book lines, MLB +
+          World Cup soccer only -- other sports have no live prop bridge yet) */}
+      <div className="grid grid-cols-12 gap-4">
+        <div className="col-span-12 lg:col-span-7">
+          <LiveLinesPanel />
+        </div>
+        <div className="col-span-12 lg:col-span-5">
+          <PropsPanel />
+        </div>
+      </div>
 
       {/* Row 3: in-game numbers + gate matrix side by side */}
       <div className="grid grid-cols-12 gap-4">
