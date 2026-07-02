@@ -83,6 +83,12 @@ _FEED_HEALTH_HB = "data/cache/daemon_heartbeats/m30_feed_health.txt"
 # facts, 6h cadence). Heartbeat freshness gates readiness; see mlb_context_runner.
 _MLB_CONTEXT_HB = "data/cache/daemon_heartbeats/m31_mlb_context.txt"
 
+# M32 -- MLB context autogate: nightly re-run of the SP-offset + weather-totals
+# candidate gates against the growing M31 context corpus. VERDICTS ONLY -- never
+# wires/ships a winner. Heartbeat freshness gates readiness; see
+# mlb_context_autogate_runner.
+_MLB_CONTEXT_AUTOGATE_HB = "data/cache/daemon_heartbeats/m32_mlb_context_autogate.txt"
+
 # M14 -- the brain-rebuild cadence (brain_rebuild_runner loop-wrapper): rebuilds the
 # organized, person-free Obsidian brain (vault/_Organized) from the deep
 # _vault_legacy_archive source on a slow (default 6h) cadence so the knowledge graph
@@ -625,6 +631,25 @@ def base_specs() -> List[ProcSpec]:
             argv=["--interval", "21600"],
             readiness=ReadinessSpec(
                 kind=HEARTBEAT, heartbeat_path=_MLB_CONTEXT_HB, fresh_sec=45000.0),
+            restart_policy=_FOREVER,
+        ),
+        # M32 -- MLB context autogate: nightly re-runs the SP-offset gate
+        # (domains.mlb.sp_adjust_current) and the weather-totals gate
+        # (domains.mlb.weather_totals_gate) end-to-end so their verdicts track
+        # the growing M31 context corpus, then composes ONE ops summary doc
+        # (data/frontend/ops/mlb_context_autogate.json) listing every candidate
+        # + its verdict + a ship_review roster. VERDICTS ONLY -- this daemon
+        # never wires, ships, or flips a flag for any candidate; SHIP_REVIEW/
+        # SHIP-READY verdicts surface for a HUMAN to decide. No $ field, no
+        # flag flip, no data/registry/ write, no real-money action. fresh_sec
+        # = 2x the 86400s cadence + margin so a healthy tick stays fresh while
+        # a hung one ages out.
+        ProcSpec(
+            name="m32_mlb_context_autogate", kind="py",
+            module="scripts.platformkit.mlb_context_autogate_runner",
+            argv=["--interval", "86400"],
+            readiness=ReadinessSpec(
+                kind=HEARTBEAT, heartbeat_path=_MLB_CONTEXT_AUTOGATE_HB, fresh_sec=190000.0),
             restart_policy=_FOREVER,
         ),
     ]

@@ -90,6 +90,9 @@ def test_default_manifest_is_acyclic_and_ordered():
         # m31 -- MLB pregame-context snapshotter (probables/weather/umps + injuries
         # + deterministic edge facts; snapshot-append, as-of vintages, no $)
         "m31_mlb_context",
+        # m32 -- MLB context autogate (nightly SP-offset + weather-totals
+        # re-gating vs the growing M31 corpus; verdicts only, no $)
+        "m32_mlb_context_autogate",
     }
     _assert_topo(specs)
     # producer precedes the Auto-API which precedes the boards API which precedes UI.
