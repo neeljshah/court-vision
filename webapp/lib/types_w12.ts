@@ -126,28 +126,41 @@ export type BestBetsBoard = {
 
 // PlayerPropRow -- one calibrated prop prediction from
 // GET /api/predict/props/{sport}. p_over/p_under in [0,1]; no $ field.
+// Numeric fields (proj_mean/proj_sigma/edge_vs_market) can be null -- render
+// "--"/"n/a", never coerce to 0. confidence is a STRING (e.g. "ok"), not a number.
 export type PlayerPropRow = {
   player: string;
   stat: string;
-  line: number;
+  line: number | null;
   book: string;
-  p_over: number;
-  p_under: number;
-  proj_mean: number;
-  proj_sigma: number;
-  edge_vs_market: number;
+  p_over: number | null;
+  p_under: number | null;
+  proj_mean: number | null;
+  proj_sigma: number | null;
+  edge_vs_market: number | null;
   tier: string | null;
-  confidence: number;
+  confidence: string | null;
   clv_is_proxy: boolean;
+  match?: string | null;
+  team?: string | null;
+  date?: string | null;
+  sport?: string | null;
+  honest_note?: string | null;
 };
 
+// PropsBoard -- the real GET /api/predict/props/{sport} envelope. The rows key
+// is `rows` (NOT `props`). status can also be "UNAVAILABLE"/"unavailable" with
+// rows=[] (offseason / genuine miss) -- NEVER assume rows is non-empty.
 export type PropsBoard = {
   status: string;
   sport: string;
+  date?: string | null;
   generated_at: string | null;
-  props: PlayerPropRow[];
+  rows: PlayerPropRow[];
   count: number;
   honest_note?: string;
+  source?: string | null;
+  clv_is_proxy?: boolean;
   edge_claimed: boolean; // ALWAYS false
   reason?: string;
 };
