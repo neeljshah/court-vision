@@ -62,3 +62,41 @@ def test_brier_of_perfect_and_coin():
     assert cc._brier(perfect) == 0.0
     coin = [{"devig_close_prob": 0.5, "outcome": 1}, {"devig_close_prob": 0.5, "outcome": 0}]
     assert abs(cc._brier(coin) - 0.25) < 1e-9
+
+
+def test_mlb_result_fn_joins_datetime64_box_dates(tmp_path):
+    # REGRESSION: espn_boxscores.parquet stores "date" as datetime64 (domains.mlb.
+    # ingest_espn_box normalises it that way). A bare str(...)[:8] slice on a
+    # datetime64 value yields "2026-06-" (month-only, with dashes) which NEVER
+    # matches _game_dates()'s "YYYYMMDD" key -> the whole join silently returned
+    # None for every close (build_states('mlb') went to 0 states). Locks in the
+    # pd.to_datetime(...).dt.strftime("%Y%m%d") fix.
+    import pandas as pd
+    box = pd.DataFrame([
+        {"date": pd.Timestamp("2026-05-15"), "home_abbr": "PIT", "away_abbr": "PHI",
+         "home_score": 5.0, "away_score": 3.0},
+    ])
+    domains_root = tmp_path / "mlb"
+    domains_root.mkdir()
+    box.to_parquet(domains_root / "espn_boxscores.parquet", index=False)
+
+    fn = cc._mlb_result_fn(domains_root)
+    close = {"home": "Pittsburgh Pirates", "away": "Philadelphia Phillies",
+            "commence_time": "2026-05-15T22:41:00Z"}
+    assert fn(close) == 1  # home (Pirates) won 5-3
+
+
+def test_mlb_result_fn_unresolved_game_is_none(tmp_path):
+    import pandas as pd
+    box = pd.DataFrame([
+        {"date": pd.Timestamp("2026-05-15"), "home_abbr": "PIT", "away_abbr": "PHI",
+         "home_score": 5.0, "away_score": 3.0},
+    ])
+    domains_root = tmp_path / "mlb"
+    domains_root.mkdir()
+    box.to_parquet(domains_root / "espn_boxscores.parquet", index=False)
+
+    fn = cc._mlb_result_fn(domains_root)
+    close = {"home": "New York Yankees", "away": "Boston Red Sox",
+            "commence_time": "2026-05-15T22:41:00Z"}
+    assert fn(close) is None  # not in this box frame -> unresolved, never guessed
