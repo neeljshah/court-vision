@@ -17,9 +17,19 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
+import pytest  # noqa: E402
+
+import scripts.platformkit.mlb_context_autogate_runner as _runner_mod  # noqa: E402
 from scripts.platformkit.mlb_context_autogate_runner import (  # noqa: E402
     DEFAULT_INTERVAL_SEC, HEARTBEAT_COMPONENT, _AUTOGATE_OUT, run, tick,
 )
+
+
+@pytest.fixture(autouse=True)
+def _no_real_heartbeat(monkeypatch):
+    """Tests pass synthetic clocks; a REAL _beat would stamp epoch-era timestamps
+    into the live heartbeat file and make the healthy daemon read stale."""
+    monkeypatch.setattr(_runner_mod, "_beat", lambda now_epoch=None: None)
 
 
 def _cleanup_out():
