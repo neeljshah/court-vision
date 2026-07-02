@@ -217,3 +217,19 @@ def test_nba_sport_wired_offseason_empty():
 def test_no_rows_unavailable():
     res = parse_props({"data": [], "included": []}, "soccer_intl")
     assert is_unavailable(res)
+
+
+def test_leagues_fetch_failure_reason_not_mislabeled_as_not_found():
+    # A blocked/failed /leagues call (e.g. the live 2026-07-02 403 WAF block) must
+    # surface its REAL reason, never the generic "league 'X' not found" message --
+    # that would mislead diagnosis into thinking the league name is wrong.
+    def http_get(url):
+        if "leagues" in url:
+            return {"status": "unavailable", "reason": "prizepicks GET failed (HTTPError)"}
+        return PROJECTIONS
+
+    prov = PrizePicksProvider(http_get=http_get)
+    res = prov.fetch_props("mlb")
+    assert is_unavailable(res)
+    assert "not found" not in res.get("reason", "")
+    assert "leagues lookup failed" in res.get("reason", "")
