@@ -87,6 +87,9 @@ def test_default_manifest_is_acyclic_and_ordered():
         # m30 -- feed-health sentinel (GREEN/RED per live odds-provider/sport probe;
         # read-only, no restart authority)
         "m30_feed_health",
+        # m31 -- MLB pregame-context snapshotter (probables/weather/umps + injuries
+        # + deterministic edge facts; snapshot-append, as-of vintages, no $)
+        "m31_mlb_context",
     }
     _assert_topo(specs)
     # producer precedes the Auto-API which precedes the boards API which precedes UI.
