@@ -12,10 +12,13 @@ market_type. A sport absent here is unsupported in-play (-> [], never guessed).
 Verified live 2026-07-03 via
   https://api.elections.kalshi.com/trade-api/v2/markets?series_ticker=<S>&status=open&limit=3
 OPEN right now: KXATPMATCH, KXWTAMATCH, KXMLBTOTAL, KXMLBSPREAD, KXMLBTEAMTOTAL,
-KXWCTEAMTOTAL, KXWCSPREAD. Closed-now-but-real (offseason): KXNBASPREAD,
-KXSOCCERTOTAL, KXFIFASPREAD. KXFIFASPREAD is NOT wired below (soccer_intl already
-carries KXWCSPREAD for the same underlying World Cup slate; adding a second spread
-series per sport is not needed until a concrete gap shows up).
+KXWCTEAMTOTAL, KXWCSPREAD, KXWNBAGAME, KXWNBASPREAD, KXWNBATOTAL. Closed-now-but-
+real (offseason): KXNBASPREAD, KXSOCCERTOTAL, KXFIFASPREAD. KXFIFASPREAD is NOT
+wired below (soccer_intl already carries KXWCSPREAD for the same underlying World
+Cup slate; adding a second spread series per sport is not needed until a concrete
+gap shows up). KXWNBATEAMTOTAL was PROBED and does NOT exist (404 on the /series/
+endpoint, 0 markets at any status 2026-07-03) -- correctly ABSENT below; re-probe
+before adding.
 
 INVARIANTS: build only under scripts/platformkit/; <=300 LOC; ASCII only; no I/O
 at import (pure data). Per-file test:
@@ -55,13 +58,18 @@ SERIES_SPEC: Dict[str, List[Tuple[str, str]]] = {
         ("KXNBAGAME", "moneyline"),
         ("KXNBASPREAD", "spread"),
     ],
+    "wnba": [
+        ("KXWNBAGAME", "moneyline"),
+        ("KXWNBASPREAD", "spread"),
+        ("KXWNBATOTAL", "total"),
+    ],
 }
 
 # Back-compat: the pre-widening code (and any external import) expects a single
 # series ticker per sport, the moneyline "...GAME" series (mlb/soccer/soccer_intl/
-# nba only -- tennis has no per-GAME series, only per-MATCH, so it is correctly
-# ABSENT here, matching pre-widening scope). Derived, never hand-duplicated, so it
-# can never drift from SERIES_SPEC.
+# nba/wnba only -- tennis has no per-GAME series, only per-MATCH, so it is
+# correctly ABSENT here, matching pre-widening scope). Derived, never hand-
+# duplicated, so it can never drift from SERIES_SPEC.
 _GAME_SERIES: Dict[str, str] = {
     sport: series for sport, pairs in SERIES_SPEC.items()
     for series, mt in [pairs[0]] if mt == "moneyline" and series.endswith("GAME")
