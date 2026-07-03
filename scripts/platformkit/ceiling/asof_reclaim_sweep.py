@@ -58,6 +58,19 @@ def _mlb_ra_diff() -> Dict:
     return mlb.run()
 
 
+def _wta_hold_diff() -> Dict:
+    from domains.tennis import asof_hold_wta_gate as wta
+    return wta.run()
+
+
+def _soccer(feat_col: str) -> Callable[[], Dict]:
+    from domains.soccer import asof_features_gate as soc
+
+    def _fn() -> Dict:
+        return soc.gate_feature(feat_col)
+    return _fn
+
+
 def registry() -> List[GateSpec]:
     """The frozen candidate list.  Extend ONLY with same-contract evals."""
     specs = [
@@ -72,6 +85,15 @@ def registry() -> List[GateSpec]:
         GateSpec("nba", "nba_blk_diff_asof",
                  _nba("blk_diff_asof", "asof_box_extra.parquet")),
         GateSpec("mlb", "mlb_sp_ra_diff_asof", _mlb_ra_diff),
+        GateSpec("tennis", "wta_hold_pct_diff_asof", _wta_hold_diff),
+        GateSpec("soccer", "soccer_diff_sot_for_asof",
+                 _soccer("diff_sot_for_asof")),
+        GateSpec("soccer", "soccer_diff_sot_against_asof",
+                 _soccer("diff_sot_against_asof")),
+        GateSpec("soccer", "soccer_diff_shots_for_asof",
+                 _soccer("diff_shots_for_asof")),
+        GateSpec("soccer", "soccer_diff_shots_against_asof",
+                 _soccer("diff_shots_against_asof")),
     ]
     return specs
 
