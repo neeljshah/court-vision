@@ -10,7 +10,11 @@ HONEST liquidity gate + canonical in-play schema:
   * a market priced ONLY by the deprecated bare-integer fields (yes_bid/yes_ask/
     volume = None on the live API) -> NOT zeroed into a real price -> excluded;
   * commence_time is never emitted (a near-final price can't be is_true_close);
-  * fetch_price_history maps candlesticks to the canonical schema + phase.
+  * fetch_price_history maps candlesticks to the canonical schema + phase;
+  * fetch_inplay iterates ALL of a sport's wired series (mlb: game+total+spread+
+    team_total; tennis: ATP+WTA), tags market_type, carries "line" from floor_strike
+    for non-moneyline, isolates one series' failure from the others, and moneyline
+    rows stay byte-compatible with the pre-widening schema.
 
   cd /c/Users/neelj/nba-ai-system && python -m pytest tests/platformkit/odds_provider/test_inplay_kalshi.py -q
 """
@@ -18,6 +22,7 @@ from __future__ import annotations
 
 import re
 
+from scripts.platformkit.odds_provider import transport as _transport
 from scripts.platformkit.odds_provider.inplay_kalshi import (
     PHASE,
     fetch_inplay,
@@ -27,7 +32,9 @@ from scripts.platformkit.odds_provider.inplay_kalshi import (
 
 _ISO = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
 _CANON_KEYS = {"sport", "game_id", "venue", "market_type", "side", "ticker",
-               "prob", "ts", "phase"}
+               "prob", "line", "ts", "phase"}
+_MONEYLINE_LEGACY_KEYS = {"sport", "game_id", "venue", "market_type", "side",
+                          "ticker", "prob", "ts", "phase"}  # pre-widening shape
 
 
 # ---- a LIQUID in-season game market (real *_dollars / *_fp depth) ----------- #
@@ -104,10 +111,15 @@ def test_is_liquid_gate():
 
 
 def test_liquid_market_parses_to_canonical_inplay_tick():
+    # mlb now queries 4 series (game/total/spread/team_total); the SAME fixture body is
+    # returned for each, but the event_ticker startswith(series) guard means only the
+    # KXMLBGAME query's markets survive -- the total/spread/team_total queries see the
+    # SAME body but every market in it has an event_ticker starting "KXMLBGAME", which
+    # does not start with "KXMLBTOTAL"/"KXMLBSPREAD"/"KXMLBTEAMTOTAL", so they contribute 0.
     ticks = fetch_inplay(
         "mlb", http=_fake_http([_LIQUID, _ILLIQUID, _DEPRECATED_ONLY, _OTHER_SPORT]),
         now_iso="2026-06-19T18:30:00Z")
-    # only the single LIQUID, correct-sport market survives the gate
+    # only the single LIQUID, correct-sport, correct-series market survives the gate
     assert len(ticks) == 1
     t = ticks[0]
     assert set(t) == _CANON_KEYS
@@ -120,26 +132,39 @@ def test_liquid_market_parses_to_canonical_inplay_tick():
     assert t["phase"] == PHASE == "in_play"
     assert isinstance(t["prob"], float) and 0.0 < t["prob"] < 1.0
     assert abs(t["prob"] - 0.54) < 1e-9   # yes_ask_dollars
+    assert t["line"] is None              # moneyline never carries a line
     assert _ISO.match(t["ts"])
     # HONESTY: a near-final price must never carry a commence_time -> is_true_close
     assert "commence_time" not in t
+    # moneyline rows stay BYTE-COMPATIBLE with the pre-widening schema (minus "line",
+    # which is a new key -- every OLD key is still present and unchanged).
+    assert _MONEYLINE_LEGACY_KEYS <= set(t)
 
 
-def test_fetch_queries_per_game_series_ticker():
-    # W2: the list endpoint MUST be queried with series_ticker=KX<league>GAME so the
-    # per-game liquid markets page in (the old broad KX<league> prefix missed them).
+def test_fetch_queries_every_wired_series_for_the_sport():
+    # W2->widened: mlb queries ALL FOUR series (game/total/spread/team_total); tennis
+    # queries ATP+WTA; soccer_intl queries game+spread+team_total.
     seen = []
     fetch_inplay("mlb", http=_fake_http([_LIQUID], seen=seen),
                  now_iso="2026-06-19T18:30:00Z")
-    assert len(seen) == 1
-    assert "series_ticker=KXMLBGAME" in seen[0]
-    assert "status=open" in seen[0]
+    assert len(seen) == 4
+    assert all("status=open" in u for u in seen)
+    got_series = {u.split("series_ticker=")[1].split("&")[0] for u in seen}
+    assert got_series == {"KXMLBGAME", "KXMLBTOTAL", "KXMLBSPREAD", "KXMLBTEAMTOTAL"}
 
     seen_wc = []
     fetch_inplay("soccer_intl", http=_fake_http([_LIQUID_WC], seen=seen_wc),
                  now_iso="2026-06-19T18:30:00Z")
-    assert len(seen_wc) == 1
-    assert "series_ticker=KXWCGAME" in seen_wc[0]
+    assert len(seen_wc) == 3
+    got_wc = {u.split("series_ticker=")[1].split("&")[0] for u in seen_wc}
+    assert got_wc == {"KXWCGAME", "KXWCSPREAD", "KXWCTEAMTOTAL"}
+
+    seen_tennis = []
+    fetch_inplay("tennis", http=_fake_http([], seen=seen_tennis),
+                 now_iso="2026-06-19T18:30:00Z")
+    assert len(seen_tennis) == 2
+    got_tennis = {u.split("series_ticker=")[1].split("&")[0] for u in seen_tennis}
+    assert got_tennis == {"KXATPMATCH", "KXWTAMATCH"}
 
 
 def test_world_cup_per_game_market_parses_liquid_tick():
@@ -157,6 +182,7 @@ def test_world_cup_per_game_market_parses_liquid_tick():
     assert t["game_id"] == "KXWCGAME-26JUN18MEXKOR"
     assert t["phase"] == "in_play"
     assert abs(t["prob"] - 0.62) < 1e-9
+    assert t["line"] is None
     assert "commence_time" not in t
 
 
@@ -199,6 +225,109 @@ def test_illiquid_and_deprecated_excluded_not_faked():
     assert ticks == []
 
 
+# ---- tennis (KXATPMATCH/KXWTAMATCH -- moneyline only, real-shaped ticker) ---- #
+_LIQUID_ATP = {
+    "ticker": "KXATPMATCH-26JUL05SAFDJO-SAF",
+    "event_ticker": "KXATPMATCH-26JUL05SAFDJO",
+    "yes_sub_title": "Roman Safiullin",
+    "strike_type": "structured",     # real shape: NO floor_strike on a moneyline match
+    "yes_bid_dollars": 0.15, "yes_ask_dollars": 0.16,
+    "yes_bid_size_fp": 1200.0, "yes_ask_size_fp": 1500.0,
+    "volume_fp": 144.53,
+    "yes_bid": None, "yes_ask": None, "last_price": None, "volume": None,
+}
+
+
+def test_tennis_atp_match_parses_liquid_moneyline_tick_no_line():
+    # now = match day itself (Jul 5) so the future-game ticker-date guard keeps it.
+    ticks = fetch_inplay("tennis", http=_fake_http([_LIQUID_ATP]),
+                         now_iso="2026-07-05T12:00:00Z")
+    assert len(ticks) == 1
+    t = ticks[0]
+    assert t["sport"] == "tennis"
+    assert t["market_type"] == "moneyline"
+    assert t["ticker"] == "KXATPMATCH-26JUL05SAFDJO-SAF"
+    assert t["game_id"] == "KXATPMATCH-26JUL05SAFDJO"
+    assert t["side"] == "Roman Safiullin"
+    assert abs(t["prob"] - 0.16) < 1e-9
+    assert t["line"] is None  # a tennis moneyline match never carries a strike line
+
+
+# ---- total/spread/team_total: real-shaped fixtures (floor_strike carries the line) - #
+_LIQUID_TOTAL = {
+    "ticker": "KXMLBTOTAL-26JUL032010SFCOL-9",
+    "event_ticker": "KXMLBTOTAL-26JUL032010SFCOL",
+    "yes_sub_title": "Over 8.5 runs scored",
+    "floor_strike": 8.5, "strike_type": "greater",
+    "yes_bid_dollars": 0.73, "yes_ask_dollars": 0.74,
+    "yes_bid_size_fp": 153.0, "yes_ask_size_fp": 2849.21,
+    "volume_fp": 1716.35,
+    "yes_bid": None, "yes_ask": None, "last_price": None, "volume": None,
+}
+
+_LIQUID_SPREAD = {
+    "ticker": "KXMLBSPREAD-26JUL032010SFCOL-SF4",
+    "event_ticker": "KXMLBSPREAD-26JUL032010SFCOL",
+    "yes_sub_title": "San Francisco wins by over 3.5 runs",
+    "floor_strike": 3.5, "strike_type": "greater",
+    "yes_bid_dollars": 0.30, "yes_ask_dollars": 0.31,
+    "yes_bid_size_fp": 4977.80, "yes_ask_size_fp": 10471.85,
+    "volume_fp": 560.61,
+    "yes_bid": None, "yes_ask": None, "last_price": None, "volume": None,
+}
+
+
+def test_mlb_total_market_tags_market_type_and_carries_line():
+    def _series_router(url):
+        if "series_ticker=KXMLBTOTAL" in url:
+            return {"markets": [_LIQUID_TOTAL]}
+        return {"markets": []}
+    ticks = fetch_inplay("mlb", http=_series_router, now_iso="2026-07-03T20:15:00Z")
+    assert len(ticks) == 1
+    t = ticks[0]
+    assert t["market_type"] == "total"
+    assert t["ticker"] == "KXMLBTOTAL-26JUL032010SFCOL-9"
+    assert t["game_id"] == "KXMLBTOTAL-26JUL032010SFCOL"
+    assert abs(t["line"] - 8.5) < 1e-9
+    assert abs(t["prob"] - 0.74) < 1e-9
+    assert set(t) == _CANON_KEYS
+
+
+def test_mlb_spread_market_tags_market_type_and_carries_line():
+    def _series_router(url):
+        if "series_ticker=KXMLBSPREAD" in url:
+            return {"markets": [_LIQUID_SPREAD]}
+        return {"markets": []}
+    ticks = fetch_inplay("mlb", http=_series_router, now_iso="2026-07-03T20:15:00Z")
+    assert len(ticks) == 1
+    t = ticks[0]
+    assert t["market_type"] == "spread"
+    assert abs(t["line"] - 3.5) < 1e-9
+
+
+def test_one_series_failure_does_not_sink_the_others():
+    # KXMLBTOTAL raises; KXMLBGAME/SPREAD/TEAMTOTAL still return their own markets.
+    def _flaky_router(url):
+        if "series_ticker=KXMLBTOTAL" in url:
+            raise RuntimeError("network down for this series only")
+        if "series_ticker=KXMLBGAME" in url:
+            return {"markets": [_LIQUID]}
+        return {"markets": []}
+    ticks = fetch_inplay("mlb", http=_flaky_router, now_iso="2026-06-19T18:30:00Z")
+    assert len(ticks) == 1
+    assert ticks[0]["market_type"] == "moneyline"
+    assert ticks[0]["ticker"] == "KXMLBGAME-26JUN191420TORCHC-CHC"
+
+
+def test_default_http_fetcher_is_the_resilient_transport():
+    # fetch_inplay's default http param must be transport.resilient_get_json (the
+    # escalating stealth-fallback tier), not the plain http_get_json -- same injection
+    # seam, new default.
+    import inspect
+    sig = inspect.signature(fetch_inplay)
+    assert sig.parameters["http"].default is _transport.resilient_get_json
+
+
 def test_unsupported_sport_and_bad_body_yield_empty():
     assert fetch_inplay("cricket", http=_fake_http([_LIQUID])) == []
     assert fetch_inplay("mlb", http=lambda u: {"markets": "bad"}) == []
@@ -230,7 +359,9 @@ def test_price_history_maps_to_canonical_schema_with_phase():
         sport="mlb", side="LAA", http=_get, now_epoch=1781575200)
     assert len(ticks) == 2  # 3rd candle unusable -> skipped (never fabricated)
     for t in ticks:
-        assert set(t) == _CANON_KEYS
+        # fetch_price_history's schema is UNCHANGED by this widening (no "line" key --
+        # it is a single-market candle backfill, not a multi-series in-play fetch).
+        assert set(t) == _MONEYLINE_LEGACY_KEYS
         assert t["venue"] == "kalshi"
         assert t["phase"] == "in_play"
         assert t["ticker"] == "KXMLBGAME-26JUN182140LAAATH-LAA"

@@ -116,3 +116,42 @@ def test_tick_never_raises_when_quality_fn_raises():
     doc = tick(now=1.0, scan_fn=_fake_scan_green, write_fn=lambda doc, now=None: True,
               heal_fn=_noop_heal, quality_fn=boom_quality)
     assert doc["overall"] == "GREEN"  # feed_health tick unaffected by quality failure
+
+
+def test_tick_calls_injected_inplay_quality_fn():
+    calls = []
+
+    def inplay_quality_fn():
+        calls.append(1)
+        return {"overall": "GREEN"}
+
+    doc = tick(now=1.0, scan_fn=_fake_scan_green, write_fn=lambda doc, now=None: True,
+              heal_fn=_noop_heal, inplay_quality_fn=inplay_quality_fn)
+    assert len(calls) == 1
+    assert doc["overall"] == "GREEN"
+
+
+def test_tick_never_raises_when_inplay_quality_fn_raises():
+    def boom_inplay_quality():
+        raise RuntimeError("inplay_capture_quality scoreboard exploded")
+
+    doc = tick(now=1.0, scan_fn=_fake_scan_green, write_fn=lambda doc, now=None: True,
+              heal_fn=_noop_heal, inplay_quality_fn=boom_inplay_quality)
+    assert doc["overall"] == "GREEN"  # feed_health tick unaffected by in-play quality failure
+
+
+def test_tick_calls_both_quality_fns_independently():
+    calls = []
+
+    def quality_fn():
+        calls.append("pregame")
+        return {"overall": "GREEN"}
+
+    def inplay_quality_fn():
+        calls.append("inplay")
+        return {"overall": "GREEN"}
+
+    doc = tick(now=1.0, scan_fn=_fake_scan_green, write_fn=lambda doc, now=None: True,
+              heal_fn=_noop_heal, quality_fn=quality_fn, inplay_quality_fn=inplay_quality_fn)
+    assert set(calls) == {"pregame", "inplay"}
+    assert doc["overall"] == "GREEN"

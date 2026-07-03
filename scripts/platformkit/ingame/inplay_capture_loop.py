@@ -141,17 +141,27 @@ def _default_model_fn(sport: str, state: Dict[str, Any]) -> Optional[float]:
 
 
 def _yes_pair(ticks: List[Dict[str, Any]]) -> Dict[str, Dict[str, float]]:
-    """Group liquid Kalshi ticks by game_id -> {home_yes, away_yes} implied probs.
+    """Group liquid Kalshi MONEYLINE ticks by game_id -> {home_yes, away_yes} implied probs.
 
-    Each liquid tick is one team's YES prob; we pair the two team markets of a game. The
-    home/away label comes from the daemon's state match (the caller knows the home team), so
-    here we just keep BOTH sides keyed by their side label tail for the caller to align. We
-    return up to two probs per game; a single-sided game keeps just the one (the devig fills
-    the complement). Never raises.
+    Each liquid moneyline tick is one team's YES(win) prob; we pair the two team markets of
+    a game. The home/away label comes from the daemon's state match (the caller knows the
+    home team), so here we just keep BOTH sides keyed by their side label tail for the caller
+    to align. We return up to two probs per game; a single-sided game keeps just the one (the
+    devig fills the complement). Never raises.
+
+    MARKET_TYPE FILTER (binding): inplay_kalshi.fetch_inplay now ALSO returns total/spread/
+    team_total ticks whose "prob" is P(over line) / P(covers), never a team win-prob. Mixing
+    those into this win-prob pairing would silently corrupt model_prob-vs-price grading (the
+    devig, the CLV ledger, the tail gate all assume a win-prob pair) -- so every row here is
+    filtered to market_type=="moneyline" before pairing. A row missing market_type (older
+    cached shape) is treated as moneyline for back-compat.
     """
     by_game: Dict[str, Dict[str, float]] = {}
     for t in ticks:
         if not isinstance(t, dict):
+            continue
+        mt = t.get("market_type")
+        if mt is not None and str(mt) != "moneyline":
             continue
         gid = str(t.get("game_id") or "")
         p = _prob01(t.get("prob"))

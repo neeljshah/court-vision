@@ -87,10 +87,22 @@ def _name_matches(a: str, b: str) -> bool:
 
 def group_by_game(rows: Sequence[Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
     """fetch_inplay rows -> {game_id: {'sides': {side_name: (prob, ticker)}, 'venue': v}}.
-    Keeps the most recent prob per side; ignores rows missing a game_id/side/prob."""
+    Keeps the most recent prob per side; ignores rows missing a game_id/side/prob.
+
+    MARKET_TYPE FILTER (binding): inplay_kalshi.fetch_inplay now ALSO returns total/spread/
+    team_total rows -- their "prob" is P(over line) / P(covers), never a team win-prob, and
+    their "side" is not a team name. This placer devigs {side: prob} pairs as a two/three-way
+    MONEYLINE book (placements_from_game), so a non-moneyline row must never enter the group
+    -- it would either fail team-name matching (harmless) or, worse, silently pollute a game's
+    side set. Filtered to market_type=="moneyline"; a row missing market_type (older cached
+    shape / non-Kalshi venue) is treated as moneyline for back-compat.
+    """
     out: Dict[str, Dict[str, Any]] = {}
     for r in rows or []:
         if not isinstance(r, dict):
+            continue
+        mt = r.get("market_type")
+        if mt is not None and str(mt) != "moneyline":
             continue
         gid = str(r.get("game_id") or "").strip()
         side = str(r.get("side") or "").strip()
