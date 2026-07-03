@@ -38,10 +38,18 @@ NON-GOALS (permanent):
 | Execute: code, gates, structured audits | Sonnet x2-3 | 3 x 35K / 8K | All builds in scripts/platformkit/ or domains/ |
 | Read: probes, log scans, inventories, memory writes | Haiku | 20K / 2K | First responder for every read; escalate only on ambiguity |
 
-Budget rails: the DAILY ceiling $10 (and weekly $70) is the BINDING rail; ~$1.25/wake
-is a soft target only. Opus review rounds count against the day, not a separate budget.
-Every wake reads today's spend file first; if cumulative spend projects past $10/day or
-$70/week, the wake degrades to probe-and-digest only (no Sonnet fleet). Cost levers
+SPRINT MODE (Fable-ratified 2026-07-03 on user directive, ACTIVE through 2026-07-06
+end-of-day): the full weekly budget ($70) is spent across 3 days -- ~$23/day BINDING.
+Wakes self-continue back-to-back (never-stop loop), no fixed cadence; each wake runs
+the FULL fleet: Fable orchestrates + adjudicates, Sonnet x3 executes in parallel,
+Haiku sweeps/probes/reads first on everything, Opus reviews every ship and any
+contested verdict. After 2026-07-06 the standard rails below resume automatically
+unless the human renews sprint mode.
+STANDARD rails (outside sprint): the DAILY ceiling $10 (weekly $70) is the BINDING
+rail; ~$1.25/wake is a soft target only. Opus review rounds count against the day,
+not a separate budget. Every wake reads today's spend file first; if cumulative spend
+projects past the binding rail, the wake degrades to probe-and-digest only (no Sonnet
+fleet). Cost levers
 (standing): Haiku-first reads; batch wake work inside one cache window; fold the gated
 experiment into the Sonnet fleet call (no second cold-cache review round-trip).
 
@@ -72,7 +80,8 @@ PARKED -- NOT IN QUEUE (an autonomous wake may NOT pull these; human re-activate
 (v) LLM CONTEXT LAYER L4: in-game repricing first; shuffled-context planted-null
     MANDATORY on every eval; ANY fail -> SCOUTING-ONLY label, never wired to predictions.
 
-## 5. Wake protocol (8 wakes/day, ~every 3h)
+## 5. Wake protocol (SPRINT through 2026-07-06: continuous self-continuing wakes;
+## standard after: 8 wakes/day ~every 3h)
 
 Per-wake checklist, in order:
 0. LOCK + RECOVER: acquire .bot_state/wake.lock (write PID + timestamp). If held by a
