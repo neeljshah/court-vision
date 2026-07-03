@@ -88,6 +88,7 @@ _MLB_CONTEXT_HB = "data/cache/daemon_heartbeats/m31_mlb_context.txt"
 # wires/ships a winner. Heartbeat freshness gates readiness; see
 # mlb_context_autogate_runner.
 _MLB_CONTEXT_AUTOGATE_HB = "data/cache/daemon_heartbeats/m32_mlb_context_autogate.txt"
+_INGAME_TAIL_MULTI_HB = "data/cache/daemon_heartbeats/m35_ingame_tail_multi.txt"
 
 # M14 -- the brain-rebuild cadence (brain_rebuild_runner loop-wrapper): rebuilds the
 # organized, person-free Obsidian brain (vault/_Organized) from the deep
@@ -95,6 +96,24 @@ _MLB_CONTEXT_AUTOGATE_HB = "data/cache/daemon_heartbeats/m32_mlb_context_autogat
 # stays FULLY REACHABLE + fresh WITHOUT a self-installing OS scheduler. It beats this
 # heartbeat at boot + every boundary; absent/stale -> NOT-READY (never a stale-green).
 _BRAIN_REBUILD_HB = "data/cache/daemon_heartbeats/m14_brain_rebuild.txt"
+
+# M33 -- the HTTP-readiness WEDGE reaper (reliability lane, closes the gap
+# heartbeat_reaper does not cover: an HTTP-readiness proc, e.g. m1_api_paper
+# :8099, whose event loop wedges keeps its port LISTENING with every HTTP probe
+# timing out -- no heartbeat file means heartbeat_reaper never restarts it).
+# Every 30s it probes each declared HTTP-readiness target's port + HTTP health
+# + per-PID CPU%; kills ONLY a PID meeting BOTH >=3 consecutive >10s timeouts
+# (port still listening) AND CPU>50% sustained >120s (the supervisor's normal
+# restart/backoff path relaunches it). See http_wedge_reaper_runner.TARGETS.
+# NO $ field, NO flag flip, NO data/registry/ write, NO restart authority
+# beyond the single targeted kill.
+_HTTP_WEDGE_REAPER_HB = "data/cache/daemon_heartbeats/m33_http_wedge_reaper.txt"
+
+# M34 -- the per-daemon FRESHNESS SLA scoreboard (reliability lane). Every 300s
+# checks every supervised daemon name against freshness_sla.TABLE and writes a
+# GREEN/RED/NA row per daemon (a name absent from TABLE reads NA, never GREEN).
+# Read-only, NO restart authority. See freshness_sla.TABLE + freshness_sla_runner.
+_FRESHNESS_SLA_HB = "data/cache/daemon_heartbeats/m34_freshness_sla.txt"
 
 _FOREVER = RestartPolicy(max_retries=None, backoff_base_sec=2.0, backoff_cap_sec=60.0)
 
@@ -650,6 +669,53 @@ def base_specs() -> List[ProcSpec]:
             argv=["--interval", "86400"],
             readiness=ReadinessSpec(
                 kind=HEARTBEAT, heartbeat_path=_MLB_CONTEXT_AUTOGATE_HB, fresh_sec=190000.0),
+            restart_policy=_FOREVER,
+        ),
+        # M33 -- HTTP-readiness wedge reaper (see _HTTP_WEDGE_REAPER_HB comment
+        # above). 30s cadence -- a wedge is a live-incident detector, not a slow
+        # batch sentinel; fresh_sec=90 (3x cadence + margin) keeps a healthy
+        # runner fresh while a genuinely dead/hung tick ages out quickly (this
+        # sentinel itself must never silently wedge). Independent branch (no
+        # depends_on) so a dead reaper tick is itself ONE red status entry.
+        ProcSpec(
+            name="m33_http_wedge_reaper", kind="py",
+            module="scripts.platformkit.autonomy.http_wedge_reaper_runner",
+            argv=["--interval", "30"],
+            readiness=ReadinessSpec(
+                kind=HEARTBEAT, heartbeat_path=_HTTP_WEDGE_REAPER_HB, fresh_sec=90.0),
+            restart_policy=_FOREVER,
+        ),
+        # M34 -- per-daemon freshness SLA scoreboard (see _FRESHNESS_SLA_HB
+        # comment above). 300s cadence; fresh_sec=660 (2.2x cadence + margin,
+        # matching M29's own margin convention). Independent branch (no
+        # depends_on) so a dead scoreboard tick is itself ONE red status entry.
+        ProcSpec(
+            name="m34_freshness_sla", kind="py",
+            module="scripts.platformkit.autonomy.freshness_sla_runner",
+            argv=["--interval", "300"],
+            readiness=ReadinessSpec(
+                kind=HEARTBEAT, heartbeat_path=_FRESHNESS_SLA_HB, fresh_sec=660.0),
+            restart_policy=_FOREVER,
+        ),
+        # M35 -- LANE C cross-sport (tennis + soccer_intl/WC) in-play tail-band
+        # scan + pre-registered forward gate + tick-latency scoreboard. Every 6h
+        # re-runs ingame_tail_scan_multi (per-sport price-band calibration scan,
+        # writes data/domains/<sport>/ingame_tail_scan.json), ingame_tail_gate_
+        # multi (pre-registered H1/H2 forward-only gate, writes data/domains/
+        # <sport>/ingame_tail_verdict.json), and inplay_tick_latency (cadence
+        # scoreboard, writes data/frontend/ops/inplay_tick_latency.json), then
+        # composes ONE ops summary (data/frontend/ops/ingame_tail_multi.json).
+        # VERDICTS ONLY -- never wires, ships, or flips a flag; SHIP_REVIEW
+        # surfaces for a HUMAN to decide. No $ field, no flag flip, no
+        # data/registry/ write, no real-money action. NOT YET RUNNING --
+        # registered here but requires a supervisor restart to take effect
+        # (restart pending). fresh_sec = 2x the 21600s cadence + margin.
+        ProcSpec(
+            name="m35_ingame_tail_multi", kind="py",
+            module="scripts.platformkit.ingame.ingame_tail_multi_runner",
+            argv=["--interval", "21600"],
+            readiness=ReadinessSpec(
+                kind=HEARTBEAT, heartbeat_path=_INGAME_TAIL_MULTI_HB, fresh_sec=45000.0),
             restart_policy=_FOREVER,
         ),
     ]
