@@ -94,3 +94,25 @@ def test_run_respects_should_stop_immediately():
 
 def test_heartbeat_component_name_stable():
     assert HEARTBEAT_COMPONENT == "m30_feed_health"
+
+
+def test_tick_calls_injected_quality_fn():
+    calls = []
+
+    def quality_fn():
+        calls.append(1)
+        return {"overall": "GREEN"}
+
+    doc = tick(now=1.0, scan_fn=_fake_scan_green, write_fn=lambda doc, now=None: True,
+              heal_fn=_noop_heal, quality_fn=quality_fn)
+    assert len(calls) == 1
+    assert doc["overall"] == "GREEN"
+
+
+def test_tick_never_raises_when_quality_fn_raises():
+    def boom_quality():
+        raise RuntimeError("capture_quality scoreboard exploded")
+
+    doc = tick(now=1.0, scan_fn=_fake_scan_green, write_fn=lambda doc, now=None: True,
+              heal_fn=_noop_heal, quality_fn=boom_quality)
+    assert doc["overall"] == "GREEN"  # feed_health tick unaffected by quality failure

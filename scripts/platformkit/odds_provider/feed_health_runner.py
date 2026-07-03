@@ -6,7 +6,9 @@ soccer_intl/tennis -- unchanged cadence: 600s comfortably covers the heavier
 probe cycle, so the interval is left as-is rather than shortened), heals any
 RED auth/blocked provider (feed_health.heal marks its host stealth-first for
 the NEXT fetch -- see transport.py), atomically writes the GREEN/RED verdict
-doc (with the healed hosts attached), then beats the M30 heartbeat.
+doc (with the healed hosts attached), also runs the capture_quality
+scoreboard (per-day capture-coverage vs yesterday, guarded so a quality
+failure never sinks the health tick), then beats the M30 heartbeat.
 Independent branch (no depends_on) so a dead sentinel tick is itself just one
 red status entry -- it never blocks the rest of the stack. Read-only network
 probes only; NO $ field, NO flag flip, NO data/registry/ write, NO real-money
@@ -37,17 +39,36 @@ def _beat(now_epoch: Optional[float] = None) -> None:
         logger.debug("feed_health heartbeat skipped: %s", exc)
 
 
+def _default_quality_fn() -> Dict[str, Any]:
+    from scripts.platformkit.odds_provider.capture_quality import scoreboard
+    return scoreboard()
+
+
+def _run_quality(quality_fn: Callable[..., Dict[str, Any]], now: float) -> None:
+    """Measure + write the capture-quality scoreboard. A failure here must
+    never sink the feed_health tick -- guarded and logged only."""
+    try:
+        from scripts.platformkit.odds_provider.capture_quality import write_status
+        qdoc = quality_fn()
+        write_status(qdoc, now=now)
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("capture_quality tick raised: %s", exc)
+
+
 def tick(*, now: float,
          scan_fn: Optional[Callable[..., Dict[str, Any]]] = None,
          write_fn: Optional[Callable[..., bool]] = None,
-         heal_fn: Optional[Callable[..., Any]] = None) -> Dict[str, Any]:
+         heal_fn: Optional[Callable[..., Any]] = None,
+         quality_fn: Optional[Callable[..., Dict[str, Any]]] = None) -> Dict[str, Any]:
     """One sentinel tick: live-probe every provider -> heal any RED auth/blocked
     provider (mark it stealth-first for its NEXT fetch) -> write the verdict doc
-    (with the healed hosts attached) -> heartbeat. Never raises."""
+    (with the healed hosts attached) -> run the capture_quality scoreboard
+    (guarded, never sinks this tick) -> heartbeat. Never raises."""
     from scripts.platformkit.odds_provider.feed_health import heal, scan, write_status
     _scan = scan_fn if scan_fn is not None else scan
     _write = write_fn if write_fn is not None else write_status
     _heal = heal_fn if heal_fn is not None else heal
+    _quality = quality_fn if quality_fn is not None else _default_quality_fn
     try:
         doc = dict(_scan() or {})
     except Exception as exc:  # noqa: BLE001
@@ -62,6 +83,7 @@ def tick(*, now: float,
         _write(doc, now=now)
     except Exception as exc:  # noqa: BLE001
         logger.debug("feed_health write raised: %s", exc)
+    _run_quality(_quality, now)
     _beat(now)
     return doc
 
