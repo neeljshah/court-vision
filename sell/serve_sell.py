@@ -144,7 +144,8 @@ def _require_feature(plan: str, feature: str) -> None:
 def _honest_envelope(payload: Dict[str, Any]) -> Dict[str, Any]:
     """Inject honesty invariants; remove any stray $ keys (defence-in-depth)."""
     out = {k: v for k, v in payload.items()
-           if not any(tok in k.lower() for tok in ("roi", "profit", "$edge"))}
+           if not any(tok in k.lower() for tok in ("roi", "profit", "$edge",
+                                                   "pnl", "bankroll", "dollar"))}
     out["edge_claimed"] = _EDGE_CLAIMED
     out["honest_note"] = _HONEST_NOTE
     return out
