@@ -14,6 +14,11 @@ the growing corpus, WITHOUT a human in the loop:
       The decisive candidate: does weather add anything vs the market's own
       totals CLOSE (not just vs our own baseline)? Expected result is REJECT
       (the close already prices weather); SHIP_REVIEW would be extraordinary.
+  (d) in-play tail-band gate -- scripts.platformkit.ingame.ingame_tail_gate
+      .run_gate(), rewrites data/domains/mlb/ingame_tail_verdict.json.  PRE-
+      REGISTERED venue-bias hypotheses (longshot band underpriced / mid-fav
+      band overpriced) scored on FORWARD-captured games only; confirmation
+      accumulates as the in-play capture corpus grows.
 
 Then composes ONE ops summary doc, data/frontend/ops/mlb_context_autogate.json,
 listing every candidate + its current verdict + a ship_review roster.
@@ -122,6 +127,13 @@ def _run_weather_vs_close_gate() -> Dict[str, Any]:
     }
 
 
+def _run_tail_gate() -> Dict[str, Any]:
+    """Re-run the pre-registered in-play tail-band gate (forward evidence only);
+    it rewrites data/domains/mlb/ingame_tail_verdict.json itself."""
+    from scripts.platformkit.ingame.ingame_tail_gate import run_gate
+    return run_gate()
+
+
 def _compose(candidates: List[Dict[str, Any]], now_iso: str) -> Dict[str, Any]:
     ship_review = [c["name"] for c in candidates if c.get("verdict") in _SHIP_VERDICTS]
     return {
@@ -135,18 +147,22 @@ def _compose(candidates: List[Dict[str, Any]], now_iso: str) -> Dict[str, Any]:
 def tick(*, now: float,
          sp_gate_fn: Optional[Callable[[], Dict[str, Any]]] = None,
          weather_gate_fn: Optional[Callable[[], Dict[str, Any]]] = None,
-         weather_vs_close_gate_fn: Optional[Callable[[], Dict[str, Any]]] = None) -> Dict[str, Any]:
+         weather_vs_close_gate_fn: Optional[Callable[[], Dict[str, Any]]] = None,
+         tail_gate_fn: Optional[Callable[[], Dict[str, Any]]] = None) -> Dict[str, Any]:
     """One re-gating tick: SP gate -> weather gate -> weather-vs-close gate ->
-    composed doc -> heartbeat. Never raises. Each gate step isolated; a
-    raising gate is recorded as an ERROR candidate entry, never kills the tick."""
+    tail-band gate -> composed doc -> heartbeat. Never raises. Each gate step
+    isolated; a raising gate is recorded as an ERROR candidate entry, never
+    kills the tick."""
     _sp = sp_gate_fn if sp_gate_fn is not None else _run_sp_gate
     _weather = weather_gate_fn if weather_gate_fn is not None else _run_weather_gate
     _weather_vs_close = (weather_vs_close_gate_fn if weather_vs_close_gate_fn is not None
                           else _run_weather_vs_close_gate)
+    _tail = tail_gate_fn if tail_gate_fn is not None else _run_tail_gate
 
     candidates: List[Dict[str, Any]] = []
     for name, fn in (("sp_elo_offset_2026_forward", _sp), ("weather_totals", _weather),
-                      ("weather_vs_close", _weather_vs_close)):
+                      ("weather_vs_close", _weather_vs_close),
+                      ("ingame_tail_bands", _tail)):
         try:
             headline = fn()
             if not isinstance(headline, dict) or "name" not in headline:
@@ -175,6 +191,7 @@ def run(*, interval_sec: float = DEFAULT_INTERVAL_SEC,
         sp_gate_fn: Optional[Callable[[], Dict[str, Any]]] = None,
         weather_gate_fn: Optional[Callable[[], Dict[str, Any]]] = None,
         weather_vs_close_gate_fn: Optional[Callable[[], Dict[str, Any]]] = None,
+        tail_gate_fn: Optional[Callable[[], Dict[str, Any]]] = None,
         clock: Optional[Callable[[], float]] = None,
         sleep: Optional[Callable[[float], None]] = None,
         max_ticks: Optional[int] = None,
@@ -201,7 +218,8 @@ def run(*, interval_sec: float = DEFAULT_INTERVAL_SEC,
         except Exception:  # noqa: BLE001
             now = _time.time()
         doc = tick(now=now, sp_gate_fn=sp_gate_fn, weather_gate_fn=weather_gate_fn,
-                   weather_vs_close_gate_fn=weather_vs_close_gate_fn)
+                   weather_vs_close_gate_fn=weather_vs_close_gate_fn,
+                   tail_gate_fn=tail_gate_fn)
         ship_review = doc.get("ship_review", [])
         print("%s | tick=%d candidates=%d ship_review=%s" % (
             HEARTBEAT_COMPONENT, ticks, len(doc.get("candidates", [])), ship_review), flush=True)

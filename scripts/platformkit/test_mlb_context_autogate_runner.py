@@ -32,6 +32,11 @@ def _no_real_heartbeat(monkeypatch):
     monkeypatch.setattr(_runner_mod, "_beat", lambda now_epoch=None: None)
 
 
+def _fake_tail():
+    return {"name": "ingame_tail_bands", "verdict": "PENDING_FORWARD",
+            "verdict_reason": "forward games=0", "n": 0}
+
+
 def _cleanup_out():
     try:
         if _AUTOGATE_OUT.exists():
@@ -56,10 +61,12 @@ def test_tick_composes_doc_and_ship_review_list():
         weather_vs_close_gate_fn=lambda: {"name": "weather_vs_close", "verdict": "REJECT",
                                            "verdict_reason": "close already prices weather",
                                            "n": 2200, "n_scorable": 2100},
+        tail_gate_fn=_fake_tail,
     )
-    assert len(doc["candidates"]) == 3
+    assert len(doc["candidates"]) == 4
     names = {c["name"] for c in doc["candidates"]}
-    assert names == {"sp_elo_offset_2026_forward", "weather_totals", "weather_vs_close"}
+    assert names == {"sp_elo_offset_2026_forward", "weather_totals", "weather_vs_close",
+                     "ingame_tail_bands"}
     assert doc["ship_review"] == ["sp_elo_offset_2026_forward"]
     assert "no $ edge claimed" in doc["honest_note"]
     assert _AUTOGATE_OUT.exists()
@@ -75,6 +82,7 @@ def test_tick_all_ship_review_variants_recognized():
         sp_gate_fn=lambda: {"name": "sp_elo_offset_2026_forward", "verdict": "SHIP_REVIEW"},
         weather_gate_fn=lambda: {"name": "weather_totals", "verdict": "SHIP-READY"},
         weather_vs_close_gate_fn=lambda: {"name": "weather_vs_close", "verdict": "SHIP_REVIEW"},
+        tail_gate_fn=_fake_tail,
     )
     assert set(doc["ship_review"]) == {
         "sp_elo_offset_2026_forward", "weather_totals", "weather_vs_close",
@@ -93,8 +101,9 @@ def test_tick_survives_raising_gate_and_marks_error():
         sp_gate_fn=_boom,
         weather_gate_fn=lambda: {"name": "weather_totals", "verdict": "INCONCLUSIVE", "n": 50},
         weather_vs_close_gate_fn=lambda: {"name": "weather_vs_close", "verdict": "REJECT", "n": 2100},
+        tail_gate_fn=_fake_tail,
     )
-    assert len(doc["candidates"]) == 3
+    assert len(doc["candidates"]) == 4
     sp_entry = next(c for c in doc["candidates"] if c["name"] == "sp_elo_offset_2026_forward")
     assert sp_entry["verdict"] == "ERROR"
     assert "planted gate failure" in sp_entry["verdict_reason"]
@@ -114,8 +123,9 @@ def test_tick_all_gates_raise_still_writes_doc():
     def _boom():
         raise ValueError("boom")
 
-    doc = tick(now=1000.0, sp_gate_fn=_boom, weather_gate_fn=_boom, weather_vs_close_gate_fn=_boom)
-    assert len(doc["candidates"]) == 3
+    doc = tick(now=1000.0, sp_gate_fn=_boom, weather_gate_fn=_boom, weather_vs_close_gate_fn=_boom,
+               tail_gate_fn=_boom)
+    assert len(doc["candidates"]) == 4
     assert all(c["verdict"] == "ERROR" for c in doc["candidates"])
     assert doc["ship_review"] == []
     assert _AUTOGATE_OUT.exists()
@@ -132,8 +142,9 @@ def test_tick_defaults_weather_vs_close_fn_when_omitted():
         now=1000.0,
         sp_gate_fn=lambda: {"name": "sp_elo_offset_2026_forward", "verdict": "REJECT"},
         weather_gate_fn=lambda: {"name": "weather_totals", "verdict": "REJECT"},
+        tail_gate_fn=_fake_tail,
     )
-    assert len(doc["candidates"]) == 3
+    assert len(doc["candidates"]) == 4
     names = {c["name"] for c in doc["candidates"]}
     assert "weather_vs_close" in names
     assert _AUTOGATE_OUT.exists()
@@ -153,6 +164,7 @@ def test_run_max_ticks_and_should_stop():
                 sp_gate_fn=_sp,
                 weather_gate_fn=lambda: {"name": "weather_totals", "verdict": "REJECT"},
                 weather_vs_close_gate_fn=lambda: {"name": "weather_vs_close", "verdict": "REJECT"},
+                tail_gate_fn=_fake_tail,
                 clock=lambda: 123.0,
                 sleep=slept.append,
                 max_ticks=3)
@@ -165,6 +177,7 @@ def test_run_max_ticks_and_should_stop():
                 sp_gate_fn=_sp,
                 weather_gate_fn=lambda: {"name": "weather_totals", "verdict": "REJECT"},
                 weather_vs_close_gate_fn=lambda: {"name": "weather_vs_close", "verdict": "REJECT"},
+                tail_gate_fn=_fake_tail,
                 clock=lambda: 123.0,
                 sleep=lambda s: None,
                 should_stop=lambda: True)
