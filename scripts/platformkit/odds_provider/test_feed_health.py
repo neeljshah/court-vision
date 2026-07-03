@@ -1,8 +1,8 @@
-"""Per-file tests for feed_health (NETWORK-FREE -- all providers injected)."""
+"""Per-file tests for feed_health (NETWORK-FREE -- all providers/mark injected)."""
 from __future__ import annotations
 
 from scripts.platformkit.odds_provider.feed_health import (
-    GREEN, RED, probe_one, render, scan)
+    DEFAULT_SPORTS, GREEN, PROVIDER_HOSTS, RED, heal, probe_one, render, scan)
 
 
 class _FakeProvider:
@@ -99,3 +99,68 @@ def test_render_includes_red_reasons():
     assert "RED" in text
     assert "boom (403)" in text
     assert "OVERALL: RED" in text
+
+
+def test_default_sports_widened_to_five():
+    assert set(DEFAULT_SPORTS) == {"nba", "mlb", "soccer", "soccer_intl", "tennis"}
+
+
+def test_heal_marks_host_for_red_auth_reason():
+    doc = {"rows": [
+        {"provider": "pinnacle", "sport": "soccer_intl", "status": RED,
+         "reason": "pinnacle matchups call failed (401)"},
+    ]}
+    marked = []
+    heal(doc, mark=lambda host: marked.append(host))
+    assert marked == [PROVIDER_HOSTS["pinnacle"]]
+
+
+def test_heal_ignores_non_blocked_red_reason():
+    doc = {"rows": [
+        {"provider": "pinnacle", "sport": "mlb", "status": RED,
+         "reason": "exception:TimeoutError"},
+    ]}
+    marked = []
+    heal(doc, mark=lambda host: marked.append(host))
+    assert marked == []
+
+
+def test_heal_ignores_green_rows():
+    doc = {"rows": [
+        {"provider": "pinnacle", "sport": "mlb", "status": GREEN, "reason": None},
+    ]}
+    marked = []
+    heal(doc, mark=lambda host: marked.append(host))
+    assert marked == []
+
+
+def test_heal_ignores_unknown_provider():
+    doc = {"rows": [
+        {"provider": "totally_unknown", "sport": "mlb", "status": RED,
+         "reason": "403 forbidden"},
+    ]}
+    marked = []
+    heal(doc, mark=lambda host: marked.append(host))
+    assert marked == []
+
+
+def test_heal_never_raises_when_mark_raises():
+    doc = {"rows": [
+        {"provider": "fanduel", "sport": "nba", "status": RED, "reason": "401 auth"},
+    ]}
+
+    def boom(host):
+        raise RuntimeError("disk full")
+
+    marked = heal(doc, mark=boom)
+    assert marked == []
+
+
+def test_heal_case_insensitive_reason_match():
+    doc = {"rows": [
+        {"provider": "kalshi", "sport": "nba", "status": RED,
+         "reason": "Unauthorized: token expired"},
+    ]}
+    marked = []
+    heal(doc, mark=lambda host: marked.append(host))
+    assert marked == [PROVIDER_HOSTS["kalshi"]]

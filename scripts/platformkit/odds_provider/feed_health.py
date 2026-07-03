@@ -25,6 +25,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Sequence
 
 from .base import is_unavailable
+from .transport import mark_stealth_first
 
 _REPO = Path(__file__).resolve().parents[3]
 _OUT_PATH = _REPO / "data" / "frontend" / "ops" / "feed_health.json"
@@ -32,7 +33,24 @@ _OUT_PATH = _REPO / "data" / "frontend" / "ops" / "feed_health.json"
 GREEN = "GREEN"
 RED = "RED"
 
-DEFAULT_SPORTS = ("mlb", "soccer_intl")
+DEFAULT_SPORTS = ("nba", "mlb", "soccer", "soccer_intl", "tennis")
+
+# provider name -> the host its live network calls hit. Sourced from each
+# module's own base-URL constant (grepped, not guessed): pinnacle._BASE,
+# fanduel._url()'s sbapi.<region>.sportsbook.fanduel.com, espn._SITE,
+# kalshi._BASE, polymarket._BASE. Used only by heal() to mark a RED
+# auth/blocked host stealth-first for its NEXT fetch (see transport.py).
+PROVIDER_HOSTS: Dict[str, str] = {
+    "pinnacle": "guest.api.arcadia.pinnacle.com",
+    "fanduel": "sbapi.nj.sportsbook.fanduel.com",
+    "espn": "site.api.espn.com",
+    "kalshi": "api.elections.kalshi.com",
+    "polymarket": "gamma-api.polymarket.com",
+}
+
+# Reason substrings meaning "this looks like an auth/bot-wall block" -- the
+# shape heal() escalates to the stealth transport. Case-insensitive match.
+_BLOCKED_REASON_MARKERS = ("401", "403", "forbidden", "auth", "unauthorized")
 
 # Reason substrings that mean "this provider legitimately has nothing to say"
 # (unsupported sport for this venue, or an honestly empty slate) -- NOT a break.
@@ -120,6 +138,40 @@ def scan(
     }
 
 
+def heal(doc: Dict[str, Any], *, mark: Callable[..., None] = mark_stealth_first) -> List[str]:
+    """Escalate any RED auth/blocked provider to the stealth transport tier.
+
+    For each row in *doc* that is RED with a reason shaped like an auth/bot-wall
+    block (401/403/forbidden/auth/unauthorized, case-insensitive), look up that
+    provider's host in PROVIDER_HOSTS and mark it stealth-first so its NEXT fetch
+    tries the browser-TLS-impersonated path before the plain one. A provider not
+    present in PROVIDER_HOSTS, or a RED row that is not blocked-shaped (timeout /
+    parse / exception / unexpected-shape), is left alone -- heal() only reacts to
+    the specific failure shape stealth is known to fix. Never raises; returns the
+    list of hosts marked (may contain duplicates if multiple sports triggered the
+    same provider/host -- callers that want a set can dedupe).
+    """
+    marked: List[str] = []
+    try:
+        for row in doc.get("rows", []) or []:
+            if row.get("status") != RED:
+                continue
+            reason = (row.get("reason") or "").lower()
+            if not any(marker in reason for marker in _BLOCKED_REASON_MARKERS):
+                continue
+            host = PROVIDER_HOSTS.get(row.get("provider"))
+            if not host:
+                continue
+            try:
+                mark(host)
+                marked.append(host)
+            except Exception:  # noqa: BLE001 -- one bad mark must not sink heal()
+                pass
+    except Exception:  # noqa: BLE001 -- heal() must never raise
+        pass
+    return marked
+
+
 def write_status(doc: Dict[str, Any], *, out_path: Optional[Path] = None,
                   now: Optional[float] = None) -> bool:
     """Atomically write the scan result (tmp + os.replace). Never raises."""
@@ -172,6 +224,9 @@ def render(doc: Dict[str, Any]) -> str:
 def main(argv: Optional[Sequence[str]] = None) -> int:
     doc = scan()
     print(render(doc))
+    marked = heal(doc)
+    if marked:
+        print("healed (marked stealth-first): %s" % ", ".join(sorted(set(marked))))
     write_status(doc)
     print("\nwrote %s" % _OUT_PATH)
     return 0
@@ -181,5 +236,5 @@ if __name__ == "__main__":
     raise SystemExit(main())
 
 
-__all__ = ["GREEN", "RED", "DEFAULT_SPORTS", "probe_one", "scan", "write_status",
-           "load_status", "render"]
+__all__ = ["GREEN", "RED", "DEFAULT_SPORTS", "PROVIDER_HOSTS", "probe_one", "scan",
+           "heal", "write_status", "load_status", "render"]

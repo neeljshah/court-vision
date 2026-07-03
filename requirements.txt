@@ -80,6 +80,7 @@ python-dotenv>=1.0             # .env loading
 tqdm>=4.66                     # Progress bars
 loguru>=0.7                    # Structured logging
 tenacity>=8.2                  # Retry logic
+scrapling>=0.4.9               # stealth fallback transport for blocked odds feeds (needs [fetchers] extra)
 schedule>=1.2                  # Simple job scheduler
 gdown>=5.1                     # Google Drive download (model fetch)
 tensorboard>=2.15              # Training visualization

@@ -1,12 +1,17 @@
 """scripts.platformkit.odds_provider.feed_health_runner -- supervised M30 entry.
 
 Every ~600s: live-probes every (provider, sport) pair the real slate uses
-(feed_health.scan), atomically writes the GREEN/RED verdict doc, then beats
-the M30 heartbeat. Independent branch (no depends_on) so a dead sentinel tick
-is itself just one red status entry -- it never blocks the rest of the stack.
-Read-only network probes only; NO $ field, NO flag flip, NO data/registry/
-write, NO real-money action, NO restart authority (visibility only -- a human
-or the autonomy monitor acts on a RED row).
+(feed_health.scan across DEFAULT_SPORTS, now widened to nba/mlb/soccer/
+soccer_intl/tennis -- unchanged cadence: 600s comfortably covers the heavier
+probe cycle, so the interval is left as-is rather than shortened), heals any
+RED auth/blocked provider (feed_health.heal marks its host stealth-first for
+the NEXT fetch -- see transport.py), atomically writes the GREEN/RED verdict
+doc (with the healed hosts attached), then beats the M30 heartbeat.
+Independent branch (no depends_on) so a dead sentinel tick is itself just one
+red status entry -- it never blocks the rest of the stack. Read-only network
+probes only; NO $ field, NO flag flip, NO data/registry/ write, NO real-money
+action, NO restart authority (visibility only -- a human or the autonomy
+monitor acts on a RED row).
 
 Heartbeat: m30_feed_health -> data/cache/daemon_heartbeats/m30_feed_health.txt
 Cadence: DEFAULT_INTERVAL_SEC = 600 s. Report: data/frontend/ops/feed_health.json.
@@ -34,17 +39,25 @@ def _beat(now_epoch: Optional[float] = None) -> None:
 
 def tick(*, now: float,
          scan_fn: Optional[Callable[..., Dict[str, Any]]] = None,
-         write_fn: Optional[Callable[..., bool]] = None) -> Dict[str, Any]:
-    """One sentinel tick: live-probe every provider -> write the verdict doc ->
-    heartbeat. Never raises."""
-    from scripts.platformkit.odds_provider.feed_health import scan, write_status
+         write_fn: Optional[Callable[..., bool]] = None,
+         heal_fn: Optional[Callable[..., Any]] = None) -> Dict[str, Any]:
+    """One sentinel tick: live-probe every provider -> heal any RED auth/blocked
+    provider (mark it stealth-first for its NEXT fetch) -> write the verdict doc
+    (with the healed hosts attached) -> heartbeat. Never raises."""
+    from scripts.platformkit.odds_provider.feed_health import heal, scan, write_status
     _scan = scan_fn if scan_fn is not None else scan
     _write = write_fn if write_fn is not None else write_status
+    _heal = heal_fn if heal_fn is not None else heal
     try:
         doc = dict(_scan() or {})
     except Exception as exc:  # noqa: BLE001
         logger.debug("feed_health scan raised: %s", exc)
         doc = {"rows": [], "n_red": 0, "overall": "GREEN"}
+    try:
+        doc["healed_hosts"] = sorted(set(_heal(doc)))
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("feed_health heal raised: %s", exc)
+        doc["healed_hosts"] = []
     try:
         _write(doc, now=now)
     except Exception as exc:  # noqa: BLE001
@@ -82,8 +95,10 @@ def run(*, interval_sec: float = DEFAULT_INTERVAL_SEC,
         except Exception:  # noqa: BLE001
             now = _time.time()
         doc = tick(now=now, scan_fn=scan_fn, write_fn=write_fn)
-        print("%s | tick=%d probed=%d red=%d" % (
-            HEARTBEAT_COMPONENT, ticks, doc.get("n_probed", 0), doc.get("n_red", 0)),
+        healed = doc.get("healed_hosts") or []
+        print("%s | tick=%d probed=%d red=%d healed=%s" % (
+            HEARTBEAT_COMPONENT, ticks, doc.get("n_probed", 0), doc.get("n_red", 0),
+            ",".join(healed) if healed else "none"),
             flush=True)
         ticks += 1
         if max_ticks is not None and ticks >= max_ticks:
