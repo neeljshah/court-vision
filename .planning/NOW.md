@@ -41,6 +41,30 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 1 (FULL FLEET: 4 SHIPS + 1 PROBE, ALL OPUS-PASS, 2026-07-03 pm, commits
+  71073874/bacfd223/3546dcb6/b4c1d7ec, 11 agents / ~1.2M subagent tokens, sprint rail
+  LIFTED per user directive): (1) RELIABILITY: m33 http_wedge_reaper (kill ONLY on
+  >=3 consecutive >10s HTTP timeouts on LISTENING port AND cpu>50%>2min; the :8099
+  wedge class) + m34 freshness_sla (per-daemon SLA table, missing entry=NA never
+  GREEN) -- RESTART PENDING to activate. (2) WNBA END-TO-END: 768 labels (2024-2026),
+  Elo fit on 2024 only, gate on 2025+2026 independently = CALIBRATION_BASELINE_OK
+  (brier .2195/.2341 vs coin .25), close-comparison honestly PENDING (capture starts
+  at daemon re-import); Kalshi KXWNBAGAME/SPREAD/TOTAL live-verified wired,
+  KXWNBATEAMTOTAL probed 404 excluded; in-game deferred (NBA blend hardcodes 2880s).
+  (3) IN-PLAY MULTI: cross-sport tail scan (tennis n=0 -- capture NOT started,
+  DEFAULT_SPORTS lacks tennis = REAL GAP queued; soccer_intl 7/39 graded) + H1/H2
+  forward gates PRE-REGISTERED 2026-07-04T00:00Z (orchestrator tightened builder's
+  07-06 stamp, +2 forward days, zero discovery contamination) + tick-latency
+  scoreboard (mlb GREEN p50=29s n=47K ticks; venue ts absent -> lag honestly
+  NOT_AVAILABLE) as m35. (4) m19 WIDENED 6->11 candidates: WTA hold SHIP_REVIEW
+  (truncation control FLIPS -- downgraded correctly), soccer diff_sot_for +
+  diff_shots_for single-corpus SHIP (dm_p .030/.049, NOT wired, replication queued),
+  2 honest REJECTs, 6 prior candidates byte-identical. (5) KBO/NPB PROBE: both
+  FEASIBLE-WITH-GAPS; Kalshi KXKBO*/KXNPB* + Pinnacle ids (KBO 6227, NPB 187703)
+  LIVE; ESPN + statsapi both DEAD ENDS for labels (statsapi sportId=32/31 = stub
+  rosters, zero schedules); NPB-first (npb.jp HTML 2018+ scrapeable, no auth);
+  biggest gap = historical price corpus (present-only venues). No edge claimed;
+  paper/measurement only; local commits only.
 - WAKE-34 (IN-PLAY EVERY-LINE WIDENING + IN-PLAY QUALITY SCOREBOARD, 2026-07-03, commit
   021e3712, Fable-planned / 2 Sonnet executors): user directive "ingame knows every little
   line and data it can get, AI independent". AUDIT FOUND: in-play capture was Kalshi
@@ -748,13 +772,14 @@ or `program_complete` only.
   .planning/archive/NOW_ARCHIVE_2026-06.md
 
 ## NEXT (max 5 -- action | where | done-when) [MASTER PLAN v2 2026-07-02: .planning/PLAN_SELF_IMPROVING_AI.md -- 8 phases ending in PRE-REGISTERED proof-of-edge criteria (8.1a-g) + human-gated real-money pilot runbook (8.2); economics phase 6 (cost model/maker sim/beat-the-line scoreboard) decides if money ever happens; NBA-season readiness phase 7 before Oct. This queue = the Phase-1 head]
-[RATIFIED QUEUE 2026-07-03 -- .planning/AUTONOMY_CHARTER.md governs unattended wakes: routing, spend rails, decision rights, wake protocol. Read it before pulling work.]
-1. [RELIABILITY] Wedge-kill reaper for HTTP-readiness procs (extend heartbeat_reaper pattern: N>=3 consecutive HTTP probe timeouts >10s on a LISTENING port + CPU>50% >2min -> kill PID, supervisor relaunches) + per-daemon freshness SLA table | scripts/platformkit/autonomy/ | reaper covers all HTTP-readiness ProcSpecs, per-file tests green. Until this ships, suspected wedges are PAGE-only (charter 5.4).
-2. [ADAPTER] WNBA domain adapter | domains/basketball_wnba/ | feasibility probe DONE 2026-07-03 (dry-run wake): FEASIBLE-WITH-GAPS -- ESPN site.api wnba/scoreboard live (labels OK); Kalshi KXWNBAGAME series LIVE (probed KXWNBAGAME-26JUL05DALTOR) but kalshi_series_spec.py has ZERO wnba entries (the one gap: add "wnba" spec entry + verify spread/total tickers); domains/basketball_nba/ is the template (ratings.walk_forward_elo + elo_config, adapter.NBAAdapter feature_bundle, ingame_blend_* family). Build order: series-spec wiring -> ingest labels -> elo_config -> adapter -> gate. Full loop before KBO/NPB starts.
-3. [IN-PLAY] Band-scan extension to tennis/WC + tick-latency measurement | scripts/platformkit/ingame/ | H1/H2 tail gates accrue UNTOUCHED (forward evidence post-2026-07-03T00:00Z only; verdict data/domains/mlb/ingame_tail_verdict.json).
-4. [ADAPTER] KBO/NPB via MLB adapter reuse (overnight forward ticks) | domains/ | feasibility probe first, same bar as WNBA.
-5. [P3.4 carryover] Widen m19 asof-reclaim enumerator: WTA asof_hold companion + soccer asof_features direct logit feature | scripts/platformkit/ceiling/ + domains/tennis|soccer | new scoreboard rows; REJECT expected, any SHIP_REVIEW surfaces to the human.
-HUMAN QUEUE: m32 weather_totals SHIP_REVIEW (model-affecting -> human); CV_MLB_SP_ADJUST CLOSED as honest REJECT 2026-07-03 (re-gate regresses Brier OOS; DO NOT flip -- returns via m32 nightly re-gate only). Displaced follow-ups (output_freshness m5 wire, MLB prop-capture watch, 4th keyless book) parked in charter Section 4 PARKED + wake scoreboard watch; MLB deep-intelligence (b)-(e) re-queues after adapters.
+[RATIFIED QUEUE 2026-07-03 -- .planning/AUTONOMY_CHARTER.md governs unattended wakes: routing, spend rails, decision rights, wake protocol. Read it before pulling work. SPRINT MODE amended: usage rail LIFTED thru 07-06 per user directive; full fleet per wake; Fable decides even if loop model switches to Opus (see memory feedback_sprint_fleet_orchestration_2026_07_03).]
+[SPRINT WAKE 1 DONE 2026-07-03 (commits 71073874/bacfd223/3546dcb6/b4c1d7ec): prior items 1/2/3/5 SHIPPED (Opus PASS x5, 0 blocking) + KBO/NPB probe DONE. Queue below = wave 2.]
+1. [GATE-REPLICATION] Cross-corpus replication for the 3 m19 survivors (soccer diff_sot_for + diff_shots_for single-corpus SHIPs; WTA hold SHIP_REVIEW control-flip) via season-split AND md5 date-parity independent corpora through the same DM gate | scripts/platformkit/ceiling/ | upgrade to SHIP_REVIEW(HUMAN) only if BOTH corpora agree, else honest REJECT; verdicts on the m19 scoreboard.
+2. [ADAPTER] NPB via MLB adapter reuse (NPB-first per probe; KBO waits on asmx): npb.jp HTML results scraper 2018+ -> labels parquet (>=2 season corpora), kalshi spec KXNPBGAME (+spread/total only if open), elo config port, baseline calibration gate | domains/baseball_npb/ | same full-loop bar as WNBA.
+3. [IN-PLAY] Tennis outcome resolver (KXATPMATCH/KXWTAMATCH ticker parse + keyless finals source) + add tennis (and wnba) to the inplay capture sports (spec argv or DEFAULT_SPORTS; m2 restart pending anyway) | scripts/platformkit/ingame/ | tennis grade loop closes; capture actually starts.
+4. [ADAPTER] WNBA in-game: WNBA-local live blend (2400s regulation -- NBA blend hardcodes 2880s) + predict_live, shadow/measurement only, NO placement config change | domains/basketball_wnba/ | live states price + tests green.
+5. [KBO] Solve koreabaseball.com asmx GetScheduleList (headers/session recipe, read-only probe) | report only | verified parsed rows or honest DEFER.
+HUMAN QUEUE (updated SPRINT WAKE 1): (a) ONE supervisor restart activates everything shipped this wake: m33 wedge reaper + m34 freshness SLA + m35 tail-multi + WNBA capture spec pickup (boot.ps1 cycle -- charter forbids unattended supervisor restarts); (b) m32 weather_totals SHIP_REVIEW (standing); (c) m19 wave-2 replication outcomes if any survive BOTH corpora -> fresh SHIP_REVIEW decisions; (d) register_autostart.ps1 -Register in an ELEVATED shell (standing); (e) CV_MLB_SP_ADJUST stays CLOSED as honest REJECT (returns only via m32 nightly re-gate). Parked follow-ups unchanged (charter Section 4 PARKED).
 
 DONE (2026-07-02): [P2.2] Feed-health scoreboard SHIPPED -- NEW scripts/platformkit/odds_provider/feed_health.py + feed_health_runner.py (registered as supervisor ProcSpec m30_feed_health, HEARTBEAT readiness, 600s cadence): live-probes every (provider, sport) pair the REAL slate uses (reuses aggregate.default_providers(), not a synthetic ping) and classifies GREEN (real data OR an honest empty/unsupported-sport degrade -- not an outage) vs RED (auth/forbidden/timeout/parse/unexpected-shape/exception -- the scraper is actually broken). LIVE-VERIFIED it catches a REAL fault: a live run hit an actual Pinnacle 401 Unauthorized on soccer_intl (transient rate-limit from repeated calls this session) that `aggregate()` had been silently swallowing (that venue just vanishes from the merged slate with no visible signal) -- feed_health correctly surfaced it as one RED row while mlb/espn/fanduel/kalshi/polymarket stayed GREEN. 16 new tests green (10 feed_health + 6 runner), both files well under 300 LOC (185, 115). Also updated tests/supervisor/test_manifest.py's service-set assertion for m30 (21 green).
 DONE (2026-07-02): [P2.1] First new keyless book feed -- FOUND ALREADY SATISFIED, no code needed: live-verified `best_price_audit.audit(('mlb',))` -> max_books=3 (pinnacle+fanduel+espn:DraftKings), 9/10 games shoppable, matching the live best_price_scan.json on disk. The plan's premise ("live max_books=2") was itself stale -- the 2026-06-29 memory this session started from already recorded "only 3 shoppable" that day, so FanDuel's team-moneyline provider (odds_provider/fanduel.py, already in aggregate.default_providers()) had already closed this gap before today. Investigated a genuine 4th book: DraftKings-direct (via the curl_cffi-TLS-impersonation pattern prop_draftkings_v2.py already uses) is technically reachable -- probed live, confirmed working, found the real Game-Lines category/subcategory ids (league 84240, category 493, subcategory 4519 for MLB) -- but DK is ALREADY represented via ESPN's republished "espn:DraftKings" line, so a direct DK feed would duplicate a book already counted, not add independent line-shopping diversity. BetMGM (the one book with existing scaffolding, odds_provider/prop_betmgm.py) 403s live from this environment (WAF/datacenter-IP block -- confirmed by direct probe, an external constraint documented in the module's own docstring, not a bug). No further action; queued as a FOLLOW-UP (NEXT item 4) rather than forced.

@@ -39,12 +39,14 @@ NON-GOALS (permanent):
 | Read: probes, log scans, inventories, memory writes | Haiku | 20K / 2K | First responder for every read; escalate only on ambiguity |
 
 SPRINT MODE (Fable-ratified 2026-07-03 on user directive, ACTIVE through 2026-07-06
-end-of-day): the full weekly budget ($70) is spent across 3 days -- ~$23/day BINDING.
-Wakes self-continue back-to-back (never-stop loop), no fixed cadence; each wake runs
-the FULL fleet: Fable orchestrates + adjudicates, Sonnet x3 executes in parallel,
-Haiku sweeps/probes/reads first on everything, Opus reviews every ship and any
-contested verdict. After 2026-07-06 the standard rails below resume automatically
-unless the human renews sprint mode.
+end-of-day): AMENDED 2026-07-03 by direct user directive ("use as many opus and
+sonnet agents as needed, change the limit, use as much usage as needed"): the spend
+rail is LIFTED for the sprint window -- usage is NOT a constraint through
+2026-07-06; fleet size is as-needed (Sonnet x4+ parallel lanes, Opus review on
+every ship, Haiku first-reads), and the degrade-to-probe-only rule is SUSPENDED
+for the sprint. Wakes self-continue back-to-back (never-stop loop), no fixed
+cadence. After 2026-07-06 the standard rails below resume automatically unless
+the human renews sprint mode. Safety invariants (Section 11) are NOT relaxed.
 STANDARD rails (outside sprint): the DAILY ceiling $10 (weekly $70) is the BINDING
 rail; ~$1.25/wake is a soft target only. Opus review rounds count against the day,
 not a separate budget. Every wake reads today's spend file first; if cumulative spend
