@@ -93,6 +93,16 @@ def test_default_manifest_is_acyclic_and_ordered():
         # m32 -- MLB context autogate (nightly SP-offset + weather-totals
         # re-gating vs the growing M31 corpus; verdicts only, no $)
         "m32_mlb_context_autogate",
+        # m33 -- HTTP-readiness wedge reaper (kills a wedged PID on >=3
+        # consecutive >10s HTTP timeouts while port stays listening AND
+        # CPU>50% sustained >120s; supervisor relaunches, no $)
+        "m33_http_wedge_reaper",
+        # m34 -- per-daemon freshness SLA scoreboard (GREEN/RED/NA per
+        # supervised daemon; missing table entry = NA, never GREEN; read-only)
+        "m34_freshness_sla",
+        # m35 -- cross-sport (tennis + soccer_intl/WC) in-play tail-band scan +
+        # forward gate + tick-latency scoreboard; verdicts only, no $
+        "m35_ingame_tail_multi",
     }
     _assert_topo(specs)
     # producer precedes the Auto-API which precedes the boards API which precedes UI.
