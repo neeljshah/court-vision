@@ -230,11 +230,16 @@ def test_no_dollar_field_anywhere(tmp_path):
 
 
 # --------------------------------------------------------------------------------------- #
-# (e) the REAL on-disk single game -> INSUFFICIENT_DATA.                                     #
+# (e) a single-game on-disk pool -> INSUFFICIENT_DATA.                                       #
 # --------------------------------------------------------------------------------------- #
-def test_real_on_disk_single_game_insufficient():
-    # Reads the actual data/cache/ingame_grade dir (today: one partial mlb game, 4 ticks).
-    pool = ag.aggregate_grade()  # default DEFAULT_GRADE_DIR
+def test_real_on_disk_single_game_insufficient(tmp_path):
+    # Isolated fixture dir with exactly one partial game (4 ticks), mirroring the shape of
+    # a real early-slate on-disk snapshot. NOT the live data/cache/ingame_grade dir -- that
+    # grows over the season (145 games as of 2026-07-03) and would no longer be < MIN_GAMES,
+    # making this a fixture-rot false-fail rather than a real regression.
+    gd = tmp_path / "ingame_grade"
+    _write_game(gd, "REAL-G0", _beat_game(0, "REAL-G0", 1.0, n=4))
+    pool = ag.aggregate_grade(grade_dir=gd)
     assert pool["pool_verdict"] == "INSUFFICIENT_DATA", pool
     assert pool["n_games"] < ag.MIN_GAMES
     assert pool["edge_claimed"] is False

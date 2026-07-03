@@ -57,8 +57,9 @@ No accuracy/edge claim anywhere in this file (see .claude/rules/no-edge-claims.m
 
 1. **Wedge-kill for HTTP-readiness procs** (supervisor) -- today's 2.5h silent
    outage recurs otherwise; small, testable, protects the whole serving spine.
-2. **NEXT#5 MLB deep-intelligence continuation** -- (a) human decision on
-   CV_MLB_SP_ADJUST=1 (gate PASSED cross-era + 2026 OOS, verdict on disk);
+2. **NEXT#5 MLB deep-intelligence continuation** -- (a) CV_MLB_SP_ADJUST CLOSED
+   as honest REJECT (2026-07-03 correction: 5.7x corpus re-gate regresses Brier
+   OOS; NOW.md says DO NOT flip -- earlier "gate PASSED" note here was stale);
    (b) asof_bullpen (un-deferred -- SP identity now keyed by game_pk);
    (c) umpire tendencies; (d) per-pitch archetype layer (5 season corpora).
 3. **NEXT#1 widen m19 asof-reclaim** to tennis (needs WTA asof_hold companion)
