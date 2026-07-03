@@ -158,17 +158,24 @@ def _methodology_obj() -> Dict[str, Any]:
 def assemble_pack(*, secret: Optional[str] = None,
                   track_record_path: Optional[Path] = None,
                   governance_kwargs: Optional[Dict[str, Any]] = None,
+                  track_record: Optional[Dict[str, Any]] = None,
                   ) -> Dict[str, Any]:
     """Build the in-memory pack objects + manifest. No disk writes. Honesty-linted.
 
     Returns the dict of named artifact objects PLUS the manifest, all keyed by
     their pack-relative name. RAISES (honesty_linter.assert_clean) before returning
     if any artifact carries a banned $-edge key or a retracted number.
+    An already-signed *track_record* may be passed so a caller (docs_gen) that
+    also renders the record uses ONE object -- otherwise a second build here
+    gets a different generated_at/signature than the one rendered.
     """
     # Signed CLV track record (REUSES the vetted scoreboard; CLV not recomputed;
     # sign_track_record honesty-lints it and raises on any violation).
-    tr = build_track_record()
-    signed_tr = sign_track_record(tr, secret=secret)
+    if track_record is not None:
+        signed_tr = track_record
+    else:
+        tr = build_track_record()
+        signed_tr = sign_track_record(tr, secret=secret)
 
     # Verify the pack's OWN freshly-signed track record (not a stale on-disk one).
     verdicts = reproduce_all(

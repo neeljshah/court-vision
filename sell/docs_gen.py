@@ -475,7 +475,8 @@ def generate_all(*, secret: Optional[str] = None,
     # Assemble the evidence pack (source for MANIFEST.md).
     # Pass the already-signed track record so pack assembly is consistent and
     # does not rebuild from ledger a second time.
-    pack = assemble_pack(secret=sec, governance_kwargs=None)
+    pack = assemble_pack(secret=sec, governance_kwargs=None,
+                         track_record=signed_tr)
 
     # Generate the four documents.
     docs: Dict[str, str] = {
