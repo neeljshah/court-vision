@@ -1,0 +1,76 @@
+# docker-compose.sell.yml -- sellable stack (LOCAL demo; no secrets).
+#
+# Declares three services that form the locally-runnable sellable stack.
+# Secrets are supplied via a .env file (gitignored) or the host environment --
+# NEVER hardcoded here.
+#
+# HUMAN-GATED public deploy:
+#   Pushing this to a public host (Railway, Fly.io, etc.) is a HUMAN STEP.
+#   See docs/sell/DEPLOY.md for the public-deploy checklist.
+#   Before any public deploy a human must:
+#     1. Rotate all credentials.
+#     2. Verify governance preflight passes (python -m governance.run_governance).
+#     3. Confirm edge_claimed=false in every sell API response.
+#
+# Usage (local):
+#   docker compose -f deploy/docker-compose.sell.yml up
+#
+# Required secrets (supply via host env or .env -- gitignored):
+#   ODDS_API_KEY   -- optional; endpoints return "unavailable" when absent
+#   DB_URL         -- optional; defaults to local Parquet files when absent
+
+version: "3.9"
+
+x-common: &common
+  build:
+    context: ..
+    dockerfile: Dockerfile.predictor
+  working_dir: /app
+  volumes:
+    - ../data:/app/data:ro
+  environment:
+    - PYTHONPATH=/app
+    - ODDS_API_KEY=${ODDS_API_KEY:-}
+    - DB_URL=${DB_URL:-}
+  restart: on-failure
+
+services:
+  sell_api:
+    <<: *common
+    command: python -m sell.app
+    ports:
+      - "${SELL_PORT:-8100}:8100"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8100/health')\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      com.courtvision.service: "sell_api"
+      com.courtvision.edge_claimed: "false"
+      com.courtvision.public_deploy: "HUMAN_GATED"
+
+  auto_api:
+    <<: *common
+    command: python -m predict_service.app
+    ports:
+      - "${AUTO_API_PORT:-8099}:8099"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8099/health')\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      com.courtvision.service: "auto_api"
+
+  paper_loop:
+    <<: *common
+    command: python -m scripts.platformkit.pm_trading.auto_loop --forever
+    volumes:
+      - ../data:/app/data
+    labels:
+      com.courtvision.service: "paper_loop"
+      com.courtvision.role: "clv_tracking_paper_only"
+
+# NOTE: no UI service declared here; the CourtVision Next.js UI is started
+# separately via boot_sell.ps1 or boot.ps1 -NoUI.

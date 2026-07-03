@@ -1,0 +1,25 @@
+# Procfile.sell -- sellable runtime process declarations (LOCAL only).
+#
+# Declares the three processes that form the sellable stack:
+#   sell_api    -- the read-only sell API (sell.app, port 8100)
+#   auto_api    -- the predict-service Auto-API (predict_service.app, port 8099)
+#   paper_loop  -- the paper-trading self-improving loop (pm_trading.auto_loop)
+#
+# HUMAN-GATED: bringing this to a public host is a HUMAN STEP.
+# See docs/sell/DEPLOY.md for the public-deploy checklist.
+# Secrets must be supplied via environment only (never in this file).
+#
+# To run locally with honcho (or a Procfile runner):
+#   pip install honcho
+#   honcho start -f deploy/Procfile.sell
+#
+# Required env vars (supplied externally, never hardcoded):
+#   PYTHONPATH    -- repo root (e.g. /path/to/nba-ai-system)
+#   SELL_PORT     -- port for the sell API (default 8100)
+#   AUTO_API_PORT -- port for the auto API (default 8099)
+#   ODDS_API_KEY  -- optional; if absent, odds endpoints return "unavailable"
+#   DB_URL        -- optional; if absent, the stack uses local Parquet files
+
+sell_api:   python -m sell.app
+auto_api:   python -m predict_service.app
+paper_loop: python -m scripts.platformkit.pm_trading.auto_loop --forever

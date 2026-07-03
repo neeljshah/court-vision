@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CourtVision — System Bible</title>
+<style>
+  :root{
+    --ink:#0e1620; --ink2:#1b2735; --muted:#5b6b7d; --line:#d7dee6;
+    --paper:#ffffff; --soft:#f4f7fa; --accent:#f97316; --accent2:#0ea5a4;
+    --good:#0e7c66; --warn:#b45309; --bad:#9f1239; --code:#0b2540;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;color:var(--ink);
+    font-family:"Segoe UI",-apple-system,Helvetica,Arial,sans-serif;
+    font-size:10.5pt; line-height:1.5; background:var(--paper);}
+  h1,h2,h3,h4{line-height:1.18; color:var(--ink); font-weight:700; margin:0 0 .35em;}
+  h2{font-size:18pt; margin-top:0;}
+  h3{font-size:13pt; margin-top:1.2em; color:var(--ink2);}
+  h4{font-size:11pt; margin-top:1em; color:var(--ink2);}
+  p{margin:.45em 0;}
+  code,.mono{font-family:"Cascadia Code","Consolas",monospace; font-size:9pt;
+    background:var(--soft); padding:.06em .35em; border-radius:3px; color:var(--code);}
+  a{color:var(--accent2); text-decoration:none;}
+  .muted{color:var(--muted);}
+  .small{font-size:9pt;}
+  .accent{color:var(--accent);} .accent2{color:var(--accent2);}
+
+  /* ---- page mechanics ---- */
+  @page{ size:Letter; margin:16mm 15mm 16mm 15mm; }
+  .section{ page-break-before:always; }
+  .nobreak{ page-break-inside:avoid; }
+
+  /* ---- cover ---- */
+  .cover{ page-break-after:always; height:247mm; position:relative;
+    background:linear-gradient(160deg,#0e1620 0%, #142233 55%, #1d3350 100%);
+    color:#eaf1f8; border-radius:0; padding:24mm 20mm; overflow:hidden;}
+  .cover:before{content:""; position:absolute; right:-60mm; top:-40mm; width:160mm; height:160mm;
+    background:radial-gradient(circle at center, rgba(249,115,22,.30), transparent 62%);}
+  .cover:after{content:""; position:absolute; left:-50mm; bottom:-50mm; width:150mm; height:150mm;
+    background:radial-gradient(circle at center, rgba(14,165,164,.26), transparent 62%);}
+  .cv-kicker{ letter-spacing:.32em; text-transform:uppercase; font-size:10pt; color:#9fb6cc;}
+  .cv-title{ font-size:44pt; line-height:1.02; margin:.18em 0 .1em; font-weight:800; color:#fff;}
+  .cv-sub{ font-size:15pt; color:#c8d6e6; font-weight:500; max-width:150mm;}
+  .cv-rule{ height:3px; width:64mm; background:linear-gradient(90deg,var(--accent),var(--accent2)); margin:9mm 0;}
+  .cv-meta{ position:absolute; bottom:22mm; left:20mm; right:20mm; font-size:10pt; color:#9fb6cc;}
+  .cv-meta strong{color:#eaf1f8;}
+  .cv-chips{margin-top:7mm;}
+  .cv-chip{display:inline-block; border:1px solid rgba(255,255,255,.22); border-radius:20px;
+    padding:3px 11px; margin:0 6px 6px 0; font-size:8.6pt; color:#dce7f2;}
+
+  /* ---- blocks ---- */
+  .lead{font-size:11.5pt; color:var(--ink2);}
+  .callout{border-left:4px solid var(--accent); background:#fff7ed; padding:.7em .9em;
+    border-radius:0 6px 6px 0; margin:1em 0;}
+  .callout.honest{border-color:var(--accent2); background:#effaf9;}
+  .callout.warn{border-color:var(--warn); background:#fffbeb;}
+  .callout h4{margin:.1em 0 .3em;}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .card{border:1px solid var(--line); border-radius:8px; padding:.7em .85em; background:#fff;}
+  .card h4{margin:.05em 0 .35em; color:var(--ink);}
+  .pill{display:inline-block; font-size:8pt; font-weight:700; letter-spacing:.04em;
+    padding:2px 8px; border-radius:20px; text-transform:uppercase;}
+  .pill.proven{background:#dcfce7; color:#14653a;}
+  .pill.unproven{background:#fee2e2; color:#9f1239;}
+  .pill.live{background:#e0f2fe; color:#075985;}
+  table{border-collapse:collapse; width:100%; margin:.6em 0; font-size:9.2pt;}
+  th,td{border:1px solid var(--line); padding:5px 8px; text-align:left; vertical-align:top;}
+  th{background:var(--soft); font-weight:700; color:var(--ink2);}
+  tr:nth-child(even) td{background:#fbfdff;}
+  ul,ol{margin:.4em 0 .5em; padding-left:1.25em;}
+  li{margin:.2em 0;}
+  .toc{font-size:10.5pt;}
+  .toc div{display:flex; justify-content:space-between; border-bottom:1px dotted var(--line); padding:5px 0;}
+  .toc .n{color:var(--accent); font-weight:700; width:24px;}
+  .toc .t{flex:1; padding-left:6px;}
+  figure{margin:1em 0; text-align:center;}
+  figcaption{font-size:8.6pt; color:var(--muted); margin-top:4px;}
+  .foot{font-size:8pt; color:var(--muted); border-top:1px solid var(--line); margin-top:14px; padding-top:5px;}
+  .kpi{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin:1em 0;}
+  .kpi .b{border:1px solid var(--line); border-radius:8px; padding:.6em; text-align:center; background:#fff;}
+  .kpi .v{font-size:17pt; font-weight:800; color:var(--ink);}
+  .kpi .l{font-size:8pt; color:var(--muted); text-transform:uppercase; letter-spacing:.04em;}
+</style>
+</head>
+<body>
+
+<!-- ============ COVER ============ -->
+<section class="cover">
+  <div class="cv-kicker">AI-Native Sports Intelligence Platform</div>
+  <div class="cv-title">CourtVision</div>
+  <div class="cv-rule"></div>
+  <div class="cv-sub">The System Bible — every moving part, how it works, how it gets
+    better, what it honestly is today, and where it can go.</div>
+  <div class="cv-chips">
+    <span class="cv-chip">Computer Vision → Possession Sim</span>
+    <span class="cv-chip">4 Sports · One Engine Each</span>
+    <span class="cv-chip">18-Daemon Self-Healing Stack</span>
+    <span class="cv-chip">Self-Improving · Leak-Free Gates</span>
+    <span class="cv-chip">Obsidian Brain · Auto-Memory</span>
+    <span class="cv-chip">Honest by Construction</span>
+  </div>
+  <div class="cv-meta">
+    Architect &amp; Director: <strong>Neel Shah</strong> — solo human directing an agentic build pipeline.<br>
+    Built Mar–May 2026 · ~1,470 commits · neeljshah22@gmail.com<br>
+    <span class="small">Calibration, not profit. Markets are efficient; we match the close.
+    No dollar edge is claimed in this document.</span>
+  </div>
+</section>
+
+<!-- ============ TOC ============ -->
+<section>
+  <h2>Contents</h2>
+  <div class="toc">
+    <div><span class="n">1</span><span class="t">Executive Summary — what CourtVision is</span><span class="muted">3</span></div>
+    <div><span class="n">2</span><span class="t">The Funnel — DATA → SIGNALS → MODELS → ENGINES → PREDICTIONS → INTELLIGENCE</span><span class="muted">4</span></div>
+    <div><span class="n">3</span><span class="t">The Computer-Vision Foundation (the original moat)</span><span class="muted">5</span></div>
+    <div><span class="n">4</span><span class="t">System Architecture — the 18-daemon self-healing stack</span><span class="muted">6</span></div>
+    <div><span class="n">5</span><span class="t">The Prediction Engines — one coherent number per sport</span><span class="muted">8</span></div>
+    <div><span class="n">6</span><span class="t">In-Game Intelligence — the one validated edge frontier</span><span class="muted">9</span></div>
+    <div><span class="n">7</span><span class="t">How It Gets Better — the self-improvement machinery</span><span class="muted">10</span></div>
+    <div><span class="n">8</span><span class="t">The Validation Discipline &amp; Honesty Rails</span><span class="muted">12</span></div>
+    <div><span class="n">9</span><span class="t">The Intelligence Layer &amp; Memory (the brain)</span><span class="muted">13</span></div>
+    <div><span class="n">10</span><span class="t">Honest Current State — what is proven vs unproven</span><span class="muted">14</span></div>
+    <div><span class="n">11</span><span class="t">Where It Can Go — the roadmap &amp; the thesis</span><span class="muted">15</span></div>
+    <div><span class="n">12</span><span class="t">Appendix — glossary, file map, the rails</span><span class="muted">17</span></div>
+  </div>
+  <div class="foot">CourtVision System Bible · generated for the architect · honest-by-construction edition</div>
+</section>
+
+<!-- ============ 1. EXEC ============ -->
+<section class="section">
+  <h2>1 · Executive Summary</h2>
+  <p class="lead">CourtVision is an AI-native NBA intelligence platform evolving into a
+  domain-agnostic, multi-sport forecasting and decision engine. It turns raw sport data —
+  including its own computer-vision tracking — into <strong>calibrated probabilistic
+  predictions</strong>, validates every step against a brutal leak-free gate, and improves
+  itself within hard honesty rails. It runs unattended, heals itself, and tells the truth
+  about what it does and does not know.</p>
+
+  <div class="kpi">
+    <div class="b"><div class="v">4+1</div><div class="l">Sports (NBA·MLB·Soccer·Tennis + Intl)</div></div>
+    <div class="b"><div class="v">18</div><div class="l">Supervised daemons</div></div>
+    <div class="b"><div class="v">85</div><div class="l">Trained signals</div></div>
+    <div class="b"><div class="v">872</div><div class="l">Brain notes (1 graph)</div></div>
+  </div>
+
+  <p>The defining idea is the <strong>funnel</strong>: every data point is pushed through as
+  many candidate signals as possible, the survivors feed models, the models feed one engine
+  per sport, the engine emits one coherent prediction per market, and an intelligence layer
+  plus an agentic loop re-validate the whole chain continuously. The funnel was originated
+  here — building this kind of end-to-end, self-validating sports-detail pipeline is genuinely
+  hard precisely because it has not been done this way before.</p>
+
+  <div class="callout honest">
+    <h4>The honest north star</h4>
+    <p>The product is a <strong>calibrated predictor</strong>, not a betting-edge product.
+    The defensible win is matching the devigged closing line within noise on team-strength
+    markets, plus a measured, calibrated <em>in-game conditioning</em> improvement. Beating
+    the vig is not the goal; beating predictions — accuracy and calibration — is. An honest
+    REJECT is a success, not a failure. No dollar edge is claimed anywhere.</p>
+  </div>
+
+  <h3>What makes it unusual</h3>
+  <ul>
+    <li><strong>It owns its data tier.</strong> A real CV pipeline (YOLO → homography →
+      tracking → re-ID → events) produces possession-level micro-state most public models
+      never see.</li>
+    <li><strong>It is honest by construction.</strong> Hard-coded rails forbid fabricated
+      edges, retracted numbers, dollar fields on the served product, and flag flips — even
+      when running unattended for days.</li>
+    <li><strong>It improves itself — carefully.</strong> A 5-gate ratchet can recalibrate the
+      served model, but only on changes that survive walk-forward, multi-corpus, clustered
+      significance testing; otherwise it ships nothing and says so.</li>
+    <li><strong>It was built by an agentic pipeline</strong> directed by one human — Opus
+      orchestrates and gates, a Sonnet fleet writes code, search agents explore — across
+      ~1,470 commits.</li>
+  </ul>
+</section>
+
+<!-- ============ 2. FUNNEL ============ -->
+<section class="section">
+  <h2>2 · The Funnel</h2>
+  <p class="lead">The spine of the whole system. Each stage narrows raw breadth into one
+  validated, coherent number — and a loop re-tests every stage so nothing rots.</p>
+
+  <figure class="nobreak">
+  <svg viewBox="0 0 760 230" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif">
+    <defs>
+      <linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#f97316"/><stop offset="1" stop-color="#0ea5a4"/></linearGradient>
+      <marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#5b6b7d"/></marker>
+    </defs>
+    <rect x="0" y="92" width="760" height="6" fill="url(#g)" opacity="0.25"/>
+    <g font-size="11" font-weight="700" text-anchor="middle">
+      <g><rect x="6" y="56" width="108" height="78" rx="9" fill="#fff" stroke="#f97316" stroke-width="1.5"/>
+         <text x="60" y="84" fill="#0e1620">DATA</text><text x="60" y="104" font-size="8" font-weight="400" fill="#5b6b7d">CV tracking ·</text><text x="60" y="116" font-size="8" font-weight="400" fill="#5b6b7d">APIs · feeds</text></g>
+      <g><rect x="136" y="56" width="108" height="78" rx="9" fill="#fff" stroke="#fb923c" stroke-width="1.5"/>
+         <text x="190" y="84" fill="#0e1620">SIGNALS</text><text x="190" y="104" font-size="8" font-weight="400" fill="#5b6b7d">85 trained ·</text><text x="190" y="116" font-size="8" font-weight="400" fill="#5b6b7d">gate-tested</text></g>
+      <g><rect x="266" y="56" width="108" height="78" rx="9" fill="#fff" stroke="#d8a657" stroke-width="1.5"/>
+         <text x="320" y="84" fill="#0e1620">MODELS</text><text x="320" y="104" font-size="8" font-weight="400" fill="#5b6b7d">props · win-prob</text><text x="320" y="116" font-size="8" font-weight="400" fill="#5b6b7d">· calibration</text></g>
+      <g><rect x="396" y="56" width="108" height="78" rx="9" fill="#fff" stroke="#5ab0a8" stroke-width="1.5"/>
+         <text x="450" y="84" fill="#0e1620">ENGINES</text><text x="450" y="104" font-size="8" font-weight="400" fill="#5b6b7d">1 sim/sport ·</text><text x="450" y="116" font-size="8" font-weight="400" fill="#5b6b7d">possession MC</text></g>
+      <g><rect x="526" y="56" width="118" height="78" rx="9" fill="#fff" stroke="#0ea5a4" stroke-width="1.5"/>
+         <text x="585" y="80" fill="#0e1620">PREDICTIONS</text><text x="585" y="104" font-size="8" font-weight="400" fill="#5b6b7d">one coherent #</text><text x="585" y="116" font-size="8" font-weight="400" fill="#5b6b7d">/ market</text></g>
+      <g><rect x="666" y="56" width="92" height="78" rx="9" fill="#0e1620" stroke="#0ea5a4" stroke-width="1.5"/>
+         <text x="712" y="80" fill="#fff" font-size="10">INTEL-</text><text x="712" y="94" fill="#fff" font-size="10">LIGENCE</text><text x="712" y="116" font-size="7.5" font-weight="400" fill="#9fb6cc">brain · scouting</text></g>
+    </g>
+    <g stroke="#5b6b7d" stroke-width="1.4" marker-end="url(#ar)">
+      <line x1="114" y1="95" x2="134" y2="95"/><line x1="244" y1="95" x2="264" y2="95"/>
+      <line x1="374" y1="95" x2="394" y2="95"/><line x1="504" y1="95" x2="524" y2="95"/>
+      <line x1="644" y1="95" x2="664" y2="95"/>
+    </g>
+    <path d="M712 140 C712 185, 60 185, 60 140" fill="none" stroke="#f97316" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#ar)"/>
+    <text x="386" y="205" text-anchor="middle" font-size="9" fill="#f97316">agentic re-validation loop — every stage re-tested continuously</text>
+  </svg>
+  <figcaption>The funnel: breadth → validated narrowness → one coherent prediction → intelligence, wrapped in a self-re-testing loop.</figcaption>
+  </figure>
+
+  <table>
+    <tr><th>Stage</th><th>What happens</th><th>Discipline applied</th></tr>
+    <tr><td><strong>Data</strong></td><td>CV tracking output + keyless sports APIs + odds feeds + historical corpora.</td><td>Provenance tracked; never fabricated; offseason/empty states are honest, not faked.</td></tr>
+    <tr><td><strong>Signals</strong></td><td>~85 candidate predictive features proposed and trained; deep-data layers ingested per sport.</td><td>Each runs the leak-free gate; most REJECT and are kept as <em>scouting</em>, never force-fed.</td></tr>
+    <tr><td><strong>Models</strong></td><td>Player-prop models, win-probability, calibration layers (Platt / isotonic variants).</td><td>Walk-forward out-of-sample; held-out residuals drive uncertainty.</td></tr>
+    <tr><td><strong>Engines</strong></td><td>One simulation/rating engine per sport produces a single probability distribution.</td><td>Every served market is read off that one distribution (coherence asserted in code).</td></tr>
+    <tr><td><strong>Predictions</strong></td><td>One coherent number per market, devigged via Shin, with phase-labelled provenance.</td><td><code>vs_close</code> labelled UNPROVEN; uncertainty surfaced; no dollar fields.</td></tr>
+    <tr><td><strong>Intelligence</strong></td><td>Obsidian brain + 80-artifact intelligence manifest + reject ledger + scouting.</td><td>Person-free, fully cross-linked, self-policing graph gates.</td></tr>
+  </table>
+
+  <div class="callout">
+    <h4>Why the funnel is the hard, original part</h4>
+    <p>Anyone can fit a model. The originality here is the <em>end-to-end discipline</em>:
+    making every data point earn its place through the same brutal gate, fusing only survivors
+    into one coherent number per market, and keeping the whole thing honest while it runs and
+    improves itself. That full sports-detail funnel — CV tier included — is what had to be
+    invented from scratch.</p>
+  </div>
+</section>
+
+<!-- ============ 3. CV ============ -->
+<section class="section">
+  <h2>3 · The Computer-Vision Foundation</h2>
+  <p class="lead">The data tier most forecasters never own. From broadcast or tracking video,
+  CourtVision reconstructs possession-level micro-state — the raw material of genuinely new
+  signal.</p>
+
+  <figure class="nobreak">
+  <svg viewBox="0 0 760 150" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif">
+    <defs><marker id="ar2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#5b6b7d"/></marker></defs>
+    <g font-size="8.5" text-anchor="middle">
+      <g><rect x="2" y="40" width="86" height="50" rx="7" fill="#fff7ed" stroke="#f97316"/><text x="45" y="62" font-weight="700" fill="#0e1620">YOLOv8n</text><text x="45" y="76" fill="#5b6b7d">detect</text></g>
+      <g><rect x="110" y="40" width="86" height="50" rx="7" fill="#fff" stroke="#fb923c"/><text x="153" y="62" font-weight="700" fill="#0e1620">SIFT</text><text x="153" y="76" fill="#5b6b7d">homography</text></g>
+      <g><rect x="218" y="40" width="96" height="50" rx="7" fill="#fff" stroke="#d8a657"/><text x="266" y="60" font-weight="700" fill="#0e1620">Kalman +</text><text x="266" y="73" font-weight="700" fill="#0e1620">Hungarian</text></g>
+      <g><rect x="336" y="40" width="86" height="50" rx="7" fill="#fff" stroke="#9ab87f"/><text x="379" y="60" font-weight="700" fill="#0e1620">OSNet</text><text x="379" y="73" fill="#5b6b7d">re-ID 512-d</text></g>
+      <g><rect x="444" y="40" width="86" height="50" rx="7" fill="#fff" stroke="#5ab0a8"/><text x="487" y="62" font-weight="700" fill="#0e1620">EasyOCR</text><text x="487" y="76" fill="#5b6b7d">jersey #</text></g>
+      <g><rect x="552" y="40" width="96" height="50" rx="7" fill="#fff" stroke="#3aa39a"/><text x="600" y="60" font-weight="700" fill="#0e1620">Event</text><text x="600" y="73" fill="#5b6b7d">Detector</text></g>
+      <g><rect x="668" y="40" width="90" height="50" rx="7" fill="#0e1620" stroke="#0ea5a4"/><text x="713" y="60" font-weight="700" fill="#fff">Possession</text><text x="713" y="73" fill="#9fb6cc">Monte Carlo</text></g>
+    </g>
+    <g stroke="#5b6b7d" stroke-width="1.3" marker-end="url(#ar2)">
+      <line x1="88" y1="65" x2="108" y2="65"/><line x1="196" y1="65" x2="216" y2="65"/>
+      <line x1="314" y1="65" x2="334" y2="65"/><line x1="422" y1="65" x2="442" y2="65"/>
+      <line x1="530" y1="65" x2="550" y2="65"/><line x1="648" y1="65" x2="666" y2="65"/>
+    </g>
+    <text x="380" y="120" text-anchor="middle" font-size="8.5" fill="#5b6b7d">pixels → court coordinates → tracked identities → events → simulated possessions</text>
+  </svg>
+  <figcaption>The CV pipeline: a real, headless, GPU-bound stack turning video into possession-level state.</figcaption>
+  </figure>
+
+  <table>
+    <tr><th>Stage</th><th>Component</th><th>Role</th></tr>
+    <tr><td>Detection</td><td>YOLOv8n</td><td>Players + ball per frame.</td></tr>
+    <tr><td>Geometry</td><td>SIFT homography (panorama)</td><td>Map image pixels to real court coordinates.</td></tr>
+    <tr><td>Tracking</td><td>Kalman filter + Hungarian assignment</td><td>Stable identities frame-to-frame.</td></tr>
+    <tr><td>Re-identification</td><td>OSNet (512-dim) + team-color tracker</td><td>Recover identity through occlusion / camera cuts.</td></tr>
+    <tr><td>Numbers</td><td>EasyOCR</td><td>Read jersey numbers (the current accuracy wall).</td></tr>
+    <tr><td>Semantics</td><td>EventDetector</td><td>Shots, possessions, transitions.</td></tr>
+    <tr><td>Simulation</td><td>Possession Monte Carlo</td><td>Roll possessions forward into win/score distributions.</td></tr>
+  </table>
+
+  <div class="callout warn">
+    <h4>The honest limit (and why it is the opportunity)</h4>
+    <p>Jersey-OCR identity is noisy (~a low single-digit error wall), so the per-player CV
+    micro-state is currently <em>identity-walled</em>: team and possession aggregates are
+    clean, but clean per-player identity at scale is a real CV research problem, not a
+    download. Solving it is exactly where the moat deepens — see §11.</p>
+  </div>
+</section>
+
+<!-- ============ 4. ARCHITECTURE ============ -->
+<section class="section">
+  <h2>4 · System Architecture</h2>
+  <p class="lead">One command brings up a self-healing stack of 18 supervised daemons. Each
+  has a heartbeat and an independent restart policy: if one dies it goes red alone and
+  auto-restarts in seconds while the rest keep running.</p>
+
+  <figure class="nobreak">
+  <svg viewBox="0 0 760 300" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif">
+    <rect x="0" y="0" width="760" height="300" fill="#f4f7fa" rx="10"/>
+    <rect x="20" y="14" width="720" height="34" rx="7" fill="#0e1620"/>
+    <text x="380" y="36" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Supervisor (boot.ps1) — readiness-gated · self-heartbeat · crash-rate breaker · stale-never-green</text>
+    <g font-size="8" text-anchor="middle">
+      <!-- serving -->
+      <rect x="20" y="62" width="350" height="70" rx="8" fill="#fff" stroke="#0ea5a4"/>
+      <text x="195" y="76" font-size="8.5" font-weight="700" fill="#0ea5a4">SERVING SPINE</text>
+      <g fill="#0e1620">
+        <rect x="30" y="84" width="80" height="38" rx="5" fill="#effaf9" stroke="#9fd6d2"/><text x="70" y="100" font-weight="700">m1_producer</text><text x="70" y="113" fill="#5b6b7d">600s · engines</text>
+        <rect x="118" y="84" width="76" height="38" rx="5" fill="#effaf9" stroke="#9fd6d2"/><text x="156" y="100" font-weight="700">api :8099</text><text x="156" y="113" fill="#5b6b7d">predict</text>
+        <rect x="202" y="84" width="76" height="38" rx="5" fill="#effaf9" stroke="#9fd6d2"/><text x="240" y="100" font-weight="700">boards :8098</text><text x="240" y="113" fill="#5b6b7d">best-bets</text>
+        <rect x="286" y="84" width="76" height="38" rx="5" fill="#effaf9" stroke="#9fd6d2"/><text x="324" y="100" font-weight="700">ui :3000</text><text x="324" y="113" fill="#5b6b7d">webapp</text>
+      </g>
+      <!-- trading -->
+      <rect x="380" y="62" width="360" height="70" rx="8" fill="#fff" stroke="#f97316"/>
+      <text x="560" y="76" font-size="8.5" font-weight="700" fill="#f97316">LINES · PAPER · BANKROLL</text>
+      <g fill="#0e1620">
+        <rect x="390" y="84" width="108" height="38" rx="5" fill="#fff7ed" stroke="#fcd4a8"/><text x="444" y="100" font-weight="700">m1_line_daemon</text><text x="444" y="113" fill="#5b6b7d">Pinnacle·ESPN·DK</text>
+        <rect x="506" y="84" width="100" height="38" rx="5" fill="#fff7ed" stroke="#fcd4a8"/><text x="556" y="100" font-weight="700">m1_paper</text><text x="556" y="113" fill="#5b6b7d">units · void-safe</text>
+        <rect x="614" y="84" width="116" height="38" rx="5" fill="#fff7ed" stroke="#fcd4a8"/><text x="672" y="100" font-weight="700">m1_bankroll</text><text x="672" y="113" fill="#5b6b7d">P&amp;L · CLV ledger</text>
+      </g>
+      <!-- ingame -->
+      <rect x="20" y="142" width="430" height="70" rx="8" fill="#fff" stroke="#7c3aed"/>
+      <text x="235" y="156" font-size="8.5" font-weight="700" fill="#7c3aed">IN-GAME / LIVE</text>
+      <g fill="#0e1620">
+        <rect x="30" y="164" width="84" height="38" rx="5" fill="#f5f0ff" stroke="#d3bdf5"/><text x="72" y="180" font-weight="700">m6_ingame</text><text x="72" y="193" fill="#5b6b7d">reprice 300s</text>
+        <rect x="122" y="164" width="84" height="38" rx="5" fill="#f5f0ff" stroke="#d3bdf5"/><text x="164" y="180" font-weight="700">m2_inplay</text><text x="164" y="193" fill="#5b6b7d">+ capture</text>
+        <rect x="214" y="164" width="100" height="38" rx="5" fill="#f5f0ff" stroke="#d3bdf5"/><text x="264" y="180" font-weight="700">m11_pred_tick</text><text x="264" y="193" fill="#5b6b7d">live snapshots</text>
+        <rect x="322" y="164" width="118" height="38" rx="5" fill="#f5f0ff" stroke="#d3bdf5"/><text x="381" y="180" font-weight="700">m12_pm_paper</text><text x="381" y="193" fill="#5b6b7d">Kalshi/PM trail</text>
+      </g>
+      <!-- bestbets/props -->
+      <rect x="460" y="142" width="280" height="70" rx="8" fill="#fff" stroke="#0369a1"/>
+      <text x="600" y="156" font-size="8.5" font-weight="700" fill="#0369a1">BEST-BETS · PROPS</text>
+      <g fill="#0e1620">
+        <rect x="470" y="164" width="128" height="38" rx="5" fill="#eff6ff" stroke="#b8d4f0"/><text x="534" y="180" font-weight="700">m10_best_bets</text><text x="534" y="193" fill="#5b6b7d">divergence 120s</text>
+        <rect x="606" y="164" width="124" height="38" rx="5" fill="#eff6ff" stroke="#b8d4f0"/><text x="668" y="180" font-weight="700">m13_props</text><text x="668" y="193" fill="#5b6b7d">re-score 300s</text>
+      </g>
+      <!-- improve -->
+      <rect x="20" y="222" width="720" height="66" rx="8" fill="#0e1620" stroke="#334155"/>
+      <text x="120" y="238" font-size="8.5" font-weight="700" fill="#fbbf24">SELF-IMPROVE · AUTONOMY · MONITOR</text>
+      <g fill="#eaf1f8">
+        <rect x="30" y="244" width="120" height="36" rx="5" fill="#1b2735" stroke="#475569"/><text x="90" y="260" font-weight="700">m4_selfimprove</text><text x="90" y="272" fill="#9fb6cc">5-gate ratchet</text>
+        <rect x="158" y="244" width="120" height="36" rx="5" fill="#1b2735" stroke="#475569"/><text x="218" y="260" font-weight="700">m7_refresh</text><text x="218" y="272" fill="#9fb6cc">re-gate · re-fit</text>
+        <rect x="286" y="244" width="120" height="36" rx="5" fill="#1b2735" stroke="#475569"/><text x="346" y="260" font-weight="700">m8_ci_cadence</text><text x="346" y="272" fill="#9fb6cc">coverage++</text>
+        <rect x="414" y="244" width="140" height="36" rx="5" fill="#1b2735" stroke="#475569"/><text x="484" y="260" font-weight="700">m5_autonomy_mon</text><text x="484" y="272" fill="#9fb6cc">one status · 60s</text>
+        <rect x="562" y="244" width="168" height="36" rx="5" fill="#1b2735" stroke="#475569"/><text x="646" y="260" font-weight="700">m9 supervisor heartbeat</text><text x="646" y="272" fill="#9fb6cc">watchdog detects wedge</text>
+      </g>
+    </g>
+  </svg>
+  <figcaption>The 18-daemon supervised stack. Independent branches: one dead daemon = one red entry, auto-restarted; the rest run on.</figcaption>
+  </figure>
+
+  <h3>Operational properties</h3>
+  <ul>
+    <li><strong>Independent &amp; self-healing.</strong> Kill any daemon → it returns in ~30s;
+      kill the whole thing → clean stop leaves zero processes.</li>
+    <li><strong>Stale-never-green.</strong> A hung or dead daemon reads RED, never falsely
+      "fresh." Heartbeat freshness windows are tuned per daemon cadence.</li>
+    <li><strong>Boot-on-login.</strong> A registered Windows task brings the whole stack up at
+      logon via a watchdog that keeps the supervisor alive; governance preflight runs first;
+      real money stays default-DENY.</li>
+    <li><strong>Atomic writes</strong> on every shared artifact so a crash mid-write never
+      corrupts the served state.</li>
+  </ul>
+</section>
+
+<!-- ============ 5. ENGINES ============ -->
+<section class="section">
+  <h2>5 · The Prediction Engines</h2>
+  <p class="lead">Each sport has exactly one engine producing one probability distribution.
+  Every market — moneyline, totals, spread, sets, props — is read off that same distribution,
+  so the served numbers are internally coherent by construction (and the code asserts it).</p>
+
+  <table>
+    <tr><th>Sport</th><th>Engine</th><th>One distribution → many markets</th></tr>
+    <tr><td><strong>NBA</strong></td><td>Elo + possession-level Monte Carlo</td><td>Win prob, totals, spread off one possession sim.</td></tr>
+    <tr><td><strong>MLB</strong></td><td>Margin-of-victory Elo + anchored Negative-Binomial</td><td>Run-line at 0 = moneyline; totals partition asserted.</td></tr>
+    <tr><td><strong>Soccer</strong></td><td>Exponentially-weighted Poisson / Dixon-Coles</td><td>All markets off one Dixon-Coles score matrix.</td></tr>
+    <tr><td><strong>Tennis</strong></td><td>Surface-Elo + point-level Monte Carlo</td><td>9 coherent markets off one MC matrix (sets, handicaps, scores).</td></tr>
+  </table>
+
+  <div class="grid2">
+    <div class="card"><h4>Coherence is enforced, not hoped for</h4>
+      <p class="small">The producer asserts <code>served_prob == engine_prob</code>. A corrupted
+      engine cell fails the coherence check by design — you cannot ship a market that
+      disagrees with the distribution it came from.</p></div>
+    <div class="card"><h4>Devigging &amp; uncertainty</h4>
+      <p class="small">Market prices are devigged via <strong>Shin</strong>. Uncertainty bands
+      come from held-out residuals — not invented. <code>vs_close</code> is labelled
+      <span class="pill unproven">UNPROVEN</span> everywhere: the system claims it
+      <em>matches</em> the close, never that it beats it.</p></div>
+  </div>
+
+  <p>Above the engines sit player-prop models and calibration layers. Props synthesize from
+  on-disk gamelogs when an external line feed rate-limits, so the board is never empty; every
+  card carries <code>edge_claimed=false</code> and shows units, never dollars.</p>
+</section>
+
+<!-- ============ 6. IN-GAME ============ -->
+<section class="section">
+  <h2>6 · In-Game Intelligence</h2>
+  <p class="lead">This is the one place with a <em>validated</em> measured advantage — and the
+  genuine frontier for everything beyond matching the close.</p>
+
+  <h3>The proven part: prior-conditioning calibration</h3>
+  <p>The served in-game number blends the <strong>proven pregame prior</strong> with realized
+  game state (margin/run-diff, fraction elapsed). Conditioning the static prediction on live
+  state produces a real, measured calibration improvement — statistically decisive on NBA
+  fine-resolution data (Diebold–Mariano p ≈ 1.2&times;10<sup>-12</sup>), holding across 3 of 4
+  sports. This is calibration, labelled as such — not a dollar claim.</p>
+
+  <div class="callout">
+    <h4>Engineering note — carrying the prior across provider-id gaps</h4>
+    <p class="small">The live feed and the pregame snapshot sometimes key the same game under
+    different provider id namespaces, which silently dropped the proven prior (degrading to a
+    weaker base model). A leak-free resolver now bridges this by a <em>unique team match</em>
+    (<code>PRIOR_TEAMS</code>) — exact id first, and on a tie (e.g. a doubleheader) it returns
+    BASE rather than guess. Result: the served in-game number carries the proven prior for
+    more games. Verified on real data; necessary input for the CLV frontier below.</p>
+  </div>
+
+  <h3>The unproven frontier: in-game CLV</h3>
+  <p>The open question — the real upside — is whether that calibration advantage converts into
+  positive <strong>closing-line value</strong> against real liquid in-play prices (keyless
+  Kalshi per-game markets, liquidity-gated). The capture loop pairs the model number with the
+  devigged price every tick across live games; an aggregate grader pools per-game CLV with a
+  game-resampling bootstrap and clustered Diebold–Mariano.</p>
+
+  <div class="callout honest">
+    <h4>The bar for calling it an edge</h4>
+    <p>BEAT requires ≥5 settled games, ≥40 ticks, a settled-outcome arm, a positive pooled-CLV
+    confidence-interval lower bound, <em>and</em> cross-corpus both-direction significance. A
+    pure market-copy candidate is structurally impossible to pass (it yields no corpus). Until
+    that bar is cleared and replicated, <code>vs_close</code> stays UNPROVEN and real money
+    stays DENY. Today: single-corpus, tiny-n — <span class="pill unproven">insufficient</span>.</p>
+  </div>
+</section>
+
+<!-- ============ 7. GETS BETTER ============ -->
+<section class="section">
+  <h2>7 · How It Gets Better</h2>
+  <p class="lead">"Better" is three distinct things with different levers. Conflating them is
+  how fake edges get born; separating them is how this system stays honest.</p>
+
+  <figure class="nobreak">
+  <svg viewBox="0 0 760 250" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif">
+    <defs><marker id="ar3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#f97316"/></marker></defs>
+    <text x="380" y="20" text-anchor="middle" font-size="11" font-weight="700" fill="#0e1620">The 5-Gate Self-Improvement Ratchet</text>
+    <g font-size="8.5" text-anchor="middle">
+      <circle cx="120" cy="80" r="42" fill="#fff7ed" stroke="#f97316" stroke-width="1.5"/><text x="120" y="74" font-weight="700" fill="#0e1620">Settled</text><text x="120" y="88" fill="#5b6b7d">games fold in</text>
+      <circle cx="320" cy="80" r="42" fill="#fff" stroke="#fb923c" stroke-width="1.5"/><text x="320" y="74" font-weight="700" fill="#0e1620">Candidate</text><text x="320" y="88" fill="#5b6b7d">Platt recal</text>
+      <circle cx="540" cy="80" r="46" fill="#0e1620" stroke="#0ea5a4" stroke-width="1.5"/><text x="540" y="68" font-weight="700" fill="#fff">5 GATES</text><text x="540" y="82" fill="#9fb6cc" font-size="7.5">WF · 2 corpora</text><text x="540" y="93" fill="#9fb6cc" font-size="7.5">DM · base · FWER</text>
+    </g>
+    <g stroke="#f97316" stroke-width="1.5" marker-end="url(#ar3)">
+      <line x1="162" y1="80" x2="276" y2="80"/><line x1="362" y1="80" x2="492" y2="80"/>
+    </g>
+    <!-- outcomes -->
+    <g font-size="8.5" text-anchor="middle">
+      <rect x="470" y="160" width="140" height="40" rx="7" fill="#fee2e2" stroke="#fca5a5"/><text x="540" y="178" font-weight="700" fill="#9f1239">REJECT (usual)</text><text x="540" y="191" fill="#9f1239" font-size="7.5">nothing ships — a success</text>
+      <rect x="630" y="160" width="120" height="40" rx="7" fill="#dcfce7" stroke="#86efac"/><text x="690" y="178" font-weight="700" fill="#14653a">proposals.jsonl</text><text x="690" y="191" fill="#14653a" font-size="7.5">human promotes</text>
+    </g>
+    <g stroke="#9f1239" stroke-width="1.3" marker-end="url(#ar3)"><line x1="540" y1="126" x2="540" y2="158"/></g>
+    <path d="M584 110 C660 130, 690 140, 690 158" fill="none" stroke="#14653a" stroke-width="1.3" marker-end="url(#ar3)"/>
+    <text x="690" y="138" text-anchor="middle" font-size="7" fill="#14653a">only if all 5 pass</text>
+    <!-- guardrails -->
+    <g font-size="8" fill="#5b6b7d">
+      <rect x="40" y="150" width="380" height="80" rx="8" fill="#f4f7fa" stroke="#d7dee6"/>
+      <text x="56" y="168" font-weight="700" fill="#0e1620" text-anchor="start">Why a candidate almost always (correctly) fails:</text>
+      <text x="56" y="184" text-anchor="start">• walk-forward out-of-sample (no peeking)</text>
+      <text x="56" y="198" text-anchor="start">• must replicate on ≥2 independent corpora</text>
+      <text x="56" y="212" text-anchor="start">• clustered Diebold–Mariano significance, both directions</text>
+      <text x="56" y="226" text-anchor="start">• degenerate-base guard + planted-null tripwire (a null that "passes" freezes the family)</text>
+    </g>
+  </svg>
+  <figcaption>Sandbox-proven: on a planted miscalibration the ratchet cuts sealed-fold Brier 0.2025 → 0.0958 (seed-stable). On the real efficient market it returns NO_CANDIDATE — the honest, correct result.</figcaption>
+  </figure>
+
+  <table>
+    <tr><th>Kind of "better"</th><th>What changes</th><th>Lever / gate</th><th>Status</th></tr>
+    <tr><td><strong>1 · System</strong></td><td>Validation coverage, robustness, the loop itself</td><td>Automatic, continuous (m8 cadence)</td><td><span class="pill live">running</span></td></tr>
+    <tr><td><strong>2 · Model</strong></td><td>Served calibration actually changes</td><td>Data volume + 5-gate pass + human promote</td><td><span class="pill proven">ready</span> / data-gated</td></tr>
+    <tr><td><strong>3 · Edge</strong></td><td>CLV proves positive vs real prices</td><td>Many in-season games + replication</td><td><span class="pill unproven">unproven</span></td></tr>
+  </table>
+
+  <h3>The three improvement engines</h3>
+  <ul>
+    <li><strong>Living refresh (hourly):</strong> newly-settled finals fold into each sport's
+      corpora; the in-game model is re-gated and re-fit, and either swaps in or downgrades its
+      own provenance label. Continuous recalibration on fresh truth.</li>
+    <li><strong>The 5-gate ratchet (daily):</strong> the only path that can change a served
+      number — and it never auto-ships; survivors land in <code>proposals.jsonl</code> for a
+      human to promote.</li>
+    <li><strong>CLV as a second corpus:</strong> settled closing-line value is leak-free and
+      gate-able, fed to the ratchet as a do-no-harm second corpus — never a ship objective
+      (that is the market-follow trap, structurally blocked).</li>
+  </ul>
+
+  <div class="callout honest">
+    <h4>What "gets better" honestly means</h4>
+    <p>Growing validation coverage and a recalibration engine <em>proven ready</em> that
+    improves calibration when the data earns it — <strong>not</strong> a fake live-accuracy or
+    edge climb. The served model is static until a gate-passing candidate is promoted. The
+    expected daily outcome is REJECT, and that is the system working: an honest null beats a
+    fabricated edge.</p>
+  </div>
+</section>
+
+<!-- ============ 8. DISCIPLINE ============ -->
+<section class="section">
+  <h2>8 · The Validation Discipline &amp; Honesty Rails</h2>
+  <p class="lead">The credibility of every claim rests on a gate that rejects almost
+  everything. The discipline is the product.</p>
+
+  <h3>The gate, in full</h3>
+  <ul>
+    <li><strong>Leak-free:</strong> features are as-of, the outcome is never an input, the
+      close is held out; verified on disk (zero debut-row leaks).</li>
+    <li><strong>Walk-forward / out-of-sample:</strong> single-fold lifts are treated as
+      artifacts until they replicate.</li>
+    <li><strong>≥2 independent corpora, both directions:</strong> a signal must survive
+      A→B and B→A, not just one slice.</li>
+    <li><strong>Clustered Diebold–Mariano by game:</strong> significance that respects
+      within-game correlation.</li>
+    <li><strong>FWER budget + planted-null tripwire:</strong> the bar tightens as more
+      candidates are tested; a null that "passes" freezes its whole family — proof the gate
+      has teeth.</li>
+    <li><strong>Degenerate-base guard &amp; collinearity check:</strong> no winning by a
+      broken baseline or by restating the base.</li>
+  </ul>
+
+  <div class="callout warn">
+    <h4>Numbers that are permanently retracted</h4>
+    <p>Certain early figures were measurement artifacts (market-follow grading, a Q4 leak, an
+    L5-proxy ceiling) and are <strong>never</strong> presented as current results. They appear
+    only inside an explicit retraction context. Honesty is enforced, not aspirational: the
+    served product carries no dollar fields, and a single boolean flips the whole status to
+    "not honest" if a dollar/edge/stale-green/real-money leak ever appears.</p>
+  </div>
+
+  <h3>The binding invariants (held even unattended, for days)</h3>
+  <div class="grid2">
+    <div class="card small"><strong>Never</strong> claim a dollar edge or print a retracted number.</div>
+    <div class="card small"><strong>Never</strong> auto-ship a model change or flip a feature flag on.</div>
+    <div class="card small"><strong>Never</strong> enable real money — it stays default-DENY.</div>
+    <div class="card small"><strong>Never</strong> push private data/ledgers to the public origin.</div>
+    <div class="card small"><strong>Always</strong> stale-never-green: dead reads red.</div>
+    <div class="card small"><strong>Always</strong> record honest rejects — they are the deliverable.</div>
+  </div>
+</section>
+
+<!-- ============ 9. INTELLIGENCE/MEMORY ============ -->
+<section class="section">
+  <h2>9 · The Intelligence Layer &amp; Memory</h2>
+  <p class="lead">Beneath the predictions sits a navigable knowledge graph — the system's
+  long-term understanding of the sport — plus an auto-memory that lets the agentic builder
+  carry lessons across sessions.</p>
+
+  <div class="grid2">
+    <div class="card">
+      <h4>The Obsidian Brain</h4>
+      <ul class="small">
+        <li><strong>872 notes</strong>, 100% reachable, one connected component, person-free.</li>
+        <li>Player dossiers, scheme atlases, archetype hubs, comparables, game plans,
+          leaderboards, lineup chemistry.</li>
+        <li>An 80-artifact intelligence manifest + a reject ledger (the signal graveyard).</li>
+        <li>Three self-policing graph gates keep it coherent on every rebuild.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Auto-Memory (cross-session)</h4>
+      <ul class="small">
+        <li>One fact per file: user profile, feedback, project state, references.</li>
+        <li>Lets the agentic pipeline remember decisions, landmines, and "do-not-claim" rules
+          between runs.</li>
+        <li>Verified against the live code before reuse — memory informs, it never overrides
+          what the repo actually says.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Scouting vs serving — the key distinction</h3>
+  <p>Most ingested signals REJECT at the gate. Rejected signals are not discarded — they become
+  <strong>validated scouting</strong>: recorded, searchable intelligence about what does and
+  does not move a sport. They are <em>never force-fed</em> into the served prediction, because
+  force-feeding a rejected signal is exactly the overfitting / market-follow failure mode the
+  whole discipline exists to prevent. The intelligence layer is therefore an honest map of the
+  sport's predictability frontier, not a pile of unused features.</p>
+
+  <div class="callout honest">
+    <h4>The meta-finding (the plateau)</h4>
+    <p>Tested at the finest available on-disk grids across all four sports — coarse state →
+    at-bat / per-pitch / Statcast → CV aggregates → playstyle correlations — deeper data
+    <strong>rejects</strong> for held-out win-probability calibration beyond the (margin/time)
+    base plus the pregame prior. Recording that plateau, under gates proven to both fail noise
+    and pass real signal, <em>is</em> a genuine scientific deliverable. One confirmed survivor
+    (a soccer corners signal) cleared the hardest six-control gate — tiny in magnitude, real in
+    fact, and still labelled calibration-only.</p>
+  </div>
+</section>
+
+<!-- ============ 10. STATE ============ -->
+<section class="section">
+  <h2>10 · Honest Current State</h2>
+  <p class="lead">What is proven, what is unproven, and what is simply running — stated plainly.</p>
+
+  <table>
+    <tr><th>Area</th><th>Status</th><th>Honest reading</th></tr>
+    <tr><td>Multi-sport parity</td><td><span class="pill proven">green</span></td><td>All 4 sports + intl pass the census/manifest/feature-spec checks.</td></tr>
+    <tr><td>Pregame calibration</td><td><span class="pill proven">matches close</span></td><td>Matches the devigged close within noise. No edge — and none claimed.</td></tr>
+    <tr><td>In-game conditioning</td><td><span class="pill proven">validated</span></td><td>Real measured calibration lift (DM p≈1.2e-12 NBA). Calibration, not dollars.</td></tr>
+    <tr><td>In-game CLV / "edge"</td><td><span class="pill unproven">unproven</span></td><td>+1.0% mean CLV on n=13 settled — tiny, single-corpus, within noise.</td></tr>
+    <tr><td>Self-improve loop</td><td><span class="pill live">armed · INERT</span></td><td>Runs the ratchet daily; returns REJECT/NO_CANDIDATE; ships nothing.</td></tr>
+    <tr><td>Paper bankroll</td><td><span class="pill live">units only</span></td><td>An honest paper track record in units; <code>executed=false</code>; not profit.</td></tr>
+    <tr><td>Real money</td><td><span class="pill unproven">DENY</span></td><td>Stays off until CLV is replicated-positive. By design.</td></tr>
+  </table>
+
+  <div class="callout">
+    <h4>Why so much "unproven" is a feature</h4>
+    <p>A system that mostly rejects, mostly says "insufficient," and refuses to claim a dollar
+    edge is a system you can trust the rare time it says "this survived." The honesty is not
+    timidity — it is what makes the eventual signal worth something. The market is efficient;
+    matching it cleanly, and measuring an in-game advantage carefully, is the real and
+    defensible achievement.</p>
+  </div>
+</section>
+
+<!-- ============ 11. WHERE IT GOES ============ -->
+<section class="section">
+  <h2>11 · Where It Can Go</h2>
+  <p class="lead">This is the start, not the finish. The foundation is built and honest; the
+  frontier is wide. Below: the founder's thesis, with proven foundation and aspirational
+  frontier clearly separated.</p>
+
+  <h3>The thesis</h3>
+  <p>An originated, end-to-end sports-detail funnel — CV tracking through one coherent
+  prediction through a self-validating loop — is a genuinely new kind of system. It is hard
+  precisely because it has not been done this way before. The asset compounds: every day of
+  in-season data, every deeper data tier, and every improvement to the CV identity layer feeds
+  the <em>same brutal gate</em>, and the survivors are real because the gate is real.</p>
+
+  <h3>The roadmap</h3>
+  <table>
+    <tr><th>Horizon</th><th>Move</th><th>Honest framing</th></tr>
+    <tr><td><strong>Now → in-season</strong></td><td>Volume on the in-game CLV loop; let the aggregate grader reach a real BEAT/MATCH/BEHIND verdict.</td><td>The immediate frontier. If CLV replicates positive → a real, measured edge. If not → a rigorous null. Either is a win.</td></tr>
+    <tr><td><strong>Months</strong></td><td>Deepen the data tier: Tier-3 acquisition (point-by-point, vendor tracking/xG, full Statcast) feeding the same gate.</td><td>Honest base rate: most still reject. The point is to find the few that don't — and capital funds this.</td></tr>
+    <tr><td><strong>The moat</strong></td><td>Integrate CV tracking deeply: solve the jersey-identity wall → clean per-player possession micro-state no public model owns.</td><td>This is the original differentiator. Person-level CV signal is the data nobody else can download — it must be built.</td></tr>
+    <tr><td><strong>Platform</strong></td><td>The sport-blind kernel + per-sport adapters generalize beyond the first four sports.</td><td>From "NBA tool" to a domain-agnostic forecasting + decision engine.</td></tr>
+    <tr><td><strong>The builder</strong></td><td>The agentic pipeline itself — discover → validate → ship/reject — keeps compounding the system unattended.</td><td>A system that gets more complete and better-validated on its own, within the rails.</td></tr>
+  </table>
+
+  <div class="callout honest">
+    <h4>The honest ceiling — and why it is a good one</h4>
+    <p>Pregame: match the close (essentially reached — a real, defensible result). In-game: a
+    <em>small</em> measured conditioning edge whose conversion to CLV is the open prize; if it
+    replicates in liquid markets, that is rare and valuable precisely because almost everything
+    else rejects. As intelligence and product: a high and largely realized ceiling — the
+    most-complete, honestly-calibrated, self-validating multi-sport forecaster, with a CV data
+    tier as its moat. The path to "edges on its own" is in-season volume + deeper data + the
+    CV layer, all poured into the same uncompromising gate. Capital accelerates the data and
+    the tracking; it does not change the discipline — and the discipline is what makes it true.</p>
+  </div>
+
+  <h3>What to do next, concretely</h3>
+  <ol>
+    <li>Leave it running through in-season volume — the CLV verdict needs games, not code.</li>
+    <li>Acquire deeper data tiers and feed them to the existing gate (expect mostly rejects).</li>
+    <li>Invest in the CV identity layer — the one data source nobody can buy.</li>
+    <li>Promote only gate-survivors; keep real money DENY until CLV is replicated-positive.</li>
+    <li>Generalize the kernel/adapter platform to new sports.</li>
+  </ol>
+</section>
+
+<!-- ============ 12. APPENDIX ============ -->
+<section class="section">
+  <h2>12 · Appendix</h2>
+  <h3>Glossary</h3>
+  <table>
+    <tr><th>Term</th><th>Meaning</th></tr>
+    <tr><td>CLV</td><td>Closing-line value — did you get a better number than the closing price. The honest track-record yardstick.</td></tr>
+    <tr><td>Devig / Shin</td><td>Removing bookmaker margin from prices to recover an implied probability; Shin is the method used.</td></tr>
+    <tr><td>Diebold–Mariano (DM)</td><td>A statistical test for whether one forecast is significantly more accurate than another.</td></tr>
+    <tr><td>Brier / BSS</td><td>Brier score measures probabilistic calibration (lower is better); BSS is its skill score vs a baseline.</td></tr>
+    <tr><td>Walk-forward</td><td>Train on the past, test strictly on the future — no peeking.</td></tr>
+    <tr><td>FWER</td><td>Family-wise error rate control — tightening the bar as more candidates are tested.</td></tr>
+    <tr><td>Planted-null</td><td>A known-fake signal injected to confirm the gate rejects noise (a tripwire).</td></tr>
+    <tr><td>INERT</td><td>The self-improve loop runs but ships nothing — proposal-only until a human promotes.</td></tr>
+    <tr><td>p0 / PRIOR_TEAMS</td><td>The leak-free pregame prior carried into the in-game number; PRIOR_TEAMS = resolved by a unique team match across provider-id gaps.</td></tr>
+    <tr><td>Scouting</td><td>A gate-rejected signal kept as validated intelligence, never force-fed into serving.</td></tr>
+  </table>
+
+  <h3>The stack at a glance</h3>
+  <p class="small mono">YOLOv8n → SIFT homography → Kalman+Hungarian → OSNet re-ID → EasyOCR →
+  EventDetector → possession Monte Carlo → 85 signals → per-sport engine → FastAPI (predict
+  :8099 · boards :8098) → webapp :3000 → 18-daemon supervisor → 5-gate self-improve ratchet →
+  Obsidian brain + auto-memory.</p>
+
+  <h3>The one-line truth</h3>
+  <div class="callout honest">
+    <p><strong>CourtVision is a self-healing, self-validating, honestly-calibrated multi-sport
+    prediction engine with its own computer-vision data tier. It matches the close, measures a
+    real in-game calibration advantage, improves itself only on what survives a brutal gate,
+    and never claims an edge it has not proven. The edge frontier is open; the foundation is
+    real; this is the start.</strong></p>
+  </div>
+
+  <div class="foot">CourtVision System Bible · architect: Neel Shah · honest-by-construction edition ·
+  calibration not profit · no dollar edge claimed · real money default-DENY.</div>
+</section>
+
+</body>
+</html>
