@@ -84,7 +84,7 @@ Binding invariants live in `.claude/rules/` and load via these imports (do not r
 @.claude/rules/human-gated-paths.md
 @.claude/rules/bash-cwd-prefix.md
 
-- Py3.9 local (conda `basketball_ai`, CUDA 11.8, RTX 4060 8GB) | **RunPod is Py3.12** | type hints | docstrings on public API only
+- Py3.10.20 local (conda `basketball_ai`, CUDA 11.8, RTX 4060 8GB; verified 2026-07-03) | **RunPod is Py3.12** | type hints | docstrings on public API only
 - Max 300 LOC/file | `# ... existing code ...` for unchanged blocks | Models → `data/models/` | Logs → `vault/Improvements/`
 - Never re-read data dirs unless asked | Never run: `run.py`, `loop_processor.py` | Video headless only (`--no-show`), never `cv2.imshow`
 - **Tests: PER-FILE ONLY** (`python -m pytest tests/path/test_one.py -q`); a full `pytest tests/` FREEZES the box — never run it
