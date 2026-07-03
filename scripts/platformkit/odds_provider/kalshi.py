@@ -36,6 +36,7 @@ _BASE = "https://api.elections.kalshi.com/trade-api/v2"
 # prefix since the public list endpoint paginates across all categories.
 _SERIES_HINT: Dict[str, str] = {
     "nba": "KXNBA",
+    "wnba": "KXWNBA",
     "mlb": "KXMLB",
     "soccer": "KXEPL",
     "soccer_intl": "KXWC",

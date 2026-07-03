@@ -47,9 +47,20 @@ def test_series_for_returns_a_copy_not_the_module_list():
 def test_game_series_back_compat_is_moneyline_only():
     assert spec._GAME_SERIES == {
         "mlb": "KXMLBGAME", "soccer": "KXEPLGAME",
-        "soccer_intl": "KXWCGAME", "nba": "KXNBAGAME"}
+        "soccer_intl": "KXWCGAME", "nba": "KXNBAGAME", "wnba": "KXWNBAGAME"}
     # tennis has no single "GAME" series (it is MATCH-per-tour) -- not in back-compat map.
     assert "tennis" not in spec._GAME_SERIES
+
+
+def test_series_for_wnba_is_moneyline_spread_total_no_team_total():
+    pairs = spec.series_for("wnba")
+    assert pairs == [
+        ("KXWNBAGAME", "moneyline"),
+        ("KXWNBASPREAD", "spread"),
+        ("KXWNBATOTAL", "total"),
+    ]
+    # KXWNBATEAMTOTAL was probed live 2026-07-03 and does not exist -- must stay absent.
+    assert "KXWNBATEAMTOTAL" not in {s for s, _mt in pairs}
 
 
 def test_ticker_game_date_parses_game_and_match_tickers():
