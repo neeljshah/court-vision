@@ -1,7 +1,7 @@
 """scripts.platformkit.mlb_context_autogate_runner -- supervised M32 entry.
 
 Nightly re-gating daemon: as the MLB context corpus (probables/weather from
-M31, games_current outcomes) keeps growing, this re-runs the two current
+M31, games_current outcomes) keeps growing, this re-runs the three current
 context-driven candidate gates end-to-end so their verdicts stay fresh against
 the growing corpus, WITHOUT a human in the loop:
 
@@ -9,6 +9,11 @@ the growing corpus, WITHOUT a human in the loop:
       _verdict(), rewrites data/domains/mlb/sp_adjust_verdict.json.
   (b) weather-totals gate -- domains.mlb.weather_totals_gate.run_gate(),
       rewrites data/domains/mlb/weather_totals_verdict.json.
+  (c) weather-vs-close gate -- domains.mlb.weather_vs_close_gate.run_gate_
+      with_context(), rewrites data/domains/mlb/weather_vs_close_verdict.json.
+      The decisive candidate: does weather add anything vs the market's own
+      totals CLOSE (not just vs our own baseline)? Expected result is REJECT
+      (the close already prices weather); SHIP_REVIEW would be extraordinary.
 
 Then composes ONE ops summary doc, data/frontend/ops/mlb_context_autogate.json,
 listing every candidate + its current verdict + a ship_review roster.
@@ -96,6 +101,27 @@ def _run_weather_gate() -> Dict[str, Any]:
     }
 
 
+def _run_weather_vs_close_gate() -> Dict[str, Any]:
+    """Re-run the weather-vs-close gate; rewrite its verdict JSON. Returns a
+    compact headline dict: {name, verdict, verdict_reason, n, n_scorable}.
+    The decisive candidate: does weather beat the MARKET CLOSE, not just our
+    own baseline. Expected result is REJECT (books already price weather)."""
+    from domains.mlb.weather_vs_close_gate import run_gate_with_context
+    result = run_gate_with_context()
+    result["generated_at"] = datetime.now(timezone.utc).isoformat()
+    out_path = _REPO_ROOT / "data/domains/mlb/weather_vs_close_verdict.json"
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = out_path.with_suffix(".json.tmp")
+    with open(tmp, "w") as f:
+        json.dump(result, f, indent=2, default=str)
+    os.replace(str(tmp), str(out_path))
+    return {
+        "name": "weather_vs_close", "verdict": result.get("verdict", "ERROR"),
+        "verdict_reason": result.get("verdict_reason", ""),
+        "n": result.get("n", 0), "n_scorable": result.get("n_scorable", 0),
+    }
+
+
 def _compose(candidates: List[Dict[str, Any]], now_iso: str) -> Dict[str, Any]:
     ship_review = [c["name"] for c in candidates if c.get("verdict") in _SHIP_VERDICTS]
     return {
@@ -108,15 +134,19 @@ def _compose(candidates: List[Dict[str, Any]], now_iso: str) -> Dict[str, Any]:
 
 def tick(*, now: float,
          sp_gate_fn: Optional[Callable[[], Dict[str, Any]]] = None,
-         weather_gate_fn: Optional[Callable[[], Dict[str, Any]]] = None) -> Dict[str, Any]:
-    """One re-gating tick: SP gate -> weather gate -> composed doc -> heartbeat.
-    Never raises. Each gate step isolated; a raising gate is recorded as an
-    ERROR candidate entry, never kills the tick."""
+         weather_gate_fn: Optional[Callable[[], Dict[str, Any]]] = None,
+         weather_vs_close_gate_fn: Optional[Callable[[], Dict[str, Any]]] = None) -> Dict[str, Any]:
+    """One re-gating tick: SP gate -> weather gate -> weather-vs-close gate ->
+    composed doc -> heartbeat. Never raises. Each gate step isolated; a
+    raising gate is recorded as an ERROR candidate entry, never kills the tick."""
     _sp = sp_gate_fn if sp_gate_fn is not None else _run_sp_gate
     _weather = weather_gate_fn if weather_gate_fn is not None else _run_weather_gate
+    _weather_vs_close = (weather_vs_close_gate_fn if weather_vs_close_gate_fn is not None
+                          else _run_weather_vs_close_gate)
 
     candidates: List[Dict[str, Any]] = []
-    for name, fn in (("sp_elo_offset_2026_forward", _sp), ("weather_totals", _weather)):
+    for name, fn in (("sp_elo_offset_2026_forward", _sp), ("weather_totals", _weather),
+                      ("weather_vs_close", _weather_vs_close)):
         try:
             headline = fn()
             if not isinstance(headline, dict) or "name" not in headline:
@@ -144,6 +174,7 @@ def tick(*, now: float,
 def run(*, interval_sec: float = DEFAULT_INTERVAL_SEC,
         sp_gate_fn: Optional[Callable[[], Dict[str, Any]]] = None,
         weather_gate_fn: Optional[Callable[[], Dict[str, Any]]] = None,
+        weather_vs_close_gate_fn: Optional[Callable[[], Dict[str, Any]]] = None,
         clock: Optional[Callable[[], float]] = None,
         sleep: Optional[Callable[[float], None]] = None,
         max_ticks: Optional[int] = None,
@@ -169,7 +200,8 @@ def run(*, interval_sec: float = DEFAULT_INTERVAL_SEC,
             now = float(_clock())
         except Exception:  # noqa: BLE001
             now = _time.time()
-        doc = tick(now=now, sp_gate_fn=sp_gate_fn, weather_gate_fn=weather_gate_fn)
+        doc = tick(now=now, sp_gate_fn=sp_gate_fn, weather_gate_fn=weather_gate_fn,
+                   weather_vs_close_gate_fn=weather_vs_close_gate_fn)
         ship_review = doc.get("ship_review", [])
         print("%s | tick=%d candidates=%d ship_review=%s" % (
             HEARTBEAT_COMPONENT, ticks, len(doc.get("candidates", [])), ship_review), flush=True)

@@ -53,10 +53,13 @@ def test_tick_composes_doc_and_ship_review_list():
                              "verdict_reason": "does not regress", "n": 400},
         weather_gate_fn=lambda: {"name": "weather_totals", "verdict": "REJECT",
                                   "verdict_reason": "fails half2", "n": 900, "n_scorable": 800},
+        weather_vs_close_gate_fn=lambda: {"name": "weather_vs_close", "verdict": "REJECT",
+                                           "verdict_reason": "close already prices weather",
+                                           "n": 2200, "n_scorable": 2100},
     )
-    assert len(doc["candidates"]) == 2
+    assert len(doc["candidates"]) == 3
     names = {c["name"] for c in doc["candidates"]}
-    assert names == {"sp_elo_offset_2026_forward", "weather_totals"}
+    assert names == {"sp_elo_offset_2026_forward", "weather_totals", "weather_vs_close"}
     assert doc["ship_review"] == ["sp_elo_offset_2026_forward"]
     assert "no $ edge claimed" in doc["honest_note"]
     assert _AUTOGATE_OUT.exists()
@@ -65,14 +68,17 @@ def test_tick_composes_doc_and_ship_review_list():
     _cleanup_out()
 
 
-def test_tick_both_ship_review_variants_recognized():
+def test_tick_all_ship_review_variants_recognized():
     _cleanup_out()
     doc = tick(
         now=1000.0,
         sp_gate_fn=lambda: {"name": "sp_elo_offset_2026_forward", "verdict": "SHIP_REVIEW"},
         weather_gate_fn=lambda: {"name": "weather_totals", "verdict": "SHIP-READY"},
+        weather_vs_close_gate_fn=lambda: {"name": "weather_vs_close", "verdict": "SHIP_REVIEW"},
     )
-    assert set(doc["ship_review"]) == {"sp_elo_offset_2026_forward", "weather_totals"}
+    assert set(doc["ship_review"]) == {
+        "sp_elo_offset_2026_forward", "weather_totals", "weather_vs_close",
+    }
     _cleanup_out()
 
 
@@ -86,28 +92,50 @@ def test_tick_survives_raising_gate_and_marks_error():
         now=1000.0,
         sp_gate_fn=_boom,
         weather_gate_fn=lambda: {"name": "weather_totals", "verdict": "INCONCLUSIVE", "n": 50},
+        weather_vs_close_gate_fn=lambda: {"name": "weather_vs_close", "verdict": "REJECT", "n": 2100},
     )
-    assert len(doc["candidates"]) == 2
+    assert len(doc["candidates"]) == 3
     sp_entry = next(c for c in doc["candidates"] if c["name"] == "sp_elo_offset_2026_forward")
     assert sp_entry["verdict"] == "ERROR"
     assert "planted gate failure" in sp_entry["verdict_reason"]
     weather_entry = next(c for c in doc["candidates"] if c["name"] == "weather_totals")
     assert weather_entry["verdict"] == "INCONCLUSIVE"
+    wvc_entry = next(c for c in doc["candidates"] if c["name"] == "weather_vs_close")
+    assert wvc_entry["verdict"] == "REJECT"
     assert doc["ship_review"] == []
     # doc still written even though one gate raised.
     assert _AUTOGATE_OUT.exists()
     _cleanup_out()
 
 
-def test_tick_both_gates_raise_still_writes_doc():
+def test_tick_all_gates_raise_still_writes_doc():
     _cleanup_out()
 
     def _boom():
         raise ValueError("boom")
 
-    doc = tick(now=1000.0, sp_gate_fn=_boom, weather_gate_fn=_boom)
+    doc = tick(now=1000.0, sp_gate_fn=_boom, weather_gate_fn=_boom, weather_vs_close_gate_fn=_boom)
+    assert len(doc["candidates"]) == 3
     assert all(c["verdict"] == "ERROR" for c in doc["candidates"])
     assert doc["ship_review"] == []
+    assert _AUTOGATE_OUT.exists()
+    _cleanup_out()
+
+
+def test_tick_defaults_weather_vs_close_fn_when_omitted():
+    """weather_vs_close_gate_fn is optional -- omitting it must not crash tick()
+    even though the real gate isn't injected (falls back to the module default,
+    which itself may raise/ERROR against a missing/partial data fixture, but
+    tick() must still isolate it and keep composing the doc)."""
+    _cleanup_out()
+    doc = tick(
+        now=1000.0,
+        sp_gate_fn=lambda: {"name": "sp_elo_offset_2026_forward", "verdict": "REJECT"},
+        weather_gate_fn=lambda: {"name": "weather_totals", "verdict": "REJECT"},
+    )
+    assert len(doc["candidates"]) == 3
+    names = {c["name"] for c in doc["candidates"]}
+    assert "weather_vs_close" in names
     assert _AUTOGATE_OUT.exists()
     _cleanup_out()
 
@@ -124,6 +152,7 @@ def test_run_max_ticks_and_should_stop():
     ticks = run(interval_sec=5.0,
                 sp_gate_fn=_sp,
                 weather_gate_fn=lambda: {"name": "weather_totals", "verdict": "REJECT"},
+                weather_vs_close_gate_fn=lambda: {"name": "weather_vs_close", "verdict": "REJECT"},
                 clock=lambda: 123.0,
                 sleep=slept.append,
                 max_ticks=3)
@@ -135,6 +164,7 @@ def test_run_max_ticks_and_should_stop():
     ticks = run(interval_sec=5.0,
                 sp_gate_fn=_sp,
                 weather_gate_fn=lambda: {"name": "weather_totals", "verdict": "REJECT"},
+                weather_vs_close_gate_fn=lambda: {"name": "weather_vs_close", "verdict": "REJECT"},
                 clock=lambda: 123.0,
                 sleep=lambda s: None,
                 should_stop=lambda: True)
