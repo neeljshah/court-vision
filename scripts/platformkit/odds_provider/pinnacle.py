@@ -4,7 +4,7 @@ Pinnacle is the sharpest sportsbook (lowest vig, market-efficient closing line).
 Its guest API at guest.api.arcadia.pinnacle.com/0.1 is publicly accessible with
 no auth -- the same endpoint the legacy pinnacle_scraper.py uses.
 
-Flow:
+Flow (per resolved league id -- see below):
   1. GET /leagues/{league_id}/matchups -> parent game matchups with team names.
   2. GET /leagues/{league_id}/markets/straight -> moneyline/spread/total markets.
   3. Join on matchupId; keep only period=0 (full-game) markets; convert American
@@ -27,30 +27,24 @@ shape that markets.quotes_from_aggregate consumes (same as the ESPN provider).
 Price convention: Pinnacle's `price` field is American odds (e.g. -110, +150).
 We convert to decimal (>1.0) via american_to_decimal before emitting.
 
-Honesty:
-  * venue = 'pinnacle', venue_type = VENUE_SPORTSBOOK.
-  * Empty/unreachable API -> [] (no exception, no fabricated price).
-  * Network absent / unexpected shape -> UNAVAILABLE sentinel.
-  * No $ or P&L field. No edge claim.
+Honesty: venue='pinnacle' (VENUE_SPORTSBOOK); empty/unreachable API -> [] (no
+exception, no fabricated price); unexpected shape -> UNAVAILABLE sentinel; no
+$ or P&L field; no edge claim.
 
-Sport -> Pinnacle league ID mapping (the IDs that have game markets on the API):
-  nba: 487,  mlb: 246,  soccer: 1980 (EPL),  soccer_intl: 2686 (FIFA WC),
-  tennis: 12 (ATP)
-
-Pinnacle rotates a tournament's league id when the event moves from qualifying/
-futures into the live tournament proper -- soccer_intl was 2764 pre-kickoff and
-became 2686 once the 2026 World Cup proper started (live-verified 2026-07-02 via
-GET /sports/29/leagues: 2764 no longer appears in the live league list at all,
-which is why matchups/2764 401s rather than 404s -- a delisted league id, not an
-auth/rate-limit issue). If soccer_intl goes RED again with a 401, re-check that
-listing for a "FIFA - World Cup" entry before assuming it is transient.
+Sport -> Pinnacle league id(s): nba/mlb/soccer are static (year-round leagues);
+tennis/soccer_intl rotate as tournaments change and are resolved LIVE (TTL disk
+cache + stale-cache fallback + self-healing 401 invalidation) by
+pinnacle_league_resolver.resolve_league_ids -- see that module for why a
+hardcoded rotating tournament id cannot stay fresh.
 """
 from __future__ import annotations
 
 import logging
+import urllib.error
 from datetime import datetime, timezone
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
+from . import pinnacle_league_resolver
 from .base import OddsEvent, unavailable, VENUE_SPORTSBOOK
 from .http_cache import disk_cache_get_meta, http_get_json
 from .pinnacle_parse import moneyline_sides, spread_node, total_node
@@ -78,12 +72,8 @@ def _now_iso() -> str:
 
 
 def _team_names(participants: List[Dict[str, Any]]) -> Tuple[str, str]:
-    """Extract (home, away) from a Pinnacle matchup participants list.
-
-    Pinnacle uses alignment='home'/'away' on each participant. When both are
-    found the canonical pair is returned; otherwise ('', '') is returned so the
-    caller can skip the event (never guessed).
-    """
+    """Extract (home, away) via alignment='home'/'away'; ('', '') if either is
+    missing so the caller can skip the event (never guessed)."""
     home = away = ""
     for p in participants or []:
         align = (p.get("alignment") or "").lower()
@@ -108,24 +98,17 @@ def parse_games(
 ) -> List[OddsEvent]:
     """Turn Pinnacle matchups + straight markets into normalized OddsEvents.
 
-    Pure; safe to unit-test on canned payloads.
-
-    Rules applied:
-    - Only parent matchups (those without type='special' and without parentId)
-      produce game entries; special/prop matchups are skipped.
-    - Only period=0 (full-game) moneyline/spread/total markets are included.
-    - Moneyline -> sides['home'/'away']; spread -> sides['spread']; total ->
-      sides['total'] (extended node shape consumed by markets.quotes_from_aggregate).
-      A spread/total node is added ONLY when both legs have a line AND a price.
-    - A game with no usable moneyline is still emitted (empty prices dict) when
-      team names are present -- the event is real, just no price to show yet.
-    - Games with empty home OR empty away name are skipped.
-    - Prices[].designation ('home'/'away') maps each leg to the correct side.
-      When designation is absent the first price is treated as home, second away.
-    - All prices are converted from American to decimal (>1.0); invalid / missing
-      prices are omitted (never fabricated).
-    - venue label is always 'pinnacle' (VENUE_SPORTSBOOK).
-    - as_of is the TRUE fetched-at (cache-honest, stale-never-green).
+    Pure; safe to unit-test on canned payloads. Rules: only parent matchups
+    (no type='special', no parentId) produce games; only period=0 (full-game)
+    moneyline/spread/total markets are included; moneyline -> sides['home'/
+    'away'], spread -> sides['spread'], total -> sides['total'] (extended node
+    shape consumed by markets.quotes_from_aggregate), added ONLY when both legs
+    have a line AND a price; a game with no usable moneyline is still emitted
+    (empty prices dict) when team names are present; games with an empty
+    home/away name are skipped; designation ('home'/'away') maps each leg, or
+    first=home/second=away when absent; all prices are American->decimal
+    (>1.0), invalid/missing omitted (never fabricated); venue is always
+    'pinnacle'; as_of is the TRUE fetched-at (cache-honest, stale-never-green).
     """
     as_of = as_of or _now_iso()
 
@@ -203,12 +186,10 @@ def parse_games(
 class PinnacleProvider:
     """Keyless Pinnacle sharp-line provider. fetch(sport) -> list[OddsEvent] | UNAVAILABLE.
 
-    Two API calls per fetch (matchups + straight markets), both covered by the
-    shared TTL disk cache. A fetch failure on EITHER call degrades to UNAVAILABLE
-    rather than emitting partial / fabricated data.
-
-    Venue label: 'pinnacle' (VENUE_SPORTSBOOK).
-    Prices: decimal (>1.0), converted from Pinnacle American moneyline integers.
+    Two API calls per resolved league id (matchups + straight markets), both
+    covered by the shared TTL disk cache. A per-league failure is isolated (see
+    fetch); venue label 'pinnacle' (VENUE_SPORTSBOOK); prices are decimal (>1.0),
+    converted from Pinnacle American moneyline integers.
     """
 
     name = "pinnacle"
@@ -232,44 +213,66 @@ class PinnacleProvider:
             return body, fetched_at
         return self._http_get(url), _now_iso()
 
-    def fetch(self, sport: str) -> Union[List[OddsEvent], Dict[str, str]]:
-        """Fetch and normalize Pinnacle moneyline odds for *sport*.
-
-        Returns list[OddsEvent] on success (may be empty when no games are live),
-        or an unavailable() sentinel when:
-          - sport is not in the supported league map
-          - either API call fails or returns an unexpected shape
-        Never raises; never fabricates a price; never claims an edge.
-        """
-        sport = sport.lower()
-        league_id = _LEAGUE_ID.get(sport)
-        if league_id is None:
-            return unavailable(f"pinnacle: unsupported sport '{sport}'")
-
+    def _fetch_league(
+        self, sport: str, league_id: int,
+    ) -> Union[List[OddsEvent], Dict[str, str]]:
+        """Fetch+parse ONE league id (one matchups call + one markets call)."""
         matchups_url = f"{_BASE}/leagues/{league_id}/matchups"
         markets_url = f"{_BASE}/leagues/{league_id}/markets/straight"
 
-        try:
-            matchups_body, as_of = self._get(matchups_url)
-        except Exception as exc:  # noqa: BLE001 -- degrade, never bubble
-            logger.warning("pinnacle matchups failed for %s: %s", sport, exc)
-            return unavailable(f"pinnacle matchups call failed ({type(exc).__name__})")
-
+        matchups_body, as_of = self._get(matchups_url)
         if not isinstance(matchups_body, list):
             return unavailable("pinnacle: unexpected matchups shape (not a list)")
 
-        try:
-            markets_body, markets_as_of = self._get(markets_url)
-        except Exception as exc:  # noqa: BLE001 -- degrade, never bubble
-            logger.warning("pinnacle markets failed for %s: %s", sport, exc)
-            return unavailable(f"pinnacle markets call failed ({type(exc).__name__})")
-
+        markets_body, markets_as_of = self._get(markets_url)
         if not isinstance(markets_body, list):
             return unavailable("pinnacle: unexpected markets shape (not a list)")
 
         # as_of = OLDEST of the two fetch timestamps (stale-never-green floor).
         true_as_of = _oldest_as_of(as_of, markets_as_of)
         return parse_games(matchups_body, markets_body, sport, true_as_of)
+
+    def fetch(self, sport: str) -> Union[List[OddsEvent], Dict[str, str]]:
+        """Resolve+fetch all live league id(s) for *sport* (static ids for
+        nba/mlb/soccer; live-resolved + cached for rotating tournament sports --
+        see pinnacle_league_resolver), concatenating events across leagues. A
+        401 on one league (delisted/rotated) invalidates its cache entry and is
+        skipped in favor of the others; any other per-league error is likewise
+        skipped. Returns list[OddsEvent] (may be empty), or unavailable() when no
+        id resolves or every league failed. Never raises; never fabricates data.
+        """
+        sport = sport.lower()
+        league_ids = pinnacle_league_resolver.resolve_league_ids(
+            sport, http_get=self._http_get)
+        if not league_ids:
+            return unavailable(f"pinnacle: no live league ids for '{sport}'")
+
+        events: List[OddsEvent] = []
+        last_reason: Optional[str] = None
+        any_ok = False
+        for league_id in league_ids:
+            try:
+                result = self._fetch_league(sport, league_id)
+            except Exception as exc:  # noqa: BLE001 -- isolate one league, keep going
+                if isinstance(exc, urllib.error.HTTPError) and exc.code == 401:
+                    logger.warning(
+                        "pinnacle league %s 401 for %s (delisted) -- invalidating",
+                        league_id, sport)
+                    pinnacle_league_resolver.invalidate(sport)
+                else:
+                    logger.warning("pinnacle league %s failed for %s: %s",
+                                    league_id, sport, exc)
+                last_reason = f"pinnacle call failed ({type(exc).__name__})"
+                continue
+            if isinstance(result, dict):  # unavailable sentinel from this league
+                last_reason = result.get("reason", "pinnacle: unavailable")
+                continue
+            any_ok = True
+            events.extend(result)
+
+        if not any_ok and not events:
+            return unavailable(last_reason or f"pinnacle: no data for '{sport}'")
+        return events
 
 
 def _oldest_as_of(a: str, b: str) -> str:

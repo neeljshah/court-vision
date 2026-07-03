@@ -17,6 +17,14 @@ cache hit, and stamp their ``as_of`` / ``captured_at`` with that true time.
 RETRY/BACKOFF (LA-P0-c / EX-P0-01): the network fetch is wrapped in an exponential
 backoff + jitter + cap retry (tenacity when installed; an equivalent stdlib
 fallback otherwise) so one transient 503 does not drop an entire sport's lines.
+
+STEALTH FALLBACK: when a caller leaves ``http_get`` at its default
+(``http_get_json``), ``disk_cache_get_meta`` routes the live fetch through
+``transport.resilient_get_json``, which escalates a BLOCKED-SHAPED failure
+(401/403/406/429/451/503, or an HTML wall parsed as JSON) to a browser-TLS-
+impersonated fetch before giving up. Kill switch: env CV_STEALTH_FALLBACK=0
+restores exact legacy (plain-only) behavior. A caller that injects its own
+``http_get`` is UNCHANGED -- escalation only applies to the shared default path.
 """
 from __future__ import annotations
 
@@ -158,7 +166,14 @@ def disk_cache_get_meta(
                 return body, fetched_at, True
     except Exception as exc:  # noqa: BLE001 -- cache read must never sink a fetch
         logger.debug("odds cache read miss for %s: %s", url, exc)
-    body = http_get(url)
+    if http_get is http_get_json:
+        # Caller left http_get at its default -> route through the escalating
+        # transport (plain first, stealth fallback on a blocked-shaped failure).
+        # Imported here (not at module top) to avoid a transport<->http_cache cycle.
+        from .transport import resilient_get_json
+        body = resilient_get_json(url)
+    else:
+        body = http_get(url)
     fetched_epoch = float(now())
     fetched_at = _epoch_to_iso(fetched_epoch)
     try:
