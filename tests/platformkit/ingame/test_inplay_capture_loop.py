@@ -80,6 +80,54 @@ def _no_dollar_field(obj):
 
 
 # --------------------------------------------------------------------------------------- #
+# 0. market_type filter: _yes_pair must never mix a total/spread/team_total row into the   #
+#    win-prob pairing (its "prob" is P(over line), never a team win-prob)                  #
+# --------------------------------------------------------------------------------------- #
+def test_yes_pair_filters_out_non_moneyline_ticks():
+    ticks = [
+        {"game_id": "KX-G", "side": "DET", "prob": 0.55, "market_type": "moneyline"},
+        {"game_id": "KX-G", "side": "CWS", "prob": 0.47, "market_type": "moneyline"},
+        {"game_id": "KX-G", "side": "Over 8.5 runs scored", "prob": 0.74,
+         "market_type": "total"},
+        {"game_id": "KX-G", "side": "DET wins by over 3.5 runs", "prob": 0.31,
+         "market_type": "spread"},
+    ]
+    legs = loop._yes_pair(ticks)
+    assert set(legs["KX-G"]) == {"DET", "CWS"}
+    assert legs["KX-G"]["DET"] == 0.55 and legs["KX-G"]["CWS"] == 0.47
+
+
+def test_yes_pair_row_missing_market_type_is_back_compat_moneyline():
+    ticks = [{"game_id": "KX-G", "side": "DET", "prob": 0.55}]
+    legs = loop._yes_pair(ticks)
+    assert legs["KX-G"]["DET"] == 0.55
+
+
+def test_poll_once_end_to_end_ignores_mixed_market_type_ticks(tmp_path):
+    # A live fetch that returns the widened multi-series shape (moneyline + total + spread)
+    # must still pair + paper-decide identically to the moneyline-only fixture.
+    def _mixed_fetch(sport):
+        return _inplay_fetch(sport) + [
+            {"sport": sport, "game_id": "KXMLBGAME-26JUN191840CWSDET", "venue": "kalshi",
+             "market_type": "total", "side": "Over 8.5 runs scored",
+             "ticker": "KXMLBTOTAL-x-9", "prob": 0.74, "phase": "in_play"},
+            {"sport": sport, "game_id": "KXMLBGAME-26JUN191840CWSDET", "venue": "kalshi",
+             "market_type": "team_total", "side": "DET over 4.5 runs",
+             "ticker": "KXMLBTEAMTOTAL-x-DET4", "prob": 0.40, "phase": "in_play"},
+        ]
+
+    grade_dir = tmp_path / "grade"
+    hb = loop.poll_once(sports=["mlb"], live_state_fn=_state_fn_prior, model_fn=_model_fn,
+                        inplay_fetch_fn=_mixed_fetch, finals_fn=_finals_none,
+                        grade_dir=grade_dir, ledger_path=tmp_path / "l.jsonl",
+                        heartbeat_path=tmp_path / "hb.json")
+    assert hb["n_pairs"] == 1 and hb["n_live"] == 1  # the extra total/team_total rows are inert
+    g = hb["games"][0]
+    assert g["paired"] is True
+    assert g["devigged_price"] is not None and 0.0 < g["devigged_price"] < 1.0
+
+
+# --------------------------------------------------------------------------------------- #
 # 1. one bounded cycle: capture a pair (with the proven prior), paper-decide, no $          #
 # --------------------------------------------------------------------------------------- #
 def test_one_cycle_captures_pair_with_prior_and_paper_decides(tmp_path):

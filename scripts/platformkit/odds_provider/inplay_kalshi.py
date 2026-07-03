@@ -1,40 +1,36 @@
 """scripts.platformkit.odds_provider.inplay_kalshi -- LIQUID Kalshi in-play feed.
 
 The frontier-unblock connector: the ONLY keyless venue with REAL in-play depth in
-season (Kalshi KX*GAME game-winner markets). It exposes the SAME two-function
-contract every other in-play source uses so it plugs into the daemon + the CLV
-replay with zero new plumbing:
+season (Kalshi KX*GAME/TOTAL/SPREAD/TEAMTOTAL/MATCH markets).
 
-  fetch_inplay(sport)               -> live in-play ticks for currently-open KX*GAME
-                                       markets (one YES-prob tick per LIQUID side).
+  fetch_inplay(sport)               -> live in-play ticks across ALL of the sport's
+                                       wired series (kalshi_series_spec.SERIES_SPEC),
+                                       one YES-prob tick per LIQUID market.
   fetch_price_history(market_ref,*) -> the historical in-play series for one market.
 
-Canonical tick (UNCHANGED schema the CLV replay consumes), with phase tagged:
-  {"sport","game_id","venue":"kalshi","market_type":"moneyline","side","ticker",
-   "prob" (YES in [0,1]), "ts" (ISO-8601 UTC 'Z'), "phase":"in_play"}
+Canonical tick (moneyline rows are BYTE-COMPATIBLE with the pre-widening schema so
+every existing consumer is unchanged):
+  {"sport","game_id","venue":"kalshi","market_type","side","ticker",
+   "prob" (YES in [0,1]), "line" (None for moneyline; the strike for total/spread/
+   team_total), "ts" (ISO-8601 UTC 'Z'), "phase":"in_play"}
 
-REUSE, never duplicate:
-  * KalshiProvider supplies the keyless markets fetch (http getter + cache + the
-    KX<league> open-market filter). We read the SAME /markets body it fetches so we
-    can apply the liquidity gate on the raw *_dollars / *_fp fields, then reuse
-    kalshi._yes_ask_prob + kalshi.group_markets for the price + grouping.
-  * inplay_history.fetch_price_history supplies the candlestick back-fetch (it
-    already reads the live *_dollars candle fields). We do NOT add a 2nd fetcher.
+REUSE, never duplicate: kalshi._yes_ask_prob (price) + kalshi_series_spec (the
+per-sport (series_ticker, market_type) list AND the shared future-game ticker-date
+guard) + inplay_history.fetch_price_history (candlestick back-fetch).
 
 THE LIQUIDITY GATE (the honest fix for "listed but untraded"): a market counts as
 tradeable in-play ONLY if, on the LIVE *_dollars / *_fp fields (NOT the deprecated
-integer fields which read None):
-  * it is open + not settled (KalshiProvider already filters status=open), AND
-  * its YES spread (yes_ask_dollars - yes_bid_dollars) is <= MAX_SPREAD, AND
-  * its traded volume (volume_fp) is above MIN_VOLUME, AND
-  * both side sizes (yes_bid_size_fp, yes_ask_size_fp) are above MIN_SIZE.
-An untraded pregame contract (all *_fp None / zero, wide/no spread) therefore emits
-NOTHING -- it can never masquerade as a live in-play price. A missing / illiquid
-market -> VOID (skipped), NEVER 0-filled into a fake observation.
+integer fields which read None): open+not settled, YES spread <= MAX_SPREAD,
+volume_fp above MIN_VOLUME, and both yes_bid_size_fp/yes_ask_size_fp above
+MIN_SIZE. An untraded pregame contract emits NOTHING -- never masquerades as a
+live price; a missing/illiquid market -> VOID, NEVER 0-filled.
 
 HONESTY (binding): commence_time stays None (Kalshi's only timestamp is a
 SETTLEMENT bound, never a tip-off) so a near-final price can NEVER be mislabeled
 is_true_close. phase is always "in_play". No $ / ROI / edge -- probability only.
+market_type is NEVER assumed to be a WIN probability outside "moneyline" --
+consumers that treat prob as P(team wins) MUST filter market_type=="moneyline"
+(pm_game_placer / inplay_capture_loop do this at their own boundary).
 
 INVARIANTS: build only under scripts/platformkit/; <=300 LOC; ASCII only; stdlib +
 repo-internal only. Per-file test:
@@ -43,78 +39,44 @@ repo-internal only. Per-file test:
 from __future__ import annotations
 
 import logging
-import re
 import time
 import urllib.parse
-from datetime import date, datetime, timedelta, timezone
+from datetime import datetime, timezone
 from typing import Any, Callable, Dict, List, Optional
 
 from .http_cache import http_get_json
 from .inplay_history import fetch_price_history as _candle_history
-from .kalshi import _BASE, _yes_ask_prob, group_markets
+from .kalshi import _BASE, _yes_ask_prob
+from .kalshi_liquidity import MAX_SPREAD, MIN_SIZE, MIN_VOLUME, is_liquid
+from .kalshi_series_spec import (  # noqa: F401 -- _GAME_SERIES is a back-compat re-export
+    _GAME_SERIES,
+    is_future_game,
+    series_for,
+)
+from .transport import resilient_get_json
 
 logger = logging.getLogger(__name__)
 
 VENUE = "kalshi"
 PHASE = "in_play"
 
-# Sport -> Kalshi per-GAME series ticker. Kalshi's two-team game-winner contracts
-# live in the KX<LEAGUE>GAME series (one EVENT per game holding two team markets).
-# We query the /markets list endpoint with series_ticker=<this> so those per-game
-# markets page in DIRECTLY. The old code used the broad KX<LEAGUE> prefix (kalshi.
-# _SERIES_HINT) over an UNFILTERED limit=200 page -- the per-game series never
-# appeared in the first page, so fetch_inplay silently found nothing. A sport with
-# no per-game series here is unsupported in-play (-> []), never guessed.
-_GAME_SERIES: Dict[str, str] = {
-    "mlb": "KXMLBGAME",
-    "soccer": "KXEPLGAME",
-    "soccer_intl": "KXWCGAME",
-    "nba": "KXNBAGAME",
-}
+# RATE POLITENESS BUDGET: the in-play capture loop ticks per-sport, not per-series
+# (see inplay_capture_loop.poll_once / inplay_snapshot_daemon), typically every few
+# seconds to tens of seconds during a live slate. Widening from 1 series/sport to
+# up to 4 (mlb: game+total+spread+team_total) multiplies calls by <=4x per tick.
+# Kalshi's public rate limit is ~30 rps (documented, keyless tier); even at a 4-
+# series sport polled every 5s that is 4/5 = 0.8 rps, ~40x under budget. No cadence
+# change is made here -- the budget math only justifies NOT throttling further.
 
-# Liquidity-gate thresholds (probability-space dollars + fractional-point sizes).
-# A market must clear ALL of these on its LIVE fields to count as tradeable in-play.
-# Defaults are deliberately conservative: the research probe showed liquid in-season
-# game markets sit at a 1-2c spread with 5-6 figure volume / sizes, while untraded
-# pregame contracts read None on every *_fp field and have no real spread.
-MAX_SPREAD = 0.02   # <= 2c YES bid/ask spread
-MIN_VOLUME = 50.0   # traded contracts (volume_fp) floor
-MIN_SIZE = 1.0      # both bid_size_fp and ask_size_fp must be above this floor
+# Liquidity-gate thresholds + is_liquid() now live in kalshi_liquidity (imported
+# above); re-exported here (MAX_SPREAD/MIN_VOLUME/MIN_SIZE/is_liquid) for back-compat.
 
 Tick = Dict[str, Any]
 HttpGet = Callable[[str], Any]
 
-# A Kalshi GAME ticker embeds the scheduled DATE (KXWCGAME-26JUL04CANMAR -> 2026-07-04).
-# Kalshi exposes NO commence_time on the live markets list, so a liquid FUTURE-dated
-# contract (the next days' games, traded pre-tournament) would otherwise read as "in_play"
-# and could pollute the in-play CLV corpus with a pregame price. We parse the date and drop
-# a clearly-future game. The 1-day grace is deliberate: a today/tomorrow game (any
-# timezone) is KEPT (its true liveness is decided downstream), so a live game is NEVER
-# dropped -- only multi-day-out futures. An UNPARSEABLE ticker is kept (no drop on a miss).
-_FUTURE_GRACE_DAYS = 1
-_TICKER_DATE_RE = re.compile(r"-(\d{2})([A-Z]{3})(\d{2})")
-_TICKER_MONTHS = {"JAN": 1, "FEB": 2, "MAR": 3, "APR": 4, "MAY": 5, "JUN": 6,
-                  "JUL": 7, "AUG": 8, "SEP": 9, "OCT": 10, "NOV": 11, "DEC": 12}
-
-
-def _ticker_game_date(ref: Any) -> Optional[date]:
-    """Scheduled game date from a Kalshi GAME ticker ('...-26JUL04...' -> 2026-07-04), or
-    None if absent. Pure; never raises (a malformed ticker -> None -> the market is kept)."""
-    try:
-        m = _TICKER_DATE_RE.search(str(ref or "").upper())
-        mo = _TICKER_MONTHS.get(m.group(2)) if m else None
-        if mo is None:
-            return None
-        return date(2000 + int(m.group(1)), mo, int(m.group(3)))
-    except (ValueError, TypeError):
-        return None
-
-
-def _is_future_game(ref: Any, now_dt: datetime) -> bool:
-    """True iff the ticker's game date is clearly FUTURE (> now + _FUTURE_GRACE_DAYS).
-    Timezone-tolerant: only a game >1 day out is dropped, so today/tomorrow is always kept."""
-    gd = _ticker_game_date(ref)
-    return gd is not None and gd > (now_dt.date() + timedelta(days=_FUTURE_GRACE_DAYS))
+# The future-game ticker-date guard (shared by ALL series: game/total/spread/team_total/
+# match tickers embed the same '-DDMONYY' fragment, including tennis KXATPMATCH/KXWTAMATCH)
+# now lives in kalshi_series_spec -- see is_future_game there for the full rationale.
 
 
 def _parse_iso_now(s: Any) -> datetime:
@@ -129,76 +91,42 @@ def _parse_iso_now(s: Any) -> datetime:
         return datetime.now(timezone.utc)
 
 
-def _fp(market: Dict[str, Any], key: str) -> Optional[float]:
-    """A fractional-point (*_fp) or *_dollars field coerced to float, else None.
-
-    Reads ONLY the LIVE fields. The deprecated bare-integer fields (yes_bid,
-    yes_ask, volume, open_interest) read None on the live API, so a market priced
-    only by those returns None here and is gated out -- never zero-filled.
-    """
-    v = market.get(key)
-    if v is None:
-        return None
-    try:
-        return float(v)
-    except (TypeError, ValueError):
-        return None
-
-
-def _spread(market: Dict[str, Any]) -> Optional[float]:
-    """YES bid/ask spread in dollars (ask - bid) from the live *_dollars fields.
-
-    None if either side is unquoted (cannot prove a tight market) or the spread is
-    nonsensical (negative). A None spread fails the gate (we never assume tight).
-    """
-    bid = _fp(market, "yes_bid_dollars")
-    ask = _fp(market, "yes_ask_dollars")
-    if bid is None or ask is None:
-        return None
-    s = ask - bid
-    return s if s >= 0.0 else None
-
-
-def is_liquid(market: Dict[str, Any],
-              *, max_spread: float = MAX_SPREAD,
-              min_volume: float = MIN_VOLUME,
-              min_size: float = MIN_SIZE) -> bool:
-    """True iff *market* clears the in-play liquidity gate on its LIVE fields.
-
-    Requires a tight quoted spread AND real traded volume AND real depth on BOTH
-    sides -- so an untraded pregame contract (None/zero *_fp) is excluded. Pure +
-    total; never raises (a malformed market -> False, i.e. VOID, never faked live).
-    """
-    try:
-        spread = _spread(market)
-        if spread is None or spread > max_spread:
-            return False
-        vol = _fp(market, "volume_fp")
-        if vol is None or vol <= min_volume:
-            return False
-        bid_sz = _fp(market, "yes_bid_size_fp")
-        ask_sz = _fp(market, "yes_ask_size_fp")
-        if bid_sz is None or ask_sz is None:
-            return False
-        return bid_sz > min_size and ask_sz > min_size
-    except Exception as exc:  # noqa: BLE001 -- classification must never sink a row
-        logger.debug("is_liquid check failed: %s", exc)
-        return False
-
-
 def _side_label(market: Dict[str, Any]) -> str:
     """Best-effort YES-team label for a market (yes_sub_title or title tail)."""
     return (market.get("yes_sub_title") or market.get("title") or "").strip()
 
 
-def _tick_from_market(sport: str, market: Dict[str, Any], ts: str) -> Optional[Tick]:
+def _line_from_market(market: Dict[str, Any]) -> Optional[float]:
+    """The LINE for a total/spread/team_total market (None for moneyline).
+
+    Reads `floor_strike` (verified live 2026-07-03 on KXMLBTOTAL/KXMLBSPREAD/
+    KXMLBTEAMTOTAL/KXWCSPREAD/KXWCTEAMTOTAL, e.g. floor_strike=8.5 for "Over 8.5
+    runs scored"); `cap_strike` as a fallback. A moneyline market (strike_type=
+    "structured") has neither -- correctly reads None (no line). This is the REAL
+    body field, not a ticker-suffix parse. Never raises.
+    """
+    for key in ("floor_strike", "cap_strike"):
+        v = market.get(key)
+        if v is None:
+            continue
+        try:
+            return float(v)
+        except (TypeError, ValueError):
+            continue
+    return None
+
+
+def _tick_from_market(sport: str, market: Dict[str, Any], ts: str,
+                      market_type: str) -> Optional[Tick]:
     """One canonical in-play tick from ONE liquid Kalshi market, or None.
 
     The YES prob comes from kalshi._yes_ask_prob (the same *_dollars reader the
     provider uses); the ticker is the market ticker; the game_id is the event
     ticker (the two-team game). commence_time is intentionally ABSENT (None-by-
     omission is enforced by the daemon path; we never stamp a settlement bound as a
-    start). Returns None if the market has no usable YES price (VOID, never faked).
+    start). *market_type* is the caller's (series_ticker, market_type) pair tag --
+    "line" is None for moneyline, else the real strike (see _line_from_market).
+    Returns None if the market has no usable YES price (VOID, never faked).
     """
     prob = _yes_ask_prob(market)
     if prob is None:
@@ -211,46 +139,31 @@ def _tick_from_market(sport: str, market: Dict[str, Any], ts: str) -> Optional[T
         "sport": sport,
         "game_id": game_id,
         "venue": VENUE,
-        "market_type": "moneyline",
+        "market_type": market_type,
         "side": _side_label(market) or "yes",
         "ticker": ticker,
         "prob": prob,
+        "line": _line_from_market(market) if market_type != "moneyline" else None,
         "ts": ts,
         "phase": PHASE,
     }
 
 
-def fetch_inplay(sport: str, *, http: HttpGet = http_get_json,
-                 now_iso: Optional[str] = None,
-                 max_spread: float = MAX_SPREAD,
-                 min_volume: float = MIN_VOLUME,
-                 min_size: float = MIN_SIZE) -> List[Tick]:
-    """Live in-play ticks for currently-open KX<league>GAME markets of *sport*.
-
-    Queries the keyless /markets list endpoint with series_ticker=KX<league>GAME
-    (KXMLBGAME for mlb, KXWCGAME for World Cup soccer) so the per-GAME team-winner
-    markets page in DIRECTLY -- the old broad KX<league> prefix over an unfiltered
-    limit=200 page missed them. Applies the LIQUIDITY GATE to each raw market on its
-    live *_dollars / *_fp fields and emits ONE canonical tick per market that clears
-    it. An illiquid / untraded market is SKIPPED (VOID) -- never 0-filled, never
-    faked into a live price. *http* is injected for offline tests. Never raises: an
-    unsupported sport or a feed failure yields [].
-    """
-    series = _GAME_SERIES.get(str(sport).lower())
-    if not series:
-        return []
+def _fetch_one_series(sport: str, series: str, market_type: str, *, http: HttpGet,
+                      ts: str, now_dt: datetime, max_spread: float,
+                      min_volume: float, min_size: float) -> List[Tick]:
+    """Ticks for ONE (series_ticker, market_type) pair. [] on any failure -- a single
+    series failing (network, bad body) must never sink the sport's other series."""
     params = {"series_ticker": series, "limit": 200, "status": "open"}
     url = "%s/markets?%s" % (_BASE, urllib.parse.urlencode(params))
     try:
         body = http(url)
-    except Exception as exc:  # noqa: BLE001 -- degrade, never bubble
-        logger.warning("kalshi in-play markets failed for %s: %s", sport, exc)
+    except Exception as exc:  # noqa: BLE001 -- isolate, never bubble past this series
+        logger.warning("kalshi in-play markets failed for %s/%s: %s", sport, series, exc)
         return []
     markets = body.get("markets") if isinstance(body, dict) else None
     if not isinstance(markets, list):
         return []
-    ts = now_iso or _now_iso()
-    now_dt = _parse_iso_now(ts)
     out: List[Tick] = []
     # The series_ticker filter is server-side; the startswith is a cheap defensive
     # guard so a stray cross-series market (a mixed page) can never leak through.
@@ -261,14 +174,46 @@ def fetch_inplay(sport: str, *, http: HttpGet = http_get_json,
         # actively traded pre-tournament) is NOT in-play -- emitting it would let a pregame
         # price masquerade as live. Drop only the clearly-future games (today/tomorrow kept;
         # their true liveness is the downstream score-state bridge's call).
-        if _is_future_game(m.get("event_ticker") or m.get("ticker"), now_dt):
+        if is_future_game(m.get("event_ticker") or m.get("ticker"), now_dt):
             continue
         if not is_liquid(m, max_spread=max_spread, min_volume=min_volume,
                          min_size=min_size):
             continue  # illiquid / untraded -> VOID, never a fake in-play price
-        tick = _tick_from_market(sport, m, ts)
+        tick = _tick_from_market(sport, m, ts, market_type)
         if tick is not None:
             out.append(tick)
+    return out
+
+
+def fetch_inplay(sport: str, *, http: HttpGet = resilient_get_json,
+                 now_iso: Optional[str] = None,
+                 max_spread: float = MAX_SPREAD,
+                 min_volume: float = MIN_VOLUME,
+                 min_size: float = MIN_SIZE) -> List[Tick]:
+    """Live in-play ticks across ALL of *sport*'s wired Kalshi series.
+
+    Iterates kalshi_series_spec.series_for(sport) -- one /markets?series_ticker=...
+    call per (series_ticker, market_type) pair (e.g. mlb queries KXMLBGAME,
+    KXMLBTOTAL, KXMLBSPREAD, KXMLBTEAMTOTAL) -- and tags every tick it parses with
+    that pair's market_type. Applies the LIQUIDITY GATE to each raw market on its
+    live *_dollars / *_fp fields and emits ONE canonical tick per market that
+    clears it. An illiquid / untraded market is SKIPPED (VOID) -- never 0-filled,
+    never faked into a live price. A series with zero open markets contributes
+    nothing (honest empty); one series failing does not sink the others (isolated
+    per-series in _fetch_one_series). *http* is injected for offline tests (default
+    is the escalating transport.resilient_get_json, same seam as http_get_json).
+    Never raises: an unsupported sport or a feed failure yields [].
+    """
+    pairs = series_for(sport)
+    if not pairs:
+        return []
+    ts = now_iso or _now_iso()
+    now_dt = _parse_iso_now(ts)
+    out: List[Tick] = []
+    for series, market_type in pairs:
+        out.extend(_fetch_one_series(
+            sport, series, market_type, http=http, ts=ts, now_dt=now_dt,
+            max_spread=max_spread, min_volume=min_volume, min_size=min_size))
     return out
 
 

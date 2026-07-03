@@ -33,6 +33,28 @@ def test_group_by_game():
     assert set(g["KX-HOUTOR"]["sides"]) == {"Houston", "Toronto"}
 
 
+def test_group_by_game_filters_out_non_moneyline_rows():
+    # A total/spread/team_total row must NEVER enter the win-prob side set: its "prob" is
+    # P(over line), not a team win-prob, and mixing it in would corrupt the devig.
+    rows = _kalshi_rows() + [
+        {"sport": "mlb", "game_id": "KX-HOUTOR", "venue": "kalshi",
+         "market_type": "total", "side": "Over 8.5 runs scored",
+         "ticker": "KXMLBTOTAL-x-9", "prob": 0.74},
+        {"sport": "mlb", "game_id": "KX-HOUTOR", "venue": "kalshi",
+         "market_type": "spread", "side": "Houston wins by over 3.5 runs",
+         "ticker": "KXMLBSPREAD-x-HOU4", "prob": 0.31},
+    ]
+    g = G.group_by_game(rows)
+    assert set(g["KX-HOUTOR"]["sides"]) == {"Houston", "Toronto"}  # unchanged by the extra rows
+
+
+def test_group_by_game_row_missing_market_type_is_back_compat_moneyline():
+    rows = [{"sport": "mlb", "game_id": "KX-X", "venue": "kalshi",
+             "side": "Home", "ticker": "KX-X-H", "prob": 0.5}]
+    g = G.group_by_game(rows)
+    assert "KX-X" in g and "Home" in g["KX-X"]["sides"]
+
+
 def test_name_matches_city_to_fullname():
     assert G._name_matches("Houston", "Houston Astros")
     assert G._name_matches("Toronto", "Toronto Blue Jays")
