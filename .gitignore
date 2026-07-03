@@ -194,6 +194,7 @@ coverage.xml
 # -- Node / Frontend ----------------------------------------------------------
 node_modules/
 .next/
+.vite/
 dist/
 .nuxt/
 .output/
