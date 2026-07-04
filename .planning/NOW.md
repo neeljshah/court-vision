@@ -41,6 +41,20 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 20 (NBA-READINESS BUILD-OUT + NPB/KBO GRADING UNBLOCKED + MLB TAIL
+  CLOSED, 2026-07-04/05 ~12:00Z, commits b457e758/7f400e2e/b0ab0377/27f509d6,
+  13 agents / ~1.12M tokens, 1 lane-overlap FAIL adjudicated): (1) NBA outcome
+  resolver (182 real tickers) + tail gate NBA entry stamped 2026-10-01 -- opening
+  night's ticks count as forward evidence from tick one. (2) NBA states gate
+  PORTED (2880s regulation, cross-fit+CI, ready-for-corpus; input =
+  linescores.parquet, NOT a CDN backfill -- lane 4 found cdn.nba.com hard-BLOCKED
+  at all tiers). (3) NPB/KBO grading BLOCKER CLEARED: _SPORTS now has npb/kbo via
+  a new live-state source (coarse score+status = enough for outcome grading);
+  activates at daemon restart. (4) MLB PM BACKFILL CLOSED (exhausted at natural
+  edge, 2731 games / 7.33M ticks to 2026-06-29): H1 n=1630 + H2 n=1900 BOTH
+  CALIBRATED -> FINAL historical-tail word: every corpus CALIBRATED except the
+  thin PM-2023 H1 pocket (n=14) -- the prior is firmly 'no persistent venue tail
+  bias; forward gates decide'. Ledger + scoreboard rebuilt. No edge claimed.
 - SPRINT WAKE 19 (STRUCTURAL GAPS SURFACED: NPB/KBO LIVE-STATE + NBA READINESS +
   FORWARD-EVIDENCE VIEW, 2026-07-04 ~11:00Z, commits ac013fd9/a90c35d8, 15 agents /
   ~1.12M tokens): (1) NPB/KBO grading BLOCKED at root -- ingame_live_state._SPORTS
