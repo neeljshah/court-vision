@@ -95,3 +95,23 @@ def test_empty_corpus_dir_no_crash(tmp_path: Path) -> None:
     doc = tv.run_validation(corpus_dir=tmp_path / "does_not_exist", sport="mlb")
     assert doc["n_markets_scanned"] == 0
     assert doc["pooled_all"]["bands"] == {}
+
+
+def test_nba_has_no_discovery_window_label(tmp_path: Path) -> None:
+    """NBA never had the live in-play discovery capture -- the doc must say so
+    explicitly, and excluded_discovery_window must be identical to pooled_all
+    (every doc's in_discovery_window is False for nba, per the fetcher)."""
+    for i in range(9):
+        _write_market(tmp_path, "KXNBAGAME-26JUN2%d-G%d" % (i, i), "yes",
+                      "2026-06-2%dT00:00:00Z" % i, in_window=False, probs=[0.55] * 5)
+    doc = tv.run_validation(corpus_dir=tmp_path, sport="nba")
+    assert doc["has_discovery_window"] is False
+    assert "N/A for this sport" in doc["discovery_window_caveat"]
+    assert doc["n_markets_in_discovery_window"] == 0
+    assert doc["pooled_all"]["bands"] == doc["excluded_discovery_window"]["bands"]
+
+
+def test_mlb_has_discovery_window_label(tmp_path: Path) -> None:
+    doc = tv.run_validation(corpus_dir=tmp_path, sport="mlb")
+    assert doc["has_discovery_window"] is True
+    assert "N/A" not in doc["discovery_window_caveat"]

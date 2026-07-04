@@ -14,8 +14,9 @@ Output: data/venue_history/kalshi/<sport>/<ticker>.jsonl, one JSON doc per marke
    "candles": [{"ts": iso, "prob": float, "traded": bool}, ...]}
 
 PROVENANCE (binding): VALIDATION corpus, physically separate from lane 1's file and from the
-forward pre-registered gates (ingame_tail_gate). Never pooled with forward evidence.
-
+forward pre-registered gates (ingame_tail_gate). Never pooled with forward evidence. Sport-blind
+(series_ticker + sport are both params, e.g. KXMLBGAME/mlb, KXNBAGAME/nba); the discovery-window
+flag (see in_discovery_window) is MLB-only -- never set for a sport that never had that capture.
 Politeness: 1 req/s (sleep injected, tests instant); progress persisted to a JSON sidecar so an
 interrupted run resumes from its last cursor instead of re-fetching.
 
@@ -45,9 +46,8 @@ DEFAULT_PROGRESS = DEFAULT_OUT_DIR / "_progress.json"
 
 HttpGet = Callable[[str], Any]
 
-# The discovery-in-play-capture corpus this backfill window overlaps with (see
-# ingame_tail_gate.py / memory ingame_tail_bias_prereg_2026_07_03). Games whose close_time
-# falls inside this UTC window are NOT an independent sample for cross-venue validation.
+# The MLB discovery-in-play-capture window (see ingame_tail_gate.py); a close_time inside it
+# is NOT an independent sample for cross-venue validation (MLB only -- see DISCOVERY_WINDOW_SPORTS).
 DISCOVERY_WINDOW_START = "2026-06-19T00:00:00Z"
 DISCOVERY_WINDOW_END = "2026-07-02T23:59:59Z"
 
@@ -71,9 +71,7 @@ def list_settled_markets_page(
     """One page of GET /markets?series_ticker&status=settled. Returns {"markets": [...],
     "cursor": str}. ``min_close_ts`` is deliberately NEVER sent (server-side no-op,
     verified live). ``max_close_ts`` is honoured server-side for the backward walk."""
-    params: Dict[str, Any] = {
-        "series_ticker": series_ticker, "status": "settled", "limit": int(limit),
-    }
+    params: Dict[str, Any] = {"series_ticker": series_ticker, "status": "settled", "limit": int(limit)}
     if cursor:
         params["cursor"] = cursor
     if max_close_ts is not None:
@@ -173,9 +171,16 @@ def fetch_market_candles(
     return out
 
 
-def in_discovery_window(close_time_iso: str) -> bool:
-    """True iff *close_time_iso* falls inside the live in-play discovery-capture
-    window (2026-06-19..07-02) -- the honest independent subset excludes these."""
+DISCOVERY_WINDOW_SPORTS = ("mlb",)  # only sport whose live capture overlaps this window;
+                                     # others (e.g. nba) never flagged, even on date overlap.
+
+
+def in_discovery_window(close_time_iso: str, sport: str = "mlb") -> bool:
+    """True iff *close_time_iso* is inside the capture window (06-19..07-02) AND
+    *sport* actually had that capture (mlb only) -- a date-only coincidence for an
+    unlisted sport (e.g. nba) never counts; the window is a capture property."""
+    if str(sport).lower() not in DISCOVERY_WINDOW_SPORTS:
+        return False
     return DISCOVERY_WINDOW_START <= close_time_iso <= DISCOVERY_WINDOW_END
 
 
@@ -206,10 +211,10 @@ def run_backfill(
     http: HttpGet = http_get_json,
     sleep_fn: Callable[[float], None] = time.sleep,
 ) -> Dict[str, Any]:
-    """Bounded, resumable tranche of ALL settled *series_ticker* markets: enumerate
-    pages (cursor-resumable), fetch candles per market, write one JSONL per ticker.
-    Politeness: sleeps *sleep_sec* between requests; stops at *max_requests*.
-    Resumes from *progress_path* (cursor + already-fetched tickers) if present."""
+    """Bounded, resumable tranche of ALL settled *series_ticker* markets: enumerate pages
+    (cursor-resumable), fetch candles per market, write one JSONL per ticker. Politeness:
+    sleeps *sleep_sec* between requests, stops at *max_requests*; resumes from
+    *progress_path* (cursor + already-fetched tickers) if present."""
     out_base = Path(out_dir) if out_dir is not None else DEFAULT_OUT_DIR / sport.lower()
     prog_path = Path(progress_path) if progress_path is not None else out_base / "_progress.json"
     progress = _load_progress(prog_path)
@@ -217,9 +222,7 @@ def run_backfill(
     done_tickers = set(progress.get("done_tickers", []))
     earliest_close: Optional[str] = progress.get("earliest_close_time")
 
-    n_requests = 0
-    n_markets = 0
-    n_candles = 0
+    n_requests = n_markets = n_candles = 0
     exhausted = False
 
     while n_requests < max_requests:
@@ -234,8 +237,7 @@ def run_backfill(
             ticker = str(m.get("ticker") or "")
             if not ticker or ticker in done_tickers:
                 continue
-            close_time = str(m.get("close_time") or "")
-            result = str(m.get("result") or "")
+            close_time, result = str(m.get("close_time") or ""), str(m.get("result") or "")
             if n_requests >= max_requests:
                 break
             candles = fetch_market_candles(series_ticker, ticker, close_time, http=http)
@@ -245,7 +247,7 @@ def run_backfill(
                 "ticker": ticker, "event_ticker": str(m.get("event_ticker") or ""),
                 "series_ticker": series_ticker, "sport": sport,
                 "close_time": close_time, "result": result,
-                "in_discovery_window": in_discovery_window(close_time) if close_time else None,
+                "in_discovery_window": in_discovery_window(close_time, sport) if close_time else None,
                 "n_candles": len(candles), "candles": candles,
             }
             out_path = out_base / ("%s.jsonl" % ticker)
@@ -258,10 +260,8 @@ def run_backfill(
             if close_time and (earliest_close is None or close_time < earliest_close):
                 earliest_close = close_time
         cursor = page["cursor"]
-        progress = {
-            "series_ticker": series_ticker, "cursor": cursor,
-            "done_tickers": sorted(done_tickers), "earliest_close_time": earliest_close,
-        }
+        progress = {"series_ticker": series_ticker, "cursor": cursor,
+                    "done_tickers": sorted(done_tickers), "earliest_close_time": earliest_close}
         _save_progress(prog_path, progress)
         if not cursor:
             exhausted = True
@@ -296,5 +296,5 @@ if __name__ == "__main__":
 __all__ = [
     "list_settled_markets_page", "fetch_market_candles", "run_backfill",
     "in_discovery_window", "DISCOVERY_WINDOW_START", "DISCOVERY_WINDOW_END",
-    "KALSHI_BASE", "MAX_CANDLES_PER_CALL",
+    "DISCOVERY_WINDOW_SPORTS", "KALSHI_BASE", "MAX_CANDLES_PER_CALL",
 ]
