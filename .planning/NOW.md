@@ -41,6 +41,20 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 18 (SUPERVISOR STORM FIXED AT ROOT + ENRICHMENT PERSISTED + WNBA SHADOW
+  LIVE-VERIFIED, 2026-07-04 ~10:15Z, commits a8de869a/dad0bc29/290588a4, 10 agents /
+  ~0.92M tokens, ui lane report-crash #4 but its artifact survived intact):
+  (1) supervisor: 41 serial probes x 2s vs 90s threshold = the whole 65-event
+  wedge storm -> beat thread (m13 precedent) + 300s threshold + initiator stamp;
+  inert until next boot. (2) m1_ui = GENUINE_APP_CRASH_LOOP: stale node orphans
+  (watchdog-kill survivors) hold port 3000 (2,288 EADDRINUSE) -> orchestrator
+  killed the current orphan (2nd occurrence; the supervisor fix stops the
+  orphan factory); PROPOSED env-gated UI-off diff in the triage json (user
+  request). (3) enrichment persists into grade rows + sidecar retention
+  (archive-never-delete) shipped. (4) KBO parser 0-0-placeholder bug fixed
+  before first finals; WNBA SHADOW FIELD VERIFIED on 3 real live games; NPB/KBO
+  finals still pending (games in progress at check). (5) MLB PM backfill still
+  running in background; validation deferred to completion. No edge claimed.
 - SPRINT WAKE 17 (429 PACING FIXED + SUPERVISOR SELF-WEDGE ROOT-CAUSED + RESOLVER
   FABRICATION BUG CAUGHT, 2026-07-04 ~09:00Z, commits b396f67c/8f2149c1/39e2866c,
   13 agents / ~1.14M tokens, 1 LOC-trim fix round): (1) Kalshi 429: 17-req/cycle
