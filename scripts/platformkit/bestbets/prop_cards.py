@@ -216,14 +216,25 @@ def _is_priced_line(line: Any) -> bool:
         return False
 
 
+def last_circuit_skips(sport: Optional[str] = None) -> Dict[str, List[Dict[str, Any]]]:
+    """Circuit-breaker SKIPPED_CIRCUIT entries recorded on the most recent
+    _capped_lines() call, keyed by sport (delegates to prop_cards_circuit_io so
+    this file stays <=300 LOC). Never raises."""
+    from scripts.platformkit.bestbets import prop_cards_circuit_io as _pcio  # noqa: PLC0415
+    return _pcio.last_circuit_skips(sport)
+
+
 def _capped_lines(sport: str, max_lines: int) -> Optional[List[Any]]:
     """Fetch + cap provider lines for *sport* to *max_lines* (ALL priced first;
     model-only tail truncated). None when providers/config unavailable. 429 RESILIENCE:
     on an empty gather (feed throttled) REUSE the disk-cached last-good set rather than
-    re-poll; never fabricate a line. Never raises."""
+    re-poll; never fabricate a line. Never raises. CIRCUIT BREAKER (m13-circuit): a
+    provider with 3 consecutive failures is skipped for a cooldown BEFORE dispatch
+    (never inline-called dead) -- see prop_cards_circuit_io / last_circuit_skips."""
     if max_lines <= 0:
         return None
     from scripts.platformkit.bestbets import prop_cards_cache as _cc  # noqa: PLC0415
+    from scripts.platformkit.bestbets import prop_cards_circuit_io as _pcio  # noqa: PLC0415
     cached = _cc.line_cache_read(sport)
     try:
         from scripts.platformkit import prop_edge as _pe  # noqa: PLC0415
@@ -231,7 +242,9 @@ def _capped_lines(sport: str, max_lines: int) -> Optional[List[Any]]:
         cfg = prop_edge_config.get_config(sport)
         if cfg is None:
             return None
-        lines, _sources = _pe._gather(cfg.default_providers(), sport)
+        providers = _pcio.apply_circuit_breaker(sport, cfg.default_providers())
+        lines, _sources = _pe._gather(providers, sport)
+        _pcio.record_circuit_results(_sources)
     except Exception as exc:  # noqa: BLE001
         logger.debug("prop_cards: line gather(%s) failed: %s", sport, exc)
         lines = []
@@ -336,10 +349,15 @@ def build_prop_cards(
     today = _today_for(now)
     _sports = sports if sports is not None else DEFAULT_PROP_SPORTS
 
+    from scripts.platformkit.bestbets import prop_cards_circuit_io as _pcio  # noqa: PLC0415
+
     cards: List[Dict[str, Any]] = []
     for sport in _sports:
         edges = _board_edges(sport, max_lines=max_lines_per_sport)
-        cards.extend(_cards_from_edges(edges, sport, today, reliable_only))
+        sport_cards = _cards_from_edges(edges, sport, today, reliable_only)
+        if max_lines_per_sport > 0:
+            _pcio.stamp_circuit_skips(sport_cards, sport)
+        cards.extend(sport_cards)
     return cards
 
 
@@ -350,4 +368,4 @@ from scripts.platformkit.bestbets.prop_cards_bounded import (  # noqa: E402
 __all__ = [
     "DEFAULT_PROP_SPORTS", "DEFAULT_MODEL_ONLY_CAP", "DEFAULT_MAX_LINES_PER_SPORT",
     "build_prop_cards", "cards_from_lines", "build_bounded_prop_cards",
-    "build_synth_only_prop_cards", "pregame_games_exist"]
+    "build_synth_only_prop_cards", "pregame_games_exist", "last_circuit_skips"]
