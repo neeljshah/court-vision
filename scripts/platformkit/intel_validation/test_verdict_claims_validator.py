@@ -160,8 +160,10 @@ def test_module_never_imports_a_gate_package():
 
 
 def test_real_three_verdicts_validate_end_to_end():
-    """Live proof: the 3 real on-disk verdict files this lane targets are
-    all VERIFIED via the checked-in proof claims JSONL."""
+    """Live proof: every real on-disk verdict file this lane targets is
+    VERIFIED via the checked-in proof claims JSONL (wave-26: 3 seed claims;
+    wave-33 extended to 6 -- see lane claims-breadth: mlb sp_velo_fatigue,
+    nba positional_weight, tennis surface_hold_gate_verdict_domains added)."""
     from pathlib import Path
     repo_root = Path(__file__).resolve().parents[3]
     claims_path = repo_root / "data" / "cache" / "intel_claims" / "gate_verdict_claims.jsonl"
@@ -169,7 +171,7 @@ def test_real_three_verdicts_validate_end_to_end():
         import pytest
         pytest.skip("proof claims artifact not present in this checkout")
     summary = vcv.validate_verdict_claims_file(claims_path)
-    assert summary.n_claims == 3
-    assert summary.n_verified == 3
+    assert summary.n_claims == 6
+    assert summary.n_verified == 6
     assert summary.n_mismatch == 0
     assert summary.n_unverifiable == 0

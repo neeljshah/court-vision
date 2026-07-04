@@ -51,6 +51,10 @@ CLAIM_SOURCE_PAIRS: tuple[tuple[Path, Path], ...] = (
         REPO_ROOT / "data" / "frontend" / "ops" / "intel_verdict_claims_validation.json",
         REPO_ROOT / "data" / "cache" / "intel_claims" / "gate_verdict_claims.jsonl",
     ),
+    (
+        REPO_ROOT / "data" / "cache" / "intel_claims" / "tennis_hold_claims_validation.json",
+        REPO_ROOT / "data" / "cache" / "intel_claims" / "tennis_hold_claims.jsonl",
+    ),
 )
 
 VERIFIED = "VERIFIED"
