@@ -281,3 +281,14 @@ def test_deep_enrichment_is_mlb_only(tmp_path):
                    grade_dir=tmp_path / "grade", ledger_path=tmp_path / "l.jsonl",
                    heartbeat_path=tmp_path / "hb.json")
     assert seen == []  # mlb-only gating: soccer never invokes the base-out resolver
+
+
+def test_default_sports_widened_to_tennis_and_wnba():
+    # 2026-07-03: tennis (KXATPMATCH/KXWTAMATCH) + wnba (KXWNBAGAME) capture START --
+    # kalshi_series_spec already carried both series; DEFAULT_SPORTS was the only gate
+    # keeping them out of the capture daemon. mlb/soccer_intl stay present (additive).
+    assert set(loop.DEFAULT_SPORTS) >= {"mlb", "soccer_intl", "tennis", "wnba"}
+    # both new sports resolve to a real (series_ticker, market_type) list, never [].
+    from scripts.platformkit.odds_provider import kalshi_series_spec as _spec
+    assert _spec.series_for("tennis")
+    assert _spec.series_for("wnba")

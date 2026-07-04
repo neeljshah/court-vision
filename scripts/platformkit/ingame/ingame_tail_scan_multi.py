@@ -89,13 +89,19 @@ def _soccer_lookup() -> OutcomeLookup:
 
 
 def _tennis_lookup() -> OutcomeLookup:
-    """NO tennis ticker outcome resolver exists yet, and tennis in-play tick
-    capture has NOT started (inplay_capture_loop.DEFAULT_SPORTS covers only
-    mlb + soccer_intl; no data/cache/ingame_grade/tennis/ dir on disk). Every
-    stem is honestly unresolved rather than a guessed parse. Kept as its own
-    function (not a bare lambda) so a future resolver drops in here with zero
-    call-site change."""
-    return lambda stem: None
+    """tennis_outcome_resolver.TennisOutcomeResolver.home_win, disk-first (fresh
+    espn_matches.parquet) else live ESPN scoreboard fallback (keyless). "home" =
+    the ticker's FIRST surname code, a consistent but arbitrary convention (see
+    tennis_outcome_resolver's module docstring) -- tennis in-play capture only
+    just started (inplay_capture_loop.DEFAULT_SPORTS now includes 'tennis'), so
+    this mostly reads INSUFFICIENT_N with a real n until enough games settle."""
+    try:
+        from scripts.platformkit.ingame.tennis_outcome_resolver import TennisOutcomeResolver
+        res = TennisOutcomeResolver()
+    except Exception as exc:  # noqa: BLE001 -- resolver unavailable -> every game unresolved
+        logger.debug("ingame_tail_scan_multi tennis resolver unavailable: %s", exc)
+        return lambda stem: None
+    return res.home_win
 
 
 _LOOKUP_BUILDERS: Dict[str, Callable[[], OutcomeLookup]] = {

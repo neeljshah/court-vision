@@ -29,6 +29,49 @@ def test_tennis_has_no_capture_reads_insufficient_n(tmp_path):
     assert res["edge_claimed"] is False
 
 
+def test_tennis_lookup_wired_to_resolver(monkeypatch, tmp_path):
+    # _tennis_lookup() now builds a REAL TennisOutcomeResolver (drop-in, no longer
+    # the always-None stub). Stub the resolver class so this stays offline/fast,
+    # but the wiring itself (constructed + .home_win bound) is exercised for real.
+    calls = []
+
+    class _FakeResolver:
+        def home_win(self, ticker):
+            calls.append(ticker)
+            return 1
+
+    monkeypatch.setattr(
+        "scripts.platformkit.ingame.tennis_outcome_resolver.TennisOutcomeResolver",
+        lambda *a, **k: _FakeResolver())
+
+    lookup = tsm._tennis_lookup()
+    assert lookup("KXATPMATCH-26JUL05AUGDAV") == 1
+    assert calls == ["KXATPMATCH-26JUL05AUGDAV"]
+
+
+def test_tennis_scan_graded_count_via_wired_resolver(monkeypatch, tmp_path):
+    # End-to-end: capture writes tennis ticks -> scan_sport(sport_lookup) uses the
+    # SAME _tennis_lookup() dispatch this module wires -> graded games increments.
+    gd = tmp_path / "grade" / "tennis"
+    for i in range(25):
+        _write_game(gd, "tennis", "KXATPMATCH-26JUL05AAA%03d" % i,
+                   [(0.2, 0.2, "2026-07-05T00:00:00Z")] * 3)
+
+    class _FakeResolver:
+        def home_win(self, ticker):
+            return 1  # every ticket resolves: code_a ("home") won
+
+    monkeypatch.setattr(
+        "scripts.platformkit.ingame.tennis_outcome_resolver.TennisOutcomeResolver",
+        lambda *a, **k: _FakeResolver())
+
+    res = tsm.scan_sport("tennis", grade_dir=tmp_path / "grade",
+                         outcome_lookup=tsm._tennis_lookup(), iters=200)
+    assert res["n_games_resolved"] == 25
+    assert res["n_games_graded"] == 25
+    assert res["sport_verdict"] == "SCANNED"
+
+
 def test_soccer_lookup_excludes_draws(tmp_path):
     gd = tmp_path / "grade" / "soccer_intl"
     _write_game(gd, "soccer_intl", "KXWCGAME-26JUL01AAABBB",
