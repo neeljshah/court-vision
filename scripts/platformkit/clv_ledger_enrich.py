@@ -43,6 +43,17 @@ try:
 except Exception:  # noqa: BLE001 -- optional history bridge; absence = old behavior
     _lookup_close_legs = None  # type: ignore[assignment]
 
+# LANE-5 additive fallback: Kalshi-ticker-keyed close-proxy from captured in-play
+# ticks (kx_ticker_close.py), consulted ONLY when the ESPN-numeric-game_id path
+# above returns None -- see _compute_clv_fields. Absence of this module leaves
+# the ESPN path byte-identical (old behavior).
+try:
+    from scripts.platformkit.clv.kx_close_fallback import (
+        lookup_close_legs_kx as _lookup_close_legs_kx,
+    )
+except Exception:  # noqa: BLE001 -- optional bridge; absence = old behavior
+    _lookup_close_legs_kx = None  # type: ignore[assignment]
+
 try:
     from scripts.platformkit.clv_ledger import compute_clv as _compute_clv
     _CLV_OK = True
@@ -186,11 +197,20 @@ def _compute_clv_fields(row: Dict[str, Any]) -> Dict[str, Any]:
 
     legs = _extract_closing_decimals(row)
     history_proxy: Optional[bool] = None
+    close_kind: Optional[str] = None
     if legs is None and _lookup_close_legs is not None:
         hl = _lookup_close_legs(row)
         if hl is not None:
             legs = (hl[0], hl[1])
             history_proxy = not hl[2]  # at-lock=True -> real; else proxy
+    # LANE-5 additive fallback: only reached when the ESPN-keyed path above found
+    # nothing (row.game_id is a venue ticker, e.g. Kalshi KX*, off that id space).
+    if legs is None and _lookup_close_legs_kx is not None:
+        hl_kx = _lookup_close_legs_kx(row)
+        if hl_kx is not None:
+            legs = (hl_kx[0], hl_kx[1])
+            history_proxy = not hl_kx[2]  # always True (last-tick proxy)
+            close_kind = "last_tick"
     if legs is None:
         return dict(_NO_CLOSE,
                     clv_note="no closing line captured; CLV unavailable (win/loss only)")
@@ -214,8 +234,9 @@ def _compute_clv_fields(row: Dict[str, Any]) -> Dict[str, Any]:
 
     is_proxy = (history_proxy if history_proxy is not None
                 else bool(row.get("clv_is_proxy", False)))
-    src = "line history" if history_proxy is not None else "row"
-    return {
+    src = "kx ticker tick series" if close_kind else (
+        "line history" if history_proxy is not None else "row")
+    out: Dict[str, Any] = {
         "clv_pct":    clv["clv_pct"],
         "beat_close": clv["beat_close"],
         "clv_status": "clv_proxy" if is_proxy else "clv_real",
@@ -226,6 +247,11 @@ def _compute_clv_fields(row: Dict[str, Any]) -> Dict[str, Any]:
             % (src, side, taken, close_home, close_away)
         ),
     }
+    if close_kind:
+        # LANE-5: last-tick close-proxy inherits venue staleness -- stamp every
+        # derived CLV row so scoreboards can segregate it from a real/at-lock close.
+        out["close_kind"] = close_kind
+    return out
 
 
 def enrich_row(row: Dict[str, Any]) -> Dict[str, Any]:
@@ -270,6 +296,11 @@ def enrich_row(row: Dict[str, Any]) -> Dict[str, Any]:
         # clv_is_proxy: stamp it when the close came from the line-history bridge.
         if "clv_is_proxy" in cf:
             enriched["clv_is_proxy"] = cf["clv_is_proxy"]
+        # close_kind: LANE-5 -- present only for a KX-ticker last-tick proxy close;
+        # absent (never fabricated) for the ESPN/line-history path. Lets scoreboards
+        # segregate a last-tick proxy from a real/at-lock close.
+        if "close_kind" in cf:
+            enriched["close_kind"] = cf["close_kind"]
         # clv_note: fill gap.
         if not enriched.get("clv_note"):
             enriched["clv_note"] = cf.get("clv_note", "")
