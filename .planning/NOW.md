@@ -41,6 +41,23 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 5 (FULL FLEET: WNBA SHADOW LIVE ON A REAL Q4 GAME + SOCCER 3-WAY + TWO
+  BIG HONEST VERDICTS + KBO PAPER LIVE-READY, 2026-07-03 night, commits 25216d37/
+  9afb9f31/635a4abc/25638f2f/30e0cbf9, 13 agents / ~1.28M tokens, 1 fix round
+  (LOC-split only), 5/5 PASS): (1) wnba live-state route + pre-existing basketball
+  clock gap fixed; LIVE-verified on NYL-MIN Q4 (shadow p=0.9815 through the exact
+  capture path). (2) kalshi 3-way KXWCGAME -> soccer_intl pregame 0->8 events
+  live; consumers proven draw-safe. (3) MLB props eval on the 5-season corpus:
+  EW projections WORSE than season-to-date mean at CRPS for Ks/hits/walks in
+  BOTH holdouts -- honest REJECT of the EW design; no historical prop lines on
+  disk so no market comparison (recorded). (4) npb/kbo board + paper channel via
+  kalshi_listing; KBO odds-match fixed live (4 real paper bets recorded in the
+  live test cycle under existing gates); NPB = honest kanji-map limitation
+  (queued). (5) soccer resolver: 2 compounding root causes fixed, n_labeled
+  8->30, and the FIRST real soccer in-play verdicts landed: H1+H2 both
+  WORSE_THAN_VENUE (model brier .31/.42 vs venue .15/.26, CIs exclude 0) ->
+  suppression recommendation queued for cross-corpus trust + human. No edge
+  claimed anywhere.
 - SPRINT WAKE 4 (FULL FLEET: KALSHI PREGAME BUG FOUND+FIXED + WNBA PAPER CHANNEL LIVE-
   READY + NPB/KBO IN-PLAY + TENNIS ZERO GAPS, 2026-07-03 night, commits d68d0df7/
   1721c148/19aa2348/44a37adc, 11 agents / ~1.26M tokens, 0 fix rounds, 5/5 Opus PASS):
@@ -834,12 +851,12 @@ or `program_complete` only.
 
 ## NEXT (max 5 -- action | where | done-when) [MASTER PLAN v2 2026-07-02: .planning/PLAN_SELF_IMPROVING_AI.md -- 8 phases ending in PRE-REGISTERED proof-of-edge criteria (8.1a-g) + human-gated real-money pilot runbook (8.2); economics phase 6 (cost model/maker sim/beat-the-line scoreboard) decides if money ever happens; NBA-season readiness phase 7 before Oct. This queue = the Phase-1 head]
 [RATIFIED QUEUE 2026-07-03 -- .planning/AUTONOMY_CHARTER.md governs unattended wakes: routing, spend rails, decision rights, wake protocol. Read it before pulling work. SPRINT MODE amended: usage rail LIFTED thru 07-06 per user directive; full fleet per wake; Fable decides even if loop model switches to Opus (see memory feedback_sprint_fleet_orchestration_2026_07_03).]
-[SPRINT WAKES 1-4 DONE 2026-07-03 (18 lane commits, 46 agents, ~5.0M tokens, 20/20 Opus lane PASS). Queue below = wave 5 (overnight).]
-1. [WNBA-LIVE-STATE] Add wnba to ingame_live_state._SPORTS (basketball/wnba ESPN route) + period segment fields so live_state('wnba') returns real states -- unblocks the shadow logger + m36 grading; live-verify against tonight's WNBA slate if a game is live | scripts/platformkit/ingame/ | shadow logs real probs at restart.
-2. [SOCCER-3WAY] kalshi.py parse_events support for 3-way KXWCGAME markets (regulation Tie/A/B): map into the existing soccer 1X2 representation honestly (study how other providers' soccer moneylines are represented; devig 3-way as 3-way, never force 2-way) | scripts/platformkit/odds_provider/ | soccer_intl kalshi pregame events >0 live-verified.
-3. [MLB-PROPS-EVAL] The edge-map #1 unlock follow-through: find + run the REAL props_eval on the 5-season 321K-row gamelog corpus (per-opportunity props first: pitcher Ks, hits, walks), leak-free walk-forward, >=2 season corpora; honest verdicts to the reject ledger; NO wiring | domains/mlb/ + platformkit | verdict rows with numbers (REJECT expected where market efficient).
-4. [NPB-KBO-BOARD] Kalshi-derived listing adapter (tickers encode date+teams) so npb/kbo get board listings + pregame paper channel like wnba; if board machinery genuinely cannot take a no-clock listing, record the honest gap with the exact missing piece | scripts/platformkit/frontend/ | listed-or-gapped with evidence.
-5. [SOCCER-RESOLVER-AUDIT] 32/39 captured soccer_intl games unresolved: break down draw vs not-final vs resolver-miss; fix recoverable misses (alias/ticker-parse), draws stay honestly None | scripts/platformkit/ingame/ | labeled-game count rises or the loss is proven irreducible.
+[SPRINT WAKES 1-5 DONE 2026-07-03 (23 lane commits, 59 agents, ~6.3M tokens, 25/25 Opus lane PASS). Queue below = wave 6.]
+1. [SOCCER-ADVERSE-TRUST] Adjudicate the WORSE_THAN_VENUE soccer finding cross-corpus: run segment_trust_multi md5-parity splits on the 30-game corpus; if ADVERSE replicates in every non-insufficient corpus, write the formal HUMAN-queue recommendation (suppress soccer_intl in-play placement / strict floor) + a proposed REVERSIBLE config diff for the human -- NO execution change autonomously | scripts/platformkit/ingame/ | recommendation with numbers, or honest NOT-REPLICATED.
+2. [NPB-KANJI] EN<->kanji club map (10 clubs, grounded on live Kalshi EN names + npb_results.parquet spellings) into team_resolver so NPB paper prices like KBO | scripts/platformkit/odds_provider/ + tests | NPB board prices live-verified.
+3. [FINALS-GUARD] Soccer finals ingest staleness guard: wire ingest_espn_finals refresh into an existing runner cadence (or small new ProcSpec) + freshness_sla entry so finals can never silently go stale again (root cause of 26 unresolved games) | scripts/platformkit/ | SLA row exists, refresh automated.
+4. [PROPS-BASELINE-SHOOTOUT] Follow the props REJECT: pre-declared family shootout #2 (season-to-date mean [wave-5 winner] vs league-mean shrinkage by sample size vs EW [control]) on the same 2 independent holdouts; adopt nothing -- record the honest best point-forecast family as the standing baseline any future prop model must beat | domains/mlb/ | per-corpus CRPS tables.
+5. [DIGEST-DAY2] Write .planning/DIGEST_2026-07-04.md (waves 1-5 summary, human queue: ONE restart + soccer-adverse recommendation + weather SHIP_REVIEW + register_autostart) + refresh sprint_status.json restart_activates with wave-5 additions | .planning/ + data/frontend/ops/ | digest committed.
 HUMAN QUEUE (updated SPRINT WAKE 1): (a) ONE supervisor restart activates everything shipped this wake: m33 wedge reaper + m34 freshness SLA + m35 tail-multi + WNBA capture spec pickup (boot.ps1 cycle -- charter forbids unattended supervisor restarts); (b) m32 weather_totals SHIP_REVIEW (standing); (c) m19 wave-2 replication outcomes if any survive BOTH corpora -> fresh SHIP_REVIEW decisions; (d) register_autostart.ps1 -Register in an ELEVATED shell (standing); (e) CV_MLB_SP_ADJUST stays CLOSED as honest REJECT (returns only via m32 nightly re-gate). Parked follow-ups unchanged (charter Section 4 PARKED).
 
 DONE (2026-07-02): [P2.2] Feed-health scoreboard SHIPPED -- NEW scripts/platformkit/odds_provider/feed_health.py + feed_health_runner.py (registered as supervisor ProcSpec m30_feed_health, HEARTBEAT readiness, 600s cadence): live-probes every (provider, sport) pair the REAL slate uses (reuses aggregate.default_providers(), not a synthetic ping) and classifies GREEN (real data OR an honest empty/unsupported-sport degrade -- not an outage) vs RED (auth/forbidden/timeout/parse/unexpected-shape/exception -- the scraper is actually broken). LIVE-VERIFIED it catches a REAL fault: a live run hit an actual Pinnacle 401 Unauthorized on soccer_intl (transient rate-limit from repeated calls this session) that `aggregate()` had been silently swallowing (that venue just vanishes from the merged slate with no visible signal) -- feed_health correctly surfaced it as one RED row while mlb/espn/fanduel/kalshi/polymarket stayed GREEN. 16 new tests green (10 feed_health + 6 runner), both files well under 300 LOC (185, 115). Also updated tests/supervisor/test_manifest.py's service-set assertion for m30 (21 green).
