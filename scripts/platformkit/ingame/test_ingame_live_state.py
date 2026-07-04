@@ -524,3 +524,70 @@ def test_wnba_ingame_shadow_chain_produces_real_prob_from_live_state_fixture():
     shadow = wshadow.WnbaIngameShadow(adapter=_FakeAdapter())
     prob = shadow.shadow_prob("wnba", st["home_display"], st["away_display"], st)
     assert prob == 0.71
+
+
+# --------------------------------------------------------------------------------------- #
+# LANE 5: espn_event_id extraction. Un-inerts the wave-11 enrichment facade's espn_wp(event_id)
+# arm, which previously always got None because ingame_live_state's state dict never carried
+# an ESPN event id key at all (inplay_capture_loop._enrichment_fields reads
+# state.get("espn_event_id"), a key that simply did not exist before this fix). ESPN's
+# scoreboard event `id` IS the numeric id the summary?event={id} endpoint (and
+# espn_wp_backfill_measure.resolve_event_id) already expects -- so this is a same-value
+# additive alias of game_id, not a new lookup.
+# --------------------------------------------------------------------------------------- #
+def test_extract_emits_espn_event_id_mlb():
+    st = S._extract("mlb", _mlb_event(), None, p0_provider=lambda s, g: None)
+    assert st["espn_event_id"] == "G1" == st["game_id"]
+
+
+def test_extract_emits_espn_event_id_wnba():
+    payload_ev = _wnba_event(live=True, event_id="401700001")
+    st = S._extract("wnba", payload_ev, None, p0_provider=lambda s, g: None)
+    assert st["espn_event_id"] == "401700001" == st["game_id"]
+
+
+def test_live_state_carries_espn_event_id_end_to_end_mlb():
+    ev = _mlb_event()
+    payload = {"events": [ev]}
+    st = S.live_state("mlb", http_get=lambda url: payload, p0=0.5)
+    assert st is not None
+    assert st["espn_event_id"] == "G1"
+
+
+def test_extract_espn_event_id_none_when_id_blank():
+    # honest absence: a blank/missing ESPN id must yield None, never "" or a fabricated id.
+    ev = _mlb_event()
+    ev["id"] = ""
+    st = S._extract("mlb", ev, None, p0_provider=lambda s, g: None)
+    assert st["espn_event_id"] is None
+
+
+def test_enrichment_facade_espn_wp_arm_proven_live_capable_from_state(tmp_path):
+    """End-to-end proof (LANE 5 DONE-WHEN): a live_state() dict carrying a real
+    espn_event_id -> EnrichmentFacade.espn_wp() resolves a number from a fixture sidecar,
+    exactly the inplay_capture_loop._enrichment_fields call shape
+    (facade.espn_wp("mlb", state.get("espn_event_id")))."""
+    import json as _json
+    from scripts.platformkit.ingame import ingame_enrichment as E
+
+    espn_dir = tmp_path / "domains"
+    sidecar = espn_dir / "mlb" / "espn_wp" / "G1.jsonl"
+    sidecar.parent.mkdir(parents=True, exist_ok=True)
+    with sidecar.open("w", encoding="utf-8") as fh:
+        fh.write(_json.dumps({"espn_wp_home": 0.42, "n_wp_points": 12}) + "\n")
+
+    payload = {"events": [_mlb_event()]}
+    st = S.live_state("mlb", http_get=lambda url: payload, p0=0.5)
+    assert st is not None and st["espn_event_id"] == "G1"
+
+    facade = E.EnrichmentFacade(espn_wp_dir=espn_dir)
+    wp = facade.espn_wp("mlb", st.get("espn_event_id"))
+    assert wp == {"espn_wp": 0.42}
+
+
+def test_enrichment_facade_espn_wp_arm_still_none_when_event_id_absent(tmp_path):
+    # honest pending case preserved: a state with no espn_event_id (e.g. tennis, or an
+    # extraction that failed to find one) must still yield None, never raise.
+    from scripts.platformkit.ingame import ingame_enrichment as E
+    facade = E.EnrichmentFacade(espn_wp_dir=tmp_path / "domains")
+    assert facade.espn_wp("mlb", None) is None

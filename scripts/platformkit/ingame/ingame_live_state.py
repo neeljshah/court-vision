@@ -333,6 +333,16 @@ def _extract(sport: str, ev: dict, p0: Optional[float],
                               home=_display(home), away=_display(away))
     out = {
         "sport": sport, "game_id": game_id,
+        # espn_event_id: ADDITIVE alias of game_id for team sports (nba/mlb/wnba/soccer/
+        # soccer_intl) -- the ESPN scoreboard's own event `id` field IS the numeric id the
+        # summary?event={id} endpoint expects (same convention espn_wp_backfill_measure.
+        # resolve_event_id already matches against; espn_wp_reference.capture_one takes this
+        # exact value as its `event_id` arg). Un-inerts the enrichment facade's espn_wp(sport,
+        # event_id) arm, which previously always got None because no caller populated this key.
+        # Tennis's synthetic per-match `id` (from the groupings flatten) is NOT a real ESPN
+        # summary event id -- espn_wp_reference.SUPPORTED_SPORTS excludes tennis anyway, so this
+        # is a no-op there (facade already short-circuits on unsupported sport before use).
+        "espn_event_id": game_id or None,
         "home": _name(home), "away": _name(away),
         # full display names + absolute scores are ADDITIVE (existing consumers read
         # state_diff/frac_elapsed): they let the in-game model_fn resolve corpus team ids

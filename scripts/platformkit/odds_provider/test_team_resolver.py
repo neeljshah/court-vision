@@ -47,6 +47,14 @@ def test_canonical_code_aliases():
     assert canonical("mlb", "SF") == canonical("mlb", "San Francisco Giants")
 
 
+def test_canonical_mlb_az_alias_matches_arizona_diamondbacks():
+    # LANE 5: "AZ" is the Kalshi-ticker-suffix spelling for Arizona; ESPN's scoreboard
+    # abbreviation is "ARI" -- both must converge so the espn_wp fuzzy resolver can bridge
+    # capture tickers like "...MILAZ" / "...AZSTL" to the real ESPN event.
+    assert canonical("mlb", "AZ") == canonical("mlb", "Arizona Diamondbacks")
+    assert canonical("mlb", "AZ") == canonical("mlb", "ARI")
+
+
 def test_canonical_soccer_tennis_passthrough_and_unknown_degrade():
     # No codes for soccer/tennis: pure normalized pass-through (no crash).
     assert canonical("soccer", "Manchester City") == "soccer:city"
