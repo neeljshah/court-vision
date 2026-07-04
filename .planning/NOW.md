@@ -41,6 +41,20 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 35 (WAVE-34: REVIEWERS CAUGHT A FALSE FIX CLAIM + REPROCESS LOOP
+  PROVEN + BRIDGE 17x, 2026-07-05 ~00:20Z, wf_b7c4725e-0de 18 agents/~1.86M tok,
+  3 commits): (1) reprocess loop COMPLETE -- rho mode + true exporters, both
+  self-checks match verdicts within 1e-6 -> any intelligence change now replays
+  against old games in one command. (2) tennis H3 HELD, review FAIL: fix agent
+  CLAIMED null-population fix (8748==8748) but artifact shows 8748 vs 8951 --
+  NaN-shuffle bug still live + keystone test vacuous; 4 findings -> wave-35
+  finish lane. (3) NBA bridge: 74-game ceiling was a CODE BUG (2024-25
+  linescores unread); now 1299 exact matches -> H_A/H_B pre-registered re-test
+  at 17x power queued. (4) m13: stale proc restarted (62s), SLA GREEN, but NEW
+  bug found: a breaker-BYPASS path still calls circuit-open providers ->
+  wave-35 fix lane. (5) vault-feed 46->146 sections (tennis players in).
+  WAVE-35: h3-null-fix, breaker-bypass fix, H_A/H_B rerun @1299, claims
+  breadth (MLB/soccer rankings). NPB/KBO grades ~09-10Z wake. No edge claimed.
 - SPRINT WAKE 34 (WAVE-33 LANDED IN 17 MIN -- FASTEST YET, 2026-07-04 ~23:15Z,
   wf_01874c65-606 15 agents/~1.35M tok, 4 commits): (1) NBA in-game H_A hot-night
   + H_B scheme-fit (pre-registered wave-26) BOTH HONEST REJECT outright -- base
