@@ -41,6 +41,21 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 28 (MULTI-SPORT INTELLIGENCE PROGRAM COMPLETE, 2026-07-04 ~18:20Z,
+  6 agents / ~0.88M tokens, docs local-only): 4 sport-truth specs DONE with live-read
+  numbers (MLB 35 dims/27 covered; soccer_intl 38/25; tennis 48/34 -- structural
+  finding: tennis atlas is in-memory->vault-prose, never persisted to parquet; WNBA
+  54/13 with 39 gaps MOSTLY zero-new-fetch from the owned CDN corpus) + STORAGE AUDIT
+  (75GB/87K files; honest deviation: only 2 retention policies exist, not the 5 the
+  brief claimed; uncapped line_history growth flagged; irreplaceable venue-history
+  backup -> HUMAN) + OPUS CONDUCTOR program: build queue ratified (1 WNBA zero-fetch
+  extraction, 2 contract entity_key, 3 NBA shooter_quality + predictive-validity
+  gate, 4 MLB SP-fatigue in-game gate, 5 tennis surface-hold in-game, 6 WNBA rest
+  covariate), scrape targets (1 schema-drift snapshots=resilience, 2 ESPN injuries,
+  3 altitude table, 4 fuller Statcast, 5 tennis/wnba venue backfill->HUMAN), 5 spec
+  fixes all none-blocking/watch, vault+memory feed design written. Verify: 17 PASS/
+  1 cosmetic FAIL/16 await live games; pacing absorbed 2x 429 correctly. No edge
+  claimed.
 - SPRINT WAKES 26-27 (VALIDATED-INTELLIGENCE STACK SHIPPED + BASKETBALL-TRUTH SPEC +
   MULTI-SPORT PROGRAM LAUNCHED, 2026-07-04 ~17:40Z, commits 5ae26b67/9c48aa13/612fcee4,
   ~16 agents / ~1.3M tokens): (1) wave-26 stack COMMITTED after double Opus review
@@ -1184,6 +1199,7 @@ or `program_complete` only.
    (B/G, after 26-fix lands) build the multi-factor index on the claims contract (multi-source joins) + run the predictive-validity gate; both rankings published side by side with honest verdicts; ask-anything skill rides on top | docs/research/intel-layer/ then domains/basketball_nba/ + scripts/platformkit/ | Curry-check reported as diagnostic; gate verdict decides which ranking is CANONICAL.
 0c. [WAVE-28 MULTI-SPORT INTELLIGENCE PROGRAM, LAUNCHED -- USER DIRECTIVE 2026-07-04f: "many sonnet and haiku researchers, opus conductors, for each sport... every little aspect of each sport, on court off court, how they work together... make it into data using predictions and historical odds... make obsidian better and memory as good as possible... use github.com/DietrichGebert/ponytail for low usage"] (a) 4 Sonnet sport-truth researchers (MLB, soccer_intl, tennis, WNBA -- NBA already in flight): per-sport inventory of ALL owned data + full intelligence-dimension enumeration + dimension->data map (gaps = scraping targets) + pre-registerable validation hypotheses vs predictions/historical odds; (b) storage-audit lane (data/ layout health, retention coverage, proposal-only); (c) Opus CONDUCTOR synthesis after all lanes: cross-sport intelligence program, generalized claims/validator contract, prioritized build queue, vault/obsidian + auto-memory feed design (brain_pipeline proposal, no hand-edits, no rebuild launch); (d) PONYTAIL: verified real (73.7k stars, MIT, efficiency skill) -- decision-ladder discipline injected into all fleet briefs NOW; harness plugin install = 2 interactive /plugin commands -> HUMAN QUEUE | docs/research/intel-layer/ | 4 sport specs + program doc + storage spec on disk.
 HUMAN QUEUE ADDITION (ponytail): run in an interactive session, two separate prompts: (1) /plugin marketplace add DietrichGebert/ponytail (2) /plugin install ponytail@ponytail -- then all future sessions run it automatically (default mode full; /ponytail lite|ultra|off to adjust).
+0d. [WAVE-29 BUILD FLEET, LAUNCHED ~18:25Z -- conductor-ratified queue top 4] (1) WNBA zero-fetch extraction: 168-game CDN corpus -> season-aggregate player/team parquets (unblocks ~20 dims); (2) claims contract += criteria.entity_key (producer+validator, 12/12 stays VERIFIED, rankings byte-identical); (3) NBA shooter_quality_v1/scorer_quality_v1 scored on 329 qualifiers per FROZEN spec weights + predictive-validity gate run (naive stays canonical if it wins; Curry/Ellis positions reported as diagnostic); (4) MLB SP within-start fatigue in-game conditioning gate (ingame_layer_gate_nba clone, planted-null, walk-forward) | per intelligence_program.json | Opus-PASS lanes committed with honest verdicts. Deferred to wave-30: tennis surface-hold, WNBA rest covariate, schema-drift snapshots, ESPN injuries, altitude table.
 [WAVES 22+23 CONSUMED 2026-07-04 ~15:50Z -- ledgers above. Queue below = wave 24; the bottleneck is now largely WALL-CLOCK forward-evidence accrual -> cadence rule: light check-ins unless a gate decides or the user messages.]
 1. [LIVE-ACTIVATION-VERIFY] once MLB slate is live (~17:00Z+): enrichment fields present in fresh grade rows, kalshi pacing counters nonzero in capture heartbeat, m13 fresh props_snapshot + freshness_sla green (relaunched PID 14028 w/ timeout fix), grade-writer clamp writing late-inning rows; npb/kbo FIRST GRADES land overnight (their game windows) | orchestrator light check-in | verifier PENDINGs -> PASS or triaged.
 2. [FORWARD-GATES-WATCH] wall-clock accrual, no fleet: MLB tail fwd (floor ~20), soccer_intl xG forward (floor 8/half), wnba/npb/kbo tail stamps live -- escalate to a decision wave ONLY on a real headline_verdict or an allowlist-external regression | forward_evidence_scoreboard | gate decides -> decision wave.
