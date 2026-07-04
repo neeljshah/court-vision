@@ -41,6 +41,22 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 33 (WAVE-32 LANDED: DUAL REVIEWERS CAUGHT A REAL CONFOUND + 65%
+  PROP-CYCLE CUT, 2026-07-04 ~22:30Z, wf_52a5cc51-006 18 agents/~1.63M tok,
+  commits bd0fbf2c..07a64213): (1) positional-weight gate NOT_TESTABLE honest
+  (overall CI naive-favoring [-.128,-.019]; BIG-group cell +.058 with 3/3 fold
+  signs but CI incl 0 + replication below floor -> pre-registered re-test as
+  corpus grows; naive canonical). (2) WNBA Elo refresh: ALL 3 candidates REJECT;
+  dual review caught a REAL cold/warm-start confound (fake sign-flipping delta
+  -> +.0002 after fix) -> gate-comparability memory written. (3) prop scoring
+  2601-line cycle 1080.8s -> 371.5s (-65.6%), zero rows dropped, byte-identical
+  default; with the circuit breaker, m13 SLA should go GREEN -- verify next
+  probe. (4) reprocess harness v1 committed (self-check honestly BLOCKED on
+  rho-shape; binary self-check queued on elo_refresh_rows). (5) heartbeat =
+  stale assertion, not flake (deterministic 5 beats). WAVE-33 LAUNCHED: binary
+  self-check, claims breadth (tennis hold rankings + all gate-verdict claims ->
+  ask layer), NBA in-game H_A/H_B (edge-slot, spec wave-26), tennis playstyle
+  persistence (unblocks H3), ask-intel command. No edge claimed.
 - SPRINT WAKE 32 (WAVE-31 LANDED IN 34 MIN + SCOUT FLEET + WAVE-32 LAUNCHED,
   2026-07-04 ~21:35Z, wf_01221c03-405 16 agents/~1.53M tok + 5 Haiku scouts/
   3.5min, commits 00be9aab..5f68e9d6): (1) m13 breaker COMPLETE, live proof
