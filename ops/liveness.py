@@ -10,6 +10,12 @@ heartbeat(component, *, path=None)
     Write a fresh UTC ISO timestamp to the component's heartbeat file.
     Path defaults to data/cache/daemon_heartbeats/<component>.txt.
     Atomic (tmp + os.replace). Never raises.
+    TEST-ISOLATION: when no explicit `path` is given AND the process is
+    running under pytest (PYTEST_CURRENT_TEST set), the write is redirected
+    to a per-process scratch file under the OS temp dir instead of the real
+    production heartbeat path -- see _resolve_write_path(). Any caller that
+    explicitly passes `path=` (real daemons never do; well-isolated tests
+    already do) is completely unaffected.
 
 is_live(component, *, max_age_sec, now=None, path=None) -> bool
     True iff the heartbeat file exists and its mtime (or embedded ts) is
@@ -27,6 +33,7 @@ from __future__ import annotations
 
 import json
 import os
+import tempfile
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -81,6 +88,51 @@ def _utc_iso(ts: float) -> str:
 
 def _default_hb_path(component: str) -> Path:
     return _DAEMON_HB_DIR / f"{component}.txt"
+
+
+# Frozen reference to the real production heartbeat dir, captured at import
+# time and NEVER read through the mutable _DAEMON_HB_DIR global. Some existing
+# tests legitimately `monkeypatch.setattr(liveness, "_DAEMON_HB_DIR", tmp_path)`
+# to isolate the default path themselves -- that pre-existing pattern must keep
+# working unchanged. This constant lets us tell "the default still points at
+# the real production dir" apart from "a test already redirected the default".
+_REAL_PRODUCTION_HB_DIR: Path = _DAEMON_HB_DIR
+
+# Per-process scratch dir used ONLY when a bare (no explicit path) heartbeat()
+# call happens under pytest AND the default hb dir has NOT already been
+# redirected by the caller -- keeps production data/cache/daemon_heartbeats/
+# untouched by any test that forgot to inject a path, mock _beat, or
+# monkeypatch _DAEMON_HB_DIR itself.
+_TEST_SCRATCH_HB_DIR: Path = Path(tempfile.gettempdir()) / "nba_ai_test_heartbeats"
+
+
+def _running_under_pytest() -> bool:
+    """True iff the current process is inside a pytest test (env var pytest
+    sets for the duration of each test item). Cheap, no import of pytest."""
+    return bool(os.environ.get("PYTEST_CURRENT_TEST"))
+
+
+def _resolve_write_path(component: str, explicit_path: Optional[Union[str, Path]]) -> Path:
+    """Resolve the path heartbeat() should write to.
+
+    Precedence:
+    1. Explicit path always wins (real daemons are free to pass it; already-
+       isolated tests that pass path=tmp_path keep working unchanged).
+    2. If a test has already monkeypatched module-level _DAEMON_HB_DIR away
+       from the real production dir, honor that -- it is an intentional,
+       already-safe isolation pattern used by several existing test files.
+    3. Otherwise (no explicit path, default still points at the real
+       production dir): under pytest, redirect to a scratch dir so a bare
+       test call can never touch the real production heartbeat file; outside
+       pytest (real daemon processes), use the normal default path unchanged.
+    """
+    if explicit_path is not None:
+        return Path(explicit_path)
+    if _DAEMON_HB_DIR != _REAL_PRODUCTION_HB_DIR:
+        return _default_hb_path(component)
+    if _running_under_pytest():
+        return _TEST_SCRATCH_HB_DIR / f"{component}.txt"
+    return _default_hb_path(component)
 
 
 def _parse_ts_from_text(text: str) -> Optional[float]:
@@ -158,7 +210,7 @@ def heartbeat(
     Never raises.
     """
     try:
-        hb_path = Path(path) if path is not None else _default_hb_path(component)
+        hb_path = _resolve_write_path(component, path)
         hb_path.parent.mkdir(parents=True, exist_ok=True)
         ts = _now if _now is not None else time.time()
         content = _utc_iso(ts)
