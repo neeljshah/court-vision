@@ -41,6 +41,27 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKES 26-27 (VALIDATED-INTELLIGENCE STACK SHIPPED + BASKETBALL-TRUTH SPEC +
+  MULTI-SPORT PROGRAM LAUNCHED, 2026-07-04 ~17:40Z, commits 5ae26b67/9c48aa13/612fcee4,
+  ~16 agents / ~1.3M tokens): (1) wave-26 stack COMMITTED after double Opus review
+  (final reviewer independently hand-recomputed rank-1 from raw parquet; 9 grammar-
+  injection attempts all blocked; 45 tests): player-intel producer (12 claims,
+  machine-recomputable contract) + INDEPENDENT validator (12/12 VERIFIED live;
+  planted errors caught; found+fixed int64-id dtype bug) + L4 LLM gate pre-registered
+  (deterministic planted-null, SCOUTING_ONLY fail-action). Integration fix round:
+  contract gained aggregate/window_spec/value_precision (12 UNVERIFIABLE -> 12
+  VERIFIED, rankings byte-identical). (2) BASKETBALL-TRUTH SPEC (Opus researcher):
+  naive composite CONFIRMED inverts (Ellis .6882 [460 FGA] > Curry .6517 [1255 FGA]);
+  shooter/scorer_quality_v1 with FROZEN weights (eff .30/difficulty .30/gravity .25/
+  volume .15), predictive-validity gate design (Spearman vs future-30d TS%, naive
+  stays canonical if it wins), in-game hypotheses H-A/H-B specced w/ planted-null;
+  gaps: no defender-distance/contest tracking, no player-level in-game feed ->
+  scrape targets. (3) wave-28 LAUNCHED: 4 Sonnet sport-truth researchers (mlb/
+  soccer_intl/tennis/wnba) + storage auditor -> Opus conductor (cross-sport contract,
+  build queue, gap-driven scrape targets, vault/obsidian + auto-memory feed design).
+  (4) PONYTAIL (user link) verified real (73.7k stars, MIT, efficiency ladder) --
+  discipline injected into all fleet briefs; harness install = 2 interactive /plugin
+  commands -> HUMAN QUEUE. No edge claimed.
 - SPRINT WAKE 25 (SCHEDULED LIGHT CHECK-IN + LEAK-DISCIPLINE OBSERVABILITY FIX,
   2026-07-04 ~16:15Z, commit 00ec12a5, 2 agents / ~0.09M tokens): wall-clock
   accrual wake, NO fleet (correct per cadence rule -- no gate decided). Spine GREEN
