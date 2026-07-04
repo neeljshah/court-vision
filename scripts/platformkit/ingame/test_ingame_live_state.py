@@ -124,3 +124,100 @@ def test_state_summary_and_segment_roundtrip():
     ss = lg._state_summary(st)
     assert "inning=5" in ss and "home_score" in ss and ss != "live"
     assert ps._infer_segment("mlb", ss) == "I5"
+
+
+# --------------------------------------------------------------------------------------- #
+# tennis fixture: trimmed from a REAL ESPN tennis scoreboard fetched live 2026-07-03        #
+# (site.api.espn.com/apis/site/v2/sports/tennis/atp/scoreboard, Wimbledon). Confirmed live: #
+#  - the `dates=` query param is IGNORED; the endpoint always returns the WHOLE tournament. #
+#  - each top-level "event" is the TOURNAMENT itself (no top-level `competitions` key);     #
+#    real per-match competitions nest under event["groupings"][i]["competitions"].          #
+#  - competitors carry type=="athlete" + an `athlete` block (displayName/shortName), not    #
+#    `team`, and carry NO `score` field at all -- only per-set `linescores` + `winner`.      #
+# --------------------------------------------------------------------------------------- #
+def _tennis_match(*, live: bool, match_id="179877", winner_home=True,
+                  home_name="Zsombor Piros", away_name="Ivan Ivanov"):
+    """One nested tennis match competition, shaped exactly like the real trimmed
+    payload (see docstring above): athlete competitors, linescores, no score key."""
+    if live:
+        status = {"period": 1, "type": {"id": "2", "name": "STATUS_IN_PROGRESS",
+                                        "state": "in", "completed": False}}
+        home_ls = [{"value": 6.0, "winner": True}]
+        away_ls = [{"value": 3.0, "winner": False}]
+    else:
+        status = {"period": 2, "type": {"id": "3", "name": "STATUS_FINAL",
+                                        "state": "post", "completed": True}}
+        home_ls = [{"value": 6.0, "winner": winner_home}, {"value": 6.0, "winner": winner_home}]
+        away_ls = [{"value": 2.0, "winner": not winner_home}, {"value": 2.0, "winner": not winner_home}]
+    return {
+        "id": match_id, "date": "2026-06-22T10:05Z",
+        "status": status,
+        "type": {"id": "1", "text": "Men's Singles", "slug": "mens-singles"},
+        "competitors": [
+            {"id": "13489", "type": "athlete", "homeAway": "away", "winner": not winner_home,
+             "linescores": away_ls,
+             "athlete": {"displayName": away_name, "shortName": "I. Ivanov"}},
+            {"id": "3110", "type": "athlete", "homeAway": "home", "winner": winner_home,
+             "linescores": home_ls,
+             "athlete": {"displayName": home_name, "shortName": "Z. Piros"}},
+        ],
+    }
+
+
+def _tennis_payload(matches):
+    """Real ESPN tennis scoreboard shape: one tournament event wrapping groupings."""
+    return {"events": [{"id": "188-2026", "name": "Wimbledon",
+                        "groupings": [{"grouping": {"slug": "mens-singles"},
+                                      "competitions": matches}]}]}
+
+
+def test_tennis_events_flatten_nested_groupings():
+    payload = _tennis_payload([_tennis_match(live=True), _tennis_match(live=False, match_id="X")])
+    events = S._events_for("tennis", payload)
+    assert len(events) == 2
+    assert {e["id"] for e in events} == {"179877", "X"}
+    # synthetic event carries the MATCH's own status, not the tournament's (absent/None)
+    assert events[0]["status"]["type"]["state"] == "in"
+
+
+def test_tennis_name_and_display_use_athlete_fallback():
+    m = _tennis_match(live=True)
+    home, away = S._competitors({"competitions": [m]})
+    assert S._name(home) == "Z. Piros" and S._name(away) == "I. Ivanov"
+    assert S._display(home) == "Zsombor Piros" and S._display(away) == "Ivan Ivanov"
+
+
+def test_tennis_score_derives_sets_won_from_linescores():
+    m = _tennis_match(live=False, winner_home=True)
+    home, away = S._competitors({"competitions": [m]})
+    assert S._score(home) == 2.0 and S._score(away) == 0.0
+
+
+def test_live_state_tennis_produces_named_competitors():
+    # end-to-end: the real inplay_capture_loop path (live_states -> _scan_live_by_legs)
+    # bridges by home_display/away_display -- this proves those are real player names,
+    # not '', for a live tennis match nested under groupings.
+    payload = _tennis_payload([_tennis_match(live=True)])
+    states = S.live_states("tennis", http_get=lambda url: payload)
+    assert len(states) == 1
+    st = states[0]
+    assert st["home"] == "Z. Piros" and st["away"] == "I. Ivanov"
+    assert st["home_display"] == "Zsombor Piros" and st["away_display"] == "Ivan Ivanov"
+    assert st["home_goals"] == 1.0 and st["away_goals"] == 0.0  # sets won so far
+    assert st["state_diff"] == 1.0
+    assert st["frac_elapsed"] is None  # tennis has no clock -- honest, never fabricated
+    assert st["set"] == 1  # segment field from the match's own status.period
+
+
+def test_live_state_tennis_by_event_id_finds_nested_match():
+    payload = _tennis_payload([_tennis_match(live=True, match_id="179877"),
+                               _tennis_match(live=False, match_id="999999")])
+    st = S.live_state("tennis", "179877", http_get=lambda url: payload)
+    assert st is not None and st["game_id"] == "179877"
+    assert st["home_display"] == "Zsombor Piros"
+
+
+def test_live_state_tennis_skips_final_match():
+    # only STATUS_FINAL match present -> no in-progress match -> None
+    payload = _tennis_payload([_tennis_match(live=False)])
+    assert S.live_state("tennis", http_get=lambda url: payload) is None

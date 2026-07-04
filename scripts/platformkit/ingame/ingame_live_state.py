@@ -66,6 +66,25 @@ def _is_live(ev: dict) -> bool:
     return bool(st.get("state") == "in") or str(st.get("name", "")).endswith("IN_PROGRESS")
 
 
+def _tennis_matches(payload: dict) -> List[dict]:
+    """Tennis' scoreboard is NOT flat like nba/mlb/soccer: each top-level event
+    is a whole TOURNAMENT (no top-level `competitions`); real per-match
+    competitions nest under event["groupings"][i]["competitions"] (verified
+    live 2026-07-03: 1 tournament event, 5 groupings, 635 nested matches, 0
+    top-level competitions). Flattens each match into a synthetic event dict
+    so the rest of this module's flat-event code works UNCHANGED. Never raises."""
+    return [{"id": m.get("id"), "status": m.get("status") or {}, "competitions": [m]}
+            for ev in (payload.get("events") or [])
+            for g in (ev.get("groupings") or [])
+            for m in (g.get("competitions") or [])
+            if isinstance(m, dict)]
+
+
+def _events_for(sport: str, payload: dict) -> List[dict]:
+    """Flat, per-match event dicts (tennis needs the groupings flatten)."""
+    return _tennis_matches(payload) if sport == "tennis" else list(payload.get("events") or [])
+
+
 def _competitors(ev: dict) -> Tuple[Optional[dict], Optional[dict]]:
     comps = (ev.get("competitions") or [{}])[0].get("competitors") or []
     home = next((c for c in comps if c.get("homeAway") == "home"), None)
@@ -74,18 +93,39 @@ def _competitors(ev: dict) -> Tuple[Optional[dict], Optional[dict]]:
 
 
 def _name(c: Optional[dict]) -> str:
-    return ((c or {}).get("team") or {}).get("abbreviation") or \
-        ((c or {}).get("team") or {}).get("displayName", "")
+    """.team first (byte-identical for team sports); tennis carries .athlete
+    instead of .team (verified live 2026-07-03) -- ADDITIVE fallback."""
+    team = (c or {}).get("team") or {}
+    val = team.get("abbreviation") or team.get("displayName")
+    if val:
+        return val
+    athlete = (c or {}).get("athlete") or {}
+    return athlete.get("shortName") or athlete.get("displayName") or ""
 
 
 def _display(c: Optional[dict]) -> str:
-    """Full display name (for cross-provider team matching), abbreviation as fallback."""
-    return ((c or {}).get("team") or {}).get("displayName") or _name(c)
+    """Full display name, abbreviation as fallback. Tennis: athlete.displayName
+    additive fallback (same team-first/athlete-fallback shape as _name)."""
+    team_disp = ((c or {}).get("team") or {}).get("displayName")
+    if team_disp:
+        return team_disp
+    athlete_disp = ((c or {}).get("athlete") or {}).get("displayName")
+    return athlete_disp or _name(c)
 
 
 def _score(c: Optional[dict]) -> Optional[float]:
+    """.score first (team sports). Tennis competitors carry NO score field
+    (verified live 2026-07-03) -- only per-set .linescores + a .winner bool;
+    ADDITIVE fallback derives a sets-won count so tennis isn't just dropped."""
     try:
         return float((c or {}).get("score"))
+    except (TypeError, ValueError):
+        pass
+    ls = (c or {}).get("linescores")
+    if not isinstance(ls, list) or not ls:
+        return None
+    try:
+        return float(sum(1 for s in ls if isinstance(s, dict) and s.get("winner")))
     except (TypeError, ValueError):
         return None
 
@@ -268,7 +308,7 @@ def live_state(sport: str, event_id: Optional[str] = None, *,
         return None
     getter = http_get or _http_get
     payload = getter(_scoreboard_url(sport, league))
-    events = payload.get("events") or []
+    events = _events_for(sport, payload)
     if event_id is not None:
         ev = next((e for e in events if str(e.get("id")) == str(event_id)), None)
         if ev is None:
@@ -295,7 +335,7 @@ def live_states(sport: str, *, league: Optional[str] = None,
         getter = http_get or _http_get
         payload = getter(_scoreboard_url(sport, league)) if sport in _SPORTS else {}
         out: List[Dict] = []
-        for ev in (payload.get("events") or []):
+        for ev in _events_for(sport, payload):
             if not _is_live(ev):
                 continue
             res = _extract(sport, ev, None, p0_provider)
