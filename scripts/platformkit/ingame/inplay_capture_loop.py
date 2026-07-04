@@ -339,6 +339,13 @@ def poll_once(*, sports: Optional[List[str]] = None,
 
     n_live = n_pairs = n_bets = n_settled = 0
     games_seen: List[Dict[str, Any]] = []
+    # GRADE-WRITE LAG counters (LANE 2, wave-14 fix): every game with a liquid
+    # moneyline leg this tick is a candidate grade-write; if _process_game did NOT
+    # capture a pair, bucket it by reason so the freshness SLA can see per-game
+    # grade-write lag distinctly from a genuinely dead/illiquid game (which never
+    # appears in legs_by_game at all -- that case has no row here, by construction).
+    grade_write_fail_by_reason: Dict[str, int] = {}
+    grade_write_fail_games: List[Dict[str, Any]] = []
 
     for sport in sport_list:
         try:
@@ -356,6 +363,17 @@ def poll_once(*, sports: Optional[List[str]] = None,
             if row.get("paired"):
                 n_live += 1
                 n_pairs += 1
+            else:
+                # A liquid moneyline leg existed this tick (the game IS live per the
+                # venue) but no grade row was written -- this is exactly the wave-14
+                # class of stall (per-game grade-write lag), isolated per tick: the
+                # roster is rebuilt fresh from legs_by_game every poll_once call, so
+                # a failure here NEVER permanently removes the game -- next tick
+                # retries unconditionally. Counted here purely for observability.
+                reason = str(row.get("reason") or "unknown")
+                grade_write_fail_by_reason[reason] = grade_write_fail_by_reason.get(reason, 0) + 1
+                grade_write_fail_games.append({
+                    "sport": sport, "game_id": gid, "reason": reason})
             if row.get("bet"):
                 n_bets += 1
         # FINAL stamps (W3): append the held-out home_win label so the OUTCOME arm can fire.
@@ -373,6 +391,13 @@ def poll_once(*, sports: Optional[List[str]] = None,
         "n_pairs": n_pairs, "n_bets": n_bets, "n_settled": n_settled,
         "games": games_seen, "measurement_only": True, "executed": False,
         "edge_claimed": False, "units": "probability",
+        # GRADE-WRITE LAG (LANE 2): per-tick counter of live-but-unpaired games, by
+        # reason (e.g. "no_model_prob", "no_home_leg", "error:<ExcType>"). n_live/
+        # n_pairs already tell you the aggregate; this tells you WHY a specific live
+        # game's grade write is lagging so an ops SLA can page on a persistent count
+        # for one game_id across ticks, distinct from ordinary per-tick noise.
+        "grade_write_fail_by_reason": grade_write_fail_by_reason,
+        "grade_write_fail_games": grade_write_fail_games,
         "_honest_note": (
             "In-play capture daemon heartbeat. Captures (model,devigged-price) pairs + paper "
             "UNIT decisions + settle labels; NO real money, NO flag flip, NO autostart. A down "
