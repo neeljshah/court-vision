@@ -109,3 +109,38 @@ def test_run_stops_after_max_ticks(tmp_path, monkeypatch):
 
 def test_heartbeat_component_name_matches_registered_spec():
     assert runner.HEARTBEAT_COMPONENT == "m37_ingame_enrichment"
+
+
+def test_retention_runs_on_tick_zero_and_is_periodic(tmp_path, monkeypatch):
+    monkeypatch.setattr(runner, "_SUMMARY_OUT", tmp_path / "summary.json")
+    monkeypatch.setattr(runner, "_beat", lambda now_epoch=None: None)
+    calls = []
+
+    def _retention_fn():
+        calls.append(1)
+        return {"total_archived": 0, "total_errors": 0, "trees": []}
+
+    doc0 = runner.tick(now=1000.0, tick_index=0,
+                       fotmob_fn=lambda: {}, gumbo_fn=lambda: {}, book_depth_fn=lambda: {},
+                       retention_fn=_retention_fn)
+    assert "retention" in doc0 and calls == [1]
+
+    doc1 = runner.tick(now=1030.0, tick_index=1,
+                       fotmob_fn=lambda: {}, gumbo_fn=lambda: {}, book_depth_fn=lambda: {},
+                       retention_fn=_retention_fn)
+    assert "retention" not in doc1, "retention only fires on its periodic cadence"
+    assert calls == [1], "not called again on a non-periodic tick"
+
+
+def test_retention_raising_is_isolated_and_never_sinks_the_tick(tmp_path, monkeypatch):
+    monkeypatch.setattr(runner, "_SUMMARY_OUT", tmp_path / "summary.json")
+    monkeypatch.setattr(runner, "_beat", lambda now_epoch=None: None)
+
+    def _boom():
+        raise RuntimeError("retention sweep exploded")
+
+    doc = runner.tick(now=1000.0, tick_index=0,
+                      fotmob_fn=lambda: {"n_matches": 1}, gumbo_fn=lambda: {},
+                      book_depth_fn=lambda: {}, retention_fn=_boom)
+    assert doc["retention"]["error"] == "retention sweep exploded"
+    assert doc["fotmob"]["n_matches"] == 1, "a raising retention pass never sinks other sources"

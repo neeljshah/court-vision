@@ -61,6 +61,53 @@ def test_capture_writes_correct_paired_row(tmp_path):
 
 
 # --------------------------------------------------------------------------------------- #
+# 1b (LANE 3): the optional `extra` kwarg persists enrichment fields additively.          #
+# --------------------------------------------------------------------------------------- #
+def test_extra_fields_persist_additively(tmp_path):
+    lg.capture_pair_once(
+        "mlb", "E1", now=_t(0),
+        live_state_fn=lambda s, g: {"home_score": 1, "away_score": 0},
+        model_fn=lambda st: 0.60, market_fetch_fn=lambda s, g: 0.55,
+        out_dir=tmp_path,
+        extra={"xg_home": 1.2, "xg_away": 0.8, "espn_wp": 0.61},
+    )
+    path = tmp_path / "mlb" / "E1.jsonl"
+    row = json.loads(path.read_text(encoding="ascii").splitlines()[0])
+    assert row["xg_home"] == 1.2 and row["xg_away"] == 0.8 and row["espn_wp"] == 0.61
+    # Core keys are untouched.
+    assert row["model_prob"] == 0.60 and row["market_prob"] == 0.55 and row["side"] == "home"
+
+
+def test_extra_cannot_overwrite_core_keys(tmp_path):
+    lg.capture_pair_once(
+        "mlb", "E2", now=_t(0),
+        live_state_fn=lambda s, g: {"home_score": 1, "away_score": 0},
+        model_fn=lambda st: 0.60, market_fetch_fn=lambda s, g: 0.55,
+        out_dir=tmp_path,
+        extra={"model_prob": 0.99, "side": "away", "new_field": "kept"},
+    )
+    path = tmp_path / "mlb" / "E2.jsonl"
+    row = json.loads(path.read_text(encoding="ascii").splitlines()[0])
+    assert row["model_prob"] == 0.60, "extra can never overwrite the real model_prob"
+    assert row["side"] == "home", "extra can never overwrite the alignment side"
+    assert row["new_field"] == "kept", "a non-colliding extra key still persists"
+
+
+def test_extra_non_dict_is_a_noop(tmp_path):
+    summary = lg.capture_pair_once(
+        "mlb", "E3", now=_t(0),
+        live_state_fn=lambda s, g: {"home_score": 1, "away_score": 0},
+        model_fn=lambda st: 0.60, market_fetch_fn=lambda s, g: 0.55,
+        out_dir=tmp_path, extra="not-a-dict",
+    )
+    assert summary["status"] == "captured"
+    path = tmp_path / "mlb" / "E3.jsonl"
+    row = json.loads(path.read_text(encoding="ascii").splitlines()[0])
+    assert set(row.keys()) == {"sport", "game_id", "ts", "market_prob", "model_prob",
+                               "side", "state_summary"}
+
+
+# --------------------------------------------------------------------------------------- #
 # 2. misaligned / missing pairs are SKIPPED, not graded.                                  #
 # --------------------------------------------------------------------------------------- #
 def test_missing_market_side_is_skipped_not_written(tmp_path):

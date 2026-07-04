@@ -253,6 +253,32 @@ def test_run_series_captures_and_single_game_grade_is_insufficient(tmp_path):
     _no_dollar_field(pool)
 
 
+# --------------------------------------------------------------------------------------- #
+# 6 (LANE 3): `extra` is forwarded verbatim into the persisted grade row.                  #
+# --------------------------------------------------------------------------------------- #
+def test_extra_kwarg_forwarded_into_grade_row(tmp_path):
+    grade_dir = tmp_path / "grade"
+    d = dt.on_tick("mlb", "G10", _tick(0.80, 0.55, yes_away=0.50),
+                   grade_dir=grade_dir, ledger_path=tmp_path / "l.jsonl",
+                   extra={"xg_home": 1.5, "espn_wp": 0.58})
+    assert d["captured"] is True
+    path = grade_dir / "mlb" / "G10.jsonl"
+    row = json.loads(path.read_text(encoding="ascii").splitlines()[0])
+    assert row["xg_home"] == 1.5 and row["espn_wp"] == 0.58
+
+
+def test_extra_none_is_backward_compatible(tmp_path):
+    # Default (no extra passed) behaves exactly as before -- no new keys appear.
+    grade_dir = tmp_path / "grade"
+    d = dt.on_tick("mlb", "G11", _tick(0.80, 0.55, yes_away=0.50),
+                   grade_dir=grade_dir, ledger_path=tmp_path / "l.jsonl")
+    assert d["captured"] is True
+    path = grade_dir / "mlb" / "G11.jsonl"
+    row = json.loads(path.read_text(encoding="ascii").splitlines()[0])
+    assert set(row.keys()) == {"sport", "game_id", "ts", "market_prob", "model_prob",
+                               "side", "state_summary"}
+
+
 def test_leak_free_enter_does_not_see_the_close(tmp_path):
     # The ENTER decision uses only as-of-tick model_prob + the live price. We prove the
     # close (a LATER, higher price) is never an input: an early tick with a +edge bets the

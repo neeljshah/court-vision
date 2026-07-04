@@ -244,3 +244,35 @@ def test_real_on_disk_single_game_insufficient(tmp_path):
     assert pool["n_games"] < ag.MIN_GAMES
     assert pool["edge_claimed"] is False
     assert pool["units"] == "probability"
+
+
+# --------------------------------------------------------------------------------------- #
+# LANE 3: consumer tolerance -- additive enrichment keys on every row are IGNORED, the      #
+# pooled verdict is byte-identical to the same rows without those keys.                    #
+# --------------------------------------------------------------------------------------- #
+def _with_enrichment(rows: list) -> list:
+    out = []
+    for i, r in enumerate(rows):
+        r2 = dict(r)
+        r2.update({"xg_home": 1.1 + 0.01 * i, "xg_away": 0.9, "xg_asof_min": 42.0,
+                  "spread_bp": 55.0, "book_thinness": 12, "stale_quote": False,
+                  "espn_wp": 0.61})
+        out.append(r2)
+    return out
+
+
+def test_extra_enrichment_keys_are_ignored_verdict_unchanged(tmp_path):
+    gd_plain = tmp_path / "plain"
+    gd_enriched = tmp_path / "enriched"
+    outcomes = [1.0, 0.0, 1.0, 1.0, 0.0, 1.0]
+    for k, o in enumerate(outcomes):
+        _write_game(gd_plain, "E-G%d" % k, _beat_game(k, "E-G%d" % k, o))
+        _write_game(gd_enriched, "E-G%d" % k, _with_enrichment(_beat_game(k, "E-G%d" % k, o)))
+
+    pool_plain = ag.aggregate_grade(grade_dir=gd_plain)
+    pool_enriched = ag.aggregate_grade(grade_dir=gd_enriched)
+
+    assert pool_plain["pool_verdict"] == pool_enriched["pool_verdict"]
+    assert pool_plain["n_games"] == pool_enriched["n_games"]
+    assert pool_plain["total_ticks_scored"] == pool_enriched["total_ticks_scored"]
+    assert pool_plain["pooled_mean_clv"] == pool_enriched["pooled_mean_clv"]

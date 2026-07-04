@@ -91,6 +91,22 @@ def _run_book_depth() -> Dict[str, Any]:
     return poll_once(sports=["mlb", "wnba"])
 
 
+# Retention is a periodic housekeeping pass, not a per-tick one (a directory walk every
+# 30s is wasteful for a 30-day active window) -- gated to fire every _RETENTION_EVERY_N
+# ticks (default: 1 hour at the 30s cadence). ARCHIVES only (see sidecar_retention.py),
+# never deletes; a failure here can never sink the enrichment tick (LANE 1's fotmob/
+# gumbo/book_depth sources are unaffected either way).
+_RETENTION_EVERY_N_TICKS = 120
+
+
+def _run_retention() -> Dict[str, Any]:
+    """One retention enforcement pass over DEFAULT_POLICY (all 5 sidecar trees).
+    Archives stale files (age/byte budget); never deletes. Returns enforce_all's
+    summary dict."""
+    from scripts.platformkit.ingame.sidecar_retention import enforce_all
+    return enforce_all()
+
+
 def _compose(fotmob: Dict[str, Any], gumbo: Dict[str, Any],
             book_depth: Dict[str, Any], now_iso: str) -> Dict[str, Any]:
     return {
@@ -102,17 +118,25 @@ def _compose(fotmob: Dict[str, Any], gumbo: Dict[str, Any],
     }
 
 
-def tick(*, now: float,
+def tick(*, now: float, tick_index: int = 0,
          fotmob_fn: Optional[Callable[[], Dict[str, Any]]] = None,
          gumbo_fn: Optional[Callable[[], Dict[str, Any]]] = None,
-         book_depth_fn: Optional[Callable[[], Dict[str, Any]]] = None) -> Dict[str, Any]:
+         book_depth_fn: Optional[Callable[[], Dict[str, Any]]] = None,
+         retention_fn: Optional[Callable[[], Dict[str, Any]]] = None) -> Dict[str, Any]:
     """One enrichment tick: fotmob -> gumbo -> book-depth -> composed doc ->
     heartbeat. Each source is try/except-isolated; a raising source degrades to
     an {"error": str} entry for that source only, never kills the tick or blocks
-    a sibling source. Never raises."""
+    a sibling source. Never raises.
+
+    Retention is a PERIODIC pass (every _RETENTION_EVERY_N_TICKS, keyed off
+    *tick_index*), additive + failure-isolated the same way as the 3 sources: a
+    raising retention pass degrades to {"error": str} and never blocks/kills the
+    tick. Absent from the doc entirely on ticks it does not run (no "skipped"
+    noise every 30s)."""
     _fotmob = fotmob_fn if fotmob_fn is not None else _run_fotmob
     _gumbo = gumbo_fn if gumbo_fn is not None else _run_gumbo
     _book_depth = book_depth_fn if book_depth_fn is not None else _run_book_depth
+    _retention = retention_fn if retention_fn is not None else _run_retention
 
     try:
         fotmob_summary = _fotmob()
@@ -132,6 +156,12 @@ def tick(*, now: float,
 
     now_iso = datetime.fromtimestamp(now, tz=timezone.utc).isoformat()
     doc = _compose(fotmob_summary, gumbo_summary, book_depth_summary, now_iso)
+    if tick_index >= 0 and tick_index % _RETENTION_EVERY_N_TICKS == 0:
+        try:
+            doc["retention"] = _retention()
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("ingame_enrichment retention step raised: %s", exc)
+            doc["retention"] = {"error": str(exc)}
     try:
         _SUMMARY_OUT.parent.mkdir(parents=True, exist_ok=True)
         tmp = _SUMMARY_OUT.with_suffix(".json.tmp")
@@ -169,7 +199,7 @@ def run(*, interval_sec: float = DEFAULT_INTERVAL_SEC,
             now = float(_clock())
         except Exception:  # noqa: BLE001
             now = _time.time()
-        doc = tick(now=now)
+        doc = tick(now=now, tick_index=ticks)
         errs = [k for k in ("fotmob", "gumbo", "book_depth") if "error" in (doc.get(k) or {})]
         print("%s | tick=%d errors=%s" % (HEARTBEAT_COMPONENT, ticks, ",".join(errs) or "none"),
               flush=True)
