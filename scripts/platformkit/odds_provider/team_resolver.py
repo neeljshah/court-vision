@@ -56,9 +56,15 @@ _MLB_CODE_TO_NICK: Dict[str, str] = {
     "TOR": "bluejays", "WAS": "nationals",
 }
 # Common alternate MLB codes -> our canonical code.
+# "AZ" (LANE 5, this fix): the Kalshi-derived capture ticker suffix convention
+# (espn_wp_backfill_measure's KXMLBGAME-<date><away><home> parsing) spells Arizona
+# "AZ", one of 36 espn_wp backfill misses traced to this exact abbreviation gap
+# (ARI's ESPN scoreboard abbreviation is "ARI", never "AZ" -- verified live
+# 2026-07-06 against site.api.espn.com/.../baseball/mlb/scoreboard). Additive; ARI
+# itself is already the canonical code (line above), unaffected.
 _MLB_CODE_ALIASES: Dict[str, str] = {
     "CHC": "CUB", "CHW": "CWS", "SD": "SDG", "SF": "SFO", "KC": "KAN",
-    "TB": "TAM", "WSH": "WAS", "WSN": "WAS", "ARZ": "ARI", "LA": "LAD",
+    "TB": "TAM", "WSH": "WAS", "WSN": "WAS", "ARZ": "ARI", "AZ": "ARI", "LA": "LAD",
 }
 
 # --------------------------------------------------------------------------- #

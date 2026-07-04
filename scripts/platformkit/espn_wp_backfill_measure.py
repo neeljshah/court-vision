@@ -30,6 +30,7 @@ from typing import Dict, List, Optional, Tuple
 from scripts.platformkit.espn_wp_reference import (
     SUPPORTED_SPORTS, _UA, fetch_summary, build_asof_series, get_outcome,
 )
+from scripts.platformkit.odds_provider.team_resolver import canonical
 
 _REPO = Path(__file__).resolve().parents[2]
 _PACE_SEC = 1.0
@@ -54,9 +55,8 @@ def parse_ticker(name: str) -> Optional[Tuple[str, str]]:
     return yyyymmdd, suffix
 
 
-def resolve_event_id(sport: str, yyyymmdd: str, team_suffix: str) -> Optional[str]:
-    """One ESPN scoreboard lookup for a date; match the event whose away+home
-    abbreviation concat equals team_suffix. Returns the ESPN numeric event id."""
+def _fetch_scoreboard(sport: str, yyyymmdd: str) -> Optional[Dict]:
+    """One ESPN scoreboard fetch for a date. None on any network/parse failure."""
     espn_sport = SUPPORTED_SPORTS.get(sport)
     if espn_sport is None:
         return None
@@ -64,8 +64,77 @@ def resolve_event_id(sport: str, yyyymmdd: str, team_suffix: str) -> Optional[st
     req = urllib.request.Request(url, headers={"User-Agent": _UA})
     try:
         with urllib.request.urlopen(req, timeout=10) as resp:
-            data = json.loads(resp.read())
+            return json.loads(resp.read())
     except (urllib.error.URLError, urllib.error.HTTPError, ValueError, TimeoutError):
+        return None
+
+
+def _split_team_suffix(sport: str, team_suffix: str) -> List[Tuple[str, str]]:
+    """Every (away_code, home_code) split of *team_suffix* where BOTH halves are a
+    known code or alias for *sport* (per team_resolver's own alias map -- no new map
+    invented here). Bounded (len(team_suffix)-1 candidate cut points, MLB/NBA codes
+    are 2-3 chars so this is a handful of tries). Returns [] if no split qualifies,
+    exactly one entry for an unambiguous split, 2+ for a genuinely ambiguous suffix
+    (caller must then refuse to guess)."""
+    from scripts.platformkit.odds_provider.team_resolver import _CODE_TO_NICK, _CODE_ALIASES
+    code_map = _CODE_TO_NICK.get(sport)
+    if code_map is None:
+        return []
+    alias_map = _CODE_ALIASES.get(sport, {})
+    known = set(code_map) | set(alias_map)
+    out: List[Tuple[str, str]] = []
+    for cut in range(1, len(team_suffix)):
+        away, home = team_suffix[:cut], team_suffix[cut:]
+        if away in known and home in known:
+            out.append((away, home))
+    return out
+
+
+def resolve_event_id_fuzzy(sport: str, yyyymmdd: str, team_suffix: str,
+                          scoreboard: Optional[Dict] = None) -> Optional[str]:
+    """Alias-fallback resolution: canonicalize both our ticker's away/home codes AND
+    each ESPN event's abbreviations via team_resolver.canonical(), matching only when
+    the (away,home) canonical pair identifies EXACTLY ONE event on the date AND the
+    suffix splits into exactly one candidate (away,home) code pair. A fuzzy match that
+    could bind two+ games -- either an ambiguous suffix split or two candidate ESPN
+    events sharing a canonical pair -- returns None (honest refusal, never a guess).
+    *scoreboard* may be injected (already-fetched payload) for network-free testing;
+    production callers omit it and this fetches once itself."""
+    espn_sport = SUPPORTED_SPORTS.get(sport)
+    if espn_sport is None:
+        return None
+    splits = _split_team_suffix(sport, team_suffix)
+    if len(splits) != 1:
+        return None  # no split, or an ambiguous suffix -- never guess
+    away_code, home_code = splits[0]
+    away_key = canonical(sport, away_code)
+    home_key = canonical(sport, home_code)
+    data = scoreboard if scoreboard is not None else _fetch_scoreboard(sport, yyyymmdd)
+    if not data:
+        return None
+    matches = []
+    for e in data.get("events", []):
+        comps = e.get("competitions", [{}])[0].get("competitors", [])
+        abbr = {c.get("homeAway"): c.get("team", {}).get("abbreviation") for c in comps}
+        e_away = abbr.get("away")
+        e_home = abbr.get("home")
+        if e_away is None or e_home is None:
+            continue
+        if canonical(sport, e_away) == away_key and canonical(sport, e_home) == home_key:
+            matches.append(e.get("id"))
+    if len(matches) != 1:
+        return None  # 0 = no fuzzy hit, 2+ = ambiguous -- both are an honest miss
+    return matches[0]
+
+
+def resolve_event_id(sport: str, yyyymmdd: str, team_suffix: str) -> Optional[str]:
+    """One ESPN scoreboard lookup for a date; match the event whose away+home
+    abbreviation concat equals team_suffix (strict). On a strict miss, falls back to
+    resolve_event_id_fuzzy's alias-canonicalized, unambiguous-only match (reuses the
+    SAME fetched scoreboard payload -- no extra network call). Returns the ESPN
+    numeric event id, or None if neither strict nor fuzzy resolves unambiguously."""
+    data = _fetch_scoreboard(sport, yyyymmdd)
+    if not data:
         return None
     for e in data.get("events", []):
         comps = e.get("competitions", [{}])[0].get("competitors", [])
@@ -73,7 +142,7 @@ def resolve_event_id(sport: str, yyyymmdd: str, team_suffix: str) -> Optional[st
         concat = f"{abbr.get('away','')}{abbr.get('home','')}"
         if concat == team_suffix:
             return e.get("id")
-    return None
+    return resolve_event_id_fuzzy(sport, yyyymmdd, team_suffix, scoreboard=data)
 
 
 def list_capture_games(sport: str) -> List[str]:
@@ -178,9 +247,17 @@ def measure_mlb() -> Dict:
                 wp_point = _nearest_prior(series, ts)
                 if wp_point is None:
                     continue  # never use a future WP point
-                our_preds.append(float(tick.get("model_prob", float("nan"))))
+                # LANE 5 fix: a handful of grade rows (first-tick placeholders on games
+                # captured before the model had priced a live number) carry model_prob/
+                # market_prob == None. Previously these silently poisoned the WHOLE Brier
+                # sum to NaN via float(None-default nan); skip the tick honestly instead
+                # (never included in n) rather than reporting a broken aggregate.
+                mp, vp = tick.get("model_prob"), tick.get("market_prob")
+                if mp is None or vp is None:
+                    continue
+                our_preds.append(float(mp))
                 espn_preds.append(wp_point["home_win_pct"])
-                venue_preds.append(float(tick.get("market_prob", float("nan"))))
+                venue_preds.append(float(vp))
                 outcomes.append(y)
                 used_this_game += 1
         if used_this_game:
