@@ -41,6 +41,20 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 30 (SCHEDULED WAKE: M13 ROOT CAUSE EXPOSED BY ITS OWN FIX + WAVE-30
+  FLEET LAUNCHED, 2026-07-04 ~19:35Z, in flight wf_9ca5d74f): stop flag clear;
+  verifier 16 PASS / 16 PENDING (between July-4 day and night slates -- honest) /
+  2 FAIL (beat_thread cosmetic + m13 SLA RED again). m13 TRIAGE: timeout wrapper
+  WORKS ("score timed out after 240s" -- the infinite hang is gone) and thereby
+  EXPOSED the true root cause: dead providers called inline in the score path
+  (prizepicks 403 walled, betmgm 400 broken -- BetMGM should not be hot-path at
+  all per memory) burn the whole 240s budget most cycles -> snapshot rarely
+  refreshes. = the exact prop_cards.py follow-up wave-22 flagged. WAVE-30 lanes:
+  (1) per-provider timeouts + file-backed circuit breaker (skip dead providers,
+  SKIPPED_CIRCUIT recorded honestly, manual-cycle proof required); (2) tennis
+  surface-hold in-game gate (conductor rank 5, planted-null); (3) provider
+  schema-drift shape snapshots (scrape-target rank 1, resilience). NPB/KBO first
+  grades: next games ~09-10Z 07-05, verify next-morning wake. No edge claimed.
 - SPRINT WAKE 29 (INTEL BUILD FLEET: CURRY ADJUDICATED + 2 PLANTED-NULL CATCHES,
   2026-07-04 ~19:00Z, commits 176c908e/cd9a1c61/48ecbfbc/b464018f, 10 agents /
   ~1.13M tokens, 1 fix round): (1) THE HEADLINE: predictive-validity gate = HONEST
