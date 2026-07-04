@@ -41,6 +41,21 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 29 (INTEL BUILD FLEET: CURRY ADJUDICATED + 2 PLANTED-NULL CATCHES,
+  2026-07-04 ~19:00Z, commits 176c908e/cd9a1c61/48ecbfbc/b464018f, 10 agents /
+  ~1.13M tokens, 1 fix round): (1) THE HEADLINE: predictive-validity gate = HONEST
+  REJECT of shooter_quality_v1 (naive rho .4044 vs .2680 forecasting future-30d
+  TS%, CI excludes 0, 0/3 folds) -> naive STAYS CANONICAL for prediction; BUT the
+  face diagnostic: intelligence index ranks Curry 5/329 (Durant/LaVine top-3,
+  basketball-plausible), Ellis falls 1->99 -- the index DESCRIBES shooting value,
+  the naive index FORECASTS efficiency; both published, correctly labeled
+  (descriptive = scouting layer, never prediction-wired). (2) WNBA extraction:
+  6 atlas_wnba_* parquets from the 168-game CDN corpus, ~20 dims unblocked; Opus
+  caught 2 real data bugs (turnovers sliver, cumulative pointsTotal) -> fixed vs
+  real corpus. (3) contract entity_key: generalized to any entity, 12/12 VERIFIED,
+  byte-identical. (4) MLB SP-fatigue: NOT_TESTABLE -- real model dm_p=.020 BUT
+  planted null shows SAME improvement = flexibility artifact; false positive
+  refused (2nd planted-null catch this wave). No edge claimed.
 - SPRINT WAKE 28 (MULTI-SPORT INTELLIGENCE PROGRAM COMPLETE, 2026-07-04 ~18:20Z,
   6 agents / ~0.88M tokens, docs local-only): 4 sport-truth specs DONE with live-read
   numbers (MLB 35 dims/27 covered; soccer_intl 38/25; tennis 48/34 -- structural
