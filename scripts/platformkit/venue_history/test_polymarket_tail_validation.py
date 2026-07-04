@@ -94,3 +94,42 @@ def test_write_artifact_atomic(tmp_path: Path) -> None:
     assert path.is_file()
     loaded = json.loads(path.read_text(encoding="utf-8"))
     assert loaded["provenance"] == "polymarket_historical_validation"
+
+
+def test_window_2024plus_reads_sibling_dir_and_labels_provenance(tmp_path: Path) -> None:
+    """LANE 3: window='2024plus' reads from <corpus_dir>/<sport>_2024plus (the
+    physically separate directory the new backfill writes to), and gets its
+    own provenance string + own default output filename -- never confused
+    with or pooled into the 2023_dailies window's artifact."""
+    base = tmp_path / "nba_2024plus"
+    for i in range(10):
+        _write_game(base, "2025-11-%02d" % (i + 1), "nba-games-x", "nba-g-%d" % i,
+                    1, [0.15, 0.14, 0.16])
+    result = ptv.validate("nba", corpus_dir=tmp_path, window="2024plus")
+    assert result["window"] == "2024plus"
+    assert result["provenance"] == "polymarket_historical_validation_2024plus"
+    assert result["n_games_total_corpus"] == 10
+    h1 = result["bands"][ptv.H1_BAND]
+    assert h1["pooled"]["venue_verdict"] == "VENUE_UNDERPRICES"
+
+
+def test_window_2023_dailies_default_unchanged() -> None:
+    """Default call (no window arg) must still produce the exact original
+    provenance/window label -- no behavior change for existing callers."""
+    result = ptv.validate("mlb", corpus_dir=Path("__nonexistent_dir__"))
+    assert result["window"] == "2023_dailies"
+    assert result["provenance"] == "polymarket_historical_validation"
+
+
+def test_write_artifact_default_path_per_window(tmp_path: Path, monkeypatch) -> None:
+    """write_artifact() with no out_path derives <sport>_tail_validation.json
+    for 2023_dailies and <sport>_2024plus_tail_validation.json for 2024plus,
+    both under the same parent dir as the original DEFAULT_OUT -- so the
+    original mlb_tail_validation.json filename is preserved exactly."""
+    monkeypatch.setattr(ptv, "DEFAULT_OUT", tmp_path / "mlb_tail_validation.json")
+    r2023 = ptv.validate("mlb", corpus_dir=Path("__nonexistent_dir__"))
+    p2023 = ptv.write_artifact(r2023)
+    assert p2023 == tmp_path / "mlb_tail_validation.json"
+    r2024 = ptv.validate("nba", corpus_dir=Path("__nonexistent_dir__"), window="2024plus")
+    p2024 = ptv.write_artifact(r2024)
+    assert p2024 == tmp_path / "nba_2024plus_tail_validation.json"

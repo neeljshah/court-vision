@@ -115,10 +115,20 @@ def _venue_only_stats(rows: List[Tuple[str, float, float, int]]) -> Dict[str, An
     }
 
 
-def validate(sport: str = "mlb", corpus_dir: Optional[Path] = None) -> Dict[str, Any]:
+def validate(sport: str = "mlb", corpus_dir: Optional[Path] = None,
+            window: str = "2023_dailies") -> Dict[str, Any]:
     """Run the H1/H2 band validation against the Polymarket historical corpus.
-    Returns the full result dict (also written to disk by write_artifact)."""
-    all_rows = _load_corpus_rows(corpus_dir or DEFAULT_CORPUS_DIR, sport)
+    *window* labels which physically-separate corpus/era this run is against
+    (default "2023_dailies" -- UNCHANGED existing behavior/output for any
+    caller not passing window explicitly). "2024plus" is LANE 3's alternate
+    game-slug corpus (data/venue_history/polymarket/<sport>_2024plus/) --
+    same band math, but its own provenance string and output path so the two
+    windows are NEVER pooled. Returns the full result dict (also written to
+    disk by write_artifact)."""
+    if corpus_dir is None:
+        corpus_dir = DEFAULT_CORPUS_DIR
+    sport_subdir = sport if window == "2023_dailies" else "%s_2024plus" % sport
+    all_rows = _load_corpus_rows(corpus_dir, sport_subdir)
     n_games_total = len({r[0] for r in all_rows})
     bands: Dict[str, Any] = {}
     for label in (H1_BAND, H2_BAND):
@@ -140,16 +150,20 @@ def validate(sport: str = "mlb", corpus_dir: Optional[Path] = None) -> Dict[str,
                         "n_games": len({r[0] for r in band_rows_all}),
                         "venue_verdict": "INSUFFICIENT_DATA"})
         bands[label] = {"pooled": pooled, "halves": halves}
+    provenance = ("polymarket_historical_validation" if window == "2023_dailies"
+                 else "polymarket_historical_validation_2024plus")
+    era_note = ("no live model price for 2023 history" if window == "2023_dailies"
+               else "no live model price for this 2024+ alternate-slug corpus")
     return {
         "updated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "component": "m_polymarket_tail_validation",
-        "provenance": "polymarket_historical_validation",
-        "sport": sport, "venue": "polymarket",
+        "provenance": provenance,
+        "sport": sport, "venue": "polymarket", "window": window,
         "note": ("independent multi-season historical validation of the H1/H2 "
                  "in-play tail-band venue-bias hypothesis (ingame_tail_bias_prereg_2026_07_03) "
                  "on a PHYSICALLY SEPARATE corpus; never pooled with the forward "
-                 "pre-registered gate (ingame_tail_gate.py); model/delta_brier "
-                 "not applicable here (no live model price for 2023 history)"),
+                 "pre-registered gate (ingame_tail_gate.py) NOR with the other "
+                 "window's corpus; model/delta_brier not applicable here (%s)" % era_note),
         "n_games_total_corpus": n_games_total,
         "min_games_band": MIN_GAMES_BAND,
         "bands": bands, "edge_claimed": False,
@@ -157,7 +171,15 @@ def validate(sport: str = "mlb", corpus_dir: Optional[Path] = None) -> Dict[str,
 
 
 def write_artifact(result: Dict[str, Any], out_path: Optional[Path] = None) -> Path:
-    p = Path(out_path) if out_path is not None else DEFAULT_OUT
+    if out_path is None:
+        window = result.get("window", "2023_dailies")
+        sport = result.get("sport", "mlb")
+        if window == "2023_dailies":
+            p = DEFAULT_OUT.parent / ("%s_tail_validation.json" % sport)
+        else:
+            p = DEFAULT_OUT.parent / ("%s_2024plus_tail_validation.json" % sport)
+    else:
+        p = Path(out_path)
     p.parent.mkdir(parents=True, exist_ok=True)
     tmp = p.with_suffix(".tmp")
     tmp.write_text(json.dumps(result, indent=1), encoding="utf-8")
@@ -166,9 +188,14 @@ def write_artifact(result: Dict[str, Any], out_path: Optional[Path] = None) -> P
 
 
 def main() -> None:
-    result = validate()
-    print("polymarket historical tail validation (%s): %d games in corpus" %
-          (result["sport"], result["n_games_total_corpus"]))
+    import argparse
+    ap = argparse.ArgumentParser(prog="polymarket_tail_validation")
+    ap.add_argument("--sport", default="mlb")
+    ap.add_argument("--window", default="2023_dailies", choices=["2023_dailies", "2024plus"])
+    a = ap.parse_args()
+    result = validate(a.sport, window=a.window)
+    print("polymarket historical tail validation (%s, window=%s): %d games in corpus" %
+          (result["sport"], result["window"], result["n_games_total_corpus"]))
     for label in (H1_BAND, H2_BAND):
         b = result["bands"][label]
         pooled = b["pooled"]
