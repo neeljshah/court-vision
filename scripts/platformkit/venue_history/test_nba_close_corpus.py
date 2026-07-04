@@ -176,6 +176,55 @@ def test_build_from_polymarket_excludes_and_counts_honestly(tmp_path: Path) -> N
     assert exclusions["no_commence_time_reference"] == 1  # doc_b
 
 
+def test_build_from_polymarket_falls_back_to_extra_commence_index(tmp_path: Path) -> None:
+    """Primary comm has no match for this game (simulates the pre-2024-11-15
+    odds_api gap); comm_extra (e.g. ESPN backfill) supplies the tipoff time
+    instead. Primary is tried first and wins when both have a match --
+    covered by test_build_from_polymarket_no_flip_when_pm_home_matches_real_home
+    which never even builds an extra index (default None)."""
+    pm_dir = tmp_path / "pm_fallback"
+    pm_dir.mkdir()
+    doc = {
+        "date": "2023-02-23", "market_slug": "nba-ind-bos-2023-02-23",
+        "home": "Pacers", "away": "Celtics",
+        "prices": [{"ts": "2023-02-23T23:00:00Z", "prob_home": 0.4}],
+    }
+    (pm_dir / "day.jsonl").write_text(json.dumps(doc) + "\n", encoding="utf-8")
+    sched = _sched([("2023-02-23", "IND", "BOS", 0.0)])
+    comm_primary = _comm([])  # odds_api has no 2023 coverage -- no match
+    comm_extra = _comm([("2023-02-23T23:30:00Z", "Indiana Pacers", "Boston Celtics")])
+    exclusions = {"malformed_doc": 0, "no_schedule_match": 0,
+                  "no_commence_time_reference": 0, "no_tick_before_tipoff": 0,
+                  "kalshi_unparseable_ticker": 0}
+    rows = ncc._build_from_polymarket(pm_dir, "test_corpus", sched, comm_primary, exclusions,
+                                      comm_extra=comm_extra)
+    assert len(rows) == 1
+    assert rows[0]["close_prob_home"] == 0.4
+    assert sum(exclusions.values()) == 0
+
+
+def test_build_from_polymarket_no_extra_index_stays_honest_exclusion(tmp_path: Path) -> None:
+    """Without comm_extra, a game outside the primary index's coverage is
+    STILL excluded -- confirms the fallback is additive, never a silent
+    behavior change for callers that don't pass it (e.g. Kalshi builder)."""
+    pm_dir = tmp_path / "pm_no_fallback"
+    pm_dir.mkdir()
+    doc = {
+        "date": "2023-02-23", "market_slug": "nba-ind-bos-2023-02-23",
+        "home": "Pacers", "away": "Celtics",
+        "prices": [{"ts": "2023-02-23T23:00:00Z", "prob_home": 0.4}],
+    }
+    (pm_dir / "day.jsonl").write_text(json.dumps(doc) + "\n", encoding="utf-8")
+    sched = _sched([("2023-02-23", "IND", "BOS", 0.0)])
+    comm_primary = _comm([])
+    exclusions = {"malformed_doc": 0, "no_schedule_match": 0,
+                  "no_commence_time_reference": 0, "no_tick_before_tipoff": 0,
+                  "kalshi_unparseable_ticker": 0}
+    rows = ncc._build_from_polymarket(pm_dir, "test_corpus", sched, comm_primary, exclusions)
+    assert rows == []
+    assert exclusions["no_commence_time_reference"] == 1
+
+
 def test_kalshi_tail_split_unique_match_resolves(tmp_path: Path) -> None:
     sched = _sched([("2026-04-26", "BOS", "PHI", 1.0)])
     m = nck.match_tail_to_schedule("PHIBOS", "2026-04-26", sched)
@@ -254,7 +303,8 @@ def test_build_corpus_end_to_end_writes_parquet_and_reports_honestly(tmp_path: P
         sched = _sched([("2024-11-15", "BOS", "MIA", 1.0)])
         comm = _comm([("2024-11-16T00:00:00Z", "Boston Celtics", "Miami Heat")])
         out_path = tmp_path / "out.parquet"
-        rep = m.build_corpus(out_path=out_path, schedule_index=sched, commence_index=comm)
+        rep = m.build_corpus(out_path=out_path, schedule_index=sched, commence_index=comm,
+                             commence_index_extra=_comm([]))  # hermetic: no real ESPN cache hit
     finally:
         m.PM_NBA_2023, m.PM_NBA_2024PLUS, m.KALSHI_NBA = orig_23, orig_24, orig_k
 

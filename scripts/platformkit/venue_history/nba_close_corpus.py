@@ -9,31 +9,37 @@ Kalshi-side building lives in the sibling nba_close_corpus_kalshi.py.
 
 SOURCES (grounded 2026-07-04): PM data/venue_history/polymarket/nba/*.jsonl
 (2023 pilot) + nba_2024plus/*.jsonl (both repeat docs, see DEDUP); Kalshi
-data/venue_history/kalshi/nba/*.jsonl (2026 playoffs); games.parquet (regular-
-season schedule, date-only, no clock); and data/cache/odds_api/
-historical_events/*.json -- a PRE-EXISTING LOCAL CACHE (NOT a new purchase)
-used STRICTLY as the tipoff-time reference (only on-disk source with a real UTC
-commence_time), never as a probability source. Games outside its coverage, or
-with no schedule match, are EXCLUDED + counted.
+data/venue_history/kalshi/nba/*.jsonl (2026 playoffs); games.parquet (date-
+only, no clock); and TWO independent tipoff-time references (time-of-day
+only, never a probability source): (a) data/cache/odds_api/historical_events/
+*.json -- pre-existing local cache, covers 2024-11-15 onward; (b) data/cache/
+venue_history/espn_scoreboard/nba/*.json -- keyless ESPN scoreboard backfill
+(sibling espn_tipoff_backfill.py, added 2026-07-04) covering the pre-
+2024-11-15 2023 PM pilot window odds_api does not reach. Games outside BOTH
+references, or with no schedule match, are EXCLUDED + counted.
+
+2023-24 EXTENSION (2026-07-04): every other on-disk NBA parquet (games,
+espn_boxscores, linescores, odds) is date-only -- checked and genuinely
+exhausted before falling to ESPN's scoreboard API (full candidate-order note
+in espn_tipoff_backfill.py). commence_index_extra is that ESPN reference,
+tried only when the primary (odds_api) CommenceIndex has no match -- odds_api
+stays sole reference for its own 2024-11-15+ window (no silent override).
 
 CRITICAL DATA FIX (do not regress): PM docs' "home"/"away" are OUTCOME[0]/[1]
-from the market's listing order (e.g. slug "nba-sas-nyk-2024-12-25" lists SAS
-first) -- NOT necessarily the true venue home. This module NEVER trusts that
-label; it re-derives true home/away from games.parquet (unordered team-pair +
-nearest-date join) and re-orients prob_home (flips 1-p when PM outcome0 is not
-the real home). Kalshi tickers already carry an explicit away+home split.
+market-listing order, NOT necessarily the true venue home. Re-derived from
+games.parquet (unordered pair + nearest-date join); prob_home flips (1-p)
+when PM outcome0 != real home. Kalshi tickers carry an explicit away+home split.
 
-DEDUP: PM jsonl repeats each game byte-for-byte (benign append artifact); keep
-the FIRST per (date, market_slug). CLOSE DEFINITION: last tick with ts strictly
-< the matched commence_time. PM/Kalshi are single-number prob feeds (no
-bid/ask), so no two-sided vig-tolerance check applies -- recorded via `venue`.
+DEDUP: PM jsonl repeats each game byte-for-byte; keep FIRST per (date,
+market_slug). CLOSE = last tick with ts strictly < matched commence_time.
+Single-number prob feeds (no bid/ask) -- no vig-tolerance check; see `venue`.
 
 OUTPUT: data/cache/venue_history/nba_close_corpus.parquet -- game_id, date,
 home/away_team, home_win, venue, corpus_id, close_kind, close_ts,
 close_prob_home, commence_time, seconds_before_tip, validation_only=True.
-HONESTY: all exclusions are counted + returned in the build report, never
-silently dropped. INVARIANTS: platformkit-only; ASCII only; offline; no
-data/registry writes; no flag flips; no $-edge claims.
+HONESTY: all exclusions counted + returned, never silently dropped.
+INVARIANTS: platformkit-only; ASCII only; offline; no data/registry writes;
+no flag flips; no $-edge claims.
 
 Per-file test:
   cd /c/Users/neelj/nba-ai-system && python -m pytest scripts/platformkit/venue_history/test_nba_close_corpus.py -q
@@ -205,7 +211,11 @@ def _last_tick_before(prices: List[Dict[str, Any]], cutoff: datetime,
 
 
 def _build_from_polymarket(directory: Path, corpus_id: str, sched: ScheduleIndex,
-                           comm: CommenceIndex, exclusions: Dict[str, int]) -> List[Dict[str, Any]]:
+                           comm: CommenceIndex, exclusions: Dict[str, int],
+                           comm_extra: Optional[Any] = None) -> List[Dict[str, Any]]:
+    """*comm_extra* (e.g. EspnCommenceIndex) is tried only when *comm* has no
+    match -- odds_api stays authoritative for its own window (module
+    docstring's 2023-24 EXTENSION note). Duck-typed .match(); no inheritance."""
     rows: List[Dict[str, Any]] = []
     for doc in _iter_pm_docs(directory):
         date_str = str(doc.get("date", ""))
@@ -219,6 +229,8 @@ def _build_from_polymarket(directory: Path, corpus_id: str, sched: ScheduleIndex
             continue
         _sdate, game_id, real_home, real_away, home_win = sched_match
         commence = comm.match(date_str, outcome0, outcome1)
+        if commence is None and comm_extra is not None:
+            commence = comm_extra.match(date_str, outcome0, outcome1)
         if commence is None:
             exclusions["no_commence_time_reference"] += 1
             continue
@@ -246,12 +258,18 @@ def _build_from_polymarket(directory: Path, corpus_id: str, sched: ScheduleIndex
 
 def build_corpus(*, out_path: Optional[Path] = None,
                  schedule_index: Optional[ScheduleIndex] = None,
-                 commence_index: Optional[CommenceIndex] = None) -> Dict[str, Any]:
-    """Build the NBA pregame close corpus from our own venue-history ticks.
-    Writes a provenance-labeled parquet and returns a build report with
-    honest exclusion counts. Never pools with forward gates (validation_only=True)."""
+                 commence_index: Optional[CommenceIndex] = None,
+                 commence_index_extra: Optional[Any] = None) -> Dict[str, Any]:
+    """Build the NBA pregame close corpus. Writes a provenance-labeled parquet,
+    returns a build report with honest exclusion counts; never pools with
+    forward gates (validation_only=True). commence_index_extra defaults to the
+    on-disk ESPN backfill (pre-2024-11-15 window); pass an empty index to
+    disable it in a test."""
     sched = schedule_index or ScheduleIndex.load()
     comm = commence_index or CommenceIndex.load()
+    if commence_index_extra is None:
+        from scripts.platformkit.venue_history.espn_tipoff_backfill import EspnCommenceIndex  # noqa: PLC0415
+        commence_index_extra = EspnCommenceIndex.load()
     exclusions: Dict[str, int] = {
         "malformed_doc": 0, "no_schedule_match": 0, "no_commence_time_reference": 0,
         "no_tick_before_tipoff": 0, "kalshi_unparseable_ticker": 0,
@@ -259,7 +277,8 @@ def build_corpus(*, out_path: Optional[Path] = None,
     from scripts.platformkit.venue_history.nba_close_corpus_kalshi import build_from_kalshi  # noqa: PLC0415
 
     rows: List[Dict[str, Any]] = []
-    rows += _build_from_polymarket(PM_NBA_2023, "polymarket_nba_2023_pilot", sched, comm, exclusions)
+    rows += _build_from_polymarket(PM_NBA_2023, "polymarket_nba_2023_pilot", sched, comm,
+                                   exclusions, comm_extra=commence_index_extra)
     rows += _build_from_polymarket(PM_NBA_2024PLUS, "polymarket_nba_2024plus", sched, comm, exclusions)
     rows += build_from_kalshi(KALSHI_NBA, sched, comm, exclusions)
 
