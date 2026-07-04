@@ -400,6 +400,112 @@ def test_wnba_segment_bucket_resolves_via_infer_segment():
     assert ps._infer_segment("wnba", ss) == "Q3"
 
 
+# --------------------------------------------------------------------------------------- #
+# LANE 1 (2026-07-06): soccer tick-state instrumentation. 22/40 captured soccer_intl games   #
+# had bare 'live' state (no minute/half) -- their ticks fell into the synthetic UNK segment  #
+# (wave-6 finding, the only cross-corpus WORSE bucket). Root cause: _segment_fields'/         #
+# _frac_elapsed's soccer branch only parsed the plain "57'" displayClock shape; stoppage-time #
+# ("90'+5'") and halftime (displayClock "" / "HT", unparseable) both fell through to no       #
+# minute key at all. Fixtures below are the REAL ESPN status shapes fetched live 2026-07-06   #
+# from site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard (event 760501,      #
+# STATUS_FIRST_HALF, displayClock "22'") plus the documented ESPN status vocabulary for the    #
+# halftime/stoppage/extra-time shapes not live at probe time (no WC game was at HT/stoppage    #
+# right now) -- same convention already shipped and proven in live_board._soccer_minute for    #
+# the served page, so this keeps the two readers consistent.                                  #
+# --------------------------------------------------------------------------------------- #
+def _soccer_status(display_clock, period=1, name="STATUS_FIRST_HALF", state="in"):
+    return {"displayClock": display_clock, "period": period,
+            "type": {"state": state, "name": name, "shortDetail": display_clock}}
+
+
+def test_soccer_minute_plain_clock_real_live_fixture():
+    # real live fetch 2026-07-06: fifa.world event 760501, STATUS_FIRST_HALF, "22'"
+    st = _soccer_status("22'", period=1, name="STATUS_FIRST_HALF")
+    assert S._soccer_minute(st) == 22
+
+
+def test_soccer_minute_stoppage_time_first_half():
+    st = _soccer_status("45'+2'", period=1, name="STATUS_FIRST_HALF")
+    # base minute only (45), matching live_board._soccer_minute's own '+' convention
+    assert S._soccer_minute(st) == 45
+
+
+def test_soccer_minute_stoppage_time_second_half():
+    st = _soccer_status("90'+5'", period=2, name="STATUS_SECOND_HALF")
+    assert S._soccer_minute(st) == 90
+
+
+def test_soccer_minute_halftime_falls_back_to_period_boundary():
+    # ESPN halftime shape: displayClock often "" or "HT" (unparseable), period still 1
+    for disp in ("", "HT"):
+        st = _soccer_status(disp, period=1, name="STATUS_HALFTIME")
+        assert S._soccer_minute(st) == 45, "displayClock=%r" % disp
+
+
+def test_soccer_minute_extra_time_second_half_boundary():
+    # extra-time period (>=2) with an unreadable clock still resolves to the H2 boundary
+    st = _soccer_status("", period=3, name="STATUS_END_FIRST_HALF_EXTRA")
+    assert S._soccer_minute(st) == 90
+
+
+def test_soccer_minute_none_when_wholly_unreadable():
+    st = _soccer_status("", period=0, name="STATUS_SCHEDULED")
+    assert S._soccer_minute(st) is None
+
+
+def test_segment_fields_soccer_stoppage_time_populates_minute_and_half():
+    ev = {"status": _soccer_status("90'+5'", period=2, name="STATUS_SECOND_HALF")}
+    out = S._segment_fields("soccer_intl", ev)
+    assert out["minute"] == 90 and out["half"] == "2"
+
+
+def test_segment_fields_soccer_halftime_populates_minute_and_half_not_bare_live():
+    # this is the exact bug: before the fix, a halftime tick had NO minute/half key at all
+    # -> live_grade._state_summary returned bare "live" -> _infer_segment("live") == "UNK".
+    ev = {"status": _soccer_status("", period=1, name="STATUS_HALFTIME")}
+    out = S._segment_fields("soccer_intl", ev)
+    assert out.get("minute") == 45 and out.get("half") == "1"
+
+
+def test_frac_elapsed_soccer_stoppage_time_does_not_raise_or_return_none():
+    ev = {"status": _soccer_status("90'+3'", period=2, name="STATUS_SECOND_HALF")}
+    frac = S._frac_elapsed("soccer_intl", ev)
+    assert frac is not None and abs(frac - 90.0 / 90.0) < 1e-6
+
+
+def test_frac_elapsed_soccer_halftime_does_not_raise_or_return_none():
+    ev = {"status": _soccer_status("", period=1, name="STATUS_HALFTIME")}
+    frac = S._frac_elapsed("soccer_intl", ev)
+    assert frac is not None and abs(frac - 45.0 / 90.0) < 1e-6
+
+
+def test_stoppage_and_halftime_ticks_no_longer_land_in_unk_segment():
+    # end-to-end proof of the m36 grading pickup: _extract -> live_grade._state_summary ->
+    # ingame_clv_per_segment._infer_segment must flip from "UNK" to a real H1/H2 bucket.
+    from scripts.platformkit.ingame import live_grade as lg
+    from scripts.platformkit.ingame import ingame_clv_per_segment as ps
+
+    stoppage_ev = {"id": "X1",
+                   "status": _soccer_status("90'+4'", period=2, name="STATUS_SECOND_HALF"),
+                   "competitions": [{"competitors": [
+                       {"homeAway": "home", "score": "2", "team": {"abbreviation": "ARG"}},
+                       {"homeAway": "away", "score": "1", "team": {"abbreviation": "AUT"}}]}]}
+    st = S._extract("soccer_intl", stoppage_ev, None, p0_provider=lambda s, g: None)
+    ss = lg._state_summary(st)
+    assert ss != "live"
+    assert ps._infer_segment("soccer_intl", ss) == "H2"
+
+    halftime_ev = {"id": "X2",
+                   "status": _soccer_status("", period=1, name="STATUS_HALFTIME"),
+                   "competitions": [{"competitors": [
+                       {"homeAway": "home", "score": "1", "team": {"abbreviation": "ARG"}},
+                       {"homeAway": "away", "score": "0", "team": {"abbreviation": "AUT"}}]}]}
+    st2 = S._extract("soccer_intl", halftime_ev, None, p0_provider=lambda s, g: None)
+    ss2 = lg._state_summary(st2)
+    assert ss2 != "live"
+    assert ps._infer_segment("soccer_intl", ss2) == "H1"
+
+
 def test_wnba_ingame_shadow_chain_produces_real_prob_from_live_state_fixture():
     # end-to-end fixture-driven proof (no live dependency): a wnba-shaped scoreboard ->
     # live_state() -> wnba_ingame_shadow.shadow_prob() via the real WNBAAdapter.predict_live
