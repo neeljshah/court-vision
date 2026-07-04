@@ -41,6 +41,22 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 37 (WAVE-36: BYPASS FIX VERIFIED LIVE + CONDUCTOR QUEUE EXHAUSTED,
+  2026-07-05 ~02:15Z, wf_053ca842-a85 13 agents/~0.95M tok, 3 commits e6f39cb6..
+  8c471112): (1) m13: supervisor reaper had ALREADY relaunched w/ fix 60s after
+  commit; bypass VERIFIED LIVE (open providers skipped, all rows stamped); SLA
+  honestly still RED -- scoring pass 356-800s vs 660s threshold = pure perf,
+  next lever = per-sport parallel scoring (wave-37). (2) bare callers closed
+  (serve.py + prop_paper.py through shared helper) -- ALL known breaker
+  bypasses done. (3) vault dossiers 146->246 entities (MLB pitchers + soccer
+  teams in). (4) Statcast fuller: 12 new cols/134K rows landed in-budget ->
+  catcher/umpire/positioning/platoon surfaces unlocked. (5) WNBA probe: PARK
+  refolds until 172+ games (~4 more); injuries ingest is single-shot -> daily
+  scheduling lane. CONDUCTOR BUILD QUEUE (wave-28 program) NOW FULLY EXHAUSTED
+  (all 7 build + 4 scrape items done or honestly closed) -> wave-37 runs an
+  Opus conductor synthesis for program v2; Fable ratifies next wake. WAVE-37:
+  m13-sport-parallel, wnba-injuries-daily, program-v2 conductor. NPB/KBO
+  ~09-10Z wake. No edge claimed.
 - SPRINT WAKE 36 (WAVE-35: H3 FIXED FOR REAL + 4TH NULL CATCH AT 17x + 4 SPORTS
   QUERYABLE, 2026-07-05 ~01:30Z, wf_296dde48-070 12 agents/~1.23M tok, 4 commits
   3a80e5d1..dd7f5987): (1) tennis H3 NaN-upcast null bug fixed FOR REAL
