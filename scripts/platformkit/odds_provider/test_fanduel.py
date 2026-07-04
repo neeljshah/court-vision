@@ -65,3 +65,38 @@ def test_empty_payload_unavailable():
     p = FanDuelProvider(http_get=lambda url: {})
     res = p.fetch("mlb")
     assert isinstance(res, dict) and res.get("reason")
+
+
+# --- WNBA (LANE 2): customPageId="wnba" probed live 2026-07-03, real payload
+# shape captured below (team names have no "(pitcher)" parens to strip). ---
+_WNBA_PAYLOAD = {
+    "attachments": {
+        "events": {
+            "300": {"name": "Golden State Valkyries @ Atlanta Dream",
+                    "openDate": "2026-07-04T17:00:00Z"},
+        },
+        "markets": {
+            "w1": {"eventId": 300, "marketType": "MONEY_LINE", "runners": [
+                {"runnerName": "Golden State Valkyries",
+                 "winRunnerOdds": {"trueOdds": {"decimalOdds": {"decimalOdds": 2.10}}}},
+                {"runnerName": "Atlanta Dream",
+                 "winRunnerOdds": {"trueOdds": {"decimalOdds": {"decimalOdds": 1.80}}}},
+            ]},
+        },
+    }
+}
+
+
+def test_wnba_page_id_wired_and_parses():
+    p = FanDuelProvider(http_get=lambda url: _WNBA_PAYLOAD)
+    evs = p.fetch("wnba")
+    assert isinstance(evs, list) and len(evs) == 1
+    e = evs[0]
+    assert e.away == "Golden State Valkyries" and e.home == "Atlanta Dream"
+    assert e.prices["fanduel"]["away"] == 2.10
+    assert e.prices["fanduel"]["home"] == 1.80
+
+
+def test_wnba_page_id_in_page_map():
+    from scripts.platformkit.odds_provider.fanduel import _PAGE
+    assert _PAGE["wnba"] == "wnba"

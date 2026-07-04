@@ -37,10 +37,14 @@ logger = logging.getLogger(__name__)
 _BASE = "https://guest.api.arcadia.pinnacle.com/0.1"
 
 # Static, stable, year-round leagues -- never rotate, no network needed.
+# wnba=578 probed live 2026-07-03 (LANE 2): GET /sports shows WNBA as a
+# persistent named league under sport id 4 (Basketball), matchupCount=3 live --
+# same static shape as nba/mlb/soccer, not a rotating tournament container.
 _STATIC_LEAGUE_IDS: Dict[str, List[int]] = {
     "nba":    [487],
     "mlb":    [246],
     "soccer": [1980],
+    "wnba":   [578],
 }
 
 # Dynamic sports: sport_id to list leagues under + a name/count filter.
