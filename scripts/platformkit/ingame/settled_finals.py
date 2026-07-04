@@ -68,23 +68,56 @@ def _is_final(ev: Dict[str, Any]) -> bool:
 
 
 def _team(comp: Dict[str, Any], side: str) -> str:
+    """Team-sport competitors carry .team; tennis carries .athlete instead
+    (verified live 2026-07-03) -- ADDITIVE fallback, team-sport path unchanged."""
     for c in comp.get("competitors", []) or []:
         if c.get("homeAway") == side:
             t = c.get("team") or {}
-            return str(t.get("displayName") or t.get("name")
+            name = str(t.get("displayName") or t.get("name")
                        or t.get("abbreviation") or "").strip()
+            if name:
+                return name
+            a = c.get("athlete") or {}
+            return str(a.get("displayName") or a.get("shortName") or "").strip()
     return ""
 
 
 def _side_score(comp: Dict[str, Any], side: str) -> Optional[float]:
-    """Final score for one side, or None when absent/unparseable (NEVER fabricated)."""
+    """Final score for one side, or None when absent/unparseable (NEVER fabricated).
+    Tennis competitors carry NO .score field (verified live 2026-07-03) -- only
+    per-set .linescores + a .winner bool; ADDITIVE fallback derives a sets-won
+    count so a tennis final still gets a real, comparable number."""
     for c in comp.get("competitors", []) or []:
-        if c.get("homeAway") == side:
-            try:
-                return float(c.get("score"))
-            except (TypeError, ValueError):
-                return None
+        if c.get("homeAway") != side:
+            continue
+        try:
+            return float(c.get("score"))
+        except (TypeError, ValueError):
+            pass
+        ls = c.get("linescores")
+        if not isinstance(ls, list) or not ls:
+            return None
+        try:
+            return float(sum(1 for s in ls if isinstance(s, dict) and s.get("winner")))
+        except (TypeError, ValueError):
+            return None
     return None
+
+
+def _tennis_final_matches(events: List[Any]) -> List[Dict[str, Any]]:
+    """Tennis' scoreboard is NOT flat like nba/mlb/soccer: each top-level event
+    is a whole TOURNAMENT (no top-level `competitions`); real per-match
+    competitions nest under event["groupings"][i]["competitions"] (verified
+    live 2026-07-03: 1 tournament event, 5 groupings, 635 nested matches, 0
+    top-level competitions). Flattens each match into a synthetic event dict
+    {"id","date","competitions":[<match>]} carrying its OWN match id + date
+    (not the tournament's), so the flat _final_games_from_board loop below
+    works UNCHANGED for tennis, same as nba/mlb/soccer. Never raises."""
+    return [{"id": m.get("id"), "date": m.get("date"), "competitions": [m]}
+            for ev in events if isinstance(ev, dict)
+            for g in (ev.get("groupings") or [])
+            for m in (g.get("competitions") or [])
+            if isinstance(m, dict)]
 
 
 def _final_games_from_board(board: Any, sport: str) -> List[Dict[str, Any]]:
@@ -94,6 +127,8 @@ def _final_games_from_board(board: Any, sport: str) -> List[Dict[str, Any]]:
     events = board.get("events")
     if not isinstance(events, list):
         return []
+    if sport == "tennis":
+        events = _tennis_final_matches(events)
     out: List[Dict[str, Any]] = []
     for ev in events:
         if not isinstance(ev, dict) or not _is_final(ev):
