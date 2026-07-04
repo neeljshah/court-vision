@@ -50,6 +50,47 @@ def test_gameid_map_hint_malformed_gamecode_skipped():
 
 
 # ---------------------------------------------------------------------------
+# non-3-letter tricode hardening (this wave -- the flagged untested case)
+# ---------------------------------------------------------------------------
+
+def test_gameid_map_hint_2plus4_split_resolved():
+    # away tricode "GS" (2 chars) + home "PORT" (4 chars, hypothetical alt code).
+    sb_games = [{"gameId": "9990000001", "gameCode": "20260703/GSPORT"}]
+    espn_events = [_espn_event("500000001", "PORT", "GS")]
+    mapping = gameid_map_hint(sb_games, espn_events)
+    assert mapping == {"9990000001": "500000001"}
+
+
+def test_gameid_map_hint_4plus2_split_resolved():
+    # away tricode "CONN" (4 chars) + home "NY" (2 chars, hypothetical alt code).
+    sb_games = [{"gameId": "9990000002", "gameCode": "20260703/CONNNY"}]
+    espn_events = [_espn_event("500000002", "NY", "CONN")]
+    mapping = gameid_map_hint(sb_games, espn_events)
+    assert mapping == {"9990000002": "500000002"}
+
+
+def test_gameid_map_hint_non_3_letter_ambiguous_across_splits_is_absent():
+    # A blob that plausibly matches under more than one split candidate must
+    # never guess -- absent beats wrong.
+    sb_games = [{"gameId": "9990000003", "gameCode": "20260703/ATLATL"}]
+    espn_events = [
+        _espn_event("500000003", "ATL", "ATL"),  # 3+3 split matches
+        _espn_event("500000004", "ATLA", "TL"),  # 4+2 split also matches (contrived)
+    ]
+    mapping = gameid_map_hint(sb_games, espn_events)
+    assert "9990000003" not in mapping
+
+
+def test_gameid_map_hint_still_resolves_standard_3plus3_after_hardening():
+    # Regression guard: the original confirmed-real pair must still resolve
+    # after widening the split search.
+    sb_games = [{"gameId": "1022600149", "gameCode": "20260703/CHILVA"}]
+    espn_events = [_espn_event("401857038", "LV", "CHI")]
+    mapping = gameid_map_hint(sb_games, espn_events)
+    assert mapping == {"1022600149": "401857038"}
+
+
+# ---------------------------------------------------------------------------
 # fetch_scoreboardv3 (WAF/timeout degrade to [])
 # ---------------------------------------------------------------------------
 
