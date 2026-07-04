@@ -156,6 +156,37 @@ def _score(c: Optional[dict]) -> Optional[float]:
         return None
 
 
+def _soccer_minute(status: dict) -> Optional[int]:
+    """Base minute elapsed from an ESPN soccer status block, honest across every live-status
+    shape (verified live 2026-07-03 vs fifa.world + trimmed fixtures for the shapes not live
+    right now):
+      - normal play:      displayClock "57'"        -> 57
+      - stoppage time:    displayClock "45'+2'" / "90'+5'" -> BASE minute only (45 / 90); the
+        '+N' stoppage add-on is NOT folded in -- same convention live_board._soccer_minute
+        uses for the served page, so this stays consistent with the already-shipped reader.
+      - halftime:         displayClock often "" / "HT" / unparseable, but status.period==1
+        (first half just ended) -> minute=45 (honest boundary, not fabricated extra detail).
+      - second half start / extra time / stoppage with an unparseable clock: falls back to
+        the *period* field's half boundary (period 1 -> 45, period>=2 -> 90) rather than
+        leaving minute unset, so a halftime/ET tick still lands in a real H1/H2 bucket
+        instead of the synthetic UNK segment.
+    Returns None only when NEITHER displayClock NOR period is readable (truly no signal)."""
+    disp = str(status.get("displayClock") or "").strip()
+    base = disp.split("+")[0].replace("'", "").strip()
+    try:
+        return int(float(base))
+    except ValueError:
+        pass
+    # displayClock unreadable (e.g. "HT", ""): fall back to the half boundary from period.
+    try:
+        period = int(status.get("period") or 0)
+    except (TypeError, ValueError):
+        period = 0
+    if period <= 0:
+        return None
+    return 45 if period == 1 else 90
+
+
 def _frac_elapsed(sport: str, ev: dict) -> Optional[float]:
     """Sport-specific completed-fraction from the live status block. None if unreadable."""
     st = (ev.get("status") or {})
@@ -179,11 +210,10 @@ def _frac_elapsed(sport: str, ev: dict) -> Optional[float]:
         half = (1 if str(typ.get("shortDetail", "")).lower().startswith("top") else 2)
         return max(0.0, min(1.0, (2 * (period - 1) + half) / cfg["denom_half"]))
     if sport in ("soccer", "soccer_intl"):
-        # displayClock like "57'" -> minute elapsed
-        disp = str(st.get("displayClock") or "").replace("'", "").strip()
-        try:
-            minute = float(disp)
-        except ValueError:
+        # displayClock like "57'" -> minute elapsed; _soccer_minute additionally covers
+        # stoppage ("90'+5'") and halftime/unreadable-clock (falls back to period boundary).
+        minute = _soccer_minute(st)
+        if minute is None:
             minute = float(st.get("clock") or 0.0) / 60.0 if st.get("clock") else None
         if minute is None:
             return None
@@ -258,11 +288,17 @@ def _segment_fields(sport: str, ev: dict) -> Dict[str, object]:
         elif "bot" in detail:
             out["half"] = "bottom"
     elif sport in ("soccer", "soccer_intl"):
-        disp = str(status.get("displayClock") or "").replace("'", "").strip()
-        try:
-            out["minute"] = int(float(disp))
-        except (TypeError, ValueError):
-            pass
+        # minute: base minute elapsed, covering plain/stoppage/halftime shapes (see
+        # _soccer_minute docstring) -- previously only the plain "57'" shape parsed, so
+        # stoppage-time and halftime ticks fell through to bare "live" (no minute/half key)
+        # and landed in the synthetic UNK segment (wave-6 finding, this lane's fix).
+        minute = _soccer_minute(status)
+        if minute is not None:
+            out["minute"] = minute
+            # half: derived straight from the minute boundary (<=45 -> H1, >45 -> H2) so a
+            # halftime tick (minute==45, clock unreadable) still carries an explicit half
+            # label alongside minute, matching _infer_segment's own <=45/>45 convention.
+            out["half"] = "1" if minute <= 45 else "2"
     elif sport == "tennis" and period > 0:
         out["set"] = period
     return out
