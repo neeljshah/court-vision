@@ -72,6 +72,36 @@ def test_composer_reads_present_tail_verdict(tmp_path, monkeypatch):
     assert h2["days_accruing"] == 7.0
 
 
+def test_composer_prefers_forward_over_graded_count(tmp_path, monkeypatch):
+    # REGRESSION (2026-07-04): the multi-sport gate writes BOTH n_forward_games
+    # (leak-free, post-pre-registration) AND n_forward_games_graded (which can
+    # equal the DISCOVERY corpus). soccer_intl had n_forward_games=1 but
+    # n_forward_games_graded=31 -> the scoreboard read graded and falsely
+    # reported DECIDABLE_NOW at floor=20. forward_n MUST reflect the 1 real
+    # forward game, NOT the 31-game discovery set.
+    monkeypatch.setattr(fes, "DOMAINS_DIR", tmp_path)
+    monkeypatch.setattr(fes, "TAIL_SPORTS", ["soccer_intl"])
+    now = datetime(2026, 7, 4, 16, tzinfo=timezone.utc)
+    doc = {
+        "pre_registered_at": "2026-07-04T00:00:00Z",
+        "hypotheses": [
+            {"id": "H1_longshot_underpriced", "forward_verdict": "INSUFFICIENT_FORWARD"},
+            {"id": "H2_midfav_overpriced", "forward_verdict": "INSUFFICIENT_FORWARD"},
+        ],
+        "verdict": "PENDING_FORWARD",
+        "n_discovery_games_graded": 31,
+        "n_forward_games": 1,
+        "n_forward_games_graded": 31,
+    }
+    _write(tmp_path / "soccer_intl" / "ingame_tail_verdict.json", doc)
+    sb = fes.build_scoreboard(now=now)
+    rows = [r for r in sb["rows"] if r["sport"] == "soccer_intl" and r["gate"].startswith("tail_")]
+    assert len(rows) == 2
+    assert all(r["forward_n"] == 1 for r in rows), "must use n_forward_games (1), not graded (31)"
+    # 1 game in <1 day, floor 20 -> nowhere near decidable
+    assert all(r["distance_to_decidable"] != fes._NOW for r in rows)
+
+
 # ---------------------------------------------------------------- composer: absent
 
 def test_composer_absent_file_degrades_honestly(tmp_path, monkeypatch):
