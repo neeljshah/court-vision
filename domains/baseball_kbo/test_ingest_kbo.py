@@ -89,6 +89,18 @@ def test_parse_schedule_tie_excluded_from_home_win_but_flagged():
     assert rows[0]["home_win"] is None
 
 
+def test_parse_schedule_skips_inprogress_zero_zero_placeholder():
+    """A 0-0/same/same cell is an in-progress-not-final placeholder (found
+    live 2026-07-04), NOT a real completed tie -- must be skipped, never
+    recorded as home_win=None/tied=True."""
+    body = _body([
+        _row_group(_day_cell("07.04(SAT)", rowspan="1"),
+                   _play_cell_scored("LG", "SSG", 0, 0, away_cls="same", home_cls="same")),
+    ])
+    rows = ikbo._parse_schedule(body, "2026")
+    assert rows == []
+
+
 def test_parse_schedule_skips_postponed_unplayed_game():
     body = _body([
         _row_group(_day_cell("09.05(FRI)", rowspan="1"),
