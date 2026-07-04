@@ -185,3 +185,78 @@ def test_settle_open_mixed_mlb_and_soccer_batch(tmp_path):
     assert doc["settled"] == 2
     assert doc["by_sport"]["mlb"]["settled"] == 1
     assert doc["by_sport"]["soccer_intl"]["settled"] == 1
+
+
+# --------------------------------------------------------------------------------------- #
+# LANE 3: NPB/KBO dispatch wiring (capture-only today -- no bets placed for either sport,   #
+# see inplay_capture_loop.DEFAULT_SPORTS; this settle arm activates the moment a future     #
+# lane wires a live model, exercised here via injected score_fns).                          #
+# --------------------------------------------------------------------------------------- #
+def test_dispatch_routes_npb_ticker_by_prefix():
+    npb_calls = []
+
+    def npb_fn(t):
+        npb_calls.append(t)
+        return (5, 3)
+
+    fn = ps._dispatch_score_fn(None, None, npb_fn=npb_fn)
+    assert fn("KXNPBGAME-26JUL050500YOKYAK-YOK") == (5, 3)
+    assert fn("KXMLBGAME-x") is None  # no mlb resolver injected -> unresolved
+    assert npb_calls == ["KXNPBGAME-26JUL050500YOKYAK-YOK"]
+
+
+def test_dispatch_routes_kbo_ticker_by_prefix():
+    kbo_calls = []
+
+    def kbo_fn(t):
+        kbo_calls.append(t)
+        return (6, 2)
+
+    fn = ps._dispatch_score_fn(None, None, kbo_fn=kbo_fn)
+    assert fn("KXKBOGAME-26JUL050500NCDKIA-NCD") == (6, 2)
+    assert fn("KXWNBAGAME-x") is None  # no wnba resolver injected -> unresolved
+    assert kbo_calls == ["KXKBOGAME-26JUL050500NCDKIA-NCD"]
+
+
+def test_dispatch_missing_npb_kbo_resolvers_leaves_ticker_unresolved():
+    fn = ps._dispatch_score_fn(None, None, npb_fn=None, kbo_fn=None)
+    assert fn("KXNPBGAME-26JUL050500YOKYAK-YOK") is None
+    assert fn("KXKBOGAME-26JUL050500NCDKIA-NCD") is None
+
+
+def test_npb_score_fn_inert_without_results_parquet(monkeypatch, tmp_path):
+    from scripts.platformkit.ingame import npb_outcome_resolver as nr
+    monkeypatch.setattr(nr, "DEFAULT_RESULTS_PARQUET", tmp_path / "missing.parquet")
+    assert ps._npb_score_fn() is None
+
+
+def test_kbo_score_fn_inert_without_results_parquet(monkeypatch, tmp_path):
+    from scripts.platformkit.ingame import kbo_outcome_resolver as kr
+    monkeypatch.setattr(kr, "DEFAULT_RESULTS_PARQUET", tmp_path / "missing.parquet")
+    assert ps._kbo_score_fn() is None
+
+
+def test_settle_open_npb_kbo_batch_via_injected_score_fns(tmp_path):
+    npb_ticker = "KXNPBGAME-26JUL050500YOKYAK-YOK"
+    kbo_ticker = "KXKBOGAME-26JUL050500NCDKIA-NCD"
+    led = _ledger(tmp_path, [
+        {"channel": "paper_ingame", "status": "open", "sport": "npb",
+         "game_id": npb_ticker, "side": "home", "market": "win_home",
+         "taken_decimal": 1.9, "model_prob": 0.6,
+         "edge_key": "npb|%s|win_home|home|2026-07-05" % npb_ticker},
+        {"channel": "paper_ingame", "status": "open", "sport": "kbo",
+         "game_id": kbo_ticker, "side": "home", "market": "win_home",
+         "taken_decimal": 1.9, "model_prob": 0.6,
+         "edge_key": "kbo|%s|win_home|home|2026-07-05" % kbo_ticker},
+    ])
+    scores = {npb_ticker: (5, 3), kbo_ticker: (6, 2)}
+    score_fn = ps._dispatch_score_fn(None, None, npb_fn=lambda t: scores.get(t),
+                                     kbo_fn=lambda t: scores.get(t))
+
+    def fake_grade(bet, hs, as_, path=None):
+        return {"status": "settled", "outcome": "win" if hs > as_ else "loss"}
+
+    doc = ps.settle_open(ledger_path=led, score_fn=score_fn, grade_fn=fake_grade)
+    assert doc["settled"] == 2
+    assert doc["by_sport"]["npb"]["settled"] == 1
+    assert doc["by_sport"]["kbo"]["settled"] == 1

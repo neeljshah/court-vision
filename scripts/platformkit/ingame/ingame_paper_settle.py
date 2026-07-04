@@ -105,6 +105,32 @@ def _wnba_score_fn() -> Optional[ScoreFn]:
     return None
 
 
+def _npb_score_fn() -> Optional[ScoreFn]:
+    """NpbOutcomeResolver.final_score already matches the ScoreFn contract
+    (ticker -> (home_score, away_score) | None) -- no wrapper needed. None
+    (bets stay open) if the resolver has no usable local results parquet."""
+    try:
+        from scripts.platformkit.ingame.npb_outcome_resolver import NpbOutcomeResolver
+        res = NpbOutcomeResolver()
+        if res.available:
+            return res.final_score
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("ingame_paper_settle NPB resolver unavailable: %s", exc)
+    return None
+
+
+def _kbo_score_fn() -> Optional[ScoreFn]:
+    """KboOutcomeResolver.final_score already matches the ScoreFn contract."""
+    try:
+        from scripts.platformkit.ingame.kbo_outcome_resolver import KboOutcomeResolver
+        res = KboOutcomeResolver()
+        if res.available:
+            return res.final_score
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("ingame_paper_settle KBO resolver unavailable: %s", exc)
+    return None
+
+
 def _tennis_score_fn() -> Optional[ScoreFn]:
     """Wrap TennisOutcomeResolver.home_win -> a synthetic (1,0)/(0,1) score pair
     so it satisfies the ScoreFn/grade_live contract (grade_one only ever compares
@@ -129,7 +155,9 @@ def _tennis_score_fn() -> Optional[ScoreFn]:
 def _dispatch_score_fn(mlb_fn: Optional[ScoreFn],
                        soccer_fn: Optional[ScoreFn],
                        tennis_fn: Optional[ScoreFn] = None,
-                       wnba_fn: Optional[ScoreFn] = None) -> ScoreFn:
+                       wnba_fn: Optional[ScoreFn] = None,
+                       npb_fn: Optional[ScoreFn] = None,
+                       kbo_fn: Optional[ScoreFn] = None) -> ScoreFn:
     """Route a ticker to the resolver matching its Kalshi series prefix. A
     ticker neither resolver recognises (or an inert resolver) -> None, never a
     guess -- the bet just stays open."""
@@ -143,17 +171,24 @@ def _dispatch_score_fn(mlb_fn: Optional[ScoreFn],
             return tennis_fn(ticker)
         if t.startswith("KXWNBAGAME") and wnba_fn is not None:
             return wnba_fn(ticker)
+        if t.startswith("KXNPBGAME") and npb_fn is not None:
+            return npb_fn(ticker)
+        if t.startswith("KXKBOGAME") and kbo_fn is not None:
+            return kbo_fn(ticker)
         return None
     return _fn
 
 
 def _default_score_fn() -> ScoreFn:
-    """Build the combined ticker->final-score resolver (MLB + WC soccer + WNBA, all
-    offline parquet reads; tennis disk-first/live-ESPN-fallback). A sport whose
-    resolver is unavailable simply never matches -- its bets stay open, never
-    fabricated."""
+    """Build the combined ticker->final-score resolver (MLB + WC soccer + WNBA +
+    NPB + KBO, all offline parquet reads; tennis disk-first/live-ESPN-fallback).
+    A sport whose resolver is unavailable simply never matches -- its bets stay
+    open, never fabricated. NOTE: npb/kbo currently place NO bets (no live
+    model wired -- see inplay_capture_loop.DEFAULT_SPORTS), so this settle arm
+    for them is a no-op today (nothing to settle) and becomes active the
+    moment a future lane wires a live model for either sport."""
     return _dispatch_score_fn(_mlb_score_fn(), _soccer_score_fn(), _tennis_score_fn(),
-                              _wnba_score_fn())
+                              _wnba_score_fn(), _npb_score_fn(), _kbo_score_fn())
 
 
 def _settled_edge_keys(rows: List[Dict[str, Any]]) -> set:

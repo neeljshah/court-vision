@@ -292,3 +292,125 @@ def test_default_sports_widened_to_tennis_and_wnba():
     from scripts.platformkit.odds_provider import kalshi_series_spec as _spec
     assert _spec.series_for("tennis")
     assert _spec.series_for("wnba")
+
+
+# --------------------------------------------------------------------------------------- #
+# 7. LANE 3: npb/kbo widen (capture-only, NO placement -- no live model wired yet)          #
+# --------------------------------------------------------------------------------------- #
+def test_default_sports_widened_to_npb_and_kbo():
+    assert set(loop.DEFAULT_SPORTS) >= {"mlb", "soccer_intl", "tennis", "wnba", "npb", "kbo"}
+    from scripts.platformkit.odds_provider import kalshi_series_spec as _spec
+    assert _spec.series_for("npb")
+    assert _spec.series_for("kbo")
+
+
+def _npb_fetch(sport):
+    return [
+        {"sport": sport, "game_id": "KXNPBGAME-26JUL050500YOKYAK-YOK", "venue": "kalshi",
+         "market_type": "moneyline", "side": "YOK", "prob": 0.55, "phase": "in_play"},
+        {"sport": sport, "game_id": "KXNPBGAME-26JUL050500YOKYAK-YOK", "venue": "kalshi",
+         "market_type": "moneyline", "side": "YAK", "prob": 0.43, "phase": "in_play"},
+    ]
+
+
+def test_npb_kbo_have_no_model_fn_branch_ticks_still_accrue(tmp_path):
+    """Poison-safe path: the PRODUCTION default model_fn (_default_model_fn ->
+    live_board.live_model_home_prob) has NO npb/kbo branch, so model_prob is
+    honestly None every tick -- _process_game must skip the pair cleanly
+    (reason=no_model_prob) WITHOUT raising, and WITHOUT calling on_tick/placing
+    any bet. This exercises the REAL default model_fn (no injection) so the
+    None-safe dispatch itself is covered, not just a stubbed model_fn."""
+    grade_dir = tmp_path / "grade"
+
+    def _npb_state_fn(sport, gid):
+        return {"sport": sport, "game_id": gid, "home": "YAK", "away": "YOK",
+                "state_diff": 1.0, "frac_elapsed": 0.3, "p0": 0.52,
+                "p0_source": "PRIOR", "status": "3rd inning"}
+
+    hb = loop.poll_once(sports=["npb"], live_state_fn=_npb_state_fn,
+                        inplay_fetch_fn=_npb_fetch, finals_fn=_finals_none,
+                        grade_dir=grade_dir, ledger_path=tmp_path / "l.jsonl",
+                        heartbeat_path=tmp_path / "hb.json")
+    # ticks + venue prices are seen (games_seen carries the row) but NOTHING pairs/bets.
+    assert hb["n_pairs"] == 0 and hb["n_bets"] == 0
+    g = hb["games"][0]
+    assert g["paired"] is False
+    assert g["reason"] == "no_model_prob"
+    assert hb["edge_claimed"] is False and hb["executed"] is False
+    _no_dollar_field(hb)
+
+
+def test_kbo_model_fn_none_safe_with_injected_model_fn_matching_production(tmp_path):
+    """Same poison-safe contract, but via an explicit model_fn stand-in for
+    live_board.live_model_home_prob's real npb/kbo dispatch (always None for
+    any sport not in ('mlb','soccer','soccer_intl'))."""
+    def _prod_shaped_model_fn(sport, state):
+        return None  # mirrors live_model_home_prob's real kbo/npb behavior
+
+    grade_dir = tmp_path / "grade"
+
+    def _kbo_fetch(sport):
+        return [
+            {"sport": sport, "game_id": "KXKBOGAME-26JUL050500NCDKIA-NCD", "venue": "kalshi",
+             "market_type": "moneyline", "side": "NCD", "prob": 0.5, "phase": "in_play"},
+            {"sport": sport, "game_id": "KXKBOGAME-26JUL050500NCDKIA-NCD", "venue": "kalshi",
+             "market_type": "moneyline", "side": "KIA", "prob": 0.48, "phase": "in_play"},
+        ]
+
+    def _kbo_state_fn(sport, gid):
+        return {"sport": sport, "game_id": gid, "home": "KIA", "away": "NCD",
+                "state_diff": 0.0, "frac_elapsed": 0.1, "p0": 0.5,
+                "p0_source": "PRIOR", "status": "1st inning"}
+
+    hb = loop.poll_once(sports=["kbo"], live_state_fn=_kbo_state_fn,
+                        model_fn=_prod_shaped_model_fn,
+                        inplay_fetch_fn=_kbo_fetch, finals_fn=_finals_none,
+                        grade_dir=grade_dir, ledger_path=tmp_path / "l.jsonl",
+                        heartbeat_path=tmp_path / "hb.json")
+    assert hb["n_pairs"] == 0 and hb["n_bets"] == 0
+    assert hb["games"][0]["reason"] == "no_model_prob"
+
+
+# --------------------------------------------------------------------------------------- #
+# 8. LANE 3: wnba shadow field appended after on_tick, poisoned-build -> permanent None,    #
+#    decision path untouched.                                                               #
+# --------------------------------------------------------------------------------------- #
+def test_wnba_shadow_field_present_and_none_safe(tmp_path, monkeypatch):
+    # Force the shadow's underlying prober to a KNOWN value via the injected singleton,
+    # so this test asserts the WIRE (field present, decision untouched) not the adapter math.
+    from scripts.platformkit.ingame import wnba_ingame_shadow as wshadow
+
+    class _Stub:
+        def shadow_prob(self, sport, home, away, state):
+            return 0.71
+
+    monkeypatch.setattr(wshadow, "get_shadow", lambda: _Stub())
+
+    grade_dir = tmp_path / "grade"
+    hb = loop.poll_once(sports=["mlb"], live_state_fn=_state_fn_prior, model_fn=_model_fn,
+                        inplay_fetch_fn=_inplay_fetch, finals_fn=_finals_none,
+                        grade_dir=grade_dir, ledger_path=tmp_path / "l.jsonl",
+                        heartbeat_path=tmp_path / "hb.json")
+    g = hb["games"][0]
+    # additive field present; decision (bet/action/model_prob) is UNCHANGED by it.
+    assert g["model_prob_wnba_shadow"] == 0.71
+    assert g["bet"] is True and g["model_prob"] == 0.80
+
+
+def test_wnba_shadow_poisoned_get_shadow_is_none_never_raises(tmp_path, monkeypatch):
+    from scripts.platformkit.ingame import wnba_ingame_shadow as wshadow
+
+    def _raise():
+        raise RuntimeError("poisoned build")
+
+    monkeypatch.setattr(wshadow, "get_shadow", _raise)
+
+    grade_dir = tmp_path / "grade"
+    hb = loop.poll_once(sports=["mlb"], live_state_fn=_state_fn_prior, model_fn=_model_fn,
+                        inplay_fetch_fn=_inplay_fetch, finals_fn=_finals_none,
+                        grade_dir=grade_dir, ledger_path=tmp_path / "l.jsonl",
+                        heartbeat_path=tmp_path / "hb.json")
+    g = hb["games"][0]
+    assert g["model_prob_wnba_shadow"] is None
+    # decision path fully unaffected by the poisoned shadow prober.
+    assert g["bet"] is True and g["model_prob"] == 0.80

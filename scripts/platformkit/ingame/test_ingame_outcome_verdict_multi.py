@@ -110,6 +110,48 @@ def test_build_verdict_all_composes_three_sports(tmp_path, monkeypatch):
     assert doc["per_sport"]["tennis"]["n_labeled"] == 0
 
 
+def test_sports_list_includes_npb_kbo():
+    assert "npb" in ovm.SPORTS and "kbo" in ovm.SPORTS
+
+
+def test_npb_outcome_fn_wired_in_factory():
+    assert "npb" in ovm._OUTCOME_FACTORY
+    fn = ovm._OUTCOME_FACTORY["npb"]()
+    # no real npb_results.parquet fixture here -- just confirm the factory
+    # builds a callable that degrades to None rather than raising.
+    assert fn("KXNPBGAME-does-not-matter") is None or isinstance(
+        fn("KXNPBGAME-does-not-matter"), int)
+
+
+def test_kbo_outcome_fn_wired_in_factory():
+    assert "kbo" in ovm._OUTCOME_FACTORY
+    fn = ovm._OUTCOME_FACTORY["kbo"]()
+    assert fn("KXKBOGAME-does-not-matter") is None or isinstance(
+        fn("KXKBOGAME-does-not-matter"), int)
+
+
+def test_build_verdict_for_sport_npb_insufficient_when_no_model(tmp_path):
+    # npb ticks currently carry model_prob=None (no live model wired) -- a
+    # captured grade file with model_prob=None must still degrade to an
+    # honest INSUFFICIENT_DATA/n_labeled=0 verdict, never raise.
+    grade = tmp_path / "grade"
+    _write_game(grade, "npb", "N0", None, 0.55, state="inning=3 half=top")
+    doc = ovm.build_verdict_for_sport("npb", grade_dir=grade, outcome_fn=lambda g: 1)
+    assert doc["edge_claimed"] is False
+
+
+def test_build_verdict_all_composes_npb_kbo(tmp_path, monkeypatch):
+    def _fake_build(sport, **kw):
+        return {"sport": sport, "n_files": 0, "n_labeled": 0, "segments": {},
+                "better_segments": [], "worse_segments": [], "edge_claimed": False,
+                "segment_source": "game_clock"}
+
+    monkeypatch.setattr(ovm, "build_verdict_for_sport", _fake_build)
+    doc = ovm.build_verdict_all(sports=["npb", "kbo"])
+    assert set(doc["per_sport"].keys()) == {"npb", "kbo"}
+    assert doc["edge_claimed"] is False
+
+
 def test_write_and_render(tmp_path):
     grade = tmp_path / "grade"
     outc = {}

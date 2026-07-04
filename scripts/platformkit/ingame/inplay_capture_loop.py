@@ -67,7 +67,20 @@ DEFAULT_HEARTBEAT = _REPO_ROOT / "data" / "cache" / "ingame_grade" / "_capture_h
 # still gating them out of capture. tennis_outcome_resolver now supplies the outcome
 # label tennis previously had no way to grade. Additive: mlb/soccer_intl unchanged.
 # A running daemon only picks this up at its already-pending restart.
-DEFAULT_SPORTS: List[str] = ["mlb", "soccer_intl", "tennis", "wnba"]
+#
+# npb/kbo ADDED 2026-07-06 (LANE 3, CAPTURE-ONLY): kalshi_series_spec.SERIES_SPEC
+# already carries KXNPBGAME/KXKBOGAME (verified live 2026-07-04) so this was again
+# the only remaining gate. NEITHER sport has a predict_live model wired into
+# live_board.live_model_home_prob (_default_model_fn's only production caller) --
+# that function's dispatch has no npb/kbo branch, so model_fn(sport, state) returns
+# None for every npb/kbo tick (see _default_model_fn / live_model_home_prob), which
+# _process_game's "row['reason'] = 'no_model_prob'; return row" honors as a clean,
+# poison-safe skip: NO placement, NO on_tick call, NO paper bet -- ticks + venue
+# prices still accrue every restart via the fetch+legs+deep-state path so the tail
+# gates + grading-multi corpus start filling from the moment of restart. This is
+# CORRECT and DELIBERATE (no live model exists yet), mirroring the same None-safe
+# convention ingame_sp_shadow.py documents for its shadow probe.
+DEFAULT_SPORTS: List[str] = ["mlb", "soccer_intl", "tennis", "wnba", "npb", "kbo"]
 
 # RELAXED in-game EV floor per sport (opt-in): the strict pre-registered floor (policy tier C
 # = +0.02 EV, +0.01 proxy = +0.03) rarely fires in-game because the calibrated model tracks
@@ -423,6 +436,9 @@ def _process_game(sport: str, gid: str, legs: Dict[str, float],
         # SHADOW MEASUREMENT ONLY, added AFTER dec is final -- never read by on_tick.
         row["model_prob_sp_shadow"] = _sp_shadow(sport, state.get("home_display") or state.get("home"),
             state.get("away_display") or state.get("away"), model_p, state.get("game_pk"))
+        row["model_prob_wnba_shadow"] = _wnba_shadow(
+            sport, state.get("home_display") or state.get("home"),
+            state.get("away_display") or state.get("away"), state)
     except Exception as exc:  # noqa: BLE001 -- one bad game never stops the others
         logger.warning("inplay_capture_loop game %s/%s failed: %s", sport, gid, exc)
         row["reason"] = "error:%s" % type(exc).__name__
@@ -437,6 +453,19 @@ def _sp_shadow(sport: str, home: Any, away: Any, model_p: float, game_pk: Any = 
         from scripts.platformkit.ingame.ingame_sp_shadow import get_shadow
         return get_shadow().shadow_prob(sport, str(home or ""), str(away or ""), model_p,
                                         int(game_pk) if game_pk is not None else None)
+    except Exception:  # noqa: BLE001 -- shadow measurement never affects the capture path
+        return None
+
+
+def _wnba_shadow(sport: str, home: Any, away: Any, state: Dict[str, Any]) -> Optional[float]:
+    """SHADOW MEASUREMENT ONLY (logged, never decided on). All logic lives in
+    wnba_ingame_shadow.py; this wrapper only guarantees an exception here can
+    never reach the capture path. None-safe (see inplay_capture_loop's
+    npb/kbo DEFAULT_SPORTS comment for the analogous no-live-model-yet gap
+    this shadow is scoped to measure once wired)."""
+    try:
+        from scripts.platformkit.ingame.wnba_ingame_shadow import get_shadow
+        return get_shadow().shadow_prob(sport, str(home or ""), str(away or ""), state)
     except Exception:  # noqa: BLE001 -- shadow measurement never affects the capture path
         return None
 
