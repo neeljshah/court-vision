@@ -101,10 +101,17 @@ paper-only; ASCII stdout; never print retracted numbers (+18.38%, 0.119, +54%,
   scorer_quality_v1 = descriptive/scouting layer (Curry 5/329). WNBA atlas
   6 parquets extracted (zero-fetch). MLB SP-fatigue NOT_TESTABLE (planted-null).
 - 5 sport truth specs + storage audit + conductor program on disk (local-only).
-- WAVE-30 QUEUE (conductor order): tennis surface-hold in-game gate; WNBA rest
-  covariate; schema-drift payload snapshots (resilience scrape target #1); ESPN
-  injuries ingest; altitude lookup table; ask-anything skill over the claims
-  engine; composition-layer design (mission spine #3 -- Fable designs the gate).
+- WAVE-30 was LAUNCHED then STOPPED mid-build at the 19:50Z session handoff:
+  partial UNREVIEWED work sits in git stash@{0} "wave-30-partial-UNREVIEWED"
+  (m13 provider circuit-breaker fix, tennis surface-hold gate, schema-drift
+  snapshots -- 7 files). FIRST BUILD ACTION: re-run those 3 lanes fresh per the
+  NOW.md WAKE-30 ledger specs (stash = reference; pop or rebuild, then Opus
+  review before ANY commit). The m13 fix is the priority: props_snapshot SLA is
+  RED because dead providers (prizepicks 403, betmgm 400) burn the 240s score
+  budget inline -- per-provider timeouts + file-backed circuit breaker.
+- WAVE-30 REMAINING QUEUE (conductor order): WNBA rest covariate; ESPN injuries
+  ingest; altitude lookup table; ask-anything skill over the claims engine;
+  composition-layer design (mission spine #3 -- Fable designs the gate).
 - Live-activation: 16 verifier PENDINGs resolve when games are live; NPB/KBO
   first-ever grades expected overnight 2026-07-04/05 -- VERIFY EARLY next wake.
 - HUMAN QUEUE: ponytail 2-command install; venue-history backup decision (75GB,
