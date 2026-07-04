@@ -30,6 +30,21 @@ legitimate feed to poll; the reader just gets zero rows back today).
 KXNPBTOTAL and KXNPBTEAMTOTAL both 404 on /series/ -- genuinely do NOT exist,
 correctly ABSENT below; re-probe before adding.
 
+Re-verified live 2026-07-04 for the KBO (baseball_kbo) lane, same
+/markets?series_ticker=<S>&status=open&limit=5 probe: ALL FOUR of
+KXKBOGAME/KXKBOSPREAD/KXKBOTOTAL/KXKBORFI have 5 OPEN markets right now (e.g.
+KXKBOGAME-26JUL050500NCDKIA-NCD, same '-DDMONYY' ticker-date fragment). GAME/
+SPREAD/TOTAL map cleanly onto the existing moneyline/spread/total market_type
+vocabulary and are wired below. KXKBORFI ("run first inning") is a yes/no
+proposition on which TEAM scores first in the 1st inning (sample ticker
+KXKBORFI-26JUL050100DOOKIW-Y) -- it is NOT a team win-prob, spread-cover-prob,
+or over/under-prob in the existing market_type vocabulary (moneyline | total |
+spread | team_total), so it is deliberately left UNWIRED here rather than
+forced into a mapping that would misrepresent what it prices; a "first_score"
+or similar market_type would need its own consumer-side safety review before
+wiring (see the WNBA/NPB moneyline-only safety invariant below) -- flagged,
+not implemented, per this lane's not_done.
+
 INVARIANTS: build only under scripts/platformkit/; <=300 LOC; ASCII only; no I/O
 at import (pure data). Per-file test:
   cd /c/Users/neelj/nba-ai-system && python -m pytest tests/platformkit/odds_provider/test_kalshi_series_spec.py -q
@@ -76,6 +91,15 @@ SERIES_SPEC: Dict[str, List[Tuple[str, str]]] = {
     "npb": [
         ("KXNPBGAME", "moneyline"),
         ("KXNPBSPREAD", "spread"),
+    ],
+    "kbo": [
+        ("KXKBOGAME", "moneyline"),
+        ("KXKBOSPREAD", "spread"),
+        ("KXKBOTOTAL", "total"),
+        # KXKBORFI (run-first-inning yes/no proposition) is deliberately NOT
+        # wired -- it does not map onto moneyline/total/spread/team_total
+        # (see module docstring); re-probe + design a dedicated market_type
+        # before adding it.
     ],
 }
 

@@ -1,0 +1,134 @@
+"""Per-file tests for domains.baseball_kbo.ratings (pure, offline, synthetic data).
+
+  cd /c/Users/neelj/nba-ai-system && python -m pytest domains/baseball_kbo/test_ratings.py -q
+"""
+from __future__ import annotations
+
+import datetime as dt
+import random
+
+import numpy as np
+import pandas as pd
+
+from domains.baseball_kbo import ratings as r
+from domains.baseball_kbo.elo_config import ELO_MEAN
+
+
+def _games_df(rows):
+    return pd.DataFrame(rows, columns=["date", "season", "home_team", "away_team", "home_win"])
+
+
+def test_walk_forward_elo_unseen_teams_start_at_prior():
+    df = _games_df([
+        (dt.date(2023, 4, 3), 2023, "DOOSAN", "KIA", 1.0),
+    ])
+    out = r.walk_forward_elo(df)
+    assert out.loc[0, "elo_home"] == ELO_MEAN
+    assert out.loc[0, "elo_away"] == ELO_MEAN
+    assert 0.0 < out.loc[0, "p_home_elo"] < 1.0
+
+
+def test_walk_forward_elo_winner_rating_increases():
+    df = _games_df([
+        (dt.date(2023, 4, 3), 2023, "DOOSAN", "KIA", 1.0),
+        (dt.date(2023, 4, 5), 2023, "DOOSAN", "KIA", 1.0),
+    ])
+    out = r.walk_forward_elo(df)
+    assert out.loc[1, "elo_home"] > out.loc[0, "elo_home"]
+
+
+def test_tied_game_does_not_update_elo_but_is_kept_in_output():
+    df = _games_df([
+        (dt.date(2023, 4, 3), 2023, "DOOSAN", "KIA", np.nan),
+        (dt.date(2023, 4, 5), 2023, "DOOSAN", "KIA", 1.0),
+    ])
+    out = r.walk_forward_elo(df)
+    assert len(out) == 2
+    # tie row's pre-game elo == prior (no earlier games); post-tie elo unchanged
+    assert out.loc[0, "elo_home"] == ELO_MEAN
+    assert out.loc[1, "elo_home"] == ELO_MEAN  # tie did NOT move the rating
+    assert pd.isna(out.loc[0, "home_win"])
+
+
+def test_replay_counts_tied_rows_separately_from_decisive():
+    df = _games_df([
+        (dt.date(2023, 4, 3), 2023, "DOOSAN", "KIA", np.nan),
+        (dt.date(2023, 4, 5), 2023, "DOOSAN", "KIA", 1.0),
+        (dt.date(2023, 4, 7), 2023, "DOOSAN", "KIA", 0.0),
+    ])
+    state = r.replay(df)
+    assert state.n_processed == 3
+    assert state.n_tied == 1
+    assert state.counts["DOOSAN"] == 2  # only the two decisive games counted
+
+
+def test_elo_state_asof_matches_fresh_replay_on_subset():
+    """Truncation-invariance: elo_state_asof(full, D) == replay(subset_before_D)."""
+    df = _games_df([
+        (dt.date(2023, 4, 3), 2023, "DOOSAN", "KIA", 1.0),
+        (dt.date(2023, 4, 5), 2023, "KIA", "DOOSAN", 0.0),
+        (dt.date(2023, 4, 8), 2023, "DOOSAN", "KIA", 1.0),
+    ])
+    cut = dt.date(2023, 4, 8)
+    state_asof = r.elo_state_asof(df, cut)
+
+    subset = df[pd.to_datetime(df["date"]).dt.date < cut]
+    state_fresh = r.replay(subset)
+
+    assert state_asof.elo == state_fresh.elo
+    assert state_asof.n_processed == state_fresh.n_processed == 2
+
+
+def test_no_leak_shuffling_future_games_does_not_change_past_ratings():
+    """Core leak-free property: ratings AS OF a cut date must be identical
+    whether or not future (post-cut) games are reordered/shuffled."""
+    base_rows = [
+        (dt.date(2023, 4, 3), 2023, "DOOSAN", "KIA", 1.0),
+        (dt.date(2023, 4, 5), 2023, "KIA", "LOTTE", 1.0),
+        (dt.date(2023, 4, 8), 2023, "LOTTE", "DOOSAN", 0.0),
+    ]
+    future_rows = [
+        (dt.date(2023, 5, 1), 2023, "DOOSAN", "LOTTE", 1.0),
+        (dt.date(2023, 5, 3), 2023, "KIA", "DOOSAN", 0.0),
+        (dt.date(2023, 5, 5), 2023, "LOTTE", "KIA", 1.0),
+    ]
+    cut = dt.date(2023, 4, 10)
+
+    df1 = _games_df(base_rows + future_rows)
+    state1 = r.elo_state_asof(df1, cut)
+
+    rng = random.Random(42)
+    shuffled_future = list(future_rows)
+    rng.shuffle(shuffled_future)
+    df2 = _games_df(base_rows + shuffled_future)
+    state2 = r.elo_state_asof(df2, cut)
+
+    assert state1.elo == state2.elo
+    assert state1.n_processed == state2.n_processed == 3
+
+
+def test_season_boundary_regression_pulls_toward_mean():
+    df = _games_df([
+        (dt.date(2023, 4, 3), 2023, "DOOSAN", "KIA", 1.0),
+        (dt.date(2023, 4, 5), 2023, "DOOSAN", "KIA", 1.0),
+        (dt.date(2023, 4, 8), 2023, "DOOSAN", "KIA", 1.0),
+        (dt.date(2024, 4, 3), 2024, "DOOSAN", "KIA", 1.0),
+    ])
+    out = r.walk_forward_elo(df)
+    assert out.loc[3, "elo_home"] != out.loc[2, "elo_home"]
+
+
+def test_replay_empty_dataframe_returns_default_state():
+    df = _games_df([])
+    state = r.replay(df)
+    assert state.elo == {}
+    assert state.n_processed == 0
+    assert state.n_tied == 0
+
+
+def test_walk_forward_elo_empty_dataframe_has_expected_columns():
+    df = _games_df([])
+    out = r.walk_forward_elo(df)
+    for col in ("elo_home", "elo_away", "elo_diff_hfa", "p_home_elo"):
+        assert col in out.columns
+        assert len(out[col]) == 0
