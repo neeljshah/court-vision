@@ -21,6 +21,10 @@ score state (that would risk grading against a fabricated outcome).
 
 REUSES live_grade's atomic append discipline + grade-path convention so the stamp row lands
 in the SAME file the aggregate OUTCOME arm reads (_OUTCOME_KEYS includes 'home_win').
+Also REUSES ingame_live_state._competitors/_score (the team-then-athlete / sets-won
+fallback built for tennis) for a raw nested ESPN event, and handles the flat
+settled_finals-style game dict (no 'competitions' key -- the real production `ev` shape)
+directly off home_score/away_score. See _home_win_from_event for all three shapes.
 
 INVARIANTS: build only under scripts/platformkit/ingame/; <=300 LOC; ASCII only; no network
 at import; no data/registry write, no flag flip, no autostart; never edits live_grade
@@ -38,6 +42,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Optional
 
+from scripts.platformkit.ingame import ingame_live_state as _ls
 from scripts.platformkit.ingame import live_grade as _lg
 from scripts.platformkit.ingame import settled_finals as _sf
 
@@ -89,26 +94,56 @@ def already_stamped(path: Path) -> bool:
     return False
 
 
+def _home_win_from_flat_game(ev: Dict[str, Any]) -> Optional[float]:
+    """Derive binary home_win from a FLAT settled_finals-style game dict, or None.
+
+    inplay_capture_loop._stamp_final's production `ev` is actually
+    settled_finals.settled_since's flat game shape {home,away,home_score,away_score,...}
+    -- it carries NO 'competitions' key at all, so the raw-ESPN-event path below never
+    matches it (any sport, not just tennis). This is the SAME direct-score shape as
+    settled_finals._final_games_from_board already emits (home_score/away_score already
+    resolved leak-free, including tennis' sets-won fallback there). Only used when the
+    dict has no 'competitions' key, so byte-identical raw-ESPN-event behavior is
+    unaffected. Never raises (called only from the guarded caller below).
+    """
+    try:
+        hs = float(ev["home_score"])
+        as_ = float(ev["away_score"])
+    except (KeyError, TypeError, ValueError):
+        return None
+    if hs == as_:
+        return None
+    return 1.0 if hs > as_ else 0.0
+
+
 def _home_win_from_event(ev: Dict[str, Any]) -> Optional[float]:
     """Derive binary home_win from a FINAL ESPN event dict, or None.
 
-    Only returns a label when the event is FINAL (settled_finals._is_final) AND both final
-    scores are readable AND not a tie. A non-final / tied / unreadable event -> None (we
-    never stamp a fabricated or premature label).
+    Handles THREE shapes, byte-identical for the first (existing team-sport behavior
+    unchanged):
+      1. Raw flat ESPN event: {"competitions":[{"status":..., "competitors":[...]}]} with
+         numeric .score fields (nba/mlb/soccer -- the ORIGINAL, unchanged code path).
+      2. Tennis (and any sport) nested/athlete-shaped event: competitors carry .athlete
+         instead of .team and NO numeric .score (only per-set .linescores + .winner) --
+         REUSES ingame_live_state._competitors/_score (the wave-3 fix) so this module
+         does not duplicate that team-then-athlete / sets-won fallback logic.
+      3. Flat settled_finals-style game dict with no 'competitions' key at all (the
+         REAL shape inplay_capture_loop._stamp_final passes as `ev` in production) --
+         reads home_score/away_score directly (see _home_win_from_flat_game).
+
+    Only returns a label when the event is FINAL (settled_finals._is_final, shape 1/2)
+    AND both final scores are readable AND not a tie. A non-final / tied / unreadable
+    event -> None (we never stamp a fabricated or premature label).
     """
-    if not isinstance(ev, dict) or not _sf._is_final(ev):
+    if not isinstance(ev, dict):
         return None
-    comp = (ev.get("competitions") or [{}])[0]
-    hs = as_ = None
-    for c in comp.get("competitors", []) or []:
-        try:
-            sc = float(c.get("score"))
-        except (TypeError, ValueError):
-            return None
-        if c.get("homeAway") == "home":
-            hs = sc
-        elif c.get("homeAway") == "away":
-            as_ = sc
+    if "competitions" not in ev:
+        # shape 3: no nested competitions at all -- the settled_finals flat game dict.
+        return _home_win_from_flat_game(ev)
+    if not _sf._is_final(ev):
+        return None
+    home, away = _ls._competitors(ev)
+    hs, as_ = _ls._score(home), _ls._score(away)
     if hs is None or as_ is None or hs == as_:
         return None
     return 1.0 if hs > as_ else 0.0

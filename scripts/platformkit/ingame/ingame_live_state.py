@@ -38,11 +38,29 @@ _SPORTS: Dict[str, Dict] = {
     # the in-game daytrader can pair the calibrated 1X2 model (p_home_win) with the live
     # Kalshi WC moneyline. Without this key live_state returned None -> "no_live_state".
     "soccer_intl": {"path": "soccer/{league}", "kind": "minutes", "total_min": 90.0},
-    "tennis": {"path": "tennis/atp", "kind": "tennis"},
+    # {league} defaults to "atp" (unchanged single-league behavior for any caller that
+    # does not go through _fetch_events's dual atp+wta merge, e.g. an explicit
+    # league="wta" from a caller that already knows the tour).
+    "tennis": {"path": "tennis/{league}", "kind": "tennis"},
 }
 
 # default ESPN league per soccer sport id when the caller omits an explicit league.
 _SOCCER_DEFAULT_LEAGUE: Dict[str, str] = {"soccer": "eng.1", "soccer_intl": "fifa.world"}
+
+# default ESPN tour path when a tennis caller passes no explicit league AND bypasses
+# _fetch_events's dual-board merge (e.g. a direct _scoreboard_url call) -- keeps the
+# prior hardcoded "tennis/atp" behavior as the single-league default.
+_TENNIS_DEFAULT_LEAGUE = "atp"
+
+# tennis has TWO tours sharing one ESPN sport id ("tennis/atp", "tennis/wta") but the
+# in-play capture loop's DEFAULT_SPORTS/inplay_capture_loop keys BOTH tours under the
+# single capture sport "tennis" (KXATPMATCH and KXWTAMATCH tickers alike) -- there is no
+# per-tour sport id upstream to route on. So when the caller does not pin an explicit
+# `league`, tennis fetches BOTH tour scoreboards and MERGES their flattened matches (an
+# explicit league= still selects exactly that one tour, unchanged). Team sports (nba/mlb/
+# soccer/soccer_intl) always use their single `_SPORTS[sport]["path"]` and are untouched
+# by this -- this tuple is consulted ONLY when sport == "tennis" and league is None.
+_TENNIS_LEAGUES: Tuple[str, ...] = ("atp", "wta")
 
 
 def _http_get(url: str) -> dict:
@@ -58,6 +76,8 @@ def _scoreboard_url(sport: str, league: Optional[str]) -> str:
     path = _SPORTS[sport]["path"]
     if sport in _SOCCER_DEFAULT_LEAGUE:
         path = path.format(league=league or _SOCCER_DEFAULT_LEAGUE[sport])
+    elif sport == "tennis":
+        path = path.format(league=league or _TENNIS_DEFAULT_LEAGUE)
     return f"https://site.api.espn.com/apis/site/v2/sports/{path}/scoreboard"
 
 
@@ -291,6 +311,27 @@ def _extract(sport: str, ev: dict, p0: Optional[float],
     return out
 
 
+def _fetch_events(sport: str, league: Optional[str],
+                  getter: Callable[[str], dict]) -> List[dict]:
+    """Flat, per-match event dicts for *sport*, fetching a single league board -- EXCEPT
+    tennis with no explicit `league`, which fetches BOTH tour boards (atp, wta) and merges
+    their flattened matches (see _TENNIS_LEAGUES). An explicit league= (e.g. from a caller
+    that already knows the tour) still fetches exactly that one board, unchanged. Team
+    sports are always single-board, byte-identical to the prior behavior. Never raises
+    (a per-league fetch error just contributes no events for that league)."""
+    if sport == "tennis" and league is None:
+        out: List[dict] = []
+        for lg in _TENNIS_LEAGUES:
+            try:
+                payload = getter(_scoreboard_url(sport, lg))
+                out.extend(_events_for(sport, payload))
+            except Exception:  # noqa: BLE001 -- one tour's feed failing must not lose the other
+                continue
+        return out
+    payload = getter(_scoreboard_url(sport, league))
+    return _events_for(sport, payload)
+
+
 def live_state(sport: str, event_id: Optional[str] = None, *,
                league: Optional[str] = None,
                http_get: Optional[Callable] = None,
@@ -303,12 +344,12 @@ def live_state(sport: str, event_id: Optional[str] = None, *,
     AUTO-SUPPLIED from p0_provider (default live_p0.p0_for, READ-only on the pregame
     snapshot -> leak-free) so the served number carries the PROVEN prior, not BASE. The
     returned dict carries 'p0_source' ('CALLER'|'PRIOR'|'BASE_FALLBACK') as an honest label.
+    Tennis with no explicit `league` scans BOTH atp and wta boards (see _fetch_events).
     """
     if sport not in _SPORTS:
         return None
     getter = http_get or _http_get
-    payload = getter(_scoreboard_url(sport, league))
-    events = _events_for(sport, payload)
+    events = _fetch_events(sport, league, getter)
     if event_id is not None:
         ev = next((e for e in events if str(e.get("id")) == str(event_id)), None)
         if ev is None:
@@ -330,12 +371,15 @@ def live_states(sport: str, *, league: Optional[str] = None,
     The single-game live_state matches by ESPN event id; the in-play capture loop instead
     keys games by their Kalshi ticker, which never equals the ESPN id -> it needs to bridge
     by TEAM. This returns every in-progress state so the caller can pick the one whose teams
-    match a Kalshi market's legs. Leak-free + never raises (any error -> [])."""
+    match a Kalshi market's legs. Tennis with no explicit `league` merges BOTH atp+wta boards
+    (see _fetch_events) so a WTA match's teams are also scannable -- inplay_capture_loop
+    passes the bare capture sport "tennis" for both tours (KXATPMATCH and KXWTAMATCH alike),
+    so this is the merge point that makes WTA games bridgeable at all. Leak-free + never
+    raises (any error -> [])."""
     try:
-        getter = http_get or _http_get
-        payload = getter(_scoreboard_url(sport, league)) if sport in _SPORTS else {}
+        events = _fetch_events(sport, league, http_get or _http_get) if sport in _SPORTS else []
         out: List[Dict] = []
-        for ev in _events_for(sport, payload):
+        for ev in events:
             if not _is_live(ev):
                 continue
             res = _extract(sport, ev, None, p0_provider)
