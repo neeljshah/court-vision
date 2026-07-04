@@ -20,6 +20,16 @@ gap shows up). KXWNBATEAMTOTAL was PROBED and does NOT exist (404 on the /series
 endpoint, 0 markets at any status 2026-07-03) -- correctly ABSENT below; re-probe
 before adding.
 
+Re-verified live 2026-07-04 for the NPB (baseball_npb) lane, same
+/markets?series_ticker=<S> probe: KXNPBGAME has 5 OPEN markets right now (e.g.
+KXNPBGAME-26JUL050500YOKYAK-YOK, matching the SAME '-DDMONYY' ticker-date
+fragment the future-game guard below already parses). KXNPBSPREAD EXISTS as a
+series (/series/KXNPBSPREAD resolves) but has 0 open AND 0 settled markets --
+thin, not absent, so it IS wired below (a real, currently-empty series is a
+legitimate feed to poll; the reader just gets zero rows back today).
+KXNPBTOTAL and KXNPBTEAMTOTAL both 404 on /series/ -- genuinely do NOT exist,
+correctly ABSENT below; re-probe before adding.
+
 INVARIANTS: build only under scripts/platformkit/; <=300 LOC; ASCII only; no I/O
 at import (pure data). Per-file test:
   cd /c/Users/neelj/nba-ai-system && python -m pytest tests/platformkit/odds_provider/test_kalshi_series_spec.py -q
@@ -62,6 +72,10 @@ SERIES_SPEC: Dict[str, List[Tuple[str, str]]] = {
         ("KXWNBAGAME", "moneyline"),
         ("KXWNBASPREAD", "spread"),
         ("KXWNBATOTAL", "total"),
+    ],
+    "npb": [
+        ("KXNPBGAME", "moneyline"),
+        ("KXNPBSPREAD", "spread"),
     ],
 }
 

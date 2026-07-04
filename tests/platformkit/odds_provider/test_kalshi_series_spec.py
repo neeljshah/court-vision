@@ -47,7 +47,8 @@ def test_series_for_returns_a_copy_not_the_module_list():
 def test_game_series_back_compat_is_moneyline_only():
     assert spec._GAME_SERIES == {
         "mlb": "KXMLBGAME", "soccer": "KXEPLGAME",
-        "soccer_intl": "KXWCGAME", "nba": "KXNBAGAME", "wnba": "KXWNBAGAME"}
+        "soccer_intl": "KXWCGAME", "nba": "KXNBAGAME", "wnba": "KXWNBAGAME",
+        "npb": "KXNPBGAME"}
     # tennis has no single "GAME" series (it is MATCH-per-tour) -- not in back-compat map.
     assert "tennis" not in spec._GAME_SERIES
 
@@ -61,6 +62,37 @@ def test_series_for_wnba_is_moneyline_spread_total_no_team_total():
     ]
     # KXWNBATEAMTOTAL was probed live 2026-07-03 and does not exist -- must stay absent.
     assert "KXWNBATEAMTOTAL" not in {s for s, _mt in pairs}
+
+
+def test_series_for_npb_is_moneyline_and_spread_only():
+    pairs = spec.series_for("npb")
+    assert pairs == [
+        ("KXNPBGAME", "moneyline"),
+        ("KXNPBSPREAD", "spread"),
+    ]
+    # KXNPBTOTAL/KXNPBTEAMTOTAL were probed live 2026-07-04 and 404 on /series/
+    # (genuinely do not exist) -- must stay absent.
+    tickers = {s for s, _mt in pairs}
+    assert "KXNPBTOTAL" not in tickers
+    assert "KXNPBTEAMTOTAL" not in tickers
+
+
+def test_npb_moneyline_is_the_only_series_treated_as_win_probability():
+    """Safety invariant: for every sport, the ONLY market_type ever safe to
+    feed a win-prob consumer is 'moneyline' -- a spread/total prob must never
+    leak into that path. Explicitly re-checked for npb since it is new."""
+    pairs = spec.series_for("npb")
+    moneyline_tickers = {s for s, mt in pairs if mt == "moneyline"}
+    non_moneyline_tickers = {s for s, mt in pairs if mt != "moneyline"}
+    assert moneyline_tickers == {"KXNPBGAME"}
+    assert non_moneyline_tickers == {"KXNPBSPREAD"}
+    assert moneyline_tickers.isdisjoint(non_moneyline_tickers)
+
+
+def test_npb_ticker_game_date_parses_real_live_ticker_shape():
+    """Real ticker probed live 2026-07-04: KXNPBGAME-26JUL050500YOKYAK-YOK."""
+    assert spec.ticker_game_date("KXNPBGAME-26JUL050500YOKYAK-YOK") == __import__(
+        "datetime").date(2026, 7, 5)
 
 
 def test_ticker_game_date_parses_game_and_match_tickers():
