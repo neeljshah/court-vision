@@ -41,6 +41,24 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 24 (SCRAPING FRONTIER: USER Q "is scraping at the highest level, best
+  webscraping systems, using githubs", 2026-07-04 ~16:35Z, commit ad8e59dd + local
+  scout doc, 6 agents / ~0.53M tokens): (1) TIER-3 browser-render transport BUILT
+  (browser_fetch.py on scrapling DynamicFetcher/Playwright; StealthyFetcher/camoufox
+  not installed) DEFAULT-OFF (CV_BROWSER_FALLBACK), byte-identical when off; live
+  probes Sofascore + WNBA-CDN + stats.wnba ALL STILL_BLOCKED with real evidence
+  (403 / CloudFront AccessDenied XML / Playwright timeout = egress walls, NOT code).
+  (2) OSS scout ranked the stealth frontier (nodriver 28/31 AGPL, curl_cffi 26,
+  patchright 25; camoufox in maintenance gap) + per-blocked-source unlock map +
+  install plan (all HUMAN/restart-window per no-install-while-running rail). HONESTY
+  SELF-CATCH: scout FABRICATED a 'curl-cffi update' CLI verb (does not exist on
+  0.15.0) -- Opus round-2 refused PASS, orchestrator corrected to 'pip install -U'
+  + retraction framing before commit. (3) 3 real gaps recorded: browser-render tier
+  (built, needs better browser pkg), single egress IP (proxy=PAID=human-only),
+  global per-host rate governor (small build queued). Memory
+  [[scraping-frontier-2026-07-04]]. ALSO fixed live: m1_ui orphan-node #3 on
+  port 3000 killed -> all_ready; verified pacing counters LIVE (17req/0-429),
+  freshness_sla GREEN. No edge claimed.
 - SPRINT WAKE 23 (LEAN 3-LANE: OWN-CLOSES BACK TO 2023 + LIVENESS ISOLATION + SOCCER
   SPLIT, 2026-07-04 ~15:50Z, commits ecb11d4a/c871d175/2d63fb62, 6 agents / ~0.54M
   tokens, 1 report-crash recovered via direct Opus review -- session crash #2, both
