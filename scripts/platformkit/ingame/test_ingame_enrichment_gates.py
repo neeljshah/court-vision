@@ -82,11 +82,15 @@ def test_run_gate_a_writes_pending_when_no_rows(tmp_path):
     assert on_disk["edge_claimed"] is False
 
 
-def test_run_gate_a_default_rows_fn_is_empty_and_never_raises():
-    """The real default row source (no fotmob-join wiring yet) must return []
-    and never raise -- this is the exact 'PENDING n=0' contract the brief asks for."""
+def test_run_gate_a_default_rows_fn_never_raises_and_is_a_list():
+    """LANE 4: the real default row source is now wired to
+    enrichment_rows_soccer.build_rows (an as-of join over real captured
+    data). It must never raise and must always return a list -- real
+    overlap between soccer_intl grade ticks and fotmob sidecars may be
+    thin or zero right now, so this does NOT assert emptiness, only the
+    never-raises/list-shape contract."""
     rows = g._default_rows_soccer_xg()
-    assert rows == []
+    assert isinstance(rows, list)
 
 
 def test_pre_registered_at_stamp_is_frozen_before_data_existed():

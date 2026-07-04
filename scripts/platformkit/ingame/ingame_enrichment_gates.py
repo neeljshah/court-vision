@@ -188,11 +188,18 @@ def judge_enrichment(rows: Sequence[Row], *, eps: float = EPS_DEFAULT,
 
 def _default_rows_soccer_xg() -> List[Row]:
     """Production row source for GATE A: forward-captured, xG-enriched
-    soccer_intl grade ticks paired with OUTCOME. No such rows exist yet
-    (fotmob wiring is a future lane per ingame_fotmob.py's WIRE SPEC) -- so
-    this honestly returns [] until that wiring lands and grade rows carry
-    model_prob_enriched + xg_diff/sot_diff. Never raises."""
-    return []
+    soccer_intl grade ticks paired with OUTCOME. LANE 4 wired this to
+    enrichment_rows_soccer.build_rows, which as-of-joins captured
+    soccer_intl grade ticks with fotmob xG sidecars (see that module's
+    docstring for the join + naive-conditioning contract). Import is
+    lazy and best-effort -- if the producer module is absent or its
+    import fails for any reason, this still honestly returns [] rather
+    than raising."""
+    try:
+        from scripts.platformkit.ingame.enrichment_rows_soccer import build_rows
+        return build_rows()
+    except Exception as exc:  # noqa: BLE001 -- a producer failure is an honest empty gate
+        return []
 
 
 def run_gate_a(rows_fn: Optional[RowsFn] = None,
