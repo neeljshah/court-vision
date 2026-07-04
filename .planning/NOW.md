@@ -41,6 +41,18 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SESSION HANDOFF (2026-07-04 ~19:50Z): session b90493cf ENDED at user request
+  ("find a stopping point, pasting new session prompt"). WAVE-30 fleet STOPPED
+  mid-build; partial UNREVIEWED work stashed as stash@{0} "wave-30-partial-
+  UNREVIEWED" (m13 circuit breaker, tennis surface-hold gate, schema snapshot --
+  7 files; nothing committed per every-ship-reviewed rule). Tree CLEAN at
+  144b502d. NEW SESSION OWNS THE LOOP (boot from .planning/NEXT_SESSION_PROMPT.md):
+  first actions = re-run wave-30 lanes fresh per the WAKE-30 ledger specs below
+  (stash is reference only -- pop OR re-build, builder's choice after reading it;
+  m13 SLA RED circuit-breaker fix is the priority), then night-slate live-
+  activation verify + NPB/KBO first grades ~09-10Z 07-05. GUARD: if a scheduled
+  wake fires in the OLD session (one armed for ~20:30Z), it must EXIT immediately
+  without acting -- the new session owns the loop and the wake lock.
 - SPRINT WAKE 30 (SCHEDULED WAKE: M13 ROOT CAUSE EXPOSED BY ITS OWN FIX + WAVE-30
   FLEET LAUNCHED, 2026-07-04 ~19:35Z, in flight wf_9ca5d74f): stop flag clear;
   verifier 16 PASS / 16 PENDING (between July-4 day and night slates -- honest) /
