@@ -5,6 +5,10 @@ recomputes each ranking claim's metric straight from its declared
 source_files + criteria.formula using pandas (no import of the producer
 module), and reports VERIFIED / MISMATCH / UNVERIFIABLE per claim.
 
+criteria.entity_key names the ranking-entity id column (defaults to
+'player_id' for back-compat) so non-basketball sports can publish ranking
+claims keyed on e.g. pitcher_id / team_id through the SAME contract.
+
 CLI:
     python -m scripts.platformkit.intel_validation.claims_validator <claims.jsonl>
 """
@@ -85,8 +89,11 @@ def _apply_min_sample_floors(df: pd.DataFrame, min_sample: dict[str, Any]) -> tu
     return filtered, before - len(filtered)
 
 
-def _player_key(row_or_dict: dict[str, Any]) -> Any:
-    return row_or_dict.get("player_id")
+def _entity_key(claim_or_criteria: dict[str, Any]) -> Any:
+    """criteria.entity_key names the ranking-entity id column (e.g.
+    player_id / pitcher_id / team_id). Defaults to 'player_id' for
+    back-compat with every claim published before this field existed."""
+    return claim_or_criteria.get("entity_key", "player_id")
 
 
 def validate_claim(claim: dict[str, Any]) -> ClaimVerdict:
@@ -98,6 +105,7 @@ def validate_claim(claim: dict[str, Any]) -> ClaimVerdict:
     direction = criteria.get("direction", "desc")
     source_files = claim.get("source_files", [])
     claimed_ranking = claim.get("ranking", [])
+    entity_key = _entity_key(criteria)
 
     if not formula:
         return ClaimVerdict(claim_id, "UNVERIFIABLE", reason="criteria.formula missing")
@@ -118,6 +126,11 @@ def validate_claim(claim: dict[str, Any]) -> ClaimVerdict:
         except Exception as e:  # noqa: BLE001 -- fail closed, never silently skip
             return ClaimVerdict(claim_id, "UNVERIFIABLE", reason=f"aggregate recompute error: {e}")
         id_col = criteria["aggregate"]["group_by"]
+        if id_col != entity_key:
+            return ClaimVerdict(
+                claim_id, "UNVERIFIABLE",
+                reason=f"entity_key={entity_key!r} does not match aggregate.group_by={id_col!r}",
+            )
         # An empty survivors table with an empty claimed ranking is an honest
         # floor-driven empty result -- verified via the n_excluded check below.
     else:
@@ -138,9 +151,9 @@ def validate_claim(claim: dict[str, Any]) -> ClaimVerdict:
 
         recomputed = filtered.copy()
         recomputed["_value"] = values
-        id_col = "player_id" if "player_id" in recomputed.columns else None
+        id_col = entity_key if entity_key in recomputed.columns else None
         if id_col is None:
-            return ClaimVerdict(claim_id, "UNVERIFIABLE", reason="no player_id column in source data")
+            return ClaimVerdict(claim_id, "UNVERIFIABLE", reason=f"no {entity_key!r} column in source data")
 
     ascending = direction == "asc"
     recomputed = recomputed.sort_values("_value", ascending=ascending).reset_index(drop=True)
@@ -160,17 +173,17 @@ def validate_claim(claim: dict[str, Any]) -> ClaimVerdict:
         # take the id from the COLUMN, not the row Series -- a mixed-dtype row
         # gets upcast to float64, which would corrupt int64 ids (1630198.0)
         recomputed_id = recomputed[id_col].iloc[idx]
-        claimed_id = claimed_row.get("player_id")
-        # allow int/str id mismatch (e.g. 101 vs "101") but not a different player
+        claimed_id = claimed_row.get(entity_key)
+        # allow int/str id mismatch (e.g. 101 vs "101") but not a different entity
         if str(recomputed_id) != str(claimed_id):
             return ClaimVerdict(
                 claim_id,
                 "MISMATCH",
-                reason=f"rank {rank}: claimed player_id={claimed_id} recomputed player_id={recomputed_id}",
+                reason=f"rank {rank}: claimed {entity_key}={claimed_id} recomputed {entity_key}={recomputed_id}",
                 first_divergence={
                     "rank": rank,
                     "claimed": claimed_row,
-                    "recomputed": {"player_id": recomputed_id, "value": float(recomputed_row["_value"])},
+                    "recomputed": {entity_key: recomputed_id, "value": float(recomputed_row["_value"])},
                 },
             )
         recomputed_value = float(recomputed_row["_value"])
@@ -191,7 +204,7 @@ def validate_claim(claim: dict[str, Any]) -> ClaimVerdict:
                 first_divergence={
                     "rank": rank,
                     "claimed": claimed_row,
-                    "recomputed": {"player_id": recomputed_id, "value": recomputed_value},
+                    "recomputed": {entity_key: recomputed_id, "value": recomputed_value},
                 },
             )
         claimed_n = claimed_row.get("n")

@@ -74,10 +74,15 @@ def _window_spec(window: str) -> dict:
     raise ValueError(f"unknown window: {window}")
 
 
+ENTITY_KEY = "player_id"  # this module's ranking entity; other sports' claim
+# producers pass their own (pitcher_id/team_id/...) -- see criteria.entity_key
+# in scripts/platformkit/intel_validation/claims_validator.py.
+
+
 def _aggregate_contract(min_sample: dict) -> dict:
     """criteria.aggregate: group key + derivation of every floor column."""
     return {
-        "group_by": "player_id",
+        "group_by": ENTITY_KEY,
         "derived": {col: DERIVED_EXPRS[col] for col in min_sample},
     }
 
@@ -140,6 +145,7 @@ def build_claims(df: pd.DataFrame, window: str, top_n: int = 10) -> list[dict]:
             "min_sample": comp_min_sample,
             "direction": "desc",
             "value_precision": VALUE_PRECISION,
+            "entity_key": ENTITY_KEY,
         },
         "ranking": _ranking_rows(comp_survivors, "composite", top_n),
         "source_files": [BOXSCORE_PATH],
@@ -173,6 +179,7 @@ def build_claims(df: pd.DataFrame, window: str, top_n: int = 10) -> list[dict]:
                 "min_sample": min_sample,
                 "direction": "desc",
                 "value_precision": VALUE_PRECISION,
+                "entity_key": ENTITY_KEY,
             },
             "ranking": _ranking_rows(survivors, metric, top_n),
             "source_files": [BOXSCORE_PATH],
