@@ -93,6 +93,53 @@ _KBO_NAME_TO_CODE: Dict[str, str] = {
 # instead of the ASCII-nickname-convergence trick.
 
 # --------------------------------------------------------------------------- #
+# WNBA (LANE 1): Kalshi's ODDS FEED (kalshi.py._team_label reads yes_sub_title,
+# same field KBO/NPB use) carries only the club's CITY word ("Las Vegas",
+# "New York"), NOT the franchise nickname -- verified live 2026-07-03 direct
+# against BOTH open (10 rows) and settled (up to 200 rows / 2 pages) Kalshi
+# markets for series_ticker=KXWNBAGAME (17 distinct yes_sub_title values
+# collected: the 15 real 2026 franchise cities below + 2 non-franchise
+# exhibition labels -- "Japan National Team", "Nigeria National Team" --
+# correctly EXCLUDED, never mapped to a real club). ESPN's local scoreboard
+# (data/domains/wnba/espn_scoreboard.parquet, 769 rows) carries the FULL
+# franchise name ("Las Vegas Aces"), cross-checked the same session (24
+# distinct home/away strings: the 15 real franchises below + 9 non-franchise
+# rows -- Brazil/JAPAN/NIGERIA/Puerto Rico/Team USA/Team WNBA/TEAM
+# CLARK/TEAM COLLIER/Toyota Antelopes -- all-star and exhibition rows that
+# must likewise never collide with a real franchise key).
+#
+# _WNBA_CITY_TO_CODE below is the single explicit map from each of the 15 real
+# 2026 WNBA franchises' Kalshi CITY label (lowercased) to a stable short code
+# -- mirrors ingame.wnba_outcome_resolver._ABBR_OVERRIDES's own franchise set
+# (same 15 codes: ATL, CHI, CONN, DAL, GS, IND, LV, LA, MIN, NY, PDX, PHX, SEA,
+# TOR, WSH) so the two modules never drift. Toronto Tempo (2026 expansion,
+# code TOR) and the Golden State Valkyries expansion club (code GS) are both
+# confirmed present live. _NAME_NICK_FIXUPS folds each FULL ESPN name into the
+# same code via its normalized city-prefix phrase, so "Las Vegas Aces" and
+# "Las Vegas" converge on one canonical key -- while "Los Angeles" and "Las
+# Vegas" stay fully distinct (no shared normalized token; verified in
+# test_team_resolver.py).
+# --------------------------------------------------------------------------- #
+_WNBA_CITY_TO_CODE: Dict[str, str] = {
+    "atlanta": "ATL", "chicago": "CHI", "connecticut": "CONN", "dallas": "DAL",
+    "golden state": "GS", "indiana": "IND", "las vegas": "LV",
+    "los angeles": "LA", "minnesota": "MIN", "new york": "NY",
+    "portland": "PDX", "phoenix": "PHX", "seattle": "SEA", "toronto": "TOR",
+    "washington": "WSH",
+}
+# Full ESPN franchise name -> its Kalshi city code (used to build the
+# multi-word fixup phrases below; the phrase IS the city, since that is all
+# Kalshi ever supplies).
+_WNBA_FULLNAME_TO_CODE: Dict[str, str] = {
+    "atlanta dream": "ATL", "chicago sky": "CHI", "connecticut sun": "CONN",
+    "dallas wings": "DAL", "golden state valkyries": "GS",
+    "indiana fever": "IND", "las vegas aces": "LV", "los angeles sparks": "LA",
+    "minnesota lynx": "MIN", "new york liberty": "NY", "portland fire": "PDX",
+    "phoenix mercury": "PHX", "seattle storm": "SEA", "toronto tempo": "TOR",
+    "washington mystics": "WSH",
+}
+
+# --------------------------------------------------------------------------- #
 # NPB (LANE 2): Kalshi's ODDS FEED (kalshi.py._team_label, same yes_sub_title/
 # title fields KBO uses) carries each club's FULL English name ("Hanshin
 # Tigers"), verified live 2026-07-06 direct against
@@ -148,16 +195,24 @@ def _kbo_code_to_nick() -> Dict[str, str]:
 
 # Multi-word full-name nicknames that must collapse to a single token so a
 # full name resolves to the SAME key as its code (e.g. "Red Sox" -> "redsox").
+# WNBA (LANE 1): the "code" a bare Kalshi label collapses to IS the city phrase
+# itself (Kalshi never supplies a nickname or a single-token code for WNBA --
+# see module note above), so both the bare city ("Las Vegas") and the full
+# name ("Las Vegas Aces") register the SAME city-phrase key here; branch 2 of
+# canonical() (phrase-in-norm) matches either shape to the identical token.
 _NAME_NICK_FIXUPS = {
     ("nba", "trail blazers"): "trailblazers",
     ("mlb", "red sox"): "redsox",
     ("mlb", "white sox"): "whitesox",
     ("mlb", "blue jays"): "bluejays",
     **{("kbo", full): code for full, code in _KBO_NAME_TO_CODE.items()},
+    **{("wnba", city): code for city, code in _WNBA_CITY_TO_CODE.items()},
+    **{("wnba", full): code for full, code in _WNBA_FULLNAME_TO_CODE.items()},
 }
 
 _CODE_TO_NICK = {"nba": _NBA_CODE_TO_NICK, "mlb": _MLB_CODE_TO_NICK,
-                 "kbo": _kbo_code_to_nick()}
+                 "kbo": _kbo_code_to_nick(),
+                 "wnba": {c: c for c in _WNBA_CITY_TO_CODE.values()}}
 _CODE_ALIASES = {"nba": _NBA_CODE_ALIASES, "mlb": _MLB_CODE_ALIASES}
 _STOP = {"the", "fc", "afc", "cf", "sc"}
 
