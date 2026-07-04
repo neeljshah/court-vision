@@ -159,6 +159,17 @@ def run_validation(
     bands_all = {b: _band_stats(rows, iters=iters) for b, rows in sorted(all_rows_by_band.items())}
     bands_excl = {b: _band_stats(rows, iters=iters) for b, rows in sorted(excl_rows_by_band.items())}
 
+    from scripts.platformkit.venue_history.kalshi_intragame import DISCOVERY_WINDOW_SPORTS
+    has_discovery_window = sport.lower() in DISCOVERY_WINDOW_SPORTS
+    caveat = (
+        "this backfill overlaps the live in-play capture discovery corpus "
+        "(2026-06-19..07-02); the honest independent subset is close_time before "
+        "2026-06-19 or after 2026-07-02 -- see 'excluded_discovery_window' below"
+        if has_discovery_window else
+        "N/A for this sport -- the discovery-window exclusion is an MLB-only artifact "
+        "(no live in-play capture ran for this sport in that window); "
+        "'excluded_discovery_window' below is IDENTICAL to 'pooled_all', not a real subset")
+
     doc_out = {
         "component": "kalshi_tail_validation", "sport": sport,
         "provenance": "kalshi_historical_validation",
@@ -167,10 +178,8 @@ def run_validation(
                  "calibration by price band; game-clustered bootstrap CI; SEPARATE from "
                  "lane 1's file and from the forward pre-registered ingame_tail_gate; "
                  "never pooled with forward evidence"),
-        "discovery_window_caveat": (
-            "this backfill overlaps the live in-play capture discovery corpus "
-            "(2026-06-19..07-02); the honest independent subset is close_time before "
-            "2026-06-19 or after 2026-07-02 -- see 'excluded_discovery_window' below"),
+        "has_discovery_window": has_discovery_window,
+        "discovery_window_caveat": caveat,
         "n_markets_scanned": n_markets, "n_markets_unresolved": n_unresolved,
         "n_markets_in_discovery_window": n_in_window,
         "n_markets_excluded_independent": n_excluded,

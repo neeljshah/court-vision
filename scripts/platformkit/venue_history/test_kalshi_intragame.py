@@ -108,12 +108,41 @@ def test_empty_price_and_no_quotes_skipped() -> None:
 
 def test_discovery_window_exclusion_flag() -> None:
     """Games whose close_time falls inside 2026-06-19..07-02 are flagged, not silently
-    dropped -- the honest independent subset excludes them downstream."""
+    dropped -- the honest independent subset excludes them downstream. Default sport
+    (mlb) is the one that actually had the live discovery capture."""
     assert ki.in_discovery_window("2026-06-25T12:00:00Z") is True
     assert ki.in_discovery_window("2026-06-18T23:59:59Z") is False
     assert ki.in_discovery_window("2026-07-03T00:00:01Z") is False
     assert ki.in_discovery_window(ki.DISCOVERY_WINDOW_START) is True
     assert ki.in_discovery_window(ki.DISCOVERY_WINDOW_END) is True
+
+
+def test_discovery_window_never_flagged_for_nba() -> None:
+    """NBA never had the live in-play discovery capture running -- a date that WOULD
+    match the MLB window must never be flagged for nba, even by calendar coincidence."""
+    assert ki.in_discovery_window("2026-06-25T12:00:00Z", sport="nba") is False
+    assert ki.in_discovery_window("2026-06-25T12:00:00Z", sport="NBA") is False
+    assert ki.in_discovery_window(ki.DISCOVERY_WINDOW_START, sport="nba") is False
+    # mlb (any case) is unaffected
+    assert ki.in_discovery_window("2026-06-25T12:00:00Z", sport="MLB") is True
+
+
+def test_nba_series_param_end_to_end(tmp_path: Path) -> None:
+    """run_backfill with series='KXNBAGAME', sport='nba' writes docs stamped sport='nba'
+    and NEVER flags in_discovery_window True, even for a close_time inside the MLB window."""
+    m = {"ticker": "KXNBAGAME-26JUN25NYKSAS-NYK", "event_ticker": "KXNBAGAME-26JUN25NYKSAS",
+         "close_time": "2026-06-25T03:00:00Z", "result": "yes"}
+    pages = {"": {"markets": [m], "cursor": ""}}
+    http = _fake_http(pages, {"KXNBAGAME-26JUN25NYKSAS-NYK": []})
+    out_dir = tmp_path / "nba_out"
+    result = ki.run_backfill("KXNBAGAME", "nba", out_dir=out_dir, http=http,
+                              sleep_sec=0, sleep_fn=lambda s: None, max_requests=20)
+    assert result["series_ticker"] == "KXNBAGAME"
+    assert result["sport"] == "nba"
+    doc = json.loads((out_dir / "KXNBAGAME-26JUN25NYKSAS-NYK.jsonl").read_text(encoding="utf-8"))
+    assert doc["sport"] == "nba"
+    assert doc["series_ticker"] == "KXNBAGAME"
+    assert doc["in_discovery_window"] is False  # NBA never had the discovery window
 
 
 def test_candle_window_fits_server_cap() -> None:
@@ -148,6 +177,40 @@ def test_run_backfill_stamps_provenance_and_discovery_flag(tmp_path: Path) -> No
     assert doc["result"] == "yes"
     assert doc["in_discovery_window"] is True  # 2026-06-25 is inside 06-19..07-02
     assert doc["n_candles"] == 1
+
+
+def test_cursor_continuation_never_refetches_done_ticker_candles(tmp_path: Path) -> None:
+    """A resumed run with a persisted cursor + done_tickers must NEVER re-issue a
+    candlesticks call for a ticker already marked done -- assert the call count."""
+    m1 = {"ticker": "KXMLBGAME-26JUN01-AAA", "event_ticker": "KXMLBGAME-26JUN01",
+          "close_time": "2026-06-01T00:00:00Z", "result": "yes"}
+    m2 = {"ticker": "KXMLBGAME-26JUN02-BBB", "event_ticker": "KXMLBGAME-26JUN02",
+          "close_time": "2026-06-02T00:00:00Z", "result": "no"}
+    # Both tickers appear again on the resumed page (as a real Kalshi cursor page
+    # would replay if the caller re-requested from an earlier cursor by mistake).
+    pages = {"CUR1": {"markets": [m1, m2], "cursor": ""}}
+    candle_calls: List[str] = []
+
+    def http(url: str) -> Any:
+        if "/candlesticks" in url:
+            ticker = url.split("/markets/")[1].split("/candlesticks")[0]
+            candle_calls.append(ticker)
+            return {"candlesticks": []}
+        return pages["CUR1"]
+
+    out_dir = tmp_path / "resume"
+    prog_path = out_dir / "_progress.json"
+    out_dir.mkdir(parents=True)
+    prog_path.write_text(json.dumps({
+        "cursor": "CUR1", "done_tickers": ["KXMLBGAME-26JUN01-AAA"],
+        "earliest_close_time": "2026-06-01T00:00:00Z",
+    }), encoding="utf-8")
+
+    result = ki.run_backfill("KXMLBGAME", "mlb", out_dir=out_dir, http=http,
+                              sleep_sec=0, sleep_fn=lambda s: None, max_requests=20)
+    assert candle_calls == ["KXMLBGAME-26JUN02-BBB"]  # AAA never re-fetched
+    assert result["n_markets_fetched_this_run"] == 1
+    assert not (out_dir / "KXMLBGAME-26JUN01-AAA.jsonl").exists()
 
 
 def test_max_requests_budget_respected(tmp_path: Path) -> None:
