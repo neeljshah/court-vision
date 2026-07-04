@@ -30,8 +30,8 @@ cdn_backfill), joined to linescores.parquet ONLY for this pre-declared check
 -- never pooled with a forward-only capture stream, per AUTONOMY_CHARTER.
 
 This module = Row/build_rows/fit_coef/crossfit/descriptive_stats (pure
-computation). See states_gate_runner.py for the parquet-reading entry point
-(run_gate/write_gate/CLI) that assembles this into states_gate_validation.json.
+computation). states_gate_runner.py assembles this into the on-disk gate;
+states_gate_ci.py adds game-clustered bootstrap CIs on cross-fit deltas.
 
 INVARIANTS: <=300 LOC; ASCII only; pandas + stdlib only; no network; no
 $/roi/edge fields; never mutates ingame_blend.py or ingame_blend_families.py.
@@ -167,6 +167,8 @@ def _feature_value(row: Row, feature: str) -> float:
 
 
 def _predict_with_term(row: Row, feature: str, coef: float) -> float:
+    """With-term prediction for one row. Also used (as-is, imported directly)
+    by states_gate_ci.py to recompute per-row deltas for bootstrap resampling."""
     z = _logit(row.p_anchored) + coef * _feature_value(row, feature)
     return _sigmoid(z)
 
@@ -197,7 +199,7 @@ class CheckpointCrossfitResult:
     brier_with_term_h1: Optional[float]     # h0-fit coef, eval on h1
     brier_anchored_h0: Optional[float]      # baseline (no term), eval on h0
     brier_with_term_h0: Optional[float]     # h1-fit coef, eval on h0
-    verdict: str  # IMPROVED_BOTH_DIRECTIONS / MIXED / NO_IMPROVEMENT / INSUFFICIENT
+    verdict: str  # LOWER_BRIER_BOTH_DIRECTIONS / MIXED / NO_IMPROVEMENT / INSUFFICIENT
 
     def to_dict(self) -> Dict[str, object]:
         return {
@@ -247,7 +249,7 @@ def crossfit_checkpoint_feature(
         and brier_with_term_h0 < brier_anchored_h0
 
     if improved_dir_a and improved_dir_b:
-        verdict = "IMPROVED_BOTH_DIRECTIONS"
+        verdict = "LOWER_BRIER_BOTH_DIRECTIONS"
     elif improved_dir_a or improved_dir_b:
         verdict = "MIXED"
     else:

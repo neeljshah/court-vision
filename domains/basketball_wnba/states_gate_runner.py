@@ -3,10 +3,13 @@
 Wires states_gate.py's pure computation (Row/build_rows/fit_coef/crossfit/
 descriptive_stats) to the on-disk corpora (espn_scoreboard.parquet,
 linescores.parquet, cdn_backfill_states.parquet) via states_gate_join.py's
-CDN game_id <-> ESPN event_id crosswalk. See states_gate.py's docstring for
-the full pre-declared question + method; this module is I/O + assembly only.
+CDN game_id <-> ESPN event_id crosswalk, then layers states_gate_ci.py's
+game-clustered bootstrap CIs + v2 SUPPORTED survival verdict on top (LANE 4).
+See states_gate.py's docstring for the full pre-declared question + method;
+this module is I/O + assembly only.
 
-Output: data/domains/wnba/states_gate_validation.json.
+Output: data/domains/wnba/states_gate_validation.json (now includes v2
+delta_ci95_eval_h0/h1, ci_excludes_zero_h0/h1, verdict_v2 per cell).
 
 INVARIANTS: <=300 LOC; ASCII only; pandas + stdlib only; no network at import
 time (parquet reads only; states_gate_join reads already-backfilled JSON off
@@ -33,6 +36,7 @@ from domains.basketball_wnba.states_gate import (
     descriptive_stats,
 )
 from domains.basketball_wnba.states_gate import _MIN_N_PER_HALF
+from domains.basketball_wnba.states_gate_ci import crossfit_with_ci
 from domains.basketball_wnba.states_gate_join import build_join_map
 
 EDGE_CLAIMED = False
@@ -72,14 +76,19 @@ def run_gate(
 
     per_feature: Dict[str, List[Dict[str, object]]] = {}
     for feature in FEATURES:
-        per_feature[feature] = [
-            crossfit_checkpoint_feature(rows, cp, feature).to_dict() for cp in CHECKPOINTS
-        ]
+        cell_results = []
+        for cp in CHECKPOINTS:
+            base = crossfit_checkpoint_feature(rows, cp, feature)
+            with_ci = crossfit_with_ci(rows, cp, feature, base)
+            cell_results.append(with_ci.to_dict())
+        per_feature[feature] = cell_results
 
-    any_improved = any(
-        r["verdict"] == "IMPROVED_BOTH_DIRECTIONS"
-        for feature_results in per_feature.values() for r in feature_results
-    )
+    supported_cells = [
+        {"feature": feature, "checkpoint": r["checkpoint"]}
+        for feature, feature_results in per_feature.items()
+        for r in feature_results if r["verdict_v2"] == "SUPPORTED"
+    ]
+    any_improved = bool(supported_cells)
 
     result: Dict[str, object] = {
         "edge_claimed": False,
@@ -100,14 +109,19 @@ def run_gate(
         "min_n_per_half_floor": _MIN_N_PER_HALF,
         "crossfit_results": per_feature,
         "descriptive_stats": descriptive_stats(rows),
+        "supported_cells_v2": supported_cells,
         "overall_verdict": (
-            "AT_LEAST_ONE_FEATURE_IMPROVED_BOTH_DIRECTIONS" if any_improved
-            else "NO_FEATURE_IMPROVED_BOTH_DIRECTIONS__HONEST_NULL"
+            "AT_LEAST_ONE_FEATURE_SUPPORTED_V2" if any_improved
+            else "NO_FEATURE_SUPPORTED_V2__HONEST_NULL"
         ),
         "note": (
             "Validation only. The anchored blend (domains.basketball_wnba."
             "ingame_blend.blend_prob) stays UNTOUCHED regardless of this "
-            "gate's verdict; any adoption is a future human-queue item."
+            "gate's verdict; any adoption is a future human-queue item. v2 "
+            "SUPPORTED requires LOWER_BRIER_BOTH_DIRECTIONS AND both "
+            "directions' bootstrap delta CI95 excluding 0 (see "
+            "states_gate_ci.py); the v1 point-estimate verdict alone (see "
+            "crossfit_results[*].verdict) is NOT sufficient for SUPPORTED."
         ),
     }
     return result
