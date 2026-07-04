@@ -41,6 +41,22 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 32 (WAVE-31 LANDED IN 34 MIN + SCOUT FLEET + WAVE-32 LAUNCHED,
+  2026-07-04 ~21:35Z, wf_01221c03-405 16 agents/~1.53M tok + 5 Haiku scouts/
+  3.5min, commits 00be9aab..5f68e9d6): (1) m13 breaker COMPLETE, live proof
+  68/68 served rows carry SKIPPED_CIRCUIT (was 0/68) -> committed. (2) MLB
+  velo-fatigue HONEST REJECT (real proxy LOSES to base .2137->.2177, DM p=.0023
+  wrong dir) -> SP-fatigue class CLOSED, memory written. (3) soccer tier
+  REJECT_ARTIFACT (3rd planted-null catch). (4) SHIPs: vault-feed staging (46
+  dossier sections + 53 atlas hubs), consolidate-not-delete retention (0
+  eligible until ~07-18), verdict-claims validator (3/3 real verdicts VERIFIED)
+  + gate_verdict ask family. (5) ops lane: all 4 probe anomalies were STALE --
+  daemon already polling wnba/npb/kbo since 07-03, resolver/bet_board fixes
+  already live, beat_thread PASS; zero changes. (6) reprocess lane = agent dud
+  (empty return) -> redispatched. WAVE-32 (FAST-LANE: scouted paths, dual
+  reviewers): reprocess-v2, positional-weight gate (Fable design: per-posgroup
+  weights vs naive, null=shuffled positions), WNBA Elo MOV refresh, prop-edge
+  line budget, heartbeat flake. No edge claimed.
 - SPRINT WAKE 31 (WAVE-30 LANDED + CONTINUOUS NO-DOWNTIME MODE, 2026-07-04
   ~20:20Z, run wf_56124b67-c33, 21 agents/~1.10M tok, 7 lanes COMMITTED
   cb9bd7fa..fa3f3a4c): (1) tennis surface-hold HONEST REJECT (ATP +.00012 /
