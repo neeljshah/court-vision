@@ -30,6 +30,12 @@ see post_restart_checks.py for the check implementations + data tables):
       enrichment tick fields (xg_*/spread_bp/book_thinness/stale_quote/espn_wp;
       None values fine) -- PENDING without a live game.
   (j) LANE 5 addition: espn_event_id present (non-null) in a fresh mlb capture tick.
+  (k)-(p) RESTART-READINESS LANE 3 addition (see post_restart_readiness_checks.py):
+      the 6 activations waves 15/17/18/20 shipped that need this pending m2/
+      supervisor bounce to run under the NEW code -- grade-writer frac-clamp (k),
+      Kalshi 429 pacing counters (l), enrichment persisted into grade rows (m),
+      sidecar retention dry-run plan (n), supervisor beat-thread + boot_initiator
+      stamp (o), npb/kbo live-state bridge wiring (p).
 
 Every external effect (HTTP probe, kalshi fetch, live-game lookup, wall clock)
 is INJECTABLE so tests never hit a real socket, kill a PID, or restart
@@ -58,6 +64,14 @@ from scripts.platformkit.autonomy.post_restart_enrichment_checks import (
     check_enrichment_tick_fields,
     check_espn_event_id_mlb,
     check_m37_artifact_dirs,
+)
+from scripts.platformkit.autonomy.post_restart_readiness_checks import (
+    check_enrichment_persistence,
+    check_grade_writer_clamp,
+    check_kalshi_pacing_counters,
+    check_npb_kbo_live_state_bridge,
+    check_sidecar_retention,
+    check_supervisor_beat_thread,
 )
 from scripts.platformkit.autonomy.post_restart_checks import (
     FAIL,
@@ -122,6 +136,14 @@ def run_all(*, now: Optional[float] = None,
     rows.extend(check_m37_artifact_dirs(ts, live_game_fn=live_game_fn))
     rows.append(check_enrichment_tick_fields(ts, live_game_fn=live_game_fn, sport="mlb"))
     rows.append(check_espn_event_id_mlb(ts, live_game_fn=live_game_fn))
+    # RESTART-READINESS LANE 3 addition: the 6 activations waves 15/17/18/20 shipped
+    # that need the pending m2/supervisor bounce to run under the NEW code.
+    rows.append(check_grade_writer_clamp(ts, live_game_fn=live_game_fn))
+    rows.append(check_kalshi_pacing_counters(at_restart))
+    rows.append(check_enrichment_persistence(ts, live_game_fn=live_game_fn))
+    rows.append(check_sidecar_retention())
+    rows.append(check_supervisor_beat_thread(ts, at_restart))
+    rows.append(check_npb_kbo_live_state_bridge())
 
     n_pass = sum(1 for r in rows if r["status"] == PASS)
     n_fail = sum(1 for r in rows if r["status"] == FAIL)
