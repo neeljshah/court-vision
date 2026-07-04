@@ -77,6 +77,54 @@ def test_date_tolerance_one_day():
     assert res.final_score("KXWCGAME-26JUN28GERPAR") == (1, 1)
 
 
+def _lane5_finals_df():
+    """Real failing tickers from the 2026-07-03 Lane 5 soccer resolver audit
+    (32/39 captured soccer_intl games were unresolved -- root cause: 6 FIFA
+    codes had no override and no unique first-3-letter match)."""
+    rows = [
+        # AUT: "Austria"[:3]="AUS" != "AUT" -- no natural match, needs override.
+        # Also exercises the AUS/AUT prefix collision (both start "AUS").
+        {"event_id": "10", "date": "2026-06-22", "home_team": "Argentina",
+         "away_team": "Austria", "home_score": 2.0, "away_score": 0.0,
+         "status_name": "STATUS_FULL_TIME", "completed": True},
+        # AUS: "AUS" prefix-collides Austria/Australia -- needs override to
+        # disambiguate to Australia specifically.
+        {"event_id": "11", "date": "2026-07-03", "home_team": "Australia",
+         "away_team": "Egypt", "home_score": 1.0, "away_score": 1.0,
+         "status_name": "STATUS_FINAL_PEN", "completed": True},
+        # DZA: "Algeria"[:3]="ALG" != "DZA".
+        {"event_id": "12", "date": "2026-06-22", "home_team": "Jordan",
+         "away_team": "Algeria", "home_score": 1.0, "away_score": 2.0,
+         "status_name": "STATUS_FULL_TIME", "completed": True},
+        # HTI: "Haiti"[:3]="HAI" != "HTI".
+        {"event_id": "13", "date": "2026-06-24", "home_team": "Morocco",
+         "away_team": "Haiti", "home_score": 4.0, "away_score": 2.0,
+         "status_name": "STATUS_FULL_TIME", "completed": True},
+        # IRQ/IRI: "Iraq"[:3]="IRA" != "IRQ", "Iran"[:3]="IRA" != "IRI" --
+        # both collide on "IRA" with each other, needs two separate overrides.
+        {"event_id": "14", "date": "2026-06-22", "home_team": "France",
+         "away_team": "Iraq", "home_score": 3.0, "away_score": 0.0,
+         "status_name": "STATUS_FULL_TIME", "completed": True},
+        {"event_id": "15", "date": "2026-06-26", "home_team": "Egypt",
+         "away_team": "Iran", "home_score": 1.0, "away_score": 1.0,
+         "status_name": "STATUS_FULL_TIME", "completed": True},
+    ]
+    return pd.DataFrame(rows)
+
+
+def test_lane5_previously_unresolved_codes_now_resolve():
+    # Real tickers from data/cache/ingame_grade/soccer_intl/ that were
+    # CODE-RESOLVE-FAIL before the AUT/AUS/DZA/HTI/IRQ/IRI overrides were added.
+    res = so.SoccerOutcomeResolver(finals_df=_lane5_finals_df())
+    assert res.available
+    assert res.final_score("KXWCGAME-26JUN22ARGAUT") == (2, 0)   # AUT -> Austria
+    assert res.final_score("KXWCGAME-26JUL03AUSEGY") == (1, 1)   # AUS -> Australia (draw)
+    assert res.final_score("KXWCGAME-26JUN22JORDZA") == (1, 2)   # DZA -> Algeria
+    assert res.final_score("KXWCGAME-26JUN24MARHTI") == (4, 2)   # HTI -> Haiti
+    assert res.final_score("KXWCGAME-26JUN22FRAIRQ") == (3, 0)   # IRQ -> Iraq
+    assert res.final_score("KXWCGAME-26JUN26EGYIRI") == (1, 1)   # IRI -> Iran (draw)
+
+
 def test_ambiguous_code_never_guessed():
     # a code with no unique match anywhere in the loaded corpus -> None, not a guess
     df = pd.concat([_finals_df(), pd.DataFrame([

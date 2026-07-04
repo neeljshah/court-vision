@@ -71,6 +71,17 @@ _CODE_OVERRIDES: Dict[str, str] = {
     "CHN": "China", "TPE": "Chinese Taipei", "GER": "Germany", "URU": "Uruguay",
     "DEN": "Denmark", "POR": "Portugal", "GRE": "Greece", "TUR": "Turkey",
     "SCO": "Scotland", "WAL": "Wales", "IRL": "Republic of Ireland",
+    # Added 2026-07-03 (Lane 5 soccer resolver audit) -- confirmed against real
+    # failing WC tickers in data/cache/ingame_grade/soccer_intl/. Each of these
+    # FIFA/IOC codes has NO unique first-3-letter match in the real ESPN name
+    # corpus (either no match at all, or a prefix collision with another team),
+    # so without an explicit override the ticker resolved to None forever.
+    "AUT": "Austria",   # "Austria"[:3]="AUS" != "AUT" -- no natural match
+    "AUS": "Australia", # "AUS" prefix-collides Austria/Australia -- disambiguate
+    "DZA": "Algeria",   # "Algeria"[:3]="ALG" != "DZA"
+    "HTI": "Haiti",     # "Haiti"[:3]="HAI" != "HTI"
+    "IRQ": "Iraq",      # "Iraq"[:3]="IRA" != "IRQ" -- also collides with Iran
+    "IRI": "Iran",      # "Iran"[:3]="IRA" != "IRI" -- also collides with Iraq
 }
 
 
