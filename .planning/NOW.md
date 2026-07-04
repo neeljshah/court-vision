@@ -41,6 +41,20 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 17 (429 PACING FIXED + SUPERVISOR SELF-WEDGE ROOT-CAUSED + RESOLVER
+  FABRICATION BUG CAUGHT, 2026-07-04 ~09:00Z, commits b396f67c/8f2149c1/39e2866c,
+  13 agents / ~1.14M tokens, 1 LOC-trim fix round): (1) Kalshi 429: 17-req/cycle
+  bursts + silent swallow -> stagger + Retry-After cooldown + counters; activates
+  at the m2 bounce (with the grade-writer fix). (2) API dual-crash = chronic
+  SUPERVISOR SELF-WEDGE cascade (watchdog killed/relaunched m9 five times
+  07:08-07:18Z; 36 wedge events since 06-23; boot sweep reaps children) --
+  threshold/robustness fix queued; explains the m1_ui flap history. (3) NPB/KBO
+  day one: 51K ticks combined, settle+grading wired; resolver neighbor-day
+  FABRICATION bug reproduced live + fixed BEFORE any grade consumed it.
+  (4) MLB PM gap backfill running in background (~349-day gap; validation
+  deferred to completion). (5) Enrichment persistence: option (b) additive,
+  GATED on a sidecar retention policy (Fable accepted; queued together).
+  No edge claimed.
 - SPRINT WAKE 16 (CLOSING ARC: RETRO + DRIFT NOTES + HONEST NULLS + APIS AUTO-
   RECOVERED, 2026-07-04 ~07:30Z, commits a65cd636/9a2986e3, 11 agents / ~0.89M
   tokens, 5/5 PASS): forward check -- ALL 6 sports ticking live (tennis/wnba/npb/
