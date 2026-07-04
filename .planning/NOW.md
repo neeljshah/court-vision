@@ -41,6 +41,19 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 11 (ENRICHMENT LIVE-WIRED + GATES PRE-REGISTERED + 126 ROWS CLV-GRADED,
+  2026-07-05 early, commits 9dc59af2/c1b65e1a/c044490e/92a08226/03daf447, 11 agents /
+  ~1.03M tokens, 0 fix rounds, 5/5 PASS): enrichment facade wired into capture ticks
+  (decision-identity proven on/off/poisoned; espn_wp arm inert pending event-id
+  resolution -- wave 12); game-pk bridge live 13/13 ESPN + m37 ProcSpec; 3 feature
+  gates pre-registered with fixture-proven judges (soccer xG / MLB base-out /
+  stale-quote); WNBA line-shopping LIVE (4 shoppable, 3 books, real gap rows);
+  scan_ledger dup fix DIRECT (296 false positives -> genuine count); KX proxy
+  closes graded 126 previously-ungradeable in-game rows (close_kind=last_tick
+  labeled; mean +6.08%/median -21.65%, calibration measurement). ALSO:
+  historical-odds scout adjudicated -- POLYMARKET = multi-season intra-game
+  goldmine (1-min paths to 2023), Kalshi candles rich but ~2-3mo deep, WTA odds
+  gap fillable, OddsAPI human brief queued. No edge claimed.
 - SPRINT WAKE 10 (DATA-BREADTH BUILD: 5 SCOUT-DERIVED INGEST LANES ALL SHIPPED + FIRST
   EXTERNAL BENCHMARK, 2026-07-04 late night, commits 61c62782/d36b07c5/ebad9e01/
   35eb8a57/4261507c, 11 agents / ~1.04M tokens, 0 fix rounds, 5/5 PASS; scout fleet
