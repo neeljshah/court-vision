@@ -10,6 +10,7 @@ for the real-data self-check attempt against the wave-30 composition gate).
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -178,3 +179,48 @@ def test_perfect_tie_delta_near_zero():
     })
     v = run_harness(df)
     assert v.per_corpus["A"]["vs_base"]["delta"] == pytest.approx(0.0, abs=1e-12)
+
+
+_REPO_ROOT = Path(__file__).resolve().parents[3]
+_ELO_ROWS = _REPO_ROOT / "data" / "domains" / "wnba" / "elo_refresh_rows.parquet"
+_PW_ROWS = _REPO_ROOT / "data" / "domains" / "basketball_nba" / "positional_weight_rows.parquet"
+
+
+@pytest.mark.skipif(not _ELO_ROWS.exists(), reason="real wnba corpus not present in this checkout")
+def test_elo_refresh_rows_is_not_harness_shaped():
+    """Pins the wave-32-selfcheck finding: elo_refresh_rows.parquet is raw
+    game rows (single flat p_home_elo, no per-candidate probabilities), NOT
+    the reprocess_harness pre-scored shape -- load_rows must fail closed
+    rather than silently accept it. See
+    data/domains/wnba/reprocess_selfcheck_elo.json for the full blocked note.
+    """
+    df = pd.read_parquet(_ELO_ROWS)
+    missing = [c for c in REQUIRED_COLS if c not in df.columns]
+    assert missing, (
+        "elo_refresh_rows.parquet unexpectedly gained harness columns -- "
+        "re-run the selfcheck replay, do not assume this is still blocked"
+    )
+    with pytest.raises(SchemaError):
+        load_rows(_ELO_ROWS)
+
+
+@pytest.mark.skipif(not _PW_ROWS.exists(), reason="real nba corpus not present in this checkout")
+def test_positional_weight_rows_replay_is_deterministic():
+    """positional_weight_rows.parquet IS harness-shaped and replays through
+    reprocess_harness mechanically, but its 'outcome' column is a continuous
+    future-30d TS%-style value (range ~0.29-0.80), not a binary outcome --
+    positional_weight_verdict.json's own verdict is rank-correlation (rho)
+    based, not Brier. This test pins that the harness still runs and is
+    deterministic on this real file; it deliberately does NOT assert equality
+    against positional_weight_verdict.json's rho numbers since the harness
+    computes a different (Brier-on-continuous-outcome) statistic -- see
+    reprocess_selfcheck_elo.json for the documented skip rationale.
+    """
+    df = load_rows(_PW_ROWS)
+    assert df["outcome"].min() >= 0.0 and df["outcome"].max() <= 1.0
+    assert df["outcome"].nunique() > 50, "outcome looks binary -- re-check the continuous-outcome skip rationale"
+    v1 = run_harness(df)
+    v2 = run_harness(df)
+    d1 = v1.per_corpus["nba_2024_25_boxscore"]["vs_base"]["delta"]
+    d2 = v2.per_corpus["nba_2024_25_boxscore"]["vs_base"]["delta"]
+    assert d1 == pytest.approx(d2, abs=1e-12)
