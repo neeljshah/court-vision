@@ -41,6 +41,20 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 14 (FIRST xG WIN + NEW PROCSPECS FOUND LIVE + PM 2024+ CORPUS + WNBA CDN
+  UNLOCKED, 2026-07-04 ~02:00, commits b9c32708/4ad1dccc/a65dfd93/cfbc0492, 11 agents
+  / ~1.07M tokens, 0 fix rounds, 5/5 PASS): (1) GATE A VALIDATION = BETTER_THAN_
+  BASELINE both md5 halves (xG conditioning, unfitted, reconstructed corpus n=29;
+  half0 delta -0.0173 CI excl 0) -- the first real soccer WORSE->MATCH datapoint;
+  strengthen honestly next. (2) LIVE FINDING: m33-m37 heartbeats FRESH, 41 procs,
+  kalshi pregame flowing for wnba/npb/kbo -- new ProcSpecs are RUNNING (restart
+  done or hot-loaded; wave-15 audits, human queue may already be satisfied).
+  (3) m2 triage: narrow per-game grade-writer SUSPECTED_WEDGE (raw ticks flow,
+  grade file frozen); systemic proxy 21.8% (29/133) truncated before I9 ->
+  grade-writer fix queued (affects verdict corpora). (4) PM 2024+ slug family
+  found: +583 games/1.58M ticks backfilled (cursors resumable), all bands
+  CALIBRATED; WC-2022 confirmed nonexistent. (5) WNBA CDN yields to STEALTH:
+  168 games, 504 checkpoint states (bonus/timeouts/run). No edge claimed.
 - SPRINT WAKE 13 (BACKFILLS EXHAUSTED + EVIDENCE LEDGER + GATE PRODUCERS, 2026-07-04
   ~01:00, commits da092442/60b7976b/707639c6/19e2ef57/c8cbb591, 11 agents / ~1.06M
   tokens, 0 fix rounds, 5/5 PASS): PM NBA-2023 backfilled (435 games/1.10M ticks)
