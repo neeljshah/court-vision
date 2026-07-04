@@ -10,6 +10,10 @@ SCOUT-VERIFIED COVERAGE (probed live 2026-07-03 against site.api.espn.com):
                                  87 points on event 401815820) + plays[] with wallclock.
   - WNBA (basketball/wnba):     summary?event={id} HAS winprobability[] (verified,
                                  361 points on event 401857037) + plays[] with wallclock.
+  - NBA (basketball/nba):       summary?event={id} HAS winprobability[] (verified
+                                 2026-07-04, 506 points + 506 plays on a completed
+                                 2025-26 STATUS_FINAL event 401811026) -- added wave-22
+                                 lane 5, same route shape as WNBA (both basketball/*).
   - soccer (soccer/{league}):   summary?event={id} has NO winprobability key at all
                                  (verified empty/absent on eng.1 event 401879301).
                                  SKIPPED -- recorded here, not fetched.
@@ -37,6 +41,7 @@ _PACE_SEC = 1.0
 SUPPORTED_SPORTS = {
     "mlb": "baseball/mlb",
     "wnba": "basketball/wnba",
+    "nba": "basketball/nba",
 }
 UNSUPPORTED_SPORTS = {
     "soccer": "no winprobability[] key in summary response (verified empty 2026-07-03)",
