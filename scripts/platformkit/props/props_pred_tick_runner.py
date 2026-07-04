@@ -22,6 +22,8 @@ import threading
 import time
 from typing import Any, Callable, Dict, List, Optional
 
+from scripts.platformkit.props import props_score_timeout
+
 logger = logging.getLogger("props_pred_tick_runner")
 
 HEARTBEAT_COMPONENT = "m13_props_pred_tick"
@@ -31,10 +33,11 @@ _OUTPUT_PATH = _REPO / "data" / "frontend" / "props_snapshot.json"
 
 DEFAULT_INTERVAL_SEC = 300.0
 
+# 2026-07-04 LANE 6: bounds the scoring call so a hung feed request can't starve
+# props_snapshot.json forever -- see props_score_timeout module docstring.
+SCORE_TIMEOUT_SEC = props_score_timeout.DEFAULT_SCORE_TIMEOUT_SEC
 
-# ---------------------------------------------------------------------------
 # Heartbeat
-# ---------------------------------------------------------------------------
 
 def _beat(now_epoch: Optional[float] = None) -> None:
     """Write the M13 liveness heartbeat. Never raises."""
@@ -59,11 +62,11 @@ def _strip_dollar(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
 
 def _score_props_bounded(now: float):
-    """Build the BOUNDED/RANKED player-prop CARD set + the honest "N more" tally via
-    prop_cards.build_bounded_prop_cards (SLOW full board ONCE; ALL priced + top-N
-    reliable model-only per sport, cap 50; model-only carry NO edge/CLV; priced carry
-    edge_vs_market, a prob diff NOT $; past-dated dropped). Returns (rows, n_more);
-    rows == [] ONLY when genuinely nothing live. Never raises; strips any $ field."""
+    """Build the BOUNDED/RANKED player-prop CARD set + the honest "N more" tally
+    (SLOW full board ONCE; ALL priced + top-N reliable model-only per sport, cap
+    50; model-only carry NO edge/CLV; priced carry edge_vs_market, a prob diff
+    NOT $). Returns (rows, n_more); rows == [] ONLY when genuinely nothing live.
+    Never raises; strips any $ field."""
     try:
         from scripts.platformkit.bestbets.prop_cards import (  # noqa: PLC0415
             build_bounded_prop_cards)
@@ -127,10 +130,7 @@ def _make_envelope(rows: List[Dict[str, Any]], now: float, *,
         ),
     }
 
-
-# ---------------------------------------------------------------------------
 # Atomic write
-# ---------------------------------------------------------------------------
 
 def _atomic_write(path: pathlib.Path, doc: Dict[str, Any]) -> bool:
     """Atomically write JSON to path. Returns True on success. Never raises."""
@@ -148,9 +148,9 @@ def _atomic_write(path: pathlib.Path, doc: Dict[str, Any]) -> bool:
 
 def _write_prop_cards_cache(rows: List[Dict[str, Any]], now: float,
                             n_more: Dict[str, int]) -> None:
-    """Write the decoupled prop-card cache the FAST m10 board reads. The slow build
-    runs HERE (300 s) and is cached so the 120 s m10 board never recomputes inline
-    (which hung >240 s). Never raises."""
+    """Write the decoupled prop-card cache the FAST m10 board reads (the slow
+    build runs HERE at 300s cadence so the 120s m10 board never recomputes
+    inline). Never raises."""
     try:
         from scripts.platformkit.bestbets import prop_cards_cache  # noqa: PLC0415
         prop_cards_cache.write(rows, now, n_more_model_only=n_more)
@@ -163,7 +163,8 @@ def tick(*, now: float,
          output_path: Optional[pathlib.Path] = None,
          write_cache: bool = True,
          synth_fill_fn: Optional[Callable[[float], Any]] = None,
-         pregame_fn: Optional[Callable[[float], bool]] = None) -> Dict[str, Any]:
+         pregame_fn: Optional[Callable[[float], bool]] = None,
+         score_timeout_sec: float = SCORE_TIMEOUT_SEC) -> Dict[str, Any]:
     """One props tick: score (slow, bounded) -> atomic write snapshot + prop-card
     cache -> heartbeat. Never raises. UNAVAILABLE only when genuinely no pregame
     games. Heartbeat advances regardless of score outcome. ALSO writes the decoupled
@@ -171,7 +172,8 @@ def tick(*, now: float,
     tests). ANTI-FLICKER guard: a 0-card tick with pregame games on disk RECOMPUTES
     a model-only synth-only fill (no feed) and serves it -- see module docstring.
     synth_fill_fn / pregame_fn injectable for tests; the guard is SKIPPED when
-    score_fn is injected (raw-path determinism)."""
+    score_fn is injected (raw-path determinism). score_timeout_sec (LANE 6 fix)
+    bounds the scoring call so a hang can no longer starve the snapshot write."""
     path = output_path if output_path is not None else _OUTPUT_PATH
     _synth = synth_fill_fn if synth_fill_fn is not None else _synth_only_fill
     _pregame = pregame_fn if pregame_fn is not None else _pregame_games_exist
@@ -185,17 +187,23 @@ def tick(*, now: float,
     _beater.start()
 
     n_more: Dict[str, int] = {}
+    timed_out = False
     try:
         if score_fn is not None:
-            rows = list(score_fn(now))
+            result, timed_out = props_score_timeout.score_with_timeout(
+                lambda: list(score_fn(now)), timeout_sec=score_timeout_sec)
+            rows = result if not timed_out else []
         else:
-            rows, n_more = _score_props_bounded(now)
-        ok = True
+            result, timed_out = props_score_timeout.score_with_timeout(
+                lambda: _score_props_bounded(now), timeout_sec=score_timeout_sec)
+            rows, n_more = result if not timed_out else ([], {})
+        ok = not timed_out
+        if timed_out:
+            logger.warning("props_pred_tick score timed out after %.0fs",
+                           score_timeout_sec)
     except Exception as exc:  # noqa: BLE001
         logger.debug("props_pred_tick score raised: %s", exc)
-        rows = []
-        n_more = {}
-        ok = False
+        rows, n_more, ok = [], {}, False
     finally:
         _stop_beat.set()  # stop background beater regardless of outcome
 
@@ -222,10 +230,7 @@ def tick(*, now: float,
     _beat(now)
     return envelope
 
-
-# ---------------------------------------------------------------------------
 # Run loop
-# ---------------------------------------------------------------------------
 
 def run(*, score_fn: Optional[Callable[[float], List[Dict[str, Any]]]] = None,
         output_path: Optional[pathlib.Path] = None,
@@ -267,10 +272,7 @@ def run(*, score_fn: Optional[Callable[[float], List[Dict[str, Any]]]] = None,
             break
     return ticks
 
-
-# ---------------------------------------------------------------------------
 # CLI
-# ---------------------------------------------------------------------------
 
 def _main() -> int:  # pragma: no cover
     import argparse as _ap

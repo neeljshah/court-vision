@@ -229,6 +229,17 @@ $env:BOOT_INTERVAL = "$Interval"
 # per-sport best-bets boards (nba alone is offseason-empty -> mlb/soccer went stale).
 $env:BOOT_SPORTS   = "nba,mlb,soccer_intl"
 
+# 2026-07-04 LANE 6 fix: boot_initiator was only ever stamped by the OUTER
+# watchdog_autostart.ps1 ($env:NBA_AI_BOOT_INITIATOR = "watchdog_autostart").
+# A direct/manual `.\boot.ps1` invocation (no watchdog in the process tree)
+# left this env var unset, so supervisor/__main__.py read None and the status
+# doc's boot_initiator stayed null forever -- post_restart_verify's
+# supervisor_beat_thread check then FAILed even though the beat-thread code
+# path itself was live. Only default it here if not already supplied by an
+# outer caller, so watchdog_autostart's more specific "watchdog_autostart"
+# tag still wins when boot.ps1 is launched THROUGH the watchdog.
+if (-not $env:NBA_AI_BOOT_INITIATOR) { $env:NBA_AI_BOOT_INITIATOR = "boot_ps1_manual" }
+
 # Serve the PRODUCTION webapp/ dashboard on :3000 (parity with go.ps1 + the
 # autostart watchdog). Without this, a BARE `boot.ps1` falls back to stack_specs'
 # legacy default (court-visions `npm run dev`), which collides with any stale
