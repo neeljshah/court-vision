@@ -154,6 +154,18 @@ def _build_predictor(sport: str) -> Optional[Any]:
             # None (hasattr(pred, "to_jd") is False) -- honest, not a gap here.
             from domains.basketball_wnba.adapter import WNBAAdapter  # noqa: PLC0415
             pred = WNBAAdapter()
+        elif s == "npb":
+            # NPB (LANE 4): same shape as wnba -- no to_jd() (no runs/score-
+            # distribution model, no predict_live -- see domains/baseball_npb/
+            # adapter.py). predict() alone is enough for bet_board's
+            # moneyline-only path. get_demo_jd("npb") degrades to None
+            # (no _DEMO_MATCHUPS entry either) -- both honest, not gaps here.
+            from domains.baseball_npb.adapter import NPBAdapter  # noqa: PLC0415
+            pred = NPBAdapter()
+        elif s == "kbo":
+            # KBO (LANE 4): same shape as npb (see domains/baseball_kbo/adapter.py).
+            from domains.baseball_kbo.adapter import KBOAdapter  # noqa: PLC0415
+            pred = KBOAdapter()
     except Exception:  # noqa: BLE001 -- gitignored corpus absent / import error -> degrade
         pred = None
 

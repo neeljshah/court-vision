@@ -128,6 +128,31 @@ class KBOAdapter:
         return float(_p_home(state.elo.get(str(meta.get("home_team", "")), ELO_MEAN),
                               state.elo.get(str(meta.get("away_team", "")), ELO_MEAN)))
 
+    # ------------------------------------------------------------------
+    # Pregame-paper-seam surface (LANE 4 wiring, mirrors WNBAAdapter.predict):
+    # a minimal to_jd()-SHAPED moneyline view so predict_matchup.build_result
+    # can drive the bet board / paper channel for KBO. Delegates straight to
+    # baseline_probability/Elo -- NO new model logic, no score-distribution
+    # fabrication (KBO has no runs model yet, so to_jd() is deliberately NOT
+    # implemented; predictor_jd.get_demo_jd degrades to None for kbo, the
+    # honest outcome -- moneyline pricing does not need it).
+    def predict(self, home: str, away: str) -> Dict:
+        """Moneyline-only pregame view: P(home wins) via the leak-free Elo
+        baseline (as_of=now). Mirrors the shape predict_matchup._pregame_block
+        reads generically (p_home_win / honest_note)."""
+        p_home = self.baseline_probability(
+            {"meta": {"home_team": home, "away_team": away}}, dt.datetime.now(dt.timezone.utc))
+        return {
+            "sport": SPORT_ID, "home": home, "away": away,
+            "p_home_win": round(float(p_home), 4),
+            "p_away_win": round(1.0 - float(p_home), 4),
+            "honest_note": (
+                "KBO pregame = leak-free Elo win-prob (baseline_probability), "
+                "moneyline only -- no runs/total model exists yet, and there is "
+                "no predict_live (no live PBP/base-out-state ingest built). "
+                "Calibration only; no $ edge claimed."),
+        }
+
     def feature_bundle(
         self,
         hypothesis: Hypothesis,

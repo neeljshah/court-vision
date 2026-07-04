@@ -56,6 +56,21 @@ def test_canonical_soccer_tennis_passthrough_and_unknown_degrade():
     assert canonical("nba", "") == "nba:"
 
 
+def test_canonical_kbo_kalshi_fullname_equals_parquet_code():
+    # LANE 4: Kalshi's ODDS FEED (yes_sub_title / title) carries each club's
+    # FULL English name ("NC Dinos"), verified live 2026-07-06 direct against
+    # /trade-api/v2/markets?series_ticker=KXKBOGAME -- NOT the ticker's 3-letter
+    # tail code. canonical() must collapse the full name to the SAME key as
+    # the parquet's own ASCII EN spelling for all 10 real clubs.
+    for full_name, parquet_code in [
+        ("NC Dinos", "NC"), ("Kia Tigers", "KIA"), ("Lotte Giants", "LOTTE"),
+        ("KT Wiz", "KT"), ("Samsung Lions", "SAMSUNG"), ("SSG Landers", "SSG"),
+        ("LG Twins", "LG"), ("Hanwha Eagles", "HANWHA"),
+        ("Kiwoom Heroes", "KIWOOM"), ("Doosan Bears", "DOOSAN")]:
+        assert canonical("kbo", full_name) == canonical("kbo", parquet_code), \
+            (full_name, parquet_code)
+
+
 # --------------------------------------------------------------------------- #
 # teams_match(): codes now link to full names, different teams still do not.
 # --------------------------------------------------------------------------- #
@@ -83,6 +98,16 @@ def test_teams_match_soccer_strict_name_unchanged():
     assert aggregate.teams_match("Manchester City", "Manchester City", "soccer")
     assert not aggregate.teams_match("Manchester City", "Manchester United", "soccer")
     assert aggregate.teams_match("San Antonio Spurs", "Spurs", "soccer")  # subset rule
+
+
+def test_teams_match_kbo_kalshi_fullname_links_and_rejects_wrong_pair():
+    # LANE 4: the Kalshi full-name vs parquet-code KBO link (this lane's fix).
+    assert aggregate.teams_match("NC Dinos", "NC", "kbo")
+    assert aggregate.teams_match("KT Wiz", "KT", "kbo")
+    assert aggregate.teams_match("Hanwha Eagles", "HANWHA", "kbo")
+    # A wrong pair must NOT match (never a mispriced game).
+    assert not aggregate.teams_match("NC Dinos", "KIA", "kbo")
+    assert not aggregate.teams_match("Hanwha Eagles", "KT", "kbo")
 
 
 # --------------------------------------------------------------------------- #
