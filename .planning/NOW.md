@@ -41,6 +41,21 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 19 (STRUCTURAL GAPS SURFACED: NPB/KBO LIVE-STATE + NBA READINESS +
+  FORWARD-EVIDENCE VIEW, 2026-07-04 ~11:00Z, commits ac013fd9/a90c35d8, 15 agents /
+  ~1.12M tokens): (1) NPB/KBO grading BLOCKED at root -- ingame_live_state._SPORTS
+  has NO npb/kbo entry -> every tick hits no_live_state, never grades (capture
+  healthy: 18K+ npb ticks; resolvers 23/23 tests green but never exercised). No
+  ESPN equivalent -> needs a live-in-progress scraper (npb.jp/koreabaseball or
+  Naver); honest DEFER -> wave-20 build. (2) Forward-evidence scoreboard SHIPPED:
+  mlb tail forward_n=5 (5d to floor), soccer_intl 31 DECIDABLE, rest off-season
+  zeros. (3) NBA READINESS audit: gaps = DEFAULT_SPORTS lacks 'nba', no
+  nba_outcome_resolver, tail-scan-multi lacks 'nba', states_gate ports cleanly
+  -- all buildable in safe areas before Oct. (4) enrichment first-fruits:
+  book_depth stale-flag 1.6% on a fuller slate (vs 91% thin), soccer GATE-A
+  n_joined=19, gumbo stale (blocks GATE-B) -- grade-row persistence not yet
+  exercised (live-game gap, not code). (5) MLB PM backfill still running (~11mo
+  short); partial stays CALIBRATED. No edge claimed.
 - SPRINT WAKE 18 (SUPERVISOR STORM FIXED AT ROOT + ENRICHMENT PERSISTED + WNBA SHADOW
   LIVE-VERIFIED, 2026-07-04 ~10:15Z, commits a8de869a/dad0bc29/290588a4, 10 agents /
   ~0.92M tokens, ui lane report-crash #4 but its artifact survived intact):
