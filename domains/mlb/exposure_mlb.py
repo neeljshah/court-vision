@@ -49,7 +49,7 @@ def _lineup_default(batting_order) -> float:
 
 
 def expected_pa(
-    df: pd.DataFrame, player_id, as_of, *, batting_order=None
+    df: pd.DataFrame, player_id, as_of, *, batting_order=None, cache: Optional[Dict] = None
 ) -> Dict[str, object]:
     """Expected plate appearances for one batter in the upcoming game.
 
@@ -58,8 +58,12 @@ def expected_pa(
     no history, falls back to the lineup-spot prior (status "default") when a
     ``batting_order`` is given, else the global default. status "unknown" only when
     inputs are unusable. Never raises.
+
+    ``cache``: optional per-score-cycle memo dict (see player_rates_mlb._prior_rows)
+    so the as_of leak-guard mask is computed once per cycle, not once per line.
+    None is byte-identical to the prior behavior.
     """
-    prior = _prior_rows(df, as_of)
+    prior = _prior_rows(df, as_of, cache=cache)
     if prior is None:
         if batting_order is not None:
             return {"e_pa": float(_lineup_default(batting_order)), "status": "default"}
@@ -77,15 +81,19 @@ def expected_pa(
     return {"e_pa": _DEFAULT_PA, "status": "default"}
 
 
-def expected_bf(df: pd.DataFrame, player_id, as_of) -> Dict[str, object]:
+def expected_bf(df: pd.DataFrame, player_id, as_of,
+                cache: Optional[Dict] = None) -> Dict[str, object]:
     """Expected batters faced for one pitcher in the upcoming start.
 
     Returns {"e_bf": float, "status": "ok"|"default"|"unknown"}.
     Method (leak-free): mean BF over the pitcher's recent appearances before as_of
     (this naturally separates starters ~24 from relievers via their own history).
     No history -> starter default (status "default"). Never raises.
+
+    ``cache``: optional per-score-cycle memo dict (see expected_pa). None is
+    byte-identical to the prior behavior.
     """
-    prior = _prior_rows(df, as_of)
+    prior = _prior_rows(df, as_of, cache=cache)
     if prior is None:
         return {"e_bf": _DEFAULT_STARTER_BF, "status": "unknown"}
 
