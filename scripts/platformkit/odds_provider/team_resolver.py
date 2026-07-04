@@ -85,6 +85,53 @@ _KBO_NAME_TO_CODE: Dict[str, str] = {
     "lg twins": "lg", "hanwha eagles": "hanwha", "kiwoom heroes": "kiwoom",
     "doosan bears": "doosan",
 }
+# NPB update (LANE 2, this fix): the ASCII-nickname-token mechanism above still
+# cannot apply to NPB (the parquet's kanji/katakana strips to "" under _norm),
+# but this is NO LONGER an unaddressed gap -- see _NPB_NAME_TO_KANJI +
+# canonical()'s dedicated npb branch just below, which matches Kalshi's full
+# English name to the parquet's RAW kanji spelling via an explicit 12-club map
+# instead of the ASCII-nickname-convergence trick.
+
+# --------------------------------------------------------------------------- #
+# NPB (LANE 2): Kalshi's ODDS FEED (kalshi.py._team_label, same yes_sub_title/
+# title fields KBO uses) carries each club's FULL English name ("Hanshin
+# Tigers"), verified live 2026-07-06 direct against
+# /trade-api/v2/markets?series_ticker=KXNPBGAME (both open + settled markets,
+# all 12 real clubs). But NPB's parquet (data/domains/npb/npb_results.parquet)
+# stores the npb.jp scrape's NATIVE Japanese kanji/katakana club name for each
+# team, NOT an ASCII code -- so the KBO mechanism (normalize the full name ->
+# ASCII nickname token -> match the parquet's OWN ASCII spelling) cannot
+# apply: `_norm`'s [^a-z0-9 ] regex strips ALL kanji/katakana to "",
+# meaning a kanji "code" has no ASCII nickname token to converge on (see the
+# module-level note above and npb_outcome_resolver's module docstring).
+#
+# _NPB_NAME_TO_KANJI is the single explicit map from each of the 12 real NPB
+# clubs' Kalshi full English name (lowercased, normalized the SAME way as
+# every other name in this module) to the EXACT RAW (un-normalized) parquet
+# kanji/katakana spelling -- mirrors npb_outcome_resolver._CODE_TO_NAME
+# (ticker-code -> parquet name) one level up (full-name -> parquet name
+# instead of ticker-code -> parquet name), cross-checked against the SAME
+# live 2026-07-06 Kalshi probe.
+# --------------------------------------------------------------------------- #
+_NPB_NAME_TO_KANJI: Dict[str, str] = {
+    # Keys are the ALREADY-_norm()-NORMALIZED Kalshi full name (lowercase,
+    # punctuation incl. hyphens collapsed to spaces -- e.g. "Nippon-Ham" ->
+    # "nippon ham") so a dict lookup on `norm` (canonical()'s already-normalized
+    # string) hits directly; canonical() must NOT re-normalize these keys.
+    "yokohama dena baystars": "DeNA",
+    "tokyo yakult swallows": "ヤクルト",
+    "hiroshima toyo carp": "広島",
+    "hanshin tigers": "阪神",
+    "hokkaido nippon ham fighters": "日本ハム",
+    "tohoku rakuten golden eagles": "楽天",
+    "saitama seibu lions": "西武",
+    "orix buffaloes": "オリックス",
+    "fukuoka hawks": "ソフトバンク",
+    "fukuoka softbank hawks": "ソフトバンク",
+    "chiba lotte marines": "ロッテ",
+    "yomiuri giants": "巨人",
+    "chunichi dragons": "中日",
+}
 
 
 def _kbo_code_to_nick() -> Dict[str, str]:
@@ -114,6 +161,13 @@ _CODE_TO_NICK = {"nba": _NBA_CODE_TO_NICK, "mlb": _MLB_CODE_TO_NICK,
 _CODE_ALIASES = {"nba": _NBA_CODE_ALIASES, "mlb": _MLB_CODE_ALIASES}
 _STOP = {"the", "fc", "afc", "cf", "sc"}
 
+# NPB (LANE 2): raw (un-normalized) parquet kanji/katakana spelling -> itself,
+# used as the "code" key for npb (mirrors _kbo_code_to_nick's {code: code}
+# shape, but keyed on the RAW string since kanji/katakana normalizes to ""
+# under _norm -- see _NPB_NAME_TO_KANJI's module note above).
+_NPB_KANJI_TO_SELF: Dict[str, str] = {k: k for k in set(_NPB_NAME_TO_KANJI.values())}
+_CODE_TO_NICK["npb"] = _NPB_KANJI_TO_SELF
+
 
 def _norm(name: str) -> str:
     """Lowercase, strip punctuation/stopwords -> space-joined tokens."""
@@ -129,12 +183,25 @@ def canonical(sport: str, name: str) -> str:
     normalized full-name nickname token -- a pass-through that does not change
     their existing matching. Unknown input degrades to its normalized nickname
     token (never crashes, never collides with a known different team).
+
+    NPB (LANE 2) special case: the parquet's own team spelling is Japanese
+    kanji/katakana, which normalizes to "" (no ASCII survives _norm's regex),
+    so it MUST be matched on the RAW string before normalization discards it.
+    A Kalshi full English name ("Hanshin Tigers") still goes through the
+    normal normalize-then-lookup path via _NPB_NAME_TO_KANJI.
     """
     sp = str(sport).lower()
     raw = str(name).strip()
+    if sp == "npb" and raw in _NPB_KANJI_TO_SELF:
+        return f"npb:{raw}"
     norm = _norm(raw)
     if not norm:
         return f"{sp}:"
+    if sp == "npb":
+        kanji = _NPB_NAME_TO_KANJI.get(norm)
+        if kanji is not None:
+            return f"npb:{kanji}"
+        return f"npb:{norm.split()[-1]}"
 
     code_map = _CODE_TO_NICK.get(sp)
     if code_map is not None:

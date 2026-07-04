@@ -40,20 +40,21 @@ guessed team pairing) -- mirrors the resolvers' own honesty contract. No odds
 math here (this is LISTING only; odds/EV live in bet_board via the existing
 aggregate/Kalshi odds provider). Never raises; never writes data/registry/.
 
-ODDS-ATTACHMENT NOTE (LANE 4): the Kalshi ODDS FEED (kalshi.py._team_label,
-consumed by odds_provider.aggregate) labels each leg with the club's FULL
-English name (yes_sub_title, e.g. "NC Dinos") -- NOT the ticker's 3-letter
-tail code this module parses. For KBO, team_resolver._KBO_NAME_TO_CODE now
-links that full name to the parquet's ASCII EN spelling (this lane's fix), so
-a KBO listing row's home/away CAN find a live Kalshi book price via
-aggregate.teams_match. For NPB, the odds feed's English full name ("Hanshin
-Tigers") shares NO normalized token with the parquet's Japanese kanji/
-katakana spelling ("阪神") -- there is no name-matching path that closes this
-without a dedicated EN<->kanji club map, so NPB listing rows are honestly
-PRICED NEVER (board shows a model view only, best_price=None) until that map
-exists. Verified live 2026-07-06/07: aggregate('kbo') attaches kalshi prices
-to all 10 clubs; aggregate('npb') returns 6 kalshi events with ZERO name
-match against the parquet.
+ODDS-ATTACHMENT NOTE (LANE 4 / LANE 2): the Kalshi ODDS FEED (kalshi.py._team_
+label, consumed by odds_provider.aggregate) labels each leg with the club's
+FULL English name (yes_sub_title, e.g. "NC Dinos", "Hanshin Tigers") -- NOT
+the ticker's 3-letter tail code this module parses. For KBO,
+team_resolver._KBO_NAME_TO_CODE links that full name to the parquet's ASCII
+EN spelling (LANE 4). For NPB, team_resolver._NPB_NAME_TO_KANJI links the
+same full English name to the parquet's Japanese kanji/katakana spelling
+via an explicit 12-club map (LANE 2, closes the gap this note used to
+describe) -- canonical()'s dedicated npb branch matches the RAW kanji
+string directly since it strips to "" under normal ASCII normalization. Both
+KBO and NPB listing rows now CAN find a live Kalshi book price via
+aggregate.teams_match. Verified live 2026-07-06/07 (KBO) and 2026-07-06 +
+re-verified this lane (NPB): aggregate('kbo') attaches kalshi prices to all
+10 clubs; aggregate('npb') attaches kalshi prices to all 6 open matchups
+(12/12 listed games priced via to_odds_lookup('npb')).
 
 INVARIANTS: build only under scripts/platformkit/odds_provider/; <=300 LOC;
 ASCII only; no secrets.
