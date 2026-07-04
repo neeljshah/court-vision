@@ -91,10 +91,16 @@ def test_run_gate_end_to_end_shape(synthetic_corpus, monkeypatch):
         assert len(result["crossfit_results"][feature]) == len(CHECKPOINTS)
     assert result["anchored_blend_frozen_params"] == {"ANCHORED_K": ANCHORED_K, "ANCHORED_W0": ANCHORED_W0}
     assert result["overall_verdict"] in (
-        "AT_LEAST_ONE_FEATURE_IMPROVED_BOTH_DIRECTIONS",
-        "NO_FEATURE_IMPROVED_BOTH_DIRECTIONS__HONEST_NULL",
+        "AT_LEAST_ONE_FEATURE_SUPPORTED_V2",
+        "NO_FEATURE_SUPPORTED_V2__HONEST_NULL",
     )
     assert "descriptive_stats" in result
+    assert "supported_cells_v2" in result
+    for feature_results in result["crossfit_results"].values():
+        for cell in feature_results:
+            assert "verdict_v2" in cell
+            assert "delta_ci95_eval_h1" in cell
+            assert "delta_ci95_eval_h0" in cell
     assert result["join"]["n_matched_to_linescores"] == len(join_map)
 
 
