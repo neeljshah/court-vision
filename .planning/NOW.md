@@ -41,6 +41,24 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 15 (RESTART CONFIRMED DONE + GRADE-WRITER FIXED + xG STORY COMPLETE +
+  TAIL PRIOR SETTLING, 2026-07-04 ~03:30, commits 25e2ff11/87042bf7/602d394b/fcd9d37c,
+  10 agents / ~1.09M tokens): (1) RESTART AUDIT: boot.ps1 cycle CONFIRMED 2026-07-03
+  23:11 (13/13 PIDs in 51s window) -- m33-m37 + capture widening + kalshi fix ALL
+  LIVE; digest corrected (the ONE human action is DONE). Residuals found+handled:
+  orphaned pre-restart node held port 3000 (m1_ui 34-restart flap) -> orchestrator
+  killed the orphan (evidence-verified, charter-allowed) -> m1_ui READY clean;
+  m13 self-recovered. (2) GRADE-WRITER ROOT CAUSE: frac_elapsed saturates 1.0 in
+  bottom-9th/extras -> model rejected every late tick (the 21.8% truncation
+  class); clamp fix + heartbeat observability shipped -- m2 runs old code until
+  its next restart (queued as optional bounce). (3) xG COMPLETE: cross-fit
+  BETTER both directions BUT NO_ADD_BEYOND_MARKET -- xG catches our model up to
+  venue, does not beat it (honest WORSE->MATCH win; PROPOSED wiring -> human
+  queue). (4) PM resumed: NBA 908 games thru Nov-2025 + MLB 397, H1/H2
+  CALIBRATED everywhere; ledger 6 corpora, H1 synthesis: only the thin PM-2023
+  pocket significant -- prior shifts toward no persistent venue tail bias;
+  forward gates arbiter. (5) wnba-states-gate crashed on report (3rd time) --
+  direct Opus review running. No edge claimed.
 - SPRINT WAKE 14 (FIRST xG WIN + NEW PROCSPECS FOUND LIVE + PM 2024+ CORPUS + WNBA CDN
   UNLOCKED, 2026-07-04 ~02:00, commits b9c32708/4ad1dccc/a65dfd93/cfbc0492, 11 agents
   / ~1.07M tokens, 0 fix rounds, 5/5 PASS): (1) GATE A VALIDATION = BETTER_THAN_
