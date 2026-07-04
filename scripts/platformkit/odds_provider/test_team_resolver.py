@@ -72,6 +72,62 @@ def test_canonical_kbo_kalshi_fullname_equals_parquet_code():
 
 
 # --------------------------------------------------------------------------- #
+# NPB (LANE 2): Kalshi full English name <-> parquet kanji/katakana club name.
+# --------------------------------------------------------------------------- #
+# All 12 real NPB clubs: (Kalshi yes_sub_title/title full English name,
+# npb_results.parquet's exact team-name spelling). Verified live 2026-07-06
+# direct against /trade-api/v2/markets?series_ticker=KXNPBGAME (both open and
+# settled markets) AND cross-checked against the parquet's own distinct
+# home_team/away_team strings + npb_outcome_resolver._CODE_TO_NAME.
+_NPB_FULLNAME_KANJI_PAIRS = [
+    ("Yokohama DeNA BayStars", "DeNA"),
+    ("Tokyo Yakult Swallows", "ヤクルト"),
+    ("Hiroshima Toyo Carp", "広島"),
+    ("Hanshin Tigers", "阪神"),
+    ("Hokkaido Nippon-Ham Fighters", "日本ハム"),
+    ("Tohoku Rakuten Golden Eagles", "楽天"),
+    ("Saitama Seibu Lions", "西武"),
+    ("Orix Buffaloes", "オリックス"),
+    ("Fukuoka Hawks", "ソフトバンク"),
+    ("Chiba Lotte Marines", "ロッテ"),
+    ("Yomiuri Giants", "巨人"),
+    ("Chunichi Dragons", "中日"),
+]
+
+
+def test_canonical_npb_kalshi_fullname_equals_parquet_kanji():
+    # LANE 2: Kalshi's ODDS FEED carries each club's FULL English name; the
+    # local parquet stores the npb.jp scrape's native kanji/katakana spelling.
+    # canonical() must collapse both forms to the SAME key for all 12 clubs.
+    for full_name, kanji in _NPB_FULLNAME_KANJI_PAIRS:
+        assert canonical("npb", full_name) == canonical("npb", kanji), \
+            (full_name, kanji)
+
+
+def test_canonical_npb_zero_cross_club_collisions():
+    # Exhaustive 12x12 (132 ordered off-diagonal pairs): no two DIFFERENT NPB
+    # clubs may ever resolve to the same canonical key (would mean a false
+    # odds-attachment between two different real games).
+    kanjis = [k for _, k in _NPB_FULLNAME_KANJI_PAIRS]
+    n_checked = 0
+    for i, ki in enumerate(kanjis):
+        for j, kj in enumerate(kanjis):
+            if i == j:
+                continue
+            n_checked += 1
+            assert canonical("npb", ki) != canonical("npb", kj), (ki, kj)
+    assert n_checked == 12 * 11 == 132
+
+
+def test_canonical_npb_unknown_team_degrades_no_crash():
+    # An unresolvable NPB name must degrade honestly, never crash or collide
+    # with a real club.
+    key = canonical("npb", "Fake Town Aliens")
+    assert key not in {canonical("npb", k) for _, k in _NPB_FULLNAME_KANJI_PAIRS}
+    assert canonical("npb", "") == "npb:"
+
+
+# --------------------------------------------------------------------------- #
 # teams_match(): codes now link to full names, different teams still do not.
 # --------------------------------------------------------------------------- #
 def test_teams_match_links_code_to_fullname():
@@ -110,6 +166,17 @@ def test_teams_match_kbo_kalshi_fullname_links_and_rejects_wrong_pair():
     assert not aggregate.teams_match("Hanwha Eagles", "KT", "kbo")
 
 
+def test_teams_match_npb_kalshi_fullname_links_and_rejects_wrong_pair():
+    # LANE 2: the Kalshi full-name vs parquet-kanji NPB link (this lane's fix).
+    assert aggregate.teams_match("Hanshin Tigers", "阪神", "npb")
+    assert aggregate.teams_match("Yomiuri Giants", "巨人", "npb")
+    assert aggregate.teams_match("Yokohama DeNA BayStars", "DeNA", "npb")
+    assert aggregate.teams_match("Hokkaido Nippon-Ham Fighters", "日本ハム", "npb")
+    # A wrong pair must NOT match (never a mispriced game).
+    assert not aggregate.teams_match("Hanshin Tigers", "巨人", "npb")
+    assert not aggregate.teams_match("Hokkaido Nippon-Ham Fighters", "楽天", "npb")
+
+
 # --------------------------------------------------------------------------- #
 # to_odds_lookup-style probe: a coded slate now links to a full-name feed event.
 # --------------------------------------------------------------------------- #
@@ -135,3 +202,16 @@ def test_lookup_links_code_slate_to_fullname_feed_mlb():
     cubs = OddsEvent("e3", "mlb", "Chicago Cubs", "Cincinnati Reds", None, {})
     sox = OddsEvent("", "mlb", "CWS", "CIN", None, {})
     assert not aggregate._event_match(cubs, sox)
+
+
+def test_lookup_links_kanji_slate_to_fullname_feed_npb():
+    # LANE 2: this is the exact live shape -- Kalshi's odds FEED event carries
+    # the FULL English name; our parquet-derived slate probes with kanji.
+    from scripts.platformkit.odds_provider.base import OddsEvent
+    feed = OddsEvent("e4", "npb", "Hanshin Tigers", "Yomiuri Giants", None,
+                     {"kalshi": {"home": 1.9, "away": 1.95}})
+    probe = OddsEvent("", "npb", "阪神", "巨人", None, {})
+    assert aggregate._event_match(feed, probe)
+    # A different NPB matchup must NOT link.
+    other = OddsEvent("", "npb", "楽天", "西武", None, {})
+    assert not aggregate._event_match(feed, other)

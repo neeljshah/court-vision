@@ -164,10 +164,11 @@ def test_kalshi_fetch_npb_filters_by_series():
 
 
 def test_kalshi_fetch_unsupported_sport_still_unavailable():
-    """A sport absent from _SERIES_HINT (e.g. 'kbo', built in a parallel lane) stays
-    a clean UNAVAILABLE degrade, never a guess -- unaffected by the npb addition."""
+    """A sport absent from _SERIES_HINT stays a clean UNAVAILABLE degrade, never a
+    guess. (Fixture sport was 'kbo' until kbo became SUPPORTED in waves 3-4; use a
+    sport with no series hint.)"""
     http = _stub({"markets": KALSHI_MARKETS})
-    res = KalshiProvider(http_get=http, use_cache=False).fetch("kbo")
+    res = KalshiProvider(http_get=http, use_cache=False).fetch("cricket")
     assert base.is_unavailable(res)
 
 
