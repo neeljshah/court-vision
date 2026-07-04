@@ -163,6 +163,42 @@ def test_ev_computed_when_price_supplied():
     assert away_row["ev_pct"] is None and away_row["fair_odds"] is not None
 
 
+def test_soccer_1x2_book_price_attaches():
+    # regression: soccer's head-to-head group is named "1X2" (not "Moneyline");
+    # the book-price attach seam must key on it too, including a Draw price.
+    def odds_lookup(sport, home, away):
+        return {"BookX": {home: 2.10, "Draw": 3.40, away: 3.80}}
+    for sport in ("soccer", "soccer_intl"):
+        b = _board(sport, odds_lookup=odds_lookup)
+        grp = next(g for g in b["groups"] if g["name"] == "1X2")
+        home_row = next(r for r in grp["bets"] if r["selection"] == "H")
+        draw_row = next(r for r in grp["bets"] if r["selection"] == "Draw")
+        away_row = next(r for r in grp["bets"] if r["selection"] == "A")
+        assert home_row["best_book"] == "BookX" and home_row["best_price"] == 2.10
+        assert draw_row["best_book"] == "BookX" and draw_row["best_price"] == 3.40
+        assert away_row["best_book"] == "BookX" and away_row["best_price"] == 3.80
+        assert home_row["ev_pct"] is not None  # priced -> EV computed, not null
+        # a non-1X2 group (e.g. Double chance) never gets a book price fabricated
+        dc = next(g for g in b["groups"] if g["name"] == "Double chance")
+        assert all(r["best_price"] is None for r in dc["bets"])
+
+
+def test_other_sports_byte_identical_after_1x2_fix():
+    # regression: the 1X2 group-name fix must not change nba/mlb/wnba output.
+    # Moneyline-only book_prices dict shaped exactly like the pre-fix tests.
+    def odds_lookup(sport, home, away):
+        return {"BookX": {home: 2.0}, "BookY": {home: 1.85}}
+    for sport in ("nba", "mlb", "wnba"):
+        b = _board(sport, odds_lookup=odds_lookup)
+        ml = next(g for g in b["groups"] if g["name"] == "Moneyline")
+        home_row = next(r for r in ml["bets"] if r["selection"] == "H")
+        away_row = next(r for r in ml["bets"] if r["selection"] == "A")
+        assert home_row["best_book"] == "BookX" and home_row["best_price"] == 2.0
+        assert away_row["best_price"] is None and away_row["ev_pct"] is None
+        # no group named "1X2" ever appears for these sports
+        assert not any(g["name"] == "1X2" for g in b["groups"])
+
+
 def test_best_bets_ranked_and_capped():
     def odds_lookup(sport, home, away):
         return {"BookX": {home: 2.0}}

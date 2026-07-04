@@ -80,10 +80,20 @@ def _fair_odds(prob: Optional[float]) -> Optional[float]:
     return round(1.0 / float(prob), 4)
 
 
+# Group names that carry the head-to-head / match-winner market across sports.
+# NBA/MLB/WNBA/NPB/KBO emit "Moneyline"; soccer/soccer_intl emit "1X2" (a 3-way
+# market -- Home/Draw/Away -- per bet_board_flat.flatten_soccer). Both are the
+# same conceptual seam (the reliably shoppable market via our keyless feed);
+# book prices attach to selections in EITHER group, never elsewhere.
+_H2H_GROUPS = ("Moneyline", "1X2")
+
+
 def _moneyline_prices(book_prices: Optional[Dict[str, Dict[str, float]]],
                       home: str, away: str) -> Dict[str, Optional[Dict[str, Any]]]:
-    """Best home/away book+price from the multi-book moneyline dict (keyed by team
-    name, per to_odds_lookup). Absent -> None entries (never fabricated)."""
+    """Best book+price per side from the multi-book head-to-head dict (keyed by
+    team name or "Draw", per to_odds_lookup). Absent -> None entries (never
+    fabricated). Keeps every side the feed quotes (not just home/away) so a
+    soccer "Draw" price -- when a book quotes one -- can still attach."""
     if not book_prices:
         return {home: None, away: None}
     try:
@@ -91,23 +101,28 @@ def _moneyline_prices(book_prices: Optional[Dict[str, Dict[str, float]]],
     except Exception as exc:  # noqa: BLE001 -- shopping never sinks the board
         logger.warning("best_line failed: %s", exc)
         return {home: None, away: None}
-    return {home: best.get(home), away: best.get(away)}
+    out = dict(best)
+    out.setdefault(home, None)
+    out.setdefault(away, None)
+    return out
 
 
 def _enrich(rows: List[Dict[str, Any]], home: str, away: str,
             book_prices: Optional[Dict[str, Dict[str, float]]]) -> List[Dict[str, Any]]:
     """Attach fair_odds to every row + best_book/best_price/ev_pct/verdict.
 
-    Book price is attached ONLY to the moneyline rows (the reliably shoppable
-    market via our keyless feed): the selection string equals the team name. All
-    other rows get fair_odds + a model-view verdict, best_*/ev null.
+    Book price is attached ONLY to head-to-head rows (Moneyline for nba/mlb/
+    wnba/npb/kbo, 1X2 for soccer/soccer_intl -- the reliably shoppable market
+    via our keyless feed): the selection string equals the team name (or
+    "Draw" for soccer, when a book quotes one). All other rows get fair_odds +
+    a model-view verdict, best_*/ev null.
     """
     ml_best = _moneyline_prices(book_prices, home, away)
     out: List[Dict[str, Any]] = []
     for r in rows:
         prob = r.get("model_prob")
         fair = _fair_odds(prob)
-        best = ml_best.get(r.get("selection")) if r.get("group") == "Moneyline" else None
+        best = ml_best.get(r.get("selection")) if r.get("group") in _H2H_GROUPS else None
         price = best["price"] if best else None
         book = best["book"] if best else None
         ev = None
