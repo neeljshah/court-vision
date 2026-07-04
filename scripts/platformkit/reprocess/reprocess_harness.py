@@ -1,33 +1,26 @@
 """Sport-blind reprocess-comparison harness (mission spine 2).
 
-The standing machinery that lets every intelligence change be re-validated
-against old+new games: feed it PRE-SCORED rows for a base variant and a
-challenger variant, get back a leak-free-respecting, provenance-separated
-Brier/Diebold-Mariano verdict.
+Feed it PRE-SCORED rows for a base variant and a challenger variant, get
+back a leak-free-respecting, provenance-separated Brier/Diebold-Mariano
+verdict (binary outcomes) or a Spearman-rho verdict (continuous outcomes,
+see reprocess_harness_rho.py). NEVER imports producer code -- callers score
+their own variant, persist the rows, hand this harness a parquet/JSONL.
 
-This harness NEVER imports producer code -- same invariant as
-scripts/platformkit/intel_validation/claims_validator.py. Callers score their
-own variant with their own module, persist the rows, and hand this harness a
-parquet/JSONL of already-scored predictions.
+INPUT (parquet/JSONL), one row per scored prediction: corpus_id (provenance,
+never pooled for the verdict), fold_id, event_id, p_variant, p_base,
+outcome (binary 0/1 for metric=brier, continuous for metric=rho),
+p_close (OPTIONAL, brier-only calibration-vs-close, never an edge).
 
-INPUT SHAPE (parquet or JSONL), one row per scored prediction:
-    corpus_id   str    -- provenance tag; corpora are NEVER pooled for the
-                          verdict (pooled numbers are a diagnostic only)
-    fold_id     str    -- walk-forward fold within a corpus
-    event_id    str    -- unique id of the scored event/state
-    p_variant   float  -- challenger's predicted probability, in [0, 1]
-    p_base      float  -- base/incumbent's predicted probability, in [0, 1]
-    outcome     int    -- realized binary outcome, 0 or 1
-    p_close     float  -- OPTIONAL devigged close probability. When present,
-                          the verdict also reports variant-vs-close as a
-                          CALIBRATION comparison, never an edge.
-
-OUTPUT: verdict JSON -- per-corpus and a pooled-diagnostic Brier/DM comparison
-of variant vs base (and vs close, if p_close is present). Fails closed on any
-missing required column. edge_claimed is always stamped false.
+METRIC is declared explicitly via --metric {brier,rho}, NEVER inferred from
+outcome cardinality -- a mismatch (e.g. brier on a continuous outcome) is a
+fail-closed SchemaError. rho additionally requires a declared cluster_col
+(default "cluster_id", e.g. player_id) present in the input for its paired
+cluster bootstrap; missing column fails closed rather than falling back to
+event_id. See reprocess_harness_rho.py for the rho comparison + validator.
 
 CLI:
-    python -m scripts.platformkit.reprocess.reprocess_harness --input X --out Y
+    python -m scripts.platformkit.reprocess.reprocess_harness --input X --out Y --metric brier
+    python -m scripts.platformkit.reprocess.reprocess_harness --input X --out Y --metric rho --cluster-col player_id
 """
 from __future__ import annotations
 
@@ -44,8 +37,11 @@ import pandas as pd
 
 from scripts.platformkit.eval_gate.dm_test import diebold_mariano
 
+from scripts.platformkit.reprocess.reprocess_harness_rho import METRICS
+
 REQUIRED_COLS = ["corpus_id", "fold_id", "event_id", "p_variant", "p_base", "outcome"]
 OPTIONAL_CLOSE_COL = "p_close"
+DEFAULT_CLUSTER_COL = "cluster_id"
 
 
 class SchemaError(ValueError):
@@ -79,6 +75,18 @@ def load_rows(path: Path) -> pd.DataFrame:
 def _brier(p: np.ndarray, y: np.ndarray) -> np.ndarray:
     """Per-row squared error (Brier loss contribution)."""
     return (p - y) ** 2
+
+
+def validate_metric_matches_outcome(df: pd.DataFrame, metric: str) -> None:
+    """Fail-closed check: the declared metric must match the outcome dtype.
+    metric is NEVER inferred silently from cardinality -- the caller always
+    states it; this only catches a stated metric that contradicts the data.
+    Thin wrapper -- the actual check lives in reprocess_harness_rho (split
+    out to stay under the 300-LOC cap) so SchemaError stays defined here."""
+    from scripts.platformkit.reprocess.reprocess_harness_rho import (
+        validate_metric_matches_outcome as _validate,
+    )
+    _validate(df, metric, SchemaError)
 
 
 @dataclass
@@ -149,17 +157,10 @@ class ReprocessVerdict:
     has_close: bool = False
     generated_at: str = ""
     edge_claimed: bool = False
+    metric: str = "brier"
 
 
-def run_harness(df: pd.DataFrame) -> ReprocessVerdict:
-    """Corpora are NEVER pooled for the verdict -- only shown pooled as a
-    diagnostic. Fails closed (raises SchemaError) on missing required cols;
-    caller (load_rows) already enforces this, but re-check defensively since
-    run_harness may be called directly with a caller-built DataFrame."""
-    missing = [c for c in REQUIRED_COLS if c not in df.columns]
-    if missing:
-        raise SchemaError(f"input missing required columns: {missing}")
-
+def _run_harness_brier(df: pd.DataFrame) -> ReprocessVerdict:
     has_close = OPTIONAL_CLOSE_COL in df.columns
 
     per_corpus: dict[str, Any] = {}
@@ -194,27 +195,59 @@ def run_harness(df: pd.DataFrame) -> ReprocessVerdict:
             }
 
     return ReprocessVerdict(
-        per_corpus=per_corpus,
-        pooled_diagnostic=pooled_diagnostic,
-        has_close=has_close,
-        generated_at=datetime.now(timezone.utc).isoformat(),
-        edge_claimed=False,
+        per_corpus=per_corpus, pooled_diagnostic=pooled_diagnostic,
+        has_close=has_close, generated_at=datetime.now(timezone.utc).isoformat(),
+        edge_claimed=False, metric="brier",
     )
 
 
+def _run_harness_rho(df: pd.DataFrame, cluster_col: str) -> ReprocessVerdict:
+    """Delegates to reprocess_harness_rho (split out to stay under the
+    300-LOC cap); SchemaError is passed in by class so the companion module
+    never needs to import it back from here."""
+    from scripts.platformkit.reprocess.reprocess_harness_rho import run_harness_rho
+    return ReprocessVerdict(**run_harness_rho(df, cluster_col, SchemaError))
+
+
+def run_harness(df: pd.DataFrame, metric: str = "brier",
+                cluster_col: str = DEFAULT_CLUSTER_COL) -> ReprocessVerdict:
+    """Corpora are NEVER pooled for the verdict -- only shown pooled as a
+    diagnostic. Fails closed (raises SchemaError) on missing required cols
+    or a metric/outcome-dtype mismatch; caller (load_rows) already enforces
+    the column check, but re-check defensively since run_harness may be
+    called directly with a caller-built DataFrame. metric is ALWAYS an
+    explicit argument -- never inferred from outcome cardinality."""
+    missing = [c for c in REQUIRED_COLS if c not in df.columns]
+    if missing:
+        raise SchemaError(f"input missing required columns: {missing}")
+    validate_metric_matches_outcome(df, metric)
+
+    if metric == "rho":
+        return _run_harness_rho(df, cluster_col)
+    return _run_harness_brier(df)
+
+
 def verdict_to_dict(v: ReprocessVerdict) -> dict[str, Any]:
+    honest_note = (
+        "leak-free walk-forward comparison of pre-scored variant vs base "
+        "Spearman rho against a continuous outcome; corpora are "
+        "provenance-separated and never pooled for the verdict (pooled "
+        "block is a diagnostic only); rho deltas are a descriptive/"
+        "predictive-validity comparison, never an edge"
+        if v.metric == "rho" else
+        "leak-free walk-forward comparison of pre-scored variant vs base "
+        "Brier loss; corpora are provenance-separated and never pooled for "
+        "the verdict (pooled block is a diagnostic only); vs_close block, "
+        "when present, is a calibration comparison, never an edge"
+    )
     return {
         "component": "reprocess_harness",
+        "metric": v.metric,
         "generated_at": v.generated_at,
         "per_corpus": v.per_corpus,
         "pooled_diagnostic": v.pooled_diagnostic,
         "has_close": v.has_close,
-        "honest_note": (
-            "leak-free walk-forward comparison of pre-scored variant vs base "
-            "Brier loss; corpora are provenance-separated and never pooled for "
-            "the verdict (pooled block is a diagnostic only); vs_close block, "
-            "when present, is a calibration comparison, never an edge"
-        ),
+        "honest_note": honest_note,
         "edge_claimed": v.edge_claimed,
     }
 
@@ -230,21 +263,30 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Sport-blind reprocess-comparison harness")
     parser.add_argument("--input", required=True, help="path to pre-scored rows (parquet or JSONL)")
     parser.add_argument("--out", required=True, help="path to write the verdict JSON")
+    parser.add_argument("--metric", choices=METRICS, default="brier",
+                        help="brier (binary outcome, DM test) or rho (continuous outcome, cluster bootstrap); "
+                             "declared explicitly, never inferred")
+    parser.add_argument("--cluster-col", default=DEFAULT_CLUSTER_COL,
+                        help="cluster column for the rho paired bootstrap (metric=rho only), e.g. player_id")
     args = parser.parse_args(argv)
 
     input_path = Path(args.input)
     try:
         df = load_rows(input_path)
-        verdict = run_harness(df)
+        verdict = run_harness(df, metric=args.metric, cluster_col=args.cluster_col)
     except (FileNotFoundError, SchemaError) as e:
         print(f"BLOCKED: {e}")
         return 1
 
     write_verdict(verdict, Path(args.out))
-    print(f"n_corpora={len(verdict.per_corpus)} pooled_n={verdict.pooled_diagnostic['n']}")
+    print(f"metric={verdict.metric} n_corpora={len(verdict.per_corpus)} pooled_n={verdict.pooled_diagnostic['n']}")
     for corpus_id, block in verdict.per_corpus.items():
         vb = block["vs_base"]
-        print(f"  {corpus_id}: n={block['n']} delta={vb['delta']:.6f} dm_p={vb['dm_p']:.4f}")
+        if verdict.metric == "rho":
+            print(f"  {corpus_id}: n={block['n']} delta={vb['delta']:.6f} "
+                  f"ci=[{vb['ci_lo']:.4f},{vb['ci_hi']:.4f}]")
+        else:
+            print(f"  {corpus_id}: n={block['n']} delta={vb['delta']:.6f} dm_p={vb['dm_p']:.4f}")
     print(f"wrote verdict to {args.out}")
     return 0
 

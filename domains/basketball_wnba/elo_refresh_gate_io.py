@@ -62,6 +62,59 @@ def write_rows(feat: pd.DataFrame, dest: Path) -> str:
     return str(dest)
 
 
+def build_harness_rows(feat: pd.DataFrame, train_frac: float) -> pd.DataFrame:
+    """reprocess_harness-schema export (corpus_id/fold_id/event_id/p_variant/
+    p_base/outcome), one row per (season, candidate, held-out-tail game) --
+    reuses elo_refresh_gate's OWN _replay_candidate + CAND_SPEC + EVAL_SEASONS
+    on the SAME cold-start within-season fold construction the committed gate
+    scored (see elo_refresh_gate._within_season_fold): full-season replay so
+    ratings accumulate, cold-started p_base = _replay_candidate(use_mov=False,
+    neutral_aware=False), score both models on the TEST tail only. Does NOT
+    invent a new scoring path -- lazy-imports from elo_refresh_gate to avoid
+    the circular import the module docstring already documents.
+    """
+    from domains.basketball_wnba.elo_refresh_gate import (
+        CANDIDATES, EVAL_SEASONS, _CAND_SPEC, _replay_candidate,
+    )
+
+    rows = []
+    for season in EVAL_SEASONS:
+        sdf = feat[feat["season"] == season].copy().sort_values("date", kind="mergesort").reset_index(drop=True)
+        n = len(sdf)
+        if n < 40:
+            continue
+        cut = int(n * train_frac)
+        if cut < 20 or (n - cut) < 15:
+            continue
+        sdf = sdf.rename(columns={"margin_true": "margin_for_replay"})
+        base_full = _replay_candidate(sdf, use_mov=False, neutral_aware=False)
+        p_base_tail = base_full["p_home_candidate"].to_numpy()[cut:]
+        event_ids = sdf["event_id"].to_numpy()[cut:]
+        outcomes = sdf["home_win"].to_numpy(dtype=float)[cut:]
+
+        for cname in CANDIDATES:
+            spec = _CAND_SPEC[cname]
+            cand_full = _replay_candidate(sdf, use_mov=spec["use_mov"], neutral_aware=spec["neutral_aware"])
+            p_variant_tail = cand_full["p_home_candidate"].to_numpy()[cut:]
+            for i in range(len(event_ids)):
+                rows.append({
+                    "corpus_id": f"wnba_elo_refresh_{cname}",
+                    "fold_id": season,
+                    "event_id": str(event_ids[i]),
+                    "p_variant": float(p_variant_tail[i]),
+                    "p_base": float(p_base_tail[i]),
+                    "outcome": float(outcomes[i]),
+                })
+    return pd.DataFrame(rows)
+
+
+def write_harness_rows(feat: pd.DataFrame, train_frac: float, dest: Path) -> str:
+    df = build_harness_rows(feat, train_frac)
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    df.to_parquet(dest, index=False)
+    return str(dest)
+
+
 def write(payload: Dict, dest: Path) -> str:
     dest.parent.mkdir(parents=True, exist_ok=True)
     with open(dest, "w", encoding="ascii") as f:
@@ -89,4 +142,5 @@ def report(payload: Dict) -> str:
     return "\n".join(lines)
 
 
-__all__ = ["reproduce_fold_discrepancy", "write_rows", "write", "report"]
+__all__ = ["reproduce_fold_discrepancy", "write_rows", "write", "report",
+           "build_harness_rows", "write_harness_rows"]
