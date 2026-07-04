@@ -113,6 +113,53 @@ class WNBAAdapter:
         return float(_p_home(state.elo.get(str(meta.get("home_team", "")), ELO_MEAN),
                               state.elo.get(str(meta.get("away_team", "")), ELO_MEAN)))
 
+    # ------------------------------------------------------------------
+    # Pregame-paper-seam surface (LANE 2 wiring): a minimal to_jd()-SHAPED
+    # moneyline view so predict_matchup.build_result can drive the bet board /
+    # paper channel for WNBA. Delegates straight to baseline_probability/Elo --
+    # NO new model logic, no score-distribution fabrication (WNBA has no pace/
+    # off/def rating model, so a full to_jd() score-sample JD is deliberately
+    # NOT implemented here; predictor_jd.get_demo_jd degrades to None for wnba,
+    # which is the honest outcome -- moneyline pricing does not need it).
+    def predict(self, home: str, away: str) -> Dict:
+        """Moneyline-only pregame view: P(home wins) via the leak-free Elo
+        baseline (as_of=now). Mirrors the shape predict_matchup._pregame_block
+        reads generically (p_home_win / honest_note)."""
+        p_home = self.baseline_probability(
+            {"meta": {"home_team": home, "away_team": away}}, dt.datetime.now(dt.timezone.utc))
+        return {
+            "sport": SPORT_ID, "home": home, "away": away,
+            "p_home_win": round(float(p_home), 4),
+            "p_away_win": round(1.0 - float(p_home), 4),
+            "honest_note": (
+                "WNBA pregame = leak-free Elo win-prob (baseline_probability), "
+                "moneyline only -- no spread/total model exists yet. "
+                "Calibration only; no $ edge claimed."),
+        }
+
+    def predict_live_state(self, home: str, away: str, *, elapsed_minutes: float,
+                           home_score: int, away_score: int) -> Dict:
+        """Pregame-paper-seam in-game view: adapts the generic (elapsed_minutes,
+        home_score, away_score) live-kwargs shape predict_matchup uses for NBA
+        onto the existing, wired WNBAAdapter.predict_live (period/clock_s/as_of).
+        Kept as a SEPARATE method (not an overload of predict_live) so the
+        already-consumed predict_live(home, away, as_of, period, clock_s, ...)
+        signature -- used by wnba_ingame_shadow.py -- is untouched.
+
+        REG_SEC=2400s (4x10min, ingame_blend.PERIOD_SEC=600s/quarter):
+        elapsed_minutes (0-40, clamped) -> (period, clock_s=seconds LEFT in
+        that period) via the exact inverse of ingame_blend.sec_remaining, so
+        is_buzzer fires only at the true elapsed_minutes>=40 boundary (never
+        fabricated early, never un-derivable at true regulation end)."""
+        em = max(0.0, min(40.0, float(elapsed_minutes)))
+        sec_remaining_reg = max(0.0, 2400.0 - em * 60.0)
+        period = min(4, max(1, 4 - int(sec_remaining_reg // 600.0)))
+        clock_s = max(0.0, min(600.0, sec_remaining_reg - 600.0 * (4 - period)))
+        return self.predict_live(
+            home, away, as_of=dt.datetime.now(dt.timezone.utc),
+            period=period, clock_s=clock_s,
+            home_score=float(home_score), away_score=float(away_score))
+
     def predict_live(
         self,
         home: str,

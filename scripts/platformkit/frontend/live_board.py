@@ -38,6 +38,7 @@ logger = logging.getLogger(__name__)
 _ESPN_ROUTES: Dict[str, Tuple[str, str]] = {
     "mlb": ("baseball/mlb", "mlb"),
     "nba": ("basketball/nba", "nba"),
+    "wnba": ("basketball/wnba", "wnba"),
     "soccer_intl": ("soccer/fifa.world", "fifa.world"),
     "soccer": ("soccer/eng.1", "eng.1"),
 }
@@ -97,6 +98,14 @@ def resolve_team(sport: str, abbr: Optional[str], display: Optional[str]) -> Opt
         if not display:
             return None
         return _INTL_NAME.get(display, display)
+    if s == "wnba":
+        # WNBA corpus (espn_scoreboard.parquet) keys on the full ESPN
+        # displayName ("Las Vegas Aces") -- it was BUILT from this same ESPN
+        # feed, so pass through unchanged (no short-code map needed, unlike
+        # nba/mlb whose corpora predate/differ from ESPN's own codes).
+        if not display:
+            return None
+        return display
     return None
 
 
@@ -158,6 +167,21 @@ def _nba_elapsed(period: Optional[int], clock: Optional[str]) -> Optional[float]
         except (ValueError, TypeError):
             rem = 0.0
     return round(max(0.0, (int(period) - 1) * 12.0 + (12.0 - rem)), 2)
+
+
+def _wnba_elapsed(period: Optional[int], clock: Optional[str]) -> Optional[float]:
+    """WNBA minutes ELAPSED: same shape as _nba_elapsed but 10-min quarters
+    (REG_SEC=2400s, see domains/basketball_wnba/ingame_blend.py PERIOD_SEC)."""
+    if not period:
+        return None
+    rem = 0.0
+    if clock and ":" in str(clock):
+        try:
+            mm, ss = str(clock).split(":")
+            rem = float(mm) + float(ss) / 60.0
+        except (ValueError, TypeError):
+            rem = 0.0
+    return round(max(0.0, (int(period) - 1) * 10.0 + (10.0 - rem)), 2)
 
 
 def _mlb_half_inning(detail: Optional[str], period: Optional[int]
@@ -222,6 +246,8 @@ def _live_ns(sport: str, row: Dict[str, Any], home_id: str, away_id: str
         sets_home=None, sets_away=None, games_home=None, games_away=None)
     if s == "nba":
         ns.elapsed = _nba_elapsed(row.get("period"), row.get("clock"))
+    elif s == "wnba":
+        ns.elapsed = _wnba_elapsed(row.get("period"), row.get("clock"))
     elif s in ("soccer", "soccer_intl"):
         ns.elapsed = _soccer_minute(row.get("clock"))
     elif s == "mlb":

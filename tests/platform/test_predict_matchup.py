@@ -165,3 +165,57 @@ def test_cli_nba_ingame_coherent_with_pregame_at_tipoff(capsys):
     pre = float(out["pregame"]["p_home_win"])
     live = float(out["ingame"]["p_home_win"])
     assert abs(live - pre) <= 0.06, f"tipoff live {live} should track pregame {pre}"
+
+
+# ----------------------------- WNBA (LANE 2 pregame-paper-seam wiring) ------------
+
+def test_live_kwargs_wnba_mapping_same_shape_as_nba():
+    p = build_parser()
+    full = p.parse_args(["--sport", "wnba", "--home", "Las Vegas Aces",
+                         "--away", "Indiana Fever", "--elapsed", "15",
+                         "--home-score", "40", "--away-score", "35"])
+    assert live_kwargs("wnba", full) == {
+        "elapsed_minutes": 15.0, "home_score": 40, "away_score": 35}
+    partial = p.parse_args(["--sport", "wnba", "--home", "Las Vegas Aces",
+                            "--away", "Indiana Fever", "--elapsed", "15"])
+    assert live_kwargs("wnba", partial) is None  # missing scores -> pregame only
+
+
+def test_cli_wnba_pregame_moneyline_only_markets(capsys):
+    if _build_predictor("wnba") is None:
+        pytest.skip("wnba corpus absent on this clone (gitignored)")
+    rc = pm.main(["--sport", "wnba", "--home", "Las Vegas Aces",
+                  "--away", "Indiana Fever"])
+    assert rc == 0
+    out = json.loads(capsys.readouterr().out)
+    assert out["edge_claimed"] is False
+    ph = out["pregame"]["p_home_win"]
+    assert ph is not None and 0.0 < float(ph) < 1.0
+    mkts = out["pregame"]["markets"]
+    # moneyline-only: no spread/total model exists for wnba -- never fabricated.
+    assert set(mkts) == {"moneyline"}
+    assert 0.0 < mkts["moneyline"]["p_home_win"] < 1.0
+    json.dumps(mkts)  # strict-JSON-clean, no numpy leakage
+
+
+def test_cli_wnba_ingame_uses_predict_live_state_adapter(capsys):
+    if _build_predictor("wnba") is None:
+        pytest.skip("wnba corpus absent on this clone (gitignored)")
+    rc = pm.main(["--sport", "wnba", "--home", "Las Vegas Aces",
+                  "--away", "Indiana Fever", "--elapsed", "0",
+                  "--home-score", "0", "--away-score", "0"])
+    assert rc == 0
+    out = json.loads(capsys.readouterr().out)
+    assert "ingame" in out
+    pre = float(out["pregame"]["p_home_win"])
+    live = float(out["ingame"]["p_home_win"])
+    assert abs(live - pre) <= 0.06, f"tipoff live {live} should track pregame {pre}"
+
+
+def test_cli_wnba_unavailable_corpus_degrades_cleanly(monkeypatch, capsys):
+    monkeypatch.setattr(pm, "_build_predictor", lambda s: None)
+    rc = pm.main(["--sport", "wnba", "--home", "Las Vegas Aces",
+                  "--away", "Indiana Fever"])
+    assert rc == 0
+    cap = capsys.readouterr()
+    assert "corpus unavailable on this clone" in cap.out

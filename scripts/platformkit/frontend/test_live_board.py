@@ -199,6 +199,71 @@ def test_resolve_team_paths():
     assert lb.resolve_team("nba", None, "Some Team") is None   # no abbr -> unresolved
 
 
+# --------------------------------------------------------------------------- WNBA (LANE 2)
+_WNBA_PAYLOAD = {"events": [
+    # LIVE: Las Vegas Aces leading Indiana Fever 55-50, Q3 5:00 remaining
+    _event(None, "Las Vegas Aces", "55", None, "Indiana Fever", "50",
+           "in", "Q3 5:00", "5:00", 3),
+]}
+
+
+class _StubWNBAPredictor:
+    """WNBA-shaped predictor: predict(home,away) + predict_live_state(...)."""
+
+    def predict(self, home, away, **kw):  # noqa: ANN001
+        return {"p_home_win": 0.62, "markets": {"moneyline": {"p_home_win": 0.62,
+                                                              "p_away_win": 0.38}},
+                "honest_note": "WNBA pregame Elo, moneyline only."}
+
+    def predict_live_state(self, home, away, *, elapsed_minutes, home_score,
+                           away_score, **kw):  # noqa: ANN001
+        p = 0.85 if home_score > away_score else 0.5
+        return {"p_home_win": p, "pregame_p_home": 0.62,
+                "honest_note": "WNBA in-game blend."}
+
+
+def _wnba_factory(sport):  # noqa: ANN001
+    return _StubWNBAPredictor()
+
+
+def test_wnba_espn_route_registered():
+    assert lb._ESPN_ROUTES.get("wnba") == ("basketball/wnba", "wnba")
+
+
+def test_wnba_resolve_team_passthrough_full_display_name():
+    # WNBA corpus keys on the ESPN displayName directly (no short-code map).
+    assert lb.resolve_team("wnba", None, "Las Vegas Aces") == "Las Vegas Aces"
+    assert lb.resolve_team("wnba", None, None) is None
+
+
+def test_wnba_elapsed_minutes_from_period_and_clock():
+    # Q3 (period 3) with 5:00 remaining -> elapsed = 2*10 + (10-5) = 25.0 minutes
+    assert lb._wnba_elapsed(3, "5:00") == 25.0
+    assert lb._wnba_elapsed(1, "10:00") == 0.0
+    assert lb._wnba_elapsed(None, None) is None
+
+
+def test_wnba_inprogress_game_gets_pregame_and_ingame_prediction():
+    out = lb.todays_live_games("wnba", http_get=lambda url: _WNBA_PAYLOAD,
+                               predictor_factory=_wnba_factory)
+    assert out["status"] == "ok"
+    assert out["n_live"] == 1
+    g = out["games"][0]
+    assert g["home"] == "Las Vegas Aces" and g["away"] == "Indiana Fever"
+    pred = g["prediction"]
+    assert pred is not None
+    assert pred["pregame"]["p_home_win"] == 0.62
+    assert pred["ingame"]["p_home_win"] == 0.85  # home leading -> moved up
+    assert g["predictor_ids"] == {"home": "Las Vegas Aces", "away": "Indiana Fever"}
+
+
+def test_wnba_feed_down_is_unavailable():
+    out = lb.todays_live_games("wnba", http_get=lambda url: {},
+                               predictor_factory=_wnba_factory)
+    assert out["status"] == "unavailable"
+    assert out["games"] == []
+
+
 # --------------------------------------------------- live_model_home_prob (in-game seam)
 class _StubLiveIntlPredictor:
     """Soccer-shaped predictor: predict_live(home,away,minute,hg,ag) -> p_home_win."""
