@@ -42,6 +42,12 @@ _SPORTS: Dict[str, Dict] = {
     # does not go through _fetch_events's dual atp+wta merge, e.g. an explicit
     # league="wta" from a caller that already knows the tour).
     "tennis": {"path": "tennis/{league}", "kind": "tennis"},
+    # WNBA: same ESPN clock/period convention as nba (basketball/wnba scoreboard is the
+    # proven keyless route -- see domains/basketball_wnba/ingest_espn.py), but regulation
+    # is 4x10min = 2400.0s, not nba's 4x12min = 2880.0s. Without this entry live_state/
+    # live_states("wnba") always returned None/[] (sport not in _SPORTS), leaving the
+    # wave-4 wnba_ingame_shadow logging None forever and m36 grading with no wnba segment.
+    "wnba": {"path": "basketball/wnba", "kind": "clock", "reg_sec": 2400.0},
 }
 
 # default ESPN league per soccer sport id when the caller omits an explicit league.
@@ -155,13 +161,16 @@ def _frac_elapsed(sport: str, ev: dict) -> Optional[float]:
     st = (ev.get("status") or {})
     typ = (st.get("type") or {})
     cfg = _SPORTS[sport]
-    if sport == "nba":
-        # period 1..4 (+OT); clock counts down within a 12-min quarter.
+    if sport in ("nba", "wnba"):
+        # period 1..4 (+OT); clock counts down within a quarter (nba: 12min/720s,
+        # wnba: 10min/600s -- derived from each sport's own reg_sec/4 so this stays
+        # correct if either regulation length ever changes).
+        period_sec = cfg["reg_sec"] / 4.0
         period = int(st.get("period") or 0)
         clock = float(st.get("clock") or 0.0)  # seconds left in period
         if period <= 0:
             return None
-        elapsed = (period - 1) * 720.0 + (720.0 - min(720.0, clock))
+        elapsed = (period - 1) * period_sec + (period_sec - min(period_sec, clock))
         return max(0.0, min(1.0, elapsed / cfg["reg_sec"]))
     if sport == "mlb":
         period = int(st.get("period") or 0)  # inning number
@@ -230,8 +239,18 @@ def _segment_fields(sport: str, ev: dict) -> Dict[str, object]:
     except (TypeError, ValueError):
         period = 0
     detail = str(typ.get("shortDetail") or typ.get("detail") or "").lower()
-    if sport == "nba" and period > 0:
+    if sport in ("nba", "wnba") and period > 0:
         out["period"] = period
+        # raw seconds-left-in-period, ADDITIVE: live_grade._state_summary and
+        # wnba_ingame_shadow.shadow_prob both read state["clock"] directly (the same
+        # ESPN status.clock the offline _frac_elapsed math already consumes above) --
+        # without this key here it was never populated for ANY basketball sport, so
+        # the wnba shadow chain (and nba's own state_summary "clock=" label) always
+        # read None even when the feed carried a real clock value.
+        try:
+            out["clock"] = float(status.get("clock") or 0.0)
+        except (TypeError, ValueError):
+            pass
     elif sport == "mlb" and period > 0:
         out["inning"] = period
         if detail.startswith("top") or " top" in detail:

@@ -312,3 +312,109 @@ def test_live_states_one_tour_feed_error_does_not_lose_the_other():
 
     states = S.live_states("tennis", http_get=_flaky)
     assert {st["game_id"] for st in states} == {"7"}
+
+
+# --------------------------------------------------------------------------------------- #
+# WNBA wiring (queue item 1, LANE 1): ingame_live_state._SPORTS had no "wnba" entry, so     #
+# live_state("wnba")/live_states("wnba") always returned None/[] -- leaving the wave-4      #
+# wnba_ingame_shadow logging None forever and m36 grading with no wnba segment fields.      #
+# Same ESPN basketball scoreboard shape as nba (period + status.clock seconds-remaining),   #
+# but regulation is 4x10min=2400s, not nba's 4x12min=2880s.                                 #
+# --------------------------------------------------------------------------------------- #
+def _wnba_event(*, live: bool, hs: str = "41", as_: str = "38", period: int = 2,
+                clock: float = 320.0, event_id: str = "401700001"):
+    state = "in" if live else "pre"
+    name = "STATUS_IN_PROGRESS" if live else "STATUS_SCHEDULED"
+    return {
+        "id": event_id,
+        "status": {"period": period, "clock": clock,
+                   "type": {"state": state, "name": name, "shortDetail": "Q%d" % period}},
+        "competitions": [{"competitors": [
+            {"homeAway": "home", "score": hs,
+             "team": {"abbreviation": "LVA", "displayName": "Las Vegas Aces"}},
+            {"homeAway": "away", "score": as_,
+             "team": {"abbreviation": "CHI", "displayName": "Chicago Sky"}},
+        ]}],
+    }
+
+
+def test_wnba_scoreboard_url_uses_basketball_wnba_path():
+    assert S._scoreboard_url("wnba", None) == (
+        "https://site.api.espn.com/apis/site/v2/sports/basketball/wnba/scoreboard")
+
+
+def test_wnba_frac_elapsed_uses_2400s_regulation():
+    # period 2, 320s left in a 600s (10min) quarter -> elapsed = 600 + (600-320) = 880s / 2400s
+    ev = _wnba_event(live=True, period=2, clock=320.0)
+    frac = S._frac_elapsed("wnba", ev)
+    assert frac is not None and abs(frac - 880.0 / 2400.0) < 1e-6
+
+
+def test_live_state_wnba_extracts_real_state():
+    payload = {"events": [_wnba_event(live=True)]}
+    st = S.live_state("wnba", http_get=lambda url: payload, p0=0.55)
+    assert st is not None
+    assert st["sport"] == "wnba"
+    assert st["home"] == "LVA" and st["away"] == "CHI"
+    assert st["home_display"] == "Las Vegas Aces" and st["away_display"] == "Chicago Sky"
+    assert st["home_score"] == 41.0 and st["away_score"] == 38.0
+    assert st["state_diff"] == 3.0
+    assert abs(st["frac_elapsed"] - 880.0 / 2400.0) < 1e-6
+    # segment + raw clock fields: previously ONLY populated for sport=="nba" -- widened
+    # so wnba_ingame_shadow.shadow_prob (which reads state["period"]/state["clock"]) has
+    # real inputs instead of permanent None.
+    assert st["period"] == 2
+    assert st["clock"] == 320.0
+    assert st["p0"] == 0.55 and st["p0_source"] == "CALLER"
+
+
+def test_live_states_wnba_returns_all_in_progress():
+    ev_live2 = _wnba_event(live=True, hs="10", as_="8", period=1, clock=500.0,
+                           event_id="401700002")
+    ev_live2["competitions"][0]["competitors"][0]["team"] = {
+        "abbreviation": "NYL", "displayName": "New York Liberty"}
+    ev_live2["competitions"][0]["competitors"][1]["team"] = {
+        "abbreviation": "CON", "displayName": "Connecticut Sun"}
+    payload = {"events": [_wnba_event(live=True), ev_live2, _wnba_event(live=False)]}
+    states = S.live_states("wnba", http_get=lambda url: payload)
+    assert len(states) == 2
+    names = {(s["home"], s["away"]) for s in states}
+    assert ("LVA", "CHI") in names and ("NYL", "CON") in names
+
+
+def test_live_states_wnba_empty_when_none_live():
+    payload = {"events": [_wnba_event(live=False)]}
+    assert S.live_states("wnba", http_get=lambda url: payload) == []
+
+
+def test_wnba_segment_bucket_resolves_via_infer_segment():
+    # real downstream chain: _extract -> live_grade._state_summary -> _infer_segment,
+    # same as the existing MLB roundtrip test above -- proves wnba ticks get a real Q-bucket
+    # instead of falling into UNK now that _segment_fields is widened beyond sport=="nba".
+    from scripts.platformkit.ingame import live_grade as lg
+    from scripts.platformkit.ingame import ingame_clv_per_segment as ps
+    st = S._extract("wnba", _wnba_event(live=True, period=3), None,
+                    p0_provider=lambda s, g: None)
+    ss = lg._state_summary(st)
+    assert "period=3" in ss and "clock=" in ss
+    assert ps._infer_segment("wnba", ss) == "Q3"
+
+
+def test_wnba_ingame_shadow_chain_produces_real_prob_from_live_state_fixture():
+    # end-to-end fixture-driven proof (no live dependency): a wnba-shaped scoreboard ->
+    # live_state() -> wnba_ingame_shadow.shadow_prob() via the real WNBAAdapter.predict_live
+    # signature, using a fake adapter so this stays offline/deterministic.
+    from scripts.platformkit.ingame import wnba_ingame_shadow as wshadow
+
+    class _FakeAdapter:
+        def predict_live(self, home, away, as_of, period, clock_s, home_score,
+                         away_score, *, neutral_site: bool = False):
+            return {"p_home_win": 0.71}
+
+    payload = {"events": [_wnba_event(live=True, period=2, clock=320.0, hs="41", as_="38")]}
+    st = S.live_state("wnba", http_get=lambda url: payload, p0=0.5)
+    assert st is not None
+
+    shadow = wshadow.WnbaIngameShadow(adapter=_FakeAdapter())
+    prob = shadow.shadow_prob("wnba", st["home_display"], st["away_display"], st)
+    assert prob == 0.71
