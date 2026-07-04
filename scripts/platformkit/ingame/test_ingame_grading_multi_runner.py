@@ -104,3 +104,105 @@ def test_heartbeat_component_name_matches_registered_spec():
 
 def test_default_interval_matches_m25_cadence():
     assert runner.DEFAULT_INTERVAL_SEC == 900.0
+
+
+# --- LANE 5: freshness adjudication auto-wire -------------------------------
+
+def test_freshness_runs_on_first_tick_and_every_nth(monkeypatch):
+    """tick_no=1 and tick_no=1+N run the freshness step; tick_no=2 does not."""
+    monkeypatch.setattr(runner, "_beat", lambda now_epoch=None: None)
+    calls = []
+
+    def freshness_fn():
+        calls.append(1)
+        return {"outcome_verdict_freshness": {}, "freshness_cross_corpus": {}}
+
+    doc1 = runner.tick(now=1000.0, verdict_fn=lambda: {}, trust_fn=lambda: {},
+                       label_refresh_fn=lambda: {}, freshness_fn=freshness_fn, tick_no=1)
+    doc2 = runner.tick(now=1000.0, verdict_fn=lambda: {}, trust_fn=lambda: {},
+                       label_refresh_fn=lambda: {}, freshness_fn=freshness_fn, tick_no=2)
+    doc33 = runner.tick(now=1000.0, verdict_fn=lambda: {}, trust_fn=lambda: {},
+                        label_refresh_fn=lambda: {}, freshness_fn=freshness_fn,
+                        tick_no=1 + runner.FRESHNESS_EVERY_N_TICKS)
+    assert calls == [1, 1]
+    assert "outcome_verdict_freshness" in doc1["freshness_summary"]
+    assert doc2["freshness_summary"]["skipped_reason"] == "not_nth_tick"
+    assert doc2["freshness_summary"]["tick_no"] == 2
+    assert "outcome_verdict_freshness" in doc33["freshness_summary"]
+
+
+def test_freshness_step_isolated_from_verdict_and_trust(monkeypatch):
+    """A raising freshness step degrades to an error entry but never blocks
+    verdict/trust, and never propagates out of tick()."""
+    monkeypatch.setattr(runner, "_beat", lambda now_epoch=None: None)
+
+    def _boom_freshness():
+        raise RuntimeError("freshness exploded")
+
+    doc = runner.tick(
+        now=1000.0, verdict_fn=lambda: {"mlb": {"n_labeled": 3}},
+        trust_fn=lambda: {"mlb": {"trusted": [], "adverse": []}},
+        label_refresh_fn=lambda: {}, freshness_fn=_boom_freshness, tick_no=1,
+    )
+    assert "error" in doc["freshness_summary"]
+    assert doc["verdict_summary"]["mlb"]["n_labeled"] == 3
+    assert doc["trust_summary"]["mlb"]["trusted"] == []
+
+
+def test_verdict_and_trust_failures_do_not_block_freshness(monkeypatch):
+    """Mirror-direction isolation: verdict/trust raising must not prevent the
+    freshness step from running on a landing tick."""
+    monkeypatch.setattr(runner, "_beat", lambda now_epoch=None: None)
+
+    def _boom():
+        raise RuntimeError("boom")
+
+    doc = runner.tick(
+        now=1000.0, verdict_fn=_boom, trust_fn=_boom, label_refresh_fn=_boom,
+        freshness_fn=lambda: {"outcome_verdict_freshness": {"ok": True}},
+        tick_no=1,
+    )
+    assert doc["freshness_summary"]["outcome_verdict_freshness"] == {"ok": True}
+    assert "error" in doc["verdict_summary"]
+    assert "error" in doc["trust_summary"]
+    assert "error" in doc["label_refresh_summary"]
+
+
+def test_run_freshness_adjudications_isolates_each_sub_step(monkeypatch):
+    """_run_freshness_adjudications: one sub-step raising must not block the
+    other from populating its own key."""
+    def _boom_ovf():
+        raise RuntimeError("ovf exploded")
+
+    def _ok_fcc():
+        return {"overall_segment_verdict": {"I1": "NOT-REPLICATED"}}
+
+    monkeypatch.setattr(runner, "_run_outcome_verdict_freshness", _boom_ovf)
+    monkeypatch.setattr(runner, "_run_freshness_cross_corpus", _ok_fcc)
+    out = runner._run_freshness_adjudications()
+    assert "error" in out["outcome_verdict_freshness"]
+    assert out["freshness_cross_corpus"]["overall_segment_verdict"]["I1"] == "NOT-REPLICATED"
+
+
+def test_tick_without_tick_no_uses_module_counter(monkeypatch):
+    """When tick_no is omitted, tick() advances the module-level _tick_counter
+    so a real run() loop still gates correctly across successive calls."""
+    monkeypatch.setattr(runner, "_beat", lambda now_epoch=None: None)
+    monkeypatch.setattr(runner, "_tick_counter", 0)
+    calls = []
+
+    def freshness_fn():
+        calls.append(1)
+        return {}
+
+    for _ in range(runner.FRESHNESS_EVERY_N_TICKS + 1):
+        runner.tick(now=1000.0, verdict_fn=lambda: {}, trust_fn=lambda: {},
+                    label_refresh_fn=lambda: {}, freshness_fn=freshness_fn)
+    # tick 1 and tick (N+1) both land -> 2 calls over N+1 ticks.
+    assert calls == [1, 1]
+
+
+def test_freshness_every_n_ticks_matches_2_to_4x_per_day_target():
+    ticks_per_day = 86400.0 / runner.DEFAULT_INTERVAL_SEC
+    runs_per_day = ticks_per_day / runner.FRESHNESS_EVERY_N_TICKS
+    assert 2.0 <= runs_per_day <= 4.0
