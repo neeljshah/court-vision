@@ -35,7 +35,7 @@ from scripts.platformkit.frontend import bet_board_flat as flat
 
 logger = logging.getLogger(__name__)
 
-SPORTS = ("nba", "mlb", "soccer", "soccer_intl", "tennis", "wnba")
+SPORTS = ("nba", "mlb", "soccer", "soccer_intl", "tennis", "wnba", "npb", "kbo")
 
 HONEST_NOTE = (
     "Model prob + fair odds are a calibrated model VIEW, not a claimed edge. EV is "

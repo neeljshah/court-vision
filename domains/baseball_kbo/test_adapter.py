@@ -128,3 +128,14 @@ def test_event_id_is_stable_natural_key():
     assert "2023-04-01" in events[0]["event_id"]
     assert "DOOSAN" in events[0]["event_id"]
     assert "KIA" in events[0]["event_id"]
+
+
+def test_predict_moneyline_pregame_view():
+    adapter = KBOAdapter(games_df=_synthetic_games())
+    out = adapter.predict("DOOSAN", "KIA")
+    assert out["sport"] == SPORT_ID
+    assert out["home"] == "DOOSAN" and out["away"] == "KIA"
+    assert 0.0 <= out["p_home_win"] <= 1.0
+    assert abs(out["p_home_win"] + out["p_away_win"] - 1.0) < 1e-9
+    assert "Elo" in out["honest_note"]
+    assert "no $ edge" in out["honest_note"].lower()

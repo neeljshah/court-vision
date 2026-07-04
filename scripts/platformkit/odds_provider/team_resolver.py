@@ -61,6 +61,44 @@ _MLB_CODE_ALIASES: Dict[str, str] = {
     "TB": "TAM", "WSH": "WAS", "WSN": "WAS", "ARZ": "ARI", "LA": "LAD",
 }
 
+# --------------------------------------------------------------------------- #
+# KBO (LANE 4): code -> canonical nickname token = the parquet's OWN ASCII EN
+# spelling (domains/baseball_kbo/kbo_results.parquet), lowercased. Kalshi's
+# ODDS FEED (kalshi.py._team_label reads yes_sub_title, falling back to the
+# market title) carries the club's FULL English name ("NC Dinos", "Kia
+# Tigers", ...), NOT the ticker's 3-letter tail code -- verified live
+# 2026-07-06 direct against /trade-api/v2/markets?series_ticker=KXKBOGAME
+# (yes_sub_title == 'NC Dinos' for the NCD leg). _KBO_NAME_TO_CODE below is
+# the single explicit map from each of the 10 real clubs' Kalshi full name to
+# its exact parquet spelling; _NAME_NICK_FIXUPS folds each into the SAME
+# multi-word-collapse mechanism NBA/MLB already use (e.g. "red sox"->
+# "redsox") so "NC Dinos" and "NC" converge on one canonical key. NPB is NOT
+# addable this way: the parquet's team names are Japanese kanji/katakana,
+# which _norm's [^a-z0-9 ] regex strips to "" -- there is no ASCII nickname
+# token to converge on, so NPB odds-matching stays a named, honest gap (see
+# kalshi_listing.py module docstring / this lane's report) rather than a
+# silently-broken code map.
+# --------------------------------------------------------------------------- #
+_KBO_NAME_TO_CODE: Dict[str, str] = {
+    "nc dinos": "nc", "kia tigers": "kia", "lotte giants": "lotte",
+    "kt wiz": "kt", "samsung lions": "samsung", "ssg landers": "ssg",
+    "lg twins": "lg", "hanwha eagles": "hanwha", "kiwoom heroes": "kiwoom",
+    "doosan bears": "doosan",
+}
+
+
+def _kbo_code_to_nick() -> Dict[str, str]:
+    """{ASCII EN code (lowercased) -> itself} for every real KBO club, derived
+    from domains.baseball_kbo.team_map.ALL_EN_CODES (never hand-duplicated).
+    Import-guarded: an import failure degrades to {} (kbo falls back to the
+    prior strict-name-only matching, never a crash)."""
+    try:
+        from domains.baseball_kbo.team_map import ALL_EN_CODES
+        return {code: code.lower() for code in ALL_EN_CODES}
+    except Exception:  # noqa: BLE001 -- degrade, never bubble
+        return {}
+
+
 # Multi-word full-name nicknames that must collapse to a single token so a
 # full name resolves to the SAME key as its code (e.g. "Red Sox" -> "redsox").
 _NAME_NICK_FIXUPS = {
@@ -68,9 +106,11 @@ _NAME_NICK_FIXUPS = {
     ("mlb", "red sox"): "redsox",
     ("mlb", "white sox"): "whitesox",
     ("mlb", "blue jays"): "bluejays",
+    **{("kbo", full): code for full, code in _KBO_NAME_TO_CODE.items()},
 }
 
-_CODE_TO_NICK = {"nba": _NBA_CODE_TO_NICK, "mlb": _MLB_CODE_TO_NICK}
+_CODE_TO_NICK = {"nba": _NBA_CODE_TO_NICK, "mlb": _MLB_CODE_TO_NICK,
+                 "kbo": _kbo_code_to_nick()}
 _CODE_ALIASES = {"nba": _NBA_CODE_ALIASES, "mlb": _MLB_CODE_ALIASES}
 _STOP = {"the", "fc", "afc", "cf", "sc"}
 

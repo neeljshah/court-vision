@@ -24,7 +24,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from scripts.platformkit.predictor_jd import _build_predictor
 
-_SPORTS = ("nba", "mlb", "soccer", "soccer_intl", "tennis", "wnba")
+_SPORTS = ("nba", "mlb", "soccer", "soccer_intl", "tennis", "wnba", "npb", "kbo")
 _ALIASES = {"basketball_nba": "nba", "worldcup": "soccer_intl", "wc": "soccer_intl"}
 
 _UNAVAILABLE = (
@@ -183,12 +183,13 @@ def _pregame_block(sport: str, pred: Any, home: str, away: str,
         # read off the SAME calibrated distribution. Guarded: a markets failure must NEVER
         # break the core prediction -- on any error the key is present but None.
         block["markets"] = _surface_nba(pred, home, away)
-    elif s == "wnba":
-        # Moneyline-only markets dict (no spread/total model exists for WNBA
-        # yet -- see domains/basketball_wnba/adapter.py). Shaped so
-        # bet_board_flat.flatten("wnba", ...) can reuse flatten_nba(): only the
-        # "moneyline" key is populated, so spread/total/quarter rows are simply
-        # absent (never fabricated), matching flatten_nba's guarded .get(...) reads.
+    elif s in ("wnba", "npb", "kbo"):
+        # Moneyline-only markets dict (no spread/total model exists for WNBA/
+        # NPB/KBO yet -- see domains/basketball_wnba|baseball_npb|baseball_kbo/
+        # adapter.py). Shaped so bet_board_flat.flatten(sport, ...) can reuse
+        # flatten_nba(): only the "moneyline" key is populated, so spread/
+        # total/quarter rows are simply absent (never fabricated), matching
+        # flatten_nba's guarded .get(...) reads.
         block["markets"] = {"moneyline": {"p_home_win": raw.get("p_home_win"),
                                           "p_away_win": raw.get("p_away_win")}}
     elif s == "mlb":

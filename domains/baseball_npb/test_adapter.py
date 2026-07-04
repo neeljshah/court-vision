@@ -128,3 +128,16 @@ def test_event_id_is_stable_natural_key():
     assert "2023-04-01" in events[0]["event_id"]
     assert "Giants" in events[0]["event_id"]
     assert "Tigers" in events[0]["event_id"]
+
+
+def test_predict_moneyline_pregame_view():
+    adapter = NPBAdapter(games_df=_synthetic_games())
+    events = adapter.list_events(dt.date(2023, 4, 1))
+    home, away = events[0]["meta"]["home_team"], events[0]["meta"]["away_team"]
+    out = adapter.predict(home, away)
+    assert out["sport"] == SPORT_ID
+    assert out["home"] == home and out["away"] == away
+    assert 0.0 <= out["p_home_win"] <= 1.0
+    assert abs(out["p_home_win"] + out["p_away_win"] - 1.0) < 1e-9
+    assert "Elo" in out["honest_note"]
+    assert "no $ edge" in out["honest_note"].lower()

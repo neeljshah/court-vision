@@ -1,7 +1,9 @@
 """scripts.platformkit.pm_trading.run_paper_today -- PAPER trader on TODAY's slate.
 
-Pulls today's REAL games + state (live_board.todays_live_games), builds each game's
-bet board (bet_board.game_bet_board) priced off the aggregated odds slate, and:
+Pulls today's REAL games + state (live_board.todays_live_games for ESPN-covered
+sports; kalshi_listing.todays_kalshi_games -- PREGAME ONLY -- for npb/kbo, which
+have no ESPN scoreboard; see default_live_fetch), builds each game's bet board
+(bet_board.game_bet_board) priced off the aggregated odds slate, and:
   * PRICED row (real book price, mainly moneyline) -> EV, POLICY TIER + STAKE UNITS
     via pm_trading.policy; below-floor (tier None) rows skipped. RECORD to the CLV
     ledger (clv_ledger.record_bet) executed=False/channel="paper" for later settling.
@@ -27,12 +29,29 @@ from scripts.platformkit import clv_ledger as _clv
 from scripts.platformkit.frontend.bet_board import game_bet_board
 from scripts.platformkit.frontend.live_board import todays_live_games
 from scripts.platformkit.odds_provider.base import OddsEvent
+from scripts.platformkit.odds_provider.kalshi_listing import todays_kalshi_games
 from scripts.platformkit.odds_shop import devig_twoway, ev_vs_price
 from scripts.platformkit.pm_trading.paper_autobet import (
     AutoBetConfig, CHANNEL_PAPER)
 from scripts.platformkit.pm_trading import paper_today_support as S
 from scripts.platformkit.pm_trading.paper_today_support import (
     Ctx, DEFAULT_PREDICTIONS, DEFAULT_SPORTS, PAPER_EV_FLOOR)
+
+# Sports with NO ESPN scoreboard (live_board._ESPN_ROUTES has no entry) but a
+# real Kalshi GAME-series listing (LANE 4): route these through the Kalshi
+# ticker listing instead -- PREGAME ONLY (no live clock/score, no in-game
+# model; see kalshi_listing.py module docstring). Additive: every other sport
+# is UNCHANGED (still routes through todays_live_games/ESPN).
+_KALSHI_LISTING_SPORTS = frozenset({"npb", "kbo"})
+
+
+def default_live_fetch(sport: str) -> Dict[str, Any]:
+    """live_fetch dispatcher: ESPN-backed sports -> todays_live_games (ticks +
+    in-game state); Kalshi-listing-only sports (npb/kbo, no ESPN feed) ->
+    todays_kalshi_games (pregame listing only). Never raises."""
+    if sport.lower() in _KALSHI_LISTING_SPORTS:
+        return todays_kalshi_games(sport)
+    return todays_live_games(sport)
 
 # Policy tiering -- guarded so a missing import never breaks the paper cycle.
 try:
@@ -230,7 +249,7 @@ def run_paper_cycle(
     *,
     predictions_path: Optional[Path] = None,
     cfg: Optional[AutoBetConfig] = None,
-    live_fetch: Callable[..., Dict[str, Any]] = todays_live_games,
+    live_fetch: Callable[..., Dict[str, Any]] = default_live_fetch,
     board_fn: Callable[..., Dict[str, Any]] = game_bet_board,
     odds_index: Callable[[str], Tuple[Any, List[OddsEvent]]] = S.odds_index,
 ) -> Dict[str, Any]:
