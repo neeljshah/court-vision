@@ -1,16 +1,17 @@
-"""domains.basketball_wnba.adapter -- WNBAAdapter: PREGAME-ONLY two-way moneyline adapter.
+"""domains.basketball_wnba.adapter -- WNBAAdapter: two-way moneyline + in-game adapter.
 
 Gate seam: feature_bundle() -> FeatureBundle so src.loop.gate.evaluate runs on
 WNBA data with ZERO kernel edits, mirroring domains.basketball_nba.adapter.NBAAdapter.
 
-PREGAME-ONLY this wave (in-game live blend deferred -- see not_done in the wave
-report): domains.basketball_nba.ingame_blend_plive hardcodes NBA's 48-minute
-(4x12) regulation length (_REG_SEC = 2880.0) and consumes a live PBP foul-state
-feed (players dict with team/pf) that this wave does not build for WNBA (WNBA
-plays 4x10-minute quarters, a different _REG_SEC, and needs its OWN foul-state
-ingest before that blend could be safely reused). predict_live is therefore
-ABSENT here rather than silently reusing NBA's clock constant. baseline_probability
-(pregame Elo) is the full, real, leak-free signal this adapter offers.
+LANE 4 (this wave): predict_live is now WIRED via domains.basketball_wnba.ingame_blend
+-- a WNBA-local, transparent time-decay blend (REG_SEC=2400.0, 4x10min, re-derived
+rather than borrowing NBA's 2880.0) that does NOT depend on a live foul-state feed
+(WNBA has no such ingest; see ingame_blend.py module docstring for the honest
+degrade). Wave-1 deferred this because domains.basketball_nba.ingame_blend_plive
+hardcodes NBA's clock constant + a foul/bonus feature row this domain lacks --
+ingame_blend.py re-derives the time-scale-dependent constants instead of reusing
+that NBA module. baseline_probability (pregame Elo) remains the full, real,
+leak-free pregame signal; predict_live blends it with realized score state.
 
 F5: imports ONLY stdlib, numpy, pandas, domains.basketball_wnba.*,
 src.loop.gate.FeatureBundle, src.loop.signal. PRIVATE: never tracked publicly.
@@ -27,6 +28,7 @@ import pandas as pd
 
 from .elo_config import ELO_MEAN
 from .ratings import walk_forward_elo
+from .ingame_blend import LiveState, blend_prob, is_buzzer
 from src.loop.gate import FeatureBundle
 from src.loop.signal import Hypothesis
 
@@ -37,7 +39,7 @@ GAMES_PARQUET = "data/domains/wnba/espn_scoreboard.parquet"
 
 
 class WNBAAdapter:
-    """PREGAME-ONLY WNBA two-way moneyline adapter (no in-game predict_live)."""
+    """WNBA two-way moneyline adapter: pregame Elo + in-game live blend."""
 
     sport: str = SPORT_ID
 
@@ -106,6 +108,64 @@ class WNBAAdapter:
         meta = event.get("meta", {}) if isinstance(event, dict) else getattr(event, "meta", {})  # type: ignore[union-attr]
         return float(_p_home(state.elo.get(str(meta.get("home_team", "")), ELO_MEAN),
                               state.elo.get(str(meta.get("away_team", "")), ELO_MEAN)))
+
+    def predict_live(
+        self,
+        home: str,
+        away: str,
+        as_of: dt.datetime,
+        period: int,
+        clock_s: float,
+        home_score: float,
+        away_score: float,
+        *,
+        neutral_site: bool = False,
+    ) -> Dict:
+        """In-game P(home wins) = pregame Elo prior blended with realized score
+        state via domains.basketball_wnba.ingame_blend.blend_prob.
+
+        p0 is the SAME leak-free pregame Elo probability baseline_probability(as_of)
+        reports (all games strictly before as_of) -- coherent with the pregame
+        signal, not a re-derivation. neutral_site is accepted for API parity with
+        other domains' predict_live (soccer_intl); the Elo replay itself has no
+        home-tilt term to drop for WNBA (HFA is baked into _p_home via ELO_HFA),
+        so neutral_site is recorded on the output but does not alter p0 here --
+        honestly reported via the neutral_site_adjusted flag (always False) rather
+        than silently ignored.
+
+        BUZZER FIX (mirrors domains.basketball_nba.test_nba_live_buzzer.py): at the
+        exact final buzzer (period==4, clock_s<=0) with a DECIDED score, p_home_win
+        is snapped to the EXACT 0.0/1.0 rather than the blend's asymptotic sigmoid
+        value -- a finished result is deterministic, not a probabilistic forecast.
+        A buzzer tie (score_diff==0 at 0:00) is NOT a buzzer per is_buzzer's
+        contract (the game continues to OT) and is left to the blend (-> 0.5).
+        """
+        p0 = self.baseline_probability(
+            {"meta": {"home_team": home, "away_team": away}}, as_of)
+        state = LiveState(period=int(period), clock_s=float(clock_s),
+                           home_score=float(home_score), away_score=float(away_score))
+        score_diff = float(home_score) - float(away_score)
+        if is_buzzer(state) and score_diff != 0.0:
+            p_live = 1.0 if score_diff > 0.0 else 0.0
+        else:
+            p_live = blend_prob(p0, state)
+        return {
+            "sport": SPORT_ID, "home": home, "away": away,
+            "period": int(period), "clock_s": float(clock_s),
+            "score": (float(home_score), float(away_score)),
+            "p_home_win": round(float(p_live), 4),
+            "p_away_win": round(1.0 - float(p_live), 4),
+            "pregame_p_home": round(float(p0), 4),
+            "neutral_site": bool(neutral_site),
+            "neutral_site_adjusted": False,
+            "honest_note": (
+                "In-game = pregame WNBA Elo win-prob (leak-free, as-of) blended "
+                "with realized score state via a transparent time-decay logit "
+                "blend (REG_SEC=2400.0, no foul-state term -- WNBA has no live "
+                "foul feed, honestly degraded out rather than faked). Calibration "
+                "only; no $ edge claimed."
+            ),
+        }
 
     def feature_bundle(
         self,
