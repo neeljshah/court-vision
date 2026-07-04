@@ -1,6 +1,6 @@
 """scripts.platformkit.ingame.ingame_tail_gate_multi -- LANE C: PRE-REGISTERED
 cross-sport in-play venue-bias gate (tennis + soccer_intl / World Cup + wnba +
-npb + kbo), the multi-sport counterpart to ingame_tail_gate.py (MLB-only).
+npb + kbo + nba), the multi-sport counterpart to ingame_tail_gate.py (MLB-only).
 
 THE HYPOTHESES (registered at each sport's own PRE_REGISTERED_AT stamp -- see
 PRE_REGISTERED_AT_BY_SPORT)
@@ -25,16 +25,20 @@ evidence as its capture corpus grows (this lane does not touch any daemon hot
 path -- the runner registered in ingame_tail_multi_runner.py is what actually
 re-runs this per tick once wired).
 
-PER-SPORT STAMPS (2026-07-04 LANE 5 addition)
+PER-SPORT STAMPS (2026-07-04 LANE 5 addition; nba added same day, LANE 1)
 ----------------------------------------------
 tennis / soccer_intl / soccer were registered 2026-07-04T00:00:00Z (unchanged
 -- see PRE_REGISTERED_AT_BY_SPORT and the byte-identical regression test).
 wnba / npb / kbo are registered 2026-07-04T12:00:00Z -- a FRESH, LATER stamp,
 deliberately set before any of their in-play capture exists yet, so their
-first captured tick is trivially forward-only from day one. A sport not
-listed in PRE_REGISTERED_AT_BY_SPORT falls back to _DEFAULT_PRE_REGISTERED_AT
-(the original single stamp), preserving old behavior for any future caller
-that adds a sport without an explicit entry.
+first captured tick is trivially forward-only from day one. nba is
+registered 2026-10-01T00:00:00Z -- an NBA-season-open-safe future date, set
+deliberately before any NBA in-play tick can exist (2026-27 season has not
+tipped off; games.parquet's own data stops 2026-04-12), so it is trivially
+forward-only by construction, same discipline as the other pre-registered
+sports. A sport not listed in PRE_REGISTERED_AT_BY_SPORT falls back to
+_DEFAULT_PRE_REGISTERED_AT (the original single stamp), preserving old
+behavior for any future caller that adds a sport without an explicit entry.
 
 HONESTY: venue-vs-outcome calibration only; fees/fills/adverse-selection are
 NOT modeled; no $ edge is claimed; acting on a CONFIRMED verdict stays a HUMAN
@@ -67,7 +71,10 @@ PRE_REGISTERED_AT = _DEFAULT_PRE_REGISTERED_AT  # back-compat alias, unchanged v
 # ORIGINAL 2026-07-04T00:00:00Z stamp untouched (byte-identical verdict output
 # is asserted by test_existing_sports_stamp_and_output_unchanged). wnba/npb/kbo
 # get a fresh, later stamp -- registered BEFORE any of their capture exists --
-# so evidence counts from each sport's first captured tick.
+# so evidence counts from each sport's first captured tick. nba gets an
+# NBA-season-open-safe FUTURE stamp (2026-10-01, before the 2026-27 season
+# tips off) -- trivially forward-only, since no NBA in-play tick can exist
+# before then.
 PRE_REGISTERED_AT_BY_SPORT: Dict[str, str] = {
     "tennis": _DEFAULT_PRE_REGISTERED_AT,
     "soccer_intl": _DEFAULT_PRE_REGISTERED_AT,
@@ -75,6 +82,7 @@ PRE_REGISTERED_AT_BY_SPORT: Dict[str, str] = {
     "wnba": "2026-07-04T12:00:00Z",
     "npb": "2026-07-04T12:00:00Z",
     "kbo": "2026-07-04T12:00:00Z",
+    "nba": "2026-10-01T00:00:00Z",
 }
 
 
