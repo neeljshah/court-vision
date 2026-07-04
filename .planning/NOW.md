@@ -41,6 +41,21 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 31 (WAVE-30 LANDED + CONTINUOUS NO-DOWNTIME MODE, 2026-07-04
+  ~20:20Z, run wf_56124b67-c33, 21 agents/~1.10M tok, 7 lanes COMMITTED
+  cb9bd7fa..fa3f3a4c): (1) tennis surface-hold HONEST REJECT (ATP +.00012 /
+  WTA +.0025 worse, 0/3 folds both tours, null died clean) -> surface-blind
+  canonical, do-not-relitigate. (2) composition v1 NOT_TESTABLE (CI incl 0 both
+  pops, 2025-26 replication below floor) -> naive canonical; sample-size axis
+  parked. (3) WNBA rest INVALID_BASE: frozen Elo DEGENERATE on 2026 fold (BSS
+  -.012) -> base refresh queued. (4) SHIPs: schema snapshots (6 pairs, 0 drift/
+  16d), city-geo 631 rows (WNBA 100%, soccer 90.14%), ESPN WNBA injuries
+  confirmed+ingested (41 rows), ask-anything v1 (VERIFIED-claims only).
+  (5) m13 breaker HELD uncommitted -- re-review FAIL: bounded/synth served path
+  drops SKIPPED_CIRCUIT + live proof missing -> wave-31 finish lane. (6) probe:
+  NPB/KBO capture LIVE (18372 ticks); m1_line_daemon needs restart TONIGHT for
+  wnba/npb/kbo closes -> wave-31 ops lane. USER: continuous mode + GPU/speed
+  rules ratified (.planning/platform/WAVE_31_PLAN.md). Wave-31 fleet launched.
 - SESSION HANDOFF (2026-07-04 ~19:50Z): session b90493cf ENDED at user request
   ("find a stopping point, pasting new session prompt"). WAVE-30 fleet STOPPED
   mid-build; partial UNREVIEWED work stashed as stash@{0} "wave-30-partial-
