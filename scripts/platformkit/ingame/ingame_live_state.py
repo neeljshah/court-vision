@@ -48,7 +48,25 @@ _SPORTS: Dict[str, Dict] = {
     # live_states("wnba") always returned None/[] (sport not in _SPORTS), leaving the
     # wave-4 wnba_ingame_shadow logging None forever and m36 grading with no wnba segment.
     "wnba": {"path": "basketball/wnba", "kind": "clock", "reg_sec": 2400.0},
+    # npb/kbo: NON-ESPN sports (ESPN carries neither league -- verified live 400 on both
+    # site.api paths, LANE 3 wave-19). source="npb_kbo" routes live_state/live_states to
+    # scripts.platformkit.ingame.npb_kbo_live_state instead of the ESPN scoreboard fetch
+    # below (see _fetch_events / live_state / live_states dispatch). COARSE state only:
+    # inning/frac_elapsed are always None on this feed (see that module's docstring for
+    # why); score+status are enough for OUTCOME grading (final home_win), not in-game
+    # segment-level CLV. No "path" entry needed -- the ESPN branch is never reached for
+    # these two sports.
+    "npb": {"source": "npb_kbo"},
+    "kbo": {"source": "npb_kbo"},
 }
+
+# sport ids that route to the non-ESPN npb_kbo_live_state module instead of the ESPN
+# scoreboard fetch. Kept as its own frozenset (rather than inline-checking _SPORTS[s]
+# .get("source")) so every existing ESPN-path call site (_scoreboard_url, _fetch_events,
+# _frac_elapsed, _segment_fields, _extract) stays completely untouched -- the dispatch
+# happens ONLY at the two public entry points (live_state, live_states), before any
+# ESPN-specific helper is ever invoked for npb/kbo.
+_NON_ESPN_SPORTS = frozenset(s for s, cfg in _SPORTS.items() if cfg.get("source") == "npb_kbo")
 
 # default ESPN league per soccer sport id when the caller omits an explicit league.
 _SOCCER_DEFAULT_LEAGUE: Dict[str, str] = {"soccer": "eng.1", "soccer_intl": "fifa.world"}
@@ -397,6 +415,29 @@ def _fetch_events(sport: str, league: Optional[str],
     return _events_for(sport, payload)
 
 
+def _npb_kbo_live_state(sport: str, event_id: Optional[str],
+                        p0: Optional[float], p0_provider: Optional[Callable],
+                        http_get: Optional[Callable]) -> Optional[Dict]:
+    """Bridge one npb/kbo state (from npb_kbo_live_state.live_states) into this module's
+    p0/p0_source-carrying dict shape, so callers of live_state get the SAME contract for
+    npb/kbo as every ESPN sport. event_id, if given, matches the synthetic game_id this
+    lane's live source assigns (npb-<date>-<away>-<home> / kbo-...). Never raises."""
+    from scripts.platformkit.ingame.npb_kbo_live_state import live_states as _npb_kbo_states
+    getter = None if http_get is _http_get else http_get  # never pass the ESPN getter through
+    states = _npb_kbo_states(sport, http_get=getter)
+    if event_id is not None:
+        states = [s for s in states if str(s.get("game_id")) == str(event_id)]
+    if not states:
+        return None
+    st = states[0]
+    p0v, p0_src = _resolve_p0(sport, str(st.get("game_id") or ""), p0, p0_provider,
+                              home=st.get("home_display"), away=st.get("away_display"))
+    out = dict(st)
+    out["p0"] = p0v
+    out["p0_source"] = p0_src
+    return out
+
+
 def live_state(sport: str, event_id: Optional[str] = None, *,
                league: Optional[str] = None,
                http_get: Optional[Callable] = None,
@@ -410,9 +451,12 @@ def live_state(sport: str, event_id: Optional[str] = None, *,
     snapshot -> leak-free) so the served number carries the PROVEN prior, not BASE. The
     returned dict carries 'p0_source' ('CALLER'|'PRIOR'|'BASE_FALLBACK') as an honest label.
     Tennis with no explicit `league` scans BOTH atp and wta boards (see _fetch_events).
+    npb/kbo route to npb_kbo_live_state (non-ESPN source; see _SPORTS/_NON_ESPN_SPORTS).
     """
     if sport not in _SPORTS:
         return None
+    if sport in _NON_ESPN_SPORTS:
+        return _npb_kbo_live_state(sport, event_id, p0, p0_provider, http_get)
     getter = http_get or _http_get
     events = _fetch_events(sport, league, getter)
     if event_id is not None:
@@ -439,11 +483,34 @@ def live_states(sport: str, *, league: Optional[str] = None,
     match a Kalshi market's legs. Tennis with no explicit `league` merges BOTH atp+wta boards
     (see _fetch_events) so a WTA match's teams are also scannable -- inplay_capture_loop
     passes the bare capture sport "tennis" for both tours (KXATPMATCH and KXWTAMATCH alike),
-    so this is the merge point that makes WTA games bridgeable at all. Leak-free + never
-    raises (any error -> [])."""
+    so this is the merge point that makes WTA games bridgeable at all. npb/kbo route to
+    npb_kbo_live_state (non-ESPN source -- see _SPORTS/_NON_ESPN_SPORTS); their states
+    already carry every key this function's ESPN branch would otherwise build via
+    _extract, plus p0/p0_source resolved the same way. Leak-free + never raises (any
+    error -> [])."""
     try:
+        if sport in _NON_ESPN_SPORTS:
+            from scripts.platformkit.ingame.npb_kbo_live_state import live_states as _npb_kbo_states
+            getter = None if http_get is _http_get else http_get
+            out: List[Dict] = []
+            for st in _npb_kbo_states(sport, http_get=getter):
+                # "final" games are settled, not live -- excluded here so this stays a
+                # LIVE scan (matches the ESPN branch's _is_live filter). "scheduled" and
+                # "in_progress_or_scheduled" are BOTH kept: the underlying feed cannot
+                # distinguish not-yet-started from mid-game (see npb_kbo_live_state
+                # docstring) so excluding "scheduled" would silently drop real live
+                # games whose feed happens to render the pre-game placeholder shape.
+                if str(st.get("status")) == "final":
+                    continue
+                p0v, p0_src = _resolve_p0(sport, str(st.get("game_id") or ""), None, p0_provider,
+                                          home=st.get("home_display"), away=st.get("away_display"))
+                res = dict(st)
+                res["p0"] = p0v
+                res["p0_source"] = p0_src
+                out.append(res)
+            return out
         events = _fetch_events(sport, league, http_get or _http_get) if sport in _SPORTS else []
-        out: List[Dict] = []
+        out = []
         for ev in events:
             if not _is_live(ev):
                 continue

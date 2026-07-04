@@ -591,3 +591,88 @@ def test_enrichment_facade_espn_wp_arm_still_none_when_event_id_absent(tmp_path)
     from scripts.platformkit.ingame import ingame_enrichment as E
     facade = E.EnrichmentFacade(espn_wp_dir=tmp_path / "domains")
     assert facade.espn_wp("mlb", None) is None
+
+
+# ---- LANE 3 (wave-19): npb/kbo non-ESPN dispatch ------------------------------------
+# ESPN carries neither league (verified live 400 on both site.api paths) -- npb/kbo
+# route through scripts.platformkit.ingame.npb_kbo_live_state instead. These tests only
+# check the DISPATCH wiring (npb_kbo_live_state itself has its own full per-file suite
+# in test_npb_kbo_live_state.py); the injected http_get here is npb_kbo_live_state's own
+# shape (single-arg url->body for npb, (url, body)->text for kbo), never ESPN's.
+
+def test_npb_in_sports_and_routes_non_espn():
+    assert "npb" in S._SPORTS and "kbo" in S._SPORTS
+    assert "npb" in S._NON_ESPN_SPORTS and "kbo" in S._NON_ESPN_SPORTS
+    assert "mlb" not in S._NON_ESPN_SPORTS
+
+
+def test_live_states_npb_returns_real_games_from_fixture():
+    row = ('<tr id="date0703"><th rowspan="1">7/3</th>'
+           '<td><div class="team1">DeNA</div><div class="score1">5</div>'
+           '<div class="state">-</div><div class="score2">3</div>'
+           '<div class="team2">阪神</div></td></tr>')
+    states = S.live_states("npb", http_get=lambda url: row)
+    # a completed ("final") game is excluded from the LIVE scan (mirrors the ESPN
+    # branch's _is_live filter) -- so this fixture (a final score) yields [].
+    assert states == []
+
+
+def test_live_states_npb_keeps_ambiguous_scheduled_state():
+    import datetime as _dt
+    today = _dt.date.today()
+    row = (f'<tr id="date{today.month:02d}{today.day:02d}">'
+           '<th rowspan="1">x</th>'
+           '<td><div class="team1">ヤクルト</div><div class="score1">&nbsp;</div>'
+           '<div class="state">-</div><div class="score2">&nbsp;</div>'
+           '<div class="team2">DeNA</div></td></tr>')
+    states = S.live_states("npb", http_get=lambda url: row)
+    assert len(states) == 1
+    st = states[0]
+    assert st["home"] == "ヤクルト" and st["status"] == "scheduled"
+    # p0/p0_source carried the same way every ESPN sport's live_states does
+    assert "p0_source" in st and st["p0"] is None  # no pregame snapshot injected -> BASE_FALLBACK
+
+
+def test_live_states_kbo_dispatches_and_carries_p0_fields():
+    import datetime as _dt
+    import json
+    today = _dt.date.today()
+    body = json.dumps({"rows": [
+        {"row": [{"Class": "day", "Text": f"{today.month:02d}.{today.day:02d}(x)"},
+                 {"Class": "play", "Text": '<span>NC</span><em><span class="same">0</span>'
+                                            '<span>vs</span><span class="same">0</span></em>'
+                                            '<span>KIA</span>'}]},
+    ]})
+    states = S.live_states("kbo", http_get=lambda url, b: body)
+    assert len(states) == 1
+    st = states[0]
+    assert st["sport"] == "kbo" and st["status"] == "in_progress_or_scheduled"
+    assert "p0_source" in st
+
+
+def test_live_state_single_game_npb_by_synthetic_game_id():
+    import datetime as _dt
+    today = _dt.date.today()
+    row = (f'<tr id="date{today.month:02d}{today.day:02d}">'
+           '<th rowspan="1">x</th>'
+           '<td><div class="team1">ヤクルト</div><div class="score1">&nbsp;</div>'
+           '<div class="state">-</div><div class="score2">&nbsp;</div>'
+           '<div class="team2">DeNA</div></td></tr>')
+    gid = f"npb-{today.isoformat()}-DeNA-ヤクルト"
+    st = S.live_state("npb", gid, http_get=lambda url: row)
+    assert st is not None and st["game_id"] == gid
+
+
+def test_live_state_npb_unknown_game_id_returns_none():
+    row = ('<tr id="date0704"><th rowspan="1">x</th>'
+           '<td><div class="team1">ヤクルト</div><div class="score1">&nbsp;</div>'
+           '<div class="state">-</div><div class="score2">&nbsp;</div>'
+           '<div class="team2">DeNA</div></td></tr>')
+    st = S.live_state("npb", "does-not-exist", http_get=lambda url: row)
+    assert st is None
+
+
+def test_live_states_npb_never_raises_on_source_error():
+    def _boom(url):
+        raise RuntimeError("boom")
+    assert S.live_states("npb", http_get=_boom) == []
