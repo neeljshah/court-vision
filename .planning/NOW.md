@@ -41,6 +41,22 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 36 (WAVE-35: H3 FIXED FOR REAL + 4TH NULL CATCH AT 17x + 4 SPORTS
+  QUERYABLE, 2026-07-05 ~01:30Z, wf_296dde48-070 12 agents/~1.23M tok, 4 commits
+  3a80e5d1..dd7f5987): (1) tennis H3 NaN-upcast null bug fixed FOR REAL
+  (orchestrator re-verified artifact: n_train identical 8748/17496/26244 both
+  sides; test de-vacuoused, fails pre-fix) -> NOT_TESTABLE (WTA no corpus).
+  (2) NBA H_A/H_B rerun @1299 games: REJECT CONFIRMED; 2024-25 hot_night looked
+  SHIP but null also beat base = 4th planted-null catch -> player-profile
+  in-game class CLOSED (memory written). (3) m13 breaker BYPASS fixed (bare
+  build_prop_board fallback; proof vs real circuit state); runner restart
+  attempted -- 4 pool workers (23:14Z parent unfound) persist -> wave-36 ops
+  lane does the proper supervisor-managed restart. serve.py/prop_paper.py bare
+  callers flagged. (4) claims breadth: MLB K-rate + soccer strength top-50 both
+  100% VERIFIED -> ask() now answers NBA/tennis/MLB/soccer with provenance.
+  WAVE-36: m13 proper restart + SLA verify, bare-callers fix, vault-feed
+  refresh 2, Statcast fuller pull, WNBA accrual probe. NPB/KBO ~09-10Z wake.
+  No edge claimed.
 - SPRINT WAKE 35 (WAVE-34: REVIEWERS CAUGHT A FALSE FIX CLAIM + REPROCESS LOOP
   PROVEN + BRIDGE 17x, 2026-07-05 ~00:20Z, wf_b7c4725e-0de 18 agents/~1.86M tok,
   3 commits): (1) reprocess loop COMPLETE -- rho mode + true exporters, both
