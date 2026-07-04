@@ -128,6 +128,90 @@ def test_canonical_npb_unknown_team_degrades_no_crash():
 
 
 # --------------------------------------------------------------------------- #
+# WNBA (LANE 1): Kalshi CITY-only label ("Las Vegas") <-> ESPN full franchise
+# name ("Las Vegas Aces"). GROUNDED live 2026-07-03 direct against the Kalshi
+# public API (KXWNBAGAME open + settled markets) and against the local
+# data/domains/wnba/espn_scoreboard.parquet -- see team_resolver.py's own
+# module note for the full derivation.
+# --------------------------------------------------------------------------- #
+_WNBA_CITY_FULLNAME_PAIRS = [
+    ("Atlanta", "Atlanta Dream"), ("Chicago", "Chicago Sky"),
+    ("Connecticut", "Connecticut Sun"), ("Dallas", "Dallas Wings"),
+    ("Golden State", "Golden State Valkyries"), ("Indiana", "Indiana Fever"),
+    ("Las Vegas", "Las Vegas Aces"), ("Los Angeles", "Los Angeles Sparks"),
+    ("Minnesota", "Minnesota Lynx"), ("New York", "New York Liberty"),
+    ("Portland", "Portland Fire"), ("Phoenix", "Phoenix Mercury"),
+    ("Seattle", "Seattle Storm"), ("Toronto", "Toronto Tempo"),
+    ("Washington", "Washington Mystics"),
+]
+
+
+def test_canonical_wnba_kalshi_city_equals_espn_fullname():
+    for city, full in _WNBA_CITY_FULLNAME_PAIRS:
+        assert canonical("wnba", city) == canonical("wnba", full), (city, full)
+
+
+def test_canonical_wnba_zero_cross_franchise_collisions():
+    # Exhaustive 15x15 (210 ordered off-diagonal pairs): no two DIFFERENT WNBA
+    # franchises may ever resolve to the same canonical key (would mean a
+    # false odds-attachment between two different real games). Specifically
+    # covers the city-word-overlap worry: Los Angeles vs Las Vegas (both
+    # start "L"), New York vs Golden State/others.
+    cities = [c for c, _ in _WNBA_CITY_FULLNAME_PAIRS]
+    n_checked = 0
+    for i, ci in enumerate(cities):
+        for j, cj in enumerate(cities):
+            if i == j:
+                continue
+            n_checked += 1
+            assert canonical("wnba", ci) != canonical("wnba", cj), (ci, cj)
+    assert n_checked == 15 * 14 == 210
+    # Explicit call-out: Los Angeles vs Las Vegas must be distinct.
+    assert canonical("wnba", "Los Angeles") != canonical("wnba", "Las Vegas")
+    assert canonical("wnba", "Los Angeles Sparks") != canonical("wnba", "Las Vegas Aces")
+
+
+def test_canonical_wnba_non_franchise_noise_never_collides():
+    # Exhibition / all-star / national-team rows seen live in BOTH feeds
+    # (Kalshi: "Japan National Team", "Nigeria National Team"; ESPN: Brazil,
+    # JAPAN, NIGERIA, Puerto Rico, Team USA, Team WNBA, TEAM CLARK, TEAM
+    # COLLIER, Toyota Antelopes) must never resolve to a real franchise key.
+    real_keys = {canonical("wnba", c) for c, _ in _WNBA_CITY_FULLNAME_PAIRS}
+    noise = ["Japan National Team", "Nigeria National Team", "Brazil", "JAPAN",
+             "NIGERIA", "Puerto Rico", "Team USA", "Team WNBA", "TEAM CLARK",
+             "TEAM COLLIER", "Toyota Antelopes"]
+    for n in noise:
+        assert canonical("wnba", n) not in real_keys, n
+
+
+def test_teams_match_wnba_kalshi_city_links_and_rejects_wrong_pair():
+    # LANE 1: the Kalshi city-only label vs ESPN full-name WNBA link.
+    assert aggregate.teams_match("Las Vegas", "Las Vegas Aces", "wnba")
+    assert aggregate.teams_match("New York", "New York Liberty", "wnba")
+    assert aggregate.teams_match("Golden State", "Golden State Valkyries", "wnba")
+    assert aggregate.teams_match("Toronto", "Toronto Tempo", "wnba")
+    # Los Angeles vs Las Vegas: both start "L", must NOT match.
+    assert not aggregate.teams_match("Los Angeles", "Las Vegas", "wnba")
+    assert not aggregate.teams_match("Los Angeles Sparks", "Las Vegas Aces", "wnba")
+    # A wrong pair must NOT match (never a mispriced game).
+    assert not aggregate.teams_match("New York", "Golden State", "wnba")
+    assert aggregate.teams_match("Chicago", "Chicago Sky", "wnba")
+
+
+def test_lookup_links_city_slate_to_fullname_feed_wnba():
+    # LANE 1: this is the exact live shape -- Kalshi's odds FEED event carries
+    # the CITY-only label; our ESPN-derived slate probes with the full name.
+    from scripts.platformkit.odds_provider.base import OddsEvent
+    feed = OddsEvent("e5", "wnba", "Las Vegas", "Chicago", None,
+                     {"kalshi": {"home": 1.5, "away": 2.6}})
+    probe = OddsEvent("", "wnba", "Las Vegas Aces", "Chicago Sky", None, {})
+    assert aggregate._event_match(feed, probe)
+    # A different WNBA matchup must NOT link.
+    other = OddsEvent("", "wnba", "Indiana Fever", "Dallas Wings", None, {})
+    assert not aggregate._event_match(feed, other)
+
+
+# --------------------------------------------------------------------------- #
 # teams_match(): codes now link to full names, different teams still do not.
 # --------------------------------------------------------------------------- #
 def test_teams_match_links_code_to_fullname():
