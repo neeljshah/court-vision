@@ -55,6 +55,25 @@ def apply_circuit_breaker(sport: str, providers: List[Any]) -> List[Any]:
         return providers
 
 
+def breaker_filtered_providers(sport: str) -> Optional[List[Any]]:
+    """Circuit-BREAKER-GATED cfg.default_providers() for *sport*; None when sport
+    config is unavailable. BYPASS FIX (m13-breaker-bypass): _board_edges' no-cache
+    fallback used to call build_prop_board(sport) bare, which re-derives
+    default_providers() UN-GATED -- re-dispatching to providers the breaker just
+    opened. This is the ONE gated source for that fallback's providers. Never
+    raises."""
+    try:
+        from scripts.platformkit import prop_edge_config  # noqa: PLC0415
+        cfg = prop_edge_config.get_config(sport)
+        if cfg is None:
+            return None
+        return apply_circuit_breaker(sport, cfg.default_providers())
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("prop_cards: breaker_filtered_providers(%s) unavailable: %s",
+                    sport, exc)
+        return None
+
+
 def record_circuit_results(sources: Dict[str, str]) -> None:
     """Feed each provider's _gather status string back into the circuit breaker
     (ok (N rows) -> success; timeout/error/unavailable -> failure). Never raises."""
@@ -85,5 +104,5 @@ def stamp_circuit_skips(cards: List[Dict[str, Any]], sport: str) -> None:
         card["circuit_skips"] = skips
 
 
-__all__ = ["last_circuit_skips", "apply_circuit_breaker", "record_circuit_results",
-           "stamp_circuit_skips"]
+__all__ = ["last_circuit_skips", "apply_circuit_breaker", "breaker_filtered_providers",
+           "record_circuit_results", "stamp_circuit_skips"]

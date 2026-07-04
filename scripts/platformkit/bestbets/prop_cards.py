@@ -267,14 +267,22 @@ def _board_edges(sport: str, max_lines: int = 0,
                  lines_source: Optional[List[Any]] = None) -> List[Dict[str, Any]]:
     """Fetch the live prop board for *sport*; [] on any failure. Never raises.
     max_lines > 0 caps fed lines (priced first) for the m13 budget; 0 = full board.
-    *lines_source* OVERRIDES the feed (synth fallback prices parquet no-price lines)."""
+    *lines_source* OVERRIDES the feed (synth fallback prices parquet no-price lines).
+    CIRCUIT BREAKER (m13-breaker-bypass fix): build_prop_board is NEVER called bare
+    (which would let it re-derive cfg.default_providers() with no breaker filter,
+    re-dispatching to a provider the breaker just opened). When there is no capped
+    lines source, this passes an EXPLICIT breaker-filtered providers list instead."""
     try:
         from scripts.platformkit.prop_edge import build_prop_board  # noqa: PLC0415
         src = lines_source
         if src is None and max_lines > 0:
             src = _capped_lines(sport, max_lines)
-        board = (build_prop_board(sport, lines_source=src)
-                 if src is not None else build_prop_board(sport))
+        if src is not None:
+            board = build_prop_board(sport, lines_source=src)
+        else:
+            from scripts.platformkit.bestbets import prop_cards_circuit_io as _pcio  # noqa: PLC0415
+            provs = _pcio.breaker_filtered_providers(sport)
+            board = build_prop_board(sport, providers=(provs if provs is not None else []))
     except Exception as exc:  # noqa: BLE001
         logger.debug("prop_cards: build_prop_board(%s) failed: %s", sport, exc)
         return []
