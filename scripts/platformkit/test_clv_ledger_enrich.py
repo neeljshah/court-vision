@@ -19,6 +19,7 @@ Run ONLY this file:
 """
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 from typing import Any, Dict
@@ -378,3 +379,62 @@ def test_existing_real_clv_preserved():
     )
     assert enriched["clv_status"] == "clv_real"
     assert enriched["beat_close"] is True
+
+
+# ---------------------------------------------------------------------------
+# LANE-5: Kalshi-ticker-keyed close fallback (kx_close_fallback), additive.
+# Confirms (a) a KX-ticker row with a derived close gets clv_pct + close_kind
+# stamped, (b) an ESPN-numeric row is COMPLETELY UNAFFECTED by the fallback
+# (byte-identical existing behavior -- regression guard).
+# ---------------------------------------------------------------------------
+
+class TestKxTickerCloseFallback:
+
+    def test_kx_ticker_row_gets_clv_and_close_kind(self, tmp_path, monkeypatch):
+        from scripts.platformkit.clv import kx_ticker_close as _kx
+
+        grade_dir = tmp_path / "grade"
+        out_dir = tmp_path / "closes"
+        p = grade_dir / "mlb" / "KXMLBGAME-ENRICH.jsonl"
+        p.parent.mkdir(parents=True, exist_ok=True)
+        with p.open("w", encoding="utf-8") as fh:
+            fh.write(json.dumps({
+                "sport": "mlb", "game_id": "KXMLBGAME-ENRICH",
+                "ts": "2026-07-01T12:00:00Z", "market_prob": 0.60,
+                "model_prob": 0.5, "side": "home",
+            }) + "\n")
+        _kx.write_closes("mlb", grade_dir=grade_dir, out_dir=out_dir)
+        monkeypatch.setattr(_kx, "DEFAULT_CLOSES_DIR", out_dir)
+
+        row = _base_settled_row(game_id="KXMLBGAME-ENRICH", side="home",
+                                 taken_decimal=2.0)
+        enriched = enrich_row(row)
+        assert enriched["clv_pct"] is not None, (
+            "KX-ticker row must get CLV via the fallback; "
+            "clv_note=%r" % enriched.get("clv_note")
+        )
+        assert enriched["close_kind"] == "last_tick"
+        assert enriched["clv_is_proxy"] is True
+        _assert_no_banned(enriched, "kx_row")
+
+    def test_espn_numeric_row_unaffected_by_kx_fallback(self):
+        """An ESPN-numeric game_id row with NO closing line must stay
+        clv_status='no_close' -- the KX fallback must never fire for it
+        (regression: byte-identical existing behavior). Uses a game_id
+        guaranteed absent from the real line_history corpus."""
+        row = _base_settled_row(game_id="999999999999")
+        enriched = enrich_row(row)
+        assert enriched["clv_pct"] is None
+        assert enriched["clv_status"] == "no_close"
+        assert "close_kind" not in enriched
+
+    def test_kx_row_with_no_derived_close_stays_no_close(self, tmp_path, monkeypatch):
+        from scripts.platformkit.clv import kx_ticker_close as _kx
+        out_dir = tmp_path / "closes_never_derived"
+        monkeypatch.setattr(_kx, "DEFAULT_CLOSES_DIR", out_dir)
+
+        row = _base_settled_row(game_id="KXMLBGAME-NEVER-DERIVED")
+        enriched = enrich_row(row)
+        assert enriched["clv_pct"] is None
+        assert enriched["clv_status"] == "no_close"
+        assert "close_kind" not in enriched
