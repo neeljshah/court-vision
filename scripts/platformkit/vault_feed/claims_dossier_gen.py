@@ -37,6 +37,8 @@ OUT_DIR = REPO_ROOT / "data/cache/vault_feed_staging/dossier_sections"
 # (ranking-kind claims validated outside the main ops validation file).
 EXTRA_VALIDATION_PATHS = [
     REPO_ROOT / "data/cache/intel_claims/tennis_hold_claims_validation.json",
+    REPO_ROOT / "data/cache/intel_claims/mlb_pitcher_claims_validation.json",
+    REPO_ROOT / "data/cache/intel_claims/soccer_intl_strength_claims_validation.json",
 ]
 
 # claim_id prefix -> claims jsonl filename (only ranking claims from these files are eligible)
@@ -44,6 +46,15 @@ CLAIM_ID_TO_FILE = {
     "nba_shooting_": "nba_shooting_claims.jsonl",
     "nba_quality_": "nba_quality_claims.jsonl",
     "tennis_hold_": "tennis_hold_claims.jsonl",
+    "mlb_pitcher_": "mlb_pitcher_claims.jsonl",
+    "soccer_intl_strength_": "soccer_intl_strength_claims.jsonl",
+}
+
+# entity_key values eligible for per-entity dossier sections (ranking row field
+# that names the entity + the row field holding its display name)
+ENTITY_KEY_NAME_FIELD = {
+    "player_id": "player_name",
+    "team": "team",
 }
 
 
@@ -133,13 +144,14 @@ def build_dossier_sections(validation_path: Path = VALIDATION_PATH,
         if claim is None or claim.get("kind") != "ranking":
             continue
         entity_key = _entity_key_field(claim)
-        if entity_key != "player_id":
+        name_field = ENTITY_KEY_NAME_FIELD.get(entity_key)
+        if name_field is None:
             continue
         metric = claim.get("criteria", {}).get("metric", claim_id)
         precision = claim.get("criteria", {}).get("value_precision", 4)
         source_files = claim.get("source_files", [])
         for row in claim.get("ranking", []):
-            name = row.get("player_name")
+            name = row.get(name_field)
             if not name:
                 continue
             slug = name.strip().lower().replace(" ", "_").replace(".", "").replace("'", "")
