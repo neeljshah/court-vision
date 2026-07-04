@@ -1,0 +1,290 @@
+"""Independent claims validator (Lane B).
+
+Reads claim rows in the SHARED CLAIMS CONTRACT JSONL shape, independently
+recomputes each ranking claim's metric straight from its declared
+source_files + criteria.formula using pandas (no import of the producer
+module), and reports VERIFIED / MISMATCH / UNVERIFIABLE per claim.
+
+CLI:
+    python -m scripts.platformkit.intel_validation.claims_validator <claims.jsonl>
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import math
+import sys
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+import pandas as pd
+
+from scripts.platformkit.intel_validation.aggregate_recompute import recompute_aggregate
+from scripts.platformkit.intel_validation.safe_formula import FormulaError, evaluate_formula
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
+DEFAULT_OUTPUT = REPO_ROOT / "data" / "frontend" / "ops" / "intel_claims_validation.json"
+TOLERANCE = 1e-9 * 10  # "1e-9-ish" per spec; guards against float round-trip noise
+
+
+@dataclass
+class ClaimVerdict:
+    claim_id: str
+    verdict: str  # VERIFIED | MISMATCH | UNVERIFIABLE
+    reason: str = ""
+    first_divergence: dict[str, Any] | None = None
+
+
+@dataclass
+class ValidationSummary:
+    component: str = "intel_claims_validation"
+    generated_at: str = ""
+    n_claims: int = 0
+    n_verified: int = 0
+    n_mismatch: int = 0
+    n_unverifiable: int = 0
+    edge_claimed: bool = False
+    details: list[dict[str, Any]] = field(default_factory=list)
+
+
+def _load_claims(path: Path) -> list[dict[str, Any]]:
+    rows = []
+    with open(path, "r", encoding="ascii", errors="strict") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            rows.append(json.loads(line))
+    return rows
+
+
+def _load_source_frame(source_files: list[str]) -> pd.DataFrame:
+    """Load and concat all declared parquet source files, relative to repo root."""
+    frames = []
+    for rel in source_files:
+        p = REPO_ROOT / rel
+        if not p.exists():
+            raise FileNotFoundError(str(rel))
+        frames.append(pd.read_parquet(p))
+    if not frames:
+        raise FileNotFoundError("no source_files declared")
+    return pd.concat(frames, ignore_index=True)
+
+
+def _apply_min_sample_floors(df: pd.DataFrame, min_sample: dict[str, Any]) -> tuple[pd.DataFrame, int]:
+    """Apply column >= floor filters. Returns (filtered_df, n_excluded)."""
+    before = len(df)
+    mask = pd.Series(True, index=df.index)
+    for col, floor in min_sample.items():
+        if col not in df.columns:
+            raise FormulaError(f"min_sample column not present: {col!r}")
+        mask &= df[col] >= floor
+    filtered = df[mask]
+    return filtered, before - len(filtered)
+
+
+def _player_key(row_or_dict: dict[str, Any]) -> Any:
+    return row_or_dict.get("player_id")
+
+
+def validate_claim(claim: dict[str, Any]) -> ClaimVerdict:
+    claim_id = claim.get("claim_id", "<missing-id>")
+    criteria = claim.get("criteria", {})
+    formula = criteria.get("formula")
+    metric = criteria.get("metric")
+    min_sample = criteria.get("min_sample", {}) or {}
+    direction = criteria.get("direction", "desc")
+    source_files = claim.get("source_files", [])
+    claimed_ranking = claim.get("ranking", [])
+
+    if not formula:
+        return ClaimVerdict(claim_id, "UNVERIFIABLE", reason="criteria.formula missing")
+
+    try:
+        df = _load_source_frame(source_files)
+    except FileNotFoundError as e:
+        return ClaimVerdict(claim_id, "UNVERIFIABLE", reason=f"source file missing: {e}")
+
+    if criteria.get("aggregate"):
+        # Contract-extension path: floors + formula apply to PER-GROUP DERIVED
+        # columns recomputed from raw rows via the declared aggregate grammar.
+        try:
+            table = recompute_aggregate(df, criteria)
+            recomputed, n_excluded = _apply_min_sample_floors(table, min_sample)
+        except FormulaError as e:
+            return ClaimVerdict(claim_id, "UNVERIFIABLE", reason=f"aggregate recompute error: {e}")
+        except Exception as e:  # noqa: BLE001 -- fail closed, never silently skip
+            return ClaimVerdict(claim_id, "UNVERIFIABLE", reason=f"aggregate recompute error: {e}")
+        id_col = criteria["aggregate"]["group_by"]
+        # An empty survivors table with an empty claimed ranking is an honest
+        # floor-driven empty result -- verified via the n_excluded check below.
+    else:
+        try:
+            filtered, n_excluded = _apply_min_sample_floors(df, min_sample)
+        except FormulaError as e:
+            return ClaimVerdict(claim_id, "UNVERIFIABLE", reason=f"min_sample floor error: {e}")
+
+        if filtered.empty:
+            return ClaimVerdict(claim_id, "UNVERIFIABLE", reason="no rows survive min_sample floors")
+
+        try:
+            values = evaluate_formula(formula, filtered)
+        except FormulaError as e:
+            return ClaimVerdict(claim_id, "UNVERIFIABLE", reason=f"formula not executable: {e}")
+        except Exception as e:  # noqa: BLE001 -- fail closed as UNVERIFIABLE, never silently skip
+            return ClaimVerdict(claim_id, "UNVERIFIABLE", reason=f"formula evaluation error: {e}")
+
+        recomputed = filtered.copy()
+        recomputed["_value"] = values
+        id_col = "player_id" if "player_id" in recomputed.columns else None
+        if id_col is None:
+            return ClaimVerdict(claim_id, "UNVERIFIABLE", reason="no player_id column in source data")
+
+    ascending = direction == "asc"
+    recomputed = recomputed.sort_values("_value", ascending=ascending).reset_index(drop=True)
+
+    # Compare rank-by-rank against the claimed ranking.
+    for claimed_row in sorted(claimed_ranking, key=lambda r: r["rank"]):
+        rank = claimed_row["rank"]
+        idx = rank - 1
+        if idx < 0 or idx >= len(recomputed):
+            return ClaimVerdict(
+                claim_id,
+                "MISMATCH",
+                reason=f"claimed rank {rank} exceeds recomputed pool size {len(recomputed)}",
+                first_divergence={"rank": rank, "claimed": claimed_row, "recomputed": None},
+            )
+        recomputed_row = recomputed.iloc[idx]
+        # take the id from the COLUMN, not the row Series -- a mixed-dtype row
+        # gets upcast to float64, which would corrupt int64 ids (1630198.0)
+        recomputed_id = recomputed[id_col].iloc[idx]
+        claimed_id = claimed_row.get("player_id")
+        # allow int/str id mismatch (e.g. 101 vs "101") but not a different player
+        if str(recomputed_id) != str(claimed_id):
+            return ClaimVerdict(
+                claim_id,
+                "MISMATCH",
+                reason=f"rank {rank}: claimed player_id={claimed_id} recomputed player_id={recomputed_id}",
+                first_divergence={
+                    "rank": rank,
+                    "claimed": claimed_row,
+                    "recomputed": {"player_id": recomputed_id, "value": float(recomputed_row["_value"])},
+                },
+            )
+        recomputed_value = float(recomputed_row["_value"])
+        precision = criteria.get("value_precision")
+        if precision is not None:
+            # The contract declares claimed values rounded to this many decimal
+            # places; round the recompute identically before the tight compare.
+            recomputed_value = round(recomputed_value, int(precision))
+        claimed_value = float(claimed_row.get("value", math.nan))
+        if math.isnan(claimed_value) or abs(recomputed_value - claimed_value) > TOLERANCE:
+            return ClaimVerdict(
+                claim_id,
+                "MISMATCH",
+                reason=(
+                    f"rank {rank}: claimed value={claimed_value} recomputed value={recomputed_value} "
+                    f"(tolerance={TOLERANCE})"
+                ),
+                first_divergence={
+                    "rank": rank,
+                    "claimed": claimed_row,
+                    "recomputed": {"player_id": recomputed_id, "value": recomputed_value},
+                },
+            )
+        claimed_n = claimed_row.get("n")
+        if claimed_n is not None:
+            for col, floor in min_sample.items():
+                if col in recomputed_row and recomputed_row[col] < floor:
+                    return ClaimVerdict(
+                        claim_id,
+                        "MISMATCH",
+                        reason=f"rank {rank}: min_sample floor violated for column {col!r}",
+                        first_divergence={"rank": rank, "claimed": claimed_row, "recomputed": None},
+                    )
+
+    # Also check the claimed n_excluded_below_floor if present.
+    claimed_n_excluded = claim.get("n_excluded_below_floor")
+    if claimed_n_excluded is not None and int(claimed_n_excluded) != int(n_excluded):
+        return ClaimVerdict(
+            claim_id,
+            "MISMATCH",
+            reason=(
+                f"n_excluded_below_floor claimed={claimed_n_excluded} recomputed={n_excluded}"
+            ),
+            first_divergence={
+                "rank": None,
+                "claimed": {"n_excluded_below_floor": claimed_n_excluded},
+                "recomputed": {"n_excluded_below_floor": n_excluded},
+            },
+        )
+
+    return ClaimVerdict(claim_id, "VERIFIED", reason=f"metric={metric} matched within tolerance")
+
+
+def validate_claims_file(path: Path) -> ValidationSummary:
+    claims = _load_claims(path)
+    summary = ValidationSummary(generated_at=datetime.now(timezone.utc).isoformat())
+    for claim in claims:
+        verdict = validate_claim(claim)
+        summary.n_claims += 1
+        if verdict.verdict == "VERIFIED":
+            summary.n_verified += 1
+        elif verdict.verdict == "MISMATCH":
+            summary.n_mismatch += 1
+        else:
+            summary.n_unverifiable += 1
+        summary.details.append(
+            {
+                "claim_id": verdict.claim_id,
+                "verdict": verdict.verdict,
+                "reason": verdict.reason,
+                "first_divergence": verdict.first_divergence,
+            }
+        )
+    return summary
+
+
+def write_summary(summary: ValidationSummary, output_path: Path) -> None:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "component": summary.component,
+        "generated_at": summary.generated_at,
+        "n_claims": summary.n_claims,
+        "n_verified": summary.n_verified,
+        "n_mismatch": summary.n_mismatch,
+        "n_unverifiable": summary.n_unverifiable,
+        "edge_claimed": summary.edge_claimed,
+        "details": summary.details,
+    }
+    with open(output_path, "w", encoding="ascii", errors="strict") as f:
+        json.dump(payload, f, indent=2)
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Independent intel claims validator")
+    parser.add_argument("claims_jsonl", type=str, help="path to claims JSONL file")
+    parser.add_argument("--output", type=str, default=str(DEFAULT_OUTPUT))
+    args = parser.parse_args(argv)
+
+    claims_path = Path(args.claims_jsonl)
+    if not claims_path.exists():
+        print(f"UNVERIFIABLE: claims file not found: {claims_path}")
+        return 1
+
+    summary = validate_claims_file(claims_path)
+    write_summary(summary, Path(args.output))
+
+    print(
+        f"n_claims={summary.n_claims} verified={summary.n_verified} "
+        f"mismatch={summary.n_mismatch} unverifiable={summary.n_unverifiable}"
+    )
+    for d in summary.details:
+        print(f"  {d['claim_id']}: {d['verdict']} -- {d['reason']}")
+    return 0 if summary.n_mismatch == 0 else 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())
