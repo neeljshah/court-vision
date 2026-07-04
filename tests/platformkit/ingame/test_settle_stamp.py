@@ -93,3 +93,84 @@ def test_stamp_does_not_corrupt_capture_rows(tmp_path):
     pairs = lg._load_pairs(p)  # validity-guarded loader: settle row has no probs -> excluded
     assert len(pairs) == 2
     assert all(0.0 <= r["model_prob"] <= 1.0 for r in pairs)
+
+
+# --------------------------------------------------------------------------------------- #
+# tennis: nested/athlete-shaped raw ESPN event (REUSES ingame_live_state's team-then-athlete
+# / sets-won fallback, same fixture convention as test_ingame_live_state.py's tennis tests).
+# --------------------------------------------------------------------------------------- #
+
+def _tennis_final_event(*, winner_home: bool):
+    """One flattened tennis match event ({"competitions":[<match>]}), shaped exactly like
+    settled_finals._tennis_final_matches / ingame_live_state._tennis_matches emit: no .team,
+    no numeric .score, only .athlete + .linescores + .winner."""
+    home_ls = [{"winner": winner_home}, {"winner": winner_home}]
+    away_ls = [{"winner": not winner_home}, {"winner": not winner_home}]
+    return {"id": "179877", "competitions": [{
+        "status": {"type": {"name": "STATUS_FINAL", "completed": True}},
+        "competitors": [
+            {"homeAway": "home", "athlete": {"shortName": "Player A"}, "linescores": home_ls},
+            {"homeAway": "away", "athlete": {"shortName": "Player B"}, "linescores": away_ls},
+        ],
+    }]}
+
+
+def test_home_win_derived_from_tennis_event_home_wins(tmp_path):
+    _seed_capture(tmp_path, "tennis", "T1")
+    r = ss.stamp_final("tennis", "T1", ev=_tennis_final_event(winner_home=True),
+                        grade_dir=tmp_path)
+    assert r["status"] == "stamped" and r["home_win"] == 1.0
+
+
+def test_home_win_derived_from_tennis_event_away_wins(tmp_path):
+    _seed_capture(tmp_path, "tennis", "T2")
+    r = ss.stamp_final("tennis", "T2", ev=_tennis_final_event(winner_home=False),
+                        grade_dir=tmp_path)
+    assert r["status"] == "stamped" and r["home_win"] == 0.0
+
+
+def test_tennis_in_progress_event_skipped(tmp_path):
+    _seed_capture(tmp_path, "tennis", "T3")
+    in_progress = {"id": "X", "competitions": [{
+        "status": {"type": {"name": "STATUS_IN_PROGRESS", "state": "in", "completed": False}},
+        "competitors": [
+            {"homeAway": "home", "athlete": {"shortName": "A"}, "linescores": [{"winner": True}]},
+            {"homeAway": "away", "athlete": {"shortName": "B"}, "linescores": [{"winner": False}]},
+        ],
+    }]}
+    r = ss.stamp_final("tennis", "T3", ev=in_progress, grade_dir=tmp_path)
+    assert r["status"] == "skipped" and r["home_win"] is None
+
+
+# --------------------------------------------------------------------------------------- #
+# flat settled_finals-style game dict: the REAL shape inplay_capture_loop._stamp_final
+# passes as `ev` in production (settled_since returns {home,away,home_score,away_score,...},
+# never a nested 'competitions' key). Regression guard for the bug this lane closes.
+# --------------------------------------------------------------------------------------- #
+
+def test_home_win_derived_from_flat_settled_finals_game(tmp_path):
+    _seed_capture(tmp_path, "nba", "G7")
+    flat_game = {"sport": "nba", "game_id": "G7", "commence": "2026-07-01T00:00:00Z",
+                 "home": "BOS", "away": "LAL", "home_score": 110.0, "away_score": 100.0,
+                 "key": "x"}
+    r = ss.stamp_final("nba", "G7", ev=flat_game, grade_dir=tmp_path)
+    assert r["status"] == "stamped" and r["home_win"] == 1.0
+
+
+def test_home_win_flat_shape_away_win_and_tie(tmp_path):
+    _seed_capture(tmp_path, "mlb", "G8")
+    flat_away_win = {"home": "NYY", "away": "BOS", "home_score": 2.0, "away_score": 5.0}
+    r = ss.stamp_final("mlb", "G8", ev=flat_away_win, grade_dir=tmp_path)
+    assert r["status"] == "stamped" and r["home_win"] == 0.0
+
+    _seed_capture(tmp_path, "mlb", "G9")
+    flat_tie = {"home": "NYY", "away": "BOS", "home_score": 3.0, "away_score": 3.0}
+    r2 = ss.stamp_final("mlb", "G9", ev=flat_tie, grade_dir=tmp_path)
+    assert r2["status"] == "skipped" and r2["home_win"] is None
+
+
+def test_home_win_flat_shape_missing_scores_skipped(tmp_path):
+    _seed_capture(tmp_path, "soccer", "G10")
+    flat_missing = {"home": "ARS", "away": "CHE"}
+    r = ss.stamp_final("soccer", "G10", ev=flat_missing, grade_dir=tmp_path)
+    assert r["status"] == "skipped" and r["home_win"] is None

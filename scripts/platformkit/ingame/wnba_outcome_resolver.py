@@ -13,21 +13,34 @@ DIRECTLY off the Kalshi ticker, mirroring the MLB resolver's contract, reading t
 local data/domains/wnba/espn_scoreboard.parquet (event_id, date, home_team, away_team,
 home_score, away_score, home_win, status_name).
 
-TICKER SHAPE (ASSUMED, NOT YET VERIFIED LIVE -- see HONESTY below)
--------------------------------------------------------------------
-No live KXWNBAGAME ticker sample was available in this repo at build time (WNBA
-capture only just started per the brief). WNBA moneyline is structurally closest to
-KXMLBGAME (city/team abbreviations, no set/half/period-count ambiguity like tennis),
-so this mirrors that shape:
-  KXWNBAGAME-<YY><MON><DD><HHMM><AWAY+HOME concatenated>[-<SIDE>]
-e.g. KXWNBAGAME-26JUL051930LVACHI (Las Vegas Aces @ Chicago Sky). The tail
-concatenates AWAY then HOME with NO delimiter (same ambiguity as MLB), so it is
-split at the ONE position where BOTH halves normalise to a real ESPN team-name
-abbreviation (derived from the loaded scoreboard itself, never hand-typed) --
-an ambiguous or no-match split returns None, never a guess. If the live ticker
-turns out to omit HHMM or use a different tail width, `parse_wnba_ticker` returning
-None on every real ticker is the honest failure mode (never a silent mislabel) and
-is surfaced via `n_labeled=0` in the verdict doc, not a crash.
+TICKER SHAPE (GROUNDED live 2026-07-03 against the Kalshi public API -- REPLACES the
+earlier assumed KXMLBGAME-style shape; see git history for the retracted assumption)
+--------------------------------------------------------------------------------------
+Fetched twice: 12 open + up to 200 settled KXWNBAGAME markets (330 total rows, 165
+games). REAL shape:
+  KXWNBAGAME-<YY><MON><DD><AWAY+HOME concatenated>[-<SIDE>]
+e.g. KXWNBAGAME-26JUL05DALTOR-TOR (Dallas Wings @ Toronto Tempo, ticker verified open
+2026-07-03). Differences from the original assumption, both confirmed on every one of
+the 330 fetched tickers:
+  1. NO HHMM field at all -- the date digits are followed IMMEDIATELY by the tail.
+  2. The tail is Kalshi's OWN city-code shorthand (from its market title), not an ESPN
+     team abbreviation: e.g. "Golden State" -> GS (not GSV), "Washington" -> WSH (not
+     WAS), "New York" -> NY (not NYL), "Los Angeles" -> LA (not LAS), "Portland" -> PDX
+     (airport code, not POR), "Connecticut" -> CONN (not CON). All 15 codes for the
+     2026 season's real franchises were enumerated directly off `yes_sub_title` +
+     the ticker's own -<SIDE> suffix (never hand-typed): ATL, CHI, CONN, DAL, GS, IND,
+     LV, LA, MIN, NY, PDX, PHX, SEA, TOR, WSH.
+The tail concatenates AWAY then HOME with NO delimiter (verified: e.g. LVCHI settled
+with Las Vegas -- away, listed first in "Las Vegas vs Chicago" -- winning; cross-checked
+against data/domains/wnba/espn_scoreboard.parquet's home_team/away_team columns for the
+same date, home team = whichever half is NOT the away leader in the title). Split at the
+ONE position where BOTH halves are real Kalshi codes (see _KALSHI_CODES) -- an ambiguous
+or no-match split returns None, never a guess. 326/330 fetched tickers resolved uniquely
+via this grounded code set; the 4 that did not are national-team exhibition legs (NGR =
+Nigeria, JNT = Japan National Team) that are not real WNBA franchises -- correctly
+excluded (n_labeled=0 for those, never a guess), consistent with the module's honesty
+contract. Toronto Tempo (2026 expansion team, code TOR) is confirmed present both in the
+live tickers and in the parquet's team-name column.
 
 HONESTY: probability/label space only; no $ field; an unresolvable ticker, an
 ambiguous split, or a not-yet-final game returns None (NEVER a guess or a
@@ -57,23 +70,24 @@ DEFAULT_SCOREBOARD_PARQUET = (
 _MONTHS = {"JAN": 1, "FEB": 2, "MAR": 3, "APR": 4, "MAY": 5, "JUN": 6,
            "JUL": 7, "AUG": 8, "SEP": 9, "OCT": 10, "NOV": 11, "DEC": 12}
 
-# KXWNBAGAME-<YY><MON><DD><HHMM><AWAY+HOME concatenated>[-<side>] (mirrors
-# KXMLBGAME's shape -- see module docstring for the "assumed, not yet verified
-# live" caveat).
-_TICKER_RE = re.compile(r"^KXWNBAGAME-(\d{2})([A-Z]{3})(\d{2})(\d{4})([A-Z]+)")
+# KXWNBAGAME-<YY><MON><DD><AWAY+HOME concatenated>[-<side>] -- GROUNDED live 2026-07-03
+# against 330 real Kalshi tickers (open + settled); see module docstring. NO HHMM field
+# (the original assumed shape had one; every real ticker confirms it does not).
+_TICKER_RE = re.compile(r"^KXWNBAGAME-(\d{2})([A-Z]{3})(\d{2})([A-Z]+)")
 
-# Small set of common WNBA 3-letter city/team codes that do not simply equal the
-# team name's first letters (e.g. "Golden State Valkyries" -> GSV, not GOL). An
-# override is only ever ACCEPTED if the resulting name is ALSO present in the
-# loaded scoreboard's own name index (see _resolve_abbr), so a stale/wrong entry
-# here just fails to match -- it can never mislabel a different real team.
+# Kalshi's OWN city-code shorthand for each of the 2026 season's 15 real WNBA franchises,
+# enumerated directly off 330 fetched tickers' `yes_sub_title` + `-<SIDE>` suffix (never
+# hand-typed) -- see module docstring for the full derivation + verification count. An
+# override is only ever ACCEPTED if the resulting name is ALSO present in the loaded
+# scoreboard's own name index (see _resolve_abbr), so a stale/wrong entry here just fails
+# to match -- it can never mislabel a different real team. Toronto Tempo (TOR) is the
+# 2026 expansion franchise, confirmed present in both live tickers and the parquet.
 _ABBR_OVERRIDES: Dict[str, str] = {
-    "LVA": "Las Vegas Aces", "LV": "Las Vegas Aces", "NYL": "New York Liberty",
-    "GSV": "Golden State Valkyries", "CON": "Connecticut Sun",
-    "PHX": "Phoenix Mercury", "WAS": "Washington Mystics", "IND": "Indiana Fever",
-    "CHI": "Chicago Sky", "MIN": "Minnesota Lynx", "SEA": "Seattle Storm",
-    "DAL": "Dallas Wings", "ATL": "Atlanta Dream", "LAS": "Los Angeles Sparks",
-    "TOR": "Toronto Tempo", "POR": "Portland Fire",
+    "ATL": "Atlanta Dream", "CHI": "Chicago Sky", "CONN": "Connecticut Sun",
+    "DAL": "Dallas Wings", "GS": "Golden State Valkyries", "IND": "Indiana Fever",
+    "LV": "Las Vegas Aces", "LA": "Los Angeles Sparks", "MIN": "Minnesota Lynx",
+    "NY": "New York Liberty", "PDX": "Portland Fire", "PHX": "Phoenix Mercury",
+    "SEA": "Seattle Storm", "TOR": "Toronto Tempo", "WSH": "Washington Mystics",
 }
 
 
@@ -107,7 +121,7 @@ def parse_wnba_ticker(ticker: str) -> Optional[Tuple[Any, str, str]]:
         m = _TICKER_RE.match(_norm(ticker))
         if not m:
             return None
-        yy, mon, dd, _hhmm, tail = m.groups()
+        yy, mon, dd, tail = m.groups()
         month = _MONTHS.get(mon)
         if month is None:
             return None

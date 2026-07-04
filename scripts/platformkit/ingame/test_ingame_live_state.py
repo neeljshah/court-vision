@@ -193,12 +193,18 @@ def test_tennis_score_derives_sets_won_from_linescores():
     assert S._score(home) == 2.0 and S._score(away) == 0.0
 
 
+def _atp_only(payload):
+    """http_get stub: ATP board returns *payload*, WTA board is empty (no double-count) --
+    live_states("tennis") with no explicit league now fetches BOTH tour boards and merges."""
+    return lambda url: payload if "/atp/" in url else {}
+
+
 def test_live_state_tennis_produces_named_competitors():
     # end-to-end: the real inplay_capture_loop path (live_states -> _scan_live_by_legs)
     # bridges by home_display/away_display -- this proves those are real player names,
     # not '', for a live tennis match nested under groupings.
     payload = _tennis_payload([_tennis_match(live=True)])
-    states = S.live_states("tennis", http_get=lambda url: payload)
+    states = S.live_states("tennis", http_get=_atp_only(payload))
     assert len(states) == 1
     st = states[0]
     assert st["home"] == "Z. Piros" and st["away"] == "I. Ivanov"
@@ -221,3 +227,88 @@ def test_live_state_tennis_skips_final_match():
     # only STATUS_FINAL match present -> no in-progress match -> None
     payload = _tennis_payload([_tennis_match(live=False)])
     assert S.live_state("tennis", http_get=lambda url: payload) is None
+
+
+# --------------------------------------------------------------------------------------- #
+# WTA coverage: inplay_capture_loop passes the bare capture sport "tennis" for BOTH tours
+# (KXATPMATCH and KXWTAMATCH tickers alike) -- there is no per-tour sport id upstream, so
+# live_state/live_states must scan BOTH tennis/atp and tennis/wta boards when no explicit
+# league is pinned. Team sports (nba/mlb/soccer/soccer_intl) stay single-board, unchanged.
+# --------------------------------------------------------------------------------------- #
+
+def _by_league(atp_payload=None, wta_payload=None):
+    """http_get stub that routes by the fetched URL's tour segment."""
+    def _get(url):
+        if "/atp/" in url:
+            return atp_payload or {}
+        if "/wta/" in url:
+            return wta_payload or {}
+        return {}
+    return _get
+
+
+def test_scoreboard_url_routes_by_league():
+    assert S._scoreboard_url("tennis", "atp").endswith("tennis/atp/scoreboard")
+    assert S._scoreboard_url("tennis", "wta").endswith("tennis/wta/scoreboard")
+    # no explicit league -> single-board default stays atp (unchanged prior behavior for
+    # any direct _scoreboard_url caller that bypasses the _fetch_events dual-board merge).
+    assert S._scoreboard_url("tennis", None).endswith("tennis/atp/scoreboard")
+
+
+def test_team_sport_urls_unaffected_by_tennis_routing():
+    assert S._scoreboard_url("nba", None).endswith("basketball/nba/scoreboard")
+    assert S._scoreboard_url("mlb", None).endswith("baseball/mlb/scoreboard")
+
+
+def test_live_states_merges_atp_and_wta_boards():
+    atp_match = _tennis_match(live=True, match_id="1", home_name="ATP Home", away_name="ATP Away")
+    wta_match = _tennis_match(live=True, match_id="2", home_name="WTA Home", away_name="WTA Away")
+    getter = _by_league(atp_payload=_tennis_payload([atp_match]),
+                        wta_payload=_tennis_payload([wta_match]))
+    states = S.live_states("tennis", http_get=getter)
+    assert {st["game_id"] for st in states} == {"1", "2"}
+    assert {st["home_display"] for st in states} == {"ATP Home", "WTA Home"}
+
+
+def test_live_states_wta_only_match_is_found():
+    # a match that exists ONLY on the WTA board must still surface (the gap this closes:
+    # before this fix, tennis always queried tennis/atp only -- a WTA-only live match was
+    # invisible to live_states/_scan_live_by_legs no matter what).
+    wta_match = _tennis_match(live=True, match_id="42", home_name="Iga Swiatek",
+                              away_name="Coco Gauff")
+    getter = _by_league(atp_payload={}, wta_payload=_tennis_payload([wta_match]))
+    states = S.live_states("tennis", http_get=getter)
+    assert len(states) == 1
+    assert states[0]["home_display"] == "Iga Swiatek"
+
+
+def test_live_state_wta_only_match_by_event_id():
+    wta_match = _tennis_match(live=True, match_id="42", home_name="Iga Swiatek",
+                              away_name="Coco Gauff")
+    getter = _by_league(atp_payload={}, wta_payload=_tennis_payload([wta_match]))
+    st = S.live_state("tennis", "42", http_get=getter)
+    assert st is not None and st["home_display"] == "Iga Swiatek"
+
+
+def test_live_states_explicit_league_stays_single_board():
+    # an explicit league= still fetches exactly that one board (no merge) -- unchanged
+    # single-league contract for a caller that already knows the tour.
+    atp_match = _tennis_match(live=True, match_id="1")
+    wta_match = _tennis_match(live=True, match_id="2")
+    getter = _by_league(atp_payload=_tennis_payload([atp_match]),
+                        wta_payload=_tennis_payload([wta_match]))
+    states = S.live_states("tennis", league="wta", http_get=getter)
+    assert {st["game_id"] for st in states} == {"2"}
+
+
+def test_live_states_one_tour_feed_error_does_not_lose_the_other():
+    # a raising ATP fetch must not sink the WTA half of the merge.
+    wta_match = _tennis_match(live=True, match_id="7")
+
+    def _flaky(url):
+        if "/atp/" in url:
+            raise RuntimeError("feed down")
+        return _tennis_payload([wta_match])
+
+    states = S.live_states("tennis", http_get=_flaky)
+    assert {st["game_id"] for st in states} == {"7"}
