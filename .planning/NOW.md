@@ -41,6 +41,17 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 13 (BACKFILLS EXHAUSTED + EVIDENCE LEDGER + GATE PRODUCERS, 2026-07-04
+  ~01:00, commits da092442/60b7976b/707639c6/19e2ef57/c8cbb591, 11 agents / ~1.06M
+  tokens, 0 fix rounds, 5/5 PASS): PM NBA-2023 backfilled (435 games/1.10M ticks)
+  -- BOTH bands CALIBRATED (H1 +0.086 CI incl 0); Kalshi backfill EXHAUSTED both
+  sports (MLB 1600 mkts to 04-27, NBA 106 playoffs) -- ALL bands CALIBRATED.
+  TAIL LEDGER live (28 rows, 4 corpus classes): H2 likely dead; H1 = thin
+  PM-MLB-2023 pocket only; forward gates decide. DIGEST_2026-07-05.md written.
+  Gate producers wired: soccer xG (first real n=19 joined, 1 game, honest
+  INSUFFICIENT) + MLB base-out via pk bridge (n=0 tonight -- m2 capture ticks
+  stalled 04:31Z while a game ran; heartbeat fresh; wave-14 ops triage,
+  no-kill per charter). No edge claimed.
 - SPRINT WAKE 12 (HISTORICAL BACKFILLS + TAIL EVIDENCE SYNTHESIS, 2026-07-05 ~00:30,
   commits fe982589/6843db17(incl kalshi lane via add-chain quirk)/789b87a1/a8b67fb3,
   11 agents / ~1.1M tokens, 0 fix rounds, 5/5 PASS): TAIL HYPOTHESIS STATE AFTER
