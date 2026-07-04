@@ -33,10 +33,17 @@ VALIDATION_PATH = REPO_ROOT / "data/frontend/ops/intel_claims_validation.json"
 CLAIMS_DIR = REPO_ROOT / "data/cache/intel_claims"
 OUT_DIR = REPO_ROOT / "data/cache/vault_feed_staging/dossier_sections"
 
+# Additional validation files whose VERIFIED claim_ids also feed the dossier
+# (ranking-kind claims validated outside the main ops validation file).
+EXTRA_VALIDATION_PATHS = [
+    REPO_ROOT / "data/cache/intel_claims/tennis_hold_claims_validation.json",
+]
+
 # claim_id prefix -> claims jsonl filename (only ranking claims from these files are eligible)
 CLAIM_ID_TO_FILE = {
     "nba_shooting_": "nba_shooting_claims.jsonl",
     "nba_quality_": "nba_quality_claims.jsonl",
+    "tennis_hold_": "tennis_hold_claims.jsonl",
 }
 
 
@@ -92,11 +99,29 @@ def _provenance_line(claim_id: str, metric: str, value, precision, source_files,
     return f"{claim_id} | {metric} | {val_str} ({precision}) | {srcs} | validator=VERIFIED @ {generated_at}"
 
 
+_DEFAULT = object()
+
+
 def build_dossier_sections(validation_path: Path = VALIDATION_PATH,
                             claims_dir: Path = CLAIMS_DIR,
-                            out_dir: Path = OUT_DIR) -> dict:
-    """Generate per-entity dossier section files. Returns {entity_slug: n_claim_lines} for verification."""
+                            out_dir: Path = OUT_DIR,
+                            extra_validation_paths=_DEFAULT) -> dict:
+    """Generate per-entity dossier section files. Returns {entity_slug: n_claim_lines} for verification.
+
+    extra_validation_paths defaults to EXTRA_VALIDATION_PATHS only when the caller uses the
+    default validation_path/claims_dir/out_dir (i.e. the real repo run); callers that pass
+    their own tmp paths (tests) get an empty list unless they opt in explicitly, so isolated
+    fail-open tests are not polluted by real repo artifacts.
+    """
+    if extra_validation_paths is _DEFAULT:
+        extra_validation_paths = (
+            EXTRA_VALIDATION_PATHS
+            if validation_path == VALIDATION_PATH and claims_dir == CLAIMS_DIR and out_dir == OUT_DIR
+            else []
+        )
     verified = _load_verified_claim_ids(validation_path)
+    for extra_path in extra_validation_paths:
+        verified.update(_load_verified_claim_ids(extra_path))
     if not verified:
         return {}
     bodies = _load_claim_bodies(claims_dir)
