@@ -125,3 +125,24 @@ def test_is_pitcher_stat_routing():
     assert is_pitcher_stat("Outs") is True
     assert is_pitcher_stat("Hits") is False
     assert is_pitcher_stat("NotAStat") is False
+
+
+def test_cache_is_byte_identical_to_uncached_batter_and_pitcher():
+    """PERF (m13 prop-edge-budget lane): passing a per-cycle memo dict must
+    reproduce EXACTLY the same result as the uncached call (cache changes
+    performance only, never output) -- and must be safely reusable across
+    repeated calls (a second call with the same warm cache still matches)."""
+    bdf, pdf = _batter_df(), _pitcher_df()
+    cache: dict = {}
+    uncached_b = batter_rate(bdf, "A", "Hits", as_of="2026-06-01")
+    cached_b1 = batter_rate(bdf, "A", "Hits", as_of="2026-06-01", cache=cache)
+    cached_b2 = batter_rate(bdf, "A", "Hits", as_of="2026-06-01", cache=cache)
+    assert cached_b1 == uncached_b == cached_b2
+
+    uncached_p = pitcher_rate(pdf, "P", "Pitcher Strikeouts", as_of="2026-06-01")
+    cache2: dict = {}
+    cached_p1 = pitcher_rate(pdf, "P", "Pitcher Strikeouts", as_of="2026-06-01", cache=cache2)
+    cached_p2 = pitcher_rate(pdf, "P", "Pitcher Strikeouts", as_of="2026-06-01", cache=cache2)
+    assert cached_p1 == uncached_p == cached_p2
+    # cache actually got populated (proves the memo path was exercised, not a no-op)
+    assert len(cache2) > 0

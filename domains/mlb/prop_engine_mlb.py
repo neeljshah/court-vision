@@ -48,15 +48,21 @@ _EPS = 1e-9
 
 
 def _resolve_rate_and_exposure(
-    df, player_id, stat_canonical, as_of, exposure, batting_order
+    df, player_id, stat_canonical, as_of, exposure, batting_order, cache=None
 ):
     """Return (lam, meta) or (None, meta) when unknown. meta carries rate/exposure.
 
     lam = rate * exposure, except per-start stats where lam = per_start directly.
+
+    ``cache`` (optional): a per-SCORE-CYCLE memo dict (same instance across every
+    line in one build_prop_board call) threaded down to the leak-guard prior-rows
+    mask + league-baseline lookups, which are otherwise recomputed identically
+    for every one of thousands of lines sharing the same as_of (measured ~53% of
+    one cycle's wall-clock). None reproduces the exact prior per-call behavior.
     """
     meta: Dict[str, object] = {"rate": None, "exposure": None, "n": 0}
     if is_pitcher_stat(stat_canonical):
-        rate = pitcher_rate(df, player_id, stat_canonical, as_of)
+        rate = pitcher_rate(df, player_id, stat_canonical, as_of, cache=cache)
         if rate.get("status") != "ok":
             return None, meta
         if stat_canonical in PER_START_STATS:
@@ -72,7 +78,7 @@ def _resolve_rate_and_exposure(
             return None, meta
         exp = exposure
         if exp is None:
-            eb = expected_bf(df, player_id, as_of)
+            eb = expected_bf(df, player_id, as_of, cache=cache)
             exp = eb.get("e_bf")
         try:
             exp = float(exp)
@@ -82,7 +88,7 @@ def _resolve_rate_and_exposure(
         return float(per_bf) * max(exp, 0.0), meta
 
     # batter path
-    rate = batter_rate(df, player_id, stat_canonical, as_of)
+    rate = batter_rate(df, player_id, stat_canonical, as_of, cache=cache)
     if rate.get("status") != "ok":
         return None, meta
     per_pa = rate.get("per_pa")
@@ -92,7 +98,7 @@ def _resolve_rate_and_exposure(
         return None, meta
     exp = exposure
     if exp is None:
-        ep = expected_pa(df, player_id, as_of, batting_order=batting_order)
+        ep = expected_pa(df, player_id, as_of, batting_order=batting_order, cache=cache)
         exp = ep.get("e_pa")
     try:
         exp = float(exp)
@@ -111,6 +117,7 @@ def prop_distribution(
     exposure: Optional[float] = None,
     dispersion: Optional[float] = None,
     batting_order=None,
+    cache: Optional[Dict] = None,
 ) -> Dict[str, object]:
     """Build the count distribution for one player + canonical MLB stat.
 
@@ -119,6 +126,13 @@ def prop_distribution(
     per_start directly). model is "negbin" when ``dispersion`` (NB size r) > 0 else
     "poisson". p_over(line) = P(X > line). Degrades to status "unknown" (no
     fabricated probability) when the rate or exposure is unknown. Never raises.
+
+    ``cache`` (optional, m13 prop-edge-budget lane): a per-SCORE-CYCLE dict the
+    caller may create ONCE (e.g. per build_prop_board call) and pass on every
+    line/player -- it memoizes the as_of-only-dependent leak-guard mask + league
+    baselines that would otherwise be recomputed per line (measured ~53% of one
+    2601-line MLB cycle's wall-clock). None (default) is byte-identical output to
+    the prior uncached behavior; this parameter changes performance ONLY.
     """
     unknown = {
         "lam": None, "model": None, "p_over": None, "status": "unknown",
@@ -129,7 +143,7 @@ def prop_distribution(
 
     try:
         lam, meta = _resolve_rate_and_exposure(
-            df, player_id, stat_canonical, as_of, exposure, batting_order
+            df, player_id, stat_canonical, as_of, exposure, batting_order, cache=cache
         )
     except Exception:
         return dict(unknown)

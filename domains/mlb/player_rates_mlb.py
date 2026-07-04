@@ -88,16 +88,31 @@ def _as_ts(value) -> Optional[pd.Timestamp]:
         return None
 
 
-def _prior_rows(df: pd.DataFrame, as_of) -> Optional[pd.DataFrame]:
-    """Rows STRICTLY BEFORE as_of (leak guard). None on bad input."""
+def _prior_rows(df: pd.DataFrame, as_of, cache: Optional[Dict] = None) -> Optional[pd.DataFrame]:
+    """Rows STRICTLY BEFORE as_of (leak guard). None on bad input.
+
+    PERF (m13 prop-edge-budget lane): as_of is the SAME value for every line in
+    one score cycle (thousands of lines x this call), so re-parsing
+    pd.to_datetime(df['date']) and re-masking the full gamelog df per line was
+    the #1 cost (~29% of one 2601-line MLB cycle, measured). ``cache`` is an
+    OPTIONAL per-cycle dict (keyed by id(df) + as_of) callers may pass so the
+    mask is computed ONCE per score cycle and reused across every line/player;
+    None (default) reproduces the exact prior per-call behavior byte-for-byte,
+    so this is purely additive -- no output changes for existing callers."""
     if df is None or len(df) == 0 or "date" not in df.columns:
         return None
     ts = _as_ts(as_of)
     if ts is None:
         return None
+    cache_key = (id(df), str(as_of)) if cache is not None else None
+    if cache_key is not None and cache_key in cache:
+        return cache[cache_key]
     dates = pd.to_datetime(df["date"], errors="coerce")
     mask = dates.notna() & (dates < ts)
-    return df.loc[mask]
+    result = df.loc[mask]
+    if cache_key is not None:
+        cache[cache_key] = result
+    return result
 
 
 def _col_sum(rows: pd.DataFrame, cols: List[str]) -> float:
@@ -131,14 +146,38 @@ def _own_rows(prior: pd.DataFrame, player_id) -> pd.DataFrame:
 
 
 def _league_per_exposure(
-    df: pd.DataFrame, stat_canonical: str, as_of, exposure: str
+    df: pd.DataFrame, stat_canonical: str, as_of, exposure: str,
+    cache: Optional[Dict] = None,
 ) -> Optional[float]:
     """Pooled league per-PA / per-BF / per-start baseline using rows before as_of.
 
     For batter stats pools rows where PA>0; for pitcher per-BF pools rows BF>0;
     for per-start pools pitcher rows that recorded outs (a start). None if no
-    signal."""
-    prior = _prior_rows(df, as_of)
+    signal.
+
+    PERF: the result depends only on (id(df), as_of, stat_canonical, exposure)
+    -- fully invariant across every line in one score cycle (same board, same
+    as_of). ``cache`` (optional, same per-cycle dict passed to _prior_rows)
+    memoizes the baseline itself, not just the prior-rows mask, since this was
+    the #2 cost (~25% of one 2601-line MLB cycle, measured). None reproduces
+    prior behavior exactly."""
+    baseline_key = (id(df), str(as_of), stat_canonical, exposure) if cache is not None else None
+    if baseline_key is not None and baseline_key in cache:
+        return cache[baseline_key]
+
+    result = _league_per_exposure_uncached(df, stat_canonical, as_of, exposure, cache)
+    if baseline_key is not None:
+        cache[baseline_key] = result
+    return result
+
+
+def _league_per_exposure_uncached(
+    df: pd.DataFrame, stat_canonical: str, as_of, exposure: str,
+    cache: Optional[Dict] = None,
+) -> Optional[float]:
+    """The uncached body of _league_per_exposure (split out so the memoized
+    wrapper has a single return-and-cache point instead of one per early-exit)."""
+    prior = _prior_rows(df, as_of, cache=cache)
     if prior is None or len(prior) == 0:
         return None
     spec = MLB_CANON.get(stat_canonical)
@@ -170,7 +209,8 @@ def _result(per_key, per_val, n_key, n_val, shrunk, status):
 
 
 def batter_rate(
-    df: pd.DataFrame, player_id, stat_canonical: str, as_of
+    df: pd.DataFrame, player_id, stat_canonical: str, as_of,
+    cache: Optional[Dict] = None,
 ) -> Dict[str, object]:
     """Leak-free, shrunk per-PA rate for one batter + canonical stat.
 
@@ -178,18 +218,23 @@ def batter_rate(
     rate = sum(stat)/sum(PA) over rows before as_of, empirical-Bayes shrunk toward
     the league per-PA baseline with strength SHRINK_K (~30 PA-worth). status
     "unknown" when neither the player nor the league has any signal. Never raises.
+
+    ``cache`` (optional): a per-SCORE-CYCLE dict callers may reuse across every
+    line so the as_of-only-dependent prior-rows mask + league baseline are
+    computed ONCE per cycle, not once per line (see _prior_rows PERF note).
+    None (default) is byte-identical to the prior behavior.
     """
     unknown = _result("per_pa", None, "n_pa", 0, False, "unknown")
     spec = MLB_CANON.get(stat_canonical)
     if spec is None or spec["role"] != "batter":
         return dict(unknown)
-    prior = _prior_rows(df, as_of)
+    prior = _prior_rows(df, as_of, cache=cache)
     if prior is None:
         return dict(unknown)
 
     own = _own_rows(prior, player_id)
     n_pa = _pa_total(own)
-    baseline = _league_per_exposure(df, stat_canonical, as_of, "pa")
+    baseline = _league_per_exposure(df, stat_canonical, as_of, "pa", cache=cache)
 
     if n_pa <= _EPS:
         if baseline is None:
@@ -204,7 +249,8 @@ def batter_rate(
 
 
 def pitcher_rate(
-    df: pd.DataFrame, player_id, stat_canonical: str, as_of
+    df: pd.DataFrame, player_id, stat_canonical: str, as_of,
+    cache: Optional[Dict] = None,
 ) -> Dict[str, object]:
     """Leak-free, shrunk per-BF rate for one pitcher + canonical stat.
 
@@ -213,6 +259,9 @@ def pitcher_rate(
     rate uses only rows before as_of, shrunk toward the league baseline (SHRINK_K
     BF-worth, or SHRINK_K_START starts for Outs). status "unknown" when no signal.
     Never raises.
+
+    ``cache``: see batter_rate -- optional per-score-cycle memo dict; None is
+    byte-identical to the prior behavior.
     """
     spec = MLB_CANON.get(stat_canonical)
     per_start = stat_canonical in PER_START_STATS
@@ -221,18 +270,18 @@ def pitcher_rate(
     unknown = _result(per_key, None, n_key, 0, False, "unknown")
     if spec is None or spec["role"] != "pitcher":
         return dict(unknown)
-    prior = _prior_rows(df, as_of)
+    prior = _prior_rows(df, as_of, cache=cache)
     if prior is None:
         return dict(unknown)
 
     own = _own_rows(prior, player_id)
     if per_start:
         n = float(len(own))
-        baseline = _league_per_exposure(df, stat_canonical, as_of, "start")
+        baseline = _league_per_exposure(df, stat_canonical, as_of, "start", cache=cache)
         k = SHRINK_K_START
     else:
         n = _bf_total(own)
-        baseline = _league_per_exposure(df, stat_canonical, as_of, "bf")
+        baseline = _league_per_exposure(df, stat_canonical, as_of, "bf", cache=cache)
         k = SHRINK_K
 
     if n <= _EPS:

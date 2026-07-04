@@ -97,3 +97,27 @@ def test_prop_ladder_keys_and_unknown():
     # unknown -> None probabilities, never fabricated
     bad = prop_ladder(df, "A", "NotAStat", as_of="2026-06-01", lines=[0.5])
     assert bad[0]["p_over"] is None and bad[0]["p_under"] is None
+
+
+def test_cache_reused_across_lines_matches_uncached_lam():
+    """PERF (m13 prop-edge-budget lane): a shared per-cycle cache dict, reused
+    across TWO different lines/stats/players (as a real score cycle would),
+    must yield lam values identical to the uncached per-line calls -- the memo
+    is purely a performance optimization, never a correctness change."""
+    df = pd.DataFrame([
+        dict(date="2026-05-01", player_id="A", is_pitcher=False, atBats=3,
+             baseOnBalls=0, hitByPitch=0, hits=3, totalBases=3, runs=0, rbi=0,
+             homeRuns=0, strikeOuts=0, stolenBases=0),
+        dict(date="2026-05-01", player_id="P", is_pitcher=True, battersFaced=25,
+             pitch_strikeOuts=10, earnedRuns=2, hits_allowed=5,
+             baseOnBalls_allowed=1, outs=18),
+    ])
+    cache: dict = {}
+    d1 = prop_distribution(df, "A", "Hits", as_of="2026-06-01", exposure=1.5, cache=cache)
+    d2 = prop_distribution(df, "P", "Pitcher Strikeouts", as_of="2026-06-01",
+                           exposure=25.0, cache=cache)
+    u1 = prop_distribution(df, "A", "Hits", as_of="2026-06-01", exposure=1.5)
+    u2 = prop_distribution(df, "P", "Pitcher Strikeouts", as_of="2026-06-01",
+                           exposure=25.0)
+    assert d1["lam"] == u1["lam"] and d1["status"] == u1["status"]
+    assert d2["lam"] == u2["lam"] and d2["status"] == u2["status"]

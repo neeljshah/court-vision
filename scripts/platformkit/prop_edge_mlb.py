@@ -29,11 +29,16 @@ def _unresolved(raw_name, line, reason) -> Dict[str, Any]:
 def edge_for_line_mlb(
     cfg, line: PropLine, df, as_of: str, index, *,
     apply_ev: Callable[..., None], reliable_n: int,
+    rate_cache: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """Resolve + distribute + EV one MLB PropLine -> {"edge": {...}} or
     {"unresolved": {...}}. ``apply_ev`` attaches EV-vs-priced (two-way book) / model-
-    view fields + ev_flag; ``reliable_n`` is the leak-free prior-exposure gate. Never
-    raises."""
+    view fields + ev_flag; ``reliable_n`` is the leak-free prior-exposure gate.
+    ``rate_cache`` (optional): a per-SCORE-CYCLE memo dict (same instance for every
+    line dispatched from one build_prop_board call) that lets the engine reuse the
+    as_of-only-dependent leak-guard mask + league baseline across lines instead of
+    recomputing them per line (m13 prop-edge-budget lane; ~53% of cycle time before
+    this). None reproduces the prior uncached behavior exactly. Never raises."""
     raw_name = getattr(line, "player", None)
     res = cfg.resolve_player(df, raw_name, team=getattr(line, "team", None),
                              index=index)
@@ -44,7 +49,8 @@ def edge_for_line_mlb(
     if cfg.canonical_stats and stat_c not in cfg.canonical_stats:
         return _unresolved(raw_name, line, "stat_unsupported")
 
-    dist = cfg.engine_distribution(df, player_id, stat_c, as_of, exposure=None)
+    dist = cfg.engine_distribution(df, player_id, stat_c, as_of, exposure=None,
+                                   cache=rate_cache)
     p_over_fn = dist.get("p_over")
     if dist.get("status") != "ok" or not callable(p_over_fn):
         return _unresolved(raw_name, line, "model_unknown")

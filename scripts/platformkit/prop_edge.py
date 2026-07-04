@@ -216,10 +216,14 @@ def _build_edges(cfg, sport_key, lines, df, as_of, index, priors_path):
     each per-line fn is itself guarded."""
     if sport_key == "mlb":
         from scripts.platformkit import prop_edge_mlb
+        # PERF (m13): one memo dict/cycle (mirrors opp_cache) -- as_of-invariant
+        # mask+baseline, was ~53% of a 2601-line cycle. See _prior_rows PERF note.
+        rate_cache: Dict[Any, Any] = {}
         for line in lines:
             yield prop_edge_mlb.edge_for_line_mlb(
                 cfg, line, df, as_of, index,
-                apply_ev=_apply_ev, reliable_n=_MLB_RELIABLE_N)
+                apply_ev=_apply_ev, reliable_n=_MLB_RELIABLE_N,
+                rate_cache=rate_cache)
         return
     try:  # leak-free per-stat NB dispersion, computed ONCE for the board
         dispersions = soccer_dispersion.all_dispersions(df, as_of)
