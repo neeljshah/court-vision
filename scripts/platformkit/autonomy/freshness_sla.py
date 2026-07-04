@@ -105,6 +105,43 @@ TABLE: Dict[str, SlaEntry] = {
     # (stack_specs.py L636-654).
     "m32_mlb_context_autogate": SlaEntry(
         _OPS / "mlb_context_autogate.json", 190000.0),
+
+    # --- LANE 3 (2026-07-03): outcome-LABEL artifact freshness -----------------
+    # These are NOT daemon heartbeats -- they are the realized-score parquets the
+    # in-game outcome resolvers (soccer_outcome/ingame_outcome_label/
+    # wnba_outcome_resolver/npb_outcome_resolver/kbo_outcome_resolver) read.
+    # 26/32 unresolved soccer_intl in-game bets traced to espn_finals.parquet
+    # going stale silently for 6 days (2026-06-22..28 never ingested) with no
+    # SLA row to catch it. max_staleness_sec below is deliberately generous
+    # (each sport plays at most ~1x/day, so a same-day miss is normal) but
+    # bounded so a MULTI-day silent gap goes RED, not NA-forever.
+    #
+    # soccer_intl finals: now self-healed every ~900s by BOTH m27's own 3-day
+    # lookback (ingame_paper_settle._refresh_soccer_finals) AND the new bounded
+    # multi-day refresh wired into m36 (label_finals_refresh.refresh_all, capped
+    # 10 dates/tick) -- 36h is a daily-tournament-slate cadence with margin.
+    "soccer_intl_finals": SlaEntry(
+        _REPO / "data" / "domains" / "soccer_intl" / "espn_finals.parquet", 129600.0),
+    # mlb espn_boxscores: MLB plays every day of the season; observed stale
+    # 2.5 days (2026-07-01) at lane start with NO periodic caller anywhere in
+    # the repo before this lane wired one into m36. 36h (129600s) margin over a
+    # daily cadence.
+    "mlb_espn_boxscores": SlaEntry(
+        _REPO / "data" / "domains" / "mlb" / "espn_boxscores.parquet", 129600.0),
+    # wnba espn_scoreboard: daily-ish WNBA slate; same "nobody calls this
+    # periodically" gap as MLB before this lane. 36h margin.
+    "wnba_espn_scoreboard": SlaEntry(
+        _REPO / "data" / "domains" / "wnba" / "espn_scoreboard.parquet", 129600.0),
+    # npb_results / kbo_results: SLA-monitored but NOT auto-refreshed by this
+    # lane (see label_finals_refresh.py module docstring -- monthly HTML scrape
+    # with its own polite-pacing/bot-wall discipline, different shape from the
+    # bounded per-date ESPN JSON refresh). Both sports play near-daily in
+    # season; 48h (172800s) margin gives a bit more slack than the ESPN-sourced
+    # rows since refresh here is still a manual/CLI re-run.
+    "npb_results": SlaEntry(
+        _REPO / "data" / "domains" / "npb" / "npb_results.parquet", 172800.0),
+    "kbo_results": SlaEntry(
+        _REPO / "data" / "domains" / "kbo" / "kbo_results.parquet", 172800.0),
 }
 
 

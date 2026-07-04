@@ -127,6 +127,51 @@ def test_table_entries_have_positive_staleness():
 
 
 # --------------------------------------------------------------------------- #
+# LANE 3: outcome-label artifact SLA rows (soccer_intl/mlb/wnba/npb/kbo)
+# --------------------------------------------------------------------------- #
+def test_label_artifact_sla_entries_present():
+    from scripts.platformkit.autonomy.freshness_sla import TABLE
+    for name in ("soccer_intl_finals", "mlb_espn_boxscores", "wnba_espn_scoreboard",
+                 "npb_results", "kbo_results"):
+        assert name in TABLE, name
+        assert TABLE[name].max_staleness_sec > 0
+
+
+def test_label_artifact_sla_green_when_fresh(tmp_path):
+    p = tmp_path / "espn_finals.parquet"
+    p.write_text("{}", encoding="utf-8")
+    now = p.stat().st_mtime + 10.0
+    table = {"soccer_intl_finals": SlaEntry(p, 129600.0)}
+    row = check_one("soccer_intl_finals", now=now, table=table)
+    assert row["status"] == GREEN
+
+
+def test_label_artifact_sla_red_when_multi_day_stale(tmp_path):
+    p = tmp_path / "espn_finals.parquet"
+    p.write_text("{}", encoding="utf-8")
+    now = p.stat().st_mtime + 6 * 86400.0  # a 6-day silent gap, the real incident shape
+    table = {"soccer_intl_finals": SlaEntry(p, 129600.0)}
+    row = check_one("soccer_intl_finals", now=now, table=table)
+    assert row["status"] == RED
+    assert row["reason"] == "stale"
+
+
+def test_label_artifact_sla_na_for_unmonitored_name():
+    row = check_one("some_future_sport_finals_not_yet_registered", now=1000.0)
+    assert row["status"] == NA
+
+
+def test_m36_already_registered_no_new_procspec_needed_this_lane():
+    """LANE 3 wired the bounded finals-refresh into the EXISTING m36 grading
+    tick rather than adding a new ProcSpec -- so supervisor.manifest() (the
+    real daemon-name source freshness_sla_runner._daemon_names() reads) must
+    already include m36 with zero further registration/resync work."""
+    from supervisor.manifest import manifest
+    names = [s.name for s in manifest("default")]
+    assert "m36_ingame_grading_multi" in names
+
+
+# --------------------------------------------------------------------------- #
 # runner: fake check/write callables, no real supervisor.manifest() names touched
 # --------------------------------------------------------------------------- #
 def test_runner_tick_calls_check_and_write():

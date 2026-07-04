@@ -20,6 +20,16 @@ no flag flipped. The trust doc here does NOT wire any floor/execution
 routing (that stays exclusively with the MLB-only ingame_segment_trust path
 pending a human review).
 
+LANE 3 ADDITION (2026-07-03) -- before verdict/trust, each tick also runs a
+BOUNDED, failure-isolated refresh of the outcome-label artifacts these
+resolvers read (scripts.platformkit.autonomy.label_finals_refresh.refresh_all:
+soccer_intl finals + MLB espn_boxscores + WNBA espn_scoreboard, each capped at
+10 missing dates/tick). This closes the silent-staleness gap that left 26/32
+soccer_intl in-game bets unresolved (espn_finals.parquet was never re-ingested
+2026-06-22..28). Wrapped in its own try/except so a refresh failure (network
+hiccup, bad HTML) can never block the verdict/trust steps that already run
+here.
+
 NOT YET REGISTERED FOR A RUNNING SUPERVISOR TICK -- the ProcSpec added to
 supervisor/stack_specs.py requires a restart to take effect (restart already
 pending per this lane's brief; new registrations ride it).
@@ -76,31 +86,52 @@ def _run_trust() -> Dict[str, Any]:
             for sport, d in doc.get("per_sport", {}).items()}
 
 
+def _run_label_refresh() -> Dict[str, Any]:
+    """LANE 3: bounded, failure-isolated refresh of the outcome-label parquets
+    (soccer_intl finals + MLB boxscores + WNBA scoreboard) the resolvers this
+    tick's verdict/trust steps depend on. Never raises -- refresh_all already
+    isolates per-spec; this wrapper is belt+suspenders against an unexpected
+    import-time error."""
+    from scripts.platformkit.autonomy.label_finals_refresh import refresh_all
+    return refresh_all()
+
+
 def _compose(verdict_summary: Dict[str, Any], trust_summary: Dict[str, Any],
-            now_iso: str) -> Dict[str, Any]:
+            now_iso: str, label_refresh_summary: Optional[Dict[str, Any]] = None
+            ) -> Dict[str, Any]:
     return {
         "component": "ingame_grading_multi", "generated_at": now_iso,
         "verdict_summary": verdict_summary,
         "trust_summary": trust_summary,
+        "label_refresh_summary": label_refresh_summary or {},
         "measurement_only": True,
         "honest_note": ("verdicts + cross-corpus trust for soccer_intl/tennis/wnba, "
                         "mirroring the MLB m25/m26 pair; INSUFFICIENT_N/NEUTRAL is "
                         "the correct, honest result for a sport whose in-play "
                         "capture corpus is still thin; wires no floor/execution "
-                        "routing; no $ edge claimed"),
+                        "routing; no $ edge claimed; label_refresh_summary is the "
+                        "LANE-3 bounded finals-freshness self-heal (soccer_intl/mlb/"
+                        "wnba), isolated so its failure never blocks a verdict"),
         "edge_claimed": False,
     }
 
 
 def tick(*, now: float,
          verdict_fn: Optional[Callable[[], Dict[str, Any]]] = None,
-         trust_fn: Optional[Callable[[], Dict[str, Any]]] = None) -> Dict[str, Any]:
-    """One re-grading tick: verdict -> trust -> composed doc -> heartbeat.
-    Never raises. Each step isolated; a raising step degrades to an empty/ERROR
-    entry, never kills the tick or blocks a sibling step."""
+         trust_fn: Optional[Callable[[], Dict[str, Any]]] = None,
+         label_refresh_fn: Optional[Callable[[], Dict[str, Any]]] = None) -> Dict[str, Any]:
+    """One re-grading tick: label refresh -> verdict -> trust -> composed doc ->
+    heartbeat. Never raises. Each step isolated; a raising step degrades to an
+    empty/ERROR entry, never kills the tick or blocks a sibling step."""
     _verdict = verdict_fn if verdict_fn is not None else _run_verdict
     _trust = trust_fn if trust_fn is not None else _run_trust
+    _label_refresh = label_refresh_fn if label_refresh_fn is not None else _run_label_refresh
 
+    try:
+        label_refresh_summary = _label_refresh()
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("ingame_grading_multi label refresh step raised: %s", exc)
+        label_refresh_summary = {"error": str(exc)}
     try:
         verdict_summary = _verdict()
     except Exception as exc:  # noqa: BLE001
@@ -113,7 +144,7 @@ def tick(*, now: float,
         trust_summary = {"error": str(exc)}
 
     now_iso = datetime.fromtimestamp(now, tz=timezone.utc).isoformat()
-    doc = _compose(verdict_summary, trust_summary, now_iso)
+    doc = _compose(verdict_summary, trust_summary, now_iso, label_refresh_summary)
     _beat(now)
     return doc
 
