@@ -274,8 +274,15 @@ def main(argv: Optional[List[str]] = None) -> int:
     try:
         if args.record:
             from scripts.platformkit.prop_edge import build_prop_board
+            from scripts.platformkit.bestbets import prop_cards_circuit_io as _pcio
 
-            board = build_prop_board(args.sport)
+            # m13-breaker-bypass (bare-caller close-out): route through the SAME
+            # circuit-breaker-gated providers helper the wave-35 prop_cards.py fix
+            # uses, never bare build_prop_board(sport) (which re-derives
+            # cfg.default_providers() UN-GATED inside prop_edge.py). None/missing
+            # helper -> explicit empty providers list, never an unfiltered fallback.
+            provs = _pcio.breaker_filtered_providers(args.sport)
+            board = build_prop_board(args.sport, providers=(provs if provs is not None else []))
             res = record_board(board, only_reliable=not args.all)
             print(json.dumps(res))
         if args.grade:

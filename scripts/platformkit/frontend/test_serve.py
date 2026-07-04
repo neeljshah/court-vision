@@ -128,3 +128,65 @@ def test_slate_endpoint_uses_real_factory_gracefully():
     payload = r.json()
     assert payload["status"] in {"ok", "unavailable"}
     assert "honest_note" in payload
+
+
+# ---------------------------------------------------------------------------
+# m13-breaker-bypass (bare-caller close-out, wave-36): /api/props' live-compute
+# fallback used to call build_prop_board(sport) BARE, which re-derives
+# cfg.default_providers() UN-GATED inside prop_edge.py -- re-dispatching to a
+# provider the circuit breaker just opened. The fix routes it through the SAME
+# breaker_filtered_providers() helper the wave-35 prop_cards.py fix uses.
+# ---------------------------------------------------------------------------
+
+def test_api_props_live_compute_uses_breaker_filtered_providers(monkeypatch):
+    calls = []
+
+    def fake_board(sport, **kw):  # noqa: ANN001
+        calls.append((sport, kw))
+        return {"sport": sport, "status": "ok", "edges": []}
+    monkeypatch.setattr(serve_mod, "_build_prop_board", fake_board)
+    monkeypatch.setattr(serve_mod, "_read_snapshot_part", lambda sport, part: None)
+
+    class _FakeProvider:
+        name = "fake_survivor"
+
+    filtered_calls = []
+
+    def fake_breaker_filtered(sport):  # noqa: ANN001
+        filtered_calls.append(sport)
+        return [_FakeProvider()]
+
+    import scripts.platformkit.bestbets.prop_cards_circuit_io as pcio
+    monkeypatch.setattr(pcio, "breaker_filtered_providers", fake_breaker_filtered)
+
+    client = TestClient(serve_mod.create_app())
+    r = client.get("/api/props?sport=mlb")
+    assert r.status_code == 200
+    assert filtered_calls == ["mlb"]
+    assert len(calls) == 1
+    sport_arg, kwargs = calls[0]
+    assert sport_arg == "mlb"
+    assert [getattr(p, "name", None) for p in kwargs.get("providers", [])] == ["fake_survivor"]
+
+
+def test_api_props_never_calls_bare_unfiltered_providers(monkeypatch):
+    # Even if the breaker helper is unavailable (returns None), the fallback must
+    # pass an explicit EMPTY providers list -- never omit providers / let
+    # build_prop_board fall back to cfg.default_providers() un-gated.
+    calls = []
+
+    def fake_board(sport, **kw):  # noqa: ANN001
+        calls.append((sport, kw))
+        return {"sport": sport, "status": "ok", "edges": []}
+    monkeypatch.setattr(serve_mod, "_build_prop_board", fake_board)
+    monkeypatch.setattr(serve_mod, "_read_snapshot_part", lambda sport, part: None)
+
+    import scripts.platformkit.bestbets.prop_cards_circuit_io as pcio
+    monkeypatch.setattr(pcio, "breaker_filtered_providers", lambda sport: None)
+
+    client = TestClient(serve_mod.create_app())
+    r = client.get("/api/props?sport=mlb")
+    assert r.status_code == 200
+    assert len(calls) == 1
+    _, kwargs = calls[0]
+    assert kwargs.get("providers") == []

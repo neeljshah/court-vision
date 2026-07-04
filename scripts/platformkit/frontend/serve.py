@@ -287,7 +287,14 @@ def create_app(*, intent_log: Optional[Path] = None) -> "FastAPI":
                                  "edges": [], "served_from": "live_compute",
                                  "note": "prop_edge module not importable"})
         try:
-            payload = _build_prop_board(sport)
+            # m13-breaker-bypass (bare-caller close-out): route through the SAME
+            # circuit-breaker-gated providers helper the wave-35 prop_cards.py fix
+            # uses, never bare build_prop_board(sport) (which re-derives
+            # cfg.default_providers() UN-GATED inside prop_edge.py). None/missing
+            # helper -> explicit empty providers list, never an unfiltered fallback.
+            from scripts.platformkit.bestbets import prop_cards_circuit_io as _pcio  # noqa: PLC0415
+            provs = _pcio.breaker_filtered_providers(sport)
+            payload = _build_prop_board(sport, providers=(provs if provs is not None else []))
         except Exception as exc:  # noqa: BLE001 - the props endpoint must never 500
             payload = {"sport": sport, "status": "unavailable", "edges": [],
                        "note": f"prop board error ({type(exc).__name__})"}
