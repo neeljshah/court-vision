@@ -17,6 +17,19 @@ HONEST (binding):
   * The in-play day-trader still gates every placement (calibration_justified requires
     p0_source PRIOR + is_liquid + is_fresh + tier floor) -- this only supplies the number.
 
+LANE-2 FIX (grade-write wedge, wave-14): ingame_live_state._frac_elapsed's MLB formula is
+denom_half=18.0 (9 innings x 2 halves = regulation) -- (2*(inning-1)+half)/18.0 SATURATES at
+exactly 1.0 from the bottom of the 9th onward and stays clamped at 1.0 for the entire rest of
+extras (min(1.0, ...)). The OLD guard here (`frac_f < 1.0` -> None) therefore treated every
+still-LIVE bottom-9th/extra-innings tick as if the game had ended, permanently starving
+model_fn (-> capture_pair_once never called again) for any game that runs to or past 9
+innings -- NOT a transient failure, a deterministic one every tick from that point on.
+FINALITY is decided ONLY by _is_final(state) (the real ESPN status string, e.g. "Top 11th"
+vs "Final"), never by frac_elapsed's saturation. frac_f is now CLAMPED just under 1.0 for
+the blend's freshness math (extras get the same max-freshness treatment as a tied bottom-9th
+would) instead of being rejected. See test_late_and_extra_innings_still_price in
+test_mlb_live_model.py + m2_stall_triage.json (MIL@ARI, KXMLBGAME-26JUL032145MILAZ).
+
 INVARIANTS: build only under scripts/platformkit/; never edit src/ or kernel/; ASCII;
 <=300 LOC; pure (no network); public fn NEVER raises.
 """
@@ -63,12 +76,24 @@ def _is_final(state: Dict[str, Any]) -> bool:
     return any(k in st for k in ("final", "post", "complete"))
 
 
+# frac_elapsed's clamp ceiling for the freshness blend. Genuinely-live extra-innings /
+# bottom-9th ticks arrive with frac_elapsed==1.0 (ingame_live_state's MLB formula
+# saturates there -- see the LANE-2 FIX note above); pin the blend's *input* just under
+# 1.0 rather than reject the tick, so a live extras game still gets a (maximally-fresh,
+# score-dominated) number instead of being silently dropped forever.
+_FRAC_CEIL = 0.999
+
+
 def mlb_home_prob(state: Dict[str, Any]) -> Optional[float]:
     """In-game P(home win) for MLB from {p0, state_diff, frac_elapsed}, or None (skip).
 
     None (clean no-bet) when: state is not a dict; p0/state_diff/frac_elapsed missing or
-    unparseable; frac_elapsed outside [0,1); or the game is FINAL. Otherwise returns the
-    verified freshness-blended P(home win). NEVER raises (a miss is a skip, not a crash)."""
+    unparseable; frac_elapsed is negative; or the game is FINAL (decided ONLY by the real
+    ESPN status string via _is_final -- NEVER by frac_elapsed reaching/saturating at 1.0,
+    since bottom-9th-onward innings legitimately saturate the frac formula while the game
+    is still live). Otherwise returns the verified freshness-blended P(home win), with
+    frac_elapsed clamped to _FRAC_CEIL so extras get the same max-freshness treatment a
+    tied bottom-9th would. NEVER raises (a miss is a skip, not a crash)."""
     try:
         if not isinstance(state, dict) or _is_final(state):
             return None
@@ -78,8 +103,9 @@ def mlb_home_prob(state: Dict[str, Any]) -> Optional[float]:
         if p0 is None or diff is None or frac is None:
             return None
         frac_f = float(frac)
-        if not (0.0 <= frac_f < 1.0):
-            return None  # pre-game (0 ok) but a finished game (>=1.0) is no in-game bet
+        if frac_f < 0.0:
+            return None  # unparseable/negative freshness lever -> honest skip
+        frac_f = min(frac_f, _FRAC_CEIL)  # extras/bottom-9th saturation -> clamp, never reject
         from scripts.platformkit.ingame.blend_apply import apply_surface
         out = apply_surface({"p0": float(p0)},
                             _ShimState(frac_f, float(diff)), _MLB_SURFACE)

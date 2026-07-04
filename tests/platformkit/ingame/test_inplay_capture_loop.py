@@ -499,3 +499,77 @@ def test_enrichment_poisoned_facade_never_raises_decision_unaffected(tmp_path, m
         assert g.get(key) is None
     # decision path fully unaffected by the poisoned enrichment facade.
     assert g["bet"] is True and g["model_prob"] == 0.80
+
+
+# --------------------------------------------------------------------------------------- #
+# LANE 2: grade-write wedge fix (wave-14, 21.8% truncation). Root cause: mlb_live_model's
+# old frac_elapsed>=1.0 guard permanently starved model_fn once a game reached bottom-9th/
+# extras (ingame_live_state's MLB frac formula saturates at 1.0 there). Fixed at the model
+# layer (see test_mlb_live_model.py); THIS file additionally verifies (a) a per-game
+# capture failure is ISOLATED per tick -- the roster is rebuilt fresh from the raw liquid
+# legs every poll_once call, so a live game whose grade-write fails once is NEVER
+# permanently dropped, the very next tick retries unconditionally -- and (b) the failure
+# is now COUNTED into the heartbeat (grade_write_fail_by_reason / grade_write_fail_games)
+# so an ops freshness SLA can see per-game grade-write lag instead of silence.
+# --------------------------------------------------------------------------------------- #
+def test_grade_write_failure_counted_and_isolated_per_tick(tmp_path):
+    # model_fn raises on the FIRST tick only (simulates an exception inside the per-game
+    # model-prob step, e.g. the old extras-saturation bug) -- captured by _process_game's
+    # broad except, never sinks the loop, and the SAME live game is retried next tick.
+    calls = {"n": 0}
+
+    def _flaky_model_fn(sport, state):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise RuntimeError("simulated per-game grade-write failure")
+        return 0.80
+
+    grade_dir = tmp_path / "grade"
+    hb1 = loop.poll_once(sports=["mlb"], live_state_fn=_state_fn_prior,
+                        model_fn=_flaky_model_fn, inplay_fetch_fn=_inplay_fetch,
+                        finals_fn=_finals_none, grade_dir=grade_dir,
+                        ledger_path=tmp_path / "l.jsonl", heartbeat_path=tmp_path / "hb.json")
+    # tick 1: the game was LIVE (a liquid leg existed) but failed to pair -> counted,
+    # never silently dropped from games_seen.
+    assert hb1["n_pairs"] == 0
+    assert len(hb1["games"]) == 1
+    g1 = hb1["games"][0]
+    assert g1["paired"] is False
+    assert str(g1["reason"]).startswith("error:")
+    assert hb1["grade_write_fail_by_reason"]  # non-empty: at least one failure bucketed
+    assert sum(hb1["grade_write_fail_by_reason"].values()) == 1
+    fail_row = hb1["grade_write_fail_games"][0]
+    assert fail_row["sport"] == "mlb" and fail_row["reason"].startswith("error:")
+
+    # tick 2: SAME game_id, no injected failure this time -> retries cleanly and pairs.
+    # The roster is rebuilt from legs_by_game every call -- nothing permanently removed it.
+    hb2 = loop.poll_once(sports=["mlb"], live_state_fn=_state_fn_prior,
+                        model_fn=_flaky_model_fn, inplay_fetch_fn=_inplay_fetch,
+                        finals_fn=_finals_none, grade_dir=grade_dir,
+                        ledger_path=tmp_path / "l.jsonl", heartbeat_path=tmp_path / "hb.json")
+    assert hb2["n_pairs"] == 1
+    assert hb2["games"][0]["paired"] is True
+    assert hb2["grade_write_fail_by_reason"] == {}  # clean tick -> no failures counted
+    assert hb2["grade_write_fail_games"] == []
+
+
+def test_grade_write_fail_counters_empty_on_clean_run(tmp_path):
+    # A fully healthy tick carries the new keys but empty -- additive, never noisy.
+    hb = _run_one_tick(tmp_path)
+    assert hb["grade_write_fail_by_reason"] == {}
+    assert hb["grade_write_fail_games"] == []
+
+
+def test_grade_write_fail_reason_no_model_prob_counted(tmp_path):
+    # The exact wave-14 signature (before this lane's model-layer fix): model_fn returns
+    # None every tick (e.g. a still-poisoned corpus) -> reason=no_model_prob, counted, and
+    # the game stays visible in games_seen every tick (never vanishes silently).
+    grade_dir = tmp_path / "grade"
+    hb = loop.poll_once(sports=["mlb"], live_state_fn=_state_fn_prior,
+                        model_fn=lambda sport, state: None, inplay_fetch_fn=_inplay_fetch,
+                        finals_fn=_finals_none, grade_dir=grade_dir,
+                        ledger_path=tmp_path / "l.jsonl", heartbeat_path=tmp_path / "hb.json")
+    assert hb["n_pairs"] == 0
+    assert hb["games"][0]["reason"] == "no_model_prob"
+    assert hb["grade_write_fail_by_reason"] == {"no_model_prob": 1}
+    assert hb["grade_write_fail_games"][0]["reason"] == "no_model_prob"
