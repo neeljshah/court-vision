@@ -61,8 +61,24 @@ _ROW_TAG_BACKFILL = "backfill_validation"
 # Naive reference-conditioning magnitude cap (logit space) -- crude on purpose,
 # see module docstring. Never tuned against outcome data (that would leak into
 # the gate it is meant to be judged by).
-_XG_LOGIT_SCALE = 0.15
-_SOT_LOGIT_SCALE = 0.03
+#
+# XG-APPLY (2026-07-04, human-ratified, docs/research/organization-sprint/
+# PROPOSED_soccer_xg_wiring.md): _XG_LOGIT_SCALE is now a SHRUNK cross-fit beta
+# (0.25 * the SMALLER of the two xg_crossfit_conditioning.py cross-fit betas:
+# fit0->eval1 beta=4.354042, fit1->eval0 beta=7.454383 -> 0.25 * 4.354042 =
+# 1.0885105, rounded to 1.0885). Still fixed-form / not adaptively retrained.
+# This constant change conditions the LIVE forward gate (rows_fn ->
+# ingame_enrichment_gates.run_gate_a); it does NOT itself constitute a beat-
+# the-market claim -- the backfill market-awareness read (xg_market_awareness.
+# json) was NO_ADD_BEYOND_MARKET (CI crosses zero). Re-run run_gate_a FORWARD
+# on live ticks for >=2 independent corpora before drawing any new conclusion;
+# see the PROPOSED doc's "why this is not applied automatically" section for
+# the full caveat (reconstructed-corpus beta, not a live-in-play magnitude).
+_XG_LOGIT_SCALE = 1.0885
+# sot_diff intentionally left UNWIRED (0.0): the cross-fit lane deliberately
+# isolated xg_diff alone; a joint 2-parameter fit is a separate, un-pre-
+# declared family per the PROPOSED doc step 2.
+_SOT_LOGIT_SCALE = 0.0
 _MAX_LOGIT_SHIFT = 1.5
 
 
