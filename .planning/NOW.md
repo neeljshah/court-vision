@@ -41,6 +41,24 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 7 (FULL FLEET: MLB IN-PLAY 'BEATS VENUE' STORY FULLY DEAD + SOCCER UNK
+  KILLED BOTH DIRECTIONS + NPB/KBO PRICE LIVE + RESTART VERIFIER, 2026-07-04 early,
+  commits 37c91463/59bbb4a6/dd0620fb/8e2e6ba1 + 10e33afa (npb-kanji, direct-Opus-
+  reviewed after builder crash), 11 agents / ~1.04M tokens, 0 fix rounds, 5/5 PASS):
+  (1) soccer minute/half state fixed (stoppage '+N' ValueError + halftime HT
+  unparseable were the root causes) -- live-verified on a live WC match; future
+  ticks segment-labeled. (2) QUOTE-FRESHNESS CONTROL: MLB fresh_share only .218
+  (stale runs to 337 ticks); I4-I6 FLIP raw=MATCH -> fresh_only=WORSE_THAN_VENUE
+  (CIs>0); PREMISE CORRECTION: current raw MLB verdict is ALL-MATCH -- the WAKE-27
+  I5-I9 BETTER did not survive corpus growth. Soccer WORSE robust to control.
+  (3) pricing verify: NPB 6/6 + KBO 5/5 priced LIVE end-to-end; WNBA pricing
+  BLOCKED by missing team_resolver map (Kalshi city-only labels) -- wave-8;
+  soccer bet_board '1X2'-vs-'Moneyline' group mismatch found (wave-8); close
+  capture for new sports = pure pending-restart cost (quantified: 0 possible);
+  MLB tail gate 5 forward games accruing. (4) post_restart_verify one-command
+  pack (found+fixed :8099 /health readiness bug). (5) UNK backfill: 22/22 games
+  salvaged deterministically (sidecar, +/-10min buffer, 20.7% excluded);
+  WORSE_THAN_VENUE robust in raw AND backfilled variants. No edge claimed.
 - SPRINT WAKE 6 (FULL FLEET: SOCCER SUPPRESSION HONESTLY NOT ACTIONABLE + NEW PROPS
   STANDING BASELINE + LABEL-STALENESS GUARD + DAY-2 DIGEST, 2026-07-03 late night,
   commits 9a024be9/6994ed71/79d824e1 + npb-kanji pending review, 12 agents / ~1.08M
@@ -871,12 +889,12 @@ or `program_complete` only.
 
 ## NEXT (max 5 -- action | where | done-when) [MASTER PLAN v2 2026-07-02: .planning/PLAN_SELF_IMPROVING_AI.md -- 8 phases ending in PRE-REGISTERED proof-of-edge criteria (8.1a-g) + human-gated real-money pilot runbook (8.2); economics phase 6 (cost model/maker sim/beat-the-line scoreboard) decides if money ever happens; NBA-season readiness phase 7 before Oct. This queue = the Phase-1 head]
 [RATIFIED QUEUE 2026-07-03 -- .planning/AUTONOMY_CHARTER.md governs unattended wakes: routing, spend rails, decision rights, wake protocol. Read it before pulling work. SPRINT MODE amended: usage rail LIFTED thru 07-06 per user directive; full fleet per wake; Fable decides even if loop model switches to Opus (see memory feedback_sprint_fleet_orchestration_2026_07_03).]
-[SPRINT WAKES 1-6 DONE 2026-07-03/04 (26 lane commits, 71 agents, ~7.3M tokens; every ship Opus-reviewed). Queue below = wave 7.]
-1. [SOCCER-TICK-STATE] Kill the UNK capture artifact: make every soccer_intl in-play tick carry minute/half state (22/40 games currently store a bare 'live' placeholder -- same class as the basketball clock gap fixed in wave 5); derive segment from ESPN soccer clock fields in the live-state path | scripts/platformkit/ingame/ | future ticks segment-labeled; H1/H2 trust adjudication becomes possible as corpus grows.
-2. [QUOTE-FRESHNESS-CONTROL] Add a fresh-quote control dimension to outcome-verdict (all sports incl re-reading MLB): score model-vs-venue ONLY on ticks where the venue quote actually moved recently, report both raw and controlled verdicts -- if MLB's I5-I9 BETTER or soccer's WORSE flips under the control, that is the honest headline | scripts/platformkit/ingame/ | both numbers per segment per sport.
-3. [NPB-KANJI-FINISH] Pending the direct Opus review of the orphaned diff: PASS -> commit + live-verify NPB pricing during JST daytime; FAIL -> rebuild the lane fresh (report gotcha: keep kanji ONLY in data dicts, romanize everything in the report text -- the crash was a structured-output validation loop) | scripts/platformkit/odds_provider/ | NPB prices attach.
-4. [POST-RESTART-VERIFY] One-command post-restart verification pack (scripts/platformkit/autonomy/post_restart_verify.py): checks proc count, ports 200, new ProcSpecs ticking (m33-m36), capture dirs appearing for tennis/wnba/npb/kbo, wnba shadow field in fresh ticks, kalshi pregame events >0 per sport, SLA scoreboard GREEN -- prints PASS/FAIL table so the ONE human restart is self-verifying | scripts/platformkit/autonomy/ | script + tests; referenced from the digest.
-5. [FORWARD-GATES-CHECK] It is past 2026-07-04T00:00Z: verify H1/H2 MLB tail gates are accruing forward ticks (forward_games should rise tonight), multi-sport gates tick clean, m32 nightly candidates re-ran on the expanded corpora; report real numbers | scripts/platformkit/ingame/ + data/domains/ | forward_games>0 confirmed or honest not-yet with cause.
+[SPRINT WAKES 1-7 DONE 2026-07-03/04 (31 lane commits, 82 agents, ~8.4M tokens; every ship Opus-reviewed, crashed lanes direct-Opus-reviewed). Queue below = wave 8.]
+1. [WNBA-RESOLVER-MAP] team_resolver wnba map: Kalshi city-only labels ('Las Vegas', 'Golden State', 'Toronto') vs ESPN full names -- mirror the KBO/NPB map pattern, ground on real fetched KXWNBAGAME labels + espn_scoreboard.parquet names (13 franchises incl Toronto Tempo/Golden State); live-verify tonight's slate prices | scripts/platformkit/odds_provider/ | wnba board prices attach.
+2. [SOCCER-BOARD-GROUP] Fix the pre-existing bet_board '1X2'-vs-'Moneyline' group-name mismatch blocking soccer book-table attach (affects soccer + soccer_intl); study which side is canonical before renaming | scripts/platformkit/frontend/ | soccer_intl book table attaches live (8 events had prices with no board rows).
+3. [SOCCER-TRUST-RERUN] Re-adjudicate soccer_intl trust cross-corpus on the ENLARGED corpus (raw + backfilled sidecar variants SEPARATELY, never merged): do H1/H2 ADVERSE replicate in md5 halves now that segments clear floors? If ADVERSE-REPLICATED in both variants -> formalize the human-queue recommendation (PROPOSED diff exists: docs/research/organization-sprint/PROPOSED_soccer_inplay_suppression.md) | scripts/platformkit/ingame/ | verdict with per-half numbers.
+4. [MLB-FRESH-TRUST] Cross-corpus check of the fresh-only MLB I4-I6 WORSE finding (md5 halves through the freshness arm): replicated or single-corpus artifact? Plus root-cause memo on the raw-verdict drift (BETTER->MATCH as corpus grew 29->105 games) with the honest timeline; reject-ledger rows | scripts/platformkit/ingame/ | numbers both halves + memo.
+5. [TAIL-PREREG-NEW-SPORTS] Pre-register H1/H2 tail hypotheses for wnba/npb/kbo NOW (mirror gate-multi pattern, stamp = commit time) so forward evidence counts from each sport's FIRST captured tick post-restart | scripts/platformkit/ingame/ | verdict files PENDING_FORWARD n=0 exist for all 3.
 HUMAN QUEUE (updated SPRINT WAKE 1): (a) ONE supervisor restart activates everything shipped this wake: m33 wedge reaper + m34 freshness SLA + m35 tail-multi + WNBA capture spec pickup (boot.ps1 cycle -- charter forbids unattended supervisor restarts); (b) m32 weather_totals SHIP_REVIEW (standing); (c) m19 wave-2 replication outcomes if any survive BOTH corpora -> fresh SHIP_REVIEW decisions; (d) register_autostart.ps1 -Register in an ELEVATED shell (standing); (e) CV_MLB_SP_ADJUST stays CLOSED as honest REJECT (returns only via m32 nightly re-gate). Parked follow-ups unchanged (charter Section 4 PARKED).
 
 DONE (2026-07-02): [P2.2] Feed-health scoreboard SHIPPED -- NEW scripts/platformkit/odds_provider/feed_health.py + feed_health_runner.py (registered as supervisor ProcSpec m30_feed_health, HEARTBEAT readiness, 600s cadence): live-probes every (provider, sport) pair the REAL slate uses (reuses aggregate.default_providers(), not a synthetic ping) and classifies GREEN (real data OR an honest empty/unsupported-sport degrade -- not an outage) vs RED (auth/forbidden/timeout/parse/unexpected-shape/exception -- the scraper is actually broken). LIVE-VERIFIED it catches a REAL fault: a live run hit an actual Pinnacle 401 Unauthorized on soccer_intl (transient rate-limit from repeated calls this session) that `aggregate()` had been silently swallowing (that venue just vanishes from the merged slate with no visible signal) -- feed_health correctly surfaced it as one RED row while mlb/espn/fanduel/kalshi/polymarket stayed GREEN. 16 new tests green (10 feed_health + 6 runner), both files well under 300 LOC (185, 115). Also updated tests/supervisor/test_manifest.py's service-set assertion for m30 (21 green).
