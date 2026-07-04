@@ -1,8 +1,9 @@
 """scripts.platformkit.ingame.ingame_tail_gate_multi -- LANE C: PRE-REGISTERED
-cross-sport in-play venue-bias gate (tennis + soccer_intl / World Cup), the
-multi-sport counterpart to ingame_tail_gate.py (MLB-only).
+cross-sport in-play venue-bias gate (tennis + soccer_intl / World Cup + wnba +
+npb + kbo), the multi-sport counterpart to ingame_tail_gate.py (MLB-only).
 
-THE HYPOTHESES (registered at PRE_REGISTERED_AT, this lane's ratification)
+THE HYPOTHESES (registered at each sport's own PRE_REGISTERED_AT stamp -- see
+PRE_REGISTERED_AT_BY_SPORT)
 ---------------------------------------------------------------------------
 Mirroring the SAME bands the MLB gate pre-registered (ingame_tail_gate.py
 HYPOTHESES, discovery corpus 95 games 2026-06-19..07-02) as the DEFAULT
@@ -16,13 +17,24 @@ multiple-testing draw:
   H1  [0.10,0.20)  venue UNDERPRICES (realized rate ABOVE price) -- "longshots too cheap"
   H2  [0.65,0.80)  venue OVERPRICES  (realized rate BELOW price) -- "mid-favorites too dear"
 
-Scored on FORWARD-captured games ONLY (first tick strictly after
-PRE_REGISTERED_AT) -- never on the discovery/pre-registration sample, exactly
-like the MLB gate. Each sport's verdict file starts PENDING_FORWARD n=0 the
-moment this module first runs for that sport, and accumulates evidence as its
-capture corpus grows (this lane does not touch any daemon hot path -- the
-runner registered in ingame_tail_multi_runner.py is what actually re-runs this
-per tick once wired).
+Scored on FORWARD-captured games ONLY (first tick strictly after that sport's
+own pre-registration stamp) -- never on the discovery/pre-registration sample,
+exactly like the MLB gate. Each sport's verdict file starts PENDING_FORWARD
+n=0 the moment this module first runs for that sport, and accumulates
+evidence as its capture corpus grows (this lane does not touch any daemon hot
+path -- the runner registered in ingame_tail_multi_runner.py is what actually
+re-runs this per tick once wired).
+
+PER-SPORT STAMPS (2026-07-04 LANE 5 addition)
+----------------------------------------------
+tennis / soccer_intl / soccer were registered 2026-07-04T00:00:00Z (unchanged
+-- see PRE_REGISTERED_AT_BY_SPORT and the byte-identical regression test).
+wnba / npb / kbo are registered 2026-07-04T12:00:00Z -- a FRESH, LATER stamp,
+deliberately set before any of their in-play capture exists yet, so their
+first captured tick is trivially forward-only from day one. A sport not
+listed in PRE_REGISTERED_AT_BY_SPORT falls back to _DEFAULT_PRE_REGISTERED_AT
+(the original single stamp), preserving old behavior for any future caller
+that adds a sport without an explicit entry.
 
 HONESTY: venue-vs-outcome calibration only; fees/fills/adverse-selection are
 NOT modeled; no $ edge is claimed; acting on a CONFIRMED verdict stays a HUMAN
@@ -46,10 +58,31 @@ from scripts.platformkit.ingame.ingame_tail_scan_multi import SPORTS, scan_sport
 
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 
-# Stamped once, at this lane's ratification. A game whose first captured tick
-# predates this can NEVER count as forward evidence for ANY sport (mirrors
-# ingame_tail_gate.REGISTERED_AT).
-PRE_REGISTERED_AT = "2026-07-04T00:00:00Z"
+# Original single global stamp, kept as the fallback for any sport not present
+# in PRE_REGISTERED_AT_BY_SPORT (preserves the pre-refactor default exactly).
+_DEFAULT_PRE_REGISTERED_AT = "2026-07-04T00:00:00Z"
+PRE_REGISTERED_AT = _DEFAULT_PRE_REGISTERED_AT  # back-compat alias, unchanged value
+
+# Per-sport pre-registration stamps. tennis/soccer_intl/soccer keep the
+# ORIGINAL 2026-07-04T00:00:00Z stamp untouched (byte-identical verdict output
+# is asserted by test_existing_sports_stamp_and_output_unchanged). wnba/npb/kbo
+# get a fresh, later stamp -- registered BEFORE any of their capture exists --
+# so evidence counts from each sport's first captured tick.
+PRE_REGISTERED_AT_BY_SPORT: Dict[str, str] = {
+    "tennis": _DEFAULT_PRE_REGISTERED_AT,
+    "soccer_intl": _DEFAULT_PRE_REGISTERED_AT,
+    "soccer": _DEFAULT_PRE_REGISTERED_AT,
+    "wnba": "2026-07-04T12:00:00Z",
+    "npb": "2026-07-04T12:00:00Z",
+    "kbo": "2026-07-04T12:00:00Z",
+}
+
+
+def pre_registered_at_for(sport: str) -> str:
+    """This sport's pre-registration stamp, falling back to the original
+    single global stamp for any sport not explicitly listed above."""
+    return PRE_REGISTERED_AT_BY_SPORT.get(sport, _DEFAULT_PRE_REGISTERED_AT)
+
 
 HYPOTHESES: List[Dict[str, str]] = [
     {"id": "H1_longshot_underpriced", "band": "[0.10,0.20)",
@@ -82,12 +115,17 @@ def _judge(band_stats: Optional[Dict[str, Any]], direction: str) -> str:
 
 
 def run_gate_for_sport(sport: str, scan_fn: Optional[Callable[..., Dict[str, Any]]] = None,
-                       pre_registered_at: str = PRE_REGISTERED_AT,
+                       pre_registered_at: Optional[str] = None,
                        verdict_out: Optional[Path] = None) -> Dict[str, Any]:
     """Run discovery + forward scans for ONE sport, judge each pre-registered
     hypothesis on the forward corpus only, write the verdict JSON, return the
     runner headline dict. Never raises -- a scan failure degrades to
-    PENDING_FORWARD n=0 rather than killing the tick."""
+    PENDING_FORWARD n=0 rather than killing the tick. *pre_registered_at*
+    defaults to this sport's own stamp (PRE_REGISTERED_AT_BY_SPORT) when not
+    given explicitly -- explicit callers (e.g. existing tests) keep working
+    unchanged."""
+    if pre_registered_at is None:
+        pre_registered_at = pre_registered_at_for(sport)
     _scan = scan_fn if scan_fn is not None else (
         lambda **kw: scan_sport(sport, **kw))
     try:
@@ -162,9 +200,10 @@ def run_gate_all(sports: Optional[List[str]] = None) -> List[Dict[str, Any]]:
 
 def main() -> None:
     headlines = run_gate_all()
-    print("ingame_tail_gate_multi | pre_registered_at=%s" % PRE_REGISTERED_AT)
+    print("ingame_tail_gate_multi | per-sport pre_registered_at (see PRE_REGISTERED_AT_BY_SPORT)")
     for h in headlines:
-        print("  %-12s verdict=%s" % (h["sport"], h["verdict"]))
+        print("  %-12s pre_registered_at=%s verdict=%s" % (
+            h["sport"], pre_registered_at_for(h["sport"]), h["verdict"]))
         print("    " + h["verdict_reason"])
         print("    verdict file: %s" % _verdict_out(h["sport"]))
     print("NOTE: calibration measurement; no fees modeled; no edge claimed.")
