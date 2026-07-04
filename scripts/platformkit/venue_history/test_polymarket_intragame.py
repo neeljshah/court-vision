@@ -132,6 +132,34 @@ def test_enumerator_resumability(tmp_path: Path) -> None:
     assert result2["n_game_days"] == 2  # cumulative counter carried from progress
 
 
+def test_nba_slug_and_outcome_parameterization(tmp_path: Path) -> None:
+    """LANE 1: sport='nba' builds the nba-dailies-<date> slug (not hardcoded mlb)
+    and resolves outcomes/writes output identically to the mlb path -- confirms
+    the module needs no per-sport branching, just the sport argument threaded
+    through slug + out_dir (verified live against the real gamma API separately)."""
+    events = {
+        "nba-dailies-2023-03-01": [{
+            "slug": "nba-dailies-2023-03-01",
+            "markets": [_market("nba-lal-bos-2023-03-01", ["Lakers", "Celtics"],
+                                "N0", "N1", ["0", "1"])],
+        }],
+    }
+    history = {"N0": [{"t": 1677628800, "p": 0.42}]}
+    http = _fake_http(events, history)
+    ev = pi.fetch_dailies_event("nba", "2023-03-01", http=http)
+    assert ev is not None and ev["slug"] == "nba-dailies-2023-03-01"
+    out_dir = tmp_path / "poly_nba_out"
+    result = pi.run_backfill("nba", "2023-03-01", "2023-03-01", out_dir=out_dir,
+                             http=http, sleep_sec=0, sleep_fn=lambda s: None, max_requests=10)
+    assert result["sport"] == "nba"
+    assert result["n_games"] == 1
+    out_file = out_dir / "2023-03-01_nba-dailies-2023-03-01.jsonl"
+    assert out_file.is_file()
+    doc = json.loads(out_file.read_text(encoding="utf-8").strip())
+    assert doc["sport"] == "nba"
+    assert doc["outcome_home_win"] == 0  # away (Celtics/outcome[1]) won
+
+
 def test_budget_stops_run_short_of_end_date(tmp_path: Path) -> None:
     events = {
         "mlb-dailies-2023-04-01": [{
