@@ -113,6 +113,52 @@ def test_dispatch_missing_resolver_leaves_ticker_unresolved():
     assert fn("KXWCGAME-x") is None
 
 
+def test_dispatch_routes_wnba_ticker_by_prefix():
+    wnba_calls = []
+
+    def wnba_fn(t):
+        wnba_calls.append(t)
+        return (88, 81)
+
+    fn = ps._dispatch_score_fn(None, None, wnba_fn=wnba_fn)
+    assert fn("KXWNBAGAME-26JUL051930LVACHI") == (88, 81)
+    assert fn("KXMLBGAME-x") is None  # no mlb resolver injected -> unresolved
+    assert wnba_calls == ["KXWNBAGAME-26JUL051930LVACHI"]
+
+
+def test_dispatch_missing_wnba_resolver_leaves_ticker_unresolved():
+    fn = ps._dispatch_score_fn(None, None, wnba_fn=None)
+    assert fn("KXWNBAGAME-26JUL051930LVACHI") is None
+
+
+def _wnba_bet(gid, side="home", ek=None):
+    return {"channel": "paper_ingame", "status": "open", "sport": "wnba",
+            "game_id": gid, "side": side, "market": "win_home",
+            "taken_decimal": 1.9, "model_prob": 0.6,
+            "edge_key": ek or ("wnba|%s|win_home|%s|2026-07-05" % (gid, side))}
+
+
+def test_settle_open_wnba_batch_via_injected_wnba_score_fn(tmp_path):
+    ticker = "KXWNBAGAME-26JUL051930LVACHI"
+    led = _ledger(tmp_path, [_wnba_bet(ticker)])
+    score_fn = ps._dispatch_score_fn(None, None, wnba_fn=lambda t: (88, 81))
+
+    def fake_grade(bet, hs, as_, path=None):
+        return {"status": "settled", "outcome": "win" if hs > as_ else "loss"}
+
+    doc = ps.settle_open(ledger_path=led, score_fn=score_fn, grade_fn=fake_grade)
+    assert doc["settled"] == 1
+    assert doc["by_sport"]["wnba"]["settled"] == 1
+
+
+def test_wnba_score_fn_inert_without_scoreboard_parquet(monkeypatch, tmp_path):
+    # WnbaOutcomeResolver() with no local parquet -> available=False -> _wnba_score_fn
+    # returns None (the bet stays open, never a fabricated settle).
+    from scripts.platformkit.ingame import wnba_outcome_resolver as wr
+    monkeypatch.setattr(wr, "DEFAULT_SCOREBOARD_PARQUET", tmp_path / "missing.parquet")
+    assert ps._wnba_score_fn() is None
+
+
 def test_default_score_fn_paths_never_touch_network_when_score_fn_injected(tmp_path, monkeypatch):
     # settle_open with an explicit score_fn must NEVER build the default resolvers
     # (and therefore never call the soccer finals refresh) -- guards the per-file

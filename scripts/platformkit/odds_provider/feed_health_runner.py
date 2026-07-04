@@ -2,8 +2,8 @@
 
 Every ~600s: live-probes every (provider, sport) pair the real slate uses
 (feed_health.scan across DEFAULT_SPORTS, now widened to nba/mlb/soccer/
-soccer_intl/tennis -- unchanged cadence: 600s comfortably covers the heavier
-probe cycle, so the interval is left as-is rather than shortened), heals any
+soccer_intl/tennis/wnba/npb -- unchanged cadence: 600s comfortably covers the
+heavier probe cycle, so the interval is left as-is rather than shortened), heals any
 RED auth/blocked provider (feed_health.heal marks its host stealth-first for
 the NEXT fetch -- see transport.py), atomically writes the GREEN/RED verdict
 doc (with the healed hosts attached), also runs the capture_quality

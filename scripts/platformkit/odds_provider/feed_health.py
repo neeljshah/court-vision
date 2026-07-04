@@ -33,7 +33,13 @@ _OUT_PATH = _REPO / "data" / "frontend" / "ops" / "feed_health.json"
 GREEN = "GREEN"
 RED = "RED"
 
-DEFAULT_SPORTS = ("nba", "mlb", "soccer", "soccer_intl", "tennis")
+# "wnba"/"npb" added 2026-07-03 (paper enablement sweep, LANE 5): every provider's
+# fetch() degrades cleanly to an "unsupported sport" UNAVAILABLE for a sport it does
+# not carry (never raises), which _classify_reason maps to GREEN (a benign, honest
+# degrade) -- so widening this list only ADDS real signal (kalshi covers both; a
+# provider silently going RED for either sport now becomes visible) and can never
+# turn an existing GREEN row RED.
+DEFAULT_SPORTS = ("nba", "mlb", "soccer", "soccer_intl", "tennis", "wnba", "npb")
 
 # provider name -> the host its live network calls hit. Sourced from each
 # module's own base-URL constant (grepped, not guessed): pinnacle._BASE,

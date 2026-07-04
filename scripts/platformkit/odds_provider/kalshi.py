@@ -34,6 +34,12 @@ _BASE = "https://api.elections.kalshi.com/trade-api/v2"
 # Sport -> Kalshi series-ticker prefixes for team game-winner markets. Kalshi's
 # sports series use KX<LEAGUE>GAME naming; we filter client-side by event_ticker
 # prefix since the public list endpoint paginates across all categories.
+# "npb" added 2026-07-03 (paper enablement sweep, LANE 5): KXNPBGAME is
+# live-verified in kalshi_series_spec.py (5 OPEN markets probed 2026-07-04);
+# the short "KXNPB" prefix matches the existing nba/mlb/soccer convention
+# (this provider only emits moneyline-shaped events -- parse_events drops any
+# non-two-way leg, so a stray KXNPBSPREAD ticker is simply skipped, not
+# fabricated into a moneyline price).
 _SERIES_HINT: Dict[str, str] = {
     "nba": "KXNBA",
     "wnba": "KXWNBA",
@@ -41,6 +47,7 @@ _SERIES_HINT: Dict[str, str] = {
     "soccer": "KXEPL",
     "soccer_intl": "KXWC",
     "tennis": "KXATP",
+    "npb": "KXNPB",
 }
 
 
