@@ -36,7 +36,11 @@ _HERE = Path(__file__).resolve().parent
 # data/ is the gitignored runtime tree (see data-vault-nocommit rule).
 DEFAULT_INPLAY_DIR = _HERE.parents[2] / "data" / "cache" / "inplay_history"
 
-DEFAULT_SPORTS: tuple = ("nba", "mlb", "soccer", "soccer_intl", "tennis")
+# wnba/npb/kbo added 2026-07-04 (LANE 4): kalshi_series_spec.SERIES_SPEC already
+# wires all three for in-play (fetch_inplay is unaffected by the pregame-provider
+# fix in kalshi.py -- it always queried series_ticker= server-side correctly).
+DEFAULT_SPORTS: tuple = ("nba", "mlb", "soccer", "soccer_intl", "tennis",
+                         "wnba", "npb", "kbo")
 
 # Cadence: poll every FAST_INTERVAL_SEC while a game is live; back off to
 # IDLE_INTERVAL_SEC when none are. Exponential backoff on repeated fetch errors.

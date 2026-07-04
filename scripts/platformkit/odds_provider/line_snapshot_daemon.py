@@ -50,7 +50,14 @@ from .snapshot import DEFAULT_HISTORY_DIR, write_quotes
 logger = logging.getLogger(__name__)
 
 # Default slate of active sports the daemon rotates through each tick.
-DEFAULT_SPORTS: tuple = ("nba", "mlb", "soccer", "soccer_intl", "tennis")
+# wnba/npb/kbo added 2026-07-04 (LANE 4 close-capture widening): all three ride
+# the SAME quotes_from_aggregate/write_quotes machinery unchanged; Kalshi is
+# their ONLY odds source (ESPN/fanduel/polymarket/pinnacle report "unsupported"
+# for all three), so this pregame capture daemon is what gives them a real
+# close to grade against (verified live: KalshiProvider now returns real
+# priced events for wnba/npb/kbo after the series_ticker fix in kalshi.py).
+DEFAULT_SPORTS: tuple = ("nba", "mlb", "soccer", "soccer_intl", "tennis",
+                         "wnba", "npb", "kbo")
 
 # Liveness heartbeat (RB-P0-03): supervised as m1_line_daemon. serve_forever beats
 # this every tick so the supervisor's HEARTBEAT readiness reads the service

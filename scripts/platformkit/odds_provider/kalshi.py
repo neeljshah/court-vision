@@ -31,15 +31,14 @@ logger = logging.getLogger(__name__)
 
 _BASE = "https://api.elections.kalshi.com/trade-api/v2"
 
-# Sport -> Kalshi series-ticker prefixes for team game-winner markets. Kalshi's
-# sports series use KX<LEAGUE>GAME naming; we filter client-side by event_ticker
-# prefix since the public list endpoint paginates across all categories.
-# "npb" added 2026-07-03 (paper enablement sweep, LANE 5): KXNPBGAME is
-# live-verified in kalshi_series_spec.py (5 OPEN markets probed 2026-07-04);
-# the short "KXNPB" prefix matches the existing nba/mlb/soccer convention
-# (this provider only emits moneyline-shaped events -- parse_events drops any
-# non-two-way leg, so a stray KXNPBSPREAD ticker is simply skipped, not
-# fabricated into a moneyline price).
+# Sport -> Kalshi series-ticker prefixes for team game-winner markets. Used as a
+# client-side event_ticker startswith GUARD (defensive, mirrors inplay_kalshi's
+# relevant-filter) and as the fallback sport-scope when no exact GAME series is
+# registered for a sport (tennis: MATCH-shaped, not GAME -- correctly absent from
+# _GAME_SERIES below).
+# "npb" added 2026-07-03 (paper enablement sweep, LANE 5); "kbo" added
+# 2026-07-04 (LANE 4 close-capture widening) -- both live-verified in
+# kalshi_series_spec.py.
 _SERIES_HINT: Dict[str, str] = {
     "nba": "KXNBA",
     "wnba": "KXWNBA",
@@ -48,11 +47,27 @@ _SERIES_HINT: Dict[str, str] = {
     "soccer_intl": "KXWC",
     "tennis": "KXATP",
     "npb": "KXNPB",
+    "kbo": "KXKBO",
 }
 
 
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
+def _game_series_ticker(sport: str) -> Optional[str]:
+    """Exact Kalshi GAME series_ticker for *sport*, or None (no exact series /
+    lookup unavailable -- caller falls back to the unfiltered+startswith path).
+
+    Sourced from kalshi_series_spec._GAME_SERIES (the same server-verified
+    registry inplay_kalshi already queries by), guarded so a missing/broken
+    import degrades to None rather than raising. Never raises.
+    """
+    try:
+        from .kalshi_series_spec import _GAME_SERIES
+        return _GAME_SERIES.get(str(sport).lower())
+    except Exception:  # noqa: BLE001 -- degrade, never bubble
+        return None
 
 
 def _token() -> Optional[str]:
@@ -160,7 +175,24 @@ class KalshiProvider:
         prefix = _SERIES_HINT.get(sport)
         if not prefix:
             return unavailable(f"kalshi: unsupported sport '{sport}'")
-        params = {"limit": self._page_limit, "status": "open"}
+        params: Dict[str, Any] = {"limit": self._page_limit, "status": "open"}
+        # BUGFIX (2026-07-04, LANE 4): an UNFILTERED /markets call paginates across
+        # ALL ~2300 Kalshi series; a single 200-row page can miss a sport's markets
+        # entirely regardless of volume (verified live: nba/mlb/soccer/tennis/wnba/
+        # npb ALL returned 0 rows via the old unfiltered call, masked for
+        # nba/mlb/soccer/tennis only because aggregate() also merges ESPN/fanduel/
+        # polymarket/pinnacle for those sports -- wnba/npb/kbo have NO other odds
+        # source, so this was a silent total outage for them). Passing the exact
+        # per-sport GAME series_ticker (kalshi_series_spec._GAME_SERIES, the
+        # server-verified moneyline series -- same registry inplay_kalshi already
+        # uses) makes the call SERVER-SIDE scoped, matching the in-play fetcher's
+        # already-correct pattern. A sport with no GAME series (tennis: MATCH-
+        # shaped, not GAME) falls back to the prior unfiltered+startswith behavior
+        # unchanged. The client-side startswith stays as a defensive guard either
+        # way (mirrors inplay_kalshi._fetch_one_series).
+        series_ticker = _game_series_ticker(sport)
+        if series_ticker:
+            params["series_ticker"] = series_ticker
         url = f"{_BASE}/markets?" + urllib.parse.urlencode(params)
         try:
             body, fetched_at = self._get(url)
