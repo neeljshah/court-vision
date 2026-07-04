@@ -9,23 +9,19 @@ This module is that producer.
 
 JOIN (STRICT AS-OF, leak-free): (a) grade ticks
 data/cache/ingame_grade/soccer_intl/<ticker>.jsonl (live_grade._load_pairs:
-{game_id, ts, model_prob, market_prob}); (b) fotmob snapshots
-data/domains/soccer_intl/fotmob_live/<matchId>.jsonl (ingame_fotmob
-append_snapshot rows: {home, away, fetch_ts, xg_home, xg_away, sot_diff,
-cutoff_min}), matched via ingame_fotmob.match_to_fixture on the ticker's
-team names (soccer_outcome.parse_wc_ticker + the SAME code->name resolution
-the outcome resolver uses, so xG matching never disagrees with settlement).
-A snapshot joins a tick only if fetch_ts <= tick ts (never a future
-snapshot); the LATEST eligible one wins. No eligible snapshot ->
-model_prob_enriched=None -> row skipped by the judge, never imputed.
+{game_id, ts, model_prob, market_prob}); (b) fotmob snapshots (live dir by
+default, or the LANE 2 backfill dir -- see PROVENANCE below) matched via
+ingame_fotmob.match_to_fixture on the ticker's team names (soccer_outcome.
+parse_wc_ticker + the SAME code->name resolution the outcome resolver uses,
+so xG matching never disagrees with settlement). A snapshot joins a tick only
+if fetch_ts <= tick ts (never future); latest eligible one wins. No eligible
+snapshot -> model_prob_enriched=None -> row skipped, never imputed.
 
 model_prob_enriched IS A NAIVE, MEASUREMENT-ONLY REFERENCE CONDITIONING: no
 live xG-conditioned model exists yet, so this producer nudges the baseline
 model_prob in logit space by as-of xg_diff/sot_diff (fixed-form, clipped, NOT
 fitted/trained, NEVER wired to any decision path) purely so GATE A has a
-genuine (if crude) enriched arm to judge WORSE/MATCH/BETTER against. A future
-lane may replace this with a properly fit model without changing the row-shape
-contract.
+genuine (if crude) enriched arm to judge WORSE/MATCH/BETTER against.
 
 HONESTY: probability/Brier space only; no $/roi/pnl field; a join miss /
 resolver miss / bad tick is skipped, never fabricated or imputed.
@@ -49,8 +45,18 @@ logger = logging.getLogger(__name__)
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_GRADE_DIR = _REPO_ROOT / "data" / "cache" / "ingame_grade" / "soccer_intl"
 DEFAULT_FOTMOB_DIR = _REPO_ROOT / "data" / "domains" / "soccer_intl" / "fotmob_live"
+DEFAULT_FOTMOB_BACKFILL_DIR = _REPO_ROOT / "data" / "domains" / "soccer_intl" / "fotmob_backfill"
 
 SPORT = "soccer_intl"
+
+# LANE 2 addition: row provenance selector. "live" (default, unchanged) reads
+# DEFAULT_FOTMOB_DIR, no extra field. "backfill" reads DEFAULT_FOTMOB_BACKFILL_DIR
+# and tags rows provenance="backfill_validation" -- never pool with GATE A's
+# forward verdict (see ingame_enrichment_gates.run_gate_a); the backfill
+# validation pass writes its own separate verdict file.
+PROVENANCE_LIVE = "live"
+PROVENANCE_BACKFILL = "backfill"
+_ROW_TAG_BACKFILL = "backfill_validation"
 
 # Naive reference-conditioning magnitude cap (logit space) -- crude on purpose,
 # see module docstring. Never tuned against outcome data (that would leak into
@@ -196,16 +202,27 @@ def _xg_conditioned_prob(model_prob: float, xg_diff: Optional[float],
 def build_rows(*, grade_dir: Optional[Path] = None,
               fotmob_dir: Optional[Path] = None,
               outcome_fn: Optional[Any] = None,
-              resolver: Optional[Any] = None) -> List[Dict[str, Any]]:
+              resolver: Optional[Any] = None,
+              provenance: str = PROVENANCE_LIVE) -> List[Dict[str, Any]]:
     """GATE A production rows: as-of-joined {game_id, y, model_prob,
     model_prob_enriched} for every graded soccer_intl tick with a resolvable
     outcome AND a strict as-of fotmob match. *resolver* is injectable for
-    hermetic tests; defaults to the real parquet-backed resolver. Never
-    raises (bad inputs just yield fewer/zero rows)."""
+    hermetic tests; defaults to the real parquet-backed resolver.
+
+    *provenance*: "live" (default, unchanged -- reads fotmob_dir or
+    DEFAULT_FOTMOB_DIR, no extra row field) or "backfill" (reads fotmob_dir or
+    DEFAULT_FOTMOB_BACKFILL_DIR, tags every row provenance="backfill_validation";
+    see module docstring -- never pool with the forward gate). An explicit
+    *fotmob_dir* always wins over the provenance default. Never raises."""
     rows: List[Dict[str, Any]] = []
     try:
         gdir = Path(grade_dir) if grade_dir is not None else DEFAULT_GRADE_DIR
-        fdir = Path(fotmob_dir) if fotmob_dir is not None else DEFAULT_FOTMOB_DIR
+        if fotmob_dir is not None:
+            fdir = Path(fotmob_dir)
+        elif provenance == PROVENANCE_BACKFILL:
+            fdir = DEFAULT_FOTMOB_BACKFILL_DIR
+        else:
+            fdir = DEFAULT_FOTMOB_DIR
         if not gdir.is_dir():
             return rows
 
@@ -266,12 +283,15 @@ def build_rows(*, grade_dir: Optional[Path] = None,
                 enriched = _xg_conditioned_prob(float(mp), xg_diff, sot_diff)
                 if enriched is None:
                     continue
-                rows.append({
+                row = {
                     "game_id": ticker, "ts": ts, "y": float(y),
                     "model_prob": float(mp), "model_prob_enriched": enriched,
                     "xg_home": xg_home, "xg_away": xg_away,
                     "xg_asof_min": snap.get("cutoff_min"),
-                })
+                }
+                if provenance == PROVENANCE_BACKFILL:
+                    row["provenance"] = _ROW_TAG_BACKFILL
+                rows.append(row)
     except Exception as exc:  # noqa: BLE001 -- a producer failure yields honest [] rows
         logger.warning("enrichment_rows_soccer.build_rows failed: %s", exc)
         return []
@@ -282,6 +302,14 @@ def rows_fn() -> List[Dict[str, Any]]:
     """Zero-arg entry point matching ingame_enrichment_gates.RowsFn's contract
     (used by run_gate_a(rows_fn=enrichment_rows_soccer.rows_fn))."""
     return build_rows()
+
+
+def rows_fn_backfill() -> List[Dict[str, Any]]:
+    """LANE 2 VALIDATION pass: as-of-joins against the backfill sidecar dir,
+    rows tagged provenance="backfill_validation". NEVER pass to run_gate_a
+    (forward verdict file) -- use judge_enrichment(rows) + a separate
+    validation verdict path (see fotmob_backfill_validation)."""
+    return build_rows(provenance=PROVENANCE_BACKFILL)
 
 
 def main() -> None:
@@ -295,6 +323,7 @@ if __name__ == "__main__":
 
 
 __all__ = [
-    "DEFAULT_GRADE_DIR", "DEFAULT_FOTMOB_DIR", "SPORT",
-    "build_rows", "rows_fn",
+    "DEFAULT_GRADE_DIR", "DEFAULT_FOTMOB_DIR", "DEFAULT_FOTMOB_BACKFILL_DIR", "SPORT",
+    "PROVENANCE_LIVE", "PROVENANCE_BACKFILL",
+    "build_rows", "rows_fn", "rows_fn_backfill",
 ]
