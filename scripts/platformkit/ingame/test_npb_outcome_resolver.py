@@ -118,6 +118,31 @@ def test_missing_parquet_is_inert_never_raises(tmp_path):
     assert res.final_score(T_YOKYAK_YOK) is None
 
 
+def test_consecutive_day_same_matchup_never_borrows_prior_day_final():
+    """REGRESSION (found live 2026-07-04, twin of the KBO resolver fix): NPB
+    can also repeat the same matchup on consecutive days. Yesterday's game is
+    FINAL; today's identical matchup is still in progress (0-0, home_win
+    NaN). The resolver must return None for today's ticker, never silently
+    settle it using yesterday's already-final score for the same pairing."""
+    df = pd.DataFrame([
+        # 07-04: Rakuten(home) beat Nippon-Ham(away) 4-1 -- FINAL.
+        {"date": pd.Timestamp("2026-07-04"), "season": "2026", "home_team": "楽天",
+         "away_team": "日本ハム", "home_score": 4.0, "away_score": 1.0,
+         "home_win": 1.0, "tied": False},
+        # 07-05: SAME matchup, still in progress -- placeholder 0-0, NaN.
+        {"date": pd.Timestamp("2026-07-05"), "season": "2026", "home_team": "楽天",
+         "away_team": "日本ハム", "home_score": 0.0, "away_score": 0.0,
+         "home_win": float("nan"), "tied": False},
+    ])
+    res = R.NpbOutcomeResolver(results_df=df)
+    ticker_today = "KXNPBGAME-26JUL050400HOKTOH-HOK"  # 07-05 ticker, in-progress
+    assert res.home_win(ticker_today) is None
+    assert res.final_score(ticker_today) is None
+    ticker_yesterday = "KXNPBGAME-26JUL040400HOKTOH-HOK"
+    assert res.home_win(ticker_yesterday) == 1
+    assert res.final_score(ticker_yesterday) == (4, 1)
+
+
 def test_date_grace_window_plus_minus_one_day():
     res = _resolver()
     # T_HOKTOH ticker embeds 26JUL05 (from the -0400 HHMM tail's date group is

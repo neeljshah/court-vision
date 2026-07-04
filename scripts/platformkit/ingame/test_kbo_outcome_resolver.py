@@ -122,4 +122,30 @@ def test_missing_parquet_is_inert_never_raises(tmp_path):
     res = R.KboOutcomeResolver(results_parquet=tmp_path / "does_not_exist.parquet")
     assert res.available is False
     assert res.home_win(T_NCDKIA) is None
+
+
+def test_consecutive_day_same_matchup_never_borrows_prior_day_final():
+    """REGRESSION (found live 2026-07-04): KBO reruns the SAME matchup
+    (same home/away) on consecutive days in a series. Yesterday's game is
+    FINAL; today's identical matchup is still in progress (0-0, home_win
+    NaN). The resolver must return None for today's ticker, never silently
+    settle it using yesterday's already-final score for the same pairing."""
+    df = pd.DataFrame([
+        # 07-04: KIWOOM(home) beat DOOSAN(away) 6-5 -- FINAL.
+        {"date": pd.Timestamp("2026-07-04"), "season": "2026", "home_team": "KIWOOM",
+         "away_team": "DOOSAN", "home_score": 6.0, "away_score": 5.0,
+         "home_win": 1.0, "tied": False},
+        # 07-05: SAME matchup, still in progress -- placeholder 0-0, NaN.
+        {"date": pd.Timestamp("2026-07-05"), "season": "2026", "home_team": "KIWOOM",
+         "away_team": "DOOSAN", "home_score": 0.0, "away_score": 0.0,
+         "home_win": float("nan"), "tied": False},
+    ])
+    res = R.KboOutcomeResolver(results_df=df)
+    ticker_today = "KXKBOGAME-26JUL050100DOOKIW-KIW"  # 07-05 ticket, in-progress
+    assert res.home_win(ticker_today) is None
+    assert res.final_score(ticker_today) is None
+    # Yesterday's ticker (if one were captured) still resolves correctly.
+    ticker_yesterday = "KXKBOGAME-26JUL040100DOOKIW-KIW"
+    assert res.home_win(ticker_yesterday) == 1
+    assert res.final_score(ticker_yesterday) == (6, 5)
     assert res.final_score(T_NCDKIA) is None
