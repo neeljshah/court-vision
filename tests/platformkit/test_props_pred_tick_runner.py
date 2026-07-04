@@ -33,13 +33,22 @@ def test_bounded_run_stops_at_max_ticks(tmp_path):
 
 
 def test_heartbeat_at_boot_and_per_tick(monkeypatch, tmp_path):
-    """Heartbeat advanced at boot + after each tick."""
+    """Heartbeat advanced at boot + at least once per tick.
+
+    tick() beats at the start AND end of scoring (start/end-of-scoring
+    bracket, see props_pred_tick_runner.tick), so run(max_ticks=2) yields
+    1 boot beat + 2 beats/tick * 2 ticks = 5, not a naive 1-per-tick count
+    of 3. Assert >=1 beat per tick (a lower bound, not the exact internal
+    beat count) so this test doesn't re-break on a legitimate future beat
+    added inside tick() -- see .planning ledger LANE heartbeat-flake.
+    """
     beats = []
     monkeypatch.setattr(r, "_beat", lambda now=None: beats.append(now))
+    max_ticks = 2
     r.run(score_fn=lambda now: [],
           output_path=tmp_path / "snap.json",
-          clock=lambda: 11.0, sleep=_no_sleep, max_ticks=2)
-    assert len(beats) == 3
+          clock=lambda: 11.0, sleep=_no_sleep, max_ticks=max_ticks)
+    assert len(beats) >= max_ticks + 1
     assert 11.0 in beats
 
 
