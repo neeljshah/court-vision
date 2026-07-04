@@ -34,11 +34,38 @@ param(
     [int]$PollSeconds = 15,
     # C1: a WEDGED run_forever (process alive, supervise loop stopped ticking)
     # is treated as DOWN once its self-heartbeat is older than this many seconds.
-    # The supervisor beats every supervise tick (~2s + tick work); 90s is well
-    # above any healthy loop period yet far below a reboot/wedge, so a genuine
-    # wedge surfaces while a slow-but-healthy tick never false-positives.
-    [int]$SupervisorStaleSeconds = 90
+    #
+    # 2026-07-04 ROBUSTNESS FIX (LANE 1, root-cause confirmed in
+    # data/frontend/ops/api_crash_20260704_rootcause.json + 36+ WEDGED events
+    # in logs/watchdog_autostart.log since 2026-06-23): the OLD 90s threshold
+    # had ~ZERO margin. supervise() probes every ProcSpec serially each tick;
+    # each TCP/HTTP probe's own timeout is 2.0s (supervisor/health.py
+    # _DEFAULT_TIMEOUT), and the fleet is 41 specs as of this fix -- so a tick
+    # where several probes each run close to their timeout under heavy CPU
+    # load can approach 82s of serial probe time alone, before sleep/beat
+    # overhead, against a 90s cutoff. That is why the wedge-storm recurred in
+    # bursts with ~103-130s inter-wedge gaps (just past 90s each time) whenever
+    # fleet CPU was heavy (e.g. a parallel Sonnet fleet sprint).
+    #
+    # The supervisor-side fix (supervisor/_beat_thread.py, this same change)
+    # decouples the self-heartbeat from supervise()'s own duration via a
+    # background thread beating every 20s regardless of tick length, which
+    # should make 90s unnecessary in practice -- but 300s is kept as a
+    # DEFENSIVE outer bound: even a supervisor that somehow loses its beat
+    # thread (e.g. an unforeseen exception path) gets ~15x the 20s beat
+    # cadence margin before the watchdog calls it wedged, while a GENUINELY
+    # wedged process (loop stopped, thread dead too) still recovers within
+    # 5 minutes -- an acceptable bound for an unattended fleet, and far
+    # better than a false-positive fleet-wide reboot storm every ~2 minutes.
+    [int]$SupervisorStaleSeconds = 300
 )
+
+# 2026-07-04 boot-initiator stamping (LANE 1 robustness fix): the supervisor's
+# status doc includes a "boot_initiator" field so an operator (or a future
+# root-cause read) can see WHO/WHAT launched the currently-running supervisor
+# without reconstructing it from log timestamps. supervisor/__main__.py reads
+# this from the process env at each refresh_status() call.
+$env:NBA_AI_BOOT_INITIATOR = "watchdog_autostart"
 
 # Serve the PRODUCTION webapp dashboard on autostart (parity with go.ps1).
 # stack_specs.py reads these from the parent env at import; boot.ps1 inherits this

@@ -48,6 +48,7 @@ def supervisor_status(
     profile: str = "default",
     started_at: Optional[float] = None,
     updated_at: Optional[float] = None,
+    boot_initiator: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Build the status document from a list of per-proc state dicts.
 
@@ -55,6 +56,14 @@ def supervisor_status(
     optional keys ``pid``, ``restarts``, ``ready``, ``detail`` are passed
     through (defaulted) so the UI always sees the same shape. Pure -- does no
     I/O, so a test can assert the shape directly.
+
+    ``boot_initiator`` (2026-07-04 robustness fix): who/what launched THIS
+    supervisor process -- e.g. "watchdog_autostart" (the outer PS1 watchdog
+    relaunching a WEDGED/DOWN supervisor) vs "manual" (an operator running
+    boot.ps1 directly) vs None (unknown/not stamped). Additive + optional so
+    older callers/tests that omit it are unaffected; the field is None unless
+    the caller (supervisor.__main__, reading NBA_AI_BOOT_INITIATOR) supplies
+    it. Read-only diagnostic -- never gates any behavior.
     """
     rows: List[Dict[str, Any]] = []
     all_ready = True
@@ -76,6 +85,7 @@ def supervisor_status(
         "started_at": started_at,
         "updated_at": float(updated_at if updated_at is not None else time.time()),
         "all_ready": all_ready if rows else False,
+        "boot_initiator": boot_initiator,
         "procs": rows,
     }
 

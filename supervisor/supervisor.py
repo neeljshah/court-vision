@@ -2,24 +2,23 @@
 
 Brings the whole stack up with ONE readiness-gated call, with auto-restart +
 capped exponential backoff and graceful shutdown -- so it "just always runs".
+boot(): starts ProcSpecs in DEPENDENCY order (a dependent waits for deps READY).
+supervise(): one tick -- reap dead, restart per RestartPolicy+backoff, reap hung
+(stale-heartbeat) procs, write the status JSON (a FAILED proc is isolated, not
+fleet-sinking). drain()/shutdown(): graceful stop in REVERSE dependency order.
 
-  * boot(profile): start ProcSpecs in DEPENDENCY order; a dependent waits until
-    every dep is READY (per its readiness probe).
-  * supervise(): one tick -- reap dead, restart per RestartPolicy with backoff,
-    reap hung (stale-heartbeat) procs, write the status JSON. A FAILED proc does
-    NOT sink the rest (failure isolation).
-  * drain()/shutdown(): graceful stop in REVERSE dependency order.
-
-Restart/backoff, survivor-reconcile, crash-rate-breaker, self-heartbeat, and
-stale-heartbeat reaping bodies live in ``supervisor._restart`` (for the <=300 LOC
-rail); methods here delegate. Everything external is injectable (proc / clock /
-sleeper / fetcher) so a test drives boot/restart/backoff/drain with FAKES.
-States: PENDING -> STARTING -> READY ; on death -> RESTARTING -> (READY|FAILED).
-Stdlib-only, ASCII-only. Never writes data/registry/; never flips a flag on.
+Restart/backoff/survivor-reconcile/crash-breaker/stale-heartbeat bodies live in
+``supervisor._restart``; background self-beat lives in ``supervisor._beat_thread``
+(wedge-storm fix, see its docstring) -- both out of this module for the <=300
+LOC rail. Everything external is injectable (proc/clock/sleeper/fetcher) so
+tests drive boot/restart/backoff/drain with FAKES. States: PENDING -> STARTING
+-> READY ; on death -> RESTARTING -> (READY|FAILED). Stdlib-only, ASCII-only.
+Never writes data/registry/; never flips a flag on.
 """
 from __future__ import annotations
 
 import logging
+import os
 import time
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional
@@ -27,6 +26,7 @@ from typing import Any, Callable, Dict, List, Optional
 from scripts.platformkit.autonomy.heartbeat_reaper import HeartbeatReaper
 from supervisor import _restart
 from supervisor import proc as _proc_mod
+from supervisor._beat_thread import BeatThread
 from supervisor.proc import to_spawn_spec as _to_spawn_spec
 from supervisor.config import load_profile
 from supervisor.health import _probe_heartbeat  # re-exported for _restart + tests
@@ -114,16 +114,15 @@ class Supervisor:
         # silently (distinct from the per-spec backoff that paces ONE relaunch).
         self._restart_epochs: Dict[str, List[float]] = {}
         self._breaker_tripped: Dict[str, bool] = {}
+        self._beat_thread = BeatThread(self._beat_self)
 
     def _deps_ready(self, spec: ProcSpec) -> bool:
         return all(self._states[d].ready for d in spec.depends_on if d in self._states)
 
     def _is_alive(self, handle: Optional[Dict[str, Any]]) -> bool:
         """Liveness with the PID-REUSE guard (cmdline token verified if supported).
-
         A recycled OS pid would otherwise read alive forever; verify_cmdline=True
-        rejects it. Backends without the kwarg fall back to the plain pid check.
-        """
+        rejects it. Backends without the kwarg fall back to the plain pid check."""
         if not handle:
             return False
         try:
@@ -151,9 +150,7 @@ class Supervisor:
 
     def _await_ready(self, st: _ProcState, *, max_polls: int = 600) -> bool:
         """Poll readiness until READY, the proc dies, or max_polls elapse.
-
-        Sleeps via the injected sleeper between polls (the test records, never
-        sleeps). Returns True once READY."""
+        Sleeps via the injected sleeper between polls. Returns True once READY."""
         for _ in range(max_polls):
             if not self._is_alive(st.handle):
                 return False
@@ -173,14 +170,10 @@ class Supervisor:
     def boot(self, *, max_polls: int = 15) -> Dict[str, Any]:
         """Start every proc in dependency order, gating on dep readiness.
 
-        Reconciles survivors first (idempotent boot, no duplicate daemons / port
-        collisions). A proc launches only once its depends_on are READY; an unready
-        dep leaves dependents PENDING. Returns the status doc.
-
-        C2 BOOT-STALL FIX: ``max_polls`` defaults to 15 (was 600 -> ~10min stall
-        on one cold producer heartbeat). Readiness gating is PRESERVED; a laggard
-        hands off to supervise() promptly (which brings up + restarts laggards).
-        """
+        Reconciles survivors first (idempotent boot, no duplicate daemons/port
+        collisions); an unready dep leaves dependents PENDING. Returns the
+        status doc. ``max_polls``=15 (was 600 -> ~10min stall): a laggard
+        hands off to supervise() promptly instead."""
         self._reconcile_survivors()
         for spec in self._specs:  # topo order: deps precede dependents
             st = self._states[spec.name]
@@ -237,9 +230,14 @@ class Supervisor:
 
     def run_forever(self, *, max_cycles: Optional[int] = None,
                     tick_sec: float = 2.0) -> Dict[str, Any]:
-        """Boot then supervise on a cadence (max_cycles=None loops forever)."""
+        """Boot then supervise on a cadence (max_cycles=None loops forever).
+
+        BeatThread runs the whole loop so self-liveness keeps stamping even
+        if a tick runs long under load; see _beat_thread.BeatThread docstring.
+        """
         self.boot()
         self._beat_self()  # stamp liveness as soon as the supervise loop starts
+        self._beat_thread.start()
         cycles = 0
         while max_cycles is None or cycles < max_cycles:
             self.supervise()
@@ -251,6 +249,7 @@ class Supervisor:
 
     def drain(self) -> Dict[str, Any]:
         """Graceful stop in REVERSE dependency order (dependents before deps)."""
+        self._beat_thread.stop()
         for spec in reversed(self._specs):
             st = self._states[spec.name]
             if st.handle:
@@ -271,9 +270,10 @@ class Supervisor:
 
     def refresh_status(self) -> Dict[str, Any]:
         """Build the status doc, persist it atomically, and return it."""
-        doc = supervisor_status(
-            self._rows(), profile=self.profile,
-            started_at=self.started_at, updated_at=self._clock())
+        initiator = os.environ.get("NBA_AI_BOOT_INITIATOR") or None
+        doc = supervisor_status(self._rows(), profile=self.profile,
+            started_at=self.started_at, updated_at=self._clock(),
+            boot_initiator=initiator)
         self._write_status(doc)
         return doc
 
