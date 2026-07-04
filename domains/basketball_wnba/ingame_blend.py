@@ -1,5 +1,25 @@
 """domains.basketball_wnba.ingame_blend -- WNBA-local in-game win-prob blend.
 
+LANE 4 (this wave) SETTLEMENT: wave 2 shipped the FIXED-constant blend below
+(now `blend_prob_fixed_legacy`, K_SCORE=3.0, never fit on data) as the adapter
+default. The honest wave-2 check (data/domains/wnba/ingame_blend_check.json v1)
+showed a naive score-diff sigmoid beats it decisively at half (.1915 vs .2316)
+and end_q3 (.1606 vs .2318) on 150 2026 games. domains.basketball_wnba.
+ingame_blend_families.py then fit 4 pre-declared candidate families on 2024,
+validated on 2025, and OOS-checked on 2026 (see that module's docstring for the
+full method + data/domains/wnba/ingame_blend_check.json v2 for the tables).
+RESULT: the "anchored" family --
+
+    p_live = sigmoid( logit(p0) * w0 * (1 - t)  +  k * score_diff / sqrt(minutes_remaining) )
+
+-- won EVERY checkpoint (end_q1/half/end_q3) on BOTH 2025 (validate) and 2026
+(OOS) independently vs fixed, naive, and time_scaled -- a clean cross-corpus
+win, not a tie. Fit on 2024 only: k=0.63, w0=1.0 (frozen constants below,
+ANCHORED_K / ANCHORED_W0 -- NOT refit on 2025/2026, per the no-leak contract).
+`blend_prob` below is now this anchored family; the OLD fixed-constant formula
+is kept importable, unchanged, as `blend_prob_fixed_legacy` for comparison
+(ingame_blend_families.predict_fixed calls it directly).
+
 WNBA in-game live blend, deferred from Wave 1 (see adapter.py docstring): NBA's
 domains/basketball_nba/ingame_blend_plive.py hardcodes _REG_SEC=2880.0 (4x12min)
 and consumes a live PBP foul-state feed (players dict -> per-player personal
@@ -9,27 +29,24 @@ constant (regulation = 2400s, 4x10min) and DEGRADES the foul-state term out
 cleanly (it is simply absent from the feature set here -- not zero-filled, not
 approximated).
 
-FUNCTIONAL FAMILY (deliberately the SAME shape the NBA blend/repricer family
-uses, ported at the transparent-formula level rather than reusing NBA's fitted
-ML artifact, since fit_plive/predict_plive in ingame_blend_plive.py is trained
-on the NBA foul/bonus feature row this domain does not have):
+CURRENT DEFAULT FAMILY (anchored, adopted this wave):
 
-    p_live = sigmoid( logit(p0) * w_prior(t)  +  k * score_diff * ramp(t) )
+    p_live = sigmoid( logit(p0) * w_prior(t)  +  ANCHORED_K * score_diff / sqrt(minutes_remaining(t)) )
 
-  - w_prior(t) in [0, 1]: weight kept on the pregame prior as time elapses.
-    w_prior(t) = 1 - fraction_elapsed(t) -- the prior's influence LINEARLY
-    decays to 0 at the final buzzer (mirrors the "early trust prior, late trust
-    score" freshness ramp documented in scripts/platformkit/ingame/mlb_live_model.py,
-    re-derived here as a closed-form linear ramp rather than the MLB module's
-    4-bucket step function, since WNBA has no per-file bucket calibration yet).
-  - score_diff * ramp(t): the realized-state term. ramp(t) = fraction_elapsed(t)
-    / max(sec_remaining, floor) -- same "time_pressure" shape as NBA's
-    ingame_blend_plive.build_state_features (score_diff scaled by inverse time
-    remaining, floor-clamped so it never blows up near the buzzer); k is a fixed
-    points-to-logits scale (see K_SCORE below), NOT fit on a live corpus (no
-    leak-free live corpus exists yet for WNBA -- see calibration check step 4).
-  - AT t=0 (tipoff): ramp(0)=0, w_prior(0)=1 -> p_live == p0 exactly (recovers
-    the pregame Elo probability, the p0-recovery invariant tested below).
+  - w_prior(t) = ANCHORED_W0 * (1 - fraction_elapsed(t)): weight kept on the
+    pregame prior as time elapses. ANCHORED_W0=1.0 (fit) makes this identical
+    in SHAPE to the legacy family's w_prior(t) = 1 - fraction_elapsed(t) --
+    the fit independently recovered a pure linear prior-decay as optimal.
+  - score_diff / sqrt(minutes_remaining(t)): the realized-state term, scaled by
+    inverse SQRT time remaining in MINUTES (not linear inverse seconds, as the
+    legacy family used) -- this shape, with a properly fit k, is what wins
+    cross-corpus (see ingame_blend_families.py docstring for the full family
+    comparison). minutes_remaining floor-clamped at 25/60 min so the term never
+    diverges near the buzzer (same 25s floor the legacy ramp used).
+  - AT t=0 (tipoff): score_diff/... term uses whatever score_diff is at tipoff
+    (0 by construction in the adapter's real call path) and w_prior(0)=ANCHORED_W0
+    -> with ANCHORED_W0=1.0, p_live == p0 exactly (recovers the pregame Elo
+    probability, the p0-recovery invariant tested below).
   - AT t=T (buzzer): if the game is DECIDED (score_diff != 0), p_live snaps to
     the EXACT 0.0/1.0 (see predict_live's buzzer clamp -- same class of fix as
     domains/basketball_nba/test_nba_live_buzzer.py) rather than reporting a
@@ -56,17 +73,27 @@ REG_SEC: float = 2400.0
 PERIOD_SEC: float = 600.0
 OT_SEC: float = 300.0
 
-# Points-to-logits scale for the realized-score term. Kept a fixed, documented
-# constant (not fit on a live corpus -- WNBA has none yet) chosen so a 10-point
-# lead with ~1 quarter (600s) remaining moves the blended probability sharply
-# away from 0.5 without swamping the pregame prior at tip-off-adjacent states.
+# Points-to-logits scale for the LEGACY fixed blend's realized-score term. Kept
+# a fixed, documented constant (not fit on a live corpus at the time it was
+# shipped) chosen so a 10-point lead with ~1 quarter (600s) remaining moves the
+# blended probability sharply away from 0.5 without swamping the pregame prior
+# at tip-off-adjacent states. Retained ONLY for blend_prob_fixed_legacy.
 K_SCORE: float = 3.0
 
-# Floor on sec_remaining used only inside the ramp's inverse-time term, so the
-# realized-score contribution never diverges as sec_remaining -> 0 (mirrors
-# NBA's build_state_features time_pressure 30s floor, scaled here to WNBA's
-# shorter period length: 30 * (PERIOD_SEC/720) = 25s).
+# Floor on sec_remaining used only inside the legacy ramp's inverse-time term,
+# so the realized-score contribution never diverges as sec_remaining -> 0
+# (mirrors NBA's build_state_features time_pressure 30s floor, scaled here to
+# WNBA's shorter period length: 30 * (PERIOD_SEC/720) = 25s).
 _TIME_FLOOR_SEC: float = 25.0
+
+# ---------------------------------------------------------------------------
+# Current default family (anchored) -- fit ONLY on 2024, frozen thereafter.
+# See ingame_blend_families.py + data/domains/wnba/ingame_blend_check.json (v2)
+# for the fit method and full cross-corpus Brier tables.
+# ---------------------------------------------------------------------------
+ANCHORED_K: float = 0.63
+ANCHORED_W0: float = 1.0
+_MIN_REMAIN_FLOOR: float = 25.0 / 60.0  # same 25s floor, expressed in minutes
 
 
 def sec_remaining(period: int, clock_s: float) -> float:
@@ -115,15 +142,45 @@ class LiveState:
     away_score: float
 
 
-def blend_prob(p0: float, state: LiveState) -> float:
-    """p_live = sigmoid(logit(p0) * w_prior(t) + K_SCORE * score_diff * ramp(t)).
+def minutes_remaining(period: int, clock_s: float) -> float:
+    """Minutes left in regulation/OT, floor-clamped at _MIN_REMAIN_FLOOR (25s
+    expressed in minutes) so 1/sqrt(minutes_remaining) never diverges near the
+    buzzer. Thin unit-conversion wrapper around sec_remaining."""
+    sr = sec_remaining(period, clock_s)
+    return max(sr / 60.0, _MIN_REMAIN_FLOOR)
 
-    Pure function of (p0, state); no I/O, no fitting. p0 is the pregame P(home
-    win) (WNBA Elo, the SAME prior WNBAAdapter.baseline_probability reports).
-    Monotone increasing in score_diff for fixed t (larger home lead -> higher
-    p_live); converges to a determined 0/1 outcome as t->T when score_diff!=0
-    (see predict_live's exact buzzer clamp -- this function alone asymptotes
-    toward but does not force 0/1, by design a pure continuous blend)."""
+
+def blend_prob(p0: float, state: LiveState) -> float:
+    """CURRENT DEFAULT (anchored family, adopted this wave -- see module
+    docstring): p_live = sigmoid(logit(p0) * w_prior(t) + ANCHORED_K *
+    score_diff / sqrt(minutes_remaining(t))), with w_prior(t) = ANCHORED_W0 *
+    (1 - fraction_elapsed(t)).
+
+    Pure function of (p0, state); no I/O, no fitting (ANCHORED_K/ANCHORED_W0
+    are frozen constants fit once on 2024 -- see ingame_blend_families.py).
+    p0 is the pregame P(home win) (WNBA Elo, the SAME prior
+    WNBAAdapter.baseline_probability reports). Monotone increasing in
+    score_diff for fixed t (larger home lead -> higher p_live); converges to a
+    determined 0/1 outcome as t->T when score_diff!=0 (see predict_live's exact
+    buzzer clamp -- this function alone asymptotes toward but does not force
+    0/1, by design a pure continuous blend). At tipoff (t=0, score_diff=0 in
+    the adapter's real call path) p_live == p0 exactly with ANCHORED_W0=1.0
+    (p0-recovery invariant tested below)."""
+    t = fraction_elapsed(state.period, state.clock_s)
+    w_prior = ANCHORED_W0 * (1.0 - t)
+    score_diff = float(state.home_score) - float(state.away_score)
+    mr = minutes_remaining(state.period, state.clock_s)
+    z = _logit(p0) * w_prior + ANCHORED_K * score_diff / math.sqrt(mr)
+    return _sigmoid(z)
+
+
+def blend_prob_fixed_legacy(p0: float, state: LiveState) -> float:
+    """LEGACY (wave-2) fixed-constant blend, UNCHANGED:
+    p_live = sigmoid(logit(p0) * w_prior(t) + K_SCORE * score_diff * ramp(t)).
+
+    Kept importable for comparison (ingame_blend_families.predict_fixed calls
+    this directly) and as the wave-2 incumbent baseline in the cross-family
+    check. No longer the adapter default -- see module docstring for why."""
     t = fraction_elapsed(state.period, state.clock_s)
     w_prior = 1.0 - t
     score_diff = float(state.home_score) - float(state.away_score)
@@ -141,6 +198,7 @@ def is_buzzer(state: LiveState) -> bool:
 
 
 __all__ = [
-    "REG_SEC", "PERIOD_SEC", "OT_SEC", "K_SCORE",
-    "LiveState", "sec_remaining", "fraction_elapsed", "blend_prob", "is_buzzer",
+    "REG_SEC", "PERIOD_SEC", "OT_SEC", "K_SCORE", "ANCHORED_K", "ANCHORED_W0",
+    "LiveState", "sec_remaining", "fraction_elapsed", "minutes_remaining",
+    "blend_prob", "blend_prob_fixed_legacy", "is_buzzer",
 ]
