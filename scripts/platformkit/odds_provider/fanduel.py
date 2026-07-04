@@ -36,8 +36,11 @@ _REGION = "nj"
 _UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
        "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
 
-# sport key -> FanDuel customPageId.
-_PAGE: Dict[str, str] = {"mlb": "mlb", "nba": "nba", "nhl": "nhl", "nfl": "nfl"}
+# sport key -> FanDuel customPageId. wnba probed live 2026-07-03 (LANE 2):
+# customPageId="wnba" returns 6 events / 52 markets incl. MONEY_LINE, same
+# "Away @ Home" event-name shape already parsed below (no code change needed).
+_PAGE: Dict[str, str] = {"mlb": "mlb", "nba": "nba", "nhl": "nhl", "nfl": "nfl",
+                         "wnba": "wnba"}
 
 
 def _url(page_id: str) -> str:

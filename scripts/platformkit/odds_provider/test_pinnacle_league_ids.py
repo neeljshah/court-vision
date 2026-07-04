@@ -26,6 +26,19 @@ def test_soccer_intl_league_id_not_stale_pre_kickoff_id():
     assert _LEAGUE_ID["soccer_intl"] != 2764
 
 
+def test_wnba_league_id_is_static_578():
+    """LANE 2, probed live 2026-07-03: GET /sports/4/leagues found WNBA as a
+    persistent named league (id 578, matchupCount=3) -- static, not rotating."""
+    assert _LEAGUE_ID["wnba"] == 578
+
+
+def test_wnba_resolves_via_static_fast_path_no_network():
+    ids = pinnacle_league_resolver.resolve_league_ids(
+        "wnba", http_get=lambda url: (_ for _ in ()).throw(
+            AssertionError("wnba is static -- must not hit the network")))
+    assert ids == [578]
+
+
 def test_unsupported_sport_still_degrades_honestly():
     res = PinnacleProvider(http_get=lambda url: (_ for _ in ()).throw(
         AssertionError("should not fetch for an unsupported sport"))).fetch("curling")

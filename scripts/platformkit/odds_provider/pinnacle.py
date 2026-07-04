@@ -31,11 +31,16 @@ Honesty: venue='pinnacle' (VENUE_SPORTSBOOK); empty/unreachable API -> [] (no
 exception, no fabricated price); unexpected shape -> UNAVAILABLE sentinel; no
 $ or P&L field; no edge claim.
 
-Sport -> Pinnacle league id(s): nba/mlb/soccer are static (year-round leagues);
-tennis/soccer_intl rotate as tournaments change and are resolved LIVE (TTL disk
-cache + stale-cache fallback + self-healing 401 invalidation) by
-pinnacle_league_resolver.resolve_league_ids -- see that module for why a
+Sport -> Pinnacle league id(s): nba/mlb/soccer/wnba are static (year-round
+leagues); tennis/soccer_intl rotate as tournaments change and are resolved
+LIVE (TTL disk cache + stale-cache fallback + self-healing 401 invalidation)
+by pinnacle_league_resolver.resolve_league_ids -- see that module for why a
 hardcoded rotating tournament id cannot stay fresh.
+
+WNBA (LANE 2, probed live 2026-07-03): league id 578 under sport id 4
+(Basketball) -- GET /sports leagues listing showed WNBA as a persistent
+named league (matchupCount=3 live), same static-year-round shape as NBA/MLB,
+so it is hardcoded here rather than routed through the dynamic resolver.
 """
 from __future__ import annotations
 
@@ -64,6 +69,7 @@ _LEAGUE_ID: Dict[str, int] = {
     "soccer":      1980,
     "soccer_intl": 2686,
     "tennis":      12,
+    "wnba":        578,
 }
 
 

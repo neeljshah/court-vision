@@ -15,7 +15,9 @@ degrades to UNAVAILABLE (scoreboard) or a skipped event (summary) -- never a fak
 
 Mapping our sport keys -> ESPN league paths:
   nba -> basketball/nba ; mlb -> baseball/mlb ;
-  soccer -> soccer/eng.1 (EPL) ; soccer_intl -> soccer/fifa.world.
+  soccer -> soccer/eng.1 (EPL) ; soccer_intl -> soccer/fifa.world ;
+  wnba -> basketball/wnba (probed live 2026-07-03: scoreboard + pickcenter both
+  carry real DraftKings moneyline/spread/total, same shape as nba -- LANE 2).
 
 SPREAD SOURCE: pickcenter[].spread is the home-team handicap (e.g. -5.5). The
 away line is its negation. Per-provider spread ODDS are sourced from
@@ -45,6 +47,7 @@ _LEAGUE_PATH: Dict[str, str] = {
     "soccer": "soccer/eng.1",
     "soccer_intl": "soccer/fifa.world",
     "tennis": "tennis/atp",
+    "wnba": "basketball/wnba",
 }
 
 
