@@ -87,17 +87,23 @@ class PositionalWeightGateResult:
 
 
 def _export_rows(ok_cutoffs: list[str], tables: list[pd.DataFrame],
-                  fit_all: dict[str, np.ndarray]) -> pd.DataFrame:
+                  weights_per_fold: list[dict[str, np.ndarray]]) -> pd.DataFrame:
     """Reprocess-harness input schema: corpus_id/fold_id/event_id/p_variant/
-    p_base/outcome (diagnostic export; not part of the walk-forward verdict
-    computed above)."""
+    p_base/outcome, plus cluster_id (=player_id) for the harness's rho-metric
+    paired cluster bootstrap. p_variant is scored with EACH fold's own
+    leave-one-fold-out weights (weights_per_fold[i], the SAME weights
+    leave_one_fold_out already fit for the walk-forward verdict above) --
+    NOT fit_all_group_weights -- so this export reproduces
+    per_fold[i].overall.rho_positional exactly rather than a different
+    all-folds-fit quantity."""
     rows = []
-    for cutoff, t in zip(ok_cutoffs, tables):
-        pred = predict_positional(t, fit_all)
+    for cutoff, t, weights in zip(ok_cutoffs, tables, weights_per_fold):
+        pred = predict_positional(t, weights)
         for i, pid in enumerate(t["player_id"]):
             rows.append({
                 "corpus_id": "nba_2024_25_boxscore", "fold_id": cutoff,
-                "event_id": f"{pid}-{cutoff}", "p_variant": float(pred.iloc[i]),
+                "event_id": f"{pid}-{cutoff}", "cluster_id": str(pid),
+                "p_variant": float(pred.iloc[i]),
                 "p_base": float(t["naive_pctile"].iloc[i]),
                 "outcome": float(t["realized_ts_pct"].iloc[i]),
             })
@@ -173,7 +179,7 @@ def run_gate() -> PositionalWeightGateResult:
         verdict = "REJECT"
         reason = "naive stays canonical: win/sign/replication conditions not jointly satisfied"
 
-    rows_df = _export_rows(ok_cutoffs, tables, fit_all)
+    rows_df = _export_rows(ok_cutoffs, tables, weights_per_fold)
 
     return PositionalWeightGateResult(
         verdict=verdict, reason=reason, coverage=cov, ok_cutoffs=ok_cutoffs,
