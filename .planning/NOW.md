@@ -41,6 +41,23 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 10 (DATA-BREADTH BUILD: 5 SCOUT-DERIVED INGEST LANES ALL SHIPPED + FIRST
+  EXTERNAL BENCHMARK, 2026-07-04 late night, commits 61c62782/d36b07c5/ebad9e01/
+  35eb8a57/4261507c, 11 agents / ~1.04M tokens, 0 fix rounds, 5/5 PASS; scout fleet
+  = 7 more agents earlier): (1) FotMob live xG ingest -- 3 REAL live matches
+  captured (WC + NWSL) with as-of no-leak discipline; shape bug found live
+  (general block, not content). (2) MLB GUMBO -- 7 live games 0 errors; reality
+  check: diffPatch returns FULL snapshots in this deployment (fullUpdate = the
+  norm); fielding-position trap confirmed with named players and test-locked.
+  (3) Venue depth-of-book (Kalshi orderbook+trades + PM CLOB) -- live run 110
+  snapshots, honest 91%-stale-on-thin-slate context; gamma cache never read.
+  (4) WNBA CDN ingest -- code fixture-proven; egress WAF-blocked this session
+  (recorded, zero fabricated rows). (5) ESPN WP reference + FIRST THREE-WAY
+  BENCHMARK on 98 games / 27,772 ticks: our model Brier .18602 vs ESPN WP
+  .18771 vs venue .18133 -- we narrowly beat ESPN's own reference model, venue
+  lowest (consistent with MATCH; NO edge claim). All sidecar/measurement-only;
+  ZERO capture-loop edits (wire specs documented per module). Source recipes +
+  reality-checks saved to memory reference_ingame_data_sources_2026_07_04.
 - SPRINT WAKE 9 (FULL FLEET: PROP-CLOSE MYSTERY SOLVED + WNBA 3 BOOKS + DRAW PRICES
   LIVE + LEDGER EXONERATED + FRESHNESS AUTO-WIRED, 2026-07-04 night, commits
   bc40e46e/caa6b867/61263ade/7c44c190/fce73b78, 11 agents / ~0.88M tokens, 0 fix
@@ -924,12 +941,13 @@ or `program_complete` only.
 
 ## NEXT (max 5 -- action | where | done-when) [MASTER PLAN v2 2026-07-02: .planning/PLAN_SELF_IMPROVING_AI.md -- 8 phases ending in PRE-REGISTERED proof-of-edge criteria (8.1a-g) + human-gated real-money pilot runbook (8.2); economics phase 6 (cost model/maker sim/beat-the-line scoreboard) decides if money ever happens; NBA-season readiness phase 7 before Oct. This queue = the Phase-1 head]
 [RATIFIED QUEUE 2026-07-03 -- .planning/AUTONOMY_CHARTER.md governs unattended wakes: routing, spend rails, decision rights, wake protocol. Read it before pulling work. SPRINT MODE amended: usage rail LIFTED thru 07-06 per user directive; full fleet per wake; Fable decides even if loop model switches to Opus (see memory feedback_sprint_fleet_orchestration_2026_07_03).]
-[SPRINT WAKES 1-9 DONE 2026-07-03/04 (41 lane commits, 104 agents, ~10.2M tokens; every ship Opus-reviewed). Queue below = wave 10; lanes 1-2 fixed, 3-5 + scout-derived lanes fill from the in-game data scout synthesis (running).]
-1. [BEST-PRICE-WNBA] Widen best_price_scan sport list += wnba (now viable at >=2 books/game after wave-9) + verify the scan produces real line-shop rows on tonight's slate | scripts/platformkit/ | wnba shoppable games counted.
-2. [INGAME-PROP-CHANNEL] paper_ingame_prop has 0 ledger rows EVER while the DK live in-game feed is healthy (128 rows verified): root-cause why ingame_prop_trader never places (wiring? gates? thresholds?) -- measurement/diagnosis first; any execution change = PROPOSED diff for the human (recall: in-game-prop was measured structurally CLV-adverse 2026-06-27 -- the honest outcome may be 'correctly never places, retire the trader') | scripts/platformkit/ | root cause with evidence + recommendation.
-3. [KX-TICKER-CLOSE] Close the structural CLV id-space gap (126 in-game rows ungradeable): capture Kalshi closes keyed by KX* ticker (the in-play capture already sees final ticks -- persist a ticker-keyed close row at market close) + wire the CLV reconciler to read it | scripts/platformkit/ | in-game CLV coverage rises from 0 for ticker-keyed rows.
-4. [SCAN-LEDGER-READTHROUGH] PROPOSED diff (governance/ is human-gated): scan_ledger reads through the canonical index so dup_count reflects genuine dups (0) not coarse-key false positives (296) | docs/research/organization-sprint/ | proposed diff written.
-5. [SCOUT-BUILD-LANES] Top-ranked lanes from the in-game data scout synthesis (GUMBO MLB live pbp, soccer live xG, tennis/wnba state, orderbook depth, faster polling) -- as-of ingestion, additive tick fields, pre-registered gates per feature | scripts/platformkit/ingame/ + domains/ | per synthesis.
+[SPRINT WAKES 1-10 DONE 2026-07-03/04 (46 lane commits, 122 agents, ~11.7M tokens; every ship Opus-reviewed). Queue below = wave 11 (integration + gates).]
+1. [ENRICHMENT-INTEGRATION] ONE lane owns the shared files this wave: apply the 5 WIRE SPECs additively (fotmob xG lookup for soccer ticks, book-depth fields, espn_wp field; gumbo/wnba-cdn wiring only where the bridge exists -- else record) into inplay_capture_loop.py / ingame_live_state.py; None-safe throughout, poisoned-build -> permanent None (sp_shadow contract) | scripts/platformkit/ingame/ | enriched ticks flow at next restart, all existing tests green.
+2. [GAME-PK-BRIDGE + ENRICHMENT-PROCSPEC] domains/mlb game_pk bridge (Kalshi ticker/ESPN id <-> statsapi gamePk, grounded on real ids) + ONE combined m37_ingame_enrichment ProcSpec running the fotmob/gumbo/book-depth pollers on cadence (failure-isolated per source) + test_manifest resync | domains/mlb/ + supervisor additive | pollers tick unattended post-restart.
+3. [FEATURE-GATES-PREREG] Pre-register the forward gates BEFORE feature data accrues: (a) soccer as-of-xG in-play conditioning gate (does adding xG state improve in-play Brier vs outcome, walk-forward, >=2 corpora -- the WORSE->MATCH push), (b) MLB base-out live-state gate (GUMBO state vs score-only baseline), (c) stale_quote_flag as a tail-gate/freshness covariate; stamps = commit time | scripts/platformkit/ingame/ | PENDING verdict files exist with stamps.
+4. [FIXED-SMALL] best_price_scan += wnba (>=2 books now) with live verification + scan_ledger read-through PROPOSED diff to docs/research/organization-sprint/ (governance/ is human-gated) | scripts/platformkit/ + docs/research/ | wnba shoppable count + proposed diff.
+5. [KX-TICKER-CLOSE] Ticker-keyed Kalshi close capture (in-play capture already sees final ticks -- persist close rows keyed by KX* ticker) + CLV reconciler reads it -> the 126 structurally-ungradeable in-game rows become gradeable forward | scripts/platformkit/ | in-game CLV coverage rises from 0.
+[wave 12 seed: ingame-prop-channel root-cause; WNBA CDN live retry on friendlier egress; espn_wp fuzzy resolver for the 36 unmatched games.]
 HUMAN QUEUE (updated SPRINT WAKE 1): (a) ONE supervisor restart activates everything shipped this wake: m33 wedge reaper + m34 freshness SLA + m35 tail-multi + WNBA capture spec pickup (boot.ps1 cycle -- charter forbids unattended supervisor restarts); (b) m32 weather_totals SHIP_REVIEW (standing); (c) m19 wave-2 replication outcomes if any survive BOTH corpora -> fresh SHIP_REVIEW decisions; (d) register_autostart.ps1 -Register in an ELEVATED shell (standing); (e) CV_MLB_SP_ADJUST stays CLOSED as honest REJECT (returns only via m32 nightly re-gate). Parked follow-ups unchanged (charter Section 4 PARKED).
 
 DONE (2026-07-02): [P2.2] Feed-health scoreboard SHIPPED -- NEW scripts/platformkit/odds_provider/feed_health.py + feed_health_runner.py (registered as supervisor ProcSpec m30_feed_health, HEARTBEAT readiness, 600s cadence): live-probes every (provider, sport) pair the REAL slate uses (reuses aggregate.default_providers(), not a synthetic ping) and classifies GREEN (real data OR an honest empty/unsupported-sport degrade -- not an outage) vs RED (auth/forbidden/timeout/parse/unexpected-shape/exception -- the scraper is actually broken). LIVE-VERIFIED it catches a REAL fault: a live run hit an actual Pinnacle 401 Unauthorized on soccer_intl (transient rate-limit from repeated calls this session) that `aggregate()` had been silently swallowing (that venue just vanishes from the merged slate with no visible signal) -- feed_health correctly surfaced it as one RED row while mlb/espn/fanduel/kalshi/polymarket stayed GREEN. 16 new tests green (10 feed_health + 6 runner), both files well under 300 LOC (185, 115). Also updated tests/supervisor/test_manifest.py's service-set assertion for m30 (21 green).
