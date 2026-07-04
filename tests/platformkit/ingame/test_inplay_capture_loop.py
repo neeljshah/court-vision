@@ -573,3 +573,85 @@ def test_grade_write_fail_reason_no_model_prob_counted(tmp_path):
     assert hb["games"][0]["reason"] == "no_model_prob"
     assert hb["grade_write_fail_by_reason"] == {"no_model_prob": 1}
     assert hb["grade_write_fail_games"][0]["reason"] == "no_model_prob"
+
+
+# --------------------------------------------------------------------------------------- #
+# LANE 1 (wave-16 fix): Kalshi pacing counters surface in the heartbeat, aggregated across  #
+# sports; legacy 1-arg fetch stubs (every pre-existing test's inplay_fetch_fn) still work.  #
+# --------------------------------------------------------------------------------------- #
+def test_heartbeat_carries_pacing_counters_zero_for_legacy_1arg_fetch_fn(tmp_path):
+    # _inplay_fetch (used throughout this file) is a 1-arg stub with no stats kwarg --
+    # _call_fetch must fall back to the legacy call cleanly, and the counters read 0
+    # (no stats.dict was ever populated), never raising and never breaking the decision.
+    hb = _run_one_tick(tmp_path)
+    assert hb["n_requests_total"] == 0
+    assert hb["n_429_total"] == 0
+    assert "cycle_duration_sec" in hb and hb["cycle_duration_sec"] >= 0.0
+    g = hb["games"][0]
+    assert g["bet"] is True and g["model_prob"] == 0.80  # decision path unaffected
+
+
+def test_heartbeat_aggregates_stats_from_a_pacing_aware_fetch_fn(tmp_path):
+    # A fetch_fn that DOES accept **stats (mirrors _default_inplay_fetch's real
+    # signature) has its counters aggregated into the heartbeat across every sport
+    # polled this cycle -- two sports here, each contributing its own stats dict.
+    def _mlb_fetch(sport, stats=None):
+        if stats is not None:
+            stats["n_requests"] = 4
+            stats["n_429"] = 1
+        return _inplay_fetch(sport)
+
+    def _soccer_fetch_stats(sport, stats=None):
+        if stats is not None:
+            stats["n_requests"] = 3
+            stats["n_429"] = 0
+        return _soccer_fetch(sport)
+
+    def _fetch_router(sport, stats=None):
+        if sport == "mlb":
+            return _mlb_fetch(sport, stats=stats)
+        return _soccer_fetch_stats(sport, stats=stats)
+
+    def _state_fn_by_sport(sport, gid):
+        if sport == "soccer_intl":
+            s = _state_fn_prior(sport, gid)
+            s.update({"home": "Argentina", "away": "Australia"})
+            return s
+        return _state_fn_prior(sport, gid)
+
+    grade_dir = tmp_path / "grade"
+    hb = loop.poll_once(sports=["mlb", "soccer_intl"], live_state_fn=_state_fn_by_sport,
+                        model_fn=_model_fn, inplay_fetch_fn=_fetch_router,
+                        finals_fn=_finals_none, grade_dir=grade_dir,
+                        ledger_path=tmp_path / "l.jsonl", heartbeat_path=tmp_path / "hb.json")
+    assert hb["n_requests_total"] == 7   # 4 (mlb) + 3 (soccer_intl)
+    assert hb["n_429_total"] == 1        # only mlb's series 429'd
+    assert hb["n_pairs"] == 2            # both sports still pair/decide identically
+
+
+def test_call_fetch_falls_back_to_legacy_1arg_on_typeerror():
+    # Directly exercises _call_fetch's fallback: a fetch_fn that raises TypeError
+    # if given a stats kwarg (the exact shape of every pre-existing test stub in
+    # this file) must still be called successfully via the 1-arg path.
+    def _legacy_fetch(sport):
+        return _inplay_fetch(sport)
+
+    result = loop._call_fetch(_legacy_fetch, "mlb", {})
+    assert result == _inplay_fetch("mlb")
+
+
+def test_default_inplay_fetch_passes_stagger_sec_to_fetch_inplay(monkeypatch):
+    # The production default fetcher must opt IN to inplay_kalshi's pacing
+    # (stagger_sec=REQUEST_STAGGER_SEC) rather than relying on fetch_inplay's own
+    # (now zero) default -- this is what actually fixes the burst in production.
+    from scripts.platformkit.odds_provider import inplay_kalshi as _ik
+
+    seen_kwargs = {}
+
+    def _spy_fetch_inplay(sport, **kwargs):
+        seen_kwargs.update(kwargs)
+        return []
+
+    monkeypatch.setattr(_ik, "fetch_inplay", _spy_fetch_inplay)
+    loop._default_inplay_fetch("mlb", stats={})
+    assert seen_kwargs.get("stagger_sec") == _ik.REQUEST_STAGGER_SEC

@@ -21,10 +21,13 @@ HONEST liquidity gate + canonical in-play schema:
 from __future__ import annotations
 
 import re
+import urllib.error
 
 from scripts.platformkit.odds_provider import transport as _transport
 from scripts.platformkit.odds_provider.inplay_kalshi import (
+    MAX_429_COOLDOWN_SEC,
     PHASE,
+    REQUEST_STAGGER_SEC,
     fetch_inplay,
     fetch_price_history,
     is_liquid,
@@ -380,3 +383,92 @@ def test_price_history_bad_body_yields_empty():
         raise RuntimeError("down")
 
     assert fetch_price_history("KXMLBGAME-x", http=_boom) == []
+
+
+# --------------------------------------------------------------------------------------- #
+# LANE 1 (wave-16 fix): request pacing + 429 observability, injected clock (no real sleep)  #
+# --------------------------------------------------------------------------------------- #
+def _http_429(headers=None):
+    return urllib.error.HTTPError(url="http://x", code=429, msg="Too Many Requests",
+                                  hdrs=headers or {}, fp=None)
+
+
+def test_fetch_inplay_default_stagger_is_zero_no_behavior_change_for_existing_callers():
+    # BACK-COMPAT (LANE 1): stagger_sec defaults to 0.0 -- a caller that never
+    # mentions pacing (every pre-existing test/caller) gets ZERO sleeps, so the
+    # offline suite stays instant and production callers are unaffected unless
+    # they explicitly opt in (see inplay_capture_loop._default_inplay_fetch).
+    sleeps = []
+    fetch_inplay("mlb", http=_fake_http([_LIQUID]), now_iso="2026-06-19T18:30:00Z",
+                sleep_fn=sleeps.append)
+    assert sleeps == []
+
+
+def test_fetch_inplay_explicit_stagger_sleeps_between_but_not_before_first_series():
+    # mlb queries 4 series -> 3 gaps between them, sleep injected (no real time.sleep).
+    sleeps = []
+    fetch_inplay("mlb", http=_fake_http([_LIQUID]), now_iso="2026-06-19T18:30:00Z",
+                sleep_fn=sleeps.append, stagger_sec=REQUEST_STAGGER_SEC)
+    assert sleeps == [REQUEST_STAGGER_SEC] * 3
+
+
+def test_fetch_inplay_counts_requests_in_stats():
+    stats: dict = {}
+    fetch_inplay("mlb", http=_fake_http([_LIQUID]), now_iso="2026-06-19T18:30:00Z",
+                stats=stats, sleep_fn=lambda s: None)
+    assert stats["n_requests"] == 4  # mlb wires 4 series
+
+
+def test_fetch_inplay_counts_429_and_recovers_other_series():
+    # KXMLBTOTAL 429s (counted + cooled down, no real sleep); the other 3 series still
+    # return their own markets -- one series' 429 never sinks the sport's fetch.
+    def _router(url):
+        if "series_ticker=KXMLBTOTAL" in url:
+            raise _http_429()
+        if "series_ticker=KXMLBGAME" in url:
+            return {"markets": [_LIQUID]}
+        return {"markets": []}
+
+    stats: dict = {}
+    cooldowns = []
+    ticks = fetch_inplay("mlb", http=_router, now_iso="2026-06-19T18:30:00Z",
+                         stats=stats, sleep_fn=cooldowns.append)
+    assert stats["n_requests"] == 4
+    assert stats["n_429"] == 1
+    assert len(ticks) == 1 and ticks[0]["ticker"] == "KXMLBGAME-26JUN191420TORCHC-CHC"
+    # the 429 cool-down IS one of the injected sleep calls (mixed with stagger sleeps).
+    assert any(abs(s - MAX_429_COOLDOWN_SEC) < 1e-9 for s in cooldowns)
+
+
+def test_fetch_inplay_429_honors_retry_after_header_capped():
+    def _router(url):
+        if "series_ticker=KXMLBTOTAL" in url:
+            raise _http_429(headers={"Retry-After": "1"})
+        return {"markets": []}
+
+    cooldowns = []
+    fetch_inplay("mlb", http=_router, now_iso="2026-06-19T18:30:00Z",
+                sleep_fn=cooldowns.append)
+    assert 1.0 in cooldowns  # honored, under MAX_429_COOLDOWN_SEC cap
+
+
+def test_fetch_inplay_non_429_error_is_not_counted_as_429():
+    def _router(url):
+        if "series_ticker=KXMLBTOTAL" in url:
+            raise RuntimeError("plain network error")
+        return {"markets": []}
+
+    stats: dict = {}
+    fetch_inplay("mlb", http=_router, now_iso="2026-06-19T18:30:00Z",
+                stats=stats, sleep_fn=lambda s: None)
+    assert stats.get("n_429", 0) == 0
+    assert stats["n_requests"] == 4
+
+
+def test_fetch_inplay_stats_none_by_default_no_behavior_change():
+    # Calling fetch_inplay exactly as every pre-existing caller does (no stats/sleep_fn
+    # kwargs) must be unaffected -- this exercises the real default sleep_fn=time.sleep
+    # with stagger_sec=0 to avoid a real sleep in the test suite.
+    ticks = fetch_inplay("mlb", http=_fake_http([_LIQUID]), now_iso="2026-06-19T18:30:00Z",
+                         stagger_sec=0.0)
+    assert len(ticks) == 1

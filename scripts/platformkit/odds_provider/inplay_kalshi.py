@@ -15,8 +15,7 @@ every existing consumer is unchanged):
    team_total), "ts" (ISO-8601 UTC 'Z'), "phase":"in_play"}
 
 REUSE, never duplicate: kalshi._yes_ask_prob (price) + kalshi_series_spec (the
-per-sport (series_ticker, market_type) list AND the shared future-game ticker-date
-guard) + inplay_history.fetch_price_history (candlestick back-fetch).
+per-sport series list + future-game guard) + inplay_history.fetch_price_history.
 
 THE LIQUIDITY GATE (the honest fix for "listed but untraded"): a market counts as
 tradeable in-play ONLY if, on the LIVE *_dollars / *_fp fields (NOT the deprecated
@@ -28,13 +27,19 @@ live price; a missing/illiquid market -> VOID, NEVER 0-filled.
 HONESTY (binding): commence_time stays None (Kalshi's only timestamp is a
 SETTLEMENT bound, never a tip-off) so a near-final price can NEVER be mislabeled
 is_true_close. phase is always "in_play". No $ / ROI / edge -- probability only.
-market_type is NEVER assumed to be a WIN probability outside "moneyline" --
-consumers that treat prob as P(team wins) MUST filter market_type=="moneyline"
-(pm_game_placer / inplay_capture_loop do this at their own boundary).
+market_type is NEVER assumed to be a WIN probability outside "moneyline" -- a
+consumer treating prob as P(team wins) MUST filter market_type=="moneyline".
 
 INVARIANTS: build only under scripts/platformkit/; <=300 LOC; ASCII only; stdlib +
 repo-internal only. Per-file test:
   cd /c/Users/neelj/nba-ai-system && python -m pytest tests/platformkit/odds_provider/test_inplay_kalshi.py -q
+
+PACING + 429 OBSERVABILITY (LANE 1, wave-16 fix): a 6-sport cycle fires 17 series
+requests back-to-back with no gap, and a shared 429 wall then hits every
+remaining series in the same burst uncounted -- see kalshi_pacing.py for the
+root-cause + fix. Additive, off-by-default no-ops if unused: REQUEST_STAGGER_SEC
+drips the series calls; *stats* is mutated with n_requests/n_429, never changing
+fetch_inplay's return type (still List[Tick]).
 """
 from __future__ import annotations
 
@@ -48,6 +53,8 @@ from .http_cache import http_get_json
 from .inplay_history import fetch_price_history as _candle_history
 from .kalshi import _BASE, _yes_ask_prob
 from .kalshi_liquidity import MAX_SPREAD, MIN_SIZE, MIN_VOLUME, is_liquid
+from .kalshi_pacing import MAX_429_COOLDOWN_SEC, REQUEST_STAGGER_SEC
+from .kalshi_pacing import cooldown_after_429, is_429, record_429, record_request, stagger_sleep
 from .kalshi_series_spec import (  # noqa: F401 -- _GAME_SERIES is a back-compat re-export
     _GAME_SERIES,
     is_future_game,
@@ -60,19 +67,15 @@ logger = logging.getLogger(__name__)
 VENUE = "kalshi"
 PHASE = "in_play"
 
-# RATE POLITENESS BUDGET: the in-play capture loop ticks per-sport, not per-series
-# (see inplay_capture_loop.poll_once / inplay_snapshot_daemon), typically every few
-# seconds to tens of seconds during a live slate. Widening from 1 series/sport to
-# up to 4 (mlb: game+total+spread+team_total) multiplies calls by <=4x per tick.
-# Kalshi's public rate limit is ~30 rps (documented, keyless tier); even at a 4-
-# series sport polled every 5s that is 4/5 = 0.8 rps, ~40x under budget. No cadence
-# change is made here -- the budget math only justifies NOT throttling further.
+# RATE POLITENESS: Kalshi's public rate limit is ~30 rps (documented, keyless
+# tier); see kalshi_pacing.py for why a bursty 429 wall still forms and how
+# REQUEST_STAGGER_SEC/MAX_429_COOLDOWN_SEC (imported above) fix it.
 
-# Liquidity-gate thresholds + is_liquid() now live in kalshi_liquidity (imported
-# above); re-exported here (MAX_SPREAD/MIN_VOLUME/MIN_SIZE/is_liquid) for back-compat.
+# Liquidity-gate thresholds + is_liquid() live in kalshi_liquidity (imported above).
 
 Tick = Dict[str, Any]
 HttpGet = Callable[[str], Any]
+SleepFn = Callable[[float], None]
 
 # The future-game ticker-date guard (shared by ALL series: game/total/spread/team_total/
 # match tickers embed the same '-DDMONYY' fragment, including tennis KXATPMATCH/KXWTAMATCH)
@@ -151,15 +154,28 @@ def _tick_from_market(sport: str, market: Dict[str, Any], ts: str,
 
 def _fetch_one_series(sport: str, series: str, market_type: str, *, http: HttpGet,
                       ts: str, now_dt: datetime, max_spread: float,
-                      min_volume: float, min_size: float) -> List[Tick]:
+                      min_volume: float, min_size: float,
+                      stats: Optional[Dict[str, Any]] = None,
+                      sleep_fn: SleepFn = time.sleep) -> List[Tick]:
     """Ticks for ONE (series_ticker, market_type) pair. [] on any failure -- a single
-    series failing (network, bad body) must never sink the sport's other series."""
+    series failing (network, bad body) must never sink the sport's other series.
+
+    *stats*, if given, is MUTATED in place (kalshi_pacing.record_request/record_429).
+    On a 429 (kalshi_pacing.is_429) this also takes a short, capped cool-down
+    (kalshi_pacing.cooldown_after_429) before returning [], giving a shared-venue
+    throttle a moment to clear before the next series is requested. Never raises
+    regardless of *stats*/*sleep_fn*.
+    """
+    record_request(stats)
     params = {"series_ticker": series, "limit": 200, "status": "open"}
     url = "%s/markets?%s" % (_BASE, urllib.parse.urlencode(params))
     try:
         body = http(url)
     except Exception as exc:  # noqa: BLE001 -- isolate, never bubble past this series
         logger.warning("kalshi in-play markets failed for %s/%s: %s", sport, series, exc)
+        if is_429(exc):
+            record_429(stats)
+            cooldown_after_429(exc, sleep_fn)
         return []
     markets = body.get("markets") if isinstance(body, dict) else None
     if not isinstance(markets, list):
@@ -189,7 +205,10 @@ def fetch_inplay(sport: str, *, http: HttpGet = resilient_get_json,
                  now_iso: Optional[str] = None,
                  max_spread: float = MAX_SPREAD,
                  min_volume: float = MIN_VOLUME,
-                 min_size: float = MIN_SIZE) -> List[Tick]:
+                 min_size: float = MIN_SIZE,
+                 stats: Optional[Dict[str, Any]] = None,
+                 sleep_fn: SleepFn = time.sleep,
+                 stagger_sec: float = 0.0) -> List[Tick]:
     """Live in-play ticks across ALL of *sport*'s wired Kalshi series.
 
     Iterates kalshi_series_spec.series_for(sport) -- one /markets?series_ticker=...
@@ -203,6 +222,15 @@ def fetch_inplay(sport: str, *, http: HttpGet = resilient_get_json,
     per-series in _fetch_one_series). *http* is injected for offline tests (default
     is the escalating transport.resilient_get_json, same seam as http_get_json).
     Never raises: an unsupported sport or a feed failure yields [].
+
+    PACING (LANE 1): *stagger_sec* defaults to 0.0 (NO pacing, byte-identical to
+    the pre-LANE-1 behavior) so every pre-existing caller/test is UNCHANGED. The
+    production capture loop opts IN by passing stagger_sec=REQUEST_STAGGER_SEC
+    explicitly (see inplay_capture_loop._default_inplay_fetch) so only the real,
+    multi-series-fan-out path drips instead of bursting -- an offline test that
+    never mentions pacing keeps running instantly. *stats*, if given, is MUTATED
+    in place with n_requests / n_429 regardless of stagger_sec -- return type is
+    unchanged (still List[Tick]).
     """
     pairs = series_for(sport)
     if not pairs:
@@ -210,10 +238,12 @@ def fetch_inplay(sport: str, *, http: HttpGet = resilient_get_json,
     ts = now_iso or _now_iso()
     now_dt = _parse_iso_now(ts)
     out: List[Tick] = []
-    for series, market_type in pairs:
+    for i, (series, market_type) in enumerate(pairs):
+        stagger_sleep(sleep_fn, stagger_sec, is_first=(i == 0))
         out.extend(_fetch_one_series(
             sport, series, market_type, http=http, ts=ts, now_dt=now_dt,
-            max_spread=max_spread, min_volume=min_volume, min_size=min_size))
+            max_spread=max_spread, min_volume=min_volume, min_size=min_size,
+            stats=stats, sleep_fn=sleep_fn))
     return out
 
 
@@ -258,12 +288,7 @@ def _now_iso() -> str:
 
 
 __all__ = [
-    "fetch_inplay",
-    "fetch_price_history",
-    "is_liquid",
-    "MAX_SPREAD",
-    "MIN_VOLUME",
-    "MIN_SIZE",
-    "VENUE",
-    "PHASE",
+    "fetch_inplay", "fetch_price_history", "is_liquid", "MAX_SPREAD",
+    "MIN_VOLUME", "MIN_SIZE", "VENUE", "PHASE",
+    "REQUEST_STAGGER_SEC", "MAX_429_COOLDOWN_SEC",
 ]
