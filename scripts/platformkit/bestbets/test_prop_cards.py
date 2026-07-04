@@ -534,3 +534,73 @@ def test_no_skip_recorded_yields_empty_circuit_skips_list(monkeypatch):
     cards, _ = pc.build_bounded_prop_cards(now=_NOW, sports=("mlb",))
     assert len(cards) == 1
     assert cards[0]["circuit_skips"] == []
+
+
+# ---------------------------------------------------------------------------
+# REGRESSION (m13-breaker-bypass, wave-34): when _capped_lines() yields no source
+# (feed empty + no on-disk cache -- e.g. all default providers circuit-OPEN),
+# _board_edges() previously fell through to a BARE build_prop_board(sport) call,
+# which re-derives cfg.default_providers() with NO breaker filter inside
+# prop_edge.py -- re-dispatching live HTTP calls to providers the breaker just
+# opened. The fix routes that fallback through an EXPLICIT breaker-filtered
+# providers list so a circuit-OPEN provider can never be re-dispatched this way.
+# ---------------------------------------------------------------------------
+
+def test_no_capped_lines_fallback_uses_breaker_filtered_providers(monkeypatch):
+    import scripts.platformkit.bestbets.prop_cards_circuit_io as pcio
+
+    # Feed empty + no cache -> _capped_lines returns None (the exact bypass trigger).
+    monkeypatch.setattr(pc, "_capped_lines", lambda sport, max_lines: None)
+
+    calls = []
+
+    def fake_board(sport, **kw):
+        calls.append((sport, kw))
+        return {"status": "ok", "edges": []}
+    monkeypatch.setattr("scripts.platformkit.prop_edge.build_prop_board", fake_board)
+
+    class _FakeProvider:
+        name = "fake_survivor"
+
+    filtered_calls = []
+
+    def fake_breaker_filtered(sport):
+        filtered_calls.append(sport)
+        return [_FakeProvider()]
+    monkeypatch.setattr(pcio, "breaker_filtered_providers", fake_breaker_filtered)
+
+    pc.build_prop_cards(now=_NOW, sports=("mlb",), max_lines_per_sport=2500)
+
+    # build_prop_board must have been called via the breaker-filtered helper
+    # (never bare / with no providers kwarg at all).
+    assert filtered_calls == ["mlb"]
+    assert len(calls) == 1
+    sport_arg, kwargs = calls[0]
+    assert sport_arg == "mlb"
+    assert "providers" in kwargs
+    assert [getattr(p, "name", None) for p in kwargs["providers"]] == ["fake_survivor"]
+    # lines_source must NOT be set on this fallback path (it's the providers path).
+    assert kwargs.get("lines_source") is None
+
+
+def test_no_capped_lines_fallback_never_calls_default_providers_unfiltered(monkeypatch):
+    # Even if the breaker helper itself is unavailable (returns None), the fallback
+    # must pass an explicit empty providers list -- NEVER omit providers/let
+    # build_prop_board fall back to cfg.default_providers() un-gated.
+    import scripts.platformkit.bestbets.prop_cards_circuit_io as pcio
+
+    monkeypatch.setattr(pc, "_capped_lines", lambda sport, max_lines: None)
+    monkeypatch.setattr(pcio, "breaker_filtered_providers", lambda sport: None)
+
+    calls = []
+
+    def fake_board(sport, **kw):
+        calls.append((sport, kw))
+        return {"status": "ok", "edges": []}
+    monkeypatch.setattr("scripts.platformkit.prop_edge.build_prop_board", fake_board)
+
+    pc.build_prop_cards(now=_NOW, sports=("mlb",), max_lines_per_sport=2500)
+
+    assert len(calls) == 1
+    _, kwargs = calls[0]
+    assert kwargs.get("providers") == []
