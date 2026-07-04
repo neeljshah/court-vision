@@ -87,6 +87,27 @@ def _count_dups(rows: List[Dict[str, Any]]) -> Tuple[int, Set[str]]:
     return extra, dup_keys
 
 
+def _canonical_dup_count(rows: List[Dict[str, Any]]) -> Optional[int]:
+    """Read through the canonical-identity index: dup_count = GENUINE collisions
+    (same bet_id/edge_key), not coarse matchup-fallback false positives (a
+    recurring team matchup across a season). None -> fall back to coarse count.
+    Never raises, never mutates the ledger."""
+    try:
+        from scripts.platformkit.clv_ledger_canonical_index import (
+            _canonical_key, _completeness_score,
+        )
+    except Exception:  # noqa: BLE001 -- read-through is best-effort
+        return None
+    by_canon: Dict[Any, List[int]] = {}
+    for idx, row in enumerate(rows):
+        by_canon.setdefault(_canonical_key(row), []).append(idx)
+    extra = 0
+    for idxs in by_canon.values():
+        if len(idxs) > 1:
+            extra += len(idxs) - 1
+    return extra
+
+
 def _insuf(reason: str) -> Dict[str, Any]:
     return {
         "status": "INSUFFICIENT_DATA",
@@ -122,7 +143,9 @@ def scan_ledger(path: Optional[Path] = None) -> Dict[str, Any]:
 
     n_syn = sum(1 for r in rows if _is_synthetic(r))
     n_mal = sum(1 for r in rows if _is_malformed(r))
-    n_dup, _ = _count_dups(rows)
+    n_dup_coarse, _ = _count_dups(rows)
+    n_dup_canonical = _canonical_dup_count(rows)  # true identity, reconciles false positives
+    n_dup = n_dup_canonical if n_dup_canonical is not None else n_dup_coarse
 
     settled = [r for r in rows if str(r.get("status") or "").lower() == "settled"]
     with_clv = sum(1 for r in settled if r.get("clv_pct") is not None)
@@ -145,7 +168,14 @@ def scan_ledger(path: Optional[Path] = None) -> Dict[str, Any]:
         },
         "duplicates": {
             "count": n_dup,
-            "label": "extra copies beyond first for each (game|market|side|venue|date|status) key",
+            "label": (
+                "genuine collisions on canonical identity (bet_id|status else "
+                "edge_key|status else coarse key); coarse matches with distinct "
+                "canonical identity (recurring matchup) are NOT counted"
+                if n_dup_canonical is not None else
+                "extra copies beyond first per (game|market|side|venue|date|status) "
+                "key (coarse fallback -- canonical index unavailable)"
+            ),
         },
         "honest_clv": {
             "settled_with_clv": with_clv,

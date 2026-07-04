@@ -32,7 +32,8 @@ _REPO = Path(__file__).resolve().parents[3]
 SCAN_PATH = _REPO / "data" / "frontend" / "ops" / "best_price_scan.json"
 CATCH_LOG = _REPO / "data" / "frontend" / "ops" / "best_price_catches.jsonl"
 DEFAULT_INTERVAL_SEC = 240.0          # transient cross-book gaps -> poll often
-DEFAULT_SPORTS = ("mlb", "soccer_intl")
+DEFAULT_SPORTS = ("mlb", "soccer_intl", "wnba")  # wnba added 2026-07-03: >=2 books/game
+                                                  # live (kalshi/espn/fanduel/pinnacle)
 DEFAULT_MIN_CLV = 0.5                 # min expected CLV %% to call a row a "gap"
 COMPONENT = "m_best_price_scan"
 
