@@ -41,6 +41,18 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 16 (CLOSING ARC: RETRO + DRIFT NOTES + HONEST NULLS + APIS AUTO-
+  RECOVERED, 2026-07-04 ~07:30Z, commits a65cd636/9a2986e3, 11 agents / ~0.89M
+  tokens, 5/5 PASS): forward check -- ALL 6 sports ticking live (tennis/wnba/npb/
+  kbo first ticks confirmed), MLB forward_games=5 rising, book_depth flowing;
+  :8099+:8098 died ~07:05Z and the SUPERVISOR AUTO-RECOVERED both (fresh PIDs,
+  200s -- resilience working; root-cause queued); Kalshi 429 rate-limit cycles
+  observed on the widened 6-sport capture -> pacing lane queued. PM completed to
+  budget: NBA n=1056+/band, MLB n=685+/band -- ALL CALIBRATED, tail-bias prior
+  firm. States gate CI hardening: honest NULL (0/6 cells survive). Retro
+  written (15 wakes/181 agents/17.46M tokens/64 commits/0 code FAILs at
+  snapshot) + CHARTER_DRIFT_NOTES_2026-07-04.md (7 items for the 07-10 review).
+  Sprint retrospective memory saved. No edge claimed.
 - SPRINT WAKE 15 (RESTART CONFIRMED DONE + GRADE-WRITER FIXED + xG STORY COMPLETE +
   TAIL PRIOR SETTLING, 2026-07-04 ~03:30, commits 25e2ff11/87042bf7/602d394b/fcd9d37c,
   10 agents / ~1.09M tokens): (1) RESTART AUDIT: boot.ps1 cycle CONFIRMED 2026-07-03
