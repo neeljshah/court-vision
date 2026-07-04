@@ -5,14 +5,19 @@ every number in every row is copied verbatim from the artifact that produced
 it. A missing artifact yields an honest status=ABSENT row rather than a
 fabricated or interpolated one.
 
-CORPORA composed (4):
+CORPORA composed (6, LANE 4 adds the last 2):
   kalshi_discovery_2026   -- data/frontend/ops/ingame_tail_scan.json (MLB
                               discovery scan) + the MLB forward-gate context
                               (data/domains/mlb/ingame_tail_verdict.json)
   forward_gates           -- data/domains/<sport>/ingame_tail_verdict.json for
                               all 6 sports (mlb + the 5 cross-sport gates)
-  polymarket_2023         -- data/venue_history/polymarket/*_tail_validation.json
+  polymarket_2023         -- data/venue_history/polymarket/mlb_tail_validation.json
+                              (the 2023 "dailies" corpus, mlb only)
   kalshi_historical       -- data/venue_history/kalshi/*_tail_validation.json
+  polymarket_2024plus_nba -- data/venue_history/polymarket/nba_2024plus_tail_validation.json
+                              (LANE 4: 2024-25+2025-26 alternate-slug corpus, nba)
+  polymarket_2024plus_mlb -- data/venue_history/polymarket/mlb_2024plus_tail_validation.json
+                              (LANE 4: 2025+2026 alternate-slug corpus, mlb)
 
 PROVENANCE RULE (binding, do not pool): each corpus is a separate, provenance-
 labeled row. Forward gates stay forward-only. Historical venue corpora are
@@ -31,6 +36,10 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+
+from scripts.platformkit.ingame.tail_hypothesis_ledger_2024plus import (
+    h1_all_calibrated_outside_thin_pm2023, rows_polymarket_2024plus,
+)
 
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 
@@ -55,6 +64,18 @@ _SYNTHESIS = (
     "the Kalshi discovery-excluded window; verdict rides on the "
     "pre-registered forward gates. No edge claimed; calibration statements "
     "about venue prices only."
+)
+
+# LANE 4 (2026-07-04): after adding the 2 new PM-2024plus corpora (nba, mlb;
+# resumed backfill through the cursors reached this run -- see the run report,
+# not re-derived here), every corpus EXCEPT the original thin PM-2023 H1 n=14
+# pocket reads CALIBRATED for H1. This line is additive to (does not replace)
+# the H2 sentence above.
+_SYNTHESIS_H1_UPDATE = (
+    "H1 evidence after 6 corpora: only the PM-MLB-2023 pocket (n=14) is "
+    "significant; every larger corpus reads CALIBRATED. The prior shifts "
+    "toward 'no persistent venue tail bias'; the forward gates remain the "
+    "arbiter and continue accruing."
 )
 
 
@@ -218,20 +239,32 @@ def build_ledger() -> Dict[str, Any]:
     rows.extend(_rows_forward_gates())
     rows.extend(_rows_venue_history("polymarket", "polymarket_2023"))
     rows.extend(_rows_venue_history("kalshi", "kalshi_historical"))
+    rows.extend(rows_polymarket_2024plus(
+        "nba", repo_root=_REPO_ROOT, hypotheses=HYPOTHESES,
+        read_json=_read_json, absent_row=_absent_row))
+    rows.extend(rows_polymarket_2024plus(
+        "mlb", repo_root=_REPO_ROOT, hypotheses=HYPOTHESES,
+        read_json=_read_json, absent_row=_absent_row))
 
     n_present = sum(1 for r in rows if r["status"] == "PRESENT")
     n_absent = sum(1 for r in rows if r["status"] == "ABSENT")
+
+    synthesis = _SYNTHESIS
+    if h1_all_calibrated_outside_thin_pm2023(rows):
+        synthesis = _SYNTHESIS + " " + _SYNTHESIS_H1_UPDATE
+
     return {
         "component": "tail_hypothesis_ledger",
         "note": ("one row per (hypothesis, corpus); every number is copied "
                  "verbatim from an existing verdict artifact -- this module "
                  "computes NOTHING new; missing artifact = honest ABSENT row"),
         "corpora": ["kalshi_discovery_2026", "forward_gates", "polymarket_2023",
-                    "kalshi_historical"],
+                    "kalshi_historical", "polymarket_2024plus_nba",
+                    "polymarket_2024plus_mlb"],
         "hypotheses": [h["id"] for h in HYPOTHESES],
         "rows": rows,
         "n_rows": len(rows), "n_present": n_present, "n_absent": n_absent,
-        "synthesis": _SYNTHESIS,
+        "synthesis": synthesis,
         "edge_claimed": False,
     }
 
