@@ -200,7 +200,11 @@ def flatten(sport: str, markets: Optional[Dict[str, Any]], home: str, away: str,
         for k, v in extra.items():
             m.setdefault(k, v)
     s = sport.lower()
-    if s == "nba":
+    if s in ("nba", "wnba"):
+        # wnba's markets dict only ever populates "moneyline" (see
+        # predict_matchup._pregame_block) -- flatten_nba's other keys are
+        # guarded .get(...) reads, so reuse gives moneyline-only rows, never
+        # fabricated spread/total rows.
         return flatten_nba(m, home, away)
     if s == "mlb":
         return flatten_mlb(m, home, away)

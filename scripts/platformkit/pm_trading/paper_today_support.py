@@ -30,7 +30,7 @@ DEFAULT_PREDICTIONS = _HERE.parents[2] / "data" / "frontend" / "paper_prediction
 # Permissive paper floor: record a priced pick unless deeply -EV (we GATHER CLV
 # data, not filter to winners). would_pass_real_gate is the stricter EV>0 tag.
 PAPER_EV_FLOOR = -0.02
-DEFAULT_SPORTS = ("mlb", "soccer_intl", "nba", "tennis")
+DEFAULT_SPORTS = ("mlb", "soccer_intl", "nba", "tennis", "wnba")
 
 
 @dataclass

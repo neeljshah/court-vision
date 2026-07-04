@@ -24,7 +24,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from scripts.platformkit.predictor_jd import _build_predictor
 
-_SPORTS = ("nba", "mlb", "soccer", "soccer_intl", "tennis")
+_SPORTS = ("nba", "mlb", "soccer", "soccer_intl", "tennis", "wnba")
 _ALIASES = {"basketball_nba": "nba", "worldcup": "soccer_intl", "wc": "soccer_intl"}
 
 _UNAVAILABLE = (
@@ -76,6 +76,13 @@ def live_kwargs(sport: str, a: argparse.Namespace) -> Optional[Dict[str, Any]]:
     s = _norm_sport(sport)
     hs, as_ = a.home_score, a.away_score
     if s == "nba":
+        if a.elapsed is None or hs is None or as_ is None:
+            return None
+        return {"elapsed_minutes": float(a.elapsed), "home_score": int(hs),
+                "away_score": int(as_)}
+    if s == "wnba":
+        # same generic shape as nba; WNBAAdapter.predict_live_state adapts it
+        # onto the sport's own period/clock_s live-state internally.
         if a.elapsed is None or hs is None or as_ is None:
             return None
         return {"elapsed_minutes": float(a.elapsed), "home_score": int(hs),
@@ -176,6 +183,14 @@ def _pregame_block(sport: str, pred: Any, home: str, away: str,
         # read off the SAME calibrated distribution. Guarded: a markets failure must NEVER
         # break the core prediction -- on any error the key is present but None.
         block["markets"] = _surface_nba(pred, home, away)
+    elif s == "wnba":
+        # Moneyline-only markets dict (no spread/total model exists for WNBA
+        # yet -- see domains/basketball_wnba/adapter.py). Shaped so
+        # bet_board_flat.flatten("wnba", ...) can reuse flatten_nba(): only the
+        # "moneyline" key is populated, so spread/total/quarter rows are simply
+        # absent (never fabricated), matching flatten_nba's guarded .get(...) reads.
+        block["markets"] = {"moneyline": {"p_home_win": raw.get("p_home_win"),
+                                          "p_away_win": raw.get("p_away_win")}}
     elif s == "mlb":
         block["expected_total"] = raw.get("expected_total")
         block["expected_runs_home"] = raw.get("expected_runs_home")
@@ -207,7 +222,12 @@ def _pregame_block(sport: str, pred: Any, home: str, away: str,
 def _ingame_block(sport: str, pred: Any, home: str, away: str,
                   kw: Dict[str, Any]) -> Dict[str, Any]:
     s = _norm_sport(sport)
-    live = pred.predict_live(home, away, **kw)
+    # wnba's predict_live keeps its own (as_of, period, clock_s, ...) signature
+    # (already consumed elsewhere -- see domains/basketball_wnba/adapter.py); the
+    # generic elapsed_minutes/home_score/away_score kwargs route through the
+    # additive predict_live_state adapter instead of predict_live directly.
+    live = pred.predict_live_state(home, away, **kw) if s == "wnba" \
+        else pred.predict_live(home, away, **kw)
     block: Dict[str, Any] = {"p_home_win": _p_home_of(live)}
     if "p_draw" in live:
         block["p_draw"] = live["p_draw"]

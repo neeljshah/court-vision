@@ -145,6 +145,15 @@ def _build_predictor(sport: str) -> Optional[Any]:
         elif s == "tennis":
             from domains.tennis.predictor import TennisPredictor  # noqa: PLC0415
             pred = TennisPredictor()
+        elif s == "wnba":
+            # WNBA has no to_jd() (no score-distribution model yet -- see
+            # domains/basketball_wnba/adapter.py); the predictor is still built
+            # + cached here so bet_board/live_board/paper_today_support can
+            # reach predict()/predict_live_state() through the SAME cached
+            # factory as every other sport. get_demo_jd("wnba") degrades to
+            # None (hasattr(pred, "to_jd") is False) -- honest, not a gap here.
+            from domains.basketball_wnba.adapter import WNBAAdapter  # noqa: PLC0415
+            pred = WNBAAdapter()
     except Exception:  # noqa: BLE001 -- gitignored corpus absent / import error -> degrade
         pred = None
 

@@ -60,8 +60,12 @@ _TENNIS = {
     "game_handicap": [{"side": "p1", "line": 2.5, "cover": 0.59}],
     "per_set_winner": {"p1": 0.43, "p2": 0.57},
 }
+# WNBA is moneyline-only (see predict_matchup._pregame_block wnba branch --
+# no spread/total model exists yet); reuses flatten_nba's guarded .get(...)
+# reads, so only the moneyline rows should ever come out.
+_WNBA = {"moneyline": {"p_home_win": 0.69, "p_away_win": 0.31}}
 _SURFACES = {"nba": _NBA, "mlb": _MLB, "soccer": _SOCCER, "soccer_intl": _SOCCER,
-             "tennis": _TENNIS}
+             "tennis": _TENNIS, "wnba": _WNBA}
 
 
 class _StubPredictor:
@@ -100,7 +104,7 @@ def _board(sport: str, home="H", away="A", *, live=None, **kw):
 
 # --------------------------------------------------------------------------- #
 def test_uniform_schema_all_sports():
-    for sport in ("nba", "mlb", "soccer", "soccer_intl", "tennis"):
+    for sport in ("nba", "mlb", "soccer", "soccer_intl", "tennis", "wnba"):
         b = _board(sport)
         assert set(b) >= {"sport", "home", "away", "status", "as_of", "live",
                           "best_bets", "groups", "honest_note"}
@@ -193,3 +197,32 @@ def test_unknown_sport():
     b = bb.game_bet_board("cricket", "H", "A", predictor=_StubPredictor())
     assert b["status"] == "unknown_sport"
     assert b["groups"] == [] and b["best_bets"] == []
+
+
+def test_wnba_in_sports_and_moneyline_only():
+    assert "wnba" in bb.SPORTS
+    b = _board("wnba")
+    assert b["status"] == "ok"
+    names = {g["name"] for g in b["groups"]}
+    # moneyline-only: no spread/total groups fabricated for a sport with no
+    # such model yet.
+    assert names == {"Moneyline"}
+    ml = next(g for g in b["groups"] if g["name"] == "Moneyline")
+    assert {r["selection"] for r in ml["bets"]} == {"H", "A"}
+
+
+def test_wnba_honest_no_odds_degrade_then_priced_when_matched():
+    # no odds_lookup -> fair odds only, no price/EV fabricated
+    b_no_odds = _board("wnba")
+    ml = next(g for g in b_no_odds["groups"] if g["name"] == "Moneyline")
+    home_row = next(r for r in ml["bets"] if r["selection"] == "H")
+    assert home_row["best_price"] is None and home_row["ev_pct"] is None
+    assert home_row["fair_odds"] is not None
+
+    def odds_lookup(sport, home, away):
+        return {"kalshi": {home: 1.45}}
+    b_priced = _board("wnba", odds_lookup=odds_lookup)
+    ml2 = next(g for g in b_priced["groups"] if g["name"] == "Moneyline")
+    home_row2 = next(r for r in ml2["bets"] if r["selection"] == "H")
+    assert home_row2["best_price"] == 1.45
+    assert home_row2["best_book"] == "kalshi"
