@@ -62,7 +62,13 @@ _REPO_ROOT = Path(__file__).resolve().parents[3]
 OUT_PATH = _REPO_ROOT / "data" / "frontend" / "ops" / "ingame_outcome_verdict_multi.json"
 COMPONENT = "m_ingame_outcome_verdict_multi"
 
-SPORTS: List[str] = ["soccer_intl", "tennis", "wnba"]
+# npb/kbo ADDED LANE 3 (2026-07-06): both now CAPTURE in-play ticks (see
+# inplay_capture_loop.DEFAULT_SPORTS) with a real outcome resolver (npb/kbo
+# _outcome_resolver.py) wired below via _OUTCOME_FACTORY. Neither sport has a
+# live model wired yet (model_prob is honestly None every tick), so their
+# verdict docs correctly report n_labeled=0 / INSUFFICIENT_DATA until a future
+# lane wires a live model -- an honest, expected result, not a bug.
+SPORTS: List[str] = ["soccer_intl", "tennis", "wnba", "npb", "kbo"]
 
 OutcomeFn = Callable[[str], Optional[int]]
 
@@ -114,10 +120,32 @@ def _wnba_outcome_fn() -> OutcomeFn:
         return lambda _g: None
 
 
+def _npb_outcome_fn() -> OutcomeFn:
+    try:
+        from scripts.platformkit.ingame.npb_outcome_resolver import NpbOutcomeResolver
+        res = NpbOutcomeResolver()
+        return res.home_win if res.available else (lambda _g: None)
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("_npb_outcome_fn init failed: %s", exc)
+        return lambda _g: None
+
+
+def _kbo_outcome_fn() -> OutcomeFn:
+    try:
+        from scripts.platformkit.ingame.kbo_outcome_resolver import KboOutcomeResolver
+        res = KboOutcomeResolver()
+        return res.home_win if res.available else (lambda _g: None)
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("_kbo_outcome_fn init failed: %s", exc)
+        return lambda _g: None
+
+
 _OUTCOME_FACTORY: Dict[str, Callable[[], OutcomeFn]] = {
     "soccer_intl": _soccer_outcome_fn,
     "tennis": _tennis_outcome_fn,
     "wnba": _wnba_outcome_fn,
+    "npb": _npb_outcome_fn,
+    "kbo": _kbo_outcome_fn,
 }
 
 
@@ -183,11 +211,11 @@ def build_verdict_all(sports: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "note": ("multi-sport per-segment Brier of the live in-game model vs the "
                  "OUTCOME, compared to the VENUE in-play price (thin/laggy Kalshi "
                  "quote), for every sport CAPTURING in-play ticks beyond MLB "
-                 "(soccer_intl/tennis/wnba). BETTER_THAN_VENUE = better calibrated "
-                 "to truth than that venue quote; NOT an efficient-close beat, NOT "
-                 "a $ edge. INSUFFICIENT_DATA is an honest result for a sport whose "
-                 "capture corpus is still thin (expected for tennis/wnba on day 1 "
-                 "of capture)."),
+                 "(soccer_intl/tennis/wnba/npb/kbo). BETTER_THAN_VENUE = better "
+                 "calibrated to truth than that venue quote; NOT an efficient-close "
+                 "beat, NOT a $ edge. INSUFFICIENT_DATA is an honest result for a "
+                 "sport whose capture corpus is still thin, OR (npb/kbo) whose "
+                 "model_prob is honestly None every tick pending a live model."),
     }
 
 
