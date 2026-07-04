@@ -19,9 +19,19 @@ a provider's existing except-and-degrade-to-UNAVAILABLE logic is unchanged.
 Kill switch: CV_STEALTH_FALLBACK=0 (or "false"/"no") restores exact legacy
 behavior (plain fetch only, scrapling never imported).
 
-Everything injectable for offline tests: plain_get, stealth_get, prefs_path,
-now. No scrapling import here -- only stealth_fetch imports it, and only when
-actually used.
+TIER 3 (browser render): when plain AND stealth BOTH fail blocked-shaped, and
+only if the caller has explicitly opted in with env CV_BROWSER_FALLBACK=1,
+one more escalation is tried via browser_fetch (a real headless-browser page
+load -- see that module's docstring for why this exists and its one known
+limitation). DEFAULT OFF -- this is a transport CONFIG knob, not a model or
+feature flag: it exists so a human or a reviewed wake can turn on the
+heaviest, slowest tier for a specific probe run without changing any
+daemon's behavior by default. A host that succeeds via browser is remembered
+with tier tag "browser" in the SAME prefs file/TTL as the stealth tier.
+
+Everything injectable for offline tests: plain_get, stealth_get, browser_get,
+prefs_path, now. No scrapling import here -- only stealth_fetch/browser_fetch
+import it, and only when actually used.
 """
 from __future__ import annotations
 
@@ -34,6 +44,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, Optional
 from urllib.parse import urlparse
 
+from .browser_fetch import browser_get_json
 from .http_cache import http_get_json
 from .stealth_fetch import stealth_get_json
 
@@ -51,6 +62,12 @@ _BLOCKED_HTTP_CODES = (401, 403, 406, 409, 429, 451, 503)
 
 def _kill_switch_on() -> bool:
     return os.environ.get("CV_STEALTH_FALLBACK", "1").strip().lower() in ("0", "false", "no")
+
+
+def _browser_fallback_on() -> bool:
+    """Tier 3 is opt-IN (opposite polarity of the tier-2 kill switch): default
+    OFF, only tried when a human/reviewed-wake process sets this explicitly."""
+    return os.environ.get("CV_BROWSER_FALLBACK", "0").strip().lower() in ("1", "true", "yes")
 
 
 def _stealth_ttl_sec() -> float:
@@ -101,31 +118,42 @@ def _save_prefs(prefs: Dict[str, Any], prefs_path: Optional[Path] = None) -> Non
 def mark_stealth_first(
     host: str,
     *,
+    tier: str = "stealth",
     prefs_path: Optional[Path] = None,
     now: Callable[[], float] = time.time,
 ) -> None:
-    """Record that *host* should be tried via stealth FIRST going forward.
+    """Record that *host* should be tried via *tier* FIRST going forward.
 
-    Idempotent; refreshes ``since``/``last_used`` on every call. Never raises.
+    *tier* is "stealth" (default, back-compat) or "browser" (tier 3). Idempotent;
+    refreshes ``since``/``last_used``/``tier`` on every call. Never raises.
     """
     prefs = _load_prefs(prefs_path)
     ts = float(now())
     entry = prefs.get(host)
     since = ts if not isinstance(entry, dict) else float(entry.get("since", ts))
-    prefs[host] = {"since": since, "last_used": ts}
+    prefs[host] = {"since": since, "last_used": ts, "tier": tier}
     _save_prefs(prefs, prefs_path)
 
 
-def _is_stealth_first(host: str, *, prefs_path: Optional[Path], now: Callable[[], float]) -> bool:
+def _preferred_tier(host: str, *, prefs_path: Optional[Path], now: Callable[[], float]) -> Optional[str]:
+    """Return the fresh (non-expired) preferred tier for *host*, or None if no
+    mark exists or it has expired past the shared TTL. Legacy entries (written
+    before the "tier" field existed) default to "stealth" -- unchanged behavior."""
     prefs = _load_prefs(prefs_path)
     entry = prefs.get(host)
     if not isinstance(entry, dict):
-        return False
+        return None
     try:
         since = float(entry.get("since", 0.0))
     except (TypeError, ValueError):
-        return False
-    return (float(now()) - since) < _stealth_ttl_sec()
+        return None
+    if (float(now()) - since) >= _stealth_ttl_sec():
+        return None
+    return str(entry.get("tier", "stealth"))
+
+
+def _is_stealth_first(host: str, *, prefs_path: Optional[Path], now: Callable[[], float]) -> bool:
+    return _preferred_tier(host, prefs_path=prefs_path, now=now) == "stealth"
 
 
 def _is_blocked_shaped(exc: BaseException) -> bool:
@@ -144,34 +172,54 @@ def resilient_get_json(
     *,
     plain_get: Callable[..., Any] = http_get_json,
     stealth_get: Callable[..., Any] = stealth_get_json,
+    browser_get: Callable[..., Any] = browser_get_json,
     prefs_path: Optional[Path] = None,
     now: Callable[[], float] = time.time,
 ) -> Any:
-    """Fetch *url* as JSON, escalating from plain to stealth only when blocked.
+    """Fetch *url* as JSON, escalating plain -> stealth -> browser only when blocked.
 
     Order:
-      1. Kill switch (CV_STEALTH_FALLBACK=0) -> plain_get only, exact legacy path.
-      2. Host has a fresh stealth-first mark -> try stealth first, fall back to
-         plain on ANY stealth failure (never lose a feed to a stealth-only bug).
-      3. Otherwise plain first; on a BLOCKED-SHAPED failure, try stealth; on
-         stealth success the host is marked stealth-first for next time.
-      4. If stealth also fails, the ORIGINAL plain error is re-raised (never the
-         stealth error) -- honest degrade, provider goes UNAVAILABLE as today.
-      5. A non-blocked-shaped plain failure re-raises immediately -- never masks
-         a real outage with a stealth retry.
+      1. Kill switch (CV_STEALTH_FALLBACK=0) -> plain_get only, exact legacy path
+         (tier 3 is also skipped -- the kill switch restores full legacy behavior).
+      2. Host has a fresh preferred-tier mark (stealth or browser) -> try that
+         tier first, fall back to plain on ANY failure of it (never lose a feed
+         to a tier-specific bug).
+      3. Otherwise plain first; on a BLOCKED-SHAPED failure, try stealth.
+      4. If stealth ALSO fails blocked-shaped AND env CV_BROWSER_FALLBACK=1,
+         try browser (tier 3) as the last resort. DEFAULT OFF -- see
+         _browser_fallback_on(); this is a transport config knob, not a model
+         flag, so a daemon's behavior never changes unless a human/reviewed
+         wake sets the env for a specific run.
+      5. Whichever tier succeeds marks the host preferred-tier for next time.
+      6. If every attempted tier fails, the ORIGINAL plain error is re-raised
+         (never a stealth/browser error) -- honest degrade, provider goes
+         UNAVAILABLE as today.
+      7. A non-blocked-shaped plain failure re-raises immediately -- never masks
+         a real outage with a stealth/browser retry.
     """
     if _kill_switch_on():
         return plain_get(url, timeout)
 
     host = _host(url)
+    browser_on = _browser_fallback_on()
 
-    if _is_stealth_first(host, prefs_path=prefs_path, now=now):
+    preferred = _preferred_tier(host, prefs_path=prefs_path, now=now)
+    if preferred == "stealth":
         try:
             result = stealth_get(url, timeout)
-            mark_stealth_first(host, prefs_path=prefs_path, now=now)  # refresh last_used
+            mark_stealth_first(host, tier="stealth", prefs_path=prefs_path, now=now)
             return result
-        except Exception as exc:  # noqa: BLE001 -- stealth-first hosts still fall back
+        except Exception as exc:  # noqa: BLE001 -- preferred-tier hosts still fall back
             logger.debug("stealth-first fetch failed for %s, falling back to plain: %s",
+                        host, exc)
+            return plain_get(url, timeout)
+    if preferred == "browser" and browser_on:
+        try:
+            result = browser_get(url, timeout)
+            mark_stealth_first(host, tier="browser", prefs_path=prefs_path, now=now)
+            return result
+        except Exception as exc:  # noqa: BLE001 -- preferred-tier hosts still fall back
+            logger.debug("browser-first fetch failed for %s, falling back to plain: %s",
                         host, exc)
             return plain_get(url, timeout)
 
@@ -182,10 +230,19 @@ def resilient_get_json(
             raise
         try:
             result = stealth_get(url, timeout)
-        except Exception as stealth_exc:  # noqa: BLE001 -- honest degrade
+        except Exception as stealth_exc:  # noqa: BLE001 -- honest degrade / maybe tier 3
             logger.debug("stealth fallback also failed for %s: %s", host, stealth_exc)
+            if browser_on and _is_blocked_shaped(stealth_exc):
+                try:
+                    result = browser_get(url, timeout)
+                except Exception as browser_exc:  # noqa: BLE001 -- honest degrade
+                    logger.debug("browser fallback also failed for %s: %s",
+                                host, browser_exc)
+                    raise plain_exc
+                mark_stealth_first(host, tier="browser", prefs_path=prefs_path, now=now)
+                return result
             raise plain_exc
-        mark_stealth_first(host, prefs_path=prefs_path, now=now)
+        mark_stealth_first(host, tier="stealth", prefs_path=prefs_path, now=now)
         return result
 
 

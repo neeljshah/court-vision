@@ -206,3 +206,7 @@ def test_mark_stealth_first_preserves_original_since(tmp_path):
 def test_missing_prefs_file_is_empty(tmp_path):
     prefs = _load_prefs(tmp_path / "does_not_exist.json")
     assert prefs == {}
+
+
+# Tier 3 (browser) escalation tests live in test_transport_browser_tier.py
+# (split out to keep both files under the 300-LOC/file limit).
