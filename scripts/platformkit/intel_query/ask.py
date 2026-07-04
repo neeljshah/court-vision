@@ -1,20 +1,15 @@
 """ask(question) -> dict, answering ONLY from VERIFIED claims (mission spine 5).
 
-This is a deterministic tool surface: an external LLM calls ask() the way it
-would call any other tool. There is NO LLM call inside this module -- question
-routing is keyword/regex matching (families.classify), and answers are pulled
-straight from claim rows an INDEPENDENT validator already marked VERIFIED.
+Deterministic tool surface: an external LLM calls ask() like any other tool.
+NO LLM call inside this module -- routing is families.classify (keyword/regex),
+and answers come straight from claim rows an INDEPENDENT validator marked
+VERIFIED. Sources joined per pair in CLAIM_SOURCE_PAIRS: a validation-summary
+JSON (per-claim_id verdict) + the producer claims JSONL it validates (full
+claim rows: criteria/ranking or gate_module/verdict, source_files, caveats).
 
-Sources joined:
-    1. The validated-claims artifact(s): data/frontend/ops/intel_claims_validation*.json
-       (per-claim_id verdict, written by scripts/platformkit/intel_validation/claims_validator.py)
-    2. The producer claims JSONL(s): data/cache/intel_claims/*_claims.jsonl
-       (full claim rows: criteria, ranking, source_files, caveats, computed_at)
-
-HONEST UNANSWERABLE: if no VERIFIED claim covers the question, OR the family
-cannot be classified, return {"answerable": False, "reason": ..., "nearest_supported_families": [...]}.
-This module NEVER falls back to raw computation and NEVER answers from an
-UNVERIFIABLE/MISMATCH claim -- those verdicts are treated the same as "absent".
+HONEST UNANSWERABLE: no VERIFIED claim covers the question, or the family
+can't be classified -> {"answerable": False, "reason": ..., "nearest_supported_families": [...]}.
+Never falls back to raw computation; never answers from an UNVERIFIABLE/MISMATCH claim.
 
 CLI:
     python -m scripts.platformkit.intel_query.ask "Who are the top 5 best shooters (composite) in window=last_20?"
@@ -31,17 +26,18 @@ from typing import Any
 
 from scripts.platformkit.intel_query.families import (
     FAMILY_ENTITY_LOOKUP,
+    FAMILY_GATE_VERDICT,
     FAMILY_PROVENANCE,
     FAMILY_TOP_N,
     classify,
     describe_families,
+    match_gate_verdict_candidates,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
-# Every known (validation-summary, producer-claims) pair. v1 is a static
-# registry rather than a directory glob so the answer surface only ever
-# reads artifacts this lane has explicitly verified the shape of.
+# Every known (validation-summary, producer-claims) pair -- a static registry,
+# not a directory glob, so ask() only ever reads artifacts this lane verified.
 CLAIM_SOURCE_PAIRS: tuple[tuple[Path, Path], ...] = (
     (
         REPO_ROOT / "data" / "frontend" / "ops" / "intel_claims_validation.json",
@@ -50,6 +46,10 @@ CLAIM_SOURCE_PAIRS: tuple[tuple[Path, Path], ...] = (
     (
         REPO_ROOT / "data" / "cache" / "intel_claims" / "nba_quality_claims_validation.json",
         REPO_ROOT / "data" / "cache" / "intel_claims" / "nba_quality_claims.jsonl",
+    ),
+    (
+        REPO_ROOT / "data" / "frontend" / "ops" / "intel_verdict_claims_validation.json",
+        REPO_ROOT / "data" / "cache" / "intel_claims" / "gate_verdict_claims.jsonl",
     ),
 )
 
@@ -69,7 +69,7 @@ def _load_json(path: Path) -> dict[str, Any] | None:
 
 
 def _display_path(path: Path) -> str:
-    """repo-relative string when possible, else the raw path (test fixtures
+    """Repo-relative string when possible, else the raw path (fixtures
     live under a tmp_path outside REPO_ROOT)."""
     try:
         return str(path.relative_to(REPO_ROOT))
@@ -90,12 +90,10 @@ def _load_jsonl(path: Path) -> list[dict[str, Any]]:
 
 
 def load_verified_claims() -> dict[str, dict[str, Any]]:
-    """Join validation-summary verdicts to full producer claim rows.
-
-    Returns {claim_id: claim_row} for every claim_id whose validator verdict
-    is exactly VERIFIED. A claim_id present in the producer JSONL but absent
-    from (or non-VERIFIED in) the validation summary is NOT included -- an
-    unvalidated or MISMATCH/UNVERIFIABLE claim is invisible to ask()."""
+    """{claim_id: claim_row} for every claim_id whose validator verdict is
+    exactly VERIFIED. A claim_id absent from (or non-VERIFIED in) its
+    validation summary is NOT included -- MISMATCH/UNVERIFIABLE stays
+    invisible to ask()."""
     verified: dict[str, dict[str, Any]] = {}
     for validation_path, claims_path in CLAIM_SOURCE_PAIRS:
         summary = _load_json(validation_path)
@@ -152,23 +150,17 @@ def _answer_top_n(parsed, question: str, verified: dict[str, dict[str, Any]]) ->
         return _unanswerable(
             "no VERIFIED ranking claim matches the requested metric/window", question
         )
-    # Prefer the most-recently-computed matching claim (deterministic tie-break).
-    row = max(candidates, key=lambda r: r.get("computed_at", ""))
-    n = parsed.top_n or 10
+    row = max(candidates, key=lambda r: r.get("computed_at", ""))  # most-recent tie-break
     ranking = [dict(r) for r in row.get("ranking", [])]
     for r in ranking:
         if "player_name" in r:
             r["player_name"] = _ascii_name(str(r["player_name"]))
-    ranking = ranking[:n]
+    ranking = ranking[:parsed.top_n or 10]
     return {
-        "answerable": True,
-        "question": question,
-        "family": FAMILY_TOP_N,
+        "answerable": True, "question": question, "family": FAMILY_TOP_N,
         "answer": {
-            "metric": row["criteria"].get("metric"),
-            "window": row["criteria"].get("window"),
-            "ranking": ranking,
-            "n_considered": row.get("n_considered"),
+            "metric": row["criteria"].get("metric"), "window": row["criteria"].get("window"),
+            "ranking": ranking, "n_considered": row.get("n_considered"),
             "n_excluded_below_floor": row.get("n_excluded_below_floor"),
             "caveats": row.get("caveats", []),
         },
@@ -185,8 +177,7 @@ def _answer_entity_lookup(parsed, question: str, verified: dict[str, dict[str, A
     hits = []
     for row in candidates:
         for r in row.get("ranking", []):
-            pname = _ascii_name(str(r.get("player_name", "")))
-            if pname.strip().lower() == name_key:
+            if _ascii_name(str(r.get("player_name", ""))).strip().lower() == name_key:
                 hits.append((row, r))
     if not hits:
         return _unanswerable(
@@ -194,21 +185,16 @@ def _answer_entity_lookup(parsed, question: str, verified: dict[str, dict[str, A
             "(the entity may exist but did not clear the claim's min_sample floor)",
             question,
         )
-    answers = []
-    evidence = []
-    for row, r in hits:
-        answers.append({
-            "metric": row["criteria"].get("metric"),
-            "window": row["criteria"].get("window"),
-            "rank": r["rank"],
-            "value": r["value"],
-            "n": r.get("n"),
-        })
-        evidence.append(_claim_evidence(row))
+    answers = [
+        {
+            "metric": row["criteria"].get("metric"), "window": row["criteria"].get("window"),
+            "rank": r["rank"], "value": r["value"], "n": r.get("n"),
+        }
+        for row, r in hits
+    ]
+    evidence = [_claim_evidence(row) for row, _r in hits]
     return {
-        "answerable": True,
-        "question": question,
-        "family": FAMILY_ENTITY_LOOKUP,
+        "answerable": True, "question": question, "family": FAMILY_ENTITY_LOOKUP,
         "answer": {"entity_name": parsed.entity_name, "rankings": answers},
         "evidence": evidence,
     }
@@ -221,15 +207,31 @@ def _answer_provenance(parsed, question: str, verified: dict[str, dict[str, Any]
         )
     row = verified[parsed.claim_id]
     return {
-        "answerable": True,
-        "question": question,
-        "family": FAMILY_PROVENANCE,
+        "answerable": True, "question": question, "family": FAMILY_PROVENANCE,
         "answer": {
-            "claim_id": row["claim_id"],
-            "question_answered_by_claim": row.get("question"),
-            "criteria": row.get("criteria"),
-            "n_considered": row.get("n_considered"),
+            "claim_id": row["claim_id"], "question_answered_by_claim": row.get("question"),
+            "criteria": row.get("criteria"), "n_considered": row.get("n_considered"),
             "n_excluded_below_floor": row.get("n_excluded_below_floor"),
+            "caveats": row.get("caveats", []),
+        },
+        "evidence": [_claim_evidence(row)],
+    }
+
+
+def _answer_gate_verdict(parsed, question: str, verified: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    candidates = match_gate_verdict_candidates(parsed, verified)
+    if not candidates:
+        return _unanswerable(
+            "no VERIFIED gate-verdict claim matches this question's topic", question
+        )
+    row = max(candidates, key=lambda r: r.get("computed_at", ""))  # most-recent tie-break
+    return {
+        "answerable": True, "question": question, "family": FAMILY_GATE_VERDICT,
+        "answer": {
+            "gate_module": row.get("gate_module"), "verdict": row.get("verdict"),
+            "primary_number": row.get("primary_number"), "corpus_ids": row.get("corpus_ids", []),
+            "planted_null_passed": row.get("planted_null_passed"),
+            "edge_claimed": row.get("edge_claimed", False), "verdict_file": row.get("verdict_file"),
             "caveats": row.get("caveats", []),
         },
         "evidence": [_claim_evidence(row)],
@@ -244,7 +246,8 @@ def ask(question: str) -> dict[str, Any]:
 
     if parsed.family is None:
         return _unanswerable(
-            "question did not match a supported family (top_n / entity_lookup / provenance)",
+            "question did not match a supported family (top_n / entity_lookup / "
+            "provenance / gate_verdict)",
             question,
         )
     if not verified:
@@ -256,6 +259,8 @@ def ask(question: str) -> dict[str, Any]:
         return _answer_entity_lookup(parsed, question, verified)
     if parsed.family == FAMILY_PROVENANCE:
         return _answer_provenance(parsed, question, verified)
+    if parsed.family == FAMILY_GATE_VERDICT:
+        return _answer_gate_verdict(parsed, question, verified)
     return _unanswerable("unreachable family branch", question)  # pragma: no cover
 
 
@@ -263,6 +268,7 @@ _DEMO_QUESTIONS = (
     "Who are the top 5 best shooters (composite) in window=last_20?",
     "Where does Isaiah Joe rank on composite in window=last_20?",
     "How do you know? Show the evidence for nba_shooting_composite_last_20.",
+    "What did the tennis surface gate find?",
     "What is the weather in Boston tomorrow?",
 )
 
@@ -270,11 +276,11 @@ _DEMO_QUESTIONS = (
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="ask-anything over VERIFIED intel claims")
     parser.add_argument("question", nargs="?", default=None)
-    parser.add_argument("--demo", action="store_true", help="run 2 answerable + 1 unanswerable proof questions")
+    parser.add_argument("--demo", action="store_true", help="run 3 answerable + 1 unanswerable proof questions")
     args = parser.parse_args(argv)
 
     if args.demo or not args.question:
-        questions = _DEMO_QUESTIONS[:2] + _DEMO_QUESTIONS[-1:]
+        questions = _DEMO_QUESTIONS[:2] + _DEMO_QUESTIONS[-2:]
         for q in questions:
             result = ask(q)
             print(f"Q: {q}")

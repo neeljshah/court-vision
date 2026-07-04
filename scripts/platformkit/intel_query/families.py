@@ -12,6 +12,10 @@ Families:
                      <player>'s <metric>"
     PROVENANCE   -- "how do you know" / "show the evidence" / "prove" for a
                      specific claim_id
+    GATE_VERDICT -- "what did the <thing> gate find" / "did <thing> beat
+                     <baseline>" -- routes to a VERIFIED claim_kind=verdict
+                     row (gate_module + verdict_file + numbers), never to a
+                     gate re-run.
 """
 from __future__ import annotations
 
@@ -22,8 +26,9 @@ from typing import Any
 FAMILY_TOP_N = "top_n"
 FAMILY_ENTITY_LOOKUP = "entity_lookup"
 FAMILY_PROVENANCE = "provenance"
+FAMILY_GATE_VERDICT = "gate_verdict"
 
-ALL_FAMILIES = (FAMILY_TOP_N, FAMILY_ENTITY_LOOKUP, FAMILY_PROVENANCE)
+ALL_FAMILIES = (FAMILY_TOP_N, FAMILY_ENTITY_LOOKUP, FAMILY_PROVENANCE, FAMILY_GATE_VERDICT)
 
 _TOP_N_RE = re.compile(
     r"\btop\s*[- ]?\s*(\d+)\b|\bbest\s+(\d+)\b", re.IGNORECASE
@@ -41,6 +46,11 @@ _RANK_LOOKUP_RE = re.compile(
 # once quoted (e.g. season_2024-25 windows embedded in the id).
 _CLAIM_ID_RE = re.compile(r"\b([a-z][a-z0-9]*(?:_[a-z0-9-]+){2,})\b", re.IGNORECASE)
 _WINDOW_RE = re.compile(r"\bwindow\s*[=:]\s*([a-z0-9_-]+)\b", re.IGNORECASE)
+_GATE_VERDICT_WORDS = re.compile(
+    r"\bwhat did\b.+\b(gate|check)\b.+\bfind\b|\bdid\b.+\b(beat|clear the bar|clear|pass)\b|"
+    r"\bgate verdict\b|\bwhat.?s the verdict\b|\bwhat was the verdict\b",
+    re.IGNORECASE,
+)
 
 
 @dataclass
@@ -52,6 +62,7 @@ class ParsedQuestion:
     raw: str = ""
     metric_hints: list[str] = field(default_factory=list)
     window_hint: str | None = None
+    topic_hints: list[str] = field(default_factory=list)
 
 
 _METRIC_ALIASES: dict[str, tuple[str, ...]] = {
@@ -75,6 +86,46 @@ def _extract_metric_hints(text: str) -> list[str]:
         if any(a in lower for a in aliases):
             hits.append(metric)
     return hits
+
+
+_TOPIC_ALIASES: dict[str, tuple[str, ...]] = {
+    "tennis_surface": ("surface", "hold prior", "hold-prior", "atp", "wta", "tennis"),
+    "nba_composition": ("composition", "shooter quality", "scorer quality", "quality blend", "nba"),
+    "wnba_rest": ("rest covariate", "rest diff", "wnba rest", "+rest", "wnba"),
+}
+
+
+def _extract_topic_hints(text: str) -> list[str]:
+    lower = text.lower()
+    hits = []
+    for topic, aliases in _TOPIC_ALIASES.items():
+        if any(a in lower for a in aliases):
+            hits.append(topic)
+    return hits
+
+
+def match_gate_verdict_candidates(parsed: ParsedQuestion, verified: dict[str, Any]) -> list[dict[str, Any]]:
+    """Match a gate_verdict question to VERIFIED claim_kind=verdict rows by a
+    RECOGNIZED topic keyword (checked against gate_module/claim_id/question
+    text, lowercase substring match, no fuzzy scoring). A question with no
+    recognized topic_hint matches nothing -- honest UNANSWERABLE rather than
+    guessing from generic overlap words like "gate" or "find"."""
+    if not parsed.topic_hints:
+        return []
+    verdict_claims = [r for r in verified.values() if r.get("kind") == "verdict"]
+    matched = []
+    for row in verdict_claims:
+        haystack = " ".join([
+            str(row.get("gate_module", "")).lower(),
+            str(row.get("claim_id", "")).lower(),
+            str(row.get("question", "")).lower(),
+        ])
+        for topic in parsed.topic_hints:
+            aliases = _TOPIC_ALIASES.get(topic, ())
+            if any(a in haystack for a in aliases):
+                matched.append(row)
+                break
+    return matched
 
 
 def _extract_claim_id(text: str) -> str | None:
@@ -116,15 +167,27 @@ def classify(question: str) -> ParsedQuestion:
 
     Order matters: provenance (explicit claim_id + evidence words) is
     checked first since it can otherwise look like a top-N or lookup
-    question if the claim_id itself contains digits/words like 'top'."""
+    question if the claim_id itself contains digits/words like 'top'.
+    gate_verdict is checked next -- "what did the gate find" / "did X beat
+    Y" phrasing is distinctive enough it should not fall through to top_n
+    or entity_lookup (which need a metric/player, not a gate topic)."""
     text = question or ""
     window_hint = _extract_window_hint(text)
+    topic_hints = _extract_topic_hints(text)
 
     if _PROVENANCE_WORDS.search(text):
         claim_id = _extract_claim_id(text)
         return ParsedQuestion(
             family=FAMILY_PROVENANCE, claim_id=claim_id, raw=question,
             metric_hints=_extract_metric_hints(text), window_hint=window_hint,
+            topic_hints=topic_hints,
+        )
+
+    if _GATE_VERDICT_WORDS.search(text):
+        return ParsedQuestion(
+            family=FAMILY_GATE_VERDICT, raw=question,
+            metric_hints=_extract_metric_hints(text), window_hint=window_hint,
+            topic_hints=topic_hints,
         )
 
     top_n_match = _TOP_N_RE.search(text)
@@ -136,6 +199,7 @@ def classify(question: str) -> ParsedQuestion:
             raw=question,
             metric_hints=_extract_metric_hints(text),
             window_hint=window_hint,
+            topic_hints=topic_hints,
         )
 
     if _RANK_LOOKUP_RE.search(text):
@@ -145,10 +209,12 @@ def classify(question: str) -> ParsedQuestion:
             raw=question,
             metric_hints=_extract_metric_hints(text),
             window_hint=window_hint,
+            topic_hints=topic_hints,
         )
 
     return ParsedQuestion(
         family=None, raw=question, metric_hints=_extract_metric_hints(text), window_hint=window_hint,
+        topic_hints=topic_hints,
     )
 
 
@@ -159,4 +225,5 @@ def describe_families() -> list[dict[str, Any]]:
         {"family": FAMILY_TOP_N, "example": "Who are the top 10 best shooters (composite) in window=last_20?"},
         {"family": FAMILY_ENTITY_LOOKUP, "example": "Where does Stephen Curry rank on fg3_pct in window=season_2024-25?"},
         {"family": FAMILY_PROVENANCE, "example": "How do you know? Show the evidence for nba_shooting_composite_last_20."},
+        {"family": FAMILY_GATE_VERDICT, "example": "What did the tennis surface gate find?"},
     ]
