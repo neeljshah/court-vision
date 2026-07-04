@@ -41,6 +41,27 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 4 (FULL FLEET: KALSHI PREGAME BUG FOUND+FIXED + WNBA PAPER CHANNEL LIVE-
+  READY + NPB/KBO IN-PLAY + TENNIS ZERO GAPS, 2026-07-03 night, commits d68d0df7/
+  1721c148/19aa2348/44a37adc, 11 agents / ~1.26M tokens, 0 fix rounds, 5/5 Opus PASS):
+  (1) settle_stamp had a SECOND bug (production ev = flat settled_finals dict ->
+  None for EVERY sport on that path) -- fixed 3-shape; WTA dual-board merge
+  (found _scoreboard_url never honored league=); WNBA ticker map rebuilt from
+  330 REAL tickers (no HHMM; Kalshi city shorthand GS/WSH/NY/LA/PDX/CONN):
+  326/330 resolve, 314/318 match parquet labels. (2) WNBA pregame paper channel
+  wired end-to-end (predictor_jd->predict_matchup->bet_board->live_board->
+  paper_today; honest no-odds degrade verified; live p=0.6914 on real corpus);
+  npb/kbo board = honest gap (needs kalshi-derived listing machinery). (3)
+  npb+kbo in-play capture-only (model_prob honestly None -- zero placement) +
+  resolvers grounded on 44 real tickers (NO home/away signal from Kalshi --
+  first-code=away convention) + WNBA shadow (sp_shadow contract; logs None
+  until live_state gets a wnba route -- wave 5). (4) BIGGEST FIND: Kalshi
+  pregame fetch() returned 0 events for EVERY sport (no series_ticker filter,
+  exact-match required, masked by aggregate) -- fixed + live-verified mlb
+  0->47, wnba 0->6, npb 0->6; snapshot daemons +wnba/npb/kbo; CLV path proven
+  sport-blind. (5) ops-verify: every sprint module ran live, 129/129 targeted
+  regressions, sprint_status.json + 9-step restart checklist composed. ONE
+  supervisor restart activates everything. No edge claimed.
 - SPRINT WAKE 3 (FULL FLEET: KBO SHIPPED + TENNIS TRULY FIXED + MULTI-SPORT GRADING +
   WNBA BLEND WINNER + PAPER ENABLEMENT, 2026-07-03 night, commits 933d9302/bb8bb567/
   e44255a6/e1c8258a/5de5e850, 11 agents / ~1.26M tokens, 0 fix rounds, 5/5 Opus PASS):
@@ -813,12 +834,12 @@ or `program_complete` only.
 
 ## NEXT (max 5 -- action | where | done-when) [MASTER PLAN v2 2026-07-02: .planning/PLAN_SELF_IMPROVING_AI.md -- 8 phases ending in PRE-REGISTERED proof-of-edge criteria (8.1a-g) + human-gated real-money pilot runbook (8.2); economics phase 6 (cost model/maker sim/beat-the-line scoreboard) decides if money ever happens; NBA-season readiness phase 7 before Oct. This queue = the Phase-1 head]
 [RATIFIED QUEUE 2026-07-03 -- .planning/AUTONOMY_CHARTER.md governs unattended wakes: routing, spend rails, decision rights, wake protocol. Read it before pulling work. SPRINT MODE amended: usage rail LIFTED thru 07-06 per user directive; full fleet per wake; Fable decides even if loop model switches to Opus (see memory feedback_sprint_fleet_orchestration_2026_07_03).]
-[SPRINT WAKES 1-3 DONE 2026-07-03 (13 lane commits, 35 agents, all Opus-reviewed). Queue below = wave 4.]
-1. [TENNIS-COMPLETE] settle_stamp.py groupings/athlete fix (same class as wave-3 lane 2) + WTA league path (tennis wta variant in _SPORTS/_LEAGUE_PATH) + validate wnba_outcome_resolver's ASSUMED ticker regex against a REAL fetched KXWNBAGAME ticker (fix if mismatch) | scripts/platformkit/ingame/ | tennis loop has zero known gaps; wnba regex grounded.
-2. [PREGAME-PAPER-SEAM] Wire wnba (and npb/kbo where listing sources exist) into the pregame paper channel: predictor_jd._build_predictor seam + bet_board.SPORTS + live_board routes + paper_today_support.DEFAULT_SPORTS; wnba has ESPN listing; npb/kbo need a listing source (kalshi-derived or honest gap) | scripts/platformkit/ | paper-only, thresholds untouched.
-3. [INPLAY-WIDEN+SHADOW] npb+kbo into in-play capture (capture-only, model None-safe) + NPB/KBO outcome resolvers wired into settle + grading-multi sport lists + WNBA in-play model SHADOW logging (sp_shadow pattern: field appended post-on_tick, no placement) | scripts/platformkit/ingame/ | ticks accrue + settle-ready at restart.
-4. [CLOSE-CAPTURE-CLV] Audit + widen pregame close capture / line_history / CLV reconciler for wnba/npb/kbo (kalshi provider now serves all three); verify a close can lock for a real upcoming KXWNBAGAME event | scripts/platformkit/ | CLV grading works for new sports from day one.
-5. [OPS-VERIFY] Run every shipped module's live entrypoint once (kbo/npb gates, wnba blend check v2, grading-multi tick, freshness SLA probe, wedge-reaper dry tick, tick latency); compose data/frontend/ops/sprint_status.json + restart-readiness checklist; targeted per-file regression re-runs | scripts/platformkit/ | one honest status artifact.
+[SPRINT WAKES 1-4 DONE 2026-07-03 (18 lane commits, 46 agents, ~5.0M tokens, 20/20 Opus lane PASS). Queue below = wave 5 (overnight).]
+1. [WNBA-LIVE-STATE] Add wnba to ingame_live_state._SPORTS (basketball/wnba ESPN route) + period segment fields so live_state('wnba') returns real states -- unblocks the shadow logger + m36 grading; live-verify against tonight's WNBA slate if a game is live | scripts/platformkit/ingame/ | shadow logs real probs at restart.
+2. [SOCCER-3WAY] kalshi.py parse_events support for 3-way KXWCGAME markets (regulation Tie/A/B): map into the existing soccer 1X2 representation honestly (study how other providers' soccer moneylines are represented; devig 3-way as 3-way, never force 2-way) | scripts/platformkit/odds_provider/ | soccer_intl kalshi pregame events >0 live-verified.
+3. [MLB-PROPS-EVAL] The edge-map #1 unlock follow-through: find + run the REAL props_eval on the 5-season 321K-row gamelog corpus (per-opportunity props first: pitcher Ks, hits, walks), leak-free walk-forward, >=2 season corpora; honest verdicts to the reject ledger; NO wiring | domains/mlb/ + platformkit | verdict rows with numbers (REJECT expected where market efficient).
+4. [NPB-KBO-BOARD] Kalshi-derived listing adapter (tickers encode date+teams) so npb/kbo get board listings + pregame paper channel like wnba; if board machinery genuinely cannot take a no-clock listing, record the honest gap with the exact missing piece | scripts/platformkit/frontend/ | listed-or-gapped with evidence.
+5. [SOCCER-RESOLVER-AUDIT] 32/39 captured soccer_intl games unresolved: break down draw vs not-final vs resolver-miss; fix recoverable misses (alias/ticker-parse), draws stay honestly None | scripts/platformkit/ingame/ | labeled-game count rises or the loss is proven irreducible.
 HUMAN QUEUE (updated SPRINT WAKE 1): (a) ONE supervisor restart activates everything shipped this wake: m33 wedge reaper + m34 freshness SLA + m35 tail-multi + WNBA capture spec pickup (boot.ps1 cycle -- charter forbids unattended supervisor restarts); (b) m32 weather_totals SHIP_REVIEW (standing); (c) m19 wave-2 replication outcomes if any survive BOTH corpora -> fresh SHIP_REVIEW decisions; (d) register_autostart.ps1 -Register in an ELEVATED shell (standing); (e) CV_MLB_SP_ADJUST stays CLOSED as honest REJECT (returns only via m32 nightly re-gate). Parked follow-ups unchanged (charter Section 4 PARKED).
 
 DONE (2026-07-02): [P2.2] Feed-health scoreboard SHIPPED -- NEW scripts/platformkit/odds_provider/feed_health.py + feed_health_runner.py (registered as supervisor ProcSpec m30_feed_health, HEARTBEAT readiness, 600s cadence): live-probes every (provider, sport) pair the REAL slate uses (reuses aggregate.default_providers(), not a synthetic ping) and classifies GREEN (real data OR an honest empty/unsupported-sport degrade -- not an outage) vs RED (auth/forbidden/timeout/parse/unexpected-shape/exception -- the scraper is actually broken). LIVE-VERIFIED it catches a REAL fault: a live run hit an actual Pinnacle 401 Unauthorized on soccer_intl (transient rate-limit from repeated calls this session) that `aggregate()` had been silently swallowing (that venue just vanishes from the merged slate with no visible signal) -- feed_health correctly surfaced it as one RED row while mlb/espn/fanduel/kalshi/polymarket stayed GREEN. 16 new tests green (10 feed_health + 6 runner), both files well under 300 LOC (185, 115). Also updated tests/supervisor/test_manifest.py's service-set assertion for m30 (21 green).
