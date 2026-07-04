@@ -93,32 +93,54 @@ def fetch_scoreboardv3(date_str: str,
     return games if isinstance(games, list) else []
 
 
+def _candidate_splits(tri: str) -> List[tuple]:
+    """(away, home) candidate splits of the concatenated gameCode tricode blob.
+
+    HARDENING (this wave): the shipped v1 assumed a fixed 3+3 split (true for
+    every WNBA tricode observed in the live 2026 schedule -- CHI/LVA/GSV/NGR
+    etc are all exactly 3 chars -- see cdn_backfill.fetch_completed_game_ids's
+    season-schedule probe, 350 games checked), but nothing in the CDN contract
+    GUARANTEES 3 chars forever (NBA-family
+    tricodes have occasionally been non-3-letter historically, e.g. 2-letter
+    or 4-letter alternate codes). Rather than hardcode one split point, try
+    every plausible away-length in [2,4] and let the ESPN-abbreviation match
+    below disambiguate; a length that yields zero or >1 hits is discarded, so
+    a wrong split can only ever produce an absent mapping, never a garbage one."""
+    out = []
+    for away_len in (3, 2, 4):
+        if 0 < away_len < len(tri):
+            out.append((tri[:away_len], tri[away_len:]))
+    return out
+
+
 def gameid_map_hint(scoreboardv3_games: List[dict], espn_events: List[dict]) -> Dict[str, str]:
     """scoreboardv3 gameId -> ESPN event id, cross-referenced by same-day team
     tricode/displayName substring match (both id spaces are NBA-format vs
     ESPN-format and NEVER positionally identical -- confirmed 2026-07-03:
     gameId 1022600149 vs espn id 401857038 for the same CHI@LV game).
-    Unmatched or ambiguous (>1 hit) pairs are absent from the result -- never
-    a guessed mapping."""
+    Unmatched or ambiguous (>1 hit, incl. across split candidates) pairs are
+    absent from the result -- never a guessed mapping. Tricode segment is
+    NOT assumed to be a fixed 3+3 split (see _candidate_splits)."""
     out: Dict[str, str] = {}
     for sb in scoreboardv3_games:
         code = str(sb.get("gameCode") or "")
         tri = code.split("/")[-1] if "/" in code else ""  # e.g. "MINNYL" -> away+home tricodes
         if len(tri) < 4:
             continue
-        away_tri, home_tri = tri[:3], tri[3:]
-        hits = []
-        for ev in espn_events:
-            comps = (ev.get("competitions") or [{}])[0].get("competitors") or []
-            names = {c.get("homeAway"): str((c.get("team") or {}).get("abbreviation") or "")
-                     for c in comps}
-            home_abbr, away_abbr = names.get("home", "").upper(), names.get("away", "").upper()
-            if home_abbr and away_abbr and \
-               (home_abbr in home_tri.upper() or home_tri.upper() in home_abbr) and \
-               (away_abbr in away_tri.upper() or away_tri.upper() in away_abbr):
-                hits.append(ev)
-        if len(hits) == 1:
-            out[str(sb.get("gameId"))] = str(hits[0].get("id"))
+        all_hits = []
+        for away_tri, home_tri in _candidate_splits(tri):
+            for ev in espn_events:
+                comps = (ev.get("competitions") or [{}])[0].get("competitors") or []
+                names = {c.get("homeAway"): str((c.get("team") or {}).get("abbreviation") or "")
+                         for c in comps}
+                home_abbr, away_abbr = names.get("home", "").upper(), names.get("away", "").upper()
+                if home_abbr and away_abbr and \
+                   (home_abbr in home_tri.upper() or home_tri.upper() in home_abbr) and \
+                   (away_abbr in away_tri.upper() or away_tri.upper() in away_abbr):
+                    if ev not in all_hits:
+                        all_hits.append(ev)
+        if len(all_hits) == 1:
+            out[str(sb.get("gameId"))] = str(all_hits[0].get("id"))
     return out
 
 
