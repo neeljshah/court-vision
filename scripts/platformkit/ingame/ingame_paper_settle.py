@@ -91,8 +91,30 @@ def _soccer_score_fn() -> Optional[ScoreFn]:
     return None
 
 
+def _tennis_score_fn() -> Optional[ScoreFn]:
+    """Wrap TennisOutcomeResolver.home_win -> a synthetic (1,0)/(0,1) score pair
+    so it satisfies the ScoreFn/grade_live contract (grade_one only ever compares
+    home_score>away_score, never reads a real tennis game score -- see
+    tennis_outcome_resolver's module docstring). None (bet stays open) when the
+    resolver can't resolve a winner (ambiguous/live/unparseable)."""
+    try:
+        from scripts.platformkit.ingame.tennis_outcome_resolver import TennisOutcomeResolver
+        res = TennisOutcomeResolver()
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("ingame_paper_settle tennis resolver unavailable: %s", exc)
+        return None
+
+    def _fn(ticker: str) -> Optional[Tuple[int, int]]:
+        hw = res.home_win(ticker)
+        if hw is None:
+            return None
+        return (1, 0) if hw == 1 else (0, 1)
+    return _fn
+
+
 def _dispatch_score_fn(mlb_fn: Optional[ScoreFn],
-                       soccer_fn: Optional[ScoreFn]) -> ScoreFn:
+                       soccer_fn: Optional[ScoreFn],
+                       tennis_fn: Optional[ScoreFn] = None) -> ScoreFn:
     """Route a ticker to the resolver matching its Kalshi series prefix. A
     ticker neither resolver recognises (or an inert resolver) -> None, never a
     guess -- the bet just stays open."""
@@ -102,15 +124,18 @@ def _dispatch_score_fn(mlb_fn: Optional[ScoreFn],
             return mlb_fn(ticker)
         if t.startswith("KXWCGAME") and soccer_fn is not None:
             return soccer_fn(ticker)
+        if (t.startswith("KXATPMATCH") or t.startswith("KXWTAMATCH")) and tennis_fn is not None:
+            return tennis_fn(ticker)
         return None
     return _fn
 
 
 def _default_score_fn() -> ScoreFn:
     """Build the combined ticker->final-score resolver (MLB + WC soccer, both
-    offline parquet reads). A sport whose resolver is unavailable simply never
-    matches -- its bets stay open, never fabricated."""
-    return _dispatch_score_fn(_mlb_score_fn(), _soccer_score_fn())
+    offline parquet reads; tennis disk-first/live-ESPN-fallback). A sport whose
+    resolver is unavailable simply never matches -- its bets stay open, never
+    fabricated."""
+    return _dispatch_score_fn(_mlb_score_fn(), _soccer_score_fn(), _tennis_score_fn())
 
 
 def _settled_edge_keys(rows: List[Dict[str, Any]]) -> set:

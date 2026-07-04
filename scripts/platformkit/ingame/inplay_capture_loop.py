@@ -60,8 +60,14 @@ _REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_GRADE_DIR = _REPO_ROOT / "data" / "cache" / "ingame_grade"
 DEFAULT_HEARTBEAT = _REPO_ROOT / "data" / "cache" / "ingame_grade" / "_capture_heartbeat.json"
 
-# Sports that have BOTH a KX<league>GAME in-play series (W2) and a predict_live model.
-DEFAULT_SPORTS: List[str] = ["mlb", "soccer_intl"]
+# Sports that have BOTH a KX<league>GAME/MATCH in-play series (W2) and a predict_live
+# model. tennis (KXATPMATCH/KXWTAMATCH, wired WAKE-34) and wnba (KXWNBAGAME, wired
+# wave 1) ADDED 2026-07-03 -- kalshi_series_spec.SERIES_SPEC already carries both (see
+# scripts/platformkit/odds_provider/kalshi_series_spec.py); this was the only place
+# still gating them out of capture. tennis_outcome_resolver now supplies the outcome
+# label tennis previously had no way to grade. Additive: mlb/soccer_intl unchanged.
+# A running daemon only picks this up at its already-pending restart.
+DEFAULT_SPORTS: List[str] = ["mlb", "soccer_intl", "tennis", "wnba"]
 
 # RELAXED in-game EV floor per sport (opt-in): the strict pre-registered floor (policy tier C
 # = +0.02 EV, +0.01 proxy = +0.03) rarely fires in-game because the calibrated model tracks
