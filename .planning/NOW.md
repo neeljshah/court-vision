@@ -41,6 +41,18 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 25 (SCHEDULED LIGHT CHECK-IN + LEAK-DISCIPLINE OBSERVABILITY FIX,
+  2026-07-04 ~16:15Z, commit 00ec12a5, 2 agents / ~0.09M tokens): wall-clock
+  accrual wake, NO fleet (correct per cadence rule -- no gate decided). Spine GREEN
+  (all_ready, feeds, freshness), pacing counters LIVE (17req/0-429). Verifier now
+  17 PASS / 16 PENDING (no live games at 16:00Z) / 1 FAIL (supervisor_beat_thread
+  = boot_initiator provenance stamp, RESTART-PENDING: current supervisor launched
+  14:16Z, its boot.ps1 fix committed 14:54Z -- all FUNCTIONAL fixes live). FOUND+
+  FIXED+SHIPPED (Opus PASS): forward_evidence_scoreboard read n_forward_games_graded
+  (=discovery corpus 31 for soccer_intl) not n_forward_games (=1 leak-free forward)
+  -> false DECIDABLE_NOW misleading the escalation trigger; conservative fix (subset,
+  cannot inflate readiness), decidable_now 2->0, MLB unchanged, +regression test,
+  13 green. No edge claimed.
 - SPRINT WAKE 24 (SCRAPING FRONTIER: USER Q "is scraping at the highest level, best
   webscraping systems, using githubs", 2026-07-04 ~16:35Z, commit ad8e59dd + local
   scout doc, 6 agents / ~0.53M tokens): (1) TIER-3 browser-render transport BUILT
