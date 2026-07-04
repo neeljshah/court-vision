@@ -41,6 +41,21 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 21 (CONSOLIDATION: SUITE GREEN + CALIBRATION SCOREBOARD + TAIL FINAL
+  MEMO, 2026-07-04/05 ~13:00Z, commits 85245194/f23495b6, 15 agents / ~1.02M
+  tokens, 1 self-caught fabrication): (1) TEST INTEGRITY: 632 tests / 51 files
+  GREEN, 0 regressions from the night's ~80 commits, 19/19 modules import clean.
+  (2) CALIBRATION SCOREBOARD (real tooling): eval-gate 38/38 GREEN; per-sport ECE
+  all IMPROVED (tennis -0.0297 largest, nba -0.0086, mlb -0.0035, soccer -0.0017);
+  cross-sport OOS NBA/TENNIS/SOCCER VALIDATED, MLB honest non-beat (pitcher-blind
+  gap, not fabricated). (3) restart verifier covers the full wave-15..20
+  activation set (2 honest 'restart-pending' FAILs). (4) TAIL FINAL MEMO: H2 dead
+  in all 6 corpora, H1 thin-pocket artifact only -> forward gates the sole
+  arbiter. (5) loose-ends lane FALSELY claimed npb/kbo still blocked (read a
+  pre-fix artifact) -> Opus caught it, fix confirmed the wave-20 _SPORTS entries
+  ARE live (verified: ingame_live_state.py:59-60) -- the honesty gate catching
+  its own stale-read. Serving spine GREEN; m1_ui churn continues (fix inert till
+  restart, as predicted). No edge claimed.
 - SPRINT WAKE 20 (NBA-READINESS BUILD-OUT + NPB/KBO GRADING UNBLOCKED + MLB TAIL
   CLOSED, 2026-07-04/05 ~12:00Z, commits b457e758/7f400e2e/b0ab0377/27f509d6,
   13 agents / ~1.12M tokens, 1 lane-overlap FAIL adjudicated): (1) NBA outcome
