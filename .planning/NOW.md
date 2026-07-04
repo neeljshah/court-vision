@@ -41,6 +41,25 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 3 (FULL FLEET: KBO SHIPPED + TENNIS TRULY FIXED + MULTI-SPORT GRADING +
+  WNBA BLEND WINNER + PAPER ENABLEMENT, 2026-07-03 night, commits 933d9302/bb8bb567/
+  e44255a6/e1c8258a/5de5e850, 11 agents / ~1.26M tokens, 0 fix rounds, 5/5 Opus PASS):
+  (1) KBO end-to-end: 3,250 games 2022-2026 (recipe correction: teamId= empty
+  REQUIRED; gameMonth='' = whole season in 1 request); gate honest PARTIAL (2024
+  trips BSS_MIN degenerate guard, 2025+2026 beats both baselines); KXKBOGAME/
+  SPREAD/TOTAL wired, RFI honestly unwired (no market_type fits). (2) TENNIS real
+  root cause: ESPN tennis nests matches in groupings[] -- flat iteration returned
+  ZERO matches; live_state + settled_finals fixed (team sports byte-identical);
+  settle_stamp.py same-class gap + WTA path -> wave-4. (3) m36 grading-multi:
+  outcome verdict + segment trust for soccer_intl/tennis/wnba (soccer 7 games =
+  INSUFFICIENT_DATA floor-honest; wnba ticker regex ASSUMED -- validate vs real
+  ticker queued). (4) WNBA blend: pre-declared 4-family shootout fit on 2024 only
+  -> ANCHORED (k=.63, 1/sqrt(min) scaling) wins 6/6 checkpoints on BOTH 2025 +
+  2026 OOS (pooled Brier .1589/.1685 vs fixed .2223/.2303) -- adopted; internal
+  baselines only, NO market claim. (5) Enablement: npb pregame kalshi hint;
+  feed_health 5->7 sports; WNBA in-play settle arm wired (bets could never
+  settle); honest gaps recorded (to_jd pregame seam missing for wnba/npb;
+  best-price needs >=2 books). No edge claimed anywhere.
 - SPRINT WAKE 2 (FULL FLEET: 3 HONEST REJECTS + 2 NEW SPORTS CLOSER + TENNIS CAPTURE
   UNBLOCKED, 2026-07-03 eve, commits 902afdf5/07c78018/37bc2a40/3aede182, 13 agents /
   ~1.23M subagent tokens, 1 fix round): (1) REPLICATION GATE: all 3 wave-1 m19
@@ -794,12 +813,12 @@ or `program_complete` only.
 
 ## NEXT (max 5 -- action | where | done-when) [MASTER PLAN v2 2026-07-02: .planning/PLAN_SELF_IMPROVING_AI.md -- 8 phases ending in PRE-REGISTERED proof-of-edge criteria (8.1a-g) + human-gated real-money pilot runbook (8.2); economics phase 6 (cost model/maker sim/beat-the-line scoreboard) decides if money ever happens; NBA-season readiness phase 7 before Oct. This queue = the Phase-1 head]
 [RATIFIED QUEUE 2026-07-03 -- .planning/AUTONOMY_CHARTER.md governs unattended wakes: routing, spend rails, decision rights, wake protocol. Read it before pulling work. SPRINT MODE amended: usage rail LIFTED thru 07-06 per user directive; full fleet per wake; Fable decides even if loop model switches to Opus (see memory feedback_sprint_fleet_orchestration_2026_07_03).]
-[SPRINT WAKES 1+2 DONE 2026-07-03 (8 lane commits, 24 agents, all Opus-reviewed). Queue below = wave 3.]
-1. [KBO] Build domains/baseball_kbo/ end-to-end with the SOLVED recipe (POST GetScheduleList form-urlencoded + load-bearing Referer; leId=1, srIdList '0,9,6' regular season, per-month loop -- try gameMonth='' once first; depth to 2001; EN<->KR team table in wave-2 report) + kalshi spec kbo entries (KXKBOGAME/SPREAD/TOTAL/RFI all confirmed live wave-1) | same full-loop bar as NPB.
-2. [IN-PLAY FIX] ingame_live_state.py + settled_finals.py tennis athlete-vs-team field bugs (competitor.get('team') vs .get('athlete')) so live tennis names/states/finals actually work | scripts/platformkit/ingame/ | tests prove tennis competitors parse.
-3. [IN-PLAY GRADING MULTI] Extend ingame_outcome_verdict + segment-trust to multi-sport (tennis/wnba/soccer_intl) so every capturing sport grades model-vs-venue-vs-outcome like MLB | scripts/platformkit/ingame/ NEW files | measurement only, INSUFFICIENT_N honest.
-4. [WNBA BLEND GATE] Fit blend family walk-forward on 2024 + 2025 linescore corpora INDEPENDENTLY, evaluate 2026 OOS vs the naive sigmoid that won wave-2; adopt only the cross-corpus winner | domains/basketball_wnba/ | ingame_blend_check.json v2 with per-corpus numbers.
-5. [PAPER ENABLEMENT SWEEP] Audit every daemon/paper/CLV sport list for wnba/npb/tennis (+kbo when built): line capture, close capture, best-price scan, paper placers, settle arms, CLV reconciler; widen additively where safe (all activate at the ONE pending restart); report remaining gaps | scripts/platformkit/ | one-restart-activates-everything.
+[SPRINT WAKES 1-3 DONE 2026-07-03 (13 lane commits, 35 agents, all Opus-reviewed). Queue below = wave 4.]
+1. [TENNIS-COMPLETE] settle_stamp.py groupings/athlete fix (same class as wave-3 lane 2) + WTA league path (tennis wta variant in _SPORTS/_LEAGUE_PATH) + validate wnba_outcome_resolver's ASSUMED ticker regex against a REAL fetched KXWNBAGAME ticker (fix if mismatch) | scripts/platformkit/ingame/ | tennis loop has zero known gaps; wnba regex grounded.
+2. [PREGAME-PAPER-SEAM] Wire wnba (and npb/kbo where listing sources exist) into the pregame paper channel: predictor_jd._build_predictor seam + bet_board.SPORTS + live_board routes + paper_today_support.DEFAULT_SPORTS; wnba has ESPN listing; npb/kbo need a listing source (kalshi-derived or honest gap) | scripts/platformkit/ | paper-only, thresholds untouched.
+3. [INPLAY-WIDEN+SHADOW] npb+kbo into in-play capture (capture-only, model None-safe) + NPB/KBO outcome resolvers wired into settle + grading-multi sport lists + WNBA in-play model SHADOW logging (sp_shadow pattern: field appended post-on_tick, no placement) | scripts/platformkit/ingame/ | ticks accrue + settle-ready at restart.
+4. [CLOSE-CAPTURE-CLV] Audit + widen pregame close capture / line_history / CLV reconciler for wnba/npb/kbo (kalshi provider now serves all three); verify a close can lock for a real upcoming KXWNBAGAME event | scripts/platformkit/ | CLV grading works for new sports from day one.
+5. [OPS-VERIFY] Run every shipped module's live entrypoint once (kbo/npb gates, wnba blend check v2, grading-multi tick, freshness SLA probe, wedge-reaper dry tick, tick latency); compose data/frontend/ops/sprint_status.json + restart-readiness checklist; targeted per-file regression re-runs | scripts/platformkit/ | one honest status artifact.
 HUMAN QUEUE (updated SPRINT WAKE 1): (a) ONE supervisor restart activates everything shipped this wake: m33 wedge reaper + m34 freshness SLA + m35 tail-multi + WNBA capture spec pickup (boot.ps1 cycle -- charter forbids unattended supervisor restarts); (b) m32 weather_totals SHIP_REVIEW (standing); (c) m19 wave-2 replication outcomes if any survive BOTH corpora -> fresh SHIP_REVIEW decisions; (d) register_autostart.ps1 -Register in an ELEVATED shell (standing); (e) CV_MLB_SP_ADJUST stays CLOSED as honest REJECT (returns only via m32 nightly re-gate). Parked follow-ups unchanged (charter Section 4 PARKED).
 
 DONE (2026-07-02): [P2.2] Feed-health scoreboard SHIPPED -- NEW scripts/platformkit/odds_provider/feed_health.py + feed_health_runner.py (registered as supervisor ProcSpec m30_feed_health, HEARTBEAT readiness, 600s cadence): live-probes every (provider, sport) pair the REAL slate uses (reuses aggregate.default_providers(), not a synthetic ping) and classifies GREEN (real data OR an honest empty/unsupported-sport degrade -- not an outage) vs RED (auth/forbidden/timeout/parse/unexpected-shape/exception -- the scraper is actually broken). LIVE-VERIFIED it catches a REAL fault: a live run hit an actual Pinnacle 401 Unauthorized on soccer_intl (transient rate-limit from repeated calls this session) that `aggregate()` had been silently swallowing (that venue just vanishes from the merged slate with no visible signal) -- feed_health correctly surfaced it as one RED row while mlb/espn/fanduel/kalshi/polymarket stayed GREEN. 16 new tests green (10 feed_health + 6 runner), both files well under 300 LOC (185, 115). Also updated tests/supervisor/test_manifest.py's service-set assertion for m30 (21 green).
