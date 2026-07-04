@@ -41,6 +41,21 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 34 (WAVE-33 LANDED IN 17 MIN -- FASTEST YET, 2026-07-04 ~23:15Z,
+  wf_01874c65-606 15 agents/~1.35M tok, 4 commits): (1) NBA in-game H_A hot-night
+  + H_B scheme-fit (pre-registered wave-26) BOTH HONEST REJECT outright -- base
+  Brier .1677 vs .2357/.2404 conditioned, DM p<.001 wrong direction; real
+  direction-blind bug in _planted_null_dies FOUND+FIXED during verify; thin-
+  corpus caveat (74 bridged games) stated. (2) claims breadth: ATP+WTA hold
+  rankings VERIFIED into ask layer; verdict claims 3->6 (2 honest skips);
+  /ask-intel command LIVE. (3) tennis atlases persisted first time (408 players
+  + 30616 pair-keyed H2H rows w/ provenance) -> H3 UNBLOCKED. (4) reprocess
+  self-check HONEST BLOCKED: elo rows not harness-schema (gate exporter mislabeled),
+  positional rows continuous (needs rho mode) -> wave-34 completion lane.
+  WAVE-34: tennis H3 playstyle in-game gate, reprocess rho-mode + true exporters,
+  m13 SLA verify + stale-code runner restart, vault-feed refresh (new claims),
+  NBA bridge expansion (74-game ceiling raise). NPB/KBO grades = morning wake.
+  No edge claimed.
 - SPRINT WAKE 33 (WAVE-32 LANDED: DUAL REVIEWERS CAUGHT A REAL CONFOUND + 65%
   PROP-CYCLE CUT, 2026-07-04 ~22:30Z, wf_52a5cc51-006 18 agents/~1.63M tok,
   commits bd0fbf2c..07a64213): (1) positional-weight gate NOT_TESTABLE honest
