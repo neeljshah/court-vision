@@ -8,6 +8,7 @@ import json
 
 import pandas as pd
 
+from scripts.platformkit import prop_paper
 from scripts.platformkit.prop_paper import (
     grade_open, prop_summary, record_board, load_ledger,
 )
@@ -253,3 +254,65 @@ def test_public_fns_never_raise_on_garbage(tmp_path):
     assert grade_open(realized_df=None, ledger_path=led)["status"] in (
         "ok", "no_realized_data")
     assert prop_summary(ledger_path=led)["status"] == "ok"
+
+
+# ---------------------------------------------------------------------------
+# m13-breaker-bypass (bare-caller close-out, wave-36): main()'s --record path
+# used to call build_prop_board(sport) BARE, which re-derives
+# cfg.default_providers() UN-GATED inside prop_edge.py -- re-dispatching to a
+# provider the circuit breaker just opened. The fix routes it through the SAME
+# breaker_filtered_providers() helper the wave-35 prop_cards.py fix uses.
+# ---------------------------------------------------------------------------
+
+def test_cli_record_uses_breaker_filtered_providers(monkeypatch, tmp_path, capsys):
+    calls = []
+
+    def fake_board(sport, **kw):  # noqa: ANN001
+        calls.append((sport, kw))
+        return {"sport": sport, "status": "ok", "edges": []}
+    monkeypatch.setattr("scripts.platformkit.prop_edge.build_prop_board", fake_board)
+    monkeypatch.setattr(prop_paper, "record_board",
+                        lambda board, only_reliable=True: {"status": "ok", "recorded": 0})
+
+    class _FakeProvider:
+        name = "fake_survivor"
+
+    filtered_calls = []
+
+    def fake_breaker_filtered(sport):  # noqa: ANN001
+        filtered_calls.append(sport)
+        return [_FakeProvider()]
+
+    import scripts.platformkit.bestbets.prop_cards_circuit_io as pcio
+    monkeypatch.setattr(pcio, "breaker_filtered_providers", fake_breaker_filtered)
+
+    rc = prop_paper.main(["--record", "--sport", "mlb"])
+    assert rc == 0
+    assert filtered_calls == ["mlb"]
+    assert len(calls) == 1
+    sport_arg, kwargs = calls[0]
+    assert sport_arg == "mlb"
+    assert [getattr(p, "name", None) for p in kwargs.get("providers", [])] == ["fake_survivor"]
+
+
+def test_cli_record_never_calls_bare_unfiltered_providers(monkeypatch):
+    # Even if the breaker helper is unavailable (returns None), the CLI must pass
+    # an explicit EMPTY providers list -- never omit providers / let
+    # build_prop_board fall back to cfg.default_providers() un-gated.
+    calls = []
+
+    def fake_board(sport, **kw):  # noqa: ANN001
+        calls.append((sport, kw))
+        return {"sport": sport, "status": "ok", "edges": []}
+    monkeypatch.setattr("scripts.platformkit.prop_edge.build_prop_board", fake_board)
+    monkeypatch.setattr(prop_paper, "record_board",
+                        lambda board, only_reliable=True: {"status": "ok", "recorded": 0})
+
+    import scripts.platformkit.bestbets.prop_cards_circuit_io as pcio
+    monkeypatch.setattr(pcio, "breaker_filtered_providers", lambda sport: None)
+
+    rc = prop_paper.main(["--record", "--sport", "mlb"])
+    assert rc == 0
+    assert len(calls) == 1
+    _, kwargs = calls[0]
+    assert kwargs.get("providers") == []
