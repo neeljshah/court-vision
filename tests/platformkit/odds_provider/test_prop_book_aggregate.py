@@ -21,11 +21,13 @@ from __future__ import annotations
 from scripts.platformkit.odds_provider.base import is_unavailable
 from scripts.platformkit.odds_provider.prop_base import PropLine
 from scripts.platformkit.odds_provider.prop_book_aggregate import (
+    _SPORTSBOOK_PROVIDERS,
     FanDuelProvider,
     book_best_line_props,
     book_gather_raw,
     book_props_unavailable,
 )
+from scripts.platformkit.odds_provider.prop_draftkings_v2 import DraftKingsV2Provider
 
 # ---------------------------------------------------------------------------
 # Canned FanDuel payloads (mirroring the real runner shape)
@@ -366,6 +368,25 @@ def test_no_dollar_or_roi_field_in_output():
 # ===========================================================================
 # 7. book_gather_raw: flat gather, no dedup
 # ===========================================================================
+
+# ===========================================================================
+# 2026-07-03 root-cause fix: DraftKingsV2Provider wired alongside FanDuel.
+# FanDuel posts no MLB player-prop markets (live-verified); DK sportsbook-nash
+# is the real MLB pregame prop source prop_edge_config already uses. Default
+# provider set must include both so book_best_line_props is not structurally
+# silent for MLB.
+# ===========================================================================
+
+def test_default_sportsbook_providers_include_draftkings_v2():
+    """DraftKingsV2Provider must be in the default provider registry (root-cause
+    fix: FanDuel-only left MLB pregame close-capture permanently silent)."""
+    assert DraftKingsV2Provider in _SPORTSBOOK_PROVIDERS
+
+
+def test_default_sportsbook_providers_still_include_fanduel():
+    """FanDuel stays wired (soccer/WC coverage; harmless no-op for MLB today)."""
+    assert FanDuelProvider in _SPORTSBOOK_PROVIDERS
+
 
 def test_book_gather_raw_returns_flat_list():
     """book_gather_raw returns raw un-deduped rows from all providers."""

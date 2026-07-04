@@ -1,8 +1,16 @@
 """scripts.platformkit.odds_provider.prop_book_aggregate -- FanDuel sportsbook wiring.
 
-Wires the orphaned FanDuelProvider (two-sided SPORTSBOOK props, payout_type=
-"sportsbook") into the prop best-line cross-source selection alongside DFS
-single-sided pick'em sources.
+Wires two-sided SPORTSBOOK prop providers (payout_type="sportsbook") into the
+prop best-line cross-source selection alongside DFS single-sided pick'em sources.
+
+PROVIDER AUDIT (2026-07-03, prop close-capture root-cause): FanDuel's keyless NJ
+API posts NO player-prop markets for MLB at all -- verified live (in-progress AND
+pregame events both return only team/inning markets: Moneyline, Run Line, Total
+Runs, "Nth Inning ..."). FanDuel-only left this module structurally silent for MLB.
+DraftKingsV2Provider (prop_draftkings_v2, sportsbook-nash endpoint) is the provider
+prop_edge_config actually wires for the REAL MLB pregame prop board and was live-
+verified to return 100+ two-way rows same session -- added here so book_best_line_
+props (and its caller, prop_close_capture_pregame) sees real MLB pregame closes.
 
 CONTRACT (all upheld here):
   - Sportsbook two-sided price BEATS a DFS pick'em non-price on the same side:
@@ -18,7 +26,10 @@ CONTRACT (all upheld here):
   - NEVER raises.
 
 Build-on (READ-ONLY from this module):
-  prop_fanduel.FanDuelProvider  -- two-sided American-odds sportsbook props
+  prop_fanduel.FanDuelProvider  -- two-sided American-odds sportsbook props (soccer;
+    MLB currently posts no player props there -- kept as a provider for when it does)
+  prop_draftkings_v2.DraftKingsV2Provider -- two-sided sportsbook-nash pregame props
+    (the REAL live MLB pregame source; verified posting 100+ rows/session)
   prop_aggregate.gather_props, best_line_props, _better_price -- core merge logic
   prop_base.PropLine -- normalized row type
   base.is_unavailable, unavailable -- sentinel helpers
@@ -34,6 +45,7 @@ from typing import Any, Dict, List, Optional, Sequence, Union
 from .base import is_unavailable, unavailable
 from .prop_aggregate import best_line_props, gather_props
 from .prop_base import PropLine
+from .prop_draftkings_v2 import DraftKingsV2Provider
 from .prop_fanduel import FanDuelProvider
 
 logger = logging.getLogger(__name__)
@@ -42,9 +54,15 @@ logger = logging.getLogger(__name__)
 # Book registry: providers yielding two-sided sportsbook props (payout_type=
 # "sportsbook"). Additional DFS providers (PrizePicks, Underdog) are accepted
 # as supplemental context sources in the optional dfs_providers argument.
+#
+# DraftKingsV2Provider listed first: it is the live-verified MLB pregame source
+# (100+ rows/session, 2026-07-03 audit); FanDuel posts no MLB player props today
+# but stays wired for soccer/WC and in case MLB props post there later. Both
+# NEVER raise and degrade to UNAVAILABLE individually -- one dead provider never
+# sinks the other (best_line_props merges whatever real prices come back).
 # ---------------------------------------------------------------------------
 
-_SPORTSBOOK_PROVIDERS = (FanDuelProvider,)
+_SPORTSBOOK_PROVIDERS = (DraftKingsV2Provider, FanDuelProvider)
 
 
 def _default_book_providers() -> List[Any]:
