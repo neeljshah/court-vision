@@ -211,3 +211,61 @@ def test_rows_fn_zero_arg_entry_point_never_raises():
     never raise even against whatever real data currently exists on disk."""
     rows = R.rows_fn()
     assert isinstance(rows, list)
+
+
+# --------------------------------------------------------------------------- #
+# LANE 2: provenance separation (live vs backfill-validation)                 #
+# --------------------------------------------------------------------------- #
+def test_default_provenance_is_live_no_extra_field(tmp_path):
+    """Unchanged default behavior: live-provenance rows carry NO provenance
+    key at all (byte-identical to the pre-LANE-2 contract)."""
+    ticker = "KXWCGAME-26JUN29GERPAR"
+    grade_dir = _mk_grade_dir(tmp_path, ticker, [
+        {"sport": "soccer_intl", "game_id": ticker, "ts": "2026-06-29T12:10:00Z",
+         "market_prob": 0.6, "model_prob": 0.55, "side": "home",
+         "state_summary": "home_score=1.0 away_score=0.0"},
+    ])
+    fotmob_dir = tmp_path / "fotmob"
+    _write_jsonl(fotmob_dir / "999.jsonl", [
+        {"home": "Germany", "away": "Paraguay", "fetch_ts": "2026-06-29T12:05:00Z",
+         "xg_home": 1.2, "xg_away": 0.3, "sot_diff": 2, "cutoff_min": 40.0},
+    ])
+    res = SoccerOutcomeResolver(finals_df=_finals_df())
+    rows = R.build_rows(grade_dir=grade_dir, fotmob_dir=fotmob_dir, resolver=res)
+    assert len(rows) == 1
+    assert "provenance" not in rows[0]
+
+
+def test_backfill_provenance_tags_rows_and_reads_backfill_dir(tmp_path):
+    """provenance='backfill' reads the DIFFERENT sidecar dir passed as
+    fotmob_dir and tags every row provenance='backfill_validation'."""
+    ticker = "KXWCGAME-26JUN29GERPAR"
+    grade_dir = _mk_grade_dir(tmp_path, ticker, [
+        {"sport": "soccer_intl", "game_id": ticker, "ts": "2026-06-29T12:10:00Z",
+         "market_prob": 0.6, "model_prob": 0.55, "side": "home",
+         "state_summary": "home_score=1.0 away_score=0.0"},
+    ])
+    backfill_dir = tmp_path / "fotmob_backfill"
+    _write_jsonl(backfill_dir / "999.jsonl", [
+        {"home": "Germany", "away": "Paraguay", "fetch_ts": "2026-06-29T12:05:00Z",
+         "xg_home": 1.2, "xg_away": 0.3, "sot_diff": 2, "cutoff_min": 40.0,
+         "provenance": "fotmob_finished_reconstruction"},
+    ])
+    res = SoccerOutcomeResolver(finals_df=_finals_df())
+    rows = R.build_rows(grade_dir=grade_dir, fotmob_dir=backfill_dir, resolver=res,
+                        provenance=R.PROVENANCE_BACKFILL)
+    assert len(rows) == 1
+    assert rows[0]["provenance"] == "backfill_validation"
+
+
+def test_backfill_provenance_default_dir_is_separate_from_live_default_dir():
+    assert R.DEFAULT_FOTMOB_BACKFILL_DIR != R.DEFAULT_FOTMOB_DIR
+    assert R.DEFAULT_FOTMOB_BACKFILL_DIR.name == "fotmob_backfill"
+    assert R.DEFAULT_FOTMOB_DIR.name == "fotmob_live"
+
+
+def test_rows_fn_backfill_zero_arg_entry_point_never_raises():
+    rows = R.rows_fn_backfill()
+    assert isinstance(rows, list)
+    for r in rows:
+        assert r.get("provenance") == "backfill_validation"
