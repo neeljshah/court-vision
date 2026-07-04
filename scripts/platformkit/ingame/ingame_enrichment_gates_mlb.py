@@ -19,6 +19,12 @@ is judge-first: it can start scoring the moment forward MLB grade rows exist
 with a non-None `bos` field). >=2 independent corpora (md5-parity halves of
 forward game_ids) must agree in sign, mirroring GATE A exactly.
 
+PRODUCER (LANE 5, wired 2026-07-04): _default_rows_mlb_baseout now calls
+enrichment_rows_mlb.rows_fn_today(), which AS-OF joins captured grade ticks
+with the GUMBO live sidecars via the game_pk bridge. Still degrades to []
+whenever no bridged/gumbo/grade data overlaps yet (thin real accrual is
+expected early -- see that module's docstring for the join contract).
+
 METHOD: identical to GATE A (see ingame_enrichment_gates.judge_enrichment
 docstring) -- per-game MSE of baseline vs enriched model_prob against the
 resolved OUTCOME (MlbOutcomeResolver.home_win, ticker-keyed), pooled delta,
@@ -59,12 +65,16 @@ RowsFn = Callable[[], List[Row]]
 
 def _default_rows_mlb_baseout() -> List[Row]:
     """Production row source for GATE B: forward-captured MLB grade ticks
-    paired with a resolved OUTCOME and a non-None base_out_state-conditioned
-    model_prob_enriched. No wired producer exists yet (this gate is
-    judge-first, per the module docstring) -- honestly returns [] until a
-    future lane pairs live_grade rows through a base-out-conditioned model
-    variant. Never raises."""
-    return []
+    AS-OF joined with the GUMBO live sidecars, paired with a resolved OUTCOME
+    and a base_out_state-conditioned model_prob_enriched (LANE 5's
+    enrichment_rows_mlb.rows_fn_today). Degrades to [] on any failure
+    (missing bridge/gumbo/grade data is an honest empty corpus, not an
+    error) -- never raises."""
+    try:
+        from scripts.platformkit.ingame.enrichment_rows_mlb import rows_fn_today
+        return rows_fn_today()
+    except Exception:  # noqa: BLE001 -- an import/producer failure is an honest []
+        return []
 
 
 def run_gate_b(rows_fn: Optional[RowsFn] = None,
