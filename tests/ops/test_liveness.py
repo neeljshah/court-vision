@@ -67,6 +67,59 @@ class TestHeartbeat:
 
 
 # ---------------------------------------------------------------------------
+# liveness.heartbeat -- test-isolation hazard (wave-22 LANE B)
+#
+# A bare heartbeat("some_component", _now=...) call with NO explicit path
+# (exactly what every real daemon runner's _beat() helper does, and what a
+# test that forgets to inject a path/mock also does) must NEVER touch the
+# real production data/cache/daemon_heartbeats/ directory while running
+# under pytest. Verified two ways: (1) the resolved path is redirected away
+# from the production dir, (2) the real production file for a throwaway
+# component name is untouched after the bare call.
+# ---------------------------------------------------------------------------
+
+class TestHeartbeatTestIsolation:
+    def test_bare_call_under_pytest_does_not_resolve_to_production_dir(self) -> None:
+        # This test itself runs under pytest, so PYTEST_CURRENT_TEST is set
+        # by the test runner already -- no monkeypatch needed to prove the
+        # in-test behavior.
+        resolved = _lv._resolve_write_path("wave22_isolation_probe", None)
+        assert str(_lv._DAEMON_HB_DIR) not in str(resolved)
+
+    def test_bare_call_under_pytest_leaves_production_file_untouched(self) -> None:
+        component = "wave22_isolation_probe_writeonce"
+        prod_path = _lv._DAEMON_HB_DIR / f"{component}.txt"
+        existed_before = prod_path.exists()
+        before_content = prod_path.read_text(encoding="ascii") if existed_before else None
+        try:
+            _lv.heartbeat(component, _now=1.0)  # bare call, no path= -- like a daemon's _beat()
+            if existed_before:
+                assert prod_path.read_text(encoding="ascii") == before_content
+            else:
+                assert not prod_path.exists()
+        finally:
+            # Clean up only if we created it (we shouldn't have).
+            if not existed_before and prod_path.exists():
+                prod_path.unlink()
+
+    def test_explicit_path_still_wins_under_pytest(self, tmp_path: Path) -> None:
+        # Explicit path must always be honored -- this is what real daemons
+        # would use if they opted in, and what well-isolated tests already do.
+        hb = tmp_path / "explicit.txt"
+        resolved = _lv._resolve_write_path("comp", hb)
+        assert resolved == hb
+        _lv.heartbeat("comp", path=hb, _now=42.0)
+        assert hb.exists()
+
+    def test_bare_call_outside_pytest_resolves_to_default_path(self, monkeypatch) -> None:
+        # Simulate a real daemon process (PYTEST_CURRENT_TEST unset) to prove
+        # daemon call sites are byte-identical to pre-fix behavior.
+        monkeypatch.delenv("PYTEST_CURRENT_TEST", raising=False)
+        resolved = _lv._resolve_write_path("some_daemon", None)
+        assert resolved == _lv._default_hb_path("some_daemon")
+
+
+# ---------------------------------------------------------------------------
 # liveness.is_live
 # ---------------------------------------------------------------------------
 
