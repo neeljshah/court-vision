@@ -354,8 +354,10 @@ def to_odds_lookup(sport: str, providers: Optional[Sequence[Any]] = None,
 
     Aggregates ONCE up front (so the slate does not re-hit sources per row), then
     the returned closure matches each (home, away) to a merged event and returns
-    its {venue: {"home": dec, "away": dec[, "draw": dec]}} dict -- exactly what
-    slate -> odds_shop.summarise_twoway consumes. No match / no odds -> None.
+    its {venue: {home: dec, away: dec[, "Draw": dec]}} dict (keyed by the
+    caller's team-name strings, plus the literal "Draw" selection for a genuine
+    3-way soccer market) -- exactly what slate -> odds_shop.summarise_twoway and
+    bet_board._moneyline_prices consume. No match / no odds -> None.
 
     Wire it in with one line:
         build_slate("nba", odds_lookup=to_odds_lookup("nba"))
@@ -377,14 +379,26 @@ def to_odds_lookup(sport: str, providers: Optional[Sequence[Any]] = None,
                 for venue, sides in ev.prices.items():
                     h = sides.get("away") if flip else sides.get("home")
                     a = sides.get("home") if flip else sides.get("away")
+                    # Draw is orientation-agnostic (a flip only swaps home/away
+                    # legs -- _flip_spread's sibling logic in _merge_into already
+                    # keeps 'draw' unflipped) and is NEVER attached for a 2-way
+                    # sport: sides only carries a non-None 'draw' when the source
+                    # is a genuine 3-way market (soccer), so this is a no-op for
+                    # nba/mlb/wnba/npb/kbo/tennis (regression-safe by construction).
+                    d = sides.get("draw")
                     # Key by the CALLER's team-name strings: slate.build_slate calls
                     # odds_shop.summarise_twoway(book_prices, home, away) with the
                     # team names, so the inner dict must use those exact labels.
+                    # "Draw" is the literal selection string bet_board_flat.flatten_soccer
+                    # emits for the 1X2 draw leg (bet_board._moneyline_prices looks it
+                    # up by that exact key) -- carry it through under that same key.
                     clean: Dict[str, float] = {}
                     if h is not None:
                         clean[home] = float(h)
                     if a is not None:
                         clean[away] = float(a)
+                    if d is not None:
+                        clean["Draw"] = float(d)
                     if clean:
                         out[venue] = clean
                 return out or None

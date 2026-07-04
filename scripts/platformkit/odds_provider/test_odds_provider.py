@@ -308,6 +308,38 @@ def test_lookup_no_match_returns_none():
     assert lookup("nba", "Phoenix Suns", "Miami Heat") is None
 
 
+def test_lookup_carries_draw_for_soccer():
+    # DRAW-KEY-CARRY-THROUGH: a raw 3-way soccer event's literal 'draw' price must
+    # reach the lookup output under the board's expected "Draw" selection key.
+    ev = base.OddsEvent("1", "soccer_intl", "England", "Croatia", None,
+                        {"kalshi": {"home": 1.90, "away": 4.50, "draw": 3.40}})
+
+    class _StubProvider:
+        name = "kalshi"
+        def fetch(self, sport):
+            return [ev]
+
+    lookup = aggregate.to_odds_lookup("soccer_intl", providers=[_StubProvider()])
+    book_prices = lookup("soccer_intl", "England", "Croatia")
+    assert book_prices is not None
+    venue = book_prices["kalshi"]
+    assert venue["England"] == 1.90
+    assert venue["Croatia"] == 4.50
+    assert venue["Draw"] == 3.40
+
+
+def test_lookup_2way_sport_has_no_draw_key():
+    # REGRESSION: a 2-way sport (no 'draw' in the source prices) must NOT gain a
+    # "Draw" key -- byte-identical output to before the carry-through fix.
+    http = _stub({"scoreboard": {"events": []}, "markets": KALSHI_MARKETS})
+    providers = aggregate.default_providers(http_get=http, use_cache=False)
+    lookup = aggregate.to_odds_lookup("nba", providers)
+    book_prices = lookup("nba", "Boston Celtics", "Los Angeles Lakers")
+    assert book_prices is not None
+    for venue in book_prices.values():
+        assert "Draw" not in venue
+
+
 # --------------------------------------------------------------------------- #
 # Feed-down / missing -> unavailable (no fabricated price).
 # --------------------------------------------------------------------------- #
