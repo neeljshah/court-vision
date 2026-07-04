@@ -135,9 +135,16 @@ def _tail_rows_for_sport(sport: str, now: datetime) -> List[Dict[str, Any]]:
             {"id": "H1_longshot_underpriced"}, {"id": "H2_midfav_overpriced"})]
     pre_reg = doc.get("pre_registered_at") or doc.get("registered_at")
     days = _days_accruing(pre_reg, now)
-    forward_n = doc.get("n_forward_games_graded")
+    # LEAK-FREE COUNT: n_forward_games is the post-pre-registration forward
+    # evidence -- the ONLY count that may drive distance_to_decidable. The
+    # multi-sport gate ALSO writes n_forward_games_graded, but that field can
+    # equal the DISCOVERY corpus (e.g. soccer_intl: n_forward_games=1 while
+    # n_forward_games_graded=31, the 31-game pre-registration discovery set) --
+    # reading graded falsely reported DECIDABLE_NOW. Prefer n_forward_games; the
+    # graded fallback is purely defensive for any artifact that omits it.
+    forward_n = doc.get("n_forward_games")
     if forward_n is None:
-        forward_n = doc.get("n_forward_games", 0)
+        forward_n = doc.get("n_forward_games_graded", 0)
     rows = []
     for h in doc.get("hypotheses", []) or []:
         rows.append({
