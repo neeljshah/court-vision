@@ -5,32 +5,26 @@ each tick, our in-game model's number (predictor.predict_live, wrapped) with the
 captured venue in-play price, then feeds the pair through the EXISTING P1 CLV replay
 harness (forward_capture.inplay_clv_replay) to produce an HONEST verdict.
 
-It REUSES, never rebuilds:
-  * the model    -> domains/<sport>/predictor.py predict_live (NON-gated), reached here
-    through INJECTABLE model_fn (default wraps live_board's resolved predictor chain).
-  * the price    -> odds_provider.inplay_feed.default_fetch / the in-play snapshot daemon
-    (INJECTABLE market_fetch_fn).
-  * the grader   -> inplay_clv_replay.replay_series / load_series / ReplayResult.
-  * atomic I/O   -> the .tmp + os.replace append discipline of the snapshot daemons.
+REUSES, never rebuilds: model -> domains/<sport>/predictor.py predict_live (INJECTABLE
+model_fn); price -> odds_provider.inplay_feed / snapshot daemon (INJECTABLE
+market_fetch_fn); grader -> inplay_clv_replay.replay_series/load_series/ReplayResult;
+atomic I/O -> the .tmp + os.replace append discipline of the snapshot daemons.
 
 PAIRED ROW (one JSON per line, data/cache/ingame_grade/<sport>/<game_id>.jsonl):
-  {"sport","game_id","ts","market_prob","model_prob","side","state_summary"}
-Both probs refer to the SAME outcome (see ALIGNMENT below). model_prob was computed LIVE
-from state-as-of-that-tick -- never from the close -- so replaying the stored model_prob
-at grade time is LEAK-FREE.
+  {"sport","game_id","ts","market_prob","model_prob","side","state_summary"} plus any
+  ADDITIVE enrichment keys merged via the optional `extra` kwarg (LANE 3 persistence;
+  see capture_pair_once) -- consumers read via .get(), so extra keys are inert to them.
+model_prob was computed LIVE from state-as-of-that-tick -- never from the close -- so
+replaying the stored model_prob at grade time is LEAK-FREE.
 
-ALIGNMENT (binding -- a misaligned pair manufactures fake CLV):
-  model_prob and market_prob MUST be the SAME side's probability. The convention here is
-  HOME side: model_prob = P(home team wins) and market_prob = the venue's implied P(home).
-  capture_pair_once records the side it paired ("home"). If the market fetch cannot be
-  confirmed to expose the home side, the pair is SKIPPED (logged), NOT graded.
+ALIGNMENT (binding -- a misaligned pair manufactures fake CLV): model_prob and
+market_prob MUST be the SAME side's probability (HOME here). capture_pair_once records
+the side it paired ("home"); an unconfirmed home-side market fetch -> SKIPPED, not graded.
 
-HONESTY (binding):
-  * A SINGLE partial game is NEVER a beat. grade_game returns INSUFFICIENT_DATA below
-    min_ticks pairs (or an unsettled game). The REAL test is aggregating MANY graded
-    games -- see the TODO on grade_game.
-  * PAPER / measurement only. No $ / ROI / stake / edge -- CLV is probability space.
-  * Never fabricates a prob; a missing/out-of-range model_prob or market_prob -> SKIP.
+HONESTY (binding): a SINGLE partial game is NEVER a beat (grade_game -> INSUFFICIENT_DATA
+below min_ticks; the real test aggregates MANY games, see grade_game's TODO). PAPER /
+measurement only -- no $ / ROI / stake / edge, CLV is probability space. Never fabricates
+a prob; a missing/out-of-range model_prob or market_prob -> SKIP.
 
 INVARIANTS: build only under scripts/platformkit/; <=300 LOC; ASCII only; no network at
 import; never edits src/ or kernel/.
@@ -132,13 +126,18 @@ def capture_pair_once(sport: str, game_id: str, *,
                       live_state_fn: LiveStateFn,
                       model_fn: ModelFn,
                       market_fetch_fn: MarketFetchFn,
-                      out_dir: Optional[Path] = None) -> Dict[str, Any]:
+                      out_dir: Optional[Path] = None,
+                      extra: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """Capture ONE paired (model_prob, market_prob) tick for a live game and persist it.
 
     Flow: live_state_fn(sport, game_id) -> state; model_fn(state) -> model P(home win);
     market_fetch_fn(sport, game_id) -> venue implied P(home win). Both probs are the HOME
     side (ALIGNMENT). If EITHER prob is missing / out of [0,1] the pair is SKIPPED (logged)
     and NOTHING is written -- a misaligned or half-missing pair would manufacture fake CLV.
+
+    *extra* (LANE 3 persistence, optional): ADDITIONAL fields (e.g. inplay_capture_loop's
+    enrichment dict) merged into the row -- ADDITIVE ONLY, a colliding key is dropped, not
+    overwritten. Non-dict/None is a no-op. Readers use rec.get(k), so new keys are inert.
 
     On a good pair, atomically appends a row to
       data/cache/ingame_grade/<sport>/<game_id>.jsonl
@@ -171,6 +170,9 @@ def capture_pair_once(sport: str, game_id: str, *,
             "market_prob": market_p, "model_prob": model_p, "side": PAIR_SIDE,
             "state_summary": _state_summary(state),
         }
+        if isinstance(extra, dict):
+            # ADDITIVE ONLY: a colliding key is DROPPED (never overwrites core keys).
+            row.update({k: v for k, v in extra.items() if k not in row})
         _append_atomic(path, json.dumps(row, ensure_ascii=True))
         summary.update({"market_prob": market_p, "model_prob": model_p,
                         "status": "captured", "reason": "",
@@ -252,12 +254,9 @@ def grade_game(path: str, *, eps: float = ic.EPS_DEFAULT,
         pairs = []
     n_pairs = len(pairs)
 
-    # Build the canonical market tick series + a POSITIONAL stored-model lookup.
-    # Keying by ts alone (1c) collapsed same-SECOND ticks (a later row silently
-    # overwrote an earlier one's distinct model_prob). pairs and series are built in
-    # the SAME order, and replay_series hands the model_fn history = series[:i+1], so
-    # the positional index is len(history)-1 -- a robust 1:1 lookup even when several
-    # ticks share a timestamp. This is not a leak: series[:i+1] never reveals the future.
+    # Canonical market tick series + a POSITIONAL stored-model lookup (ts-only keying
+    # once collapsed same-SECOND ticks). pairs/series share order; replay_series hands
+    # history=series[:i+1], so idx=len(history)-1 is a robust 1:1 lookup with no leak.
     model_by_pos: List[float] = []
     series: List[Dict[str, Any]] = []
     for r in pairs:

@@ -502,6 +502,47 @@ def test_enrichment_poisoned_facade_never_raises_decision_unaffected(tmp_path, m
 
 
 # --------------------------------------------------------------------------------------- #
+# LANE 3 persistence: enrichment now PERSISTS into the grade jsonl row (not just the       #
+# ops/heartbeat row) -- additive-only, never changes the decision.                         #
+# --------------------------------------------------------------------------------------- #
+def test_enrichment_persists_into_grade_row(tmp_path, monkeypatch):
+    from scripts.platformkit.ingame import ingame_enrichment as enrich
+
+    class _StubOn:
+        def fotmob_xg(self, *a, **kw):
+            return None  # mlb tick -- fotmob_xg is soccer_intl-only, expect None either way
+
+        def book_depth(self, *a, **kw):
+            return {"spread_bp": 42.0, "book_thinness": 7, "stale_quote": False}
+
+        def espn_wp(self, *a, **kw):
+            return {"espn_wp": 0.59}
+
+    monkeypatch.setattr(enrich, "get_facade", lambda: _StubOn())
+    grade_dir = tmp_path / "grade"
+    hb = loop.poll_once(sports=["mlb"], live_state_fn=_state_fn_prior, model_fn=_model_fn,
+                       inplay_fetch_fn=_inplay_fetch, finals_fn=_finals_none,
+                       grade_dir=grade_dir, ledger_path=tmp_path / "l.jsonl",
+                       heartbeat_path=tmp_path / "hb.json")
+    assert hb["games"][0]["paired"] is True
+
+    grade_files = list(grade_dir.rglob("*.jsonl"))
+    assert grade_files, "a grade row must have been written"
+    rows = [json.loads(ln) for ln in grade_files[0].read_text(encoding="ascii").splitlines()
+            if ln.strip()]
+    assert len(rows) == 1
+    row = rows[0]
+    # The enrichment fields persisted INTO the grade row (not just the ops heartbeat).
+    assert row["spread_bp"] == 42.0 and row["book_thinness"] == 7
+    assert row["espn_wp"] == 0.59
+    # Core pair/alignment keys are untouched by the additive merge.
+    assert row["model_prob"] == 0.80 and row["side"] == "home"
+    assert set(row.keys()) >= {"sport", "game_id", "ts", "market_prob", "model_prob",
+                               "side", "state_summary", "spread_bp", "book_thinness",
+                               "stale_quote", "espn_wp"}
+
+
+# --------------------------------------------------------------------------------------- #
 # LANE 2: grade-write wedge fix (wave-14, 21.8% truncation). Root cause: mlb_live_model's
 # old frac_elapsed>=1.0 guard permanently starved model_fn once a game reached bottom-9th/
 # extras (ingame_live_state's MLB frac formula saturates at 1.0 there). Fixed at the model

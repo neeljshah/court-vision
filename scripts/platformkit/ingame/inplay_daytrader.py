@@ -86,13 +86,19 @@ def on_tick(sport: str, game_id: str, tick: LiveTick, *,
             position: Optional[Dict[str, Any]] = None,
             now: Optional[datetime] = None,
             grade_dir: Optional[Path] = None,
-            ledger_path: Optional[Path] = None) -> Dict[str, Any]:
+            ledger_path: Optional[Path] = None,
+            extra: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """Process ONE live in-play tick: capture the pair, decide enter/hold/exit, size+place.
 
     *position* is the engine's open position for this game/side (None = FLAT). Returns a
     decision dict {action, tier, side, edge, units, captured, placement, reason, position}
     where ``position`` is the (possibly unchanged) open position to thread into the next
     tick. UNITS only -- no $ field. NEVER raises (a bad tick -> action="no_bet").
+
+    *extra* (LANE 3 persistence, optional): forwarded verbatim to
+    live_grade.capture_pair_once's `extra` kwarg -- additive enrichment fields merged
+    into the persisted grade row. See that function's docstring for the additive-only
+    (never-overwrites-core-keys) guarantee.
 
     Flow per tick:
       1. evaluate the edge (PURE, gated) via inplay_edge_signal.evaluate.
@@ -132,7 +138,7 @@ def on_tick(sport: str, game_id: str, tick: LiveTick, *,
                 live_state_fn=lambda s, g: _state_summary_fn(tick),
                 model_fn=lambda st: mp,
                 market_fetch_fn=lambda s, g: dp,
-                out_dir=grade_dir)
+                out_dir=grade_dir, extra=extra)
             decision["captured"] = cap.get("status") == "captured"
 
         # 3. enter / hold / exit.

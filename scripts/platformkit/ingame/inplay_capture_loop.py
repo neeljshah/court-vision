@@ -501,8 +501,17 @@ def _process_game(sport: str, gid: str, legs: Dict[str, float],
         pair = _fold_draw_into_field(pair, legs)  # 3-way (soccer) -> 2-way home-vs-field
         tick = _build_tick(state, model_p, pair)
         pkey = "%s/%s" % (sport, gid)
+        # ENRICHMENT MEASUREMENT ONLY (LANE 1), computed BEFORE on_tick (LANE 3
+        # persistence): a lookup exception can never sink a tick or change on_tick's
+        # decision -- _enrichment_fields is itself exception-safe (returns a None-filled
+        # dict on failure) and is only ever THREADED THROUGH as additive `extra`, never
+        # read by on_tick/capture_pair_once's core pairing/alignment logic.
+        enrichment = _enrichment_fields(
+            sport, state.get("home_display") or state.get("home"),
+            state.get("away_display") or state.get("away"), gid, state)
         dec = _dt.on_tick(sport, gid, tick, position=pos_map.get(pkey),
-                          now=nowdt, grade_dir=grade_dir, ledger_path=ledger_path)
+                          now=nowdt, grade_dir=grade_dir, ledger_path=ledger_path,
+                          extra=enrichment)
         pos_map[pkey] = dec.get("position")
         row.update({
             "paired": bool(dec.get("captured")), "bet": dec.get("action") == "bet",
@@ -516,11 +525,9 @@ def _process_game(sport: str, gid: str, legs: Dict[str, float],
         row["model_prob_wnba_shadow"] = _wnba_shadow(
             sport, state.get("home_display") or state.get("home"),
             state.get("away_display") or state.get("away"), state)
-        # ENRICHMENT MEASUREMENT ONLY (LANE 1), added AFTER dec is final -- never read by
-        # on_tick; a lookup exception can never sink a tick or change a decision.
-        row.update(_enrichment_fields(
-            sport, state.get("home_display") or state.get("home"),
-            state.get("away_display") or state.get("away"), gid, state))
+        # Same enrichment dict also mirrors onto the heartbeat/ops row for visibility
+        # (unchanged behavior from before this LANE 3 move -- still after dec is final).
+        row.update(enrichment)
     except Exception as exc:  # noqa: BLE001 -- one bad game never stops the others
         logger.warning("inplay_capture_loop game %s/%s failed: %s", sport, gid, exc)
         row["reason"] = "error:%s" % type(exc).__name__
