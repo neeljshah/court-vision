@@ -1,5 +1,5 @@
 """scripts.platformkit.ingame.ingame_tail_scan_multi -- LANE C: multi-sport price-band
-(tail) miscalibration scan (tennis + soccer_intl / World Cup + wnba + npb + kbo),
+(tail) miscalibration scan (tennis + soccer_intl / World Cup + wnba + npb + kbo + nba),
 generalizing ingame_tail_scan.py (MLB-only) to run per-sport over whatever
 outcome-graded in-play ticks exist on disk right now.
 
@@ -18,7 +18,10 @@ not stretched or faked. wnba/npb/kbo (2026-07-04 LANE 5 addition) dispatch to
 WnbaOutcomeResolver / NpbOutcomeResolver / KboOutcomeResolver (same
 home_win(ticker)->{0,1}|None contract) -- their in-play capture has not started
 as of this addition either, so they too read INSUFFICIENT_N n=0 honestly until
-capture begins.
+capture begins. nba (2026-07-04 LANE 1 addition) dispatches to
+NbaOutcomeResolver (same contract, reading data/domains/basketball_nba/
+games.parquet) -- NBA in-play capture has not started either (off-season), so
+it also reads INSUFFICIENT_N n=0 honestly until capture begins.
 
 HONESTY: calibration measurement only; edge_claimed is ALWAYS False; a sport
 with fewer than MIN_GAMES_SPORT outcome-graded games gets verdict
@@ -54,7 +57,8 @@ _REPO_ROOT = Path(__file__).resolve().parents[3]
 # code change -- an empty/missing dir just reads INSUFFICIENT_N n=0, honestly.
 # wnba/npb/kbo added 2026-07-04 (LANE 5 pre-registration) -- capture has not
 # started for them yet either, so they read INSUFFICIENT_N n=0 until it does.
-SPORTS: List[str] = ["tennis", "soccer_intl", "soccer", "wnba", "npb", "kbo"]
+# nba added 2026-07-04 (LANE 1 pre-registration) -- same story, off-season.
+SPORTS: List[str] = ["tennis", "soccer_intl", "soccer", "wnba", "npb", "kbo", "nba"]
 
 MIN_GAMES_SPORT: int = 20  # per the brief: <20 graded games -> INSUFFICIENT_N
 
@@ -150,6 +154,21 @@ def _kbo_lookup() -> OutcomeLookup:
     return res.home_win
 
 
+def _nba_lookup() -> OutcomeLookup:
+    """nba_outcome_resolver.NbaOutcomeResolver.home_win keyed off the Kalshi
+    KXNBAGAME ticker (see that module's docstring for the ticker-shape
+    derivation). Added 2026-07-04 (LANE 1 pre-registration); NBA in-play
+    capture has not started yet (off-season) so this mostly reads
+    INSUFFICIENT_N n=0."""
+    try:
+        from scripts.platformkit.ingame.nba_outcome_resolver import NbaOutcomeResolver
+        res = NbaOutcomeResolver()
+    except Exception as exc:  # noqa: BLE001 -- resolver unavailable -> every game unresolved
+        logger.debug("ingame_tail_scan_multi nba resolver unavailable: %s", exc)
+        return lambda stem: None
+    return res.home_win
+
+
 _LOOKUP_BUILDERS: Dict[str, Callable[[], OutcomeLookup]] = {
     "soccer_intl": _soccer_lookup,
     "soccer": _soccer_lookup,
@@ -157,6 +176,7 @@ _LOOKUP_BUILDERS: Dict[str, Callable[[], OutcomeLookup]] = {
     "wnba": _wnba_lookup,
     "npb": _npb_lookup,
     "kbo": _kbo_lookup,
+    "nba": _nba_lookup,
 }
 
 

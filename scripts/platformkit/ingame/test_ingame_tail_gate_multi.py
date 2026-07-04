@@ -108,6 +108,38 @@ def test_new_sports_get_fresh_later_stamp():
         assert stamp > gm.pre_registered_at_for("tennis")
 
 
+# --------------------------------------------------------------------------- #
+# LANE 1: nba pre-registration stamp (NBA-season-open-safe future date)       #
+# --------------------------------------------------------------------------- #
+def test_nba_gets_season_open_safe_future_stamp():
+    """nba must be pre-registered at an October 2026 stamp -- strictly later
+    than every other sport's stamp, and before the 2026-27 NBA season tips
+    off, so it is trivially forward-only (no NBA in-play tick can predate
+    it)."""
+    stamp = gm.pre_registered_at_for("nba")
+    assert stamp == "2026-10-01T00:00:00Z"
+    assert stamp > gm.pre_registered_at_for("tennis")
+    assert stamp > gm.pre_registered_at_for("wnba")
+
+
+def test_nba_gate_uses_its_own_stamp_as_forward_filter(tmp_path):
+    calls = []
+
+    def scan_fn(since=None):
+        calls.append(since)
+        return {"bands": {}, "n_games_resolved": 0, "n_games_graded": 0}
+
+    out = tmp_path / "nba_verdict.json"
+    headline = gm.run_gate_for_sport("nba", scan_fn=scan_fn, verdict_out=out)
+    assert headline["verdict"] == "PENDING_FORWARD"
+    assert headline["n"] == 0
+    doc = json.loads(out.read_text(encoding="utf-8"))
+    assert doc["pre_registered_at"] == "2026-10-01T00:00:00Z"
+    assert None in calls and "2026-10-01T00:00:00Z" in calls
+    assert "2026-07-04T00:00:00Z" not in calls
+    assert "2026-07-04T12:00:00Z" not in calls
+
+
 def test_unknown_sport_falls_back_to_default_stamp():
     assert gm.pre_registered_at_for("some_future_sport") == gm.PRE_REGISTERED_AT
 
@@ -161,3 +193,40 @@ def test_existing_sport_output_unchanged_when_stamp_not_passed_explicitly(tmp_pa
     assert "2026-07-04T00:00:00Z" in calls
     doc = json.loads(out.read_text(encoding="utf-8"))
     assert doc["pre_registered_at"] == "2026-07-04T00:00:00Z"
+
+
+# --------------------------------------------------------------------------- #
+# LANE 1 regression: adding nba must not change ANY existing sport's stamp or #
+# verdict-doc shape -- byte-identical output for every pre-existing sport.    #
+# --------------------------------------------------------------------------- #
+def test_existing_sports_stamp_and_output_unchanged_by_nba_addition(tmp_path):
+    def scan_fn(since=None):
+        return {"bands": {}, "n_games_resolved": 0, "n_games_graded": 0}
+
+    expected_stamps = {
+        "tennis": "2026-07-04T00:00:00Z",
+        "soccer_intl": "2026-07-04T00:00:00Z",
+        "soccer": "2026-07-04T00:00:00Z",
+        "wnba": "2026-07-04T12:00:00Z",
+        "npb": "2026-07-04T12:00:00Z",
+        "kbo": "2026-07-04T12:00:00Z",
+    }
+    for sport, expected in expected_stamps.items():
+        assert gm.pre_registered_at_for(sport) == expected
+        out = tmp_path / ("%s_verdict.json" % sport)
+        headline = gm.run_gate_for_sport(sport, scan_fn=scan_fn, verdict_out=out)
+        assert headline["verdict"] == "PENDING_FORWARD"
+        assert headline["n"] == 0
+        doc = json.loads(out.read_text(encoding="utf-8"))
+        assert doc["sport"] == sport
+        assert doc["pre_registered_at"] == expected
+        assert doc["edge_claimed"] is False
+        assert doc["verdict"] == "PENDING_FORWARD"
+
+
+def test_sports_list_includes_nba_alongside_all_prior_sports():
+    """SPORTS must contain every previously-registered sport UNCHANGED, plus
+    nba newly appended -- no existing sport removed or reordered away."""
+    for sport in ("tennis", "soccer_intl", "soccer", "wnba", "npb", "kbo"):
+        assert sport in gm.SPORTS
+    assert "nba" in gm.SPORTS
