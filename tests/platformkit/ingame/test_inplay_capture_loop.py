@@ -414,3 +414,88 @@ def test_wnba_shadow_poisoned_get_shadow_is_none_never_raises(tmp_path, monkeypa
     assert g["model_prob_wnba_shadow"] is None
     # decision path fully unaffected by the poisoned shadow prober.
     assert g["bet"] is True and g["model_prob"] == 0.80
+
+
+# --------------------------------------------------------------------------------------- #
+# LANE 1 enrichment: append-after-decision property (on / off / poisoned)                  #
+# --------------------------------------------------------------------------------------- #
+def _run_one_tick(tmp_path):
+    grade_dir = tmp_path / "grade"
+    return loop.poll_once(sports=["mlb"], live_state_fn=_state_fn_prior, model_fn=_model_fn,
+                          inplay_fetch_fn=_inplay_fetch, finals_fn=_finals_none,
+                          grade_dir=grade_dir, ledger_path=tmp_path / "l.jsonl",
+                          heartbeat_path=tmp_path / "hb.json")
+
+
+def _decision_fields(g):
+    return {k: g.get(k) for k in ("bet", "action", "tier", "model_prob", "devigged_price",
+                                  "p0_source", "reason", "paired")}
+
+
+def test_enrichment_fields_present_and_none_safe_with_no_sidecars(tmp_path):
+    # No fixture sidecars exist -> every enrichment field is honest None, but the
+    # decision output is fully present and identical to the pre-enrichment shape.
+    hb = _run_one_tick(tmp_path)
+    g = hb["games"][0]
+    for key in ("xg_home", "xg_away", "xg_asof_min", "spread_bp", "book_thinness",
+               "stale_quote", "espn_wp"):
+        assert key in g and g[key] is None
+    assert g["bet"] is True and g["model_prob"] == 0.80
+
+
+def test_enrichment_on_vs_off_decision_output_identical(tmp_path, monkeypatch):
+    # "on": facade returns real-looking values. "off": facade returns None (as if no
+    # sidecar existed). Either way the decision fields (bet/action/model_prob/etc) must
+    # be byte-identical -- enrichment can only ever add measurement fields, never change
+    # a decision.
+    from scripts.platformkit.ingame import ingame_enrichment as enrich
+
+    class _StubOn:
+        def fotmob_xg(self, *a, **kw):
+            return {"xg_home": 1.2, "xg_away": 0.4, "xg_asof_min": 55.0}
+
+        def book_depth(self, *a, **kw):
+            return {"spread_bp": 80.0, "book_thinness": 20, "stale_quote": False}
+
+        def espn_wp(self, *a, **kw):
+            return {"espn_wp": 0.63}
+
+    class _StubOff:
+        def fotmob_xg(self, *a, **kw):
+            return None
+
+        def book_depth(self, *a, **kw):
+            return None
+
+        def espn_wp(self, *a, **kw):
+            return None
+
+    monkeypatch.setattr(enrich, "get_facade", lambda: _StubOn())
+    hb_on = _run_one_tick(tmp_path / "on")
+    g_on = hb_on["games"][0]
+
+    monkeypatch.setattr(enrich, "get_facade", lambda: _StubOff())
+    hb_off = _run_one_tick(tmp_path / "off")
+    g_off = hb_off["games"][0]
+
+    assert _decision_fields(g_on) == _decision_fields(g_off)
+    # the "on" run DOES carry the enriched values (proves the wire fired).
+    assert g_on["spread_bp"] == 80.0 and g_on["espn_wp"] == 0.63
+    # the "off" run is honest None (proves absence never fabricates a value).
+    assert g_off["spread_bp"] is None and g_off["espn_wp"] is None
+
+
+def test_enrichment_poisoned_facade_never_raises_decision_unaffected(tmp_path, monkeypatch):
+    from scripts.platformkit.ingame import ingame_enrichment as enrich
+
+    def _raise():
+        raise RuntimeError("poisoned enrichment facade")
+
+    monkeypatch.setattr(enrich, "get_facade", _raise)
+    hb = _run_one_tick(tmp_path)
+    g = hb["games"][0]
+    for key in ("xg_home", "xg_away", "xg_asof_min", "spread_bp", "book_thinness",
+               "stale_quote", "espn_wp"):
+        assert g.get(key) is None
+    # decision path fully unaffected by the poisoned enrichment facade.
+    assert g["bet"] is True and g["model_prob"] == 0.80

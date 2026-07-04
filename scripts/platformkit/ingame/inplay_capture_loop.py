@@ -439,6 +439,11 @@ def _process_game(sport: str, gid: str, legs: Dict[str, float],
         row["model_prob_wnba_shadow"] = _wnba_shadow(
             sport, state.get("home_display") or state.get("home"),
             state.get("away_display") or state.get("away"), state)
+        # ENRICHMENT MEASUREMENT ONLY (LANE 1), added AFTER dec is final -- never read by
+        # on_tick; a lookup exception can never sink a tick or change a decision.
+        row.update(_enrichment_fields(
+            sport, state.get("home_display") or state.get("home"),
+            state.get("away_display") or state.get("away"), gid, state))
     except Exception as exc:  # noqa: BLE001 -- one bad game never stops the others
         logger.warning("inplay_capture_loop game %s/%s failed: %s", sport, gid, exc)
         row["reason"] = "error:%s" % type(exc).__name__
@@ -468,6 +473,36 @@ def _wnba_shadow(sport: str, home: Any, away: Any, state: Dict[str, Any]) -> Opt
         return get_shadow().shadow_prob(sport, str(home or ""), str(away or ""), state)
     except Exception:  # noqa: BLE001 -- shadow measurement never affects the capture path
         return None
+
+
+def _enrichment_fields(sport: str, home: Any, away: Any, gid: str,
+                       state: Dict[str, Any]) -> Dict[str, Any]:
+    """ENRICHMENT MEASUREMENT ONLY (LANE 1). All lookup logic lives in
+    ingame_enrichment.py (sidecar-file reads only, poisoned-source -> permanent
+    None); this wrapper only guarantees an exception here can never reach the
+    capture path. None-safe. soccer_intl gets xg_*; sports with a book-depth
+    sidecar get spread_bp/book_thinness/stale_quote; mlb gets espn_wp (only if a
+    cheap ESPN event id is already on the state -- else honest None/pending)."""
+    out: Dict[str, Any] = {"xg_home": None, "xg_away": None, "xg_asof_min": None,
+                          "spread_bp": None, "book_thinness": None, "stale_quote": None,
+                          "espn_wp": None}
+    try:
+        from scripts.platformkit.ingame.ingame_enrichment import get_facade
+        facade = get_facade()
+        if str(sport or "").lower() == "soccer_intl":
+            xg = facade.fotmob_xg(str(home or ""), str(away or ""), state.get("minute"))
+            if xg:
+                out.update(xg)
+        depth = facade.book_depth(str(gid or ""))
+        if depth:
+            out.update(depth)
+        if str(sport or "").lower() == "mlb":
+            wp = facade.espn_wp("mlb", state.get("espn_event_id"))
+            if wp:
+                out.update(wp)
+    except Exception:  # noqa: BLE001 -- enrichment measurement never affects the capture path
+        pass
+    return out
 
 
 def _devig_of(tick: Dict[str, Any]) -> Optional[float]:
