@@ -70,6 +70,7 @@ _METRIC_ALIASES: dict[str, tuple[str, ...]] = {
     "fg3_pct": ("3pt", "three point", "3-point", "fg3", "threes"),
     "ts_pct": ("true shooting", "ts%", "ts pct", "ts_pct"),
     "efg_pct": ("effective field goal", "efg%", "efg pct", "efg"),
+    "hold_pct_asof": ("hold serve", "holds serve", "hold%", "hold pct", "hold_pct", "service hold"),
 }
 
 
@@ -92,6 +93,8 @@ _TOPIC_ALIASES: dict[str, tuple[str, ...]] = {
     "tennis_surface": ("surface", "hold prior", "hold-prior", "atp", "wta", "tennis"),
     "nba_composition": ("composition", "shooter quality", "scorer quality", "quality blend", "nba"),
     "wnba_rest": ("rest covariate", "rest diff", "wnba rest", "+rest", "wnba"),
+    "mlb_fatigue": ("fatigue", "velocity decline", "velo decline", "starting pitcher", "sp fatigue", "mlb"),
+    "nba_positional": ("positional weight", "per-position", "posgroup", "guard/forward/center"),
 }
 
 
