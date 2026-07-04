@@ -149,6 +149,11 @@ class NpbOutcomeResolver:
         self._code_index: Dict[str, str] = {}
         self._final: Dict[Tuple[Any, str, str], int] = {}
         self._scores: Dict[Tuple[Any, str, str], Tuple[int, int]] = {}
+        # Every (date, away, home) key seen in the parquet AT ALL, resolved or
+        # not (NPB, like KBO, can repeat the SAME matchup on consecutive days
+        # -- an in-progress today-row must never fall through to yesterday's
+        # already-final identical matchup; see kbo_outcome_resolver twin fix).
+        self._known_dates: set = set()
         try:
             df = results_df
             if df is None:
@@ -173,13 +178,14 @@ class NpbOutcomeResolver:
             home, away = str(r["home_team"]).strip(), str(r["away_team"]).strip()
             if not home or not away or pd.isna(r["date"]):
                 continue
+            key = (r["date"].date(), away, home)
+            self._known_dates.add(key)  # row exists for this exact date, resolved or not
             try:
                 hs, as_ = float(r["home_score"]), float(r["away_score"])
             except (TypeError, ValueError):
                 continue
             if bool(r.get("tied", False)) or pd.isna(r.get("home_win")):
                 continue  # ties/unresolved are not a binary home_win label
-            key = (r["date"].date(), away, home)
             self._scores[key] = (int(hs), int(as_))
             hw = r.get("home_win")
             try:
@@ -191,6 +197,22 @@ class NpbOutcomeResolver:
     def available(self) -> bool:
         return self._ok and bool(self._final)
 
+    def _resolve_key(self, date: Any, away: str, home: str
+                      ) -> Optional[Tuple[Any, str, str]]:
+        """Exact-date match wins ALWAYS if a row exists for it (resolved or
+        not) -- see kbo_outcome_resolver._resolve_key twin fix for the full
+        rationale (consecutive-day same-matchup series). +-1 day neighbor
+        fallback fires ONLY when the exact date has no row at all."""
+        import datetime as _dt
+        exact = (date, away, home)
+        if exact in self._known_dates:
+            return exact if exact in self._final or exact in self._scores else None
+        for delta in (-1, 1):
+            key = (date + _dt.timedelta(days=delta), away, home)
+            if key in self._known_dates:
+                return key
+        return None
+
     def home_win(self, ticker: str) -> Optional[int]:
         """1 if home won, 0 if away won, None if unresolved/tie/not-final/
         ambiguous-split. Never raises."""
@@ -199,17 +221,13 @@ class NpbOutcomeResolver:
         parsed = parse_npb_ticker(ticker)
         if parsed is None:
             return None
-        import datetime as _dt
         date, tail = parsed
         split = _split_tail(tail, self._code_index)
         if split is None:
             return None
         away, home = split
-        for delta in (0, -1, 1):
-            key = (date + _dt.timedelta(days=delta), away, home)
-            if key in self._final:
-                return self._final[key]
-        return None
+        key = self._resolve_key(date, away, home)
+        return self._final.get(key) if key is not None else None
 
     def final_score(self, ticker: str) -> Optional[Tuple[int, int]]:
         """(home_score, away_score) for a Kalshi ticker's FINAL game, else None.
@@ -219,17 +237,13 @@ class NpbOutcomeResolver:
         parsed = parse_npb_ticker(ticker)
         if parsed is None:
             return None
-        import datetime as _dt
         date, tail = parsed
         split = _split_tail(tail, self._code_index)
         if split is None:
             return None
         away, home = split
-        for delta in (0, -1, 1):
-            key = (date + _dt.timedelta(days=delta), away, home)
-            if key in self._scores:
-                return self._scores[key]
-        return None
+        key = self._resolve_key(date, away, home)
+        return self._scores.get(key) if key is not None else None
 
 
 __all__ = [

@@ -120,6 +120,11 @@ class KboOutcomeResolver:
         self._codes: set = set()
         self._final: Dict[Tuple[Any, str, str], int] = {}
         self._scores: Dict[Tuple[Any, str, str], Tuple[int, int]] = {}
+        # Every (date, away, home) key seen in the parquet AT ALL, resolved or
+        # not (KBO plays the SAME matchup on consecutive days in a series, so
+        # an in-progress today-row must never fall through to yesterday's
+        # already-final identical matchup -- see module docstring update).
+        self._known_dates: set = set()
         try:
             df = results_df
             if df is None:
@@ -143,13 +148,14 @@ class KboOutcomeResolver:
             home, away = str(r["home_team"]).strip(), str(r["away_team"]).strip()
             if not home or not away or pd.isna(r["date"]):
                 continue
+            key = (r["date"].date(), away, home)
+            self._known_dates.add(key)  # row exists for this exact date, resolved or not
             try:
                 hs, as_ = float(r["home_score"]), float(r["away_score"])
             except (TypeError, ValueError):
                 continue
             if bool(r.get("tied", False)) or pd.isna(r.get("home_win")):
                 continue  # ties/unresolved are not a binary home_win label
-            key = (r["date"].date(), away, home)
             self._scores[key] = (int(hs), int(as_))
             hw = r.get("home_win")
             try:
@@ -164,6 +170,24 @@ class KboOutcomeResolver:
     def _valid_codes(self) -> set:
         return self._codes | set(_KALSHI_TO_PARQUET.keys())
 
+    def _resolve_key(self, date: Any, away: str, home: str
+                      ) -> Optional[Tuple[Any, str, str]]:
+        """Exact-date match wins ALWAYS if a row exists for it (resolved or
+        not) -- KBO reruns the SAME matchup on consecutive days, so an
+        in-progress today's game must never silently borrow yesterday's
+        already-final identical matchup. The +-1 day neighbor fallback is
+        used ONLY when the exact date has no row at all (genuine schedule/
+        timezone slop), never to skip past an unresolved exact-date row."""
+        import datetime as _dt
+        exact = (date, away, home)
+        if exact in self._known_dates:
+            return exact if exact in self._final or exact in self._scores else None
+        for delta in (-1, 1):
+            key = (date + _dt.timedelta(days=delta), away, home)
+            if key in self._known_dates:
+                return key
+        return None
+
     def home_win(self, ticker: str) -> Optional[int]:
         """1 if home won, 0 if away won, None if unresolved/tie/not-final/
         ambiguous-split. Never raises."""
@@ -172,13 +196,9 @@ class KboOutcomeResolver:
         parsed = parse_kbo_ticker(ticker, self._valid_codes())
         if parsed is None:
             return None
-        import datetime as _dt
         date, away, home = parsed
-        for delta in (0, -1, 1):
-            key = (date + _dt.timedelta(days=delta), away, home)
-            if key in self._final:
-                return self._final[key]
-        return None
+        key = self._resolve_key(date, away, home)
+        return self._final.get(key) if key is not None else None
 
     def final_score(self, ticker: str) -> Optional[Tuple[int, int]]:
         """(home_score, away_score) for a Kalshi ticker's FINAL game, else None.
@@ -188,13 +208,9 @@ class KboOutcomeResolver:
         parsed = parse_kbo_ticker(ticker, self._valid_codes())
         if parsed is None:
             return None
-        import datetime as _dt
         date, away, home = parsed
-        for delta in (0, -1, 1):
-            key = (date + _dt.timedelta(days=delta), away, home)
-            if key in self._scores:
-                return self._scores[key]
-        return None
+        key = self._resolve_key(date, away, home)
+        return self._scores.get(key) if key is not None else None
 
 
 __all__ = [
