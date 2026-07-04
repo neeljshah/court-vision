@@ -75,10 +75,15 @@ experiment into the Sonnet fleet call (no second cold-cache review round-trip).
     UNTOUCHED -- forward evidence post-2026-07-03T00:00Z only, verdict at
     data/domains/mlb/ingame_tail_verdict.json. Extend band-scan to tennis/WC; pbp
     state fusion; tick-latency measurement.
-PARKED -- NOT IN QUEUE (an autonomous wake may NOT pull these; human re-activates):
-(iv) INFO BREADTH: depth-of-book snapshots, event-time news via the m31 as-of
-    pattern, 4th keyless book (BetMGM WAF-blocked; OddsAPI paid stays OFF -- spend is
-    HUMAN-only).
+(iv) INFO BREADTH -- IN-GAME (UN-PARKED 2026-07-04 by direct user directive: "look at
+    real sports apps for webscraping, use every webscraping data in game to make my
+    ingame systems best; more data, more edges"): keyless live in-game data sources
+    (official league live feeds, Sofascore/FotMob-class apps, live xG/pbp/point
+    data, Kalshi/Polymarket depth-of-book) probed read-only first, then ingested
+    via the m31 as-of pattern with politeness + stealth transport; every derived
+    in-play feature goes through pre-registered forward gates. STILL PARKED
+    (human-only): any PAID service (OddsAPI stays OFF -- spend is HUMAN-only);
+    BetMGM (WAF-blocked, external).
 (v) LLM CONTEXT LAYER L4: in-game repricing first; shuffled-context planted-null
     MANDATORY on every eval; ANY fail -> SCOUTING-ONLY label, never wired to predictions.
 
