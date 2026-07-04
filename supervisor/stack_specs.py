@@ -89,6 +89,7 @@ _MLB_CONTEXT_HB = "data/cache/daemon_heartbeats/m31_mlb_context.txt"
 # mlb_context_autogate_runner.
 _MLB_CONTEXT_AUTOGATE_HB = "data/cache/daemon_heartbeats/m32_mlb_context_autogate.txt"
 _INGAME_TAIL_MULTI_HB = "data/cache/daemon_heartbeats/m35_ingame_tail_multi.txt"
+_INGAME_GRADING_MULTI_HB = "data/cache/daemon_heartbeats/m36_ingame_grading_multi.txt"
 
 # M14 -- the brain-rebuild cadence (brain_rebuild_runner loop-wrapper): rebuilds the
 # organized, person-free Obsidian brain (vault/_Organized) from the deep
@@ -716,6 +717,35 @@ def base_specs() -> List[ProcSpec]:
             argv=["--interval", "21600"],
             readiness=ReadinessSpec(
                 kind=HEARTBEAT, heartbeat_path=_INGAME_TAIL_MULTI_HB, fresh_sec=45000.0),
+            restart_policy=_FOREVER,
+        ),
+        # M36 -- LANE 3 multi-sport in-game grading: the soccer_intl/tennis/wnba
+        # counterpart to the MLB-only m25 (ingame_outcome_verdict) + m26
+        # (ingame_segment_trust) pair. Every 900s (m25's cadence) re-runs
+        # ingame_outcome_verdict_multi.build_verdict_all() (per-segment Brier of
+        # the live model vs OUTCOME vs the venue in-play price, per capturing
+        # sport, writes data/frontend/ops/ingame_outcome_verdict_multi.json) and
+        # ingame_segment_trust_multi.build_trust_all() (cross-corpus TRUSTED/
+        # ADVERSE/NEUTRAL replication gate per sport, writes data/frontend/ops/
+        # ingame_segment_trust_multi.json), then composes one small tick summary.
+        # MEASUREMENT ONLY -- wires no floor/execution routing anywhere; the
+        # MLB-only m26 path remains the sole trust gate that affects execution,
+        # pending a human review of extending routing to these sports. No $
+        # field, no flag flip, no data/registry/ write, no real-money action.
+        # INSUFFICIENT_N/NEUTRAL is the expected, honest readout for tennis/wnba
+        # on day 1 of capture. NOT YET RUNNING -- registered here but requires a
+        # supervisor restart to take effect (restart already pending; rides the
+        # same restart as m33-m35 + the tennis/wnba capture sports). Readiness
+        # NONE would also be defensible (mirrors m25/m26), but a heartbeat is
+        # used here (mirrors m35) so the freshness sentinels can see it too.
+        # fresh_sec = 2x the 900s cadence + margin. Independent branch (no
+        # depends_on) so a dead grading tick is itself ONE red status entry.
+        ProcSpec(
+            name="m36_ingame_grading_multi", kind="py",
+            module="scripts.platformkit.ingame.ingame_grading_multi_runner",
+            argv=["--interval", "900"],
+            readiness=ReadinessSpec(
+                kind=HEARTBEAT, heartbeat_path=_INGAME_GRADING_MULTI_HB, fresh_sec=2000.0),
             restart_policy=_FOREVER,
         ),
     ]

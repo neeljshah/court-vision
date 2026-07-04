@@ -103,6 +103,9 @@ def test_default_manifest_is_acyclic_and_ordered():
         # m35 -- cross-sport (tennis + soccer_intl/WC) in-play tail-band scan +
         # forward gate + tick-latency scoreboard; verdicts only, no $
         "m35_ingame_tail_multi",
+        # m36 -- multi-sport in-game grading (soccer_intl/tennis/wnba outcome-
+        # gated verdict + cross-corpus segment trust); measurement only, no $
+        "m36_ingame_grading_multi",
     }
     _assert_topo(specs)
     # producer precedes the Auto-API which precedes the boards API which precedes UI.
