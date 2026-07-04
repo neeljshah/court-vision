@@ -71,6 +71,8 @@ _METRIC_ALIASES: dict[str, tuple[str, ...]] = {
     "ts_pct": ("true shooting", "ts%", "ts pct", "ts_pct"),
     "efg_pct": ("effective field goal", "efg%", "efg pct", "efg"),
     "hold_pct_asof": ("hold serve", "holds serve", "hold%", "hold pct", "hold_pct", "service hold"),
+    "k_rate": ("strikeout rate", "k-rate", "k rate", "k_rate", "strikeout%"),
+    "strength": ("strongest", "team strength", "net expected goals", "strength rating"),
 }
 
 
