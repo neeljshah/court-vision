@@ -29,38 +29,21 @@ def test_norm_abbr_maps_divergent_tricodes():
     assert IO._norm_abbr("BOS") == "BOS"  # unchanged tricode passes through
 
 
-def test_bridge_games_joins_on_normalized_tricode_and_date():
-    lines = pd.DataFrame({
-        "event_id": [1, 2], "home_abbr": ["GS", "BOS"], "away_abbr": ["NY", "MIA"],
-        "date": pd.to_datetime(["2025-11-01", "2025-11-02"]),
-        "home_q1": [25, 20], "home_q2": [25, 20], "home_q3": [25, 20], "home_q4": [25, 20],
-        "away_q1": [20, 25], "away_q2": [20, 25], "away_q3": [20, 25], "away_q4": [20, 25],
-    })
-    box = pd.DataFrame({
-        "game_id": ["g1", "g1", "g2", "g2"],
-        "date": pd.to_datetime(["2025-11-01"] * 2 + ["2025-11-02"] * 2),
-        "team": ["GSW", "NYK", "BOS", "MIA"],
-        "is_home": [True, False, True, False],
-    })
-    bridged = IO.bridge_games(lines, box)
-    assert len(bridged) == 2
-    assert set(bridged["game_id"]) == {"g1", "g2"}
-    assert set(bridged["home_nba"]) == {"GSW", "BOS"}
+def test_load_bridge_reads_persisted_wave34_bridge_and_filters_by_season():
+    """wave-34 replaced the inline bridge_games() join with a persisted
+    parquet (domains.basketball_nba.espn_nba_bridge); this module now just
+    reads it. Covers the full corpus and the per-season filter both work."""
+    full = IO.load_bridge()
+    assert len(full) == 1299
+    assert set(full["season"].unique()) == {"2024-25", "2025-26"}
 
+    only_2526 = IO.load_bridge(season="2025-26")
+    assert len(only_2526) == 74
+    assert set(only_2526["season"].unique()) == {"2025-26"}
 
-def test_bridge_games_no_match_returns_empty():
-    lines = pd.DataFrame({
-        "event_id": [1], "home_abbr": ["GS"], "away_abbr": ["NY"],
-        "date": pd.to_datetime(["2025-11-01"]),
-        "home_q1": [25], "home_q2": [25], "home_q3": [25], "home_q4": [25],
-        "away_q1": [20], "away_q2": [20], "away_q3": [20], "away_q4": [20],
-    })
-    box = pd.DataFrame({
-        "game_id": ["gX", "gX"], "date": pd.to_datetime(["2025-12-25"] * 2),
-        "team": ["LAL", "BOS"], "is_home": [True, False],
-    })
-    bridged = IO.bridge_games(lines, box)
-    assert len(bridged) == 0
+    only_2425 = IO.load_bridge(season="2024-25")
+    assert len(only_2425) == 1225
+    assert set(only_2425["season"].unique()) == {"2024-25"}
 
 
 # ------------------------------------------------------------- synthetic gate
@@ -142,19 +125,41 @@ def test_no_usable_folds_is_not_testable():
 
 # --------------------------------------------------------------- end-to-end
 @pytest.mark.parametrize("layer", ["hot_night", "scheme_fit"])
-def test_real_driver_runs_end_to_end(layer):
-    """Runs the real on-disk corpora; asserts a well-formed, honestly-labeled
-    verdict without asserting a specific SHIP/REJECT direction (calibration
-    facts on real data, not a fixed expectation)."""
-    v = G.run(layer)
+@pytest.mark.parametrize("season", ["2024-25", "2025-26"])
+def test_real_driver_runs_end_to_end_per_season(layer, season):
+    """Runs the real on-disk corpora (17x-power bridge) for each season
+    separately; asserts a well-formed, honestly-labeled verdict without
+    asserting a specific SHIP/REJECT direction, and that the season-specific
+    leak caveat is always present (2024-25=IN-SAMPLE-LEAK, 2025-26=frozen-prior)."""
+    v = G.run(layer, season=season)
     assert v.layer == layer
+    assert v.season == season
     assert v.verdict in ("SHIP_CONDITIONAL_PRIOR", "REJECT", "NOT_TESTABLE")
     d = v.to_dict()
     assert d["vs_close"].startswith("UNPROVEN")
     assert "metrics" in d and "planted_null" in d and "caveats" in d
     assert any("CALIBRATION" in c for c in d["caveats"])
+    if season == "2024-25":
+        assert any("IN-SAMPLE LEAK" in c for c in d["caveats"])
+    else:
+        assert any("FROZEN-PRIOR" in c for c in d["caveats"])
 
 
 def test_run_rejects_unknown_layer():
     with pytest.raises(ValueError):
-        G.run("not_a_real_layer")
+        G.run("not_a_real_layer", season="2025-26")
+
+
+def test_run_rejects_unknown_season():
+    with pytest.raises(ValueError):
+        G.run("hot_night", season="2099-00")
+
+
+def test_load_prior_run_reads_frozen_v1_verdict_if_present():
+    """load_prior_run must read the wave-33 v1 artifact as-is (never re-derive
+    it) when present on disk, and return None gracefully if absent."""
+    prior = IO.load_prior_run("hot_night")
+    if prior is not None:
+        assert prior["corpus"].startswith("wave-33")
+        assert "verdict" in prior and "metrics" in prior
+    assert IO.load_prior_run("not_a_real_layer_xyz") is None

@@ -1,51 +1,32 @@
 """scripts.platformkit.ingame.ingame_shooterprofile_gate_nba -- pre-registered
 H_A/H_B in-game conditioning gates (basketball_truth_spec.json wave-26/27,
-"ingame_hypotheses"). Clone of ingame_layer_gate_nba.py's walk-forward pattern
-with a --layer {hot_night,scheme_fit} flag, exactly as pre-registered. State
-construction + TRAIN-only gating + planted-null shuffles live in the companion
-ingame_shooterprofile_gate_nba_io.py (kept <=300 LOC/file); this file holds the
-sport-blind walk-forward/DM verdict driver shared by both layers.
+"ingame_hypotheses"; walk-forward cloned from ingame_layer_gate_nba.py).
+--layer {hot_night,scheme_fit}. State/gating/planted-null live in _io.py.
 
-THE QUESTIONS (both condition the GAME-level (margin,time) BASE win-prob model on
-an AS-OF PLAYER-PROFILE prior -- no player-level in-game scoring feed exists on
-disk, per the spec's data_constraint):
+RE-RUN AT 17x POWER (lane nba-ingame-rerun, wave-34+): wave-33 verdicted this
+SAME pre-registration on a 74-game corpus (hardcoded single-file bridge, thin-
+corpus caveat). The bridge module now persists the full on-disk join (1299
+games: 1225 for 2024-25 + 74 for 2025-26) -- honest completion, not
+re-litigation. Machinery (folds/DM/planted-null) UNCHANGED; corpus+split new.
 
-  H_A hot_night : does a team's top shooter/scorer_quality_v1 prior, ACTIVE ONLY
-                  on a hot-team-shooting-night (team eFG% above its own season-
-                  to-date mean by the 60th-pct TRAIN-fold threshold), beat the
-                  (margin,time) BASE on held-out Brier?
-  H_B scheme_fit: does the offense's top-scorer by_scheme TS% against the
-                  defense's dominant coverage scheme, ACTIVE ONLY in the top/
-                  bottom TRAIN-fold tercile of scheme-fit, beat BASE?
+THE QUESTIONS: H_A hot_night -- top shooter/scorer_quality_v1 prior, ACTIVE
+ONLY on a hot-shooting-night, beat (margin,time) BASE? H_B scheme_fit --
+top-scorer's by_scheme TS% vs defense's dominant coverage, ACTIVE ONLY in
+top/bottom TRAIN tercile, beat BASE? BASE=p_live(score_diff,frac_elapsed);
++PRIOR=blend(p0,p_live,w), w fit TRAIN-only, p0=prior when gated else 0.5.
+Full detail in the companion _io.py docstring.
+DISCIPLINE (verbatim from ingame_layer_gate_nba.py): >=3 expanding walk-forward
+folds, w fit TRAIN-only; pooled OOS Brier; DM clustered by game_id p<0.05;
+sign consistent >=2/3 folds; PLANTED NULL shuffles conditioning assignment,
+must NOT also beat BASE (else REJECT); real/null share corpus+eval path.
 
-BASE   = p_live(score_diff, frac_elapsed)          # margin+time only, no prior
-+PRIOR = blend(p0, p_live, w(time,margin))         # w fit on TRAIN fold ONLY
-         p0 = the layer's conditioning prior, ACTIVE only on the gated condition;
-         off-condition states get a NEUTRAL p0=0.5 so the gate isolates the
-         CONDITIONAL lift the spec claims, not an unconditional main effect.
+CAVEAT: priors are SEASON-LEVEL snapshots on QUALIFY_SEASON="2024-25" box
+data -- frozen-prior caveat for 2025-26 (predates season), IN-SAMPLE leak for
+2024-25 (fit on same season scored). Verdicts run/report PER SEASON
+(run(layer, season=...)), never pooled. BASE+outcome labels leak-free either way.
 
-DISCIPLINE (inherited verbatim from ingame_layer_gate_nba.py):
-  * >=3 expanding-window walk-forward folds; w fit on TRAIN only.
-  * Pooled OOS Brier; DM clustered by game_id, p<0.05; sign >=2/3 folds.
-  * PLANTED NULL (binding, pre-registered): shuffle the conditioning assignment
-    (H_A: player-profile across teams; H_B: opponent-scheme assignment), re-run
-    the SAME gate, confirm the shuffled prior's Brier-delta CI includes 0. If the
-    shuffled prior ALSO "wins", the real result is a flexibility artifact -> REJECT.
-  * GATE-COMPARABILITY: real and planted-null runs share the identical start
-    state, corpus slice, and eval path -- only the conditioning assignment differs.
-
-CAVEAT (carried honestly, same framing the spec itself uses for the pregame
-indices): shooter_quality_v1/scorer_quality_v1 and the scheme atlas are SEASON-
-LEVEL snapshots (as_of a single date spanning the whole disk window), not
-per-game walk-forward-recomputed priors -- a season-level caveat, not a
-per-game leak. The (margin,time) BASE and the outcome labels ARE leak-free
-(no walk-forward Elo used here; BASE only reads realized as-of score).
-
-VERDICT: CALIBRATION only (held-out Brier), never a $ edge. REJECT/NOT_TESTABLE
-is a fully valid, logged result.
-INVARIANTS: never edit src/ or kernel/; <=300 LOC; ASCII-only; numpy+pandas+stdlib.
-CLI: python -m scripts.platformkit.ingame.ingame_shooterprofile_gate_nba --layer hot_night
-     python -m scripts.platformkit.ingame.ingame_shooterprofile_gate_nba --layer scheme_fit
+VERDICT: CALIBRATION only, never a $ edge. REJECT/NOT_TESTABLE is fully valid.
+<=300 LOC; ASCII-only. CLI: --layer {hot_night,scheme_fit}.
 """
 from __future__ import annotations
 
@@ -61,11 +42,12 @@ from scripts.platformkit.eval_gate.scoring import brier
 from scripts.platformkit.ingame.ingame_shooterprofile_gate_nba_io import (
     apply_hot_night_gate,
     apply_scheme_tercile_gate,
-    bridge_games,
     build_states_hot_night,
     build_states_scheme_fit,
+    export_states_parquet,
     load_boxscores,
-    load_linescores,
+    load_bridge,
+    load_prior_run,
     shuffle_hot_night,
     shuffle_scheme_fit,
     team_game_efg,
@@ -92,9 +74,10 @@ class HypothesisVerdict:
     planted_null: Dict[str, object] = field(default_factory=dict)
     per_fold: List[Dict[str, float]] = field(default_factory=list)
     caveats: List[str] = field(default_factory=list)
+    season: Optional[str] = None
 
     def to_dict(self) -> Dict:
-        return {"verdict": self.verdict, "layer": self.layer,
+        return {"verdict": self.verdict, "layer": self.layer, "season": self.season,
                 "vs_close": "UNPROVEN -- no in-play odds; CALIBRATION only, never a market edge",
                 "metrics": self.metrics, "planted_null": self.planted_null,
                 "per_fold": self.per_fold, "caveats": list(self.caveats)}
@@ -199,26 +182,34 @@ def _planted_null_dies(delta_ci: Tuple[float, float]) -> bool:
     return not (lo > 0.0 and hi > 0.0)
 
 
+_SEASON_LEAK_CAVEAT = {
+    "2024-25": "IN-SAMPLE LEAK: the prior (QUALIFY_SEASON=2024-25) is fit on the SAME "
+               "season it is scored against. NOT a clean OOS result; reported for "
+               "completeness only.",
+    "2025-26": "FROZEN-PRIOR CAVEAT (season-level, spec Section 3a framing): the prior "
+               "is a single as_of snapshot from the PRIOR season (2024-25), predating "
+               "2025-26 -- a season-level caveat, not a per-game leak.",
+}
+
+
 # ------------------------------------------------------------------- driver
-def run(layer: str) -> HypothesisVerdict:
+def run(layer: str, season: str) -> HypothesisVerdict:
     if layer not in _LAYERS:
         raise ValueError(f"unknown layer {layer!r}; must be one of {sorted(_LAYERS)}")
+    if season not in _SEASON_LEAK_CAVEAT:
+        raise ValueError(f"unknown season {season!r}; must be one of {sorted(_SEASON_LEAK_CAVEAT)}")
     build_fn, gate_fn, shuffle_fn = _LAYERS[layer]
 
-    lines = load_linescores()
+    bridge = load_bridge(season=season)
     box_all = load_boxscores()
-    box = box_all[box_all["season"] == "2025-26"].copy()
-    bridge = bridge_games(lines, box)
+    box = box_all[box_all["season"] == season].copy()
     caveats = [
-        "BRIDGE: linescores (ESPN event_id) joined to player_boxscores (NBA game_id) "
-        "on (home/away tricode, date) after normalizing 6 divergent ESPN<->NBA-stats "
-        "abbreviations; a deterministic, outcome-free join key, restricted to the "
-        "2025-26 overlap window.",
-        "CAVEAT (season-level, same framing as spec Section 3a): shooter_quality_v1/"
-        "scorer_quality_v1 and the scheme atlas are single as_of snapshots spanning "
-        "the whole disk window, not per-game walk-forward-recomputed priors.",
-        "Off-condition states get a NEUTRAL p0=0.5 so the gate isolates the "
-        "CONDITIONAL lift the spec claims, not an unconditional main effect.",
+        "BRIDGE (wave-34 re-run, 17x power): consumes persisted espn_nba_game_bridge."
+        f"parquet (1299 games, 2024-25+2025-26), same join as wave-33, restricted to "
+        f"{season} ({len(bridge)} games).",
+        _SEASON_LEAK_CAVEAT[season],
+        "Off-condition states get NEUTRAL p0=0.5 so the gate isolates the CONDITIONAL "
+        "lift, not an unconditional main effect.",
         "No in-play odds -> verdict is CALIBRATION (held-out Brier), never a market "
         "edge. No $ anywhere.",
     ]
@@ -228,6 +219,7 @@ def run(layer: str) -> HypothesisVerdict:
         states = build_fn(bridge, box, quality, efg_df)
     else:
         states = build_fn(bridge, box)
+    export_states_parquet(states, layer, season)  # per-row harness-schema export
 
     verdict, metrics, per_fold = run_gate(states, gate_fn)
 
@@ -246,17 +238,16 @@ def run(layer: str) -> HypothesisVerdict:
     final_verdict = verdict
     if verdict == "SHIP_CONDITIONAL_PRIOR" and not pn_dies:
         final_verdict = "REJECT"
-        caveats.append(
-            "PLANTED NULL SURVIVED: the shuffled conditioning prior ALSO beat BASE "
-            "(delta CI excludes 0) -- the real result is a flexibility artifact, not "
-            "a genuine conditional signal. Downgraded SHIP -> REJECT per pre-registration.")
+        caveats.append("PLANTED NULL SURVIVED: the shuffled conditioning prior ALSO "
+            "beat BASE (delta CI excludes 0) -- a flexibility artifact. Downgraded "
+            "SHIP -> REJECT per pre-registration.")
 
-    return HypothesisVerdict(final_verdict, layer, metrics, planted_null, per_fold, caveats)
+    return HypothesisVerdict(final_verdict, layer, metrics, planted_null, per_fold, caveats, season)
 
 
 def _report(v: HypothesisVerdict) -> str:
     m = v.metrics
-    lines = ["=" * 72, f"IN-GAME H_A/H_B GATE (NBA): layer={v.layer}", "=" * 72,
+    lines = ["=" * 72, f"IN-GAME H_A/H_B GATE (NBA): layer={v.layer} season={v.season}", "=" * 72,
              f"verdict          : {v.verdict}",
              f"pooled OOS Brier : BASE {m.get('brier_base')}  +PRIOR {m.get('brier_prior')}"
              f"  (delta {m.get('brier_delta')})",
@@ -285,9 +276,23 @@ def main(argv: Optional[List[str]] = None) -> None:
     ap = argparse.ArgumentParser(description="H_A/H_B in-game conditioning gate (NBA).")
     ap.add_argument("--layer", choices=["hot_night", "scheme_fit"], required=True)
     a = ap.parse_args(argv)
-    v = run(a.layer)
-    print(_report(v))
-    path = write(v.to_dict(), f"ingame_hypothesis_{a.layer}.json")
+
+    prior_run = load_prior_run(a.layer)  # v1 74-game verdict, read BEFORE overwriting
+    by_season: Dict[str, Dict] = {}
+    for season in ("2024-25", "2025-26"):
+        v = run(a.layer, season=season)
+        print(_report(v))
+        by_season[season] = v.to_dict()
+
+    out_doc = {
+        "schema_version": 2, "layer": a.layer,
+        "by_season": by_season,
+        "prior_run": prior_run,
+        "headline_note": "Per-season verdicts are NOT pooled: 2024-25 carries an "
+                          "in-sample-leak caveat (prior fit on 2024-25 box data), "
+                          "2025-26 is the clean frozen-prior slice. See by_season.",
+    }
+    path = write(out_doc, f"ingame_hypothesis_{a.layer}.json")
     print(f"wrote {path}")
 
 

@@ -1,33 +1,32 @@
 """scripts.platformkit.ingame.ingame_shooterprofile_gate_nba_io -- IO + conditioning-
 variable plumbing for the H_A/H_B in-game gate (companion to
-ingame_shooterprofile_gate_nba.py). Pre-registered in
-docs/research/intel-layer/basketball_truth_spec.json ("ingame_hypotheses").
-Splits data-loading + prior construction + state-building out of the gate driver
-so each file stays <=300 LOC.
+ingame_shooterprofile_gate_nba.py; basketball_truth_spec.json "ingame_hypotheses").
+Splits data-loading/prior-construction/state-building out of the driver so
+each file stays <=300 LOC.
 
-BRIDGE (new, needed here): linescores.parquet uses ESPN event_id + ESPN team
-abbreviations (GS/NO/NY/SA/UTAH/WSH); player_boxscores.parquet uses NBA-stats
-game_id + NBA-stats tricodes (GSW/NOP/NYK/SAS/UTA/WAS). No on-disk bridge table
-exists for these two id spaces, so this module builds one by (home/away tricode,
-date) after normalizing the divergent abbreviations. Restricted to the 2025-26
-season window where both corpora overlap (2025-10-21 .. 2026-01-19).
+BRIDGE (wave-34+, RE-TEST at 17x power): wave-33 built its own inline (tricode,
+date) join against ONE hardcoded linescores file, capping the corpus at 74
+games (2025-26 only). domains/basketball_nba/espn_nba_bridge.py now
+generalizes the IDENTICAL join across every on-disk (linescores x box-season)
+pairing and persists espn_nba_game_bridge.parquet -- 1299 games (1225 for
+2024-25 + 74 for 2025-26). This module READS that bridge (load_bridge())
+instead of duplicating the join; old inline bridge_games()/load_linescores()
+are gone (see bridge module + its own test).
 
-CONDITIONING PRIORS (both season-level snapshots -- same honest caveat the spec
-uses for the pregame indices in Section 3a: "stable style descriptors with a
-season-level caveat", NOT per-game leak-free, since shooter_quality_v1/
-scorer_quality_v1 and the scheme atlas are single as-of snapshots covering the
-whole disk window). Carried into every verdict the gate emits.
+CONDITIONING PRIORS: season-level snapshots (shooter_quality_v1/
+scorer_quality_v1 + scheme atlas), spec Section 3a caveat framing.
+quality_indices_score.run() defaults to QUALIFY_SEASON="2024-25" -- fit on
+2024-25 box data, so scoring vs 2024-25 games is IN-SAMPLE; for 2025-26 the
+snapshot predates the season (frozen-prior caveat only). Driver reports
+PER-SEASON verdicts, labeling 2024-25 as leaking, never pooled.
 
-  H_A hot_night : team's top (shooter_quality_v1, scorer_quality_v1) player among
-                  that game's box lineup -> p0, ACTIVE only on hot-night games
-                  (team eFG% that game exceeds its season-to-date mean by more
-                  than the 60th-pct team-game eFG delta, threshold from TRAIN
-                  fold only); off-condition states get neutral p0=0.5.
-  H_B scheme_fit: offense top-scorer's `by_scheme` TS% vs the defending team's
-                  dominant coverage scheme -> p0, ACTIVE only on top/bottom
-                  TRAIN-fold tercile of scheme-fit; else neutral p0=0.5.
+  H_A hot_night : team's top quality player -> p0, ACTIVE only on hot-night
+                  games (team eFG% > season-to-date mean by 60th-pct TRAIN
+                  delta); off-condition states get neutral p0=0.5.
+  H_B scheme_fit: offense top-scorer's `by_scheme` TS% vs defense's dominant
+                  coverage -> p0, ACTIVE only top/bottom TRAIN tercile; else 0.5.
 
-INVARIANTS: never edit src/ or kernel/; <=300 LOC; ASCII-only; numpy/pandas + stdlib.
+INVARIANTS: never edit src/ or kernel/; <=300 LOC; ASCII-only; numpy/pandas.
 """
 from __future__ import annotations
 
@@ -37,13 +36,12 @@ from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
-
+from domains.basketball_nba.espn_nba_bridge import OUT_PATH as BRIDGE_PATH
 from domains.basketball_nba.quality_indices_score import run as run_quality_indices
 
 _NEUTRAL_P0 = 0.5
 
 _REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
-LINESCORES = os.path.join(_REPO, "data", "domains", "basketball_nba", "linescores.parquet")
 BOXSCORES = os.path.join(_REPO, "data", "domains", "basketball_nba", "player_boxscores.parquet")
 VS_SCHEME = os.path.join(_REPO, "data", "cache", "atlas_player_vs_scheme_splits.parquet")
 TEAM_DEF_SCHEME = os.path.join(_REPO, "data", "cache", "atlas_team_defensive_scheme.parquet")
@@ -51,10 +49,9 @@ OUT_DIR = os.path.join(_REPO, "data", "domains", "basketball_nba")
 
 _REG_SEC = 2880.0
 QSEC = {1: 2160.0, 2: 1440.0, 3: 720.0}
-_QCOLS = ["home_q1", "home_q2", "home_q3", "home_q4",
-          "away_q1", "away_q2", "away_q3", "away_q4"]
 
-# ESPN -> NBA-stats tricode normalization (only the divergent ones need mapping).
+# ESPN -> NBA-stats tricode normalization (only the divergent ones need mapping;
+# kept here too since tests exercise it directly against the bridge's convention).
 _ESPN_TO_NBA = {"GS": "GSW", "NO": "NOP", "NY": "NYK", "SA": "SAS",
                 "UTAH": "UTA", "WSH": "WAS"}
 
@@ -70,39 +67,19 @@ def p_live_from_margin(score_diff: float, frac_elapsed: float) -> float:
     return float(1.0 / (1.0 + np.exp(-slope * float(score_diff))))
 
 
-def load_linescores(path: str = LINESCORES) -> pd.DataFrame:
-    df = pd.read_parquet(path).dropna(subset=_QCOLS)
-    return df.sort_values("date").reset_index(drop=True)
-
-
 def load_boxscores(path: str = BOXSCORES) -> pd.DataFrame:
     return pd.read_parquet(path)
 
 
-def bridge_games(lines: pd.DataFrame, box: pd.DataFrame) -> pd.DataFrame:
-    """Join linescores (ESPN event_id) to player_boxscores (NBA game_id) on
-    (home_tricode, away_tricode, date), normalizing divergent abbreviations.
-    No on-disk id bridge exists for these two corpora; this is a deterministic,
-    outcome-free join key, not a fitted model. One row per matched game."""
-    lines = lines.copy()
-    lines["home_nba"] = lines["home_abbr"].map(_norm_abbr)
-    lines["away_nba"] = lines["away_abbr"].map(_norm_abbr)
-    lines["_date"] = pd.to_datetime(lines["date"]).dt.normalize()
-
-    home_box = (box[box["is_home"] == True]  # noqa: E712
-                [["game_id", "date", "team"]].drop_duplicates())
-    away_box = (box[box["is_home"] == False]  # noqa: E712
-                [["game_id", "date", "team"]].drop_duplicates())
-    home_box = home_box.rename(columns={"team": "home_nba"})
-    away_box = away_box.rename(columns={"team": "away_nba"})
-    home_box["_date"] = pd.to_datetime(home_box["date"]).dt.normalize()
-    away_box["_date"] = pd.to_datetime(away_box["date"]).dt.normalize()
-    box_games = home_box.merge(away_box[["game_id", "away_nba"]], on="game_id")
-
-    merged = lines.merge(
-        box_games[["game_id", "home_nba", "away_nba", "_date"]],
-        on=["home_nba", "away_nba", "_date"], how="inner")
-    return merged.drop_duplicates(subset=["event_id"]).reset_index(drop=True)
+def load_bridge(path: str = BRIDGE_PATH, season: Optional[str] = None) -> pd.DataFrame:
+    """Load the persisted wave-34 ESPN<->NBA game bridge (1299 exact-match
+    games across 2024-25 + 2025-26), optionally restricted to one season.
+    Replaces the wave-33 inline bridge_games() join -- same join key/logic,
+    now built once and shared via domains.basketball_nba.espn_nba_bridge."""
+    df = pd.read_parquet(path).sort_values("date").reset_index(drop=True)
+    if season is not None:
+        df = df[df["season"] == season].reset_index(drop=True)
+    return df
 
 
 # ------------------------------------------------------------------- H_A prior
@@ -174,6 +151,29 @@ def write(verdict_dict: dict, name: str, out_dir: str = OUT_DIR) -> str:
     with open(path, "w", encoding="ascii") as f:
         json.dump(verdict_dict, f, indent=2, sort_keys=True)
     return path
+
+
+def export_states_parquet(states: List[dict], layer: str, season: str,
+                          out_dir: str = OUT_DIR) -> str:
+    """Per-row harness-schema export (one row per state, layer/season tagged);
+    audit/reuse artifact only, not part of the verdict itself."""
+    df = pd.DataFrame(states)
+    df["layer"], df["season"] = layer, season
+    path = os.path.join(out_dir, f"ingame_hypothesis_{layer}_{season}_rows.parquet")
+    df.to_parquet(path, index=False)
+    return path
+
+
+def load_prior_run(layer: str, out_dir: str = OUT_DIR) -> Optional[dict]:
+    """Read the frozen wave-33 v1 verdict (74 games) before the v2 re-run overwrites it."""
+    path = os.path.join(out_dir, f"ingame_hypothesis_{layer}.json")
+    if not os.path.exists(path):
+        return None
+    with open(path, "r", encoding="ascii") as f:
+        p = json.load(f)
+    return {"corpus": "wave-33, 74 games (2025-26 only, hardcoded single-file bridge)",
+            "verdict": p.get("verdict"), "metrics": p.get("metrics"),
+            "planted_null": p.get("planted_null")}
 
 
 # ------------------------------------------------------------- state building
