@@ -8,23 +8,20 @@ Content-Type=application/x-www-form-urlencoded; charset=UTF-8,
 Referer=https://www.koreabaseball.com/Schedule/Schedule.aspx. Body
 form-urlencoded (NOT JSON -- JSON returns 401): leId=1, srIdList=0,9,6
 (regular season), seasonId=YYYY, gameMonth=MM, teamId= (empty -- REQUIRED;
-omitting it 500s with body text "parameter missing. teamId" -- verified live
-2026-07-04, the one correction this module adds to the inherited recipe).
-The Referer is LOAD-BEARING: without it the endpoint returns HTTP 200 with an
-HTML error page (NOT a 4xx) -- CHECK THE BODY PARSES AS JSON, never trust the
-status code alone; a non-JSON 200 degrades to zero rows, never a crash.
+omitting it 500s with body text "parameter missing. teamId"). The Referer is
+LOAD-BEARING: without it the endpoint returns HTTP 200 with an HTML error
+page (NOT a 4xx) -- CHECK THE BODY PARSES AS JSON, never trust the status
+code alone; a non-JSON 200 degrades to zero rows, never a crash.
 
-WHOLE-SEASON SHORTCUT (verified live 2026-07-04): gameMonth='' (empty
-string) returns the ENTIRE season in ONE request (2025-05 alone: 147 games
-via gameMonth='05'; gameMonth='' for the same season: 804 play-cells
-spanning day-labels 03.22-10.04, i.e. the whole season in one shot). Tried
+WHOLE-SEASON SHORTCUT (verified live 2026-07-04): gameMonth='' returns the
+ENTIRE season in ONE request (2025-05 alone: 147 games via gameMonth='05';
+gameMonth='' for the same season: 804 play-cells spanning 03.22-10.04). Tried
 FIRST by default; months=SEASON_MONTHS forces the per-month loop.
 
 Response shape: JSON {"rows": [...]}, each a row-group {"row": [cell, ...]}.
 A multi-game day has ONE cell with Class=="day" shared by that day's first
 row-group; subsequent row-groups OMIT the day cell (RowSpan-merge) -- date
-CARRIES FORWARD, never re-derived via RowSpan arithmetic. The game lives in
-the cell with Class=="play":
+CARRIES FORWARD, never re-derived. The game lives in the Class=="play" cell:
   "<span>AWAY</span><em><span class=X>N</span><span>vs</span>
    <span class=Y>M</span></em><span>HOME</span>"
 X/Y in {"win","lose","same"} ("same" on both = a tie). AWAY is the FIRST
@@ -33,16 +30,18 @@ home park, confirms KT=away/Doosan=home).
 
 POSTPONED/UNPLAYED (excluded, never fabricated): a "play" cell for an
 incomplete game has NO score spans -- "<span>AWAY</span><em><span>vs</span>
-</em><span>HOME</span>" -- skipped entirely (84 of 804 2025-season play-cells
-were this shape at scrape time).
+</em><span>HOME</span>" -- skipped entirely (84/804 2025-season play-cells).
 
 TIES: KBO games can end level (extra-inning curfew). Both score spans
-class=="same" -> home_win=None, EXCLUDED from win-prob training but COUNTED
-and reported, never silently dropped from the parquet.
+class=="same" -> home_win=None, EXCLUDED from win-prob training but COUNTED,
+never silently dropped. EXCEPTION -- an in-progress/not-final game renders
+the SAME same/same markup but with both scores exactly 0 (found live
+2026-07-04: 5/5 today's games, still playing; 0 real 0-0 ties exist across
+the 3255-row historical parquet) -- 0-0/same/same is "not final yet", so it
+is skipped, not fabricated as a tie. A real tie (e.g. 3-3) is unaffected.
 
-Depth floor: seasonId=2001 returns real games (532, 2026-07-04 probe);
-seasonId=2000 returns a valid empty {"rows": []} (not an error) -- this
-module backfills 2022..2026 per lane scope ("do not chase older years").
+Depth floor: seasonId=2001 returns real games; seasonId=2000 returns a valid
+empty {"rows": []} (not an error) -- backfills 2022..2026 per lane scope.
 
 Polite pacing ~1.05s between requests, plain urllib only (never observed to
 bot-wall). Network isolation: http_get is INJECTABLE; no network at import.
@@ -177,6 +176,8 @@ def _parse_schedule(body: str, season: str) -> List[dict]:
                 away_score = float(m.group("as_"))
                 home_score = float(m.group("hs"))
                 tied = (m.group("xc") == "same") and (m.group("yc") == "same")
+                if tied and away_score == 0.0 and home_score == 0.0:
+                    continue  # in-progress/not-yet-final placeholder, not a real 0-0 tie
                 out.append({
                     "date": f"{season}-{cur_month:02d}-{cur_day:02d}",
                     "season": str(season),
