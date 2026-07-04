@@ -169,7 +169,20 @@ def _sign_holds_str(per_fold: list[dict], key: str) -> tuple[int, int]:
     return holds, n
 
 
-def run_gate() -> CompositionGateResult:
+def _persist_rows(tables: list[pd.DataFrame], cutoffs: list[str], path: str) -> None:
+    """Optional diagnostic export (rho-shaped rows, NOT reprocess_harness
+    binary p_variant/p_base/outcome shape). Off unless --persist-rows given."""
+    out = Path(path)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    cols = ["naive_pctile", "shooter_pctile", "realized_ts_pct"]
+    with open(out, "w", encoding="ascii") as f:
+        for cutoff, t in zip(cutoffs, tables):
+            for pid, row in t[cols].iterrows():
+                f.write(json.dumps({"cutoff": cutoff, "player_id": str(pid),
+                                     **row.astype(float).to_dict()}) + "\n")
+
+
+def run_gate(persist_rows_path: str | None = None) -> CompositionGateResult:
     box = load_boxscores()
     tables, ok_cutoffs = [], []
     for cutoff in CUTOFFS_2024_25:
@@ -177,6 +190,8 @@ def run_gate() -> CompositionGateResult:
         if r is not None:
             tables.append(r["table"])
             ok_cutoffs.append(cutoff)
+    if persist_rows_path is not None and tables:
+        _persist_rows(tables, ok_cutoffs, persist_rows_path)
 
     if len(tables) < 2:
         return CompositionGateResult(
@@ -287,7 +302,12 @@ def write_verdict(g: CompositionGateResult, path: str = VERDICT_PATH) -> dict:
 
 
 if __name__ == "__main__":
-    g = run_gate()
+    import argparse
+    _parser = argparse.ArgumentParser(description="Composition blend gate")
+    _parser.add_argument("--persist-rows", default=None, help="optional per-row JSONL export path")
+    _args = _parser.parse_args()
+
+    g = run_gate(persist_rows_path=_args.persist_rows)
     print(f"VERDICT: {g.verdict} -- {g.reason}")
     print(f"ok_cutoffs={g.ok_cutoffs}")
     print(f"sign_holds overall={g.sign_holds_overall} low_sample={g.sign_holds_low_sample}")
