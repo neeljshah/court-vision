@@ -23,6 +23,13 @@ see post_restart_checks.py for the check implementations + data tables):
       (KalshiProvider.fetch, injectable) -- degrades to PENDING (never FAIL)
       on a network/unavailable error, since that is a feed hiccup, not a
       restart-activation failure.
+  (h) LANE 5 (waves 11-13) addition: m37_ingame_enrichment's own data-flow
+      surface (fotmob_live/, gumbo_live/, book_depth/ artifact-mtime checks,
+      PENDING-when-no-live-game semantics) -- see post_restart_enrichment_checks.py.
+  (i) LANE 5 addition: a fresh in-play tick for a live game carries the
+      enrichment tick fields (xg_*/spread_bp/book_thinness/stale_quote/espn_wp;
+      None values fine) -- PENDING without a live game.
+  (j) LANE 5 addition: espn_event_id present (non-null) in a fresh mlb capture tick.
 
 Every external effect (HTTP probe, kalshi fetch, live-game lookup, wall clock)
 is INJECTABLE so tests never hit a real socket, kill a PID, or restart
@@ -46,6 +53,11 @@ from typing import Any, Callable, Dict, List, Optional
 from scripts.platformkit.autonomy.post_restart_capture_checks import (
     check_capture_dirs,
     check_shadow_field,
+)
+from scripts.platformkit.autonomy.post_restart_enrichment_checks import (
+    check_enrichment_tick_fields,
+    check_espn_event_id_mlb,
+    check_m37_artifact_dirs,
 )
 from scripts.platformkit.autonomy.post_restart_checks import (
     FAIL,
@@ -106,6 +118,10 @@ def run_all(*, now: Optional[float] = None,
     rows.extend(check_shadow_field(ts, live_game_fn=live_game_fn))
     rows.append(check_freshness_sla())
     rows.extend(check_kalshi_pregame(fetch_fn=kalshi_fetch_fn))
+    # LANE 5 (waves 11-13) addition: m37_ingame_enrichment data-flow surface.
+    rows.extend(check_m37_artifact_dirs(ts, live_game_fn=live_game_fn))
+    rows.append(check_enrichment_tick_fields(ts, live_game_fn=live_game_fn, sport="mlb"))
+    rows.append(check_espn_event_id_mlb(ts, live_game_fn=live_game_fn))
 
     n_pass = sum(1 for r in rows if r["status"] == PASS)
     n_fail = sum(1 for r in rows if r["status"] == FAIL)

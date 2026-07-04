@@ -37,6 +37,10 @@ NEW_PROCS: Dict[str, Dict[str, Any]] = {
         "heartbeat": _HB / "m35_ingame_tail_multi.txt", "cadence_sec": 21600.0},
     "m36_ingame_grading_multi": {
         "heartbeat": _HB / "m36_ingame_grading_multi.txt", "cadence_sec": 900.0},
+    # LANE 5 waves 11-13 addition: m37_ingame_enrichment (fotmob/gumbo/book-depth
+    # pollers), 30s cadence (ingame_enrichment_runner.DEFAULT_INTERVAL_SEC).
+    "m37_ingame_enrichment": {
+        "heartbeat": _HB / "m37_ingame_enrichment.txt", "cadence_sec": 30.0},
 }
 
 # The 3 serving ports (m1_api_paper :8099, m1_api_boards :8098, m1_ui :3000) +
