@@ -91,6 +91,18 @@ _MLB_CONTEXT_AUTOGATE_HB = "data/cache/daemon_heartbeats/m32_mlb_context_autogat
 _INGAME_TAIL_MULTI_HB = "data/cache/daemon_heartbeats/m35_ingame_tail_multi.txt"
 _INGAME_GRADING_MULTI_HB = "data/cache/daemon_heartbeats/m36_ingame_grading_multi.txt"
 
+# M37 -- LANE 2 combined wave-10 enrichment tick: fotmob (soccer live, ~30s
+# runner cadence, fotmob's own poll_once paces its per-match GETs internally)
+# + gumbo (mlb live GUMBO ticks, id-bridged via game_pk_bridge_live) + book-
+# depth (live in-play kalshi/polymarket snapshots), each source try/except-
+# isolated so one raising source never sinks the tick or blocks a sibling.
+# CAPTURE/MEASUREMENT ONLY -- touches no bet/decision path, flips no flag,
+# writes no data/registry/; composes ONE small ops summary doc
+# (data/frontend/ops/ingame_enrichment.json). NOT YET RUNNING -- registered
+# here but requires a supervisor restart to take effect (restart pending).
+# fresh_sec = 2x the 30s cadence + margin.
+_INGAME_ENRICHMENT_HB = "data/cache/daemon_heartbeats/m37_ingame_enrichment.txt"
+
 # M14 -- the brain-rebuild cadence (brain_rebuild_runner loop-wrapper): rebuilds the
 # organized, person-free Obsidian brain (vault/_Organized) from the deep
 # _vault_legacy_archive source on a slow (default 6h) cadence so the knowledge graph
@@ -746,6 +758,18 @@ def base_specs() -> List[ProcSpec]:
             argv=["--interval", "900"],
             readiness=ReadinessSpec(
                 kind=HEARTBEAT, heartbeat_path=_INGAME_GRADING_MULTI_HB, fresh_sec=2000.0),
+            restart_policy=_FOREVER,
+        ),
+        # M37 -- LANE 2 combined wave-10 enrichment tick (fotmob + gumbo +
+        # book-depth). See _INGAME_ENRICHMENT_HB comment above for the full
+        # spec. Independent branch (no depends_on) so a dead tick is itself
+        # ONE red status entry. NOT YET RUNNING -- restart pending.
+        ProcSpec(
+            name="m37_ingame_enrichment", kind="py",
+            module="scripts.platformkit.ingame.ingame_enrichment_runner",
+            argv=["--interval", "30"],
+            readiness=ReadinessSpec(
+                kind=HEARTBEAT, heartbeat_path=_INGAME_ENRICHMENT_HB, fresh_sec=90.0),
             restart_policy=_FOREVER,
         ),
     ]

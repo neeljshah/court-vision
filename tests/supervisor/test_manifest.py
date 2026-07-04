@@ -106,6 +106,9 @@ def test_default_manifest_is_acyclic_and_ordered():
         # m36 -- multi-sport in-game grading (soccer_intl/tennis/wnba outcome-
         # gated verdict + cross-corpus segment trust); measurement only, no $
         "m36_ingame_grading_multi",
+        # m37 -- LANE 2 combined wave-10 enrichment tick (fotmob + gumbo +
+        # book-depth, per-source failure-isolated); capture/measurement only, no $
+        "m37_ingame_enrichment",
     }
     _assert_topo(specs)
     # producer precedes the Auto-API which precedes the boards API which precedes UI.
