@@ -125,6 +125,107 @@ def test_scan_all_never_raises_on_bad_sport(tmp_path):
     assert results["tennis"]["edge_claimed"] is False
 
 
+def test_wnba_npb_kbo_in_sports_list():
+    for sport in ("wnba", "npb", "kbo"):
+        assert sport in tsm.SPORTS
+
+
+def test_wnba_has_no_capture_reads_insufficient_n(tmp_path):
+    gd = tmp_path / "grade"
+    gd.mkdir()
+    res = tsm.scan_sport("wnba", grade_dir=gd, iters=20)
+    assert res["n_games_graded"] == 0
+    assert res["sport_verdict"] == "INSUFFICIENT_N"
+    assert res["edge_claimed"] is False
+
+
+def test_npb_has_no_capture_reads_insufficient_n(tmp_path):
+    gd = tmp_path / "grade"
+    gd.mkdir()
+    res = tsm.scan_sport("npb", grade_dir=gd, iters=20)
+    assert res["n_games_graded"] == 0
+    assert res["sport_verdict"] == "INSUFFICIENT_N"
+    assert res["edge_claimed"] is False
+
+
+def test_kbo_has_no_capture_reads_insufficient_n(tmp_path):
+    gd = tmp_path / "grade"
+    gd.mkdir()
+    res = tsm.scan_sport("kbo", grade_dir=gd, iters=20)
+    assert res["n_games_graded"] == 0
+    assert res["sport_verdict"] == "INSUFFICIENT_N"
+    assert res["edge_claimed"] is False
+
+
+def test_wnba_lookup_wired_to_resolver(monkeypatch):
+    calls = []
+
+    class _FakeResolver:
+        def home_win(self, ticker):
+            calls.append(ticker)
+            return 1
+
+    monkeypatch.setattr(
+        "scripts.platformkit.ingame.wnba_outcome_resolver.WnbaOutcomeResolver",
+        lambda *a, **k: _FakeResolver())
+    lookup = tsm._wnba_lookup()
+    assert lookup("KXWNBAGAME-26JUL05DALTOR-TOR") == 1
+    assert calls == ["KXWNBAGAME-26JUL05DALTOR-TOR"]
+
+
+def test_npb_lookup_wired_to_resolver(monkeypatch):
+    calls = []
+
+    class _FakeResolver:
+        def home_win(self, ticker):
+            calls.append(ticker)
+            return 0
+
+    monkeypatch.setattr(
+        "scripts.platformkit.ingame.npb_outcome_resolver.NpbOutcomeResolver",
+        lambda *a, **k: _FakeResolver())
+    lookup = tsm._npb_lookup()
+    assert lookup("KXNPBGAME-26JUL050500YOKYAK-YOK") == 0
+    assert calls == ["KXNPBGAME-26JUL050500YOKYAK-YOK"]
+
+
+def test_kbo_lookup_wired_to_resolver(monkeypatch):
+    calls = []
+
+    class _FakeResolver:
+        def home_win(self, ticker):
+            calls.append(ticker)
+            return 1
+
+    monkeypatch.setattr(
+        "scripts.platformkit.ingame.kbo_outcome_resolver.KboOutcomeResolver",
+        lambda *a, **k: _FakeResolver())
+    lookup = tsm._kbo_lookup()
+    assert lookup("KXKBOGAME-26JUL050500NCDKIA-NCD") == 1
+    assert calls == ["KXKBOGAME-26JUL050500NCDKIA-NCD"]
+
+
+def test_wnba_scan_graded_count_via_wired_resolver(monkeypatch, tmp_path):
+    gd = tmp_path / "grade" / "wnba"
+    for i in range(25):
+        _write_game(gd, "wnba", "KXWNBAGAME-26JUL05AAA%03d" % i,
+                   [(0.15, 0.15, "2026-07-05T00:00:00Z")] * 3)
+
+    class _FakeResolver:
+        def home_win(self, ticker):
+            return 1
+
+    monkeypatch.setattr(
+        "scripts.platformkit.ingame.wnba_outcome_resolver.WnbaOutcomeResolver",
+        lambda *a, **k: _FakeResolver())
+
+    res = tsm.scan_sport("wnba", grade_dir=tmp_path / "grade",
+                         outcome_lookup=tsm._wnba_lookup(), iters=200)
+    assert res["n_games_resolved"] == 25
+    assert res["n_games_graded"] == 25
+    assert res["sport_verdict"] == "SCANNED"
+
+
 def test_write_artifacts_writes_one_file_per_sport(tmp_path, monkeypatch):
     monkeypatch.setattr(tsm, "_REPO_ROOT", tmp_path)
     results = {

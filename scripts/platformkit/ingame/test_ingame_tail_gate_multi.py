@@ -87,3 +87,77 @@ def test_run_gate_all_never_raises(monkeypatch):
     # the default scan_fn lambda, so a raising scan_sport must not propagate.
     headlines = gm.run_gate_all(sports=["tennis"])
     assert headlines[0]["verdict"] == "PENDING_FORWARD"
+
+
+# --------------------------------------------------------------------------- #
+# LANE 5: per-sport pre-registration stamps (wnba/npb/kbo)                    #
+# --------------------------------------------------------------------------- #
+def test_existing_sports_keep_original_stamp():
+    """tennis/soccer_intl/soccer must keep the ORIGINAL global stamp untouched."""
+    for sport in ("tennis", "soccer_intl", "soccer"):
+        assert gm.pre_registered_at_for(sport) == "2026-07-04T00:00:00Z"
+    assert gm.PRE_REGISTERED_AT == "2026-07-04T00:00:00Z"
+
+
+def test_new_sports_get_fresh_later_stamp():
+    """wnba/npb/kbo must be pre-registered at a FRESH stamp, strictly later
+    than the original sports' stamp (before any of their capture exists)."""
+    for sport in ("wnba", "npb", "kbo"):
+        stamp = gm.pre_registered_at_for(sport)
+        assert stamp == "2026-07-04T12:00:00Z"
+        assert stamp > gm.pre_registered_at_for("tennis")
+
+
+def test_unknown_sport_falls_back_to_default_stamp():
+    assert gm.pre_registered_at_for("some_future_sport") == gm.PRE_REGISTERED_AT
+
+
+def test_new_sport_gate_uses_its_own_stamp_as_forward_filter(tmp_path):
+    """run_gate_for_sport(wnba) with no explicit pre_registered_at must call
+    scan_fn(since=<wnba's own stamp>), not the tennis/soccer stamp."""
+    calls = []
+
+    def scan_fn(since=None):
+        calls.append(since)
+        return {"bands": {}, "n_games_resolved": 0, "n_games_graded": 0}
+
+    out = tmp_path / "wnba_verdict.json"
+    headline = gm.run_gate_for_sport("wnba", scan_fn=scan_fn, verdict_out=out)
+    assert headline["verdict"] == "PENDING_FORWARD"
+    assert headline["n"] == 0
+    doc = json.loads(out.read_text(encoding="utf-8"))
+    assert doc["pre_registered_at"] == "2026-07-04T12:00:00Z"
+    assert None in calls and "2026-07-04T12:00:00Z" in calls
+    assert "2026-07-04T00:00:00Z" not in calls
+
+
+def test_new_sports_start_pending_forward_n_zero(tmp_path):
+    for sport in ("wnba", "npb", "kbo"):
+        def scan_fn(since=None):
+            return {"bands": {}, "n_games_resolved": 0, "n_games_graded": 0}
+        out = tmp_path / ("%s_verdict.json" % sport)
+        headline = gm.run_gate_for_sport(sport, scan_fn=scan_fn, verdict_out=out)
+        assert headline["verdict"] == "PENDING_FORWARD"
+        assert headline["n"] == 0
+        doc = json.loads(out.read_text(encoding="utf-8"))
+        assert doc["sport"] == sport
+        assert doc["pre_registered_at"] == "2026-07-04T12:00:00Z"
+        assert doc["edge_claimed"] is False
+
+
+def test_existing_sport_output_unchanged_when_stamp_not_passed_explicitly(tmp_path):
+    """Regression: calling run_gate_for_sport for an EXISTING sport without an
+    explicit pre_registered_at must still resolve to the original stamp (the
+    refactor's default-lookup path must not silently change existing sports'
+    forward-filter behavior)."""
+    calls = []
+
+    def scan_fn(since=None):
+        calls.append(since)
+        return {"bands": {}, "n_games_resolved": 0, "n_games_graded": 0}
+
+    out = tmp_path / "tennis_verdict.json"
+    gm.run_gate_for_sport("tennis", scan_fn=scan_fn, verdict_out=out)
+    assert "2026-07-04T00:00:00Z" in calls
+    doc = json.loads(out.read_text(encoding="utf-8"))
+    assert doc["pre_registered_at"] == "2026-07-04T00:00:00Z"

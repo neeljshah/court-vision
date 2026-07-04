@@ -1,7 +1,7 @@
 """scripts.platformkit.ingame.ingame_tail_scan_multi -- LANE C: multi-sport price-band
-(tail) miscalibration scan (tennis + soccer_intl / World Cup), generalizing
-ingame_tail_scan.py (MLB-only) to run per-sport over whatever outcome-graded
-in-play ticks exist on disk right now.
+(tail) miscalibration scan (tennis + soccer_intl / World Cup + wnba + npb + kbo),
+generalizing ingame_tail_scan.py (MLB-only) to run per-sport over whatever
+outcome-graded in-play ticks exist on disk right now.
 
 WHY A SEPARATE MODULE (not a param on ingame_tail_scan.scan)
 -------------------------------------------------------------
@@ -14,7 +14,11 @@ is not a binary home-win label so it is excluded, never guessed); tennis has NO
 resolver and (as of this scan) NO captured grade files at all -- inplay_capture_
 loop.DEFAULT_SPORTS is currently ["mlb", "soccer_intl"] only, so tennis capture
 has not started. That is reported honestly as INSUFFICIENT_N with the real n=0,
-not stretched or faked.
+not stretched or faked. wnba/npb/kbo (2026-07-04 LANE 5 addition) dispatch to
+WnbaOutcomeResolver / NpbOutcomeResolver / KboOutcomeResolver (same
+home_win(ticker)->{0,1}|None contract) -- their in-play capture has not started
+as of this addition either, so they too read INSUFFICIENT_N n=0 honestly until
+capture begins.
 
 HONESTY: calibration measurement only; edge_claimed is ALWAYS False; a sport
 with fewer than MIN_GAMES_SPORT outcome-graded games gets verdict
@@ -48,7 +52,9 @@ _REPO_ROOT = Path(__file__).resolve().parents[3]
 # no captured grade dir yet either (only "mlb" and "soccer_intl" exist on disk at
 # time of writing) but is listed so a future capture start is picked up with zero
 # code change -- an empty/missing dir just reads INSUFFICIENT_N n=0, honestly.
-SPORTS: List[str] = ["tennis", "soccer_intl", "soccer"]
+# wnba/npb/kbo added 2026-07-04 (LANE 5 pre-registration) -- capture has not
+# started for them yet either, so they read INSUFFICIENT_N n=0 until it does.
+SPORTS: List[str] = ["tennis", "soccer_intl", "soccer", "wnba", "npb", "kbo"]
 
 MIN_GAMES_SPORT: int = 20  # per the brief: <20 graded games -> INSUFFICIENT_N
 
@@ -104,10 +110,53 @@ def _tennis_lookup() -> OutcomeLookup:
     return res.home_win
 
 
+def _wnba_lookup() -> OutcomeLookup:
+    """wnba_outcome_resolver.WnbaOutcomeResolver.home_win keyed off the Kalshi
+    KXWNBAGAME ticker (see that module's docstring for the ticker-shape
+    derivation). Added 2026-07-04 (LANE 5 pre-registration); WNBA in-play
+    capture has not started yet so this mostly reads INSUFFICIENT_N n=0."""
+    try:
+        from scripts.platformkit.ingame.wnba_outcome_resolver import WnbaOutcomeResolver
+        res = WnbaOutcomeResolver()
+    except Exception as exc:  # noqa: BLE001 -- resolver unavailable -> every game unresolved
+        logger.debug("ingame_tail_scan_multi wnba resolver unavailable: %s", exc)
+        return lambda stem: None
+    return res.home_win
+
+
+def _npb_lookup() -> OutcomeLookup:
+    """npb_outcome_resolver.NpbOutcomeResolver.home_win keyed off the Kalshi
+    KXNPBGAME ticker. Added 2026-07-04 (LANE 5 pre-registration); NPB in-play
+    capture has not started yet so this mostly reads INSUFFICIENT_N n=0."""
+    try:
+        from scripts.platformkit.ingame.npb_outcome_resolver import NpbOutcomeResolver
+        res = NpbOutcomeResolver()
+    except Exception as exc:  # noqa: BLE001 -- resolver unavailable -> every game unresolved
+        logger.debug("ingame_tail_scan_multi npb resolver unavailable: %s", exc)
+        return lambda stem: None
+    return res.home_win
+
+
+def _kbo_lookup() -> OutcomeLookup:
+    """kbo_outcome_resolver.KboOutcomeResolver.home_win keyed off the Kalshi
+    KXKBOGAME ticker. Added 2026-07-04 (LANE 5 pre-registration); KBO in-play
+    capture has not started yet so this mostly reads INSUFFICIENT_N n=0."""
+    try:
+        from scripts.platformkit.ingame.kbo_outcome_resolver import KboOutcomeResolver
+        res = KboOutcomeResolver()
+    except Exception as exc:  # noqa: BLE001 -- resolver unavailable -> every game unresolved
+        logger.debug("ingame_tail_scan_multi kbo resolver unavailable: %s", exc)
+        return lambda stem: None
+    return res.home_win
+
+
 _LOOKUP_BUILDERS: Dict[str, Callable[[], OutcomeLookup]] = {
     "soccer_intl": _soccer_lookup,
     "soccer": _soccer_lookup,
     "tennis": _tennis_lookup,
+    "wnba": _wnba_lookup,
+    "npb": _npb_lookup,
+    "kbo": _kbo_lookup,
 }
 
 
