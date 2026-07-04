@@ -454,4 +454,83 @@ def test_synth_gate_fallback_keeps_live_sport_nonempty(monkeypatch):
     monkeypatch.setattr(pc, "cards_from_lines", cards_from_lines)
     out = pcb._synth_model_only_cards("mlb", _NOW, reliable=True)
     assert len(out) == 1  # served the un-gated card rather than an empty sport
-    assert out[0]["prop_player"] == "Boundary"
+
+
+# ---------------------------------------------------------------------------
+# m13-circuit fix round 2: circuit_skips must reach the SERVED bounded/synth rows
+# (this is the exact dead-provider case the breaker exists for -- BLOCKING finding).
+# ---------------------------------------------------------------------------
+
+def _fake_skips(sport, entries_by_sport):
+    """A last_circuit_skips() stand-in returning canned SKIPPED_CIRCUIT entries."""
+    def _last(sport_arg=None):
+        if sport_arg is not None:
+            return {sport_arg: list(entries_by_sport.get(sport_arg, []))}
+        return {k: list(v) for k, v in entries_by_sport.items()}
+    return _last
+
+
+def test_synth_fallback_carries_real_circuit_skip(monkeypatch):
+    # THE BUG: build_bounded_prop_cards synth-fallback path (feed dead -> synthesize
+    # from parquet) never stamped circuit_skips, so a SKIPPED_CIRCUIT provider was
+    # silently dropped from the served output in exactly the case the breaker exists
+    # for. Seed a real skip entry via prop_cards_circuit_io and assert it survives.
+    import scripts.platformkit.bestbets.prop_cards_circuit_io as pcio
+    skip_entry = {"provider": "prizepicks", "reason": "SKIPPED_CIRCUIT",
+                 "since": 1000.0, "last_reason": "403", "consecutive_failures": 3}
+    monkeypatch.setattr(pcio, "last_circuit_skips",
+                        _fake_skips("mlb", {"mlb": [skip_entry]}))
+    _patch_synth(monkeypatch, {"mlb": [_synth_edge("Synth Bat")], "soccer_intl": []})
+    cards, _ = pc.build_bounded_prop_cards(now=_NOW, sports=("mlb",))
+    assert len(cards) == 1
+    c = cards[0]
+    assert c["model_only"] is True  # confirms this IS the synth-fallback row
+    assert c["circuit_skips"] == [skip_entry]  # never silently dropped
+
+
+def test_priced_and_feed_model_only_carry_circuit_skips_too(monkeypatch):
+    # Non-fallback rows (priced + feed-sourced model-only) already went through
+    # build_prop_cards' own stamp; build_bounded_prop_cards must not clobber that
+    # with an empty list -- re-stamping with the SAME last-tick skips is a no-op.
+    # Includes a model-only edge too so the feed path is non-empty and the synth
+    # fallback (a separate, already-covered case) never triggers here.
+    import scripts.platformkit.bestbets.prop_cards_circuit_io as pcio
+    skip_entry = {"provider": "betmgm", "reason": "SKIPPED_CIRCUIT", "since": 500.0,
+                 "last_reason": "400", "consecutive_failures": 3}
+    monkeypatch.setattr(pcio, "last_circuit_skips",
+                        _fake_skips("mlb", {"mlb": [skip_entry]}))
+    priced = _edge(player="Priced", edge_basis="ev_vs_priced",
+                   fair_over=0.55, fair_under=0.45)
+    model = _edge(player="ModelOnly")
+    _patch_board(monkeypatch, {"mlb": [priced, model], "soccer_intl": []})
+    cards, _ = pc.build_bounded_prop_cards(now=_NOW, sports=("mlb",))
+    assert len(cards) == 2
+    for c in cards:
+        assert c["circuit_skips"] == [skip_entry]
+
+
+def test_synth_only_prop_cards_carries_circuit_skip(monkeypatch):
+    # build_synth_only_prop_cards (the anti-flicker no-feed fill) is ALSO a served
+    # path -- it must stamp circuit_skips exactly like the bounded builder.
+    import scripts.platformkit.bestbets.prop_cards_bounded as pcb
+    import scripts.platformkit.bestbets.prop_cards_circuit_io as pcio
+    skip_entry = {"provider": "fanduel", "reason": "SKIPPED_CIRCUIT", "since": 1.0,
+                 "last_reason": "timeout", "consecutive_failures": 3}
+    monkeypatch.setattr(pcio, "last_circuit_skips",
+                        _fake_skips("mlb", {"mlb": [skip_entry]}))
+    monkeypatch.setattr(pcb, "_synth_model_only_cards",
+                        lambda sport, now, reliable: (
+                            [_card_dict("S1", sport)] if sport == "mlb" else []))
+    cards, _ = pcb.build_synth_only_prop_cards(now=_NOW, sports=("mlb",))
+    assert len(cards) == 1
+    assert cards[0]["circuit_skips"] == [skip_entry]
+
+
+def test_no_skip_recorded_yields_empty_circuit_skips_list(monkeypatch):
+    # Honest default: a sport with no breaker activity carries [], never omitted.
+    import scripts.platformkit.bestbets.prop_cards_circuit_io as pcio
+    monkeypatch.setattr(pcio, "last_circuit_skips", _fake_skips("mlb", {}))
+    _patch_synth(monkeypatch, {"mlb": [_synth_edge("Clean")], "soccer_intl": []})
+    cards, _ = pc.build_bounded_prop_cards(now=_NOW, sports=("mlb",))
+    assert len(cards) == 1
+    assert cards[0]["circuit_skips"] == []

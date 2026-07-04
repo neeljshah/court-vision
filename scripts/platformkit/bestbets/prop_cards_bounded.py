@@ -7,10 +7,10 @@ runs ONCE per m13 cycle, cached for the fast m10 board.
 ALWAYS-FRESH RAIL: MODEL-ONLY props do NOT depend on the external feed (PrizePicks /
 Underdog). When the feed 429s, build_bounded_prop_cards FALLS BACK to model-only cards
 SYNTHESIZED from the on-disk gamelog parquet (recent players x canonical stats, same
-engine, line at the recent mean -- honest projection, never fabricated); priced props
-are a BONUS when the feed is up. build_synth_only_prop_cards + pregame_games_exist
-expose that no-feed synth as the anti-flicker fill the m13 tick uses when a transient
-empty would otherwise zero /bets.
+engine, line at the recent mean, honest projection, never fabricated); priced props are
+a BONUS when the feed is up. build_synth_only_prop_cards + pregame_games_exist expose
+that no-feed synth as the anti-flicker fill the m13 tick uses on a transient empty.
+Every served row (incl synth-fallback) is stamped with circuit_skips (never dropped).
 
 HONESTY: edge_claimed ALWAYS False; model-only carry model_only=True / no edge; priced
 carry edge_vs_market (a LABELLED prob diff, NOT $). UNITS not $. RAILS: ASCII; stdlib +
@@ -25,19 +25,17 @@ DEFAULT_MODEL_ONLY_CAP = 50
 DEFAULT_MAX_LINES_PER_SPORT = 2500
 DEFAULT_PROP_SPORTS = ("soccer_intl", "mlb")
 
-# Recent active players to synthesize model-only cards for per sport when the feed is
-# unavailable. Bounded so the no-network fallback stays FAST (inside m13 300 s).
+# Recent active players to synthesize model-only cards for per sport (bounded so the
+# no-network fallback stays FAST, inside m13 300s) when the feed is unavailable.
 SYNTH_PLAYERS_PER_SPORT = 60
 
 logger = logging.getLogger(__name__)
 
 # Calibration label -> reliability rank (higher is better). Unknown -> 0.
-_CALIB_RANK = {"proven": 3, "calibrated": 3, "marginal": 2, "weak": 1,
-               "unmeasured": 0, "": 0}
+_CALIB_RANK = {"proven": 3, "calibrated": 3, "marginal": 2, "weak": 1, "unmeasured": 0, "": 0}
 
-# Per-sport (gamelog-column -> canonical stat) used to SYNTHESIZE model-only lines
-# from the parquet when no feed line exists. Each canonical stat must be one the
-# sport engine can price; lines are set to the player's recent mean (projection).
+# Per-sport (gamelog-column -> canonical stat) to SYNTHESIZE model-only lines from the
+# parquet (line at the player's recent mean) when no feed line exists.
 _SYNTH_STATS = {
     "soccer_intl": {
         "totalShots": "Shots", "shotsOnTarget": "Shots On Target",
@@ -53,8 +51,7 @@ _SYNTH_STATS = {
 
 
 def _rank_key(card: Dict[str, Any]):
-    """Sort key for model-only cards: reliable, then calibration, then confidence
-    (reverse=True -> DESCENDING usefulness)."""
+    """Sort key: reliable, then calibration, then confidence (reverse=True -> DESC)."""
     reliable = 1 if card.get("reliable") else 0
     calib = _CALIB_RANK.get(str(card.get("calibration", "")).lower(), 0)
     try:
@@ -72,16 +69,14 @@ def _half_line(value: float) -> float:
 def _synth_line(sport, player, team, stat, line_val, as_of, source, event_id):
     """A NO-PRICE model-only PropLine. Shared so both synth paths never drift."""
     from scripts.platformkit.odds_provider.prop_base import PropLine  # noqa: PLC0415
-    return PropLine(
-        sport=sport, event_id=event_id, match=(team or ""), player=player,
-        team=team, stat=stat, line=line_val, over_price=None, under_price=None,
-        payout_type="dfs_pickem", source=source, as_of=as_of)
+    return PropLine(sport=sport, event_id=event_id, match=(team or ""), player=player,
+                    team=team, stat=stat, line=line_val, over_price=None,
+                    under_price=None, payout_type="dfs_pickem", source=source, as_of=as_of)
 
 
 def _synth_lines_for_sport(sport, as_of, n_players):
-    """NO-PRICE PropLines for recent active players x canonical stats from the sport's
-    gamelog parquet (priced as MODEL-ONLY edges; line at each player's recent mean --
-    honest projection). NO network; pure on-disk read. Never raises -> []."""
+    """NO-PRICE PropLines from the parquet (recent players x stats, line at recent mean).
+    NO network; pure on-disk read. Never raises -> []."""
     stat_map = _SYNTH_STATS.get(sport)
     if not stat_map:
         return []
@@ -128,8 +123,7 @@ def _synth_lines_for_sport(sport, as_of, n_players):
 
 
 def _recent_means(recent, stat_map, names):
-    """Per-(player, gamelog-column) recent mean for the line. Existing cols only.
-    Never raises -> {}."""
+    """Per-(player, gamelog-column) recent mean for the line; existing cols only. Never raises -> {}."""
     out: Dict[Any, float] = {}
     try:
         cols = [c for c in stat_map if c in recent.columns]
@@ -148,8 +142,8 @@ def _recent_means(recent, stat_map, names):
 
 
 def _recenter_lines(cards, lines):
-    """Re-center each line at the ENGINE projection (proj) so model-only p_over lands
-    near 0.5 (honest). New line list. Never raises -> the original lines."""
+    """Re-center each line at the ENGINE projection so p_over lands near 0.5 (honest).
+    New line list. Never raises -> the original lines."""
     try:
         proj_of = {(str(c.get("prop_player")), str(c.get("prop_stat"))): c["proj"]
                    for c in cards if c.get("proj") is not None}
@@ -168,12 +162,8 @@ def _recenter_lines(cards, lines):
 
 
 def _as_of_for(now) -> str:
-    """ET calendar-day date string for *now* (or today). Pure; never raises.
-
-    The synth lines stamp as_of with this date and the stale guard (_is_stale)
-    compares against today's ET day, so both sides agree on the ET boundary
-    (matching the paper/ + producer convention via et_day). Falls back to the UTC
-    date only if the shared et_day helper cannot import."""
+    """ET calendar-day date string for *now* (or today); pure, never raises. Keeps synth
+    as_of and the stale guard on the same ET boundary; UTC fallback if et_day missing."""
     from datetime import datetime, timezone
     try:
         if now is not None:
@@ -198,22 +188,17 @@ def _synth_model_only_cards(sport: str, now, reliable: bool):
     re-prices with the line CENTERED there so p_over is honest (~0.5). Never raises."""
     try:
         from scripts.platformkit.bestbets import prop_cards as _pc  # noqa: PLC0415
-        lines = _synth_lines_for_sport(sport, _as_of_for(now),
-                                       SYNTH_PLAYERS_PER_SPORT)
+        lines = _synth_lines_for_sport(sport, _as_of_for(now), SYNTH_PLAYERS_PER_SPORT)
         if not lines:
             return []
-        # Pass 1: harvest the engine projection (all rows, no reliability cut).
-        probe = _pc.cards_from_lines(sport, lines, now=now, reliable_only=False)
+        probe = _pc.cards_from_lines(sport, lines, now=now, reliable_only=False)  # pass 1
         centered = _recenter_lines(probe, lines)
-        # Pass 2: final cards at the centered line, with the reliability gate.
-        gated = _pc.cards_from_lines(sport, centered, now=now, reliable_only=reliable)
-        # ANTI-FLICKER: the gate can transiently zero a sport that DOES have games
-        # (model_lam jitter at the boundary). If the un-gated probe priced cards,
-        # serve those rather than emit an empty sport -> no regressive 0. Still
-        # honest: model_only / edge_claimed False; only the reliability LABEL differs.
+        gated = _pc.cards_from_lines(sport, centered, now=now, reliable_only=reliable)  # pass 2
+        # ANTI-FLICKER: gate can transiently zero a sport with real games (model_lam
+        # jitter); serve the un-gated probe instead of a regressive 0 (still honest --
+        # only the reliability LABEL differs).
         if not gated and probe:
-            return _pc.cards_from_lines(sport, centered, now=now,
-                                        reliable_only=False)
+            return _pc.cards_from_lines(sport, centered, now=now, reliable_only=False)
         return gated
     except Exception as exc:  # noqa: BLE001
         logger.debug("synth_model_only(%s) failed: %s", sport, exc)
@@ -221,8 +206,7 @@ def _synth_model_only_cards(sport: str, now, reliable: bool):
 
 
 def _rank_cap(model_only, cap_i, sport, n_more):
-    """Rank model-only cards (best first), keep top *cap_i*, record overflow in
-    *n_more*. Shared by both builders so they never drift. Returns the kept list."""
+    """Rank model-only cards (best first), keep top *cap_i*, record overflow in *n_more*."""
     model_only.sort(key=_rank_key, reverse=True)
     kept = model_only[:cap_i]
     extra = len(model_only) - len(kept)
@@ -238,11 +222,9 @@ def _cap_int(cap) -> int:
         return DEFAULT_MODEL_ONLY_CAP
 
 
-def pregame_games_exist(now: Optional[float] = None,
-                        sports: Optional[tuple] = None) -> bool:
-    """True when >=1 sport has SYNTHESIZABLE pregame props on disk -- the cheap
-    NO-FEED "board should not be empty" check. If synth lines exist, a 0-card tick is
-    a transient, not an empty slate. Never raises -> False (genuinely empty)."""
+def pregame_games_exist(now: Optional[float] = None, sports: Optional[tuple] = None) -> bool:
+    """True when >=1 sport has SYNTHESIZABLE pregame props on disk (cheap NO-FEED
+    "board should not be empty" check). Never raises -> False (genuinely empty)."""
     _sports = sports if sports is not None else DEFAULT_PROP_SPORTS
     as_of = _as_of_for(now)
     for sport in _sports:
@@ -254,14 +236,22 @@ def pregame_games_exist(now: Optional[float] = None,
     return False
 
 
-def build_synth_only_prop_cards(now: Optional[float] = None,
-                                sports: Optional[tuple] = None,
-                                cap: int = DEFAULT_MODEL_ONLY_CAP,
-                                reliable: bool = True):
-    """MODEL-ONLY synth, NO feed: the cheap honest fill for a full tick that returns 0
-    cards while pregame games exist. Per-sport model-only cards from the parquet (same
-    engine + honesty), ranked + capped. Cannot 429 -> empty only when truly no pregame
-    games. (cards, n_more). Never raises -> ([], {})."""
+def _stamp_circuit_skips(cards: List[Dict[str, Any]], sport: str) -> None:
+    """Stamp SKIPPED_CIRCUIT entries for *sport* onto served *cards* (delegates to
+    prop_cards_circuit_io; was dropped on the dead-provider/synth path). No raise."""
+    try:
+        from scripts.platformkit.bestbets import prop_cards_circuit_io as _pcio  # noqa: PLC0415
+        _pcio.stamp_circuit_skips(cards, sport)
+    except Exception:  # noqa: BLE001
+        for card in cards:
+            card.setdefault("circuit_skips", [])
+
+
+def build_synth_only_prop_cards(now: Optional[float] = None, sports: Optional[tuple] = None,
+                                cap: int = DEFAULT_MODEL_ONLY_CAP, reliable: bool = True):
+    """MODEL-ONLY synth, NO feed: the cheap honest fill for a full tick returning 0 cards
+    while pregame games exist (same engine + honesty, ranked + capped). Cannot 429.
+    (cards, n_more). Never raises -> ([], {})."""
     _sports = sports if sports is not None else DEFAULT_PROP_SPORTS
     cap_i = _cap_int(cap)
     served: List[Dict[str, Any]] = []
@@ -269,25 +259,23 @@ def build_synth_only_prop_cards(now: Optional[float] = None,
     for sport in _sports:
         model_only = _synth_model_only_cards(sport, now, reliable)  # never raises
         if model_only:
-            served.extend(_rank_cap(model_only, cap_i, sport, n_more))
+            kept = _rank_cap(model_only, cap_i, sport, n_more)
+            _stamp_circuit_skips(kept, sport)
+            served.extend(kept)
     return served, n_more
 
 
-def build_bounded_prop_cards(now: Optional[float] = None,
-                             sports: Optional[tuple] = None,
-                             cap: int = DEFAULT_MODEL_ONLY_CAP,
-                             reliable: bool = True,
+def build_bounded_prop_cards(now: Optional[float] = None, sports: Optional[tuple] = None,
+                             cap: int = DEFAULT_MODEL_ONLY_CAP, reliable: bool = True,
                              max_lines_per_sport: int = DEFAULT_MAX_LINES_PER_SPORT):
     """BOUNDED, RANKED prop-card set + honest "N more" tally. SERVED path: ALL priced
-    props (real line + edge_vs_market) + top *cap* MODEL-ONLY props PER SPORT, ranked
-    by reliability/calibration/confidence. ALWAYS-FRESH FALLBACK: when the feed 429s
-    and a sport has no feed model-only cards, SYNTHESIZE from the parquet so the board
-    never goes blank. max_lines caps LINES PRICED; cap bounds CARDS SERVED. No raise."""
+    props + top *cap* MODEL-ONLY props PER SPORT, ranked by reliability/calibration/
+    confidence. ALWAYS-FRESH FALLBACK: no feed model-only -> SYNTHESIZE from the parquet
+    so the board never goes blank. max_lines caps LINES PRICED; cap bounds CARDS. No raise."""
     try:
         from scripts.platformkit.bestbets import prop_cards as _pc  # noqa: PLC0415
-        all_cards = _pc.build_prop_cards(
-            now=now, sports=sports, reliable_only=reliable,
-            max_lines_per_sport=max_lines_per_sport)
+        all_cards = _pc.build_prop_cards(now=now, sports=sports, reliable_only=reliable,
+                                         max_lines_per_sport=max_lines_per_sport)
         default_sports = _pc.DEFAULT_PROP_SPORTS
     except Exception as exc:  # noqa: BLE001 -- never raise out of the served path
         logger.debug("build_bounded_prop_cards: build_prop_cards failed: %s", exc)
@@ -298,17 +286,15 @@ def build_bounded_prop_cards(now: Optional[float] = None,
     n_more: Dict[str, int] = {}
     cap_i = _cap_int(cap)
     for sport in _sports:
-        priced = [c for c in all_cards
-                  if c.get("sport") == sport and not c.get("model_only")]
-        model_only = [c for c in all_cards
-                      if c.get("sport") == sport and c.get("model_only")]
-        # ALWAYS-FRESH: feed gave no model-only cards (429) -> synthesize from parquet.
-        if not model_only:
+        priced = [c for c in all_cards if c.get("sport") == sport and not c.get("model_only")]
+        model_only = [c for c in all_cards if c.get("sport") == sport and c.get("model_only")]
+        if not model_only:  # ALWAYS-FRESH: feed gave no model-only (429) -> synth
             model_only = _synth_model_only_cards(sport, now, reliable)
-        served.extend(priced)  # ALL priced bets survive; rank+cap the model-only tail
-        served.extend(_rank_cap(model_only, cap_i, sport, n_more))
+        kept_model_only = _rank_cap(model_only, cap_i, sport, n_more)
+        sport_rows = priced + kept_model_only  # ALL priced survive; ranked model-only tail
+        _stamp_circuit_skips(sport_rows, sport)  # honesty: every served row, incl synth
+        served.extend(sport_rows)
     return served, n_more
 
 
-__all__ = ["build_bounded_prop_cards", "build_synth_only_prop_cards",
-           "pregame_games_exist"]
+__all__ = ["build_bounded_prop_cards", "build_synth_only_prop_cards", "pregame_games_exist"]
