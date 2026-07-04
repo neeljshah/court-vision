@@ -41,6 +41,20 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 12 (HISTORICAL BACKFILLS + TAIL EVIDENCE SYNTHESIS, 2026-07-05 ~00:30,
+  commits fe982589/6843db17(incl kalshi lane via add-chain quirk)/789b87a1/a8b67fb3,
+  11 agents / ~1.1M tokens, 0 fix rounds, 5/5 PASS): TAIL HYPOTHESIS STATE AFTER
+  4 CORPORA -- H2 (mid-fav overpriced) LIKELY DEAD: CALIBRATED on PM-2023 (n=138)
+  AND on Kalshi discovery-excluded (n=799, all 8 bands calibrated); H1 (longshot
+  underpriced) THIN CROSS-VENUE SUPPORT: PM-2023 VENUE_UNDERPRICES (realized .523
+  vs price .155, CI excludes 0, n=14, one half INSUFFICIENT) -- rides on the
+  forward gates now. Corpora: PM 2023 pilot 744 games/1.83M ticks (dailies are a
+  2023-only pilot, NOT multi-season -- premise corrected); Kalshi 1194 markets/
+  2.16M candles to 05-20 (tranche 2 resumable). WTA odds 8,054 rows ingested +
+  WTA close gate honest BEHIND (+0.0173, efficient-market expectation). Prop
+  channel = CORRECTLY-SILENT (clv_guard by design on the -31% prior; KEEP ->
+  human queue). espn_wp arm un-inerted (event id in state) + 18/36 fuzzy-resolved
+  (18 rest = future games). No edge claimed.
 - SPRINT WAKE 11 (ENRICHMENT LIVE-WIRED + GATES PRE-REGISTERED + 126 ROWS CLV-GRADED,
   2026-07-05 early, commits 9dc59af2/c1b65e1a/c044490e/92a08226/03daf447, 11 agents /
   ~1.03M tokens, 0 fix rounds, 5/5 PASS): enrichment facade wired into capture ticks
