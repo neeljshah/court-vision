@@ -102,7 +102,22 @@ def test_render_includes_red_reasons():
 
 
 def test_default_sports_widened_to_five():
-    assert set(DEFAULT_SPORTS) == {"nba", "mlb", "soccer", "soccer_intl", "tennis"}
+    assert {"nba", "mlb", "soccer", "soccer_intl", "tennis"} <= set(DEFAULT_SPORTS)
+
+
+def test_default_sports_widened_to_seven_incl_wnba_npb():
+    """paper enablement sweep (LANE 5): wnba/npb added -- every provider degrades
+    cleanly to an honest 'unsupported sport' GREEN for a sport it does not carry,
+    so this can only ADD visibility, never flip an existing row RED."""
+    assert set(DEFAULT_SPORTS) == {
+        "nba", "mlb", "soccer", "soccer_intl", "tennis", "wnba", "npb"}
+
+
+def test_scan_wnba_npb_unsupported_provider_is_green_not_red():
+    prov = _FakeProvider("fanduel", {})  # no wnba/npb entry -> falls to default reason
+    doc = scan(("wnba", "npb"), providers=[prov])
+    assert doc["overall"] == GREEN
+    assert doc["n_red"] == 0
 
 
 def test_heal_marks_host_for_red_auth_reason():

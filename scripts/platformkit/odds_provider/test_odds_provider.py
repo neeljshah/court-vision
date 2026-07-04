@@ -144,6 +144,33 @@ def test_kalshi_fetch_filters_by_series():
     assert isinstance(events, list) and len(events) == 1
 
 
+def test_kalshi_fetch_npb_filters_by_series():
+    """npb added to _SERIES_HINT (paper enablement sweep, LANE 5): KXNPBGAME
+    tickers filter in, everything else (incl. KXNBAGAME) filters out."""
+    npb_markets = {
+        "markets": [
+            {"event_ticker": "KXNPBGAME-26JUL050500YOKYAK", "yes_sub_title": "Yokohama",
+             "yes_ask_dollars": "0.55", "close_time": "2026-07-05T05:00Z"},
+            {"event_ticker": "KXNPBGAME-26JUL050500YOKYAK", "yes_sub_title": "Yakult",
+             "yes_ask_dollars": "0.48", "close_time": "2026-07-05T05:00Z"},
+            {"event_ticker": "KXNBAGAME-26JUN17BOSLAL", "yes_sub_title": "noise",
+             "yes_ask_dollars": "0.5"},
+        ],
+    }
+    http = _stub({"markets": npb_markets})
+    events = KalshiProvider(http_get=http, use_cache=False).fetch("npb")
+    assert isinstance(events, list) and len(events) == 1
+    assert events[0].home in ("Yokohama", "Yakult") or events[0].away in ("Yokohama", "Yakult")
+
+
+def test_kalshi_fetch_unsupported_sport_still_unavailable():
+    """A sport absent from _SERIES_HINT (e.g. 'kbo', built in a parallel lane) stays
+    a clean UNAVAILABLE degrade, never a guess -- unaffected by the npb addition."""
+    http = _stub({"markets": KALSHI_MARKETS})
+    res = KalshiProvider(http_get=http, use_cache=False).fetch("kbo")
+    assert base.is_unavailable(res)
+
+
 # --------------------------------------------------------------------------- #
 # Polymarket best-effort parser.
 # --------------------------------------------------------------------------- #
