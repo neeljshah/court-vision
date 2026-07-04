@@ -103,12 +103,32 @@ IDLE_INTERVAL_SEC = 120.0
 # tested path needs NO network / NO predictor corpus / NO venue):
 #   live_state_fn(sport, gid) -> dict | None   (ingame_live_state.live_state; p0 auto-supplied)
 #   model_fn(sport, state)    -> float | None  (predict_live P(home win) as-of this tick)
-#   inplay_fetch_fn(sport)    -> [tick,...]    (inplay_kalshi.fetch_inplay liquid YES ticks)
+#   inplay_fetch_fn(sport, stats=None) -> [tick,...] (inplay_kalshi.fetch_inplay liquid YES
+#                                        ticks; the optional 2nd positional/keyword *stats*
+#                                        dict is LANE 1's request/429 counter passthrough --
+#                                        a 1-arg test stub is still accepted, see _call_fetch)
 #   finals_fn(sport)          -> [game,...]    (settled_finals.settled_since-style FINAL games)
 LiveStateFn = Callable[[str, str], Optional[Dict[str, Any]]]
 ModelFn = Callable[[str, Dict[str, Any]], Optional[float]]
-InplayFetchFn = Callable[[str], List[Dict[str, Any]]]
+InplayFetchFn = Callable[..., List[Dict[str, Any]]]
 FinalsFn = Callable[[str], List[Dict[str, Any]]]
+
+
+def _call_fetch(fetch_fn: InplayFetchFn, sport: str,
+                stats: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Call *fetch_fn* passing the per-cycle *stats* dict if it accepts one.
+
+    LANE 1: existing/test fetch stubs are 1-arg (sport only) -- calling them with
+    a stats kwarg would TypeError. We try the 2-arg form first (production
+    _default_inplay_fetch and any pacing-aware stub) and fall back to the legacy
+    1-arg call on a TypeError, so every existing injected fetch_fn in the test
+    suite keeps working unmodified. Never raises past this: any other exception
+    propagates to poll_once's own per-sport try/except (unchanged behavior).
+    """
+    try:
+        return fetch_fn(sport, stats=stats)
+    except TypeError:
+        return fetch_fn(sport)
 
 
 def _utc_iso() -> str:
@@ -123,11 +143,24 @@ def _prob01(value: Any) -> Optional[float]:
     return v if 0.0 <= v <= 1.0 else None
 
 
-def _default_inplay_fetch(sport: str) -> List[Dict[str, Any]]:
-    """Default production fetch: inplay_kalshi.fetch_inplay (W2 per-game series). [] on error."""
+def _default_inplay_fetch(sport: str, stats: Optional[Dict[str, Any]] = None
+                          ) -> List[Dict[str, Any]]:
+    """Default production fetch: inplay_kalshi.fetch_inplay (W2 per-game series). [] on error.
+
+    *stats*, if given, is passed straight through to fetch_inplay's own *stats*
+    param (LANE 1) so the caller can aggregate n_requests/n_429 across sports for
+    the heartbeat. Explicitly opts IN to fetch_inplay's inter-series pacing
+    (stagger_sec=REQUEST_STAGGER_SEC) -- fetch_inplay itself defaults stagger_sec
+    to 0.0 (no pacing) so every OTHER caller/test is unaffected; only THIS
+    production default fetcher (the real 6-sport/17-series fan-out) drips its
+    requests instead of bursting them.
+    """
     try:
         from scripts.platformkit.odds_provider import inplay_kalshi as _ik
-        return list(_ik.fetch_inplay(sport))
+        if stats is not None:
+            return list(_ik.fetch_inplay(sport, stats=stats,
+                                          stagger_sec=_ik.REQUEST_STAGGER_SEC))
+        return list(_ik.fetch_inplay(sport, stagger_sec=_ik.REQUEST_STAGGER_SEC))
     except Exception as exc:  # noqa: BLE001 -- a feed error is never fatal
         logger.warning("inplay_capture_loop fetch failed sport=%s: %s", sport, exc)
         return []
@@ -336,6 +369,7 @@ def poll_once(*, sports: Optional[List[str]] = None,
     fin_fn = finals_fn or _default_finals
     pos_map = positions if positions is not None else {}
     nowdt = now or datetime.now(timezone.utc)
+    cycle_start = time.monotonic()
 
     n_live = n_pairs = n_bets = n_settled = 0
     games_seen: List[Dict[str, Any]] = []
@@ -346,13 +380,21 @@ def poll_once(*, sports: Optional[List[str]] = None,
     # appears in legs_by_game at all -- that case has no row here, by construction).
     grade_write_fail_by_reason: Dict[str, int] = {}
     grade_write_fail_games: List[Dict[str, Any]] = []
+    # KALSHI PACING counters (LANE 1, wave-16 fix): aggregated across every sport's
+    # fetch this cycle so an ops SLA can see request volume + throttle frequency
+    # instead of a silent [] indistinguishable from a dead feed (see
+    # inplay_kalshi.kalshi_pacing for the mechanics this counts).
+    n_requests_total = n_429_total = 0
 
     for sport in sport_list:
+        sport_stats: Dict[str, Any] = {}
         try:
-            ticks = fetch_fn(sport)
+            ticks = _call_fetch(fetch_fn, sport, sport_stats)
         except Exception as exc:  # noqa: BLE001 -- a feed error never sinks the tick
             logger.warning("inplay_capture_loop fetch error %s: %s", sport, exc)
             ticks = []
+        n_requests_total += int(sport_stats.get("n_requests", 0))
+        n_429_total += int(sport_stats.get("n_429", 0))
         legs_by_game = _yes_pair(list(ticks) if ticks else [])
         # DEEP enrichment is MLB-only (the base-out resolver); other sports pass through.
         sport_deep_fn = deep_state_fn if str(sport).lower() == "mlb" else None
@@ -398,6 +440,16 @@ def poll_once(*, sports: Optional[List[str]] = None,
         # for one game_id across ticks, distinct from ordinary per-tick noise.
         "grade_write_fail_by_reason": grade_write_fail_by_reason,
         "grade_write_fail_games": grade_write_fail_games,
+        # KALSHI PACING (LANE 1, wave-16 fix): n_requests_total is the total Kalshi
+        # /markets series calls this cycle made (across every sport); n_429_total
+        # is how many of those hit a 429. cycle_duration_sec is this poll_once
+        # call's own wall-clock cost -- an ops SLA can page when it approaches or
+        # exceeds LIVE_INTERVAL_SEC (the cadence this cycle is meant to fit in),
+        # which is the exact failure mode a 429 storm produced (n_live=0 cycles
+        # were previously indistinguishable from a genuinely dead feed).
+        "n_requests_total": n_requests_total,
+        "n_429_total": n_429_total,
+        "cycle_duration_sec": round(time.monotonic() - cycle_start, 3),
         "_honest_note": (
             "In-play capture daemon heartbeat. Captures (model,devigged-price) pairs + paper "
             "UNIT decisions + settle labels; NO real money, NO flag flip, NO autostart. A down "
