@@ -14,7 +14,15 @@ home only when an explicit home hint is absent (caller-supplied team match in
 aggregate.py disambiguates). We expose BOTH teams' YES asks as the two sides; the
 venue label is "kalshi". Implied prob (yes_ask_dollars) -> decimal = 1/prob.
 
-A market we cannot confidently map to a two-team game is skipped (never guessed).
+3-WAY (regulation-time soccer, e.g. KXWCGAME): some series group THREE markets
+per event_ticker -- team-A, "Tie", team-B (each its own YES/NO contract). These
+are recognized and emitted as {"home": dec, "away": dec, "draw": dec}, the SAME
+flat moneyline shape base.OddsEvent documents (see parse_events._split_three_way
+for the tie-leg detection rule). Downstream consumers already devig this 3-way
+(markets._moneyline_quotes' Shin N-outcome solver) -- unchanged for this fix.
+
+A market we cannot confidently map to a two-team (or team/tie/team) game is
+skipped (never guessed).
 """
 from __future__ import annotations
 
@@ -108,16 +116,62 @@ def _team_label(market: Dict[str, Any]) -> str:
     return (market.get("yes_sub_title") or market.get("title") or "").strip()
 
 
+# Tokens identifying the TIE/DRAW leg of a 3-way (soccer regulation) Kalshi game
+# group (e.g. KXWCGAME-26JUN22USAMEX has THREE markets: "United States", "Tie",
+# "Mexico"). Matched case-insensitively against the full label -- mirrors
+# inplay_capture_loop._draw_leg / pm_game_placer._TIE_TOKENS (the SAME convention
+# already proven live on the in-play side of this exact series).
+_TIE_TOKENS = frozenset({"tie", "draw", "x"})
+
+
+def _is_tie_label(label: str) -> bool:
+    lab = str(label or "").strip().lower()
+    return lab in _TIE_TOKENS or "draw" in lab or "tie" in lab
+
+
+def _split_three_way(legs: List[Dict[str, Any]],
+                     ) -> Optional[Tuple[Dict[str, Any], Dict[str, Any], Dict[str, Any]]]:
+    """Split a 3-leg Kalshi group into (team_a, tie, team_b), or None.
+
+    Exactly one leg must carry a tie/draw label (by _is_tie_label); the other two
+    are the two team legs, returned in their original relative order. None if the
+    group is NOT shaped like a regulation 3-way (zero or >1 tie-labeled legs) --
+    never guessed.
+    """
+    tie_idx = [i for i, l in enumerate(legs) if _is_tie_label(_team_label(l))]
+    if len(tie_idx) != 1:
+        return None
+    i = tie_idx[0]
+    teams = [l for j, l in enumerate(legs) if j != i]
+    if len(teams) != 2:
+        return None
+    return teams[0], legs[i], teams[1]
+
+
 def parse_events(markets: List[Dict[str, Any]], sport: str,
                  as_of: Optional[str] = None,
                  ) -> List[OddsEvent]:
-    """Turn a flat Kalshi market list into normalized two-team OddsEvents.
+    """Turn a flat Kalshi market list into normalized OddsEvents (2-way or 3-way).
 
-    Pure: unit-tested on canned markets. Only events with exactly two team
-    markets BOTH carrying a usable YES ask become an OddsEvent; the two YES asks
-    are surfaced as the two sides under venue "kalshi". Home/away here is the
-    market order (caller matches by team name to fix orientation); a one-sided or
-    >2-leg event is skipped (never guessed into a line).
+    Pure: unit-tested on canned markets. Home/away here is the market order
+    (caller matches by team name to fix orientation).
+
+    2-LEG groups (the pre-existing path, BYTE-IDENTICAL): both legs must carry a
+    usable YES ask -> {"home": dec, "away": dec, "draw": None}.
+
+    3-LEG groups (NEW, additive): a regulation-time soccer market (e.g. Kalshi
+    KXWCGAME groups team-A/tie/team-B as three separate YES/NO markets under one
+    event_ticker). Recognized ONLY when exactly one leg's label is a tie/draw
+    token (_is_tie_label) and the other two are team legs, ALL THREE carrying a
+    usable YES ask -> {"home": dec, "away": dec, "draw": dec}, the SAME flat
+    moneyline shape base.OddsEvent already documents and every downstream
+    consumer (markets._moneyline_quotes 3-way Shin devig, book_table._ML_SIDES,
+    aggregate._merge_into) already reads for soccer 1X2 (Pinnacle/ESPN). Devigged
+    AS a 3-way (markets.py's Shin N-outcome solver), never forced 2-way.
+
+    A group that is neither a clean 2-leg NOR a clean 3-way (any leg missing a
+    price, or a >=3-leg group with zero/multiple tie-labeled legs) is skipped
+    (never guessed into a line).
 
     *as_of* is the TRUE fetched-at time of the source body (the original fetch
     time on a cache hit, never now()) so a cached/dead feed cannot read fresh.
@@ -126,16 +180,32 @@ def parse_events(markets: List[Dict[str, Any]], sport: str,
     as_of = as_of or _now_iso()
     out: List[OddsEvent] = []
     for ev_ticker, legs in group_markets(markets).items():
-        if len(legs) != 2:
+        if len(legs) == 2:
+            priced = [(l, _yes_ask_prob(l)) for l in legs]
+            if any(p is None for _l, p in priced):
+                continue
+            (m_a, p_a), (m_b, p_b) = priced
+            dec_a, dec_b = prob_to_decimal(p_a), prob_to_decimal(p_b)
+            if dec_a is None or dec_b is None:
+                continue
+            home, away = _team_label(m_a), _team_label(m_b)
+            draw_dec: Optional[float] = None
+        elif len(legs) == 3:
+            split = _split_three_way(legs)
+            if split is None:
+                continue
+            m_a, m_tie, m_b = split
+            p_a, p_tie, p_b = (_yes_ask_prob(m_a), _yes_ask_prob(m_tie),
+                              _yes_ask_prob(m_b))
+            if p_a is None or p_tie is None or p_b is None:
+                continue
+            dec_a, draw_dec, dec_b = (prob_to_decimal(p_a), prob_to_decimal(p_tie),
+                                      prob_to_decimal(p_b))
+            if dec_a is None or dec_b is None or draw_dec is None:
+                continue
+            home, away = _team_label(m_a), _team_label(m_b)
+        else:
             continue
-        priced = [(l, _yes_ask_prob(l)) for l in legs]
-        if any(p is None for _l, p in priced):
-            continue
-        (m_a, p_a), (m_b, p_b) = priced
-        dec_a, dec_b = prob_to_decimal(p_a), prob_to_decimal(p_b)
-        if dec_a is None or dec_b is None:
-            continue
-        home, away = _team_label(m_a), _team_label(m_b)
         # Kalshi's close_time is a SETTLEMENT/expiry bound (at or after game end),
         # NOT the tip-off time. Putting it in commence_time would let a near-final
         # in-play price be labeled is_true_close=True by line_store._within_lock,
@@ -144,7 +214,7 @@ def parse_events(markets: List[Dict[str, Any]], sport: str,
         out.append(OddsEvent(
             event_id=ev_ticker, sport=sport, home=home, away=away,
             commence_time=None,
-            prices={"kalshi": {"home": dec_a, "away": dec_b, "draw": None}},
+            prices={"kalshi": {"home": dec_a, "away": dec_b, "draw": draw_dec}},
             source="kalshi", as_of=as_of))
     return out
 
