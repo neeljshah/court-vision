@@ -1,8 +1,10 @@
 """Per-file tests for domains/basketball_wnba/ingame_blend.py.
 
 Covers: sec_remaining / fraction_elapsed regulation math (WNBA 2400s), OT
-handling, blend_prob monotonicity + p0-recovery at tipoff, is_buzzer exactness.
-Hermetic -- no network, no data files.
+handling, blend_prob (anchored family, the LANE-4-v2 default) monotonicity +
+p0-recovery at tipoff, is_buzzer exactness, and blend_prob_fixed_legacy (the
+wave-2 formula, kept importable unchanged) sanity. Hermetic -- no network, no
+data files.
 
 Run: cd /c/Users/neelj/nba-ai-system && python -m pytest domains/basketball_wnba/test_ingame_blend.py -q
 """
@@ -13,13 +15,17 @@ import math
 import pytest
 
 from domains.basketball_wnba.ingame_blend import (
+    ANCHORED_K,
+    ANCHORED_W0,
     OT_SEC,
     PERIOD_SEC,
     REG_SEC,
     LiveState,
     blend_prob,
+    blend_prob_fixed_legacy,
     fraction_elapsed,
     is_buzzer,
+    minutes_remaining,
     sec_remaining,
 )
 
@@ -188,3 +194,103 @@ def test_live_state_has_no_foul_fields():
     state = LiveState(period=2, clock_s=300, home_score=40, away_score=38)
     for absent in ("players", "foul_diff", "bonus", "home_bonus", "away_bonus"):
         assert not hasattr(state, absent)
+
+
+# ---------------------------------------------------------------------------
+# minutes_remaining (anchored family's time-scale term)
+# ---------------------------------------------------------------------------
+
+
+def test_minutes_remaining_tipoff_is_40():
+    assert minutes_remaining(1, 600) == pytest.approx(40.0)
+
+
+def test_minutes_remaining_never_below_floor():
+    assert minutes_remaining(4, 0) == pytest.approx(25.0 / 60.0)
+    assert minutes_remaining(4, 0) > 0.0
+
+
+def test_minutes_remaining_matches_sec_remaining_divided_by_60():
+    for period, clock in [(1, 300), (2, 150), (3, 50), (5, 200)]:
+        sr = sec_remaining(period, clock)
+        mr = minutes_remaining(period, clock)
+        if sr / 60.0 > 25.0 / 60.0:
+            assert mr == pytest.approx(sr / 60.0)
+
+
+# ---------------------------------------------------------------------------
+# blend_prob is the ANCHORED family (LANE-4-v2 default) -- fit constants +
+# p0-recovery + buzzer-adjacent invariants specific to this default.
+# ---------------------------------------------------------------------------
+
+
+def test_anchored_constants_are_the_fit_values():
+    # Frozen 2024-fit constants (see ingame_blend_families.py / test there for
+    # the fit-reproduces-the-shipped-constant guard).
+    assert ANCHORED_K == pytest.approx(0.63)
+    assert ANCHORED_W0 == pytest.approx(1.0)
+
+
+def test_blend_prob_p0_recovery_at_tipoff_with_zero_score_diff():
+    # w0=1.0 -> w_prior(0)=1.0 exactly; score_diff=0 at tipoff (adapter's real
+    # call path) -> p_live == p0 exactly.
+    for p0 in [0.15, 0.5, 0.62, 0.88]:
+        state = LiveState(period=1, clock_s=PERIOD_SEC, home_score=0, away_score=0)
+        assert blend_prob(p0, state) == pytest.approx(p0, abs=1e-9)
+
+
+def test_blend_prob_differs_from_legacy_mid_game():
+    # The two formulas use different time-scaling shapes (1/sqrt(minutes) vs
+    # linear inverse-seconds ramp) and different fitted/fixed k -- they must
+    # NOT coincide at a generic mid-game state (this is the whole point of
+    # the family swap; a silent no-op swap would be a bug).
+    state = LiveState(period=3, clock_s=200, home_score=68, away_score=60)
+    p_new = blend_prob(0.55, state)
+    p_legacy = blend_prob_fixed_legacy(0.55, state)
+    assert p_new != pytest.approx(p_legacy, abs=1e-6)
+
+
+def test_blend_prob_fixed_legacy_still_matches_old_k_score_formula():
+    # blend_prob_fixed_legacy must remain BYTE-IDENTICAL to the pre-LANE-4-v2
+    # formula (K_SCORE=3.0, linear ramp) -- a regression here would silently
+    # break the "kept importable for comparison" contract.
+    from domains.basketball_wnba.ingame_blend import K_SCORE, _TIME_FLOOR_SEC
+    state = LiveState(period=2, clock_s=300, home_score=44, away_score=38)
+    t = fraction_elapsed(2, 300)
+    w_prior = 1.0 - t
+    score_diff = 44.0 - 38.0
+    sr = sec_remaining(2, 300)
+    ramp = t / max(sr, _TIME_FLOOR_SEC)
+    z = math.log(0.6 / 0.4) * w_prior + K_SCORE * score_diff * ramp
+    expected = 1.0 / (1.0 + math.exp(-z))
+    assert blend_prob_fixed_legacy(0.6, state) == pytest.approx(expected, abs=1e-9)
+
+
+def test_blend_prob_fixed_legacy_p0_recovery_still_holds():
+    # The legacy path's OWN p0-recovery invariant must still hold post-refactor
+    # (it was untouched, but this guards against an accidental edit).
+    for p0 in [0.2, 0.5, 0.73, 0.91]:
+        state = LiveState(period=1, clock_s=PERIOD_SEC, home_score=0, away_score=0)
+        assert blend_prob_fixed_legacy(p0, state) == pytest.approx(p0, abs=1e-9)
+
+
+def test_blend_prob_monotone_increasing_in_score_diff_anchored():
+    p0 = 0.5
+    diffs = [-20, -10, -5, 0, 5, 10, 20]
+    probs = []
+    for d in diffs:
+        state = LiveState(period=3, clock_s=200, home_score=60 + max(d, 0),
+                           away_score=60 + max(-d, 0))
+        probs.append(blend_prob(p0, state))
+    for a, b in zip(probs, probs[1:]):
+        assert b > a, f"not monotone: {probs}"
+
+
+def test_blend_prob_buzzer_exactness_via_adapter_pattern():
+    # blend_prob itself asymptotes but does not force 0/1 (the adapter clamps
+    # exactly via is_buzzer) -- but a decisive lead at the buzzer must still
+    # push the raw blend value strongly toward the correct side.
+    state = LiveState(period=4, clock_s=0.0, home_score=90, away_score=70)
+    assert blend_prob(0.5, state) > 0.95
+    state_loss = LiveState(period=4, clock_s=0.0, home_score=70, away_score=90)
+    assert blend_prob(0.5, state_loss) < 0.05

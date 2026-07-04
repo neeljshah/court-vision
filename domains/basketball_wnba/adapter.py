@@ -3,15 +3,19 @@
 Gate seam: feature_bundle() -> FeatureBundle so src.loop.gate.evaluate runs on
 WNBA data with ZERO kernel edits, mirroring domains.basketball_nba.adapter.NBAAdapter.
 
-LANE 4 (this wave): predict_live is now WIRED via domains.basketball_wnba.ingame_blend
--- a WNBA-local, transparent time-decay blend (REG_SEC=2400.0, 4x10min, re-derived
-rather than borrowing NBA's 2880.0) that does NOT depend on a live foul-state feed
-(WNBA has no such ingest; see ingame_blend.py module docstring for the honest
-degrade). Wave-1 deferred this because domains.basketball_nba.ingame_blend_plive
-hardcodes NBA's clock constant + a foul/bonus feature row this domain lacks --
-ingame_blend.py re-derives the time-scale-dependent constants instead of reusing
-that NBA module. baseline_probability (pregame Elo) remains the full, real,
-leak-free pregame signal; predict_live blends it with realized score state.
+LANE 4 (this wave): predict_live is WIRED via domains.basketball_wnba.ingame_blend
+.blend_prob, now the "anchored" family (logit(p0)*w_prior(t) + k*score_diff/
+sqrt(minutes_remaining)) adopted after a cross-corpus family settlement -- see
+ingame_blend.py's module docstring + ingame_blend_families.py + data/domains/
+wnba/ingame_blend_check.json (v2) for the fit/validate/OOS trail. This REPLACES
+wave-2's fixed-constant blend (still importable, unchanged, as
+ingame_blend.blend_prob_fixed_legacy) after the honest wave-2 check showed it
+losing to a naive score-diff sigmoid at half/end_q3. Time-scale constants
+(REG_SEC=2400.0, 4x10min) are re-derived rather than borrowing NBA's 2880.0,
+and there is still no foul-state term (WNBA has no live foul-state ingest; see
+ingame_blend.py module docstring for the honest degrade). baseline_probability
+(pregame Elo) remains the full, real, leak-free pregame signal; predict_live
+blends it with realized score state.
 
 F5: imports ONLY stdlib, numpy, pandas, domains.basketball_wnba.*,
 src.loop.gate.FeatureBundle, src.loop.signal. PRIVATE: never tracked publicly.
@@ -160,10 +164,11 @@ class WNBAAdapter:
             "neutral_site_adjusted": False,
             "honest_note": (
                 "In-game = pregame WNBA Elo win-prob (leak-free, as-of) blended "
-                "with realized score state via a transparent time-decay logit "
-                "blend (REG_SEC=2400.0, no foul-state term -- WNBA has no live "
-                "foul feed, honestly degraded out rather than faked). Calibration "
-                "only; no $ edge claimed."
+                "with realized score state via the 'anchored' family logit blend "
+                "(REG_SEC=2400.0, cross-corpus-selected over fixed/naive/"
+                "time_scaled -- see ingame_blend_check.json v2; no foul-state "
+                "term -- WNBA has no live foul feed, honestly degraded out "
+                "rather than faked). Calibration only; no $ edge claimed."
             ),
         }
 
