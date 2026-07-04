@@ -661,6 +661,128 @@ def _make_middle_name_fixtures() -> tuple[pd.DataFrame, pd.DataFrame]:
     return matches, td_rows
 
 
+class TestWtaIngest:
+    """WTA arm of the tennis-data ingest (Lane 3): tour tagging, WTA-row parse,
+    and a same-fixture-shape join test.  All offline/synthetic — no real corpus.
+    """
+
+    def _make_wta_matches(self) -> pd.DataFrame:
+        return pd.DataFrame([
+            dict(
+                event_id="20230116-wta-2023-580-800001-800002-001",
+                date=dt.date(2023, 1, 16),
+                tour="wta",
+                tourney_id="2023-580",
+                tourney_name="Australian Open",
+                surface="Hard",
+                best_of=3,
+                round="R64",
+                match_num=1,
+                p1_id=800001,
+                p2_id=800002,
+                p1_name="Elena Rybakina",
+                p2_name="Elisabetta Cocciaretto",
+                p1_rank=4.0,
+                p2_rank=45.0,
+                winner=1,
+                score="6-3 6-2",
+                retirement=False,
+                minutes=85.0,
+            ),
+        ])
+
+    def _make_wta_td_row(self) -> pd.DataFrame:
+        df = pd.DataFrame([
+            dict(
+                Date=dt.date(2023, 1, 16),
+                Tournament="Australian Open", Surface="Hard", Round="1st Round",
+                **{"Best of": 3},
+                Winner="Rybakina E.", Loser="Cocciaretto E.",
+                WRank=4, LRank=45, Comment="Completed",
+                B365W=1.10, B365L=6.50, PSW=1.12, PSL=6.80,
+                MaxW=1.15, MaxL=7.00, AvgW=1.11, AvgL=6.60,
+            ),
+        ])
+        df["_tour"] = "wta"
+        df["_year"] = 2023
+        return df
+
+    def test_wta_row_parses_and_joins(self):
+        """A WTA tennis-data row must join against a WTA-tour Sackmann row."""
+        matches = self._make_wta_matches()
+        td = self._make_wta_td_row()
+        result = join_odds(td, matches)
+        assert len(result.joined_df) == 1, (
+            f"expected 1 joined WTA row, got {len(result.joined_df)}; "
+            f"unjoined={len(result.unjoined_df)}"
+        )
+
+    def test_wta_tour_tag_preserved(self):
+        """Joined output must carry tour='wta', not silently default to 'atp'."""
+        matches = self._make_wta_matches()
+        td = self._make_wta_td_row()
+        result = join_odds(td, matches)
+        assert not result.joined_df.empty
+        assert (result.joined_df["tour"] == "wta").all()
+
+    def test_wta_does_not_join_against_atp_matches(self):
+        """A WTA td row must NOT cross-join into an ATP matches frame (tour-key isolation)."""
+        atp_matches = _make_matches()  # existing ATP fixture helper
+        td = self._make_wta_td_row()
+        result = join_odds(td, atp_matches)
+        assert len(result.joined_df) == 0, (
+            "WTA row must not join against an ATP-only matches frame"
+        )
+
+    def test_build_odds_multi_tour_tags_both(self, tmp_path):
+        """build_odds with both an ATP and a WTA frame must tag rows correctly and
+        must not regress the ATP-only row count."""
+        atp_matches = _make_matches()
+        atp_td = _load_td_fixture()
+        wta_matches = self._make_wta_matches()
+        wta_td = self._make_wta_td_row()
+
+        combined_matches = pd.concat([atp_matches, wta_matches], ignore_index=True)
+        frames = [("atp", 2023, atp_td), ("wta", 2023, wta_td)]
+
+        out = tmp_path / "odds.parquet"
+        result = build_odds(frames, combined_matches, out=out)
+        df = pd.read_parquet(out)
+
+        assert set(df["tour"].unique()) <= {"atp", "wta"}
+        assert (df["tour"] == "wta").sum() == 1, "expected exactly 1 WTA row joined"
+
+        # No-ATP-regression: build ATP alone and compare joined counts.
+        atp_only_result = build_odds([("atp", 2023, atp_td)], atp_matches, out=tmp_path / "atp_only.parquet")
+        assert len(result.joined_df[result.joined_df["tour"] == "atp"]) == len(
+            atp_only_result.joined_df
+        ), "ATP joined-row count must not change when a WTA frame is added"
+
+    def test_wta_join_rate_floor_on_real_corpus(self):
+        """If the real WTA odds corpus is present locally, assert a join-rate floor
+        (>=0.60 vs the Sackmann WTA matches corpus scoped to comparable tiers) so a
+        future regression in name-matching or corpus wiring is caught. Skips cleanly
+        if the private data/ corpus is absent (fresh clone)."""
+        repo_root = pathlib.Path(__file__).resolve().parents[2]
+        odds_path = repo_root / "data" / "domains" / "tennis" / "odds.parquet"
+        wta_matches_path = repo_root / "data" / "domains" / "tennis" / "wta_matches.parquet"
+        if not odds_path.exists() or not wta_matches_path.exists():
+            pytest.skip("private data/domains/tennis corpus not present (fresh clone)")
+
+        odds = pd.read_parquet(odds_path)
+        wta_odds = odds[odds["tour"] == "wta"]
+        assert len(wta_odds) > 0, "WTA odds rows must be present in odds.parquet"
+
+        wta_matches = pd.read_parquet(wta_matches_path)
+        # Restrict to tiers that tennis-data.co.uk actually carries for WTA
+        # (Grand Slam / Premier / Doubles-adjacent main-draw levels present in
+        # the Sackmann WTA corpus) — see build report note in the Lane 3 handoff.
+        joined_eids = set(wta_odds["event_id"])
+        covered = wta_matches[wta_matches["event_id"].isin(joined_eids)]
+        rate = len(covered) / len(wta_matches) if len(wta_matches) else 0.0
+        assert rate >= 0.60, f"WTA join-rate floor breached: {rate:.3f} < 0.60"
+
+
 class TestMiddleNameJoin:
     """Ensure middle-name mismatches join correctly end-to-end."""
 
