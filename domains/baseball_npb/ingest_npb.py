@@ -166,7 +166,7 @@ def _parse_month(body: str, year: str, month: int) -> List[dict]:
         away_score = float(s2.group(1))
         tied = home_score == away_score
         rows.append({
-            "date": f"{year}-{month:02d}-{md[:2]}",
+            "date": f"{year}-{month:02d}-{md[2:]}",
             "season": str(year),
             "home_team": home, "away_team": away,
             "home_score": home_score, "away_score": away_score,
