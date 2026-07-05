@@ -41,19 +41,42 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
-- >>> COORDINATION PIN (INTERACTIVE FABLE SESSION, 15:35Z, remove when cleared):
-  the USER-DIRECTED interactive session is running build wave wf_ff769e21
-  (11 lanes: supervisor reaper fix, kalshi rate governor, depth-capture arm +
-  registry entries, feed_health schema overlay, m8_ci_cadence spec, improve/
-  FWER + CLV bridges, soccer ADVERSE suppression, asof reclaim gates for
-  mlb/nba/tennis/soccer). WORKING TREE IS INTENTIONALLY DIRTY until ~16:45Z.
-  Sprint loop: do NOT treat the in-flight diff as found-uncommitted-backlog,
-  do NOT commit/review/revert it, do NOT restart daemons this window. If the
-  tree is still dirty at your wake, hop 30 min and re-check. Full queue
-  adjudication (all 10 items Fable-decided): docs/research/organization-sprint/
-  HUMAN_QUEUE_2026-07-05.md top section. This pin is NOT a session-takeover
-  wake entry -- the sprint loop KEEPS its cadence; US verifier sweep proceeds
-  once the tree is clean. THIS SESSION will clear the pin when lanes commit.
+- INTERACTIVE FABLE WAVE (wf_ff769e21, USER-DIRECTED QUEUE ADJUDICATION +
+  INDEPENDENCE BUILD, 2026-07-05 15:20-16:15Z, 24 agents/~2.36M tok, 10/10
+  lanes PASS w/ Opus review, commits 9f6bc39b + afec9f52..b024a104): ALL 10
+  human-queue items Fable-adjudicated as user-proxy (full record:
+  docs/research/organization-sprint/HUMAN_QUEUE_2026-07-05.md top section).
+  LANDED: (1) m1_ui reaper fix ('next-server'->'next'; arms at next
+  supervisor restart -- running supervisor holds old code, flap frozen
+  meanwhile); (2) Kalshi rate governor 297 LOC wired BOTH daemons at the
+  inplay_kalshi choke point (capture .35 / snapshot .65 shares, cross-process
+  429 pressure file, KALSHI_GOVERNOR_OFF kill-switch; evidence: m2_inplay
+  1678 429s today unpaced); (3) depth-capture ARMED (Fable-sanctioned flag,
+  fail-open) + m2_inplay_capture registered in daemon_registry (26 entries)
+  + WNBA injuries daily daemon; (4) feed_health schema_drift overlay;
+  (5) improve/ FWER min_corpora_eff floor + planted-null ledger bridge;
+  (6) soccer ADVERSE-segment suppression (conservative withhold). RECLAIM
+  GATES (honest verdicts, nothing wired): NBA 7/7 REJECT (pace/oreb/tov/dreb/
+  fg3m/stl/blk asof dims vs Elo, planted nulls died correctly, ast_rate
+  excluded as prior REJECT); tennis 10/10 REJECT (hold%/return dims, ATP-only);
+  MLB found ALREADY DONE prior wakes (sp_ra REJECT; weather-vs-close REJECT
+  n=2113); soccer 1 SHIP-AT-GATE candidate home_sot_for_l10 (beats OWN
+  goals-only Poisson base w/ planted-null dying; vs-close UNTESTED, nothing
+  wired, cross-corpus replication REQUIRED before any promotion) + 10 PARTIAL
+  + 1 REJECT. RUNTIME: both inplay daemons reloaded onto new code via
+  supervisor (capture 29752->17444 ~40s detect + 32s backoff; snapshot 15804
+  reloading), governor active both callers. ALSO: ponytail plugin INSTALLED
+  via CLI (new sessions); autostart -Register attempted = needs elevated
+  shell (human); private remote VERIFIED reachable -> branch pushed; P0-A-002
+  edge-named scripts untracked (9f6bc39b). HONESTY NOTES: 2 PROPOSED docs
+  found stale-already-applied (m8_ci_cadence, CLV bridge -- live via
+  aggregate_clv_to_corpus); PIPELINE_ENABLED sentinel found ALREADY ARMED on
+  box (NOT this session -- flagged to user); selfimprove_daemon 307 LOC (was
+  301 pre-existing over-cap, +6 flagged); pre-existing RH1 heartbeat test
+  failure verified pre-existing via stash. NEXT: soccer home_sot_for_l10
+  cross-corpus replication gate; nodriver install at next restart window
+  (AGPL accepted for local-only); supervisor restart window to arm reaper
+  fix. No edge claims -- every verdict above is calibration-only.
 - SPRINT WAKE 70 (HEALTH TICK, 15:29Z): all green -- heartbeat 0.3 min,
   MLB/soccer feeds 1.0 min, KBO 138 rows. Hop; US verifier sweep wave
   launches next wake (~16:30Z) so results land as the 17Z window opens.
