@@ -41,6 +41,9 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 70 (HEALTH TICK, 15:29Z): all green -- heartbeat 0.3 min,
+  MLB/soccer feeds 1.0 min, KBO 138 rows. Hop; US verifier sweep wave
+  launches next wake (~16:30Z) so results land as the 17Z window opens.
 - SPRINT WAKE 69 (HEALTH TICK, 14:30Z): daemon SINGLETON confirmed (29752;
   the second PID was my own probe matching its own command line -- observer
   effect, resolved), heartbeat 1.6 min, MLB/tennis feeds 0-1 min fresh, KBO
