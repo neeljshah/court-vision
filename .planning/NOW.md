@@ -41,6 +41,21 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 62 (WAVE-61: KBO CAPTURE LIVE FROM THE DAEMON -- ARC CLOSED,
+  2026-07-05 ~10:35Z true-UTC, wf_7e0a2bd9-94a 6 agents/~0.51M tok, 1
+  commit): the sanctioned reorder shipped (kbo-only deep capture before the
+  no_live_state return; decision path byte-unchanged; 41 tests); daemon
+  reloaded (7880->29752); RUNTIME PROOF: 26 relay rows / 4 games accruing
+  autonomously (SSSK inning 1->2 progression, OBWO 19 rows). Three stacked
+  bugs total on this arc (runner default / uncalled persistence / early
+  return), every one caught by runtime-evidence review. Real-state corpus
+  STARTED; model fit stays FORBIDDEN until a fresh pre-registered real-state
+  gate. 429 micro: 192 total (soccer_intl 74/mlb 62/kbo 19), backoff exists
+  (kalshi_pacing), feeds 1.4-9x hotter than yesterday NOT degraded, governor
+  stays PROPOSED; NEW question: second daemon m2_inplay may be a legacy
+  duplicate (1583 429s) -> read-only identity check queued. WAVE-62:
+  sprint-retro digest + human-queue consolidation (07-06 EOD approaching),
+  KBO accrual tick + m2_inplay duplicate check (read-only). No edge claims.
 - SPRINT WAKE 61 (WAVE-60: TWO MORE REAL KBO BUGS PEELED, 2026-07-05 ~09:55Z
   true-UTC, wf_ed425118-c63 6 agents/~0.64M tok, 1 commit): (1) FIXED --
   kbo_capture_wire built state rows but NEVER persisted (append_state_row
