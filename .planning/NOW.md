@@ -41,6 +41,22 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 39 (WAVE-38 LANDED IN 22 MIN: 8/8 PASS, PROGRAM V2 EXECUTING,
+  2026-07-05 ~04:20Z, wf_c88ae23d-1be 27 agents/~2.37M tok, 8 commits a71d070e..
+  3f5d876b): (1) HONESTY CATCH: Statcast type=S/B/X only -> catcher metric
+  relabeled out-of-zone strike-rate w/ chase confound stated (54/107 qualify,
+  VERIFIED). (2) platoon HONEST_NEGATIVE: fuller seasons are 18-DAY WINDOWS not
+  full seasons (0/633 clear floor) -> window extension = top unblock (wave-39).
+  (3) pair-keyed contract path LIVE: tennis H2H + playstyle VERIFIED, ask()
+  answers matchups. (4) verdict claims 6->16 (13 VERIFIED/3 honest MISMATCH/30
+  files); found ask() tie-break bug -> wave-39 fix. (5) WNBA context: 3 parquets
+  (35 officials/7276 fouls exact parity). (6) geo descriptors 3 sports; soccer
+  altitude gate REJECT exactly as pre-registered. (7) reprocess clients: exactly
+  1 adopted layer exists, honest UNAVAILABLE (aggregate-only history). (8)
+  breaker lock: pre-fix repro lost 9/10 pings, fixed. WAVE-39: statcast full-
+  season extension + index re-runs, umpire-join probe/arm, ask tie-break fix,
+  vault refresh 3, m13 SLA probe. NPB/KBO verify at the first wake past 09Z.
+  No edge claimed.
 - SPRINT WAKE 38 (WAVE-37 LANDED + PROGRAM V2 FABLE-RATIFIED, 2026-07-05 ~03:15Z,
   wf_436f7bdf-17e 9 agents/~0.85M tok, 1 commit + 2 local-only docs): (1) m13
   sport-parallel scoring COMMITTED (cycle ~= slowest sport, 328s saved vs
