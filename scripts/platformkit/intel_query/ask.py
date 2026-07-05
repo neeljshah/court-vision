@@ -41,43 +41,60 @@ from scripts.platformkit.intel_query.families import (
 FAMILY_FIT = "fit"
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
+INTEL_CLAIMS_DIR = REPO_ROOT / "data" / "cache" / "intel_claims"
 
-# Every known (validation-summary, producer-claims) pair -- a static registry,
-# not a directory glob, so ask() only ever reads artifacts this lane verified.
-CLAIM_SOURCE_PAIRS: tuple[tuple[Path, Path], ...] = (
-    (
-        REPO_ROOT / "data" / "frontend" / "ops" / "intel_claims_validation.json",
-        REPO_ROOT / "data" / "cache" / "intel_claims" / "nba_shooting_claims.jsonl",
-    ),
-    (
-        REPO_ROOT / "data" / "cache" / "intel_claims" / "nba_quality_claims_validation.json",
-        REPO_ROOT / "data" / "cache" / "intel_claims" / "nba_quality_claims.jsonl",
-    ),
-    (
-        REPO_ROOT / "data" / "frontend" / "ops" / "intel_verdict_claims_validation.json",
-        REPO_ROOT / "data" / "cache" / "intel_claims" / "gate_verdict_claims.jsonl",
-    ),
-    (
-        REPO_ROOT / "data" / "cache" / "intel_claims" / "tennis_hold_claims_validation.json",
-        REPO_ROOT / "data" / "cache" / "intel_claims" / "tennis_hold_claims.jsonl",
-    ),
-    (
-        REPO_ROOT / "data" / "cache" / "intel_claims" / "mlb_pitcher_claims_validation.json",
-        REPO_ROOT / "data" / "cache" / "intel_claims" / "mlb_pitcher_claims.jsonl",
-    ),
-    (
-        REPO_ROOT / "data" / "cache" / "intel_claims" / "soccer_intl_strength_claims_validation.json",
-        REPO_ROOT / "data" / "cache" / "intel_claims" / "soccer_intl_strength_claims.jsonl",
-    ),
-    (
-        REPO_ROOT / "data" / "cache" / "intel_claims" / "tennis_h2h_index_claims_validation.json",
-        REPO_ROOT / "data" / "cache" / "intel_claims" / "tennis_h2h_index_claims.jsonl",
-    ),
-    (
-        REPO_ROOT / "data" / "cache" / "intel_claims" / "nba_fit_ingredient_claims_validation.json",
-        REPO_ROOT / "data" / "cache" / "intel_claims" / "nba_fit_ingredient_claims.jsonl",
-    ),
-)
+# Two producer JSONLs predate the "<stem>_validation.json in the same
+# directory" naming convention every OTHER store follows, and their
+# validation summary lives under data/frontend/ops/ instead. This is the
+# ONE static fallback the discovery below applies -- every store added
+# after this map was written (wnba/tennis_v3/catcher_framing/platoon_split/
+# umpire_zone/nba_fit_ingredient/...) is found by the glob with zero
+# registration here.
+_LEGACY_VALIDATION_OVERRIDES: dict[str, Path] = {
+    "nba_shooting_claims.jsonl": REPO_ROOT / "data" / "frontend" / "ops" / "intel_claims_validation.json",
+    "gate_verdict_claims.jsonl": REPO_ROOT / "data" / "frontend" / "ops" / "intel_verdict_claims_validation.json",
+}
+
+
+def discover_claim_source_pairs(claims_dir: Path = INTEL_CLAIMS_DIR) -> tuple[tuple[Path, Path], ...]:
+    """AUTOMATIC (validation-summary, producer-claims) discovery over EVERY
+    *.jsonl file directly under claims_dir (data/cache/intel_claims/) -- so a
+    new claim store lands in ask() the moment its producer + validator both
+    write to disk, with NO per-store registration here. Every *.jsonl in
+    this directory today (nba/wnba/tennis/mlb/soccer, 13 files) is a
+    producer-claims file, not an incidental cache artifact, so this one
+    glob is the whole discovery mechanism (the ONE fallback below is a
+    static 2-entry override for names that predate the naming convention,
+    not a second glob).
+
+    Pairing rule: <stem>.jsonl pairs with <stem>_validation.json in the SAME
+    directory if that file exists; else _LEGACY_VALIDATION_OVERRIDES (2
+    pre-convention stores). A *.jsonl with NEITHER is silently skipped --
+    unvalidated claims must stay invisible to ask(), not error the whole
+    discovery pass (fail-open per-file, matching load_verified_claims'
+    existing "missing validation JSON -> skip" behavior for a named pair).
+
+    Deterministic order: sorted by claims-file name, so iteration order
+    (and therefore any tie-break that depends on it) is stable across runs.
+    """
+    pairs: list[tuple[Path, Path]] = []
+    if not claims_dir.exists():
+        return tuple(pairs)
+    for claims_path in sorted(claims_dir.glob("*.jsonl")):
+        validation_path = _LEGACY_VALIDATION_OVERRIDES.get(claims_path.name)
+        if validation_path is None:
+            candidate = claims_path.with_name(claims_path.stem + "_validation.json")
+            if candidate.exists():
+                validation_path = candidate
+        if validation_path is not None:
+            pairs.append((validation_path, claims_path))
+    return tuple(pairs)
+
+
+# Populated once at import time (module-level constant, matching the old
+# static-tuple contract every caller/test already expects) but produced by
+# discover_claim_source_pairs's glob rather than a hand-maintained list.
+CLAIM_SOURCE_PAIRS: tuple[tuple[Path, Path], ...] = discover_claim_source_pairs()
 
 # claim_id of each fit-ingredient claim compose_fit() joins -- a static
 # registry (not a glob) so compose_fit only ever reads claims this lane
@@ -100,10 +117,19 @@ def _ascii_name(name: str) -> str:
 
 
 def _load_json(path: Path) -> dict[str, Any] | None:
+    """Fail-open per-file: a missing OR malformed (mid-write/truncated/
+    corrupt) validation-summary JSON must never crash ask() for every OTHER
+    store -- treat it exactly like "not yet available" (None), same as the
+    missing-file case. A shared validator output path can be caught
+    mid-rewrite by a concurrent producer; that store's claims simply stay
+    invisible this call, they do not take the whole surface down."""
     if not path.exists():
         return None
-    with open(path, "r", encoding="ascii", errors="strict") as f:
-        return json.load(f)
+    try:
+        with open(path, "r", encoding="ascii", errors="strict") as f:
+            return json.load(f)
+    except (json.JSONDecodeError, UnicodeDecodeError, OSError):
+        return None
 
 
 def _display_path(path: Path) -> str:
@@ -116,14 +142,25 @@ def _display_path(path: Path) -> str:
 
 
 def _load_jsonl(path: Path) -> list[dict[str, Any]]:
+    """Per-LINE fail-open: one malformed line (e.g. a concurrent writer
+    caught mid-append/mid-flush) is skipped rather than raising and losing
+    every OTHER already-well-formed row/claim in the same file."""
     if not path.exists():
         return []
     rows = []
-    with open(path, "r", encoding="ascii", errors="strict") as f:
-        for line in f:
-            line = line.strip()
-            if line:
-                rows.append(json.loads(line))
+    try:
+        with open(path, "r", encoding="ascii", errors="strict") as f:
+            lines = f.readlines()
+    except (UnicodeDecodeError, OSError):
+        return []
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            rows.append(json.loads(line))
+        except json.JSONDecodeError:
+            continue
     return rows
 
 
@@ -173,11 +210,14 @@ def _unanswerable(reason: str, question: str) -> dict[str, Any]:
 
 
 def _filter_by_hints(rows: list[dict[str, Any]], parsed) -> list[dict[str, Any]]:
+    # Per-file schema tolerance: a claims row from a store this lane hasn't
+    # seen yet might be missing "criteria" entirely -- treat that as "does
+    # not match this hint" rather than KeyError-ing the whole ask() call.
     candidates = rows
     if parsed.metric_hints:
-        candidates = [r for r in candidates if r["criteria"].get("metric") in parsed.metric_hints]
+        candidates = [r for r in candidates if r.get("criteria", {}).get("metric") in parsed.metric_hints]
     if parsed.window_hint:
-        candidates = [r for r in candidates if r["criteria"].get("window") == parsed.window_hint]
+        candidates = [r for r in candidates if r.get("criteria", {}).get("window") == parsed.window_hint]
     return candidates
 
 
@@ -197,7 +237,7 @@ def _answer_top_n(parsed, question: str, verified: dict[str, dict[str, Any]]) ->
     return {
         "answerable": True, "question": question, "family": FAMILY_TOP_N,
         "answer": {
-            "metric": row["criteria"].get("metric"), "window": row["criteria"].get("window"),
+            "metric": row.get("criteria", {}).get("metric"), "window": row.get("criteria", {}).get("window"),
             "ranking": ranking, "n_considered": row.get("n_considered"),
             "n_excluded_below_floor": row.get("n_excluded_below_floor"),
             "caveats": row.get("caveats", []),
@@ -225,8 +265,8 @@ def _answer_entity_lookup(parsed, question: str, verified: dict[str, dict[str, A
         )
     answers = [
         {
-            "metric": row["criteria"].get("metric"), "window": row["criteria"].get("window"),
-            "rank": r["rank"], "value": r["value"], "n": r.get("n"),
+            "metric": row.get("criteria", {}).get("metric"), "window": row.get("criteria", {}).get("window"),
+            "rank": r.get("rank"), "value": r.get("value"), "n": r.get("n"),
         }
         for row, r in hits
     ]
