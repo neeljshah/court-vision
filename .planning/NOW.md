@@ -41,6 +41,16 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 49 (WAVE-48: RMSE MODE + UMPIRE REPLAY 0.0, 2026-07-05 ~06:40Z,
+  wf_2bcc5cb4-b36 3 agents/~0.40M tok, commit 328d8348): harness gains
+  metric=rmse; umpire-totals client RAN at max_abs_diff=0.0 all 3 folds (pure
+  relabel + gate's own fold constants, read-only); tally 3 RAN / 4 honest
+  UNAVAILABLE w/ exact root causes (train-only refit needed / H0 rows never
+  exported; prior wrong not-exists claim corrected). WAVE-49 (light): h3 H0-row
+  export -> 4th RAN client. OVERNIGHT SESSION HANDOFF READY (prompt delivered
+  to user; NEXT_SESSION_PROMPT current; yield protocol: old session exits if a
+  newer wake entry exists). Milestones: KBO live confirm ~09:30Z, US verifier
+  sweep ~17-23Z, sprint ends 07-06 EOD. No edge claimed.
 - SPRINT WAKE 48 (WAVE-47: REPLAY CLIENTS LIVE + HUMAN QUEUE CONSOLIDATED,
   2026-07-05 ~05:55Z, wf_9dd1add2-dcd 6 agents/~0.45M tok, commit 3fbad559):
   (1) reprocess clients v2: 7 registered incl. REJECTs (Fable policy: honest
