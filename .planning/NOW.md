@@ -93,6 +93,33 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- PREREG AMENDMENT A3 AUTHORED + SHA-PINNED ~01:10Z TRUE-UTC 07-06 (Fable-
+  authored per 0f(b); prior shas V1 1ea91086 + A2 ccf703e1 verified intact
+  before writing): docs/research/combination-moat/PREREG_AMENDMENT_A3_2026-
+  07-06.md sha256=
+  709505d795efd36e9df7e33d4b5ed7b5875e4e09d9dd2e4e35a1a823985ae737. Opens NBA
+  Family 3 ONLY: team-adv ratings stacks on the GAP#6 reclaim (asof_team_adv
+  .parquet, coverage RECOUNTED 1230+1230+1225=3685 -- an earlier scout claim
+  of 2024-25-only was a join-dtype artifact, 5th premise catch today).
+  Era-disjoint pair A=2022-24 (2460 games) / B=2024-25 (1225); base identical
+  V1/A2 elo-logit; K_new=2 (TA1 off/def rtg diffs; TA2 four-factors efg/tov/
+  oreb diffs); NBA K_cum=6, eps_eff=0.008333, min_corpora_eff=2; REPLICATED_
+  WEAK cap carried verbatim (same-source pipeline); planted-null >=20 draws +
+  null-floor prescreen; L1/L3 mandatory; vs-close judge non-blocking (2022-24
+  close overlap ~zero, reported honestly); expected outcome REJECT (Elo
+  collinearity = designed honest risk). Fit lane launches AFTER this commit
+  (protocol: pin-before-fit). ALSO IN FLIGHT: paperpm same-venue close wave
+  (wf_1d5c4130) from the Opus audit -- root cause of the paper_pm DIVERGENT
+  flip = CROSS-VENUE basis (Kalshi taken price scored vs BOOK lock-window
+  close; dogs +49.76% claimed CLV went 4-21, z=-2.84, CLV fattest on losers;
+  survives independence correction z=-2.46 on the 38-row single-side subset)
+  -> forward-only Kalshi own-venue close capture + reconciler single_side
+  transparency block; paper_pm mean CLV treated as an UPPER BOUND inflated by
+  venue basis until same-venue closes accrue. ROW-WORK wave wf_ffafa21a: BOTH
+  lanes honest premise catches (tennis outcome resolver ALREADY built+wired
+  2026-07-03 -- row 12's residue is exactly the dispatch-promotion watch;
+  after_cost/beat_the_line/edge_greenlight freshness rows ALREADY registered
+  same-day) -- row 2 CLOSED, row 12 corrected. No edge claims.
 - GREENLIGHT UNCAP BUILT + LIVE ~00:25Z TRUE-UTC 07-06 (duty 1 build complete;
   wf_6dd79761 10 agents/1.00M + completion wf_dc1b83e3 6 agents/0.51M; commits
   fa468979 L2-reconciler / 5433aa84 L3-stamp+TABLE / 67e1fd7d L1-module /
