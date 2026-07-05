@@ -41,6 +41,21 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 55 (WAVE-54 SHIPPED: FIT-VALIDITY GATE HONEST REJECT, 2026-07-05
+  ~07:55Z, wf_bd872e77-95e 7 agents/~0.60M tok, 1 code commit): the marquee
+  verdict -- fit score (archetype x scheme x vacancy, season<=s ingredients)
+  does NOT predict post-move performance: pooled_delta=-0.0618 (H1 WORSE),
+  sign 1/5 folds, off-init PROVEN, both nulls die, reproduced twice, 17 tests
+  green. V2 amendment written BEFORE run (V1 frozen sha re-verified; V2 sha
+  2df32a291c3190db); lane self-caught a coarse-grid optimizer defect + a null-
+  comparison bug pre-verdict. REJECT = SUCCESS per priors; fit stays SCOUTING
+  (memory written). Validation-contention: 18 producers audited, 3 missing
+  per-store validation files materialized (wnba 5/8 claims were invisible to
+  ask) -> coverage 62 VERIFIED claims/16 stores; 3 stale wnba dupe jsonls
+  deleted (subset-verified). KBO probe: 5-game slate saved, 1 game ALREADY
+  STARTED -> live window OPEN EARLY. WAVE-55 launching: KBO Naver LIVE
+  mid-game confirm + capture-only wire (m31 as-of, fail-open, NO model/flag),
+  tennis H2H full-pair claims (30616 pairs), fit REJECT verdict into ask.
 - SPRINT WAKE 54 (WAVE-53 SHIPPED: NBA TRULY FULL-POP + MOVES 417, 2026-07-05
   ~07:25Z, wf_d8c6358b-cc0 10 agents/~0.80M tok, 3 lane commits): NBA uncap
   FIXED (1000->5424 rows, ts_pct=329 recount-verified, LeBron 9->17 rankable,
