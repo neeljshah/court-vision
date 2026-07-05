@@ -162,9 +162,11 @@ def test_module_never_imports_a_gate_package():
 def test_real_three_verdicts_validate_end_to_end():
     """Live proof: every real on-disk verdict file this lane targets is
     VERIFIED via the checked-in proof claims JSONL (wave-26: 3 seed claims;
-    wave-33 extended to 6; verdict-coverage lane extended to 16 -- see
-    scripts/platformkit/intel_validation/_build_verdict_claims_coverage.py.
-    3 of the 16 are EXPECTED MISMATCH by design (not a regression): 2 are the
+    wave-33 extended to 6; verdict-coverage lane extended to 16; PROGRAM v3
+    fit-verdict-into-ask lane extended to 17 (added nba_fit_validity_gate_verdict,
+    citing data/domains/nba/fit_validity_gate_verdict.json) -- see
+    scripts/platformkit/intel_validation/build_verdict_claims_coverage.py.
+    3 of the 17 are EXPECTED MISMATCH by design (not a regression): 2 are the
     wave-33 honest-skip pair (soccer_intl tier_calibration, wnba elo_refresh)
     whose real planted-null result is a nested per-fold/per-tier structure
     with no single deterministic scalar path -- their primary_number/
@@ -182,8 +184,8 @@ def test_real_three_verdicts_validate_end_to_end():
         import pytest
         pytest.skip("proof claims artifact not present in this checkout")
     summary = vcv.validate_verdict_claims_file(claims_path)
-    assert summary.n_claims == 16
-    assert summary.n_verified == 13
+    assert summary.n_claims == 17
+    assert summary.n_verified == 14
     assert summary.n_mismatch == 3
     assert summary.n_unverifiable == 0
     expected_mismatch_ids = {
