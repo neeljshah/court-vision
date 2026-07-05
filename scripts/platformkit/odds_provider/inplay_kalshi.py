@@ -3,16 +3,13 @@
 The frontier-unblock connector: the ONLY keyless venue with REAL in-play depth in
 season (Kalshi KX*GAME/TOTAL/SPREAD/TEAMTOTAL/MATCH markets).
 
-  fetch_inplay(sport)               -> live in-play ticks across ALL of the sport's
-                                       wired series (kalshi_series_spec.SERIES_SPEC),
-                                       one YES-prob tick per LIQUID market.
+  fetch_inplay(sport)               -> live in-play ticks across ALL wired series
+                                       (kalshi_series_spec.SERIES_SPEC).
   fetch_price_history(market_ref,*) -> the historical in-play series for one market.
 
-Canonical tick (moneyline rows are BYTE-COMPATIBLE with the pre-widening schema so
-every existing consumer is unchanged):
-  {"sport","game_id","venue":"kalshi","market_type","side","ticker",
-   "prob" (YES in [0,1]), "line" (None for moneyline; the strike for total/spread/
-   team_total), "ts" (ISO-8601 UTC 'Z'), "phase":"in_play"}
+Canonical tick (moneyline rows BYTE-COMPATIBLE with the pre-widening schema):
+  {"sport","game_id","venue":"kalshi","market_type","side","ticker","prob" (YES
+   in [0,1]), "line" (None for moneyline; the strike otherwise), "ts", "phase"}
 
 REUSE, never duplicate: kalshi._yes_ask_prob (price) + kalshi_series_spec (the
 per-sport series list + future-game guard) + inplay_history.fetch_price_history.
@@ -21,25 +18,24 @@ THE LIQUIDITY GATE (the honest fix for "listed but untraded"): a market counts a
 tradeable in-play ONLY if, on the LIVE *_dollars / *_fp fields (NOT the deprecated
 integer fields which read None): open+not settled, YES spread <= MAX_SPREAD,
 volume_fp above MIN_VOLUME, and both yes_bid_size_fp/yes_ask_size_fp above
-MIN_SIZE. An untraded pregame contract emits NOTHING -- never masquerades as a
-live price; a missing/illiquid market -> VOID, NEVER 0-filled.
+MIN_SIZE. An untraded pregame contract emits NOTHING -- a missing/illiquid market
+-> VOID, NEVER 0-filled.
 
-HONESTY (binding): commence_time stays None (Kalshi's only timestamp is a
-SETTLEMENT bound, never a tip-off) so a near-final price can NEVER be mislabeled
-is_true_close. phase is always "in_play". No $ / ROI / edge -- probability only.
-market_type is NEVER assumed to be a WIN probability outside "moneyline" -- a
-consumer treating prob as P(team wins) MUST filter market_type=="moneyline".
+HONESTY (binding): commence_time stays None (a SETTLEMENT bound, never a tip-off)
+so a near-final price is NEVER mislabeled is_true_close. No $/ROI/edge --
+probability only; market_type is NEVER assumed a WIN prob outside "moneyline".
 
 INVARIANTS: build only under scripts/platformkit/; <=300 LOC; ASCII only; stdlib +
 repo-internal only. Per-file test:
   cd /c/Users/neelj/nba-ai-system && python -m pytest tests/platformkit/odds_provider/test_inplay_kalshi.py -q
 
-PACING + 429 OBSERVABILITY (LANE 1, wave-16 fix): a 6-sport cycle fires 17 series
-requests back-to-back with no gap, and a shared 429 wall then hits every
-remaining series in the same burst uncounted -- see kalshi_pacing.py for the
-root-cause + fix. Additive, off-by-default no-ops if unused: REQUEST_STAGGER_SEC
-drips the series calls; *stats* is mutated with n_requests/n_429, never changing
-fetch_inplay's return type (still List[Tick]).
+PACING + 429 OBSERVABILITY (see kalshi_pacing.py for root-cause + fix): additive,
+off-by-default no-ops if unused -- REQUEST_STAGGER_SEC drips series calls; *stats*
+is mutated with n_requests/n_429, never changing fetch_inplay's return type.
+
+CROSS-PROCESS RATE GOVERNOR (see kalshi_rate_governor.py): opt-in via
+governor_caller (None default = no governor, byte-identical); both production
+daemons opt in explicitly (env KALSHI_GOVERNOR_OFF=1 disables). Fail-open.
 """
 from __future__ import annotations
 
@@ -55,6 +51,8 @@ from .kalshi import _BASE, _yes_ask_prob
 from .kalshi_liquidity import MAX_SPREAD, MIN_SIZE, MIN_VOLUME, is_liquid
 from .kalshi_pacing import MAX_429_COOLDOWN_SEC, REQUEST_STAGGER_SEC
 from .kalshi_pacing import cooldown_after_429, is_429, record_429, record_request, stagger_sleep
+from .kalshi_rate_governor import before_request as _governor_before
+from .kalshi_rate_governor import report_429 as _governor_report_429, resolve_governor as _resolve_governor
 from .kalshi_series_spec import (  # noqa: F401 -- _GAME_SERIES is a back-compat re-export
     _GAME_SERIES,
     is_future_game,
@@ -156,16 +154,19 @@ def _fetch_one_series(sport: str, series: str, market_type: str, *, http: HttpGe
                       ts: str, now_dt: datetime, max_spread: float,
                       min_volume: float, min_size: float,
                       stats: Optional[Dict[str, Any]] = None,
-                      sleep_fn: SleepFn = time.sleep) -> List[Tick]:
+                      sleep_fn: SleepFn = time.sleep,
+                      governor: Optional[Any] = None,
+                      n_active_sports: int = 1) -> List[Tick]:
     """Ticks for ONE (series_ticker, market_type) pair. [] on any failure -- a single
     series failing (network, bad body) must never sink the sport's other series.
 
     *stats*, if given, is MUTATED in place (kalshi_pacing.record_request/record_429).
     On a 429 (kalshi_pacing.is_429) this also takes a short, capped cool-down
-    (kalshi_pacing.cooldown_after_429) before returning [], giving a shared-venue
-    throttle a moment to clear before the next series is requested. Never raises
-    regardless of *stats*/*sleep_fn*.
+    (kalshi_pacing.cooldown_after_429) before returning []. *governor*, if given,
+    additionally gates the request (kalshi_rate_governor, fail-open) and is told
+    of any 429. Never raises regardless of *stats*/*sleep_fn*/*governor*.
     """
+    _governor_before(governor, sport, n_active_sports=n_active_sports)
     record_request(stats)
     params = {"series_ticker": series, "limit": 200, "status": "open"}
     url = "%s/markets?%s" % (_BASE, urllib.parse.urlencode(params))
@@ -176,6 +177,7 @@ def _fetch_one_series(sport: str, series: str, market_type: str, *, http: HttpGe
         if is_429(exc):
             record_429(stats)
             cooldown_after_429(exc, sleep_fn)
+            _governor_report_429(governor)
         return []
     markets = body.get("markets") if isinstance(body, dict) else None
     if not isinstance(markets, list):
@@ -208,7 +210,9 @@ def fetch_inplay(sport: str, *, http: HttpGet = resilient_get_json,
                  min_size: float = MIN_SIZE,
                  stats: Optional[Dict[str, Any]] = None,
                  sleep_fn: SleepFn = time.sleep,
-                 stagger_sec: float = 0.0) -> List[Tick]:
+                 stagger_sec: float = 0.0,
+                 governor_caller: Optional[str] = None,
+                 n_active_sports: int = 1) -> List[Tick]:
     """Live in-play ticks across ALL of *sport*'s wired Kalshi series.
 
     Iterates kalshi_series_spec.series_for(sport) -- one /markets?series_ticker=...
@@ -223,27 +227,30 @@ def fetch_inplay(sport: str, *, http: HttpGet = resilient_get_json,
     is the escalating transport.resilient_get_json, same seam as http_get_json).
     Never raises: an unsupported sport or a feed failure yields [].
 
-    PACING (LANE 1): *stagger_sec* defaults to 0.0 (NO pacing, byte-identical to
-    the pre-LANE-1 behavior) so every pre-existing caller/test is UNCHANGED. The
-    production capture loop opts IN by passing stagger_sec=REQUEST_STAGGER_SEC
-    explicitly (see inplay_capture_loop._default_inplay_fetch) so only the real,
-    multi-series-fan-out path drips instead of bursting -- an offline test that
-    never mentions pacing keeps running instantly. *stats*, if given, is MUTATED
-    in place with n_requests / n_429 regardless of stagger_sec -- return type is
-    unchanged (still List[Tick]).
+    PACING (LANE 1): *stagger_sec* defaults to 0.0 (byte-identical to pre-LANE-1
+    behavior). The production capture loop opts IN with stagger_sec=
+    REQUEST_STAGGER_SEC (see inplay_capture_loop._default_inplay_fetch). *stats*,
+    if given, is MUTATED with n_requests/n_429 regardless -- return type unchanged.
+
+    RATE GOVERNOR (kalshi_rate_governor.py): *governor_caller* defaults to None
+    (byte-identical, no governor -- every pre-existing caller/test UNCHANGED, same
+    opt-in discipline as *stagger_sec*). The two production daemons opt IN
+    explicitly ("capture", "snapshot"); env KALSHI_GOVERNOR_OFF=1 disables either.
     """
     pairs = series_for(sport)
     if not pairs:
         return []
     ts = now_iso or _now_iso()
     now_dt = _parse_iso_now(ts)
+    governor = _resolve_governor(governor_caller)
     out: List[Tick] = []
     for i, (series, market_type) in enumerate(pairs):
         stagger_sleep(sleep_fn, stagger_sec, is_first=(i == 0))
         out.extend(_fetch_one_series(
             sport, series, market_type, http=http, ts=ts, now_dt=now_dt,
             max_spread=max_spread, min_volume=min_volume, min_size=min_size,
-            stats=stats, sleep_fn=sleep_fn))
+            stats=stats, sleep_fn=sleep_fn, governor=governor,
+            n_active_sports=max(1, n_active_sports)))
     return out
 
 
@@ -283,7 +290,6 @@ def fetch_price_history(market_ref: str, window: Optional[int] = None,
 
 
 def _now_iso() -> str:
-    from datetime import datetime, timezone
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 

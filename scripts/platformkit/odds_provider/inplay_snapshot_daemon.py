@@ -131,6 +131,36 @@ def _append_atomic(path: Path, lines: List[str]) -> None:
         fh.write("\n".join(lines) + "\n")
 
 
+def _governed_default_fetch(sport: str) -> List[Dict[str, Any]]:
+    """Kalshi-primary in-play ticks, paced via kalshi_rate_governor's "snapshot"
+    cross-process rate share (see kalshi_rate_governor.py + inplay_kalshi.
+    fetch_inplay's governor_caller param).
+
+    Deliberately calls fetch_inplay directly (governor_caller="snapshot") rather
+    than inplay_feed.default_fetch, whose Kalshi call is an UNGOVERNED local
+    import default_fetch's other callers/tests must keep byte-unchanged. This is
+    a safe narrowing, not a behavior loss: default_fetch's ESPN/PM corroborators
+    are tagged tradeable=False and _clean_tick (above) UNCONDITIONALLY drops any
+    tradeable=False tick before it is ever persisted -- so this daemon's real
+    output is identical either way; only the wasted, always-discarded ESPN/PM
+    fetch is skipped. Never raises: any failure yields [].
+    """
+    try:
+        from .inplay_kalshi import fetch_inplay as _fetch_kalshi
+        out: List[Dict[str, Any]] = []
+        for tick in (_fetch_kalshi(sport, governor_caller="snapshot") or []):
+            t = dict(tick)
+            t["tradeable"] = True
+            t.setdefault("status", "in")
+            t.setdefault("source_ts", tick.get("ts"))
+            out.append(t)
+        return out
+    except Exception as exc:  # noqa: BLE001 -- a feed error is never fatal
+        logger.warning("inplay_snapshot_daemon governed fetch failed sport=%s: %s",
+                       sport, exc)
+        return []
+
+
 def poll_inplay_once(sport: str, *, now: Optional[datetime] = None,
                      fetch_fn: Optional[Callable[[str], List[Dict[str, Any]]]] = None,
                      out_dir: Optional[Path] = None,
@@ -156,8 +186,14 @@ def poll_inplay_once(sport: str, *, now: Optional[datetime] = None,
         "out_path": None, "captured_at": _iso(nowdt), "status": "ok",
     }
     try:
-        from .inplay_feed import default_fetch, default_is_live_native
-        fetch = fetch_fn or default_fetch
+        from .inplay_feed import default_is_live_native
+        # kalshi_rate_governor config-only touch: the REAL default fetch is now
+        # _governed_default_fetch (see above), a thin fetch_inplay(governor_
+        # caller="snapshot") wrapper -- NOT inplay_feed.default_fetch (whose own
+        # Kalshi call stays ungoverned for its 4 other callers/tests). An
+        # explicitly injected fetch_fn (tests, other callers) is left exactly as
+        # given -- this only affects the real default.
+        fetch = fetch_fn or _governed_default_fetch
         raw_ticks = fetch(sport) or []
         live_game_ids: set = set()
         kept: List[Dict[str, Any]] = []

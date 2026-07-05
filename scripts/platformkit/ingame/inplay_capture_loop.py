@@ -164,14 +164,20 @@ def _default_inplay_fetch(sport: str, stats: Optional[Dict[str, Any]] = None
     (stagger_sec=REQUEST_STAGGER_SEC) -- fetch_inplay itself defaults stagger_sec
     to 0.0 (no pacing) so every OTHER caller/test is unaffected; only THIS
     production default fetcher (the real 6-sport/17-series fan-out) drips its
-    requests instead of bursting them.
+    requests instead of bursting them. Also passes governor_caller="capture" (the
+    kalshi_rate_governor config-only identity for this daemon's fair rate share,
+    distinct from inplay_snapshot_daemon's default "snapshot" share) so the two
+    daemons' cross-process token buckets stay apportioned per
+    kalshi_rate_governor.DEFAULT_RATE_SHARES.
     """
     try:
         from scripts.platformkit.odds_provider import inplay_kalshi as _ik
         if stats is not None:
             return list(_ik.fetch_inplay(sport, stats=stats,
-                                          stagger_sec=_ik.REQUEST_STAGGER_SEC))
-        return list(_ik.fetch_inplay(sport, stagger_sec=_ik.REQUEST_STAGGER_SEC))
+                                          stagger_sec=_ik.REQUEST_STAGGER_SEC,
+                                          governor_caller="capture"))
+        return list(_ik.fetch_inplay(sport, stagger_sec=_ik.REQUEST_STAGGER_SEC,
+                                      governor_caller="capture"))
     except Exception as exc:  # noqa: BLE001 -- a feed error is never fatal
         logger.warning("inplay_capture_loop fetch failed sport=%s: %s", sport, exc)
         return []
