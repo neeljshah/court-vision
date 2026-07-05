@@ -93,6 +93,31 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- GAP-ROCKS WAVE CLOSED ~23:58Z TRUE-UTC (wf_15876188, 12 agents/0.85M; duty 4
+  head): 2 LANDED + 2 HONEST PREMISE CATCHES (the queue's own integrity rail
+  firing). LANDED: (1) GAP#6 asof_team_adv.py 8989fe92 (Opus PASS; leak-free
+  prior-only trailing from team_advanced_stats.parquet 7370 rows 2022-25;
+  asof_team_adv.parquet 975KB live; snapshot-before-update WF, games.parquet
+  authoritative dates; truncation-invariance + shift tests) -- 2nd-corpus
+  ingredient EXISTS, fits still need sha-pinned prereg amendment (K
+  cumulative); (2) composer-arc fixes d849d940 (claims_validator numpy-int64
+  encoder fix, verdict logic untouched; context_shooting entity-id divergence
+  fixed in PRODUCER -> nba_context_shooting 3/3 VERIFIED by independent
+  recompute, was 1/3; validator never weakened). PREMISE CATCHES: (3) GAP#8
+  baseout "DORMANT 0/0" is STALE -- gate live at data/frontend/ops/
+  ingame_baseout_gate.json (23:18Z, n_ticks=33706/n_games=92, floors cleared)
+  w/ two-corpus HONEST REJECT (a: -0.0053 dm_p~6e-17 BUT b flips +0.0012
+  p=.034 AND planted null does not collapse -> overfit floor caught); closed
+  as already-wired, re-adjudicate only on materially larger forward corpus;
+  (4) schedule-tail premise FALSE -- games.parquet already holds 1156 full
+  2025-26 rows; the "0 rows" scout read used season-key 202526 vs 2025-26
+  (scout-artifact rail: verify key formats before queueing reclaims); real
+  residual = 2025-26 BOX coverage 74/1156 (network-ingest class, queued
+  separately only if binding). DEPTH_PROGRAM doc gained an append-only CYCLE
+  VERDICTS block (rows never rewritten); re-pinned sha256=
+  ef5f7d1d2adf8f5f62357912a680ae4f5fc5726fe02ef6c4da87c6ad4175e0a8.
+  CONFORMAL not pulled (class closed: 3 CQR REJECTs + aci pinball-null). No
+  edge claims.
 - ONE-CONCLUSION COMPOSER LANDED ~23:30Z TRUE-UTC (duty 2; wf_004db836 2 lanes
   + Fable-directed fix round; commits 51ce7129 claim / ca57abe5 composer /
   6acd8b97 domain-filter fix; every lane Opus cv-code-reviewer PASS): (1) the
