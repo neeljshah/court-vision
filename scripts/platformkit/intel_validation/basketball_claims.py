@@ -8,9 +8,15 @@ claims_validator.py can VERIFY every row independently.
 GOAL: full population, not top-N sampling. The FLOOR applies to the WHOLE
 qualifying population -- "where does LeBron rank on X" is answerable for
 every one of the 329 (2024-25 n_games>=20 AND fga_sum>=200) qualifying
-players who ALSO clear that dimension's own per-source floor;
-n_considered/n_excluded_below_floor cover the full population, never just
-the printed top 50 (excluded, never silently dropped).
+players who ALSO clear that dimension's own per-source floor; EVERY
+qualifying player above that floor is RANKED (no top-N cap -- lane
+nba-uncap-settle removed a prior TOP_N=50 truncation at two head(TOP_N)
+call sites, mirroring the mlb_tto_claims.py full-population precedent).
+n_considered/n_excluded_below_floor cover the full population; below-floor
+players are counted honestly, never silently dropped. claim_id strings
+retain their historical `_top50_` token unchanged -- stable identifiers
+consumed verbatim by dossier_registry.py's CLAIM_ID_TO_FILE registry; only
+the ranked population changed, not the id.
 
 TWO CLAIM SHAPES: (1) boxscore aggregate dims (ts_pct/efg_pct/fga_per_game/
 fg3a_per_game) via the validator's criteria.aggregate group-by path off
@@ -56,7 +62,6 @@ _OUT_DIR = REPO_ROOT / "data" / "cache" / "intel_claims"
 _CLAIMS_OUT = _OUT_DIR / "nba_shooting_claims.jsonl"
 _BOXSCORE_SNAPSHOT_OUT = _OUT_DIR / "nba_boxscore_agg_snapshot.parquet"
 
-TOP_N = 50
 SEASON_WINDOW = dims.SEASON
 
 
@@ -136,10 +141,9 @@ def build_boxscore_aggregate_claim(metric: str) -> dict[str, Any]:
     qualifiers = qualifiers.sort_values("_value", ascending=ascending).reset_index(drop=True)
     # itertuples mangles "_value" -> "_1" positionally; rename first.
     qualifiers = qualifiers.rename(columns={"_value": "metric_value"})
-    top = qualifiers.head(TOP_N)
 
     ranking = []
-    for i, row in enumerate(top.itertuples(index=False), start=1):
+    for i, row in enumerate(qualifiers.itertuples(index=False), start=1):
         pid = int(row.player_id)
         ranking.append({
             "rank": i,
@@ -165,6 +169,9 @@ def build_boxscore_aggregate_claim(metric: str) -> dict[str, Any]:
             f"min_sample floor: n_games>={dims.POP_MIN_GAMES} AND fga_sum>={dims.POP_MIN_FGA} "
             f"({len(qualifiers)}/{n_considered} players qualify) -- the frozen "
             "qualifying_population gate from basketball_truth_spec.json.",
+            f"FULL POPULATION: all {len(qualifiers)} qualifying players clearing the floor "
+            "are ranked here (no top-N truncation) -- below-floor players honestly counted "
+            "in n_excluded_below_floor, never silently dropped.",
             "DESCRIPTIVE ranking only -- no forecasting/market/$ edge claimed.",
         ],
     }
@@ -192,10 +199,9 @@ def build_atlas_dim_claim(spec: dims.DimSpec) -> dict[str, Any] | None:
     n_excluded = n_considered - len(qualifiers)
     ascending = spec.direction == "asc"
     qualifiers = qualifiers.sort_values(spec.metric_col, ascending=ascending).reset_index(drop=True)
-    top = qualifiers.head(TOP_N)
 
     ranking = []
-    for i, row in enumerate(top.itertuples(index=False), start=1):
+    for i, row in enumerate(qualifiers.itertuples(index=False), start=1):
         pid = int(row.player_id)
         ranking.append({
             "rank": i,
@@ -231,6 +237,9 @@ def build_atlas_dim_claim(spec: dims.DimSpec) -> dict[str, Any] | None:
             f"population gate: 2024-25 n_games>=20 AND fga_sum>=200 (329 qualifying per "
             f"basketball_truth_spec.json), further restricted by min_sample floor "
             f"{spec.floor_col}>={spec.floor_value} ({len(qualifiers)}/{n_considered} qualify).",
+            f"FULL POPULATION: all {len(qualifiers)} qualifying players clearing the floor "
+            "are ranked here (no top-N truncation) -- below-floor players honestly counted "
+            "in n_excluded_below_floor, never silently dropped.",
             "DESCRIPTIVE ranking only -- no forecasting/market/$ edge claimed.",
         ],
     }
