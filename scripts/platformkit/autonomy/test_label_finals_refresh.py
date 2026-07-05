@@ -160,7 +160,8 @@ def test_refresh_all_isolates_one_failing_spec_from_others(tmp_path):
 def test_refresh_all_default_specs_shape():
     from scripts.platformkit.autonomy.label_finals_refresh import SPECS
     names = {s.name for s in SPECS}
-    assert {"soccer_intl_finals", "mlb_espn_boxscores", "wnba_espn_scoreboard"} <= names
+    assert {"soccer_intl_finals", "mlb_espn_boxscores", "wnba_espn_scoreboard",
+            "npb_results", "kbo_results"} <= names
     for s in SPECS:
         assert s.max_dates_per_tick > 0
         assert callable(s.fetch_fn)
@@ -168,3 +169,72 @@ def test_refresh_all_default_specs_shape():
 
 def test_refresh_all_never_raises_with_empty_specs_list():
     assert refresh_all([]) == {}
+
+
+# --------------------------------------------------------------------------- #
+# NPB/KBO wiring (wave-42 lane label-finals-wiring): fetch_fn wrappers call
+# the season-level catchup_npb/catchup_kbo, not a per-date fetch.
+# --------------------------------------------------------------------------- #
+def test_npb_fetch_wrapper_calls_catchup_npb(monkeypatch, tmp_path):
+    import scripts.platformkit.autonomy.label_finals_refresh as mod
+
+    calls = {}
+
+    def fake_catchup_npb(out_path=None, **kwargs):
+        calls["out_path"] = out_path
+        return {"name": "npb_results", "refreshed": True}
+
+    monkeypatch.setattr(
+        "domains.baseball_npb.results_catchup.catchup_npb", fake_catchup_npb
+    )
+    p = tmp_path / "npb_results.parquet"
+    res = mod._npb_results_fetch(["20260703"], p)
+    assert calls["out_path"] == p
+    assert res["refreshed"] is True
+
+
+def test_kbo_fetch_wrapper_calls_catchup_kbo(monkeypatch, tmp_path):
+    import scripts.platformkit.autonomy.label_finals_refresh as mod
+
+    calls = {}
+
+    def fake_catchup_kbo(out_path=None, **kwargs):
+        calls["out_path"] = out_path
+        return {"name": "kbo_results", "refreshed": True}
+
+    monkeypatch.setattr(
+        "domains.baseball_kbo.results_catchup_kbo.catchup_kbo", fake_catchup_kbo
+    )
+    p = tmp_path / "kbo_results.parquet"
+    res = mod._kbo_results_fetch(["20260703"], p)
+    assert calls["out_path"] == p
+    assert res["refreshed"] is True
+
+
+def test_refresh_all_invokes_npb_and_kbo_specs_isolated(monkeypatch, tmp_path):
+    """refresh_one for npb/kbo specs must call the mocked catchup fetch_fn
+    (proving both sports are now invoked by refresh_all), isolated from each
+    other and from the other three specs."""
+    import scripts.platformkit.autonomy.label_finals_refresh as mod
+
+    invoked = {"npb": False, "kbo": False}
+
+    def fake_npb_fetch(dates, out_path):
+        invoked["npb"] = True
+
+    def fake_kbo_fetch(dates, out_path):
+        invoked["kbo"] = True
+        raise RuntimeError("kbo boom")  # must not sink npb's result
+
+    specs = [
+        RefreshSpec(name="npb_results", out_path=tmp_path / "npb.parquet",
+                    fetch_fn=fake_npb_fetch, max_dates_per_tick=1, bootstrap_days=1),
+        RefreshSpec(name="kbo_results", out_path=tmp_path / "kbo.parquet",
+                    fetch_fn=fake_kbo_fetch, max_dates_per_tick=1, bootstrap_days=1),
+    ]
+    out = mod.refresh_all(specs, today=dt.date(2026, 7, 3))
+    assert invoked["npb"] is True
+    assert invoked["kbo"] is True
+    assert out["npb_results"]["error"] is None
+    assert out["kbo_results"]["error"] is not None
+    assert "kbo boom" in out["kbo_results"]["error"]
