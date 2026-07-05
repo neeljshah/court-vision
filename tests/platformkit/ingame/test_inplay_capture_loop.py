@@ -465,6 +465,82 @@ def test_kbo_deep_state_fn_exception_leaves_base_path_untouched(tmp_path):
 
 
 # --------------------------------------------------------------------------------------- #
+# 7c. kbo-reorder-verify lane: ESPN cannot resolve a KBO live state at all -> the deep      #
+#     enricher's dispatch (kbo_deep_state_fn) was otherwise UNREACHABLE for kbo. The        #
+#     reorder invokes it fail-open for its capture (disk-append) side effect BEFORE the     #
+#     early no_live_state return, WITHOUT changing the returned row: reason stays           #
+#     "no_live_state" and no decision field is ever populated (capture-only).               #
+# --------------------------------------------------------------------------------------- #
+def _no_state_fn(sport, gid):
+    return None  # ESPN-keyed lookup miss (the exact seam this reorder targets)
+
+
+def test_kbo_failed_live_state_still_invokes_deep_fn_once_reason_unchanged(tmp_path, monkeypatch):
+    # Force the team-name bridge scan to also miss (mirrors an ESPN-side outage/absence)
+    # so the offline test never depends on a real npb/kbo network call.
+    monkeypatch.setattr(loop._ls, "live_states", lambda *a, **kw: [])
+    calls = []
+
+    def _deep_fn(gid):
+        calls.append(gid)
+        return {"inning": 4}  # return value is discarded by the reorder -- capture only
+
+    hb = loop.poll_once(sports=["kbo"], live_state_fn=_no_state_fn,
+                        model_fn=_model_fn,
+                        inplay_fetch_fn=lambda s: _kbo_fetch_for_deep(),
+                        finals_fn=_finals_none, kbo_deep_state_fn=_deep_fn,
+                        grade_dir=tmp_path / "grade", ledger_path=tmp_path / "l.jsonl",
+                        heartbeat_path=tmp_path / "hb.json")
+    assert calls == ["KXKBOGAME-26JUL050100DOOKIW"]  # deep fn fired exactly once
+    g = hb["games"][0]
+    assert g["reason"] == "no_live_state"            # row output unchanged
+    assert g["paired"] is False and g["bet"] is False  # no decision fields populated
+    assert "action" not in g and "model_prob" not in g and "tier" not in g
+    assert hb["n_pairs"] == 0 and hb["n_bets"] == 0 and hb["n_live"] == 0
+    _no_dollar_field(hb)
+
+
+def test_kbo_failed_live_state_deep_fn_raising_is_swallowed_identical_output(tmp_path, monkeypatch):
+    monkeypatch.setattr(loop._ls, "live_states", lambda *a, **kw: [])
+
+    def _boom(gid):
+        raise RuntimeError("relay down")
+
+    hb = loop.poll_once(sports=["kbo"], live_state_fn=_no_state_fn,
+                        model_fn=_model_fn,
+                        inplay_fetch_fn=lambda s: _kbo_fetch_for_deep(),
+                        finals_fn=_finals_none, kbo_deep_state_fn=_boom,
+                        grade_dir=tmp_path / "grade", ledger_path=tmp_path / "l.jsonl",
+                        heartbeat_path=tmp_path / "hb.json")
+    # Identical output to the non-raising deep fn case above: the exception never
+    # surfaces, reason/paired/bet are unaffected.
+    g = hb["games"][0]
+    assert g["reason"] == "no_live_state"
+    assert g["paired"] is False and g["bet"] is False
+    assert hb["n_pairs"] == 0 and hb["n_bets"] == 0
+
+
+def test_non_kbo_sport_never_invokes_deep_fn_on_failed_live_state_path(tmp_path, monkeypatch):
+    # mlb (and every other sport) must NOT get this capture-only hook on the
+    # no_live_state path -- it is scoped to sport=="kbo" ONLY, per the sanctioned reorder.
+    monkeypatch.setattr(loop._ls, "live_states", lambda *a, **kw: [])
+    calls = []
+
+    def _spy(gid):
+        calls.append(gid)
+        return {"inning": 4}
+
+    hb = loop.poll_once(sports=["mlb"], live_state_fn=_no_state_fn, model_fn=_model_fn,
+                        inplay_fetch_fn=_inplay_fetch, finals_fn=_finals_none,
+                        deep_state_fn=_spy,
+                        grade_dir=tmp_path / "grade", ledger_path=tmp_path / "l.jsonl",
+                        heartbeat_path=tmp_path / "hb.json")
+    assert calls == []  # non-kbo sport: the reorder's kbo-only gate never fires
+    g = hb["games"][0]
+    assert g["reason"] == "no_live_state"
+
+
+# --------------------------------------------------------------------------------------- #
 # 8. LANE 3: wnba shadow field appended after on_tick, poisoned-build -> permanent None,    #
 #    decision path untouched.                                                               #
 # --------------------------------------------------------------------------------------- #

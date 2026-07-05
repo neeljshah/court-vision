@@ -560,6 +560,22 @@ def _process_game(sport: str, gid: str, legs: Dict[str, float],
             # gid is a Kalshi ticker, not an ESPN id -> bridge to the live game by team.
             state = _scan_live_by_legs(sport, legs)
         if not isinstance(state, dict):
+            # KBO REORDER (kbo-reorder-verify lane, capture-only): ESPN cannot resolve a
+            # KBO live state at all (ESPN doesn't carry the league), so this branch is
+            # KBO's ONLY path to the relay wire -- the deep_state_fn dispatch below is
+            # otherwise unreachable for kbo. Fire it here purely for its disk-append
+            # side effect (kbo_capture_wire.kbo_deep_state_for_ticker persists via
+            # append_state_row internally, see beb65aaa); fail-open (any exception is
+            # swallowed, mirrors every other deep_state_fn call in this function) and
+            # its return value is discarded. The returned row is UNCHANGED: reason
+            # stays "no_live_state" and no decision field is touched -- capture-only.
+            if str(sport).lower() == "kbo" and deep_state_fn is not None:
+                try:
+                    deep_state_fn(gid)
+                except Exception as exc:  # noqa: BLE001 -- capture-only, never fatal
+                    logger.debug(
+                        "inplay_capture_loop kbo capture-only deep(%s/%s) failed: %s",
+                        sport, gid, exc)
             row["reason"] = "no_live_state"
             return row
         state.setdefault("sport", sport)  # segment-trust floor lookup needs the sport
