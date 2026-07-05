@@ -23,6 +23,17 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   Conformalized Quantile Regression for prop intervals) + ONDISK_RECLAIM_TARGETS.md (BIG finding:
   leak-free asof_*.parquet already BUILT for every sport but NO gate adapter merges them -> each
   reclaim = cheap wire+gate experiment). EXECUTION QUEUE in BUILD_BACKLOG S0.
+- COMBO-MOAT WAVE-1 OPEN (ARCHITECT SESSION per SESSION_PROMPTS prompt 1,
+  2026-07-05 17:05Z true-UTC): NEXT 0e execution started. YIELD NOTE: this entry
+  supersedes the sprint loop's next wake -- the 17-23Z US verifier sweep items
+  are COVERED by this wave's health scout lane, do not duplicate. Stage A in
+  flight (wf_8d24dc3e-05f): health + live-activation verifier tick, per-sport
+  ingredient inventory (reject-ledger + reclaim gates), combo-machinery contract
+  scout, stack-family PREREG draft + Opus adversarial review. Fits run ONLY
+  after Fable adjudicates + sha-pins the prereg (stage B: mlb_pregame_stack_v1,
+  nba_pregame_stack_v1, soccer_home_sot_replication_v1). Stacks/gates need no
+  sentinel; combo-daemon manifest wiring stays BLOCKED pending user confirmation
+  of who armed data/cache/improve/PIPELINE_ENABLED. No edge claims.
 - MAINTENANCE (SYSTEM HEALTH SWEEP + WORKSPACE ORG, 2026-07-03 pm, review session):
   FOUND+FIXED two LIVE serving-spine outages: (1) m1_api_paper (:8099) WEDGED since
   13:00:30 (last request served = /api/paper/trail?limit=2000; event loop blocked,
