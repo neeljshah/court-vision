@@ -142,6 +142,26 @@ TABLE: Dict[str, SlaEntry] = {
         _REPO / "data" / "domains" / "npb" / "npb_results.parquet", 172800.0),
     "kbo_results": SlaEntry(
         _REPO / "data" / "domains" / "kbo" / "kbo_results.parquet", 172800.0),
+
+    # --- LANE 1 (2026-07-05): manual/CLI ops-report freshness -------------------
+    # edge_greenlight / clv_scoreboard / clv_reconcile (moneyline + paper_pm) /
+    # after_cost / beat_the_line write scoreboards used to gate real decisions but
+    # have NO ProcSpec/daemon at all (scripts/platformkit/clv/ + econ/, hand/CLI-
+    # run only) -- found 73-75h stale with nothing flagging it. Same 48h manual-
+    # refresh margin as npb_results/kbo_results above (a hand-run report going a
+    # day-plus silent is normal; multi-day is the honest-gap signal to catch).
+    "edge_greenlight": SlaEntry(
+        _OPS / "edge_greenlight.json", 172800.0),
+    "clv_scoreboard": SlaEntry(
+        _OPS / "clv_scoreboard.json", 172800.0),
+    "clv_reconcile_moneyline": SlaEntry(
+        _OPS / "clv_reconcile_moneyline.json", 172800.0),
+    "clv_reconcile_paper_pm": SlaEntry(
+        _OPS / "clv_reconcile_paper_pm.json", 172800.0),
+    "after_cost_scoreboard": SlaEntry(
+        _OPS / "after_cost_scoreboard.json", 172800.0),
+    "beat_the_line": SlaEntry(
+        _OPS / "beat_the_line.json", 172800.0),
 }
 
 

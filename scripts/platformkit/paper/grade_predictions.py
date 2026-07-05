@@ -15,11 +15,10 @@ HONESTY (binding):
   * Idempotent: a pred already graded (by pred_key) is skipped.
 
 Output ledger: data/frontend/paper_predictions_graded.jsonl (append-only twins).
-The pregame fair price (fair_odds) is the decimal we settle at -- the honest model
-price. Most rows never captured a tradeable book price -> no CLV
-(clv_status="no_close"); a moneyline-selection row that DID capture a two-way
-close_proxy at log time gets real CLV here too (clv_status="proxy" -- an honest
-label, excluded from the true-close aggregate; see _clv_from_proxy).
+fair_odds is the decimal we settle at (the honest model price). CLV tiers,
+best first (see _clv_fields): true_close (our own captured line history at
+lock, prediction_close_attach) > proxy (a same-cycle close_proxy snapshot,
+_clv_from_proxy) > no_close (no tradeable price captured -- most rows).
 
 INVARIANTS: build only under scripts/platformkit/; <=300 LOC; ASCII; no secrets.
 
@@ -38,6 +37,7 @@ from scripts.platformkit.clv_ledger import compute_clv
 from scripts.platformkit.clv_ledger_migrate import BANNED_KEYS
 from scripts.platformkit.paper import finals_fetch as _ff
 from scripts.platformkit.paper import market_resolver as _mr
+from scripts.platformkit.paper import prediction_close_attach as _pca
 
 _HERE = Path(__file__).resolve().parent
 _FRONTEND = _HERE.parents[2] / "data" / "frontend"
@@ -103,6 +103,15 @@ def _load_jsonl(path: Path) -> List[Dict[str, Any]]:
 
 _NO_CLOSE = {"clv_pct": None, "beat_close": None,
             "clv_status": "no_close", "clv_is_proxy": False}
+
+
+def _clv_fields(row: Dict[str, Any], home_team: str, away_team: str
+                ) -> Dict[str, Any]:
+    """true_close (our own captured line history) first, else the close_proxy
+    fallback, else no_close. Neither tier ever fabricates."""
+    true_close = _pca.attach_true_close(row, home_team, away_team)
+    return (true_close if true_close["clv_status"] == "true_close"
+           else _clv_from_proxy(row, home_team, away_team))
 
 
 def _clv_from_proxy(row: Dict[str, Any], home_team: str, away_team: str
@@ -182,12 +191,7 @@ def grade_one_pred(
         "unit_result": _unit_result(outcome, dec, stake_units),
         "executed": False,
         "edge_claimed": False,
-        # Most rows never captured a tradeable close proxy (derived/spread/total
-        # markets) -> CLV genuinely unavailable, unchanged. A moneyline-selection
-        # row that DID capture a two-way close_proxy at log time gets real CLV
-        # here (clv_status="proxy" -- honest label, excluded from the true-close
-        # aggregate; see _clv_from_proxy).
-        **_clv_from_proxy(row, home_team, away_team),
+        **_clv_fields(row, home_team, away_team),  # true_close > proxy > no_close
         "pred_key": pred_key(row),
         "channel": "paper_prediction",
     })
