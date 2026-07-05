@@ -15,6 +15,15 @@ merge treats {} identically to no enrichment: `if isinstance(deep, dict) and dee
 zero-content dict is indistinguishable from "nothing to add" and the tick is captured
 exactly as it always was. NOTHING here can raise past this module's own boundary.
 
+BUGFIX (kbo-runtime-verify lane, wave-56): kbo_deep_state_for_ticker previously called
+kbo_relay_state_provider.relay_state_for_game directly, which builds the row but never
+persists it -- the disk-append lives in a DIFFERENT function (append_state_row) that only
+make_kbo_state_fn's own closure invoked. Net effect: the alias->matcher->relay chain
+resolved and merged into the in-memory tick correctly, but data/cache/kbo_relay_state/
+never received a row through THIS path, silently (no hop failed, so nothing logged). Now
+mirrors make_kbo_state_fn's own capture=True default by calling append_state_row after a
+successful resolve.
+
 SCOPE (unchanged from kbo_relay_state_provider): NO model probability, NO dispatch
 branch, NO bet decision. This is descriptive state only, same class as the MLB deep
 enricher (ingame_id_resolver_mlb.make_tick_deep_fn) this module mirrors.
@@ -43,12 +52,17 @@ def kbo_deep_state_for_ticker(ticker: str, *,
                               date: Optional[str] = None,
                               slate_dir: Optional[Path] = None,
                               http_get: Optional[Callable] = None,
-                              relay_http_get: Optional[Callable] = None
+                              relay_http_get: Optional[Callable] = None,
+                              capture: bool = True,
+                              out_dir: Optional[Path] = None
                               ) -> Dict[str, Any]:
     """Resolve one Kalshi KBO ticker -> its as-of relay state row (a plain dict,
     matching kbo_relay_state_provider's row shape), or {} on ANY miss/failure at any
     hop. *date* defaults to today (UTC) -- injectable so the tested path is
-    deterministic. Never raises."""
+    deterministic. *capture* (default True) also appends the resolved row to disk via
+    kbo_relay_state_provider.append_state_row, mirroring make_kbo_state_fn's own
+    capture=True default (see BUGFIX note above) -- pass False for a pure lookup that
+    never touches disk. Never raises."""
     try:
         parsed = _matcher.parse_kalshi_kbo_ticker(ticker)
         if parsed is None:
@@ -70,7 +84,11 @@ def kbo_deep_state_for_ticker(ticker: str, *,
         if gid is None:
             return {}
         row = _relay_state.relay_state_for_game(gid, http_get=relay_http_get)
-        return row if isinstance(row, dict) else {}
+        if not isinstance(row, dict):
+            return {}
+        if capture:
+            _relay_state.append_state_row(gid, row, out_dir=out_dir)
+        return row
     except Exception as exc:  # noqa: BLE001 -- capture-only enrichment must never raise
         logger.debug("kbo_capture_wire kbo_deep_state_for_ticker(%s) failed: %s", ticker, exc)
         return {}
@@ -79,16 +97,21 @@ def kbo_deep_state_for_ticker(ticker: str, *,
 def make_kbo_deep_fn(*, date: Optional[str] = None,
                      slate_dir: Optional[Path] = None,
                      http_get: Optional[Callable] = None,
-                     relay_http_get: Optional[Callable] = None
+                     relay_http_get: Optional[Callable] = None,
+                     capture: bool = True,
+                     out_dir: Optional[Path] = None
                      ) -> Callable[[str], Dict[str, Any]]:
     """Build the (kalshi_ticker) -> dict closure for inplay_capture_loop's
     deep_state_fn slot, mirroring ingame_id_resolver_mlb.make_tick_deep_fn's shape
     (a bare callable, no lazy candidate cache needed here since every lookup is
-    already cheap/cached via the slate file). Never raises -- degrades to {}."""
+    already cheap/cached via the slate file). *capture*/*out_dir* pass through to
+    kbo_deep_state_for_ticker (disk-append toggle, see BUGFIX note above). Never
+    raises -- degrades to {}."""
     def _deep(ticker: str) -> Dict[str, Any]:
         return kbo_deep_state_for_ticker(
             ticker, date=date, slate_dir=slate_dir,
-            http_get=http_get, relay_http_get=relay_http_get)
+            http_get=http_get, relay_http_get=relay_http_get,
+            capture=capture, out_dir=out_dir)
     return _deep
 
 

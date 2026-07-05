@@ -152,3 +152,35 @@ def test_malformed_ticker_never_raises():
     assert kbo_deep_state_for_ticker(None) == {}
     assert kbo_deep_state_for_ticker("garbage") == {}
     assert kbo_deep_state_for_ticker("") == {}
+
+
+def test_happy_path_appends_state_row_to_disk(tmp_path):
+    """BUGFIX regression (kbo-runtime-verify lane, wave-56): a successful resolve must
+    also persist via kbo_relay_state_provider.append_state_row -- previously this wire
+    called relay_state_for_game directly and never appended, so data/cache/
+    kbo_relay_state/ silently never gained rows through this path even on a fully
+    healthy chain. capture=True (the production default) must write a real .jsonl."""
+    slate_dir = _write_slate_cache(tmp_path)
+    out_dir = tmp_path / "kbo_relay_state"
+    row = kbo_deep_state_for_ticker(
+        _TICKER, date=_DATE, slate_dir=slate_dir, relay_http_get=_relay_http_get,
+        out_dir=out_dir)
+    assert row != {}
+    state_file = out_dir / ("%s.jsonl" % _GID)
+    assert state_file.is_file()
+    lines = state_file.read_text(encoding="utf-8").strip().splitlines()
+    assert len(lines) == 1
+    written = json.loads(lines[0])
+    assert written["game_id"] == _GID
+    assert written["inning"] == 8
+
+
+def test_capture_false_never_writes_to_disk(tmp_path):
+    """capture=False (pure-lookup mode) must resolve the row but never touch disk."""
+    slate_dir = _write_slate_cache(tmp_path)
+    out_dir = tmp_path / "kbo_relay_state"
+    row = kbo_deep_state_for_ticker(
+        _TICKER, date=_DATE, slate_dir=slate_dir, relay_http_get=_relay_http_get,
+        capture=False, out_dir=out_dir)
+    assert row != {}
+    assert not out_dir.exists()
