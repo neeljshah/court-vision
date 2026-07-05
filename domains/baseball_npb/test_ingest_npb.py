@@ -53,6 +53,22 @@ def test_parse_month_extracts_completed_games_and_labels_home_win():
     assert rows[1]["home_win"] == 1.0
 
 
+def test_parse_month_date_uses_day_not_month_digits():
+    # Regression: "date" MUST come from the DAY half of the row id
+    # ("dateMMDD" -> DD), never the MONTH half. A month/day slice bug here
+    # previously collapsed every row in a given month onto a single bogus
+    # date equal to the month number (e.g. all of July stamped "07-07").
+    # month != day in every id below so a mixed-up slice cannot pass by luck.
+    body = (
+        _row_html("0704", "Nipponham", "Yakult", 3, 2)
+        + _row_html("0715", "Kyojin", "Hanshin", 1, 0)
+        + _row_html("0731", "DeNA", "Chunichi", 2, 2)
+    )
+    rows = inpb._parse_month(body, "2026", 7)
+    dates = sorted(r["date"] for r in rows)
+    assert dates == ["2026-07-04", "2026-07-15", "2026-07-31"]
+
+
 def test_parse_month_tie_excluded_from_home_win_but_flagged():
     body = _row_html("0908", "DeNA", "Chunichi", 3, 3)
     rows = inpb._parse_month(body, "2023", 9)
