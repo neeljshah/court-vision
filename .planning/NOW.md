@@ -41,6 +41,10 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 67 (SLATE TICK, 12:14Z): corpus 110 rows/5 games. SSSK inn8
+  (39 rows) + LTKT inn9 near close; HHLG/NCHT later starts in early innings
+  (live ~2h more; HHLG 26-rows-at-inn1 pattern flagged for the close-out
+  lane); OBWO final-static. Hop to ~13:15Z, close-out lane ~14:15Z.
 - SPRINT WAKE 66 (MID-SLATE TICK, 2026-07-05 11:12Z TRUE-UTC via date -u;
   correction: wake-65's "~11:45Z" stamp was ~10:45Z actual -- estimate
   drift again, re-anchored): stop flag false. KBO real-state corpus
