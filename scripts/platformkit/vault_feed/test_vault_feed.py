@@ -67,6 +67,40 @@ def test_dossier_gen_excludes_non_verified_and_non_ranking(tmp_path):
     assert not (out_dir / "should_not_appear.md").exists()
 
 
+def test_dossier_gen_renders_caveats_verbatim(tmp_path):
+    caveat_text = "ooz_strike_rate is confounded by BATTER chase/whiff behavior."
+    validation = {
+        "generated_at": "2026-01-01T00:00:00+00:00",
+        "details": [
+            {"claim_id": "mlb_catcher_framing_top50_2022_2023", "verdict": "VERIFIED"},
+        ],
+    }
+    (tmp_path / "validation.json").write_text(json.dumps(validation), encoding="utf-8")
+    claims_dir = tmp_path / "claims"
+    claims_dir.mkdir()
+    (claims_dir / "catcher_framing_claims.jsonl").write_text(
+        json.dumps({
+            "claim_id": "mlb_catcher_framing_top50_2022_2023", "kind": "ranking",
+            "criteria": {"metric": "ooz_strike_rate", "value_precision": 4, "entity_key": "catcher_id"},
+            "source_files": ["data/cache/intel_claims/catcher_framing_snapshot.parquet"],
+            "ranking": [{"rank": 1, "catcher_id": 663728, "catcher_name": "Cal Raleigh", "value": 0.3198}],
+            "caveats": [caveat_text, "another caveat line"],
+        }) + "\n",
+        encoding="utf-8",
+    )
+    out_dir = tmp_path / "out"
+    counts = build_dossier_sections(
+        validation_path=tmp_path / "validation.json",
+        claims_dir=claims_dir,
+        out_dir=out_dir,
+    )
+    assert counts == {"cal_raleigh": 1}
+    body = (out_dir / "cal_raleigh.md").read_text(encoding="utf-8")
+    assert caveat_text in body
+    assert "another caveat line" in body
+    assert "**Caveats:**" in body
+
+
 def test_dossier_gen_idempotent_on_real_inputs():
     if not (REPO_ROOT / "data/frontend/ops/intel_claims_validation.json").exists():
         pytest.skip("real validation artifact not present in this environment")
