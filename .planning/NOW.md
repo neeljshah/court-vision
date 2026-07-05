@@ -93,6 +93,36 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- A1 GATE WAVE CLOSED ~19:55Z (wf_18023b36, 6 agents/0.61M tok, commits
+  75543f39 tennis + 548399e0 soccer, both Opus-PASS): ALL FOUR A1
+  interaction candidates HONEST REJECT -- and the tennis result is the
+  marquee null-machinery catch of the program: T1/T2 BEAT base on BOTH
+  independent tours (DM p=0.00000/0.00005, held-out deltas +0.0006 ATP /
+  +0.0021 WTA, cleared L0/L1/L2/L3/L4/L5) yet 20/20 planted-null draws
+  shipped (permuted surface columns bought the SAME +0.0003-0.0006 from
+  pure noise) => fdr_hat=1.0, family FROZEN at K_cum=2. WITHOUT the
+  matched-flexibility planted null this was a certain false SHIP --
+  cross-corpus DM alone cannot catch the small-param overfit floor
+  (memory rail written: gate-baseline-comparability item 4). Reviewer
+  independently RE-RAN the gate to verify the freeze is design-correct.
+  SOCCER: L1 sealed-holdout selected S2 over S1 then REJECTed it
+  (outer_score -0.00075 on 615 frozen games; 0/6 leagues at eps_eff
+  .003333; L3 p10 -0.00073; vs-close BEHIND .2462 vs .2399 in the sanity
+  zone). Soccer family K_cum=15; tennis K_cum=2 FROZEN. FWER ledger
+  fully consistent -- bars never hardcoded (fwer_budget imported).
+  FOLLOW-UPS QUEUED: (a) harness nit -- judge passes pre-tightened
+  eps_eff into fdr_budget => double-tightening 0.0125 vs stated 0.025
+  (conservative-only bias, cannot false-SHIP; fix ONLY under explicit
+  authorization on the shared harness); (b) S2 np.sign zero-tie counts
+  as agree (immaterial to REJECT); (c) ORCHESTRATION: Workflow args
+  interpolation silently returned undefined in script template literals
+  -> embed constants directly in scripts; parallel same-worktree lanes
+  cross-contaminated REPORTS once -> use worktree isolation or per-lane
+  file-list diffs. COMBINATION-MOAT CYCLE-1 NOW FULLY CLOSED: 7 verdicts
+  across 4 sports (MLB REJECT, NBA NOT_TESTABLE x2, soccer REJECT x3,
+  tennis REJECT x2 FROZEN), every one planted-null-attached, zero false
+  ships, machinery + FWER ledgers reusable for cycle-2. STILL IN FLIGHT:
+  m13 fix (wf_d89026f0). No edge claims.
 - 0f WAVE-2 CLOSED + AMENDMENT A1 PINNED ~19:35Z (wf_129021ce, 4 agents/
   0.36M tok): (1) CONTEXT-ADJUSTED SHOOTING CLAIMS LIVE (commit ff179a3d):
   domains/basketball_nba/context_shooting_claims.py off player_boxscores
