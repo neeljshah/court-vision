@@ -41,6 +41,21 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 44 (WAVE-43: STATCAST 100% COMPLETE + SYNTHESIS-LEAK RAIL BORN,
+  2026-07-05 ~04:00Z, wf_81f3a635-4f4 18 agents/~1.44M tok, commits c143427a/
+  4414086d): (1) statcast BOTH seasons complete (2022 180/180 710,509 + 2023
+  183/183 720,984 = 1.43M rows); final qualifiers platoon 394/catcher 113/
+  umpire 102, claims re-validated. (2) NPB base fit = HONEST_NEGATIVE with a
+  NEW METHODOLOGY RAIL: final-score-only synthesis leaks outcome (noise control
+  shows +.4057 BSS on ZERO signal) -> pure-noise control now MANDATORY for any
+  synthesized-state fit (memory rail #3); fabricated params deleted; REAL data
+  wall = live feed frac_elapsed=None, zero real in-game states. (3) finals
+  auto-refresh wiring committed (invocation gap closed permanently). (4) kbo-
+  fit + wire-dispatch agents returned EMPTY (dud class, 3rd) -- subsumed by
+  wave-44: raw-tick PAYLOAD inspection (46.8K/57.1K stored ticks: is inning/
+  score in there?) -> states extractor -> REAL-state fits + wire if derivable,
+  else honest source-wall closure. WAVE-44: tick-payload+extractor -> cond.
+  fits+wire, vault refresh on final qualifiers. No edge claimed.
 - SPRINT WAKE 43 (WAVE-42: NPB DATE-CORRUPTION FIXED + STATCAST 2023 COMPLETE +
   LIVE-MODEL DUD REDISPATCHED, 2026-07-05 ~03:10Z, wf_1150f4e2-9d5 10 agents/
   ~0.74M tok, commit 66284ac8): (1) CRITICAL: ingest_npb sliced MONTH not DAY
