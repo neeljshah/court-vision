@@ -11,8 +11,8 @@ Acceptance criteria:
        window trip a DEGRADED breaker (status row carries crash_breaker), and
        it clears once the relaunch rate falls back under the cap.
 
-  RH3. H1 node match_pattern targets next-server (not "npm run dev"); py specs
-       still match their module.
+  RH3. H1 node match_pattern targets the bare substring "next" (not
+       "npm run dev"); py specs still match their module.
 
   RH4. PID + cmdline liveness: a reused pid (alive pid, WRONG cmdline) reads
        DEAD under verify_cmdline=True; the matching cmdline reads alive; a
@@ -154,15 +154,23 @@ def test_rh2b_crash_rate_breaker_clears_after_window():
 
 
 # ---------------------------------------------------------------------------
-# RH3 -- H1 node match_pattern targets next-server
+# RH3 -- H1 node match_pattern targets the bare substring "next"
 # ---------------------------------------------------------------------------
 
 def test_rh3_node_match_pattern_targets_next_server():
-    """A node spec matches next-server, not its launch cmd ('npm run dev')."""
+    """A node spec matches bare "next", not its launch cmd ('npm run dev').
+
+    The real Windows CommandLine of a Next.js listener (verified against a
+    live orphaned process) never contains the literal "next-server" -- that
+    is an internal Next.js module name, not something Windows reports in the
+    process's CommandLine. "next" IS present (e.g. "...\\next\\dist\\bin\\next
+    start -p 3000"), so match_pattern targets that bare substring instead.
+    """
     node = ProcSpec(name="m1_ui", kind="node", cmd="npm run dev",
                     readiness=ReadinessSpec(kind="tcp-port-open"))
-    assert _restart.match_pattern(node) == "next-server", \
-        "RH3: node match must be 'next-server' (the real listener), not the npm cmd"
+    assert _restart.match_pattern(node) == "next", \
+        "RH3: node match must be 'next' (matches the real listener's live " \
+        "CommandLine on Windows; 'next-server' never appears there)"
     py = ProcSpec(name="m1_api_paper", kind="py", module="predict_service.app")
     assert _restart.match_pattern(py) == "predict_service.app", \
         "RH3: py specs still match their module"

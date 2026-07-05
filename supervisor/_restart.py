@@ -35,16 +35,15 @@ def match_pattern(spec: ProcSpec) -> str:
 
     For a py spec the module name is unique enough (e.g. predict_service.app).
 
-    H1 NODE FIX: a node UI is launched via ``npm run dev`` / ``npm run start`` but
-    the npm wrapper EXITS and the REAL long-lived listener (the process actually
-    holding :3000) is ``next-server`` (spawned by ``next/dist/bin/next``). Matching
-    the launch cmd ("npm run dev") therefore matches NOTHING -- so a supervisor
-    restart never reaped the orphaned next-server -> EADDRINUSE restart-loop /
-    orphaned child. We match ``next-server`` instead so reconcile/kill targets the
-    real listener. Empty => skip.
+    H1 NODE FIX (revised 2026-07-05): the npm wrapper ("npm run dev") EXITS;
+    the real long-lived listener is ``next/dist/bin/next``, whose live
+    Windows CommandLine (verified against a 258-relaunch flap) never
+    contains the old literal "next-server". We match the bare substring
+    "next" instead -- present in the real CommandLine and safe since only
+    one ``kind="node"`` spec exists in stack_specs.py. Empty => skip.
     """
     if spec.kind == "node":
-        return "next-server"
+        return "next"
     return (spec.module or "").strip()
 
 
@@ -54,9 +53,9 @@ def reconcile_survivors(sv: "Supervisor") -> None:
     A PREVIOUS supervisor's children keep running on its crash/kill (ports
     :8099/:8098/:3000 + headless loops). Re-launching every spec unconditionally
     would duplicate those daemons and collide on ports (EADDRINUSE) + double-write
-    ledgers. So we adopt-by-removal: find every survivor by cmdline match and kill
-    it, making boot idempotent. Best-effort + never raises (a backend without
-    find_by_match falls through to a normal launch).
+    ledgers. So we adopt-by-removal: find every survivor by cmdline match (see
+    ``match_pattern``) and kill it, making boot idempotent. Best-effort + never
+    raises (a backend without find_by_match falls through to a normal launch).
     """
     finder = getattr(sv._proc, "find_by_match", None)
     if not callable(finder):
