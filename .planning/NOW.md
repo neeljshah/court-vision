@@ -41,6 +41,21 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 59 (WAVE-58: VERIFY LANE CAUGHT MY OWN OVERCLAIM, 2026-07-05
+  ~09:50Z, wf_52c934de-cb2 9 agents/~0.79M tok, 1 lane commit): HONEST
+  CORRECTION -- the kbo_deep wire is NOT live in production: the runner only
+  setdefaults mlb_deep, never kbo_deep (serve_forever default False; enricher
+  = dead code; zero kbo log lines; the disk state row was wave-56's MANUAL
+  soak). Wave-57's "wire now LIVE" ledger line was an overclaim; alias/
+  matcher chain dry-runs CORRECTLY -- gap is purely the runner default.
+  m1_ui flap ROOT-CAUSED w/ evidence: 17h orphaned next-start holds :3000
+  (259 relaunches; reconcile_survivors pattern-match bug never fires; C7
+  breaker never tripped) -> code fix PROPOSED (supervisor tree untouched);
+  orphan kill is the sanctioned minimal ops fix. NBA schedule claims: 5 dims
+  x 30 teams VERIFIED from games.parquet (thin scoreboard cache honestly
+  rejected). Kalshi 429 throttling noted all-sports (orthogonal, feeds still
+  growing). WAVE-59: kbo_deep setdefault fix + reload + DAEMON-log accrual
+  verify (slate live now), m1_ui orphan-chain kill + hold-clean watch.
 - SPRINT WAKE 58 (WAVE-57 SHIPPED: DAEMON RELOADED + SOCCER WIDENED,
   2026-07-05 ~09:25Z, wf_0e1ab333-af3 6 agents/~0.48M tok, 1 lane commit +
   1 ops action): m2_inplay_capture reloaded SINGLETON-clean (PID 20452->
