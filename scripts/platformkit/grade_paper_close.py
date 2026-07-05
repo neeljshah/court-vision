@@ -79,8 +79,16 @@ def game_key_for_bet(bet: Dict[str, Any]) -> Optional[str]:
 
 def close_from_store(
     bet: Dict[str, Any], *, base: Optional[Path] = None
-) -> Optional[Tuple[float, float, bool]]:
-    """(home_dec, away_dec, is_true_close) from line_store, or None. Never raises."""
+) -> Optional[Tuple[float, float, bool, Optional[str], Optional[str]]]:
+    """(home_dec, away_dec, is_true_close, close_book_home, close_book_away) from
+    line_store, or None. Never raises.
+
+    close_book_{home,away} is the book that supplied the winning quote for that
+    side (line_store.get_close's own per-row 'book' field, preserved through --
+    it was already there, just previously discarded by callers). None when the
+    quote row carries no book. Additive only: existing 3-tuple callers must
+    unpack the first 3 elements, never assume the tuple length.
+    """
     if not _LINE_STORE_OK or _ls_get_close is None:
         return None
     gk = game_key_for_bet(bet)
@@ -101,7 +109,9 @@ def close_from_store(
     ch, ca = hr.get("odds"), ar.get("odds")
     if ch is None or ca is None or float(ch) <= 1.0 or float(ca) <= 1.0:
         return None
-    return float(ch), float(ca), bool(is_true)
+    book_h = str(hr.get("book")) if hr.get("book") else None
+    book_a = str(ar.get("book")) if ar.get("book") else None
+    return float(ch), float(ca), bool(is_true), book_h, book_a
 
 
 def load_predictions(predictions_path: Optional[Path]) -> Dict[str, Dict[str, Any]]:

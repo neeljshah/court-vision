@@ -199,7 +199,7 @@ def _line_store_close(row: Dict[str, Any]) -> Optional[CloseResult]:
         return None
     if res is None:
         return None
-    home_dec, away_dec, is_true_close = res
+    home_dec, away_dec, is_true_close = res[0], res[1], res[2]
     if home_dec <= 1.0 or away_dec <= 1.0:
         return None
     # line_store: is_true_close=True -> within lock window -> NOT proxy.

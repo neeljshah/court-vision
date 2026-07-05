@@ -49,7 +49,7 @@ from scripts.platformkit.clv.clv_scoreboard import (
     _channel_of, _dedup_settled, _is_measurable, _mean_ci, _CHANNEL_LABEL)
 from scripts.platformkit.pm_trading.scoreboard_venue import _venue_key
 from scripts.platformkit.clv.execution_quality_math import (
-    clv_distribution, entry_timing_from_graded, load_jsonl)
+    clv_distribution, entry_timing_from_graded, load_jsonl, same_venue_stats)
 
 _OUT_JSON = os.path.join(_REPO, "data", "frontend", "ops", "execution_quality.json")
 _OUT_MD = os.path.join(_REPO, "data", "frontend", "ops", "execution_quality.md")
@@ -79,6 +79,7 @@ def _cell_stats(rows: Sequence[Dict[str, Any]]) -> Dict[str, Any]:
         "clv_distribution_pct": dist,
         "clv_ci95": [ci["lo95"], ci["hi95"]],
         "clv_significant": ci["significant"],
+        "same_venue": same_venue_stats(measurable, mean_ci=_mean_ci),
     }
 
 
@@ -190,8 +191,10 @@ def render_md(report: Dict[str, Any]) -> str:
     lines.append("Measurement-only. Units/CLV-percent only, no dollar figure.")
     lines.append("")
     lines.append("| phase | channel | sport | venue | n_settled | n_meas | covg%% | "
-                 "mean CLV%% | median | p10 | p90 |".replace("%%", "%"))
-    lines.append("|---|---|---|---|---|---|---|---|---|---|---|")
+                 "mean CLV%% (unrestricted) | median | p10 | p90 | "
+                 "same-venue n / mean%% | cross-venue n / mean%% | no-close-book n |"
+                 .replace("%%", "%"))
+    lines.append("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
     for key in sorted(report["cells"]):
         c = report["cells"][key]
         d = c["clv_distribution_pct"]
@@ -200,12 +203,32 @@ def render_md(report: Dict[str, Any]) -> str:
         med = ("%+.2f" % d["median"]) if d["median"] is not None else "--"
         p10 = ("%+.2f" % d["p10"]) if d["p10"] is not None else "--"
         p90 = ("%+.2f" % d["p90"]) if d["p90"] is not None else "--"
-        lines.append("| %s | %s | %s | %s | %d | %d | %.0f | %s | %s | %s | %s |"
+        sv, cv, nc = (c["same_venue"]["same_venue"], c["same_venue"]["cross_venue"],
+                     c["same_venue"]["no_same_venue_close"])
+        sv_txt = ("%d / %+.2f" % (sv["n"], sv["clv_distribution_pct"]["mean"])
+                  if sv["clv_distribution_pct"]["mean"] is not None else "%d / --" % sv["n"])
+        cv_txt = ("%d / %+.2f" % (cv["n"], cv["clv_distribution_pct"]["mean"])
+                  if cv["clv_distribution_pct"]["mean"] is not None else "%d / --" % cv["n"])
+        lines.append("| %s | %s | %s | %s | %d | %d | %.0f | %s | %s | %s | %s | %s | %s | %d |"
                      % (c["phase"], c["channel_label"], c["sport"], c["venue"],
                         c["n_settled"], c["n_measurable"],
-                        c["true_close_coverage_pct"], mean, med, p10, p90))
+                        c["true_close_coverage_pct"], mean, med, p10, p90,
+                        sv_txt, cv_txt, nc["n"]))
     lines.append("")
-    lines.append("`*` = mean CLV 95% CI excludes 0.")
+    lines.append("`*` = mean CLV 95%% CI excludes 0.".replace("%%", "%"))
+    lines.append("")
+    lines.append(
+        "**Same-venue restriction** (see "
+        "docs/research/PROPOSED_same_venue_close_restriction.md): the "
+        "'mean CLV%% (unrestricted)' column mixes cross-venue settlements "
+        "(bet at one book, settled vs a DIFFERENT book's close) into the "
+        "headline mean -- an artifact, not a real per-venue edge. "
+        "'same-venue n / mean%%' is the honest restricted reading: CLV computed "
+        "ONLY when the close's book (close_book_home/away, stamped by "
+        "grade_paper.grade_one at settle time) matches the bet's own taken_book. "
+        "close_book_* is a NEW field (added by this fix) -- every row settled "
+        "BEFORE this change has no provenance and correctly falls into "
+        "'no-close-book n', not into either venue bucket.".replace("%%", "%"))
     lines.append("")
     pg = report["pregame_prediction_ledger"]
     lines.append("## Pregame prediction ledger (entry timing source)")

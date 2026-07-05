@@ -16,12 +16,21 @@ _BANNED = {"pnl", "roi", "dollar", "profit", "revenue", "bankroll"}
 
 
 def _ledger_row(bet_id, channel, sport="mlb", venue=None, clv_status="no_close",
-                 clv_pct=None, settled_at="2026-06-25T00:00:00Z"):
+                 clv_pct=None, settled_at="2026-06-25T00:00:00Z", taken_book=None,
+                 side=None, close_book_home=None, close_book_away=None):
     r = {"bet_id": bet_id, "channel": channel, "status": "settled",
          "sport": sport, "clv_status": clv_status, "clv_pct": clv_pct,
          "settled_at": settled_at, "unit_result": 0.0}
     if venue is not None:
         r["venue"] = venue
+    if taken_book is not None:
+        r["taken_book"] = taken_book
+    if side is not None:
+        r["side"] = side
+    if close_book_home is not None:
+        r["close_book_home"] = close_book_home
+    if close_book_away is not None:
+        r["close_book_away"] = close_book_away
     return r
 
 
@@ -83,6 +92,33 @@ def test_parse_iso_hours_before_malformed_is_none():
     assert M.parse_iso_hours_before(None, None) is None
 
 
+def test_same_venue_bucket_matches_taken_and_close_book():
+    row = {"taken_book": "fanduel", "side": "home", "close_book_home": "fanduel"}
+    assert M.same_venue_bucket(row) == "same_venue"
+
+
+def test_same_venue_bucket_cross_venue_when_books_differ():
+    # Root cause reproduced: fanduel-taken bet settled vs pinnacle's close.
+    row = {"taken_book": "fanduel", "side": "home", "close_book_home": "pinnacle"}
+    assert M.same_venue_bucket(row) == "cross_venue"
+
+
+def test_same_venue_bucket_uses_away_close_book_for_away_side():
+    row = {"taken_book": "kalshi", "side": "away", "close_book_away": "kalshi",
+           "close_book_home": "pinnacle"}
+    assert M.same_venue_bucket(row) == "same_venue"
+
+
+def test_same_venue_bucket_no_close_book_is_honestly_unknown():
+    row = {"taken_book": "fanduel", "side": "home"}  # no close_book_* at all
+    assert M.same_venue_bucket(row) == "no_same_venue_close"
+
+
+def test_same_venue_bucket_no_taken_book_is_honestly_unknown():
+    row = {"side": "home", "close_book_home": "pinnacle"}
+    assert M.same_venue_bucket(row) == "no_same_venue_close"
+
+
 def test_entry_timing_from_graded_buckets_and_skips_bad_rows():
     rows = [
         {"logged_at": "2026-06-25T00:00:00Z", "commence_time": "2026-06-25T02:00:00Z"},  # 2h -> 1-6h
@@ -112,6 +148,24 @@ def test_cell_stats_coverage_pct():
     assert stats["n_measurable"] == 2
     assert stats["true_close_coverage_pct"] == 50.0
     assert stats["clv_distribution_pct"]["n"] == 2
+
+
+def test_cell_stats_same_venue_split_never_mixes_cross_venue():
+    rows = [
+        _ledger_row("m1", "moneyline", clv_status="true_close", clv_pct=22.7,
+                    taken_book="fanduel", side="home", close_book_home="pinnacle"),
+        _ledger_row("m2", "moneyline", clv_status="true_close", clv_pct=-1.9,
+                    taken_book="pinnacle", side="home", close_book_home="pinnacle"),
+        _ledger_row("m3", "moneyline", clv_status="true_close", clv_pct=5.0,
+                    taken_book="draftkings", side="home"),  # no close_book -> unknown
+    ]
+    stats = EQ._cell_stats(rows)
+    sv = stats["same_venue"]
+    assert sv["cross_venue"]["n"] == 1 and sv["cross_venue"]["clv_distribution_pct"]["mean"] == 22.7
+    assert sv["same_venue"]["n"] == 1 and sv["same_venue"]["clv_distribution_pct"]["mean"] == -1.9
+    assert sv["no_same_venue_close"]["n"] == 1
+    # the unrestricted headline mean still mixes all 3 (documented, not the fix target)
+    assert stats["clv_distribution_pct"]["n"] == 3
 
 
 def test_cell_stats_zero_coverage_when_no_close():

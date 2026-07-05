@@ -180,11 +180,13 @@ def grade_one(
     ch = bet.get("closing_decimal_home")
     ca = bet.get("closing_decimal_away")
     is_proxy: bool = False
+    close_book_home: Optional[str] = None
+    close_book_away: Optional[str] = None
 
     if ch is None or ca is None:  # Levels 2+3: line_store captured close.
         sr = _close_from_store(bet, base=_line_store_base)
         if sr is not None:
-            ch, ca, is_true = sr
+            ch, ca, is_true, close_book_home, close_book_away = sr
             is_proxy = not is_true
 
     if ch is None or ca is None:  # Level 4: explicit last-observed proxy on bet.
@@ -197,6 +199,14 @@ def grade_one(
         settled = _clv.settle_closing_line(settled, float(ch), float(ca))
         settled["clv_is_proxy"] = bool(is_proxy)
         settled["clv_status"] = "proxy" if is_proxy else "true_close"
+        # Same-venue CLV restriction needs to know WHICH book supplied the close
+        # (line_store mixes books with zero venue awareness -- see
+        # docs/research/PROPOSED_same_venue_close_restriction.md). Only line_store
+        # (levels 2+3) knows a per-side book; Level 1 (bet already carries its own
+        # closing_decimal_*) and Level 4 (bare last_decimal_* proxy) have none --
+        # left None honestly, never guessed.
+        settled["close_book_home"] = close_book_home
+        settled["close_book_away"] = close_book_away
     else:
         # Level 5 (PE-P0-03): NO close -> CLV genuinely unavailable. clv_pct=None,
         # clv_is_proxy EXPLICITLY False (proxy=True would fabricate confidence) +
