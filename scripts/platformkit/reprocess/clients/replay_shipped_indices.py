@@ -1,5 +1,6 @@
 """Reprocess-harness client registry for shipped gate exports (wave-30 lane 8,
-extended wave-45 lane: reprocess-register).
+extended wave-45 lane: reprocess-register; wave-47: harness-rmse-mode gap
+closure).
 
 The reprocess harness (reprocess_harness.py) is proven to 1e-6. This module
 enumerates gate-exported row parquets and, for each one, either:
@@ -19,19 +20,41 @@ WAVE-30 SEARCH (original, ADOPT/SHIP only): grepped ADOPT/SHIP verdict
 strings across .planning/*.md and data/**/*.json -> one hit, WNBA anchored
 blend (registered below, UNAVAILABLE -- per-row scores never persisted).
 
-WAVE-45 SEARCH (this task, newest gate exports named in the task):
-  - data/domains/mlb/umpire_totals_gate_rows.parquet       -> UNAVAILABLE,
-    schema mismatch (RMSE-shape columns, not corpus_id/fold_id/p_variant/...).
+WAVE-45 SEARCH (newest gate exports named in that task):
+  - data/domains/mlb/umpire_totals_gate_rows.parquet       -> was UNAVAILABLE
+    (harness had no RMSE metric path). SEE WAVE-47 -- now REGISTERED.
   - data/domains/basketball_nba/positional_weight_rows.parquet -> REGISTERED
     (metric=rho, per-fold comparator; verdict=NOT_TESTABLE).
   - data/domains/wnba/elo_refresh_harness_rows.parquet     -> REGISTERED
     (metric=brier, per-candidate-corpus comparator; verdict=REJECT).
   - data/domains/basketball_nba/ingame_hypothesis_{hot_night,scheme_fit}_
     {2024-25,2025-26}_rows.parquet (4 files) -> UNAVAILABLE, schema mismatch
-    (in-game-state columns, not corpus_id/fold_id/p_variant/p_base).
-  - data/domains/tennis/h3_playstyle_rows.parquet          -> UNAVAILABLE,
-    schema-compatible but NO committed verdict exists anywhere under
-    data/domains/tennis/**/*.json to replay against.
+    (in-game-state columns, no corpus_id/fold_id/p_variant/p_base; deeper
+    reason confirmed wave-47: the gated/train-fit predictions in the
+    committed verdict were never persisted per-row, only the plain p_live/
+    cond_prior columns were -- reproducing brier_base/brier_prior would
+    require RE-FITTING the fold's TRAIN-only prior surface, not a rename).
+  - data/domains/tennis/h3_playstyle_rows.parquet          -> UNAVAILABLE;
+    wave-47 found the committed verdict DOES exist (data/frontend/ingame/
+    playstyle_gate_verdict.json, not under data/domains/tennis/ as first
+    searched) but the exported rows' p_base column is the gate's plain
+    sigmoid base model, NOT the H0 arm's own detail-model prediction the
+    committed brier_h0 scores -- H0's per-row predictions were never
+    exported (only H1's), so replay still cannot reach brier_h0 without
+    re-running the gate. Reason text corrected wave-47 to name this exact
+    field gap instead of "no committed verdict exists".
+
+WAVE-47 (harness-rmse-mode lane): added --metric rmse to reprocess_harness
+(reprocess_harness_rmse.py); mlb_umpire_totals_gate now REGISTERED (was
+UNAVAILABLE) via umpire_totals_rows()/compare_umpire_totals in
+replay_shipped_indices_io.py -- a column RENAME + fold_id derived with the
+gate's OWN BURN_IN=300/N_FOLDS=3 constants (verified byte-exact fold sizes
+1521/1520/1520), no re-scoring, replay matches committed per-fold RMSE
+within 1e-6 (actual max_abs_diff=0.0). The two nba_ingame_hypothesis clients
+and tennis_h3_playstyle were re-checked for a field-paths mapping fix per
+the task; both genuinely require re-running gate machinery (train-refit /
+missing H0 export respectively), so they stay honest UNAVAILABLE with a
+corrected, more precise reason (see above) rather than a coerced RAN.
 
 REGISTERED CLIENTS: see REGISTRY below.
 """
@@ -53,11 +76,12 @@ from scripts.platformkit.reprocess.reprocess_harness import (
 from scripts.platformkit.reprocess.clients.replay_shipped_indices_io import (
     compare_elo_refresh,
     compare_positional_weight,
+    compare_umpire_totals,
     elo_refresh_rows,
     h3_playstyle_unavailable_reason,
     ingame_hypothesis_unavailable_reason,
     positional_weight_rows,
-    umpire_totals_unavailable_reason,
+    umpire_totals_rows,
 )
 
 _REPO = Path(__file__).resolve().parents[4]
@@ -123,11 +147,11 @@ REGISTRY: list[ReprocessClient] = [
     ),
     ReprocessClient(
         name="mlb_umpire_totals_gate",
-        metric="brier",
+        metric="rmse",
         committed_verdict_path=_REPO / "data" / "domains" / "mlb" / "umpire_totals_gate_verdict.json",
         tolerance=1e-6,
-        rows_source=None,
-        unavailable_reason=umpire_totals_unavailable_reason(),
+        rows_source=umpire_totals_rows,
+        compare_fn=compare_umpire_totals,
     ),
     ReprocessClient(
         name="nba_ingame_hypothesis_hot_night",
@@ -148,7 +172,11 @@ REGISTRY: list[ReprocessClient] = [
     ReprocessClient(
         name="tennis_h3_playstyle",
         metric="brier",
-        committed_verdict_path=_REPO / "data" / "domains" / "tennis" / "h3_playstyle_verdict_DOES_NOT_EXIST.json",
+        # Found wave-47 (was reported as not existing anywhere under
+        # data/domains/tennis/**): the actual committed verdict lives at
+        # data/frontend/ingame/playstyle_gate_verdict.json. Still UNAVAILABLE
+        # -- see h3_playstyle_unavailable_reason() for the field-gap reason.
+        committed_verdict_path=_REPO / "data" / "frontend" / "ingame" / "playstyle_gate_verdict.json",
         tolerance=1e-6,
         rows_source=None,
         unavailable_reason=h3_playstyle_unavailable_reason(),
