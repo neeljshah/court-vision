@@ -93,6 +93,20 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- GREENLIGHT DESIGN LANDED AT HANDOFF ~22:15Z (wf_582fb362, 2 agents/0.20M):
+  SOUND-WITH-FIXES. Spec = real fail-closed computations for (e) channel_trust
+  (5 measured artifacts w/ freshness) + (f) cv_honesty (5 machine checks:
+  retracted-number scan, edge_claimed integrity, proposal_only, ledger
+  monotonicity, prereg integrity). Reviewer catches (all accepted): F-check-5
+  sha field does not exist yet in l4_gate_prereg.json (vaporware pillar --
+  fail-closed but unreachable); in-game channels lack per-channel reconcile
+  artifacts -> permanently RED at E-check-3 as written; 60/60 trust floors
+  contradict governance.policy vetted 500/0.90 (strongest gaming gap);
+  freshness check_one returns NA for 6 unregistered artifacts. FABLE RULINGS
+  recorded in NEXT_SESSION_PROMPT duty 1 (floors from governance.policy for
+  GREEN; NOT-APPLICABLE never silently passes; reconciler extension + sha
+  emission in the build wave; SLAs read from TABLE; watermark sidecar).
+  Build = new session's first wave, spec amended+pinned first. No edge claims.
 - ARCHITECT SESSION CLOSED ~22:10Z TRUE-UTC (user starting a new session).
   SESSION TOTALS (2026-07-05 17:02-22:10Z): 9 workflows + 1 standalone review
   (~60 agents / ~7M subagent tokens), ~24 commits, 11 combination candidates
