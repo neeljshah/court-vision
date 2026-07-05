@@ -93,6 +93,25 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- THROUGHPUT WAVE OPEN ~20:15Z (USER DIRECTIVE 2026-07-05d: "make this
+  testing as efficient and fast as possible... historical data and odds...
+  paper betting to get execution perfect... rejecting and accepting as many
+  different ways properly... constantly pushing" -- Fable frame: maximize
+  HONEST throughput; rejects get cheaper, ships stay exactly as hard; edge
+  LANGUAGE stays banned in artifacts, the search itself pushes at full
+  speed). wf_00a24f85, 4 lanes: (1) TEST FACTORY -- per-sport gate-ready
+  corpus caches + null-floor tables (the tennis overfit-floor lesson as
+  CODE: candidate delta <= p99(matched null floor) = instant REJECT
+  FDR_PRESCREEN; survivors STILL face the full >=20-draw ceremony, prescreen
+  can never ship) + batch_gate one-process multi-candidate runner; (2) MLB
+  CURRENT-ERA ASOF REBUILD (kills the corpus-B zero-coverage wall; data
+  only, frozen family stays REJECT until an amendment authorizes re-gate);
+  (3) NBA 2ND-CORPUS feasibility probe (read-only, ranked build plan);
+  (4) EXECUTION-QUALITY scoreboard (per channel/sport/venue: CLV-vs-close
+  distribution + entry-timing + true-close coverage; measurement-only,
+  units/CLV language, in-game prop guard finding must reproduce). Paid
+  OddsAPI re-purchase remains HUMAN (declined 2026-07-04; flagged to user
+  as reopenable). m13 fix (wf_d89026f0) still in flight. No edge claims.
 - A1 GATE WAVE CLOSED ~19:55Z (wf_18023b36, 6 agents/0.61M tok, commits
   75543f39 tennis + 548399e0 soccer, both Opus-PASS): ALL FOUR A1
   interaction candidates HONEST REJECT -- and the tennis result is the
