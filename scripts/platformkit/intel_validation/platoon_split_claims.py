@@ -22,14 +22,19 @@ WINDOW: seasons 2022+2023 (data/cache/statcast/statcast_fuller__2022/2023.parque
 -- both an 18-day sample window per season, not full seasons).
 
 MIN-SAMPLE FLOOR (per LANE spec): pa_vs_l >= 100 AND pa_vs_r >= 100.
-HONEST DATA-SCALE FINDING (verified live this session): ZERO batters clear
-this floor on both hands simultaneously in the current corpus (max PA vs
-LHP across all 633 distinct batters is 57; the floor is 100) -- so this
-claim's `ranking` is legitimately EMPTY and claims_validator.validate_claim
-returns UNVERIFIABLE (reason: "no rows survive min_sample floors"), which is
-the CORRECT, honest verdict for an unsatisfiable floor on this corpus, not a
-producer bug. See platoon_split_index.py module docstring for the full
-data-scale writeup.
+DATA-SCALE STATUS IS CORPUS-DEPENDENT AND COMPUTED FRESH EVERY RUN --
+NEVER HARDCODE IT HERE. `_sample_floor_caveat()` below derives the true
+qualifier count (and the honest-empty sentence if it is zero) from the
+live `index_report` returned by build_platoon_snapshot() at emit time, and
+that derived caveat is what ships in the claim's `caveats` list -- this
+docstring intentionally does not restate a snapshot of n_considered /
+n_qualifying / ranking length, because those numbers move as the corpus
+grows and a stale copy here would silently contradict the shipped claim.
+To see the CURRENT numbers, read the live artifact:
+data/cache/intel_claims/platoon_split_claims.jsonl (n_considered,
+n_excluded_below_floor, caveats[1], ranking) -- or re-run this producer.
+See platoon_split_index.py module docstring for the full data-scale
+methodology writeup (PA definition, on-base-event set).
 
 LEAK DISCIPLINE: purely descriptive/retrospective (a completed 2-season
 statcast aggregate) -- no forecasting claim, no leak-risk window.
@@ -79,6 +84,34 @@ def build_snapshot() -> tuple[Path, dict]:
     _OUT_DIR.mkdir(parents=True, exist_ok=True)
     pq.write_table(pa.Table.from_pandas(write_cols, preserve_index=False), _SNAPSHOT_OUT)
     return _SNAPSHOT_OUT, report
+
+
+def _sample_floor_caveat(index_report: dict) -> str:
+    """Build the min-sample-floor caveat FROM the actual qualifier count at
+    emit time (never a hardcoded corpus-state assertion). Two branches:
+    0 qualifiers -> honest-empty sentence; N>0 -> true count + sample-window
+    seasons covered, sourced from the live index_report."""
+    n_qual = index_report["n_qualifying_batters"]
+    n_considered = index_report["n_batters_considered"]
+    seasons_str = "/".join(str(s) for s in index_report["seasons"])
+    base = (
+        f"min_sample floor: PA >= {MIN_PA_PER_HAND} vs BOTH hands "
+        f"({n_qual}/{n_considered} batters qualify) -- per LANE spec."
+    )
+    if n_qual == 0:
+        return (
+            f"{base} HONEST DATA-SCALE FINDING: this corpus (seasons={seasons_str}) is a "
+            "sample window in which 0 batters currently clear the floor on both hands "
+            f"(max PA vs LHP any batter={index_report['max_pa_vs_l_any_batter']}, "
+            f"vs RHP={index_report['max_pa_vs_r_any_batter']}); the ranking below is "
+            "legitimately empty until a fuller-coverage corpus lands -- no code change "
+            "needed to re-run this claim once it does."
+        )
+    return (
+        f"{base} DATA-SCALE STATUS: {n_qual} of {n_considered} batters (seasons="
+        f"{seasons_str}) clear the floor on both hands, so the ranking below is a real, "
+        "non-empty result over this sample window (not a full-season corpus)."
+    )
 
 
 def build_ranking_claim() -> dict[str, Any]:
@@ -146,14 +179,7 @@ def build_ranking_claim() -> dict[str, Any]:
             f"100% coverage), PA defined by events notna (NEVER des -- see "
             f"platoon_split_index.py), seasons={SEASON_WINDOW} "
             "(data/cache/statcast/statcast_fuller__2022/2023.parquet).",
-            f"min_sample floor: PA >= {MIN_PA_PER_HAND} vs BOTH hands "
-            f"({index_report['n_qualifying_batters']}/{index_report['n_batters_considered']} "
-            "batters qualify) -- per LANE spec. HONEST DATA-SCALE FINDING: this corpus is an "
-            "18-day-per-season sample window, so 0 batters currently clear the floor on both "
-            f"hands (max PA vs LHP any batter={index_report['max_pa_vs_l_any_batter']}, "
-            f"vs RHP={index_report['max_pa_vs_r_any_batter']}); the ranking below is "
-            "legitimately empty until a fuller-coverage (full-season) corpus lands -- no code "
-            "change needed to re-run this claim once it does.",
+            _sample_floor_caveat(index_report),
             "DESCRIPTIVE platoon-split scouting index only -- no forecasting/market/$ edge claimed.",
         ],
     }

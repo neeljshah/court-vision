@@ -135,3 +135,99 @@ def test_run_all_writes_json_report(tmp_path, monkeypatch):
     loaded = json.loads(report_fp.read_text(encoding="ascii"))
     assert loaded["cols_requested"] == list(F._NEW_COLS.keys())
     assert "2022" in loaded["seasons"] and "2023" in loaded["seasons"]
+
+
+def test_full_season_days_falls_back_to_calendar_range(monkeypatch):
+    monkeypatch.setattr(F, "_PROBABLES_FP", F._REPO / "nonexistent_probables.parquet")
+    days = F._full_season_days(2023)
+    assert days[0] == "2023-03-30"
+    assert days[-1] == "2023-10-01"
+    assert len(days) == 186  # full calendar span, no schedule to skip off-days
+
+
+def test_full_season_days_reads_real_schedule_and_skips_off_days(tmp_path, monkeypatch):
+    dates = pd.to_datetime(
+        ["2023-03-30", "2023-03-31", "2023-07-10", "2023-10-01", "2022-04-07"])
+    fp = tmp_path / "probables.parquet"
+    pd.DataFrame({"game_date": dates}).to_parquet(fp, index=False)
+    monkeypatch.setattr(F, "_PROBABLES_FP", fp)
+    days = F._full_season_days(2023)
+    assert days == ["2023-03-30", "2023-03-31", "2023-07-10", "2023-10-01"]
+    assert "2022-04-07" not in days  # season-filtered via _FULL_SEASON_BOUNDS
+
+
+def test_acquire_season_fuller_full_season_uses_wider_day_list(tmp_path, monkeypatch):
+    monkeypatch.setattr(F, "_full_season_days", lambda season: ["2023-03-30", "2023-10-01"])
+
+    def stub(day, timeout=90):
+        return _fake_day(day)
+
+    monkeypatch.setattr(F, "_day_csv_fuller", stub)
+
+    def fake_acquire(season, days=18, delay_s=0.0, cache_dir=None, max_seconds=None,
+                     full_season=False):
+        all_days = F._full_season_days(season) if full_season else ["2023-05-01"]
+        return {"df": pd.concat([stub(d) for d in all_days], ignore_index=True),
+                "days_requested": len(all_days), "days_fetched_this_run": len(all_days),
+                "days_available_total": len(all_days), "capped": False}
+
+    monkeypatch.setattr(F, "acquire_season_fuller", fake_acquire)
+    res = F.run_season_fuller(2023, full_season=True, cache_dir=tmp_path)
+    assert res["days_requested"] == 2  # the wide 2-day stub list, not the 1-day default
+
+
+def test_materialize_includes_all_cached_days_even_past_budget_cap(tmp_path, monkeypatch):
+    """REGRESSION for the wave-39/wave-40 stranded-checkpoint bug: acquire_season_fuller
+    must MATERIALIZE every already-cached day in raw_days_fuller/, even ones that sit
+    AFTER the day a wall-clock budget cap breaks the FETCH loop on. Pre-fix, the single
+    fetch+collect loop would `break` at the capped day and never read back any cache file
+    for days later in all_days -- silently dropping rows that were sitting on disk the
+    whole time. This test pre-populates cache files for days 1, 3, and 5 (day 2 and 4
+    intentionally UNCACHED so the run must fetch them), caps max_seconds at ~0 so the
+    fetch loop caps out immediately at day 2, and asserts the day-5 (post-cap) cached
+    file is still present in the output -- this MUST fail on the pre-fix implementation."""
+    monkeypatch.setattr(F, "_WINDOWS", {2023: ["2023-05-01"]})
+    all_days = ["2023-05-01", "2023-05-02", "2023-05-03", "2023-05-04", "2023-05-05"]
+    monkeypatch.setattr(F, "_date_range", lambda start, n: all_days)
+
+    raw_dir = tmp_path / "raw_days_fuller"
+    raw_dir.mkdir(parents=True)
+    # pre-cache day 1, day 3, and day 5 (day 5 is the one AFTER where the cap will bite)
+    for day in ("2023-05-01", "2023-05-03", "2023-05-05"):
+        fp = raw_dir / f"day__{day}.parquet"
+        _fake_day(day).to_parquet(fp, index=False)
+
+    def slow_stub(day, timeout=90):
+        raise AssertionError("fetch must not run once the budget is already exhausted")
+
+    monkeypatch.setattr(F, "_day_csv_fuller", slow_stub)
+    # a negative max_seconds means the budget is exhausted BEFORE the first uncached
+    # day (2023-05-02) is even attempted, so the fetch loop caps immediately without
+    # ever reaching day 5 via fetch (and _day_csv_fuller must never be called).
+    acq = F.acquire_season_fuller(2023, days=5, delay_s=0.0, cache_dir=tmp_path,
+                                  max_seconds=-1.0)
+    assert acq["capped"] is True
+    got_dates = set(pd.to_datetime(acq["df"]["game_date"]).dt.strftime("%Y-%m-%d"))
+    # day 5 was cached on disk BEFORE this run and must be materialized regardless of
+    # the budget cap breaking the fetch walk at day 2.
+    assert "2023-05-05" in got_dates, (
+        "cached day AFTER the budget-capped day was stranded -- materialize must "
+        "include every cached day unconditionally"
+    )
+    assert "2023-05-01" in got_dates
+    assert "2023-05-03" in got_dates
+    # day 2 and day 4 were never cached and the fetch loop capped before fetching them.
+    assert "2023-05-02" not in got_dates
+    assert "2023-05-04" not in got_dates
+
+
+def test_cli_priority_flag_defaults_to_2023_first(monkeypatch):
+    seen = {}
+
+    def fake_run_all(seasons=(2022, 2023), days=18, max_seconds=None, full_season=False):
+        seen["seasons"] = seasons
+        return {"verdict": "MATERIALIZED"}
+
+    monkeypatch.setattr(F, "run_all", fake_run_all)
+    F._main([])
+    assert seen["seasons"] == [2023, 2022]
