@@ -93,6 +93,35 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- GREENLIGHT UNCAP BUILT + LIVE ~00:25Z TRUE-UTC 07-06 (duty 1 build complete;
+  wf_6dd79761 10 agents/1.00M + completion wf_dc1b83e3 6 agents/0.51M; commits
+  fa468979 L2-reconciler / 5433aa84 L3-stamp+TABLE / 67e1fd7d L1-module /
+  f5d399f0 L4-wiring -- every lane Opus cv-code-reviewer PASS vs pinned spec
+  87bfdf1f, lanes sha-verified at start+end, no tamper). REVIEW SYSTEM EARNED
+  ITS KEEP: L1 was refused TWICE with REPRODUCED fail-open holes (planted
+  78.11/18.38/54.57 in cited ops artifacts passed the F-scan; planted
+  edge_claimed:True in ingame_clv_verdict passed check-2) -- both fixed +
+  regression-locked before landing. INTEGRATION (orchestrator-run, this
+  entry = the ledgered actions): (1) prereg_sha_stamp run once on real
+  l4_gate_prereg.json -> additive sha256=1a85eca7... + snapshot sidecar
+  (fields byte-intact, F-check-5 sha_pending resolved); (2) reconciler
+  always-emit live: moneyline GENUINE_VARIANCE n=72 max|z|=0.92 (n up from
+  28 on 07-02); paper_ingame + paper_ingame_prop honest INSUFFICIENT_DATA
+  n=0 (R-NA feed); paper_pm FLIPPED to DIVERGENT max|z_units|=2.04 at n=92
+  (was GENUINE_VARIANCE z=1.24 at n=36) -> close-capture audit QUEUED (the
+  machinery flagging its own channel = the anti-fabrication direction);
+  (3) live refresh: NOT_BUILT count 0, criterion (e) emits measured reasons
+  (settled_n_or_coverage_below_60 / same_venue_clv_ci_straddles_zero /
+  reconcile_not_applicable:<ch>), criterion (f) RED on genuinely stale
+  clv_scoreboard (fail-closed freshness; daemon flywheel owns refresh), ALL
+  channels RED/AMBER -- no fake GREEN, matching the pre-ledgered expected
+  outcome. Tests grounded by orchestrator's own runs: 18 (edge_greenlight)
+  + 32 (trust_honesty) green per-file. Nits: pre-existing 07-02 junk
+  clv_reconcile_--help.json deleted (argv-as-channel CLI quirk, cosmetic,
+  fix skipped YAGNI). DEPTH_PROGRAM verdicts += GAP#3 BUILT line, re-pinned
+  sha256=acbd0743b271f994ab24a7958e506603c3ac4303c1c0db4a2e594b11bba6168d.
+  Suppression-only invariant intact: GREEN only stops withholding, nothing
+  places; uncap EARNED per charter. No edge claims.
 - GAP-ROCKS WAVE CLOSED ~23:58Z TRUE-UTC (wf_15876188, 12 agents/0.85M; duty 4
   head): 2 LANDED + 2 HONEST PREMISE CATCHES (the queue's own integrity rail
   firing). LANDED: (1) GAP#6 asof_team_adv.py 8989fe92 (Opus PASS; leak-free
