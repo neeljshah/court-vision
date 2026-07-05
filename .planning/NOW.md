@@ -93,6 +93,29 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- CYCLE-3 FOLLOW-UPS CLOSED ~21:55Z TRUE-UTC (wf_ed653abd, 9 agents/0.91M,
+  commits 3ec9e409 tennis-diagnosis + e25585bc shadow-history+factory, all
+  Opus PASS): (1) TENNIS ROOT CAUSE SETTLED: state resolution is NOT broken
+  (live-verified on 3 real ESPN matches incl. Bencic/Gauff; bridge + dual-
+  tour merge work) -- the ONE root for both symptoms is the DELIBERATE
+  missing tennis branch in live_board.live_model_home_prob (model_p None ->
+  early return -> on_tick never fires -> zero grade pairs -> zero labels);
+  fix = a model-dispatch choice between two proven candidates = PROPOSED
+  doc (docs/research/PROPOSED_tennis_ingame_model_dispatch.md) for
+  adjudication AFTER shadow evidence accrues (shadow-first ruling stands).
+  (2) DURABLE SHADOW STORE LIVE: shadow_history.py + fail-open hook (proven
+  reachable for no_model_prob rows; 50MB/day bound; 50/50 tests) ->
+  data/cache/ingame_shadow_history/<sport>/<date>.jsonl -- promotion
+  decisions now have an append evidence store. (3) FACTORY HARDENED:
+  SHIP->REPLICATED_WEAK remap structural on same_source_pair (clause 3 by
+  code), plant-null recomputes products from permuted components (clause 4
+  literal), docstrings fixed, dup ledger rows trimmed (421->417, richer
+  originals kept). NOTE: inplay_capture_loop.py concurrently expanded by
+  another lane/user (DEFAULT_SPORTS += npb/kbo CAPTURE-ONLY, tennis/wnba
+  already in; LIVE_INTERVAL 20s) -- intentional, preserved. NEXT BIG ROCK:
+  GAP#3 greenlight uncap -- (e) channel_trust + (f) cv_honesty REAL
+  implementations (design lane launching; charter: faking them green is a
+  blockable regression, so spec first, build second). No edge claims.
 - NBA A2 RE-GATE CLOSED 21:25Z TRUE-UTC (wf_7d1ba1de, 3 agents/0.36M,
   commit d26bcf52, Opus PASS w/ byte-identical independent reproduction):
   ALL 4 CANDIDATES HONEST REJECT at layer=FDR_PRESCREEN -- deltas
