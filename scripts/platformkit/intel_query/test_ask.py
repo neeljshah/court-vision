@@ -493,6 +493,7 @@ def test_real_repo_discovery_covers_every_wave51_store():
         "platoon_split_claims.jsonl",
         "umpire_zone_claims.jsonl",
         "nba_fit_ingredient_claims.jsonl",
+        "npb_kbo_claims.jsonl",  # lane npb-kbo-strength-claims
     ):
         assert expected in claims_names, f"{expected} not discovered from the real repo tree"
 
