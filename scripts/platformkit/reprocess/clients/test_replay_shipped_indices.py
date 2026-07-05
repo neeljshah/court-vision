@@ -70,14 +70,28 @@ def test_registry_positional_weight_and_elo_refresh_replay_and_match():
     assert elo["max_abs_diff"] <= 1e-6
 
 
+def test_registry_umpire_totals_gate_replays_via_rmse_metric():
+    """wave-47 gap closure: mlb_umpire_totals_gate now RUNS (was UNAVAILABLE)
+    via the harness's new metric=rmse path -- column relabel + fold_id
+    derived with the gate's own BURN_IN/N_FOLDS constants, no re-scoring,
+    per-fold RMSE matches the committed verdict exactly."""
+    results = run_all_clients()
+    by_name = {r["client"]: r for r in results}
+    ump = by_name["mlb_umpire_totals_gate"]
+    assert ump["status"] == "RAN"
+    assert ump["matched"] is True
+    assert ump["max_abs_diff"] <= 1e-6
+    assert set(ump["per_fold_diffs"]) == {"fold0", "fold1", "fold2"}
+
+
 def test_registry_schema_mismatches_are_honest_unavailable():
-    """umpire totals, both ingame_hypothesis layers, and h3_playstyle (no
-    committed verdict) must never be coerced -- all UNAVAILABLE with a
-    reason, never a fabricated RAN result."""
+    """Both ingame_hypothesis layers and h3_playstyle must never be coerced
+    -- still UNAVAILABLE with a reason (re-checked wave-47: both require
+    re-running gate machinery to reach the committed per-row scores, not a
+    field_paths rename), never a fabricated RAN result."""
     results = run_all_clients()
     by_name = {r["client"]: r for r in results}
     for name in (
-        "mlb_umpire_totals_gate",
         "nba_ingame_hypothesis_hot_night",
         "nba_ingame_hypothesis_scheme_fit",
         "tennis_h3_playstyle",

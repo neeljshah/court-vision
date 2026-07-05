@@ -18,6 +18,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import pandas as pd
 
 from scripts.platformkit.reprocess.reprocess_harness import (
@@ -131,20 +132,104 @@ def compare_elo_refresh(client, committed: dict) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# UNAVAILABLE reason builders (schema / missing-verdict mismatches)
+# umpire_totals_gate (MLB, rmse, relabeled columns -- wave-47 gap closure)
 # ---------------------------------------------------------------------------
 
-def umpire_totals_unavailable_reason() -> str:
-    return (
-        "Rows schema mismatch: data/domains/mlb/umpire_totals_gate_rows.parquet "
-        "columns are ['game_pk','date','hp_umpire_id','total_runs','baseline_pred',"
-        "'candidate_pred'] -- a custom RMSE-comparison shape, not the harness's "
-        "required ['corpus_id','fold_id','event_id','p_variant','p_base','outcome']. "
-        "The committed verdict (umpire_totals_gate_verdict.json) itself reports "
-        "baseline_rmse/candidate_rmse per fold, not Brier/rho -- the harness has no "
-        "RMSE metric path. Recorded as an honest UNAVAILABLE rather than renaming "
-        "columns or inventing an RMSE metric mode to force a fit."
+_UMPIRE_BURN_IN = 300   # must match domains.mlb.umpire_totals_gate.BURN_IN exactly
+_UMPIRE_N_FOLDS = 3     # must match domains.mlb.umpire_totals_gate.N_FOLDS exactly
+
+
+def umpire_totals_rows() -> pd.DataFrame:
+    """Relabels umpire_totals_gate_rows.parquet's own columns into the
+    harness's rmse contract -- a column RENAME plus a fold_id derived with
+    the IDENTICAL construction the gate itself uses: BURN_IN=300 is applied
+    as a POSITIONAL cutoff on the RAW row order FIRST (matching
+    umpire_totals_gate._score_corpus's arange(BURN_IN, n_total) on the
+    as-persisted row order), THEN rows with a NaN prediction are dropped --
+    dropping NaNs before slicing would shift the burn-in boundary by however
+    many NaN rows preceded it, which is NOT what the gate computes (verified:
+    doing dropna-then-slice mismatches the committed fold sizes by 1 row).
+    N_FOLDS=3 chronological np.array_split follows, on the post-burn-in,
+    post-dropna scorable rows -- both constants copied verbatim from
+    domains.mlb.umpire_totals_gate, not re-derived or guessed. No re-scoring:
+    candidate_pred/baseline_pred are the gate's own persisted predictions,
+    untouched."""
+    df = load_rows("data/domains/mlb/umpire_totals_gate_rows.parquet")
+    n_total = len(df)
+    scorable = df.iloc[_UMPIRE_BURN_IN:n_total].dropna(
+        subset=["baseline_pred", "candidate_pred"]).reset_index(drop=True)
+    n_scorable = len(scorable)
+    fold_bounds = np.array_split(np.arange(n_scorable), _UMPIRE_N_FOLDS)
+    fold_id = np.empty(n_scorable, dtype=object)
+    for i, b in enumerate(fold_bounds):
+        fold_id[b] = f"fold{i}"
+    return pd.DataFrame({
+        "corpus_id": "mlb_umpire_totals_gate",
+        "fold_id": fold_id,
+        "event_id": scorable["game_pk"].astype(str),
+        "p_variant": scorable["candidate_pred"].astype(float),
+        "p_base": scorable["baseline_pred"].astype(float),
+        "outcome": scorable["total_runs"].astype(float),
+        "hp_umpire_id": scorable["hp_umpire_id"],
+    })
+
+
+def umpire_totals_committed_fold_deltas() -> dict:
+    """committed verdict's real_result.folds[i].rmse_delta, keyed to match
+    the harness's own fold{i} naming -- rmse_delta is NEGATIVE when the
+    candidate improves (cand_rmse - base_rmse), the OPPOSITE sign convention
+    from the harness's rmse delta (rmse_base - rmse_variant, positive =>
+    variant improves); this returns the value SIGN-FLIPPED so it is directly
+    comparable to the harness's per-fold mean_delta without the caller
+    needing to know the committed JSON's own sign convention."""
+    verdict = json.loads(
+        (_REPO / "data" / "domains" / "mlb" / "umpire_totals_gate_verdict.json").read_text(encoding="ascii")
     )
+    folds = verdict["real_result"]["folds"]
+    return {f"fold{i}": -float(f["rmse_delta"]) for i, f in enumerate(folds)}
+
+
+def compare_umpire_totals(client, committed: dict) -> dict:
+    """Per-fold RMSE delta comparison, mirroring compare_positional_weight's
+    fold-by-fold approach: the harness's per_fold_signs_vs_base mean_delta
+    (rmse_base - rmse_variant, positive => variant/candidate improves) is
+    diffed against the committed verdict's real_result.folds[i].rmse_delta
+    (SIGN-FLIPPED by umpire_totals_committed_fold_deltas to the same
+    convention) for the SAME fold_id -- both are the identical statistic
+    computed two ways (gate's own walk-forward vs harness replay of the
+    persisted predictions), so a 1e-6 match is a meaningful replay proof."""
+    df = client.rows_source()
+    try:
+        verdict = run_harness(df, metric=client.metric, cluster_col=None)
+    except SchemaError as e:
+        return {"status": "UNAVAILABLE", "reason": f"SchemaError: {e}"}
+    replayed = verdict_to_dict(verdict)
+    corpus_id = df["corpus_id"].iloc[0]
+    replayed_folds = {
+        f["fold_id"]: f["mean_delta"]
+        for f in replayed["per_corpus"][str(corpus_id)]["per_fold_signs_vs_base"]
+    }
+    committed_folds = umpire_totals_committed_fold_deltas()
+    if set(replayed_folds) != set(committed_folds):
+        return {
+            "status": "UNAVAILABLE",
+            "reason": f"fold_id set mismatch: replayed={sorted(replayed_folds)} "
+                      f"committed={sorted(committed_folds)}",
+        }
+    diffs = {k: abs(replayed_folds[k] - committed_folds[k]) for k in replayed_folds}
+    max_abs_diff = max(diffs.values())
+    return {
+        "status": "RAN",
+        "matched": max_abs_diff <= client.tolerance,
+        "max_abs_diff": max_abs_diff,
+        "tolerance": client.tolerance,
+        "per_fold_diffs": diffs,
+    }
+
+
+# ---------------------------------------------------------------------------
+# UNAVAILABLE reason builders (schema / verdict-shape mismatches)
+# ---------------------------------------------------------------------------
 
 
 def ingame_hypothesis_unavailable_reason(layer: str) -> str:
@@ -152,20 +237,30 @@ def ingame_hypothesis_unavailable_reason(layer: str) -> str:
         f"Rows schema mismatch: data/domains/basketball_nba/ingame_hypothesis_{layer}_"
         "*_rows.parquet columns are ['game_id','period','seconds_remaining','score_diff',"
         "'p_live','outcome','cond_delta'/'cond_val','team','layer','season'] -- an in-game "
-        "state shape (no corpus_id/fold_id/p_variant/p_base). The committed verdict "
-        f"(ingame_hypothesis_{layer}.json) is split per-season with its own DM-test block "
-        "computed directly against p_live/cond_prior, never persisted as p_variant/p_base "
-        "rows. Recorded as an honest UNAVAILABLE rather than relabeling columns to fit."
+        "state shape (no corpus_id/fold_id/p_variant/p_base). RE-CHECKED wave-47 for a "
+        "field_paths mapping fix (task asked): NOT a simple rename -- the committed verdict's "
+        f"(ingame_hypothesis_{layer}.json) per-fold brier_base/brier_prior score a TRAIN-only-"
+        "fit conditioning-prior surface (fit_weight_surface) gated to a TRAIN-derived threshold; "
+        "neither the fitted surface, the gate threshold, nor the gated_on mask were persisted "
+        "per-row -- only the plain p_live/cond_prior columns were exported. Reproducing "
+        "brier_prior would require RE-FITTING the fold's prior surface (model re-run), not a "
+        "column rename. Recorded as an honest UNAVAILABLE rather than relabeling columns to fit."
     )
 
 
 def h3_playstyle_unavailable_reason() -> str:
     return (
-        "No committed verdict exists for data/domains/tennis/h3_playstyle_rows.parquet -- "
-        "searched data/domains/tennis/**/*.json for an h3/playstyle-named verdict and found "
-        "none (only surface_hold_gate_verdict.json, a different gate, is present). Rows are "
-        "schema-compatible with the harness (corpus_id/fold_id/event_id/p_variant/p_base/"
-        "outcome present, binary outcome), but there is nothing committed to replay against. "
-        "Recorded as an honest UNAVAILABLE rather than treating a fresh harness run as its "
-        "own ground truth."
+        "RE-CHECKED wave-47: a committed verdict DOES exist -- data/frontend/ingame/"
+        "playstyle_gate_verdict.json (NOT under data/domains/tennis/ as first searched; "
+        "domains/tennis/playstyle_ingame_gate.py's own _OUT_DIR points there). But the "
+        "exported h3_playstyle_rows.parquet's p_base column is fit_score_detail()'s plain "
+        "sigmoid BASE model (r1['p_base']) -- NOT the H0 arm's own detail-model prediction "
+        "(r0['p_variant']) that the committed verdict's brier_h0 actually scores (verified: "
+        "harness brier_variant matches committed brier_h1 exactly per fold, but harness "
+        "brier_base does NOT match committed brier_h0 -- confirms p_base is a third, "
+        "different quantity). H0's per-row predictions were never exported (only H1's, via "
+        "the `for gid, pv, pb, y in zip(r1[...])` loop in playstyle_ingame_gate.py), so "
+        "replay cannot reach brier_h0 without re-running the gate to score H0 per-row. "
+        "Recorded as an honest UNAVAILABLE with the precise field-gap reason, not a fresh "
+        "harness run standing in as its own ground truth."
     )

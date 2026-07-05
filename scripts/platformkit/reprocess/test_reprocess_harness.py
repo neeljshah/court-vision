@@ -350,3 +350,132 @@ def test_rho_metric_custom_cluster_col_name():
     df = df.rename(columns={"cluster_id": "player_id"})
     v = run_harness(df, metric="rho", cluster_col="player_id")
     assert v.pooled_diagnostic["vs_base"]["n_clusters"] == 15
+
+
+# --------------------------------------------------------------------------- metric=rmse
+
+def _synthetic_rmse_df(n_per_corpus: int, seed: int, variant_better: bool,
+                        corpora=("corpusA",), n_folds: int = 3, n_clusters: int = 10) -> pd.DataFrame:
+    """Continuous PREDICTIONS (p_variant/p_base) vs a continuous TARGET
+    (outcome) -- the rmse-metric contract (predictions, not probabilities)."""
+    rng = np.random.default_rng(seed)
+    rows = []
+    eid = 0
+    for corpus in corpora:
+        for i in range(n_per_corpus):
+            fold = f"fold{i % n_folds}"
+            cluster = f"c{i % n_clusters}"
+            truth = rng.uniform(2.0, 12.0)  # e.g. runs-like continuous target
+            outcome = float(truth + rng.normal(0, 1.0))
+            if variant_better:
+                p_variant = float(truth + rng.normal(0, 0.3))
+                p_base = float(truth + rng.normal(0, 2.0))
+            else:
+                p_variant = float(truth + rng.normal(0, 2.0))
+                p_base = float(truth + rng.normal(0, 0.3))
+            rows.append({
+                "corpus_id": corpus, "fold_id": fold, "event_id": f"e{eid}",
+                "cluster_id": cluster,
+                "p_variant": p_variant, "p_base": p_base, "outcome": outcome,
+            })
+            eid += 1
+    return pd.DataFrame(rows)
+
+
+def test_rmse_metric_requires_continuous_outcome_fails_closed_on_binary():
+    df = _synthetic_df(n_per_corpus=50, seed=200, variant_better=True)  # binary outcome
+    with pytest.raises(SchemaError):
+        run_harness(df, metric="rmse")
+
+
+def test_rmse_metric_variant_better_shows_positive_delta():
+    df = _synthetic_rmse_df(n_per_corpus=300, seed=201, variant_better=True, n_clusters=20)
+    v = run_harness(df, metric="rmse", cluster_col="cluster_id")
+    assert v.metric == "rmse"
+    pooled = v.pooled_diagnostic["vs_base"]
+    assert pooled["delta"] > 0  # rmse_base - rmse_variant > 0 => variant improves
+    assert pooled["ci_lo"] > 0  # bootstrap CI on the delta excludes 0
+    for corpus_id, block in v.per_corpus.items():
+        assert block["vs_base"]["delta"] > 0
+
+
+def test_rmse_metric_variant_worse_shows_negative_delta():
+    df = _synthetic_rmse_df(n_per_corpus=300, seed=202, variant_better=False, n_clusters=20)
+    v = run_harness(df, metric="rmse", cluster_col="cluster_id")
+    pooled = v.pooled_diagnostic["vs_base"]
+    assert pooled["delta"] < 0
+
+
+def test_rmse_metric_cluster_col_declared_but_missing_fails_closed():
+    df = _synthetic_rmse_df(n_per_corpus=60, seed=203, variant_better=True).drop(columns=["cluster_id"])
+    with pytest.raises(SchemaError):
+        run_harness(df, metric="rmse", cluster_col="cluster_id")
+
+
+def test_rmse_metric_cluster_col_none_omits_bootstrap_without_raising():
+    df = _synthetic_rmse_df(n_per_corpus=60, seed=204, variant_better=True).drop(columns=["cluster_id"])
+    v = run_harness(df, metric="rmse", cluster_col=None)
+    assert v.metric == "rmse"
+    pooled = v.pooled_diagnostic["vs_base"]
+    assert pooled["n_clusters"] == 0
+    assert pooled["ci_lo"] != pooled["ci_lo"]  # nan != nan
+
+
+def test_rmse_metric_corpora_never_pooled_and_edge_never_claimed():
+    df = _synthetic_rmse_df(n_per_corpus=150, seed=205, variant_better=True,
+                             corpora=("A", "B"), n_clusters=15)
+    v = run_harness(df, metric="rmse", cluster_col="cluster_id")
+    assert set(v.per_corpus.keys()) == {"A", "B"}
+    d = verdict_to_dict(v)
+    assert d["edge_claimed"] is False
+    assert "never an edge" in d["honest_note"]
+
+
+def test_rmse_metric_per_fold_signs_reported():
+    df = _synthetic_rmse_df(n_per_corpus=300, seed=206, variant_better=True, n_folds=3, n_clusters=20)
+    v = run_harness(df, metric="rmse", cluster_col="cluster_id")
+    for corpus_id, block in v.per_corpus.items():
+        signs = block["per_fold_signs_vs_base"]
+        assert len(signs) == 3
+        assert all(s["sign"] in ("variant", "base", "tie") for s in signs)
+
+
+def test_rmse_metric_deterministic_across_runs():
+    df = _synthetic_rmse_df(n_per_corpus=200, seed=207, variant_better=True, n_clusters=15)
+    v1 = run_harness(df, metric="rmse", cluster_col="cluster_id")
+    v2 = run_harness(df, metric="rmse", cluster_col="cluster_id")
+    d1 = v1.pooled_diagnostic["vs_base"]["delta"]
+    d2 = v2.pooled_diagnostic["vs_base"]["delta"]
+    assert d1 == pytest.approx(d2, abs=1e-12)
+
+
+# --------------------------------------------------------------------------- real umpire corpus (rmse)
+
+_UMPIRE_ROWS = _REPO_ROOT / "data" / "domains" / "mlb" / "umpire_totals_gate_rows.parquet"
+
+
+@pytest.mark.skipif(not _UMPIRE_ROWS.exists(), reason="real mlb umpire corpus not present in this checkout")
+def test_umpire_rows_relabeled_replay_matches_committed_folds():
+    """Closes the wave-47 gap: umpire_totals_gate_rows.parquet's own columns
+    (game_pk/date/hp_umpire_id/total_runs/baseline_pred/candidate_pred),
+    relabeled into the harness's rmse contract (p_base=baseline_pred,
+    p_variant=candidate_pred, outcome=total_runs, one corpus_id, fold_id via
+    the SAME BURN_IN=300/N_FOLDS=3/np.array_split construction the gate
+    itself uses), replays the committed per-fold RMSE within 1e-6. See
+    scripts/platformkit/reprocess/clients/replay_shipped_indices_io.py
+    umpire_totals_rows() for the production relabeling used by the client."""
+    from scripts.platformkit.reprocess.clients.replay_shipped_indices_io import (
+        umpire_totals_committed_fold_deltas,
+        umpire_totals_rows,
+    )
+    df = umpire_totals_rows()
+    v = run_harness(df, metric="rmse", cluster_col=None)
+    corpus_id = df["corpus_id"].iloc[0]
+    replayed_folds = {
+        f["fold_id"]: (f["mean_delta"])
+        for f in v.per_corpus[str(corpus_id)]["per_fold_signs_vs_base"]
+    }
+    committed_folds = umpire_totals_committed_fold_deltas()
+    assert set(replayed_folds) == set(committed_folds)
+    max_abs_diff = max(abs(replayed_folds[k] - committed_folds[k]) for k in replayed_folds)
+    assert max_abs_diff <= 1e-6

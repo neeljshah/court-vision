@@ -19,7 +19,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import spearmanr
 
-METRICS = ("brier", "rho")
+METRICS = ("brier", "rho", "rmse")
 N_BOOT_RHO = 2000
 BOOT_SEED_RHO = 20260704
 
@@ -41,11 +41,11 @@ def validate_metric_matches_outcome(df: pd.DataFrame, metric: str, schema_error_
     if metric == "brier" and not binary:
         raise schema_error_cls(
             "metric=brier declared but outcome is not binary (0/1) -- "
-            "continuous outcomes require --metric rho"
+            "continuous outcomes require --metric rho or --metric rmse"
         )
-    if metric == "rho" and binary:
+    if metric in ("rho", "rmse") and binary:
         raise schema_error_cls(
-            "metric=rho declared but outcome is binary (0/1) -- "
+            f"metric={metric} declared but outcome is binary (0/1) -- "
             "binary outcomes require --metric brier"
         )
 

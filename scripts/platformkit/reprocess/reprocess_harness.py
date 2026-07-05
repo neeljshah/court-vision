@@ -2,25 +2,26 @@
 
 Feed it PRE-SCORED rows for a base variant and a challenger variant, get
 back a leak-free-respecting, provenance-separated Brier/Diebold-Mariano
-verdict (binary outcomes) or a Spearman-rho verdict (continuous outcomes,
-see reprocess_harness_rho.py). NEVER imports producer code -- callers score
-their own variant, persist the rows, hand this harness a parquet/JSONL.
+verdict (binary outcomes), a Spearman-rho verdict, or an RMSE verdict
+(continuous outcomes -- see reprocess_harness_rho.py / _rmse.py). NEVER
+imports producer code -- callers score their own variant, persist the rows,
+hand this harness a parquet/JSONL.
 
 INPUT (parquet/JSONL), one row per scored prediction: corpus_id (provenance,
 never pooled for the verdict), fold_id, event_id, p_variant, p_base,
-outcome (binary 0/1 for metric=brier, continuous for metric=rho),
+outcome (binary 0/1 for brier; continuous prediction/target for rho/rmse),
 p_close (OPTIONAL, brier-only calibration-vs-close, never an edge).
 
-METRIC is declared explicitly via --metric {brier,rho}, NEVER inferred from
-outcome cardinality -- a mismatch (e.g. brier on a continuous outcome) is a
-fail-closed SchemaError. rho additionally requires a declared cluster_col
-(default "cluster_id", e.g. player_id) present in the input for its paired
-cluster bootstrap; missing column fails closed rather than falling back to
-event_id. See reprocess_harness_rho.py for the rho comparison + validator.
+METRIC is declared explicitly via --metric {brier,rho,rmse}, NEVER inferred
+from outcome cardinality -- a mismatch is a fail-closed SchemaError. rho
+requires a declared cluster_col (default "cluster_id") for its paired
+cluster bootstrap, fails closed if missing. rmse's cluster bootstrap is
+OPTIONAL -- pass --no-cluster-col to omit it (CI reported as nan). See
+reprocess_harness_rho.py (rho + shared validator) / _rmse.py (rmse).
 
 CLI:
     python -m scripts.platformkit.reprocess.reprocess_harness --input X --out Y --metric brier
-    python -m scripts.platformkit.reprocess.reprocess_harness --input X --out Y --metric rho --cluster-col player_id
+    python -m scripts.platformkit.reprocess.reprocess_harness --input X --out Y --metric rmse --cluster-col hp_umpire_id
 """
 from __future__ import annotations
 
@@ -78,11 +79,8 @@ def _brier(p: np.ndarray, y: np.ndarray) -> np.ndarray:
 
 
 def validate_metric_matches_outcome(df: pd.DataFrame, metric: str) -> None:
-    """Fail-closed check: the declared metric must match the outcome dtype.
-    metric is NEVER inferred silently from cardinality -- the caller always
-    states it; this only catches a stated metric that contradicts the data.
-    Thin wrapper -- the actual check lives in reprocess_harness_rho (split
-    out to stay under the 300-LOC cap) so SchemaError stays defined here."""
+    """Fail-closed: declared metric must match outcome dtype, never inferred.
+    Thin wrapper -- check lives in reprocess_harness_rho (300-LOC cap)."""
     from scripts.platformkit.reprocess.reprocess_harness_rho import (
         validate_metric_matches_outcome as _validate,
     )
@@ -202,21 +200,23 @@ def _run_harness_brier(df: pd.DataFrame) -> ReprocessVerdict:
 
 
 def _run_harness_rho(df: pd.DataFrame, cluster_col: str) -> ReprocessVerdict:
-    """Delegates to reprocess_harness_rho (split out to stay under the
-    300-LOC cap); SchemaError is passed in by class so the companion module
-    never needs to import it back from here."""
+    """Delegates to reprocess_harness_rho (300-LOC cap split)."""
     from scripts.platformkit.reprocess.reprocess_harness_rho import run_harness_rho
     return ReprocessVerdict(**run_harness_rho(df, cluster_col, SchemaError))
 
 
+def _run_harness_rmse(df: pd.DataFrame, cluster_col: str | None) -> ReprocessVerdict:
+    """Delegates to reprocess_harness_rmse (300-LOC cap split)."""
+    from scripts.platformkit.reprocess.reprocess_harness_rmse import run_harness_rmse
+    return ReprocessVerdict(**run_harness_rmse(df, cluster_col, SchemaError))
+
+
 def run_harness(df: pd.DataFrame, metric: str = "brier",
-                cluster_col: str = DEFAULT_CLUSTER_COL) -> ReprocessVerdict:
+                cluster_col: str | None = DEFAULT_CLUSTER_COL) -> ReprocessVerdict:
     """Corpora are NEVER pooled for the verdict -- only shown pooled as a
-    diagnostic. Fails closed (raises SchemaError) on missing required cols
-    or a metric/outcome-dtype mismatch; caller (load_rows) already enforces
-    the column check, but re-check defensively since run_harness may be
-    called directly with a caller-built DataFrame. metric is ALWAYS an
-    explicit argument -- never inferred from outcome cardinality."""
+    diagnostic. Fails closed on a missing col or metric/outcome mismatch.
+    metric is ALWAYS explicit -- never inferred. metric=rmse: pass
+    cluster_col=None to skip its (optional) paired bootstrap."""
     missing = [c for c in REQUIRED_COLS if c not in df.columns]
     if missing:
         raise SchemaError(f"input missing required columns: {missing}")
@@ -224,22 +224,29 @@ def run_harness(df: pd.DataFrame, metric: str = "brier",
 
     if metric == "rho":
         return _run_harness_rho(df, cluster_col)
+    if metric == "rmse":
+        return _run_harness_rmse(df, cluster_col)
     return _run_harness_brier(df)
 
 
+_HONEST_NOTES = {
+    "rho": ("leak-free walk-forward comparison of pre-scored variant vs base Spearman "
+            "rho vs a continuous outcome; corpora provenance-separated, never pooled "
+            "for the verdict (pooled block is diagnostic only); rho deltas are "
+            "descriptive/predictive-validity only, never an edge"),
+    "rmse": ("leak-free walk-forward comparison of pre-scored variant vs base continuous "
+             "PREDICTIONS scored by RMSE vs a continuous target; corpora provenance-"
+             "separated, never pooled for the verdict (pooled block is diagnostic only); "
+             "RMSE deltas are a calibration/fit comparison, never an edge"),
+    "brier": ("leak-free walk-forward comparison of pre-scored variant vs base Brier "
+              "loss; corpora provenance-separated, never pooled for the verdict (pooled "
+              "block is diagnostic only); vs_close, when present, is calibration only, "
+              "never an edge"),
+}
+
+
 def verdict_to_dict(v: ReprocessVerdict) -> dict[str, Any]:
-    honest_note = (
-        "leak-free walk-forward comparison of pre-scored variant vs base "
-        "Spearman rho against a continuous outcome; corpora are "
-        "provenance-separated and never pooled for the verdict (pooled "
-        "block is a diagnostic only); rho deltas are a descriptive/"
-        "predictive-validity comparison, never an edge"
-        if v.metric == "rho" else
-        "leak-free walk-forward comparison of pre-scored variant vs base "
-        "Brier loss; corpora are provenance-separated and never pooled for "
-        "the verdict (pooled block is a diagnostic only); vs_close block, "
-        "when present, is a calibration comparison, never an edge"
-    )
+    honest_note = _HONEST_NOTES[v.metric]
     return {
         "component": "reprocess_harness",
         "metric": v.metric,
@@ -264,29 +271,31 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--input", required=True, help="path to pre-scored rows (parquet or JSONL)")
     parser.add_argument("--out", required=True, help="path to write the verdict JSON")
     parser.add_argument("--metric", choices=METRICS, default="brier",
-                        help="brier (binary outcome, DM test) or rho (continuous outcome, cluster bootstrap); "
-                             "declared explicitly, never inferred")
+                        help="brier (binary), rho (continuous, cluster required), or rmse "
+                             "(continuous pred vs target, cluster optional)")
     parser.add_argument("--cluster-col", default=DEFAULT_CLUSTER_COL,
-                        help="cluster column for the rho paired bootstrap (metric=rho only), e.g. player_id")
+                        help="cluster column for rho (required) / rmse (optional) bootstrap")
+    parser.add_argument("--no-cluster-col", action="store_true",
+                        help="metric=rmse only: omit the paired bootstrap (CI reported as nan)")
     args = parser.parse_args(argv)
 
     input_path = Path(args.input)
+    cluster_col = None if (args.metric == "rmse" and args.no_cluster_col) else args.cluster_col
     try:
         df = load_rows(input_path)
-        verdict = run_harness(df, metric=args.metric, cluster_col=args.cluster_col)
+        verdict = run_harness(df, metric=args.metric, cluster_col=cluster_col)
     except (FileNotFoundError, SchemaError) as e:
         print(f"BLOCKED: {e}")
         return 1
 
     write_verdict(verdict, Path(args.out))
     print(f"metric={verdict.metric} n_corpora={len(verdict.per_corpus)} pooled_n={verdict.pooled_diagnostic['n']}")
+    tails = {"rho": lambda vb: f"ci=[{vb['ci_lo']:.4f},{vb['ci_hi']:.4f}]",
+             "rmse": lambda vb: f"rmse_base={vb['rmse_base']:.6f} rmse_variant={vb['rmse_variant']:.6f}",
+             "brier": lambda vb: f"dm_p={vb['dm_p']:.4f}"}
     for corpus_id, block in verdict.per_corpus.items():
         vb = block["vs_base"]
-        if verdict.metric == "rho":
-            print(f"  {corpus_id}: n={block['n']} delta={vb['delta']:.6f} "
-                  f"ci=[{vb['ci_lo']:.4f},{vb['ci_hi']:.4f}]")
-        else:
-            print(f"  {corpus_id}: n={block['n']} delta={vb['delta']:.6f} dm_p={vb['dm_p']:.4f}")
+        print(f"  {corpus_id}: n={block['n']} delta={vb['delta']:.6f} {tails[verdict.metric](vb)}")
     print(f"wrote verdict to {args.out}")
     return 0
 
