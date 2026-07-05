@@ -41,6 +41,20 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 63 (WAVE-62: RETRO DIGEST + HANDOFF REFRESHED, 2026-07-05
+  ~11:00Z true-UTC, wf_da0e1705-577 5 agents/~0.35M tok): digest verified
+  (waves 47-61: 42 commits, 11 honesty catches, coverage 62 claims/13210
+  rows/16305 entities); human queue extended in its REAL location (docs/
+  research/organization-sprint/HUMAN_QUEUE_2026-07-05.md, items 9-10).
+  CONFIRMED: m2_inplay (PID 15804, inplay_runner snapshots) and
+  m2_inplay_capture (PID 29752) are TWO distinct daemons, both 429ing ->
+  double-polling consolidation = open question (read-only intent check
+  queued). KBO 27 rows/4 games accruing. FABLE wrote: sprint retro memory
+  (waves47_61) + MEMORY.md index + NEXT_SESSION_PROMPT.md REWRITTEN for
+  post-sprint (standard rails from 07-07, runtime-evidence bar, clock rail,
+  open watches). WAVE-63 launching: ask-layer end-to-end demo battery (the
+  v3 closure proof: 25 questions across all sports, provenance asserted) +
+  m2 double-polling read-only intent check. Slate-close KBO tick ~13Z next.
 - SPRINT WAKE 62 (WAVE-61: KBO CAPTURE LIVE FROM THE DAEMON -- ARC CLOSED,
   2026-07-05 ~10:35Z true-UTC, wf_7e0a2bd9-94a 6 agents/~0.51M tok, 1
   commit): the sanctioned reorder shipped (kbo-only deep capture before the
