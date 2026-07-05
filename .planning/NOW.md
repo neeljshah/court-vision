@@ -41,6 +41,20 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 57 (WAVE-56 SHIPPED: KBO CAPTURE WIRE CLOSED, 2026-07-05
+  ~08:50Z, wf_79579c90-da0 6 agents/~0.61M tok, 2 lane commits): alias bridge
+  evidence-derived across 3 alphabets (Kalshi KBO tickers do NOT fix team
+  order -- unique-split matching; Naver codes via existing team_map glyphs,
+  zero invented literals); fail-open chain wired via kbo_deep_state_fn
+  (mirrors mlb_deep); LIVE SOAK stored a real progressing state row (counts
+  0-1 -> 0-2, top 9th) with decision behavior UNCHANGED (no_model_prob,
+  capture-only). 90 tests green. NPB+KBO join claims: 8 strength dims
+  VERIFIED (NPB 3964-rowcount guard refuses on mismatch). Model wire stays
+  FORBIDDEN (both ingame fits HONEST_NEGATIVE) until real states accrue for
+  a fresh pre-registered fit. WAVE-57 launching: capture-daemon single-
+  process reload (supervisor relaunch precedent, two-layer HB check) +
+  in-window accrual verify (main slate ~09:30Z, 4 games), soccer widening
+  (H2H pairs + form descriptive from owned results). No edge claims.
 - SPRINT WAKE 56 (WAVE-55 SHIPPED: KBO LIVE CONFIRMED -- WALL BROKEN,
   2026-07-05 ~08:15Z, wf_c05edee0-9e0 9 agents/~0.75M tok, 3 lane commits):
   Naver relay served REAL MID-GAME states (2 polls 66s apart, game
