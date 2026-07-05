@@ -19,6 +19,16 @@ Rules (binding, see LANE spec):
     timestamps in file bodies except the claim's own `generated_at` (from the
     validation record) quoted verbatim.
   - No edge/ROI phrasing anywhere in generated text.
+  - FULL POPULATION, no cap here: every VERIFIED ranking row above its own
+    min_sample floor gets a line (a capped dossier traces to the upstream
+    claim producer, e.g. basketball_claims.py's TOP_N, not this module).
+  - CLAIM_ID_TO_FILE / EXTRA_VALIDATION_PATHS is a STATIC registry, not a
+    glob -- a prefix that matches zero real claim_ids silently starves that
+    source (fixed once: "nba_shooting_" matched none of
+    nba_shooting_claims.jsonl's 20 per-dimension ids; see
+    test_claim_id_to_file_prefixes_match_real_on_disk_claim_ids).
+  - _slugify() strips Windows-illegal filename chars from fallback ids
+    (e.g. "ATL|BIG" -> "atlbig") so a raw id never crashes the write.
 
 Provenance line format (one per claim, per entity):
   claim_id | metric | value (precision) | source_files | validator=VERIFIED @ generated_at
@@ -28,54 +38,17 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
+from scripts.platformkit.vault_feed.dossier_registry import (
+    CLAIM_ID_TO_FILE,
+    ENTITY_KEY_NAME_FIELD,
+    EXTRA_VALIDATION_PATHS,
+    PAIR_ENTITY_KEY_NAME_FIELDS,
+    REPO_ROOT,
+)
+
 VALIDATION_PATH = REPO_ROOT / "data/frontend/ops/intel_claims_validation.json"
 CLAIMS_DIR = REPO_ROOT / "data/cache/intel_claims"
 OUT_DIR = REPO_ROOT / "data/cache/vault_feed_staging/dossier_sections"
-
-# Additional validation files whose VERIFIED claim_ids also feed the dossier
-# (ranking-kind claims validated outside the main ops validation file).
-EXTRA_VALIDATION_PATHS = [
-    REPO_ROOT / "data/cache/intel_claims/tennis_hold_claims_validation.json",
-    REPO_ROOT / "data/cache/intel_claims/mlb_pitcher_claims_validation.json",
-    REPO_ROOT / "data/cache/intel_claims/soccer_intl_strength_claims_validation.json",
-    REPO_ROOT / "data/cache/intel_claims/tennis_h2h_index_claims_validation.json",
-    REPO_ROOT / "data/cache/intel_claims/catcher_framing_claims_validation.json",
-    REPO_ROOT / "data/cache/intel_claims/umpire_zone_claims_validation.json",
-    REPO_ROOT / "data/cache/intel_claims/platoon_split_claims_validation.json",
-]
-
-# claim_id prefix -> claims jsonl filename (only ranking claims from these files are eligible)
-CLAIM_ID_TO_FILE = {
-    "nba_shooting_": "nba_shooting_claims.jsonl",
-    "nba_quality_": "nba_quality_claims.jsonl",
-    "tennis_hold_": "tennis_hold_claims.jsonl",
-    "mlb_pitcher_": "mlb_pitcher_claims.jsonl",
-    "soccer_intl_strength_": "soccer_intl_strength_claims.jsonl",
-    "mlb_catcher_framing_": "catcher_framing_claims.jsonl",
-    "tennis_h2h_dominance_": "tennis_h2h_index_claims.jsonl",
-    "tennis_playstyle_": "tennis_h2h_index_claims.jsonl",
-    "mlb_umpire_zone_": "umpire_zone_claims.jsonl",
-    "mlb_platoon_split_": "platoon_split_claims.jsonl",
-}
-
-# entity_key values eligible for per-entity dossier sections (ranking row field
-# that names the entity + the row field holding its display name).
-# A None name-field means: no display-name row field exists, fall back to the
-# entity_key's own id value formatted as the display name.
-ENTITY_KEY_NAME_FIELD = {
-    "player_id": "player_name",
-    "team": "team",
-    "catcher_id": "catcher_name",
-    "umpire_id": "umpire_name",
-    "batter": "batter_name",
-}
-
-# Pair-keyed entity_key values (list of two id fields) -> (id_field_pair, name_field_pair).
-# Rendered to a single deterministic slug "p1_vs_p2" (lower id first for determinism).
-PAIR_ENTITY_KEY_NAME_FIELDS = {
-    ("p1_id", "p2_id"): ("p1_name", "p2_name"),
-}
 
 
 def _load_verified_claim_ids(validation_path: Path) -> dict:
@@ -122,6 +95,20 @@ def _load_claim_bodies(claims_dir: Path) -> dict:
 
 def _entity_key_field(claim: dict) -> str | None:
     return claim.get("criteria", {}).get("entity_key")
+
+
+# Windows filename-illegal characters (also unwelcome in slugs generally).
+# Seen in the wild: nba_fit_role_vacancy_by_team_posgroup_current's fallback
+# id "ATL|BIG" (pipe) crashed write_text with OSError: Invalid argument.
+_SLUG_ILLEGAL = str.maketrans("", "", '<>:"/\\|?*')
+
+
+def _slugify(name: str) -> str:
+    return (
+        name.strip().lower()
+        .replace(" ", "_").replace(".", "").replace("'", "")
+        .translate(_SLUG_ILLEGAL)
+    )
 
 
 def _provenance_line(claim_id: str, metric: str, value, precision, source_files, generated_at: str) -> str:
@@ -180,8 +167,8 @@ def build_dossier_sections(validation_path: Path = VALIDATION_PATH,
                 n1, n2 = row.get(name_a), row.get(name_b)
                 if not n1 or not n2:
                     continue
-                s1 = n1.strip().lower().replace(" ", "_").replace(".", "").replace("'", "")
-                s2 = n2.strip().lower().replace(" ", "_").replace(".", "").replace("'", "")
+                s1 = _slugify(n1)
+                s2 = _slugify(n2)
                 # deterministic pair slug: lower id first
                 if row.get(id_a, 0) <= row.get(id_b, 0):
                     slug, name = f"{s1}_vs_{s2}", f"{n1} vs {n2}"
@@ -207,7 +194,7 @@ def build_dossier_sections(validation_path: Path = VALIDATION_PATH,
                 if raw_id is None:
                     continue
                 name = str(raw_id)
-            slug = str(name).strip().lower().replace(" ", "_").replace(".", "").replace("'", "")
+            slug = _slugify(str(name))
             line = _provenance_line(claim_id, metric, row.get("value"), precision, source_files, generated_at)
             entity_lines.setdefault(slug, {"name": name, "lines": []})
             entity_lines[slug]["lines"].append((row.get("rank"), line))
@@ -241,59 +228,17 @@ def build_dossier_sections(validation_path: Path = VALIDATION_PATH,
     return counts
 
 
-GATE_VERDICT_VALIDATION_PATH = REPO_ROOT / "data/frontend/ops/intel_verdict_claims_validation.json"
-GATE_VERDICT_CLAIMS_PATH = REPO_ROOT / "data/cache/intel_claims/gate_verdict_claims.jsonl"
-GATE_VERDICT_HUB_OUT_DIR = REPO_ROOT / "data/cache/vault_feed_staging/atlas_hubs"
-
-
-def build_gate_verdict_hub(validation_path: Path = GATE_VERDICT_VALIDATION_PATH,
-                            claims_path: Path = GATE_VERDICT_CLAIMS_PATH,
-                            out_dir: Path = GATE_VERDICT_HUB_OUT_DIR) -> int:
-    """Write a single whole-population 'Honest Verdicts' hub note.
-
-    Gate-verdict claims describe a whole population, not one entity -- they never
-    get per-entity dossiers. VERIFIED-only: MISMATCH/UNVERIFIABLE rows are excluded.
-    Fail-open: missing inputs -> no file written, returns 0.
-    """
-    if not validation_path.exists() or not claims_path.exists():
-        return 0
-    try:
-        val_doc = json.loads(validation_path.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError):
-        return 0
-    verified_ids = {
-        row["claim_id"] for row in val_doc.get("details", [])
-        if row.get("verdict") == "VERIFIED"
-    }
-    if not verified_ids:
-        return 0
-
-    bodies = {}
-    try:
-        for line in claims_path.read_text(encoding="utf-8").splitlines():
-            line = line.strip()
-            if not line:
-                continue
-            d = json.loads(line)
-            bodies[d["claim_id"]] = d
-    except (json.JSONDecodeError, OSError):
-        return 0
-
-    out_dir.mkdir(parents=True, exist_ok=True)
-    lines = ["## Honest Verdicts Hub", ""]
-    for claim_id in sorted(verified_ids):
-        claim = bodies.get(claim_id)
-        if claim is None:
-            continue
-        verdict = claim.get("verdict", "")
-        primary = claim.get("primary_number", "")
-        gate_module = claim.get("gate_module", "")
-        lines.append(f"- {claim_id} | verdict={verdict} | primary={primary} | gate={gate_module}")
-    lines.append("")
-    n = len(lines) - 2
-    (out_dir / "honest_verdicts_hub.md").write_text("\n".join(lines), encoding="utf-8", newline="\n")
-    return n
-
+# build_gate_verdict_hub moved to gate_verdict_hub_gen.py (kept this module
+# under the 300 LOC/file rail; it covers a different concern -- one whole-
+# population verdict hub note, not per-entity dossiers). Re-exported here so
+# any existing `from claims_dossier_gen import build_gate_verdict_hub` caller
+# keeps working unchanged.
+from scripts.platformkit.vault_feed.gate_verdict_hub_gen import (  # noqa: E402
+    GATE_VERDICT_CLAIMS_PATH,
+    GATE_VERDICT_HUB_OUT_DIR,
+    GATE_VERDICT_VALIDATION_PATH,
+    build_gate_verdict_hub,
+)
 
 if __name__ == "__main__":
     counts = build_dossier_sections()
