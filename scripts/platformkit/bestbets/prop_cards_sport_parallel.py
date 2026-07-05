@@ -56,7 +56,21 @@ FAILURE ISOLATION: one sport's board build raising is caught HERE per-sport
 SCORE_ERROR in the returned per-sport error map; the sport contributes zero
 cards for that cycle rather than a fabricated row.
 
-Stdlib + repo-internal only. ASCII-only. <=150 LOC.
+OVERALL DEADLINE (2026-07-05 m13-freeze fix): per-provider fetches were already
+bounded (_PROP_FETCH_DEADLINE_S in prop_edge.py), but nothing bounded the SUM of
+a sport's sequential steps (feed fetch + up to two synth-fallback passes, each
+re-reading the gamelog parquet) -- under live-slate load one sport's total could
+run long enough to blow the 240s props_pred_tick score_with_timeout budget even
+though every individual fetch finished inside its own 30s cap. deadline_sec adds
+a WALL-CLOCK ceiling on the whole fan-out using the same recipe already proven in
+frontend/bestbets_routes.py (_LIVE_DEADLINE_SEC): an explicit (non-`with`) pool +
+as_completed(timeout=...) + shutdown(wait=False, cancel_futures=True) so a slow
+sport's still-running future is ABANDONED (never awaited) rather than blocking the
+caller past the deadline -- the `with` form's __exit__ calls shutdown(wait=True)
+unconditionally, which would defeat this. Py3.10: catches
+concurrent.futures.TimeoutError, NOT the builtin TimeoutError.
+
+Stdlib + repo-internal only. ASCII-only. <=300 LOC.
 Per-file test: scripts/platformkit/bestbets/test_prop_cards_sport_parallel.py
 """
 from __future__ import annotations
@@ -64,6 +78,7 @@ from __future__ import annotations
 import concurrent.futures
 import logging
 import time
+from concurrent.futures import TimeoutError as _FuturesTimeout
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
@@ -71,6 +86,20 @@ logger = logging.getLogger(__name__)
 # Cap concurrent sport workers. Small (sport count is O(2-4) today); a fixed
 # ceiling avoids an unbounded pool if _sports ever grows a lot.
 MAX_SPORT_WORKERS = 8
+
+# Overall wall-clock ceiling on the whole fan-out (all sports together), well
+# below the 240s props_pred_tick score_with_timeout budget so this deadline
+# fires FIRST and the caller gets an honest partial board instead of the outer
+# timeout discarding everything. Tune via PROP_SPORT_FANOUT_DEADLINE_S.
+def _env_float(name: str, default: float) -> float:
+    import os
+    try:
+        return float(os.environ.get(name, default))
+    except (TypeError, ValueError):
+        return default
+
+
+DEFAULT_FANOUT_DEADLINE_SEC = _env_float("PROP_SPORT_FANOUT_DEADLINE_S", 180.0)
 
 # Last-cycle per-sport error/timing metadata, for honest cycle-metadata
 # reporting (prop_cards.last_sport_errors/last_sport_seconds delegate here).
@@ -106,25 +135,36 @@ def last_sport_seconds() -> Dict[str, float]:
 def run_sports_parallel(
     sports: Tuple[str, ...],
     build_one: Callable[[str], List[Dict[str, Any]]],
+    deadline_sec: Optional[float] = DEFAULT_FANOUT_DEADLINE_SEC,
 ) -> Tuple[List[Dict[str, Any]], Dict[str, str], Dict[str, float]]:
-    """Run build_one(sport) for every sport in *sports* CONCURRENTLY (threads).
+    """Run build_one(sport) for every sport in *sports* CONCURRENTLY (threads),
+    bounded by an OVERALL *deadline_sec* wall clock (None/<=0 = no deadline, the
+    old unbounded behavior; tests rely on this).
 
     Returns (cards, errors, per_sport_seconds):
       * cards -- all sports' cards concatenated in the FIXED order of *sports*
         (never dict/completion order) so output is deterministic regardless of
         which sport's fetch finishes first.
       * errors -- {sport: "SCORE_ERROR: <repr>"} for any sport whose build_one
-        raised; that sport contributes [] cards (never fabricated rows). Empty
-        dict when every sport succeeded.
-      * per_sport_seconds -- {sport: wall-clock seconds} for the proof artifact.
+        raised; that sport contributes [] cards (never fabricated rows). A sport
+        still running when the deadline fires is recorded as
+        "SCORE_ERROR: fanout deadline exceeded" (honest partial, not fabricated).
+        Empty dict when every sport finished in time and succeeded.
+      * per_sport_seconds -- {sport: wall-clock seconds} for the proof artifact
+        (only for sports that finished; a deadline-abandoned sport has none).
 
-    One sport raising NEVER cancels or corrupts siblings (each future's
-    exception is caught independently). Never raises out."""
+    One sport raising or timing out NEVER cancels or corrupts siblings (each
+    future's exception is caught independently; abandoned futures are left to
+    finish/die on their own -- Python threads cannot be force-killed safely, the
+    SAME daemon-thread contract as props_score_timeout.score_with_timeout).
+    Never raises out."""
     _sports = tuple(sports or ())
     if not _sports:
         return [], {}, {}
     if len(_sports) == 1:
-        # No fan-out benefit for a single sport; skip the pool entirely.
+        # No fan-out benefit for a single sport; skip the pool entirely (no
+        # deadline applied -- there is no sibling to protect from a hang, and
+        # the caller's own outer timeout already bounds this case).
         sport = _sports[0]
         t0 = time.time()
         try:
@@ -146,10 +186,17 @@ def run_sports_parallel(
         finally:
             per_sport_seconds[sport] = time.time() - t0
 
+    # NB: NOT `with ThreadPoolExecutor(...)` -- its __exit__ calls
+    # shutdown(wait=True) unconditionally, which BLOCKS until every sport's
+    # future finishes even after our as_completed deadline fires, defeating the
+    # deadline (same footgun documented in frontend/bestbets_routes.py). Manage
+    # the pool explicitly + shutdown non-blocking so this returns AT the deadline.
+    ex = concurrent.futures.ThreadPoolExecutor(max_workers=workers)
     try:
-        with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as ex:
-            futs = {ex.submit(_timed, sport): sport for sport in _sports}
-            for fut in concurrent.futures.as_completed(futs):
+        futs = {ex.submit(_timed, sport): sport for sport in _sports}
+        try:
+            wait_kw = {} if not deadline_sec or deadline_sec <= 0 else {"timeout": deadline_sec}
+            for fut in concurrent.futures.as_completed(futs, **wait_kw):
                 sport = futs[fut]
                 try:
                     per_sport_cards[sport] = fut.result()
@@ -158,13 +205,22 @@ def run_sports_parallel(
                                 sport, exc)
                     per_sport_cards[sport] = []
                     errors[sport] = "SCORE_ERROR: %r" % (exc,)
+        except _FuturesTimeout:
+            logger.warning("prop_cards_sport_parallel: fanout hit %.0fs deadline "
+                           "(%d/%d sports done)", deadline_sec, len(per_sport_cards),
+                           len(_sports))
+            for sport in _sports:
+                if sport not in per_sport_cards:
+                    errors[sport] = "SCORE_ERROR: fanout deadline exceeded"
+                    per_sport_cards[sport] = []
     except Exception as exc:  # noqa: BLE001 -- pool machinery itself must never raise
         logger.debug("prop_cards_sport_parallel: pool failed: %s", exc)
-        # Fall back to whatever finished; any un-started sport is an honest error.
         for sport in _sports:
             if sport not in per_sport_cards:
                 errors.setdefault(sport, "SCORE_ERROR: %r" % (exc,))
                 per_sport_cards.setdefault(sport, [])
+    finally:
+        ex.shutdown(wait=False, cancel_futures=True)
 
     # DETERMINISTIC ORDER: assemble by the caller's fixed sport order, never by
     # dict/future-completion order.
@@ -174,5 +230,22 @@ def run_sports_parallel(
     return cards, errors, per_sport_seconds
 
 
-__all__ = ["run_sports_parallel", "MAX_SPORT_WORKERS", "record_last_cycle",
-           "last_sport_errors", "last_sport_seconds"]
+def bucket_model_only_by_sport(
+        sports: Tuple[str, ...],
+        build_one: Callable[[str], List[Dict[str, Any]]],
+) -> Dict[str, List[Dict[str, Any]]]:
+    """Run *build_one(sport)* per sport through run_sports_parallel (default
+    deadline) and bucket the resulting cards by their own "sport" key. Used by
+    prop_cards_bounded's per-sport model-only builders (feed + synth-fallback)
+    so that per-sport work is BOUNDED here too -- not just the feed fetch inside
+    build_prop_cards. Errors/timing are discarded (the per-sport SCORE_ERROR
+    case degrades to an honest empty list for that sport, never fabricated)."""
+    cards, _errors, _secs = run_sports_parallel(sports, build_one)
+    by_sport: Dict[str, List[Dict[str, Any]]] = {s: [] for s in sports}
+    for c in cards:
+        by_sport.setdefault(c.get("sport"), []).append(c)
+    return by_sport
+
+
+__all__ = ["run_sports_parallel", "bucket_model_only_by_sport", "MAX_SPORT_WORKERS",
+           "record_last_cycle", "last_sport_errors", "last_sport_seconds"]

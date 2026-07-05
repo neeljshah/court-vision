@@ -1,8 +1,9 @@
 """scripts.platformkit.bestbets.prop_cards_bounded -- bounded/ranked served set.
 
 Split out of prop_cards.py. SERVED prop-card set: ALL priced props (real bets) +
-capped, ranked top-N MODEL-ONLY props per sport + an honest "N more" tally. SLOW;
-runs ONCE per m13 cycle, cached for the fast m10 board.
+capped, ranked top-N MODEL-ONLY props per sport + an honest "N more" tally. Runs
+ONCE per m13 cycle (cached for m10); per-sport work is BOUNDED via
+prop_cards_sport_parallel.bucket_model_only_by_sport (2026-07-05, was unbounded).
 
 ALWAYS-FRESH RAIL: MODEL-ONLY props do NOT depend on the external feed (PrizePicks /
 Underdog). When the feed 429s, build_bounded_prop_cards FALLS BACK to model-only cards
@@ -206,12 +207,14 @@ def _synth_model_only_cards(sport: str, now, reliable: bool):
 
 
 def _rank_cap(model_only, cap_i, sport, n_more):
-    """Rank model-only cards (best first), keep top *cap_i*, record overflow in *n_more*."""
+    """Rank+cap model-only (best first, top *cap_i*); stamps circuit_skips (idempotent
+    re-stamp downstream is a harmless overwrite); records overflow in *n_more*."""
     model_only.sort(key=_rank_key, reverse=True)
     kept = model_only[:cap_i]
     extra = len(model_only) - len(kept)
     if extra > 0:
         n_more[sport] = extra
+    _stamp_circuit_skips(kept, sport)
     return kept
 
 
@@ -224,7 +227,7 @@ def _cap_int(cap) -> int:
 
 def pregame_games_exist(now: Optional[float] = None, sports: Optional[tuple] = None) -> bool:
     """True when >=1 sport has SYNTHESIZABLE pregame props on disk (cheap NO-FEED
-    "board should not be empty" check). Never raises -> False (genuinely empty)."""
+    check). Never raises -> False (genuinely empty)."""
     _sports = sports if sports is not None else DEFAULT_PROP_SPORTS
     as_of = _as_of_for(now)
     for sport in _sports:
@@ -249,51 +252,48 @@ def _stamp_circuit_skips(cards: List[Dict[str, Any]], sport: str) -> None:
 
 def build_synth_only_prop_cards(now: Optional[float] = None, sports: Optional[tuple] = None,
                                 cap: int = DEFAULT_MODEL_ONLY_CAP, reliable: bool = True):
-    """MODEL-ONLY synth, NO feed: the cheap honest fill for a full tick returning 0 cards
-    while pregame games exist (same engine + honesty, ranked + capped). Cannot 429.
-    (cards, n_more). Never raises -> ([], {})."""
+    """MODEL-ONLY synth, NO feed: the honest fill for a full tick returning 0 cards while
+    pregame games exist (same engine, ranked+capped). Cannot 429."""
+    from scripts.platformkit.bestbets import prop_cards_sport_parallel as _spar  # noqa: PLC0415
     _sports = sports if sports is not None else DEFAULT_PROP_SPORTS
     cap_i = _cap_int(cap)
+    by_sport = _spar.bucket_model_only_by_sport(
+        _sports, lambda s: _synth_model_only_cards(s, now, reliable))
     served: List[Dict[str, Any]] = []
     n_more: Dict[str, int] = {}
     for sport in _sports:
-        model_only = _synth_model_only_cards(sport, now, reliable)  # never raises
+        model_only = by_sport.get(sport, [])
         if model_only:
-            kept = _rank_cap(model_only, cap_i, sport, n_more)
-            _stamp_circuit_skips(kept, sport)
-            served.extend(kept)
+            served.extend(_rank_cap(model_only, cap_i, sport, n_more))
     return served, n_more
 
 
 def build_bounded_prop_cards(now: Optional[float] = None, sports: Optional[tuple] = None,
                              cap: int = DEFAULT_MODEL_ONLY_CAP, reliable: bool = True,
                              max_lines_per_sport: int = DEFAULT_MAX_LINES_PER_SPORT):
-    """BOUNDED, RANKED prop-card set + honest "N more" tally. SERVED path: ALL priced
-    props + top *cap* MODEL-ONLY props PER SPORT, ranked by reliability/calibration/
-    confidence. ALWAYS-FRESH FALLBACK: no feed model-only -> SYNTHESIZE from the parquet
-    so the board never goes blank. max_lines caps LINES PRICED; cap bounds CARDS. No raise."""
+    """BOUNDED, RANKED prop-card set + "N more" tally. ALL priced + top *cap* MODEL-ONLY
+    per sport, ranked by reliability/calibration/confidence. ALWAYS-FRESH: no feed
+    model-only -> SYNTHESIZE."""
     try:
         from scripts.platformkit.bestbets import prop_cards as _pc  # noqa: PLC0415
         all_cards = _pc.build_prop_cards(now=now, sports=sports, reliable_only=reliable,
                                          max_lines_per_sport=max_lines_per_sport)
         default_sports = _pc.DEFAULT_PROP_SPORTS
-    except Exception as exc:  # noqa: BLE001 -- never raise out of the served path
+    except Exception as exc:  # noqa: BLE001
         logger.debug("build_bounded_prop_cards: build_prop_cards failed: %s", exc)
         all_cards, default_sports = [], DEFAULT_PROP_SPORTS
     _sports = sports if sports is not None else default_sports
-
+    cap_i = _cap_int(cap)
+    from scripts.platformkit.bestbets import prop_cards_sport_parallel as _spar  # noqa: PLC0415
+    by_sport = _spar.bucket_model_only_by_sport(_sports, lambda s: (
+        [c for c in all_cards if c.get("sport") == s and c.get("model_only")]
+        or _synth_model_only_cards(s, now, reliable)))
     served: List[Dict[str, Any]] = []
     n_more: Dict[str, int] = {}
-    cap_i = _cap_int(cap)
-    for sport in _sports:
+    for sport in _sports:  # ALL priced survive; ranked model-only tail
         priced = [c for c in all_cards if c.get("sport") == sport and not c.get("model_only")]
-        model_only = [c for c in all_cards if c.get("sport") == sport and c.get("model_only")]
-        if not model_only:  # ALWAYS-FRESH: feed gave no model-only (429) -> synth
-            model_only = _synth_model_only_cards(sport, now, reliable)
-        kept_model_only = _rank_cap(model_only, cap_i, sport, n_more)
-        sport_rows = priced + kept_model_only  # ALL priced survive; ranked model-only tail
-        _stamp_circuit_skips(sport_rows, sport)  # honesty: every served row, incl synth
-        served.extend(sport_rows)
+        _stamp_circuit_skips(priced, sport)
+        served.extend(priced + _rank_cap(by_sport.get(sport, []), cap_i, sport, n_more))
     return served, n_more
 
 
