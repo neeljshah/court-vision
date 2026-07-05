@@ -93,6 +93,29 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- NBA A2 RE-GATE CLOSED 21:25Z TRUE-UTC (wf_7d1ba1de, 3 agents/0.36M,
+  commit d26bcf52, Opus PASS w/ byte-identical independent reproduction):
+  ALL 4 CANDIDATES HONEST REJECT at layer=FDR_PRESCREEN -- deltas
+  -0.001292/-0.000801/+0.000085/+0.000587 ALL inside the matched null
+  floor (p99 0.0025-0.0031 on the 1225-row primary unit) = killed in
+  seconds, full ceremony correctly never spent. FIRST REAL FACTORY RUN
+  PROVEN: prescreen speed + discipline both demonstrated; base identity
+  verified max|diff|=0.0 across all 1814 rows; L1 selector now genuinely
+  argmaxes (diagnostic bypass chose nba_pace_x_dreb -> honest L1 REJECT
+  outer_score=-0.000484). TWO REAL FACTORY BUGS found+fixed+regression-
+  tested in-lane: L0 base-slice shape mismatch (would have force-REJECTed
+  every above-floor candidate for the WRONG reason) + the constant-L1-
+  selector nit. COMBINATION-MOAT PROGRAM STATE after A2: every enumerated
+  family adjudicated w/ ZERO false ships -- MLB REJECT(L3+structural),
+  soccer solo+interactions REJECT (families closed), tennis interactions
+  FROZEN (overfit floor), NBA 4x REJECT-at-prescreen (no longer
+  NOT_TESTABLE -- genuinely tested on the powered pair). FOLLOW-UPS
+  QUEUED (3 nits): (a) STRUCTURAL REPLICATED-WEAK remap in batch_gate
+  (latent: a future same-source-pair SHIP would bypass clause 3 -- enforce
+  by code not by luck); (b) _plant_null product-recompute-from-permuted-
+  inputs (letter of clause 4; unreached this run); (c) null_floor
+  docstrings 1..3 -> 1..4. Reviewer side-effect: 4 dup ledger rows
+  21:18:41 (local-only, harmless). No edge claims.
 - SHADOW VERIFICATION ADDENDUM 21:15Z: post-reload heartbeat rows CONFIRM
   the shadow code live (11/36 games rows carry ALL FOUR shadow keys).
   NEW LOAD-BEARING FINDING: today's tennis rows die at no_live_state
