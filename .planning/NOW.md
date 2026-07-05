@@ -93,6 +93,31 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- INTEL SYNERGY WAVE CLOSED ~19:20Z (wf_cf55b7dc, 9 agents/0.87M tok,
+  commits 97d189c0 fit-sweep + 46b901f0 quality-fix): (1) LeBron 30-TEAM
+  BEST-FIT SWEEP live + VALIDATED (nba_fit_sweep_claims.py producer +
+  intel_query/fit_sweep.py query surface; claims_validator VERIFIED 0
+  mismatch; frozen weights .40 complement/.35 scheme/.25 vacancy declared
+  pre-compute; player excluded from own-team roster means): top-10 BOS
+  .5703 / PHI .5631 / NYK .5566 / NOP .5542 / POR .5480 / OKC .5381 / LAL
+  .5228 / PHX .5160 / HOU .5090 / BKN .5081; CHI honest UNANSWERABLE (no
+  VERIFIED BIG-vacancy row); report data/cache/intel_claims/
+  lebron_best_fit_sweep_2026-07-05.md w/ the fit-gate REJECT cited verbatim
+  up top -- SCOUTING-only framing enforced end-to-end. (2) Quality claims
+  now 2/3 VERIFIED + 1 unverifiable-BY-DESIGN (paired-bootstrap CI has no
+  recompute formula, documented contract); REJECT_NAIVE_STAYS_CANONICAL
+  re-confirmed on re-run (naive rho .4044 > shooter_quality_v1 .2680).
+  (3) REVIEW CATCH: two tests were WRITING 3 synthetic rows OVER the prod
+  329-row pillar snapshots (test-pollution made the shooter claim
+  UNVERIFIABLE) -> monkeypatched + snapshots regenerated + regression
+  tests (landmine memory #10). NOTE cross-lane report contamination
+  occurred (two lanes, one worktree: lane A's report described lane B's
+  diff; verdict-string mismatch APPROVE!=PASS left a false FAILED status)
+  -- reconciled from disk: BOTH lanes committed, tree clean of intel files;
+  workflow-design lesson = single-worktree parallel lanes must diff their
+  OWN file list, and review schemas must pin the verdict enum. IN FLIGHT:
+  m13 fix (wf_d89026f0) + 0f context-depth wave (wf_129021ce). No edge
+  claims -- fit output is SCOUTING-only per the standing REJECT.
 - MAINTENANCE (SYSTEM HEALTH SWEEP + WORKSPACE ORG, 2026-07-03 pm, review session):
   FOUND+FIXED two LIVE serving-spine outages: (1) m1_api_paper (:8099) WEDGED since
   13:00:30 (last request served = /api/paper/trail?limit=2000; event loop blocked,
