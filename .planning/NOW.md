@@ -93,6 +93,27 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- GREENLIGHT SPEC AMENDED + SHA-PINNED ~22:31Z TRUE-UTC (new architect session,
+  duty 1, pre-build): all wf_582fb362 reviewer catches + Fable rulings R-a..R-e
+  integrated INTO docs/research/depth-program/GREENLIGHT_UNCAP_SPEC_2026-07-05.md
+  (r2, 299 lines, gitignored-local; pin-the-hash precedent). sha256=
+  87bfdf1f107664aa0af3e1deb9ff6c929285c3e55a97f33f8bd43971b7966c56. Binding
+  deltas vs the 22:15Z draft: GREEN floors IMPORTED from governance.policy
+  (MIN_SETTLED_N=500 / MIN_TRUE_CLOSE_FRAC=0.90; literals = review-FAIL), 60/60
+  demoted to AMBER-only tier; R-NA rule (NOT_APPLICABLE caps AMBER, never
+  passes, reasons listed); E-check-3 reconciler ALWAYS-emits per known channel
+  (in-game channels start honest INSUFFICIENT_DATA/N-A) -- extension in-wave;
+  F-check-5 split into snapshot-immutability (runs today) + sha-integrity
+  (N/A `sha_pending` until new prereg_sha_stamp.py emits the field, additive-
+  only) -- emission in-wave; SLAs read FROM freshness_sla.TABLE (10 new keys,
+  seconds-literals in the module = review-FAIL); reject-ledger watermark =
+  dedicated append-only sidecar (data/cache/greenlight/) w/ prefix-sha rewrite
+  detection, never inside the regenerable report; anti-fake tamper test
+  mandatory; build lanes must sha-verify the spec at lane start+end. Build
+  wave next: 4 file-disjoint lanes (module+tests / reconciler / stamp+TABLE /
+  wiring), Opus cv-code-reviewer PASS|FAIL each, commit-on-PASS. Expected
+  honest outcome: NO channel turns GREEN today (n/coverage floors + sha just
+  stamped) -- the machinery becomes real, statuses stay earned. No edge claims.
 - GREENLIGHT DESIGN LANDED AT HANDOFF ~22:15Z (wf_582fb362, 2 agents/0.20M):
   SOUND-WITH-FIXES. Spec = real fail-closed computations for (e) channel_trust
   (5 measured artifacts w/ freshness) + (f) cv_honesty (5 machine checks:
