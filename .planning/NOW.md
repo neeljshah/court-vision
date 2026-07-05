@@ -41,6 +41,21 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 45 (WAVE-44: NPB/KBO IN-GAME = SOURCE WALL, TERMINAL + HONEST,
+  2026-07-05 ~04:40Z, wf_0b0498fc-df0 6 agents/~0.42M tok, no code commits --
+  evidence lanes): (1) ALL 121,537 stored ticks scanned (not sampled): pure
+  Kalshi quote schema, zero game-state fields; 'phase' is a constant literal.
+  NPB/KBO in-game grading CLOSED at source level until a stateful keyless
+  source lands (best lead: KBO Naver api-gw per-game relay route,
+  undiscovered); memory updated TERMINAL. Wave-43's KBO params (synthetic
+  states) violate the synthesis-leak rail -> wave-45 quarantine lane.
+  (2) vault final refresh: MLB claims re-validated on the complete corpus
+  (394/821, 113/136, 102/103 rendered in dynamic caveats verbatim), 441
+  dossiers, idempotent, 0 MISMATCH. WAVE-45 pivot to where power now exists:
+  umpire-tendency PREDICTIVE gate (pre-registered, MATCH-not-beat, expect
+  REJECT -- first NEW pregame test with genuinely new data since v2), KBO
+  synthetic-params quarantine, Kalshi order-book depth capture start (charter
+  4b asset accrual), Naver relay bounded keyless probe. No edge claimed.
 - SPRINT WAKE 44 (WAVE-43: STATCAST 100% COMPLETE + SYNTHESIS-LEAK RAIL BORN,
   2026-07-05 ~04:00Z, wf_81f3a635-4f4 18 agents/~1.44M tok, commits c143427a/
   4414086d): (1) statcast BOTH seasons complete (2022 180/180 710,509 + 2023
