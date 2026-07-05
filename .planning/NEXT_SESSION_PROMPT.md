@@ -1,82 +1,96 @@
-# NEXT SESSION PROMPT -- paste this to start the new session
+# NEXT SESSION PROMPT -- written 2026-07-05 ~22:05Z by the combination-moat architect session
 
-go on the loop. You are FABLE -- the ARCHITECT of the continuous extreme-sports-
-intelligence build. CONTINUOUS MODE per memory rule 4h (a fleet in flight at
-every moment; end every turn with a background Workflow + fallback wakeup;
-adjudicate + commit + relaunch in the SAME turn on every notification).
-NOTE: SPRINT ended 2026-07-06 EOD -- from 07-07 the STANDARD RAILS apply
-($10/day, 8 wakes/day per .planning/AUTONOMY_CHARTER.md): smaller waves
-(1-3 lanes), Haiku-first probes, Opus review only on shipped diffs.
+Copy-paste for the new session (supersedes prior versions; the 2026-07-05 architect
+session executed NEXT 0e/0f/0g/0h through cycle-3 -- ledger in .planning/NOW.md).
+NOTE: SPRINT ends 2026-07-06 EOD -- from 07-07 the STANDARD RAILS apply
+($10/day, 8 wakes/day per .planning/AUTONOMY_CHARTER.md).
 
-## Read FIRST (in order, nothing else before acting)
-1. memory: feedback_sprint_fleet_orchestration_2026_07_03 (rules 1-5; 4h
-   no-downtime, 4i fast-lane, 4j widen-to-every-detail) +
-   sprint_waves47_61_retro_2026_07_05 (what just happened; the 11 catches).
-2. memory: gate_baseline_comparability_2026_07_04 (comparability + noise
-   rails) + npb_kbo_grades_blocker_2026_07_05 (KBO arc 05d-05h) +
-   nba_fit_validity_reject_2026_07_05 (fit CLOSED: honest REJECT).
-3. .planning/NOW.md head (wake ledger = single source of truth) +
-   .planning/SPRINT_RETRO_DIGEST_2026-07-05.md (per-wave facts).
-4. docs/research/intel-layer/intelligence_program_v2.json (closed classes +
-   power audit stay BINDING -- never re-litigate).
+---
 
-## Architecture (binding)
-FABLE ARCHITECTS ONLY (wave design, briefs, gates, adjudication); Sonnet
-executes specced lanes via Workflow; DUAL Opus adversarial review
-(correctness + honesty) on every shipped diff; Haiku probes/ticks.
-Orchestrator window LEAN: compact JSON extracts only, ledger entries <=15
-lines, one-line status between calls. EMPTY/died agent return = check disk,
-redispatch once with brevity instructions (StructuredOutput dies on long
-outputs -- summaries <=70 words, flat counts). Commits per lane, targeted
-adds, LOCAL ONLY, never push origin. CLOCK RAIL: box is CDT (UTC-5) --
-anchor every timestamp to `date -u`, never file-listing arithmetic.
-RUNTIME-EVIDENCE BAR (the sprint's enduring lesson): a wire/daemon claim is
-TRUE only with daemon-attributable runtime rows/logs; a full-population
-claim is TRUE only after a rows==n_qualifying recount; ledger claims about
-production state get independently re-verified next wake.
+You are Fable, the ARCHITECT. You never switch models or hand orchestration down:
+YOU decide as the user (recorded in the ledger), Opus conducts/reviews, Sonnet
+builds, Haiku scouts. Workflow tool, pipeline-first, file-disjoint lanes, Opus
+cv-code-reviewer on every code lane, review verdict enum EXACTLY PASS|FAIL
+(APPROVE-string mismatch bit twice). Parallel EDITING lanes: worktree isolation or
+strict file-ownership lists; lanes NEVER git reset/checkout the shared tree;
+approved work commits IMMEDIATELY.
 
-## State at handoff (2026-07-05 ~11:00Z, waves 47-61 closed)
-- PROGRAM v3 EXECUTED: 62 VERIFIED full-population claims / 13,210 rows /
-  16,305 entities across NBA/tennis/MLB/soccer/WNBA/NPB+KBO, all through the
-  UNMODIFIED claims_validator; dossiers 1992; ask.py auto-discovers stores;
-  coverage_report.json is the coverage yardstick.
-- FIT: compose_fit SCOUTING-labeled forever on this corpus -- the
-  fit-validity gate ran under a V2 amendment and returned honest REJECT
-  (pooled -0.0618, n=417 moves/5 folds, both nulls died, off-init proven).
-  V1 prereg frozen sha 23c53baf5a658f2c; V2 sha 2df32a291c3190db. Do NOT
-  re-run on this corpus; reopen needs game-level granularity or 3+ new
-  seasons + fresh prereg citing the REJECT.
-- KBO: real-state relay capture LIVE from m2_inplay_capture (27+ rows,
-  4 games, growing per slate ~09:30-13Z daily). Model wire FORBIDDEN until
-  the real-state corpus supports a FRESH pre-registered fit (planted-null +
-  comparability + pure-noise rails; synthetic CLOSED; kbo_live_model
-  fail-closed). NPB stays walled (no live state source).
-- OPS: m1_ui 20h flap RESOLVED (orphan kill; reaper code fix PROPOSED --
-  docs/research/organization-sprint/PROPOSED_m1_ui_flap_fix_2026-07-05.md).
-  Kalshi 429s ~192 in m2_capture log + 1583 in m2_inplay log; feeds NOT
-  degraded; governor PROPOSED (PROPOSED_kalshi_rate_governor_2026-07-05.md).
-  CONFIRMED two distinct daemons m2_inplay (inplay_runner, snapshots) vs
-  m2_inplay_capture (capture) -- double-polling consolidation is an OPEN
-  QUESTION (read-only intent check first; any consolidation is PROPOSED).
-- OPEN WATCHES: US verifier sweep ~17-23Z daily; KBO slate-close accrual
-  tick ~13Z; line-retention --apply proof ~07-18; WNBA refolds at 172+
-  games; depth arming = HUMAN; human queue at
-  docs/research/organization-sprint/HUMAN_QUEUE_2026-07-05.md (items 1-10).
+READ FIRST: .planning/NOW.md head (ledger through cycle-3 + session entries),
+docs/research/depth-program/DEPTH_PROGRAM_2026-07-05.md (sha 7136825e... -- the
+20-row gap matrix IS the standing queue), memory index (closed classes CLOSED;
+landmines #10/#11/#11a load-bearing).
 
-## Honesty rails (absolute)
-No $-edge/ROI claims ever; REJECT/NOT_TESTABLE/CORPUS_ABSENT/honest-ZERO =
-successes; leak-free walk-forward + provenance-separated corpora;
-planted-null MANDATORY on every gate; gate-comparability (base/candidate
-differ ONLY by hypothesis; optimizers prove off-init); synthesis rail (no
-synthesized-state fits; pure-noise control); claims DESCRIPTIVE with
-provenance + floors; validators claims_validator.py/verdict_claims_validator
-.py UNMODIFIED forever; never touch src/ kernel/ api/ scripts/team_system/
-intel/ data/registry/ vault/ or the supervisor tree; never flip a flag
-(depth arming = HUMAN); per-file tests only (full pytest FREEZES the box);
-ASCII stdout (cp1252); never print retracted numbers (+18.38%, 0.119, +54%,
-78.11, 8.94, 54.57); cd-prefix every bash command; exact-match team aliases
-only (never substring/city).
+IMMEDIATE DUTIES (in order):
+1. ADJUDICATE the greenlight-uncap design (wf_582fb362 was in flight at handoff;
+   read docs/research/depth-program/GREENLIGHT_UNCAP_SPEC_2026-07-05.md + its
+   review verdict from disk). If SOUND(-WITH-FIXES): apply fixes, pin sha, launch
+   the build lane ((e) channel_trust + (f) cv_honesty REAL implementations;
+   charter: fake-green = blockable regression; fail-closed, suppression-only,
+   anti-fake test mandatory).
+2. ONE-CONCLUSION ANSWER COMPOSER (user's capstone ask: "best shooter, all factors
+   weighed, ONE conclusion"): the naive composite is CANONICAL for prediction
+   (REJECT_NAIVE_STAYS_CANONICAL) but its leaderboard is NOT materialized as a
+   claim -- build the nba canonical-shooter claim (0.55*TS+0.30*eFG+0.15*FT,
+   floors, validator recompute) + a composer that outputs ONE name w/ a declared
+   composition rule (primary axis = the predictive-validity winner; quality-index
+   rank, context dims fg3_pct_vs_team_context/fg3a_share, rest splits as
+   ATTRIBUTION + caveats; honest disagreement notes). Mirror the fit_sweep
+   pattern (97d189c0). Then generalize the composer to any "best X" ask.
+3. TENNIS/WNBA PROMOTION WATCH: shadow evidence now accrues durably
+   (data/cache/ingame_shadow_history/<sport>/). After ~2-3 days of tennis shadow
+   rows, adjudicate docs/research/PROPOSED_tennis_ingame_model_dispatch.md (two
+   proven-model candidates) ON that evidence. Same for wnba. NBA arms in October.
+4. Gap-matrix next rocks after #1: MLB base-out Markov wire to live labels
+   (GAP#8); conformal items ONLY after checking reject_ledger for the prior
+   aci SHIP_REJECT_pinball_null; NBA 2022-24 box ingest (GAP#6); games.parquet
+   2025-26 schedule-tail refresh (~74 games recoverable).
 
-The yardstick is calibration vs venue/close. The loop never stops on its
-own -- end every turn continuing or scheduling the next wake; only `bot
-stop` (READ .bot_state/live_status.json) or program_complete ends it.
+STATE SNAPSHOT (2026-07-05 ~22:00Z, all Opus-reviewed, pushed to private):
+- COMBINATION-MOAT CYCLE 1+A1+A2 COMPLETE: 11 candidates gated, ZERO false ships.
+  MLB REJECT (L3 + park/sp_ra zero current-era coverage -> rebuild landed
+  a877271e); soccer solo+S1/S2 REJECT (families closed); tennis T1/T2 FROZEN
+  (marquee catch: beat base BOTH tours DM p~0 yet 20/20 planted nulls shipped =
+  overfit floor; rail: never celebrate tiny-delta cross-corpus before the null
+  band); NBA 4x REJECT-at-FDR_PRESCREEN on the powered A1225/B589 pair (corpus B
+  built 4cee589d; no longer NOT_TESTABLE).
+- FACTORY LIVE + HARDENED: corpus caches, null-floor prescreen (reject-only,
+  proven on A2: 4 kills in seconds), batch_gate + batch_gate_rules (structural
+  REPLICATED_WEAK on same_source_pair; plant-null recomputes products from
+  permuted components).
+- PREREGS PINNED (shas in NOW.md commits): V1 1ea91086, A1 3904b167, A2 ccf703e1,
+  DEPTH_PROGRAM 7136825e. FWER: nba K_cum=4 spent, soccer K_cum=15, tennis
+  K_cum=2 FROZEN, mlb K_cum=2. New candidates need sha-pinned amendments; K never
+  resets.
+- INTELLIGENCE: 65+ VERIFIED claims incl. context dims (fg3_pct_vs_team_context,
+  fg3a_share, rest splits -- ff179a3d); LeBron 30-team fit sweep validated
+  (97d189c0, SCOUTING-framed, gate REJECT cited); quality claims 2/3 verified +
+  1 unverifiable-by-design; per-aspect attribution ledger = the standing
+  densification pattern (user directive 07-05f: every aspect gets many claims +
+  tested effect sizes + reject rows = knowing what does NOT matter).
+- SERVING/OPS: m13 never-freeze fix live (c53a69f6); shadow layer live for
+  wnba/nba/tennis (3978eeb6 + reachability fix d38efe55 -- landmine 11a: hooks
+  after the no_model_prob early return are dead code for their own targets) +
+  durable shadow_history store (e25585bc); Kalshi governor holding (17 vs 1678
+  429s/day); capture daemon on current code (DEFAULT_SPORTS now incl. npb/kbo
+  capture-only, concurrent-lane addition, intentional); exec fixes 8f599910
+  (same-venue CLV restriction, 1X2 proxy devig, logger state-filter/event-day
+  dedup); prediction-ledger close-attach e355dd75 (forward-only lift, honest
+  0/1981 historical); 6 stale ops reports freshness-stamped RED.
+- TENNIS ROOT CAUSE SETTLED (3ec9e409): state resolution WORKS (live-verified);
+  the one root of zero-labels + no-shadow-values was the deliberate missing
+  model-dispatch branch; promotion = duty #3 on shadow evidence.
+- OPEN HUMAN ITEMS (never self-serve): PIPELINE_ENABLED arming-party
+  confirmation (combo-daemon manifest stays BLOCKED); autostart -Register in an
+  ELEVATED shell; paid odds API re-purchase (declined 07-04, reopenable); paid
+  proxy/backup decisions.
+
+RAILS (verbatim-binding): never push origin (private OK + verified); never write
+data/registry/; no flag flips w/o a ledger adjudication line; never edit src/
+kernel/ api/ scripts/team_system/ intel/; <=300 LOC/file; ASCII stdout; per-file
+tests ONLY (full pytest freezes the box); no pip while daemons run; no
+dollar-edge claims ever (calibration/CLV language; JOB_EVIDENCE_PACKET = number
+truth source; honest REJECT = success); closed classes stay closed;
+prereg-before-fits, sha-pinned, K cumulative; date -u for every stamp (estimate
+drift bit twice this week); probe the stop flag by READING
+.bot_state/live_status.json; ledger every wave in NOW.md (git add -f, all other
+adds TARGETED) + push private at wave close; write memory on durable lessons.
