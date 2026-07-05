@@ -290,3 +290,123 @@ def test_leak_free_enter_does_not_see_the_close(tmp_path):
     assert d["action"] == "bet"
     # The tick dict carries NO close/outcome key -- enter cannot have used one.
     assert "close" not in early and "outcome" not in early and "settled_outcome" not in early
+
+
+# --------------------------------------------------------------------------------------- #
+# 7 (queue item 8a): cross-corpus ADVERSE-segment suppression -- a conservative WITHHOLD.  #
+# The allowlist (_SANCTIONED_ADVERSE_SEGMENTS) ships EMPTY by design (no doc-sanctioned,   #
+# runtime-computable, non-UNK ADVERSE finding exists yet -- see that module-level comment  #
+# and PROPOSED_soccer_inplay_suppression.md section 6, "human decision requested",         #
+# unresolved). These mechanism tests monkeypatch the allowlist (never the UNK hard-        #
+# exclude) to prove the wiring is correct FOR WHEN a human populates it; section 7b below   #
+# additionally proves the real unmocked runtime lookup on today's live evidence.           #
+# --------------------------------------------------------------------------------------- #
+def test_adverse_segment_suppresses_the_marginal_entry(tmp_path, monkeypatch):
+    # Same edge/gates as test_enter_places_paper_bet_units_only (would otherwise "bet"),
+    # but the segment ("H1", minute=20) is SANCTIONED (via the allowlist, monkeypatched
+    # here to simulate a human having populated it) and reported cross-corpus ADVERSE ->
+    # WITHHELD, never placed. The pair is still captured (capture is unconditional and
+    # runs before the suppression check); no ledger row is written; the reason is the
+    # specific sentinel.
+    grade_dir = tmp_path / "grade"
+    ledger = tmp_path / "ledger.jsonl"
+    monkeypatch.setattr(dt, "_SANCTIONED_ADVERSE_SEGMENTS", {"soccer_intl": frozenset({"H1"})})
+    monkeypatch.setattr(
+        dt._trust_multi, "build_trust_for_sport",
+        lambda sport: {"segments": {"H1": {"trust": "ADVERSE"}}})
+    gid = "401859980"
+    d = dt.on_tick("soccer_intl", gid,
+                   _tick(0.80, 0.55, yes_away=0.50, minute=20),
+                   grade_dir=grade_dir, ledger_path=ledger)
+    assert d["action"] == "no_bet"
+    assert d["reason"] == "segment_adverse_suppressed"
+    assert d["placement"] is None
+    assert d["captured"] is True  # capture above the branch still ran
+    path = grade_dir / "soccer_intl" / ("%s.jsonl" % gid)
+    assert path.exists()  # the grade series is complete despite the withhold
+    assert not ledger.exists() or "open" not in ledger.read_text(encoding="ascii")
+    _no_dollar_field(d)
+
+
+def test_non_adverse_segment_bets_normally(tmp_path, monkeypatch):
+    # Sanity control for the test above: same tick/segment/allowlist entry, but trust
+    # reports NEUTRAL -> the suppression must NOT fire and the marginal entry places
+    # exactly as before.
+    grade_dir = tmp_path / "grade"
+    ledger = tmp_path / "ledger.jsonl"
+    monkeypatch.setattr(dt, "_SANCTIONED_ADVERSE_SEGMENTS", {"soccer_intl": frozenset({"H1"})})
+    monkeypatch.setattr(
+        dt._trust_multi, "build_trust_for_sport",
+        lambda sport: {"segments": {"H1": {"trust": "NEUTRAL"}}})
+    gid = "401859981"
+    d = dt.on_tick("soccer_intl", gid,
+                   _tick(0.80, 0.55, yes_away=0.50, minute=20),
+                   grade_dir=grade_dir, ledger_path=ledger)
+    assert d["action"] == "bet"
+    assert d["reason"] != "segment_adverse_suppressed"
+    assert d["placement"]["added_new"] is True
+
+
+def test_trust_lookup_raising_is_unchanged_behavior(tmp_path, monkeypatch):
+    # Fail-open (binding rail): if the trust lookup itself raises (missing ops doc, bad
+    # sport, whatever) for a SANCTIONED segment, the day-trader must behave EXACTLY as if
+    # suppression did not exist -- i.e. the same edge/gates that would otherwise "bet"
+    # still "bet".
+    grade_dir = tmp_path / "grade"
+    ledger = tmp_path / "ledger.jsonl"
+    monkeypatch.setattr(dt, "_SANCTIONED_ADVERSE_SEGMENTS", {"soccer_intl": frozenset({"H1"})})
+    def _boom(sport):
+        raise RuntimeError("ops doc missing")
+    monkeypatch.setattr(dt._trust_multi, "build_trust_for_sport", _boom)
+    gid = "401859982"
+    d = dt.on_tick("soccer_intl", gid,
+                   _tick(0.80, 0.55, yes_away=0.50, minute=20),
+                   grade_dir=grade_dir, ledger_path=ledger)
+    assert d["action"] == "bet"
+    assert d["reason"] != "segment_adverse_suppressed"
+    assert d["placement"]["added_new"] is True
+    assert d["placement"]["executed"] is False
+    _no_dollar_field(d)
+
+
+# --------------------------------------------------------------------------------------- #
+# 7b (fix-round, finding 4): the UNMOCKED real runtime lookup must NEVER suppress on UNK,  #
+# and today's empty allowlist means NOTHING is suppressed for soccer_intl at all -- the    #
+# doc's sanctioned H1/H2 finding only exists on the BACKFILLED variant this runtime call   #
+# does not compute (PROPOSED_soccer_inplay_suppression.md section 0/6).                    #
+# --------------------------------------------------------------------------------------- #
+def test_real_unmocked_trust_lookup_does_not_suppress_a_no_clock_soccer_tick(tmp_path):
+    # NO monkeypatch: calls the REAL ingame_segment_trust_multi.build_trust_for_sport on
+    # today's live ops doc. A soccer tick with no minute/half field -> state_summary "live"
+    # -> _infer_segment -> "UNK". Even though the real live doc reports UNK as ADVERSE
+    # (data/frontend/ops/ingame_segment_trust_multi.json: adverse_by_sport soccer_intl ==
+    # ["UNK"]), the hard UNK exclude in _segment_is_adverse means this tick is NEVER
+    # suppressed -- proving the inversion bug (suppressing the forbidden UNK bucket while
+    # leaving the doc's actual target segment untouched) is fixed.
+    grade_dir = tmp_path / "grade"
+    ledger = tmp_path / "ledger.jsonl"
+    gid = "401859983"
+    d = dt.on_tick("soccer_intl", gid,
+                   _tick(0.80, 0.55, yes_away=0.50),  # no minute/half -> segment UNK
+                   grade_dir=grade_dir, ledger_path=ledger)
+    assert d["action"] == "bet"
+    assert d["reason"] != "segment_adverse_suppressed"
+    assert d["placement"]["added_new"] is True
+    _no_dollar_field(d)
+
+
+def test_real_unmocked_trust_lookup_h1_is_not_suppressed_today(tmp_path):
+    # NO monkeypatch: an H1 soccer tick (minute=20) against the REAL runtime trust doc.
+    # _SANCTIONED_ADVERSE_SEGMENTS ships empty (no verified human authorization exists for
+    # the doc's BACKFILLED-only H1/H2 finding), so this bets normally today regardless of
+    # what the live RAW doc reports for H1 (currently NEUTRAL there too).
+    grade_dir = tmp_path / "grade"
+    ledger = tmp_path / "ledger.jsonl"
+    gid = "401859984"
+    d = dt.on_tick("soccer_intl", gid,
+                   _tick(0.80, 0.55, yes_away=0.50, minute=20),
+                   grade_dir=grade_dir, ledger_path=ledger)
+    assert d["action"] == "bet"
+    assert d["reason"] != "segment_adverse_suppressed"
+    assert d["placement"]["added_new"] is True
+    _no_dollar_field(d)

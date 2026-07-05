@@ -50,6 +50,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
+from scripts.platformkit.ingame import ingame_clv_per_segment as _clvseg
+from scripts.platformkit.ingame import ingame_segment_trust_multi as _trust_multi
 from scripts.platformkit.ingame import inplay_edge_signal as _sig
 from scripts.platformkit.ingame import live_grade as _lg
 from scripts.platformkit.ingame import paper_ingame as _paper
@@ -80,6 +82,58 @@ def _state_summary_fn(tick: LiveTick) -> Dict[str, Any]:
     return st if isinstance(st, dict) else {k: tick.get(k) for k in (
         "home_score", "away_score", "minute", "inning", "half", "clock", "period")
         if tick.get(k) is not None}
+
+
+# Sanctioned (sport -> {segment labels}) suppression targets, per
+# docs/research/organization-sprint/PROPOSED_soccer_inplay_suppression.md section 5's
+# scoping notes: "Strict SPORT+SEGMENT scoped (soccer_intl H1/H2)" and "Do NOT suppress
+# on the UNK bucket ... it is a data-capture artifact, not a game-phase segment."
+#
+# EMPTY BY DESIGN today. The doc's own verdict (section 0/6) is that a real, non-UNK,
+# ADVERSE-REPLICATED finding for soccer_intl H1/H2 exists ONLY on the BACKFILLED variant
+# (the kickoff-derived tick_segment_backfill.json sidecar), which this runtime lookup
+# does NOT compute -- build_trust_for_sport(sport) here reads the live RAW ops doc
+# (data/frontend/ops/ingame_segment_trust_multi.json), where soccer_intl H1/H2 are
+# NEUTRAL (INSUFFICIENT_DATA) and only the forbidden UNK bucket is ADVERSE. The doc's
+# section 6 bottom line is explicit: "evidence bar met, human decision requested" --
+# still unresolved, no Fable-APPROVED artifact exists anywhere under docs/research/. So
+# this allowlist stays empty (suppression wired but inert) until a human populates it
+# with a sport/segment pair actually backed by runtime-computable, non-UNK, cross-corpus
+# ADVERSE evidence. Never edit this to include "UNK" for any sport.
+_SANCTIONED_ADVERSE_SEGMENTS: Dict[str, frozenset] = {
+    # "soccer_intl": frozenset({"H1", "H2"}),  # NOT enabled -- see comment above.
+}
+
+
+def _segment_is_adverse(sport: str, tick: LiveTick) -> bool:
+    """True iff the CURRENT tick's segment is BOTH (a) sanctioned for this sport per
+    _SANCTIONED_ADVERSE_SEGMENTS (never includes the UNK catch-all -- hard-excluded
+    below regardless of allowlist contents) AND (b) reported cross-corpus ADVERSE by
+    ingame_segment_trust_multi.build_trust_for_sport(sport).
+
+    Reuses the exact same state_summary string pipeline live_grade.capture_pair_once
+    already builds (_state_summary_fn -> live_grade._state_summary -> the same
+    _infer_segment classifier ingame_outcome_verdict/ingame_segment_trust_multi score
+    against), so the segment label looked up here always matches the label the trust
+    doc was built from. Fail-open (queue item 8a): ANY exception (bad sport, missing
+    trust doc, import hiccup) -> False, i.e. behave EXACTLY as before this suppression
+    existed. MEASUREMENT-DRIVEN WITHHOLD ONLY -- never claims an edge, never raises.
+    """
+    try:
+        seg_label = _clvseg._infer_segment(sport, _lg._state_summary(_state_summary_fn(tick)))
+        if seg_label == "UNK":
+            return False  # hard exclude: UNK is a missing-clock-state capture artifact,
+            # never a tradeable game-phase segment (doc sections 2/5/6) -- regardless of
+            # what any trust doc reports for the UNK bucket.
+        sanctioned = _SANCTIONED_ADVERSE_SEGMENTS.get(sport) or frozenset()
+        if seg_label not in sanctioned:
+            return False  # only doc-sanctioned, non-UNK (sport, segment) pairs are eligible
+        trust_doc = _trust_multi.build_trust_for_sport(sport)
+        seg_trust = (trust_doc.get("segments", {}).get(seg_label) or {}).get("trust")
+        return seg_trust == "ADVERSE"
+    except Exception as exc:  # noqa: BLE001 -- fail-open: unchanged behavior on any error
+        logger.warning("_segment_is_adverse(%s) failed: %s", sport, exc)
+        return False
 
 
 def on_tick(sport: str, game_id: str, tick: LiveTick, *,
@@ -140,6 +194,19 @@ def on_tick(sport: str, game_id: str, tick: LiveTick, *,
                 market_fetch_fn=lambda s, g: dp,
                 out_dir=grade_dir, extra=extra)
             decision["captured"] = cap.get("status") == "captured"
+
+        # 2b. SUPPRESSION (queue item 8a, conservative withhold -- mechanism only, currently
+        # INERT: _SANCTIONED_ADVERSE_SEGMENTS is empty pending human authorization, see that
+        # allowlist's docstring and docs/research/organization-sprint/
+        # PROPOSED_soccer_inplay_suppression.md section 5/6, "human decision requested",
+        # unresolved). Would-be sanctioned pairs are scoped SPORT+non-UNK-SEGMENT only; the
+        # UNK bucket is hard-excluded in _segment_is_adverse regardless of allowlist state.
+        # This only ever turns a would-be "bet" into "no_bet" -- it never manufactures a bet,
+        # never claims an edge, and the pair captured above already ran regardless. Fail-open:
+        # any trust-lookup exception -> _segment_is_adverse returns False -> unchanged behavior.
+        if ev["action"] == "bet" and _segment_is_adverse(sport, tick):
+            decision["reason"] = "segment_adverse_suppressed"
+            return decision  # no_bet: captured above already ran; suppress the marginal entry
 
         # 3. enter / hold / exit.
         if ev["action"] != "bet":
