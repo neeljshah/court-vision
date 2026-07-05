@@ -93,6 +93,10 @@ def test_min_sample_floor_excludes_low_n_prior_players(tmp_path, monkeypatch):
     ranked_ids = {r["player_id"] for r in claim["ranking"]}
     assert 2 not in ranked_ids  # excluded: n_prior=5 < floor 10
     assert claim["n_excluded_below_floor"] == 1
+    # FULL POPULATION: both qualifiers (players 1 and 3) are ranked -- no
+    # top-N slice truncates a 2-row qualifying pool.
+    assert ranked_ids == {1, 3}
+    assert len(claim["ranking"]) == 2
 
 
 def test_real_atp_claim_independently_verifies():
@@ -102,3 +106,15 @@ def test_real_atp_claim_independently_verifies():
     claim = thc.build_ranking_claim("atp")
     verdict = validate_claim(claim)
     assert verdict.verdict == "VERIFIED", verdict.reason
+
+
+def test_real_atp_claim_is_full_population_not_top_50():
+    """The production ATP ranking must cover EVERY qualifying player above
+    the min_sample floor, not a top-50 slice -- this is the uncap this
+    module exists to prove. n_considered - n_excluded_below_floor is the
+    true qualifying pool size; the ranking must match it exactly."""
+    claim = thc.build_ranking_claim("atp")
+    n_qualifying = claim["n_considered"] - claim["n_excluded_below_floor"]
+    assert len(claim["ranking"]) == n_qualifying
+    assert n_qualifying > 50, "expected the real ATP 2025 qualifying pool to exceed the old TOP_N=50 cap"
+    assert not hasattr(thc, "TOP_N"), "TOP_N cap must be fully removed, not just unused"
