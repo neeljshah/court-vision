@@ -34,15 +34,11 @@ WAVE-45 SEARCH (newest gate exports named in that task):
     committed verdict were never persisted per-row, only the plain p_live/
     cond_prior columns were -- reproducing brier_base/brier_prior would
     require RE-FITTING the fold's TRAIN-only prior surface, not a rename).
-  - data/domains/tennis/h3_playstyle_rows.parquet          -> UNAVAILABLE;
-    wave-47 found the committed verdict DOES exist (data/frontend/ingame/
-    playstyle_gate_verdict.json, not under data/domains/tennis/ as first
-    searched) but the exported rows' p_base column is the gate's plain
-    sigmoid base model, NOT the H0 arm's own detail-model prediction the
-    committed brier_h0 scores -- H0's per-row predictions were never
-    exported (only H1's), so replay still cannot reach brier_h0 without
-    re-running the gate. Reason text corrected wave-47 to name this exact
-    field gap instead of "no committed verdict exists".
+  - data/domains/tennis/h3_playstyle_rows.parquet          -> was UNAVAILABLE
+    (wave-47: committed verdict exists at data/frontend/ingame/
+    playstyle_gate_verdict.json, but exported p_base was the gate's plain
+    sigmoid base model, not H0's own detail-model prediction). SEE
+    WAVE-H3-H0-EXPORT -- now REGISTERED.
 
 WAVE-47 (harness-rmse-mode lane): added --metric rmse to reprocess_harness
 (reprocess_harness_rmse.py); mlb_umpire_totals_gate now REGISTERED (was
@@ -51,10 +47,16 @@ replay_shipped_indices_io.py -- a column RENAME + fold_id derived with the
 gate's OWN BURN_IN=300/N_FOLDS=3 constants (verified byte-exact fold sizes
 1521/1520/1520), no re-scoring, replay matches committed per-fold RMSE
 within 1e-6 (actual max_abs_diff=0.0). The two nba_ingame_hypothesis clients
-and tennis_h3_playstyle were re-checked for a field-paths mapping fix per
-the task; both genuinely require re-running gate machinery (train-refit /
-missing H0 export respectively), so they stay honest UNAVAILABLE with a
-corrected, more precise reason (see above) rather than a coerced RAN.
+stay honest UNAVAILABLE (genuinely require re-running gate machinery /
+train-refit); tennis_h3_playstyle's gap was closed instead, see below.
+
+WAVE-H3-H0-EXPORT: playstyle_ingame_gate.py's export loop now zips
+r0["p_variant"] (H0's own detail-model prediction, scores brier_h0) into
+p_base instead of r1["p_base"] (the plain sigmoid base, a third quantity).
+Gate re-run once, byte-identical to the committed verdict (no drift).
+tennis_h3_playstyle REGISTERED (metric=brier, per-fold comparator via
+h3_playstyle_rows()/compare_h3_playstyle(), verdict=NOT_TESTABLE) -- RAN,
+matched=True.
 
 REGISTERED CLIENTS: see REGISTRY below.
 """
@@ -75,10 +77,11 @@ from scripts.platformkit.reprocess.reprocess_harness import (
 )
 from scripts.platformkit.reprocess.clients.replay_shipped_indices_io import (
     compare_elo_refresh,
+    compare_h3_playstyle,
     compare_positional_weight,
     compare_umpire_totals,
     elo_refresh_rows,
-    h3_playstyle_unavailable_reason,
+    h3_playstyle_rows,
     ingame_hypothesis_unavailable_reason,
     positional_weight_rows,
     umpire_totals_rows,
@@ -172,14 +175,14 @@ REGISTRY: list[ReprocessClient] = [
     ReprocessClient(
         name="tennis_h3_playstyle",
         metric="brier",
-        # Found wave-47 (was reported as not existing anywhere under
-        # data/domains/tennis/**): the actual committed verdict lives at
-        # data/frontend/ingame/playstyle_gate_verdict.json. Still UNAVAILABLE
-        # -- see h3_playstyle_unavailable_reason() for the field-gap reason.
+        # wave-h3-h0-export: gate export now carries H0's own detail pred as
+        # p_base (was the plain sigmoid base) -- REGISTERED (RAN), no longer
+        # UNAVAILABLE. Committed verdict: data/frontend/ingame/
+        # playstyle_gate_verdict.json (_OUT_DIR in playstyle_ingame_gate.py).
         committed_verdict_path=_REPO / "data" / "frontend" / "ingame" / "playstyle_gate_verdict.json",
         tolerance=1e-6,
-        rows_source=None,
-        unavailable_reason=h3_playstyle_unavailable_reason(),
+        rows_source=h3_playstyle_rows,
+        compare_fn=compare_h3_playstyle,
     ),
 ]
 
