@@ -93,6 +93,21 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- ARCHITECT SESSION CLOSED ~22:10Z TRUE-UTC (user starting a new session).
+  SESSION TOTALS (2026-07-05 17:02-22:10Z): 9 workflows + 1 standalone review
+  (~60 agents / ~7M subagent tokens), ~24 commits, 11 combination candidates
+  gated w/ ZERO false ships, factory built+proven, corpus B built+consumed,
+  shadow layer live end-to-end w/ durable evidence store, m13 root-caused+
+  fixed, 4 real infra bugs caught by honesty machinery (decorative-L1,
+  decimal-odds false-BEAT, test-prod-overwrite x2, unreachable shadows),
+  prereg discipline held (4 pinned docs, K cumulative). IN FLIGHT AT
+  HANDOFF: greenlight-uncap design wf_582fb362 (next session adjudicates
+  from disk). NEXT_SESSION_PROMPT.md REWRITTEN (duties: 1 greenlight
+  adjudicate+build, 2 ONE-CONCLUSION answer composer -- canonical shooter
+  leaderboard not yet materialized as a claim, composer mirrors fit_sweep,
+  3 tennis/wnba promotion on shadow evidence, 4 gap-matrix rocks). YIELD:
+  this session ends on the user's new-session start; no wakeups scheduled.
+  No edge claims.
 - CYCLE-3 FOLLOW-UPS CLOSED ~21:55Z TRUE-UTC (wf_ed653abd, 9 agents/0.91M,
   commits 3ec9e409 tennis-diagnosis + e25585bc shadow-history+factory, all
   Opus PASS): (1) TENNIS ROOT CAUSE SETTLED: state resolution is NOT broken
