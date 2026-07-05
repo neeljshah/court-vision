@@ -55,6 +55,44 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   vs 1678 baseline, PASS); m13 props_snapshot RED 1509s vs 660 SLA (triage
   in stage B); MLB grade-rows probe looked at legacy path, re-probe at
   data/cache/ingame_grade/ queued; late-inning clamp PENDING (no rows yet).
+  STAGE-B CLOSED ~18:40Z (wf_95fdc577, 12 agents/1.31M tok, commits de868023
+  harness+mlb / 76b54835 nba / 511d1ea9 soccer; every lane Opus-reviewed,
+  prereg sha re-verified at start+end of each lane, no tamper). THE MOAT
+  MACHINERY NOW EXISTS: combo/stack_fit.py (250L) + stack_gate_pregame.py
+  (300L, L0-L6+FDR pregame judge importing guards/nested_cv/fwer/dm) + 31
+  tests green; harness review fix-round KILLED a decorative-L1 bug (stub
+  select/score fns -- sealed-holdout now hard-gates, 2 regression tests).
+  VERDICTS (0e wave-1 done-when MET: >=2 sports gated stack verdicts on disk
+  w/ planted-null + replication attached): (1) mlb_pregame_stack_v1 HONEST
+  REJECT both candidates at L3 seed-stability (p10 -0.000028/-0.000215<0; L1
+  real+passed .000031/.000137; STRUCTURAL: corpus-B 2022-2026 added-feature
+  coverage=0% -- 5413/5413 rows fell back, park/sp_ra asof features do not
+  exist on the current era -> any MLB stack retry FIRST needs current-era
+  asof rebuild); (2) nba_pregame_stack_v1 NOT_TESTABLE both candidates
+  exactly as pre-registered (never-SHIP guard verified live; top3 by |solo
+  delta| = pace/dreb/blk; close-corpus overlap verified n=89/1251, labeled;
+  informational close briers 0.2468/0.2395); (3) soccer_home_sot_replication
+  _v1 HONEST REJECT -- FAMILY CLOSED: 0/6 leagues at DM p<0.003846 (p range
+  .0417-.33 = 10-85x over bar), L3 p10 -0.000242, planted-null fired
+  correctly, L1 passed honestly (.000687) -> the 1-of-11 year-bucket
+  SHIP-at-gate is CONCLUSIVELY a multiple-comparison artifact; vs-close
+  BEHIND (.2455 vs .2399). Lane SELF-CAUGHT a real bug pre-report: soccer
+  odds.parquet p_over/p_under are RAW DECIMAL ODDS (mean~1.94) not probs --
+  first run showed false BEAT w/ nonsense close_brier .4865; fixed via
+  adapter._devig_over -> honest BEHIND (landmine memory written). Most
+  stacks rejecting = the system working, as pre-registered. OPS: m10
+  self-recovered GREEN; grade rows PRESENT at the CORRECT paths (6918 grade
+  + 2.43M inplay rows today; stage-A FAIL was a wrong-path probe); sampled
+  grade rows show enrichment=false -> follow-up at settle-time; late-inning
+  PENDING (early innings). m13 ROOT-CAUSED (not a wedge): EVERY tick times
+  out at 240s since 16:40Z (live-slate load) AND the timeout path never
+  writes the promised fallback snapshot (mtime frozen; LANE-6 design gap);
+  kill+relaunch proven ineffective (PIDs 9264->24252 identical behavior) ->
+  fix chain IN FLIGHT (wf_d89026f0: bounded pass + honest fallback write +
+  live reload verify + Opus review). ALSO IN FLIGHT: intel synergy wave
+  (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
+  criteria.formula fix). No edge claims -- all numbers above are
+  calibration-layer verdicts.
 - MAINTENANCE (SYSTEM HEALTH SWEEP + WORKSPACE ORG, 2026-07-03 pm, review session):
   FOUND+FIXED two LIVE serving-spine outages: (1) m1_api_paper (:8099) WEDGED since
   13:00:30 (last request served = /api/paper/trail?limit=2000; event loop blocked,
