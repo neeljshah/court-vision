@@ -6,7 +6,7 @@ import json
 from scripts.platformkit.clv import clv_result_reconciler as _mod
 from scripts.platformkit.clv.clv_result_reconciler import (
     KNOWN_CHANNELS, _close_implied_expectation, _duplicate_close_pairs,
-    _record, _verdict, _zscore, main, reconcile_channel)
+    _record, _single_side, _verdict, _zscore, main, reconcile_channel)
 
 
 def _row(side, taken_decimal, close_home, close_away, unit_result, fair_close_prob,
@@ -166,6 +166,70 @@ def test_explicit_argv_still_scopes_to_requested_channels(tmp_path, monkeypatch)
     main(argv=["moneyline"], out_dir=str(tmp_path))
     written = {p.name for p in tmp_path.glob("clv_reconcile_*.json")}
     assert written == {"clv_reconcile_moneyline.json"}
+
+
+# ---------------------------------------------------------------------------
+# single_side: both-sides-pair independence transparency fix.
+# ---------------------------------------------------------------------------
+
+def test_single_side_collapses_both_sides_pairs_keeps_first_taken():
+    rows = [
+        _row("home", 2.0, 2.0, 2.0, 1.0, 0.5, event_id="p1"),   # pair p1, first
+        _row("away", 2.0, 2.0, 2.0, -1.0, 0.5, event_id="p1"),  # pair p1, dropped
+        _row("home", 2.0, 2.0, 2.0, 1.0, 0.5, event_id="p2"),   # pair p2, first
+        _row("away", 2.0, 2.0, 2.0, -1.0, 0.5, event_id="p2"),  # pair p2, dropped
+        _row("home", 2.0, 2.0, 2.0, 1.0, 0.5, event_id="s1"),
+        _row("home", 2.0, 2.0, 2.0, 1.0, 0.5, event_id="s2"),
+        _row("home", 2.0, 2.0, 2.0, 1.0, 0.5, event_id="s3"),
+    ]
+    out, both_pairs = _single_side(rows)
+    assert len(out) == 5
+    assert both_pairs == 2
+    kept_ids = [r["event_id"] for r in out]
+    assert kept_ids == ["p1", "p2", "s1", "s2", "s3"]
+    assert [r["side"] for r in out[:2]] == ["home", "home"]  # first-taken side kept
+
+
+def test_reconcile_channel_single_side_block_2_pairs_3_singles():
+    rows = [
+        _row("home", 2.0, 2.0, 2.0, 1.0, 0.5, event_id="p1"),
+        _row("away", 1.8, 2.0, 2.0, -1.0, 0.45, event_id="p1"),
+        _row("home", 2.0, 2.0, 2.0, -1.0, 0.5, event_id="p2"),
+        _row("away", 1.9, 2.0, 2.0, 1.0, 0.48, event_id="p2"),
+        _row("home", 2.0, 2.0, 2.0, 1.0, 0.5, event_id="s1"),
+        _row("home", 2.0, 2.0, 2.0, -1.0, 0.5, event_id="s2"),
+        _row("home", 2.0, 2.0, 2.0, 1.0, 0.5, event_id="s3"),
+    ]
+    report = reconcile_channel("paper_pm", ledger=rows)
+    # Headline stays computed over ALL 7 rows -- no behavior change.
+    assert report["n_measurable"] == 7
+    pre_fix_verdict = report["verdict"]
+    pre_fix_z_wins = report["z_wins"]
+    pre_fix_z_units = report["z_units"]
+    # New block is additive context on the one-row-per-event_id subset.
+    ss = report["single_side"]
+    assert ss["n"] == 5
+    assert ss["both_sides_pairs"] == 2
+    assert ss["note"] is not None and "2 event" in ss["note"]
+    # Headline fields provably unaffected by computing the additive block.
+    assert report["verdict"] == pre_fix_verdict
+    assert report["z_wins"] == pre_fix_z_wins
+    assert report["z_units"] == pre_fix_z_units
+
+
+def test_reconcile_channel_single_side_identical_to_headline_when_no_pairs():
+    rows = [
+        _row("home", 2.0, 2.0, 2.0, (1.0 if i % 2 == 0 else -1.0), 0.5,
+             event_id="g%d" % i)
+        for i in range(20)
+    ]
+    report = reconcile_channel("paper_pm", ledger=rows)
+    ss = report["single_side"]
+    assert ss["n"] == report["n_measurable"]
+    assert ss["both_sides_pairs"] == 0
+    assert ss["note"] is None
+    assert ss["z_wins"] == report["z_wins"]
+    assert ss["z_units"] == report["z_units"]
 
 
 def test_existing_channel_with_adequate_data_unchanged_by_extension(tmp_path, monkeypatch):

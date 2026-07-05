@@ -135,6 +135,30 @@ def _zscore(realized: float, expected: float, se: Optional[float]) -> Optional[f
     return round((realized - expected) / se, 3)
 
 
+def _single_side(rows: Sequence[Dict[str, Any]]
+                 ) -> "tuple[List[Dict[str, Any]], int]":
+    """Collapse to one row/event_id (keep first-taken side, input order) +
+    count events with >=2 rows (both sides taken -- anti-correlated, not
+    independent). No-event_id rows are each their own singleton.
+    """
+    counts: Dict[Any, int] = {}
+    for r in rows:
+        eid = r.get("event_id")
+        if eid is not None:
+            counts[eid] = counts.get(eid, 0) + 1
+    seen: set = set()
+    out: List[Dict[str, Any]] = []
+    for r in rows:
+        eid = r.get("event_id")
+        if eid is not None and eid in seen:
+            continue
+        if eid is not None:
+            seen.add(eid)
+        out.append(r)
+    both_pairs = sum(1 for c in counts.values() if c > 1)
+    return out, both_pairs
+
+
 def _duplicate_close_pairs(rows: Sequence[Dict[str, Any]]) -> int:
     """Count of (home,away) closing-decimal pairs shared by >=2 DIFFERENT
     event_ids -- a transparency signal only (see module docstring); round
@@ -184,6 +208,22 @@ def reconcile_channel(channel: str,
     z_wins = _zscore(rec["wins"], exp["exp_wins"], exp["se_wins"])
     z_units = _zscore(rec["net_units"], exp["exp_units"], exp["se_units"])
     dup_pairs = _duplicate_close_pairs(rows)
+
+    ss_rows, both_pairs = _single_side(rows)  # additive; never alters verdict above
+    ss_n = len(ss_rows)
+    ss_rec = _record(ss_rows)
+    ss_exp = _close_implied_expectation(ss_rows)
+    single_side = {
+        "n": ss_n,
+        "z_wins": _zscore(ss_rec["wins"], ss_exp["exp_wins"], ss_exp["se_wins"]),
+        "z_units": _zscore(ss_rec["net_units"], ss_exp["exp_units"], ss_exp["se_units"]),
+        "both_sides_pairs": both_pairs,
+        "note": ("%d event(s) had both sides taken as the line moved -- those "
+                 "rows are anti-correlated, not independent; single_side "
+                 "collapses each to its first-taken side before z-scoring."
+                 % both_pairs) if both_pairs > 0 else None,
+    }
+
     return {
         "channel": channel,
         "label": _CHANNEL_LABEL.get(channel, channel),
@@ -197,6 +237,7 @@ def reconcile_channel(channel: str,
         "z_units": z_units,
         "duplicate_close_pairs_diff_event": dup_pairs,
         "verdict": _verdict(n, z_wins, z_units),
+        "single_side": single_side,
     }
 
 
@@ -221,6 +262,10 @@ def render(report: Dict[str, Any]) -> str:
         lines.append("note: %d closing-price pair(s) shared across different events "
                      "(commonly just round American odds repeating -- glance, don't "
                      "assume a bug)." % report["duplicate_close_pairs_diff_event"])
+    ss = report["single_side"]
+    if ss.get("note"):
+        lines.append("note: %s (single_side: n=%s z_wins=%s z_units=%s)"
+                     % (ss["note"], ss["n"], ss["z_wins"], ss["z_units"]))
     lines.append("")
     lines.append("VERDICT: " + report["verdict"])
     lines.append("=" * 78)
