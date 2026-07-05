@@ -2043,6 +2043,27 @@ HUMAN QUEUE ADDITION (ponytail): run in an interactive session, two separate pro
    rails exist) | done-when: >=2 sports have a gated STACK verdict on disk
    (SHIP or honest REJECT, planted-null + replication attached); most stacks
    REJECTING is the expected, successful outcome.
+0h. [DEPTH PROGRAM / COMPLETE KALSHI PAPER PRODUCT -- USER DIRECTIVE 2026-07-05e
+   (in-session): "keep building everything so the AI is most in-depth it can
+   be... complete product that works on Kalshi API automatically... no holes...
+   all data, all signals, all models, as many engines per prediction, really
+   testing, a very advanced LLM conducting... ask any sports question accurately
+   with substantial data support... think of everything." FABLE FRAME (binding):
+   (a) REAL-MONEY BOUNDARY UNCHANGED -- Kalshi real execution stays HUMAN-ONLY
+   default-DENY forever (charter S6); the buildable target is the COMPLETE
+   AUTOMATIC PAPER PRODUCT (capture->predict->decide->paper-execute->settle->
+   learn per sport on Kalshi) + the pre-registered proof criteria (master plan
+   8.1a-g) + human pilot runbook (8.2) that gate any go/no-go, which is the
+   user's call alone. (b) "NO HOLES" MADE MEASURABLE: the DEPTH PROGRAM doc =
+   complete enumeration (per sport: data assets -> derivable signal families ->
+   model/engine classes -> intelligence dims -> ask-layer gaps -> Kalshi
+   product-completeness table) + a ranked GAP MATRIX that becomes the STANDING
+   QUEUE the test factory consumes each cycle. (c) LLM conductor = Opus
+   program-synthesis lanes + Fable adjudication, exactly the loop already
+   running. (d) All gates/rails unchanged -- depth grows through the factory,
+   never around it. | docs/research/depth-program/ + the standing NOW queue |
+   done-when: DEPTH_PROGRAM doc on disk w/ gap matrix + completeness table,
+   and the queue head pulls from it every cycle.]
 0f. [CONTEXT-CONDITIONING DEPTH -- USER DIRECTIVE 2026-07-05c (in-session, verbatim
    intent): "teams schedules everything impacts players; a player can be a good
    shooter on a bad shooting team; everything affects everything -- depth to every
