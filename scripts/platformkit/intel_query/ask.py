@@ -103,6 +103,13 @@ _FIT_ARCHETYPE_CLAIM_ID = "nba_fit_archetype_profile_current"
 _FIT_SCHEME_CLAIM_ID = "nba_fit_team_scheme_identity_current"
 _FIT_VACANCY_CLAIM_ID = "nba_fit_role_vacancy_by_team_posgroup_current"
 
+# PROGRAM v3 closure: the pre-registered fit-validity gate's REJECT verdict
+# (does scheme fit predict post-move performance? -- see
+# data/domains/nba/fit_validity_gate_verdict.json, read-only truth, never
+# regenerated here) is cited inline in every compose_fit() answer so the
+# SCOUTING composition never implies validity it does not have.
+_FIT_VALIDITY_CLAIM_ID = "nba_fit_validity_gate_verdict"
+
 # Words a SCOUTING fit answer must never contain -- compose_fit() is a
 # descriptive composition of three VERIFIED ingredient claims, never a
 # prediction (no-edge-claims rule).
@@ -422,7 +429,8 @@ def compose_fit(player: str, team: str) -> dict[str, Any]:
                           "n": vacancy.get("n")},
         "note": (
             "SCOUTING composition of 3 VERIFIED descriptive ingredients -- purely descriptive, "
-            "no market/$ claim."
+            "no market/$ claim. Composition is descriptive; the validity gate returned REJECT "
+            "on 2026-07-05."
         ),
     }
     text_blob = json.dumps(answer).lower()
@@ -433,11 +441,16 @@ def compose_fit(player: str, team: str) -> dict[str, Any]:
                 f"composed answer would contain forbidden predictive word {word!r} -- refusing",
             )
 
+    evidence = [_claim_evidence(archetype_claim), _claim_evidence(scheme_claim),
+                _claim_evidence(vacancy_claim)]
+    validity_claim = verified.get(_FIT_VALIDITY_CLAIM_ID)
+    if validity_claim:
+        evidence.append(_claim_evidence(validity_claim))
+
     return {
         "answerable": True, "family": FAMILY_FIT, "player": _ascii_name(player), "team": team,
         "answer": answer,
-        "evidence": [_claim_evidence(archetype_claim), _claim_evidence(scheme_claim),
-                     _claim_evidence(vacancy_claim)],
+        "evidence": evidence,
     }
 
 

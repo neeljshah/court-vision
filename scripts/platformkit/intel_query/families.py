@@ -48,7 +48,8 @@ _CLAIM_ID_RE = re.compile(r"\b([a-z][a-z0-9]*(?:_[a-z0-9-]+){2,})\b", re.IGNOREC
 _WINDOW_RE = re.compile(r"\bwindow\s*[=:]\s*([a-z0-9_-]+)\b", re.IGNORECASE)
 _GATE_VERDICT_WORDS = re.compile(
     r"\bwhat did\b.+\b(gate|check)\b.+\bfind\b|\bdid\b.+\b(beat|clear the bar|clear|pass)\b|"
-    r"\bgate verdict\b|\bwhat.?s the verdict\b|\bwhat was the verdict\b",
+    r"\bgate verdict\b|\bwhat.?s the verdict\b|\bwhat was the verdict\b|"
+    r"\bdoes\b.+\bpredict\b",
     re.IGNORECASE,
 )
 
@@ -97,6 +98,10 @@ _TOPIC_ALIASES: dict[str, tuple[str, ...]] = {
     "wnba_rest": ("rest covariate", "rest diff", "wnba rest", "+rest", "wnba"),
     "mlb_fatigue": ("fatigue", "velocity decline", "velo decline", "starting pitcher", "sp fatigue", "mlb"),
     "nba_positional": ("positional weight", "per-position", "posgroup", "guard/forward/center"),
+    "nba_fit_validity": (
+        "scheme fit", "fit validity", "fit predict", "predict performance",
+        "after a move", "post-move",
+    ),
 }
 
 

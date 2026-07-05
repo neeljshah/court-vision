@@ -533,9 +533,70 @@ def test_real_repo_below_floor_player_is_honest_excluded_not_a_miss():
 def test_real_repo_compose_fit_non_star_player_composes():
     """ACCEPTANCE (c): compose_fit for a NON-star player (Taurean Prince, a
     rotation wing, not a franchise star) + his real team composes cleanly
-    from all 3 VERIFIED fit-ingredient claims with full provenance."""
+    from the 3 VERIFIED fit-ingredient claims plus the fit-validity gate
+    REJECT citation, with full provenance."""
     result = ask_mod.compose_fit("Taurean Prince", "MIL")
     assert result["answerable"] is True
     assert result["answer"]["archetype_profile"]["posgroup"] == "WING"
-    assert len(result["evidence"]) == 3
+    assert len(result["evidence"]) == 4
     assert all(e["validator_verdict"] == "VERIFIED" for e in result["evidence"])
+    claim_ids = {e["claim_id"] for e in result["evidence"]}
+    assert ask_mod._FIT_VALIDITY_CLAIM_ID in claim_ids
+    assert "REJECT" in result["answer"]["note"]
+
+
+def test_real_repo_tennis_h2h_pairkeyed_claim_discovered_and_answerable():
+    """ACCEPTANCE (d): the lane tennis-h2h-fullpairs store
+    (tennis_h2h_claims.jsonl, pair-keyed entity_key=[p1_id, p2_id]) is
+    AUTO-DISCOVERED via the same glob every other store uses (no
+    registration here) and answerable via the provenance family -- proving
+    the FIRST production pair-keyed claim flows end-to-end through ask()."""
+    pairs = ask_mod.discover_claim_source_pairs()
+    assert "tennis_h2h_claims.jsonl" in {c.name for _v, c in pairs}
+
+    result = ask_mod.ask(
+        "How do you know? Show the evidence for tennis_h2h_win_share_atp_fullpairs."
+    )
+    assert result["answerable"] is True
+    assert result["answer"]["claim_id"] == "tennis_h2h_win_share_atp_fullpairs"
+    assert result["answer"]["criteria"]["entity_key"] == ["p1_id", "p2_id"]
+    assert result["answer"]["n_considered"] > result["answer"]["n_excluded_below_floor"]
+    caveats = " ".join(result["answer"]["caveats"]).lower()
+    assert "not a predictor" in caveats
+    assert all(e["validator_verdict"] == "VERIFIED" for e in result["evidence"])
+
+
+# --- fit-validity-into-ask (PROGRAM v3 closure) ------------------------------
+
+def test_real_repo_validity_question_returns_reject_claim_with_provenance():
+    """ACCEPTANCE (b): a validity question ('does scheme fit predict
+    performance after a move') routes to gate_verdict and returns the
+    pre-registered fit-validity gate's REJECT claim (pooled_delta<0,
+    n_moves=417, folds=5, sign_holds=1/5, both planted nulls died), citing
+    the read-only verdict json as evidence."""
+    result = ask_mod.ask("Does scheme fit predict performance after a move?")
+    assert result["answerable"] is True
+    assert result["family"] == families.FAMILY_GATE_VERDICT
+    answer = result["answer"]
+    assert answer["verdict"] == "REJECT"
+    assert answer["primary_number"] < 0
+    assert answer["planted_null_passed"] is True
+    assert answer["edge_claimed"] is False
+    assert answer["verdict_file"] == "data/domains/nba/fit_validity_gate_verdict.json"
+    evidence = result["evidence"][0]
+    assert evidence["claim_id"] == "nba_fit_validity_gate_verdict"
+    assert evidence["validator_verdict"] == "VERIFIED"
+
+
+def test_real_repo_compose_fit_note_cites_validity_reject_inline():
+    """ACCEPTANCE (c): every compose_fit() SCOUTING answer cites the
+    fit-validity gate's REJECT verdict inline in its note field -- the
+    composition never implies validity it does not have."""
+    result = ask_mod.compose_fit("Taurean Prince", "MIL")
+    assert result["answerable"] is True
+    note = result["answer"]["note"]
+    assert "descriptive" in note.lower()
+    assert "REJECT" in note
+    blob = json.dumps(result["answer"]).lower()
+    for forbidden in ask_mod._FORBIDDEN_FIT_WORDS:
+        assert forbidden not in blob
