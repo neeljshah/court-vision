@@ -41,6 +41,19 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 68 (WAVE-65: KBO DAY-1 CORPUS CLOSED OUT, 2026-07-05 ~13:35Z
+  true-UTC, wf_7b02838c-d51 2 agents/~0.16M tok): 113 rows/5 games. SSSK
+  100% innings coverage / LTKT 77.8% / OBWO thin (mid-matinee wire start,
+  expected). ANOMALY RESOLVED w/ evidence: HHLG+NCHT = REAL-SUSPENDED rain
+  cancellations (cancel=true + textRelay rain; parser fabrication path
+  ruled out by code audit) -> 37 pre-start shell rows flagged, QUARANTINE
+  RULE recorded (exclude cancel=true games from future fit prep; capture
+  keeps raw). 1 OBWO single-poll progression blip. Daemon healthy. Memory
+  05i written: density adequate (~25 rows/game); binding constraint =
+  GAMES; honest reopen-consideration bar ~150-200 covered games ~= mid-Aug
+  2026 at current cadence; synthetic n is NOT the yardstick. NEXT: US
+  verifier sweep 17-23Z (hops w/ honest ticks; wall-clock cadence
+  sanctioned, no make-work). Slate report: data/domains/kbo/. No edge claims.
 - SPRINT WAKE 67 (SLATE TICK, 12:14Z): corpus 110 rows/5 games. SSSK inn8
   (39 rows) + LTKT inn9 near close; HHLG/NCHT later starts in early innings
   (live ~2h more; HHLG 26-rows-at-inn1 pattern flagged for the close-out
