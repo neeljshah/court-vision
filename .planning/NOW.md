@@ -93,6 +93,38 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- CYCLE-2B CLOSED + A2 PINNED 20:57Z TRUE-UTC (wf_9f68bc45, 9 agents/0.98M;
+  CLOCK RE-ANCHOR: this session's prior stamps from ~"18:40Z" onward ran up
+  to ~1h AHEAD of date -u -- the known estimate-drift trap; entries below
+  this line re-anchored, prior entries directionally right, order correct).
+  (1) CLOSE-CAPTURE + FRESHNESS COMMITTED e355dd75: prediction-ledger
+  true-close attach (lock-window [tip-30,tip] parity w/ line_store,
+  true_close > proxy > no_close precedence, 8868f609 proxy logic
+  unregressed) -- HONEST RESULT: 0/1981 historical rows lift (line_history
+  retention starts 07-02, ledger rows predate; mechanism PROVEN live on
+  event 401816034 clv_pct=1.70 true_close) -> coverage lifts FORWARD-ONLY;
+  6 stale ops reports (edge_greenlight/clv_scoreboard/2x clv_reconcile/
+  after_cost/beat_the_line, all 73-75h old) now RED in freshness_sla
+  (sound documented deviation: rows added to the CONSUMED autonomy/
+  freshness_sla TABLE, not the zero-consumer ops_sentinel MANUAL_TABLE);
+  35+11+35+11 tests green. (2) EXEC FIXES COMMITTED 8f599910: same-venue
+  CLV restriction (close_book fields carried through from line_store,
+  previously discarded by every caller), soccer 1X2 3-way proxy devig,
+  prediction-logger state-filter + event-day dedup (kills the 56%
+  stale-re-log class, preserves designed whole-slate logging).
+  (3) A2 AMENDMENT PINNED: docs/research/combination-moat/
+  PREREG_AMENDMENT_A2_2026-07-05.md sha256=
+  ccf703e176d9352a6baac06503a2a0afdb4695f98508b7981e65e783046640c7 (120
+  lines; nba Family 2 re-opened on the ext corpus pair A1225/B589,
+  K_cum=4 [2 prior stacks + N1 pace-x-dreb + N2 stl-x-fg3m], eps_eff=
+  .0125, REPLICATED-WEAK clause mandatory, prescreen may only REJECT,
+  L1/L3 mandatory; both prior shas verified pre-write). NBA RE-GATE = next
+  wave via batch_gate. (4) SHADOW LANE DIED on StructuredOutput cap (5th
+  occurrence of this dud class) AFTER writing code: 4 shadow modules +
+  an inplay_capture_loop.py edit sit UNREVIEWED on disk -- Opus review
+  agent dispatched (a2c2477d); NOTHING reloads the capture daemon until
+  its verdict; tennis-settle sub-task status unknown, will re-queue if
+  absent. No edge claims.
 - DEPTH PROGRAM PINNED ~21:45Z (wf_de19e6ab 2 agents/0.28M): docs/research/
   depth-program/DEPTH_PROGRAM_2026-07-05.md sha256=
   7136825e9aae2a92287641156dfc7dca246bbc1f7d6b6150ada5b7a7348cb7f4 (260
