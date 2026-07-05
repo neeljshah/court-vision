@@ -42,6 +42,7 @@ EXTRA_VALIDATION_PATHS = [
     REPO_ROOT / "data/cache/intel_claims/tennis_h2h_index_claims_validation.json",
     REPO_ROOT / "data/cache/intel_claims/catcher_framing_claims_validation.json",
     REPO_ROOT / "data/cache/intel_claims/umpire_zone_claims_validation.json",
+    REPO_ROOT / "data/cache/intel_claims/platoon_split_claims_validation.json",
 ]
 
 # claim_id prefix -> claims jsonl filename (only ranking claims from these files are eligible)
@@ -55,6 +56,7 @@ CLAIM_ID_TO_FILE = {
     "tennis_h2h_dominance_": "tennis_h2h_index_claims.jsonl",
     "tennis_playstyle_": "tennis_h2h_index_claims.jsonl",
     "mlb_umpire_zone_": "umpire_zone_claims.jsonl",
+    "mlb_platoon_split_": "platoon_split_claims.jsonl",
 }
 
 # entity_key values eligible for per-entity dossier sections (ranking row field
@@ -65,6 +67,8 @@ ENTITY_KEY_NAME_FIELD = {
     "player_id": "player_name",
     "team": "team",
     "catcher_id": "catcher_name",
+    "umpire_id": "umpire_name",
+    "batter": "batter_name",
 }
 
 # Pair-keyed entity_key values (list of two id fields) -> (id_field_pair, name_field_pair).
