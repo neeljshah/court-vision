@@ -32,6 +32,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import threading
 import time
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Tuple
@@ -40,6 +41,26 @@ logger = logging.getLogger(__name__)
 
 _REPO = Path(__file__).resolve().parents[3]
 DEFAULT_STATE_PATH = _REPO / "data" / "cache" / "odds_circuit_breaker" / "prop_circuit_breaker.json"
+
+# ---------------------------------------------------------------------------
+# Per-path threading locks (mirrors clv_ledger_guarded_append._path_lock):
+# serialise the read-modify-write critical section in record_result/is_open's
+# half-open transition so two threads acting on the SAME state file cannot
+# both read stale state and clobber each other's update (lost-ping race under
+# true concurrency). Keyed on the resolved absolute path string so different
+# state files get independent locks.
+# ---------------------------------------------------------------------------
+_LOCK_REGISTRY: Dict[str, threading.Lock] = {}
+_REGISTRY_LOCK = threading.Lock()
+
+
+def _path_lock(path: Path) -> threading.Lock:
+    """Return (creating if needed) the threading.Lock for *path*."""
+    key = str(path.resolve())
+    with _REGISTRY_LOCK:
+        if key not in _LOCK_REGISTRY:
+            _LOCK_REGISTRY[key] = threading.Lock()
+        return _LOCK_REGISTRY[key]
 
 # Consecutive failures before a provider's circuit OPENS (skipped).
 FAILURE_THRESHOLD = 3
@@ -93,25 +114,28 @@ def record_result(
     clears opened_since). A failure increments consecutive_failures; hitting
     *failure_threshold* OPENS the circuit (sets opened_since = now if not
     already open). Never raises."""
-    state = _load_state(state_path)
-    ts = float(now())
-    entry = state.get(provider)
-    if not isinstance(entry, dict):
-        entry = {"consecutive_failures": 0, "opened_since": None,
-                  "last_reason": "", "last_result_at": ts}
-    if ok:
-        entry["consecutive_failures"] = 0
-        entry["opened_since"] = None
-        entry["last_reason"] = ""
-    else:
-        entry["consecutive_failures"] = int(entry.get("consecutive_failures", 0)) + 1
-        entry["last_reason"] = str(reason or "")
-        if entry["consecutive_failures"] >= failure_threshold and entry.get("opened_since") is None:
-            entry["opened_since"] = ts
-    entry["last_result_at"] = ts
-    state[provider] = entry
-    _save_state(state, state_path)
-    return dict(entry)
+    path = _state_file(state_path)
+    lock = _path_lock(path)
+    with lock:
+        state = _load_state(path)
+        ts = float(now())
+        entry = state.get(provider)
+        if not isinstance(entry, dict):
+            entry = {"consecutive_failures": 0, "opened_since": None,
+                      "last_reason": "", "last_result_at": ts}
+        if ok:
+            entry["consecutive_failures"] = 0
+            entry["opened_since"] = None
+            entry["last_reason"] = ""
+        else:
+            entry["consecutive_failures"] = int(entry.get("consecutive_failures", 0)) + 1
+            entry["last_reason"] = str(reason or "")
+            if entry["consecutive_failures"] >= failure_threshold and entry.get("opened_since") is None:
+                entry["opened_since"] = ts
+        entry["last_result_at"] = ts
+        state[provider] = entry
+        _save_state(state, path)
+        return dict(entry)
 
 
 def is_open(
@@ -136,27 +160,30 @@ def is_open(
     >= cooldown -> permanently half-open, retried every cycle forever instead
     of getting a fresh cooldown). Clearing state here means the very next
     record_result failure re-opens with a brand-new timestamp, as documented."""
-    state = _load_state(state_path)
-    entry = state.get(provider)
-    if not isinstance(entry, dict):
-        return False, None
-    opened_since = entry.get("opened_since")
-    if opened_since is None:
-        return False, None
-    try:
-        since = float(opened_since)
-    except (TypeError, ValueError):
-        return False, None
-    age = float(now()) - since
-    if age >= cooldown_sec:
-        # Cooldown elapsed -> half-open. Persist the transition so a subsequent
-        # failure can re-open with a FRESH opened_since (see docstring).
-        entry["opened_since"] = None
-        entry["consecutive_failures"] = 0
-        state[provider] = entry
-        _save_state(state, state_path)
-        return False, None
-    return True, dict(entry)
+    path = _state_file(state_path)
+    lock = _path_lock(path)
+    with lock:
+        state = _load_state(path)
+        entry = state.get(provider)
+        if not isinstance(entry, dict):
+            return False, None
+        opened_since = entry.get("opened_since")
+        if opened_since is None:
+            return False, None
+        try:
+            since = float(opened_since)
+        except (TypeError, ValueError):
+            return False, None
+        age = float(now()) - since
+        if age >= cooldown_sec:
+            # Cooldown elapsed -> half-open. Persist the transition so a subsequent
+            # failure can re-open with a FRESH opened_since (see docstring).
+            entry["opened_since"] = None
+            entry["consecutive_failures"] = 0
+            state[provider] = entry
+            _save_state(state, path)
+            return False, None
+        return True, dict(entry)
 
 
 def filter_providers(

@@ -19,6 +19,7 @@ Acceptance criteria:
 from __future__ import annotations
 
 import json
+import threading
 
 import pytest
 
@@ -148,6 +149,41 @@ def test_atomic_write_round_trips(state_path):
     assert raw["fanduel"]["last_result_at"] == 42.0
     # no leftover tmp file
     assert not state_path.with_suffix(state_path.suffix + ".tmp").exists()
+
+
+def test_concurrent_failures_different_providers_all_recorded(state_path):
+    """Regression (LANE breaker-lock): N threads each recording ONE failure for
+    a DISTINCT provider concurrently must all land -- final state must contain
+    ALL pings. Pre-fix this is a lost-update race: two threads can both
+    _load_state() the same on-disk snapshot, then each _save_state() its own
+    single-provider update, with the second save clobbering the first's write
+    (whichever thread's dict lacks the other's key wins the file). Pre-fix this
+    test is flaky-to-failing under real thread interleaving; the per-path lock
+    in record_result makes the read-modify-write atomic so every ping survives
+    regardless of interleaving."""
+    providers = ["provA", "provB", "provC", "provD", "provE",
+                 "provF", "provG", "provH", "provI", "provJ"]
+    barrier = threading.Barrier(len(providers))
+
+    def _fire(name: str) -> None:
+        barrier.wait()  # maximize actual overlap of the read-modify-write window
+        pcb.record_result(name, False, reason="concurrent", state_path=state_path,
+                          now=lambda: 1000.0)
+
+    threads = [threading.Thread(target=_fire, args=(p,)) for p in providers]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    raw = json.loads(state_path.read_text(encoding="utf-8"))
+    assert set(raw.keys()) == set(providers), (
+        "lost update: expected all %d provider pings, found %d (%s)"
+        % (len(providers), len(raw), sorted(raw.keys()))
+    )
+    for name in providers:
+        assert raw[name]["consecutive_failures"] == 1
+        assert raw[name]["last_reason"] == "concurrent"
 
 
 def test_filter_providers_empty_input_never_raises(state_path):
