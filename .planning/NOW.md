@@ -41,6 +41,16 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 66 (MID-SLATE TICK, 2026-07-05 11:12Z TRUE-UTC via date -u;
+  correction: wake-65's "~11:45Z" stamp was ~10:45Z actual -- estimate
+  drift again, re-anchored): stop flag false. KBO real-state corpus
+  accruing healthily MID-SLATE: 60 rows / 5 games (SSSK 24 climbing, OBWO
+  19 final-static, HHLG 10, LTKT 6, NCHT 1 NEW file) -- daemon working by
+  direct evidence (new game file appeared, counts climbing since the
+  wave-61 reorder). All non-time-gated work remains COMPLETE; slate close
+  ~12:30-13Z -> close-out verification lane next wake; US verifier sweep
+  17-23Z after. No workflow in flight BY DESIGN (wake-50 precedent -- no
+  make-work waves while everything is time-gated). No edge claims.
 - SPRINT WAKE 65 (WAVE-64: BATTERY GAP CLOSED, 2026-07-05 ~11:45Z true-UTC,
   wf_0711da68-066 3 agents/~0.28M tok, commit 500c7e24): the tennis name
   gap was v4-ONLY (v3 already emitted player_name -- fix lane VERIFIED
