@@ -162,6 +162,30 @@ TABLE: Dict[str, SlaEntry] = {
         _OPS / "after_cost_scoreboard.json", 172800.0),
     "beat_the_line": SlaEntry(
         _OPS / "beat_the_line.json", 172800.0),
+
+    # --- GREENLIGHT-UNCAP wave (2026-07-05): channel-trust + honesty inputs ---
+    # These are the artifacts channel_trust_status/cv_honesty_status (E-SPEC/
+    # F-SPEC, GREENLIGHT_UNCAP_SPEC_2026-07-05.md R-d) read each on-demand
+    # greenlight refresh. 26h (93600s) mirrors the existing daily-daemon-cadence
+    # rows above (execution_quality/segment-trust/m20 verdict all refresh at
+    # least daily); 48h (172800s) mirrors the existing manual/CLI-report margin
+    # (clv_scoreboard row above) for the batch-cadence artifacts.
+    "execution_quality": SlaEntry(
+        _OPS / "execution_quality.json", 93600.0),
+    "ingame_segment_trust": SlaEntry(
+        _OPS / "ingame_segment_trust.json", 93600.0),
+    "ingame_segment_trust_multi": SlaEntry(
+        _OPS / "ingame_segment_trust_multi.json", 93600.0),
+    "ingame_clv_verdict": SlaEntry(
+        _OPS / "ingame_clv_verdict.json", 93600.0),
+    "l4_gate_prereg": SlaEntry(
+        _OPS / "l4_gate_prereg.json", 172800.0),
+    "reject_ledger": SlaEntry(
+        _FRONTEND / "reject_ledger.jsonl", 172800.0),
+    "clv_reconcile_paper_ingame": SlaEntry(
+        _OPS / "clv_reconcile_paper_ingame.json", 172800.0),
+    "clv_reconcile_paper_ingame_prop": SlaEntry(
+        _OPS / "clv_reconcile_paper_ingame_prop.json", 172800.0),
 }
 
 

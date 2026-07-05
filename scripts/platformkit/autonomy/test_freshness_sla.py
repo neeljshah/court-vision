@@ -205,6 +205,98 @@ def test_m36_already_registered_no_new_procspec_needed_this_lane():
 
 
 # --------------------------------------------------------------------------- #
+# GREENLIGHT-UNCAP wave (2026-07-05): channel-trust + honesty input SLA rows
+# (E-SPEC/F-SPEC, GREENLIGHT_UNCAP_SPEC_2026-07-05.md R-d -- 10 keys total,
+# 8 new here + clv_reconcile_moneyline/clv_reconcile_paper_pm already present
+# from LANE 1 above, unduplicated/unaltered).
+# --------------------------------------------------------------------------- #
+def test_greenlight_trust_honesty_sla_entries_present():
+    from scripts.platformkit.autonomy.freshness_sla import TABLE
+    for name in ("execution_quality", "ingame_segment_trust",
+                 "ingame_segment_trust_multi", "ingame_clv_verdict",
+                 "l4_gate_prereg", "reject_ledger",
+                 "clv_reconcile_moneyline", "clv_reconcile_paper_pm",
+                 "clv_reconcile_paper_ingame", "clv_reconcile_paper_ingame_prop"):
+        assert name in TABLE, name
+        assert TABLE[name].max_staleness_sec > 0
+
+
+def test_greenlight_trust_honesty_sla_paths_match_expected():
+    from scripts.platformkit.autonomy.freshness_sla import TABLE, _FRONTEND, _OPS
+    expected = {
+        "execution_quality": _OPS / "execution_quality.json",
+        "ingame_segment_trust": _OPS / "ingame_segment_trust.json",
+        "ingame_segment_trust_multi": _OPS / "ingame_segment_trust_multi.json",
+        "ingame_clv_verdict": _OPS / "ingame_clv_verdict.json",
+        "l4_gate_prereg": _OPS / "l4_gate_prereg.json",
+        "reject_ledger": _FRONTEND / "reject_ledger.jsonl",
+        "clv_reconcile_moneyline": _OPS / "clv_reconcile_moneyline.json",
+        "clv_reconcile_paper_pm": _OPS / "clv_reconcile_paper_pm.json",
+        "clv_reconcile_paper_ingame": _OPS / "clv_reconcile_paper_ingame.json",
+        "clv_reconcile_paper_ingame_prop": _OPS / "clv_reconcile_paper_ingame_prop.json",
+    }
+    for name, path in expected.items():
+        assert TABLE[name].path == path, name
+
+
+def test_greenlight_trust_honesty_sla_values_match_spec():
+    from scripts.platformkit.autonomy.freshness_sla import TABLE
+    day_plus_grace = {
+        "execution_quality": 93600.0,
+        "ingame_segment_trust": 93600.0,
+        "ingame_segment_trust_multi": 93600.0,
+        "ingame_clv_verdict": 93600.0,
+    }
+    two_day_batch = {
+        "l4_gate_prereg": 172800.0,
+        "reject_ledger": 172800.0,
+        "clv_reconcile_moneyline": 172800.0,
+        "clv_reconcile_paper_pm": 172800.0,
+        "clv_reconcile_paper_ingame": 172800.0,
+        "clv_reconcile_paper_ingame_prop": 172800.0,
+    }
+    for name, sla in {**day_plus_grace, **two_day_batch}.items():
+        assert TABLE[name].max_staleness_sec == sla, name
+
+
+def test_greenlight_trust_honesty_sla_green_when_fresh(tmp_path):
+    p = tmp_path / "execution_quality.json"
+    p.write_text("{}", encoding="utf-8")
+    now = p.stat().st_mtime + 10.0
+    table = {"execution_quality": SlaEntry(p, 93600.0)}
+    row = check_one("execution_quality", now=now, table=table)
+    assert row["status"] == GREEN
+
+
+def test_greenlight_trust_honesty_sla_red_when_stale(tmp_path):
+    p = tmp_path / "l4_gate_prereg.json"
+    p.write_text("{}", encoding="utf-8")
+    now = p.stat().st_mtime + 3 * 86400.0  # 3 days, past the 48h batch SLA
+    table = {"l4_gate_prereg": SlaEntry(p, 172800.0)}
+    row = check_one("l4_gate_prereg", now=now, table=table)
+    assert row["status"] == RED
+    assert row["reason"] == "stale"
+
+
+def test_greenlight_trust_honesty_sla_red_when_missing(tmp_path):
+    p = tmp_path / "reject_ledger.jsonl"
+    table = {"reject_ledger": SlaEntry(p, 172800.0)}
+    row = check_one("reject_ledger", now=1000.0, table=table)
+    assert row["status"] == RED
+    assert row["reason"] == "missing"
+
+
+def test_greenlight_trust_honesty_sla_no_duplicate_moneyline_paper_pm_rows():
+    """clv_reconcile_moneyline/clv_reconcile_paper_pm were already registered by
+    LANE 1 -- this wave must not have duplicated or altered either row."""
+    from scripts.platformkit.autonomy.freshness_sla import TABLE, _OPS
+    assert TABLE["clv_reconcile_moneyline"].path == _OPS / "clv_reconcile_moneyline.json"
+    assert TABLE["clv_reconcile_moneyline"].max_staleness_sec == 172800.0
+    assert TABLE["clv_reconcile_paper_pm"].path == _OPS / "clv_reconcile_paper_pm.json"
+    assert TABLE["clv_reconcile_paper_pm"].max_staleness_sec == 172800.0
+
+
+# --------------------------------------------------------------------------- #
 # runner: fake check/write callables, no real supervisor.manifest() names touched
 # --------------------------------------------------------------------------- #
 def test_runner_tick_calls_check_and_write():
