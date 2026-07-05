@@ -72,18 +72,33 @@ def test_lebron_is_rankable_on_at_least_one_dimension():
         c["claim_id"] for c in claims
         if any(row["player_id"] == LEBRON_ID for row in c["ranking"])
     ]
-    assert len(lebron_dims) > 0, "LeBron does not appear in any dimension's top-50 ranking"
+    assert len(lebron_dims) > 0, "LeBron does not appear in any dimension's ranking"
 
 
 def test_excluded_below_floor_counted_never_dropped():
-    """n_considered must equal (qualifiers ranked+unranked) + n_excluded --
-    i.e. the floor-excluded population is COUNTED, never silently dropped."""
+    """n_considered must equal (qualifiers ranked) + n_excluded -- i.e. the
+    floor-excluded population is COUNTED, never silently dropped."""
     claims, _ = bc.build_all_claims()
     for claim in claims:
         n_considered = claim["n_considered"]
         n_excluded = claim["n_excluded_below_floor"]
         assert n_excluded >= 0
         assert n_excluded <= n_considered, claim["claim_id"]
+
+
+def test_rows_equal_n_qualifying_per_dim_no_top_n_cap():
+    """FULL POPULATION: every qualifying player above a dimension's own
+    floor must appear in its ranking -- rows == n_qualifying (n_considered
+    - n_excluded_below_floor), NOT a fixed top-50 cap (the exact bug this
+    lane fixed: TOP_N=50 previously truncated every one of the 20 dims to
+    50 rows regardless of how many players actually qualified)."""
+    claims, _ = bc.build_all_claims()
+    for claim in claims:
+        n_qualifying = claim["n_considered"] - claim["n_excluded_below_floor"]
+        assert len(claim["ranking"]) == n_qualifying, (
+            f"{claim['claim_id']}: rows={len(claim['ranking'])} != "
+            f"n_qualifying={n_qualifying} (top-N cap regression?)"
+        )
 
 
 def test_no_edge_language_in_any_claim():
