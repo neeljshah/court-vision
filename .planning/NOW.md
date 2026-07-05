@@ -41,6 +41,19 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- >>> COORDINATION PIN (INTERACTIVE FABLE SESSION, 15:35Z, remove when cleared):
+  the USER-DIRECTED interactive session is running build wave wf_ff769e21
+  (11 lanes: supervisor reaper fix, kalshi rate governor, depth-capture arm +
+  registry entries, feed_health schema overlay, m8_ci_cadence spec, improve/
+  FWER + CLV bridges, soccer ADVERSE suppression, asof reclaim gates for
+  mlb/nba/tennis/soccer). WORKING TREE IS INTENTIONALLY DIRTY until ~16:45Z.
+  Sprint loop: do NOT treat the in-flight diff as found-uncommitted-backlog,
+  do NOT commit/review/revert it, do NOT restart daemons this window. If the
+  tree is still dirty at your wake, hop 30 min and re-check. Full queue
+  adjudication (all 10 items Fable-decided): docs/research/organization-sprint/
+  HUMAN_QUEUE_2026-07-05.md top section. This pin is NOT a session-takeover
+  wake entry -- the sprint loop KEEPS its cadence; US verifier sweep proceeds
+  once the tree is clean. THIS SESSION will clear the pin when lanes commit.
 - SPRINT WAKE 70 (HEALTH TICK, 15:29Z): all green -- heartbeat 0.3 min,
   MLB/soccer feeds 1.0 min, KBO 138 rows. Hop; US verifier sweep wave
   launches next wake (~16:30Z) so results land as the 17Z window opens.
