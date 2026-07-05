@@ -13,6 +13,13 @@ Public API:
     persist_playstyles(out_path, corpus_dir=None, as_of=None) -> PersistResult
     persist_h2h(out_path, corpus_dir=None, as_of=None) -> PersistResult
 
+EXTENDED (lane tennis-persist, program v3): domains/tennis/atlas_persist_layers.py
+(same package, kept in a separate file purely on the <=300 LOC-per-file rail)
+adds two more persisted layers -- persist_scouting() (atlas_scouting briefs)
+and persist_surface_splits() (per-player per-surface serve descriptives) --
+plus write_manifest() in atlas_persist_manifest.py, which writes all four
+layers to data/cache/tennis_atlas/*.parquet with a manifest.json.
+
 F5-clean: stdlib + numpy + pandas + domains.tennis.* only.
 """
 from __future__ import annotations
