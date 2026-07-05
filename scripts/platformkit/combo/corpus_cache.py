@@ -1,0 +1,275 @@
+"""scripts.platformkit.combo.corpus_cache -- gate-ready per-sport corpus builder.
+
+GENERALIZES what the wave-1 sport runners hand-rolled inline: one gate-ready
+frame per sport, persisted so batch_gate.py / null_floor.py never re-replay a
+base construction per candidate. Each sport's base p_base replay is REUSED
+EXACTLY from the wave-1/A1 runner (same public fn, same call pattern) --
+never re-derived here.
+
+Sports: mlb, nba, soccer, tennis. Output: one row per event with keys
+(event_id, corpus_unit, y, p_base) + every currently-legal leak-free
+ingredient column at full coverage (NaN where absent -- consumers apply the
+score_with_fallback contract, never this module).
+
+STALENESS CONTRACT: a sidecar JSON records each SOURCE file's mtime+sha256 at
+build time. `load_gate_corpus` refuses (raises StaleCorpusError) if any
+source file's mtime OR sha differs from what the sidecar recorded -- an
+honest error, never a silent stale read.
+
+Calibration, not edge. NO $/ROI anywhere. pandas + numpy + stdlib only. ASCII.
+"""
+from __future__ import annotations
+
+import hashlib
+import json
+import sys
+import time
+from pathlib import Path
+from typing import Dict, List, Tuple
+
+import numpy as np
+import pandas as pd
+
+_REPO = Path(__file__).resolve().parents[3]
+if str(_REPO) not in sys.path:
+    sys.path.insert(0, str(_REPO))
+
+from domains.basketball_nba.ratings import walk_forward_elo as nba_walk_forward_elo  # noqa: E402
+from domains.mlb.asof_sp_form import build_sp_form_features  # noqa: E402
+from domains.mlb.ratings import walk_forward_elo as mlb_walk_forward_elo  # noqa: E402
+from domains.soccer.ratings import walk_forward_goals  # noqa: E402
+from domains.tennis.elo_walkforward import walk_forward_elo as tennis_walk_forward_elo  # noqa: E402
+from scripts.platformkit.combo.stack_fit import logit  # noqa: E402
+
+_CACHE_DIR = _REPO / "data" / "cache" / "combo"
+SPORTS: Tuple[str, ...] = ("mlb", "nba", "soccer", "tennis")
+
+
+class StaleCorpusError(RuntimeError):
+    """A cached corpus's source files moved since it was built -- refuse the read."""
+
+
+def _corpus_path(sport: str) -> Path:
+    return _CACHE_DIR / f"gate_corpus_{sport}.parquet"
+
+
+def _sidecar_path(sport: str) -> Path:
+    return _CACHE_DIR / f"gate_corpus_{sport}.sources.json"
+
+
+def _file_sha256(path: Path) -> str:
+    h = hashlib.sha256()
+    h.update(path.read_bytes())
+    return h.hexdigest()
+
+
+def _source_manifest(paths: List[Path]) -> Dict[str, Dict[str, object]]:
+    return {str(p): {"mtime": p.stat().st_mtime, "sha256": _file_sha256(p)} for p in paths}
+
+
+# --------------------------------------------------------------------------- #
+# Per-sport gate-ready frame builders (mirror the wave-1 runner exactly)
+# --------------------------------------------------------------------------- #
+
+def _build_mlb() -> Tuple[pd.DataFrame, List[Path]]:
+    """games.parquet (2010-2021) + games_current.parquet (2022-2026) eras as
+    corpus_unit; base = 2-feature [elo_logit, z(sp_first6_diff_ew)] mirroring
+    domains.mlb.pregame_stack_gate._fit_base's ingredients exactly."""
+    games_a = _REPO / "data/domains/mlb/games.parquet"
+    games_b = _REPO / "data/domains/mlb/games_current.parquet"
+    park = _REPO / "data/domains/mlb/asof_park.parquet"
+    asof = _REPO / "data/domains/mlb/asof_features.parquet"
+    sources = [games_a, games_b, park, asof]
+
+    sp = build_sp_form_features()[["event_id", "sp_first6_diff_ew"]]
+    park_df = pd.read_parquet(park)[["event_id", "park_factor"]]
+    ra_df = pd.read_parquet(asof)[["event_id", "sp_ra_diff_asof"]]
+
+    frames = []
+    for path, unit in ((games_a, "era_2010_2021"), (games_b, "era_2022_2026")):
+        games = pd.read_parquet(path)
+        games = games[games["target_home_win"].notna()].reset_index(drop=True)
+        elo = mlb_walk_forward_elo(games)[["event_id", "date", "p_home_elo"]]
+        out = games[["event_id", "target_home_win"]].merge(elo, on="event_id", how="left")
+        out = out.merge(sp, on="event_id", how="left")
+        out = out.merge(park_df, on="event_id", how="left")
+        out = out.merge(ra_df, on="event_id", how="left")
+        out = out.sort_values("date").reset_index(drop=True)
+        out["corpus_unit"] = unit
+        out["y"] = out["target_home_win"].astype(float)
+        out["p_base"] = np.nan  # base needs a walk-forward LOGISTIC fit -- see note below
+        frames.append(out)
+    df = pd.concat(frames, ignore_index=True)
+    # p_base here is the pre-stack ELO probability (a legal, cheap standalone base
+    # ingredient); the 2-feature LOGISTIC p_base used by judge_stack_family is
+    # fit per-candidate inside stack_gate_pregame callers (train-only), never cached
+    # -- caching a FIT would freeze a standardizer across candidates, which the
+    # prereg forbids. This module caches the INGREDIENT columns, not a frozen fit.
+    df["p_base"] = df["p_home_elo"].astype(float)
+    return df[["event_id", "corpus_unit", "y", "p_base", "p_home_elo",
+              "sp_first6_diff_ew", "park_factor", "sp_ra_diff_asof"]], sources
+
+
+# asof_features.parquet ships raw home/away asof pace/oreb/tov columns, not the
+# diff -- mirrors asof_reclaim_dims.py's _PAIR_DIFFS mapping exactly (imported
+# name, never re-derived independently of that module's convention).
+_NBA_PAIR_DIFFS: Dict[str, Tuple[str, str]] = {
+    "pace_diff_asof": ("home_pace_asof", "away_pace_asof"),
+    "oreb_pg_diff_asof": ("home_oreb_pg_asof", "away_oreb_pg_asof"),
+    "tov_pg_diff_asof": ("home_tov_pg_asof", "away_tov_pg_asof"),
+}
+
+
+def _build_nba() -> Tuple[pd.DataFrame, List[Path]]:
+    """Single 1299-row box-era corpus (pre-registered structural blocker: no
+    2nd season-disjoint box parquet exists yet); base = walk-forward Elo on
+    games.parquet (the only frame carrying `date`), joined to the box-era
+    asof_features/asof_box_extra ingredient parquets on game_id. Mirrors
+    PREREG Family 2 ingredients exactly."""
+    games_path = _REPO / "data/domains/basketball_nba/games.parquet"
+    asof = _REPO / "data/domains/basketball_nba/asof_features.parquet"
+    box_extra = _REPO / "data/domains/basketball_nba/asof_box_extra.parquet"
+    sources = [games_path, asof, box_extra]
+
+    games = pd.read_parquet(games_path)
+    games = games[games["home_win"].notna()].reset_index(drop=True)
+    # walk_forward_elo requires an INT season (season-boundary regression); games.parquet
+    # ships '2022-23' style strings -- start-year convention mirrors adapter.py._season_to_int.
+    games["season"] = games["season"].astype(str).str.split("-").str[0].astype(int)
+    wf = nba_walk_forward_elo(games)
+    elo_col = next((c for c in ("p_home_elo", "win_prob_home", "p_elo") if c in wf.columns), None)
+    elo_sel = wf[["game_id", elo_col]].rename(columns={elo_col: "p_elo"}) if elo_col else \
+        wf[["game_id"]].assign(p_elo=np.nan)
+
+    af = pd.read_parquet(asof)
+    for out_col, (h, a) in _NBA_PAIR_DIFFS.items():
+        af[out_col] = af[h].astype(float) - af[a].astype(float) if h in af.columns and a in af.columns else np.nan
+    box = pd.read_parquet(box_extra)
+    box_keep = [c for c in ("dreb_diff_asof", "fg3m_diff_asof", "stl_diff_asof", "blk_diff_asof")
+               if c in box.columns]
+
+    # asof_features (1299 rows, the box-era universe) drives the corpus; games/elo
+    # and box_extra are LEFT-merged onto it (both are supersets keyed on game_id).
+    out = af[["game_id"] + list(_NBA_PAIR_DIFFS.keys())].merge(
+        box[["game_id"] + box_keep], on="game_id", how="left")
+    out = out.merge(games[["game_id", "date", "home_win"]], on="game_id", how="left")
+    out = out.merge(elo_sel, on="game_id", how="left")
+    out = out.sort_values("date").reset_index(drop=True)
+
+    out["event_id"] = out["game_id"].astype(str)
+    out["corpus_unit"] = "box_era_single_corpus"
+    out["y"] = out["home_win"].astype(float)
+    out["p_base"] = out["p_elo"].astype(float)
+    cols = ["event_id", "corpus_unit", "y", "p_base", "p_elo"] + box_keep + list(_NBA_PAIR_DIFFS.keys())
+    return out[cols], sources
+
+
+def _build_soccer() -> Tuple[pd.DataFrame, List[Path]]:
+    """matches.parquet `div` column = disjoint-league corpus_unit; base = Poisson
+    walk_forward_goals p_over25, mirrors home_sot_replication_gate exactly."""
+    matches = _REPO / "data/domains/soccer/matches.parquet"
+    asof = _REPO / "data/domains/soccer/asof_features.parquet"
+    sources = [matches, asof]
+
+    mdf = pd.read_parquet(matches)
+    mdf["event_id"] = mdf["event_id"].astype(str)
+    total_goals = (pd.to_numeric(mdf["fthg"], errors="coerce")
+                  + pd.to_numeric(mdf["ftag"], errors="coerce"))
+    mdf["target_over25"] = (total_goals >= 3).astype(float)
+    mdf = mdf[total_goals.notna()].copy()
+    wf = walk_forward_goals(mdf)
+    wf["event_id"] = wf["event_id"].astype(str)
+    wf["p_over25"] = np.clip(wf["p_over25"].astype(float), 1e-6, 1 - 1e-6)
+
+    adf = pd.read_parquet(asof)
+    adf["event_id"] = adf["event_id"].astype(str)
+    adf = adf.drop_duplicates("event_id", keep="first")
+    ing_cols = [c for c in (
+        "home_sot_for_l10", "away_sot_for_l10", "diff_sot_for_asof", "diff_sot_against_asof",
+        "diff_shots_for_asof", "diff_shots_against_asof", "home_sot_ratio_for_asof",
+        "away_sot_ratio_for_asof", "home_n_prior", "away_n_prior") if c in adf.columns]
+
+    out = wf.merge(adf[["event_id"] + ing_cols], on="event_id", how="left")
+    out["corpus_unit"] = out["div"].astype(str) if "div" in out.columns else "unknown_league"
+    out["y"] = out["target_over25"].astype(float)
+    out["p_base"] = out["p_over25"].astype(float)
+    return out[["event_id", "corpus_unit", "y", "p_base", "p_over25"] + ing_cols], sources
+
+
+def _build_tennis() -> Tuple[pd.DataFrame, List[Path]]:
+    """matches.parquet (ATP) / wta_matches.parquet (WTA) = tour corpus_unit;
+    base = walk-forward Elo, mirrors interaction_gate_math.build_corpus_frame."""
+    atp_m = _REPO / "data/domains/tennis/matches.parquet"
+    atp_h = _REPO / "data/domains/tennis/asof_hold.parquet"
+    wta_m = _REPO / "data/domains/tennis/wta_matches.parquet"
+    wta_h = _REPO / "data/domains/tennis/asof_hold_wta.parquet"
+    ret = _REPO / "data/domains/tennis/asof_return.parquet"
+    sources = [atp_m, atp_h, wta_m, wta_h, ret]
+
+    frames = []
+    for m_path, h_path, unit in ((atp_m, atp_h, "ATP"), (wta_m, wta_h, "WTA")):
+        mm = pd.read_parquet(m_path)
+        mm = mm[mm["winner"].notna()].reset_index(drop=True)
+        wf = tennis_walk_forward_elo(mm)
+        elo_col = next((c for c in ("win_prob_p1", "p_elo") if c in wf.columns), None)
+        out = wf[["event_id", "date", "winner"] + ([elo_col] if elo_col else [])].rename(
+            columns={elo_col: "p_elo"} if elo_col else {})
+        if "p_elo" not in out.columns:
+            out["p_elo"] = np.nan
+        out["target_p1_win"] = (out["winner"].astype(float) == 1.0).astype(float)
+
+        hold = pd.read_parquet(h_path)
+        hold_cols = [c for c in ("event_id", "surface", "p1_n_prior", "p2_n_prior",
+                                 "p1_hold_pct_asof", "p2_hold_pct_asof") if c in hold.columns]
+        hold_sel = hold[hold_cols].drop_duplicates("event_id", keep="first")
+        out = out.merge(hold_sel, on="event_id", how="left")
+
+        ret_df = pd.read_parquet(ret)
+        ret_cols = [c for c in ("event_id", "diff_return_won_asof", "diff_break_pct_asof")
+                   if c in ret_df.columns]
+        out = out.merge(ret_df[ret_cols].drop_duplicates("event_id", keep="first"),
+                        on="event_id", how="left")
+        out["corpus_unit"] = unit
+        out["y"] = out["target_p1_win"]
+        out["p_base"] = out["p_elo"].astype(float)
+        frames.append(out)
+    df = pd.concat(frames, ignore_index=True)
+    keep = ["event_id", "corpus_unit", "y", "p_base", "p_elo", "surface",
+           "p1_hold_pct_asof", "p2_hold_pct_asof", "diff_return_won_asof", "diff_break_pct_asof"]
+    return df[[c for c in keep if c in df.columns]], sources
+
+
+_BUILDERS = {"mlb": _build_mlb, "nba": _build_nba, "soccer": _build_soccer, "tennis": _build_tennis}
+
+
+def build_gate_corpus(sport: str) -> pd.DataFrame:
+    """Build ONE sport's gate-ready frame, persist to parquet + sources sidecar."""
+    if sport not in _BUILDERS:
+        raise ValueError(f"unknown sport {sport!r}; must be one of {SPORTS}")
+    df, sources = _BUILDERS[sport]()
+    _CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    df.to_parquet(_corpus_path(sport), index=False)
+    manifest = {"sport": sport, "built_at": time.time(), "n_rows": len(df),
+               "sources": _source_manifest(sources)}
+    _sidecar_path(sport).write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    return df
+
+
+def load_gate_corpus(sport: str) -> pd.DataFrame:
+    """Load a cached corpus; refuse (StaleCorpusError) if any source file moved."""
+    cp, sp = _corpus_path(sport), _sidecar_path(sport)
+    if not cp.exists() or not sp.exists():
+        raise StaleCorpusError(f"no cached corpus for {sport!r}; run build_gate_corpus first")
+    manifest = json.loads(sp.read_text(encoding="utf-8"))
+    for src, rec in manifest.get("sources", {}).items():
+        p = Path(src)
+        if not p.exists():
+            raise StaleCorpusError(f"source {src} for {sport!r} corpus no longer exists")
+        if p.stat().st_mtime != rec["mtime"] or _file_sha256(p) != rec["sha256"]:
+            raise StaleCorpusError(
+                f"source {src} for {sport!r} corpus changed since build "
+                f"(mtime/sha mismatch) -- rebuild via build_gate_corpus({sport!r})")
+    return pd.read_parquet(cp)
+
+
+__all__ = ["SPORTS", "StaleCorpusError", "build_gate_corpus", "load_gate_corpus"]
