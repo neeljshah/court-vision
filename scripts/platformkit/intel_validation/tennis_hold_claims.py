@@ -1,10 +1,11 @@
 """Tennis hold-pct ranking claims producer (mission spine 5, lane claims-breadth).
 
-Emits top-50 as-of hold-pct% ranking claims per tour (ATP + WTA), in the SAME
-claims contract shape as scripts/platformkit/intel_validation's ranking claims
-(see data/cache/intel_claims/nba_shooting_claims.jsonl for the sibling NBA
-producer's row shape) so the independent claims_validator.py can VERIFY them
-with zero code sharing between producer and validator.
+Emits FULL-POPULATION as-of hold-pct% ranking claims per tour (ATP + WTA) --
+every player above the min_sample floor gets a ranked row, not a top-N slice
+-- in the SAME claims contract shape as scripts/platformkit/intel_validation's
+ranking claims (see data/cache/intel_claims/nba_shooting_claims.jsonl for the
+sibling NBA producer's row shape) so the independent claims_validator.py can
+VERIFY them with zero code sharing between producer and validator.
 
 WHY A LONG-FORMAT SIDE PARQUET: the on-disk asof_hold*.parquet is WIDE
 (one row per MATCH, p1_/p2_-prefixed columns, no player_id column at all --
@@ -58,7 +59,6 @@ _CLAIMS_OUT = _OUT_DIR / "tennis_hold_claims.jsonl"
 
 SEASON_WINDOW = "2025"  # last complete on-disk season for BOTH tours (verified)
 MIN_N_PRIOR = 50
-TOP_N = 50
 
 
 def _reshape_long(matches: pd.DataFrame, hold: pd.DataFrame) -> pd.DataFrame:
@@ -134,7 +134,9 @@ def build_ranking_claim(tour: str) -> dict[str, Any]:
     qualifiers = snapshot[snapshot["n_prior"] >= MIN_N_PRIOR].copy()
     qualifiers = qualifiers.dropna(subset=["hold_pct_asof"])
     qualifiers = qualifiers.sort_values("hold_pct_asof", ascending=False).reset_index(drop=True)
-    top = qualifiers.head(TOP_N)
+    # FULL POPULATION: every qualifier above the floor gets a row (no head(N)
+    # slice) -- below-floor entities are already counted in n_excluded above.
+    top = qualifiers
 
     ranking = []
     for i, row in enumerate(top.itertuples(index=False), start=1):
@@ -152,10 +154,14 @@ def build_ranking_claim(tour: str) -> dict[str, Any]:
     # "window=season_2025_atp" hint disambiguates tour in ask()'s top_n filter --
     # both tours otherwise share metric=hold_pct_asof and would tie-break on
     # computed_at alone (see ask.py's _answer_top_n most-recent tie-break).
+    # claim_id keeps its original "top50" token (a stable identifier, not a
+    # population-size claim) even though the ranking itself is now the FULL
+    # qualifying population -- renaming it would break cached demo transcripts
+    # / dossier keys that reference this exact string.
     return {
         "claim_id": f"tennis_hold_pct_top50_{tour}_{SEASON_WINDOW}",
         "kind": "ranking",
-        "question": f"Who holds serve best on the {tour_label} tour (top 50, season={SEASON_WINDOW})?",
+        "question": f"Who holds serve best on the {tour_label} tour (full population, season={SEASON_WINDOW})?",
         "criteria": {
             "metric": "hold_pct_asof",
             "formula": "hold_pct_asof",
@@ -180,6 +186,8 @@ def build_ranking_claim(tour: str) -> dict[str, Any]:
             f"min_sample floor n_prior>={MIN_N_PRIOR} (running matches-in-history feeding the "
             "trailing average) -- a defensible floor against small-sample noise, not a "
             "tour-standard service-games threshold.",
+            "FULL POPULATION: every qualifying player above the floor is ranked (no top-N "
+            "slice); below-floor players are counted in n_excluded_below_floor, never dropped.",
             "CALIBRATION/descriptive ranking only -- no market/$ edge claimed.",
         ],
     }
