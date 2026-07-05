@@ -5,7 +5,8 @@ Pre-registered, walk-forward, leak-free. Binding honest-null clause: if naive
 wins OR the delta CI includes 0, NAIVE STAYS CANONICAL and the richer index is
 REJECT-logged with the exact numbers -- that is a SUCCESS, not a failure.
 Claims emission lives in quality_validity_gate_claims.py (kept separate to
-stay under the 300-LOC/file cap).
+stay under the 300-LOC/file cap); quality_claim_builders.write_verdict()
+persists VERDICT_PATH for that lane's gate claim to cite as provenance.
 
 Design (spec 3a):
   - 4 monthly cutoffs T in 2024-25: 2024-12-01, 2025-01-01, 2025-02-01, 2025-03-01.
@@ -271,7 +272,15 @@ def run_gate() -> GateResult:
     )
 
 
+VERDICT_PATH = "data/domains/basketball_nba/quality_validity_gate_verdict.json"
+# write_verdict() lives in quality_claim_builders.py (kept out of this file
+# purely to stay under the 300-LOC/file cap) -- see its docstring for the
+# verdict-artifact convention + why it carries no planted_null_passed.
+
+
 if __name__ == "__main__":
+    from domains.basketball_nba.quality_claim_builders import write_verdict  # deferred: avoids import cycle
+
     gate = run_gate()
     print(f"VERDICT: {gate.verdict}")
     print(f"mean_rho_shooter={gate.mean_rho_shooter:.4f} mean_rho_naive={gate.mean_rho_naive:.4f}")
@@ -279,3 +288,5 @@ if __name__ == "__main__":
         print(f"bootstrap delta CI=[{gate.bootstrap['ci_lo']:.4f}, {gate.bootstrap['ci_hi']:.4f}]")
     print(f"sign_holds={gate.sign_holds_folds}/{gate.n_folds}")
     print(f"replication={gate.replication}")
+    write_verdict(gate)
+    print(f"wrote verdict -> {VERDICT_PATH}")
