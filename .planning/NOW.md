@@ -93,6 +93,24 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- SHADOW ARC CLOSED ~21:10Z TRUE-UTC: orphaned shadow-lane work Opus-reviewed
+  PASS (model_prob never mutated, decision path byte-unchanged, 39 tests) ->
+  COMMITTED 3978eeb6 -- THEN Fable caught what the reviewer missed: the
+  wnba/nba/tennis shadow writes sat AFTER the no_model_prob early return
+  that fires for EXACTLY those sports = unreachable dead code for their own
+  targets (the KBO wave-61 trap, 2nd occurrence), AND the pre-existing
+  wnba shadow was therefore DEAD-ON-ARRIVAL since it shipped (never wrote a
+  field; the audit's 'shadow-only by design' was actually 'shadow never
+  fired'). FIX COMMITTED d38efe55: three model-less shadows moved BEFORE
+  the early return (sp_shadow stays post-dec, needs real model_p); 30+9
+  tests green; reviewer-lens lesson = verify REACHABILITY for the target
+  inputs, not just harmlessness. Daemon cycled onto the fixed code
+  (17444->23064->recycling); live tennis/wnba shadow-field verification in
+  flight (tennis 13 + wnba 5 live events today). Tennis-settle sub-task was
+  NOT done by the dead lane BUT tennis_outcome_resolver.py already exists
+  committed -> the corpus_labeled=0 gap is a WIRING/dispatch question,
+  re-queued as a diagnosis item. IN FLIGHT: nba-a2 re-gate (wf_7d1ba1de).
+  No edge claims.
 - CYCLE-2B CLOSED + A2 PINNED 20:57Z TRUE-UTC (wf_9f68bc45, 9 agents/0.98M;
   CLOCK RE-ANCHOR: this session's prior stamps from ~"18:40Z" onward ran up
   to ~1h AHEAD of date -u -- the known estimate-drift trap; entries below
