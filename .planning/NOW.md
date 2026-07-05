@@ -41,6 +41,19 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 58 (WAVE-57 SHIPPED: DAEMON RELOADED + SOCCER WIDENED,
+  2026-07-05 ~09:25Z, wf_0e1ab333-af3 6 agents/~0.48M tok, 1 lane commit +
+  1 ops action): m2_inplay_capture reloaded SINGLETON-clean (PID 20452->
+  23332, supervisor reap_and_restart in 2s, clean startup, two-layer HB
+  verified 11.5 min, other daemons untouched) -- the wave-56 kbo_deep wire
+  is now LIVE in production; KBO accrual honestly PENDING (matinee ended
+  pre-reload, main slate ~09:30Z). Soccer: 2911 H2H pairs + 179 form teams
+  VERIFIED (canonicalization + date-resort both PROVEN load-bearing by
+  dedicated tests). NEW SMELL surfaced: m1_ui restart-cycling ~90s
+  (pre-existing, untouched) -> diagnosis lane queued. WAVE-58 launching:
+  in-window KBO accrual verify (4-game slate), m1_ui flap read-only
+  diagnosis (fix only if platformkit-editable), NBA schedule/travel
+  DESCRIPTIVE claims (predictive travel class stays CLOSED). No edge claims.
 - SPRINT WAKE 57 (WAVE-56 SHIPPED: KBO CAPTURE WIRE CLOSED, 2026-07-05
   ~08:50Z, wf_79579c90-da0 6 agents/~0.61M tok, 2 lane commits): alias bridge
   evidence-derived across 3 alphabets (Kalshi KBO tickers do NOT fix team
