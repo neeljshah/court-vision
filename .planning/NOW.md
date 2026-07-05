@@ -41,6 +41,21 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 53 (WAVE-52 SHIPPED: COVERAGE+DEPTH WIDENED, 2026-07-05 ~07:00Z,
+  wf_6ca41510-e18 21 agents/~2.02M tok, 5 lane commits): ask auto-discovers
+  ALL claim stores + coverage_report.json (55 validated); dossiers 1253->1823
+  / claim lines 1308->3865 (registry zero-match prefix fix + pipe-filename
+  crash fix); WNBA +5 atlas parquets +5 claims 8/8 VERIFIED (IEEE754 tie bug
+  caught); tennis atlases PERSISTED (playstyles 408 / h2h 30616 / surface 903;
+  scouting honest-empty) + 9 surface claims v4; MLB TTO descriptive 4 dims/785
+  SP (fatigue class stays CLOSED); bbref probe GREEN (robots allows, est +400
+  moves, corpus-size threshold MET; artifacts docs/research local-only).
+  HONEST CORRECTION: wave-51 NBA "full population" was WRONG -- TOP_N=50
+  survived in basketball_claims.py (1000 rows = 20x50; caught by the dossier
+  lane cross-check, missed by wave-51 dual review). WAVE-53 launching: NBA
+  uncap+regen+settle (claim_ids stable), bbref 4-season ingest + moves rebuild
+  + power recompute (gate run stays LOCKED pending Fable review; prereg sha
+  pinned), MLB plate-discipline descriptive dims. KBO window ~09:30Z next.
 - SPRINT WAKE 52 (WAVE-51 SHIPPED: FULL-POPULATION CLAIMS LIVE, 2026-07-05
   ~06:25Z, wf_b3927d59-905 28 agents/~2.37M tok, 7 lane commits): backlog
   dual review CAUGHT the KBO wire on a noise-disqualified fit + FABRICATED
