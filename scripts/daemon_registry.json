@@ -188,6 +188,17 @@
       "_note": "P2 supervised in-play capture runner. Beats m2_inplay.txt each poll tick; per-sport isolation inside serve_inplay_forever. Paper/measurement only."
     },
     {
+      "name": "m2_inplay_capture",
+      "command": "python -u -m scripts.platformkit.ingame.inplay_capture_runner",
+      "expected_interval_sec": 120,
+      "heartbeat_file": "data/cache/daemon_heartbeats/m2_inplay_capture.txt",
+      "restart_cmd": "cd /workspace/nba-ai-system && mkdir -p logs && nohup python -u -m scripts.platformkit.ingame.inplay_capture_runner > logs/m2_inplay_capture.log 2>&1 &",
+      "restart_cmd_win": "cd /d C:\\Users\\neelj\\nba-ai-system && if not exist logs mkdir logs && start \"\" /b cmd /c \"python -u -m scripts.platformkit.ingame.inplay_capture_runner >> logs\\m2_inplay_capture.log 2>&1\"",
+      "process_match": "ingame.inplay_capture_runner",
+      "heartbeat_optional": true,
+      "_note": "W4 MEASUREMENT-ONLY in-play capture daemon (adapted from PROPOSED-inplay-capture-loop-supervisor-wiring.md: points at the inplay_capture_runner wrapper, not the bare loop module, since the runner is what beats the ops.liveness heartbeat this entry's heartbeat_file reads). Per live game per tick: fetches the devigged in-play price, pairs it with the live model prob, runs the paper decision (UNITS, executed=False, idempotent), and on ESPN FINAL stamps the held-out home_win label. LANE 4b: also threads a bounded real order-book depth-capture callable through at a slower cadence (~every 15 ticks), fail-open so a depth-capture failure never affects this cycle. PAPER-ONLY: no $ field, no real money, no flag flip, no autostart arm beyond this supervised entry. Phase-aware cadence 20s live / 120s idle; heartbeat_optional because each tick is self-contained and the loop's own _capture_heartbeat.json is a separate measurement readout."
+    },
+    {
       "name": "m4_selfimprove",
       "command": "python -u -m scripts.platformkit.improve.selfimprove_runner",
       "expected_interval_sec": 60,
@@ -252,6 +263,17 @@
       "process_match": "props.props_pred_tick_runner",
       "heartbeat_optional": true,
       "_note": "M13 measurement-only props prediction tick. Every 300 s re-scores prop lines and writes data/frontend/props_snapshot.json. overall=UNAVAILABLE in offseason (no prop lines); UNITS not $; calibration not edge; no flag flip."
+    },
+    {
+      "name": "wnba_injuries_daily",
+      "command": "python -u -m domains.basketball_wnba.injuries_daily_daemon",
+      "expected_interval_sec": 86400,
+      "heartbeat_file": "data/cache/daemon_heartbeats/wnba_injuries_daily.txt",
+      "restart_cmd": "cd /workspace/nba-ai-system && mkdir -p logs && nohup python -u -m domains.basketball_wnba.injuries_daily_daemon > logs/wnba_injuries_daily.log 2>&1 &",
+      "restart_cmd_win": "cd /d C:\\Users\\neelj\\nba-ai-system && if not exist logs mkdir logs && start \"\" /b cmd /c \"python -u -m domains.basketball_wnba.injuries_daily_daemon >> logs\\wnba_injuries_daily.log 2>&1\"",
+      "process_match": "basketball_wnba.injuries_daily_daemon",
+      "heartbeat_optional": true,
+      "_note": "Per PROPOSED_wnba_injuries_daily.md: a thin daily scheduling wrapper (domains/basketball_wnba/injuries_daily_daemon.py, new this lane) around the existing domains.basketball_wnba.ingest_espn_injuries.ingest_snapshot (unmodified) -- idempotent same-day re-run, atomic parquet write, no network at import. Runs once per boot then sleeps until the next 11:00Z boundary. Builds the snapshot_date history the future injury-absence gate needs for as-of joins. KNOWLEDGE/SUBSTRATE ONLY: ingest only, no feature derivation, no model wire, no flag flip. heartbeat_optional because a single missed daily tick is not itself a crash signal at the watchdog's 3x-expected-interval staleness threshold."
     }
   ]
 }

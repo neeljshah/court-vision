@@ -45,6 +45,27 @@ logger = logging.getLogger("inplay_capture_runner")
 
 HEARTBEAT_COMPONENT = "m2_inplay_capture"
 
+# LANE 4b (depth capture arming, follow-up wire): the REAL order-book depth
+# capture callable, reusing scripts.platformkit.odds_provider.depth_capture.
+# run_capture_pass AS-IS (no rewrite). Constructed here (not merely
+# depth_capture=True) so this production entry point owns the exact call
+# shape it wants (max_tickers_per_sport bound) independent of the loop
+# module's own internal default. FAIL-OPEN: any exception -- import error,
+# network failure, malformed return -- is caught by the loop's own
+# _maybe_capture_depth wrapper (scripts/platformkit/ingame/
+# inplay_capture_loop.py) before it can reach poll_once/serve_forever; this
+# function adds no additional try/except because the hook already guarantees
+# the host cycle is unaffected. DATA CAPTURE ONLY: no model, no gate, no edge
+# framing -- an accrual asset for future liquidity/venue-calibration studies.
+def _depth_capture_fn(sports: List[str]) -> Any:
+    """The real depth-capture callable: odds_provider.depth_capture.run_capture_pass.
+
+    Bounded per-sport (max_tickers_per_sport) so one slate can never balloon a
+    tick's cost. Any failure surfaces to the loop's fail-open hook, not here.
+    """
+    from scripts.platformkit.odds_provider import depth_capture as _dc
+    return _dc.run_capture_pass(list(sports), max_tickers_per_sport=50)
+
 
 def _beat(now_epoch: Optional[float] = None) -> None:
     """Write the liveness heartbeat for this service. Never raises."""
@@ -111,6 +132,14 @@ def run(*, sports: Optional[List[str]] = None,
     # LAZY + fail-open, same discipline as mlb_deep -- a test can still inject
     # kbo_deep=False or an offline kbo_deep_state_fn via **kwargs to override.
     kwargs.setdefault("kbo_deep", True)
+    # PRODUCTION default (LANE 4b arming): thread the REAL order-book depth
+    # capture callable through to serve_forever/poll_once at its own slower
+    # cadence (DEPTH_CAPTURE_EVERY_N_TICKS). setdefault so a test/offline
+    # caller can still inject depth_capture_fn=None (or its own stub) via
+    # **kwargs to opt out -- exactly the mlb_deep/kbo_deep pattern above.
+    # FAIL-OPEN is guaranteed inside the loop's own _maybe_capture_depth
+    # wrapper, not here.
+    kwargs.setdefault("depth_capture_fn", _depth_capture_fn)
     return serve_forever(
         interval=interval,
         clock=wrapped_sleep,
