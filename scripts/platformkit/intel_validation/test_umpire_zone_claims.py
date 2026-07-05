@@ -34,12 +34,14 @@ def test_real_umpire_zone_claim_independently_verifies():
 
 
 def test_min_sample_floor_matches_index_report():
+    """Full-population claim: ranking length == ALL qualifying umpires (no
+    top-N truncation) -- mlb-fullpop lane."""
     claim = uzc.build_ranking_claim()
     from domains.mlb.umpire_zone_index import build_umpire_index
     _, index_report = build_umpire_index()
     assert claim["n_excluded_below_floor"] == index_report["n_umpires_excluded_below_floor"]
     assert claim["n_considered"] == index_report["n_umpires_considered"]
-    assert len(claim["ranking"]) == min(50, index_report["n_qualifying_umpires"])
+    assert len(claim["ranking"]) == index_report["n_qualifying_umpires"]
 
 
 def test_claim_has_no_edge_language():

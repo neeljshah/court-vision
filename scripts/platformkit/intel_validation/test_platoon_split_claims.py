@@ -29,12 +29,14 @@ def test_real_platoon_split_claim_independently_verifies():
 
 
 def test_min_sample_floor_matches_index_report():
+    """Full-population claim: ranking length == ALL qualifying batters (no
+    top-N truncation) -- mlb-fullpop lane."""
     claim = psc.build_ranking_claim()
     from domains.mlb.platoon_split_index import build_platoon_snapshot
     _, index_report = build_platoon_snapshot()
     assert claim["n_considered"] == index_report["n_batters_considered"]
     assert claim["n_excluded_below_floor"] == index_report["n_batters_excluded_below_floor"]
-    assert len(claim["ranking"]) == min(50, index_report["n_qualifying_batters"])
+    assert len(claim["ranking"]) == index_report["n_qualifying_batters"]
 
 
 def test_claim_has_no_edge_language():

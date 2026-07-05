@@ -1,9 +1,10 @@
 """MLB starting/relief pitcher K-rate ranking claims producer (mission spine 5,
 lane claims-breadth-2). Mirrors scripts/platformkit/intel_validation/
-tennis_hold_claims.py's structure: emit a top-50 ranking claim in the SAME
-claims contract shape, backed by a side parquet the independent
-claims_validator.py re-derives the ranking from, zero code sharing between
-producer and validator.
+tennis_hold_claims.py's structure: emit a FULL-POPULATION ranking claim
+(every pitcher clearing the min_sample floor, no top-N truncation -- see
+mlb-fullpop lane) in the SAME claims contract shape, backed by a side parquet
+the independent claims_validator.py re-derives the ranking from, zero code
+sharing between producer and validator.
 
 METRIC: k_rate = pitch_strikeOuts / battersFaced, aggregated over a single
 season from data/domains/mlb/player_gamelogs.parquet's per-player-per-game
@@ -26,7 +27,8 @@ in-progress per data/domains/mlb/player_gamelogs.parquet's season counts).
 MIN-SAMPLE FLOOR: battersFaced summed over the season >= 200 -- a plain,
 stated, recomputable innings-floor proxy (roughly 45-50 IP), well above
 single-relief-appearance noise, comfortably below a full qualifying-starter
-threshold so the top-50 is dominated by real starters without hand-picking one.
+threshold so the full-population ranking is dominated by real starters
+without hand-picking a cutoff.
 
 LEAK DISCIPLINE: purely descriptive/retrospective (a completed-season
 box-score aggregate) -- no forecasting claim, no leak-risk window.
@@ -60,7 +62,9 @@ _SNAPSHOT_OUT = _OUT_DIR / "mlb_pitcher_season_rows.parquet"
 
 SEASON_WINDOW = "2025"  # last complete on-disk MLB season (verified: 2026 in-progress)
 MIN_BATTERS_FACED = 200  # season-summed floor, ~45-50 IP proxy
-TOP_N = 50
+# FULL-POPULATION FIX: every pitcher above the min_sample floor ships (no
+# top-N truncation) -- below-floor pitchers are honestly counted in
+# n_excluded_below_floor, never silently dropped. See mlb-fullpop lane.
 
 
 def _ascii_fold(name: str) -> str:
@@ -107,10 +111,9 @@ def build_ranking_claim() -> dict[str, Any]:
     n_excluded = n_considered - len(qualifiers)
     qualifiers["k_rate"] = qualifiers["k"] / qualifiers["bf"]
     qualifiers = qualifiers.sort_values("k_rate", ascending=False).reset_index(drop=True)
-    top = qualifiers.head(TOP_N)
 
     ranking = []
-    for i, row in enumerate(top.itertuples(index=False), start=1):
+    for i, row in enumerate(qualifiers.itertuples(index=False), start=1):
         pid = int(row.player_id)
         ranking.append({
             "rank": i,
@@ -122,9 +125,10 @@ def build_ranking_claim() -> dict[str, Any]:
 
     rel_source = str(out_path.relative_to(REPO_ROOT)).replace("\\", "/")
     return {
-        "claim_id": f"mlb_pitcher_k_rate_top50_{SEASON_WINDOW}",
+        "claim_id": f"mlb_pitcher_k_rate_top50_{SEASON_WINDOW}",  # claim_id kept stable (identifier, not a population statement)
         "kind": "ranking",
-        "question": f"Which MLB pitchers have the best strikeout rate (top 50, season={SEASON_WINDOW})?",
+        "question": f"Which MLB pitchers have the best strikeout rate "
+                    f"(full qualifying population, season={SEASON_WINDOW})?",
         "criteria": {
             "metric": "k_rate",
             "formula": "sum(pitch_strikeOuts) / sum(battersFaced)",
@@ -157,6 +161,9 @@ def build_ranking_claim() -> dict[str, Any]:
             f"min_sample floor: season batters-faced >= {MIN_BATTERS_FACED} (~45-50 IP proxy) "
             "-- a defensible floor against small-sample relief-appearance noise, not an "
             "official qualifying-starter (162-IP) threshold.",
+            f"FULL POPULATION: all {len(qualifiers)} pitchers clearing the min_sample floor "
+            "are ranked here (no top-N truncation) -- below-floor pitchers are honestly "
+            "counted in n_excluded_below_floor, never silently dropped.",
             "DESCRIPTIVE season box-score aggregate only -- no forecasting/market/$ edge claimed.",
         ],
     }

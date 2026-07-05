@@ -25,12 +25,14 @@ def test_real_catcher_framing_claim_independently_verifies():
 
 
 def test_min_sample_floor_matches_index_report():
+    """Full-population claim: ranking length == ALL qualifying catchers (no
+    top-N truncation) -- mlb-fullpop lane."""
     claim = cfc.build_ranking_claim()
     from domains.mlb.catcher_framing_index import build_catcher_index
     _, index_report = build_catcher_index()
     assert claim["n_excluded_below_floor"] == index_report["n_catchers_excluded_below_floor"]
     assert claim["n_considered"] == index_report["n_catchers_considered"]
-    assert len(claim["ranking"]) == min(50, index_report["n_qualifying_catchers"])
+    assert len(claim["ranking"]) == index_report["n_qualifying_catchers"]
 
 
 def test_claim_has_no_edge_language():
