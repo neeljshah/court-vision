@@ -23,6 +23,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import pandas as pd
 
 from scripts.platformkit.intel_validation.aggregate_recompute import recompute_aggregate
@@ -275,6 +276,18 @@ def validate_claims_file(path: Path) -> ValidationSummary:
     return summary
 
 
+def _json_numpy_default(obj: Any) -> Any:
+    """json.dump default= hook: a MISMATCH first_divergence block can carry a
+    raw numpy scalar straight off a pandas column (e.g. recomputed_id from an
+    int64 entity_key column) -- convert it to the equivalent Python int/float
+    instead of crashing with TypeError. No other type is special-cased."""
+    if isinstance(obj, np.integer):
+        return int(obj)
+    if isinstance(obj, np.floating):
+        return float(obj)
+    raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
+
+
 def write_summary(summary: ValidationSummary, output_path: Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     payload = {
@@ -288,7 +301,7 @@ def write_summary(summary: ValidationSummary, output_path: Path) -> None:
         "details": summary.details,
     }
     with open(output_path, "w", encoding="ascii", errors="strict") as f:
-        json.dump(payload, f, indent=2)
+        json.dump(payload, f, indent=2, default=_json_numpy_default)
 
 
 def main(argv: list[str] | None = None) -> int:
