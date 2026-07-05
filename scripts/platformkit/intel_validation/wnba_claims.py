@@ -38,6 +38,16 @@ is independently reproducible by re-running domains/basketball_wnba's own
 per-file tests, not by this validator, which validates the DECLARED
 parquet-to-ranking step only, exactly as it does for every other sport).
 
+FIVE MORE DIMENSIONS (lane wnba-atlas, widening descriptive depth further)
+live in the TWO SIBLING MODULES wnba_claims_ext.py (player_playmaking,
+player_defense_activity, player_usage_volume) and wnba_claims_ext2.py
+(player_ft_profile, team_defense_allowed) -- three-way split to keep every
+file <=300 LOC (per human-gated-paths rail; see each sibling's own
+docstring for its dimension list). Both siblings reuse this module's
+_rel()/_full_population_ranking() helpers + SEASON_WINDOW/MIN_N_GAMES_PLAYER
+constants (single source of truth); this module's main() merges all three
+producers' claims into one combined 8-claim CLI output.
+
 LEAK DISCIPLINE: purely descriptive/retrospective (completed-game box-score
 and officiating aggregates over the 2026 season-to-date) -- no forecasting
 claim, no leak-risk window, no market comparison.
@@ -240,6 +250,13 @@ def write_claims(claims: list[dict[str, Any]], out_path: Path = _CLAIMS_OUT) -> 
 
 
 def main(argv: list[str] | None = None) -> int:
+    # Lazy import (not module-level) to avoid a circular import: both siblings
+    # import helpers FROM this module, so this module cannot import them back
+    # at load time -- only safe once all three modules are fully defined,
+    # i.e. here, inside main().
+    from scripts.platformkit.intel_validation import wnba_claims_ext as ext
+    from scripts.platformkit.intel_validation import wnba_claims_ext2 as ext2
+
     parser = argparse.ArgumentParser(description="Emit WNBA DESCRIPTIVE ranking claims (no gate)")
     parser.add_argument("--output", type=str, default=str(_CLAIMS_OUT))
     args = parser.parse_args(argv)
@@ -248,6 +265,8 @@ def main(argv: list[str] | None = None) -> int:
         build_referee_crew_claim(),
         build_player_shot_quality_claim(),
         build_player_rebounding_claim(),
+        *ext.all_ext_claims(),
+        *ext2.all_ext2_claims(),
     ]
     out_path = write_claims(claims, Path(args.output))
     for c in claims:
