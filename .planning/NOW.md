@@ -41,6 +41,18 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 42 (WAVE-41 4/4 PASS: NPB/KBO PREMISE CORRECTED + STATCAST SET
+  COMMITTED, 2026-07-05 ~02:25Z, wf_565742a6-a32 15 agents/~1.01M tok, commits
+  8fe73061/1735fb57): (1) NPB/KBO ROOT CAUSE: grades were NEVER trigger-blocked
+  -- NO live model wired for npb/kbo (every tick skips no_model_prob; daemons
+  healthy; 46.8K/57.1K ticks fine) + results lag 1-2d; premise memory written;
+  wave-42 fits+wires per-sport in-game base models BEFORE the ~09Z slate.
+  (2) statcast full set COMMITTED after the dynamic-caveat fix (corpus
+  1,072,139 rows; platoon 231 qualifiers/catcher 97/umpire 97 all VERIFIED;
+  2023 needs 28d, 2022 62d to complete). (3) vault: 446 entity dossiers, all
+  MLB families render caveats verbatim. WAVE-42: npb-kbo live-model fit+wire
+  (time-sensitive), results-lag fix, statcast continuation, verifier PENDING
+  sweep. No edge claimed.
 - SPRINT WAKE 41 (WAVE-40: STATCAST CORPUS REAL + M13 CLEARED + NPB/KBO GRADE
   WORRY, 2026-07-05 ~01:55Z real-clock [prior 2 wake stamps drifted +3h],
   wf_3c1379a0-2dc 13 agents/~1.18M tok, 2 commits 7461674c/0307be4c): (1)
