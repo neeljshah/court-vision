@@ -109,28 +109,47 @@ def _extract_topic_hints(text: str) -> list[str]:
     return hits
 
 
+def gate_verdict_match_score(parsed: ParsedQuestion, row: dict[str, Any]) -> int:
+    """Same scoring rule used by match_gate_verdict_candidates, exposed so
+    callers can detect a genuine tie between the top candidates."""
+    haystack = " ".join([
+        str(row.get("gate_module", "")).lower(),
+        str(row.get("claim_id", "")).lower(),
+        str(row.get("question", "")).lower(),
+    ])
+    matched_tokens = 0
+    for topic in parsed.topic_hints:
+        aliases = _TOPIC_ALIASES.get(topic, ())
+        matched_tokens += sum(1 for a in aliases if a in haystack)
+    return matched_tokens
+
+
 def match_gate_verdict_candidates(parsed: ParsedQuestion, verified: dict[str, Any]) -> list[dict[str, Any]]:
     """Match a gate_verdict question to VERIFIED claim_kind=verdict rows by a
     RECOGNIZED topic keyword (checked against gate_module/claim_id/question
     text, lowercase substring match, no fuzzy scoring). A question with no
     recognized topic_hint matches nothing -- honest UNANSWERABLE rather than
-    guessing from generic overlap words like "gate" or "find"."""
+    guessing from generic overlap words like "gate" or "find".
+
+    Returned list is DETERMINISTICALLY ordered (best match first): score
+    DESC (count of distinct matched alias tokens, i.e. specificity), then
+    claim_id ASC (lexicographic) as the final total order -- never
+    dict/insertion order, which is not a meaningful ranking."""
     if not parsed.topic_hints:
         return []
     verdict_claims = [r for r in verified.values() if r.get("kind") == "verdict"]
-    matched = []
+    scored: list[tuple[int, dict[str, Any]]] = []
     for row in verdict_claims:
         haystack = " ".join([
             str(row.get("gate_module", "")).lower(),
             str(row.get("claim_id", "")).lower(),
             str(row.get("question", "")).lower(),
         ])
-        for topic in parsed.topic_hints:
-            aliases = _TOPIC_ALIASES.get(topic, ())
-            if any(a in haystack for a in aliases):
-                matched.append(row)
-                break
-    return matched
+        matched_tokens = gate_verdict_match_score(parsed, row)
+        if matched_tokens > 0:
+            scored.append((matched_tokens, row))
+    scored.sort(key=lambda pair: (-pair[0], str(pair[1].get("claim_id", ""))))
+    return [row for _score, row in scored]
 
 
 def _extract_claim_id(text: str) -> str | None:

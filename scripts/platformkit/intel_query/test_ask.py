@@ -224,6 +224,69 @@ def test_gate_verdict_uncovered_topic_is_honest_unanswerable(fixture_sources_wit
     assert "nearest_supported_families" in result
 
 
+@pytest.fixture
+def fixture_sources_ambiguous_verdicts(tmp_path, monkeypatch):
+    """Two VERIFIED gate_verdict claims sharing a topic word (both match
+    'tennis surface') with DIFFERENT verdicts and the SAME computed_at --
+    this is the wave-38 tiebreak bug: the old code used
+    max(..., key=computed_at) which is arbitrary under a tie. Also includes
+    a distinct-topic claim (mlb_fatigue) that must never be pulled in."""
+    claims_path = tmp_path / "claims.jsonl"
+    validation_path = tmp_path / "validation.json"
+
+    claim_a = _verdict_claim("fixture_tennis_a", "SHIP", "tennis surface gate a")
+    claim_b = _verdict_claim("fixture_tennis_b", "REJECT", "tennis surface gate b")
+    claim_other = _verdict_claim("fixture_mlb_fatigue", "REJECT", "mlb sp fatigue gate")
+
+    with open(claims_path, "w", encoding="ascii") as f:
+        for row in (claim_a, claim_b, claim_other):
+            f.write(json.dumps(row) + "\n")
+
+    validation_summary = {
+        "component": "intel_verdict_claims_validation",
+        "n_claims": 3,
+        "details": [
+            {"claim_id": "fixture_tennis_a", "verdict": "VERIFIED", "reason": "ok"},
+            {"claim_id": "fixture_tennis_b", "verdict": "VERIFIED", "reason": "ok"},
+            {"claim_id": "fixture_mlb_fatigue", "verdict": "VERIFIED", "reason": "ok"},
+        ],
+    }
+    validation_path.write_text(json.dumps(validation_summary), encoding="ascii")
+
+    monkeypatch.setattr(ask_mod, "CLAIM_SOURCE_PAIRS", ((validation_path, claims_path),))
+    return validation_path, claims_path
+
+
+def test_gate_verdict_tiebreak_is_deterministic_across_runs(fixture_sources_ambiguous_verdicts):
+    # Same topic word, same computed_at, DIFFERENT verdicts -> old code
+    # (max by computed_at, dict-iteration order under the tie) could return
+    # either row nondeterministically. New code must be stable.
+    results = [ask_mod.ask("What did the tennis surface gate find?") for _ in range(10)]
+    first = results[0]
+    for r in results[1:]:
+        assert r == first
+
+
+def test_gate_verdict_ambiguous_topic_reports_honestly(fixture_sources_ambiguous_verdicts):
+    result = ask_mod.ask("What did the tennis surface gate find?")
+    assert result["answerable"] is True
+    assert "note" in result
+    assert "multiple matching verdicts" in result["note"]
+    assert set(result["candidates"]) == {"fixture_tennis_a", "fixture_tennis_b"}
+    # the unrelated mlb-fatigue claim must never leak into the ambiguity set
+    assert "fixture_mlb_fatigue" not in result["candidates"]
+
+
+def test_gate_verdict_non_ambiguous_topic_still_resolves(fixture_sources_with_verdicts):
+    # sanity: the pre-existing non-ambiguous fixture (VERIFIED + MISMATCH,
+    # so only one VERIFIED candidate survives) must still resolve directly,
+    # not go down the ambiguity path.
+    result = ask_mod.ask("What did the tennis surface gate find?")
+    assert result["answerable"] is True
+    assert "note" not in result
+    assert result["answer"]["verdict"] == "REJECT"
+
+
 def test_classify_families_and_window_hint():
     top_n = families.classify("Who are the top 10 best shooters (composite) in window=last_20?")
     assert top_n.family == families.FAMILY_TOP_N

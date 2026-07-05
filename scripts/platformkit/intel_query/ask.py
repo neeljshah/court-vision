@@ -31,6 +31,7 @@ from scripts.platformkit.intel_query.families import (
     FAMILY_TOP_N,
     classify,
     describe_families,
+    gate_verdict_match_score,
     match_gate_verdict_candidates,
 )
 
@@ -235,12 +236,26 @@ def _answer_provenance(parsed, question: str, verified: dict[str, dict[str, Any]
 
 
 def _answer_gate_verdict(parsed, question: str, verified: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    # Deterministic ranking (score DESC, claim_id ASC). If 2+ candidates tie
+    # the top score with DIFFERENT verdicts, report ambiguity honestly.
     candidates = match_gate_verdict_candidates(parsed, verified)
     if not candidates:
         return _unanswerable(
             "no VERIFIED gate-verdict claim matches this question's topic", question
         )
-    row = max(candidates, key=lambda r: r.get("computed_at", ""))  # most-recent tie-break
+    row = candidates[0]
+    if len(candidates) > 1:
+        top_score = gate_verdict_match_score(parsed, row)
+        tied = [c for c in candidates if gate_verdict_match_score(parsed, c) == top_score]
+        distinct_verdicts = {c.get("verdict") for c in tied}
+        if len(tied) > 1 and len(distinct_verdicts) > 1:
+            return {
+                "answerable": True,
+                "question": question,
+                "family": FAMILY_GATE_VERDICT,
+                "note": "multiple matching verdicts with equal match score -- ambiguous topic",
+                "candidates": [c.get("claim_id") for c in tied],
+            }
     return {
         "answerable": True, "question": question, "family": FAMILY_GATE_VERDICT,
         "answer": {
