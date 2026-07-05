@@ -1,34 +1,45 @@
-"""fit_validity_gate -- SKELETON ONLY, guarded, for PROGRAM v3 item 3.
+"""fit_validity_gate -- V1 guard (DEFAULT, still refuses) + V2 pass-through
+for PROGRAM v3 item 3.
 
-This module is the pre-registered gate that will one day test whether a
-composed fit score (player archetype x team scheme x role vacancy, built
+This module's DEFAULT behavior is UNCHANGED from the original skeleton: with
+no --spec argument (or an explicit V1 spec_path), run_gate() refuses via the
+V1 guard below -- V1's run_permitted stays False forever (frozen,
+sha256[:16]=23c53baf5a658f2c), so the DEFAULT path must ALWAYS still refuse.
+This is a deliberate regression test, not an oversight: a caller must
+EXPLICITLY pass --spec pointing at the V2 amendment to get a real run.
+
+A composed fit score (player archetype x team scheme x role vacancy, built
 from claims already VERIFIED by scripts.platformkit.intel_validation
 .claims_validator) predicts realized post-move performance change on the
-STRICT historical-moves corpus (n=96, on-disk only) defined in
-docs/research/intel-layer/fit_validity_gate_prereg.json.
+STRICT historical-moves corpus defined in
+docs/research/intel-layer/fit_validity_gate_prereg.json (V1, n=96) or its
+V2 amendment (docs/research/intel-layer/fit_validity_gate_prereg_v2.json,
+n=417 across 5 walk-forward folds, run_permitted=true, authorized under the
+recorded Fable decision in that file).
 
-NO FIT RUNS IN THIS MODULE THIS WAVE. The guard IS the deliverable: calling
-run_gate() unconditionally raises FitGateNotAuthorized unless BOTH:
+run_gate() unconditionally raises FitGateNotAuthorized for V1 (or any spec
+where pre_registered/run_permitted are not both True) unless BOTH:
     1. the pre-registration spec's `pre_registered` flag is exactly True, and
     2. the caller passes explicit_run_requested=True.
+AND (a third, separate gate the spec itself controls) the spec's own
+`run_permitted` field must also be True -- V1's stays False forever; V2's is
+True, so a caller must pass spec_path=V2_SPEC_PATH to get past this guard.
+Even when all three conditions are met, THIS module still does not execute
+any fit math -- it hands off to
+scripts.platformkit.intel_validation.fit_validity_gate_impl.run_gate(), the
+real implementation, kept in a separate file so this guard stays the tiny,
+trivially auditable surface it always was.
 
-This mirrors the project's binding invariant that a predictive framing may
-never be attempted before its validity gate is pre-registered (see
-docs/research/intel-layer/FIT_VALIDITY_GATE_PREREG_2026-07-05.md section 1).
-The spec's own `run_permitted` field is a SEPARATE, stronger guard: even with
-explicit_run_requested=True, run_gate() also refuses unless run_permitted is
-True in the spec file -- so re-authorizing a real run requires editing the
-pre-registration itself (a deliberate, reviewable act), not just a call-site
-flag flip.
-
-Planted-null scaffolding (shuffle_move_team_assignment, pure_noise_control)
-are exposed as documented, spec-describing STUBS -- they raise NotImplementedError
-when actually invoked with data, because no gate math ships this wave. Their
-docstrings describe the exact design in fit_validity_gate_prereg.json so a
-future implementation wave has an unambiguous contract to fill in.
+Planted-null STUBS (shuffle_move_team_assignment, pure_noise_control) remain
+in THIS file as documented, spec-describing placeholders that raise
+NotImplementedError -- the REAL, working null implementations
+(shuffle_move_team_assignment, shuffle_outcome_deltas) live in
+fit_validity_gate_nulls.py and are used only by fit_validity_gate_impl.py's
+V2 run path, never by this guard module directly.
 
 CLI:
     python -m scripts.platformkit.intel_validation.fit_validity_gate --status
+    python -m scripts.platformkit.intel_validation.fit_validity_gate --status --spec <path>
 """
 from __future__ import annotations
 
@@ -98,8 +109,33 @@ def load_prereg_spec(path: Path = PREREG_SPEC_PATH) -> PreRegSpec:
     )
 
 
+def _load_guard_fields(path: Path) -> tuple[bool, bool]:
+    """Schema-agnostic guard-field read: every spec (V1, V2, or any future
+    amendment) MUST carry top-level `pre_registered` / `run_permitted`
+    booleans -- this is the ONE contract every spec variant is held to,
+    independent of how the rest of that spec's schema is shaped. Used only
+    by run_gate()'s authorization check; load_prereg_spec (above) remains
+    the STRICT, V1-shaped parser used by print_status/the regression tests
+    and is never relaxed."""
+    if not path.exists():
+        raise FileNotFoundError(f"pre-registration spec not found: {path}")
+    with open(path, "r", encoding="ascii", errors="strict") as f:
+        payload = json.load(f)
+    for required in ("pre_registered", "run_permitted"):
+        if required not in payload:
+            raise ValueError(f"pre-registration spec missing required field: {required!r}")
+    pre_registered, run_permitted = payload["pre_registered"], payload["run_permitted"]
+    if not isinstance(pre_registered, bool) or not isinstance(run_permitted, bool):
+        raise ValueError(
+            "pre_registered and run_permitted must be JSON booleans, "
+            f"got {type(pre_registered)} / {type(run_permitted)}"
+        )
+    return pre_registered, run_permitted
+
+
 def run_gate(explicit_run_requested: bool = False, spec_path: Path = PREREG_SPEC_PATH) -> None:
-    """The guard. ALWAYS raises this wave.
+    """The guard. Refuses for V1 (or any spec with run_permitted=False)
+    unconditionally.
 
     Refuses unless ALL of:
         - the spec's pre_registered flag is True,
@@ -107,24 +143,24 @@ def run_gate(explicit_run_requested: bool = False, spec_path: Path = PREREG_SPEC
           the spec itself controls -- see module docstring), and
         - the caller passes explicit_run_requested=True.
 
-    Even if every condition were met, this skeleton has no fit implementation
-    to execute -- a future wave must add the actual H0/H1 fit, the shuffle
-    null, and the pure-noise control before this function could do anything
-    beyond raise. That is intentional: this wave ships the guard, not the gate.
+    THIS module never executes fit math regardless of spec_path -- clearing
+    this guard only means the CALLER may now invoke
+    fit_validity_gate_impl.run_gate() (the real implementation) directly;
+    this function itself has no fit logic to fall through to.
     """
-    spec = load_prereg_spec(spec_path)
+    pre_registered, run_permitted = _load_guard_fields(spec_path)
 
     if not explicit_run_requested:
         raise FitGateNotAuthorized(
             "fit_validity_gate.run_gate() refused: explicit_run_requested=False. "
             "Pass explicit_run_requested=True to even attempt authorization."
         )
-    if not spec.pre_registered:
+    if not pre_registered:
         raise FitGateNotAuthorized(
             "fit_validity_gate.run_gate() refused: pre_registered is False in "
             f"{spec_path}. A fit may never run before pre-registration."
         )
-    if not spec.run_permitted:
+    if not run_permitted:
         raise FitGateNotAuthorized(
             "fit_validity_gate.run_gate() refused: run_permitted is False in "
             f"{spec_path}. Per the pre-registration, this stays False until an "
@@ -134,14 +170,18 @@ def run_gate(explicit_run_requested: bool = False, spec_path: Path = PREREG_SPEC
             "power_audit.accrual_threshold_that_would_reopen_it in the spec."
         )
 
-    # Unreachable this wave: both guards above fire first (run_permitted is
-    # hard-coded False in the committed spec). Left in place so a future
-    # wave's authorization edit has an obvious next step to implement.
+    # Reached whenever pre_registered/run_permitted/explicit_run_requested
+    # are ALL True (e.g. the V2 spec) -- but THIS module (the guard) never
+    # executes fit math itself by design, even when authorized. The real
+    # implementation is scripts.platformkit.intel_validation
+    # .fit_validity_gate_impl.run_gate(), which the caller must invoke
+    # separately once this guard clears. For V1 this line is unreachable
+    # (run_permitted is hard-coded False there, forever).
     raise FitGateNotAuthorized(
-        "fit_validity_gate.run_gate() reached the post-guard stage, but no "
-        "H0/H1 fit implementation exists yet in this skeleton. Implement the "
-        "actual gate (H0 base model, H1 candidate model, planted-null shuffle, "
-        "pure-noise control) before removing this final raise."
+        "fit_validity_gate.run_gate() (the guard module) cleared authorization "
+        f"for {spec_path}, but this module never executes fit math itself. "
+        "Call scripts.platformkit.intel_validation.fit_validity_gate_impl"
+        ".run_gate() directly to run the real V2 implementation."
     )
 
 
@@ -185,6 +225,12 @@ def pure_noise_control(fit_scores: Any, seed: int) -> Any:
 
 
 def print_status(spec_path: Path = PREREG_SPEC_PATH) -> None:
+    """V1-shaped status printer (unchanged). load_prereg_spec's PreRegSpec
+    dataclass is contracted to V1's exact corpus.verified_counts schema --
+    calling this against a differently-shaped spec (e.g. V2, which records
+    accrual/power info differently) would raise KeyError, which is the
+    correct fail-closed behavior for a schema this function does not know
+    how to summarize; use print_generic_spec_summary for any other spec."""
     spec = load_prereg_spec(spec_path)
     print("=" * 78)
     print("FIT-VALIDITY GATE -- PRE-REGISTRATION STATUS (PROGRAM v3 item 3)")
@@ -199,25 +245,53 @@ def print_status(spec_path: Path = PREREG_SPEC_PATH) -> None:
     print("NO FIT RUNS THIS WAVE. run_gate() raises FitGateNotAuthorized unconditionally.")
 
 
+def print_generic_spec_summary(spec_path: Path) -> None:
+    """Schema-agnostic status printer for any spec (V1 or V2 or future
+    amendments) -- reads only the two guard fields every spec must have
+    (pre_registered, run_permitted) plus status/doc, without assuming V1's
+    exact nested corpus shape."""
+    with open(spec_path, "r", encoding="ascii", errors="strict") as f:
+        payload = json.load(f)
+    print("=" * 78)
+    print(f"FIT-VALIDITY GATE -- SPEC STATUS: {payload.get('doc', spec_path.name)}")
+    print("=" * 78)
+    print(f"spec: {spec_path}")
+    print(f"status: {payload.get('status')}")
+    print(f"pre_registered: {payload.get('pre_registered')}   run_permitted: {payload.get('run_permitted')}")
+    print("-" * 78)
+    if payload.get("run_permitted"):
+        print("run_permitted=true -- see fit_validity_gate_impl.run_gate() for the real implementation path.")
+    else:
+        print("run_permitted=false -- run_gate() (this module) refuses unconditionally for this spec.")
+
+
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Fit-validity gate -- pre-registration guard (no fit runs)")
-    parser.add_argument("--status", action="store_true", help="print pre-registration status and exit")
+    parser = argparse.ArgumentParser(description="Fit-validity gate -- V1 guard (default) + V2 spec pass-through")
+    parser.add_argument("--status", action="store_true", help="print spec status and exit")
     parser.add_argument(
         "--attempt-run", action="store_true",
-        help="attempt to authorize a real run (expected to raise FitGateNotAuthorized this wave)",
+        help="attempt to authorize a real run against the selected spec (V1 default: expected to raise)",
+    )
+    parser.add_argument(
+        "--spec", type=str, default=None,
+        help="path to an alternate spec (e.g. the V2 amendment); DEFAULT stays the frozen V1 spec, which must still refuse",
     )
     args = parser.parse_args(argv)
+    spec_path = Path(args.spec) if args.spec else PREREG_SPEC_PATH
 
     if args.attempt_run:
         try:
-            run_gate(explicit_run_requested=True)
+            run_gate(explicit_run_requested=True, spec_path=spec_path)
         except FitGateNotAuthorized as e:
-            print(f"REFUSED (expected): {e}")
+            print(f"REFUSED: {e}")
             return 0
-        print("UNEXPECTED: run_gate() did not raise -- this should never happen this wave.")
-        return 1
+        print(f"AUTHORIZED against {spec_path} -- guard cleared (real math lives in fit_validity_gate_impl.py).")
+        return 0
 
-    print_status()
+    if spec_path == PREREG_SPEC_PATH:
+        print_status(spec_path)
+    else:
+        print_generic_spec_summary(spec_path)
     return 0
 
 
