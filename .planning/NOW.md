@@ -93,6 +93,44 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- THROUGHPUT WAVE CLOSED ~20:35Z (wf_00a24f85, 10 agents/0.96M tok, commits
+  cfafe175 factory + a877271e mlb-rebuild + 699ad581 exec-quality, all
+  Opus-PASS): (1) TEST FACTORY LIVE: per-sport gate-ready corpus caches w/
+  staleness-refusing sidecars + null-floor tables (M=40 matched-flexibility
+  noise fits per corpus x param-count) + batch_gate one-process runner;
+  reviewer verified THE RAIL STRUCTURALLY (prescreen has exactly 2 outcomes
+  REJECT|PROCEED-to-full-ceremony; fail-open on missing floor = full
+  ceremony; no ship shortcut exists); 8/8 tests. (2) MLB ERA REBUILD:
+  honest source truth FIRST -- pitchers.parquet+games.parquet FROZEN at
+  2010-2021 (zero 2022+ rows); the only clean current-era SP identity =
+  probables.parquet (11128 rows 2022-2026, REAL announced starters;
+  caveat: median ~773d backfill lag via historical schedule API, identity
+  not outcome-derived); espn_boxscores 2025-03+ only; statcast 2022-23
+  only; rebuilt what is real, CORPUS_ABSENT where not; 8 tests. MLB family
+  stays REJECT until a sha-pinned amendment authorizes re-gate on the
+  widened corpus. (3) NBA PROBE -- PREMISE CORRECTION: the "single 1299-row
+  corpus" = complete 2024-25 (n=1225, 98.7% cov) + partial 2025-26 (n=74)
+  NEVER SPLIT, and 678 ESPN-native 2025-26 FINALS (2026-01-20..05-24) sit
+  on disk UN-AGGREGATED (espn_boxscores.parquet 401-format event_ids, box
+  cols 100% populated, fg3 under compound suffix). FABLE RULING: Option-1
+  74-game B-side REJECTED as a replication arm (no statistical power --
+  a verdict either way is uninformative); AUTHORIZE Option-2 build (bridge
+  678 finals -> game_id via espn_nba_bridge, re-aggregate, extend asof
+  parquets -> corpus B n~600-700, domains/-only); season-split pairs COUNT
+  as 2 corpora per the MLB-era precedent BUT adjacent-season same-source
+  SHIPs get a REPLICATED-WEAK label + independent-source confirmation
+  required before any promotion; NBA re-gate ONLY via sha-pinned A2 after
+  the corpus lands. (4) EXECUTION SCOREBOARD LIVE (execution_quality.json/
+  .md): REAL FINDINGS -- 64% of pregame prediction-ledger entries (1271/
+  1981) stamped AT-OR-AFTER commence (mislabel vs true-late = diagnosis
+  queued); that ledger has 0% close coverage (capture gap); venue CLV
+  spreads (fanduel +22.7%*/kalshi +17.0%* vs pinnacle -1.9%*) FLAGGED
+  possible cross-venue close-reference artifact -- NO interpretation until
+  verified same-venue closes; in-game prop -31% adverse finding REPRODUCES,
+  guard ON = working. CYCLE-2 HEAD LAUNCHING: NBA Option-2 corpus build +
+  execution diagnosis lanes. m13 wf still running (fix already live+GREEN,
+  fallback snapshot writing; deep pass still deadline-limited under live
+  load). No edge claims -- CLV numbers above are execution measurements.
 - THROUGHPUT WAVE OPEN ~20:15Z (USER DIRECTIVE 2026-07-05d: "make this
   testing as efficient and fast as possible... historical data and odds...
   paper betting to get execution perfect... rejecting and accepting as many
