@@ -99,6 +99,14 @@ _INGAME_RELAXED_EV_FLOOR: Dict[str, float] = {
 LIVE_INTERVAL_SEC = 20.0
 IDLE_INTERVAL_SEC = 120.0
 
+# LANE 4b (depth capture, OPTIONAL, OFF by default): order-book depth changes far more
+# slowly than top-of-book price, so the hook fires only every Nth tick instead of every
+# tick. At the live cadence (20s) this is ~5 minutes; at idle cadence (120s) it is ~30
+# minutes -- both acceptable since depth is a slow-moving accrual asset, not a decision
+# input. Ticks-based (not wall-clock) so the bounded/injected-clock test path stays
+# deterministic (no real time.time() dependency).
+DEPTH_CAPTURE_EVERY_N_TICKS = 15
+
 # Injectable callbacks (all default to the real chains; tests inject offline stubs so the
 # tested path needs NO network / NO predictor corpus / NO venue):
 #   live_state_fn(sport, gid) -> dict | None   (ingame_live_state.live_state; p0 auto-supplied)
@@ -112,6 +120,9 @@ LiveStateFn = Callable[[str, str], Optional[Dict[str, Any]]]
 ModelFn = Callable[[str, Dict[str, Any]], Optional[float]]
 InplayFetchFn = Callable[..., List[Dict[str, Any]]]
 FinalsFn = Callable[[str], List[Dict[str, Any]]]
+# LANE 4b: DepthCaptureFn(sports) -> summary dict (odds_provider.depth_capture.run_capture_pass
+# shape). OPTIONAL -- default None means the hook never fires (zero behavior change).
+DepthCaptureFn = Callable[[List[str]], Dict[str, Any]]
 
 
 def _call_fetch(fetch_fn: InplayFetchFn, sport: str,
@@ -164,6 +175,24 @@ def _default_inplay_fetch(sport: str, stats: Optional[Dict[str, Any]] = None
     except Exception as exc:  # noqa: BLE001 -- a feed error is never fatal
         logger.warning("inplay_capture_loop fetch failed sport=%s: %s", sport, exc)
         return []
+
+
+def _default_depth_capture(sports: List[str]) -> Dict[str, Any]:
+    """Default LANE 4b depth capture: odds_provider.depth_capture.run_capture_pass.
+
+    DATA CAPTURE ONLY (no model, no gate, no edge framing) -- snapshots the full Kalshi
+    order-book ladder per sport to data/cache/depth_history/<sport>/<date>.jsonl. Bounded
+    per-sport (max_tickers_per_sport) so one slate can never balloon this tick's cost.
+    Never raises past this wrapper: any failure is caught by the caller (_maybe_capture_depth)
+    too, but this local guard keeps the failure mode identical to the other _default_* fetchers
+    in this file (log + empty summary, never propagate).
+    """
+    try:
+        from scripts.platformkit.odds_provider import depth_capture as _dc
+        return _dc.run_capture_pass(list(sports), max_tickers_per_sport=50)
+    except Exception as exc:  # noqa: BLE001 -- depth capture must never affect the host cycle
+        logger.warning("inplay_capture_loop depth_capture failed: %s", exc)
+        return {}
 
 
 def _default_finals(sport: str) -> List[Dict[str, Any]]:
@@ -345,12 +374,41 @@ def _build_tick(state: Dict[str, Any], model_p: float,
     }
 
 
+def _maybe_capture_depth(depth_capture_fn: Optional[DepthCaptureFn], sports: List[str],
+                         tick_counter: Optional[Dict[str, int]]) -> Optional[Dict[str, Any]]:
+    """LANE 4b: fire *depth_capture_fn* at most once every DEPTH_CAPTURE_EVERY_N_TICKS ticks.
+
+    OPTIONAL + FAIL-OPEN (binding rail): depth_capture_fn is None by default -> this is a
+    no-op every call (zero behavior change to the existing price-pairing cadence). When a
+    fn IS supplied, *tick_counter* (threaded by the caller across ticks, mirrors how
+    *positions* is threaded) counts calls; the capture only actually fires on tick 1 and
+    every Nth tick after, so depth's slower cadence never rides every fast live tick. ANY
+    exception from depth_capture_fn -- import error, network failure, bad return shape -- is
+    caught here and converted to a logged None: the host cycle (live pairing, paper
+    decisions, settlement) must NEVER see or propagate a depth-capture failure. Returns the
+    capture summary dict on a tick where it fired, else None (including on failure)."""
+    if depth_capture_fn is None:
+        return None
+    counter = tick_counter if tick_counter is not None else {}
+    n = counter.get("n", 0)
+    counter["n"] = n + 1
+    if n % DEPTH_CAPTURE_EVERY_N_TICKS != 0:
+        return None
+    try:
+        return depth_capture_fn(sports)
+    except Exception as exc:  # noqa: BLE001 -- depth capture must NEVER break the host cycle
+        logger.warning("inplay_capture_loop depth_capture_fn failed (host cycle unaffected): %s", exc)
+        return None
+
+
 def poll_once(*, sports: Optional[List[str]] = None,
               live_state_fn: Optional[LiveStateFn] = None,
               model_fn: Optional[ModelFn] = None,
               inplay_fetch_fn: Optional[InplayFetchFn] = None,
               finals_fn: Optional[FinalsFn] = None,
               deep_state_fn: Optional[Callable[[str], Dict[str, Any]]] = None,
+              depth_capture_fn: Optional[DepthCaptureFn] = None,
+              depth_tick_counter: Optional[Dict[str, int]] = None,
               grade_dir: Optional[Path] = None,
               ledger_path: Optional[Path] = None,
               heartbeat_path: Optional[Path] = None,
@@ -428,6 +486,15 @@ def poll_once(*, sports: Optional[List[str]] = None,
             if _stamp_final(sport, g, grade_dir, nowdt):
                 n_settled += 1
 
+    # LANE 4b: OPTIONAL, FAIL-OPEN depth-capture hook, fired at most once per cycle across
+    # ALL sports (not per-sport, since depth_capture_fn itself fans out internally). None by
+    # default (depth_capture_fn=None) -> zero behavior change to every existing call site
+    # that doesn't pass it. See _maybe_capture_depth for the cadence-throttle + exception
+    # discipline; a failure here can NEVER surface as a poll_once exception or missing
+    # heartbeat -- it degrades to depth_capture=None on the heartbeat, same as any other
+    # skipped-this-tick measurement.
+    depth_summary = _maybe_capture_depth(depth_capture_fn, sport_list, depth_tick_counter)
+
     heartbeat = {
         "as_of": _utc_iso(), "sports": sport_list, "n_live": n_live,
         "n_pairs": n_pairs, "n_bets": n_bets, "n_settled": n_settled,
@@ -450,6 +517,10 @@ def poll_once(*, sports: Optional[List[str]] = None,
         "n_requests_total": n_requests_total,
         "n_429_total": n_429_total,
         "cycle_duration_sec": round(time.monotonic() - cycle_start, 3),
+        # LANE 4b: None on every tick where the (optional, off-by-default) depth hook did
+        # not fire or was never supplied -- never fabricated, so "no depth this tick" is
+        # always visibly distinct from "depth capture ran and wrote 0 rows".
+        "depth_capture": depth_summary,
         "_honest_note": (
             "In-play capture daemon heartbeat. Captures (model,devigged-price) pairs + paper "
             "UNIT decisions + settle labels; NO real money, NO flag flip, NO autostart. A down "
@@ -657,6 +728,8 @@ def serve_forever(interval: Optional[float] = None, *,
                   finals_fn: Optional[FinalsFn] = None,
                   mlb_deep: bool = False,
                   deep_state_fn: Optional[Callable[[str], Dict[str, Any]]] = None,
+                  depth_capture: bool = False,
+                  depth_capture_fn: Optional[DepthCaptureFn] = None,
                   grade_dir: Optional[Path] = None,
                   ledger_path: Optional[Path] = None,
                   heartbeat_path: Optional[Path] = None) -> int:
@@ -670,9 +743,24 @@ def serve_forever(interval: Optional[float] = None, *,
     The enricher is rebuilt per tick (fresh live candidates) and LAZY (no fetch on a tick
     with no MLB game to enrich), so leaving it OFF -- or running with a dead feed -- needs
     no network.  *deep_state_fn* injects an offline enricher for the tested path.
+
+    *depth_capture* (LANE 4b, default OFF) enables the OPTIONAL order-book depth-capture
+    hook (odds_provider.depth_capture.run_capture_pass by default) at a slower cadence
+    (DEPTH_CAPTURE_EVERY_N_TICKS) than the price-pairing tick -- FAIL-OPEN: any exception
+    inside the hook is caught in poll_once/_maybe_capture_depth and can never stop or
+    affect this loop. *depth_capture_fn* injects an offline stub for the tested path (mirrors
+    deep_state_fn); a real explicit depth_capture_fn implies depth_capture=True even if the
+    flag was left at its default, so a caller can inject a test stub without also flipping
+    the flag.
     """
     sleep = clock if clock is not None else time.sleep
     positions: Dict[str, Dict[str, Any]] = {}
+    depth_tick_counter: Dict[str, int] = {}
+    active_depth_fn: Optional[DepthCaptureFn] = None
+    if depth_capture_fn is not None:
+        active_depth_fn = depth_capture_fn
+    elif depth_capture:
+        active_depth_fn = _default_depth_capture
     ticks = 0
     while max_ticks is None or ticks < max_ticks:
         # Fresh per-tick enricher so the live candidate set tracks the slate (LAZY: built
@@ -682,6 +770,8 @@ def serve_forever(interval: Optional[float] = None, *,
             hb = poll_once(sports=sports, live_state_fn=live_state_fn, model_fn=model_fn,
                            inplay_fetch_fn=inplay_fetch_fn, finals_fn=finals_fn,
                            deep_state_fn=tick_deep_fn,
+                           depth_capture_fn=active_depth_fn,
+                           depth_tick_counter=depth_tick_counter,
                            grade_dir=grade_dir, ledger_path=ledger_path,
                            heartbeat_path=heartbeat_path, positions=positions)
         except Exception as exc:  # noqa: BLE001 -- a tick error never stops the loop

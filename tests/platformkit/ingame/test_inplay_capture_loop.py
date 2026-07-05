@@ -696,3 +696,139 @@ def test_default_inplay_fetch_passes_stagger_sec_to_fetch_inplay(monkeypatch):
     monkeypatch.setattr(_ik, "fetch_inplay", _spy_fetch_inplay)
     loop._default_inplay_fetch("mlb", stats={})
     assert seen_kwargs.get("stagger_sec") == _ik.REQUEST_STAGGER_SEC
+
+
+# --------------------------------------------------------------------------------------- #
+# LANE 4b: optional, fail-open depth-capture hook                                          #
+# --------------------------------------------------------------------------------------- #
+def test_depth_capture_off_by_default_zero_behavior_change(tmp_path):
+    # depth_capture_fn defaults to None -> heartbeat carries depth_capture=None and the
+    # existing pairing/decision fields are completely unaffected (regression guard).
+    hb = loop.poll_once(sports=["mlb"], live_state_fn=_state_fn_prior, model_fn=_model_fn,
+                        inplay_fetch_fn=_inplay_fetch, finals_fn=_finals_none,
+                        grade_dir=tmp_path / "grade", ledger_path=tmp_path / "l.jsonl",
+                        heartbeat_path=tmp_path / "hb.json")
+    assert hb["depth_capture"] is None
+    assert hb["n_pairs"] == 1
+
+
+def test_depth_capture_fires_on_first_tick_when_supplied(tmp_path):
+    calls = []
+
+    def _depth_fn(sports):
+        calls.append(list(sports))
+        return {"sports": {s: {"n_rows_written": 3} for s in sports}}
+
+    hb = loop.poll_once(sports=["mlb"], live_state_fn=_state_fn_prior, model_fn=_model_fn,
+                        inplay_fetch_fn=_inplay_fetch, finals_fn=_finals_none,
+                        depth_capture_fn=_depth_fn, depth_tick_counter={},
+                        grade_dir=tmp_path / "grade", ledger_path=tmp_path / "l.jsonl",
+                        heartbeat_path=tmp_path / "hb.json")
+    assert len(calls) == 1 and calls[0] == ["mlb"]
+    assert hb["depth_capture"]["sports"]["mlb"]["n_rows_written"] == 3
+
+
+def test_depth_capture_throttled_to_every_nth_tick(tmp_path):
+    # Same counter dict threaded across N+2 manual poll_once calls (mirrors how
+    # serve_forever threads it): must fire on call 1 and call N+1, never in between.
+    calls = []
+    counter: dict = {}
+
+    def _depth_fn(sports):
+        calls.append(1)
+        return {"ok": True}
+
+    n = loop.DEPTH_CAPTURE_EVERY_N_TICKS
+    for _ in range(n + 1):
+        loop.poll_once(sports=["mlb"], live_state_fn=_state_fn_prior, model_fn=_model_fn,
+                       inplay_fetch_fn=_inplay_fetch, finals_fn=_finals_none,
+                       depth_capture_fn=_depth_fn, depth_tick_counter=counter,
+                       grade_dir=tmp_path / "grade", ledger_path=tmp_path / "l.jsonl",
+                       heartbeat_path=tmp_path / "hb.json")
+    # Fires on tick index 0 and tick index n (n+1 calls total spanning indices 0..n).
+    assert len(calls) == 2
+
+
+def test_depth_capture_exception_never_breaks_host_cycle(tmp_path):
+    def _boom(sports):
+        raise RuntimeError("depth feed exploded")
+
+    hb = loop.poll_once(sports=["mlb"], live_state_fn=_state_fn_prior, model_fn=_model_fn,
+                        inplay_fetch_fn=_inplay_fetch, finals_fn=_finals_none,
+                        depth_capture_fn=_boom, depth_tick_counter={},
+                        grade_dir=tmp_path / "grade", ledger_path=tmp_path / "l.jsonl",
+                        heartbeat_path=tmp_path / "hb.json")
+    # The host cycle's own pairing/decision/heartbeat must be completely unaffected.
+    assert hb["depth_capture"] is None
+    assert hb["n_pairs"] == 1
+    assert hb["n_bets"] >= 0  # decision path ran to completion, no propagated exception
+    _no_dollar_field(hb)
+
+
+def test_maybe_capture_depth_none_fn_is_noop():
+    assert loop._maybe_capture_depth(None, ["mlb"], {}) is None
+
+
+def test_serve_forever_depth_capture_off_by_default(tmp_path):
+    # depth_capture=False (default) -> the hook never fires across a multi-tick bounded run,
+    # even though a stub is capable of being called (proves the flag actually gates it).
+    calls = []
+
+    def _depth_fn(sports):
+        calls.append(1)
+        return {}
+
+    ticks_run = loop.serve_forever(
+        clock=lambda s: None, max_ticks=3, sports=["mlb"],
+        live_state_fn=_state_fn_prior, model_fn=_model_fn,
+        inplay_fetch_fn=_inplay_fetch, finals_fn=_finals_none,
+        depth_capture=False,  # explicit default
+        grade_dir=tmp_path / "grade", ledger_path=tmp_path / "l.jsonl",
+        heartbeat_path=tmp_path / "hb.json")
+    assert ticks_run == 3
+    assert calls == []
+
+
+def test_serve_forever_injected_depth_capture_fn_fires_without_flag(tmp_path):
+    # An explicitly-injected depth_capture_fn should activate even if the caller left the
+    # depth_capture bool at its default -- this is what lets a test/offline stub run without
+    # also having to flip a separate flag.
+    calls = []
+
+    def _depth_fn(sports):
+        calls.append(list(sports))
+        return {"ok": True}
+
+    ticks_run = loop.serve_forever(
+        clock=lambda s: None, max_ticks=1, sports=["mlb"],
+        live_state_fn=_state_fn_prior, model_fn=_model_fn,
+        inplay_fetch_fn=_inplay_fetch, finals_fn=_finals_none,
+        depth_capture_fn=_depth_fn,
+        grade_dir=tmp_path / "grade", ledger_path=tmp_path / "l.jsonl",
+        heartbeat_path=tmp_path / "hb.json")
+    assert ticks_run == 1
+    assert calls == [["mlb"]]
+
+
+def test_serve_forever_depth_capture_true_uses_default_fn(tmp_path, monkeypatch):
+    # depth_capture=True with no explicit fn wires up _default_depth_capture, which in turn
+    # calls odds_provider.depth_capture.run_capture_pass -- verify that real wiring path
+    # (not just the injectable stub path) without hitting the network.
+    from scripts.platformkit.odds_provider import depth_capture as _dc
+
+    seen = []
+
+    def _fake_run_capture_pass(sports, **kwargs):
+        seen.append(list(sports))
+        return {"sports": {}, "n_requests_total": 0, "n_429_total": 0}
+
+    monkeypatch.setattr(_dc, "run_capture_pass", _fake_run_capture_pass)
+    ticks_run = loop.serve_forever(
+        clock=lambda s: None, max_ticks=1, sports=["mlb"],
+        live_state_fn=_state_fn_prior, model_fn=_model_fn,
+        inplay_fetch_fn=_inplay_fetch, finals_fn=_finals_none,
+        depth_capture=True,
+        grade_dir=tmp_path / "grade", ledger_path=tmp_path / "l.jsonl",
+        heartbeat_path=tmp_path / "hb.json")
+    assert ticks_run == 1
+    assert seen == [["mlb"]]
