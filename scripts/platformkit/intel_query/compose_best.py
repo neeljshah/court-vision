@@ -41,6 +41,11 @@ from scripts.platformkit.intel_query.ask import (
 )
 
 COMPOSITION_RULE = (
+    "0. DOMAIN FILTER (if declared for this aspect): the primary ranking pool "
+    "is first restricted to entities meeting a pre-declared domain-qualification "
+    "minimum cited to an EXTERNAL convention (e.g. the NBA's own official 3P%-title "
+    "statistical minimum, season fg3m>=82) -- a domain restriction, never a tuned "
+    "threshold; the unfiltered #1 is still reported alongside for transparency. "
     "1. PRIMARY AXIS = the predictive-validity gate's verdict (read live from "
     "verdict_file) decides which VERIFIED ranking claim is canonical/primary; "
     "never hardcoded, follows the gate if it ever flips. "
@@ -61,11 +66,24 @@ class _AttributionAxis:
 
 
 @dataclass(frozen=True)
+class _DomainFilter:
+    """A pre-declared domain restriction on the PRIMARY ranking pool, applied
+    before rank-1 selection -- e.g. an external league's own statistical-
+    qualification minimum. This is a DOMAIN restriction cited to an outside
+    convention, never a tuned/fitted threshold, so it lives here as data, not
+    buried inside compose_best()'s logic."""
+    field: str
+    min: float
+    source: str
+
+
+@dataclass(frozen=True)
 class _AspectConfig:
     verdict_file: Path
     # gate verdict value -> claim_id of the ranking claim that becomes primary
     verdict_to_primary_claim: dict[str, str]
     attribution_axes: tuple[_AttributionAxis, ...]
+    domain_filter: _DomainFilter | None = None
 
 
 # ponytail: only "shooter" wired v1 (task says no speculative aspects) --
@@ -83,6 +101,9 @@ _ASPECT_CONFIGS: dict[str, _AspectConfig] = {
             _AttributionAxis("fg3_pct_vs_team_context", "nba_fg3_pct_vs_team_context"),
             _AttributionAxis("fg3a_share_of_team", "nba_fg3a_share_of_team_2024-25"),
             _AttributionAxis("fg3_pct_rest_split", "nba_fg3_pct_rest_split_2024-25"),
+        ),
+        domain_filter=_DomainFilter(
+            field="fg3m", min=82, source="NBA official 3P% qualification minimum (82 3PM)"
         ),
     ),
 }
@@ -117,6 +138,27 @@ def _unanswerable(aspect: str, missing: list[str]) -> dict[str, Any]:
     }
 
 
+def _apply_domain_filter(
+    ranking: list[dict[str, Any]], domain_filter: _DomainFilter
+) -> tuple[list[dict[str, Any]], dict[str, Any]] | None:
+    """Restrict `ranking` to rows meeting domain_filter before rank-1
+    selection. Returns (filtered_rows, unfiltered_rank1_block) or None if the
+    domain field is missing from the ranking rows -- fail-closed, the caller
+    must turn None into UNANSWERABLE rather than silently skip the filter."""
+    if not all(domain_filter.field in r for r in ranking):
+        return None
+    unfiltered_rank1 = min(ranking, key=lambda r: r.get("rank", float("inf")))
+    unfiltered_block = {
+        "name": _ascii_name(str(unfiltered_rank1.get("player_name", ""))),
+        "value": unfiltered_rank1.get("value"),
+        "fails_domain": (
+            f"{domain_filter.field}={unfiltered_rank1.get(domain_filter.field)} < {domain_filter.min}"
+        ),
+    }
+    filtered = [r for r in ranking if r.get(domain_filter.field, 0) >= domain_filter.min]
+    return filtered, unfiltered_block
+
+
 def compose_best(aspect: str = "shooter") -> dict[str, Any]:
     """ONE conclusion for `aspect`, composed per COMPOSITION_RULE. See module
     docstring for the fail-closed contract."""
@@ -144,6 +186,25 @@ def compose_best(aspect: str = "shooter") -> dict[str, Any]:
     ranking = primary_claim.get("ranking", [])
     if not ranking:
         return _unanswerable(aspect, [f"primary claim {primary_claim_id} has an empty ranking"])
+
+    unfiltered_rank1: dict[str, Any] | None = None
+    if config.domain_filter is not None:
+        applied = _apply_domain_filter(ranking, config.domain_filter)
+        if applied is None:
+            return _unanswerable(
+                aspect,
+                [
+                    f"domain_filter field {config.domain_filter.field!r} missing from "
+                    f"primary claim {primary_claim_id}'s ranking rows"
+                ],
+            )
+        ranking, unfiltered_rank1 = applied
+        if not ranking:
+            return _unanswerable(
+                aspect,
+                [f"no rows in {primary_claim_id} survive domain_filter {config.domain_filter.source!r}"],
+            )
+
     rank1 = min(ranking, key=lambda r: r.get("rank", float("inf")))
     conclusion_name = _ascii_name(str(rank1.get("player_name", "")))
 
@@ -186,7 +247,7 @@ def compose_best(aspect: str = "shooter") -> dict[str, Any]:
         provenance.append(_claim_evidence(axis_claim))
         caveats.extend(c for c in axis_claim.get("caveats", []) if c not in caveats)
 
-    return {
+    result: dict[str, Any] = {
         "aspect": aspect,
         "conclusion": conclusion_name,
         "composition_rule": COMPOSITION_RULE,
@@ -204,6 +265,12 @@ def compose_best(aspect: str = "shooter") -> dict[str, Any]:
         "edge_claimed": False,
         "computed_at": datetime.now(timezone.utc).isoformat(),
     }
+    if unfiltered_rank1 is not None:
+        result["unfiltered_rank1"] = unfiltered_rank1
+    face_validity = primary_claim.get("face_validity_diagnostic")
+    if face_validity is not None:
+        result["face_validity_diagnostic"] = face_validity
+    return result
 
 
 def main(argv: list[str] | None = None) -> int:

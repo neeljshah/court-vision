@@ -48,6 +48,8 @@ from domains.basketball_nba.quality_indices import (
     QUALIFY_MIN_FGA,
     QUALIFY_MIN_GAMES,
     QUALIFY_SEASON,
+    aggregate_season,
+    load_boxscores,
     load_qualifying_factor_table,
 )
 
@@ -58,7 +60,7 @@ _SNAPSHOT_PATH = _OUT_DIR / "nba_canonical_shooter_snapshot.parquet"
 _CLAIMS_OUT = _OUT_DIR / "nba_canonical_shooter_claims.jsonl"
 
 _VERDICT_FILE = "data/domains/basketball_nba/quality_validity_gate_verdict.json"
-_SNAPSHOT_COLS = ["player_id", "player_name", "games", "fga", "ts_pct", "efg_pct", "ft_pct"]
+_SNAPSHOT_COLS = ["player_id", "player_name", "games", "fga", "fg3m", "fg3a", "ts_pct", "efg_pct", "ft_pct"]
 
 
 def _build_formula() -> str:
@@ -77,6 +79,21 @@ def _write_parquet(df: pd.DataFrame, path: Path) -> None:
     pq.write_table(pa.Table.from_pandas(df, preserve_index=False), path)
 
 
+def _attach_fg3m(t: pd.DataFrame, season: str) -> pd.DataFrame:
+    """load_qualifying_factor_table()'s output already carries fg3a but drops
+    fg3m at its build_factor_table() column-select (quality_indices.py is
+    domains/** and out of this task's edit rails) -- so fg3m is joined back in
+    here from the SAME season boxscore aggregate (load_boxscores +
+    aggregate_season, both already the single source of truth this module
+    imports for everything else), keyed on player_id. Additive column only:
+    ranking order/values/floors are untouched."""
+    agg = aggregate_season(load_boxscores(), season=season)
+    fg3m_by_player = agg.set_index("player_id")["fg3m"]
+    out = t.copy()
+    out["fg3m"] = out["player_id"].map(fg3m_by_player).fillna(0).astype(int)
+    return out
+
+
 def build_canonical_shooter_claim(season: str = QUALIFY_SEASON) -> dict[str, Any]:
     """Build the snapshot parquet + the single full-ordered-ranking claim.
 
@@ -84,6 +101,7 @@ def build_canonical_shooter_claim(season: str = QUALIFY_SEASON) -> dict[str, Any
     (games>=20, fga>=200) pool every sibling quality claim in this lane uses.
     """
     t = load_qualifying_factor_table(season=season)
+    t = _attach_fg3m(t, season)
     _write_parquet(t[_SNAPSHOT_COLS].copy(), _SNAPSHOT_PATH)
 
     ranked = t.sort_values("naive_comp", ascending=False, na_position="last").reset_index(drop=True)
@@ -98,6 +116,8 @@ def build_canonical_shooter_claim(season: str = QUALIFY_SEASON) -> dict[str, Any
             "player_name": row["player_name"],
             "value": round(float(row["naive_comp"]), 4),
             "n": int(row["games"]),
+            "fg3m": int(row["fg3m"]),
+            "fg3a": int(row["fg3a"]),
         }
         for i, row in ranked.iterrows()
         if pd.notna(row["naive_comp"])
