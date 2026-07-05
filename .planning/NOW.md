@@ -93,6 +93,17 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- SHADOW VERIFICATION ADDENDUM 21:15Z: post-reload heartbeat rows CONFIRM
+  the shadow code live (11/36 games rows carry ALL FOUR shadow keys).
+  NEW LOAD-BEARING FINDING: today's tennis rows die at no_live_state
+  (line ~586, UPSTREAM of the model gate) -- tennis's real blocker is
+  STATE RESOLUTION, not model serving; this likely ALSO explains the
+  corpus_labeled=0 settle gap -> the two queued tennis mysteries collapse
+  into ONE diagnosis item (state resolution -> labeling -> shadow values).
+  wnba: watch next slate. ALSO QUEUED: durable shadow-evidence store
+  (heartbeat is overwrite-per-cycle; promotion decisions need an APPEND
+  history -- small measurement-only lane). Daemon 24320 healthy-starting
+  (first cycle slow behind governor-paced 429 retries, expected).
 - SHADOW ARC CLOSED ~21:10Z TRUE-UTC: orphaned shadow-lane work Opus-reviewed
   PASS (model_prob never mutated, decision path byte-unchanged, 39 tests) ->
   COMMITTED 3978eeb6 -- THEN Fable caught what the reviewer missed: the
