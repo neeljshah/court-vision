@@ -10,8 +10,10 @@ ONE CYCLE (run_cycle, idempotent):
      decline apart from a pre-evaluation TRANSIENT bail (see step 6).
   3. gate_fn(candidate) -> a VERDICT dict {ship, gate_results, reasons}. Defaults to
      the real improve.ratchet_state.evaluate_candidate (the 5 gates, no promotion).
-  4. SHIP iff: gate ship==True AND OOS improves AND replicated on >= 2 corpora. One
-     corpus -> REPLICATION_PENDING (never SHIP on one corpus). Else REJECT.
+  4. SHIP iff: gate ship==True AND OOS improves AND replicated on >= min_corpora corpora
+     (fixed 2, or an explicit override, or the FWER-aware floor from
+     selfimprove_stage.effective_min_corpora -- never below 2). One corpus ->
+     REPLICATION_PENDING (never SHIP on one corpus). Else REJECT.
   5. On SHIP: stage a versioned artifact + atomic-swap `current`; held-out AUTO-ROLLBACK if
      it regressed. On non-SHIP: append a reject_ledger row. Always emit a PROPOSAL row.
   6. Advance + persist the cursor -- but ONLY on a real fold: a SHIP/REJECT, or an armed
@@ -118,10 +120,12 @@ def run_cycle(*, name: str, settled_games_fn: Callable[..., Sequence[Dict[str, A
               reject_path: Optional[pathlib.Path] = None,
               status_path: Optional[pathlib.Path] = None,
               now: Optional[float] = None,
-              min_corpora: int = 2) -> CycleResult:
+              min_corpora: Optional[int] = None) -> CycleResult:
     """Run ONE idempotent self-improvement cycle for `name`. Never raises.
 
     Every dependency is injectable for offline testing; defaults use the real ratchet/store.
+    `min_corpora`: explicit override, else the FWER-aware floor (stage.effective_min_corpora;
+    never stricter than 2 with only 1-2 corpora available -- identical to today).
     """
     t = time.time() if now is None else float(now)
     gate_fn = gate_fn or _default_gate_fn
@@ -208,20 +212,22 @@ def run_cycle(*, name: str, settled_games_fn: Callable[..., Sequence[Dict[str, A
     reasons = list(verdict.get("reasons", []))
     oos_improves = bool(candidate.get("oos_improves", False))
     n_rep = _count_replicated_corpora(candidate)
-    # --- 4. SHIP decision: 5-gate unanimous AND OOS-improves AND >=2 corpora --
+    eff_min_corpora = int(min_corpora) if min_corpora is not None \
+        else _stage.effective_min_corpora(name, n_rep)
+    # --- 4. SHIP decision: 5-gate unanimous AND OOS-improves AND >=min_corpora ---
     decision = REJECT
-    if gate_ship and oos_improves and n_rep >= min_corpora:
+    if gate_ship and oos_improves and n_rep >= eff_min_corpora:
         decision = SHIP
     elif gate_ship and oos_improves and n_rep == 1:
         decision = REPLICATION_PENDING
-        reasons.append("replicated on 1 corpus; need >= %d -- not shipped" % min_corpora)
+        reasons.append("replicated on 1 corpus; need >= %d -- not shipped" % eff_min_corpora)
     else:
         if not gate_ship:
             reasons.append("5-gate verdict did not pass unanimously")
         if not oos_improves:
             reasons.append("candidate does not improve OOS")
-        if n_rep < min_corpora:
-            reasons.append("replicated on %d/%d corpora" % (n_rep, min_corpora))
+        if n_rep < eff_min_corpora:
+            reasons.append("replicated on %d/%d corpora" % (n_rep, eff_min_corpora))
 
     shipped_version: Optional[int] = None
     rolled_to: Optional[int] = None
