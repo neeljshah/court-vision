@@ -25,6 +25,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Sequence
 
 from .base import is_unavailable
+from .schema_snapshot import check_sport as _schema_check_sport
 from .transport import mark_stealth_first
 
 _REPO = Path(__file__).resolve().parents[3]
@@ -100,6 +101,22 @@ def probe_one(provider: Any, sport: str) -> Dict[str, Any]:
     return row
 
 
+def _schema_drift_notes(sports: Sequence[str]) -> Dict[str, Any]:
+    """Best-effort schema-drift overlay per sport. Never raises; a sport with
+    no local capture file yet reports {} for that sport (honest, not RED)."""
+    notes: Dict[str, Any] = {}
+    for sport in sports:
+        try:
+            doc = _schema_check_sport(sport)
+            drifted = {p: info for p, info in doc.get("providers", {}).items()
+                       if info.get("status") == "drift"}
+            if drifted:
+                notes[sport] = drifted
+        except Exception:  # noqa: BLE001 -- overlay must never sink feed_health
+            continue
+    return notes
+
+
 def scan(
     sports: Sequence[str] = DEFAULT_SPORTS,
     *, providers: Optional[Sequence[Any]] = None,
@@ -135,6 +152,7 @@ def scan(
         "n_red": n_red,
         "by_provider": by_provider,
         "overall": RED if n_red else GREEN,
+        "schema_drift": _schema_drift_notes(sports),
         "honest_note": (
             "read-only live probe of the SAME providers the real slate uses. RED = "
             "the scraper itself is broken (auth/forbidden/timeout/parse/exception); "
