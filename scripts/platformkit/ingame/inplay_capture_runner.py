@@ -106,6 +106,11 @@ def run(*, sports: Optional[List[str]] = None,
     # dead-feed / offline test tick makes NO network call; a test can still inject
     # mlb_deep=False or an offline deep_state_fn via **kwargs to override.
     kwargs.setdefault("mlb_deep", True)
+    # PRODUCTION default (mirrors mlb_deep): enrich the captured KBO series with the
+    # capture-only relay state row (kbo_capture_wire ticker->alias->matcher->relay chain).
+    # LAZY + fail-open, same discipline as mlb_deep -- a test can still inject
+    # kbo_deep=False or an offline kbo_deep_state_fn via **kwargs to override.
+    kwargs.setdefault("kbo_deep", True)
     return serve_forever(
         interval=interval,
         clock=wrapped_sleep,
