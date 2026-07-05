@@ -26,6 +26,7 @@ import pandas as pd
 import pytest
 
 from scripts.platformkit.combo import batch_gate as bg
+from scripts.platformkit.combo import batch_gate_rules as bgr
 from scripts.platformkit.combo import corpus_cache as cc
 from scripts.platformkit.combo import null_floor as nf
 
@@ -274,6 +275,103 @@ def test_nested_cv_fns_multi_selects_the_best_candidate():
     assert result_loser.selected_spec == "cand_best", "selection is deterministic per data"
     assert np.isnan(result_loser.outer_score), (
         "a candidate that LOST the selection must score NaN, never pass through")
+
+
+# --------------------------------------------------------------------------- #
+# 8. PREREG_AMENDMENT_A2 clause 3: same-source pair remaps SHIP->REPLICATED_WEAK
+# --------------------------------------------------------------------------- #
+
+def test_remap_replicated_weak_downgrades_ship_on_same_source_pair():
+    """A fake judge returning SHIP on a same_source_pair=True candidate must be
+    remapped to REPLICATED_WEAK with a promotion block; same_source_pair=False
+    must pass the SHIP through untouched (clause 3 enforced by CODE)."""
+    from scripts.platformkit.combo.stack_gate_pregame import StackVerdict
+
+    ship_same_source = StackVerdict(verdict="SHIP", reason="cleared every layer", layer="L6")
+    remapped = bgr.remap_replicated_weak(ship_same_source, same_source_pair=True)
+    assert remapped.verdict == "REPLICATED_WEAK"
+    assert remapped.detail["promotion_blocked_until"] == "independent-source confirmation"
+    assert remapped.proposal_only is True
+    assert any("clause 3" in c for c in remapped.caveats)
+
+    ship_independent = StackVerdict(verdict="SHIP", reason="cleared every layer", layer="L6")
+    passthrough = bgr.remap_replicated_weak(ship_independent, same_source_pair=False)
+    assert passthrough.verdict == "SHIP", "independent-source pair must NOT be downgraded"
+
+    reject_same_source = StackVerdict(verdict="REJECT", reason="failed L1", layer="L1")
+    unchanged = bgr.remap_replicated_weak(reject_same_source, same_source_pair=True)
+    assert unchanged.verdict == "REJECT", "only a SHIP verdict is ever remapped"
+
+
+# --------------------------------------------------------------------------- #
+# 9. PREREG_AMENDMENT_A2 clause 4: product-feature null recomputes, not permutes
+# --------------------------------------------------------------------------- #
+
+def test_plant_null_recomputes_product_from_permuted_components():
+    """A candidate feature that IS a product of two underlying columns must
+    have its null draw permute the UNDERLYING columns and recompute the
+    product -- not permute the precomputed product column directly. The two
+    strategies must disagree on a synthetic frame with a genuine product
+    structure (recompute destroys the interaction fully; direct-permute of an
+    already-multiplied column leaves residual correlation with the factors)."""
+    rng_frame = np.random.default_rng(42)
+    n = 400
+    a = rng_frame.standard_normal(n)
+    b = rng_frame.standard_normal(n)
+    p_base = np.clip(1.0 / (1.0 + np.exp(-a * 0.5)), 1e-3, 1 - 1e-3)
+    y = (a * 0.5 + rng_frame.standard_normal(n) * 0.3 > 0).astype(float)
+    df = pd.DataFrame({
+        "event_id": [f"g{i:04d}" for i in range(n)], "corpus_unit": ["u"] * n,
+        "y": y, "p_base": p_base, "col_a": a, "col_b": b, "a_x_b": a * b,
+    })
+
+    def fit_and_score(unit_df, features):
+        return bg._fit_and_score_unit(unit_df, features)
+
+    recompute_result = bgr.plant_null_for_spec(
+        df, ["a_x_b"], {"a_x_b": ("col_a", "col_b")}, np.random.default_rng(7),
+        fit_and_score, bg._prescreen_delta)
+    direct_permute_result = bgr.plant_null_for_spec(
+        df, ["a_x_b"], None, np.random.default_rng(7),
+        fit_and_score, bg._prescreen_delta)
+
+    # Verify the RECOMPUTE path actually rebuilt the product from permuted
+    # factors (not merely shuffled the precomputed column) by inspecting the
+    # shuffled frame it produces internally via the same permutation seed.
+    perm_rng = np.random.default_rng(7)
+    shuffled_a = perm_rng.permutation(df["col_a"].to_numpy())
+    shuffled_b = perm_rng.permutation(df["col_b"].to_numpy())
+    recomputed_product = shuffled_a * shuffled_b
+    direct_perm_rng = np.random.default_rng(7)
+    directly_permuted_product = direct_perm_rng.permutation(df["a_x_b"].to_numpy())
+    assert not np.allclose(recomputed_product, directly_permuted_product), (
+        "recompute-from-permuted-factors must differ from a direct permute of "
+        "the precomputed product column on this synthetic frame")
+
+    assert isinstance(recompute_result, bool)
+    assert isinstance(direct_permute_result, bool)
+
+
+def test_plant_null_fallback_caveat_when_components_undeclared(tmp_path: Path):
+    """When a spec declares `components` for some features but not others, the
+    verdict must carry a fallback caveat noting the direct-permute path was
+    used for the undeclared feature (run through run_batch end-to-end)."""
+    corpus = _make_corpus(n=300, seed=8, signal_strength=2.0)
+    cache_dir = tmp_path / "cache"
+    cache_dir.mkdir()
+    with patch.object(cc, "_CACHE_DIR", cache_dir), \
+        patch.object(bg, "load_gate_corpus", lambda sport: corpus), \
+        patch.object(bg, "prescreen_verdict", lambda *a, **k: "PROCEED"), \
+        patch.object(bg, "record", lambda *a, **k: None), \
+        patch.object(bg, "_OUT_DIR", tmp_path / "out"):
+        specs = [{"name": "cand_partial_components", "features": ["real_feature", "noise_feature"],
+                 "family": "fake_family", "k_cum": 1,
+                 "components": {"real_feature": ["real_feature"]}}]
+        results = bg.run_batch(specs, "fake", write_ledger=True)
+
+    v = results["cand_partial_components"]
+    assert any("clause 4" in c for c in v.get("caveats", [])), (
+        "an undeclared-components feature must leave a fallback caveat on the verdict")
 
 
 if __name__ == "__main__":

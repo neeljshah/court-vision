@@ -1,6 +1,6 @@
 """scripts.platformkit.combo.null_floor -- pure-noise held-out delta floor.
 
-Per (sport, corpus_unit, n_extra_params in 1..3): fit M=40 permuted-noise
+Per (sport, corpus_unit, n_extra_params in 1..MAX_EXTRA_PARAMS): fit M=40 permuted-noise
 candidates through the IDENTICAL stack_fit path (same expanding-window split,
 same standardizer, same fallback contract) as a real candidate would use, and
 persist the held-out Brier-delta distribution (p50/p90/p99).
@@ -85,7 +85,7 @@ def compute_null_floor_for_unit(y: np.ndarray, p_base: np.ndarray, n_extra: int,
 
 def build_null_floor(sport: str, corpus: pd.DataFrame, m_draws: int = M_DRAWS,
                      base_seed: int = 0) -> Dict[str, object]:
-    """Per (corpus_unit, n_extra_params in 1..3): compute + persist the floor table."""
+    """Per (corpus_unit, n_extra_params in 1..MAX_EXTRA_PARAMS): compute + persist the floor table."""
     table: Dict[str, Dict[str, Dict[str, float]]] = {}
     timings: Dict[str, float] = {}
     for unit in sorted(corpus["corpus_unit"].dropna().unique().tolist()):

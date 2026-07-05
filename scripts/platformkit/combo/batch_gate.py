@@ -30,6 +30,7 @@ import numpy as np
 import pandas as pd
 
 from scripts.platformkit.combo import stack_fit as sf
+from scripts.platformkit.combo.batch_gate_rules import plant_null_for_spec, remap_replicated_weak
 from scripts.platformkit.combo.corpus_cache import load_gate_corpus
 from scripts.platformkit.combo.fwer_budget import eps_eff
 from scripts.platformkit.combo.nested_cv import select_then_score
@@ -48,12 +49,17 @@ class CandidateSpec:
     family: str
     k_cum: int
     corpus_units: Optional[Sequence[str]] = None
+    same_source_pair: bool = False  # caller-declared: True => SHIP remapped to REPLICATED_WEAK
+    components: Optional[Mapping[str, Sequence[str]]] = None  # product feature -> underlying cols
 
 
 def _spec_from_dict(d: Dict[str, Any]) -> CandidateSpec:
     return CandidateSpec(name=d["name"], features=tuple(d["features"]), family=d["family"],
                          k_cum=int(d["k_cum"]), corpus_units=tuple(d["corpus_units"])
-                         if d.get("corpus_units") else None)
+                         if d.get("corpus_units") else None,
+                         same_source_pair=bool(d.get("same_source_pair", False)),
+                         components={k: tuple(v) for k, v in d["components"].items()}
+                         if d.get("components") else None)
 
 
 def _fit_and_score_unit(unit_df: pd.DataFrame, features: Sequence[str]) -> List[StackRow]:
@@ -173,18 +179,6 @@ def _seed_stability_p10(unit_df: pd.DataFrame, features: Sequence[str], seed: in
     return float(np.percentile(deltas, 10))
 
 
-def _plant_null(unit_df: pd.DataFrame, features: Sequence[str], rng: np.random.Generator) -> bool:
-    """Permute each added feature column within-corpus, destroying alignment;
-    refit through the IDENTICAL path; True iff the shuffled stack beats base."""
-    shuffled = unit_df.copy()
-    for c in features:
-        shuffled[c] = rng.permutation(shuffled[c].to_numpy())
-    null_rows = _fit_and_score_unit(shuffled, features)
-    if not null_rows:
-        return False
-    return _prescreen_delta(null_rows) > 0.0
-
-
 def run_batch(candidate_specs: Sequence[Dict[str, Any]], sport: str,
              write_ledger: bool = True) -> Dict[str, Dict[str, Any]]:
     """Load cached corpus; prescreen each spec; judge survivors; emit verdicts.
@@ -280,11 +274,17 @@ def run_batch(candidate_specs: Sequence[Dict[str, Any]], sport: str,
             k_cum=spec.k_cum, n_corpora_available=len(rows_per_unit),
             nested_cv_select_fn=nested_select_fn, nested_cv_score_fn=nested_score_fn,
             nested_cv_game_ids=game_ids,
-            planted_null_fn=lambda rng, u=primary_unit, f=spec.features: _plant_null(
-                corpus[corpus["corpus_unit"] == u], f, rng),
+            planted_null_fn=lambda rng, u=primary_unit, f=spec.features, c=spec.components:
+                plant_null_for_spec(corpus[corpus["corpus_unit"] == u], f, c, rng,
+                                    _fit_and_score_unit, _prescreen_delta),
             seed_stability_p10=_seed_stability_p10(corpus[corpus["corpus_unit"] == primary_unit],
                                                    spec.features),
         )
+        if spec.components is not None and any(f not in spec.components for f in spec.features):
+            verdict.caveats.append(
+                "clause 4 (PREREG_AMENDMENT_A2): components declared for some but not all "
+                "features -- undeclared features used the direct-permute-the-column fallback.")
+        verdict = remap_replicated_weak(verdict, spec.same_source_pair)
         results[spec.name] = verdict.to_dict()
         if write_ledger:
             record(sport, f"{spec.family}__{spec.name}", verdict.verdict, verdict.reason,
