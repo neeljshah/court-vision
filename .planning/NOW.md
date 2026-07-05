@@ -41,6 +41,10 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 69 (HEALTH TICK, 14:30Z): daemon SINGLETON confirmed (29752;
+  the second PID was my own probe matching its own command line -- observer
+  effect, resolved), heartbeat 1.6 min, MLB/tennis feeds 0-1 min fresh, KBO
+  corpus 133 rows. All green; hop to US verifier sweep window ~17Z.
 - SPRINT WAKE 68 (WAVE-65: KBO DAY-1 CORPUS CLOSED OUT, 2026-07-05 ~13:35Z
   true-UTC, wf_7b02838c-d51 2 agents/~0.16M tok): 113 rows/5 games. SSSK
   100% innings coverage / LTKT 77.8% / OBWO thin (mid-matinee wire start,
