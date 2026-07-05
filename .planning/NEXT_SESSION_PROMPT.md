@@ -21,12 +21,26 @@ docs/research/depth-program/DEPTH_PROGRAM_2026-07-05.md (sha 7136825e... -- the
 landmines #10/#11/#11a load-bearing).
 
 IMMEDIATE DUTIES (in order):
-1. ADJUDICATE the greenlight-uncap design (wf_582fb362 was in flight at handoff;
-   read docs/research/depth-program/GREENLIGHT_UNCAP_SPEC_2026-07-05.md + its
-   review verdict from disk). If SOUND(-WITH-FIXES): apply fixes, pin sha, launch
-   the build lane ((e) channel_trust + (f) cv_honesty REAL implementations;
-   charter: fake-green = blockable regression; fail-closed, suppression-only,
-   anti-fake test mandatory).
+1. BUILD the greenlight uncap -- design ALREADY ADJUDICATED at handoff
+   (wf_582fb362 returned SOUND-WITH-FIXES; spec at docs/research/depth-program/
+   GREENLIGHT_UNCAP_SPEC_2026-07-05.md). FABLE RULINGS BINDING ON THE BUILD:
+   (a) E trust floors come FROM governance.policy vetted constants
+   (MIN_SETTLED_N=500 / MIN_TRUE_CLOSE_FRAC=0.90) for GREEN -- the spec's 60/60
+   may exist only as the AMBER tier, never GREEN (reviewer MEDIUM: strongest
+   gaming gap); (b) E-check-3: only moneyline + paper_pm have reconcile
+   artifacts today -- in-game channels are honest NOT-APPLICABLE (non-GREEN)
+   until clv_result_reconciler emits per-channel files; EXTEND the reconciler
+   in the same build wave; (c) F-check-5 sha-integrity is NOT-APPLICABLE
+   (non-GREEN, never silently-pass) until the prereg producer emits a sha
+   field -- add that emission to the build; verify the fields that DO exist
+   vs a persisted snapshot meanwhile (reviewer HIGH: current artifact has no
+   sha to compare); (d) add the 6 missing artifacts to freshness_sla.TABLE
+   w/ cited SLAs read FROM the table (never hardcoded), fix the import path;
+   (e) reject-ledger watermark lives in a dedicated append-only sidecar, not
+   inside the regenerable report (spec open-question 3 ruling). Apply ALL
+   remaining reviewer fixes; spec is amended-then-sha-pinned BEFORE build;
+   anti-fake test (tamper an input -> RED) mandatory; fail-closed everywhere;
+   suppression-only.
 2. ONE-CONCLUSION ANSWER COMPOSER (user's capstone ask: "best shooter, all factors
    weighed, ONE conclusion"): the naive composite is CANONICAL for prediction
    (REJECT_NAIVE_STAYS_CANONICAL) but its leaderboard is NOT materialized as a
