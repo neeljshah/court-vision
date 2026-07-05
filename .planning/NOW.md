@@ -41,6 +41,22 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 41 (WAVE-40: STATCAST CORPUS REAL + M13 CLEARED + NPB/KBO GRADE
+  WORRY, 2026-07-05 ~01:55Z real-clock [prior 2 wake stamps drifted +3h],
+  wf_3c1379a0-2dc 13 agents/~1.18M tok, 2 commits 7461674c/0307be4c): (1)
+  statcast FIXED for real (fetch/materialize split, regression test fails on
+  pre-fix): 2022 2,034->412,260 rows (105/180d), 2023 306,139 (79/183d);
+  platoon 0->~230 qualifiers, catcher 54->97, umpire 97; all 3 validation
+  artifacts VERIFIED -- HELD on ONE surgical finding: stale hardcoded '0
+  batters/ranking empty' caveat contradicts the shipped 50-row ranking ->
+  wave-41 3-line fix then commit the set. (2) m13 zero-cards NOT a regression
+  (manual cycle 1475 real cards via parallel path; self-healing transient
+  documented). (3) vault registration + verbatim-caveat renderer committed;
+  pipeline race means next regen absorbs the new artifacts. (4) NPB/KBO probe:
+  capture healthy (46.8K/57.1K ticks) BUT yesterday's slate ended 12+h ago and
+  grade dirs STILL absent -> trigger/finality diagnosis lane NOW, not at 09Z.
+  WAVE-41: platoon-caveat fix, npb-kbo grade-check, vault regen, statcast
+  fetch continuation. No edge claimed.
 - SPRINT WAKE 40 (WAVE-39: UMPIRE ARM SHIPPED + 2 HELD ON REVIEW CATCHES,
   2026-07-05 ~05:15Z, wf_bed94924-86d 19 agents/~1.47M tok, 2 commits 1a2a1eaa/
   b7cde847): (1) umpire index SHIPPED: probables.parquet joins statcast 460/460
