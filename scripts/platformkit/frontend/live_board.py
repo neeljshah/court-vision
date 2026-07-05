@@ -127,7 +127,12 @@ def live_model_home_prob(sport: str, state: Dict[str, Any]) -> Optional[float]:
 
     SOCCER / WORLD CUP ONLY for now (the 1X2 in-game model is wired + calibrated there);
     any other sport returns None so the caller SKIPS the pair cleanly -- it NEVER fabricates
-    a number. Never raises (a model miss is a clean skip, not a crashed tick)."""
+    a number. Never raises (a model miss is a clean skip, not a crashed tick).
+
+    NPB/KBO are NOT wired: both sports' BASE fits are HONEST_NEGATIVE, disqualified by the
+    same planted pure-noise control (data/domains/{npb,kbo}/ingame_base_fit_verdict.json,
+    disqualified_by_noise_control=true, params_persisted=false) -- see
+    scripts/platformkit/ingame/test_npb_kbo_live_model_gap.py."""
     try:
         s = _norm_sport(sport)
         if not isinstance(state, dict):
