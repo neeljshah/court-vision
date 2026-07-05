@@ -41,6 +41,21 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 40 (WAVE-39: UMPIRE ARM SHIPPED + 2 HELD ON REVIEW CATCHES,
+  2026-07-05 ~05:15Z, wf_bed94924-86d 19 agents/~1.47M tok, 2 commits 1a2a1eaa/
+  b7cde847): (1) umpire index SHIPPED: probables.parquet joins statcast 460/460
+  on game_pk (no bridge), 68 umpires clear floor, leak caveat stated. (2) ask()
+  tie-break fixed (deterministic + honest ambiguity list). (3) statcast lane
+  HELD: found+fixed DESTRUCTIVE test-pollution bug (test clobbered prod 2023
+  corpus to 4 rows!) but its cache rebuild STRANDS days after gaps (parquet 1
+  day vs cache 19 for 2022) -> wave-40 finish (no live pull needed, cache
+  intact: 96 days/~372K rows). (4) vault lane HELD: catcher registration
+  claimed-but-undelivered -- NO catcher validation artifact was ever persisted
+  (wave-38 ran validator ad hoc) -> wave-40 persists validation + registers.
+  (5) m13 probe: proc fresh, bypass works, but latest snapshot 0 CARDS + SLA
+  RED 705s -> wave-40 diagnosis lane (overnight empty slate vs parallel
+  regression). WAVE-40: statcast-finish, vault-finish, m13-zero-cards, NPB/KBO
+  pre-position probe (games ~09-10Z). No edge claimed.
 - SPRINT WAKE 39 (WAVE-38 LANDED IN 22 MIN: 8/8 PASS, PROGRAM V2 EXECUTING,
   2026-07-05 ~04:20Z, wf_c88ae23d-1be 27 agents/~2.37M tok, 8 commits a71d070e..
   3f5d876b): (1) HONESTY CATCH: Statcast type=S/B/X only -> catcher metric
