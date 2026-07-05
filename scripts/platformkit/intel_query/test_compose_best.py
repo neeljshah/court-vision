@@ -15,6 +15,13 @@ Acceptance criteria:
   4. edge_claimed is always False.
   5. provenance lists every claim actually consumed (primary + each
      available attribution axis), each with a VERIFIED evidence entry.
+  6. Domain filter (clause 0): a pre-declared aspect domain_filter (e.g.
+     fg3m>=82) restricts the primary ranking BEFORE rank-1 selection -- a
+     center-with-0-threes fixture that tops the naive score never wins
+     "shooter" once filtered; the unfiltered #1 is still reported
+     (unfiltered_rank1) for transparency; a ranking missing the domain field
+     entirely fails closed to UNANSWERABLE (never silently skips the
+     filter); COMPOSITION_RULE contains a numbered clause 0 for the filter.
 """
 from __future__ import annotations
 
@@ -293,3 +300,134 @@ def test_ask_unrecognized_best_x_falls_through(monkeypatch):
     result = ask_mod.ask("who is the best rebounder in the league?")
     assert called["hit"] is False
     assert result.get("family") != ask_mod.FAMILY_BEST
+
+
+# --- domain filter (clause 0) -------------------------------------------------
+
+_PRIMARY_DOMAIN = "fixture_primary_naive_domain"
+_RIM_RUNNER = "Rim Runner Center"  # naive-score #1, fg3m=2 -- fails the 82 domain floor
+_SHARPSHOOTER = "Sharp Shooter Guard"  # naive-score #2, fg3m=150 -- clears the floor
+
+
+@pytest.fixture
+def fixture_domain_claims(tmp_path, monkeypatch):
+    """One primary ranking claim where the naive-score #1 (a rim-running
+    center) has fg3m=2 -- the documented face-validity failure mode -- and
+    the naive-score #2 clears the domain floor (fg3m=150)."""
+    claims_path = tmp_path / "claims.jsonl"
+    validation_path = tmp_path / "validation.json"
+
+    primary = _ranking_claim(_PRIMARY_DOMAIN, "naive_comp", [
+        {"rank": 1, "player_id": 10, "player_name": _RIM_RUNNER, "value": 0.90, "n": 60, "fg3m": 2},
+        {"rank": 2, "player_id": 11, "player_name": _SHARPSHOOTER, "value": 0.75, "n": 60, "fg3m": 150},
+        {"rank": 3, "player_id": 12, "player_name": "Below Floor Too", "value": 0.70, "n": 60, "fg3m": 81},
+    ])
+    with open(claims_path, "w", encoding="ascii") as f:
+        f.write(json.dumps(primary) + "\n")
+
+    validation_summary = {
+        "component": "fixture_validation",
+        "n_claims": 1,
+        "details": [{"claim_id": _PRIMARY_DOMAIN, "verdict": "VERIFIED", "reason": "ok"}],
+    }
+    validation_path.write_text(json.dumps(validation_summary), encoding="ascii")
+    monkeypatch.setattr(ask_mod, "CLAIM_SOURCE_PAIRS", ((validation_path, claims_path),))
+    return claims_path, validation_path
+
+
+def _domain_config(verdict_file, domain_filter):
+    return cb_mod._AspectConfig(
+        verdict_file=verdict_file,
+        verdict_to_primary_claim={"REJECT_DOMAIN": _PRIMARY_DOMAIN},
+        attribution_axes=(),
+        domain_filter=domain_filter,
+    )
+
+
+@pytest.fixture
+def fixture_domain_aspect(tmp_path, monkeypatch, fixture_domain_claims):
+    verdict_file = tmp_path / "verdict.json"
+    verdict_file.write_text(json.dumps({"verdict": "REJECT_DOMAIN"}), encoding="ascii")
+    domain_filter = cb_mod._DomainFilter(field="fg3m", min=82, source="NBA official 3P% qualification minimum (82 3PM)")
+    config = _domain_config(verdict_file, domain_filter)
+    monkeypatch.setattr(cb_mod, "_ASPECT_CONFIGS", {"fixture_aspect": config})
+    return verdict_file
+
+
+def test_domain_filter_center_with_few_threes_never_wins_shooter(fixture_domain_aspect):
+    # Rim Runner Center has the TOP naive score (0.90) but fg3m=2 -- the
+    # documented Jarrett-Allen-style face-validity failure. "Below Floor Too"
+    # (fg3m=81) also fails the 82 floor, confirming this is a pool
+    # restriction, not a rank-1-only special case. Only Sharp Shooter Guard
+    # (fg3m=150) clears the floor and wins.
+    result = cb_mod.compose_best("fixture_aspect")
+    assert result["conclusion"] == _SHARPSHOOTER
+    assert result["conclusion"] != _RIM_RUNNER
+    assert result["primary"]["score"] == 0.75
+
+
+def test_unfiltered_rank1_reported_alongside_filtered_conclusion(fixture_domain_aspect):
+    result = cb_mod.compose_best("fixture_aspect")
+    assert result["unfiltered_rank1"] == {
+        "name": _RIM_RUNNER,
+        "value": 0.90,
+        "fails_domain": "fg3m=2 < 82",
+    }
+
+
+def test_missing_domain_field_is_unanswerable_never_silently_skipped(tmp_path, monkeypatch):
+    # A ranking row set with NO fg3m field at all -- the filter must fail
+    # closed to UNANSWERABLE, never silently rank without it.
+    claims_path = tmp_path / "claims.jsonl"
+    validation_path = tmp_path / "validation.json"
+    primary = _ranking_claim(_PRIMARY_DOMAIN, "naive_comp", [
+        {"rank": 1, "player_id": 1, "player_name": "No Domain Field Player", "value": 0.5, "n": 40},
+    ])
+    with open(claims_path, "w", encoding="ascii") as f:
+        f.write(json.dumps(primary) + "\n")
+    validation_path.write_text(json.dumps({
+        "component": "fixture_validation", "n_claims": 1,
+        "details": [{"claim_id": _PRIMARY_DOMAIN, "verdict": "VERIFIED", "reason": "ok"}],
+    }), encoding="ascii")
+    monkeypatch.setattr(ask_mod, "CLAIM_SOURCE_PAIRS", ((validation_path, claims_path),))
+
+    verdict_file = tmp_path / "verdict.json"
+    verdict_file.write_text(json.dumps({"verdict": "REJECT_DOMAIN"}), encoding="ascii")
+    domain_filter = cb_mod._DomainFilter(field="fg3m", min=82, source="NBA official 3P% qualification minimum (82 3PM)")
+    config = _domain_config(verdict_file, domain_filter)
+    monkeypatch.setattr(cb_mod, "_ASPECT_CONFIGS", {"fixture_aspect": config})
+
+    result = cb_mod.compose_best("fixture_aspect")
+    assert result["status"] == "UNANSWERABLE"
+    assert "fg3m" in result["missing"][0]
+    assert "conclusion" not in result
+
+
+def test_no_domain_filter_declared_behaves_as_before(fixture_aspect):
+    # fixture_aspect (from the pre-existing fixture_claims/_fixture_config)
+    # declares NO domain_filter -- confirms the None default is fully
+    # backward compatible with the pre-domain-filter composer behavior.
+    result = cb_mod.compose_best("fixture_aspect")
+    assert result["conclusion"] == "Alpha Player"
+    assert "unfiltered_rank1" not in result
+
+
+def test_composition_rule_has_clause_0_domain_filter():
+    assert cb_mod.COMPOSITION_RULE.strip().startswith("0.")
+    assert "domain" in cb_mod.COMPOSITION_RULE.lower()
+    assert "82" in cb_mod.COMPOSITION_RULE
+
+
+def test_face_validity_diagnostic_passthrough(fixture_domain_aspect, fixture_domain_claims):
+    # primary_claim carrying a face_validity_diagnostic surfaces it at the
+    # composer output's TOP level, unmodified.
+    claims_path, _validation_path = fixture_domain_claims
+    with open(claims_path, "r", encoding="ascii") as f:
+        rows = [json.loads(line) for line in f]
+    rows[0]["face_validity_diagnostic"] = {"type": "reported_never_a_fitting_target", "n_qualifying": 3}
+    with open(claims_path, "w", encoding="ascii") as f:
+        for row in rows:
+            f.write(json.dumps(row) + "\n")
+
+    result = cb_mod.compose_best("fixture_aspect")
+    assert result["face_validity_diagnostic"] == {"type": "reported_never_a_fitting_target", "n_qualifying": 3}

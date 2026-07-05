@@ -21,6 +21,9 @@ Acceptance criteria:
   5. Honest caveats: the gate-verdict citation, the naive-metrics-blind-to-
      difficulty/gravity limitation (with real Curry/Ellis ranks), and
      edge_claimed=False are all present; no forbidden predictive/edge words.
+  6. fg3m/fg3a fields: every ranking row carries fg3m/fg3a (additive, sourced
+     via _attach_fg3m from the same season boxscore aggregate) -- ranking
+     order/values/floors are untouched by their presence.
 """
 from __future__ import annotations
 
@@ -47,6 +50,10 @@ _FIXTURE_ROWS = [
     (5, "Stephen Curry", 40, 300, 0.55, 0.50, 0.75),  # naive = .55*.55+.30*.50+.15*.75 = .565
 ]
 
+# fg3m per fixture player_id -- deliberately distinct values so a test can
+# assert the field is read from THIS table, not zeroed/hardcoded.
+_FIXTURE_FG3M = {1: 50, 2: 90, 3: 10, 4: 120, 5: 200}
+
 
 def _fixture_table() -> pd.DataFrame:
     df = pd.DataFrame(
@@ -58,12 +65,22 @@ def _fixture_table() -> pd.DataFrame:
         + NAIVE_WEIGHTS["efg_pct"] * df["efg_pct"]
         + NAIVE_WEIGHTS["ft_pct"] * df["ft_pct"]
     )
+    df["fg3a"] = 100
     return df
+
+
+def _fixture_attach_fg3m(t: pd.DataFrame, season: str) -> pd.DataFrame:
+    """Stand-in for csc._attach_fg3m in tests: same additive-join contract
+    (keyed on player_id) without touching real boxscore parquet data."""
+    out = t.copy()
+    out["fg3m"] = out["player_id"].map(_FIXTURE_FG3M)
+    return out
 
 
 @pytest.fixture()
 def built_claim(monkeypatch, tmp_path):
     monkeypatch.setattr(csc, "load_qualifying_factor_table", lambda season=None: _fixture_table())
+    monkeypatch.setattr(csc, "_attach_fg3m", _fixture_attach_fg3m)
     monkeypatch.setattr(csc, "_SNAPSHOT_PATH", tmp_path / "snap.parquet")
     monkeypatch.setattr(csc, "REPO_ROOT", tmp_path.parent)
     # rank_of is a plain pandas helper imported from quality_claim_builders;
@@ -128,6 +145,19 @@ def test_validator_independently_reverifies(built_claim, monkeypatch):
     monkeypatch.setattr(claims_validator, "REPO_ROOT", tmp_path.parent)
     verdict = claims_validator.validate_claim(claim)
     assert verdict.verdict == "VERIFIED", verdict.reason
+
+
+def test_fg3m_fg3a_present_on_every_ranking_row(built_claim):
+    claim, _tmp_path = built_claim
+    by_name = {r["player_name"]: (r["fg3m"], r["fg3a"]) for r in claim["ranking"]}
+    # sourced from _FIXTURE_FG3M (per player_id) + fixture's flat fg3a=100 --
+    # confirms the values are READ from the attached table, not hardcoded.
+    assert by_name["Alice"] == (50, 100)
+    assert by_name["Bob"] == (90, 100)
+    assert by_name["Stephen Curry"] == (200, 100)
+    for r in claim["ranking"]:
+        assert isinstance(r["fg3m"], int)
+        assert isinstance(r["fg3a"], int)
 
 
 def test_no_forbidden_words_and_required_caveats_present(built_claim):
