@@ -93,6 +93,44 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- M13 CLOSED + CYCLE-2 HEAD CLOSED ~21:20Z (wf_d89026f0 4 agents/0.75M +
+  wf_16c6fa77 6 agents/0.59M): (1) M13 FIX COMMITTED c53a69f6 (Fable-
+  authorized as orchestrator after APPROVE-vs-PASS string mismatch left the
+  approved work uncommitted): root cause = the anti-flicker fallback re-ran
+  an UNBOUNDED feed path; now primary 240s + no-network synth fallback 45s
+  + per-sport fanout deadlines + timeout writes an honest fallback ENVELOPE
+  (never freeze, never fabricate); Opus reviewer independently confirmed
+  LIVE (primary pass 825 cards; fallback envelopes under peak load; 49/49
+  targeted tests). INCIDENT: a concurrent lane's git reset WIPED this
+  lane's uncommitted work once (reflog 4x 'reset: moving to HEAD'); lane
+  detected + re-applied + re-verified. NEW STANDING RULE (Fable): parallel
+  EDITING lanes must use worktree isolation; lanes NEVER run git reset/
+  checkout on the shared tree; approved work commits IMMEDIATELY.
+  (2) NBA CORPUS B BUILT + COMMITTED 4cee589d: n=74 -> n=589 (100% WF
+  coverage; ext parquets 1814 rows; frozen originals byte-identical, sha-
+  verified by reviewer; exact-match reconciliation 515/675, 0 ambiguous,
+  160 honest drops diagnosed 82 post-schedule-edge + 74 absent-from-stale-
+  games.parquet + 4 All-Star). NBA REPLICATION ARM UNBLOCKED -> A2
+  amendment next cycle. 2ND TEST-OVERWRITE INCIDENT (draft test hit a
+  builder's DEFAULT out_path = the frozen prod parquet): caught via the
+  sha256-before/after habit, recovered, shipped test uses tmp_path
+  (landmine #10 extended). Follow-up queued: refresh games.parquet 2025-26
+  schedule tail (~74 more games recoverable). (3) EXEC DIAGNOSIS COMMITTED
+  8868f609: the 64% at-or-after-commence SOLVED = 56% REAL DEFECT (todays_
+  live_games returns the FULL day slate w/ no state filter + dedup keys on
+  LOG-day not event-day -> finished games re-log next day as fresh
+  predictions) + 44% designed whole-slate CLV logging (not a bug);
+  close-coverage gap FIXED at settle time (_clv_from_proxy reuses canonical
+  compute_clv, stamps clv_status='proxy', excluded from true-close
+  aggregates -- honest); 30 current proxy rows are soccer 1X2 w/ draw-leg-
+  stripped booksum<1 (structural). FABLE ADJUDICATIONS on the 3 follow-ups:
+  (a) same-venue-close CLV restriction APPROVED for a lane (measurement-
+  integrity; the fanduel +22.7% class is a cross-venue artifact until
+  proven otherwise); (b) soccer 1X2 3-way close-proxy devig APPROVED for a
+  lane (Opus-reviewed); (c) prediction-logger state-filter + event-day
+  dedup fix APPROVED for a lane (pm_trading is platformkit -- editable;
+  directly serves execution discipline). All 3 queued cycle-2b. IN FLIGHT:
+  depth-program wave (wf_de19e6ab). No edge claims.
 - THROUGHPUT WAVE CLOSED ~20:35Z (wf_00a24f85, 10 agents/0.96M tok, commits
   cfafe175 factory + a877271e mlb-rebuild + 699ad581 exec-quality, all
   Opus-PASS): (1) TEST FACTORY LIVE: per-sport gate-ready corpus caches w/
