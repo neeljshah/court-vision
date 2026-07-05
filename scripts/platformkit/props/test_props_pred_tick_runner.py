@@ -198,3 +198,33 @@ def test_guard_skipped_when_score_fn_injected(monkeypatch, tmp_path):
     assert fill_called["n"] == 0                  # guard not consulted on raw path
     doc = json.loads(cache_p.read_text(encoding="ascii"))
     assert doc["card_count"] == 0
+
+
+def test_real_score_timeout_falls_back_to_synth_not_zero(monkeypatch, tmp_path):
+    # 2026-07-05 LANE m13-zero-cards diagnosis: production observed (live probe,
+    # wave-39/wave-40) the REAL board (build_bounded_prop_cards) taking 365-481s
+    # wall-clock -- longer than SCORE_TIMEOUT_SEC (240s) -- so EVERY tick times out
+    # and must fall back to the synth-only path. This test locks in that the
+    # timeout path (not just an injected score_fn returning []) still reaches the
+    # anti-flicker guard and serves synth cards instead of degrading to 0, using
+    # the REAL default (score_fn=None) code path through score_with_timeout.
+    cache_p = _patch_cache_path(monkeypatch, tmp_path)
+    snap_p = tmp_path / "snap.json"
+
+    def hangs_past_timeout(now):
+        import time as _t
+        _t.sleep(5.0)  # >> the tiny score_timeout_sec used below
+        return ([_card()], {"mlb": 999})  # never observed by the caller
+
+    monkeypatch.setattr(runner, "_score_props_bounded", hangs_past_timeout)
+    env = runner.tick(now=99.0, output_path=snap_p,
+                      pregame_fn=lambda now: True,
+                      synth_fill_fn=lambda now: ([_card()], {"mlb": 7}),
+                      score_timeout_sec=0.05)
+    assert env["overall"] == "ok"
+    assert env["card_count"] == 1                  # synth fill served, not 0
+    assert env["n_more_model_only"] == {"mlb": 7}   # the SYNTH tally, not the hung one
+    doc = json.loads(cache_p.read_text(encoding="ascii"))
+    assert doc["card_count"] == 1
+    assert doc["cards"][0]["model_only"] is True
+    assert doc["cards"][0]["edge_claimed"] is False
