@@ -17,20 +17,18 @@ keep both files under the 300 LOC cap):
       halves, 95% CI excluding 0 (CLOSE_SUSPECT/off-market rows disqualify --
       handled upstream by clv_scoreboard's is_clv_suspect filter, reused here).
   (d) after-cost units (6.3) > 0 in both halves.
-  (e) the specific segments being bet are TRUSTED (m26) AND the channel is
-      TRUSTED (4.1) -- both gates, same week.
+  (e) the specific segments being bet are TRUSTED (m26) AND the channel-trust
+      gate (4.1) is GREEN -- both gates, same week.
   (f) eval-gate green (no leak flag) + cv-honesty-gate adjudicates the claim
       NOT-REFUTED.
   (g) beat_the_line excess win rate CI (6.4) excludes 0 in the pooled sample.
 
-HONEST GAPS (report, never fabricate): as of this build, (e)'s CHANNEL-trust
-half (a "4.1 channel trust gate") does not exist anywhere in this repo, and
-(f)'s "cv-honesty-gate that adjudicates a proof-of-edge claim NOT-REFUTED"
-does not exist either -- governance/honesty_linter.py is a DIFFERENT thing (an
-output-string banned-claim scanner, not a claim adjudicator). Both are reported
-as criterion status NOT_BUILT, which counts as a FAILING sub-criterion -- never
-silently passed. A channel that would otherwise be GREEN is therefore held at
-AMBER with these two named explicitly until they are built.
+(e)'s CHANNEL-trust half (4.1) and (f)'s cv-honesty-gate are now REAL, wired to
+scripts.platformkit.econ.greenlight_trust_honesty (channel_trust_status,
+cv_honesty_status) per docs/research/depth-program/GREENLIGHT_UNCAP_SPEC_2026-07-05.md.
+Fail-closed: any missing/stale/unreadable input or exception reports RED, never
+a bare pass -- a channel only reaches GREEN on (e)/(f) via genuine, freshness-
+stamped computation, never a constant.
 
 Run:  python -m scripts.platformkit.econ.edge_greenlight
 """
@@ -54,15 +52,17 @@ _OUT_JSON = os.path.join(_REPO, "data", "frontend", "ops", "edge_greenlight.json
 
 
 def evaluate_channel(channel: str, rows: Sequence[Dict[str, Any]]) -> Dict[str, Any]:
-    criteria = {
+    criteria: Dict[str, Any] = {
         "a": G.criterion_a(rows),
         "b": G.criterion_b(rows),
         "c": G.criterion_c(rows),
         "d": G.criterion_d(rows),
-        "e": G.criterion_e(channel),
-        "f": G.criterion_f(),
-        "g": G.criterion_g(rows),
+        "e": G.criterion_e(channel, rows),
     }
+    # criterion_f's cv-honesty scan is a PARTIAL scan of criteria a-e computed
+    # so far for this channel (F-SPEC check 1) -- not the full multi-channel report.
+    criteria["f"] = G.criterion_f(criteria)
+    criteria["g"] = G.criterion_g(rows)
     failing = [k for k, c in criteria.items() if not c["passed"]]
     not_built = [k for k, c in criteria.items()
                  if "NOT_BUILT" in str(c.get("segment_trust_status", ""))
@@ -83,7 +83,7 @@ def evaluate_channel(channel: str, rows: Sequence[Dict[str, Any]]) -> Dict[str, 
         # has real settled volume and is not actively net-negative on both the
         # raw and after-cost record -- genuine "in progress toward GREEN",
         # blocked by specific named criteria (small-n, missing significance,
-        # or the two NOT_BUILT infra gates). This is the honest AMBER case.
+        # or a RED/AMBER (e)/(f) sub-check). This is the honest AMBER case.
         status = "AMBER"
     return {
         "channel": channel,
