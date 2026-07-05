@@ -162,8 +162,19 @@ def test_module_never_imports_a_gate_package():
 def test_real_three_verdicts_validate_end_to_end():
     """Live proof: every real on-disk verdict file this lane targets is
     VERIFIED via the checked-in proof claims JSONL (wave-26: 3 seed claims;
-    wave-33 extended to 6 -- see lane claims-breadth: mlb sp_velo_fatigue,
-    nba positional_weight, tennis surface_hold_gate_verdict_domains added)."""
+    wave-33 extended to 6; verdict-coverage lane extended to 16 -- see
+    scripts/platformkit/intel_validation/_build_verdict_claims_coverage.py.
+    3 of the 16 are EXPECTED MISMATCH by design (not a regression): 2 are the
+    wave-33 honest-skip pair (soccer_intl tier_calibration, wnba elo_refresh)
+    whose real planted-null result is a nested per-fold/per-tier structure
+    with no single deterministic scalar path -- their primary_number/
+    planted_null_passed field_paths deliberately point at an unrelated config
+    scalar so they honestly MISMATCH rather than silently match a fabricated
+    null. The 3rd (mlb_weather_totals_verdict) has no planted-null concept
+    at all (RMSE regression gate) and its planted_null_passed field_path is
+    likewise deliberately routed to a non-boolean coefficient for the same
+    honest reason. Only verdict is asserted VERIFIED for those 3; every other
+    field on every other claim VERIFIES cleanly (0 UNVERIFIABLE)."""
     from pathlib import Path
     repo_root = Path(__file__).resolve().parents[3]
     claims_path = repo_root / "data" / "cache" / "intel_claims" / "gate_verdict_claims.jsonl"
@@ -171,7 +182,16 @@ def test_real_three_verdicts_validate_end_to_end():
         import pytest
         pytest.skip("proof claims artifact not present in this checkout")
     summary = vcv.validate_verdict_claims_file(claims_path)
-    assert summary.n_claims == 6
-    assert summary.n_verified == 6
-    assert summary.n_mismatch == 0
+    assert summary.n_claims == 16
+    assert summary.n_verified == 13
+    assert summary.n_mismatch == 3
     assert summary.n_unverifiable == 0
+    expected_mismatch_ids = {
+        "soccer_intl_tier_calibration_verdict_HONEST_SKIP",
+        "wnba_elo_refresh_verdict_HONEST_SKIP",
+        "mlb_weather_totals_verdict",
+    }
+    mismatched_ids = {
+        d["claim_id"] for d in summary.details if d["verdict"] == "MISMATCH"
+    }
+    assert mismatched_ids == expected_mismatch_ids
