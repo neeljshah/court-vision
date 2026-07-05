@@ -67,6 +67,24 @@ def test_tick_error_never_crashes(tmp_path):
     assert n == 2
 
 
+def test_default_kwargs_enable_both_mlb_deep_and_kbo_deep(tmp_path, monkeypatch):
+    """The wave-58 fix: run() must setdefault BOTH mlb_deep and kbo_deep to True so the
+    kbo_capture_wire enrichment chain (kbo_relay_state_provider) is no longer dead code
+    in production, exactly mirroring the existing mlb_deep production default. Spies on
+    serve_forever's effective kwargs rather than asserting behavior, since the offline
+    fixture never has a live kbo/mlb game to enrich."""
+    seen_kwargs = {}
+
+    def _spy_serve_forever(**kwargs):
+        seen_kwargs.update(kwargs)
+        return 0
+
+    monkeypatch.setattr(r, "serve_forever", _spy_serve_forever)
+    r.run(sleep=lambda s: None, max_ticks=1, **_offline_kwargs(tmp_path))
+    assert seen_kwargs.get("mlb_deep") is True
+    assert seen_kwargs.get("kbo_deep") is True
+
+
 if __name__ == "__main__":
     import sys
     import tempfile
