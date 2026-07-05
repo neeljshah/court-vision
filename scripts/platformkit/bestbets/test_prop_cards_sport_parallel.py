@@ -127,3 +127,81 @@ def test_record_last_cycle_never_raises_on_bad_input():
     spar.record_last_cycle(None, None)  # type: ignore[arg-type]
     assert spar.last_sport_errors() == {}
     assert spar.last_sport_seconds() == {}
+
+
+# ---------------------------------------------------------------------------
+# OVERALL DEADLINE (2026-07-05 m13-freeze fix): a slow sport must not block the
+# whole fan-out past deadline_sec -- the caller gets an honest partial board.
+# ---------------------------------------------------------------------------
+
+def test_deadline_returns_partial_when_one_sport_exceeds_it():
+    # mlb finishes fast; soccer_intl hangs well past the deadline -> the caller
+    # gets mlb's cards promptly and an honest SCORE_ERROR for soccer_intl,
+    # instead of blocking for soccer_intl's full duration.
+    def build_one(sport):
+        if sport == "soccer_intl":
+            time.sleep(5.0)
+            return [{"sport": sport}]  # never observed within the deadline
+        time.sleep(0.01)
+        return [{"sport": sport, "player": "OK"}]
+
+    t0 = time.monotonic()
+    cards, errors, secs = spar.run_sports_parallel(
+        ("soccer_intl", "mlb"), build_one, deadline_sec=0.3)
+    elapsed = time.monotonic() - t0
+    assert elapsed < 2.0  # returned at the deadline, not after the 5s hang
+    assert cards == [{"sport": "mlb", "player": "OK"}]  # mlb's result survives
+    assert "soccer_intl" in errors
+    assert "deadline exceeded" in errors["soccer_intl"]
+    assert "mlb" not in errors
+    assert "mlb" in secs  # timing recorded for the sport that finished
+
+
+def test_deadline_none_preserves_old_unbounded_behavior():
+    # deadline_sec=None must behave exactly like before this fix (no ceiling).
+    def build_one(sport):
+        time.sleep(0.05)
+        return [{"sport": sport}]
+
+    cards, errors, secs = spar.run_sports_parallel(
+        ("soccer_intl", "mlb"), build_one, deadline_sec=None)
+    assert errors == {}
+    assert [c["sport"] for c in cards] == ["soccer_intl", "mlb"]
+    assert set(secs.keys()) == {"soccer_intl", "mlb"}
+
+
+def test_default_deadline_is_comfortably_below_the_props_score_timeout():
+    # The fanout deadline must fire BEFORE props_score_timeout's 240s budget so
+    # the caller gets an honest partial board instead of the outer timeout
+    # discarding everything with no per-sport detail.
+    assert 0.0 < spar.DEFAULT_FANOUT_DEADLINE_SEC < 240.0
+
+
+def test_fast_sports_under_deadline_are_unaffected():
+    # A deadline comfortably longer than every sport's actual duration must
+    # produce byte-identical output to the undeadlined (old) behavior.
+    def build_one(sport):
+        time.sleep(0.01)
+        return [{"sport": sport, "player": "A"}]
+
+    cards, errors, secs = spar.run_sports_parallel(
+        ("soccer_intl", "mlb"), build_one, deadline_sec=10.0)
+    assert errors == {}
+    assert [c["sport"] for c in cards] == ["soccer_intl", "mlb"]
+    assert set(secs.keys()) == {"soccer_intl", "mlb"}
+
+
+def test_all_sports_exceed_deadline_yields_all_honest_errors_not_a_hang():
+    def build_one(sport):
+        time.sleep(5.0)
+        return [{"sport": sport}]
+
+    t0 = time.monotonic()
+    cards, errors, _secs = spar.run_sports_parallel(
+        ("soccer_intl", "mlb"), build_one, deadline_sec=0.2)
+    elapsed = time.monotonic() - t0
+    assert elapsed < 2.0
+    assert cards == []
+    assert set(errors.keys()) == {"soccer_intl", "mlb"}
+    for msg in errors.values():
+        assert "deadline exceeded" in msg

@@ -228,3 +228,43 @@ def test_real_score_timeout_falls_back_to_synth_not_zero(monkeypatch, tmp_path):
     assert doc["card_count"] == 1
     assert doc["cards"][0]["model_only"] is True
     assert doc["cards"][0]["edge_claimed"] is False
+
+
+def test_both_score_and_fallback_hang_still_writes_honest_snapshot(monkeypatch, tmp_path):
+    # 2026-07-05 SLA-FREEZE regression: props_score_timeout's docstring promised a
+    # timed-out tick "still writes an honest (empty/synth) snapshot" but the
+    # fallback call itself was UNBOUNDED, so when live-slate load made the
+    # fallback ALSO run long, tick() never reached _atomic_write and
+    # props_snapshot.json's mtime froze. This locks in that BOTH the score AND
+    # its fallback hanging past their budgets still reaches the write, labeled
+    # source="timeout_fallback" (honest degraded, never fabricated rows/mtime freeze).
+    cache_p = _patch_cache_path(monkeypatch, tmp_path)
+    snap_p = tmp_path / "snap.json"
+
+    def hangs(now):
+        import time as _t
+        _t.sleep(5.0)  # >> both tiny timeouts used below
+        return ([_card()], {"mlb": 999})  # never observed
+
+    monkeypatch.setattr(runner, "_score_props_bounded", hangs)
+    import scripts.platformkit.props.props_score_timeout as pst
+    monkeypatch.setattr(pst, "DEFAULT_FALLBACK_TIMEOUT_SEC", 0.05)  # shrink for a fast test
+    import time as _t
+    t0 = _t.monotonic()
+    env = runner.tick(now=88.0, output_path=snap_p,
+                      pregame_fn=lambda now: True,
+                      synth_fill_fn=hangs,  # the fallback ALSO hangs
+                      score_timeout_sec=0.05)
+    elapsed = _t.monotonic() - t0
+    assert elapsed < 3.0  # returned promptly; did not block for either 5s hang
+    assert env["source"] == "timeout_fallback"
+    assert env["overall"] == "UNAVAILABLE"
+    assert env["card_count"] == 0
+    # the write ITSELF happened (this is the exact bug: mtime must advance).
+    assert snap_p.exists()
+    doc = json.loads(snap_p.read_text(encoding="ascii"))
+    assert doc["generated_at"] == 88.0
+    assert doc["source"] == "timeout_fallback"
+    # the decoupled m10 cache also advances (never a stale omit).
+    cache_doc = json.loads(cache_p.read_text(encoding="ascii"))
+    assert cache_doc["generated_at"] == 88.0

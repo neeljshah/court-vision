@@ -3,7 +3,8 @@
 MEASUREMENT-ONLY daemon: every 300 s re-scores prop lines -> props_snapshot.json.
 HONEST RAILS: UNITS not $; UNAVAILABLE only when genuinely no pregame games;
 CALIBRATION not edge; no flag flip; no data/registry/ write; no real-money action.
-ANTI-FLICKER: transient-empty tick with pregame games -> model-only synth fill.
+ANTI-FLICKER: transient-empty tick -> bounded model-only synth fill (see
+props_score_timeout docstring).
 HEARTBEAT: start beat + background 300 s beater during slow scoring (700+ props
 can exceed the 660 s supervisor fresh threshold without the background thread).
 Injectable clock/sleep/score_fn/synth_fill_fn/pregame_fn/max_ticks for tests.
@@ -109,13 +110,16 @@ def _pregame_games_exist(now: float) -> bool:
 
 
 def _make_envelope(rows: List[Dict[str, Any]], now: float, *,
-                   ok: bool,
+                   ok: bool, source: str = "primary",
                    n_more: Optional[Dict[str, int]] = None) -> Dict[str, Any]:
-    """Wrap prop rows in a standard output envelope."""
+    """Wrap prop rows in a standard output envelope. *source*: "primary" (fresh
+    score), "fallback" (bounded synth fallback served after a primary timeout),
+    or "timeout_fallback" (both exhausted -- honest degraded, not fabricated)."""
     overall = "ok" if (ok and rows) else ("UNAVAILABLE" if not rows else "degraded")
     return {
         "generated_at": now,
         "overall": overall,
+        "source": source,
         "card_count": len(rows),
         "n_more_model_only": dict(n_more or {}),
         "rows": rows,
@@ -126,7 +130,8 @@ def _make_envelope(rows: List[Dict[str, Any]], now: float, *,
             "(model_only=True) carry NO edge/CLV; PRICED rows carry edge_vs_market "
             "(a prob diff, NOT $). UNITS not $; past-dated boards dropped; "
             "UNAVAILABLE only when there are genuinely no pregame games. "
-            "calibration not edge."
+            "source=timeout_fallback = both score+fallback hit their deadline "
+            "this cycle (honest degraded, never fabricated). calibration not edge."
         ),
     }
 
@@ -172,8 +177,9 @@ def tick(*, now: float,
     tests). ANTI-FLICKER guard: a 0-card tick with pregame games on disk RECOMPUTES
     a model-only synth-only fill (no feed) and serves it -- see module docstring.
     synth_fill_fn / pregame_fn injectable for tests; the guard is SKIPPED when
-    score_fn is injected (raw-path determinism). score_timeout_sec (LANE 6 fix)
-    bounds the scoring call so a hang can no longer starve the snapshot write."""
+    score_fn is injected (raw-path determinism). score_timeout_sec bounds BOTH
+    the score and its fallback (score_with_timeout_and_fallback) so the write
+    below always happens; envelope "source" labels a degraded cycle honestly."""
     path = output_path if output_path is not None else _OUTPUT_PATH
     _synth = synth_fill_fn if synth_fill_fn is not None else _synth_only_fill
     _pregame = pregame_fn if pregame_fn is not None else _pregame_games_exist
@@ -187,43 +193,38 @@ def tick(*, now: float,
     _beater.start()
 
     n_more: Dict[str, int] = {}
-    timed_out = False
+    source = "primary"
     try:
-        if score_fn is not None:
+        if score_fn is not None:  # raw injected path: no fallback wrapping (as before)
             result, timed_out = props_score_timeout.score_with_timeout(
                 lambda: list(score_fn(now)), timeout_sec=score_timeout_sec)
-            rows = result if not timed_out else []
+            rows, ok = (result, True) if not timed_out else ([], False)
         else:
-            result, timed_out = props_score_timeout.score_with_timeout(
-                lambda: _score_props_bounded(now), timeout_sec=score_timeout_sec)
-            rows, n_more = result if not timed_out else ([], {})
-        ok = not timed_out
-        if timed_out:
-            logger.warning("props_pred_tick score timed out after %.0fs",
-                           score_timeout_sec)
+            # Fallback is ALSO bounded now (see props_score_timeout docstring).
+            def _fallback() -> Any:
+                if not _pregame(now):
+                    return [], {}
+                return _synth(now)
+            result, source = props_score_timeout.score_with_timeout_and_fallback(
+                lambda: _score_props_bounded(now), _fallback,
+                needs_fallback=lambda r: not r[0], timeout_sec=score_timeout_sec,
+                fallback_timeout_sec=props_score_timeout.DEFAULT_FALLBACK_TIMEOUT_SEC)
+            rows, n_more = result if result is not None else ([], {})
+            ok = source != "timeout"
+            if source != "primary":
+                logger.warning("props_pred_tick score timed out after %.0fs "
+                               "(fallback path=%s, %d rows)",
+                               score_timeout_sec, source, len(rows))
     except Exception as exc:  # noqa: BLE001
         logger.debug("props_pred_tick score raised: %s", exc)
-        rows, n_more, ok = [], {}, False
+        rows, n_more, ok, source = [], {}, False, "timeout_fallback"
     finally:
         _stop_beat.set()  # stop background beater regardless of outcome
 
-    # ANTI-FLICKER: a transient empty while pregame games exist on disk -> honest
-    # model-only synth-only recompute (no feed). Skipped for the injected raw path.
-    if not rows and score_fn is None:
-        try:
-            if _pregame(now):
-                fill_rows, fill_more = _synth(now)
-                if fill_rows:
-                    logger.debug("props_pred_tick: transient empty with pregame "
-                                 "games; filled %d model-only synth cards",
-                                 len(fill_rows))
-                    rows = fill_rows
-                    n_more = fill_more
-                    ok = True
-        except Exception as exc:  # noqa: BLE001
-            logger.debug("props_pred_tick synth-only guard skipped: %s", exc)
-
-    envelope = _make_envelope(rows, now, ok=ok, n_more=n_more)
+    # "timeout" (both score+fallback exhausted) -> relabel "timeout_fallback" for envelope honesty.
+    envelope = _make_envelope(
+        rows, now, ok=ok,
+        source=("timeout_fallback" if source == "timeout" else source), n_more=n_more)
     _atomic_write(path, envelope)
     if write_cache:
         _write_prop_cards_cache(rows, now, n_more)
