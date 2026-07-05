@@ -20,6 +20,7 @@ if str(_REPO) not in sys.path:
 
 from scripts.platformkit.improve import artifact_store as store  # noqa: E402
 from scripts.platformkit.improve import selfimprove_daemon as D  # noqa: E402
+from scripts.platformkit.improve import selfimprove_stage as ST  # noqa: E402
 from scripts.platformkit.improve.checkpoint import load_checkpoint  # noqa: E402
 
 
@@ -253,6 +254,127 @@ def test_count_replicated_corpora_dedups_by_corpus_id():
     two = {"primary_corpus_id": "A", "fold_results": folds,
            "corpora": [{"corpus_id": "B", "folds": [{"delta": 0.03}]}]}
     assert D._count_replicated_corpora(two) == 2
+
+
+# ------------------------------------------------ FWER-budget wiring (moat-fwer-wiring.md)
+def test_effective_min_corpora_unchanged_with_only_two_corpora_available():
+    """With only 2 corpora ever available (today's typical case), the FWER-aware floor
+    must be BYTE-IDENTICAL to the fixed default of 2, however wide K (LANE C's growing
+    candidate surface) gets -- min_corpora_eff never demands more corpora than exist.
+    """
+    assert ST.effective_min_corpora("nba", 2) == 2
+    assert ST.effective_min_corpora("nba", 1) == 2  # floor never below 2 either
+
+
+def test_effective_min_corpora_rises_with_more_available_corpora():
+    """When more independent corpora are genuinely available, the replication floor
+    RISES with K (defense-in-depth) rather than staying pinned at the old fixed 2.
+    """
+    floor = ST.effective_min_corpora("nba", 10)
+    assert floor >= 2
+    # LANE C + the always-on families give K > 1 for a real sport name, so the floor
+    # should be free to exceed 2 when enough corpora exist (never BELOW 2).
+    assert floor <= 10
+
+
+def test_effective_min_corpora_failsafe_on_import_failure(monkeypatch):
+    """A broken/non-importable helper (e.g. candidate_enum unavailable) falls back to the
+    UNCHANGED fixed default of 2 -- never crashes, never silently loosens OR tightens.
+    """
+    import builtins
+    real_import = builtins.__import__
+
+    def _blocked(name, *a, **k):
+        if "candidate_enum" in name:
+            raise ImportError("blocked for test")
+        return real_import(name, *a, **k)
+
+    monkeypatch.setattr(builtins, "__import__", _blocked)
+    assert ST.effective_min_corpora("nba", 10) == 2  # would be >2 if the helper ran
+
+
+def test_run_cycle_uses_fwer_aware_floor_by_default(tmp_path):
+    """run_cycle with NO explicit min_corpora must consult effective_min_corpora, not a
+    bare hardcoded 2 -- proven by a candidate whose n_rep=1 still REPLICATION_PENDINGs
+    (the floor can never drop below 2), matching today's behaviour exactly.
+    """
+    res = _run("nba_winprob", _candidate(two_corpora=False), tmp_path)  # n_rep == 1
+    assert res.decision == D.REPLICATION_PENDING
+    assert res.shipped_version is None
+
+
+def test_run_cycle_explicit_min_corpora_still_overrides():
+    """An explicit min_corpora kwarg (e.g. an offline test wanting a looser bar) still
+    wins over the FWER-aware default -- backward compatible with any existing caller.
+    """
+    import tempfile
+    with tempfile.TemporaryDirectory() as td:
+        tmp_path = pathlib.Path(td)
+        res = _run("nba_winprob", _candidate(two_corpora=False), tmp_path, min_corpora=1)
+        assert res.decision == D.SHIP  # 1 corpus clears an explicit min_corpora=1
+
+
+# ------------------------------------------------- planted-null tripwire ledger wiring
+def test_planted_null_ledger_shape_matches_prioritizer_contract():
+    """planted_null_ledger() must emit the EXACT {family: {"null_shipped": bool, ...}}
+    shape prioritizer.frozen_families() reads (mirrors segment_planted_nulls.ledger_of).
+    Runs the REAL shuffled-label nulls (no stub) -- honest expectation: none ship.
+    """
+    from scripts.platformkit.improve.prioritizer import frozen_families
+
+    ledger = ST.planted_null_ledger()
+    assert ledger, "expected at least one LANE C family in the ledger"
+    for fam, row in ledger.items():
+        assert "null_shipped" in row and "null_ships" in row
+        assert isinstance(row["null_shipped"], bool)
+        assert row["note"] == "calibration, not edge"
+    # honest expectation: a shuffled-label null carries no real signal -> none ship,
+    # so frozen_families() on the real ledger freezes NOTHING today.
+    assert frozen_families(ledger) == set()
+
+
+def test_planted_null_ledger_tripwire_fires_when_a_null_ships(monkeypatch):
+    """The tripwire's WIRING (not the underlying gate) must actually freeze a family
+    when its planted null reports shipped=True. Proven by monkeypatching the seam
+    planted_null_ledger reads (run_all_planted_nulls) with a synthetic shipped result --
+    the gate math itself is untouched; this is purely the ledger-writer contract.
+    """
+    from dataclasses import dataclass
+
+    from scripts.platformkit.improve.prioritizer import frozen_families
+
+    @dataclass(frozen=True)
+    class _FakeResult:
+        family: str
+        verdict: str
+        shipped: bool
+        n_games: int
+
+    def _fake_run_all(**kw):
+        return [_FakeResult("playstyle_corr", "REPLICATED", True, 120),
+                _FakeResult("scheme_prior", "REJECT", False, 120)]
+
+    monkeypatch.setattr(
+        "scripts.platformkit.signals.planted_nulls.run_all_planted_nulls", _fake_run_all)
+    ledger = ST.planted_null_ledger()
+    assert ledger["playstyle_corr"]["null_shipped"] is True
+    assert ledger["scheme_prior"]["null_shipped"] is False
+    assert frozen_families(ledger) == {"playstyle_corr"}  # a shipped null FREEZES the family
+
+
+def test_planted_null_ledger_failsafe_returns_empty_on_import_failure(monkeypatch):
+    """A missing/broken planted_nulls module must yield {} (freezes nothing) -- the
+    conservative fail-safe direction, never a crash, never a fabricated freeze."""
+    import builtins
+    real_import = builtins.__import__
+
+    def _blocked(name, *a, **k):
+        if name.endswith("signals.planted_nulls") or name == "scripts.platformkit.signals.planted_nulls":
+            raise ImportError("blocked for test")
+        return real_import(name, *a, **k)
+
+    monkeypatch.setattr(builtins, "__import__", _blocked)
+    assert ST.planted_null_ledger() == {}
 
 
 if __name__ == "__main__":

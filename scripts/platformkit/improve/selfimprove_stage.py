@@ -150,7 +150,74 @@ def emit_proposal(proposals_path: pathlib.Path, *, ts: float, name: str,
     })
 
 
+# --- FWER-budget wiring (docs/research/organization-sprint/PROPOSED-moat-fwer-wiring.md)
+# LANE C additively enumerates K candidate specs per sport; gating them all at a FIXED
+# min_corpora=2 is a replication-BUDGET gap as K grows (defense-in-depth, NOT the FWER
+# bound itself -- Bonferroni-on-eps is, and it already lives in
+# scripts.platformkit.combo.fwer_budget.eps_eff, reused verbatim here). We raise the
+# corpora floor with K via the SAME proven eps_eff/min_corpora_eff curve the fusion and
+# in-game-segment lanes already reuse (fusion/meta_flex_fwer.py, segment_planted_nulls.py).
+_DEFAULT_MIN_CORPORA = 2  # unchanged fallback: identical to today's fixed floor.
+
+
+def effective_min_corpora(name: str, n_available_corpora: int) -> int:
+    """Replication floor = min_corpora_eff(n_available_corpora, K), K = enumerated specs.
+
+    K is the number of distinct, deduped candidate_ids candidate_enum.enumerate_specs
+    would propose for `name` this cycle (LANE C's growing signal-factory surface, plus
+    the always-on recal/ingame/segment/prop-recency families). min_corpora_eff NEVER
+    demands more corpora than `n_available_corpora` (R14 -- an environment with only 2
+    corpora available still clears at the floor of 2), so a real 2-corpora win stays
+    reachable regardless of how wide K grows. Any import/enumeration failure -> the
+    unchanged fixed default of 2 (fail-safe, never a stricter OR looser surprise floor).
+    Pure; never raises; never writes a ledger; never flips a flag.
+    """
+    try:
+        from scripts.platformkit.improve.candidate_enum import enumerate_specs
+        from scripts.platformkit.combo.fwer_budget import min_corpora_eff
+        k = len(enumerate_specs(str(name)))
+        return int(min_corpora_eff(int(n_available_corpora), k))
+    except Exception:  # noqa: BLE001 -- fail-safe: identical to today's fixed floor
+        return _DEFAULT_MIN_CORPORA
+
+
+# --- planted-null tripwire ledger (proposal change 3 -- NOT an FWER bound; a calibration
+# leak detector). Wires scripts.platformkit.signals.planted_nulls' shuffled-label results
+# into the {"null_shipped": bool, ...} shape prioritizer.frozen_families() already reads.
+def planted_null_ledger() -> Dict[str, Dict[str, Any]]:
+    """Run every LANE C family's planted null and return a prioritizer-shaped ledger dict.
+
+    Shape: {family: {"null_shipped": bool, "null_ships": int, "verdict": str, ...}} --
+    identical field names to segment_planted_nulls.ledger_of() so
+    prioritizer.frozen_families() reads either interchangeably. A family whose shuffled
+    -label null returns REPLICATED has a calibration leak (added flexibility manufactured
+    a false win) and is flagged null_shipped=True -> frozen_families() sinks/flags it
+    until a human reviews. This function ONLY returns a ledger dict for a caller to
+    persist/merge -- it never writes a file, never flips a flag, never auto-freezes
+    anything itself. Any import/run failure -> {} (an empty ledger freezes nothing,
+    the conservative fail-safe direction). Calibration, not edge; no $ field.
+    """
+    try:
+        from scripts.platformkit.signals.planted_nulls import run_all_planted_nulls
+    except Exception:  # noqa: BLE001 -- module unavailable -> no ledger, nothing frozen
+        return {}
+    out: Dict[str, Dict[str, Any]] = {}
+    try:
+        for r in run_all_planted_nulls():
+            out[str(r.family)] = {
+                "null_shipped": bool(r.shipped),
+                "null_ships": int(bool(r.shipped)),
+                "verdict": str(r.verdict),
+                "n_games": int(r.n_games),
+                "note": "calibration, not edge",
+            }
+    except Exception:  # noqa: BLE001 -- a crashing null run must not wedge the caller
+        return out
+    return out
+
+
 __all__ = [
     "append_jsonl", "call_recal", "default_gate_fn", "count_replicated_corpora",
     "stage_ship", "emit_reject", "emit_proposal",
+    "effective_min_corpora", "planted_null_ledger",
 ]

@@ -163,3 +163,42 @@ def test_candidate_has_no_dollar_keys_and_carries_calibration_note(monkeypatch, 
     for key in ("base_preds", "cand_preds", "y", "fold_results", "stability_metric_fn",
                 "artifact", "payload"):
         assert key in cand
+
+
+# ------------------------------------------- (e) CLV settled-close 2nd-corpus bridge
+# (docs/research/organization-sprint/PROPOSED-clv-corpus-wiring.md -- the ~5-LOC bridge
+# already lives in build_candidate via _inject_clv_corpus; these assert its contract.)
+def test_clv_corpus_stays_empty_without_a_real_second_corpus(monkeypatch, tmp_path):
+    """No on-disk grades and no injected `clv_corpus` kwarg -> corpora stays [] (the
+    honest REPLICATION_PENDING baseline is never fabricated into a phantom 2nd corpus).
+    """
+    _enable(monkeypatch, tmp_path)
+    # the on-disk grade-file adapter finds nothing in an empty/nonexistent dir.
+    cand = RC.build_candidate("nba", _settled_batch(), grade_dir=tmp_path / "no_grades")
+    assert cand is not None
+    assert cand["corpora"] == []  # unchanged: no phantom corpus ever fabricated
+
+
+def test_clv_corpus_injected_via_test_hook_satisfies_two_corpora_rule(monkeypatch, tmp_path):
+    """The `clv_corpus` kwarg (offline/test hook documented in _inject_clv_corpus) appends
+    a genuine 2nd corpus to `candidate['corpora']` -- the SAME path a real settled-CLV
+    close-beats window would take. vs_close stays UNPROVEN regardless (P2 -- the bridge
+    NEVER self-stamps an upgrade).
+    """
+    _enable(monkeypatch, tmp_path)
+    second_corpus = {"corpus_id": "clv_settled_close",
+                     "folds": [{"delta": 0.01, "metric": "brier"}],
+                     "all_positive": True}
+    cand = RC.build_candidate("nba", _settled_batch(), clv_corpus=second_corpus)
+    assert cand is not None
+    assert cand["corpora"] == [second_corpus]
+    assert cand["vs_close"] == "UNPROVEN"  # never self-stamped, even with a 2nd corpus
+
+
+def test_clv_corpus_inject_never_raises_on_a_malformed_hook(monkeypatch, tmp_path):
+    """A malformed `clv_corpus` value (not a dict) must be ignored, never crash the
+    choke point -- purity: any failure leaves the candidate's corpora UNCHANGED ([])."""
+    _enable(monkeypatch, tmp_path)
+    cand = RC.build_candidate("nba", _settled_batch(), clv_corpus="not-a-dict")
+    assert cand is not None
+    assert cand["corpora"] == []
