@@ -41,6 +41,15 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 50 (WAVE-49: H3 REPLAYABLE + REPLAY LEDGER 4/7, 2026-07-05
+  ~07:10Z, wf_359c261e-484 3 agents/~0.30M tok, commit 6bf71d17): real export
+  bug fixed (H1's base zipped into p_base instead of H0's own prediction);
+  gate re-run BYTE-IDENTICAL to committed verdict (no-drift guard held);
+  tennis_h3 client RAN at 4e-7. Replay coverage 4 RAN / 3 honest UNAVAILABLE
+  (need gate re-fits, out of scope by policy). ALL runnable non-time-gated
+  work now complete -> wall-clock cadence per charter until: KBO Naver LIVE
+  confirm ~09:30Z (reopens KBO in-game), US verifier sweep ~17-23Z, sprint
+  close 07-06 EOD. Overnight-session yield protocol active. No edge claimed.
 - SPRINT WAKE 49 (WAVE-48: RMSE MODE + UMPIRE REPLAY 0.0, 2026-07-05 ~06:40Z,
   wf_2bcc5cb4-b36 3 agents/~0.40M tok, commit 328d8348): harness gains
   metric=rmse; umpire-totals client RAN at max_abs_diff=0.0 all 3 folds (pure
