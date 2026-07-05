@@ -20,6 +20,13 @@ Acceptance criteria:
   8. gate_verdict question against a VERIFIED claim_kind=verdict row returns
      gate_module/verdict/primary_number/provenance; a MISMATCH verdict-claim
      row is invisible; an uncovered gate topic is honestly unanswerable.
+  9. discover_claim_source_pairs (PROGRAM v3 ask-coverage lane) AUTOMATICALLY
+     glob-discovers every *.jsonl claims store paired with its same-stem
+     _validation.json sibling, with zero per-store registration -- proven
+     against a tmp_path fixture with 3 stores (2 conventional, 1 unpaired)
+     plus a REAL end-to-end check that every wave-51 store this lane added
+     (wnba/tennis_claims_v3/catcher_framing/platoon_split/umpire_zone) is
+     actually discovered from the real repo tree.
 """
 from __future__ import annotations
 
@@ -425,3 +432,110 @@ def test_compose_fit_missing_ingredient_is_honest_unanswerable(fixture_fit_sourc
     result2 = ask_mod.compose_fit("Nobody Fake", "ATL")
     assert result2["answerable"] is False
     assert result2["missing_ingredient"] == "archetype_profile"
+
+
+# --- discover_claim_source_pairs (PROGRAM v3 ask-coverage lane) --------------
+
+def test_discover_claim_source_pairs_matches_by_stem_convention(tmp_path):
+    """<stem>.jsonl auto-pairs with <stem>_validation.json in the SAME
+    directory -- the convention every store except the 2 legacy overrides
+    already follows."""
+    (tmp_path / "some_new_sport_claims.jsonl").write_text('{"claim_id": "x"}\n', encoding="ascii")
+    (tmp_path / "some_new_sport_claims_validation.json").write_text("{}", encoding="ascii")
+
+    pairs = ask_mod.discover_claim_source_pairs(tmp_path)
+    assert len(pairs) == 1
+    validation_path, claims_path = pairs[0]
+    assert claims_path.name == "some_new_sport_claims.jsonl"
+    assert validation_path.name == "some_new_sport_claims_validation.json"
+
+
+def test_discover_claim_source_pairs_skips_unpaired_jsonl(tmp_path):
+    """A *.jsonl with NO matching _validation.json (and no legacy override)
+    is silently skipped -- unvalidated claims stay invisible, discovery
+    never errors on a partial store."""
+    (tmp_path / "orphan_claims.jsonl").write_text('{"claim_id": "y"}\n', encoding="ascii")
+    (tmp_path / "paired_claims.jsonl").write_text('{"claim_id": "z"}\n', encoding="ascii")
+    (tmp_path / "paired_claims_validation.json").write_text("{}", encoding="ascii")
+
+    pairs = ask_mod.discover_claim_source_pairs(tmp_path)
+    claims_names = {c.name for _v, c in pairs}
+    assert "orphan_claims.jsonl" not in claims_names
+    assert "paired_claims.jsonl" in claims_names
+    assert len(pairs) == 1
+
+
+def test_discover_claim_source_pairs_empty_dir_returns_empty(tmp_path):
+    empty_dir = tmp_path / "does_not_exist"
+    assert ask_mod.discover_claim_source_pairs(empty_dir) == ()
+
+
+def test_discover_claim_source_pairs_deterministic_order(tmp_path):
+    for stem in ("zzz_claims", "aaa_claims", "mmm_claims"):
+        (tmp_path / f"{stem}.jsonl").write_text('{"claim_id": "q"}\n', encoding="ascii")
+        (tmp_path / f"{stem}_validation.json").write_text("{}", encoding="ascii")
+
+    pairs = ask_mod.discover_claim_source_pairs(tmp_path)
+    names = [c.name for _v, c in pairs]
+    assert names == sorted(names)
+
+
+def test_real_repo_discovery_covers_every_wave51_store():
+    """END-TO-END proof (no monkeypatch, the actual repo tree): the
+    automatic glob discovery finds every claim store this lane's wave-51
+    modules produced, so ask() covers them with zero registration here."""
+    pairs = ask_mod.discover_claim_source_pairs()
+    claims_names = {c.name for _v, c in pairs}
+    for expected in (
+        "wnba_claims.jsonl",
+        "tennis_claims_v3.jsonl",
+        "catcher_framing_claims.jsonl",
+        "platoon_split_claims.jsonl",
+        "umpire_zone_claims.jsonl",
+        "nba_fit_ingredient_claims.jsonl",
+    ):
+        assert expected in claims_names, f"{expected} not discovered from the real repo tree"
+
+    # every discovered pair's validation file must actually exist on disk
+    for validation_path, claims_path in pairs:
+        assert validation_path.exists(), f"{validation_path} missing for {claims_path}"
+        assert claims_path.exists()
+
+
+def test_real_repo_lebron_james_rank_lookup_is_verified():
+    """ACCEPTANCE (a): a LeBron James rank lookup on a dimension wave-51
+    says he IS rankable on -- nba_fit_archetype_profile_current's usage_pct
+    (rank 95, window=current) -- returns a VERIFIED answer with rank+n.
+    Deliberately scoped to nba_fit_ingredient_claims' OWN dedicated
+    <stem>_validation.json (not the shared data/frontend/ops/
+    intel_claims_validation.json path nba_shooting_claims.jsonl still
+    depends on -- see spawned task re: DEFAULT_OUTPUT collision -- so this
+    acceptance check is immune to that pre-existing, out-of-lane race)."""
+    result = ask_mod.ask("Where does LeBron James rank on usage_pct?")
+    assert result["answerable"] is True
+    assert result["answer"]["entity_name"] == "LeBron James"
+    usage_hit = next(
+        r for r in result["answer"]["rankings"] if r["metric"] == "usage_pct" and r["window"] == "current"
+    )
+    assert usage_hit["rank"] == 95
+    assert any(e["validator_verdict"] == "VERIFIED" for e in result["evidence"])
+
+
+def test_real_repo_below_floor_player_is_honest_excluded_not_a_miss():
+    """ACCEPTANCE (b): Sami Whitcomb (n_games_played=2 in the source WNBA
+    parquet, floor is n_games_played>=10) returns the honest
+    excluded-below-floor reason, never a generic/silent miss."""
+    result = ask_mod.ask("Where does Sami Whitcomb rank on ts_pct in window=season_2026_wnba?")
+    assert result["answerable"] is False
+    assert "min_sample floor" in result["reason"]
+
+
+def test_real_repo_compose_fit_non_star_player_composes():
+    """ACCEPTANCE (c): compose_fit for a NON-star player (Taurean Prince, a
+    rotation wing, not a franchise star) + his real team composes cleanly
+    from all 3 VERIFIED fit-ingredient claims with full provenance."""
+    result = ask_mod.compose_fit("Taurean Prince", "MIL")
+    assert result["answerable"] is True
+    assert result["answer"]["archetype_profile"]["posgroup"] == "WING"
+    assert len(result["evidence"]) == 3
+    assert all(e["validator_verdict"] == "VERIFIED" for e in result["evidence"])
