@@ -41,6 +41,20 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 61 (WAVE-60: TWO MORE REAL KBO BUGS PEELED, 2026-07-05 ~09:55Z
+  true-UTC, wf_ed425118-c63 6 agents/~0.64M tok, 1 commit): (1) FIXED --
+  kbo_capture_wire built state rows but NEVER persisted (append_state_row
+  uncalled sibling; docstring lied); chain dry-run proves all 4 live tickers
+  resolve end-to-end; daemon reloaded (PID 7880). (2) UNFIXED STRUCTURAL:
+  _process_game returns no_live_state at line ~563 BEFORE the deep dispatch
+  (~569) -- ESPN can't resolve KBO live states (why the relay exists), so
+  the wire is unreachable; fix agent deferred, re-reviewer ruled FAIL
+  (deferral != resolution; correct). FABLE SANCTION: minimal reorder -- for
+  sport==kbo fire the fail-open deep capture BEFORE the early return,
+  decision-path return UNCHANGED (capture-only). 429 lane died on
+  StructuredOutput cap AGAIN (2nd) -> micro-schema retry. Partial 429 data:
+  ~10% kbo-tagged of 192 total; feeds healthy. WAVE-61: reorder+test+reload
+  +in-window verify (slate live to ~13Z), micro 429 diagnosis. No edge claims.
 - SPRINT WAKE 60 (WAVE-59 ADJUDICATED FROM DISK, 2026-07-05 09:15Z TRUE-UTC
   [clock note: box=CDT/UTC-5; my wave 'now' args + recent ledger stamps ran
   ~45min ahead; re-anchored to date -u]): KBO lane died on StructuredOutput
