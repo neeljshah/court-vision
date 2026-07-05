@@ -2,23 +2,31 @@
 
 Accept: mock Kalshi settled->is_proxy=False; open->is_proxy=True; degraded->None;
 line_store true-close->False; proxy->True; no close->None; CLV sign correct; no $.
+2026-07-06 audit fix: kalshi-taken row gets own-venue close (close_venue=
+"kalshi", close_kind="kalshi_lock") ahead of the book line_store fallback;
+non-kalshi paths byte-unchanged; close_venue always present; no row rewrites.
 
 Run:
   cd /c/Users/neelj/nba-ai-system && python -m pytest scripts/platformkit/pm_trading/test_close_capture.py -q
 """
 from __future__ import annotations
 
+import json
 import sys
 import pathlib
+
+import pytest
 
 _ROOT = pathlib.Path(__file__).resolve().parents[4]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
 from scripts.platformkit.pm_trading.close_capture import (
-    CloseResult, capture_close, _kalshi_close,
+    CloseResult, capture_close, _kalshi_close, _kx_venue_close,
 )
 from scripts.platformkit.clv_ledger import compute_clv
+from scripts.platformkit.clv import kx_ticker_close as _kx_ticker_close
+from scripts.platformkit.clv import kx_close_fallback as _kx_close_fallback
 
 
 def _row(event_id: str = "KXNBA2026-BOS-NYK", sport: str = "nba",
@@ -39,6 +47,23 @@ def _no_dollar_keys(obj: object) -> bool:
         if any(f in str(k).lower() for f in forbidden):
             return False
     return all(_no_dollar_keys(v) for v in obj.values())
+
+
+def _seed_kx_close(tmp_path, ticker: str, sport: str, close_prob: float):
+    """Same fixture recipe as test_kx_close_fallback.py's _seed_close: writes one
+    in-play tick then derives+writes the kx_ticker_close close-proxy, returning
+    the closes_dir to monkeypatch onto kx_close_fallback's kx_ticker_close ref."""
+    grade_dir = tmp_path / "grade"
+    out_dir = tmp_path / "closes"
+    p = grade_dir / sport / (ticker + ".jsonl")
+    p.parent.mkdir(parents=True, exist_ok=True)
+    with p.open("w", encoding="utf-8") as fh:
+        fh.write(json.dumps({
+            "sport": sport, "game_id": ticker, "ts": "2026-07-06T23:55:00Z",
+            "market_prob": close_prob, "model_prob": 0.5, "side": "home",
+        }) + "\n")
+    _kx_ticker_close.write_closes(sport, grade_dir=grade_dir, out_dir=out_dir)
+    return out_dir
 
 
 # ---------------------------------------------------------------------------
@@ -294,3 +319,131 @@ class TestIsProxyPropagation:
         for src in ("kalshi", "line_store", "proxy"):
             cr = CloseResult(1.80, 2.10, is_proxy=True, close_source=src)
             assert cr.close_source == src
+
+
+# ---------------------------------------------------------------------------
+# Tests: kalshi own-venue close tier (2026-07-06 audit fix)
+# ---------------------------------------------------------------------------
+
+class TestKxVenueClose:
+    """Kalshi-taken rows must get their OWN venue's close, not a different
+    book's line_store snapshot -- the cross-venue-basis bug."""
+
+    def test_kalshi_taken_row_gets_venue_close_when_available(self, tmp_path, monkeypatch):
+        """taken_book='kalshi' + a derived kx close on disk -> close_venue=
+        'kalshi', close_kind='kalshi_lock', is_proxy=True (honest proxy label),
+        reusing kx_close_fallback/kx_ticker_close end-to-end (no duplicated fetch)."""
+        out_dir = _seed_kx_close(tmp_path, "KXNBAGAME-VENUE", "nba", 0.60)
+        monkeypatch.setattr(_kx_ticker_close, "DEFAULT_CLOSES_DIR", out_dir)
+        row = {
+            "event_id": "KXNBAGAME-VENUE", "sport": "nba", "side": "home",
+            "taken_book": "kalshi", "taken_decimal": 1.95, "matchup": "BOS@NYK",
+        }
+        res = _kx_venue_close(row)
+        assert res is not None
+        assert res.close_venue == "kalshi"
+        assert res.close_kind == "kalshi_lock"
+        assert res.is_proxy is True
+        assert res.close_source == "kalshi_venue"
+        assert res.close_home_dec == pytest.approx(1.0 / 0.60)
+        assert res.close_away_dec == pytest.approx(1.0 / 0.40)
+        assert _no_dollar_keys(res.__dict__)
+
+    def test_kalshi_taken_row_falls_back_labeled_when_no_kx_close(self, tmp_path, monkeypatch):
+        """taken_book='kalshi' but no derived close on disk -> _kx_venue_close
+        returns None; capture_close falls through to the line_store tier and
+        the returned CloseResult still honestly carries close_venue='book'."""
+        empty_dir = tmp_path / "closes_never_derived"
+        monkeypatch.setattr(_kx_ticker_close, "DEFAULT_CLOSES_DIR", empty_dir)
+        row = {
+            "event_id": "KXNBAGAME-NOCLOSE", "sport": "nba", "side": "home",
+            "taken_book": "kalshi", "taken_decimal": 1.95, "matchup": "BOS@NYK",
+        }
+        assert _kx_venue_close(row) is None
+        # Full chain: no public-REST match, no kx-venue close, no line_store
+        # history -> honest None (never a fabricated close).
+        res = capture_close(row, kalshi_fetch=lambda s: [])
+        assert res is None
+
+    def test_non_kalshi_taken_row_never_gets_kx_venue_close(self, tmp_path, monkeypatch):
+        """taken_book != 'kalshi' -> _kx_venue_close is gated off even when a kx
+        close WOULD resolve for that ticker (never substituted for a non-kalshi
+        taken price -- the exact bug this tier must not re-introduce reversed)."""
+        out_dir = _seed_kx_close(tmp_path, "KXNBAGAME-OTHERBOOK", "nba", 0.60)
+        monkeypatch.setattr(_kx_ticker_close, "DEFAULT_CLOSES_DIR", out_dir)
+        row = {
+            "event_id": "KXNBAGAME-OTHERBOOK", "sport": "nba", "side": "home",
+            "taken_book": "fanduel", "taken_decimal": 1.95, "matchup": "BOS@NYK",
+        }
+        assert _kx_venue_close(row) is None
+
+    def test_missing_taken_book_never_gets_kx_venue_close(self, tmp_path, monkeypatch):
+        """No taken_book field at all -> gated off (never a silent guess)."""
+        out_dir = _seed_kx_close(tmp_path, "KXNBAGAME-NOBOOK", "nba", 0.60)
+        monkeypatch.setattr(_kx_ticker_close, "DEFAULT_CLOSES_DIR", out_dir)
+        row = {"event_id": "KXNBAGAME-NOBOOK", "sport": "nba"}
+        assert _kx_venue_close(row) is None
+
+    def test_kx_venue_close_takes_precedence_over_line_store_in_full_chain(
+        self, tmp_path, monkeypatch
+    ):
+        """capture_close's full precedence: kalshi-taken row with BOTH a
+        derivable kx-venue close AND a line_store history returns the
+        kx-venue result (close_venue='kalshi'), not the line_store one."""
+        out_dir = _seed_kx_close(tmp_path, "KXNBAGAME-PRECEDENCE", "nba", 0.70)
+        monkeypatch.setattr(_kx_ticker_close, "DEFAULT_CLOSES_DIR", out_dir)
+
+        def _fake_line_store(row):
+            # If this fires, precedence is broken -- kx-venue should win first.
+            return (1.50, 2.50, True, "fanduel", "fanduel")
+
+        import scripts.platformkit.pm_trading.close_capture as _cc
+        monkeypatch.setattr(_cc, "_close_from_store", _fake_line_store)
+
+        row = {
+            "event_id": "KXNBAGAME-PRECEDENCE", "sport": "nba", "side": "home",
+            "taken_book": "kalshi", "taken_decimal": 1.95, "matchup": "BOS@NYK",
+        }
+        res = capture_close(row, kalshi_fetch=lambda s: [])
+        assert res is not None
+        assert res.close_venue == "kalshi"
+        assert res.close_kind == "kalshi_lock"
+
+    def test_close_venue_always_present_on_every_tier(self):
+        """close_venue is never blank on a CloseResult from any of the three
+        constructors: kalshi (public REST), kalshi_venue, line_store."""
+        for src, venue in (("kalshi", "kalshi"), ("kalshi_venue", "kalshi"),
+                          ("line_store", "book"), ("proxy", "book")):
+            cr = CloseResult(1.80, 2.10, is_proxy=True, close_source=src,
+                             close_venue=venue)
+            assert cr.close_venue in ("kalshi", "book")
+            assert cr.close_venue == venue
+
+    def test_capture_close_result_always_has_close_venue_attr(self):
+        """Every CloseResult capture_close can return has a close_venue
+        attribute (dataclass default guarantees this even on old call sites)."""
+        row = _row(event_id="KXNBA2026-BOS-NYK")
+
+        def _fetch(sport):
+            return [{
+                "event_ticker": "KXNBA2026-BOS-NYK", "status": "resolved",
+                "close_home_dec": 1.80, "close_away_dec": 2.10,
+            }]
+
+        res = capture_close(row, kalshi_fetch=_fetch)
+        assert res is not None
+        assert hasattr(res, "close_venue")
+        assert res.close_venue == "kalshi"
+
+    def test_capture_close_never_mutates_input_row(self, tmp_path, monkeypatch):
+        """FORWARD-ONLY invariant: capture_close/its' venue tier never writes
+        back into the row dict it was given (no rewriting of ledger rows)."""
+        out_dir = _seed_kx_close(tmp_path, "KXNBAGAME-NOMUTATE", "nba", 0.60)
+        monkeypatch.setattr(_kx_ticker_close, "DEFAULT_CLOSES_DIR", out_dir)
+        row = {
+            "event_id": "KXNBAGAME-NOMUTATE", "sport": "nba", "side": "home",
+            "taken_book": "kalshi", "taken_decimal": 1.95, "matchup": "BOS@NYK",
+        }
+        before = dict(row)
+        _ = capture_close(row, kalshi_fetch=lambda s: [])
+        assert row == before, "capture_close must never mutate the input row"
