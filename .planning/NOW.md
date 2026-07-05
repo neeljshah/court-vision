@@ -41,6 +41,22 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 56 (WAVE-55 SHIPPED: KBO LIVE CONFIRMED -- WALL BROKEN,
+  2026-07-05 ~08:15Z, wf_c05edee0-9e0 9 agents/~0.75M tok, 3 lane commits):
+  Naver relay served REAL MID-GAME states (2 polls 66s apart, game
+  20260705OBWO02026: score 5->6, bases rotated, seq 79->80; full base-out/
+  count fields) -- first success after every prior probe hit finals. State
+  provider built (13 tests, live fixture); WIRE honestly deferred: needs a
+  3-way team-code alias bridge (Kalshi ticker vs parquet vs Naver 2-letter)
+  + date matcher; NO model wire (kbo_live_model stays HONEST_NEGATIVE
+  fail-closed). Tennis H2H: 2787 full pairs VERIFIED (first production
+  pair-keyed validator claim; no WTA rows -> no fabricated split). Fit
+  REJECT registered into ask (17 verdict claims; validity questions answer
+  REJECT w/ provenance; compose_fit cites it inline). Merged test state
+  27+5+13+12 green. WAVE-56 launching: KBO alias bridge + capture wire +
+  bounded live soak (4 games start ~09:30Z; alias rail: EXACT-match codes,
+  never substring city match per prop-settler lesson), NPB/KBO descriptive
+  team-strength claims (7th+ sport coverage). No edge claims.
 - SPRINT WAKE 55 (WAVE-54 SHIPPED: FIT-VALIDITY GATE HONEST REJECT, 2026-07-05
   ~07:55Z, wf_bd872e77-95e 7 agents/~0.60M tok, 1 code commit): the marquee
   verdict -- fit score (archetype x scheme x vacancy, season<=s ingredients)
