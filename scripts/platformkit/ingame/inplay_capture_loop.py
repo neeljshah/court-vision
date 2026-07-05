@@ -631,6 +631,12 @@ def _process_game(sport: str, gid: str, legs: Dict[str, float],
         row["model_prob_wnba_shadow"] = _wnba_shadow(
             sport, state.get("home_display") or state.get("home"),
             state.get("away_display") or state.get("away"), state)
+        row["model_prob_nba_shadow"] = _nba_shadow(
+            sport, state.get("home_display") or state.get("home"),
+            state.get("away_display") or state.get("away"), state)
+        row["model_prob_tennis_shadow"] = _tennis_shadow(
+            sport, state.get("home_display") or state.get("home"),
+            state.get("away_display") or state.get("away"), state)
         # Same enrichment dict also mirrors onto the heartbeat/ops row for visibility
         # (unchanged behavior from before this LANE 3 move -- still after dec is final).
         row.update(enrichment)
@@ -660,6 +666,34 @@ def _wnba_shadow(sport: str, home: Any, away: Any, state: Dict[str, Any]) -> Opt
     this shadow is scoped to measure once wired)."""
     try:
         from scripts.platformkit.ingame.wnba_ingame_shadow import get_shadow
+        return get_shadow().shadow_prob(sport, str(home or ""), str(away or ""), state)
+    except Exception:  # noqa: BLE001 -- shadow measurement never affects the capture path
+        return None
+
+
+def _nba_shadow(sport: str, home: Any, away: Any, state: Dict[str, Any]) -> Optional[float]:
+    """SHADOW MEASUREMENT ONLY (logged, never decided on). All logic lives in
+    domains/basketball_nba/ingame_shadow.py; this wrapper only guarantees an
+    exception here can never reach the capture path. None-safe. Same gap this
+    measures as _wnba_shadow: live_board.live_model_home_prob's dispatch has
+    no nba branch, so model_prob stays None for every nba tick regardless of
+    this shadow's existence (LANE 3 wave)."""
+    try:
+        from domains.basketball_nba.ingame_shadow import get_shadow
+        return get_shadow().shadow_prob(sport, str(home or ""), str(away or ""), state)
+    except Exception:  # noqa: BLE001 -- shadow measurement never affects the capture path
+        return None
+
+
+def _tennis_shadow(sport: str, home: Any, away: Any, state: Dict[str, Any]) -> Optional[float]:
+    """SHADOW MEASUREMENT ONLY (logged, never decided on). All logic lives in
+    domains/tennis/ingame_shadow.py; this wrapper only guarantees an exception
+    here can never reach the capture path. None-safe. Same gap this measures
+    as _wnba_shadow: live_board.live_model_home_prob's dispatch has no tennis
+    branch, so model_prob stays None for every tennis tick regardless of this
+    shadow's existence (LANE 3 wave)."""
+    try:
+        from domains.tennis.ingame_shadow import get_shadow
         return get_shadow().shadow_prob(sport, str(home or ""), str(away or ""), state)
     except Exception:  # noqa: BLE001 -- shadow measurement never affects the capture path
         return None
