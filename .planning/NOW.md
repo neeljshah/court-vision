@@ -41,6 +41,18 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 65 (WAVE-64: BATTERY GAP CLOSED, 2026-07-05 ~11:45Z true-UTC,
+  wf_0711da68-066 3 agents/~0.28M tok, commit 500c7e24): the tennis name
+  gap was v4-ONLY (v3 already emitted player_name -- fix lane VERIFIED
+  rather than assumed); v4 gained the same matches.parquet lookup (423 ids,
+  0 unresolved), 17/17 re-VERIFIED w/ unchanged rows + stable claim_ids;
+  Djokovic/Isner name lookups resolve w/ provenance (addendum artifact);
+  15 tests green. QUEUE STATE: all non-time-gated PROGRAM v3 work COMPLETE
+  (claims full-pop + fit SCOUTING/REJECT + battery proof + gaps closed);
+  remaining items are time-gated (KBO slate-close accrual tick ~12:30Z,
+  US verifier sweep 17-23Z) or human-gated (PROPOSED docs, depth arming).
+  Per the wake-50 precedent: wall-clock cadence to the next window -- no
+  make-work waves. Wakeup set for the slate-close window. No edge claims.
 - SPRINT WAKE 64 (WAVE-63: V3 CLOSURE PROOF ON DISK, 2026-07-05 ~11:20Z
   true-UTC, wf_82443ee0-97c 5 agents/~0.37M tok, ledger-only commit): ask
   demo battery 29 questions via the REAL entrypoints -- 19 VERIFIED, 1
