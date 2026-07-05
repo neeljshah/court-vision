@@ -41,6 +41,20 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 64 (WAVE-63: V3 CLOSURE PROOF ON DISK, 2026-07-05 ~11:20Z
+  true-UTC, wf_82443ee0-97c 5 agents/~0.37M tok, ledger-only commit): ask
+  demo battery 29 questions via the REAL entrypoints -- 19 VERIFIED, 1
+  SCOUTING (LeBron/LAL fit w/ inline REJECT cite, 4-way provenance), 5
+  honest UNANSWERABLE (each names its missing piece), 3 VERDICT + 1 honest
+  AMBIGUOUS tie, provenance_missing=0 (transcript:
+  data/cache/intel_claims/ask_demo_battery_2026-07-05.json). One REAL gap:
+  tennis v3/v4 stores key by numeric player_id only -> name lookups cannot
+  resolve (fix = wave-64). m2 question CLOSED: INTENTIONAL siblings
+  (disjoint outputs inplay_history vs ingame_grade, ~10 vs ~27 consumers,
+  ZERO overlap, separate SLAs; shared-fetch idea PROPOSED only). WAVE-64
+  launching: tennis id->name resolution (reuse the hold-claims name source,
+  regenerate v3/v4, battery re-check). KBO slate-close tick ~12:30Z, US
+  verifier sweep 17-23Z next. No edge claims.
 - SPRINT WAKE 63 (WAVE-62: RETRO DIGEST + HANDOFF REFRESHED, 2026-07-05
   ~11:00Z true-UTC, wf_da0e1705-577 5 agents/~0.35M tok): digest verified
   (waves 47-61: 42 commits, 11 honesty catches, coverage 62 claims/13210
