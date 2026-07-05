@@ -93,6 +93,31 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- 0f WAVE-2 CLOSED + AMENDMENT A1 PINNED ~19:35Z (wf_129021ce, 4 agents/
+  0.36M tok): (1) CONTEXT-ADJUSTED SHOOTING CLAIMS LIVE (commit ff179a3d):
+  domains/basketball_nba/context_shooting_claims.py off player_boxscores
+  .parquet (26,186 player-game rows 2024-25) -- fg3_pct_vs_team_context
+  (the literal good-shooter-on-bad-team number, player excluded from team
+  mean), fg3a_share_of_team, rest_context_fg3 (B2B vs 2+ days; game logs
+  existed, no CORPUS_ABSENT needed); 3/3 claims validator-VERIFIED, 7
+  tests green; STINT-level design (traded players get per-team context --
+  LaVine SAC vs CHI distinct rows). (2) LLM-PROPOSER emitted 6
+  mechanism-motivated interaction candidates w/ REAL on-disk coverage
+  checks + mechanism numbers (soccer regime split: corr(sot,over25)=.042
+  low-xG vs .095 high-xG regime); honest drops: MLB zero (coverage wall),
+  soccer finishing/hfa/dispersion/clean_sheet DROPPED -- grep proved they
+  do NOT exist on disk (stage-A inventory rows were wrong). (3) FABLE
+  ADJUDICATION -> PREREG AMENDMENT A1 sha-pinned: docs/research/
+  combination-moat/PREREG_AMENDMENT_A1_2026-07-05.md sha256=
+  3904b1671faaea2e8edf43dc8944fb2248748a5551179a3a6b9f96816ee56466 (100
+  lines; V1 stays frozen). ACCEPTED: tennis_interactions_v1 (T1 surface-
+  hold-regime + T2 low-hold-regime; K_new=2 eps_eff=.025; ATP+WTA both
+  dirs) + soccer family CONTINUATION (S1 xg-pace-regime x sot + S2
+  supremacy-agreement x sot; K_cum 13->15, eps_eff TIGHTENS .003846->
+  .003333, >=4/6 leagues both dirs; sot enters ONLY inside interaction
+  terms -- closed solo family not re-gated). DEFERRED not-enumerated:
+  NBA N1/N2 (NOT_TESTABLE until 2nd corpus; K unconsumed). Gate wave
+  next. No edge claims.
 - INTEL SYNERGY WAVE CLOSED ~19:20Z (wf_cf55b7dc, 9 agents/0.87M tok,
   commits 97d189c0 fit-sweep + 46b901f0 quality-fix): (1) LeBron 30-TEAM
   BEST-FIT SWEEP live + VALIDATED (nba_fit_sweep_claims.py producer +
