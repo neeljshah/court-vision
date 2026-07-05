@@ -531,3 +531,9 @@ vault/
 docs/model_deployment_audit_R20_M7.md
 docs/m2_family_mlp_rollout.md
 docs/system_metrics.html
+
+# 2026-07-05 P0-A-002: edge-named scripts untracked (local-only, no-edge-claims hygiene)
+scripts/playoff_pregame_edge.py
+scripts/stake_sizing_backtest.py
+scripts/gate1_filtered_vs_vegas.py
+scripts/ingame/grade_ingame_vs_vegas.py
