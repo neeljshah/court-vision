@@ -41,6 +41,19 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 47 (WAVE-46 + RETRO WRITTEN + HANDOFF REFRESHED, 2026-07-05
+  ~05:30Z, wf_628ebbcf-70e 4 agents/~0.38M tok, commit 265f1283): (1) depth
+  hook COMMITTED: optional fail-open depth_capture_fn in inplay_capture_loop,
+  live-proved 45 rows through the integrated path, OFF by default -- ARMING is
+  a one-line HUMAN decision (no-flag-flip rail). (2) RETRO stats verified +
+  memory written (waves 30-46: 141 commits/97 lane-code, 31 verdicts, 5 null
+  catches, 12 honest non-ships, 0 code failures, 34 VERIFIED claims/4 sports).
+  (3) NEXT_SESSION_PROMPT rewritten to current architecture (v2 executed,
+  4 method rails, live assets, open leads, human queue). NEXT WAKES: KBO Naver
+  live mid-game confirm at ~09:30Z+ (reopens KBO in-game if confirmed); US
+  verifier sweep ~17-23Z; wave-47 light lanes (reprocess client registration
+  for new gate-row exports, human-queue digest consolidation). Sprint ends
+  07-06 EOD; standard rails 07-07. No edge claimed.
 - SPRINT WAKE 46 (WAVE-45 4/4 IN 11 MIN: 5TH NULL CATCH + DEPTH CAPTURE LIVE +
   KBO WALL SOFTENS, 2026-07-05 ~05:00Z, wf_3a7dcdb7-21c 12 agents/~1.01M tok,
   commits 68a01a81/c700a35a/85ecdab1): (1) umpire totals gate HONEST REJECT
