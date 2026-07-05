@@ -372,6 +372,99 @@ def test_kbo_model_fn_none_safe_with_injected_model_fn_matching_production(tmp_p
 
 
 # --------------------------------------------------------------------------------------- #
+# 7b. kbo-alias-wire-soak lane: kbo_deep_state_fn is dispatched ONLY for sport=="kbo",       #
+#     merges additively onto the coarse KBO state, and its failure never sinks the tick     #
+#     (capture-only: no model prob, no dispatch change vs the existing no_model_prob path)  #
+# --------------------------------------------------------------------------------------- #
+def _kbo_fetch_for_deep():
+    return [
+        {"sport": "kbo", "game_id": "KXKBOGAME-26JUL050100DOOKIW", "venue": "kalshi",
+         "market_type": "moneyline", "side": "KIW", "prob": 0.5, "phase": "in_play"},
+        {"sport": "kbo", "game_id": "KXKBOGAME-26JUL050100DOOKIW", "venue": "kalshi",
+         "market_type": "moneyline", "side": "DOO", "prob": 0.48, "phase": "in_play"},
+    ]
+
+
+def _kbo_state_fn_for_deep(sport, gid):
+    return {"sport": sport, "game_id": gid, "home": "KIWOOM", "away": "DOOSAN",
+            "state_diff": 0.0, "frac_elapsed": None, "p0": 0.5,
+            "p0_source": "PRIOR", "status": "in progress"}
+
+
+def test_kbo_deep_state_fn_dispatched_only_for_kbo(tmp_path):
+    """kbo_deep_state_fn must NEVER be invoked for a non-kbo sport (mirrors the MLB-only
+    gating test): calling it on an mlb ticker would mis-key a Kalshi blob that was never
+    a KXKBOGAME series."""
+    seen = []
+
+    def _spy(gid):
+        seen.append(gid)
+        return {"inning": 3}
+
+    loop.poll_once(sports=["mlb"], live_state_fn=_state_fn_prior, model_fn=_model_fn,
+                   inplay_fetch_fn=_inplay_fetch, finals_fn=_finals_none,
+                   kbo_deep_state_fn=_spy,
+                   grade_dir=tmp_path / "grade", ledger_path=tmp_path / "l.jsonl",
+                   heartbeat_path=tmp_path / "hb.json")
+    assert seen == []  # kbo-only gating: mlb never invokes the kbo relay-state wire
+
+
+def test_kbo_deep_state_fn_merges_additively_onto_coarse_state(tmp_path):
+    """The KBO capture-only enricher's row (inning/half/outs/base_state/...) merges onto
+    the coarse live state; the tick still has no model_prob (honest no_model_prob skip,
+    unchanged from before this wiring) -- capture-only, no dispatch change."""
+    captured_state = {}
+
+    def _prod_shaped_model_fn(sport, state):
+        captured_state.update(state)
+        return None  # mirrors live_model_home_prob's real npb/kbo dispatch (still None)
+
+    def _deep_row(gid):
+        return {"game_id": gid, "inning": 8, "half": "top", "outs": 2,
+                "base_state": "-2-", "score_home": 1, "score_away": 5, "count": "1-0"}
+
+    hb = loop.poll_once(sports=["kbo"], live_state_fn=_kbo_state_fn_for_deep,
+                        model_fn=_prod_shaped_model_fn,
+                        inplay_fetch_fn=lambda s: _kbo_fetch_for_deep(),
+                        finals_fn=_finals_none, kbo_deep_state_fn=_deep_row,
+                        grade_dir=tmp_path / "grade", ledger_path=tmp_path / "l.jsonl",
+                        heartbeat_path=tmp_path / "hb.json")
+    # Still no_model_prob (unchanged existing behavior) -- this wiring adds NO dispatch.
+    assert hb["games"][0]["reason"] == "no_model_prob"
+    assert hb["n_pairs"] == 0 and hb["n_bets"] == 0
+    # But the deep row DID merge onto the state model_fn received.
+    assert captured_state.get("inning") == 8
+    assert captured_state.get("base_state") == "-2-"
+    assert captured_state.get("score_away") == 5
+    _no_dollar_field(hb)
+
+
+def test_kbo_deep_state_fn_exception_leaves_base_path_untouched(tmp_path):
+    """An exploding kbo_deep_state_fn must NEVER sink the tick -- the coarse state still
+    reaches model_fn unmodified, exactly as if no enricher were injected at all."""
+    captured_state = {}
+
+    def _prod_shaped_model_fn(sport, state):
+        captured_state.update(state)
+        return None
+
+    def _boom(gid):
+        raise RuntimeError("relay down")
+
+    hb = loop.poll_once(sports=["kbo"], live_state_fn=_kbo_state_fn_for_deep,
+                        model_fn=_prod_shaped_model_fn,
+                        inplay_fetch_fn=lambda s: _kbo_fetch_for_deep(),
+                        finals_fn=_finals_none, kbo_deep_state_fn=_boom,
+                        grade_dir=tmp_path / "grade", ledger_path=tmp_path / "l.jsonl",
+                        heartbeat_path=tmp_path / "hb.json")
+    assert hb["games"][0]["reason"] == "no_model_prob"
+    # The base state (home/away/status) is intact -- the exception never removed it.
+    assert captured_state.get("home") == "KIWOOM"
+    assert captured_state.get("away") == "DOOSAN"
+    assert "inning" not in captured_state  # the boom never contributed a row
+
+
+# --------------------------------------------------------------------------------------- #
 # 8. LANE 3: wnba shadow field appended after on_tick, poisoned-build -> permanent None,    #
 #    decision path untouched.                                                               #
 # --------------------------------------------------------------------------------------- #

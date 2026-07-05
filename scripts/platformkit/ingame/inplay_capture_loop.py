@@ -366,11 +366,13 @@ def _build_tick(state: Dict[str, Any], model_p: float,
         # dropped all of these -> every captured tick logged a bare "live".  These keys feed
         # ONLY live_grade._state_summary (the label); model/price/sizing read top-level tick
         # fields, so widening this is label-only and cannot change a decision.
+        # score_home/score_away/base_state ADDED (kbo-alias-wire-soak lane): the KBO relay
+        # wire's own field names for score/base-occupancy -- label-only, same discipline.
         "state": {k: state.get(k) for k in (
             "home", "away", "state_diff", "frac_elapsed", "status", "p0", "p0_source",
             "home_score", "away_score", "inning", "half", "period", "minute", "clock",
             "outs", "base", "bos", "re", "count", "pitch_count", "tto",
-            "game_pk") if k in state},
+            "game_pk", "score_home", "score_away", "base_state") if k in state},
     }
 
 
@@ -407,6 +409,7 @@ def poll_once(*, sports: Optional[List[str]] = None,
               inplay_fetch_fn: Optional[InplayFetchFn] = None,
               finals_fn: Optional[FinalsFn] = None,
               deep_state_fn: Optional[Callable[[str], Dict[str, Any]]] = None,
+              kbo_deep_state_fn: Optional[Callable[[str], Dict[str, Any]]] = None,
               depth_capture_fn: Optional[DepthCaptureFn] = None,
               depth_tick_counter: Optional[Dict[str, int]] = None,
               grade_dir: Optional[Path] = None,
@@ -419,6 +422,14 @@ def poll_once(*, sports: Optional[List[str]] = None,
     Reuses the existing chain end-to-end via injectable callbacks (default to the real ones).
     *positions* threads each game's open paper position across ticks (None -> fresh). Returns
     a heartbeat dict and writes it to disk (stale-never-green). UNITS only -- no $. Never raises.
+
+    *kbo_deep_state_fn* (optional, mirrors *deep_state_fn*'s MLB-only role): a (kalshi_
+    ticker)->dict enricher dispatched ONLY for sport=="kbo", chaining the ticker through
+    kbo_capture_wire's alias->matcher->relay bridge to a descriptive as-of state row
+    (inning/half/outs/base/score/count) -- NO model probability, NO dispatch change. None
+    (default) -> zero behavior change (kbo ticks are captured exactly as before this
+    wiring; the sport was already gated to "no_model_prob" upstream of this hook, so a
+    missing/failing enricher can never remove a previously-working KBO capture path).
     """
     sport_list = list(sports) if sports else list(DEFAULT_SPORTS)
     ls_fn = live_state_fn or (lambda s, g: _ls.live_state(s, g))
@@ -454,8 +465,10 @@ def poll_once(*, sports: Optional[List[str]] = None,
         n_requests_total += int(sport_stats.get("n_requests", 0))
         n_429_total += int(sport_stats.get("n_429", 0))
         legs_by_game = _yes_pair(list(ticks) if ticks else [])
-        # DEEP enrichment is MLB-only (the base-out resolver); other sports pass through.
-        sport_deep_fn = deep_state_fn if str(sport).lower() == "mlb" else None
+        # DEEP enrichment: MLB gets the base-out resolver, KBO (capture-only, wave
+        # kbo-alias-wire-soak) gets the relay state-row bridge; other sports pass through.
+        sport_deep_fn = deep_state_fn if str(sport).lower() == "mlb" else (
+            kbo_deep_state_fn if str(sport).lower() == "kbo" else None)
         for gid, legs in legs_by_game.items():
             row = _process_game(sport, gid, legs, ls_fn, md_fn, pos_map,
                                 grade_dir, ledger_path, nowdt, sport_deep_fn)
@@ -718,6 +731,24 @@ def _make_mlb_deep_fn(deep_state_fn: Optional[Callable[[str], Dict[str, Any]]]
         return None
 
 
+def _make_kbo_deep_fn(kbo_deep_state_fn: Optional[Callable[[str], Dict[str, Any]]]
+                      ) -> Optional[Callable[[str], Dict[str, Any]]]:
+    """Build the per-tick KBO deep-state enricher (kbo-alias-wire-soak lane, capture-
+    only): kbo_capture_wire chains ticker->alias->matcher->relay to an as-of state row
+    (inning/half/outs/base/score/count), NO model prob. An explicit kbo_deep_state_fn
+    wins (tests inject an offline stub); otherwise the real wire. Returns None if the
+    wire cannot be imported -- enrichment is then simply skipped (same degrade-to-shallow
+    discipline as the MLB builder)."""
+    if kbo_deep_state_fn is not None:
+        return kbo_deep_state_fn
+    try:
+        from scripts.platformkit.ingame import kbo_capture_wire as _kbo_wire
+        return _kbo_wire.make_kbo_deep_fn()
+    except Exception as exc:  # noqa: BLE001 -- no wire -> shallow capture, never a crash
+        logger.debug("inplay_capture_loop kbo deep enricher unavailable: %s", exc)
+        return None
+
+
 def serve_forever(interval: Optional[float] = None, *,
                   clock: Optional[Callable[[float], None]] = None,
                   max_ticks: Optional[int] = None,
@@ -728,6 +759,8 @@ def serve_forever(interval: Optional[float] = None, *,
                   finals_fn: Optional[FinalsFn] = None,
                   mlb_deep: bool = False,
                   deep_state_fn: Optional[Callable[[str], Dict[str, Any]]] = None,
+                  kbo_deep: bool = False,
+                  kbo_deep_state_fn: Optional[Callable[[str], Dict[str, Any]]] = None,
                   depth_capture: bool = False,
                   depth_capture_fn: Optional[DepthCaptureFn] = None,
                   grade_dir: Optional[Path] = None,
@@ -743,6 +776,13 @@ def serve_forever(interval: Optional[float] = None, *,
     The enricher is rebuilt per tick (fresh live candidates) and LAZY (no fetch on a tick
     with no MLB game to enrich), so leaving it OFF -- or running with a dead feed -- needs
     no network.  *deep_state_fn* injects an offline enricher for the tested path.
+
+    *kbo_deep* (default OFF, kbo-alias-wire-soak lane) enables the CAPTURE-ONLY KBO relay
+    state-row enricher (kbo_capture_wire): NO model probability, NO dispatch branch --
+    purely descriptive (inning/half/outs/base/score/count) alongside the existing tick.
+    Same fail-open discipline as mlb_deep: OFF by default, any failure degrades to a
+    shallow (unenriched) capture. *kbo_deep_state_fn* injects an offline stub for the
+    tested path.
 
     *depth_capture* (LANE 4b, default OFF) enables the OPTIONAL order-book depth-capture
     hook (odds_provider.depth_capture.run_capture_pass by default) at a slower cadence
@@ -766,10 +806,12 @@ def serve_forever(interval: Optional[float] = None, *,
         # Fresh per-tick enricher so the live candidate set tracks the slate (LAZY: built
         # only when mlb_deep is on; no candidate fetch until a real MLB game is enriched).
         tick_deep_fn = _make_mlb_deep_fn(deep_state_fn) if mlb_deep else None
+        tick_kbo_deep_fn = _make_kbo_deep_fn(kbo_deep_state_fn) if kbo_deep else None
         try:
             hb = poll_once(sports=sports, live_state_fn=live_state_fn, model_fn=model_fn,
                            inplay_fetch_fn=inplay_fetch_fn, finals_fn=finals_fn,
                            deep_state_fn=tick_deep_fn,
+                           kbo_deep_state_fn=tick_kbo_deep_fn,
                            depth_capture_fn=active_depth_fn,
                            depth_tick_counter=depth_tick_counter,
                            grade_dir=grade_dir, ledger_path=ledger_path,
