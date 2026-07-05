@@ -16,7 +16,10 @@ HONESTY (binding):
 
 Output ledger: data/frontend/paper_predictions_graded.jsonl (append-only twins).
 The pregame fair price (fair_odds) is the decimal we settle at -- the honest model
-price; with no tradeable book price these rows have no CLV (clv_status="no_close").
+price. Most rows never captured a tradeable book price -> no CLV
+(clv_status="no_close"); a moneyline-selection row that DID capture a two-way
+close_proxy at log time gets real CLV here too (clv_status="proxy" -- an honest
+label, excluded from the true-close aggregate; see _clv_from_proxy).
 
 INVARIANTS: build only under scripts/platformkit/; <=300 LOC; ASCII; no secrets.
 
@@ -31,6 +34,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
+from scripts.platformkit.clv_ledger import compute_clv
 from scripts.platformkit.clv_ledger_migrate import BANNED_KEYS
 from scripts.platformkit.paper import finals_fetch as _ff
 from scripts.platformkit.paper import market_resolver as _mr
@@ -97,6 +101,50 @@ def _load_jsonl(path: Path) -> List[Dict[str, Any]]:
     return out
 
 
+_NO_CLOSE = {"clv_pct": None, "beat_close": None,
+            "clv_status": "no_close", "clv_is_proxy": False}
+
+
+def _clv_from_proxy(row: Dict[str, Any], home_team: str, away_team: str
+                    ) -> Dict[str, Any]:
+    """Real CLV vs the two-way close PROXY captured at logging time, when present.
+
+    _log_unpriced (run_paper_today.py) only fills close_proxy for a row whose
+    selection literally equals the home or away team name (moneyline pick with
+    no tradeable book price) -- so a non-null close_proxy always maps to a real
+    side here. Everything else (derived/spread/total markets -- the majority of
+    this ledger) never gets a close_proxy at all: for those, "no tradeable book
+    price captured" remains the honest, unchanged verdict.
+    """
+    proxy = row.get("close_proxy")
+    if not isinstance(proxy, dict):
+        return dict(_NO_CLOSE)
+    ch, ca = proxy.get("close_decimal_home"), proxy.get("close_decimal_away")
+    if ch is None or ca is None:
+        return dict(_NO_CLOSE)
+    selection = row.get("selection")
+    if selection == home_team:
+        side = "home"
+    elif selection == away_team:
+        side = "away"
+    else:
+        return dict(_NO_CLOSE)
+    dec = row.get("fair_odds")
+    if not dec or float(dec) <= 1.0:
+        return dict(_NO_CLOSE)
+    try:  # arb/degenerate proxy close (booksum<1) -> Shin devig asserts; no CLV
+        clv = compute_clv(side, float(dec), float(ch), float(ca))
+    except Exception:  # noqa: BLE001 -- mirrors _log_unpriced's own devig guard
+        return dict(_NO_CLOSE)
+    # clv_status="proxy" (mirrors grade_paper.py's sibling convention exactly):
+    # the "close" is a same-cycle book snapshot at LOG time, not a true
+    # post-commence closing line, so it must NOT satisfy clv_scoreboard's
+    # _is_measurable (== "true_close" only) -- an honest proxy stays out of the
+    # true-close aggregate, never silently inflating it.
+    return {"clv_pct": clv["clv_pct"], "beat_close": clv["clv_pct"] > 0.0,
+            "clv_status": "proxy", "clv_is_proxy": True}
+
+
 def grade_one_pred(
     row: Dict[str, Any], final: Dict[str, Any], *, stake_units: float = 1.0
 ) -> Optional[Dict[str, Any]]:
@@ -134,8 +182,12 @@ def grade_one_pred(
         "unit_result": _unit_result(outcome, dec, stake_units),
         "executed": False,
         "edge_claimed": False,
-        # No tradeable book price was ever captured -> CLV genuinely unavailable.
-        "clv_pct": None, "clv_status": "no_close", "clv_is_proxy": False,
+        # Most rows never captured a tradeable close proxy (derived/spread/total
+        # markets) -> CLV genuinely unavailable, unchanged. A moneyline-selection
+        # row that DID capture a two-way close_proxy at log time gets real CLV
+        # here (clv_status="proxy" -- honest label, excluded from the true-close
+        # aggregate; see _clv_from_proxy).
+        **_clv_from_proxy(row, home_team, away_team),
         "pred_key": pred_key(row),
         "channel": "paper_prediction",
     })

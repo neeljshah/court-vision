@@ -71,6 +71,83 @@ def test_grade_predictions_settles_resolvable_markets(tmp_path: Path):
         assert k not in g
 
 
+def test_grade_predictions_uses_close_proxy_for_moneyline_selection(tmp_path: Path):
+    """A moneyline-selection row (selection == home/away team) with a captured
+    close_proxy gets real CLV -- clv_status='proxy' (honest, excluded from the
+    true-close aggregate), never 'no_close' when a real proxy close exists."""
+    preds = tmp_path / "preds.jsonl"
+    graded = tmp_path / "graded.jsonl"
+    _write_preds(preds, [
+        {"sport": "mlb", "event_id": "E1", "matchup": "New York Mets@Cincinnati Reds",
+         "group": "1X2", "selection": "Cincinnati Reds", "line": None, "fair_odds": 1.8,
+         "close_proxy": {"close_decimal_home": 1.75, "close_decimal_away": 2.20,
+                         "fair_close_prob": None}},
+    ])
+
+    def fake_fetch(eid, sport):
+        return {"state": "post", "home": "Cincinnati Reds", "away": "New York Mets",
+                "home_score": 9, "away_score": 1}
+
+    res = gp.grade_predictions(preds, graded, final_fetch=fake_fetch)
+    assert res["n_graded_now"] == 1
+    rows = [json.loads(l) for l in graded.read_text(encoding="utf-8").splitlines() if l]
+    g = rows[0]
+    assert g["clv_status"] == "proxy"
+    assert g["clv_is_proxy"] is True
+    assert g["clv_pct"] is not None
+    assert g["beat_close"] is not None
+    for k in ("pnl", "roi", "profit", "dollars"):
+        assert k not in g
+
+
+def test_grade_predictions_degenerate_proxy_stays_no_close(tmp_path: Path):
+    """A booksum<1 (arb/degenerate) close_proxy raises in the Shin devig -- caught,
+    never crashes the grading pass, falls back to no_close (mirrors _log_unpriced's
+    own devig guard). Real production data has hit this shape."""
+    preds = tmp_path / "preds.jsonl"
+    graded = tmp_path / "graded.jsonl"
+    _write_preds(preds, [
+        {"sport": "mlb", "event_id": "E1", "matchup": "New York Mets@Cincinnati Reds",
+         "group": "1X2", "selection": "Cincinnati Reds", "line": None, "fair_odds": 1.8,
+         "close_proxy": {"close_decimal_home": 1.75, "close_decimal_away": 9.0,
+                         "fair_close_prob": None}},  # booksum = 1/1.75+1/9.0 < 1
+    ])
+
+    def fake_fetch(eid, sport):
+        return {"state": "post", "home": "Cincinnati Reds", "away": "New York Mets",
+                "home_score": 9, "away_score": 1}
+
+    res = gp.grade_predictions(preds, graded, final_fetch=fake_fetch)
+    assert res["n_graded_now"] == 1  # never crashes the pass
+    rows = [json.loads(l) for l in graded.read_text(encoding="utf-8").splitlines() if l]
+    g = rows[0]
+    assert g["clv_status"] == "no_close"
+    assert g["clv_pct"] is None
+
+
+def test_grade_predictions_no_proxy_stays_no_close(tmp_path: Path):
+    """A derived-market row (no close_proxy ever captured) is unchanged: no_close."""
+    preds = tmp_path / "preds.jsonl"
+    graded = tmp_path / "graded.jsonl"
+    _write_preds(preds, [
+        {"sport": "mlb", "event_id": "E1", "matchup": "New York Mets@Cincinnati Reds",
+         "group": "Game total", "selection": "Over 6.5", "line": 6.5, "fair_odds": 1.9,
+         "close_proxy": None},
+    ])
+
+    def fake_fetch(eid, sport):
+        return {"state": "post", "home": "Cincinnati Reds", "away": "New York Mets",
+                "home_score": 9, "away_score": 1}
+
+    res = gp.grade_predictions(preds, graded, final_fetch=fake_fetch)
+    rows = [json.loads(l) for l in graded.read_text(encoding="utf-8").splitlines() if l]
+    g = rows[0]
+    assert g["clv_status"] == "no_close"
+    assert g["clv_is_proxy"] is False
+    assert g["clv_pct"] is None
+    assert g["beat_close"] is None
+
+
 def test_grade_predictions_idempotent(tmp_path: Path):
     preds = tmp_path / "preds.jsonl"
     graded = tmp_path / "graded.jsonl"
