@@ -41,6 +41,20 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 43 (WAVE-42: NPB DATE-CORRUPTION FIXED + STATCAST 2023 COMPLETE +
+  LIVE-MODEL DUD REDISPATCHED, 2026-07-05 ~03:10Z, wf_1150f4e2-9d5 10 agents/
+  ~0.74M tok, commit 66284ac8): (1) CRITICAL: ingest_npb sliced MONTH not DAY
+  (1505/1505 rows day==month) -- fixed + regression test + parquet REBUILT to
+  3,964 correct rows; pre-fix NPB date-dependent analyses SUSPECT (memory
+  updated). Results lag was pure invocation-gap (NPB/KBO scoped out of auto-
+  refresh); catchup modules committed, KBO 3255 rows current. (2) statcast 2023
+  COMPLETE 183/183d 720,984 rows; 2022 at 166/180; indices re-ran clean.
+  (3) verifier 17 PASS/16 PENDING (await live)/1 expected FAIL; feeds GREEN;
+  m1_ui flap cosmetic (133 restarts, port responsive). (4) npbkbo-live-model
+  lane returned EMPTY (agent dud, 2nd occurrence) -> wave-43 redispatch SPLIT
+  per doctrine: parallel npb/kbo base fits (on the REBUILT corpus) -> wire
+  dispatch + replay proof; still ahead of the ~09Z slate. WAVE-43: fits+wire,
+  label_finals_refresh wiring, statcast 2022 finish (14d). No edge claimed.
 - SPRINT WAKE 42 (WAVE-41 4/4 PASS: NPB/KBO PREMISE CORRECTED + STATCAST SET
   COMMITTED, 2026-07-05 ~02:25Z, wf_565742a6-a32 15 agents/~1.01M tok, commits
   8fe73061/1735fb57): (1) NPB/KBO ROOT CAUSE: grades were NEVER trigger-blocked
