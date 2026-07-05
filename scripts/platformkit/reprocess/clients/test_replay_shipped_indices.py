@@ -42,14 +42,49 @@ def _synthetic_rows() -> pd.DataFrame:
 
 
 def test_real_registry_wnba_layer_is_unavailable():
-    """The one real registered client (WNBA anchored blend) must honestly
-    report UNAVAILABLE -- its per-row scores were never persisted."""
+    """The WNBA anchored blend must honestly report UNAVAILABLE -- its
+    per-row scores were never persisted."""
     results = run_all_clients()
-    assert len(results) == len(REGISTRY) == 1
-    r = results[0]
-    assert r["client"] == "wnba_anchored_linescore_blend"
+    assert len(results) == len(REGISTRY) == 7
+    by_name = {r["client"]: r for r in results}
+    r = by_name["wnba_anchored_linescore_blend"]
     assert r["status"] == "UNAVAILABLE"
     assert "re-running the gate" in r["reason"].lower() or "RE-RUNNING THE GATE" in r["reason"]
+
+
+def test_registry_positional_weight_and_elo_refresh_replay_and_match():
+    """The two schema-compatible wave-45 clients (rho per-fold, brier
+    per-candidate-corpus) replay through the harness and match their
+    committed verdicts within tolerance."""
+    results = run_all_clients()
+    by_name = {r["client"]: r for r in results}
+
+    pw = by_name["nba_positional_weight"]
+    assert pw["status"] == "RAN"
+    assert pw["matched"] is True
+    assert pw["max_abs_diff"] <= 1e-6
+
+    elo = by_name["wnba_elo_refresh"]
+    assert elo["status"] == "RAN"
+    assert elo["matched"] is True
+    assert elo["max_abs_diff"] <= 1e-6
+
+
+def test_registry_schema_mismatches_are_honest_unavailable():
+    """umpire totals, both ingame_hypothesis layers, and h3_playstyle (no
+    committed verdict) must never be coerced -- all UNAVAILABLE with a
+    reason, never a fabricated RAN result."""
+    results = run_all_clients()
+    by_name = {r["client"]: r for r in results}
+    for name in (
+        "mlb_umpire_totals_gate",
+        "nba_ingame_hypothesis_hot_night",
+        "nba_ingame_hypothesis_scheme_fit",
+        "tennis_h3_playstyle",
+    ):
+        r = by_name[name]
+        assert r["status"] == "UNAVAILABLE", f"{name} should be UNAVAILABLE, got {r}"
+        assert r["reason"]
 
 
 def test_synthetic_client_matches_committed_verdict(tmp_path):
