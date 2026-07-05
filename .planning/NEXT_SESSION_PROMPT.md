@@ -56,6 +56,23 @@ split). Commits: per-lane targeted adds, LOCAL ONLY, never push origin.
   in docs/research/organization-sprint/; venue-history backup; ponytail
   plugin install; proxy/egress brief.
 
+## PROGRAM v3 DIRECTION (user-ratified 2026-07-05: "widen to every little detail")
+The intelligence layer widens to FULL coverage -- this is the active program:
+1. FULL-POPULATION CLAIMS: every qualifying entity gets VERIFIED rows (drop the
+   top-50 caps; a "where does LeBron rank" lookup must answer for EVERY player
+   above the stated floor); publish every truth-spec dimension whose floor is
+   met, across all 5+ sports, through the unmodified independent validator.
+2. FIT QUESTION FAMILY (ask layer): scouting-grade composition -- player
+   archetype/attribute profile (player_roles posgroup/creation/spacing/rim
+   scores) x team scheme identity x role vacancy; EVERY ingredient a VERIFIED
+   claim with provenance; answers labeled SCOUTING, never predictive.
+3. FIT-VALIDITY GATE (pre-registered before any predictive framing): does the
+   fit score predict actual performance change across HISTORICAL player-team
+   moves? Planted-null + gate-comparability rails; expect honest outcomes; the
+   H_B scheme-fit in-game REJECT and positional NOT_TESTABLE are the priors.
+4. Vault dossiers + ask coverage scale to full rosters; power audit governs:
+   descriptive depth has no MDE floor, predictive claims do.
+
 ## Honesty rails (absolute)
 No $-edge/ROI claims ever; REJECT/NOT_TESTABLE/honest-BLOCKED = successes;
 leak-free walk-forward + provenance-separated corpora; planted-null MANDATORY
