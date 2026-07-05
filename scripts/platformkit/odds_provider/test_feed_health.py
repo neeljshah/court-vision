@@ -1,6 +1,7 @@
 """Per-file tests for feed_health (NETWORK-FREE -- all providers/mark injected)."""
 from __future__ import annotations
 
+from scripts.platformkit.odds_provider import feed_health as _feed_health
 from scripts.platformkit.odds_provider.feed_health import (
     DEFAULT_SPORTS, GREEN, PROVIDER_HOSTS, RED, heal, probe_one, render, scan)
 
@@ -90,6 +91,19 @@ def test_scan_never_raises_on_provider_exception():
     doc = scan(("mlb",), providers=[_RaisingProvider()])
     assert doc["overall"] == RED
     assert doc["rows"][0]["reason"] == "exception:RuntimeError"
+
+
+def test_scan_schema_drift_overlay_is_fail_open(monkeypatch):
+    """schema_snapshot overlay is additive: a check_sport() failure must be
+    swallowed (empty overlay for that sport), never sink scan()'s own verdict."""
+    def _boom(sport):
+        raise RuntimeError("corrupt snapshot file")
+
+    monkeypatch.setattr(_feed_health, "_schema_check_sport", _boom)
+    good = _FakeProvider("good", {"mlb": [1]})
+    doc = scan(("mlb",), providers=[good])
+    assert doc["schema_drift"] == {}
+    assert doc["overall"] == GREEN
 
 
 def test_render_includes_red_reasons():
