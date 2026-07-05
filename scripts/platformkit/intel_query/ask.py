@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 import unicodedata
 from pathlib import Path
@@ -39,6 +40,19 @@ from scripts.platformkit.intel_query.families import (
 # free-text question routed through families.classify), so it is defined
 # here rather than added to families.py's question-classifier enum.
 FAMILY_FIT = "fit"
+
+# ONE-CONCLUSION composer family: "who is the best shooter" (singular,
+# all-factors-weighed) is a DIFFERENT question from "top 5 best shooters"
+# (a ranking list, already routed to FAMILY_TOP_N by families.classify).
+# Checked BEFORE the existing family dispatch so it never disturbs top_n's
+# "best shooters" plural/top-N phrasing. Only "shooter" is wired v1 --
+# _BEST_ASPECT_ALIASES maps a recognized alias phrase to a compose_best()
+# aspect key; an unrecognized "best X" phrase falls through to the existing
+# families.classify dispatch unchanged.
+FAMILY_BEST = "best"
+_BEST_ASPECT_ALIASES: dict[str, str] = {"shooter": "shooter", "shooters": "shooter"}
+_BEST_SINGLE_RE = re.compile(r"\bbest\s+(shooter|shooters)\b", re.IGNORECASE)
+_TOP_N_ANYWHERE_RE = re.compile(r"\btop\s*[- ]?\s*\d+\b", re.IGNORECASE)
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 INTEL_CLAIMS_DIR = REPO_ROOT / "data" / "cache" / "intel_claims"
@@ -454,9 +468,34 @@ def compose_fit(player: str, team: str) -> dict[str, Any]:
     }
 
 
+def _try_best_x(question: str) -> dict[str, Any] | None:
+    """Minimal hook for the ONE-CONCLUSION composer: a singular "best <X>"
+    question (not "top N best <X>", which stays FAMILY_TOP_N) with a wired
+    aspect alias routes to compose_best(); anything else returns None so
+    ask() falls through to its existing family dispatch unchanged."""
+    text = question or ""
+    if _TOP_N_ANYWHERE_RE.search(text):
+        return None
+    m = _BEST_SINGLE_RE.search(text)
+    if not m:
+        return None
+    aspect = _BEST_ASPECT_ALIASES.get(m.group(1).lower())
+    if aspect is None:
+        return None
+    from scripts.platformkit.intel_query.compose_best import compose_best  # local import: avoid import cycle
+
+    result = compose_best(aspect)
+    result["family"] = FAMILY_BEST
+    result["question"] = question
+    return result
+
+
 def ask(question: str) -> dict[str, Any]:
     """Answer `question` ONLY from VERIFIED claims. Never guesses, never
     computes from raw data, never uses an UNVERIFIABLE/MISMATCH claim."""
+    best_x = _try_best_x(question)
+    if best_x is not None:
+        return best_x
     verified = load_verified_claims()
     parsed = classify(question)
 
