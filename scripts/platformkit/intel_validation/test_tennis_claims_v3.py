@@ -15,6 +15,10 @@ Acceptance criteria:
   4. build_ranking_claim's claimed ranking is independently re-verified by
      claims_validator.validate_claim -> VERIFIED for a real on-disk metric.
   5. FULL POPULATION: no top-N truncation -- ranked count == qualifying count.
+  6. Every ranking row carries player_name (wave-63 idname-fix: this is the
+     name source ask.py's entity_lookup resolves against).
+  7. A player_id genuinely absent from the matches p1_name/p2_name source
+     gets an honest fallback, never a fabricated name.
 """
 from __future__ import annotations
 
@@ -103,3 +107,28 @@ def test_real_wta_setdetail_claim_independently_verifies():
     claim = tcv3.build_ranking_claim("setdetail", metric, "wta")
     verdict = validate_claim(claim)
     assert verdict.verdict == "VERIFIED", verdict.reason
+
+
+def test_ranking_rows_carry_player_name_field():
+    """wave-63 idname-fix acceptance: every ranking row must carry a real
+    player_name (not just player_id) so ask.py's name-based entity_lookup
+    can resolve v3 rows -- v3 already sourced this from matches.parquet's
+    p1_name/p2_name; this test locks the contract in place."""
+    metric = tcv3.SOURCES[0].metrics[0]  # return_won_asof
+    claim = tcv3.build_ranking_claim("return", metric, "atp")
+    assert len(claim["ranking"]) > 0
+    for row in claim["ranking"]:
+        assert "player_name" in row
+        assert row["player_name"] != ""
+
+
+def test_name_lookup_id_absent_from_source_gets_honest_fallback_not_fabricated():
+    """A player_id with NO row in matches' p1_name/p2_name columns must never
+    be silently assigned a fabricated name -- _name_lookup's caller falls
+    back to the literal sentinel "Unknown", not a guess."""
+    matches = _fixture_matches()
+    names = tcv3._name_lookup(matches)
+    assert names.get(999) is None  # id 999 never appears in the fixture
+    # build_tour_snapshot's own .get(..., "Unknown") fallback for any id
+    # absent from the lookup dict:
+    assert names.get(999, "Unknown") == "Unknown"

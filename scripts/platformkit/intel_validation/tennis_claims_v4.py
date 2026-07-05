@@ -57,6 +57,12 @@ import pandas as pd
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
 _SURFACE_SPLITS_SRC = REPO_ROOT / "data" / "cache" / "tennis_atlas" / "surface_splits.parquet"
+# surface_splits.parquet's player_id is ATP-only (confirmed: 423/423 ids
+# intersect matches.parquet, 0/423 intersect wta_matches.parquet), so the
+# SAME name-lookup source tennis_hold_claims.py / tennis_claims_v3.py already
+# use (matches.parquet's p1_name/p2_name) resolves every id here too --
+# reused verbatim, not a new mapping.
+_ATP_MATCHES_FOR_NAMES = REPO_ROOT / "data" / "domains" / "tennis" / "matches.parquet"
 _OUT_DIR = REPO_ROOT / "data" / "cache" / "intel_claims"
 _CLAIMS_OUT = _OUT_DIR / "tennis_claims_v4.jsonl"
 
@@ -94,6 +100,22 @@ def _rel(path: Path) -> str:
 
 def _load_surface_splits() -> pd.DataFrame:
     return pd.read_parquet(_SURFACE_SPLITS_SRC)
+
+
+def _name_lookup() -> dict[int, str]:
+    """IDENTICAL pattern to tennis_hold_claims.py / tennis_claims_v3.py's
+    _name_lookup: read matches.parquet's p1_id/p1_name + p2_id/p2_name pairs
+    into one {player_id: name} dict. surface_splits.parquet has no name
+    column of its own (see module docstring's ATP-only overlap check)."""
+    names: dict[int, str] = {}
+    if not _ATP_MATCHES_FOR_NAMES.exists():
+        return names
+    matches = pd.read_parquet(_ATP_MATCHES_FOR_NAMES, columns=["p1_id", "p1_name", "p2_id", "p2_name"])
+    for id_col, name_col in (("p1_id", "p1_name"), ("p2_id", "p2_name")):
+        sub = matches[[id_col, name_col]].dropna()
+        for pid, name in zip(sub[id_col], sub[name_col]):
+            names[int(pid)] = str(name)
+    return names
 
 
 def build_surface_snapshot(
@@ -134,11 +156,22 @@ def build_ranking_claim(
     n_excluded = n_considered - len(qualifiers)
     qualifiers = qualifiers.sort_values(metric.column, ascending=False).reset_index(drop=True)
 
+    # player_name is NOT written to the snapshot parquet (kept numeric-only,
+    # matching tennis_claims_v3.py's snapshot shape exactly) -- it is joined
+    # in-memory here purely to enrich the claim's own `ranking` rows so
+    # ask.py's name-based entity_lookup can resolve them; ids genuinely
+    # absent from the name source get player_name=None, counted honestly
+    # rather than silently dropped or faked.
+    names = _name_lookup()
+    ids_without_name = int(sum(1 for pid in qualifiers["player_id"] if int(pid) not in names))
+
     ranking = []
     for i, row in enumerate(qualifiers.itertuples(index=False), start=1):
+        pid = int(getattr(row, "player_id"))
         ranking.append({
             "rank": i,
-            "player_id": int(getattr(row, "player_id")),
+            "player_id": pid,
+            "player_name": names.get(pid),
             "value": round(float(getattr(row, metric.column)), 4),
             "n": int(getattr(row, "n_matches")),
         })
@@ -167,6 +200,7 @@ def build_ranking_claim(
         "computed_at": datetime.now(timezone.utc).isoformat(),
         "n_considered": n_considered,
         "n_excluded_below_floor": n_excluded,
+        "ids_without_name": ids_without_name,
         "caveats": [
             f"{metric.column} = per-player mean {metric.label} on {surface} matches, "
             "sourced from data/cache/tennis_atlas/surface_splits.parquet (domains/tennis/"

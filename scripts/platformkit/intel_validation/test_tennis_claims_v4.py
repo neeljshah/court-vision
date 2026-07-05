@@ -14,6 +14,11 @@ Acceptance criteria:
      predictive gates stay closed; this module never re-opens them).
   5. build_all_claims honestly reports a missing surface as
      dims_corpus_absent, never silently omitted.
+  6. player_name is present on every ranking row (wave-63 idname-fix gap
+     closure) so ask.py's name-based entity_lookup can resolve v4 rows.
+  7. ids genuinely absent from the name source get player_name=None,
+     counted honestly in the claim's ids_without_name (never dropped,
+     never faked).
 """
 from __future__ import annotations
 
@@ -115,3 +120,32 @@ def test_real_ace_rate_hard_claim_independently_verifies_against_real_corpus():
     assert verdict.verdict == "VERIFIED", verdict.reason
     n_qualifying = claim["n_considered"] - claim["n_excluded_below_floor"]
     assert len(claim["ranking"]) == n_qualifying
+
+
+def test_ranking_rows_carry_player_name_field(tmp_path, monkeypatch):
+    """wave-63 idname-fix: every ranking row must carry player_name (even if
+    None) so ask.py's name-based entity_lookup can attempt a match -- a row
+    with the key entirely absent could never resolve."""
+    monkeypatch.setattr(tcv4, "REPO_ROOT", tmp_path.parent)
+    df = _fixture_surface_splits()
+    metric = tcv4.METRICS[0]  # ace_rate
+    claim = tcv4.build_ranking_claim(df, metric, "Hard", out_dir=tmp_path)
+    assert len(claim["ranking"]) > 0
+    for row in claim["ranking"]:
+        assert "player_name" in row
+
+
+def test_ids_without_name_counted_honestly_not_dropped(tmp_path, monkeypatch):
+    """Fixture player_ids (1-4) do not exist in the real on-disk
+    matches.parquet name source -- _name_lookup() genuinely has no name for
+    any of them, so every qualifying row gets player_name=None AND the count
+    is surfaced in the claim's ids_without_name (never silently faked, never
+    silently dropped from the ranking)."""
+    monkeypatch.setattr(tcv4, "REPO_ROOT", tmp_path.parent)
+    df = _fixture_surface_splits()
+    metric = tcv4.METRICS[0]  # ace_rate
+    claim = tcv4.build_ranking_claim(df, metric, "Hard", out_dir=tmp_path)
+    n_qualifying = claim["n_considered"] - claim["n_excluded_below_floor"]
+    assert claim["ids_without_name"] == n_qualifying == len(claim["ranking"])
+    for row in claim["ranking"]:
+        assert row["player_name"] is None
