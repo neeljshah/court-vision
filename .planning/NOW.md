@@ -41,6 +41,17 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 48 (WAVE-47: REPLAY CLIENTS LIVE + HUMAN QUEUE CONSOLIDATED,
+  2026-07-05 ~05:55Z, wf_9dd1add2-dcd 6 agents/~0.45M tok, commit 3fbad559):
+  (1) reprocess clients v2: 7 registered incl. REJECTs (Fable policy: honest
+  negatives stay replay-reproducible); positional MATCHED 0.0 + wnba elo
+  2.7e-7; 5 honest UNAVAILABLE (aggregate-only history, RMSE gap, shape v2);
+  lane report empty (4th reporting dud) but disk work verified directly.
+  (2) HUMAN_QUEUE_2026-07-05.md: all 19 PROPOSED docs + scattered items in ONE
+  digest, 6 marked superseded. WAVE-48 (light): harness metric=rmse mode ->
+  umpire client RAN. NEXT MILESTONES: KBO Naver LIVE confirm ~09:30Z (reopens
+  KBO in-game); US verifier sweep ~17-23Z; sprint ends 07-06 EOD. No edge
+  claimed.
 - SPRINT WAKE 47 (WAVE-46 + RETRO WRITTEN + HANDOFF REFRESHED, 2026-07-05
   ~05:30Z, wf_628ebbcf-70e 4 agents/~0.38M tok, commit 265f1283): (1) depth
   hook COMMITTED: optional fail-open depth_capture_fn in inplay_capture_loop,
