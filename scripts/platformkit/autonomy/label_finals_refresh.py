@@ -31,14 +31,15 @@ error -- it can NEVER sink a caller's tick or block a sibling spec.
 refresh_all(specs, ...): runs refresh_one for each spec in SPECS (or an
 injected list), isolated per-spec, returns one summary dict for observability.
 
-NOT wired here: NPB/KBO. Their ingest (domains.baseball_npb.ingest_npb /
-domains.baseball_kbo.ingest_kbo) is a monthly HTML scrape with its own
-polite-pacing + bot-wall-detection/stealth-fallback discipline, a fundamentally
-different shape from the per-UTC-date ESPN JSON fetch this module bounds --
-folding it in here would risk a slow/bot-walled scrape blocking whichever
-runner's tick calls this. They get an SLA table entry (freshness_sla.py) but
-their refresh stays manual/CLI for now; recorded here as an honest scope
-boundary, not silently dropped.
+NPB/KBO: wired (wave-42 lane label-finals-wiring) via
+domains.baseball_npb.results_catchup.catchup_npb /
+domains.baseball_kbo.results_catchup_kbo.catchup_kbo. These are SEASON-level,
+idempotent catch-ups (not per-UTC-date ESPN JSON fetches like the three specs
+above) -- the `dates` arg passed by refresh_one is ignored by their fetch_fn
+wrappers below; catchup_npb/catchup_kbo re-derive their own staleness check
+and current-season target internally. Bounded the same way: never touches a
+prior season, never an unbounded pull, safe to call on every tick (a fresh
+parquet is a no-op).
 
 HONESTY: descriptive/realized-score ingestion only; no $/edge field; never
 writes data/registry/; never flips a flag; never raises out of refresh_one/
@@ -187,6 +188,20 @@ def _wnba_scoreboard_fetch(dates: List[str], out_path: Path) -> Any:
     return ingest_season(year, out_path=out_path, dates_override=dates)
 
 
+def _npb_results_fetch(dates: List[str], out_path: Path) -> Any:
+    # dates ignored: catchup_npb is season-level + self-derives its own
+    # staleness check (see module docstring PROPOSED_WIRING).
+    from domains.baseball_npb.results_catchup import catchup_npb
+    return catchup_npb(out_path=out_path)
+
+
+def _kbo_results_fetch(dates: List[str], out_path: Path) -> Any:
+    # dates ignored: catchup_kbo is season-level + self-derives its own
+    # staleness check (see domains.baseball_npb.results_catchup docstring).
+    from domains.baseball_kbo.results_catchup_kbo import catchup_kbo
+    return catchup_kbo(out_path=out_path)
+
+
 def _default_specs() -> List[RefreshSpec]:
     """Built lazily (module-level import-time safety: no repo-path resolution
     at import unless a caller actually asks for SPECS)."""
@@ -206,6 +221,20 @@ def _default_specs() -> List[RefreshSpec]:
             name="wnba_espn_scoreboard",
             out_path=repo_root / "data" / "domains" / "wnba" / "espn_scoreboard.parquet",
             fetch_fn=_wnba_scoreboard_fetch,
+        ),
+        RefreshSpec(
+            name="npb_results",
+            out_path=repo_root / "data" / "domains" / "npb" / "npb_results.parquet",
+            fetch_fn=_npb_results_fetch,
+            max_dates_per_tick=1,
+            bootstrap_days=1,
+        ),
+        RefreshSpec(
+            name="kbo_results",
+            out_path=repo_root / "data" / "domains" / "kbo" / "kbo_results.parquet",
+            fetch_fn=_kbo_results_fetch,
+            max_dates_per_tick=1,
+            bootstrap_days=1,
         ),
     ]
 
