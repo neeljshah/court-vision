@@ -93,6 +93,35 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- ONE-CONCLUSION COMPOSER LANDED ~23:30Z TRUE-UTC (duty 2; wf_004db836 2 lanes
+  + Fable-directed fix round; commits 51ce7129 claim / ca57abe5 composer /
+  6acd8b97 domain-filter fix; every lane Opus cv-code-reviewer PASS): (1) the
+  canonical-shooter leaderboard is now MATERIALIZED as a VERIFIED claim
+  (data/cache/intel_claims/nba_canonical_shooter_claims.jsonl: naive composite
+  w/ weights IMPORTED from quality_validity_gate.py, gate-matched floors
+  20g/200FGA, independent-recompute VERIFIED, rows carry fg3m/fg3a). (2)
+  compose_best('shooter') answers the user capstone with ONE auditable
+  conclusion + a DECLARED rule: clause-0 ASPECT DOMAIN = NBA official 82-3PM
+  statistical minimum as config DATA (FABLE RULING after the live run exposed
+  the wave-26 failure mode resurfacing: unfiltered naive #1 = Jarrett Allen
+  fg3m=0, Gafford #2 -- domain restriction from the league's own standard,
+  never a tuned threshold; unfiltered_rank1 always reported alongside);
+  primary axis read LIVE from the gate verdict file (REJECT_NAIVE_STAYS_
+  CANONICAL, never hardcoded -- flips if the gate ever flips); attribution
+  axes with claim-id provenance; honest disagreements surfaced (shooter_
+  quality_v1's own #1 = Kevin Durant; conclusion Keon Ellis not_qualifying on
+  that axis's stiffer floors; rest-split axis #1 = Chris Boucher);
+  face_validity_diagnostic passthrough; fail-closed UNANSWERABLE on missing
+  claims/fields; VERIFIED-only loader (ask.py routes best-shooter asks).
+  Tests 8+22 green per-file, Opus re-ran them + the live call itself.
+  Composer generalizes via aspect-config map; only shooter wired (ponytail).
+  (3) HONEST CATCHES for next wave: independent recompute DOWNGRADED 2/3
+  context-shooting claims to MISMATCH (real entity-id divergences in the
+  domains/basketball_nba/context_shooting_claims.py producer -- previously
+  ledgered VERIFIED; the recompute rail caught it) + claims_validator.py
+  write_summary crashes on numpy int64 (pre-existing; worked around without
+  altering any verdict). Both queued. No edge claims -- SCOUTING framing,
+  edge_claimed false everywhere.
 - GREENLIGHT SPEC AMENDED + SHA-PINNED ~22:31Z TRUE-UTC (new architect session,
   duty 1, pre-build): all wf_582fb362 reviewer catches + Fable rulings R-a..R-e
   integrated INTO docs/research/depth-program/GREENLIGHT_UNCAP_SPEC_2026-07-05.md
