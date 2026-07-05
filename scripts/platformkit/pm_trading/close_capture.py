@@ -5,24 +5,24 @@ clv_ledger.settle_closing_line can fill clv_pct (currently null on all settled
 rows because no close ever lands).
 
 Resolution precedence (first non-None wins):
-  1. Kalshi public REST  -- event_id / market_id on the row (is_proxy=False when
-     the Kalshi market is already settled/resolved; is_proxy=True when still open).
-  2. line_store snapshot -- get_close() from grade_paper_close (is_proxy mirrors
-     is_true_close from the lock-window check).
-  3. Proxy/degraded      -- last-observed line from the store (is_proxy=True).
-     Emits a "close_source"="proxy" tag so downstream readers can distinguish.
+  1. Kalshi public REST  -- settled/resolved market (is_proxy=False); open (True).
+  2. Kalshi own-venue quote, kalshi-taken rows ONLY -- reuses
+     kx_close_fallback.venue_close_for_row (itself reusing kx_ticker_close);
+     close_venue="kalshi", close_kind="kalshi_lock". Fixes the cross-venue-
+     basis bug (2026-07-06 audit): a kalshi-taken row's close was silently
+     falling through to a DIFFERENT book's line_store snapshot.
+  3. line_store snapshot -- close_venue="book" (may differ from taken venue).
+  4. Proxy/degraded      -- last-observed line, is_proxy=True, close_source="proxy".
 
 HONESTY CONTRACT (binding):
-  * is_proxy=False ONLY when a confirmed close is from a settled/resolved Kalshi
-    market OR a true-close line_store snapshot (within the lock window). Every
-    other path stamps is_proxy=True -- an honest acknowledgement that the price
-    may not be the final cleared line.
-  * CLV sign follows clv_ledger.compute_clv convention: POSITIVE = you got a
-    BETTER NUMBER than the close (lower implied prob than fair close). Never
-    reversed.
+  * is_proxy=False ONLY for a settled Kalshi market or a true-close line_store
+    snapshot (lock window). Every other path stamps is_proxy=True.
+  * close_venue ALWAYS present: "kalshi" (levels 1-2, own taken venue) or
+    "book" (level 3 fallback). Never inferred silently.
+  * CLV sign per clv_ledger.compute_clv: POSITIVE = better number than close.
   * No $ / dollar / pnl / roi / profit field. Units only. CALIBRATION not edge.
-  * Real-money gate stays DENY (never flipped here).
-  * Never raises; degrades to None on every failure path.
+  * Real-money gate stays DENY. Never raises; degrades to None on failure.
+  * FORWARD-ONLY: never rewrites a previously-stamped ledger row.
 
 INVARIANTS: build only under scripts/platformkit/; <=300 LOC; ASCII only;
 stdlib + project-internal imports only; no secrets.
@@ -64,6 +64,21 @@ except Exception:  # noqa: BLE001
     _close_from_store = None  # type: ignore[assignment]
     _LINE_STORE_OK = False
 
+# ---------------------------------------------------------------------------
+# kx_close_fallback import (guarded) -- REUSES the existing Kalshi-ticker
+# own-venue close plumbing; no fetch logic duplicated here.
+# ---------------------------------------------------------------------------
+try:
+    from scripts.platformkit.clv.kx_close_fallback import (
+        venue_close_for_row as _venue_close_for_row,
+    )
+    _KX_FALLBACK_OK = True
+except Exception:  # noqa: BLE001
+    _venue_close_for_row = None  # type: ignore[assignment]
+    _KX_FALLBACK_OK = False
+
+_KX_LOCK_KIND = "kalshi_lock"
+
 
 # ---------------------------------------------------------------------------
 # Public result type.
@@ -74,16 +89,18 @@ class CloseResult:
     """Resolved closing line for one two-way market.
 
     close_home_dec / close_away_dec: decimal odds (> 1.0).
-    is_proxy: True when this is a degraded / inferred close rather than a
-      confirmed settled-market price. Downstream CLV should note is_proxy on
-      the ledger row so realmoney_gate and scoreboard can separate true closes
-      from proxy closes honestly.
-    close_source: descriptive tag ("kalshi", "line_store", "proxy") for audit.
+    is_proxy: True = degraded/inferred close, not a confirmed settled price.
+    close_source: tag ("kalshi", "kalshi_venue", "line_store", "proxy").
+    close_venue: venue that supplied the price -- "kalshi" (own taken venue,
+      levels 1-2) or "book" (level 3 fallback, may differ). ALWAYS present.
+    close_kind: finer tag, e.g. "kalshi_lock"; None for pre-existing tiers.
     """
     close_home_dec: float
     close_away_dec: float
     is_proxy: bool
     close_source: str
+    close_venue: str = "book"
+    close_kind: Optional[str] = None
 
 
 # ---------------------------------------------------------------------------
@@ -177,6 +194,7 @@ def _kalshi_close(
             close_away_dec=float(a_dec),
             is_proxy=not is_settled,
             close_source="kalshi",
+            close_venue="kalshi",
         )
     except Exception:  # noqa: BLE001
         logger.debug("Kalshi price parse failed for event_id=%r", event_id, exc_info=True)
@@ -208,6 +226,37 @@ def _line_store_close(row: Dict[str, Any]) -> Optional[CloseResult]:
         close_away_dec=float(away_dec),
         is_proxy=not is_true_close,
         close_source="line_store",
+        close_venue="book",
+    )
+
+
+def _kx_venue_close(row: Dict[str, Any]) -> Optional[CloseResult]:
+    """Kalshi's OWN pre-commence venue quote for a kalshi-taken row.
+
+    Thin CloseResult wrapper -- ALL gating (taken_book=="kalshi" check) and the
+    actual REUSED lookup (clv.kx_close_fallback.lookup_close_legs_kx, which
+    itself reuses clv.kx_ticker_close.get_close_prob; no fetch logic
+    duplicated) live in kx_close_fallback.venue_close_for_row. Always
+    is_proxy=True (the underlying module's own last-tick convention -- never
+    promoted to a confirmed true close here). Never raises.
+    """
+    if not _KX_FALLBACK_OK or _venue_close_for_row is None:
+        return None
+    try:
+        legs = _venue_close_for_row(row)
+    except Exception:  # noqa: BLE001 -- degrade, never bubble
+        logger.debug("kx_close_fallback venue_close_for_row failed", exc_info=True)
+        return None
+    if legs is None:
+        return None
+    home_dec, away_dec = legs[0], legs[1]
+    return CloseResult(
+        close_home_dec=float(home_dec),
+        close_away_dec=float(away_dec),
+        is_proxy=True,
+        close_source="kalshi_venue",
+        close_venue="kalshi",
+        close_kind=_KX_LOCK_KIND,
     )
 
 
@@ -220,35 +269,25 @@ def capture_close(
     *,
     kalshi_fetch: Optional[Callable[[str], Any]] = None,
 ) -> Optional[CloseResult]:
-    """Resolve a closing line for one ledger *row*.
+    """Resolve a closing line for one ledger *row*. See module docstring for
+    the 4-level resolution precedence.
 
-    Resolution order:
-      1. Kalshi public REST (is_proxy=False only when market is settled).
-      2. line_store snapshot (is_proxy mirrors lock-window check).
-      3. None -- no close available; caller must treat CLV as INSUFFICIENT_DATA.
+    kalshi_fetch: optional callable(sport) -> list replacing the live Kalshi
+    network call (for tests / offline use).
 
-    Parameters
-    ----------
-    row:
-        A ledger row dict (as returned by clv_ledger.record_bet).
-    kalshi_fetch:
-        Optional callable(sport) -> list that replaces the live Kalshi network
-        call (for tests / offline use). Receives the row's sport string and
-        returns either a list of OddsEvent-like objects or raw market dicts.
-
-    Returns
-    -------
-    CloseResult or None.
-      * CloseResult.is_proxy=False -> confirmed settled close -> clv_is_proxy=False.
-      * CloseResult.is_proxy=True  -> proxy / inferred close  -> clv_is_proxy=True.
-      * None                       -> no close at all; CLV should be INSUFFICIENT_DATA.
-    Never raises.
+    Returns CloseResult or None (no close at all -> caller treats CLV as
+    INSUFFICIENT_DATA). Never raises.
     """
-    # Level 1: Kalshi.
+    # Level 1: Kalshi public REST (settled market -- best possible close).
     result = _kalshi_close(row, kalshi_fetch=kalshi_fetch)
     if result is not None:
         return result
-    # Level 2 + 3: line_store (true-close or last-observed proxy).
+    # Level 2: Kalshi's own pre-commence venue quote, kalshi-taken rows only.
+    result = _kx_venue_close(row)
+    if result is not None:
+        return result
+    # Level 3 + 4: line_store (true-close or last-observed proxy) -- unchanged
+    # for every row, kalshi-taken or not, when levels 1-2 found nothing.
     result = _line_store_close(row)
     return result
 
