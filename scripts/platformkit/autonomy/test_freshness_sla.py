@@ -161,6 +161,39 @@ def test_label_artifact_sla_na_for_unmonitored_name():
     assert row["status"] == NA
 
 
+# --------------------------------------------------------------------------- #
+# LANE 1: manual/CLI ops-report SLA rows (edge_greenlight/clv_scoreboard/
+# clv_reconcile/after_cost/beat_the_line)
+# --------------------------------------------------------------------------- #
+def test_manual_report_sla_entries_present():
+    from scripts.platformkit.autonomy.freshness_sla import TABLE
+    for name in ("edge_greenlight", "clv_scoreboard", "clv_reconcile_moneyline",
+                 "clv_reconcile_paper_pm", "after_cost_scoreboard", "beat_the_line"):
+        assert name in TABLE, name
+        assert TABLE[name].max_staleness_sec > 0
+
+
+def test_manual_report_sla_green_when_fresh(tmp_path):
+    p = tmp_path / "edge_greenlight.json"
+    p.write_text("{}", encoding="utf-8")
+    now = p.stat().st_mtime + 10.0
+    table = {"edge_greenlight": SlaEntry(p, 172800.0)}
+    row = check_one("edge_greenlight", now=now, table=table)
+    assert row["status"] == GREEN
+
+
+def test_manual_report_sla_red_when_multi_day_stale(tmp_path):
+    """The real incident shape this lane found: 73-75h stale with nothing
+    flagging it -- must go RED, never silently read as live."""
+    p = tmp_path / "clv_scoreboard.json"
+    p.write_text("{}", encoding="utf-8")
+    now = p.stat().st_mtime + 75 * 3600.0  # 75h, matches the real observed staleness
+    table = {"clv_scoreboard": SlaEntry(p, 172800.0)}
+    row = check_one("clv_scoreboard", now=now, table=table)
+    assert row["status"] == RED
+    assert row["reason"] == "stale"
+
+
 def test_m36_already_registered_no_new_procspec_needed_this_lane():
     """LANE 3 wired the bounded finals-refresh into the EXISTING m36 grading
     tick rather than adding a new ProcSpec -- so supervisor.manifest() (the
