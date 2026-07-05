@@ -78,11 +78,15 @@ def odds_index(sport: str) -> Tuple[Callable[..., Optional[Dict[str, Dict[str, f
             for venue, sides in ev.prices.items():
                 h = sides.get("away") if flipped else sides.get("home")
                 a = sides.get("home") if flipped else sides.get("away")
+                d = sides.get("draw")  # unflipped: draw has no home/away side to swap
                 clean: Dict[str, float] = {}
                 if h is not None:
                     clean[home] = float(h)
                 if a is not None:
                     clean[away] = float(a)
+                # "draw" can never collide with a team label -> safe sibling key.
+                if d is not None:
+                    clean["draw"] = float(d)
                 if clean:
                     out[venue] = clean
             return out or None
@@ -116,7 +120,9 @@ def close_proxy_decimals(book_prices: Optional[Dict[str, Dict[str, float]]],
                          home: str, away: str) -> Optional[Tuple[float, float]]:
     """Two-way closing-line PROXY (home_dec, away_dec) from the current book -- the
     grader's target. Uses the worst (lowest-decimal) real quote per side; None if
-    not two-way. Never fabricated."""
+    not two-way. Never fabricated. Draw leg (soccer 1X2), if present in
+    *book_prices*, is available via close_proxy_draw_decimal -- kept out of this
+    tuple so every existing 2-way caller (mlb/nba/wnba moneyline) is untouched."""
     if not book_prices:
         return None
     hs = [p[home] for p in book_prices.values() if home in p]
@@ -126,16 +132,50 @@ def close_proxy_decimals(book_prices: Optional[Dict[str, Dict[str, float]]],
     return (min(hs), min(aws))
 
 
+def close_proxy_draw_decimal(book_prices: Optional[Dict[str, Dict[str, float]]]
+                             ) -> Optional[float]:
+    """Worst (lowest-decimal) draw quote across books, or None (no draw leg --
+    e.g. mlb/nba/wnba moneyline, or a soccer book that priced no draw). See
+    docs/research/PROPOSED_soccer_1x2_close_proxy_devig.md: without this, a
+    soccer close proxy silently drops the draw leg and the remaining two legs'
+    booksum is < 1 by construction (Shin's B>1.0 arb guard then fires on every
+    single soccer row)."""
+    if not book_prices:
+        return None
+    ds = [p["draw"] for p in book_prices.values() if "draw" in p and p["draw"] is not None]
+    return min(ds) if ds else None
+
+
 def ledger_keys(rows: Sequence[Dict[str, Any]]) -> set:
     """(sport, matchup, side, day) keys already in the CLV ledger (bets)."""
     return {(str(r.get("sport")), str(r.get("matchup")), str(r.get("side")),
              str(r.get("ts", ""))[:10]) for r in rows}
 
 
+def prediction_event_day(row: Dict[str, Any], *, fallback_day: str = "") -> str:
+    """The EVENT day for a prediction row: commence_time's date when present,
+    else *fallback_day* (legacy rows / genuinely unresolved event_id use
+    logged_at's date via this fallback; the live-cycle call site passes
+    ctx.day so an unresolved event keeps dedupping on today exactly as before).
+
+    Dedup MUST key on the event day, not the log day -- keying on logged_at let
+    a game that already finished re-log as a "fresh" prediction on any later
+    calendar day the daemon happens to see it again on the feed (see
+    LANE 4 prediction-logger-hygiene fix). commence_time is stable for a given
+    game regardless of which day the daemon runs, so the key stays constant.
+    """
+    ct = str(row.get("commence_time") or "")[:10]
+    if ct:
+        return ct
+    return fallback_day if fallback_day else str(row.get("logged_at", ""))[:10]
+
+
 def prediction_keys(rows: Sequence[Dict[str, Any]]) -> set:
-    """(sport, matchup, selection, day) keys already in the predictions store."""
+    """(sport, matchup, selection, event_day) keys already in the predictions
+    store. event_day = commence_time's date (see prediction_event_day) --
+    NOT the log day, so a finished game cannot re-log as a fresh prediction."""
     return {(str(r.get("sport")), str(r.get("matchup")), str(r.get("selection")),
-             str(r.get("logged_at", ""))[:10]) for r in rows}
+             prediction_event_day(r)) for r in rows}
 
 
 def log_prediction(rec: Dict[str, Any], *, path: Path) -> None:
@@ -183,6 +223,7 @@ def live_state(g: Dict[str, Any]) -> Optional[Dict[str, Any]]:
 __all__ = [
     "Ctx", "DEFAULT_PREDICTIONS", "DEFAULT_SPORTS", "PAPER_EV_FLOOR",
     "now_iso", "today_key", "odds_index", "event_meta", "side_of",
-    "close_proxy_decimals", "ledger_keys", "prediction_keys",
-    "log_prediction", "load_predictions", "iter_rows", "live_state",
+    "close_proxy_decimals", "close_proxy_draw_decimal", "ledger_keys",
+    "prediction_keys", "prediction_event_day", "log_prediction",
+    "load_predictions", "iter_rows", "live_state",
 ]

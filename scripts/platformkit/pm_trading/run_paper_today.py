@@ -30,6 +30,7 @@ from scripts.platformkit.frontend.bet_board import game_bet_board
 from scripts.platformkit.frontend.live_board import todays_live_games
 from scripts.platformkit.odds_provider.base import OddsEvent
 from scripts.platformkit.odds_provider.kalshi_listing import todays_kalshi_games
+from scripts.platformkit.eval_gate.shin import shin_devig_decimal
 from scripts.platformkit.odds_shop import devig_twoway, ev_vs_price
 from scripts.platformkit.pm_trading.paper_autobet import (
     AutoBetConfig, CHANNEL_PAPER)
@@ -185,17 +186,34 @@ def _record_priced(row, sport, matchup, meta, side, price, prob, selection,
 
 
 def _log_unpriced(row, sport, matchup, home, away, meta, close, prob, selection,
-                  ctx: Ctx) -> Optional[Dict[str, Any]]:
-    """Log an unpriced model prediction + closing-line proxy. None if deduped."""
-    pred_key = (sport, matchup, str(selection), ctx.day)
+                  ctx: Ctx, *, draw: Optional[float] = None
+                  ) -> Optional[Dict[str, Any]]:
+    """Log an unpriced model prediction + closing-line proxy. None if deduped.
+
+    *draw* is the captured draw-leg decimal (soccer 1X2 only; None for every
+    two-way sport, unchanged behavior). When present, devigs all THREE legs
+    together (see PROPOSED_soccer_1x2_close_proxy_devig.md) instead of the
+    two-way devig -- stripping the draw leg out first would leave a booksum<1
+    remainder that the Shin arb guard rejects on every single soccer row.
+    """
+    # event day, NOT log day (see prediction_event_day); unresolved event_id
+    # falls back to ctx.day, exactly matching the pre-fix behavior for that case.
+    event_day = S.prediction_event_day(meta, fallback_day=ctx.day)
+    pred_key = (sport, matchup, str(selection), event_day)
     if pred_key in ctx.pred_keys:
         return None
     proxy, side = None, S.side_of(selection, home, away)
     if close is not None and side is not None:
         proxy = {"close_decimal_home": round(close[0], 4),
                  "close_decimal_away": round(close[1], 4), "fair_close_prob": None}
-        try:  # devig only when the two-way line is a real vigged book (booksum>=1)
-            fh, fa = devig_twoway(close[0], close[1])
+        if draw is not None:
+            proxy["close_decimal_draw"] = round(draw, 4)
+        try:  # devig only when the line is a real vigged book (booksum>=1)
+            if draw is not None:
+                probs, _z = shin_devig_decimal([close[0], draw, close[1]])
+                fh, fa = probs[0], probs[2]  # order matches [home, draw, away]
+            else:
+                fh, fa = devig_twoway(close[0], close[1])
             proxy["fair_close_prob"] = round(fh if side == "home" else fa, 6)
         except Exception:  # noqa: BLE001 -- arb/degenerate proxy -> fair stays None
             pass
@@ -213,9 +231,18 @@ def _log_unpriced(row, sport, matchup, home, away, meta, close, prob, selection,
     return {"kind": "prediction", "row": pred}
 
 
-def _handle_row(row, sport, matchup, home, away, meta, close, ctx: Ctx
-                ) -> Optional[Dict[str, Any]]:
-    """Record a priced two-way row as a paper bet, else log a model prediction."""
+def _handle_row(row, sport, matchup, home, away, meta, close, ctx: Ctx, *,
+                draw: Optional[float] = None,
+                game_state: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    """Record a priced two-way row as a paper bet, else log a model prediction.
+
+    *game_state* gates the PREGAME-PREDICTION path only (_log_unpriced):
+    a game not in state 'pre' skips it -- a finished game re-appearing on the
+    feed must never re-log as a "fresh" pregame model view (see LANE 4
+    prediction-logger-hygiene fix). The priced-bet path (_record_priced) is
+    the DESIGNED whole-slate in-game/CLV logging behavior and is UNCHANGED --
+    it never checks game_state.
+    """
     prob, selection = row.get("model_prob"), row.get("selection")
     if not isinstance(prob, (int, float)) or prob <= 0.0 or prob >= 1.0:
         return None
@@ -225,8 +252,10 @@ def _handle_row(row, sport, matchup, home, away, meta, close, ctx: Ctx
     if price is not None and side is not None:
         return _record_priced(row, sport, matchup, meta, side, price, prob,
                               selection, ctx)
+    if game_state is not None and game_state != "pre":
+        return None  # not a pregame model view -- never log a stale/finished one
     return _log_unpriced(row, sport, matchup, home, away, meta, close, prob,
-                         selection, ctx)
+                         selection, ctx, draw=draw)
 
 
 def _market_ledger_keys(rows: Sequence[Dict[str, Any]]) -> set:
@@ -302,9 +331,12 @@ def run_paper_cycle(
             if board.get("status") != "ok":
                 continue
             meta = S.event_meta(events, s, home, away)
-            close = S.close_proxy_decimals(lookup(s, home, away), home, away)
+            book_prices = lookup(s, home, away)
+            close = S.close_proxy_decimals(book_prices, home, away)
+            draw = S.close_proxy_draw_decimal(book_prices)
             for row in S.iter_rows(board):
-                rec = _handle_row(row, s, matchup, home, away, meta, close, ctx)
+                rec = _handle_row(row, s, matchup, home, away, meta, close, ctx,
+                                  draw=draw, game_state=g.get("state"))
                 if rec is None:
                     continue
                 if rec["kind"] == "bet":

@@ -138,6 +138,167 @@ def test_no_games_degrades_cleanly(tmp_path):
     assert out["n_logged"] == 0
     assert out["sports"]["mlb"]["status"] == "unavailable"
     assert out["sports"]["mlb"]["n_games"] == 0
+
+
+# --------------------------------------------------------------------------- #
+# LANE 4 prediction-logger hygiene regressions.
+# (a) pregame prediction logging filters to state='pre'.
+# (b) dedup keys on EVENT day (commence_time), not LOG day -- a finished game
+#     re-seen on a LATER calendar day must not re-log as a fresh prediction.
+# --------------------------------------------------------------------------- #
+def _live_one_game_state(sport: str, state: str) -> Dict[str, Any]:
+    return {"sport": sport, "status": "ok", "games": [
+        {"sport": sport, "home": "Boston Red Sox", "away": "Toronto Blue Jays",
+         "state": state, "home_score": 5, "away_score": 3, "clock": None},
+    ]}
+
+
+def test_finished_game_does_not_log_pregame_prediction(tmp_path):
+    """(a) state='post' (finished) must NOT log a pregame model view -- the
+    whole-slate PRICED bet path (_record_priced) is untouched/unchanged;
+    only the unpriced pregame-prediction path is gated on state."""
+    out = _run(tmp_path, live_fetch=lambda s: _live_one_game_state(s, "post"))
+    assert out["n_logged"] == 0
+    assert out["predictions"] == []
+    # the priced moneyline bet still records -- unrelated to this fix.
+    assert out["n_recorded"] == 1
+
+
+def test_in_game_state_does_not_log_pregame_prediction(tmp_path):
+    """(a) state='in' (live) must NOT log a pregame model view either -- an
+    in-progress game is not pregame. True in-game logging is a SEPARATE
+    module (paper_ingame.py, channel=paper_ingame), never touched here."""
+    out = _run(tmp_path, live_fetch=lambda s: _live_one_game_state(s, "in"))
+    assert out["n_logged"] == 0
+    assert out["predictions"] == []
+
+
+def test_pregame_state_still_logs_unpriced_predictions(tmp_path):
+    """(a) state='pre' is UNCHANGED -- pregame model views still log."""
+    out = _run(tmp_path, live_fetch=lambda s: _live_one_game_state(s, "pre"))
+    assert out["n_logged"] >= 1
+    assert out["predictions"]
+
+
+def test_finished_game_seen_on_later_day_does_not_relog(tmp_path):
+    """(b) REGRESSION for the exact reported defect: a game commencing on day 1
+    is logged once (pregame, state='pre'). The SAME game reappearing on the
+    feed on a LATER calendar day (still same commence_time -- e.g. a stale/
+    re-served feed row) must NOT re-log as a second "fresh" prediction, because
+    dedup keys on the event day (commence_time), not the day it was logged."""
+    from scripts.platformkit.odds_provider.base import OddsEvent
+
+    ev = OddsEvent(event_id="evt-42", sport="mlb", home="Boston Red Sox",
+                   away="Toronto Blue Jays", commence_time="2026-07-01T23:00:00Z",
+                   prices={})
+
+    def _idx(sport):
+        def _lookup(s, home, away):
+            return {"stub_book": {home: 1.95, away: 1.90}}
+        return _lookup, [ev]
+
+    # Day 1: game is pregame, logs normally.
+    out1 = _run(tmp_path, live_fetch=lambda s: _live_one_game_state(s, "pre"),
+               odds_index=_idx)
+    n_logged_day1 = out1["n_logged"]
+    assert n_logged_day1 >= 1
+
+    # "Later day": the SAME event_id/commence_time reappears (state now 'post'
+    # -- game already happened) fed through the identical predictions store.
+    # Must add ZERO new predictions: game_state='post' blocks the log path
+    # AND (independently) the event-day dedup key would already match even if
+    # it were somehow 'pre' again.
+    out2 = _run(tmp_path, live_fetch=lambda s: _live_one_game_state(s, "post"),
+               odds_index=_idx)
+    assert out2["n_logged"] == 0
+    preds_path = tmp_path / "preds.jsonl"
+    lines = [l for l in preds_path.read_text().splitlines() if l]
+    assert len(lines) == n_logged_day1  # store did not grow
+
+
+# --------------------------------------------------------------------------- #
+# Soccer 1X2 close-proxy devig (PROPOSED_soccer_1x2_close_proxy_devig.md).
+# Reproduces the live-corpus finding EXACTLY: Austria@Jordan
+# close_decimal_home=1.3922 close_decimal_away=9.0 -> booksum 0.829 without the
+# draw leg (arb guard fires, fair_close_prob=None, 30/30 soccer rows dead on
+# arrival). Adding the draw leg makes the SAME numbers devig cleanly.
+# --------------------------------------------------------------------------- #
+def _live_soccer_game(sport: str) -> Dict[str, Any]:
+    return {"sport": sport, "status": "ok", "games": [
+        {"sport": sport, "home": "Austria", "away": "Jordan",
+         "state": "pre", "home_score": None, "away_score": None, "clock": None},
+    ]}
+
+
+def _board_soccer_unpriced(sport, home, away, *, odds_lookup=None, live=None, **_):
+    """Both moneyline sides unpriced -- exercises the close-proxy path only."""
+    return {"sport": sport, "home": home, "away": away, "status": "ok",
+            "live": None, "best_bets": [], "honest_note": "stub",
+            "groups": [
+                {"name": "Moneyline", "bets": [
+                    {"group": "Moneyline", "selection": home, "model_prob": 0.55,
+                     "line": None, "fair_odds": 1.82, "best_book": None,
+                     "best_price": None, "ev_pct": None, "verdict": "MODEL_VIEW"},
+                    {"group": "Moneyline", "selection": away, "model_prob": 0.20,
+                     "line": None, "fair_odds": 5.0, "best_book": None,
+                     "best_price": None, "ev_pct": None, "verdict": "MODEL_VIEW"},
+                ]},
+            ]}
+
+
+def _odds_index_soccer_no_draw(sport: str):
+    """The live-corpus reproduction: home 1.3922 / away 9.0, NO draw leg captured
+    (booksum = 1/1.3922 + 1/9.0 = 0.829 < 1 -> Shin arb guard fires)."""
+    def _lookup(s, home, away):
+        return {"bookA": {home: 1.3922, away: 9.0}}
+    return _lookup, []
+
+
+def _odds_index_soccer_with_draw(sport: str):
+    """Same home/away prices, PLUS the draw leg the book actually offers
+    (booksum = 1/1.3922 + 1/4.5 + 1/9.0 = 1.052, a normal ~5% hold)."""
+    def _lookup(s, home, away):
+        return {"bookA": {home: 1.3922, away: 9.0, "draw": 4.5}}
+    return _lookup, []
+
+
+def test_soccer_proxy_without_draw_leg_dies_on_arb_guard(tmp_path):
+    """BEFORE the fix (no draw captured): reproduces the dead-code path exactly --
+    close_proxy is captured but fair_close_prob stays None on every row."""
+    out = run_paper_cycle(
+        sports=("soccer_intl",), ledger_path=tmp_path / "ledger.jsonl",
+        predictions_path=tmp_path / "preds.jsonl", live_fetch=_live_soccer_game,
+        board_fn=_board_soccer_unpriced, odds_index=_odds_index_soccer_no_draw)
+    preds = out["predictions"]
+    assert preds, "expected unpriced soccer model views to be logged"
+    for p in preds:
+        proxy = p["close_proxy"]
+        assert proxy is not None
+        assert proxy["fair_close_prob"] is None       # arb guard fired -> dead
+        assert "close_decimal_draw" not in proxy      # no draw leg was captured
+
+
+def test_soccer_proxy_with_draw_leg_devigs_correctly(tmp_path):
+    """AFTER the fix: the SAME home/away prices plus a captured draw leg devig
+    cleanly into a real fair_close_prob -- soccer's proxy becomes measurable."""
+    out = run_paper_cycle(
+        sports=("soccer_intl",), ledger_path=tmp_path / "ledger.jsonl",
+        predictions_path=tmp_path / "preds.jsonl", live_fetch=_live_soccer_game,
+        board_fn=_board_soccer_unpriced, odds_index=_odds_index_soccer_with_draw)
+    preds = out["predictions"]
+    assert preds, "expected unpriced soccer model views to be logged"
+    home_pred = [p for p in preds if p["selection"] == "Austria"][0]
+    proxy = home_pred["close_proxy"]
+    assert proxy is not None
+    assert proxy["close_decimal_draw"] == 4.5
+    assert proxy["fair_close_prob"] is not None       # devig SUCCEEDED
+    assert 0.0 < proxy["fair_close_prob"] < 1.0
+    away_pred = [p for p in preds if p["selection"] == "Jordan"][0]
+    away_proxy = away_pred["close_proxy"]
+    assert away_proxy["fair_close_prob"] is not None
+    # three legs must sum to ~1 (Shin normalizes) -- home heavily favoured (1.39)
+    # so its fair prob should be well above the away underdog's (9.0).
+    assert home_pred["close_proxy"]["fair_close_prob"] > away_proxy["fair_close_prob"]
     # nothing written
     assert L.load_ledger(tmp_path / "ledger.jsonl") == []
 

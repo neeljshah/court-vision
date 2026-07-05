@@ -105,16 +105,17 @@ def test_game_key_no_data():
 # _close_from_store
 # ---------------------------------------------------------------------------
 def test_close_from_store_true_close(tmp_path):
-    """At-lock tick -> is_true_close=True -> returns (ch, ca, True)."""
+    """At-lock tick -> is_true_close=True -> returns (ch, ca, True, book, book)."""
     # tick at 22:55 is 5 min before 23:00 tip -> within 30-min window
     gid = _write_ml(tmp_path, "2026-06-18T22:55:00+00:00", 1.80, 2.10)
     bet = _bet_base(event_id=gid)
     result = _close_from_store(bet, base=tmp_path)
     assert result is not None
-    ch, ca, is_true = result
+    ch, ca, is_true, book_h, book_a = result
     assert is_true is True
     assert abs(ch - 1.80) < 1e-9
     assert abs(ca - 2.10) < 1e-9
+    assert book_h == "test_book" and book_a == "test_book"  # see _write_ml
 
 
 def test_close_from_store_proxy(tmp_path):
@@ -123,7 +124,7 @@ def test_close_from_store_proxy(tmp_path):
     bet = _bet_base(event_id=gid)
     result = _close_from_store(bet, base=tmp_path)
     assert result is not None
-    ch, ca, is_true = result
+    ch, ca, is_true, book_h, book_a = result
     assert is_true is False
 
 
@@ -156,6 +157,27 @@ def test_grade_one_true_close_from_store(tmp_path):
     assert s["beat_close"] is True           # 2.50 > fair decimal at 1.80/2.10 close
     assert s["outcome"] == "win"             # home 5 > away 3
     assert s["executed"] is False
+
+
+def test_grade_one_stamps_close_book_from_line_store(tmp_path):
+    """Same-venue CLV restriction needs the close's book -- line_store resolution
+    must stamp it onto the settled row (see PROPOSED_same_venue_close_restriction)."""
+    gid = _write_ml(tmp_path, "2026-06-18T22:55:00+00:00", 1.80, 2.10)
+    bet = _bet_base(event_id=gid)  # taken_book="test", close book="test_book"
+    s = grade_one(bet, _GAME, _line_store_base=tmp_path)
+
+    assert s["close_book_home"] == "test_book"
+    assert s["close_book_away"] == "test_book"
+
+
+def test_grade_one_close_book_none_when_not_from_line_store(tmp_path):
+    """Level-1 (bet already carries closing_decimal_*) has no per-book provenance
+    -> close_book_{home,away} stay explicitly None, never guessed."""
+    bet = _bet_base(closing_decimal_home=1.80, closing_decimal_away=2.10)
+    s = grade_one(bet, _GAME, _line_store_base=tmp_path)
+
+    assert s["close_book_home"] is None
+    assert s["close_book_away"] is None
 
 
 # ---------------------------------------------------------------------------
