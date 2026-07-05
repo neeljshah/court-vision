@@ -343,6 +343,19 @@ def cards_from_lines(sport: str, lines: List[Any], *, now: Optional[float] = Non
                              today, reliable_only)
 
 
+def _build_one_sport(sport: str, today: str, reliable_only: bool,
+                     max_lines_per_sport: int) -> List[Dict[str, Any]]:
+    """One sport's edges -> cards (the per-sport unit run by the parallel
+    fan-out). Never raises (propagates up so the caller can record an honest
+    SCORE_ERROR instead of silently losing the sport)."""
+    from scripts.platformkit.bestbets import prop_cards_circuit_io as _pcio  # noqa: PLC0415
+    edges = _board_edges(sport, max_lines=max_lines_per_sport)
+    sport_cards = _cards_from_edges(edges, sport, today, reliable_only)
+    if max_lines_per_sport > 0:
+        _pcio.stamp_circuit_skips(sport_cards, sport)
+    return sport_cards
+
+
 def build_prop_cards(
     now: Optional[float] = None,
     sports: Optional[tuple] = None,
@@ -353,20 +366,38 @@ def build_prop_cards(
     stale-guard ref. sports: fan-out override (default DEFAULT_PROP_SPORTS).
     reliable_only: keep reliable + ev_flag=="ok". max_lines_per_sport: >0 caps priced
     LINES (priced first; m13 budget), 0 = full board. Never raises -> []. Model-only
-    cards carry model_only=True / NO edge; priced carry edge_vs_market (prob diff). No $."""
+    cards carry model_only=True / NO edge; priced carry edge_vs_market (prob diff). No $.
+
+    SPORT-PARALLEL (m13-sport-parallel): per-sport boards are INDEPENDENT so they run
+    CONCURRENTLY (threads; race audit in prop_cards_sport_parallel) -- cycle wall-clock
+    ~= the slowest sport, not the sum. Cards are assembled in the FIXED *sports* order
+    (never thread order) so output is deterministic. A sport whose build raises
+    contributes zero cards this cycle (see last_sport_errors()), never fabricated."""
     today = _today_for(now)
-    _sports = sports if sports is not None else DEFAULT_PROP_SPORTS
+    _sports = tuple(sports) if sports is not None else DEFAULT_PROP_SPORTS
 
-    from scripts.platformkit.bestbets import prop_cards_circuit_io as _pcio  # noqa: PLC0415
+    from scripts.platformkit.bestbets import prop_cards_sport_parallel as _spar  # noqa: PLC0415
 
-    cards: List[Dict[str, Any]] = []
-    for sport in _sports:
-        edges = _board_edges(sport, max_lines=max_lines_per_sport)
-        sport_cards = _cards_from_edges(edges, sport, today, reliable_only)
-        if max_lines_per_sport > 0:
-            _pcio.stamp_circuit_skips(sport_cards, sport)
-        cards.extend(sport_cards)
+    def _one(sport: str) -> List[Dict[str, Any]]:
+        return _build_one_sport(sport, today, reliable_only, max_lines_per_sport)
+
+    cards, errors, per_sport_seconds = _spar.run_sports_parallel(_sports, _one)
+    _spar.record_last_cycle(errors, per_sport_seconds)
     return cards
+
+
+def last_sport_errors() -> Dict[str, str]:
+    """{sport: "SCORE_ERROR: ..."} for any sport whose board build raised last
+    cycle (delegates to prop_cards_sport_parallel; <=300 LOC). Never raises."""
+    from scripts.platformkit.bestbets import prop_cards_sport_parallel as _spar  # noqa: PLC0415
+    return _spar.last_sport_errors()
+
+
+def last_sport_seconds() -> Dict[str, float]:
+    """{sport: wall-clock seconds} for the most recent cycle (delegates to
+    prop_cards_sport_parallel). Never raises."""
+    from scripts.platformkit.bestbets import prop_cards_sport_parallel as _spar  # noqa: PLC0415
+    return _spar.last_sport_seconds()
 
 
 # Bounded/ranked SERVED path lives in prop_cards_bounded.py (keeps this <=300 LOC).
@@ -376,4 +407,5 @@ from scripts.platformkit.bestbets.prop_cards_bounded import (  # noqa: E402
 __all__ = [
     "DEFAULT_PROP_SPORTS", "DEFAULT_MODEL_ONLY_CAP", "DEFAULT_MAX_LINES_PER_SPORT",
     "build_prop_cards", "cards_from_lines", "build_bounded_prop_cards",
-    "build_synth_only_prop_cards", "pregame_games_exist", "last_circuit_skips"]
+    "build_synth_only_prop_cards", "pregame_games_exist", "last_circuit_skips",
+    "last_sport_errors", "last_sport_seconds"]

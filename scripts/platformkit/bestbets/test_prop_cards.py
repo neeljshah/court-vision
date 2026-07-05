@@ -604,3 +604,78 @@ def test_no_capped_lines_fallback_never_calls_default_providers_unfiltered(monke
     assert len(calls) == 1
     _, kwargs = calls[0]
     assert kwargs.get("providers") == []
+
+
+# ---------------------------------------------------------------------------
+# m13-sport-parallel: build_prop_cards fans out across sports CONCURRENTLY.
+# Race-audit -- two sports scored concurrently must produce output IDENTICAL
+# to a sequential build, in a fixed (not completion-order) sequence, and one
+# sport erroring must not sink the cycle.
+# ---------------------------------------------------------------------------
+
+def test_sport_parallel_matches_sequential_output(monkeypatch):
+    # soccer_intl sleeps longer than mlb so completion order would put mlb
+    # first if the assembly were completion-ordered; the FIXED sports order
+    # (soccer_intl, mlb) must still be what comes out. game_id lookup is
+    # stubbed out (network call, orthogonal to this fan-out test) so timing
+    # reflects ONLY the board-fetch mock.
+    import time as _time
+
+    _patch_edge_view(monkeypatch, {})  # no games -> game_id="" for every card
+
+    def fake_board(sport, **_kw):
+        _time.sleep(0.05 if sport == "soccer_intl" else 0.01)
+        return {"status": "ok", "edges": [_edge(player="P-%s" % sport)]}
+    monkeypatch.setattr("scripts.platformkit.prop_edge.build_prop_board", fake_board)
+
+    cards = pc.build_prop_cards(now=_NOW, sports=("soccer_intl", "mlb"))
+    assert [c["sport"] for c in cards] == ["soccer_intl", "mlb"]
+
+    # Sequential reference build (call each sport's edges directly, in order).
+    seq_cards = []
+    for sport in ("soccer_intl", "mlb"):
+        edges = pc._board_edges(sport)
+        seq_cards.extend(pc._cards_from_edges(edges, sport, pc._today_for(_NOW), True))
+    assert cards == seq_cards
+    assert pc.last_sport_errors() == {}
+
+
+def test_sport_parallel_one_sport_error_does_not_sink_cycle(monkeypatch):
+    # _board_edges already swallows a build_prop_board raise into an honest
+    # empty board (existing, unrelated behavior) -- so to exercise THIS lane's
+    # SCORE_ERROR isolation we make the per-sport unit itself raise past that
+    # point, via _cards_from_edges (still inside _build_one_sport).
+    _patch_board(monkeypatch, {"soccer_intl": [_edge(player="OK")], "mlb": [_edge()]})
+    _patch_edge_view(monkeypatch, {})
+    real_cards_from_edges = pc._cards_from_edges
+
+    def fake_cards_from_edges(edges, sport, today, reliable_only):
+        if sport == "mlb":
+            raise RuntimeError("mlb scoring exploded")
+        return real_cards_from_edges(edges, sport, today, reliable_only)
+    monkeypatch.setattr(pc, "_cards_from_edges", fake_cards_from_edges)
+
+    cards = pc.build_prop_cards(now=_NOW, sports=("soccer_intl", "mlb"))
+    assert len(cards) == 1
+    assert cards[0]["sport"] == "soccer_intl"
+    errors = pc.last_sport_errors()
+    assert "mlb" in errors
+    assert "SCORE_ERROR" in errors["mlb"]
+    assert "soccer_intl" not in errors
+
+
+def test_sport_parallel_runs_concurrently_not_sequentially(monkeypatch):
+    import time as _time
+
+    _patch_edge_view(monkeypatch, {})
+
+    def fake_board(sport, **_kw):
+        _time.sleep(0.15)
+        return {"status": "ok", "edges": [_edge(player="P-%s" % sport)]}
+    monkeypatch.setattr("scripts.platformkit.prop_edge.build_prop_board", fake_board)
+
+    t0 = _time.time()
+    cards = pc.build_prop_cards(now=_NOW, sports=("soccer_intl", "mlb"))
+    elapsed = _time.time() - t0
+    assert len(cards) == 2
+    assert elapsed < 0.28  # well under the 0.30s sequential sum
