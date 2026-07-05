@@ -52,6 +52,14 @@ _OUT_DIR = os.path.join(_REPO, "data", "frontend", "ops")
 _Z_SIG = 1.96
 _MIN_N = 10
 
+# Full known-channel set (greenlight E-check-3): the reconciler must emit a
+# file for every one of these EACH run, even when a channel currently has
+# zero/too-few measurable rows -- an absent file reads as "reconciler broken",
+# not "not yet". reconcile_channel() already returns an honest
+# INSUFFICIENT_DATA verdict + real n_measurable + un-fabricated (None) z's for
+# a zero-row channel, so no change to the math below; this is enumeration only.
+KNOWN_CHANNELS = ("moneyline", "paper_pm", "paper_ingame", "paper_ingame_prop")
+
 
 def _measurable_rows(channel: str, ledger: Optional[Sequence[Dict[str, Any]]] = None
                      ) -> List[Dict[str, Any]]:
@@ -219,15 +227,21 @@ def render(report: Dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-def main(argv: Optional[Sequence[str]] = None) -> int:
+def main(argv: Optional[Sequence[str]] = None, out_dir: Optional[str] = None) -> int:
+    """Default (no argv): ALWAYS reconciles + writes every KNOWN_CHANNELS entry
+    (E-check-3 build-wave extension) so a downstream trust check never sees a
+    missing file for a known channel. Passing explicit channel args on argv
+    still reconciles exactly those (manual/ad-hoc CLI use unchanged).
+    """
     argv = list(argv if argv is not None else sys.argv[1:])
-    channels = argv or ["paper_pm"]
+    channels = argv or list(KNOWN_CHANNELS)
+    out_dir = out_dir or _OUT_DIR
     ledger = load_ledger()
-    os.makedirs(_OUT_DIR, exist_ok=True)
+    os.makedirs(out_dir, exist_ok=True)
     for ch in channels:
         report = reconcile_channel(ch, ledger)
         print(render(report))
-        out_path = os.path.join(_OUT_DIR, "clv_reconcile_%s.json" % ch)
+        out_path = os.path.join(out_dir, "clv_reconcile_%s.json" % ch)
         try:
             with open(out_path, "w", encoding="utf-8") as fh:
                 json.dump(report, fh, indent=1)

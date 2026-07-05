@@ -1,9 +1,12 @@
 """Per-file tests for clv_result_reconciler."""
 from __future__ import annotations
 
+import json
+
+from scripts.platformkit.clv import clv_result_reconciler as _mod
 from scripts.platformkit.clv.clv_result_reconciler import (
-    _close_implied_expectation, _duplicate_close_pairs, _record, _verdict,
-    _zscore, reconcile_channel)
+    KNOWN_CHANNELS, _close_implied_expectation, _duplicate_close_pairs,
+    _record, _verdict, _zscore, main, reconcile_channel)
 
 
 def _row(side, taken_decimal, close_home, close_away, unit_result, fair_close_prob,
@@ -115,3 +118,72 @@ def test_reconcile_channel_ignores_other_channels_and_unmeasurable():
     report = reconcile_channel("paper_pm", ledger=rows)
     assert report["n_measurable"] == 0
     assert report["verdict"].startswith("INSUFFICIENT_DATA")
+
+
+# ---------------------------------------------------------------------------
+# E-check-3 BUILD-WAVE EXTENSION: always-emit-every-known-channel.
+# ---------------------------------------------------------------------------
+
+def test_known_channels_matches_spec_set():
+    assert set(KNOWN_CHANNELS) == {
+        "moneyline", "paper_pm", "paper_ingame", "paper_ingame_prop"}
+
+
+def test_zero_row_channel_has_no_fabricated_z(tmp_path, monkeypatch):
+    # Ledger has rows for only ONE channel; the other three KNOWN_CHANNELS
+    # entries must still each get an honest INSUFFICIENT_DATA file with real
+    # n_measurable and un-fabricated (None) z-scores.
+    only_paper_pm = [
+        _row("home", 2.0, 2.0, 2.0, 1.0, 0.5, event_id="g1", channel="paper_pm"),
+    ]
+    monkeypatch.setattr(_mod, "load_ledger", lambda: only_paper_pm)
+    rc = main(argv=[], out_dir=str(tmp_path))
+    assert rc == 0
+    for ch in KNOWN_CHANNELS:
+        out_path = tmp_path / ("clv_reconcile_%s.json" % ch)
+        assert out_path.exists(), "missing emitted file for known channel %s" % ch
+        report = json.loads(out_path.read_text(encoding="utf-8"))
+        assert report["channel"] == ch
+        if ch == "paper_pm":
+            continue  # this channel has the one row; other 3 are zero-row
+        assert report["n_measurable"] == 0
+        assert report["verdict"].startswith("INSUFFICIENT_DATA")
+        assert report["z_wins"] is None
+        assert report["z_units"] is None
+
+
+def test_main_default_argv_covers_every_known_channel(tmp_path, monkeypatch):
+    monkeypatch.setattr(_mod, "load_ledger", lambda: [])
+    main(argv=[], out_dir=str(tmp_path))
+    written = {p.name for p in tmp_path.glob("clv_reconcile_*.json")}
+    assert written == {"clv_reconcile_%s.json" % ch for ch in KNOWN_CHANNELS}
+
+
+def test_explicit_argv_still_scopes_to_requested_channels(tmp_path, monkeypatch):
+    # Manual/ad-hoc CLI use (explicit channel args) is unchanged: only the
+    # requested channel(s) are written, not the full known set.
+    monkeypatch.setattr(_mod, "load_ledger", lambda: [])
+    main(argv=["moneyline"], out_dir=str(tmp_path))
+    written = {p.name for p in tmp_path.glob("clv_reconcile_*.json")}
+    assert written == {"clv_reconcile_moneyline.json"}
+
+
+def test_existing_channel_with_adequate_data_unchanged_by_extension(tmp_path, monkeypatch):
+    # Regression lock: moneyline/paper_pm w/ adequate measurable data still
+    # reads GENUINE_VARIANCE (the always-emit extension must not perturb the
+    # existing per-channel math or write format for a well-populated channel).
+    rows = []
+    for i in range(20):
+        won = i % 2 == 0
+        rows.append(_row(
+            "home", 2.0, 2.0, 2.0,
+            unit_result=(1.0 if won else -1.0), fair_close_prob=0.5,
+            event_id="g%d" % i, clv_pct=2.0, channel="paper_pm",
+        ))
+    monkeypatch.setattr(_mod, "load_ledger", lambda: rows)
+    main(argv=[], out_dir=str(tmp_path))
+    report = json.loads(
+        (tmp_path / "clv_reconcile_paper_pm.json").read_text(encoding="utf-8"))
+    assert report["n_measurable"] == 20
+    assert report["record"]["wins"] == 10
+    assert report["verdict"].startswith("GENUINE_VARIANCE")
