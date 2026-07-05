@@ -92,8 +92,18 @@ def _apply_min_sample_floors(df: pd.DataFrame, min_sample: dict[str, Any]) -> tu
 def _entity_key(claim_or_criteria: dict[str, Any]) -> Any:
     """criteria.entity_key names the ranking-entity id column (e.g.
     player_id / pitcher_id / team_id). Defaults to 'player_id' for
-    back-compat with every claim published before this field existed."""
+    back-compat with every claim published before this field existed.
+    ALSO accepts a LIST of columns (e.g. [p1_id, p2_id]) for pair-keyed
+    entities (e.g. tennis H2H); the scalar path is unchanged."""
     return claim_or_criteria.get("entity_key", "player_id")
+
+
+def _entity_id_str(row: Any, entity_key: Any) -> str:
+    """Stringify the entity id for comparison. entity_key list -> tuple of
+    the named columns (pair-keyed); scalar -> the single column value."""
+    if isinstance(entity_key, list):
+        return str(tuple(row[c] for c in entity_key))
+    return str(row[entity_key])
 
 
 def validate_claim(claim: dict[str, Any]) -> ClaimVerdict:
@@ -151,9 +161,10 @@ def validate_claim(claim: dict[str, Any]) -> ClaimVerdict:
 
         recomputed = filtered.copy()
         recomputed["_value"] = values
-        id_col = entity_key if entity_key in recomputed.columns else None
-        if id_col is None:
-            return ClaimVerdict(claim_id, "UNVERIFIABLE", reason=f"no {entity_key!r} column in source data")
+        key_cols = entity_key if isinstance(entity_key, list) else [entity_key]
+        if not all(c in recomputed.columns for c in key_cols):
+            return ClaimVerdict(claim_id, "UNVERIFIABLE", reason=f"no {entity_key!r} column(s) in source data")
+        id_col = entity_key
 
     ascending = direction == "asc"
     recomputed = recomputed.sort_values("_value", ascending=ascending).reset_index(drop=True)
@@ -170,10 +181,14 @@ def validate_claim(claim: dict[str, Any]) -> ClaimVerdict:
                 first_divergence={"rank": rank, "claimed": claimed_row, "recomputed": None},
             )
         recomputed_row = recomputed.iloc[idx]
-        # take the id from the COLUMN, not the row Series -- a mixed-dtype row
-        # gets upcast to float64, which would corrupt int64 ids (1630198.0)
-        recomputed_id = recomputed[id_col].iloc[idx]
-        claimed_id = claimed_row.get(entity_key)
+        # take the id from the COLUMN(S), not the row Series -- a mixed-dtype
+        # row gets upcast to float64, which would corrupt int64 ids (1630198.0)
+        if isinstance(id_col, list):
+            recomputed_id = _entity_id_str({c: recomputed[c].iloc[idx] for c in id_col}, id_col)
+            claimed_id = _entity_id_str(claimed_row, id_col)
+        else:
+            recomputed_id = recomputed[id_col].iloc[idx]
+            claimed_id = claimed_row.get(entity_key)
         # allow int/str id mismatch (e.g. 101 vs "101") but not a different entity
         if str(recomputed_id) != str(claimed_id):
             return ClaimVerdict(
@@ -183,7 +198,7 @@ def validate_claim(claim: dict[str, Any]) -> ClaimVerdict:
                 first_divergence={
                     "rank": rank,
                     "claimed": claimed_row,
-                    "recomputed": {entity_key: recomputed_id, "value": float(recomputed_row["_value"])},
+                    "recomputed": {str(entity_key): recomputed_id, "value": float(recomputed_row["_value"])},
                 },
             )
         recomputed_value = float(recomputed_row["_value"])
@@ -204,7 +219,7 @@ def validate_claim(claim: dict[str, Any]) -> ClaimVerdict:
                 first_divergence={
                     "rank": rank,
                     "claimed": claimed_row,
-                    "recomputed": {entity_key: recomputed_id, "value": recomputed_value},
+                    "recomputed": {str(entity_key): recomputed_id, "value": recomputed_value},
                 },
             )
         claimed_n = claimed_row.get("n")
