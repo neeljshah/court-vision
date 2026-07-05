@@ -1001,3 +1001,74 @@ def test_serve_forever_depth_capture_true_uses_default_fn(tmp_path, monkeypatch)
         heartbeat_path=tmp_path / "hb.json")
     assert ticks_run == 1
     assert seen == [["mlb"]]
+
+
+# --------------------------------------------------------------------------------------- #
+# LANE 2: shadow_history hook -- append-only durable evidence store, fail-open.            #
+# --------------------------------------------------------------------------------------- #
+def test_shadow_history_hook_writes_rows_after_a_real_tick(tmp_path, monkeypatch):
+    # NOTE: no shadow_history monkeypatch needed -- poll_once derives history_dir from
+    # heartbeat_path's own parent (see the LANE 2 hook comment in inplay_capture_loop.py),
+    # so an injected tmp heartbeat_path automatically isolates this test's shadow rows
+    # from the real data/cache/ingame_shadow_history/ path.
+    from scripts.platformkit.ingame import wnba_ingame_shadow as wshadow
+
+    class _Stub:
+        def shadow_prob(self, sport, home, away, state):
+            return 0.71
+
+    monkeypatch.setattr(wshadow, "get_shadow", lambda: _Stub())
+    hb = loop.poll_once(sports=["mlb"], live_state_fn=_state_fn_prior, model_fn=_model_fn,
+                       inplay_fetch_fn=_inplay_fetch, finals_fn=_finals_none,
+                       grade_dir=tmp_path / "grade", ledger_path=tmp_path / "l.jsonl",
+                       heartbeat_path=tmp_path / "hb.json")
+    assert hb["games"][0]["model_prob_wnba_shadow"] == 0.71
+    hist_dir = tmp_path / "ingame_shadow_history"
+    day_files = list(hist_dir.rglob("*.jsonl"))
+    assert day_files, "shadow_history must have appended a row for the shadow-carrying game"
+    rec = json.loads(day_files[0].read_text(encoding="utf-8").strip())
+    assert rec["model_prob_wnba_shadow"] == 0.71 and rec["sport"] == "mlb"
+
+
+def test_shadow_history_poisoned_module_never_raises_into_poll_once(tmp_path, monkeypatch):
+    from scripts.platformkit.ingame import shadow_history as sh
+
+    def _boom(*a, **kw):
+        raise RuntimeError("disk on fire")
+
+    monkeypatch.setattr(sh, "append_shadow_rows", _boom)
+    hb = loop.poll_once(sports=["mlb"], live_state_fn=_state_fn_prior, model_fn=_model_fn,
+                       inplay_fetch_fn=_inplay_fetch, finals_fn=_finals_none,
+                       grade_dir=tmp_path / "grade", ledger_path=tmp_path / "l.jsonl",
+                       heartbeat_path=tmp_path / "hb.json")
+    # the heartbeat write (which happens before the hook) still succeeded, and the
+    # decision path is fully unaffected by the poisoned shadow_history module.
+    assert hb["games"][0]["bet"] is True and hb["games"][0]["model_prob"] == 0.80
+    assert (tmp_path / "hb.json").is_file()
+
+
+def test_shadow_history_history_dir_isolated_from_real_default_via_heartbeat_path(
+        tmp_path, monkeypatch):
+    """Regression guard: a test/caller that supplies heartbeat_path but never touches
+    shadow_history directly must NOT be able to leak rows into the real
+    data/cache/ingame_shadow_history/ default (this bit once: poll_once used to call
+    append_shadow_rows with no history_dir override at all)."""
+    from scripts.platformkit.ingame import shadow_history as sh
+    from scripts.platformkit.ingame import wnba_ingame_shadow as wshadow
+
+    class _Stub:
+        def shadow_prob(self, sport, home, away, state):
+            return 0.71
+
+    monkeypatch.setattr(wshadow, "get_shadow", lambda: _Stub())
+    real_default_before = (sh.DEFAULT_HISTORY_DIR.exists()
+                           and list(sh.DEFAULT_HISTORY_DIR.rglob("*.jsonl")))
+    loop.poll_once(sports=["mlb"], live_state_fn=_state_fn_prior, model_fn=_model_fn,
+                   inplay_fetch_fn=_inplay_fetch, finals_fn=_finals_none,
+                   grade_dir=tmp_path / "grade", ledger_path=tmp_path / "l.jsonl",
+                   heartbeat_path=tmp_path / "hb.json")
+    real_default_after = (sh.DEFAULT_HISTORY_DIR.exists()
+                          and list(sh.DEFAULT_HISTORY_DIR.rglob("*.jsonl")))
+    assert real_default_after == real_default_before, (
+        "poll_once must never write shadow rows to the real DEFAULT_HISTORY_DIR "
+        "when a tmp heartbeat_path was supplied")

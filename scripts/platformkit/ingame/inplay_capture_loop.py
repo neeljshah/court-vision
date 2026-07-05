@@ -547,6 +547,25 @@ def poll_once(*, sports: Optional[List[str]] = None,
         ),
     }
     _write_heartbeat(heartbeat, heartbeat_path)
+    # LANE 2 (durable shadow-evidence store): the heartbeat above is OVERWRITTEN every
+    # cycle, so a promotion decision needs an APPEND history of the 4 shadow fields
+    # instead. Fail-open (mirrors every other measurement hook in this file): an
+    # exception inside shadow_history can never sink this cycle's heartbeat write,
+    # which has already happened by this point. history_dir is derived from
+    # *heartbeat_path*'s own parent when the caller supplied one (every existing/test
+    # call site already does, mirroring grade_dir's own tmp_path convention) so an
+    # injected tmp heartbeat_path automatically isolates shadow history too -- a test
+    # that never touches shadow_history at all still can't leak rows into the real
+    # data/cache/ingame_shadow_history/ path. Only a caller that leaves BOTH
+    # heartbeat_path and history_dir at their defaults (i.e. real production) reaches
+    # the real DEFAULT_HISTORY_DIR.
+    try:
+        from scripts.platformkit.ingame import shadow_history as _sh
+        hist_dir = (Path(heartbeat_path).parent / "ingame_shadow_history"
+                   if heartbeat_path is not None else None)
+        _sh.append_shadow_rows(games_seen, now=nowdt, history_dir=hist_dir)
+    except Exception as exc:  # noqa: BLE001 -- shadow history is observability, not critical
+        logger.warning("inplay_capture_loop shadow_history append failed: %s", exc)
     return heartbeat
 
 
