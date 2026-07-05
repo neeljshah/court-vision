@@ -5,8 +5,9 @@ the segment-trust JSON artifact and one in-process offline eval-gate run
 (cached). Never raises -- a criterion that cannot be computed reports its own
 honest failure detail rather than crashing the nightly report.
 
-See edge_greenlight.py's module docstring for the full criteria (a)-(g) text
-and the two documented NOT_BUILT gaps (channel-trust 4.1, cv-honesty-gate).
+See edge_greenlight.py's module docstring for the full criteria (a)-(g) text.
+Criteria (e)/(f) now wire to scripts.platformkit.econ.greenlight_trust_honesty
+(channel_trust_status, cv_honesty_status) per GREENLIGHT_UNCAP_SPEC_2026-07-05.md.
 """
 from __future__ import annotations
 
@@ -18,6 +19,8 @@ from scripts.platformkit.clv.clv_scoreboard import _is_measurable, _mean_ci, _wl
 from scripts.platformkit.econ.cost_model import breakeven_edge_prob
 from scripts.platformkit.econ.after_cost_scoreboard import after_cost_units
 from scripts.platformkit.econ.beat_the_line import _win_rate_excess
+from scripts.platformkit.econ.greenlight_trust_honesty import (
+    channel_trust_status as _channel_trust_status, cv_honesty_status as _cv_honesty_status)
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _REPO = os.path.dirname(os.path.dirname(os.path.dirname(_HERE)))
@@ -149,7 +152,7 @@ def criterion_d(rows: Sequence[Dict[str, Any]]) -> Dict[str, Any]:
     return {"id": "d", "passed": ok, **vals, "detail": detail}
 
 
-def criterion_e(channel: str) -> Dict[str, Any]:
+def criterion_e(channel: str, rows: Sequence[Dict[str, Any]]) -> Dict[str, Any]:
     segment_status = "NOT_BUILT"
     trusted_segments: List[str] = []
     try:
@@ -160,25 +163,32 @@ def criterion_e(channel: str) -> Dict[str, Any]:
             segment_status = "TRUSTED" if trusted_segments else "NO_TRUSTED_SEGMENTS"
     except (OSError, json.JSONDecodeError):
         segment_status = "READ_ERROR"
-    # Channel-level trust (4.1) -- NOT BUILT anywhere in this repo as of this
-    # pass. Reported honestly rather than defaulted to pass.
-    channel_trust_status = "NOT_BUILT"
-    passed = (segment_status == "TRUSTED") and (channel_trust_status == "TRUSTED")
+    # Channel-level trust (4.1) -- real per-channel computation per E-SPEC.
+    # Fail-closed: any exception from the module is a RED, never a bare pass.
+    try:
+        trust = _channel_trust_status(channel, rows)
+        channel_trust_status = trust.get("status", "RED")
+        trust_reasons = trust.get("reasons", [])
+    except Exception as exc:  # noqa: BLE001 -- fail-closed, never a bare pass
+        channel_trust_status = "RED"
+        trust_reasons = ["error:%s" % type(exc).__name__]
+    passed = (segment_status == "TRUSTED") and (channel_trust_status == "GREEN")
     return {
         "id": "e", "passed": passed,
         "segment_trust_status": segment_status,
         "trusted_segments": trusted_segments,
         "channel_trust_status": channel_trust_status,
-        "detail": ("segments TRUSTED (m26) AND channel TRUSTED (4.1) both required; "
-                   "channel-trust gate (4.1) is NOT_BUILT in this repo -- criterion "
-                   "cannot pass until it exists. segment status=%s" % segment_status),
+        "channel_trust_reasons": trust_reasons,
+        "detail": ("segments TRUSTED (m26) AND channel-trust GREEN (4.1) both required; "
+                   "segment status=%s channel_trust=%s reasons=%s"
+                   % (segment_status, channel_trust_status, trust_reasons)),
     }
 
 
 _EVAL_GATE_CACHE: Dict[str, Any] = {}
 
 
-def criterion_f() -> Dict[str, Any]:
+def criterion_f(partial_criteria: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     if "result" not in _EVAL_GATE_CACHE:
         try:
             from scripts.platformkit.eval_gate.run_gate import (
@@ -192,20 +202,27 @@ def criterion_f() -> Dict[str, Any]:
                                            "error": "%s: %s" % (type(exc).__name__, exc)}
     eval_gate_result = _EVAL_GATE_CACHE["result"]
     eval_gate_green = eval_gate_result.get("status") == "GREEN"
-    # cv-honesty-gate: NOT BUILT anywhere in this repo. governance/honesty_linter.py
-    # is a DIFFERENT thing (scans output strings for banned $-edge claims/numbers,
-    # never adjudicates whether a proof-of-edge claim is refuted).
-    cv_honesty_status = "NOT_BUILT"
+    # cv-honesty-gate: real machine-checkable honesty invariants (F-SPEC). The
+    # report passed in is the criteria-computed-so-far partial dict (this
+    # criterion runs last in evaluate_channel, after a-e) -- a PARTIAL scan of
+    # this channel's own report, not the full multi-channel greenlight report.
+    # Fail-closed: any exception from the module is a RED, never a bare pass.
+    try:
+        honesty = _cv_honesty_status(partial_criteria or {})
+        cv_honesty_status = honesty.get("status", "RED")
+        honesty_failures = honesty.get("failures", [])
+    except Exception as exc:  # noqa: BLE001 -- fail-closed, never a bare pass
+        cv_honesty_status = "RED"
+        honesty_failures = ["error:%s" % type(exc).__name__]
     passed = eval_gate_green and (cv_honesty_status == "NOT_REFUTED")
     return {
         "id": "f", "passed": passed,
         "eval_gate_offline_golden": eval_gate_result,
         "cv_honesty_gate_status": cv_honesty_status,
+        "cv_honesty_failures": honesty_failures,
         "detail": ("eval-gate green AND cv-honesty-gate NOT-REFUTED both required; "
-                   "cv-honesty-gate is NOT_BUILT in this repo (governance/"
-                   "honesty_linter.py is a banned-claim STRING scanner, not a claim "
-                   "adjudicator) -- criterion cannot pass until it exists. "
-                   "eval_gate(offline golden)=%s" % eval_gate_result.get("status")),
+                   "eval_gate(offline golden)=%s cv_honesty=%s failures=%s"
+                   % (eval_gate_result.get("status"), cv_honesty_status, honesty_failures)),
     }
 
 
