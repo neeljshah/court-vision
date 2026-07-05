@@ -1,5 +1,5 @@
 """Per-file tests for soccer_intl_strength_claims (mission spine 5, lane
-claims-breadth-2).
+soccer-wnba-fullpop -- widened from top-50 to FULL population above floor).
 
 Run with:
   cd /c/Users/neelj/nba-ai-system && python -m pytest \
@@ -9,7 +9,8 @@ Acceptance criteria:
   1. build_strength_snapshot writes one row per team with the replay's
      gf_ew/ga_ew/n_matches, as-of the day AFTER the corpus's last match date.
   2. min_sample floor (n_matches) actually excludes below-floor teams.
-  3. build_ranking_claim's claimed ranking is independently re-verified by
+  3. FULL POPULATION: every team clearing the floor is ranked, no top-N cap.
+  4. build_ranking_claim's claimed ranking is independently re-verified by
      claims_validator.validate_claim -> VERIFIED against the REAL on-disk
      corpus -- proves reproducibility, not just self-consistency.
 """
@@ -80,6 +81,38 @@ def test_min_sample_floor_excludes_low_match_count_teams(tmp_path, monkeypatch):
     assert claim["n_excluded_below_floor"] == 2
     # Alpha (net +3/match dominance) outranks Beta
     assert claim["ranking"][0]["team"] == "Alpha"
+
+
+def test_full_population_no_top_n_cap(tmp_path, monkeypatch):
+    """FULL POPULATION: every team clearing the floor is ranked -- no top-50
+    (or any other) cap. Fixture has 60 qualifying teams (well past the old
+    TOP_N=50 cap) to prove the cap is genuinely gone, not just untriggered."""
+    monkeypatch.setattr(sisc, "_OUT_DIR", tmp_path)
+    monkeypatch.setattr(sisc, "_SNAPSHOT_OUT", tmp_path / "soccer_intl_strength_snapshot.parquet")
+    monkeypatch.setattr(sisc, "_CLAIMS_OUT", tmp_path / "soccer_intl_strength_claims.jsonl")
+    monkeypatch.setattr(sisc, "REPO_ROOT", tmp_path.parent)
+    monkeypatch.setattr(sisc, "MIN_N_MATCHES", 3)
+    results_path = tmp_path / "results.parquet"
+
+    rows = []
+    for t in range(60):
+        home, away = f"Team{t}A", f"Team{t}B"
+        for i in range(5):
+            rows.append({
+                "date": pd.Timestamp("2024-01-01") + pd.Timedelta(days=i * 7),
+                "home_team": home, "away_team": away,
+                "home_score": 2.0, "away_score": 0.0,
+                "tournament": "Friendly", "city": "X", "country": home, "neutral": False,
+            })
+    pd.DataFrame(rows).to_parquet(results_path)
+    monkeypatch.setattr(sisc, "_RESULTS", results_path)
+
+    claim = sisc.build_ranking_claim()
+    # 120 distinct teams, all with 5 matches >= floor of 3 -> zero excluded,
+    # and the ranking must carry ALL 120, not truncate at 50.
+    assert claim["n_considered"] == 120
+    assert claim["n_excluded_below_floor"] == 0
+    assert len(claim["ranking"]) == 120
 
 
 def test_real_soccer_intl_claim_independently_verifies():
