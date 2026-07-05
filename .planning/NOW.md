@@ -34,6 +34,27 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   nba_pregame_stack_v1, soccer_home_sot_replication_v1). Stacks/gates need no
   sentinel; combo-daemon manifest wiring stays BLOCKED pending user confirmation
   of who armed data/cache/improve/PIPELINE_ENABLED. No edge claims.
+  STAGE-A CLOSED ~17:35Z (wf_8d24dc3e, 5 agents/0.48M tok): PREREG AUTHORED +
+  Opus adversarial review SOUND-WITH-FIXES, all 5 findings applied BEFORE pin
+  (BLOCKING: gate_combo/gate_detail_layer base is hard-wired in-game
+  sigmoid((a+b*frac_elapsed)*state_diff) -> pregame families use the fusion_mlb/
+  asof_sp_form_eval N-feature WF-logistic harness reproducing L0-L6 explicitly;
+  MAJORs: L1/L3 now mandatory, soccer prior SHIP was 1-of-11 year-bucket pairs
+  = UNREPLICATED prior evidence, new bar >=4-of-6 leagues BOTH dirs at per-pair
+  DM p<0.003846). PREREG SHA-PINNED (doc is gitignored-local by design;
+  precedent = pin the hash): docs/research/combination-moat/
+  PREREG_STACK_FAMILIES_2026-07-05.md sha256=
+  1ea9108613af841175c663a75ec5a293d91003c27370dcd31dd096d336453baa (282 lines).
+  Families: mlb K_cum=2 eps_eff=.025 (adds park+sp_ra to tuned 2-sig base, 2
+  disjoint eras); nba K_cum=2 (7 solo-REJECT box dims vs Elo; expected
+  NOT_TESTABLE at replication -- no 2nd disjoint box corpus; MUST NOT SHIP);
+  soccer K_cum=13 eps_eff=.003846 min_corpora=4 (6-league div split). Fable
+  Q1-Q6 rulings in-doc (NBA 2nd-corpus probe queued wave-2 as domains/-only
+  build; WC-drop keeps pinned bars; freeze harness-internal, combo_bandit
+  state untouched). HEALTH from stage-A scout: governor WORKING (17 429s today
+  vs 1678 baseline, PASS); m13 props_snapshot RED 1509s vs 660 SLA (triage
+  in stage B); MLB grade-rows probe looked at legacy path, re-probe at
+  data/cache/ingame_grade/ queued; late-inning clamp PENDING (no rows yet).
 - MAINTENANCE (SYSTEM HEALTH SWEEP + WORKSPACE ORG, 2026-07-03 pm, review session):
   FOUND+FIXED two LIVE serving-spine outages: (1) m1_api_paper (:8099) WEDGED since
   13:00:30 (last request served = /api/paper/trail?limit=2000; event loop blocked,
