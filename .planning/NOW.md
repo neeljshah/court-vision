@@ -41,6 +41,21 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 46 (WAVE-45 4/4 IN 11 MIN: 5TH NULL CATCH + DEPTH CAPTURE LIVE +
+  KBO WALL SOFTENS, 2026-07-05 ~05:00Z, wf_3a7dcdb7-21c 12 agents/~1.01M tok,
+  commits 68a01a81/c700a35a/85ecdab1): (1) umpire totals gate HONEST REJECT
+  exactly as pre-registered -- real beats baseline 3/3 folds (-.00074) but
+  shuffled-umpire null beats it MORE (-.00091) = flexibility artifact, 5TH
+  planted-null catch; gate proven not-over-conservative via synthetic plant.
+  (2) KBO synthetic params QUARANTINED w/ noise-control proof (.4515 on zero
+  signal), mirrors NPB. (3) depth capture LIVE: 90 order-book rows/6 sports/0
+  429s; accrual started; wiring PROPOSED. (4) Naver relay RE-VERIFIED working
+  keyless w/ base-out/score (module exists from wave-22); only LIVE mid-game
+  confirmation missing -> ~09:30Z KBO slate wake confirms + wires; /record
+  route unexplored; memory updated (wall softened). WAVE-46: retro-stats
+  collector + depth daemon-wiring evaluation; SPRINT RETRO + NEXT_SESSION
+  refresh due before 07-06 EOD; KBO live confirm at the 09:30Z+ wake.
+  No edge claimed.
 - SPRINT WAKE 45 (WAVE-44: NPB/KBO IN-GAME = SOURCE WALL, TERMINAL + HONEST,
   2026-07-05 ~04:40Z, wf_0b0498fc-df0 6 agents/~0.42M tok, no code commits --
   evidence lanes): (1) ALL 121,537 stored ticks scanned (not sampled): pure
