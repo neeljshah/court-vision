@@ -41,6 +41,23 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 38 (WAVE-37 LANDED + PROGRAM V2 FABLE-RATIFIED, 2026-07-05 ~03:15Z,
+  wf_436f7bdf-17e 9 agents/~0.85M tok, 1 commit + 2 local-only docs): (1) m13
+  sport-parallel scoring COMMITTED (cycle ~= slowest sport, 328s saved vs
+  sequential-sum; runner killed for relaunch w/ new code; low-sev breaker-state
+  RMW race flagged -> wave-38 lock lane). (2) injuries ingest already append-
+  safe; daily wiring = PROPOSED doc + cron-ready CLI (roster not found in glob
+  cap). (3) INTELLIGENCE PROGRAM V2 synthesized (Opus conductor) + RATIFIED by
+  Fable w/ ONE AMENDMENT: conductor rank-7 verdict validator ALREADY EXISTS
+  (5f68e9d6, 6 claims live) -> re-scoped to coverage completion (6 -> all 28
+  verdicts). V2 headline ACCEPTED: predictive frontier EXHAUSTED at current
+  corpora (every hypothesis CLOSED or UNDECIDABLE) -> descriptive/contract/
+  infra program; power audit refused all underpowered gates; NBA in-game
+  rolling-prior + all WNBA gates to watchlist. WAVE-38 (8 lanes): catcher
+  framing, platoon (schema-check-first), tennis H2H/playstyle claims (pair-key
+  first use), WNBA context extract, verdict coverage, geo consumers (gate arm
+  expects REJECT), reprocess clients, breaker lock. NPB/KBO ~09-10Z wake.
+  No edge claimed.
 - SPRINT WAKE 37 (WAVE-36: BYPASS FIX VERIFIED LIVE + CONDUCTOR QUEUE EXHAUSTED,
   2026-07-05 ~02:15Z, wf_053ca842-a85 13 agents/~0.95M tok, 3 commits e6f39cb6..
   8c471112): (1) m13: supervisor reaper had ALREADY relaunched w/ fix 60s after
