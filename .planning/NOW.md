@@ -1810,6 +1810,32 @@ or `program_complete` only.
 0c. [WAVE-28 MULTI-SPORT INTELLIGENCE PROGRAM, LAUNCHED -- USER DIRECTIVE 2026-07-04f: "many sonnet and haiku researchers, opus conductors, for each sport... every little aspect of each sport, on court off court, how they work together... make it into data using predictions and historical odds... make obsidian better and memory as good as possible... use github.com/DietrichGebert/ponytail for low usage"] (a) 4 Sonnet sport-truth researchers (MLB, soccer_intl, tennis, WNBA -- NBA already in flight): per-sport inventory of ALL owned data + full intelligence-dimension enumeration + dimension->data map (gaps = scraping targets) + pre-registerable validation hypotheses vs predictions/historical odds; (b) storage-audit lane (data/ layout health, retention coverage, proposal-only); (c) Opus CONDUCTOR synthesis after all lanes: cross-sport intelligence program, generalized claims/validator contract, prioritized build queue, vault/obsidian + auto-memory feed design (brain_pipeline proposal, no hand-edits, no rebuild launch); (d) PONYTAIL: verified real (73.7k stars, MIT, efficiency skill) -- decision-ladder discipline injected into all fleet briefs NOW; harness plugin install = 2 interactive /plugin commands -> HUMAN QUEUE | docs/research/intel-layer/ | 4 sport specs + program doc + storage spec on disk.
 HUMAN QUEUE ADDITION (ponytail): run in an interactive session, two separate prompts: (1) /plugin marketplace add DietrichGebert/ponytail (2) /plugin install ponytail@ponytail -- then all future sessions run it automatically (default mode full; /ponytail lite|ultra|off to adjust).
 0d. [WAVE-29 BUILD FLEET, LAUNCHED ~18:25Z -- conductor-ratified queue top 4] (1) WNBA zero-fetch extraction: 168-game CDN corpus -> season-aggregate player/team parquets (unblocks ~20 dims); (2) claims contract += criteria.entity_key (producer+validator, 12/12 stays VERIFIED, rankings byte-identical); (3) NBA shooter_quality_v1/scorer_quality_v1 scored on 329 qualifiers per FROZEN spec weights + predictive-validity gate run (naive stays canonical if it wins; Curry/Ellis positions reported as diagnostic); (4) MLB SP within-start fatigue in-game conditioning gate (ingame_layer_gate_nba clone, planted-null, walk-forward) | per intelligence_program.json | Opus-PASS lanes committed with honest verdicts. Deferred to wave-30: tennis surface-hold, WNBA rest covariate, schema-drift snapshots, ESPN injuries, altitude table.
+0e. [COMBINATION-MOAT PROGRAM -- USER DIRECTIVE 2026-07-05 ~17:40Z (in-session):
+   "stop rejecting as many by combining many signals using intelligence -- that's
+   the moat." FABLE INTERPRETATION (binding): NO gate is lowered, ever; the reject
+   RATE stays high by design -- what changes is candidate QUALITY and testing
+   COMBINATIONS as first-class citizens. Proof-of-concept already on the board:
+   MLB tuned method = elo_logit + sp_first6_diff_ew (SP-form solo-REJECTED as an
+   edge, yet -20% ECE as a feature in the 2-signal calibration stack). Lanes:
+   (a) per-sport JOINT CALIBRATION STACKS: walk-forward regularized stacks over
+   the leak-free reject-ledger signals; gate the STACK vs base AND vs devigged
+   close; planted-null = shuffled-feature stack must die; FWER min_corpora_eff
+   floor (wired wf_ff769e21) MANDATORY; families pre-registered before any fit.
+   (b) intelligence-guided INTERACTIONS only (mechanism-motivated from the
+   claims/atlas layer: umpire-zone x SP-whiff-style, rest x pace, surface x
+   hold-form), proposed via discovery.py / Fable-authored lists under a bounded
+   comparison budget -- NO brute-force feature crosses. First family member =
+   soccer home_sot_for_l10 cross-corpus replication (wave wf_ff769e21 survivor).
+   (c) prior-x-state IN-GAME fusion (trust-gated segment models) as real-state
+   corpora accrue (KBO bar ~mid-Aug; depth corpus day-1 today).
+   GATING NOTE: PROPOSED-combo-daemon-wiring.md is "inert until sentinel exists"
+   and data/cache/improve/PIPELINE_ENABLED was FOUND ARMED 2026-07-05 (arming
+   party unconfirmed) -- get user confirmation of the sentinel BEFORE applying
+   the combo-daemon manifest wiring; stacks/gates above need no sentinel.
+   | domains/<sport>/ + scripts/platformkit/ (combo_bandit, meta_flex_fwer, FWER
+   rails exist) | done-when: >=2 sports have a gated STACK verdict on disk
+   (SHIP or honest REJECT, planted-null + replication attached); most stacks
+   REJECTING is the expected, successful outcome.
 [WAVES 22+23 CONSUMED 2026-07-04 ~15:50Z -- ledgers above. Queue below = wave 24; the bottleneck is now largely WALL-CLOCK forward-evidence accrual -> cadence rule: light check-ins unless a gate decides or the user messages.]
 1. [LIVE-ACTIVATION-VERIFY] once MLB slate is live (~17:00Z+): enrichment fields present in fresh grade rows, kalshi pacing counters nonzero in capture heartbeat, m13 fresh props_snapshot + freshness_sla green (relaunched PID 14028 w/ timeout fix), grade-writer clamp writing late-inning rows; npb/kbo FIRST GRADES land overnight (their game windows) | orchestrator light check-in | verifier PENDINGs -> PASS or triaged.
 2. [FORWARD-GATES-WATCH] wall-clock accrual, no fleet: MLB tail fwd (floor ~20), soccer_intl xG forward (floor 8/half), wnba/npb/kbo tail stamps live -- escalate to a decision wave ONLY on a real headline_verdict or an allowlist-external regression | forward_evidence_scoreboard | gate decides -> decision wave.
