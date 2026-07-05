@@ -207,5 +207,74 @@ def test_planted_real_signal_survives_prescreen(tmp_path: Path):
             f"noise floor -- the prescreen is not trivially rejecting everything")
 
 
+# --------------------------------------------------------------------------- #
+# 6. L0's base_feature_cols must be sliced to the TEST-split (not the full unit)
+# --------------------------------------------------------------------------- #
+
+def test_run_batch_l0_base_slice_matches_added_raw_shape(tmp_path: Path):
+    """Regression: base_logit_primary was previously built from the FULL
+    corpus_unit (e.g. 1225 rows) while StackRow.added_raw comes from ONLY the
+    TEST-split rows (e.g. 613) -- l0_guards' shape check then fired on every
+    candidate regardless of real collinearity (silent false-REJECT at L0,
+    masked because the existing above-floor test's assertion accepted REJECT
+    as a valid outcome). A strong real signal must NOT get stuck at L0."""
+    corpus = _make_corpus(n=300, seed=7, signal_strength=2.0)
+    cache_dir = tmp_path / "cache"
+    cache_dir.mkdir()
+    with patch.object(cc, "_CACHE_DIR", cache_dir), \
+        patch.object(bg, "load_gate_corpus", lambda sport: corpus), \
+        patch.object(bg, "prescreen_verdict", lambda *a, **k: "PROCEED"), \
+        patch.object(bg, "record", lambda *a, **k: None), \
+        patch.object(bg, "_OUT_DIR", tmp_path / "out"):
+        specs = [{"name": "cand_real", "features": ["real_feature"],
+                 "family": "fake_family", "k_cum": 1}]
+        results = bg.run_batch(specs, "fake", write_ledger=True)
+    v = results["cand_real"]
+    assert v["layer"] != "L0", (
+        f"a strong real signal must not be rejected at L0 on a shape artifact; "
+        f"got reason={v['reason']!r}")
+
+
+# --------------------------------------------------------------------------- #
+# 7. L1 multi-candidate selection is a REAL choice, not a constant
+# --------------------------------------------------------------------------- #
+
+def test_nested_cv_fns_multi_selects_the_best_candidate():
+    """`_nested_cv_fns_multi` must compute an ARGMAX over candidates on the
+    inner games, not return a hardcoded name -- and the candidate that LOSES
+    the selection must score NaN (judge_stack_family's outer_score<0 gate
+    treats NaN as failing), never silently pass through."""
+    from scripts.platformkit.combo.nested_cv import select_then_score
+    from scripts.platformkit.combo.stack_gate_pregame import StackRow
+
+    def make_rows(n: int, quality: float) -> List[StackRow]:
+        rows = []
+        for i in range(n):
+            y = 1.0 if i % 2 == 0 else 0.0
+            p_cand = 0.5 + quality if y == 1.0 else 0.5 - quality
+            rows.append(StackRow(event_id=f"g{i}", y=y, p_base=0.5,
+                                 p_candidate=p_cand, added_raw=(0.0,)))
+        return rows
+
+    rows_by_cand = {
+        "cand_weak": make_rows(200, 0.01),
+        "cand_best": make_rows(200, 0.20),
+        "cand_mid": make_rows(200, 0.05),
+    }
+    game_ids = [r.event_id for r in rows_by_cand["cand_weak"]]
+
+    sel_fn, score_fn = bg._nested_cv_fns_multi(rows_by_cand, "cand_best")
+    result = select_then_score(sel_fn, score_fn, game_ids)
+    assert result.selected_spec == "cand_best", (
+        "the selector must choose the genuinely best candidate, not a constant")
+    assert result.outer_score > 0.0
+
+    sel_fn_loser, score_fn_loser = bg._nested_cv_fns_multi(rows_by_cand, "cand_weak")
+    result_loser = select_then_score(sel_fn_loser, score_fn_loser, game_ids)
+    assert result_loser.selected_spec == "cand_best", "selection is deterministic per data"
+    assert np.isnan(result_loser.outer_score), (
+        "a candidate that LOST the selection must score NaN, never pass through")
+
+
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-q"]))

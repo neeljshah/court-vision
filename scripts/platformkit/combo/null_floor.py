@@ -40,7 +40,7 @@ from scripts.platformkit.combo import stack_fit as sf
 _REPO = Path(__file__).resolve().parents[3]
 _CACHE_DIR = _REPO / "data" / "cache" / "combo"
 M_DRAWS = 40
-MAX_EXTRA_PARAMS = 3
+MAX_EXTRA_PARAMS = 4  # A2 nba_stack_box4 adds 4 columns -- extend the floor table to cover it
 
 
 def _floor_path(sport: str) -> Path:

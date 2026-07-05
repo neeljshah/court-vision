@@ -121,21 +121,26 @@ _NBA_PAIR_DIFFS: Dict[str, Tuple[str, str]] = {
 
 
 def _build_nba() -> Tuple[pd.DataFrame, List[Path]]:
-    """Single 1299-row box-era corpus (pre-registered structural blocker: no
-    2nd season-disjoint box parquet exists yet); base = walk-forward Elo on
-    games.parquet (the only frame carrying `date`), joined to the box-era
-    asof_features/asof_box_extra ingredient parquets on game_id. Mirrors
-    PREREG Family 2 ingredients exactly."""
+    """Season-disjoint 2-corpus pair (PREREG_AMENDMENT_A2_2026-07-05.md Family 2
+    re-open): asof_features_ext/asof_box_extra_ext (commit 4cee589d) carry BOTH
+    2024-25 (1225 rows) and 2025-26 (589 rows); `season` from games.parquet
+    splits them into corpus_unit='2024-25'/'2025-26'. Base = walk-forward Elo on
+    games.parquet, joined to the ext ingredient parquets on game_id -- SAME
+    construction as the pre-A2 single-corpus build, just on the widened _ext
+    sources. Also derives the two A2 product terms (N1 dreb*pace, N2 stl*fg3m)
+    as plain columns so batch_gate's declarative feature-name specs can select
+    them directly."""
     games_path = _REPO / "data/domains/basketball_nba/games.parquet"
-    asof = _REPO / "data/domains/basketball_nba/asof_features.parquet"
-    box_extra = _REPO / "data/domains/basketball_nba/asof_box_extra.parquet"
+    asof = _REPO / "data/domains/basketball_nba/asof_features_ext.parquet"
+    box_extra = _REPO / "data/domains/basketball_nba/asof_box_extra_ext.parquet"
     sources = [games_path, asof, box_extra]
 
     games = pd.read_parquet(games_path)
     games = games[games["home_win"].notna()].reset_index(drop=True)
+    games["season_label"] = games["season"].astype(str)  # keep '2024-25' for corpus_unit later
     # walk_forward_elo requires an INT season (season-boundary regression); games.parquet
     # ships '2022-23' style strings -- start-year convention mirrors adapter.py._season_to_int.
-    games["season"] = games["season"].astype(str).str.split("-").str[0].astype(int)
+    games["season"] = games["season_label"].str.split("-").str[0].astype(int)
     wf = nba_walk_forward_elo(games)
     elo_col = next((c for c in ("p_home_elo", "win_prob_home", "p_elo") if c in wf.columns), None)
     elo_sel = wf[["game_id", elo_col]].rename(columns={elo_col: "p_elo"}) if elo_col else \
@@ -148,19 +153,24 @@ def _build_nba() -> Tuple[pd.DataFrame, List[Path]]:
     box_keep = [c for c in ("dreb_diff_asof", "fg3m_diff_asof", "stl_diff_asof", "blk_diff_asof")
                if c in box.columns]
 
-    # asof_features (1299 rows, the box-era universe) drives the corpus; games/elo
-    # and box_extra are LEFT-merged onto it (both are supersets keyed on game_id).
+    # asof_features_ext (1814 rows, the widened 2-season box-era universe) drives
+    # the corpus; games/elo and box_extra_ext are LEFT-merged onto it (both are
+    # supersets keyed on game_id).
     out = af[["game_id"] + list(_NBA_PAIR_DIFFS.keys())].merge(
         box[["game_id"] + box_keep], on="game_id", how="left")
-    out = out.merge(games[["game_id", "date", "home_win"]], on="game_id", how="left")
+    out = out.merge(games[["game_id", "date", "season_label", "home_win"]], on="game_id", how="left")
     out = out.merge(elo_sel, on="game_id", how="left")
     out = out.sort_values("date").reset_index(drop=True)
 
     out["event_id"] = out["game_id"].astype(str)
-    out["corpus_unit"] = "box_era_single_corpus"
+    out["corpus_unit"] = out["season_label"]  # '2024-25' / '2025-26' -- season-disjoint
     out["y"] = out["home_win"].astype(float)
     out["p_base"] = out["p_elo"].astype(float)
-    cols = ["event_id", "corpus_unit", "y", "p_base", "p_elo"] + box_keep + list(_NBA_PAIR_DIFFS.keys())
+    # A2 K_new product terms (raw, pre-standardization -- z() happens at fit time).
+    out["dreb_x_pace_asof"] = out["dreb_diff_asof"] * out["pace_diff_asof"]
+    out["stl_x_fg3m_asof"] = out["stl_diff_asof"] * out["fg3m_diff_asof"]
+    cols = (["event_id", "corpus_unit", "y", "p_base", "p_elo"] + box_keep
+           + list(_NBA_PAIR_DIFFS.keys()) + ["dreb_x_pace_asof", "stl_x_fg3m_asof"])
     return out[cols], sources
 
 

@@ -12,11 +12,9 @@ A candidate spec is a DECLARATIVE dict:
   {"name": str, "features": [column names in the cached corpus], "family": str,
    "k_cum": int, "corpus_units": [unit names to use as cross-corpus pairs] (optional,
    default = every unit present)}
-This module has NO fitting logic of its own -- it is pure orchestration over
-stack_fit (feature assembly + fit/score) and stack_gate_pregame (judge). The
-per-candidate fit/score/nested-CV/planted-null glue mirrors the wave-1
-runners' `_fit_candidate`/`_score_candidate`/`_make_nested_cv_fns` pattern
-exactly, generalized to an arbitrary feature-name list.
+No fitting logic of its own -- pure orchestration over stack_fit (feature
+assembly + fit/score) and stack_gate_pregame (judge), generalized to an
+arbitrary feature-name list.
 
 Calibration, not edge. NO $/ROI anywhere. numpy + pandas + stdlib only. ASCII.
 """
@@ -26,7 +24,7 @@ import json
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Dict, List, Mapping, Optional, Sequence
 
 import numpy as np
 import pandas as pd
@@ -94,27 +92,52 @@ def _fit_and_score_unit(unit_df: pd.DataFrame, features: Sequence[str]) -> List[
     return rows
 
 
-def _prescreen_delta(rows: List[StackRow]) -> float:
+def _prescreen_delta(rows: Sequence[StackRow]) -> float:
+    if not rows:
+        return float("nan")
     p_base = np.array([r.p_base for r in rows])
     p_cand = np.array([r.p_candidate for r in rows])
     y = np.array([r.y for r in rows])
     return sf.brier(p_base, y) - sf.brier(p_cand, y)
 
 
+def _rows_delta_on_games(by_id: Dict[str, StackRow], game_ids: Sequence[str]) -> float:
+    return _prescreen_delta([by_id[g] for g in game_ids if g in by_id])
+
+
 def _nested_cv_fns(rows: Sequence[StackRow], cand_name: str):
+    """Single-candidate select/score -- `_select` is a constant since there is
+    nothing else to choose among (multi-candidate real selection: see below)."""
     by_id = {r.event_id: r for r in rows}
 
     def _select(inner_game_ids):
         return cand_name
 
     def _score(spec, holdout_game_ids) -> float:
-        held = [by_id[g] for g in holdout_game_ids if g in by_id]
-        if not held:
-            return float("nan")
-        p_base = np.array([r.p_base for r in held])
-        p_cand = np.array([r.p_candidate for r in held])
-        y = np.array([r.y for r in held])
-        return sf.brier(p_base, y) - sf.brier(p_cand, y)
+        return _rows_delta_on_games(by_id, holdout_game_ids)
+
+    return _select, _score
+
+
+def _nested_cv_fns_multi(rows_by_candidate: Mapping[str, Sequence[StackRow]], judged_name: str):
+    """REAL cross-candidate L1 selection: `_select` argmaxes EVERY candidate's
+    inner-fold Brier-delta-vs-base (an actual choice, never a constant),
+    scored ONLY on the frozen outer holdout (select_then_score's contract). If
+    the shared pick != `judged_name`, `_score` returns NaN -- judge_stack_
+    family's `outer_score<0.0` gate treats NaN as failing, an honest L1 REJECT
+    for the candidate that lost selection, never a silent pass-through."""
+    by_id_by_cand = {name: {r.event_id: r for r in rs} for name, rs in rows_by_candidate.items()}
+
+    def _select(inner_game_ids: Sequence[str]) -> str:
+        deltas = {name: _rows_delta_on_games(by_id, inner_game_ids)
+                 for name, by_id in by_id_by_cand.items()}
+        finite = {n: d for n, d in deltas.items() if np.isfinite(d)}
+        return max(finite, key=finite.get) if finite else next(iter(by_id_by_cand))
+
+    def _score(spec: str, holdout_game_ids: Sequence[str]) -> float:
+        if spec != judged_name:
+            return float("nan")  # this candidate lost the selection -- honest L1 REJECT
+        return _rows_delta_on_games(by_id_by_cand[spec], holdout_game_ids)
 
     return _select, _score
 
@@ -168,12 +191,19 @@ def run_batch(candidate_specs: Sequence[Dict[str, Any]], sport: str,
 
     Returns {candidate_name: verdict_dict}. verdict_dict for a prescreen
     reject has verdict='REJECT', layer='FDR_PRESCREEN'; survivors carry the
-    full judge_stack_family verdict shape.
+    full judge_stack_family verdict shape. L1 selection across >=2 surviving
+    specs sharing a primary corpus_unit is a REAL argmax choice (see
+    `_nested_cv_fns_multi`); a lone survivor falls back to the single-
+    candidate selector (nothing to choose among).
     """
     corpus = load_gate_corpus(sport)
     units = sorted(corpus["corpus_unit"].dropna().unique().tolist())
     results: Dict[str, Dict[str, Any]] = {}
 
+    # Pass 1: prescreen every spec; collect PROCEED survivors' fitted rows.
+    survivors: Dict[str, CandidateSpec] = {}
+    rows_per_unit_by_spec: Dict[str, Dict[str, List[StackRow]]] = {}
+    primary_unit_by_spec: Dict[str, str] = {}
     for raw_spec in candidate_specs:
         spec = _spec_from_dict(raw_spec)
         use_units = list(spec.corpus_units) if spec.corpus_units else units
@@ -212,17 +242,42 @@ def run_batch(candidate_specs: Sequence[Dict[str, Any]], sport: str,
                       source="funnel_gate", metrics={"layer": v["layer"]})
             continue
 
-        # ABOVE the floor gains nothing: full ceremony is mandatory from here.
+        survivors[spec.name] = spec
+        rows_per_unit_by_spec[spec.name] = rows_per_unit
+        primary_unit_by_spec[spec.name] = primary_unit
+
+    # Pass 2: ABOVE the floor gains nothing -- full ceremony is mandatory. Group
+    # survivors sharing a primary_unit so the L1 selector can REALLY choose among them.
+    by_primary_unit: Dict[str, List[str]] = {}
+    for name, pu in primary_unit_by_spec.items():
+        by_primary_unit.setdefault(pu, []).append(name)
+
+    for spec_name, spec in survivors.items():
+        rows_per_unit = rows_per_unit_by_spec[spec_name]
+        primary_unit = primary_unit_by_spec[spec_name]
+        primary_rows = rows_per_unit[primary_unit]
         game_ids = [r.event_id for r in primary_rows]
-        nested_select_fn, nested_score_fn = _nested_cv_fns(primary_rows, spec.name)
-        base_logit_primary = sf.logit(
-            corpus[corpus["corpus_unit"] == primary_unit]["p_base"].to_numpy(float))
+        cohort = by_primary_unit[primary_unit]
+        if len(cohort) >= 2:
+            rows_by_cand = {n: rows_per_unit_by_spec[n][primary_unit] for n in cohort}
+            nested_select_fn, nested_score_fn = _nested_cv_fns_multi(rows_by_cand, spec_name)
+        else:
+            nested_select_fn, nested_score_fn = _nested_cv_fns(primary_rows, spec_name)
+        # L0 compares vs `first["added_raw"]` = the TEST-split rows only
+        # (StackRow.added_raw comes from `test` in _fit_and_score_unit) --
+        # base_feature_cols MUST match that same slice, else l0_guards sees a
+        # shape mismatch and every candidate REJECTs at L0 regardless of real
+        # collinearity (fixed: was previously the full-unit-length slice).
+        primary_df = corpus[corpus["corpus_unit"] == primary_unit]
+        primary_df = primary_df[primary_df["p_base"].notna() & primary_df["y"].notna()]
+        primary_te_idx = sf.expanding_window_splits(len(primary_df), 0.5, 1)[0].test_idx
+        base_logit_primary = sf.logit(primary_df["p_base"].to_numpy(float))[primary_te_idx]
 
         verdict = judge_stack_family(
-            name=spec.name, corpora=list(rows_per_unit.values()),
+            name=spec_name, corpora=list(rows_per_unit.values()),
             corpus_labels=list(rows_per_unit.keys()),
             base_feature_cols={"base_logit": base_logit_primary},
-            k_cum=spec.k_cum, n_corpora_available=len(use_units),
+            k_cum=spec.k_cum, n_corpora_available=len(rows_per_unit),
             nested_cv_select_fn=nested_select_fn, nested_cv_score_fn=nested_score_fn,
             nested_cv_game_ids=game_ids,
             planted_null_fn=lambda rng, u=primary_unit, f=spec.features: _plant_null(
