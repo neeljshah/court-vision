@@ -41,6 +41,33 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 52 (WAVE-51 SHIPPED: FULL-POPULATION CLAIMS LIVE, 2026-07-05
+  ~06:25Z, wf_b3927d59-905 28 agents/~2.37M tok, 7 lane commits): backlog
+  dual review CAUGHT the KBO wire on a noise-disqualified fit + FABRICATED
+  wire-proof params -> KBO dispatch branch REMOVED (NPB/KBO symmetric),
+  docstrings HONEST_NEGATIVE, fail-closed loader, 14+4 tests green (another
+  honesty-machinery catch). Full-population claims via UNMODIFIED validator:
+  NBA NEW 20 dims/329 players (LeBron 9 rankable + 11 honest below-floor);
+  tennis 245 + 8 v3 claims; MLB 4 modules uncapped (963 ranked); soccer 153;
+  WNBA NEW 3 descriptive-only dims; fit ingredients 531 rows -> ask.py
+  compose_fit SCOUTING-labeled (Luka/LAL composes; was 2x UNANSWERABLE).
+  Fit-validity gate PRE-REGISTERED: n_moves=96 -> expected NOT_TESTABLE,
+  double run-guard, spec sha pinned in commit (docs/research local-only).
+  LAUNCHING wave-52: ask auto-discovery+coverage, dossier full-pop (staging
+  only), WNBA atlas extract, tennis atlas persist, MLB TTO descriptive,
+  bbref moves-backfill PROBE. KBO Naver confirm next window ~09:30Z.
+- SPRINT WAKE 51 (PROGRAM v3 WAVE-1 LAUNCH, 2026-07-05 05:12Z TRUE-UTC; box
+  local=UTC-5, prior entries' Z labels ran ~2h ahead -- wake-50 actually
+  closed ~04:35-05:06Z): stop flag false. Found UNCOMMITTED wave-50 backlog
+  (kbo_live_model.py + npb_kbo_wire_proof.py + 2 tests + live_board.py diff
+  + tennis playstyle_ingame_gate_io.py) -> dual-Opus backlog review lane
+  FIRST; commit on PASS at notification. LAUNCHED wave-51 workflow: 4 haiku
+  scouts -> 6 file-disjoint sonnet lanes (NBA full-population claims NEW
+  basketball_claims, tennis/MLB/soccer+WNBA cap-drop full-pop, fit-ingredient
+  claims + SCOUTING fit family in ask.py, fit-validity gate PRE-REGISTRATION
+  power-audit-first w/ honest NOT_TESTABLE allowed) -> dual Opus per lane ->
+  fix round. claims_validator stays UNMODIFIED (rail). KBO Naver live confirm
+  queued ~09:30-13Z; US verifier sweep ~17-23Z. No edge claims.
 - SPRINT WAKE 50 (WAVE-49: H3 REPLAYABLE + REPLAY LEDGER 4/7, 2026-07-05
   ~07:10Z, wf_359c261e-484 3 agents/~0.30M tok, commit 6bf71d17): real export
   bug fixed (H1's base zipped into p_base instead of H0's own prediction);
