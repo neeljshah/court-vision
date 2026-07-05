@@ -6,10 +6,16 @@ player_intel_shooting_claims.py) to:
     data/cache/intel_claims/nba_quality_claims.jsonl
     data/cache/intel_claims/nba_quality_answers.md
 
-Emits 3 claims: the 3a gate verdict (gate_verdict kind), the
-shooter_quality_v1 top-10 ranking, and the scorer_quality_v1 top-10 ranking.
-Each ranking claim carries the Curry/Ellis face-validity diagnostic as a
-REPORTED field, never a fitting target (spec Section 3b).
+Emits 3 claims: the 3a gate verdict (gate_verdict kind, see
+quality_claim_builders.build_gate_claim for why it stays UNVERIFIABLE by
+construction), the shooter_quality_v1 top-10 ranking, and the
+scorer_quality_v1 top-10 ranking (both kind=ranking, made recomputable via
+quality_claims_snapshot.py -- see its module docstring for the
+provenance-contract rationale). Each ranking claim carries the Curry/Ellis
+face-validity diagnostic as a REPORTED field, never a fitting target (spec
+Section 3b). Claim-row construction itself lives in quality_claim_builders.py
+(kept separate to stay under the 300-LOC/file cap); this module is the
+orchestrator (run gate + indices, build claims, write JSONL + markdown).
 """
 from __future__ import annotations
 
@@ -20,7 +26,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from domains.basketball_nba.quality_indices import BOXSCORE_PATH, SCORER_WEIGHTS, SHOOTER_WEIGHTS, QUALIFY_MIN_FGA, QUALIFY_MIN_GAMES
+from domains.basketball_nba.quality_claim_builders import build_gate_claim, build_ranking_claim, rank_of, write_verdict
+from domains.basketball_nba.quality_indices import SCORER_WEIGHTS, SHOOTER_WEIGHTS
 from domains.basketball_nba.quality_indices_score import run as run_indices
 from domains.basketball_nba.quality_validity_gate import GateResult, run_gate
 
@@ -30,96 +37,6 @@ ANSWERS_PATH = Path("data/cache/intel_claims/nba_quality_answers.md")
 
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
-
-
-def _ranking_rows(df: pd.DataFrame, score_col: str, top_n: int = 10) -> list[dict]:
-    rows = []
-    for i, row in df.head(top_n).iterrows():
-        rows.append({
-            "rank": int(i) + 1,
-            "player_id": int(row["player_id"]),
-            "player_name": row["player_name"],
-            "value": round(float(row[score_col]), 4),
-            "n": int(row["games"]),
-            "coverage": round(float(row["coverage"]), 4),
-        })
-    return rows
-
-
-def rank_of(df: pd.DataFrame, score_col: str, name: str) -> int:
-    ranked = df.sort_values(score_col, ascending=False, na_position="last").reset_index(drop=True)
-    match = ranked[ranked["player_name"] == name]
-    return int(match.index[0]) + 1 if len(match) else -1
-
-
-def build_gate_claim(gate: GateResult, computed_at: str) -> dict:
-    return {
-        "claim_id": "nba_quality_predictive_validity_gate_3a",
-        "kind": "gate_verdict",
-        "question": "Does shooter_quality_v1 predict future TS% better than the naive composite (pre-registered walk-forward gate)?",
-        "criteria": {
-            "gate": "3a_predictive_validity",
-            "primary_target": "realized_ts_pct over [T, T+30d], forward_games>=8, on 329-qualifier pool",
-            "comparison_statistic": "mean Spearman rho across cutoffs; paired bootstrap clustered by player on rho(shooter)-rho(naive)",
-            "win_rule": "CI excludes 0 in favor AND sign holds >=3/4 folds AND replicates in 2025-26",
-        },
-        "verdict": gate.verdict,
-        "mean_rho_shooter_quality_v1": round(gate.mean_rho_shooter, 4) if not np.isnan(gate.mean_rho_shooter) else None,
-        "mean_rho_naive": round(gate.mean_rho_naive, 4) if not np.isnan(gate.mean_rho_naive) else None,
-        "bootstrap_delta_ci": (
-            {k: (round(v, 4) if isinstance(v, float) else v) for k, v in gate.bootstrap.items()}
-            if gate.bootstrap else None
-        ),
-        "sign_holds_folds": f"{gate.sign_holds_folds}/{gate.n_folds}",
-        "per_cutoff": gate.per_cutoff,
-        "replication_2025_26": gate.replication,
-        "source_files": [
-            BOXSCORE_PATH,
-            "data/cache/atlas_player_catch_shoot_vs_pullup.parquet",
-            "data/cache/atlas_player_spacing_gravity.parquet",
-            "data/cache/atlas_player_scoring_creation.parquet",
-        ],
-        "computed_at": computed_at,
-        "caveats": [
-            "Honest-null clause is BINDING: if the gate REJECTs, the naive composite "
-            "(0.55*TS%+0.30*eFG%+0.15*FT%) stays canonical. REJECT is a recorded SUCCESS, not a failure.",
-            "DIFFICULTY/GRAVITY pillars at each pre-T cutoff use same-season atlas style-share "
-            "fields (playtype mix, gravity_score) as stable style descriptors, not efficiency; "
-            "EFFICIENCY/VOLUME pillars are recomputed exactly from pre-T boxscore rows only.",
-        ],
-    }
-
-
-def build_ranking_claim(claim_id: str, question: str, weights: dict, ranking_df: pd.DataFrame,
-                         score_col: str, ellis_rank: int, curry_rank: int, n_qualifying: int,
-                         source_files: list[str], extra_caveat: str, computed_at: str) -> dict:
-    return {
-        "claim_id": claim_id,
-        "kind": "ranking",
-        "question": question,
-        "criteria": {
-            "metric": score_col,
-            "weights": weights,
-            "floors": {"min_games": QUALIFY_MIN_GAMES, "min_fga": QUALIFY_MIN_FGA},
-            "direction": "desc",
-        },
-        "ranking": _ranking_rows(ranking_df, score_col),
-        "face_validity_diagnostic": {
-            "type": "reported_never_a_fitting_target",
-            "stephen_curry_rank": curry_rank,
-            "keon_ellis_rank": ellis_rank,
-            "n_qualifying": n_qualifying,
-            "top_decile_cutoff_rank": max(1, n_qualifying // 10),
-        },
-        "source_files": [BOXSCORE_PATH] + source_files,
-        "computed_at": computed_at,
-        "n_considered": n_qualifying,
-        "caveats": [
-            "Weights DECLARED and FROZEN before scoring (basketball_truth_spec.json); "
-            "never tuned to a named player's rank.",
-            extra_caveat,
-        ],
-    }
 
 
 def write_claims(claims: list[dict]) -> None:
@@ -193,6 +110,7 @@ def write_answers_md(gate: GateResult, claims: list[dict]) -> None:
 
 def run() -> GateResult:
     gate = run_gate()
+    write_verdict(gate)  # persists quality_claim_builders.VERDICT_FILE (VERDICT_PATH)
     idx = run_indices()
     computed_at = _now_iso()
     n_qualifying = len(idx.factor_table)
@@ -215,6 +133,7 @@ def run() -> GateResult:
             "nba_quality_predictive_validity_gate_3a claim); until then the naive composite is canonical."
         ),
         computed_at=computed_at,
+        index_name="shooter",
     ))
     claims.append(build_ranking_claim(
         "nba_scorer_quality_v1_full_season_2024_25",
@@ -236,6 +155,7 @@ def run() -> GateResult:
             "run (gate 3a tests shooter_quality_v1 only, per spec)."
         ),
         computed_at=computed_at,
+        index_name="scorer",
     ))
 
     write_claims(claims)
