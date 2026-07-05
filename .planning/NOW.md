@@ -41,6 +41,21 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 54 (WAVE-53 SHIPPED: NBA TRULY FULL-POP + MOVES 417, 2026-07-05
+  ~07:25Z, wf_d8c6358b-cc0 10 agents/~0.80M tok, 3 lane commits): NBA uncap
+  FIXED (1000->5424 rows, ts_pct=329 recount-verified, LeBron 9->17 rankable,
+  20/20 re-VERIFIED, ids stable); soccer stale claim_id cleared; dossiers
+  1992 / 8442 lines; coverage 5 sports/47 claims/10327 rows/13422 entities/
+  21551 honest below-floor. bbref ingest 4/4 seasons (4 req, 0 blocks); moves
+  96->417 (5 cohorts 82/80/85/74/96; prereg 96 reproduced byte-identical, sha
+  intact). Recompute: strict threshold reading false BUT second-cohort event
+  substantively satisfied -> FABLE DECISION (charter S6 user-proxy):
+  AUTHORIZE gate run via V2 AMENDMENT (new sha-pinned file, V1 stays frozen;
+  strict season<=s ingredients; planted-null + comparability + off-init;
+  honest REJECT/NOT_TESTABLE expected = success; measurement-only, wires
+  nothing). MLB whiff/chase honest CORPUS_ABSENT (no description col);
+  zone_rate 665/1130 VERIFIED. WAVE-54 launching: fit-gate V2 amend+run,
+  shared validation-json contention fix, KBO slate probe (window ~09:30Z).
 - SPRINT WAKE 53 (WAVE-52 SHIPPED: COVERAGE+DEPTH WIDENED, 2026-07-05 ~07:00Z,
   wf_6ca41510-e18 21 agents/~2.02M tok, 5 lane commits): ask auto-discovers
   ALL claim stores + coverage_report.json (55 validated); dossiers 1253->1823
