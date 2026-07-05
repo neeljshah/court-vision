@@ -308,3 +308,120 @@ def test_classify_families_and_window_hint():
 
     unknown = families.classify("What time is it?")
     assert unknown.family is None
+
+
+# --- compose_fit (PROGRAM v3 item 2, FIT question family) -------------------
+
+def _fixture_fit_claims() -> tuple[dict, dict, dict]:
+    archetype_claim = {
+        "claim_id": ask_mod._FIT_ARCHETYPE_CLAIM_ID,
+        "kind": "ranking",
+        "question": "archetype profile?",
+        "criteria": {"metric": "usage_pct", "formula": "usage_pct", "entity_key": "pid"},
+        "ranking": [
+            {"rank": 1, "pid": 999, "player_name": "Fixture Star", "value": 0.9, "n": None,
+             "team": "ATL", "posgroup": "WING", "archetype": "WING_CREATOR",
+             "creation": 0.9, "playmaking": 0.8, "spacing": 0.5, "rim_pressure": 0.2,
+             "rebounding": 0.4, "rim_protect": 0.3, "perimeter_d": 0.6, "self_create": 0.7,
+             "usage_pct": 0.9},
+        ],
+        "source_files": ["data/fake/archetype.parquet"],
+        "computed_at": "2026-07-05T00:00:00+00:00",
+        "n_considered": 10, "n_excluded_below_floor": 2, "caveats": ["fixture caveat"],
+    }
+    scheme_claim = {
+        "claim_id": ask_mod._FIT_SCHEME_CLAIM_ID,
+        "kind": "ranking",
+        "question": "scheme identity?",
+        "criteria": {"metric": "wf_ppp_allowed_z", "formula": "wf_ppp_allowed_z", "entity_key": "team"},
+        "ranking": [
+            {"rank": 1, "team": "ATL", "value": 0.5, "n": 20,
+             "dominant_tag": "SWITCH HEAVY", "best_scheme": None, "confidence": "high"},
+        ],
+        "source_files": ["data/fake/scheme.parquet"],
+        "computed_at": "2026-07-05T00:00:00+00:00",
+        "n_considered": 30, "n_excluded_below_floor": 0, "caveats": ["fixture caveat"],
+    }
+    vacancy_claim = {
+        "claim_id": ask_mod._FIT_VACANCY_CLAIM_ID,
+        "kind": "ranking",
+        "question": "role vacancy?",
+        "criteria": {"metric": "vacancy_share", "formula": "mean(is_below_median)", "entity_key": "team_posgroup"},
+        "ranking": [
+            {"rank": 1, "team_posgroup": "ATL|WING", "value": 0.4444, "n": 9,
+             "team": "ATL", "posgroup": "WING"},
+        ],
+        "source_files": ["data/fake/vacancy_snapshot.parquet"],
+        "computed_at": "2026-07-05T00:00:00+00:00",
+        "n_considered": 40, "n_excluded_below_floor": 3, "caveats": ["fixture caveat"],
+    }
+    return archetype_claim, scheme_claim, vacancy_claim
+
+
+@pytest.fixture
+def fixture_fit_sources(tmp_path, monkeypatch):
+    """One VERIFIED row for each of the 3 fit-ingredient claims (Fixture
+    Star on ATL, posgroup WING) -- a full-pop compose_fit lookup should
+    join all three cleanly."""
+    claims_path = tmp_path / "fit_claims.jsonl"
+    validation_path = tmp_path / "fit_validation.json"
+    archetype_claim, scheme_claim, vacancy_claim = _fixture_fit_claims()
+
+    with open(claims_path, "w", encoding="ascii") as f:
+        for row in (archetype_claim, scheme_claim, vacancy_claim):
+            f.write(json.dumps(row) + "\n")
+
+    validation_summary = {
+        "component": "fit_claims_validation",
+        "n_claims": 3,
+        "details": [
+            {"claim_id": ask_mod._FIT_ARCHETYPE_CLAIM_ID, "verdict": "VERIFIED", "reason": "ok"},
+            {"claim_id": ask_mod._FIT_SCHEME_CLAIM_ID, "verdict": "VERIFIED", "reason": "ok"},
+            {"claim_id": ask_mod._FIT_VACANCY_CLAIM_ID, "verdict": "VERIFIED", "reason": "ok"},
+        ],
+    }
+    validation_path.write_text(json.dumps(validation_summary), encoding="ascii")
+
+    monkeypatch.setattr(ask_mod, "CLAIM_SOURCE_PAIRS", ((validation_path, claims_path),))
+    return validation_path, claims_path
+
+
+def test_compose_fit_full_population_lookup_joins_all_three_ingredients(fixture_fit_sources):
+    result = ask_mod.compose_fit("Fixture Star", "ATL")
+    assert result["answerable"] is True
+    assert result["family"] == ask_mod.FAMILY_FIT
+    answer = result["answer"]
+    assert answer["archetype_profile"]["posgroup"] == "WING"
+    assert answer["archetype_profile"]["archetype"] == "WING_CREATOR"
+    assert answer["team_scheme_identity"]["dominant_tag"] == "SWITCH HEAVY"
+    assert answer["role_vacancy"]["team_posgroup"] == "ATL|WING"
+    assert answer["role_vacancy"]["vacancy_share"] == 0.4444
+    # never predictive/edge language in a fit answer
+    blob = json.dumps(answer).lower()
+    for forbidden in ask_mod._FORBIDDEN_FIT_WORDS:
+        assert forbidden not in blob
+    # every ingredient carries provenance
+    assert len(result["evidence"]) == 3
+    claim_ids = {e["claim_id"] for e in result["evidence"]}
+    assert claim_ids == {
+        ask_mod._FIT_ARCHETYPE_CLAIM_ID, ask_mod._FIT_SCHEME_CLAIM_ID, ask_mod._FIT_VACANCY_CLAIM_ID,
+    }
+    for e in result["evidence"]:
+        assert e["validator_verdict"] == "VERIFIED"
+
+
+def test_compose_fit_missing_ingredient_is_honest_unanswerable(fixture_fit_sources):
+    # player exists in the archetype claim, but the fixture only has a
+    # scheme/vacancy row for ATL -- asking about a DIFFERENT team should
+    # honestly name team_scheme_identity as the missing ingredient, not
+    # silently compose from a partial join.
+    result = ask_mod.compose_fit("Fixture Star", "BOS")
+    assert result["answerable"] is False
+    assert result["family"] == ask_mod.FAMILY_FIT
+    assert result["missing_ingredient"] == "team_scheme_identity"
+
+    # a player entirely absent from the archetype claim is also honest
+    # UNANSWERABLE, naming archetype_profile as the missing ingredient
+    result2 = ask_mod.compose_fit("Nobody Fake", "ATL")
+    assert result2["answerable"] is False
+    assert result2["missing_ingredient"] == "archetype_profile"
