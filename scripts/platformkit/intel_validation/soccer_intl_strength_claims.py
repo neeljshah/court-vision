@@ -1,7 +1,9 @@
 """SOCCER_INTL (national-team) strength ranking claims producer (mission
-spine 5, lane claims-breadth-2). Mirrors scripts/platformkit/intel_validation/
-tennis_hold_claims.py's structure: emit a top-50 as-of ranking claim in the
-SAME claims contract shape, backed by a side parquet the independent
+spine 5, lane claims-breadth-2 -> widened to FULL population, lane
+soccer-wnba-fullpop). Mirrors scripts/platformkit/intel_validation/
+tennis_hold_claims.py's structure: emit a FULL-population as-of ranking
+claim (every team above the soccer_intl_truth_spec floor, no top-N cap) in
+the SAME claims contract shape, backed by a side parquet the independent
 claims_validator.py re-derives the ranking from, zero code sharing between
 producer and validator.
 
@@ -27,8 +29,11 @@ from that materialized snapshot -- it never re-imports or re-runs the replay.
 MIN-SAMPLE FLOOR: n_matches (the team's total processed-match count feeding
 its EW state) >= 200 -- excludes small non-FIFA/regional entities in the
 corpus (Jersey, Guernsey, Isle of Man, Occitania, New Caledonia, ...) whose
-tiny sample sizes produce noisy EW estimates; verified to leave a clean top-50
-of recognizable senior national teams.
+tiny sample sizes produce noisy EW estimates.
+
+FULL POPULATION: every team clearing the floor is ranked (no top-N cap) --
+below-floor teams are counted honestly in n_excluded_below_floor, never
+silently dropped.
 
 LEAK DISCIPLINE: gf_ew/ga_ew are the SAME leak-free trailing EW state the
 predictor uses pre-match (domains/soccer_intl/ratings.py's own strictly-prior
@@ -66,7 +71,6 @@ _CLAIMS_OUT = _OUT_DIR / "soccer_intl_strength_claims.jsonl"
 _SNAPSHOT_OUT = _OUT_DIR / "soccer_intl_strength_snapshot.parquet"
 
 MIN_N_MATCHES = 200
-TOP_N = 50
 
 
 def build_strength_snapshot(results_path: Path | None = None) -> tuple[Path, str, int]:
@@ -103,10 +107,9 @@ def build_ranking_claim() -> dict[str, Any]:
     n_excluded = n_considered - len(qualifiers)
     qualifiers["strength"] = qualifiers["gf_ew"] - qualifiers["ga_ew"]
     qualifiers = qualifiers.sort_values("strength", ascending=False).reset_index(drop=True)
-    top = qualifiers.head(TOP_N)
 
     ranking = []
-    for i, row in enumerate(top.itertuples(index=False), start=1):
+    for i, row in enumerate(qualifiers.itertuples(index=False), start=1):
         ranking.append({
             "rank": i,
             "team": str(row.team),
@@ -117,11 +120,11 @@ def build_ranking_claim() -> dict[str, Any]:
 
     rel_source = str(out_path.relative_to(REPO_ROOT)).replace("\\", "/")
     return {
-        "claim_id": f"soccer_intl_strength_top50_asof_{as_of_iso}",
+        "claim_id": f"soccer_intl_strength_full_asof_{as_of_iso}",
         "kind": "ranking",
         "question": (
             f"Which international (national-team) sides rate strongest by net "
-            f"expected goals (top 50, as-of {as_of_iso})?"
+            f"expected goals (full population above floor, as-of {as_of_iso})?"
         ),
         "criteria": {
             "metric": "strength",
@@ -148,6 +151,8 @@ def build_ranking_claim() -> dict[str, Any]:
             f"min_sample floor n_matches>={MIN_N_MATCHES} (total processed matches feeding "
             "the team's EW state) -- excludes small non-FIFA/regional entities in the corpus "
             "(e.g. Jersey, Guernsey, Isle of Man) whose tiny samples produce noisy EW estimates.",
+            "FULL POPULATION: every team clearing the floor is ranked, no top-N cap -- "
+            "below-floor teams are counted in n_excluded_below_floor, never silently dropped.",
             "CALIBRATION/descriptive team-strength ranking only -- no market/$ edge claimed.",
         ],
     }
