@@ -1906,6 +1906,34 @@ HUMAN QUEUE ADDITION (ponytail): run in an interactive session, two separate pro
    rails exist) | done-when: >=2 sports have a gated STACK verdict on disk
    (SHIP or honest REJECT, planted-null + replication attached); most stacks
    REJECTING is the expected, successful outcome.
+0f. [CONTEXT-CONDITIONING DEPTH -- USER DIRECTIVE 2026-07-05c (in-session, verbatim
+   intent): "teams schedules everything impacts players; a player can be a good
+   shooter on a bad shooting team; everything affects everything -- depth to every
+   thing and how every little part reacts to another; AI should be getting every
+   signal, testing them, using smart LLMs on how signals combine into models,
+   building new models testing against each other, knowing how every little aspect
+   reacts to another, INDEPENDENTLY." FABLE INTERPRETATION (binding, extends 0e):
+   (a) CONTEXT-ADJUSTED player intelligence dims as validated claims FIRST
+   (descriptive): player metric vs team-context (e.g. 3P% vs team-minus-player
+   environment), opponent-context, schedule-context (rest/B2B splits) -- claims-
+   validator recompute mandatory; these then become LEGAL stack/interaction
+   ingredients via prereg. (b) LLM-AS-PROPOSER: smart-LLM (Opus) lanes read the
+   claims/atlas/reject-ledger intelligence and PROPOSE mechanism-motivated
+   interaction candidates (bounded lists, each w/ mechanism rationale + exact
+   leak-free sources + coverage check); proposals cost K (FWER budget counts every
+   enumerated candidate) but need NO L4 gate (search guidance, not features).
+   LLM-derived FEATURES (text->model inputs) still require the L4 shuffled-context
+   planted-null gate, fail=SCOUTING-only forever. (c) MODEL TOURNAMENT: every
+   gated SHIP becomes the next base (ratchet semantics on the stack harness);
+   REJECTs accumulate in the ledger = the map of what does NOT interact (that is
+   knowledge too). (d) INDEPENDENCE: proposer->prereg-amendment(sha-pinned,
+   Fable-adjudicated)->gate->ledger runs as the standing loop cadence. CLOSED
+   CLASSES STAY CLOSED (travel-predictive, ast_rate, SP-fatigue, player-profile
+   in-game, home_sot family, tennis solo dims) -- context-ADJUSTED descriptives +
+   NEW interaction families are the legal surface. | domains/<sport>/ +
+   scripts/platformkit/ | done-when: context-adjusted claims dims VERIFIED on
+   disk + first LLM-proposed interaction family sha-pinned + gated w/ honest
+   verdicts.]
 [WAVES 22+23 CONSUMED 2026-07-04 ~15:50Z -- ledgers above. Queue below = wave 24; the bottleneck is now largely WALL-CLOCK forward-evidence accrual -> cadence rule: light check-ins unless a gate decides or the user messages.]
 1. [LIVE-ACTIVATION-VERIFY] once MLB slate is live (~17:00Z+): enrichment fields present in fresh grade rows, kalshi pacing counters nonzero in capture heartbeat, m13 fresh props_snapshot + freshness_sla green (relaunched PID 14028 w/ timeout fix), grade-writer clamp writing late-inning rows; npb/kbo FIRST GRADES land overnight (their game windows) | orchestrator light check-in | verifier PENDINGs -> PASS or triaged.
 2. [FORWARD-GATES-WATCH] wall-clock accrual, no fleet: MLB tail fwd (floor ~20), soccer_intl xG forward (floor 8/half), wnba/npb/kbo tail stamps live -- escalate to a decision wave ONLY on a real headline_verdict or an allowlist-external regression | forward_evidence_scoreboard | gate decides -> decision wave.
