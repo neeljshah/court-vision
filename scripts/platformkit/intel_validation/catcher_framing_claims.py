@@ -1,9 +1,10 @@
 """MLB catcher out-of-zone strike-rate ranking claims producer (program v2
 build rank 1, catcher-arm). Mirrors
 scripts/platformkit/intel_validation/mlb_pitcher_claims.py's structure: emit
-a top-50 ranking claim in the SAME claims contract shape, backed by the
-domains/mlb/catcher_framing_index.py index parquet, zero code sharing
-between producer and validator.
+a FULL-POPULATION ranking claim (every catcher clearing the min_sample floor,
+no top-N truncation -- see mlb-fullpop lane) in the SAME claims contract
+shape, backed by the domains/mlb/catcher_framing_index.py index parquet,
+zero code sharing between producer and validator.
 
 METRIC (RELABELED after FIX ROUND): ooz_strike_rate = ooz_strikes /
 n_ooz_called -- out-of-zone STRIKE rate, called-OR-swung-OR-fouled. Statcast
@@ -70,7 +71,9 @@ _CLAIMS_OUT = _OUT_DIR / "catcher_framing_claims.jsonl"
 _SNAPSHOT_OUT = _OUT_DIR / "catcher_framing_snapshot.parquet"
 
 SEASON_WINDOW = "2022_2023"
-TOP_N = 50
+# FULL-POPULATION FIX: every catcher above the min_sample floor ships (no
+# top-N truncation) -- below-floor catchers are honestly counted in
+# n_excluded_below_floor, never silently dropped. See mlb-fullpop lane.
 
 
 def build_snapshot() -> tuple[Path, dict]:
@@ -116,10 +119,9 @@ def build_ranking_claim() -> dict[str, Any]:
         qualifiers["ooz_strikes"] / qualifiers["n_ooz_called"]
     )
     qualifiers = qualifiers.sort_values("ooz_strike_rate", ascending=False).reset_index(drop=True)
-    top = qualifiers.head(TOP_N)
 
     ranking = []
-    for i, row in enumerate(top.itertuples(index=False), start=1):
+    for i, row in enumerate(qualifiers.itertuples(index=False), start=1):
         cid = int(row.catcher_id)
         ranking.append({
             "rank": i,
@@ -137,11 +139,11 @@ def build_ranking_claim() -> dict[str, Any]:
     # count (54/107). Using index_report here reproduced the mismatched-stat bug.
     rel_source = str(out_path.relative_to(REPO_ROOT)).replace("\\", "/")
     return {
-        "claim_id": f"mlb_catcher_framing_top50_{SEASON_WINDOW}",
+        "claim_id": f"mlb_catcher_framing_top50_{SEASON_WINDOW}",  # claim_id kept stable (identifier, not a population statement)
         "kind": "ranking",
         "question": f"Which MLB catchers see the highest out-of-zone STRIKE rate "
                     f"(called-or-swung-or-fouled; NOT a called-strike/framing rate -- "
-                    f"top 50, seasons={SEASON_WINDOW})?",
+                    f"full qualifying population, seasons={SEASON_WINDOW})?",
         "criteria": {
             "metric": "ooz_strike_rate",
             "formula": "sum(ooz_strikes) / sum(n_ooz_called)",
@@ -185,6 +187,9 @@ def build_ranking_claim() -> dict[str, Any]:
             "floor against small-sample noise.",
             f"zone-vs-geometric-plate_x/z cross-check agreement="
             f"{index_report['zone_vs_geometric_agreement_frac']:.4f} (reported, not substituted).",
+            f"FULL POPULATION: all {len(qualifiers)} catchers clearing the min_sample floor "
+            "are ranked here (no top-N truncation) -- below-floor catchers are honestly "
+            "counted in n_excluded_below_floor, never silently dropped.",
             "DESCRIPTIVE out-of-zone strike-rate only -- NOT a framing proxy, no "
             "forecasting/market/$ edge claimed.",
         ],

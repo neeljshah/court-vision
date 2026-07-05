@@ -71,7 +71,9 @@ _SNAPSHOT_OUT = _OUT_DIR / "platoon_split_snapshot.parquet"
 _GAMELOGS = REPO_ROOT / "data" / "domains" / "mlb" / "player_gamelogs.parquet"
 
 SEASON_WINDOW = "2022_2023"
-TOP_N = 50
+# FULL-POPULATION FIX: every batter above the min_sample floor ships (no
+# top-N truncation) -- below-floor batters are honestly counted in
+# n_excluded_below_floor, never silently dropped. See mlb-fullpop lane.
 
 
 def build_snapshot() -> tuple[Path, dict]:
@@ -139,10 +141,9 @@ def build_ranking_claim() -> dict[str, Any]:
             - qualifiers["on_base_vs_r"] / qualifiers["pa_vs_r"]
         )
         qualifiers = qualifiers.sort_values("platoon_delta", ascending=False).reset_index(drop=True)
-    top = qualifiers.head(TOP_N)
 
     ranking = []
-    for i, row in enumerate(top.itertuples(index=False), start=1):
+    for i, row in enumerate(qualifiers.itertuples(index=False), start=1):
         bid = int(row.batter)
         ranking.append({
             "rank": i,
@@ -154,10 +155,11 @@ def build_ranking_claim() -> dict[str, Any]:
 
     rel_source = str(out_path.relative_to(REPO_ROOT)).replace("\\", "/")
     return {
-        "claim_id": f"mlb_platoon_split_top50_{SEASON_WINDOW}",
+        "claim_id": f"mlb_platoon_split_top50_{SEASON_WINDOW}",  # claim_id kept stable (identifier, not a population statement)
         "kind": "ranking",
         "question": f"Which MLB batters show the largest platoon split "
-                    f"(on-base rate vs LHP minus vs RHP, top 50, seasons={SEASON_WINDOW})?",
+                    f"(on-base rate vs LHP minus vs RHP, full qualifying population, "
+                    f"seasons={SEASON_WINDOW})?",
         "criteria": {
             "metric": "platoon_delta",
             "formula": "(on_base_vs_l / pa_vs_l) - (on_base_vs_r / pa_vs_r)",
@@ -180,6 +182,9 @@ def build_ranking_claim() -> dict[str, Any]:
             f"platoon_split_index.py), seasons={SEASON_WINDOW} "
             "(data/cache/statcast/statcast_fuller__2022/2023.parquet).",
             _sample_floor_caveat(index_report),
+            f"FULL POPULATION: all {len(qualifiers)} batters clearing the min_sample floor "
+            "are ranked here (no top-N truncation) -- below-floor batters are honestly "
+            "counted in n_excluded_below_floor, never silently dropped.",
             "DESCRIPTIVE platoon-split scouting index only -- no forecasting/market/$ edge claimed.",
         ],
     }

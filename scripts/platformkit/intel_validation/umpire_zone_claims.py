@@ -51,7 +51,9 @@ _CLAIMS_OUT = _OUT_DIR / "umpire_zone_claims.jsonl"
 _SNAPSHOT_OUT = _OUT_DIR / "umpire_zone_snapshot.parquet"
 
 SEASON_WINDOW = "2022_2023"
-TOP_N = 50
+# FULL-POPULATION FIX: every umpire above the min_sample floor ships (no
+# top-N truncation) -- below-floor umpires are honestly counted in
+# n_excluded_below_floor, never silently dropped. See mlb-fullpop lane.
 
 
 def build_snapshot() -> tuple[Path, dict, dict]:
@@ -98,10 +100,9 @@ def build_ranking_claim() -> dict[str, Any]:
     qualifiers = qualifiers.sort_values(
         ["ooz_strike_rate", "umpire_id"], ascending=[False, True]
     ).reset_index(drop=True)
-    top = qualifiers.head(TOP_N)
 
     ranking = []
-    for i, row in enumerate(top.itertuples(index=False), start=1):
+    for i, row in enumerate(qualifiers.itertuples(index=False), start=1):
         uid = row.umpire_id
         ranking.append({
             "rank": i,
@@ -113,11 +114,11 @@ def build_ranking_claim() -> dict[str, Any]:
 
     rel_source = str(out_path.relative_to(REPO_ROOT)).replace("\\", "/")
     return {
-        "claim_id": f"mlb_umpire_zone_top50_{SEASON_WINDOW}",
+        "claim_id": f"mlb_umpire_zone_top50_{SEASON_WINDOW}",  # claim_id kept stable (identifier, not a population statement)
         "kind": "ranking",
         "question": f"Which MLB home-plate umpires see the highest out-of-zone STRIKE rate "
                     f"(called-or-swung-or-fouled; NOT a called-strike/zone-consistency rate -- "
-                    f"top 50, seasons={SEASON_WINDOW})?",
+                    f"full qualifying population, seasons={SEASON_WINDOW})?",
         "criteria": {
             "metric": "ooz_strike_rate",
             "formula": "sum(ooz_strikes) / sum(n_ooz_called)",
@@ -158,6 +159,9 @@ def build_ranking_claim() -> dict[str, Any]:
             "snapshot for these seasons is a 2026-07 backfill, not captured at-the-time "
             "of the games -- descriptive/retrospective identity join only (see "
             "umpire_zone_index.py leak_free_caveat).",
+            f"FULL POPULATION: all {len(qualifiers)} umpires clearing the min_sample floor "
+            "are ranked here (no top-N truncation) -- below-floor umpires are honestly "
+            "counted in n_excluded_below_floor, never silently dropped.",
             "DESCRIPTIVE out-of-zone strike-rate only -- NOT a zone-consistency proxy, "
             "no forecasting/market/$ edge claimed.",
             "KNOWN TIE-BREAK GAP (reported, not hidden): umpire_id 427164 (Andy "
