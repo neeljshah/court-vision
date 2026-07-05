@@ -93,6 +93,34 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- DEPTH PROGRAM PINNED ~21:45Z (wf_de19e6ab 2 agents/0.28M): docs/research/
+  depth-program/DEPTH_PROGRAM_2026-07-05.md sha256=
+  7136825e9aae2a92287641156dfc7dca246bbc1f7d6b6150ada5b7a7348cb7f4 (260
+  lines; 7-sport depth ledgers + verbatim completeness table + 20-row gap
+  matrix + standing-queue contract; every row cites evidence). AUDIT
+  HEADLINES: MLB + soccer_intl loops fully LIVE end-to-end (m20 verdicts
+  computed TODAY: mlb MATCH mean_clv +0.86% / 59084 ticks / 142 mkts;
+  soccer_intl MATCH +2.11% / 8043 ticks, ADVERSE segments suppressed);
+  NBA + TENNIS in-game models REPLICATED but UNSERVED in live_board.py
+  dispatch (only mlb/soccer branches exist); WNBA shadow-only by design;
+  tennis ticks flow but corpus_labeled=0 (settle gap); edge_greenlight
+  (e)/(f) NOT_BUILT caps every channel (honest hold; real implementations
+  = the uncap); 5 manual reports stale since 07-02 read as live. FABLE
+  QUEUE CORRECTIONS to the conductor head (it ran concurrent w/ cycle-2):
+  GAP#5 season-split SUPERSEDED by the built corpus B (4cee589d, n=589);
+  GAP#4 serving wire goes SHADOW-FIRST (wnba_ingame_shadow pattern,
+  measurement-only; promotion = later reviewed decision on shadow
+  evidence); GAP#9/#10 conformal items must check the ledger first
+  (aci-online-conformal already ended SHIP_REJECT_pinball_null per
+  live_status last_outcome -- no re-gating closed attempts). CYCLE-2b
+  LAUNCHING: (L1) close-capture daemon for the prediction ledger +
+  freshness-stamp the 5 stale reports; (L2) A2 AMENDMENT draft+review
+  (NBA Family 2 re-gate on the 1225/589 pair + N1/N2 enumeration,
+  K_cum=4, REPLICATED-WEAK label mandatory; Fable pins next turn);
+  (L3) tennis+NBA in-game SHADOW wires + tennis settle-gap diagnosis;
+  (L4) the 3 approved exec fixes (same-venue CLV, 1X2 proxy devig,
+  logger state-filter + event-day dedup). No edge claims -- CLV numbers
+  are execution measurements, MATCH verdicts are calibration-only.
 - M13 CLOSED + CYCLE-2 HEAD CLOSED ~21:20Z (wf_d89026f0 4 agents/0.75M +
   wf_16c6fa77 6 agents/0.59M): (1) M13 FIX COMMITTED c53a69f6 (Fable-
   authorized as orchestrator after APPROVE-vs-PASS string mismatch left the
