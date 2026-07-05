@@ -85,20 +85,34 @@ def test_registry_umpire_totals_gate_replays_via_rmse_metric():
 
 
 def test_registry_schema_mismatches_are_honest_unavailable():
-    """Both ingame_hypothesis layers and h3_playstyle must never be coerced
-    -- still UNAVAILABLE with a reason (re-checked wave-47: both require
-    re-running gate machinery to reach the committed per-row scores, not a
-    field_paths rename), never a fabricated RAN result."""
+    """The two ingame_hypothesis layers must never be coerced -- still
+    UNAVAILABLE with a reason (re-checked wave-47: require re-running gate
+    machinery to reach the committed per-row scores, not a field_paths
+    rename), never a fabricated RAN result."""
     results = run_all_clients()
     by_name = {r["client"]: r for r in results}
     for name in (
         "nba_ingame_hypothesis_hot_night",
         "nba_ingame_hypothesis_scheme_fit",
-        "tennis_h3_playstyle",
     ):
         r = by_name[name]
         assert r["status"] == "UNAVAILABLE", f"{name} should be UNAVAILABLE, got {r}"
         assert r["reason"]
+
+
+def test_registry_tennis_h3_playstyle_replays_and_matches():
+    """wave-h3-h0-export gap closure: tennis_h3_playstyle now RUNS (was
+    UNAVAILABLE) once the gate's export carries H0's own detail-model
+    prediction as p_base -- per-fold Brier delta matches the committed
+    verdict (data/frontend/ingame/playstyle_gate_verdict.json) within
+    tolerance, never a fabricated match."""
+    results = run_all_clients()
+    by_name = {r["client"]: r for r in results}
+    r = by_name["tennis_h3_playstyle"]
+    assert r["status"] == "RAN"
+    assert r["matched"] is True
+    assert r["max_abs_diff"] <= 1e-6
+    assert set(r["per_fold_diffs"]) == {"fold0", "fold1", "fold2"}
 
 
 def test_synthetic_client_matches_committed_verdict(tmp_path):

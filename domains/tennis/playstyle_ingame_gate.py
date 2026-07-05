@@ -14,43 +14,41 @@ constants atlas_playstyles.py fits its counts with). The pairing type
 differential computed PER PAIRING TYPE (TRAIN-fold-only quantiles, one tercile per
 pair_type) -- matches the spec text exactly ("gated on archetype-pair being in a
 top-vs-bottom tercile of historical hold-rate differential for THAT PAIRING TYPE").
-pair_type is therefore load-bearing in the numeric detail term, not just a coverage
-filter: two rows with the same hold_diff_blind can get different gated outputs if
-their pair_types differ (see _tercile_gate / _pairing_detail_raw). Any pair_type
-with fewer than MIN_PAIR_TYPE_CELL train rows falls back to the pooled global
-tercile (OPEN, conservative simplification for thin cells only). Bucket mapping
-itself is an OPEN choice (see buckets module): the spec names only the "big-serve
-vs elite-returner" example, not a full bucket table.
+pair_type is therefore load-bearing in the numeric detail term: two rows with the
+same hold_diff_blind can get different gated outputs if their pair_types differ
+(see _tercile_gate / _pairing_detail_raw). Any pair_type with fewer than
+MIN_PAIR_TYPE_CELL train rows falls back to the pooled global tercile (OPEN,
+conservative simplification for thin cells only). Bucket mapping itself is an
+OPEN choice: the spec names only "big-serve vs elite-returner", not a full table.
 
 AS-OF SAFETY CAVEAT (mandatory, stated exactly as the NBA H_A/H_B verdicts did):
 atlas_playstyles.parquet is a SEASON-LEVEL SNAPSHOT (built once over the full
 2015-2025 corpus) -- NOT as-of-safe / walk-forward-safe. Using it is a KNOWN,
 DISCLOSED leak of future playstyle info into every fold; this gate cannot claim
 leak-free status for the playstyle term the way asof_hold.parquet's hold% terms
-are. Run anyway as a PRE-REGISTERED EXPLORATORY design per the spec; the verdict
-carries this caveat, never silently dropped.
+are. Run anyway as a PRE-REGISTERED EXPLORATORY design; the verdict carries this
+caveat, never silently dropped.
 
 DEPENDENCY CONSTRAINT (binding, honest): atlas_playstyles.parquet is ATP-ONLY
 (corpus_id == "sackmann_atp_matches_parquet"). NO WTA equivalent exists anywhere on
-disk (atlas_h2h.parquet is also ATP-only). Spec requires WTA replication for SHIP --
-since no WTA archetype corpus exists, this gate CANNOT SHIP; WTA is honestly
-reported NOT_TESTABLE (no source data), not silently skipped or faked.
-
+disk (atlas_h2h.parquet is also ATP-only). Spec requires WTA replication for SHIP;
+since no WTA archetype corpus exists, WTA is honestly NOT_TESTABLE, never faked.
 REUSED MACHINERY (no new scoring math): ingame_gate_generic_models fit/predict/blend
 + detail_layer_gate squash/leak-guard (via playstyle_ingame_gate_buckets.
-fit_score_detail) + eval_gate.dm_test.diebold_mariano -- the SAME imports
-surface_hold_ingame_gate.py uses, same fold construction, same min_cell=20.
+fit_score_detail) + eval_gate.dm_test.diebold_mariano -- SAME imports
+surface_hold_ingame_gate.py uses, same fold construction, min_cell=20.
 
 PLANTED NULL (mandatory, per spec): shuffle the archetype-bucket assignment across
-players ("shuffle archetype assignment across players"). Implementation invariant:
-the shuffle permutes the per-player bucket LABEL only -- it holds the covered row
-population IDENTICAL to the real run (same NaN/non-NaN pattern for atlas-unmapped
-players; no per-lookup default that would change which rows _covered() keeps).
-
+players. Implementation invariant: the shuffle permutes the per-player bucket
+LABEL only -- it holds the covered row population IDENTICAL to the real run
+(same NaN/non-NaN pattern for atlas-unmapped players; no per-lookup default that
+would change which rows _covered() keeps).
 SHIP iff: Brier(H1) < Brier(H0) pooled AND DM p<0.05 AND sign holds >=2/3 ATP folds
 AND WTA replicates AND planted-null fails to replicate. WTA cannot run, so SHIP is
-categorically unreachable -- REJECT/NOT_TESTABLE are the reachable honest outcomes.
-
+categorically unreachable.
+EXPORT SCHEMA (h3-h0-export lane): export_rows p_variant=H1's own detail pred,
+p_base=H0's own detail pred (r0["p_variant"], NOT r1's plain sigmoid base) so a
+replay harness can reproduce brier_h0 exactly, not just brier_h1.
 NO $ anywhere; verdict is CALIBRATION (held-out Brier) only, never a market edge.
 INVARIANTS: never edit src/ or kernel/; <=300 LOC; ASCII-only; numpy + pandas.
 CLI: python -m domains.tennis.playstyle_ingame_gate
@@ -132,7 +130,6 @@ def walk_forward_h0_vs_h1(df: pd.DataFrame, n_folds: int = N_FOLDS,
         # turning NaN into the truthy STRING 'nan' (regression: real 34992 vs
         # buggy-null 35805 rows, +813). Fix: partition mapped/unmapped BEFORE
         # permuting -- shuffle only mapped labels; unmapped stay true NaN.
-        # See module docstring PLANTED NULL section for the kept invariant.
         p1_map = dict(zip(d["p1_id"], d["p1_bucket"]))
         p2_map = dict(zip(d["p2_id"], d["p2_bucket"]))
         player_bucket: Dict = {**p2_map, **p1_map}  # p1 wins on conflict (rare/none)
@@ -178,7 +175,10 @@ def walk_forward_h0_vs_h1(df: pd.DataFrame, n_folds: int = N_FOLDS,
             "h1_beats_h0": bool(r1["brier_detail"] < r0["brier_detail"] and dm.p_value < EPS),
             "base_degenerate": bool(r0["base_degenerate"] or r1["base_degenerate"]),
         })
-        for gid, pv, pb, y in zip(r1["game_ids"], r1["p_variant"], r1["p_base"], r1["outcome"]):
+        # p_variant=r1's own detail pred (brier_h1); p_base=r0's own detail pred
+        # (brier_h0) -- NOT r1["p_base"] (plain sigmoid base, a 3rd quantity).
+        # r0/r1 share the same `test` slice/order so this zips row-for-row.
+        for gid, pv, pb, y in zip(r1["game_ids"], r1["p_variant"], r0["p_variant"], r1["outcome"]):
             rows.append({"fold_id": f"fold{k}", "event_id": gid,
                          "p_variant": pv, "p_base": pb, "outcome": y})
     n_beat = sum(1 for f in folds if f["h1_beats_h0"])

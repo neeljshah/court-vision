@@ -9,8 +9,7 @@ Policy (Fable-ratified, this task): REJECT/NOT_TESTABLE verdicts get replay
 clients too, same as ADOPT/SHIP -- replaying a REJECT verifies the honest
 negative stays reproducible as the harness/code evolves. A schema or
 verdict-shape mismatch is recorded as an honest UNAVAILABLE with a reason;
-it is NEVER coerced into a shape the harness or committed verdict don't
-actually have.
+it is NEVER coerced into a shape the harness or committed verdict don't have.
 """
 from __future__ import annotations
 
@@ -249,18 +248,53 @@ def ingame_hypothesis_unavailable_reason(layer: str) -> str:
 
 
 def h3_playstyle_unavailable_reason() -> str:
-    return (
-        "RE-CHECKED wave-47: a committed verdict DOES exist -- data/frontend/ingame/"
-        "playstyle_gate_verdict.json (NOT under data/domains/tennis/ as first searched; "
-        "domains/tennis/playstyle_ingame_gate.py's own _OUT_DIR points there). But the "
-        "exported h3_playstyle_rows.parquet's p_base column is fit_score_detail()'s plain "
-        "sigmoid BASE model (r1['p_base']) -- NOT the H0 arm's own detail-model prediction "
-        "(r0['p_variant']) that the committed verdict's brier_h0 actually scores (verified: "
-        "harness brier_variant matches committed brier_h1 exactly per fold, but harness "
-        "brier_base does NOT match committed brier_h0 -- confirms p_base is a third, "
-        "different quantity). H0's per-row predictions were never exported (only H1's, via "
-        "the `for gid, pv, pb, y in zip(r1[...])` loop in playstyle_ingame_gate.py), so "
-        "replay cannot reach brier_h0 without re-running the gate to score H0 per-row. "
-        "Recorded as an honest UNAVAILABLE with the precise field-gap reason, not a fresh "
-        "harness run standing in as its own ground truth."
-    )
+    """RETIRED wave-h3-h0-export: p_base now exports H0's own detail pred
+    (r0["p_variant"]), not the plain sigmoid base -- REGISTERED (RAN) below
+    via h3_playstyle_rows()/compare_h3_playstyle(), not UNAVAILABLE."""
+    return "RETIRED (pre h3-h0-export fix) -- see compare_h3_playstyle."
+
+
+# ---------------------------------------------------------------------------
+# tennis_h3_playstyle (ATP, brier, per-fold comparison; h3-h0-export lane)
+# ---------------------------------------------------------------------------
+
+def h3_playstyle_rows() -> pd.DataFrame:
+    return load_rows("data/domains/tennis/h3_playstyle_rows.parquet")
+
+
+def compare_h3_playstyle(client, committed: dict) -> dict:
+    """Per-fold Brier delta comparison (mirrors compare_umpire_totals): harness
+    mean_delta (brier_base - brier_variant, positive => H1 improves) vs
+    committed atp.real.folds[i].brier_delta_h1_minus_h0 (SIGN-FLIPPED: committed
+    is brier_h1 - brier_h0, negative => H1 improves), same fold_id -- identical
+    statistic computed two ways, so a 1e-6 match is a real replay proof."""
+    df = client.rows_source()
+    try:
+        verdict = run_harness(df, metric=client.metric, cluster_col=None)
+    except SchemaError as e:
+        return {"status": "UNAVAILABLE", "reason": f"SchemaError: {e}"}
+    replayed = verdict_to_dict(verdict)
+    corpus_id = df["corpus_id"].iloc[0]
+    replayed_folds = {
+        f["fold_id"]: f["mean_delta"]
+        for f in replayed["per_corpus"][str(corpus_id)]["per_fold_signs_vs_base"]
+    }
+    committed_folds = {
+        f"fold{f['fold']}": -float(f["brier_delta_h1_minus_h0"])
+        for f in committed["atp"]["real"]["folds"]
+    }
+    if set(replayed_folds) != set(committed_folds):
+        return {
+            "status": "UNAVAILABLE",
+            "reason": f"fold_id set mismatch: replayed={sorted(replayed_folds)} "
+                      f"committed={sorted(committed_folds)}",
+        }
+    diffs = {k: abs(replayed_folds[k] - committed_folds[k]) for k in replayed_folds}
+    max_abs_diff = max(diffs.values())
+    return {
+        "status": "RAN",
+        "matched": max_abs_diff <= client.tolerance,
+        "max_abs_diff": max_abs_diff,
+        "tolerance": client.tolerance,
+        "per_fold_diffs": diffs,
+    }
