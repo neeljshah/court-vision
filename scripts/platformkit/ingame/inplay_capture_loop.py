@@ -596,6 +596,19 @@ def _process_game(sport: str, gid: str, legs: Dict[str, float],
             except Exception as exc:  # noqa: BLE001 -- deep state is additive, never fatal
                 logger.debug("inplay_capture_loop deep(%s/%s) failed: %s", sport, gid, exc)
         model_p = _prob01(md_fn(sport, state))
+        # SHADOW MEASUREMENT ONLY -- MUST run BEFORE the no_model_prob early return:
+        # wnba/nba/tennis are exactly the sports whose md_fn returns None, so a shadow
+        # write placed after that return is unreachable for its own target sports
+        # (KBO wave-61 reorder precedent; decision path below is byte-unchanged).
+        row["model_prob_wnba_shadow"] = _wnba_shadow(
+            sport, state.get("home_display") or state.get("home"),
+            state.get("away_display") or state.get("away"), state)
+        row["model_prob_nba_shadow"] = _nba_shadow(
+            sport, state.get("home_display") or state.get("home"),
+            state.get("away_display") or state.get("away"), state)
+        row["model_prob_tennis_shadow"] = _tennis_shadow(
+            sport, state.get("home_display") or state.get("home"),
+            state.get("away_display") or state.get("away"), state)
         if model_p is None:
             row["reason"] = "no_model_prob"
             return row
@@ -625,18 +638,12 @@ def _process_game(sport: str, gid: str, legs: Dict[str, float],
             "model_prob": model_p, "devigged_price": _devig_of(tick),
             "p0_source": state.get("p0_source"), "reason": dec.get("reason") or "ok",
         })
-        # SHADOW MEASUREMENT ONLY, added AFTER dec is final -- never read by on_tick.
+        # SP SHADOW MEASUREMENT ONLY, added AFTER dec is final -- never read by on_tick.
+        # (Stays here: it needs the real model_p, which mlb always has past the gate;
+        # the wnba/nba/tennis shadows moved ABOVE the no_model_prob return, where their
+        # target sports actually reach.)
         row["model_prob_sp_shadow"] = _sp_shadow(sport, state.get("home_display") or state.get("home"),
             state.get("away_display") or state.get("away"), model_p, state.get("game_pk"))
-        row["model_prob_wnba_shadow"] = _wnba_shadow(
-            sport, state.get("home_display") or state.get("home"),
-            state.get("away_display") or state.get("away"), state)
-        row["model_prob_nba_shadow"] = _nba_shadow(
-            sport, state.get("home_display") or state.get("home"),
-            state.get("away_display") or state.get("away"), state)
-        row["model_prob_tennis_shadow"] = _tennis_shadow(
-            sport, state.get("home_display") or state.get("home"),
-            state.get("away_display") or state.get("away"), state)
         # Same enrichment dict also mirrors onto the heartbeat/ops row for visibility
         # (unchanged behavior from before this LANE 3 move -- still after dec is final).
         row.update(enrichment)
