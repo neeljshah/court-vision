@@ -41,6 +41,20 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   restored same session); webapp/README.md created (prod-build/.next gotcha);
   root scratch (trail_temp.json, oa809*.json, STATUS.md lane notes) cleared/archived.
   No accuracy/edge claim; serving-spine repair only.
+- SPRINT WAKE 60 (WAVE-59 ADJUDICATED FROM DISK, 2026-07-05 09:15Z TRUE-UTC
+  [clock note: box=CDT/UTC-5; my wave 'now' args + recent ledger stamps ran
+  ~45min ahead; re-anchored to date -u]): KBO lane died on StructuredOutput
+  retries AFTER finishing -- disk shows the kbo_deep setdefault landed
+  (08:47Z), default-assert test 5 green, daemon reloaded on NEW code (PID
+  28232 @ 08:49Z). Runtime accrual PENDING honestly: slate live ~09:00Z,
+  ticks flowing (last 09:00:28Z), zero kbo log lines in 20min = inconclusive
+  (fail-open degrades SILENTLY -- verify lane must dry-run the chain if rows
+  stay absent). m1_ui flap RESOLVED: orphan chain killed (3 PIDs, cascade),
+  port 3000 -> new parented PID 22684, restart counter FROZEN at #264 since
+  08:50Z (was ~90s cadence, 264 restarts/20h); reaper fix stays PROPOSED.
+  1 commit (runner+test). WAVE-60 launching: KBO daemon-evidence accrual
+  verify (+chain dry-run if silent), Kalshi 429 read-only diagnosis
+  (global-rate-governor is a known frontier gap -- propose only).
 - SPRINT WAKE 59 (WAVE-58: VERIFY LANE CAUGHT MY OWN OVERCLAIM, 2026-07-05
   ~09:50Z, wf_52c934de-cb2 9 agents/~0.79M tok, 1 lane commit): HONEST
   CORRECTION -- the kbo_deep wire is NOT live in production: the runner only
