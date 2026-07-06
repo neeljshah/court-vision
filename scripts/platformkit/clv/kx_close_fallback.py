@@ -96,4 +96,31 @@ def close_kind_for_row(row: Dict[str, Any]) -> Optional[str]:
     return _kx.CLOSE_KIND
 
 
-__all__ = ["lookup_close_legs_kx", "close_kind_for_row"]
+def _is_kalshi_taken(row: Dict[str, Any]) -> bool:
+    """Was THIS row's price actually taken on Kalshi (row's own venue, not the
+    close's venue)? Only "kalshi" (case-insensitive) counts -- never a guess."""
+    return str(row.get("taken_book") or "").strip().lower() == "kalshi"
+
+
+def venue_close_for_row(row: Dict[str, Any]) -> Optional[Tuple[float, float]]:
+    """(close_home_decimal, close_away_decimal) -- Kalshi's OWN pre-commence
+    venue quote for a KALSHI-TAKEN row ONLY.
+
+    Used by pm_trading.close_capture (PT-3 audit fix, 2026-07-06): the taken
+    price was the Kalshi contract, but the close was falling through to a
+    DIFFERENT book's line_store snapshot -- a cross-venue basis. This gates
+    lookup_close_legs_kx() (the identical last-tick-proxy lookup already used
+    by clv_ledger_enrich) to taken_book=="kalshi" rows only, so a non-kalshi
+    taken row NEVER gets substituted a Kalshi close here. Returns None when
+    the row wasn't kalshi-taken or lookup_close_legs_kx(row) is None. Never
+    raises.
+    """
+    if not _is_kalshi_taken(row):
+        return None
+    legs = lookup_close_legs_kx(row)
+    if legs is None:
+        return None
+    return (legs[0], legs[1])
+
+
+__all__ = ["lookup_close_legs_kx", "close_kind_for_row", "venue_close_for_row"]
