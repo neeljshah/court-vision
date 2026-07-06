@@ -147,7 +147,8 @@ def _kalshi_close(
             # Injected for tests: kalshi_fetch(sport) -> list[dict] raw markets
             markets: Any = kalshi_fetch(sport)
         else:
-            provider = _KalshiProvider(use_cache=False)
+            # governor_caller: m18 hammered Kalshi ungoverned (kalshi_rate_governor.py).
+            provider = _KalshiProvider(use_cache=False, governor_caller="close_capture")
             markets = provider.fetch(sport)
         if _is_unavailable is not None and _is_unavailable(markets):
             return None

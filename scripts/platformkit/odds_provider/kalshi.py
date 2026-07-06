@@ -23,6 +23,15 @@ for the tie-leg detection rule). Downstream consumers already devig this 3-way
 
 A market we cannot confidently map to a two-team (or team/tie/team) game is
 skipped (never guessed).
+
+CROSS-PROCESS RATE GOVERNOR (see kalshi_rate_governor.py): opt-in via
+governor_caller (None default = no governor, byte-identical -- every
+pre-existing caller/test stays unchanged), same discipline as
+inplay_kalshi.fetch_inplay's own governor_caller. m18 (pm_close_capture, via
+close_capture._kalshi_close) opts in explicitly with governor_caller=
+"close_capture" since it instantiates KalshiProvider directly (bypasses
+aggregate()'s other providers), hammering this endpoint ungoverned. Env
+KALSHI_GOVERNOR_OFF=1 disables. Fail-open.
 """
 from __future__ import annotations
 
@@ -34,6 +43,9 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from .base import OddsEvent, prob_to_decimal, unavailable
 from .http_cache import disk_cache_get_meta, http_get_json
+from .kalshi_pacing import is_429 as _is_429
+from .kalshi_rate_governor import before_request as _governor_before
+from .kalshi_rate_governor import report_429 as _governor_report_429, resolve_governor as _resolve_governor
 
 logger = logging.getLogger(__name__)
 
@@ -226,10 +238,14 @@ class KalshiProvider:
 
     def __init__(self,
                  http_get: Callable[[str], Any] = http_get_json,
-                 *, use_cache: bool = True, page_limit: int = 200) -> None:
+                 *, use_cache: bool = True, page_limit: int = 200,
+                 governor_caller: Optional[str] = None) -> None:
         self._http_get = http_get
         self._use_cache = use_cache
         self._page_limit = page_limit
+        # None (default) = no governor, byte-identical for every pre-existing
+        # caller; resolve once here (mirrors fetch_inplay's governor_caller).
+        self._governor = _resolve_governor(governor_caller)
 
     def _get(self, url: str) -> Tuple[Any, str]:
         """Return (body, fetched_at_iso) -- the TRUE network fetch time of the body
@@ -264,10 +280,13 @@ class KalshiProvider:
         if series_ticker:
             params["series_ticker"] = series_ticker
         url = f"{_BASE}/markets?" + urllib.parse.urlencode(params)
+        _governor_before(self._governor, sport)
         try:
             body, fetched_at = self._get(url)
         except Exception as exc:  # noqa: BLE001 -- degrade, never bubble
             logger.warning("kalshi markets failed for %s: %s", sport, exc)
+            if _is_429(exc):
+                _governor_report_429(self._governor)
             return unavailable(f"kalshi call failed ({type(exc).__name__})")
         markets = body.get("markets") if isinstance(body, dict) else None
         if not isinstance(markets, list):
