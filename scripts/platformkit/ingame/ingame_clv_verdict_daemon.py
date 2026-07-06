@@ -67,6 +67,7 @@ def collect(sports: Sequence[str] = DEFAULT_SPORTS,
     return {"updated_at": _utc(), "component": COMPONENT,
             "note": "in-game CLV = anticipation of the in-play close (probability "
                     "space); calibration, NOT a $ edge.",
+            "edge_claimed": False,
             "sports": rows}
 
 
