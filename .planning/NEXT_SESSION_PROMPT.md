@@ -1,78 +1,99 @@
-# NIGHT SESSION PROMPT -- written 2026-07-06 ~05:55Z by the independence-capstone session
-Copy-paste for the OVERNIGHT session. Mode: LOW USAGE -- monitor, fix small, keep the
-system healthy. NO new programs, NO new preregs, NO K spend tonight. Supersedes the
-2026-07-05 22:05Z prompt (that session executed everything: ledger in .planning/NOW.md).
+# DAY SESSION PROMPT -- written 2026-07-06 ~09:45 local by the night watchman
+Copy-paste for the DAY session. Supersedes the 2026-07-06 ~05:55Z night prompt
+(that session executed everything; ledger in .planning/NOW.md, entries
+"NIGHT WATCHMAN STARTUP DUTIES DONE" + "WAKE-2"). NOTE: from 07-07 the
+STANDARD RAILS apply ($10/day, 8 wakes/day per AUTONOMY_CHARTER).
 
----
+## WHAT THE NIGHT DID (real counts, all ledgered + pushed private)
 
-You are Fable, the NIGHT WATCHMAN (architect authority retained, spend discipline ON).
-LOW-USAGE RULES: Haiku scouts for all scanning; Sonnet ONLY when a fix needs code; Opus
-cv-code-reviewer ONLY on code diffs (the review gate is never dropped, even at night);
-one thing at a time, no parallel build waves; self-pace wakes ~45-90 min apart; between
-wakes do nothing. Probe the stop flag by READING .bot_state/live_status.json each wake.
+1. RESUMED sport-grid rollout wf_5bab3431 to completion:
+   - tennis config committed e700f85f; GENERATED tennis_p1_match_context
+     1,312 + tennis_p2_match_context 1,346 claims, ALL verified, 0 mismatch,
+     indexed (.index.jsonl on disk).
+   - soccer GENERATED soccer_intl_team_travel_rate 1,458 verified / 0
+     mismatch, indexed (index reported stale again by HQ3 -- refresh is a
+     one-call build_index if needed).
+   - Counts are honest floors-applied numbers (well below the 10-20k rough
+     estimates; floors excluded 3,976+5,016 tennis / 510 soccer cells).
+2. ASK-ROUTER FIX COMMITTED a0c42694: entity-type gate + metric-synonym map
+   as DATA + longest-alias-match + UNANSWERABLE-over-wrong-answer in BOTH
+   fast/slow paths; test_ask 36/36 + test_ask_index 15/15 green; Opus
+   APPROVE. Regression pinned: "top 5 nba players by free throw percentage"
+   -> PLAYER ft_reliability, never team pts/game.
+3. HISTORICAL QUANT SWEEP wf_9a13ee78 COMPLETE (docs under
+   docs/research/depth-program/, gitignored-local):
+   - HQ1 CALIBRATION_HISTORY VERIFIED (byte-identical independent re-run).
+     Honest BEHIND cells: MLB generic-vs-tuned +0.00362 Brier; vs-close
+     freshness gaps NBA totals +1.058 RMSE (2025-26-only odds corpus), MLB
+     totals +0.2777 RMSE, ATP +0.0149 Brier. Disk limits: NBA odds =
+     2025-26 only; MLB games+odds end 2021-11-02. NAMING TRAP: calibration
+     "soccer" = data/domains/soccer; data/domains/soccer_intl is used by NO
+     calibration/benchmark harness.
+   - HQ2 CLOSE_BACKFILL_FEASIBILITY: honest NOT-WORTH-A-BUILD (0/1,981
+     backfillable via real attach_true_close; widened ceiling 220 rows =
+     only 19 distinct events; blockers = capture cadence + missing
+     team_total market_type). Verifier caught false headline reasoning
+     (30 moneyline-shaped 1X2 rows exist, not 0: 24 cadence-miss + 6 fail
+     two-way devig on a 3-way market) + 618-vs-638 stat; doc CORRECTED in
+     place, sha256=3a5f929955b693f5b175a976b9ba6e955f720f44ec5321d5a30186e
+     15359c24e (227 lines).
+   - HQ3 INTEL_ORG_AUDIT VERIFIED: 0 deleted-producer orphans; 28/43
+     verdict files ask()-unreachable; verdict_coverage_report's own
+     universe missing 14 on-disk verdict files; WNBA/KBO/NPB have ZERO
+     reject-ledger footprint; fast-path indexes exist for only a few
+     families.
+4. MLB CLAIMS VALIDATION GAP (kill landed between generate and validate):
+   mlb_team_rate CLOSED this morning -- 186/186 VERIFIED, 0 mismatch, 1.6s,
+   index built. mlb_batter_rate + mlb_pitcher_rate (~11,886 claims, 560MB +
+   296MB jsonl) DEFERRED: validate_claims_file_batched's _load_claims reads
+   the WHOLE file into memory (several-GB peak) and the box has ~2GB free
+   -- running it is exactly what glitched the machine. See day queue (g).
+5. FLEET RESTARTED 08:57-08:59 local by the user (attended). This ARMED m38
+   (autoloop_runner --interval 86400 now supervised) and the queued reaper
+   fix. Post-restart fresh reads: freshness overall GREEN n_red=0 (22 NA =
+   first-tick pending), feed_health GREEN all 5 providers (kalshi 5-sport
+   HTTPErrors cleared). The night's 7-RED scout report was pre-restart
+   staleness -- premise-check caught it, no false fix applied.
 
-READ FIRST (only these): .planning/NOW.md head (~80 lines), this file. Do not re-derive
-state from anywhere else.
+## BLOCKED / WATCH
 
-## STARTUP DUTIES (in order, once)
+- m13 props_snapshot: root-caused earlier (every tick times out at 240s +
+  timeout path never writes the fallback snapshot); its fix chain
+  wf_d89026f0 was KILLED mid-flight and NOT resumed by the night (out of
+  night scope). The restart may mask the symptom for a while. CHECK m13
+  freshness during the day; if RED again, resume wf_d89026f0
+  (resumeFromRunId) rather than re-deriving the fix.
+- 22 freshness rows were NA right after restart; long-interval daemons
+  (86400s) legitimately stay NA for hours. Only chase rows still NA/RED
+  well past their interval.
 
-1. RESUME THE TWO KILLED WORKFLOWS (prior process exited mid-flight; completed lanes
-   return cached, only unfinished stages re-run):
-   - Workflow({scriptPath: "C:\\Users\\neelj\\.claude\\projects\\C--Users-neelj-nba-ai-system\\10e98158-abdb-4fab-a1bb-03f0bf8e8faa\\workflows\\scripts\\sport-grid-rollout-wf_5bab3431-a70.js", resumeFromRunId: "wf_5bab3431-a70"})
-     State: SG-mlb (4bbb1051) + SG-soccer (b9c469cb) configs COMMITTED w/ R2 PASS --
-     their GENERATION stages never ran; SG-tennis config sits UNTRACKED in the tree
-     (domains/tennis/claims_grid.py + test) awaiting review/commit/generation.
-     Expected honest outcome: mlb ~20-40k + soccer ~5-10k + tennis ~10-20k claims
-     generated + batch-validated + indexed; MISMATCHes reported never forced.
-   - Workflow({scriptPath: "...\\workflows\\scripts\\historical-quant-sweep-wf_9a13ee78-01d.js", resumeFromRunId: "wf_9a13ee78-01d"})
-     (same dir as above): 3 read-only lanes (full-history calibration report /
-     close-backfill feasibility w/ real sample joins / organization audit), each w/ an
-     Opus verifier that must reproduce numbers. Output docs land under
-     docs/research/depth-program/.
-2. FINISH THE ASK-ROUTER FIX (killed mid-build; partial work UNCOMMITTED in tree:
-   ask.py, ask_index.py, test_ask.py, test_ask_index.py all modified). One Sonnet lane:
-   premise-check the diff state, complete per the original brief (entity-type detection
-   + metric synonym map as DATA + longest-match + UNANSWERABLE-over-wrong-answer;
-   regression test = "top 5 nba players by free throw percentage" must return a PLAYER
-   ft_pct ranking, never team pts/game), per-file tests green, Opus review PASS|FAIL,
-   commit w/ VERBATIM message you provide. If the partial work is unsalvageable,
-   restore the 4 files from HEAD (they are all committed-clean at bcffbdc9) and redo
-   small.
-3. After 1+2: run one autoloop cycle (cd /c/Users/neelj/nba-ai-system && python -m
-   scripts.platformkit.autoloop.autoloop_runner --once) so the new sport claims enter
-   the report/index path; quote the report counts in the ledger. Ledger + push private.
+## DAY QUEUE (standing + new)
 
-## THE NIGHT LOOP (repeat until morning or bot stop)
+(a) defender-dims family prereg (2 SHIP-at-gate candidates; home_sot
+    precedent binding: 1-of-N SHIPs are artifacts until replicated).
+(b) consolidated reclaim gate-bars amendment (tennis-meta / mlb-inning /
+    player-adv).
+(c) RT1 soccer HT/referee re-scope to domains/soccer/.
+(d) tennis/wnba shadow promotion adjudication (evidence ripens ~07-07;
+    shadow-history accrual as of last scout: mlb 2 files, tennis 2, wnba 1).
+(e) m38 arming -- DONE (armed by the 08:57 attended restart). Verify its
+    first supervised cycle report instead.
+(f) sweep-doc follow-ups, now concrete: (i) fix verdict_coverage_report's
+    file universe (+14 missing files); (ii) decide soccer_intl's place in
+    calibration harnesses (wire or document-as-unused); (iii) WNBA/KBO/NPB
+    reject-ledger densification.
+(g) MLB batter/pitcher validation: EITHER run at a quiet-box window
+    (>5-6GB free; sequential, one family at a time) OR a small Sonnet lane
+    adding a streaming loader path to claims_validator_batch (spec-parity,
+    per-file tests, Opus review). After validation: build_index for both.
+(h) index densification: fast-path .index.jsonl for remaining ask()-
+    reachable families (one build_index call per family; soccer_intl_team_
+    travel_rate needs a refresh).
 
-Each wake, ONE Haiku scout reads: data/frontend/ops/freshness_sla.json,
-autoloop_report.json, feed_health.json, edge_greenlight.json, supervisor status,
-data/cache/ingame_shadow_history/ accrual (tennis/wnba promotion evidence ripens
-~07-07 -- do NOT adjudicate tonight, just count rows). Then:
-- ALL GREEN/expected -> ledger one line, schedule next wake, stop.
-- Something RED/stale/crashed -> smallest possible fix (restart one daemon via the
-  supervisor recipe, never two brain rebuilds, never a supervisor bounce; config/data
-  nits direct; code fixes = Sonnet lane + Opus review + targeted commit). Premise-check
-  before every fix (5 stale premises died today -- fresh reads or it did not happen).
-- New settled data since last cycle -> autoloop --once (watermark makes no-op cheap).
-- NOTHING ELSE. No new features, no refactors, no new claims families, no fits beyond
-  what the standing templates authorize (T02 is TEMPLATE_EXHAUSTED -- leave it).
-
-## BINDING RAILS (verbatim, non-negotiable)
-Never push origin (private remote OK at ledger points). Never write data/registry/.
-Never flip a flag. Never edit src/ kernel/ api/ scripts/team_system/ intel/. <=300
-LOC/file. ASCII stdout. Per-file tests ONLY (full pytest freezes the box). No pip while
-daemons run. No $-edge claims ever -- calibration/CLV language; honest REJECT = success.
-No supervisor bounce overnight (m38 autoloop arms at the NEXT attended restart -- do
-not arm it tonight). Ownership lists include extraction targets; stray tracked mods
-outside ownership are blocking. Commit messages passed VERBATIM to Haiku commit agents.
-Ledger every fix in NOW.md (git add -f, all other adds targeted) + push private at
-wake close. Write memory only for durable lessons.
-
-## MORNING HANDOFF (before the user wakes)
-Rewrite this file for the day session: what the night resumed/fixed/generated (real
-counts), anything BLOCKED, and the standing day queue: (a) defender-dims family prereg
-(2 SHIP-at-gate candidates, home_sot precedent binding); (b) consolidated reclaim
-gate-bars amendment (tennis-meta/mlb-inning/player-adv); (c) RT1 soccer HT/referee
-re-scope to domains/soccer/; (d) tennis/wnba shadow promotion adjudication (~07-07);
-(e) autoloop m38 arming at an attended supervisor restart; (f) sweep-doc follow-ups.
-NOTE: from 07-07 the STANDARD RAILS apply ($10/day, 8 wakes/day per AUTONOMY_CHARTER).
+## BINDING RAILS (unchanged)
+Never push origin (private OK). Never write data/registry/. Never flip a
+flag. Never edit src/ kernel/ api/ scripts/team_system/ intel/. <=300
+LOC/file. ASCII stdout. Per-file tests ONLY. No $-edge claims -- honest
+REJECT = success. Targeted git adds (git add -f only for .planning/NOW.md).
+Probe the stop flag by READING .bot_state/live_status.json. Ledger every
+fix in NOW.md + push private at wake close.
