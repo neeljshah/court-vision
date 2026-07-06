@@ -172,6 +172,44 @@ def test_kalshi_fetch_unsupported_sport_still_unavailable():
     assert base.is_unavailable(res)
 
 
+def test_kalshi_fetch_governor_caller_opt_in_gates_request(monkeypatch):
+    """governor_caller="close_capture" (m18's fix) resolves a REAL governor and
+    acquires a token before the HTTP call; the default (governor_caller=None,
+    every pre-existing caller) resolves to governor=None, so before_request's
+    own None-check no-ops it -- byte-identical behavior, same opt-in idiom as
+    inplay_kalshi.fetch_inplay's governor_caller."""
+    calls = []
+    import scripts.platformkit.odds_provider.kalshi as kalshi_mod
+    monkeypatch.setattr(kalshi_mod, "_governor_before",
+                        lambda governor, sport, **kw: calls.append((governor, sport)))
+    http = _stub({"markets": KALSHI_MARKETS})
+
+    KalshiProvider(http_get=http, use_cache=False).fetch("nba")
+    assert calls == [(None, "nba")]  # default caller=None -> governor is None (no-op downstream)
+
+    calls.clear()
+    KalshiProvider(http_get=http, use_cache=False,
+                  governor_caller="close_capture").fetch("nba")
+    assert len(calls) == 1 and calls[0][1] == "nba" and calls[0][0] is not None
+
+
+def test_kalshi_fetch_governor_reports_429(monkeypatch):
+    """A 429 on the governed path must report_429 so the shared backoff engages."""
+    reported = []
+    import scripts.platformkit.odds_provider.kalshi as kalshi_mod
+    import urllib.error
+    monkeypatch.setattr(kalshi_mod, "_governor_report_429",
+                        lambda governor: reported.append(governor))
+
+    def _raise_429(_url):
+        raise urllib.error.HTTPError("u", 429, "Too Many Requests", {}, None)
+
+    res = KalshiProvider(http_get=_raise_429, use_cache=False,
+                         governor_caller="close_capture").fetch("nba")
+    assert base.is_unavailable(res)
+    assert len(reported) == 1
+
+
 # --------------------------------------------------------------------------- #
 # Polymarket best-effort parser.
 # --------------------------------------------------------------------------- #
