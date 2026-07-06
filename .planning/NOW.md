@@ -93,6 +93,41 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- NIGHT WATCHMAN WAKE-2 ~09:25-local 07-06 (Claude process exited after
+  startup duties; user resumed ~09:00): (1) FLEET RESTARTED 08:57-08:59
+  local (supervisor + ~40 daemons; attended/user-side, not the watchman)
+  -- scout's 7-RED freshness report was PRE-RESTART data, premise-check
+  caught it, NO fix applied; fresh re-read 20 min post-restart: freshness
+  overall GREEN n_red=0 (20 GREEN / 22 NA = no-first-tick-yet, honest
+  unknown), feed_health GREEN all 5 providers (kalshi 5-sport failures
+  cleared). NOTE: the restart ARMED m38 (autoloop_runner --interval 86400
+  now a supervised daemon) + the queued reaper fix -- the 'attended
+  restart' arming condition was met by the user's restart. (2) HISTORICAL
+  QUANT SWEEP wf_9a13ee78 COMPLETE (2nd resume; 6 agents/0.15M this leg):
+  HQ1 calibration-history VERIFIED byte-identical on independent re-run
+  (all tuned forecasters beat own baseline on ECE; honest BEHIND cells =
+  MLB generic-vs-tuned +0.00362 Brier and 3 vs-close freshness gaps: NBA
+  totals +1.058 RMSE 2025-26-only corpus, MLB totals +0.2777 RMSE, ATP
+  +0.0149 Brier; caveats: NBA odds disk-capped to 2025-26, MLB data ends
+  2021-11; naming trap: calibration 'soccer' = data/domains/soccer,
+  soccer_intl is unused by every wired harness); HQ2 close-backfill
+  REFUTED = not worth a build lane (0/1,981 backfillable via real
+  attach_true_close; widened-scope ceiling 220 rows = only 19 distinct
+  events; blocker is capture cadence + no team_total market_type, not
+  join logic) -- verifier caught the doc's headline REASONING as false
+  (30 moneyline-shaped 1X2 rows exist, not 0: 24 cadence-miss + 6 fail
+  two-way devig on a three-way market, booksum<1) + 618-vs-638 Team-total
+  stat; doc CORRECTED in place w/ correction notes, verdict unchanged,
+  new sha256=3a5f929955b693f5b175a976b9ba6e955f720f44ec5321d5a30186e15359
+  c24e (227 lines, gitignored-local per precedent); HQ3 org audit
+  VERIFIED: 0 deleted-producer orphans; MLB validation gap quantified =
+  12,072 rows / 3 rate families generated-never-validated (ask() skips
+  them, matches wake-1 finding, stays on day queue); 28/43 verdict files
+  ask()-unreachable; verdict_coverage_report's own universe missing 14
+  files; WNBA/KBO/NPB zero reject-ledger footprint; only 2/27 families
+  have fresh fast-path indexes (soccer_intl_team_travel_rate index
+  already stale). Wake verdict: ALL GREEN post-restart, no fixes needed
+  beyond the doc correction. No edge claims.
 - NIGHT WATCHMAN STARTUP DUTIES DONE ~03:30-local 07-06 (low-usage session;
   stop flag probed clear): (1) sport-grid rollout wf_5bab3431 RESUMED to
   completion -- SG-tennis config committed e700f85f + GENERATED
