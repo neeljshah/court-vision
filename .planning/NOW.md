@@ -2460,6 +2460,25 @@ HUMAN QUEUE ADDITION (ponytail): run in an interactive session, two separate pro
    scripts/platformkit/ | done-when: context-adjusted claims dims VERIFIED on
    disk + first LLM-proposed interaction family sha-pinned + gated w/ honest
    verdicts.]
+0i. [CLAIMS-SCALE PROGRAM -- USER DIRECTIVE 2026-07-06a (in-session): "most
+   advanced possible, every possible piece of data, all signals on+off court
+   per sport, every little factor independently, odds, complete system paper
+   trading to intelligence, 10000s of claims each sport, efficient, Fable
+   architects + Opus/Sonnet fleets, AI independently good." FABLE FRAME
+   (binding, extends 0f/0h): (a) 10k-claims path = CLAIMS FACTORY: a generic
+   enumerator over (entity x dimension x window x context-split) grids per
+   sport data source, emitting standard-contract claims in BATCH with
+   BATCHED/vectorized validator recompute (per-family one-pass, never
+   per-claim scans) -- hand-built one-family modules do not scale; spec
+   Opus-reviewed then Fable-pinned before build. (b) descriptive claims
+   spend NO K; predictive candidates stay prereg->gate->ledger; closed
+   classes stay closed. (c) data breadth order: ONDISK reclaim tail first
+   (row 19: soccer HT/referee, tennis meta, MLB inning, nba defender-rollup,
+   player-adv), then live-capture breadth, then blocked-source unlocks.
+   (d) real-money boundary unchanged forever. | scripts/platformkit/
+   intel_validation/ + domains/<sport>/ | done-when: factory spec pinned +
+   first sport generating 1000s of VERIFIED claims through it + reclaim-tail
+   extractors landed w/ honest gate verdicts.]
 [WAVES 22+23 CONSUMED 2026-07-04 ~15:50Z -- ledgers above. Queue below = wave 24; the bottleneck is now largely WALL-CLOCK forward-evidence accrual -> cadence rule: light check-ins unless a gate decides or the user messages.]
 1. [LIVE-ACTIVATION-VERIFY] once MLB slate is live (~17:00Z+): enrichment fields present in fresh grade rows, kalshi pacing counters nonzero in capture heartbeat, m13 fresh props_snapshot + freshness_sla green (relaunched PID 14028 w/ timeout fix), grade-writer clamp writing late-inning rows; npb/kbo FIRST GRADES land overnight (their game windows) | orchestrator light check-in | verifier PENDINGs -> PASS or triaged.
 2. [FORWARD-GATES-WATCH] wall-clock accrual, no fleet: MLB tail fwd (floor ~20), soccer_intl xG forward (floor 8/half), wnba/npb/kbo tail stamps live -- escalate to a decision wave ONLY on a real headline_verdict or an allowlist-external regression | forward_evidence_scoreboard | gate decides -> decision wave.
