@@ -93,6 +93,20 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- SMALL-ROWS WAVE CLOSED ~03:45Z TRUE-UTC 07-06 (wf_f96cdc11, 13 agents/1.05M):
+  2 landed + 2 duplicate-work catches. LANDED: row 11 verdict doc 33dd3674
+  (SATISFIED-BY-GREENLIGHT-UNCAP -- E-check-4 adverse=RED suppress-only, no
+  residual); row 13 npb feed_health fix ceea459b (structural absences =
+  honest GREEN capture-only, real faults still RED, fault-fixture proven).
+  CATCHES: row 15 OBE (umpire arm already ships since wave-39 1a2a1eaa);
+  row 16 OBE (career_to_date per-surface windows already in
+  tennis_claims_v4.py -- the build agent's step-0 missed it, the Opus
+  reviewer FAILED the duplicate and it was deleted uncommitted; review layer
+  held where step-0 slipped). Matrix append-only verdicts added, re-pinned
+  sha256=a7610c39b08441daa8476d83ca50ac0ebbc3740da70f75118a7ea9acd97685b5.
+  META: 9 of 20 matrix rows resolved/corrected within 24h of authoring --
+  the enumeration was written from docs/state, the disk had moved; premise-
+  check step 0 stays load-bearing on every lane. No edge claims.
 - CLAIMS-FACTORY SPEC PINNED ~03:08Z TRUE-UTC 07-06 (0i(a); Opus design lane
   + Fable rulings R1-R5 appended): docs/research/depth-program/
   CLAIMS_FACTORY_SPEC_2026-07-06.md sha256=
