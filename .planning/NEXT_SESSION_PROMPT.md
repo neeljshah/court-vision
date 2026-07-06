@@ -63,9 +63,17 @@ STANDARD RAILS apply ($10/day, 8 wakes/day per AUTONOMY_CHARTER).
   night scope). The restart may mask the symptom for a while. CHECK m13
   freshness during the day; if RED again, resume wf_d89026f0
   (resumeFromRunId) rather than re-deriving the fix.
-- 22 freshness rows were NA right after restart; long-interval daemons
-  (86400s) legitimately stay NA for hours. Only chase rows still NA/RED
-  well past their interval.
+- 22 freshness rows NA: count is CONSTANT (22 at 09:20, 10:06, 11:03)
+  while the short-interval daemons in the NA set are all running -- so
+  this is a freshness-runner MAPPING gap (names with no table entry;
+  the report's own note: NA = unknown, never GREEN), NOT stale daemons.
+  Pre-existing. Day-queue nit: extend the runner's name->output table
+  (code change, Sonnet lane + Opus review). Do not chase NA rows as
+  outages.
+- Transient single-probe feed_health HTTPErrors observed (kalshi/mlb at
+  10:06 self-cleared by 11:03; pinnacle/soccer at 11:03) -- one-off probe
+  failures are noise; only investigate a provider+sport RED that persists
+  across consecutive 600s cycles.
 
 ## DAY QUEUE (standing + new)
 
@@ -82,10 +90,10 @@ STANDARD RAILS apply ($10/day, 8 wakes/day per AUTONOMY_CHARTER).
     file universe (+14 missing files); (ii) decide soccer_intl's place in
     calibration harnesses (wire or document-as-unused); (iii) WNBA/KBO/NPB
     reject-ledger densification.
-(g) MLB batter/pitcher validation: EITHER run at a quiet-box window
-    (>5-6GB free; sequential, one family at a time) OR a small Sonnet lane
-    adding a streaming loader path to claims_validator_batch (spec-parity,
-    per-file tests, Opus review). After validation: build_index for both.
+(g) DONE ~15:30 07-06: streaming validator shipped (98cb5b3b, Opus PASS)
+    and both stores validated+indexed with it -- pitcher 4,434/4,434 +
+    batter 7,452/7,452, all VERIFIED, 0 mismatch, RSS bounded 207-379MB.
+    MLB rate families now fully ask()-servable.
 (h) index densification: fast-path .index.jsonl for remaining ask()-
     reachable families (one build_index call per family; soccer_intl_team_
     travel_rate needs a refresh).

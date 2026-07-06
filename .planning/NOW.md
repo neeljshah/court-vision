@@ -93,6 +93,25 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- WATCHMAN DAY ARC ~14:00-15:30-local 07-06 (MLB VALIDATION GAP FULLY
+  CLOSED): the 6GB-free RAM window never arrived (box steady 1.5-2.6GB
+  free), so day-queue item (g)'s alternative executed -- ONE Sonnet lane
+  rewrote validate_claims_file_batched as two-pass byte-offset streaming
+  (peak = largest group + one source frame; 299 lines under rail; order/
+  verdict/reason parity preserved; test_claims_validator 4 + test_claims_
+  factory 12 green; live 186-claim parity 0 diffs), Opus review PASS
+  (independently verified Windows text-mode tell/seek safety + blank-line
+  order preservation + reran tests), committed 98cb5b3b. Then BOTH big
+  stores validated+indexed sequentially with the new path, memory proven
+  bounded live: mlb_pitcher_rate 4,434/4,434 VERIFIED 0 mismatch (88.2s,
+  RSS 207MB on 296MB file) + mlb_batter_rate 7,452/7,452 VERIFIED 0
+  mismatch (217.9s, RSS 379MB on 560MB file). MLB rate total = 12,072
+  (exactly HQ3's predicted gap count); platform verified-claims total now
+  52,343 across 30 validated families, 8 with fast-path indexes. Watchman
+  wakes 10:06/11:03/12:05/13:06/14:07 all-green (transient single-probe
+  feed HTTPErrors self-clear -- kalshi/mlb + pinnacle/soccer both
+  confirmed; n_na=22 = pre-existing freshness mapping gap, day-queue
+  nit). No edge claims.
 - NIGHT WATCHMAN WAKE-3 ~09:45-local 07-06 (morning handoff): mlb_team_rate
   validation gap CLOSED direct (existing batched validator, no new code):
   186/186 VERIFIED / 0 mismatch / 0 unverifiable in 1.6s + .index.jsonl
