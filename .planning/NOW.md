@@ -93,6 +93,41 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- SESSION CLOSE-OUT ~02:20Z TRUE-UTC 07-06: (1) A3 FITTED + HONEST REJECT
+  (a93eaf86, Opus PASS): TA1 off/def-rtg L1 sealed-holdout -0.001393, TA2
+  four-factors -0.000905 (261 frozen holdout games) -- trailing team-adv
+  ratings do NOT beat WF Elo OOS, exactly as pre-registered; corpora exact
+  2460/1225, fallbacks 16/0 verified, FWER imported (K_cum=6 SPENT,
+  eps=.008333), 4 reject_ledger rows, shas verified start+end, lane honestly
+  reported the 331-game corpus-A close overlap that contradicted A3's ~zero
+  prediction (all train-half, correctly unscored). (2) SAME-VENUE CLOSE WAVE
+  landed (b9ccbe4f close_capture + 0cb06b8a reconciler single_side + 15af1c3c
+  extraction-target followup): forward-only kalshi own-venue closes w/
+  close_venue labels; single_side transparency NOTE -- first-side collapse
+  (n=65 z=-0.97) is WEAKER than the audit's exclude-paired subset (n=38
+  z=-2.46), two defensible corrections disagree in strength, headline
+  DIVERGENT (z=-2.04) stands and paper_pm remains RED at E-check-3.
+  (3) CRITERION F EARNED NOT_REFUTED live: after the real producers re-ran
+  (clv_scoreboard CLI refresh; m20 --once re-emit w/ new edge_claimed:false
+  contract 8a9216d8 + tennis regression tests 8bf05fdd), cv_honesty=
+  NOT_REFUTED failures=[] on FRESH inputs -- the gate peeled 3 real failures
+  honestly (stale scoreboard -> missing edge_claimed -> clean) and channels
+  STILL don't GREEN (evidence floors unmet -- correct suppression).
+  (4) SCOPE-REVIEW CATCH: V1's extraction target kx_close_fallback.py was
+  outside its ownership list -> b9ccbe4f shipped guard-imported-but-
+  uncommitted helpers (feature silently inert); caught by an Opus scope FAIL
+  on the m20 micro-review, repaired w/ attributed commits; ownership-list
+  rail memorized (lane-ownership-extraction-trap). (5) DEPTH_PROGRAM final
+  consolidated verdicts appended (rows 1-partial/2/5/9/10/12/14/17 + Family
+  3), re-pinned sha256=
+  341ad5074312ef8fdc5af7419aac67f01bf4329719226b725f14c2bfbbd19fab.
+  SESSION TOTALS (2026-07-05 22:20Z - 07-06 02:20Z): 7 workflows + 9
+  standalone agents (~54 agents / ~4.4M subagent tokens), ~21 commits, 5
+  premise catches, 2 reproduced fail-open holes killed pre-land, 3 honest
+  REJECTs recorded (TA1/TA2 + the standing conformal closure), 0 false
+  ships, 0 fake GREENs. All handoff duties done exc. duty-3 watch (ripens
+  ~07-07: tennis dispatch adjudication on shadow evidence + wnba). No edge
+  claims.
 - PREREG AMENDMENT A3 AUTHORED + SHA-PINNED ~01:10Z TRUE-UTC 07-06 (Fable-
   authored per 0f(b); prior shas V1 1ea91086 + A2 ccf703e1 verified intact
   before writing): docs/research/combination-moat/PREREG_AMENDMENT_A3_2026-
