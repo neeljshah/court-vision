@@ -25,6 +25,7 @@ import unicodedata
 from pathlib import Path
 from typing import Any
 
+from scripts.platformkit.intel_query import ask_index
 from scripts.platformkit.intel_query.families import (
     FAMILY_ENTITY_LOOKUP,
     FAMILY_GATE_VERDICT,
@@ -242,14 +243,10 @@ def _filter_by_hints(rows: list[dict[str, Any]], parsed) -> list[dict[str, Any]]
     return candidates
 
 
-def _answer_top_n(parsed, question: str, verified: dict[str, dict[str, Any]]) -> dict[str, Any]:
-    ranking_claims = [r for r in verified.values() if r.get("kind") == "ranking"]
-    candidates = _filter_by_hints(ranking_claims, parsed)
-    if not candidates:
-        return _unanswerable(
-            "no VERIFIED ranking claim matches the requested metric/window", question
-        )
-    row = max(candidates, key=lambda r: r.get("computed_at", ""))  # most-recent tie-break
+def _format_top_n_answer(parsed, question: str, row: dict[str, Any]) -> dict[str, Any]:
+    """Shared formatter: BOTH the index fast path and the full-load slow
+    path call this on their winning row, so the two can never drift in
+    answer SHAPE -- only in how the winning row was found."""
     ranking = [dict(r) for r in row.get("ranking", [])]
     for r in ranking:
         if "player_name" in r:
@@ -265,6 +262,17 @@ def _answer_top_n(parsed, question: str, verified: dict[str, dict[str, Any]]) ->
         },
         "evidence": [_claim_evidence(row)],
     }
+
+
+def _answer_top_n(parsed, question: str, verified: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    ranking_claims = [r for r in verified.values() if r.get("kind") == "ranking"]
+    candidates = _filter_by_hints(ranking_claims, parsed)
+    if not candidates:
+        return _unanswerable(
+            "no VERIFIED ranking claim matches the requested metric/window", question
+        )
+    row = max(candidates, key=lambda r: r.get("computed_at", ""))  # most-recent tie-break
+    return _format_top_n_answer(parsed, question, row)
 
 
 def _answer_entity_lookup(parsed, question: str, verified: dict[str, dict[str, Any]]) -> dict[str, Any]:
@@ -492,11 +500,17 @@ def _try_best_x(question: str) -> dict[str, Any] | None:
 
 def ask(question: str) -> dict[str, Any]:
     """Answer `question` ONLY from VERIFIED claims. Never guesses, never
-    computes from raw data, never uses an UNVERIFIABLE/MISMATCH claim."""
+    computes from raw data, never uses an UNVERIFIABLE/MISMATCH claim.
+
+    Spec sec 4 SERVING AT SCALE: for FAMILY_TOP_N, try the small per-family
+    `.index.jsonl` sidecar FIRST -- a hit skips `load_verified_claims()`'s
+    full O(all-claims) parse entirely. A miss (no family has a fresh index,
+    or none has a VERIFIED metric/window match) falls through to the
+    existing full-load path completely unchanged -- the index is a
+    speedup, never a correctness dependency."""
     best_x = _try_best_x(question)
     if best_x is not None:
         return best_x
-    verified = load_verified_claims()
     parsed = classify(question)
 
     if parsed.family is None:
@@ -505,6 +519,13 @@ def ask(question: str) -> dict[str, Any]:
             "provenance / gate_verdict)",
             question,
         )
+
+    if parsed.family == FAMILY_TOP_N:
+        fast_row = ask_index.index_top_n_lookup(parsed, INTEL_CLAIMS_DIR, REPO_ROOT)
+        if fast_row is not None:
+            return _format_top_n_answer(parsed, question, fast_row)
+
+    verified = load_verified_claims()
     if not verified:
         return _unanswerable("no VERIFIED claims are currently available", question)
 
