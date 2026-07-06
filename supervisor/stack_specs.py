@@ -98,7 +98,7 @@ _FEED_HEALTH_HB = "data/cache/daemon_heartbeats/m30_feed_health.txt"
 # ONE red status entry. NOT YET RUNNING -- registered here but requires a
 # supervisor restart (or an explicit orchestrator reload) to take effect per
 # R-C; this wave does NOT bounce the supervisor.
-_AUTOLOOP_HB = "data/cache/daemon_heartbeats/m37_autoloop.txt"
+_AUTOLOOP_HB = "data/cache/daemon_heartbeats/m38_autoloop.txt"
 
 # M31 -- MLB pregame-context snapshotter (probables/weather/umps + injuries + edge
 # facts, 6h cadence). Heartbeat freshness gates readiness; see mlb_context_runner.
