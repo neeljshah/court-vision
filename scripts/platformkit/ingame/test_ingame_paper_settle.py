@@ -131,6 +131,26 @@ def test_dispatch_missing_wnba_resolver_leaves_ticker_unresolved():
     assert fn("KXWNBAGAME-26JUL051930LVACHI") is None
 
 
+def test_dispatch_routes_tennis_ticker_by_prefix():
+    tennis_calls = []
+
+    def tennis_fn(t):
+        tennis_calls.append(t)
+        return (1, 0)
+
+    fn = ps._dispatch_score_fn(None, None, tennis_fn=tennis_fn)
+    assert fn("KXATPMATCH-26JUL05AUGDAV-DAV") == (1, 0)
+    assert fn("KXWTAMATCH-26JUL05BENGAU-GAU") == (1, 0)
+    assert fn("KXMLBGAME-x") is None  # no mlb resolver injected -> unresolved
+    assert tennis_calls == ["KXATPMATCH-26JUL05AUGDAV-DAV", "KXWTAMATCH-26JUL05BENGAU-GAU"]
+
+
+def test_dispatch_missing_tennis_resolver_leaves_ticker_unresolved():
+    fn = ps._dispatch_score_fn(None, None, tennis_fn=None)
+    assert fn("KXATPMATCH-26JUL05AUGDAV-DAV") is None
+    assert fn("KXWTAMATCH-26JUL05BENGAU-GAU") is None
+
+
 def _wnba_bet(gid, side="home", ek=None):
     return {"channel": "paper_ingame", "status": "open", "sport": "wnba",
             "game_id": gid, "side": side, "market": "win_home",
