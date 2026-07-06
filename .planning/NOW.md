@@ -93,6 +93,25 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- RECLAIM-TAIL WAVE CLOSED ~04:00Z TRUE-UTC 07-06 (wf_93d258bf, 15 agents/
+  0.99M; row 19): 4 of 5 extractors LANDED, all Opus-reviewed, leak tests
+  (truncation-invariance + own-row-exclusion) green. (1) tennis meta
+  2ed91fa1: 30,616 rows 2015-2025, ht 97.8%/rank_points 98.3% coverage,
+  debut-row zero-leak verified live. (2) mlb inning dffa47aa: sbro 2010-21
+  inning columns extracted; GATE=AMENDMENT-NEEDED (harness has no recorded
+  bar for the source -- correctly stopped, no improvised fit). (3) nba
+  defender-rollup d3d00796: wired through the EXISTING harness (asof_ast_
+  rate_eval.gate_feature + _verdict_of verbatim), 6 dims gated -> 4 REJECT +
+  2 SHIP-AT-GATE (def_fg_pct_allowed_diff_asof, def_pts_allowed_per36_diff_
+  asof) -- SINGLE-CORPUS vs own base ONLY; home_sot precedent BINDING: these
+  are candidates for a prereg'd replication+planted-null ceremony, NOT
+  promotions, NOT claims. (4) nba player-adv d21a8da9: 77,728-row source
+  extracted; GATE=AMENDMENT-NEEDED. (5) RT1 soccer HT/referee BLOCKED
+  honest: source lives in the CLUB domain data/domains/soccer/ (not
+  soccer_intl) -- re-scope queued. NEXT-CYCLE QUEUE: one consolidated
+  reclaim-bars amendment (tennis-meta + mlb-inning + player-adv sources) +
+  defender-dims family prereg (the 2 SHIP candidates) + RT1 re-scope.
+  Descriptive extractors spent NO K. No edge claims.
 - SMALL-ROWS WAVE CLOSED ~03:45Z TRUE-UTC 07-06 (wf_f96cdc11, 13 agents/1.05M):
   2 landed + 2 duplicate-work catches. LANDED: row 11 verdict doc 33dd3674
   (SATISFIED-BY-GREENLIGHT-UNCAP -- E-check-4 adverse=RED suppress-only, no
