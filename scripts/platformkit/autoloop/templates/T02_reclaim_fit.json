@@ -1,0 +1,41 @@
+{
+ "authored_at": "2026-07-06",
+ "authored_by": "Fable",
+ "bars": {
+  "eps": 0.05,
+  "note": "eps_eff/min_corpora_eff computed at run time from cumulative K via scripts.platformkit.combo.fwer_budget -- never a frozen copy.",
+  "source": "fwer_budget"
+ },
+ "blocklist_stale_after_days": 180,
+ "corpus": {
+  "source": "scripts.platformkit.combo.corpus_cache.build_gate_corpus",
+  "sport": "nba"
+ },
+ "excluded_reason": "def_fg_pct_allowed_diff_asof and def_pts_allowed_per36_diff_asof (asof_defender_rollup.py dims) await their own human-pinned family prereg; never auto-refit under this template.",
+ "excluded_signals": [
+  "def_fg_pct_allowed_diff_asof",
+  "def_pts_allowed_per36_diff_asof"
+ ],
+ "k_ledger": "data/cache/autoloop/k_ledger/nba__T02_reclaim_fit.jsonl",
+ "kind": "reclaim_fit",
+ "max_candidates_per_cycle": 8,
+ "planted_null": {
+  "harness": "scripts.platformkit.ceiling.asof_reclaim_sweep",
+  "note": "reuses the sweep's own null-collapse + truncation-invariance controls (asof_reclaim_sweep._normalize) -- a SHIP failing either control downgrades to SHIP_REVIEW.",
+  "required": true
+ },
+ "prereg_sha": "9b8166fafbebf2980d3f307846d4426de351d71436584b7c9dc13b84182abce6",
+ "replication": {
+  "min_corpora_ref": "fwer_budget"
+ },
+ "spec_ref": "docs/research/depth-program/AUTOLOOP_SPEC_2026-07-06.md#ruling-R-D",
+ "sport": "nba",
+ "template_id": "T02_reclaim_fit",
+ "universe": [
+  "nba_ast_rate_diff_asof",
+  "nba_dreb_diff_asof",
+  "nba_fg3m_diff_asof",
+  "nba_stl_diff_asof",
+  "nba_blk_diff_asof"
+ ]
+}
