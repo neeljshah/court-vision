@@ -2513,6 +2513,26 @@ HUMAN QUEUE ADDITION (ponytail): run in an interactive session, two separate pro
    scripts/platformkit/ | done-when: context-adjusted claims dims VERIFIED on
    disk + first LLM-proposed interaction family sha-pinned + gated w/ honest
    verdicts.]
+0j. [CLAUDE-FREE AUTOLOOP -- USER DIRECTIVE 2026-07-06b (in-session): "get the
+   AI to the point it doesn't need Claude... independently getting better
+   through historical and new data and odds." FABLE FRAME (binding): the
+   DAILY GRIND goes zero-LLM: an AUTOLOOP daemon (supervisor ProcSpec,
+   measurement/suppress-only, stop-flag-respecting) each cycle runs (a)
+   pre-authorized gated fits from a MACHINE-EXECUTABLE STANDING PREREG
+   registry (sha-pinned family templates w/ FIXED enumeration universe,
+   auto-K via fwer_budget appended to a per-sport K ledger never reset,
+   closed-class blocklist derived from reject_ledger, planted-null +
+   replication bars, new-settled-data watermark so unchanged corpora are
+   never refit), (b) claims-factory regeneration + batched validation +
+   index, (c) freshness + greenlight refresh, (d) honest cycle report +
+   human-queue emission (SHIP/REPLICATED_WEAK candidates, exhaustion
+   notices). ILLEGAL for the daemon forever: promotions, flag flips,
+   data/registry writes, PIPELINE_ENABLED, pushes, LLM calls, new family
+   classes. Claude/Fable remain for judgment acts only. | scripts/
+   platformkit/autoloop/ (new) + supervisor ProcSpec | done-when: spec
+   pinned; phase-1 (claims-regen-only template) LIVE under supervisor w/
+   heartbeat + anti-fake PREREG_TAMPER test; phase-2 first fit-bearing
+   template runs a real cycle w/ honest verdicts.]
 0i. [CLAIMS-SCALE PROGRAM -- USER DIRECTIVE 2026-07-06a (in-session): "most
    advanced possible, every possible piece of data, all signals on+off court
    per sport, every little factor independently, odds, complete system paper
