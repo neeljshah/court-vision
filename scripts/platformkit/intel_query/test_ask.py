@@ -166,6 +166,149 @@ def test_wellformed_question_no_covering_claim_is_honest_unanswerable(fixture_so
     assert result["answerable"] is False
 
 
+# --- entity-type + metric-synonym routing bug fix ---------------------------
+#
+# Live-reproduced bug: "who are the top 5 nba players by free throw
+# percentage this season" answered with metric=team_pts_per_game (a TEAM
+# claim) because families.classify's metric_hints alias dict has no
+# synonym for "free throw percentage" (metric_hints came back empty), and
+# an empty metric_hints used to skip ALL metric filtering -- every VERIFIED
+# ranking claim across every family (player or team) became eligible, and
+# the most-recent computed_at won by accident. These fixtures reproduce
+# the EXACT collision shape (a player ft_pct claim + an unrelated, more
+# recent team_pts_per_game claim in the same corpus) to prove it cannot
+# recur, regardless of what the real on-disk corpus currently contains.
+
+def _player_ranking_claim(claim_id: str, metric: str, window: str, computed_at: str, ranking: list[dict]) -> dict:
+    return {
+        "claim_id": claim_id, "kind": "ranking",
+        "question": f"Top by {metric} in window={window}?",
+        "criteria": {"metric": metric, "window": window, "entity_key": "player_id", "formula": "x/y"},
+        "ranking": ranking, "source_files": ["data/fake/player_source.parquet"],
+        "computed_at": computed_at, "n_considered": 50, "n_excluded_below_floor": 5,
+        "caveats": ["fixture caveat"],
+    }
+
+
+def _team_ranking_claim(claim_id: str, metric: str, window: str, computed_at: str, ranking: list[dict]) -> dict:
+    return {
+        "claim_id": claim_id, "kind": "ranking",
+        "question": f"Top by {metric} in window={window}?",
+        "criteria": {"metric": metric, "window": window, "entity_key": "team", "formula": "x/y"},
+        "ranking": ranking, "source_files": ["data/fake/team_source.parquet"],
+        "computed_at": computed_at, "n_considered": 30, "n_excluded_below_floor": 0,
+        "caveats": ["fixture caveat"],
+    }
+
+
+@pytest.fixture
+def fixture_player_team_collision(tmp_path, monkeypatch):
+    """A player-shaped ft_pct-style claim (metric=ft_reliability, older
+    computed_at) alongside a MORE RECENT, unrelated team_pts_per_game claim
+    -- the exact shape that let the team claim win by recency when the
+    question's metric_hints came back empty. No sidecar .index.jsonl is
+    built, so this exercises the full-load path (_filter_by_hints)."""
+    claims_path = tmp_path / "claims.jsonl"
+    validation_path = tmp_path / "validation.json"
+
+    player_row = _player_ranking_claim(
+        "fixture_ft_reliability", "ft_reliability", "season_2024_25", "2026-07-01T00:00:00+00:00",
+        [
+            {"rank": 1, "player_id": 1, "player_name": "Free Thrower", "value": 1.0, "n": 24},
+            {"rank": 2, "player_id": 2, "player_name": "Second Shooter", "value": 0.95, "n": 61},
+        ],
+    )
+    team_row = _team_ranking_claim(
+        "fixture_team_pts_per_game", "team_pts_per_game", "season_2024_25", "2026-07-06T00:00:00+00:00",
+        [{"rank": 1, "team": "CLE", "value": 121.6, "n": 82}],
+    )
+
+    with open(claims_path, "w", encoding="ascii") as f:
+        for row in (player_row, team_row):
+            f.write(json.dumps(row) + "\n")
+
+    validation_summary = {
+        "component": "intel_claims_validation",
+        "n_claims": 2,
+        "details": [
+            {"claim_id": "fixture_ft_reliability", "verdict": "VERIFIED", "reason": "ok"},
+            {"claim_id": "fixture_team_pts_per_game", "verdict": "VERIFIED", "reason": "ok"},
+        ],
+    }
+    validation_path.write_text(json.dumps(validation_summary), encoding="ascii")
+
+    monkeypatch.setattr(ask_mod, "INTEL_CLAIMS_DIR", tmp_path)
+    monkeypatch.setattr(ask_mod, "CLAIM_SOURCE_PAIRS", ((validation_path, claims_path),))
+    return validation_path, claims_path
+
+
+def test_players_question_with_unaliased_metric_finds_player_claim_not_team(fixture_player_team_collision):
+    """THE regression: the exact failing question shape now returns the
+    PLAYER ft_pct-style ranking, never the more-recent team claim."""
+    result = ask_mod.ask("who are the top 5 nba players by free throw percentage this season")
+    assert result["answerable"] is True
+    assert result["family"] == families.FAMILY_TOP_N
+    assert result["answer"]["metric"] == "ft_reliability"
+    ranking = result["answer"]["ranking"]
+    assert ranking[0]["player_name"] == "Free Thrower"
+    assert "team" not in ranking[0]  # rank-1 row is a player row, not a team row
+
+
+def test_team_phrasing_still_returns_team_metric(fixture_player_team_collision):
+    """A team-phrased question must still resolve to the team claim -- the
+    entity-type gate filters, it does not become a player-only allowlist."""
+    result = ask_mod.ask("who are the top 5 nba teams by team points per game this season")
+    assert result["answerable"] is True
+    assert result["answer"]["metric"] == "team_pts_per_game"
+    assert result["answer"]["ranking"][0]["team"] == "CLE"
+
+
+def test_unknown_metric_is_honest_unanswerable_never_wrong_entity(fixture_player_team_collision):
+    """A metric with no synonym AND no families.py alias must never fall
+    back to answering from an unrelated claim (of either entity type) --
+    honest UNANSWERABLE, not a guess."""
+    result = ask_mod.ask("who are the top 5 nba players by hustle plays this season")
+    assert result["answerable"] is False
+    assert "reason" in result
+
+
+def test_longest_metric_synonym_match_beats_substring_collision(fixture_player_team_collision):
+    """"team free throw percentage" contains "free throw percentage" as a
+    literal substring -- the longest-match rule must resolve it to
+    team_ft_pct, not the shorter ft_reliability alias. Neither metric
+    exists in this fixture's corpus, so the honest result is
+    UNANSWERABLE either way, but it must be unanswerable for the RIGHT
+    metric (team_ft_pct), never silently answered from ft_reliability."""
+    from scripts.platformkit.intel_query import ask_index as ask_index_mod
+
+    assert ask_index_mod.extract_metric_synonym("team free throw percentage") == "team_ft_pct"
+    assert ask_index_mod.extract_metric_synonym("free throw percentage") == "ft_reliability"
+
+    result = ask_mod.ask("who are the top 5 nba teams by team free throw percentage this season")
+    assert result["answerable"] is False  # fixture has no team_ft_pct claim -- honest miss
+    # never silently answers from the DIFFERENT (player) ft_reliability claim
+    assert result.get("answer", {}).get("metric") != "ft_reliability"
+
+
+def test_real_repo_ft_percentage_question_never_answers_wrong_entity_or_metric():
+    """LIVE-REPRODUCED bug, real corpus (no monkeypatch): whatever ask()
+    currently returns for this question, it must NEVER be a team claim
+    (metric starting with "team_") and NEVER a metric unrelated to free
+    throws. Today the corpus has no VALIDATED player ft_pct/ft_reliability
+    claim (see spawned task: nba_shooting_claims.jsonl's 20 rows are paired
+    with a validation summary that covers a DIFFERENT producer file), so
+    the honest, current answer is UNANSWERABLE -- proving the routing fix
+    holds against the real on-disk data, not just a fixture."""
+    result = ask_mod.ask("who are the top 5 nba players by free throw percentage this season")
+    if result["answerable"]:
+        assert not str(result["answer"]["metric"]).startswith("team_")
+        assert "ft" in result["answer"]["metric"].lower()
+        for row in result["answer"]["ranking"]:
+            assert "team" not in row  # rank rows must be player rows, not team rows
+    else:
+        assert "reason" in result
+
+
 def _write_indexable_pair(claims_dir, family: str, rows: list[dict], verdicts: dict[str, str]):
     """Same shape as claims_index.py's own test helpers -- writes
     <family>.jsonl + <family>_validation.json into claims_dir (no index)."""

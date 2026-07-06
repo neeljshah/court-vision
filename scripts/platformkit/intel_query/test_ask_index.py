@@ -128,3 +128,102 @@ def test_index_top_n_lookup_skips_stale_family_without_error(tmp_path):
     # pair exists) but has NO index at all -- is_index_fresh must be False.
     parsed = ParsedQuestion(family="top_n", top_n=5, metric_hints=["pts"], window_hint="season")
     assert ask_index.index_top_n_lookup(parsed, tmp_path, REPO_ROOT) is None
+
+
+# --- entity-type + metric-synonym gate (routing/metric-matching bug fix) ----
+
+def _team_ranking_row(claim_id: str, metric: str, window: str, computed_at: str) -> dict:
+    """Same shape as _ranking_row but entity_key='team' -- the TEAM side of
+    the exact collision the reported bug hit (a team claim beating a player
+    question when metric_hints came back empty)."""
+    return {
+        "claim_id": claim_id, "kind": "ranking",
+        "question": f"{metric} leaderboard ({window})?",
+        "criteria": {"metric": metric, "window": window, "entity_key": "team"},
+        "ranking": [{"rank": 1, "team": "CLE", "value": 121.6}],
+        "source_files": ["data/fake/source.parquet"],
+        "computed_at": computed_at, "n_considered": 30, "n_excluded_below_floor": 0,
+        "caveats": ["test caveat"],
+    }
+
+
+def test_extract_metric_synonym_finds_ft_percentage_phrasing():
+    assert ask_index.extract_metric_synonym("free throw percentage") == "ft_reliability"
+    assert ask_index.extract_metric_synonym("what is his ft%") == "ft_reliability"
+    assert ask_index.extract_metric_synonym("no metric words here") is None
+
+
+def test_extract_metric_synonym_prefers_longest_alias_match():
+    # "team free throw percentage" contains "free throw percentage" as a
+    # substring -- longest-match must resolve to team_ft_pct, never let the
+    # shorter alias shadow the more specific one.
+    assert ask_index.extract_metric_synonym("team free throw percentage") == "team_ft_pct"
+    assert ask_index.extract_metric_synonym("free throw percentage") == "ft_reliability"
+
+
+def test_question_entity_type_detects_players_vs_teams():
+    assert ask_index.question_entity_type("top 5 nba players by free throw percentage") == "player"
+    assert ask_index.question_entity_type("top 5 nba teams by points per game") == "team"
+    assert ask_index.question_entity_type("top 5 by points per game") is None  # names neither
+
+
+def test_entity_key_matches_classifies_team_vs_player_keys():
+    assert ask_index.entity_key_matches("team", "team") is True
+    assert ask_index.entity_key_matches("team", "player") is False
+    assert ask_index.entity_key_matches("player_id", "player") is True
+    assert ask_index.entity_key_matches("player_id", "team") is False
+    assert ask_index.entity_key_matches(["p1_id", "p2_id"], "player") is True
+    assert ask_index.entity_key_matches(["team_lo", "team_hi"], "team") is True
+    assert ask_index.entity_key_matches("anything", None) is True  # no entity type named -> no filter
+
+
+def test_index_top_n_lookup_rejects_team_row_for_a_players_question(tmp_path):
+    """The reported bug's exact shape at the index layer: a team-entity
+    ranking claim (team_pts_per_game) must never win a question that names
+    "players" -- even with empty metric_hints (no alias matched), the
+    entity-type gate alone must reject it."""
+    rows = [_team_ranking_row("team_a1", "team_pts_per_game", "season", "2026-01-01T00:00:00+00:00")]
+    _write_family(tmp_path, "fam", rows, {"team_a1": "VERIFIED"})
+    build_index("fam", tmp_path)
+
+    parsed = ParsedQuestion(
+        family="top_n", top_n=5, metric_hints=[], window_hint=None,
+        raw="who are the top 5 nba players by free throw percentage this season",
+    )
+    assert ask_index.index_top_n_lookup(parsed, tmp_path, REPO_ROOT) is None
+
+
+def test_index_top_n_lookup_finds_synonym_matched_metric_via_raw(tmp_path):
+    """metric_hints is empty (no families.py alias for this phrasing) but
+    raw contains a recognized synonym -- the fast path must still find the
+    matching player-entity row via extract_metric_synonym."""
+    rows = [_ranking_row("ft_a1", "ft_reliability", "season", "2026-01-01T00:00:00+00:00",
+                          [{"rank": 1, "player_id": 5, "player_name": "Free Thrower", "value": 0.95}])]
+    _write_family(tmp_path, "fam", rows, {"ft_a1": "VERIFIED"})
+    build_index("fam", tmp_path)
+
+    parsed = ParsedQuestion(
+        family="top_n", top_n=5, metric_hints=[], window_hint=None,
+        raw="who are the top 5 nba players by free throw percentage this season",
+    )
+    row = ask_index.index_top_n_lookup(parsed, tmp_path, REPO_ROOT)
+    assert row is not None
+    assert row["claim_id"] == "ft_a1"
+    assert row["ranking"][0]["player_name"] == "Free Thrower"
+
+
+def test_index_top_n_lookup_team_question_still_finds_team_metric(tmp_path):
+    """A team phrasing ("top 5 nba teams by points per game") must still
+    resolve to the team-entity claim -- the entity-type gate is a filter,
+    not a player-only allowlist."""
+    rows = [_team_ranking_row("team_a1", "team_pts_per_game", "season", "2026-01-01T00:00:00+00:00")]
+    _write_family(tmp_path, "fam", rows, {"team_a1": "VERIFIED"})
+    build_index("fam", tmp_path)
+
+    parsed = ParsedQuestion(
+        family="top_n", top_n=5, metric_hints=[], window_hint=None,
+        raw="top 5 nba teams by team points per game",
+    )
+    row = ask_index.index_top_n_lookup(parsed, tmp_path, REPO_ROOT)
+    assert row is not None
+    assert row["claim_id"] == "team_a1"
