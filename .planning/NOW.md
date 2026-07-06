@@ -93,6 +93,29 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- AUTOLOOP LIVE-PROVEN ~05:00Z TRUE-UTC 07-06 (0j phases 1+2 BUILT; wf_69eff2e9
+  6 agents/0.66M; commits b02d38d2 core / bd200b89 m38 ProcSpec / 24aa18bf
+  m37->m38 naming consistency -- all Opus PASS): THE CLAUDE-FREE LOOP EXISTS.
+  ONE-SHOT CYCLE 1 (real repo, 19.5s): T01_claims_regen regenerated 2 factory
+  families -> 36,090 claims INDEPENDENTLY VERIFIED (nba_player_box_rate
+  34,650/34,650 + nba_team_box_rate 1,440/1,440, ZERO mismatches, 33,186
+  honestly excluded below floors -- the 10k/sport bar CLEARED on NBA in the
+  first live cycle); T02_reclaim_fit TEMPLATE_EXHAUSTED w/ all 5 universe
+  signals blocklisted as live reject_ledger REJECTs, K spent = 0. ONE-SHOT
+  CYCLE 2 (7 min later, 4.2s): both templates skipped_no_new_data -- the
+  corpus-content-sha watermark kills busywork refits exactly as spec'd.
+  PREREG_TAMPER anti-fake test green (one-byte template edit => family
+  refused). m38_autoloop registered w/ HEARTBEAT (arms at next supervisor
+  restart per R-C; no bounce performed). Human-queue emission working.
+  NITS RECORDED HONESTLY: (a) f1a4553a (claims-factory L-A) commit MESSAGE
+  is Haiku-confabulated ("arbitrage"/"98-test" -- neither exists in the
+  code); contents verified correct (claims_factory.py 299L + test 263L,
+  Opus-reviewed); process fix = commit prompts now carry exact message text;
+  (b) rejected-R16 orphan claim DATA (10 duplicate tennis career rows +
+  snapshots) deleted from data/cache/intel_claims. Factory wave L-D (index +
+  ask wiring + live report) still in flight. No edge claims -- and no
+  arbitrage code exists anywhere; the word appears only in that one local
+  commit message.
 - AUTOLOOP SPEC PINNED ~04:45Z TRUE-UTC 07-06 (0j; Opus design + Fable rulings
   R-A..R-E + 2 errata): docs/research/depth-program/AUTOLOOP_SPEC_2026-07-06
   .md sha256=
