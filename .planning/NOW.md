@@ -93,6 +93,18 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- NIGHT WATCHMAN WAKE-3 ~09:45-local 07-06 (morning handoff): mlb_team_rate
+  validation gap CLOSED direct (existing batched validator, no new code):
+  186/186 VERIFIED / 0 mismatch / 0 unverifiable in 1.6s + .index.jsonl
+  built (52.6KB) -- ask() now serves the family. mlb_batter_rate +
+  mlb_pitcher_rate (~11,886 claims) PREMISE-CHECKED AND DEFERRED:
+  validator's _load_claims reads the whole 560MB/296MB jsonl into memory
+  (several-GB peak) vs 2.0GB free (87% used) -- exactly the load class
+  that glitched the box; day-queue item (g) = quiet-box window OR
+  streaming-loader lane. NEXT_SESSION_PROMPT.md REWRITTEN as the day
+  prompt: night results w/ real counts, m13 watch note (fix chain
+  wf_d89026f0 killed, resume not re-derive), day queue (a)-(h) incl. m38
+  arming DONE via the user's 08:57 attended restart. No edge claims.
 - NIGHT WATCHMAN WAKE-2 ~09:25-local 07-06 (Claude process exited after
   startup duties; user resumed ~09:00): (1) FLEET RESTARTED 08:57-08:59
   local (supervisor + ~40 daemons; attended/user-side, not the watchman)
