@@ -24,12 +24,12 @@ from scripts.platformkit.autoloop import standing_prereg as SP
 from scripts.platformkit.io_atomic import append_jsonl_atomic, write_json_atomic
 
 _REPO = Path(__file__).resolve().parents[3]
-COMPONENT = "m37_autoloop"
+COMPONENT = "m38_autoloop"
 DEFAULT_INTERVAL_SEC = 86400.0
 
 REPORT_PATH = _REPO / "data" / "frontend" / "ops" / "autoloop_report.json"
 HUMAN_QUEUE_PATH = _REPO / "data" / "frontend" / "ops" / "autoloop_human_queue.jsonl"
-HEARTBEAT_PATH = _REPO / "data" / "cache" / "daemon_heartbeats" / "m37_autoloop.txt"
+HEARTBEAT_PATH = _REPO / "data" / "cache" / "daemon_heartbeats" / "m38_autoloop.txt"
 STOP_FLAG_PATH = _REPO / ".bot_state" / "live_status.json"
 
 
