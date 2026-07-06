@@ -93,6 +93,31 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- NIGHT WATCHMAN STARTUP DUTIES DONE ~03:30-local 07-06 (low-usage session;
+  stop flag probed clear): (1) sport-grid rollout wf_5bab3431 RESUMED to
+  completion -- SG-tennis config committed e700f85f + GENERATED
+  tennis_p1_match_context 1,312 + tennis_p2_match_context 1,346 verified /
+  0 mismatch (floors excluded 3,976 + 5,016 -- honest counts, below the
+  rough 10-20k estimate); SG-soccer GENERATED soccer_intl_team_travel_rate
+  1,458 verified / 0 mismatch; both batch-validated + .index.jsonl on disk.
+  SG-MLB GAP: mlb_batter_rate/pitcher_rate/team_rate .jsonl generated 21:30
+  by the KILLED run (560MB/296MB/0.5MB) but NO validation summary + NO
+  index (kill landed between generate and validate; resumed lane cached
+  past it) -> INERT to ask() by design, nothing wrong served; validation
+  DEFERRED to day queue (box RAM 90% used / 1.5GB free tonight -- dwm.exe
+  leak 2.4GB; big-file validation is exactly the load that glitched the
+  box). (2) ASK-ROUTER FIX COMMITTED a0c42694: salvaged the killed lane's
+  uncommitted work (it was complete except the UNANSWERABLE guard), added
+  top_n no-resolved-metric refusal in BOTH paths (entity lookups exempt);
+  test_ask 36/36 + test_ask_index 15/15 green this run; Opus cv-code-
+  reviewer APPROVE (its lone caveat -- full-file green -- was already
+  proven by the solo background run). (3) autoloop --once: T01 + T02 both
+  skipped_no_new_data (templates are NBA-only; honest no-op, 30.1s wall,
+  0 human-queue rows; greenlight rewrote: pregame-props AMBER, others RED
+  as expected). (4) historical sweep wf_9a13ee78 found STOPPED w/ no
+  completion record -> RELAUNCHED w/ resumeFromRunId, in flight. Night
+  loop from here: one Haiku scout per wake, smallest-fix-only, sequential
+  local work only (RAM discipline). No edge claims.
 - SESSION HANDOFF ~06:00Z TRUE-UTC 07-06 (process exit killed 3 in-flight
   tracks; user starting a LOW-USAGE overnight session): STATE AT CUT --
   sport-grid rollout wf_5bab3431: SG-mlb 4bbb1051 + SG-soccer b9c469cb
