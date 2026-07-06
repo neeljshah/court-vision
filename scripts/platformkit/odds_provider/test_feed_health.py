@@ -3,7 +3,8 @@ from __future__ import annotations
 
 from scripts.platformkit.odds_provider import feed_health as _feed_health
 from scripts.platformkit.odds_provider.feed_health import (
-    DEFAULT_SPORTS, GREEN, PROVIDER_HOSTS, RED, heal, probe_one, render, scan)
+    CAPTURE_ONLY_SPORTS, DEFAULT_SPORTS, GREEN, PROVIDER_HOSTS, RED, heal,
+    probe_one, render, scan)
 
 
 class _FakeProvider:
@@ -193,3 +194,86 @@ def test_heal_case_insensitive_reason_match():
     marked = []
     heal(doc, mark=lambda host: marked.append(host))
     assert marked == [PROVIDER_HOSTS["kalshi"]]
+
+
+# --- Matrix row 13: npb capture-only structural degrade (2026-07-05) --------
+
+def test_npb_is_in_capture_only_sports():
+    assert "npb" in CAPTURE_ONLY_SPORTS
+
+
+def test_kbo_not_yet_in_capture_only_sports():
+    # kbo is not in DEFAULT_SPORTS (unscanned) as of this fix; do not blanket
+    # it in without live confirmation of the same structural pattern.
+    assert "kbo" not in CAPTURE_ONLY_SPORTS
+
+
+def test_npb_pinnacle_structural_absence_is_green_capture_only():
+    """The exact live reason string ('no live league ids') on npb -> GREEN,
+    labeled capture_only_degrade, not a silent pass (row still appears)."""
+    prov = _FakeProvider("pinnacle", {"npb": {
+        "status": "unavailable",
+        "reason": "pinnacle: no live league ids for 'npb'"}})
+    row = probe_one(prov, "npb")
+    assert row["status"] == GREEN
+    assert row["capture_only_degrade"] is True
+    assert row["sport"] == "npb"  # row still present, not deleted
+
+
+def test_npb_real_auth_fault_still_red():
+    """A genuine fault (auth/timeout/etc) on npb -- NOT the known structural
+    'no live league ids' shape -- must still classify RED. This must not
+    blanket-green the whole sport."""
+    prov = _FakeProvider("pinnacle", {"npb": {
+        "status": "unavailable",
+        "reason": "pinnacle matchups call failed (HTTPError 401)"}})
+    row = probe_one(prov, "npb")
+    assert row["status"] == RED
+
+
+def test_npb_timeout_fault_still_red():
+    prov = _FakeProvider("pinnacle", {"npb": {
+        "status": "unavailable",
+        "reason": "exception:TimeoutError"}})
+    row = probe_one(prov, "npb")
+    assert row["status"] == RED
+
+
+def test_same_reason_on_non_capture_only_sport_stays_red():
+    """The 'no live league ids' shape is only benign for a sport actually in
+    CAPTURE_ONLY_SPORTS -- the same reason on mlb (not capture-only) must
+    still be RED, proving the exemption is sport-scoped, not global."""
+    prov = _FakeProvider("pinnacle", {"mlb": {
+        "status": "unavailable",
+        "reason": "pinnacle: no live league ids for 'mlb'"}})
+    row = probe_one(prov, "mlb")
+    assert row["status"] == RED
+    assert "capture_only_degrade" not in row
+
+
+def test_scan_npb_structural_gap_does_not_flip_overall_red():
+    """End-to-end: a scan where npb's ONLY red-shaped row is the known
+    structural pinnacle gap, and every other provider/sport is healthy,
+    reports overall GREEN (the aggregate no longer degrades for this)."""
+    prov = _FakeProvider("pinnacle", {
+        "npb": {"status": "unavailable",
+                "reason": "pinnacle: no live league ids for 'npb'"},
+        "mlb": [1, 2, 3],
+    })
+    doc = scan(("npb", "mlb"), providers=[prov])
+    assert doc["overall"] == GREEN
+    assert doc["n_red"] == 0
+    npb_row = [r for r in doc["rows"] if r["sport"] == "npb"][0]
+    assert npb_row["capture_only_degrade"] is True
+
+
+def test_scan_npb_real_fault_still_flips_overall_red():
+    """A genuine npb fault (not the structural shape) must still surface as
+    RED in the aggregate -- this fix must not silence real breakage."""
+    prov = _FakeProvider("pinnacle", {
+        "npb": {"status": "unavailable",
+                "reason": "pinnacle matchups call failed (403 Forbidden)"},
+    })
+    doc = scan(("npb",), providers=[prov])
+    assert doc["overall"] == RED
+    assert doc["n_red"] == 1
