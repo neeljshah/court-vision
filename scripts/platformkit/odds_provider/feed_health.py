@@ -66,12 +66,34 @@ _BENIGN_REASON_MARKERS = (
     "no player-prop markets", "empty fixture", "empty/invalid fixtures",
 )
 
+# Sports that are capture-only / no-model (verdicts come from a resolver like
+# kalshi/kbo results, never from a live in-game model dispatch) AND have a
+# KNOWN structural venue gap: pinnacle carries no league-id mapping for them
+# (confirmed 2026-07-05: pinnacle.py's resolve_league_ids() returns empty for
+# 'npb', a permanent map gap, not a transient fault). Verified live same-day:
+# npb's pinnacle row reads "pinnacle: no live league ids for 'npb'" and is the
+# ONLY red row for the sport (espn/fanduel/polymarket already degrade to their
+# own benign "unsupported sport" GREEN; kalshi returns real events). kbo is
+# NOT in DEFAULT_SPORTS today (unscanned), so it is deliberately left out here
+# until it is actually probed and shows the same structural pattern.
+CAPTURE_ONLY_SPORTS = frozenset({"npb"})
 
-def _classify_reason(reason: str) -> str:
+# Reason substrings that are a KNOWN structural absence for a capture-only
+# sport (see CAPTURE_ONLY_SPORTS) -- a benign, permanent venue gap, not a
+# scraper fault. Only applied when the row's sport is in CAPTURE_ONLY_SPORTS,
+# so the same reason on a normal sport still classifies RED.
+_CAPTURE_ONLY_BENIGN_MARKERS = ("no live league ids",)
+
+
+def _classify_reason(reason: str, sport: Optional[str] = None) -> str:
     low = (reason or "").lower()
     for marker in _BENIGN_REASON_MARKERS:
         if marker in low:
             return GREEN
+    if sport in CAPTURE_ONLY_SPORTS:
+        for marker in _CAPTURE_ONLY_BENIGN_MARKERS:
+            if marker in low:
+                return GREEN
     return RED  # auth/forbidden/timeout/parse/unexpected-shape/exception -> broken
 
 
@@ -92,7 +114,11 @@ def probe_one(provider: Any, sport: str) -> Dict[str, Any]:
         return row
     if is_unavailable(res):
         reason = str(res.get("reason") or "unavailable")
-        row.update(status=_classify_reason(reason), reason=reason, n_events=None)
+        status = _classify_reason(reason, sport)
+        row.update(status=status, reason=reason, n_events=None)
+        if status == GREEN and sport in CAPTURE_ONLY_SPORTS and any(
+                m in reason.lower() for m in _CAPTURE_ONLY_BENIGN_MARKERS):
+            row["capture_only_degrade"] = True
         return row
     if isinstance(res, list):
         row.update(status=GREEN, reason=None, n_events=len(res))
@@ -260,5 +286,5 @@ if __name__ == "__main__":
     raise SystemExit(main())
 
 
-__all__ = ["GREEN", "RED", "DEFAULT_SPORTS", "PROVIDER_HOSTS", "probe_one", "scan",
-           "heal", "write_status", "load_status", "render"]
+__all__ = ["GREEN", "RED", "DEFAULT_SPORTS", "PROVIDER_HOSTS", "CAPTURE_ONLY_SPORTS",
+           "probe_one", "scan", "heal", "write_status", "load_status", "render"]
