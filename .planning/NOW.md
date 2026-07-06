@@ -93,6 +93,26 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- AUTOLOOP SPEC PINNED ~04:45Z TRUE-UTC 07-06 (0j; Opus design + Fable rulings
+  R-A..R-E + 2 errata): docs/research/depth-program/AUTOLOOP_SPEC_2026-07-06
+  .md sha256=
+  e654d58aecd481bd0c4ebb47c305c73e97f115f4169dcf34ec7fa338fe99f537.
+  Thin driver composing EXISTING tested machinery (P4 ratchet, reclaim
+  harness, fwer_budget, corpus_cache content-sha watermark, claims factory,
+  freshness, greenlight) -- zero new math, zero LLM. Standing-prereg
+  registry: TRACKED templates at scripts/platformkit/autoloop/templates/
+  (R-D erratum), sha-verified every tick (PREREG_TAMPER refusal), K ledger
+  append-only per (sport,template) never reset, blocklist from reject_ledger
+  .is_known_reject, corpus-content-sha watermark kills K-inflation on
+  unchanged data. RULINGS: ProcSpec registration IN-WAVE at repo-root
+  supervisor/stack_specs.py (safe tree, m29/m30 precedent; spec's PROPOSED-
+  snippet route revoked; next free slot = m38 verified live); wave does NOT
+  bounce the supervisor (one-shot proof + arm at next restart); T-01
+  claims_regen (zero fits) + T-02 reclaim_fit (frozen NBA registry() minus
+  blocklist minus the 2 defender SHIP candidates -- those await their own
+  human prereg; max 8 candidates/cycle); phase-3 P4 widening next session.
+  Human queue out: SHIP_CANDIDATE/REPLICATED_WEAK/TEMPLATE_EXHAUSTED/
+  ANOMALY. Build wave launching. No edge claims.
 - RECLAIM-TAIL WAVE CLOSED ~04:00Z TRUE-UTC 07-06 (wf_93d258bf, 15 agents/
   0.99M; row 19): 4 of 5 extractors LANDED, all Opus-reviewed, leak tests
   (truncation-invariance + own-row-exclusion) green. (1) tennis meta
