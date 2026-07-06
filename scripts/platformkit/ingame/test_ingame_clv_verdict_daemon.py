@@ -21,6 +21,7 @@ def test_collect_assembles_doc_and_no_dollar():
     assert {r["sport"] for r in doc["sports"]} == {"mlb", "soccer_intl"}
     assert doc["sports"][0]["verdict"] == "MATCH"
     assert "updated_at" in doc
+    assert doc["edge_claimed"] is False     # cv_honesty F-check-2 contract
     blob = json.dumps(doc).lower()
     # no profit/ROI claim (the honest note legitimately says "not a $ edge", so $ is allowed)
     for banned in ("roi", "pnl", "profit", "p_l", "stake"):
