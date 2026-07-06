@@ -93,6 +93,25 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- SESSION HANDOFF ~06:00Z TRUE-UTC 07-06 (process exit killed 3 in-flight
+  tracks; user starting a LOW-USAGE overnight session): STATE AT CUT --
+  sport-grid rollout wf_5bab3431: SG-mlb 4bbb1051 + SG-soccer b9c469cb
+  configs COMMITTED w/ R2 PASS (generation stages NOT run), SG-tennis config
+  untracked in tree awaiting review; historical sweep wf_9a13ee78: no lanes
+  landed; ask-router fix: partial UNCOMMITTED edits to ask.py/ask_index.py/
+  tests (restorable from bcffbdc9 if unsalvageable). BOTH workflows resume
+  via resumeFromRunId (completed lanes cached). NEXT_SESSION_PROMPT.md
+  REWRITTEN as the NIGHT WATCHMAN prompt: low-usage monitor-and-fix loop
+  (Haiku scans, Sonnet only for fixes, Opus review never dropped, no new
+  programs/preregs/K, no supervisor bounce -- m38 arms at an attended
+  restart), startup duties = resume 2 workflows + finish router fix + one
+  autoloop --once, morning handoff spec included. SESSION TOTALS (07-05
+  22:20Z - 07-06 06:00Z): ~13 workflows/standalone waves, ~35 commits, 2
+  directives ratified (0i claims-scale, 0j claude-free autoloop), AUTOLOOP
+  LIVE-PROVEN 2x, CLAIMS FACTORY COMPLETE (36,090 verified NBA claims),
+  A3 honest REJECT, greenlight uncap EARNED (criterion f NOT_REFUTED on
+  fresh inputs), 6 premise catches, 2 extraction-trap catches, 0 false
+  ships, 0 fake GREENs. No edge claims.
 - CLAIMS FACTORY COMPLETE ~05:40Z TRUE-UTC 07-06 (0i(a) done-when EXCEEDED;
   wf_2066a74d 14 agents/1.50M; commits f1a4553a core / 9adb3cf6 batch-
   validator / b214ec36 nba-grid / b6ee85b2 index+ask / bcffbdc9 orphan-fix;

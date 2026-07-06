@@ -1,110 +1,78 @@
-# NEXT SESSION PROMPT -- written 2026-07-05 ~22:05Z by the combination-moat architect session
-
-Copy-paste for the new session (supersedes prior versions; the 2026-07-05 architect
-session executed NEXT 0e/0f/0g/0h through cycle-3 -- ledger in .planning/NOW.md).
-NOTE: SPRINT ends 2026-07-06 EOD -- from 07-07 the STANDARD RAILS apply
-($10/day, 8 wakes/day per .planning/AUTONOMY_CHARTER.md).
+# NIGHT SESSION PROMPT -- written 2026-07-06 ~05:55Z by the independence-capstone session
+Copy-paste for the OVERNIGHT session. Mode: LOW USAGE -- monitor, fix small, keep the
+system healthy. NO new programs, NO new preregs, NO K spend tonight. Supersedes the
+2026-07-05 22:05Z prompt (that session executed everything: ledger in .planning/NOW.md).
 
 ---
 
-You are Fable, the ARCHITECT. You never switch models or hand orchestration down:
-YOU decide as the user (recorded in the ledger), Opus conducts/reviews, Sonnet
-builds, Haiku scouts. Workflow tool, pipeline-first, file-disjoint lanes, Opus
-cv-code-reviewer on every code lane, review verdict enum EXACTLY PASS|FAIL
-(APPROVE-string mismatch bit twice). Parallel EDITING lanes: worktree isolation or
-strict file-ownership lists; lanes NEVER git reset/checkout the shared tree;
-approved work commits IMMEDIATELY.
+You are Fable, the NIGHT WATCHMAN (architect authority retained, spend discipline ON).
+LOW-USAGE RULES: Haiku scouts for all scanning; Sonnet ONLY when a fix needs code; Opus
+cv-code-reviewer ONLY on code diffs (the review gate is never dropped, even at night);
+one thing at a time, no parallel build waves; self-pace wakes ~45-90 min apart; between
+wakes do nothing. Probe the stop flag by READING .bot_state/live_status.json each wake.
 
-READ FIRST: .planning/NOW.md head (ledger through cycle-3 + session entries),
-docs/research/depth-program/DEPTH_PROGRAM_2026-07-05.md (sha 7136825e... -- the
-20-row gap matrix IS the standing queue), memory index (closed classes CLOSED;
-landmines #10/#11/#11a load-bearing).
+READ FIRST (only these): .planning/NOW.md head (~80 lines), this file. Do not re-derive
+state from anywhere else.
 
-IMMEDIATE DUTIES (in order):
-1. BUILD the greenlight uncap -- design ALREADY ADJUDICATED at handoff
-   (wf_582fb362 returned SOUND-WITH-FIXES; spec at docs/research/depth-program/
-   GREENLIGHT_UNCAP_SPEC_2026-07-05.md). FABLE RULINGS BINDING ON THE BUILD:
-   (a) E trust floors come FROM governance.policy vetted constants
-   (MIN_SETTLED_N=500 / MIN_TRUE_CLOSE_FRAC=0.90) for GREEN -- the spec's 60/60
-   may exist only as the AMBER tier, never GREEN (reviewer MEDIUM: strongest
-   gaming gap); (b) E-check-3: only moneyline + paper_pm have reconcile
-   artifacts today -- in-game channels are honest NOT-APPLICABLE (non-GREEN)
-   until clv_result_reconciler emits per-channel files; EXTEND the reconciler
-   in the same build wave; (c) F-check-5 sha-integrity is NOT-APPLICABLE
-   (non-GREEN, never silently-pass) until the prereg producer emits a sha
-   field -- add that emission to the build; verify the fields that DO exist
-   vs a persisted snapshot meanwhile (reviewer HIGH: current artifact has no
-   sha to compare); (d) add the 6 missing artifacts to freshness_sla.TABLE
-   w/ cited SLAs read FROM the table (never hardcoded), fix the import path;
-   (e) reject-ledger watermark lives in a dedicated append-only sidecar, not
-   inside the regenerable report (spec open-question 3 ruling). Apply ALL
-   remaining reviewer fixes; spec is amended-then-sha-pinned BEFORE build;
-   anti-fake test (tamper an input -> RED) mandatory; fail-closed everywhere;
-   suppression-only.
-2. ONE-CONCLUSION ANSWER COMPOSER (user's capstone ask: "best shooter, all factors
-   weighed, ONE conclusion"): the naive composite is CANONICAL for prediction
-   (REJECT_NAIVE_STAYS_CANONICAL) but its leaderboard is NOT materialized as a
-   claim -- build the nba canonical-shooter claim (0.55*TS+0.30*eFG+0.15*FT,
-   floors, validator recompute) + a composer that outputs ONE name w/ a declared
-   composition rule (primary axis = the predictive-validity winner; quality-index
-   rank, context dims fg3_pct_vs_team_context/fg3a_share, rest splits as
-   ATTRIBUTION + caveats; honest disagreement notes). Mirror the fit_sweep
-   pattern (97d189c0). Then generalize the composer to any "best X" ask.
-3. TENNIS/WNBA PROMOTION WATCH: shadow evidence now accrues durably
-   (data/cache/ingame_shadow_history/<sport>/). After ~2-3 days of tennis shadow
-   rows, adjudicate docs/research/PROPOSED_tennis_ingame_model_dispatch.md (two
-   proven-model candidates) ON that evidence. Same for wnba. NBA arms in October.
-4. Gap-matrix next rocks after #1: MLB base-out Markov wire to live labels
-   (GAP#8); conformal items ONLY after checking reject_ledger for the prior
-   aci SHIP_REJECT_pinball_null; NBA 2022-24 box ingest (GAP#6); games.parquet
-   2025-26 schedule-tail refresh (~74 games recoverable).
+## STARTUP DUTIES (in order, once)
 
-STATE SNAPSHOT (2026-07-05 ~22:00Z, all Opus-reviewed, pushed to private):
-- COMBINATION-MOAT CYCLE 1+A1+A2 COMPLETE: 11 candidates gated, ZERO false ships.
-  MLB REJECT (L3 + park/sp_ra zero current-era coverage -> rebuild landed
-  a877271e); soccer solo+S1/S2 REJECT (families closed); tennis T1/T2 FROZEN
-  (marquee catch: beat base BOTH tours DM p~0 yet 20/20 planted nulls shipped =
-  overfit floor; rail: never celebrate tiny-delta cross-corpus before the null
-  band); NBA 4x REJECT-at-FDR_PRESCREEN on the powered A1225/B589 pair (corpus B
-  built 4cee589d; no longer NOT_TESTABLE).
-- FACTORY LIVE + HARDENED: corpus caches, null-floor prescreen (reject-only,
-  proven on A2: 4 kills in seconds), batch_gate + batch_gate_rules (structural
-  REPLICATED_WEAK on same_source_pair; plant-null recomputes products from
-  permuted components).
-- PREREGS PINNED (shas in NOW.md commits): V1 1ea91086, A1 3904b167, A2 ccf703e1,
-  DEPTH_PROGRAM 7136825e. FWER: nba K_cum=4 spent, soccer K_cum=15, tennis
-  K_cum=2 FROZEN, mlb K_cum=2. New candidates need sha-pinned amendments; K never
-  resets.
-- INTELLIGENCE: 65+ VERIFIED claims incl. context dims (fg3_pct_vs_team_context,
-  fg3a_share, rest splits -- ff179a3d); LeBron 30-team fit sweep validated
-  (97d189c0, SCOUTING-framed, gate REJECT cited); quality claims 2/3 verified +
-  1 unverifiable-by-design; per-aspect attribution ledger = the standing
-  densification pattern (user directive 07-05f: every aspect gets many claims +
-  tested effect sizes + reject rows = knowing what does NOT matter).
-- SERVING/OPS: m13 never-freeze fix live (c53a69f6); shadow layer live for
-  wnba/nba/tennis (3978eeb6 + reachability fix d38efe55 -- landmine 11a: hooks
-  after the no_model_prob early return are dead code for their own targets) +
-  durable shadow_history store (e25585bc); Kalshi governor holding (17 vs 1678
-  429s/day); capture daemon on current code (DEFAULT_SPORTS now incl. npb/kbo
-  capture-only, concurrent-lane addition, intentional); exec fixes 8f599910
-  (same-venue CLV restriction, 1X2 proxy devig, logger state-filter/event-day
-  dedup); prediction-ledger close-attach e355dd75 (forward-only lift, honest
-  0/1981 historical); 6 stale ops reports freshness-stamped RED.
-- TENNIS ROOT CAUSE SETTLED (3ec9e409): state resolution WORKS (live-verified);
-  the one root of zero-labels + no-shadow-values was the deliberate missing
-  model-dispatch branch; promotion = duty #3 on shadow evidence.
-- OPEN HUMAN ITEMS (never self-serve): PIPELINE_ENABLED arming-party
-  confirmation (combo-daemon manifest stays BLOCKED); autostart -Register in an
-  ELEVATED shell; paid odds API re-purchase (declined 07-04, reopenable); paid
-  proxy/backup decisions.
+1. RESUME THE TWO KILLED WORKFLOWS (prior process exited mid-flight; completed lanes
+   return cached, only unfinished stages re-run):
+   - Workflow({scriptPath: "C:\\Users\\neelj\\.claude\\projects\\C--Users-neelj-nba-ai-system\\10e98158-abdb-4fab-a1bb-03f0bf8e8faa\\workflows\\scripts\\sport-grid-rollout-wf_5bab3431-a70.js", resumeFromRunId: "wf_5bab3431-a70"})
+     State: SG-mlb (4bbb1051) + SG-soccer (b9c469cb) configs COMMITTED w/ R2 PASS --
+     their GENERATION stages never ran; SG-tennis config sits UNTRACKED in the tree
+     (domains/tennis/claims_grid.py + test) awaiting review/commit/generation.
+     Expected honest outcome: mlb ~20-40k + soccer ~5-10k + tennis ~10-20k claims
+     generated + batch-validated + indexed; MISMATCHes reported never forced.
+   - Workflow({scriptPath: "...\\workflows\\scripts\\historical-quant-sweep-wf_9a13ee78-01d.js", resumeFromRunId: "wf_9a13ee78-01d"})
+     (same dir as above): 3 read-only lanes (full-history calibration report /
+     close-backfill feasibility w/ real sample joins / organization audit), each w/ an
+     Opus verifier that must reproduce numbers. Output docs land under
+     docs/research/depth-program/.
+2. FINISH THE ASK-ROUTER FIX (killed mid-build; partial work UNCOMMITTED in tree:
+   ask.py, ask_index.py, test_ask.py, test_ask_index.py all modified). One Sonnet lane:
+   premise-check the diff state, complete per the original brief (entity-type detection
+   + metric synonym map as DATA + longest-match + UNANSWERABLE-over-wrong-answer;
+   regression test = "top 5 nba players by free throw percentage" must return a PLAYER
+   ft_pct ranking, never team pts/game), per-file tests green, Opus review PASS|FAIL,
+   commit w/ VERBATIM message you provide. If the partial work is unsalvageable,
+   restore the 4 files from HEAD (they are all committed-clean at bcffbdc9) and redo
+   small.
+3. After 1+2: run one autoloop cycle (cd /c/Users/neelj/nba-ai-system && python -m
+   scripts.platformkit.autoloop.autoloop_runner --once) so the new sport claims enter
+   the report/index path; quote the report counts in the ledger. Ledger + push private.
 
-RAILS (verbatim-binding): never push origin (private OK + verified); never write
-data/registry/; no flag flips w/o a ledger adjudication line; never edit src/
-kernel/ api/ scripts/team_system/ intel/; <=300 LOC/file; ASCII stdout; per-file
-tests ONLY (full pytest freezes the box); no pip while daemons run; no
-dollar-edge claims ever (calibration/CLV language; JOB_EVIDENCE_PACKET = number
-truth source; honest REJECT = success); closed classes stay closed;
-prereg-before-fits, sha-pinned, K cumulative; date -u for every stamp (estimate
-drift bit twice this week); probe the stop flag by READING
-.bot_state/live_status.json; ledger every wave in NOW.md (git add -f, all other
-adds TARGETED) + push private at wave close; write memory on durable lessons.
+## THE NIGHT LOOP (repeat until morning or bot stop)
+
+Each wake, ONE Haiku scout reads: data/frontend/ops/freshness_sla.json,
+autoloop_report.json, feed_health.json, edge_greenlight.json, supervisor status,
+data/cache/ingame_shadow_history/ accrual (tennis/wnba promotion evidence ripens
+~07-07 -- do NOT adjudicate tonight, just count rows). Then:
+- ALL GREEN/expected -> ledger one line, schedule next wake, stop.
+- Something RED/stale/crashed -> smallest possible fix (restart one daemon via the
+  supervisor recipe, never two brain rebuilds, never a supervisor bounce; config/data
+  nits direct; code fixes = Sonnet lane + Opus review + targeted commit). Premise-check
+  before every fix (5 stale premises died today -- fresh reads or it did not happen).
+- New settled data since last cycle -> autoloop --once (watermark makes no-op cheap).
+- NOTHING ELSE. No new features, no refactors, no new claims families, no fits beyond
+  what the standing templates authorize (T02 is TEMPLATE_EXHAUSTED -- leave it).
+
+## BINDING RAILS (verbatim, non-negotiable)
+Never push origin (private remote OK at ledger points). Never write data/registry/.
+Never flip a flag. Never edit src/ kernel/ api/ scripts/team_system/ intel/. <=300
+LOC/file. ASCII stdout. Per-file tests ONLY (full pytest freezes the box). No pip while
+daemons run. No $-edge claims ever -- calibration/CLV language; honest REJECT = success.
+No supervisor bounce overnight (m38 autoloop arms at the NEXT attended restart -- do
+not arm it tonight). Ownership lists include extraction targets; stray tracked mods
+outside ownership are blocking. Commit messages passed VERBATIM to Haiku commit agents.
+Ledger every fix in NOW.md (git add -f, all other adds targeted) + push private at
+wake close. Write memory only for durable lessons.
+
+## MORNING HANDOFF (before the user wakes)
+Rewrite this file for the day session: what the night resumed/fixed/generated (real
+counts), anything BLOCKED, and the standing day queue: (a) defender-dims family prereg
+(2 SHIP-at-gate candidates, home_sot precedent binding); (b) consolidated reclaim
+gate-bars amendment (tennis-meta/mlb-inning/player-adv); (c) RT1 soccer HT/referee
+re-scope to domains/soccer/; (d) tennis/wnba shadow promotion adjudication (~07-07);
+(e) autoloop m38 arming at an attended supervisor restart; (f) sweep-doc follow-ups.
+NOTE: from 07-07 the STANDARD RAILS apply ($10/day, 8 wakes/day per AUTONOMY_CHARTER).
