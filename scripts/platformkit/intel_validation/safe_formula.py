@@ -11,9 +11,11 @@ checked against an allowlist before any evaluation happens.
 from __future__ import annotations
 
 import ast
+import functools
 import operator
 from typing import Any
 
+import numpy as np
 import pandas as pd
 
 _ALLOWED_BINOPS = {
@@ -181,3 +183,64 @@ def evaluate_formula(formula: str, df: pd.DataFrame) -> pd.Series:
         return _eval_node(tree, row.to_dict())
 
     return df.apply(_row_eval, axis=1)
+
+
+def _eval_node_vectorized(node: ast.AST, cols: dict[str, pd.Series]) -> Any:
+    """SAME grammar/allowlist as `_eval_node`, but the namespace binds whole
+    column Series instead of one row's scalars -- every op (+ - * / abs)
+    already vectorizes unchanged over a Series. The ONLY divergence is
+    min()/max(): Python's builtin min/max does pairwise `<` comparison, which
+    on a Series returns an elementwise bool Series (ambiguous truth value,
+    raises) instead of picking the smaller Series -- so those two dispatch
+    through `functools.reduce(np.minimum/np.maximum, args)` here instead,
+    which is elementwise-correct for Series, Series+scalar, and scalar+scalar
+    alike. Identical numeric results to the row-wise path in every case."""
+    if isinstance(node, ast.Expression):
+        return _eval_node_vectorized(node.body, cols)
+    if isinstance(node, ast.Constant):
+        if isinstance(node.value, (int, float)):
+            return node.value
+        raise FormulaError(f"disallowed constant type: {type(node.value).__name__}")
+    if isinstance(node, ast.Name):
+        if node.id in cols:
+            return cols[node.id]
+        raise FormulaError(f"unknown identifier: {node.id!r}")
+    if isinstance(node, ast.BinOp):
+        op = _ALLOWED_BINOPS.get(type(node.op))
+        if op is None:
+            raise FormulaError(f"disallowed operator: {type(node.op).__name__}")
+        return op(_eval_node_vectorized(node.left, cols), _eval_node_vectorized(node.right, cols))
+    if isinstance(node, ast.UnaryOp):
+        op = _ALLOWED_UNARYOPS.get(type(node.op))
+        if op is None:
+            raise FormulaError(f"disallowed unary operator: {type(node.op).__name__}")
+        return op(_eval_node_vectorized(node.operand, cols))
+    if isinstance(node, ast.Call):
+        fname = node.func.id  # validated in _check_columns
+        args = [_eval_node_vectorized(a, cols) for a in node.args]
+        if fname == "abs":
+            return abs(args[0])
+        if fname == "min":
+            return functools.reduce(np.minimum, args)
+        if fname == "max":
+            return functools.reduce(np.maximum, args)
+        raise FormulaError(f"disallowed function: {fname}")
+    raise FormulaError(f"disallowed syntax node: {type(node).__name__}")
+
+
+def evaluate_formula_vectorized(formula: str, df: pd.DataFrame) -> pd.Series:
+    """Evaluate `formula` ONCE over the whole frame (column-Series ops) instead
+    of once per row. SAME whitelist grammar, SAME `_check_columns` gate, SAME
+    numeric result as `evaluate_formula` -- proven by the parity test in
+    test_claims_validator.py. Only the binding differs (Series vs per-row
+    dict); no new expressiveness, no forked grammar."""
+    columns = set(df.columns)
+    _check_columns(formula, columns)
+    tree = ast.parse(formula, mode="eval")
+    cols = {c: df[c] for c in columns}
+    result = _eval_node_vectorized(tree, cols)
+    if not isinstance(result, pd.Series):
+        # a formula with no column reference (pure literal) evaluates to one
+        # scalar; broadcast to match evaluate_formula's one-value-per-row contract.
+        result = pd.Series(result, index=df.index, dtype="float64")
+    return result

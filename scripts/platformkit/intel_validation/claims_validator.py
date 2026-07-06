@@ -329,3 +329,15 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+
+
+def validate_claims_file_batched(path: Path) -> ValidationSummary:
+    """Re-export: the batch/vectorized fast path (spec sec 3) lives in
+    claims_validator_batch.py (split out for the 300-LOC/file rail; that
+    module imports FROM here, so this import is deferred to call time to
+    avoid a circular import). Everything above this line is the ORIGINAL,
+    untouched per-claim path -- unaffected by this addition."""
+    from scripts.platformkit.intel_validation.claims_validator_batch import (
+        validate_claims_file_batched as _batched,
+    )
+    return _batched(path)
