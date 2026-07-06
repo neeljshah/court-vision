@@ -93,6 +93,28 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- WATCHMAN m18 ARC ~17:35-18:24-local 07-06 (FIRST REAL RED OF THE DAY,
+  FIXED + VERIFIED): m18_pm_close_capture RED age 2102s, err log = endless
+  "kalshi markets failed for mlb: HTTP 429" spiral. PREMISE-CHECKS: the
+  supervisor had ALREADY self-restarted it (5 same-second pids = respawn +
+  rotating spawn-children, main pid stable -- NOT the m13-style flap); the
+  429s continued post-restart (age re-exceeded the 900s interval), so a
+  restart-only outcome was mechanically doomed. ROOT CAUSE (lane premise-
+  check beat the brief's guess): close_capture._kalshi_close instantiates
+  KalshiProvider directly and pregame kalshi.py's fetch was a KNOWN-
+  unwired governor caller (listed in kalshi_rate_governor.py's own
+  docstring) -- m18 hammered ungoverned while governed siblings won the
+  shared budget. FIX 961c3944: opt-in governor_caller param on
+  KalshiProvider (default None = byte-identical for aggregate.py + every
+  other caller, grep-verified), close_capture opts in; bounded wait <=5s/
+  fetch VOID-never-hang; KALSHI_GOVERNOR_OFF intact; 32+28+37 per-file
+  tests green incl. 2 MUTATION-VERIFIED proof tests (fail when wiring
+  removed); Opus review APPROVE. Targeted taskkill of main pid only ->
+  supervisor respawned governed 18:06:58. VERIFIED LIVE: first tick's
+  small 429 burst (budget still blown from the spiral) then ZERO err-log
+  growth through the full 18:21 governed tick; m18 GREEN. Same-venue
+  Kalshi close capture for paper_pm preserved for tonight's slate. No
+  edge claims.
 - WATCHMAN DAY ARC ~14:00-15:30-local 07-06 (MLB VALIDATION GAP FULLY
   CLOSED): the 6GB-free RAM window never arrived (box steady 1.5-2.6GB
   free), so day-queue item (g)'s alternative executed -- ONE Sonnet lane
