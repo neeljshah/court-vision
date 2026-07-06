@@ -11,16 +11,157 @@ behavior unchanged -- this module never decides "unanswerable" itself.
 
 Never weakens VERIFIED-only: an index line with verdict != VERIFIED is
 skipped exactly as `load_verified_claims` already skips non-VERIFIED rows.
+
+BUG FIX (routing/metric-matching, no data missing): "top 5 nba players by
+free throw percentage" was answering with metric=team_pts_per_game -- a
+TEAM claim -- because (a) families.classify's fixed alias dict has no
+synonym for "free throw percentage" so metric_hints comes back empty, and
+an empty metric_hints skips ALL metric filtering (every VERIFIED ranking
+claim in the corpus becomes a candidate), and (b) nothing ever checked
+that the question said "players" while the winning claim's entity_key was
+"team". `_extract_metric_synonym` + `_question_entity_type` +
+`_entity_key_type` close both gaps as DATA (a synonym dict + an entity_key
+classifier), applied identically in both the fast (index) path here and
+the slow (full-load) path in ask.py's `_filter_by_hints`.
 """
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Any
 
 from scripts.platformkit.intel_query.claims_index import discover_families, is_index_fresh
 
 VERIFIED = "VERIFIED"
+
+ENTITY_TYPE_PLAYER = "player"
+ENTITY_TYPE_TEAM = "team"
+
+# Natural-language metric synonyms -> the REAL metric name used in
+# criteria.metric across data/cache/intel_claims/*.jsonl. Enumerated from
+# the actual dims that exist (nba_player_box_rate, nba_shooting_claims,
+# nba_team_box_rate) rather than guessed -- see the fix's diagnosis for the
+# `python -c` dump this was built from. Longest-alias-wins matching (see
+# `_extract_metric_synonym`) so e.g. "free throw percentage" (-> ft_pct-
+# shaped) is never shadowed by a shorter, unrelated substring.
+# ponytail: hand-maintained alias dict -- a NEW metric dim needs an alias
+# entry here to be answerable by natural phrasing; unaliased phrasings
+# honestly refuse (UNANSWERABLE), never mis-answer. Safe failure mode.
+_METRIC_SYNONYMS: dict[str, str] = {
+    # player free-throw RELIABILITY (nba_shooting_claims) -- there is no
+    # player-level metric literally named ft_pct; ft_reliability IS the
+    # player free-throw-percentage claim (values are the made/attempt
+    # rate, e.g. 0.95 = 95%).
+    "free throw percentage": "ft_reliability",
+    "free-throw percentage": "ft_reliability",
+    "free throw pct": "ft_reliability",
+    "free-throw pct": "ft_reliability",
+    "ft%": "ft_reliability",
+    "ft pct": "ft_reliability",
+    "ft_pct": "ft_reliability",
+    "free throw reliability": "ft_reliability",
+    # team free-throw pct (nba_team_box_rate) -- distinct metric, distinct
+    # entity_key=team; only reachable when the question says "team(s)".
+    "team free throw percentage": "team_ft_pct",
+    "team ft%": "team_ft_pct",
+    # obvious box-rate synonyms (nba_player_box_rate / nba_team_box_rate)
+    "points per game": "pts_per_game",
+    "ppg": "pts_per_game",
+    "assists per game": "ast_per_game",
+    "apg": "ast_per_game",
+    "assist to turnover": "ast_to_tov",
+    "rebounds per game": "reb_per_game",
+    "rpg": "reb_per_game",
+    "offensive rebounds per game": "oreb_per_game",
+    "defensive rebounds per game": "dreb_per_game",
+    "steals per game": "stl_per_game",
+    "spg": "stl_per_game",
+    "blocks per game": "blk_per_game",
+    "bpg": "blk_per_game",
+    "turnovers per game": "tov_per_game",
+    "personal fouls per game": "pf_per_game",
+    "fouls per game": "pf_per_game",
+    "minutes per game": "min_per_game",
+    "field goal attempts per game": "fga_per_game",
+    "free throw attempts per game": "fta_per_game",
+    "plus minus": "plus_minus_per_game",
+    "plus-minus": "plus_minus_per_game",
+    "team points per game": "team_pts_per_game",
+    "team rebounds per game": "team_reb_per_game",
+    "team assists per game": "team_ast_per_game",
+    "team turnovers per game": "team_tov_per_game",
+    "team field goal percentage": "team_fg_pct",
+    "team fg%": "team_fg_pct",
+    "team 3 point percentage": "team_fg3_pct",
+    "team three point percentage": "team_fg3_pct",
+    "team true shooting": "team_ts_pct",
+}
+
+# A claim's criteria.entity_key NAME already tells you its entity type --
+# every team-shaped family observed in data/cache/intel_claims/ names its
+# key as "team" or a "team_"-prefixed word-piece (team, team_posgroup,
+# team_lo, team_hi), and every player/person-shaped family does not
+# (player_id, pid, batter, catcher_id, umpire_id, official_id, p1_id,
+# p2_id). Matching the word-piece rather than an exhaustive hand-
+# maintained set means a new family lands correctly the moment its rows
+# declare entity_key using the same team_* / *_id naming every existing
+# family already follows.
+_PLAYERS_WORD_RE = re.compile(r"\bplayers?\b", re.IGNORECASE)
+_TEAMS_WORD_RE = re.compile(r"\bteams?\b", re.IGNORECASE)
+
+
+def _entity_key_type(entity_key: Any) -> str:
+    """Classify a claim's criteria.entity_key as ENTITY_TYPE_TEAM or
+    ENTITY_TYPE_PLAYER. A pair-keyed entity_key (list, e.g. [p1_id, p2_id]
+    or [team_lo, team_hi]) is classified by its first element's name --
+    the same team/not-team word-piece check applies element-wise."""
+    if isinstance(entity_key, list):
+        entity_key = entity_key[0] if entity_key else None
+    pieces = str(entity_key or "").lower().split("_")
+    return ENTITY_TYPE_TEAM if "team" in pieces else ENTITY_TYPE_PLAYER
+
+
+def question_entity_type(text: str) -> str | None:
+    """"players"/"player" or "teams"/"team" token in the question text ->
+    the entity type the answer MUST be. None if the question names
+    neither (or names both, ambiguously) -- callers must not filter by
+    entity type in that case, only when it is unambiguous."""
+    text = text or ""
+    has_players = bool(_PLAYERS_WORD_RE.search(text))
+    has_teams = bool(_TEAMS_WORD_RE.search(text))
+    if has_players and not has_teams:
+        return ENTITY_TYPE_PLAYER
+    if has_teams and not has_players:
+        return ENTITY_TYPE_TEAM
+    return None
+
+
+def entity_key_matches(entity_key: Any, entity_type: str | None) -> bool:
+    """True if entity_type is None (question named no entity type, so every
+    row passes) or entity_key classifies as entity_type. Takes the raw
+    entity_key VALUE (not a row) so one function works for both the flat
+    index-sidecar shape (top-level "entity_key") and the full claim-row
+    shape (nested under "criteria") -- callers pass whichever they have."""
+    if entity_type is None:
+        return True
+    return _entity_key_type(entity_key) == entity_type
+
+
+def extract_metric_synonym(text: str) -> str | None:
+    """Longest-alias-match lookup into _METRIC_SYNONYMS: never
+    first-keyword-wins -- e.g. "team free throw percentage" must resolve to
+    team_ft_pct, not the shorter "free throw percentage" -> ft_reliability
+    alias that is also a substring of it. Returns the REAL metric name, or
+    None if no alias appears in `text` at all."""
+    lower = (text or "").lower()
+    best_alias_len = -1
+    best_metric: str | None = None
+    for alias, metric in _METRIC_SYNONYMS.items():
+        if alias in lower and len(alias) > best_alias_len:
+            best_alias_len = len(alias)
+            best_metric = metric
+    return best_metric
 
 
 def _display_path(path: Path, repo_root: Path) -> str:
@@ -58,7 +199,27 @@ def index_top_n_lookup(parsed, claims_dir: Path, repo_root: Path) -> dict[str, A
     fail-open PER FAMILY, matching load_verified_claims' own per-store
     fail-open convention -- one stale/missing index never blocks another
     family's fresh index from answering.
+
+    Entity-type + metric-synonym gate (bug fix): a synonym resolved from
+    parsed.raw (e.g. "free throw percentage" -> ft_reliability) is honored
+    ALONGSIDE metric_hints, not instead of it -- either one matching is
+    enough. entity_type is resolved once from parsed.raw and used to
+    reject any row whose entity_key classifies as the OTHER entity type
+    (a "players" question can never be answered by a team-shaped row, and
+    vice versa), closing the exact gap that let team_pts_per_game win a
+    "top 5 nba players" question.
     """
+    metric_synonym = extract_metric_synonym(parsed.raw)
+    entity_type = question_entity_type(parsed.raw)
+    allowed_metrics = set(parsed.metric_hints)
+    if metric_synonym is not None:
+        allowed_metrics.add(metric_synonym)
+    if not allowed_metrics:
+        # UNANSWERABLE-over-wrong-answer: a top-N question whose metric
+        # resolved to NOTHING (no families.py alias, no synonym) must never
+        # be answered by whatever claim is most recent. Fall through to the
+        # slow path, which refuses with the honest unanswerable reason.
+        return None
     best_row: dict[str, Any] | None = None
     best_claims_path: Path | None = None
     best_computed_at = ""
@@ -82,9 +243,11 @@ def index_top_n_lookup(parsed, claims_dir: Path, repo_root: Path) -> dict[str, A
                 continue
             if idx_row.get("verdict") != VERIFIED:
                 continue
-            if parsed.metric_hints and idx_row.get("metric") not in parsed.metric_hints:
+            if idx_row.get("metric") not in allowed_metrics:
                 continue
             if parsed.window_hint and idx_row.get("window") != parsed.window_hint:
+                continue
+            if not entity_key_matches(idx_row.get("entity_key"), entity_type):
                 continue
             computed_at = idx_row.get("computed_at") or ""
             if computed_at <= best_computed_at:

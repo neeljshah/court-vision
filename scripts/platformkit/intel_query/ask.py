@@ -235,11 +235,29 @@ def _filter_by_hints(rows: list[dict[str, Any]], parsed) -> list[dict[str, Any]]
     # Per-file schema tolerance: a claims row from a store this lane hasn't
     # seen yet might be missing "criteria" entirely -- treat that as "does
     # not match this hint" rather than KeyError-ing the whole ask() call.
+    #
+    # BUG FIX: families.classify's metric_hints alias dict has no synonym
+    # for phrasings like "free throw percentage", so metric_hints can come
+    # back EMPTY for a real, answerable metric -- and an empty metric_hints
+    # used to skip metric filtering entirely, letting an unrelated claim
+    # (wrong metric, wrong entity type) win by recency. ask_index's
+    # extract_metric_synonym covers the phrasings that exist in the actual
+    # claim corpus; entity_key_matches rejects a claim whose entity_key
+    # (player vs team) contradicts a question that names an entity type
+    # unambiguously ("players" must never be answered by a team claim).
+    metric_synonym = ask_index.extract_metric_synonym(parsed.raw)
+    entity_type = ask_index.question_entity_type(parsed.raw)
+    allowed_metrics = set(parsed.metric_hints)
+    if metric_synonym is not None:
+        allowed_metrics.add(metric_synonym)
     candidates = rows
-    if parsed.metric_hints:
-        candidates = [r for r in candidates if r.get("criteria", {}).get("metric") in parsed.metric_hints]
+    if allowed_metrics:
+        candidates = [r for r in candidates if r.get("criteria", {}).get("metric") in allowed_metrics]
     if parsed.window_hint:
         candidates = [r for r in candidates if r.get("criteria", {}).get("window") == parsed.window_hint]
+    candidates = [
+        r for r in candidates if ask_index.entity_key_matches(r.get("criteria", {}).get("entity_key"), entity_type)
+    ]
     return candidates
 
 
@@ -265,6 +283,16 @@ def _format_top_n_answer(parsed, question: str, row: dict[str, Any]) -> dict[str
 
 
 def _answer_top_n(parsed, question: str, verified: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    # UNANSWERABLE-over-wrong-answer: a top-N question whose metric resolved
+    # to NOTHING (no families.py alias, no ask_index synonym) must never be
+    # answered by whatever unrelated claim is most recent -- that recency
+    # guess IS the reported bug. Entity lookups are exempt: metric-less
+    # "where does <name> rank" legitimately searches every ranking claim.
+    if not parsed.metric_hints and ask_index.extract_metric_synonym(parsed.raw) is None:
+        return _unanswerable(
+            "could not map the requested metric to any known claims metric "
+            "(no alias or synonym matched) -- refusing to guess", question
+        )
     ranking_claims = [r for r in verified.values() if r.get("kind") == "ranking"]
     candidates = _filter_by_hints(ranking_claims, parsed)
     if not candidates:
