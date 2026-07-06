@@ -79,6 +79,27 @@ _OUTPUT_FRESHNESS_HB = "data/cache/daemon_heartbeats/m29_output_freshness.txt"
 # NO $ field, NO flag flip, NO data/registry/ write, NO real-money action.
 _FEED_HEALTH_HB = "data/cache/daemon_heartbeats/m30_feed_health.txt"
 
+# M38 -- the AUTOLOOP daemon (AUTOLOOP_SPEC_2026-07-06.md, sha e654d58a...; R-B/
+# R-B erratum + R-C/R-D/R-E rulings binding). ZERO-LLM: composes the EXISTING
+# P4 ratchet / reclaim-gate / claims-factory / FWER-curve harnesses under a
+# sha-pinned standing-prereg registry (scripts/platformkit/autoloop/templates/)
+# -- no new math, no new gate. Watermark-triggered (corpus content-sha, not a
+# timer) so unchanged settled data never re-fits and never inflates K. Daily
+# cadence (86400s); readiness=NONE would also be defensible (mirrors m19), but
+# a HEARTBEAT is used here (mirrors m29/m30) so the freshness sentinels can see
+# it too. fresh_sec = 2x the 86400s cadence + margin so a healthy daily tick
+# stays fresh while a genuinely dead/hung run ages out. MEASUREMENT/SUPPRESS-
+# ONLY: never flips a flag, never writes data/registry/, never touches
+# PIPELINE_ENABLED, never promotes a SHIP into the served predictor (an
+# in-model SHIP or a SHIP_REVIEW is a human/Fable queue row, sec 4 of the
+# spec) -- appends only to data/frontend/ops/autoloop_report.json +
+# autoloop_human_queue.jsonl + the append-only K ledger/reject_ledger under
+# data/cache/autoloop/. Independent branch (no depends_on) so a dead tick is
+# ONE red status entry. NOT YET RUNNING -- registered here but requires a
+# supervisor restart (or an explicit orchestrator reload) to take effect per
+# R-C; this wave does NOT bounce the supervisor.
+_AUTOLOOP_HB = "data/cache/daemon_heartbeats/m37_autoloop.txt"
+
 # M31 -- MLB pregame-context snapshotter (probables/weather/umps + injuries + edge
 # facts, 6h cadence). Heartbeat freshness gates readiness; see mlb_context_runner.
 _MLB_CONTEXT_HB = "data/cache/daemon_heartbeats/m31_mlb_context.txt"
@@ -770,6 +791,20 @@ def base_specs() -> List[ProcSpec]:
             argv=["--interval", "30"],
             readiness=ReadinessSpec(
                 kind=HEARTBEAT, heartbeat_path=_INGAME_ENRICHMENT_HB, fresh_sec=90.0),
+            restart_policy=_FOREVER,
+        ),
+        # M38 -- the AUTOLOOP daemon. See _AUTOLOOP_HB comment above for the
+        # full spec (AUTOLOOP_SPEC_2026-07-06.md, R-B/R-C/R-D/R-E rulings).
+        # Independent branch (no depends_on) so a dead tick is itself ONE red
+        # status entry. NOT YET RUNNING -- registered here but requires a
+        # supervisor restart to take effect (R-C: this wave does NOT bounce
+        # the supervisor).
+        ProcSpec(
+            name="m38_autoloop", kind="py",
+            module="scripts.platformkit.autoloop.autoloop_runner",
+            argv=["--interval", "86400"],
+            readiness=ReadinessSpec(
+                kind=HEARTBEAT, heartbeat_path=_AUTOLOOP_HB, fresh_sec=190000.0),
             restart_policy=_FOREVER,
         ),
     ]

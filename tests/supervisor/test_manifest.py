@@ -109,6 +109,10 @@ def test_default_manifest_is_acyclic_and_ordered():
         # m37 -- LANE 2 combined wave-10 enrichment tick (fotmob + gumbo +
         # book-depth, per-source failure-isolated); capture/measurement only, no $
         "m37_ingame_enrichment",
+        # m38 -- the AUTOLOOP daemon (zero-LLM, sha-pinned standing-prereg
+        # registry composing the P4 ratchet/reclaim-gate/claims-factory/FWER
+        # harnesses verbatim; measurement/suppress-only, never promotes)
+        "m38_autoloop",
     }
     _assert_topo(specs)
     # producer precedes the Auto-API which precedes the boards API which precedes UI.
