@@ -93,6 +93,26 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- CLAIMS-FACTORY SPEC PINNED ~03:08Z TRUE-UTC 07-06 (0i(a); Opus design lane
+  + Fable rulings R1-R5 appended): docs/research/depth-program/
+  CLAIMS_FACTORY_SPEC_2026-07-06.md sha256=
+  c2095913253c4748e6e52086372d5dd7a50bacf60681927361ab38c081ad871f (322
+  lines). Key decisions: GRID=data per sport (claims_grid.py, safe_formula
+  grammar => recomputable by construction); windows = materialized snapshot
+  parquets; one jsonl per (sport,family) atomic; deterministic claim_id
+  family__entity__metric__window; validate_claims_file_batched ADDITIVE w/
+  vectorized AST eval (46x measured) + PARITY test vs the slow path (byte-
+  identical verdicts invariant); serving index sidecar w/ tested full-load
+  fallback (fixes ask.py load-all at :188-210); floors REQUIRED per window
+  (fail-closed); no LLM values; descriptive spends NO K; lint+edge_claimed
+  post-checks fail-closed; anti-fake tamper test (tampered parquet =>
+  exactly affected claims flip MISMATCH). Measured post-floor estimates:
+  NBA ~15-30k, MLB ~20-40k, tennis ~10-20k, soccer ~5-10k claims -- the
+  10k/sport bar is real from on-disk grids. RULINGS: family-config Opus
+  review BEFORE first generation; verbatim recompute-caveat on every claim;
+  one build wave (4 lanes A-D), live NBA generation in-wave sanctioned.
+  IN FLIGHT: reclaim-tail wave wf_93d258bf (5 extractor lanes) + small-rows
+  wave wf_f96cdc11. No edge claims.
 - SESSION CLOSE-OUT ~02:20Z TRUE-UTC 07-06: (1) A3 FITTED + HONEST REJECT
   (a93eaf86, Opus PASS): TA1 off/def-rtg L1 sealed-holdout -0.001393, TA2
   four-factors -0.000905 (261 frozen holdout games) -- trailing team-adv
