@@ -93,6 +93,28 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- CLAIMS FACTORY COMPLETE ~05:40Z TRUE-UTC 07-06 (0i(a) done-when EXCEEDED;
+  wf_2066a74d 14 agents/1.50M; commits f1a4553a core / 9adb3cf6 batch-
+  validator / b214ec36 nba-grid / b6ee85b2 index+ask / bcffbdc9 orphan-fix;
+  all lanes Opus PASS vs pinned spec c2095913, L-D verified the sha before
+  AND after its sanctioned run): NBA generates 36,090 INDEPENDENTLY VERIFIED
+  claims in 19.8s (34,650 player + 1,440 team; zero mismatches; parity test
+  locks batch==slow-path verdicts; anti-fake tamper test green; L-A caught
+  its own 28x perf bug 541s->19.2s in-lane). ask() serves from the index in
+  0.27s w/ full provenance + floors + the R3 recompute-caveat. NBA grid
+  ceiling: 98,040 pre-floor / ~50,940 post-floor as more families enable.
+  TWO ORCHESTRATOR CATCHES on the live test: (1) EXTRACTION-TRAP RECURRENCE
+  (worse form): committed ask.py:28 + claims_validator.py:340 imported
+  UNCOMMITTED 300-LOC-rail split modules (clean checkout would crash ask());
+  fixed bcffbdc9, tests re-run green -- wave predated the ownership-list
+  process fix; (2) ASK ROUTER WRONG-METRIC: "top 5 players by free throw
+  percentage" answered w/ TEAM pts/game (well-formed, wrong entity+metric)
+  -- fix lane IN FLIGHT (entity-type detection + synonym map as data +
+  UNANSWERABLE-over-wrong-answer rule). ALSO IN FLIGHT: sport-grid rollout
+  wf_5bab3431 (mlb/tennis/soccer configs, R2 semantic reviews, sanctioned
+  generation) + historical quant sweep wf_9a13ee78 (full-history calibration
+  / close-backfill feasibility / organization audit, all Opus-verified).
+  No edge claims.
 - AUTOLOOP LIVE-PROVEN ~05:00Z TRUE-UTC 07-06 (0j phases 1+2 BUILT; wf_69eff2e9
   6 agents/0.66M; commits b02d38d2 core / bd200b89 m38 ProcSpec / 24aa18bf
   m37->m38 naming consistency -- all Opus PASS): THE CLAUDE-FREE LOOP EXISTS.
