@@ -103,16 +103,18 @@ def place_arbs(arbs: Sequence[Dict[str, Any]], *, ledger_path: Optional[Path] = 
     n_dup = 0
     for arb in arbs:
         row_a, row_b = arb_to_rows(arb, stake_units=stake_units)
-        if row_a["bet_id"] in seen or row_b["bet_id"] in seen:
+        # per-leg dedup: a crash between the two appends leaves one leg
+        # orphaned; writing only the missing leg here self-heals next tick
+        legs = [r for r in (row_a, row_b) if r["bet_id"] not in seen]
+        if not legs:
             n_dup += 1
             continue
         if not place:
             continue
-        ok_a = _append(row_a, _ledger)
-        ok_b = _append(row_b, _ledger)
-        if ok_a and ok_b:
-            written.extend([row_a["bet_id"], row_b["bet_id"]])
-            seen.add(row_a["bet_id"]); seen.add(row_b["bet_id"])
+        for row in legs:
+            if _append(row, _ledger):
+                written.append(row["bet_id"])
+                seen.add(row["bet_id"])
     return {"n_detected": len(arbs), "n_pairs_written": len(written) // 2,
             "n_dup_skipped": n_dup, "bet_ids": written, "edge_claimed": False,
             "channel": "paper"}
