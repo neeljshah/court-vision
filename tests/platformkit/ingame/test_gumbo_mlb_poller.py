@@ -170,3 +170,131 @@ def test_run_once_no_live_games_clean_zero_report(tmp_path):
                          state_file=tmp_path / "s.json", fetch_fn=fetch,
                          sleep_fn=lambda s: None)
     assert report["n_live_games"] == 0 and report["n_rows_written"] == 0
+
+
+# --- live-cadence window (latency-audit fix, 2026-07-07) ---
+
+_PRE_CHANGE_KEYS = {  # exact row keys BEFORE this change, for the fixture payload
+    "game_pk", "ts", "inning", "half", "outs", "base_state", "base_label",
+    "on_first", "on_second", "on_third", "balls", "strikes",
+    "score_away", "score_home", "batter_id", "pitcher_id"}
+
+
+def test_row_schema_unchanged_plus_additive_captured_at(tmp_path):
+    def fetch(url):
+        if "schedule" in url:
+            return _schedule_payload(game_pk=111)
+        return _bootstrap_payload(game_pk=111)
+
+    M.run_once(date_str="2026-07-04", out_dir=tmp_path / "g",
+               state_file=tmp_path / "s.json", fetch_fn=fetch, sleep_fn=lambda s: None)
+    row = json.loads((tmp_path / "g" / "111.jsonl").read_text(encoding="utf-8").splitlines()[0])
+    assert set(row) == _PRE_CHANGE_KEYS | {"captured_at"}, "schema must stay byte-compatible + one additive key"
+    assert row["ts"] == "20260704_025709", "ts stays MLB's own metaData.timeStamp"
+    assert row["captured_at"].endswith("Z") and "T" in row["captured_at"]
+
+
+def test_live_cadence_env_default_and_floor(monkeypatch):
+    monkeypatch.delenv("CV_GUMBO_LIVE_SEC", raising=False)
+    assert M.live_cadence_sec() == 10.0
+    monkeypatch.setenv("CV_GUMBO_LIVE_SEC", "2")
+    assert M.live_cadence_sec() == 5.0, "never hammer below the 5s politeness floor"
+    monkeypatch.setenv("CV_GUMBO_LIVE_SEC", "15")
+    assert M.live_cadence_sec() == 15.0
+    monkeypatch.setenv("CV_GUMBO_LIVE_SEC", "garbage")
+    assert M.live_cadence_sec() == 10.0
+
+
+class _FakeClock:
+    def __init__(self):
+        self.t = 0.0
+        self.slept = []
+
+    def __call__(self):
+        return self.t
+
+    def sleep(self, s):
+        self.t += s
+        self.slept.append(s)
+
+
+def _clock():
+    return _FakeClock()
+
+
+def test_run_live_window_fast_polls_while_live(tmp_path):
+    passes = {"n": 0}
+
+    def fetch(url):
+        if "schedule" in url:
+            passes["n"] += 1
+            return _schedule_payload(game_pk=111)
+        return _bootstrap_payload(game_pk=111)
+
+    c = _clock()
+    rep = M.run_live_window(30.0, date_str="2026-07-04", out_dir=tmp_path / "g",
+                            state_file=tmp_path / "s.json", fetch_fn=fetch,
+                            sleep_fn=c.sleep, clock=c, cadence_sec=10.0)
+    assert rep["passes"] == 2 and rep["rows_written"] == 2
+    assert c.slept == [10.0, 10.0, 10.0], "waits one cadence first, then per-pass, then remainder"
+    assert passes["n"] == 2, "one schedule check per fast pass"
+
+
+def test_run_live_window_goes_idle_when_no_live_games(tmp_path):
+    calls = {"n": 0}
+
+    def fetch(url):
+        calls["n"] += 1
+        return {"dates": []}   # nothing live
+
+    c = _clock()
+    rep = M.run_live_window(30.0, date_str="2026-07-04", out_dir=tmp_path / "g",
+                            state_file=tmp_path / "s.json", fetch_fn=fetch,
+                            sleep_fn=c.sleep, clock=c, cadence_sec=10.0)
+    assert rep["passes"] == 1 and rep["rows_written"] == 0
+    assert calls["n"] == 1, "no fast polling without a live game (idle cadence unchanged)"
+    assert c.t == 30.0, "remaining window is plain-slept away, never returned early"
+
+
+def test_run_live_window_backs_off_exponentially_on_error_passes(tmp_path):
+    def fetch(url):
+        if "schedule" in url:
+            return _schedule_payload(game_pk=111)
+        return None   # every game fetch fails (HTTP error path degrades to None)
+
+    c = _clock()
+    rep = M.run_live_window(100.0, date_str="2026-07-04", out_dir=tmp_path / "g",
+                            state_file=tmp_path / "s.json", fetch_fn=fetch,
+                            sleep_fn=c.sleep, clock=c, cadence_sec=10.0)
+    assert rep["rows_written"] == 0
+    assert c.slept[:3] == [10.0, 20.0, 40.0], "exponential backoff on all-error passes"
+    assert max(c.slept) <= 60.0, "backoff capped"
+
+
+def test_run_live_window_diffpatch_then_fallback_to_full_feed(tmp_path):
+    """Steady state uses diffPatch; a broken patch falls back to the full feed -- proven
+    inside the fast window (not just in poll_one_game isolation)."""
+    urls = []
+    bad_patch = [{"metaData": {"logicalEvents": []},
+                  "diff": [{"op": "replace", "path": "/liveData/linescore/outs/99", "value": 1}]}]
+
+    def fetch(url):
+        urls.append(url)
+        if "schedule" in url:
+            return _schedule_payload(game_pk=111)
+        if "diffPatch" in url:
+            return bad_patch
+        return _bootstrap_payload(game_pk=111, outs=2, ts="20260704_030000")
+
+    state_file = tmp_path / "s.json"
+    c = _clock()
+    rep = M.run_live_window(21.0, date_str="2026-07-04", out_dir=tmp_path / "g",
+                            state_file=state_file, fetch_fn=fetch,
+                            sleep_fn=c.sleep, clock=c, cadence_sec=10.0)
+    assert rep["passes"] == 2
+    diffpatch_calls = [u for u in urls if "diffPatch" in u]
+    full_feed_calls = [u for u in urls if "feed/live" in u and "diffPatch" not in u]
+    assert diffpatch_calls, "second pass must try diffPatch (prior ts cached)"
+    assert len(full_feed_calls) >= 2, "bootstrap + fallback re-fetch on patch failure"
+    rows = (tmp_path / "g" / "111.jsonl").read_text(encoding="utf-8").splitlines()
+    assert len(rows) == 2 and json.loads(rows[1])["outs"] == 2, "fallback row still written"

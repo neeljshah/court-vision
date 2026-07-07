@@ -5,7 +5,11 @@ enrichment tick (m37): fotmob (soccer live) + gumbo (mlb live) + book-depth
 Every tick (default 30s, the fastest of the three source cadences -- fotmob's
 own ~60s pace is honored internally via its own poll_once sleep_s pacing, not by
 skipping ticks here, so this stays a SINGLE simple cadence rather than a
-per-source scheduler):
+per-source scheduler; EXCEPTION, latency-audit fix 2026-07-07: when the last
+tick saw >=1 live MLB game, the inter-tick wait is spent inside
+gumbo_mlb_poller.run_live_window(), fast-polling GUMBO diffPatch at
+CV_GUMBO_LIVE_SEC (default 10s) instead of sleeping idle -- fotmob/book-depth
+keep their 30s cadence, idle behavior unchanged):
   (a) domains.soccer.ingame_fotmob.poll_once()        -- soccer live snapshots
   (b) scripts.platformkit.ingame.gumbo_mlb_poller.run_once() -- MLB GUMBO ticks,
       using game_pk_bridge_live for id-join context (best-effort, additive)
@@ -173,6 +177,26 @@ def tick(*, now: float, tick_index: int = 0,
     return doc
 
 
+def _intertick_wait(interval_sec: float, last_doc: Dict[str, Any],
+                    sleep_fn: Callable[[float], None]) -> None:
+    """Spend the inter-tick wait fast-polling MLB GUMBO (run_live_window, CV_GUMBO_LIVE_SEC
+    cadence) when the last tick saw >=1 live MLB game; plain sleep otherwise (idle
+    unchanged). A raising live window degrades to a plain sleep -- never raises."""
+    try:
+        n_live = int(((last_doc or {}).get("gumbo") or {}).get("n_live_games") or 0)
+    except (TypeError, ValueError):
+        n_live = 0
+    if n_live <= 0:
+        sleep_fn(float(interval_sec))
+        return
+    try:
+        from scripts.platformkit.ingame.gumbo_mlb_poller import run_live_window
+        run_live_window(window_sec=float(interval_sec), sleep_fn=sleep_fn)
+    except Exception as exc:  # noqa: BLE001 -- capture-only; degrade, never sink the loop
+        logger.warning("ingame_enrichment gumbo live window raised: %s", exc)
+        sleep_fn(float(interval_sec))
+
+
 def run(*, interval_sec: float = DEFAULT_INTERVAL_SEC,
         clock: Optional[Callable[[], float]] = None,
         sleep: Optional[Callable[[float], None]] = None,
@@ -207,7 +231,7 @@ def run(*, interval_sec: float = DEFAULT_INTERVAL_SEC,
         if max_ticks is not None and ticks >= max_ticks:
             break
         try:
-            _sleep(float(interval_sec))
+            _intertick_wait(float(interval_sec), doc, _sleep)
         except Exception:  # noqa: BLE001
             break
     return ticks
