@@ -35,6 +35,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Tuple
@@ -46,6 +47,9 @@ logger = logging.getLogger(__name__)
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 STATUS_PATH = _REPO_ROOT / "data" / "frontend" / "ops" / "ingame_paper_settle_status.json"
 COMPONENT = "m_ingame_paper_settle"
+# Ticks with open bets but ZERO settles before status flips to STUCK
+# (24 ticks * 900s = ~6h). Override via env INGAME_SETTLE_STUCK_TICKS.
+STUCK_AFTER_TICKS = int(os.environ.get("INGAME_SETTLE_STUCK_TICKS", "24"))
 
 # game_id -> (home_score, away_score) | None. MLB via the ticker->boxscore resolver.
 ScoreFn = Callable[[str], Optional[Tuple[int, int]]]
@@ -260,8 +264,24 @@ def settle_open(*, score_fn: Optional[ScoreFn] = None,
     }
 
 
-def write_status(doc: Dict[str, Any], path: Optional[Path] = None) -> None:
+def write_status(doc: Dict[str, Any], path: Optional[Path] = None,
+                 stuck_after: Optional[int] = None) -> None:
+    """Write the status doc, folding in the STUCK detector: a tick that ends
+    with open bets but zero settles bumps consecutive_zero_ticks (persisted in
+    the status file itself); >= stuck_after consecutive such ticks flips
+    status to STUCK so ops_sentinel/feed_health can alert -- the 2026-07-07
+    incident (63+ silent zero-settle ticks) becomes visible, not silent."""
     p = Path(path) if path is not None else STATUS_PATH
+    n = int(stuck_after) if stuck_after is not None else STUCK_AFTER_TICKS
+    prev = 0
+    try:
+        prev = int(json.loads(p.read_text(encoding="ascii"))
+                   .get("consecutive_zero_ticks", 0))
+    except Exception:  # noqa: BLE001 -- first write / unreadable -> counter restarts
+        prev = 0
+    zero = int(doc.get("settled", 0)) == 0 and int(doc.get("still_open", 0)) > 0
+    doc["consecutive_zero_ticks"] = prev + 1 if zero else 0
+    doc["status"] = "STUCK" if doc["consecutive_zero_ticks"] >= n else "OK"
     p.parent.mkdir(parents=True, exist_ok=True)
     tmp = p.with_suffix(p.suffix + ".tmp")
     tmp.write_text(json.dumps(doc, indent=1), encoding="ascii")

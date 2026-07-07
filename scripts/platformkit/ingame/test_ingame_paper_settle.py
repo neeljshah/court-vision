@@ -78,7 +78,31 @@ def test_write_status(tmp_path):
     out = tmp_path / "status.json"
     ps.write_status(doc, out)
     assert out.exists()
-    assert json.loads(out.read_text())["component"] == ps.COMPONENT
+    got = json.loads(out.read_text())
+    assert got["component"] == ps.COMPONENT
+    assert got["status"] == "OK"  # nothing open -> not stuck
+    assert got["consecutive_zero_ticks"] == 0
+
+
+def test_stuck_detector_flags_after_n_zero_ticks(tmp_path):
+    """2026-07-07 incident shape: open>0, settled==0 for many ticks, errors==0
+    -- must surface as STUCK instead of staying silent."""
+    out = tmp_path / "status.json"
+    for i in range(3):
+        ps.write_status({"settled": 0, "still_open": 129}, out, stuck_after=3)
+        got = json.loads(out.read_text())
+        assert got["consecutive_zero_ticks"] == i + 1
+    assert got["status"] == "STUCK"
+
+
+def test_stuck_counter_resets_when_a_settle_lands(tmp_path):
+    out = tmp_path / "status.json"
+    for _ in range(5):
+        ps.write_status({"settled": 0, "still_open": 10}, out, stuck_after=3)
+    ps.write_status({"settled": 2, "still_open": 8}, out, stuck_after=3)
+    got = json.loads(out.read_text())
+    assert got["consecutive_zero_ticks"] == 0
+    assert got["status"] == "OK"
 
 
 def _soccer_bet(gid, side="home", ek=None):
