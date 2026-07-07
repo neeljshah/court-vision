@@ -267,6 +267,20 @@ def test_scan_npb_structural_gap_does_not_flip_overall_red():
     assert npb_row["capture_only_degrade"] is True
 
 
+def test_default_providers_governs_kalshi_only():
+    """BUGFIX 2026-07-07: the real provider stack's KalshiProvider must come
+    back governed (governor_caller='feed_health'), every other provider
+    untouched -- proves the probe no longer hits Kalshi unpaced (the 429 root
+    cause), without a real network call."""
+    provs = _feed_health._default_providers()
+    kalshi = [p for p in provs if getattr(p, "name", None) == "kalshi"]
+    assert len(kalshi) == 1
+    assert kalshi[0]._governor is not None
+    assert kalshi[0]._governor._caller == "feed_health"
+    others = [p for p in provs if getattr(p, "name", None) != "kalshi"]
+    assert len(others) == len(provs) - 1
+
+
 def test_scan_npb_real_fault_still_flips_overall_red():
     """A genuine npb fault (not the structural shape) must still surface as
     RED in the aggregate -- this fix must not silence real breakage."""
