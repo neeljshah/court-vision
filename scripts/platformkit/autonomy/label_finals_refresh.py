@@ -60,6 +60,7 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_MAX_DATES_PER_TICK = 10
 DEFAULT_BOOTSTRAP_DAYS = 3
+DEFAULT_REFETCH_DAYS = 3
 
 # fetch_fn contract: fetch_fn(dates: List[str] (YYYYMMDD), out_path: Path) -> Any.
 # Isolated per-spec -- an exception here is caught by refresh_one, never propagated.
@@ -76,6 +77,9 @@ class RefreshSpec:
         every ingest module wired here).
     fetch_fn: sport ingest_range-shaped callable: fetch_fn(dates, out_path=...).
     max_dates_per_tick / bootstrap_days: bounds (never an unbounded pull).
+    refetch_days: trailing window ALWAYS re-fetched even if already present
+        (a present date may be incomplete -- ingests persist FINAL games only);
+        0 disables (pure watermark, the pre-2026-07-07 behavior).
     """
     name: str
     out_path: Path
@@ -83,6 +87,7 @@ class RefreshSpec:
     date_col: str = "date"
     max_dates_per_tick: int = DEFAULT_MAX_DATES_PER_TICK
     bootstrap_days: int = DEFAULT_BOOTSTRAP_DAYS
+    refetch_days: int = DEFAULT_REFETCH_DAYS
 
 
 def _utc_today() -> dt.date:
@@ -123,6 +128,16 @@ def missing_dates(spec: RefreshSpec, *, today: Optional[dt.date] = None) -> List
         start = now - dt.timedelta(days=max(0, spec.bootstrap_days - 1))
     else:
         start = max_dt + dt.timedelta(days=1)
+        if spec.refetch_days > 0:
+            # ROOT-CAUSE GUARD (2026-07-07): a date PRESENT in the parquet is
+            # not necessarily COMPLETE. The ingests persist only games already
+            # FINAL at fetch time, so the first final of day D advances the
+            # watermark to D and locks out the rest of D's games forever
+            # (observed: exactly 1 of ~14 MLB games/day landed 07-03..07-06 ->
+            # 129 in-game paper bets unsettleable). Always re-fetch the
+            # trailing refetch_days window; every wired ingest dedupes on its
+            # event/game id, so re-fetching is idempotent.
+            start = min(start, now - dt.timedelta(days=spec.refetch_days - 1))
     if start > now:
         return []
     n_days = (now - start).days + 1
@@ -244,5 +259,5 @@ SPECS: List[RefreshSpec] = _default_specs()
 
 __all__ = [
     "RefreshSpec", "SPECS", "DEFAULT_MAX_DATES_PER_TICK", "DEFAULT_BOOTSTRAP_DAYS",
-    "missing_dates", "refresh_one", "refresh_all",
+    "DEFAULT_REFETCH_DAYS", "missing_dates", "refresh_one", "refresh_all",
 ]

@@ -44,12 +44,30 @@ def test_missing_dates_computes_gap_since_max_date(tmp_path):
     assert got == ["20260629", "20260630", "20260701", "20260702", "20260703"]
 
 
-def test_missing_dates_empty_when_already_current(tmp_path):
+def test_missing_dates_empty_when_already_current_and_refetch_disabled(tmp_path):
     p = tmp_path / "finals.parquet"
     _write_parquet(p, ["2026-07-03"])
-    spec = RefreshSpec(name="x", out_path=p, fetch_fn=lambda dates, out_path: None)
+    spec = RefreshSpec(name="x", out_path=p, fetch_fn=lambda dates, out_path: None,
+                       refetch_days=0)
     got = missing_dates(spec, today=dt.date(2026, 7, 3))
     assert got == []
+
+
+def test_missing_dates_refetches_partially_ingested_day(tmp_path):
+    """REGRESSION (2026-07-07): the ingests persist only games FINAL at fetch
+    time, so the first final of day D advanced the watermark to D and the old
+    watermark-only missing_dates NEVER re-fetched D. Real shape observed:
+    espn_boxscores.parquet held exactly 1 of ~14 MLB games/day for 07-03..06
+    and 129 open in-game paper bets could not settle (m27 settled=0, errors=0).
+    Fixture mirrors it: one full day (14 games) then a 1-game partial day."""
+    p = tmp_path / "box.parquet"
+    _write_parquet(p, ["2026-07-02"] * 14 + ["2026-07-03"])
+    spec = RefreshSpec(name="x", out_path=p, fetch_fn=lambda dates, out_path: None)
+    got = missing_dates(spec, today=dt.date(2026, 7, 4))
+    # Old code returned only ["20260704"]; 07-03's 13 missing games stayed
+    # missing forever. The trailing refetch window must re-include 07-03.
+    assert "20260703" in got
+    assert got == ["20260702", "20260703", "20260704"]
 
 
 def test_missing_dates_caps_at_max_dates_per_tick(tmp_path):
@@ -84,9 +102,10 @@ def test_refresh_one_calls_fetch_fn_with_missing_dates(tmp_path):
 
     spec = RefreshSpec(name="x", out_path=p, fetch_fn=fake_fetch)
     res = refresh_one(spec, today=dt.date(2026, 7, 3))
-    assert calls["dates"] == ["20260702", "20260703"]
+    # default refetch_days=3 re-includes 07-01 (present but maybe incomplete)
+    assert calls["dates"] == ["20260701", "20260702", "20260703"]
     assert calls["out_path"] == p
-    assert res["n_fetched"] == 2 and res["error"] is None
+    assert res["n_fetched"] == 3 and res["error"] is None
 
 
 def test_refresh_one_noop_when_nothing_missing_does_not_call_fetch(tmp_path):
@@ -97,7 +116,8 @@ def test_refresh_one_noop_when_nothing_missing_does_not_call_fetch(tmp_path):
     def fake_fetch(dates, out_path):
         called["n"] += 1
 
-    spec = RefreshSpec(name="x", out_path=p, fetch_fn=fake_fetch)
+    spec = RefreshSpec(name="x", out_path=p, fetch_fn=fake_fetch,
+                       refetch_days=0)
     res = refresh_one(spec, today=dt.date(2026, 7, 3))
     assert called["n"] == 0
     assert res == {"name": "x", "fetched": [], "n_fetched": 0, "error": None}
@@ -152,7 +172,7 @@ def test_refresh_all_isolates_one_failing_spec_from_others(tmp_path):
     ]
     out = refresh_all(specs, today=dt.date(2026, 7, 3))
     assert out["ok_spec"]["error"] is None
-    assert out["ok_spec"]["n_fetched"] == 2
+    assert out["ok_spec"]["n_fetched"] == 3
     assert out["bad_spec"]["error"] is not None
     assert out["bad_spec"]["n_fetched"] == 0
 
