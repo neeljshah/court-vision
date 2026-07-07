@@ -93,6 +93,22 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- KALSHI READINESS: DEMO-VENUE SPEC DRAFTED ~23:10-local 07-06 (doc-only,
+  day-queue item (i) prep; user goal restated on leaving: "sports trading
+  at the highest level... make my ai independent... work to a place where
+  i can make money" -- via honest gates only): docs/research/depth-program/
+  PROPOSED_KALSHI_DEMO_VENUE_2026-07-07.md sha256=4e8ebc731e9b605f7f74e5
+  ef83258a5391e458f31f74ea9df872dd5a27850db4 (288 lines, gitignored-local
+  per precedent). Specs KalshiDemoVenue implementing the real MarketVenue
+  ABC (8 methods, BestExecution-compatible), RSA-signed demo-env client
+  (VERIFY-AT-BUILD flags on all API facts), governor caller 'kalshi_venue',
+  idempotent order lifecycle + log-only reconciliation + kill-switch,
+  hermetic FakeKalshiHTTP tests + attended-only smoke, 3 build lanes.
+  PREMISE CATCH: existing venues/live_stubs.py KalshiVenue is a
+  credential-presence stub that refuses all orders -- spec closes the REAL
+  gap (no signing/trading client exists anywhere) without duplicating.
+  Rails in-spec: demo default only, no secrets, never daemon-imported,
+  real money human-gated forever. No edge claims.
 - KALSHI-PAPER READINESS ARC: (e)-GAP LANE LANDED ~22:35-local 07-06
   (bb8df999, Opus PASS): TWO real measurement bugs fixed -- (1) trust
   checker key mismatch ('ingame|sport|channel' vs builder's 'phase|sport|
