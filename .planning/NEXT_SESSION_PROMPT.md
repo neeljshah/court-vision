@@ -90,13 +90,22 @@ STANDARD RAILS apply ($10/day, 8 wakes/day per AUTONOMY_CHARTER).
     file universe (+14 missing files); (ii) decide soccer_intl's place in
     calibration harnesses (wire or document-as-unused); (iii) WNBA/KBO/NPB
     reject-ledger densification.
+(i) KALSHI-PAPER READINESS (user directive 07-06 evening, arc OPEN in
+    NOW.md): execution_quality.json has NO owning daemon (26h SLA, on-
+    demand only; its staleness alone REDs criterion f on every channel --
+    proven+fixed by hand tonight). Build a supervised refresher (fold into
+    m20's cadence or a tiny runner). Check the (e)-gap lane's outcome in
+    NOW.md first (execution_quality cells + reconcile verdicts). Criteria
+    (a)/(b)/(g) are volume/market verdicts -- no build can move them
+    honestly. Also spec the live KalshiVenue adapter against the demo env
+    (MarketVenue interface in pm_trading/venues/) so execution readiness
+    is proven at zero risk while evidence accrues.
 (g) DONE ~15:30 07-06: streaming validator shipped (98cb5b3b, Opus PASS)
     and both stores validated+indexed with it -- pitcher 4,434/4,434 +
     batter 7,452/7,452, all VERIFIED, 0 mismatch, RSS bounded 207-379MB.
     MLB rate families now fully ask()-servable.
-(h) index densification: fast-path .index.jsonl for remaining ask()-
-    reachable families (one build_index call per family; soccer_intl_team_
-    travel_rate needs a refresh).
+(h) DONE ~21:15 07-06: all 30/30 validated families fast-path indexed
+    (22 built in one data-only pass, 27/27 index tests green).
 
 ## BINDING RAILS (unchanged)
 Never push origin (private OK). Never write data/registry/. Never flip a

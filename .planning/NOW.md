@@ -93,6 +93,22 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- KALSHI-PAPER READINESS ARC OPEN ~22:00-local 07-06 (user directive:
+  "get kalshi paper trading to the highest level... ready for kalshi
+  trading"; program = close every MEASUREMENT gap in the greenlight
+  criteria, never force a green): PREMISE-CHECK WIN: criterion (f) RED on
+  ALL channels traced to ONE stale artifact -- execution_quality.json
+  (29.6h old, 26h SLA, NO daemon owns it, on-demand main() only). Ran it
+  once + greenlight recompute -> (f) now PASSES on all 4 channels
+  (cv_honesty NOT_REFUTED, failures=[]); the 03:24 edge_claimed_false flag
+  was a dead-fleet stale-read artifact. paper_pm fresh state: n=191 (need
+  300), CLV (c) still PASSES, (d) is a MARKET VERDICT not a gap (n_costed
+  49/55 works; after-cost units -7.5/-5.0 honest negative), (e) = last
+  buildable gap (2 execution_quality cells missing + reconcile_unknown_
+  verdict) -- diagnose-first Sonnet lane in flight w/ no-forced-green
+  rule. DAY QUEUE ADD: execution_quality needs a supervised refresher
+  (daemon or fold into m20) so it can never re-stale criterion f. No
+  edge claims -- (b)/(g) stay honest RED until settled volume decides.
 - WATCHMAN INDEX DENSIFICATION ~21:15-local 07-06 (day-queue item (h)
   CLOSED, user "no gaps" directive): built fresh .index.jsonl for ALL 22
   remaining validated families via committed build_index tooling (fail-
