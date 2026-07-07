@@ -93,6 +93,25 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- KALSHI-PAPER READINESS ARC: (e)-GAP LANE LANDED ~22:35-local 07-06
+  (bb8df999, Opus PASS): TWO real measurement bugs fixed -- (1) trust
+  checker key mismatch ('ingame|sport|channel' vs builder's 'phase|sport|
+  venue'): paper_pm's evidence EXISTED (104 measurable rows, 54.5% same-
+  venue coverage at pregame|mlb|kalshi) but was invisible to criterion e;
+  venue-agnostic channel_cells rollup added (same rows/same stats helper,
+  no new math), checker reads fail-closed (old artifacts w/o the key =
+  honest RED); (2) DIVERGENT reconcile verdict (z=2.04, under the 2.5
+  RED bar) previously fell to 'unknown' -- now explicit AMBER
+  'reconcile_divergent_not_decisive', and Opus verified AMBER CANNOT pass
+  e (strict ==GREEN literal in greenlight_criteria.py:175). POST-FIX
+  HONEST STATE: e still fails on real grounds (coverage 54.5%<60 floor,
+  same-venue CLV CI straddles 0, divergent-not-decisive) -- measurement
+  now COMPLETE; only settled volume moves the channel from here. Nits
+  queued: direct DIVERGENT-branch test fixture; pre-existing env-driven
+  test_criterion_f_never_silently_passes failure on HEAD (reads real ops
+  dir) needs a day-session look. MEASUREMENT-GAP SWEEP OF THE ARC DONE:
+  f fixed (stale orphan artifact), e fixed (this), d verified market-
+  verdict-not-gap, a/b/g volume/market. No edge claims.
 - KALSHI-PAPER READINESS ARC OPEN ~22:00-local 07-06 (user directive:
   "get kalshi paper trading to the highest level... ready for kalshi
   trading"; program = close every MEASUREMENT gap in the greenlight
