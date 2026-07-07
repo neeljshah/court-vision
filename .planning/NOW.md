@@ -93,6 +93,17 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- WATCHMAN INDEX DENSIFICATION ~21:15-local 07-06 (day-queue item (h)
+  CLOSED, user "no gaps" directive): built fresh .index.jsonl for ALL 22
+  remaining validated families via committed build_index tooling (fail-
+  closed, data-only, no code change) -- 30/30 families now fast-path
+  indexed (was 8/30 per HQ3 audit); test_ask_index + test_claims_index
+  27/27 green after. m18 governor fix confirmed durable: 2/2 longevity
+  passes (+66 bytes/hr err growth = lone paced 429s, spiral dead).
+  Greenlight end-of-day: props AMBER excess +13.2pp CI[-0.5,+26.9] n=99;
+  moneyline/pm excess negative; in-game accruing (859 grade files).
+  Shadow history 8 files -- tennis/wnba adjudication ripens tomorrow (day
+  session). No edge claims.
 - WATCHMAN m18 ARC ~17:35-18:24-local 07-06 (FIRST REAL RED OF THE DAY,
   FIXED + VERIFIED): m18_pm_close_capture RED age 2102s, err log = endless
   "kalshi markets failed for mlb: HTTP 429" spiral. PREMISE-CHECKS: the
