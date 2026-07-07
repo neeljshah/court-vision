@@ -254,6 +254,17 @@
       "_note": "M12 measurement-only PM paper tick. Every 60 s captures Kalshi/Polymarket model-vs-price pairs and appends to data/cache/pm_paper/<market_id>.jsonl. UNITS not $; no flag flip; no data/registry/ write; real-money default-DENY."
     },
     {
+      "name": "cross_venue_arb",
+      "command": "python -u -m scripts.platformkit.pm_trading.run_cross_venue_arb --daemon --place",
+      "expected_interval_sec": 60,
+      "heartbeat_file": "data/cache/daemon_heartbeats/cross_venue_arb.txt",
+      "restart_cmd": "cd /workspace/nba-ai-system && mkdir -p logs && nohup python -u -m scripts.platformkit.pm_trading.run_cross_venue_arb --daemon --place > logs/cross_venue_arb.log 2>&1 &",
+      "restart_cmd_win": "cd /d C:\\Users\\neelj\\nba-ai-system && if not exist logs mkdir logs && start \"\" /b cmd /c \"python -u -m scripts.platformkit.pm_trading.run_cross_venue_arb --daemon --place >> logs\\cross_venue_arb.log 2>&1\"",
+      "process_match": "pm_trading.run_cross_venue_arb",
+      "heartbeat_optional": true,
+      "_note": "Paper cross-venue price-discrepancy lane (mlb/wnba two-way moneyline only -- soccer's 3-way draw excluded, see cross_venue_arb.py docstring). Every 60s reads cached data/cache/line_history/<sport>/<date>.jsonl, matches the same game across Kalshi vs sportsbooks via pm_game_placer._name_matches, flags fee-adjusted locks >120s stale as skip, and paper-writes both legs to clv_ledger.jsonl (market_type=arb, executed=False, edge_claimed=False). UNITS not $; no flag flip; no data/registry/ write; real-money default-DENY."
+    },
+    {
       "name": "m13_props_pred_tick",
       "command": "python -u -m scripts.platformkit.props.props_pred_tick_runner",
       "expected_interval_sec": 300,
