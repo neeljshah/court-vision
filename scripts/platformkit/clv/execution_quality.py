@@ -120,16 +120,17 @@ def build_scoreboard(
     settled = _dedup_settled(ledger)
 
     cells: Dict[str, Dict[str, Any]] = {}
+    by_channel: Dict[str, Dict[str, Any]] = {}  # "sport|channel" rollup across venues, see channel_cells
     for r in settled:
         ch = _channel_of(r)
         phase = _PHASE_OF.get(ch, "unknown_phase")
         sport = str(r.get("sport") or "unknown")
         venue = _venue_key(r)
+        base = {"phase": phase, "channel": ch, "channel_label": _CHANNEL_LABEL.get(ch, ch), "sport": sport}
         key = "%s|%s|%s" % (phase, sport, venue)
-        cells.setdefault(key, {"phase": phase, "channel": ch,
-                               "channel_label": _CHANNEL_LABEL.get(ch, ch),
-                               "sport": sport, "venue": venue, "rows": []})
-        cells[key]["rows"].append(r)
+        cells.setdefault(key, {**base, "venue": venue, "rows": []})["rows"].append(r)
+        ck = "%s|%s" % (sport, ch)
+        by_channel.setdefault(ck, {**base, "rows": []})["rows"].append(r)
 
     channels_out: Dict[str, Any] = {}
     for key, cell in sorted(cells.items()):
@@ -138,6 +139,17 @@ def build_scoreboard(
             "phase": cell["phase"], "channel": cell["channel"],
             "channel_label": cell["channel_label"], "sport": cell["sport"],
             "venue": cell["venue"], **stats,
+        }
+
+    # channel_cells: venue-agnostic "sport|channel" rollup (same measurable
+    # rows re-aggregated, not fabricated) -- the lookup greenlight_trust_honesty
+    # needs, since a channel like paper_pm/moneyline spans multiple venue cells.
+    channel_cells: Dict[str, Any] = {}
+    for ck, cell in sorted(by_channel.items()):
+        stats = _cell_stats(cell["rows"])
+        channel_cells[ck] = {
+            "phase": cell["phase"], "channel": cell["channel"],
+            "channel_label": cell["channel_label"], "sport": cell["sport"], **stats,
         }
 
     if graded_rows is None:
@@ -149,6 +161,7 @@ def build_scoreboard(
     return {
         "cells": channels_out,
         "n_cells": len(channels_out),
+        "channel_cells": channel_cells,
         "total_settled_clv_ledger": len(settled),
         "pregame_prediction_ledger": {
             **_cell_stats(graded_rows),
