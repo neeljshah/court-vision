@@ -98,9 +98,19 @@ def _classify_reason(reason: str, sport: Optional[str] = None) -> str:
 
 
 def _default_providers() -> List[Any]:
-    """The same provider stack the live slate uses (reuse, not reinvent)."""
+    """The same provider stack the live slate uses (reuse, not reinvent).
+
+    BUGFIX (2026-07-07): aggregate's KalshiProvider is unpaced (governor_caller=
+    None, untouched here). 7 back-to-back kalshi calls with zero spacing, on top
+    of the capture/snapshot daemons hammering the same host, produced live
+    "kalshi markets failed: HTTP Error 429" (logs/m30_feed_health.err) -- never a
+    ticker/endpoint fault. Swap in a governed KalshiProvider for the probe only.
+    """
     from .aggregate import default_providers as _dp
-    return _dp(use_cache=False)
+    from .kalshi import KalshiProvider
+    provs = _dp(use_cache=False)
+    return [KalshiProvider(use_cache=False, governor_caller="feed_health")
+            if getattr(p, "name", None) == "kalshi" else p for p in provs]
 
 
 def probe_one(provider: Any, sport: str) -> Dict[str, Any]:

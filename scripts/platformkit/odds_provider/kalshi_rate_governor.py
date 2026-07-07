@@ -57,8 +57,11 @@ BASE_RPS = 15.0
 # Per-process fair shares of BASE_RPS (PROPOSED doc + prompt default, since the
 # doc did not specify a cross-process split): capture is the slower/steadier
 # LIVE_INTERVAL_SEC=20s loop; snapshot is the faster FAST_INTERVAL_SEC=5s loop
-# with 8 sports (vs capture's 6) -- it gets the larger share.
-DEFAULT_RATE_SHARES: Dict[str, float] = {"capture": 0.35, "snapshot": 0.65}
+# with 8 sports (vs capture's 6) -- it gets the larger share. feed_health added
+# 2026-07-07: a 10-minute-interval health probe (7 sports, 1 call each), not a
+# hot loop -- a small fixed share is enough to stop it 429ing itself while it
+# still yields to the two live-trading daemons.
+DEFAULT_RATE_SHARES: Dict[str, float] = {"capture": 0.35, "snapshot": 0.65, "feed_health": 0.15}
 
 # Bucket capacity: a small burst allowance (2s worth of tokens at the full
 # per-process rate) so a fresh process start doesn't have to wait from empty,
