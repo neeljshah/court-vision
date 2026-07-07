@@ -107,6 +107,25 @@ def test_run_stops_after_max_ticks(tmp_path, monkeypatch):
     assert ticks == 3
 
 
+def test_intertick_wait_plain_sleep_when_idle():
+    slept = []
+    runner._intertick_wait(30.0, {"gumbo": {"n_live_games": 0}}, slept.append)
+    runner._intertick_wait(30.0, {"gumbo": {"error": "x"}}, slept.append)
+    runner._intertick_wait(30.0, {}, slept.append)
+    assert slept == [30.0, 30.0, 30.0], "no live MLB game -> idle cadence unchanged"
+
+
+def test_intertick_wait_runs_gumbo_live_window_when_live(monkeypatch):
+    from scripts.platformkit.ingame import gumbo_mlb_poller as poller
+    calls = []
+    monkeypatch.setattr(poller, "run_live_window",
+                        lambda window_sec, **kw: calls.append(window_sec) or {"passes": 3})
+    slept = []
+    runner._intertick_wait(30.0, {"gumbo": {"n_live_games": 2}}, slept.append)
+    assert calls == [30.0], "live MLB game -> inter-tick wait spent fast-polling gumbo"
+    assert slept == [], "no idle sleep when the live window ran"
+
+
 def test_heartbeat_component_name_matches_registered_spec():
     assert runner.HEARTBEAT_COMPONENT == "m37_ingame_enrichment"
 

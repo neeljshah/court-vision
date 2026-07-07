@@ -2,8 +2,20 @@
 
 Bootstrap-then-diffPatch poller: for each live game on the day's schedule, GET the
 bootstrap `feed/live` snapshot once, cache metaData.timeStamp, then steady-state poll
-`feed/live/diffPatch?startTimecode=<ts>` at ~20s and append one extracted tick per pass to
+`feed/live/diffPatch?startTimecode=<ts>` and append one extracted tick per pass to
 data/domains/mlb/gumbo_live/<gamePk>.jsonl.
+
+LIVE CADENCE (latency-audit fix, 2026-07-07): while >=1 game is live, run_live_window()
+fast-polls at CV_GUMBO_LIVE_SEC (default 10s, hard floor 5s) using diffPatch deltas, with
+exponential backoff (cap 60s) on all-error passes. Idle behavior is unchanged (the m37
+runner's 30s tick). Each row now also carries `captured_at` (our poll receive time, ISO
+UTC) alongside `ts` (MLB's own metaData.timeStamp event wall-clock) -- additive key only,
+existing schema/keys byte-identical. One shared HTTP session (keep-alive) for all fetches.
+
+Disk growth at 10s live cadence: ~4-5x today's 104-247 rows/game -> ~400-1,200 rows/game,
+~350 bytes/row => <=0.5 MB/game, ~3-7 MB/day on a full 15-game slate. sidecar_retention's
+gumbo_live policy (30d active + 1 GiB byte budget) absorbs this >5x growth with ~150x
+headroom -- existing rotation handles it, no policy change needed.
 
 STANDALONE (per this wave's binding invariant): does NOT touch inplay_capture_loop.py or
 any shared runner. Bounded via --once (one pass over all live games, then exit) -- there is
@@ -25,6 +37,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import time
 import urllib.error
 import urllib.request
@@ -48,15 +61,40 @@ _DIFFPATCH_URL = "https://statsapi.mlb.com/api/v1.1/game/{game_pk}/feed/live/dif
 
 FetchFn = Callable[[str], Any]
 
+_SESSION: Optional[Any] = None  # one shared keep-alive session for ALL statsapi fetches
+
+
+def live_cadence_sec() -> float:
+    """Live-game poll cadence from CV_GUMBO_LIVE_SEC (default 10s), politeness floor 5s."""
+    try:
+        v = float(os.environ.get("CV_GUMBO_LIVE_SEC", "") or 10.0)
+    except ValueError:
+        v = 10.0
+    return max(5.0, v)
+
 
 def _http_get_json(url: str, timeout: float = 15.0) -> Optional[Any]:
-    """GET url, return parsed JSON or None on any network/HTTP/JSON error (never raises)."""
-    req = urllib.request.Request(url, headers={"User-Agent": _UA})
+    """GET url via one shared requests.Session (keep-alive), return parsed JSON or None
+    on any network/HTTP/JSON error (never raises). Falls back to plain urllib if the
+    requests import itself is unavailable."""
+    global _SESSION
     try:
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            return json.loads(resp.read().decode("utf-8"))
-    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError,
-            ValueError, OSError) as exc:
+        if _SESSION is None:
+            import requests
+            _SESSION = requests.Session()
+            _SESSION.headers["User-Agent"] = _UA
+        resp = _SESSION.get(url, timeout=timeout)
+        resp.raise_for_status()
+        return resp.json()
+    except ImportError:
+        req = urllib.request.Request(url, headers={"User-Agent": _UA})
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                return json.loads(resp.read().decode("utf-8"))
+        except (urllib.error.URLError, TimeoutError, ValueError, OSError) as exc:
+            logger.warning("gumbo_mlb_poller GET failed url=%s: %s", url, exc)
+            return None
+    except Exception as exc:  # noqa: BLE001 -- fetch failures degrade to None, never raise
         logger.warning("gumbo_mlb_poller GET failed url=%s: %s", url, exc)
         return None
 
@@ -162,11 +200,61 @@ def run_once(date_str: Optional[str] = None,
             continue
         report["game_pks"].append(gp)
         if tick:
+            # captured_at = OUR poll receive time (UTC); `ts` stays MLB's own
+            # metaData.timeStamp event wall-clock. Additive key, schema otherwise
+            # byte-identical (closes the latency audit's "true event time" gap).
+            tick["captured_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
             _append_jsonl(out_dir / ("%s.jsonl" % gp), tick)
             report["n_rows_written"] += 1
 
     _save_poller_state(state_file, poller_state)
     return report
+
+
+def run_live_window(window_sec: float,
+                    date_str: Optional[str] = None,
+                    out_dir: Path = DEFAULT_OUT_DIR,
+                    state_file: Path = DEFAULT_STATE_FILE,
+                    fetch_fn: FetchFn = _http_get_json,
+                    sleep_fn: Callable[[float], None] = time.sleep,
+                    clock: Callable[[], float] = time.monotonic,
+                    cadence_sec: Optional[float] = None) -> Dict[str, Any]:
+    """Fast-poll live games every ~live_cadence_sec() for one window of window_sec.
+
+    Meant to be called for the m37 runner's inter-tick wait, right AFTER a run_once pass
+    already fired -- so it waits one cadence FIRST, then passes. Behavior:
+      * a pass finding 0 live games -> plain-sleep the remaining window and stop (idle
+        cadence unchanged; the runner's own 30s tick governs when idle);
+      * a pass with live games but 0 rows written (fetch/extract failures) -> exponential
+        backoff (cadence * 2^k, capped 60s), reset on any successful row;
+      * cadence has a hard 5s politeness floor (live_cadence_sec()).
+    Returns {passes, rows_written, window_sec, cadence_sec}. Never hammers, never raises
+    beyond what run_once already isolates."""
+    cad = max(5.0, float(cadence_sec) if cadence_sec else live_cadence_sec())
+    start = clock()
+    passes = 0
+    rows = 0
+    fails = 0
+    while True:
+        wait = min(cad * (2 ** fails), 60.0)
+        remaining = window_sec - (clock() - start)
+        if remaining < wait + 1.0:
+            if remaining > 0:
+                sleep_fn(remaining)
+            break
+        sleep_fn(wait)
+        report = run_once(date_str=date_str, out_dir=out_dir, state_file=state_file,
+                          fetch_fn=fetch_fn, sleep_fn=sleep_fn)
+        passes += 1
+        rows += report["n_rows_written"]
+        if report["n_live_games"] <= 0:
+            remaining = window_sec - (clock() - start)
+            if remaining > 0:
+                sleep_fn(remaining)
+            break
+        fails = 0 if report["n_rows_written"] > 0 else fails + 1
+    return {"passes": passes, "rows_written": rows,
+            "window_sec": window_sec, "cadence_sec": cad}
 
 
 if __name__ == "__main__":  # pragma: no cover -- CLI smoke, not exercised by tests
