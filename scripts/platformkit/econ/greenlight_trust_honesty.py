@@ -29,7 +29,6 @@ _RED, _AMBER, _GREEN = "RED", "AMBER", "GREEN"
 
 def _ops(root: str) -> str:
     return os.path.join(root, "data", "frontend", "ops")
-
 def _read_json(path: str) -> Optional[Dict[str, Any]]:
     try:
         with open(path, "r", encoding="utf-8") as fh:
@@ -57,7 +56,7 @@ def _e_settled_n_coverage(sport: str, channel: str, root: str, table: Dict[str, 
     if stale:
         return "red", "execution_quality:%s" % stale
     eq = _read_json(os.path.join(_ops(root), "execution_quality.json")) or {}
-    cell = (eq.get("cells") or {}).get("ingame|%s|%s" % (sport, channel))
+    cell = (eq.get("channel_cells") or {}).get("%s|%s" % (sport, channel))
     if cell is None:
         return "red", "execution_quality_cell_missing"
     n, cov = cell.get("n_measurable"), cell.get("true_close_coverage_pct")
@@ -98,6 +97,8 @@ def _e_reconciler(channel: str, root: str, table: Dict[str, Any], inputs: Dict[s
         return "amber", "reconcile_not_applicable:%s" % channel
     if verdict.startswith("GENUINE_VARIANCE"):
         return "green", None
+    if verdict.startswith("DIVERGENT"):  # zmax<=_Z_SIG here -- real, not-decisive 4th outcome, not "unknown"
+        return "amber", "reconcile_divergent_not_decisive:%s" % channel
     return "red", "reconcile_unknown_verdict"
 
 def _e_segment_trust(sport: str, root: str, table: Dict[str, Any], inputs: Dict[str, Any]) -> Any:
@@ -164,7 +165,6 @@ _SNAPSHOT_REL = os.path.join("data", "cache", "greenlight", "prereg_snapshot")
 _PREREG_PINNED_FIELDS = ("pre_registered_at", "floors", "planted_null", "fail_action")
 _CITED_OPS_ARTIFACTS = ("execution_quality.json", "clv_scoreboard.json", "ingame_clv_verdict.json",
     "ingame_segment_trust.json", "ingame_segment_trust_multi.json")  # F-check-1 spec L163
-
 def _check_retracted_numbers(report: Dict[str, Any], root: str) -> Dict[str, Any]:
     fails = list(_linter.lint_obj(report)["violations"])  # any kind: number/token/key, incl. cited artifacts
     for fn in _CITED_OPS_ARTIFACTS:

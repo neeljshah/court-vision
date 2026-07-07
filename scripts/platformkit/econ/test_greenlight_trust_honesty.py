@@ -48,7 +48,7 @@ def _green_fixture(root, channel="paper_ingame", sport="mlb"):
     """Full all-GREEN fixture for channel_trust_status: fresh artifacts, strong
     numbers, GENUINE_VARIANCE reconciler, no adverse segments, in-game MATCH."""
     _write(root, "execution_quality.json",
-           {"cells": {"ingame|%s|%s" % (sport, channel): _eq_cell()}})
+           {"channel_cells": {"%s|%s" % (sport, channel): _eq_cell()}})
     _write(root, "clv_reconcile_%s.json" % channel,
            {"verdict": "GENUINE_VARIANCE -- ok", "z_wins": 0.5, "z_units": 0.3})
     _write(root, "ingame_segment_trust.json", {"adverse": [], "trusted": ["I1"]})
@@ -100,13 +100,13 @@ def test_amber_tier_never_green(tmp_path):
     rows = _green_fixture(tmp_path)
     # n in [60, 500) with everything else perfect -> AMBER, not GREEN (R-a lock).
     _write(tmp_path, "execution_quality.json",
-           {"cells": {"ingame|mlb|paper_ingame": _eq_cell(n=200, cov=95.0)}})
+           {"channel_cells": {"mlb|paper_ingame": _eq_cell(n=200, cov=95.0)}})
     res = channel_trust_status("paper_ingame", rows, root=str(tmp_path))
     assert res["status"] == "AMBER"
 
     # coverage in [60, 90) with everything else perfect -> AMBER too.
     _write(tmp_path, "execution_quality.json",
-           {"cells": {"ingame|mlb|paper_ingame": _eq_cell(n=600, cov=75.0)}})
+           {"channel_cells": {"mlb|paper_ingame": _eq_cell(n=600, cov=75.0)}})
     res2 = channel_trust_status("paper_ingame", rows, root=str(tmp_path))
     assert res2["status"] == "AMBER"
 
@@ -194,7 +194,7 @@ def test_reconciler_suspect_close_forces_red(tmp_path):
 def test_same_venue_clv_ci_adverse_is_red(tmp_path):
     rows = _green_fixture(tmp_path)
     _write(tmp_path, "execution_quality.json",
-           {"cells": {"ingame|mlb|paper_ingame": _eq_cell(ci=(-3.0, -0.5))}})
+           {"channel_cells": {"mlb|paper_ingame": _eq_cell(ci=(-3.0, -0.5))}})
     res = channel_trust_status("paper_ingame", rows, root=str(tmp_path))
     assert res["status"] == "RED"
     assert "same_venue_clv_ci_adverse" in res["reasons"]
