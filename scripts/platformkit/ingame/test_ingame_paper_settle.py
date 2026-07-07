@@ -304,3 +304,60 @@ def test_settle_open_npb_kbo_batch_via_injected_score_fns(tmp_path):
     assert doc["settled"] == 2
     assert doc["by_sport"]["npb"]["settled"] == 1
     assert doc["by_sport"]["kbo"]["settled"] == 1
+
+
+# --------------------------------------------------------------------------------------- #
+# MLB DOUBLEHEADERS (2026-07-07 MIL@STL incident): tickers end G1/G2; the boxscore has     #
+# two same-day same-matchup rows disambiguated by start_time (G1 = earliest). Exercised    #
+# end-to-end through the REAL MlbOutcomeResolver + dispatch + settle_open.                 #
+# --------------------------------------------------------------------------------------- #
+def _dh_box_df():
+    import pandas as pd
+    return pd.DataFrame([
+        # G1: MIL won 6-2, first pitch 18:15Z
+        {"event_id": "10", "date": "2026-07-07", "home_abbr": "STL", "away_abbr": "MIL",
+         "home_score": 2.0, "away_score": 6.0, "status": "STATUS_FINAL",
+         "start_time": "2026-07-07T18:15Z"},
+        # G2: STL won 5-1, first pitch 23:15Z
+        {"event_id": "11", "date": "2026-07-07", "home_abbr": "STL", "away_abbr": "MIL",
+         "home_score": 5.0, "away_score": 1.0, "status": "STATUS_FINAL",
+         "start_time": "2026-07-07T23:15Z"},
+        # single game the same day (PHI @ WSH) -- must settle exactly as before
+        {"event_id": "12", "date": "2026-07-07", "home_abbr": "WSH", "away_abbr": "PHI",
+         "home_score": 4.0, "away_score": 3.0, "status": "STATUS_FINAL",
+         "start_time": "2026-07-07T22:05Z"},
+    ])
+
+
+def test_doubleheader_g1_g2_settle_against_correct_games(tmp_path):
+    from scripts.platformkit.ingame.ingame_outcome_label import MlbOutcomeResolver
+    res = MlbOutcomeResolver(box_df=_dh_box_df())
+    g1 = "KXMLBGAME-26JUL071415MILSTLG1"
+    g2 = "KXMLBGAME-26JUL071915MILSTLG2"
+    single = "KXMLBGAME-26JUL071805PHIWSH"
+    led = _ledger(tmp_path, [_open_bet(g1), _open_bet(g2), _open_bet(single)])
+    graded = {}
+
+    def fake_grade(bet, hs, as_, path=None):
+        graded[bet["game_id"]] = (hs, as_)
+        return {"status": "settled"}
+
+    fn = ps._dispatch_score_fn(res.final_score, None)
+    doc = ps.settle_open(ledger_path=led, score_fn=fn, grade_fn=fake_grade)
+    assert doc["settled"] == 3, doc
+    assert graded[g1] == (2, 6)      # G1 = earlier start
+    assert graded[g2] == (5, 1)      # G2 = later start
+    assert graded[single] == (4, 3)  # single-game ticker path unchanged
+
+
+def test_doubleheader_no_gnum_or_missing_game_stays_open(tmp_path):
+    from scripts.platformkit.ingame.ingame_outcome_label import MlbOutcomeResolver
+    res = MlbOutcomeResolver(box_df=_dh_box_df())
+    # no G suffix on a 2-row day (ambiguous) + a G2 whose day has only G1 final
+    led = _ledger(tmp_path, [
+        _open_bet("KXMLBGAME-26JUL071415MILSTL"),
+    ])
+    fn = ps._dispatch_score_fn(res.final_score, None)
+    doc = ps.settle_open(ledger_path=led, score_fn=fn,
+                         grade_fn=lambda *a, **k: {"status": "settled"})
+    assert doc["settled"] == 0 and doc["still_open"] == 1  # fail closed
