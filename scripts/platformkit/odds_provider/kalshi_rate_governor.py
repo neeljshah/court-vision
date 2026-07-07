@@ -60,8 +60,13 @@ BASE_RPS = 15.0
 # with 8 sports (vs capture's 6) -- it gets the larger share. feed_health added
 # 2026-07-07: a 10-minute-interval health probe (7 sports, 1 call each), not a
 # hot loop -- a small fixed share is enough to stop it 429ing itself while it
-# still yields to the two live-trading daemons.
-DEFAULT_RATE_SHARES: Dict[str, float] = {"capture": 0.35, "snapshot": 0.65, "feed_health": 0.15}
+# still yields to the two live-trading daemons. close_capture added 2026-07-07:
+# a 900s-interval settled-row sweep, not a hot loop -- without a registered
+# share it fell to the unknown-caller default (0.5), which on a full live slate
+# pushed the aggregate demand past the shared ceiling (429 storm -> slow sweeps
+# -> m18 heartbeat flap).
+DEFAULT_RATE_SHARES: Dict[str, float] = {"capture": 0.35, "snapshot": 0.65,
+                                         "feed_health": 0.15, "close_capture": 0.15}
 
 # Bucket capacity: a small burst allowance (2s worth of tokens at the full
 # per-process rate) so a fresh process start doesn't have to wait from empty,

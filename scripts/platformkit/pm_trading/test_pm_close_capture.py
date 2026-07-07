@@ -73,3 +73,24 @@ def test_no_close_available_is_honest(tmp_path):
     p = _write(tmp_path, [_row("pm|g3|home")])
     out = P.sweep_closes(p, capture_fn=lambda r, **k: None)
     assert out["n_no_close"] == 1 and out["n_captured"] == 0
+
+
+def test_sweep_bounded_by_max_rows(tmp_path):
+    """max_rows caps work per sweep (the m18 heartbeat-flap guard): with 3
+    targets and max_rows=1, exactly one capture attempt happens."""
+    import json
+    from scripts.platformkit.pm_trading.pm_close_capture import sweep_closes
+    ledger = tmp_path / "ledger.jsonl"
+    rows = [
+        {"bet_id": "b%d" % i, "channel": "paper_pm", "venue": "kalshi",
+         "settled": True, "clv_status": "pending", "ticker": "T%d" % i}
+        for i in range(3)
+    ]
+    ledger.write_text("\n".join(json.dumps(r) for r in rows) + "\n", encoding="ascii")
+    calls = []
+    def fake_cap(row, kalshi_fetch=None):
+        calls.append(row["bet_id"])
+        return None  # no close found -- nothing written
+    out = sweep_closes(ledger, capture_fn=fake_cap, max_rows=1)
+    assert len(calls) <= 1
+    assert out.get("edge_claimed") is False

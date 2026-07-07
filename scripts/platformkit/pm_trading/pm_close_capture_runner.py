@@ -45,7 +45,11 @@ def _default_sweep() -> Dict[str, Any]:
     """Run the real PM close-capture sweep over clv_ledger. Never raises."""
     try:
         from scripts.platformkit.pm_trading.pm_close_capture import sweep_closes
-        return dict(sweep_closes() or {})
+        # ponytail: bounded sweep (40 rows/tick, ~2min at the governed rate) so a
+        # 429-throttled sweep can never outlast the supervisor's 1980s heartbeat
+        # freshness; deferred rows are picked up next 900s tick.
+        max_rows = int(os.environ.get("CV_PM_CLOSE_MAX_ROWS", "40"))
+        return dict(sweep_closes(max_rows=max_rows) or {})
     except Exception as exc:  # noqa: BLE001
         logger.debug("pm_close_capture sweep raised: %s", exc)
         return {"n_targets": 0, "n_captured": 0, "n_no_close": 0, "n_proxy": 0,
@@ -92,6 +96,7 @@ def tick(*, now: float,
     status write -> heartbeat. Never raises. Heartbeat advances regardless of count."""
     path = status_path if status_path is not None else _STATUS_PATH
     _sweep = sweep_fn if sweep_fn is not None else _default_sweep
+    _beat(now)  # beat BEFORE the sweep too: a throttled sweep must not starve liveness
     try:
         result = dict(_sweep() or {})
     except Exception as exc:  # noqa: BLE001
