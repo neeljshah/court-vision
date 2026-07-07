@@ -90,6 +90,18 @@ STANDARD RAILS apply ($10/day, 8 wakes/day per AUTONOMY_CHARTER).
     file universe (+14 missing files); (ii) decide soccer_intl's place in
     calibration harnesses (wire or document-as-unused); (iii) WNBA/KBO/NPB
     reject-ledger densification.
+(j) ASK() LIVE-DEMO FINDINGS (23:30 07-06, from a real "top 5 best
+    shooters last season" query -- honest UNANSWERABLE, correct behavior,
+    two gaps): (j1) alias gap: families maps "best shooters"->"composite"
+    but on-disk metrics are naive_comp / shooter_quality_v1 /
+    scorer_quality_v1 -- DECIDE which one "best shooters" means (the
+    one-conclusion composer's declared-rule job), then add the synonym as
+    DATA in ask_index._METRIC_SYNONYMS + a regression test, same pattern
+    as a0c42694; (j2) slow-path cost: a top_n miss now full-loads ALL
+    stores incl. 860MB of MLB jsonl (51.6s wall) -- since 30/30 families
+    have fresh indexes, a fast-path miss is authoritative for top_n;
+    short-circuit the slow load when every discovered family's index is
+    fresh (small change in ask.py, per-file tests).
 (i) KALSHI-PAPER READINESS (user directive 07-06 evening, arc OPEN in
     NOW.md): execution_quality.json has NO owning daemon (26h SLA, on-
     demand only; its staleness alone REDs criterion f on every channel --

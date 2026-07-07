@@ -93,6 +93,17 @@ ok). Daemon flywheel + builder loop run independently; enders `bot stop` / progr
   (wf_cf55b7dc: LeBron 30-team fit sweep SCOUTING-framed + quality-claims
   criteria.formula fix). No edge claims -- all numbers above are
   calibration-layer verdicts.
+- ASK() 196x SPEEDUP LANDED ~00:15-local 07-07 (64bf24ad, Opus PASS; day
+  item j2 closed early): top_n index miss was full-loading EVERY store
+  (860MB MLB incl.) to say unanswerable -- 45.2s measured. Safe residual
+  fix: load ONLY not-fresh-indexed pairs from CLAIM_SOURCE_PAIRS (lane
+  premise-check caught that discover_families CANNOT see the 2 legacy-
+  override stores incl. ranking-bearing nba_shooting_claims -- the naive
+  skip-everything variant would have been silently WRONG); 45.2s -> 0.23s
+  same honest answer; regression test provably fails on old code; also
+  fixed a def-time-default trap on the new pairs param. j1 (which
+  composite "best shooters" means) still needs the attended metric
+  decision. No edge claims.
 - KALSHI READINESS: DEMO-VENUE SPEC DRAFTED ~23:10-local 07-06 (doc-only,
   day-queue item (i) prep; user goal restated on leaving: "sports trading
   at the highest level... make my ai independent... work to a place where
