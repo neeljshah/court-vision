@@ -48,28 +48,33 @@ _KALSHI_TO_ESPN = {
 _MONTHS = {"JAN": 1, "FEB": 2, "MAR": 3, "APR": 4, "MAY": 5, "JUN": 6,
            "JUL": 7, "AUG": 8, "SEP": 9, "OCT": 10, "NOV": 11, "DEC": 12}
 
-# KXMLBGAME-<YY><MON><DD><HHMM><AWAY+HOME concatenated>[-<side>]
-_TICKER_RE = re.compile(r"^KXMLBGAME-(\d{2})([A-Z]{3})(\d{2})(\d{4})([A-Z]+)")
+# KXMLBGAME-<YY><MON><DD><HHMM><AWAY+HOME concatenated>[G<n> doubleheader][-<side>]
+# Team tail is lazy + G-group needs a DIGIT, so an abbr ending in G (SFG) never
+# loses its G to the doubleheader group.
+_TICKER_RE = re.compile(
+    r"^KXMLBGAME-(\d{2})([A-Z]{3})(\d{2})(\d{4})([A-Z]+?)(?:G(\d))?(?=-|$)")
 
 
 def _norm(abbr: str) -> str:
     return _KALSHI_TO_ESPN.get(abbr, abbr)
 
 
-def parse_mlb_ticker(ticker: str, valid_abbrs: set) -> Optional[Tuple[Any, str, str]]:
-    """Parse a Kalshi MLB ticker -> (date, away_abbr, home_abbr) in ESPN abbrs.
+def parse_mlb_ticker(ticker: str, valid_abbrs: set
+                     ) -> Optional[Tuple[Any, str, str, Optional[int]]]:
+    """Parse a Kalshi MLB ticker -> (date, away_abbr, home_abbr, game_number).
 
     The tail concatenates AWAY then HOME with no delimiter, so we split it at the ONE
     position where BOTH sides normalise to a real box-score abbr.  Ambiguous or no valid
     split -> None (never a guess -- a mis-split would mislabel a different game). *date*
-    is a datetime.date.  Never raises.
+    is a datetime.date.  *game_number* is the doubleheader index from a trailing
+    G<digit> (e.g. ...MILSTLG1 -> 1), None for a single game.  Never raises.
     """
     try:
         import datetime as _dt
         m = _TICKER_RE.match(str(ticker or "").strip())
         if not m:
             return None
-        yy, mon, dd, _hhmm, tail = m.groups()
+        yy, mon, dd, _hhmm, tail, gnum = m.groups()
         month = _MONTHS.get(mon)
         if month is None:
             return None
@@ -81,7 +86,7 @@ def parse_mlb_ticker(ticker: str, valid_abbrs: set) -> Optional[Tuple[Any, str, 
                 good.append((a, h))
         if len(good) != 1:
             return None
-        return (date, good[0][0], good[0][1])
+        return (date, good[0][0], good[0][1], int(gnum) if gnum else None)
     except Exception as exc:  # noqa: BLE001 -- a bad ticker is unresolvable, never fatal
         logger.debug("parse_mlb_ticker(%s) failed: %s", ticker, exc)
         return None
@@ -99,8 +104,9 @@ class MlbOutcomeResolver:
                  box_parquet: Optional[Path] = None) -> None:
         self._ok = False
         self._abbrs: set = set()
-        self._final: Dict[Tuple[Any, str, str], int] = {}
-        self._scores: Dict[Tuple[Any, str, str], Tuple[int, int]] = {}
+        # (date, away, home) -> [(start_time_iso_str, (home_score, away_score)), ...]
+        # A list because a doubleheader legitimately has 2 rows for one key.
+        self._rows: Dict[Tuple[Any, str, str], list] = {}
         try:
             df = box_df
             if df is None:
@@ -119,6 +125,7 @@ class MlbOutcomeResolver:
         d = df[df["status"].astype(str).str.upper().str.endswith("FINAL")].copy()
         d["date"] = pd.to_datetime(d["date"], errors="coerce")
         self._abbrs = set(d["home_abbr"].astype(str)) | set(d["away_abbr"].astype(str))
+        has_st = "start_time" in d.columns
         for _, r in d.iterrows():
             try:
                 hs, as_ = float(r["home_score"]), float(r["away_score"])
@@ -127,48 +134,69 @@ class MlbOutcomeResolver:
             if pd.isna(r["date"]):
                 continue
             key = (r["date"].date(), str(r["away_abbr"]), str(r["home_abbr"]))
-            self._scores[key] = (int(hs), int(as_))  # final score kept even for ties
-            if hs == as_:
-                continue  # ties/unresolved are not a binary home_win label
-            self._final[key] = 1 if hs > as_ else 0
+            st = str(r["start_time"]) if has_st and pd.notna(r["start_time"]) else ""
+            self._rows.setdefault(key, []).append((st, (int(hs), int(as_))))
 
     @property
     def available(self) -> bool:
-        return self._ok and bool(self._final)
+        return self._ok and bool(self._rows)
 
-    def home_win(self, ticker: str) -> Optional[int]:
-        """1 if home won, 0 if away won, None if unresolved/tie/not-final. Never raises."""
+    def _pick(self, key: Tuple[Any, str, str],
+              game_number: Optional[int]) -> Optional[Tuple[int, int]]:
+        """Pick ONE final score for a (date, away, home) key, doubleheader-aware.
+
+        game_number None + exactly 1 row -> that row (the pre-doubleheader path).
+        game_number None + 2+ rows -> None (ambiguous doubleheader, fail closed).
+        game_number N -> rows ordered by start_time (ISO strings sort correctly),
+        G1 = earliest; N beyond the finals on disk, or 2+ rows we cannot order
+        (missing start_time), -> None (fail closed, never a guess)."""
+        rows = self._rows.get(key)
+        if not rows:
+            return None
+        if game_number is None:
+            return rows[0][1] if len(rows) == 1 else None
+        if len(rows) > 1 and any(not st for st, _ in rows):
+            return None
+        if game_number > len(rows):
+            return None
+        # ponytail: G1 settles off a single final row (G1 always finishes first;
+        # a G1 suspended past G2 is the known ceiling -- add a ticker-HHMM vs
+        # start_time cross-check if that ever bites).
+        return sorted(rows)[game_number - 1][1]
+
+    def _resolve(self, ticker: str) -> Optional[Tuple[int, int]]:
+        """(home_score, away_score) for a ticker's FINAL game, else None. Never raises."""
         if not self._ok:
             return None
         parsed = parse_mlb_ticker(ticker, self._abbrs | set(_KALSHI_TO_ESPN.keys()))
         if parsed is None:
             return None
         import datetime as _dt
-        date, away, home = parsed
-        # Join with +/- 1 day tolerance (a late UTC game files on the prior/next ET day).
-        for delta in (0, -1, 1):
-            key = (date + _dt.timedelta(days=delta), away, home)
-            if key in self._final:
-                return self._final[key]
+        date, away, home, gnum = parsed
+        # Join with a +1 day tolerance only (a late game can file on the NEXT day).
+        # delta=-1 is FORBIDDEN: ticker dates and box dates are both ET, so a box
+        # row dated BEFORE the ticker date is a different game of the same series
+        # -- observed live 2026-07-07: a bet on the 07-08 MIL@STL game settled
+        # against 07-07's just-final G1 score via delta=-1. Never again.
+        for delta in (0, 1):
+            score = self._pick((date + _dt.timedelta(days=delta), away, home), gnum)
+            if score is not None:
+                return score
         return None
+
+    def home_win(self, ticker: str) -> Optional[int]:
+        """1 if home won, 0 if away won, None if unresolved/tie/not-final. Never raises."""
+        score = self._resolve(ticker)
+        if score is None or score[0] == score[1]:
+            return None  # ties/unresolved are not a binary home_win label
+        return 1 if score[0] > score[1] else 0
 
     def final_score(self, ticker: str) -> Optional[Tuple[int, int]]:
         """(home_score, away_score) for a Kalshi ticker's FINAL game, else None.
 
         Unlike home_win this also resolves ties (needed to settle a paper bet against the
         realized score). Never raises."""
-        if not self._ok:
-            return None
-        parsed = parse_mlb_ticker(ticker, self._abbrs | set(_KALSHI_TO_ESPN.keys()))
-        if parsed is None:
-            return None
-        import datetime as _dt
-        date, away, home = parsed
-        for delta in (0, -1, 1):
-            key = (date + _dt.timedelta(days=delta), away, home)
-            if key in self._scores:
-                return self._scores[key]
-        return None
+        return self._resolve(ticker)
 
 
 __all__ = [

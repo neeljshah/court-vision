@@ -133,9 +133,14 @@ def _parse_summary(payload: dict, event_id: str) -> dict:
     home_score: Optional[float] = None
     away_score: Optional[float] = None
     status_name = ""
+    start_time = ""
     comps = (payload.get("header") or {}).get("competitions") or []
     if comps:
         comp = comps[0]
+        # ISO UTC first-pitch time. Disambiguates DOUBLEHEADERS: two same-day
+        # same-matchup rows are ordered by start_time (G1 = earliest). Additive
+        # column -- existing consumers select their own columns.
+        start_time = str(comp.get("date") or "")
         for ct in comp.get("competitors") or []:
             try:
                 score: Optional[float] = float(ct.get("score", ""))
@@ -159,7 +164,8 @@ def _parse_summary(payload: dict, event_id: str) -> dict:
         "home_abbr": team_meta.get("home", {}).get("abbreviation", ""),
         "away_abbr": team_meta.get("away", {}).get("abbreviation", ""),
         "home_score": home_score, "away_score": away_score,
-        "status": status_name, "venue": venue, "attendance": attendance,
+        "status": status_name, "start_time": start_time,
+        "venue": venue, "attendance": attendance,
     }
     for side in ("home", "away"):
         for k, v in team_data[side].items():

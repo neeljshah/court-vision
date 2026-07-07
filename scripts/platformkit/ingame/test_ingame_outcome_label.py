@@ -29,12 +29,24 @@ def test_parse_basic_and_alias():
     valid = {"WSH", "PHI", "TB", "ARI"} | set(ol._KALSHI_TO_ESPN.keys())
     got = ol.parse_mlb_ticker("KXMLBGAME-26JUN241845PHIWSH", valid)
     assert got is not None
-    _date, away, home = got
+    _date, away, home, gnum = got
     assert (away, home) == ("PHI", "WSH")
     assert _date == dt.date(2026, 6, 24)
+    assert gnum is None  # single game -> no doubleheader index
     # AZ -> ARI alias resolves
     got2 = ol.parse_mlb_ticker("KXMLBGAME-26JUN261910AZTB", valid)
-    assert got2 is not None and got2[1:] == ("ARI", "TB")
+    assert got2 is not None and got2[1:] == ("ARI", "TB", None)
+
+
+def test_parse_doubleheader_suffix():
+    valid = {"MIL", "STL", "SF"} | set(ol._KALSHI_TO_ESPN.keys())
+    got = ol.parse_mlb_ticker("KXMLBGAME-26JUL071415MILSTLG1", valid)
+    assert got == (dt.date(2026, 7, 7), "MIL", "STL", 1)
+    got2 = ol.parse_mlb_ticker("KXMLBGAME-26JUL071915MILSTLG2-MIL", valid)
+    assert got2 == (dt.date(2026, 7, 7), "MIL", "STL", 2)
+    # a tail ending in G (SFG alias -> SF) must NOT lose its G to the suffix
+    got3 = ol.parse_mlb_ticker("KXMLBGAME-26JUL071415MILSFG", valid)
+    assert got3 == (dt.date(2026, 7, 7), "MIL", "SF", None)
 
 
 def test_parse_rejects_garbage():
@@ -67,3 +79,56 @@ def test_date_tolerance_one_day():
     res = ol.MlbOutcomeResolver(box_df=_box_df())
     # ticker says 06-23 but box has 06-24 -> +1 day tolerance matches
     assert res.home_win("KXMLBGAME-26JUN231845PHIWSH") == 1
+
+
+def _dh_df():
+    """A real-shaped doubleheader day: MIL @ STL twice on 2026-07-07."""
+    return pd.DataFrame([
+        {"event_id": "10", "date": "2026-07-07", "home_abbr": "STL", "away_abbr": "MIL",
+         "home_score": 2.0, "away_score": 6.0, "status": "STATUS_FINAL",
+         "start_time": "2026-07-07T18:15Z"},
+        {"event_id": "11", "date": "2026-07-07", "home_abbr": "STL", "away_abbr": "MIL",
+         "home_score": 5.0, "away_score": 1.0, "status": "STATUS_FINAL",
+         "start_time": "2026-07-07T23:15Z"},
+    ])
+
+
+def test_doubleheader_g1_g2_pick_by_start_time():
+    res = ol.MlbOutcomeResolver(box_df=_dh_df())
+    assert res.final_score("KXMLBGAME-26JUL071415MILSTLG1") == (2, 6)  # earliest
+    assert res.final_score("KXMLBGAME-26JUL071915MILSTLG2") == (5, 1)  # later
+    assert res.home_win("KXMLBGAME-26JUL071415MILSTLG1") == 0
+    assert res.home_win("KXMLBGAME-26JUL071915MILSTLG2") == 1
+
+
+def test_doubleheader_fails_closed_on_ambiguity():
+    res = ol.MlbOutcomeResolver(box_df=_dh_df())
+    # no game_number + 2 same-day rows -> ambiguous, never a guess
+    assert res.final_score("KXMLBGAME-26JUL071415MILSTL") is None
+    # G3 does not exist -> None
+    assert res.final_score("KXMLBGAME-26JUL071415MILSTLG3") is None
+
+
+def test_doubleheader_g1_settles_off_single_final_row():
+    # Live shape: G1 just went final, G2 not yet played -> only 1 row on disk.
+    res = ol.MlbOutcomeResolver(box_df=_dh_df().iloc[:1])
+    assert res.final_score("KXMLBGAME-26JUL071415MILSTLG1") == (2, 6)
+    assert res.final_score("KXMLBGAME-26JUL071915MILSTLG2") is None  # waits
+
+
+def test_next_day_ticker_never_settles_against_prior_day_final():
+    # 2026-07-07 live incident: a bet on the NEXT day's game of the same series
+    # settled against the just-final earlier game via a delta=-1 day tolerance.
+    # Ticker and box dates are both ET -> a box row dated before the ticker date
+    # is a DIFFERENT game; must stay unresolved until its own final lands.
+    res = ol.MlbOutcomeResolver(box_df=_box_df())  # box has 06-24 PHI@WSH final
+    assert res.final_score("KXMLBGAME-26JUN251845PHIWSH") is None
+    assert res.home_win("KXMLBGAME-26JUN251845PHIWSH") is None
+
+
+def test_doubleheader_fails_closed_without_start_times():
+    df = _dh_df().drop(columns=["start_time"])
+    res = ol.MlbOutcomeResolver(box_df=df)
+    # 2 rows but no ordering info -> cannot prove which is G1 -> no settle
+    assert res.final_score("KXMLBGAME-26JUL071415MILSTLG1") is None
+    assert res.final_score("KXMLBGAME-26JUL071915MILSTLG2") is None
