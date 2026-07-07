@@ -186,13 +186,18 @@ def _load_jsonl(path: Path) -> list[dict[str, Any]]:
     return rows
 
 
-def load_verified_claims() -> dict[str, dict[str, Any]]:
+def load_verified_claims(pairs: tuple[tuple[Path, Path], ...] | None = None) -> dict[str, dict[str, Any]]:
     """{claim_id: claim_row} for every claim_id whose validator verdict is
     exactly VERIFIED. A claim_id absent from (or non-VERIFIED in) its
     validation summary is NOT included -- MISMATCH/UNVERIFIABLE stays
-    invisible to ask()."""
+    invisible to ask(). `pairs` lets a caller load a SUBSET of stores (see
+    ask()'s top_n short-circuit); None (default) re-reads the CURRENT
+    module-level CLAIM_SOURCE_PAIRS (not a function-def-time default, so
+    tests that monkeypatch it still take effect)."""
+    if pairs is None:
+        pairs = CLAIM_SOURCE_PAIRS
     verified: dict[str, dict[str, Any]] = {}
-    for validation_path, claims_path in CLAIM_SOURCE_PAIRS:
+    for validation_path, claims_path in pairs:
         summary = _load_json(validation_path)
         if not summary:
             continue
@@ -552,6 +557,23 @@ def ask(question: str) -> dict[str, Any]:
         fast_row = ask_index.index_top_n_lookup(parsed, INTEL_CLAIMS_DIR, REPO_ROOT)
         if fast_row is not None:
             return _format_top_n_answer(parsed, question, fast_row)
+        # BUG FIX (perf, m38): index miss is authoritative for every INDEXED
+        # family (same filters/claim set as index_top_n_lookup); only the
+        # handful discover_families can't index (legacy-override pairs, e.g.
+        # nba_shooting_claims -- <1MB combined) get loaded here, not the
+        # whole multi-GB corpus.
+        if not parsed.metric_hints and ask_index.extract_metric_synonym(parsed.raw) is None:
+            return _unanswerable(
+                "could not map the requested metric to any known claims metric "
+                "(no alias or synonym matched) -- refusing to guess", question)
+        stale_pairs = tuple((v, p) for v, p in CLAIM_SOURCE_PAIRS if not ask_index.is_index_fresh(p.stem, INTEL_CLAIMS_DIR))
+        residual_rows = [r for r in load_verified_claims(stale_pairs).values() if r.get("kind") == "ranking"]
+        residual_candidates = _filter_by_hints(residual_rows, parsed)
+        if not residual_candidates:
+            return _unanswerable("no VERIFIED ranking claim matches the requested metric/window", question)
+        return _format_top_n_answer(
+            parsed, question, max(residual_candidates, key=lambda r: r.get("computed_at", ""))
+        )
 
     verified = load_verified_claims()
     if not verified:

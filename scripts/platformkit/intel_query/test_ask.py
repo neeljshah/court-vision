@@ -386,6 +386,52 @@ def test_missing_index_never_built_falls_back_cleanly(tmp_path, monkeypatch):
     assert result["answer"]["ranking"][0]["player_name"] == "Zeta Player"
 
 
+def test_all_families_indexed_short_circuits_without_slow_load(tmp_path, monkeypatch):
+    """BUG FIX regression (m38, j2 day-queue item): with EVERY family
+    fresh-indexed, a top_n question whose metric resolves but matches no
+    claim must return honest unanswerable WITHOUT ever calling
+    load_verified_claims's whole-corpus loop -- that full parse (GBs on the
+    real corpus) is exactly the measured 51.6s bug. Monkeypatching
+    load_verified_claims to raise proves the short-circuit, not just that
+    the answer happens to be right."""
+    from scripts.platformkit.intel_query.claims_index import build_index
+
+    row = _ranking_claim(
+        "sc_fam_a", "composite", "sc_window_v1",
+        [{"rank": 1, "player_id": 1, "player_name": "Echo Player", "value": 0.5, "n": 25}],
+    )
+    claims_a, validation_a = _write_indexable_pair(tmp_path, "sc_fam_a", [row], {"sc_fam_a": "VERIFIED"})
+    build_index("sc_fam_a", tmp_path)
+
+    row_b = _ranking_claim(
+        "sc_fam_b", "other_metric", "sc_window_v1",
+        [{"rank": 1, "player_id": 2, "player_name": "Foxtrot Player", "value": 0.4, "n": 25}],
+    )
+    claims_b, validation_b = _write_indexable_pair(tmp_path, "sc_fam_b", [row_b], {"sc_fam_b": "VERIFIED"})
+    build_index("sc_fam_b", tmp_path)
+
+    monkeypatch.setattr(ask_mod, "INTEL_CLAIMS_DIR", tmp_path)
+    monkeypatch.setattr(
+        ask_mod, "CLAIM_SOURCE_PAIRS", ((validation_a, claims_a), (validation_b, claims_b))
+    )
+
+    real_load = ask_mod.load_verified_claims
+
+    def _guarded(pairs=ask_mod.CLAIM_SOURCE_PAIRS):
+        # Both families are fresh-indexed -- the short-circuit's residual
+        # load must be called with an EMPTY pairs tuple (nothing stale), and
+        # must NEVER be called with the full CLAIM_SOURCE_PAIRS (that is the
+        # slow whole-corpus path this fix exists to skip).
+        assert pairs != ask_mod.CLAIM_SOURCE_PAIRS, "slow path must not run"
+        return real_load(pairs)
+
+    monkeypatch.setattr(ask_mod, "load_verified_claims", _guarded)
+
+    result = ask_mod.ask("Who are the top 5 best shooters (composite) in window=sc_window_unmatched?")
+    assert result["answerable"] is False
+    assert "metric" in result["reason"]
+
+
 def test_stale_index_falls_back_cleanly(indexable_fixture):
     tmp_path, family, _claims_path, validation_path = indexable_fixture
     # Rewrite (not delete) the validation summary WITHOUT rebuilding the
