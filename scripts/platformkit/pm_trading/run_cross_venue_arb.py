@@ -39,12 +39,36 @@ def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _leg_fill(arb: Dict[str, Any], leg: Dict[str, Any],
+              stake_units: float) -> Dict[str, Any]:
+    """ADDITIVE realistic-fill stamp for one arb leg: kalshi legs resolve their
+    market ticker via the captured depth sidecar (game_id IS the Kalshi event
+    ticker in line_history) and price against the freshest captured book.
+    Non-kalshi venues / no captured book -> fill_quality="no_book" (the bet is
+    still written at its snapshot price, honestly stamped unsimulated)."""
+    from scripts.platformkit.pm_trading import fill_sim as _fs
+    try:
+        if str(leg.get("venue")) != "kalshi":
+            return dict(_fs._NO_BOOK)
+        ev, side = str(leg.get("game_id") or ""), str(leg.get("side") or "")
+        sport = str(arb.get("sport") or "") or None
+        ticker = _fs.event_side_tickers(ev, sport=sport).get(side) if ev else None
+        if not ticker:
+            return dict(_fs._NO_BOOK)
+        return _fs.stamp_fill(ticker, "yes", float(stake_units), sport=sport)
+    except Exception:  # noqa: BLE001 -- fill stamp must never block the bet write
+        return {"fill_prob": None, "n_filled": 0.0, "slippage_prob": None,
+                "book_age_sec": None, "fill_quality": "no_book"}
+
+
 def _leg_row(arb: Dict[str, Any], leg_key: str, other_key: str,
-            stake_units: float) -> Dict[str, Any]:
+            stake_units: float,
+            fill_fn: Callable[..., Dict[str, Any]] = _leg_fill) -> Dict[str, Any]:
     leg, other = arb[leg_key], arb[other_key]
     matchup = "%s @ %s" % (arb["away"], arb["home"])
     bet_id = "arb|%s|%s|%s|%s" % (arb["sport"], matchup, leg["venue"], leg["side"])
-    return {
+    row = dict(fill_fn(arb, leg, stake_units))  # additive fill_* fields only
+    row.update({
         "ts": _now_iso(), "sport": str(arb.get("sport") or ""),
         "matchup": matchup, "side": leg["side"], "taken_book": leg["venue"],
         "venue": leg["venue"], "taken_decimal": float(leg["decimal"]),
@@ -58,7 +82,8 @@ def _leg_row(arb: Dict[str, Any], leg_key: str, other_key: str,
         "leg_age_sec": leg["age_sec"],
         "clv_status": "INSUFFICIENT_DATA", "clv_is_proxy": True,
         "edge_claimed": False, "honest_note": HONEST_NOTE,
-    }
+    })
+    return row
 
 
 def arb_to_rows(arb: Dict[str, Any], stake_units: float = DEFAULT_STAKE_UNITS
