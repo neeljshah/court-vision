@@ -94,7 +94,8 @@ def _heuristic_starters(period_team_actions: list[dict[str, Any]]) -> set[int]:
     pre = {a["personId"] for a in non_sub if a["actionNumber"] < first_sub_num}
     first_sub_type: dict[int, str] = {}
     for s in sorted(subs, key=lambda x: x["actionNumber"]):
-        first_sub_type.setdefault(s["personId"], s["subType"])
+        if s["personId"] is not None:  # unmapped ESPN sub: a None here poisons sorted(lineup)
+            first_sub_type.setdefault(s["personId"], s["subType"])
     starters = pre | {p for p, t in first_sub_type.items() if t == "out"}
     if len(starters) != 5:
         first_seen: dict[int, int] = {}
@@ -187,13 +188,15 @@ def build_team_stints(
     return stints, notes
 
 
-def build_game_stints(game_json: dict[str, Any], box_df: pd.DataFrame) -> tuple[list[dict[str, Any]], list[str]]:
+def build_game_stints(game_json: dict[str, Any], box_df: pd.DataFrame,
+                      home_tricode: str | None = None) -> tuple[list[dict[str, Any]], list[str]]:
     game_id = game_json["game"]["gameId"]
     actions = game_json["game"]["actions"]
     team_tricode = {a["teamId"]: a["teamTricode"] for a in actions if a.get("teamId")}
     box_game = box_df[box_df["game_id"] == game_id]
-    home_rows = box_game[box_game["is_home"] == 1]
-    home_tricode = home_rows["team"].iloc[0] if not home_rows.empty else None
+    if home_tricode is None:  # box-derived default; main() passes games.parquet's
+        home_rows = box_game[box_game["is_home"] == 1]  # home_team for seasons the box lacks
+        home_tricode = home_rows["team"].iloc[0] if not home_rows.empty else None
 
     all_stints: list[dict[str, Any]] = []
     all_notes: list[str] = []
@@ -212,6 +215,8 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     box_df = pd.read_parquet(_BOX_SRC)
+    games_df = pd.read_parquet(REPO_ROOT / "data" / "domains" / "basketball_nba" / "games.parquet")
+    home_by_gid = dict(zip(games_df["game_id"].astype(str), games_df["home_team"]))
     pbp_dir = Path(args.pbp_dir) if args.pbp_dir else _PBP_DIR
     files = sorted(pbp_dir.glob("*.json"))
     if args.limit:
@@ -223,7 +228,8 @@ def main(argv: list[str] | None = None) -> int:
     for fp in files:
         try:
             game_json = json.loads(fp.read_text(encoding="utf-8"))
-            stints, notes = build_game_stints(game_json, box_df)
+            stints, notes = build_game_stints(game_json, box_df,
+                                              home_tricode=home_by_gid.get(fp.stem))
             rows.extend(stints)
             if notes:
                 n_repaired_games += 1
