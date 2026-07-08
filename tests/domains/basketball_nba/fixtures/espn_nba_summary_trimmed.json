@@ -1,0 +1,347 @@
+{
+ "header": {
+  "competitions": [
+   {
+    "status": {
+     "type": {
+      "name": "STATUS_FINAL"
+     }
+    }
+   }
+  ]
+ },
+ "boxscore": {
+  "players": [
+   {
+    "team": {
+     "abbreviation": "CLE"
+    },
+    "statistics": [
+     {
+      "keys": [
+       "minutes",
+       "points",
+       "fieldGoalsMade-fieldGoalsAttempted",
+       "threePointFieldGoalsMade-threePointFieldGoalsAttempted",
+       "freeThrowsMade-freeThrowsAttempted",
+       "rebounds",
+       "assists",
+       "turnovers",
+       "steals",
+       "blocks",
+       "offensiveRebounds",
+       "defensiveRebounds",
+       "fouls",
+       "plusMinus"
+      ],
+      "athletes": [
+       {
+        "active": true,
+        "athlete": {
+         "id": "3912848",
+         "uid": "s:40~l:46~a:3912848",
+         "guid": "cca49252-51b9-e1da-48ac-382f040cd2b4",
+         "displayName": "Dean Wade",
+         "shortName": "D. Wade",
+         "links": [
+          {
+           "rel": [
+            "playercard",
+            "desktop",
+            "athlete"
+           ],
+           "href": "https://www.espn.com/nba/player/_/id/3912848/dean-wade",
+           "text": "Player Card"
+          }
+         ],
+         "headshot": {
+          "href": "https://a.espncdn.com/i/headshots/nba/players/full/3912848.png",
+          "alt": "Dean Wade"
+         },
+         "position": {
+          "name": "Forward",
+          "displayName": "Forward",
+          "abbreviation": "F"
+         },
+         "jersey": "32"
+        },
+        "starter": true,
+        "didNotPlay": false,
+        "reason": "COACH'S DECISION",
+        "ejected": false,
+        "stats": [
+         "27",
+         "4",
+         "1-3",
+         "0-2",
+         "2-2",
+         "9",
+         "4",
+         "1",
+         "1",
+         "1",
+         "1",
+         "8",
+         "1",
+         "+11"
+        ]
+       },
+       {
+        "active": true,
+        "athlete": {
+         "id": "4066328",
+         "uid": "s:40~l:46~a:4066328",
+         "guid": "2c854df9-a5a0-0096-9a6e-c13cefab21d0",
+         "displayName": "Jarrett Allen",
+         "shortName": "J. Allen",
+         "links": [
+          {
+           "rel": [
+            "playercard",
+            "desktop",
+            "athlete"
+           ],
+           "href": "https://www.espn.com/nba/player/_/id/4066328/jarrett-allen",
+           "text": "Player Card"
+          }
+         ],
+         "headshot": {
+          "href": "https://a.espncdn.com/i/headshots/nba/players/full/4066328.png",
+          "alt": "Jarrett Allen"
+         },
+         "jersey": "31",
+         "position": {
+          "name": "Center",
+          "displayName": "Center",
+          "abbreviation": "C"
+         }
+        },
+        "starter": true,
+        "didNotPlay": false,
+        "reason": "COACH'S DECISION",
+        "ejected": false,
+        "stats": [
+         "35",
+         "13",
+         "4-8",
+         "0-0",
+         "5-6",
+         "9",
+         "0",
+         "1",
+         "0",
+         "2",
+         "1",
+         "8",
+         "1",
+         "-3"
+        ]
+       },
+       {
+        "active": false,
+        "athlete": {
+         "id": "3934723",
+         "uid": "s:40~l:46~a:3934723",
+         "guid": "4b399440-a23d-e7d3-e7b3-f2db19e9bb2b",
+         "displayName": "Thomas Bryant",
+         "shortName": "T. Bryant",
+         "links": [
+          {
+           "rel": [
+            "playercard",
+            "desktop",
+            "athlete"
+           ],
+           "href": "https://www.espn.com/nba/player/_/id/3934723/thomas-bryant",
+           "text": "Player Card"
+          }
+         ],
+         "headshot": {
+          "href": "https://a.espncdn.com/i/headshots/nba/players/full/3934723.png",
+          "alt": "Thomas Bryant"
+         },
+         "jersey": "3",
+         "position": {
+          "name": "Center",
+          "displayName": "Center",
+          "abbreviation": "C"
+         }
+        },
+        "starter": false,
+        "didNotPlay": true,
+        "reason": "COACH'S DECISION",
+        "ejected": false,
+        "stats": []
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "team": {
+     "abbreviation": "CHA"
+    },
+    "statistics": [
+     {
+      "keys": [
+       "minutes",
+       "points",
+       "fieldGoalsMade-fieldGoalsAttempted",
+       "threePointFieldGoalsMade-threePointFieldGoalsAttempted",
+       "freeThrowsMade-freeThrowsAttempted",
+       "rebounds",
+       "assists",
+       "turnovers",
+       "steals",
+       "blocks",
+       "offensiveRebounds",
+       "defensiveRebounds",
+       "fouls",
+       "plusMinus"
+      ],
+      "athletes": [
+       {
+        "active": false,
+        "athlete": {
+         "id": "4066383",
+         "uid": "s:40~l:46~a:4066383",
+         "guid": "f288347b-fa90-b31d-965a-98e20e1a8294",
+         "displayName": "Miles Bridges",
+         "shortName": "M. Bridges",
+         "links": [
+          {
+           "rel": [
+            "playercard",
+            "desktop",
+            "athlete"
+           ],
+           "href": "https://www.espn.com/nba/player/_/id/4066383/miles-bridges",
+           "text": "Player Card"
+          }
+         ],
+         "headshot": {
+          "href": "https://a.espncdn.com/i/headshots/nba/players/full/4066383.png",
+          "alt": "Miles Bridges"
+         },
+         "position": {
+          "name": "Forward",
+          "displayName": "Forward",
+          "abbreviation": "F"
+         },
+         "jersey": "0"
+        },
+        "starter": true,
+        "didNotPlay": false,
+        "reason": "COACH'S DECISION",
+        "ejected": false,
+        "stats": [
+         "26",
+         "11",
+         "5-13",
+         "1-5",
+         "0-1",
+         "1",
+         "1",
+         "0",
+         "0",
+         "0",
+         "0",
+         "1",
+         "1",
+         "-29"
+        ]
+       },
+       {
+        "active": false,
+        "athlete": {
+         "id": "4433249",
+         "uid": "s:40~l:46~a:4433249",
+         "guid": "9005f423-8ebb-3459-acf9-31eb0eaaf801",
+         "displayName": "Moussa Diabate",
+         "shortName": "M. Diabate",
+         "links": [
+          {
+           "rel": [
+            "playercard",
+            "desktop",
+            "athlete"
+           ],
+           "href": "https://www.espn.com/nba/player/_/id/4433249/moussa-diabate",
+           "text": "Player Card"
+          }
+         ],
+         "headshot": {
+          "href": "https://a.espncdn.com/i/headshots/nba/players/full/4433249.png",
+          "alt": "Moussa Diabate"
+         },
+         "jersey": "14",
+         "position": {
+          "name": "Forward",
+          "displayName": "Forward",
+          "abbreviation": "F"
+         }
+        },
+        "starter": true,
+        "didNotPlay": false,
+        "reason": "COACH'S DECISION",
+        "ejected": false,
+        "stats": [
+         "29",
+         "4",
+         "1-1",
+         "0-0",
+         "2-6",
+         "5",
+         "0",
+         "2",
+         "1",
+         "3",
+         "3",
+         "2",
+         "4",
+         "+1"
+        ]
+       },
+       {
+        "active": false,
+        "athlete": {
+         "id": "5211176",
+         "uid": "s:40~l:46~a:5211176",
+         "guid": "1dc72382-093a-337b-9b04-4ad051171560",
+         "displayName": "Tidjane Salaun",
+         "shortName": "T. Salaun",
+         "links": [
+          {
+           "rel": [
+            "playercard",
+            "desktop",
+            "athlete"
+           ],
+           "href": "https://www.espn.com/nba/player/_/id/5211176/tidjane-salaun",
+           "text": "Player Card"
+          }
+         ],
+         "headshot": {
+          "href": "https://a.espncdn.com/i/headshots/nba/players/full/5211176.png",
+          "alt": "Tidjane Salaun"
+         },
+         "jersey": "31",
+         "position": {
+          "name": "Forward",
+          "displayName": "Forward",
+          "abbreviation": "F"
+         }
+        },
+        "starter": false,
+        "didNotPlay": true,
+        "reason": "COACH'S DECISION",
+        "ejected": false,
+        "stats": []
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ }
+}
