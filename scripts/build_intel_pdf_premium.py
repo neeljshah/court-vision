@@ -885,7 +885,7 @@ def ops_checklist():
         ["Health monitor", "17 OK / 5 WARN / 0 ERROR", "OK"],
         ["Live-edge scanner", "MC re-run every 90 sec post-tip", "OK"],
         ["CLV auto-pickup", "wire_clv_from_registered.py @ 09:00 ET", "OK"],
-        ["Bankroll snapshot", "$11,043.48 — 21.2% at risk", "OK"],
+        ["Paper units snapshot", "demo units — layout sample only", "OK"],
     ]
     t = Table(rows, colWidths=[1.7 * inch, 4.0 * inch, 0.95 * inch])
     t.setStyle(TableStyle([
@@ -948,7 +948,7 @@ def build():
         canvas.setFillColor(C_GRAY_500)
         canvas.setFont("Helvetica", 7)
         canvas.drawString(0.45 * inch, 0.22 * inch,
-                          "CourtVision AI · 2026-05-26 · BR $11,043.48 · "
+                          "CourtVision AI · 2026-05-26 · PAPER demo (units) · "
                           "3-way verified (model + WCF G1–G4 + Pin sharp)")
         canvas.drawRightString(LETTER[0] - 0.45 * inch, 0.22 * inch,
                                 f"Page {doc_.page}")
@@ -1136,7 +1136,7 @@ def build():
     # Expected returns + worst/best cases
     bets_list = bets["bets"]
     total_stake = sum(b["stake"] for b in bets_list)
-    # Expected profit: sum(stake * ev_per_$1)
+    # Model EV in demo units: sum(stake * ev_per_unit) -- layout sample, no recommendation
     exp_profit = sum(b["stake"] * b["ev_pct"] / 100 for b in bets_list)
     # Best case: every bet wins
     def payout_for(odds):
@@ -1152,8 +1152,8 @@ def build():
          Paragraph("<b><font color='white' size=8>VALUE</font></b>", BODY),
          Paragraph("<b><font color='white' size=8>INTERPRETATION</font></b>", BODY)],
         ["Total at risk", f"${total_stake:,.0f}",
-         f"{total_stake/BR*100:.1f}% of $11,043 bankroll — within 25% slate cap"],
-        ["Expected profit", f"${exp_profit:+,.0f}",
+         "stake sizing: user-defined units — demo layout only, no recommendation"],
+        ["Model EV (demo units)", f"{exp_profit:+,.1f}",
          f"Avg leg EV {avg_ev:.1f}% × $260 × 9 — model's probability estimate vs market price"],
         ["Best case (all hit)", f"${best_case:+,.0f}",
          f"All 9 legs win — multiplicative return on 21% of bankroll"],

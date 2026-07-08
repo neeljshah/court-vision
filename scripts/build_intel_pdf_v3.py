@@ -908,8 +908,8 @@ def slate_risk_summary():
     rows = [
         [head("METRIC"), head("VALUE"), head("INTERPRETATION")],
         ["Total at risk", f"${total_stake:,.0f}",
-         f"{total_stake/BR*100:.1f}% of $11,043 bankroll — within 25% slate cap"],
-        ["Expected profit", f"${exp_profit:+,.0f}",
+         "stake sizing: user-defined units — demo layout only, no recommendation"],
+        ["Model EV (demo units)", f"{exp_profit:+,.1f}",
          f"Avg leg EV {avg_ev:.1f}% × $260 × 9 — model's probability estimate vs market price"],
         ["Best case (all hit)", f"${best_case:+,.0f}",
          "All 9 legs win — multiplicative payoff on 21% bankroll"],
@@ -1319,7 +1319,7 @@ def build():
         canvas.setFillColor(C_GRAY_500)
         canvas.setFont("Helvetica", 7)
         canvas.drawString(0.45*inch, 0.22*inch,
-                           "CourtVision AI  ·  2026-05-26  ·  Bankroll $11,043.48  ·  "
+                           "CourtVision AI  ·  2026-05-26  ·  PAPER demo (units)  ·  "
                            "3-way verified (Model + WCF G1–G4 series + Pin sharp)")
         canvas.setFillColor(C_GOLD)
         canvas.setFont("Helvetica-Bold", 7)
