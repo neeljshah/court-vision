@@ -18,6 +18,10 @@
 system who rigorously audits and disproves his own results — senior-grade engineering
 discipline without a degree.
 
+**The honest headline finding (§3):** against real closing lines I found the market is
+efficient — the model is about break-even-minus-vig, with assists the one small, durable
+edge. That is a sophisticated and honest result, and I have the harnesses that prove it.
+
 He is a self-taught, hands-on systems engineer who built a complete NBA broadcast-video
 CV pipeline, a multi-output ML prediction stack, and a multi-service FastAPI/daemon
 serving platform, mostly by architecting and directing an agentic build workflow (a
