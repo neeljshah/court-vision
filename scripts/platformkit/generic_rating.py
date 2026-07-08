@@ -40,7 +40,8 @@ _SPORT_CFG: Dict[str, Dict[str, str]] = {
 }
 # Per-sport pinned constants (the 03 design: the adapter supplies these).  Home
 # advantage in Elo points: NBA strong, MLB modest, soccer moderate, tennis none.
-_SPORT_HFA: Dict[str, float] = {"nba": 65.0, "mlb": 24.0, "soccer": 46.0, "tennis": 0.0}
+_SPORT_HFA: Dict[str, float] = {"nba": 65.0, "mlb": 24.0, "soccer": 46.0, "tennis": 0.0,
+                                 "soccer_intl": 46.0}  # reuse soccer's HFA scale -- same Elo mechanic
 _NOTE = ("One generic Elo across sports; CALIBRATION/ACCURACY != EDGE. A competitive "
          "match with the per-sport baseline validates the abstraction, not a market edge.")
 
