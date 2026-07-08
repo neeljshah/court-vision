@@ -1,0 +1,32 @@
+{
+ "authored_at": "2026-07-08",
+ "authored_by": "Fable",
+ "bars": {
+  "note": "claims_regen spends zero fits and faces no gate bar -- descriptive-only, edge_claimed:false throughout.",
+  "source": "n/a"
+ },
+ "blocklist_stale_after_days": 0,
+ "corpus": {
+  "note": "claims-regen reads the pinned grid's own per-family source parquet; no gate corpus_cache watermark applies -- freshness is per-family via the factory's own source file, watermarked below at the template level by the source grid file's content sha.",
+  "source": "domains.mlb.claims_grid.GRID"
+ },
+ "excluded_signals": [],
+ "k_ledger": "data/cache/autoloop/k_ledger/mlb__T03_claims_regen_mlb.jsonl",
+ "kind": "claims_regen",
+ "max_candidates_per_cycle": 4,
+ "planted_null": {
+  "applicability": "NOT_APPLICABLE",
+  "note": "descriptive claims carry no null-collapse control; NOT_APPLICABLE is recorded as such, never silently GREEN.",
+  "required": false
+ },
+ "prereg_sha": "330b67f4bf82cad56a25ba23434d2b7d3ff97ab03ab79967e498d0e6cccaa929",
+ "spec_ref": "docs/research/depth-program/AUTOLOOP_SPEC_2026-07-06.md#ruling-R-D",
+ "sport": "mlb",
+ "template_id": "T03_claims_regen_mlb",
+ "universe": [
+  "mlb_batter_rate",
+  "mlb_pitcher_rate",
+  "mlb_team_rate",
+  "mlb_bullpen_fatigue_chains"
+ ]
+}

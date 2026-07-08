@@ -132,3 +132,39 @@ def test_watermark_save_and_load_roundtrip(tmp_path):
     SP.save_watermarks({"t08": {"corpus_sha": "abc", "last_run_ts": "now"}}, path=wpath)
     loaded = SP.load_watermarks(path=wpath)
     assert loaded["t08"]["corpus_sha"] == "abc"
+
+
+def test_real_templates_dir_all_sha_verify():
+    """Every tracked template under templates/ (T01-T05, incl. the mlb/soccer/
+    tennis claims_regen additions) loads ok=True -- a real content edit
+    without a re-shai would show up here as PREREG_TAMPER."""
+    tpls = SP.load_all_templates()
+    by_id = {t.template_id: t for t in tpls}
+    expected = {
+        "T01_claims_regen": "basketball_nba",
+        "T02_reclaim_fit": "nba",
+        "T03_claims_regen_mlb": "mlb",
+        "T04_claims_regen_soccer": "soccer",
+        "T05_claims_regen_tennis": "tennis",
+    }
+    for template_id, sport in expected.items():
+        assert template_id in by_id, "%s missing from templates/" % template_id
+        tpl = by_id[template_id]
+        assert tpl.ok is True, "%s failed to load: %s" % (template_id, tpl.reason)
+        assert tpl.sport == sport
+        assert tpl.kind in SP.VALID_KINDS
+
+
+def test_new_claims_regen_templates_content_sha_and_due():
+    """The 3 new claims_regen templates (mlb/soccer/tennis) resolve a real
+    per-family source-parquet content sha and evaluate is_due() cleanly --
+    the same dry-run the daemon does before ever calling run_claims_regen."""
+    tpls = {t.template_id: t for t in SP.load_all_templates()}
+    for template_id in ("T03_claims_regen_mlb", "T04_claims_regen_soccer",
+                        "T05_claims_regen_tennis"):
+        tpl = tpls[template_id]
+        assert tpl.kind == "claims_regen"
+        sha = SP.template_content_sha(tpl)
+        assert sha, "%s: no content sha resolved (source parquet missing?)" % template_id
+        assert SP.is_due(tpl.template_id, sha, {}) is True
+        assert SP.is_due(tpl.template_id, sha, {tpl.template_id: {"corpus_sha": sha}}) is False

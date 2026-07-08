@@ -1,0 +1,30 @@
+{
+ "authored_at": "2026-07-08",
+ "authored_by": "Fable",
+ "bars": {
+  "note": "claims_regen spends zero fits and faces no gate bar -- descriptive-only, edge_claimed:false throughout.",
+  "source": "n/a"
+ },
+ "blocklist_stale_after_days": 0,
+ "corpus": {
+  "note": "claims-regen reads the pinned grid's own per-family source parquet; no gate corpus_cache watermark applies -- freshness is per-family via the factory's own source file, watermarked below at the template level by the source grid file's content sha.",
+  "source": "domains.soccer.claims_grid.GRID"
+ },
+ "excluded_signals": [],
+ "k_ledger": "data/cache/autoloop/k_ledger/soccer__T04_claims_regen_soccer.jsonl",
+ "kind": "claims_regen",
+ "max_candidates_per_cycle": 2,
+ "planted_null": {
+  "applicability": "NOT_APPLICABLE",
+  "note": "descriptive claims carry no null-collapse control; NOT_APPLICABLE is recorded as such, never silently GREEN.",
+  "required": false
+ },
+ "prereg_sha": "27b2b86fc0112ddbb7150ab0d2c6ad2cf66f7da8fe516d4cc8da7d99a1c9fcc0",
+ "spec_ref": "docs/research/depth-program/AUTOLOOP_SPEC_2026-07-06.md#ruling-R-D",
+ "sport": "soccer",
+ "template_id": "T04_claims_regen_soccer",
+ "universe": [
+  "soccer_referee_card_foul_profiles",
+  "soccer_style_matchup_claims"
+ ]
+}
