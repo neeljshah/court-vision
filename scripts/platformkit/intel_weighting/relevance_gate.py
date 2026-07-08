@@ -36,6 +36,7 @@ from scripts.platformkit.intel_weighting.claim_features import (
     load_family_features,
     prior_season_metrics,
 )
+from scripts.platformkit.intel_weighting.player_team_agg import aggregate_to_team, prior_season
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 _GAMES = {
@@ -46,6 +47,9 @@ _MIN_TEST = 60          # too few OOS games -> UNTESTABLE
 _TRAIN_FRAC = 0.6       # temporal train prefix within the eval season
 _DM_ALPHA = 0.05        # two-tailed p for "beyond noise"
 METHOD = "prior_season_claim_walkforward_v1"
+# entity_key spellings seen in claim payloads for a player-id-keyed family.
+# Aggregation source (player_boxscores.parquet) is NBA-only -- see run_family.
+_PLAYER_ENTITY_KEYS = {"player_id", "player", "pid"}
 
 
 @dataclass
@@ -165,19 +169,44 @@ def run_family(sport: str, family: str,
     games_df = pd.read_parquet(REPO_ROOT / _GAMES[sport][0]).sort_values("date").reset_index(drop=True)
     eval_season = sorted(games_df["season"].astype(str).unique())[-1]
 
-    if entity_key != "team":
+    dropped_by_metric: Dict[str, List[str]] = {}
+    if entity_key == "team":
+        pri = prior_season_metrics(table, eval_season)
+        entity_mapping = "team"
+    elif entity_key in _PLAYER_ENTITY_KEYS and sport == "nba":
+        # design (a): prior-season claim values, rolled up to team with
+        # prior-season roster+minutes weights (see player_team_agg module doc).
+        player_pri = prior_season_metrics(table, eval_season)
+        pri = {}
+        roster_season = prior_season(eval_season)
+        for metric, player_vals in player_pri.items():
+            team_vals, dropped = aggregate_to_team(player_vals, roster_season)
+            if team_vals:
+                pri[metric] = team_vals
+                if dropped:
+                    dropped_by_metric[metric] = dropped
+        entity_mapping = "player_minwt_prior_season"
+    else:
         return [GateResult(family, sport, "-", f"{entity_key}->none", len(games_df),
                            0.0, 0.0, 0.0, 0.0, 1.0, "UNTESTABLE",
-                           [f"entity_key={entity_key}: no team mapping in payload "
-                            "(ponytail: roster+minutes join is the upgrade path)"])]
-    pri = prior_season_metrics(table, eval_season)
+                           [f"entity_key={entity_key}: no team-aggregation path for "
+                            f"sport={sport} (ponytail: NBA-only player_boxscores join)"])]
+
     if not pri:
-        return [GateResult(family, sport, "-", "team", len(games_df), 0.0, 0.0, 0.0,
+        return [GateResult(family, sport, "-", entity_mapping, len(games_df), 0.0, 0.0, 0.0,
                            0.0, 1.0, "UNTESTABLE",
-                           [f"no prior-season ({eval_season} minus 1) plain window"])]
+                           [f"no prior-season ({eval_season} minus 1) plain window, or "
+                            "aggregation left zero teams above the coverage floor"])]
 
     pb = np.clip(_base_probs(sport, games_df), 1e-9, 1 - 1e-9)
     base_logit_all = np.log(pb / (1 - pb))
     eval_mask = (games_df["season"].astype(str) == eval_season).to_numpy()
-    return [run_gate(sport, family, metric, feat, games_df, base_logit_all, eval_mask, "team")
-            for metric, feat in sorted(pri.items())]
+    results = []
+    for metric, feat in sorted(pri.items()):
+        g = run_gate(sport, family, metric, feat, games_df, base_logit_all, eval_mask, entity_mapping)
+        dropped = dropped_by_metric.get(metric)
+        if dropped:
+            g.caveats.append(f"{len(dropped)} team(s) dropped below 60% minutes-coverage floor: "
+                              f"{','.join(dropped)}")
+        results.append(g)
+    return results
