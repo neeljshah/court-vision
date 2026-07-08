@@ -159,8 +159,8 @@ def _load_missed_shots_and_rebounds(pbp_dir: Path = _PBP_DIR, limit: int | None 
     return pd.DataFrame(rows)
 
 
-def build_continuity_dreb(stints_df: pd.DataFrame) -> pd.DataFrame:
-    shots = _load_missed_shots_and_rebounds()
+def build_continuity_dreb(stints_df: pd.DataFrame, pbp_dir: Path = _PBP_DIR) -> pd.DataFrame:
+    shots = _load_missed_shots_and_rebounds(pbp_dir=pbp_dir)
     clean = stints_df[stints_df["n_on_court"] == 5].copy()
     team_ids_by_game = clean.groupby("game_id")["team_id"].unique().apply(list).to_dict()
     shots["defending_team_id"] = shots.apply(

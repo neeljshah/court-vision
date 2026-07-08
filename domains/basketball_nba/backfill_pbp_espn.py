@@ -222,13 +222,17 @@ def _get_json(sess: requests.Session, url: str, sleep: float, tries: int = 2) ->
     return {}
 
 
-def backfill(season: str = "2025-26", sleep: float = 0.7, limit: int = 0) -> dict:
+def backfill(season: str = "2025-26", sleep: float = 0.7, limit: int = 0,
+             pbp_dir: Path = _PBP_DIR) -> dict:
     """Fetch ESPN-derived pbp for every uncached *season* game; resumable,
-    on-disk skip. Returns a counters dict; never raises per-game."""
-    _PBP_DIR.mkdir(parents=True, exist_ok=True)
+    on-disk skip. Returns a counters dict; never raises per-game.
+    *pbp_dir* lets a different season write to a SEPARATE cache dir (team id
+    map is still harvested from the original 2025-26 cache -- franchises are
+    unchanged season-to-season, no need to duplicate that harvest)."""
+    pbp_dir.mkdir(parents=True, exist_ok=True)
     real_ids = _real_team_id_map()
     player_map = load_player_map()
-    todo = _missing_games(season)
+    todo = _missing_games(season, pbp_dir=pbp_dir)
     if limit > 0:
         todo = todo.head(limit)
     dates = sorted({d.strftime("%Y%m%d") for d in pd.to_datetime(todo["date"])})
@@ -250,7 +254,7 @@ def backfill(season: str = "2025-26", sleep: float = 0.7, limit: int = 0) -> dic
         day = todo[pd.to_datetime(todo["date"]).dt.strftime("%Y%m%d") == date]
         for row in day.itertuples():
             gid = str(row.game_id)
-            out_path = _PBP_DIR / f"{gid}.json"
+            out_path = pbp_dir / f"{gid}.json"
             if out_path.exists():
                 continue
             eid = ev_by_teams.get((row.home_team, row.away_team))
@@ -290,9 +294,11 @@ def _main() -> None:
     ap.add_argument("--season", default="2025-26")
     ap.add_argument("--limit", type=int, default=0, help="max games this run (0 = all missing)")
     ap.add_argument("--sleep", type=float, default=0.7)
+    ap.add_argument("--pbp-dir", default=None, help="override output dir (default: team_system/pbp)")
     args = ap.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
-    c = backfill(season=args.season, limit=args.limit, sleep=args.sleep)
+    pbp_dir = Path(args.pbp_dir) if args.pbp_dir else _PBP_DIR
+    c = backfill(season=args.season, limit=args.limit, sleep=args.sleep, pbp_dir=pbp_dir)
     print(f"RESULT {c}")
 
 
