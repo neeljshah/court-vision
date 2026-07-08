@@ -79,12 +79,13 @@ def test_build_ranking_claim_excludes_below_coverage_floor_honestly(tmp_path, mo
         "test_claim", "test question?", WEIGHTS, df, "shooter_quality_v1",
         ellis_rank=-1, curry_rank=1, n_qualifying=3, source_files=["dummy.parquet"],
         extra_caveat="test caveat", computed_at="2026-01-01T00:00:00+00:00",
-        index_name="shooter",
+        index_name="shooter", season="2024-25",
     )
     assert claim["criteria"]["min_sample"] == {"coverage": 1.0}
     # 1 of 3 synthetic rows has coverage=0.85 -- must be counted, never silently dropped
     assert claim["n_excluded_below_floor"] == 1
     assert claim["criteria"]["formula"] == "0.6*pillar_EFFICIENCY + 0.4*pillar_DIFFICULTY"
+    assert claim["criteria"]["window"] == "2024-25"
 
 
 class _FakeGate:

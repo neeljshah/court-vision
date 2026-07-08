@@ -27,7 +27,7 @@ import numpy as np
 import pandas as pd
 
 from domains.basketball_nba.quality_claim_builders import build_gate_claim, build_ranking_claim, rank_of, write_verdict
-from domains.basketball_nba.quality_indices import SCORER_WEIGHTS, SHOOTER_WEIGHTS
+from domains.basketball_nba.quality_indices import QUALIFY_SEASON, SCORER_WEIGHTS, SHOOTER_WEIGHTS
 from domains.basketball_nba.quality_indices_score import run as run_indices
 from domains.basketball_nba.quality_validity_gate import GateResult, run_gate
 
@@ -134,6 +134,7 @@ def run() -> GateResult:
         ),
         computed_at=computed_at,
         index_name="shooter",
+        season=QUALIFY_SEASON,
     ))
     claims.append(build_ranking_claim(
         "nba_scorer_quality_v1_full_season_2024_25",
@@ -156,6 +157,7 @@ def run() -> GateResult:
         ),
         computed_at=computed_at,
         index_name="scorer",
+        season=QUALIFY_SEASON,
     ))
 
     write_claims(claims)

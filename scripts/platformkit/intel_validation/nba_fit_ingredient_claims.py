@@ -20,6 +20,9 @@ docstring/caveats -- summary:
       docstring for the vacancy_share definition. Aggregate validator path
       (safe_formula.evaluate_group_formula), entity_key=team, group_by=team.
 
+  Window stamps for all three: see the ARCHETYPE_WINDOW / SCHEME_IDENTITY_SEASON
+  / ROLE_VACANCY_SEASON constants below for the per-family vintage evidence.
+
 LEAK DISCIPLINE: player_roles/scheme_coverage are season-to-date descriptive
 aggregates already on disk -- a SCOUTING composition, not an in-game/
 pregame predictive feature. player_boxscores rows are completed-game box
@@ -49,6 +52,24 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 _PLAYER_ROLES = REPO_ROOT / "data" / "cache" / "team_system" / "player_roles.parquet"
 _SCHEME_COVERAGE = REPO_ROOT / "data" / "cache" / "team_system" / "scheme_coverage.parquet"
 _PLAYER_BOXSCORES = REPO_ROOT / "data" / "domains" / "basketball_nba" / "player_boxscores.parquet"
+
+# Claim window stamps (claim_features.window_to_season()'s prior-season match
+# for the intel_weighting gate; eval season is 2025-26, prior is 2024-25):
+#  (a) ARCHETYPE_WINDOW: player_roles.parquet's upstream player_rates.parquet
+#      (team_system, human-gated) has no season column -- no single-season
+#      vintage establishable, stamped career_to_date (window_to_season()
+#      refuses "career" -> untestable-by-design, not a fabricated hit).
+#  (b) SCHEME_IDENTITY_SEASON: wf_ppp_allowed_z is built from
+#      league_team_game.parquet, confirmed 2025-10-21..2026-04-06 only -- a
+#      real single-season value, but same season as the CURRENT eval season
+#      (no 2024-25-equivalent corpus exists for this metric per
+#      scripts/mine_scheme_coverage.py) -> also untestable today, honestly.
+#  (c) ROLE_VACANCY_SEASON: player_boxscores.parquet spans both 2024-25 and
+#      2025-26 with no filter previously applied -- pinned to the season
+#      strictly prior to eval so this one is real, leak-free, and testable.
+ARCHETYPE_WINDOW = "career_to_date"
+SCHEME_IDENTITY_SEASON = "2025-26"
+ROLE_VACANCY_SEASON = "2024-25"
 
 _OUT_DIR = REPO_ROOT / "data" / "cache" / "intel_claims"
 _CLAIMS_OUT = _OUT_DIR / "nba_fit_ingredient_claims.jsonl"
@@ -117,7 +138,7 @@ def build_archetype_claim() -> dict[str, Any]:
         "criteria": {
             "metric": "usage_pct",
             "formula": "usage_pct",
-            "window": "current",
+            "window": ARCHETYPE_WINDOW,  # see constant comment above
             "min_sample": {"mpg": MIN_MPG},
             "direction": "desc",
             "value_precision": 4,
@@ -169,7 +190,7 @@ def build_scheme_identity_claim() -> dict[str, Any]:
         "criteria": {
             "metric": "wf_ppp_allowed_z",
             "formula": "wf_ppp_allowed_z",
-            "window": "current",
+            "window": SCHEME_IDENTITY_SEASON,
             "min_sample": {},
             "direction": "desc",
             "value_precision": 4,
@@ -204,6 +225,8 @@ def build_role_vacancy_snapshot() -> tuple[Path, pd.DataFrame]:
     validator groups by to independently re-derive vacancy_share =
     mean(is_below_median). Returns (path, snapshot_df)."""
     box = pd.read_parquet(_PLAYER_BOXSCORES)
+    if "season" in box.columns:
+        box = box[box["season"].astype(str) == ROLE_VACANCY_SEASON]  # see constant comment above
     roles = pd.read_parquet(_PLAYER_ROLES)[["pid", "posgroup"]].drop_duplicates(subset=["pid"])
 
     per_player_team = box.groupby(["player_id", "team"], as_index=False).agg(
@@ -260,7 +283,7 @@ def build_role_vacancy_claim() -> dict[str, Any]:
         "criteria": {
             "metric": "vacancy_share",
             "formula": "mean(is_below_median)",
-            "window": "current",
+            "window": ROLE_VACANCY_SEASON,
             "min_sample": {"n_players": MIN_TEAM_POSGROUP_N},
             "direction": "desc",
             "value_precision": 4,

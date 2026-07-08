@@ -129,7 +129,7 @@ def build_gate_claim(gate: GateResult, computed_at: str) -> dict:
 def build_ranking_claim(claim_id: str, question: str, weights: dict, ranking_df: pd.DataFrame,
                          score_col: str, ellis_rank: int, curry_rank: int, n_qualifying: int,
                          source_files: list[str], extra_caveat: str, computed_at: str,
-                         index_name: str) -> dict:
+                         index_name: str, season: str) -> dict:
     snapshot_path = write_pillar_snapshot(ranking_df, weights, index_name)
     n_full_coverage = int((ranking_df["coverage"] >= 1.0).sum())
     return {
@@ -145,6 +145,12 @@ def build_ranking_claim(claim_id: str, question: str, weights: dict, ranking_df:
             "direction": "desc",
             "value_precision": 4,
             "entity_key": "player_id",
+            # window: real single-season vintage (idx.shooter/idx.scorer are
+            # scored over quality_indices_score.run(season=...), same season
+            # this claim was computed from) -- resolves via
+            # intel_weighting.claim_features.window_to_season() so the
+            # relevance gate can use this as a prior-season feature.
+            "window": season,
         },
         "ranking": _ranking_rows(ranking_df, score_col),
         "face_validity_diagnostic": {
