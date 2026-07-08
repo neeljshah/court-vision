@@ -1,9 +1,10 @@
-"""Per-file test on the real 0022500003.json fixture: builds the tricode->
-team_id map, picks top-usage players, and checks the sanity invariants --
-the map recovers exactly the 2 teams in the game, top_usage_players never
-returns more than TOP_N_USAGE per team, and a single 48-minute game can
-never clear the 200/50-minute with/without floors (so the batch output is
-empty here by construction).
+"""Per-file test on the real 0022500003.json fixture: picks top-usage
+players straight off this game's own shot events (season-safe ranking, see
+usage_redistribution.py's module docstring for why this replaced a
+player_boxscores.parquet+tricode-map path), and checks the sanity
+invariants -- top_usage_players never returns more than TOP_N_USAGE per
+team, and a single 48-minute game can never clear the 200/50-minute
+with/without floors (so the batch output is empty here by construction).
 
 Run: python -m pytest domains/basketball_nba/interactions/test_usage_redistribution.py -q
 """
@@ -16,7 +17,6 @@ import pytest
 
 from domains.basketball_nba.interactions.usage_redistribution import (
     TOP_N_USAGE,
-    build_tricode_to_team_id,
     compute_usage_redistribution,
     top_usage_players,
 )
@@ -34,15 +34,14 @@ def test_usage_redistribution_structurally_sane_on_one_game() -> None:
     assert notes == []
     stints_df = pd.DataFrame(stints)
 
-    tricode_to_team = build_tricode_to_team_id([_FIXTURE])
-    assert len(tricode_to_team) == 2
+    shots_df = load_shot_events(game_json)
+    shots_df = attach_lineup_to_shots(stints_df, shots_df)
+    assert shots_df["team_id"].nunique() == 2
 
-    usage_df = top_usage_players(box_df[box_df["game_id"] == game_json["game"]["gameId"]], tricode_to_team)
+    usage_df = top_usage_players(shots_df)
     assert 0 < len(usage_df) <= TOP_N_USAGE * 2
     assert (usage_df.groupby("team_id").size() <= TOP_N_USAGE).all()
 
-    shots_df = load_shot_events(game_json)
-    shots_df = attach_lineup_to_shots(stints_df, shots_df)
     result, n_excluded = compute_usage_redistribution(stints_df, shots_df, usage_df, box_df)
     # one 48-min game can never supply 200 min_with -- every candidate is excluded
     assert n_excluded == len(usage_df)
