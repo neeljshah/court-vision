@@ -186,7 +186,9 @@ def run_pytest(targets: Optional[List[str]] = None, timeout: int = 1800,
     cmd += [str(t) for t in targets] if targets else [str(ROOT / "tests")]
     cmd += ["-q", "--no-header", "--tb=no"]
     if junitxml:
-        cmd += ["--junitxml=" + str(junitxml)]
+        # Full-suite id-aware runs must survive duplicate-basename collection
+        # errors (they become frozen error ids) instead of aborting (P0-H-005).
+        cmd += ["--junitxml=" + str(junitxml), "--continue-on-collection-errors"]
     if _PYTEST_TIMEOUT_AVAILABLE:
         cmd += ["--timeout=300", "--timeout-method=thread"]
     child_env = {**os.environ, "NBA_OFFLINE": "1"}
