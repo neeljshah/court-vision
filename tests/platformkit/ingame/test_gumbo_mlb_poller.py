@@ -298,3 +298,18 @@ def test_run_live_window_diffpatch_then_fallback_to_full_feed(tmp_path):
     assert len(full_feed_calls) >= 2, "bootstrap + fallback re-fetch on patch failure"
     rows = (tmp_path / "g" / "111.jsonl").read_text(encoding="utf-8").splitlines()
     assert len(rows) == 2 and json.loads(rows[1])["outs"] == 2, "fallback row still written"
+
+
+def test_default_date_is_baseball_date_not_utc(monkeypatch):
+    """Past 00:00 UTC (evening US games still live), the default schedule date
+    must stay on the US slate date (UTC-10h roll), not roll to tomorrow-UTC --
+    the today-UTC default made capture go blind every evening at ~7pm CT."""
+    from scripts.platformkit.ingame import gumbo_mlb_poller as gp
+    seen = {}
+    def fake_fetch(url):
+        seen["url"] = url
+        return {"dates": []}
+    gp.list_live_game_pks(date_str=None, fetch_fn=fake_fetch)
+    from datetime import datetime, timedelta, timezone
+    expect = (datetime.now(timezone.utc) - timedelta(hours=10)).strftime("%Y-%m-%d")
+    assert expect in seen["url"]
