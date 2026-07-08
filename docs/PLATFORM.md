@@ -273,13 +273,60 @@ core decision systems see **[architecture/system-overview.md](architecture/syste
 
 ---
 
+## The Build Program -- kernel extraction, live status
+
+The `kernel/` + `domains/<sport>/` split described above is not finished by hand; it is executed by
+an autonomous build harness (`scripts/platform_harness/`) working a task backlog under the same
+gates as everything else in this repo. Current status, pulled from a live run of the harness's own
+status probe (not typed by hand):
+
+```
+python scripts/platform_harness/build_status.py
+program=platform_v1  phase_cursor=0
+tasks  total=83  done=53  in_progress=0  review=0  blocked=0  rejected=0  todo/ready=30
+percent_done=63.9%
+```
+
+53/83 tasks done (63.9%). Full loop mechanics -- probe / adjudicate / plan-wave / spec / spawn /
+review / gate / merge, the `HOT_FILES` serialization rules, the game-day landing filter -- are
+documented in **[PLATFORM_HARNESS.md](PLATFORM_HARNESS.md)**; the always-on runtime fleet this
+harness is separate from (it builds code, the daemons run it) is documented in
+**[DAEMONS.md](DAEMONS.md)**.
+
+One concrete extraction artifact worth naming: the ten `CV_CFG_*` dual-path config flags
+(`CV_CFG_STATS`, `CV_CFG_PBP`, `CV_CFG_COURT`, `CV_CFG_CLOCK`, `CV_CFG_LEAGUE_CLIENT`,
+`CV_CFG_ROSTER`, `CV_CFG_SPEED`, `CV_CFG_GAMESTATE`, `CV_CFG_ENTITIES`, `CV_CFG_ATLAS`) are
+registered in `src/brain/flags.py`, every one **default-OFF** with `flag_allowed_on=False` until
+its own recorded gate verdict (byte-identical fixture slate ON==OFF, pytest green, loop dry-run
+green). Registering a flag is not the same as flipping it -- per the human-gated-paths and
+no-edge-claims invariants, this program never flips a flag ON unattended.
+
+`domains/basketball_nba` is carrying real ingest work as part of this deepening, not just
+scaffolding: `ingest_espn_player_box.py` backfills the 2025-26 per-player box gap (stats.nba.com is
+blocked from this route; ESPN's site.api is the documented working substitute) directly into the
+existing `quarter_box` cache shape, so the pre-existing pure transform in `ingest_boxscores.py`
+needs zero changes to consume it.
+
+### The census -- the domain-expansion queue
+
+`data/frontend/ops/data_census.json` is the machine-readable answer to "what's on disk, what's
+derivable from it, and what's actually built" per sport -- CENSUS -> DIFF -> FACTORY (walk every
+source, list what claim families are derivable and their BUILT/PARTIAL/UNBUILT status, then feed
+UNBUILT-with-`leverage_rank` families into the standing priority queue). This is the same census
+step 2 of the new-sport playbook above runs (`python -m data_registry.inventory scan`) -- one
+mechanism serves both "what should this existing sport build next" and "is a new sport's corpus
+non-empty enough to onboard." Full per-sport inventory and the priority queue itself:
+**[DATA_DEPTH.md](DATA_DEPTH.md)**.
+
+---
+
 ## Roadmap
 
 ### Done -- Extract the kernel + ship four adapters
 The sport-agnostic machinery is shared, and NBA/MLB/Soccer/Tennis each run as adapters on top of it with leak-free proofs.
 
 ### Now -- Deepen the per-sport data funnel
-For each sport, ingest more reachable, fresher data to sharpen calibration and widen the in-game conditioning lead. Pregame markets are efficient; the gains are freshness, joint-market shape, and in-game state.
+For each sport, ingest more reachable, fresher data to sharpen calibration and widen the in-game conditioning lead. Pregame markets are efficient; the gains are freshness, joint-market shape, and in-game state. The kernel-extraction harness (above) is running this concurrently against the platform backlog -- see [PLATFORM_HARNESS.md](PLATFORM_HARNESS.md) for live status.
 
 ### Next -- Broaden
 Additional sports each add an adapter without touching the kernel. Kernel improvements (calibration, walk-forward gating, the agent loop) benefit every sport simultaneously.
