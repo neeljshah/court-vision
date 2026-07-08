@@ -50,6 +50,7 @@ def test_archetype_claim_excludes_below_floor_players(monkeypatch, tmp_path):
     assert claim["n_excluded_below_floor"] == 1
     # Alpha (usage_pct=0.95) ranks above Gamma (0.60) -- desc by usage_pct
     assert claim["ranking"][0]["pid"] == 1
+    assert claim["criteria"]["window"] == "career_to_date"  # genuinely un-scoped vintage
 
 
 def test_scheme_identity_claim_covers_full_population_no_floor(monkeypatch, tmp_path):
@@ -74,6 +75,7 @@ def test_scheme_identity_claim_covers_full_population_no_floor(monkeypatch, tmp_
     teams = {r["team"] for r in claim["ranking"]}
     assert teams == {"ATL", "BOS"}
     assert claim["ranking"][0]["team"] == "ATL"  # 0.5 > -0.3, desc
+    assert claim["criteria"]["window"] == fic.SCHEME_IDENTITY_SEASON
 
 
 def _fixture_boxscores() -> pd.DataFrame:
@@ -85,6 +87,7 @@ def _fixture_boxscores() -> pd.DataFrame:
     return pd.DataFrame({
         "player_id": [10, 11, 12, 13, 20],
         "team": ["ATL", "ATL", "ATL", "BOS", "CHI"],
+        "season": ["2024-25"] * 5,  # matches fic.ROLE_VACANCY_SEASON filter
         "min": [10.0, 10.0, 10.0, 10.0, 10.0],
         "pts": [10.0, 10.0, 1.0, 10.0, 5.0],
     })
@@ -114,6 +117,7 @@ def test_role_vacancy_uses_league_wide_posgroup_median_and_floor(monkeypatch, tm
     atl_big = next(r for r in claim["ranking"] if r["team_posgroup"] == "ATL|BIG")
     assert atl_big["value"] == round(1 / 3, 4)
     assert atl_big["n"] == 3
+    assert claim["criteria"]["window"] == fic.ROLE_VACANCY_SEASON
 
 
 def test_real_archetype_claim_independently_verifies():

@@ -112,7 +112,14 @@ def build_canonical_shooter_claim(season: str = QUALIFY_SEASON) -> dict[str, Any
     """
     t = load_qualifying_factor_table(season=season)
     t = _attach_fg3m(t, season)
-    _write_parquet(t[_SNAPSHOT_COLS].copy(), _SNAPSHOT_PATH)
+    # season-scoped snapshot filename: two seasons of this claim (e.g. the
+    # 2024-25 default store + the 2025-26 sibling) must NOT share one on-disk
+    # snapshot, or running the second season silently clobbers the first
+    # season's re-validation source (claims_validator recomputes from
+    # source_files, so a stale/wrong-season snapshot breaks it).
+    season_id = season.replace("-", "_")
+    snapshot_path = _SNAPSHOT_PATH.with_name(f"nba_canonical_shooter_snapshot_{season_id}.parquet")
+    _write_parquet(t[_SNAPSHOT_COLS].copy(), snapshot_path)
 
     ranked = t.sort_values("naive_comp", ascending=False, na_position="last").reset_index(drop=True)
     n_considered = int(len(t))
@@ -137,8 +144,7 @@ def build_canonical_shooter_claim(season: str = QUALIFY_SEASON) -> dict[str, Any
     curry_rank = rank_of(t, "naive_comp", "Stephen Curry")
     ellis_rank = rank_of(t, "naive_comp", "Keon Ellis")
 
-    season_id = season.replace("-", "_")
-    rel_source = str(_SNAPSHOT_PATH.relative_to(REPO_ROOT)).replace("\\", "/")
+    rel_source = str(snapshot_path.relative_to(REPO_ROOT)).replace("\\", "/")
     claim = {
         "claim_id": f"nba_canonical_shooter_leaderboard_full_season_{season_id}",
         "kind": "ranking",
@@ -155,6 +161,12 @@ def build_canonical_shooter_claim(season: str = QUALIFY_SEASON) -> dict[str, Any
             "direction": "desc",
             "value_precision": 4,
             "entity_key": "player_id",
+            # window: real single-season vintage this claim was aggregated
+            # over (season arg, e.g. "2024-25") -- resolves via
+            # intel_weighting.claim_features.window_to_season(style="split")
+            # so the relevance gate can use this as a prior-season feature
+            # instead of being permanently UNTESTABLE on an unlabeled window.
+            "window": season,
         },
         "ranking": ranking,
         "top_name": top_name,
