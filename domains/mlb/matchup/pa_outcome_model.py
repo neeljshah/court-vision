@@ -42,8 +42,10 @@ the 2023 held-out evaluation is the walk-forward claim).
     weighted by how often THIS pitcher actually throws each pitch type.
     THE interaction term the task calls for.
   expected_slug_interaction -- identical construction with slug_proxy.
-Batters/pitchers absent from the 2022 profile fall back to the
-LEAGUE-AVERAGE per-pitch-type rate (documented, never silently zero-filled).
+Batters/pitchers absent from the 2022 profile fall back to the column-mean
+of that feature (never silently zero-filled -- fixed bug: nansum() over an
+all-NaN reindexed row used to return 0.0 for the interaction terms; now
+re-nulled + column-mean-imputed like the other projected features).
 
 SPLIT: train = 2022 PA rows, test = 2023 PA rows (temporal, not random).
 MODEL: sklearn LogisticRegression, one fit per LAYER (additive feature
@@ -169,8 +171,14 @@ def build_features(pa: pd.DataFrame, pitcher_profile_2022: pd.DataFrame,
                     batter_profile_2022: pd.DataFrame) -> pd.DataFrame:
     """Build features for `pa` (any season) using ONLY the 2022 profile
     tables -- see module docstring's walk-forward rationale."""
-    df = pa.merge(_pitcher_overall(pitcher_profile_2022).drop(columns="season"), on="pitcher", how="left")
-    df = df.merge(_batter_overall(batter_profile_2022).drop(columns="season"), on="batter", how="left")
+    pitcher_overall = _pitcher_overall(pitcher_profile_2022)
+    batter_overall = _batter_overall(batter_profile_2022)
+    df = pa.merge(pitcher_overall.drop(columns="season"), on="pitcher", how="left")
+    df = df.merge(batter_overall.drop(columns="season"), on="batter", how="left")
+    # coverage flags: does this PA's pitcher/batter have a REAL 2022 profile,
+    # or is every projected feature below about to be an imputed placeholder?
+    df["has_pitcher_profile"] = df["pitcher"].isin(pitcher_overall["pitcher"])
+    df["has_batter_profile"] = df["batter"].isin(batter_overall["batter"])
 
     league_usage = pitcher_profile_2022.groupby("pitch_type")["usage_share"].mean()
     league_k = batter_profile_2022.groupby("pitch_type")["k_rate"].mean()
@@ -191,6 +199,13 @@ def build_features(pa: pd.DataFrame, pitcher_profile_2022: pd.DataFrame,
     bs = batter_slug_wide.reindex(df["batter"]).to_numpy()
     df["expected_k_interaction"] = np.nansum(u * bk, axis=1)
     df["expected_slug_interaction"] = np.nansum(u * bs, axis=1)
+    # nansum() silently zeroes all-NaN reindexed rows (bug) -- re-null + impute
+    # like the other projected features instead.
+    uncovered = ~(df["has_pitcher_profile"] & df["has_batter_profile"])
+    df.loc[uncovered, "expected_k_interaction"] = np.nan
+    df.loc[uncovered, "expected_slug_interaction"] = np.nan
+    for col in ("expected_k_interaction", "expected_slug_interaction"):
+        df[col] = df[col].fillna(df[col].mean())
     return df
 
 
@@ -224,21 +239,32 @@ def run_ladder() -> dict:
     feats = build_features(pa, pitcher_2022, batter_2022)
     train = feats[feats["season"] == 2022]
     test = feats[feats["season"] == 2023]
+    # report the ladder on the full test set AND the both-covered subset, so
+    # a coverage artifact (imputed-placeholder rows) can't hide the verdict.
+    covered = test["has_pitcher_profile"] & test["has_batter_profile"]
+    test_covered = test[covered]
 
-    results = {}
-    for name, cols in FEATURE_LAYERS.items():
-        results[name] = {"log_loss": round(fit_eval_layer(train, test, cols), 5), "n_features": len(cols)}
-    league_ll = results["league_rate"]["log_loss"]
-    for name in results:
-        results[name]["delta_vs_league"] = round(league_ll - results[name]["log_loss"], 5)
+    def _ladder(train_df: pd.DataFrame, test_df: pd.DataFrame) -> dict:
+        out = {}
+        for name, cols in FEATURE_LAYERS.items():
+            out[name] = {"log_loss": round(fit_eval_layer(train_df, test_df, cols), 5), "n_features": len(cols)}
+        base = out["league_rate"]["log_loss"]
+        for name in out:
+            out[name]["delta_vs_league"] = round(base - out[name]["log_loss"], 5)
+        return out
 
     return {
         "component": "pa_outcome_model",
         "as_of": datetime.now(timezone.utc).isoformat(),
         "n_train": int(len(train)),
         "n_test": int(len(test)),
+        "test_coverage": {
+            "both_profile_covered_n": int(covered.sum()),
+            "both_profile_covered_frac": round(float(covered.mean()), 4),
+        },
         "buckets": BUCKETS,
-        "layers": results,
+        "layers": _ladder(train, test),
+        "layers_covered_subset": _ladder(train, test_covered),
         "descriptive_only": True,
         "edge_claimed": False,
     }
@@ -253,8 +279,15 @@ def main(argv: Optional[list] = None) -> int:
     with open(_REPORT_OUT, "w", encoding="ascii", errors="strict") as f:
         json.dump(report, f, indent=2)
 
-    print(f"n_train={report['n_train']} n_test={report['n_test']}")
+    cov = report["test_coverage"]
+    print(f"n_train={report['n_train']} n_test={report['n_test']} "
+          f"both_profile_covered={cov['both_profile_covered_n']} ({cov['both_profile_covered_frac']:.2%})")
+    print("layers (full test set):")
     for name, r in report["layers"].items():
+        print(f"  {name}: log_loss={r['log_loss']} delta_vs_league={r['delta_vs_league']} "
+              f"n_features={r['n_features']}")
+    print("layers (both-profile-covered subset):")
+    for name, r in report["layers_covered_subset"].items():
         print(f"  {name}: log_loss={r['log_loss']} delta_vs_league={r['delta_vs_league']} "
               f"n_features={r['n_features']}")
     print(f"wrote -> {_REPORT_OUT}")
