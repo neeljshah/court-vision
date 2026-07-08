@@ -86,9 +86,19 @@ def _attach_fg3m(t: pd.DataFrame, season: str) -> pd.DataFrame:
     here from the SAME season boxscore aggregate (load_boxscores +
     aggregate_season, both already the single source of truth this module
     imports for everything else), keyed on player_id. Additive column only:
-    ranking order/values/floors are untouched."""
+    ranking order/values/floors are untouched.
+
+    aggregate_season groups by (player_id, player_name): a handful of 2025-26
+    box rows carry a mojibake-corrupted name variant for the same player_id
+    (e.g. "Luka Doncic" vs "Luka Don?i?"), which would otherwise split one
+    player into two agg rows and break the player_id->fg3m map (duplicate
+    index). Group by player_id alone here so every variant's fg3m is summed
+    under the one real player -- ponytail: the name-corruption itself is an
+    ESPN-ingest encoding bug in domains/basketball_nba/ (human-gated, out of
+    this file's edit rails), not fixed here; this local sum only prevents this
+    additive fg3m join from undercounting or crashing on it."""
     agg = aggregate_season(load_boxscores(), season=season)
-    fg3m_by_player = agg.set_index("player_id")["fg3m"]
+    fg3m_by_player = agg.groupby("player_id")["fg3m"].sum()
     out = t.copy()
     out["fg3m"] = out["player_id"].map(fg3m_by_player).fillna(0).astype(int)
     return out
@@ -127,13 +137,14 @@ def build_canonical_shooter_claim(season: str = QUALIFY_SEASON) -> dict[str, Any
     curry_rank = rank_of(t, "naive_comp", "Stephen Curry")
     ellis_rank = rank_of(t, "naive_comp", "Keon Ellis")
 
+    season_id = season.replace("-", "_")
     rel_source = str(_SNAPSHOT_PATH.relative_to(REPO_ROOT)).replace("\\", "/")
     claim = {
-        "claim_id": "nba_canonical_shooter_leaderboard_full_season_2024_25",
+        "claim_id": f"nba_canonical_shooter_leaderboard_full_season_{season_id}",
         "kind": "ranking",
         "question": (
-            "Who is the canonical NBA shooter leaderboard (naive composite, "
-            "full season 2024-25) -- top name explicit?"
+            f"Who is the canonical NBA shooter leaderboard (naive composite, "
+            f"full season {season}) -- top name explicit?"
         ),
         "criteria": {
             "metric": "naive_comp",
@@ -184,9 +195,10 @@ def build_canonical_shooter_claim(season: str = QUALIFY_SEASON) -> dict[str, Any
             "rank; the diagnostic is descriptive evidence, never an optimization target.",
             "SCOPE: naive_comp needs no atlas join (TS%/eFG%/FT% are boxscore-only "
             "rate stats), so this claim's qualifying population and source parquet "
-            "are the same as every sibling quality-index claim in this lane "
-            "(load_qualifying_factor_table, season 2024-25, games>=20 AND fga>=200, "
-            "329 qualifiers, 0 with a NaN naive_comp).",
+            "are built the same way as every sibling quality-index claim in this "
+            f"lane (load_qualifying_factor_table, season {season}, games>="
+            f"{QUALIFY_MIN_GAMES} AND fga>={QUALIFY_MIN_FGA}, {n_considered} "
+            f"qualifiers, {n_excluded_below_floor} with a NaN naive_comp).",
         ],
     }
     return claim
