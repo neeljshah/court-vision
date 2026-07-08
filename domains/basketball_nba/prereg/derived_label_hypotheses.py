@@ -41,13 +41,15 @@ LATE_CLOCK_S = 7.0
 METHOD = "derived_label_v1"
 
 
-def build_frame(sc: pd.DataFrame, tf: pd.DataFrame) -> pd.DataFrame:
-    """Shot-level frame: made, shot_clock_proxy, is_transition, spacing_mean_dist."""
+def build_frame(sc: pd.DataFrame, tf: pd.DataFrame, **spacing_kwargs) -> pd.DataFrame:
+    """Shot-level frame: made, shot_clock_proxy, is_transition, spacing_mean_dist.
+    spacing_kwargs (stints_src/spacing_src) MUST be passed for non-2025-26
+    seasons -- add_spacing's defaults are the 2025-26 artifacts."""
     merged = sc.merge(
         tf[["game_id", "team_id", "period", "elapsed_s", "is_transition"]],
         on=["game_id", "team_id", "period", "elapsed_s"], how="inner",
     )
-    merged = add_spacing(merged)
+    merged = add_spacing(merged, **spacing_kwargs)
     merged["is_late_clock"] = (merged["shot_clock_proxy"] <= LATE_CLOCK_S).astype(int)
     return merged
 

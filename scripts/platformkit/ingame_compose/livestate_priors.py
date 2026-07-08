@@ -55,7 +55,9 @@ def build_player_net48_asof(stints: pd.DataFrame | None = None,
         player_id=rows["lineup_key"].str.split(",")
     ).explode("player_id")
     exploded = exploded[exploded["player_id"] != ""]
-    exploded["player_id"] = exploded["player_id"].astype(int)  # int everywhere (matches boxscores)
+    # int64 NOT int: Windows astype(int)=int32, and the ESPN-backfill negative
+    # placeholder ids (unresolved players, ~6% of 2023-24 slots) overflow it
+    exploded["player_id"] = exploded["player_id"].astype("int64")
     per_game = exploded.groupby(["game_id", "player_id"], as_index=False).agg(
         pf=("pts_for", "sum"), pa=("pts_against", "sum"), sec=("elapsed_s", "sum"))
     long = per_game.merge(gm, on="game_id", how="inner").rename(
