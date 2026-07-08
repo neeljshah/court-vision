@@ -38,6 +38,13 @@ def _write_template(path, *, kind="claims_regen", universe=None, extra=None):
     return body
 
 
+def _noop_maintenance(watermarks, queue_fn=None):
+    """Neutralizes the real store-validate/weighting/replication phase in
+    these tests -- it touches real data/cache/intel_claims by design in
+    production; tests must not mutate real repo data as a side effect."""
+    return {}
+
+
 def _paths(tmp_path):
     return dict(
         report_path=tmp_path / "report.json", queue_path=tmp_path / "queue.jsonl",
@@ -59,6 +66,7 @@ def test_one_shot_stub_harness_report_shape_and_queue(tmp_path):
     report = AR.run_cycle(
         templates_dir=tdir, reclaim_fit_fn=stub_reclaim_fit,
         corpus_sha_fn=lambda tpl: "sha_v1", refresh_fn=lambda: None,
+        maintenance_fn=_noop_maintenance,
         **_paths(tmp_path),
     )
     assert "ts" in report and "wall_clock_sec" in report
@@ -86,7 +94,7 @@ def test_prereg_tamper_at_cycle_level(tmp_path):
 
     report = AR.run_cycle(
         templates_dir=tdir, corpus_sha_fn=lambda tpl: "sha_v1",
-        refresh_fn=lambda: None, **_paths(tmp_path),
+        refresh_fn=lambda: None, maintenance_fn=_noop_maintenance, **_paths(tmp_path),
     )
     row = report["per_template"][0]
     assert row["prereg_tamper"] is True
@@ -110,12 +118,14 @@ def test_skipped_no_new_data_keeps_k_flat(tmp_path):
 
     paths = _paths(tmp_path)
     r1 = AR.run_cycle(templates_dir=tdir, reclaim_fit_fn=stub_reclaim_fit,
-                      corpus_sha_fn=lambda tpl: "same_sha", refresh_fn=lambda: None, **paths)
+                      corpus_sha_fn=lambda tpl: "same_sha", refresh_fn=lambda: None,
+                      maintenance_fn=_noop_maintenance, **paths)
     assert r1["per_template"][0]["cum_k"] == 1
     assert calls["n"] == 1
 
     r2 = AR.run_cycle(templates_dir=tdir, reclaim_fit_fn=stub_reclaim_fit,
-                      corpus_sha_fn=lambda tpl: "same_sha", refresh_fn=lambda: None, **paths)
+                      corpus_sha_fn=lambda tpl: "same_sha", refresh_fn=lambda: None,
+                      maintenance_fn=_noop_maintenance, **paths)
     assert r2["per_template"][0]["status"] == "skipped_no_new_data"
     assert r2["per_template"][0]["cum_k"] == 1  # unchanged -- K never inflated by a no-op tick
     assert calls["n"] == 1  # the stub harness was NOT called again
@@ -146,7 +156,7 @@ def test_factory_absent_is_honest_skipped_family(tmp_path):
 
     report = AR.run_cycle(
         templates_dir=tdir, corpus_sha_fn=lambda tpl: "sha_v1",
-        refresh_fn=lambda: None, **_paths(tmp_path),
+        refresh_fn=lambda: None, maintenance_fn=_noop_maintenance, **_paths(tmp_path),
     )
     row = report["per_template"][0]
     assert row["status"] == "SKIPPED_FAMILY"
@@ -162,7 +172,7 @@ def test_honesty_lint_suppresses_write(tmp_path, monkeypatch):
     report_path = tmp_path / "report.json"
     report = AR.run_cycle(
         templates_dir=tdir, corpus_sha_fn=lambda tpl: "sha_v1",
-        refresh_fn=lambda: None, report_path=report_path,
+        refresh_fn=lambda: None, maintenance_fn=_noop_maintenance, report_path=report_path,
         queue_path=tmp_path / "queue.jsonl", heartbeat_path=tmp_path / "hb.txt",
         k_ledger_dir=tmp_path / "k_ledger", watermark_path=tmp_path / "watermark.json",
     )
