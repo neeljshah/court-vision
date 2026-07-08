@@ -243,6 +243,152 @@ FLAGS: Dict[str, Dict[str, Any]] = {
             "never called = byte-identical CPU+GPU. Betting mode rejects leak_safe=false fields."
         ),
     },
+    # ------------------------------------------------------------------
+    # P0.E — kernel-extraction CV_CFG_* dual-path config flags
+    # (EXTRACTION_PLAN Sec2.1.3; each gates one sport-specific literal's
+    # move behind a Sport/kernel config lookup -- OFF path stays the
+    # verbatim legacy literal, byte-identical to pre-flag behavior)
+    # ------------------------------------------------------------------
+    "CV_CFG_STATS": {
+        "default": False,
+        "phase": "P0.E",
+        "gate": (
+            "flag_allowed_on=FALSE until recorded gate verdict. "
+            "Gate (EXTRACTION_PLAN Sec2.1.3): byte-identical fixture slate "
+            "ON==OFF, pytest green, loop dry-run green."
+        ),
+        "desc": (
+            "Dual-path config lookup for stat lists / priced order "
+            "(portfolio._PROP_STATS_ORDER, decision engine sigma, loop "
+            "TARGETS). OFF = verbatim legacy literal, byte-identical."
+        ),
+    },
+    "CV_CFG_PBP": {
+        "default": False,
+        "phase": "P0.E",
+        "gate": (
+            "flag_allowed_on=FALSE until recorded gate verdict. "
+            "Gate (EXTRACTION_PLAN Sec2.1.3): byte-identical fixture slate "
+            "ON==OFF, pytest green, loop dry-run green."
+        ),
+        "desc": (
+            "Dual-path config lookup for play-by-play event-type mapping "
+            "(state_featurizer.py EVENTMSGTYPE dict). OFF = verbatim "
+            "legacy literal, byte-identical."
+        ),
+    },
+    "CV_CFG_COURT": {
+        "default": False,
+        "phase": "P0.E",
+        "gate": (
+            "flag_allowed_on=FALSE until recorded gate verdict. "
+            "Gate (EXTRACTION_PLAN Sec2.1.3): byte-identical fixture slate "
+            "ON==OFF, pytest green, loop dry-run green."
+        ),
+        "desc": (
+            "Dual-path config lookup for court geometry constants "
+            "(94x50 / 940x500, spacing/reach thresholds). OFF = verbatim "
+            "legacy literal, byte-identical."
+        ),
+    },
+    "CV_CFG_CLOCK": {
+        "default": False,
+        "phase": "P0.E",
+        "gate": (
+            "flag_allowed_on=FALSE until recorded gate verdict. "
+            "Gate (EXTRACTION_PLAN Sec2.1.3): byte-identical fixture slate "
+            "ON==OFF, pytest green, loop dry-run green."
+        ),
+        "desc": (
+            "Dual-path config lookup for game-clock constants "
+            "(REG_GAME_LEN_SEC/OT, bonus-foul clock, snapshot labels). "
+            "OFF = verbatim legacy literal, byte-identical."
+        ),
+    },
+    "CV_CFG_LEAGUE_CLIENT": {
+        "default": False,
+        "phase": "P0.E",
+        "gate": (
+            "flag_allowed_on=FALSE until recorded gate verdict. "
+            "Gate (EXTRACTION_PLAN Sec2.1.3): byte-identical fixture slate "
+            "ON==OFF, pytest green, loop dry-run green."
+        ),
+        "desc": (
+            "Dual-path config lookup for the league API client binding "
+            "(sport-specific data-fetch client injection). OFF = verbatim "
+            "legacy direct call, byte-identical."
+        ),
+    },
+    "CV_CFG_ROSTER": {
+        "default": False,
+        "phase": "P0.E",
+        "gate": (
+            "flag_allowed_on=FALSE until recorded gate verdict. "
+            "Gate (EXTRACTION_PLAN Sec2.1.3): byte-identical fixture slate "
+            "ON==OFF, pytest green, loop dry-run green."
+        ),
+        "desc": (
+            "Dual-path config lookup for roster/player-pool construction "
+            "(sport-specific roster size and position rules). OFF = "
+            "verbatim legacy literal, byte-identical."
+        ),
+    },
+    "CV_CFG_SPEED": {
+        "default": False,
+        "phase": "P0.E",
+        "gate": (
+            "flag_allowed_on=FALSE until recorded gate verdict. "
+            "Gate (EXTRACTION_PLAN Sec2.1.3): byte-identical fixture slate "
+            "ON==OFF, pytest green, loop dry-run green."
+        ),
+        "desc": (
+            "Dual-path config lookup for player-speed / pace-related "
+            "tracking thresholds. OFF = verbatim legacy literal, "
+            "byte-identical."
+        ),
+    },
+    "CV_CFG_GAMESTATE": {
+        "default": False,
+        "phase": "P0.E",
+        "gate": (
+            "flag_allowed_on=FALSE until recorded gate verdict. "
+            "Gate (EXTRACTION_PLAN Sec2.1.3): byte-identical fixture slate "
+            "ON==OFF, pytest green, loop dry-run green."
+        ),
+        "desc": (
+            "Dual-path config lookup for in-game state constants "
+            "(universal_winprob.py SIGMA_FULL_DEFAULT). OFF = verbatim "
+            "legacy literal, byte-identical."
+        ),
+    },
+    "CV_CFG_ENTITIES": {
+        "default": False,
+        "phase": "P0.E",
+        "gate": (
+            "flag_allowed_on=FALSE until recorded gate verdict. "
+            "Gate (EXTRACTION_PLAN Sec2.1.3): byte-identical fixture slate "
+            "ON==OFF, pytest green, loop dry-run green."
+        ),
+        "desc": (
+            "Dual-path config lookup for team/player entity resolution "
+            "(kernel/config/entities.py resolve_team). OFF = verbatim "
+            "legacy literal, byte-identical."
+        ),
+    },
+    "CV_CFG_ATLAS": {
+        "default": False,
+        "phase": "P0.E",
+        "gate": (
+            "flag_allowed_on=FALSE until recorded gate verdict. "
+            "Gate (EXTRACTION_PLAN Sec2.1.3): byte-identical fixture slate "
+            "ON==OFF, pytest green, loop dry-run green."
+        ),
+        "desc": (
+            "Dual-path config lookup for the brain atlas build inputs "
+            "(sport-specific atlas source paths/keys). OFF = verbatim "
+            "legacy literal, byte-identical."
+        ),
+    },
 }
 
 
