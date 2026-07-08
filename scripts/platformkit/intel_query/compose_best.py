@@ -38,6 +38,15 @@ from scripts.platformkit.intel_query.ask import (
     _claim_evidence,
     _find_by_key,
     load_verified_claims,
+    pairs_for_claim_stores,
+)
+
+# The ONLY stores this composer reads (see pairs_for_claim_stores docstring --
+# a bare load_verified_claims() whole-loads GB-scale bulk rate stores).
+_BEST_STORES: tuple[str, ...] = (
+    "nba_canonical_shooter_claims.jsonl",
+    "nba_quality_claims.jsonl",
+    "nba_context_shooting_claims.jsonl",
 )
 
 COMPOSITION_RULE = (
@@ -178,7 +187,7 @@ def compose_best(aspect: str = "shooter") -> dict[str, Any]:
             [f"gate verdict {verdict_value!r} has no declared primary-claim mapping in verdict_to_primary_claim"],
         )
 
-    verified = load_verified_claims()
+    verified = load_verified_claims(pairs_for_claim_stores(_BEST_STORES))
     primary_claim = verified.get(primary_claim_id)
     if primary_claim is None:
         return _unanswerable(aspect, [f"primary claim not VERIFIED/available: {primary_claim_id}"])
