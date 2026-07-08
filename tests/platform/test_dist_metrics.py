@@ -9,6 +9,7 @@ import pytest
 from scripts.platformkit.dist_metrics import (
     coverage_calibration, crps_ensemble, crps_poisson_pmf,
     distribution_scorecard, interval_coverage, pinball_loss,
+    pit_histogram, pit_values,
 )
 
 
@@ -245,3 +246,47 @@ class TestDistributionScorecard:
         s = rng.normal(20.0, 5.0, (n, 50))
         lo, hi = np.full(n, 100.0), np.full(n, 101.0)
         assert not distribution_scorecard(y, s, lo, hi, nominal_coverage=0.90)["calibrated"]
+
+
+# ---------------------------------------------------------------------------
+# pit_values / pit_histogram
+# ---------------------------------------------------------------------------
+
+class TestPit:
+    def test_wellspecified_ensemble_roughly_uniform(self):
+        """Ensemble spread matches truth spread → PIT ~ uniform, shape OK, high p."""
+        rng = np.random.default_rng(1)
+        n = 1000
+        y = rng.normal(20.0, 5.0, n)
+        s = rng.normal(20.0, 5.0, (n, 200))
+        pit = pit_values(y, s, rng=np.random.default_rng(2))
+        assert ((pit >= 0.0) & (pit <= 1.0)).all()
+        hist = pit_histogram(pit, bins=10)
+        assert hist["shape_flag"] == "OK"
+        assert hist["uniformity_p"] > 0.05
+
+    def test_overconfident_narrow_ensemble_is_ushape(self):
+        """Ensemble far narrower than the truth's spread → PIT piles at 0/1 (U-shape)."""
+        rng = np.random.default_rng(3)
+        n = 1000
+        y = rng.normal(20.0, 5.0, n)
+        s = rng.normal(20.0, 1.0, (n, 200))
+        pit = pit_values(y, s, rng=np.random.default_rng(4))
+        hist = pit_histogram(pit, bins=10)
+        assert hist["shape_flag"] == "U_SHAPE"
+
+    def test_discrete_ties_bounded_and_deterministic(self):
+        """Repeated-value (discrete) ensemble: PIT stays in [0,1] and is seed-stable."""
+        s = np.array([1.0, 2.0, 2.0, 2.0, 3.0, 3.0, 4.0, 5.0])
+        pit1 = pit_values(3.0, s, rng=np.random.default_rng(7))
+        pit2 = pit_values(3.0, s, rng=np.random.default_rng(7))
+        assert 0.0 <= pit1[0] <= 1.0
+        assert pit1 == pytest.approx(pit2)
+
+    def test_histogram_empty_returns_nan_p(self):
+        hist = pit_histogram(np.array([]), bins=10)
+        assert hist["n"] == 0 and math.isnan(hist["uniformity_p"])
+
+    def test_pit_values_length_mismatch_raises(self):
+        with pytest.raises(ValueError):
+            pit_values([1.0, 2.0], np.zeros((3, 5)))

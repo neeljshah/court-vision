@@ -7,12 +7,14 @@ HONESTY: calibration metrics only.  Better CRPS or coverage does NOT imply a pos
 expected value or beating the closing line.  See: feedback_accuracy_is_not_edge.md.
 """
 from __future__ import annotations
-from typing import Sequence, Union
+from typing import Optional, Sequence, Union
 import numpy as np
+from scipy.stats import chisquare
 
 __all__ = [
     "pinball_loss", "interval_coverage", "coverage_calibration",
     "crps_ensemble", "crps_poisson_pmf", "distribution_scorecard",
+    "pit_values", "pit_histogram",
 ]
 
 ArrayLike = Union[Sequence[float], np.ndarray]
@@ -181,6 +183,62 @@ def crps_poisson_pmf(y_true: ArrayLike, pmf: ArrayLike, support: ArrayLike) -> f
         crps_vals[i] = float(np.sum((cdf - (yi <= sup).astype(float)) ** 2))
     valid = crps_vals[np.isfinite(crps_vals)]
     return float(valid.mean()) if len(valid) > 0 else float("nan")
+
+
+# ---------------------------------------------------------------------------
+# pit_values / pit_histogram
+# ---------------------------------------------------------------------------
+
+def pit_values(y_true: ArrayLike, samples: ArrayLike, rng: Optional[np.random.Generator] = None) -> np.ndarray:
+    """Randomized PIT for an ensemble forecast (discrete-support safe).
+
+    PIT_i = frac of members <= y_i, randomized within [P(S<y), P(S<=y)] on ties
+    (Czado et al. 2009) so a discrete/small ensemble doesn't fake a spike.
+    Well-calibrated -> PIT ~ Uniform(0,1). Deterministic given `rng`'s seed.
+    samples: shape (m,) for single obs or (n, m) for n observations. calibration != edge.
+    """
+    if rng is None:
+        rng = np.random.default_rng(42)
+    s = np.asarray(samples, dtype=float)
+    y = np.atleast_1d(np.asarray(y_true, dtype=float))
+    if s.ndim == 1:
+        s = s[np.newaxis, :]
+    if s.shape[0] != len(y):
+        raise ValueError(f"y_true length {len(y)} must match samples rows {s.shape[0]}.")
+    pit = np.empty(s.shape[0], dtype=float)
+    for i in range(s.shape[0]):
+        si, yi = s[i][np.isfinite(s[i])], y[i]
+        if not np.isfinite(yi) or len(si) == 0:
+            pit[i] = float("nan")
+            continue
+        lo, hi = float(np.mean(si < yi)), float(np.mean(si <= yi))
+        pit[i] = lo if lo == hi else rng.uniform(lo, hi)
+    return pit
+
+
+def pit_histogram(pit_vals: ArrayLike, bins: int = 10) -> dict:
+    """PIT histogram + chi-square uniformity test (Δ-calibration diagnostic).
+
+    Flat histogram (high uniformity_p) = calibrated. U_SHAPE (both end bins
+    overloaded) = overconfident/too-narrow. CENTRAL_HUMP (an interior bin
+    overloaded) = underconfident/too-wide. NaNs excluded. calibration != edge.
+    """
+    p = _arr(pit_vals)
+    p = p[np.isfinite(p)]
+    n = int(len(p))
+    if n == 0:
+        return {"counts": [0] * bins, "uniformity_p": float("nan"), "n": 0, "shape_flag": "OK"}
+    counts, _ = np.histogram(p, bins=bins, range=(0.0, 1.0))
+    expected = n / bins
+    _, pval = chisquare(counts, f_exp=np.full(bins, expected))
+    thresh = 1.5 * expected
+    if counts[0] > thresh and counts[-1] > thresh:
+        shape_flag = "U_SHAPE"
+    elif bins > 2 and np.any(counts[1:-1] > thresh):
+        shape_flag = "CENTRAL_HUMP"
+    else:
+        shape_flag = "OK"
+    return {"counts": counts.tolist(), "uniformity_p": float(pval), "n": n, "shape_flag": shape_flag}
 
 
 # ---------------------------------------------------------------------------
