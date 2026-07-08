@@ -64,6 +64,7 @@ reprice. Follow the links to go as deep as you want at any stage.
 
 ### Honesty truth-sources (read these before trusting any number)
 - [JOB_EVIDENCE_PACKET](JOB_EVIDENCE_PACKET.md) -- **the single truth-source**: every number's proof + the do-not-claim list
+- [HONESTY_SYSTEM](HONESTY_SYSTEM.md) -- the discipline stack itself: lint -> gates -> independent validators -> preregistration -> retraction list -> ops detectors -> git guards, with a worked REJECT
 - [KNOWN_LIMITATIONS](KNOWN_LIMITATIONS.md) -- open gaps, unproven claims, honest nulls
 - [PROOFS](PROOFS.md) -- the provability index: every claim -> its runnable leak-free proof
 - [MARKET_EFFICIENCY_PROOF](MARKET_EFFICIENCY_PROOF.md) -- the full-season walk-forward showing mainlines are efficient
