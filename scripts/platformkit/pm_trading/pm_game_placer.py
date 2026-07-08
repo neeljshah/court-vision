@@ -209,7 +209,14 @@ def placements_from_game(game: Dict[str, Any], model: Dict[str, Any],
 def _ledger_row(p: Dict[str, Any]) -> Dict[str, Any]:
     venue = str(p["venue"])
     mid = str(p.get("ticker") or "%s-%s" % (p["game_id"], p["side"]))
-    return {
+    # ADDITIVE realistic-fill stamp (fill_prob/n_filled/slippage_prob/
+    # book_age_sec/fill_quality) priced against the captured Kalshi depth
+    # sidecar; no captured book -> fill_quality="no_book" (bet still written
+    # at the snapshot price, honestly stamped unsimulated). Never raises.
+    from scripts.platformkit.pm_trading.fill_sim import stamp_fill as _stamp
+    row = _stamp(str(p.get("ticker") or ""), "yes", float(p["flat_unit"]),
+                 sport=str(p.get("sport") or "") or None)
+    row.update({
         "ts": _now_iso(), "sport": str(p["sport"]),
         "matchup": str(p.get("matchup") or ""), "side": str(p["side"]),
         "taken_book": venue, "taken_decimal": float(p["taken_decimal"]),
@@ -225,7 +232,8 @@ def _ledger_row(p: Dict[str, Any]) -> Dict[str, Any]:
         "edge": round(float(p["model_prob"]) - float(p["market_prob"]), 6),
         "clv_is_proxy": True, "clv_status": "INSUFFICIENT_DATA",
         "edge_claimed": False, "bet_id": "pm|%s|%s|%s" % (venue, p["game_id"], p["side"]),
-    }
+    })
+    return row
 
 
 def _model_games(sport: str) -> List[Dict[str, Any]]:

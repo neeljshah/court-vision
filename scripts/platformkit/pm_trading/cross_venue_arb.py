@@ -257,11 +257,11 @@ def find_arbs(
                         "leg_a": {"venue": str(book_a), "side": side_a,
                                   "decimal": round(dec_a, 6), "fee_prob": round(fee_a, 6),
                                   "captured_at": row_a.get("captured_at"),
-                                  "age_sec": round(age_a, 1)},
+                                  "game_id": row_a.get("game_id"), "age_sec": round(age_a, 1)},
                         "leg_b": {"venue": str(book_b), "side": other_side,
                                   "decimal": round(dec_b, 6), "fee_prob": round(fee_b, 6),
                                   "captured_at": row_b.get("captured_at"),
-                                  "age_sec": round(age_b, 1)},
+                                  "game_id": row_b.get("game_id"), "age_sec": round(age_b, 1)},
                         "locked_prob": round(locked, 6),
                     })
     # Dedup mirror pairs (A/B and B/A of the same lock): keep the higher-locked copy.
