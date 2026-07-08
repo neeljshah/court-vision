@@ -330,12 +330,17 @@ moving first, not us.
 
 **Why the gap exists -- capture cadence.** The root cause is a coarseness mismatch, not a modeling
 gap: Kalshi's own quote capture cadence is a median **7s** poll, while our gumbo live-state capture
-cadence is a median **54s** poll with real-world gaps stretching up to **~102 minutes** (restarts,
-stale windows). A depth-of-book join for the leading moments also failed to resolve (0/135) on a
-side-name-to-ticker-abbreviation format mismatch. At this resolution mismatch the dataset cannot
-resolve true lead/lag either way -- a measurement-power problem, not a proven absence of lead. (The
-Kalshi depth-ladder capture used by the paper fill-simulation layer runs coarser still, ~20 minutes
-per ticker -- fine for pricing a fill against a recent book, not for a lead/lag race.)
+cadence -- as measured in this audit -- was a median **54s** poll with real-world gaps stretching up
+to **~102 minutes** (restarts, stale windows). A depth-of-book join for the leading moments also
+failed to resolve (0/135) on a side-name-to-ticker-abbreviation format mismatch. At that resolution
+mismatch the dataset cannot resolve true lead/lag either way -- a measurement-power problem, not a
+proven absence of lead. **Same-day response:** the capture was upgraded the evening of the audit
+(2026-07-07) to a ~10s live-game window using GUMBO diffPatch (see docs/INGEST_PIPELINES.md),
+verified writing rows every 11-18s across 11 concurrent live games; the audit is queued to re-run
+on the fine-grained captures, and the lead/lag verdict stays NOT_ESTABLISHED until that
+re-measurement lands. (The Kalshi depth-ladder capture used by the paper fill-simulation layer runs
+coarser still, ~20 minutes per ticker -- fine for pricing a fill against a recent book, not for a
+lead/lag race.)
 
 This audit is why in-game family builds in this doc are framed as *calibration and context*, never
 as a latency edge -- the honest verdict on latency itself is NOT_ESTABLISHED, and no claim here
