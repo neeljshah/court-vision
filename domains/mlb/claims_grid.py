@@ -100,11 +100,44 @@ Floors reuse shipping MLB precedent values (grounding reads):
     'split' floor is intentionally absent -- test_every_window_type_has_a_
     required_floor only requires 'split' WHEN context_splits is non-empty.
 
+RANK-7 CENSUS FAMILY ADDED (claims-scale lane): mlb_bullpen_fatigue_chains,
+entity_key=player_id, source=data/domains/mlb/bullpen_relief_chains.parquet
+-- a DERIVED parquet (domains/mlb/ingest_bullpen_relief_chains.py), not
+player_gamelogs.parquet directly, because the starter/reliever split and the
+rest-day/rolling-appearance cadence features are temporal/row-level
+computations the pure-data grid format cannot express (see that module's
+own docstring). This family carries its OWN `year` window (2022-2026) even
+though the "NO season/year WINDOW" note above still applies to the OTHER two
+families' raw source -- the derived parquet legitimately has a year column,
+computed once in the prep step, not faked here. DISTINCT from the CLOSED
+SP-velocity class (see ingest_bullpen_relief_chains.py docstring) -- this is
+appearance CADENCE (rest days, back-to-back rate), never a within-outing
+pitch-count/velocity metric.
+
+HONEST RE-MEASUREMENT (real on-disk data via the prep script's build(),
+replaying the exact factory floor+groupby logic, this session): 71,523
+relief-appearance rows / 1,565 distinct relievers. career_to_date: 752/1,565
+clear >=15 appearances. 5 year windows (2022-2026): 1,513 (player,year)
+cells clear >=15 (of 3,662). 4 dims x these window-slots -> ~9,060 post-floor
+exploded claims (3,008 career + 6,052 year-split).
+
 CLI: none -- this module is imported, never run directly.
 """
 from __future__ import annotations
 
 _GAMELOGS = "data/domains/mlb/player_gamelogs.parquet"
+_BULLPEN_CHAINS = "data/domains/mlb/bullpen_relief_chains.parquet"
+
+_BULLPEN_DIMS = [
+    {"metric": "avg_rest_days", "agg": {"num": "sum(rest_days)", "den": "count(rest_days)"}},
+    {"metric": "b2b_rate", "agg": {"num": "sum(is_b2b)", "den": "count(is_b2b)"}},
+    {"metric": "appearances_last_3d_avg", "agg": {"num": "sum(appearances_last_3d)", "den": "count(game_pk)"}},
+    {"metric": "bf_per_relief", "agg": {"num": "sum(battersFaced)", "den": "count(game_pk)"}},
+]
+
+_BULLPEN_WINDOWS = [{"name": "career_to_date", "filter": {}}] + [
+    {"name": f"year_{y}", "filter": {"year": y}} for y in range(2022, 2027)
+]
 
 _BATTER_DIMS = [
     {"metric": "hits_per_game", "agg": {"num": "sum(hits)", "den": "count(game_pk)"}},
@@ -188,6 +221,19 @@ GRID: dict = {
             "floors": {
                 "season": {"game_pk": 20},
                 "career": {"game_pk": 40},
+            },
+        },
+        {
+            "family": "mlb_bullpen_fatigue_chains",
+            "source": _BULLPEN_CHAINS,
+            "grain": "per_relief_appearance",
+            "entity_key": "player_id",
+            "entity_name_col": "player",
+            "dims": _BULLPEN_DIMS,
+            "windows": _BULLPEN_WINDOWS,
+            "floors": {
+                "season": {"game_pk": 15},
+                "career": {"game_pk": 15},
             },
         },
     ],
