@@ -288,6 +288,62 @@ served model, and produces **no** betting edge versus closing lines.
 
 ---
 
+## Trait profiles + season claims (2026-07)
+
+A second generation of this layer sits on top of the 80 artifacts above: instead of a fixed
+parquet, `scripts/platformkit/intel_query/` answers questions live from **VERIFIED claims** --
+each claim independently recomputed and checked by a separate validator before it is allowed to
+answer anything. This is the "AI chat surface" (section 9 above) grown into a full query layer.
+
+**Shooter trait VECTORS, never one re-weighted score.** `compose_profile.py` answers "what kind
+of shooter is X" (routed automatically by `ask()`, see `ask.py`'s `_try_shooter_profile`) with a
+per-axis vector -- volume, efficiency, difficulty, gravity, context -- each axis citing its own
+VERIFIED claim, its own rank, and two percentiles (within the claim's full pool, and within the
+NBA's own fg3m>=82 3P%-title qualification pool). Axes are **never** combined into a single score;
+a declared, un-tuned band table (elite/high/mid/low) turns percentiles into a plain-language
+`trait_line`. This is a deliberate design choice, not a missing feature: Luka Doncic is the
+canonical case for why -- mediocre fg3_pct but extreme self-created shot difficulty, huge volume,
+real gravity, all of which a single blended number would erase. Honest gaps are reported alongside
+the built axes rather than papered over: `avg_shot_distance`/`deep3_share` has no 2024-25 per-shot
+location parquet on disk, and true on/off `gravity` has no lineup on/off table yet (it cites the
+modeled `gravity_score` atlas claim instead, labelled explicitly as a model, not a measurement --
+see [DATA_DEPTH.md](DATA_DEPTH.md)'s keystone section for the plan to close that gap).
+
+**The 2025-26 canonical shooter claim is now VERIFIED.** The naive-composite shooter leaderboard
+(`nba_canonical_shooter_claims.py`) was season-parameterized and re-run for 2025-26 once
+`domains/basketball_nba/ingest_espn_player_box.py` backfilled the season's full-game player box
+gap (74 of 1,156 games missing from the `quarter_box` q0 cache) via ESPN. The resulting claim,
+`nba_canonical_shooter_leaderboard_full_season_2025_26`, validated VERIFIED against 339 qualifiers
+(games>=20, fga>=200) -- the same independent-recompute discipline as every other claim in this
+layer, just extended to the current season for the first time.
+
+**Claim stores + independent validator pattern.** Every claim family in this layer follows the
+same shape: a producer module in `scripts/platformkit/intel_validation/` writes a `.jsonl` of
+claims (ranking rows, formula, source files, caveats), and a separate validator
+(`claims_validator.py`) independently recomputes each claim from the cited source parquet and
+stamps a verdict -- `VERIFIED`, `MISMATCH`, or `UNVERIFIABLE`. `ask.py`'s
+`load_verified_claims()` only ever surfaces claims with a `VERIFIED` verdict; a `MISMATCH` or
+`UNVERIFIABLE` claim stays invisible to every downstream composer, never silently used. Composers
+load through `pairs_for_claim_stores()` so a bare `load_verified_claims()` never whole-loads the
+GB-scale bulk rate stores (`nba_player_box_rate.jsonl` alone is 1.3GB) -- a live MemoryError this
+lane already hit and fixed.
+
+**The one-conclusion composer.** `compose_best.py` answers a genuinely different question --
+"who is the *best* shooter, all factors weighed, ONE conclusion" -- via a declared, auditable
+rule rather than a re-weighted blend: (1) an optional **domain filter** restricts the ranking pool
+to a pre-declared external standard (the NBA's own 3P%-title qualification minimum, fg3m>=82 --
+never a tuned threshold); (2) the **primary axis** is selected by a pre-registered predictive-
+validity gate verdict read live from disk, so if the gate ever flips, the composer follows it,
+never a baked-in "naive wins"; (3) **attribution axes** annotate the primary axis's #1 player with
+other VERIFIED claims' rank/value for that same player, purely as context, never overriding the
+primary axis; (4) **honest disagreement** is surfaced explicitly whenever an attribution axis's
+own #1 differs from the primary axis's #1, with the gate citation explaining why the primary axis
+still wins. This is the composer pattern this layer standardizes on for any "one answer, not a
+ranking" question: an absurd-looking conclusion gets a domain fix (a filter, a different primary
+axis), never silent re-weighting until the number looks right.
+
+---
+
 ## What's honest about this layer
 
 - **Row counts above are the truth.** Some layers (similarity 26K, shot-clock buckets 8.5K,

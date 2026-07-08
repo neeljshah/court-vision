@@ -75,6 +75,7 @@ reprice. Follow the links to go as deep as you want at any stage.
 - [PREDICTOR_QUICKSTART](PREDICTOR_QUICKSTART.md) / [PREDICTIONS_QUICKSTART](../PREDICTIONS_QUICKSTART.md) -- run a prediction in 60s
 - [PLATFORM](PLATFORM.md) -- kernel + adapter multi-sport architecture
 - [PLATFORM_TOOLING](PLATFORM_TOOLING.md) -- the platformkit CLI + proof-module surface
+- [PLATFORM_HARNESS](PLATFORM_HARNESS.md) -- the platformkit build/test/gate harness underneath the CLI
 - [PRODUCT_ONE_PAGER](PRODUCT_ONE_PAGER.md) -- one-page pitch
 - [DEMO](DEMO.md) -- deterministic walkthrough (environment, CLIs, API, CV)
 - [PUBLIC_EVIDENCE](PUBLIC_EVIDENCE.md) -- 60-second funnel scan
@@ -111,6 +112,7 @@ reprice. Follow the links to go as deep as you want at any stage.
 - [decisions](decisions.md) -- decision-engine logic, tier floors, no-bet policy
 - [label_strategy](label_strategy.md) -- prop labeling (reliable / thin / reject), CLV tiering
 - [scoreboard](scoreboard.md) -- the live CLV / calibration scoreboard
+- [PAPER_TRADING_STACK](PAPER_TRADING_STACK.md) -- the paper-trading ledger + fill-sim + analytics stack (never real money)
 
 ### Live / in-game
 - [LIVE_ENGINE_V2](LIVE_ENGINE_V2.md) -- in-game repricer architecture
@@ -121,6 +123,8 @@ reprice. Follow the links to go as deep as you want at any stage.
 - [DATA](DATA.md) -- sources, schemas, freshness
 - [DATA_OUTPUTS](DATA_OUTPUTS.md) -- parquet snapshots, feature store, artifacts
 - [data_schema](data_schema.md) -- parquet / feature-store schemas
+- [DATA_DEPTH](DATA_DEPTH.md) -- the per-sport data census, the census->diff->factory loop, and the NBA lineup-reconstruction keystone
+- [INGEST_PIPELINES](INGEST_PIPELINES.md) -- per-source ingest jobs, cadence, and keyless-capture recipes
 
 ### Serving / API / front-end
 - [API](API.md) -- the FastAPI surface (endpoints, contracts)
@@ -130,6 +134,7 @@ reprice. Follow the links to go as deep as you want at any stage.
 - [PRODUCTION_RUNBOOK](PRODUCTION_RUNBOOK.md) -- launch, bootstrap, monitor, troubleshoot
 - [DEPLOY_RAILWAY](DEPLOY_RAILWAY.md) -- Railway deploy
 - [daily_workflow_cron](daily_workflow_cron.md) -- scheduled jobs
+- [DAEMONS](DAEMONS.md) -- the always-on background daemons (governors, reapers, capture loops) and what each one guards
 - [operations/](operations/data-pipeline.md) -- data-pipeline, deployment, full-game-production, RunPod runbooks, backfill
 
 ### Computer-vision lineage (origin, not the headline)
