@@ -102,14 +102,21 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Build NBA gravity-proxy + lineup-spacing claims inputs")
     parser.add_argument("--stints", type=str, default=str(_STINTS_PATH))
     parser.add_argument("--on-off", type=str, default=str(_ON_OFF_PATH))
+    parser.add_argument("--pbp-dir", type=str, default=None, help="override input dir (default: team_system/pbp)")
+    parser.add_argument("--gravity-out", type=str, default=str(_GRAVITY_OUT))
+    parser.add_argument("--spacing-out", type=str, default=str(_SPACING_OUT))
     parser.add_argument("--limit", type=int, default=None)
     args = parser.parse_args(argv)
 
+    pbp_dir = Path(args.pbp_dir) if args.pbp_dir else _PBP_DIR
+    gravity_out = Path(args.gravity_out)
+    spacing_out = Path(args.spacing_out)
+
     on_off_df = pd.read_parquet(args.on_off)
     gravity_df = build_gravity(on_off_df)
-    _GRAVITY_OUT.parent.mkdir(parents=True, exist_ok=True)
-    gravity_df.to_parquet(_GRAVITY_OUT, index=False)
-    print(f"gravity_proxy rows={len(gravity_df)} -> {_GRAVITY_OUT}")
+    gravity_out.parent.mkdir(parents=True, exist_ok=True)
+    gravity_df.to_parquet(gravity_out, index=False)
+    print(f"gravity_proxy rows={len(gravity_df)} -> {gravity_out}")
 
     stints_df = pd.read_parquet(args.stints)
     game_ids = stints_df["game_id"].unique()
@@ -119,7 +126,7 @@ def main(argv: list[str] | None = None) -> int:
 
     shot_frames = []
     for gid in game_ids:
-        fp = _PBP_DIR / f"{gid}.json"
+        fp = pbp_dir / f"{gid}.json"
         if fp.exists():
             shot_frames.append(load_shot_events_xy(json.loads(fp.read_text(encoding="utf-8"))))
     shots_xy_df = pd.concat(shot_frames, ignore_index=True) if shot_frames else pd.DataFrame(
@@ -127,8 +134,9 @@ def main(argv: list[str] | None = None) -> int:
     )
     shots_xy_df = attach_lineup_to_shots(stints_df, shots_xy_df)
     spacing_df = build_spacing(stints_df, shots_xy_df)
-    spacing_df.to_parquet(_SPACING_OUT, index=False)
-    print(f"lineup_spacing rows={len(spacing_df)} -> {_SPACING_OUT}")
+    spacing_out.parent.mkdir(parents=True, exist_ok=True)
+    spacing_df.to_parquet(spacing_out, index=False)
+    print(f"lineup_spacing rows={len(spacing_df)} -> {spacing_out}")
     return 0
 
 

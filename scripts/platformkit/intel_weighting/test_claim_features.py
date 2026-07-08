@@ -146,13 +146,26 @@ def test_composite_key_without_team_prefix_is_clean_untestable(tmp_path):
     assert "no team mapping for entity_key=player_posgroup" in " ".join(results[0].caveats)
 
 
-def test_real_lineup_families_no_longer_crash():
-    """The actual 2025-26-vintage lineup families: current-season-only window
-    means an empty prior-season table -- correctly UNTESTABLE, not a crash."""
-    for family in ("nba_on_off_claims", "nba_gravity_proxy_claims", "nba_lineup_spacing_claims"):
+def test_real_lineup_families_are_genuinely_tested():
+    """The lineup families now carry a season_2024_25 window (prior-season
+    unlock), so the gate must genuinely test them for eval season 2025-26:
+    team-mapped (numeric NBA ids remapped to tricodes), a real verdict, and
+    real feature coverage -- never the old all-fdiff=0 fake NULL."""
+    for family in ("nba_on_off_claims", "nba_gravity_proxy_claims",
+                   "nba_lineup_spacing_claims", "nba_lineup_synergy_claims"):
         results = run_family("nba", family)
-        assert all(r.verdict == "UNTESTABLE" for r in results), (family, results)
-        assert all("unhashable" not in " ".join(r.caveats).lower() for r in results), family
+        assert results, family
+        for r in results:
+            assert r.verdict in {"NULL", "MATTERS_PROVISIONAL"}, (family, r)
+            assert r.entity_mapping == "team", (family, r)
+            caveats = " ".join(r.caveats).lower()
+            assert "unhashable" not in caveats, family
+            # all 30 teams clear the floor in the first three families, so any
+            # missing-entity caveat there means the id->tricode bridge broke.
+            # synergy's 100-min lineup floor genuinely leaves a few teams with
+            # zero qualifying lineups (partial coverage is real, not a bug).
+            if family != "nba_lineup_synergy_claims":
+                assert "games had an entity missing" not in caveats, (family, r.caveats)
 
 
 if __name__ == "__main__":  # tiny manual run without pytest
