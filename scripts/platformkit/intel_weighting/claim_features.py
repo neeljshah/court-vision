@@ -31,16 +31,25 @@ FeatureTable = Dict[Tuple[str, str], Dict[str, float]]
 _SEASON_RE = re.compile(r"(\d{4})[_-](\d{2})")
 
 
-def window_to_season(window: Optional[str]) -> Optional[str]:
-    """'season_2024_25' / '2024-25' -> '2024-25'; unlabeled -> None.
+_PLAIN_YEAR_RE = re.compile(r"^year_(\d{4})$")
 
-    Only PLAIN full-season windows qualify -- home/away/career splits return
-    None so the gate never conditions on a partial-vintage slice."""
+
+def window_to_season(window: Optional[str], style: str = "split") -> Optional[str]:
+    """'season_2024_25' / '2024-25' -> '2024-25' (style='split', NBA); or
+    'year_2024' -> '2024' (style='plain', mlb/soccer/tennis -- single
+    calendar-year seasons). Unlabeled -> None.
+
+    Only PLAIN full-season windows qualify -- home/away/career/surface/
+    division splits ('year_2024_clay', 'season_2024_25_home') return None so
+    the gate never conditions on a partial-vintage slice."""
     if not window:
         return None
     w = window.strip().lower()
     if "home" in w or "away" in w or "career" in w:
         return None
+    if style == "plain":
+        m = _PLAIN_YEAR_RE.fullmatch(w)
+        return m.group(1) if m else None
     m = _SEASON_RE.search(w)
     if not m:
         return None
@@ -90,15 +99,20 @@ def load_family_features(family: str, claims_dir: Optional[Path] = None) -> Tupl
     return (entity_key or "unknown"), table
 
 
-def prior_season_metrics(table: FeatureTable, eval_season: str) -> Dict[str, Dict[str, float]]:
+def prior_season_metrics(table: FeatureTable, eval_season: str,
+                          style: str = "split") -> Dict[str, Dict[str, float]]:
     """Select {metric: {entity: value}} for the season STRICTLY ONE BEFORE
-    eval_season (leak-free design (a)). eval_season like '2025-26' -> looks for
-    a window resolving to '2024-25'."""
-    start = int(eval_season.split("-")[0])
-    want = f"{start - 1:04d}-{(start) % 100:02d}"
+    eval_season (leak-free design (a)). style='split': '2025-26' -> looks for
+    a window resolving to '2024-25' (NBA). style='plain': '2026' -> '2025'
+    (mlb/soccer/tennis, single calendar-year seasons)."""
+    if style == "plain":
+        want = str(int(eval_season) - 1)
+    else:
+        start = int(eval_season.split("-")[0])
+        want = f"{start - 1:04d}-{(start) % 100:02d}"
     out: Dict[str, Dict[str, float]] = {}
     for (metric, window), values in table.items():
-        if window_to_season(window) == want:
+        if window_to_season(window, style) == want:
             out[metric] = values  # plain full-season only (splits already None)
     return out
 
@@ -110,4 +124,7 @@ if __name__ == "__main__":  # tiny self-check on a known team store
     assert "team_pts_per_game" in pri and len(pri["team_pts_per_game"]) >= 20
     assert window_to_season("season_2024_25_home") is None
     assert window_to_season("2024-25") == "2024-25"
+    assert window_to_season("year_2024", "plain") == "2024"
+    assert window_to_season("year_2024_clay", "plain") is None
+    assert prior_season_metrics({("m", "year_2024"): {"x": 1.0}}, "2025", "plain") == {"m": {"x": 1.0}}
     print(f"OK entity_key={ek} prior_metrics={sorted(pri)}")
