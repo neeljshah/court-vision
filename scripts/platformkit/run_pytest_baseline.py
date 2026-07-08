@@ -80,9 +80,14 @@ def main() -> int:
 
     # CV_BASELINE_TARGET: smoke-test override only; the real capture uses tests/.
     target = os.environ.get("CV_BASELINE_TARGET", str(ROOT / "tests"))
+    # --continue-on-collection-errors: duplicate-basename modules (e.g.
+    # tests/soccer/ vs tests/basketball_nba/ test_asof_features.py) error at
+    # collection; default pytest ABORTS the whole run on that. Recording them
+    # as frozen error ids is the documented-not-fixed behavior P0-H-005 wants.
     cmd = [sys.executable, "-m", "pytest", target, "-q",
            "--timeout=" + PER_TEST_TIMEOUT, "--timeout-method=thread",
-           "--durations=0", "--junitxml=" + str(junit)]
+           "--durations=0", "--continue-on-collection-errors",
+           "--junitxml=" + str(junit)]
     env = {**os.environ, "NBA_OFFLINE": "1", "CV_HERMETIC_TRACE": "1"}
 
     _stop_window("open")
@@ -107,7 +112,8 @@ def main() -> int:
             parsed = parse_junit_xml(junit)
         except Exception as e:  # noqa: BLE001
             _say("junit parse failed: %s" % e)
-    partial = timed_out or parsed is None
+    # rc 0/1 = clean / test-failures (both fine); anything else = interrupted.
+    partial = timed_out or parsed is None or rc not in (0, 1)
 
     baseline = {
         "captured_at": dt.datetime.now().isoformat(timespec="seconds"),
