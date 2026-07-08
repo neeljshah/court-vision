@@ -125,9 +125,11 @@ reprice. Follow the links to go as deep as you want at any stage.
 - [data_schema](data_schema.md) -- parquet / feature-store schemas
 - [DATA_DEPTH](DATA_DEPTH.md) -- the per-sport data census, the census->diff->factory loop, and the NBA lineup-reconstruction keystone
 - [INGEST_PIPELINES](INGEST_PIPELINES.md) -- per-source ingest jobs, cadence, and keyless-capture recipes
+- [SPORTS_COVERAGE](SPORTS_COVERAGE.md) -- per-sport matrix: data on disk, cadences, VERIFIED claims, vs-close verdict, biggest gap
 
 ### Serving / API / front-end
 - [API](API.md) -- the FastAPI surface (endpoints, contracts)
+- [ASK_SURFACES](ASK_SURFACES.md) -- the question-answering layer: ask() families, composers, trait profiles, paper analytics (VERIFIED claims only, honest UNANSWERABLE)
 - [FRONTEND_OVERVIEW](FRONTEND_OVERVIEW.md) -- the dashboard surfaces
 
 ### Operations / deployment
