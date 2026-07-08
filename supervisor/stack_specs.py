@@ -149,6 +149,23 @@ _HTTP_WEDGE_REAPER_HB = "data/cache/daemon_heartbeats/m33_http_wedge_reaper.txt"
 # Read-only, NO restart authority. See freshness_sla.TABLE + freshness_sla_runner.
 _FRESHNESS_SLA_HB = "data/cache/daemon_heartbeats/m34_freshness_sla.txt"
 
+# M39 -- NBA/WNBA injury-facts snapshotter (the NBA sibling of m31's MLB injury
+# snapshot). Every 6h it fetches the ESPN injuries feed for each wired basketball
+# sport, snapshot-dates every row (as-of vintage history), and appends to the same
+# injury_facts_<sport>.jsonl the gamebrief layer reads. KNOWLEDGE/SUBSTRATE only.
+# fresh_sec = 2x the 21600s cadence + margin (mirrors m31).
+_INJURY_FACTS_HB = "data/cache/daemon_heartbeats/m39_injury_facts_nba.txt"
+
+# M40 -- the WEDGE-RESTARTER detector. Reads m29's output_freshness.json; a daemon
+# RED for >=3 consecutive reads gets ONE rate-limited RESTART_REQUEST row appended
+# to data/frontend/ops/restart_requests.jsonl, which the supervisor's own pickup
+# seam (supervisor._restart.process_restart_requests) honors -- protected-daemon-
+# safe + max 1 honored restart per daemon per 30min. REQUEST-ONLY (the detector
+# decides nothing about killing; the supervisor is the sole actor). 300s cadence
+# (mirrors m29, the source it reads); fresh_sec=660 (>2x + margin). NO $ field, NO
+# flag flip, NO data/registry/ write, NO restart authority of its own.
+_WEDGE_RESTARTER_HB = "data/cache/daemon_heartbeats/m40_wedge_restarter.txt"
+
 _FOREVER = RestartPolicy(max_retries=None, backoff_base_sec=2.0, backoff_cap_sec=60.0)
 
 # The Next.js UI directory. Default "court-visions" (the original wired app);
@@ -805,6 +822,33 @@ def base_specs() -> List[ProcSpec]:
             argv=["--interval", "86400"],
             readiness=ReadinessSpec(
                 kind=HEARTBEAT, heartbeat_path=_AUTOLOOP_HB, fresh_sec=190000.0),
+            restart_policy=_FOREVER,
+        ),
+        # M39 -- NBA/WNBA injury-facts snapshotter (see _INJURY_FACTS_HB comment
+        # above). Every 6h; the NBA sibling of m31's MLB injury snapshot. Independent
+        # branch (no depends_on) so a dead tick is itself ONE red status entry. NOT
+        # YET RUNNING -- registered here but requires a supervisor restart to take
+        # effect. fresh_sec = 2x the 21600s cadence + margin (mirrors m31).
+        ProcSpec(
+            name="m39_injury_facts_nba", kind="py",
+            module="scripts.platformkit.edge_engine.injury_daemon",
+            argv=["--interval", "21600"],
+            readiness=ReadinessSpec(
+                kind=HEARTBEAT, heartbeat_path=_INJURY_FACTS_HB, fresh_sec=45000.0),
+            restart_policy=_FOREVER,
+        ),
+        # M40 -- the WEDGE-RESTARTER detector (see _WEDGE_RESTARTER_HB comment
+        # above). Request-only: turns a persistent output-freshness RED into a
+        # rate-limited RESTART_REQUEST the supervisor honors. Independent branch
+        # (no depends_on) so a dead tick is itself ONE red status entry. NOT YET
+        # RUNNING -- registered here but requires a supervisor restart to take
+        # effect. fresh_sec=660 (>2x the 300s cadence + margin, mirrors m29).
+        ProcSpec(
+            name="m40_wedge_restarter", kind="py",
+            module="scripts.platformkit.ops_sentinel.wedge_restarter",
+            argv=["--interval", "300"],
+            readiness=ReadinessSpec(
+                kind=HEARTBEAT, heartbeat_path=_WEDGE_RESTARTER_HB, fresh_sec=660.0),
             restart_policy=_FOREVER,
         ),
     ]

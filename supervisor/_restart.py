@@ -9,8 +9,10 @@ Also hosts the C1 self-heartbeat (``beat_self``) and C7 crash-rate breaker
 """
 from __future__ import annotations
 
+import json
 import logging
 import os
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from supervisor.manifest import HEARTBEAT, ProcSpec
@@ -238,6 +240,86 @@ def reap_stale_heartbeat(sv: "Supervisor", st: "_ProcState") -> None:
         arm_backoff(sv, st)
 
 
+# -- wedge-restart request pickup (M40 seam) ------------------------------- #
+# Path the M40 wedge_restarter detector appends RESTART_REQUEST rows to. The
+# supervisor is the ONLY actor that restarts (the detector only requests).
+_RESTART_REQ_PATH = (Path(__file__).resolve().parents[1]
+                     / "data" / "frontend" / "ops" / "restart_requests.jsonl")
+# Never auto-bounce the reliability sentinels or the supervisor itself.
+_RESTART_PROTECTED = frozenset({
+    "m9_supervisor", "m33_http_wedge_reaper", "m34_freshness_sla",
+    "m38_autoloop", "m40_wedge_restarter",
+})
+_RESTART_MIN_INTERVAL_SEC = 1800.0  # max ONE honored restart per daemon per 30min
+
+
+def process_restart_requests(sv: "Supervisor") -> None:
+    """Honor NEW M40 RESTART_REQUEST rows for ALIVE-but-wedged daemons.
+
+    Reads restart_requests.jsonl and, for each request naming a supervised daemon
+    that is still alive (the wedged case output_freshness flags), kills it so the
+    normal reap path relaunches it. Guards: skips protected daemons, enforces max
+    one honored restart per daemon per 30min, and on the FIRST call seeks to the
+    file's end (ignores any backlog) so a supervisor (re)boot never replays a
+    request storm. Never raises. No flag flip, no data/registry/ write.
+    """
+    try:
+        if not _RESTART_REQ_PATH.exists():
+            return
+        lines = _RESTART_REQ_PATH.read_text(
+            encoding="ascii", errors="replace").splitlines()
+    except Exception:  # noqa: BLE001 -- a bad read must never sink the tick
+        return
+    # First observation: skip the backlog (do-no-harm on boot).
+    if sv._restart_req_offset is None:
+        sv._restart_req_offset = len(lines)
+        return
+    if len(lines) <= sv._restart_req_offset:
+        if len(lines) < sv._restart_req_offset:  # file rotated/truncated -> resync
+            sv._restart_req_offset = len(lines)
+        return
+    new_lines = lines[sv._restart_req_offset:]
+    sv._restart_req_offset = len(lines)
+    now = sv._clock()
+    for line in new_lines:
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            req = json.loads(line)
+        except Exception:  # noqa: BLE001
+            continue
+        name = req.get("daemon") or req.get("name")
+        if not name or name not in sv._states:
+            continue
+        if name in _RESTART_PROTECTED:
+            logger.info("supervisor: restart_request for protected %s ignored", name)
+            continue
+        last = sv._restart_req_last.get(name, 0.0)
+        if now - last < _RESTART_MIN_INTERVAL_SEC:
+            logger.info("supervisor: restart_request for %s rate-limited "
+                        "(%.0fs < %.0fs)", name, now - last, _RESTART_MIN_INTERVAL_SEC)
+            continue
+        st = sv._states[name]
+        if not (st.handle and sv._is_alive(st.handle)):
+            continue  # already dead -> the normal reap path owns it
+        logger.warning("supervisor: RESTART_REQUEST honored for wedged %s "
+                       "(kill + relaunch via reap path)", name)
+        try:
+            sv._proc.kill(st.handle)
+        except Exception as exc:  # noqa: BLE001 -- kill must not sink the tick
+            logger.warning("supervisor: kill wedged %s raised %s",
+                           name, type(exc).__name__)
+        st.ready = False
+        st.handle = None
+        try:
+            sv._reaper.note_restarted(name)
+        except Exception:  # noqa: BLE001
+            pass
+        arm_backoff(sv, st)
+        sv._restart_req_last[name] = now
+
+
 # -- targeted predict_service restart (idempotent, standalone) --------------- #
 
 def restart_predict_service(log_dir: str = "logs") -> Dict[str, Any]:
@@ -296,4 +378,5 @@ __all__ = [
     "match_pattern", "reconcile_survivors", "arm_backoff",
     "reap_and_restart", "heartbeat_age", "reap_stale_heartbeat",
     "beat_self", "note_relaunch", "restart_predict_service",
+    "process_restart_requests",
 ]
