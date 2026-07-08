@@ -128,10 +128,11 @@ def _attach_names(df: pd.DataFrame, box_df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def _load_all_shots(stints_df: pd.DataFrame, game_ids: Any) -> pd.DataFrame:
+def _load_all_shots(stints_df: pd.DataFrame, game_ids: Any, pbp_dir: Path | None = None) -> pd.DataFrame:
+    pbp_dir = pbp_dir or _PBP_DIR
     frames = []
     for gid in game_ids:
-        fp = _PBP_DIR / f"{gid}.json"
+        fp = pbp_dir / f"{gid}.json"
         if fp.exists():
             frames.append(load_shot_events(json.loads(fp.read_text(encoding="utf-8"))))
     shots_df = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(
@@ -144,16 +145,18 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Build NBA pairwise on/off gravity matrix")
     parser.add_argument("--stints", type=str, default=str(_STINTS_PATH))
     parser.add_argument("--out", type=str, default=str(_OUT_PATH))
+    parser.add_argument("--pbp-dir", type=str, default=None, help="override input dir (default: team_system/pbp)")
     parser.add_argument("--limit", type=int, default=None)
     args = parser.parse_args(argv)
 
+    pbp_dir = Path(args.pbp_dir) if args.pbp_dir else _PBP_DIR
     stints_df = pd.read_parquet(args.stints)
     game_ids = stints_df["game_id"].unique()
     if args.limit:
         game_ids = game_ids[: args.limit]
         stints_df = stints_df[stints_df["game_id"].isin(game_ids)]
 
-    shots_df = _load_all_shots(stints_df, game_ids)
+    shots_df = _load_all_shots(stints_df, game_ids, pbp_dir)
     result, n_pairs_total = compute_pairwise(stints_df, shots_df)
     result = _attach_names(result, pd.read_parquet(_BOX_SRC))
     cols = [

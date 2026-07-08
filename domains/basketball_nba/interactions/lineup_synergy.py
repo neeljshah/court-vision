@@ -30,7 +30,9 @@ and qualifies=False (counted, not dropped).
 
 OUTPUT: data/cache/team_system/interactions/lineup_synergy_2025_26.parquet
   team_id, lineup_key, n_games, min, net_per48, expected_net_per48,
-  synergy_residual, n_members_qualified, qualifies.
+  synergy_residual, n_members_qualified, qualifies, min_member_id (smallest
+  raw id in lineup_key -- a claims-layer floor to drop lineups containing an
+  unresolved/negative placeholder id).
 
 Claims: scripts/platformkit/intel_validation/nba_lineup_synergy_claims.py
 (descriptive ranking on synergy_residual, floor reapplied independently).
@@ -96,6 +98,11 @@ def attach_expected(lineup_df: pd.DataFrame, on_off_df: pd.DataFrame) -> pd.Data
     lineup_df["net_per48"] = lineup_df["net_per48"].round(4)
     lineup_df["min"] = lineup_df["min"].round(2)
     lineup_df["qualifies"] = (lineup_df["min"] >= MIN_LINEUP_MINUTES) & lineup_df["synergy_residual"].notna()
+    # min_member_id: smallest raw id in the 5-man lineup_key -- some seasons'
+    # stint reconstruction fills an unresolved roster slot with a negative
+    # placeholder id (pbp_lineups.py's build_team_stints); >=0 here is a
+    # ready-made claims-layer floor to exclude those unresolved lineups.
+    lineup_df["min_member_id"] = lineup_df["lineup_key"].apply(lambda s: min(int(p) for p in s.split(",")))
     return lineup_df
 
 
@@ -113,7 +120,7 @@ def main(argv: list[str] | None = None) -> int:
     result = attach_expected(lineup_df, on_off_df)
     cols = [
         "team_id", "lineup_key", "n_games", "min", "net_per48",
-        "expected_net_per48", "synergy_residual", "n_members_qualified", "qualifies",
+        "expected_net_per48", "synergy_residual", "n_members_qualified", "qualifies", "min_member_id",
     ]
     result = result[cols].sort_values("synergy_residual", ascending=False, na_position="last").reset_index(drop=True)
 

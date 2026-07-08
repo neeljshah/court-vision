@@ -6,23 +6,29 @@ literally "what happens to the offense when the high-usage player is out",
 the primitive an injury feed later conditions on; no injury data is read
 here, just the on/off shot redistribution.
 
-TEAM_ID RESOLUTION: player_boxscores.parquet keys team by tricode ("OKC"),
-the stint table by numeric team_id -- there is no static tricode map on disk,
-so it is built HERE, once, straight off the same PBP jsons already being
-loaded for shots (each action carries both teamId and teamTricode; stable
-all season, no in-season relocations to worry about).
+TOP-USAGE RANKING SOURCE: ranked directly off THIS SEASON's own shot events
+(shots_df, numeric team_id already attached from the PBP feed) -- not off
+player_boxscores.parquet. That file has NO 2023-24 rows at all (its `season`
+column is only 2024-25/2025-26) and, unfiltered by season, would silently
+blend a player's 2024-25+2025-26 FGA together when ranking either season in
+isolation -- both wrong for a per-season top-3-usage cut. The season's own
+shot volume is already loaded for the redistribution computation itself and
+is season-correct by construction, so it doubles as the ranking input.
 
 Floors (fail-closed): the high-usage player needs >=200 min WITH-floor
 minutes AND >=50 min WITHOUT-floor minutes to be included at all (stars sit
 rarely -- 50 is deliberately looser than the 100 used elsewhere in this
 lane); a reported teammate row additionally needs >0 FGA in the bucket being
 reported, else the share/eFG for that side is null, not zero (an unplayed
-bucket is missing data, not a real zero).
+bucket is missing data, not a real zero). `teammate_fga_joint` (fga_with +
+fga_without) is carried through as a plain column so a claims layer can
+apply its own joint-shot-exposure floor without re-deriving it.
 
 OUTPUT: data/cache/team_system/interactions/usage_redistribution_2025_26.parquet
   player_id, team_id, player_name (the high-usage player), teammate_id,
   teammate_name, min_with, min_without, fga_share_with, fga_share_without,
-  share_delta, efg_with, efg_without, efg_delta.
+  share_delta, efg_with, efg_without, efg_delta, teammate_fga_with,
+  teammate_fga_without, teammate_fga_joint.
 
 NETWORK: zero. CLI: python -m domains.basketball_nba.interactions.usage_redistribution
 """
@@ -47,21 +53,13 @@ MIN_MINUTES_WITH = 200.0
 MIN_MINUTES_WITHOUT = 50.0
 
 
-def build_tricode_to_team_id(files: list[Path]) -> dict[str, int]:
-    mapping: dict[str, int] = {}
-    for fp in files:
-        game_json = json.loads(fp.read_text(encoding="utf-8"))
-        for a in game_json["game"]["actions"]:
-            if a.get("teamId") and a.get("teamTricode") and a["teamTricode"] not in mapping:
-                mapping[a["teamTricode"]] = a["teamId"]
-    return mapping
-
-
-def top_usage_players(box_df: pd.DataFrame, tricode_to_team: dict[str, int]) -> pd.DataFrame:
-    agg = box_df.groupby(["player_id", "team"])["fga"].sum().reset_index()
-    agg["team_id"] = agg["team"].map(tricode_to_team)
-    agg = agg.dropna(subset=["team_id"])
-    agg["team_id"] = agg["team_id"].astype(int)
+def top_usage_players(shots_df: pd.DataFrame) -> pd.DataFrame:
+    """Top-N FGA players per team_id, ranked off THIS SEASON's own shot
+    events (person_id, team_id, fga already numeric/season-scoped -- see
+    module docstring for why this replaced a player_boxscores.parquet+
+    tricode-map path)."""
+    agg = shots_df.groupby(["person_id", "team_id"])["fga"].sum().reset_index()
+    agg = agg.rename(columns={"person_id": "player_id"})
     agg["rank"] = agg.groupby("team_id")["fga"].rank(method="first", ascending=False)
     return agg[agg["rank"] <= TOP_N_USAGE][["player_id", "team_id", "fga"]].reset_index(drop=True)
 
@@ -100,7 +98,10 @@ def compute_usage_redistribution(
         total_fga_with = with_grp["fga"].sum()
         total_fga_without = without_grp["fga"].sum()
 
-        teammates = sorted(set(with_grp.index) | set(without_grp.index) - {int(player_id)})
+        # parens required: `-` binds tighter than `|` for sets, so an
+        # unparenthesized `A | B - {x}` only drops x from B, not the union --
+        # the player himself was leaking through as his own "teammate" row.
+        teammates = sorted((set(with_grp.index) | set(without_grp.index)) - {int(player_id)})
         for q in teammates:
             fga_w = with_grp["fga"].get(q, 0.0)
             fga_wo = without_grp["fga"].get(q, 0.0)
@@ -121,6 +122,8 @@ def compute_usage_redistribution(
                 "efg_with": round(efg_w, 4) if efg_w is not None else None,
                 "efg_without": round(efg_wo, 4) if efg_wo is not None else None,
                 "efg_delta": round(efg_w - efg_wo, 4) if efg_w is not None and efg_wo is not None else None,
+                "teammate_fga_with": int(fga_w), "teammate_fga_without": int(fga_wo),
+                "teammate_fga_joint": int(fga_w + fga_wo),
             })
 
     result = pd.DataFrame(rows)
@@ -134,30 +137,29 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Build NBA usage-redistribution (on/off shot-diet) table")
     parser.add_argument("--stints", type=str, default=str(_STINTS_PATH))
     parser.add_argument("--out", type=str, default=str(_OUT_PATH))
+    parser.add_argument("--pbp-dir", type=str, default=None, help="override input dir (default: team_system/pbp)")
     parser.add_argument("--limit", type=int, default=None)
     args = parser.parse_args(argv)
 
+    pbp_dir = Path(args.pbp_dir) if args.pbp_dir else _PBP_DIR
     stints_df = pd.read_parquet(args.stints)
     game_ids = stints_df["game_id"].unique()
-    files = sorted(_PBP_DIR.glob("*.json"))
     if args.limit:
         game_ids = game_ids[: args.limit]
         stints_df = stints_df[stints_df["game_id"].isin(game_ids)]
-        files = [f for f in files if f.stem in set(game_ids)]
 
-    tricode_to_team = build_tricode_to_team_id(files)
     box_df = pd.read_parquet(_BOX_SRC)
-    usage_df = top_usage_players(box_df, tricode_to_team)
 
     shot_frames = []
     for gid in game_ids:
-        fp = _PBP_DIR / f"{gid}.json"
+        fp = pbp_dir / f"{gid}.json"
         if fp.exists():
             shot_frames.append(load_shot_events(json.loads(fp.read_text(encoding="utf-8"))))
     shots_df = pd.concat(shot_frames, ignore_index=True) if shot_frames else pd.DataFrame(
         columns=["game_id", "team_id", "period", "elapsed_s", "person_id", "fgm", "fg3m", "fga"]
     )
     shots_df = attach_lineup_to_shots(stints_df, shots_df)
+    usage_df = top_usage_players(shots_df)
 
     result, n_excluded_players = compute_usage_redistribution(stints_df, shots_df, usage_df, box_df)
     result = result.sort_values("share_delta", ascending=False).reset_index(drop=True) if len(result) else result
