@@ -73,3 +73,89 @@ if hasattr(_signals_pkg, "__path__") and os.path.isdir(_SCRIPTS_TS_SIGNALS):
     _ns_path = list(_signals_pkg.__path__)
     if _SCRIPTS_TS_SIGNALS not in _ns_path:
         _signals_pkg.__path__.append(_SCRIPTS_TS_SIGNALS)
+
+# ---------------------------------------------------------------------------
+# P0-H-005  CV_HERMETIC_TRACE=1 — capture-run-only mutation tracing.
+#
+# Default OFF (env unset): the hooks below are never even defined, so the
+# normal test path pays zero cost.  When ON (the sanctioned overnight
+# baseline capture), after the LAST test of each module we diff
+# `git status --porcelain` against a running snapshot; NEW dirty paths are
+# attributed to that module in .planning/platform/baselines/pytest_mutators.md
+# and then RESTORED (git restore for tracked, delete for untracked).
+# The GATE never reverts anything — only this env-gated capture hook does.
+# ---------------------------------------------------------------------------
+if os.environ.get("CV_HERMETIC_TRACE") == "1":
+    import shutil as _sh
+    import subprocess as _sp
+
+    _HT_MD = os.path.join(_REPO_ROOT, ".planning", "platform", "baselines",
+                          "pytest_mutators.md")
+    _ht_state = {"snap": None}
+
+    def _ht_porcelain():
+        # ponytail: one `git status` per test module (~2s each on this repo);
+        # fine inside an 8h budget, do not enable outside the capture run.
+        try:
+            r = _sp.run(["git", "status", "--porcelain"], capture_output=True,
+                        text=True, timeout=60, cwd=_REPO_ROOT)
+            if r.returncode != 0:
+                return set()
+            return {ln for ln in r.stdout.splitlines() if ln.strip()}
+        except Exception:
+            return set()
+
+    def _ht_path(line):
+        p = line[3:].strip()
+        if " -> " in p:  # rename: restore the destination
+            p = p.split(" -> ", 1)[1]
+        return p.strip('"')
+
+    def _ht_restore(line):
+        p = _ht_path(line)
+        ap = os.path.join(_REPO_ROOT, p)
+        try:
+            if line.startswith("??"):
+                if os.path.isdir(ap):
+                    _sh.rmtree(ap)
+                elif os.path.exists(ap):
+                    os.remove(ap)
+            else:
+                _sp.run(["git", "restore", "--", p], capture_output=True,
+                        timeout=60, cwd=_REPO_ROOT)
+        except Exception:
+            pass  # record-first: the md entry survives even if restore fails
+
+    def pytest_sessionstart(session):
+        _ht_state["snap"] = _ht_porcelain()
+        os.makedirs(os.path.dirname(_HT_MD), exist_ok=True)
+        with open(_HT_MD, "w", encoding="utf-8") as fh:
+            fh.write(
+                "# pytest mutators (CV_HERMETIC_TRACE capture run)\n\n"
+                "Modules whose tests left NEW `git status --porcelain` entries.\n"
+                "Each path was restored immediately after attribution (capture\n"
+                "run only; the gate never reverts).  Every entry needs a\n"
+                "follow-up task id or an explicit waiver (P0-H-005).\n\n")
+
+    def _ht_module_check(modpath):
+        now = _ht_porcelain()
+        new = now - (_ht_state["snap"] or set())
+        if not new:
+            return
+        try:
+            with open(_HT_MD, "a", encoding="utf-8") as fh:
+                fh.write("## {}\n".format(modpath))
+                for ln in sorted(new):
+                    fh.write("- `{}` -- follow-up: TODO\n".format(ln.strip()))
+                fh.write("\n")
+        except Exception:
+            pass
+        for ln in new:
+            _ht_restore(ln)
+        _ht_state["snap"] = _ht_porcelain()
+
+    def pytest_runtest_teardown(item, nextitem):
+        mod = item.nodeid.split("::", 1)[0]
+        nxt = nextitem.nodeid.split("::", 1)[0] if nextitem is not None else None
+        if nxt != mod:
+            _ht_module_check(mod)

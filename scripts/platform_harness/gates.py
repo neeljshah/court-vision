@@ -2,6 +2,7 @@
 Cardinal rule: absent script/baseline → SKIP, never FAIL. H0: almost everything skips."""
 from __future__ import annotations
 import argparse
+import json
 import os
 import re
 import subprocess
@@ -22,6 +23,14 @@ try:
 except ImportError:
     _select_tests = None  # type: ignore[assignment]
     _SELECT_AVAILABLE = False
+
+# Lazy import of the P0-H-005 junit parser (scripts/platformkit on sys.path above).
+try:
+    import capture_pytest_baseline as _cap  # noqa: E402
+    _CAP_AVAILABLE = True
+except ImportError:
+    _cap = None  # type: ignore[assignment]
+    _CAP_AVAILABLE = False
 
 # ---------------------------------------------------------------------------
 # Protected-file registry (§6.4)
@@ -169,12 +178,15 @@ def _parse_counts(text: str) -> dict:
     return counts
 
 
-def run_pytest(targets: Optional[List[str]] = None, timeout: int = 1800) -> dict:
+def run_pytest(targets: Optional[List[str]] = None, timeout: int = 1800,
+               junitxml: Optional[str] = None) -> dict:
     """Run pytest; never raises.  Keys: ran, timed_out, passed, failed, skipped, errors,
     rc (success only), elapsed_s.  On timeout salvages partial counts from e.stdout."""
     cmd = [sys.executable, "-m", "pytest"]
     cmd += [str(t) for t in targets] if targets else [str(ROOT / "tests")]
     cmd += ["-q", "--no-header", "--tb=no"]
+    if junitxml:
+        cmd += ["--junitxml=" + str(junitxml)]
     if _PYTEST_TIMEOUT_AVAILABLE:
         cmd += ["--timeout=300", "--timeout-method=thread"]
     child_env = {**os.environ, "NBA_OFFLINE": "1"}
@@ -215,48 +227,110 @@ def _run_script(gate: str, script_key: str, extra_args: Optional[List[str]] = No
         return _skip(gate, f"exception: {e}")
 
 
-def g1(baseline_required: bool = False) -> dict:
-    """G1 — pytest count vs baseline (RECORDED if baseline absent, else PASS/FAIL)."""
-    if not PYTEST_BASELINE.exists():
-        if baseline_required:
-            return _skip("G1", "baseline absent and baseline_required=True")
-        res = run_pytest()
-        if not res.get("ran"):
-            return _skip("G1", f"pytest failed to run: {res.get('error')}")
-        try:
-            PYTEST_BASELINE.parent.mkdir(parents=True, exist_ok=True)
-            PYTEST_BASELINE.write_text(
-                "\n".join(f"{k}={res[k]}" for k in ("passed", "failed", "skipped", "errors")) + "\n",
-                encoding="utf-8")
-        except Exception:  # noqa: BLE001
-            pass
-        return {"gate": "G1", "status": "RECORDED",
-                "why": "baseline absent — current counts recorded", "counts": res}
+# --- G1 id-aware full-suite gate (P0-H-005) --------------------------------
+# The full serial suite runs for hours; budget matches the capture run's 8h.
+G1_FULL_SUITE_TIMEOUT = int(os.environ.get("CV_G1_TIMEOUT_S", "28800"))
+G1_JUNIT = ROOT / ".planning" / "platform" / "baselines" / "_g1_last_run_junit.xml"
 
+
+def _g1_legacy_counts(text: str) -> dict:
+    """Pre-P0-H-005 count-only comparison (baseline in `k=v` format)."""
     baseline: dict = {}
-    for line in PYTEST_BASELINE.read_text(encoding="utf-8").splitlines():
+    for line in text.splitlines():
         if "=" in line:
             k, _, v = line.partition("=")
             try:
                 baseline[k.strip()] = int(v.strip())
             except ValueError:
                 pass
-
-    res = run_pytest()
+    res = run_pytest(timeout=G1_FULL_SUITE_TIMEOUT)
     if res.get("timed_out"):
-        # Timeout with baseline present → FAIL (phase may not close on vacuous gate).
         return {"gate": "G1", "status": "FAIL",
                 "why": f"pytest timed out after {res.get('elapsed_s', 0):.1f}s with baseline present",
-                "baseline": baseline,
-                "actual": {k: res[k] for k in ("passed", "failed", "skipped", "errors")},
-                "timed_out": True}
+                "baseline": baseline, "timed_out": True}
     if not res.get("ran"):
         return _skip("G1", f"pytest failed to run: {res.get('error')}")
     ok = res["passed"] >= baseline.get("passed", 0) and res["failed"] == 0 and res["errors"] == 0
     return {"gate": "G1", "status": "PASS" if ok else "FAIL",
+            "why": "legacy count-format baseline -- re-baseline via run_pytest_baseline.py",
             "baseline": baseline,
             "actual": {k: res[k] for k in ("passed", "failed", "skipped", "errors")},
             "rc": res["rc"]}
+
+
+def g1(baseline_required: bool = False) -> dict:
+    """G1 — id-aware full-suite gate (P0-H-005).
+
+    FAIL iff NEW failing/error ids appear vs the frozen baseline, or the
+    collected count drops beyond tolerance.  Frozen (pre-existing) failing ids
+    are excluded until an explicit phase-boundary re-baseline.  Parses
+    junit-xml, never the pytest summary line.  Legacy ``k=v`` count baselines
+    fall back to the old count comparison until the id-aware baseline lands.
+    """
+    if not PYTEST_BASELINE.exists():
+        if baseline_required:
+            return _skip("G1", "baseline absent and baseline_required=True")
+        res = run_pytest(timeout=G1_FULL_SUITE_TIMEOUT, junitxml=str(G1_JUNIT))
+        if not res.get("ran"):
+            return _skip("G1", f"pytest failed to run: {res.get('error')}")
+        try:
+            PYTEST_BASELINE.parent.mkdir(parents=True, exist_ok=True)
+            if _CAP_AVAILABLE and G1_JUNIT.exists():
+                parsed = _cap.parse_junit_xml(G1_JUNIT)
+                PYTEST_BASELINE.write_text(json.dumps({
+                    "captured_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
+                    "partial": False,
+                    "note": "recorded by g1() -- id-aware",
+                    "passed": parsed["passed"], "skipped": parsed["skipped"],
+                    "total_collected": parsed["total_collected"],
+                    "failed_ids": sorted(parsed["failed_ids"]),
+                    "error_ids": sorted(parsed["error_ids"]),
+                }, indent=2) + "\n", encoding="utf-8")
+            else:
+                PYTEST_BASELINE.write_text(
+                    "\n".join(f"{k}={res[k]}" for k in ("passed", "failed", "skipped", "errors")) + "\n",
+                    encoding="utf-8")
+        except Exception:  # noqa: BLE001
+            pass
+        return {"gate": "G1", "status": "RECORDED",
+                "why": "baseline absent — current run recorded", "counts": res}
+
+    text = PYTEST_BASELINE.read_text(encoding="utf-8")
+    if not text.lstrip().startswith("{"):
+        return _g1_legacy_counts(text)
+
+    baseline = json.loads(text)
+    baseline.setdefault("failed_ids", [])
+    baseline.setdefault("error_ids", [])
+    if baseline.get("partial"):
+        return _skip("G1", "baseline is PARTIAL (capture budget exceeded) -- "
+                           "re-run scripts/platformkit/run_pytest_baseline.py")
+    if not _CAP_AVAILABLE:
+        return _skip("G1", "capture_pytest_baseline module unavailable")
+
+    res = run_pytest(timeout=G1_FULL_SUITE_TIMEOUT, junitxml=str(G1_JUNIT))
+    if res.get("timed_out"):
+        return {"gate": "G1", "status": "FAIL",
+                "why": f"pytest timed out after {res.get('elapsed_s', 0):.1f}s with baseline present",
+                "timed_out": True}
+    if not res.get("ran"):
+        return _skip("G1", f"pytest failed to run: {res.get('error')}")
+    if not G1_JUNIT.exists():
+        return _skip("G1", "junit-xml not produced by pytest run")
+
+    parsed = _cap.parse_junit_xml(G1_JUNIT)
+    ok, reasons = _cap.g1_compare(baseline, parsed)
+    frozen = len(set(baseline["failed_ids"]) | set(baseline["error_ids"]))
+    return {"gate": "G1", "status": "PASS" if ok else "FAIL",
+            "why": ("; ".join(reasons) if reasons else
+                    f"id-aware: no new failing/error ids ({frozen} frozen excluded); "
+                    f"collected {parsed['total_collected']}"),
+            "frozen_excluded": frozen,
+            "actual": {"passed": parsed["passed"], "skipped": parsed["skipped"],
+                        "failed": len(parsed["failed_ids"]),
+                        "errors": len(parsed["error_ids"]),
+                        "collected": parsed["total_collected"]},
+            "rc": res.get("rc")}
 
 
 def g2() -> dict:

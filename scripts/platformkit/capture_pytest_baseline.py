@@ -161,7 +161,7 @@ def g1_compare(
         reasons.append(
             f"NEW failing/error ids ({len(sorted_new)}): "
             + ", ".join(sorted_new[:10])
-            + (" …" if len(sorted_new) > 10 else "")
+            + (" ..." if len(sorted_new) > 10 else "")
         )
 
     baseline_total = baseline.get("total_collected", 0)
@@ -262,7 +262,7 @@ def main(argv: List[str] | None = None) -> int:
 
     if args.freeze:
         write_baseline(parsed, args.freeze)
-        print(f"Baseline frozen → {args.freeze}")
+        print(f"Baseline frozen -> {args.freeze}")
         return 0
 
     # --check
@@ -276,7 +276,7 @@ def main(argv: List[str] | None = None) -> int:
     else:
         print("G1 FAIL:")
         for r in reasons:
-            print(f"  • {r}")
+            print(f"  - {r}")
         return 1
 
 
