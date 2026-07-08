@@ -65,6 +65,48 @@ The market is efficient on closing lines; that is the honest, sophisticated find
 
 ---
 
+## Current per-sport model stack (2026-07)
+
+The production pregame model per sport, confirmed against the real module (`src/prediction/`
+for NBA win-prob + props, `domains/<sport>/` for the other three) and re-verified with a live
+run of `python -m scripts.platformkit.beat_the_close_scoreboard` (real corpora: NBA 2025-26
+odds, MLB 2010-2021, soccer 2019-2026, ATP; run from the box with `data/domains/` present —
+absent on a fresh clone, in which case the scoreboard prints `CORPUS NOT PRESENT` and falls
+back to this recorded table).
+
+| Sport | Market | Production model | Module | vs-close verdict | n |
+|-------|--------|-------------------|--------|-------------------|---|
+| NBA | moneyline | MOV-aware Elo (`domains/basketball_nba/predictor.py::NBAPredictor`) | `scripts/platformkit/proof_nba/ml_accuracy.py` | MATCH (Brier 0.1735 vs close 0.1672) | 372 |
+| NBA | total O/U | possessions/efficiency model | `scripts/platformkit/proof_nba/asof_box_accuracy.py` | BEHIND (freshness — RMSE 19.172 vs 18.114) | 372 |
+| MLB | moneyline | walk-forward MOV-Elo | `scripts/platformkit/proof_mlb/beat_the_close_ml.py` | MATCH (Brier 0.2429 vs close 0.2390 — tiny deficit is pitcher-blindness, the close prices the SP) | 13,992 |
+| MLB | total O/U | run-rate expected total | `scripts/platformkit/proof_mlb/beat_the_close_total.py` | BEHIND (freshness — RMSE 4.719 vs 4.441) | 1,679 |
+| Soccer | O/U-2.5 | EW-Poisson + finishing + pooled-Platt recal | `scripts/platformkit/proof_soccer/beat_the_close_ou.py` | MATCH (Brier 0.2465 vs close 0.2390) | 7,558 |
+| Tennis (ATP) | match-win | surface-Elo + Platt | `scripts/platformkit/proof_tennis/beat_the_close_ml.py` | BEHIND (freshness — Brier 0.2177 vs close 0.2028; ATP closes are very efficient) | 7,374 |
+
+WTA runs its own live recalibrator (`proof_tennis/wta_temp_live.py`, temperature T=1.36,
+holdout ECE 0.045 -> 0.019) — a calibration win, not a market-vs-close row.
+
+These are the same numbers published in [`docs/MARKET_EFFICIENCY_PROOF.md`](MARKET_EFFICIENCY_PROOF.md)
+§1, re-run live on 2026-07-07 and confirmed unchanged (the recorded canonical table and the live
+harness output agree to 4 decimal places — no drift since last verification).
+
+### The honest-REJECT graveyard (validated negative knowledge)
+
+A model that never ships is not wasted work if the gate that killed it is real. Four recent
+closures, each reached through the leak-free walk-forward + planted-null gate, not a vibe:
+
+| Candidate | Verdict | Why | Commit |
+|-----------|---------|-----|--------|
+| CQR prop intervals (7 stats) | REJECT 7/7 | Sharper pinball/width than incumbent split-conformal on all 7 stats, but over-covers the 90% nominal (91-96% vs incumbent's 88-91%) and fails the strict coverage-proximity check; incumbent constant-width band ships unchanged | `a642eac5` |
+| ACI online conformal (in-game, T4) | REJECT (pinball + planted-null) | Recovers coverage under drift (77.7% -> 89.9% on a synthetic non-stationary stream) but pays pinball cost via wider bands, and the planted-null control still shows residual variance drift after shuffling — a coverage win that bleeds sharpness is half a win | `fb468a9c` |
+| Fit-validity gate (roster fit -> post-move performance) | REJECT (n=417, 5 walk-forward season-pair folds) | Fit does not predict post-move performance on this corpus; fit stays a SCOUTING signal, not a predictive one | `docs/research/intel-layer/FIT_VALIDITY_GATE_PREREG_V2_2026-07-05.md` |
+| SP-fatigue in-game class (MLB) | NOT_TESTABLE + velo-decline REJECT | Class closed; do not re-attempt on this corpus without new pitch-level data | memory `mlb_sp_fatigue_closed_2026_07_04` |
+
+None of these are failures — they are the gate working. A signal that reverses sign or fails a
+planted null is caught before it ships, not after.
+
+---
+
 ## Model Inventory
 
 ### Win Probability
@@ -562,7 +604,7 @@ coverage exists. Current SHAP ≈ 0 reflects data scarcity, not model exclusion.
 
 *Deep dives: [`models/model-registry.md`](models/model-registry.md) (artifact inventory) · [`models/calibration.md`](models/calibration.md) (calibration math + Shin) · [`models/feature-inventory.md`](models/feature-inventory.md) (feature stack + WF verdicts) · [full doc map](INDEX.md)*
 
-*Last verified: 2026-06-11*
+*Last verified: 2026-07-07*
 
 
 ---
