@@ -73,23 +73,40 @@ def verdict(p: float, alpha: float) -> str:
     return SURVIVES if p < alpha else NULL
 
 
-def blocked_row(name: str, sport: str, atomic_unit: str, reason: str) -> Dict[str, Any]:
+def blocked_row(name: str, sport: str, atomic_unit: str, reason: str,
+                method: str = "") -> Dict[str, Any]:
     return _row(name, sport, atomic_unit, n=0, effect=None, p=None, alpha_fwer=None,
-                verdict_str=BLOCKED, note=reason)
+                verdict_str=BLOCKED, note=reason, method=method)
 
 
-def tested_row(name: str, sport: str, atomic_unit: str, fit: Dict[str, Any], alpha: float) -> Dict[str, Any]:
+def tested_row(name: str, sport: str, atomic_unit: str, fit: Dict[str, Any], alpha: float,
+              method: str = "") -> Dict[str, Any]:
     v = verdict(fit["p"], alpha)
     note = "PROVISIONAL -- needs independent replication before belief" if v == SURVIVES else ""
     return _row(name, sport, atomic_unit, n=fit["n"], effect=fit["effect"], p=fit["p"],
-                alpha_fwer=alpha, verdict_str=v, note=note, term=fit["term"])
+                alpha_fwer=alpha, verdict_str=v, note=note, term=fit["term"], method=method)
 
 
-def _row(name, sport, atomic_unit, n, effect, p, alpha_fwer, verdict_str, note="", term=None) -> Dict[str, Any]:
+# replication verdicts: a PROVISIONAL survivor tested again on an INDEPENDENT corpus
+# (different season, same mechanism). Reuses `verdict`/alpha_fwer -- not a new stat.
+REPLICATED = "REPLICATED"
+FAILED_REPLICATION = "FAILED_REPLICATION"
+
+
+def replication_row(name: str, sport: str, atomic_unit: str, fit: Dict[str, Any], alpha: float,
+                    method: str) -> Dict[str, Any]:
+    v = REPLICATED if verdict(fit["p"], alpha) == SURVIVES else FAILED_REPLICATION
+    return _row(name, sport, atomic_unit, n=fit["n"], effect=fit["effect"], p=fit["p"],
+                alpha_fwer=alpha, verdict_str=v, note="independent-season replication check",
+                term=fit["term"], method=method)
+
+
+def _row(name, sport, atomic_unit, n, effect, p, alpha_fwer, verdict_str, note="", term=None,
+        method="") -> Dict[str, Any]:
     return {
         "hypothesis": name, "sport": sport, "atomic_unit": atomic_unit, "n": n,
         "effect": effect, "p": p, "alpha_fwer": alpha_fwer, "verdict": verdict_str,
-        "term": term, "note": note, "edge_claimed": False,
+        "term": term, "note": note, "edge_claimed": False, "method": method,
         "computed_at": datetime.now(timezone.utc).isoformat(),
     }
 
@@ -101,5 +118,6 @@ def append_ledger(rows: list[Dict[str, Any]], path: Path = LEDGER_PATH) -> None:
             f.write(json.dumps(row) + "\n")
 
 
-__all__ = ["SURVIVES", "NULL", "BLOCKED", "alpha_fwer", "fit_interaction", "fit_single",
-           "verdict", "blocked_row", "tested_row", "append_ledger", "LEDGER_PATH"]
+__all__ = ["SURVIVES", "NULL", "BLOCKED", "REPLICATED", "FAILED_REPLICATION",
+           "alpha_fwer", "fit_interaction", "fit_single", "verdict", "blocked_row",
+           "tested_row", "replication_row", "append_ledger", "LEDGER_PATH"]
