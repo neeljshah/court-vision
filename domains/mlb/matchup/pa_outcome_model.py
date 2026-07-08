@@ -94,6 +94,7 @@ _IN_PLAY_OUT_EVENTS = {
 _SINGLE_EVENTS = {"single"}
 _XBH_EVENTS = {"double", "triple", "home_run"}
 BUCKETS = ["K", "BB", "IN_PLAY_OUT", "SINGLE_PLUS", "XBH"]
+_BUCKETS_SORTED = sorted(BUCKETS)  # log_loss(labels=X) scores ALPHABETICAL columns regardless of X's order
 _BUCKET_MAP = {}
 for _e in _K_EVENTS: _BUCKET_MAP[_e] = "K"
 for _e in _BB_EVENTS: _BUCKET_MAP[_e] = "BB"
@@ -105,8 +106,8 @@ _PITCH_TYPE_VOCAB = ["FF", "SL", "SI", "CH", "FC", "CU", "ST", "KC", "FS"]
 _PA_COLS = [
     "pitcher", "batter", "pitch_type", "events", "stand", "p_throws",
     "outs_when_up", "bat_score", "home_score", "away_score",
+    "game_pk", "game_date", "at_bat_number",  # unused here; reused by pa_outcome_v2.py
 ]
-
 FEATURE_LAYERS = {
     "league_rate": [],
     "batter_only": ["batter_k_rate", "batter_slug", "batter_bb_rate"],
@@ -212,19 +213,19 @@ def build_features(pa: pd.DataFrame, pitcher_profile_2022: pd.DataFrame,
 def fit_eval_layer(train_df: pd.DataFrame, test_df: pd.DataFrame, feature_cols: list) -> float:
     y_train, y_test = train_df["bucket"], test_df["bucket"]
     if not feature_cols:
-        rates = y_train.value_counts(normalize=True).reindex(BUCKETS).fillna(1e-6)
+        rates = y_train.value_counts(normalize=True).reindex(_BUCKETS_SORTED).fillna(1e-6)
         probs = np.tile(rates.to_numpy(), (len(y_test), 1))
-        return float(log_loss(y_test, probs, labels=BUCKETS))
+        return float(log_loss(y_test, probs, labels=_BUCKETS_SORTED))
     scaler = StandardScaler().fit(train_df[feature_cols])
     X_train = scaler.transform(train_df[feature_cols])
     X_test = scaler.transform(test_df[feature_cols])
     clf = LogisticRegression(max_iter=1000)
     clf.fit(X_train, y_train)
     prob_df = pd.DataFrame(clf.predict_proba(X_test), columns=clf.classes_)
-    for b in BUCKETS:
+    for b in _BUCKETS_SORTED:
         if b not in prob_df.columns:
             prob_df[b] = 1e-6
-    return float(log_loss(y_test, prob_df[BUCKETS].to_numpy(), labels=BUCKETS))
+    return float(log_loss(y_test, prob_df[_BUCKETS_SORTED].to_numpy(), labels=_BUCKETS_SORTED))
 
 
 def run_ladder() -> dict:

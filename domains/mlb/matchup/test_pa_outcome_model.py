@@ -66,11 +66,17 @@ def test_expected_k_interaction_is_the_dot_product():
 
 
 def test_fit_eval_layer_empty_features_matches_marginal_log_loss():
+    """NOTE: sklearn's log_loss(..., labels=X) always assumes y_pred's
+    columns are ALPHABETICALLY ordered regardless of X's given order (a
+    LabelBinarizer internal, not a BUCKETS-specific quirk) -- this
+    expected-value computation must use _BUCKETS_SORTED, same as
+    fit_eval_layer itself, or the two would land on different (and both
+    wrong) column alignments and coincidentally still match."""
     train_df = pd.DataFrame({"bucket": ["K", "K", "BB", "IN_PLAY_OUT"]})
     test_df = pd.DataFrame({"bucket": ["K", "IN_PLAY_OUT"]})
     ll = m.fit_eval_layer(train_df, test_df, [])
-    rates = train_df["bucket"].value_counts(normalize=True).reindex(m.BUCKETS).fillna(1e-6)
-    expected = log_loss(test_df["bucket"], np.tile(rates.to_numpy(), (2, 1)), labels=m.BUCKETS)
+    rates = train_df["bucket"].value_counts(normalize=True).reindex(m._BUCKETS_SORTED).fillna(1e-6)
+    expected = log_loss(test_df["bucket"], np.tile(rates.to_numpy(), (2, 1)), labels=m._BUCKETS_SORTED)
     assert abs(ll - expected) < 1e-9
 
 
