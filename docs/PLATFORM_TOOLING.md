@@ -129,6 +129,55 @@ rather than fabricate a value.
 
 ---
 
+## The build harness, the daemon fleet, and the paper-execution stack
+
+Three deep docs cover the rest of the always-on system this reference only
+summarizes above:
+
+- **[docs/PLATFORM_HARNESS.md](PLATFORM_HARNESS.md)** -- the autonomous build
+  orchestrator (`scripts/platform_harness/`) that turns the backlog into a
+  running loop: probe state, plan a wave of disjoint-file tasks, spawn coding
+  agents, run gate tiers, merge -- with no human required to click continue.
+  Current honest status, pulled live from `build_status.py`: **53/83 backlog
+  tasks done (63.9%)**, zero blocked, zero rejected.
+- **[docs/DAEMONS.md](DAEMONS.md)** -- the always-on daemon fleet: ~41
+  long-lived `ProcSpec`s (`supervisor/stack_specs.py`) that capture lines,
+  reprice live games, settle paper bets, and re-gate candidate signals with
+  no chat session attached. Every daemon is PAPER (`executed=False`), UNITS
+  not `$`.
+- **[docs/PAPER_TRADING_STACK.md](PAPER_TRADING_STACK.md)** -- end to end,
+  a model probability becomes a paper ledger row, gets a realistic simulated
+  fill (`pm_trading/fill_sim.py` VWAP-walks the opposite side's captured
+  Kalshi depth ladder; fail-closed `None`/`no_book` on a stale or missing
+  book rather than dressing an unsimulated mid-fill as a book-fill), and is
+  settled/graded behind a fail-closed greenlight gate. The same doc's Sec. 7
+  covers the cross-venue arb lane (`pm_trading/cross_venue_arb.py` +
+  `run_cross_venue_arb.py`) -- a fee-aware two-way lock scanner that fences
+  soccer out by default (three-way moneyline risk) and stamps both legs of
+  every lock idempotently.
+
+### The id-aware G1 baseline
+
+`scripts/platformkit/run_pytest_baseline.py` is the ONE sanctioned exception
+to the per-file-only pytest rule (P0-H-005): a serial, budgeted (8h hard
+stop), instrumented full-suite run that produces the frozen failing/error-id
+baseline the harness's **G1 gate** (`scripts/platform_harness/gates.py`)
+diffs future runs against. G1 is **id-aware**, not a raw pass/fail count: a
+new failing or erroring test id fails the gate even if the total count is
+unchanged, while a previously-frozen id is excluded so a known-broken test
+doesn't block every future wave. Launched detached, never inline:
+
+```bash
+cd /c/Users/neelj/nba-ai-system && nohup python scripts/platformkit/run_pytest_baseline.py \
+  > logs/pytest_baseline_capture.log 2>&1 &
+```
+
+`tests/platform/test_g1_id_aware.py` verifies the id-aware diff logic against
+synthetic junit-xml fixtures only -- `run_pytest` is monkeypatched and the
+real suite is never invoked from the test itself.
+
+---
+
 ## Verification
 
 The table below lists the CORE robustness invariants. The full test surface is
