@@ -149,6 +149,29 @@ toolkit table and [docs/PROOFS.md](PROOFS.md) for the per-module index.
 
 ---
 
+## 4b. 2026-07 live-run verification + what would falsify this
+
+The section-1 table was re-run live on 2026-07-07 with
+`python -m scripts.platformkit.beat_the_close_scoreboard` against the real corpora (NBA 2025-26
+odds, MLB 2010-2021, soccer 2019-2026, ATP). Every row reproduced the recorded numbers to 4
+decimal places (NBA ML Brier 0.1735/0.1672 n=372, MLB ML 0.2429/0.2390 n=13,992, Soccer O/U-2.5
+0.2465/0.2390 n=7,558, ATP 0.2177/0.2028 n=7,374; NBA/MLB totals RMSE unchanged). No drift since
+last verification — the table below stays current, not stale.
+
+**What would falsify the efficiency conclusion.** This is a preregistered, honest test, not a
+rhetorical shield: if a freshness feed (injury/lineup wire, starting-pitcher confirmation, live
+odds-panel scrape) moved our model's Brier or RMSE below the close's on a BEHIND row — measured
+leak-free, OOS, on the same real outcomes, with the feed timestamped strictly before the close —
+that would be evidence the market has NOT already priced that information, and the "freshness
+gap, not a model defect" framing would be wrong for that row. The natural candidates are the
+BEHIND rows in section 1 (NBA totals, MLB totals, ATP match-win), because those are the rows
+where we already know the direction of the gap; a MATCH row turning into a beat would be the
+stronger and more surprising result. No such feed has been built or tested yet — this is the
+falsification condition to watch, preregistered here so a future positive result cannot be
+read as inevitable in hindsight.
+
+---
+
 ## 5. Reproduce (offline)
 
 ```
