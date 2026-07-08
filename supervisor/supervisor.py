@@ -114,6 +114,11 @@ class Supervisor:
         # silently (distinct from the per-spec backoff that paces ONE relaunch).
         self._restart_epochs: Dict[str, List[float]] = {}
         self._breaker_tripped: Dict[str, bool] = {}
+        # M40 wedge-restart request pickup: offset=None means "not yet observed"
+        # (first read skips the backlog so a (re)boot never replays a request storm);
+        # _restart_req_last caps honored restarts to one per daemon per 30min.
+        self._restart_req_offset: Optional[int] = None
+        self._restart_req_last: Dict[str, float] = {}
         self._beat_thread = BeatThread(self._beat_self)
 
     def _deps_ready(self, spec: ProcSpec) -> bool:
@@ -205,6 +210,9 @@ class Supervisor:
     def _reap_stale_heartbeat(self, st: _ProcState) -> None:
         _restart.reap_stale_heartbeat(self, st)
 
+    def _process_restart_requests(self) -> None:
+        _restart.process_restart_requests(self)
+
     def _beat_self(self) -> None:
         """Stamp the supervisor's OWN liveness (a WEDGED run_forever is alive +
         stale-heartbeat to the watchdog). Never raises."""
@@ -226,6 +234,7 @@ class Supervisor:
                 continue
             self._reap_and_restart(st)
             self._reap_stale_heartbeat(st)
+        self._process_restart_requests()  # M40: honor wedge RESTART_REQUEST rows
         return self.refresh_status()
 
     def run_forever(self, *, max_cycles: Optional[int] = None,

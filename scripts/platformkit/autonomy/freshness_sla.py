@@ -106,6 +106,35 @@ TABLE: Dict[str, SlaEntry] = {
     "m32_mlb_context_autogate": SlaEntry(
         _OPS / "mlb_context_autogate.json", 190000.0),
 
+    # --- RELIABILITY-LANE (2026-07-08): m33-m40 SLA rows. Each cites its
+    # ProcSpec argv --interval + ReadinessSpec fresh_sec (supervisor.stack_specs).
+    # Beat-every-tick daemons whose real output can legitimately idle-skip (a
+    # verdict daemon with INSUFFICIENT_N, an enrichment tick with no live games,
+    # the watermark-triggered autoloop that only re-writes its report on a corpus
+    # change) declare their HEARTBEAT file -- the one artifact that advances every
+    # tick -- as the "doing work" proof; m34 declares its own output doc (written
+    # unconditionally each tick, mirrors m29's self-reference). Thresholds = the
+    # daemon's own ReadinessSpec fresh_sec, verbatim.
+    # m33_http_wedge_reaper: 30s cadence, fresh_sec=90 (stack_specs.py).
+    "m33_http_wedge_reaper": SlaEntry(_HB / "m33_http_wedge_reaper.txt", 90.0),
+    # m34_freshness_sla: 300s cadence, fresh_sec=660; its own output is this file.
+    "m34_freshness_sla": SlaEntry(_OPS / "freshness_sla.json", 660.0),
+    # m35_ingame_tail_multi: 21600s (6h) cadence, fresh_sec=45000 (verdict output
+    # idle-skips on INSUFFICIENT -> heartbeat is the per-tick proof).
+    "m35_ingame_tail_multi": SlaEntry(_HB / "m35_ingame_tail_multi.txt", 45000.0),
+    # m36_ingame_grading_multi: 900s cadence, fresh_sec=2000.
+    "m36_ingame_grading_multi": SlaEntry(_HB / "m36_ingame_grading_multi.txt", 2000.0),
+    # m37_ingame_enrichment: 30s cadence, fresh_sec=90 (output idle-skips when no
+    # live games -> heartbeat is the per-tick proof).
+    "m37_ingame_enrichment": SlaEntry(_HB / "m37_ingame_enrichment.txt", 90.0),
+    # m38_autoloop: 86400s (daily) cadence, fresh_sec=190000; watermark-triggered
+    # report only re-writes on a corpus change -> heartbeat is the per-tick proof.
+    "m38_autoloop": SlaEntry(_HB / "m38_autoloop.txt", 190000.0),
+    # m39_injury_facts_nba: 21600s (6h) cadence, fresh_sec=45000 (mirrors m31).
+    "m39_injury_facts_nba": SlaEntry(_HB / "m39_injury_facts_nba.txt", 45000.0),
+    # m40_wedge_restarter: 300s cadence, fresh_sec=660 (mirrors m29).
+    "m40_wedge_restarter": SlaEntry(_HB / "m40_wedge_restarter.txt", 660.0),
+
     # --- LANE 3 (2026-07-03): outcome-LABEL artifact freshness -----------------
     # These are NOT daemon heartbeats -- they are the realized-score parquets the
     # in-game outcome resolvers (soccer_outcome/ingame_outcome_label/

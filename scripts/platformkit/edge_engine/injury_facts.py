@@ -38,6 +38,7 @@ _BASE = "https://site.api.espn.com/apis/site/v2/sports/{path}/injuries"
 _SPORT_PATHS: Dict[str, str] = {
     "nba": "basketball/nba",
     "mlb": "baseball/mlb",
+    "wnba": "basketball/wnba",
 }
 
 # Explicit normalizations; anything else falls through to the token transform in _norm_status.
@@ -111,10 +112,22 @@ def fetch_injuries(sport: str, http_get: Optional[HttpGet] = None) -> List[Dict[
     return rows_from_payload(payload, sport)
 
 
-def store_injuries(sport: str, http_get: Optional[HttpGet] = None) -> Tuple[int, int]:
-    """Fetch, then append only new rows. Returns (n_fetched, n_added). Idempotent on re-run."""
+def store_injuries(sport: str, http_get: Optional[HttpGet] = None,
+                   *, snapshot_date: Optional[str] = None) -> Tuple[int, int]:
+    """Fetch, then append only new rows. Returns (n_fetched, n_added). Idempotent on re-run.
+
+    When *snapshot_date* (YYYY-MM-DD) is given, stamp it on every row and fold it into
+    the dedupe key -- so the SAME injury re-captured on a NEW day is a fresh AS-OF row
+    (vintage-guarded history) while a same-day re-run still adds 0. Absent snapshot_date
+    keeps the original flat behavior (dedupe on player|status|report_date)."""
     rows = fetch_injuries(sport, http_get=http_get)
-    added = append_new(path_for("injury", sport), rows, _dedupe_key)
+    if snapshot_date:
+        for r in rows:
+            r["snapshot_date"] = snapshot_date
+        keyfn = lambda r: (r["player_name"], r["status"], r["snapshot_date"])  # noqa: E731
+    else:
+        keyfn = _dedupe_key
+    added = append_new(path_for("injury", sport), rows, keyfn)
     return len(rows), added
 
 

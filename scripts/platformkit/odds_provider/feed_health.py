@@ -33,6 +33,13 @@ _OUT_PATH = _REPO / "data" / "frontend" / "ops" / "feed_health.json"
 
 GREEN = "GREEN"
 RED = "RED"
+# A schema-drift status that is PERSISTENT enough to warrant attention but is NOT a
+# scraper outage -- it lives ONLY inside the schema_drift overlay and never flips the
+# top-level feed_health "overall"/row status to RED, so consumers that only branch on
+# 'red' keep their GREEN semantics unchanged.
+SOFT_RED = "soft_red"
+_DRIFT_COUNTER_PATH = _REPO / "data" / "cache" / "schema_drift_counters.json"
+_DRIFT_THRESHOLD = 3   # consecutive drifted scans with a TYPE_CHANGE before soft_red
 
 # "wnba"/"npb" added 2026-07-03 (paper enablement sweep, LANE 5): every provider's
 # fetch() degrades cleanly to an "unsupported sport" UNAVAILABLE for a sport it does
@@ -137,9 +144,67 @@ def probe_one(provider: Any, sport: str) -> Dict[str, Any]:
     return row
 
 
-def _schema_drift_notes(sports: Sequence[str]) -> Dict[str, Any]:
+def _load_drift_counters(path: Path) -> Dict[str, int]:
+    """Best-effort read of the persistent per-(sport|provider) drift counter."""
+    try:
+        if path.exists():
+            d = json.loads(path.read_text(encoding="ascii"))
+            if isinstance(d, dict):
+                return {k: int(v) for k, v in d.items() if isinstance(v, (int, float))}
+    except Exception:  # noqa: BLE001
+        pass
+    return {}
+
+
+def _save_drift_counters(counters: Dict[str, int], path: Path) -> None:
+    """Atomically persist the drift counter (tmp + os.replace). Never raises."""
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        tmp = path.with_suffix(path.suffix + ".tmp")
+        tmp.write_text(json.dumps(counters, ensure_ascii=True, indent=2, sort_keys=True),
+                       encoding="ascii")
+        os.replace(str(tmp), str(path))
+    except Exception:  # noqa: BLE001
+        pass
+
+
+def promote_persistent_drift(notes: Dict[str, Any], *,
+                             counter_path: Optional[Path] = None,
+                             threshold: int = _DRIFT_THRESHOLD) -> Dict[str, Any]:
+    """Stamp status 'soft_red' on any (sport, provider) whose type_changes have
+    persisted for >=*threshold* CONSECUTIVE drifted scans, backed by a small
+    persistent counter. A scan with NO type_change for a pair resets its counter.
+    soft_red lives ONLY in this schema_drift overlay -- it never flips the top-level
+    feed_health overall/row status to RED (GREEN semantics preserved for consumers
+    that only check 'red'). Mutates + returns *notes*. Never raises."""
+    path = counter_path if counter_path is not None else _DRIFT_COUNTER_PATH
+    try:
+        counters = _load_drift_counters(path)
+        seen: set = set()
+        for sport, provs in (notes or {}).items():
+            for provider, info in (provs or {}).items():
+                if not isinstance(info, dict) or not info.get("type_changes"):
+                    continue
+                key = "%s|%s" % (sport, provider)
+                counters[key] = counters.get(key, 0) + 1
+                seen.add(key)
+                if counters[key] >= threshold:
+                    info["status"] = SOFT_RED
+                    info["consecutive_type_change_drifts"] = counters[key]
+        for key in list(counters):        # reset any pair not drifting-with-type-change now
+            if key not in seen:
+                counters[key] = 0
+        _save_drift_counters(counters, path)
+    except Exception:  # noqa: BLE001 -- promotion must never sink feed_health
+        pass
+    return notes
+
+
+def _schema_drift_notes(sports: Sequence[str], *,
+                        counter_path: Optional[Path] = None) -> Dict[str, Any]:
     """Best-effort schema-drift overlay per sport. Never raises; a sport with
-    no local capture file yet reports {} for that sport (honest, not RED)."""
+    no local capture file yet reports {} for that sport (honest, not RED).
+    Persistent type_changes (>=3 consecutive drifted scans) promote to soft_red."""
     notes: Dict[str, Any] = {}
     for sport in sports:
         try:
@@ -150,7 +215,7 @@ def _schema_drift_notes(sports: Sequence[str]) -> Dict[str, Any]:
                 notes[sport] = drifted
         except Exception:  # noqa: BLE001 -- overlay must never sink feed_health
             continue
-    return notes
+    return promote_persistent_drift(notes, counter_path=counter_path)
 
 
 def scan(
@@ -296,5 +361,6 @@ if __name__ == "__main__":
     raise SystemExit(main())
 
 
-__all__ = ["GREEN", "RED", "DEFAULT_SPORTS", "PROVIDER_HOSTS", "CAPTURE_ONLY_SPORTS",
-           "probe_one", "scan", "heal", "write_status", "load_status", "render"]
+__all__ = ["GREEN", "RED", "SOFT_RED", "DEFAULT_SPORTS", "PROVIDER_HOSTS",
+           "CAPTURE_ONLY_SPORTS", "probe_one", "scan", "heal", "write_status",
+           "load_status", "render", "promote_persistent_drift"]

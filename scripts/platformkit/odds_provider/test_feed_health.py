@@ -291,3 +291,41 @@ def test_scan_npb_real_fault_still_flips_overall_red():
     doc = scan(("npb",), providers=[prov])
     assert doc["overall"] == RED
     assert doc["n_red"] == 1
+
+
+# --------------------------------------------------------------------------- #
+# schema-drift soft_red counter (2026-07-08): >=3 consecutive type_change
+# drifts promote to soft_red WITHOUT flipping the top-level overall to RED.
+# --------------------------------------------------------------------------- #
+def _drift_note():
+    return {"nba": {"pinnacle": {"status": "drift", "type_changes": ["a.b"],
+                                 "missing_keys": [], "new_keys": []}}}
+
+
+def test_promote_persistent_drift_soft_red_after_threshold(tmp_path):
+    counter = tmp_path / "drift_counters.json"
+    n1 = _feed_health.promote_persistent_drift(_drift_note(), counter_path=counter)
+    assert n1["nba"]["pinnacle"]["status"] == "drift"
+    n2 = _feed_health.promote_persistent_drift(_drift_note(), counter_path=counter)
+    assert n2["nba"]["pinnacle"]["status"] == "drift"
+    n3 = _feed_health.promote_persistent_drift(_drift_note(), counter_path=counter)
+    assert n3["nba"]["pinnacle"]["status"] == _feed_health.SOFT_RED
+    assert n3["nba"]["pinnacle"]["consecutive_type_change_drifts"] == 3
+
+
+def test_promote_persistent_drift_resets_when_type_change_clears(tmp_path):
+    counter = tmp_path / "drift_counters.json"
+    _feed_health.promote_persistent_drift(_drift_note(), counter_path=counter)
+    _feed_health.promote_persistent_drift(_drift_note(), counter_path=counter)
+    # a drift with NO type_change (only missing_keys) resets the persistence counter
+    cleared = {"nba": {"pinnacle": {"status": "drift", "type_changes": [],
+                                    "missing_keys": ["x"], "new_keys": []}}}
+    _feed_health.promote_persistent_drift(cleared, counter_path=counter)
+    import json as _json
+    counters = _json.loads(counter.read_text(encoding="ascii"))
+    assert counters["nba|pinnacle"] == 0
+
+
+def test_soft_red_is_distinct_from_red_never_flips_overall():
+    # soft_red is its own token in the overlay only; scan()'s overall stays keyed on RED.
+    assert _feed_health.SOFT_RED != _feed_health.RED
