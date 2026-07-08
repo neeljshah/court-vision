@@ -41,7 +41,7 @@ import os
 import time
 import urllib.error
 import urllib.request
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
@@ -102,8 +102,13 @@ def _http_get_json(url: str, timeout: float = 15.0) -> Optional[Any]:
 def list_live_game_pks(date_str: Optional[str] = None,
                         fetch_fn: FetchFn = _http_get_json) -> List[Dict[str, Any]]:
     """Return [{game_pk, status, away, home}, ...] for games "In Progress" on date_str
-    (default: today, UTC). Uses the schedule endpoint; never raises."""
-    date_str = date_str or datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    (default: the MLB "baseball date" -- UTC minus 10h, so the slate date rolls at
+    ~5-6am ET after the last west-coast game, NOT at 00:00 UTC. The old today-UTC
+    default went blind every evening at 7-8pm CT: past midnight UTC it queried
+    tomorrow's all-Preview slate and found 0 live games while 12 were in progress).
+    Uses the schedule endpoint; never raises."""
+    date_str = date_str or (
+        datetime.now(timezone.utc) - timedelta(hours=10)).strftime("%Y-%m-%d")
     data = fetch_fn(_SCHEDULE_URL.format(date=date_str))
     if not isinstance(data, dict):
         return []
