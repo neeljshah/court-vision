@@ -45,7 +45,7 @@ def assemble(home: str, away: str, date: str) -> Dict[str, Any]:
         "elo_win_prob": elo,
         "rest_and_schedule": sections_team.rest_and_schedule(games_df, home, away, date),
         "teams": {home: team_block(home, home_id), away: team_block(away, away_id)},
-        "concession_matchup": sections_intel.concession_matchup(home, away, home_id, away_id),
+        "concession_matchup": sections_intel.concession_matchup(home, away, home_id, away_id, date),
         "honesty_labels": {
             "gravity": honesty.label_for_section("gravity"),
             "lineup_synergy": honesty.label_for_section("lineup_spacing"),

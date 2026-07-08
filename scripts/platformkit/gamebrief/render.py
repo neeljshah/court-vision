@@ -11,6 +11,14 @@ _RULE = "=" * 100
 _SUB = "-" * 100
 
 
+def _ordinal(n: Any) -> str:
+    if n is None:
+        return "?"
+    n = int(n)
+    suffix = "th" if 10 <= n % 100 <= 20 else {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+    return f"{n}{suffix}"
+
+
 def _ascii(s: str) -> str:
     """Fold to ASCII (e.g. Jokic for Jokic-with-diacritic) -- this repo's console
     is cp1252 and must never be handed a raw non-ASCII codepoint."""
@@ -99,13 +107,20 @@ def _concession_section(cm: Dict[str, Any]) -> str:
             f"(rank {side['overall_efg_allowed_rank_worst_to_best']}/{cm['league_size']} worst-to-best), "
             f"rim eFG {side['rim_efg_allowed']:.3f} "
             f"(rank {side['rim_efg_allowed_rank_worst_to_best']}/{cm['league_size']})")
-    for team, diet in cm.get("shot_diet", {}).items():
-        if diet["status"] != "ok":
-            lines.append(f"  {team} shot diet: not available -- {diet['reason']}")
+    for team in cm["sides"]:
+        opp = next((t for t in cm["sides"] if t != team), None)
+        diet = cm.get("shot_diet", {}).get(team, {})
+        if diet.get("status") != "ok":
+            lines.append(f"  {team} shot diet: not available -- {diet.get('reason', 'no reason given')}")
             continue
         lines.append(
-            f"  {team} shot diet ({diet['n_games']} games sampled): "
-            f"rim {diet['rim_share']:.1%}, mid {diet['mid_share']:.1%}, 3pt {diet['fg3_share']:.1%}")
+            f"  {team} takes {diet['rim_share']:.1%} of shots at rim "
+            f"({_ordinal(diet['rim_share_rank_most_to_least'])}-most, season-to-date as-of); "
+            f"{opp} concedes rank-{diet['opp_rim_efg_allowed_rank_worst_to_best'] or '?'} rim eFG")
+        lines.append(
+            f"  {team} takes {diet['fg3_share']:.1%} of shots from 3 "
+            f"({_ordinal(diet['fg3_share_rank_most_to_least'])}-most, season-to-date as-of); "
+            f"{opp} concedes rank-{diet['opp_fg3_efg_allowed_rank_worst_to_best'] or '?'} above-the-break-3 eFG")
     return "\n".join(lines)
 
 

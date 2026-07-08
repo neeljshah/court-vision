@@ -108,11 +108,47 @@ def test_concession_matchup_rank_and_diet_gap(monkeypatch):
         "rim_share_allowed": [0.25, 0.30], "above_break_3_efg_allowed": [0.35, 0.36],
     })
     monkeypatch.setattr(sections_intel.sources, "concession", lambda: df)
-    monkeypatch.setattr(sections_intel.sources, "team_game_zone_sample", lambda: None)
-    out = sections_intel.concession_matchup("OKC", "DEN", 1610612760, 1610612743)
+    monkeypatch.setattr(sections_intel.sources, "shot_diet", lambda: None)
+    out = sections_intel.concession_matchup("OKC", "DEN", 1610612760, 1610612743, "2026-02-27")
     assert out["status"] == "ok"
     assert out["sides"]["DEN"]["overall_efg_allowed_rank_worst_to_best"] == 1  # highest allowed = worst
-    assert out["shot_diet"]["OKC"]["status"] == "not_available"
+    assert out["shot_diet"]["OKC"]["status"] == "not_available"  # no shot_diet parquet -> honest gap
+
+
+def test_concession_matchup_diet_ranks_and_asof_leak_free(monkeypatch):
+    conc = pd.DataFrame({
+        "defense_team_id": [1610612760, 1610612743],
+        "overall_efg_allowed": [0.50, 0.55], "rim_efg_allowed": [0.55, 0.60],
+        "rim_share_allowed": [0.25, 0.30], "above_break_3_efg_allowed": [0.35, 0.36],
+    })
+    monkeypatch.setattr(sections_intel.sources, "concession", lambda: conc)
+
+    zone_cols = {f"{z}_fga": 0 for z in ["rim", "paint", "mid", "corner3", "above_break_3"]}
+    diet = pd.DataFrame([
+        # OKC (1610612760): heavy rim diet, 3 prior games -- clears the floor.
+        dict(zone_cols, game_id="g1", date=pd.Timestamp("2026-02-20"), team_id=1610612760,
+             total_fga=40, rim_fga=20, corner3_fga=5, above_break_3_fga=10),
+        dict(zone_cols, game_id="g2", date=pd.Timestamp("2026-02-22"), team_id=1610612760,
+             total_fga=40, rim_fga=20, corner3_fga=5, above_break_3_fga=10),
+        dict(zone_cols, game_id="g3", date=pd.Timestamp("2026-02-24"), team_id=1610612760,
+             total_fga=40, rim_fga=20, corner3_fga=5, above_break_3_fga=10),
+        # On the target date itself -- must be EXCLUDED from OKC's as-of diet.
+        dict(zone_cols, game_id="g_target", date=pd.Timestamp("2026-02-27"), team_id=1610612760,
+             total_fga=40, rim_fga=0, corner3_fga=0, above_break_3_fga=0),
+        # DEN (1610612743): only 1 prior game -- below the 3-game honesty floor.
+        dict(zone_cols, game_id="g4", date=pd.Timestamp("2026-02-20"), team_id=1610612743,
+             total_fga=40, rim_fga=10, corner3_fga=10, above_break_3_fga=10),
+    ])
+    monkeypatch.setattr(sections_intel.sources, "shot_diet", lambda: diet)
+
+    out = sections_intel.concession_matchup("OKC", "DEN", 1610612760, 1610612743, "2026-02-27")
+    okc = out["shot_diet"]["OKC"]
+    assert okc["status"] == "ok"
+    assert okc["n_games"] == 3  # target-date game excluded (leak-free)
+    assert abs(okc["rim_share"] - 0.5) < 1e-9  # 20/40, not diluted by the excluded 0-rim game
+    assert okc["rim_share_rank_most_to_least"] == 1  # OKC's rim share (0.5) beats DEN's (0.25)
+    assert okc["opp_rim_efg_allowed_rank_worst_to_best"] == out["sides"]["DEN"]["rim_efg_allowed_rank_worst_to_best"]
+    assert out["shot_diet"]["DEN"]["status"] == "not_available"  # below the 3-game floor
 
 
 if __name__ == "__main__":

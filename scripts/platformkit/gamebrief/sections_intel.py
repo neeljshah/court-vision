@@ -7,10 +7,12 @@ from typing import Any, Dict, List, Optional
 
 import pandas as pd
 
+from domains.basketball_nba.composition.zone_geometry import ZONES
 from scripts.platformkit.gamebrief import sources, team_ids
 
 _NA = {"status": "not_available"}
 _MIN_LINEUP_MIN = 24.0  # >=~half a game of shared minutes before citing a lineup
+_MIN_DIET_GAMES = 3  # honesty floor before citing a season-to-date shot-diet share
 
 
 def gravity_leaders(team_id: Optional[int], top_n: int = 3) -> Dict:
@@ -76,13 +78,36 @@ def _rank_desc(df: pd.DataFrame, col: str, team_id: int) -> Optional[int]:
     return None if len(hit) == 0 else int(hit[0]) + 1
 
 
-def concession_matchup(home: str, away: str, home_id: Optional[int], away_id: Optional[int]) -> Dict:
+def _diet_league_asof(diet_df: pd.DataFrame, asof_date: Any) -> pd.DataFrame:
+    """League-wide, fga-weighted zone shares as of strictly-prior games only
+    (leak-free, same strictly-prior-to-date pattern as sections_team.top3_fga)
+    -- one row per team_id, fga summed first then divided so a team's shares
+    are weighted by attempts, not averaged game-to-game."""
+    d = diet_df[diet_df["date"] < pd.Timestamp(asof_date)]
+    fga_cols = [f"{z}_fga" for z in ZONES] + ["total_fga"]
+    per_team = d.groupby("team_id")[fga_cols].sum().reset_index()
+    per_team["n_games"] = d.groupby("team_id").size().reindex(per_team["team_id"]).to_numpy()
+    for z in ZONES:
+        per_team[f"{z}_share"] = per_team[f"{z}_fga"] / per_team["total_fga"].replace(0, pd.NA)
+    per_team["fg3_share"] = per_team["corner3_share"] + per_team["above_break_3_share"]
+    return per_team
+
+
+def _diet_rank(league: pd.DataFrame, col: str, team_id: int) -> Optional[int]:
+    """1 = highest share in the league ('most') for `col`."""
+    ranked = league.sort_values(col, ascending=False).reset_index(drop=True)
+    hit = ranked.index[ranked["team_id"] == team_id]
+    return None if len(hit) == 0 else int(hit[0]) + 1
+
+
+def concession_matchup(home: str, away: str, home_id: Optional[int], away_id: Optional[int],
+                        asof_date: Any) -> Dict:
     df = sources.concession()
     if df is None:
         return dict(_NA, reason="concession parquet not found")
     n = len(df)
     out: Dict[str, Any] = {"status": "ok", "league_size": n, "sides": {}}
-    for label, team, tid in ((home, home, home_id), (away, away, away_id)):
+    for team, tid in ((home, home_id), (away, away_id)):
         row = _concession_row(tid)
         if row is None:
             out["sides"][team] = {"status": "not_available", "reason": "no concession row for this team_id"}
@@ -95,23 +120,35 @@ def concession_matchup(home: str, away: str, home_id: Optional[int], away_id: Op
             "rim_efg_allowed_rank_worst_to_best": _rank_desc(df, "rim_efg_allowed", tid),
             "rim_share_allowed": round(float(row["rim_share_allowed"]), 4),
             "above_break_3_efg_allowed": round(float(row["above_break_3_efg_allowed"]), 4),
+            "above_break_3_efg_allowed_rank_worst_to_best": _rank_desc(df, "above_break_3_efg_allowed", tid),
         }
-    # Shot-diet half of the matchup: only available where the narrow team_game
-    # zone sample happens to cover this team (verified: NYK/SAS only) -- an
-    # honest, explicit gap rather than a fabricated league-wide diet number.
-    zone = sources.team_game_zone_sample()
+
+    # Offensive shot-diet half of the matchup: league-wide, game-dated,
+    # strictly-as-of asof_date (shot_diet.py) -- each team's own diet share
+    # cross-referenced against the OPPONENT's concession rank for that zone,
+    # e.g. "OKC takes 34% of shots at rim (5th-most); DEN concedes rank-4 rim eFG".
+    diet_df = sources.shot_diet()
+    league = _diet_league_asof(diet_df, asof_date) if diet_df is not None else None
     diets: Dict[str, Any] = {}
-    for team in (home, away):
-        if zone is None or team not in set(zone["team"].unique()):
-            diets[team] = {"status": "not_available",
-                           "reason": "shot-zone attempt data only covers a narrow team_game sample"}
+    for team, tid, opp_team in ((home, home_id, away), (away, away_id, home)):
+        if league is None or tid is None or tid not in set(league["team_id"]):
+            diets[team] = dict(_NA, reason="shot_diet parquet missing or no as-of games for this team")
             continue
-        d = zone[zone["team"] == team]
-        fga = d["fga"].sum()
-        diets[team] = {"status": "ok", "n_games": int(len(d)),
-                       "rim_share": round(float(d["rim_fga"].sum() / fga), 4) if fga else None,
-                       "mid_share": round(float(d["mid_fga"].sum() / fga), 4) if fga else None,
-                       "fg3_share": round(float(d["fg3a"].sum() / fga), 4) if fga else None}
+        row = league[league["team_id"] == tid].iloc[0]
+        if row["n_games"] < _MIN_DIET_GAMES:
+            diets[team] = dict(_NA, reason=f"fewer than {_MIN_DIET_GAMES} as-of games for this team")
+            continue
+        opp_side = out["sides"].get(opp_team, {})
+        opp_ok = opp_side.get("status") == "ok"
+        diets[team] = {
+            "status": "ok", "n_games": int(row["n_games"]),
+            "rim_share": round(float(row["rim_share"]), 4),
+            "rim_share_rank_most_to_least": _diet_rank(league, "rim_share", tid),
+            "opp_rim_efg_allowed_rank_worst_to_best": opp_side.get("rim_efg_allowed_rank_worst_to_best") if opp_ok else None,
+            "fg3_share": round(float(row["fg3_share"]), 4),
+            "fg3_share_rank_most_to_least": _diet_rank(league, "fg3_share", tid),
+            "opp_fg3_efg_allowed_rank_worst_to_best": opp_side.get("above_break_3_efg_allowed_rank_worst_to_best") if opp_ok else None,
+        }
     out["shot_diet"] = diets
     return out
 
