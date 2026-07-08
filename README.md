@@ -40,6 +40,11 @@ thorough read is a multi-day tour.
   (13-chapter end-to-end walkthrough)
 - **How AI built it?** -> [docs/BUILT_WITH_CLAUDE.md](docs/BUILT_WITH_CLAUDE.md)
 
+**Deep-dive layer (new)** -> [DAEMONS](docs/DAEMONS.md) - [PLATFORM_HARNESS](docs/PLATFORM_HARNESS.md) -
+[PAPER_TRADING_STACK](docs/PAPER_TRADING_STACK.md) - [INGEST_PIPELINES](docs/INGEST_PIPELINES.md) -
+[DATA_DEPTH](docs/DATA_DEPTH.md). The system's depth is now documented subsystem by subsystem, not
+just at the funnel-stage level above.
+
 ---
 
 ## How the whole brain works together
