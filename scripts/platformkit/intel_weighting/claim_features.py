@@ -14,6 +14,15 @@ prior_season_claim_walkforward_v1). An unlabeled window ('current',
 ponytail: player-entity families are returned too, but they carry no
 team/minutes in the payload, so the gate maps only entity_key=='team'
 families. Upgrade path = roster+minutes join to aggregate players to teams.
+
+PAIR-KEYED families (entity_key is a list, e.g. ['player_id','team_id'] for
+nba_on_off_claims/nba_gravity_proxy_claims, ['team_id','lineup_key'] for
+nba_lineup_spacing_claims): a bare dict.get(list) is a TypeError (unhashable
+list), so these are resolved explicitly. If the pair contains 'team_id' the
+ranked metric is averaged across that team's pair entries per (metric,
+window) and folded into the ordinary entity_key=='team' path. Otherwise the
+family is marked 'pair_no_team:<keys>' -- caught by relevance_gate's
+existing catch-all dispatch as a clean UNTESTABLE, never a raise.
 """
 from __future__ import annotations
 
@@ -56,12 +65,44 @@ def window_to_season(window: Optional[str], style: str = "split") -> Optional[st
     return f"{m.group(1)}-{m.group(2)}"
 
 
+def _resolve_entity_key(ekey) -> str:
+    """A single-string entity_key passes through unchanged. A pair-list
+    entity_key (e.g. ['player_id','team_id']) resolves to 'team' if it names
+    team_id (aggregation handled by _team_paired_values below), else to a
+    'pair_no_team:<keys>' marker -- a plain string, so it stays hashable for
+    every downstream `entity_key == ...` / `entity_key in {...}` check."""
+    if isinstance(ekey, list):
+        return "team" if "team_id" in ekey else f"pair_no_team:{','.join(map(str, ekey))}"
+    return str(ekey)
+
+
+def _team_paired_values(ranking) -> Dict[str, float]:
+    """Pair-keyed ranking (entity_key contains 'team_id'): mean the ranked
+    metric's value across all pair entries sharing a team_id, for this one
+    (metric, window) claim. Works whether the OTHER pair key is a player
+    (nba_on_off/gravity_proxy: mean over that team's rostered players) or a
+    lineup (nba_lineup_spacing: mean over that team's tracked lineups)."""
+    sums: Dict[str, float] = {}
+    counts: Dict[str, int] = {}
+    for r in ranking:
+        team = r.get("team_id")
+        val = r.get("value")
+        if team is None or val is None:
+            continue
+        key = str(team)
+        sums[key] = sums.get(key, 0.0) + float(val)
+        counts[key] = counts.get(key, 0) + 1
+    return {k: sums[k] / counts[k] for k in sums}
+
+
 def load_family_features(family: str, claims_dir: Optional[Path] = None) -> Tuple[str, FeatureTable]:
     """Read `<family>.jsonl` -> (entity_key, {(metric, window): {entity: value}}).
 
     entity_key is taken from the first well-formed claim (families are
-    homogeneous). Malformed lines are skipped (the store's own validation is
-    the source of truth for VERIFIED; here we only need the numbers)."""
+    homogeneous) and always resolved to a plain string (see
+    _resolve_entity_key) -- never the raw list a pair-keyed family carries.
+    Malformed lines are skipped (the store's own validation is the source of
+    truth for VERIFIED; here we only need the numbers)."""
     claims_dir = claims_dir or CLAIMS_DIR
     path = claims_dir / f"{family}.jsonl"
     if not path.exists():
@@ -81,19 +122,24 @@ def load_family_features(family: str, claims_dir: Optional[Path] = None) -> Tupl
             cr = row.get("criteria", {})
             ekey = cr.get("entity_key")
             if entity_key is None and ekey:
-                entity_key = ekey   # capture even if this claim lacks a window
+                entity_key = _resolve_entity_key(ekey)   # capture even if this claim lacks a window
             metric = cr.get("metric")
             window = cr.get("window")
             ranking = row.get("ranking", [])
             if not (ekey and metric and window and ranking):
                 continue
-            values: Dict[str, float] = {}
-            for r in ranking:
-                ent = r.get(ekey)
-                val = r.get("value")
-                if ent is None or val is None:
-                    continue
-                values[str(ent)] = float(val)
+            if isinstance(ekey, list):
+                if "team_id" not in ekey:
+                    continue   # pair-keyed, no team mapping -- clean UNTESTABLE downstream, not a raise
+                values = _team_paired_values(ranking)
+            else:
+                values = {}
+                for r in ranking:
+                    ent = r.get(ekey)
+                    val = r.get("value")
+                    if ent is None or val is None:
+                        continue
+                    values[str(ent)] = float(val)
             if values:
                 table[(metric, window)] = values
     return (entity_key or "unknown"), table
