@@ -1,0 +1,183 @@
+"""relevance_gate -- does conditioning on a claim feature improve OOS Brier?
+
+For one (sport, family, metric):
+  base model      = leak-free walk-forward Elo (reuse GenericRatingModel),
+                    recalibrated with a fitted INTERCEPT on the train prefix.
+  candidate model = same base logit + intercept + beta * standardized claim
+                    feature-diff (home_z - away_z), beta fit on the SAME train.
+Base and candidate differ ONLY by the feature term (comparability rail): same
+games, same folds, same optimizer. Claim feature is the PRIOR season's
+season-end value -- known before the eval season starts, so no leak.
+
+Walk-forward: eval-season games ordered by date, split by time (train prefix
+fits {intercept[, beta]}, test suffix is scored). ponytail: single temporal
+split, not a per-game expanding refit -- beta is one scalar, and refitting it
+1156 times buys nothing here; upgrade to expanding refit if beta drifts.
+
+Truncation: delta recomputed after dropping the last 20% of the test window.
+"Beyond noise" = cluster-robust Diebold-Mariano on the paired squared-error
+diffs (reuse eval_gate.dm_test), clustered by game_id.
+
+NO dollar/edge language: Brier / log-loss deltas only.
+"""
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Dict, List, Optional
+
+import numpy as np
+import pandas as pd
+from scipy.optimize import minimize
+
+from scripts.platformkit.eval_gate.dm_test import diebold_mariano
+from scripts.platformkit.generic_rating import GenericRatingModel, _SPORT_HFA
+from scripts.platformkit.intel_weighting.claim_features import (
+    load_family_features,
+    prior_season_metrics,
+)
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
+_GAMES = {
+    "nba": ("data/domains/basketball_nba/games.parquet", "home_win"),
+    "mlb": ("data/domains/mlb/games.parquet", "target_home_win"),
+}
+_MIN_TEST = 60          # too few OOS games -> UNTESTABLE
+_TRAIN_FRAC = 0.6       # temporal train prefix within the eval season
+_DM_ALPHA = 0.05        # two-tailed p for "beyond noise"
+METHOD = "prior_season_claim_walkforward_v1"
+
+
+@dataclass
+class GateResult:
+    family: str
+    sport: str
+    metric: str
+    entity_mapping: str
+    n_games: int
+    brier_base: float
+    brier_cond: float
+    delta: float            # brier_base - brier_cond  (>0 = conditioning helps)
+    delta_trunc80: float
+    dm_p: float
+    verdict: str            # MATTERS | NULL | UNTESTABLE
+    caveats: List[str] = field(default_factory=list)
+
+
+def _brier(p: np.ndarray, y: np.ndarray) -> float:
+    return float(np.mean((p - y) ** 2))
+
+
+def _sigmoid(z: np.ndarray) -> np.ndarray:
+    return 1.0 / (1.0 + np.exp(-np.clip(z, -30, 30)))
+
+
+def _fit(base_logit: np.ndarray, design: np.ndarray, y: np.ndarray) -> np.ndarray:
+    """Fit theta minimizing log-loss of sigmoid(base_logit + design @ theta)."""
+    def nll(theta: np.ndarray) -> float:
+        p = _sigmoid(base_logit + design @ theta)
+        p = np.clip(p, 1e-12, 1 - 1e-12)
+        return float(-np.mean(y * np.log(p) + (1 - y) * np.log(1 - p)))
+    res = minimize(nll, np.zeros(design.shape[1]), method="BFGS")
+    return res.x
+
+
+def _base_probs(sport: str, games_df: pd.DataFrame) -> np.ndarray:
+    """Leak-free walk-forward Elo home-win prob for every row, in df order."""
+    win_col = _GAMES[sport][1]
+    games = [
+        {"home": str(h), "away": str(a), "season": str(s), "home_win": float(w)}
+        for h, a, s, w in zip(
+            games_df["home_team"], games_df["away_team"],
+            games_df["season"], games_df[win_col])
+    ]
+    mdl = GenericRatingModel(hfa=_SPORT_HFA.get(sport, 65.0))
+    return mdl.walkforward(games)
+
+
+def _zmap(values: Dict[str, float]) -> Dict[str, float]:
+    v = np.array(list(values.values()), dtype=float)
+    mu, sd = float(v.mean()), float(v.std())
+    if sd == 0:
+        return {k: 0.0 for k in values}
+    return {k: (val - mu) / sd for k, val in values.items()}
+
+
+def run_gate(sport: str, family: str, metric: str,
+             feat: Dict[str, float], games_df: pd.DataFrame,
+             base_logit_all: np.ndarray, eval_mask: np.ndarray,
+             entity_mapping: str) -> GateResult:
+    """Score one (family, metric). games_df/base_logit_all cover ALL seasons;
+    eval_mask selects the eval-season rows (date-ordered)."""
+    caveats: List[str] = []
+    z = _zmap(feat)
+    win_col = _GAMES[sport][1]
+    ev = games_df[eval_mask].reset_index(drop=True)
+    base_logit = base_logit_all[eval_mask]
+    y = ev[win_col].to_numpy(dtype=float)
+    gid = ev["game_id"].astype(str).to_numpy() if "game_id" in ev.columns \
+        else ev.get("event_id", pd.Series(range(len(ev)))).astype(str).to_numpy()
+
+    fdiff = np.array([z.get(str(h), 0.0) - z.get(str(a), 0.0)
+                      for h, a in zip(ev["home_team"], ev["away_team"])], dtype=float)
+    covered = sum(1 for h, a in zip(ev["home_team"], ev["away_team"])
+                  if str(h) in z and str(a) in z)
+    if covered < len(ev):
+        caveats.append(f"{len(ev) - covered}/{len(ev)} games had an entity missing from the claim (fdiff=0)")
+
+    n = len(ev)
+    n_tr = int(n * _TRAIN_FRAC)
+    n_te = n - n_tr
+    if n_te < _MIN_TEST:
+        return GateResult(family, sport, metric, entity_mapping, n, 0.0, 0.0, 0.0,
+                          0.0, 1.0, "UNTESTABLE", caveats + [f"only {n_te} OOS games"])
+
+    tr, te = slice(0, n_tr), slice(n_tr, n)
+    # base: intercept only. cand: intercept + feature. Same optimizer/train/test.
+    a_base = _fit(base_logit[tr], np.ones((n_tr, 1)), y[tr])
+    theta = _fit(base_logit[tr], np.column_stack([np.ones(n_tr), fdiff[tr]]), y[tr])
+
+    p_base = _sigmoid(base_logit[te] + a_base[0])
+    p_cond = _sigmoid(base_logit[te] + theta[0] + theta[1] * fdiff[te])
+    yb = y[te]
+    brier_base, brier_cond = _brier(p_base, yb), _brier(p_cond, yb)
+    delta = brier_base - brier_cond
+
+    d = (p_base - yb) ** 2 - (p_cond - yb) ** 2   # >0 => cond better
+    dm = diebold_mariano(d, gid[te])
+
+    cut = int(n_te * 0.8)
+    delta_t80 = _brier(p_base[:cut], yb[:cut]) - _brier(p_cond[:cut], yb[:cut])
+
+    if delta > 0 and dm.p_value < _DM_ALPHA and delta_t80 > 0:
+        verdict = "MATTERS"
+    else:
+        verdict = "NULL"
+    return GateResult(family, sport, metric, entity_mapping, n,
+                      round(brier_base, 6), round(brier_cond, 6), round(delta, 6),
+                      round(delta_t80, 6), round(dm.p_value, 4), verdict, caveats)
+
+
+def run_family(sport: str, family: str,
+               claims_dir: Optional[Path] = None) -> List[GateResult]:
+    """All prior-season team-mappable metrics of one family."""
+    entity_key, table = load_family_features(family, claims_dir)
+    games_df = pd.read_parquet(REPO_ROOT / _GAMES[sport][0]).sort_values("date").reset_index(drop=True)
+    eval_season = sorted(games_df["season"].astype(str).unique())[-1]
+
+    if entity_key != "team":
+        return [GateResult(family, sport, "-", f"{entity_key}->none", len(games_df),
+                           0.0, 0.0, 0.0, 0.0, 1.0, "UNTESTABLE",
+                           [f"entity_key={entity_key}: no team mapping in payload "
+                            "(ponytail: roster+minutes join is the upgrade path)"])]
+    pri = prior_season_metrics(table, eval_season)
+    if not pri:
+        return [GateResult(family, sport, "-", "team", len(games_df), 0.0, 0.0, 0.0,
+                           0.0, 1.0, "UNTESTABLE",
+                           [f"no prior-season ({eval_season} minus 1) plain window"])]
+
+    pb = np.clip(_base_probs(sport, games_df), 1e-9, 1 - 1e-9)
+    base_logit_all = np.log(pb / (1 - pb))
+    eval_mask = (games_df["season"].astype(str) == eval_season).to_numpy()
+    return [run_gate(sport, family, metric, feat, games_df, base_logit_all, eval_mask, "team")
+            for metric, feat in sorted(pri.items())]
