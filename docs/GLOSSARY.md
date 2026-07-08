@@ -131,6 +131,56 @@
   homography -> Kalman + Hungarian -> OSNet re-ID -> EasyOCR -> EventDetector) the platform grew out
   of. Engineering history; its features carry ~0 measured predictive value today. See [CV_TRACKING](CV_TRACKING.md).
 
+## Platform / execution vocabulary (2026-07)
+
+- **Baseball date** -- the MLB day boundary the GUMBO live poller schedules against: UTC minus 10
+  hours, not calendar-UTC midnight. A sport's "day" is a domain concept; defaulting to raw UTC
+  goes blind every evening once the date rolls past midnight UTC while West Coast games are still
+  live. See [INGEST_PIPELINES](INGEST_PIPELINES.md).
+- **Census (data census)** -- `data/frontend/ops/data_census.json`, a machine-readable,
+  regenerate-on-demand inventory of every derivable data family per sport (61 across NBA / MLB /
+  soccer / soccer_intl / tennis / WNBA / NPB / KBO / cross-sport-market), each tagged BUILT /
+  PARTIAL / UNBUILT; UNBUILT families carry a `leverage_rank` feeding the standing cross-sport
+  priority queue. See [DATA_DEPTH](DATA_DEPTH.md).
+- **Fill quality (book / no_book)** -- the honesty stamp on a simulated paper fill: `book` = priced
+  by walking a fresh captured order-book depth ladder; `no_book` = no usable book (stale, missing,
+  or one-sided), so the bet is recorded at its snapshot price without a fabricated fill. See
+  [PAPER_TRADING_STACK](PAPER_TRADING_STACK.md).
+- **Greenlight gate (a-g criteria)** -- `scripts/platformkit/econ/edge_greenlight.py`; seven
+  pre-registered criteria (sample size in both independent halves, both-halves profitability, CLV
+  significance, after-cost units, trust + eval-gate honesty, excess win rate) a paper channel must
+  clear before a units figure means anything. Read-only, RED / AMBER / GREEN, fail-closed on any
+  missing input. See [PAPER_TRADING_STACK](PAPER_TRADING_STACK.md).
+- **id-aware G1** -- the phase-tier regression gate that compares per-test node ids (not aggregate
+  pass/fail counts) against a frozen baseline, so a genuinely new failure can't be masked by an
+  unrelated new pass, and a pre-existing flaky failure doesn't block work that never touched it.
+  See [PLATFORM_HARNESS](PLATFORM_HARNESS.md).
+- **One-conclusion composer** -- the `compose_best()` pattern for "who is the best X" questions:
+  ONE name out, reached via a declared, auditable rule (domain filter -> primary axis selected by
+  a pre-registered gate verdict -> attribution axes for context -> honest disagreement surfaced,
+  never hidden), never a re-weighted score. Contrast with trait vector/profile below. See
+  [ASK_SURFACES](ASK_SURFACES.md).
+- **pairs_for_claim_stores subset loading** -- the loader composers must call instead of a bare
+  `load_verified_claims()`: restricts claim-source pairs to a named subset of stores so a composer
+  never whole-loads a GB-scale bulk claim store (e.g. `nba_player_box_rate`, 34,650 rows) into
+  memory. See [ASK_SURFACES](ASK_SURFACES.md).
+- **STUCK detector** -- a counter of consecutive processing ticks that had open work and zero
+  completions; past a threshold (e.g. 24 ticks / ~6h at a 900s settlement cadence) it flips a
+  status file to `STUCK` so ops monitoring alerts, turning a silent stall into a visible state
+  instead of an unread log line. See [PAPER_TRADING_STACK](PAPER_TRADING_STACK.md).
+- **Trait vector / profile** -- the `compose_profile()` answer shape for "what kind of X is
+  player" questions: an independently-cited multi-axis vector (e.g. volume / efficiency /
+  difficulty / gravity / context for a shooter), never combined into one score. Contrast with the
+  one-conclusion composer above. See [ASK_SURFACES](ASK_SURFACES.md).
+- **VWAP fill walk** -- `fill_sim.fill_price()`'s method for pricing a simulated paper fill: walks
+  the opposite side's bid ladder best-price-first until the requested size fills or depth runs
+  out, producing an honest partial fill rather than a fabricated full one. See
+  [PAPER_TRADING_STACK](PAPER_TRADING_STACK.md).
+- **Watermark refetch window** -- a trailing re-fetch window (e.g. `refetch_days = 3`) that always
+  re-pulls the last N days even when already cached, so a pure "fetch from watermark forward"
+  ingest can't permanently lock out a day that was only partially complete when first fetched.
+  See [INGEST_PIPELINES](INGEST_PIPELINES.md).
+
 ---
 
 *Numbers vocabulary note: every metric above is reported as calibration / sharpness, never as a
