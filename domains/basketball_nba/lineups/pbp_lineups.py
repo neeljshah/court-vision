@@ -163,6 +163,9 @@ def build_team_stints(
             stints.append(_make_stint(game_id, team_id, period, seg_start_s, boundary_s, current, seg_start_score, end_score, is_home, stint_quality))
             for a in batch:
                 pid = a["personId"]
+                if pid is None:  # unmapped sub (ESPN name-resolve miss): note it, never sorted()-crash on None
+                    notes.append(f"period{period}:sub_unmapped_person")
+                    continue
                 if a["subType"] == "out":
                     if pid not in current:
                         notes.append(f"period{period}:sub_out_not_on_court({pid})")
@@ -205,10 +208,12 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Reconstruct NBA lineup stints from PBP")
     parser.add_argument("--out", type=str, default=str(_OUT_PATH))
     parser.add_argument("--limit", type=int, default=None)
+    parser.add_argument("--pbp-dir", type=str, default=None, help="override input dir (default: team_system/pbp)")
     args = parser.parse_args(argv)
 
     box_df = pd.read_parquet(_BOX_SRC)
-    files = sorted(_PBP_DIR.glob("*.json"))
+    pbp_dir = Path(args.pbp_dir) if args.pbp_dir else _PBP_DIR
+    files = sorted(pbp_dir.glob("*.json"))
     if args.limit:
         files = files[: args.limit]
 
