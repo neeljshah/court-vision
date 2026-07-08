@@ -65,10 +65,22 @@ from scripts.platformkit.intel_weighting.relevance_gate import (
 METHOD = "ingame_livestate_v2_walkforward"
 _RUNGS = ["base"] + FEATURE_NAMES   # base, +floor_quality_now, +star_minutes_load, ...
 _REPO = Path(__file__).resolve().parents[3]
-_STINTS = _REPO / "data" / "cache" / "team_system" / "lineups" / "stints_2025_26.parquet"
 _BOX = _REPO / "data" / "domains" / "basketball_nba" / "player_boxscores.parquet"
 _GAMES = _REPO / "data" / "domains" / "basketball_nba" / "games.parquet"
-_PBP = _REPO / "data" / "cache" / "team_system" / "pbp"
+# per-season corpus dirs -- live season's pbp/stints are unsuffixed, prior
+# seasons are suffixed (matches data/cache/team_system/ layout on disk).
+_SEASON_DIRS = {
+    "2025-26": ("pbp", "stints_2025_26.parquet"),
+    "2024-25": ("pbp_2024_25", "stints_2024_25.parquet"),
+}
+
+
+def _season_paths(season: str) -> Tuple[Path, Path]:
+    """(pbp_dir, stints_path) for `season`; unknown seasons fall back to the
+    live 2025-26 layout."""
+    pbp_name, stints_name = _SEASON_DIRS.get(season, _SEASON_DIRS["2025-26"])
+    base = _REPO / "data" / "cache" / "team_system"
+    return base / pbp_name, base / "lineups" / stints_name
 
 
 @dataclass
@@ -153,18 +165,22 @@ def score_rung(rung: str, feat_cols: List[str], elo_logit: np.ndarray,
 def _load_v2_states(season: str = "2025-26"):
     """(games, states_by_game, elo_by_game, skips) where states_by_game[gid][cid]
     is the (score_diff, floor_quality, star_minutes, luck, bench) tuple or None."""
+    pbp_dir, stints_path = _season_paths(season)
     games = pd.read_parquet(_GAMES)
     games["date"] = pd.to_datetime(games["date"])
     ev = games[games["season"].astype(str) == season].sort_values(["date", "game_id"]).reset_index(drop=True)
     abbr = team_id_to_abbr()
     id_by_abbr = {v: k for k, v in abbr.items()}
 
-    stints_all = add_global_times(pd.read_parquet(_STINTS))
+    stints_all = add_global_times(pd.read_parquet(stints_path))
     # net48 is as-of PER GAME (a player's rolling rating moves game to game) --
     # index is (game_id, player_id); group into one {player_id: net48} dict per
     # game_id so compute_v2_features gets a plain player_id-keyed lookup for
     # the specific game it is scoring, not one global (stale) snapshot.
-    net_df = build_player_net48_asof().reset_index()
+    # stints_all (this season's file, already loaded above) is passed explicitly
+    # so this stays season-parameterized rather than falling back to
+    # livestate_priors' own default (2025-26) stints path.
+    net_df = build_player_net48_asof(stints_all).reset_index()
     net_df.columns = ["game_id", "player_id", "net48"]
     net48_by_game: Dict[str, Dict[int, float]] = {
         g: dict(zip(d["player_id"], d["net48"])) for g, d in net_df.groupby("game_id")}
@@ -180,7 +196,7 @@ def _load_v2_states(season: str = "2025-26"):
 
     for r in ev.itertuples(index=False):
         gid = str(r.game_id)
-        fp = _PBP / f"{gid}.json"
+        fp = pbp_dir / f"{gid}.json"
         if not fp.exists():
             skips["no_pbp"] += 1
             continue
