@@ -85,11 +85,12 @@ def shot_xpts() -> Optional[pd.DataFrame]:
 
 
 @functools.lru_cache(maxsize=1)
-def team_game_zone_sample() -> Optional[pd.DataFrame]:
-    """Team-game shot-zone attempt counts (rim/mid/paint/fg3a). Narrow coverage
-    (verified: only NYK/SAS, a finals-study sample) -- callers must premise-
-    check the team is present before using it, never assume league-wide."""
-    return _pq("data/cache/team_system/team_game.parquet")
+def shot_diet() -> Optional[pd.DataFrame]:
+    """League-wide, game-dated per-team offensive shot-diet (zone attempt
+    shares), from domains/basketball_nba/composition/shot_diet.py. Superseded
+    the old team_game.parquet sample (NYK/SAS only) -- this one covers all 30
+    teams and carries a date column so callers can filter strictly-as-of."""
+    return _pq("data/cache/team_system/composition/shot_diet_2025_26.parquet")
 
 
 @functools.lru_cache(maxsize=1)
