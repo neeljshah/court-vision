@@ -37,19 +37,24 @@ from scripts.platformkit.intel_weighting.claim_features import (
     prior_season_metrics,
 )
 from scripts.platformkit.intel_weighting.player_team_agg import aggregate_to_team, prior_season
+from scripts.platformkit.intel_weighting.sport_config import (
+    SEASON_STYLE, load_games, prior_season_str, soccer_referee_view, win_col,
+)
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-_GAMES = {
-    "nba": ("data/domains/basketball_nba/games.parquet", "home_win"),
-    "mlb": ("data/domains/mlb/games.parquet", "target_home_win"),
-}
 _MIN_TEST = 60          # too few OOS games -> UNTESTABLE
 _TRAIN_FRAC = 0.6       # temporal train prefix within the eval season
 _DM_ALPHA = 0.05        # two-tailed p for "beyond noise"
 METHOD = "prior_season_claim_walkforward_v1"
 # entity_key spellings seen in claim payloads for a player-id-keyed family.
-# Aggregation source (player_boxscores.parquet) is NBA-only -- see run_family.
 _PLAYER_ENTITY_KEYS = {"player_id", "player", "pid"}
+# sports with a wired playing-time source for player->team aggregation
+# (see player_team_agg._BOX_SOURCES). Others fall through to UNTESTABLE.
+_PLAYER_TEAM_AGG_SPORTS = {"nba", "mlb"}
+# sports where the "player" IS one of the two game sides directly -- no
+# team roll-up needed, home_team/away_team already carry the player's id.
+_PLAYER_DIRECT_SPORTS = {"tennis"}
+_REFEREE_ENTITY_KEYS = {"referee"}
+_REFEREE_SPORTS = {"soccer"}
 
 
 @dataclass
@@ -64,7 +69,10 @@ class GateResult:
     delta: float            # brier_base - brier_cond  (>0 = conditioning helps)
     delta_trunc80: float
     dm_p: float
-    verdict: str            # MATTERS | NULL | UNTESTABLE
+    verdict: str            # MATTERS_PROVISIONAL | NULL | UNTESTABLE
+                            # single-fold gate by construction: its strongest
+                            # verdict stays PROVISIONAL until replicated on an
+                            # independent season/corpus
     caveats: List[str] = field(default_factory=list)
 
 
@@ -87,13 +95,17 @@ def _fit(base_logit: np.ndarray, design: np.ndarray, y: np.ndarray) -> np.ndarra
 
 
 def _base_probs(sport: str, games_df: pd.DataFrame) -> np.ndarray:
-    """Leak-free walk-forward Elo home-win prob for every row, in df order."""
-    win_col = _GAMES[sport][1]
+    """Leak-free walk-forward Elo home-win prob for every row, in df order.
+
+    home_win here may be fractional (soccer H/D/A -> 1.0/0.5/0.0) -- Elo's
+    update rule and the gate's Brier/log-loss are proper scoring rules for any
+    target in [0,1], so a 0.5 draw needs no special-casing."""
+    wc = win_col(sport)
     games = [
         {"home": str(h), "away": str(a), "season": str(s), "home_win": float(w)}
         for h, a, s, w in zip(
             games_df["home_team"], games_df["away_team"],
-            games_df["season"], games_df[win_col])
+            games_df["season"], games_df[wc])
     ]
     mdl = GenericRatingModel(hfa=_SPORT_HFA.get(sport, 65.0))
     return mdl.walkforward(games)
@@ -115,10 +127,10 @@ def run_gate(sport: str, family: str, metric: str,
     eval_mask selects the eval-season rows (date-ordered)."""
     caveats: List[str] = []
     z = _zmap(feat)
-    win_col = _GAMES[sport][1]
+    wc = win_col(sport)
     ev = games_df[eval_mask].reset_index(drop=True)
     base_logit = base_logit_all[eval_mask]
-    y = ev[win_col].to_numpy(dtype=float)
+    y = ev[wc].to_numpy(dtype=float)
     gid = ev["game_id"].astype(str).to_numpy() if "game_id" in ev.columns \
         else ev.get("event_id", pd.Series(range(len(ev)))).astype(str).to_numpy()
 
@@ -154,7 +166,11 @@ def run_gate(sport: str, family: str, metric: str,
     delta_t80 = _brier(p_base[:cut], yb[:cut]) - _brier(p_cond[:cut], yb[:cut])
 
     if delta > 0 and dm.p_value < _DM_ALPHA and delta_t80 > 0:
-        verdict = "MATTERS"
+        verdict = "MATTERS_PROVISIONAL"
+        caveats.append(
+            "single-fold verdict at alpha=0.05 across many tested metrics: "
+            "expected chance hits ~0.05*n_metrics; stays PROVISIONAL until "
+            "replicated on an independent season/corpus")
     else:
         verdict = "NULL"
     return GateResult(family, sport, metric, entity_mapping, n,
@@ -164,49 +180,65 @@ def run_gate(sport: str, family: str, metric: str,
 
 def run_family(sport: str, family: str,
                claims_dir: Optional[Path] = None) -> List[GateResult]:
-    """All prior-season team-mappable metrics of one family."""
+    """All prior-season team/player/referee-mappable metrics of one family."""
     entity_key, table = load_family_features(family, claims_dir)
-    games_df = pd.read_parquet(REPO_ROOT / _GAMES[sport][0]).sort_values("date").reset_index(drop=True)
+    games_df = load_games(sport)
+    style = SEASON_STYLE.get(sport, "split")
     eval_season = sorted(games_df["season"].astype(str).unique())[-1]
 
     dropped_by_metric: Dict[str, List[str]] = {}
+    gate_df = games_df
     if entity_key == "team":
-        pri = prior_season_metrics(table, eval_season)
+        pri = prior_season_metrics(table, eval_season, style)
         entity_mapping = "team"
-    elif entity_key in _PLAYER_ENTITY_KEYS and sport == "nba":
+    elif entity_key in _PLAYER_ENTITY_KEYS and sport in _PLAYER_DIRECT_SPORTS:
+        # tennis: home_team/away_team ARE p1_id/p2_id -- fdiff = z_p1 - z_p2
+        # falls out of the existing z.get(home)-z.get(away) formula unchanged,
+        # no team roll-up needed (there is no team).
+        pri = prior_season_metrics(table, eval_season, style)
+        entity_mapping = "player_direct"
+    elif entity_key in _PLAYER_ENTITY_KEYS and sport in _PLAYER_TEAM_AGG_SPORTS:
         # design (a): prior-season claim values, rolled up to team with
-        # prior-season roster+minutes weights (see player_team_agg module doc).
-        player_pri = prior_season_metrics(table, eval_season)
+        # prior-season roster+playing-time weights (see player_team_agg doc).
+        player_pri = prior_season_metrics(table, eval_season, style)
         pri = {}
-        roster_season = prior_season(eval_season)
+        roster_season = prior_season_str(eval_season, sport)
         for metric, player_vals in player_pri.items():
-            team_vals, dropped = aggregate_to_team(player_vals, roster_season)
+            team_vals, dropped = aggregate_to_team(player_vals, roster_season, sport=sport)
             if team_vals:
                 pri[metric] = team_vals
                 if dropped:
                     dropped_by_metric[metric] = dropped
         entity_mapping = "player_minwt_prior_season"
+    elif entity_key in _REFEREE_ENTITY_KEYS and sport in _REFEREE_SPORTS:
+        # a referee is not a side -- no home/away sign. soccer_referee_view
+        # substitutes the assigned referee for home_team and a sentinel
+        # (z=0) for away_team, so run_gate's fdiff collapses to the raw,
+        # unsigned z(referee). Base Elo still rates the REAL teams (games_df).
+        pri = prior_season_metrics(table, eval_season, style)
+        entity_mapping = "referee_raw_z"
+        gate_df = soccer_referee_view(games_df)
     else:
         return [GateResult(family, sport, "-", f"{entity_key}->none", len(games_df),
                            0.0, 0.0, 0.0, 0.0, 1.0, "UNTESTABLE",
-                           [f"entity_key={entity_key}: no team-aggregation path for "
-                            f"sport={sport} (ponytail: NBA-only player_boxscores join)"])]
+                           [f"entity_key={entity_key}: no aggregation path wired for "
+                            f"sport={sport} (team/player_minwt/referee only)"])]
 
     if not pri:
         return [GateResult(family, sport, "-", entity_mapping, len(games_df), 0.0, 0.0, 0.0,
                            0.0, 1.0, "UNTESTABLE",
                            [f"no prior-season ({eval_season} minus 1) plain window, or "
-                            "aggregation left zero teams above the coverage floor"])]
+                            "aggregation left zero entities above the coverage floor"])]
 
     pb = np.clip(_base_probs(sport, games_df), 1e-9, 1 - 1e-9)
     base_logit_all = np.log(pb / (1 - pb))
     eval_mask = (games_df["season"].astype(str) == eval_season).to_numpy()
     results = []
     for metric, feat in sorted(pri.items()):
-        g = run_gate(sport, family, metric, feat, games_df, base_logit_all, eval_mask, entity_mapping)
+        g = run_gate(sport, family, metric, feat, gate_df, base_logit_all, eval_mask, entity_mapping)
         dropped = dropped_by_metric.get(metric)
         if dropped:
-            g.caveats.append(f"{len(dropped)} team(s) dropped below 60% minutes-coverage floor: "
+            g.caveats.append(f"{len(dropped)} team(s) dropped below 60% coverage floor: "
                               f"{','.join(dropped)}")
         results.append(g)
     return results
