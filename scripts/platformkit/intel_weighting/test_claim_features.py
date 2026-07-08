@@ -38,9 +38,9 @@ def test_pair_with_team_id_aggregates_to_team_mean(tmp_path):
         ],
     }]
     claims_dir = _write_family(tmp_path, "fake_pair_team", rows)
-    entity_key, table = load_family_features("fake_pair_team", claims_dir)
+    table = load_family_features("fake_pair_team", claims_dir)
+    entity_key, values = table[("net_rating_on_per48", "season_2024_25_nba_lineup_corpus")]
     assert entity_key == "team"
-    values = table[("net_rating_on_per48", "season_2024_25_nba_lineup_corpus")]
     assert values == {"100": 15.0, "200": 5.0}   # mean(10,20)=15 for team 100
 
 
@@ -53,9 +53,8 @@ def test_pair_without_team_id_resolves_to_clean_marker(tmp_path):
         "ranking": [{"player_id": 1, "lineup_key": "a,b,c", "value": 1.0}],
     }]
     claims_dir = _write_family(tmp_path, "fake_pair_no_team", rows)
-    entity_key, table = load_family_features("fake_pair_no_team", claims_dir)
-    assert entity_key == "pair_no_team:player_id,lineup_key"
-    assert table == {}
+    table = load_family_features("fake_pair_no_team", claims_dir)
+    assert table == {}   # pair-keyed w/o team_id never gets stored -- no aggregation to fall back to
 
 
 def test_pair_without_team_id_flows_to_clean_untestable_via_gate(tmp_path):
@@ -88,6 +87,63 @@ def test_pair_with_team_id_flows_to_team_path_via_gate(tmp_path):
     results = run_family("nba", "fake_pair_team2", claims_dir)
     assert len(results) == 1
     assert results[0].entity_mapping == "team"
+
+
+def test_mixed_entity_key_family_resolves_each_metric_independently(tmp_path):
+    """The actual bug this fix closes: nba_fit_ingredient_claims mixes a
+    player-keyed metric with a team_posgroup-keyed one in the SAME family.
+    Both must resolve correctly in one run_family call -- neither one's
+    entity_key may leak onto the other."""
+    rows = [
+        {
+            "criteria": {"metric": "usage_pct", "window": "season_2024_25",
+                         "entity_key": "pid"},
+            "ranking": [{"pid": 1, "value": 0.30}, {"pid": 2, "value": 0.20},
+                        {"pid": 3, "value": 0.10}],
+        },
+        {
+            "criteria": {"metric": "vacancy_share", "window": "season_2024_25",
+                         "entity_key": "team_posgroup"},
+            "ranking": [
+                {"team_posgroup": "ATL|GUARD", "value": 0.9},
+                {"team_posgroup": "ATL|BIG", "value": 0.1},
+                {"team_posgroup": "BOS|GUARD", "value": 0.5},
+            ],
+        },
+    ]
+    claims_dir = _write_family(tmp_path, "fake_mixed_key", rows)
+    table = load_family_features("fake_mixed_key", claims_dir)
+    ek_usage, _ = table[("usage_pct", "season_2024_25")]
+    ek_vacancy, _ = table[("vacancy_share", "season_2024_25")]
+    assert ek_usage == "pid"
+    assert ek_vacancy == "team_posgroup"
+
+    results = run_family("nba", "fake_mixed_key", claims_dir)
+    by_metric = {r.metric: r for r in results}
+    assert set(by_metric) == {"usage_pct", "vacancy_share"}
+    # usage_pct is player-keyed on synthetic ids with no real roster --
+    # UNTESTABLE (zero coverage), not misrouted through the team path.
+    assert by_metric["usage_pct"].entity_mapping == "player_minwt_prior_season"
+    # vacancy_share's composite team_posgroup key must aggregate to team
+    # (ATL's GUARD/BIG segments mean to 0.5), not fall through to UNTESTABLE.
+    assert by_metric["vacancy_share"].entity_mapping == "composite_team_mean"
+    assert by_metric["vacancy_share"].verdict in {"NULL", "MATTERS_PROVISIONAL"}
+
+
+def test_composite_key_without_team_prefix_is_clean_untestable(tmp_path):
+    """A composite entity id whose first '|' segment is NOT a real team code
+    (e.g. a player-scoped composite) must resolve to a clean UNTESTABLE, never
+    silently drop to zero entities without saying why."""
+    rows = [{
+        "criteria": {"metric": "some_metric", "window": "season_2024_25",
+                     "entity_key": "player_posgroup"},
+        "ranking": [{"player_posgroup": "99999|GUARD", "value": 1.0}],
+    }]
+    claims_dir = _write_family(tmp_path, "fake_composite_no_team", rows)
+    results = run_family("nba", "fake_composite_no_team", claims_dir)
+    assert len(results) == 1
+    assert results[0].verdict == "UNTESTABLE"
+    assert "no team mapping for entity_key=player_posgroup" in " ".join(results[0].caveats)
 
 
 def test_real_lineup_families_no_longer_crash():

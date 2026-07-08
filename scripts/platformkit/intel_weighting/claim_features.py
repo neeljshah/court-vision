@@ -11,9 +11,14 @@ window whose season is STRICTLY PRIOR to the eval season (design (a) --
 prior_season_claim_walkforward_v1). An unlabeled window ('current',
 'career_to_date') returns season None and is refused by the gate.
 
-ponytail: player-entity families are returned too, but they carry no
-team/minutes in the payload, so the gate maps only entity_key=='team'
-families. Upgrade path = roster+minutes join to aggregate players to teams.
+entity_key is resolved PER (metric, window), not once for the whole family:
+a family's claims can mix entity_key spellings across metrics -- e.g.
+nba_fit_ingredient_claims has archetype metrics keyed 'pid' (player) while
+vacancy_share is keyed 'team_posgroup' (a composite 'MIL|GUARD' string).
+Capturing a single family-level entity_key from the first claim row used to
+force every OTHER metric through that one mapping -- a silent zero-match
+UNTESTABLE for any metric whose real key differed. relevance_gate.run_family
+now dispatches each metric's own (entity_key, values) independently.
 
 PAIR-KEYED families (entity_key is a list, e.g. ['player_id','team_id'] for
 nba_on_off_claims/nba_gravity_proxy_claims, ['team_id','lineup_key'] for
@@ -21,8 +26,8 @@ nba_lineup_spacing_claims): a bare dict.get(list) is a TypeError (unhashable
 list), so these are resolved explicitly. If the pair contains 'team_id' the
 ranked metric is averaged across that team's pair entries per (metric,
 window) and folded into the ordinary entity_key=='team' path. Otherwise the
-family is marked 'pair_no_team:<keys>' -- caught by relevance_gate's
-existing catch-all dispatch as a clean UNTESTABLE, never a raise.
+metric is simply not stored (no team mapping to fall back to) -- caught by
+relevance_gate's catch-all dispatch as a clean UNTESTABLE, never a raise.
 """
 from __future__ import annotations
 
@@ -34,8 +39,8 @@ from typing import Dict, Optional, Tuple
 REPO_ROOT = Path(__file__).resolve().parents[3]
 CLAIMS_DIR = REPO_ROOT / "data" / "cache" / "intel_claims"
 
-# (metric, window) -> {entity_id: value}
-FeatureTable = Dict[Tuple[str, str], Dict[str, float]]
+# (metric, window) -> (entity_key, {entity_id: value})
+FeatureTable = Dict[Tuple[str, str], Tuple[str, Dict[str, float]]]
 
 _SEASON_RE = re.compile(r"(\d{4})[_-](\d{2})")
 
@@ -95,12 +100,12 @@ def _team_paired_values(ranking) -> Dict[str, float]:
     return {k: sums[k] / counts[k] for k in sums}
 
 
-def load_family_features(family: str, claims_dir: Optional[Path] = None) -> Tuple[str, FeatureTable]:
-    """Read `<family>.jsonl` -> (entity_key, {(metric, window): {entity: value}}).
+def load_family_features(family: str, claims_dir: Optional[Path] = None) -> FeatureTable:
+    """Read `<family>.jsonl` -> {(metric, window): (entity_key, {entity: value})}.
 
-    entity_key is taken from the first well-formed claim (families are
-    homogeneous) and always resolved to a plain string (see
-    _resolve_entity_key) -- never the raw list a pair-keyed family carries.
+    entity_key is resolved per claim line (see module docstring -- a family's
+    metrics can carry different keys) and always a plain string (see
+    _resolve_entity_key), never the raw list a pair-keyed family carries.
     Malformed lines are skipped (the store's own validation is the source of
     truth for VERIFIED; here we only need the numbers)."""
     claims_dir = claims_dir or CLAIMS_DIR
@@ -108,7 +113,6 @@ def load_family_features(family: str, claims_dir: Optional[Path] = None) -> Tupl
     if not path.exists():
         raise FileNotFoundError(f"claims file not found: {path}")
 
-    entity_key: Optional[str] = None
     table: FeatureTable = {}
     with open(path, "r", encoding="ascii", errors="replace") as f:
         for line in f:
@@ -121,8 +125,6 @@ def load_family_features(family: str, claims_dir: Optional[Path] = None) -> Tupl
                 continue
             cr = row.get("criteria", {})
             ekey = cr.get("entity_key")
-            if entity_key is None and ekey:
-                entity_key = _resolve_entity_key(ekey)   # capture even if this claim lacks a window
             metric = cr.get("metric")
             window = cr.get("window")
             ranking = row.get("ranking", [])
@@ -141,36 +143,39 @@ def load_family_features(family: str, claims_dir: Optional[Path] = None) -> Tupl
                         continue
                     values[str(ent)] = float(val)
             if values:
-                table[(metric, window)] = values
-    return (entity_key or "unknown"), table
+                table[(metric, window)] = (_resolve_entity_key(ekey), values)
+    return table
 
 
 def prior_season_metrics(table: FeatureTable, eval_season: str,
-                          style: str = "split") -> Dict[str, Dict[str, float]]:
-    """Select {metric: {entity: value}} for the season STRICTLY ONE BEFORE
-    eval_season (leak-free design (a)). style='split': '2025-26' -> looks for
-    a window resolving to '2024-25' (NBA). style='plain': '2026' -> '2025'
-    (mlb/soccer/tennis, single calendar-year seasons)."""
+                          style: str = "split") -> Dict[str, Tuple[str, Dict[str, float]]]:
+    """Select {metric: (entity_key, {entity: value})} for the season STRICTLY
+    ONE BEFORE eval_season (leak-free design (a)). style='split': '2025-26' ->
+    looks for a window resolving to '2024-25' (NBA). style='plain': '2026' ->
+    '2025' (mlb/soccer/tennis, single calendar-year seasons)."""
     if style == "plain":
         want = str(int(eval_season) - 1)
     else:
         start = int(eval_season.split("-")[0])
         want = f"{start - 1:04d}-{(start) % 100:02d}"
-    out: Dict[str, Dict[str, float]] = {}
-    for (metric, window), values in table.items():
+    out: Dict[str, Tuple[str, Dict[str, float]]] = {}
+    for (metric, window), (entity_key, values) in table.items():
         if window_to_season(window, style) == want:
-            out[metric] = values  # plain full-season only (splits already None)
+            out[metric] = (entity_key, values)  # plain full-season only (splits already None)
     return out
 
 
 if __name__ == "__main__":  # tiny self-check on a known team store
-    ek, tbl = load_family_features("nba_team_box_rate")
+    tbl = load_family_features("nba_team_box_rate")
     pri = prior_season_metrics(tbl, "2025-26")
+    assert "team_pts_per_game" in pri
+    ek, vals = pri["team_pts_per_game"]
     assert ek == "team", ek
-    assert "team_pts_per_game" in pri and len(pri["team_pts_per_game"]) >= 20
+    assert len(vals) >= 20
     assert window_to_season("season_2024_25_home") is None
     assert window_to_season("2024-25") == "2024-25"
     assert window_to_season("year_2024", "plain") == "2024"
     assert window_to_season("year_2024_clay", "plain") is None
-    assert prior_season_metrics({("m", "year_2024"): {"x": 1.0}}, "2025", "plain") == {"m": {"x": 1.0}}
+    assert prior_season_metrics({("m", "year_2024"): ("team", {"x": 1.0})}, "2025", "plain") \
+        == {"m": ("team", {"x": 1.0})}
     print(f"OK entity_key={ek} prior_metrics={sorted(pri)}")
