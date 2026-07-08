@@ -1154,7 +1154,7 @@ def build():
         ["Total at risk", f"${total_stake:,.0f}",
          f"{total_stake/BR*100:.1f}% of $11,043 bankroll — within 25% slate cap"],
         ["Expected profit", f"${exp_profit:+,.0f}",
-         f"Avg leg EV {avg_ev:.1f}% × $260 × 9 — model's positive-edge claim"],
+         f"Avg leg EV {avg_ev:.1f}% × $260 × 9 — model's probability estimate vs market price"],
         ["Best case (all hit)", f"${best_case:+,.0f}",
          f"All 9 legs win — multiplicative return on 21% of bankroll"],
         ["Worst case (all miss)", f"${worst_case:+,.0f}",
