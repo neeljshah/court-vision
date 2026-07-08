@@ -151,6 +151,113 @@ is the SSE half of the **SSE-with-poll-fallback** pattern (the React client poll
 
 ---
 
+## Intel Query -- ask() surfaces (offline, VERIFIED-claims CLI)
+
+**Module family:** `scripts/platformkit/intel_query/`. Not an HTTP surface --
+a Python CLI/importable layer that answers ONLY from claim rows an independent
+validator marked `VERIFIED` (see [`docs/INTELLIGENCE.md`](INTELLIGENCE.md)).
+`ask.py`'s `ask(question)` classifies a free-text question via
+`families.classify` (keyword/regex, no LLM call inside the module) and routes
+to one of several composers. A question no VERIFIED claim covers returns
+`{"answerable": False, "reason": ..., "nearest_supported_families": [...]}` --
+never a guess.
+
+```bash
+python -m scripts.platformkit.intel_query.ask "Who are the top 5 best shooters (composite) in window=last_20?"
+python -m scripts.platformkit.intel_query.ask --demo
+```
+
+### Shooter trait-profile family -- `compose_profile.py`
+
+`compose_profile(player) -> dict` answers "what kind of shooter is X?" as a
+**vector**, never one re-weighted scalar: each of 10 axes (volume /
+efficiency / difficulty / gravity / context group) is reported with its own
+`value`, `rank`, `pct_pool`, and `pct_qualified` (percentile within the
+fg3m>=82 NBA-official qualification subset), each citing its own VERIFIED
+claim. Axes are never combined into a score. A `trait_line` (e.g.
+`"high-volume, elite-efficiency shooter; self-creation high, gravity elite"`)
+is derived only from the declared `BANDS` word thresholds (config data, never
+tuned). Fail-closed: a player found on no axis, or a missing qualified-pool
+claim, returns `{"status": "UNANSWERABLE", ...}`; a single missing axis is
+reported per-axis as `not_in_pool`, never guessed. Routed automatically from
+`ask()` via the `shooter_profile` family (`"what kind of shooter is X"` /
+`"shooter profile for X"`), or callable directly:
+
+```bash
+python -m scripts.platformkit.intel_query.compose_profile "Luka Doncic"
+```
+
+### One-conclusion best-X composer -- `compose_best.py`
+
+`compose_best(aspect="shooter") -> dict` answers "who is the best X, all
+factors weighed, ONE conclusion" per a `COMPOSITION_RULE` emitted verbatim in
+the response so the conclusion is auditable: (0) an optional **domain
+filter** (e.g. the NBA's own fg3m>=82 3P%-title qualification minimum,
+cited to an external convention, never tuned) restricts the primary pool
+before rank-1 selection -- the unfiltered #1 is still reported alongside for
+transparency; (1) the **primary axis** is whichever VERIFIED ranking claim
+the pre-registered predictive-validity gate verdict currently selects, read
+live from the verdict JSON at call time -- never hardcoded, so a gate flip
+changes the answer with no code change; (2) **attribution axes** annotate the
+primary axis's #1 player with other VERIFIED claims' rank/value for that same
+player, never overriding it; (3) **honest disagreement** is surfaced
+explicitly whenever an attribution axis's own #1 differs from the primary
+axis's #1, with the gate citation explaining why the primary axis still wins.
+Fail-closed: a missing primary claim or gate-verdict file returns
+`{"status": "UNANSWERABLE", "missing": [...]}`; a missing attribution axis is
+annotated `not_verified`, never load-bearing for the conclusion. v1 wires one
+aspect (`"shooter"`) -- a new aspect gets its own `_AspectConfig` entry only
+when actually asked for.
+
+```bash
+python -m scripts.platformkit.intel_query.compose_best shooter
+```
+
+### Paper-analytics CLI -- `paper_analytics.py`
+
+Ask-style surface over the live PAPER TRADING ledger (`data/frontend/clv_ledger.jsonl`)
+-- a different kind of source than the VERIFIED-claims stores above (fresh-read,
+never "validated"). Streams the ledger line-by-line (one malformed line is
+skipped, never fatal -- the ledger is large and growing). Every answer carries
+`source_files`, `edge_claimed: false`, and a `net_units` figure is never shown
+without its channel's fail-closed greenlight status (`RED`/`AMBER`/`GREEN`,
+read from `data/frontend/ops/edge_greenlight.json`; a channel the gate has no
+verdict for reports `"unknown"`, never GREEN-by-silence).
+
+```bash
+python -m scripts.platformkit.intel_query.paper_analytics "this week by channel"
+python -m scripts.platformkit.intel_query.paper_analytics "today"
+python -m scripts.platformkit.intel_query.paper_analytics "arb lane"
+python -m scripts.platformkit.intel_query.paper_analytics "settlement backlog"
+```
+
+Full flow (placement -> fill sim -> close capture -> settlement -> grading ->
+greenlight gate -> this CLI) is documented in
+[`docs/PAPER_TRADING_STACK.md`](PAPER_TRADING_STACK.md).
+
+### The `pairs_for_claim_stores` subset-loading pattern
+
+`ask.load_verified_claims(pairs=None)` re-reads the module-level
+`CLAIM_SOURCE_PAIRS` and joins **every** claims store discovered under
+`data/cache/intel_claims/`. That is fine for `ask()` itself, but a composer
+that only ever needs 3-4 named stores must NOT call it bare: some stores
+(bulk player-box rate stores) are GB-scale, and a whole-repo load produced a
+live `MemoryError` (2026-07-07). `pairs_for_claim_stores(store_names)` filters
+`CLAIM_SOURCE_PAIRS` down to just the claims-file names passed in, then that
+subset is handed to `load_verified_claims(pairs=...)`:
+
+```python
+from scripts.platformkit.intel_query.ask import load_verified_claims, pairs_for_claim_stores
+
+_PROFILE_STORES = ("nba_shooter_profile_claims.jsonl", "nba_shooting_claims.jsonl", ...)
+verified = load_verified_claims(pairs_for_claim_stores(_PROFILE_STORES))
+```
+
+Both `compose_profile.py` and `compose_best.py` load through this pattern
+exclusively -- any new composer over VERIFIED claims must do the same.
+
+---
+
 ## Quick Start
 
 ```bash
