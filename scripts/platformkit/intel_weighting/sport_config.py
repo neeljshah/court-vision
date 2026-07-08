@@ -15,6 +15,12 @@ mlb_bullpen_fatigue_chains claim windows are year_2022..2026 -- games.parquet
 has zero overlap with any prior-season lookup those windows could feed. Use
 games_current.parquet (2022-2026) instead, the only MLB games table that
 actually overlaps a year-windowed claim family.
+
+soccer_intl (national-team/World-Cup corpus, data/domains/soccer_intl --
+DIFFERENT from the soccer club corpus above): results.parquet has no
+pre-built season/game_id/win column, so _load_soccer_intl derives them here
+(season = calendar year of date; win via the same H/D/A -> 1.0/0.5/0.0
+fractional convention `_load_soccer` already uses).
 """
 from __future__ import annotations
 
@@ -27,9 +33,11 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 
 WIN_COL = "target_home_win"      # normalized outcome col for mlb/soccer/tennis
 _GAMES_WIN_COL: Dict[str, str] = {"nba": "home_win", "mlb": WIN_COL,
-                                   "soccer": WIN_COL, "tennis": WIN_COL}
+                                   "soccer": WIN_COL, "tennis": WIN_COL,
+                                   "soccer_intl": WIN_COL}
 # split -> eval_season like '2025-26' (prior = '2024-25'); plain -> '2026' (prior = '2025')
-SEASON_STYLE: Dict[str, str] = {"nba": "split", "mlb": "plain", "soccer": "plain", "tennis": "plain"}
+SEASON_STYLE: Dict[str, str] = {"nba": "split", "mlb": "plain", "soccer": "plain",
+                                 "tennis": "plain", "soccer_intl": "plain"}
 _FTR_SCORE = {"H": 1.0, "D": 0.5, "A": 0.0}
 _REF_SENTINEL = "_NONE_"          # absent from any z dict -> z.get(sentinel, 0) = 0
 
@@ -62,8 +70,20 @@ def _load_tennis() -> pd.DataFrame:
     })
 
 
+def _load_soccer_intl() -> pd.DataFrame:
+    df = pd.read_parquet(REPO_ROOT / "data/domains/soccer_intl/results.parquet")
+    df = df.assign(
+        season=pd.to_datetime(df["date"]).dt.year.astype(str),
+        game_id=df.index.astype(str),
+        **{WIN_COL: (df["home_score"] > df["away_score"]).astype(float)
+                     + 0.5 * (df["home_score"] == df["away_score"]).astype(float)},
+    )
+    return df[["home_team", "away_team", "season", "game_id", "date", WIN_COL]]
+
+
 _LOADERS: Dict[str, Callable[[], pd.DataFrame]] = {
     "nba": _load_nba, "mlb": _load_mlb, "soccer": _load_soccer, "tennis": _load_tennis,
+    "soccer_intl": _load_soccer_intl,
 }
 
 
@@ -104,7 +124,7 @@ def soccer_referee_view(games_df: pd.DataFrame, match_stats_path: Optional[Path]
 
 
 if __name__ == "__main__":  # tiny self-check, no network/heavy deps
-    for sport in ("nba", "mlb", "soccer", "tennis"):
+    for sport in ("nba", "mlb", "soccer", "tennis", "soccer_intl"):
         df = load_games(sport)
         assert {"home_team", "away_team", "season", "game_id", "date", win_col(sport)} <= set(df.columns), sport
         assert df[win_col(sport)].between(0, 1).all(), sport

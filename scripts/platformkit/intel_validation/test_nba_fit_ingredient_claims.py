@@ -21,6 +21,7 @@ from __future__ import annotations
 import pandas as pd
 
 from scripts.platformkit.intel_validation import nba_fit_ingredient_claims as fic
+from scripts.platformkit.intel_validation import nba_fit_ingredient_builders as ficb
 from scripts.platformkit.intel_validation.claims_validator import validate_claim
 
 
@@ -40,8 +41,8 @@ def test_archetype_claim_excludes_below_floor_players(monkeypatch, tmp_path):
     })
     path = tmp_path / "player_roles.parquet"
     fixture.to_parquet(path)
-    monkeypatch.setattr(fic, "_PLAYER_ROLES", path)
-    monkeypatch.setattr(fic, "REPO_ROOT", tmp_path.parent)
+    monkeypatch.setattr(ficb, "_PLAYER_ROLES", path)
+    monkeypatch.setattr(ficb, "REPO_ROOT", tmp_path.parent)
 
     claim = fic.build_archetype_claim()
     ranked_pids = {r["pid"] for r in claim["ranking"]}
@@ -65,8 +66,8 @@ def test_scheme_identity_claim_covers_full_population_no_floor(monkeypatch, tmp_
     })
     path = tmp_path / "scheme_coverage.parquet"
     fixture.to_parquet(path)
-    monkeypatch.setattr(fic, "_SCHEME_COVERAGE", path)
-    monkeypatch.setattr(fic, "REPO_ROOT", tmp_path.parent)
+    monkeypatch.setattr(ficb, "_SCHEME_COVERAGE", path)
+    monkeypatch.setattr(ficb, "REPO_ROOT", tmp_path.parent)
 
     claim = fic.build_scheme_identity_claim()
     # the player_vs_coverage row must never leak into the team_scheme ranking
@@ -75,7 +76,7 @@ def test_scheme_identity_claim_covers_full_population_no_floor(monkeypatch, tmp_
     teams = {r["team"] for r in claim["ranking"]}
     assert teams == {"ATL", "BOS"}
     assert claim["ranking"][0]["team"] == "ATL"  # 0.5 > -0.3, desc
-    assert claim["criteria"]["window"] == fic.SCHEME_IDENTITY_SEASON
+    assert claim["criteria"]["window"] == ficb.SCHEME_IDENTITY_SEASON
 
 
 def _fixture_boxscores() -> pd.DataFrame:
@@ -102,11 +103,11 @@ def test_role_vacancy_uses_league_wide_posgroup_median_and_floor(monkeypatch, tm
         "posgroup": ["BIG", "BIG", "BIG", "BIG", "GUARD"],
     }).to_parquet(roles_path)
 
-    monkeypatch.setattr(fic, "_PLAYER_BOXSCORES", box_path)
-    monkeypatch.setattr(fic, "_PLAYER_ROLES", roles_path)
-    monkeypatch.setattr(fic, "_VACANCY_SNAPSHOT", tmp_path / "snap.parquet")
-    monkeypatch.setattr(fic, "MIN_TEAM_POSGROUP_N", 3)
-    monkeypatch.setattr(fic, "REPO_ROOT", tmp_path.parent)
+    monkeypatch.setattr(ficb, "_PLAYER_BOXSCORES", box_path)
+    monkeypatch.setattr(ficb, "_PLAYER_ROLES", roles_path)
+    monkeypatch.setattr(ficb, "_VACANCY_SNAPSHOT", tmp_path / "snap.parquet")
+    monkeypatch.setattr(ficb, "MIN_TEAM_POSGROUP_N", 3)
+    monkeypatch.setattr(ficb, "REPO_ROOT", tmp_path.parent)
 
     claim = fic.build_role_vacancy_claim()
     keys = {r["team_posgroup"] for r in claim["ranking"]}
@@ -117,7 +118,7 @@ def test_role_vacancy_uses_league_wide_posgroup_median_and_floor(monkeypatch, tm
     atl_big = next(r for r in claim["ranking"] if r["team_posgroup"] == "ATL|BIG")
     assert atl_big["value"] == round(1 / 3, 4)
     assert atl_big["n"] == 3
-    assert claim["criteria"]["window"] == fic.ROLE_VACANCY_SEASON
+    assert claim["criteria"]["window"] == ficb.ROLE_VACANCY_SEASON
 
 
 def test_real_archetype_claim_independently_verifies():
