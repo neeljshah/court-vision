@@ -10,12 +10,8 @@ Elo offset; walk-forward; DM p; truncation-80) -- see conditional_gate.py's
 docstring for the score_diff*sqrt(trf) collinearity note, unchanged here.
 v2's only difference is the candidate ladder: 4 preregistered feature diffs
 (livestate_ingame.compute_v2_features), added ONE AT A TIME, cumulative:
-
-  rung0 base
-  rung1 base + floor_quality_now
-  rung2 rung1 + star_minutes_load
-  rung3 rung2 + shooting_luck_so_far
-  rung4 rung3 + bench_depth_used
+base -> +floor_quality_now -> +star_minutes_load -> +shooting_luck_so_far
+-> +bench_depth_used.
 
 All 4 features (or none) are required per game/checkpoint -- a game missing
 any one is dropped from EVERY rung so all 5 rungs score the identical sample
@@ -72,6 +68,7 @@ _GAMES = _REPO / "data" / "domains" / "basketball_nba" / "games.parquet"
 _SEASON_DIRS = {
     "2025-26": ("pbp", "stints_2025_26.parquet"),
     "2024-25": ("pbp_2024_25", "stints_2024_25.parquet"),
+    "2023-24": ("pbp_2023_24", "stints_2023_24.parquet"),
 }
 
 
@@ -162,6 +159,25 @@ def score_rung(rung: str, feat_cols: List[str], elo_logit: np.ndarray,
                       betas, caveats)
 
 
+def _pbp_top3_table(pbp_dir: Path, ev: pd.DataFrame) -> pd.DataFrame:
+    """top3-FGA for seasons player_boxscores does NOT cover (2023-24): per-player
+    FGA counted from the pbp 2pt/3pt actions, cumulative by date -- same shape
+    and strictly-prior lookup boundary as the box-derived table."""
+    rows = []
+    for r in ev.itertuples(index=False):
+        fp = pbp_dir / f"{r.game_id}.json"
+        if not fp.exists():
+            continue
+        cnt: Dict[Tuple[str, int], int] = {}
+        for a in json.loads(fp.read_text(encoding="utf-8"))["game"]["actions"]:
+            if a.get("actionType") in ("2pt", "3pt") and a.get("personId"):
+                k = (a["teamTricode"], int(a["personId"]))
+                cnt[k] = cnt.get(k, 0) + 1
+        rows += [{"team": t, "player_id": p, "date": r.date, "fga": n} for (t, p), n in cnt.items()]
+    b = pd.DataFrame(rows).sort_values(["team", "player_id", "date"])
+    return b.assign(cum_fga=b.groupby(["team", "player_id"])["fga"].cumsum())
+
+
 def _load_v2_states(season: str = "2025-26"):
     """(games, states_by_game, elo_by_game, skips) where states_by_game[gid][cid]
     is the (score_diff, floor_quality, star_minutes, luck, bench) tuple or None."""
@@ -185,6 +201,8 @@ def _load_v2_states(season: str = "2025-26"):
     net48_by_game: Dict[str, Dict[int, float]] = {
         g: dict(zip(d["player_id"], d["net48"])) for g, d in net_df.groupby("game_id")}
     top3_table = build_top3_fga_table()
+    if top3_table["date"].min() > ev["date"].max():  # box coverage starts AFTER this season
+        top3_table = _pbp_top3_table(pbp_dir, ev)
     rate_table = build_league_shot_rate_table()
 
     games_all, base_logit_all = _base_logit_nba()
