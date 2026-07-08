@@ -179,6 +179,34 @@ def build_continuity_dreb(stints_df: pd.DataFrame, pbp_dir: Path = _PBP_DIR) -> 
     return matched.dropna(subset=["continuity_s"])[["continuity_s", "is_dreb"]]
 
 
+def build_continuity_dreb_tagged(stints_df: pd.DataFrame, pbp_dir: Path = _PBP_DIR) -> pd.DataFrame:
+    """Same leak-checked join as build_continuity_dreb, tagged with (game_id,
+    team_id=the defending/rebounding team) for a downstream team-game as-of
+    feature (scripts/platformkit/compose/dreb_challenger.py). build_continuity_dreb
+    itself is untouched -- other tests depend on its bare 2-col shape."""
+    shots = _load_missed_shots_and_rebounds(pbp_dir=pbp_dir)
+    clean = stints_df[stints_df["n_on_court"] == 5].copy()
+    team_ids_by_game = clean.groupby("game_id")["team_id"].unique().apply(list).to_dict()
+    shots["defending_team_id"] = shots.apply(
+        lambda r: _other_team(team_ids_by_game.get(r["game_id"], []), r["team_id"]), axis=1)
+    shots = shots.dropna(subset=["defending_team_id"])
+    shots["defending_team_id"] = shots["defending_team_id"].astype("int64")  # Windows astype(int) trap
+
+    right = clean.rename(columns={"team_id": "defending_team_id"})[
+        ["game_id", "period", "defending_team_id", "start_s"]]
+    matched = pd.merge_asof(
+        shots.sort_values("elapsed_s"), right.sort_values("start_s"),
+        left_on="elapsed_s", right_on="start_s", by=["game_id", "period", "defending_team_id"],
+        direction="backward",
+    )
+    matched["continuity_s"] = matched["elapsed_s"] - matched["start_s"]
+    matched = matched.dropna(subset=["continuity_s"])
+    # drop the SHOOTING team's team_id first -- else renaming defending_team_id
+    # would produce two columns both named "team_id" (silent dup-column bug).
+    return matched.drop(columns=["team_id"]).rename(columns={"defending_team_id": "team_id"})[
+        ["game_id", "team_id", "continuity_s", "is_dreb"]]
+
+
 def build_clutch_shots(pbp_dir: Path = _PBP_DIR) -> pd.DataFrame:
     """h10: spacing x clutch (atomic=shot). Clutch = kernel/config/game_state.py's
     NBA primary live constants (read-only reference, not imported/edited):
