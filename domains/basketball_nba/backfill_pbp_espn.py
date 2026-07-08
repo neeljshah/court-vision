@@ -50,7 +50,9 @@ import pandas as pd
 import requests
 
 from domains.basketball_nba.espn_nba_bridge import _norm_abbr
-from domains.basketball_nba.ingest_espn_player_box import _norm_name, load_player_map
+from domains.basketball_nba.ingest_espn_player_box import (
+    _norm_name, is_stale_resolution, load_activity_windows, load_player_map,
+)
 from domains.basketball_nba.ingest_pbp_states import _clock_seconds
 
 log = logging.getLogger(__name__)
@@ -121,16 +123,28 @@ def _espn_id_to_name(payload: dict) -> Dict[int, str]:
     return out
 
 
-def _resolve_id(espn_id: Optional[object], id_to_name: Dict[int, str], player_map: Dict[str, int]) -> Optional[int]:
+def _guard_stale(pid: Optional[int], season: object, activity: Optional[Dict[int, set]]) -> Optional[int]:
+    """Reject a name-join to a >=2-season-stale id (retired/wrong athlete) ->
+    None (unmapped), mirroring ingest_espn_player_box's box guard. Inert when
+    season/activity are None (back-compat: existing tests pass unchanged)."""
+    if pid is not None and season is not None and activity is not None \
+            and is_stale_resolution(pid, season, activity):
+        return None
+    return pid
+
+
+def _resolve_id(espn_id: Optional[object], id_to_name: Dict[int, str], player_map: Dict[str, int],
+                season: object = None, activity: Optional[Dict[int, set]] = None) -> Optional[int]:
     if not espn_id:
         return None
     name = id_to_name.get(int(espn_id))
     if not name:
         return None
-    return player_map.get(_norm_name(name))
+    return _guard_stale(player_map.get(_norm_name(name)), season, activity)
 
 
-def _convert_play(play: dict, team_map: Dict[str, dict], id_to_name: Dict[int, str], player_map: Dict[str, int]) -> List[dict]:
+def _convert_play(play: dict, team_map: Dict[str, dict], id_to_name: Dict[int, str], player_map: Dict[str, int],
+                  season: object = None, activity: Optional[Dict[int, set]] = None) -> List[dict]:
     """One ESPN play -> 0, 1, or 2 liveData-shaped actions (2 for a substitution:
     'out' then 'in', matching the real NBA feed's own two-record convention)."""
     team_info = team_map.get(str((play.get("team") or {}).get("id", "")))
@@ -151,7 +165,8 @@ def _convert_play(play: dict, team_map: Dict[str, dict], id_to_name: Dict[int, s
     type_text = (play.get("type") or {}).get("text", "")
     pts_att = play.get("pointsAttempted") or 0
     if type_text != "Substitution":
-        pid = _resolve_id((parts[0].get("athlete") or {}).get("id") if parts else None, id_to_name, player_map)
+        pid = _resolve_id((parts[0].get("athlete") or {}).get("id") if parts else None,
+                          id_to_name, player_map, season, activity)
         if play.get("shootingPlay") and pts_att in (1, 2, 3):
             # shot/FT: on_off.py/gravity_spacing.py key off 2pt/3pt + real x/y;
             # ESPN garbage-sentinels a FT's coordinate (~-2.1e9) -> drop out-of-court.
@@ -170,26 +185,31 @@ def _convert_play(play: dict, team_map: Dict[str, dict], id_to_name: Dict[int, s
         return [{**base, "actionType": "other", "subType": "", "personId": pid}]
 
     m = _SUB_RE.match(play.get("text", "") or "")
-    in_id = player_map.get(_norm_name(m.group(1).strip())) if m else None
-    out_id = player_map.get(_norm_name(m.group(2).strip())) if m else None
+    in_id = _guard_stale(player_map.get(_norm_name(m.group(1).strip())) if m else None, season, activity)
+    out_id = _guard_stale(player_map.get(_norm_name(m.group(2).strip())) if m else None, season, activity)
     if in_id is None and len(parts) > 0:
-        in_id = _resolve_id((parts[0].get("athlete") or {}).get("id"), id_to_name, player_map)
+        in_id = _resolve_id((parts[0].get("athlete") or {}).get("id"), id_to_name, player_map, season, activity)
     if out_id is None and len(parts) > 1:
-        out_id = _resolve_id((parts[1].get("athlete") or {}).get("id"), id_to_name, player_map)
+        out_id = _resolve_id((parts[1].get("athlete") or {}).get("id"), id_to_name, player_map, season, activity)
     return [
         {**base, "actionType": "substitution", "subType": "out", "personId": out_id},
         {**base, "actionType": "substitution", "subType": "in", "personId": in_id},
     ]
 
 
-def convert_game_actions(payload: dict, real_ids: Dict[str, int], player_map: Dict[str, int]) -> Tuple[List[dict], int]:
-    """PURE: ESPN summary payload -> (actions list, n_unmapped_sub_person_ids)."""
+def convert_game_actions(payload: dict, real_ids: Dict[str, int], player_map: Dict[str, int],
+                         season: object = None, activity: Optional[Dict[int, set]] = None) -> Tuple[List[dict], int]:
+    """PURE: ESPN summary payload -> (actions list, n_unmapped_sub_person_ids).
+
+    When ``season``/``activity`` are given, name-joins to a >=2-season-stale id
+    are rejected to personId None (the retired/wrong-athlete guard); default
+    None keeps the guard inert."""
     team_map = _team_map_from_summary(payload, real_ids)
     id_to_name = _espn_id_to_name(payload)
     actions: List[dict] = []
     unmapped = 0
     for play in payload.get("plays") or []:
-        for a in _convert_play(play, team_map, id_to_name, player_map):
+        for a in _convert_play(play, team_map, id_to_name, player_map, season, activity):
             if a["actionType"] == "substitution" and a.get("personId") is None:
                 unmapped += 1
             actions.append(a)
@@ -232,6 +252,7 @@ def backfill(season: str = "2025-26", sleep: float = 0.7, limit: int = 0,
     pbp_dir.mkdir(parents=True, exist_ok=True)
     real_ids = _real_team_id_map()
     player_map = load_player_map()
+    activity = load_activity_windows()  # feeds the stale-id guard in convert_game_actions
     todo = _missing_games(season, pbp_dir=pbp_dir)
     if limit > 0:
         todo = todo.head(limit)
@@ -270,7 +291,7 @@ def backfill(season: str = "2025-26", sleep: float = 0.7, limit: int = 0,
                 c["not_final"] += 1
                 log.warning("gid=%s eid=%s status=%r not FINAL -- skipped", gid, eid, status)
                 continue
-            actions, unmapped = convert_game_actions(payload, real_ids, player_map)
+            actions, unmapped = convert_game_actions(payload, real_ids, player_map, season, activity)
             if not actions:
                 c["empty"] += 1
                 log.warning("gid=%s eid=%s: empty action parse -- skipped", gid, eid)

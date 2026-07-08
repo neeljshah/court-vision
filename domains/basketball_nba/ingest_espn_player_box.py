@@ -52,6 +52,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 _CACHE_DIR = _REPO_ROOT / "data" / "cache" / "quarter_box"
 _GAMES_PARQUET = _REPO_ROOT / "data" / "domains" / "basketball_nba" / "games.parquet"
 _BOX_PARQUET = _REPO_ROOT / "data" / "domains" / "basketball_nba" / "player_boxscores.parquet"
+_FLAGS_PATH = _REPO_ROOT / "data" / "domains" / "basketball_nba" / "id_resolution_flags.jsonl"
 
 _UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0.0.0"
 _SB_URL = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates={date}"
@@ -83,6 +84,61 @@ def load_player_map(box_parquet: Path = _BOX_PARQUET) -> Dict[str, int]:
     return {_norm_name(n): int(pid) for pid, n in zip(b["player_id"], b["player_name"])}
 
 
+def _season_start_year(season: object) -> object:
+    """Leading 4-digit start year of a season label ('2024-25' -> 2024); None if unparseable."""
+    m = re.match(r"(\d{4})", str(season))
+    return int(m.group(1)) if m else None
+
+
+def load_activity_windows(box_parquet: Path = _BOX_PARQUET) -> Dict[int, set]:
+    """player_id -> set of season START-YEARS present in the box parquet.
+
+    The self-contained basis for ``is_stale_resolution``: as the box parquet
+    accrues seasons, a name-join that lands on a long-retired player's id
+    becomes detectable purely from the id's own on-disk activity span.
+    """
+    b = pd.read_parquet(box_parquet, columns=["player_id", "season"]).drop_duplicates()
+    out: Dict[int, set] = {}
+    for pid, season in zip(b["player_id"], b["season"]):
+        y = _season_start_year(season)
+        if y is not None:
+            out.setdefault(int(pid), set()).add(y)
+    return out
+
+
+def is_stale_resolution(pid: int, season: object, activity: Dict[int, set]) -> bool:
+    """CONSERVATIVE guard: True iff a name-join to *pid* looks like a retired /
+    wrong athlete rather than a legitimate current or returning player.
+
+    Rule -- derived ENTIRELY from the box parquet's own season coverage
+    (``activity`` = player_id -> set of season start-years). Flag TRUE only when
+    ALL hold:
+      * *pid* has box rows in some season BEFORE ``season`` (a prior history), AND
+      * its most-recent prior season is >= 2 FULL seasons stale, i.e.
+        ``current_start - last_prior_start >= 3`` (e.g. last 2021-22 vs a
+        2024-25 game: 2024 - 2021 = 3), AND
+      * *pid* has NO rows in an ADJACENT season (start-year ``current-1`` or
+        ``current+1``).
+
+    Deliberately DOES NOT flag: an id with no prior rows (a debut/rookie); a
+    player who missed exactly ONE season then returned (``last_prior_start ==
+    current-2`` -> gap 2, below the >=3 bar); anyone active in an adjacent
+    season. Absent that stale-then-silent signature the join is accepted.
+    """
+    cur = _season_start_year(season)
+    if cur is None:
+        return False
+    yrs = activity.get(int(pid))
+    if not yrs:
+        return False
+    prior = [y for y in yrs if y < cur]
+    if not prior:
+        return False
+    if any(y in (cur - 1, cur + 1) for y in yrs):
+        return False
+    return max(prior) <= cur - 3
+
+
 def _num(s: object) -> float:
     try:
         return float(str(s).replace("+", ""))
@@ -90,11 +146,23 @@ def _num(s: object) -> float:
         return 0.0
 
 
-def parse_summary_players(payload: dict, player_map: Dict[str, int]) -> List[dict]:
+def parse_summary_players(payload: dict, player_map: Dict[str, int],
+                          season: object = None, activity: Dict[int, set] = None,
+                          roster_ids: Dict[str, set] = None) -> List[dict]:
     """ESPN summary payload -> quarter_box-shaped player records (pure, no I/O).
 
     Unmapped names get player_id = -espn_id (synthetic; caller logs via the
     'player_id_mapped' flag). DNP athletes (empty stats) are skipped.
+
+    ID-RESOLUTION GUARD (root cause of the Elfrid-Payton contamination): when
+    ``season`` is given, a name-join that resolves to an id is REJECTED to the
+    same negative-placeholder convention (and marked with ``resolution_flag`` +
+    ``rejected_id`` so the caller can log it) if EITHER
+      * ``activity`` is given and ``is_stale_resolution`` fires (the id's box
+        activity is >= 2 full seasons stale -- a retired/wrong athlete), OR
+      * ``roster_ids`` is given (team_abbr -> set of valid ids from that
+        season's PBP personIds) and the id is absent from that team's roster.
+    Both default None -> guard inert (back-compat with existing callers/tests).
     """
     out: List[dict] = []
     for team_block in (payload.get("boxscore", {}).get("players") or []):
@@ -109,7 +177,14 @@ def parse_summary_players(payload: dict, player_map: Dict[str, int]) -> List[dic
                 meta = ath.get("athlete") or {}
                 name = str(meta.get("displayName", ""))
                 espn_id = int(meta.get("id", 0) or 0)
-                nba_id = player_map.get(_norm_name(name))
+                resolved = player_map.get(_norm_name(name))
+                reason = None
+                if resolved is not None and season is not None:
+                    if activity is not None and is_stale_resolution(resolved, season, activity):
+                        reason = "stale_id_ge2_seasons"
+                    elif roster_ids is not None and resolved not in roster_ids.get(nba_abbr, set()):
+                        reason = "roster_absent"
+                nba_id = None if reason else resolved
                 rec = {
                     "player_id": nba_id if nba_id is not None else -espn_id,
                     "player_id_mapped": nba_id is not None,
@@ -119,6 +194,9 @@ def parse_summary_players(payload: dict, player_map: Dict[str, int]) -> List[dic
                     "start_position": "F" if ath.get("starter") else "",
                     "min": str(by_key.get("minutes", "0")),
                 }
+                if reason:
+                    rec["resolution_flag"] = reason
+                    rec["rejected_id"] = int(resolved)
                 for k, (mf, af) in _DASH_KEYS.items():
                     parts = str(by_key.get(k, "0-0")).split("-")
                     rec[mf] = _num(parts[0])
@@ -157,6 +235,7 @@ def backfill(season: str = "2025-26", limit: int = 0, sleep: float = 1.5) -> dic
     """
     _CACHE_DIR.mkdir(parents=True, exist_ok=True)
     player_map = load_player_map()
+    activity = load_activity_windows()  # as-of snapshot; feeds the stale-id guard
     todo = _missing_games(season)
     if limit > 0:
         todo = todo.head(limit)
@@ -165,7 +244,8 @@ def backfill(season: str = "2025-26", limit: int = 0, sleep: float = 1.5) -> dic
 
     sess = requests.Session()
     sess.headers["User-Agent"] = _UA
-    c = {"written": 0, "no_event_match": 0, "not_final": 0, "empty": 0, "unmapped_players": 0}
+    c = {"written": 0, "no_event_match": 0, "not_final": 0, "empty": 0,
+         "unmapped_players": 0, "id_flagged": 0}
 
     for date in dates:
         sb = _get_json(sess, _SB_URL.format(date=date), sleep)
@@ -191,11 +271,22 @@ def backfill(season: str = "2025-26", limit: int = 0, sleep: float = 1.5) -> dic
                 c["not_final"] += 1
                 log.warning("gid=%s eid=%s status=%r not FINAL -- skipped", gid, eid, status)
                 continue
-            players = parse_summary_players(payload, player_map)
+            players = parse_summary_players(payload, player_map, season=season, activity=activity)
             if not players:
                 c["empty"] += 1
                 log.warning("gid=%s eid=%s: empty player parse -- skipped", gid, eid)
                 continue
+            flagged = [p for p in players if p.get("resolution_flag")]
+            if flagged:
+                with _FLAGS_PATH.open("a", encoding="utf-8") as fh:
+                    for p in flagged:
+                        fh.write(json.dumps({
+                            "game_id": gid, "season": season, "team": p["team_abbreviation"],
+                            "espn_name": p["player_name"], "rejected_id": p["rejected_id"],
+                            "reason": p["resolution_flag"],
+                        }, ensure_ascii=False) + "\n")
+                c["id_flagged"] += len(flagged)
+                log.warning("gid=%s rejected %d stale/roster-absent id-joins", gid, len(flagged))
             unmapped = [p["player_name"] for p in players if not p["player_id_mapped"]]
             if unmapped:
                 c["unmapped_players"] += len(unmapped)
