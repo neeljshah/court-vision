@@ -65,10 +65,15 @@ def load_shot_events_xy(game_json: dict) -> pd.DataFrame:
     rows = []
     for a in game_json["game"]["actions"]:
         if a.get("actionType") in ("2pt", "3pt") and a.get("teamId") and a.get("personId") and a.get("x") is not None:
+            # Fold both court ends onto one (x = length-percent, court is symmetric):
+            # CDN-native pbp records a team's Q1/Q3 shots at opposite ends, which
+            # counted an end-switch as huge fake 'spacing'; espn_derived files are
+            # already single-ended -- folding makes every source comparable.
+            x = float(a["x"])
             rows.append({
                 "game_id": game_id, "team_id": a["teamId"], "period": a["period"],
                 "elapsed_s": _elapsed_s(a["period"], a["clock"]), "person_id": a["personId"],
-                "x": float(a["x"]), "y": float(a["y"]),
+                "x": min(x, 100.0 - x), "y": float(a["y"]),
             })
     return pd.DataFrame(rows)
 
