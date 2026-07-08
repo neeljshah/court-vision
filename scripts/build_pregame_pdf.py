@@ -332,7 +332,7 @@ def build_pdf():
     ))
     story.append(Paragraph(
         "All 9 bets at Pinnacle. Three-way verified (model + WCF series + Pin sharp). "
-        "Stake $260 each = 4% Kelly cap x 0.65 playoff. Total exposure $2,340 (23% of $11,043 bankroll).",
+        "Stake sizing: user-defined units; this demo shows layout only, no recommendation.",
         H_SUB,
     ))
     story.append(Spacer(1, 0.05*inch))

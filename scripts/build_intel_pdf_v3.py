@@ -910,7 +910,7 @@ def slate_risk_summary():
         ["Total at risk", f"${total_stake:,.0f}",
          f"{total_stake/BR*100:.1f}% of $11,043 bankroll — within 25% slate cap"],
         ["Expected profit", f"${exp_profit:+,.0f}",
-         f"Avg leg EV {avg_ev:.1f}% × $260 × 9 — model's +edge claim"],
+         f"Avg leg EV {avg_ev:.1f}% × $260 × 9 — model's probability estimate vs market price"],
         ["Best case (all hit)", f"${best_case:+,.0f}",
          "All 9 legs win — multiplicative payoff on 21% bankroll"],
         ["Worst case (all miss)", f"${worst_case:+,.0f}",
@@ -1172,17 +1172,17 @@ def middles_and_hedges_table():
     rows.append([
         Paragraph("<b>Wemby REB UNDER 13.5</b> at -117 — hedge", BODY_SM),
         "Live OVER if &gt; 8 REB by half",
-        Paragraph("Lock $50 profit if line moves to 11.5", SMALL),
+        Paragraph("Hedge trigger if line moves to 11.5", SMALL),
     ])
     rows.append([
         Paragraph("<b>Kornet PTS OVER 2.5</b> at -115 — hedge", BODY_SM),
         "Live UNDER if 0 pts by Q3",
-        Paragraph("Lock $80 profit if line moves to 4.5", SMALL),
+        Paragraph("Hedge trigger if line moves to 4.5", SMALL),
     ])
     rows.append([
         Paragraph("<b>K.Johnson PTS OVER 6.5</b> at +105 — hedge", BODY_SM),
         "Live UNDER if &lt; 3 pts by half",
-        Paragraph("Net guaranteed +$95 if line moves to 9.5", SMALL),
+        Paragraph("Hedge trigger if line moves to 9.5", SMALL),
     ])
     t = Table(rows, colWidths=[3.0*inch, 2.7*inch, 1.8*inch])
     t.setStyle(TableStyle([
