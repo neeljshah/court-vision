@@ -59,7 +59,9 @@ def fixture_claims(tmp_path, monkeypatch):
     top=Beta) plus one attribution axis claim (quality, top=Beta -- disagrees
     with primary A's #1). All three VERIFIED. The verdict file starts
     pointing at A via _ASPECT_CONFIGS' declared mapping."""
-    claims_path = tmp_path / "claims.jsonl"
+    # store name must be in compose_best._BEST_STORES -- the composer loads
+    # through pairs_for_claim_stores (bulk-store MemoryError guard, 2026-07-07)
+    claims_path = tmp_path / "nba_canonical_shooter_claims.jsonl"
     validation_path = tmp_path / "validation.json"
 
     primary_a = _ranking_claim(_PRIMARY_A, "naive_comp", [
@@ -314,7 +316,9 @@ def fixture_domain_claims(tmp_path, monkeypatch):
     """One primary ranking claim where the naive-score #1 (a rim-running
     center) has fg3m=2 -- the documented face-validity failure mode -- and
     the naive-score #2 clears the domain floor (fg3m=150)."""
-    claims_path = tmp_path / "claims.jsonl"
+    # store name must be in compose_best._BEST_STORES -- the composer loads
+    # through pairs_for_claim_stores (bulk-store MemoryError guard, 2026-07-07)
+    claims_path = tmp_path / "nba_canonical_shooter_claims.jsonl"
     validation_path = tmp_path / "validation.json"
 
     primary = _ranking_claim(_PRIMARY_DOMAIN, "naive_comp", [
@@ -378,7 +382,9 @@ def test_unfiltered_rank1_reported_alongside_filtered_conclusion(fixture_domain_
 def test_missing_domain_field_is_unanswerable_never_silently_skipped(tmp_path, monkeypatch):
     # A ranking row set with NO fg3m field at all -- the filter must fail
     # closed to UNANSWERABLE, never silently rank without it.
-    claims_path = tmp_path / "claims.jsonl"
+    # store name must be in compose_best._BEST_STORES -- the composer loads
+    # through pairs_for_claim_stores (bulk-store MemoryError guard, 2026-07-07)
+    claims_path = tmp_path / "nba_canonical_shooter_claims.jsonl"
     validation_path = tmp_path / "validation.json"
     primary = _ranking_claim(_PRIMARY_DOMAIN, "naive_comp", [
         {"rank": 1, "player_id": 1, "player_name": "No Domain Field Player", "value": 0.5, "n": 40},

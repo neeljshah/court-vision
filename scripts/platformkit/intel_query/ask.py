@@ -55,18 +55,35 @@ _BEST_ASPECT_ALIASES: dict[str, str] = {"shooter": "shooter", "shooters": "shoot
 _BEST_SINGLE_RE = re.compile(r"\bbest\s+(shooter|shooters)\b", re.IGNORECASE)
 _TOP_N_ANYWHERE_RE = re.compile(r"\btop\s*[- ]?\s*\d+\b", re.IGNORECASE)
 
+# SHOOTER TRAIT PROFILE family: "what kind of shooter is X?" is a VECTOR
+# question (multi-axis profile), not a ranking/scalar question -- routed to
+# compose_profile(), which assembles per-axis VERIFIED claims and never
+# collapses them into one score. Checked before families.classify (same
+# pattern as FAMILY_BEST above).
+FAMILY_SHOOTER_PROFILE = "shooter_profile"
+_PROFILE_RE = re.compile(
+    r"\bwhat kind of shooter is\s+(?P<name>[A-Za-z][A-Za-z .'\-]*?)\s*\??\s*$"
+    r"|\bshooter profile (?:for|of)\s+(?P<name2>[A-Za-z][A-Za-z .'\-]*?)\s*\??\s*$",
+    re.IGNORECASE,
+)
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 INTEL_CLAIMS_DIR = REPO_ROOT / "data" / "cache" / "intel_claims"
 
-# Two producer JSONLs predate the "<stem>_validation.json in the same
-# directory" naming convention every OTHER store follows, and their
+# One producer JSONL predates the "<stem>_validation.json in the same
+# directory" naming convention every OTHER store follows, and its
 # validation summary lives under data/frontend/ops/ instead. This is the
 # ONE static fallback the discovery below applies -- every store added
 # after this map was written (wnba/tennis_v3/catcher_framing/platoon_split/
 # umpire_zone/nba_fit_ingredient/...) is found by the glob with zero
 # registration here.
+# (nba_shooting_claims.jsonl was REMOVED from this map 2026-07-07: its legacy
+# shared path data/frontend/ops/intel_claims_validation.json had been
+# clobbered by a later quality-claims validator run using the same
+# DEFAULT_OUTPUT, silently hiding all 20 of its VERIFIED claims from ask().
+# It now pairs with the convention-named in-directory
+# nba_shooting_claims_validation.json like every other store.)
 _LEGACY_VALIDATION_OVERRIDES: dict[str, Path] = {
-    "nba_shooting_claims.jsonl": REPO_ROOT / "data" / "frontend" / "ops" / "intel_claims_validation.json",
     "gate_verdict_claims.jsonl": REPO_ROOT / "data" / "frontend" / "ops" / "intel_verdict_claims_validation.json",
 }
 
@@ -110,6 +127,22 @@ def discover_claim_source_pairs(claims_dir: Path = INTEL_CLAIMS_DIR) -> tuple[tu
 # static-tuple contract every caller/test already expects) but produced by
 # discover_claim_source_pairs's glob rather than a hand-maintained list.
 CLAIM_SOURCE_PAIRS: tuple[tuple[Path, Path], ...] = discover_claim_source_pairs()
+
+
+def pairs_for_claim_stores(store_names: tuple[str, ...],
+                           pairs: tuple[tuple[Path, Path], ...] | None = None,
+                           ) -> tuple[tuple[Path, Path], ...]:
+    """Subset of claim-source pairs whose claims-file NAME is in store_names.
+    Composers MUST load through this: bulk rate stores (nba_player_box_rate
+    et al) are GBs, and a bare load_verified_claims() whole-loads every store
+    (live MemoryError, 2026-07-07). pairs=None re-reads the CURRENT
+    module-level CLAIM_SOURCE_PAIRS at call time (monkeypatch-safe, same
+    contract as load_verified_claims)."""
+    if pairs is None:
+        pairs = CLAIM_SOURCE_PAIRS
+    wanted = set(store_names)
+    return tuple(p for p in pairs if p[1].name in wanted)
+
 
 # claim_id of each fit-ingredient claim compose_fit() joins -- a static
 # registry (not a glob) so compose_fit only ever reads claims this lane
@@ -531,6 +564,25 @@ def _try_best_x(question: str) -> dict[str, Any] | None:
     return result
 
 
+def _try_shooter_profile(question: str) -> dict[str, Any] | None:
+    """"what kind of shooter is <name>" / "shooter profile for <name>" ->
+    compose_profile(name); anything else returns None so ask() falls through
+    to the existing family dispatch unchanged."""
+    m = _PROFILE_RE.search(question or "")
+    if not m:
+        return None
+    name = (m.group("name") or m.group("name2") or "").strip()
+    if not name:
+        return None
+    from scripts.platformkit.intel_query.compose_profile import compose_profile  # local: avoid import cycle
+
+    result = compose_profile(name)
+    result["family"] = FAMILY_SHOOTER_PROFILE
+    result["question"] = question
+    result["answerable"] = result.get("status") == "OK"
+    return result
+
+
 def ask(question: str) -> dict[str, Any]:
     """Answer `question` ONLY from VERIFIED claims. Never guesses, never
     computes from raw data, never uses an UNVERIFIABLE/MISMATCH claim.
@@ -544,6 +596,9 @@ def ask(question: str) -> dict[str, Any]:
     best_x = _try_best_x(question)
     if best_x is not None:
         return best_x
+    profile = _try_shooter_profile(question)
+    if profile is not None:
+        return profile
     parsed = classify(question)
 
     if parsed.family is None:
