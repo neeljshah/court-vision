@@ -186,6 +186,23 @@ _SURFACE_SPLITS = [
     {"name": "grass", "col": "surface", "eq": "Grass"},
 ]
 
+# tennis_serve_return_matchup_claims (organization-sprint response/interaction
+# lane): source is a DERIVED parquet (domains/tennis/
+# serve_return_interaction.py's build_pairing_claims_source()), one row per
+# (match, perspective) -- 2 rows/match, self player's own serve tier (Big/
+# Normal, median-split within tour+season on serve_return_profiles.py's
+# serve_strength) vs the OPPONENT's return tier (Elite/Normal, same split on
+# return_strength). pairing_key is a SCALAR 4-value column ("Big_vs_Elite"
+# etc.), not a pair-key, so generate_family's pair-key restriction does not
+# apply. row_id is unique per perspective-row (event_id + perspective index)
+# so count(row_id) correctly counts both rows per match, unlike event_id
+# which repeats.
+_SERVE_RETURN_MATCHUP_SRC = "data/domains/tennis/serve_return_matchup_pairing.parquet"
+
+_SERVE_RETURN_MATCHUP_DIMS = [
+    {"metric": "self_win_rate", "agg": {"num": "sum(self_win)", "den": "count(row_id)"}},
+]
+
 GRID: dict = {
     "sport": "tennis",
     "families": [
@@ -230,6 +247,19 @@ GRID: dict = {
                 "career": {"event_id": 40},
                 "season": {"event_id": 15},
                 "split": {"event_id": 15},
+            },
+        },
+        {
+            "family": "tennis_serve_return_matchup_claims",
+            "source": _SERVE_RETURN_MATCHUP_SRC,
+            "grain": "per_match_perspective",
+            "entity_key": "pairing_key",
+            "entity_name_col": "pairing_key",
+            "dims": _SERVE_RETURN_MATCHUP_DIMS,
+            "windows": [{"name": "career_to_date", "filter": {}}],
+            "context_splits": [],
+            "floors": {
+                "career": {"row_id": 100},
             },
         },
     ],
