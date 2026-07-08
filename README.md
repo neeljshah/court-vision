@@ -93,11 +93,12 @@ is an adapter, not a kernel rewrite; adding a market is a read off the same anch
 Every output is a calibrated probability or a point forecast with dispersion -- never a
 recommended wager. The buyer-facing CLI stamps `"edge_claimed": false` on every response.
 
-**NBA 2025-26 season coverage.** `games.parquet` carries all 1,156 games of the in-progress
-2025-26 season (vs 1,230 for a completed season); per-player full-game boxscores are backfilled
-into the same `quarter_box` cache the quarter-level pipeline already reads (q0 = full-game
-totals, q1-q4 = real quarters, zero downstream transform changes), closing the gap to 74/1,156
-games still uncached as of this writing.
+**NBA 2025-26 season coverage.** `games.parquet` carries all 1,156 scheduled games of the
+2025-26 season; per-player boxscores now cover the FULL season -- 74 games from the original
+quarter-level cache plus 1,082 games backfilled from ESPN full-game summaries into the same
+`quarter_box` cache the pipeline already reads (q0 = full-game totals, q1-q4 = real quarters,
+zero downstream transform changes). The season's canonical shooter leaderboard claim is
+produced and independently VERIFIED on this corpus.
 
 **Ask it what kind of shooter someone is.** Not a ranking -- a ten-axis trait vector
 (volume/efficiency/difficulty/gravity/context), each axis citing its own VERIFIED claim, never
