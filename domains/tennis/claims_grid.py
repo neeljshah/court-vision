@@ -129,11 +129,42 @@ the denominator, not by adding a floor -- both dims, both families):
   the HONEST PRE/POST-FLOOR COUNTS above remain exactly as measured (floors
   key off `event_id`, an orthogonal, never-null column).
 
+RANK-9 CENSUS FAMILY ADDED (claims-scale lane): tennis_fatigue_schedule_
+density, entity_key=player_id, source=data/domains/tennis/
+schedule_density.parquet -- a DERIVED parquet (domains/tennis/
+ingest_schedule_density.py), not matches.parquet directly, because rest-day
+and rolling-match-count features need each player's FULL match history
+melted from the wide p1_id/p2_id columns into one long per-player-appearance
+table, plus temporal diff/rolling computation the pure-data grid format
+cannot express (see that module's own docstring). Its `year` window (2015-
+2025) is legitimate here because the prep script derives it from `date`,
+same pattern as the mlb_bullpen_fatigue_chains family added above this
+session.
+
+HONEST RE-MEASUREMENT (real on-disk data via the prep script's build(),
+replaying the exact factory floor+groupby logic, this session): 61,232
+player-match rows / 1,273 distinct players. career_to_date: 287/1,273 clear
+>=40 matches. 3 surface splits: 744 (player,surface) cells clear >=15 (of
+2,483). 11 year windows (2015-2025): 1,274 (player,year) cells clear >=15
+(of 4,568). 3 dims x these window-slots -> ~6,915 post-floor exploded claims
+(861 career + 2,232 surface-split + 3,822 year-split).
+
 CLI: none -- this module is imported, never run directly.
 """
 from __future__ import annotations
 
 _MATCHES = "data/domains/tennis/matches.parquet"
+_SCHEDULE_DENSITY = "data/domains/tennis/schedule_density.parquet"
+
+_SCHEDULE_DIMS = [
+    {"metric": "rest_days_avg", "agg": {"num": "sum(rest_days)", "den": "count(rest_days)"}},
+    {"metric": "matches_last_7d_avg", "agg": {"num": "sum(matches_last_7d)", "den": "count(matches_last_7d)"}},
+    {"metric": "matches_last_14d_avg", "agg": {"num": "sum(matches_last_14d)", "den": "count(matches_last_14d)"}},
+]
+
+_SCHEDULE_CAREER_AND_YEAR_WINDOWS = [{"name": "career_to_date", "filter": {}}] + [
+    {"name": f"year_{y}", "filter": {"year": y}} for y in range(2015, 2026)
+]
 
 _P1_DIMS = [
     {"metric": "rank_at_match", "agg": {"num": "sum(p1_rank)", "den": "count(p1_rank)"}},
@@ -183,6 +214,21 @@ GRID: dict = {
             "context_splits": _SURFACE_SPLITS,
             "floors": {
                 "career": {"event_id": 40},
+                "split": {"event_id": 15},
+            },
+        },
+        {
+            "family": "tennis_fatigue_schedule_density",
+            "source": _SCHEDULE_DENSITY,
+            "grain": "per_player_match",
+            "entity_key": "player_id",
+            "entity_name_col": "player_name",
+            "dims": _SCHEDULE_DIMS,
+            "windows": _SCHEDULE_CAREER_AND_YEAR_WINDOWS,
+            "context_splits": _SURFACE_SPLITS,
+            "floors": {
+                "career": {"event_id": 40},
+                "season": {"event_id": 15},
                 "split": {"event_id": 15},
             },
         },
