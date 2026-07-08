@@ -20,6 +20,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
+from scripts.platformkit.autoloop import maintenance_templates as MT
 from scripts.platformkit.autoloop import standing_prereg as SP
 from scripts.platformkit.io_atomic import append_jsonl_atomic, write_json_atomic
 
@@ -193,6 +194,7 @@ def run_cycle(*, templates_dir: Optional[Path] = None,
              claims_regen_fn: Optional[Callable[[SP.Template], Dict[str, Any]]] = None,
              corpus_sha_fn: Optional[Callable[[SP.Template], Optional[str]]] = None,
              refresh_fn: Optional[Callable[[], None]] = None,
+             maintenance_fn: Optional[Callable[..., Dict[str, Any]]] = None,
              report_path: Optional[Path] = None, queue_path: Optional[Path] = None,
              heartbeat_path: Optional[Path] = None, k_ledger_dir: Optional[Path] = None,
              watermark_path: Optional[Path] = None, clock: Optional[Callable[[], float]] = None) -> Dict[str, Any]:
@@ -217,6 +219,7 @@ def run_cycle(*, templates_dir: Optional[Path] = None,
             row["status"], row["error"] = "template_error", str(exc)[:200]
             per_template.append(row)
 
+    maintenance = (maintenance_fn or MT.run_all)(watermarks, queue_fn=lambda row: _queue(row, queue_path))
     SP.save_watermarks(watermarks, path=watermark_path)
     (refresh_fn or _refresh_scoreboards)()
 
@@ -224,6 +227,7 @@ def run_cycle(*, templates_dir: Optional[Path] = None,
         "ts": _now_iso(), "component": COMPONENT,
         "wall_clock_sec": round((clock or _time.time)() - t0, 3),
         "per_template": per_template, "human_queue_appended": human_queue_appended,
+        "maintenance": maintenance,
     }
     if _honesty_clean(report):
         write_json_atomic(report_path or REPORT_PATH, report)
