@@ -36,6 +36,8 @@ import re
 from pathlib import Path
 from typing import Dict, Optional, Tuple
 
+from scripts.platformkit.gamebrief.team_ids import TEAM_ID_TO_ABBR
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 CLAIMS_DIR = REPO_ROOT / "data" / "cache" / "intel_claims"
 
@@ -86,7 +88,11 @@ def _team_paired_values(ranking) -> Dict[str, float]:
     metric's value across all pair entries sharing a team_id, for this one
     (metric, window) claim. Works whether the OTHER pair key is a player
     (nba_on_off/gravity_proxy: mean over that team's rostered players) or a
-    lineup (nba_lineup_spacing: mean over that team's tracked lineups)."""
+    lineup (nba_lineup_spacing: mean over that team's tracked lineups).
+
+    Numeric NBA franchise ids (1610612xxx) are remapped to tricodes here --
+    the gate's games_df keys teams by tricode (BOS/DEN), so leaving raw ids
+    silently zeroes every fdiff (a fake NULL, not a tested one)."""
     sums: Dict[str, float] = {}
     counts: Dict[str, int] = {}
     for r in ranking:
@@ -94,7 +100,7 @@ def _team_paired_values(ranking) -> Dict[str, float]:
         val = r.get("value")
         if team is None or val is None:
             continue
-        key = str(team)
+        key = TEAM_ID_TO_ABBR.get(team, str(team)) if isinstance(team, int) else str(team)
         sums[key] = sums.get(key, 0.0) + float(val)
         counts[key] = counts.get(key, 0) + 1
     return {k: sums[k] / counts[k] for k in sums}

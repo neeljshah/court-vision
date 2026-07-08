@@ -44,11 +44,14 @@ from typing import Any
 import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-_SYNERGY_SRC = REPO_ROOT / "data" / "cache" / "team_system" / "interactions" / "lineup_synergy_2025_26.parquet"
+_INTERACTIONS_DIR = REPO_ROOT / "data" / "cache" / "team_system" / "interactions"
 _OUT_DIR = REPO_ROOT / "data" / "cache" / "intel_claims"
 _CLAIMS_OUT = _OUT_DIR / "nba_lineup_synergy_claims.jsonl"
 
-SEASON_WINDOW = "2025_26"
+# season window -> human corpus descriptor. Both windows are emitted into the
+# SAME store; the weighting gate's prior_season_metrics resolves the 2024_25
+# window itself when evaluating 2025-26 (leak-free design (a)).
+SEASONS = {"2025_26": "1192-game", "2024_25": "1230-game"}
 MIN_LINEUP_MINUTES = 100.0
 
 
@@ -56,8 +59,10 @@ def _rel(path: Path) -> str:
     return str(path.relative_to(REPO_ROOT)).replace("\\", "/")
 
 
-def build_synergy_claim() -> dict[str, Any]:
-    df = pd.read_parquet(_SYNERGY_SRC)
+def build_synergy_claim(season: str = "2025_26") -> dict[str, Any]:
+    src = _INTERACTIONS_DIR / f"lineup_synergy_{season}.parquet"
+    corpus = SEASONS[season]
+    df = pd.read_parquet(src)
     n_considered = len(df)
     qualifiers = df[(df["min"] >= MIN_LINEUP_MINUTES) & df["synergy_residual"].notna()].copy()
     n_excluded = n_considered - len(qualifiers)
@@ -74,24 +79,24 @@ def build_synergy_claim() -> dict[str, Any]:
         })
 
     return {
-        "claim_id": f"nba_lineup_synergy_residual_full_{SEASON_WINDOW}",
+        "claim_id": f"nba_lineup_synergy_residual_full_{season}",
         "kind": "ranking",
         "question": (
             f"Which NBA 5-man lineups outperform (or underperform) what their members' "
             f"individual on/off net ratings alone would predict (synergy residual, full "
-            f"population above floor, {SEASON_WINDOW} 1192-game slice)?"
+            f"population above floor, {season} {corpus} slice)?"
         ),
         "criteria": {
             "metric": "synergy_residual",
             "formula": "synergy_residual",
-            "window": f"season_{SEASON_WINDOW}_nba_lineup_corpus",
+            "window": f"season_{season}_nba_lineup_corpus",
             "min_sample": {"min": MIN_LINEUP_MINUTES},
             "direction": "desc",
             "value_precision": 4,
             "entity_key": ["team_id", "lineup_key"],
         },
         "ranking": ranking,
-        "source_files": [_rel(_SYNERGY_SRC)],
+        "source_files": [_rel(src)],
         "computed_at": datetime.now(timezone.utc).isoformat(),
         "n_considered": n_considered,
         "n_excluded_below_floor": n_excluded,
@@ -99,11 +104,11 @@ def build_synergy_claim() -> dict[str, Any]:
         "caveats": [
             "synergy_residual = lineup's own actual net rating per48 (from stint-level "
             "pts_for/pts_against) minus the mean of its 5 members' individual "
-            "net_rating_on_per48 (from on_off.py's on_off_2025_26.parquet) -- from "
-            "data/cache/team_system/interactions/lineup_synergy_2025_26.parquet.",
+            f"net_rating_on_per48 (from on_off.py's on_off_{season}.parquet) -- from "
+            f"{_rel(src)}.",
             f"min_sample floor min>={MIN_LINEUP_MINUTES} minutes AND synergy_residual not "
             "null (null means at least one of the 5 members lacked >=100 individual "
-            "on-court minutes in on_off_2025_26.parquet) -- reapplied here on the raw "
+            f"on-court minutes in on_off_{season}.parquet) -- reapplied here on the raw "
             "columns, independent of the source file's own `qualifies` flag.",
             "Lineup-keyed entity (team_id, lineup_key): the 5-man unit is the ranking "
             "entity, not a player.",
@@ -124,18 +129,21 @@ def write_claims(claims: list[dict[str, Any]], out_path: Path = _CLAIMS_OUT) -> 
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Emit NBA lineup-synergy-residual ranking claim")
+    parser = argparse.ArgumentParser(description="Emit NBA lineup-synergy-residual ranking claims")
     parser.add_argument("--output", type=str, default=str(_CLAIMS_OUT))
+    parser.add_argument("--season", type=str, default="all", choices=[*SEASONS, "all"])
     args = parser.parse_args(argv)
 
-    claim = build_synergy_claim()
-    out_path = write_claims([claim], Path(args.output))
-    print(
-        f"{claim['claim_id']}: n_considered={claim['n_considered']} "
-        f"n_excluded_below_floor={claim['n_excluded_below_floor']} "
-        f"top1={claim['ranking'][0] if claim['ranking'] else None}"
-    )
-    print(f"wrote 1 claim -> {out_path}")
+    seasons = list(SEASONS) if args.season == "all" else [args.season]
+    claims = [build_synergy_claim(s) for s in seasons]
+    out_path = write_claims(claims, Path(args.output))
+    for claim in claims:
+        print(
+            f"{claim['claim_id']}: n_considered={claim['n_considered']} "
+            f"n_excluded_below_floor={claim['n_excluded_below_floor']} "
+            f"top1={json.dumps(claim['ranking'][0]) if claim['ranking'] else None}"
+        )
+    print(f"wrote {len(claims)} claims -> {out_path}")
     return 0
 
 

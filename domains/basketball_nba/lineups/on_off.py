@@ -135,9 +135,11 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Build NBA on/off splits from stint table")
     parser.add_argument("--stints", type=str, default=str(_STINTS_PATH))
     parser.add_argument("--out", type=str, default=str(_OUT_PATH))
+    parser.add_argument("--pbp-dir", type=str, default=None, help="override input dir (default: team_system/pbp)")
     parser.add_argument("--limit", type=int, default=None)
     args = parser.parse_args(argv)
 
+    pbp_dir = Path(args.pbp_dir) if args.pbp_dir else _PBP_DIR
     stints_df = pd.read_parquet(args.stints)
     game_ids = stints_df["game_id"].unique()
     if args.limit:
@@ -146,7 +148,7 @@ def main(argv: list[str] | None = None) -> int:
 
     shot_frames = []
     for gid in game_ids:
-        fp = _PBP_DIR / f"{gid}.json"
+        fp = pbp_dir / f"{gid}.json"
         if fp.exists():
             shot_frames.append(load_shot_events(json.loads(fp.read_text(encoding="utf-8"))))
     shots_df = pd.concat(shot_frames, ignore_index=True) if shot_frames else pd.DataFrame(

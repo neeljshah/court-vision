@@ -42,11 +42,14 @@ from typing import Any
 import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-_ON_OFF_SRC = REPO_ROOT / "data" / "cache" / "team_system" / "lineups" / "on_off_2025_26.parquet"
+_LINEUPS_DIR = REPO_ROOT / "data" / "cache" / "team_system" / "lineups"
 _OUT_DIR = REPO_ROOT / "data" / "cache" / "intel_claims"
 _CLAIMS_OUT = _OUT_DIR / "nba_gravity_proxy_claims.jsonl"
 
-SEASON_WINDOW = "2025_26"
+# season window -> human corpus descriptor. Both windows are emitted into the
+# SAME store; the weighting gate's prior_season_metrics resolves the 2024_25
+# window itself when evaluating 2025-26 (leak-free design (a)).
+SEASONS = {"2025_26": "196-game", "2024_25": "1230-game"}
 MIN_ON_MINUTES = 300.0
 MIN_TEAMMATE_FGA = 200
 
@@ -55,8 +58,10 @@ def _rel(path: Path) -> str:
     return str(path.relative_to(REPO_ROOT)).replace("\\", "/")
 
 
-def build_gravity_claim() -> dict[str, Any]:
-    df = pd.read_parquet(_ON_OFF_SRC)
+def build_gravity_claim(season: str = "2025_26") -> dict[str, Any]:
+    src = _LINEUPS_DIR / f"on_off_{season}.parquet"
+    corpus = SEASONS[season]
+    df = pd.read_parquet(src)
     n_considered = len(df)
     mask = (
         (df["min_on"] >= MIN_ON_MINUTES)
@@ -82,16 +87,16 @@ def build_gravity_claim() -> dict[str, Any]:
         })
 
     return {
-        "claim_id": f"nba_gravity_proxy_full_{SEASON_WINDOW}",
+        "claim_id": f"nba_gravity_proxy_full_{season}",
         "kind": "ranking",
         "question": (
             f"Which NBA players' teammates shoot the best eFG% with them on the floor vs. "
-            f"off it (gravity proxy, full population above floor, {SEASON_WINDOW} 196-game slice)?"
+            f"off it (gravity proxy, full population above floor, {season} {corpus} slice)?"
         ),
         "criteria": {
             "metric": "gravity_proxy",
             "formula": "teammate_efg_on - teammate_efg_off",
-            "window": f"season_{SEASON_WINDOW}_nba_lineup_corpus",
+            "window": f"season_{season}_nba_lineup_corpus",
             "min_sample": {
                 "min_on": MIN_ON_MINUTES, "teammate_fga_on": MIN_TEAMMATE_FGA, "teammate_fga_off": MIN_TEAMMATE_FGA,
             },
@@ -100,22 +105,22 @@ def build_gravity_claim() -> dict[str, Any]:
             "entity_key": ["player_id", "team_id"],
         },
         "ranking": ranking,
-        "source_files": [_rel(_ON_OFF_SRC)],
+        "source_files": [_rel(src)],
         "computed_at": datetime.now(timezone.utc).isoformat(),
         "n_considered": n_considered,
         "n_excluded_below_floor": n_excluded,
         "edge_claimed": False,
         "caveats": [
             "gravity_proxy = teammate eFG% while this player is ON the floor minus teammate "
-            "eFG% while OFF it, from data/cache/team_system/lineups/on_off_2025_26.parquet "
+            f"eFG% while OFF it, from {_rel(src)} "
             "(shot-event attribution over pbp_lineups.py's reconstructed lineup stints, "
-            "196-game 2025-26 PBP corpus). A DESCRIPTIVE association, not a causal gravity "
+            f"{corpus} {season} PBP corpus). A DESCRIPTIVE association, not a causal gravity "
             "measurement (lineup/opponent quality is not controlled for).",
             f"min_sample floor min_on>={MIN_ON_MINUTES} AND teammate_fga_on>={MIN_TEAMMATE_FGA} "
             f"AND teammate_fga_off>={MIN_TEAMMATE_FGA} -- both sides of the split need real "
             "teammate shot volume, not just on-court minutes, or the eFG% comparison is noise.",
-            "Pair-keyed entity (player_id, team_id): 42 players in this corpus appear under "
-            "more than one team_id (mid-window trades), so player_id alone is not unique.",
+            "Pair-keyed entity (player_id, team_id): players can appear under more than "
+            "one team_id in a window (mid-window trades), so player_id alone is not unique.",
             "FULL POPULATION: every (player,team) clearing the floor is ranked, no top-N cap.",
             "DESCRIPTIVE box-score aggregate ONLY -- NOT a gate, NOT a predictive/causal claim, "
             "no market/$ edge claimed.",
@@ -132,18 +137,21 @@ def write_claims(claims: list[dict[str, Any]], out_path: Path = _CLAIMS_OUT) -> 
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Emit NBA gravity-proxy ranking claim")
+    parser = argparse.ArgumentParser(description="Emit NBA gravity-proxy ranking claims")
     parser.add_argument("--output", type=str, default=str(_CLAIMS_OUT))
+    parser.add_argument("--season", type=str, default="all", choices=[*SEASONS, "all"])
     args = parser.parse_args(argv)
 
-    claim = build_gravity_claim()
-    out_path = write_claims([claim], Path(args.output))
-    print(
-        f"{claim['claim_id']}: n_considered={claim['n_considered']} "
-        f"n_excluded_below_floor={claim['n_excluded_below_floor']} "
-        f"top1={claim['ranking'][0] if claim['ranking'] else None}"
-    )
-    print(f"wrote 1 claim -> {out_path}")
+    seasons = list(SEASONS) if args.season == "all" else [args.season]
+    claims = [build_gravity_claim(s) for s in seasons]
+    out_path = write_claims(claims, Path(args.output))
+    for claim in claims:
+        print(
+            f"{claim['claim_id']}: n_considered={claim['n_considered']} "
+            f"n_excluded_below_floor={claim['n_excluded_below_floor']} "
+            f"top1={json.dumps(claim['ranking'][0]) if claim['ranking'] else None}"
+        )
+    print(f"wrote {len(claims)} claims -> {out_path}")
     return 0
 
 
