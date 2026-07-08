@@ -62,6 +62,25 @@ _DIVISION_SPLITS = [
     {"name": div, "col": "div", "eq": div} for div in ("E0", "E1", "SP1", "I1", "F1", "D1")
 ]
 
+# soccer_style_matchup_claims (organization-sprint response/interaction lane):
+# source is a DERIVED parquet (domains/soccer/style_interaction.py's
+# build_pairing_claims_source()), NOT a raw corpus file -- same
+# derived-artifact-before-grid pattern as soccer_referee_card_foul_profiles
+# above. One row per match: pairing_key = "<home_poss_tier>_vs_<away_poss_tier>"
+# (possession-tier proxy pairing, see style_fingerprints.py for the honest
+# shot_share-not-possession substitution), row_id (unique per row, = event_id
+# here since this source is one row per match), home_win/draw/away_win (0/1),
+# total_goals. entity_key=pairing_key is a SCALAR column (4 distinct values),
+# not a pair-key, so generate_family's pair-key restriction does not apply.
+_STYLE_MATCHUP_SRC = "data/domains/soccer/style_matchup_pairing.parquet"
+
+_STYLE_MATCHUP_DIMS = [
+    {"metric": "home_win_rate", "agg": {"num": "sum(home_win)", "den": "count(row_id)"}},
+    {"metric": "draw_rate", "agg": {"num": "sum(draw)", "den": "count(row_id)"}},
+    {"metric": "away_win_rate", "agg": {"num": "sum(away_win)", "den": "count(row_id)"}},
+    {"metric": "avg_total_goals", "agg": {"num": "sum(total_goals)", "den": "count(row_id)"}},
+]
+
 GRID: dict = {
     "sport": "soccer",
     "families": [
@@ -78,6 +97,19 @@ GRID: dict = {
                 "career": {"event_id": 20},
                 "season": {"event_id": 20},
                 "split": {"event_id": 20},
+            },
+        },
+        {
+            "family": "soccer_style_matchup_claims",
+            "source": _STYLE_MATCHUP_SRC,
+            "grain": "per_match",
+            "entity_key": "pairing_key",
+            "entity_name_col": "pairing_key",
+            "dims": _STYLE_MATCHUP_DIMS,
+            "windows": [{"name": "career_to_date", "filter": {}}],
+            "context_splits": [],
+            "floors": {
+                "career": {"row_id": 100},
             },
         },
     ],
