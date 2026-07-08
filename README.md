@@ -42,8 +42,9 @@ thorough read is a multi-day tour.
 
 **Deep-dive layer (new)** -> [DAEMONS](docs/DAEMONS.md) - [PLATFORM_HARNESS](docs/PLATFORM_HARNESS.md) -
 [PAPER_TRADING_STACK](docs/PAPER_TRADING_STACK.md) - [INGEST_PIPELINES](docs/INGEST_PIPELINES.md) -
-[DATA_DEPTH](docs/DATA_DEPTH.md). The system's depth is now documented subsystem by subsystem, not
-just at the funnel-stage level above.
+[DATA_DEPTH](docs/DATA_DEPTH.md) - [ASK_SURFACES](docs/ASK_SURFACES.md) -
+[SPORTS_COVERAGE](docs/SPORTS_COVERAGE.md). The system's depth is now documented subsystem by
+subsystem, not just at the funnel-stage level above.
 
 ---
 
@@ -92,6 +93,31 @@ is an adapter, not a kernel rewrite; adding a market is a read off the same anch
 Every output is a calibrated probability or a point forecast with dispersion -- never a
 recommended wager. The buyer-facing CLI stamps `"edge_claimed": false` on every response.
 
+**NBA 2025-26 season coverage.** `games.parquet` carries all 1,156 games of the in-progress
+2025-26 season (vs 1,230 for a completed season); per-player full-game boxscores are backfilled
+into the same `quarter_box` cache the quarter-level pipeline already reads (q0 = full-game
+totals, q1-q4 = real quarters, zero downstream transform changes), closing the gap to 74/1,156
+games still uncached as of this writing.
+
+**Ask it what kind of shooter someone is.** Not a ranking -- a ten-axis trait vector
+(volume/efficiency/difficulty/gravity/context), each axis citing its own VERIFIED claim, never
+combined into one score:
+
+```bash
+python -m scripts.platformkit.intel_query.ask "what kind of shooter is Stephen Curry"
+# or directly:
+python -m scripts.platformkit.intel_query.compose_profile "Luka Doncic"
+```
+
+**Ask how the paper book is doing.** Streamed off the live paper ledger (never whole-file
+loaded), every answer paired with its channel's fail-closed greenlight verdict so a units figure
+never appears without its gate status:
+
+```bash
+python -m scripts.platformkit.intel_query.paper_analytics "this week by channel"
+python -m scripts.platformkit.intel_query.paper_analytics "settlement backlog"
+```
+
 ---
 
 ## Wide in knowledge -- and it knows every little detail
@@ -104,6 +130,17 @@ per-player rosters + athlete season splits, Sackmann tennis, football-data, plus
 markets (Kalshi / Polymarket) and DFS prop feeds (Underdog / PrizePicks). The opportunity surface
 is bounded by data breadth, not by model breadth: the same pure best-line / Shin-devig / EV /
 arbitrage core covers *every* event the feeds return.
+
+**The claims scale.** Every derived stat the brain will answer a question from first has to pass
+an independent validator that marks it `VERIFIED`, `MISMATCH`, or `UNVERIFIABLE` -- **52,379
+VERIFIED claim rows** stand behind the ask surfaces today, tallied live from every
+`*_validation.json` summary under `data/cache/intel_claims/` (33 claim stores, 7 sports). A
+machine-readable **data census** (`data/frontend/ops/data_census.json`) inventories what's
+derivable from the corpus on disk per sport -- 61 derivable families across NBA, MLB, soccer,
+soccer_intl, tennis, WNBA, NPB, KBO, and cross-sport markets -- and ranks every still-`UNBUILT`
+one by `leverage_rank` into a single cross-sport priority queue the autoloop reads to decide what
+to build next. The full per-sport breakdown (data on disk, claim counts, biggest gap, model vs
+close verdict) lives in [docs/SPORTS_COVERAGE.md](docs/SPORTS_COVERAGE.md).
 
 **Depth (every little detail).** Under each team number the brain goes all the way down:
 
@@ -193,7 +230,9 @@ search for edge systematic, grounded, and honest. See
 
 Lower Brier / RMSE is sharper. MATCH = within sampling noise of the sharp close. BEHIND = the
 market's injury / lineup / weather / park / starting-pitcher freshness a public + box-score model
-cannot see. Source: `vault/_Edge_Maps/_Beat_The_Close.md`.
+cannot see. Source: `vault/_Edge_Maps/_Beat_The_Close.md`, reproduced below verbatim from a live
+`scripts.platformkit.beat_the_close_scoreboard` run against the real corpora; full framing +
+the candidate-REJECT table in [docs/MARKET_EFFICIENCY_PROOF.md](docs/MARKET_EFFICIENCY_PROOF.md).
 
 | Sport / market    | Our model     | Close   | Verdict                          |
 |-------------------|---------------|---------|----------------------------------|
@@ -271,6 +310,18 @@ python -m scripts.platformkit.ingame_scoreboard        --corpus tests/fixtures/p
 - **It disproves its own hype.** The same harnesses that grade the market were pointed inward and
   retired a market-follow ROI artifact, a Q4 look-ahead leak, and an L5-proxy ceiling mislabeled
   as edge. Building the instrument that refutes your own claims is the strongest signal here.
+- **A units number is never shown without its gate.** The paper-execution stack's **greenlight
+  gate** evaluates every channel against seven pre-registered criteria (sample size in both
+  independent halves, both-halves profitability, CLV significance, after-cost units, trust +
+  eval-gate honesty, excess win rate) and writes a fail-closed RED/AMBER/GREEN verdict nightly --
+  criteria on trust and eval-gate honesty report RED, never a bare pass, on any missing or stale
+  input. Fills are priced against real captured order-book depth (a VWAP walk of the opposite
+  side's bid ladder, honest partial fills, `fill_quality: no_book` rather than a fabricated fill
+  when the book is stale), and **STUCK detectors** turn a silent settlement stall into a visible
+  alert instead of an unread log line (the incident that motivated it: 63+ silent zero-settle
+  ticks). As of this writing every channel is RED or AMBER -- the gate reporting honestly that no
+  edge has been proven yet is the feature, not a gap to paper over. Full account:
+  [docs/PAPER_TRADING_STACK.md](docs/PAPER_TRADING_STACK.md).
 
 **Honesty truth-source:** every number's provenance + every retracted over-claim live in
 **[docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md)**. Open gaps:
@@ -314,12 +365,18 @@ XGBoost, LightGBM. **Quant / validation:** walk-forward CV (season / era purged)
 devig, per-stat isotonic / temperature recalibration, NegBinom dispersion calibration,
 multi-corpus calibration acceptance gate, cluster-robust Diebold-Mariano, truncation-invariance
 leak tests, CLV ledger. **CV lineage:** YOLOv8n, OpenCV, SIFT homography, OSNet re-ID, EasyOCR.
-**Serving:** FastAPI, uvicorn, SSE, parquet feature store, compute-once snapshot service.
-**AI agents:** Claude Code -- Opus orchestrator + parallel Sonnet/Opus executors under hard ship
-gates (this codebase, including the ~100-file intelligence corpus, was built by that pipeline
-under human direction). The runtime is **Claude-free** -- classical models + a deterministic
-self-improve loop, no LLM on the prediction path. Full account:
-[docs/BUILT_WITH_CLAUDE.md](docs/BUILT_WITH_CLAUDE.md).
+**Live capture:** MLB GUMBO `feed/live` diffPatch poller at 10s cadence while any game is live
+(5s politeness floor); an order-book **fill simulator** VWAP-walks captured Kalshi depth ladders
+so a paper fill is priced against real liquidity, not a snapshot mid. **Serving:** FastAPI,
+uvicorn, SSE, parquet feature store, compute-once snapshot service. **AI agents:** Claude Code --
+Opus orchestrator + parallel Sonnet/Opus executors under hard ship gates (this codebase, including
+the ~100-file intelligence corpus, was built by that pipeline under human direction). The runtime
+is **Claude-free** -- classical models + a deterministic self-improve loop, no LLM on the
+prediction path. **The build harness itself is live**: an autonomous probe-plan-spawn-gate-merge
+loop (`scripts/platform_harness/`) is 63.9% through its current backlog (53/83 tasks) with zero
+human required to click "continue." Full account:
+[docs/BUILT_WITH_CLAUDE.md](docs/BUILT_WITH_CLAUDE.md) -
+[docs/PLATFORM_HARNESS.md](docs/PLATFORM_HARNESS.md).
 
 ---
 
