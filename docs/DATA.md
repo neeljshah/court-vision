@@ -323,6 +323,45 @@ An out-of-range prob is skipped, never fabricated.
 
 ---
 
+## Current capture cadences (2026-07)
+
+Snapshot of the live cadence numbers as actually measured, not aspirational.
+Each pipeline is documented in full (source, output row shape, failure mode +
+guard) in [`docs/INGEST_PIPELINES.md`](INGEST_PIPELINES.md); the census of
+what is captured vs still missing per sport, plus the latency audit that
+produced these numbers, lives in [`docs/DATA_DEPTH.md`](DATA_DEPTH.md).
+
+- **MLB GUMBO live poller** (`ingame/gumbo_mlb_poller.py`) -- diffPatch
+  bootstrap-then-diff protocol against `statsapi.mlb.com feed/live`, ~10 s
+  while a game is live (5 s hard politeness floor), 30 s idle tick. Schedule
+  date defaults to the MLB **baseball date** (UTC-10h roll), not the raw UTC
+  calendar date -- the old UTC default went blind every evening around 7pm CT
+  once UTC rolled past midnight while 12 games were still in progress.
+- **Kalshi in-play quotes** -- Kalshi's own quote feed refreshes at a
+  measured median **~7 s** poll; our in-play capture (`inplay_snapshot_daemon.py`)
+  runs 5 s while any game is live, 120 s idle, so it is not the coarseness
+  bottleneck (gumbo's own historical ~54 s cadence was; see DATA_DEPTH.md
+  latency section for the audit and why the lead/lag verdict stays
+  NOT_ESTABLISHED).
+- **Kalshi depth ladders** (`data/cache/depth_history/<sport>/<date>.jsonl`)
+  -- every 15th live in-play tick, measured ~20 minutes per ticker. Coarse by
+  design: fine for pricing a simulated fill against a recent order book, not
+  for a latency race.
+- **Pregame line/close capture** (`line_snapshot_daemon.py`) -- phase-aware
+  poll (fast inside 45 min of tip, slow otherwise) with a **30-minute lock
+  window** before `commence_time`: only a quote captured inside that window
+  is ever certified a true close (`is_true_close=True`); anything else reads
+  back as an explicit proxy, never a fabricated close.
+- **2025-26 NBA player-box backfill** -- ESPN full-game player boxes now
+  close the 74-of-1,156-game gap left by stats.nba.com being blocked from
+  this box, written into the existing `quarter_box` cache under the `q0`
+  convention (`<game_id>_q0.json`, `period: 0`, `source: "espn_fullgame"` --
+  real quarters stay `_q1..q4`, so quarter-level consumers never see it and
+  full-game consumers aggregate it naturally). Zero transform changes to the
+  existing pure `ingest_boxscores.py` reader.
+
+---
+
 ## Cache Directory Layout
 
 ```
