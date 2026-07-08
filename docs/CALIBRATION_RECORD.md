@@ -117,6 +117,47 @@ self-audit.
 
 ---
 
+## 3b. 2026-07 state — cross-sport rating object, live run
+
+`python -m scripts.platformkit.platform_scoreboard --json` validates the ONE sport-blind
+`GenericRatingModel` object (`scripts/platformkit/generic_rating.py`) OOS leak-free per sport
+against each sport's own hand-tuned baseline (binary sports) or a naive mean (soccer expected-
+score). This is a DIFFERENT comparison than section 3a: not vs the devigged close, but whether
+the generic cross-sport abstraction holds up against the sport-specific tuned model. Live run,
+2026-07-07:
+
+| Sport | n (OOS) | Metric | Generic rating | Reference (tuned baseline / naive mean) | Beats reference? |
+|-------|---------|--------|-----------------|------------------------------------------|-------------------|
+| NBA | 4,646 | Brier | 0.21699 | 0.21806 (tuned baseline) | yes |
+| MLB | 27,783 | Brier | 0.24760 | 0.24398 (tuned baseline) | no |
+| Tennis | 30,416 | Brier | 0.22055 | 0.21845 (tuned baseline) | no |
+| Soccer | 25,634 | expected-score RMSE | 0.40059 | 0.42674 (naive mean) | yes |
+
+`validated=true/false` per sport is a beats-baseline flag, not a market-edge claim — see the
+binding note in the script: "a baseline match / beats-naive is a validated abstraction, NOT a
+market edge." NBA and soccer beat their reference; MLB and tennis trail their tuned baseline
+(the generic object gives up sport-specific structure — pitcher identity for MLB, surface for
+tennis — for cross-sport simplicity). This is the honest cost of the one-object abstraction,
+not hidden.
+
+**In-game static -> conditional framing (repeat, for the 2026-07 record):** the one measured
+calibration win stays the fusion of the pregame prior with realized mid-game state (section 3);
+nothing above changes that. **WTA calibration:** the live temperature recalibrator
+(`proof_tennis/wta_temp_live.py`, T=1.36, holdout ECE 0.045 -> 0.019) is a calibration fix, not
+a market-vs-close row — it does not appear in section 3a because WTA has no comparable closing-
+line corpus wired yet.
+
+**Latency-audit verdict for in-game claims: NOT_ESTABLISHED.** The 2026-07-07 audit found our
+GUMBO live-state capture ran a median 54s poll (gaps up to ~102 minutes) against Kalshi's own
+~7s quote cadence, and a depth-of-book join for the leading moments failed to resolve (0/135) on
+a ticker-format mismatch — a measurement-power problem, not a proven absence of lead. Capture was
+upgraded same-day to a ~10s window (verified 11-18s across 11 concurrent live games); the
+lead/lag verdict stays NOT_ESTABLISHED until the audit re-runs on the fine-grained captures. No
+in-game latency edge is claimed here or anywhere until that re-measurement lands
+(`docs/DATA_DEPTH.md` latency section is the full audit).
+
+---
+
 ## 4. Reproduce (offline, < 60s each)
 
 ```
