@@ -144,14 +144,15 @@ def sweep_closes(
             continue
         try:
             settled = _clv.settle_closing_line(
-                r, float(res.close_home_dec), float(res.close_away_dec))
+                r, float(res.close_home_dec), float(res.close_away_dec),
+                close_source=getattr(res, "close_source", None) or "kalshi",
+                close_venue=getattr(res, "close_venue", None))
         except Exception as exc:  # noqa: BLE001
             logger.debug("pm_close_capture settle_closing_line raised: %s", exc)
             n_noclose += 1
             continue
         settled["clv_is_proxy"] = False
         settled["clv_status"] = "true_close"
-        settled["close_source"] = getattr(res, "close_source", "kalshi")
         try:
             _clv.append_settlement(settled, path=path)
             n_cap += 1

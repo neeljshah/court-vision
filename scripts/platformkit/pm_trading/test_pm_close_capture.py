@@ -32,7 +32,7 @@ def _write(tmp_path, rows):
 
 def _confirmed_close(row, *, kalshi_fetch=None):
     return CloseResult(close_home_dec=1.80, close_away_dec=2.10,
-                       is_proxy=False, close_source="kalshi")
+                       is_proxy=False, close_source="kalshi", close_venue="kalshi")
 
 
 def _proxy_close(row, *, kalshi_fetch=None):
@@ -51,6 +51,20 @@ def test_stamps_confirmed_close(tmp_path):
     s = settled[-1]
     assert s["clv_is_proxy"] is False and s["clv_status"] == "true_close"
     assert s["outcome"] == "win" and s["unit_result"] == 1.0   # preserved
+
+
+def test_stamps_close_source_and_venue_on_settled_row(tmp_path):
+    """ROOT CAUSE FIX (2026-07-09): sweep_closes previously computed
+    res.close_source only for its own diagnostic counter and never passed it
+    to settle_closing_line -- settled ledger rows carried no close_source/
+    close_venue at all. Now both flow through the settle_closing_line kwargs."""
+    p = _write(tmp_path, [_row("pm|kalshi|g4|home")])
+    out = P.sweep_closes(p, capture_fn=_confirmed_close)
+    assert out["n_captured"] == 1
+    rows = [json.loads(l) for l in p.read_text().splitlines() if l.strip()]
+    settled = [r for r in rows if r.get("clv_pct") is not None][-1]
+    assert settled["close_source"] == "kalshi"
+    assert settled["close_venue"] == "kalshi"
 
 
 def test_proxy_close_is_counted_not_written(tmp_path):

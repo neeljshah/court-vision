@@ -221,8 +221,17 @@ def settle_closing_line(
     bet: Dict[str, Any],
     closing_decimal_home: float,
     closing_decimal_away: float,
+    *,
+    close_source: Optional[str] = None,
+    close_venue: Optional[str] = None,
 ) -> Dict[str, Any]:
-    """Return a settled twin of *bet* with CLV fields filled in. Pure, no I/O."""
+    """Return a settled twin of *bet* with CLV fields filled in. Pure, no I/O.
+
+    close_source/close_venue are OPTIONAL and stamped on the settled row only
+    when the caller passes them (e.g. pm_close_capture's same-venue Kalshi
+    resolution) -- omitted for every pre-existing caller, so this is additive
+    and never disturbs a caller that doesn't know its close's provenance.
+    """
     clv = compute_clv(
         bet["side"], bet["taken_decimal"],
         closing_decimal_home, closing_decimal_away,
@@ -236,6 +245,10 @@ def settle_closing_line(
     settled["taken_implied_prob"] = clv["taken_p"]
     settled["clv_pct"] = clv["clv_pct"]
     settled["beat_close"] = clv["beat_close"]
+    if close_source is not None:
+        settled["close_source"] = close_source
+    if close_venue is not None:
+        settled["close_venue"] = close_venue
     return settled
 
 
