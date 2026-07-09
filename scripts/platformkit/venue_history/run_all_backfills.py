@@ -24,6 +24,7 @@ Per-file test:
 from __future__ import annotations
 
 import json
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
@@ -65,14 +66,33 @@ def plan_kalshi_calls(sport: str) -> List[Tuple[str, str, Path]]:
 
 def run_kalshi_sport(sport: str, *, max_requests: int = 1200, sleep_sec: float = 1.0) -> Dict[str, Any]:
     """Run kalshi_intragame.run_backfill once per series wired to *sport*
-    (sequential, politeness inherited), returning one result dict per series."""
+    (sequential, politeness inherited), returning one result dict per series.
+
+    governor_caller="backfill" (2026-07-09 fix): every request also clears the
+    shared cross-process kalshi_rate_governor budget, not just this call's own
+    sleep_sec pacing -- see kalshi_rate_governor.DEFAULT_RATE_SHARES."""
     results = []
     for series, market_type, out_dir in plan_kalshi_calls(sport):
         res = kalshi_intragame.run_backfill(
-            series, sport, out_dir=out_dir, max_requests=max_requests, sleep_sec=sleep_sec)
+            series, sport, out_dir=out_dir, max_requests=max_requests, sleep_sec=sleep_sec,
+            governor_caller="backfill")
         res["market_type"] = market_type
         results.append(res)
     return {"sport": sport, "venue": "kalshi", "series_results": results}
+
+
+def run_many(sports: List[str], venue: str, *, max_concurrent: int = 2,
+            max_requests: int = 1200, sleep_sec: float = 1.0) -> List[Dict[str, Any]]:
+    """Run *venue*'s per-sport backfill for every sport in *sports*, at most
+    *max_concurrent* at once (ThreadPoolExecutor -- network-bound, GIL released
+    during I/O waits; sequential queue for the rest). Replaces the ad hoc "launch
+    N sports as N separate unpaced processes" pattern that stacked 8 backfills on
+    the shared Kalshi budget in one shot and tripped a 429 penalty (2026-07-09)."""
+    runner = run_kalshi_sport if venue == "kalshi" else run_polymarket_game_slug_sport
+    with ThreadPoolExecutor(max_workers=max(1, int(max_concurrent))) as ex:
+        futs = [ex.submit(runner, sport, max_requests=max_requests, sleep_sec=sleep_sec)
+               for sport in sports]
+        return [f.result() for f in futs]
 
 
 def run_polymarket_game_slug_sport(sport: str, *, max_requests: int = 1200,
@@ -91,15 +111,15 @@ def main() -> None:
     import argparse
     ap = argparse.ArgumentParser(prog="run_all_backfills")
     ap.add_argument("--venue", choices=["kalshi", "polymarket_game_slug"], required=True)
-    ap.add_argument("--sport", required=True)
+    ap.add_argument("--sport", required=True, nargs="+", help="one or more sports")
     ap.add_argument("--max-requests", type=int, default=1200)
     ap.add_argument("--sleep-sec", type=float, default=1.0)
+    ap.add_argument("--max-concurrent", type=int, default=2,
+                    help="max sports run at once (2026-07-09 429-incident cap)")
     a = ap.parse_args()
-    if a.venue == "kalshi":
-        result = run_kalshi_sport(a.sport, max_requests=a.max_requests, sleep_sec=a.sleep_sec)
-    else:
-        result = run_polymarket_game_slug_sport(a.sport, max_requests=a.max_requests, sleep_sec=a.sleep_sec)
-    print(json.dumps(result, indent=1, default=str))
+    results = run_many(a.sport, a.venue, max_concurrent=a.max_concurrent,
+                       max_requests=a.max_requests, sleep_sec=a.sleep_sec)
+    print(json.dumps(results, indent=1, default=str))
 
 
 if __name__ == "__main__":
@@ -108,5 +128,5 @@ if __name__ == "__main__":
 
 __all__ = [
     "kalshi_out_dir", "plan_kalshi_calls", "run_kalshi_sport",
-    "run_polymarket_game_slug_sport", "POLYMARKET_GAME_SLUG_SPORTS",
+    "run_polymarket_game_slug_sport", "run_many", "POLYMARKET_GAME_SLUG_SPORTS",
 ]

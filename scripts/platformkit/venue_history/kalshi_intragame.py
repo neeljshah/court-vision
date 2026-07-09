@@ -17,8 +17,9 @@ PROVENANCE (binding): VALIDATION corpus, physically separate from lane 1's file 
 forward pre-registered gates (ingame_tail_gate). Never pooled with forward evidence. Sport-blind
 (series_ticker + sport are both params, e.g. KXMLBGAME/mlb, KXNBAGAME/nba); the discovery-window
 flag (see in_discovery_window) is MLB-only -- never set for a sport that never had that capture.
-Politeness: 1 req/s (sleep injected, tests instant); progress persisted to a JSON sidecar so an
-interrupted run resumes from its last cursor instead of re-fetching.
+Politeness: 1 req/s (sleep injected, tests instant) plus an opt-in kalshi_rate_governor share
+(run_backfill's governor_caller); progress persisted to a JSON sidecar so an interrupted run
+resumes from its last cursor instead of re-fetching.
 
 INVARIANTS: platformkit-only; <=300 LOC; ASCII; stdlib only; no $-edge claims; no data/registry
 writes; no flag flips.
@@ -35,6 +36,8 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
 from scripts.platformkit.odds_provider.http_cache import http_get_json
+from scripts.platformkit.odds_provider.kalshi_pacing import is_429
+from scripts.platformkit.odds_provider.kalshi_rate_governor import before_request as _governor_before, report_429 as _governor_report_429, resolve_governor as _resolve_governor
 
 KALSHI_BASE = "https://api.elections.kalshi.com/trade-api/v2"
 MAX_CANDLES_PER_CALL = 5000          # server-enforced cap on 1-min candlesticks
@@ -52,21 +55,20 @@ DISCOVERY_WINDOW_START = "2026-06-19T00:00:00Z"
 DISCOVERY_WINDOW_END = "2026-07-02T23:59:59Z"
 
 
-def _get(http: HttpGet, url: str) -> Optional[Dict[str, Any]]:
+def _get(http: HttpGet, url: str, *, governor: Optional[Any] = None, sport: str = "") -> Optional[Dict[str, Any]]:
+    _governor_before(governor, sport)  # gates + reports any 429 (fail-open); no-op if governor=None
     try:
         body = http(url)
-    except Exception:  # noqa: BLE001 -- a failed page must not kill the whole run
+    except Exception as exc:  # noqa: BLE001 -- a failed page must not kill the whole run
+        if is_429(exc):
+            _governor_report_429(governor)
         return None
     return body if isinstance(body, dict) else None
 
 
 def list_settled_markets_page(
-    series_ticker: str,
-    cursor: str = "",
-    limit: int = 200,
-    max_close_ts: Optional[int] = None,
-    *,
-    http: HttpGet = http_get_json,
+    series_ticker: str, cursor: str = "", limit: int = 200, max_close_ts: Optional[int] = None,
+    *, http: HttpGet = http_get_json, governor: Optional[Any] = None, sport: str = "",
 ) -> Dict[str, Any]:
     """One page of GET /markets?series_ticker&status=settled. Returns {"markets": [...],
     "cursor": str}. ``min_close_ts`` is deliberately NEVER sent (server-side no-op,
@@ -77,7 +79,7 @@ def list_settled_markets_page(
     if max_close_ts is not None:
         params["max_close_ts"] = int(max_close_ts)
     url = "%s/markets?%s" % (KALSHI_BASE, urllib.parse.urlencode(params))
-    body = _get(http, url)
+    body = _get(http, url, governor=governor, sport=sport)
     if body is None:
         return {"markets": [], "cursor": ""}
     markets = body.get("markets")
@@ -139,11 +141,8 @@ def _candle_to_point(c: Dict[str, Any]) -> Optional[Dict[str, Any]]:
 
 
 def fetch_market_candles(
-    series_ticker: str,
-    ticker: str,
-    close_time_iso: str,
-    *,
-    http: HttpGet = http_get_json,
+    series_ticker: str, ticker: str, close_time_iso: str,
+    *, http: HttpGet = http_get_json, governor: Optional[Any] = None, sport: str = "",
 ) -> List[Dict[str, Any]]:
     """Full-lifetime 1-min candles for one settled market, windowed to fit the
     server's 5000-candle cap: [close_time - 5000min - pad, close_time + pad]."""
@@ -156,7 +155,7 @@ def fetch_market_candles(
         "start_ts": start_ts, "end_ts": end_ts, "period_interval": 1,
     })
     url = "%s/series/%s/markets/%s/candlesticks?%s" % (KALSHI_BASE, series_ticker, ticker, params)
-    body = _get(http, url)
+    body = _get(http, url, governor=governor, sport=sport)
     if body is None:
         return []
     candles = body.get("candlesticks")
@@ -200,21 +199,20 @@ def _save_progress(path: Path, doc: Dict[str, Any]) -> None:
 
 
 def run_backfill(
-    series_ticker: str,
-    sport: str,
-    *,
-    out_dir: Optional[Path] = None,
-    progress_path: Optional[Path] = None,
-    max_requests: int = 1200,
-    page_limit: int = 200,
-    sleep_sec: float = 1.0,
-    http: HttpGet = http_get_json,
-    sleep_fn: Callable[[float], None] = time.sleep,
+    series_ticker: str, sport: str, *, out_dir: Optional[Path] = None,
+    progress_path: Optional[Path] = None, max_requests: int = 1200, page_limit: int = 200,
+    sleep_sec: float = 1.0, http: HttpGet = http_get_json,
+    sleep_fn: Callable[[float], None] = time.sleep, governor_caller: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Bounded, resumable tranche of ALL settled *series_ticker* markets: enumerate pages
     (cursor-resumable), fetch candles per market, write one JSONL per ticker. Politeness:
     sleeps *sleep_sec* between requests, stops at *max_requests*; resumes from
-    *progress_path* (cursor + already-fetched tickers) if present."""
+    *progress_path* (cursor + already-fetched tickers) if present.
+
+    *governor_caller* defaults to None (byte-identical opt-in, as inplay_kalshi.fetch_inplay);
+    run_all_backfills opts in with caller="backfill" so a fleet of these shares the live
+    daemons' cross-process budget/429-backoff (kalshi_rate_governor) instead of stacking unpaced."""
+    governor = _resolve_governor(governor_caller)
     out_base = Path(out_dir) if out_dir is not None else DEFAULT_OUT_DIR / sport.lower()
     prog_path = Path(progress_path) if progress_path is not None else out_base / "_progress.json"
     progress = _load_progress(prog_path)
@@ -226,7 +224,8 @@ def run_backfill(
     exhausted = False
 
     while n_requests < max_requests:
-        page = list_settled_markets_page(series_ticker, cursor=cursor, limit=page_limit, http=http)
+        page = list_settled_markets_page(series_ticker, cursor=cursor, limit=page_limit,
+                                         http=http, governor=governor, sport=sport)
         n_requests += 1
         sleep_fn(sleep_sec)
         markets = page["markets"]
@@ -240,7 +239,8 @@ def run_backfill(
             close_time, result = str(m.get("close_time") or ""), str(m.get("result") or "")
             if n_requests >= max_requests:
                 break
-            candles = fetch_market_candles(series_ticker, ticker, close_time, http=http)
+            candles = fetch_market_candles(series_ticker, ticker, close_time, http=http,
+                                           governor=governor, sport=sport)
             n_requests += 1
             sleep_fn(sleep_sec)
             doc = {

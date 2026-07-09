@@ -46,3 +46,50 @@ def test_polymarket_game_slug_unsupported_sport_skips_honestly() -> None:
     result = rab.run_polymarket_game_slug_sport("tennis")
     assert result["skipped"]
     assert result["venue"] == "polymarket_game_slug"
+
+
+def test_run_kalshi_sport_opts_into_backfill_governor(monkeypatch) -> None:
+    """run_kalshi_sport must pass governor_caller="backfill" to every series call
+    (2026-07-09 fix) so a fleet of these shares the live daemons' governor budget."""
+    seen = []
+
+    def fake_run_backfill(series, sport, **kw):
+        seen.append(kw.get("governor_caller"))
+        return {"series_ticker": series, "sport": sport}
+
+    monkeypatch.setattr(rab.kalshi_intragame, "run_backfill", fake_run_backfill)
+    rab.run_kalshi_sport("mlb")
+    assert seen and all(c == "backfill" for c in seen)
+
+
+def test_run_many_caps_concurrency(monkeypatch) -> None:
+    """run_many must never let more than max_concurrent per-sport runs be in
+    flight at once (the 2026-07-09 incident: 8 sports launched at once with no
+    cap stacked unpaced on the shared Kalshi governor budget)."""
+    import threading
+    import time as _time
+
+    lock = threading.Lock()
+    state = {"current": 0, "peak": 0}
+
+    def fake_run_kalshi_sport(sport, *, max_requests=1200, sleep_sec=1.0):
+        with lock:
+            state["current"] += 1
+            state["peak"] = max(state["peak"], state["current"])
+        _time.sleep(0.05)
+        with lock:
+            state["current"] -= 1
+        return {"sport": sport}
+
+    monkeypatch.setattr(rab, "run_kalshi_sport", fake_run_kalshi_sport)
+    sports = ["mlb", "nba", "wnba", "tennis", "soccer", "kbo"]
+    results = rab.run_many(sports, "kalshi", max_concurrent=2)
+    assert {r["sport"] for r in results} == set(sports)
+    assert state["peak"] <= 2
+
+
+def test_run_many_single_sport_still_works(monkeypatch) -> None:
+    monkeypatch.setattr(rab, "run_polymarket_game_slug_sport",
+                        lambda sport, **kw: {"sport": sport, "venue": "polymarket_game_slug"})
+    results = rab.run_many(["mlb"], "polymarket_game_slug")
+    assert results == [{"sport": "mlb", "venue": "polymarket_game_slug"}]

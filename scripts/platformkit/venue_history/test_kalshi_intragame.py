@@ -213,6 +213,48 @@ def test_cursor_continuation_never_refetches_done_ticker_candles(tmp_path: Path)
     assert not (out_dir / "KXMLBGAME-26JUN01-AAA.jsonl").exists()
 
 
+def test_governor_caller_opt_in_gates_every_request(tmp_path: Path, monkeypatch) -> None:
+    """governor_caller="backfill" resolves a REAL governor and gates BOTH the page
+    listing call and the per-market candle call; default (None) stays a no-op --
+    same opt-in idiom as inplay_kalshi.fetch_inplay's governor_caller."""
+    calls = []
+    monkeypatch.setattr(ki, "_governor_before",
+                        lambda governor, sport: calls.append((governor, sport)))
+    m = {"ticker": "KXMLBGAME-26JUN25-XYZ", "event_ticker": "e", "close_time": "2026-06-25T12:00:00Z",
+         "result": "yes"}
+    pages = {"": {"markets": [m], "cursor": ""}}
+    http = _fake_http(pages, {"KXMLBGAME-26JUN25-XYZ": []})
+    out_dir = tmp_path / "gov"
+    ki.run_backfill("KXMLBGAME", "mlb", out_dir=out_dir, http=http, sleep_sec=0,
+                    sleep_fn=lambda s: None, max_requests=20)
+    assert calls and all(governor is None for governor, _sport in calls)  # no caller -> no-op
+
+    calls.clear()
+    for f in out_dir.glob("*.jsonl"):
+        f.unlink()
+    (out_dir / "_progress.json").unlink()
+    ki.run_backfill("KXMLBGAME", "mlb", out_dir=out_dir, http=http, sleep_sec=0,
+                    sleep_fn=lambda s: None, max_requests=20, governor_caller="backfill")
+    assert len(calls) == 2  # one page-list call + one candles call
+    assert all(sport == "mlb" and governor is not None for governor, sport in calls)
+
+
+def test_governor_reports_429(tmp_path: Path, monkeypatch) -> None:
+    """A 429 on the governed path must report_429 so the shared backoff engages."""
+    import urllib.error
+    reported = []
+    monkeypatch.setattr(ki, "_governor_report_429", lambda governor: reported.append(governor))
+
+    def http(url: str) -> Any:
+        raise urllib.error.HTTPError("u", 429, "Too Many Requests", {}, None)
+
+    out_dir = tmp_path / "gov429"
+    result = ki.run_backfill("KXMLBGAME", "mlb", out_dir=out_dir, http=http, sleep_sec=0,
+                             sleep_fn=lambda s: None, max_requests=5, governor_caller="backfill")
+    assert result["n_markets_total_done"] == 0  # the failed page yields no markets
+    assert len(reported) == 1
+
+
 def test_max_requests_budget_respected(tmp_path: Path) -> None:
     """A tight max_requests budget stops the run early without exhausting pages."""
     markets = [{"ticker": "KXMLBGAME-26JUN0%d-T" % i, "event_ticker": "e%d" % i,

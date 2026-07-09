@@ -64,9 +64,15 @@ BASE_RPS = 15.0
 # a 900s-interval settled-row sweep, not a hot loop -- without a registered
 # share it fell to the unknown-caller default (0.5), which on a full live slate
 # pushed the aggregate demand past the shared ceiling (429 storm -> slow sweeps
-# -> m18 heartbeat flap).
+# -> m18 heartbeat flap). backfill added 2026-07-09: 8 parallel settled-market
+# backfill processes each paced their OWN 1 req/s locally but never consulted
+# this governor, stacking unpaced on top of the live fleet's ~15rps budget and
+# tripping a 1,254-count 429 penalty (all feed probes RED ~50min). A small fixed
+# share (same unknown-caller trap as close_capture) plus run_all_backfills'
+# max-2-concurrent cap keeps a backfill fleet inside the shared budget.
 DEFAULT_RATE_SHARES: Dict[str, float] = {"capture": 0.35, "snapshot": 0.65,
-                                         "feed_health": 0.15, "close_capture": 0.15}
+                                         "feed_health": 0.15, "close_capture": 0.15,
+                                         "backfill": 0.10}
 
 # Bucket capacity: a small burst allowance (2s worth of tokens at the full
 # per-process rate) so a fresh process start doesn't have to wait from empty,
