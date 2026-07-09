@@ -100,10 +100,12 @@ def _abs_offset(period: int) -> float:
     return sum(_period_len(q) for q in range(1, period))
 
 
-def load_player_composite(prior_window: str, path: Path = PLAYER_PROFILES) -> Tuple[Dict[int, float], float]:
-    """Per-player composite = sum of the 12 BASKET attributes, each z-scored
-    across THIS prior window's player population and signed. Returns
-    {player_id: composite} and mean coverage (fraction of the 12 present).
+def load_player_composite(prior_window: str, path: Path = PLAYER_PROFILES,
+                          basket: Tuple[Tuple[str, int], ...] = BASKET) -> Tuple[Dict[int, float], float]:
+    """Per-player composite = sum of the `basket` attributes (default: this
+    module's 12-attr BASKET; v2 passes a wider basket), each z-scored across
+    THIS prior window's player population and signed. Returns
+    {player_id: composite} and mean coverage (fraction of the basket present).
     Empty window -> empty dict (caller documents the exclusion)."""
     p = pd.read_parquet(path)
     p = p[p["window"] == prior_window]
@@ -112,7 +114,7 @@ def load_player_composite(prior_window: str, path: Path = PLAYER_PROFILES) -> Tu
     wide = p.pivot_table(index="entity_id", columns="attribute", values="raw_value", aggfunc="first")
     z = pd.DataFrame(index=wide.index)
     present = pd.Series(0, index=wide.index, dtype=int)
-    for attr, sign in BASKET:
+    for attr, sign in basket:
         if attr not in wide.columns:
             continue
         col = wide[attr]
@@ -126,7 +128,7 @@ def load_player_composite(prior_window: str, path: Path = PLAYER_PROFILES) -> Tu
         return {}, 0.0
     comp = z.fillna(0.0).sum(axis=1)
     comp.index = comp.index.astype("int64")  # landmine: negative placeholder ids overflow int32
-    coverage = float(present.mean() / len(BASKET))
+    coverage = float(present.mean() / len(basket))
     return comp.to_dict(), coverage
 
 
