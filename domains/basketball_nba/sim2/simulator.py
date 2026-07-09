@@ -28,7 +28,7 @@ from typing import Optional
 
 import numpy as np
 
-from domains.basketball_nba.sim2.possession_model import N_MARGIN, _MARGIN_EDGES
+from domains.basketball_nba.sim2.possession_model import N_MARGIN, N_CELLS, _MARGIN_EDGES
 from domains.basketball_nba.sim2.pace_model import DMAX
 
 _MARGIN_EDGES_ARR = np.array(_MARGIN_EDGES)
@@ -59,12 +59,24 @@ def _margin_bucket_vec(off_margin: np.ndarray) -> np.ndarray:
 def simulate(period: int, clock_s: float, home_score: int, away_score: int,
              ter: GameTerciles, point_cdf: np.ndarray, dur_cdf: np.ndarray,
              n: int = 2000, seed: int = 0,
-             cond: Optional[dict] = None) -> np.ndarray:
+             cond: Optional[dict] = None,
+             comp_home: Optional[float] = None,
+             comp_thr: Optional[list] = None) -> np.ndarray:
     """Return an array (len n) of simulated FINAL home-minus-away margins.
 
-    `cond` is the v3 conditioning seam (ignored in v2). `point_cdf` is
-    [N_CELLS, PMAX+1], `dur_cdf` is [42, DMAX], both inclusive CDFs.
+    `cond` is the legacy seam (ignored). `point_cdf` is [N_CELLS, PMAX+1] for v2
+    or [N_CELLS*n_comp, PMAX+1] for v3; `dur_cdf` is [42, DMAX]; both inclusive CDFs.
+
+    v3 conditioning (cond_composite): pass this game's comp_home_minus_away
+    (`comp_home`) + tercile edges (`comp_thr`). The point cell then gains an
+    offense-relative composite bin (home-offense sees +comp_home, away -comp_home).
+    Held fixed for the whole replay -- the sim cannot see future substitutions, so
+    the game-representative lineup quality is the honest forward value. Leave both
+    None for v2.
     """
+    v3 = comp_home is not None and comp_thr is not None
+    n_comp = (point_cdf.shape[0] // N_CELLS) if v3 else 1
+    comp_thr_arr = np.asarray(comp_thr) if v3 else None
     rng = np.random.default_rng(seed)
     hs = np.full(n, float(home_score))
     as_ = np.full(n, float(away_score))
@@ -85,6 +97,10 @@ def simulate(period: int, clock_s: float, home_score: int, away_score: int,
             off_t = ter.home_off_t if off_home else ter.away_off_t
             def_t = ter.away_def_t if off_home else ter.home_def_t
             cell = ((((tb * N_MARGIN + mb) * 3 + off_t) * 3 + def_t) * 3 + ter.pace_t)
+            if v3:
+                offrel = comp_home if off_home else -comp_home
+                comp_b = int(np.searchsorted(comp_thr_arr, offrel, side="right"))
+                cell = cell * n_comp + comp_b
             dcell = tb * N_MARGIN + mb
             # points: inverse-CDF (count thresholds u meets/exceeds)
             u = rng.random(n)
