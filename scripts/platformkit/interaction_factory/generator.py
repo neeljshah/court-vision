@@ -119,6 +119,10 @@ class Candidate:
     attr_a: str
     attr_b: str
     feature_builder: str
+    # 'knowledge' (seeded from a domain mechanisms.md entry) | 'blind' (plain
+    # combinatorial enumeration). Additive: a template that doesn't declare it
+    # defaults to 'blind' -- see TEMPLATES.get(...) in enumerate_candidates.
+    hypothesis_source: str = "blind"
 
 
 def _registry(sport: str) -> Dict[str, Any]:
@@ -184,6 +188,7 @@ def enumerate_candidates(template_id: str) -> List[Candidate]:
     else:
         raise ValueError("unknown pairing %r for %s" % (pairing, template_id))
 
+    hyp_source = tpl.get("hypothesis_source", "blind")
     out: List[Candidate] = []
     for a, b in pairs:
         if _blocked(a, b, tpl):
@@ -192,7 +197,7 @@ def enumerate_candidates(template_id: str) -> List[Candidate]:
             candidate_id=_candidate_id(template_id, a, b),
             template_id=template_id, sport=sport, atomic_unit=tpl["atomic_unit"],
             outcome=tpl["outcome"], attr_a=a, attr_b=b,
-            feature_builder=tpl["feature_builder"],
+            feature_builder=tpl["feature_builder"], hypothesis_source=hyp_source,
         ))
     return out
 

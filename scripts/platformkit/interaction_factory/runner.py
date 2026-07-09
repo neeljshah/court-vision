@@ -144,6 +144,11 @@ def _row(cand: GEN.Candidate, *, verdict: str, n: int, effect, p, cum_k: int,
         "k_declared": int(k_declared), "cum_K": int(cum_k), "verdict": verdict,
         "effect": effect, "p": p, "n": int(n), "alpha_fwer": alpha, "corpus": corpus,
         "note": note, "edge_claimed": False, "computed_at": _now(),
+        # 'knowledge' | 'blind' -- see Candidate.hypothesis_source. Rows written
+        # before this field existed have none; a reader must treat a MISSING
+        # key as "blind" (row.get("hypothesis_source", "blind")), never as an
+        # error -- this is an additive schema change, not a migration.
+        "hypothesis_source": cand.hypothesis_source,
     }
 
 
