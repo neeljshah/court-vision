@@ -161,7 +161,9 @@ def test_replication_watch_never_calls_a_run_or_fit_function():
 def test_run_all_isolates_one_failing_job(tmp_path):
     with mock.patch.object(MT, "run_validate_new_stores", side_effect=RuntimeError("x")), \
         mock.patch.object(MT, "run_weighting_refresh", return_value={"sports_refreshed": []}), \
-        mock.patch.object(MT, "run_replication_watch", return_value={"new_reports": 0}):
+        mock.patch.object(MT, "run_replication_watch", return_value={"new_reports": 0}), \
+        mock.patch("scripts.platformkit.scoreboard_history.append_rows",
+                   return_value={"status": "ok", "appended": 0}):
         out = MT.run_all({}, queue_fn=lambda row: None)
     assert out["validate_new_stores"]["status"] == "error"
     assert out["weighting_refresh"] == {"sports_refreshed": []}
