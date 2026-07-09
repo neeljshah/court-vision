@@ -66,6 +66,58 @@ def test_poll_kalshi_depth_no_series_for_sport_is_empty(tmp_path):
     assert summary["n_snapshotted"] == 0
 
 
+_TRADES_WITH_PRICES = {"trades": [
+    {"created_time": "2026-07-06T00:00:01.000000Z", "yes_price_dollars": "0.55", "count": "2"},
+]}
+
+
+def _http_kalshi_with_trades(url: str):
+    if "/markets?" in url and "series_ticker" in url:
+        return _MARKETS_BODY
+    if "orderbook" in url:
+        return _ORDERBOOK_BODY
+    if "trades" in url:
+        return _TRADES_WITH_PRICES
+    raise AssertionError("unexpected url %s" % url)
+
+
+def test_poll_kalshi_depth_persists_trades_with_prices_and_dedups(tmp_path):
+    """Trades tape prices land in the parallel kalshi_trades sidecar; the
+    existing kalshi depth summary row is unchanged (no leaked _new_trades/
+    _trade_watermark keys); a second poll with the same tape dedups to zero
+    new trades via the threaded watermark."""
+    now_dt = datetime(2026, 7, 6, 0, 0, 0, tzinfo=timezone.utc)
+    watermarks: dict = {}
+    prev: dict = {}
+    summary = poller.poll_kalshi_depth(["tennis"], http=_http_kalshi_with_trades, sidecar_dir=tmp_path,
+                                       now=lambda: now_dt, max_markets_per_sport=1,
+                                       prev_by_ticker=prev, trade_watermark_by_ticker=watermarks)
+    assert summary["n_trades"] == 1
+    depth_row = summary["rows"][0]
+    assert "_new_trades" not in depth_row and "_trade_watermark" not in depth_row
+
+    trades_sidecar = tmp_path / "kalshi_trades" / "2026-07-06.jsonl"
+    assert trades_sidecar.is_file()
+    trade_lines = trades_sidecar.read_text(encoding="ascii").strip().splitlines()
+    assert len(trade_lines) == 1
+    trade_row = json.loads(trade_lines[0])
+    assert trade_row["price"] == 0.55
+    assert trade_row["ticker"] == "KXMLBGAME-TEST-AAA" and trade_row["sport"] == "tennis"
+
+    depth_sidecar = tmp_path / "kalshi" / "2026-07-06.jsonl"
+    depth_lines = depth_sidecar.read_text(encoding="ascii").strip().splitlines()
+    on_disk_row = json.loads(depth_lines[0])
+    assert "_new_trades" not in on_disk_row and "_trade_watermark" not in on_disk_row
+    assert set(on_disk_row) == set(depth_row)  # existing summary row shape unchanged
+
+    # second poll, same tape + threaded watermark -> no duplicate trade line
+    summary2 = poller.poll_kalshi_depth(["tennis"], http=_http_kalshi_with_trades, sidecar_dir=tmp_path,
+                                        now=lambda: now_dt, max_markets_per_sport=1,
+                                        prev_by_ticker=prev, trade_watermark_by_ticker=watermarks)
+    assert summary2["n_trades"] == 0
+    assert len(trades_sidecar.read_text(encoding="ascii").strip().splitlines()) == 1
+
+
 def test_poll_polymarket_depth_resolves_once_and_caches(tmp_path):
     calls = {"gamma": 0, "book": 0}
 

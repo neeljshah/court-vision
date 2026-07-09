@@ -100,3 +100,48 @@ def test_snapshot_market_orderbook_failure_returns_none():
         raise TimeoutError("no response")
     assert kd.snapshot_market("X", http=_boom, now_dt=datetime.now(timezone.utc),
                               now_iso_fn=lambda: "t") is None
+
+
+def test_normalize_trade_extracts_price_and_ts():
+    n = kd.normalize_trade({"created_time": "2026-07-06T02:40:13.373445Z",
+                            "yes_price_dollars": "0.95", "count": "3",
+                            "taker_side": "yes", "trade_id": "T1"})
+    assert n == {"trade_ts": "2026-07-06T02:40:13.373445Z", "trade_id": "T1",
+                "price": 0.95, "count": 3.0, "taker_side": "yes"}
+
+
+def test_normalize_trade_unparseable_ts_is_none():
+    assert kd.normalize_trade({"created_time": "not-a-date"}) is None
+    assert kd.normalize_trade("not-a-dict") is None
+
+
+def test_new_trades_since_cold_start_returns_whole_tape():
+    new, watermark = kd.new_trades_since(_TRADES_BODY["trades"])
+    assert len(new) == 2  # no prior watermark -> whole fetched tape is "new"
+    assert watermark == "2026-07-06T02:40:13.373445Z"  # newest trade_ts
+
+
+def test_new_trades_since_dedups_against_watermark():
+    """Second call with the watermark from the first call sees only strictly
+    newer trades -- the repeat is not re-persisted."""
+    new, watermark = kd.new_trades_since(_TRADES_BODY["trades"])
+    new2, watermark2 = kd.new_trades_since(_TRADES_BODY["trades"], watermark=watermark)
+    assert new2 == []  # same tape, nothing newer than the watermark
+    assert watermark2 == watermark
+
+
+def test_new_trades_since_caps_at_limit():
+    trades = [{"created_time": "2026-07-06T02:00:%02d.000000Z" % i,
+              "yes_price_dollars": "0.50"} for i in range(10)]
+    new, _ = kd.new_trades_since(trades, limit=3)
+    assert len(new) == 3
+    assert new[-1]["trade_ts"] == "2026-07-06T02:00:09.000000Z"  # newest kept
+
+
+def test_snapshot_market_carries_transient_trade_keys():
+    now_dt = datetime(2026, 7, 6, 2, 41, 0, tzinfo=timezone.utc)
+    row = kd.snapshot_market("KXMLBGAME-TEST-AAA", http=_http_ok, now_dt=now_dt,
+                             now_iso_fn=lambda: "2026-07-06T02:41:00.000000Z")
+    assert len(row["_new_trades"]) == 2
+    assert row["_new_trades"][0]["price"] == 0.90  # sorted ascending by trade_ts
+    assert row["_trade_watermark"] == "2026-07-06T02:40:13.373445Z"
