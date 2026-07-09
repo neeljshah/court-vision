@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import json
 
+import numpy as np
 import pandas as pd
 
 from scripts.platformkit.interaction_factory import generator as GEN
@@ -169,3 +170,115 @@ def test_cum_k_math_only_real_tests_advance(tmp_path, monkeypatch):
     monkeypatch.setattr(RUN, "_fit_candidate", lambda b, c: None)
     more = RUN.run_batch(tid, 3, ledger_path=ledger)
     assert {r["candidate_id"] for r in more}.isdisjoint({r["candidate_id"] for r in rows})
+
+
+def test_task39b_builders_are_registered():
+    for key in ("nba_boxdetail_asof", "mlb_battrack_asof", "mlb_pa_archetype_asof",
+                "tennis_match_asof", "soccer_match_asof"):
+        assert key in RUN._BUILDERS
+
+
+def test_insufficient_train_history_short_circuits_without_a_fit(tmp_path, monkeypatch):
+    # nba_boxdetail's known limitation (train coverage starts after the
+    # sibling gate's 70% cutoff) must NOT_TESTABLE every candidate in the
+    # batch with the explicit reason, spending no cum_K, never calling _fit_candidate.
+    ledger = tmp_path / "ledger.jsonl"
+    monkeypatch.setitem(RUN._BUILDERS, "nba_boxdetail_asof",
+                        lambda attrs, tpl: {"frame": None, "cluster": "game_id", "corpus": "boxdetail_asof",
+                                             "kind": "logit", "insufficient_train_history": True,
+                                             "train_note": "synthetic guard for this test"})
+
+    def _boom(build, cand):
+        raise AssertionError("_fit_candidate must not run when insufficient_train_history is set")
+    monkeypatch.setattr(RUN, "_fit_candidate", _boom)
+
+    rows = RUN.run_batch("nba_boxdetail_self_cross", 10, ledger_path=ledger)
+    assert rows and all(r["verdict"] == RUN.NOT_TESTABLE for r in rows)
+    assert all(r["note"].startswith("insufficient_train_history: synthetic guard") for r in rows)
+    assert all(r["cum_K"] == 0 for r in rows)
+
+
+def test_fit_candidate_covariate_and_entity_class_scoping():
+    # covariate: 'y ~ cov + fa + fb + fa:fb' -- included column must be present
+    # and standardized, never silently dropped. Random (seeded) inputs, not a
+    # perfectly-separable pattern, so the logit Hessian stays non-singular.
+    rng = np.random.default_rng(0)
+    n = 400
+    frame = pd.DataFrame({
+        "y": rng.integers(0, 2, n).astype(float),
+        "asof__a": rng.normal(size=n),
+        "asof__b": rng.normal(size=n),
+        "p_base": rng.uniform(0.2, 0.8, n),
+        "cl": rng.integers(0, 10, n),
+    })
+    cand = GEN.Candidate(candidate_id="x", template_id="t", sport="basketball_nba",
+                         atomic_unit="team_game", outcome="home_win", attr_a="a", attr_b="b",
+                         feature_builder="nba_boxdetail_asof")
+    build = {"frame": frame, "cluster": "cl", "kind": "logit", "covariate": "p_base"}
+    fit = RUN._fit_candidate(build, cand)
+    assert fit is not None and "n" in fit
+
+    # entity_class: scoping to an unresolvable class -> NOT_TESTABLE (None), never silently
+    # falls back to the unscoped frame.
+    build2 = {"frame": frame.assign(team=["X"] * 400), "cluster": "cl", "kind": "logit",
+              "archetype_members": {"known_slug": {"X"}}, "entity_col": "team"}
+    cand_unknown = GEN.Candidate(candidate_id="y", template_id="t", sport="mlb",
+                                 atomic_unit="plate_appearance", outcome="is_k", attr_a="a", attr_b="b",
+                                 feature_builder="mlb_pa_archetype_asof", entity_class="unknown_slug")
+    assert RUN._fit_candidate(build2, cand_unknown) is None
+    cand_known = GEN.Candidate(candidate_id="z", template_id="t", sport="mlb",
+                               atomic_unit="plate_appearance", outcome="is_k", attr_a="a", attr_b="b",
+                               feature_builder="mlb_pa_archetype_asof", entity_class="known_slug")
+    assert RUN._fit_candidate(build2, cand_known) is not None
+
+
+def test_battrack_frame_joins_season_y_to_season_yplus1_outcome():
+    # synthetic overlap (real on-disk corpus currently has none -- see
+    # build_mlb_battrack_frame docstring) proves the season-shift join itself.
+    profiles = pd.DataFrame([
+        {"entity_id": 1, "window": "season_2024", "attribute": "swing_speed", "raw_value": 75.0},
+        {"entity_id": 1, "window": "season_2025", "attribute": "contact_quality", "raw_value": 0.4},
+        {"entity_id": 2, "window": "season_2024", "attribute": "swing_speed", "raw_value": 70.0},
+        {"entity_id": 2, "window": "season_2026", "attribute": "contact_quality", "raw_value": 0.1},  # wrong year, no match
+    ])
+    frame = RUN.build_mlb_battrack_frame(profiles, ["swing_speed"])
+    row = frame.set_index("entity_id")
+    assert row.loc[1, "y"] == 0.4 and row.loc[1, "asof__swing_speed"] == 75.0
+    assert 2 not in row.index  # season_2024 -> needs outcome at season_2025, batter 2 only has season_2026
+
+
+def test_pa_archetype_frame_derives_batting_team_from_topbot():
+    pitch_df = pd.DataFrame([
+        {"game_pk": 1, "at_bat_number": 1, "pitch_number": 1, "pitcher": 9, "batter": 1,
+         "game_date": "2025-04-01", "events": "strikeout", "description": "swinging_strike", "launch_speed": None,
+         "home_team": "NYY", "away_team": "BOS", "inning_topbot": "Top"},
+        {"game_pk": 1, "at_bat_number": 2, "pitch_number": 1, "pitcher": 5, "batter": 2,
+         "game_date": "2025-04-01", "events": "walk", "description": "ball", "launch_speed": None,
+         "home_team": "NYY", "away_team": "BOS", "inning_topbot": "Bot"},
+    ])
+    frame = RUN.build_mlb_pa_archetype_frame(pitch_df, ["K_avoidance"])
+    teams = frame.set_index("at_bat_number")["team"]
+    assert teams.loc[1] == "BOS"  # top half -> away team bats
+    assert teams.loc[2] == "NYY"  # bottom half -> home team bats
+
+
+def test_tennis_and_soccer_match_frames_derive_win_target():
+    matches = pd.DataFrame([
+        {"event_id": "e1", "tourney_id": "t1", "winner": 1},
+        {"event_id": "e2", "tourney_id": "t1", "winner": 2},
+    ])
+    ret = pd.DataFrame([{"event_id": "e1", "diff_return_won_asof": 0.1},
+                        {"event_id": "e2", "diff_return_won_asof": -0.2}])
+    feats = pd.DataFrame([{"event_id": "e1", "diff_ace_rate_asof": 0.05},
+                          {"event_id": "e2", "diff_ace_rate_asof": -0.01}])
+    tframe = RUN.build_tennis_match_frame(matches, ret, feats, ["diff_return_won_asof", "diff_ace_rate_asof"])
+    y = tframe.set_index("event_id")["y"]
+    assert y.loc["e1"] == 1.0 and y.loc["e2"] == 0.0
+
+    soc_matches = pd.DataFrame([{"event_id": "s1", "div": "E1", "fthg": 2, "ftag": 1},
+                                {"event_id": "s2", "div": "E1", "fthg": 0, "ftag": 3}])
+    soc_feats = pd.DataFrame([{"event_id": "s1", "diff_sot_for_asof": 1.5},
+                              {"event_id": "s2", "diff_sot_for_asof": -0.5}])
+    sframe = RUN.build_soccer_match_frame(soc_matches, soc_feats, ["diff_sot_for_asof"])
+    ys = sframe.set_index("event_id")["y"]
+    assert ys.loc["s1"] == 1.0 and ys.loc["s2"] == 0.0

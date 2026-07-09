@@ -262,31 +262,76 @@ def _mlb_pa_builder(attrs: List[str], tpl: Dict[str, Any]) -> Optional[Dict[str,
 
 # feature_builder key -> callable. Templates whose builder is not registered here
 # yield honest NOT_TESTABLE rows (the factory tests them once a builder lands).
+# The 5 task-39b builders (nba_boxdetail_asof, mlb_battrack_asof,
+# mlb_pa_archetype_asof, tennis_match_asof, soccer_match_asof) live in the
+# sibling builders_task39b module (kept this file under its LOC budget); the
+# frame-building functions are re-exported below so `RUN.build_nba_boxdetail_
+# frame` etc keep working for callers/tests that import them off this module.
+from scripts.platformkit.interaction_factory import builders_task39b as _t39b  # noqa: E402
+
+build_nba_boxdetail_frame = _t39b.build_nba_boxdetail_frame
+build_mlb_battrack_frame = _t39b.build_mlb_battrack_frame
+build_mlb_pa_archetype_frame = _t39b.build_mlb_pa_archetype_frame
+mlb_team_archetype_members = _t39b.mlb_team_archetype_members
+build_tennis_match_frame = _t39b.build_tennis_match_frame
+build_soccer_match_frame = _t39b.build_soccer_match_frame
+
 _BUILDERS = {
     "nba_player_offense_asof": _nba_builder,
     "nba_stint_lineup_asof": _nba_stint_builder,
     "mlb_pa_asof": _mlb_pa_builder,
+    "nba_boxdetail_asof": _t39b._nba_boxdetail_builder,
+    "mlb_battrack_asof": _t39b._mlb_battrack_builder,
+    "mlb_pa_archetype_asof": _t39b._mlb_pa_archetype_builder,
+    "tennis_match_asof": _t39b._tennis_match_builder,
+    "soccer_match_asof": _t39b._soccer_match_builder,
 }
 
 
 def _fit_candidate(build: Dict[str, Any], cand: GEN.Candidate) -> Optional[Dict[str, Any]]:
     """Fit y ~ fa + fb (baseline) vs + fa:fb (candidate); return the interaction
-    term's cluster-robust effect + p, or None if not enough signal (NOT_TESTABLE)."""
+    term's cluster-robust effect + p, or None if not enough signal (NOT_TESTABLE).
+
+    Optional build['covariate'] names a 3rd control column (e.g. box-detail's
+    Elo p_base) folded in as `y ~ cov + fa + fb + fa:fb` -- additive, only
+    covariate-bearing builders (nba_boxdetail_asof) set it.
+
+    Optional cand.entity_class (entity-class wildcard templates, e.g. team
+    archetype) scopes the frame to build['archetype_members'][entity_class]
+    via build['entity_col'] BEFORE fitting -- an unresolvable class or a
+    frame missing the entity column is NOT_TESTABLE (None), never a silent
+    skip of the scoping.
+    """
     frame, cluster, kind = build["frame"], build["cluster"], build["kind"]
+    if cand.entity_class is not None:
+        members = (build.get("archetype_members") or {}).get(cand.entity_class)
+        entity_col = build.get("entity_col")
+        if not members or entity_col not in frame.columns:
+            return None
+        frame = frame[frame[entity_col].isin(members)]
     ca, cb = "asof__" + cand.attr_a, "asof__" + cand.attr_b
     if ca not in frame or cb not in frame:
         return None
-    sub = frame[["y", ca, cb, cluster]].rename(columns={ca: "fa", cb: "fb", cluster: "cl"}).dropna()
+    covariate = build.get("covariate")
+    if covariate and covariate not in frame.columns:
+        return None
+    cols = ["y", ca, cb, cluster] + ([covariate] if covariate else [])
+    sub = frame[cols].rename(columns={ca: "fa", cb: "fb", cluster: "cl"})
+    if covariate:
+        sub = sub.rename(columns={covariate: "cov"})
+    sub = sub.dropna()
     if len(sub) > MAX_ROWS:
         sub = sub.sample(MAX_ROWS, random_state=0)  # declared deterministic subsample
     if len(sub) < MIN_N or sub["cl"].nunique() < MIN_CLUSTERS:
         return None
-    for c in ("fa", "fb"):
+    std_cols = ["fa", "fb"] + (["cov"] if covariate else [])
+    for c in std_cols:
         sd = sub[c].std(ddof=0)
         if sd == 0 or not (sd == sd):
             return None
         sub[c] = (sub[c] - sub[c].mean()) / sd
-    model = smf.logit("y ~ fa + fb + fa:fb", sub) if kind == "logit" else smf.ols("y ~ fa + fb + fa:fb", sub)
+    formula = "y ~ cov + fa + fb + fa:fb" if covariate else "y ~ fa + fb + fa:fb"
+    model = smf.logit(formula, sub) if kind == "logit" else smf.ols(formula, sub)
     res = (model.fit(disp=0, cov_type="cluster", cov_kwds={"groups": sub["cl"]}) if kind == "logit"
            else model.fit(cov_type="cluster", cov_kwds={"groups": sub["cl"]}))
     term = "fa:fb"
@@ -356,11 +401,20 @@ def run_batch(template_id: str, k: int, *, ledger_path: Path = LEDGER_PATH,
         except Exception as exc:  # noqa: BLE001 -- an unbuildable frame is NOT_TESTABLE, not a crash
             build = None
     corpus = build["corpus"] if build else tpl.get("feature_builder")
+    insufficient_train = bool(build and build.get("insufficient_train_history"))
+    train_note = (build or {}).get("train_note", "")
 
     running = sum(1 for r in existing
                   if r.get("template_id") == template_id and r.get("verdict") in (SURVIVES, NULL))
     out: List[Dict[str, Any]] = []
     for cand in batch:
+        if insufficient_train:
+            row = _row(cand, verdict=NOT_TESTABLE, n=0, effect=None, p=None, cum_k=running,
+                       k_declared=k, alpha=None, corpus=corpus,
+                       note="insufficient_train_history: %s" % train_note)
+            append_jsonl_atomic(ledger_path, row)
+            out.append(row)
+            continue
         fit = None
         if build is not None:
             try:
@@ -413,4 +467,7 @@ if __name__ == "__main__":
 __all__ = ["run_batch", "build_nba_offense_frame", "nba_source_for_season",
            "build_nba_stint_frame", "nba_stints_source_for_season",
            "build_mlb_pa_frame", "mlb_savant_source_for_year", "LEDGER_PATH",
+           "build_nba_boxdetail_frame", "build_mlb_battrack_frame",
+           "build_mlb_pa_archetype_frame", "mlb_team_archetype_members",
+           "build_tennis_match_frame", "build_soccer_match_frame",
            "SURVIVES", "NULL", "NOT_TESTABLE", "main"]

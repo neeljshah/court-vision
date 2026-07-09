@@ -158,10 +158,57 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
         "pairing": "self_cross",
         "left_pool": {"attributes": ["K_avoidance", "BB_rate"]},
         "entity_classes": "mlb_team_archetype",
-        "feature_builder": "mlb_pa_archetype_asof",   # not yet registered -> NOT_TESTABLE
+        "feature_builder": "mlb_pa_archetype_asof",
         "blocklist_attrs": [],
         "blocklist_pairs": [],
     },
+    # ---- TENNIS / SOCCER (task-39b) -----------------------------------
+    # Neither sport has a per-entity ATTRIBUTES profile registry wired into
+    # THIS factory's grammar yet (their own domains/*/profiles/attribute_
+    # registry.py drives a different pipeline -- percentile/rating profiles,
+    # not raw as-of diff columns -- and is not touched here to avoid wiring
+    # an unbuilt name into that engine's per-attribute function dispatch, see
+    # runner.py builder docstrings). These two pools are declared directly as
+    # STATIC_POOLS below: the exact diff_*_asof column names already sitting,
+    # leak-free, on disk (domains.tennis.asof_return/asof_features,
+    # domains.soccer.asof_features) -- resolve_pool serves them without a
+    # per-sport ATTRIBUTES registry lookup (see `static_pool` pool-spec key).
+    "tennis_match_asof_self_cross": {
+        "sport": "tennis",
+        "atomic_unit": "match",
+        "outcome": "p1_win",
+        "baseline": "p1_win ~ attr_a + attr_b",
+        "pairing": "self_cross",
+        "left_pool": {"static_pool": "tennis_match_asof"},
+        "feature_builder": "tennis_match_asof",
+        "blocklist_attrs": [],
+        "blocklist_pairs": [],
+    },
+    "soccer_match_asof_self_cross": {
+        "sport": "soccer",
+        "atomic_unit": "match",
+        "outcome": "home_win",
+        "baseline": "home_win ~ attr_a + attr_b",
+        "pairing": "self_cross",
+        "left_pool": {"static_pool": "soccer_match_asof"},
+        "feature_builder": "soccer_match_asof",
+        "blocklist_attrs": [],
+        "blocklist_pairs": [],
+    },
+}
+
+# STATIC pools for templates whose attribute names come straight from an
+# on-disk as-of parquet rather than a per-sport ATTRIBUTES profile registry
+# (see the tennis/soccer TEMPLATES entries above). `resolve_pool` serves these
+# without calling `_registry(sport)` at all.
+STATIC_POOLS: Dict[str, List[str]] = {
+    "tennis_match_asof": [
+        "diff_return_won_asof", "diff_break_pct_asof", "diff_1st_win_asof",
+        "diff_2nd_win_asof", "diff_ace_rate_asof", "diff_1st_in_asof", "diff_bp_saved_asof",
+    ],
+    "soccer_match_asof": [
+        "diff_sot_for_asof", "diff_sot_against_asof", "diff_shots_for_asof", "diff_shots_against_asof",
+    ],
 }
 
 
@@ -219,8 +266,17 @@ def resolve_pool(sport: str, pool_spec: Dict[str, Any]) -> List[str]:
                    resolution (on top of the GLOBAL_BLOCKLIST_ATTRS closed-
                    class filter applied later in enumerate_candidates).
 
+    `static_pool` -- a key into STATIC_POOLS: the pool is served verbatim, no
+    per-sport ATTRIBUTES registry involved at all (tennis/soccer templates
+    above; both sports' own attribute_registry.py drives a different profile
+    pipeline, see module-level STATIC_POOLS comment).
+
     Unknown pool shape -> [].
     """
+    if "static_pool" in pool_spec:
+        names = list(STATIC_POOLS.get(pool_spec["static_pool"], []))
+        exclude = set(pool_spec.get("exclude") or [])
+        return sorted(set(names) - exclude)
     reg = _registry(sport)
     if "attributes" in pool_spec:
         names = [a for a in pool_spec["attributes"] if a in reg]
@@ -332,6 +388,6 @@ def next_batch(template_id: str, k: int, ledger_rows: Optional[List[Dict[str, An
 
 
 __all__ = [
-    "TEMPLATES", "GLOBAL_BLOCKLIST_ATTRS", "GLOBAL_BLOCKLIST_PAIRS", "Candidate",
+    "TEMPLATES", "STATIC_POOLS", "GLOBAL_BLOCKLIST_ATTRS", "GLOBAL_BLOCKLIST_PAIRS", "Candidate",
     "ENTITY_CLASS_RESOLVERS", "resolve_pool", "enumerate_candidates", "tested_ids", "next_batch",
 ]
