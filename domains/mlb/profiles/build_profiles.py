@@ -31,24 +31,35 @@ from domains.mlb.profiles.ingredients_batter import BUILDERS as BATTER_BUILDERS
 from domains.mlb.profiles.ingredients_batter_grid import BUILDERS as BATTER_GRID_BUILDERS
 from domains.mlb.profiles.ingredients_batter_zones import BUILDERS as BATTER_ZONE_BUILDERS
 from domains.mlb.profiles.ingredients_catcher import BUILDERS as CATCHER_BUILDERS
+from domains.mlb.profiles.ingredients_leaderboard import ATTR_TO_FAMILY as LEADERBOARD_FAMILY
+from domains.mlb.profiles.ingredients_leaderboard import BUILDERS as LEADERBOARD_BUILDERS
 from domains.mlb.profiles.ingredients_pitcher import BUILDERS as PITCHER_BUILDERS
 from domains.mlb.profiles.ingredients_pitcher_grid import BUILDERS as PITCHER_GRID_BUILDERS
 from domains.mlb.profiles.ingredients_pitcher_zones import BUILDERS as PITCHER_ZONE_BUILDERS
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 _STATCAST_DIR = REPO_ROOT / "data" / "cache" / "statcast"
+_LEADERBOARD_DIR = REPO_ROOT / "data" / "cache" / "statcast" / "leaderboards"
 _GAMELOGS = REPO_ROOT / "data" / "domains" / "mlb" / "player_gamelogs.parquet"
 _OUT_PATH = REPO_ROOT / "data" / "cache" / "profiles" / "mlb_player_profiles.parquet"
 
 SEASONS = ("2023", "2024")
+# bat-tracking didn't exist before 2024; all 3 leaderboard families are pulled
+# 2024-2026 (see scripts/platformkit/data_frontier/savant_bat_tracking.py).
+LEADERBOARD_YEARS = ("2024", "2025", "2026")
 
+# pitch-frame builders ONLY (Callable[[pd.DataFrame], pd.DataFrame], one shared
+# season frame per season -- see build_all's first loop). LEADERBOARD_BUILDERS
+# (Callable[[str], pd.DataFrame], one CSV read per year) are dispatched
+# separately below -- different input shape, different season set.
 _BUILDERS: dict[str, Callable[[pd.DataFrame], pd.DataFrame]] = {
     **BATTER_BUILDERS, **PITCHER_BUILDERS, **CATCHER_BUILDERS,
     **BATTER_GRID_BUILDERS, **PITCHER_GRID_BUILDERS,
     **BATTER_ZONE_BUILDERS, **PITCHER_ZONE_BUILDERS,
 }
-assert set(_BUILDERS) == set(ATTRIBUTES), (
-    f"builder/registry mismatch: {set(ATTRIBUTES) ^ set(_BUILDERS)}")
+_ALL_BUILDER_ATTRS = set(_BUILDERS) | set(LEADERBOARD_BUILDERS)
+assert _ALL_BUILDER_ATTRS == set(ATTRIBUTES), (
+    f"builder/registry mismatch: {set(ATTRIBUTES) ^ _ALL_BUILDER_ATTRS}")
 
 
 def load_season(season: str) -> pd.DataFrame:
@@ -100,13 +111,48 @@ def build_attribute_window(attr: str, season: str, frame: pd.DataFrame,
     return scored[cols], coverage
 
 
+def build_leaderboard_attribute_window(attr: str, year: str,
+                                        name_lookup: dict[int, str]) -> tuple[pd.DataFrame, dict[str, Any]]:
+    """Same shape as build_attribute_window, but for a LEADERBOARD_BUILDERS
+    attribute: no shared pitch-frame, builder reads its own per-year CSV."""
+    spec = ATTRIBUTES[attr]
+    raw = LEADERBOARD_BUILDERS[attr](year)
+    n_considered = len(raw)
+    qualified = raw[raw["n"] >= spec["floor"]].copy()
+    n_excluded = n_considered - len(qualified)
+    scored = _percentile_and_rating(qualified)
+
+    scored["entity_id"] = scored["entity_id"].astype(int)
+    scored["entity_name"] = scored["entity_id"].map(lambda eid: name_lookup.get(eid, str(eid)))
+    scored["window"] = f"season_{year}"
+    scored["attribute"] = attr
+    scored["ingredients"] = scored["ingredients"].map(json.dumps)
+    scored["status"] = spec["status"]
+    family = LEADERBOARD_FAMILY[attr]
+    scored["sources"] = json.dumps([f"data/cache/statcast/leaderboards/{family}_{year}.csv"])
+
+    coverage = {
+        "attribute": attr, "season": year, "entity": spec["entity"],
+        "n_considered": n_considered, "n_excluded_below_floor": n_excluded,
+        "n_qualifying": len(scored), "floor": spec["floor"], "status": spec["status"],
+    }
+    cols = ["entity_id", "entity_name", "window", "attribute", "raw_value", "percentile",
+            "rating_2k", "n", "ingredients", "status", "sources"]
+    return scored[cols], coverage
+
+
 def build_all() -> tuple[pd.DataFrame, list[dict[str, Any]]]:
     name_lookup = load_name_lookup()
     frames, coverage_rows = [], []
     for season in SEASONS:
         frame = load_season(season)
-        for attr in ATTRIBUTES:
+        for attr in _BUILDERS:
             scored, coverage = build_attribute_window(attr, season, frame, name_lookup)
+            frames.append(scored)
+            coverage_rows.append(coverage)
+    for year in LEADERBOARD_YEARS:
+        for attr in LEADERBOARD_BUILDERS:
+            scored, coverage = build_leaderboard_attribute_window(attr, year, name_lookup)
             frames.append(scored)
             coverage_rows.append(coverage)
     profiles = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()

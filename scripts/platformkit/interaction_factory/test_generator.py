@@ -66,3 +66,14 @@ def test_cross_pairing_mlb_is_ordered_product():
     assert len(cands) == 4
     lefts = {c.attr_a for c in cands}
     assert lefts == {"K_avoidance", "BB_rate"}
+
+
+def test_leaderboard_attrs_resolve_via_entity_pool():
+    # registry-resolution check (not a template membership check -- no MLB
+    # template names these attrs yet, see build report): an entity-wildcard
+    # pool spec picks up the new leaderboard attrs the moment they enter the
+    # registry, same "writes more on its own" property resolve_pool documents.
+    batters = GEN.resolve_pool("mlb", {"entity": "batter"})
+    assert {"swing_speed", "squared_up_rate", "blast_rate", "sword_rate"} <= set(batters)
+    fielders = GEN.resolve_pool("mlb", {"entity": "fielder"})
+    assert {"range_oaa", "difficult_play_conversion"} <= set(fielders)

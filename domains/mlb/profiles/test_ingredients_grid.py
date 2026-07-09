@@ -11,7 +11,7 @@ import pandas as pd
 import pytest
 
 from domains.mlb.profiles.attribute_registry import ATTRIBUTES
-from domains.mlb.profiles.build_profiles import _BUILDERS, build_attribute_window
+from domains.mlb.profiles.build_profiles import LEADERBOARD_BUILDERS, _BUILDERS, build_attribute_window
 from domains.mlb.profiles.ingredients_batter_grid import BUILDERS as BATTER_GRID_BUILDERS
 from domains.mlb.profiles.ingredients_batter_grid import build_hard_contact_share
 from domains.mlb.profiles.ingredients_pitcher_grid import BUILDERS as PITCHER_GRID_BUILDERS
@@ -27,8 +27,9 @@ def test_classify_pitch_class():
 
 def test_registry_grid_count_and_parity():
     # 14 original + 29 pitcher-grid + 20 batter-grid + 30 pitcher-zone + 17 batter-zone = 110
-    assert len(ATTRIBUTES) == 110
-    assert set(ATTRIBUTES) == set(_BUILDERS)
+    # + 6 leaderboard (bat-tracking/OAA/catch-probability, see ingredients_leaderboard.py) = 116
+    assert len(ATTRIBUTES) == 116
+    assert set(ATTRIBUTES) == set(_BUILDERS) | set(LEADERBOARD_BUILDERS)
     assert len(PITCHER_GRID_BUILDERS) == 29
     assert len(BATTER_GRID_BUILDERS) == 20
 
