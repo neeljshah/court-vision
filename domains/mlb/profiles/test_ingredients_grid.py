@@ -26,8 +26,8 @@ def test_classify_pitch_class():
 
 
 def test_registry_grid_count_and_parity():
-    # 14 original + 29 pitcher-grid + 20 batter-grid = 63
-    assert len(ATTRIBUTES) == 63
+    # 14 original + 29 pitcher-grid + 20 batter-grid + 30 pitcher-zone + 17 batter-zone = 110
+    assert len(ATTRIBUTES) == 110
     assert set(ATTRIBUTES) == set(_BUILDERS)
     assert len(PITCHER_GRID_BUILDERS) == 29
     assert len(BATTER_GRID_BUILDERS) == 20
