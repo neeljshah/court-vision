@@ -17,6 +17,10 @@ to (never re-implements) the systems that already exist:
         recomputed live -- recomputation is calibration-report's job)
     historical_result -> data/domains/<sport>/{linescores,games}.parquet
         (final score / W-L, read directly, no derived number)
+    mechanism_effect  -> domains/<sport>/knowledge/validation_ledger.jsonl
+        ("does mechanism X hold up locally" -- verbatim ledger row(s):
+        verdict/effect/n/p/corpus/note, LOCAL-only framing baked into the
+        answer, never improvised for an unregistered mechanism)
     edge_language     -> always REFUSED (see .claude/rules/no-edge-claims.md)
 
 Every resolve() call returns one envelope shape:
@@ -26,6 +30,8 @@ Every resolve() call returns one envelope shape:
 """
 from __future__ import annotations
 
+import difflib
+import json
 import os
 import re
 from datetime import datetime, timezone
@@ -98,6 +104,14 @@ RESOLVERS: dict[str, dict] = {
         "computation": "final score read directly off the boxscore/linescore row for the matched game",
         "units": "points (NBA) / runs (MLB), integers", "rounding": "none -- integer score",
     },
+    "mechanism_effect": {
+        "resolver": "resolver_registry.mechanism_effect",
+        "source_artifact": "domains/<sport>/knowledge/validation_ledger.jsonl",
+        "computation": "verbatim lookup of the matched hypothesis row(s) -- verdict/effect/n/p/corpus/note, "
+                        "as written by the mechanism validators; never recomputed, never improvised",
+        "units": "effect size + n + p as stored (sport/spec-native, see each row's 'note' for what was measured)",
+        "rounding": "none -- verbatim from the ledger row",
+    },
     "edge_language": {
         "resolver": None,
         "source_artifact": ".claude/rules/no-edge-claims.md",
@@ -112,6 +126,8 @@ _PREDICTION_KEYWORDS = ("win probability", "who wins", "will win", "predict", "f
 _CALIBRATION_KEYWORDS = ("brier", "ece", "calibrat")
 _HISTORICAL_KEYWORDS = ("final score", "what happened", "box score", "result of", "score of the game",
                         "who won on", "final of")
+_MECHANISM_KEYWORDS = ("evidence", "mechanism", "hypothesis", "folklore",
+                       "hold up", "does the data support", "is it true that")
 
 
 def classify(query: str) -> str | None:
@@ -130,6 +146,8 @@ def classify(query: str) -> str | None:
         return "prediction_winprob"
     if any(k in low for k in _HISTORICAL_KEYWORDS):
         return "historical_result"
+    if any(k in low for k in _MECHANISM_KEYWORDS):
+        return "mechanism_effect"
     if any(k in low for k in _CONCEPT_KEYWORDS):
         return "concept_rating"
     if "rating" in low or "percentile" in low or "2k" in low:
@@ -208,6 +226,79 @@ def historical_result(sport: str, team: str, opponent: str | None = None, date: 
             "winner": row[home_col] if home_score > away_score else row[away_col]}
 
 
+_LEDGER_PATHS = {
+    "nba": "domains/basketball_nba/knowledge/validation_ledger.jsonl",
+    "mlb": "domains/mlb/knowledge/validation_ledger.jsonl",
+    "soccer": "domains/soccer/knowledge/validation_ledger.jsonl",
+    "tennis": "domains/tennis/knowledge/validation_ledger.jsonl",
+}
+# words that show up in a free-text question but never in a hypothesis name --
+# stripped before matching so phrasing doesn't defeat the token-subset test.
+_MECH_FILLER = {"what", "does", "the", "evidence", "say", "about", "is", "there", "for", "on",
+                "local", "data", "support", "it", "true", "that", "hold", "up", "locally",
+                "mechanism", "hypothesis", "folklore", "of", "a", "an", "in", "does"}
+
+
+def _mech_tokens(s: str) -> set[str]:
+    return {t for t in re.findall(r"[a-z0-9]+", s.lower()) if t not in _MECH_FILLER}
+
+
+def _load_ledger(sport: str) -> list[dict]:
+    """Fresh read every call -- a concurrent validation lane appends to these
+    files live, so no row count or content is ever cached."""
+    path = _LEDGER_PATHS.get(sport)
+    if path is None or not os.path.exists(path):
+        return []
+    rows = []
+    with open(path, encoding="utf-8") as fh:
+        for line in fh:
+            line = line.strip()
+            if line:
+                rows.append(json.loads(line))
+    return rows
+
+
+def mechanism_effect(sport: str, mechanism: str) -> dict:
+    """Matches free text / a mechanism name against the DISTINCT hypothesis
+    names in this sport's validation ledger -- never against model memory.
+    Multiple ledger rows for the SAME hypothesis (re-tested across corpora,
+    e.g. tennis's 4-corpus rows) are all returned together, verbatim, under
+    one answer. Multiple DIFFERENT matching hypotheses -> ambiguous with the
+    candidate list (ask.py's existing convention). No match -> not_supported,
+    never improvised."""
+    path = _LEDGER_PATHS.get(sport)
+    if path is None:
+        return {"status": "not_supported", "category": "mechanism_effect", "sport": sport,
+                "note": f"mechanism_effect not wired for sport '{sport}'. Available: {sorted(_LEDGER_PATHS)}"}
+    rows = _load_ledger(sport)
+    if not rows:
+        return {"status": "no_data", "category": "mechanism_effect", "sport": sport, "source_artifact": path}
+    by_name: dict[str, list[dict]] = {}
+    for r in rows:
+        by_name.setdefault(r["hypothesis"], []).append(r)
+    names = sorted(by_name)
+    key = mechanism.strip().lower().replace(" ", "_")
+    if key in by_name:
+        matches = [key]
+    else:
+        q_tokens = _mech_tokens(mechanism)
+        matches = [n for n in names if q_tokens and q_tokens <= _mech_tokens(n)]
+        if not matches:
+            matches = difflib.get_close_matches(key, names, n=5, cutoff=0.6)
+    if not matches:
+        return {"status": "not_supported", "category": "mechanism_effect", "sport": sport,
+                "note": f"no mechanism matched '{mechanism}' in {path}. Registered hypotheses: {names}"}
+    if len(matches) > 1:
+        return {"status": "ambiguous", "category": "mechanism_effect", "sport": sport, "candidates": matches}
+    name = matches[0]
+    as_of = datetime.fromtimestamp(os.path.getmtime(path), tz=timezone.utc).isoformat()
+    findings = [{"verdict": r["verdict"], "effect_local": r["effect"], "n": r["n"], "p": r.get("p"),
+                 "corpus": r["corpus"], "note": r["note"]} for r in by_name[name]]
+    return {"status": "ok", "category": "mechanism_effect", "sport": sport, "source_artifact": path,
+            "as_of": as_of, "hypothesis": name, "findings": findings,
+            "framing": "LOCAL single-corpus finding(s) -- not a market-beating or causal claim"}
+
+
 # ---------------------------------------------------------------------------
 # Single dispatch entrypoint
 # ---------------------------------------------------------------------------
@@ -228,6 +319,8 @@ def resolve(query: str, sport: str = "nba", category: str | None = None, **kwarg
         return calibration_number(sport)
     if cat == "historical_result":
         return historical_result(sport, kwargs.get("team", ""), kwargs.get("opponent"), kwargs.get("date"))
+    if cat == "mechanism_effect":
+        return mechanism_effect(sport, kwargs.get("mechanism") or query)
     if cat == "prediction_winprob":
         return {"status": "not_supported", "category": cat, "sport": sport,
                 "note": "prediction_winprob is resolved by the predict-matchup CLI/skill, not this "
