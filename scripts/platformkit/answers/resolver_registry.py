@@ -50,6 +50,19 @@ EDGE_KEYWORDS = ("edge", "roi", "beat the market", "beat the close", "profit",
                  "positive ev", "+ev", "bankroll", "win rate over market")
 
 
+def _word_boundary_hit(text: str, keyword: str) -> bool:
+    """True if `keyword` occurs in `text` as a whole word/phrase, not merely
+    as a substring of a longer word (e.g. "edge" must not fire on "ledger",
+    "ece" must not fire on "receipt"). A trailing '*' marks a deliberate stem
+    match (e.g. "calibrat*" matches calibration/calibrated/calibrating) --
+    only its left edge is boundary-checked."""
+    stem = keyword.endswith("*")
+    kw = keyword[:-1] if stem else keyword
+    left = r"(?<![A-Za-z0-9])" if kw[0].isalnum() else ""
+    right = "" if stem else (r"(?![A-Za-z0-9])" if kw[-1].isalnum() else "")
+    return re.search(left + re.escape(kw) + right, text) is not None
+
+
 def is_edge_language(text: str) -> str | None:
     """Returns the matched forbidden token, or None. Checked BEFORE
     classification so an edge-flavored question never reaches a resolver."""
@@ -58,7 +71,7 @@ def is_edge_language(text: str) -> str | None:
         if tok in low:
             return tok
     for tok in EDGE_KEYWORDS:
-        if tok in low:
+        if _word_boundary_hit(low, tok):
             return tok
     return None
 
@@ -123,7 +136,7 @@ RESOLVERS: dict[str, dict] = {
 _CONCEPT_KEYWORDS = ("best", "who has", "vs ", " versus ", "why is", "fit team", "does ", "compare")
 _PREDICTION_KEYWORDS = ("win probability", "who wins", "will win", "predict", "forecast", "project the",
                         "spread", "moneyline", "odds for")
-_CALIBRATION_KEYWORDS = ("brier", "ece", "calibrat")
+_CALIBRATION_KEYWORDS = ("brier", "ece", "calibrat*")
 _HISTORICAL_KEYWORDS = ("final score", "what happened", "box score", "result of", "score of the game",
                         "who won on", "final of")
 _MECHANISM_KEYWORDS = ("evidence", "mechanism", "hypothesis", "folklore",
@@ -140,7 +153,7 @@ def classify(query: str) -> str | None:
     if is_edge_language(query):
         return "edge_language"
     low = query.lower()
-    if any(k in low for k in _CALIBRATION_KEYWORDS):
+    if any(_word_boundary_hit(low, k) for k in _CALIBRATION_KEYWORDS):
         return "calibration_number"
     if any(k in low for k in _PREDICTION_KEYWORDS):
         return "prediction_winprob"
