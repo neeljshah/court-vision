@@ -21,6 +21,7 @@ import argparse
 import io
 import json
 import time
+from datetime import date
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -44,6 +45,14 @@ _FAMILIES: Dict[str, str] = {
     "catch_probability": "catch_probability",
 }
 
+# Families whose leaderboard endpoint IGNORES every season-like param we tried.
+# Confirmed live 2026-07-09: bat-tracking with year=2021, year=2024, season=2024,
+# years=2024 all returned byte-identical content (md5 6a899c03...). outs_above_average
+# and catch_probability were NOT retested here -- their per-year files already differ
+# on disk, so their startYear/endYear + year params are working as-is.
+# These families are captured as dated snapshots instead of fake per-year files.
+_SNAPSHOT_FAMILIES = {"bat_tracking"}
+
 
 def _params(family: str, year: int) -> Dict[str, str]:
     if family == "bat_tracking":
@@ -61,6 +70,26 @@ def fetch_one(family: str, year: int, fetcher=None, timeout: float = 30.0):
     return get(url, params=_params(family, year), headers=_HDR, timeout=timeout)
 
 
+def _pull_snapshot(family, years, fetcher, out_dir, log_path, delay_s, today, landed, skipped, failed):
+    """family's endpoint ignores the season param -- capture ONE dated snapshot
+    per as-of day instead of re-fetching one identical CSV per requested year."""
+    snap_fp = out_dir / f"{family}_{today}.csv"
+    if snap_fp.exists():
+        skipped[family].append(today)
+        return
+    probe_year = max(years) if years else date.today().year
+    r = fetch_one(family, probe_year, fetcher=fetcher)
+    if r.status_code == 200 and len(r.content) > 50:
+        atomic_write_bytes(snap_fp, r.content)
+        atomic_write_bytes(out_dir / f"{family}_latest.csv", r.content)
+        landed[family].append(today)
+        log_line(log_path, f"OK {family} snapshot {today} bytes={len(r.content)}")
+    else:
+        failed[family].append(today)
+        log_line(log_path, f"FAIL {family} snapshot {today} HTTP {getattr(r, 'status_code', '?')}")
+    time.sleep(delay_s)
+
+
 def pull(
     years: List[int],
     families: Optional[List[str]] = None,
@@ -69,16 +98,23 @@ def pull(
     out_dir: Path = _OUT_DIR,
     log_path: Path = _LOG_FP,
     delay_s: float = _DELAY_S,
+    today: Optional[str] = None,
 ) -> Dict[str, object]:
-    """Skip-if-cached per (family, year) CSV; then rebuild each family's
-    consolidated parquet from whatever CSVs exist on disk (not just this run's)."""
+    """Skip-if-cached per (family, year) CSV for year-keyed families; skip-if-
+    captured-today for snapshot families; then rebuild each family's consolidated
+    parquet from whatever CSVs exist on disk (not just this run's)."""
     families = families or list(_FAMILIES)
     out_dir.mkdir(parents=True, exist_ok=True)
-    landed: Dict[str, List[int]] = {f: [] for f in families}
-    skipped: Dict[str, List[int]] = {f: [] for f in families}
-    failed: Dict[str, List[int]] = {f: [] for f in families}
+    today = today or date.today().isoformat()
+    landed: Dict[str, List] = {f: [] for f in families}
+    skipped: Dict[str, List] = {f: [] for f in families}
+    failed: Dict[str, List] = {f: [] for f in families}
 
     for family in families:
+        if family in _SNAPSHOT_FAMILIES:
+            _pull_snapshot(family, years, fetcher, out_dir, log_path, delay_s, today,
+                            landed, skipped, failed)
+            continue
         for year in years:
             csv_fp = out_dir / f"{family}_{year}.csv"
             if csv_fp.exists():
@@ -96,6 +132,24 @@ def pull(
 
     consolidated_rows: Dict[str, int] = {}
     for family in families:
+        if family in _SNAPSHOT_FAMILIES:
+            parts = []
+            for csv_fp in sorted(out_dir.glob(f"{family}_????-??-??.csv")):
+                as_of = csv_fp.stem[len(family) + 1:]  # strip "<family>_" prefix (family itself has underscores)
+                try:
+                    df = pd.read_csv(csv_fp, encoding="utf-8-sig")
+                except Exception as exc:  # noqa: BLE001 -- honest skip, not a hard fail
+                    log_line(log_path, f"PARSE_FAIL {family} {as_of} {exc}")
+                    continue
+                df["as_of"] = as_of
+                parts.append(df)
+            if parts:
+                out = pd.concat(parts, ignore_index=True)
+                out.to_parquet(out_dir / f"{family}_consolidated.parquet", index=False)
+                consolidated_rows[family] = int(len(out))
+            else:
+                consolidated_rows[family] = 0
+            continue
         parts = []
         for year in years:
             csv_fp = out_dir / f"{family}_{year}.csv"
