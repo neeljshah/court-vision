@@ -3,7 +3,8 @@
 Uses the real local corpus (skipped if absent).
 (a) TRUNCATION-INVARIANCE: base rows byte-identical pre-T in truncated vs full.
 (b) DETERMINISM: two identical builds produce identical FeatureBundle.
-(c) BASE-COL CONTRACT: 8 cols; signal in (0,1); target binary; dates ascending.
+(c) BASE-COL CONTRACT: 10 cols (incl. 2 SHIP-verdict as-of reclaim cols, gap ledger
+    rank 1); signal in (0,1); target binary; dates ascending.
 (d) INTERFACE: adapter_interface_spec.check_adapter(NBAAdapter) → 0 FAILs.
 (e) feature_bundle positional prefix == (hypothesis, seasons).
 """
@@ -21,7 +22,8 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CORPUS_DIR = REPO_ROOT / "data" / "domains" / "basketball_nba"
 _FLOAT_TOL = 1e-6
-EXPECTED_BASE_COLS = 8
+EXPECTED_BASE_COLS = 10
+ASOF_COL_IDX = {"def_fg_pct_allowed_diff_asof": 8, "def_pts_allowed_per36_diff_asof": 9}
 
 
 def _hyp(name: str = "nba_test"):
@@ -169,6 +171,87 @@ class TestBaseColContract:
         a = NBAAdapter(games_df=games_df.copy())
         with pytest.raises(ValueError, match="no rows"):
             a.feature_bundle(_hyp("empty"), seasons=["9999-99"])
+
+
+# ---------------------------------------------------------------------------
+# SHIP-verdict as-of reclaim wire (gap ledger rank 1): join-rate + leak check
+# ---------------------------------------------------------------------------
+
+class TestShipAsofWire:
+    """def_fg_pct_allowed_diff_asof / def_pts_allowed_per36_diff_asof (base cols 8,9):
+    the only 2 of 13 NBA as-of reclaim dims gated SHIP
+    (data/domains/basketball_nba/reclaim_gate_defender_rollup_summary.json). Merged
+    in from asof_defender_rollup.parquet by game_id -- already leak-free (shift1
+    per-defender priors) upstream; this only checks the join itself is honest.
+    """
+
+    ROLLUP = CORPUS_DIR / "asof_defender_rollup.parquet"
+
+    def test_join_rate_matches_source_rollup(self, bundle):
+        if not self.ROLLUP.exists():
+            pytest.skip("asof_defender_rollup.parquet absent.")
+        rollup = pd.read_parquet(self.ROLLUP)
+        expected_hit_rate = len(rollup) / max(bundle.base.shape[0], 1)
+        for col, ci in ASOF_COL_IDX.items():
+            got_hits = int(np.isfinite(bundle.base[:, ci]).sum())
+            got_rate = got_hits / bundle.base.shape[0]
+            # asof rollup only covers the box-tracking era subset of games; join rate
+            # must be in the right ballpark, not silently 0% or 100%.
+            assert 0.0 < got_rate <= 1.0, f"{col}: join rate {got_rate:.3f} out of bounds"
+            assert abs(got_rate - expected_hit_rate) < 0.05, (
+                f"{col}: join rate {got_rate:.3f} vs source-rollup coverage "
+                f"{expected_hit_rate:.3f} diverge more than 5pp"
+            )
+
+    def test_asof_values_match_source_rollup_by_game_id(self, adapter, games_df):
+        """Reconstruct the SAME chronologically-sorted walk-forward frame the adapter
+        builds internally (game_id order != raw games.parquet row order), then check
+        row-for-row that fb.base's 2 as-of cols equal a direct rollup lookup."""
+        if not self.ROLLUP.exists():
+            pytest.skip("asof_defender_rollup.parquet absent.")
+        from domains.basketball_nba.adapter import _add_rolling_win10, _season_to_int
+        from domains.basketball_nba.ratings import walk_forward_elo
+
+        rollup = pd.read_parquet(self.ROLLUP)
+        rollup["game_id"] = rollup["game_id"].astype(str)
+        rollup = rollup.set_index("game_id")
+
+        g = games_df.copy()
+        g["_season_orig"] = g["season"]
+        g["season"] = g["season"].apply(_season_to_int)
+        wf = _add_rolling_win10(walk_forward_elo(g))
+        wf["game_id"] = wf["game_id"].astype(str)
+        wf = wf[wf["home_win"].notna()].reset_index(drop=True)
+
+        fb = adapter.feature_bundle(_hyp("asof_spotcheck"))
+        assert len(wf) == fb.base.shape[0]
+        checked = 0
+        for i, gid in enumerate(wf["game_id"].tolist()):
+            if gid not in rollup.index:
+                continue
+            for col, ci in ASOF_COL_IDX.items():
+                exp = rollup.loc[gid, col]
+                got = fb.base[i, ci]
+                if pd.isna(exp):
+                    assert np.isnan(got), f"game_id={gid} {col}: expected NaN, got {got}"
+                else:
+                    assert abs(float(exp) - got) < _FLOAT_TOL, (
+                        f"game_id={gid} {col}: source={exp} bundle={got}"
+                    )
+            checked += 1
+            if checked >= 25:
+                break
+        assert checked > 0, "no overlapping game_id rows to spot-check"
+
+    def test_missing_rollup_file_yields_nan_not_zero(self, games_df, tmp_path):
+        """If asof_defender_rollup.parquet is absent, the 2 cols must be NaN, never
+        silently 0.0 (which would look like a real 'no defensive edge' signal)."""
+        from domains.basketball_nba.adapter import NBAAdapter
+        a = NBAAdapter(repo_root=tmp_path, games_df=games_df.copy(), odds_df=pd.DataFrame())
+        fb = a.feature_bundle(_hyp("no_rollup_file"))
+        for _, ci in ASOF_COL_IDX.items():
+            assert np.all(np.isnan(fb.base[:, ci])), \
+                f"col {ci}: expected all-NaN with no rollup file on disk"
 
 
 # ---------------------------------------------------------------------------

@@ -25,6 +25,12 @@ SPORT_ID = "basketball_nba"
 HOME_SIDE, AWAY_SIDE = "HOME", "AWAY"
 GAMES_PARQUET = "data/domains/basketball_nba/games.parquet"
 ODDS_PARQUET  = "data/domains/basketball_nba/odds.parquet"
+# Gap ledger rank 1 (docs/research/gap_ledger_2026-07-11.md): 11/13 NBA as-of reclaim
+# dims gated REJECT (data/domains/basketball_nba/reclaim_gate_*.json); these 2 are the
+# honest SHIP set (reclaim_gate_defender_rollup_summary.json). SHIP-only wire, no
+# blanket asof_features merge.
+DEFENDER_ROLLUP_PARQUET = "data/domains/basketball_nba/asof_defender_rollup.parquet"
+SHIP_ASOF_COLS = ("def_fg_pct_allowed_diff_asof", "def_pts_allowed_per36_diff_asof")
 
 
 def _verify_kernel_import_weight() -> None:
@@ -129,9 +135,14 @@ class NBAAdapter:
     ) -> FeatureBundle:
         """Gate-valid FeatureBundle.
 
-        Base (8 cols, all strictly pre-game):
+        Base (10 cols, all strictly pre-game):
             [elo_home, elo_away, elo_diff_hfa, rest_days_home, rest_days_away,
-             home_b2b, away_b2b, rolling_win10_home]
+             home_b2b, away_b2b, rolling_win10_home,
+             def_fg_pct_allowed_diff_asof, def_pts_allowed_per36_diff_asof]
+        The 2 trailing cols are the SHIP-verdict as-of reclaim (gap ledger rank 1):
+        already-leak-free team roll-ups (asof_defender_rollup.py, shift1-per-defender
+        priors) merged in by game_id; NaN where the box-era defender-tracking corpus
+        has no coverage for that game (imputed downstream by src.loop.gate._impute).
         signal_col = p_home_elo.  target = home_win {0,1}.
         lines/closing = devigged home-win prob from odds (2025-26 only; NaN elsewhere).
         """
@@ -166,6 +177,16 @@ class NBAAdapter:
             wf["home_ml"] = np.nan
             wf["away_ml"] = np.nan
 
+        rollup_path = self._root / DEFENDER_ROLLUP_PARQUET
+        wf["game_id"] = wf["game_id"].astype(str)
+        if rollup_path.exists():
+            _r = pd.read_parquet(rollup_path)[["game_id", *SHIP_ASOF_COLS]].copy()
+            _r["game_id"] = _r["game_id"].astype(str)
+            wf = wf.merge(_r, on="game_id", how="left")
+        else:
+            for _c in SHIP_ASOF_COLS:
+                wf[_c] = np.nan
+
         rows_base, rows_sig, rows_tgt, rows_dates, rows_lv = [], [], [], [], []
         for _, row in wf.iterrows():
             tgt = row.get("home_win", np.nan)
@@ -180,6 +201,8 @@ class NBAAdapter:
                 float(bool(row.get("home_b2b", False))),
                 float(bool(row.get("away_b2b", False))),
                 float(row.get("rolling_win10_home", 0.5)),
+                float(row.get("def_fg_pct_allowed_diff_asof", np.nan)),
+                float(row.get("def_pts_allowed_per36_diff_asof", np.nan)),
             ])
             rows_sig.append(float(row["p_home_elo"]))
             rows_tgt.append(float(tgt))

@@ -1,10 +1,15 @@
 """domains.basketball_nba.feature_spec -- the frozen NBA base-feature contract.
 
-Single source of truth for the 8-column base matrix the NBAAdapter builds inline in
+Single source of truth for the 10-column base matrix the NBAAdapter builds inline in
 feature_bundle(). Declaring it here (and proving build_base_matrix reproduces the
 adapter byte-for-byte, see tests/platformkit/test_feature_spec_nba.py) means any
 future train OR inference path constructs the SAME columns in the SAME order with
 the SAME defaults -- the parity seam.
+
+v2 (gap ledger rank 1): appends the 2 SHIP-verdict as-of reclaim cols
+(def_fg_pct_allowed_diff_asof, def_pts_allowed_per36_diff_asof;
+data/domains/basketball_nba/reclaim_gate_defender_rollup_summary.json) that the
+adapter now merges in from asof_defender_rollup.parquet by game_id.
 
 ADOPTION IS ADDITIVE: this module does not modify the adapter. It mirrors the
 adapter's current contract so the adapter can later delegate to it without changing
@@ -32,7 +37,7 @@ from scripts.platformkit.feature_spec_core import (
 #   float(row.get("rolling_win10_home", 0.5))
 NBA_BASE_SPEC = FeatureSpec(
     sport="basketball_nba",
-    version="nba-base-v1",
+    version="nba-base-v2",
     fields=(
         FeatureField("elo_home", "elo_home", default=None, cast=CAST_FLOAT),
         FeatureField("elo_away", "elo_away", default=None, cast=CAST_FLOAT),
@@ -42,6 +47,10 @@ NBA_BASE_SPEC = FeatureSpec(
         FeatureField("home_b2b", "home_b2b", default=0.0, cast=CAST_BOOL_FLOAT),
         FeatureField("away_b2b", "away_b2b", default=0.0, cast=CAST_BOOL_FLOAT),
         FeatureField("rolling_win10_home", "rolling_win10_home", default=0.5, cast=CAST_FLOAT),
+        FeatureField("def_fg_pct_allowed_diff_asof", "def_fg_pct_allowed_diff_asof",
+                     default=None, cast=CAST_FLOAT),
+        FeatureField("def_pts_allowed_per36_diff_asof", "def_pts_allowed_per36_diff_asof",
+                     default=None, cast=CAST_FLOAT),
     ),
 )
 
