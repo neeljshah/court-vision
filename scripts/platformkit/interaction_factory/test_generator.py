@@ -92,3 +92,31 @@ def test_leaderboard_attrs_resolve_via_entity_pool():
     assert {"swing_speed", "squared_up_rate", "blast_rate", "sword_rate"} <= set(batters)
     fielders = GEN.resolve_pool("mlb", {"entity": "fielder"})
     assert {"range_oaa", "difficult_play_conversion"} <= set(fielders)
+
+
+def test_static_pool_serves_tennis_soccer_without_a_registry():
+    # task-39b: tennis/soccer have no per-sport ATTRIBUTES registry wired into
+    # this factory -- static_pool bypasses _registry(sport) entirely.
+    tennis = GEN.resolve_pool("tennis", {"static_pool": "tennis_match_asof"})
+    assert tennis == sorted(GEN.STATIC_POOLS["tennis_match_asof"])
+    soccer = GEN.resolve_pool("soccer", {"static_pool": "soccer_match_asof"})
+    assert soccer == sorted(GEN.STATIC_POOLS["soccer_match_asof"])
+    # exclude seam still honored on a static pool.
+    trimmed = GEN.resolve_pool("soccer", {"static_pool": "soccer_match_asof", "exclude": ["diff_shots_for_asof"]})
+    assert "diff_shots_for_asof" not in trimmed
+
+
+def test_tennis_soccer_templates_enumerate():
+    # 7-attr self-cross -> C(7,2)=21; 4-attr self-cross -> C(4,2)=6.
+    tennis = GEN.enumerate_candidates("tennis_match_asof_self_cross")
+    assert len(tennis) == 21
+    assert all(c.sport == "tennis" for c in tennis)
+    soccer = GEN.enumerate_candidates("soccer_match_asof_self_cross")
+    assert len(soccer) == 6
+    assert all(c.sport == "soccer" for c in soccer)
+
+
+def test_archetype_wildcard_now_has_a_real_builder_declared():
+    # mlb_pa_attr_x_archetype's feature_builder key exists (runner registers
+    # it) -- generator itself doesn't import runner, just checks the name.
+    assert GEN.TEMPLATES["mlb_pa_attr_x_archetype"]["feature_builder"] == "mlb_pa_archetype_asof"
