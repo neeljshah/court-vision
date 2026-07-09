@@ -37,8 +37,9 @@ Fable-adjudicated) · a **2–3× parallel Sonnet fleet** writes code · Explore
 the kernel/adapter platform + NBA-completeness from `.planning/platform/` and **keeps building for
 days** — self-continues every wake, ending ONLY on `bot stop` or `program_complete`. First run
 bootstraps its own scripts (H0). `bot stop` (`python scripts/bot_guards/stop_bot.py`) brakes it
-cleanly. ABSOLUTE invariants it never violates even unattended: never pushes to public `origin`
-(private/local only), never writes `data/registry/`, never flips a flag ON, never claims an edge.
+cleanly. ABSOLUTE invariants it never violates even unattended: never writes `data/registry/`,
+never flips a flag ON, never claims an edge, never uses `--force`. Push to public `origin master`
+is ALLOWED (2026-07-09 user override) -- secrets-scan first, targeted `git add` (never `data/`/`vault/`).
 
 ### "bot go workday" — legacy CV/pipeline workday loop
 When the user's message is explicitly `bot go workday`, read `.claude/commands/start-day.md`
@@ -88,7 +89,7 @@ Binding invariants live in `.claude/rules/` and load via these imports (do not r
 - Max 300 LOC/file | `# ... existing code ...` for unchanged blocks | Models → `data/models/` | Logs → `vault/Improvements/`
 - Never re-read data dirs unless asked | Never run: `run.py`, `loop_processor.py` | Video headless only (`--no-show`), never `cv2.imshow`
 - **Tests: PER-FILE ONLY** (`python -m pytest tests/path/test_one.py -q`); a full `pytest tests/` FREEZES the box — never run it
-- Permissions: execute autonomously, but human-gated paths (see rule) need confirmation; a PreToolUse hook hard-blocks push-to-origin + full-pytest + `--force`
+- Permissions: execute autonomously, but human-gated paths (see rule) need confirmation; a PreToolUse hook hard-blocks full-pytest + `--force` (push-to-origin is ALLOWED per the 2026-07-09 override -- secrets-scan first)
 - On `/compact` or auto-compaction, PRESERVE: modified-file list, test commands run, which flags stay OFF, and the no-edge + human-gated invariants
 - Full plan: `.planning/ROADMAP.md` (167KB — grep/section-read only, NEVER full-read) | Session log: `vault/Sessions/Decision Log.md`
 - `_VRAM_FLUSH_INTERVAL` in `unified_pipeline.py` must be **3000** (not 100)
