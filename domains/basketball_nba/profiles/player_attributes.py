@@ -152,29 +152,64 @@ def _on_off_pts_against(stints: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows).sort_values("min_on", ascending=False).drop_duplicates("player_id", keep="first")
 
 
+def _zscore(s: pd.Series) -> pd.Series:
+    """Standardize within the qualified population passed in; a zero-
+    variance column (all-equal after floor filtering) returns 0.0 for every
+    row rather than dividing by zero."""
+    mu, sd = s.mean(), s.std()
+    return (s - mu) / sd if sd else pd.Series(0.0, index=s.index)
+
+
+def _compose_rim_pressure(d: pd.DataFrame) -> pd.Series:
+    """3 suppression swings, each oriented so POSITIVE = better defense, then
+    z-scored within the qualified population and summed -- so the composite's
+    sign is 'higher = more rim deterrence' regardless of each ingredient's own
+    raw scale (share is a 0-1 fraction, eFG a 0-1 rate, pts_against a per-48
+    point count -- not directly comparable unscaled)."""
+    swing_rim_share = d["rim_share_allowed_off"] - d["rim_share_allowed_on"]
+    swing_rim_efg = d["rim_efg_allowed_off"] - d["rim_efg_allowed_on"]
+    swing_pts_against = d["pts_against_per48_off"] - d["pts_against_per48_on"]
+    return _zscore(swing_rim_share) + _zscore(swing_rim_efg) + _zscore(swing_pts_against)
+
+
 def build_rim_pressure_def(season: str) -> list[dict]:
     stints_src = _LINEUPS / f"stints_{season}.parquet"
-    if not stints_src.exists():
+    zone_src = _LINEUPS / f"zone_onoff_{season}.parquet"
+    if not stints_src.exists() or not zone_src.exists():
         return []
     stints = pd.read_parquet(stints_src)
-    d = _on_off_pts_against(stints)
+    pts = _on_off_pts_against(stints)
+    if pts.empty:
+        return []
+    # trade-dedup, same precedent as _on_off_pts_against/build_spacing_contribution:
+    # keep the team a player logged the most on-court minutes with this season.
+    zone = pd.read_parquet(zone_src).sort_values("min_on", ascending=False).drop_duplicates("player_id", keep="first")
+    if zone.empty:
+        return []
+
+    zone_cols = ["player_id", "player_name", "rim_share_allowed_on", "rim_share_allowed_off", "rim_efg_allowed_on", "rim_efg_allowed_off"]
+    d = pts.merge(zone[zone_cols], on="player_id", how="inner")  # inner: drops any negative
+    # placeholder id (zone.parquet can carry one) -- pts already excludes them, see _on_off_pts_against
+    d = d[(d["min_on"] >= 750.0) & (d["min_off"] >= 750.0)].dropna(
+        subset=["rim_share_allowed_on", "rim_share_allowed_off", "rim_efg_allowed_on", "rim_efg_allowed_off"]
+    ).reset_index(drop=True)
     if d.empty:
         return []
-    d["raw_value"] = d["pts_against_per48_off"] - d["pts_against_per48_on"]
+    d["raw_value"] = _compose_rim_pressure(d)
+
     concession_src = _COMPOSITION / "concession_2025_26.parquet"
-    sources = [stints_src]
-    context_cols: list[str] = []
+    sources = [stints_src, zone_src]
     if season == "2025_26" and concession_src.exists():
-        # team-level context ONLY -- see registry docstring; needs team_id,
-        # which is not on the stints-derived frame. Skipped join keeps this
-        # attribute honestly player-level; context noted in registry, not
-        # blended into raw_value or ingredients here (no team_id available
-        # post-groupby without re-reading stints per player -- out of scope).
+        # team-level context ONLY -- see registry docstring; not blended
+        # into raw_value or ingredients, just a source for the human reader.
         sources.append(concession_src)
     return finalize_rows(
-        d, entity_col="player_id", name_col=None, raw_col="raw_value", n_col="min_on",
+        d, entity_col="player_id", name_col="player_name", raw_col="raw_value", n_col="min_on",
         window=_window(season), attribute="rim_pressure_def", status="DESCRIPTIVE", sources=rel_sources(*sources),
-        ingredient_cols=["pts_against_per48_on", "pts_against_per48_off", "min_on", "min_off"],
+        ingredient_cols=[
+            "rim_share_allowed_on", "rim_share_allowed_off", "rim_efg_allowed_on", "rim_efg_allowed_off",
+            "pts_against_per48_on", "pts_against_per48_off", "min_on",
+        ],
     )
 
 

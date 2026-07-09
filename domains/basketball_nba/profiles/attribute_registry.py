@@ -32,14 +32,17 @@ STATUS MEANING:
         causal or gate-tested backing. The default for everything else.
 
 WHERE INGREDIENTS DID NOT EXIST ON DISK (dropped, not faked):
-    rim_pressure_def wanted (a) opp rim-attempt-share allowed on/off-court
-        per PLAYER and (b) rim eFG allowed on/off per PLAYER -- neither
-        exists (concession_2025_26.parquet is TEAM-level only, no on/off
-        split by player). (c) team DREB rate on-court is not cheaply
-        derivable (no DREB column in stints_<season>.parquet, no OREB-chance
-        denominator without an extra team-box join). All three DROPPED;
-        replaced with the closest real on-disk substitute -- see the
-        attribute's `formula` string below.
+    rim_pressure_def originally wanted (a) opp rim-attempt-share allowed
+        on/off-court per PLAYER and (b) rim eFG allowed on/off per PLAYER --
+        neither existed (concession_2025_26.parquet was TEAM-level only).
+        Both now exist: lineups/zone_onoff.py builds per-(player,team,season)
+        defensive on/off zone splits from stints + PBP shot x/y, and the
+        composite below folds them in. (c) team DREB rate on-court is STILL
+        not cheaply derivable (no DREB column in stints_<season>.parquet, no
+        OREB-chance denominator without an extra team-box join) -- dropped.
+        The composite is still DESCRIPTIVE, not VALIDATED_MECHANISM/CLAIM:
+        having real ingredients doesn't mean the composite predicts anything
+        yet -- that's the weight gate's job, not this builder's.
     shot_zone_profile wanted rim/mid/three per-36 -- no per-player shot-chart
         zone parquet exists (atlas_player_shot_profile.parquet's own `zones`
         field literally says "DEFER: no per-zone shot-chart parquet in
@@ -125,24 +128,33 @@ PLAYER_ATTRIBUTES: dict[str, dict] = {
     },
     "rim_pressure_def": {
         "description": (
-            "Player's own on/off defensive-points-allowed swing (pts_against per48 OFF-court minus "
-            "ON-court -- positive means the team concedes fewer points with him on the floor), carrying "
-            "the team's rim-defense context (rim_efg_allowed, rim_share_allowed) as ingredients ONLY, "
-            "not blended into raw_value (team-level, not individualized -- see registry docstring)."
+            "Composite defensive rim-deterrence score: this player's own on/off swing in opponent "
+            "rim-attempt-share allowed, opponent rim eFG allowed, and team points-against per48 -- each "
+            "swing z-scored within the qualified population and summed, so a HIGHER score means more "
+            "rim deterrence regardless of each swing's raw scale."
         ),
         "entity": "player",
         "ingredients": [
+            {"name": "rim_share_allowed_on", "source": "team_system/lineups/zone_onoff_<season>.parquet"},
+            {"name": "rim_share_allowed_off", "source": "team_system/lineups/zone_onoff_<season>.parquet"},
+            {"name": "rim_efg_allowed_on", "source": "team_system/lineups/zone_onoff_<season>.parquet"},
+            {"name": "rim_efg_allowed_off", "source": "team_system/lineups/zone_onoff_<season>.parquet"},
             {"name": "pts_against_per48_on", "source": "team_system/lineups/stints_<season>.parquet (lineup_key membership)"},
             {"name": "pts_against_per48_off", "source": "team_system/lineups/stints_<season>.parquet (lineup_key membership)"},
             {"name": "team_rim_efg_allowed (context only)", "source": "team_system/composition/concession_2025_26.parquet"},
             {"name": "team_rim_share_allowed (context only)", "source": "team_system/composition/concession_2025_26.parquet"},
         ],
-        "formula": "pts_against_per48_off - pts_against_per48_on",
+        "formula": (
+            "zscore(rim_share_allowed_off - rim_share_allowed_on) "
+            "+ zscore(rim_efg_allowed_off - rim_efg_allowed_on) "
+            "+ zscore(pts_against_per48_off - pts_against_per48_on), "
+            "z-scored within the qualified (>=750 min_on AND min_off) population per window"
+        ),
         "status": "DESCRIPTIVE",
-        "floor": {"min_on": 300.0, "min_off": 300.0},
+        "floor": {"min_on": 750.0, "min_off": 750.0},
         "weight_ledger_family": None,
         "seasons": ["2023_24", "2024_25", "2025_26"],
-        "verifiable_by_design": False,
+        "verifiable_by_design": False,  # z-score composite of 3 swings, not a bare column/groupby formula
     },
     "shot_zone_three_rate_per36": {
         "description": "Three-point attempts per 36 minutes.",
