@@ -227,6 +227,13 @@ def list_attributes(sport: str | None = None) -> str:
     return "\n".join(out) if out else "No attributes found (no profiles built and no registries importable)."
 
 
+def _ascii(s: str) -> str:
+    """cp1252 console: diacritics in entity names (e.g. Jokic's c-acute) crash
+    print -- NFKD-fold to plain ASCII at the render boundary only."""
+    import unicodedata
+    return unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode("ascii")
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description="Ask about an entity+attribute; get ingredients + provenance.")
     p.add_argument("query", nargs="?", default="")
@@ -235,9 +242,9 @@ def main(argv=None):
     p.add_argument("--list", action="store_true")
     a = p.parse_args(argv)
     if a.list:
-        print(list_attributes(a.sport))
+        print(_ascii(list_attributes(a.sport)))
     elif a.query:
-        print(answer(a.query, a.sport, a.window))
+        print(_ascii(answer(a.query, a.sport, a.window)))
     else:
         p.error("provide a query, or use --list")
 
