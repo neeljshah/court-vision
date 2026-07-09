@@ -8,10 +8,29 @@ from domains/mlb/profiles/attribute_registry.py (every `attribute` below is
 verified to exist in ATTRIBUTES -- see test_answer_quality_mlb.py), combined
 with DERIVED weights.
 
-WEIGHT DERIVATION (identical formula to the NBA registry, not hand-tuned):
-    base_weight = STATUS_RANK[row.status] * (row.n / (row.n + N0))
+WEIGHT DERIVATION (same shape as the NBA registry, not hand-tuned):
+    base_weight = STATUS_RANK[row.status] * (row.n / (row.n + n0))
     norm_weight = base_weight / sum(base_weight over the concept's signals
                   actually present for that entity+window)
+where n0 = the concept's own min_n (NOT the NBA registry's global 200): MLB
+attribute n columns live on wildly different denominators (pitches ~1000s,
+swings/taken-pitches ~100s-1000s, balls-in-play ~10s-100s, PA ~100s), so one
+global shrinkage midpoint is miscalibrated across concepts -- 200 over-shrinks
+BIP-scale signals and under-shrinks pitch-scale ones. Tying the midpoint to
+the concept's own exclusion floor keeps shrinkage on the same denominator
+scale the floor was chosen on.
+KNOWN LIMIT (documented, not hidden): shrinkage renormalizes WITHIN an
+entity, so an entity whose ONLY present signal is thin still gets
+norm_weight=1.0 on it -- shrinkage reweights signals against each other; it
+cannot penalize a composite overall. min_n on the primary signal is the one
+real defense against a small-sample entity topping a ranking. That is why
+the floors below are set from the live parquet's qualified-population n
+distribution (~40th percentile of the primary signal's n among entities that
+have it, audited 2026-07-09), NOT from the attribute registry's own
+per-attribute build floors -- those exist to make a number computable at
+all, not to make a leaderboard rank trustworthy. Concretely: the build
+floors admitted a 206-taken-pitch reliever as the #1 'command' arm; the
+distribution-based floors below exclude sub-half-season pitch samples.
 
 ORIENTATION -- this is the ONE thing that differs from NBA and is the reason
 every direction flag below is deliberate, not copy-pasted: empirically
@@ -41,8 +60,9 @@ signals) can never surface a pure pitcher.
 
 Each concept entry: same shape as the NBA registry (name, description,
 entity, signals[{attribute, direction, weight_basis}], context_qualifiers,
-failure_modes, min_n). min_n is set to (or above) the PRIMARY signal's own
-floor in attribute_registry.py.
+failure_modes, min_n). min_n applies to the PRIMARY signal's n and is set
+from the live parquet's qualified-population distribution (see WEIGHT
+DERIVATION above), always at or above the attribute's own build floor.
 """
 from __future__ import annotations
 
@@ -56,9 +76,9 @@ STATUS_RANK: dict[str, int] = {
     "DESCRIPTIVE": 2,
     "PROVISIONAL": 1,
 }
-# shrinkage midpoint: weight *= n/(n+N0) -- ponytail: same fixed constant as
-# the NBA registry; revisit per-signal if a concept's real n distribution
-# turns out wildly different (e.g. clutch signals here floor at n=30-60).
+# shrinkage midpoint fallback -- derive_weights uses the concept's own min_n
+# as n0 (see module docstring); this constant only backstops a concept dict
+# missing min_n (e.g. a synthetic test concept).
 N0 = 200.0
 
 CONCEPTS: dict[str, dict[str, Any]] = {
@@ -113,8 +133,9 @@ CONCEPTS: dict[str, dict[str, Any]] = {
             "can out-rank a durable starter with a larger, more representative sample.",
             "whiff_rate and putaway_rate both reward swing-and-miss outcomes and can "
             "double-count the same underlying skill rather than confirming it independently.",
+            "min_n floor rationale: whiff_rate n counts SWINGS (not pitches); 300 ~= the 40th percentile (q40=308, audited 2026-07-09) of qualified-pitcher swing counts -- roughly a 650+ pitch half-season. The attribute's own build floor (100 swings) admitted ~160-swing fringe relievers into the top-5.",
         ],
-        "min_n": 100.0,
+        "min_n": 300.0,
     },
     "command": {
         "name": "command",
@@ -170,8 +191,9 @@ CONCEPTS: dict[str, dict[str, Any]] = {
             "intentional waste pitches from missed spots.",
             "command_edge_share and command_edge_share_behind reuse the same underlying "
             "borderline-pitch classifier and are not independent confirmations of skill.",
+            "min_n floor rationale: command_edge_share n counts TAKEN pitches; 430 = the 40th percentile of qualified-pitcher taken-pitch counts (audited 2026-07-09) -- roughly a 900+ pitch half-season. The attribute's own build floor (200) admitted a 206-taken-pitch reliever as the #1 command arm.",
         ],
-        "min_n": 200.0,
+        "min_n": 430.0,
     },
     "discipline": {
         "name": "discipline",
@@ -226,8 +248,9 @@ CONCEPTS: dict[str, dict[str, Any]] = {
             "can look disciplined here without actually having good zone judgment.",
             "BB_rate and K_avoidance both partly reflect a team's pitching-matchup "
             "quality, not just the batter's own skill.",
+            "min_n floor rationale: BB_rate n counts PA; 350 ~= the 40th percentile (q40=352, audited 2026-07-09) of qualified-batter PA counts -- a bit over a half-season of everyday PAs.",
         ],
-        "min_n": 200.0,
+        "min_n": 350.0,
     },
     "power": {
         "name": "power",
@@ -272,8 +295,9 @@ CONCEPTS: dict[str, dict[str, Any]] = {
             "ingredient and are not fully independent confirmations of raw power.",
             "A batter who rarely sees heart-zone pitches (good pitch recognition against "
             "him) has a thinner heart_damage_xwoba sample near its 20-BIP floor.",
+            "min_n floor rationale: contact_quality n counts BATTED BALLS; 170 ~= the 40th percentile (q40=169, audited 2026-07-09) of qualified-batter batted-ball counts.",
         ],
-        "min_n": 50.0,
+        "min_n": 170.0,
     },
     "clutch": {
         "name": "clutch",
@@ -319,8 +343,9 @@ CONCEPTS: dict[str, dict[str, Any]] = {
             "risp_xwoba_delta and inning_late_xwoba_delta can both be inflated or "
             "deflated by opposing-pitcher quality in those specific situational PAs, "
             "not just the batter's own clutch skill.",
+            "min_n floor rationale: risp_xwoba_delta n counts RISP PA (min of the two split cells); 70 ~= the 40th percentile (q40=74, audited 2026-07-09) of qualified-batter RISP-PA counts -- the build floor (30) let an n=30 batter tie for #2.",
         ],
-        "min_n": 30.0,
+        "min_n": 70.0,
     },
     "contact_control": {
         "name": "contact_control",
@@ -377,8 +402,9 @@ CONCEPTS: dict[str, dict[str, Any]] = {
             "A pitcher who induces weak fly balls (also low-damage) is not credited "
             "here the way a groundball pitcher is -- gb_tendency only rewards one "
             "specific weak-contact shape.",
+            "min_n floor rationale: xwoba_against_by_class_fastball n counts fastball BALLS IN PLAY; 70 ~= the 40th percentile (q40=72, audited 2026-07-09) of qualified-pitcher fastball-BIP counts -- the build floor (30) put three ~35-BIP relievers in the top-3.",
         ],
-        "min_n": 30.0,
+        "min_n": 70.0,
     },
 }
 
@@ -429,7 +455,10 @@ def derive_weights(concept: dict[str, Any], profiles_df: pd.DataFrame,
     sub = _latest_rows(sub, window)
     sub["direction"] = sub["attribute"].map(dirs)
     status_rank = sub["status"].map(STATUS_RANK).fillna(1)
-    sub["base_weight"] = status_rank * (sub["n"] / (sub["n"] + N0))
+    # n0 = the concept's own min_n: shrinkage midpoint on the same denominator
+    # scale as the exclusion floor (see module docstring WEIGHT DERIVATION).
+    n0 = float(concept.get("min_n") or N0)
+    sub["base_weight"] = status_rank * (sub["n"] / (sub["n"] + n0))
 
     totals = sub.groupby("entity_id")["base_weight"].transform("sum")
     sub["norm_weight"] = (sub["base_weight"] / totals.where(totals > 0, 1.0)).fillna(0.0)

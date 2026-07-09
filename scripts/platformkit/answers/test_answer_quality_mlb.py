@@ -144,6 +144,70 @@ def test_stuff_top5_contains_known_elite_arms():
     assert len(top5 & top10) >= 2, f"top5 {top5} shares <2 names with whiff_rate top10 {top10}"
 
 
+def test_stuff_top5_backed_by_independent_chase_proxy():
+    """Every stuff top-5 arm must be a >=60th pct chase-inducer (independent
+    stuff-adjacent proxy computed in-test) -- a fringe small-sample reliever
+    riding one hot whiff column fails this cross-check. Live top-5 values are
+    79.9-99.8 as of 2026-07-09, so 60 leaves real margin."""
+    pct = _independent_primary_percentile("chase_induce_rate_ahead")
+    for entry in C.answer_superlative("stuff", sport="mlb", top_n=5)["top"]:
+        assert pct.get(entry["entity_name"], -1) >= 60, (
+            f"{entry['entity_name']} in stuff top-5 but chase_induce_rate_ahead pct "
+            f"is only {pct.get(entry['entity_name'])} (missing = below its build floor)")
+
+
+def test_command_top5_backed_by_independent_fps_proxy():
+    """Every command top-5 arm must be a >=70th pct first-pitch-strike thrower
+    (independent high-n command proxy computed in-test). This is the small-n
+    regression: the 206-taken-pitch reliever who topped 'command' under the
+    old floor had NO first_pitch_strike_rate row at all (below even that
+    attribute's 100-pitch build floor) -- a missing row scores -1 here and
+    fails loudly. Live top-5 values are 82-94 as of 2026-07-09."""
+    pct = _independent_primary_percentile("first_pitch_strike_rate")
+    for entry in C.answer_superlative("command", sport="mlb", top_n=5)["top"]:
+        assert pct.get(entry["entity_name"], -1) >= 70, (
+            f"{entry['entity_name']} in command top-5 but first_pitch_strike_rate pct "
+            f"is only {pct.get(entry['entity_name'])} (missing = below its build floor)")
+
+
+def test_command_top5_backed_by_independent_primary_signal():
+    pct = _independent_primary_percentile("command_edge_share")
+    for entry in C.answer_superlative("command", sport="mlb", top_n=5)["top"]:
+        assert pct.get(entry["entity_name"], -1) >= 50, (
+            f"{entry['entity_name']} in command top-5 but raw command_edge_share "
+            f"percentile is only {pct.get(entry['entity_name'])}")
+
+
+def test_min_n_floors_exceed_attribute_build_floors():
+    """Every concept's min_n must sit at or above its primary attribute's own
+    build floor -- the build floor makes a number computable, the concept
+    floor makes a leaderboard rank trustworthy (see registry docstring)."""
+    for cname, c in CONCEPTS.items():
+        primary = c["signals"][0]["attribute"]
+        build_floor = ATTRIBUTES[primary]["floor"]
+        assert c["min_n"] >= build_floor, (
+            f"{cname} min_n {c['min_n']} below {primary} build floor {build_floor}")
+
+
+def test_shrinkage_midpoint_tracks_concept_floor():
+    """derive_weights must use the concept's own min_n as the shrinkage
+    midpoint n0 (pitch/BIP/PA denominators differ by orders of magnitude --
+    one global n0 is miscalibrated; see registry docstring). At n == min_n
+    the shrinkage factor must be exactly 0.5."""
+    concept = get_concept("stuff")
+    floor = concept["min_n"]
+    df = pd.DataFrame([dict(entity_id=1, entity_name="A", window="w1", attribute="whiff_rate",
+                             raw_value=0.3, percentile=90.0, n=floor, status="DESCRIPTIVE",
+                             ingredients="{}", sources="x", sport="mlb", kind="player"),
+                        dict(entity_id=1, entity_name="A", window="w1", attribute="velo_band",
+                             raw_value=95.0, percentile=90.0, n=floor * 3, status="DESCRIPTIVE",
+                             ingredients="{}", sources="x", sport="mlb", kind="player")])
+    w = derive_weights(concept, df).set_index("attribute")
+    # base weights: 2 * n/(n+min_n) -> whiff = 2*0.5 = 1.0, velo = 2*0.75 = 1.5
+    assert abs(w.loc["whiff_rate", "base_weight"] - 1.0) < 1e-9
+    assert abs(w.loc["velo_band", "base_weight"] - 1.5) < 1e-9
+
+
 def test_directional_lower_xwoba_wins_contact_control():
     """Synthetic: A allows LOWER xwOBA than B -> since MLB percentiles are
     plain rank (not builder-oriented), A's raw xwoba_against_by_class_fastball
