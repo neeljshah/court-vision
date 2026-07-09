@@ -132,17 +132,22 @@ class NBAAdapter:
         seasons: Optional[Sequence[str]] = None,
         *,
         league_filter: Optional[str] = None,
+        include_asof: bool = False,
     ) -> FeatureBundle:
         """Gate-valid FeatureBundle.
 
-        Base (10 cols, all strictly pre-game):
+        Base (8 cols by default, all strictly pre-game):
             [elo_home, elo_away, elo_diff_hfa, rest_days_home, rest_days_away,
-             home_b2b, away_b2b, rolling_win10_home,
-             def_fg_pct_allowed_diff_asof, def_pts_allowed_per36_diff_asof]
-        The 2 trailing cols are the SHIP-verdict as-of reclaim (gap ledger rank 1):
+             home_b2b, away_b2b, rolling_win10_home]
+        include_asof=True appends 2 trailing cols (gap ledger rank 1 SHIP verdict):
+            [def_fg_pct_allowed_diff_asof, def_pts_allowed_per36_diff_asof]
         already-leak-free team roll-ups (asof_defender_rollup.py, shift1-per-defender
         priors) merged in by game_id; NaN where the box-era defender-tracking corpus
-        has no coverage for that game (imputed downstream by src.loop.gate._impute).
+        has no coverage for that game (~66% NaN outside that era). OPT-IN ONLY: an
+        unlisted consumer (nba_winprob_model.py) once fed these NaN-heavy cols into
+        the calibration tuner unvalidated and regressed NBA ECE
+        (docs/research/bundle_regression_fix_2026-07-11.md) -- callers that want them
+        must ask for them explicitly and handle the NaN discipline themselves.
         signal_col = p_home_elo.  target = home_win {0,1}.
         lines/closing = devigged home-win prob from odds (2025-26 only; NaN elsewhere).
         """
@@ -177,15 +182,16 @@ class NBAAdapter:
             wf["home_ml"] = np.nan
             wf["away_ml"] = np.nan
 
-        rollup_path = self._root / DEFENDER_ROLLUP_PARQUET
         wf["game_id"] = wf["game_id"].astype(str)
-        if rollup_path.exists():
-            _r = pd.read_parquet(rollup_path)[["game_id", *SHIP_ASOF_COLS]].copy()
-            _r["game_id"] = _r["game_id"].astype(str)
-            wf = wf.merge(_r, on="game_id", how="left")
-        else:
-            for _c in SHIP_ASOF_COLS:
-                wf[_c] = np.nan
+        if include_asof:
+            rollup_path = self._root / DEFENDER_ROLLUP_PARQUET
+            if rollup_path.exists():
+                _r = pd.read_parquet(rollup_path)[["game_id", *SHIP_ASOF_COLS]].copy()
+                _r["game_id"] = _r["game_id"].astype(str)
+                wf = wf.merge(_r, on="game_id", how="left")
+            else:
+                for _c in SHIP_ASOF_COLS:
+                    wf[_c] = np.nan
 
         rows_base, rows_sig, rows_tgt, rows_dates, rows_lv = [], [], [], [], []
         for _, row in wf.iterrows():
@@ -193,7 +199,7 @@ class NBAAdapter:
             if pd.isna(tgt):
                 continue
             lv = _devig_am(row.get("home_ml"), row.get("away_ml"))
-            rows_base.append([
+            base_row = [
                 float(row["elo_home"]), float(row["elo_away"]),
                 float(row["elo_diff_hfa"]),
                 float(row.get("rest_days_home", 5.0)),
@@ -201,9 +207,11 @@ class NBAAdapter:
                 float(bool(row.get("home_b2b", False))),
                 float(bool(row.get("away_b2b", False))),
                 float(row.get("rolling_win10_home", 0.5)),
-                float(row.get("def_fg_pct_allowed_diff_asof", np.nan)),
-                float(row.get("def_pts_allowed_per36_diff_asof", np.nan)),
-            ])
+            ]
+            if include_asof:
+                base_row.append(float(row.get("def_fg_pct_allowed_diff_asof", np.nan)))
+                base_row.append(float(row.get("def_pts_allowed_per36_diff_asof", np.nan)))
+            rows_base.append(base_row)
             rows_sig.append(float(row["p_home_elo"]))
             rows_tgt.append(float(tgt))
             rows_dates.append(str(pd.to_datetime(row["date"]).date()))
