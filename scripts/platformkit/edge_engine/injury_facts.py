@@ -124,7 +124,9 @@ def store_injuries(sport: str, http_get: Optional[HttpGet] = None,
     if snapshot_date:
         for r in rows:
             r["snapshot_date"] = snapshot_date
-        keyfn = lambda r: (r["player_name"], r["status"], r["snapshot_date"])  # noqa: E731
+        # .get() not r[...]: legacy rows written before snapshot_date existed
+        # (e.g. injury_facts_nba.jsonl pre-M39) must not KeyError the dedupe scan.
+        keyfn = lambda r: (r["player_name"], r["status"], r.get("snapshot_date", ""))  # noqa: E731
     else:
         keyfn = _dedupe_key
     added = append_new(path_for("injury", sport), rows, keyfn)
