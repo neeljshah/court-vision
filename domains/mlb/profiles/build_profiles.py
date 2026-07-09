@@ -29,9 +29,11 @@ import pyarrow.parquet as pq
 from domains.mlb.profiles.attribute_registry import ATTRIBUTES, rating_2k
 from domains.mlb.profiles.ingredients_batter import BUILDERS as BATTER_BUILDERS
 from domains.mlb.profiles.ingredients_batter_grid import BUILDERS as BATTER_GRID_BUILDERS
+from domains.mlb.profiles.ingredients_batter_zones import BUILDERS as BATTER_ZONE_BUILDERS
 from domains.mlb.profiles.ingredients_catcher import BUILDERS as CATCHER_BUILDERS
 from domains.mlb.profiles.ingredients_pitcher import BUILDERS as PITCHER_BUILDERS
 from domains.mlb.profiles.ingredients_pitcher_grid import BUILDERS as PITCHER_GRID_BUILDERS
+from domains.mlb.profiles.ingredients_pitcher_zones import BUILDERS as PITCHER_ZONE_BUILDERS
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 _STATCAST_DIR = REPO_ROOT / "data" / "cache" / "statcast"
@@ -43,6 +45,7 @@ SEASONS = ("2023", "2024")
 _BUILDERS: dict[str, Callable[[pd.DataFrame], pd.DataFrame]] = {
     **BATTER_BUILDERS, **PITCHER_BUILDERS, **CATCHER_BUILDERS,
     **BATTER_GRID_BUILDERS, **PITCHER_GRID_BUILDERS,
+    **BATTER_ZONE_BUILDERS, **PITCHER_ZONE_BUILDERS,
 }
 assert set(_BUILDERS) == set(ATTRIBUTES), (
     f"builder/registry mismatch: {set(ATTRIBUTES) ^ set(_BUILDERS)}")

@@ -24,6 +24,17 @@ RATING_2K: rating_2k = 25 + percentile*0.74, percentile in [0,100] (rank-pct
 within the qualified population for that attribute+window) -> a 25-99
 presentation-only band, same spirit as 2K/franchise-mode overalls. NEVER a
 predictive or market-facing number (edge_claimed=False everywhere upstream).
+
+ATTACK ZONES (declared BEFORE running -- full geometry + rationale lives in
+ingredients_pitcher_zones.py, the module that implements it; this is pure
+metadata so only the boundary SUMMARY is restated here): heart/shadow/chase/
+waste, a signed distance to the nearest strike-zone-rectangle edge (reused
+verbatim from prereg_shift_framing.classify_borderline) bucketed at
++-0.25ft (SHADOW_FT, framing's own declared edge-shell half-width) and
++1.00ft (CHASE_FT, declared before running) beyond the true zone edge.
+Statcast-standard-adjacent, not a literal replica of Statcast's unpublished
+exact cutoffs. See ingredients_pitcher_zones/ingredients_batter_zones.py
+(63 -> 110 total attributes).
 """
 from __future__ import annotations
 
@@ -356,6 +367,114 @@ def _grid_batter_attributes() -> dict[str, dict[str, Any]]:
 
 ATTRIBUTES.update(_grid_pitcher_attributes())
 ATTRIBUTES.update(_grid_batter_attributes())
+
+# ------------------------------------------------------------------ attack-zone grid attributes
+# heart/shadow/chase/waste region x metric (see module docstring ATTACK
+# ZONES for the boundary declaration). ATTACK_ZONES redeclared locally (not
+# imported) -- same "pure metadata, no data logic" discipline as PITCH_CLASSES
+# above; the actual geometry lives in ingredients_pitcher_zones.py.
+ATTACK_ZONES = ("heart", "shadow", "chase", "waste")
+
+
+def _grid_zone_pitcher_attributes() -> dict[str, dict[str, Any]]:
+    attrs: dict[str, dict[str, Any]] = {}
+    for z in ATTACK_ZONES:
+        attrs[f"region_pitch_share_{z}"] = {
+            "description": f"Share of all pitches thrown that land in the {z.upper()} attack zone.",
+            "entity": "pitcher", "ingredients": [f"share_{z}", "n_total_pitches"],
+            "formula": f"n_{z} / n_total_pitches",
+            "status": "DESCRIPTIVE", "floor": 100, "weight_ledger_family": "descriptive",
+        }
+        attrs[f"region_whiff_rate_{z}"] = {
+            "description": f"Swing-and-miss rate among swings against pitches in the {z.upper()} zone.",
+            "entity": "pitcher", "ingredients": ["whiff_rate", "n_swings"],
+            "formula": f"n_miss / n_swings, attack_zone={z}",
+            "status": "DESCRIPTIVE", "floor": 100, "weight_ledger_family": "descriptive",
+        }
+        attrs[f"region_called_strike_rate_{z}"] = {
+            "description": f"Called-strike rate among taken pitches in the {z.upper()} zone.",
+            "entity": "pitcher", "ingredients": ["called_strike_rate", "n_taken"],
+            "formula": f"n_called_strike / n_taken, attack_zone={z}",
+            "status": "DESCRIPTIVE", "floor": 100, "weight_ledger_family": "descriptive",
+        }
+        attrs[f"region_xwoba_against_{z}"] = {
+            "description": f"xwOBA allowed on balls in play in the {z.upper()} zone.",
+            "entity": "pitcher", "ingredients": ["xwoba_against", "n_bip"],
+            "formula": f"mean(estimated_woba_using_speedangle), attack_zone={z}, type==X",
+            "status": "DESCRIPTIVE", "floor": 30, "weight_ledger_family": "descriptive",
+        }
+        for cls in PITCH_CLASSES:
+            attrs[f"region_mix_{z}_{cls}"] = {
+                "description": f"Share of {z.upper()}-zone pitches that are {cls}-class.",
+                "entity": "pitcher", "ingredients": [f"share_{cls}", "n_region_pitches"],
+                "formula": f"n_{cls} / n_region_pitches, attack_zone={z}",
+                "status": "DESCRIPTIVE", "floor": 100, "weight_ledger_family": "descriptive",
+            }
+    attrs["chase_induce_rate_ahead"] = {
+        "description": "Batter swing rate on CHASE-zone pitches, restricted to counts where the "
+                        "pitcher is ahead (strikes>balls) -- pitcher's chase-inducing ability with "
+                        "the count advantage.",
+        "entity": "pitcher", "ingredients": ["chase_induce_rate", "n_chase_ahead"],
+        "formula": "mean(is_swing), attack_zone=chase, strikes>balls",
+        "status": "DESCRIPTIVE", "floor": 50, "weight_ledger_family": "descriptive",
+    }
+    attrs["heart_share_behind"] = {
+        "description": "Share of pitches landing in the HEART zone, restricted to counts where the "
+                        "pitcher is behind (balls>strikes) -- damage-exposure proxy.",
+        "entity": "pitcher", "ingredients": ["heart_share", "n_pitches_behind"],
+        "formula": "mean(attack_zone==heart), balls>strikes",
+        "status": "DESCRIPTIVE", "floor": 50, "weight_ledger_family": "descriptive",
+    }
+    return attrs
+
+
+def _grid_zone_batter_attributes() -> dict[str, dict[str, Any]]:
+    attrs: dict[str, dict[str, Any]] = {}
+    for z in ATTACK_ZONES:
+        attrs[f"region_swing_rate_{z}"] = {
+            "description": f"Swing rate on pitches in the {z.upper()} attack zone.",
+            "entity": "batter", "ingredients": ["swing_rate", "n_region_pitches"],
+            "formula": f"mean(is_swing), attack_zone={z}",
+            "status": "DESCRIPTIVE", "floor": 50, "weight_ledger_family": "descriptive",
+        }
+        attrs[f"region_whiff_vs_{z}"] = {
+            "description": f"Swing-and-miss rate among swings against pitches in the {z.upper()} zone.",
+            "entity": "batter", "ingredients": ["whiff_rate", "n_swings"],
+            "formula": f"n_miss / n_swings, attack_zone={z}",
+            "status": "DESCRIPTIVE", "floor": 50, "weight_ledger_family": "descriptive",
+        }
+        attrs[f"region_xwoba_contact_{z}"] = {
+            "description": f"xwOBA on contact (balls in play) in the {z.upper()} zone.",
+            "entity": "batter", "ingredients": ["xwoba_on_contact", "n_bip"],
+            "formula": f"mean(estimated_woba_using_speedangle), attack_zone={z}, type==X",
+            "status": "DESCRIPTIVE", "floor": 20, "weight_ledger_family": "descriptive",
+        }
+    attrs["shadow_take_rate"] = {
+        "description": "1 - swing rate on SHADOW-zone (borderline) pitches -- discipline: how often "
+                        "a batter lays off the zone edge.",
+        "entity": "batter", "ingredients": ["take_rate", "n_shadow_pitches"],
+        "formula": "1 - mean(is_swing), attack_zone=shadow",
+        "status": "DESCRIPTIVE", "floor": 50, "weight_ledger_family": "descriptive",
+    }
+    for cls in PITCH_CLASSES:
+        attrs[f"chase_rate_by_class_{cls}"] = {
+            "description": f"Swing rate on CHASE-zone {cls}-class pitches.",
+            "entity": "batter", "ingredients": ["chase_rate", "n_chase_pitches"],
+            "formula": f"mean(is_swing), attack_zone=chase, pitch_class={cls}",
+            "status": "DESCRIPTIVE", "floor": 50, "weight_ledger_family": "descriptive",
+        }
+    attrs["heart_damage_xwoba"] = {
+        "description": "xwOBA on contact restricted to the HEART zone -- damage exposure on the "
+                        "easiest pitches to drive.",
+        "entity": "batter", "ingredients": ["xwoba_on_heart_contact", "n_bip"],
+        "formula": "mean(estimated_woba_using_speedangle), attack_zone=heart, type==X",
+        "status": "DESCRIPTIVE", "floor": 20, "weight_ledger_family": "descriptive",
+    }
+    return attrs
+
+
+ATTRIBUTES.update(_grid_zone_pitcher_attributes())
+ATTRIBUTES.update(_grid_zone_batter_attributes())
 
 ENTITIES = ("batter", "pitcher", "catcher")
 STATUSES = ("VALIDATED_MECHANISM", "VALIDATED_CLAIM", "DESCRIPTIVE")
