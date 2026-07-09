@@ -173,6 +173,63 @@ def _duplicate_close_pairs(rows: Sequence[Dict[str, Any]]) -> int:
     return sum(1 for eids in by_pair.values() if len(eids) > 1)
 
 
+# A prediction-market venue (Kalshi/Polymarket). A row taken here whose close was
+# NOT resolved from the SAME venue is a cross-venue BASIS row: clv_pct then measures
+# the price gap between where you bet (Kalshi/PM) and a different-venue devigged close
+# (e.g. a sportsbook line via line_store), which is basis, not a beaten line. Same-
+# venue closes carry close_source/close_venue tagged kalshi/poly (pm_close_capture).
+# See reference memory 'cross-venue CLV = basis not edge' + the PROPOSED same-venue
+# close restriction. Additive/read-only: does NOT touch the verdict or z-scores.
+_PM_VENUE_TOKENS = ("kalshi", "polymarket", "poly", "pm")
+
+
+def _is_pm_taken(row: Dict[str, Any]) -> bool:
+    if row.get("is_pm"):
+        return True
+    for k in ("venue", "taken_book", "book"):
+        v = str(row.get(k) or "").lower()
+        if any(tok in v for tok in _PM_VENUE_TOKENS):
+            return True
+    return False
+
+
+def _is_same_venue_close(row: Dict[str, Any]) -> bool:
+    for k in ("close_source", "close_venue"):
+        v = str(row.get(k) or "").lower()
+        if "kalshi" in v or "poly" in v:
+            return True
+    return False
+
+
+def _cross_venue_basis(rows: Sequence[Dict[str, Any]]) -> Dict[str, Any]:
+    """Count measurable rows taken on a PM venue but priced against a DIFFERENT-
+    venue close -- for those, clv_pct is basis, not a beaten line. Transparency
+    only; never alters the verdict/z. books = the different-venue close origin.
+    """
+    cross = [r for r in rows if _is_pm_taken(r) and not _is_same_venue_close(r)]
+    n = len(cross)
+    books: Dict[str, int] = {}
+    for r in cross:
+        b = str(r.get("close_book_home") or r.get("close_source") or "unknown")
+        books[b] = books.get(b, 0) + 1
+    clvs = [float(r["clv_pct"]) for r in cross if r.get("clv_pct") is not None]
+    note = None
+    if n:
+        note = ("%d of %d measurable rows were taken on a prediction-market venue "
+                "but priced against a DIFFERENT-venue close (%s) -- for these, "
+                "clv_pct is cross-venue BASIS, not a beaten line. Read the channel "
+                "CLV as basis, not edge." % (
+                    n, len(rows),
+                    ", ".join("%s:%d" % kv for kv in sorted(books.items()))))
+    return {
+        "n": n,
+        "n_measurable": len(rows),
+        "mean_clv_pct": (round(sum(clvs) / len(clvs), 4) if clvs else None),
+        "books": books,
+        "note": note,
+    }
+
+
 def _verdict(n: int, z_wins: Optional[float], z_units: Optional[float]) -> str:
     if n < _MIN_N:
         return ("INSUFFICIENT_DATA -- only %d measurable bets; too few to "
@@ -238,6 +295,7 @@ def reconcile_channel(channel: str,
         "duplicate_close_pairs_diff_event": dup_pairs,
         "verdict": _verdict(n, z_wins, z_units),
         "single_side": single_side,
+        "cross_venue_basis": _cross_venue_basis(rows),
     }
 
 
@@ -266,6 +324,11 @@ def render(report: Dict[str, Any]) -> str:
     if ss.get("note"):
         lines.append("note: %s (single_side: n=%s z_wins=%s z_units=%s)"
                      % (ss["note"], ss["n"], ss["z_wins"], ss["z_units"]))
+    cvb = report.get("cross_venue_basis") or {}
+    if cvb.get("note"):
+        lines.append("BASIS: %s (cross-venue mean CLV %s%%)"
+                     % (cvb["note"],
+                        ("%+.2f" % cvb["mean_clv_pct"]) if cvb.get("mean_clv_pct") is not None else "--"))
     lines.append("")
     lines.append("VERDICT: " + report["verdict"])
     lines.append("=" * 78)
