@@ -1,6 +1,6 @@
-"""scripts.platformkit.autoloop.maintenance_templates -- the 3 zero-LLM
-pipeline-maintenance jobs that keep the intel layer visible to ask/weighting,
-wired as a single extra phase inside autoloop_runner.run_cycle().
+"""scripts.platformkit.autoloop.maintenance_templates -- the zero-LLM
+pipeline-maintenance jobs (8, see run_all()) that keep the intel layer visible
+to ask/weighting, wired as a single extra phase inside autoloop_runner.run_cycle().
 
 These are NOT prereg statistical templates (no universe/K-ledger/blocklist --
 standing_prereg.Template is for hypothesis-testing families only). Each job
@@ -27,6 +27,14 @@ Job #6, ingame_benchmarks (scripts.platformkit.autoloop.ingame_benchmark_job), f
 the same watermark-gated plain-function shape: re-runs the MLB/NBA in-game
 MODEL-vs-MARKET benchmarks only once their labeled-game count grew >=25% since the
 stored watermark. See that module's docstring for detail.
+
+Job #7, mechanism_reval (scripts.platformkit.autoloop.mechanism_reval_job), re-runs
+each domain's UNTESTED knowledge/validate_*.py mechanism checks once that domain's
+season corpus grows -- ledger-append only, never touches mechanisms.md prose.
+
+Job #8, utilization_drift (scripts.platformkit.autoloop.utilization_drift_job),
+re-runs the cross-sport stat-utilization census once a sport's corpora grow and
+reports any newly-dark (UNUSED) column -- report-only, never wires anything.
 """
 from __future__ import annotations
 
@@ -219,6 +227,18 @@ def run_all(watermarks: Dict[str, Any], *, queue_fn: Optional[Callable[[Dict[str
         out["ingame_benchmarks"] = run_ingame_benchmarks(watermarks)
     except Exception as exc:  # noqa: BLE001
         out["ingame_benchmarks"] = {"status": "error", "error": str(exc)[:200]}
+    try:
+        # watermark-gated mechanism re-validation (ledger-append only, no mechanisms.md edit)
+        from scripts.platformkit.autoloop.mechanism_reval_job import run_mechanism_reval
+        out["mechanism_reval"] = run_mechanism_reval(watermarks)
+    except Exception as exc:  # noqa: BLE001
+        out["mechanism_reval"] = {"status": "error", "error": str(exc)[:200]}
+    try:
+        # watermark-gated stat-utilization drift census (report-only, no wiring)
+        from scripts.platformkit.autoloop.utilization_drift_job import run_utilization_drift
+        out["utilization_drift"] = run_utilization_drift(watermarks, queue_fn=queue_fn)
+    except Exception as exc:  # noqa: BLE001
+        out["utilization_drift"] = {"status": "error", "error": str(exc)[:200]}
     return out
 
 

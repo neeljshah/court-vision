@@ -165,9 +165,15 @@ def test_run_all_isolates_one_failing_job(tmp_path):
         mock.patch("scripts.platformkit.scoreboard_history.append_rows",
                    return_value={"status": "ok", "appended": 0}), \
         mock.patch("scripts.platformkit.autoloop.ingame_benchmark_job.run_ingame_benchmarks",
-                   return_value={"mlb_state_bucket_benchmark": {"status": "skipped"}}):
+                   return_value={"mlb_state_bucket_benchmark": {"status": "skipped"}}), \
+        mock.patch("scripts.platformkit.autoloop.mechanism_reval_job.run_mechanism_reval",
+                   return_value={}), \
+        mock.patch("scripts.platformkit.autoloop.utilization_drift_job.run_utilization_drift",
+                   return_value={}):
         out = MT.run_all({}, queue_fn=lambda row: None)
     assert out["validate_new_stores"]["status"] == "error"
     assert out["weighting_refresh"] == {"sports_refreshed": []}
     assert out["replication_watch"] == {"new_reports": 0}
     assert out["ingame_benchmarks"] == {"mlb_state_bucket_benchmark": {"status": "skipped"}}
+    assert out["mechanism_reval"] == {}
+    assert out["utilization_drift"] == {}
