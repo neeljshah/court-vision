@@ -297,4 +297,15 @@ def build_all_player_rows(seasons: list[str]) -> list[dict]:
     for season in seasons:
         for fn in BUILDERS:
             rows.extend(fn(season))
+    # offense zone/context/clutch (24 attrs) + last20 window multipliers (2) --
+    # own modules to keep this file under the 300 LOC rule, wired here so
+    # build_profiles.py's existing build_all_player_rows() call picks them up.
+    from domains.basketball_nba.profiles.player_offense_windows import (
+        build_all_player_offense_window_rows,
+    )
+    from domains.basketball_nba.profiles.player_offense_zones import (
+        build_all_player_offense_zone_rows,
+    )
+    rows.extend(build_all_player_offense_zone_rows(seasons))
+    rows.extend(build_all_player_offense_window_rows(seasons))
     return rows

@@ -12,8 +12,14 @@ import pandas as pd
 
 from domains.basketball_nba.profiles.lineup_attributes import build_all_lineup_rows
 from domains.basketball_nba.profiles.player_attributes import build_all_player_rows
+from domains.basketball_nba.profiles.player_defense_zones import build_all_player_defense_zone_rows
+from domains.basketball_nba.profiles.player_fouls import build_all_player_fouls_rows
+from domains.basketball_nba.profiles.player_rebounding import build_all_player_rebounding_rows
 from domains.basketball_nba.profiles.profile_compute import REPO_ROOT
 from domains.basketball_nba.profiles.team_attributes import build_all_team_rows
+from domains.basketball_nba.profiles.team_box_splits import build_all_team_box_split_rows
+from domains.basketball_nba.profiles.team_clutch import build_all_team_clutch_rows
+from domains.basketball_nba.profiles.team_expansion import build_all_team_expansion_rows
 
 SEASONS = ["2023_24", "2024_25", "2025_26"]
 _OUT_DIR = REPO_ROOT / "data" / "cache" / "profiles"
@@ -45,8 +51,16 @@ def _print_coverage(label: str, df: pd.DataFrame) -> None:
 
 
 def build(seasons: list[str] = SEASONS, out_dir=_OUT_DIR) -> dict[str, pd.DataFrame]:
-    player_df = _to_frame(build_all_player_rows(seasons))
-    team_df = _to_frame(build_all_team_rows(seasons))
+    player_rows = (
+        build_all_player_rows(seasons) + build_all_player_defense_zone_rows(seasons)
+        + build_all_player_rebounding_rows(seasons) + build_all_player_fouls_rows(seasons)
+    )
+    team_rows = (
+        build_all_team_rows(seasons) + build_all_team_expansion_rows(seasons)
+        + build_all_team_clutch_rows(seasons) + build_all_team_box_split_rows(seasons)
+    )
+    player_df = _to_frame(player_rows)
+    team_df = _to_frame(team_rows)
     lineup_df = _to_frame(build_all_lineup_rows(seasons))
 
     out_dir.mkdir(parents=True, exist_ok=True)

@@ -93,3 +93,32 @@ def test_zone_split_math_hand_built_frame():
     p6 = out.loc[6]  # only in the 2nd stint -- off for the 2 rim shots, on for the three
     assert p6["rim_fga_off"] == 2 and p6["rim_fgm_off"] == 1
     assert p6["three_fga_on"] == 1 and p6["three_fgm_on"] == 1
+
+
+def test_all_five_zones_split_math_hand_built_frame():
+    """paint/mid/corner3/above_break_3 each get their own on/off columns,
+    independent of the legacy combined 'three' bucket (which must still sum
+    corner3+above_break_3, verified above) -- all 5 zone specs proven here."""
+    stints_df = pd.DataFrame([
+        {"game_id": "G1", "team_id": 1, "period": 1, "lineup_key": "1,2,3,4,5",
+         "n_on_court": 5, "elapsed_s": 240.0},
+    ])
+    shots_df = pd.DataFrame([
+        {"game_id": "G1", "team_id": 1, "lineup_key": "1,2,3,4,5", "n_on_court": 5,
+         "zone": "paint", "fgm": 1, "fga": 1},
+        {"game_id": "G1", "team_id": 1, "lineup_key": "1,2,3,4,5", "n_on_court": 5,
+         "zone": "mid", "fgm": 0, "fga": 1},
+        {"game_id": "G1", "team_id": 1, "lineup_key": "1,2,3,4,5", "n_on_court": 5,
+         "zone": "corner3", "fgm": 1, "fga": 1},
+        {"game_id": "G1", "team_id": 1, "lineup_key": "1,2,3,4,5", "n_on_court": 5,
+         "zone": "above_break_3", "fgm": 0, "fga": 1},
+    ])
+    out = compute_zone_onoff(stints_df, shots_df).set_index("player_id")
+    p1 = out.loc[1]  # on-court for all 4 shots
+    assert p1["paint_fga_on"] == 1 and p1["paint_fgm_on"] == 1 and p1["paint_efg_allowed_on"] == pytest.approx(1.0)
+    assert p1["mid_fga_on"] == 1 and p1["mid_fgm_on"] == 0 and p1["mid_efg_allowed_on"] == pytest.approx(0.0)
+    assert p1["corner3_fga_on"] == 1 and p1["corner3_efg_allowed_on"] == pytest.approx(1.5)
+    assert p1["above_break_3_fga_on"] == 1 and p1["above_break_3_efg_allowed_on"] == pytest.approx(0.0)
+    # legacy combined bucket still sums corner3+above_break_3 correctly
+    assert p1["three_fga_on"] == 2 and p1["three_fgm_on"] == 1
+    assert p1["opp_fga_on"] == 4
