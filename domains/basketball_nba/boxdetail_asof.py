@@ -108,17 +108,18 @@ def _bridge_event_id_to_game_id(espn_box: pd.DataFrame, games: pd.DataFrame) -> 
     return merged.drop(columns=["_home_nba", "_away_nba", "home_team", "away_team", "event_id"])
 
 
-def _melt_to_team_games(espn_box: pd.DataFrame) -> pd.DataFrame:
-    """One row per game -> two rows (home/away perspective) per team-game."""
-    df = espn_box.copy()
-    df["event_id"] = df["event_id"].astype(str)
+def _melt_to_team_games(espn_box_bridged: pd.DataFrame) -> pd.DataFrame:
+    """One row per game (already bridged to real game_id) -> two rows
+    (home/away perspective) per team-game."""
+    df = espn_box_bridged.copy()
+    df["game_id"] = df["game_id"].astype(str)
     df["date"] = pd.to_datetime(df["date"])
 
     rows: List[Dict] = []
     for _, r in df.iterrows():
         for side, team, opp in (("home", r["home_abbr"], r["away_abbr"]),
                                  ("away", r["away_abbr"], r["home_abbr"])):
-            row = {"game_id": r["event_id"], "date": r["date"],
+            row = {"game_id": r["game_id"], "date": r["date"],
                    "team": team, "opp": opp, "is_home": side == "home"}
             for stat, src_cols in _STAT_SRC_COLS.items():
                 vals = [r.get(f"{side}_{c}") for c in src_cols]
@@ -199,6 +200,7 @@ def _pivot_to_games(tg: pd.DataFrame) -> pd.DataFrame:
 
 def build_boxdetail_asof(
     espn_box: Optional[pd.DataFrame] = None,
+    games: Optional[pd.DataFrame] = None,
     out_path: Optional[str] = None,
 ) -> Path:
     """Build leak-free walk-forward box-detail as-of features.
@@ -209,6 +211,10 @@ def build_boxdetail_asof(
         ``espn_boxscores.parquet``-shaped DataFrame (event_id, date, home_abbr,
         away_abbr + home_/away_ fast_break_pts/paint_pts/tov_pts/largest_lead/
         tech/flagrant). If None, reads the default on-disk parquet.
+    games:
+        ``games.parquet``-shaped DataFrame (game_id, date, home_team, away_team)
+        used only for the outcome-free event_id->game_id schedule-key bridge
+        (see module docstring). If None, reads the default on-disk parquet.
     out_path:
         Output parquet path. If None, uses the default ``boxdetail_asof.parquet``.
 
@@ -223,11 +229,16 @@ def build_boxdetail_asof(
         if not _DEFAULT_IN.exists():
             raise FileNotFoundError(f"espn_boxscores.parquet not found at {_DEFAULT_IN}.")
         espn_box = pd.read_parquet(_DEFAULT_IN)
+    if games is None:
+        if not _GAMES.exists():
+            raise FileNotFoundError(f"games.parquet not found at {_GAMES}.")
+        games = pd.read_parquet(_GAMES)
 
     if len(espn_box) == 0:
         out = pd.DataFrame(columns=OUTPUT_COLS)
     else:
-        tg = _melt_to_team_games(espn_box)
+        bridged = _bridge_event_id_to_game_id(espn_box, games)
+        tg = _melt_to_team_games(bridged)
         tg = _walk_forward_team(tg)
         out = _pivot_to_games(tg)
 
@@ -243,11 +254,13 @@ if __name__ == "__main__":
         description="espn_boxscores.parquet -> leak-free box-detail as-of "
                     "(fast_break/paint/tov_pts/largest_lead/foul_trouble)")
     ap.add_argument("--in", dest="inp", default=None)
+    ap.add_argument("--games", default=None)
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
 
     _eb = pd.read_parquet(args.inp) if args.inp else None
-    path = build_boxdetail_asof(espn_box=_eb, out_path=args.out)
+    _gm = pd.read_parquet(args.games) if args.games else None
+    path = build_boxdetail_asof(espn_box=_eb, games=_gm, out_path=args.out)
     df = pd.read_parquet(str(path))
     print("LEAK-FREE walk-forward box-detail as-of (prior-only; snapshot-before-update).")
     print("NOT a market edge. Gate decides honestly next.")
