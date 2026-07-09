@@ -29,7 +29,11 @@ def _pts(rows: list[dict]) -> pd.DataFrame:
 
 
 def test_registry_grew_to_49_and_new_families_present():
-    assert len(concrete_attributes()) == 49
+    # registry now carries the WINDOW/OPPONENT-TIER/FORM families too (see
+    # test_build_profiles_windows.py) -- 49 was this module's own delivered
+    # count; the live total is asserted there (72) so this file doesn't need
+    # editing every time a sibling module adds attributes.
+    assert len(concrete_attributes()) >= 49
     for attr in ("courtside_serve_deuce", "courtside_serve_ad", "serve_by_set_set1",
                  "momentum_bounceback", "momentum_streakiness", "tiebreak_points_won_share",
                  "tiebreak_serve_win_rate", "second_serve_aggression_delta", "game_point_conversion"):

@@ -40,9 +40,10 @@ def test_concrete_and_blocked_partition_is_exhaustive_and_disjoint():
     assert blocked == {"rally_tolerance"}
     # original 10 (2 point-corpus + 1 pressure + 1 second-serve + 6 surface_splits) +
     # EXPANDED 39 (11 court-side/set/momentum/tiebreak/aggression/game-point +
-    # 28 match_agg 7-metrics x 4-buckets) registered in attribute_registry.py's
-    # _EXPANDED block -- see ingredients_expanded.py / build_profiles_expanded.py.
-    assert len(concrete) == 49
+    # 28 match_agg 7-metrics x 4-buckets) + WINDOWS 23 (7 window_<metric> + 14
+    # opp_tier_<metric>_<tier> + 2 form_*) registered in attribute_registry.py's
+    # _EXPANDED / _WINDOWS blocks -- see ingredients_expanded.py/ingredients_windows.py.
+    assert len(concrete) == 72
 
 
 def test_pressure_serve_is_validated_mechanism():
