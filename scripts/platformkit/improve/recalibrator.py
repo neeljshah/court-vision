@@ -37,6 +37,7 @@ import numpy as np
 from scripts.platformkit.improve.pipeline_flag import pipeline_enabled
 from scripts.platformkit.improve.settle_audit import audit_settled, FeedDegradedError
 from scripts.platformkit.improve.base_guard import degenerate_base_reason
+from scripts.platformkit.improve.recal_holdout_fit import fit_and_score, STATUS_OK
 from scripts.platformkit.eval_gate.scoring import brier
 
 logger = logging.getLogger("recalibrator")
@@ -58,6 +59,8 @@ _R_NONFINITE = "nonfinite"              # genuine: degenerate inputs
 _R_NONBINARY = "nonbinary_outcome"      # genuine: outcomes not {0,1}
 _R_FIT_FAILED = "fit_did_not_converge"  # genuine: Platt GD did not converge
 _R_DEGENERATE = "degenerate_base"       # genuine: no-op candidate (MF2)
+_R_HOLDOUT_INSUFFICIENT = "holdout_insufficient_data"  # genuine: too thin for a holdout split
+_R_HOLDOUT_NO_OOS_GAIN = "holdout_no_oos_gain"  # genuine: fails do-no-harm on held-out rows
 _R_EVALUATED = "evaluated"              # a real candidate was packaged
 _R_EXCEPTION = "exception"              # TRANSIENT: unexpected error before evaluation
 _TRANSIENT_REASONS = frozenset({_R_FEED_DEGRADED, _R_NO_CLEAN, _R_EXCEPTION})
@@ -214,12 +217,29 @@ def build_candidate(name: str, settled: Sequence[Dict[str, Any]],
             _note(report, _R_DEGENERATE)  # GENUINE evaluated decline (honest null)
             return None
 
-        # Folds + stability rows from the clean window (the candidate must beat base).
-        delta = float(brier(base, y) - brier(cand, y))
-        fold_results = [{"delta": delta, "metric": "brier", "fold_id": 0}]
+        # do-no-harm: score the Brier delta on a genuine chronological HOLDOUT split, never
+        # on the same rows the map was fit on (an in-sample delta is always >0 and fabricates
+        # oos_improves). See scripts/platformkit/improve/recal_holdout_fit.py.
+        holdout = fit_and_score(base_list, y_list)
+        if holdout["status"] != STATUS_OK:
+            logger.debug("recalibrator(%s): holdout insufficient -> NO_CANDIDATE", name)
+            _note(report, _R_HOLDOUT_INSUFFICIENT)
+            return None
+        if not holdout["oos_improves"]:
+            logger.debug("recalibrator(%s): holdout OOS delta %r -> REJECT",
+                        name, holdout["oos_delta_brier"])
+            _note(report, _R_HOLDOUT_NO_OOS_GAIN)  # GENUINE evaluated decline (honest null)
+            return None
+
+        # Holdout proved the recal direction helps OOS; the map above (fit on ALL clean
+        # data) is what ships -- fitting on more data after a proven-beneficial direction
+        # is safe and standard practice.
+        delta = float(holdout["oos_delta_brier"])
+        fold_results = [{"delta": delta, "metric": "brier_oos", "fold_id": 0,
+                         "n_train": holdout["n_train"], "n_test": holdout["n_test"]}]
         stability_data = [(float(b), float(c), float(t))
                           for b, c, t in zip(base, cand, y)]
-        oos_improves = delta > 0.0
+        oos_improves = True  # already proven by the holdout split above
 
         from improve.calib_artifact import CalibArtifact  # noqa: E402
         artifact = CalibArtifact(
