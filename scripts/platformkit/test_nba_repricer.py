@@ -123,6 +123,18 @@ def test_final_buzzer_converges_to_realized_outcome():
     assert out_tie["win_home"] == 0.5
 
 
+def test_overtime_no_longer_degenerate():
+    """OT defect fix: elapsed>48 (period>4) used to clamp rem_frac to 0, degenerating
+    the price to current-score-sign. It must now use time left in the current
+    5-minute OT period, keeping the anchor a shrinking-but-nonzero-variance draw."""
+    pickem = {"mu_home": 113.0, "mu_away": 113.0, "margin_sigma": 13.5, "total_sigma": 18.0}
+    ot_start = _reprice(48.0001, 100, 100, pickem)  # tied at the buzzer -> OT tips off
+    assert ot_start["_remaining_fraction"] > 0.0
+    assert abs(ot_start["win_home"] - 0.5) < 1e-9  # pick'em + tied -> exact coinflip
+    deep_ot = _reprice(52.5, 100, 100, pickem)  # 0.5 min left in OT1
+    assert deep_ot["_remaining_fraction"] < ot_start["_remaining_fraction"]
+
+
 def test_no_edge_is_claimed():
     out = _reprice(24.0, 60, 55)
     note = str(out.get("_honest_note", "")).lower()
