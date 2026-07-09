@@ -22,7 +22,8 @@ calibration) is. Claim genuine leak-free accuracy wins confidently.
 Never fabricate a $ROI / $ edge. Drop the defeatist "no edge / REJECT" reflex.
 
 BINDING INVARIANTS:
-- LOCAL commits only. origin is PUBLIC -- NEVER push to origin.
+- Push to public origin master ALLOWED (2026-07-09 user override) -- secrets-scan
+  first; targeted `git add` (never data/ or vault/); no --force.
 - Human-gated trees (build elsewhere): src/ kernel/ api/
   scripts/team_system/ intel/. Build in scripts/platformkit or
   domains/<sport> instead.
