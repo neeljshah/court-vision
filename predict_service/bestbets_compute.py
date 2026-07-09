@@ -17,6 +17,16 @@ from predict_service.bestbets_props import cards_from_props as _props_cards
 
 logger = logging.getLogger(__name__)
 
+# BB-Q5 hooks (CLV-aware rank, honest confidence, stale-line gate) live in one
+# small bridge module so this file stays under the LOC cap; see
+# scripts/platformkit/bestbets/compute_wiring.py. Each hook degrades to the
+# prior byte-identical behavior when its underlying module is unavailable.
+from scripts.platformkit.bestbets.compute_wiring import (  # noqa: E402
+    confidence_for as _confidence_for,
+    select_best_odds as _select_best_odds,
+    rank_cards as _rank_cards,
+)
+
 _HONEST_NOTE = (
     "Calibrated decision-support only. Markets are efficient; no $ edge claimed. "
     "edge_vs_market = model_prob - market_prob (prob diff, NOT $). "
@@ -112,16 +122,19 @@ def _cards_from_game(game: Dict[str, Any], sport: str) -> List[Dict[str, Any]]:
         cand = cand_lookup.get((mt, side)) or {}
         mp = float(cand.get("model_prob") or bet.get("model_prob") or 0.0)
         mkt = float(cand.get("market_prob") or bet.get("market_prob") or 0.0)
-        bo = cand.get("best_odds") or bet.get("best_odds")
+        all_books = list(cand.get("all_books") or [])
+        legacy_bo = cand.get("best_odds") or bet.get("best_odds")
+        legacy_book = str(cand.get("best_book") or bet.get("book") or "")
+        bo, best_book = _select_best_odds(all_books, legacy_bo, legacy_book)
         clv = _clv_for(game_id, mt, side)
-        cards.append({
+        card = {
             "game_id": game_id, "matchup": matchup, "sport": sport,
             "market_type": mt, "prop_player": None, "prop_stat": None,
             "side": side, "line": cand.get("line") or bet.get("line"),
             "model_prob": round(mp, 6), "market_prob": round(mkt, 6),
-            "best_book": str(cand.get("best_book") or bet.get("book") or ""),
+            "best_book": best_book,
             "best_odds": (round(float(bo), 6) if bo is not None else None),
-            "all_books": list(cand.get("all_books") or []),
+            "all_books": all_books,
             "edge_vs_market": round(mp - mkt, 6) if mkt else 0.0,
             "units": float(bet.get("flat_unit") or cand.get("flat_unit") or 0.0),
             "tier": tier, "confidence": round(mp, 6),
@@ -129,7 +142,9 @@ def _cards_from_game(game: Dict[str, Any], sport: str) -> List[Dict[str, Any]]:
             "clv": clv, "clv_is_proxy": bool(clv.get("clv_is_proxy", True)),
             "status": status, "honest_note": _HONEST_NOTE,
             "tipoff_utc": tipoff_utc,
-        })
+        }
+        card["confidence"] = _confidence_for(card)  # BBQ5-2: sharpness, not raw prob
+        cards.append(card)
 
     # MODEL-ONLY / LINE-ONLY cards: a fresh book line the model does not price
     # (e.g. total / run-line). Surfaced honestly by bestbets_model_only -- the line
@@ -261,10 +276,7 @@ def compute_best_bets(
     all_cards, suppressed = _suppress_degenerate(all_cards)
     # QA-stale: drop completed games, stale tipoffs.
     all_cards = _apply_stale_suppression(all_cards)
-    all_cards.sort(
-        key=lambda c: (_TIER_RANK.get(str(c.get("tier", "C")), 99),
-                       -float(c.get("confidence") or 0.0))
-    )
+    all_cards = _rank_cards(all_cards, tier_rank=_TIER_RANK)
     return {
         "status": "ok", "sport": sport, "cards": all_cards,
         "count": len(all_cards), "honest_note": _HONEST_NOTE,
