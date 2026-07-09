@@ -11,7 +11,8 @@ from pathlib import Path
 import pandas as pd
 
 from domains.basketball_nba.profiles.profile_compute import (
-    REPO_ROOT, exclude_negative_ids, finalize_rows, rel_sources,
+    REPO_ROOT, compose_rim_pressure as _compose_rim_pressure, exclude_negative_ids,
+    finalize_rows, rel_sources, zscore as _zscore,
 )
 
 _TS = REPO_ROOT / "data" / "cache" / "team_system"
@@ -150,26 +151,6 @@ def _on_off_pts_against(stints: pd.DataFrame) -> pd.DataFrame:
     if not rows:
         return pd.DataFrame(rows)
     return pd.DataFrame(rows).sort_values("min_on", ascending=False).drop_duplicates("player_id", keep="first")
-
-
-def _zscore(s: pd.Series) -> pd.Series:
-    """Standardize within the qualified population passed in; a zero-
-    variance column (all-equal after floor filtering) returns 0.0 for every
-    row rather than dividing by zero."""
-    mu, sd = s.mean(), s.std()
-    return (s - mu) / sd if sd else pd.Series(0.0, index=s.index)
-
-
-def _compose_rim_pressure(d: pd.DataFrame) -> pd.Series:
-    """3 suppression swings, each oriented so POSITIVE = better defense, then
-    z-scored within the qualified population and summed -- so the composite's
-    sign is 'higher = more rim deterrence' regardless of each ingredient's own
-    raw scale (share is a 0-1 fraction, eFG a 0-1 rate, pts_against a per-48
-    point count -- not directly comparable unscaled)."""
-    swing_rim_share = d["rim_share_allowed_off"] - d["rim_share_allowed_on"]
-    swing_rim_efg = d["rim_efg_allowed_off"] - d["rim_efg_allowed_on"]
-    swing_pts_against = d["pts_against_per48_off"] - d["pts_against_per48_on"]
-    return _zscore(swing_rim_share) + _zscore(swing_rim_efg) + _zscore(swing_pts_against)
 
 
 def build_rim_pressure_def(season: str) -> list[dict]:
