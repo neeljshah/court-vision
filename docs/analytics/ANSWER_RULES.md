@@ -99,11 +99,13 @@ historical result, edge language) mapped to exactly one resolver -- lives at
 
 - `domains/basketball_nba/knowledge/answer_rules.md`
 - `domains/mlb/knowledge/answer_rules.md`
+- `domains/soccer/knowledge/answer_rules.md`
+- `domains/tennis/knowledge/answer_rules.md`
 
 The binding contract any LLM client must follow (route through the resolver,
 quote verbatim, cite artifact + as-of, apply refusal rules) is
 `docs/AI_CONSUMER_CONTRACT.md`. `scripts/platformkit/answers/contract_client.py`
 is that contract, executable, and
-`scripts/platformkit/answers/test_answer_consistency_{nba,mlb}.py` prove the
-resolver-direct path and the contract-client path agree on every canonical
-question.
+`scripts/platformkit/answers/test_answer_consistency_{nba,mlb,soccer,tennis}.py`
+prove the resolver-direct path and the contract-client path agree on every
+canonical question.
