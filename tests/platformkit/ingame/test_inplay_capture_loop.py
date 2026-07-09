@@ -766,6 +766,54 @@ def test_enrichment_persists_into_grade_row(tmp_path, monkeypatch):
 
 
 # --------------------------------------------------------------------------------------- #
+# MLB IDENTITY fields (mlb_batter_id / mlb_pitcher_id / mlb_pitcher_pitch_count /
+# mlb_ondeck_id / mlb_bullpen_used): root-cause fix for MLB MODEL_BEHIND -- the live
+# model previously saw only 8 crude score/inning/base-out features, no notion of WHO is
+# playing. These fields need no facade/import (unlike xg_home/espn_wp) -- they are read
+# straight off `state`, which ingame_id_resolver_mlb's deep_state_fn merge already
+# populates in production from the SAME statsapi payload the base-out resolver fetches.
+# --------------------------------------------------------------------------------------- #
+def _state_fn_identity(sport, gid):
+    s = _state_fn_prior(sport, gid)
+    s.update({"batter_id": 683002, "pitcher_id": 656492, "pitch_count": 61,
+              "ondeck_id": 700000, "bullpen_used": [656492]})
+    return s
+
+
+def test_mlb_identity_fields_persist_into_grade_row(tmp_path):
+    grade_dir = tmp_path / "grade"
+    hb = loop.poll_once(sports=["mlb"], live_state_fn=_state_fn_identity, model_fn=_model_fn,
+                        inplay_fetch_fn=_inplay_fetch, finals_fn=_finals_none,
+                        grade_dir=grade_dir, ledger_path=tmp_path / "l.jsonl",
+                        heartbeat_path=tmp_path / "hb.json")
+    assert hb["games"][0]["paired"] is True
+
+    grade_files = list(grade_dir.rglob("*.jsonl"))
+    assert grade_files, "a grade row must have been written"
+    rows = [json.loads(ln) for ln in grade_files[0].read_text(encoding="ascii").splitlines()
+            if ln.strip()]
+    row = rows[0]
+    assert row["mlb_batter_id"] == 683002
+    assert row["mlb_pitcher_id"] == 656492
+    assert row["mlb_pitcher_pitch_count"] == 61
+    assert row["mlb_ondeck_id"] == 700000
+    assert row["mlb_bullpen_used"] == [656492]
+    # core pairing/decision keys are untouched by the additive identity merge.
+    assert row["model_prob"] == 0.80 and row["side"] == "home"
+
+
+def test_mlb_identity_fields_none_safe_when_unresolved(tmp_path):
+    # No batter_id/pitcher_id/etc on state (the resolver never bound this tick, e.g. a
+    # doubleheader ambiguity or a pregame gap) -> honest None, never fabricated.
+    hb = _run_one_tick(tmp_path)
+    g = hb["games"][0]
+    for key in ("mlb_batter_id", "mlb_pitcher_id", "mlb_pitcher_pitch_count",
+               "mlb_ondeck_id", "mlb_bullpen_used"):
+        assert key in g and g[key] is None
+    assert g["bet"] is True and g["model_prob"] == 0.80
+
+
+# --------------------------------------------------------------------------------------- #
 # LANE 2: grade-write wedge fix (wave-14, 21.8% truncation). Root cause: mlb_live_model's
 # old frac_elapsed>=1.0 guard permanently starved model_fn once a game reached bottom-9th/
 # extras (ingame_live_state's MLB frac formula saturates at 1.0 there). Fixed at the model
