@@ -79,6 +79,26 @@ def test_settle_fields_and_clv_sign(tmp_path):
     assert "fair_close_prob" in settled and "taken_implied_prob" in settled
 
 
+def test_settle_closing_line_stamps_close_source_venue_when_given(tmp_path):
+    # ROOT CAUSE FIX (2026-07-09): the m18 sweep needs close_source/close_venue
+    # to reach the SETTLED row so downstream CLV-basis diagnostics can tell a
+    # real same-venue Kalshi close from a cross-venue fallback. Optional +
+    # additive: omitted entirely when the caller doesn't pass them.
+    ledger = tmp_path / "clv_ledger.jsonl"
+    bet = record_bet("nba", "A @ B", "home", "kalshi", 2.50, path=ledger)
+    settled = settle_closing_line(bet, 1.80, 2.20,
+                                   close_source="kalshi", close_venue="kalshi")
+    assert settled["close_source"] == "kalshi"
+    assert settled["close_venue"] == "kalshi"
+
+
+def test_settle_closing_line_omits_close_source_venue_by_default():
+    bet = {"side": "home", "taken_decimal": 2.50}
+    settled = settle_closing_line(bet, 1.80, 2.20)
+    assert "close_source" not in settled
+    assert "close_venue" not in settled
+
+
 def test_summary_math(tmp_path):
     ledger = tmp_path / "clv_ledger.jsonl"
     # Two NBA bets: one beats the close, one does not. One MLB bet that beats it.
