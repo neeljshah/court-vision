@@ -198,109 +198,94 @@ file -- every magnitude below is a calibration/mechanism receipt, not ROI.
 
 ---
 
-## Seeded, UNTESTED (highest-leverage remaining; run through the interaction factory or a future validate_*.py before believing)
+## Validated 2026-07-09 (15 -- fresh leak-free local tests, receipts in `validation_ledger.jsonl`)
 
 ### 20. Times-through-order decay (raw, velo-independent)
 - **claim**: wOBA-against rises from 1st to 3rd time through the order even controlling for velocity.
-- **causal story**: batter familiarity/pattern-recognition compounds independent of pitcher fatigue.
-- **expected signature**: monotonic wOBA-against rise by trip number, net of a velo-band control.
-- **test spec**: PA-level regression, wOBA-against ~ trip_number + velo_band, cluster-robust by pitcher.
-- **status**: UNTESTED
+- **status**: CONFIRMED
+- **measured LOCAL magnitude**: OLS xwOBA ~ trip_number + velo_band(tercile), trip_number coef=+0.01218, p~0, n=179,383 PAs (trips<=4), 2025.
+- **artifact link**: `domains/mlb/knowledge/validate_situational_state.py::tto_decay_net_of_velo`.
+- **wiring**: in-game conditioning-feature candidate -- `trip_number` (this PA's nth time facing the same pitcher this game) as a live wOBA-against re-pricer, net of pitcher velo state.
 
 ### 21. Walk-economy baserunner inflation
 - **claim**: run-expectancy lift per walk is state-dependent (bigger with runners on 2nd/3rd than bases empty).
-- **causal story**: a walk advances the base-out state; the marginal RE gain differs by which bases are occupied.
-- **expected signature**: RE-added per walk higher in RISP states than bases-empty.
-- **test spec**: base-out state x walk-event RE-added, descriptive, one season.
-- **status**: UNTESTED
+- **status**: CONFIRMED
+- **measured LOCAL magnitude**: runs-added-on-play after a walk, RISP (0.0650, n=4,139) vs bases empty (0.0000, n=8,079); effect +0.065, p=2.0e-62, n=12,218, 2025.
+- **artifact link**: `domains/mlb/knowledge/validate_situational_state.py::walk_economy_baserunner_inflation`.
 
 ### 22. Big-inning generation (run clustering)
-- **claim**: ~60-65% of runs score in innings with 3+ runs; a leadoff baserunner disproportionately gates big innings.
-- **causal story**: run expectancy is non-linear in base-out state; the first baserunner of an inning is the critical gating event.
-- **expected signature**: same-inning scoring probability jumps sharply after a leadoff single/walk.
-- **test spec**: inning-level, P(3+ runs this inning | leadoff on-base) vs P(3+ runs | leadoff out).
-- **status**: UNTESTED
+- **claim**: a leadoff baserunner disproportionately gates big (3+ run) innings.
+- **status**: CONFIRMED
+- **measured LOCAL magnitude**: P(3+ runs this half-inning) | leadoff on-base 0.1219 (n=13,315) vs leadoff out 0.0260 (n=29,468); effect +0.096, p=7.0e-220, n=42,783, 2025.
+- **artifact link**: `domains/mlb/knowledge/validate_situational_state.py::big_inning_leadoff_gating`.
+- **wiring**: in-game conditioning-feature candidate -- leadoff-PA outcome as a live half-inning big-inning-probability re-pricer, usable the moment the leadoff PA resolves.
 
 ### 23. Sequencing and cluster luck
 - **claim**: observed run totals diverge from context-neutral expectation in small samples and regress over a season.
-- **causal story**: hit sequencing/timing is close to random; short-sample divergence is variance, not skill.
-- **expected signature**: early-season (actual - expected runs) gap shrinks by roughly half by game ~81 (team-season).
-- **test spec**: rolling actual-vs-expected-run gap by games-played, team-season.
-- **status**: UNTESTED
+- **status**: NOT_TESTABLE -- needs a full run-expectancy/linear-weights (RE24-style) model rebuilt from base-out state transitions; no such model exists locally and building one is a separate infra item, not a column check. A naive runs-per-game proxy would not isolate sequencing from talent, so was not substituted.
+- **artifact link**: `domains/mlb/knowledge/validate_premise_blocked.py::sequencing_cluster_luck`.
 
-### 24. Power/ISO run compression
+### 24. Power/ISO run compression -- LOCAL NULL
 - **claim**: high-ISO lineups have tighter strand-rate variance because HRs don't need sequencing.
-- **causal story**: a home run scores runners without requiring a multi-hit sequence, compressing the run distribution.
-- **expected signature**: negative correlation between team ISO and strand-rate variance.
-- **test spec**: team-season ISO vs strand-rate std, cross-sectional.
-- **status**: UNTESTED
+- **status**: REJECTED (NULL_LOCAL) -- direction is even reversed (positive, not negative) though not significant at alpha=0.01.
+- **measured LOCAL magnitude**: team ISO vs game-level runs-scored std (substitute proxy -- no LOB/strand field exists locally): r=+0.428, p=0.018, n=30 teams, 2025.
+- **artifact link**: `domains/mlb/knowledge/validate_persistence_skill.py::iso_strand_variance_compression`.
 
 ### 25. Speed/baserunning advancement value
 - **claim**: extra-base-taken rate on singles/doubles adds measurable run expectancy independent of power.
-- **causal story**: first-to-third on a single converts an ~0.85-run state to ~1.19-run state.
-- **expected signature**: positive RE-added per extra-base-taken event.
-- **test spec**: base-state-transition RE-added on singles with a runner on first, one season (derivable from on_1b/on_2b/on_3b transitions -- does not need the missing SB/CS events).
-- **status**: UNTESTED
+- **status**: NOT_TESTABLE -- `on_1b`/`on_2b`/`on_3b` are PRE-pitch occupant state only; there is no post-play base-state or explicit extra-bases-taken field. Inferring whether a runner from 1st reached 2nd vs 3rd on a single needs chaining consecutive PAs by runner identity (pinch-runner-safe), a bigger build than this check.
+- **artifact link**: `domains/mlb/knowledge/validate_premise_blocked.py::speed_baserunning_advancement`.
 
-### 26. Defensive-efficiency conversion
-- **claim**: team defense suppresses BABIP below contact-quality expectation.
-- **causal story**: range/positioning converts marginal balls in play into outs beyond what exit velocity/launch angle alone predict.
-- **expected signature**: negative residual (actual BABIP - xBABIP-from-launch-conditions) for good defensive teams, stable across season halves.
-- **test spec**: team-level residual BABIP, split-half persistence check (same design as contact-quality persistence, #15, at team grain).
-- **status**: UNTESTED
+### 26. Defensive-efficiency conversion -- LOCAL NULL
+- **claim**: team defense suppresses BABIP below contact-quality expectation, stably across season halves.
+- **status**: REJECTED (NULL_LOCAL).
+- **measured LOCAL magnitude**: split-half pearson r, team residual-BABIP (actual - launch-condition-bin expected hit rate): r=0.2358, p=0.210, n=30 teams, 2025.
+- **artifact link**: `domains/mlb/knowledge/validate_persistence_skill.py::defensive_efficiency_conversion`.
 
 ### 27. Pitch-count efficiency and starter durability
-- **claim**: starters who throw fewer pitches/inning go deeper, displacing higher-ERA bullpen innings.
-- **causal story**: first-pitch-strike rate and low walk rate produce quick innings; each saved bullpen inning avoids a worse expected-run rate.
-- **expected signature**: negative correlation, pitches/inning vs innings/start; positive gap between bullpen ERA and rotation ERA.
-- **test spec**: starter-season pitches/PA vs innings/start correlation; team bullpen-vs-rotation ERA gap.
-- **status**: UNTESTED
+- **claim**: starters who throw fewer pitches/PA go deeper into starts.
+- **status**: CONFIRMED (main correlation only; bullpen-vs-rotation ERA-gap sub-claim not tested this session)
+- **measured LOCAL magnitude**: pearson r, starter-season avg pitches/PA vs avg innings-reached/start: r=-0.2544, p=2.2e-4, n=207 starters (>=8 starts), 2025.
+- **artifact link**: `domains/mlb/knowledge/validate_persistence_skill.py::pitch_efficiency_durability`.
 
 ### 28. Leverage-index conversion
 - **claim**: win-probability swing per event scales with game leverage (score margin x inning).
-- **causal story**: the same run has far more win-probability impact in a late, tied game than an early blowout.
-- **expected signature**: WPA per run event rises monotonically with a leverage proxy (inning x |margin| bucket).
-- **test spec**: post_home_score/post_away_score delta-based WPA proxy by inning x margin bucket, one season.
-- **status**: UNTESTED
+- **status**: NOT_TESTABLE-as-specified -- no true win-probability model exists locally; the only available run-swing proxy is confounded (blowout innings are mechanically higher-scoring-per-play than close innings), so it cannot isolate a leverage effect from that confound.
+- **measured LOCAL magnitude**: run-swing proxy, late(inn>=7)+close(margin<=1) 0.0286 (n=79,417) vs early(inn<7)+blowout(margin>=5) 0.0349 (n=43,899); p=2.5e-6 but direction is confound-driven, not interpreted as a leverage verdict.
+- **artifact link**: `domains/mlb/knowledge/validate_situational_state.py::leverage_index_conversion`.
 
 ### 29. High-leverage strand prevention
-- **claim**: strikeout-heavy relievers strand RISP runners at a higher rate than contact-oriented ones, especially late/close.
-- **causal story**: eliminating contact removes both advancement and hit risk simultaneously with a runner on.
-- **expected signature**: positive correlation, reliever K-rate vs RISP strand rate, conditioned on late-inning/close-game appearances.
-- **test spec**: pitcher-season K-rate vs RISP-strand-rate, restricted to innings>=7 and |margin|<=2.
-- **status**: UNTESTED
+- **claim**: strikeout-heavy relievers strand RISP runners at a higher rate, especially late/close.
+- **status**: CONFIRMED
+- **measured LOCAL magnitude**: pearson r, pitcher-season K-rate vs RISP strand-rate (inn>=7, |margin|<=2): r=0.1863, p=0.0068, n=210 pitchers (>=50 PA, >=15 RISP PA there), 2025.
+- **artifact link**: `domains/mlb/knowledge/validate_situational_state.py::high_leverage_strand_prevention`.
 
 ### 30. Lineup-slot run value
-- **claim**: batting-order slot carries its own run-value independent of the individual hitter (e.g. leadoff OBP matters more than slot-6 OBP).
-- **causal story**: the same OBP produces more runs in a slot that gets more plate appearances with runners on ahead of the top of the order.
-- **expected signature**: RE-added per walk/single differs systematically by lineup slot even holding batter quality roughly fixed.
-- **test spec**: needs a batting-order-slot column, not present in `savant_full__*` (probably NOT_TESTABLE pending an ingredient check).
-- **status**: UNTESTED
+- **claim**: batting-order slot carries its own run-value independent of the individual hitter.
+- **status**: NOT_TESTABLE -- fresh column check on `savant_full__2025.parquet` (42 cols): no batting-order-slot column (0 hits for */order/,*/slot/,*/lineup/*); cannot be derived from `at_bat_number` alone (resets by half-inning, not by lineup turn).
+- **artifact link**: `domains/mlb/knowledge/validate_premise_blocked.py::lineup_slot_run_value`.
 
 ### 31. Umpire zone-call consistency
-- **claim**: individual plate umpires differ in how consistently they call the rulebook zone, and that consistency is a repeatable umpire trait.
-- **causal story**: umpire zone tendencies (wider/tighter, corner biases) are personal and stable across games.
-- **expected signature**: split-half correlation of an umpire's called-strike rate on borderline (zone 11-14) pitches.
-- **test spec**: needs an umpire-identity column -- likely NOT_TESTABLE on `savant_full__*` pending a column check (no umpire id seen in the schema pulled this session).
-- **status**: UNTESTED
+- **claim**: individual plate umpires differ in, and repeat, their called-zone consistency.
+- **status**: NOT_TESTABLE -- fresh column check on `savant_full__2025.parquet`: no umpire-identity column anywhere (0 hits for '*ump*').
+- **artifact link**: `domains/mlb/knowledge/validate_premise_blocked.py::umpire_zone_call_consistency`.
 
-### 32. Catcher game-calling (pitch sequencing) effect
-- **claim**: catchers differ in how they sequence pitch types within a PA, and better sequencing suppresses contact quality independent of framing.
-- **causal story**: unpredictable sequencing (not just individual pitch quality) disrupts batter timing.
-- **expected signature**: catcher (via `fielder_2`) fixed-effect on PA-level contact quality, net of pitcher and batter effects.
-- **test spec**: PA-level regression with catcher fixed effect (`fielder_2` as the catcher id), controlling pitcher and batter identity.
-- **status**: UNTESTED
+### 32. Catcher game-calling (pitch sequencing) effect -- LOCAL NULL
+- **claim**: catchers differ in how they sequence pitch types, and better sequencing suppresses contact quality.
+- **status**: REJECTED (NULL_LOCAL) -- simplified to a split-half persistence check (raw xwOBA-allowed while catching, not pitcher/batter-adjusted) rather than a full 3-way fixed-effect regression; a cleaner FE design is a larger future build.
+- **measured LOCAL magnitude**: split-half pearson r=0.168, p=0.178, n=66 catchers (>=100 PA/half), 2025.
+- **artifact link**: `domains/mlb/knowledge/validate_persistence_skill.py::catcher_game_calling_persistence`.
 
 ### 33. Spin-rate deception (independent of velocity)
 - **claim**: release spin rate predicts whiff rate on breaking pitches independent of velocity band.
-- **causal story**: spin drives late break/deception; two pitches at the same velocity can have very different swing-and-miss profiles by spin.
-- **expected signature**: positive partial correlation, `release_spin_rate` vs whiff rate, controlling `release_speed`.
-- **test spec**: pitch-level regression, whiff ~ release_spin_rate + release_speed, breaking-pitch-type subset.
-- **status**: UNTESTED
+- **status**: CONFIRMED
+- **measured LOCAL magnitude**: OLS whiff ~ release_spin_rate + release_speed (breaking pitches, swings only), spin coef=+4.33e-5, p=2.2e-16, n=100,280, 2025.
+- **artifact link**: `domains/mlb/knowledge/validate_persistence_skill.py::spin_rate_deception`.
+- **wiring**: in-game conditioning-feature candidate -- `release_spin_rate` as a live whiff-probability predictor on breaking pitches, additive to velocity band.
 
 ### 34. Launch-angle sweet-spot consistency
 - **claim**: a batter's sweet-spot rate (launch angle 8-32 degrees) is a repeatable skill distinct from raw exit velocity.
-- **causal story**: swing plane/timing consistency governs launch angle independent of bat speed.
-- **expected signature**: split-half correlation of sweet-spot rate per batter (same design as #15, different metric).
-- **test spec**: split-half Pearson r, batter sweet-spot rate, >=20 BBE/half.
-- **status**: UNTESTED
+- **status**: CONFIRMED
+- **measured LOCAL magnitude**: split-half pearson r=0.1942, p=5.0e-5, n=430 batters (>=20 BBE/half), 2025.
+- **artifact link**: `domains/mlb/knowledge/validate_persistence_skill.py::sweet_spot_consistency`.
+- **wiring**: in-game conditioning-feature candidate -- as-of sweet-spot-rate as a batter-quality attribute alongside the CONFIRMED contact-quality-persistence mechanism (#15).
