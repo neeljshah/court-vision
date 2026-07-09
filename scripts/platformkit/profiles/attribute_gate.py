@@ -74,7 +74,8 @@ PASS_ATTRS: Dict[str, List[str]] = {
     "nba": ["gravity", "rim_pressure_def", "usage_absorption", "spacing_contribution",
             "stint_stamina_avg_s", "creation", "lineup_continuity_avg_stint_s"],
     "mlb": ["platoon_resilience", "mix_by_leverage", "framing", "pull_tendency",
-            "contact_quality"],
+            "contact_quality", "swing_speed", "squared_up_rate", "blast_rate",
+            "sword_rate", "range_oaa", "difficult_play_conversion"],
 }
 
 
@@ -202,6 +203,11 @@ def gate_attribute(sport: str, attribute: str, games_df: pd.DataFrame,
             return _skip(family, sport, attribute, n_all, "UNTESTABLE_NO_TEAM_AGG",
                          f"no player->team playing-time aggregation wired for {sport}"), False
         role = _entity_role(sport, attribute)
+        if sport == "mlb" and role == "fielder":
+            return _skip(family, sport, attribute, n_all, "UNTESTABLE_NO_TEAM_AGG",
+                         "no fielding-time-weighted agg wired (batter_pa_agg is PA-weighted "
+                         "hitting time only -- would misattribute defensive value)",
+                         "-", caveats), False
         if sport == "mlb" and role != "pitcher":
             pa_role = "catcher" if role == "catcher" else "batter"
             feat, dropped = aggregate_to_team_batter_pa(prior_vals, prior, role=pa_role)

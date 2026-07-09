@@ -10,12 +10,18 @@ import pandas as pd
 import pytest
 
 from domains.mlb.profiles.attribute_registry import ATTRIBUTES, ENTITIES, STATUSES, rating_2k
-from domains.mlb.profiles.build_profiles import _BUILDERS, _percentile_and_rating, build_attribute_window
+from domains.mlb.profiles.build_profiles import (
+    LEADERBOARD_BUILDERS, _BUILDERS, _percentile_and_rating, build_attribute_window,
+)
 from domains.mlb.profiles.ingredients_batter import build_BB_rate, build_platoon_resilience
 
 
 def test_registry_builder_parity():
-    assert set(ATTRIBUTES) == set(_BUILDERS)
+    """Registry attrs split across two builder dicts: pitch-frame _BUILDERS
+    (season-frame-keyed) and LEADERBOARD_BUILDERS (year-csv-keyed, see
+    ingredients_leaderboard.py) -- their union must equal the full registry."""
+    assert set(ATTRIBUTES) == set(_BUILDERS) | set(LEADERBOARD_BUILDERS)
+    assert not (set(_BUILDERS) & set(LEADERBOARD_BUILDERS))
 
 
 @pytest.mark.parametrize("attr,spec", list(ATTRIBUTES.items()))

@@ -24,7 +24,9 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 from domains.mlb.profiles.attribute_registry import ATTRIBUTES
-from domains.mlb.profiles.build_profiles import SEASONS, _BUILDERS, load_name_lookup, load_season
+from domains.mlb.profiles.build_profiles import (
+    LEADERBOARD_BUILDERS, LEADERBOARD_YEARS, SEASONS, _BUILDERS, load_name_lookup, load_season,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 _OUT_DIR = REPO_ROOT / "data" / "cache" / "intel_claims"
@@ -37,15 +39,17 @@ def _rel(path: Path) -> str:
     return str(path.relative_to(REPO_ROOT)).replace("\\", "/")
 
 
-def build_claim(attr: str, season: str, frame: pd.DataFrame,
-                 name_lookup: dict[int, str]) -> dict[str, Any]:
+def _claim_from_raw(attr: str, window: str, raw: pd.DataFrame,
+                     name_lookup: dict[int, str]) -> dict[str, Any]:
+    """Shared claim-assembly, decoupled from HOW `raw` was built (pitch-frame
+    vs leaderboard CSV) -- both build_claim and build_claim_leaderboard funnel
+    through here so a claim's shape never diverges by source."""
     spec = ATTRIBUTES[attr]
-    raw = _BUILDERS[attr](frame)
     n_considered = len(raw)
     floor = spec["floor"]
 
     _OUT_DIR.mkdir(parents=True, exist_ok=True)
-    src_path = _OUT_DIR / f"mlb_profile_source_{attr}_{season}.parquet"
+    src_path = _OUT_DIR / f"mlb_profile_source_{attr}_{window}.parquet"
     src_cols = raw[["entity_id", "raw_value", "n"]].reset_index(drop=True)
     pq.write_table(pa.Table.from_pandas(src_cols, preserve_index=False), src_path)
 
@@ -59,12 +63,12 @@ def build_claim(attr: str, season: str, frame: pd.DataFrame,
         for i, r in enumerate(qualifiers.itertuples(index=False), start=1)
     ]
     return {
-        "claim_id": f"mlb_profile_{attr}_{season}",
+        "claim_id": f"mlb_profile_{attr}_{window}",
         "kind": "ranking",
-        "question": f"MLB {season}: top {TOP_N} {spec['entity']}s by {attr} ({spec['description']})?",
+        "question": f"MLB {window}: top {TOP_N} {spec['entity']}s by {attr} ({spec['description']})?",
         "criteria": {
             "metric": attr, "formula": "raw_value",
-            "window": f"season_{season}", "aggregate": None,
+            "window": f"season_{window}", "aggregate": None,
             "min_sample": {"n": floor}, "top_n": TOP_N,
             "direction": "desc", "value_precision": 4, "entity_key": "entity_id",
         },
@@ -84,13 +88,25 @@ def build_claim(attr: str, season: str, frame: pd.DataFrame,
     }
 
 
+def build_claim(attr: str, season: str, frame: pd.DataFrame,
+                 name_lookup: dict[int, str]) -> dict[str, Any]:
+    return _claim_from_raw(attr, season, _BUILDERS[attr](frame), name_lookup)
+
+
+def build_claim_leaderboard(attr: str, year: str, name_lookup: dict[int, str]) -> dict[str, Any]:
+    return _claim_from_raw(attr, year, LEADERBOARD_BUILDERS[attr](year), name_lookup)
+
+
 def build_all_claims() -> list[dict[str, Any]]:
     name_lookup = load_name_lookup()
     claims = []
     for season in SEASONS:
         frame = load_season(season)
-        for attr in ATTRIBUTES:
+        for attr in _BUILDERS:
             claims.append(build_claim(attr, season, frame, name_lookup))
+    for year in LEADERBOARD_YEARS:
+        for attr in LEADERBOARD_BUILDERS:
+            claims.append(build_claim_leaderboard(attr, year, name_lookup))
     return claims
 
 

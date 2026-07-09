@@ -10,7 +10,7 @@ import pandas as pd
 import pytest
 
 from domains.mlb.profiles.attribute_registry import ATTRIBUTES
-from domains.mlb.profiles.build_profiles import _BUILDERS, build_attribute_window
+from domains.mlb.profiles.build_profiles import LEADERBOARD_BUILDERS, _BUILDERS, build_attribute_window
 from domains.mlb.profiles.ingredients_batter_zones import BUILDERS as BATTER_ZONE_BUILDERS
 from domains.mlb.profiles.ingredients_batter_zones import build_shadow_take_rate
 from domains.mlb.profiles.ingredients_pitcher_zones import BUILDERS as PITCHER_ZONE_BUILDERS
@@ -21,8 +21,9 @@ _ZONE_GEOM = {"sz_top": 3.5, "sz_bot": 1.5}  # zone center=2.5, half-height=1.0
 
 def test_registry_zone_count_and_parity():
     # 63 (grid total) + 30 pitcher-zone + 17 batter-zone = 110
-    assert len(ATTRIBUTES) == 110
-    assert set(ATTRIBUTES) == set(_BUILDERS)
+    # + 6 leaderboard (bat-tracking/OAA/catch-probability, see ingredients_leaderboard.py) = 116
+    assert len(ATTRIBUTES) == 116
+    assert set(ATTRIBUTES) == set(_BUILDERS) | set(LEADERBOARD_BUILDERS)
     assert len(PITCHER_ZONE_BUILDERS) == 30
     assert len(BATTER_ZONE_BUILDERS) == 17
 

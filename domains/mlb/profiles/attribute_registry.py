@@ -476,7 +476,76 @@ def _grid_zone_batter_attributes() -> dict[str, dict[str, Any]]:
 ATTRIBUTES.update(_grid_zone_pitcher_attributes())
 ATTRIBUTES.update(_grid_zone_batter_attributes())
 
-ENTITIES = ("batter", "pitcher", "catcher")
+# ------------------------------------------------------------------ leaderboard attributes
+# Bat-tracking (batter) + outs-above-average/catch-probability (fielder) --
+# 2024+ Statcast LEADERBOARD data (bat-tracking didn't exist before 2024; see
+# scripts/platformkit/data_frontier/savant_bat_tracking.py for the puller +
+# column semantics). Builder signature differs on purpose: these are keyed by
+# YEAR and read a per-year leaderboard CSV directly, not the season pitch-frame
+# every other builder above takes -- see ingredients_leaderboard.py and
+# build_profiles.py's separate LEADERBOARD_YEARS loop. raw_value is Savant's
+# OWN pre-aggregated leaderboard column, never re-derived from pitch data.
+
+
+def _leaderboard_attributes() -> dict[str, dict[str, Any]]:
+    attrs: dict[str, dict[str, Any]] = {}
+    attrs["swing_speed"] = {
+        "description": "Average bat speed (mph) across all competitive swings this season "
+                        "(Statcast bat-tracking leaderboard, avg_bat_speed).",
+        "entity": "batter",
+        "ingredients": ["avg_bat_speed", "swings_competitive"],
+        "formula": "avg_bat_speed (Savant leaderboard value)",
+        "status": "DESCRIPTIVE", "floor": 50, "weight_ledger_family": "descriptive",
+    }
+    attrs["squared_up_rate"] = {
+        "description": "Share of competitive swings classified 'squared up' (Savant's own "
+                        "bat-speed/exit-velo efficiency classification).",
+        "entity": "batter",
+        "ingredients": ["squared_up_per_swing", "swings_competitive"],
+        "formula": "squared_up_per_swing (Savant leaderboard value)",
+        "status": "DESCRIPTIVE", "floor": 50, "weight_ledger_family": "descriptive",
+    }
+    attrs["blast_rate"] = {
+        "description": "Share of competitive swings classified a 'blast' (Savant's combined "
+                        "bat-speed + squared-up damage-swing rate).",
+        "entity": "batter",
+        "ingredients": ["blast_per_swing", "swings_competitive"],
+        "formula": "blast_per_swing (Savant leaderboard value)",
+        "status": "DESCRIPTIVE", "floor": 50, "weight_ledger_family": "descriptive",
+    }
+    attrs["sword_rate"] = {
+        "description": "Swords per competitive swing (Savant's fooled-so-badly-the-bat-nearly-"
+                        "hits-the-ground indicator; higher = fooled more often, not a value "
+                        "judgment -- purely descriptive).",
+        "entity": "batter",
+        "ingredients": ["swords", "swings_competitive"],
+        "formula": "n_swords / swings_competitive",
+        "status": "DESCRIPTIVE", "floor": 50, "weight_ledger_family": "descriptive",
+    }
+    attrs["range_oaa"] = {
+        "description": "Outs Above Average (range/positioning defensive runs saved, Savant's own "
+                        "outs_above_average leaderboard value). n is cross-joined from the "
+                        "catch_probability leaderboard's total chances (that CSV has no chances "
+                        "column of its own) -- documented cross-file join, not fabricated.",
+        "entity": "fielder",
+        "ingredients": ["outs_above_average", "n_chances_catch_prob"],
+        "formula": "outs_above_average (Savant leaderboard value)",
+        "status": "DESCRIPTIVE", "floor": 20, "weight_ledger_family": "descriptive",
+    }
+    attrs["difficult_play_conversion"] = {
+        "description": "Out-conversion rate on 1-star (Savant's toughest, <10%-catch-probability) "
+                        "batted balls -- highlight-reel defensive range, distinct from aggregate OAA.",
+        "entity": "fielder",
+        "ingredients": ["n_fieldout_1stars", "n_opp_1stars"],
+        "formula": "n_fieldout_1stars / n_opp_1stars",
+        "status": "DESCRIPTIVE", "floor": 10, "weight_ledger_family": "descriptive",
+    }
+    return attrs
+
+
+ATTRIBUTES.update(_leaderboard_attributes())
+
+ENTITIES = ("batter", "pitcher", "catcher", "fielder")
 STATUSES = ("VALIDATED_MECHANISM", "VALIDATED_CLAIM", "DESCRIPTIVE")
 
 
