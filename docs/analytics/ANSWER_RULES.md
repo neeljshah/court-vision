@@ -87,3 +87,23 @@ inside the concept registry itself; that belongs in the attribute registry
 and its builder first. Document `weight_basis` (why included), at least one
 `context_qualifier`, and at least one `failure_mode` for every new concept --
 an undocumented concept is not mergeable.
+
+## Cross-category canonical registry (LANE D)
+
+This file governs the NBA concept engine specifically. The full
+cross-category registry -- every question TYPE (player stat, rating/
+attribute, concept rating, prediction/win-prob, calibration number,
+historical result, edge language) mapped to exactly one resolver -- lives at
+`scripts/platformkit/answers/resolver_registry.py`. Per-sport claim rules
+(allowed phrasing, forbidden claims, source artifact per category) are at:
+
+- `domains/basketball_nba/knowledge/answer_rules.md`
+- `domains/mlb/knowledge/answer_rules.md`
+
+The binding contract any LLM client must follow (route through the resolver,
+quote verbatim, cite artifact + as-of, apply refusal rules) is
+`docs/AI_CONSUMER_CONTRACT.md`. `scripts/platformkit/answers/contract_client.py`
+is that contract, executable, and
+`scripts/platformkit/answers/test_answer_consistency_{nba,mlb}.py` prove the
+resolver-direct path and the contract-client path agree on every canonical
+question.

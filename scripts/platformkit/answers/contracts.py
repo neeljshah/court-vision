@@ -13,6 +13,16 @@ Question shapes:
         proxy -- no on-disk team-need dataset exists.)
 Never routes a forecast/prediction question here (docs/analytics/ANSWER_RULES.md):
 this answers "what is true about X", not "what will happen" -- predict-matchup owns that.
+
+This module is ONE registered resolver (category "concept_rating") inside the
+cross-category canonical registry at
+scripts/platformkit/answers/resolver_registry.py, which also covers
+player_stat/rating_attribute (ask.py), prediction_winprob (the buyer-facing
+predictor CLI, invoked as a subprocess only -- never imported),
+calibration_number (pinned scoreboard), historical_result (boxscore
+parquets), and edge_language (always refused). Route a category-agnostic
+question through resolver_registry.resolve(), not here directly, unless you
+already know it is a concept question.
 """
 from __future__ import annotations
 
