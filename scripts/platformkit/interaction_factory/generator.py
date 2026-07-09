@@ -106,6 +106,42 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
         "blocklist_attrs": ["velo_decline_in_game"],
         "blocklist_pairs": [],
     },
+    # ---- MLB bat-tracking family -- AUTO-DISCOVERY demo --------------------
+    # Pool is `{"entity": "batter", "family": "bat_tracking"}`, not a named
+    # attribute list: the moment a NEW batter attribute is tagged
+    # `"family": "bat_tracking"` in the registry, it enters this template's
+    # candidate space on its own, no template edit needed (see resolve_pool).
+    "mlb_battrack_self_cross": {
+        "sport": "mlb",
+        "atomic_unit": "batter_season",
+        "outcome": "next_season_contact_quality",
+        "baseline": "next_season_contact_quality ~ attr_a + attr_b",
+        "pairing": "self_cross",
+        "left_pool": {"entity": "batter", "family": "bat_tracking"},
+        "feature_builder": "mlb_battrack_asof",   # not yet registered -> NOT_TESTABLE
+        # bat-tracking leaderboards only exist 2024+ (docstring in the
+        # registry) -- a leak-free as-of frame needs >=2 prior-season
+        # transitions per batter; deferred until that builder is worth it.
+        "blocklist_attrs": [],
+        "blocklist_pairs": [],
+    },
+    # ---- ENTITY-CLASS WILDCARD demo ----------------------------------------
+    # `entity_classes` expands the single K_avoidance x BB_rate pair once per
+    # MLB team-archetype slug (6 members from domains.mlb.atlas_playstyles) --
+    # "does this batter interaction hold within a low-scoring-grinder team
+    # vs. a power/run-scoring one", K = 1 pair * 6 members = 6 declared tests.
+    "mlb_pa_attr_x_archetype": {
+        "sport": "mlb",
+        "atomic_unit": "plate_appearance",
+        "outcome": "is_k",
+        "baseline": "is_k ~ attr_a + attr_b, within team archetype",
+        "pairing": "self_cross",
+        "left_pool": {"attributes": ["K_avoidance", "BB_rate"]},
+        "entity_classes": "mlb_team_archetype",
+        "feature_builder": "mlb_pa_archetype_asof",   # not yet registered -> NOT_TESTABLE
+        "blocklist_attrs": [],
+        "blocklist_pairs": [],
+    },
 }
 
 
@@ -123,6 +159,13 @@ class Candidate:
     # combinatorial enumeration). Additive: a template that doesn't declare it
     # defaults to 'blind' -- see TEMPLATES.get(...) in enumerate_candidates.
     hypothesis_source: str = "blind"
+    # ENTITY-CLASS WILDCARD: which class member this candidate is scoped to
+    # (e.g. one MLB team-archetype slug), or None for a plain attr-pair
+    # candidate. A template that declares `entity_classes` expands EVERY
+    # (attr_a, attr_b) pair once per class member -- see ENTITY_CLASS_RESOLVERS
+    # and enumerate_candidates below. Additive: absent on every pre-existing
+    # candidate/ledger row (defaults None), never a migration.
+    entity_class: Optional[str] = None
 
 
 def _registry(sport: str) -> Dict[str, Any]:
@@ -144,16 +187,59 @@ def resolve_pool(sport: str, pool_spec: Dict[str, Any]) -> List[str]:
     typo drops out, it is never invented). `{"entity": "player"}` -> every
     registry attr for that entity, so a NEWLY-added registry attribute auto-
     enters the candidate space next enumeration (the "writes more on its own"
-    property). Unknown pool shape -> [].
+    property) -- this is the AUTO-DISCOVERY seam: a brand-new attribute family
+    (e.g. the bat-tracking leaderboard attrs) needs no template edit, only a
+    `family` tag on the registry entry (see below), to enter a future batch.
+
+    Optional narrowing keys, either pool shape:
+      `family`  -- ALLOWLIST seam, entity pools only: keep only attrs whose
+                   registry entry has `"family" == pool_spec["family"]` (e.g.
+                   `{"entity": "batter", "family": "bat_tracking"}`).
+      `exclude` -- DENYLIST seam, either pool shape: attr names removed after
+                   resolution (on top of the GLOBAL_BLOCKLIST_ATTRS closed-
+                   class filter applied later in enumerate_candidates).
+
+    Unknown pool shape -> [].
     """
     reg = _registry(sport)
     if "attributes" in pool_spec:
         names = [a for a in pool_spec["attributes"] if a in reg]
     elif "entity" in pool_spec:
         names = [n for n, s in reg.items() if s.get("entity") == pool_spec["entity"]]
+        family = pool_spec.get("family")
+        if family is not None:
+            names = [n for n in names if reg[n].get("family") == family]
     else:
         names = []
-    return sorted(set(names))
+    exclude = set(pool_spec.get("exclude") or [])
+    return sorted(set(names) - exclude)
+
+
+# --------------------------------------------------------------------------
+# ENTITY-CLASS resolvers -- named, deterministic member lists for a WILDCARD
+# template (task: quantify a candidate over a whole entity CLASS -- "any team
+# archetype", "any player archetype" -- rather than only named attribute
+# pairs). Each resolver is a zero-arg callable returning a sorted list of
+# member slugs; it reads only python constants already declared elsewhere
+# (real, shipped classifiers -- never live/refreshable data), so enumeration
+# stays pure and data-free, matching this module's no-data-read contract. A
+# template that declares `entity_classes: "<key>"` gets ONE candidate per
+# (attr pair, member) -- the member count multiplies straight into K, exactly
+# like any other declared-before-running enumeration.
+def _mlb_team_archetype_members() -> List[str]:
+    from domains.mlb.atlas_playstyles import _ARCHETYPES  # noqa: SLF001 -- reuse, not reinvent
+    return sorted(slug for slug, *_rest in _ARCHETYPES)
+
+
+def _nba_player_archetype_members() -> List[str]:
+    from domains.basketball_nba.memory_atlas_archetypes import ARCHETYPES, _label_to_slug  # noqa: SLF001
+    return sorted(_label_to_slug(a["label"]) for a in ARCHETYPES)
+
+
+ENTITY_CLASS_RESOLVERS: Dict[str, Any] = {
+    "mlb_team_archetype": _mlb_team_archetype_members,
+    "nba_player_archetype": _nba_player_archetype_members,
+}
 
 
 def _blocked(a: str, b: str, tpl: Dict[str, Any]) -> bool:
@@ -165,8 +251,9 @@ def _blocked(a: str, b: str, tpl: Dict[str, Any]) -> bool:
     return pair in block_pairs
 
 
-def _candidate_id(template_id: str, a: str, b: str) -> str:
-    return "%s::%s__x__%s" % (template_id, a, b)
+def _candidate_id(template_id: str, a: str, b: str, entity_class: Optional[str] = None) -> str:
+    base = "%s::%s__x__%s" % (template_id, a, b)
+    return base if entity_class is None else "%s::class=%s" % (base, entity_class)
 
 
 def enumerate_candidates(template_id: str) -> List[Candidate]:
@@ -175,6 +262,11 @@ def enumerate_candidates(template_id: str) -> List[Candidate]:
     self_cross -> unordered i<j pairs of one pool (attr x attr, same entity);
     cross      -> ordered product of two distinct pools, a!=b. Ordering is the
     natural sorted-pool combinatorial order, so it is stable across runs.
+
+    A template that declares `entity_classes: "<resolver key>"` expands every
+    surviving (a, b) pair once per class member (sorted, deterministic) --
+    K = n_pairs * n_members. A template with no `entity_classes` key behaves
+    exactly as before (one candidate per pair, entity_class=None).
     """
     tpl = TEMPLATES[template_id]
     sport = tpl["sport"]
@@ -189,16 +281,20 @@ def enumerate_candidates(template_id: str) -> List[Candidate]:
         raise ValueError("unknown pairing %r for %s" % (pairing, template_id))
 
     hyp_source = tpl.get("hypothesis_source", "blind")
+    class_key = tpl.get("entity_classes")
+    members: List[Optional[str]] = ENTITY_CLASS_RESOLVERS[class_key]() if class_key else [None]
     out: List[Candidate] = []
     for a, b in pairs:
         if _blocked(a, b, tpl):
             continue
-        out.append(Candidate(
-            candidate_id=_candidate_id(template_id, a, b),
-            template_id=template_id, sport=sport, atomic_unit=tpl["atomic_unit"],
-            outcome=tpl["outcome"], attr_a=a, attr_b=b,
-            feature_builder=tpl["feature_builder"], hypothesis_source=hyp_source,
-        ))
+        for member in members:
+            out.append(Candidate(
+                candidate_id=_candidate_id(template_id, a, b, member),
+                template_id=template_id, sport=sport, atomic_unit=tpl["atomic_unit"],
+                outcome=tpl["outcome"], attr_a=a, attr_b=b,
+                feature_builder=tpl["feature_builder"], hypothesis_source=hyp_source,
+                entity_class=member,
+            ))
     return out
 
 
@@ -217,5 +313,5 @@ def next_batch(template_id: str, k: int, ledger_rows: Optional[List[Dict[str, An
 
 __all__ = [
     "TEMPLATES", "GLOBAL_BLOCKLIST_ATTRS", "GLOBAL_BLOCKLIST_PAIRS", "Candidate",
-    "resolve_pool", "enumerate_candidates", "tested_ids", "next_batch",
+    "ENTITY_CLASS_RESOLVERS", "resolve_pool", "enumerate_candidates", "tested_ids", "next_batch",
 ]

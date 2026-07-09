@@ -106,9 +106,167 @@ def _nba_builder(attrs: List[str], tpl: Dict[str, Any]) -> Optional[Dict[str, An
     return {"frame": frame, "cluster": "player_id", "corpus": _NBA_CORPUS, "kind": "ols"}
 
 
+# --------------------------------------------------------------------------
+# NBA STINT-level builder (atomic_unit="stint" -- a contiguous 5-man lineup
+# segment). Source: data/cache/team_system/lineups/stints_<season>.parquet
+# (game_id, team_id, period, lineup_key, n_on_court, start_s/end_s/elapsed_s,
+# pts_for, pts_against). Reused verbatim, no new data pulled.
+MIN_PRIOR_STINTS = 3   # min strictly-prior stints for a lineup's as-of rate to be defined
+
+
+def nba_stints_source_for_season(season: str) -> Path:
+    """Path to the stint-level parquet for one season -- same season-thread
+    discipline as nba_source_for_season (never a silently-hardcoded year)."""
+    return REPO / "data" / "cache" / "team_system" / "lineups" / ("stints_%s.parquet" % season)
+
+
+_NBA_STINTS_SOURCE = nba_stints_source_for_season(_NBA_DEFAULT_SEASON)
+_NBA_STINTS_CORPUS = "stints_%s" % _NBA_DEFAULT_SEASON
+
+
+def build_nba_stint_frame(df: pd.DataFrame, attrs: List[str], *,
+                           min_prior_stints: int = MIN_PRIOR_STINTS) -> pd.DataFrame:
+    """Leak-free per-stint frame for a SAME 5-man lineup_key (within team):
+    outcome `y` = THIS stint's net_pts (pts_for - pts_against); features are
+    STRICTLY-PRIOR expanding stats for that (team_id, lineup_key), shift(1)
+    before this stint -- same discipline as build_nba_offense_frame, just
+    keyed by lineup instead of player.
+
+    'synergy_residual' here = as-of mean net-points-PER-SECOND for this
+    lineup's prior stints (a rolling synergy proxy, not the season-aggregate
+    lineup_synergy_*.parquet residual -- that file is season-level and would
+    leak the current stint's own season into its own feature).
+    'continuity_s' = as-of mean stint duration (elapsed_s) for this lineup --
+    a longer-lived lineup historically staying on court longer.
+    ponytail: both are PROXIES for the template's declared attr names, not a
+    literal reimplementation of lineup_synergy.py's season formula -- upgrade
+    to a real rolling-window synergy residual if this survives a batch.
+    """
+    d = df[df["n_on_court"] == 5].copy()
+    d = d.sort_values(["team_id", "lineup_key", "game_id", "period", "start_s"]).reset_index(drop=True)
+    d["net_pts"] = d["pts_for"] - d["pts_against"]
+    d["net_rate"] = d["net_pts"] / d["elapsed_s"].where(d["elapsed_s"] > 0)
+    d["y"] = d["net_pts"]
+    grp = d.groupby(["team_id", "lineup_key"], sort=False)
+    n_prior = grp.cumcount()
+    if "synergy_residual" in attrs:
+        cum_net = grp["net_rate"].transform(lambda s: s.expanding().mean().shift(1))
+        d["asof__synergy_residual"] = cum_net.where(n_prior >= min_prior_stints)
+    if "continuity_s" in attrs:
+        cum_dur = grp["elapsed_s"].transform(lambda s: s.expanding().mean().shift(1))
+        d["asof__continuity_s"] = cum_dur.where(n_prior >= min_prior_stints)
+    keep = ["team_id", "lineup_key", "game_id", "y"] + [
+        "asof__" + a for a in attrs if ("asof__" + a) in d.columns]
+    return d[keep].copy()
+
+
+def _nba_stint_builder(attrs: List[str], tpl: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    if not _NBA_STINTS_SOURCE.exists():
+        return None
+    frame = build_nba_stint_frame(pd.read_parquet(_NBA_STINTS_SOURCE), attrs)
+    return {"frame": frame, "cluster": "lineup_key", "corpus": _NBA_STINTS_CORPUS, "kind": "ols"}
+
+
+# --------------------------------------------------------------------------
+# MLB PLATE-APPEARANCE builder (atomic_unit="plate_appearance"). Source:
+# data/cache/statcast/savant_full__<year>.parquet (per-PITCH Statcast rows) --
+# grouped into one row per (game_pk, at_bat_number) here, never a pre-built
+# PA table (none exists yet).
+MIN_PRIOR_PA = 50    # min strictly-prior PAs/swings for a batter/pitcher as-of rate
+MIN_PRIOR_BIP = 20   # min strictly-prior batted-ball events for an as-of contact_quality
+
+_MLB_PA_YEAR = "2025"
+_K_EVENTS = frozenset({"strikeout", "strikeout_double_play"})
+_BB_EVENTS = frozenset({"walk", "intent_walk"})
+_MISS_DESCRIPTIONS = frozenset({"swinging_strike", "swinging_strike_blocked"})
+_SWING_DESCRIPTIONS = _MISS_DESCRIPTIONS | frozenset({"foul", "foul_tip", "hit_into_play"})
+
+
+def mlb_savant_source_for_year(year: str) -> Path:
+    return REPO / "data" / "cache" / "statcast" / ("savant_full__%s.parquet" % year)
+
+
+_MLB_PA_SOURCE = mlb_savant_source_for_year(_MLB_PA_YEAR)
+_MLB_PA_CORPUS = "savant_full__%s_pa" % _MLB_PA_YEAR
+
+
+def build_mlb_pa_frame(pitch_df: pd.DataFrame, attrs: List[str], *,
+                        min_prior_pa: int = MIN_PRIOR_PA,
+                        min_prior_bip: int = MIN_PRIOR_BIP) -> pd.DataFrame:
+    """Leak-free per-plate-appearance frame built from per-pitch Statcast rows.
+
+    Outcome `y` = is_k (0/1) for the PA's LAST pitch's `events`. Batter
+    features (K_avoidance, BB_rate, contact_quality) and the pitcher feature
+    (whiff_rate) are STRICTLY-PRIOR expanding rates over that batter's/
+    pitcher's own PA history, shift(1) before this PA -- same cumsum-shift
+    discipline as build_nba_offense_frame, just at PA granularity.
+
+    'contact_quality' is an as-of mean-launch-speed proxy for the registry's
+    barrel-share formula (needs Statcast's `launch_speed_angle` field, not
+    present in this parquet slice) -- this is the exact quantity the
+    contact_quality_persists_split_half knowledge-ledger receipt measured, so
+    it is a faithful (if not byte-identical) stand-in.
+    ponytail: 'platoon_split' (pitcher) needs a per-batter-stand as-of split
+    merge -- deferred; a candidate naming it simply falls out NOT_TESTABLE
+    (column absent), never invented.
+    """
+    d = pitch_df.sort_values(["game_pk", "at_bat_number", "pitch_number"])
+    d = d.assign(
+        is_swing=d["description"].isin(_SWING_DESCRIPTIONS),
+        is_miss=d["description"].isin(_MISS_DESCRIPTIONS),
+    )
+    pa = d.groupby(["game_pk", "at_bat_number"], sort=False).agg(
+        game_date=("game_date", "first"), batter=("batter", "first"), pitcher=("pitcher", "first"),
+        events=("events", "last"), n_swings=("is_swing", "sum"), n_miss=("is_miss", "sum"),
+        launch_speed=("launch_speed", "last"),
+    ).reset_index()
+    pa = pa.sort_values(["game_date", "game_pk", "at_bat_number"]).reset_index(drop=True)
+    pa["y"] = pa["events"].isin(_K_EVENTS).astype(float)
+    pa["is_bb"] = pa["events"].isin(_BB_EVENTS).astype(float)
+    pa["is_bip"] = pa["launch_speed"].notna()
+
+    bgrp = pa.groupby("batter", sort=False)
+    if "K_avoidance" in attrs:
+        cum_k = bgrp["y"].transform(lambda s: s.cumsum().shift(1))
+        n_prior_pa = bgrp.cumcount()
+        pa["asof__K_avoidance"] = (1.0 - cum_k / n_prior_pa.where(n_prior_pa >= min_prior_pa)).where(
+            n_prior_pa >= min_prior_pa)
+    if "BB_rate" in attrs:
+        cum_bb = bgrp["is_bb"].transform(lambda s: s.cumsum().shift(1))
+        n_prior_pa2 = bgrp.cumcount()
+        pa["asof__BB_rate"] = (cum_bb / n_prior_pa2.where(n_prior_pa2 >= min_prior_pa))
+    if "contact_quality" in attrs:
+        cum_ls = bgrp["launch_speed"].transform(lambda s: s.fillna(0.0).cumsum().shift(1))
+        cum_bip = bgrp["is_bip"].transform(lambda s: s.astype(int).cumsum().shift(1))
+        pa["asof__contact_quality"] = cum_ls / cum_bip.where(cum_bip >= min_prior_bip)
+
+    pgrp = pa.groupby("pitcher", sort=False)
+    if "whiff_rate" in attrs:
+        cum_miss = pgrp["n_miss"].transform(lambda s: s.cumsum().shift(1))
+        cum_swing = pgrp["n_swings"].transform(lambda s: s.cumsum().shift(1))
+        pa["asof__whiff_rate"] = cum_miss / cum_swing.where(cum_swing >= min_prior_pa)
+
+    keep = ["batter", "pitcher", "game_pk", "at_bat_number", "y"] + [
+        "asof__" + a for a in attrs if ("asof__" + a) in pa.columns]
+    return pa[keep].copy()
+
+
+def _mlb_pa_builder(attrs: List[str], tpl: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    if not _MLB_PA_SOURCE.exists():
+        return None
+    cols = ["game_pk", "game_date", "at_bat_number", "pitch_number", "pitcher", "batter",
+            "events", "description", "launch_speed"]
+    frame = build_mlb_pa_frame(pd.read_parquet(_MLB_PA_SOURCE, columns=cols), attrs)
+    return {"frame": frame, "cluster": "pitcher", "corpus": _MLB_PA_CORPUS, "kind": "logit"}
+
+
 # feature_builder key -> callable. Templates whose builder is not registered here
 # yield honest NOT_TESTABLE rows (the factory tests them once a builder lands).
-_BUILDERS = {"nba_player_offense_asof": _nba_builder}
+_BUILDERS = {
+    "nba_player_offense_asof": _nba_builder,
+    "nba_stint_lineup_asof": _nba_stint_builder,
+    "mlb_pa_asof": _mlb_pa_builder,
+}
 
 
 def _fit_candidate(build: Dict[str, Any], cand: GEN.Candidate) -> Optional[Dict[str, Any]]:
@@ -167,13 +325,25 @@ def _load_ledger(path: Path) -> List[Dict[str, Any]]:
 
 
 def run_batch(template_id: str, k: int, *, ledger_path: Path = LEDGER_PATH,
-              eps: float = DEFAULT_EPS) -> List[Dict[str, Any]]:
+              eps: float = DEFAULT_EPS,
+              candidates: Optional[List[GEN.Candidate]] = None) -> List[Dict[str, Any]]:
     """Test the next <=k untested candidates for one template. Deterministic,
     idempotent (dedupes vs the ledger), never raises out. Returns the rows it
     appended. K is DECLARED as `k` before running; cum_K counts only REAL tests
-    (SURVIVES|NULL) cumulatively -- NOT_TESTABLE spends no budget."""
+    (SURVIVES|NULL) cumulatively -- NOT_TESTABLE spends no budget.
+
+    `candidates`, if given, REPLACES the blind GEN.next_batch derivation with
+    an explicit pre-built list (e.g. knowledge_intake.knowledge_candidates())
+    -- still deduped against the ledger by candidate_id, still fit/appended
+    through the exact same path a blind batch uses, just a different source
+    of Candidate objects. All candidates must belong to `template_id` (the
+    builder/corpus lookup below is per-template, same as a blind batch)."""
     existing = _load_ledger(ledger_path)
-    batch = GEN.next_batch(template_id, k, existing)
+    if candidates is not None:
+        done = GEN.tested_ids(existing, template_id)
+        batch = [c for c in candidates if c.candidate_id not in done]
+    else:
+        batch = GEN.next_batch(template_id, k, existing)
     if not batch:
         return []
     tpl = GEN.TEMPLATES[template_id]
@@ -240,5 +410,7 @@ if __name__ == "__main__":
     raise SystemExit(main())
 
 
-__all__ = ["run_batch", "build_nba_offense_frame", "nba_source_for_season", "LEDGER_PATH",
+__all__ = ["run_batch", "build_nba_offense_frame", "nba_source_for_season",
+           "build_nba_stint_frame", "nba_stints_source_for_season",
+           "build_mlb_pa_frame", "mlb_savant_source_for_year", "LEDGER_PATH",
            "SURVIVES", "NULL", "NOT_TESTABLE", "main"]
