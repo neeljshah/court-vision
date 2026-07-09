@@ -68,6 +68,21 @@ def test_cross_pairing_mlb_is_ordered_product():
     assert lefts == {"K_avoidance", "BB_rate"}
 
 
+def test_hypothesis_source_defaults_to_blind_and_is_overridable():
+    # No template declares hypothesis_source -> every candidate defaults 'blind'
+    # (additive field; measures knowledge-sourced vs blind survivor rates later).
+    cands = GEN.enumerate_candidates(_NBA)
+    assert cands and all(c.hypothesis_source == "blind" for c in cands)
+    # A template that DOES declare it propagates to every candidate it enumerates.
+    tpl_backup = dict(GEN.TEMPLATES[_NBA])
+    GEN.TEMPLATES[_NBA]["hypothesis_source"] = "knowledge"
+    try:
+        cands2 = GEN.enumerate_candidates(_NBA)
+        assert all(c.hypothesis_source == "knowledge" for c in cands2)
+    finally:
+        GEN.TEMPLATES[_NBA] = tpl_backup
+
+
 def test_leaderboard_attrs_resolve_via_entity_pool():
     # registry-resolution check (not a template membership check -- no MLB
     # template names these attrs yet, see build report): an entity-wildcard

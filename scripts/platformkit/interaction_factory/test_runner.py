@@ -56,6 +56,8 @@ def test_not_testable_when_builder_unregistered(tmp_path):
     assert all(r["verdict"] == RUN.NOT_TESTABLE for r in rows)
     assert all(r["cum_K"] == 0 for r in rows)  # NOT_TESTABLE spends no budget
     assert all(r["edge_claimed"] is False for r in rows)
+    # additive hypothesis_source field: every written row carries it, default 'blind'.
+    assert all(r.get("hypothesis_source") == "blind" for r in rows)
     # re-run dedupes: no new rows appended for already-tested candidates.
     again = RUN.run_batch("nba_stint_lineup_x_lineup", 20, ledger_path=ledger)
     assert again == []
