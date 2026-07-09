@@ -35,7 +35,9 @@ def tick(*, now: float,
          check_fn: Optional[Callable[..., List[Dict[str, Any]]]] = None,
          write_fn: Optional[Callable[..., bool]] = None) -> List[Dict[str, Any]]:
     """One sentinel tick: check every daemon's output freshness -> write the
-    verdict doc -> heartbeat. Never raises."""
+    verdict doc -> run the registered failsafe jobs (guard_integrity /
+    disk_space / heartbeat_coverage / exception_burst, each isolated) ->
+    heartbeat. Never raises."""
     from scripts.platformkit.ops_sentinel.output_freshness import check_all, write_status
     _check = check_fn if check_fn is not None else check_all
     _write = write_fn if write_fn is not None else write_status
@@ -48,6 +50,11 @@ def tick(*, now: float,
         _write(rows, now=now)
     except Exception as exc:  # noqa: BLE001
         logger.debug("output_freshness write raised: %s", exc)
+    try:
+        from scripts.platformkit.ops_sentinel.failsafe_jobs import run_all
+        run_all(now=now)
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("failsafe jobs raised: %s", exc)
     _beat(now)
     return rows
 
