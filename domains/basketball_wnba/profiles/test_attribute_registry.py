@@ -1,0 +1,60 @@
+"""Per-file test for domains.basketball_wnba.profiles.attribute_registry:
+registry shape/integrity only -- no parquet reads.
+Run: cd /c/Users/neelj/nba-ai-system && python -m pytest domains/basketball_wnba/profiles/test_attribute_registry.py -q
+"""
+from __future__ import annotations
+
+import pytest
+
+from domains.basketball_wnba.profiles.attribute_registry import (
+    ATTRIBUTES, ENTITIES, STATUSES, attributes_for, rating_2k,
+)
+from domains.basketball_wnba.profiles.ingredients_lineup import BUILDERS as LINEUP_BUILDERS
+from domains.basketball_wnba.profiles.ingredients_player import BUILDERS as PLAYER_BUILDERS
+
+
+def test_registry_builder_parity():
+    all_builders = {**PLAYER_BUILDERS, **LINEUP_BUILDERS}
+    assert set(ATTRIBUTES) == set(all_builders)
+
+
+@pytest.mark.parametrize("attr,spec", list(ATTRIBUTES.items()))
+def test_registry_entry_shape(attr, spec):
+    for key in ("description", "entity", "ingredients", "formula", "status",
+                "floor", "weight_ledger_family", "source_files"):
+        assert key in spec, f"{attr} missing {key!r}"
+    assert spec["entity"] in ENTITIES
+    assert spec["status"] in STATUSES
+    assert isinstance(spec["floor"], int) and spec["floor"] > 0
+    assert isinstance(spec["ingredients"], list) and len(spec["ingredients"]) >= 2
+    assert isinstance(spec["source_files"], list) and len(spec["source_files"]) >= 1
+
+
+def test_attributes_for_entity_split():
+    players = attributes_for("player")
+    lineups = attributes_for("lineup")
+    assert len(players) == 8
+    assert len(lineups) == 3
+    assert set(players) | set(lineups) == set(ATTRIBUTES)
+
+
+def test_status_family_consistency():
+    """VALIDATED_CLAIM attributes must carry a real (non-'descriptive')
+    weight_ledger_family; DESCRIPTIVE ones are always 'descriptive' -- the
+    two fields must never disagree."""
+    for attr, spec in ATTRIBUTES.items():
+        if spec["status"] == "VALIDATED_CLAIM":
+            assert spec["weight_ledger_family"] != "descriptive", attr
+        else:
+            assert spec["weight_ledger_family"] == "descriptive", attr
+
+
+def test_rating_2k_bounds_and_monotonic():
+    assert rating_2k(0.0) == 25.0
+    assert rating_2k(100.0) == pytest.approx(99.0)
+    assert rating_2k(50.0) < rating_2k(75.0)
+
+
+if __name__ == "__main__":
+    import sys
+    sys.exit(pytest.main([__file__, "-q"]))
