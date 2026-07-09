@@ -21,16 +21,31 @@ this answers "what is true about X", not "what will happen" -- predict-matchup o
 from __future__ import annotations
 
 import argparse
+import importlib
 import re
 import unicodedata
+from functools import lru_cache
 from typing import Any
 
 import pandas as pd
 
-from domains.basketball_nba.concepts.concept_registry import (
-    STATUS_RANK, derive_weights, get_concept, list_concepts,
-)
+from domains.basketball_nba.concepts.concept_registry import STATUS_RANK  # sport-generic status ladder
 from scripts.platformkit.profiles import ask as _ask
+
+# sport -> its concepts module (each domain's concept_registry.py is self-contained).
+_CONCEPT_REGISTRY_MODULE = {
+    "nba": "domains.basketball_nba.concepts.concept_registry",
+    "mlb": "domains.mlb.concepts.concept_registry",
+}
+
+
+@lru_cache(maxsize=None)
+def _registry(sport: str):
+    path = _CONCEPT_REGISTRY_MODULE.get(sport)
+    if path is None:
+        raise ValueError(f"no concept registry wired for sport '{sport}'. "
+                          f"Available: {sorted(_CONCEPT_REGISTRY_MODULE)}")
+    return importlib.import_module(path)
 
 
 def _load_df(sport: str, kind: str = "player") -> pd.DataFrame:
@@ -103,9 +118,10 @@ def _ingredients(entity_rows: pd.DataFrame) -> dict:
 def answer_superlative(concept_name: str, sport: str = "nba", kind: str = "player",
                         window: str | None = None, top_n: int = 3,
                         min_n: float | None = None) -> dict:
-    concept = get_concept(concept_name)
+    reg = _registry(sport)
+    concept = reg.get_concept(concept_name)
     df = _load_df(sport, kind)
-    weights = _apply_min_n(derive_weights(concept, df, window), concept, min_n)
+    weights = _apply_min_n(reg.derive_weights(concept, df, window), concept, min_n)
     if weights.empty:
         return {"question_type": "superlative", "concept": concept_name, "sport": sport,
                 "window": window or "latest", "top": [], "runners_up": [],
@@ -129,11 +145,12 @@ def answer_superlative(concept_name: str, sport: str = "nba", kind: str = "playe
 
 def answer_comparison(concept_name: str, entity_a: str, entity_b: str, sport: str = "nba",
                        kind: str = "player", window: str | None = None) -> dict:
-    concept = get_concept(concept_name)
+    reg = _registry(sport)
+    concept = reg.get_concept(concept_name)
     df = _load_df(sport, kind)
     eid_a, ename_a = _resolve_entity(df, entity_a)
     eid_b, ename_b = _resolve_entity(df, entity_b)
-    weights = derive_weights(concept, df, window)
+    weights = reg.derive_weights(concept, df, window)
     comp_df, contrib_df = _entity_composite(weights[weights["entity_id"].isin([eid_a, eid_b])])
 
     def _composite_of(eid):
@@ -171,10 +188,11 @@ def answer_comparison(concept_name: str, entity_a: str, entity_b: str, sport: st
 
 def answer_explanation(concept_name: str, entity: str, sport: str = "nba",
                         kind: str = "player", window: str | None = None) -> dict:
-    concept = get_concept(concept_name)
+    reg = _registry(sport)
+    concept = reg.get_concept(concept_name)
     df = _load_df(sport, kind)
     eid, ename = _resolve_entity(df, entity)
-    rows = derive_weights(concept, df, window)
+    rows = reg.derive_weights(concept, df, window)
     rows = rows[rows["entity_id"] == eid]
     if rows.empty:
         return {"question_type": "explanation", "concept": concept_name, "entity_name": ename,
@@ -194,10 +212,11 @@ def answer_explanation(concept_name: str, entity: str, sport: str = "nba",
 
 def answer_fit(concept_name: str, entity: str, team_roster: list[str], sport: str = "nba",
                kind: str = "player", window: str | None = None) -> dict:
-    concept = get_concept(concept_name)
+    reg = _registry(sport)
+    concept = reg.get_concept(concept_name)
     df = _load_df(sport, kind)
     eid, ename = _resolve_entity(df, entity)
-    comp_df, _ = _entity_composite(derive_weights(concept, df, window))
+    comp_df, _ = _entity_composite(reg.derive_weights(concept, df, window))
     ent_row = comp_df[comp_df["entity_id"] == eid]
     if ent_row.empty:
         return {"question_type": "fit", "concept": concept_name, "entity_name": ename,
@@ -238,9 +257,9 @@ def render(result: dict) -> str:
     return _ascii(str(result))
 
 
-def _detect_concept(query: str) -> str | None:
+def _detect_concept(query: str, sport: str = "nba") -> str | None:
     q = _ask._norm(query)
-    for name in list_concepts():
+    for name in _registry(sport).list_concepts():
         if re.search(rf"\b{re.escape(name)}\b", q) or name.replace("_", " ") in q:
             return name
     return None
@@ -250,9 +269,10 @@ def answer_question(query: str, sport: str = "nba", window: str | None = None,
                      concept: str | None = None) -> dict:
     """Free-text dispatch for superlative/comparison/explanation questions.
     fit needs a roster -- use answer_fit() directly, or the CLI's --fit/--team."""
-    cname = concept or _detect_concept(query)
+    cname = concept or _detect_concept(query, sport)
     if cname is None:
-        return {"error": f"no concept recognized in '{query}'. Available: {list_concepts()}"}
+        return {"error": f"no concept recognized in '{query}'. "
+                          f"Available: {_registry(sport).list_concepts()}"}
     q = _ask._norm(query)
     if " vs " in q or " versus " in q:
         parts = re.split(r"\s+vs\.?\s+|\s+versus\s+", query, maxsplit=1)
@@ -280,7 +300,7 @@ def main(argv=None):
     p.add_argument("--list-concepts", action="store_true")
     a = p.parse_args(argv)
     if a.list_concepts:
-        print("\n".join(list_concepts()))
+        print("\n".join(_registry(a.sport).list_concepts()))
     elif a.fit:
         roster = [s.strip() for s in (a.team or "").split(",") if s.strip()]
         print(render(answer_fit(a.concept, a.entity, roster, a.sport, window=a.window)))
