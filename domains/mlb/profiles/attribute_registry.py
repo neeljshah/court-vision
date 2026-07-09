@@ -123,6 +123,18 @@ ATTRIBUTES: dict[str, dict[str, Any]] = {
         "floor": 200,
         "weight_ledger_family": "descriptive",
     },
+    "chase_rate": {
+        "description": "Overall swing rate on out-of-zone (Statcast zone>=11) pitches -- flat "
+                        "aggregate version of the chase_vs_{cls} pitch-class splits below (added "
+                        "for the two_strike_chase_rate_rises knowledge-ledger mechanism's factory "
+                        "mapping, domains/mlb/knowledge/validation_ledger.jsonl).",
+        "entity": "batter",
+        "ingredients": ["chase_rate", "n_out_of_zone"],
+        "formula": "mean(is_swing), zone>=11",
+        "status": "DESCRIPTIVE",
+        "floor": 50,
+        "weight_ledger_family": "descriptive",
+    },
     # --------------------------------------------------------------- pitcher
     "mix_by_leverage": {
         "description": "Breaking-pitch-share delta: pitcher-ahead counts minus pitcher-not-ahead "
@@ -182,6 +194,19 @@ ATTRIBUTES: dict[str, dict[str, Any]] = {
         "formula": "mean(bb_type == 'ground_ball')",
         "status": "DESCRIPTIVE",
         "floor": 50,
+        "weight_ledger_family": "descriptive",
+    },
+    "edge_zone_rate": {
+        "description": "Share of all pitches thrown landing in the raw Statcast edge zone (zone "
+                        "11-14, the four just-outside-the-corners cells) -- added for the "
+                        "edge_zone_widens_with_two_strikes knowledge-ledger mechanism's factory "
+                        "mapping (domains/mlb/knowledge/validation_ledger.jsonl); a plain zone>=11 "
+                        "aggregate, not the custom heart/shadow/chase/waste geometry above.",
+        "entity": "pitcher",
+        "ingredients": ["edge_zone_rate", "n_pitches"],
+        "formula": "mean(zone in [11,12,13,14])",
+        "status": "DESCRIPTIVE",
+        "floor": 100,
         "weight_ledger_family": "descriptive",
     },
     # --------------------------------------------------------------- catcher
