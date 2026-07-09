@@ -745,6 +745,25 @@ def _tennis_shadow(sport: str, home: Any, away: Any, state: Dict[str, Any]) -> O
         return None
 
 
+def _identity_fields_mlb(state: Dict[str, Any]) -> Dict[str, Any]:
+    """MLB IDENTITY fields for the grade row (root-cause fix: the live model only ever saw
+    8 crude state features -- score/inning/base-out -- with no notion of WHO is playing).
+    batter_id/pitcher_id/pitch_count/ondeck_id/bullpen_used are ALREADY resolved onto
+    *state* by ingame_id_resolver_mlb's deep_state_fn merge (ingame_pitcher_mlb.
+    pitcher_batter_fields, itself parsed from the SAME statsapi linescore+boxscore payload
+    the base-out/pitch-count resolver already fetches -- no extra request, no new pacing).
+    mlb_-prefixed so a future replay can condition on player identity without colliding with
+    any other sport's state keys. None when the source key never resolved (pregame gap,
+    resolver miss, non-MLB tick) -- never fabricated."""
+    return {
+        "mlb_batter_id": state.get("batter_id"),
+        "mlb_pitcher_id": state.get("pitcher_id"),
+        "mlb_pitcher_pitch_count": state.get("pitch_count"),
+        "mlb_ondeck_id": state.get("ondeck_id"),
+        "mlb_bullpen_used": state.get("bullpen_used"),
+    }
+
+
 def _enrichment_fields(sport: str, home: Any, away: Any, gid: str,
                        state: Dict[str, Any]) -> Dict[str, Any]:
     """ENRICHMENT MEASUREMENT ONLY (LANE 1). All lookup logic lives in
@@ -752,10 +771,17 @@ def _enrichment_fields(sport: str, home: Any, away: Any, gid: str,
     None); this wrapper only guarantees an exception here can never reach the
     capture path. None-safe. soccer_intl gets xg_*; sports with a book-depth
     sidecar get spread_bp/book_thinness/stale_quote; mlb gets espn_wp (only if a
-    cheap ESPN event id is already on the state -- else honest None/pending)."""
+    cheap ESPN event id is already on the state -- else honest None/pending) AND
+    the mlb_* IDENTITY fields (see _identity_fields_mlb) -- these need no facade/
+    import, so they are set OUTSIDE the facade try/except: a poisoned enrichment
+    facade must never suppress identity fields that were already sitting on state."""
     out: Dict[str, Any] = {"xg_home": None, "xg_away": None, "xg_asof_min": None,
                           "spread_bp": None, "book_thinness": None, "stale_quote": None,
-                          "espn_wp": None}
+                          "espn_wp": None, "mlb_batter_id": None, "mlb_pitcher_id": None,
+                          "mlb_pitcher_pitch_count": None, "mlb_ondeck_id": None,
+                          "mlb_bullpen_used": None}
+    if str(sport or "").lower() == "mlb":
+        out.update(_identity_fields_mlb(state))
     try:
         from scripts.platformkit.ingame.ingame_enrichment import get_facade
         facade = get_facade()
