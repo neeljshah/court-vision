@@ -93,3 +93,15 @@ def test_run_many_single_sport_still_works(monkeypatch) -> None:
                         lambda sport, **kw: {"sport": sport, "venue": "polymarket_game_slug"})
     results = rab.run_many(["mlb"], "polymarket_game_slug")
     assert results == [{"sport": "mlb", "venue": "polymarket_game_slug"}]
+
+
+def test_run_many_on_result_fires_per_sport_as_it_completes(monkeypatch) -> None:
+    """2026-07-09 observability fix: on_result must fire once per sport as its
+    future finishes, not just once at the very end -- so a long multi-hour,
+    multi-sport run can be watched live instead of looking stalled."""
+    monkeypatch.setattr(rab, "run_kalshi_sport", lambda sport, **kw: {"sport": sport})
+    seen = []
+    results = rab.run_many(["mlb", "nba", "kbo"], "kalshi", max_concurrent=2,
+                           on_result=seen.append)
+    assert {r["sport"] for r in seen} == {"mlb", "nba", "kbo"}
+    assert [r["sport"] for r in results] == ["mlb", "nba", "kbo"]  # order preserved

@@ -96,16 +96,18 @@ def test_grade_one_clv_sign_beat_close_positive():
     assert s["clv_is_proxy"] is True   # used last-observed price -> labelled proxy
 
 
-def test_grade_one_close_source_none_when_book_unknown():
+def test_grade_one_close_source_none_available_when_book_unknown():
     """Level 1 (bet already carries its own closing_decimal_*) has no known
-    book -> close_source is honestly None, never guessed."""
+    book -> close_source is stamped "none_available" (2026-07-09 fix), never
+    guessed, and never just a missing key (that would be indistinguishable
+    from a pre-fix row that never ran this code at all)."""
     g = _game("Home", "HHH", "Away", "AAA", 4, 2)
     bet = {"sport": "mlb", "matchup": "Away @ Home", "side": "home",
            "taken_decimal": 2.0, "stake_units": 1.0, "ts": "t9",
            "closing_decimal_home": 1.90, "closing_decimal_away": 2.00}
     s = grade_one(bet, g)
     assert s["clv_is_proxy"] is False
-    assert s.get("close_source") is None
+    assert s.get("close_source") == "none_available"
 
 
 def test_grade_one_close_source_same_venue(monkeypatch):
@@ -149,6 +151,7 @@ def test_grade_one_no_close_is_void_not_proxy():
     assert s["clv_pct"] is None        # no price -> no CLV, win/loss only
     assert s["clv_is_proxy"] is False  # NOT proxy: there is no close at all
     assert s["clv_status"] == "no_close"
+    assert s["close_source"] == "none_available"  # stamped, not just absent
 
 
 # --------------------------------------------------------------------------- #
