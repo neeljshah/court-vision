@@ -84,6 +84,10 @@ $SV_HB  = Join-Path $ROOT "data\cache\daemon_heartbeats\m9_supervisor.txt"
 New-Item -ItemType Directory -Force -Path $LOGDIR | Out-Null
 
 $bootArgs = @("-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $BOOT)
+# 2026-07-10 USER DIRECTIVE: frontend OFF for the time being -- always boot the
+# headless "backend" profile (full fleet, no m1_ui / port 3000). To restore the
+# UI: delete the next line's forced flag and run .\go.ps1 manually.
+$NoUI = $true
 if ($NoUI) { $bootArgs += "-NoUI" }
 
 function Write-WLog([string]$level, [string]$msg) {
