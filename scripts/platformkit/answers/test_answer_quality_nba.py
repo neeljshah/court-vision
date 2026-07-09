@@ -117,6 +117,40 @@ def test_rim_protection_top5_backed_by_independent_primary_signal():
             f"percentile is only {pct.get(entry['entity_name'])}")
 
 
+def test_rim_protection_top5_contains_known_elite_rim_protectors():
+    """The live top-5 must contain >=2 names from the rim_pressure_def top-10
+    (computed here from the parquet, not hardcoded) -- the regression that
+    caught the double-inversion bug: re-inverting an already-oriented
+    percentile ranked the WORST rim defenders on the zone_def signals."""
+    g = REAL_PROFILES[REAL_PROFILES["attribute"] == "rim_pressure_def"].sort_values("window").groupby("entity_id").tail(1)
+    floor = get_concept("rim_protection")["min_n"]
+    top10 = set(g[g["n"] >= floor].sort_values("percentile", ascending=False).head(10)["entity_name"])
+    top5 = {e["entity_name"] for e in C.answer_superlative("rim_protection", top_n=5)["top"]}
+    assert len(top5 & top10) >= 2, f"top5 {top5} shares <2 names with rim_pressure_def top10 {top10}"
+
+
+def test_directional_lower_raw_higher_oriented_pct_wins():
+    """Synthetic: A allows LOWER rim eFG than B -> builder-oriented percentile
+    is HIGHER for A -> A must outrank B on rim_protection. Fails if contracts
+    ever re-inverts a pre-oriented percentile again."""
+    concept = get_concept("rim_protection")
+    rows = []
+    for eid, name, raw, pct in ((1, "Good Rim D", 0.55, 90.0), (2, "Bad Rim D", 0.68, 10.0)):
+        for s in concept["signals"]:
+            # identical everywhere except the oriented zone_def_rim_efg percentile
+            is_target = s["attribute"] == "zone_def_rim_efg_allowed_on"
+            rows.append(dict(entity_id=eid, entity_name=name, window="w1", attribute=s["attribute"],
+                             raw_value=raw if is_target else 1.0,
+                             percentile=pct if is_target else 50.0,
+                             n=2000.0, status="DESCRIPTIVE",
+                             ingredients="{}", sources="x", sport="nba", kind="player"))
+    weights = derive_weights(concept, pd.DataFrame(rows))
+    comp, _ = C._entity_composite(weights)
+    scores = comp.set_index("entity_name")["composite"]
+    assert scores["Good Rim D"] > scores["Bad Rim D"], (
+        f"lower-eFG-allowed defender must outrank: {scores.to_dict()}")
+
+
 # ---------------------------------------------------------------------------
 # Comparison
 # ---------------------------------------------------------------------------
