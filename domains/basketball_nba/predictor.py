@@ -81,10 +81,16 @@ class NBAPredictor:
             preds.append(self._raw_total(ht, at)); totals.append(hp[i] + ap[i])
             self._update(ht, at, hp[i], ap[i], gp[i])
         # leak contract for the FIT is loose (in-sample recal of an aggregate shape), but the
-        # per-game predictions above used only prior state. Fit dispersion recal + sigmas.
+        # per-game predictions above used only prior state. Fit dispersion recal + sigmas via
+        # the audited/tested helper in totals_recal.py (see docs/research/pa3_predictor_hook.md);
+        # falls back to the original in-sample polyfit if that module is unavailable.
         pr, tt = np.asarray(preds), np.asarray(totals)
-        self.b, self.a = np.polyfit(pr, tt, 1)
-        self.total_sigma = float(np.std(tt - (self.a + self.b * pr)))
+        try:
+            from domains.basketball_nba.totals_recal import _fit_affine_sigma
+            self.b, self.a, self.total_sigma = _fit_affine_sigma(pr, tt)
+        except Exception:  # noqa: BLE001 -- fallback: original in-sample polyfit
+            self.b, self.a = np.polyfit(pr, tt, 1)
+            self.total_sigma = float(np.std(tt - (self.a + self.b * pr)))
         margins = (hp - ap)
         self.margin_sigma = float(np.std(margins)) or 13.5
         self.n_games = len(b)
