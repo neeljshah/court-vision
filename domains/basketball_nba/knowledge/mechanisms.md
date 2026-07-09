@@ -12,9 +12,10 @@ cross-corpus replication), `PARTIAL` (mixed verdict across corpora/specs),
 Local receipts for `CONFIRMED`/`REJECTED`/`NOT_TESTABLE` rows live in
 `data/cache/intel_claims/prereg_hypothesis_ledger.jsonl` (the long-running
 prereg ledger) and `domains/basketball_nba/knowledge/validation_ledger.jsonl`
-(this session's 10 fresh validations, 2,381-game 2024-25 + 2025-26
-`player_boxscores.parquet` corpus). No `$` edge is claimed anywhere in this
-file.
+(the first session's 10 fresh validations, 2,381-game 2024-25 + 2025-26
+`player_boxscores.parquet` corpus, plus a 2026-07-09 second batch of 10 more
+covering every remaining UNTESTED row -- see "Validated 2026-07-09" section).
+No `$` edge is claimed anywhere in this file.
 
 ---
 
@@ -202,74 +203,65 @@ violation -- these are mechanism checks, not production inputs).
 
 ---
 
-## Seeded, UNTESTED (highest-leverage remaining)
+## Validated 2026-07-09 (10 -- fresh leak-free local tests, receipts in `validation_ledger.jsonl`)
 
 ### 24. Clutch lineup shortening
 - **claim**: coaches shorten their rotation specifically in clutch minutes (distinct from #21's overall-game rotation stability).
 - **causal story**: trust narrows under pressure -- fewer players see clutch possessions than see full-game minutes.
-- **expected signature**: distinct-player-count in clutch possessions (via `pbp_clutch_shots_attempted`/`pbp_clutch_pts_scored` nonzero rows) smaller, per team-game, than the game's overall rotation size.
-- **test spec**: paired comparison, clutch-rotation-size vs full-game-rotation-size, same team-games.
-- **status**: UNTESTED
+- **status**: CONFIRMED
+- **measured LOCAL magnitude**: clutch distinct-player count 3.05 vs full-game (>=5min) rotation size 9.39; effect -6.34, p~0, n=1,052 team-games that reached a clutch state.
+- **artifact link**: `domains/basketball_nba/knowledge/validate_lineup_composition.py::clutch_lineup_shortening`.
+- **wiring**: in-game conditioning-feature candidate -- expected clutch-rotation-size (~3 players) as a live-state prior for close-late player-prop re-pricing.
 
-### 25. Rim-pressure defensive continuity x DREB
-- **claim**: a lineup's interior defensive-pressure attribute (`rim_pressure_def`, currently DESCRIPTIVE) predicts team DREB rate.
-- **causal story**: contesting rim shots and controlling paint positioning should translate into more contested-rebound opportunities won.
-- **expected signature**: positive correlation, rim_pressure_def vs on-court DREB rate.
-- **test spec**: stint-level regression using `zone_onoff.py`'s per-player rim on/off splits joined to stint DREB outcome.
-- **status**: UNTESTED
+### 25. Rim-pressure defensive continuity x DREB -- LOCAL NULL
+- **claim**: a lineup's interior defensive-pressure attribute (`rim_pressure_def`) predicts team DREB rate.
+- **status**: REJECTED (NULL_LOCAL) -- no relationship found this session.
+- **measured LOCAL magnitude**: r=0.0479, p=0.279, n=512 players (rim_fga>=30 both on/off states, minutes>=200), `zone_onoff_2024_25.parquet` vs season DREB/min.
+- **artifact link**: `domains/basketball_nba/knowledge/validate_lineup_composition.py::rim_pressure_def_dreb`.
 
 ### 26. Usage-redistribution persistence after a high-usage player is out
 - **claim**: when a high-usage player sits, the redistributed usage among remaining players follows a predictable (not random) pattern that persists across multiple absences.
-- **causal story**: a team's offensive hierarchy has a stable "next man up" order, not a uniform spread.
-- **expected signature**: split-half correlation of each teammate's usage-share gain across two different absence occasions for the same missing star.
-- **test spec**: reuse `data/cache/team_system/interactions/usage_redistribution_*.parquet`; split-half by absence occasion.
-- **status**: UNTESTED
+- **status**: CONFIRMED
+- **measured LOCAL magnitude**: split-half (odd/even absence occasions) pearson r=0.8005, p~0, n=1,657 team/missing-player/teammate triples, season 2025-26.
+- **artifact link**: `domains/basketball_nba/knowledge/validate_usage_events.py::usage_redistribution_persistence`.
+- **wiring**: in-game conditioning-feature candidate -- teammate's own baseline `fga_share` (constructed from games where the high-usage teammate played) as a live redistribution-share predictor when that teammate is ruled OUT (a pregame-known-absence trigger, not a leak).
 
-### 27. Assist-network hub dependency
-- **claim**: teams whose assist network concentrates through one "hub" passer are more efficient offensively than teams with a flat network, up to a point.
-- **causal story**: a stable primary facilitator creates predictable movement patterns and better shot quality, but over-concentration invites defensive keying.
-- **expected signature**: an inverted-U relationship between hub-concentration (e.g. top passer's share of team assists) and offensive rating.
-- **test spec**: team-season hub-concentration vs offensive rating, quadratic term test.
-- **status**: UNTESTED
+### 27. Assist-network hub dependency -- LOCAL NULL
+- **claim**: teams whose assist network concentrates through one "hub" passer are more efficient offensively than teams with a flat network, up to a point (inverted-U).
+- **status**: REJECTED (NULL_LOCAL) -- no significant quadratic term.
+- **measured LOCAL magnitude**: OLS `ppp_all_off ~ hub_share + hub_share^2`, quadratic coef=4.21 (linear=-1.45), p=0.341, n=30 teams, season 2025-26.
+- **artifact link**: `domains/basketball_nba/knowledge/validate_usage_events.py::assist_hub_concentration_offrtg`.
 
 ### 28. Transition-frequency pace mismatch (distinct from overall pace variance, #22)
 - **claim**: a team's transition-possession rate specifically (not overall pace) predicts its efficiency edge against slow-transition-defense opponents.
-- **causal story**: transition offense exploits opponents who are specifically slow getting back, not just opponents who play a slow overall pace.
-- **expected signature**: positive interaction, own transition-rate x opponent transition-defense-allowed-rate, on points/possession.
-- **test spec**: game-level interaction using `atlas_team_transition_defense.parquet`'s transition_freq (noting its own ~50%-opponent-mixed caveat).
-- **status**: UNTESTED
+- **status**: NOT_TESTABLE -- `atlas_team_transition_defense.parquet` is one row per team (n=30), a single-season aggregate; using it as a per-game feature for games drawn from that same season is the season-final-aggregate-as-feature leak this codebase forbids. A leak-free version needs game-level transition rate rebuilt from `pbp_possession_features.parquet`'s `pbp_transition_count` -- a separate, larger build not attempted this session.
+- **artifact link**: `domains/basketball_nba/knowledge/validate_premise_blocked.py::transition_freq_pace_mismatch`.
 
 ### 29. Clutch free-throw pressure dip
 - **claim**: FT% drops in clutch situations (last 5 min, close game) relative to a player's season FT%.
-- **causal story**: crowd noise, fatigue, and stakes-driven mechanical tightening reduce free-throw consistency under pressure.
-- **expected signature**: negative gap, clutch FT% - season FT%, for players with a meaningful clutch-FTA sample.
-- **test spec**: player-season FT% (from `player_boxscores.ftm/fta`) vs clutch-window FT% (from `pbp_clutch_shots_attempted`-adjacent clutch tracking, needs a clutch-FT-specific column check first).
-- **status**: UNTESTED
+- **status**: NOT_TESTABLE -- `pbp_possession_features.parquet` has clutch FG tracking only (`pbp_clutch_shots_attempted`/`pbp_clutch_pts_scored`), zero clutch-specific FT columns; `player_boxscores.parquet` only has game-total ftm/fta. No clutch-window FT split exists anywhere in the local corpus.
+- **artifact link**: `domains/basketball_nba/knowledge/validate_premise_blocked.py::clutch_ft_pressure_dip`.
 
-### 30. Second-unit (bench lineup) continuity effect
+### 30. Second-unit (bench lineup) continuity effect -- CONFIRMED, REVERSED direction vs full-lineup #1
 - **claim**: continuity's DREB benefit (#1) is at least as strong for bench-only lineups as for starter-heavy lineups.
-- **causal story**: chemistry effects should be lineup-composition-agnostic if the mechanism is genuinely about shared repetitions, not about individual starter talent.
-- **expected signature**: a continuity-s coefficient on DREB rate of similar magnitude when the stint sample is restricted to bench-heavy lineups (majority non-starters on court).
-- **test spec**: same regression as #1, restricted subsample by starter-count on court.
-- **status**: UNTESTED
+- **status**: CONFIRMED that continuity matters for bench-heavy stints -- but REJECTED as originally framed ("at least as strong, same direction"): the local data shows a NEGATIVE continuity coefficient for <=2-starters-on-court stints, the opposite sign of the positive full-lineup effect (#1, eff=0.000574 same single-season spec).
+- **measured LOCAL magnitude**: logit `is_dreb ~ continuity_s` restricted to <=2-starters-on-court stints: eff=-0.00019, p=5.0e-6, n=76,418 rebound-events, season 2024-25 (cf. full-lineup #1 single-season eff=+0.000574 p=1.9e-16 n=116,960 on the same corpus).
+- **artifact link**: `domains/basketball_nba/knowledge/validate_lineup_composition.py::bench_continuity_dreb`.
+- **wiring**: flag before use -- bench-heavy stints show DREB rate falling (not rising) with continuity; this contradicts the naive "chemistry always helps" read of #1 and should not be assumed to generalize from the starter-inclusive result.
 
 ### 31. Travel/time-zone fatigue (distinct from simple rest-days, #14)
 - **claim**: a team crossing 2+ time zones for a road game underperforms its rest-days-adjusted expectation.
-- **causal story**: circadian disruption is a real physiological cost beyond a simple day-count.
-- **expected signature**: negative residual margin (after controlling for rest_days) for cross-time-zone road games.
-- **test spec**: needs a per-game travel-distance/time-zone-delta ingredient -- not present in `player_boxscores.parquet`/`league_team_game.parquet`; likely NOT_TESTABLE pending an arena-location join.
-- **status**: UNTESTED
+- **status**: NOT_TESTABLE -- fresh glob this session for `*arena*`/`*travel*` under `data/domains/basketball_nba` returned 0 relevant hits; `rest_days` (#14) is the only schedule ingredient on disk. No arena-location/timezone join exists locally.
+- **artifact link**: `domains/basketball_nba/knowledge/validate_premise_blocked.py::travel_timezone_fatigue`.
 
-### 32. Foul-trouble minutes reduction (early foul trouble)
+### 32. Foul-trouble minutes reduction (early foul trouble) -- LOCAL NULL (small effect)
 - **claim**: a starter who picks up 2 fouls in the first half plays fewer total minutes than his season average that game.
-- **causal story**: coaches sit players in early foul trouble to avoid disqualification risk, at some node cost.
-- **expected signature**: negative gap, actual minutes vs season-average minutes, on early-foul-trouble games.
-- **test spec**: needs a foul-by-quarter/foul-by-time column; `player_boxscores.parquet` only has game-total `pf`, so this is likely NOT_TESTABLE on the current corpus pending a quarter-level box ingredient (see `ingest_quarter_box.py`, which may already carry this -- check before re-seeding as UNTESTED next session).
-- **status**: UNTESTED
+- **status**: REJECTED (NULL_LOCAL) -- direction is correct and p<0.01, but the magnitude is too small to call a real effect at the 1.0-minute floor used here; reported honestly rather than rounded up.
+- **measured LOCAL magnitude**: starter minutes-gap-vs-season-avg, >=2 first-half fouls (-0.47 min, n=3,392) vs <2 (-0.10 min, n=8,918); effect -0.37, p=2.7e-4, n=12,310 (quarter_box q1+q2 coverage, 1,231 games).
+- **artifact link**: `domains/basketball_nba/knowledge/validate_usage_events.py::foul_trouble_minutes_reduction`.
 
-### 33. Star-injury usage-vacuum overreaction (market/pricing angle, calibration only)
-- **claim**: when a star is ruled OUT, the market/model over- or under-estimates the redistributed production for teammates in the first 1-2 games back.
-- **causal story**: usage redistribution (#26) takes a game or two to stabilize; an early-game projection that assumes instant full redistribution will systematically miss.
-- **expected signature**: teammate production in game 1 without the star undershoots the season-long redistribution average; games 2+ converge.
-- **test spec**: event-study style, teammate usage-share by games-since-absence-started.
-- **status**: UNTESTED
+### 33. Star-injury usage-vacuum overreaction -- LOCAL NULL
+- **claim**: teammate production in game 1 without a missing star undershoots the season-long redistribution average; games 2+ converge.
+- **status**: REJECTED (NULL_LOCAL) -- no significant game-1-vs-rest gap.
+- **measured LOCAL magnitude**: fga_share deviation-from-normal-baseline, game-1-of-absence (0.0529, n=6,946) vs games>=2 (0.0511, n=5,818); effect +0.0019, p=0.030, n=12,764.
+- **artifact link**: `domains/basketball_nba/knowledge/validate_usage_events.py::star_injury_usage_vacuum_event_study`.
