@@ -98,6 +98,33 @@ def _run_reclaim_fit(template: SP.Template, eligible: List[str]) -> Dict[str, An
            "ship_review_queued": ship_review_queued, "human_rows": human_rows,
            "new_deduped_k": fits_run}
 
+def _run_interaction_batch(tpl: SP.Template) -> Dict[str, Any]:
+    """Run ONE interaction-factory batch for the factory template this autoloop
+    template points at. Reuses the factory runner's OWN dedupe + cluster-robust
+    fit + cumulative-K ledger (byte-identical to a manual `runner.run_batch`);
+    only REAL tests (SURVIVES|NULL) spend K, NOT_TESTABLE spends none. A SURVIVOR
+    (provisional) becomes a human_queue row for the replication pass."""
+    from scripts.platformkit.interaction_factory import runner as IFR
+
+    factory_tpl = tpl.body.get("factory_template")
+    k = min(20, tpl.max_candidates_per_cycle or 20)
+    if not factory_tpl:
+        return {"fits_run": 0, "rejected": 0, "ship_review_queued": 0,
+                "human_rows": [], "new_deduped_k": 0}
+    rows = IFR.run_batch(factory_tpl, k)
+    real = [r for r in rows if r.get("verdict") in (IFR.SURVIVES, IFR.NULL)]
+    survivors = [r for r in rows if r.get("verdict") == IFR.SURVIVES]
+    human_rows = [{
+        "kind": "INTERACTION_SURVIVOR", "template_id": tpl.template_id,
+        "factory_template": factory_tpl, "candidate_id": s.get("candidate_id"),
+        "effect": s.get("effect"), "p": s.get("p"), "n": s.get("n"),
+        "cum_K": s.get("cum_K"), "note": s.get("note", ""), "edge_claimed": False,
+    } for s in survivors]
+    return {"fits_run": len(real), "rejected": sum(1 for r in real if r.get("verdict") == IFR.NULL),
+            "ship_review_queued": len(survivors), "human_rows": human_rows,
+            "new_deduped_k": len(real)}
+
+
 def _refresh_scoreboards() -> None:
     """freshness_sla.write_status + edge_greenlight.main -- the same refreshers
     a human wake runs, unattended (spec sec 2e). Best-effort; never raises."""
@@ -125,7 +152,8 @@ def _base_row(tpl: SP.Template, k_ledger_dir: Optional[Path]) -> Dict[str, Any]:
 
 
 def _process_template(tpl: SP.Template, watermarks: Dict[str, Any], *, queue_path,
-                      k_ledger_dir, reclaim_fit, claims_regen, corpus_sha_fn) -> Dict[str, Any]:
+                      k_ledger_dir, reclaim_fit, claims_regen, corpus_sha_fn,
+                      interaction_fn=None) -> Dict[str, Any]:
     """One template's tick: DUE check -> blocklist -> pinned-kind harness ->
     K-ledger append. Returns {row, human_queue_appended}. Isolated per-template
     (a raise here is caught by the caller, mirrors selfimprove_daemon)."""
@@ -177,6 +205,14 @@ def _process_template(tpl: SP.Template, watermarks: Dict[str, Any], *, queue_pat
         row["n_excluded_below_floor"] = result.get("n_excluded_below_floor", 0)
         if (result.get("skipped_family") or []) and result.get("claims_regenerated", 0) == 0:
             row["status"] = "SKIPPED_FAMILY"
+    elif tpl.kind == "interaction_batch":
+        result = (interaction_fn or _run_interaction_batch)(tpl)
+        row["fits_run"] = result.get("fits_run", 0)
+        row["rejected"] = result.get("rejected", 0)
+        row["ship_review_queued"] = result.get("ship_review_queued", 0)
+        for hr in result.get("human_rows", []):
+            hq += _queue(hr, queue_path)
+        new_k = int(result.get("new_deduped_k", 0))
     else:
         row["status"], row["illegal_unpinned"] = "ILLEGAL_UNPINNED", 1
 
@@ -192,6 +228,7 @@ def _process_template(tpl: SP.Template, watermarks: Dict[str, Any], *, queue_pat
 def run_cycle(*, templates_dir: Optional[Path] = None,
              reclaim_fit_fn: Optional[Callable[[SP.Template, List[str]], Dict[str, Any]]] = None,
              claims_regen_fn: Optional[Callable[[SP.Template], Dict[str, Any]]] = None,
+             interaction_fn: Optional[Callable[[SP.Template], Dict[str, Any]]] = None,
              corpus_sha_fn: Optional[Callable[[SP.Template], Optional[str]]] = None,
              refresh_fn: Optional[Callable[[], None]] = None,
              maintenance_fn: Optional[Callable[..., Dict[str, Any]]] = None,
@@ -211,6 +248,7 @@ def run_cycle(*, templates_dir: Optional[Path] = None,
                 tpl, watermarks, queue_path=queue_path, k_ledger_dir=k_ledger_dir,
                 reclaim_fit=reclaim_fit_fn or _run_reclaim_fit,
                 claims_regen=claims_regen_fn or SP.run_claims_regen,
+                interaction_fn=interaction_fn or _run_interaction_batch,
                 corpus_sha_fn=corpus_sha_fn or SP.template_content_sha)
             per_template.append(out["row"])
             human_queue_appended += out["human_queue_appended"]
