@@ -14,12 +14,21 @@ canonical row shape, stale_quote_flag rationale, WIRE SPEC). This file owns ONLY
     i.e. also the LAST entry of the ASCENDING no_dollars ladder.
 
   GET {KALSHI_BASE}/markets/trades?ticker=&limit=
-    -> {"trades": [{"created_time": ISO-ms, "yes_price_dollars", ...}]}
+    -> {"trades": [{"created_time": ISO-ms, "yes_price_dollars", "count_fp", ...}]}
     ms-precision tape, used for last_trade_ts / trades_last_5m recency AND
     (2026-07-09, execution-profile lane) the actual trade prices -- see
     normalize_trade/new_trades_since below. Same fetch as always; no new
     request, just no longer discarding the tape's prices after recency is
     computed.
+
+    FIELD-NAME FIX (2026-07-11, gap zeta item 2): the live endpoint returns
+    trade size on "count_fp" (a decimal STRING, e.g. "75.00"), not "count" --
+    verified against one live /markets/trades call. normalize_trade below reads
+    count_fp first, falling back to a legacy "count" key so an offline/replayed
+    payload using the old key still parses. Every trade tape row captured
+    before this fix has count=None on disk (root cause, not a governor/rate
+    issue) -- not backfillable (the raw fetch is gone, only the parsed record
+    was persisted).
 
 Both endpoints verified live 2026-07-04 (keyless, no auth header needed for
 either read). No discovery/listing logic here -- that stays in
@@ -175,11 +184,14 @@ def normalize_trade(t: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     dt = parse_trade_ts(t.get("created_time"))
     if dt is None:
         return None
+    count = t.get("count_fp")
+    if count is None:
+        count = t.get("count")  # legacy/back-compat key
     return {
         "trade_ts": dt.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
         "trade_id": t.get("trade_id"),
         "price": _f(t.get("yes_price_dollars")),
-        "count": _f(t.get("count")),
+        "count": _f(count),
         "taker_side": t.get("taker_side"),
     }
 

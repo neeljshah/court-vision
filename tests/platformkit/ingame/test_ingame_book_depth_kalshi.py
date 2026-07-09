@@ -110,6 +110,15 @@ def test_normalize_trade_extracts_price_and_ts():
                 "price": 0.95, "count": 3.0, "taker_side": "yes"}
 
 
+def test_normalize_trade_reads_count_fp_live_field_name():
+    """2026-07-11 fix: live endpoint returns trade size on count_fp (a decimal
+    string), not count -- count_fp must win when both are absent/present."""
+    n = kd.normalize_trade({"created_time": "2026-07-06T02:40:13.373445Z",
+                            "yes_price_dollars": "0.62", "count_fp": "75.00",
+                            "taker_side": "no", "trade_id": "T2"})
+    assert n["count"] == 75.0
+
+
 def test_normalize_trade_unparseable_ts_is_none():
     assert kd.normalize_trade({"created_time": "not-a-date"}) is None
     assert kd.normalize_trade("not-a-dict") is None
