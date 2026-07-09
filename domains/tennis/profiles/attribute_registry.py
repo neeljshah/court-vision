@@ -266,6 +266,82 @@ for _metric in MATCH_AGG_METRICS:
 ATTRIBUTES.update(_EXPANDED)
 
 
+# ---------------------------------------------------------------------------
+# WINDOW + OPPONENT-TIER + FORM attributes (49 -> 72 registry keys): per-year
+# GAME-DATED match_agg windows (year_YYYY, gate-consumable), opponent-rank-
+# tier splits (top20 / outside_top50), and a last-10-matches FORM snapshot.
+# Math in ingredients_windows.py/build_profiles_windows.py. All DESCRIPTIVE.
+#
+# window_<metric> is the PREDICTIONS-FACING multiplier: a year_2024 row can
+# condition a 2025 match via the leak-free prior-window gate (see
+# ingredients_windows.py's module docstring for the exact regex it matches).
+#
+# One registry key per METRIC, not per year -- window is a per-row runtime
+# value in the parquet (same convention match_agg_{metric}_{bucket} already
+# uses for its own per-year rows), so the per-year multiplier does NOT
+# explode the registry-key count; build_profiles_windows.main() separately
+# reports the distinct (attribute, window) pair count, which DOES grow with
+# every year.
+# ---------------------------------------------------------------------------
+OPPONENT_TIERS = ("top20", "outside_top50")
+WINDOW_YEAR_FLOOR = 20   # >=20 matches/year, task-declared
+TIER_FLOOR = 15          # >=15 matches/tier, task-declared
+FORM_FLOOR = 10          # last-10-matches, task-declared
+
+_WINDOWS: dict[str, dict] = {}
+for _metric in MATCH_AGG_METRICS:
+    _WINDOWS[f"window_{_metric}"] = {
+        "description": (
+            f"Per-year mean match_stats {_metric}, window='year_<YYYY>' (2015-2025, "
+            f"floor >={WINDOW_YEAR_FLOOR} matches/year) -- GAME-DATED, gate-consumable "
+            "(claim_features.window_to_season style='plain' matches ^year_(\\d{4})$). "
+            "PREDICTIONS-FACING: a year_2024 row can condition a 2025 match."
+        ),
+        "entity": "player", "ingredients": [f"match_stats_{_metric}"],
+        "formula": f"mean({_metric}) grouped by (entity, year), window='year_<YYYY>'",
+        "status": DESCRIPTIVE, "floor": {"n": WINDOW_YEAR_FLOOR},
+        "weight_ledger_family": "tennis_profile_window_predictive",
+    }
+    for _tier in OPPONENT_TIERS:
+        _WINDOWS[f"opp_tier_{_metric}_{_tier}"] = {
+            "description": (
+                f"Career mean match_stats {_metric} restricted to matches vs "
+                f"{'top-20-ranked' if _tier == 'top20' else 'outside-top-50-ranked'} "
+                "opponents (matches.parquet/wta_matches.parquet p{1,2}_rank of the "
+                "OPPONENT; rows with a missing opponent rank are excluded, not "
+                f"guessed). Floor >={TIER_FLOOR} matches in the tier."
+            ),
+            "entity": "player", "ingredients": [f"match_stats_{_metric}", "opponent_rank"],
+            "formula": f"mean({_metric}) where opp_rank {'<=20' if _tier == 'top20' else '>50'}, career window",
+            "status": DESCRIPTIVE, "floor": {"n": TIER_FLOOR},
+            "weight_ledger_family": "tennis_profile_descriptive",
+        }
+ATTRIBUTES.update(_WINDOWS)
+
+ATTRIBUTES["form_serve_dominance"] = {
+    "description": (
+        "Mean per-match serve-points-won realized rate (asof_hold._derive_realized, "
+        "same formula serve_return_profiles.py uses) over the player's most recent "
+        f"{FORM_FLOOR} matches -- rolling FORM snapshot, window='last10'."
+    ),
+    "entity": "player", "ingredients": ["match_stats_serve_pts_won"],
+    "formula": f"mean(serve_pts_won_realized) over last {FORM_FLOOR} matches by date",
+    "status": DESCRIPTIVE, "floor": {"n": FORM_FLOOR},
+    "weight_ledger_family": "tennis_profile_descriptive",
+}
+ATTRIBUTES["form_return_strength"] = {
+    "description": (
+        "Mean per-match return-points-won realized rate (asof_return._derive_realized_return, "
+        "same formula serve_return_profiles.py/match_agg_return_pts_won use) over the "
+        f"player's most recent {FORM_FLOOR} matches -- window='last10'."
+    ),
+    "entity": "player", "ingredients": ["match_stats_return_pts_won"],
+    "formula": f"mean(return_pts_won_realized) over last {FORM_FLOOR} matches by date",
+    "status": DESCRIPTIVE, "floor": {"n": FORM_FLOOR},
+    "weight_ledger_family": "tennis_profile_descriptive",
+}
+
+
 def concrete_attributes() -> list[str]:
     """All attribute names that build_profiles.py actually writes rows for (excludes BLOCKED)."""
     return [name for name, spec in ATTRIBUTES.items() if spec["status"] != BLOCKED]
