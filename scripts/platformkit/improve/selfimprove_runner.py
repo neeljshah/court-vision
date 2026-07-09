@@ -109,14 +109,26 @@ def _default_recalibrate_fn(name: str, settled: Sequence[Dict[str, Any]],
     except Exception:  # noqa: BLE001 -- flag helper missing -> fail safe (inert)
         _mark("inert", False)
         return None
-    try:  # optional real recalibrator
+    try:  # optional real recalibrator + the CLV-corpus compose bridge
         from scripts.platformkit.improve import recalibrator as _rc  # type: ignore
+        from scripts.platformkit.improve.clv_corpus_inject import inject_corpus as _inject
+        from scripts.platformkit.improve.recalibrate_with_corpus import (
+            recalibrate_with_corpus as _rwc,
+        )
     except Exception:  # noqa: BLE001 -- import failed -> TRANSIENT (retry, never skip)
         _mark("recalibrator_import_failed", True)
         return None
     try:
-        # Forward the SAME report so the recalibrator's own {reason, transient} wins.
-        return _rc.build_candidate(name, settled, report=report)  # type: ignore[attr-defined]
+        # base_build closes over `report` so build_candidate's own {reason, transient}
+        # notes still win (recalibrate_with_corpus itself takes no report kwarg).
+        # This appends the settled-CLV close corpus (FIX SI-CLV-CORPUS-WIRE) so a
+        # genuine model-beats-close window can clear the >=2-corpora rule instead of
+        # every candidate staying REPLICATION_PENDING forever with corpora==[].
+        return _rwc(
+            name, settled,
+            base_build=lambda n, s: _rc.build_candidate(n, s, report=report),
+            inject=_inject,
+        )
     except Exception as exc:  # noqa: BLE001 -- a raise here is TRANSIENT
         logger.debug("recalibrate_fn(%s) unavailable: %s", name, exc)
         _mark("recalibrate_exception", True)
