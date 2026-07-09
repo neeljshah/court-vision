@@ -33,23 +33,26 @@ def test_component_and_cadence_contract():
     assert DEFAULT_INTERVAL_SEC == 21600.0
 
 
-def test_tick_merges_both_sources():
+def test_tick_merges_all_sources():
     doc = tick(now=1000.0,
                probables_fn=lambda: 12,
-               injuries_fn=lambda: {"injury_rows": 280, "edge_facts": 160})
+               injuries_fn=lambda: {"injury_rows": 280, "edge_facts": 160},
+               umpires_fn=lambda: 52)
     assert doc["probable_rows"] == 12
     assert doc["injury_rows"] == 280
     assert doc["edge_facts"] == 160
+    assert doc["umpire_rows"] == 52
 
 
-def test_tick_never_raises_when_both_sources_raise():
+def test_tick_never_raises_when_all_sources_raise():
     def _boom():
         raise RuntimeError("planted")
-    doc = tick(now=1000.0, probables_fn=_boom, injuries_fn=_boom)
+    doc = tick(now=1000.0, probables_fn=_boom, injuries_fn=_boom, umpires_fn=_boom)
     # degraded but alive: zeros, no exception out of tick()
     assert doc["probable_rows"] == 0
     assert doc["injury_rows"] == 0
     assert doc["edge_facts"] == 0
+    assert doc["umpire_rows"] == 0
 
 
 def test_run_max_ticks_and_should_stop():
@@ -63,6 +66,7 @@ def test_run_max_ticks_and_should_stop():
     ticks = run(interval_sec=5.0,
                 probables_fn=_probables,
                 injuries_fn=lambda: {"injury_rows": 0, "edge_facts": 0},
+                umpires_fn=lambda: 0,
                 clock=lambda: 123.0,
                 sleep=slept.append,
                 max_ticks=3)
@@ -73,6 +77,7 @@ def test_run_max_ticks_and_should_stop():
     ticks = run(interval_sec=5.0,
                 probables_fn=_probables,
                 injuries_fn=lambda: {"injury_rows": 0, "edge_facts": 0},
+                umpires_fn=lambda: 0,
                 clock=lambda: 123.0,
                 sleep=lambda s: None,
                 should_stop=lambda: True)

@@ -3,10 +3,13 @@
 Every ~6h: snapshots the keyless MLB pregame CONTEXT the models were blind to --
 (1) probable pitchers + weather + HP umpire for today AND tomorrow (one statsapi
     schedule call per date, hydrate=probablePitcher,weather,officials) via
-    domains.mlb.ingest_probables.ingest_range, and
+    domains.mlb.ingest_probables.ingest_range,
 (2) the ESPN injury report snapshot + deterministic edge-fact extraction
     (edge_engine.extract_rule over the beat-writer comment text) via
-    domains.mlb.ingest_injuries.
+    domains.mlb.ingest_injuries, and
+(3) the FULL umpire crew assignments (HP/1B/2B/3B) for today AND tomorrow via
+    domains.mlb.ingest_umpire_assignments.ingest_range (same schedule endpoint,
+    long-format as-of store keyed by game_pk -- added 2026-07-09, PENDING-RESTART).
 
 KNOWLEDGE/SUBSTRATE ONLY -- adds data depth, not edge. Snapshot-append parquets
 with captured_at vintages; downstream joins must be as-of on snapshot_date.
@@ -53,6 +56,20 @@ def _tick_probables() -> int:
         return 0
 
 
+def _tick_umpires() -> int:
+    """Snapshot full umpire crew assignments for today + tomorrow. Returns
+    today's snapshot row count."""
+    from domains.mlb.ingest_umpire_assignments import ingest_range
+    import pandas as pd
+    today = _dt.date.today()
+    out = ingest_range([str(today), str(today + _dt.timedelta(days=1))])
+    try:
+        df = pd.read_parquet(out)
+        return int((df["snapshot_date"] == str(today)).sum())
+    except Exception:  # noqa: BLE001
+        return 0
+
+
 def _tick_injuries() -> Dict[str, int]:
     """Snapshot the injury report + emit deterministic edge facts."""
     from domains.mlb.ingest_injuries import (
@@ -70,11 +87,15 @@ def _tick_injuries() -> Dict[str, int]:
 
 def tick(*, now: float,
          probables_fn: Optional[Callable[[], int]] = None,
-         injuries_fn: Optional[Callable[[], Dict[str, int]]] = None) -> Dict[str, Any]:
-    """One context tick: probables -> injuries+facts -> heartbeat. Never raises."""
-    doc: Dict[str, Any] = {"probable_rows": 0, "injury_rows": 0, "edge_facts": 0}
+         injuries_fn: Optional[Callable[[], Dict[str, int]]] = None,
+         umpires_fn: Optional[Callable[[], int]] = None) -> Dict[str, Any]:
+    """One context tick: probables -> injuries+facts -> umpire crews ->
+    heartbeat. Never raises."""
+    doc: Dict[str, Any] = {"probable_rows": 0, "injury_rows": 0, "edge_facts": 0,
+                           "umpire_rows": 0}
     _probables = probables_fn if probables_fn is not None else _tick_probables
     _injuries = injuries_fn if injuries_fn is not None else _tick_injuries
+    _umpires = umpires_fn if umpires_fn is not None else _tick_umpires
     try:
         doc["probable_rows"] = int(_probables())
     except Exception as exc:  # noqa: BLE001
@@ -83,6 +104,10 @@ def tick(*, now: float,
         doc.update(_injuries() or {})
     except Exception as exc:  # noqa: BLE001
         logger.warning("mlb_context injuries tick raised: %s", exc)
+    try:
+        doc["umpire_rows"] = int(_umpires())
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("mlb_context umpires tick raised: %s", exc)
     _beat(now)
     return doc
 
@@ -90,6 +115,7 @@ def tick(*, now: float,
 def run(*, interval_sec: float = DEFAULT_INTERVAL_SEC,
         probables_fn: Optional[Callable[[], int]] = None,
         injuries_fn: Optional[Callable[[], Dict[str, int]]] = None,
+        umpires_fn: Optional[Callable[[], int]] = None,
         clock: Optional[Callable[[], float]] = None,
         sleep: Optional[Callable[[float], None]] = None,
         max_ticks: Optional[int] = None,
@@ -115,10 +141,12 @@ def run(*, interval_sec: float = DEFAULT_INTERVAL_SEC,
             now = float(_clock())
         except Exception:  # noqa: BLE001
             now = _time.time()
-        doc = tick(now=now, probables_fn=probables_fn, injuries_fn=injuries_fn)
-        print("%s | tick=%d probables=%d injuries=%d facts=%d" % (
+        doc = tick(now=now, probables_fn=probables_fn, injuries_fn=injuries_fn,
+                   umpires_fn=umpires_fn)
+        print("%s | tick=%d probables=%d injuries=%d facts=%d umps=%d" % (
             HEARTBEAT_COMPONENT, ticks, doc.get("probable_rows", 0),
-            doc.get("injury_rows", 0), doc.get("edge_facts", 0)), flush=True)
+            doc.get("injury_rows", 0), doc.get("edge_facts", 0),
+            doc.get("umpire_rows", 0)), flush=True)
         ticks += 1
         if max_ticks is not None and ticks >= max_ticks:
             break
