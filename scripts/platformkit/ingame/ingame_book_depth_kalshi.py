@@ -15,7 +15,11 @@ canonical row shape, stale_quote_flag rationale, WIRE SPEC). This file owns ONLY
 
   GET {KALSHI_BASE}/markets/trades?ticker=&limit=
     -> {"trades": [{"created_time": ISO-ms, "yes_price_dollars", ...}]}
-    ms-precision tape, used only for last_trade_ts / trades_last_5m recency.
+    ms-precision tape, used for last_trade_ts / trades_last_5m recency AND
+    (2026-07-09, execution-profile lane) the actual trade prices -- see
+    normalize_trade/new_trades_since below. Same fetch as always; no new
+    request, just no longer discarding the tape's prices after recency is
+    computed.
 
 Both endpoints verified live 2026-07-04 (keyless, no auth header needed for
 either read). No discovery/listing logic here -- that stays in
@@ -160,12 +164,60 @@ def trade_recency(trades: List[Dict[str, Any]], now_dt: datetime,
     return last_ts, n_recent
 
 
+def normalize_trade(t: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """One raw Kalshi trade dict -> {trade_ts, trade_id, price, count,
+    taker_side}. None if the trade has no parseable created_time (nothing to
+    watermark/order it by -- never a fabricated record). trade_id/count/
+    taker_side are best-effort (None if the field is absent), price is the
+    yes_price_dollars the tape actually printed at."""
+    if not isinstance(t, dict):
+        return None
+    dt = parse_trade_ts(t.get("created_time"))
+    if dt is None:
+        return None
+    return {
+        "trade_ts": dt.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+        "trade_id": t.get("trade_id"),
+        "price": _f(t.get("yes_price_dollars")),
+        "count": _f(t.get("count")),
+        "taker_side": t.get("taker_side"),
+    }
+
+
+def new_trades_since(trades: List[Dict[str, Any]], watermark: Optional[str] = None,
+                     limit: int = 50) -> Tuple[List[Dict[str, Any]], Optional[str]]:
+    """Normalize *trades*, keep only those strictly newer than *watermark* (a
+    trade_ts high-water-mark; dedup mechanism is this ts comparison, not a
+    trade_id set -- ms-precision trade_ts is unique in practice). watermark=None
+    (cold start, no prior poll) -> the whole fetched tape counts as new, so the
+    first poll is not silently empty. Sorts ascending, caps at *limit* (most
+    recent). Returns (new_trades, next_watermark); next_watermark is the
+    newest trade_ts seen, or the unchanged input watermark if *trades* is
+    empty/unparseable."""
+    normalized = [n for n in (normalize_trade(t) for t in trades) if n is not None]
+    if not normalized:
+        return [], watermark
+    normalized.sort(key=lambda n: n["trade_ts"])
+    next_watermark = normalized[-1]["trade_ts"]
+    if watermark:
+        next_watermark = max(watermark, next_watermark)
+        normalized = [n for n in normalized if n["trade_ts"] > watermark]
+    return normalized[-limit:], next_watermark
+
+
 def snapshot_market(ticker: str, *, http: HttpGet, now_dt: datetime,
-                    now_iso_fn: Callable[[], str]) -> Optional[Dict[str, Any]]:
+                    now_iso_fn: Callable[[], str], trade_watermark: Optional[str] = None,
+                    trade_limit: int = 50) -> Optional[Dict[str, Any]]:
     """One full depth snapshot for a Kalshi *ticker*: orderbook + trades tape.
     Returns None if the orderbook fetch fails entirely (no fake row). Does NOT
     set stale_quote_flag -- the caller (ingame_book_depth.py) does that with the
-    prior-snapshot comparison, kept out of this venue-only reader."""
+    prior-snapshot comparison, kept out of this venue-only reader.
+
+    Carries two TRANSIENT keys on the returned row -- "_new_trades" (normalized,
+    watermark-deduped, capped at trade_limit) and "_trade_watermark" (the next
+    high-water-mark to thread into the following poll) -- for the poller to pop
+    off and persist to the trades sidecar before writing the row to the depth
+    sidecar (the canonical depth row shape is unchanged on disk)."""
     ts = now_iso_fn()
     row = fetch_orderbook_row(ticker, http=http, ts=ts)
     if row is None:
@@ -174,10 +226,14 @@ def snapshot_market(ticker: str, *, http: HttpGet, now_dt: datetime,
     last_ts, n_recent = trade_recency(trades, now_dt)
     row["last_trade_ts"] = last_ts
     row["trades_last_5m"] = n_recent
+    new_trades, next_watermark = new_trades_since(trades, trade_watermark, limit=trade_limit)
+    row["_new_trades"] = new_trades
+    row["_trade_watermark"] = next_watermark
     return row
 
 
 __all__ = [
     "KALSHI_BASE", "parse_orderbook", "spread_bp", "fetch_orderbook_row",
-    "fetch_trades", "parse_trade_ts", "trade_recency", "snapshot_market",
+    "fetch_trades", "parse_trade_ts", "trade_recency", "normalize_trade",
+    "new_trades_since", "snapshot_market",
 ]

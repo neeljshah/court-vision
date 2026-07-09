@@ -121,11 +121,15 @@ def stale_quote_flag(prev: Optional[Dict[str, Any]], cur: Dict[str, Any]) -> boo
 
 def snapshot_kalshi_market(ticker: str, *, http: HttpGet = resilient_get_json,
                            now_dt: Optional[datetime] = None,
-                           prev: Optional[Dict[str, Any]] = None) -> Optional[Dict[str, Any]]:
+                           prev: Optional[Dict[str, Any]] = None,
+                           trade_watermark: Optional[str] = None) -> Optional[Dict[str, Any]]:
     """One full depth snapshot for a Kalshi *ticker* (delegates the fetch/parse to
-    ingame_book_depth_kalshi, then applies the shared stale_quote_flag)."""
+    ingame_book_depth_kalshi, then applies the shared stale_quote_flag). Passes
+    *trade_watermark* straight through to _kd.snapshot_market -- see that
+    docstring for the transient "_new_trades"/"_trade_watermark" row keys the
+    poller pops off before persisting the depth row."""
     row = _kd.snapshot_market(ticker, http=http, now_dt=now_dt or datetime.now(timezone.utc),
-                              now_iso_fn=_now_iso)
+                              now_iso_fn=_now_iso, trade_watermark=trade_watermark)
     if row is None:
         return None
     row["stale_quote_flag"] = stale_quote_flag(prev, row)

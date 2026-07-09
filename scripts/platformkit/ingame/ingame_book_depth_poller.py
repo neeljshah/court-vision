@@ -14,6 +14,18 @@ via an atomic-enough (append-mode, best-effort) JSONL writer. Bounded per sport
 (max_markets_per_sport) so one wide sport cannot dominate a tick; bounded overall
 (serve_bounded's duration_sec) so a live run always stops.
 
+Kalshi trade tape (2026-07-09, execution-profile lane): _kd.snapshot_market
+already fetches the trades endpoint for last_trade_ts/trades_last_5m recency;
+it now also returns the normalized, watermark-deduped trades on two TRANSIENT
+row keys ("_new_trades"/"_trade_watermark"). poll_kalshi_depth pops both off
+before writing the depth row (its on-disk shape is unchanged) and appends each
+new trade as its own line to the PARALLEL sidecar
+data/cache/book_depth/kalshi_trades/<date>.jsonl -- same venue-subdir +
+date-sharded jsonl convention as the depth sidecars, via the same
+_sidecar_path/_append_jsonl helpers. Per-ticker watermark threads through
+poll_once's *state* dict (mirrors kalshi_prev) so a repeated poll never
+re-persists an already-seen trade.
+
 INVARIANTS: build only under scripts/platformkit/ingame/; <=300 LOC; ASCII only;
 stdlib + repo-internal only. No pip installs. Per-file test:
   cd /c/Users/neelj/nba-ai-system && python -m pytest tests/platformkit/ingame/test_ingame_book_depth_poller.py -q
@@ -81,30 +93,47 @@ def poll_kalshi_depth(sports: List[str], *, http: HttpGet = resilient_get_json,
                       sidecar_dir: Optional[Path] = None,
                       now: Optional[Callable[[], datetime]] = None,
                       max_markets_per_sport: int = 5,
-                      prev_by_ticker: Optional[Dict[str, Dict[str, Any]]] = None
+                      prev_by_ticker: Optional[Dict[str, Dict[str, Any]]] = None,
+                      trade_watermark_by_ticker: Optional[Dict[str, str]] = None
                       ) -> Dict[str, Any]:
     """Discover + snapshot Kalshi depth across *sports*' open in-play tickers,
     appending each row to its date-sharded sidecar. Bounded per sport
-    (max_markets_per_sport). Never raises: a per-market failure is skipped."""
+    (max_markets_per_sport). Never raises: a per-market failure is skipped.
+
+    Also persists the trades tape's actual prices (already fetched inside
+    snapshot_kalshi_market for recency -- no extra request) to the parallel
+    kalshi_trades sidecar, watermarked per ticker via *trade_watermark_by_ticker*
+    so a repeated poll never re-writes an already-seen trade."""
     now_dt = (now() if now is not None else datetime.now(timezone.utc))
     prev_by_ticker = prev_by_ticker if prev_by_ticker is not None else {}
-    n_snapshotted = n_stale = 0
+    trade_watermark_by_ticker = trade_watermark_by_ticker if trade_watermark_by_ticker is not None else {}
+    n_snapshotted = n_stale = n_trades = 0
     rows: List[Dict[str, Any]] = []
     for sport in sports:
         tickers = _live_kalshi_tickers(sport, http=http)[:max_markets_per_sport]
         for ticker in tickers:
             row = _bd.snapshot_kalshi_market(ticker, http=http, now_dt=now_dt,
-                                             prev=prev_by_ticker.get(ticker))
+                                             prev=prev_by_ticker.get(ticker),
+                                             trade_watermark=trade_watermark_by_ticker.get(ticker))
             if row is None:
                 continue
+            new_trades = row.pop("_new_trades", [])
+            next_watermark = row.pop("_trade_watermark", None)
+            if next_watermark:
+                trade_watermark_by_ticker[ticker] = next_watermark
             row["sport"] = sport
             prev_by_ticker[ticker] = row
             _append_jsonl(_sidecar_path("kalshi", sidecar_dir, now_dt), row)
             n_snapshotted += 1
             n_stale += int(bool(row.get("stale_quote_flag")))
+            for trade in new_trades:
+                trade_row = dict(trade)
+                trade_row.update({"ts": row["ts"], "ticker": ticker, "sport": sport})
+                _append_jsonl(_sidecar_path("kalshi_trades", sidecar_dir, now_dt), trade_row)
+                n_trades += 1
             rows.append(row)
-    return {"n_snapshotted": n_snapshotted, "n_stale": n_stale, "rows": rows,
-            "venue": "kalshi", "as_of": _bd._now_iso()}
+    return {"n_snapshotted": n_snapshotted, "n_stale": n_stale, "n_trades": n_trades,
+            "rows": rows, "venue": "kalshi", "as_of": _bd._now_iso()}
 
 
 def poll_polymarket_depth(slugs: List[str], *, http: HttpGet = http_get_json,
@@ -155,10 +184,12 @@ def poll_once(*, sports: Optional[List[str]] = None,
     Never raises -- degrades to empty per-venue summaries."""
     st = state if state is not None else {}
     st.setdefault("kalshi_prev", {})
+    st.setdefault("kalshi_trade_watermarks", {})
     st.setdefault("poly_prev", {})
     st.setdefault("poly_tokens", {})
     k_summary = poll_kalshi_depth(sports or [], http=kalshi_http, sidecar_dir=sidecar_dir,
-                                  now=now, prev_by_ticker=st["kalshi_prev"])
+                                  now=now, prev_by_ticker=st["kalshi_prev"],
+                                  trade_watermark_by_ticker=st["kalshi_trade_watermarks"])
     p_summary = poll_polymarket_depth(polymarket_slugs or [], http=poly_http,
                                       sidecar_dir=sidecar_dir, now=now,
                                       token_cache=st["poly_tokens"], prev_by_token=st["poly_prev"])
