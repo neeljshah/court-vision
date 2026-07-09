@@ -65,8 +65,12 @@ def _stub(mapping):
 
 
 def test_wnba_fetch_builds_event():
+    from datetime import datetime, timezone
     http = _stub({"scoreboard": _WNBA_SCOREBOARD, "summary": _WNBA_SUMMARY})
-    events = EspnProvider(http_get=http, use_cache=False).fetch("wnba")
+    # now= pinned near the canned event's date -- the stale-echo guard (espn.py
+    # _MAX_EVENT_AGE_HOURS) would otherwise drop this old fixture date.
+    now = datetime(2026, 7, 4, tzinfo=timezone.utc)
+    events = EspnProvider(http_get=http, use_cache=False).fetch("wnba", now=now)
     assert isinstance(events, list) and len(events) == 1
     ev = events[0]
     assert ev.home == "New York Liberty" and ev.away == "Minnesota Lynx"
