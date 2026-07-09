@@ -46,6 +46,15 @@ _CACHE_DIR = os.path.join(PROJECT_DIR, "data", "cache", "quarter_box")
 _NBA_DIR = os.path.join(PROJECT_DIR, "data", "nba")
 _DEFAULT_SEASONS = ["2024-25", "2025-26"]
 _PERIODS = (1, 2, 3, 4)
+# BUGFIX (found by composite v2, commit 7b5ad29a): this script previously
+# fetched ONLY these 4 regulation periods, so any OT game's cache was
+# missing all OT scoring -- player_boxscores.parquet then summed to the
+# TIED end-of-regulation score instead of the true final. The NBA stats
+# API fully supports period 5+ (OT); we just never asked for it. Fixed by
+# _fetch_ot_periods() below, called after the 4 regulation periods for
+# every game (one extra harmless call for non-OT games: period 5 comes
+# back empty and is not cached).
+_MAX_OT_PERIODS = 4  # try up to 4OT (period 8) before giving up
 
 
 # ── game discovery ───────────────────────────────────────────────────────────
@@ -84,6 +93,7 @@ def collect_game_ids(seasons: List[str]) -> List[str]:
 # 2026-05-24. v2 with RangeType=1 + StartRange/EndRange in ticks DOES
 # correctly slice; we use that here.
 _QUARTER_TICKS = 7200  # 12 min * 60s * 10 ticks/s
+_OT_TICKS = 3000  # 5 min * 60s * 10 ticks/s (NBA OT periods are 5 min)
 
 _QUARTER_RANGE = {
     1: (0, 7200),
@@ -91,6 +101,10 @@ _QUARTER_RANGE = {
     3: (14400, 21600),
     4: (21600, 28800),
 }
+for _ot_n in range(1, _MAX_OT_PERIODS + 1):
+    _period = 4 + _ot_n
+    _start = 28800 + (_ot_n - 1) * _OT_TICKS
+    _QUARTER_RANGE[_period] = (_start, _start + _OT_TICKS)
 
 
 def fetch_quarter(game_id: str, period: int,
@@ -144,6 +158,38 @@ def fetch_quarter(game_id: str, period: int,
     return True
 
 
+def _period_is_empty(cache_dir: str, game_id: str, period: int) -> bool:
+    """True if the cached (or just-written) period file has no team rows,
+    i.e. that period never happened (regulation game / no further OT)."""
+    path = os.path.join(cache_dir, f"{game_id}_q{period}.json")
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return True
+    return not data.get("teams")
+
+
+def fetch_ot_periods(game_id: str, cache_dir: str = _CACHE_DIR,
+                      sleep_s: float = 0.0) -> int:
+    """Probe OT periods 5..(4+_MAX_OT_PERIODS) for one game, stopping at the
+    first empty period (that OT never happened). Returns count of NEW
+    non-empty period files written. Safe/idempotent: already-cached period
+    files are neither re-fetched nor re-probed past."""
+    written = 0
+    for ot_n in range(1, _MAX_OT_PERIODS + 1):
+        period = 4 + ot_n
+        out_path = os.path.join(cache_dir, f"{game_id}_q{period}.json")
+        if not os.path.exists(out_path):
+            if sleep_s:
+                time.sleep(sleep_s)
+            fetch_quarter(game_id, period, cache_dir=cache_dir)
+        if _period_is_empty(cache_dir, game_id, period):
+            break
+        written += 1
+    return written
+
+
 def _coerce(v):
     """JSON-safe coercion (NaN → None)."""
     if v is None:
@@ -184,12 +230,13 @@ def main() -> int:
     ids = collect_game_ids(args.seasons)
     print(f"[quarter-box] {len(ids)} unique game_ids across {args.seasons}")
 
-    # A game counts as "new" if ANY of its 4 quarter caches is missing.
+    # A game counts as "new" if any regulation quarter OR the OT-probe
+    # (q5, written even when empty -- see fetch_ot_periods) is missing.
     new_games = [
         gid for gid in ids
         if not all(
             os.path.exists(os.path.join(_CACHE_DIR, f"{gid}_q{p}.json"))
-            for p in _PERIODS
+            for p in (*_PERIODS, 5)
         )
     ]
     print(f"[quarter-box] {len(new_games)} games not fully cached")
@@ -211,6 +258,7 @@ def main() -> int:
                 written += 1
             else:
                 errors += 1
+        written += fetch_ot_periods(gid, sleep_s=args.sleep)
         if (i + 1) % 10 == 0:
             print(f"  [{i+1}/{len(new_games)}] written={written} "
                   f"skipped={skipped} errors={errors}", flush=True)
