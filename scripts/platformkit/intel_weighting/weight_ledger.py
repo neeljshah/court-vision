@@ -18,7 +18,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 LEDGER = REPO_ROOT / "data" / "cache" / "intel_claims" / "claim_weights.jsonl"
 
 
-def _row(g: GateResult) -> dict:
+def _row(g: GateResult, method: str = METHOD) -> dict:
     return {
         "family": g.family,
         "metric": g.metric,
@@ -32,7 +32,7 @@ def _row(g: GateResult) -> dict:
         "dm_p": g.dm_p,
         "verdict": g.verdict,
         "computed_at": datetime.now(timezone.utc).isoformat(),
-        "method": METHOD,
+        "method": method,
         "edge_claimed": False,
         "caveats": g.caveats,
     }
@@ -42,8 +42,12 @@ def _key(r: dict) -> tuple:
     return (r.get("family"), r.get("metric"), r.get("method"))
 
 
-def append_results(results: Iterable[GateResult], ledger: Path | None = None) -> Path:
-    """Upsert rows keyed by (family, metric, method). Rewrites atomically."""
+def append_results(results: Iterable[GateResult], ledger: Path | None = None,
+                   method: str = METHOD) -> Path:
+    """Upsert rows keyed by (family, metric, method). Rewrites atomically.
+    `method` stamps the row's method (default the relevance-gate method); a
+    different gate (e.g. profile_attribute_gate_v1) passes its own so it upserts
+    its OWN keys instead of clobbering the claim-gate's."""
     ledger = ledger or LEDGER
     ledger.parent.mkdir(parents=True, exist_ok=True)
     existing: dict = {}
@@ -58,7 +62,7 @@ def append_results(results: Iterable[GateResult], ledger: Path | None = None) ->
                 continue
             existing[_key(r)] = r
     for g in results:
-        r = _row(g)
+        r = _row(g, method)
         existing[_key(r)] = r
     tmp = ledger.with_suffix(".jsonl.tmp")
     with open(tmp, "w", encoding="ascii", errors="strict") as f:
