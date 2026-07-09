@@ -15,6 +15,7 @@ shots-based expected-goals proxy.
 """
 from __future__ import annotations
 
+import itertools
 import json
 import os
 from pathlib import Path
@@ -157,3 +158,109 @@ def load_statsbomb_context() -> tuple[dict, pd.DataFrame]:
     """(match_lookup, match_teams) shared by the formation/defensive builders."""
     match_lookup = _load_match_lookup()
     return match_lookup, build_match_teams(match_lookup)
+
+
+# --------------------------------------------------------------- 07-08 expansion
+
+def build_conceded_snapshot(possessions: pd.DataFrame, match_teams: pd.DataFrame) -> pd.DataFrame:
+    """Full-pattern mirror of build_possession_snapshot, reassigned to the
+    CONCEDING (opponent) team as entity_id -- same masked counter_xg/
+    regular_xg/set_piece_xg columns, just opponent-keyed, so
+    defensive_counter_threat/defensive_set_piece_threat in
+    ingredients_expanded.py can reuse the counter_threat/set_piece_threat
+    formula VERBATIM (algebraic mirror, offense -> defense)."""
+    if possessions.empty or match_teams.empty:
+        return pd.DataFrame(columns=["entity_id", "match_id", "xg", "counter_xg", "regular_xg", "set_piece_xg"])
+    merged = possessions.merge(match_teams, on="match_id", how="inner")
+    opponent_id = merged["home_id"].where(merged["team_id"] == merged["away_id"], merged["away_id"])
+    is_counter = merged["pattern_group"] == "counter"
+    is_regular = merged["pattern_group"] == "regular"
+    is_set_piece = merged["pattern_group"] == "set_piece_derived"
+    return pd.DataFrame({
+        "entity_id": opponent_id.astype(str),
+        "match_id": merged["match_id"],
+        "xg": merged["xg"].astype(float),
+        "counter_xg": merged["xg"].where(is_counter),
+        "regular_xg": merged["xg"].where(is_regular),
+        "set_piece_xg": merged["xg"].where(is_set_piece, 0.0),
+    })
+
+
+def build_possession_periods(events_dir: Path = _SB_EVENTS_DIR) -> pd.DataFrame:
+    """match_id, possession -> period of the possession's first event, for
+    first_half_xg_share/second_half_xg_share. An independent lightweight
+    walk over the same event files build_possessions reads (NOT a shared
+    call -- avoids adding a period column to the preregistered
+    prereg_possession_chains.build_possessions, which the counter-attack H1
+    ledger depends on staying byte-identical)."""
+    rows = []
+    for fn in os.listdir(events_dir):
+        match_id = int(fn.replace(".json", ""))
+        with open(events_dir / fn, encoding="utf-8") as f:
+            events = json.load(f)
+        for poss_id, grp_iter in itertools.groupby(events, key=lambda e: e.get("possession")):
+            if poss_id is None:
+                continue
+            grp = list(grp_iter)
+            rows.append({"match_id": match_id, "possession": poss_id, "period": grp[0].get("period")})
+    return pd.DataFrame(rows)
+
+
+def build_shot_counts(events_dir: Path = _SB_EVENTS_DIR) -> pd.DataFrame:
+    """match_id, team_id -> n_shots (count of Shot-type events), for
+    shots_per_possession (directness)."""
+    rows = []
+    for fn in os.listdir(events_dir):
+        match_id = int(fn.replace(".json", ""))
+        with open(events_dir / fn, encoding="utf-8") as f:
+            events = json.load(f)
+        for e in events:
+            if e.get("type", {}).get("name") != "Shot":
+                continue
+            team_id = (e.get("team") or {}).get("id")
+            if team_id is None:
+                continue
+            rows.append({"match_id": match_id, "team_id": team_id})
+    df = pd.DataFrame(rows, columns=["match_id", "team_id"])
+    return df.groupby(["match_id", "team_id"]).size().reset_index(name="n_shots")
+
+
+def build_season_side_snapshot(
+    match_stats_path: Path = _MATCH_STATS_PATH, matches_path: Path = _MATCHES_PATH,
+) -> pd.DataFrame:
+    """One row per (team, match, side) melting footballdata's home/away
+    columns into a single team-perspective frame -- drives every new
+    footballdata attribute in ingredients_expanded.py (home/away goal rate,
+    clean-sheet rate, comeback rate, shot conversion/accuracy, discipline,
+    fouls, corners). hthg/htag (half-time score) back the comeback_rate
+    attribute; late-goal share stays BLOCKED (no goal-minute column exists
+    in this corpus -- see attribute_registry.BLOCKED_ATTRIBUTES)."""
+    mstats = pd.read_parquet(match_stats_path)
+    matches = pd.read_parquet(matches_path)
+    cols = ["event_id", "hthg", "htag", "home_shots", "home_sot", "away_shots", "away_sot",
+            "home_corners", "away_corners", "home_fouls", "away_fouls",
+            "home_yellow", "away_yellow", "home_red", "away_red"]
+    merged = matches.merge(mstats[cols], on="event_id", how="inner")
+
+    def _side(is_home: bool) -> pd.DataFrame:
+        gf, ga = ("fthg", "ftag") if is_home else ("ftag", "fthg")
+        htf, hta = ("hthg", "htag") if is_home else ("htag", "hthg")
+        shots, sot = ("home_shots", "home_sot") if is_home else ("away_shots", "away_sot")
+        corners = "home_corners" if is_home else "away_corners"
+        fouls = "home_fouls" if is_home else "away_fouls"
+        yellow, red = ("home_yellow", "home_red") if is_home else ("away_yellow", "away_red")
+        team_col = "home_team" if is_home else "away_team"
+        win_codes = ["H", "D"] if is_home else ["A", "D"]
+        return pd.DataFrame({
+            "entity_id": merged[team_col], "entity_name": merged[team_col],
+            "season": merged["season"].astype(int), "match_id": merged["event_id"], "is_home": is_home,
+            "goals_for": merged[gf].astype(float), "goals_against": merged[ga].astype(float),
+            "shots_for": merged[shots].astype(float), "sot_for": merged[sot].astype(float),
+            "corners_for": merged[corners].astype(float), "fouls_for": merged[fouls].astype(float),
+            "cards_for": merged[yellow].astype(float) + merged[red].astype(float),
+            "clean_sheet": (merged[ga] == 0).astype(float),
+            "trailed_ht": (merged[htf] < merged[hta]).astype(float),
+            "won_or_drew": merged["ftr"].isin(win_codes).astype(float),
+        })
+
+    return pd.concat([_side(True), _side(False)], ignore_index=True)

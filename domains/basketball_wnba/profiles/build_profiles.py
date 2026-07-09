@@ -22,9 +22,13 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 from domains.basketball_wnba.claims_player_form import load_boxscores
-from domains.basketball_wnba.profiles.attribute_registry import ATTRIBUTES, rating_2k
+from domains.basketball_wnba.profiles.attribute_registry import ATTRIBUTES, WINDOW_OVERRIDES, rating_2k
+from domains.basketball_wnba.profiles.ingredients_defzone import BUILDERS as DEFZONE_BUILDERS
+from domains.basketball_wnba.profiles.ingredients_last10 import BUILDERS as LAST10_BUILDERS
 from domains.basketball_wnba.profiles.ingredients_lineup import BUILDERS as LINEUP_BUILDERS
 from domains.basketball_wnba.profiles.ingredients_player import BUILDERS as PLAYER_BUILDERS
+from domains.basketball_wnba.profiles.ingredients_zone import BUILDERS as ZONE_BUILDERS
+from domains.basketball_wnba.profiles.source_shots import load_all_shots
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 _LINEUPS_DIR = REPO_ROOT / "data" / "cache" / "team_system" / "lineups"
@@ -34,7 +38,9 @@ _LINEUP_OUT = _OUT_DIR / "wnba_lineup_profiles.parquet"
 
 WINDOW = "season_2026"
 
-_BUILDERS: dict[str, Callable[[pd.DataFrame], pd.DataFrame]] = {**PLAYER_BUILDERS, **LINEUP_BUILDERS}
+_BUILDERS: dict[str, Callable[[pd.DataFrame], pd.DataFrame]] = {
+    **PLAYER_BUILDERS, **LINEUP_BUILDERS, **ZONE_BUILDERS, **DEFZONE_BUILDERS, **LAST10_BUILDERS,
+}
 assert set(_BUILDERS) == set(ATTRIBUTES), f"builder/registry mismatch: {set(ATTRIBUTES) ^ set(_BUILDERS)}"
 
 _FRAME_LOADERS: dict[str, Callable[[], pd.DataFrame]] = {
@@ -49,6 +55,9 @@ _FRAME_LOADERS: dict[str, Callable[[], pd.DataFrame]] = {
     "spacing": lambda: pd.read_parquet(_LINEUPS_DIR / "lineup_spacing_wnba_2026.parquet"),
     "matchup_net": lambda: pd.read_parquet(_LINEUPS_DIR / "lineup_matchups_wnba_2026.parquet"),
     "minutes_together": lambda: pd.read_parquet(_LINEUPS_DIR / "stints_wnba_2026.parquet"),
+    **{attr: load_all_shots for attr in ZONE_BUILDERS},
+    **{attr: (lambda: pd.read_parquet(_LINEUPS_DIR / "zone_onoff_wnba_2026.parquet")) for attr in DEFZONE_BUILDERS},
+    **{attr: load_boxscores for attr in LAST10_BUILDERS},
 }
 assert set(_FRAME_LOADERS) == set(ATTRIBUTES), f"loader/registry mismatch: {set(ATTRIBUTES) ^ set(_FRAME_LOADERS)}"
 
@@ -71,7 +80,7 @@ def build_attribute(attr: str) -> tuple[pd.DataFrame, dict[str, Any]]:
     n_excluded = n_considered - len(qualified)
     scored = _percentile_and_rating(qualified)
 
-    scored["window"] = WINDOW
+    scored["window"] = WINDOW_OVERRIDES.get(attr, WINDOW)
     scored["attribute"] = attr
     scored["ingredients"] = scored["ingredients"].map(json.dumps)
     scored["status"] = spec["status"]

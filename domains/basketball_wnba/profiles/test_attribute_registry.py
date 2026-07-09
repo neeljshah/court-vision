@@ -9,12 +9,15 @@ import pytest
 from domains.basketball_wnba.profiles.attribute_registry import (
     ATTRIBUTES, ENTITIES, STATUSES, attributes_for, rating_2k,
 )
+from domains.basketball_wnba.profiles.ingredients_defzone import BUILDERS as DEFZONE_BUILDERS
+from domains.basketball_wnba.profiles.ingredients_last10 import BUILDERS as LAST10_BUILDERS
 from domains.basketball_wnba.profiles.ingredients_lineup import BUILDERS as LINEUP_BUILDERS
 from domains.basketball_wnba.profiles.ingredients_player import BUILDERS as PLAYER_BUILDERS
+from domains.basketball_wnba.profiles.ingredients_zone import BUILDERS as ZONE_BUILDERS
 
 
 def test_registry_builder_parity():
-    all_builders = {**PLAYER_BUILDERS, **LINEUP_BUILDERS}
+    all_builders = {**PLAYER_BUILDERS, **LINEUP_BUILDERS, **ZONE_BUILDERS, **DEFZONE_BUILDERS, **LAST10_BUILDERS}
     assert set(ATTRIBUTES) == set(all_builders)
 
 
@@ -33,7 +36,7 @@ def test_registry_entry_shape(attr, spec):
 def test_attributes_for_entity_split():
     players = attributes_for("player")
     lineups = attributes_for("lineup")
-    assert len(players) == 8
+    assert len(players) == 28  # 8 original + 07-08 expansion: 10 zone + 1 assisted_share + 4 defzone + 5 last10
     assert len(lineups) == 3
     assert set(players) | set(lineups) == set(ATTRIBUTES)
 
