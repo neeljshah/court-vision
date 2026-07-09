@@ -1,51 +1,31 @@
-"""Answer contracts -- turns a concept (domains/basketball_nba/concepts/
-concept_registry.py) into one of four question shapes. Every answer object
+"""Answer contracts -- turns a concept (per-sport registry via
+registry_loader.get_registry) into one of four question shapes. Every answer
 carries window + n + status + provenance (ingredients); NEVER a bare number.
-
-Reuses concept_registry.derive_weights for the one weight formula, and
-ask.load_profiles/_norm/_match_entities for profile loading + entity
-resolution (the same fuzzy match the plain ask CLI already uses).
+Reuses each registry's derive_weights for the one weight formula, and
+ask.load_profiles/_norm/_match_entities for profile loading + entity resolution.
 
 Question shapes:
     superlative  -- answer_superlative(concept, ...)          "best X"
     comparison   -- answer_comparison(concept, a, b, ...)     "A vs B on X"
     explanation  -- answer_explanation(concept, entity, ...)  "why is A good at X"
     fit          -- answer_fit(concept, entity, roster, ...)  "does A fit team T need X"
-        fit's "team need" is a documented proxy (the roster's own current
-        composite average for the concept) -- no on-disk team-need dataset
-        exists to draw on instead.
-
+        (fit's "team need" = the roster's own composite average, a documented
+        proxy -- no on-disk team-need dataset exists.)
 Never routes a forecast/prediction question here (docs/analytics/ANSWER_RULES.md):
 this answers "what is true about X", not "what will happen" -- predict-matchup owns that.
 """
 from __future__ import annotations
 
 import argparse
-import importlib
 import re
 import unicodedata
-from functools import lru_cache
 from typing import Any
 
 import pandas as pd
 
 from domains.basketball_nba.concepts.concept_registry import STATUS_RANK  # sport-generic status ladder
+from scripts.platformkit.answers.registry_loader import get_registry as _registry
 from scripts.platformkit.profiles import ask as _ask
-
-# sport -> its concepts module (each domain's concept_registry.py is self-contained).
-_CONCEPT_REGISTRY_MODULE = {
-    "nba": "domains.basketball_nba.concepts.concept_registry",
-    "mlb": "domains.mlb.concepts.concept_registry",
-}
-
-
-@lru_cache(maxsize=None)
-def _registry(sport: str):
-    path = _CONCEPT_REGISTRY_MODULE.get(sport)
-    if path is None:
-        raise ValueError(f"no concept registry wired for sport '{sport}'. "
-                          f"Available: {sorted(_CONCEPT_REGISTRY_MODULE)}")
-    return importlib.import_module(path)
 
 
 def _load_df(sport: str, kind: str = "player") -> pd.DataFrame:
