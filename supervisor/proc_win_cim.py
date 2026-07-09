@@ -24,9 +24,14 @@ from typing import Any, Dict, List, Optional
 # to a SINGLE enumeration (all subsequent lookups hit the cache in microseconds).
 # Staleness is bounded by _TABLE_TTL_SEC and only affects the PID-REUSE guard /
 # survivor scan, both of which already tolerate one-tick latency.
-# ponytail: TTL cache; prime-at-tick-start only if a slow probe ever splits a
-# tick's is_alive burst across the TTL boundary (currently they run back-to-back).
-_TABLE_TTL_SEC = 2.0
+# RESIDUAL FIX (2026-07-10b): a 2.0s TTL still expired MID-TICK -- measured ~1
+# enumeration per ~2.4s of tick time, so a 60-90s tick re-paid ~25-40 x 1.3-2s
+# = 40-80s (the observed 66-90s residual). 30s covers a whole slow tick with ONE
+# enumeration. Safe: a dead pid fails the cheap OpenProcess check BEFORE the
+# cache is consulted, and an unknown (fresh) pid returns None -> caller trusts
+# pid liveness -- staleness can only delay the rare pid-reuse detection by <=30s.
+# ponytail: wall-clock TTL; per-tick generation token if 30s ever proves too stale.
+_TABLE_TTL_SEC = 30.0
 _table_cache: Dict[str, Any] = {"t": 0.0, "rows": []}
 
 
