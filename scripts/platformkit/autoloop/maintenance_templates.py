@@ -22,6 +22,11 @@ the other two or the SP-template cycle around it.
    known pattern) queues one human-queue row naming which SURVIVES_PREREG
    ledger rows (for that sport) now have an untested replication corpus.
    Never auto-runs a replication fit -- a fresh prereg needs a deciding mind.
+
+Job #6, ingame_benchmarks (scripts.platformkit.autoloop.ingame_benchmark_job), follows
+the same watermark-gated plain-function shape: re-runs the MLB/NBA in-game
+MODEL-vs-MARKET benchmarks only once their labeled-game count grew >=25% since the
+stored watermark. See that module's docstring for detail.
 """
 from __future__ import annotations
 
@@ -208,6 +213,12 @@ def run_all(watermarks: Dict[str, Any], *, queue_fn: Optional[Callable[[Dict[str
         out["scoreboard_history"] = append_rows()
     except Exception as exc:  # noqa: BLE001
         out["scoreboard_history"] = {"status": "error", "error": str(exc)[:200]}
+    try:
+        # watermark-gated in-game benchmark re-runs (grows with the labeled corpora)
+        from scripts.platformkit.autoloop.ingame_benchmark_job import run_ingame_benchmarks
+        out["ingame_benchmarks"] = run_ingame_benchmarks(watermarks)
+    except Exception as exc:  # noqa: BLE001
+        out["ingame_benchmarks"] = {"status": "error", "error": str(exc)[:200]}
     return out
 
 
