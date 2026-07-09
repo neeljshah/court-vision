@@ -26,6 +26,8 @@ def answer(query: str, sport: str = "nba", **kwargs) -> str:
         return f"NOT_SUPPORTED -- {env['note']}"
     if status == "no_data":
         return f"NO_DATA -- {env.get('note') or env.get('detail') or 'zero rows matched'}"
+    if status == "ambiguous":
+        return f"AMBIGUOUS -- multiple matches: {', '.join(env.get('candidates', []))}"
     cat = env["category"]
     if cat in ("player_stat", "rating_attribute"):
         if cat == "player_stat":
@@ -52,6 +54,11 @@ def answer(query: str, sport: str = "nba", **kwargs) -> str:
     if cat == "historical_result":
         return (f"{env['away_team']} {env['away_score']} @ {env['home_team']} {env['home_score']} "
                 f"-- winner {env['winner']} | source: {env['source_artifact']} | as-of: {env['as_of']}")
+    if cat == "mechanism_effect":
+        findings = "; ".join(f"{f['verdict']} effect={f['effect_local']} n={f['n']} p={f['p']} "
+                              f"({f['corpus']}): {f['note']}" for f in env["findings"])
+        return (f"{env['hypothesis']}: {findings} | {env['framing']} "
+                f"| source: {env['source_artifact']} | as-of: {env['as_of']}")
     return f"UNHANDLED category {cat}"
 
 

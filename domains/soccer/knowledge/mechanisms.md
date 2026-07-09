@@ -151,102 +151,85 @@ calibration/mechanism receipt, not ROI.
 
 ---
 
-## Seeded, UNTESTED (highest-leverage remaining; run through a validate_*.py before believing)
+## Validated 2026-07-09 (14 -- fresh leak-free local tests, receipts in `validation_ledger.jsonl`)
 
 ### 14. Home-advantage decomposition (crowd component)
 - **claim**: home-field advantage is not monolithic -- a crowd/atmosphere sub-component is separable from travel and referee-bias sub-components.
-- **causal story**: crowd noise affects referee decisions and opponent composure independent of the travel-fatigue or officiating-bias channels.
-- **expected signature**: home win-rate should NOT fully explain away once a proxy for attendance/stadium size is added as a control.
-- **test spec**: needs an attendance/stadium-capacity ingredient per match -- check `matches/*.json` (`stadium` field is present; attendance is not, per a quick schema check this session).
-- **status**: UNTESTED
+- **status**: NOT_TESTABLE -- `matches/*.json` (3,961 records, joined 400-for-400 to `match_meta.parquet` this session) has a `stadium` field but NO `attendance` field anywhere (0 non-null of 400 rows checked); no crowd-size proxy exists locally.
+- **artifact link**: `domains/soccer/knowledge/validate_referee_schedule.py::_premise_blocked` (home_advantage_crowd_component).
 
 ### 15. Home-advantage decay/growth across a season
-- **claim**: the home-win-rate edge is not constant -- it may compress or widen as the season progresses (e.g. fatigue, fixture congestion for away sides).
-- **causal story**: early-season home advantage reflects preseason prep asymmetries; late-season may reflect run-in fatigue asymmetries.
-- **expected signature**: home win-rate by match-week tercile trending non-flat.
-- **test spec**: corpus A only (has `match_week` in the cached `matches/*.json` files); home win-rate by week-tercile, chi-square.
-- **status**: UNTESTED
+- **claim**: the home-win-rate edge is not constant across a season -- it may compress or widen as the season progresses.
+- **status**: REJECTED (NULL_LOCAL) -- directionally rising (0.343 early -> 0.45 late) but not significant at alpha=0.01.
+- **measured LOCAL magnitude**: chi2 p=0.458, home win-rate by match-week tercile: early 0.3429, mid 0.400, late 0.450; effect +0.107, n=200 (corpus A only, `matches/*.json` `match_week` joined to `match_meta.parquet`, confirmed present for all 400 rows this session).
+- **artifact link**: `domains/soccer/knowledge/validate_referee_schedule.py::home_advantage_by_matchweek`.
 
 ### 16. Referee card-rate individual consistency (split-half)
-- **claim**: individual referees differ in how card-happy they are, and that tendency is a stable personal trait, not per-match noise.
-- **causal story**: officiating style (letting play flow vs quick to card) is a referee-level trait that should persist across that referee's matches.
-- **expected signature**: split-half correlation of a referee's cards-per-match rate.
-- **test spec**: the ingredient DOES exist locally (`data/cache/statsbomb/matches/*.json` carries a `referee.name`/`referee.id` field, confirmed this session by reading `2_27.json`) but is not yet joined to `match_meta.parquet` or wired into `_data.py` -- a straightforward follow-up loader, not a data gap.
-- **status**: UNTESTED
+- **claim**: individual referees differ in card-happiness, and that tendency is a stable personal trait.
+- **status**: NOT_TESTABLE -- 82 distinct referees officiate the 400-match corpus, but fewer than 10 have >=3 matches in BOTH season halves; too sparse for a per-referee split-half correlation on this slice (referee identity itself was confirmed joinable this session -- the gap is sample density, not the ingredient).
+- **artifact link**: `domains/soccer/knowledge/validate_referee_schedule.py::referee_card_rate_persistence`.
 
 ### 17. Yellow-card accumulation suspension effect
-- **claim**: a team missing a suspended player (accumulated-yellows ban) performs worse in that match than its baseline.
-- **causal story**: losing any starter to suspension is a talent downgrade; specifically-accumulated (not red-card) suspensions are a clean natural experiment since the absence is scheduled, not injury-correlated with recent form.
-- **expected signature**: lower goal differential in a suspension-affected match vs that team's other matches.
-- **test spec**: needs a suspension/ban ingredient (accumulated-yellow tracking across a full season) -- likely NOT_TESTABLE on the 200-of-380-match subsample (accumulated-yellow tracking requires the FULL season's card history per player, which our subsample doesn't have); check with the full `matches/*.json` card history before running.
-- **status**: UNTESTED
+- **claim**: a team missing a suspended player performs worse in that match than its baseline.
+- **status**: NOT_TESTABLE -- accumulated-yellow suspension tracking needs each player's FULL-season card history; the 400-match corpus is a partial slice (200/380 per corpus) so any suspension inferred from it would be an artifact of the missing games, not a real ban.
+- **artifact link**: `domains/soccer/knowledge/validate_referee_schedule.py::_premise_blocked` (yellow_card_suspension_effect).
 
-### 18. Set-piece share of total xG
-- **claim**: a meaningful share of a team's total shot xG comes from set pieces (corners/free kicks/penalties), and that share varies systematically by team style.
-- **causal story**: possession-light, direct-style teams should lean more heavily on set-piece xG share than possession-dominant teams.
-- **expected signature**: set-piece xG share correlated with a team's overall possession-share proxy.
-- **test spec**: per-team set-piece-xG / total-xG ratio vs team possession share, cross-sectional Pearson r.
-- **status**: UNTESTED
+### 18. Set-piece share of total xG -- LOCAL NULL
+- **claim**: set-piece xG share varies systematically with a team's overall possession-share (style proxy).
+- **status**: REJECTED (NULL_LOCAL).
+- **measured LOCAL magnitude**: pearson r=0.0288, p=0.017, n=6,879 team-match units (full 3,443-match event-cache scan, pass-share as possession proxy).
+- **artifact link**: `domains/soccer/knowledge/validate_pressing_defense.py::setpiece_xg_share_vs_possession`.
 
 ### 19. Pressing intensity (PPDA proxy) vs opponent turnover rate
-- **claim**: a team's passes-allowed-per-defensive-action (PPDA, a pressing-intensity proxy) predicts how often it forces opponent turnovers.
-- **causal story**: aggressive pressing (low PPDA) should directly produce more regains/interceptions in the opponent's build-up zone.
-- **expected signature**: negative correlation, PPDA vs opponent-turnovers-per-possession.
-- **test spec**: derivable from event data alone (Pressure/Interception/Ball Recovery/Duel event counts vs opponent Pass counts), full event cache, team-match grain.
-- **status**: UNTESTED
+- **claim**: a team's PPDA (pressing-intensity proxy) predicts how often it forces opponent turnovers.
+- **status**: CONFIRMED
+- **measured LOCAL magnitude**: pearson r=-0.558, p~0, n=6,886 team-match units (full event-cache scan); PPDA-proxy = opponent passes / own Pressure+Duel+Interception count, turnover rate = (interceptions+recoveries)/opponent passes. Direction matches the claim: lower PPDA (more pressing) -> higher turnover rate. The strongest single-effect CONFIRMED_LOCAL row in this session's soccer batch.
+- **artifact link**: `domains/soccer/knowledge/validate_pressing_defense.py::pressing_ppda_vs_turnover_rate`.
+- **wiring**: in-game conditioning-feature candidate -- team PPDA-proxy as a live pressing-intensity prior for opponent-turnover-rate re-pricing.
 
 ### 20. Goalkeeper distribution style vs possession retention
-- **claim**: a goalkeeper's distribution style (short vs long) predicts how well the team retains possession from that restart.
-- **causal story**: short buildup from the keeper should retain possession more often than a long punt into a contested aerial duel.
-- **expected signature**: higher immediate-possession-retention rate after short GK distribution vs long.
-- **test spec**: `Goal Keeper` event type, distribution length/outcome fields, vs whether the ensuing possession stays with the same team.
-- **status**: UNTESTED
+- **claim**: short GK distribution retains possession more often than long distribution.
+- **status**: CONFIRMED
+- **measured LOCAL magnitude**: goal-kick retention rate, short/ground (0.986, n=17,786) vs long/high (0.391, n=38,476); effect +0.595, p~0, n=56,262 (full 3,443-match event-cache scan, `pass.type.name=="Goal Kick"` height-classified, retained = no Incomplete/Out/Offside/Unknown outcome).
+- **artifact link**: `domains/soccer/knowledge/validate_event_windows.py::goalkeeper_distribution_vs_retention`.
+- **wiring**: in-game conditioning-feature candidate -- goal-kick height/type as a live possession-retention-probability re-pricer at every restart.
 
 ### 21. Formation-change mid-match impact
-- **claim**: an in-match formation change (tactical shift, not just a personnel sub) measurably changes a team's shot rate or shots-conceded rate.
-- **causal story**: a shape change should alter both attacking structure and defensive coverage simultaneously.
-- **expected signature**: shot-rate-for and shot-rate-against gap before/after a `Tactical Shift` event, same design as the substitution check (#11).
-- **test spec**: `Tactical Shift` event type (confirmed present in the event schema this session, ~558 instances in a 300-file sample), paired before/after window.
-- **status**: UNTESTED
+- **claim**: a `Tactical Shift` event measurably changes a team's shot rate.
+- **status**: CONFIRMED
+- **measured LOCAL magnitude**: shots/min after own team's 1st Tactical Shift vs before, paired; effect +0.0205, p=1.2e-43, n=4,356 team-match units (full event-cache scan, >=10min on both sides of the shift).
+- **artifact link**: `domains/soccer/knowledge/validate_event_windows.py::tactical_shift_shot_rate_change`.
+- **wiring**: in-game conditioning-feature candidate -- `Tactical Shift` event as a live shot-rate re-pricing trigger, same shape as the CONFIRMED substitution-window design (#11's reject) but this one clears the bar.
 
-### 22. Injury-time added-goals rate
-- **claim**: goals are disproportionately likely to be scored in the added-time minutes of each half relative to the added-time's share of total match duration.
-- **causal story**: added time is disproportionately end-game-desperation (trailing team throws numbers forward) or game-management (leading team defends deep, concedes fewer chances) -- net direction is an empirical question.
-- **expected signature**: goals-per-minute in added time (minute > 45 in period 1 / minute > 90 in period 2) vs goals-per-minute in regulation time.
-- **test spec**: full event cache, goal timeline vs each match's own regulation-length cutoff (StatsBomb's own `minute` field already carries this), Welch t-test on per-minute goal rate.
-- **status**: UNTESTED
+### 22. Injury-time added-goals rate -- LOCAL NULL
+- **claim**: goals-per-minute in added time differs from regulation time.
+- **status**: REJECTED (NULL_LOCAL) -- direction is positive (added time slightly higher) but below the declared min-effect bar.
+- **measured LOCAL magnitude**: goals-per-minute, added-time 0.0329 (654 goals / 19,890 min) vs regulation 0.0297 (9,192 goals / 309,812 min); effect +0.0032, p=0.0099, n=9,846 goals (full event-cache scan, added time = period1 minute>45 or period2 minute>90).
+- **artifact link**: `domains/soccer/knowledge/validate_event_windows.py::injury_time_added_goals_rate`.
 
 ### 23. Corner-to-shot conversion by delivery side
-- **claim**: corners taken from one side (e.g. the attacking team's stronger-footed side) produce a shot more often than the other side.
-- **causal story**: a right-footed corner-taker's natural inswinger from the left is a more direct threat than an outswinger from the right (or vice versa) -- delivery mechanics change shot-producing probability.
-- **expected signature**: shot-within-possession rate differs by corner-taker's side vs foot.
-- **test spec**: `Pass` events tagged as corners (`play_pattern.name == "From Corner"`), location + player footedness (not directly in the schema -- would need a footedness lookup, likely a v2 ingredient), vs whether the possession produced a shot.
-- **status**: UNTESTED
+- **claim**: corner delivery side/footedness changes shot-producing probability.
+- **status**: NOT_TESTABLE -- corner-taker footedness is not in the StatsBomb event or lineup schema locally; would need an external footedness lookup, a v2 ingredient.
+- **artifact link**: `domains/soccer/knowledge/validate_referee_schedule.py::_premise_blocked` (corner_delivery_side_conversion).
 
-### 24. Extra-time/knockout fatigue -- likely NOT_TESTABLE on this corpus
-- **claim**: teams playing extra time in a knockout match show measurably worse output (shot rate, pass accuracy) in the extra 30 minutes vs regulation.
-- **causal story**: accumulated fatigue over 90+ minutes should degrade execution quality in extra time specifically.
-- **expected signature**: n/a until extra-time (period 3/4) matches exist in the corpus.
-- **test spec**: check `period` value-set across the cached event files for values > 2.
-- **status**: UNTESTED -- honest expectation is NOT_TESTABLE, since this corpus (EPL 2015/16 league season + FA WSL league matches) is not a knockout competition and observed periods in every file checked this session were only {1, 2}.
+### 24. Extra-time/knockout fatigue
+- **claim**: teams playing extra time show worse output in the extra 30 minutes vs regulation.
+- **status**: NOT_TESTABLE -- both corpora (EPL 2015/16, FA WSL) are league-season round-robin competitions with no knockout legs; every cached event file's `period` value-set is {1,2}, confirmed this session -- no extra-time periods exist to test.
+- **artifact link**: `domains/soccer/knowledge/validate_referee_schedule.py::_premise_blocked` (extra_time_knockout_fatigue).
 
 ### 25. Squad-rotation (cup vs league) fixture effect
-- **claim**: teams rotate their strongest XI out for lower-stakes fixtures (cup rounds vs league), and that rotation shows up as a measurable quality/output dip.
-- **causal story**: manager incentive to rest starters for a lower-priority competition.
-- **expected signature**: lower average lineup "quality" (proxied by starting-XI regular-starter overlap) in cup vs league fixtures for the same team.
-- **test spec**: needs a competition-type tag per match beyond what `match_meta.parquet` carries (it has no competition/round field -- only date/teams/score/corpus); likely NOT_TESTABLE on the current 400-match slice without pulling competition metadata from `matches/*.json`.
-- **status**: UNTESTED
+- **claim**: teams rotate their strongest XI for lower-stakes cup fixtures vs league fixtures.
+- **status**: NOT_TESTABLE -- `competition_stage` for all 400 corpus matches (joined from `matches/*.json` this session) is uniformly "Regular Season"; no cup fixtures exist in this slice to contrast against league fixtures.
+- **artifact link**: `domains/soccer/knowledge/validate_referee_schedule.py::_premise_blocked` (squad_rotation_cup_vs_league).
 
-### 26. Defensive-block height vs opponent shot location
-- **claim**: a team defending in a deeper block concedes shots from further out (lower average shot xG per attempt) than a team pressing higher up the pitch, even though it may concede MORE shots overall.
-- **causal story**: a deep block cedes the ball but protects the highest-value central/close-range area; a high press risks fewer-but-higher-quality chances against on the counter.
-- **expected signature**: negative correlation between a team's average defensive-action location (proxy for block height) and opponent's average shot xG per attempt.
-- **test spec**: average `location` of Pressure/Tackle/Interception events (defensive block height proxy) vs opponent's mean `shot.statsbomb_xg`, team-season grain.
-- **status**: UNTESTED
+### 26. Defensive-block height vs opponent shot location -- LOCAL NULL
+- **claim**: a deeper defensive block concedes shots from further out (lower opponent xG-per-shot) than a high press.
+- **status**: REJECTED (NULL_LOCAL) -- block-height proxy adapted to a direction-agnostic form (StatsBomb does not label attacking direction per period, so absolute pitch-side block depth cannot be computed directly; proxy = |own defensive-action mean x - own shot mean x|, a compactness measure, declared simplification).
+- **measured LOCAL magnitude**: pearson r=0.0078, p=0.517, n=6,872 team-match units (full event-cache scan).
+- **artifact link**: `domains/soccer/knowledge/validate_pressing_defense.py::defensive_block_height_vs_opponent_xg`.
 
-### 27. Away-goal timing asymmetry (does the away team's first goal carry extra value)
-- **claim**: an away team's first goal shifts win probability by more than a home team's first goal of the same match-minute, because it removes the crowd/atmosphere tailwind from the home side.
-- **causal story**: silencing a home crowd has an extra psychological effect beyond the scoreline itself.
-- **expected signature**: larger post-goal shot-rate shift (of both teams combined) for away-team goals than home-team goals, matched on match-minute.
-- **test spec**: same state-segment machinery as the leading-team check (#9), split by which side (home/away) scored, matched-minute comparison.
-- **status**: UNTESTED
+### 27. Away-goal timing asymmetry -- LOCAL NULL
+- **claim**: an away team's first goal shifts combined shot rate more than a home team's first goal of the same match-minute.
+- **status**: REJECTED (NULL_LOCAL).
+- **measured LOCAL magnitude**: combined shot-rate shift (after-before, matched window around the match's first goal), away-team-scored 0.0618 (n=158) vs home-team-scored 0.0570 (n=172); effect +0.0048, n=330, 400-match corpus.
+- **artifact link**: `domains/soccer/knowledge/validate_referee_schedule.py::away_goal_timing_asymmetry`.
