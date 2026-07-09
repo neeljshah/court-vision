@@ -185,20 +185,22 @@ def _fmt_row(row) -> str:
     return "\n".join(L)
 
 
-def answer(query: str, sport: str | None = None, window: str | None = None) -> str:
+def answer_lookup(query: str, sport: str | None = None, window: str | None = None) -> dict:
+    """Structured single-attribute lookup -- the same resolution `answer()`
+    renders to a string, returned instead as {status, ...} so a caller (e.g.
+    the resolver registry) gets the real pd.Series row, not a formatted
+    string to re-parse. status is one of:
+    no_data / no_entity / ambiguous / no_attribute / ok."""
     df = load_profiles(sport)
     if df.empty:
-        return ("No profiles built yet -- run domains/<sport>/profiles/build_profiles.py "
-                "to populate data/cache/profiles/.")
+        return {"status": "no_data"}
     q_tokens = _norm(query).split()
     best, hits = _match_entities(df, q_tokens)
     if not hits:
-        return "No entity matched. Try --list to see what is available."
+        return {"status": "no_entity"}
     uniq = {(e, n): sp for e, n, sp in hits}
     if len(uniq) > 1:
-        lines = ["Multiple entities match -- narrow your query:"]
-        lines += [f"  - {n} ({sp})" for (e, n), sp in uniq.items()]
-        return "\n".join(lines)
+        return {"status": "ambiguous", "candidates": [f"{n} ({sp})" for (e, n), sp in uniq.items()]}
     eid, ename, esp = hits[0]
     sub = df[(df["entity_id"] == eid) & (df["sport"] == esp)]
     ent_toks = set(_norm(ename).split())
@@ -206,11 +208,26 @@ def answer(query: str, sport: str | None = None, window: str | None = None) -> s
     reg = load_registry(esp)
     attr = _match_attribute(sub, leftover, reg)
     if attr is None:
-        avail = sorted(sub["attribute"].unique())
-        return (f"Attribute not recognized for {ename}. Available {esp} attributes:\n  "
-                + "\n  ".join(avail))
+        return {"status": "no_attribute", "entity_name": ename, "sport": esp,
+                "available": sorted(sub["attribute"].unique())}
     rows = sub[sub["attribute"] == attr]
-    return _fmt_row(_pick_row(rows, window))
+    return {"status": "ok", "row": _pick_row(rows, window)}
+
+
+def answer(query: str, sport: str | None = None, window: str | None = None) -> str:
+    r = answer_lookup(query, sport, window)
+    if r["status"] == "no_data":
+        return ("No profiles built yet -- run domains/<sport>/profiles/build_profiles.py "
+                "to populate data/cache/profiles/.")
+    if r["status"] == "no_entity":
+        return "No entity matched. Try --list to see what is available."
+    if r["status"] == "ambiguous":
+        return "\n".join(["Multiple entities match -- narrow your query:"]
+                          + [f"  - {n}" for n in r["candidates"]])
+    if r["status"] == "no_attribute":
+        return (f"Attribute not recognized for {r['entity_name']}. Available {r['sport']} attributes:\n  "
+                + "\n  ".join(r["available"]))
+    return _fmt_row(r["row"])
 
 
 def list_attributes(sport: str | None = None) -> str:

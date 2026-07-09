@@ -1,0 +1,261 @@
+"""LANE D -- canonical resolver registry: every supported question TYPE maps
+to exactly ONE resolver (source artifact + computation rule + units/rounding
++ as-of stamp). An unregistered question type returns NOT_SUPPORTED --
+never improvised. This is the top of the answer-engine stack; it dispatches
+to (never re-implements) the systems that already exist:
+
+    player_stat / rating_attribute -> scripts.platformkit.profiles.ask (single
+        attribute row: raw_value is the fact, rating_2k is presentation-only)
+    concept_rating   -> scripts.platformkit.answers.contracts (scouting
+        composite: superlative/comparison/explanation/fit)
+    prediction_winprob -> scripts/platformkit/predict_matchup.py, invoked as a
+        subprocess (never imported here -- contracts.py's own guard test
+        proves the concept engine stays decoupled from forecast engines, and
+        this module keeps the same separation)
+    calibration_number -> the pinned scoreboard artifact
+        vault/_Organized/_Index/_Calibration_Scoreboard.md (parsed, not
+        recomputed live -- recomputation is calibration-report's job)
+    historical_result -> data/domains/<sport>/{linescores,games}.parquet
+        (final score / W-L, read directly, no derived number)
+    edge_language     -> always REFUSED (see .claude/rules/no-edge-claims.md)
+
+Every resolve() call returns one envelope shape:
+    {status: "ok"|"refused"|"not_supported"|"no_data",
+     category, sport, source_artifact, as_of, ...category-specific fields}
+"pinned" categories name a MTIME as_of; the answer is only as fresh as that file.
+"""
+from __future__ import annotations
+
+import os
+import re
+from datetime import datetime, timezone
+
+import pandas as pd
+
+from scripts.platformkit.answers import contracts as _contracts
+from scripts.platformkit.answers.registry_loader import SPORTS as _CONCEPT_SPORTS
+from scripts.platformkit.profiles import ask as _ask
+
+# ---------------------------------------------------------------------------
+# Retracted-number / edge-language guard (binding list, .claude/rules/no-edge-claims.md)
+# ---------------------------------------------------------------------------
+RETRACTED_NUMBERS = ("18.38", "0.119", "+54%", "54%", "78.11", "8.94", "54.57")
+EDGE_KEYWORDS = ("edge", "roi", "beat the market", "beat the close", "profit",
+                 "positive ev", "+ev", "bankroll", "win rate over market")
+
+
+def is_edge_language(text: str) -> str | None:
+    """Returns the matched forbidden token, or None. Checked BEFORE
+    classification so an edge-flavored question never reaches a resolver."""
+    low = text.lower()
+    for tok in RETRACTED_NUMBERS:
+        if tok in low:
+            return tok
+    for tok in EDGE_KEYWORDS:
+        if tok in low:
+            return tok
+    return None
+
+
+# ---------------------------------------------------------------------------
+# The registry: category name -> resolver metadata (deliverable 1)
+# ---------------------------------------------------------------------------
+RESOLVERS: dict[str, dict] = {
+    "player_stat": {
+        "resolver": "scripts.platformkit.profiles.ask.answer_lookup",
+        "source_artifact": "data/cache/profiles/<sport>_{player,team,lineup}_profiles.parquet",
+        "computation": "raw_value column for the fuzzy-matched entity+attribute+window row",
+        "units": "attribute-native (see attribute_registry.py per sport)", "rounding": "as stored, no rounding",
+    },
+    "rating_attribute": {
+        "resolver": "scripts.platformkit.profiles.ask.answer_lookup",
+        "source_artifact": "data/cache/profiles/<sport>_{player,team,lineup}_profiles.parquet",
+        "computation": "percentile + rating_2k (25 + percentile*0.74) for the same matched row",
+        "units": "percentile 0-100; rating_2k 25-99 (presentation-only, never causal/predictive)",
+        "rounding": "2 decimals",
+    },
+    "concept_rating": {
+        "resolver": "scripts.platformkit.answers.contracts.answer_question",
+        "source_artifact": "derived from the profiles parquet via domains/<sport>/concepts/concept_registry.py",
+        "computation": "status-rank x n-shrinkage weighted composite across a concept's declared signals",
+        "units": "composite score 0-100 (percentile-weighted, not a raw unit)", "rounding": "2 decimals",
+    },
+    "prediction_winprob": {
+        "resolver": "scripts/platformkit/predict_matchup.py (subprocess CLI)",
+        "source_artifact": "domains/<sport>/predictor.py via scripts.platformkit.predictor_jd._build_predictor",
+        "computation": "calibrated pregame probability; in-game adds the validated repricer given a live score state",
+        "units": "probability 0-1", "rounding": "4 decimals",
+    },
+    "calibration_number": {
+        "resolver": "resolver_registry.calibration_number (parses the pinned scoreboard)",
+        "source_artifact": "vault/_Organized/_Index/_Calibration_Scoreboard.md",
+        "computation": "per-sport Brier/ECE baseline vs improved, from the last calibration-report run",
+        "units": "Brier score / ECE, both 0-1 (lower is better calibrated)", "rounding": "5 decimals as printed",
+    },
+    "historical_result": {
+        "resolver": "resolver_registry.historical_result",
+        "source_artifact": "data/domains/basketball_nba/linescores.parquet | data/domains/mlb/games.parquet",
+        "computation": "final score read directly off the boxscore/linescore row for the matched game",
+        "units": "points (NBA) / runs (MLB), integers", "rounding": "none -- integer score",
+    },
+    "edge_language": {
+        "resolver": None,
+        "source_artifact": ".claude/rules/no-edge-claims.md",
+        "computation": "ALWAYS REFUSED -- no resolver computes a dollar edge/ROI/beat-the-market number here",
+        "units": "n/a", "rounding": "n/a",
+    },
+}
+
+_CONCEPT_KEYWORDS = ("best", "who has", "vs ", " versus ", "why is", "fit team", "does ", "compare")
+_PREDICTION_KEYWORDS = ("win probability", "who wins", "will win", "predict", "forecast", "project the",
+                        "spread", "moneyline", "odds for")
+_CALIBRATION_KEYWORDS = ("brier", "ece", "calibrat")
+_HISTORICAL_KEYWORDS = ("final score", "what happened", "box score", "result of", "score of the game",
+                        "who won on", "final of")
+
+
+def classify(query: str) -> str | None:
+    """category name, or None if no rule matches (-> NOT_SUPPORTED). Checked
+    in priority order: edge language first (a refusal always wins), then
+    prediction/calibration/historical (specific phrasing), then concept vs.
+    plain stat (concept needs an explicit shape word; a bare "<entity>
+    <attribute>" query is player_stat/rating_attribute, resolved by ask.py's
+    own fuzzy matcher, not by this classifier)."""
+    if is_edge_language(query):
+        return "edge_language"
+    low = query.lower()
+    if any(k in low for k in _CALIBRATION_KEYWORDS):
+        return "calibration_number"
+    if any(k in low for k in _PREDICTION_KEYWORDS):
+        return "prediction_winprob"
+    if any(k in low for k in _HISTORICAL_KEYWORDS):
+        return "historical_result"
+    if any(k in low for k in _CONCEPT_KEYWORDS):
+        return "concept_rating"
+    if "rating" in low or "percentile" in low or "2k" in low:
+        return "rating_attribute"
+    return "player_stat"  # default shape: "<entity> <attribute>" fact lookup
+
+
+# ---------------------------------------------------------------------------
+# Resolvers not already owned by another module
+# ---------------------------------------------------------------------------
+_SCOREBOARD_PATH = os.path.join("vault", "_Organized", "_Index", "_Calibration_Scoreboard.md")
+_SCOREBOARD_ROW_RE = re.compile(
+    r"^\|\s*(?P<sport>\w+)\s*\|\s*(?P<n>[\d,]+)\s*\|\s*(?P<base_brier>[\d.]+)\s*\|\s*"
+    r"(?P<imp_brier>[\d.]+)\s*\|\s*(?P<d_brier>-?[\d.]+)\s*\|\s*(?P<base_ece>[\d.]+)\s*\|\s*"
+    r"(?P<imp_ece>[\d.]+)\s*\|\s*(?P<d_ece>-?[\d.]+)\s*\|\s*(?P<method>[^|]+)\|\s*$",
+    re.MULTILINE,
+)
+
+
+def calibration_number(sport: str) -> dict:
+    """Parses the pinned scoreboard row for `sport` -- never recomputes.
+    Absent artifact (fresh clone; vault/ is gitignored) -> honest no_data."""
+    if not os.path.exists(_SCOREBOARD_PATH):
+        return {"status": "no_data", "category": "calibration_number", "sport": sport,
+                "source_artifact": _SCOREBOARD_PATH, "note": "scoreboard not built in this clone"}
+    text = open(_SCOREBOARD_PATH, encoding="utf-8").read()
+    as_of = datetime.fromtimestamp(os.path.getmtime(_SCOREBOARD_PATH), tz=timezone.utc).isoformat()
+    for m in _SCOREBOARD_ROW_RE.finditer(text):
+        if m.group("sport").lower() == sport.lower():
+            return {"status": "ok", "category": "calibration_number", "sport": sport,
+                     "source_artifact": _SCOREBOARD_PATH, "as_of": as_of,
+                     "n": int(m.group("n").replace(",", "")),
+                     "baseline_brier": float(m.group("base_brier")), "improved_brier": float(m.group("imp_brier")),
+                     "baseline_ece": float(m.group("base_ece")), "improved_ece": float(m.group("imp_ece")),
+                     "method": m.group("method").strip()}
+    return {"status": "no_data", "category": "calibration_number", "sport": sport,
+            "source_artifact": _SCOREBOARD_PATH, "note": f"no row for sport '{sport}' in current scoreboard"}
+
+
+_HIST_PATHS = {
+    "nba": ("data/domains/basketball_nba/linescores.parquet", "home_abbr", "away_abbr"),
+    "mlb": ("data/domains/mlb/games.parquet", "home_team", "away_team"),
+}
+
+
+def historical_result(sport: str, team: str, opponent: str | None = None, date: str | None = None) -> dict:
+    """Final score for one real game, read directly off the boxscore/linescore
+    parquet -- zero-row honesty: no match -> no_data, never fabricated."""
+    cfg = _HIST_PATHS.get(sport)
+    if cfg is None:
+        return {"status": "not_supported", "category": "historical_result", "sport": sport,
+                "note": f"historical_result not wired for sport '{sport}'"}
+    path, home_col, away_col = cfg
+    if not os.path.exists(path):
+        return {"status": "no_data", "category": "historical_result", "sport": sport, "source_artifact": path}
+    df = pd.read_parquet(path)
+    mask = (df[home_col] == team) | (df[away_col] == team)
+    if opponent:
+        mask &= (df[home_col] == opponent) | (df[away_col] == opponent)
+    if date:
+        mask &= df["date"].astype(str).str.startswith(date)
+    hits = df[mask]
+    if hits.empty:
+        return {"status": "no_data", "category": "historical_result", "sport": sport, "source_artifact": path,
+                "note": f"zero rows matched team={team!r} opponent={opponent!r} date={date!r} -- refusing, not guessing"}
+    row = hits.sort_values("date").iloc[-1]
+    as_of = str(row["date"])
+    if sport == "nba":
+        home_score = int(row[[c for c in df.columns if c.startswith("home_q")]].sum())
+        away_score = int(row[[c for c in df.columns if c.startswith("away_q")]].sum())
+    else:
+        home_score, away_score = int(row["home_runs"]), int(row["away_runs"])
+    return {"status": "ok", "category": "historical_result", "sport": sport, "source_artifact": path, "as_of": as_of,
+            "home_team": row[home_col], "away_team": row[away_col],
+            "home_score": home_score, "away_score": away_score,
+            "winner": row[home_col] if home_score > away_score else row[away_col]}
+
+
+# ---------------------------------------------------------------------------
+# Single dispatch entrypoint
+# ---------------------------------------------------------------------------
+def resolve(query: str, sport: str = "nba", category: str | None = None, **kwargs) -> dict:
+    """The one function every consumer (human, CLI, or an LLM following
+    docs/AI_CONSUMER_CONTRACT.md) calls. Never improvises past a registered
+    resolver; an unclassified or unregistered category is NOT_SUPPORTED."""
+    cat = category or classify(query)
+    if cat is None or cat not in RESOLVERS:
+        return {"status": "not_supported", "category": cat, "query": query,
+                "note": f"no resolver registered for this question type. Registered: {sorted(RESOLVERS)}"}
+    meta = RESOLVERS[cat]
+    if cat == "edge_language":
+        return {"status": "refused", "category": cat, "query": query, "source_artifact": meta["source_artifact"],
+                "note": "edge/ROI/retracted-number language is out of scope for this engine -- "
+                        "see .claude/rules/no-edge-claims.md"}
+    if cat == "calibration_number":
+        return calibration_number(sport)
+    if cat == "historical_result":
+        return historical_result(sport, kwargs.get("team", ""), kwargs.get("opponent"), kwargs.get("date"))
+    if cat == "prediction_winprob":
+        return {"status": "not_supported", "category": cat, "sport": sport,
+                "note": "prediction_winprob is resolved by the predict-matchup CLI/skill, not this "
+                        "in-process registry -- run scripts/platformkit/predict_matchup.py"}
+    if cat in ("player_stat", "rating_attribute"):
+        if sport not in _ask.SPORTS:
+            return {"status": "not_supported", "category": cat, "sport": sport,
+                    "note": f"sport not wired for profile lookups. Available: {_ask.SPORTS}"}
+        r = _ask.answer_lookup(query, sport, kwargs.get("window"))
+        if r["status"] != "ok":
+            return {"status": "no_data" if r["status"] in ("no_entity", "no_attribute", "no_data") else r["status"],
+                     "category": cat, "sport": sport, "detail": r}
+        row = r["row"]
+        return {"status": "ok", "category": cat, "sport": sport,
+                 "source_artifact": str(row["sources"]), "as_of": str(row["window"]),
+                 "entity_name": row["entity_name"], "attribute": row["attribute"],
+                 "raw_value": row["raw_value"], "percentile": round(float(row["percentile"]), 2),
+                 "rating_2k": round(float(row["rating_2k"]), 2), "n": round(float(row["n"]), 1),
+                 "status_label": row["status"]}
+    if cat == "concept_rating":
+        if sport not in _CONCEPT_SPORTS:
+            return {"status": "not_supported", "category": cat, "sport": sport,
+                    "note": f"no concept registry for sport '{sport}'. Available: {sorted(_CONCEPT_SPORTS)}"}
+        result = _contracts.answer_question(query, sport, kwargs.get("window"), kwargs.get("concept"),
+                                             kwargs.get("kind", "player"))
+        if "error" in result:
+            return {"status": "no_data", "category": cat, "sport": sport, "note": result["error"]}
+        return {"status": "ok", "category": cat, "sport": sport,
+                 "source_artifact": f"domains/{ 'basketball_nba' if sport=='nba' else sport }/concepts/concept_registry.py",
+                 "as_of": result.get("window"), **result}
+    return {"status": "not_supported", "category": cat, "note": "unreachable -- category registered but undispatched"}

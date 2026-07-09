@@ -15,6 +15,10 @@ CONCEPT_REGISTRY_MODULE = {
     "wnba": "domains.basketball_wnba.concepts.concept_registry",
 }
 
+# reused by resolver_registry.py to validate a sport before dispatching a
+# concept_rating question -- one list, not re-declared per caller.
+SPORTS = sorted(CONCEPT_REGISTRY_MODULE)
+
 
 @lru_cache(maxsize=None)
 def get_registry(sport: str):
