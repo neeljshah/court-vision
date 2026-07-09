@@ -32,6 +32,8 @@ from pathlib import Path
 from typing import Any, Dict, Iterator, List, Optional
 
 import pandas as pd
+import pyarrow as pa
+import pyarrow.parquet as pq
 
 from scripts.platformkit.odds_provider.kalshi_series_spec import SERIES_SPEC
 
@@ -43,6 +45,22 @@ DEFAULT_OUT_DIR = _REPO_ROOT / "data" / "cache" / "inplay_odds"
 COLUMNS = ["sport", "venue", "game_date", "ticker_or_slug", "event_key",
            "market_type", "side", "ts", "prob", "traded", "close_time",
            "result_where_known"]
+
+PARQUET_SCHEMA = pa.schema([
+    ("sport", pa.string()), ("venue", pa.string()), ("game_date", pa.string()),
+    ("ticker_or_slug", pa.string()), ("event_key", pa.string()),
+    ("market_type", pa.string()), ("side", pa.string()),
+    ("ts", pa.int64()), ("prob", pa.float64()), ("traded", pa.bool_()),
+    ("close_time", pa.string()), ("result_where_known", pa.string()),
+])
+
+# The corpus (kalshi settled candles + polymarket price ticks, growing daily
+# across every sport) is tens of millions of rows -- converting a whole
+# sport's row-of-dicts list to a DataFrame in one shot OOM'd on a machine
+# already under memory pressure from concurrent processes (see write_all).
+# Flushing a bounded batch straight to the parquet's row groups keeps peak
+# memory to BATCH_SIZE rows per sport in flight, never the full corpus.
+BATCH_SIZE = 200_000
 
 
 def series_to_market_type() -> Dict[str, str]:
@@ -161,17 +179,52 @@ def build_all(kalshi_dir: Path = DEFAULT_KALSHI_DIR,
 
 
 def write_all(out_dir: Path = DEFAULT_OUT_DIR, kalshi_dir: Path = DEFAULT_KALSHI_DIR,
-             polymarket_dir: Path = DEFAULT_POLYMARKET_DIR) -> Dict[str, int]:
-    """build_all(...) then one parquet per sport under *out_dir*. Returns
-    {sport: n_rows} for reporting -- never a $ or edge field."""
-    frames = build_all(kalshi_dir, polymarket_dir)
+             polymarket_dir: Path = DEFAULT_POLYMARKET_DIR,
+             batch_size: int = BATCH_SIZE) -> Dict[str, int]:
+    """Stream every row straight to its sport's parquet in bounded batches
+    (never holds a whole sport's rows in memory -- see BATCH_SIZE). One
+    ParquetWriter per sport, opened lazily on that sport's first flush.
+    Returns {sport: n_rows_written} -- never a $ or edge field."""
     out_dir.mkdir(parents=True, exist_ok=True)
-    counts: Dict[str, int] = {}
-    for sport, df in frames.items():
-        path = out_dir / ("%s_price_series.parquet" % sport)
-        df.to_parquet(path, index=False)
-        counts[sport] = len(df)
-    return counts
+    market_type_map = series_to_market_type()
+    buffers: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
+    writers: Dict[str, pq.ParquetWriter] = {}
+    counts: Dict[str, int] = defaultdict(int)
+
+    def _flush(sport: str) -> None:
+        rows = buffers[sport]
+        if not rows:
+            return
+        table = pa.Table.from_pylist(rows, schema=PARQUET_SCHEMA)
+        if sport not in writers:
+            path = out_dir / ("%s_price_series.parquet" % sport)
+            writers[sport] = pq.ParquetWriter(str(path), PARQUET_SCHEMA)
+        writers[sport].write_table(table)
+        counts[sport] += len(rows)
+        buffers[sport] = []
+
+    def _absorb(rows: List[Dict[str, Any]]) -> None:
+        for row in rows:
+            sport = row["sport"]
+            buffers[sport].append(row)
+            if len(buffers[sport]) >= batch_size:
+                _flush(sport)
+
+    try:
+        if kalshi_dir.is_dir():
+            for fp in kalshi_dir.rglob("*.jsonl"):
+                for doc in _iter_jsonl(fp):
+                    _absorb(kalshi_doc_to_rows(doc, market_type_map))
+        if polymarket_dir.is_dir():
+            for fp in polymarket_dir.rglob("*.jsonl"):
+                for doc in _iter_jsonl(fp):
+                    _absorb(polymarket_doc_to_rows(doc))
+        for sport in list(buffers.keys()):
+            _flush(sport)
+    finally:
+        for w in writers.values():
+            w.close()
+    return dict(counts)
 
 
 def main() -> None:
@@ -185,6 +238,6 @@ if __name__ == "__main__":
 
 __all__ = [
     "series_to_market_type", "kalshi_doc_to_rows", "polymarket_doc_to_rows",
-    "build_all", "write_all", "COLUMNS",
+    "build_all", "write_all", "COLUMNS", "PARQUET_SCHEMA", "BATCH_SIZE",
     "DEFAULT_KALSHI_DIR", "DEFAULT_POLYMARKET_DIR", "DEFAULT_OUT_DIR",
 ]
