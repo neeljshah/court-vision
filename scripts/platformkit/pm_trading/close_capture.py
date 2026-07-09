@@ -4,6 +4,8 @@ PT-3 workstream: resolves the closing line for a paper-bet row so
 clv_ledger.settle_closing_line can fill clv_pct (currently null on all settled
 rows because no close ever lands).
 
+JOIN KEY (2026-07-08b): event_id is the ESPN/FanDuel id, NEVER a Kalshi ticker
+-- _event_id_for_row derives the real ticker from market_id instead.
 Resolution precedence (first non-None wins):
   1. Kalshi public REST  -- settled/resolved market (is_proxy=False); open (True).
   2. Kalshi own-venue quote, kalshi-taken rows ONLY -- reuses
@@ -13,7 +15,6 @@ Resolution precedence (first non-None wins):
      falling through to a DIFFERENT book's line_store snapshot.
   3. line_store snapshot -- close_venue="book" (may differ from taken venue).
   4. Proxy/degraded      -- last-observed line, is_proxy=True, close_source="proxy".
-
 HONESTY CONTRACT (binding):
   * is_proxy=False ONLY for a settled Kalshi market or a true-close line_store
     snapshot (lock window). Every other path stamps is_proxy=True.
@@ -23,10 +24,7 @@ HONESTY CONTRACT (binding):
   * No $ / dollar / pnl / roi / profit field. Units only. CALIBRATION not edge.
   * Real-money gate stays DENY. Never raises; degrades to None on failure.
   * FORWARD-ONLY: never rewrites a previously-stamped ledger row.
-
-INVARIANTS: build only under scripts/platformkit/; <=300 LOC; ASCII only;
-stdlib + project-internal imports only; no secrets.
-
+INVARIANTS: scripts/platformkit/ only; <=300 LOC; ASCII; stdlib + repo-internal.
 Per-file test:
   cd /c/Users/neelj/nba-ai-system && python -m pytest scripts/platformkit/pm_trading/test_close_capture.py -q
 """
@@ -108,9 +106,13 @@ class CloseResult:
 # ---------------------------------------------------------------------------
 
 def _event_id_for_row(row: Dict[str, Any]) -> Optional[str]:
-    """Best-effort Kalshi event_id from a ledger row. None if not present."""
+    """Kalshi event_ticker: market_id minus trailing "-<TEAM>", else a
+    "KX"-shaped event_id (see module join-key note). None if neither fits."""
+    mid = str(row.get("market_id") or "").strip()
+    if mid and "-" in mid:
+        return mid.rsplit("-", 1)[0]
     eid = str(row.get("event_id") or "").strip()
-    return eid if eid else None
+    return eid if eid.upper().startswith("KX") else None
 
 
 def _sport_for_row(row: Dict[str, Any]) -> Optional[str]:
@@ -200,7 +202,6 @@ def _kalshi_close(
     except Exception:  # noqa: BLE001
         logger.debug("Kalshi price parse failed for event_id=%r", event_id, exc_info=True)
         return None
-
 
 def _line_store_close(row: Dict[str, Any]) -> Optional[CloseResult]:
     """Try to resolve a closing line from the line_store snapshot.

@@ -40,12 +40,39 @@ def _default_capture(row: Dict[str, Any], *, kalshi_fetch: Any = None) -> Any:
 
 
 def _resolved_keys(rows: List[Dict[str, Any]]) -> set:
-    """bet_ids that already carry a CONFIRMED (non-proxy) close -> skip (idempotent)."""
+    """bet_ids that already carry a CONFIRMED SAME-VENUE (kalshi/poly) close ->
+    skip (idempotent).
+
+    ROOT CAUSE FIX (2026-07-08b): grade_paper.grade_one settles a paper_pm row's
+    win/loss from the final score and, on the way, may ALSO resolve a close via
+    its own venue-blind line_store lookup -- stamping clv_is_proxy=False even
+    when that close came from a DIFFERENT book than the one the bet was taken on
+    (a cross-venue close, now labelled close_source='cross_venue_fallback' by
+    grade_one). Treating clv_is_proxy=False alone as "resolved" permanently
+    blocked this sweep from ever attempting the REAL same-venue Kalshi close --
+    every row settled this way was skipped forever. Now a row only counts as
+    resolved when its close_source/close_venue actually names the PM venue
+    (same token convention as clv_result_reconciler._is_same_venue_close); a
+    row EXPLICITLY tagged close_source='cross_venue_fallback' (grade_one's
+    new stamp) stays a target so a genuine Kalshi close still has a chance to
+    overwrite it going forward. FORWARD-ONLY: a row with NEITHER field set at
+    all (settled before this fix shipped, or Level-1 book genuinely unknown)
+    is left alone as resolved -- never reconsidered -- so old rows stay
+    labelled basis rather than churning the bounded max_rows budget every
+    tick and starving genuinely new targets out of their turn.
+    """
     out: set = set()
     for r in rows:
-        if (r.get("clv_pct") is not None and not r.get("clv_is_proxy", False)
-                and r.get("bet_id")):
-            out.add(r.get("bet_id"))
+        if not (r.get("bet_id") and r.get("clv_pct") is not None
+                and not r.get("clv_is_proxy", False)):
+            continue
+        cs, cv = r.get("close_source"), r.get("close_venue")
+        if cs is None and cv is None:
+            out.add(r.get("bet_id"))       # legacy/unknown-book -> forward-only, leave
+            continue
+        src = str(cs or cv or "").lower()
+        if "kalshi" in src or "poly" in src:
+            out.add(r.get("bet_id"))       # genuinely same-venue -> resolved
     return out
 
 
@@ -72,11 +99,14 @@ def sweep_closes(
     capture_fn: Optional[Callable[..., Any]] = None,
     kalshi_fetch: Any = None,
     max_rows: Optional[int] = None,
+    dry_run: bool = False,
 ) -> Dict[str, Any]:
     """Resolve + apply confirmed Kalshi closes to settled PM rows. Returns counts.
 
     Idempotent + non-fabricating: only a real (is_proxy=False) close is written (as
     clv_status='true_close'); a still-open / inferred market is counted, never stamped.
+    dry_run=True resolves every target (real network calls unless kalshi_fetch is
+    injected) but never calls append_settlement -- read-only, for verification.
     Never raises."""
     from scripts.platformkit import clv_ledger as _clv
     path = Path(ledger_path) if ledger_path else _clv.DEFAULT_LEDGER
@@ -92,7 +122,7 @@ def sweep_closes(
     if max_rows is not None:
         targets = targets[:max_rows]
 
-    n_cap = n_noclose = n_proxy = 0
+    n_cap = n_noclose = n_proxy = n_same_venue = 0
     for r in targets:
         try:
             res = cap(r, kalshi_fetch=kalshi_fetch)
@@ -102,8 +132,15 @@ def sweep_closes(
         if res is None:
             n_noclose += 1
             continue
+        src = str(getattr(res, "close_source", "") or
+                  getattr(res, "close_venue", "") or "").lower()
+        if "kalshi" in src or "poly" in src:
+            n_same_venue += 1  # join-key now matches: a real venue quote (proxy or not)
         if getattr(res, "is_proxy", True):
             n_proxy += 1                  # open/inferred -> NOT a close; never stamped
+            continue
+        if dry_run:
+            n_cap += 1                    # would resolve; read-only, no ledger write
             continue
         try:
             settled = _clv.settle_closing_line(
@@ -125,6 +162,7 @@ def sweep_closes(
     return {
         "n_targets": len(targets), "n_captured": n_cap,
         "n_no_close": n_noclose, "n_proxy": n_proxy,
+        "n_same_venue": n_same_venue, "dry_run": dry_run,
         "executed": False, "edge_claimed": False,
         "honest_note": ("Confirmed (settled) Kalshi closes only -> clv_status=true_close; "
                         "open/inferred markets are NOT stamped (never fabricated). PAPER "
@@ -133,10 +171,17 @@ def sweep_closes(
 
 
 def _main() -> int:  # pragma: no cover
+    import argparse
     import json
-    out = sweep_closes()
+    ap = argparse.ArgumentParser(description="PM close-capture sweep (paper only).")
+    ap.add_argument("--dry-run", action="store_true",
+                    help="resolve closes but never write to the ledger")
+    ap.add_argument("--max-rows", type=int, default=None)
+    a = ap.parse_args()
+    out = sweep_closes(max_rows=a.max_rows, dry_run=a.dry_run)
     print(json.dumps({k: out[k] for k in (
-        "n_targets", "n_captured", "n_no_close", "n_proxy")}, indent=2, sort_keys=True))
+        "n_targets", "n_captured", "n_no_close", "n_proxy",
+        "n_same_venue", "dry_run")}, indent=2, sort_keys=True))
     return 0
 
 
