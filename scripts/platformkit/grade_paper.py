@@ -221,7 +221,14 @@ def grade_one(
             book = str(side_book).strip().lower()
             settled["close_source"] = book if (taken and taken == book) else "cross_venue_fallback"
         else:
-            settled["close_source"] = None
+            # A close WAS resolved (ch/ca not None) but the resolving path (Level 1
+            # bet-carried closing_decimal_*, or Level 4 last_decimal_* proxy) never
+            # knows which book supplied it -- stamp the field with an explicit
+            # "none_available" sentinel (2026-07-09 fix) rather than leaving it None,
+            # so a downstream reader can tell "stamp attempted, no same-venue book
+            # known" apart from a row that never went through this code at all
+            # (a pre-fix row on disk with the KEY missing entirely).
+            settled["close_source"] = "none_available"
     else:
         # Level 5 (PE-P0-03): NO close -> CLV genuinely unavailable. clv_pct=None,
         # clv_is_proxy EXPLICITLY False (proxy=True would fabricate confidence) +
@@ -233,6 +240,7 @@ def grade_one(
         settled["clv_is_proxy"] = False
         settled["clv_status"] = "no_close"
         settled["clv_note"] = "no closing line captured; CLV unavailable (win/loss only)"
+        settled["close_source"] = "none_available"  # stamp attempted, nothing to stamp
 
     settled["graded"] = True
     settled["outcome"] = outcome  # win | loss | push | void (never fabricated)

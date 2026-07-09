@@ -82,17 +82,32 @@ def run_kalshi_sport(sport: str, *, max_requests: int = 1200, sleep_sec: float =
 
 
 def run_many(sports: List[str], venue: str, *, max_concurrent: int = 2,
-            max_requests: int = 1200, sleep_sec: float = 1.0) -> List[Dict[str, Any]]:
+            max_requests: int = 1200, sleep_sec: float = 1.0,
+            on_result: Optional[Callable[[Dict[str, Any]], None]] = None) -> List[Dict[str, Any]]:
     """Run *venue*'s per-sport backfill for every sport in *sports*, at most
     *max_concurrent* at once (ThreadPoolExecutor -- network-bound, GIL released
     during I/O waits; sequential queue for the rest). Replaces the ad hoc "launch
     N sports as N separate unpaced processes" pattern that stacked 8 backfills on
-    the shared Kalshi budget in one shot and tripped a 429 penalty (2026-07-09)."""
+    the shared Kalshi budget in one shot and tripped a 429 penalty (2026-07-09).
+
+    *on_result* (2026-07-09 observability fix), if given, fires as EACH sport's
+    future completes (not just at the very end) -- main() uses this to print/flush
+    per-sport so a long multi-sport run (MLB alone can run 60-90min/series) doesn't
+    look "stalled" from an empty log file while it is actually still progressing;
+    a 4-series-deep MLB sport with an 8-sport queue at max_concurrent=2 can easily
+    run for hours before the old end-of-run-only print ever wrote a byte."""
+    from concurrent.futures import as_completed
     runner = run_kalshi_sport if venue == "kalshi" else run_polymarket_game_slug_sport
     with ThreadPoolExecutor(max_workers=max(1, int(max_concurrent))) as ex:
-        futs = [ex.submit(runner, sport, max_requests=max_requests, sleep_sec=sleep_sec)
-               for sport in sports]
-        return [f.result() for f in futs]
+        fut_to_sport = {ex.submit(runner, sport, max_requests=max_requests, sleep_sec=sleep_sec): sport
+                       for sport in sports}
+        results_by_sport: Dict[str, Any] = {}
+        for fut in as_completed(fut_to_sport):
+            res = fut.result()
+            results_by_sport[fut_to_sport[fut]] = res
+            if on_result is not None:
+                on_result(res)
+        return [results_by_sport[sport] for sport in sports]
 
 
 def run_polymarket_game_slug_sport(sport: str, *, max_requests: int = 1200,
@@ -117,9 +132,12 @@ def main() -> None:
     ap.add_argument("--max-concurrent", type=int, default=2,
                     help="max sports run at once (2026-07-09 429-incident cap)")
     a = ap.parse_args()
+    def _print_progress(res: Dict[str, Any]) -> None:
+        print("[done] %s" % json.dumps(res, default=str), flush=True)
     results = run_many(a.sport, a.venue, max_concurrent=a.max_concurrent,
-                       max_requests=a.max_requests, sleep_sec=a.sleep_sec)
-    print(json.dumps(results, indent=1, default=str))
+                       max_requests=a.max_requests, sleep_sec=a.sleep_sec,
+                       on_result=_print_progress)
+    print(json.dumps(results, indent=1, default=str), flush=True)
 
 
 if __name__ == "__main__":
