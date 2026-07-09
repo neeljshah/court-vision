@@ -202,3 +202,91 @@ def test_clv_corpus_inject_never_raises_on_a_malformed_hook(monkeypatch, tmp_pat
     cand = RC.build_candidate("nba", _settled_batch(), clv_corpus="not-a-dict")
     assert cand is not None
     assert cand["corpora"] == []
+
+
+# --------------------------------------- (f) do-no-harm chronological HOLDOUT gate
+# gap-ledger rank 4: the highest-risk untested behavior -- a candidate that looks
+# like a genuine improvement IN-SAMPLE (fit on all rows) must still be REFUSED when
+# a genuine chronological holdout (recal_holdout_fit.fit_and_score, train=earlier
+# rows, test=later rows) shows the map does NOT generalize. Fixture: 24 "train"
+# games where low base p0 always precedes a WIN (base underestimates -> a Platt fit
+# learns to shift predictions UP), followed by 8 chronologically-later "test" games
+# at the SAME base p0 range whose true regime has FLIPPED (always a LOSS) -- the
+# up-shifting map is disastrous on those held-out rows even though it "improves"
+# when scored back on the very data it was fit on.
+def _regime_shift_batch():
+    """24 train obs (low p0 -> win, miscalibrated low) + 8 chronologically-later
+    test obs (SAME p0 range, but the true regime flips to always-loss). Each
+    observation is its OWN confirmed-outcome game so MF3 never quarantines it
+    regardless of the (0 or 1) label -- the honesty audit is not what this test
+    exercises; the holdout gate is."""
+    import numpy as _np
+    games = []
+    p0_train = _np.linspace(0.20, 0.45, 24)
+    for i, p0 in enumerate(p0_train):
+        y = 0.0 if i < 4 else 1.0  # mostly wins -> base (0.2-0.45) underestimates
+        games.append({"sport": "nba", "game_id": "TR%d" % i, "outcome": y,
+                     "outcome_confirmed": True,
+                     "states": [{"p0": float(p0), "outcome": y}]})
+    p0_test = _np.linspace(0.20, 0.45, 8)
+    for i, p0 in enumerate(p0_test):
+        games.append({"sport": "nba", "game_id": "TE%d" % i, "outcome": 0.0,
+                     "outcome_confirmed": True,
+                     "states": [{"p0": float(p0), "outcome": 0.0}]})  # regime flipped
+    return games
+
+
+def test_holdout_gate_refuses_when_in_sample_improves_but_oos_regime_shifted(
+    monkeypatch, tmp_path,
+):
+    """The naive in-sample check (fit on ALL rows, score back on ALL rows) WOULD
+    show an improvement here -- proving this fixture is a genuine "looks good
+    in-sample" trap -- but the real chronological holdout (train=first 24,
+    test=last 8) catches the regime shift and the gate must REFUSE (None,
+    reason=holdout_insufficient_data is NOT it -- reason must be the genuine
+    holdout_no_oos_gain decline, never a fabricated ship)."""
+    import numpy as _np
+    from scripts.platformkit.eval_gate.scoring import brier as _brier
+
+    _enable(monkeypatch, tmp_path)
+    batch = _regime_shift_batch()
+
+    # Prove the "in-sample improves" half of the trap directly against the
+    # module's own fit helpers (same math build_candidate uses internally).
+    base_list, y_list = RC._extract_obs(batch)
+    base_arr = RC._clip01(_np.asarray(base_list, dtype=float))
+    y_arr = _np.asarray(y_list, dtype=float)
+    ab = RC._fit_platt(base_arr, y_arr)
+    assert ab is not None
+    cand_arr = RC._apply_platt(base_arr, ab)
+    in_sample_base_brier = _brier(base_arr.tolist(), y_arr.tolist())
+    in_sample_cand_brier = _brier(cand_arr.tolist(), y_arr.tolist())
+    assert in_sample_cand_brier < in_sample_base_brier  # the in-sample trap: looks better
+
+    # The real gate must still REFUSE: chronological holdout shows the shifted-up
+    # map is worse on the later (regime-flipped) rows than the untouched base.
+    report: dict = {}
+    out = RC.build_candidate("nba", batch, report=report)
+    assert out is None
+    assert report["reason"] == "holdout_no_oos_gain"
+    assert report["transient"] is False  # a GENUINE evaluated decline, never retried
+
+
+def test_holdout_gate_accepts_a_genuine_oos_improvement(monkeypatch, tmp_path):
+    """Companion accept path: _settled_batch() (16 clean obs, consistent
+    miscalibration across the whole window) passes the REAL chronological holdout
+    -- oos_improves True -- and the gate ships a candidate carrying that verdict."""
+    from scripts.platformkit.improve.recal_holdout_fit import fit_and_score, STATUS_OK
+
+    base_list, y_list = RC._extract_obs(_settled_batch())
+    holdout = fit_and_score(base_list, y_list)
+    assert holdout["status"] == STATUS_OK
+    assert holdout["oos_improves"] is True  # sanity: this fixture is a genuine OOS win
+
+    _enable(monkeypatch, tmp_path)
+    report: dict = {}
+    cand = RC.build_candidate("nba", _settled_batch(), report=report)
+    assert cand is not None
+    assert cand["oos_improves"] is True
+    assert report["reason"] == "evaluated"
+    assert cand["fold_results"][0]["metric"] == "brier_oos"
