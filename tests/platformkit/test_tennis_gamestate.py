@@ -147,6 +147,26 @@ def test_empty_and_bad_winner_returns_empty():
     assert build_detail_rows("x", parse_score("6-3 6-1"), 3) == []
 
 
+# --------------------------------------------------------------- date column
+def test_build_detail_rows_date_column_constant():
+    """game_date threads through unchanged on every set-boundary row."""
+    sets = parse_score("6-3 6-1")
+    rows = build_detail_rows("m", sets, 1, drop_terminal=False, game_date="2015-01-04")
+    assert rows
+    assert all(r["date"] == "2015-01-04" for r in rows)
+
+
+def test_build_corpus_carries_date_from_matches_df():
+    """build_corpus reads the local matches.parquet 'date' col -- no network needed."""
+    syn = pd.DataFrame([
+        {"event_id": "m1", "winner": 1, "score": "6-3 6-1",
+         "retirement": False, "date": "2015-01-04"},
+    ])
+    out = build_corpus(syn)
+    assert not out.empty
+    assert (out["date"] == "2015-01-04").all()
+
+
 # --------------------------------------------------------------- build_corpus
 def test_build_corpus_dtypes_and_keys():
     syn = pd.DataFrame([

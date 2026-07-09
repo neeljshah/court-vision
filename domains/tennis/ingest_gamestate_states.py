@@ -100,13 +100,17 @@ def build_detail_rows(
     sets: List[Tuple[int, int]],
     match_winner: int,  # 1 or 2 (STABLE identity, not score orientation)
     drop_terminal: bool = True,
+    game_date: Optional[str] = None,
 ) -> List[dict]:
     """Build per-set-boundary DETAIL rows for one match (mirrors base keys).
 
     Returns rows {sport, game_id, asof_idx, games_diff_in_set, sets_diff,
-    break_pts_converted_diff, serve_holds_streak}.  One row per completed set
-    boundary; the match-ending (settled) boundary is dropped by default so the
-    DETAIL keys line up with the base LIVE-ONLY corpus.
+    break_pts_converted_diff, serve_holds_streak, date}.  One row per completed
+    set boundary; the match-ending (settled) boundary is dropped by default so
+    the DETAIL keys line up with the base LIVE-ONLY corpus.
+
+    game_date: ISO YYYY-MM-DD match date, constant across the match's rows
+    (added for venue-history/replay joins). Optional/None for backward-compat.
 
     LEAK-FREE: every value at asof_idx i uses only sets[0..i]; NEVER the match
     winner and NEVER a future set.  PURE -- no I/O; [] on broken input.
@@ -162,6 +166,7 @@ def build_detail_rows(
             "sets_diff": float(p1_sets - p2_sets),
             "break_pts_converted_diff": float(cumul_break),
             "serve_holds_streak": float(streak),
+            "date": game_date,
         })
 
     return rows
@@ -202,10 +207,13 @@ def build_corpus(
         if sets is None or len(sets) < 2:
             skipped += 1
             continue
+        raw_date = row.get("date") if hasattr(row, "get") else None
+        game_date = str(raw_date)[:10] if raw_date is not None and pd.notna(raw_date) else None
         snaps = build_detail_rows(
             game_id=str(row["event_id"]),
             sets=sets,
             match_winner=int(row["winner"]),
+            game_date=game_date,
         )
         rows.extend(snaps)
 
@@ -256,7 +264,11 @@ def _main() -> None:
         if df.empty:
             log.warning("No detail rows built for %s", tour)
             continue
-        df.to_parquet(dst, index=False)
+        # Atomic write: readers polling this path mid-rebuild must never see a
+        # truncated/partial parquet (the parquet-rebuild-race landmine).
+        tmp = dst.with_suffix(dst.suffix + ".tmp")
+        df.to_parquet(tmp, index=False)
+        tmp.replace(dst)
         n_matches = df["game_id"].nunique()
         log.info("[%s] matches=%d  rows=%d  -> %s",
                  tour.upper(), n_matches, len(df), dst)
