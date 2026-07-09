@@ -29,6 +29,25 @@ _DERIVED: dict[str, dict[str, str]] = {
                                "share_primary": "mean(is_primary)"},
     "finishing_overperformance": {"n": "count(diff)"},
     "home_strength": {"n": "count(pts)"},
+    # 07-08 expansion
+    "defensive_counter_threat": {"n": "count_distinct(match_id)", "counter_xg_sum": "sum(counter_xg)", "total_n": "count(xg)"},
+    "defensive_set_piece_threat": {"n": "count_distinct(match_id)", "set_piece_xg_sum": "sum(set_piece_xg)", "total_xg_sum": "sum(xg)"},
+    "first_half_xg_share": {"n": "count_distinct(match_id)", "half_xg_sum": "sum(first_half_xg)", "total_xg_sum": "sum(xg)"},
+    "second_half_xg_share": {"n": "count_distinct(match_id)", "half_xg_sum": "sum(second_half_xg)", "total_xg_sum": "sum(xg)"},
+    "possessions_per_match": {"n": "count_distinct(match_id)", "total_n": "count(xg)"},
+    "shots_per_possession": {"n": "sum(team_matches)", "total_shots": "sum(total_shots)", "total_poss": "sum(total_poss)"},
+    "formation_primary_xg": {"n": "sum(match_n)", "xg_sum": "sum(xg_sum)", "poss_n": "sum(poss_n)"},
+    "formation_secondary_xg": {"n": "sum(match_n)", "xg_sum": "sum(xg_sum)", "poss_n": "sum(poss_n)"},
+    "home_goal_rate": {"n": "count(goals_for)"},
+    "away_goal_rate": {"n": "count(goals_for)"},
+    "away_strength": {"n": "count(pts)"},
+    "clean_sheet_rate": {"n": "count(clean_sheet)"},
+    "comeback_rate": {"n": "count(won_or_drew)"},
+    "shot_conversion_rate": {"n": "count(match_id)"},
+    "shot_accuracy": {"n": "count(match_id)"},
+    "discipline_rate": {"n": "count(cards_for)"},
+    "foul_rate": {"n": "count(fouls_for)"},
+    "corner_rate": {"n": "count(corners_for)"},
 }
 # criteria.formula -- algebraically identical to what build_profiles.py computes
 # directly in pandas for the presentation parquet (independent recompute paths).
@@ -40,11 +59,47 @@ _FORMULA: dict[str, str] = {
     "formation_flexibility": "1 - mean(is_primary)",
     "finishing_overperformance": "mean(diff)",
     "home_strength": "mean(pts) / 3",
+    # 07-08 expansion
+    "defensive_counter_threat": "sum(counter_xg) / count(xg)",
+    "defensive_set_piece_threat": "sum(set_piece_xg) / sum(xg)",
+    "first_half_xg_share": "sum(first_half_xg) / sum(xg)",
+    "second_half_xg_share": "sum(second_half_xg) / sum(xg)",
+    "possessions_per_match": "count(xg) / count_distinct(match_id)",
+    "shots_per_possession": "sum(total_shots) / sum(total_poss)",
+    "formation_primary_xg": "sum(xg_sum) / sum(poss_n)",
+    "formation_secondary_xg": "sum(xg_sum) / sum(poss_n)",
+    "home_goal_rate": "mean(goals_for)",
+    "away_goal_rate": "mean(goals_for)",
+    "away_strength": "mean(pts) / 3",
+    "clean_sheet_rate": "mean(clean_sheet)",
+    "comeback_rate": "mean(won_or_drew)",
+    "shot_conversion_rate": "sum(goals_for) / sum(shots_for)",
+    "shot_accuracy": "sum(sot_for) / sum(shots_for)",
+    "discipline_rate": "mean(cards_for)",
+    "foul_rate": "mean(fouls_for)",
+    "corner_rate": "mean(corners_for)",
 }
+
+
+def _flatten_ingredients(rows_df: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
+    """rows_df is an ingredients_expanded row-shaped output (entity_id +
+    ingredients dict) -- flatten back into a plain numeric-column frame for
+    the validator snapshot (same shortcut precedent as finishing_
+    overperformance's pre-derived 'diff' column: some pre-aggregation is
+    already established as OK to persist, not just fully-raw event rows)."""
+    return pd.DataFrame([{"entity_id": r.entity_id, **{c: r.ingredients[c] for c in cols}}
+                          for r in rows_df.itertuples(index=False)])
 
 
 def write_snapshots(snaps: dict[str, pd.DataFrame], out_dir: Path = _CLAIMS_DIR) -> dict[str, str]:
     out_dir.mkdir(parents=True, exist_ok=True)
+    season_side = snaps["home_goal_rate"]  # full melted home+away frame, shared by several attrs below
+    from domains.soccer.profiles.ingredients_expanded import _formation_primary_xg, _formation_secondary_xg, _shots_per_possession
+
+    spp_rows = _shots_per_possession(*snaps["shots_per_possession"])
+    spp_source = _flatten_ingredients(spp_rows, ["total_shots", "total_poss"])
+    spp_source["team_matches"] = spp_rows["n"].to_numpy()
+
     files = {
         "counter_threat": ("soccer_possession_profile_source.parquet", snaps["counter_threat"]),
         "buildup_quality": ("soccer_possession_profile_source.parquet", snaps["counter_threat"]),
@@ -53,6 +108,29 @@ def write_snapshots(snaps: dict[str, pd.DataFrame], out_dir: Path = _CLAIMS_DIR)
         "formation_flexibility": ("soccer_formation_profile_source.parquet", snaps["formation_flexibility"]),
         "finishing_overperformance": ("soccer_finishing_profile_source.parquet", snaps["finishing_overperformance"]),
         "home_strength": ("soccer_homestrength_profile_source.parquet", snaps["home_strength"]),
+        # 07-08 expansion
+        "defensive_counter_threat": ("soccer_conceded_profile_source.parquet", snaps["defensive_counter_threat"]),
+        "defensive_set_piece_threat": ("soccer_conceded_profile_source.parquet", snaps["defensive_counter_threat"]),
+        "first_half_xg_share": ("soccer_halfxg_profile_source.parquet", snaps["first_half_xg_share"]),
+        "second_half_xg_share": ("soccer_halfxg_profile_source.parquet", snaps["first_half_xg_share"]),
+        "possessions_per_match": ("soccer_possession_profile_source.parquet", snaps["counter_threat"]),
+        "shots_per_possession": ("soccer_shotspp_profile_source.parquet", spp_source),
+        "formation_primary_xg": ("soccer_formationxg_primary_source.parquet",
+                                  _flatten_ingredients(_formation_primary_xg(*snaps["formation_primary_xg"]),
+                                                        ["xg_sum", "poss_n", "match_n"])),
+        "formation_secondary_xg": ("soccer_formationxg_secondary_source.parquet",
+                                    _flatten_ingredients(_formation_secondary_xg(*snaps["formation_secondary_xg"]),
+                                                          ["xg_sum", "poss_n", "match_n"])),
+        "home_goal_rate": ("soccer_homegoalrate_profile_source.parquet", season_side[season_side["is_home"]]),
+        "away_goal_rate": ("soccer_awaygoalrate_profile_source.parquet", season_side[~season_side["is_home"]]),
+        "away_strength": ("soccer_awaystrength_profile_source.parquet", _away_pts_frame(season_side)),
+        "clean_sheet_rate": ("soccer_cleansheet_profile_source.parquet", season_side),
+        "comeback_rate": ("soccer_comeback_profile_source.parquet", season_side[season_side["trailed_ht"] == 1.0]),
+        "shot_conversion_rate": ("soccer_shotconv_profile_source.parquet", season_side),
+        "shot_accuracy": ("soccer_shotacc_profile_source.parquet", season_side),
+        "discipline_rate": ("soccer_discipline_profile_source.parquet", season_side),
+        "foul_rate": ("soccer_foulrate_profile_source.parquet", season_side),
+        "corner_rate": ("soccer_cornerrate_profile_source.parquet", season_side),
     }
     written: dict[str, str] = {}
     seen: dict[str, Path] = {}
@@ -63,6 +141,16 @@ def write_snapshots(snaps: dict[str, pd.DataFrame], out_dir: Path = _CLAIMS_DIR)
             seen[name] = path
         written[attr] = str(path.relative_to(REPO_ROOT)).replace("\\", "/")
     return written
+
+
+def _away_pts_frame(season_side: pd.DataFrame) -> pd.DataFrame:
+    """away_strength's snapshot: away-only rows + a 'pts' column, same shape
+    as home_strength's existing snapshot (3/1/0 win/draw/loss points)."""
+    away = season_side[~season_side["is_home"]].copy()
+    away["pts"] = 0.0
+    away.loc[away["goals_for"] > away["goals_against"], "pts"] = 3.0
+    away.loc[away["goals_for"] == away["goals_against"], "pts"] = 1.0
+    return away
 
 
 def _best_window(profile_df: pd.DataFrame, attr: str) -> Optional[str]:

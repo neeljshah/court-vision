@@ -130,6 +130,159 @@ REGISTRY: Dict[str, Dict[str, Any]] = {
         "higher_is_better": True,
         "weight_ledger_family": "soccer_season_profile",
     },
+    # ================================================== 07-08 expansion (18)
+    # ------------------------------------------------------- statsbomb (8)
+    "defensive_counter_threat": {
+        "description": "xG conceded per opponent possession from counter-attacks against "
+                        "(defensive mirror of counter_threat).",
+        "entity": "team", "corpus": "statsbomb_event",
+        "ingredients": ["counter_xg_sum", "total_n"],
+        "formula": "sum(opponent counter-pattern xg conceded) / count(all opponent possessions)",
+        "status": "DESCRIPTIVE", "floor": 30, "floor_basis": "team_matches",
+        "higher_is_better": False, "weight_ledger_family": "soccer_possession_profile",
+    },
+    "defensive_set_piece_threat": {
+        "description": "Share of xG a team concedes that comes from opponent set-piece-derived "
+                        "possessions (defensive mirror of set_piece_threat).",
+        "entity": "team", "corpus": "statsbomb_event",
+        "ingredients": ["set_piece_xg_sum", "total_xg_sum"],
+        "formula": "sum(opponent set_piece-pattern xg conceded) / sum(opponent xg conceded, all patterns)",
+        "status": "DESCRIPTIVE", "floor": 30, "floor_basis": "team_matches",
+        "higher_is_better": False, "weight_ledger_family": "soccer_possession_profile",
+    },
+    "first_half_xg_share": {
+        "description": "Share of a team's total xG output created in the first half (period==1).",
+        "entity": "team", "corpus": "statsbomb_event",
+        "ingredients": ["half_xg_sum", "total_xg_sum"],
+        "formula": "sum(xg | period==1) / sum(xg)",
+        "status": "DESCRIPTIVE", "floor": 30, "floor_basis": "team_matches",
+        "higher_is_better": True, "weight_ledger_family": "soccer_possession_profile",
+    },
+    "second_half_xg_share": {
+        "description": "Share of a team's total xG output created in the second half or later "
+                        "(period>=2, covers extra-time periods 3-5 too).",
+        "entity": "team", "corpus": "statsbomb_event",
+        "ingredients": ["half_xg_sum", "total_xg_sum"],
+        "formula": "sum(xg | period>=2) / sum(xg)",
+        "status": "DESCRIPTIVE", "floor": 30, "floor_basis": "team_matches",
+        "higher_is_better": True, "weight_ledger_family": "soccer_possession_profile",
+    },
+    "possessions_per_match": {
+        "description": "Mean number of statsbomb possessions per match (tempo proxy).",
+        "entity": "team", "corpus": "statsbomb_event",
+        "ingredients": ["total_n", "team_matches"],
+        "formula": "count(possessions) / count_distinct(match_id)",
+        "status": "DESCRIPTIVE", "floor": 30, "floor_basis": "team_matches",
+        "higher_is_better": True, "weight_ledger_family": "soccer_possession_profile",
+    },
+    "shots_per_possession": {
+        "description": "Shot attempts per possession (directness proxy).",
+        "entity": "team", "corpus": "statsbomb_event",
+        "ingredients": ["total_shots", "total_poss"],
+        "formula": "count(Shot events) / count(possessions)",
+        "status": "DESCRIPTIVE", "floor": 30, "floor_basis": "team_matches",
+        "higher_is_better": True, "weight_ledger_family": "soccer_possession_profile",
+    },
+    "formation_primary_xg": {
+        "description": "xG per possession restricted to matches where a team used its single "
+                        "MOST-used detected starting formation (that formation needs "
+                        ">=10 matches to qualify).",
+        "entity": "team", "corpus": "statsbomb_event",
+        "ingredients": ["formation", "xg_sum", "poss_n", "match_n"],
+        "formula": "sum(xg | formation==primary) / count(possessions | formation==primary)",
+        "status": "DESCRIPTIVE", "floor": 10, "floor_basis": "matches_with_that_formation",
+        "higher_is_better": True, "weight_ledger_family": "soccer_formation_profile",
+    },
+    "formation_secondary_xg": {
+        "description": "xG per possession restricted to matches where a team used its SECOND "
+                        "most-used detected starting formation (needs >=10 matches to qualify).",
+        "entity": "team", "corpus": "statsbomb_event",
+        "ingredients": ["formation", "xg_sum", "poss_n", "match_n"],
+        "formula": "sum(xg | formation==secondary) / count(possessions | formation==secondary)",
+        "status": "DESCRIPTIVE", "floor": 10, "floor_basis": "matches_with_that_formation",
+        "higher_is_better": True, "weight_ledger_family": "soccer_formation_profile",
+    },
+    # ------------------------------------------------------ footballdata (10)
+    "home_goal_rate": {
+        "description": "Mean goals scored per HOME match, per season.",
+        "entity": "team", "corpus": "footballdata_season",
+        "ingredients": ["value", "match_n"],
+        "formula": "mean(fthg | is_home)",
+        "status": "DESCRIPTIVE", "floor": 10, "floor_basis": "team_season_home_matches",
+        "higher_is_better": True, "weight_ledger_family": "soccer_season_profile",
+    },
+    "away_goal_rate": {
+        "description": "Mean goals scored per AWAY match, per season.",
+        "entity": "team", "corpus": "footballdata_season",
+        "ingredients": ["value", "match_n"],
+        "formula": "mean(ftag | is_away)",
+        "status": "DESCRIPTIVE", "floor": 10, "floor_basis": "team_season_away_matches",
+        "higher_is_better": True, "weight_ledger_family": "soccer_season_profile",
+    },
+    "away_strength": {
+        "description": "Away points-rate per season (mirror of home_strength, away matches only).",
+        "entity": "team", "corpus": "footballdata_season",
+        "ingredients": ["pts_sum", "match_n"],
+        "formula": "mean(away_points) / 3",
+        "status": "DESCRIPTIVE", "floor": 10, "floor_basis": "team_season_away_matches",
+        "higher_is_better": True, "weight_ledger_family": "soccer_season_profile",
+    },
+    "clean_sheet_rate": {
+        "description": "Share of matches (home+away) a team concedes zero goals, per season.",
+        "entity": "team", "corpus": "footballdata_season",
+        "ingredients": ["value", "match_n"],
+        "formula": "mean(goals_conceded==0)",
+        "status": "DESCRIPTIVE", "floor": 20, "floor_basis": "team_season_matches",
+        "higher_is_better": True, "weight_ledger_family": "soccer_season_profile",
+    },
+    "comeback_rate": {
+        "description": "Of matches a team trailed at half-time, share it went on to win or draw.",
+        "entity": "team", "corpus": "footballdata_season",
+        "ingredients": ["value", "match_n"],
+        "formula": "mean(won_or_drew | trailed_at_HT)",
+        "status": "DESCRIPTIVE", "floor": 5, "floor_basis": "team_season_matches_trailing_at_HT",
+        "higher_is_better": True, "weight_ledger_family": "soccer_season_profile",
+    },
+    "shot_conversion_rate": {
+        "description": "Goals scored per shot attempted (home+away), per season.",
+        "entity": "team", "corpus": "footballdata_season",
+        "ingredients": ["num_sum", "den_sum", "match_n"],
+        "formula": "sum(goals_for) / sum(shots_for)",
+        "status": "DESCRIPTIVE", "floor": 20, "floor_basis": "team_season_matches",
+        "higher_is_better": True, "weight_ledger_family": "soccer_season_profile",
+    },
+    "shot_accuracy": {
+        "description": "Shots on target per shot attempted (home+away), per season.",
+        "entity": "team", "corpus": "footballdata_season",
+        "ingredients": ["num_sum", "den_sum", "match_n"],
+        "formula": "sum(sot_for) / sum(shots_for)",
+        "status": "DESCRIPTIVE", "floor": 20, "floor_basis": "team_season_matches",
+        "higher_is_better": True, "weight_ledger_family": "soccer_season_profile",
+    },
+    "discipline_rate": {
+        "description": "Mean cards (yellow+red) per match, per season.",
+        "entity": "team", "corpus": "footballdata_season",
+        "ingredients": ["value", "match_n"],
+        "formula": "mean(yellow_cards + red_cards)",
+        "status": "DESCRIPTIVE", "floor": 20, "floor_basis": "team_season_matches",
+        "higher_is_better": False, "weight_ledger_family": "soccer_season_profile",
+    },
+    "foul_rate": {
+        "description": "Mean fouls committed per match, per season.",
+        "entity": "team", "corpus": "footballdata_season",
+        "ingredients": ["value", "match_n"],
+        "formula": "mean(fouls)",
+        "status": "DESCRIPTIVE", "floor": 20, "floor_basis": "team_season_matches",
+        "higher_is_better": False, "weight_ledger_family": "soccer_season_profile",
+    },
+    "corner_rate": {
+        "description": "Mean corners won per match, per season (attacking-territory proxy).",
+        "entity": "team", "corpus": "footballdata_season",
+        "ingredients": ["value", "match_n"],
+        "formula": "mean(corners)",
+        "status": "DESCRIPTIVE", "floor": 20, "floor_basis": "team_season_matches",
+        "higher_is_better": True, "weight_ledger_family": "soccer_season_profile",
+    },
 }
 
 # Declared-but-not-built: registry entries the task asked for that are BLOCKED,
@@ -144,5 +297,26 @@ BLOCKED_ATTRIBUTES: Dict[str, Dict[str, str]] = {
                   "'own third' correctly needs per-period end-swap logic that is not cheap "
                   "or safe to improvise here; a wrong-sided proxy would silently invert the "
                   "attribute. BLOCKED rather than shipped wrong.",
+    },
+    "lead_trail_score_state": {
+        "description": "xG-per-possession splits by whether a team was leading/trailing/tied at "
+                        "the start of the possession (statsbomb corpus, 07-08 expansion ask).",
+        "reason": "Requires reconstructing a running score timeline per match from Shot (outcome="
+                  "'Goal') and Own Goal events, then attributing each possession's pre-possession "
+                  "score state -- but Own Goal events credit the scoring side to the OPPONENT of "
+                  "the event's own `team` field (a flip easy to get backwards), and knockout "
+                  "matches carry extra-time periods 3-5 whose continuation of the running score "
+                  "must not reset. Same class of silent-wrong-side risk that already got "
+                  "press_resistance BLOCKED above -- not attempted rather than shipped wrong.",
+    },
+    "late_goal_share": {
+        "description": "Share of a team's goals scored in the closing minutes (footballdata "
+                        "season corpus, 07-08 expansion ask).",
+        "reason": "No goal-minute column exists anywhere in the footballdata corpus -- "
+                  "match_stats.parquet/matches.parquet carry only match-level aggregate counts "
+                  "(fthg/ftag/hthg/htag, shots, cards), never a per-goal minute. The statsbomb "
+                  "corpus DOES carry per-event minutes but is a different (400-match) corpus than "
+                  "the one this attribute was asked against; BLOCKED rather than silently "
+                  "substituting a different corpus's window.",
     },
 }

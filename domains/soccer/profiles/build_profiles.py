@@ -25,6 +25,28 @@ import pandas as pd
 from domains.soccer.prereg_possession_chains import build_possessions
 from domains.soccer.profiles.attribute_registry import BLOCKED_ATTRIBUTES, REGISTRY
 from domains.soccer.profiles.claims import _CLAIMS_PATH, build_claims, write_claims, write_snapshots
+from domains.soccer.profiles.ingredients_expanded import (
+    _away_goal_rate,
+    _away_strength,
+    _clean_sheet_rate,
+    _comeback_rate,
+    _corner_rate,
+    _defensive_counter_threat,
+    _defensive_set_piece_threat,
+    _discipline_rate,
+    _first_half_xg_share,
+    _foul_rate,
+    _formation_primary_xg,
+    _formation_secondary_xg,
+    _home_goal_rate,
+    _possessions_per_match,
+    _second_half_xg_share,
+    _shot_accuracy,
+    _shot_conversion_rate,
+    _shots_per_possession,
+)
+from domains.soccer.profiles.row_shape import _entity_names, _rows
+from domains.soccer.profiles.snapshots_expanded import EXPANDED_SOURCES_SB, EXPANDED_SOURCES_SEASON, build_expanded_snapshots
 from domains.soccer.profiles.source_builders import (
     build_defensive_snapshot,
     build_formation_snapshot,
@@ -44,32 +66,9 @@ _SEASON_SOURCES = ["data/domains/soccer/match_stats.parquet", "data/domains/socc
 SOURCES = {a: _SB_SOURCES for a in
            ("counter_threat", "buildup_quality", "set_piece_threat", "formation_flexibility", "defensive_solidity")}
 SOURCES.update({"finishing_overperformance": _SEASON_SOURCES, "home_strength": ["data/domains/soccer/matches.parquet"]})
-
-
-def _num_or_str(v: Any) -> Any:
-    if isinstance(v, str):
-        return v
-    return None if pd.isna(v) else round(float(v), 4)
-
-
-def _rows(agg: pd.DataFrame, ingredient_cols: list[str], window: Optional[str]) -> pd.DataFrame:
-    """Standardize an attribute's per-entity agg DataFrame (entity_id,
-    entity_name, raw_value, n, + ingredient_cols[, window]) into the
-    entity_id/entity_name/window/raw_value/n/ingredients row shape."""
-    out = []
-    for r in agg.itertuples(index=False):
-        d = r._asdict()
-        out.append({
-            "entity_id": str(d["entity_id"]), "entity_name": d["entity_name"],
-            "window": window if window is not None else d["window"],
-            "raw_value": float(d["raw_value"]), "n": int(d["n"]),
-            "ingredients": {c: _num_or_str(d[c]) for c in ingredient_cols},
-        })
-    return pd.DataFrame(out)
-
-
-def _entity_names(snap: pd.DataFrame) -> pd.Series:
-    return snap.drop_duplicates("entity_id").set_index("entity_id")["entity_name"]
+# 07-08 expansion
+SOURCES.update({a: _SB_SOURCES for a in EXPANDED_SOURCES_SB})
+SOURCES.update({a: _SEASON_SOURCES for a in EXPANDED_SOURCES_SEASON})
 
 
 def _counter_threat(poss_snap: pd.DataFrame) -> pd.DataFrame:
@@ -179,12 +178,15 @@ def build_snapshots() -> dict[str, pd.DataFrame]:
     form_snap = build_formation_snapshot(match_lookup)
     finishing_snap, homestrength_snap = build_season_snapshots()
     def_names = poss_snap.drop_duplicates("entity_id").set_index("entity_id")["entity_name"]
-    return {
+
+    snaps = {
         "counter_threat": poss_snap, "buildup_quality": poss_snap, "set_piece_threat": poss_snap,
         "defensive_solidity": def_snap, "formation_flexibility": form_snap,
         "finishing_overperformance": finishing_snap, "home_strength": homestrength_snap,
         "_def_names": def_names,
     }
+    snaps.update(build_expanded_snapshots(match_teams, possessions, poss_snap, form_snap))
+    return snaps
 
 
 def build_profile_frames(snaps: dict[str, pd.DataFrame]) -> dict[str, pd.DataFrame]:
@@ -196,6 +198,25 @@ def build_profile_frames(snaps: dict[str, pd.DataFrame]) -> dict[str, pd.DataFra
         "formation_flexibility": _formation_flexibility(snaps["formation_flexibility"]),
         "finishing_overperformance": _finishing_overperformance(snaps["finishing_overperformance"]),
         "home_strength": _home_strength(snaps["home_strength"]),
+        # 07-08 expansion
+        "defensive_counter_threat": _defensive_counter_threat(snaps["defensive_counter_threat"], snaps["_def_names"]),
+        "defensive_set_piece_threat": _defensive_set_piece_threat(snaps["defensive_set_piece_threat"], snaps["_def_names"]),
+        "first_half_xg_share": _first_half_xg_share(snaps["first_half_xg_share"]),
+        "second_half_xg_share": _second_half_xg_share(snaps["second_half_xg_share"]),
+        "possessions_per_match": _possessions_per_match(snaps["possessions_per_match"]),
+        "shots_per_possession": _shots_per_possession(*snaps["shots_per_possession"]),
+        "formation_primary_xg": _formation_primary_xg(*snaps["formation_primary_xg"]),
+        "formation_secondary_xg": _formation_secondary_xg(*snaps["formation_secondary_xg"]),
+        "home_goal_rate": _home_goal_rate(snaps["home_goal_rate"]),
+        "away_goal_rate": _away_goal_rate(snaps["away_goal_rate"]),
+        "away_strength": _away_strength(snaps["away_strength"]),
+        "clean_sheet_rate": _clean_sheet_rate(snaps["clean_sheet_rate"]),
+        "comeback_rate": _comeback_rate(snaps["comeback_rate"]),
+        "shot_conversion_rate": _shot_conversion_rate(snaps["shot_conversion_rate"]),
+        "shot_accuracy": _shot_accuracy(snaps["shot_accuracy"]),
+        "discipline_rate": _discipline_rate(snaps["discipline_rate"]),
+        "foul_rate": _foul_rate(snaps["foul_rate"]),
+        "corner_rate": _corner_rate(snaps["corner_rate"]),
     }
 
 
