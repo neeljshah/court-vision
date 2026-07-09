@@ -15,8 +15,11 @@ from domains.basketball_nba.profiles.build_profiles import _SCHEMA_COLS, build
 
 
 @pytest.fixture(scope="module")
-def frames():
-    return build(seasons=["2025_26"])
+def frames(tmp_path_factory):
+    # out_dir MUST be a tmp dir: build() writes its parquets unconditionally,
+    # and the default out_dir is the PRODUCTION data/cache/profiles/ -- a
+    # single-season test run silently clobbered the 3-season parquets once.
+    return build(seasons=["2025_26"], out_dir=tmp_path_factory.mktemp("profiles"))
 
 
 def test_schema_columns_present(frames):

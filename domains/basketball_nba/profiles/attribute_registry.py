@@ -65,6 +65,8 @@ OMITTED from the output, never zero-filled.
 """
 from __future__ import annotations
 
+from domains.basketball_nba.composition.zone_geometry import ZONES
+
 # ---------------------------------------------------------------------------
 # PLAYER attributes
 # ---------------------------------------------------------------------------
@@ -232,6 +234,149 @@ PLAYER_ATTRIBUTES: dict[str, dict] = {
 }
 
 # ---------------------------------------------------------------------------
+# PLAYER offense zone/context/clutch attributes -- 24 entries generated from
+# composition/player_offense_events.py's per-(game,player) wide table (one
+# PBP pass per season, already zone/transition/late-clock/clutch resolved).
+# Programmatic (not hand-duplicated 24x) because the 15 zone entries and 6
+# play-context entries are each the SAME shape across zones/buckets -- see
+# player_offense_zones.py for the actual compute.
+# ---------------------------------------------------------------------------
+_OFFENSE_SEASONS = ["2023_24", "2024_25", "2025_26"]
+_OFFENSE_SRC = "team_system/composition/player_offense_events_<season>.parquet"
+_THREE_ZONES = {"corner3", "above_break_3"}
+
+
+def _zone_offense_entries() -> dict[str, dict]:
+    entries: dict[str, dict] = {}
+    for z in ZONES:
+        mult = "1.5" if z in _THREE_ZONES else "1.0"
+        entries[f"zone_attempt_share_{z}"] = {
+            "description": f"Share of this player's own season FGA taken from the {z} zone (x/y geometry classifier, 96.7% agreement -- zone_geometry.py).",
+            "entity": "player",
+            "ingredients": [{"name": f"{z}_fga", "source": _OFFENSE_SRC}, {"name": "total_fga", "source": _OFFENSE_SRC}],
+            "formula": f"sum({z}_fga) / sum(total_fga)",
+            "status": "DESCRIPTIVE",
+            "floor": {f"{z}_fga": 25.0},
+            "weight_ledger_family": None,
+            "seasons": _OFFENSE_SEASONS,
+            "verifiable_by_design": True,
+        }
+        entries[f"zone_efg_{z}"] = {
+            "description": f"eFG% on this player's own {z}-zone attempts.",
+            "entity": "player",
+            "ingredients": [{"name": f"{z}_fgm", "source": _OFFENSE_SRC}, {"name": f"{z}_fga", "source": _OFFENSE_SRC}],
+            "formula": f"(sum({z}_fgm) * {mult}) / sum({z}_fga)",
+            "status": "DESCRIPTIVE",
+            "floor": {f"{z}_fga": 25.0},
+            "weight_ledger_family": None,
+            "seasons": _OFFENSE_SEASONS,
+            "verifiable_by_design": True,
+        }
+        entries[f"zone_assisted_share_{z}"] = {
+            "description": f"Share of this player's own {z}-zone makes that were assisted (assistPersonId OR 'assist' in description text -- concession_profiles._is_assisted).",
+            "entity": "player",
+            "ingredients": [{"name": f"{z}_assisted", "source": _OFFENSE_SRC}, {"name": f"{z}_fgm", "source": _OFFENSE_SRC}],
+            "formula": f"sum({z}_assisted) / sum({z}_fgm)",
+            "status": "DESCRIPTIVE",
+            "floor": {f"{z}_fga": 25.0},
+            "weight_ledger_family": None,
+            "seasons": _OFFENSE_SEASONS,
+            "verifiable_by_design": True,
+        }
+    return entries
+
+
+def _play_context_entries() -> dict[str, dict]:
+    entries: dict[str, dict] = {}
+    specs = [
+        ("transition", "shots taken within 6s of this player's own team gaining possession (transition_flag.py's window)"),
+        ("halfcourt", "shots NOT taken in transition (the complement of transition_flag.py's window)"),
+        ("late_clock", "shots taken with <=7s left on shot_clock_proxy.py's derived shot-clock proxy"),
+    ]
+    for prefix, desc in specs:
+        entries[f"{prefix}_efg"] = {
+            "description": f"eFG% on {desc}.",
+            "entity": "player",
+            "ingredients": [
+                {"name": f"{prefix}_fgm", "source": _OFFENSE_SRC}, {"name": f"{prefix}_fg3m", "source": _OFFENSE_SRC},
+                {"name": f"{prefix}_fga", "source": _OFFENSE_SRC},
+            ],
+            "formula": f"(sum({prefix}_fgm) + 0.5 * sum({prefix}_fg3m)) / sum({prefix}_fga)",
+            "status": "DESCRIPTIVE",
+            "floor": {f"{prefix}_fga": 25.0},
+            "weight_ledger_family": None,
+            "seasons": _OFFENSE_SEASONS,
+            "verifiable_by_design": True,
+        }
+        entries[f"{prefix}_attempt_share"] = {
+            "description": f"Share of this player's own season FGA that were {desc}.",
+            "entity": "player",
+            "ingredients": [{"name": f"{prefix}_fga", "source": _OFFENSE_SRC}, {"name": "total_fga", "source": _OFFENSE_SRC}],
+            "formula": f"sum({prefix}_fga) / sum(total_fga)",
+            "status": "DESCRIPTIVE",
+            "floor": {f"{prefix}_fga": 25.0},
+            "weight_ledger_family": None,
+            "seasons": _OFFENSE_SEASONS,
+            "verifiable_by_design": True,
+        }
+    return entries
+
+
+_CLUTCH_ENTRIES: dict[str, dict] = {
+    "clutch_efg": {
+        "description": "eFG% in clutch time (Q4/OT, <=5min remaining, <=10pt margin).",
+        "entity": "player",
+        "ingredients": [
+            {"name": "clutch_fgm", "source": _OFFENSE_SRC}, {"name": "clutch_fg3m", "source": _OFFENSE_SRC},
+            {"name": "clutch_fga", "source": _OFFENSE_SRC},
+        ],
+        "formula": "(sum(clutch_fgm) + 0.5 * sum(clutch_fg3m)) / sum(clutch_fga)",
+        "status": "DESCRIPTIVE",
+        "floor": {"clutch_fga": 30.0},
+        "weight_ledger_family": None,
+        "seasons": _OFFENSE_SEASONS,
+        "verifiable_by_design": True,
+    },
+    "clutch_ft_rate": {
+        "description": "Free-throw attempts per field-goal attempt in clutch time (FTA/FGA, not FTA/36 -- see player_offense_zones.py docstring for why).",
+        "entity": "player",
+        "ingredients": [{"name": "clutch_fta", "source": _OFFENSE_SRC}, {"name": "clutch_fga", "source": _OFFENSE_SRC}],
+        "formula": "sum(clutch_fta) / sum(clutch_fga)",
+        "status": "DESCRIPTIVE",
+        "floor": {"clutch_fga": 30.0},
+        "weight_ledger_family": None,
+        "seasons": _OFFENSE_SEASONS,
+        "verifiable_by_design": True,
+    },
+    "clutch_fga_per_game": {
+        "description": (
+            "Clutch FGA per game the player logged >=1 clutch attempt -- a volume proxy substituting for FGA/36 "
+            "(true clutch on-court minutes need joint roster+running-score tracking not on disk here; see "
+            "player_offense_zones.py docstring)."
+        ),
+        "entity": "player",
+        "ingredients": [
+            {"name": "clutch_fga", "source": _OFFENSE_SRC},
+            {"name": "game_id (n_games, clutch_fga>0 only)", "source": "team_system/composition/player_offense_events_<season>.parquet"},
+        ],
+        "formula": "sum(clutch_fga) / count_distinct(game_id | clutch_fga>0)",
+        "status": "DESCRIPTIVE",
+        "floor": {"clutch_fga": 30.0},
+        "weight_ledger_family": None,
+        "seasons": _OFFENSE_SEASONS,
+        # n_games denominator needs a conditional distinct-count (games WHERE
+        # clutch_fga>0) the claims grammar can't express -- no row-filter
+        # support in aggregate_recompute.py, same exclusion class as
+        # spacing_contribution/rim_pressure_def's own membership-parse gap.
+        "verifiable_by_design": False,
+    },
+}
+
+PLAYER_ATTRIBUTES.update(_zone_offense_entries())
+PLAYER_ATTRIBUTES.update(_play_context_entries())
+PLAYER_ATTRIBUTES.update(_CLUTCH_ENTRIES)
+
+# ---------------------------------------------------------------------------
 # TEAM attributes -- shot_diet_* / concession_* pass-through columns are one
 # entry each below (16 of the 19 team attributes), generated in
 # team_attributes.py from these two column lists rather than hand-duplicated.
@@ -357,6 +502,222 @@ LINEUP_ATTRIBUTES: dict[str, dict] = {
         "seasons": ["2023_24", "2024_25", "2025_26"],
         "verifiable_by_design": False,  # two-pass sign-flip (lineup can be side A or B), not a bare column agg
     },
+}
+
+# ---------------------------------------------------------------------------
+# ADDITIVE EXPANSION (defense/rebounding/fouls/team) -- appended after the
+# hand-written dicts above rather than interleaved, so this whole block is a
+# pure append (profiles/player_defense_zones.py, player_rebounding.py,
+# player_fouls.py, team_expansion*.py are the builders).
+# ---------------------------------------------------------------------------
+_DEF_ZONES = ["rim", "paint", "mid", "corner3", "above_break_3"]
+for _zone in _DEF_ZONES:
+    for _metric in ("share_allowed", "efg_allowed"):
+        for _side, _floor_key in (("on", "min_on"), ("off", "min_off")):
+            PLAYER_ATTRIBUTES[f"zone_def_{_zone}_{_metric}_{_side}"] = {
+                "description": f"Opponent {_zone} {_metric.replace('_', ' ')} while this player's lineup is {_side}-court (lower = better defense).",
+                "entity": "player",
+                "ingredients": [{"name": f"{_zone}_{_metric}_{_side}", "source": "team_system/lineups/zone_onoff_<season>.parquet"}],
+                "formula": f"{_zone}_{_metric}_{_side} verbatim",
+                "status": "DESCRIPTIVE",
+                "floor": {"min_on": 750.0, "min_off": 750.0},
+                "weight_ledger_family": None,
+                "seasons": ["2023_24", "2024_25", "2025_26"],
+                "verifiable_by_design": True,
+            }
+
+PLAYER_ATTRIBUTES["oreb_pct"] = {
+    "description": "Offensive-rebound rate: this player's season OREB total / his own team's missed FGA while he was on-court (opportunity proxy, not the official NBA OREB%% formula).",
+    "entity": "player",
+    "ingredients": [
+        {"name": "oreb", "source": "data/domains/basketball_nba/player_boxscores.parquet"},
+        {"name": "team_missed_fga_on", "source": "team_system/lineups/stints_<season>.parquet (PBP miss events, attach_lineup_to_shots)"},
+    ],
+    "formula": "sum(oreb) / team_missed_fga_while_on",
+    "status": "DESCRIPTIVE",
+    "floor": {"team_missed_fga_on": 200.0},
+    "weight_ledger_family": None,
+    "seasons": ["2024_25", "2025_26"],
+    "verifiable_by_design": False,  # PBP on-court join, not a bare-column/groupby formula
+}
+PLAYER_ATTRIBUTES["dreb_pct"] = {
+    "description": "Defensive-rebound rate: this player's season DREB total / the opponent's missed FGA while he was on-court (opportunity proxy).",
+    "entity": "player",
+    "ingredients": [
+        {"name": "dreb", "source": "data/domains/basketball_nba/player_boxscores.parquet"},
+        {"name": "opp_missed_fga_on", "source": "team_system/lineups/zone_onoff_<season>.parquet (opp_fga_on, PBP miss events)"},
+    ],
+    "formula": "sum(dreb) / opp_missed_fga_while_on",
+    "status": "DESCRIPTIVE",
+    "floor": {"opp_missed_fga_on": 200.0},
+    "weight_ledger_family": None,
+    "seasons": ["2024_25", "2025_26"],
+    "verifiable_by_design": False,
+}
+PLAYER_ATTRIBUTES["team_dreb_pct_swing"] = {
+    "description": (
+        "Boxout-adjacent proxy: this player's TEAM defensive-rebound rate (share of opponent misses "
+        "the team recovers) while he's on-court minus while he's off -- the player-level expression of "
+        "the replicated h7 stint-continuity-x-DREB mechanism, not itself gate-tested at this grain."
+    ),
+    "entity": "player",
+    "ingredients": [{"name": "is_dreb / lineup_key membership", "source": "team_system/lineups/stints_<season>.parquet (PBP miss+rebound events, nba_hypotheses._load_missed_shots_and_rebounds)"}],
+    "formula": "team_dreb_pct_on - team_dreb_pct_off",
+    "status": "DESCRIPTIVE",
+    "floor": {"min_on": 750.0, "min_off": 750.0},
+    "weight_ledger_family": None,
+    "seasons": ["2023_24", "2024_25", "2025_26"],
+    "verifiable_by_design": False,
+}
+PLAYER_ATTRIBUTES["pf_per36"] = {
+    "description": "Personal fouls committed per 36 minutes.",
+    "entity": "player",
+    "ingredients": [{"name": "pf", "source": "data/domains/basketball_nba/player_boxscores.parquet"},
+                     {"name": "min", "source": "data/domains/basketball_nba/player_boxscores.parquet"}],
+    "formula": "sum(pf) / sum(min) * 36",
+    "status": "DESCRIPTIVE",
+    "floor": {"min_sum": 200.0},
+    "weight_ledger_family": None,
+    "seasons": ["2024_25", "2025_26"],
+    "verifiable_by_design": True,
+}
+for _side, _floor_key in (("on", "min_on"), ("off", "min_off")):
+    PLAYER_ATTRIBUTES[f"opp_ft_rate_allowed_{_side}"] = {
+        "description": f"Opponent FT-attempts-per-FGA while this player's lineup is {_side}-court (lower = fewer free points conceded).",
+        "entity": "player",
+        "ingredients": [
+            {"name": "opp_fta", "source": "team_system/lineups/stints_<season>.parquet (PBP freethrow events, defending-team tagged)"},
+            {"name": "opp_fga", "source": "team_system/lineups/zone_onoff_<season>.parquet"},
+        ],
+        "formula": f"opp_fta_{_side} / opp_fga_{_side}",
+        "status": "DESCRIPTIVE",
+        "floor": {"min_on": 750.0, "min_off": 750.0},
+        "weight_ledger_family": None,
+        "seasons": ["2023_24", "2024_25", "2025_26"],
+        "verifiable_by_design": False,  # 2-parquet merge (freethrow join + zone_onoff), not a bare groupby
+    }
+
+_OFF_ZONES = ["rim", "paint", "mid", "corner3", "above_break_3"]
+for _zone in _OFF_ZONES:
+    for _metric, _desc in (("share", "share of this team's own FGA"), ("efg", "eFG%% on this team's own attempts"), ("fga_per_game", "attempts/game")):
+        TEAM_ATTRIBUTES[f"zone_offense_{_zone}_{_metric}"] = {
+            "description": f"{_zone} {_desc} (own offense, PBP shot x/y + classify_zone).",
+            "entity": "team",
+            "ingredients": [{"name": "x/y/zone", "source": "team_system/lineups/stints_<season>.parquet (PBP shot events, classify_zone)"}],
+            "formula": f"team {_zone} {_metric}, aggregated per team_id per season",
+            "status": "DESCRIPTIVE",
+            "floor": {"n_games": 10.0},
+            "weight_ledger_family": None,
+            "seasons": ["2023_24", "2024_25", "2025_26"],
+            "verifiable_by_design": False,  # no persisted per-shot-zone parquet to independently recompute against
+        }
+
+for _side in ("home", "away", "home_away_diff"):
+    TEAM_ATTRIBUTES[f"net_rating_{_side}"] = {
+        "description": f"Net rating per48 in {_side.replace('_', ' ')} games." if _side != "home_away_diff" else "Net rating per48 home minus away (home-court proxy).",
+        "entity": "team",
+        "ingredients": [{"name": "pts_for/pts_against/elapsed_s", "source": "team_system/lineups/stints_<season>.parquet"},
+                         {"name": "home_team/away_team", "source": "data/domains/basketball_nba/games.parquet"}],
+        "formula": "(sum(pts_for) - sum(pts_against)) / sum(elapsed_s) * 48*60, split by home/away game_id",
+        "status": "DESCRIPTIVE",
+        "floor": {"n_games": 10.0},
+        "weight_ledger_family": None,
+        "seasons": ["2023_24", "2024_25", "2025_26"],
+        "verifiable_by_design": False,  # home/away conditional split via games.parquet join
+    }
+
+for _attr, _desc in (
+    ("clutch_net_pts_per_game", "Mean point differential during clutch scoring events per game (last 5min Q4+OT, margin<=10) -- a proxy, NOT a true per-48 rate."),
+    ("clutch_off_pts_per_game", "Mean points scored during clutch scoring events per game."),
+    ("clutch_def_pts_per_game", "Mean points allowed during clutch scoring events per game."),
+):
+    TEAM_ATTRIBUTES[_attr] = {
+        "description": _desc,
+        "entity": "team",
+        "ingredients": [{"name": "score deltas / period / clock", "source": "team_system/lineups/stints_<season>.parquet (PBP scoring events, clutch window: period>=4, remaining<=300s, |margin|<=10)"}],
+        "formula": f"{_attr} = mean(clutch point differential or side) per game",
+        "status": "DESCRIPTIVE",
+        "floor": {"n_games": 10.0},
+        "weight_ledger_family": None,
+        "seasons": ["2023_24", "2024_25", "2025_26"],
+        "verifiable_by_design": False,  # time-windowed PBP walk, not a bare groupby
+    }
+
+TEAM_ATTRIBUTES["bench_min_share"] = {
+    "description": "Share of total team minutes played by non-starters.",
+    "entity": "team",
+    "ingredients": [{"name": "min", "source": "data/domains/basketball_nba/player_boxscores.parquet"},
+                     {"name": "starter", "source": "data/domains/basketball_nba/player_boxscores.parquet"}],
+    "formula": "sum(min | not starter) / sum(min)",
+    "status": "DESCRIPTIVE",
+    "floor": {"n_games": 10.0},
+    "weight_ledger_family": None,
+    "seasons": ["2024_25", "2025_26"],
+    "verifiable_by_design": False,  # conditional (starter==False) filter inside the aggregate, not a bare groupby
+}
+
+TEAM_ATTRIBUTES["oreb_pct_team"] = {
+    "description": "Team offensive-rebound rate: team OREB / team's own missed FGA (opportunity proxy, box-derived).",
+    "entity": "team",
+    "ingredients": [{"name": "oreb", "source": "data/domains/basketball_nba/player_boxscores.parquet"},
+                     {"name": "fga", "source": "data/domains/basketball_nba/player_boxscores.parquet"},
+                     {"name": "fgm", "source": "data/domains/basketball_nba/player_boxscores.parquet"}],
+    "formula": "sum(oreb) / (sum(fga) - sum(fgm))",
+    "status": "DESCRIPTIVE",
+    "floor": {"n_games": 10.0},
+    "weight_ledger_family": None,
+    "seasons": ["2024_25", "2025_26"],
+    "verifiable_by_design": True,
+}
+TEAM_ATTRIBUTES["dreb_pct_team"] = {
+    "description": "Team defensive-rebound rate: team DREB / opponent's missed FGA in the same games (opponent box join).",
+    "entity": "team",
+    "ingredients": [{"name": "dreb", "source": "data/domains/basketball_nba/player_boxscores.parquet"},
+                     {"name": "opp fga/fgm", "source": "data/domains/basketball_nba/player_boxscores.parquet (opponent's own game row)"}],
+    "formula": "sum(dreb) / opponent_missed_fga_same_games",
+    "status": "DESCRIPTIVE",
+    "floor": {"n_games": 10.0},
+    "weight_ledger_family": None,
+    "seasons": ["2024_25", "2025_26"],
+    "verifiable_by_design": False,  # needs the OPPONENT team's box row in the same game -- a self-join
+}
+TEAM_ATTRIBUTES["ft_rate_team"] = {
+    "description": "Team's own FT-attempts-per-FGA (offense side; concession_ft_rate_allowed is the defense side).",
+    "entity": "team",
+    "ingredients": [{"name": "fta", "source": "data/domains/basketball_nba/player_boxscores.parquet"},
+                     {"name": "fga", "source": "data/domains/basketball_nba/player_boxscores.parquet"}],
+    "formula": "sum(fta) / sum(fga)",
+    "status": "DESCRIPTIVE",
+    "floor": {"n_games": 10.0},
+    "weight_ledger_family": None,
+    "seasons": ["2024_25", "2025_26"],
+    "verifiable_by_design": True,
+}
+TEAM_ATTRIBUTES["pf_per_game_team"] = {
+    "description": "Personal fouls committed per team-game.",
+    "entity": "team",
+    "ingredients": [{"name": "pf", "source": "data/domains/basketball_nba/player_boxscores.parquet"}],
+    "formula": "sum(pf) / count_distinct(game_id)",
+    "status": "DESCRIPTIVE",
+    "floor": {"n_games": 10.0},
+    "weight_ledger_family": None,
+    "seasons": ["2024_25", "2025_26"],
+    "verifiable_by_design": True,
+}
+TEAM_ATTRIBUTES["avg_defensive_continuity_s"] = {
+    "description": (
+        "Mean lineup-continuity seconds sampled specifically at defensive-rebound-opportunity moments "
+        "(an opponent miss) -- the raw material of the replicated h7 stint-continuity-x-DREB mechanism, "
+        "at team grain (lineup_continuity_avg_stint_s is the unconditional version over ALL stints)."
+    ),
+    "entity": "team",
+    "ingredients": [{"name": "continuity_s", "source": "team_system/lineups/stints_<season>.parquet (nba_hypotheses.build_continuity_dreb_tagged)"}],
+    "formula": "mean(continuity_s) grouped by team_id, sampled at opponent-miss moments",
+    "status": "VALIDATED_MECHANISM",
+    "floor": {"n": 50.0},
+    "weight_ledger_family": "nba_hypotheses_h7_continuity_dreb",
+    "seasons": ["2023_24", "2024_25", "2025_26"],
+    "verifiable_by_design": False,  # PBP miss->rebound asof join, not a bare groupby
 }
 
 ATTRIBUTES: dict[str, dict] = {**PLAYER_ATTRIBUTES, **TEAM_ATTRIBUTES, **LINEUP_ATTRIBUTES}

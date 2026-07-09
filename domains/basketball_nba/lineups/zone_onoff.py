@@ -21,11 +21,12 @@ profiles/player_attributes.py's build_rim_pressure_def.
 
 OUTPUT: data/cache/team_system/lineups/zone_onoff_<season>.parquet
   player_id, team_id, player_name, n_games, min_on, min_off,
-  rim_fga_on/off, rim_fgm_on/off, three_fga_on/off, three_fgm_on/off,
-  opp_fga_on/off, rim_share_allowed_on/off, rim_efg_allowed_on/off,
-  three_share_allowed_on/off, three_efg_allowed_on/off.
-  (rim is always a 2pt attempt -- eFG allowed there equals plain FG%; three
-  combines corner3 + above_break_3, no on-disk split finer than that.)
+  opp_fga_on/off, then per zone in ZONE_SPECS (rim, paint, mid, corner3,
+  above_break_3, plus the legacy combined "three" = corner3+above_break_3):
+  <zone>_fga_on/off, <zone>_fgm_on/off, <zone>_share_allowed_on/off,
+  <zone>_efg_allowed_on/off. rim/paint/mid are 2pt attempts -- eFG allowed
+  there equals plain FG%; corner3/above_break_3/three use 1.5x for the
+  3pt eFG bump.
 
 NETWORK: zero. CLI: python -m domains.basketball_nba.lineups.zone_onoff --season 2025_26
 """
@@ -50,6 +51,19 @@ _PBP_BY_SEASON = {
     "2024_25": REPO_ROOT / "data" / "cache" / "team_system" / "pbp_2024_25",
     "2025_26": _PBP_DIR,
 }
+
+# (column_prefix, zone_values classify_zone can emit, is_three_pt_scoring)
+# "three" is the legacy combined corner3+above_break_3 bucket -- kept verbatim
+# (same column names/semantics) for existing consumers (rim_pressure_def,
+# test_zone_onoff.py); the 4 new prefixes are the individual zone split.
+ZONE_SPECS: list[tuple[str, tuple[str, ...], bool]] = [
+    ("rim", ("rim",), False),
+    ("paint", ("paint",), False),
+    ("mid", ("mid",), False),
+    ("corner3", ("corner3",), True),
+    ("above_break_3", ("above_break_3",), True),
+    ("three", ("corner3", "above_break_3"), True),
+]
 
 
 def load_shot_events(game_json: dict[str, Any]) -> pd.DataFrame:
@@ -88,8 +102,8 @@ def compute_zone_onoff(stints_df: pd.DataFrame, shots_df: pd.DataFrame) -> pd.Da
     clean["players"] = clean["lineup_key"].astype(str).str.split(",")
     shots_clean = shots_df[shots_df["n_on_court"] == 5].copy()
     shots_clean["players"] = shots_clean["lineup_key"].astype(str).str.split(",")
-    shots_clean["is_rim"] = (shots_clean["zone"] == "rim").astype(int)
-    shots_clean["is_three"] = shots_clean["zone"].isin(["corner3", "above_break_3"]).astype(int)
+    for prefix, zones, _ in ZONE_SPECS:
+        shots_clean[f"is_{prefix}"] = shots_clean["zone"].isin(zones).astype(int)
 
     acc: dict[tuple[int, int], dict[str, float]] = defaultdict(lambda: defaultdict(float))
     games_seen: dict[tuple[int, int], set] = defaultdict(set)
@@ -117,34 +131,31 @@ def compute_zone_onoff(stints_df: pd.DataFrame, shots_df: pd.DataFrame) -> pd.Da
             on_s, off_s = shots_gt[mask], shots_gt[~mask]
             acc[key]["opp_fga_on"] += on_s["fga"].sum()
             acc[key]["opp_fga_off"] += off_s["fga"].sum()
-            acc[key]["rim_fga_on"] += on_s["is_rim"].sum()
-            acc[key]["rim_fgm_on"] += (on_s["is_rim"] * on_s["fgm"]).sum()
-            acc[key]["rim_fga_off"] += off_s["is_rim"].sum()
-            acc[key]["rim_fgm_off"] += (off_s["is_rim"] * off_s["fgm"]).sum()
-            acc[key]["three_fga_on"] += on_s["is_three"].sum()
-            acc[key]["three_fgm_on"] += (on_s["is_three"] * on_s["fgm"]).sum()
-            acc[key]["three_fga_off"] += off_s["is_three"].sum()
-            acc[key]["three_fgm_off"] += (off_s["is_three"] * off_s["fgm"]).sum()
+            for prefix, _, _ in ZONE_SPECS:
+                is_col = f"is_{prefix}"
+                acc[key][f"{prefix}_fga_on"] += on_s[is_col].sum()
+                acc[key][f"{prefix}_fgm_on"] += (on_s[is_col] * on_s["fgm"]).sum()
+                acc[key][f"{prefix}_fga_off"] += off_s[is_col].sum()
+                acc[key][f"{prefix}_fgm_off"] += (off_s[is_col] * off_s["fgm"]).sum()
 
     rows = []
     for (player_id, team_id), v in acc.items():
-        rows.append({
+        row = {
             "player_id": player_id, "team_id": team_id, "n_games": len(games_seen[(player_id, team_id)]),
             "min_on": round(v["min_on"], 2), "min_off": round(v["min_off"], 2),
-            "rim_fga_on": int(v["rim_fga_on"]), "rim_fgm_on": int(v["rim_fgm_on"]),
-            "rim_fga_off": int(v["rim_fga_off"]), "rim_fgm_off": int(v["rim_fgm_off"]),
-            "three_fga_on": int(v["three_fga_on"]), "three_fgm_on": int(v["three_fgm_on"]),
-            "three_fga_off": int(v["three_fga_off"]), "three_fgm_off": int(v["three_fgm_off"]),
             "opp_fga_on": int(v["opp_fga_on"]), "opp_fga_off": int(v["opp_fga_off"]),
-            "rim_share_allowed_on": round(_div(v["rim_fga_on"], v["opp_fga_on"]), 4),
-            "rim_share_allowed_off": round(_div(v["rim_fga_off"], v["opp_fga_off"]), 4),
-            "rim_efg_allowed_on": round(_div(v["rim_fgm_on"], v["rim_fga_on"]), 4),
-            "rim_efg_allowed_off": round(_div(v["rim_fgm_off"], v["rim_fga_off"]), 4),
-            "three_share_allowed_on": round(_div(v["three_fga_on"], v["opp_fga_on"]), 4),
-            "three_share_allowed_off": round(_div(v["three_fga_off"], v["opp_fga_off"]), 4),
-            "three_efg_allowed_on": round(_div(1.5 * v["three_fgm_on"], v["three_fga_on"]), 4),
-            "three_efg_allowed_off": round(_div(1.5 * v["three_fgm_off"], v["three_fga_off"]), 4),
-        })
+        }
+        for prefix, _, is_3pt in ZONE_SPECS:
+            fga_on, fgm_on = v[f"{prefix}_fga_on"], v[f"{prefix}_fgm_on"]
+            fga_off, fgm_off = v[f"{prefix}_fga_off"], v[f"{prefix}_fgm_off"]
+            mult = 1.5 if is_3pt else 1.0
+            row[f"{prefix}_fga_on"], row[f"{prefix}_fgm_on"] = int(fga_on), int(fgm_on)
+            row[f"{prefix}_fga_off"], row[f"{prefix}_fgm_off"] = int(fga_off), int(fgm_off)
+            row[f"{prefix}_share_allowed_on"] = round(_div(fga_on, v["opp_fga_on"]), 4)
+            row[f"{prefix}_share_allowed_off"] = round(_div(fga_off, v["opp_fga_off"]), 4)
+            row[f"{prefix}_efg_allowed_on"] = round(_div(mult * fgm_on, fga_on), 4)
+            row[f"{prefix}_efg_allowed_off"] = round(_div(mult * fgm_off, fga_off), 4)
+        rows.append(row)
     out = pd.DataFrame(rows)
     if not out.empty:
         out["player_id"] = out["player_id"].astype("int64")
