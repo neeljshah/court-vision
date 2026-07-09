@@ -40,6 +40,15 @@ from scripts.platformkit.io_atomic import append_jsonl_atomic, write_json_atomic
 
 TEMPLATE_IDS = ("mlb_pa_attr_x_archetype", "tennis_match_asof_self_cross")
 MLB_REPL_YEAR = "2024"
+# Declared MLB replication corpora (each a season fully disjoint from
+# discovery's 2025 fit, runner._MLB_PA_YEAR): 2024 was the original batch-2b
+# corpus; savant_full__2026.parquet (409,079 rows, 2026-03-25..2026-07-08)
+# landed later (gap_ledger_2026-07-11.md rank 9) and is registered here as a
+# 3rd independent corpus a caller can replicate() against, e.g.
+# replicate(mlb_year=MLB_REPL_YEARS[1]) -- `replicate()` already took
+# `mlb_year` as a plain parameter, so this is a declared-corpora config, not
+# a new code path.
+MLB_REPL_YEARS = ("2024", "2026")
 K_DECLARED = 6  # flat Bonferroni across this fixed 6-candidate replication family
 ALPHA = eps_eff(DEFAULT_EPS, K_DECLARED)
 
@@ -217,5 +226,5 @@ if __name__ == "__main__":
     raise SystemExit(main())
 
 
-__all__ = ["replicate", "verdict_for", "main", "TEMPLATE_IDS", "MLB_REPL_YEAR",
+__all__ = ["replicate", "verdict_for", "main", "TEMPLATE_IDS", "MLB_REPL_YEAR", "MLB_REPL_YEARS",
            "K_DECLARED", "ALPHA", "VERDICTS_PATH"]
