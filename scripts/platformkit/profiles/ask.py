@@ -240,9 +240,16 @@ def main(argv=None):
     p.add_argument("--sport")
     p.add_argument("--window")
     p.add_argument("--list", action="store_true")
+    p.add_argument("--concept", action="store_true",
+                    help="route through the concept answer engine (superlative/comparison/"
+                         "explanation composites) instead of a single-attribute lookup -- "
+                         "see docs/analytics/ANSWER_RULES.md")
     a = p.parse_args(argv)
     if a.list:
         print(_ascii(list_attributes(a.sport)))
+    elif a.concept and a.query:
+        from scripts.platformkit.answers import contracts
+        print(_ascii(contracts.render(contracts.answer_question(a.query, a.sport or "nba", a.window))))
     elif a.query:
         print(_ascii(answer(a.query, a.sport, a.window)))
     else:
