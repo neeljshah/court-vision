@@ -63,7 +63,7 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
         "baseline": "net_pts ~ attr_a + attr_b",
         "pairing": "self_cross",
         "left_pool": {"attributes": ["synergy_residual", "continuity_s"]},
-        "feature_builder": "nba_stint_lineup_asof",   # not yet registered -> NOT_TESTABLE
+        "feature_builder": "nba_stint_lineup_asof",   # registered -> runner._BUILDERS (runner.py L281)
         "blocklist_attrs": [],
         "blocklist_pairs": [],
     },
@@ -97,7 +97,7 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
         "baseline": "home_win ~ elo + attr_a_diff_asof + attr_b_diff_asof",
         "pairing": "self_cross",
         "left_pool": {"entity": "team", "family": "box_detail_asof"},
-        "feature_builder": "nba_boxdetail_asof",   # not yet registered -> NOT_TESTABLE
+        "feature_builder": "nba_boxdetail_asof",   # registered -> runner._BUILDERS (task 39b, builders_task39b.py)
         "blocklist_attrs": [],
         "blocklist_pairs": [],
     },
@@ -110,7 +110,7 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
         "pairing": "cross",
         "left_pool": {"attributes": ["K_avoidance", "BB_rate"]},
         "right_pool": {"attributes": ["whiff_rate", "platoon_split"]},
-        "feature_builder": "mlb_pa_asof",   # not yet registered -> NOT_TESTABLE
+        "feature_builder": "mlb_pa_asof",   # registered -> runner._BUILDERS (runner.py L282)
         "blocklist_attrs": [],
         "blocklist_pairs": [],
     },
@@ -138,7 +138,7 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
         "baseline": "next_season_contact_quality ~ attr_a + attr_b",
         "pairing": "self_cross",
         "left_pool": {"entity": "batter", "family": "bat_tracking"},
-        "feature_builder": "mlb_battrack_asof",   # not yet registered -> NOT_TESTABLE
+        "feature_builder": "mlb_battrack_asof",   # registered -> runner._BUILDERS (task 39b, builders_task39b.py)
         # bat-tracking leaderboards only exist 2024+ (docstring in the
         # registry) -- a leak-free as-of frame needs >=2 prior-season
         # transitions per batter; deferred until that builder is worth it.
