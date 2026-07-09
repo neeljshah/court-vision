@@ -10,6 +10,7 @@ from functools import lru_cache
 CONCEPT_REGISTRY_MODULE = {
     "nba": "domains.basketball_nba.concepts.concept_registry",
     "mlb": "domains.mlb.concepts.concept_registry",
+    "tennis": "domains.tennis.concepts.concept_registry",
 }
 
 
