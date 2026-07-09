@@ -11,6 +11,8 @@ CONCEPT_REGISTRY_MODULE = {
     "nba": "domains.basketball_nba.concepts.concept_registry",
     "mlb": "domains.mlb.concepts.concept_registry",
     "tennis": "domains.tennis.concepts.concept_registry",
+    "soccer": "domains.soccer.concepts.concept_registry",
+    "wnba": "domains.basketball_wnba.concepts.concept_registry",
 }
 
 

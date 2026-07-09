@@ -246,9 +246,11 @@ def _detect_concept(query: str, sport: str = "nba") -> str | None:
 
 
 def answer_question(query: str, sport: str = "nba", window: str | None = None,
-                     concept: str | None = None) -> dict:
+                     concept: str | None = None, kind: str = "player") -> dict:
     """Free-text dispatch for superlative/comparison/explanation questions.
-    fit needs a roster -- use answer_fit() directly, or the CLI's --fit/--team."""
+    fit needs a roster -- use answer_fit() directly, or the CLI's --fit/--team.
+    kind defaults to "player" (NBA/MLB/tennis are player-entity); soccer is
+    team-only -- pass kind="team" for that sport."""
     cname = concept or _detect_concept(query, sport)
     if cname is None:
         return {"error": f"no concept recognized in '{query}'. "
@@ -258,12 +260,12 @@ def answer_question(query: str, sport: str = "nba", window: str | None = None,
         parts = re.split(r"\s+vs\.?\s+|\s+versus\s+", query, maxsplit=1)
         if len(parts) == 2:
             return answer_comparison(cname, parts[0].strip(), re.split(r"\bon\b", parts[1])[0].strip(),
-                                      sport, window=window)
+                                      sport, kind=kind, window=window)
     if q.startswith("why"):
         m = re.search(r"why\s+is\s+(.+?)\s+(good|great|elite)\s+at", query, re.I)
         entity = m.group(1) if m else re.sub(r"why\s+is\s+", "", query, flags=re.I)
-        return answer_explanation(cname, entity.strip(), sport, window=window)
-    return answer_superlative(cname, sport, window=window)
+        return answer_explanation(cname, entity.strip(), sport, kind=kind, window=window)
+    return answer_superlative(cname, sport, kind=kind, window=window)
 
 
 def main(argv=None):
