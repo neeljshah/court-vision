@@ -72,7 +72,8 @@ def _verdict(named_improved: int, pooled: Dict[str, float]) -> "tuple[str, str]"
         "the off/def/pace state cells; adds nothing to possession-level PIT/CRPS.")
 
 
-def _panel_pit_crps(test_poss, wide, pcdf2, pcdf3, dcdf, gcd, thr) -> Dict[str, Any]:
+def _panel_pit_crps(test_poss, wide, pcdf2, pcdf3, dcdf, gcd, thr,
+                     seed_offset: int = 0) -> Dict[str, Any]:
     pit2: Dict[str, list] = {}; pit3: Dict[str, list] = {}
     crps2: Dict[str, list] = {}; crps3: Dict[str, list] = {}
     for gid, gdf in test_poss.groupby("game_id"):
@@ -82,7 +83,7 @@ def _panel_pit_crps(test_poss, wide, pcdf2, pcdf3, dcdf, gcd, thr) -> Dict[str, 
         ter = S.GameTerciles(int(row.home_off_t), int(row.home_def_t),
                              int(row.away_off_t), int(row.away_def_t), int(row.pace_t))
         ch = gcd.get(str(gid))
-        seed = int(gid[-6:]) if gid[-6:].isdigit() else 7
+        seed = (int(gid[-6:]) if gid[-6:].isdigit() else 7) + seed_offset
         for (per, clk, hs, as_, fm) in _snapshots(gdf):
             key = "P%d|m%d" % (per, margin_bucket(hs - as_))
             s2 = S.simulate(per, clk, hs, as_, ter, pcdf2, dcdf, n=N_DIST, seed=seed)
@@ -156,7 +157,9 @@ def _panel_checkpoints(wide, pcdf2, pcdf3, dcdf, gcd, thr) -> Dict[str, Any]:
             "note": "sim uses ZERO market info; market is the honest yardstick"}
 
 
-def run(rebuild: bool = False, max_fit_games: Optional[int] = None) -> Dict[str, Any]:
+def fit_v3(rebuild: bool = False, max_fit_games: Optional[int] = None) -> Dict[str, Any]:
+    """Fit v2+v3 once; return the artifacts run() and the replication checks both
+    need, so a replication script never has to pay for a second expensive fit."""
     poss = add_state_buckets(load_corpus(rebuild, max_fit_games))
     wide, _thr = build_asof_terciles(poss)
     fit_poss = attach_terciles(poss[poss["season"].isin(FIT_SEASONS)], wide)
@@ -169,6 +172,14 @@ def run(rebuild: bool = False, max_fit_games: Optional[int] = None) -> Dict[str,
     v3 = ConditionedPointModel.fit(fit_poss, v2, gcd, comp_thr)
     pcdf3 = v3.point_cdf_matrix()
     test_poss = attach_terciles(poss[poss["season"] == TEST_SEASON], wide)
+    return dict(poss=poss, wide=wide, pcdf2=pcdf2, pcdf3=pcdf3, dcdf=dcdf, gcd=gcd,
+                comp_thr=comp_thr, v3=v3, test_poss=test_poss)
+
+
+def run(rebuild: bool = False, max_fit_games: Optional[int] = None) -> Dict[str, Any]:
+    art = fit_v3(rebuild, max_fit_games)
+    wide, pcdf2, pcdf3, dcdf = art["wide"], art["pcdf2"], art["pcdf3"], art["dcdf"]
+    gcd, comp_thr, v3, test_poss = art["gcd"], art["comp_thr"], art["v3"], art["test_poss"]
     panel_ab = _panel_pit_crps(test_poss, wide, pcdf2, pcdf3, dcdf, gcd, comp_thr)
     try:
         panel_c = _panel_checkpoints(wide, pcdf2, pcdf3, dcdf, gcd, comp_thr)
@@ -176,9 +187,10 @@ def run(rebuild: bool = False, max_fit_games: Optional[int] = None) -> Dict[str,
         panel_c = {"verdict": "ERROR", "note": str(exc)[:200]}
 
     named = panel_ab["named"]
+    pooled = panel_ab["pooled"]  # bugfix: was referenced below but never bound (NameError)
     named_improved = sum(1 for k in NAMED if named.get(k)
                          and named[k]["pit_dev_v3"] < named[k]["pit_dev_v2"])
-    verdict, lesson = _verdict(named_improved, panel_ab["pooled"])
+    verdict, lesson = _verdict(named_improved, pooled)
 
     n_test_games = len([g for g in gcd if g in set(test_poss["game_id"].astype(str))])
     doc = {
