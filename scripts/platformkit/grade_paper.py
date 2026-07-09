@@ -207,6 +207,21 @@ def grade_one(
         # left None honestly, never guessed.
         settled["close_book_home"] = close_book_home
         settled["close_book_away"] = close_book_away
+        # PT-CROSSVENUE fix (2026-07-08b): stamp close_source (book name if it
+        # matches the bet's OWN taken_book, else "cross_venue_fallback") so
+        # basis diagnostics (_is_same_venue_close / pm_close_capture.
+        # _resolved_keys) can tell same-venue from cross-venue -- previously
+        # always None here, so every row read as cross-venue basis regardless
+        # of the real match. Same side-aware book pick as the pre-existing
+        # execution_quality_math.same_venue_bucket, reused for consistency.
+        side_book = close_book_home if side == "home" else (
+            close_book_away if side == "away" else None)
+        taken = str(bet.get("taken_book") or "").strip().lower()
+        if side_book:
+            book = str(side_book).strip().lower()
+            settled["close_source"] = book if (taken and taken == book) else "cross_venue_fallback"
+        else:
+            settled["close_source"] = None
     else:
         # Level 5 (PE-P0-03): NO close -> CLV genuinely unavailable. clv_pct=None,
         # clv_is_proxy EXPLICITLY False (proxy=True would fabricate confidence) +
