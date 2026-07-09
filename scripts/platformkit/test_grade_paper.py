@@ -96,6 +96,48 @@ def test_grade_one_clv_sign_beat_close_positive():
     assert s["clv_is_proxy"] is True   # used last-observed price -> labelled proxy
 
 
+def test_grade_one_close_source_none_when_book_unknown():
+    """Level 1 (bet already carries its own closing_decimal_*) has no known
+    book -> close_source is honestly None, never guessed."""
+    g = _game("Home", "HHH", "Away", "AAA", 4, 2)
+    bet = {"sport": "mlb", "matchup": "Away @ Home", "side": "home",
+           "taken_decimal": 2.0, "stake_units": 1.0, "ts": "t9",
+           "closing_decimal_home": 1.90, "closing_decimal_away": 2.00}
+    s = grade_one(bet, g)
+    assert s["clv_is_proxy"] is False
+    assert s.get("close_source") is None
+
+
+def test_grade_one_close_source_same_venue(monkeypatch):
+    """PT-CROSSVENUE fix (2026-07-08b): when the line_store close's own
+    SIDE-SPECIFIC book (close_book_home for a home bet -- same field
+    execution_quality_math.same_venue_bucket already keys on) matches the
+    bet's taken_book, close_source is stamped with that book (a genuine
+    same-venue close, not a cross-venue basis row)."""
+    import scripts.platformkit.grade_paper as gp
+    monkeypatch.setattr(gp, "_close_from_store",
+                        lambda bet, base=None: (1.90, 2.00, True, "kalshi", "fanduel"))
+    g = _game("Home", "HHH", "Away", "AAA", 4, 2)
+    bet = {"sport": "mlb", "matchup": "Away @ Home", "side": "home",
+           "taken_decimal": 2.0, "stake_units": 1.0, "ts": "t10", "taken_book": "kalshi"}
+    s = grade_one(bet, g)
+    assert s["close_source"] == "kalshi"
+
+
+def test_grade_one_close_source_cross_venue_fallback(monkeypatch):
+    """The line_store close's book is a DIFFERENT venue than the bet was
+    taken on -> honestly tagged 'cross_venue_fallback' (this is the root
+    cause of the paper_pm channel's CLV reading as basis, not edge)."""
+    import scripts.platformkit.grade_paper as gp
+    monkeypatch.setattr(gp, "_close_from_store",
+                        lambda bet, base=None: (1.90, 2.00, True, "fanduel", "fanduel"))
+    g = _game("Home", "HHH", "Away", "AAA", 4, 2)
+    bet = {"sport": "mlb", "matchup": "Away @ Home", "side": "home",
+           "taken_decimal": 2.0, "stake_units": 1.0, "ts": "t11", "taken_book": "kalshi"}
+    s = grade_one(bet, g)
+    assert s["close_source"] == "cross_venue_fallback"
+
+
 def test_grade_one_no_close_is_void_not_proxy():
     """PE-P0-03: no close -> clv_pct=None, clv_is_proxy EXPLICITLY False (never an
     inferred proxy that fabricates confidence), clv_status='no_close'."""

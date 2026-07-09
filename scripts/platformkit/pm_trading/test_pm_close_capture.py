@@ -61,12 +61,56 @@ def test_proxy_close_is_counted_not_written(tmp_path):
     assert all(r.get("clv_pct") is None for r in rows)   # nothing fabricated
 
 
-def test_skips_no_event_id_and_already_resolved(tmp_path):
+def test_skips_no_event_id_and_already_kalshi_resolved(tmp_path):
     rows = [_row("pm|a", event_id=""),                       # no event_id -> skip
-            _row("pm|b", clv_pct=4.2, is_proxy=False)]        # already resolved -> skip
+            {**_row("pm|b", clv_pct=4.2, is_proxy=False),
+             "close_source": "kalshi"}]                       # real same-venue -> skip
     p = _write(tmp_path, rows)
     out = P.sweep_closes(p, capture_fn=_confirmed_close)
     assert out["n_targets"] == 0 and out["n_captured"] == 0
+
+
+def test_cross_venue_confirmed_row_stays_a_target(tmp_path):
+    """ROOT CAUSE FIX (2026-07-08b): grade_paper.grade_one may stamp
+    clv_is_proxy=False from its OWN cross-venue line_store resolution
+    (close_source='cross_venue_fallback', grade_one's new explicit tag for a
+    row settled AFTER this fix). That must NOT be treated as 'already
+    resolved' -- this sweep needs a real chance to overwrite it with the
+    genuine Kalshi close. Previously such a row was skipped forever
+    (n_targets stayed 0)."""
+    rows = [{**_row("pm|c", clv_pct=-3.1, is_proxy=False),
+             "close_source": "cross_venue_fallback"}]
+    p = _write(tmp_path, rows)
+    out = P.sweep_closes(p, capture_fn=_confirmed_close)
+    assert out["n_targets"] == 1 and out["n_captured"] == 1
+
+
+def test_resolved_keys_forward_only_vs_same_venue_vs_legacy():
+    """Unit-level contract for _resolved_keys:
+      - no close_source/close_venue at all (row settled BEFORE this fix, or a
+        Level-1 close whose book is genuinely unknown) -> forward-only, left
+        resolved (never reconsidered -- avoids churning dead old rows through
+        the bounded max_rows budget every tick).
+      - close_source names a non-kalshi/poly book (grade_one's explicit
+        cross-venue match) -> NOT resolved, stays a target.
+      - close_source names kalshi/poly -> genuinely resolved, skip.
+    """
+    legacy = [{**_row("pm|d", clv_pct=1.0, is_proxy=False)}]  # no close_source key
+    assert P._resolved_keys(legacy) == {"pm|d"}
+    cross = [{**_row("pm|e", clv_pct=1.0, is_proxy=False), "close_source": "fanduel"}]
+    assert P._resolved_keys(cross) == set()
+    same_venue = [{**_row("pm|f", clv_pct=1.0, is_proxy=False), "close_source": "kalshi"}]
+    assert P._resolved_keys(same_venue) == {"pm|f"}
+
+
+def test_dry_run_never_writes_ledger(tmp_path):
+    """dry_run=True resolves + counts but appends nothing (read-only verify)."""
+    p = _write(tmp_path, [_row("pm|dry1")])
+    out = P.sweep_closes(p, capture_fn=_confirmed_close, dry_run=True)
+    assert out["n_captured"] == 1 and out["dry_run"] is True
+    assert out["n_same_venue"] == 1  # close_source="kalshi" from _confirmed_close
+    rows = [json.loads(l) for l in p.read_text().splitlines() if l.strip()]
+    assert all(r.get("clv_pct") is None for r in rows)  # nothing appended
 
 
 def test_no_close_available_is_honest(tmp_path):
