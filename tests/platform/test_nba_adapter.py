@@ -3,8 +3,12 @@
 Uses the real local corpus (skipped if absent).
 (a) TRUNCATION-INVARIANCE: base rows byte-identical pre-T in truncated vs full.
 (b) DETERMINISM: two identical builds produce identical FeatureBundle.
-(c) BASE-COL CONTRACT: 10 cols (incl. 2 SHIP-verdict as-of reclaim cols, gap ledger
-    rank 1); signal in (0,1); target binary; dates ascending.
+(c) BASE-COL CONTRACT: 8 cols DEFAULT (bit-identical to pre-2026-07-11 contract);
+    the 2 SHIP-verdict as-of reclaim cols (gap ledger rank 1) are OPT-IN via
+    include_asof=True (TestShipAsofWire below) -- default must stay unwidened
+    since an unlisted consumer (nba_winprob_model.py) regressed NBA calibration
+    ECE by consuming the widened bundle unvalidated
+    (docs/research/bundle_regression_fix_2026-07-11.md).
 (d) INTERFACE: adapter_interface_spec.check_adapter(NBAAdapter) → 0 FAILs.
 (e) feature_bundle positional prefix == (hypothesis, seasons).
 """
@@ -22,7 +26,8 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CORPUS_DIR = REPO_ROOT / "data" / "domains" / "basketball_nba"
 _FLOAT_TOL = 1e-6
-EXPECTED_BASE_COLS = 10
+EXPECTED_BASE_COLS = 8
+EXPECTED_ASOF_COLS = 10
 ASOF_COL_IDX = {"def_fg_pct_allowed_diff_asof": 8, "def_pts_allowed_per36_diff_asof": 9}
 
 
@@ -70,6 +75,11 @@ def games_df():
 @pytest.fixture(scope="module")
 def bundle(adapter):
     return adapter.feature_bundle(_hyp("fixture_bundle"))
+
+
+@pytest.fixture(scope="module")
+def asof_bundle(adapter):
+    return adapter.feature_bundle(_hyp("fixture_asof_bundle"), include_asof=True)
 
 
 # ---------------------------------------------------------------------------
@@ -174,12 +184,14 @@ class TestBaseColContract:
 
 
 # ---------------------------------------------------------------------------
-# SHIP-verdict as-of reclaim wire (gap ledger rank 1): join-rate + leak check
+# SHIP-verdict as-of reclaim wire (gap ledger rank 1): OPT-IN via include_asof=True.
+# join-rate + leak check. Default feature_bundle() (include_asof=False) stays 8-col;
+# see docs/research/bundle_regression_fix_2026-07-11.md for why this is opt-in.
 # ---------------------------------------------------------------------------
 
 class TestShipAsofWire:
-    """def_fg_pct_allowed_diff_asof / def_pts_allowed_per36_diff_asof (base cols 8,9):
-    the only 2 of 13 NBA as-of reclaim dims gated SHIP
+    """def_fg_pct_allowed_diff_asof / def_pts_allowed_per36_diff_asof (base cols 8,9
+    when include_asof=True): the only 2 of 13 NBA as-of reclaim dims gated SHIP
     (data/domains/basketball_nba/reclaim_gate_defender_rollup_summary.json). Merged
     in from asof_defender_rollup.parquet by game_id -- already leak-free (shift1
     per-defender priors) upstream; this only checks the join itself is honest.
@@ -187,14 +199,21 @@ class TestShipAsofWire:
 
     ROLLUP = CORPUS_DIR / "asof_defender_rollup.parquet"
 
-    def test_join_rate_matches_source_rollup(self, bundle):
+    def test_default_excludes_asof_cols(self, bundle):
+        """include_asof defaults False -- base stays the 8-col contract."""
+        assert bundle.base.shape[1] == EXPECTED_BASE_COLS
+
+    def test_include_asof_widens_to_ten_cols(self, asof_bundle):
+        assert asof_bundle.base.shape[1] == EXPECTED_ASOF_COLS
+
+    def test_join_rate_matches_source_rollup(self, asof_bundle):
         if not self.ROLLUP.exists():
             pytest.skip("asof_defender_rollup.parquet absent.")
         rollup = pd.read_parquet(self.ROLLUP)
-        expected_hit_rate = len(rollup) / max(bundle.base.shape[0], 1)
+        expected_hit_rate = len(rollup) / max(asof_bundle.base.shape[0], 1)
         for col, ci in ASOF_COL_IDX.items():
-            got_hits = int(np.isfinite(bundle.base[:, ci]).sum())
-            got_rate = got_hits / bundle.base.shape[0]
+            got_hits = int(np.isfinite(asof_bundle.base[:, ci]).sum())
+            got_rate = got_hits / asof_bundle.base.shape[0]
             # asof rollup only covers the box-tracking era subset of games; join rate
             # must be in the right ballpark, not silently 0% or 100%.
             assert 0.0 < got_rate <= 1.0, f"{col}: join rate {got_rate:.3f} out of bounds"
@@ -223,7 +242,7 @@ class TestShipAsofWire:
         wf["game_id"] = wf["game_id"].astype(str)
         wf = wf[wf["home_win"].notna()].reset_index(drop=True)
 
-        fb = adapter.feature_bundle(_hyp("asof_spotcheck"))
+        fb = adapter.feature_bundle(_hyp("asof_spotcheck"), include_asof=True)
         assert len(wf) == fb.base.shape[0]
         checked = 0
         for i, gid in enumerate(wf["game_id"].tolist()):
@@ -248,7 +267,7 @@ class TestShipAsofWire:
         silently 0.0 (which would look like a real 'no defensive edge' signal)."""
         from domains.basketball_nba.adapter import NBAAdapter
         a = NBAAdapter(repo_root=tmp_path, games_df=games_df.copy(), odds_df=pd.DataFrame())
-        fb = a.feature_bundle(_hyp("no_rollup_file"))
+        fb = a.feature_bundle(_hyp("no_rollup_file"), include_asof=True)
         for _, ci in ASOF_COL_IDX.items():
             assert np.all(np.isnan(fb.base[:, ci])), \
                 f"col {ci}: expected all-NaN with no rollup file on disk"

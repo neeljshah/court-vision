@@ -24,7 +24,12 @@ from scripts.platformkit.feature_spec_core import (
     assert_matches_catalog,
     build_base_matrix,
 )
-from domains.basketball_nba.feature_spec import NBA_BASE_SPEC, build_nba_base, catalog
+from domains.basketball_nba.feature_spec import (
+    NBA_ASOF_SPEC,
+    NBA_BASE_SPEC,
+    build_nba_base,
+    catalog,
+)
 
 
 # --------------------------------------------------------------------------- #
@@ -45,14 +50,25 @@ def test_catalog_and_hash_stable_and_sensitive():
     assert reordered.catalog_hash() != h0  # order is part of the contract
 
 
-def test_nba_catalog_is_the_ten_adapter_columns():
+def test_nba_catalog_is_the_eight_base_columns_by_default():
+    """Default contract (include_asof=False) is the 8-col nba-base-v1 -- bit-identical
+    to pre-2026-07-11 (see docs/research/bundle_regression_fix_2026-07-11.md)."""
     assert catalog() == [
+        "elo_home", "elo_away", "elo_diff_hfa",
+        "rest_days_home", "rest_days_away",
+        "home_b2b", "away_b2b", "rolling_win10_home",
+    ]
+    assert NBA_BASE_SPEC.n_features() == 8
+
+
+def test_nba_catalog_include_asof_is_the_ten_adapter_columns():
+    assert catalog(include_asof=True) == [
         "elo_home", "elo_away", "elo_diff_hfa",
         "rest_days_home", "rest_days_away",
         "home_b2b", "away_b2b", "rolling_win10_home",
         "def_fg_pct_allowed_diff_asof", "def_pts_allowed_per36_diff_asof",
     ]
-    assert NBA_BASE_SPEC.n_features() == 10
+    assert NBA_ASOF_SPEC.n_features() == 10
 
 
 def test_required_source_absent_raises_not_silent_zero():
@@ -117,8 +133,8 @@ def test_synthetic_matches_adapter_formula():
         "def_fg_pct_allowed_diff_asof": [0.02, np.nan, -0.05],
         "def_pts_allowed_per36_diff_asof": [1.1, 2.2, np.nan],
     })
-    got, names = build_nba_base(df)
-    assert names == catalog()
+    got, names = build_nba_base(df, include_asof=True)
+    assert names == catalog(include_asof=True)
     exp = _adapter_formula(df)
     np.testing.assert_array_equal(np.isnan(got), np.isnan(exp))
     both = ~np.isnan(got)
@@ -147,7 +163,8 @@ def test_parity_vs_real_adapter_feature_bundle():
         pytest.skip("season slice too small")
 
     adapter = NBAAdapter(games_df=gslice.copy(), odds_df=pd.DataFrame())
-    bundle = adapter.feature_bundle(None, seasons=[season])  # hypothesis is unused in body
+    # hypothesis is unused in body; include_asof=True exercises the full 10-col contract.
+    bundle = adapter.feature_bundle(None, seasons=[season], include_asof=True)
 
     # Reconstruct the SAME walk-forward frame the adapter built internally.
     g = gslice.copy()
@@ -171,7 +188,7 @@ def test_parity_vs_real_adapter_feature_bundle():
         for _c in SHIP_ASOF_COLS:
             kept[_c] = np.nan
 
-    got, names = build_nba_base(kept)
-    assert names == catalog()
+    got, names = build_nba_base(kept, include_asof=True)
+    assert names == catalog(include_asof=True)
     assert got.shape == bundle.base.shape, (got.shape, bundle.base.shape)
     np.testing.assert_allclose(got, bundle.base, rtol=0, atol=1e-9)
