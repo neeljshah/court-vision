@@ -720,4 +720,35 @@ TEAM_ATTRIBUTES["avg_defensive_continuity_s"] = {
     "verifiable_by_design": False,  # PBP miss->rebound asof join, not a bare groupby
 }
 
+# ---------------------------------------------------------------------------
+# BOX-DETAIL as-of family (utilization audit docs/research/utilization_matrix_
+# 2026_07_10.md ranked-backlog #1: espn_boxscores.parquet's box-detail columns
+# were entirely dark). Each entry is a leak-free season-to-date trailing mean
+# from domains/basketball_nba/boxdetail_asof.py -- tagged `family` so it
+# AUTO-ENTERS the interaction factory's candidate space (see
+# scripts/platformkit/interaction_factory/generator.py's resolve_pool) the
+# moment any template declares `{"entity": "team", "family": "box_detail_asof"}`,
+# no template edit needed if this list grows.
+# ---------------------------------------------------------------------------
+_BOXDETAIL_SPECS = [
+    ("fast_break_pts_asof", "Season-to-date trailing mean of this team's own fast-break points."),
+    ("paint_pts_asof", "Season-to-date trailing mean of this team's own points in the paint."),
+    ("tov_pts_asof", "Season-to-date trailing mean of this team's own points scored off opponent turnovers."),
+    ("largest_lead_asof", "Season-to-date trailing mean of this team's own largest lead (in-game stat, not a final-score column)."),
+    ("foul_trouble_asof", "Season-to-date trailing mean of this team's own technical + flagrant foul count (combined -- both are individually thin/sparse counts)."),
+]
+for _attr, _desc in _BOXDETAIL_SPECS:
+    TEAM_ATTRIBUTES[_attr] = {
+        "description": _desc,
+        "entity": "team",
+        "family": "box_detail_asof",
+        "ingredients": [{"name": _attr.replace("_asof", ""), "source": "data/domains/basketball_nba/espn_boxscores.parquet (via boxdetail_asof.py, prior-only walk-forward)"}],
+        "formula": f"expanding mean of {_attr.replace('_asof', '')}, strictly prior games, snapshot-before-update",
+        "status": "DESCRIPTIVE",
+        "floor": {"n_prior": 1.0},
+        "weight_ledger_family": None,
+        "seasons": ["2025_26"],  # box-detail columns only populated 2026-01-20 onward on this corpus
+        "verifiable_by_design": True,
+    }
+
 ATTRIBUTES: dict[str, dict] = {**PLAYER_ATTRIBUTES, **TEAM_ATTRIBUTES, **LINEUP_ATTRIBUTES}
