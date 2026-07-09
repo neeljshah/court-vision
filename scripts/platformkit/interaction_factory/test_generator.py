@@ -1,0 +1,68 @@
+"""Per-file test for scripts.platformkit.interaction_factory.generator.
+
+Covers: deterministic enumeration, closed-class blocklist (attr + pair),
+registry validation (a bogus attr is dropped, never invented), and dedupe vs
+the ledger (a tested candidate is never re-offered).
+
+Run:
+    cd /c/Users/neelj/nba-ai-system && python -m pytest \
+        scripts/platformkit/interaction_factory/test_generator.py -q
+"""
+from __future__ import annotations
+
+import itertools
+
+from scripts.platformkit.interaction_factory import generator as GEN
+
+_NBA = "nba_shot_offense_x_offense"
+
+
+def test_enumeration_is_deterministic_and_typed():
+    a = GEN.enumerate_candidates(_NBA)
+    b = GEN.enumerate_candidates(_NBA)
+    assert [c.candidate_id for c in a] == [c.candidate_id for c in b]  # seedless, stable
+    # self_cross over an 8-attr pool -> C(8,2)=28 unordered pairs.
+    assert len(a) == 28
+    assert all(c.attr_a < c.attr_b for c in a)  # i<j ordering
+    assert all(c.sport == "basketball_nba" and c.atomic_unit == "player_game" for c in a)
+
+
+def test_registry_validation_drops_bogus_attr(monkeypatch):
+    # A typo'd pool attr must not survive resolve_pool (never invented).
+    pool = GEN.resolve_pool("basketball_nba", {"attributes": ["zone_efg_rim", "not_a_real_attr"]})
+    assert pool == ["zone_efg_rim"]
+
+
+def test_blocklist_excludes_closed_class_attr_and_pair():
+    # Global closed class: velo_decline_in_game (SP-fatigue) is refused anywhere.
+    tpl = {"blocklist_attrs": [], "blocklist_pairs": []}
+    assert GEN._blocked("velo_decline_in_game", "K_avoidance", tpl) is True
+    # endQ1 x floor_quality closed interaction pair is refused as an unordered pair.
+    assert GEN._blocked("floor_quality", "endQ1", tpl) is True
+    # per-template blocklist honored too.
+    tpl2 = {"blocklist_attrs": ["zone_efg_rim"], "blocklist_pairs": [["zone_efg_mid", "zone_efg_paint"]]}
+    assert GEN._blocked("zone_efg_rim", "zone_efg_paint", tpl2) is True
+    assert GEN._blocked("zone_efg_paint", "zone_efg_mid", tpl2) is True
+    assert GEN._blocked("zone_efg_paint", "zone_efg_corner3", tpl2) is False
+
+
+def test_blocklisted_attr_absent_from_real_enumeration():
+    cands = GEN.enumerate_candidates("mlb_pa_attr_x_count_state")
+    assert all("velo_decline_in_game" not in (c.attr_a, c.attr_b) for c in cands)
+
+
+def test_next_batch_dedupes_vs_ledger_and_caps_k():
+    full = GEN.enumerate_candidates(_NBA)
+    first_id = full[0].candidate_id
+    ledger = [{"template_id": _NBA, "candidate_id": first_id, "verdict": "NULL"}]
+    batch = GEN.next_batch(_NBA, 5, ledger)
+    assert len(batch) == 5
+    assert first_id not in {c.candidate_id for c in batch}  # tested -> skipped
+
+
+def test_cross_pairing_mlb_is_ordered_product():
+    cands = GEN.enumerate_candidates("mlb_pa_batter_x_pitcher")
+    # left {K_avoidance,BB_rate} x right {platoon_split,whiff_rate} = 4 ordered pairs.
+    assert len(cands) == 4
+    lefts = {c.attr_a for c in cands}
+    assert lefts == {"K_avoidance", "BB_rate"}

@@ -30,7 +30,7 @@ _CACHE_DIR = _REPO / "data" / "cache" / "autoloop"
 K_LEDGER_DIR = _CACHE_DIR / "k_ledger"
 WATERMARK_PATH = _CACHE_DIR / "checkpoint.json"
 
-VALID_KINDS = {"claims_regen", "reclaim_fit", "calib_refit"}
+VALID_KINDS = {"claims_regen", "reclaim_fit", "calib_refit", "interaction_batch"}
 
 
 def _canonical_bytes(obj: Dict[str, Any]) -> bytes:
@@ -244,12 +244,47 @@ def _claims_grid_source_sha(sport: str, universe: List[str]) -> Optional[str]:
         return None
 
 
+def _interaction_content_sha(template: Template) -> Optional[str]:
+    """interaction_batch is PROGRESS-triggered, not only corpus-triggered: the
+    factory walks NEW untested candidates each cycle, so DUE must stay True while
+    candidates remain. Token = sha(source freshness + tested-candidate count):
+      - source freshness = declared `source_globs` file (name,size,mtime) digest,
+      - count = ledger rows for THIS template (each batch grows it).
+    So the token advances after every batch (still due next cycle) and STABILIZES
+    once the factory is exhausted (no new rows) -> is_due False -> halts, and a
+    corpus change flips the freshness digest -> re-triggers. None if no source."""
+    globs = template.body.get("source_globs") or []
+    parts: List[str] = []
+    for g in sorted(globs):
+        for p in sorted(_REPO.glob(g)):
+            if p.is_file():
+                st = p.stat()
+                parts.append("%s:%d:%d" % (p.name, st.st_size, int(st.st_mtime)))
+    if not parts:
+        return None
+    ledger_rel = template.body.get("interaction_ledger") or \
+        "data/cache/intel_claims/interaction_factory_ledger.jsonl"
+    lp = _REPO / ledger_rel
+    n_rows = 0
+    if lp.exists():
+        needle = '"template_id": "%s"' % template.template_id
+        needle2 = '"template_id":"%s"' % template.template_id
+        for line in lp.read_text(encoding="ascii", errors="replace").splitlines():
+            if needle in line or needle2 in line:
+                n_rows += 1
+    src = "|".join(parts)
+    return hashlib.sha256(("%s::%d" % (src, n_rows)).encode("ascii")).hexdigest()
+
+
 def template_content_sha(template: Template) -> Optional[str]:
     """Kind-dispatched content-sha watermark: reclaim_fit/calib_refit use the
     corpus_cache gate-corpus sidecar; claims_regen uses its own grid source
-    parquet(s) (no gate corpus_cache entry exists for a claims sport name)."""
+    parquet(s) (no gate corpus_cache entry exists for a claims sport name);
+    interaction_batch uses source freshness + factory progress (see above)."""
     if template.kind == "claims_regen":
         return _claims_grid_source_sha(template.sport, template.universe)
+    if template.kind == "interaction_batch":
+        return _interaction_content_sha(template)
     return _gate_corpus_sha(template.sport)
 
 

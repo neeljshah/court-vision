@@ -1,0 +1,40 @@
+{
+ "authored_at": "2026-07-09",
+ "authored_by": "Fable",
+ "bars": {
+  "eps": 0.05,
+  "note": "per-test bar = eps/cum_K (scripts.platformkit.combo.fwer_budget.eps_eff), tightens as the cumulative search widens. A SURVIVOR is PROVISIONAL -- belief needs an independent-corpus replication pass."
+ },
+ "corpus": {
+  "note": "per-(game,player) offense events; as-of features are strictly-prior expanding eFG within player (leak-free).",
+  "source": "data/cache/team_system/composition/player_offense_events_2025_26.parquet"
+ },
+ "excluded_signals": [],
+ "factory_template": "nba_shot_offense_x_offense",
+ "interaction_ledger": "data/cache/intel_claims/interaction_factory_ledger.jsonl",
+ "k_ledger": "data/cache/autoloop/k_ledger/basketball_nba__T06_interaction_nba.jsonl",
+ "kind": "interaction_batch",
+ "max_candidates_per_cycle": 20,
+ "planted_null": {
+  "applicability": "NOT_APPLICABLE",
+  "note": "the FWER-tightening eps/cum_K bar IS the null control; a separate planted-null lane is not applicable to a single-term interaction Wald test.",
+  "required": false
+ },
+ "prereg_sha": "d9cd35a9e0dac548ea261c5b1846d7ea1b7b7f19c49145d1d56aba390f05e421",
+ "source_globs": [
+  "data/cache/team_system/composition/player_offense_events_2025_26.parquet"
+ ],
+ "spec_ref": "scripts/platformkit/interaction_factory/ -- INTERACTION FACTORY (typed candidate generation + honest testing)",
+ "sport": "basketball_nba",
+ "template_id": "T06_interaction_nba",
+ "universe": [
+  "zone_efg_rim",
+  "zone_efg_paint",
+  "zone_efg_mid",
+  "zone_efg_corner3",
+  "zone_efg_above_break_3",
+  "transition_efg",
+  "halfcourt_efg",
+  "late_clock_efg"
+ ]
+}
