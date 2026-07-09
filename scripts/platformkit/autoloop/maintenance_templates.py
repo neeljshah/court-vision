@@ -202,6 +202,12 @@ def run_all(watermarks: Dict[str, Any], *, queue_fn: Optional[Callable[[Dict[str
         out["census_drift"] = run_check()
     except Exception as exc:  # noqa: BLE001
         out["census_drift"] = {"status": "error", "error": str(exc)[:200]}
+    try:
+        # longitudinal calibration log (idempotent append; calibration only, no $)
+        from scripts.platformkit.scoreboard_history import append_rows
+        out["scoreboard_history"] = append_rows()
+    except Exception as exc:  # noqa: BLE001
+        out["scoreboard_history"] = {"status": "error", "error": str(exc)[:200]}
     return out
 
 
