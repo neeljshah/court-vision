@@ -50,6 +50,21 @@ _LEAGUE_PATH: Dict[str, str] = {
     "wnba": "basketball/wnba",
 }
 
+# STALE-SCOREBOARD GUARD: an event whose commence_time is older than this is a
+# stale echo, not a live/current slate entry. Root cause (2026-07-11): ESPN's
+# scoreboard, called with no "dates=" param, falls back to re-serving the LAST
+# KNOWN event when there is nothing scheduled "today" (proven live: NBA
+# offseason -> the same June-14 game kept coming back verbatim every poll for
+# 25+ days, ballooning data/cache/line_history/nba/*.jsonl with duplicate
+# rows). Not offseason-only: the identical mechanism would just as happily
+# re-serve yesterday's finished slate during any in-season lull (all-star
+# break, a quiet feed hiccup) -- there is no upstream recency filter without
+# this guard. 30h covers a same-day doubleheader + timezone slop while
+# rejecting anything ESPN echoes back days later. ponytail: a flat age cutoff,
+# not a real "is this slate current" check -- tighten if a legit same-day
+# capture ever needs a longer look-back.
+_MAX_EVENT_AGE_HOURS = 30
+
 
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
@@ -59,6 +74,21 @@ def _team_name(competitor: Dict[str, Any]) -> str:
     team = competitor.get("team") or {}
     return (team.get("displayName") or team.get("name")
             or team.get("abbreviation") or "").strip()
+
+
+def _is_stale_echo(commence_raw: Any, now: datetime) -> bool:
+    """True if *commence_raw* (ESPN's event "date") is older than the stale-echo
+    guard (_MAX_EVENT_AGE_HOURS) -- i.e. this event is not part of today's live
+    slate, just a re-served completed game. Unparseable/missing -> not stale
+    (never drop an event on a parse miss; that would be its own fabrication)."""
+    try:
+        dt = datetime.fromisoformat(str(commence_raw).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return False
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    age_hours = (now - dt.astimezone(timezone.utc)).total_seconds() / 3600.0
+    return age_hours > _MAX_EVENT_AGE_HOURS
 
 
 def _safe_float(value: Any) -> Optional[float]:
@@ -184,7 +214,10 @@ class EspnProvider:
             return body, fetched_at
         return self._http_get(url), _now_iso()
 
-    def fetch(self, sport: str) -> Union[List[OddsEvent], Dict[str, str]]:
+    def fetch(self, sport: str, *, now: Optional[datetime] = None
+             ) -> Union[List[OddsEvent], Dict[str, str]]:
+        """*now* is injectable (offline-testable); defaults to the real UTC clock.
+        It is used ONLY for the stale-echo guard below -- never stamped as as_of."""
         sport = sport.lower()
         path = _LEAGUE_PATH.get(sport)
         if not path:
@@ -198,8 +231,11 @@ class EspnProvider:
         if not isinstance(events, list):
             return unavailable("espn: unexpected scoreboard shape")
         # as_of is the scoreboard's TRUE fetched-at (cache-honest), NOT now().
+        nowdt = now if now is not None else datetime.now(timezone.utc)
         out: List[OddsEvent] = []
         for ev in events[: self._max_events]:
+            if _is_stale_echo(ev.get("date"), nowdt):
+                continue
             comp = (ev.get("competitions") or [{}])[0]
             home = away = ""
             for c in comp.get("competitors", []) or []:

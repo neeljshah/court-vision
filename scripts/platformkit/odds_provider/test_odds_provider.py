@@ -114,14 +114,30 @@ def test_espn_parse_pickcenter():
 
 
 def test_espn_fetch_builds_event():
+    from datetime import datetime, timezone
     http = _stub({"scoreboard": ESPN_SCOREBOARD, "summary": ESPN_SUMMARY})
-    events = EspnProvider(http_get=http, use_cache=False).fetch("mlb")
+    # now= pinned near the canned event's date -- the stale-echo guard (espn.py
+    # _MAX_EVENT_AGE_HOURS) would otherwise drop this old fixture date.
+    now = datetime(2026, 6, 17, tzinfo=timezone.utc)
+    events = EspnProvider(http_get=http, use_cache=False).fetch("mlb", now=now)
     assert isinstance(events, list) and len(events) == 1
     ev = events[0]
     assert ev.event_id == "401815778"
     assert ev.home == "Atlanta Braves" and ev.away == "San Francisco Giants"
     assert "espn:DraftKings" in ev.prices
     assert ev.source == "espn" and ev.as_of
+
+
+def test_espn_fetch_drops_stale_scoreboard_echo():
+    """Root-cause regression (2026-07-11): a quiet scoreboard re-serving a game
+    that tipped off weeks ago (e.g. the offseason "last known event" fallback)
+    must be dropped, not captured as if it were today's live slate."""
+    from datetime import datetime, timezone
+    http = _stub({"scoreboard": ESPN_SCOREBOARD, "summary": ESPN_SUMMARY})
+    # ESPN_SCOREBOARD's event dates to 2026-06-16; poll 25 days later.
+    now = datetime(2026, 7, 11, tzinfo=timezone.utc)
+    events = EspnProvider(http_get=http, use_cache=False).fetch("mlb", now=now)
+    assert events == []
 
 
 # --------------------------------------------------------------------------- #
