@@ -20,12 +20,12 @@ NBA: domains.basketball_nba.ratings.walk_forward_elo already gives a strictly
   the SAME (date,away,home) ticker-split machinery nba_outcome_resolver already
   uses (reused directly, not reimplemented): tail = AWAY+HOME concatenated.
 
-TENNIS: NOT_TESTABLE on this corpus. domains/tennis/matches.parquet (the dated
-  Elo's only input) ends 2025-12-17; the tennis_price_series Kalshi corpus is
-  entirely 2026-05-27..07-05 -- a >5-month gap with zero overlapping dates and
-  no on-disk match-result feed to bridge it (espn_matches.parquet only covers
-  2026-06-06..06-21 and carries no p1_id/p2_id join key). Recorded as an honest
-  gap, not attempted with stale ratings.
+TENNIS: now TESTED (was NOT_TESTABLE). domains.tennis.results_2026_bridge joins
+  the ESPN 2026 scoreboard ingest onto Sackmann player_id (52.66% match-level
+  join rate, 3125/5934 comp_ids, WTA recovered via wta_matches.parquet since
+  players.parquet turned out to carry zero WTA rows -- see that module's
+  docstring), extending the SAME walk-forward Elo through the Kalshi corpus's
+  2026-05-27..07-05 window. See tennis_freshness_placement.py.
 
 For each horizon bucket already defined in freshness_premium.HORIZONS, this
 computes, on the INTERSECTION of games with both a market price and a resolved
@@ -60,6 +60,7 @@ from scripts.platformkit.ingame.nba_outcome_resolver import (
     _split_tail,
     parse_nba_ticker,
 )
+from scripts.platformkit.ingame.tennis_freshness_placement import tennis_placement
 
 _ROOT = Path(__file__).resolve().parents[3]
 _GAMES_PARQUET = _ROOT / "data" / "domains" / "basketball_nba" / "games.parquet"
@@ -71,12 +72,6 @@ _OUT = _ROOT / "data" / "frontend" / "ops" / "freshness_model_placement.json"
 # tricodes). A code not in this map is assumed to already match verbatim.
 _ESPN_ABBR_FIX = {"GS": "GSW", "NY": "NYK", "SA": "SAS"}
 
-_TENNIS_GAP_NOTE = (
-    "NOT_TESTABLE: domains/tennis/matches.parquet (dated Elo input) ends "
-    "2025-12-17; tennis_price_series Kalshi corpus is 2026-05-27..07-05 -- "
-    "zero overlapping dates, no on-disk bridge (espn_matches.parquet only "
-    "covers 2026-06-06..06-21, no p1_id/p2_id join key)."
-)
 
 
 def _extended_nba_games() -> pd.DataFrame:
@@ -192,7 +187,10 @@ def build() -> dict:
         out["sports"]["nba"] = nba_placement()
     except Exception as e:  # noqa: BLE001 -- a missing input must not sink the run
         out["sports"]["nba"] = {"sport": "nba", "error": str(e)}
-    out["sports"]["tennis"] = {"sport": "tennis", "status": "NOT_TESTABLE", "note": _TENNIS_GAP_NOTE}
+    try:
+        out["sports"]["tennis"] = tennis_placement()
+    except Exception as e:  # noqa: BLE001 -- a missing input must not sink the run
+        out["sports"]["tennis"] = {"sport": "tennis", "error": str(e)}
     return out
 
 
@@ -210,7 +208,17 @@ def main() -> None:
             print(f"  {h['horizon']:>17}  n={h['n']:>4}  market={h['market_brier']}  "
                   f"model={h['model_brier']}  delta={h['delta_model_minus_market']}  "
                   f"ci95={h['delta_ci95']}")
-    print("tennis: NOT_TESTABLE (see notes) -- " + _TENNIS_GAP_NOTE)
+    tennis = res["sports"]["tennis"]
+    if "error" in tennis:
+        print(f"tennis: ERROR {tennis['error']}")
+    else:
+        print(f"tennis: {tennis['status']}  {tennis['games_in_market_corpus']} market games, "
+              f"join_rate={tennis['espn_2026_join_rate']}, "
+              f"{tennis['n_tickers_resolved_to_players']} tickers resolved")
+        for h in tennis["horizons"]:
+            print(f"  {h['horizon']:>17}  n={h['n']:>4}  market={h['market_brier']}  "
+                  f"model={h['model_brier']}  delta={h['delta_model_minus_market']}  "
+                  f"ci95={h['delta_ci95']}")
     print(f"wrote {_OUT}")
 
 
