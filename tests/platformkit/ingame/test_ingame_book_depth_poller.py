@@ -118,6 +118,57 @@ def test_poll_kalshi_depth_persists_trades_with_prices_and_dedups(tmp_path):
     assert len(trades_sidecar.read_text(encoding="ascii").strip().splitlines()) == 1
 
 
+def test_poll_kalshi_depth_sticky_retention_survives_discovery_churn(tmp_path):
+    """2026-07-11 fix: a ticker no longer returned by discovery (pushed off the
+    top-N page by newer markets) stays in the poll set via active_by_sport --
+    it is NOT dropped just because one tick's discovery didn't re-list it."""
+    tick = {"n": 1}  # set by the test before each poll_kalshi_depth call, not per http call
+
+    def _http(url: str):
+        if "/markets?" in url and "series_ticker" in url:
+            # tick 1: AAA only; tick 2: discovery churns to a totally different ticker
+            if tick["n"] == 1:
+                return {"markets": [{"ticker": "KXMLBGAME-TEST-AAA"}]}
+            return {"markets": [{"ticker": "KXMLBGAME-TEST-CCC"}]}
+        if "orderbook" in url:
+            return _ORDERBOOK_BODY
+        if "trades" in url:
+            return _TRADES_BODY
+        raise AssertionError("unexpected url %s" % url)
+
+    now_dt = datetime(2026, 7, 6, 0, 0, 0, tzinfo=timezone.utc)
+    active: dict = {}
+    misses: dict = {}
+    s1 = poller.poll_kalshi_depth(["tennis"], http=_http, sidecar_dir=tmp_path,
+                                  now=lambda: now_dt, max_markets_per_sport=5,
+                                  active_by_sport=active, miss_counts=misses)
+    assert {r["ticker"] for r in s1["rows"]} == {"KXMLBGAME-TEST-AAA"}
+    tick["n"] = 2
+    s2 = poller.poll_kalshi_depth(["tennis"], http=_http, sidecar_dir=tmp_path,
+                                  now=lambda: now_dt, max_markets_per_sport=5,
+                                  active_by_sport=active, miss_counts=misses)
+    # AAA is gone from THIS tick's discovery but still gets snapshotted (sticky).
+    assert {r["ticker"] for r in s2["rows"]} == {"KXMLBGAME-TEST-AAA", "KXMLBGAME-TEST-CCC"}
+
+
+def test_poll_kalshi_depth_evicts_after_max_consecutive_misses(tmp_path):
+    """A ticker whose snapshot fails max_misses times in a row (genuinely
+    closed/unreachable, not a discovery-page miss) IS evicted."""
+    def _http(url: str):
+        if "/markets?" in url and "series_ticker" in url:
+            return {"markets": []}  # no fresh discovery this tick
+        raise ConnectionError("market closed")  # every fetch for AAA fails
+
+    active = {"tennis": ["KXMLBGAME-TEST-AAA"]}
+    misses: dict = {}
+    now_dt = datetime(2026, 7, 6, 0, 0, 0, tzinfo=timezone.utc)
+    for _ in range(3):
+        poller.poll_kalshi_depth(["tennis"], http=_http, sidecar_dir=tmp_path,
+                                 now=lambda: now_dt, active_by_sport=active,
+                                 miss_counts=misses, max_misses=3)
+    assert active["tennis"] == []  # evicted after 3 consecutive misses
+
+
 def test_poll_polymarket_depth_resolves_once_and_caches(tmp_path):
     calls = {"gamma": 0, "book": 0}
 

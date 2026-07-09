@@ -94,11 +94,32 @@ def poll_kalshi_depth(sports: List[str], *, http: HttpGet = resilient_get_json,
                       now: Optional[Callable[[], datetime]] = None,
                       max_markets_per_sport: int = 5,
                       prev_by_ticker: Optional[Dict[str, Dict[str, Any]]] = None,
-                      trade_watermark_by_ticker: Optional[Dict[str, str]] = None
+                      trade_watermark_by_ticker: Optional[Dict[str, str]] = None,
+                      active_by_sport: Optional[Dict[str, List[str]]] = None,
+                      miss_counts: Optional[Dict[str, int]] = None,
+                      max_active_per_sport: int = 20, max_misses: int = 3,
                       ) -> Dict[str, Any]:
     """Discover + snapshot Kalshi depth across *sports*' open in-play tickers,
-    appending each row to its date-sharded sidecar. Bounded per sport
-    (max_markets_per_sport). Never raises: a per-market failure is skipped.
+    appending each row to its date-sharded sidecar. Never raises: a per-market
+    failure is skipped.
+
+    STICKY RETENTION (2026-07-11 fix -- gap ζ item 3): _live_kalshi_tickers'
+    discovery is a bare /markets?status=open listing capped to
+    max_markets_per_sport, with no guaranteed sort by close_time -- on a busy
+    slate a ticker discovered today can be pushed off that top-N window by
+    newer markets well before it settles, so book_depth quietly stops
+    snapshotting it while order timestamps for that same ticker (placed by the
+    paper capture loop) keep landing hours later, producing zero-overlap gaps
+    (measured median 52h). *active_by_sport* (threaded by the caller, e.g.
+    poll_once's state dict) keeps every discovered ticker in a per-sport
+    STICKY list across polls -- once seen, a ticker stays in the poll set
+    until its OWN snapshot fails *max_misses* consecutive times (i.e. the
+    market itself is actually closed/unreachable, not merely absent from one
+    tick's discovery page), bounded by max_active_per_sport so a single sport
+    can't grow the poll set unboundedly. A single-call caller that does not
+    thread active_by_sport (e.g. existing tests) sees IDENTICAL behavior to
+    before: the sticky list starts empty and simply becomes this tick's
+    (already max_markets_per_sport-capped) discovery.
 
     Also persists the trades tape's actual prices (already fetched inside
     snapshot_kalshi_market for recency -- no extra request) to the parallel
@@ -107,15 +128,33 @@ def poll_kalshi_depth(sports: List[str], *, http: HttpGet = resilient_get_json,
     now_dt = (now() if now is not None else datetime.now(timezone.utc))
     prev_by_ticker = prev_by_ticker if prev_by_ticker is not None else {}
     trade_watermark_by_ticker = trade_watermark_by_ticker if trade_watermark_by_ticker is not None else {}
+    active_by_sport = active_by_sport if active_by_sport is not None else {}
+    miss_counts = miss_counts if miss_counts is not None else {}
     n_snapshotted = n_stale = n_trades = 0
     rows: List[Dict[str, Any]] = []
     for sport in sports:
-        tickers = _live_kalshi_tickers(sport, http=http)[:max_markets_per_sport]
+        discovered = _live_kalshi_tickers(sport, http=http)[:max_markets_per_sport]
+        active = active_by_sport.setdefault(sport, [])
+        # sticky tickers from a PRIOR tick that this tick's discovery page didn't
+        # re-list -- appended (not merged in) so discovered's own count/order is
+        # untouched (preserves existing single-tick callers' exact behavior).
+        sticky_only = [t for t in active if t not in discovered]
+        tickers = discovered + sticky_only
+        for t in discovered:
+            if t not in active:
+                active.append(t)
+            miss_counts[t] = 0  # rediscovered this tick -- reset any miss streak
+        if len(active) > max_active_per_sport:
+            del active[: len(active) - max_active_per_sport]  # oldest-first eviction
         for ticker in tickers:
             row = _bd.snapshot_kalshi_market(ticker, http=http, now_dt=now_dt,
                                              prev=prev_by_ticker.get(ticker),
                                              trade_watermark=trade_watermark_by_ticker.get(ticker))
             if row is None:
+                miss_counts[ticker] = miss_counts.get(ticker, 0) + 1
+                if miss_counts[ticker] >= max_misses:
+                    active.remove(ticker)
+                    miss_counts.pop(ticker, None)
                 continue
             new_trades = row.pop("_new_trades", [])
             next_watermark = row.pop("_trade_watermark", None)
@@ -185,11 +224,15 @@ def poll_once(*, sports: Optional[List[str]] = None,
     st = state if state is not None else {}
     st.setdefault("kalshi_prev", {})
     st.setdefault("kalshi_trade_watermarks", {})
+    st.setdefault("kalshi_active", {})
+    st.setdefault("kalshi_misses", {})
     st.setdefault("poly_prev", {})
     st.setdefault("poly_tokens", {})
     k_summary = poll_kalshi_depth(sports or [], http=kalshi_http, sidecar_dir=sidecar_dir,
                                   now=now, prev_by_ticker=st["kalshi_prev"],
-                                  trade_watermark_by_ticker=st["kalshi_trade_watermarks"])
+                                  trade_watermark_by_ticker=st["kalshi_trade_watermarks"],
+                                  active_by_sport=st["kalshi_active"],
+                                  miss_counts=st["kalshi_misses"])
     p_summary = poll_polymarket_depth(polymarket_slugs or [], http=poly_http,
                                       sidecar_dir=sidecar_dir, now=now,
                                       token_cache=st["poly_tokens"], prev_by_token=st["poly_prev"])
