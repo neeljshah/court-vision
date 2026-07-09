@@ -1,321 +1,147 @@
-# System Overview — The 6 Core Systems
+# System Overview
 
-*Reference document — the 6 core systems and how they interconnect.*
+*Reference document -- the architecture in one picture, then each piece explained.*
 
----
-
-## Architecture Principle
-
-The 85 trained models are not the system. They are components. Everything flows through six systems. Understanding those six systems — and how they interconnect — is the prerequisite for understanding any individual component. Systems 1–5 are the instrument that prices and places bets; System 6 (the agentic research layer) is the research program that plays it — autonomously discovering, validating, and retiring the signals that feed Systems 1–5.
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                         BROADCAST VIDEO                             │
-│              (29 usable / 75 attempted → 80 CLEAN target)           │
-└───────────────────────────┬─────────────────────────────────────────┘
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                      CV PIPELINE                                    │
-│  YOLOv8n → SIFT homography → Kalman/Hungarian → OSNet re-ID        │
-│  Output: defender_distance, spacing_score, legs_fatigue, ...        │
-└───────────────────────────┬─────────────────────────────────────────┘
-                            │ (CV spatial features)
-        ┌───────────────────┤
-        │ (API features)    │
-        ▼                   ▼
-┌───────────────────────────────────────────────────────────────────┐
-│                  SYSTEM 1: POSSESSION SIMULATOR                   │
-│   Lineup-dependent transition matrices + 10K Monte Carlo paths    │
-│   Output: P(stat > X) for every player, every stat, any X        │
-└───────────────────────────┬───────────────────────────────────────┘
-                            │ (full distributions)
-        ┌───────────────────┴────────────────────┐
-        ▼                                        ▼
-┌────────────────────────┐          ┌───────────────────────────────┐
-│ SYSTEM 2: LINE         │          │ SYSTEM 3: CORRELATION ENGINE  │
-│ EVALUATOR              │          │                               │
-│ Model prob vs          │          │ Joint distributions for SGP   │
-│ book implied prob      │          │ pricing; portfolio correlation │
-│ Edge = Δprobability    │          │ across active bets            │
-└───────────┬────────────┘          └──────────────┬────────────────┘
-            │ (+EV opportunities)                  │
-            └──────────────┬───────────────────────┘
-                           ▼
-┌──────────────────────────────────────────────────────────────────┐
-│                  SYSTEM 4: KELLY SIZER                           │
-│   Edge × confidence × bankroll × correlation → bet size         │
-│   Fractional Kelly with Ledoit-Wolf shrinkage on correlated legs │
-│   Drawdown circuit breakers                                      │
-└──────────────────────────┬───────────────────────────────────────┘
-                           │ (sized bets)
-                           ▼
-┌──────────────────────────────────────────────────────────────────┐
-│                 SYSTEM 5: EXECUTION ROUTER                       │
-│   Best price → Account health → Book limits → P2P preference    │
-│   Adapters: DK, FD, BetMGM, Caesars, bet365, Fanatics,         │
-│   Novig, ProphetX, Kalshi                                        │
-└──────────────────────────────────────────────────────────────────┘
-
-  SYSTEM 6: AGENTIC RESEARCH SYSTEM (planned) wraps all of the above —
-  multi-agent Claude loop that discovers new signals and retires decayed
-  ones, continuously reshaping what feeds Systems 1-5.
-```
+> **Supersedes the earlier "6 Core Systems" framing of this file**, which described a
+> single-sport, dollar-denominated betting product with an agentic research layer marked
+> "planned." Both are now real and different from that description: the platform is
+> multi-sport (`kernel/` + `domains/<sport>/`, four sports shipped), the self-improving loop is
+> built and running (not planned), and every sizing/execution number in this codebase is a
+> **unit**, never a dollar amount -- see [`../../.claude/rules/no-edge-claims.md`](../../.claude/rules/no-edge-claims.md)
+> and [`../JOB_EVIDENCE_PACKET.md`](../JOB_EVIDENCE_PACKET.md) for why.
 
 ---
 
-## System 1: Possession Simulator
+## The one-sentence architecture
 
-**The centerpiece.** Every other tool predicts a number. This generates a distribution.
+A sport-blind **kernel** (walk-forward validation, calibration, Monte-Carlo simulation, the
+discovery loop, devig/sizing math) is shared by thin per-sport **domain adapters** (NBA, MLB,
+soccer, tennis, ...), each of which emits one calibrated win-probability that anchors every
+market it prices; predictions flow through a paper-only execution/grading layer that proves or
+retracts every claim with closing-line value, never asserts one.
 
-The simulator runs the game possession-by-possession using lineup-dependent transition matrices. 10,000 Monte Carlo paths per game produce a full probability distribution over every player's every stat.
+```mermaid
+flowchart TD
+    subgraph DATA["DATA -- per-sport ingestion"]
+        D1["ESPN / MLB StatsAPI / Sackmann /\nfootball-data / odds and prop feeds"]
+    end
 
-**Why distributions matter:**
-- Price any line, not just the mainline. If the book posts O/U 27.5 but also offers alternates at 24.5 and 30.5, the distribution prices all three simultaneously.
-- Confidence intervals: `P(pts > 27.5) = 52%` is a weak signal. `P(pts > 27.5) = 62%` with a tight CI is a strong bet.
-- SGP pricing: joint probability of correlated legs requires modeling them together. The simulator does this naturally.
+    subgraph SIGNALS["SIGNALS -- leak-safe features"]
+        S1["feature_spec.py (train==inference)\nteam ratings, per-player rates, atlases"]
+    end
 
-**Inputs:**
-- Lineup on floor per possession (NBA API)
-- CV spatial features: defender_distance, spacing_score, legs_fatigue
-- Context: referee crew, rest days, altitude, travel fatigue index
-- Game state: score differential, time remaining (for garbage time modeling)
-- Player embeddings (NBA2Vec — planned)
+    subgraph MODELS["MODELS -- one calibrated anchor per sport"]
+        M1["win-probability model\n(Elo / Poisson / NegBinom / NNLS)"]
+        M2["leak-free recalibration\n(Platt / temperature / isotonic)"]
+        M1 --> M2
+    end
 
-**Possession mechanics:**
-- Lineup-dependent possession outcome probabilities
-- Shot selection per player given defensive scheme
-- Substitution patterns per coach per game state
-- Garbage time threshold (starters sit in blowouts)
-- Foul trouble logic (player at 3 fouls in Q2 sits)
+    subgraph ENGINES["ENGINES -- simulation"]
+        E1["kernel/sim_framework\nMonte-Carlo paths bisected to the anchor"]
+        E2["JointDistribution\n(coherent score matrix, SGP pricing)"]
+        E1 --> E2
+    end
 
-**Output:** `P(stat > X)` for any threshold X, for every player, for every stat.
+    subgraph MARKETS["PREDICTIONS -- the market surface"]
+        P1["moneyline / totals / spreads /\n1X2 / props / SGP -- all derived\nfrom the one anchor"]
+    end
 
-Implementation: [`src/prediction/win_probability.py`](../../src/prediction/win_probability.py), [`src/prediction/player_props.py`](../../src/prediction/player_props.py)
+    subgraph LIVE["IN-GAME -- the repricer"]
+        L1["predict_live(): re-price the same\nanchor against realized state"]
+    end
 
----
+    subgraph EXEC["EXECUTION -- paper only"]
+        X1["devig -> EV -> tier gate ->\nunit sizing (never $) -> shadow log"]
+    end
 
-## System 2: Line Evaluator
+    subgraph GRADE["GRADING -- honesty loop"]
+        G1["CLV ledger + greenlight gate\n(fail-closed, RED unless proven)"]
+        G2["kernel/loop discovery + ship gate\n(SHIP / VARIANCE_ONLY / DEFER / REJECT)"]
+    end
 
-Real-time comparison of simulator output against every available market line across all books and venues.
-
-**Mechanics:**
-1. Poll Odds API every 30–60 seconds for live lines from 40+ books
-2. For each prop line at each book: compute implied probability (Shin devig)
-3. Compare to simulator's probability for same outcome
-4. `Edge = simulator_probability - book_implied_probability`
-5. Rank all opportunities by `edge × confidence × liquidity`
-6. Filter by: minimum edge threshold, book health, correlation with existing bets
-
-**Timing triggers** — re-evaluate immediately when:
-- New prop line posted (~6am ET)
-- Referee assignments announced (~9am ET)
-- Injury report filed (1pm and 5pm mandatory)
-- Starting lineup confirmed (~30–35 min pre-game)
-- Late scratch announced (any time)
-- Line moves > 0.5 points (steam detection)
-
-See [timing-layer.md](../strategy/timing-layer.md) for the full timing architecture.
-
----
-
-## System 3: Correlation Engine
-
-**The SGP opportunity:** Books price Same Game Parlays by multiplying individual leg probabilities with a generic correlation discount. Your possession simulator generates joint distributions naturally. When the book's discount is wrong, that's edge.
-
-**Example:** "Player A over 27.5 points AND Player B over 7.5 assists." These are positively correlated (both benefit from high-tempo efficient offense). The book might price this as `P(A>27.5) × P(B>7.5) × 0.90`. Your simulator says the joint probability is higher because both fire in the same game scenarios. That difference is pure edge.
-
-**Also handles:**
-- Multi-game parlays (correlation in same-direction totals when league-wide pace is high)
-- Portfolio correlation: all active bets → how correlated is total exposure?
-- Ledoit-Wolf shrinkage on correlation matrix (raw N=80 game sample is rank-deficient)
-
-Implementation: [`src/prediction/betting_portfolio.py`](../../src/prediction/betting_portfolio.py)
-
----
-
-## System 4: Kelly Sizer
-
-**Inputs:** Edge, confidence interval, current bankroll, correlation with existing bets, book-specific max bet limit, current drawdown state.
-
-**Kelly fraction:**
-```
-f* = edge / (1 - probability_of_loss)
-```
-Full Kelly is too aggressive under parameter uncertainty. The system uses fractional Kelly:
-
-| Tier | k multiplier | When |
-|------|-------------|------|
-| Quarter Kelly | 0.25 | < 50 calibrated observations; or drawdown trigger |
-| Half Kelly | 0.50 | Standard; recommended starting point |
-| Three-quarter Kelly | 0.75 | High-confidence tier (future; not yet wired) |
-
-**Portfolio-aware modification:** If 5 bets share the same game or correlated lineup, Kelly fraction for each decreases. Naive Kelly on correlated props overstakes by 20–40% in simulation.
-
-**Drawdown circuit breakers:**
-- 10% bankroll drawdown → reduce all sizing to half Kelly
-- 20% drawdown → reduce to quarter Kelly
-- 30% drawdown → suspend all betting, alert, manual review required
-
-**Position limits:**
-- Total portfolio exposure: ≤ 20% of bankroll per slate
-- Per-game exposure: ≤ 5% of bankroll
-- Per-player exposure: ≤ 8% of bankroll
-- Correlated-cluster cap: ≤ 15% allocated to any player-pair cluster
-
-Implementation: [`src/prediction/betting_portfolio.py`](../../src/prediction/betting_portfolio.py)
-
----
-
-## System 5: Execution Router
-
-Routes each sized bet to the optimal venue.
-
-**Routing priority:**
-1. Best available price (line shopping — always buy the best number)
-2. Account health (avoid books at heat threshold)
-3. Max bet limits at each book
-4. Correlation with existing bets at same book
-5. P2P if price is within 0.5 points of best sportsbook price (zero vig compensates)
-
-**Account health monitor per book:**
-- Bet count (flag at 250, approaching ~300 limit trigger)
-- Win rate (flag if > 55% sustained over 50+ bets)
-- Bet velocity (bets per day — unnatural consistency triggers review)
-- Prop type concentration (same markets → faster limits)
-- Heat score: composite of all above
-- Auto-rotation: when heat score exceeds threshold, stop routing to that book
-
-**Book adapters:**
-- DraftKings, FanDuel, BetMGM, Caesars, bet365, Fanatics (sportsbooks; manual queue or Playwright)
-- Novig, ProphetX (P2P; API where available)
-- Kalshi (CFTC-regulated exchange; limit orders preferred for maker rebates)
-
-Implementation: [`api/execution_router.py`](../../api/execution_router.py), [`src/execution/`](../../src/execution/)
-
----
-
-## System 6: Agentic Research System
-
-**The moat.** Systems 1–5 are the instrument. System 6 is the research program that plays it — a multi-agent Claude loop that autonomously discovers, validates, ships, and retires prediction signals. **Status: planned — not yet built.**
-
-A competitor who copies the current 85 models doesn't get the discovery engine that generated them. The signal universe database — birth date, retirement date, IR history, P&L attribution — is not reproducible without running the full research pipeline from scratch.
-
-**Agent loop:**
-- **Orchestrator** — coordinates the loop, allocates research budget, logs to vault
-- **Researcher** — hypothesis generation from knowledge graph, academic literature, market microstructure
-- **Engineer** — signal implementation, feature wiring, unit tests
-- **Validator** — holdout testing, information ratio (IR) calculation, pass/fail gate (IR ≥ 0.5 to promote)
-- **Risk Manager** — correlation impact, Kelly impact, drawdown simulation
-- **Retirement Monitor** — signal decay detection, deprecation trigger
-
-**Signal registry:** Every signal carries a `signal_id`, birth date, information ratio (IR), and retirement date. Each is a hypothesis in an ongoing research program — tracked, attributed, and audited from creation to death.
-
-**Signal lifecycle:**
-1. Hypothesis generated by Researcher
-2. Signal implemented by Engineer
-3. Validated against holdout by Validator (IR threshold = 0.5 minimum to promote)
-4. Deployed to shadow mode by Orchestrator
-5. Promoted to production after 30+ settled observations confirming IR
-6. Monitored for decay by Retirement Monitor
-7. Retired when IR drops below threshold for 60 consecutive days
-
-**Ruthless retirement:** The architecture targets a signal universe of 500–5000 signals over 3–5 years. Most signals fail validation or decay — expect 60–70% retired within 18 months. The survivors compound. This is the Renaissance Technologies methodology: individual signals are disposable hypotheses; the discovery engine is the durable asset.
-
-See [MASTER_PLAN.md](../../MASTER_PLAN.md) (§ The 6 Core Systems) and [VISION.md](../../VISION.md) for the full architecture.
-
----
-
-## The Sport-Blind Kernel + Per-Sport Adapters
-
-The six systems above describe the original NBA decision instrument. The shipped
-platform generalizes it: the hard, compounding machinery (walk-forward gating,
-calibration, the Monte-Carlo framework, the discovery loop, devig/shadow logging)
-is sport-blind and lives in `kernel/`; the sport-specific pieces (data connectors,
-event taxonomy, stat definitions, market structures) are thin adapters under
-`domains/<sport>/`. Four sports — NBA, MLB, soccer, tennis — share one kernel and
-one prediction surface; adding a sport means writing the adapter, not rebuilding
-the machinery.
-
-```
-                         kernel/  (sport-blind)
-   loop  |  sim_framework  |  validation  |  decision  |  config  |  testing/conformance
-                                   ^  consumes the interface
-        +--------------+-----------+-----------+--------------+
-        |              |           |           |              |
-  domains/nba   domains/mlb  domains/soccer  domains/tennis  domains/soccer_intl
-   predictor.py    ...           ...            ...          (census-only)
-   feature_spec    feature_spec  feature_spec   feature_spec
-   ingest_manifest ingest_manif. ingest_manif.  ingest_manif.
-```
-
-**One calibrated win-prob anchors every market.** Each adapter's `predictor.py`
-emits a single calibrated win probability per matchup; the moneyline IS that
-number, and totals / spreads / set scores / props / SGP are all *derived* from it
-(the Monte-Carlo engine's marginal is bisected to the anchor, and the joint
-distribution is drawn from the same paths). There is exactly one place a
-probability can be wrong, and every market inherits it. `predict_live()`
-re-prices that same anchor against realized in-game state and re-applies a
-leak-free in-game recalibrator.
-
-**A new sport implements only three frozen seams** — `SportContext` (runtime
-contract, validated by `kernel/testing/conformance.py`), `feature_spec.py`
-(train==inference base matrix), and `ingest_manifest.py` (per-corpus leak-class +
-freshness SLA). A single fail-closed grid, `scripts/platformkit/parity_matrix.py`,
-keeps all sports green across `{census, manifest, feature_spec}`; a not-yet-built
-dimension is `n/a` and does not fail. The full contract, the 9-step new-sport
-playbook, and the parity mechanism are in [`../PLATFORM.md`](../PLATFORM.md); the
-tooling + supervisor process table are in
-[`../PLATFORM_TOOLING.md`](../PLATFORM_TOOLING.md).
-
-**Honest read:** pregame MATCHES the devigged close on team-strength markets and
-trails on totals/ATP only by freshness data a box model cannot see; in-game
-conditioning is a *calibration* win (lower Brier), not a dollar edge. No $ edge /
-ROI is claimed — the truth source is
-[`../JOB_EVIDENCE_PACKET.md`](../JOB_EVIDENCE_PACKET.md).
-
----
-
-## Data Flow Summary
-
-```
-Broadcast video
-    │
-    ▼
-CV pipeline → CV features (defender_dist, spacing, fatigue)
-                    │
-NBA API ────────────┼──→ Feature store (timestamped for walk-forward)
-                    │
-                    ▼
-              85 trained models
-                    │
-                    ▼
-         Possession simulator (10K Monte Carlo)
-                    │
-                    ▼
-         ┌──────────┴──────────┐
-         ▼                     ▼
-    Line evaluator       Correlation engine
-         │                     │
-         └──────────┬──────────┘
-                    ▼
-              Kelly sizer
-                    │
-                    ▼
-           Execution router → DK / FD / BetMGM / Novig / Kalshi
-                    │
-                    ▼
-             CLV tracker → residuals → nightly calibration update
-                    │
-                    ▼
-   Agentic research loop (System 6) → discovers new signals,
-   retires underperforming ones → reshapes the 75-model layer
+    DATA --> SIGNALS --> MODELS --> ENGINES --> MARKETS
+    MARKETS --> LIVE --> EXEC --> GRADE
+    G2 -. "reshapes" .-> SIGNALS
+    G1 -. "feeds back into" .-> M2
 ```
 
 ---
 
-*See [cv-pipeline.md](cv-pipeline.md) for the CV layer. See [possession-simulator.md](possession-simulator.md) for simulator mechanics. See [execution-engine.md](execution-engine.md) for book adapters and routing.*
+## Layer by layer
 
+| Layer | What it does | Owning code |
+|---|---|---|
+| **DATA** | Keyless, as-of-stamped ingestion per sport; every corpus tagged with a leak class (`LEAK_PRE_GAME` / `LEAK_IN_GAME` / `LEAK_POST_GAME` / `LEAK_REFERENCE`) and a freshness SLA | `domains/<sport>/ingest_*.py`, `scripts/platformkit/ingest_manifest_core.py` |
+| **SIGNALS** | A frozen `FeatureSpec` per domain declares the base feature matrix as an ordered tuple; one function (`build_base_matrix`) derives it identically at train and inference | `domains/<sport>/feature_spec.py`, `scripts/platformkit/feature_spec_core.py` |
+| **MODELS** | A raw rating model (Elo / Poisson / NegBinom / NNLS, sport-specific) is mapped through a leak-free recalibrator to ONE calibrated win-probability -- the anchor | `domains/<sport>/predictor.py`, `domains/<sport>/ratings.py` / `elo*.py` |
+| **ENGINES (simulation)** | The Monte-Carlo path framework is bisected so its win-marginal equals the anchor; totals, margins, and props fall out of the same simulated paths, so nothing can disagree with the moneyline | `kernel/sim_framework/` (target-state), per-adapter engines today (`domains/<sport>/`, `src/sim/`) |
+| **PREDICTIONS (markets)** | `to_jd()` returns one `JointDistribution` covering the whole market surface for that sport; `predict()` / `predict_live()` are the two public entry points every domain exposes | `domains/<sport>/predictor.py`, `scripts/platformkit/predict_matchup.py` (unified CLI) |
+| **EXECUTION** | Devig (Shin 1992) -> EV in probability space -> tier gate (A/B/C by EV magnitude, below-floor = no bet) -> unit sizing (flat + capped fractional Kelly, **never dollars**) -> append-only shadow/paper log | `scripts/platformkit/execution/`, `scripts/platformkit/paper/`, `scripts/platformkit/prop_paper*.py` |
+| **GRADING** | Every paper position is settled and joined to its closing snapshot; CLV is the only money-adjacent yardstick, and a fail-closed **greenlight gate** blocks any "channel is working" claim until pre-registered criteria pass on out-of-sample halves | `scripts/platformkit/clv_ledger*.py`, `scripts/platformkit/grade_paper*.py`, `scripts/platformkit/eval_gate/`, `scripts/platformkit/econ/` |
+| **SELF-IMPROVE** | A discovery loop mines model residuals and enumerates feature transforms; every candidate signal passes a multi-criterion ship gate (walk-forward, null-shuffle, ablation, calibration, CLV, multiple-comparisons-corrected) before it can ship -- most correctly REJECT | `kernel/loop/` (target-state), `src/loop/` + `scripts/platformkit/autoloop/` today, ledger at `scripts/platformkit/reject_ledger.py` |
+
+---
+
+## The kernel / domain split
+
+The layers above are implemented twice: once, sport-blind, in `kernel/`; and once per sport, as
+a thin adapter in `domains/<sport>/`. This is the core architectural decision of the platform --
+full rationale, the three frozen "seams" a new sport must implement, and the fail-closed parity
+matrix that keeps every sport honest are documented in **[../PLATFORM.md](../PLATFORM.md)** and,
+at the module level, in **[../kernel/README.md](../kernel/README.md)**.
+
+```mermaid
+flowchart LR
+    subgraph K["kernel/ (sport-blind)"]
+        direction TB
+        K1[loop]
+        K2[sim_framework]
+        K3[validation]
+        K4[decision]
+        K5[config]
+        K6[testing / conformance]
+    end
+    subgraph AD["domains/&lt;sport&gt;/ (adapter)"]
+        direction TB
+        A1[predictor.py]
+        A2[feature_spec.py]
+        A3[ingest_manifest.py]
+    end
+    K -- "consumed by" --> AD
+    AD -. "SportContext + 3 seams,\nchecked by kernel/testing/conformance.py" .-> K
+```
+
+Four adapters are shipped today: `basketball_nba`, `mlb`, `soccer`, `tennis` (plus a census-only
+`soccer_intl`, and `wnba` / `baseball_kbo` / `baseball_npb` / `cross_sport_market` in varying
+stages of build-out -- see [../domains/README.md](../domains/README.md)). Adding a sport means
+writing the adapter; `kernel/` does not change.
+
+> **Honest status note.** Several `kernel/` subtrees named in the diagram above (`loop`,
+> `sim_framework`, `decision`) are today **reserved namespaces** -- the working logic still lives
+> per-adapter and in `scripts/platformkit/`. See
+> [../kernel/README.md](../kernel/README.md#implementation-status) for the exact
+> implemented-vs-stub table rather than assuming the diagram reflects shipped code.
+
+---
+
+## What replaced the old "5 systems + planned System 6" framing
+
+| Old name | Current equivalent |
+|---|---|
+| System 1 -- Possession Simulator | per-sport transition/possession logic in `domains/<sport>/` + `src/sim/` (target: `kernel/sim_framework/`) |
+| System 2 -- Line Evaluator | The devig + EV step inside `scripts/platformkit/execution/` and `scripts/platformkit/prop_edge*.py` |
+| System 3 -- Correlation Engine | `JointDistribution` (per-adapter `to_jd()`), `scripts/platformkit/sgp_pricer.py` |
+| System 4 -- Kelly Sizer | The unit-sizing step in `scripts/platformkit/execution/` -- **units, never dollars** |
+| System 5 -- Execution Router | `scripts/platformkit/execution/` (paper-only; see [execution-engine.md](execution-engine.md)) |
+| System 6 -- Agentic Research (planned) | **Built and running**: `src/loop/` + `scripts/platformkit/autoloop/` (cross-sport scheduler) |
+
+---
+
+*See [../models/README.md](../models/README.md) for the model/calibration layer, and
+[../models/possession-simulators.md](../models/possession-simulators.md) for the cross-sport
+simulation engines. See [execution-engine.md](execution-engine.md) for routing detail. See
+[../kernel/README.md](../kernel/README.md) for the sport-blind machinery and
+[../PLATFORM.md](../PLATFORM.md) for the full adapter contract and build-program status.*
 
 ---
 <!-- nav-footer -->
