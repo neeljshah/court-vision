@@ -196,6 +196,12 @@ def run_all(watermarks: Dict[str, Any], *, queue_fn: Optional[Callable[[Dict[str
         out["replication_watch"] = run_replication_watch(watermarks, queue_fn=queue_fn)
     except Exception as exc:  # noqa: BLE001
         out["replication_watch"] = {"status": "error", "error": str(exc)[:200]}
+    try:
+        # report-only census freshness (census_drift.json); rot surfaced, never fixed here
+        from scripts.platformkit.census_drift import run_check
+        out["census_drift"] = run_check()
+    except Exception as exc:  # noqa: BLE001
+        out["census_drift"] = {"status": "error", "error": str(exc)[:200]}
     return out
 
 
