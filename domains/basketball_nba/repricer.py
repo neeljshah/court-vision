@@ -25,6 +25,7 @@ import math
 from typing import Any, Dict
 
 _NBA_FULL_MINUTES = 48.0
+_OT_PERIOD_MINUTES = 5.0  # NBA overtime period length
 _DEF_MU = 113.0          # default expected full-game points per team
 _DEF_MARGIN_SIGMA = 13.5  # full-game final-margin SD (points)
 _DEF_TOTAL_SIGMA = 18.0   # full-game final-total SD (points)
@@ -35,6 +36,19 @@ _TOTAL_OFFSETS = (-10.5, -5.5, 0.5, 5.5, 10.5)
 def _norm_cdf(z: float) -> float:
     """Standard-normal CDF via erf (no scipy)."""
     return 0.5 * (1.0 + math.erf(z / math.sqrt(2.0)))
+
+
+def _remaining_minutes(elapsed: float) -> float:
+    """Minutes left in the game. Regulation (elapsed<=48): straight countdown,
+    bit-identical to the pre-OT-fix formula. OT (elapsed>48): elapsed keeps
+    accumulating past 48 in 5-minute blocks (see nba_checkpoint_benchmark's
+    _elapsed_minutes), so this returns time left in the CURRENT OT period rather
+    than clamping to 0 -- that clamp was the overtime defect (degenerate
+    current-score-sign price once elapsed>48)."""
+    if elapsed <= _NBA_FULL_MINUTES:
+        return _NBA_FULL_MINUTES - elapsed
+    ot_elapsed = (elapsed - _NBA_FULL_MINUTES) % _OT_PERIOD_MINUTES
+    return _OT_PERIOD_MINUTES - ot_elapsed
 
 
 class NBARepricer:
@@ -48,7 +62,7 @@ class NBARepricer:
         total_sigma = float(pp.get("total_sigma", _DEF_TOTAL_SIGMA))
 
         elapsed = float(getattr(state, "elapsed_minutes", 0.0))
-        rem_frac = max(0.0, (_NBA_FULL_MINUTES - elapsed) / _NBA_FULL_MINUTES)
+        rem_frac = max(0.0, _remaining_minutes(elapsed) / _NBA_FULL_MINUTES)
         h0, a0 = int(state.home_score), int(state.away_score)
 
         if rem_frac <= 0.0:

@@ -73,6 +73,23 @@ def test_final_tie_is_coinflip_overtime():
     assert out["win_home"] == pytest.approx(0.5)
 
 
+def test_overtime_rem_frac_is_nonzero_not_degenerate():
+    """OT defect: elapsed>48 used to collapse rem_frac to 0 (degenerate
+    current-score-sign price). It must now reflect time left in the current OT."""
+    r = NBARepricer()
+    # tied at the regulation buzzer -> OT starts, 5 min on the clock
+    ot_start = r.reprice(_state(48.0001, 100, 100))
+    assert ot_start["_remaining_fraction"] > 0.0
+    assert ot_start["win_home"] == pytest.approx(0.5, abs=0.02)
+    # 2 minutes into OT1 (elapsed=50) -> 3 min left in the OT period
+    mid_ot = r.reprice(_state(50.0, 100, 100))
+    assert mid_ot["_remaining_fraction"] == pytest.approx(3.0 / 48.0, abs=1e-9)
+    assert mid_ot["_margin_sd"] < ot_start["_margin_sd"]  # anchor keeps tightening
+    # a lead carried into OT still resolves toward the leader, not a coinflip
+    leading_ot = r.reprice(_state(50.0, 104, 100))
+    assert leading_ot["win_home"] > 0.5
+
+
 def test_metadata_and_projection_present():
     r = NBARepricer()
     out = r.reprice(_state(24.0, 58, 50))

@@ -15,9 +15,10 @@ game's first traded tick's market_prob as p0 via the closed form
 mu_diff=margin_sigma*Phi^-1(p0) (reproduces win_home==p0 exactly at elapsed=0/margin=0,
 verified). price_checkpoint() is a PURE function of (p0, home_score, away_score,
 period, game_clock_s) -- never reads outcome_home_win or any other row, so it cannot
-leak future info. OT (period>=5) pushes elapsed past the repricer's hardcoded 48-min
-length, collapsing rem_frac to 0 -> a degenerate current-score-sign price; grouped into
-P4+OT so this known limitation is visible, not hidden.
+leak future info. OT (period>=5) pushes elapsed past 48; the repricer now treats this as
+time remaining in the current 5-min OT period (fixed 2026-07-09, was: rem_frac collapsed
+to 0 -> degenerate current-score-sign price). Still grouped into P4+OT (bucketing is by
+phase, not OT-vs-not) so OT ticks stay visible in the scoreboard.
 
 DATA ARTIFACT: some post-settlement ticks are traded=False (reset/stale quotes, values
 include 0.005/0.995/0.500 -- NOT one fixed value). Fix: EXCLUDE every traded=False row
@@ -256,9 +257,9 @@ def build_benchmark(data_path: Optional[Path] = None) -> Dict[str, Any]:
             "Calibration measurement only vs the LIVE Kalshi in-play price, not a devigged "
             "close. Model reuses NBARepricer (Gaussian score-anchor) read-only via "
             "live_repricer.get_repricer('nba'); no src/kernel edit. traded=False ticks "
-            "(reset/stale quotes) are excluded from scoring. OT inherits a known repricer "
-            "limitation (regulation-only 48-min length collapses rem_frac to 0), grouped "
-            "into P4+OT so it is visible not hidden. first_traded_pretip reproduces the "
+            "(reset/stale quotes) are excluded from scoring. OT (period>=5) uses time "
+            "remaining in the current 5-min OT period (fixed 2026-07-09), grouped into "
+            "P4+OT with regular Q4 ticks by phase bucketing. first_traded_pretip reproduces the "
             "market price exactly at each game's own first tick by construction (trivial "
             "there, ~1/150 ticks/game). No $/ROI/edge claim."),
         "calibration_scoreboard": {"per_sport": per_sport},
