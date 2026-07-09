@@ -133,6 +133,139 @@ for _direction in ("serve", "return"):
 del ATTRIBUTES["surface_splits"]  # family entry stays documentation-only; concrete rows are the 6 above
 
 
+# ---------------------------------------------------------------------------
+# EXPANDED attributes (10 -> 49): court side, set-number, momentum, tiebreak,
+# second-serve aggression, game-point conversion (11 concrete names, math in
+# ingredients_expanded.py/build_profiles_expanded.py), plus MATCH_AGG_METRICS
+# x MATCH_AGG_BUCKETS (28 concrete names, one per match_stats window metric x
+# surface bucket). All DESCRIPTIVE -- no prereg/replication claim attached.
+# Court side IS derivable (within-game point-index parity, verified on real
+# data -- see ingredients_expanded.py docstring), so it is NOT registry-
+# BLOCKED.
+# ---------------------------------------------------------------------------
+MATCH_AGG_METRICS = ("ace_rate", "df_rate", "first_serve_in", "first_serve_win",
+                      "second_serve_win", "bp_saved", "return_pts_won")
+MATCH_AGG_BUCKETS = SURFACES + ("Overall",)
+MATCH_AGG_FLOOR = 20  # >=20 matches per (entity, window, bucket) -- task-declared
+
+_EXPANDED: dict[str, dict] = {
+    "courtside_serve_deuce": {
+        "description": (
+            "Server win rate on points served from the deuce (right) court, side "
+            "derived from within-game point-index parity (idx%2==0): consecutive "
+            "charting_points rows sharing (match_id,set1,set2,gm1,gm2) ARE one "
+            "game's points in file order (verified) -- deuce/ad alternation is a "
+            "fixed tennis rule independent of score labels."
+        ),
+        "entity": "player", "ingredients": ["charting_courtside_points"],
+        "formula": "won/n where within_game_point_index % 2 == 0",
+        "status": DESCRIPTIVE, "floor": {"n": 150},
+        "weight_ledger_family": "tennis_profile_descriptive",
+    },
+    "courtside_serve_ad": {
+        "description": "Server win rate on points served from the ad (left) court (idx%2==1); see courtside_serve_deuce.",
+        "entity": "player", "ingredients": ["charting_courtside_points"],
+        "formula": "won/n where within_game_point_index % 2 == 1",
+        "status": DESCRIPTIVE, "floor": {"n": 150},
+        "weight_ledger_family": "tennis_profile_descriptive",
+    },
+    "serve_by_set_set1": {
+        "description": "Server win rate on points played in set 1 (stamina-proxy family, freshest state).",
+        "entity": "player", "ingredients": ["charting_set_bucket_points"],
+        "formula": "won/n where set1+set2+1 == 1", "status": DESCRIPTIVE,
+        "floor": {"n": 150}, "weight_ledger_family": "tennis_profile_descriptive",
+    },
+    "serve_by_set_set2": {
+        "description": "Server win rate on points played in set 2 (stamina-proxy family, mid-match state).",
+        "entity": "player", "ingredients": ["charting_set_bucket_points"],
+        "formula": "won/n where set1+set2+1 == 2", "status": DESCRIPTIVE,
+        "floor": {"n": 150}, "weight_ledger_family": "tennis_profile_descriptive",
+    },
+    "serve_by_set_set3plus": {
+        "description": "Server win rate on points played in set 3 or later (stamina-proxy family, late-match state).",
+        "entity": "player", "ingredients": ["charting_set_bucket_points"],
+        "formula": "won/n where set1+set2+1 >= 3", "status": DESCRIPTIVE,
+        "floor": {"n": 150}, "weight_ledger_family": "tennis_profile_descriptive",
+    },
+    "momentum_bounceback": {
+        "description": (
+            "Hold-rate delta: server's hold rate in service games immediately "
+            "following their OWN previous service game being broken, minus their "
+            "own baseline hold rate (baseline restricted to service games that HAVE "
+            "a preceding own service game in the same match, for an apples-to-apples "
+            "comparison)."
+        ),
+        "entity": "player", "ingredients": ["charting_service_games"],
+        "formula": "hold_rate(prev_own_service_game_broken) - hold_rate(baseline)",
+        "status": DESCRIPTIVE, "floor": {"n": 15},
+        "weight_ledger_family": "tennis_profile_descriptive",
+    },
+    "momentum_streakiness": {
+        "description": (
+            "Point-win-rate delta: rate of winning a point given the SAME player "
+            "won the immediately preceding point in the match (serve or return role "
+            "either way), minus their unconditional point-win rate. Raw descriptive "
+            "share, not a causal claim -- correlates with who's currently serving."
+        ),
+        "entity": "player", "ingredients": ["charting_point_sequence"],
+        "formula": "win_rate(prev_point_won) - win_rate(unconditional)",
+        "status": DESCRIPTIVE, "floor": {"n": 200},
+        "weight_ledger_family": "tennis_profile_descriptive",
+    },
+    "tiebreak_points_won_share": {
+        "description": (
+            "Share of tiebreak points won (serve or return role either way), over "
+            "charting_points rows whose score_state fails the standard 0/15/30/40/AD "
+            "parse but both tokens ARE raw integers (declared tiebreak signature; "
+            "undercounts each breaker's ambiguous 0-0 opening point by design)."
+        ),
+        "entity": "player", "ingredients": ["charting_tiebreak_points"],
+        "formula": "won/n over tiebreak points", "status": DESCRIPTIVE,
+        "floor": {"n": 30}, "weight_ledger_family": "tennis_profile_descriptive",
+    },
+    "tiebreak_serve_win_rate": {
+        "description": "Server win rate on tiebreak points only (server-perspective subset of tiebreak_points_won_share).",
+        "entity": "player", "ingredients": ["charting_tiebreak_serve_points"],
+        "formula": "won/n over tiebreak points, server perspective", "status": DESCRIPTIVE,
+        "floor": {"n": 20}, "weight_ledger_family": "tennis_profile_descriptive",
+    },
+    "second_serve_aggression_delta": {
+        "description": (
+            "second_serve_win_rate - first_serve_win_rate, REUSING "
+            "ingredients.second_serve_ingredient's own floored rates verbatim (same "
+            "floor as second_serve_reliability) -- less negative/positive means less "
+            "drop-off going to the second serve."
+        ),
+        "entity": "player", "ingredients": ["charting_first_serve_win_rate", "charting_second_serve_win_rate"],
+        "formula": "second_rate - first_rate", "status": DESCRIPTIVE,
+        "floor": {"n": 300}, "weight_ledger_family": "tennis_profile_descriptive",
+    },
+    "game_point_conversion": {
+        "description": (
+            "Win-rate delta on the server's OWN game point (score 40-x/AD, one point "
+            "from winning the game) vs their baseline serve-win rate -- the mirror of "
+            "pressure_serve's break-point-save delta, computed the same descriptive "
+            "way (not the VALIDATED_MECHANISM OLS/replication path)."
+        ),
+        "entity": "player", "ingredients": ["charting_game_point_points"],
+        "formula": "win_rate(game_point) - win_rate(baseline)", "status": DESCRIPTIVE,
+        "floor": {"n": 200}, "weight_ledger_family": "tennis_profile_descriptive",
+    },
+}
+
+for _metric in MATCH_AGG_METRICS:
+    for _bucket in MATCH_AGG_BUCKETS:
+        _EXPANDED[f"match_agg_{_metric}_{_bucket}"] = {
+            "description": f"Mean match_stats {_metric} on {_bucket} surface (season/career window, match_stats+matches/wta_matches join, floor >={MATCH_AGG_FLOOR} matches).",
+            "entity": "player", "ingredients": [f"match_stats_{_metric}"],
+            "formula": f"mean({_metric}) grouped by (entity, window, surface={_bucket})",
+            "status": DESCRIPTIVE, "floor": {"n": MATCH_AGG_FLOOR},
+            "weight_ledger_family": "tennis_profile_descriptive",
+        }
+
+ATTRIBUTES.update(_EXPANDED)
+
+
 def concrete_attributes() -> list[str]:
     """All attribute names that build_profiles.py actually writes rows for (excludes BLOCKED)."""
     return [name for name, spec in ATTRIBUTES.items() if spec["status"] != BLOCKED]
