@@ -625,6 +625,10 @@ def _process_game(sport: str, gid: str, legs: Dict[str, float],
         row["model_prob_nba_shadow"] = _nba_shadow(
             sport, state.get("home_display") or state.get("home"),
             state.get("away_display") or state.get("away"), state)
+        # SECOND, INDEPENDENT nba shadow (mechanism-ladder base spec, frozen coefficients) --
+        # additive alongside model_prob_nba_shadow (NBARepricer), never replaces it. See
+        # nba_logistic_pricer.py: same None-safe/never-raises contract.
+        row["model_prob_nba_ladder_shadow"] = _nba_ladder_shadow(sport, state)
         row["model_prob_tennis_shadow"] = _tennis_shadow(
             sport, state.get("home_display") or state.get("home"),
             state.get("away_display") or state.get("away"), state)
@@ -707,6 +711,22 @@ def _nba_shadow(sport: str, home: Any, away: Any, state: Dict[str, Any]) -> Opti
     try:
         from domains.basketball_nba.ingame_shadow import get_shadow
         return get_shadow().shadow_prob(sport, str(home or ""), str(away or ""), state)
+    except Exception:  # noqa: BLE001 -- shadow measurement never affects the capture path
+        return None
+
+
+def _nba_ladder_shadow(sport: str, state: Dict[str, Any]) -> Optional[float]:
+    """SHADOW MEASUREMENT ONLY -- the mechanism-ladder base spec (frozen coefficients,
+    nba_logistic_pricer.py) priced from this tick's (margin, frac_elapsed, pregame prior).
+    Independent of _nba_shadow (NBARepricer); logged as a SEPARATE field so forward
+    capture grades both against the market. Never decided on, never raises. nba-only;
+    None on any missing input (state_diff/frac_elapsed/p0) or unreadable artifact."""
+    try:
+        if str(sport or "").lower() != "nba" or not isinstance(state, dict):
+            return None
+        from scripts.platformkit.ingame.nba_logistic_pricer import get_pricer
+        return get_pricer().price(state.get("state_diff"), state.get("frac_elapsed"),
+                                  state.get("p0"))
     except Exception:  # noqa: BLE001 -- shadow measurement never affects the capture path
         return None
 

@@ -586,6 +586,60 @@ def test_wnba_shadow_poisoned_get_shadow_is_none_never_raises(tmp_path, monkeypa
 
 
 # --------------------------------------------------------------------------------------- #
+# 8b. mechanism-ladder nba shadow: SECOND, independent nba field alongside model_prob_    #
+#     nba_shadow (NBARepricer); additive, never decided on, none-safe.                    #
+# --------------------------------------------------------------------------------------- #
+def test_nba_ladder_shadow_field_present_and_none_safe(tmp_path, monkeypatch):
+    from scripts.platformkit.ingame import nba_logistic_pricer as pricer_mod
+
+    class _StubPricer:
+        def price(self, margin, frac_elapsed, prior_prob):
+            assert margin == 2.0 and frac_elapsed == 0.4 and prior_prob == 0.58
+            return 0.63
+
+    monkeypatch.setattr(pricer_mod, "get_pricer", lambda: _StubPricer())
+
+    grade_dir = tmp_path / "grade"
+    hb = loop.poll_once(sports=["nba"], live_state_fn=_state_fn_prior, model_fn=_model_fn,
+                        inplay_fetch_fn=_inplay_fetch, finals_fn=_finals_none,
+                        grade_dir=grade_dir, ledger_path=tmp_path / "l.jsonl",
+                        heartbeat_path=tmp_path / "hb.json")
+    g = hb["games"][0]
+    # additive field present; the EXISTING nba shadow field + decision are untouched by it.
+    assert g["model_prob_nba_ladder_shadow"] == 0.63
+    assert "model_prob_nba_shadow" in g
+    assert g["bet"] is True and g["model_prob"] == 0.80
+
+
+def test_nba_ladder_shadow_poisoned_pricer_is_none_never_raises(tmp_path, monkeypatch):
+    from scripts.platformkit.ingame import nba_logistic_pricer as pricer_mod
+
+    def _raise():
+        raise RuntimeError("poisoned pricer build")
+
+    monkeypatch.setattr(pricer_mod, "get_pricer", _raise)
+
+    grade_dir = tmp_path / "grade"
+    hb = loop.poll_once(sports=["nba"], live_state_fn=_state_fn_prior, model_fn=_model_fn,
+                        inplay_fetch_fn=_inplay_fetch, finals_fn=_finals_none,
+                        grade_dir=grade_dir, ledger_path=tmp_path / "l.jsonl",
+                        heartbeat_path=tmp_path / "hb.json")
+    g = hb["games"][0]
+    assert g["model_prob_nba_ladder_shadow"] is None
+    assert g["bet"] is True and g["model_prob"] == 0.80
+
+
+def test_nba_ladder_shadow_non_nba_sport_is_none():
+    assert loop._nba_ladder_shadow(
+        "mlb", {"state_diff": 2.0, "frac_elapsed": 0.4, "p0": 0.58}) is None
+
+
+def test_nba_ladder_shadow_missing_p0_is_none():
+    assert loop._nba_ladder_shadow(
+        "nba", {"state_diff": 2.0, "frac_elapsed": 0.4, "p0": None}) is None
+
+
+# --------------------------------------------------------------------------------------- #
 # LANE 1 enrichment: append-after-decision property (on / off / poisoned)                  #
 # --------------------------------------------------------------------------------------- #
 def _run_one_tick(tmp_path):

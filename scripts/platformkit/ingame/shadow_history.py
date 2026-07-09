@@ -40,11 +40,13 @@ logger = logging.getLogger(__name__)
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_HISTORY_DIR = _REPO_ROOT / "data" / "cache" / "ingame_shadow_history"
 
-# The 4 shadow keys inplay_capture_loop writes onto each per-game row (see
-# _wnba_shadow/_nba_shadow/_tennis_shadow/_sp_shadow in that file). A row is
-# history-worthy iff at least one of these is not None.
+# The shadow keys inplay_capture_loop writes onto each per-game row (see
+# _wnba_shadow/_nba_shadow/_nba_ladder_shadow/_tennis_shadow/_sp_shadow in that file).
+# A row is history-worthy iff at least one of these is not None. model_prob_nba_ladder_
+# shadow ADDED (mechanism-ladder base spec, frozen coefficients) alongside the existing
+# model_prob_nba_shadow (NBARepricer) -- additive, forward capture now grades both.
 SHADOW_KEYS: List[str] = [
-    "model_prob_wnba_shadow", "model_prob_nba_shadow",
+    "model_prob_wnba_shadow", "model_prob_nba_shadow", "model_prob_nba_ladder_shadow",
     "model_prob_tennis_shadow", "model_prob_sp_shadow",
 ]
 
