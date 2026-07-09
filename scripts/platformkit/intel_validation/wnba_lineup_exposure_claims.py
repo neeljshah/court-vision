@@ -59,7 +59,13 @@ def build_lineup_exposure_claim(src: Path = _SRC) -> dict[str, Any]:
         if row["lineup_id"] not in context.index:
             continue
         c = context.loc[row["lineup_id"]]
-        row["team_id"] = str(c["team_id"])
+        # team_id rides a mixed-dtype row selection (int64 team_id alongside
+        # float64 pts columns upcasts the whole Series to float64, so a bare
+        # str() prints "160....0" for a real numeric id); only round-trip
+        # through int when it IS a float-ified int -- a non-numeric team_id
+        # (e.g. a test fixture's "T1") stays a plain string.
+        tid = c["team_id"]
+        row["team_id"] = str(int(tid)) if isinstance(tid, float) and tid.is_integer() else str(tid)
         row["pts_for"] = round(float(c["pts_for"]), 4)
         row["pts_against"] = round(float(c["pts_against"]), 4)
         row["net_pts"] = round(float(c["net_pts"]), 4)
