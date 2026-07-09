@@ -174,8 +174,8 @@ def classify(query: str) -> str | None:
 _SCOREBOARD_PATH = os.path.join("vault", "_Organized", "_Index", "_Calibration_Scoreboard.md")
 _SCOREBOARD_ROW_RE = re.compile(
     r"^\|\s*(?P<sport>\w+)\s*\|\s*(?P<n>[\d,]+)\s*\|\s*(?P<base_brier>[\d.]+)\s*\|\s*"
-    r"(?P<imp_brier>[\d.]+)\s*\|\s*(?P<d_brier>-?[\d.]+)\s*\|\s*(?P<base_ece>[\d.]+)\s*\|\s*"
-    r"(?P<imp_ece>[\d.]+)\s*\|\s*(?P<d_ece>-?[\d.]+)\s*\|\s*(?P<method>[^|]+)\|\s*$",
+    r"(?P<imp_brier>[\d.]+)\s*\|\s*(?P<d_brier>[+-]?[\d.]+)\s*\|\s*(?P<base_ece>[\d.]+)\s*\|\s*"
+    r"(?P<imp_ece>[\d.]+)\s*\|\s*(?P<d_ece>[+-]?[\d.]+)\s*\|\s*(?P<method>[^|]+)\|\s*$",
     re.MULTILINE,
 )
 
