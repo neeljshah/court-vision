@@ -216,8 +216,9 @@ def _score_variant(df: pd.DataFrame, model_col: str) -> Dict[str, Any]:
     pooled = _score_group(df, model_col)
     return {"buckets": bucket_rows, "pooled": pooled}
 
-def build_benchmark(data_path: Optional[Path] = None) -> Dict[str, Any]:
-    """Full per-bucket + pooled benchmark doc for both prior variants."""
+def build_benchmark(data_path: Optional[Path] = None, benchmark_name: Optional[str] = None) -> Dict[str, Any]:
+    """Full per-bucket + pooled benchmark doc for both prior variants (*benchmark_name*
+    labels the run; default: original playoffs-only corpus name)."""
     df, counts = load_checkpoints(data_path)
     variants = {
         "neutral_p0_0.5": _score_variant(df, "model_prob_neutral_p0_0.5"),
@@ -239,7 +240,7 @@ def build_benchmark(data_path: Optional[Path] = None) -> Dict[str, Any]:
         "generated_at": "%sT00:00:00Z" % max_date if max_date != "unknown" else
                         datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "sport": "nba",
-        "benchmark": "kalshi_inplay_checkpoints_playoffs_2025_26",
+        "benchmark": benchmark_name or "kalshi_inplay_checkpoints_playoffs_2025_26",
         "model_tag": MODEL_TAG,
         "prior_variants": list(PRIOR_VARIANTS),
         "binning": {"phase": "P1-2 (period<=2) | P3 | P4+OT (period>=4, includes OT)",
@@ -248,32 +249,31 @@ def build_benchmark(data_path: Optional[Path] = None) -> Dict[str, Any]:
         "n_rows_untraded_excluded": counts["n_rows_total"] - counts["n_rows_traded"],
         "n_games": counts["n_games"], "min_games_for_verdict": MIN_GAMES, "date_range": [min_date, max_date],
         "representativeness_note": (
-            "53 games, ALL 2026 playoffs (%s to %s) -- no regular-season games; do not "
-            "generalize these verdicts without a regular-season corpus." % (min_date, max_date)),
+            "%d games, %s to %s -- see date_range/benchmark for corpus span; verdicts are "
+            "specific to THIS corpus, do not generalize across corpora." % (counts["n_games"], min_date, max_date)),
         "variants": variants,
         "units": "probability (Brier/log-loss/ECE; no dollars)",
         "edge_claimed": False,
         "honest_note": (
-            "Calibration measurement only vs the LIVE Kalshi in-play price, not a devigged "
-            "close. Model reuses NBARepricer (Gaussian score-anchor) read-only via "
-            "live_repricer.get_repricer('nba'); no src/kernel edit. traded=False ticks "
+            "Calibration measurement only vs the LIVE in-play price (venue per corpus, see "
+            "benchmark), not a devigged close. Model reuses NBARepricer (Gaussian score-anchor) "
+            "read-only via live_repricer.get_repricer('nba'); no src/kernel edit. traded=False ticks "
             "(reset/stale quotes) are excluded from scoring. OT (period>=5) uses time "
             "remaining in the current 5-min OT period (fixed 2026-07-09), grouped into "
             "P4+OT with regular Q4 ticks by phase bucketing. first_traded_pretip reproduces the "
-            "market price exactly at each game's own first tick by construction (trivial "
-            "there, ~1/150 ticks/game). No $/ROI/edge claim."),
+            "market price exactly at each game's own first tick by construction (trivial there, ~1/150 ticks/game). No $/ROI/edge claim."),
         "calibration_scoreboard": {"per_sport": per_sport},
     }
     return doc
 
 def write_benchmark(out_path: Optional[Path] = None, data_path: Optional[Path] = None,
-                    history_path: Optional[Path] = None) -> Dict[str, Any]:
+                    history_path: Optional[Path] = None, benchmark_name: Optional[str] = None) -> Dict[str, Any]:
     """Build + atomically write the benchmark JSON, then best-effort scoreboard append.
     generated_at is STABLE (from the corpus's own max game_date, not wall-clock now())
     so reruns on the same corpus dedupe in scoreboard_history. history_path defaults to
     the real data/cache/scoreboard_history.jsonl -- tests MUST pass a tmp_path override."""
     out = out_path or DEFAULT_OUT_PATH
-    doc = build_benchmark(data_path)
+    doc = build_benchmark(data_path, benchmark_name)
     out.parent.mkdir(parents=True, exist_ok=True)
     tmp = out.with_suffix(out.suffix + ".tmp")
     tmp.write_text(json.dumps(doc, indent=2, ensure_ascii=True), encoding="utf-8")
