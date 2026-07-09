@@ -81,6 +81,26 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
         "blocklist_attrs": [],
         "blocklist_pairs": [],
     },
+    # ---- NBA box-detail family -- AUTO-DISCOVERY demo ----------------------
+    # Pool is `{"entity": "team", "family": "box_detail_asof"}`, not a named
+    # attribute list: the moment a new team attribute is tagged
+    # `"family": "box_detail_asof"` in the registry (see attribute_registry.py),
+    # it enters this template's candidate space on its own, no template edit
+    # needed (see resolve_pool). The 5 box-detail as-of attrs (fast_break_pts,
+    # paint_pts, tov_pts, largest_lead, foul_trouble -- domains/basketball_nba/
+    # boxdetail_asof.py) were entirely-dark espn_boxscores.parquet columns
+    # per docs/research/utilization_matrix_2026_07_10.md's ranked backlog #1.
+    "nba_boxdetail_self_cross": {
+        "sport": "basketball_nba",
+        "atomic_unit": "team_game",
+        "outcome": "home_win",
+        "baseline": "home_win ~ elo + attr_a_diff_asof + attr_b_diff_asof",
+        "pairing": "self_cross",
+        "left_pool": {"entity": "team", "family": "box_detail_asof"},
+        "feature_builder": "nba_boxdetail_asof",   # not yet registered -> NOT_TESTABLE
+        "blocklist_attrs": [],
+        "blocklist_pairs": [],
+    },
     # ---- MLB (2) -------------------------------------------------------
     "mlb_pa_batter_x_pitcher": {
         "sport": "mlb",
