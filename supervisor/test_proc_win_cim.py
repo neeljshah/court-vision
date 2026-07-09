@@ -54,6 +54,21 @@ def test_ttl_expiry_re_enumerates(monkeypatch) -> None:
     assert fake.calls == 2
 
 
+def test_slow_tick_stays_one_enumeration(monkeypatch) -> None:
+    """Residual fix 2026-07-10b: lookups SPREAD across a slow (~25s) tick must
+    reuse ONE enumeration -- the old 2.0s TTL expired mid-tick (~1 re-enum per
+    2.4s => 40-80s residual on a 60-90s tick)."""
+    _reset_cache()
+    fake = _FakeRun()
+    monkeypatch.setattr(cim.subprocess, "run", fake)
+    fake_now = {"t": 1000.0}
+    monkeypatch.setattr(cim.time, "monotonic", lambda: fake_now["t"])
+    for _ in range(10):  # 10 lookups spaced 2.5s = 25s simulated tick
+        assert cim.cmdline_for_pid(111) == "python -m foo.bar"
+        fake_now["t"] += 2.5
+    assert fake.calls == 1, "a slow tick must not re-enumerate mid-tick"
+
+
 def test_failed_enumeration_not_cached(monkeypatch) -> None:
     """An empty/failed enumeration must not be served from cache."""
     _reset_cache()
