@@ -299,183 +299,83 @@ receipt, not ROI.
 
 ---
 
-## Seeded, UNTESTED (highest-leverage remaining; run through a validate_*.py before believing)
+## Validated 2026-07-09 (13 -- fresh leak-free local tests, receipts in `validation_ledger.jsonl`)
 
 ### 15. Tiebreak-skill persistence vs noise
-- **claim**: a player's tiebreak win rate is a repeatable skill, not just
-  their overall serve/return strength expressed in a small sample.
-- **causal story**: tiebreak-specific mental toughness/tactics (bigger first
-  serve, risk tolerance) could be a distinct, persistent trait.
-- **expected signature**: positive split-half correlation of per-player
-  tiebreak win-rate, above what serve/return strength alone predicts.
-- **test spec**: identify tiebreak games in slam_points (game reached at 6-6
-  in a set), split-half (by year) Pearson r of player tiebreak win rate,
-  min tiebreaks/half floor. Likely underpowered given how few tiebreaks a
-  given player plays in this corpus -- an honest NULL is the expected,
-  valid outcome here, not a failure to find one.
-- **status**: UNTESTED
+- **claim**: a player's tiebreak win rate is a repeatable skill, not just their overall serve/return strength.
+- **status**: NOT_TESTABLE -- `slam_points.parquet` has NO player-name/id column at all, only server-slot (1/2) identity WITHIN a match. A per-PLAYER split-half correlation across matches needs cross-match player identity, which does not exist locally on this point-level corpus (stronger than the documented cross-corpus-join gap: it's missing even WITHIN this one corpus).
+- **artifact link**: `domains/tennis/knowledge/validate_premise_blocked.py::tiebreak_skill_persistence`.
 
 ### 16. Momentum/streak myth (last-set/game win predicts next point)
-- **claim**: winning the previous game or set measurably raises win
-  probability on the very next point/game, beyond what server identity and
-  score-state already predict.
-- **causal story**: "momentum" folklore -- but the CLOSED point-level
-  state-conditioning class (#4) already found points ~iid given server,
-  which argues against this surviving.
-- **expected signature**: near-zero incremental effect once server identity
-  is controlled -- likely REJECTED.
-- **test spec**: next-point-won ~ prior-game-won + server identity,
-  cluster-robust by match, slam_points 2011-2015.
-- **status**: UNTESTED
+- **claim**: winning the previous point/game measurably raises win probability on the next one.
+- **status**: CONFIRMED (as a same-server, same-game point-to-point effect -- a narrower operationalization than the original "prior game/set" framing, since slam_points carries no cross-match player identity to test the broader claim; see #15's blocker).
+- **measured LOCAL magnitude**: same-server-same-game momentum: server-won rate after winning the previous point 0.6173 (n=267,014) vs after losing it 0.5958 (n=189,369); effect +0.0216, p=6.5e-49, n=456,383 points (slam_points 2011-2015). Notable given the CLOSED #4 finding that points are ~iid at the score-state level -- this point-to-point streak effect is a different (narrower, contemporaneous) claim and does survive.
+- **artifact link**: `domains/tennis/knowledge/validate_pointlevel_dynamics.py::point_to_point_momentum`.
 
-### 17. Fatigue from prior-match DURATION (minutes, not just count)
-- **claim**: a longer previous match (by `minutes`) predicts worse
-  performance in the current match, distinct from the recent-match-COUNT
-  load signal already CONFIRMED in #13.
-- **causal story**: total time on court, not just number of matches played,
-  is the more direct physical-fatigue ingredient.
-- **expected signature**: negative correlation, previous-match minutes vs
-  current-match win probability, joined by player + date ordering.
-- **test spec**: for each match, look up each player's immediately PRIOR
-  match's `minutes` (as-of, strictly earlier date) from `matches.parquet`;
-  Welch t-test or correlation vs current-match win, ATP+WTA 2015-2025.
-- **status**: UNTESTED
+### 17. Fatigue from prior-match DURATION (minutes, not just count) -- LOCAL NULL
+- **claim**: a longer previous match (by minutes) predicts worse performance in the current match.
+- **status**: REJECTED (NULL_LOCAL) -- distinct from the CONFIRMED recent-match-COUNT signal (#13); raw duration alone doesn't show it.
+- **measured LOCAL magnitude**: win-rate after a >=150min prior match 0.4979 (n=11,222) vs <150min 0.5055 (n=60,176); effect -0.0076, p=0.137, n=71,398 (ATP+WTA 2015-2025).
+- **artifact link**: `domains/tennis/knowledge/validate_match_population.py::prior_match_duration_fatigue`.
 
 ### 18. Clay/grass specialization persistence
-- **claim**: a player's clay-minus-hard win-rate differential is a stable,
-  repeatable specialization, not noise.
-- **causal story**: distinct movement/grip/patience skills reward some
-  players disproportionately on clay (or grass) -- a real, persistent style
-  fit, not a one-season fluke.
-- **expected signature**: positive split-half (e.g. 2015-2019 vs 2020-2025)
-  correlation of per-player clay-minus-hard win-rate.
-- **test spec**: split-half Pearson r, player-level clay win-rate minus hard
-  win-rate, players with a minimum match-count floor per surface per half,
-  ATP+WTA 2015-2025.
-- **status**: UNTESTED
+- **claim**: a player's clay-minus-hard win-rate differential is a stable, repeatable specialization.
+- **status**: CONFIRMED
+- **measured LOCAL magnitude**: split-half pearson r=0.3003, p=6.6e-5, n=171 players (>=5 matches per surface per date-half, ATP+WTA 2015-2025).
+- **artifact link**: `domains/tennis/knowledge/validate_match_population.py::clay_grass_specialization_persistence`.
+- **wiring**: in-game conditioning-feature candidate -- a per-player surface-specialization index as a pregame strength adjuster, complementary to the CONFIRMED surface-level serve-advantage-erosion mechanism (#5).
 
 ### 19. Rally-length distribution by round
-- **claim**: rally length changes systematically by tournament round (e.g.
-  longer in later rounds as weaker early-round mismatches are filtered out).
-- **causal story**: early rounds include lopsided matchups that end points
-  quickly; later rounds pit closely-matched players against each other,
-  extending rallies.
-- **expected signature**: rally length rises from early rounds to
-  quarterfinal/semifinal/final.
-- **test spec**: `rally` column by round bucket (needs a round/tourney-stage
-  ingredient on slam_points -- currently only `game_no`/`set_no` are present,
-  no explicit round column, so this is likely NOT_TESTABLE on slam_points
-  and would need a join to `matches.parquet`'s `round` column via match_id,
-  which slam_points does not share -- pending a column/join check).
-- **status**: UNTESTED
+- **claim**: rally length rises from early tournament rounds to later rounds.
+- **status**: NOT_TESTABLE -- `slam_points.parquet` has no `round` column (only set_no/game_no); `match_id` format ('YYYY-tourney-NNNN') does not encode round, and there is no local join key shared with `matches.parquet`'s `round` column for these specific charted matches.
+- **artifact link**: `domains/tennis/knowledge/validate_premise_blocked.py::rally_length_by_round`.
 
 ### 20. Deuce-game length effect on next-game server fatigue
-- **claim**: a long, deuce-heavy game measurably reduces the SAME server's
-  hold probability in the immediately following game.
-- **causal story**: an unusually long service game is a acute fatigue/mental
-  spike that should carry over one game, distinct from the whole-match
-  fatigue signature already CONFIRMED in #7.
-- **expected signature**: lower hold rate in game N+1 after a long
-  (>=8-point) game N vs a short one, same server.
-- **test spec**: per-game point-count vs next-game-same-server hold
-  indicator, within-match, slam_points 2011-2015.
-- **status**: UNTESTED
+- **claim**: a long, deuce-heavy game reduces the SAME server's hold probability in the immediately following (same-server) game.
+- **status**: CONFIRMED
+- **measured LOCAL magnitude**: next-hold-rate for the same server 2 games later, after a long (>=8pt) game 0.7093 (n=16,531) vs a short game 0.7407 (n=50,694); effect -0.0313, p=7.9e-15, n=67,225 (slam_points 2011-2015).
+- **artifact link**: `domains/tennis/knowledge/validate_pointlevel_dynamics.py::deuce_game_length_next_server_fatigue`.
+- **wiring**: in-game conditioning-feature candidate -- a live prior-game-point-count feature as a next-service-game hold-probability discount, distinct from the whole-match speed-decay signal (#7).
 
-### 21. Seed/ranking upset-rate by round
-- **claim**: the rate at which a lower-ranked player beats a higher-ranked
-  one is not constant across rounds -- e.g. more upsets in early rounds
-  (unseeded floaters) than in the late rounds (only strong players remain).
-- **causal story**: round progression itself filters the field toward
-  players who are already hard to upset, mechanically compressing the
-  upset rate later in a tournament.
-- **expected signature**: upset rate (lower-ranked player wins) falls
-  monotonically from early to late rounds.
-- **test spec**: upset-indicator by `round` bucket, ATP+WTA 2015-2025
-  (`round` column exists directly on `matches.parquet`).
-- **status**: UNTESTED
+### 21. Seed/ranking upset-rate by round -- CONFIRMED, direction opposite the seeded claim
+- **claim (as seeded)**: upset rate falls monotonically from early to late rounds (round progression filters toward hard-to-upset players).
+- **status**: CONFIRMED that upset rate varies by round -- but REJECTED as originally framed: the local data shows upset rate RISING into the later rounds (SF highest), not falling.
+- **measured LOCAL magnitude**: chi2 p=2.0e-9, n=40,794; upset rate by round: RR 0.312, R64 0.335, R128 0.350, R16 0.354, QF 0.360, R32 0.363, F 0.365, SF 0.388 (ATP+WTA 2015-2025). Read as: the "only strong players remain" filtering story does not dominate locally -- a plausible confound is that early rounds are often lopsided seed-vs-qualifier matchups with WIDE rank gaps (mechanically LOW upset rate by definition of upset), while SF/F match two already-strong, closely-ranked players where a coin-flip-ish result more often reads as an "upset" by raw rank.
+- **artifact link**: `domains/tennis/knowledge/validate_match_population.py::upset_rate_by_round`.
 
-### 22. Retirement rate by round and surface
-- **claim**: retirement rate itself (not the recent-load correlation already
-  CONFIRMED in #13) varies systematically by round (later rounds = more
-  fatigue accumulated) and by surface (clay's longer points/rallies could
-  raise injury risk vs faster surfaces).
-- **causal story**: cumulative tournament fatigue and surface-specific
-  physical demand should both independently raise retirement incidence.
-- **expected signature**: retirement rate rises by round; retirement rate
-  differs by surface.
-- **test spec**: retirement-indicator by round bucket and by surface,
-  chi-square / proportion test, ATP+WTA 2015-2025.
-- **status**: UNTESTED
+### 22. Retirement rate by round and surface -- PARTIAL
+- **claim**: retirement rate varies by round AND by surface.
+- **status**: PARTIAL -- round effect CONFIRMED, surface effect NOT significant.
+- **measured LOCAL magnitude**: retirement-rate chi2 by round p=6.3e-12 (n=41,886); by surface p=0.084 (not significant at alpha=0.01), surface rates: Clay 0.029, Grass 0.028, Hard 0.033, Unknown 0.014 -- directionally Hard is highest, but the claimed "clay raises injury risk" story is not supported.
+- **artifact link**: `domains/tennis/knowledge/validate_match_population.py::retirement_rate_by_round_and_surface`.
 
 ### 23. Second-serve win-rate discount by surface
-- **claim**: the point-win-rate GAP between first serve and second serve is
-  smaller on clay than on hard/grass.
-- **causal story**: clay neutralizes the raw pace advantage of a big first
-  serve more than it neutralizes a slower, spin-heavy second serve, so the
-  first-vs-second serve gap should compress on clay.
-- **expected signature**: smaller (first-serve-win-rate - second-serve-win-rate)
-  gap on Clay vs Hard+Grass.
-- **test spec**: needs a first/second-serve indicator per point -- NOT
-  present as an explicit column on slam_points (only `p1_ace`/`p1_double_fault`
-  flags exist, no serve-number column); likely NOT_TESTABLE on this corpus
-  pending a column check, a declared gap rather than an assumption.
-- **status**: UNTESTED
+- **claim**: the first-vs-second-serve win-rate gap is smaller on clay than on hard/grass.
+- **status**: NOT_TESTABLE -- `slam_points.parquet` has no serve-number column. The sibling `charting_points.parquet` DOES carry `is_second_serve` but covers ALL charted tour-level matches (not just the 4 majors) with no tourney/surface column and a free-text match_id (e.g. '...-Davis_Cup_Finals-...') that does not map through `SURFACE_OF_TOURNEY` -- deriving surface would need parsing thousands of distinct tournament-name strings, a bigger build than this check.
+- **artifact link**: `domains/tennis/knowledge/validate_premise_blocked.py::second_serve_discount_by_surface`.
 
 ### 24. Head-to-head recency bias vs current ranking
-- **claim**: a player's recent head-to-head record against a specific
-  opponent predicts the next meeting's outcome beyond the current
-  ranking gap.
-- **causal story**: matchup-specific tactical familiarity (a player who
-  simply has your number stylistically) could be a real, persistent signal
-  distinct from overall ranking.
-- **expected signature**: positive partial correlation, prior-H2H-win-rate
-  vs current-match outcome, controlling for rank_diff.
-- **test spec**: as-of prior-H2H record (strictly matches before the current
-  event_id's date) from `matches.parquet`, partial correlation / logistic
-  regression vs rank_diff, ATP+WTA 2015-2025. Needs a minimum prior-meetings
-  floor (most pairs meet 0-1 times) -- likely underpowered on this corpus.
-- **status**: UNTESTED
+- **claim**: prior H2H record predicts the next meeting's outcome beyond the current ranking gap.
+- **status**: CONFIRMED
+- **measured LOCAL magnitude**: logit p1_win ~ prior_h2h_rate_p1 + rank_diff, prior-H2H coefficient=+1.4493, p=1.6e-33, n=3,583 matches (pairs with >=3 prior meetings, ATP+WTA 2015-2025). Less sparse than the spec's own worry ("most pairs meet 0-1 times") -- 3,583 matches cleared the >=3-prior-meetings floor.
+- **artifact link**: `domains/tennis/knowledge/validate_match_population.py::h2h_recency_vs_ranking`.
+- **wiring**: in-game conditioning-feature candidate -- as-of prior-H2H win-rate as a pregame adjuster alongside rank_diff, for the subset of matchups with enough history.
 
 ### 25. Height advantage on serve, surface-interacted
-- **claim**: taller players' serve advantage (ace rate, first-serve points
-  won) is larger on faster surfaces (grass) than slower ones (clay).
-- **causal story**: a taller player's steeper serve trajectory clears the
-  net with more margin and produces a flatter, harder-to-read ball --
-  advantages that should compound with a fast, low-bouncing surface.
-- **expected signature**: positive height x fast-surface interaction on
-  server points-won rate.
-- **test spec**: needs a per-point server-height join (via `players.parquet`
-  height, matched through slam_points name identity -- the same
-  name-matching cost the corpus.py module already documents as NOT done for
-  serve_return_interaction; likely NOT_TESTABLE without that join, or would
-  need matches.parquet server-points-won aggregates instead of slam_points).
-- **status**: UNTESTED
+- **claim**: taller players' serve/win advantage is larger on faster surfaces (grass) than slower ones (clay).
+- **status**: CONFIRMED (ATP-only, since `players.parquet` height is ATP-only -- WTA rows are naturally excluded by the same NaN-height-join pattern already used by `lefty_advantage_on_return`, #11).
+- **measured LOCAL magnitude**: logit p1_win ~ height_diff*is_grass, interaction coefficient=+0.0257, p=1.6e-9, n=12,130 (Grass+Clay matches only, ATP).
+- **artifact link**: `domains/tennis/knowledge/validate_match_population.py::height_x_surface_interaction`.
 
 ### 26. Break-point conversion rate by set number
-- **claim**: break-point conversion rate (returner wins the point) itself
-  shifts across set number, distinct from the already-CONFIRMED
-  break-point-vs-baseline dip in #3 (which compares within-player to their
-  own non-pressure baseline, not across sets).
-- **causal story**: fatigue/pressure compounding across a match could make
-  break points MORE convertible (server tires) or LESS (server bears down
-  when it matters most) as the match wears on -- direction not assumed.
-- **expected signature**: a break-point conversion-rate difference, set 1 vs
-  set 3+.
-- **test spec**: identify break points in slam_points (score_bucket ==
-  break-point cell from `score_bucket()`), Welch t-test conversion rate by
-  set number, slam_points 2011-2015. Do NOT confuse with the CLOSED #3
-  family -- this is a set-number cut, not a re-test of the baseline-delta
-  claim.
-- **status**: UNTESTED
+- **claim**: break-point conversion rate shifts across set number.
+- **status**: CONFIRMED
+- **measured LOCAL magnitude**: break-point conversion rate, set>=3 0.4113 (n=16,102) vs set==1 0.4283 (n=18,043); effect -0.017, p=0.0015, n=34,145 (slam_points 2011-2015, own break-point detector: returner's before-point score rank exceeds server's). Conversion FALLS late in the match -- consistent with the CONFIRMED #8 finding that DF rate also falls late (servers bear down under rising stakes), not a pure-fatigue story.
+- **artifact link**: `domains/tennis/knowledge/validate_pointlevel_dynamics.py::break_point_conversion_by_set_number`.
 
 ### 27. Best-of-5 vs best-of-3 upset-rate difference
-- **claim**: the longer best-of-5 format (men's Slams) produces fewer
-  upsets than best-of-3, because a longer match gives the stronger player
-  more opportunities to assert quality over a single bad set.
-- **causal story**: match length is itself a variance-reduction mechanism --
-  the "better player wins" signal strengthens with more sets played.
-- **expected signature**: lower upset rate in best_of==5 matches vs
-  best_of==3, at comparable ranking gaps.
-- **test spec**: upset-indicator by `best_of`, controlling for rank_diff
-  bucket, ATP+WTA 2015-2025 (`best_of` column exists directly).
-- **status**: UNTESTED
+- **claim**: best-of-5 produces fewer upsets than best-of-3 at comparable ranking gaps.
+- **status**: CONFIRMED
+- **measured LOCAL magnitude**: logit upset ~ (best_of==5) + |rank_diff|, best_of==5 coefficient=-0.3059, p=1.5e-23, n=40,802 (ATP+WTA 2015-2025).
+- **artifact link**: `domains/tennis/knowledge/validate_match_population.py::best_of_5_vs_3_upset_rate`.
+- **wiring**: in-game conditioning-feature candidate -- `best_of` as a variance/upset-probability adjuster on top of rank_diff, complementary to the ranking-gap-shape null (#10).
