@@ -38,20 +38,21 @@ def test_bad_cast_raises():
 def test_catalog_and_hash_stable_and_sensitive():
     h0 = NBA_BASE_SPEC.catalog_hash()
     assert h0 == NBA_BASE_SPEC.catalog_hash()  # deterministic
-    bumped = FeatureSpec("basketball_nba", "nba-base-v2", NBA_BASE_SPEC.fields)
+    bumped = FeatureSpec("basketball_nba", "nba-base-v3", NBA_BASE_SPEC.fields)
     assert bumped.catalog_hash() != h0  # version change moves the hash
     reordered = FeatureSpec("basketball_nba", "nba-base-v1",
                             tuple(reversed(NBA_BASE_SPEC.fields)))
     assert reordered.catalog_hash() != h0  # order is part of the contract
 
 
-def test_nba_catalog_is_the_eight_adapter_columns():
+def test_nba_catalog_is_the_ten_adapter_columns():
     assert catalog() == [
         "elo_home", "elo_away", "elo_diff_hfa",
         "rest_days_home", "rest_days_away",
         "home_b2b", "away_b2b", "rolling_win10_home",
+        "def_fg_pct_allowed_diff_asof", "def_pts_allowed_per36_diff_asof",
     ]
-    assert NBA_BASE_SPEC.n_features() == 8
+    assert NBA_BASE_SPEC.n_features() == 10
 
 
 def test_required_source_absent_raises_not_silent_zero():
@@ -89,7 +90,7 @@ def test_assert_matches_catalog():
 # synthetic exact-replication of the adapter's inline formula
 # --------------------------------------------------------------------------- #
 def _adapter_formula(df: pd.DataFrame) -> np.ndarray:
-    """Re-implements adapter.py:175-183 exactly, row by row."""
+    """Re-implements adapter.py's rows_base.append(...) exactly, row by row."""
     out = []
     for _, row in df.iterrows():
         out.append([
@@ -97,6 +98,8 @@ def _adapter_formula(df: pd.DataFrame) -> np.ndarray:
             float(row.get("rest_days_home", 5.0)), float(row.get("rest_days_away", 5.0)),
             float(bool(row.get("home_b2b", False))), float(bool(row.get("away_b2b", False))),
             float(row.get("rolling_win10_home", 0.5)),
+            float(row.get("def_fg_pct_allowed_diff_asof", np.nan)),
+            float(row.get("def_pts_allowed_per36_diff_asof", np.nan)),
         ])
     return np.array(out, dtype=float)
 
@@ -111,6 +114,8 @@ def test_synthetic_matches_adapter_formula():
         "home_b2b": [True, False, np.nan],       # bool(nan)->1.0
         "away_b2b": [False, True, False],
         "rolling_win10_home": [0.6, 0.4, 0.55],
+        "def_fg_pct_allowed_diff_asof": [0.02, np.nan, -0.05],
+        "def_pts_allowed_per36_diff_asof": [1.1, 2.2, np.nan],
     })
     got, names = build_nba_base(df)
     assert names == catalog()
@@ -151,7 +156,20 @@ def test_parity_vs_real_adapter_feature_bundle():
     wf = _add_rolling_win10(walk_forward_elo(g))
     wf["season"] = wf["_season_orig"]
     wf = wf.drop(columns=["_season_orig"])
-    kept = wf[wf["home_win"].notna()]  # adapter skips NaN targets, preserving order
+    kept = wf[wf["home_win"].notna()].copy()  # adapter skips NaN targets, preserving order
+
+    # Reproduce the adapter's SHIP-asof merge (domains/basketball_nba/adapter.py) so
+    # this parity check covers the real 10-col contract, not just the original 8.
+    rollup_path = "data/domains/basketball_nba/asof_defender_rollup.parquet"
+    from domains.basketball_nba.adapter import SHIP_ASOF_COLS  # noqa: PLC0415
+    kept["game_id"] = kept["game_id"].astype(str)
+    if os.path.exists(rollup_path):
+        _r = pd.read_parquet(rollup_path)[["game_id", *SHIP_ASOF_COLS]].copy()
+        _r["game_id"] = _r["game_id"].astype(str)
+        kept = kept.merge(_r, on="game_id", how="left")
+    else:
+        for _c in SHIP_ASOF_COLS:
+            kept[_c] = np.nan
 
     got, names = build_nba_base(kept)
     assert names == catalog()
