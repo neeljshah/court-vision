@@ -39,24 +39,52 @@ LEDGERS: Dict[str, Path] = {
 # r=0.593 (p=3.2e-42, n=430 batters, 2025) that batter mean-launch-speed
 # persists -- the mechanism's own wiring note says this is "already the right
 # shape for mlb_pa_batter_x_pitcher's left pool" since the registry already
-# has `contact_quality` (DESCRIPTIVE). Every other CONFIRMED_LOCAL row in
-# both ledgers either names a not-yet-built registry attribute (edge_zone
-# rate, first_pitch_outcome, bb_type x force_state, overall_fga_share, ...)
-# or a pregame/state-level effect with no attr-pair shape (rest days,
-# home/away, garbage time, rotation size) -- honestly left unmapped.
+# has `contact_quality` (DESCRIPTIVE).
 #
-# soccer/tennis ledgers (added once mechanisms.md shipped for both sports):
-# ZERO CONFIRMED_LOCAL rows map today because TEMPLATES has no soccer/tennis
-# entry at all yet (generator.py TEMPLATES is basketball_nba+mlb only) -- a
-# template would need to exist first, then a registry attribute, before any
-# row here makes sense. Each soccer/tennis CONFIRMED_LOCAL mechanism carries
-# its own "wiring" note in its mechanisms.md instead (in-game conditioning-
-# feature candidate), e.g. soccer's `leading_team_shot_rate_suppression`
-# (score_state x shot_rate, p=2.1e-37) and `setpiece_vs_openplay_conversion`.
+# `edge_zone_widens_with_two_strikes` / `two_strike_chase_rate_rises` /
+# `first_pitch_strike_suppresses_bb` (fix-wave-alpha, 2026-07-11): the
+# registry now carries real as-of attrs for each (edge_zone_rate,
+# chase_rate -- domains/mlb/profiles/attribute_registry.py; first_pitch_
+# strike_rate already existed) with matching runner.build_mlb_pa_frame
+# columns (asof__edge_zone_rate/chase_rate/first_pitch_strike_rate). Mapped
+# into mlb_pa_batter_x_pitcher (feature_builder mlb_pa_asof, a REGISTERED
+# builder -- unlike mlb_pa_attr_x_count_state's mlb_pa_count_state_asof,
+# which has no builder yet and would only yield NOT_TESTABLE). These test a
+# related-but-not-identical interaction (same precedent as contact_quality
+# above: the ledger's own within-PA state effect isn't literally re-run,
+# the now-validated real attribute is wired into the existing attr-pair
+# grammar). `gb_double_play_suppression` (MLB's 4th unmapped row) stays
+# UNMAPPABLE: it is a batted-ball-event-level (bb_type x force_state)
+# effect, not a persistent batter/pitcher as-of attribute -- no pool shape
+# fits it; see docs/research/factory_pipe_2026-07-11.md for the full
+# UNMAPPABLE ledger (also covers all NBA/soccer/tennis CONFIRMED_LOCAL rows).
+#
+# soccer/tennis ledgers: `tennis_match_asof_self_cross` / `soccer_match_
+# asof_self_cross` templates DO exist (generator.py TEMPLATES, ADJ-1 in
+# gap_ledger_2026-07-11.md) -- this comment previously said otherwise, which
+# was stale/wrong. The real reason ZERO soccer/tennis CONFIRMED_LOCAL rows
+# map is that both templates' pools are PREGAME as-of diff attrs (serve/
+# return/shot rates), while every soccer/tennis knowledge mechanism tests an
+# IN-MATCH state effect (score_state x shot_rate, set-piece vs open-play,
+# surface, within-match serve decay, set number, retirement/fatigue) that
+# needs a different atomic_unit/outcome the current grammar has no template
+# for. See docs/research/factory_pipe_2026-07-11.md for the per-row detail.
 KNOWN_MAPPINGS: Dict[str, List[Dict[str, str]]] = {
     "contact_quality_persists_split_half": [
         {"template_id": "mlb_pa_batter_x_pitcher", "attr_a": "contact_quality", "attr_b": "whiff_rate"},
         {"template_id": "mlb_pa_batter_x_pitcher", "attr_a": "contact_quality", "attr_b": "platoon_split"},
+    ],
+    "edge_zone_widens_with_two_strikes": [
+        {"template_id": "mlb_pa_batter_x_pitcher", "attr_a": "K_avoidance", "attr_b": "edge_zone_rate"},
+        {"template_id": "mlb_pa_batter_x_pitcher", "attr_a": "BB_rate", "attr_b": "edge_zone_rate"},
+    ],
+    "two_strike_chase_rate_rises": [
+        {"template_id": "mlb_pa_batter_x_pitcher", "attr_a": "chase_rate", "attr_b": "whiff_rate"},
+        {"template_id": "mlb_pa_batter_x_pitcher", "attr_a": "chase_rate", "attr_b": "platoon_split"},
+    ],
+    "first_pitch_strike_suppresses_bb": [
+        {"template_id": "mlb_pa_batter_x_pitcher", "attr_a": "BB_rate", "attr_b": "first_pitch_strike_rate"},
+        {"template_id": "mlb_pa_batter_x_pitcher", "attr_a": "K_avoidance", "attr_b": "first_pitch_strike_rate"},
     ],
 }
 
