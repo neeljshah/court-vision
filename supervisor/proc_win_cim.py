@@ -13,14 +13,35 @@ from __future__ import annotations
 
 import json
 import subprocess
+import time
 from typing import Any, Dict, List, Optional
 
+# TICK-COST FIX (2026-07-10): every liveness call (is_alive(verify_cmdline=True)
+# via cmdline_for_pid, plus find_by_match) re-spawned PowerShell to enumerate the
+# WHOLE Win32_Process table (~1.3s / 400+ procs) just to read ONE pid's cmdline.
+# supervise() fires 2-3 such calls per spec x ~43 specs = ~90-130 enumerations per
+# tick -> ~2-3min ticks under load. A short TTL cache collapses one tick's burst
+# to a SINGLE enumeration (all subsequent lookups hit the cache in microseconds).
+# Staleness is bounded by _TABLE_TTL_SEC and only affects the PID-REUSE guard /
+# survivor scan, both of which already tolerate one-tick latency.
+# ponytail: TTL cache; prime-at-tick-start only if a slow probe ever splits a
+# tick's is_alive burst across the TTL boundary (currently they run back-to-back).
+_TABLE_TTL_SEC = 2.0
+_table_cache: Dict[str, Any] = {"t": 0.0, "rows": []}
 
-def ps_process_table() -> List[Dict[str, Any]]:
+
+def ps_process_table(*, max_age_sec: float = _TABLE_TTL_SEC) -> List[Dict[str, Any]]:
     """Return [{pid, cmdline}, ...] for every process, via Get-CimInstance.
 
-    Never raises (returns [] on powershell-absent / timeout / parse failure).
+    Result is cached for ``max_age_sec`` (monotonic) so one supervise tick's
+    liveness burst enumerates the table ONCE, not once per pid. A failed/empty
+    enumeration is never served from cache (retries next call). Never raises
+    (returns [] on powershell-absent / timeout / parse failure).
     """
+    now = time.monotonic()
+    cached = _table_cache
+    if cached["rows"] and (now - cached["t"]) < max_age_sec:
+        return cached["rows"]
     rows: List[Dict[str, Any]] = []
     ps_script = (
         "Get-CimInstance Win32_Process | "
@@ -45,6 +66,9 @@ def ps_process_table() -> List[Dict[str, Any]]:
         except (ValueError, TypeError, json.JSONDecodeError):
             continue
         rows.append({"pid": pid, "cmdline": str(obj.get("cmdline") or "")})
+    if rows:  # cache only a real (non-empty) enumeration; a failure retries next call
+        _table_cache["t"] = time.monotonic()
+        _table_cache["rows"] = rows
     return rows
 
 
