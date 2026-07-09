@@ -23,6 +23,7 @@ if str(_ROOT) not in sys.path:
 
 from scripts.platformkit.pm_trading.close_capture import (
     CloseResult, capture_close, _kalshi_close, _kx_venue_close,
+    _event_id_for_row,
 )
 from scripts.platformkit.clv_ledger import compute_clv
 from scripts.platformkit.clv import kx_ticker_close as _kx_ticker_close
@@ -64,6 +65,56 @@ def _seed_kx_close(tmp_path, ticker: str, sport: str, close_prob: float):
         }) + "\n")
     _kx_ticker_close.write_closes(sport, grade_dir=grade_dir, out_dir=out_dir)
     return out_dir
+
+
+# ---------------------------------------------------------------------------
+# Tests: join-key fix (2026-07-08b root cause) -- event_id on a real paper_pm
+# row is the ESPN/FanDuel game id, NEVER a Kalshi ticker; market_id carries
+# the real per-team contract ticker and must be used to derive the event
+# ticker Kalshi's own API groups by.
+# ---------------------------------------------------------------------------
+
+class TestEventIdJoinKeyFix:
+
+    def test_derives_event_ticker_from_market_id(self):
+        """market_id 'KXMLBGAME-...LADSD-SD' -> event ticker minus '-SD'."""
+        row = {"market_id": "KXMLBGAME-26JUN281610LADSD-SD",
+               "event_id": "401815950"}  # ESPN id -- must be ignored
+        assert _event_id_for_row(row) == "KXMLBGAME-26JUN281610LADSD"
+
+    def test_market_id_wins_over_espn_event_id(self):
+        """A real paper_pm row shape: event_id is ESPN/FanDuel, never Kalshi."""
+        row = {"market_id": "KXMLBGAME-26JUN301840TEXCLE-CLE",
+               "event_id": "fd:35769002"}
+        assert _event_id_for_row(row) == "KXMLBGAME-26JUN301840TEXCLE"
+
+    def test_falls_back_to_kx_shaped_event_id_when_no_market_id(self):
+        """No market_id, but event_id already looks like a Kalshi ticker."""
+        row = {"event_id": "KXNBA2026-BOS-NYK"}
+        assert _event_id_for_row(row) == "KXNBA2026-BOS-NYK"
+
+    def test_none_when_neither_field_is_a_kalshi_ticker(self):
+        row = {"event_id": "401815950"}  # bare ESPN id, no market_id
+        assert _event_id_for_row(row) is None
+
+    def test_kalshi_close_matches_via_market_id_derived_ticker(self):
+        """End-to-end: a row shaped like a real paper_pm/kalshi row (ESPN
+        event_id, Kalshi market_id) now MATCHES the Kalshi market list --
+        the exact join that was broken for all 284 real ledger rows."""
+        row = {"event_id": "401815950", "sport": "mlb",
+               "market_id": "KXMLBGAME-26JUN281610LADSD-SD"}
+
+        def _mock_fetch(sport):
+            return [{
+                "event_ticker": "KXMLBGAME-26JUN281610LADSD",
+                "status": "resolved",
+                "close_home_dec": 2.18, "close_away_dec": 1.78,
+            }]
+
+        res = _kalshi_close(row, kalshi_fetch=_mock_fetch)
+        assert res is not None
+        assert res.is_proxy is False
+        assert res.close_home_dec == 2.18
 
 
 # ---------------------------------------------------------------------------
