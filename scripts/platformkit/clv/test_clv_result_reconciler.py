@@ -232,6 +232,40 @@ def test_reconcile_channel_single_side_identical_to_headline_when_no_pairs():
     assert ss["z_units"] == report["z_units"]
 
 
+def test_cross_venue_basis_flags_pm_taken_book_close():
+    # Kalshi-taken rows priced against a Pinnacle (different-venue) close are
+    # cross-venue basis; the verdict/z stay untouched, the block flags the basis.
+    rows = []
+    for i in range(20):
+        r = _row("home", 2.0, 2.0, 2.0,
+                 unit_result=(1.0 if i % 2 == 0 else -1.0), fair_close_prob=0.5,
+                 event_id="g%d" % i, clv_pct=15.0)
+        r["venue"] = "kalshi"
+        r["is_pm"] = True
+        r["close_book_home"] = r["close_book_away"] = "pinnacle"
+        rows.append(r)
+    report = reconcile_channel("paper_pm", ledger=rows)
+    cvb = report["cross_venue_basis"]
+    assert cvb["n"] == 20 and cvb["n_measurable"] == 20
+    assert cvb["books"] == {"pinnacle": 20}
+    assert cvb["mean_clv_pct"] == 15.0
+    assert cvb["note"] and "BASIS" in cvb["note"]
+    # Same-venue (pm_close_capture) close is NOT counted as basis.
+    for r in rows:
+        r["close_source"] = "kalshi"
+    same = reconcile_channel("paper_pm", ledger=rows)
+    assert same["cross_venue_basis"]["n"] == 0
+
+
+def test_cross_venue_basis_zero_for_non_pm_rows():
+    # Plain moneyline (non-PM) rows are never cross-venue basis.
+    rows = [_row("home", 2.0, 2.0, 2.0, 1.0, 0.5, event_id="g%d" % i,
+                 channel="paper_pm") for i in range(12)]
+    report = reconcile_channel("paper_pm", ledger=rows)
+    assert report["cross_venue_basis"]["n"] == 0
+    assert report["cross_venue_basis"]["note"] is None
+
+
 def test_existing_channel_with_adequate_data_unchanged_by_extension(tmp_path, monkeypatch):
     # Regression lock: moneyline/paper_pm w/ adequate measurable data still
     # reads GENUINE_VARIANCE (the always-emit extension must not perturb the
