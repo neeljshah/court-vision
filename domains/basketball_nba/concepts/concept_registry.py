@@ -24,10 +24,19 @@ Each concept entry:
     name, description            -- what the concept means, in scouting prose
     signals: [{attribute, direction, weight_basis}]
         attribute      -- must be a key in attribute_registry.ATTRIBUTES
-        direction       -- "higher_is_better" | "lower_is_better" (scored off
-                           the existing 0-100 `percentile` column; for
-                           lower_is_better signals the contribution uses
-                           100 - percentile)
+        direction       -- how to consume the parquet's `percentile` column.
+                           The profile builders ALREADY orientation-normalize
+                           percentiles wherever the attribute has a natural
+                           better direction (verified empirically 2026-07-09:
+                           corr(raw,pct) ~ -0.95 for zone_def_*_allowed_* --
+                           lower eFG allowed = HIGHER percentile), so nearly
+                           every signal is "higher_is_better" = consume as-is.
+                           "lower_is_better" (contribution = 100-percentile)
+                           is ONLY for an attribute whose percentile tracks
+                           the raw value (builder saw no natural direction)
+                           while the CONCEPT reads low-raw as good. Currently
+                           exactly one: zone_assisted_share_rim
+                           (corr(raw,pct) = +0.99; creation wants low).
         weight_basis    -- WHY this signal is included (prose, not a number
                            -- the number is derived, the rationale is not)
     context_qualifiers  -- when this composite should be read cautiously
@@ -114,19 +123,22 @@ CONCEPTS: dict[str, dict[str, Any]] = {
                 ),
             },
             {
-                "attribute": "zone_def_rim_efg_allowed_on", "direction": "lower_is_better",
+                "attribute": "zone_def_rim_efg_allowed_on", "direction": "higher_is_better",
                 "weight_basis": (
                     "Secondary raw context: the on-court rim eFG allowed level itself "
                     "(not just its swing), so a low-volume/high-swing outlier is "
-                    "checked against the absolute number."
+                    "checked against the absolute number. Percentile is pre-oriented "
+                    "by the builder (lower eFG allowed = higher pct; corr(raw,pct) "
+                    "= -0.95) -- consume as-is, do NOT re-invert."
                 ),
             },
             {
-                "attribute": "zone_def_rim_share_allowed_on", "direction": "lower_is_better",
+                "attribute": "zone_def_rim_share_allowed_on", "direction": "higher_is_better",
                 "weight_basis": (
                     "Secondary raw context: how often opponents even get to the rim "
                     "with this player on-court -- shot-selection deterrence, not just "
-                    "finishing deterrence."
+                    "finishing deterrence. Percentile pre-oriented (corr = -0.97) -- "
+                    "consume as-is, do NOT re-invert."
                 ),
             },
             {
@@ -187,7 +199,9 @@ CONCEPTS: dict[str, dict[str, Any]] = {
             "creation and usage_absorption are both DESCRIPTIVE; no gate has tested "
             "whether either predicts winning.",
             "zone_assisted_share_rim direction is context-specific to THIS concept -- "
-            "it is not universally 'lower is better' outside a self-creation read.",
+            "its percentile tracks the raw value (corr = +0.99, the builder saw no "
+            "natural direction) and only the self-creation read inverts it here; it "
+            "is the ONLY lower_is_better signal in the whole registry.",
         ],
         "failure_modes": [
             "assist-network eFG lift conflates shot-selection/play-type effects with "
