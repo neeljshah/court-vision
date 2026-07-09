@@ -48,6 +48,7 @@ import numpy as np
 import pandas as pd
 
 from scripts.platformkit.gamebrief.team_ids import TEAM_ID_TO_ABBR
+from scripts.platformkit.intel_weighting.batter_pa_agg import aggregate_to_team_batter_pa
 from scripts.platformkit.intel_weighting.player_team_agg import aggregate_to_team
 from scripts.platformkit.intel_weighting.relevance_gate import (
     GateResult, _base_probs, run_gate,
@@ -91,21 +92,37 @@ def _window_season(window: str, style: str) -> Optional[str]:
     return m.group(1) if m else None
 
 
-def _weight_family(sport: str, attribute: str) -> str:
-    """Registry weight_ledger_family for this attribute, else 'profile_<attr>'.
-    (ask.load_registry maps sport->domain wrongly for nba/wnba; _DOMAIN fixes it.)"""
+def _registry_entry(sport: str, attribute: str) -> Optional[dict]:
+    """This attribute's domains.<domain>.profiles.attribute_registry metadata
+    dict, else None. (ask.load_registry maps sport->domain wrongly for
+    nba/wnba; _DOMAIN fixes it.)"""
     try:
         mod = importlib.import_module(
             f"domains.{_DOMAIN.get(sport, sport)}.profiles.attribute_registry")
         for cand in ("ATTRIBUTES", "REGISTRY", "ATTRIBUTE_REGISTRY", "attributes"):
             o = getattr(mod, cand, None)
             if isinstance(o, dict) and isinstance(o.get(attribute), dict):
-                fam = o[attribute].get("weight_ledger_family")
-                if fam:
-                    return fam
+                return o[attribute]
     except Exception:  # noqa: BLE001 -- missing registry -> clean fallback
         pass
-    return f"profile_{attribute}"
+    return None
+
+
+def _weight_family(sport: str, attribute: str) -> str:
+    """Registry weight_ledger_family for this attribute, else 'profile_<attr>'."""
+    entry = _registry_entry(sport, attribute)
+    fam = entry.get("weight_ledger_family") if entry else None
+    return fam or f"profile_{attribute}"
+
+
+def _entity_role(sport: str, attribute: str) -> Optional[str]:
+    """Registry 'entity' (batter/pitcher/catcher/...) for this attribute, else
+    None -- routes MLB to the role-appropriate team aggregation: pitcher
+    attributes stay outs-weighted (player_team_agg), everything else
+    (batter/catcher) is PA-weighted (batter_pa_agg) since they carry no
+    is_pitcher-filtered playing time."""
+    entry = _registry_entry(sport, attribute)
+    return entry.get("entity") if entry else None
 
 
 def _locate(sport: str, attribute: str) -> Tuple[Optional[str], Optional[pd.DataFrame]]:
@@ -184,8 +201,14 @@ def gate_attribute(sport: str, attribute: str, games_df: pd.DataFrame,
         if sport not in _AGG_SPORTS:
             return _skip(family, sport, attribute, n_all, "UNTESTABLE_NO_TEAM_AGG",
                          f"no player->team playing-time aggregation wired for {sport}"), False
-        feat, dropped = aggregate_to_team(prior_vals, prior, sport=sport)
-        mapping = "player_minwt_prior_season"
+        role = _entity_role(sport, attribute)
+        if sport == "mlb" and role != "pitcher":
+            pa_role = "catcher" if role == "catcher" else "batter"
+            feat, dropped = aggregate_to_team_batter_pa(prior_vals, prior, role=pa_role)
+            mapping = f"{pa_role}_pa_prior_season"
+        else:
+            feat, dropped = aggregate_to_team(prior_vals, prior, sport=sport)
+            mapping = "player_minwt_prior_season"
         if dropped:
             caveats.append(f"{len(dropped)} team(s) dropped below the coverage floor")
         if not feat:
