@@ -459,6 +459,23 @@ def test_resolve_espn_unknown_returns_norm_fallback():
         f"unknown team unexpectedly aliased to {result!r}")
 
 
+# ---------------------------------------------------------------------------
+# Test: date column (added for venue-history/replay joins)
+# ---------------------------------------------------------------------------
+
+def test_build_states_date_column_constant_across_grid():
+    """game_date threads through unchanged on every grid row."""
+    rows = build_states("g1", [(10.0, True)], 1, 0, p0=0.6, game_date="2024-08-16")
+    assert rows
+    assert all(r["date"] == "2024-08-16" for r in rows)
+
+
+def test_build_states_date_defaults_to_none():
+    """Backward-compat: omitting game_date must not break existing callers."""
+    rows = build_states("g1", [], 0, 0, p0=0.5)
+    assert all(r["date"] is None for r in rows)
+
+
 def test_p0_uses_resolved_espn_names():
     """_p0 must resolve ESPN names so Elo-rich history produces non-neutral p0."""
     hist = pd.DataFrame({

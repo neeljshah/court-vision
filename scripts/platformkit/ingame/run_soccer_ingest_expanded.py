@@ -77,7 +77,11 @@ def _build_combo(label_a: str, label_b: str, combo_label: str) -> Path:
         log.warning("No source parquets found for combo %s", combo_label)
         return out
     combo = pd.concat(parts, ignore_index=True)
-    combo.to_parquet(out, index=False)
+    # Atomic write: gates reading this path mid-rebuild must never see a
+    # truncated/partial parquet (the parquet-rebuild-race landmine).
+    tmp = out.with_suffix(out.suffix + ".tmp")
+    combo.to_parquet(tmp, index=False)
+    tmp.replace(out)
     log.info("combo %s written: games=%d rows=%d -> %s",
              combo_label, combo["game_id"].nunique(), len(combo), out)
     return out

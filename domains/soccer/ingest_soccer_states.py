@@ -4,7 +4,7 @@ ESPN keyEvents goal records -> 5-min grid states + leak-free Elo p0.
 
 Output schema per row:
   sport, game_id, asof_idx, state_diff, frac_elapsed, p0, outcome,
-  minute, home_goals, away_goals
+  minute, home_goals, away_goals, date (ISO YYYY-MM-DD, added for venue-history joins)
 
 Two corpora (independent leagues):
   data/cache/ingame/soccer_states__eng1.parquet
@@ -187,8 +187,13 @@ def _goal_events(payload: dict, home_id: str) -> List[Tuple[float, bool]]:
 def build_states(
     game_id: str, goals: List[Tuple[float, bool]],
     hg_final: int, ag_final: int, p0: float,
+    game_date: Optional[str] = None,
 ) -> List[dict]:
-    """Build 5-min grid states. Returns [] if goal counts don't reconcile (drop, never fabricate)."""
+    """Build 5-min grid states. Returns [] if goal counts don't reconcile (drop, never fabricate).
+
+    game_date: ISO YYYY-MM-DD match date, constant across the grid (added for
+    venue-history/replay joins). Optional/None for backward-compat callers.
+    """
     if goals:
         if sum(1 for _, ih in goals if ih) != hg_final:
             return []
@@ -207,6 +212,7 @@ def build_states(
             "frac_elapsed": min(float(minute) / 90.0, 1.0),
             "p0": float(p0), "outcome": outcome,
             "minute": minute, "home_goals": hg, "away_goals": ag,
+            "date": game_date,
         })
     return rows
 
@@ -280,7 +286,13 @@ def _ingest_event(eid: str, ds: str, league: str, hist: pd.DataFrame,
     match_date = date(int(ds[:4]), int(ds[4:6]), int(ds[6:8]))
     elo = _elo_map(hist, match_date)
     p = _p0(elo, home_name, away_name)
-    return build_states(eid, goals, hg_final, ag_final, p)
+    # date column: prefer ESPN's own payload date (header.competitions[0].date,
+    # ISO e.g. "2024-08-16T19:00Z"), fall back to the scoreboard-listing date
+    # (ds) if the payload omits it -- never fabricate, this only picks a source.
+    comps = (payload.get("header") or {}).get("competitions") or [{}]
+    raw_date = comps[0].get("date") if comps else None
+    game_date = raw_date[:10] if raw_date else match_date.isoformat()
+    return build_states(eid, goals, hg_final, ag_final, p, game_date=game_date)
 
 
 # ---------------------------------------------------------------------------
@@ -315,7 +327,11 @@ def ingest_league(
         time.sleep(0.08)
     df = pd.DataFrame(rows) if rows else pd.DataFrame()
     if not df.empty:
-        df.to_parquet(out, index=False)
+        # Atomic write: readers polling this path mid-rebuild must never see a
+        # truncated/partial parquet (the parquet-rebuild-race landmine).
+        tmp = out.with_suffix(out.suffix + ".tmp")
+        df.to_parquet(tmp, index=False)
+        tmp.replace(out)
     log.info("league=%s ok=%d dropped=%d states=%d -> %s", league, ok, dropped, len(df), out)
     return out
 
