@@ -57,8 +57,16 @@ _NBA_ATTR_COLS = {
     "halfcourt_efg": ("halfcourt_fgm", "halfcourt_fga", "halfcourt_fg3m"),
     "late_clock_efg": ("late_clock_fgm", "late_clock_fga", "late_clock_fg3m"),
 }
-_NBA_SOURCE = REPO / "data" / "cache" / "team_system" / "composition" / "player_offense_events_2025_26.parquet"
-_NBA_CORPUS = "player_offense_events_2025_26"
+def nba_source_for_season(season: str) -> Path:
+    """Path to the player-offense-events parquet for one season (e.g. "2024_25").
+    Threads what used to be a single hardcoded 2025_26 path -- used by cross-
+    season replication so a re-test never silently reads the wrong year."""
+    return REPO / "data" / "cache" / "team_system" / "composition" / ("player_offense_events_%s.parquet" % season)
+
+
+_NBA_DEFAULT_SEASON = "2025_26"
+_NBA_SOURCE = nba_source_for_season(_NBA_DEFAULT_SEASON)
+_NBA_CORPUS = "player_offense_events_%s" % _NBA_DEFAULT_SEASON
 
 
 def _now() -> str:
@@ -227,5 +235,5 @@ if __name__ == "__main__":
     raise SystemExit(main())
 
 
-__all__ = ["run_batch", "build_nba_offense_frame", "LEDGER_PATH",
+__all__ = ["run_batch", "build_nba_offense_frame", "nba_source_for_season", "LEDGER_PATH",
            "SURVIVES", "NULL", "NOT_TESTABLE", "main"]
