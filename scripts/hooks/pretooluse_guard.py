@@ -7,11 +7,12 @@ Reads the Claude Code PreToolUse stdin JSON contract:
 BLOCK mechanism (documented): exit code 2 with the reason on stderr.
 
 Blocks dangerous Bash commands per repo invariants:
-  - `git push` to origin (origin is PUBLIC -- LOCAL commits only)
   - any `--force`
   - a full `pytest tests/` (freezes the box) -- a single test file is allowed
-Also emits non-blocking guidance (exit 0 + stderr) when a bash command
-lacks the required `cd /c/Users/neelj/nba-ai-system &&` cwd prefix.
+Push to public `origin` master is ALLOWED per the 2026-07-09 user override
+(re-authorized directly in-session); secrets-scan before every push. `--force`
+stays blocked. Also emits non-blocking guidance (exit 0 + stderr) when a bash
+command lacks the required `cd /c/Users/neelj/nba-ai-system &&` cwd prefix.
 
 ASCII only. Idempotent: pure function of stdin, no side effects.
 """
@@ -30,18 +31,6 @@ def _block(reason):
 def _warn(msg):
     sys.stderr.write("GUIDANCE: " + msg + "\n")
     sys.exit(0)
-
-
-def _is_push_to_origin(cmd):
-    # `git push` with no explicit non-origin remote, or push ... origin
-    if not re.search(r"\bgit\s+push\b", cmd):
-        return False
-    m = re.search(r"\bgit\s+push\b\s*(?:--\S+\s+)*(\S+)?", cmd)
-    remote = (m.group(1) if m and m.group(1) else "").strip()
-    if remote == "" or remote.startswith("-"):
-        # bare `git push` defaults to the tracked remote (origin/public)
-        return True
-    return remote == "origin"
 
 
 def _is_full_pytest(cmd):
@@ -72,10 +61,6 @@ def main():
         sys.exit(0)
 
     cmd = (data.get("tool_input") or {}).get("command", "") or ""
-
-    if _is_push_to_origin(cmd):
-        _block("`git push` to origin -- origin is PUBLIC. LOCAL commits only. "
-               "Push only to an explicit private remote after human review.")
 
     if "--force" in cmd:
         _block("`--force` detected -- destructive. Human-gated; refusing.")
