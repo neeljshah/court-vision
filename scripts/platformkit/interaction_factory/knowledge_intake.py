@@ -30,6 +30,8 @@ REPO = Path(__file__).resolve().parents[3]
 LEDGERS: Dict[str, Path] = {
     "mlb": REPO / "domains" / "mlb" / "knowledge" / "validation_ledger.jsonl",
     "basketball_nba": REPO / "domains" / "basketball_nba" / "knowledge" / "validation_ledger.jsonl",
+    "soccer": REPO / "domains" / "soccer" / "knowledge" / "validation_ledger.jsonl",
+    "tennis": REPO / "domains" / "tennis" / "knowledge" / "validation_ledger.jsonl",
 }
 
 # hypothesis (ledger key) -> the (template, attr_a, attr_b) pairs it backs.
@@ -42,6 +44,15 @@ LEDGERS: Dict[str, Path] = {
 # rate, first_pitch_outcome, bb_type x force_state, overall_fga_share, ...)
 # or a pregame/state-level effect with no attr-pair shape (rest days,
 # home/away, garbage time, rotation size) -- honestly left unmapped.
+#
+# soccer/tennis ledgers (added once mechanisms.md shipped for both sports):
+# ZERO CONFIRMED_LOCAL rows map today because TEMPLATES has no soccer/tennis
+# entry at all yet (generator.py TEMPLATES is basketball_nba+mlb only) -- a
+# template would need to exist first, then a registry attribute, before any
+# row here makes sense. Each soccer/tennis CONFIRMED_LOCAL mechanism carries
+# its own "wiring" note in its mechanisms.md instead (in-game conditioning-
+# feature candidate), e.g. soccer's `leading_team_shot_rate_suppression`
+# (score_state x shot_rate, p=2.1e-37) and `setpiece_vs_openplay_conversion`.
 KNOWN_MAPPINGS: Dict[str, List[Dict[str, str]]] = {
     "contact_quality_persists_split_half": [
         {"template_id": "mlb_pa_batter_x_pitcher", "attr_a": "contact_quality", "attr_b": "whiff_rate"},
