@@ -74,6 +74,21 @@ CANDIDATES: Tuple[_CandidateSpec, ...] = (
     ("hold_pct_grass_diff_asof", _ASOF_HOLD,
      ("hold_pct_grass_diff_asof", "p1_hold_pct_grass_asof", "p2_hold_pct_grass_asof"),
      ("p1_n_prior", "p2_n_prior")),
+    # --- asof_hold.parquet: svpts-won% overall + per-surface (NEVER gated before --
+    # utilization_matrix_2026_07_10.md flagged these as built-but-unconsumed siblings
+    # of hold_pct, which the gate above already covers) ---
+    ("svpts_won_diff_asof", _ASOF_HOLD,
+     ("svpts_won_diff_asof", "p1_svpts_won_asof", "p2_svpts_won_asof"),
+     ("p1_n_prior", "p2_n_prior")),
+    ("svpts_won_hard_diff_asof", _ASOF_HOLD,
+     ("svpts_won_hard_diff_asof", "p1_svpts_won_hard_asof", "p2_svpts_won_hard_asof"),
+     ("p1_n_prior", "p2_n_prior")),
+    ("svpts_won_clay_diff_asof", _ASOF_HOLD,
+     ("svpts_won_clay_diff_asof", "p1_svpts_won_clay_asof", "p2_svpts_won_clay_asof"),
+     ("p1_n_prior", "p2_n_prior")),
+    ("svpts_won_grass_diff_asof", _ASOF_HOLD,
+     ("svpts_won_grass_diff_asof", "p1_svpts_won_grass_asof", "p2_svpts_won_grass_asof"),
+     ("p1_n_prior", "p2_n_prior")),
     # --- asof_return.parquet: ships diff_* columns directly ---
     ("diff_return_won_asof", _ASOF_RETURN, None,
      ("return_won_n_prior", "return_won_n_prior")),  # per-metric prior cols; see NOTE below

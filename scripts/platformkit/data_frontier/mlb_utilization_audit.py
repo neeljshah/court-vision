@@ -120,6 +120,11 @@ def consumers_for(column: str, roots: List[str] = _SEARCH_ROOTS, cap: int = 5) -
             res = subprocess.run(
                 ["git", "grep", "-n", "-w", column, "--", root],
                 cwd=_REPO, capture_output=True, text=True, timeout=30,
+                encoding="utf-8", errors="replace",
+                # ponytail: git-grep hit lines can carry non-ASCII (accented
+                # names in tennis/soccer corpora) that crash under the
+                # Windows console's cp1252 default -- force utf-8, replace
+                # undecodable bytes rather than crash the whole audit.
             )
         except Exception:  # noqa: BLE001 -- grep unavailable is a data gap, not a crash
             continue
