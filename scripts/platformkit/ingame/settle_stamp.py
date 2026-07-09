@@ -161,7 +161,8 @@ def stamp_final(sport: str, game_id: str, *,
                 home_win: Optional[Any] = None,
                 ev: Optional[Dict[str, Any]] = None,
                 now: Optional[datetime] = None,
-                grade_dir: Optional[Path] = None) -> Dict[str, Any]:
+                grade_dir: Optional[Path] = None,
+                close_source: Optional[str] = None) -> Dict[str, Any]:
     """Stamp the settled binary home_win label onto a game's grade file ONCE, at FINAL.
 
     The label comes from `home_win` (0/1) if given, else is derived from a FINAL ESPN event
@@ -170,6 +171,12 @@ def stamp_final(sport: str, game_id: str, *,
     (status='already'). On a fresh stamp, appends one settle row carrying 'home_win' (which
     inplay_aggregate_grade's OUTCOME arm reads) and 'settled':True. NEVER raises. Returns a
     summary dict; UNITS / label only -- no $ field, edge_claimed False, leak-free (label-only).
+
+    *close_source* (ADDITIVE, shadow-grade-join gap fix): an optional provenance string for
+    where the settled outcome/close-proxy came from (e.g. "ingame_outcome_label:
+    espn_boxscores_parquet"). Recorded on the stamp row so a downstream join (probabilities
+    from the tick rows + this row's home_win) can also cite where the label originated. A
+    bare label call (no close_source) is byte-identical to the pre-existing row shape.
     """
     path = _grade_path(sport, game_id, grade_dir)
     summary: Dict[str, Any] = {
@@ -192,6 +199,8 @@ def stamp_final(sport: str, game_id: str, *,
             "settled": True, "home_win": float(hw),
             "state_summary": "FINAL", "edge_claimed": False,
         }
+        if close_source:
+            row["close_source"] = str(close_source)
         _lg._append_atomic(path, json.dumps(row, ensure_ascii=True))
         summary.update({"status": "stamped", "home_win": float(hw)})
     except Exception as exc:  # noqa: BLE001 -- a stamp failure must never sink the loop
