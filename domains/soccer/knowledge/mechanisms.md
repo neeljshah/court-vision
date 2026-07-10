@@ -338,3 +338,35 @@ REJECTED/NULL_LOCAL) via `domains/soccer/knowledge/validate_referee_xg_fouls.py`
 - **source**: tactical/"professional" fouling as a recognized strategic tool to stop transitions is standard coaching-analytics discourse (e.g. Opta/Analyst and StatsBomb writeups on "stopping counter-attacks"); this row is the first local test of fouls as a DEFENSIVE-suppression mechanism rather than a discipline-risk one -- no existing row in this ledger tests fouls against opponent output.
 
 ---
+
+## Seeded 2026-07-10 (research-wave 2 -- literature-sourced, UNTESTED, round-2 pool feedstock)
+
+Fresh mechanism hypotheses from different literature areas than the
+round-1 research wave (#34-36 above: referee card-rate at scale, xG-supremacy
+persistence, tactical fouling). Checked against every row above and against
+`data/frontend/reject_ledger.jsonl` (0 keyword hits for `sub.*timing`/`trailing`
+on sport=soccer) before seeding. No validator built this lane.
+
+### 37. First-substitution timing (early vs late) moderates the shot-rate shift
+- **claim**: the shot-rate shift around a team's first substitution (already tested pooled-across-all-timings in #11, REJECTED as below the declared min-effect bar) is MODERATED by how early or late that substitution is made -- #11 never split by sub timing, only by before/after the (any-timing) sub.
+- **causal story**: cited substitution-timing literature argues a losing team's sub should come before ~53min to have enough remaining minutes to matter; if timing itself is the moderator, EARLY subs (more remaining minutes to compound an effect) should show a larger |shot-rate shift| than LATE subs (little time left to matter), independent of #11's already-REJECTED pooled/trivial average.
+- **expected signature**: |shot-rate shift| (after minus before, same paired design as #11) is larger for early-sub team-matches (sub_t<=60) than late-sub team-matches (sub_t>=75).
+- **test spec**: `domains.soccer.knowledge.validate_research_wave2.substitution_timing_moderates_shift` (not yet built) -- reuses #11's exact before/after shots-per-minute accumulator (`domains/soccer/knowledge/validate_ingame_state.py::_accumulate`'s substitution branch, `facts["subs"]` first-sub-per-team minute from `domains/soccer/knowledge/_data.py::extract_match_facts` + the match's `shots` list), split into early (sub_t<=60) vs late (sub_t>=75) buckets, Welch t-test comparing the two buckets' (after-before) shift distributions, full 3,443-match StatsBomb event cache, same >=10min-both-sides floor as #11; declared bar |eff|>=0.02 shots/min AND p<0.01.
+- **status**: UNTESTED
+- **measured LOCAL magnitude**: n/a (not yet run).
+- **artifact link**: none yet -- UNTESTED, no validator built this lane.
+- **note**: distinct from #11 (REJECTED, pooled all sub timings, found a real-but-trivial <0.01 shots/min average shift) -- this asks whether the SIZE of that shift depends on WHEN the sub happens, not whether an average shift exists.
+- **source**: "A Proposed Decision Rule for the Timing of Soccer Substitutions" (Myers), https://www.researchgate.net/publication/227378915_A_Proposed_Decision_Rule_for_the_Timing_of_Soccer_Substitutions -- argues a losing team's first sub should land before minute 53 to have time to matter; and a UEFA EURO 2024 substitution-timing review (PMC12287015), https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12287015/, finding subs made 60-85min are more likely to have a positive match-outcome impact than earlier or later subs -- both motivate timing (not just occurrence) as the variable of interest.
+
+### 38. Trailing-team shot-rate vs tied (extends #9's leading/tied state machine to the previously-discarded trailing case)
+- **claim**: a team currently TRAILING in a match takes a different shot rate per minute than while the score is tied -- extends #9 (leading vs tied, CONFIRMED reversed-direction: leading teams shoot MORE, not less) to the trailing state, which #9's own state-segment logic computes but silently discards.
+- **premise check**: `validate_ingame_state.py::_accumulate`'s leading/tied segment loop sets `state = "leading" if diff_x > 0 else ("tied" if diff_x == 0 else None)` -- the `diff_x < 0` (trailing) case falls through to `state is None` and is dropped (confirmed by reading the function this session, lines ~56-71); the trailing bucket has never been computed, only leading and tied.
+- **causal story**: cited StatsBomb reference argues trailing teams out-shoot due to a mix of desperation to equalize and the leading team's tactical conservatism; #9 already shows leading teams shoot MORE than tied (the opposite of the classic "defensive shell" story), so the trailing side of the same three-state comparison is not automatically implied and needs its own direct test against the same tied baseline.
+- **expected signature**: shots/min while trailing higher than shots/min while tied (per the cited literature), same team-match paired design as #9.
+- **test spec**: `domains.soccer.knowledge.validate_research_wave2.trailing_team_shot_rate` (not yet built) -- extends the existing `_accumulate` leading/tied state-segment logic to also bucket the previously-discarded `diff_x<0` case as `"trailing"`, paired t-test trailing-rate vs tied-rate, same >=5min-both-states floor and full 3,443-match event cache as #9; declared bar |eff|>=0.02 shots/min AND p<0.01 (same convention as #9's family).
+- **status**: UNTESTED
+- **measured LOCAL magnitude**: n/a (not yet run).
+- **artifact link**: none yet -- UNTESTED, no validator built this lane.
+- **source**: "Score Effects" (StatsBomb Blog Archive), https://blogarchive.statsbomb.com/articles/soccer/score-effects/ -- the canonical soccer-analytics reference for game-state-conditioned shot/possession inflation, cited directly for the trailing-team-out-shoots claim this row tests locally for the first time (only the leading side was tested in #9).
+
+---
