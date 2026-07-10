@@ -379,3 +379,53 @@ receipt, not ROI.
 - **measured LOCAL magnitude**: logit upset ~ (best_of==5) + |rank_diff|, best_of==5 coefficient=-0.3059, p=1.5e-23, n=40,802 (ATP+WTA 2015-2025).
 - **artifact link**: `domains/tennis/knowledge/validate_match_population.py::best_of_5_vs_3_upset_rate`.
 - **wiring**: in-game conditioning-feature candidate -- `best_of` as a variance/upset-probability adjuster on top of rank_diff, complementary to the ranking-gap-shape null (#10).
+
+---
+
+## Validated 2026-07-10 (4 -- fresh leak-free local tests, receipts in `validation_ledger.jsonl`)
+
+New corpus this session: `travel_scouting.parquet` (55,446 rows, 27,723 events,
+2015-2025 -- venue altitude + miles flown into the venue per player) joined
+to `match_stats.parquet` (59,312 rows -- per-match serve/break-point counts)
+and `matches.parquet`. The (event_id, is_p1) join between travel_scouting and
+matches.parquet was verified this session: 100% event_id overlap with both
+matches.parquet and match_stats.parquet, exactly one True/one False is_p1
+row per event, and a 100% name-match rate against matches.parquet's
+p1_name/p2_name for the same event_id.
+
+### 28. Altitude effect on serve ace rate -- CONFIRMED, folklore-reversing
+- **claim**: venue altitude changes serve effectiveness (thin-air folklore says higher altitude -> more aces).
+- **causal story**: thinner air at altitude reduces drag on the serve, so the ball should carry faster and produce more untouched aces.
+- **expected signature**: higher combined ace rate at high-altitude venues.
+- **test spec**: Welch t-test, combined (p1+p2)/2 ace rate, venues >=500m vs <500m altitude (real tour venues clearing this: Madrid 667m, Bogota 2640m, Quito 2850m -- verified in data), ATP+WTA 2015-2025.
+- **status**: CONFIRMED -- but in the OPPOSITE direction from the thin-air folklore.
+- **measured LOCAL magnitude**: combined ace rate 0.0722 (>=500m, n=2,522) vs 0.0805 (<500m, n=24,941); effect -0.0083, p=2.94e-23, n=27,463.
+- **artifact link**: `domains/tennis/knowledge/validate_travel_altitude.py::altitude_effect_on_serve_ace_rate`.
+
+### 29. Long travel lowers win probability, net of ranking -- CONFIRMED
+- **claim**: traveling further into the venue than your opponent measurably lowers win probability, beyond what the ranking gap already explains.
+- **causal story**: jet lag / fatigue from a longer pre-match trip should erode performance independent of who is favored on paper.
+- **expected signature**: negative travel-differential coefficient on win probability, controlling for rank_diff.
+- **test spec**: logit p1_win ~ travel_diff_1000mi + rank_diff (partial effect over the full matched sample, not a rank-windowed bucket comparison), ATP+WTA 2015-2025.
+- **status**: CONFIRMED
+- **measured LOCAL magnitude**: travel coefficient -0.0699 per 1000mi p1 traveled more than p2 (net of rank_diff), p=7.2e-52, n=26,950.
+- **artifact link**: `domains/tennis/knowledge/validate_travel_altitude.py::long_travel_effect_on_win_prob_partial`.
+- **wiring**: in-game conditioning-feature candidate -- a pre-match travel-differential adjuster alongside rank_diff, complementary to the CONFIRMED recent-match-load retirement signal (#13).
+
+### 30. Break-point-save skill persistence, controlling for serve strength -- LOCAL NULL
+- **claim**: a player's break-point-save rate is a repeatable skill beyond their overall serve win rate (guards the collinearity between the two, correlation ~0.80 at the player level).
+- **causal story**: some servers might specifically raise their level under break-point pressure beyond what their baseline serve strength predicts -- a specific "clutch-on-serve" skill.
+- **expected signature**: split-half bp_saved_pct correlation should survive controlling for split-half-A serve win rate.
+- **test spec**: split-half persistence (>=5 matches/half, >=3 bp faced/match floor, >=15 players), raw pearson r for reference, then OLS bpB ~ bpA + svA (svA = leak-safe prior-half serve win rate control), ATP+WTA 2015-2025.
+- **status**: REJECTED (NULL_LOCAL) -- raw persistence is real (r=0.44) but collapses once serve strength is controlled, meaning the raw correlation is serve-strength persistence in disguise, not an independent break-point-save skill.
+- **measured LOCAL magnitude**: raw split-half pearson r=0.4422 (p=1.31e-17, n=338 players) vs OLS-controlled bpA partial coefficient=-0.0900 (p=0.251, NOT significant), n=338.
+- **artifact link**: `domains/tennis/knowledge/validate_bp_save_persistence.py::bp_save_skill_persistence_partial`. Distinct from and a useful complement to #1 (the CONFIRMED serve-tier x return-tier interaction) -- this closes a narrower "independent clutch-on-serve" framing that #1 does not test.
+
+### 31. Break-point-save differential predicts outcome, controlling for serve differential -- CONFIRMED, modest relative magnitude
+- **claim**: the match-level bp_saved_pct differential relates to who wins, beyond the overall serve-win-rate differential.
+- **causal story**: a mechanical, within-match relationship -- saving more break points than your opponent directly helps you win, but the question is whether it adds information beyond overall serve dominance.
+- **expected signature**: bp_diff coefficient significant and nonzero after controlling for serve_diff in a joint logit.
+- **test spec**: logit p1_win ~ bp_diff + serve_diff, >=3 bp faced/side floor, ATP+WTA 2015-2025.
+- **status**: CONFIRMED, but read cautiously -- bp_diff's coefficient (4.01) is an order of magnitude smaller than serve_diff's (48.11) at comparable input scale, so the differential carries real but minor incremental information once overall serve dominance is known; large n (27,937) makes the p-value alone a poor discriminator here.
+- **measured LOCAL magnitude**: bp_diff coefficient=4.0083, p=2.07e-268, vs serve_diff coefficient=48.1141, n=27,937.
+- **artifact link**: `domains/tennis/knowledge/validate_bp_save_persistence.py::bp_save_differential_predicts_outcome_partial`.
