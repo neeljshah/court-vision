@@ -127,6 +127,31 @@ def test_no_meta_label_weighting():
     assert not (bucket_table_names & set(dir(_composer)))
 
 
+def test_no_meta_label_weighting_live_bestbets_chain():
+    """composer.py above is ORPHANED -- the LIVE best-bets path is the m10
+    daemon (scripts/daemon_registry.json: 'python -u -m
+    scripts.platformkit.bestbets.bestbets_compute_runner'), which calls
+    build_cards() -> predict_service.bestbets_compute.compute_best_bets().
+    The composer guard above proves nothing about production; this guards the
+    module that actually runs. Same ARTIFACT_CONFIRMED retirement applies
+    (docs/research/meta_label_replication_2026-07-11.md)."""
+    from scripts.platformkit.bestbets import bestbets_compute_runner as _runner
+    from scripts.platformkit.bestbets import build_cards as _build_cards
+    from predict_service import bestbets_compute as _live_compute
+
+    bucket_table_names = {
+        "build_bucket_table", "load_true_close_kalshi_bets",
+        "edge_bucket_label", "wilson_ci", "edge_quartiles",
+    }
+    for mod in (_runner, _build_cards, _live_compute):
+        src = inspect.getsource(mod)
+        for line in src.splitlines():
+            if "meta_label" in line and "import" in line:
+                raise AssertionError(
+                    f"{mod.__name__} must not import meta_label_*: {line!r}")
+        assert not (bucket_table_names & set(dir(mod))), mod.__name__
+
+
 def test_score_candidate_only_uses_divergence_and_confidence():
     """Score must be invariant to any 'bucket'/'tier'-table style field --
     only model_prob/market_prob/sigma (divergence) and confidence matter."""
