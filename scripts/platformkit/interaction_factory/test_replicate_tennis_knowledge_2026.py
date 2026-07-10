@@ -34,6 +34,15 @@ def _ledger_rows():
     ]
 
 
+def test_verdict_for_uses_this_modules_own_alpha_not_batch2bs():
+    # replicate_batch2b's K=6 -> ALPHA=0.00833; this module's K=2 -> ALPHA=0.025.
+    # A p in [0.00833, 0.025) must REPLICATE here (same sign) -- if verdict_for
+    # silently resolved batch2b's tighter alpha, this would wrongly FAIL.
+    assert REPL.ALPHA > 0.00833
+    fit = {"effect": 0.05, "p": 0.015, "n": 5000}
+    assert REPL.verdict_for(0.05, fit) == "REPLICATED"
+
+
 def test_knowledge_survivors_filters_to_knowledge_source_only():
     rows = REPL._knowledge_survivors(_ledger_rows())
     assert len(rows) == 2

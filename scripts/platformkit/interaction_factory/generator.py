@@ -126,17 +126,17 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
     # that state is reached mid-game -- the literal "wiring" language on
     # q1_slow_start_persists_split_half (mechanisms.md #34: "a live Q1-state
     # prior for in-game re-pricing") and transition_frequency_pace_mismatch__
-    # combined (#28: "in-game conditioning-feature candidate"). Pool is EMPTY
-    # today (auto-discovery family, same seam as box_detail_asof/carryover_asof
-    # above): no registry attr carries family="ingame_state_asof" yet --
-    # q1_margin_asof (domains/basketball_nba/asof_quarter_shape.py, already
-    # built leak-free) and a transition-rate as-of column each need a
-    # TEAM_ATTRIBUTES entry + a registered runner builder before this template
-    # yields anything -- that data/registry wiring is OUTSIDE this module's
-    # scope (interaction_factory grammar only); this entry closes the GRAMMAR
-    # side of the gap. See knowledge_intake.py's corrected comment for the full
-    # honest per-hypothesis state (incl. why called_strike_dispersion and
-    # soccer/tennis in-match rows stay unmapped regardless of this addition).
+    # combined (#28: "in-game conditioning-feature candidate"). Pool is WIRED
+    # (auto-discovery family, same seam as box_detail_asof/carryover_asof
+    # above): 5 registry attrs now carry family="ingame_state_asof" --
+    # q1_margin_asof, first_half_margin_asof, second_half_margin_asof,
+    # q4_margin_asof, quarter_volatility_asof (domains/basketball_nba/
+    # asof_quarter_shape.py, leak-free) -- see attribute_registry.py:793-808
+    # (M10 unblock, 88fa5a77), which also registered this template's runner
+    # builder (see feature_builder note below). See knowledge_intake.py's
+    # corrected comment for the full honest per-hypothesis state (incl. why
+    # called_strike_dispersion and soccer/tennis in-match rows stay unmapped
+    # regardless of this addition).
     "nba_ingame_state_self_cross": {
         "sport": "basketball_nba",
         "atomic_unit": "team_game_ingame_state",
@@ -144,7 +144,7 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
         "baseline": "rest_of_game_margin ~ elo + attr_a_state_asof + attr_b_state_asof",
         "pairing": "self_cross",
         "left_pool": {"entity": "team", "family": "ingame_state_asof"},
-        "feature_builder": "nba_ingame_state_asof",   # not yet registered -> NOT_TESTABLE (same honest pattern as nba_shot_attr_x_state)
+        "feature_builder": "nba_ingame_state_asof",   # registered -> runner._BUILDERS (builders_ingame_state.py, 88fa5a77)
         "blocklist_attrs": [],
         "blocklist_pairs": [],
     },
