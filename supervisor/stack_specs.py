@@ -165,6 +165,14 @@ _INJURY_FACTS_HB = "data/cache/daemon_heartbeats/m39_injury_facts_nba.txt"
 # (mirrors m29, the source it reads); fresh_sec=660 (>2x + margin). NO $ field, NO
 # flag flip, NO data/registry/ write, NO restart authority of its own.
 _WEDGE_RESTARTER_HB = "data/cache/daemon_heartbeats/m40_wedge_restarter.txt"
+# M41 -- Action Network public-betting-splits DAILY capture (frontier queue rank 3).
+# In-season reprobe 2026-07-09 confirmed /web/v2/scoreboard/mlb bet_info
+# tickets/money percents POPULATED (1436/1696 non-null, 13 games); the puller
+# (scripts.platformkit.data_frontier.an_public_splits) appends one row per
+# (game, book, market, side) to data/cache/public_splits/<league>/<date>.jsonl
+# at 1 req/s. Sentiment-vs-price capture only -- no bet, no flag, no $ field.
+# fresh_sec = 2x the 86400s cadence + margin (mirrors m38's daily-daemon shape).
+_PUBLIC_SPLITS_HB = "data/cache/daemon_heartbeats/m41_public_splits.txt"
 
 _FOREVER = RestartPolicy(max_retries=None, backoff_base_sec=2.0, backoff_cap_sec=60.0)
 
@@ -849,6 +857,19 @@ def base_specs() -> List[ProcSpec]:
             argv=["--interval", "300"],
             readiness=ReadinessSpec(
                 kind=HEARTBEAT, heartbeat_path=_WEDGE_RESTARTER_HB, fresh_sec=660.0),
+            restart_policy=_FOREVER,
+        ),
+        # M41 -- Action Network public-splits daily capture (see _PUBLIC_SPLITS_HB
+        # comment above). Independent branch (no depends_on) so a dead tick is
+        # itself ONE red status entry. NOT YET RUNNING -- registered here but
+        # requires a supervisor restart to take effect (this lane does NOT
+        # bounce the supervisor).
+        ProcSpec(
+            name="m41_public_splits", kind="py",
+            module="scripts.platformkit.data_frontier.an_public_splits",
+            argv=["--interval", "86400"],
+            readiness=ReadinessSpec(
+                kind=HEARTBEAT, heartbeat_path=_PUBLIC_SPLITS_HB, fresh_sec=190000.0),
             restart_policy=_FOREVER,
         ),
     ]
