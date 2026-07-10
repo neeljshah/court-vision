@@ -16,8 +16,13 @@ CLOSE RESOLUTION PRECEDENCE (grade_one):
 UNITS ONLY: no dollar pnl / roi / stake field is ever written; the unit record is
 ``unit_result`` (a pure unit count at the taken price). An equal "final" score for a
 sport that cannot draw (NBA/MLB) -> outcome="void". Build only under
-scripts/platformkit/; <=300 LOC; no secrets; no $-edge claim.
+scripts/platformkit/; no secrets; no $-edge claim.
 """
+# ponytail: this file is over the platform's <=300 LOC/file rail (pre-existing,
+# not introduced by the 2026-07-10 date-guard fix). grade_one() and
+# grade_open_bets() are each cohesive enough to extract to a sibling module if/
+# when this needs trimming; not done here to keep this diff a pure LOC-rail fix
+# scoped to grade_paper_asof.py (see grade_paper_dates.py).
 from __future__ import annotations
 
 import datetime as _dt
@@ -29,8 +34,8 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from scripts.platformkit import clv_ledger as _clv
 from scripts.platformkit.clv_settle_write import write_settlement as _write_settlement
-from scripts.platformkit.grade_paper_asof import bet_expected_dates as _bet_expected_dates
 from scripts.platformkit.grade_paper_asof import route_fetch as _route_fetch
+from scripts.platformkit.grade_paper_dates import bet_expected_dates as _bet_expected_dates
 from scripts.platformkit.grade_paper_close import close_from_store as _close_from_store
 from scripts.platformkit.grade_paper_close import fetch_boards as _fetch_boards
 from scripts.platformkit.grade_paper_close import game_key_for_bet as _game_key_for_bet
