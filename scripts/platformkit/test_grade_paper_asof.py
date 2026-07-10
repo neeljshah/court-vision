@@ -205,6 +205,42 @@ def test_backfill_settles_mlb_kalshi_shorthand_via_ticker(tmp_path):
     assert len(settled) == 1 and settled[0]["outcome"] == "win"  # away (CHW) won 7-6
 
 
+# --------------------------------------------------------------------------- #
+# Wrong-settle fix (gap ledger review of 0889b481): the COL@SF trap -- 3 tickets
+# dated 26JUL09/10/11 must NOT all bind to the identical 26JUL09 8-2 final.
+# --------------------------------------------------------------------------- #
+def test_mlb_ticker_fallback_rejects_wrong_date_board():
+    """A ticket dated 26JUL11 must NOT settle against a same-teams final on a
+    board queried for an EARLIER date, even though the team pairing matches --
+    this is the exact proven live wrong-settle (COL@SF 3-date collision)."""
+    bet = {"sport": "mlb", "matchup": "Colorado @ San Francisco",
+           "bet_id": "pm|kalshi|KXMLBGAME-26JUL111400COLSF|home"}
+    games = [_game("San Francisco Giants", "SF", "Colorado Rockies", "COL", 8, 2)]
+    assert mlb_ticker_fallback_match(bet, games, board_date="2026-07-09") is None
+    g = mlb_ticker_fallback_match(bet, games, board_date="2026-07-11")
+    assert g is not None and g["home_abbr"] == "SF"
+
+
+def test_mlb_ticker_fallback_doubleheader_gnum_picks_correct_game():
+    """A G2 ticket must resolve to the SECOND same-pairing final, not the first."""
+    bet = {"sport": "mlb", "matchup": "Colorado @ San Francisco",
+           "bet_id": "pm|kalshi|KXMLBGAME-26JUL111400COLSFG2|home"}
+    game1 = _game("San Francisco Giants", "SF", "Colorado Rockies", "COL", 3, 1)
+    game2 = _game("San Francisco Giants", "SF", "Colorado Rockies", "COL", 8, 2)
+    g = mlb_ticker_fallback_match(bet, [game1, game2], board_date="2026-07-11")
+    assert g is game2
+
+
+def test_mlb_ticker_fallback_ambiguous_same_pairing_no_gnum_skips():
+    """2 finals for the same pairing on the same date, no G-suffix on the ticket:
+    genuinely ambiguous -- honest skip, never a guessed first match."""
+    bet = {"sport": "mlb", "matchup": "Colorado @ San Francisco",
+           "bet_id": "pm|kalshi|KXMLBGAME-26JUL111400COLSF|home"}
+    game1 = _game("San Francisco Giants", "SF", "Colorado Rockies", "COL", 3, 1)
+    game2 = _game("San Francisco Giants", "SF", "Colorado Rockies", "COL", 8, 2)
+    assert mlb_ticker_fallback_match(bet, [game1, game2], board_date="2026-07-11") is None
+
+
 def test_backfill_skips_todays_bets(tmp_path):
     ledger = tmp_path / "clv_ledger.jsonl"
     _stale_bet(ledger, "2026-06-25T00:00:00+00:00")  # ts == today -> not backlog

@@ -20,6 +20,7 @@ scripts/platformkit/; <=300 LOC; no secrets; no $-edge claim.
 """
 from __future__ import annotations
 
+import datetime as _dt
 import json
 import logging
 import re
@@ -28,6 +29,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from scripts.platformkit import clv_ledger as _clv
 from scripts.platformkit.clv_settle_write import write_settlement as _write_settlement
+from scripts.platformkit.grade_paper_asof import bet_expected_dates as _bet_expected_dates
 from scripts.platformkit.grade_paper_asof import route_fetch as _route_fetch
 from scripts.platformkit.grade_paper_close import close_from_store as _close_from_store
 from scripts.platformkit.grade_paper_close import fetch_boards as _fetch_boards
@@ -112,7 +114,8 @@ def _team_match(label: Optional[str], game_display: str, game_abbr: Optional[str
     return all(t in disp or t in abbr for t in lab)
 
 
-def _find_final_game(bet: Dict[str, Any], games: List[Dict[str, Any]]
+def _find_final_game(bet: Dict[str, Any], games: List[Dict[str, Any]],
+                     *, board_date: Optional[str] = None
                      ) -> Optional[Dict[str, Any]]:
     """The FINAL game whose two teams match this bet's matchup. None if not found/final.
 
@@ -122,7 +125,22 @@ def _find_final_game(bet: Dict[str, Any], games: List[Dict[str, Any]]
     original KXMLBGAME ticker, grade_paper_asof.mlb_ticker_fallback_match
     resolves the same game by exact abbr code instead (local import breaks
     the cycle, mirrors that module's own import of this one).
+
+    DATE GUARD (wrong-settle fix, gap ledger review of 0889b481): team-only
+    matching -- with no date check -- let a same-teams final from the WRONG
+    calendar date settle a bet (proven live: 3 separate COL@SF tickets, dated
+    26JUL09/10/11, all settled against the identical 26JUL09 8-2 final; the
+    26JUL11 ticket settled before its own game could even be final). *games*
+    is whatever board the caller queried; *board_date* is the date that query
+    was actually FOR (None = "today", the daily pass's default unscoped
+    fetch). If *bet* has its own reliable expected date(s) (MLB ticket date,
+    else game_date/ts-derived) and *board_date* is known, a board for a date
+    outside that set cannot hold this bet's real game -- skip, never guess.
+    Applies to BOTH this team-match loop and the ticket fallback below.
     """
+    expected = _bet_expected_dates(bet)
+    if expected and board_date is not None and board_date not in expected:
+        return None
     left, right = _matchup_sides(bet.get("matchup", ""))
     for g in games:
         if g.get("state") not in _FINAL_STATES:
@@ -136,7 +154,7 @@ def _find_final_game(bet: Dict[str, Any], games: List[Dict[str, Any]]
             return g
     if str(bet.get("sport", "")).lower() == "mlb":
         from scripts.platformkit.grade_paper_asof import mlb_ticker_fallback_match as _mlb_fb
-        return _mlb_fb(bet, games)
+        return _mlb_fb(bet, games, board_date=board_date)
     return None
 
 
@@ -313,6 +331,9 @@ def grade_open_bets(
     fetch = fetch_finals if fetch_finals is not None else _route_fetch
     sports = sorted({str(b.get("sport", "")).lower() for b in open_bets})
     boards, feed_status = _fetch_boards(fetch, sports)
+    # This is always "today's" board (unscoped fetch) -- feeds _find_final_game's
+    # date guard so a bet whose OWN expected date isn't today can't bind to it.
+    today_s = _dt.datetime.now(_dt.timezone.utc).date().isoformat()
 
     settled_now: List[Dict[str, Any]] = []
     pending: List[Dict[str, Any]] = []
@@ -330,7 +351,7 @@ def grade_open_bets(
                       "last_decimal_home", "last_decimal_away"):
                 if bet.get(k) is None and pr.get(k) is not None:
                     bet = {**bet, k: pr[k]}
-        game = _find_final_game(bet, boards.get(sp, []))
+        game = _find_final_game(bet, boards.get(sp, []), board_date=today_s)
         if game is None:
             pending.append({"matchup": bet.get("matchup"), "sport": sp,
                             "reason": "no final game matched"})
