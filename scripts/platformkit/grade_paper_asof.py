@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import datetime as _dt
 import logging
+import re
 import time
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple
@@ -37,6 +38,10 @@ from scripts.platformkit import clv_ledger as _clv
 from scripts.platformkit.clv_settle_write import write_settlement as _write_settlement
 from scripts.platformkit.frontend import live_board as _lb
 from scripts.platformkit.ingame import npb_kbo_live_state as _nk
+from scripts.platformkit.ingame.hist_mlb_outcome_resolver import (
+    parse_mlb_ticker as _parse_mlb_ticker,
+    _split_tail as _mlb_split_tail,
+)
 from domains.baseball_kbo import team_map as _kbo_map
 
 logger = logging.getLogger(__name__)
@@ -46,6 +51,69 @@ logger = logging.getLogger(__name__)
 _BRIDGE_SPORTS = ("kbo", "npb")
 _DEFAULT_MAX_BETS = 200
 _DEFAULT_SLEEP_S = 1.0  # politeness: 1 req/s between DISTINCT board fetches
+
+# MLB team-alias gap (gap ledger row: 36-row backlog, 2026-07): Kalshi in-play
+# rows carry a Kalshi-house shorthand matchup label ("A's", "Chicago WS", "New
+# York Y") that grade_paper._team_match's full-name token match cannot
+# resolve. bet_id embeds the ORIGINAL Kalshi ticker though -- reused (not
+# re-derived) via hist_mlb_outcome_resolver's proven parser/split, same module
+# that already solves this exact Kalshi-shorthand-vs-ESPN-abbr gap for the
+# offline hist_mlb_forward_gate corpus.
+_MLB_TICKER_RE = re.compile(r"KXMLBGAME-[A-Z0-9]+")
+
+
+def _mlb_ticker(bet: Dict[str, Any]) -> Optional[str]:
+    """The raw KXMLBGAME-... ticker embedded in *bet*'s bet_id, or None."""
+    m = _MLB_TICKER_RE.search(str(bet.get("bet_id") or ""))
+    return m.group(0) if m else None
+
+
+def _mlb_ticker_date(bet: Dict[str, Any]) -> Optional[str]:
+    """The exact game date (ISO) embedded in *bet*'s KXMLBGAME ticker, or None.
+
+    A hard fact straight from the ticker -- preferred over the ts-based guess
+    in _candidate_dates below, since a Kalshi in-play row's ts (when our own
+    system recorded/discovered the market) can trail the game's own calendar
+    date by several days, well outside the ts/ts+1 heuristic window.
+    """
+    ticker = _mlb_ticker(bet)
+    if ticker is None:
+        return None
+    parsed = _parse_mlb_ticker(ticker)
+    return parsed[0].isoformat() if parsed else None
+
+
+def mlb_ticker_fallback_match(bet: Dict[str, Any], games: List[Dict[str, Any]]
+                              ) -> Optional[Dict[str, Any]]:
+    """MLB-only fallback for grade_paper._find_final_game: split the bet's own
+    KXMLBGAME ticker AWAY+HOME code tail against THIS board's own abbr set
+    (hist_mlb_outcome_resolver's ticker parser + split algorithm, never a new
+    hand-rolled team-name table) and match by EXACT abbr equality. None if no
+    ticker, an ambiguous split, or no FINAL game at that exact pairing.
+    """
+    ticker = _mlb_ticker(bet)
+    if ticker is None:
+        return None
+    parsed = _parse_mlb_ticker(ticker)
+    if parsed is None:
+        return None
+    _, tail, _gnum = parsed
+    abbr_index = {str(g.get("home_abbr") or "").upper() for g in games}
+    abbr_index |= {str(g.get("away_abbr") or "").upper() for g in games}
+    split = _mlb_split_tail(tail, abbr_index)
+    if split is None:
+        return None
+    away, home = split
+    from scripts.platformkit import grade_paper as _gp  # local: breaks the cycle
+    for g in games:
+        if g.get("state") not in _gp._FINAL_STATES:
+            continue
+        if (str(g.get("away_abbr") or "").upper() == away
+                and str(g.get("home_abbr") or "").upper() == home
+                and g.get("home_score") is not None
+                and g.get("away_score") is not None):
+            return g
+    return None
 
 
 def _shape_bridge_games(sport: str, rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -107,7 +175,14 @@ def _candidate_dates(bet: Dict[str, Any], *, today: Optional[str] = None) -> Lis
     which is expensive and pointless here -- we only need a final score). A bet whose
     true game date IS today is naturally picked up by the next normal daily
     grade_open_bets pass once that game goes final, not lost.
+
+    MLB KXMLBGAME rows: the ticker's own embedded date is a hard fact, preferred
+    over the ts guess below (see _mlb_ticker_date's docstring).
     """
+    if str(bet.get("sport", "")).lower() == "mlb":
+        tdate = _mlb_ticker_date(bet)
+        if tdate is not None:
+            return [tdate] if tdate != today else []
     gd = str(bet.get("game_date") or "").strip()[:10]
     if gd:
         return [gd] if gd != today else []

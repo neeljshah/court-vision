@@ -114,7 +114,15 @@ def _team_match(label: Optional[str], game_display: str, game_abbr: Optional[str
 
 def _find_final_game(bet: Dict[str, Any], games: List[Dict[str, Any]]
                      ) -> Optional[Dict[str, Any]]:
-    """The FINAL game whose two teams match this bet's matchup. None if not found/final."""
+    """The FINAL game whose two teams match this bet's matchup. None if not found/final.
+
+    MLB alias wiring (gap ledger, 36-row backlog): a Kalshi-house shorthand
+    matchup label ("A's", "Chicago WS", "New York Y") routinely fails the
+    token match below against ESPN's full team name. When bet_id embeds the
+    original KXMLBGAME ticker, grade_paper_asof.mlb_ticker_fallback_match
+    resolves the same game by exact abbr code instead (local import breaks
+    the cycle, mirrors that module's own import of this one).
+    """
     left, right = _matchup_sides(bet.get("matchup", ""))
     for g in games:
         if g.get("state") not in _FINAL_STATES:
@@ -126,6 +134,9 @@ def _find_final_game(bet: Dict[str, Any], games: List[Dict[str, Any]]
         m2 = (_team_match(left, ad, aa) and _team_match(right, hd, ha))
         if (m1 or m2) and g.get("home_score") is not None and g.get("away_score") is not None:
             return g
+    if str(bet.get("sport", "")).lower() == "mlb":
+        from scripts.platformkit.grade_paper_asof import mlb_ticker_fallback_match as _mlb_fb
+        return _mlb_fb(bet, games)
     return None
 
 

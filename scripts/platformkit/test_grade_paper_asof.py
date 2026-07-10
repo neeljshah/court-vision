@@ -12,7 +12,12 @@ from __future__ import annotations
 import json
 
 from scripts.platformkit.clv_ledger import record_bet
-from scripts.platformkit.grade_paper_asof import backfill_as_of, route_fetch
+from scripts.platformkit.grade_paper_asof import (
+    backfill_as_of,
+    mlb_ticker_fallback_match,
+    route_fetch,
+    _candidate_dates,
+)
 
 
 # --------------------------------------------------------------------------- #
@@ -148,6 +153,56 @@ def test_backfill_sleeps_only_between_distinct_boards(tmp_path):
     backfill_as_of(ledger, today="2026-06-25", fetch=fetch, _sleep=sleeps.append)
     assert fetched == [("mlb", "2026-06-20"), ("mlb", "2026-06-21")]
     assert sleeps == [1.0]
+
+
+# --------------------------------------------------------------------------- #
+# MLB team-alias gap (gap ledger, 36-row backlog): Kalshi shorthand matchup
+# labels ("A's", "Chicago WS", "New York Y") vs the ticker-based fallback.
+# --------------------------------------------------------------------------- #
+def test_mlb_ticker_fallback_matches_kalshi_shorthand_label():
+    bet = {"sport": "mlb", "matchup": "Chicago WS vs Cleveland",
+           "bet_id": "pm|kalshi|KXMLBGAME-26JUL051400CWSCLE|home"}
+    games = [_game("Cleveland Guardians", "CLE", "Chicago White Sox", "CHW", 6, 7)]
+    g = mlb_ticker_fallback_match(bet, games)
+    assert g is not None and g["home_abbr"] == "CLE" and g["away_abbr"] == "CHW"
+
+
+def test_mlb_ticker_fallback_none_without_ticker():
+    bet = {"sport": "mlb", "matchup": "Chicago WS vs Cleveland", "bet_id": "mlb|abc|home"}
+    games = [_game("Cleveland Guardians", "CLE", "Chicago White Sox", "CHW", 6, 7)]
+    assert mlb_ticker_fallback_match(bet, games) is None
+
+
+def test_mlb_ticker_fallback_none_when_not_final():
+    bet = {"sport": "mlb", "matchup": "Chicago WS vs Cleveland",
+           "bet_id": "pm|kalshi|KXMLBGAME-26JUL051400CWSCLE|home"}
+    games = [_game("Cleveland Guardians", "CLE", "Chicago White Sox", "CHW", 6, 7, state="pre")]
+    assert mlb_ticker_fallback_match(bet, games) is None
+
+
+def test_candidate_dates_prefers_mlb_ticker_date_over_ts():
+    bet = {"sport": "mlb", "ts": "2026-07-05T02:35:02+00:00",
+           "bet_id": "pm|kalshi|KXMLBGAME-26JUL071840NYYTB|away"}
+    assert _candidate_dates(bet, today="2026-07-10") == ["2026-07-07"]
+
+
+def test_backfill_settles_mlb_kalshi_shorthand_via_ticker(tmp_path):
+    """The exact gap this lane closes: matchup='Chicago WS vs Cleveland' fails the
+    plain token match, but the KXMLBGAME ticker in bet_id resolves it -- and its
+    own embedded date (07-05) drives the board fetch, not the ts-based guess."""
+    ledger = tmp_path / "clv_ledger.jsonl"
+    _stale_bet(ledger, "2026-07-04T23:27:44+00:00", matchup="Chicago WS vs Cleveland",
+              side="away", bet_id="pm|kalshi|KXMLBGAME-26JUL051400CWSCLE|away")
+
+    def fetch(sport, date):
+        assert sport == "mlb" and date == "2026-07-05"
+        return {"games": [_game("Cleveland Guardians", "CLE", "Chicago White Sox", "CHW", 6, 7)]}
+
+    out = backfill_as_of(ledger, today="2026-07-10", fetch=fetch, _sleep=lambda s: None)
+    assert out["settled_now"] == 1 and out["still_pending"] == 0
+    rows = [json.loads(ln) for ln in ledger.read_text(encoding="utf-8").splitlines() if ln]
+    settled = [r for r in rows if r.get("graded")]
+    assert len(settled) == 1 and settled[0]["outcome"] == "win"  # away (CHW) won 7-6
 
 
 def test_backfill_skips_todays_bets(tmp_path):
