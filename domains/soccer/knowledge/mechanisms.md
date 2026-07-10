@@ -407,3 +407,26 @@ No validator built this lane.
 - **source**: "Low Block In Soccer: Tactical Defensive Approach", https://stmichaelssoccer.com/rules/low-block-in-soccer-tactical-defensive-approach/ and "Low-Block – Football Tactics Explained" (The Football Analyst), https://the-footballanalyst.com/low-block-football-tactics-explained/ -- both describe the low-block-enables-fast-counterattack mechanism directly (conserving energy, exploiting space left by a pressing opponent), the basis for testing block depth against counterattack SHARE rather than #26's already-closed shot-quality-conceded question.
 
 ---
+
+## Seeded 2026-07-10 (research-wave 4 -- literature-sourced, UNTESTED, round-4 pool feedstock)
+
+Fresh mechanism hypothesis on set-piece specialization PERSISTENCE (a team
+trait question), distinct from #10 (population-level set-piece vs open-play
+CONVERSION RATE, already CONFIRMED) and #35 (overall xG-supremacy
+persistence, not scoped to set pieces). Checked against every row above and
+against `data/frontend/reject_ledger.jsonl` (535 rows, 0 keyword hits for
+`set.?piece.*persist`/`corner.*xg`/`specializ`) before seeding. Full premise
+check: `docs/research/research_seed_wave4_2026-07-10.md`. No validator
+built this lane.
+
+### 41. Team set-piece shot quality (xG per corner/free-kick shot) is a stable, persistent trait, distinct from the population-level conversion-rate question #10 already closed
+- **claim**: a team's own mean `statsbomb_xg` on set-piece shots (corners + free kicks pooled, same `shot.type.name` definition already used and CONFIRMED-populated by #10) is internally stable across a season -- split-half persistent -- i.e. some teams are genuinely better "set-piece specialists" (delivery quality, rehearsed routines, aerial targeting) in a repeatable way, not the population-level "set pieces convert lower than open play on average" question #10 already answered.
+- **premise check**: confirmed this session on the full 4,235-match StatsBomb event cache (grown from #10's original 3,443-match scan) that `shot.type.name` includes `{Corner, Free Kick, Open Play, Penalty, Kick Off}` with `shot.statsbomb_xg` present on every shot row (reused verbatim from #10's already-validated design, no new ingredient).
+- **causal story**: cited set-piece analytics literature (a 5-league/5-season, 484-team-season dataset) documents that dead-ball delivery quality and specialist personnel (e.g. a designated corner/free-kick taker) are a real, coached team investment distinct from open-play attacking quality -- if that investment is real and durable, a team's set-piece xG-per-shot should correlate across two halves of a season, not wash out as shot-to-shot noise the way #5 (soccer finishing-skill persistence) already found for open-play finishing.
+- **expected signature**: positive split-half Pearson r of per-team mean set-piece `statsbomb_xg`, first-half-of-corpus-dates vs second half.
+- **test spec**: `domains.soccer.knowledge.validate_research_wave4.setpiece_xg_persistence` (not yet built) -- per-team mean `shot.statsbomb_xg` restricted to `shot.type.name` in {Corner, Free Kick}, split-half by match date across the full 4,235-match event cache, teams with >=10 set-piece shots per half (mirrors the min-n floor style already used by #16/#34's persistence designs); Pearson r; declared bar |r|>=0.15 AND p<0.01, split-half by match index (even/odd) as the 2nd independent group for the replication bar.
+- **status**: UNTESTED
+- **artifact link**: none yet (spec only).
+- **source**: "Corners, Free Kicks, and Set Pieces Across Europe's Top Football Leagues: What the Data Actually Says" (Mathieu Acher), http://blog.mathieuacher.com/CornersSetPiecesFootballEN/ -- multi-season (5 leagues, 5 seasons, 484 team-seasons), the direct literature basis for testing set-piece performance as a repeatable team trait rather than a one-season snapshot; "Set Pieces Only: Quantifying the Value of James Ward-Prowse" (From The Byline), https://fromthebyline.substack.com/p/set-pieces-only-quantifying-the-value -- documents an individual dead-ball specialist consistently outperforming the ~0.06 xG free-kick baseline, motivating the team-level persistence question this row tests locally.
+
+---

@@ -562,3 +562,25 @@ halves NULL).
 - **status**: NOT_TESTABLE
 - **artifact link**: `domains/basketball_nba/knowledge/validate_q2_blowout_state.py::q2_foul_pace_state_interaction`; `domains/basketball_nba/knowledge/validation_ledger.jsonl`, hypothesis=`q2_foul_pace_state_interaction`.
 - **note**: closes this sub-question of the P2|m6 bucket-mapping search rather than leaving it silently untried; would need a new PBP-derived quarter-foul/quarter-pace build to test, out of scope for this session.
+
+---
+
+## Seeded 2026-07-10 (research-wave 4 -- literature-sourced, UNTESTED, round-4 pool feedstock)
+
+Fresh mechanism hypothesis on officiating-crew pace/whistle tendencies,
+scoped IDENTITY-FREE (no referee/crew-identity column exists locally),
+mirroring MLB's own identity-free called-strike-dispersion design (#39 in
+that ledger). Checked against every row above and against
+`data/frontend/reject_ledger.jsonl` (535 rows, 0 keyword hits for
+`officiat`/`whistle`/`crew`/`referee.*pace`) before seeding. Full premise
+check + dropped-candidate note: `docs/research/research_seed_wave4_2026-07-10.md`.
+No validator built this lane.
+
+### 54. Per-game whistle-tightness disperses beyond a team-adjusted Poisson null (identity-free, mirrors MLB #39)
+- **claim**: after netting out each team's own season-average personal-foul rate (removing which two teams are playing), the residual game-level total personal-foul count still varies across games by more than Poisson sampling noise alone would produce -- i.e. a real per-game environmental factor exists (crew assignment, that night's whistle tightness, game flow) beyond team identity, without needing to attribute it to a specific referee.
+- **causal story**: cited officiating-analytics coverage (DonaghyEffect, NBAstuffer) documents that NBA crews carry real, non-random foul-volume tendencies -- some crews average meaningfully more fouls/game than others, moving pace and free-throw volume by several points of total; the local corpus has no crew-identity column to test that directly, so this row tests the identity-free residual-dispersion signature the same way MLB #39 tested "does per-game called-strike rate vary beyond binomial noise" without ever claiming a specific umpire is responsible.
+- **expected signature**: quasi-Poisson dispersion ratio phi = chi2/df meaningfully above 1.0 on the team-baseline-adjusted residual game-total-PF series (declared bar phi>=1.15 AND p<0.01 -- set slightly below MLB #39's 1.2 bar because a team-baseline adjustment, not a raw pooled rate, is used here, so residual variance should already be closer to pure noise if no real per-game factor exists).
+- **test spec**: `domains.basketball_nba.knowledge.validate_research_wave4.foul_rate_dispersion_exceeds_poisson_noise` (not yet built) -- aggregate `data/domains/basketball_nba/player_boxscores.parquet` (confirmed columns `game_id`/`team`/`pf`, 77,744 rows) via `groupby(game_id,team)['pf'].sum()` to team-game PF, join each team's own season-mean PF (leave-one-out, excluding the target game, to avoid circularity) as that team's expected contribution, sum both teams' expected values to get each game's model-implied lambda, sum both teams' actual PF for the observed game-total; chi2 = sum((observed_g - lambda_g)^2 / lambda_g) ~ chi2(n_games-1) under the team-adjusted-Poisson null; phi=chi2/(n_games-1) is the effect size, full 3,611-game corpus (or a season-split subset if leave-one-out season means require a same-season floor), split-half by date for the 2-corpora replication bar.
+- **status**: UNTESTED
+- **artifact link**: none yet (spec only).
+- **source**: "How NBA Referees Affect Betting Lines, Totals & Player Props" (DonaghyEffect), https://www.donaghyeffect.com/nba/referees/explained -- documents that crews carry consistent foul-volume tendencies (some officials averaging notably more fouls/game than others) that measurably shift expected game totals; "The Referee Effect in the NBA" (NBAstuffer), https://www.nbastuffer.com/the-referee-effect-in-the-nba/ -- companion coverage of the same crew-tendency pattern. Neither source requires or provides individual-referee attribution on our local corpus; this row tests only the identity-free residual-dispersion signature their aggregate claims imply should exist.

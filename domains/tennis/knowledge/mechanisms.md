@@ -531,3 +531,30 @@ cycle's effect on serve execution. Checked against every row above and against
 - **source**: "Ball change in tennis: How does it affect match characteristics and rally pace in Grand Slam tournaments?" (ResearchGate), https://www.researchgate.net/publication/332753595_Ball_change_in_tennis_How_does_it_affect_match_characteristics_and_rally_pace_in_Grand_Slam_tournaments -- directly on-topic (same tournament scope, same question), the literature basis for testing ball-age cycle position against serve execution locally.
 
 ---
+
+## Seeded 2026-07-10 (research-wave 4 -- literature-sourced, UNTESTED, round-4 pool feedstock)
+
+Fresh mechanism hypothesis on within-tournament surface-speed drift by
+round, distinct from #18 (CONFIRMED clay/grass SURFACE-TYPE specialization
+persistence, a player trait across surfaces, not a within-tournament drift
+of one surface over time) and #36 (NOT_TESTABLE within-tournament REST-gap,
+blocked because `matches.parquet`'s `date` is the tournament START date
+constant per `tourney_id` -- this row deliberately uses `round`, not `date`,
+as its within-tournament ordinal to sidestep that exact granularity gap).
+Checked against every row above and against `data/frontend/reject_ledger.jsonl`
+(535 rows, 0 keyword hits for `surface.?speed`/`court.?speed`/
+`round.*surface`) before seeding. Full premise check:
+`docs/research/research_seed_wave4_2026-07-10.md`. No validator built this
+lane.
+
+### 39. Within-tournament ace rate rises from early to late rounds (surface-speed-drift proxy, sidesteps #36's date-granularity gap by using round instead)
+- **claim**: combined ace rate is higher in a tournament's later rounds (QF/SF/F) than in its earlier rounds (R128/R64/R32/R16), paired within the SAME `tourney_id` -- a within-tournament surface-speed-drift signature, distinct from #36 (blocked on a within-tournament REST-gap claim that needed per-match dates, which this corpus does not have at that granularity).
+- **premise check**: confirmed this session that `data/domains/tennis/matches.parquet` (30,616 rows) joined to `match_stats.parquet` (59,312 rows, confirmed columns `event_id`/`p1_ace_rate`/`p2_ace_rate`) via `event_id` gives 100% coverage on a sampled join; round-bucket coverage confirmed: early={R128,R64,R32,R16}=22,873 matches, late={QF,SF,F}=4,827 matches, and 675 distinct `tourney_id` values have >=3 matches in BOTH buckets -- enough for a paired within-tournament design. `round` (not `date`) is used as the within-tournament ordinal specifically because `matches.parquet`'s `date` column is confirmed (by #36) to be the tournament START date, constant across every round of a `tourney_id` -- this row's design was chosen to avoid re-hitting that exact gap.
+- **causal story**: cited Court Pace Index (CPI) tracking finds that hard-court surfaces measurably speed up over the course of a tournament as players' shoes wear the grit/texture off the top coat -- e.g. Court Pace Index rises from Round 1 to the final at majors like the US Open -- a physical surface-wear mechanism, not a player-quality-selection artifact (though the caveat that CPI tracking is itself concentrated on show courts, not outer/qualifying courts, is inherited honestly from the source rather than smoothed over).
+- **expected signature**: combined (p1+p2)/2 ace rate higher in the late-round bucket than the early-round bucket, paired by `tourney_id`.
+- **test spec**: `domains.tennis.knowledge.validate_research_wave4.surface_speed_drift_by_round_within_tournament` (not yet built) -- per match, combined ace rate = mean(`p1_ace_rate`, `p2_ace_rate`) from `match_stats.parquet` joined to `matches.parquet` for `tourney_id`+`round`; bucket `round` into early={R128,R64,R32,R16} vs late={QF,SF,F} (RR/BR round-robin/bronze rounds excluded as ambiguous within a straight-knockout early/late framing); per-`tourney_id` mean ace rate in each bucket, restricted to `tourney_id`s with >=3 matches in both buckets (675 qualify); paired t-test on the per-tournament (late-mean minus early-mean) gap; declared bar |eff|>=0.01 (rate points) AND p<0.01, split-half by `tourney_id` parity (even/odd hash) as the 2nd independent group for the replication bar, both halves required same sign.
+- **status**: UNTESTED
+- **artifact link**: none yet (spec only).
+- **source**: "Tennis Court Speed | Court Pace Index (CPI) Database 2012-2026" (courtspeed.com), https://courtspeed.com/ -- states CPI "tends to increase as the tournament progresses, as the grit on the court's surface is worn away by the players," with early-round matches at majors like the US Open measurably played on a slower version of the same surface than the final; explicitly flags that CPI data is concentrated on main stadium courts, a caveat carried into this row's premise rather than omitted. "Court speed and hard-court homogeneity" (Austen Peters, The Break Point), https://thebreakpoint.substack.com/p/court-speed-and-hard-court-homogeneity -- companion coverage of the same surface-wear mechanism.
+
+---
