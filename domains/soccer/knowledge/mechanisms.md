@@ -233,3 +233,21 @@ calibration/mechanism receipt, not ROI.
 - **status**: REJECTED (NULL_LOCAL).
 - **measured LOCAL magnitude**: combined shot-rate shift (after-before, matched window around the match's first goal), away-team-scored 0.0618 (n=158) vs home-team-scored 0.0570 (n=172); effect +0.0048, n=330, 400-match corpus.
 - **artifact link**: `domains/soccer/knowledge/validate_referee_schedule.py::away_goal_timing_asymmetry`.
+
+### 28. Trailing prior-xG composite beats a goals-only pregame base -- LOCAL NULL
+- **claim**: strictly-prior trailing EW real-xG-for/against diff (asof_pregame.parquet) lowers held-out home-win Brier over a goals-based EW-Poisson base.
+- **causal story**: shot quality (xG) is a lower-variance proxy of team strength than the noisier goals-scored signal, so conditioning on it should sharpen the base's win-prob estimate.
+- **expected signature**: held-out Brier(base+xg_prior_diff) < Brier(base alone), DM-significant, replicated across both StatsBomb corpora (A=EPL men, B=WSL women).
+- **test spec**: chronological 50/50 train/test split per corpus, logistic refit BASE vs BASE+feature, clustered DM by match_id, degenerate-base + planted-null guards (reuses `scripts.platformkit.gate_run_soccer_statsbomb`'s existing goals-Poisson base and split machinery).
+- **status**: REJECTED (NULL_LOCAL) -- neither corpus ships; A's held-out Brier got WORSE with the feature (base already captures most of the signal from only 170-190 held-out matches), B improved but short of DM significance.
+- **measured LOCAL magnitude**: split-half A(EPL): n=170, Brier 0.238090->0.246773, DM p=0.233 (feat worse). B(WSL): n=154, Brier 0.202416->0.184934, DM p=0.068 (feat better, not significant at eps=0.05). Combined n=324.
+- **artifact link**: `domains/soccer/validate_prior_xg_pregame.py`.
+
+### 29. Live cumulative xG diff adds to a (score, minute) in-game base -- LOCAL NULL
+- **claim**: the as-of minute-level cumulative real-xG diff (asof_ingame.parquet) lowers held-out home-win Brier over a goal-diff-only in-game base at the same minute.
+- **causal story**: goal difference is a sparse, discrete signal; the underlying shot-quality trend (who is actually creating better chances right now) should carry incremental in-play information over goals alone, especially before the next goal lands.
+- **expected signature**: held-out Brier(goal-diff-base+xg_diff_asof) < Brier(goal-diff-base alone) at a fixed minute snapshot, DM-significant, replicated across both corpora, leak-free (xg_diff_asof folded strictly minute<=t).
+- **test spec**: same chronological 50/50 split-half design as #28, applied per-minute-snapshot frame at minute 30/60/75 (robustness across match phase); planted-null and degenerate-base guards identical.
+- **status**: REJECTED (NULL_LOCAL) -- 0/3 minute snapshots ship in both corpora; the goal-diff base already dominates and xg_diff_asof does not clear DM significance at any of the 3 checkpoints in either corpus.
+- **measured LOCAL magnitude**: min30 A n=200 Brier 0.197271->0.195606 p=0.420 | B n=200 0.170695->0.159971 p=0.578. min60 A n=200 0.127919->0.129006 p=0.678 | B n=200 0.112323->0.125312 p=0.351. min75 A n=200 0.086762->0.092818 p=0.122 | B n=200 0.093832->0.105763 p=0.270. Combined n=1200.
+- **artifact link**: `domains/soccer/validate_xg_diff_ingame.py`.
