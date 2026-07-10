@@ -4,7 +4,9 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from domains.basketball_nba.boxdetail_asof import STATS, build_boxdetail_asof
+from domains.basketball_nba.boxdetail_asof import (
+    STATS, _combine_espn_sources, _quarantined_ids, build_boxdetail_asof,
+)
 
 
 def _game(event_id, date, home, away, hfb, afb, hpaint=40.0, apaint=40.0,
@@ -104,8 +106,59 @@ def test_output_columns_cover_all_stats_both_windows():
         assert f"{s}_l10_diff_asof" in OUTPUT_COLS
 
 
+def test_combine_espn_sources_dedupes_normalized_tricodes_backfill_fills_gap():
+    # live spells GSW as "GSW" (alt spelling) w/ no box-detail; backfill spells
+    # it "GS" (canonical) w/ real detail. Same real game -- must collapse to
+    # ONE row, not two, and backfill must fill the gap live left NaN.
+    live = pd.DataFrame([_game("liveid1", "2026-01-01", "GSW", "BOS",
+                                np.nan, np.nan, hpaint=np.nan, apaint=np.nan,
+                                htov=np.nan, atov=np.nan, hlead=np.nan, alead=np.nan)])
+    back = pd.DataFrame([_game("401700001", "2026-01-01", "GS", "BOS", 12.0, 8.0)])
+    out = _combine_espn_sources(live, back)
+    assert len(out) == 1
+    assert out.iloc[0]["home_fast_break_pts"] == 12.0
+
+
+def test_combine_espn_sources_live_wins_when_both_present():
+    live = pd.DataFrame([_game("liveid1", "2026-01-01", "GS", "BOS", 5.0, 5.0)])
+    back = pd.DataFrame([_game("401700001", "2026-01-01", "GS", "BOS", 12.0, 8.0)])
+    out = _combine_espn_sources(live, back)
+    assert len(out) == 1
+    assert out.iloc[0]["home_fast_break_pts"] == 5.0
+
+
+def test_quarantined_ids_missing_file_returns_empty(tmp_path):
+    import domains.basketball_nba.boxdetail_asof as boxdetail_asof
+    orig = boxdetail_asof._QUARANTINE
+    boxdetail_asof._QUARANTINE = tmp_path / "no_such_file.json"
+    try:
+        assert boxdetail_asof._quarantined_ids("live") == set()
+    finally:
+        boxdetail_asof._QUARANTINE = orig
+
+
+def test_quarantined_ids_filters_by_source(tmp_path):
+    import json
+    import domains.basketball_nba.boxdetail_asof as boxdetail_asof
+    qpath = tmp_path / "quarantine.json"
+    qpath.write_text(json.dumps({"flagged": [
+        {"source": "live", "event_id": "0022400002"},
+        {"source": "backfill_2024_25", "event_id": "401704937"},
+    ]}), encoding="ascii")
+    orig = boxdetail_asof._QUARANTINE
+    boxdetail_asof._QUARANTINE = qpath
+    try:
+        assert boxdetail_asof._quarantined_ids("live") == {"0022400002"}
+        assert boxdetail_asof._quarantined_ids("backfill_2024_25") == {"401704937"}
+        assert boxdetail_asof._quarantined_ids("other") == set()
+    finally:
+        boxdetail_asof._QUARANTINE = orig
+
+
 if __name__ == "__main__":
     test_walk_forward_snapshot_before_update()
     test_foul_trouble_combines_tech_and_flagrant()
     test_output_columns_cover_all_stats_both_windows()
+    test_combine_espn_sources_dedupes_normalized_tricodes_backfill_fills_gap()
+    test_combine_espn_sources_live_wins_when_both_present()
     print("OK: boxdetail_asof leak-free walk-forward self-checks pass.")
