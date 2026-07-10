@@ -12,8 +12,17 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 REPO = Path(__file__).resolve().parents[2]
+# M17: canonical refreshed path (calibration_refresh_job keeps this <=72h old);
+# fall back to the retired one-shot wave21 artifact only if latest is absent.
+# Resolved lazily (not a frozen module-level constant) so a long-running
+# daemon process sees _LATEST the moment calibration_refresh_job creates it.
+_LATEST = REPO / "data" / "frontend" / "ops" / "calibration_scoreboard_latest.json"
 SOURCE = REPO / "data" / "frontend" / "ops" / "calibration_scoreboard_wave21.json"
 HISTORY = REPO / "data" / "cache" / "scoreboard_history.jsonl"
+
+
+def _resolve_source() -> Path:
+    return _LATEST if _LATEST.exists() else SOURCE
 
 
 def _seen_keys(history_path: Path) -> set:
@@ -31,7 +40,7 @@ def _seen_keys(history_path: Path) -> set:
 def append_rows(source_path: Optional[Path] = None,
                 history_path: Optional[Path] = None) -> Dict[str, Any]:
     """Append new per-sport calibration rows; idempotent. Returns summary."""
-    src = source_path or SOURCE
+    src = source_path or _resolve_source()
     hist = history_path or HISTORY
     if not src.exists():
         return {"status": "no_source", "appended": 0}
