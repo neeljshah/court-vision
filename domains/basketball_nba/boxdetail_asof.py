@@ -15,12 +15,10 @@ NaN when a team has zero prior games WITH a non-null detail value (box-detail
 columns only exist for a subset of games -- OT-truncation caveat below -- so
 NaN here is expected and honest, not a bug).
 
-OT CAUTION (carried from the in-flight parallel lane): espn_boxscores finals are
-TRUNCATED for OT games (regulation tie recorded, not the final score). This
-builder never reads final-score columns (home_score/away_score/margin) -- only
-box-DETAIL columns (fast_break_pts, paint_pts, tov_pts, foul counts). largest_lead
-is an in-game stat (not a final-score column) and is safe to use here, but is
-noted as the one column closest to that caveat's boundary.
+OT CAUTION: espn_boxscores finals are TRUNCATED for OT games (regulation tie
+recorded, not final score). This builder never reads final-score columns
+(home_score/away_score/margin) -- only box-DETAIL columns. largest_lead is an
+in-game stat, not a final-score column, and is safe here.
 
 Input ``espn_box`` columns consumed (one row per game already, home_/away_
 prefixed -- no team-game pivot needed, unlike player_boxscores.parquet):
@@ -29,18 +27,19 @@ prefixed -- no team-game pivot needed, unlike player_boxscores.parquet):
   {home,away}_largest_lead, {home,away}_tech, {home,away}_flagrant.
 
 ID BRIDGE: espn_boxscores.parquet is keyed by ESPN event_id, a different ID
-space than the NBA game_id every other as-of parquet (games.parquet,
-asof_features.parquet, asof_box_extra.parquet) and the gate machinery
-(asof_ast_rate_eval.build_candidate_frame) key on. The on-disk
-espn_nba_game_bridge.parquet (domains/basketball_nba/espn_nba_bridge.py) only
-covers 2023-24/2024-25 (no linescores_2025_26.parquet exists yet), which is
-BEFORE this box-detail family's own coverage window (2026-01-20 onward) --
-zero overlap. This module instead does the SAME schedule-key join directly
-against games.parquet: (home tricode, away tricode, calendar date), reusing
-espn_nba_bridge._norm_abbr's ESPN->NBA-stats tricode normalization. No score/
-outcome field participates (outcome-free, safe pregame). Unmatched rows
-(~24% in the detail-era window -- playoffs/date-format edge cases outside
-games.parquet's regular-season scope) are DROPPED, never fabricated.
+space than the NBA game_id every other as-of parquet and the gate machinery
+key on. The on-disk espn_nba_game_bridge.parquet only covers 2023-24/2024-25
+with zero overlap with this family's coverage window, so this module instead
+does its OWN schedule-key join directly against games.parquet: (home tricode,
+away tricode, calendar date), reusing espn_nba_bridge._norm_abbr. Outcome-free
+(no score field participates). Unmatched rows (~24% in the detail-era window)
+are DROPPED, never fabricated.
+
+DEFAULT SOURCE (``espn_box`` not passed): live parquet ADDITIVELY combined with
+the 2024-25 backfill (real box-detail 2024-10-22..2025-04-13, vs live's
+2026-01-20+), both quarantine-filtered, deduped on normalized schedule key
+not event_id -- see _combine_espn_sources. Passing ``espn_box`` explicitly
+(every test does) bypasses this; unchanged for callers.
 
 Output -> ``data/domains/basketball_nba/boxdetail_asof.parquet`` keyed by the
 real NBA game_id (bridged, see above), see OUTPUT_COLS.
@@ -55,9 +54,10 @@ candidate only, gated honestly downstream.
 """
 from __future__ import annotations
 
+import json
 from collections import deque
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Set
 
 import numpy as np
 import pandas as pd
@@ -66,6 +66,8 @@ from domains.basketball_nba.espn_nba_bridge import _norm_abbr
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 _DEFAULT_IN = _REPO_ROOT / "data" / "domains" / "basketball_nba" / "espn_boxscores.parquet"
+_BACKFILL_IN = _REPO_ROOT / "data" / "domains" / "basketball_nba" / "espn_boxscores_2024_25.parquet"
+_QUARANTINE = _REPO_ROOT / "data" / "domains" / "basketball_nba" / "box_integrity_quarantine.json"
 _GAMES = _REPO_ROOT / "data" / "domains" / "basketball_nba" / "games.parquet"
 _DEFAULT_OUT = _REPO_ROOT / "data" / "domains" / "basketball_nba" / "boxdetail_asof.parquet"
 
@@ -156,12 +158,8 @@ def _walk_forward_team(tg: pd.DataFrame) -> pd.DataFrame:
                 out_cols[f"{s}_l10_asof"].append(float(np.mean(dq)) if dq else np.nan)
         n_prior_list.append(cnt)
 
-        # --- UPDATE: box-detail is an all-or-nothing block per game (ESPN
-        # either returns the whole detail set or none of it -- verified on
-        # disk, every one of the 5 stats is null/non-null in lockstep), so a
-        # game only counts as a "prior game" -- for every stat, together --
-        # when the WHOLE block is present. A partial row is skipped entirely
-        # rather than diluting one stat's mean with a missing value. ---
+        # UPDATE: box-detail is all-or-nothing per game (verified on disk, the
+        # 5 stats are null/non-null in lockstep) -- a partial row never counts.
         covered = all(pd.notna(r[s]) for s in STATS)
         if covered:
             n[t] = cnt + 1
@@ -198,6 +196,46 @@ def _pivot_to_games(tg: pd.DataFrame) -> pd.DataFrame:
     return out.sort_values("game_id", kind="mergesort").reset_index(drop=True)
 
 
+def _quarantined_ids(source: str) -> Set[str]:
+    """event_ids flagged for one source ("live"/"backfill_2024_25")."""
+    if not _QUARANTINE.exists():
+        return set()
+    payload = json.loads(_QUARANTINE.read_text(encoding="utf-8"))
+    return {str(f["event_id"]) for f in payload.get("flagged", []) if f.get("source") == source}
+
+
+def _combine_espn_sources(live: pd.DataFrame, backfill: pd.DataFrame) -> pd.DataFrame:
+    """live + 2024-25 backfill, same real game collapsed to one row. Live and
+    backfill event_ids are DIFFERENT namespaces for the same games, so dedupe
+    on the schedule key the bridge itself joins on (date/home/away), not
+    event_id -- else an overlapping game double-matches games.parquet. Group
+    on _norm_abbr'd tricodes, not raw home_abbr/away_abbr: live alone mixes
+    spellings for one team (GS/GSW, NO/NOP, NY/NYK, SA/SAS, UTA/UTAH, WAS/
+    WSH), which would split one game into two groups and still double-match
+    post-bridge. groupby.first() skips NaN: live wins where non-null,
+    backfill fills only the pre-2026-01-20 gap."""
+    combined = pd.concat([live, backfill], ignore_index=True, sort=False)
+    combined["date"] = pd.to_datetime(combined["date"])
+    combined["_nh"] = combined["home_abbr"].map(_norm_abbr)
+    combined["_na"] = combined["away_abbr"].map(_norm_abbr)
+    out = combined.groupby(["date", "_nh", "_na"], as_index=False, sort=False).first()
+    return out.drop(columns=["_nh", "_na"])
+
+
+def _load_default_espn_box() -> pd.DataFrame:
+    """Live + backfill parquet, both quarantine-filtered; live alone if no
+    backfill file. See _combine_espn_sources."""
+    if not _DEFAULT_IN.exists():
+        raise FileNotFoundError(f"espn_boxscores.parquet not found at {_DEFAULT_IN}.")
+    live = pd.read_parquet(_DEFAULT_IN)
+    live = live[~live["event_id"].astype(str).isin(_quarantined_ids("live"))]
+    if not _BACKFILL_IN.exists():
+        return live
+    backfill = pd.read_parquet(_BACKFILL_IN)
+    backfill = backfill[~backfill["event_id"].astype(str).isin(_quarantined_ids("backfill_2024_25"))]
+    return _combine_espn_sources(live, backfill)
+
+
 def build_boxdetail_asof(
     espn_box: Optional[pd.DataFrame] = None,
     games: Optional[pd.DataFrame] = None,
@@ -205,30 +243,15 @@ def build_boxdetail_asof(
 ) -> Path:
     """Build leak-free walk-forward box-detail as-of features.
 
-    Parameters
-    ----------
-    espn_box:
-        ``espn_boxscores.parquet``-shaped DataFrame (event_id, date, home_abbr,
-        away_abbr + home_/away_ fast_break_pts/paint_pts/tov_pts/largest_lead/
-        tech/flagrant). If None, reads the default on-disk parquet.
-    games:
-        ``games.parquet``-shaped DataFrame (game_id, date, home_team, away_team)
-        used only for the outcome-free event_id->game_id schedule-key bridge
-        (see module docstring). If None, reads the default on-disk parquet.
-    out_path:
-        Output parquet path. If None, uses the default ``boxdetail_asof.parquet``.
-
-    Returns
-    -------
-    Path
-        Parquet path written (one row per game_id; see OUTPUT_COLS). NaN as-of
-        values where a team has zero prior games with a non-null detail value.
+    espn_box: espn_boxscores.parquet-shaped DataFrame; None -> default source
+    (see module docstring). games: games.parquet-shaped DataFrame for the
+    outcome-free schedule-key bridge; None -> default on-disk parquet.
+    out_path: output path; None -> default boxdetail_asof.parquet.
+    Returns the Path written (one row per game_id; see OUTPUT_COLS).
     """
     dest = Path(out_path) if out_path is not None else _DEFAULT_OUT
     if espn_box is None:
-        if not _DEFAULT_IN.exists():
-            raise FileNotFoundError(f"espn_boxscores.parquet not found at {_DEFAULT_IN}.")
-        espn_box = pd.read_parquet(_DEFAULT_IN)
+        espn_box = _load_default_espn_box()
     if games is None:
         if not _GAMES.exists():
             raise FileNotFoundError(f"games.parquet not found at {_GAMES}.")

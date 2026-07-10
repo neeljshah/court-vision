@@ -6,10 +6,12 @@ Thin coverage:
 2. _assert_no_banned_tokens: raises on a banned $-language token, passes clean.
 3. run_sweep: real-slice integration run (points at the real on-disk
    boxdetail_asof.parquet, writes to a tmp out_dir) -- asserts the verdict
-   shape and the current honest NOT_TESTABLE/premise-blocked state (box-detail
-   coverage predates this gate's 70% train cutoff on the current corpus, so
-   every feature is expected NOT_TESTABLE -- a REJECT/NOT_TESTABLE here is a
-   success per repo policy, not a failure).
+   shape and the current honest state. Since the 2024-25 backfill parquet
+   (domains/basketball_nba/boxdetail_asof.py's _load_default_espn_box) now
+   gives box-detail coverage that spans this gate's 70% train cutoff, every
+   feature is a REAL evaluated test (no longer NOT_TESTABLE/premise-blocked).
+   All 4 REJECT on the current corpus -- an honest REJECT is a success per
+   repo policy, not a failure; no edge claimed.
 
 Run:
     cd /c/Users/neelj/nba-ai-system && python -m pytest \
@@ -56,10 +58,10 @@ def test_run_sweep_real_slice_verdict_shape(tmp_path):
         assert r["verdict"] in ("SHIP", "REJECT", "NOT_TESTABLE")
         assert r["n_rows"] > 0
         assert "real" in r and "planted_null" in r and "truncation" in r
-        # current on-disk corpus: box-detail history starts after this gate's
-        # train cutoff -> every feature is honestly premise-blocked.
-        assert r["verdict"] == "NOT_TESTABLE"
-        assert "train cutoff" in r["note"]
+        # backfill-extended corpus: box-detail now spans the train cutoff ->
+        # a REAL evaluated test, no longer premise-blocked. REJECT is honest.
+        assert r["verdict"] == "REJECT"
+        assert "calibration-only" in r["note"]
 
     assert (tmp_path / "boxdetail_gate_summary.json").exists()
     for feat in BG.GATED_FEATURES:
