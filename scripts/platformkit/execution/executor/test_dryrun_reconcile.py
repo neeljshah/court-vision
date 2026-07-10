@@ -71,45 +71,63 @@ def test_dryrun_writes_asof_stamped_fills_and_is_idempotent(tmp_path):
     assert len(load_jsonl(out)) == 2
 
 
-def test_resolve_mlb_ticker_synthetic_row():
-    """M13 fix: a composed row with NO ticker/kalshi_ticker/market_id (the
-    real-world shape composer emits) still resolves via captured book_depth
-    legs + KALSHI_ABBR team-name lookup -- proves the parser seam works even
-    when no live board is available to exercise it end-to-end."""
+def test_resolve_mlb_ticker_authoritative_not_matchup_order():
+    """M14 fix: reproduces the REAL wrong-leg bug (KCBAL-KC written live when
+    the actual home team is Baltimore -- Kansas City Royals @ Baltimore
+    Orioles per statsapi). The composed row's `matchup` string
+    ("Kansas City vs Baltimore") is a home-first-LOOKING trap: naive
+    `matchup.partition(" vs ")` parsing would pick 'Kansas City' for
+    side='home' -> the wrong leg (-KC) that was actually written to
+    dryrun_orders.jsonl (see dryrun_orders_quarantine.jsonl). The resolver
+    must ignore `matchup` entirely and pick the CORRECT leg (-BAL) via the
+    authoritative ingame_id_resolver_mlb.resolve_ticker(game_id), injected
+    here with the real statsapi-shaped candidate (no network, no
+    monkeypatch needed -- candidates is resolve_ticker's own test seam)."""
+    game_id = "KXMLBGAME-26JUL121335KCBAL"
     legs = dryrun.leg_index([
-        {"ticker": "KXMLBGAME-26JUL121340CLEMIA-CLE"},
-        {"ticker": "KXMLBGAME-26JUL121340CLEMIA-MIA"},
+        {"ticker": game_id + "-KC"},
+        {"ticker": game_id + "-BAL"},
     ])
-    row = {"sport": "mlb", "game_id": "KXMLBGAME-26JUL121340CLEMIA",
-           "matchup": "Cleveland Guardians vs Miami Marlins", "side": "home"}
-    assert dryrun.resolve_mlb_ticker(row, legs) == "KXMLBGAME-26JUL121340CLEMIA-CLE"
+    candidates = [{"game_pk": "824814", "away": "Kansas City Royals",
+                  "home": "Baltimore Orioles"}]
+    row = {"sport": "mlb", "game_id": game_id,
+           "matchup": "Kansas City vs Baltimore", "side": "home"}
+    # side='home' must resolve to BAL (the real home team), NOT the -KC leg
+    # a naive matchup-order parse would have produced.
+    assert dryrun.resolve_mlb_ticker(row, legs, candidates=candidates) == game_id + "-BAL"
     away_row = dict(row, side="away")
-    assert dryrun.resolve_mlb_ticker(away_row, legs) == "KXMLBGAME-26JUL121340CLEMIA-MIA"
-    # honest misses: wrong sport, no captured legs for this game, unknown side.
-    assert dryrun.resolve_mlb_ticker(dict(row, sport="nba"), legs) is None
-    assert dryrun.resolve_mlb_ticker(dict(row, game_id="KXMLBGAME-NOPE"), legs) is None
-    assert dryrun.resolve_mlb_ticker(dict(row, side="tie"), legs) is None
+    assert dryrun.resolve_mlb_ticker(away_row, legs, candidates=candidates) == game_id + "-KC"
+    # honest misses: wrong sport, no captured legs, unknown side, unresolvable game.
+    assert dryrun.resolve_mlb_ticker(dict(row, sport="nba"), legs, candidates=candidates) is None
+    assert dryrun.resolve_mlb_ticker(dict(row, game_id="KXMLBGAME-NOPE"), legs,
+                                     candidates=candidates) is None
+    assert dryrun.resolve_mlb_ticker(dict(row, side="tie"), legs, candidates=candidates) is None
+    assert dryrun.resolve_mlb_ticker(row, legs, candidates=[]) is None
 
 
 def test_dryrun_resolves_mlb_ticker_end_to_end(tmp_path):
-    """Same fix, exercised through run_dryrun end-to-end: a composer-shaped
-    row (game_id + matchup + side, no ticker) parses and fills."""
+    """Same M14 fix, exercised through run_dryrun end-to-end: a
+    composer-shaped row (game_id + side, no ticker) resolves via the
+    injected `mlb_candidates` seam (offline, no network) to the CORRECT
+    leg -- Cleveland Guardians @ Miami Marlins means home is Miami, so
+    side='home' must fill against the -MIA leg, not -CLE."""
     inp = tmp_path / "bestbets_composed.jsonl"
     out = tmp_path / "dryrun_orders.jsonl"
     row = {"sport": "mlb", "game_id": "KXMLBGAME-26JUL121340CLEMIA",
            "matchup": "Cleveland Guardians vs Miami Marlins",
            "market_type": "moneyline", "side": "home", "model_prob": 0.55}
     _write_jsonl(inp, [row])
-    snap = {"ticker": "KXMLBGAME-26JUL121340CLEMIA-CLE", "best_bid": 0.50,
+    snap = {"ticker": "KXMLBGAME-26JUL121340CLEMIA-MIA", "best_bid": 0.50,
             "best_ask": 0.56, "book_thinness": 100.0,
             "ts": NOW.strftime("%Y-%m-%dT%H:%M:%SZ"), "sport": "mlb"}
     depth = _depth_dir(tmp_path, [snap])
+    candidates = [{"game_pk": "1", "away": "Cleveland Guardians", "home": "Miami Marlins"}]
 
-    rep = dryrun.run_dryrun(inp, out, depth)
+    rep = dryrun.run_dryrun(inp, out, depth, mlb_candidates=candidates)
     assert rep["n_unparseable"] == 0 and rep["n_ticker_resolved"] == 1
     assert rep["n_written"] == 1
     written = load_jsonl(out)[0]
-    assert written["ticker"] == "KXMLBGAME-26JUL121340CLEMIA-CLE"
+    assert written["ticker"] == "KXMLBGAME-26JUL121340CLEMIA-MIA"
 
 
 def test_dryrun_missing_input_reports_honestly(tmp_path):
