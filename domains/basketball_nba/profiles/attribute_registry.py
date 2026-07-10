@@ -751,4 +751,29 @@ for _attr, _desc in _BOXDETAIL_SPECS:
         "verifiable_by_design": True,
     }
 
+# ---------------------------------------------------------------------------
+# CROSS-GAME CARRYOVER as-of family (C4 lane, depth-frontier item 4): yesterday's
+# realized load (heavy-minutes fatigue + rest days), LAG-1 (the team's single
+# immediately-prior game) not a season-to-date mean -- domains/basketball_nba/
+# carryover_asof.py. Tagged `family` so it AUTO-ENTERS the interaction factory's
+# candidate space (nba_carryover_self_cross template), same seam as box_detail_asof.
+_CARRYOVER_SPECS = [
+    ("heavy_min_load_asof", "Team's prior game's total minutes logged by heavy-usage "
+                            "(>=30min) players -- a fatigue-carryover proxy."),
+    ("rest_days_asof", "Days since the team's prior game (b2b/rest signal)."),
+]
+for _attr, _desc in _CARRYOVER_SPECS:
+    TEAM_ATTRIBUTES[_attr] = {
+        "description": _desc,
+        "entity": "team",
+        "family": "carryover_asof",
+        "ingredients": [{"name": "min", "source": "data/domains/basketball_nba/player_boxscores.parquet (via carryover_asof.py, LAG-1 walk-forward)"}],
+        "formula": f"LAG-1 (immediately-prior game) {_attr.replace('_asof', '')}, reset per team-season",
+        "status": "DESCRIPTIVE",
+        "floor": {"n_prior": 1.0},
+        "weight_ledger_family": None,
+        "seasons": ["2023_24", "2024_25", "2025_26"],
+        "verifiable_by_design": True,
+    }
+
 ATTRIBUTES: dict[str, dict] = {**PLAYER_ATTRIBUTES, **TEAM_ATTRIBUTES, **LINEUP_ATTRIBUTES}

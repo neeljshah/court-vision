@@ -315,6 +315,7 @@ def _mlb_pa_builder(attrs: List[str], tpl: Dict[str, Any]) -> Optional[Dict[str,
 # frame-building functions are re-exported below so `RUN.build_nba_boxdetail_
 # frame` etc keep working for callers/tests that import them off this module.
 from scripts.platformkit.interaction_factory import builders_task39b as _t39b  # noqa: E402
+from scripts.platformkit.interaction_factory import builders_carryover as _carry  # noqa: E402
 
 build_nba_boxdetail_frame = _t39b.build_nba_boxdetail_frame
 build_mlb_battrack_frame = _t39b.build_mlb_battrack_frame
@@ -332,6 +333,8 @@ _BUILDERS = {
     "mlb_pa_archetype_asof": _t39b._mlb_pa_archetype_builder,
     "tennis_match_asof": _t39b._tennis_match_builder,
     "soccer_match_asof": _t39b._soccer_match_builder,
+    "nba_carryover_asof": _carry._nba_carryover_builder,
+    "mlb_carryover_asof": _carry._mlb_carryover_builder,
 }
 
 

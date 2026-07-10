@@ -586,6 +586,33 @@ def _leaderboard_attributes() -> dict[str, dict[str, Any]]:
     return attrs
 
 
+# ---------------------------------------------------------------------------
+# CROSS-GAME CARRYOVER as-of family (C4 lane, depth-frontier item 4): the SP's
+# own prior-start realized load (pitch count + rest days), LAG-1 -- domains/
+# mlb/carryover_asof.py. entity="pitcher" (MLB's ENTITIES has no "team" value;
+# these are genuinely pitcher-level quantities before the interaction_factory
+# aggregates them to a team-game diff, see builders_carryover.py). Tagged
+# `family` for future auto-discovery consistency with the NBA carryover_asof
+# family, though mlb_carryover_self_cross itself declares a plain attribute
+# pool (see generator.py) rather than an entity/family pool.
+ATTRIBUTES["sp_prior_pitch_count_asof"] = {
+    "description": "Starting pitcher's own immediately-PRIOR start's pitch count "
+                    "(LAG-1, not a rolling mean) -- a fatigue-carryover proxy.",
+    "entity": "pitcher",
+    "family": "carryover_asof",
+    "ingredients": ["n_pitches_prior_start", "game_date"],
+    "formula": "LAG-1 (immediately-prior start) pitch count for this pitcher",
+    "status": "DESCRIPTIVE", "floor": 10, "weight_ledger_family": "descriptive",
+}
+ATTRIBUTES["sp_rest_days_asof"] = {
+    "description": "Days between this start and the starting pitcher's own prior start.",
+    "entity": "pitcher",
+    "family": "carryover_asof",
+    "ingredients": ["game_date", "game_date_prior_start"],
+    "formula": "this_start_date - prior_start_date, in days",
+    "status": "DESCRIPTIVE", "floor": 10, "weight_ledger_family": "descriptive",
+}
+
 ATTRIBUTES.update(_leaderboard_attributes())
 
 ENTITIES = ("batter", "pitcher", "catcher", "fielder")

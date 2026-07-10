@@ -101,6 +101,22 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
         "blocklist_attrs": [],
         "blocklist_pairs": [],
     },
+    # ---- NBA cross-game CARRYOVER family (C4 lane, depth-frontier item 4) --
+    # LAG-1 yesterday's-realized-load diffs (heavy_min_load, rest_days) from
+    # domains/basketball_nba/carryover_asof.py, self-crossed with Elo covariate
+    # -- SAME shape as nba_boxdetail_self_cross (team entity + family pool),
+    # b2b/rest is heavily priced so NULL/small is the expected, honest verdict.
+    "nba_carryover_self_cross": {
+        "sport": "basketball_nba",
+        "atomic_unit": "team_game",
+        "outcome": "home_win",
+        "baseline": "home_win ~ elo + attr_a_diff_asof + attr_b_diff_asof",
+        "pairing": "self_cross",
+        "left_pool": {"entity": "team", "family": "carryover_asof"},
+        "feature_builder": "nba_carryover_asof",   # registered -> runner._BUILDERS (builders_carryover.py)
+        "blocklist_attrs": [],
+        "blocklist_pairs": [],
+    },
     # ---- MLB (2) -------------------------------------------------------
     "mlb_pa_batter_x_pitcher": {
         "sport": "mlb",
@@ -159,6 +175,22 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
         "left_pool": {"attributes": ["K_avoidance", "BB_rate"]},
         "entity_classes": "mlb_team_archetype",
         "feature_builder": "mlb_pa_archetype_asof",
+        "blocklist_attrs": [],
+        "blocklist_pairs": [],
+    },
+    # ---- MLB cross-game CARRYOVER family (C4 lane, depth-frontier item 4) --
+    # LAG-1 SP prior-start pitch count + rest days from domains/mlb/
+    # carryover_asof.py. No "team"-entity in MLB's own registry (ENTITIES =
+    # batter/pitcher/catcher/fielder), so the pool is a plain attribute list
+    # (same shape as mlb_pa_batter_x_pitcher) rather than an entity/family pool.
+    "mlb_carryover_self_cross": {
+        "sport": "mlb",
+        "atomic_unit": "team_game",
+        "outcome": "home_win",
+        "baseline": "home_win ~ elo + attr_a_diff_asof + attr_b_diff_asof",
+        "pairing": "self_cross",
+        "left_pool": {"attributes": ["sp_prior_pitch_count_asof", "sp_rest_days_asof"]},
+        "feature_builder": "mlb_carryover_asof",   # registered -> runner._BUILDERS (builders_carryover.py)
         "blocklist_attrs": [],
         "blocklist_pairs": [],
     },
