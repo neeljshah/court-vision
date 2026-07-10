@@ -497,3 +497,26 @@ row above (especially #8/#18 NOT_TESTABLE bullpen-leverage-chaining, CLOSED
 - **source**: "What makes a good pinch hitter in 2026? One manager might have revealed the secret" (ESPN), https://www.espn.com/mlb/story/_/id/48475945/mlb-2026-pinch-hitting-hitters-swings-tyler-wade-texas-rangers-skip-schumaker -- reports 61/65 (94%) of 5th/6th-inning pinch-hitters in the cited sample entered specifically to face opposite-handed pitching; "The Three Batter Minimum's Effect on Late-Game Strategy" (FanGraphs), https://blogs.fangraphs.com/the-three-batter-minimums-effect-on-late-game-strategy/ -- context on how the 2020 three-batter-minimum rule reshaped this exact platoon-matching tactic.
 
 ---
+
+## Seeded 2026-07-10 (research-wave 4 -- literature-sourced, UNTESTED, round-4 pool feedstock)
+
+Fresh mechanism hypothesis on baserunning aggression vs outfield-arm
+deterrence, using a corpus (`espn_boxscores.parquet`) distinct from the one
+that closed #19 (savant_full, NOT_TESTABLE -- zero SB/CS events in that
+file's `events` column). Checked against every row above and against
+`data/frontend/reject_ledger.jsonl` (535 rows, 0 keyword hits for
+`baserun`/`outfield.*arm`/`arm.*deterr`) before seeding. Full premise check:
+`docs/research/research_seed_wave4_2026-07-10.md`. No validator built this
+lane.
+
+### 52. Batting-team baserunning aggression is suppressed against opponents with a strong outfield-arm reputation (unblocks the SB/CS ingredient gap that closed #19 on a different corpus)
+- **claim**: a team's stolen-base-attempt rate (SB+CS) in a given game is lower when facing a fielding team whose season-long outfield-assist rate signals a strong/accurate-armed outfield -- distinct from and NOT a re-attempt of #19 (NOT_TESTABLE specifically on `savant_full__2025.parquet`, which has zero SB/CS `events` values at all; this row uses `espn_boxscores.parquet`, a different local corpus that DOES carry the needed columns).
+- **premise check**: `data/domains/mlb/espn_boxscores.parquet` confirmed this session (3,880 rows, dates from 2025-03-27) to carry `home_bat_stolenBases`/`home_bat_caughtStealing`/`away_bat_stolenBases`/`away_bat_caughtStealing`/`home_fld_outfieldAssists`/`away_fld_outfieldAssists`, 3,874 non-null rows on the 6-column subset; combined SB+CS per team-game has real variance (mean=0.891, std=1.101, max=10), not a degenerate/sparse column.
+- **causal story (scoped honestly)**: `home_fld_outfieldAssists` is a general outfield-arm/defensive-reputation proxy, not a steal-specific metric -- a stolen-base attempt is fundamentally a catcher-vs-runner event, not an outfielder-vs-runner one. This row's claim is therefore scoped to a broader "defensive-reputation deterrence" story: a defense publicly known for cutting down runners (via strong outfield arms) plausibly makes baserunners and third-base coaches more conservative across ALL advancement decisions, including stolen-base attempts, not a narrow mechanical claim that outfield arms specifically stop steals.
+- **expected signature**: negative Pearson r between a batting team's SB+CS attempts in a game and the fielding team's season-long (leave-one-out) `outfieldAssists` rate.
+- **test spec**: `domains.mlb.knowledge.validate_research_wave4.baserunning_aggression_vs_outfield_arm_deterrence` (not yet built) -- unpivot `espn_boxscores.parquet` to team-perspective rows (batting team's `bat_stolenBases`+`bat_caughtStealing` vs the OPPONENT's `fld_outfieldAssists`), fielding team's expected arm-reputation computed as its own season-long mean `outfieldAssists`/game excluding the target game (leave-one-out, avoids circularity); Pearson r, SB+CS attempts vs opponent's leave-one-out outfieldAssists rate; declared bar |r|>=0.05 AND p<0.01 (large-n floor given ~7,748 team-perspective rows), split-half by date, both halves required same sign.
+- **status**: UNTESTED
+- **artifact link**: none yet (spec only).
+- **source**: "Stolen Base Matchup Tool" (EV Analytics), https://evanalytics.com/mlb/research/sb-matchup-tool -- documents that modern SB-decision models already condition success probability on defensive-side inputs including outfielder throwing arm alongside catcher/pitcher factors, the literature basis for treating outfield-arm reputation as a plausible baserunning-aggression deterrent worth testing directly against the local box-score corpus.
+
+---
