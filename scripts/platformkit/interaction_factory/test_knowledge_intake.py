@@ -135,3 +135,17 @@ def test_mechanism_attr_names_are_real_registry_members():
     for hyp, m in KI.MECHANISM_ATTR.items():
         assert m["attr"] in reg, hyp
         assert reg[m["attr"]]["entity"] == m["entity"], hyp
+
+
+def test_ingame_state_template_stays_unmapped_pending_registry_wiring():
+    # M10 pool-unlock lane (this session): nba_ingame_state_self_cross now
+    # exists in the grammar (generator.py) but KNOWN_MAPPINGS must not
+    # reference it until a real attr lands with family="ingame_state_asof"
+    # (never invent one, same discipline as every other row here). This is
+    # the honest before/after of the session's pool probe for the 4
+    # historic "in-match" exemplar hypotheses: still 0 mapped, 0 candidates.
+    assert "nba_ingame_state_self_cross" not in {
+        m["template_id"] for mappings in KI.KNOWN_MAPPINGS.values() for m in mappings}
+    for hyp in ("q1_slow_start_persists_split_half", "transition_rate_split_half_persistence",
+                "transition_rate_margin_relation", "called_strike_dispersion_exceeds_binomial_noise"):
+        assert hyp not in KI.KNOWN_MAPPINGS

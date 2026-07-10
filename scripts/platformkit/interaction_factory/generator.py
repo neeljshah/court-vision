@@ -117,6 +117,37 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
         "blocklist_attrs": [],
         "blocklist_pairs": [],
     },
+    # ---- NBA IN-GAME-STATE conditioning family (M10 pool-unlock lane, 2026-07) --
+    # A NEW atomic_unit, distinct from every team_game template above:
+    # box_detail_asof/carryover_asof cross SEASON-TO-DATE trailing means known
+    # BEFORE tipoff, used to price the whole game. This template is for a team's
+    # trailing tendency WITHIN a declared in-game state window (Q1 shape,
+    # transition frequency), meant to condition the REST of the current game once
+    # that state is reached mid-game -- the literal "wiring" language on
+    # q1_slow_start_persists_split_half (mechanisms.md #34: "a live Q1-state
+    # prior for in-game re-pricing") and transition_frequency_pace_mismatch__
+    # combined (#28: "in-game conditioning-feature candidate"). Pool is EMPTY
+    # today (auto-discovery family, same seam as box_detail_asof/carryover_asof
+    # above): no registry attr carries family="ingame_state_asof" yet --
+    # q1_margin_asof (domains/basketball_nba/asof_quarter_shape.py, already
+    # built leak-free) and a transition-rate as-of column each need a
+    # TEAM_ATTRIBUTES entry + a registered runner builder before this template
+    # yields anything -- that data/registry wiring is OUTSIDE this module's
+    # scope (interaction_factory grammar only); this entry closes the GRAMMAR
+    # side of the gap. See knowledge_intake.py's corrected comment for the full
+    # honest per-hypothesis state (incl. why called_strike_dispersion and
+    # soccer/tennis in-match rows stay unmapped regardless of this addition).
+    "nba_ingame_state_self_cross": {
+        "sport": "basketball_nba",
+        "atomic_unit": "team_game_ingame_state",
+        "outcome": "rest_of_game_margin",
+        "baseline": "rest_of_game_margin ~ elo + attr_a_state_asof + attr_b_state_asof",
+        "pairing": "self_cross",
+        "left_pool": {"entity": "team", "family": "ingame_state_asof"},
+        "feature_builder": "nba_ingame_state_asof",   # not yet registered -> NOT_TESTABLE (same honest pattern as nba_shot_attr_x_state)
+        "blocklist_attrs": [],
+        "blocklist_pairs": [],
+    },
     # ---- MLB (2) -------------------------------------------------------
     "mlb_pa_batter_x_pitcher": {
         "sport": "mlb",
