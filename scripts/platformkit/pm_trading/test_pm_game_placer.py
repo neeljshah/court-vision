@@ -6,6 +6,7 @@ Run ONLY this file (the full suite freezes the box):
 from __future__ import annotations
 
 import json
+from datetime import date
 
 from scripts.platformkit.pm_trading import pm_game_placer as G
 
@@ -90,6 +91,41 @@ def test_match_model_game_unique():
     assert m["_roles"]["Houston"] == "home" and m["_roles"]["Toronto"] == "away"
     # no-match -> None
     assert G.match_model_game(["Seattle", "Pittsburgh"], _model_games("mlb")) is None
+
+
+def test_group_by_game_extracts_ticker_date():
+    # gid IS the Kalshi event ticker; a real KX*GAME shape embeds the scheduled date.
+    rows = [{"sport": "mlb", "game_id": "KXMLBGAME-26JUL10HOUTOR", "venue": "kalshi",
+             "side": "Houston", "ticker": "t1", "prob": 0.5}]
+    g = G.group_by_game(rows)
+    assert g["KXMLBGAME-26JUL10HOUTOR"]["date"] == date(2026, 7, 10)
+
+
+def test_match_model_game_refuses_cross_date_phantom():
+    # PHANTOM-MATCHUP shape (root cause of the 10 bad paper_pm rows): the Kalshi ticker's
+    # own date is 2026-07-10, but 'Houston'/'Toronto' only substring-match the 07-09 model
+    # game -- a DIFFERENT game on a DIFFERENT date. The date guard must refuse this pairing
+    # rather than silently bridge across dates via team-name substring alone.
+    model_games = [
+        {"sport": "mlb", "game_id": "401001", "home": "Houston Astros",
+         "away": "Toronto Blue Jays", "pregame_probs": {"home_ml": 0.55, "away_ml": 0.45},
+         "date_candidates": frozenset({date(2026, 7, 9)})},
+        {"sport": "mlb", "game_id": "401002", "home": "Houston Astros",
+         "away": "Seattle Mariners", "pregame_probs": {"home_ml": 0.60, "away_ml": 0.40},
+         "date_candidates": frozenset({date(2026, 7, 10)})},
+    ]
+    m = G.match_model_game(["Houston", "Toronto"], model_games, kalshi_date=date(2026, 7, 10))
+    assert m is None  # no 07-10 model game has Toronto -> honest skip, never the 07-09 game
+
+
+def test_match_model_game_same_date_places():
+    model_games = [
+        {"sport": "mlb", "game_id": "401001", "home": "Houston Astros",
+         "away": "Toronto Blue Jays", "pregame_probs": {"home_ml": 0.55, "away_ml": 0.45},
+         "date_candidates": frozenset({date(2026, 7, 9)})},
+    ]
+    m = G.match_model_game(["Houston", "Toronto"], model_games, kalshi_date=date(2026, 7, 9))
+    assert m is not None and m["_roles"]["Houston"] == "home"
 
 
 def test_devig_2way_and_3way():
