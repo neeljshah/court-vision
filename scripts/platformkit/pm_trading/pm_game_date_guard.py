@@ -105,22 +105,28 @@ def _roles_for_candidates(team_sides: Sequence[str], candidates: Sequence[Dict[s
     return hits
 
 
+def _date_filtered(model_games: Sequence[Dict[str, Any]],
+                   kalshi_date: Optional[date]) -> List[Dict[str, Any]]:
+    """model_games whose OWN date_candidates (from _et_date_candidates) contain
+    *kalshi_date* -- so team-name matching (substring OR the resolver's abbrev join) can
+    never bridge two DIFFERENT dates' games. kalshi_date absent, or a candidate with no
+    date_candidates of its own, passes through unfiltered (honest 'no info', never a
+    false-positive reject). Shared by the substring path (_match_hits) AND
+    pm_game_match.match_hits' resolver path -- ONE date gate, not two."""
+    if kalshi_date is None:
+        return list(model_games)
+    return [g for g in model_games
+            if not (g.get("date_candidates")) or kalshi_date in g["date_candidates"]]
+
+
 def _match_hits(team_sides: Sequence[str], model_games: Sequence[Dict[str, Any]],
                *, kalshi_date: Optional[date] = None) -> List[Dict[str, Any]]:
-    """Every model game whose {home,away} map to the two Kalshi team sides.
-
-    When *kalshi_date* is known, a model game is only a candidate if *kalshi_date* is one
-    of ITS OWN date_candidates (from _et_date_candidates) -- so loose team-name substring
-    matching (by design, city vs full name) can never bridge two DIFFERENT dates' games.
-    kalshi_date absent, or a candidate with no date_candidates of its own, degrades to no
-    date filtering for that side (honest 'no info', never a false-positive reject)."""
+    """Every model game whose {home,away} map to the two Kalshi team sides, restricted to
+    *kalshi_date* via _date_filtered (see its docstring)."""
     if len(team_sides) != 2:
         return []
-    candidates = model_games
-    if kalshi_date is not None:
-        candidates = [g for g in model_games
-                      if not (g.get("date_candidates")) or kalshi_date in g["date_candidates"]]
-    return _roles_for_candidates(team_sides, candidates)
+    return _roles_for_candidates(team_sides, _date_filtered(model_games, kalshi_date))
 
 
-__all__ = ["_norm", "_name_matches", "_et_date_candidates", "_match_hits", "_roles_for_candidates"]
+__all__ = ["_norm", "_name_matches", "_et_date_candidates", "_date_filtered", "_match_hits",
+           "_roles_for_candidates"]

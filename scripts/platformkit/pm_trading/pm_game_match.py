@@ -22,7 +22,9 @@ from __future__ import annotations
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 from scripts.platformkit.odds_provider.kalshi_series_spec import ticker_game_date
-from scripts.platformkit.pm_trading.pm_game_date_guard import _match_hits, _norm, _roles_for_candidates
+from scripts.platformkit.pm_trading.pm_game_date_guard import (
+    _date_filtered, _match_hits, _norm, _roles_for_candidates,
+)
 
 _TIE_TOKENS = frozenset({"tie", "draw"})
 
@@ -91,9 +93,13 @@ def _resolve_mlb_game(ticker: Any, model_games: Sequence[Dict[str, Any]]
                       ) -> Tuple[bool, Optional[Dict[str, Any]]]:
     """(parsed, game). parsed=False -- *ticker* is not a real Kalshi MLB game ticket, no
     positive resolver info (caller degrades to substring). parsed=True, game=None -- a real
-    ticket that the resolver could NOT uniquely bind (0 or 2+ candidates); authoritative
-    ambiguity, honest skip, never substring afterward. parsed=True, game=<dict> -- the
-    UNIQUE model_games entry the ticker's away+home abbrev blob resolves to."""
+    ticket that the resolver could NOT uniquely bind against *model_games* (0 or 2+
+    candidates); authoritative ambiguity, honest skip, never substring afterward.
+    parsed=True, game=<dict> -- the UNIQUE model_games entry the ticker's away+home abbrev
+    blob resolves to. CALLER MUST pass an already kalshi_date-filtered *model_games* (see
+    match_hits) -- the abbrev blob alone identifies the TEAMS, never WHICH date's game; an
+    MLB series (same two teams, adjacent dates) would otherwise single-hit bind to whichever
+    date happens to be on the board."""
     from scripts.platformkit.ingame import ingame_id_resolver_mlb as _resolver
     if _resolver.parse_kalshi_mlb_ticker(ticker) is None:
         return False, None
@@ -112,11 +118,18 @@ def match_hits(team_sides: Sequence[str], model_games: Sequence[Dict[str, Any]],
     """Every model-game candidate for one Kalshi game's two team sides. Routes through the
     authoritative resolver when *sport* has one and *ticker* parses as a real ticket for it
     (currently mlb); otherwise the date-gated substring matcher in pm_game_date_guard (see
-    module docstring for the fallback rules)."""
+    module docstring for the fallback rules).
+
+    DATE GATE (binding, R1 blocker fix): the resolver identifies WHICH TEAMS a ticker is
+    for; it does NOT know WHICH DATE's game that is (an MLB series plays the same two teams
+    on adjacent dates). *model_games* is therefore restricted to *kalshi_date* candidates
+    (_date_filtered, the SAME gate the substring path uses) BEFORE the resolver runs, so a
+    0-or-2+-candidate result after that restriction is an honest skip, never a bind to a
+    same-teams game on the wrong date."""
     if len(team_sides) != 2:
         return []
     if sport in _RESOLVER_SPORTS and ticker:
-        parsed, hit = _resolve_mlb_game(ticker, model_games)
+        parsed, hit = _resolve_mlb_game(ticker, _date_filtered(model_games, kalshi_date))
         if parsed:
             return _roles_for_candidates(team_sides, [hit]) if hit is not None else []
     return _match_hits(team_sides, model_games, kalshi_date=kalshi_date)
