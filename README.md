@@ -225,6 +225,33 @@ search for edge systematic, grounded, and honest. See
 
 ---
 
+## The loop runs itself -- autonomy layer + the answer-engine oracle
+
+Beyond the discovery loop (mine residuals -> validate behind the ship gate -> ship or
+reject) sit the two autonomy stages that used to need a human: **self-shadowing**
+forward-settles the loop's own not-yet-confirmed verdicts against real outcomes as they
+land, and **self-proposal** generates and gates new hypotheses on a schedule with zero
+LLM calls and zero human trigger. A **sentinel layer** watches the watchers -- disk
+pressure, exception bursts, stalled heartbeats, tamper-evidence hashes on the
+invariant-enforcing code itself -- and a **one-command system-liveness harness**
+composes every gate/sentinel/ledger into a single readout that refuses to paper over a
+down section: a live run this week correctly reported `OVERALL: RED` with the specific
+failing subsystem named (a stale scraper heartbeat, 8 census-drift entries), not a
+decorative green.
+
+On top of the funnel sits an **answer-engine oracle**: a "what affects what" **effect
+graph** (555 nodes / 296 edges across NBA, MLB, soccer, and tennis) built entirely from
+rows the knowledge engine already adjudicated -- zero new statistics computed, only
+labeled and linked -- plus a **resolver registry** that maps every supported question
+type to exactly one deterministic source and REFUSES anything unregistered rather than
+improvising a plausible-sounding answer. The knowledge engine itself is now fully
+drained across all 4 sports: 151 mechanism hypotheses closed out (71 CONFIRMED_LOCAL, 51
+honest NULLs, the rest not locally testable) -- every "does X actually happen" question
+the oracle fields carries a verdict, sample size, p-value, and source file, not folklore.
+Full account: [docs/PRODUCT_DEMO.md](docs/PRODUCT_DEMO.md).
+
+---
+
 ## The thesis in numbers (calibration / sharpness -- NEVER a dollar edge)
 
 ### Pregame -- vs the devigged closing line, leak-free OOS
@@ -354,6 +381,7 @@ CV internals: [docs/CV_TRACKING.md](docs/CV_TRACKING.md).
 | [docs/PREDICTOR_PLATFORM.md](docs/PREDICTOR_PLATFORM.md) | Full platform: thesis, scorecards, architecture, why it sells |
 | [docs/PROOFS.md](docs/PROOFS.md) | The provability index -- every claim -> the runnable leak-free proof |
 | [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md) | The single honesty truth-source -- every number + the do-not-claim list |
+| [docs/PRODUCT_DEMO.md](docs/PRODUCT_DEMO.md) | The 15-minute demo path -- system health, a live prediction, an oracle query with a receipt, the composed board, the honesty ledgers |
 | [docs/KNOWN_LIMITATIONS.md](docs/KNOWN_LIMITATIONS.md) | Open gaps and what is not yet demonstrated |
 | [docs/PLATFORM.md](docs/PLATFORM.md) | Kernel + adapter multi-sport architecture direction |
 
