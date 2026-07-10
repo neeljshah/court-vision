@@ -4,6 +4,8 @@ dependency) -- exercises the composition/isolation/precedence logic only. Run:
 """
 from __future__ import annotations
 
+import os
+import time
 from pathlib import Path
 
 from scripts.platformkit.proof_harness import system_proof as sp
@@ -80,3 +82,45 @@ def test_section_ledgers_counts_nonblank_rows(tmp_path):
     row = out["rows"][0]
     assert row["status"] == sp.GREEN
     assert row["n_rows"] == 2  # blank line not counted
+
+
+def test_section_ledgers_stale_last_append_is_red(tmp_path):
+    p = tmp_path / "l.jsonl"
+    p.write_text('{"a":1}\n', encoding="utf-8")
+    old = time.time() - (sp._STALE_LEDGER_HOURS + 1) * 3600
+    os.utime(p, (old, old))
+    out = sp.section_ledgers({"l": p})
+    assert out["rows"][0]["status"] == sp.RED
+    assert out["overall"] == sp.RED
+
+
+def test_section_ledgers_empty_present_file_is_red_not_green(tmp_path):
+    p = tmp_path / "l.jsonl"
+    p.write_text("", encoding="utf-8")
+    out = sp.section_ledgers({"l": p})
+    assert out["rows"][0]["status"] == sp.RED
+    assert out["rows"][0]["n_rows"] == 0
+
+
+def test_section_autonomy_red_when_job_registry_unreadable(monkeypatch):
+    monkeypatch.setattr(sp, "_canonical_job_names", lambda: [])
+    out = sp.section_autonomy()
+    assert out["overall"] == sp.RED
+    assert out["rows"] == []
+
+
+def test_section_data_folds_census_drift_into_red(monkeypatch):
+    def _fake_run_check():
+        return {"n_ok": 1, "n_drift": 1, "n_missing": 0, "n_unverifiable": 0, "drift_entries": []}
+    monkeypatch.setattr("scripts.platformkit.census_drift.run_check", _fake_run_check)
+    out = sp.section_data()
+    assert out["overall"] == sp.RED
+
+
+def test_section_data_flags_stale_key_store_as_red(monkeypatch):
+    ancient = time.time() - (sp._STALE_DATA_HOURS + 24) * 3600
+    monkeypatch.setattr(sp.os.path, "getmtime", lambda p: ancient)
+    out = sp.section_data()
+    assert out["overall"] == sp.RED
+    assert any(s.get("status") == sp.RED and "stale" in (s.get("reason") or "")
+               for s in out["key_stores"])
