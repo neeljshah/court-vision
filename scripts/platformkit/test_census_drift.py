@@ -82,16 +82,18 @@ def test_directory_file_count_matches_claim(tmp_path):
 
 
 def test_drift_prefers_content_over_file_count(tmp_path):
-    # reproduces the kalshi_trades false collapse: a growing corpus (2 date-files,
-    # 40k lines summed) is numerically CLOSER to the stale claim by file-count (2)
-    # than by content (40000+) -- must report the true content, not "collapsed to 2".
+    # reproduces the kalshi_trades false collapse: content must exceed 2*target so
+    # the OLD min-by-distance tie-break would have picked file-count (2) -- i.e.
+    # |2 - 24567| < |60000 - 24567|. The precedence rule must still report the
+    # true content, never "collapsed to 2". (A 40k fixture was too small to
+    # reproduce the bug -- old code passed it by accident; judge nit 2c2cb5b0.)
     d = tmp_path / "kalshi_trades"
     d.mkdir()
-    _write_jsonl(str(d / "2026-07-09.jsonl"), 15000)
-    _write_jsonl(str(d / "2026-07-10.jsonl"), 25000)
+    _write_jsonl(str(d / "2026-07-09.jsonl"), 25000)
+    _write_jsonl(str(d / "2026-07-10.jsonl"), 35000)
     (result,) = check_entry("cross_sport_market", "kalshi_trades", {"path": str(d / "*.jsonl"), "rows": 24567})
     assert result["status"] == "drift"
-    assert result["actual"] == 40000  # content, not the file count (2)
+    assert result["actual"] == 60000  # content, not the file count (2)
 
 
 def test_directory_file_claim_still_prefers_files(tmp_path):
