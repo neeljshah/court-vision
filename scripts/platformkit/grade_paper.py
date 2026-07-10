@@ -25,7 +25,6 @@ scripts/platformkit/; no secrets; no $-edge claim.
 # scoped to grade_paper_asof.py (see grade_paper_dates.py).
 from __future__ import annotations
 
-import datetime as _dt
 import json
 import logging
 import re
@@ -36,6 +35,7 @@ from scripts.platformkit import clv_ledger as _clv
 from scripts.platformkit.clv_settle_write import write_settlement as _write_settlement
 from scripts.platformkit.grade_paper_asof import route_fetch as _route_fetch
 from scripts.platformkit.grade_paper_dates import bet_expected_dates as _bet_expected_dates
+from scripts.platformkit.grade_paper_dates import today_et_iso as _today_et_iso
 from scripts.platformkit.grade_paper_close import close_from_store as _close_from_store
 from scripts.platformkit.grade_paper_close import fetch_boards as _fetch_boards
 from scripts.platformkit.grade_paper_close import game_key_for_bet as _game_key_for_bet
@@ -338,7 +338,7 @@ def grade_open_bets(
     boards, feed_status = _fetch_boards(fetch, sports)
     # This is always "today's" board (unscoped fetch) -- feeds _find_final_game's
     # date guard so a bet whose OWN expected date isn't today can't bind to it.
-    today_s = _dt.datetime.now(_dt.timezone.utc).date().isoformat()
+    today_s = _today_et_iso()
 
     settled_now: List[Dict[str, Any]] = []
     pending: List[Dict[str, Any]] = []
