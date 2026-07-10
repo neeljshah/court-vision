@@ -273,6 +273,8 @@ _JOB_TABLE: List[Tuple[str, str, str, Tuple[str, ...]]] = [
      "run_benchmark_refresh", ("watermarks",)),
     # M16 cadence-gated CLV reconcile+scoreboard refresh (refresh only; file-mtime watermark)
     ("clv_refresh", "scripts.platformkit.autoloop.clv_refresh_job", "run_clv_refresh", ("watermarks",)),
+    # U4 log rotation: archive+truncate any logs/*.out|*.err over 50MB cap (size-check only, no watermark)
+    ("log_reaper", "scripts.platformkit.autoloop.log_reaper_job", "run_log_reaper", ("watermarks",)),
 ]
 
 
