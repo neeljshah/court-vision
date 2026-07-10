@@ -21,19 +21,22 @@ readers (e.g. replication_watch) pick the newest row per hypothesis, so a tick
 there would shadow out a real verdict; the shadow/ subdir also keeps
 validate_new_stores' non-recursive *.jsonl glob away. PROMOTE_CANDIDATE /
 DEMOTED are candidate rows only -- promotion/retirement itself stays human.
-BLOCKED rows (missing columns/corpora) are excluded: forward accrual of the
+BLOCKED rows (missing columns/corpora) are excluded -- forward accrual of the
 same corpus cannot unblock them.
-
-First WIRED shadow: the rung-8 WAIT-FOR-DATA power recheck -- calls
-domains.mlb.ingame.rung8_state.rung8_power's own join + required_n at that
-module's mid-of-range assumption (never reimplements the math).
+Three WIRED shadows bypass the generic scan (each metric/corpus is its own
+shape): (1) rung-8 WAIT-FOR-DATA power recheck, below. (2)/(3) the MLB
+ingame-CRPS total_runs|end_inning_7 provisional + the soccer chain-engine
+PROVISIONAL_SURVIVOR, both in sibling shadow_settle_wired.py (LOC-cap split).
+None reruns its source benchmark/gate's own simulation -- each only ticks
+new-data readiness and flags PROMOTE_CANDIDATE at a comparably-powered second
+window; the actual rerun + any promotion stays human.
 
 Dedup: SHADOW_UNSPECIFIED once per (ledger, key, as_of); SHADOW_TICK only when
 the forward n changed; PROMOTE_CANDIDATE/DEMOTED are terminal for that
 (ledger, key, as_of) -- a NEW provisional row (new as-of) re-arms shadowing.
-
-WATERMARK (M07 convention): newest mtime across the two ledger files + all
-grade-joined jsonl; no watermark yet -> due iff anything exists.
+WATERMARK (M07 convention): newest mtime across the ledger files, all
+grade-joined jsonl, + the two wired-shadow source artifacts; no watermark
+yet -> due iff anything exists.
 
 Per-file test:
     cd /c/Users/neelj/nba-ai-system && python -m pytest scripts/platformkit/autoloop/test_shadow_settle_job.py -q
@@ -45,6 +48,10 @@ import math
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterator, List, Optional, Tuple
+
+from scripts.platformkit.autoloop.shadow_settle_wired import (
+    shadow_mlb_crps, shadow_soccer_chain, EXTRA_WATERMARK_PATHS,
+)
 
 _REPO = Path(__file__).resolve().parents[3]
 _INTEL_DIR = _REPO / "data" / "cache" / "intel_claims"
@@ -203,6 +210,7 @@ def _watermark_mtime(ledgers: Dict[str, Tuple[Path, str]], grade_root: Path) -> 
     paths = [p for p, _k in ledgers.values() if p.is_file()]
     if grade_root.is_dir():
         paths += list(grade_root.rglob("*.jsonl"))
+    paths += [p for p in EXTRA_WATERMARK_PATHS if p.is_file()]
     mtimes = [p.stat().st_mtime for p in paths]
     return max(mtimes) if mtimes else None
 
@@ -211,7 +219,9 @@ def run_shadow_settle(watermarks: Dict[str, Any], *,
                       ledgers: Optional[Dict[str, Tuple[Path, str]]] = None,
                       shadow_path: Optional[Path] = None,
                       grade_root: Optional[Path] = None,
-                      rung8_join_fn: Optional[Callable[[], Tuple[int, int, List[int]]]] = None
+                      rung8_join_fn: Optional[Callable[[], Tuple[int, int, List[int]]]] = None,
+                      mlb_crps_n_avail_fn: Optional[Callable[[], int]] = None,
+                      soccer_eligible_n_fn: Optional[Callable[[], int]] = None
                       ) -> Dict[str, Any]:
     """One shadow-settle pass: watermark-gated, shadow-ledger-append ONLY.
     Never flips a flag, never edits the source ledgers, never claims an edge."""
@@ -235,6 +245,14 @@ def run_shadow_settle(watermarks: Dict[str, Any], *,
         out["rung8"] = _shadow_rung8(state, _rec, join_fn=rung8_join_fn)
     except Exception as exc:  # noqa: BLE001 -- wired shadow failing must not block the ledger scan
         out["rung8"] = {"status": "error", "error": str(exc)[:200]}
+    try:
+        out["mlb_crps"] = shadow_mlb_crps(state, _rec, n_avail_fn=mlb_crps_n_avail_fn)
+    except Exception as exc:  # noqa: BLE001 -- wired shadow failing must not block the ledger scan
+        out["mlb_crps"] = {"status": "error", "error": str(exc)[:200]}
+    try:
+        out["soccer_chain"] = shadow_soccer_chain(state, _rec, eligible_n_fn=soccer_eligible_n_fn)
+    except Exception as exc:  # noqa: BLE001 -- wired shadow failing must not block the ledger scan
+        out["soccer_chain"] = {"status": "error", "error": str(exc)[:200]}
     scanned = 0
     errors: List[Dict[str, str]] = []
     for lname, (lpath, kfield) in led.items():

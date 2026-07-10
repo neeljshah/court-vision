@@ -9,6 +9,9 @@ Acceptance criteria:
    powered + bar missed -> DEMOTED; no spec -> exactly ONE SHADOW_UNSPECIFIED.
 4. rung8 integration: the wired shadow calls the real module's power math and
    ticks/promotes off the injected join count.
+5. mlb_crps / soccer_chain wired shadows: both new-data-readiness watchers
+   tick/promote off injected counts against their real on-disk baselines, and
+   never raise against the real (un-injected) artifact paths.
 
 Run:
     cd /c/Users/neelj/nba-ai-system && python -m pytest \
@@ -180,3 +183,46 @@ def test_rung8_real_module_smoke(tmp_path):
     led, spath, groot, _lp = _env(tmp_path, [], [])
     out = SSJ.run_shadow_settle({}, ledgers=led, shadow_path=spath, grade_root=groot)
     assert out["rung8"]["status"] in {"ticked", "unchanged", "terminal", "error"}
+
+
+# 5. mlb_crps + soccer_chain wired shadows (both provisionals M09 now carries) ---
+def test_mlb_crps_shadow_promotes_when_new_files_reach_min_n(tmp_path):
+    import pytest
+    from scripts.platformkit.autoloop import shadow_settle_wired as SSW
+    baseline = SSW._mlb_crps_baseline()
+    if baseline is None:
+        pytest.skip("no real crps_market/last_run_ingame_mlb.json baseline on this box")
+    led, spath, groot, _lp = _env(tmp_path, [], [])
+    out = SSJ.run_shadow_settle({}, ledgers=led, shadow_path=spath, grade_root=groot,
+                                rung8_join_fn=_NO_RUNG8,
+                                mlb_crps_n_avail_fn=lambda: baseline["n_game_files"] + baseline["min_n"],
+                                soccer_eligible_n_fn=lambda: 0)
+    assert out["mlb_crps"]["status"] == "ticked" and out["mlb_crps"]["powered"] is True
+    kinds = {r["kind"] for r in _shadow_rows(spath) if r["key"] == SSW.MLB_CRPS_KEY[1]}
+    assert kinds == {"SHADOW_TICK", "PROMOTE_CANDIDATE"}
+    promo = [r for r in _shadow_rows(spath) if r["kind"] == "PROMOTE_CANDIDATE" and r["key"] == SSW.MLB_CRPS_KEY[1]]
+    assert "stays human" in promo[0]["note"]
+
+
+def test_soccer_chain_shadow_underpowered_with_no_new_matches(tmp_path):
+    import pytest
+    from scripts.platformkit.autoloop import shadow_settle_wired as SSW
+    baseline = SSW._soccer_chain_baseline()
+    if baseline is None:
+        pytest.skip("no real soccer_chain_engine_v1_full_power.json baseline on this box")
+    led, spath, groot, _lp = _env(tmp_path, [], [])
+    out = SSJ.run_shadow_settle({}, ledgers=led, shadow_path=spath, grade_root=groot,
+                                rung8_join_fn=_NO_RUNG8,
+                                mlb_crps_n_avail_fn=lambda: 0,
+                                soccer_eligible_n_fn=lambda: baseline["n_matches_total"])
+    assert out["soccer_chain"]["status"] == "ticked" and out["soccer_chain"]["powered"] is False
+    kinds = {r["kind"] for r in _shadow_rows(spath) if r["key"] == SSW.SOCCER_CHAIN_KEY[1]}
+    assert kinds == {"SHADOW_TICK"}
+
+
+def test_wired_shadows_real_smoke(tmp_path):
+    """Real artifact paths (no injection): must never raise out of the job."""
+    led, spath, groot, _lp = _env(tmp_path, [], [])
+    out = SSJ.run_shadow_settle({}, ledgers=led, shadow_path=spath, grade_root=groot)
+    assert out["mlb_crps"]["status"] in {"ticked", "unchanged", "terminal", "no_baseline", "error"}
+    assert out["soccer_chain"]["status"] in {"ticked", "unchanged", "terminal", "no_baseline", "error"}
