@@ -80,6 +80,13 @@ def section_gates(python_exe: Optional[str] = None) -> Dict[str, Any]:
 
 # [data] -- census_drift.run_check() + newest-artifact age, one store/sport
 _KEY_SPORTS = ("nba", "mlb", "soccer", "soccer_intl", "tennis", "wnba", "npb", "kbo")
+# ponytail: one global staleness ceiling across all key stores, incl. archival/
+# backfill corpora refreshed sporadically (mlb statcast + wnba cdn_backfill_states
+# + soccer_intl results + tennis matches all cover PAST seasons, not a live daily
+# feed -- widest observed gap today is tennis ~27d). 45d catches a truly-dead
+# pipeline without crying wolf on normal archive lag. Tighten to a per-store
+# table (mirror autonomy/freshness_sla.py) if a real per-sport cadence is confirmed.
+_STALE_DATA_HOURS = 24 * 45
 
 
 def section_data() -> Dict[str, Any]:
@@ -103,15 +110,20 @@ def section_data() -> Dict[str, Any]:
             stores.append({"sport": sport, "store": name, "status": RED, "reason": "no artifact matched"})
             continue
         age_h = round((now - max(os.path.getmtime(m) for m in matches)) / 3600.0, 1)
+        stale = age_h > _STALE_DATA_HOURS
+        reason = f"stale: newest artifact {age_h}h old (> {_STALE_DATA_HOURS}h ceiling)" if stale else None
         stores.append({"sport": sport, "store": name, "n_files": len(matches),
-                        "age_hours": age_h, "status": GREEN})
-    red = [s for s in stores if s.get("status") == RED]
+                        "age_hours": age_h, "status": RED if stale else GREEN, "reason": reason})
+    red_stores = [s for s in stores if s.get("status") == RED]
     n_drift = drift.get("n_drift", 0) if isinstance(drift, dict) else 0
+    n_missing = drift.get("n_missing", 0) if isinstance(drift, dict) else 0
+    census_bad = bool(n_drift or n_missing or (isinstance(drift, dict) and drift.get("error")))
+    overall = RED if (red_stores or census_bad) else GREEN
     return {"census_drift": drift, "key_stores": stores,
-            "overall": RED if red else GREEN,
+            "overall": overall,
             "summary": (f"census: {drift.get('n_ok','?')} ok/{n_drift} drift/"
-                        f"{drift.get('n_missing','?')} missing; "
-                        f"{len(stores) - len(red)}/{len(stores)} key stores fresh")}
+                        f"{n_missing} missing; "
+                        f"{len(stores) - len(red_stores)}/{len(stores)} key stores fresh")}
 
 
 # [predictions] -- one live predict_matchup smoke per core sport (subprocess,
@@ -161,7 +173,14 @@ _LEDGERS: Dict[str, Path] = {
 }
 
 
+# ponytail: 48h mirrors the 172800s manual/CLI-report margin already established
+# for reject_ledger.jsonl in autonomy/freshness_sla.py -- reuse that convention
+# rather than inventing a new number.
+_STALE_LEDGER_HOURS = 48.0
+
+
 def section_ledgers(ledgers: Optional[Dict[str, Path]] = None) -> Dict[str, Any]:
+    is_default_surface = ledgers is None
     now = time.time()
     rows: List[Dict[str, Any]] = []
     for name, path in (ledgers or _LEDGERS).items():
@@ -172,16 +191,34 @@ def section_ledgers(ledgers: Optional[Dict[str, Path]] = None) -> Dict[str, Any]
             try:
                 with open(path, encoding="utf-8") as fh:
                     n = sum(1 for line in fh if line.strip())
-                row.update(status=GREEN, n_rows=n,
-                           age_hours=round((now - path.stat().st_mtime) / 3600.0, 1))
+                age_h = round((now - path.stat().st_mtime) / 3600.0, 1)
+                stale = age_h > _STALE_LEDGER_HOURS
+                empty = n == 0
+                reason = ("empty ledger" if empty else
+                          f"stale: last append {age_h}h ago (> {_STALE_LEDGER_HOURS}h)" if stale
+                          else None)
+                row.update(status=RED if (stale or empty) else GREEN, n_rows=n,
+                           age_hours=age_h, reason=reason)
             except Exception as exc:  # noqa: BLE001
                 row.update(status=RED, error=str(exc)[:200])
         rows.append(row)
     red = [r for r in rows if r.get("status") == RED]
     n_present = sum(1 for r in rows if r.get("status") != NA)
-    return {"rows": rows, "overall": RED if red else GREEN,
-            "summary": f"{n_present}/{len(rows)} ledgers present, 0 read errors" if not red
-                       else f"{len(red)} ledger read errors"}
+    # a genuine fresh clone has no data/ dir at all (gitignored) -- NA-everything
+    # there is expected and fine. On the real box (data/ present), the DEFAULT
+    # ledger surface going 100% absent means the ledger dir vanished -- RED, not
+    # a silent "0/N present" GREEN. Only applies to the real surface (ledgers=None)
+    # so a caller/test exercising one deliberately-absent path is unaffected.
+    fresh_clone = not (_REPO / "data").is_dir()
+    vanished = is_default_surface and n_present == 0 and not fresh_clone
+    overall = RED if (red or vanished) else GREEN
+    if vanished:
+        summary = f"ledger surface vanished: 0/{len(rows)} present but data/ exists"
+    elif red:
+        summary = f"{len(red)} ledger issue(s): {', '.join(r['name'] for r in red)}"
+    else:
+        summary = f"{n_present}/{len(rows)} ledgers present, 0 read errors"
+    return {"rows": rows, "overall": overall, "summary": summary}
 
 
 # [autonomy] -- m38 autoloop job registry vs the last real cycle report.
@@ -208,8 +245,17 @@ def section_autonomy() -> Dict[str, Any]:
                 if _AUTOLOOP_HB.exists() else None)
     from scripts.platformkit.autoloop.autoloop_runner import DEFAULT_INTERVAL_SEC
     daemon_alive = hb_age_h is not None and hb_age_h * 3600.0 < 1.5 * DEFAULT_INTERVAL_SEC
+    jobs = _canonical_job_names()
+    if not jobs:
+        # an empty registry means the scan failed (source unreadable/moved), NOT
+        # that there are zero jobs to prove -- cannot claim autonomy with no
+        # registry to check it against.
+        return {"rows": [], "heartbeat_age_hours": hb_age_h,
+                "report_ts": report.get("ts") if isinstance(report, dict) else None,
+                "overall": RED,
+                "summary": "cannot enumerate job registry (maintenance_templates.py unreadable/moved)"}
     rows: List[Dict[str, Any]] = []
-    for job in _canonical_job_names():
+    for job in jobs:
         if job in maint:
             v = maint[job]
             errored = isinstance(v, dict) and v.get("status") == "error"
