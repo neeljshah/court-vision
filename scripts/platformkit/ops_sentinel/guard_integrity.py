@@ -1,9 +1,10 @@
 """scripts.platformkit.ops_sentinel.guard_integrity -- TAMPER-EVIDENCE for the
 invariant surface (07-10 incident lesson).
 
-Baselines the sha256 of scripts/hooks/pretooluse_guard.py + every
-.claude/rules/*.md + CLAUDE.md into a state file. On any mismatch (changed /
-missing / added rules file) it emits a RED status row AND an alarm file
+Baselines the sha256 of scripts/hooks/pretooluse_guard.py +
+scripts/bot_guards/pre_edit_check.py + every .claude/rules/*.md + CLAUDE.md
+into a state file. On any mismatch (changed / missing / added rules file) it
+emits a RED status row AND an alarm file
 data/frontend/ops/GUARD_INTEGRITY_ALERT.json naming each file with old/new hash.
 
 NEVER auto-reverts: the 07-10 incident proved a parallel session's edit can be
@@ -36,12 +37,20 @@ _NOTE = ("tamper-EVIDENCE only: detect + surface, NEVER auto-revert (a parallel 
          "ONLY via an explicit --accept-current CLI run.")
 
 
+# Fixed guarded entrypoints (data-driven -- add new guard scripts here, no
+# fork of the hashing/check logic needed).
+_GUARDED_RELPATHS: List[str] = [
+    "scripts/hooks/pretooluse_guard.py",
+    "scripts/bot_guards/pre_edit_check.py",
+    "CLAUDE.md",
+]
+
+
 def guarded_files(repo: Optional[Path] = None) -> List[Path]:
-    """The invariant surface: guard hook + every rules file + CLAUDE.md.
-    Globbed live so an ADDED or REMOVED rules file also surfaces."""
+    """The invariant surface: guard scripts + every rules file + CLAUDE.md.
+    Rules dir is globbed live so an ADDED or REMOVED rules file also surfaces."""
     root = Path(repo) if repo is not None else repo_root()
-    files = [root / "scripts" / "hooks" / "pretooluse_guard.py",
-             root / "CLAUDE.md"]
+    files = [root / rel for rel in _GUARDED_RELPATHS]
     files.extend(sorted((root / ".claude" / "rules").glob("*.md")))
     return files
 

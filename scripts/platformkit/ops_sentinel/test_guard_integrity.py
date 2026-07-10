@@ -12,8 +12,10 @@ from scripts.platformkit.ops_sentinel import guard_integrity as gi
 def _fake_repo(tmp_path: Path) -> Path:
     repo = tmp_path / "repo"
     (repo / "scripts" / "hooks").mkdir(parents=True)
+    (repo / "scripts" / "bot_guards").mkdir(parents=True)
     (repo / ".claude" / "rules").mkdir(parents=True)
     (repo / "scripts" / "hooks" / "pretooluse_guard.py").write_text("GUARD v1")
+    (repo / "scripts" / "bot_guards" / "pre_edit_check.py").write_text("EDIT GUARD v1")
     (repo / ".claude" / "rules" / "no-edge-claims.md").write_text("rule A")
     (repo / "CLAUDE.md").write_text("claude md v1")
     return repo
@@ -33,7 +35,8 @@ def test_clean_then_tamper_then_accept(tmp_path):
     ap = tmp_path / "ALERT.json"
     gi.write_baseline(repo=repo, baseline_path=bp, now=1000.0)
     baseline = json.loads(bp.read_text())
-    assert len(baseline["files"]) == 3
+    assert len(baseline["files"]) == 4
+    assert "scripts/bot_guards/pre_edit_check.py" in baseline["files"]
 
     rows = gi.tick(now=1010.0, repo=repo, baseline_path=bp,
                    status_path=sp, alarm_path=ap)
@@ -80,4 +83,5 @@ def test_real_guarded_files_exist_in_this_repo():
     files = gi.guarded_files()
     names = {p.name for p in files}
     assert "pretooluse_guard.py" in names and "CLAUDE.md" in names
+    assert "pre_edit_check.py" in names
     assert sum(1 for p in files if p.suffix == ".md" and "rules" in str(p)) >= 4
