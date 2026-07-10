@@ -308,3 +308,28 @@ clear p<0.01 + |r|>=0.15 for CONFIRMED_LOCAL.
 - **measured LOCAL magnitude**: persistence r=0.4485, p=0.0129 (n=30 teams, misses ALPHA=0.01); margin relation r=-0.3072, p=1.0e-30 (n=1,342 team-games).
 - **artifact link**: `domains/basketball_nba/knowledge/validate_boxdetail_persistence.py::hypothesis("tov_pts")`.
 - **wiring**: none -- do not wire until the column-attribution ambiguity above is resolved; flagged as a re-check candidate, not a confirmed mechanism.
+
+---
+
+## Validated 2026-07-10 (quarter-shape family -- linescores.parquet realized-value reuse)
+
+Corpus: `data/domains/basketball_nba/linescores.parquet` (1,313 games) via
+`domains/basketball_nba/asof_quarter_shape.py::_derive_realized` (read-only
+reuse of the production leak-free as-of builder's realized-value formula,
+not a new derivation) reshaped to 2,626 team-games, 30 teams. Split-half =
+first-half-of-corpus-dates vs second half, per team. Descriptive only, same
+discipline as the box-detail family above.
+
+### 37. Quarter-scoring volatility persistence + margin-variance relation -- LOCAL NULL
+- **claim**: a team's quarter-to-quarter scoring volatility (stdev of its own q1-q4 points) is a stable team trait (persists split-half) and relates to that team's full-game margin variance.
+- **status**: REJECTED (NULL_LOCAL) -- persistence leg fails outright (wrong-signed r, not significant); the margin-variance leg is directionally positive but misses ALPHA=0.01.
+- **measured LOCAL magnitude**: split-half persistence r=-0.1389, p=0.464 (n=30 teams); cross-sectional r(team avg quarter_volatility, team full-game margin std)=0.3022, p=0.105 (n=30 teams).
+- **artifact link**: `domains/basketball_nba/knowledge/validate_quarter_volatility.py::quarter_volatility_persists_and_relates_to_margin_variance`.
+
+### 38. Q1 slow-start tendency persistence
+- **claim**: a team's Q1 scoring margin tendency (own_q1 - opp_q1, averaged) is a stable team trait across a season.
+- **causal story**: some teams are habitually slow starters (bench-heavy openers, cold shooting patterns) or fast starters (starter-heavy aggressive openers) as a coached identity, not game-to-game noise.
+- **status**: CONFIRMED_LOCAL
+- **measured LOCAL magnitude**: split-half persistence r=0.7171, p=8.24e-06 (n=30 teams) -- the strongest split-half persistence result in this ledger to date, stronger than rotation-size persistence (#21, r=0.681).
+- **artifact link**: `domains/basketball_nba/knowledge/validate_quarter_volatility.py::q1_slow_start_persists`.
+- **wiring**: in-game conditioning-feature candidate -- a team's trailing as-of `q1_margin_asof` (already built leak-free in `data/domains/basketball_nba/asof_quarter_shape.parquet`) as a live Q1-state prior for in-game re-pricing; this validation is the receipt that the underlying trait is real and persistent, not that the asof feature itself has been gated for an outcome edge.
