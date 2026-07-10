@@ -1,0 +1,35 @@
+{
+  "sport": "soccer_intl",
+  "edge_claimed": false,
+  "metric": "brier",
+  "metric_rationale": "CRPS not constructible: each row carries a single scalar P(home win) pair (model_prob/market_prob) plus a 3-way settled outcome (1.0/0.5/0.0), never a distribution/ensemble -- no soccer conditional-distribution scoring engine exists (matches ingame_mlb.py's own other_sports_joinable note for soccer_intl). Paired Brier at fixed match-minute checkpoints is the metric this data supports.",
+  "n_game_files": 48,
+  "n_no_minute_timeline": 22,
+  "checkpoints": {
+    "home_win_prob|minute_60": {
+      "n": 22,
+      "model_brier_mean": 0.2961,
+      "market_brier_mean": 0.203,
+      "paired_delta_mean": -0.0931,
+      "paired_delta_95ci": [
+        -0.15696017645448831,
+        -0.03359206672737812
+      ],
+      "verdict": "UNDERPOWERED",
+      "provisional": false
+    },
+    "home_win_prob|minute_75": {
+      "n": 17,
+      "model_brier_mean": 0.3719,
+      "market_brier_mean": 0.2645,
+      "paired_delta_mean": -0.1075,
+      "paired_delta_95ci": [
+        -0.1885062749116145,
+        -0.03163929014699815
+      ],
+      "verdict": "UNDERPOWERED",
+      "provisional": false
+    }
+  },
+  "honest_note": "Calibration sharpness only, never a $/ROI claim. Checkpoints are match minute 60/75 (first row at-or-past that minute); games whose capture used the older minute-less state_summary format are excluded, not guessed. n is thin by construction (<=48 source games) -- UNDERPOWERED is the expected honest verdict here; this ships the harness + baseline for forward accrual."
+}
