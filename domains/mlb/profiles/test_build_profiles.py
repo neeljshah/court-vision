@@ -11,7 +11,8 @@ import pytest
 
 from domains.mlb.profiles.attribute_registry import ATTRIBUTES, ENTITIES, STATUSES, rating_2k
 from domains.mlb.profiles.build_profiles import (
-    LEADERBOARD_BUILDERS, _BUILDERS, _percentile_and_rating, build_attribute_window,
+    LEADERBOARD_BUILDERS, SEASONS, _BAT_TRACKING_ATTRS, _BUILDERS,
+    _percentile_and_rating, build_attribute_window,
 )
 from domains.mlb.profiles.ingredients_batter import build_BB_rate, build_platoon_resilience
 
@@ -19,8 +20,12 @@ from domains.mlb.profiles.ingredients_batter import build_BB_rate, build_platoon
 def test_registry_builder_parity():
     """Registry attrs split across two builder dicts: pitch-frame _BUILDERS
     (season-frame-keyed) and LEADERBOARD_BUILDERS (year-csv-keyed, see
-    ingredients_leaderboard.py) -- their union must equal the full registry."""
-    assert set(ATTRIBUTES) == set(_BUILDERS) | set(LEADERBOARD_BUILDERS)
+    ingredients_leaderboard.py). Every BUILDER must have a registry entry
+    (an orphan builder is a real bug, build_profiles.py hard-fails this
+    direction). A registry entry with no builder YET is normal WIP for a
+    multi-lane factory (build_profiles.py skips + warns, never crashes) --
+    see UNBACKED_ATTRS, not asserted empty here on purpose."""
+    assert set(_BUILDERS) | set(LEADERBOARD_BUILDERS) <= set(ATTRIBUTES)
     assert not (set(_BUILDERS) & set(LEADERBOARD_BUILDERS))
 
 
@@ -107,6 +112,21 @@ def test_hand_computed_platoon_resilience():
     out = build_platoon_resilience(frame).set_index("entity_id")
     assert out.loc[1, "raw_value"] == pytest.approx(0.25 - 0.75)
     assert out.loc[1, "n"] == 4  # min(n_same_hand=4, n_opp_hand=4)
+
+
+def test_seasons_includes_2025():
+    """hitcoords_2025 landed 2026-07-09 (712,192 rows, column superset of 2024
+    -- verified live); the pitch-frame season loop must pick it up."""
+    assert "2025" in SEASONS
+
+
+def test_bat_tracking_attrs_excluded_from_fake_season_windows():
+    """bat_tracking's Savant endpoint ignores the year param (all 'years'
+    byte-identical) -- these 4 attrs must NEVER be built via the season_YYYY
+    per-year loop (that would fabricate season granularity); they route
+    through build_bat_tracking_asof_window instead (see build_all)."""
+    assert _BAT_TRACKING_ATTRS == {"swing_speed", "squared_up_rate", "blast_rate", "sword_rate"}
+    assert _BAT_TRACKING_ATTRS <= set(LEADERBOARD_BUILDERS)
 
 
 if __name__ == "__main__":
