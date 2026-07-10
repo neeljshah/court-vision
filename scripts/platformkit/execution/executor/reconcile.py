@@ -33,6 +33,13 @@ DEFAULT_OUT = _REPO / "data" / "frontend" / "ops" / "dryrun_reconcile.json"
 BOOK_DEPTH_DIR = _REPO / "data" / "cache" / "book_depth" / "kalshi"
 LATER_WINDOW_S = 900.0  # a confirming later snapshot must land within 15min
 
+# QUARANTINE (M13 fix): dryrun_orders.jsonl's original 4 rows (source=
+# smoke_composed.jsonl) were a pre-wiring smoke fixture that predates the
+# composer->dryrun ticker fix and were never real dry-run output -- moved
+# aside on disk (see dryrun_orders.QUARANTINE_NOTE.txt), and source-filtered
+# here too as a standing guard in case a stray copy reappears. Never deleted.
+STALE_SOURCES = frozenset({"smoke_composed.jsonl"})
+
 
 def load_depth_by_ticker(depth_dir: Path = BOOK_DEPTH_DIR) -> Dict[str, List[Dict[str, Any]]]:
     """{ticker: rows sorted ASC by ts} across every captured day."""
@@ -95,7 +102,9 @@ def _stats(values: List[float]) -> Dict[str, Any]:
 def run_reconcile(orders_path: Path = DEFAULT_ORDERS,
                   depth_dir: Path = BOOK_DEPTH_DIR,
                   window_s: float = LATER_WINDOW_S) -> Dict[str, Any]:
-    rows = load_jsonl(orders_path)
+    all_rows = load_jsonl(orders_path)
+    rows = [r for r in all_rows if str(r.get("source", "")) not in STALE_SOURCES]
+    n_stale_skipped = len(all_rows) - len(rows)
     depth = load_depth_by_ticker(depth_dir)
     fills = [r for r in rows if r.get("filled_qty")]
     results = [reconcile_row(r, depth, window_s) for r in fills]
@@ -110,6 +119,7 @@ def run_reconcile(orders_path: Path = DEFAULT_ORDERS,
         "edge_claimed": False,
         "orders_path": str(orders_path),
         "n_dryrun_rows": len(rows),
+        "n_stale_smoke_skipped": n_stale_skipped,
         "n_fills": len(fills),
         "vs_later_tape": {
             "verdict": "measured" if n_tested else

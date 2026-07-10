@@ -13,6 +13,19 @@ already in the output file is skipped, never duplicated.
 If the composer input does not exist yet (it is a forward contract from the
 compose lane), the run reports input_missing honestly and writes nothing.
 
+TICKER RESOLUTION (M13 fix): composer rows never carry ticker/kalshi_ticker/
+market_id -- collect_candidates() reuses the sport/book-agnostic best-bets
+board (any book, not just Kalshi), so parse_intent() alone always returned
+None. SEAM CHOICE: resolved HERE, not in composer -- dryrun is already the
+sole Kalshi-specific IO boundary (MockKalshiExchange + book_depth/kalshi),
+so ticker resolution belongs where Kalshi concerns already live, not leaked
+into the book-agnostic composer. resolve_mlb_ticker() reuses ONLY what is
+already loaded (this run's own book_depth snapshots, split into event/leg
+ids) plus the settle path's existing team->Kalshi-code map
+(ingame_id_resolver_mlb.KALSHI_ABBR) -- no new network join, no new team map.
+MLB-only for now (KALSHI_ABBR's coverage); other sports/market_types stay an
+honest unparseable when no local resolver covers them.
+
 INVARIANTS: <=300 LOC; ASCII; stdlib only; order-time features only (the
 freshest snapshot AT run time, never a later one); never writes
 data/registry/; never flips a flag; price/probability language only.
@@ -31,6 +44,7 @@ from scripts.platformkit.execution.book_replay import load_jsonl
 from scripts.platformkit.execution.executor.lifecycle import (
     ExecOrder, OrderExecutor, idem_key, resolve_exchange)
 from scripts.platformkit.execution.executor.mock_exchange import MockKalshiExchange
+from scripts.platformkit.ingame.ingame_id_resolver_mlb import KALSHI_ABBR
 
 _REPO = Path(__file__).resolve().parents[4]
 DEFAULT_INPUT = _REPO / "data" / "frontend" / "ops" / "bestbets_composed.jsonl"
@@ -70,6 +84,62 @@ def parse_intent(row: Dict[str, Any]) -> Optional[Dict[str, Any]]:
             "sport": str(row.get("sport", "unknown"))}
 
 
+def _norm_team(name: Any) -> str:
+    return " ".join(str(name or "").lower().split())
+
+
+def _kalshi_code_for(team: str) -> Optional[str]:
+    """Team name -> Kalshi 2-3 letter code via the settle path's existing
+    KALSHI_ABBR map (statsapi full names). Kalshi-sourced board rows carry a
+    TRUNCATED dialect (e.g. 'Los Angeles D' for 'Los Angeles Dodgers'), so an
+    exact-key miss falls back to substring match -- the SAME loose-matching
+    technique pm_game_placer._name_matches already uses for this exact
+    cross-source divergence. >1 candidate match (e.g. bare 'Chicago', which
+    fits both Cubs and White Sox) is an honest skip, never a guess."""
+    t = _norm_team(team)
+    if not t:
+        return None
+    exact = KALSHI_ABBR.get(t)
+    if exact:
+        return exact
+    hits = {code for full, code in KALSHI_ABBR.items() if t in full or full in t}
+    return hits.pop() if len(hits) == 1 else None
+
+
+def leg_index(depth_rows: List[Dict[str, Any]]) -> Dict[str, Dict[str, str]]:
+    """{event_id: {team_code: leg_ticker}} from CAPTURED book_depth rows this
+    run already loads for fills (no new IO). A Kalshi leg ticker is
+    "<event_id>-<TEAMCODE>" -- this only splits that existing string, never
+    guesses. Never raises."""
+    idx: Dict[str, Dict[str, str]] = {}
+    for r in depth_rows:
+        event_id, sep, code = str(r.get("ticker") or "").rpartition("-")
+        if sep and event_id and code:
+            idx.setdefault(event_id, {})[code] = event_id + sep + code
+    return idx
+
+
+def resolve_mlb_ticker(row: Dict[str, Any], legs: Dict[str, Dict[str, str]]
+                       ) -> Optional[str]:
+    """MLB-only ticker resolution for a composed row that lacks one: if
+    row['game_id'] is already a captured Kalshi event id and row['side'] is
+    home/away, look up that side's leg ticker via the SAME team-name ->
+    Kalshi-code map the settle path already uses (KALSHI_ABBR) -- no new
+    team map. None on any miss (honest skip, never a guessed leg)."""
+    if str(row.get("sport") or "").lower() != "mlb":
+        return None
+    per_event = legs.get(str(row.get("game_id") or ""))
+    if not per_event:
+        return None
+    side = row.get("side")
+    matchup = str(row.get("matchup") or "")
+    if side not in ("home", "away") or " vs " not in matchup:
+        return None
+    home, _, away = matchup.partition(" vs ")
+    code = _kalshi_code_for(home.strip() if side == "home" else away.strip())
+    return per_event.get(code) if code else None
+
+
 def load_latest_books(depth_dir: Path = BOOK_DEPTH_DIR, n_files: int = 2
                       ) -> List[Dict[str, Any]]:
     """Freshest snapshot row per ticker from the last *n_files* capture days
@@ -97,16 +167,24 @@ def run_dryrun(input_path: Path = DEFAULT_INPUT, out_path: Path = DEFAULT_OUT,
         "asof_ts": asof, "input": str(input_path), "out": str(out_path),
         "input_missing": not input_path.exists(), "edge_claimed": False,
         "n_input_rows": len(rows), "n_intents": 0, "n_written": 0,
-        "n_skipped_idempotent": 0, "n_unparseable": 0, "states": {},
+        "n_skipped_idempotent": 0, "n_unparseable": 0, "n_ticker_resolved": 0,
+        "states": {},
     }
     if not rows:
         return report
+    books = load_latest_books(depth_dir)
     if exchange is None:
-        exchange = MockKalshiExchange(load_latest_books(depth_dir))
+        exchange = MockKalshiExchange(books)
+    legs = leg_index(books)
     executor = OrderExecutor(exchange, governor=None, sleep_fn=lambda _s: None)
     seen = _existing_keys(out_path)
     out_lines: List[str] = []
     for row in rows[:max_rows]:
+        if not (row.get("ticker") or row.get("kalshi_ticker") or row.get("market_id")):
+            resolved = resolve_mlb_ticker(row, legs)
+            if resolved:
+                row = dict(row, ticker=resolved)
+                report["n_ticker_resolved"] += 1
         intent = parse_intent(row)
         if intent is None:
             report["n_unparseable"] += 1
@@ -165,8 +243,8 @@ def main() -> int:
     return 0
 
 
-__all__ = ["parse_intent", "load_latest_books", "run_dryrun",
-           "DEFAULT_INPUT", "DEFAULT_OUT", "BOOK_DEPTH_DIR"]
+__all__ = ["parse_intent", "load_latest_books", "run_dryrun", "leg_index",
+           "resolve_mlb_ticker", "DEFAULT_INPUT", "DEFAULT_OUT", "BOOK_DEPTH_DIR"]
 
 if __name__ == "__main__":
     raise SystemExit(main())
