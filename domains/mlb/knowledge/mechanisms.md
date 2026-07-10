@@ -314,9 +314,9 @@ borderline pitches disperse MORE than pure sampling noise would predict.
 - **causal story**: something about a given game (which umpire happens to be assigned, that day's specific zone-calling tendency, weather/lighting) shifts the whole game's borderline-call rate together, rather than each pitch being an independent draw from one fixed league-wide rate.
 - **expected signature**: quasi-binomial dispersion ratio phi = chi2/df meaningfully above 1.0 (declared bar: phi>=1.2 AND p<0.01).
 - **test spec**: per-game chi2 = sum((calls_g - n_g*p_bar)^2 / (n_g*p_bar*(1-p_bar))) ~ chi2(n_games-1) under the single-shared-rate null; phi=chi2/df is the effect size (p alone is not trusted given n_games in the thousands).
-- **status**: CONFIRMED_LOCAL
-- **measured LOCAL magnitude**: phi=1.389 (chi2=3339.4, df=2405, p=9.69e-34), pooled called-strike rate on taken borderline pitches=0.0485, n=2,406 games (2025).
-- **artifact link**: `domains/mlb/knowledge/validate_called_strike_dispersion.py::called_strike_dispersion_exceeds_binomial_noise`.
+- **status**: CONFIRMED (REPLICATED on savant_full__2024 -- second-corpus receipt below)
+- **measured LOCAL magnitude**: phi=1.389 (chi2=3339.4, df=2405, p=9.69e-34), pooled called-strike rate on taken borderline pitches=0.0485, n=2,406 games (2025). Replication (2024): phi=1.392 (chi2=3379.1, df=2427, p=1.36e-34), rate=0.0634, n=2,428 games.
+- **artifact link**: `domains/mlb/knowledge/validate_called_strike_dispersion.py::called_strike_dispersion_exceeds_binomial_noise`; replication `domains/mlb/knowledge/validate_replication_wave1.py::replicate_called_strike_dispersion`; `validation_ledger.jsonl` row `called_strike_dispersion_exceeds_binomial_noise__replication_2024`.
 - **wiring**: none yet -- this confirms a real per-game environmental factor EXISTS, not that it is attributable to umpire identity (that stays NOT_TESTABLE per #31) or usable as a live feature; a candidate for a future leak-free as-of per-park/weather join, not wired here.
 
 ### 40. Called-strike deviation vs game total runs -- LOCAL NULL
@@ -375,9 +375,9 @@ reverse-direction rule).
 - **causal story**: umpires subconsciously balance outcomes -- a called third strike at 0-2 ends the PA on a borderline pitch, a called ball at 3-0 walks the batter, so the psychological cost of a "wrong" call is asymmetric by count, biasing the zone.
 - **expected signature**: lower called-strike rate on taken edge-zone pitches (same `zone in {11,12,13,14}` definition as row #10/#39) at pitcher's counts (0-2, 1-2) than at hitter's counts (3-0, 3-1), pooled across games -- distinct from #10 (pitcher TARGETING behavior) and #39/#40 (game-level dispersion, no count axis).
 - **test spec**: `domains.mlb.knowledge.validate_research_wave1.compassionate_umpire_count_zone` -- Welch t-test on the called-strike indicator (proportion-test analog, same convention as the sibling count/dispersion validators), pitcher's-count vs hitter's-count on taken edge-zone pitches, split-half by date (2 corpora); declared bar |eff|>=0.05 AND p<0.01, both halves must clear it, same direction.
-- **status**: CONFIRMED (both halves clear the bar, same direction)
-- **measured LOCAL magnitude**: h1: called-strike rate 0.0137 (pitcher's-count, n=21,803) vs 0.0903 (hitter's-count, n=3,191), effect=-0.0765, p=1.0e-48. h2: 0.0121 vs 0.0927, effect=-0.0807, p=2.5e-51 (savant_full__2025, split-half by date).
-- **artifact link**: `domains/mlb/knowledge/validate_research_wave1.py::compassionate_umpire_count_zone`; `validation_ledger.jsonl` rows `compassionate_umpire_count_zone__h1`/`__h2`/`__combined`.
+- **status**: CONFIRMED (REPLICATED on savant_full__2024 -- second-corpus receipt below)
+- **measured LOCAL magnitude**: h1: called-strike rate 0.0137 (pitcher's-count, n=21,803) vs 0.0903 (hitter's-count, n=3,191), effect=-0.0765, p=1.0e-48. h2: 0.0121 vs 0.0927, effect=-0.0807, p=2.5e-51 (savant_full__2025, split-half by date). Replication (2024, same design/bar): h1 effect=-0.0992, p=9.9e-64; h2 effect=-0.1026, p=1.1e-63, n=50,058 -- both halves clear the same |eff|>=0.05, p<0.01 bar, same direction.
+- **artifact link**: `domains/mlb/knowledge/validate_research_wave1.py::compassionate_umpire_count_zone`; replication `domains/mlb/knowledge/validate_replication_wave1.py::replicate_compassionate_umpire`; `validation_ledger.jsonl` rows `compassionate_umpire_count_zone__h1`/`__h2`/`__combined` (2025) and `compassionate_umpire_count_zone__replication_2024` (2024).
 - **source**: "The Strike Zone Expansion is Out of Control" (Hardball Times, quoting John Walsh's "Compassionate Umpire"), https://tht.fangraphs.com/the-strike-zone-expansion-is-out-of-control/ -- "the zone shrinks as the pitcher gains the edge... its size at 0-2 is only 64 percent as large as it is in a 3-0 count." Also "The Strike Zone Is Shrinking. Here's How." (FanGraphs), https://blogs.fangraphs.com/the-strike-zone-is-shrinking-heres-how/.
 
 ### 44. Shaded outfield alignment suppresses extra-base-hit rate on fly balls/line drives -- LOCAL NULL
@@ -401,6 +401,29 @@ reverse-direction rule).
 - **artifact link**: `domains/mlb/knowledge/validate_research_wave1.py::same_type_repeat_whiff`; `validation_ledger.jsonl` rows `same_type_repeat_whiff__h1`/`__h2`/`__combined`.
 - **note**: distinct from #32 (catcher game-calling persistence, split-half by catcher, REJECTED NULL_LOCAL) -- that tests whether CATCHERS differ and are internally consistent; this tests a universal batter-cognition effect independent of catcher identity, at the individual-pitch level.
 - **source**: "Pitch Sequencing Analysis: A Deeper Look at Tunneling" (Magnus), https://www.seemagnus.com/blog-posts-test/pitch-sequencing-analysis-a-deeper-look-at-tunneling -- notes same-pitch-twice results are "counterintuitive" relative to naive sequencing theory, i.e. the direction is genuinely open, not assumed; flagged there as needing empirical (not folklore) testing -- the measured LOCAL direction here (higher whiff on repeat) is the counterintuitive one the source anticipated.
+
+---
+
+## Replicated 2026-07-10 (second-corpus wave -- #39 and #43 both REPLICATED on savant_full__2024)
+
+Cross-season replication of the 2 strongest CONFIRMED_LOCALs above, on the
+independently-available `savant_full__2024.parquet` corpus (verified on disk,
+2,428 games, 711,455 pitches). Both were ported with the ORIGINAL validator
+functions imported and called unchanged (same zone set, same alpha/effect
+bars, same split-half design where the original used one) -- no bar was
+loosened for replication. Both REPLICATED; see #39 and #43 above for the
+updated combined receipts.
+
+- **called_strike_dispersion_exceeds_binomial_noise**: REPLICATED. phi=1.392
+  (2024) vs phi=1.389 (2025) -- near-identical dispersion ratio, same bar
+  (phi>=1.2 AND p<0.01) cleared on an independent season.
+- **compassionate_umpire_count_zone**: REPLICATED. Both 2024 halves clear the
+  same |eff|>=0.05, p<0.01 bar, same direction (pitcher's-count effective
+  zone smaller than hitter's-count), effect magnitude actually larger on
+  2024 (-0.099/-0.103) than on 2025 (-0.077/-0.081).
+- **artifact link**: `domains/mlb/knowledge/validate_replication_wave1.py`;
+  `validation_ledger.jsonl` rows `called_strike_dispersion_exceeds_binomial_noise__replication_2024`,
+  `compassionate_umpire_count_zone__replication_2024`.
 
 ---
 
