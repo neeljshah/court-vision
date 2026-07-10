@@ -337,6 +337,7 @@ _BUILDERS = {
     "nba_carryover_asof": _carry._nba_carryover_builder,
     "mlb_carryover_asof": _carry._mlb_carryover_builder,
     "nba_ingame_state_asof": _ingame._nba_ingame_state_builder,
+    "nba_assist_boxdetail_asof": _ingame._nba_assist_boxdetail_builder,
 }
 
 

@@ -83,4 +83,59 @@ def _nba_ingame_state_builder(attrs: List[str], tpl: Dict[str, Any]) -> Optional
     return {"frame": frame, "cluster": "event_id", "corpus": _NBA_INGAME_STATE_CORPUS, "kind": "ols"}
 
 
-__all__ = ["build_nba_ingame_state_frame", "_nba_ingame_state_builder", "_ingame_state_diff_col"]
+# --------------------------------------------------------------------------
+# NBA ASSIST-RATE x BOX-DETAIL cross builder (unlock lane follow-on -- closes
+# the last-inch gap b418cde6/f94a0373 left open for nba_assist_x_boxdetail_
+# cross's feature_builder="nba_assist_boxdetail_asof"). Placed here (not
+# builders_task39b.py, where nba_boxdetail_asof itself lives) purely for LOC
+# budget -- that file is already at 279/300 lines. Merges TWO already-on-disk
+# leak-free diff_*_asof sources: asof_features.parquet's ast_rate_diff_asof
+# (assist_asof family) + boxdetail_asof.parquet's 5 box-detail diff cols
+# (box_detail_asof family) -- both use the identical <metric>_diff_asof SUFFIX
+# naming (builders_task39b._nba_boxdetail_diff_col's string transform works
+# unchanged for ast_rate_asof -> ast_rate_diff_asof), so it is reused rather
+# than reimplemented.
+from scripts.platformkit.interaction_factory.builders_task39b import (  # noqa: E402
+    _nba_boxdetail_diff_col as _assist_bd_diff_col,
+    _NBA_BOXDETAIL_SOURCE as _NBA_BOXDETAIL_SOURCE_2,
+)
+
+_NBA_ASSIST_SOURCE = REPO / "data" / "domains" / "basketball_nba" / "asof_features.parquet"
+_NBA_ASSIST_BOXDETAIL_CORPUS = "assist_boxdetail_asof"
+
+
+def build_nba_assist_boxdetail_frame(attrs: List[str], assist: pd.DataFrame, boxdetail: pd.DataFrame,
+                                      games: Optional[pd.DataFrame] = None) -> pd.DataFrame:
+    """Per-game frame for the assist x box-detail CROSS template: y=home_win,
+    asof__<attr> pulled from whichever source parquet actually carries that
+    attr's own diff column. Seeds Elo p_base + coverage (asof_ast_rate_eval.
+    build_candidate_frame, reused) off whichever source carries the sorted-
+    first diff col -- same pattern build_nba_boxdetail_frame uses for its own
+    single-source case. Merges, invents nothing."""
+    from domains.basketball_nba import asof_ast_rate_eval as _eval
+    diff_cols = sorted({_assist_bd_diff_col(a) for a in attrs})
+    src = {"assist": assist, "boxdetail": boxdetail}
+    owner = {dc: ("assist" if dc in assist.columns else "boxdetail") for dc in diff_cols}
+    out = _eval.build_candidate_frame(games=games, asof=src[owner[diff_cols[0]]], feat_col=diff_cols[0])
+    out = out[["game_id", "home_win", "p_base", diff_cols[0]]].copy()
+    for dc in diff_cols[1:]:
+        extra = src[owner[dc]][["game_id", dc]].copy()
+        extra["game_id"] = extra["game_id"].astype(str)
+        out = out.merge(extra, on="game_id", how="left")
+    out = out.rename(columns={_assist_bd_diff_col(a): "asof__" + a for a in attrs})
+    out["y"] = out["home_win"]
+    return out
+
+
+def _nba_assist_boxdetail_builder(attrs: List[str], tpl: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    if not (_NBA_ASSIST_SOURCE.exists() and _NBA_BOXDETAIL_SOURCE_2.exists()):
+        return None
+    assist = pd.read_parquet(_NBA_ASSIST_SOURCE)
+    boxdetail = pd.read_parquet(_NBA_BOXDETAIL_SOURCE_2)
+    frame = build_nba_assist_boxdetail_frame(attrs, assist, boxdetail)
+    return {"frame": frame, "cluster": "game_id", "corpus": _NBA_ASSIST_BOXDETAIL_CORPUS,
+            "kind": "logit", "covariate": "p_base"}
+
+
+__all__ = ["build_nba_ingame_state_frame", "_nba_ingame_state_builder", "_ingame_state_diff_col",
+           "build_nba_assist_boxdetail_frame", "_nba_assist_boxdetail_builder"]
