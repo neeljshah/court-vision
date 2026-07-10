@@ -128,7 +128,20 @@ def _per_key_target(rows_text: str, key: str) -> Optional[int]:
             return int(tokens[j])
     return None
 
-def _verdict(label: str, target: Optional[int], resolved: Optional["tuple[int, Optional[int]]"]) -> Dict[str, Any]:
+_FILE_UNIT_WORDS = {"day", "days", "game", "games", "file", "files", "dir", "dirs", "date", "dates"}
+
+def _is_row_claim(rows: Any) -> bool:
+    """True when `rows` describes content (row/line/tick count) rather than a
+    file/entry count. Default True (the field is literally called "rows"),
+    EXCEPT strings that name an explicit file-like unit ("507 games", "4
+    depth-days") -- those describe entries being counted, not content."""
+    if not isinstance(rows, str):
+        return True
+    words = {w.lower() for w in re.findall(r"[A-Za-z]+", rows)}
+    return not (words & _FILE_UNIT_WORDS)
+
+def _verdict(label: str, target: Optional[int], resolved: Optional["tuple[int, Optional[int]]"],
+             is_row_claim: bool = True) -> Dict[str, Any]:
     if resolved is None:
         return {"entry": label, "status": "missing", "claimed": target}
     files, content = resolved
@@ -137,12 +150,18 @@ def _verdict(label: str, target: Optional[int], resolved: Optional["tuple[int, O
                  "actual": content if content is not None else files}
     tol = 0 if target <= 20 else max(1, round(target * 0.05))
     # files is only a meaningful candidate once there's more than one entry to count
-    candidates = [c for c in (files if files > 1 else None, content) if c is not None] or [files]
+    file_candidate = files if files > 1 else None
+    # precedence, not distance: a row-claim (default -- "rows" means content)
+    # is checked against summed line/row content first; a file-unit claim is
+    # checked against the file count first. Picking whichever candidate was
+    # numerically CLOSER to a stale claim let a file count masquerade as the
+    # true content figure (false "collapse" reports on growing corpora).
+    ordered = (content, file_candidate) if is_row_claim else (file_candidate, content)
+    candidates = [c for c in ordered if c is not None] or [files]
     for c in candidates:
         if abs(c - target) <= tol:
             return {"entry": label, "status": "ok", "claimed": target, "actual": c}
-    best = min(candidates, key=lambda c: abs(c - target))
-    return {"entry": label, "status": "drift", "claimed": target, "actual": best}
+    return {"entry": label, "status": "drift", "claimed": target, "actual": candidates[0]}
 
 def check_entry(sport: str, name: str, source: Dict[str, Any]) -> Iterator[Dict[str, Any]]:
     """Yield one result dict per sources{} sub-check (>1 only for comma-brace paths)."""
@@ -152,6 +171,7 @@ def check_entry(sport: str, name: str, source: Dict[str, Any]) -> Iterator[Dict[
         yield {"entry": label, "status": "unverifiable", "reason": "path or rows field absent"}
         return
 
+    row_claim = _is_row_claim(rows)
     path = _primary_token(raw_path)
     brace = re.search(r"\{([^}]*)\}", path)
     if brace and "," in brace.group(1):
@@ -160,14 +180,14 @@ def check_entry(sport: str, name: str, source: Dict[str, Any]) -> Iterator[Dict[
                 continue
             concrete = _to_glob(path[: brace.start()] + key + path[brace.end():])
             target = _per_key_target(rows, key) if isinstance(rows, str) else rows
-            yield _verdict(f"{label}[{key}]", target, _resolve(concrete))
+            yield _verdict(f"{label}[{key}]", target, _resolve(concrete), row_claim)
         return
 
     target = _extract_target(rows)
     if target is None:
         yield {"entry": label, "status": "unverifiable", "reason": f"rows not a single concrete count: {rows!r}"}
         return
-    yield _verdict(label, target, _resolve(_to_glob(path)))
+    yield _verdict(label, target, _resolve(_to_glob(path)), row_claim)
 
 def run_check(census_path: str = CENSUS_PATH, out_path: str = OUT_PATH) -> Dict[str, Any]:
     """Sole entrypoint -- no required args. Report-only: exit code is always 0

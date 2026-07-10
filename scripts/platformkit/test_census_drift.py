@@ -81,6 +81,30 @@ def test_directory_file_count_matches_claim(tmp_path):
     assert result["actual"] == 4
 
 
+def test_drift_prefers_content_over_file_count(tmp_path):
+    # reproduces the kalshi_trades false collapse: a growing corpus (2 date-files,
+    # 40k lines summed) is numerically CLOSER to the stale claim by file-count (2)
+    # than by content (40000+) -- must report the true content, not "collapsed to 2".
+    d = tmp_path / "kalshi_trades"
+    d.mkdir()
+    _write_jsonl(str(d / "2026-07-09.jsonl"), 15000)
+    _write_jsonl(str(d / "2026-07-10.jsonl"), 25000)
+    (result,) = check_entry("cross_sport_market", "kalshi_trades", {"path": str(d / "*.jsonl"), "rows": 24567})
+    assert result["status"] == "drift"
+    assert result["actual"] == 40000  # content, not the file count (2)
+
+
+def test_directory_file_claim_still_prefers_files(tmp_path):
+    # sanity check the other side of the precedence rule: an explicit file-unit
+    # claim ("N games"/"N depth-days") still prefers the file count, unaffected.
+    d = tmp_path / "depth_history"
+    d.mkdir()
+    for i in range(4):
+        _write_jsonl(str(d / f"day{i}.jsonl"), 500)
+    (result,) = check_entry("mlb", "depth_history", {"path": str(d), "rows": "4 depth-days"})
+    assert result["status"] == "ok" and result["actual"] == 4
+
+
 def test_comma_brace_per_key(tmp_path):
     # one key lands OK (number found adjacent to its own token), the other
     # is MISSING outright (2024 file never landed -- the savant_hitcoords case)
