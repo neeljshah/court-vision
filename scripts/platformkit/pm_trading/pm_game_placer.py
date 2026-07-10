@@ -20,11 +20,11 @@ from __future__ import annotations
 import logging
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
+from typing import Any, Callable, Dict, List, Optional, Sequence
 
-from scripts.platformkit.odds_provider.kalshi_series_spec import ticker_game_date
-from scripts.platformkit.pm_trading.pm_game_date_guard import (
-    _et_date_candidates, _match_hits, _name_matches, _norm,
+from scripts.platformkit.pm_trading.pm_game_date_guard import _et_date_candidates, _name_matches
+from scripts.platformkit.pm_trading.pm_game_match import (
+    _split_sides, group_by_game, match_hits, match_model_game, route_for,
 )
 
 logger = logging.getLogger(__name__)
@@ -33,7 +33,6 @@ DEFAULT_PM_GAME_SPORTS = ("mlb", "soccer_intl")
 _REPO = Path(__file__).resolve().parents[3]
 _DEFAULT_LEDGER = _REPO / "data" / "frontend" / "clv_ledger.jsonl"
 _TIER_RANK = {"A": 0, "B": 1, "C": 2}
-_TIE_TOKENS = frozenset({"tie", "draw"})
 _MIN_MKT, _MAX_MKT, _MAX_PLAUSIBLE_EV = 0.05, 0.95, 1.0  # plausibility band (stale-quote guard)
 
 _HONEST_NOTE = (
@@ -52,62 +51,6 @@ def _f(v: Any) -> Optional[float]:
     except (TypeError, ValueError):
         return None
     return x if x == x else None
-
-
-def group_by_game(rows: Sequence[Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
-    """fetch_inplay rows -> {game_id: {'sides': {side_name: (prob, ticker)}, 'venue': v}}.
-    Keeps the most recent prob per side; ignores rows missing a game_id/side/prob.
-
-    MARKET_TYPE FILTER (binding): inplay_kalshi.fetch_inplay now ALSO returns total/spread/
-    team_total rows -- their "prob" is P(over line) / P(covers), never a team win-prob, and
-    their "side" is not a team name. This placer devigs {side: prob} pairs as a two/three-way
-    MONEYLINE book (placements_from_game), so a non-moneyline row must never enter the group
-    -- it would either fail team-name matching (harmless) or, worse, silently pollute a game's
-    side set. Filtered to market_type=="moneyline"; a row missing market_type (older cached
-    shape / non-Kalshi venue) is treated as moneyline for back-compat.
-    """
-    out: Dict[str, Dict[str, Any]] = {}
-    for r in rows or []:
-        if not isinstance(r, dict):
-            continue
-        mt = r.get("market_type")
-        if mt is not None and str(mt) != "moneyline":
-            continue
-        gid = str(r.get("game_id") or "").strip()
-        side = str(r.get("side") or "").strip()
-        prob = _f(r.get("prob"))
-        if not gid or not side or prob is None or not (0.0 < prob < 1.0):
-            continue
-        g = out.setdefault(gid, {"sides": {}, "venue": str(r.get("venue") or "kalshi"),
-                                  # PHANTOM-MATCHUP FIX: the scheduled date embedded in the
-                                  # Kalshi event ticker itself (gid IS the event_ticker) --
-                                  # None when unparseable (degrades to no date filtering,
-                                  # never a false-positive reject; see match_model_game).
-                                  "date": ticker_game_date(gid)})
-        g["sides"][side] = (prob, str(r.get("ticker") or ""))
-    return out
-
-
-def _split_sides(sides: Dict[str, Any]) -> Tuple[List[str], Optional[float]]:
-    """Return (team_side_names, tie_prob). Tie/draw side is pulled out of the field."""
-    teams: List[str] = []
-    tie_prob: Optional[float] = None
-    for name, (prob, _t) in sides.items():
-        if _norm(name) in _TIE_TOKENS:
-            tie_prob = prob
-        else:
-            teams.append(name)
-    return teams, tie_prob
-
-
-def match_model_game(team_sides: Sequence[str], model_games: Sequence[Dict[str, Any]],
-                     *, kalshi_date: Optional[Any] = None) -> Optional[Dict[str, Any]]:
-    """Find the model game whose {home,away} uniquely map to the two Kalshi team sides.
-    Returns the model rec with an added side->role map, or None on 0 or 2+ candidates
-    (unique-hit-only; ambiguity is an honest skip, never a guessed pairing). Date guard +
-    team matching live in pm_game_date_guard (LOC-rail split)."""
-    hits = _match_hits(team_sides, model_games, kalshi_date=kalshi_date)
-    return hits[0] if len(hits) == 1 else None
 
 
 def _devig(side_prob: float, other_prob: float,
@@ -273,9 +216,10 @@ def run(sports: Sequence[str] = DEFAULT_PM_GAME_SPORTS, *,
         n_games += len(games)
         cands: List[Dict[str, Any]] = []
         s_matched = s_ambiguous = 0
-        for g in games.values():
+        for gid, g in games.items():
             teams, _tie = _split_sides(g.get("sides") or {})
-            hits = _match_hits(teams, model_games, kalshi_date=g.get("date"))
+            hits = match_hits(teams, model_games, kalshi_date=g.get("date"),
+                              ticker=gid, sport=sport)
             if len(hits) != 1:
                 if len(hits) > 1:  # phantom-matchup guard: counted skip, never a guess
                     s_ambiguous += 1
@@ -303,7 +247,7 @@ def run(sports: Sequence[str] = DEFAULT_PM_GAME_SPORTS, *,
                 n_placed += 1
         by_sport[sport] = {"games": len(games), "matched": s_matched,
                            "placed": s_placed, "dup_skipped": s_dup, "capped": s_capped,
-                           "ambiguous_skipped": s_ambiguous}
+                           "ambiguous_skipped": s_ambiguous, "matcher": route_for(sport)}
     return {"ts": _now_iso(), "n_games": n_games, "n_matched": n_matched,
             "n_placed": n_placed, "n_dup_skipped": n_dup, "n_capped": n_capped,
             "n_ambiguous_skipped": n_ambiguous,
