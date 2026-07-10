@@ -23,6 +23,9 @@ import numpy as np
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 _ARTIFACT_PATH = _REPO_ROOT / "vault" / "_Organized" / "_Index" / "_Calibration_Scoreboard.md"
+# Canonical ops-json path scoreboard_history.py reads (M17). Never the retired
+# one-shot data/frontend/ops/calibration_scoreboard_wave21.json.
+_OPS_JSON_PATH = _REPO_ROOT / "data" / "frontend" / "ops" / "calibration_scoreboard_latest.json"
 
 HONEST_BANNER = (
     "> **CALIBRATION METRIC — NOT A MARKET EDGE.**  "
@@ -139,6 +142,7 @@ def build_calibration_scoreboard(
 
     if write:
         _write_artifact(rows, vault_root=vault_root)
+        _write_ops_json(rows)
 
     return rows
 
@@ -148,6 +152,52 @@ def _write_artifact(rows: List[SportMetrics], vault_root: Optional[Path] = None)
     out = (vault_root or _ARTIFACT_PATH.parent) / "_Calibration_Scoreboard.md"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(_render_markdown(rows), encoding="utf-8")
+    return out
+
+
+def _safe(v):
+    """None for NaN/inf (not valid JSON), pass-through otherwise."""
+    import math
+    if isinstance(v, float) and not math.isfinite(v):
+        return None
+    return v
+
+
+def _row_to_ops_dict(r: SportMetrics) -> Dict:
+    if "error" in r:
+        return {"sport": r.get("sport", "?"), "error": r["error"][:120]}
+    bl, im = r.get("baseline", {}), r.get("improved", {})
+    n = im.get("n") or bl.get("n") or 0
+    bb, ib = bl.get("brier", float("nan")), im.get("brier", float("nan"))
+    be, ie = bl.get("ece", float("nan")), im.get("ece", float("nan"))
+    return {
+        "sport": r.get("sport", "?"), "n": n,
+        "baseline_brier": _safe(bb), "improved_brier": _safe(ib),
+        "d_brier": _safe(ib - bb) if _both_finite(bb, ib) else None,
+        "baseline_ece": _safe(be), "improved_ece": _safe(ie),
+        "d_ece": _safe(ie - be) if _both_finite(be, ie) else None,
+        "method": r.get("method", "-"),
+    }
+
+
+def _write_ops_json(rows: List[SportMetrics], out_path: Optional[Path] = None) -> Path:
+    """Write the ops-json shape scripts/platformkit/scoreboard_history.py expects
+    (calibration_scoreboard.per_sport rows + generated_at) to the canonical
+    latest path (M17). Does not touch the retired wave21 one-shot artifact."""
+    import json
+    from datetime import datetime, timezone
+    out = out_path or _OPS_JSON_PATH
+    out.parent.mkdir(parents=True, exist_ok=True)
+    doc = {
+        "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "honesty_note": "CALIBRATION/COVERAGE ONLY. Not a market or betting edge.",
+        "calibration_scoreboard": {
+            "source_tool": "scripts/platformkit/calibration_scoreboard.py",
+            "run_status": "OK" if not any("error" in r for r in rows) else "PARTIAL",
+            "per_sport": [_row_to_ops_dict(r) for r in rows],
+        },
+    }
+    out.write_text(json.dumps(doc, ensure_ascii=True, indent=2), encoding="utf-8")
     return out
 
 

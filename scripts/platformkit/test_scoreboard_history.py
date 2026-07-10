@@ -1,6 +1,7 @@
 """Per-file test for scoreboard_history (tmp_path only)."""
 import json
 
+from scripts.platformkit import scoreboard_history as SH
 from scripts.platformkit.scoreboard_history import append_rows
 
 
@@ -41,3 +42,15 @@ def test_missing_source(tmp_path):
     r = append_rows(source_path=tmp_path / "nope.json",
                     history_path=tmp_path / "h.jsonl")
     assert r["status"] == "no_source"
+
+
+def test_resolve_source_prefers_latest_falls_back_to_wave21(monkeypatch, tmp_path):
+    """M17: _resolve_source picks _LATEST when it exists, else the retired
+    wave21 SOURCE -- resolved fresh on every call, not frozen at import time."""
+    latest = tmp_path / "latest.json"
+    wave21 = tmp_path / "wave21.json"
+    monkeypatch.setattr(SH, "_LATEST", latest)
+    monkeypatch.setattr(SH, "SOURCE", wave21)
+    assert SH._resolve_source() == wave21
+    latest.write_text("{}", encoding="utf-8")
+    assert SH._resolve_source() == latest
