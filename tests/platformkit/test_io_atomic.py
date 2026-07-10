@@ -149,3 +149,28 @@ def test_append_jsonl_atomic_heals_pre_existing_torn_tail(tmp_path):
     append_jsonl_atomic(p, {"i": 2})
     rows = [json.loads(ln) for ln in p.read_text(encoding="ascii").splitlines() if ln.strip()]
     assert rows == [{"i": 0}, {"i": 1}, {"i": 2}]
+
+
+def test_append_jsonl_atomic_stamps_run_ts_only_for_validation_ledger(tmp_path):
+    """E14: domains/*/knowledge validate_*.py + M07 reval all write files named
+    exactly validation_ledger.jsonl through this one function -- that's the
+    single shared point that gets an auto run_ts stamp so a same-corpus reval
+    is distinguishable from a silent duplicate. Every other jsonl target
+    (feed.jsonl, cost_ledger.jsonl, etc.) must be byte-shape-unchanged."""
+    ledger = tmp_path / "validation_ledger.jsonl"
+    append_jsonl_atomic(ledger, {"hypothesis": "b2b_rest_penalty", "verdict": "NULL_LOCAL"})
+    row = json.loads(ledger.read_text(encoding="ascii").splitlines()[0])
+    assert row["hypothesis"] == "b2b_rest_penalty"
+    assert "run_ts" in row and row["run_ts"].endswith("Z")
+
+    # A caller-supplied run_ts is never clobbered.
+    other = tmp_path / "sub" / "validation_ledger.jsonl"
+    append_jsonl_atomic(other, {"hypothesis": "x", "run_ts": "PRESET"})
+    row2 = json.loads(other.read_text(encoding="ascii").splitlines()[0])
+    assert row2["run_ts"] == "PRESET"
+
+    # A differently-named ledger (every non-knowledge caller) is untouched.
+    p = tmp_path / "feed.jsonl"
+    append_jsonl_atomic(p, {"i": 0})
+    row3 = json.loads(p.read_text(encoding="ascii").splitlines()[0])
+    assert "run_ts" not in row3
