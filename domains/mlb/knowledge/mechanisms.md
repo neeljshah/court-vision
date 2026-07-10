@@ -354,42 +354,52 @@ borderline pitches disperse MORE than pure sampling noise would predict.
 
 ---
 
-## Seeded 2026-07-10 (research-wave -- literature-sourced, UNTESTED, M10 pool feedstock)
+## Validated 2026-07-10 (research-wave 1 -- #43 CONFIRMED, #44/#45 NULL)
 
-Fresh mechanism hypotheses from public sabermetrics literature, checked
-against every row above and against `data/frontend/reject_ledger.jsonl`
-(535 rows, 0 keyword hits for `fielding_alignment`/`umpire`/`sequenc` on
-sport=mlb) before seeding. No validator built this lane.
+Fresh mechanism hypotheses from public sabermetrics literature, seeded
+2026-07-10 (checked against every row above and against
+`data/frontend/reject_ledger.jsonl`, 535 rows, 0 keyword hits for
+`fielding_alignment`/`umpire`/`sequenc` on sport=mlb, before seeding).
+Validated same day via `validate_research_wave1.py`: split-half-by-date
+(2 corpora, `savant_full__2025.parquet`) supplies the >=2-corpora
+replication the honesty rail requires even though each row's own test spec
+only asked for one season; combine rule requires BOTH halves to
+individually clear their declared p AND effect-size bar (not p alone --
+see #45, where p<1e-4 both halves but the effect sits below the declared
+bar and reverses the claimed direction, same discipline as #35's
+reverse-direction rule).
 
 ### 43. Umpire called-strike zone size varies by count state ("compassionate umpire")
 - **claim**: the called-strike rate on borderline (shadow-zone) pitches shrinks in pitcher's counts (e.g. 0-2) and expands in hitter's counts (e.g. 3-0) -- the umpire's effective zone size is count-conditional, not fixed.
+- **premise check**: identity-free by construction, same as #31/#39/#40 -- no umpire-identity column exists locally and this row's own spec never asked for one (game/count-level only); no adaptation needed. Columns `zone`/`type`/`balls`/`strikes`/`description` all confirmed present on `savant_full__2025.parquet`.
 - **causal story**: umpires subconsciously balance outcomes -- a called third strike at 0-2 ends the PA on a borderline pitch, a called ball at 3-0 walks the batter, so the psychological cost of a "wrong" call is asymmetric by count, biasing the zone.
 - **expected signature**: lower called-strike rate on taken edge-zone pitches (same `zone in {11,12,13,14}` definition as row #10/#39) at pitcher's counts (0-2, 1-2) than at hitter's counts (3-0, 3-1), pooled across games -- distinct from #10 (pitcher TARGETING behavior) and #39/#40 (game-level dispersion, no count axis).
-- **test spec**: chi2/proportion test, called-strike rate on taken edge-zone pitches by count bucket (pitcher's-count vs hitter's-count vs neutral), one season; declared bar |eff|>=0.05 (proportion points) AND p<0.01.
-- **status**: UNTESTED
-- **measured LOCAL magnitude**: n/a (not yet run).
-- **artifact link**: `data/cache/statcast/savant_full__2025.parquet` (`zone`, `type`, `balls`, `strikes`, `description`; same taken-pitch/edge-zone convention as `validate_count_zone.py` and `validate_called_strike_dispersion.py`).
+- **test spec**: `domains.mlb.knowledge.validate_research_wave1.compassionate_umpire_count_zone` -- Welch t-test on the called-strike indicator (proportion-test analog, same convention as the sibling count/dispersion validators), pitcher's-count vs hitter's-count on taken edge-zone pitches, split-half by date (2 corpora); declared bar |eff|>=0.05 AND p<0.01, both halves must clear it, same direction.
+- **status**: CONFIRMED (both halves clear the bar, same direction)
+- **measured LOCAL magnitude**: h1: called-strike rate 0.0137 (pitcher's-count, n=21,803) vs 0.0903 (hitter's-count, n=3,191), effect=-0.0765, p=1.0e-48. h2: 0.0121 vs 0.0927, effect=-0.0807, p=2.5e-51 (savant_full__2025, split-half by date).
+- **artifact link**: `domains/mlb/knowledge/validate_research_wave1.py::compassionate_umpire_count_zone`; `validation_ledger.jsonl` rows `compassionate_umpire_count_zone__h1`/`__h2`/`__combined`.
 - **source**: "The Strike Zone Expansion is Out of Control" (Hardball Times, quoting John Walsh's "Compassionate Umpire"), https://tht.fangraphs.com/the-strike-zone-expansion-is-out-of-control/ -- "the zone shrinks as the pitcher gains the edge... its size at 0-2 is only 64 percent as large as it is in a 3-0 count." Also "The Strike Zone Is Shrinking. Here's How." (FanGraphs), https://blogs.fangraphs.com/the-strike-zone-is-shrinking-heres-how/.
 
-### 44. Shaded outfield alignment suppresses extra-base-hit rate on fly balls/line drives
+### 44. Shaded outfield alignment suppresses extra-base-hit rate on fly balls/line drives -- LOCAL NULL
 - **claim**: a non-standard outfield alignment (shaded toward a batter's pull/spray tendency) lowers extra-base-hit rate on fly balls and line drives vs a standard alignment -- the outfield analog of the (post-ban-null) infield-shift test (#14), using a column the infield test did not touch.
+- **premise check**: `of_fielding_alignment` locally has ONLY {Standard, Strategic, None} -- there is no "Shaded" value for the outfield column (unlike `if_fielding_alignment`, which has a distinct "Infield shade" bucket per #14's validator). Fixed inline: the tested non-standard bucket is `{Strategic}` only, the sole value that actually exists.
 - **causal story**: repositioning outfielders toward a batter's known spray pattern should convert more deep fly balls/line drives into catchable outs or singles instead of doubles/triples, the same logic as infield shifts but for the outfield and unaffected by the 2023 infield-shift ban.
-- **expected signature**: lower XBH-rate on FB/LD batted balls under `of_fielding_alignment` in {Strategic, Shaded} vs {Standard}.
-- **test spec**: Welch t-test, XBH-indicator (double/triple, decided events only) by `of_fielding_alignment` bucket, restricted to `bb_type` in {fly_ball, line_drive}, one season; declared bar |eff|>=0.03 AND p<0.01 (same design/bars family as #14).
-- **status**: UNTESTED
-- **measured LOCAL magnitude**: n/a (not yet run).
-- **artifact link**: `data/cache/statcast/savant_full__2025.parquet` (`of_fielding_alignment`, `bb_type`, `events`) -- column exists and is untouched by any row above (#14 used `if_fielding_alignment` only).
+- **expected signature**: lower XBH-rate on FB/LD batted balls under `of_fielding_alignment` in {Strategic} vs {Standard} (bucket adjusted per premise check above).
+- **test spec**: `domains.mlb.knowledge.validate_research_wave1.of_alignment_xbh_suppression` -- Welch t-test, XBH-indicator (double/triple, decided events only) by `of_fielding_alignment` bucket, restricted to `bb_type` in {fly_ball, line_drive}, split-half by date (2 corpora); declared bar |eff|>=0.03 AND p<0.01 (same design/bars family as #14).
+- **status**: REJECTED (NULL_LOCAL) both halves -- effect sign is not even consistent across halves.
+- **measured LOCAL magnitude**: h1: XBH rate 0.1035 (Strategic, n=1,150) vs 0.1155 (Standard, n=29,733), effect=-0.0120, p=0.191. h2: 0.1317 (n=995) vs 0.1171 (n=29,272), effect=+0.0146, p=0.181 (savant_full__2025, split-half by date). No evidence of outfield-shading suppression locally, consistent with #14's post-ban infield-shift null.
+- **artifact link**: `domains/mlb/knowledge/validate_research_wave1.py::of_alignment_xbh_suppression`; `validation_ledger.jsonl` rows `of_alignment_xbh_suppression__h1`/`__h2`/`__combined`.
 - **source**: Statcast's `of_fielding_alignment` field was introduced specifically to study outfield shifting; MLB's own Statcast glossary and multiple Statcast-era analytics writeups (e.g. FanGraphs/Baseball Savant shift-tracking coverage) treat outfield shading as the fly-ball/line-drive analog of the infield shift -- this row tests whether that analog shows up locally the way the infield version (post-ban) did not.
 
-### 45. Same-pitch-type repeat (back-to-back within a PA) suppresses whiff rate vs a type change
+### 45. Same-pitch-type repeat (back-to-back within a PA) suppresses whiff rate vs a type change -- LOCAL NULL
 - **claim**: when a pitcher throws the SAME pitch type as his immediately preceding pitch to that batter (within the same PA), the whiff rate on that pitch is lower than when he changes pitch type -- a batter pattern-recognition/anticipation effect, distinct from #32's catcher-level sequencing-STYLE persistence test (REJECTED NULL_LOCAL).
 - **causal story**: once a batter has seen a pitch type in this PA, his timing/recognition for that same shape is primed; changing shape (fastball -> breaking or vice versa) disrupts that priming and should raise whiff probability more than repeating it.
 - **expected signature**: lower whiff rate (swing description in {swinging_strike, swinging_strike_blocked}) on same-type-repeat pitches vs type-change pitches, among swings only.
-- **test spec**: Welch t-test, whiff-indicator (swings only) by same-type-vs-prior-pitch (True/False, computed via `at_bat_number`+`pitch_number` ordering within `game_pk`), one season; declared bar |eff|>=0.02 AND p<0.01.
-- **status**: UNTESTED
-- **measured LOCAL magnitude**: n/a (not yet run).
-- **artifact link**: `data/cache/statcast/savant_full__2025.parquet` (`pitch_type`, `pitch_number`, `at_bat_number`, `game_pk`, `description`) -- same-PA pitch-type-repeat flag is a plain groupby/shift derivation, no new ingredient needed.
+- **test spec**: `domains.mlb.knowledge.validate_research_wave1.same_type_repeat_whiff` -- Welch t-test, whiff-indicator (swings only) by same-type-vs-prior-pitch (True/False, computed via `at_bat_number`+`pitch_number` ordering within `game_pk`), split-half by date (2 corpora); declared bar |eff|>=0.02 AND p<0.01, both halves must clear it, same direction.
+- **status**: REJECTED (NULL_LOCAL) -- both halves are statistically significant (n in the hundred-thousands makes p tiny) but the effect is BELOW the declared 0.02 bar in both halves (0.0092, 0.0129) AND points the OPPOSITE direction of the claim: same-type-repeat pitches have a HIGHER whiff rate, not lower. Per the #35 reverse-direction/below-bar discipline, this never counts as support -- combined verdict is NULL_LOCAL.
+- **measured LOCAL magnitude**: h1: whiff rate 0.2320 (same-type, n=50,218) vs 0.2228 (type-change, n=88,942), effect=+0.0092, p=9.6e-5. h2: 0.2395 (n=48,655) vs 0.2266 (n=89,099), effect=+0.0129, p=6.8e-8 (savant_full__2025, split-half by date).
+- **artifact link**: `domains/mlb/knowledge/validate_research_wave1.py::same_type_repeat_whiff`; `validation_ledger.jsonl` rows `same_type_repeat_whiff__h1`/`__h2`/`__combined`.
 - **note**: distinct from #32 (catcher game-calling persistence, split-half by catcher, REJECTED NULL_LOCAL) -- that tests whether CATCHERS differ and are internally consistent; this tests a universal batter-cognition effect independent of catcher identity, at the individual-pitch level.
-- **source**: "Pitch Sequencing Analysis: A Deeper Look at Tunneling" (Magnus), https://www.seemagnus.com/blog-posts-test/pitch-sequencing-analysis-a-deeper-look-at-tunneling -- notes same-pitch-twice results are "counterintuitive" relative to naive sequencing theory, i.e. the direction is genuinely open, not assumed; flagged there as needing empirical (not folklore) testing, which is what this row proposes locally.
+- **source**: "Pitch Sequencing Analysis: A Deeper Look at Tunneling" (Magnus), https://www.seemagnus.com/blog-posts-test/pitch-sequencing-analysis-a-deeper-look-at-tunneling -- notes same-pitch-twice results are "counterintuitive" relative to naive sequencing theory, i.e. the direction is genuinely open, not assumed; flagged there as needing empirical (not folklore) testing -- the measured LOCAL direction here (higher whiff on repeat) is the counterintuitive one the source anticipated.
 
 ---
