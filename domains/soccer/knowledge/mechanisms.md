@@ -372,3 +372,30 @@ on sport=soccer) before seeding. No validator built this lane.
 - **source**: "Score Effects" (StatsBomb Blog Archive), https://blogarchive.statsbomb.com/articles/soccer/score-effects/ -- the canonical soccer-analytics reference for game-state-conditioned shot/possession inflation, cited directly for the trailing-team-out-shoots claim this row tests locally for the first time (only the leading side was tested in #9).
 
 ---
+
+## Seeded 2026-07-10 (research-wave 3 -- literature-sourced, UNTESTED, round-3 pool feedstock)
+
+Fresh mechanism hypotheses on xG-momentum/rebound structure and defensive-block
+depth vs counterattack profile (distinct outcome from the CLOSED #26 block-depth-
+vs-opponent-xG-per-shot NULL_LOCAL row). Checked against every row above and
+against `data/frontend/reject_ledger.jsonl` (535 rows, 0 keyword hits for
+`xg.?momentum`/`rebound.*shot`/`block.?depth`/`counter.?attack`) before seeding.
+No validator built this lane.
+
+### 39. xG additivity breaks down in same-team shot-rebound clusters (multi-shot possessions overstate combined scoring probability)
+- **claim**: when a team takes 2+ shots in the SAME possession within a short time window (a rebound/second-chance sequence), the summed `statsbomb_xg` across those shots systematically overstates the possession's realized goal probability, relative to single-shot possessions -- distinct from any existing row, none of which test within-possession shot clustering.
+- **premise check**: confirmed this session directly on raw StatsBomb event JSON (`data/cache/statsbomb/events/*.json`, 4,235 files) -- shot events carry both `possession` (a per-match possession id) and `shot.statsbomb_xg` (confirmed keys on a sampled shot: `body_part`/`end_location`/`first_time`/`freeze_frame`/`key_pass_id`/`outcome`/`statsbomb_xg`/`technique`/`type`), enough to group same-team shots by `possession` id and test cluster-vs-single xG-sum calibration directly -- no derived/fictitious ingredient.
+- **causal story**: cited xG-methodology critique argues shot models treat shots as independent, so a blocked/saved shot immediately followed by a rebound shot in the same possession double-counts scoring chances that share the same underlying possession quality -- inflating naive summed xG beyond the possession's true one-goal-max scoring probability.
+- **expected signature**: summed `statsbomb_xg` over a same-team multi-shot possession, minus the possession's realized goal indicator (0/1), is systematically positive (over-prediction) and larger than the equivalent single-shot-possession calibration gap.
+- **test spec**: `domains.soccer.knowledge.validate_research_wave3.xg_rebound_cluster_calibration` (not yet built) -- group shots by `(match, team, possession)` using the raw event `possession` field, cluster = 2+ shots by the same team in the same possession id; compare mean(summed cluster xG - goal-in-cluster indicator) vs mean(single-shot xG - goal indicator) via Welch t-test on the calibration-gap distributions; declared bar |eff|>=0.03 xG-points AND p<0.01, split-half by match index (even/odd).
+- **source**: "Beyond Expected Goals: A Probabilistic Framework for Shot Occurrences in Soccer" (arXiv:2512.00203), https://arxiv.org/html/2512.00203v2 -- directly documents the "double-chance" xG-inflation problem (a Feb-2025 match example: 4 rapid-fire rebound shots totaling 1.63 xG) and proposes correcting for it; this row tests whether the same inflation pattern is locally measurable in the StatsBomb corpus before any correction is attempted.
+
+### 40. Defensive block depth predicts a team's own counterattack-shot share (distinct outcome from the CLOSED #26 opponent-shot-quality NULL)
+- **claim**: a deeper defensive block (reusing #26's own compactness proxy) predicts a HIGHER share of a team's own shots coming from counterattacks (`play_pattern=='From Counter'`) -- #26 tested whether block depth changes the OPPONENT's shot quality (REJECTED, NULL_LOCAL); this row asks whether it changes the team's OWN attacking shot MIX, a different outcome variable entirely.
+- **premise check**: confirmed this session that StatsBomb's `play_pattern` field (native categorical tag) is present on 100% of a 785-shot sample (5 matches) with `'From Counter'` as one of 9 observed categories (~5.1% of shots in that sample) -- a directly available, non-derived counterattack tag, no proxy needed for the outcome side (only the block-depth predictor reuses #26's existing compactness proxy).
+- **causal story**: cited low-block tactical literature argues a deep, compact defensive shape conserves energy and creates space in transition specifically BECAUSE the team is not committing numbers forward -- once possession is regained, the team is better positioned (and more inclined, tactically) to break quickly rather than build possession, raising its counterattack-shot share.
+- **expected signature**: positive correlation between #26's block-depth-compactness proxy and a team's own `play_pattern=='From Counter'` share of total shots, per team-match.
+- **test spec**: `domains.soccer.knowledge.validate_research_wave3.block_depth_counterattack_share` (not yet built) -- reuses `validate_pressing_defense.py::defensive_block_height_vs_opponent_xg`'s exact compactness proxy (`|own defensive-action mean x - own shot mean x|`) as the predictor, per-team-match `play_pattern=='From Counter'` share of own shots as the outcome (both from the full 4,235-match event cache); Pearson r; declared bar |r|>=0.05 AND p<0.01, split-half by match index.
+- **source**: "Low Block In Soccer: Tactical Defensive Approach", https://stmichaelssoccer.com/rules/low-block-in-soccer-tactical-defensive-approach/ and "Low-Block – Football Tactics Explained" (The Football Analyst), https://the-footballanalyst.com/low-block-football-tactics-explained/ -- both describe the low-block-enables-fast-counterattack mechanism directly (conserving energy, exploiting space left by a pressing opponent), the basis for testing block depth against counterattack SHARE rather than #26's already-closed shot-quality-conceded question.
+
+---
