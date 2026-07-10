@@ -28,6 +28,7 @@ import pytest
 from domains.basketball_nba.prop_sigma_calib import (
     _SIGMA_FLOOR,
     _TARGET_PCT,
+    chrono_split_coverage,
     compute_scale_factors,
     coverage_summary,
     load_scale_factors,
@@ -232,6 +233,43 @@ class TestCoverageImproves:
 
 
 # ---------------------------------------------------------------------------
+# C2. Chrono-split OOS readout: fixes the compute_scale_factors()+
+# coverage_summary() circularity (fit and score k on the SAME sample).
+# ---------------------------------------------------------------------------
+
+class TestChronoSplitOOS:
+
+    def test_structure_and_no_leak_on_synthetic_data(self):
+        """Fit-on-early/score-on-late split runs without raising (leak guard
+        included) and returns a well-formed verdict per stat."""
+        rng = np.random.default_rng(11)
+        df = _make_oof(rng, n_players=80, games_per_player=80, stat="pts",
+                       true_sigma=5.0, shrink_frac=0.6)
+        with tempfile.NamedTemporaryFile(suffix=".parquet", delete=False) as tmp:
+            df.to_parquet(tmp.name)
+            oos = chrono_split_coverage(oof_path=Path(tmp.name), min_n=50)
+        row = oos.get("pts")
+        assert row is not None
+        assert row["verdict"] in {"SURVIVES", "DOES_NOT_SURVIVE_OOS", "UNDERPOWERED"}
+        if row["verdict"] != "UNDERPOWERED":
+            assert row["k_fit"] >= 1.0
+            assert 0.0 <= row["coverage_eval_scaled"] <= 1.0
+            assert row["n_fit"] > 0 and row["n_eval"] > 0
+
+    def test_too_few_dates_returns_empty(self):
+        """< 4 unique dates in the corpus -> empty dict (guard, not a crash)."""
+        df = _make_oof_thin("pts", n_rows=3)
+        with tempfile.NamedTemporaryFile(suffix=".parquet", delete=False) as tmp:
+            df.to_parquet(tmp.name)
+            oos = chrono_split_coverage(oof_path=Path(tmp.name))
+        assert oos == {}
+
+    def test_missing_oof_returns_empty(self):
+        oos = chrono_split_coverage(oof_path=Path("/nonexistent/oof.parquet"))
+        assert oos == {}
+
+
+# ---------------------------------------------------------------------------
 # D. Cache round-trip
 # ---------------------------------------------------------------------------
 
@@ -347,6 +385,26 @@ class TestRealOOFData:
                     f"{stat}: k={k:.3f} scaled_coverage={cov:.3f} "
                     f"should be near {target:.3f} (within 8pp)"
                 )
+
+
+# ---------------------------------------------------------------------------
+# E2. Real OOF chrono-split: the honest generalization check in-sample
+# coverage_summary() cannot provide (it fits and scores on the same rows).
+# ---------------------------------------------------------------------------
+
+@pytest.mark.skipif(not _REAL_OOF.exists(), reason="pregame_oof.parquet not present")
+class TestChronoSplitRealData:
+
+    def test_oos_readout_runs_and_reports_verdicts(self):
+        oos = chrono_split_coverage(oof_path=_REAL_OOF)
+        assert oos, "Expected non-empty chrono-split readout on real OOF data"
+        for stat, row in oos.items():
+            assert row["verdict"] in {"SURVIVES", "DOES_NOT_SURVIVE_OOS", "UNDERPOWERED"}, (
+                f"{stat}: unexpected verdict {row['verdict']}"
+            )
+            if row["verdict"] != "UNDERPOWERED":
+                assert row["k_fit"] >= 1.0
+                assert 0.0 <= row["coverage_eval_scaled"] <= 1.0
 
 
 # ---------------------------------------------------------------------------
