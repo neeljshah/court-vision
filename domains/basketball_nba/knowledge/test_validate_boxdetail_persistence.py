@@ -22,6 +22,7 @@ def _toy_espn_box() -> pd.DataFrame:
             "home_fast_break_pts": 22.0 + i * 0.1, "away_fast_break_pts": 6.0,
             "home_paint_pts": 40.0, "away_paint_pts": 40.0,
             "home_tov_pts": 15.0, "away_tov_pts": 15.0,
+            "home_largest_lead": 28.0 + i * 0.1, "away_largest_lead": 4.0,
         })
         rows.append({
             "date": d, "home_abbr": "C", "away_abbr": "B",
@@ -29,6 +30,7 @@ def _toy_espn_box() -> pd.DataFrame:
             "home_fast_break_pts": 14.0, "away_fast_break_pts": 6.0,
             "home_paint_pts": 40.0, "away_paint_pts": 40.0,
             "home_tov_pts": 15.0, "away_tov_pts": 15.0,
+            "home_largest_lead": 16.0, "away_largest_lead": 4.0,
         })
     rows.append({
         "date": pd.Timestamp("2026-02-15"), "home_abbr": "STARS", "away_abbr": "STRIPES",
@@ -36,6 +38,7 @@ def _toy_espn_box() -> pd.DataFrame:
         "home_fast_break_pts": 50.0, "away_fast_break_pts": 45.0,
         "home_paint_pts": 60.0, "away_paint_pts": 60.0,
         "home_tov_pts": 20.0, "away_tov_pts": 20.0,
+        "home_largest_lead": 15.0, "away_largest_lead": 10.0,
     })
     return pd.DataFrame(rows)
 
@@ -54,6 +57,15 @@ def test_persistence_and_margin_detect_real_signal_for_fast_break():
     margin = _margin_relation(tg, "fast_break_pts")
     # A > C > B in fast_break_pts, same ranking both halves + same margin
     # ranking (A wins by 25, C wins by 13, B always loses) -> strong r.
+    assert persist["n"] == 3  # A, B, C
+    assert persist["r"] > 0.9
+    assert margin["r"] > 0.9
+
+
+def test_persistence_and_margin_detect_real_signal_for_largest_lead():
+    tg = _load_team_games(_toy_espn_box())
+    persist = _persistence_split_half(tg, "largest_lead")
+    margin = _margin_relation(tg, "largest_lead")
     assert persist["n"] == 3  # A, B, C
     assert persist["r"] > 0.9
     assert margin["r"] > 0.9
@@ -86,6 +98,7 @@ def test_verdict_requires_both_legs():
 if __name__ == "__main__":
     test_load_team_games_excludes_allstar_and_melts_both_sides()
     test_persistence_and_margin_detect_real_signal_for_fast_break()
+    test_persistence_and_margin_detect_real_signal_for_largest_lead()
     test_flat_stat_is_null_not_confirmed()
     test_hypothesis_shape_and_verdict_values_are_json_safe()
     test_verdict_requires_both_legs()

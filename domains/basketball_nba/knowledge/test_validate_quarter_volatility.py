@@ -60,13 +60,31 @@ def test_quarter_volatility_hypothesis_well_shaped():
     assert r["verdict"] in {"CONFIRMED_LOCAL", "NULL_LOCAL", "NOT_TESTABLE"}
 
 
-def test_run_writes_two_edge_free_rows(tmp_path, monkeypatch):
+def test_team_game_frame_has_q4_margin_and_side():
+    ls = _synthetic_linescores(n_games=30)
+    tg = vqv.team_game_frame(ls)
+    assert set(tg.columns) >= {"side", "q4_margin"}
+    assert set(tg["side"].unique()) == {"home", "away"}
+
+
+def test_home_q4_edge_well_shaped_and_null_on_symmetric_synthetic_data():
+    # _synthetic_linescores has no home-specific Q4 bias by construction ->
+    # honest NULL expected (must not fabricate CONFIRMED on symmetric data).
+    ls = _synthetic_linescores(n_games=300)
+    tg = vqv.team_game_frame(ls)
+    r = vqv.home_q4_edge_exceeds_other_quarters(tg)
+    assert set(r) >= {"hypothesis", "verdict", "effect", "p", "n"}
+    assert r["verdict"] in {"CONFIRMED_LOCAL", "NULL_LOCAL", "NOT_TESTABLE"}
+    assert r["n"] == 300
+
+
+def test_run_writes_three_edge_free_rows(tmp_path, monkeypatch):
     ledger = tmp_path / "validation_ledger.jsonl"
     orig_tgf = vqv.team_game_frame
     monkeypatch.setattr(vqv, "LEDGER_PATH", ledger)
     monkeypatch.setattr(vqv, "team_game_frame", lambda: orig_tgf(_synthetic_linescores(n_games=60)))
     rows = vqv.run()
-    assert len(rows) == 2
+    assert len(rows) == 3
     assert all(r["edge_claimed"] is False and r["sport"] == "basketball_nba" for r in rows)
     on_disk = [l for l in ledger.read_text(encoding="ascii").splitlines() if l.strip()]
-    assert len(on_disk) == 2
+    assert len(on_disk) == 3
