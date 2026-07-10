@@ -32,11 +32,12 @@ this tool NEVER places a real bet and NEVER claims an edge.
 """
 from __future__ import annotations
 
+import contextlib
 import json
 import os
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, Iterator, List, Optional
 
 from scripts.platformkit.clv_ledger import DEFAULT_LEDGER
 
@@ -101,13 +102,51 @@ def _release(lock_fh) -> None:
         pass  # best-effort release; closing the handle frees it anyway
 
 
+@contextlib.contextmanager
+def ledger_lock(path: Optional[Path] = None) -> Iterator[None]:
+    """THE one shared advisory-lock helper -- hold the cross-process lock for
+    *path*'s ledger for the duration of the ``with`` block.
+
+    Root-cause primitive: append_row uses this for its single write, and
+    append_row_if_new uses it to make an entire scan-then-write critical
+    section atomic (closing the check-then-act race that a lock scoped only
+    to the final write cannot: two processes can each scan, both see a key
+    absent, and both append -- the double-settled-row race). Any other writer
+    entry point (open/settle/update) should wrap its critical section in
+    ``with ledger_lock(path): ...`` instead of re-implementing lock/unlock
+    plumbing per caller.
+
+    Best-effort / advisory, matching append_row's existing contract: NEVER
+    raises on lock failure or timeout -- the block still runs unlocked.
+    """
+    target = Path(path) if path is not None else DEFAULT_LEDGER
+    lock_fh = None
+    if _LOCK_KIND != "none":
+        try:
+            target.parent.mkdir(parents=True, exist_ok=True)
+            lock_fh = _lock_path(target).open("a+", encoding="utf-8")
+        except OSError:
+            lock_fh = None
+    try:
+        if lock_fh is not None:
+            _acquire(lock_fh)
+        yield
+    finally:
+        if lock_fh is not None:
+            _release(lock_fh)
+            try:
+                lock_fh.close()
+            except OSError:
+                pass
+
+
 # --- public API ---------------------------------------------------------------
 
 def append_row(row: Dict[str, Any], *, path: Optional[Path] = None) -> None:
     """Atomically append one JSON object as a newline-terminated line.
 
-    Serialised against other append_row callers via an OS advisory lock on a
-    sidecar .lock file. The line is written in a single write() and flushed +
+    Serialised against other append_row / append_row_if_new callers via
+    ledger_lock. The line is written in a single write() and flushed +
     fsync'd so a concurrent reader sees either the whole line or nothing.
 
     NEVER raises on a transient lock contention -- the lock is an ordering aid;
@@ -117,15 +156,7 @@ def append_row(row: Dict[str, Any], *, path: Optional[Path] = None) -> None:
     target = Path(path) if path is not None else DEFAULT_LEDGER
     target.parent.mkdir(parents=True, exist_ok=True)
     payload = json.dumps(row, default=str) + "\n"
-    lock_fh = None
-    if _LOCK_KIND != "none":
-        try:
-            lock_fh = _lock_path(target).open("a+", encoding="utf-8")
-        except OSError:
-            lock_fh = None
-    try:
-        if lock_fh is not None:
-            _acquire(lock_fh)
+    with ledger_lock(target):
         with target.open("a", encoding="utf-8") as fh:
             fh.write(payload)
             fh.flush()
@@ -133,13 +164,44 @@ def append_row(row: Dict[str, Any], *, path: Optional[Path] = None) -> None:
                 os.fsync(fh.fileno())
             except OSError:
                 pass  # fsync may be unsupported on some handles; flush sufficed
-    finally:
-        if lock_fh is not None:
-            _release(lock_fh)
-            try:
-                lock_fh.close()
-            except OSError:
-                pass
+
+
+def append_row_if_new(
+    row: Dict[str, Any],
+    key_fn: Callable[[Dict[str, Any]], str],
+    *,
+    path: Optional[Path] = None,
+) -> bool:
+    """Atomic check-then-append: skip when key_fn(row) already exists.
+
+    Root-cause fix for the settle/open-row race: the scan (via load_rows) and
+    the write happen INSIDE the same ledger_lock hold, so two competing
+    processes racing the same key can never both pass the dup check -- the
+    second one re-scans after the first released the lock and correctly sees
+    the row the first one just wrote. A per-caller scan-then-later-locked-write
+    split (scan unlocked, write locked) is exactly the gap that lets the same
+    key get appended twice (the double-settled-row bug).
+
+    Returns True when the row was written, False when key_fn(row) was already
+    present. Never raises -- an unexpected failure is treated as a no-op.
+    """
+    target = Path(path) if path is not None else DEFAULT_LEDGER
+    try:
+        with ledger_lock(target):
+            existing = {key_fn(r) for r in load_rows(path=target)}
+            if key_fn(row) in existing:
+                return False
+            target.parent.mkdir(parents=True, exist_ok=True)
+            with target.open("a", encoding="utf-8") as fh:
+                fh.write(json.dumps(row, default=str) + "\n")
+                fh.flush()
+                try:
+                    os.fsync(fh.fileno())
+                except OSError:
+                    pass
+            return True
+    except Exception:  # noqa: BLE001 -- guard must NEVER crash the caller
+        return False
 
 
 def load_rows(*, path: Optional[Path] = None) -> List[Dict[str, Any]]:
@@ -173,4 +235,6 @@ def ledger_path() -> Path:
     return DEFAULT_LEDGER
 
 
-__all__ = ["append_row", "load_rows", "ledger_path"]
+__all__ = [
+    "append_row", "append_row_if_new", "ledger_lock", "load_rows", "ledger_path",
+]
