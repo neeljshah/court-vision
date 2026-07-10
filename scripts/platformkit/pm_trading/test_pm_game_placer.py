@@ -226,6 +226,57 @@ def test_match_model_game_routes_through_mlb_resolver():
     assert m["_roles"]["Houston"] == "home" and m["_roles"]["Toronto"] == "away"
 
 
+def test_match_model_game_resolver_refuses_cross_date_phantom():
+    # OPUS-JUDGE BLOCKER (c19e9a72 review): a 07-09 ticker resolves the TEAMS via the
+    # abbrev-blob resolver, but the model board holds ONLY the SAME-TEAMS 07-10 game (an
+    # MLB series shape). Team-abbrev matching alone (the pre-fix resolver path) single-hit
+    # binds regardless of date; the resolver path must be gated by kalshi_date exactly like
+    # the substring path -- 0 date-satisfying candidates -> honest skip, never a wrong bind.
+    ticker = "KXMLBGAME-26JUL091810TORHOU"  # 07-09
+    model_games = [{"sport": "mlb", "game_id": "402099", "home": "Houston Astros",
+                    "away": "Toronto Blue Jays",
+                    "pregame_probs": {"home_ml": 0.60, "away_ml": 0.40},
+                    "date_candidates": frozenset({date(2026, 7, 10)})}]  # only 07-10 on board
+    m = G.match_model_game(["Houston", "Toronto"], model_games,
+                           kalshi_date=date(2026, 7, 9), ticker=ticker, sport="mlb")
+    assert m is None  # honest skip -- must NOT bind the 07-09 ticket to the 07-10 game
+
+
+def test_match_model_game_resolver_places_when_correct_date_present():
+    # Same phantom shape, but the CORRECT 07-09 game IS on the board -> resolver path binds.
+    ticker = "KXMLBGAME-26JUL091810TORHOU"  # 07-09
+    model_games = [{"sport": "mlb", "game_id": "402100", "home": "Houston Astros",
+                    "away": "Toronto Blue Jays",
+                    "pregame_probs": {"home_ml": 0.60, "away_ml": 0.40},
+                    "date_candidates": frozenset({date(2026, 7, 9)})}]
+    m = G.match_model_game(["Houston", "Toronto"], model_games,
+                           kalshi_date=date(2026, 7, 9), ticker=ticker, sport="mlb")
+    assert m is not None and m["_roles"]["Houston"] == "home"
+
+
+def test_run_end_to_end_refuses_resolver_cross_date_phantom_via_real_path():
+    # Reproduces the judge's EXACT scenario through run()'s real call args (event_ticker as
+    # game_id + sport='mlb'), not the direct kalshi_date-only entry point the R1 test used --
+    # run() always threads ticker=gid/sport=sport, so this is what the live path actually does.
+    ticker = "KXMLBGAME-26JUL091810TORHOU"  # 07-09
+    rows = [
+        {"sport": "mlb", "game_id": ticker, "venue": "kalshi",
+         "side": "Houston", "ticker": ticker + "-HOU", "prob": 0.40},
+        {"sport": "mlb", "game_id": ticker, "venue": "kalshi",
+         "side": "Toronto", "ticker": ticker + "-TOR", "prob": 0.55},
+    ]
+
+    def model_only_0710(sport):
+        return [{"sport": "mlb", "game_id": "999010", "home": "Houston Astros",
+                 "away": "Toronto Blue Jays", "pregame_probs": {"home_ml": 0.62, "away_ml": 0.38},
+                 "date_candidates": frozenset({date(2026, 7, 10)})}]
+
+    out = G.run(("mlb",), ledger_path=None, feed_fn=lambda s: rows,
+               model_fn=model_only_0710, place=False)
+    assert out["by_sport"]["mlb"]["matched"] == 0
+    assert out["n_placed"] == 0
+
+
 def test_match_model_game_resolver_ambiguous_is_honest_skip():
     ticker = "KXMLBGAME-26JUL101810TORHOU"
     model_games = [
