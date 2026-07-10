@@ -1,5 +1,5 @@
 """scripts.platformkit.autoloop.maintenance_templates -- the zero-LLM
-pipeline-maintenance jobs (11, see run_all()) that keep the intel layer visible
+pipeline-maintenance jobs (12, see run_all()) that keep the intel layer visible
 to ask/weighting, wired as a single extra phase inside autoloop_runner.run_cycle().
 
 These are NOT prereg statistical templates (no universe/K-ledger/blocklist --
@@ -35,12 +35,19 @@ season corpus grows -- ledger-append only, never touches mechanisms.md prose.
 Job #8, utilization_drift (scripts.platformkit.autoloop.utilization_drift_job),
 re-runs the cross-sport stat-utilization census once a sport's corpora grow and
 reports any newly-dark (UNUSED) column -- report-only, never wires anything.
+
 Job #9, frontier_probe (scripts.platformkit.data_frontier.frontier_probe_job, M11),
 re-probes the ranked keyless-source frontier daily (self-gated, 1 req/s, no
 evasion) and appends ACQUISITION_DELTA rows to frontier_deltas.jsonl when a
 source flips to KEYLESS_CONFIRMED-with-data or grows a new field.
 
-Job #10, propose_gate (scripts.platformkit.autoloop.propose_gate_job, M10),
+Job #10, shadow_settle (scripts.platformkit.autoloop.shadow_settle_job, M09),
+forward self-shadows provisional/wait-for-data ledger verdicts: recomputes each
+row's preregistered metric on the ACCRUED forward grade corpus only (strictly
+after the row's as-of) and appends SHADOW_TICK / PROMOTE_CANDIDATE / DEMOTED /
+SHADOW_UNSPECIFIED rows to its own shadow ledger -- append-only, promotion human.
+
+Job #11, propose_gate (scripts.platformkit.autoloop.propose_gate_job, M10),
 the zero-LLM SELF-PROPOSAL cycle: proposes up to K=8 novel interaction-factory
 candidates per cycle (round-robin across sports, deduped against every prior
 ledger identity AND the closed classes -- reject-ledger REJECTs + NULL_LOCAL
@@ -48,7 +55,7 @@ mechanism families) and runs each through the factory runner's REAL leak-free
 gate, which appends the honest verdict rows itself. Wall-clock capped per
 cycle; 3 consecutive NOT_TESTABLE-only cycles log a pool EXHAUSTED and rotate.
 
-Job #11, milb_refresh (scripts.platformkit.data_frontier.milb_statsapi, M12),
+Job #12, milb_refresh (scripts.platformkit.data_frontier.milb_statsapi, M12),
 daily MiLB AAA active-roster + transactions/call-up capture via statsapi
 (sportId 11 + the MLB-side sportId-1 ledger; 1 req/s, 35s timeout). Watermark =
 the as-of-dated output file's existence -- a captured day is a CACHED no-op.
@@ -262,6 +269,12 @@ def run_all(watermarks: Dict[str, Any], *, queue_fn: Optional[Callable[[Dict[str
         out["frontier_probe"] = run_probe_cycle()
     except Exception as exc:  # noqa: BLE001
         out["frontier_probe"] = {"status": "error", "error": str(exc)[:200]}
+    try:
+        # M09 forward self-shadowing of provisional verdicts (shadow-ledger append only)
+        from scripts.platformkit.autoloop.shadow_settle_job import run_shadow_settle
+        out["shadow_settle"] = run_shadow_settle(watermarks)
+    except Exception as exc:  # noqa: BLE001
+        out["shadow_settle"] = {"status": "error", "error": str(exc)[:200]}
     try:
         # M10 zero-LLM self-proposal: propose -> real leak-free gate -> honest ledger verdicts
         from scripts.platformkit.autoloop.propose_gate_job import run_propose_gate
