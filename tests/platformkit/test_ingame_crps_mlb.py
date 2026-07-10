@@ -13,13 +13,20 @@ import pandas as pd
 import pytest
 
 from scripts.platformkit.benchmarks.crps_market.ingame_mlb import (
-    checkpoint_ts, load_state_timeline, margin_market_points, resolve_game_pk,
-    total_market_points,
+    CHECKPOINTS, checkpoint_ts, load_state_timeline, margin_market_points,
+    resolve_game_pk, total_market_points,
 )
 from scripts.platformkit.benchmarks.crps_market.shape_control import (
     market_crps_discretized as _market_crps_discretized,
     shape_controlled_verdict as _shape_controlled_verdict,
 )
+
+
+def test_checkpoints_cover_moat_shape_scan():
+    """Extended past the original 3/5/7 to map early/mid/late game states --
+    checkpoint_ts/total_market_points/margin_market_points are checkpoint-
+    agnostic (int end_inning param), so 6 and 8 need no new glue."""
+    assert CHECKPOINTS == (3, 5, 6, 7, 8)
 
 
 def _by_key(rows):
