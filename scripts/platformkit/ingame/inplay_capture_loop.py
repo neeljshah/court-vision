@@ -44,7 +44,7 @@ from __future__ import annotations
 
 import logging
 import time
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
@@ -52,6 +52,8 @@ from scripts.platformkit.ingame import inplay_daytrader as _dt
 from scripts.platformkit.ingame import ingame_live_state as _ls
 from scripts.platformkit.ingame import ingame_segment_trust as _segment_trust
 from scripts.platformkit.ingame import settle_stamp as _settle
+from scripts.platformkit.odds_provider.kalshi_series_spec import ticker_game_date as _ticker_game_date
+from scripts.platformkit.paper.et_day import now_et_day as _now_et_day
 
 logger = logging.getLogger(__name__)
 
@@ -292,7 +294,9 @@ def _team_in_legs(team: str, legs: Dict[str, float]) -> bool:
                for lab in legs)
 
 
-def _scan_live_by_legs(sport: str, legs: Dict[str, float]) -> Optional[Dict[str, Any]]:
+def _scan_live_by_legs(sport: str, legs: Dict[str, float],
+                       gid: Optional[str] = None,
+                       nowdt: Optional[datetime] = None) -> Optional[Dict[str, Any]]:
     """Bridge a Kalshi-keyed game to its ESPN live state by TEAM.
 
     The capture loop keys games by their Kalshi ticker (e.g. KXWCGAME-26JUN22ARGAUT), which
@@ -300,8 +304,22 @@ def _scan_live_by_legs(sport: str, legs: Dict[str, float]) -> Optional[Dict[str,
     scans every in-progress ESPN game and returns the one whose BOTH teams align with the
     legs' team-name labels. BOTH must match: a single shared team (e.g. a live ARG-AUT vs a
     future JOR-ARG market) would otherwise mis-bind two different games. No full match ->
-    None (the caller skips; a misaligned pair manufactures fake CLV). Never raises."""
+    None (the caller skips; a misaligned pair manufactures fake CLV). Never raises.
+
+    DATE GUARD (reject-only, mirrors pm_game_date_guard): an MLB series plays the SAME two
+    teams on consecutive days, so team-only matching alone binds TONIGHT's live game to a
+    market ticketed for TOMORROW too (confirmed live 2026-07-10: KXMLBGAME-26JUL111605MILPIT
+    captured today's live MIL@PIT state against tomorrow's pregame price -- same for
+    KXMLBGAME-26JUL111610BOSNYM). gid's own ET ticker date must be today or yesterday
+    (yesterday allowed for a game still live just after ET midnight); a ticker dated
+    tomorrow-or-later is rejected before the scan even runs. An unparseable/absent gid is
+    honest no-info -- the guard is a no-op and behavior is unchanged."""
     try:
+        game_date = _ticker_game_date(gid)
+        if game_date is not None:
+            today = date.fromisoformat(_now_et_day(nowdt))
+            if game_date not in (today, today - timedelta(days=1)):
+                return None
         for st in _ls.live_states(sport):
             if not isinstance(st, dict):
                 continue
@@ -583,7 +601,7 @@ def _process_game(sport: str, gid: str, legs: Dict[str, float],
         state = ls_fn(sport, gid)
         if not isinstance(state, dict):
             # gid is a Kalshi ticker, not an ESPN id -> bridge to the live game by team.
-            state = _scan_live_by_legs(sport, legs)
+            state = _scan_live_by_legs(sport, legs, gid=gid, nowdt=nowdt)
         if not isinstance(state, dict):
             # KBO REORDER (kbo-reorder-verify lane, capture-only): ESPN cannot resolve a
             # KBO live state at all (ESPN doesn't carry the league), so this branch is
