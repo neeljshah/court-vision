@@ -157,10 +157,11 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
     # pool would silently KeyError the whole batch (see attribute_registry.py's
     # comment on _ASSIST_SPECS). A separate CROSS template instead (assist_asof
     # x box_detail_asof, 1x5=5 candidates), leaving box_detail_asof's own
-    # self_cross untouched. feature_builder is NOT yet registered in runner.py
-    # (runner._BUILDERS is outside this lane's OWNS) -- same honest
-    # "declared grammar, NOT_TESTABLE until wired" pattern as nba_shot_attr_x_
-    # state / nba_ingame_state_self_cross before its own builder landed.
+    # self_cross untouched. feature_builder is NOW registered in runner.py
+    # (runner._BUILDERS, since 7334bfa0) -- the 5 candidates graded
+    # NOT_TESTABLE before that landed re-enumerate (tested_ids excludes
+    # NOT_TESTABLE), same unlock nba_shot_attr_x_state / nba_ingame_state_
+    # self_cross saw when their own builders landed.
     "nba_assist_x_boxdetail_cross": {
         "sport": "basketball_nba",
         "atomic_unit": "team_game",
@@ -169,7 +170,7 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
         "pairing": "cross",
         "left_pool": {"entity": "team", "family": "assist_asof"},
         "right_pool": {"entity": "team", "family": "box_detail_asof"},
-        "feature_builder": "nba_assist_boxdetail_asof",   # not yet registered -> NOT_TESTABLE
+        "feature_builder": "nba_assist_boxdetail_asof",   # registered -> runner._BUILDERS (runner.py L340)
         "blocklist_attrs": [],
         "blocklist_pairs": [],
     },
@@ -465,9 +466,17 @@ def enumerate_candidates(template_id: str) -> List[Candidate]:
 
 
 def tested_ids(ledger_rows: List[Dict[str, Any]], template_id: str) -> set:
-    """candidate_ids already on record for this template (ANY verdict -- a
-    tested candidate is never re-tested; see runner dedupe note)."""
-    return {r.get("candidate_id") for r in ledger_rows if r.get("template_id") == template_id}
+    """candidate_ids already on record for this template under a TERMINAL
+    verdict -- a candidate with only a NOT_TESTABLE row (builder didn't exist
+    yet / data was unavailable at test time) is NOT tested and re-enumerates
+    once its builder lands; every other verdict (NULL, SURVIVES_PREREG_
+    PROVISIONAL, REPLICATED, FAILED_REPLICATION_POWER_ANNOTATED,
+    REPLICATION_BLOCKED, KILLED, ...) is terminal and stays deduped forever.
+    See runner dedupe note."""
+    return {
+        r.get("candidate_id") for r in ledger_rows
+        if r.get("template_id") == template_id and r.get("verdict") != "NOT_TESTABLE"
+    }
 
 
 def next_batch(template_id: str, k: int, ledger_rows: Optional[List[Dict[str, Any]]] = None) -> List[Candidate]:
