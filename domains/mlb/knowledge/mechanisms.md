@@ -324,3 +324,16 @@ borderline pitches disperse MORE than pure sampling noise would predict.
 - **status**: REJECTED (NULL_LOCAL) -- essentially zero relationship.
 - **measured LOCAL magnitude**: pearson r=0.0084, p=0.68, n=2,406 games (2025).
 - **artifact link**: `domains/mlb/knowledge/validate_called_strike_dispersion.py::called_strike_deviation_relates_to_total_runs`.
+
+---
+
+## Validated 2026-07-10 (contact-quality x park-factor interaction, C14)
+
+### 41. Trailing contact-quality x park-factor interaction on batted-ball wOBA -- LOCAL NULL
+- **claim**: a batter's as-of trailing contact quality (expanding mean launch_speed, strictly prior batted balls) interacts with the park run-environment to predict batted-ball outcome (estimated_woba_using_speedangle) BEYOND what the two additive base terms alone explain.
+- **causal story**: a hitter with elite contact quality might convert park-friendly conditions into disproportionately more value than an average hitter would (a genuine multiplicative interaction), rather than each factor just adding its own independent share.
+- **expected signature**: nonzero partial correlation of (trailing_contact x park_factor) against the wOBA outcome, after residualizing both against the base terms [trailing_contact, park_factor].
+- **test spec**: split-half by date (2 corpora); per half, OLS-residualize outcome and the interaction term against [1, contact, park], Pearson-correlate the residuals; declared bar |r|>=0.02 AND p<0.01.
+- **status**: REJECTED (NULL_LOCAL) both halves -- h1: r=0.0006, p=0.883, n=56,725; h2: r=0.0092, p=0.029 (misses alpha=0.01), n=56,529. No evidence of an interaction beyond the additive terms in this local corpus.
+- **measured LOCAL magnitude**: see above (savant_full__2025, split-half by date).
+- **artifact link**: `domains/mlb/knowledge/validate_contact_park_interaction.py::run`.

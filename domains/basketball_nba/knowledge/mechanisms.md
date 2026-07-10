@@ -333,3 +333,27 @@ discipline as the box-detail family above.
 - **measured LOCAL magnitude**: split-half persistence r=0.7171, p=8.24e-06 (n=30 teams) -- the strongest split-half persistence result in this ledger to date, stronger than rotation-size persistence (#21, r=0.681).
 - **artifact link**: `domains/basketball_nba/knowledge/validate_quarter_volatility.py::q1_slow_start_persists`.
 - **wiring**: in-game conditioning-feature candidate -- a team's trailing as-of `q1_margin_asof` (already built leak-free in `data/domains/basketball_nba/asof_quarter_shape.parquet`) as a live Q1-state prior for in-game re-pricing; this validation is the receipt that the underlying trait is real and persistent, not that the asof feature itself has been gated for an outcome edge.
+
+---
+
+## Validated 2026-07-10 (foul-trouble teammate spillover, C17 -- raw PBP `data/nba/pbp_<game_id>_p1.json`)
+
+Premise check: foul TIMING (not just the season-final PF total already in
+`player_boxscores.parquet`) is required for this class and DOES exist
+locally in the raw per-quarter PBP feed -- each foul event carries a
+`(P<n>.T<n>)` personal-foul-count suffix + `game_clock_sec`. Coverage:
+1,289 of 3,611 box-scored games (2023-24..2025-26) have a local period-1
+file (35.7%) -- a real but partial local corpus. "2-3 fouls" is
+operationalized as "PF reaches 2" (the earliest qualifying/conventional
+bench-trigger moment); "usage/efficiency" is FG-attempts-only inside a
+fixed post-trigger window of period 1, not full-game team offense --
+scope simplifications made for this pass, not a data gap.
+
+### 39. Starter early-foul-trouble x teammates' Q1-remainder usage/efficiency shift -- LOCAL NULL
+- **claim**: when a starter reaches 2 personal fouls within the first 6 minutes of period 1, teammates' shot-attempt volume (usage) and points-per-attempt (efficiency) in the remainder of period 1 shift beyond normal (no-foul-trouble) games for that team.
+- **causal story**: a compromised/benched starter forces the offense to redistribute shot creation to the remaining four players on the floor -- a rotation-driven usage/efficiency reallocation, not a talent-level effect.
+- **expected signature**: teammates' FGA-per-minute and points-per-FGA differ (foul-trouble games vs control games) beyond noise, same-direction across both halves.
+- **test spec**: same-game contemporaneous group comparison (Welch t-test), split-half by date (2 corpora); declared bars |eff|>=0.15 FGA/min (usage) and |eff|>=0.08 pts/FGA (efficiency), both at p<0.01.
+- **status**: REJECTED (NULL_LOCAL) both metrics, both halves. Usage: h1 eff=+0.007 p=0.69 (n=5,972), h2 eff=+0.024 p=0.19 (n=5,935). Efficiency: h1 eff=-0.099 p=0.09 (n=5,972), h2 eff=-0.034 p=0.56 (n=5,935). No half clears alpha=0.01 on either metric.
+- **measured LOCAL magnitude**: see above (player_boxscores + pbp_p1_json, 1,289 games, split-half by date).
+- **artifact link**: `domains/basketball_nba/knowledge/validate_foul_trouble_spillover.py::run`.
