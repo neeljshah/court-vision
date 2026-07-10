@@ -40,6 +40,7 @@ import pandas as pd
 
 from scripts.platformkit.answers import contracts as _contracts
 from scripts.platformkit.answers import effect_graph as _eg
+from scripts.platformkit.answers import leaderboard_resolver as _lb
 from scripts.platformkit.answers.registry_loader import SPORTS as _CONCEPT_SPORTS
 from scripts.platformkit.profiles import ask as _ask
 
@@ -132,6 +133,14 @@ RESOLVERS: dict[str, dict] = {
         "computation": "ALWAYS REFUSED -- no resolver computes a dollar edge/ROI/beat-the-market number here",
         "units": "n/a", "rounding": "n/a",
     },
+    "ranking": {
+        "resolver": "scripts.platformkit.answers.leaderboard_resolver.resolve_query",
+        "source_artifact": "data/cache/profiles/<sport>_{player,team,lineup}_profiles.parquet",
+        "computation": "top-N by ONE registered attribute's raw_value, min_n volume floor on top of the "
+                        "attribute's own baked-in floor, deterministic (raw_value,entity_id) tie-break -- a "
+                        "fuzzy category word that matches 0 or 2+ attributes is REFUSED with candidates, never guessed",
+        "units": "attribute-native (see attribute_registry.py per sport)", "rounding": "as stored, no rounding",
+    },
 }
 
 _CONCEPT_KEYWORDS = ("best", "who has", "vs ", " versus ", "why is", "fit team", "does ", "compare")
@@ -165,6 +174,8 @@ def classify(query: str) -> str | None:
         return "prediction_winprob"
     if any(k in low for k in _HISTORICAL_KEYWORDS):
         return "historical_result"
+    if _lb.is_ranking_query(low):
+        return "ranking"
     if any(k in low for k in _MECHANISM_KEYWORDS) or _AFFECTS_RE.match(low) or _WHAT_DOES_X_AFFECT_RE.match(low):
         return "mechanism_effect"
     if any(k in low for k in _CONCEPT_KEYWORDS):
@@ -369,6 +380,10 @@ def resolve(query: str, sport: str = "nba", category: str | None = None, **kwarg
         return historical_result(sport, kwargs.get("team", ""), kwargs.get("opponent"), kwargs.get("date"))
     if cat == "mechanism_effect":
         return mechanism_effect(sport, kwargs.get("mechanism") or query)
+    if cat == "ranking":
+        return _lb.resolve_query(sport, query, top_n=kwargs.get("top_n"), min_n=kwargs.get("min_n", 0.0),
+                                  window=kwargs.get("window"), kind=kwargs.get("kind"),
+                                  ascending=kwargs.get("ascending", False), category=kwargs.get("attribute"))
     if cat == "prediction_winprob":
         return {"status": "not_supported", "category": cat, "sport": sport,
                 "note": "prediction_winprob is resolved by the predict-matchup CLI/skill, not this "
