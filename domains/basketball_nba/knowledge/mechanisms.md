@@ -363,6 +363,48 @@ scope simplifications made for this pass, not a data gap.
 
 ---
 
+## Seeded 2026-07-10 (research-wave -- literature-sourced, UNTESTED, M10 pool feedstock)
+
+Fresh mechanism hypotheses from public NBA analytics literature, checked
+against every row above and against `data/frontend/reject_ledger.jsonl`
+(535 rows) before seeding. Each row names the exact local parquet + columns
+a validator would read; no validator built this lane (rails: knowledge-note
+lane only).
+
+### 40. On-ball defensive matchup skill is a stable, predictively-valid trait
+- **claim**: a defender's trailing (as-of) individual-matchup FG% allowed predicts his REALIZED FG% allowed in the next matchup window beyond chance -- i.e. individual on-ball defense is a measurable, persistent skill, not matchup-assignment noise.
+- **causal story**: some defenders are consistently tougher covers (lateral quickness, discipline, effort) independent of scheme; if that skill is real, a defender's own trailing matchup numbers should out-of-sample-predict his next matchup outcomes.
+- **expected signature**: positive correlation between `def_priorN_fg_pct_allowed_asof` and same-defender `realized_fg_pct_allowed` in the following window, split-half stable across two season slices.
+- **test spec**: split-half (season-date median split) Pearson r of (as-of predictive value at window start) vs (realized outcome that window), per defender, min n_prior/realized floor (e.g. >=15 matchup possessions/half); declared bar |r|>=0.15 AND p<0.01, both halves same sign.
+- **status**: UNTESTED
+- **measured LOCAL magnitude**: n/a (not yet run).
+- **artifact link**: `data/domains/basketball_nba/defender_matchup_states.parquet` (37,395 defender-game rows: `def_priorN_fg_pct_allowed_asof`, `realized_fg_pct_allowed`, `def_n_prior`).
+- **note**: distinct from `nba_defender_matchup` in `data/frontend/reject_ledger.jsonl` (REJECT, `proposal_only: true`, no actual test run) -- that entry rejected a WIN-PROBABILITY calibration-gate proposal (does a defender-matchup feature beat Elo Brier); this row tests the underlying metric's own predictive/persistence validity, the prior descriptive question, same split as the box-detail-family pattern (#34/#35 above).
+- **source**: "Using Individual Matchup Data to Evaluate Defense in the NBA" (Ahmed Cheema, Medium/The Spax), https://medium.com/@ahmed.cheema/using-individual-matchup-data-to-evaluate-defense-in-the-nba-76b86f62a8c9 -- matchup-tracking data (Second Spectrum, since 2018) is used specifically to isolate individual defender skill from team scheme; whether it is stable/persistent locally is the open question this row poses.
+
+### 41. Switch frequency correlates with worse defensive efficiency (mismatch-hunting cost)
+- **claim**: a team's defensive switch rate correlates with worse points-allowed-per-36, i.e. switching concedes efficiency to offenses that hunt the resulting mismatch, net of who the team is.
+- **causal story**: switching avoids a wide-open shooter off a screen but creates a size/speed mismatch the offense can isolate and attack; if mismatch-hunting dominates, higher switch rate should track worse defensive efficiency.
+- **expected signature**: positive correlation, `def_switches_per_game_asof` vs `def_pts_allowed_per36_asof`, at the team-game level.
+- **test spec**: cross-sectional Pearson r (or OLS controlling for `def_blocks_per_game_asof` as a rim-protection confound), `data/domains/basketball_nba/asof_defender_rollup.parquet`, both home/away sides pooled; declared bar |r|>=0.10 AND p<0.01.
+- **status**: UNTESTED
+- **measured LOCAL magnitude**: n/a (not yet run).
+- **artifact link**: `data/domains/basketball_nba/asof_defender_rollup.parquet` (1,656 games: `home_def_switches_per_game_asof`, `away_def_switches_per_game_asof`, `def_pts_allowed_per36_asof` fields).
+- **source**: "Flipping the Switch" (Cleaning the Glass), https://cleaningtheglass.com/flipping-the-switch/ and "Switch 5" (Ben Everett, Medium), https://medium.com/@beneverett/switch-5-part-1-what-tracking-era-numbers-reveal-about-the-nbas-hottest-trend-53dea6df3e09 -- both note switch-created mismatches give the offense "more of an advantage than it did when the possession started," the mechanistic basis for this claim.
+
+### 42. Team assist rate persistence + margin-relation (box-detail-family design, new column)
+- **claim**: a team's assist total is a stable team trait (persists split-half) and relates to that game's scoring margin -- the exact test design already CONFIRMED_LOCAL for fast-break points (#34) and paint points (#35), applied to `ast` (untested column, same corpus).
+- **causal story**: ball movement is a coached, practiced identity (motion offense vs iso-heavy); assists correlate with open, higher-percentage shots, so more assists should track both team identity and winning.
+- **expected signature**: positive split-half r across teams (identity persists); positive same-game r(ast, margin).
+- **test spec**: split-half Pearson r (first-half-of-corpus-dates vs second, per team) + pooled Pearson r vs same-game margin, `espn_boxscores.parquet` `home_ast`/`away_ast`, same corpus/window as #34-36.
+- **status**: UNTESTED
+- **measured LOCAL magnitude**: n/a (not yet run).
+- **artifact link**: `data/domains/basketball_nba/espn_boxscores.parquet` (`home_ast`, `away_ast`, 1,977 games).
+- **note**: distinct from `nba_ast_rate_diff_asof` in `data/frontend/reject_ledger.jsonl` (REJECT x3, win-prob Brier-over-Elo gate, `brier_delta=-1.4e-05`, DM p=0.776 -- "priced/redundant over Elo") -- that closes assists as an INCREMENTAL WIN-PROB feature; this row is the prior descriptive question (is the trait itself stable and margin-linked at all), the same box-detail-family split already run for #34/#35.
+- **source**: "Analyzing the Impact of Pass Volume and Quality on Recent NBA Offenses" (NBA Math), https://nbamath.com/analyzing-the-impact-of-pass-volume-and-quality-on-recent-nba-offenses/ and "A Guide To Passing Stats" (Basketball Index), https://www.bball-index.com/a-guide-to-passing-stats/ -- assist-rate/passing-quality literature as the mechanistic basis; NBA Math's own note that raw pass volume alone is not sufficient is exactly why the split-half+margin design (not a raw-count claim) is used here.
+
+---
+
 ## Validated 2026-07-10 (largest_lead persistence + Q4-home-edge, deep-bench drain lane)
 
 ### 40. Largest-lead persistence + margin-relation -- 4th box-detail row, extends the #34/#35/#36 triple-pass to the previously-untested `largest_lead` column already named as "unlocked" in the family header above
