@@ -41,6 +41,20 @@ def test_settle_prop_row_win_units_and_no_clv():
     assert s["clv_pct"] is None and s["clv_status"] == "no_close"  # no prop close
     assert s["executed"] is False
     assert "pnl" not in s and "stake" not in s  # no $ field
+    # D2 (settle-path bypass): the previously-bypassing prop path must now
+    # ALWAYS carry close_source, even when no close was captured.
+    assert s["close_source"] == "none_available"
+
+
+def test_settle_prop_row_true_close_stamps_close_source():
+    """A prop row with a captured two-way close carries close_source == the
+    real book, not the missing key that settlement_correctness_audit's
+    close_source_coverage previously counted as 'missing_key' for every prop."""
+    row = _open_prop(line=1.5, side="over", taken_decimal=2.0)
+    close_fn = lambda _row: {"over_dec": 1.9, "under_dec": 2.0, "source": "draftkings"}
+    s = S.settle_prop_row(row, realized=3, close_fn=close_fn)
+    assert s["clv_status"] == "true_close"
+    assert s["close_source"] == "draftkings"
 
 
 def test_settle_prop_row_loss_and_push():
