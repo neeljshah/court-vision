@@ -137,7 +137,7 @@ def build_forward_rows(
         outcome = resolver.home_win(game_id)
         if parsed is None or outcome is None:
             continue  # unresolvable game -- honest skip, never fabricated
-        _date, tail = parsed
+        _date, tail, _gnum = parsed
         # Resolve which side codes in this game's ticks are home vs away by
         # checking each observed side_code against the resolver's own abbr
         # index via a private re-derivation: try suffix match against tail end.

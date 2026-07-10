@@ -189,6 +189,38 @@ class TestRecordIngameBetWriteGuard:
             "expected exactly 1 row after duplicate call, found %d" % _count_rows(ledger)
         )
 
+    def test_idempotency_holds_after_first_row_already_settled(self, tmp_path):
+        """B2 sweep regression (2026-07-11): a same-day re-trigger of an edge
+        whose FIRST row already settled must NOT append a duplicate open row.
+
+        Root cause: _scan_existing (formerly _scan_open) only matched
+        status=="open" rows, so once the original settled it was invisible to
+        the idempotency scan and a second record_ingame_bet call appended a
+        brand-new OPEN row under the identical edge_key -- a duplicate that
+        the settle daemon's own dedup guard then ignores forever (it treats
+        any edge_key with an existing settled twin as already done). Measured
+        on the real ledger: 427/440 open paper_ingame rows were exactly this.
+        """
+        ledger = tmp_path / "test_ledger.jsonl"
+        kwargs = dict(sport="mlb", game_id="KXMLBGAME-26JUL011310TEXCLE",
+                      market="win_home", side="home", taken_decimal=1.9, path=ledger)
+
+        r1 = record_ingame_bet(**kwargs)
+        assert r1["added_new"] is True
+
+        # Simulate the settle daemon: flip the row to settled in place (same
+        # edge_key, same ts_date -- exactly what grade_live's append does).
+        rows = _read_rows(ledger)
+        rows[0]["status"] = "settled"
+        ledger.write_text("\n".join(json.dumps(r) for r in rows) + "\n", encoding="utf-8")
+
+        r2 = record_ingame_bet(**kwargs)
+        assert r2["added_new"] is False, (
+            "a same-day re-trigger after settlement must be a no-op, not a new open row")
+        assert _count_rows(ledger) == 1, (
+            "expected exactly 1 row (the settled twin), found %d" % _count_rows(ledger)
+        )
+
     def test_valid_row_never_has_dollar_field(self, tmp_path):
         """Honesty: no dollar P&L field in any written row."""
         ledger = tmp_path / "test_ledger.jsonl"
