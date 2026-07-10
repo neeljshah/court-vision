@@ -41,9 +41,25 @@ import json
 import os
 import pathlib
 import tempfile
+from datetime import datetime, timezone
 from typing import Any, Union
 
 PathLike = Union[str, "os.PathLike[str]"]
+
+# E14: domains/*/knowledge/validate_*.py (and the M07 mechanism_reval_job that
+# drives them) all append to a file literally named this, via this one shared
+# function -- no per-domain wrapper exists (see domains/<sport>/knowledge/_data.py
+# LEDGER_PATH). Rows carried no timestamp, so a deterministic reval against an
+# unchanged corpus produced a byte-identical row indistinguishable from a dupe
+# (docs/research/m07_ledger_bloat_spotcheck_2026-07-10.md). Stamping run_ts here
+# -- ONE place -- covers every validator without editing 30 call sites.
+# ponytail: name-matched, not a dedicated ledger-writer wrapper -- promote to one
+# if a second ledger family needs the same stamp.
+_KNOWLEDGE_LEDGER_NAME = "validation_ledger.jsonl"
+
+
+def _utc_now_iso() -> str:
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def _as_path(path: PathLike) -> pathlib.Path:
@@ -130,9 +146,17 @@ def append_jsonl_atomic(
     whose every line (including the new one) is complete.
 
     The serialised row is identical to the prior ``open(path, "a")`` writers, so
-    readers that split on newlines and ``json.loads`` each line parse unchanged.
+    readers that split on newlines and ``json.loads`` each line parse unchanged
+    -- EXCEPT for ``validation_ledger.jsonl`` targets (see
+    ``_KNOWLEDGE_LEDGER_NAME``), which additionally get a ``run_ts`` key
+    stamped in (only if the caller didn't already set one) so re-validation
+    passes are no longer indistinguishable from silent duplicates. Readers must
+    tolerate its absence on pre-existing rows -- it is additive, not required.
     """
     target = _as_path(path)
+    if (isinstance(row, dict) and target.name == _KNOWLEDGE_LEDGER_NAME
+            and "run_ts" not in row):
+        row = {**row, "run_ts": _utc_now_iso()}
     existing = ""
     if target.is_file():
         existing = target.read_text(encoding=encoding, errors="replace")
