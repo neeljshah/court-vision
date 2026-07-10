@@ -35,3 +35,20 @@ def test_run_against_real_corpus_matches_expected_verdicts(tmp_path, monkeypatch
     assert all(r["edge_claimed"] is False and r["sport"] == "basketball_nba" for r in rows)
     on_disk = [l for l in ledger.read_text(encoding="ascii").splitlines() if l.strip()]
     assert len(on_disk) == len(rows)
+
+
+def test_boxdetail_2024_25_second_corpus_replicates_34_35_44():
+    """#34/#35/#44 (original CONFIRMED_LOCAL) genuinely replicate on the new,
+    disjoint espn_boxscores_2024_25.parquet -- same sign, both legs."""
+    assert vrw.fast_break_pts_persistence_replication_2024_25()["verdict"] == "REPLICATED"
+    assert vrw.paint_pts_persistence_replication_2024_25()["verdict"] == "REPLICATED"
+    assert vrw.ast_persistence_replication_2024_25()["verdict"] == "REPLICATED"
+
+
+def test_tov_pts_2024_25_is_diagnostic_not_forced_to_replication_label():
+    """#36 (original NULL_LOCAL) reruns as a diagnostic -- verdict is left as
+    whatever hypothesis() measured, and the note records whether the
+    margin-leg sign flip reproduces (it does, on this corpus)."""
+    r = vrw.tov_pts_persistence_replication_2024_25()
+    assert r["verdict"] not in ("REPLICATED", "FAILED_REPLICATION")
+    assert "margin-sign flip REPRODUCES" in r["note"]
