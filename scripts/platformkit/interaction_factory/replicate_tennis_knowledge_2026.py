@@ -34,7 +34,7 @@ from scripts.platformkit.combo.fwer_budget import DEFAULT_EPS, eps_eff
 from scripts.platformkit.interaction_factory import builders_task39b as T39B
 from scripts.platformkit.interaction_factory import runner as IFR
 from scripts.platformkit.interaction_factory.replicate_batch2b import (
-    _candidate_from_row, verdict_for, _upsert_verdicts, _queue_promotion,
+    _candidate_from_row, _upsert_verdicts, _queue_promotion,
 )
 from scripts.platformkit.io_atomic import append_jsonl_atomic
 
@@ -49,6 +49,20 @@ ALPHA = eps_eff(DEFAULT_EPS, K_DECLARED)
 
 _MATCH_COLS = ["event_id", "date", "tour", "tourney_id", "winner", "round",
                "match_num", "p1_id", "p2_id", "score", "surface", "retirement"]
+
+
+def verdict_for(discovery_effect: float, fit: Dict[str, Any] | None) -> str:
+    """Same pure rule as replicate_batch2b.verdict_for, but resolves ALPHA from
+    THIS module's own K_DECLARED=2 (0.025) -- NOT reused directly, because the
+    imported replicate_batch2b.verdict_for closes over that module's K=6
+    global (0.00833) and would silently disagree with the alpha_fwer=0.025
+    this module records on every row."""
+    if fit is None:
+        return "NOT_TESTABLE"
+    same_sign = (fit["effect"] > 0) == (discovery_effect > 0) and fit["effect"] != 0
+    if not same_sign:
+        return "KILLED"
+    return "REPLICATED" if fit["p"] < ALPHA else "FAILED_REPLICATION_POWER_ANNOTATED"
 
 
 def _knowledge_survivors(ledger_rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
