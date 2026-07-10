@@ -3,6 +3,9 @@
 Acceptance criteria:
 1. Dedup vs the ledger: an already-tested candidate_id AND an identity tested
    under a '::src=knowledge' id are never re-proposed.
+1b. _draw's own prior_ids/prior_idents exclude NOT_TESTABLE (non-terminal --
+    re-enters the draw), same exclusion generator.tested_ids applies; every
+    other verdict (REJECT, KILLED, ...) stays terminal and deduped.
 2. Closed-class refusal: reject-ledger REJECT signals and NULL_LOCAL-mapped
    (template, pair) identities are refused at draw time.
 3. K budget: exactly k candidates proposed, round-robin across sports.
@@ -83,6 +86,25 @@ def test_dedup_vs_ledger_identity(tmp_path, monkeypatch):
     assert "s1_tpl::a1__x__a2" not in proposed
     assert not any("b1__x__b2" in c for c in proposed if c.startswith("s2_tpl"))
     assert out["proposed"] > 0  # the rest of the pool still flows
+
+
+def test_draw_reoffers_not_testable_but_keeps_other_verdicts_terminal(tmp_path, monkeypatch):
+    _patch_grammar(monkeypatch)
+    _ledger, reject, know = _paths(tmp_path)
+    ledger_rows = [
+        {"candidate_id": "s1_tpl::a1__x__a2", "template_id": "s1_tpl",
+         "attr_a": "a1", "attr_b": "a2", "verdict": "NOT_TESTABLE"},
+        {"candidate_id": "s1_tpl::a3__x__a4", "template_id": "s1_tpl",
+         "attr_a": "a3", "attr_b": "a4", "verdict": "REJECT"},
+        {"candidate_id": "s2_tpl::b1__x__b2", "template_id": "s2_tpl",
+         "attr_a": "b1", "attr_b": "b2", "verdict": "KILLED"},
+    ]
+    drawn, _refused = PGJ._draw(20, ledger_rows, {}, reject_ledger_path=reject,
+                                knowledge_ledgers=know, mappings=None)
+    ids = {c.candidate_id for c in drawn}
+    assert "s1_tpl::a1__x__a2" in ids       # NOT_TESTABLE -- re-offered
+    assert "s1_tpl::a3__x__a4" not in ids   # REJECT -- terminal, still deduped
+    assert "s2_tpl::b1__x__b2" not in ids   # KILLED -- terminal, still deduped
 
 
 def test_closed_class_refusal(tmp_path, monkeypatch):
