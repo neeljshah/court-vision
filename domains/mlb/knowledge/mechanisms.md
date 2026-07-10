@@ -295,3 +295,32 @@ file -- every magnitude below is a calibration/mechanism receipt, not ROI.
 - **status**: REJECTED (NULL_LOCAL) for both flags, cross-season (2023/2024/2025 independent corpora). `is_b2b`: none of the 3 seasons clear alpha=0.01 (p=0.26/0.043/0.033), direction if anything mildly reversed. `appearances_last_3d>=2`: 2023/2024 NULL; 2025 clears alpha=0.01 but in the REVERSE direction (fatigued group allows LESS xwOBA, p=0.0067) -- per combine-logic discipline a reverse-direction significant season is never counted as support for a degradation hypothesis, so the combined verdict is NULL_LOCAL, not PROVISIONAL. Most plausible read: a selection confound (managers deploy their most-trusted/best relievers on heavy-usage stretches), not fatigue -- not tested further here.
 - **measured LOCAL magnitude**: `is_b2b`: mean xwOBA allowed 0.288/0.284/0.283 (b2b) vs 0.293/0.293/0.292 (rested), n=15484/15605/15629, seasons 2023/2024/2025. `appearances_last_3d>=2`: 0.314/0.262/0.252 vs 0.296/0.297/0.296, n=9054/8897/8927.
 - **artifact link**: `domains/mlb/knowledge/validate_reliever_b2b_fatigue.py::run` (corpus: `data/domains/mlb/bullpen_relief_chains.parquet` joined to `savant_full__2023/2024/2025.parquet`).
+
+---
+
+## Validated 2026-07-10 (game-level called-strike dispersion -- companion to #31, NO umpire identity)
+
+Corpus: `savant_full__2025.parquet`, taken pitches (description in
+{ball, called_strike}) in the Statcast shadow-zone corners {11,12,13,14}
+(same EDGE_ZONES convention as #10's `validate_count_zone.py`), n>=20
+qualifying pitches/game -> 2,406 games. GAME-LEVEL only -- no umpire
+identity column exists locally (see #31, still NOT_TESTABLE for identity
+claims); this tests whether an environmental factor (weather, a given day's
+zone, scorer/PBP variance, etc.) makes per-game called-strike rate on
+borderline pitches disperse MORE than pure sampling noise would predict.
+
+### 39. Called-strike-rate dispersion exceeds binomial noise
+- **claim**: the per-game called-strike rate on borderline (shadow-zone) taken pitches varies across games by more than binomial sampling noise alone would produce -- i.e. a real game-level environmental factor exists, independent of any umpire-identity claim.
+- **causal story**: something about a given game (which umpire happens to be assigned, that day's specific zone-calling tendency, weather/lighting) shifts the whole game's borderline-call rate together, rather than each pitch being an independent draw from one fixed league-wide rate.
+- **expected signature**: quasi-binomial dispersion ratio phi = chi2/df meaningfully above 1.0 (declared bar: phi>=1.2 AND p<0.01).
+- **test spec**: per-game chi2 = sum((calls_g - n_g*p_bar)^2 / (n_g*p_bar*(1-p_bar))) ~ chi2(n_games-1) under the single-shared-rate null; phi=chi2/df is the effect size (p alone is not trusted given n_games in the thousands).
+- **status**: CONFIRMED_LOCAL
+- **measured LOCAL magnitude**: phi=1.389 (chi2=3339.4, df=2405, p=9.69e-34), pooled called-strike rate on taken borderline pitches=0.0485, n=2,406 games (2025).
+- **artifact link**: `domains/mlb/knowledge/validate_called_strike_dispersion.py::called_strike_dispersion_exceeds_binomial_noise`.
+- **wiring**: none yet -- this confirms a real per-game environmental factor EXISTS, not that it is attributable to umpire identity (that stays NOT_TESTABLE per #31) or usable as a live feature; a candidate for a future leak-free as-of per-park/weather join, not wired here.
+
+### 40. Called-strike deviation vs game total runs -- LOCAL NULL
+- **claim**: a game's called-strike-rate deviation on borderline pitches (the same per-game z-deviation that drives #39's dispersion) relates to that game's total runs scored.
+- **status**: REJECTED (NULL_LOCAL) -- essentially zero relationship.
+- **measured LOCAL magnitude**: pearson r=0.0084, p=0.68, n=2,406 games (2025).
+- **artifact link**: `domains/mlb/knowledge/validate_called_strike_dispersion.py::called_strike_deviation_relates_to_total_runs`.
