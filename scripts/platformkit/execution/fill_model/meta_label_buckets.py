@@ -15,6 +15,11 @@ the tier table. n=186 is too thin for a reliable walk-forward classifier with
 multiple continuous features (would overfit on <200 rows) -- this ships the
 honest bucket table only, per rails.
 Label: beat_close (bool, already computed in the ledger from clv_pct > 0).
+ADJUDICATED 2026-07-11 (meta_label_replication.py): the all-quartiles->50%
+pattern is an ORDER-SELECTION artifact -- no bucket replicates on the
+independent ingame_grade_joined checkpoint corpus (ARTIFACT_CONFIRMED, see
+docs/research/meta_label_replication_2026-07-11.md). This table stays
+MEASUREMENT ONLY; never weight/gate orders by these buckets.
 INVARIANTS: <=300 LOC; ASCII; stdlib only; local-only output; never writes
 data/registry/; no $/ROI/edge claim.
 Test: cd /c/Users/neelj/nba-ai-system && python -m pytest scripts/platformkit/execution/fill_model/test_meta_label_buckets.py -q
