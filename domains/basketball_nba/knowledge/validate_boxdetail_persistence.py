@@ -1,6 +1,6 @@
-"""domains.basketball_nba.knowledge.validate_boxdetail_persistence -- 3
+"""domains.basketball_nba.knowledge.validate_boxdetail_persistence -- 4
 mechanisms on the newly-unlocked espn_boxscores.parquet box-DETAIL family
-(fast_break_pts, paint_pts, tov_pts). The leak-free walk-forward AS-OF reader
+(fast_break_pts, paint_pts, tov_pts, largest_lead). The leak-free walk-forward AS-OF reader
 for this family already exists (domains/basketball_nba/boxdetail_asof.py,
 built same session) -- this module is the DESCRIPTIVE mechanism check that
 sits alongside it, same style as every other validate_*.py in this package
@@ -15,7 +15,13 @@ Each hypothesis is ONE stat, testing TWO legs together:
                        scoring margin (team_pts - opp_pts, same-game,
                        descriptive only -- not a prediction input)?
 CONFIRMED_LOCAL requires BOTH legs to clear ALPHA + a minimum effect size;
-otherwise NULL_LOCAL. 3 hypotheses (one per stat), not 6 separate rows.
+otherwise NULL_LOCAL. 4 hypotheses (one per stat), not 8 separate rows.
+
+largest_lead extends the "blowout-tendency" angle (garbage-time bench
+inflation, mechanisms.md #17 CONFIRMED) to a team-level trait: does a team's
+own largest_lead persist game-to-game, and does it relate to that same
+game's scoring margin (obviously correlated with margin by construction for
+winning teams -- the real question is the PERSISTENCE leg).
 
 OT CAUTION (same caveat boxdetail_asof.py documents): home_score/away_score
 in espn_boxscores.parquet are TRUNCATED for OT games (regulation tie
@@ -49,7 +55,7 @@ LEDGER_PATH = Path(__file__).resolve().parent / "validation_ledger.jsonl"
 ALPHA = 0.01
 MIN_EFFECT = 0.15
 _NON_TEAMS = {"STARS", "STRIPES", "WORLD"}
-STATS = ("fast_break_pts", "paint_pts", "tov_pts")
+STATS = ("fast_break_pts", "paint_pts", "tov_pts", "largest_lead")
 
 
 def _load_team_games(espn_box: Optional[pd.DataFrame] = None) -> pd.DataFrame:

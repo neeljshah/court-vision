@@ -360,3 +360,27 @@ scope simplifications made for this pass, not a data gap.
 - **status**: REJECTED (NULL_LOCAL) both metrics, both halves. Usage: h1 eff=+0.007 p=0.69 (n=5,972), h2 eff=+0.024 p=0.19 (n=5,935). Efficiency: h1 eff=-0.099 p=0.09 (n=5,972), h2 eff=-0.034 p=0.56 (n=5,935). No half clears alpha=0.01 on either metric.
 - **measured LOCAL magnitude**: see above (player_boxscores + pbp_p1_json, 1,289 games, split-half by date).
 - **artifact link**: `domains/basketball_nba/knowledge/validate_foul_trouble_spillover.py::run`.
+
+---
+
+## Validated 2026-07-10 (largest_lead persistence + Q4-home-edge, deep-bench drain lane)
+
+### 40. Largest-lead persistence + margin-relation -- 4th box-detail row, extends the #34/#35/#36 triple-pass to the previously-untested `largest_lead` column already named as "unlocked" in the family header above
+- **claim**: a team's largest_lead that game is a stable team trait (persists split-half) and relates to that game's scoring margin -- extends garbage-time bench inflation (#17 CONFIRMED) to a team-level blowout-tendency angle.
+- **causal story**: teams that build large leads are systematically stronger/deeper (roster-quality trait), so largest_lead should be both a repeatable team characteristic and mechanically tied to margin.
+- **caveat**: the margin-relation leg is expected to run high almost by construction (a bigger largest_lead directly implies a bigger final margin for winning teams) -- the persistence leg is the informative test here, same-game margin is confirmatory not novel.
+- **test spec**: same design as #34/#35 (split-half Pearson r + same-game Pearson r vs margin), same corpus/thresholds.
+- **status**: CONFIRMED_LOCAL
+- **measured LOCAL magnitude**: persistence r=0.779, p=3.97e-7 (n=30 teams); margin relation r=0.845, p~0 (n=1,342 team-games).
+- **artifact link**: `domains/basketball_nba/knowledge/validate_boxdetail_persistence.py::hypothesis("largest_lead")`.
+- **wiring**: candidate for the interaction factory's box_detail family (`boxdetail_asof.py`'s `largest_lead_diff_asof`); same thin-slice caveat as #34/#35, not gated for a pregame outcome edge.
+
+### 41. Home Q4-specific edge vs. own Q1-Q3 average -- LOCAL NULL ("clutch home cooking" literature)
+- **claim**: the home team's Q4 scoring margin (own_q4-opp_q4) is systematically LARGER than its own average per-quarter margin across Q1-Q3, i.e. a home-court edge specifically concentrated in the final quarter (officiating/crowd-pressure literature), beyond the ordinary home-court advantage present in every quarter.
+- **causal story**: officiating deference and crowd pressure are hypothesized to peak in close, late-game situations, which cluster in Q4.
+- **expected signature**: positive mean(home_q4_margin - home_avg_other_quarter_margin), paired by game.
+- **test spec**: paired one-sample t-test, home team's q4_margin vs (full_game_margin - q4_margin)/3, bar p<0.01 AND |gap|>=0.5 pts.
+- **status**: REJECTED (NULL_LOCAL) -- gap is small and wrong-signed (home teams marginally UNDER-perform their own Q1-Q3 pace in Q4, not over-perform).
+- **measured LOCAL magnitude**: gap=-0.168 pts, p=0.547 (n=1,313 home team-games).
+- **artifact link**: `domains/basketball_nba/knowledge/validate_quarter_volatility.py::home_q4_edge_exceeds_other_quarters`.
+- **wiring**: none -- honest null, no Q4-specific home-officiating effect detectable in this local corpus.
