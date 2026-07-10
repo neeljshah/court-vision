@@ -40,6 +40,7 @@ from scripts.platformkit.grade_paper_dates import (
     _mlb_ticker,
     _mlb_ticker_date,
     bet_expected_dates,
+    today_et_iso,
 )
 from scripts.platformkit.ingame import npb_kbo_live_state as _nk
 from scripts.platformkit.ingame.hist_mlb_outcome_resolver import (
@@ -184,7 +185,7 @@ def backfill_as_of(
 
     ledger_path = Path(ledger_path) if ledger_path else _clv.DEFAULT_LEDGER
     rows = _clv.load_ledger(ledger_path)
-    today_s = today or _dt.datetime.now(_dt.timezone.utc).date().isoformat()
+    today_s = today or today_et_iso()
     open_bets = [r for r in rows if r.get("status") == "open" and _gp._is_game_ml_bet(r)]
     settled_rows = [r for r in rows if r.get("status") == "settled"]
     already: Set[str] = {r.get("settle_key") for r in settled_rows if r.get("settle_key")}
