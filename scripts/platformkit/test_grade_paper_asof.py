@@ -1,0 +1,161 @@
+"""Per-file tests for scripts.platformkit.grade_paper_asof (no network).
+
+Covers: kbo/npb bridge routing + shaping, ESPN date-override plumbing, the bounded
+oldest-first backlog pass (settles a prior-day open bet, respects max_bets, never
+re-touches an already-settled row, sleeps only between distinct board fetches).
+
+Run ONLY this file (full suite freezes the box):
+    python -m pytest scripts/platformkit/test_grade_paper_asof.py -q
+"""
+from __future__ import annotations
+
+import json
+
+from scripts.platformkit.clv_ledger import record_bet
+from scripts.platformkit.grade_paper_asof import backfill_as_of, route_fetch
+
+
+# --------------------------------------------------------------------------- #
+# route_fetch: kbo/npb bridge dispatch + shaping.
+# --------------------------------------------------------------------------- #
+def test_route_fetch_kbo_uses_bridge_not_espn(monkeypatch):
+    calls = []
+
+    def fake_live_states(sport, *, date=None, http_get=None):
+        calls.append((sport, date))
+        return [{"home": "KIA", "away": "NC", "home_score": 5, "away_score": 2,
+                 "status": "final"}]
+
+    monkeypatch.setattr("scripts.platformkit.grade_paper_asof._nk.live_states",
+                        fake_live_states)
+    out = route_fetch("kbo", date="2026-06-20")
+    assert calls == [("kbo", __import__("datetime").date(2026, 6, 20))]
+    assert out["status"] == "ok"
+    g = out["games"][0]
+    assert g["state"] == "final" and g["home"] == "KIA" and g["away"] == "NC"
+    assert g["home_score"] == 5 and g["away_score"] == 2
+
+
+def test_route_fetch_kbo_not_final_maps_to_pre(monkeypatch):
+    monkeypatch.setattr(
+        "scripts.platformkit.grade_paper_asof._nk.live_states",
+        lambda sport, **kw: [{"home": "LG", "away": "SSG", "home_score": None,
+                              "away_score": None, "status": "in_progress_or_scheduled"}])
+    out = route_fetch("kbo")
+    assert out["games"][0]["state"] == "pre"
+
+
+def test_route_fetch_other_sport_goes_to_live_board(monkeypatch):
+    seen = {}
+
+    def fake_todays(sport, *, date=None, http_get=None, predictor_factory=None):
+        seen["sport"] = sport
+        seen["date"] = date
+        return {"sport": sport, "status": "ok", "games": []}
+
+    monkeypatch.setattr("scripts.platformkit.grade_paper_asof._lb.todays_live_games",
+                        fake_todays)
+    route_fetch("mlb", date="2026-06-28")
+    assert seen == {"sport": "mlb", "date": "20260628"}
+
+
+# --------------------------------------------------------------------------- #
+# backfill_as_of: bounded oldest-first backlog pass.
+# --------------------------------------------------------------------------- #
+def _stale_bet(ledger, ts, sport="mlb", matchup="CIN @ NYM", side="home",
+              bet_id=None):
+    row = {"ts": ts, "sport": sport, "matchup": matchup, "side": side,
+           "taken_book": "paper_book", "taken_decimal": 2.0, "model_prob": 0.55,
+           "stake_units": 1.0, "status": "open", "executed": False,
+           "market": "moneyline", "market_type": "moneyline",
+           "bet_id": bet_id or f"{sport}|{matchup}|{side}|{ts}"}
+    with ledger.open("a", encoding="utf-8") as fh:
+        fh.write(json.dumps(row) + "\n")
+    return row
+
+
+def _game(home, home_abbr, away, away_abbr, hs, as_, state="post"):
+    return {"home": home, "home_abbr": home_abbr, "away": away, "away_abbr": away_abbr,
+            "state": state, "home_score": hs, "away_score": as_}
+
+
+def test_backfill_settles_prior_day_bet_via_dated_board(tmp_path):
+    ledger = tmp_path / "clv_ledger.jsonl"
+    _stale_bet(ledger, "2026-06-20T21:10:00+00:00")
+
+    def fetch(sport, date):
+        assert sport == "mlb" and date == "2026-06-20"
+        return {"games": [_game("New York Mets", "NYM", "Cincinnati Reds", "CIN", 6, 3)]}
+
+    out = backfill_as_of(ledger, today="2026-06-25", fetch=fetch, _sleep=lambda s: None)
+    assert out["settled_now"] == 1 and out["still_pending"] == 0
+    assert out["per_sport_settled"] == {"mlb": 1}
+    rows = [json.loads(ln) for ln in ledger.read_text(encoding="utf-8").splitlines() if ln]
+    settled = [r for r in rows if r.get("graded")]
+    assert len(settled) == 1 and settled[0]["outcome"] == "win"
+
+
+def test_backfill_never_retouches_already_settled_row(tmp_path):
+    ledger = tmp_path / "clv_ledger.jsonl"
+    bet = _stale_bet(ledger, "2026-06-20T21:10:00+00:00")
+    # Pre-existing settled twin (as if a prior run already graded it).
+    twin = dict(bet, status="settled", graded=True, outcome="win",
+               settle_key=bet["bet_id"])
+    with ledger.open("a", encoding="utf-8") as fh:
+        fh.write(json.dumps(twin) + "\n")
+
+    calls = []
+
+    def fetch(sport, date):
+        calls.append((sport, date))
+        return {"games": [_game("New York Mets", "NYM", "Cincinnati Reds", "CIN", 6, 3)]}
+
+    out = backfill_as_of(ledger, today="2026-06-25", fetch=fetch, _sleep=lambda s: None)
+    assert out["settled_now"] == 0
+    assert calls == []  # already-settled bet never triggers a board fetch
+    lines = [ln for ln in ledger.read_text(encoding="utf-8").splitlines() if ln]
+    assert len(lines) == 2  # open row + the one pre-existing settled twin, untouched
+
+
+def test_backfill_respects_max_bets_oldest_first(tmp_path):
+    ledger = tmp_path / "clv_ledger.jsonl"
+    _stale_bet(ledger, "2026-06-21T00:00:00+00:00", matchup="LAD @ SFG", bet_id="a")
+    _stale_bet(ledger, "2026-06-20T00:00:00+00:00", matchup="CIN @ NYM", bet_id="b")
+
+    def fetch(sport, date):
+        return {"games": []}  # nothing matches -> both stay pending, order still checked
+
+    out = backfill_as_of(ledger, today="2026-06-25", max_bets=1, fetch=fetch,
+                         _sleep=lambda s: None)
+    assert out["backlog_total"] == 2 and out["attempted"] == 1
+    assert out["still_pending"] == 1
+
+
+def test_backfill_sleeps_only_between_distinct_boards(tmp_path):
+    """2 bets, SAME (sport, ts-date), no match on either candidate date (empty board):
+    each bet tries [ts-date, ts-date+1] -> 2 DISTINCT boards total (deduped across
+    both bets, not 4), so exactly 1 politeness sleep fires (before the 2nd board)."""
+    ledger = tmp_path / "clv_ledger.jsonl"
+    _stale_bet(ledger, "2026-06-20T00:00:00+00:00", matchup="LAD @ SFG", bet_id="a")
+    _stale_bet(ledger, "2026-06-20T00:01:00+00:00", matchup="CIN @ NYM", bet_id="b")
+    sleeps = []
+    fetched = []
+
+    def fetch(sport, date):
+        fetched.append((sport, date))
+        return {"games": []}
+
+    backfill_as_of(ledger, today="2026-06-25", fetch=fetch, _sleep=sleeps.append)
+    assert fetched == [("mlb", "2026-06-20"), ("mlb", "2026-06-21")]
+    assert sleeps == [1.0]
+
+
+def test_backfill_skips_todays_bets(tmp_path):
+    ledger = tmp_path / "clv_ledger.jsonl"
+    _stale_bet(ledger, "2026-06-25T00:00:00+00:00")  # ts == today -> not backlog
+
+    def fetch(sport, date):
+        raise AssertionError("should never fetch: no backlog bet")
+
+    out = backfill_as_of(ledger, today="2026-06-25", fetch=fetch, _sleep=lambda s: None)
+    assert out["backlog_total"] == 0 and out["attempted"] == 0
