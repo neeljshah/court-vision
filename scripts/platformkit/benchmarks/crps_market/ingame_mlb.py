@@ -1,7 +1,8 @@
 """scripts.platformkit.benchmarks.crps_market.ingame_mlb -- IN-GAME distributional
 CRPS: pitch engine's conditional total/margin ENSEMBLE (conditioned on the real
-end-of-inning-3/5/7 score via game_sim.py's existing GameStart seam) vs the
-in-play market's own implied distribution at that same wall-clock moment.
+end-of-inning-N score, N in CHECKPOINTS, via game_sim.py's existing GameStart
+seam) vs the in-play market's own implied distribution at that same wall-clock
+moment. CHECKPOINTS scans the moat's shape across game states (early/mid/late).
 
 EXTENDS run_mlb.py (pregame harness) -- same engine fit, same crps_ensemble/
 crps_gaussian, same fit_market_gaussian guard. New glue only: (1) Kalshi ticker
@@ -63,7 +64,7 @@ _STATCAST = _REPO / "data" / "cache" / "statcast"
 _LEDGER = _REPO / "data" / "cache" / "intel_claims" / "ingame_distributional_crps_ledger.jsonl"
 _OUT = Path(__file__).resolve().parent / "last_run_ingame_mlb.json"
 
-CHECKPOINTS = (3, 5, 7)   # "end of inning N"
+CHECKPOINTS = (3, 5, 6, 7, 8)   # "end of inning N" -- moat-shape scan across game states
 N_SIM = 1500
 _ASOF_TOL = pd.Timedelta(minutes=10)   # max staleness for a market tick vs checkpoint
 _MONTH = {"JAN": 1, "FEB": 2, "MAR": 3, "APR": 4, "MAY": 5, "JUN": 6, "JUL": 7,
@@ -335,10 +336,10 @@ def run(max_games: int = 300, seed: int = 0) -> dict:
             "nba/tennis": "NOT_TESTABLE -- in-play total market_type does not exist",
         },
         "honest_note": ("Distributional CRPS sharpness only, never a $/ROI claim. "
-                        "Checkpoints are end-of-inning 3/5/7; model conditions on the "
+                        "Checkpoints are end-of-inning %s; model conditions on the "
                         "game's own Statcast score as-of that inning (leak-free); market "
                         "points are the last in-play tick at-or-before the checkpoint "
-                        "(<=10min stale, never after)."),
+                        "(<=10min stale, never after).") % "/".join(str(c) for c in CHECKPOINTS),
     }
     _OUT.write_text(json.dumps(result, indent=2, ensure_ascii=True), encoding="utf-8")
     if ledger_rows:
