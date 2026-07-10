@@ -8,7 +8,10 @@ edge_claimed:false throughout (calibration, not a betting-edge product).
   (B) MATCH-LEVEL: MC-simulate held-out matches point-by-point (both models,
       same interface) from the real first server -> PIT of the realized final
       games-margin + CRPS of the margin ensemble vs a season-climatology Normal
-      baseline, plus match-winner Brier for both models.
+      baseline, plus match-winner Brier for both models. Every "beats" claim in
+      panel B carries a paired percentile-bootstrap CI on the per-match delta
+      (see _bootstrap_delta_ci) -- the CI IS the power gate: callers must treat
+      a CI that straddles zero as UNDERPOWERED, not as a win.
 
 MARKET BASELINE: explicitly SKIPPED. The 1,778 settled Kalshi tennis files on
 disk are current ATP/WTA tour markets (2025-2026); joining them to this
@@ -70,6 +73,24 @@ def _make_prob_fn(kind: str, model: PointModel, base: dict):
     return lambda sid, sb, tb: base.get(sid, glob)
 
 
+N_BOOT_DEFAULT = 2000
+
+
+def _bootstrap_delta_ci(deltas: np.ndarray, n_boot: int = N_BOOT_DEFAULT, seed: int = 0) -> dict:
+    """Percentile bootstrap CI on the mean of paired per-match deltas (positive =
+    challenger wins). Resamples match indices with replacement -- the CI IS the
+    power gate: a claim is only non-underpowered if the interval excludes zero.
+    ponytail: plain percentile bootstrap (not BCa) -- good enough for an
+    underpowered/PROVISIONAL gate, upgrade if a reviewer wants bias-corrected
+    intervals."""
+    rng = np.random.default_rng(seed)
+    n = len(deltas)
+    boot_means = np.array([deltas[rng.integers(0, n, n)].mean() for _ in range(n_boot)])
+    lo, hi = np.percentile(boot_means, [2.5, 97.5])
+    return {"mean_delta": round(float(deltas.mean()), 5), "ci_lo": round(float(lo), 5),
+            "ci_hi": round(float(hi), 5), "n_boot": n_boot, "n": n, "significant": bool(lo > 0)}
+
+
 def _panel_match(model: PointModel, base: dict, matches: pd.DataFrame,
                  n_sims: int, max_matches: int) -> dict:
     if len(matches) > max_matches:
@@ -78,10 +99,12 @@ def _panel_match(model: PointModel, base: dict, matches: pd.DataFrame,
     clim_sd = float(matches["total_games"].std() or 1.0)
     rows_model: List[dict] = []
     rows_base: List[dict] = []
+    crps_clim_list: List[float] = []
     for r in matches.itertuples(index=False):
         p1, p2, bo, fs, wid, tg = (r.player1id, r.player2id, r.best_of,
                                     r.first_server_id, r.winner_id, r.total_games)
         realized_p1_win = int(wid == p1)
+        crps_clim_list.append(crps_gaussian(clim_mu, clim_sd, tg))
         for kind, sink in (("model", rows_model), ("naive", rows_base)):
             prob_fn = _make_prob_fn(kind, model, base)
             margins, totals, p1_win = simulate_match_ensemble(
@@ -89,24 +112,33 @@ def _panel_match(model: PointModel, base: dict, matches: pd.DataFrame,
             sink.append({"pit_total": pit_value(totals, tg),
                          "crps_total_sim": crps_ensemble(totals, tg),
                          "p1_win_pred": p1_win, "p1_win_real": realized_p1_win})
+    def _brier_terms(rows: List[dict]) -> np.ndarray:
+        p = np.clip(np.array([r["p1_win_pred"] for r in rows]), _EPS, 1 - _EPS)
+        y = np.array([r["p1_win_real"] for r in rows], dtype=float)
+        return (p - y) ** 2
     def _summ(rows: List[dict]) -> dict:
         pit = np.array([r["pit_total"] for r in rows])
         dev = max(abs((pit <= q).mean() - q) for q in np.linspace(0.1, 1.0, 10))
-        p = np.clip(np.array([r["p1_win_pred"] for r in rows]), _EPS, 1 - _EPS)
-        y = np.array([r["p1_win_real"] for r in rows], dtype=float)
-        brier = float(np.mean((p - y) ** 2))
+        brier = float(np.mean(_brier_terms(rows)))
         crps_sim = float(np.mean([r["crps_total_sim"] for r in rows]))
         return {"n": len(rows), "pit_total_uniformity_dev": round(float(dev), 4),
                 "crps_total_sim": round(crps_sim, 4), "brier_match_winner": round(brier, 5)}
     m_summ, b_summ = _summ(rows_model), _summ(rows_base)
-    crps_clim = float(np.mean([crps_gaussian(clim_mu, clim_sd, r.total_games)
-                              for r in matches.itertuples(index=False)]))
+    crps_clim = float(np.mean(crps_clim_list))
+    # paired per-match deltas (positive = model wins) feed the bootstrap power gate
+    brier_delta = _brier_terms(rows_base) - _brier_terms(rows_model)
+    crps_delta = np.array(crps_clim_list) - np.array([r["crps_total_sim"] for r in rows_model])
+    brier_ci = _bootstrap_delta_ci(brier_delta)
+    crps_ci = _bootstrap_delta_ci(crps_delta)
     return {"model": m_summ, "naive_baseline": b_summ,
             "climatology_normal": {"mu_total_games": round(clim_mu, 3),
                                    "sd_total_games": round(clim_sd, 3),
                                    "crps_total_climatology": round(crps_clim, 4)},
             "model_beats_naive_brier": bool(m_summ["brier_match_winner"] < b_summ["brier_match_winner"]),
-            "model_beats_climatology_crps": bool(m_summ["crps_total_sim"] < crps_clim)}
+            "model_beats_climatology_crps": bool(m_summ["crps_total_sim"] < crps_clim),
+            "brier_vs_naive_ci": brier_ci, "crps_vs_climatology_ci": crps_ci,
+            "model_beats_naive_brier_significant": brier_ci["significant"],
+            "model_beats_climatology_crps_significant": crps_ci["significant"]}
 
 
 def run(n_sims: int = N_SIMS_DEFAULT, max_matches: int = MAX_MATCHES_DEFAULT) -> Dict[str, Any]:
