@@ -9,7 +9,9 @@ runner.run_batch's REAL leak-free gate, which appends the honest verdict rows
 
 DEDUP (never re-test, never re-open):
  * ledger identity -- (template_id, unordered attr pair, entity_class) across
-   EVERY prior ledger row, so a pair tested under a '::src=knowledge' id is
+   every prior TERMINAL ledger row (NOT_TESTABLE excluded -- see generator.
+   tested_ids's own exclusion; a builder/data-unavailable candidate re-enters
+   once its builder lands), so a pair tested under a '::src=knowledge' id is
    never re-proposed blind (candidate_id-only dedup would miss that).
  * closed classes -- (a) reject-ledger REJECT signals: a candidate naming a
    REJECTed signal as either attr for that sport is refused; (b) NULL_LOCAL
@@ -146,8 +148,14 @@ def _draw(k: int, ledger_rows: List[Dict[str, Any]], exhausted: Dict[str, bool],
     """Up to k novel candidates, ROUND-ROBIN one per sport per round, each
     deduped against every prior ledger identity and refused if closed-class.
     Returns (drawn, n_refused_closed_class)."""
-    prior_ids = {r.get("candidate_id") for r in ledger_rows}
-    prior_idents = {_row_identity(r) for r in ledger_rows}
+    # NOT_TESTABLE is non-terminal (builder/data wasn't ready at test time) --
+    # exclude those rows from BOTH dedup sets so a candidate whose only ledger
+    # rows are NOT_TESTABLE re-enters the draw once its builder/data lands,
+    # same exclusion generator.tested_ids applies per-template (every other
+    # verdict, blind or '::src=knowledge', stays terminal).
+    live_rows = [r for r in ledger_rows if r.get("verdict") != "NOT_TESTABLE"]
+    prior_ids = {r.get("candidate_id") for r in live_rows}
+    prior_idents = {_row_identity(r) for r in live_rows}
     closed_attrs = _reject_closed_attrs(reject_ledger_path)
     closed_idents = _null_local_identities(knowledge_ledgers, mappings)
     sports = sorted({t["sport"] for t in GEN.TEMPLATES.values()})
