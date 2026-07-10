@@ -47,12 +47,15 @@ def _newest_reconcile_age_h(ops_dir: Path) -> Optional[float]:
 
 def _default_reconcile() -> Any:
     from scripts.platformkit.clv import clv_result_reconciler as R
-    return R.main()
+    # argv=[] is load-bearing: main() falls back to sys.argv[1:], which inside
+    # the m38 daemon is the DAEMON's own args -- first live fire wrote
+    # clv_reconcile_--interval.json instead of the real channels.
+    return R.main(argv=[])
 
 
 def _default_scoreboard() -> Any:
     from scripts.platformkit.clv import clv_scoreboard as S
-    return S.main()
+    return S.main(argv=[])
 
 
 def run_clv_refresh(watermarks: Optional[Dict[str, Any]] = None, *,

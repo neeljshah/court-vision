@@ -87,3 +87,18 @@ def test_watermarks_param_accepted_and_ignored(tmp_path):
                              reconcile_fn=lambda: None, scoreboard_fn=lambda: None)
     assert out["status"] == "skipped"
     assert watermarks == {"unrelated": "untouched"}
+
+
+def test_default_callables_pass_empty_argv(monkeypatch):
+    """Regression: first live fire ran R.main() bare -> main() fell back to
+    sys.argv[1:] = the m38 DAEMON's own args -> wrote clv_reconcile_--interval
+    .json instead of the real channels. argv=[] must be passed explicitly."""
+    from scripts.platformkit.clv import clv_result_reconciler as R
+    from scripts.platformkit.clv import clv_scoreboard as S
+    seen = {}
+    monkeypatch.setattr(R, "main", lambda argv=None, **kw: seen.setdefault("r", argv))
+    monkeypatch.setattr(S, "main", lambda argv=None, **kw: seen.setdefault("s", argv))
+    monkeypatch.setattr("sys.argv", ["m38_autoloop", "--interval", "86400"])
+    CR._default_reconcile()
+    CR._default_scoreboard()
+    assert seen["r"] == [] and seen["s"] == []
