@@ -398,9 +398,9 @@ p1_name/p2_name for the same event_id.
 - **causal story**: thinner air at altitude reduces drag on the serve, so the ball should carry faster and produce more untouched aces.
 - **expected signature**: higher combined ace rate at high-altitude venues.
 - **test spec**: Welch t-test, combined (p1+p2)/2 ace rate, venues >=500m vs <500m altitude (real tour venues clearing this: Madrid 667m, Bogota 2640m, Quito 2850m -- verified in data), ATP+WTA 2015-2025.
-- **status**: CONFIRMED -- but in the OPPOSITE direction from the thin-air folklore.
-- **measured LOCAL magnitude**: combined ace rate 0.0722 (>=500m, n=2,522) vs 0.0805 (<500m, n=24,941); effect -0.0083, p=2.94e-23, n=27,463.
-- **artifact link**: `domains/tennis/knowledge/validate_travel_altitude.py::altitude_effect_on_serve_ace_rate`.
+- **status**: CONFIRMED (REPLICATED on 2 disjoint year-slices -- second-corpus receipt below) -- but in the OPPOSITE direction from the thin-air folklore. Premise-check note (this session): despite the "ATP+WTA 2015-2025" framing above, `travel_scouting.parquet` (the altitude/travel corpus) is 100% ATP event_ids -- 0% WTA overlap -- so a tour-split replication is not possible; replication instead used a disjoint year-slice split (the only viable "second corpus" axis this dataset supports).
+- **measured LOCAL magnitude**: combined ace rate 0.0722 (>=500m, n=2,522) vs 0.0805 (<500m, n=24,941); effect -0.0083, p=2.94e-23, n=27,463. Second-corpus (disjoint year-slice) replication: years_2015_2020 effect -0.0078, p=3.66e-11, n=14,329 -- REPLICATED; years_2021_2025 effect -0.0089, p=6.30e-14, n=13,134 -- REPLICATED. Same direction and magnitude in both halves, so the folklore-reversing finding is not a single-year or single-half artifact.
+- **artifact link**: `domains/tennis/knowledge/validate_travel_altitude.py::altitude_effect_on_serve_ace_rate`; replication `domains/tennis/knowledge/validate_replication_wave1.py::replicate_altitude_effect`; `validation_ledger.jsonl` rows `altitude_effect_on_serve_ace_rate__replication_years_2015_2020`, `altitude_effect_on_serve_ace_rate__replication_years_2021_2025`.
 
 ### 29. Long travel lowers win probability, net of ranking -- CONFIRMED
 - **claim**: traveling further into the venue than your opponent measurably lowers win probability, beyond what the ranking gap already explains.
@@ -557,5 +557,30 @@ lane.
 - **measured LOCAL magnitude**: late-round mean ace rate minus early-round mean ace rate, paired by `tourney_id`: effect +0.0041 (rate points), n=674 qualifying tournaments (1 fewer than the 675 premise-checked -- one tourney_id's remaining match had a null `ace_rate` in one bucket after the combined-column dropna), p=1.6e-7 (one-sample t=5.291) -- statistically significant but UNDER the declared 0.01-rate-point effect bar, so LOCAL NULL by the row's own pre-stated bar (tiny-effect, large-N significance, same pattern as wave3 #38's ace-rate sub-bar NULL). Split-half by `tourney_id` hash parity: A effect +0.0043/p=1.1e-4 (n=351), B effect +0.0040/p=4.3e-4 (n=323) -- same direction, both still under the 0.01 bar, both halves.
 - **artifact link**: `domains/tennis/knowledge/validate_research_wave4.py::surface_speed_drift_by_round`, `validation_ledger.jsonl` (hypothesis=surface_speed_drift_by_round / __split_A / __split_B).
 - **source**: "Tennis Court Speed | Court Pace Index (CPI) Database 2012-2026" (courtspeed.com), https://courtspeed.com/ -- states CPI "tends to increase as the tournament progresses, as the grit on the court's surface is worn away by the players," with early-round matches at majors like the US Open measurably played on a slower version of the same surface than the final; explicitly flags that CPI data is concentrated on main stadium courts, a caveat carried into this row's premise rather than omitted. "Court speed and hard-court homogeneity" (Austen Peters, The Break Point), https://thebreakpoint.substack.com/p/court-speed-and-hard-court-homogeneity -- companion coverage of the same surface-wear mechanism.
+
+---
+
+## Replicated 2026-07-10 (second-corpus wave -- disjoint year-slices, #28 altitude)
+
+Cross-time replication of the strongest travel/altitude CONFIRMED_LOCAL
+above, using a disjoint year-slice split never isolated by the original
+pooled 2015-2025 test. A tour-split (ATP vs WTA) replication -- the axis the
+row's own test-spec wording implies -- was checked first and found
+NOT VIABLE: `travel_scouting.parquet` is 100% ATP event_ids (confirmed this
+session), so no WTA population exists in this specific corpus despite the
+mechanism doc's "ATP+WTA" framing. Ported with the ORIGINAL
+`altitude_effect_on_serve_ace_rate` + `_verdict` imported and called
+unchanged (same 500m cut, same min_eff=0.005 bar) -- no bar was loosened.
+`domains/tennis/knowledge/validate_replication_wave1.py`.
+
+- **altitude_effect_on_serve_ace_rate** (#28): REPLICATED on both disjoint,
+  exhaustive year halves -- years_2015_2020 effect -0.0078 p=3.66e-11
+  n=14,329; years_2021_2025 effect -0.0089 p=6.30e-14 n=13,134. Same
+  direction (folklore-reversing: higher altitude -> LOWER ace rate) and
+  near-identical magnitude in both halves.
+- **artifact link**: `domains/tennis/knowledge/validate_replication_wave1.py`;
+  `validation_ledger.jsonl` rows
+  `altitude_effect_on_serve_ace_rate__replication_years_2015_2020`,
+  `altitude_effect_on_serve_ace_rate__replication_years_2021_2025`.
 
 ---
