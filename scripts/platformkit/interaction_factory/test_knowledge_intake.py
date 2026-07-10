@@ -205,20 +205,30 @@ def test_round1_3_2026_07_10_new_confirmed_mechanisms_stay_unmapped():
     # pool count proof: real ledgers, 16 before this session -> 20 after
     # (2 boxdetail_ast_persistence_and_margin rows + 2 dominance_margin_
     # predicts_outcome_partial rows, both real CONFIRMED_LOCAL on disk).
+    # WAVE-23 (2026-07-10, this session): +2 more (q1_slow_start_persists_
+    # split_half, now mapped onto nba_ingame_state_self_cross) -> 22.
     cands = KI.knowledge_candidates()
-    assert len(cands) == 20
+    assert len(cands) == 22
     assert {c.sport for c in cands} == {"mlb", "basketball_nba", "tennis"}
 
 
-def test_ingame_state_template_stays_unmapped_pending_registry_wiring():
-    # M10 pool-unlock lane (this session): nba_ingame_state_self_cross now
-    # exists in the grammar (generator.py) but KNOWN_MAPPINGS must not
-    # reference it until a real attr lands with family="ingame_state_asof"
-    # (never invent one, same discipline as every other row here). This is
-    # the honest before/after of the session's pool probe for the 4
-    # historic "in-match" exemplar hypotheses: still 0 mapped, 0 candidates.
-    assert "nba_ingame_state_self_cross" not in {
+def test_ingame_state_template_now_mapped_via_q1_slow_start_replication():
+    # M10 pool-unlock lane wired the registry attr + runner builder; WAVE-23
+    # (2026-07-10, this session) cleared the remaining replication bar for
+    # q1_slow_start_persists_split_half (now REPLICATED, 2nd corpus) -- it is
+    # the first nba_ingame_state_self_cross mapping. Fresh premise check: the
+    # other 3 historic "in-match" exemplar hypotheses stay unmapped
+    # (transition_rate_* still lack a registry attr; called_strike_dispersion
+    # is a per-game coefficient, not an entity attribute, regardless of
+    # atomic_unit -- see the KNOWN_MAPPINGS comment).
+    assert "nba_ingame_state_self_cross" in {
         m["template_id"] for mappings in KI.KNOWN_MAPPINGS.values() for m in mappings}
-    for hyp in ("q1_slow_start_persists_split_half", "transition_rate_split_half_persistence",
-                "transition_rate_margin_relation", "called_strike_dispersion_exceeds_binomial_noise"):
+    assert "q1_slow_start_persists_split_half" in KI.KNOWN_MAPPINGS
+    for m in KI.KNOWN_MAPPINGS["q1_slow_start_persists_split_half"]:
+        assert m["template_id"] == "nba_ingame_state_self_cross"
+        assert m["attr_a"] == "q1_margin_asof"
+    for hyp in ("transition_rate_split_half_persistence", "transition_rate_margin_relation",
+                "called_strike_dispersion_exceeds_binomial_noise",
+                "timeout_interrupts_opponent_run__combined", "compassionate_umpire_count_zone__combined",
+                "altitude_effect_on_serve_ace_rate"):
         assert hyp not in KI.KNOWN_MAPPINGS

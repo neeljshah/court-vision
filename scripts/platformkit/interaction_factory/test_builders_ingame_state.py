@@ -46,3 +46,38 @@ def test_build_frame_merges_diff_cols_and_sets_y():
 def test_builder_returns_none_when_source_missing(monkeypatch):
     monkeypatch.setattr(big, "_NBA_QSHAPE_SOURCE", big.Path("/does/not/exist.parquet"))
     assert big._nba_ingame_state_builder(["q1_margin_asof", "q4_margin_asof"], {}) is None
+
+
+def test_assist_boxdetail_frame_pulls_each_attr_from_its_own_source(monkeypatch):
+    # Two DISJOINT game_id sets (the real-world case on disk today: assist's
+    # coverage and box-detail's coverage do not overlap) -- the merge must
+    # still resolve each attr from the source that actually carries it, and
+    # the outer p_base/Elo merge (via the stubbed build_candidate_frame) must
+    # not invent rows.
+    games = pd.DataFrame({"game_id": ["g1", "g2", "g3"], "home_win": [1.0, 0.0, 1.0]})
+    assist = pd.DataFrame({"game_id": ["g1"], "ast_rate_diff_asof": [0.05]})
+    boxdetail = pd.DataFrame({"game_id": ["g2"], "fast_break_pts_diff_asof": [3.0]})
+
+    def _stub_build_candidate_frame(games=None, asof=None, feat_col=None):
+        out = games.merge(asof[["game_id", feat_col]], on="game_id", how="left")
+        out["p_base"] = 0.5
+        return out
+
+    monkeypatch.setattr(
+        "domains.basketball_nba.asof_ast_rate_eval.build_candidate_frame",
+        _stub_build_candidate_frame, raising=False)
+
+    out = big.build_nba_assist_boxdetail_frame(
+        ["ast_rate_asof", "fast_break_pts_asof"], assist, boxdetail, games=games)
+    assert {"asof__ast_rate_asof", "asof__fast_break_pts_asof", "y"} <= set(out.columns)
+    row_g1 = out[out["game_id"] == "g1"].iloc[0]
+    row_g2 = out[out["game_id"] == "g2"].iloc[0]
+    assert row_g1["asof__ast_rate_asof"] == 0.05
+    assert pd.isna(row_g1["asof__fast_break_pts_asof"])
+    assert row_g2["asof__fast_break_pts_asof"] == 3.0
+    assert pd.isna(row_g2["asof__ast_rate_asof"])
+
+
+def test_assist_boxdetail_builder_returns_none_when_source_missing(monkeypatch):
+    monkeypatch.setattr(big, "_NBA_ASSIST_SOURCE", big.Path("/does/not/exist.parquet"))
+    assert big._nba_assist_boxdetail_builder(["ast_rate_asof", "fast_break_pts_asof"], {}) is None
