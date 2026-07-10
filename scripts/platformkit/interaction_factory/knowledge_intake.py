@@ -99,6 +99,39 @@ LEDGERS: Dict[str, Path] = {
 # file exists on disk for either sport today (checked this session); that
 # is a per-sport data-build task, not a grammar gap, and out of this
 # module's scope.
+# ROUND 1-3 CLASSIFICATION (2026-07-10, this lane): 13 new CONFIRMED_LOCAL
+# mechanisms from tonight's first 3 research rounds (round-1 seed/wave-2/
+# wave-3; wave-4's seed yielded zero CONFIRMED). 2 borderline rows excluded
+# per the >=2-replicated-groups bar, not rounded up: foul_rate_dispersion_
+# exceeds_poisson_noise (NBA h1=NULL/h2=CONFIRMED, combined=PROVISIONAL) and
+# trailing_team_shot_rate (soccer split_A=CONFIRMED/split_B=NULL, mixed).
+# All 13 classified UNMAPPABLE -- same discipline as 39727abe, honestly, not
+# a miss: each needs a registry attr / STATIC_POOLS diff column / atomic_unit
+# that does not exist; none invented here (OWNS scope is KNOWN_MAPPINGS +
+# this module's test only -- attribute_registry.py/generator.py/runner.py
+# stay read-only). Per-hypothesis blocker (test_round1_3_2026_07_10_new_
+# confirmed_mechanisms_stay_unmapped locks these in):
+#   NBA: boxdetail_ast_persistence_and_margin (no ast_asof in box_detail_
+#     asof family), defender_matchup_skill_predictive_validity (no defender-
+#     skill registry attr/template pool), starter_minutes_vs_margin__combined
+#     (a margin-band trend, not an attr pair), timeout_interrupts_opponent_
+#     run__combined (event-level before/after, same class as gb_double_
+#     play_suppression).
+#   MLB: compassionate_umpire_count_zone__combined (count-state x zone main
+#     effect, no attr pair), mid_inning_pitching_change_interrupt__combined
+#     + pinch_sub_platoon_targeting__combined (both event-level, no is_k/
+#     home_win regression shape at all).
+#   Soccer: block_depth_counterattack_share, xg_rebound_cluster_calibration,
+#     xg_supremacy_persistence, substitution_timing_moderates_shift -- each
+#     needs a diff_*_asof column (block depth/counterattack/xG/xG-supremacy)
+#     absent from soccer_match_asof's STATIC_POOLS; substitution_timing is
+#     also an in-match state effect (class already closed for soccer).
+#   Tennis: dominance_margin_predicts_outcome_partial (needs an avg_games_
+#     per_set diff column absent from tennis_match_asof's STATIC_POOLS),
+#     ball_cycle_serve_speed_kmh (in-match ball-freshness state, wrong
+#     atomic_unit -- same class as serve_speed_decay_within_match).
+# knowledge_candidates() before/after this lane: 16/16, all MLB -- honest,
+# no new mapping this lane.
 KNOWN_MAPPINGS: Dict[str, List[Dict[str, str]]] = {
     "contact_quality_persists_split_half": [
         {"template_id": "mlb_pa_batter_x_pitcher", "attr_a": "contact_quality", "attr_b": "whiff_rate"},
