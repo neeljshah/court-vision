@@ -223,6 +223,42 @@ def join_rate_vs_savant(roster_fp: Optional[Path] = None,
             "join_rate": round(len(joined) / len(roster_ids), 4)}
 
 
+_PROFILES_FP = _REPO / "data" / "cache" / "profiles" / "mlb_player_profiles.parquet"
+
+
+def debut_watch(roster_fp: Optional[Path] = None,
+                profiles_fp: Path = _PROFILES_FP) -> Dict[str, Any]:
+    """Roster-freshness fact for the player-profile completeness audit: how many
+    of today's MiLB active-roster players already have a row in the SHARED-SCHEMA
+    mlb_player_profiles.parquet (any window) vs are DEBUT_CANDIDATEs (MiLB active,
+    zero MLB profile rows -- the expected, not-a-bug state for a player who
+    hasn't debuted/been called up yet)."""
+    import pandas as pd
+    roster_fp = roster_fp or latest_roster_fp()
+    if roster_fp is None or not roster_fp.exists():
+        return {"status": "NO_ROSTER"}
+    as_of = roster_fp.stem.rsplit("_", 1)[-1]  # rosters_aaa_2026-07-09 -> 2026-07-09
+    roster_ids: Dict[int, Optional[str]] = {}
+    with open(roster_fp, encoding="ascii", errors="replace") as f:
+        for line in f:
+            row = json.loads(line)
+            pid = row.get("player_id")
+            if pid is not None:
+                roster_ids[int(pid)] = row.get("player_name")
+    if not roster_ids:
+        return {"status": "NO_DATA", "as_of": as_of}
+    if not profiles_fp.exists():
+        return {"status": "NO_PROFILES", "as_of": as_of, "n_milb_rostered": len(roster_ids)}
+    profiled_ids = set(pd.read_parquet(profiles_fp, columns=["entity_id"])["entity_id"].astype("int64"))
+    debut_ids = sorted(set(roster_ids) - profiled_ids)
+    return {
+        "status": "OK", "as_of": as_of, "n_milb_rostered": len(roster_ids),
+        "n_with_mlb_profile": len(set(roster_ids) & profiled_ids),
+        "n_debut_candidates": len(debut_ids),
+        "debut_candidate_sample": [roster_ids[pid] for pid in debut_ids[:20]],
+    }
+
+
 def main(argv: Optional[List[str]] = None) -> int:
     ap = argparse.ArgumentParser(description="MiLB rosters + transactions via statsapi (sportId 11-14).")
     ap.add_argument("--sport-ids", nargs="+", type=int, default=[11])
@@ -241,5 +277,5 @@ if __name__ == "__main__":
     sys.exit(main())
 
 
-__all__ = ["pull", "run_daily", "join_rate_vs_savant", "latest_roster_fp",
+__all__ = ["pull", "run_daily", "join_rate_vs_savant", "latest_roster_fp", "debut_watch",
            "_SPORT_LEVELS", "_OUT_DIR"]
