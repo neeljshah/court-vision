@@ -20,6 +20,9 @@ UNCHANGED, but sigma_fallback = the MODEL's own conditional ensemble sigma at
 that checkpoint (not pregame climatology, which is the wrong scale once 3-7
 innings are already fixed and would mis-fire the guard either direction).
 
+SHAPE CONTROL: a raw MODEL_SHARPER verdict is downgraded to UNDERPOWERED
+unless a shape-matched market baseline agrees -- see shape_control.py.
+
 LEAK AUDIT: conditioning score reads the game's own Statcast rows strictly
 before the checkpoint inning (same as validate.py panel D); market points are
 the last tick at-or-before the checkpoint within _ASOF_TOL (never after).
@@ -47,6 +50,10 @@ from domains.basketball_nba.sim2.simulator import crps_ensemble, crps_gaussian
 
 from scripts.platformkit.benchmarks.crps_market.run_mlb import _fit_engine, _bootstrap_ci
 from scripts.platformkit.benchmarks.crps_market.market_dist import fit_market_gaussian
+from scripts.platformkit.benchmarks.crps_market.shape_control import (
+    market_crps_discretized as _market_crps_discretized,
+    shape_controlled_verdict as _shape_controlled_verdict,
+)
 from scripts.platformkit.ingame.ingame_id_resolver_mlb import parse_kalshi_mlb_ticker
 
 _REPO = Path(__file__).resolve().parents[4]
@@ -171,9 +178,12 @@ def margin_market_points(df_event: pd.DataFrame, ts_cp: pd.Timestamp, away_abbr:
 
 
 def _crps_bucket(model_v: np.ndarray, mu: float, sigma: float, realized: float,
-                  n_used: int) -> Dict[str, float]:
+                  n_used: int, disc_seed: int) -> Dict[str, float]:
     return {"model_crps": crps_ensemble(model_v, realized),
-            "market_crps": crps_gaussian(mu, sigma, realized), "n_lines_used": n_used}
+            "market_crps": crps_gaussian(mu, sigma, realized),
+            "market_crps_discretized": _market_crps_discretized(
+                mu, sigma, realized, len(model_v), disc_seed),
+            "n_lines_used": n_used}
 
 
 def _verdict(delta: np.ndarray) -> Tuple[str, List[float]]:
@@ -253,7 +263,8 @@ def run(max_games: int = 300, seed: int = 0) -> dict:
                     mu, sigma, n_used = fit_market_gaussian(pts, float(np.std(model_total)))
                     key = "total_runs|end_inning_%d" % end_inn
                     buckets.setdefault(key, []).append(
-                        _crps_bucket(model_total, mu, sigma, float(fh + fa), n_used))
+                        _crps_bucket(model_total, mu, sigma, float(fh + fa), n_used,
+                                     disc_seed=gpk * 10 + end_inn))
 
             if not spr_ev.empty:
                 pts = margin_market_points(spr_ev, cp, away_abbr)
@@ -261,7 +272,8 @@ def run(max_games: int = 300, seed: int = 0) -> dict:
                     mu, sigma, n_used = fit_market_gaussian(pts, float(np.std(model_margin)))
                     key = "home_margin|end_inning_%d" % end_inn
                     buckets.setdefault(key, []).append(
-                        _crps_bucket(model_margin, mu, sigma, float(fh - fa), n_used))
+                        _crps_bucket(model_margin, mu, sigma, float(fh - fa), n_used,
+                                     disc_seed=gpk * 10 + end_inn + 500_000))
 
     checkpoints_out: Dict[str, dict] = {}
     ledger_rows: List[dict] = []
@@ -269,30 +281,44 @@ def run(max_games: int = 300, seed: int = 0) -> dict:
     for key, rows in sorted(buckets.items()):
         market, bucket = key.split("|")
         mc = np.array([r["model_crps"] for r in rows]); kc = np.array([r["market_crps"] for r in rows])
+        kcd = np.array([r["market_crps_discretized"] for r in rows])
         delta = kc - mc
-        verdict, ci = _verdict(delta)
-        # single capture window today (one ingame_grade_joined dump) -- any non-null
-        # verdict is PROVISIONAL until a second, disjoint corpus replicates it.
+        delta_disc = kcd - mc
+        raw_verdict, ci = _verdict(delta)
+        disc_verdict, ci_disc = _verdict(delta_disc)
+        verdict, shape_note = _shape_controlled_verdict(raw_verdict, disc_verdict)
+        # single capture window -- any non-null verdict is PROVISIONAL until a
+        # disjoint corpus replicates it; the token itself carries the qualifier
+        # (interaction_factory convention) so `verdict` alone is never durable.
         provisional = verdict != "UNDERPOWERED"
+        verdict_token = verdict + "_PROVISIONAL" if provisional else verdict
         doc = {
             "n": len(rows), "model_crps_mean": round(float(mc.mean()), 4),
             "market_crps_mean": round(float(kc.mean()), 4),
+            "market_crps_discretized_mean": round(float(kcd.mean()), 4),
             "paired_delta_mean": round(float(delta.mean()), 4),
-            "paired_delta_95ci": ci, "verdict": verdict, "provisional": provisional,
+            "paired_delta_discretized_mean": round(float(delta_disc.mean()), 4),
+            "paired_delta_95ci": ci, "shape_control_verdict": disc_verdict,
+            "verdict": verdict_token, "provisional": provisional,
             "n_multi_line": int(sum(1 for r in rows if r["n_lines_used"] >= 2)),
         }
         checkpoints_out[key] = doc
         note = ("paired CRPS delta (market_crps - model_crps); market sigma_fallback "
                 "= model's own conditional ensemble sigma at this checkpoint, not "
-                "pregame climatology; game-clustered (1 row/game/bucket).")
-        if provisional:
-            note += " PROVISIONAL -- single capture-window corpus, needs independent-corpus replication."
+                "pregame climatology; game-clustered (1 row/game/bucket); "
+                "shape-controlled baseline = crps_ensemble on integer-rounded "
+                "N(mu,sigma) market samples (guards vs a continuous-vs-integer "
+                "distribution-family artifact).")
+        note += ((" " + shape_note) if shape_note else "")
+        note += (" PROVISIONAL -- single capture-window corpus, needs "
+                  "independent-corpus replication.") if provisional else ""
         ledger_rows.append({
             "sport": "mlb", "market": market, "bucket": bucket, "edge_claimed": False,
             "template_id": "ingame_distributional_crps_mlb",
             "candidate_id": "mlb_ingame_crps::%s::%s" % (market, bucket),
             "n": doc["n"], "effect": doc["paired_delta_mean"], "p": None,
-            "alpha_fwer": None, "verdict": verdict, "computed_at": now, "note": note,
+            "alpha_fwer": None, "verdict": verdict_token, "provisional": provisional,
+            "computed_at": now, "note": note,
         })
 
     result = {
