@@ -265,3 +265,46 @@ violation -- these are mechanism checks, not production inputs).
 - **status**: REJECTED (NULL_LOCAL) -- no significant game-1-vs-rest gap.
 - **measured LOCAL magnitude**: fga_share deviation-from-normal-baseline, game-1-of-absence (0.0529, n=6,946) vs games>=2 (0.0511, n=5,818); effect +0.0019, p=0.030, n=12,764.
 - **artifact link**: `domains/basketball_nba/knowledge/validate_usage_events.py::star_injury_usage_vacuum_event_study`.
+
+---
+
+## Validated 2026-07-10 (box-detail family -- newly-unlocked espn_boxscores.parquet detail columns)
+
+Unlocks the entirely-dark box-detail family (fast_break_pts, paint_pts,
+tov_pts, largest_lead, foul_trouble) already exposed by the leak-free
+walk-forward as-of reader `domains/basketball_nba/boxdetail_asof.py` (built
+same session, commits 132179ca/bcaa6d7a). The 3 rows below are the
+DESCRIPTIVE mechanism check (same-game raw values, split-half + cross-
+sectional, not a live per-game feature) that decides whether each stat is
+worth carrying into the interaction factory. Corpus: `espn_boxscores.parquet`
+box-detail slice, 2026-01-20..2026-05-24, n=1,342 team-games (671 games,
+30 real teams; 3 All-Star exhibition rows excluded). Each hypothesis requires
+BOTH a split-half persistence leg AND a same-game margin-relation leg to
+clear p<0.01 + |r|>=0.15 for CONFIRMED_LOCAL.
+
+### 34. Fast-break points persistence + margin-relation
+- **claim**: a team's fast-break scoring is a stable team trait (persists split-half) and relates to that game's scoring margin.
+- **causal story**: transition offense is a coached, practiced tendency (push-the-pace identity), not game-to-game noise; more transition scoring should track winning.
+- **expected signature**: positive split-half r across teams; positive same-game r(fast_break_pts, margin).
+- **test spec**: split-half Pearson r (first-half-of-corpus-dates vs second, per team) + pooled Pearson r vs same-game margin.
+- **status**: CONFIRMED_LOCAL
+- **measured LOCAL magnitude**: persistence r=0.604, p=4.1e-4 (n=30 teams); margin relation r=0.298, p=5.8e-29 (n=1,342 team-games).
+- **artifact link**: `domains/basketball_nba/knowledge/validate_boxdetail_persistence.py::hypothesis("fast_break_pts")`.
+- **wiring**: candidate for the interaction factory's box_detail family (see `boxdetail_asof.py`'s `fast_break_pts_diff_asof`); thin single-season slice (box-detail only 2026-01-20 onward) -- not yet gated for a pregame outcome edge (see `boxdetail_gate.py` for that separate SHIP/REJECT track).
+
+### 35. Points-in-the-paint persistence + margin-relation
+- **claim**: a team's paint scoring is a stable team trait and relates to that game's scoring margin.
+- **causal story**: interior scoring reflects personnel (rim finishers, post touches) and offensive scheme, both season-stable; more paint points should track winning.
+- **expected signature**: positive split-half r across teams; positive same-game r(paint_pts, margin).
+- **test spec**: same design as #34.
+- **status**: CONFIRMED_LOCAL
+- **measured LOCAL magnitude**: persistence r=0.699, p=1.7e-5 (n=30 teams); margin relation r=0.335, p=1.2e-36 (n=1,342 team-games) -- the strongest of the 3 box-detail rows on both legs.
+- **artifact link**: `domains/basketball_nba/knowledge/validate_boxdetail_persistence.py::hypothesis("paint_pts")`.
+- **wiring**: candidate for the interaction factory's box_detail family; thin single-season slice, same caveat as #34.
+
+### 36. Points off turnovers (tov_pts) persistence + margin-relation -- LOCAL NULL (persistence leg misses; margin leg flips sign)
+- **claim**: a team's points-off-turnovers total is a stable team trait and relates positively to that game's scoring margin.
+- **status**: REJECTED (NULL_LOCAL) -- persistence leg falls just short of the p<0.01 bar (p=0.0129, marginal miss, directionally real at r=0.449); the margin-relation leg IS significant but NEGATIVE (r=-0.307, p=1.0e-30), the opposite of the "more points off turnovers = better margin" prior -- an honest, mildly surprising result flagged here rather than smoothed over. A plausible confound: this column's own attribution (whether `tov_pts` credits points scored off the OPPONENT's turnovers vs. points the opponent scored off THIS team's own giveaways) is not independently verified against a second source in this session, so the sign should not be over-interpreted without a coverage/definition re-check.
+- **measured LOCAL magnitude**: persistence r=0.4485, p=0.0129 (n=30 teams, misses ALPHA=0.01); margin relation r=-0.3072, p=1.0e-30 (n=1,342 team-games).
+- **artifact link**: `domains/basketball_nba/knowledge/validate_boxdetail_persistence.py::hypothesis("tov_pts")`.
+- **wiring**: none -- do not wire until the column-attribution ambiguity above is resolved; flagged as a re-check candidate, not a confirmed mechanism.
