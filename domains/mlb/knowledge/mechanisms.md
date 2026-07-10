@@ -351,3 +351,45 @@ borderline pitches disperse MORE than pure sampling noise would predict.
 - **status**: PROVISIONAL (1 of 3 seasons significant support) -- 2023: NULL_LOCAL (eff=+0.079, p=0.580, n=2,087); 2024: CONFIRMED_LOCAL (eff=+0.392, p=0.0043, n=2,160); 2025: NULL_LOCAL (eff=+0.327, p=0.023, misses alpha=0.01, n=2,078). All three seasons point the same (support) direction but only one clears significance -- not a replicated finding, do not quote as confirmed.
 - **measured LOCAL magnitude**: see above (savant_full__2023-2025, team-day pitch-count quartile split).
 - **artifact link**: `domains/mlb/knowledge/validate_staff_dayafter_chain.py::run`; `validation_ledger.jsonl` rows `staff_dayafter_fatigue_chain` (x3) + `__combined`.
+
+---
+
+## Seeded 2026-07-10 (research-wave -- literature-sourced, UNTESTED, M10 pool feedstock)
+
+Fresh mechanism hypotheses from public sabermetrics literature, checked
+against every row above and against `data/frontend/reject_ledger.jsonl`
+(535 rows, 0 keyword hits for `fielding_alignment`/`umpire`/`sequenc` on
+sport=mlb) before seeding. No validator built this lane.
+
+### 43. Umpire called-strike zone size varies by count state ("compassionate umpire")
+- **claim**: the called-strike rate on borderline (shadow-zone) pitches shrinks in pitcher's counts (e.g. 0-2) and expands in hitter's counts (e.g. 3-0) -- the umpire's effective zone size is count-conditional, not fixed.
+- **causal story**: umpires subconsciously balance outcomes -- a called third strike at 0-2 ends the PA on a borderline pitch, a called ball at 3-0 walks the batter, so the psychological cost of a "wrong" call is asymmetric by count, biasing the zone.
+- **expected signature**: lower called-strike rate on taken edge-zone pitches (same `zone in {11,12,13,14}` definition as row #10/#39) at pitcher's counts (0-2, 1-2) than at hitter's counts (3-0, 3-1), pooled across games -- distinct from #10 (pitcher TARGETING behavior) and #39/#40 (game-level dispersion, no count axis).
+- **test spec**: chi2/proportion test, called-strike rate on taken edge-zone pitches by count bucket (pitcher's-count vs hitter's-count vs neutral), one season; declared bar |eff|>=0.05 (proportion points) AND p<0.01.
+- **status**: UNTESTED
+- **measured LOCAL magnitude**: n/a (not yet run).
+- **artifact link**: `data/cache/statcast/savant_full__2025.parquet` (`zone`, `type`, `balls`, `strikes`, `description`; same taken-pitch/edge-zone convention as `validate_count_zone.py` and `validate_called_strike_dispersion.py`).
+- **source**: "The Strike Zone Expansion is Out of Control" (Hardball Times, quoting John Walsh's "Compassionate Umpire"), https://tht.fangraphs.com/the-strike-zone-expansion-is-out-of-control/ -- "the zone shrinks as the pitcher gains the edge... its size at 0-2 is only 64 percent as large as it is in a 3-0 count." Also "The Strike Zone Is Shrinking. Here's How." (FanGraphs), https://blogs.fangraphs.com/the-strike-zone-is-shrinking-heres-how/.
+
+### 44. Shaded outfield alignment suppresses extra-base-hit rate on fly balls/line drives
+- **claim**: a non-standard outfield alignment (shaded toward a batter's pull/spray tendency) lowers extra-base-hit rate on fly balls and line drives vs a standard alignment -- the outfield analog of the (post-ban-null) infield-shift test (#14), using a column the infield test did not touch.
+- **causal story**: repositioning outfielders toward a batter's known spray pattern should convert more deep fly balls/line drives into catchable outs or singles instead of doubles/triples, the same logic as infield shifts but for the outfield and unaffected by the 2023 infield-shift ban.
+- **expected signature**: lower XBH-rate on FB/LD batted balls under `of_fielding_alignment` in {Strategic, Shaded} vs {Standard}.
+- **test spec**: Welch t-test, XBH-indicator (double/triple, decided events only) by `of_fielding_alignment` bucket, restricted to `bb_type` in {fly_ball, line_drive}, one season; declared bar |eff|>=0.03 AND p<0.01 (same design/bars family as #14).
+- **status**: UNTESTED
+- **measured LOCAL magnitude**: n/a (not yet run).
+- **artifact link**: `data/cache/statcast/savant_full__2025.parquet` (`of_fielding_alignment`, `bb_type`, `events`) -- column exists and is untouched by any row above (#14 used `if_fielding_alignment` only).
+- **source**: Statcast's `of_fielding_alignment` field was introduced specifically to study outfield shifting; MLB's own Statcast glossary and multiple Statcast-era analytics writeups (e.g. FanGraphs/Baseball Savant shift-tracking coverage) treat outfield shading as the fly-ball/line-drive analog of the infield shift -- this row tests whether that analog shows up locally the way the infield version (post-ban) did not.
+
+### 45. Same-pitch-type repeat (back-to-back within a PA) suppresses whiff rate vs a type change
+- **claim**: when a pitcher throws the SAME pitch type as his immediately preceding pitch to that batter (within the same PA), the whiff rate on that pitch is lower than when he changes pitch type -- a batter pattern-recognition/anticipation effect, distinct from #32's catcher-level sequencing-STYLE persistence test (REJECTED NULL_LOCAL).
+- **causal story**: once a batter has seen a pitch type in this PA, his timing/recognition for that same shape is primed; changing shape (fastball -> breaking or vice versa) disrupts that priming and should raise whiff probability more than repeating it.
+- **expected signature**: lower whiff rate (swing description in {swinging_strike, swinging_strike_blocked}) on same-type-repeat pitches vs type-change pitches, among swings only.
+- **test spec**: Welch t-test, whiff-indicator (swings only) by same-type-vs-prior-pitch (True/False, computed via `at_bat_number`+`pitch_number` ordering within `game_pk`), one season; declared bar |eff|>=0.02 AND p<0.01.
+- **status**: UNTESTED
+- **measured LOCAL magnitude**: n/a (not yet run).
+- **artifact link**: `data/cache/statcast/savant_full__2025.parquet` (`pitch_type`, `pitch_number`, `at_bat_number`, `game_pk`, `description`) -- same-PA pitch-type-repeat flag is a plain groupby/shift derivation, no new ingredient needed.
+- **note**: distinct from #32 (catcher game-calling persistence, split-half by catcher, REJECTED NULL_LOCAL) -- that tests whether CATCHERS differ and are internally consistent; this tests a universal batter-cognition effect independent of catcher identity, at the individual-pitch level.
+- **source**: "Pitch Sequencing Analysis: A Deeper Look at Tunneling" (Magnus), https://www.seemagnus.com/blog-posts-test/pitch-sequencing-analysis-a-deeper-look-at-tunneling -- notes same-pitch-twice results are "counterintuitive" relative to naive sequencing theory, i.e. the direction is genuinely open, not assumed; flagged there as needing empirical (not folklore) testing, which is what this row proposes locally.
+
+---

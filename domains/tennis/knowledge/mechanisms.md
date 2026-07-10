@@ -429,3 +429,44 @@ p1_name/p2_name for the same event_id.
 - **status**: CONFIRMED, but read cautiously -- bp_diff's coefficient (4.01) is an order of magnitude smaller than serve_diff's (48.11) at comparable input scale, so the differential carries real but minor incremental information once overall serve dominance is known; large n (27,937) makes the p-value alone a poor discriminator here.
 - **measured LOCAL magnitude**: bp_diff coefficient=4.0083, p=2.07e-268, vs serve_diff coefficient=48.1141, n=27,937.
 - **artifact link**: `domains/tennis/knowledge/validate_bp_save_persistence.py::bp_save_differential_predicts_outcome_partial`.
+
+---
+
+## Seeded 2026-07-10 (research-wave -- literature-sourced, UNTESTED, M10 pool feedstock)
+
+Fresh mechanism hypotheses from public tennis-analytics literature, checked
+against every row above and against `data/frontend/reject_ledger.jsonl`
+(0 keyword hits for `tiebreak`/`dominance`/`games_per_set`/`matches_last_14`
+on sport=tennis) before seeding. No validator built this lane.
+
+### 32. Tiebreak-skill persistence, via a corpus that carries player identity (unblocks NOT_TESTABLE #15)
+- **claim**: a player's tiebreak win rate is a repeatable skill, not just noise -- the same claim as #15, but #15 was NOT_TESTABLE because `slam_points.parquet` has no cross-match player identity; `asof_setdetail.parquet` is a match-level ATP+WTA corpus that DOES carry `player_id` across matches.
+- **causal story**: same as #15 -- tiebreak points are high-pressure, sudden-death-adjacent; if some players have a durable tiebreak-specific edge (composure, big-point serving) beyond their overall level, it should show up as a stable, repeatable trait.
+- **expected signature**: positive split-half Pearson r of per-player realized tiebreak win rate, first half of the corpus's date range vs second.
+- **test spec**: split-half Pearson r, per-player tiebreak win rate derived from `asof_setdetail.parquet`'s `p1_tiebreak_win_pct_asof`/`p2_tiebreak_win_pct_asof` fields (or, more directly, realized tiebreak outcomes parsed from `matches.parquet`'s `score` string using the same match-winner-perspective correction already validated for row #14), players with >=5 tiebreaks/half; declared bar |r|>=0.15 AND p<0.01.
+- **status**: UNTESTED
+- **measured LOCAL magnitude**: n/a (not yet run).
+- **artifact link**: `data/domains/tennis/asof_setdetail.parquet` (30,616 rows: `p1_tiebreak_win_pct_asof`, `p2_tiebreak_win_pct_asof`, joined to `matches.parquet`/`wta_matches.parquet` player_id) -- a genuinely different corpus from #15's `slam_points.parquet` (which lacks player identity entirely), not a re-run of the closed NOT_TESTABLE verdict.
+- **source**: tiebreak-skill-as-repeatable-trait is a standard tennis-analytics question (the premise behind ATP/WTA's own published "tiebreaks won %" leaderboards); Tennis Abstract / Jeff Sackmann's public writing on point-level modeling treats this as an open empirical question rather than an assumed truth, which is what this row tests against the local corpus.
+
+### 33. Set-margin "dominance" metric predicts outcome beyond ranking gap
+- **claim**: a player's trailing average-games-per-set-won (a game-margin "dominance" proxy, distinct from the win/loss-only signal already used everywhere else in this ledger) predicts the next match's outcome beyond the ranking-gap alone.
+- **causal story**: two players can have the same rank but very different margins of victory in their recent matches (grinding out close wins vs. blowing opponents out); a game-margin trend should carry information about current form/dominance that rank (a slower-moving, longer-window statistic) does not fully capture.
+- **expected signature**: nonzero `avg_games_per_set_asof_diff` coefficient in a joint logit alongside `rank_diff`.
+- **test spec**: logit `p1_win ~ avg_games_per_set_asof_diff + rank_diff`, ATP+WTA 2015-2025, `data/domains/tennis/asof_setdetail.parquet`; declared bar |coef|/se >= 2 (p<0.05) net of rank_diff, same design family as #24 (H2H recency) and #25 (height x surface).
+- **status**: UNTESTED
+- **measured LOCAL magnitude**: n/a (not yet run).
+- **artifact link**: `data/domains/tennis/asof_setdetail.parquet` (`avg_games_per_set_asof_diff`, plus `matches.parquet` for `rank_diff`) -- an untested column pair in an already-loaded file.
+- **source**: "dominance ratio" (return-points-won-rate / opponent's-return-points-won-rate) is a well-established tennis-analytics margin metric (Carl Bialik/FiveThirtyEight tennis coverage, https://fivethirtyeight.com/features/how-were-forecasting-the-2016-u-s-open/); note FiveThirtyEight's own finding that "trying to account for margins in tennis often leads to worse predictions... most of the information is carried in who wins and loses" -- an honest prior caveat cited here precisely because it argues this row could plausibly come back NULL, not a claim being seeded as a sure thing.
+
+### 34. Extended (14-day) match load degrades serve execution, net of the already-tested retirement link
+- **claim**: a heavier trailing 14-day match load predicts worse serve execution (lower ace rate / first-serve-in%) in the next match -- a performance-degradation outcome, distinct from #13's CONFIRMED retirement-risk link (which used the 7-day window and an injury/withdrawal outcome, not an execution-quality outcome).
+- **causal story**: cumulative match load over two weeks should tax serve mechanics (leg drive, shoulder fatigue) even short of the acute exhaustion that produces a retirement -- the same fatigue-on-serve-execution logic already CONFIRMED within a single match (#7, serve-speed decay), extended across matches using a window the retirement test did not use.
+- **expected signature**: negative correlation between combined `matches_last_14d` and same-match `ace_rate`/`1st_in_pct`.
+- **test spec**: Welch t-test (or Pearson r), `p1_ace_rate`/`p1_1st_in_pct` (and p2 symmetric) vs `matches_last_14d` tercile, `data/domains/tennis/schedule_density.parquet` joined to `match_stats.parquet` by event_id+player_id, ATP+WTA 2015-2025; declared bar |eff|>=0.01 (rate points) AND p<0.01.
+- **status**: UNTESTED
+- **measured LOCAL magnitude**: n/a (not yet run).
+- **artifact link**: `data/domains/tennis/schedule_density.parquet` (`matches_last_14d`, untested column -- #13 used `matches_last_7d` only), `data/domains/tennis/match_stats.parquet` (`p1_ace_rate`, `p1_1st_in_pct`, `p2_ace_rate`, `p2_1st_in_pct`).
+- **source**: cumulative match-load-and-serve-execution fatigue is the standard sports-science framing behind ATP/WTA scheduling-workload research; this row is the direct between-match extension of the already-CONFIRMED within-match serve-speed-decay mechanism (#7) in this same ledger, using a load window (14d) distinct from the CONFIRMED retirement signal's 7d window (#13).
+
+---
