@@ -43,10 +43,16 @@ _LEADERBOARD_DIR = REPO_ROOT / "data" / "cache" / "statcast" / "leaderboards"
 _GAMELOGS = REPO_ROOT / "data" / "domains" / "mlb" / "player_gamelogs.parquet"
 _OUT_PATH = REPO_ROOT / "data" / "cache" / "profiles" / "mlb_player_profiles.parquet"
 
-SEASONS = ("2023", "2024")
-# bat-tracking didn't exist before 2024; all 3 leaderboard families are pulled
-# 2024-2026 (see scripts/platformkit/data_frontier/savant_bat_tracking.py).
+SEASONS = ("2023", "2024", "2025")  # 2025 hitcoords landed 2026-07-09, verified column superset (test_build_profiles)
+# bat-tracking didn't exist before 2024; the other 2 leaderboard families
+# (outs_above_average, catch_probability) are real distinct per-year files,
+# pulled 2024-2026 (see scripts/platformkit/data_frontier/savant_bat_tracking.py).
 LEADERBOARD_YEARS = ("2024", "2025", "2026")
+# bat_tracking's Savant endpoint IGNORES the year param (confirmed identical
+# bytes across "years" -- see savant_bat_tracking._SNAPSHOT_FAMILIES); it is
+# captured as ONE dated snapshot per as-of day, never as fake season_YYYY
+# windows (that would fabricate season granularity the source doesn't have).
+_BAT_TRACKING_ATTRS = {"swing_speed", "squared_up_rate", "blast_rate", "sword_rate"}
 
 # pitch-frame builders ONLY (Callable[[pd.DataFrame], pd.DataFrame], one shared
 # season frame per season -- see build_all's first loop). LEADERBOARD_BUILDERS
@@ -58,8 +64,18 @@ _BUILDERS: dict[str, Callable[[pd.DataFrame], pd.DataFrame]] = {
     **BATTER_ZONE_BUILDERS, **PITCHER_ZONE_BUILDERS,
 }
 _ALL_BUILDER_ATTRS = set(_BUILDERS) | set(LEADERBOARD_BUILDERS)
-assert _ALL_BUILDER_ATTRS == set(ATTRIBUTES), (
-    f"builder/registry mismatch: {set(ATTRIBUTES) ^ _ALL_BUILDER_ATTRS}")
+# a builder with no registry entry is a real bug (an orphaned attribute
+# shipping undocumented) -- hard-fail that direction. A REGISTRY entry with no
+# builder YET is normal WIP (a factory lane can register metadata before
+# wiring the builder in a follow-up commit) -- skip it honestly instead of
+# crashing the whole pipeline for every OTHER attribute; see UNBACKED_ATTRS.
+_ORPHAN_BUILDERS = _ALL_BUILDER_ATTRS - set(ATTRIBUTES)
+assert not _ORPHAN_BUILDERS, f"builder(s) with no registry entry: {sorted(_ORPHAN_BUILDERS)}"
+UNBACKED_ATTRS = set(ATTRIBUTES) - _ALL_BUILDER_ATTRS
+if UNBACKED_ATTRS:
+    import warnings
+    warnings.warn(f"{len(UNBACKED_ATTRS)} MLB attribute(s) registered with no builder, "
+                  f"skipped: {sorted(UNBACKED_ATTRS)}", stacklevel=2)
 
 
 def load_season(season: str) -> pd.DataFrame:
@@ -141,6 +157,42 @@ def build_leaderboard_attribute_window(attr: str, year: str,
     return scored[cols], coverage
 
 
+def _bat_tracking_asof_dates() -> list[str]:
+    """Every dated bat_tracking snapshot on disk (currently one: 2026-07-09).
+    See savant_bat_tracking.py's _pull_snapshot -- filename IS the watermark."""
+    return sorted(p.stem[len("bat_tracking_"):] for p in
+                  _LEADERBOARD_DIR.glob("bat_tracking_????-??-??.csv"))
+
+
+def build_bat_tracking_asof_window(attr: str, as_of: str,
+                                    name_lookup: dict[int, str]) -> tuple[pd.DataFrame, dict[str, Any]]:
+    """Same shape as build_leaderboard_attribute_window, but window=f"asof_{as_of}"
+    (never season_YYYY -- see _BAT_TRACKING_ATTRS comment above)."""
+    spec = ATTRIBUTES[attr]
+    raw = LEADERBOARD_BUILDERS[attr](as_of)  # as_of doubles as the {year} filename slot
+    n_considered = len(raw)
+    qualified = raw[raw["n"] >= spec["floor"]].copy()
+    n_excluded = n_considered - len(qualified)
+    scored = _percentile_and_rating(qualified)
+
+    scored["entity_id"] = scored["entity_id"].astype(int)
+    scored["entity_name"] = scored["entity_id"].map(lambda eid: name_lookup.get(eid, str(eid)))
+    scored["window"] = f"asof_{as_of}"
+    scored["attribute"] = attr
+    scored["ingredients"] = scored["ingredients"].map(json.dumps)
+    scored["status"] = spec["status"]
+    scored["sources"] = json.dumps([f"data/cache/statcast/leaderboards/bat_tracking_{as_of}.csv"])
+
+    coverage = {
+        "attribute": attr, "season": f"asof_{as_of}", "entity": spec["entity"],
+        "n_considered": n_considered, "n_excluded_below_floor": n_excluded,
+        "n_qualifying": len(scored), "floor": spec["floor"], "status": spec["status"],
+    }
+    cols = ["entity_id", "entity_name", "window", "attribute", "raw_value", "percentile",
+            "rating_2k", "n", "ingredients", "status", "sources"]
+    return scored[cols], coverage
+
+
 def build_all() -> tuple[pd.DataFrame, list[dict[str, Any]]]:
     name_lookup = load_name_lookup()
     frames, coverage_rows = [], []
@@ -152,7 +204,14 @@ def build_all() -> tuple[pd.DataFrame, list[dict[str, Any]]]:
             coverage_rows.append(coverage)
     for year in LEADERBOARD_YEARS:
         for attr in LEADERBOARD_BUILDERS:
+            if attr in _BAT_TRACKING_ATTRS:
+                continue  # handled once below, as-of-dated (not a real per-year source)
             scored, coverage = build_leaderboard_attribute_window(attr, year, name_lookup)
+            frames.append(scored)
+            coverage_rows.append(coverage)
+    for as_of in _bat_tracking_asof_dates():
+        for attr in _BAT_TRACKING_ATTRS:
+            scored, coverage = build_bat_tracking_asof_window(attr, as_of, name_lookup)
             frames.append(scored)
             coverage_rows.append(coverage)
     profiles = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
