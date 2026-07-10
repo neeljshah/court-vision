@@ -18,10 +18,14 @@ raise. Test: scripts/platformkit/pm_trading/test_pm_game_placer.py
 from __future__ import annotations
 
 import logging
-import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
+
+from scripts.platformkit.odds_provider.kalshi_series_spec import ticker_game_date
+from scripts.platformkit.pm_trading.pm_game_date_guard import (
+    _et_date_candidates, _match_hits, _name_matches, _norm,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -42,47 +46,12 @@ def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-def _norm(s: Any) -> str:
-    """Lowercase alphanumeric token (drops spaces/punct) for loose team matching."""
-    return re.sub(r"[^a-z0-9]", "", str(s or "").lower())
-
-
 def _f(v: Any) -> Optional[float]:
     try:
         x = float(v)
     except (TypeError, ValueError):
         return None
     return x if x == x else None
-
-
-# National-team naming differs Kalshi vs model/ESPN (e.g. "Korea Republic" vs "South Korea").
-# Each variant -> a UNIQUE code so two known countries match ONLY when the same nation (never
-# cross-match by substring, e.g. Congo vs DR Congo). Keys are _norm()'d (lower alphanumeric).
-_COUNTRY_ALIASES: Dict[str, str] = {
-    "southkorea": "kr", "korearepublic": "kr", "korea": "kr", "republicofkorea": "kr",
-    "northkorea": "kp", "koreadpr": "kp", "dprkorea": "kp", "usa": "us", "us": "us",
-    "unitedstates": "us", "unitedstatesofamerica": "us", "iran": "ir", "iriran": "ir",
-    "islamicrepublicofiran": "ir", "turkey": "tr", "turkiye": "tr", "czechia": "cz",
-    "czechrepublic": "cz", "bosnia": "ba", "bosniaherzegovina": "ba", "china": "cn",
-    "bosniaandherzegovina": "ba", "congodr": "cd", "drcongo": "cd", "drcgo": "cd",
-    "democraticrepublicofcongo": "cd", "congo": "cg", "congorepublic": "cg", "chinapr": "cn",
-    "republicofthecongo": "cg", "ivorycoast": "ci", "cotedivoire": "ci",
-    "capeverde": "cv", "caboverde": "cv",
-}
-
-
-def _name_matches(a: str, b: str) -> bool:
-    """Loose team match. When BOTH names are known national teams, require the SAME nation
-    (exact canonical code) so 'South Korea' == 'Korea Republic' but Congo != DR Congo.
-    Otherwise fall back to substring so Kalshi city sides ('Toronto') still bridge to model
-    full names ('Toronto Blue Jays')."""
-    na, nb = _norm(a), _norm(b)
-    ca, cb = _COUNTRY_ALIASES.get(na), _COUNTRY_ALIASES.get(nb)
-    if ca is not None and cb is not None:
-        return ca == cb
-    if len(na) < 3 or len(nb) < 3:
-        return na == nb and bool(na)
-    return na in nb or nb in na
 
 
 def group_by_game(rows: Sequence[Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
@@ -109,7 +78,12 @@ def group_by_game(rows: Sequence[Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
         prob = _f(r.get("prob"))
         if not gid or not side or prob is None or not (0.0 < prob < 1.0):
             continue
-        g = out.setdefault(gid, {"sides": {}, "venue": str(r.get("venue") or "kalshi")})
+        g = out.setdefault(gid, {"sides": {}, "venue": str(r.get("venue") or "kalshi"),
+                                  # PHANTOM-MATCHUP FIX: the scheduled date embedded in the
+                                  # Kalshi event ticker itself (gid IS the event_ticker) --
+                                  # None when unparseable (degrades to no date filtering,
+                                  # never a false-positive reject; see match_model_game).
+                                  "date": ticker_game_date(gid)})
         g["sides"][side] = (prob, str(r.get("ticker") or ""))
     return out
 
@@ -126,25 +100,14 @@ def _split_sides(sides: Dict[str, Any]) -> Tuple[List[str], Optional[float]]:
     return teams, tie_prob
 
 
-def match_model_game(team_sides: Sequence[str],
-                     model_games: Sequence[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+def match_model_game(team_sides: Sequence[str], model_games: Sequence[Dict[str, Any]],
+                     *, kalshi_date: Optional[Any] = None) -> Optional[Dict[str, Any]]:
     """Find the model game whose {home,away} uniquely map to the two Kalshi team sides.
-    Returns the model rec with an added side->role map, or None (no/ambiguous match)."""
-    if len(team_sides) != 2:
-        return None
-    for g in model_games:
-        home, away = str(g.get("home") or ""), str(g.get("away") or "")
-        roles: Dict[str, str] = {}
-        for side in team_sides:
-            if _name_matches(side, home) and not _name_matches(side, away):
-                roles[side] = "home"
-            elif _name_matches(side, away) and not _name_matches(side, home):
-                roles[side] = "away"
-        if set(roles.values()) == {"home", "away"}:
-            out = dict(g)
-            out["_roles"] = roles
-            return out
-    return None
+    Returns the model rec with an added side->role map, or None on 0 or 2+ candidates
+    (unique-hit-only; ambiguity is an honest skip, never a guessed pairing). Date guard +
+    team matching live in pm_game_date_guard (LOC-rail split)."""
+    hits = _match_hits(team_sides, model_games, kalshi_date=kalshi_date)
+    return hits[0] if len(hits) == 1 else None
 
 
 def _devig(side_prob: float, other_prob: float,
@@ -247,7 +210,8 @@ def _model_games(sport: str) -> List[Dict[str, Any]]:
         for p in env.predictions or []:
             out.append({"sport": sport, "game_id": str(getattr(p, "game_id", "")),
                         "home": getattr(p, "home", ""), "away": getattr(p, "away", ""),
-                        "pregame_probs": dict(getattr(p, "pregame_probs", {}) or {})})
+                        "pregame_probs": dict(getattr(p, "pregame_probs", {}) or {}),
+                        "date_candidates": _et_date_candidates(getattr(p, "tipoff", None))})
         return out
     except Exception as exc:  # noqa: BLE001
         logger.debug("pm_game_placer: model store(%s) failed: %s", sport, exc)
@@ -302,20 +266,23 @@ def run(sports: Sequence[str] = DEFAULT_PM_GAME_SPORTS, *,
     seen = _existing_bet_ids(_ledger) if place else set()
     by_sport: Dict[str, Dict[str, int]] = {}
     placed: List[str] = []
-    n_games = n_matched = n_placed = n_dup = n_capped = 0
+    n_games = n_matched = n_placed = n_dup = n_capped = n_ambiguous = 0
     for sport in sports:
         games = group_by_game(_feed(sport))
         model_games = _model(sport)
         n_games += len(games)
         cands: List[Dict[str, Any]] = []
-        s_matched = 0
+        s_matched = s_ambiguous = 0
         for g in games.values():
             teams, _tie = _split_sides(g.get("sides") or {})
-            model = match_model_game(teams, model_games)
-            if model is None:
+            hits = _match_hits(teams, model_games, kalshi_date=g.get("date"))
+            if len(hits) != 1:
+                if len(hits) > 1:  # phantom-matchup guard: counted skip, never a guess
+                    s_ambiguous += 1
+                    n_ambiguous += 1
                 continue
             s_matched += 1
-            cands.extend(placements_from_game(g, model, min_tier=min_tier))
+            cands.extend(placements_from_game(g, hits[0], min_tier=min_tier))
         cands.sort(key=lambda c: float(c.get("ev", 0.0)), reverse=True)
         n_matched += s_matched
         s_placed = s_dup = s_capped = 0
@@ -335,9 +302,11 @@ def run(sports: Sequence[str] = DEFAULT_PM_GAME_SPORTS, *,
                 s_placed += 1
                 n_placed += 1
         by_sport[sport] = {"games": len(games), "matched": s_matched,
-                           "placed": s_placed, "dup_skipped": s_dup, "capped": s_capped}
+                           "placed": s_placed, "dup_skipped": s_dup, "capped": s_capped,
+                           "ambiguous_skipped": s_ambiguous}
     return {"ts": _now_iso(), "n_games": n_games, "n_matched": n_matched,
             "n_placed": n_placed, "n_dup_skipped": n_dup, "n_capped": n_capped,
+            "n_ambiguous_skipped": n_ambiguous,
             "by_sport": by_sport, "placed_bet_ids": placed, "place": bool(place),
             "executed": False, "edge_claimed": False, "honest_note": _HONEST_NOTE}
 
