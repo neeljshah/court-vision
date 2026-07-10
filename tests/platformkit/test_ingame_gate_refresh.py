@@ -316,5 +316,50 @@ def test_serve_ingame_proven_passes_for_sufficient_games(tmp_path):
         serve._MODEL_DIR = orig_dir
 
 
+# ---------------------------------------------------------------------------
+# gap_ledger_ultra16.md row 1: _write must be crash-safe (tmp+os.replace via
+# io_atomic.write_json_atomic), not a bare open()+json.dump.
+# ---------------------------------------------------------------------------
+
+def test_write_routes_through_atomic_helper(tmp_path, monkeypatch):
+    """_write must call io_atomic.write_json_atomic, not open()+json.dump directly."""
+    calls = []
+    real = GR.write_json_atomic
+
+    def _spy(path, obj, **kw):
+        calls.append((path, obj))
+        return real(path, obj, **kw)
+
+    monkeypatch.setattr(GR, "write_json_atomic", _spy)
+    from scripts.platformkit.ingame.ingame_gate_generic import GenericVerdict
+    v = GenericVerdict("INSUFFICIENT_DATA", "mlb", {}, {}, {"a_games": 0, "b_games": 0}, [])
+    out_dir = tmp_path / "out"
+    out = GR._write(v, "gate_mlb.json", out_dir=str(out_dir))
+    assert len(calls) == 1, "_write did not call the shared atomic helper"
+    assert calls[0][0] == out
+    assert json.loads(pathlib.Path(out).read_text())["verdict"] == "INSUFFICIENT_DATA"
+
+
+def test_write_never_leaves_a_torn_file_on_crash(tmp_path, monkeypatch):
+    """Simulate a kill mid-write: the target is either the OLD complete file or the NEW
+    complete file, never a partial one (the crash-safety this fix exists for)."""
+    from scripts.platformkit.ingame.ingame_gate_generic import GenericVerdict
+    out_dir = tmp_path / "out"
+    out_dir.mkdir()
+    target = out_dir / "gate_mlb.json"
+    target.write_text('{"verdict": "OLD"}', encoding="ascii")
+
+    def _boom(*a, **kw):
+        raise OSError("simulated kill mid-write")
+
+    monkeypatch.setattr(GR, "write_json_atomic", _boom)
+    v = GenericVerdict("REPLICATED", "mlb", {}, {}, {"a_games": 999, "b_games": 999}, [])
+    with pytest.raises(OSError):
+        GR._write(v, "gate_mlb.json", out_dir=str(out_dir))
+    # target must be untouched -- old complete content, never partial/empty
+    on_disk = json.loads(target.read_text())
+    assert on_disk == {"verdict": "OLD"}
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__, "-q"]))

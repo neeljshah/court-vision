@@ -27,7 +27,6 @@ verdict is CALIBRATION (held-out Brier), never a market edge.
 """
 from __future__ import annotations
 
-import json
 import os
 import pathlib
 from typing import List, Optional
@@ -37,6 +36,7 @@ from scripts.platformkit.ingame.ingame_gate_generic import (
     _existing_verdict_games, gate_cross,
 )
 from scripts.platformkit.ingame.ingame_gate_generic_models import load_states
+from scripts.platformkit.io_atomic import write_json_atomic
 
 
 def gate_on_paths(sport: str, paths: List[str], *,
@@ -117,8 +117,10 @@ def _write(verdict: GenericVerdict, fname: str, out_dir: Optional[str] = None) -
         thin = verdict.verdict == "INSUFFICIENT_DATA" or new_games < _MIN_GAMES_TO_OVERWRITE
         if thin and os.path.exists(out) and _existing_verdict_games(out) > new_games:
             return out  # silently skip; production file is richer
-    with open(out, "w", encoding="ascii") as f:
-        json.dump(verdict.to_dict(), f, indent=2, sort_keys=True)
+    # Crash-safe: tmp+os.replace via the shared helper, not a bare open()+json.dump
+    # (a kill mid-write on the always-on refresh loop used to leave torn JSON --
+    # gap_ledger_ultra16.md row 1).
+    write_json_atomic(out, verdict.to_dict(), encoding="ascii", indent=2)
     return out
 
 
