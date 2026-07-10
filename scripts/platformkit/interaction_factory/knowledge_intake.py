@@ -73,6 +73,32 @@ LEDGERS: Dict[str, Path] = {
 # surface, within-match serve decay, set number, retirement/fatigue) that
 # needs a different atomic_unit/outcome the current grammar has no template
 # for. See docs/research/factory_pipe_2026-07-11.md for the per-row detail.
+#
+# IN-MATCH atomic_unit (M10 pool-unlock lane, 2026-07): `nba_ingame_state_
+# self_cross` (generator.py TEMPLATES, added this session, atomic_unit=
+# "team_game_ingame_state") is the new template this gap calls for. Fresh
+# premise check on the 3 rows this session named as "in-match" exemplars:
+#   - q1_slow_start_persists_split_half / transition_rate_split_half_
+#     persistence+transition_rate_margin_relation (NBA, mechanisms.md #34/
+#     #28): neither actually needed a NEW atomic_unit -- both are PREGAME
+#     trailing traits (asof_quarter_shape.parquet / team_system_pbp, both
+#     already built leak-free), same shape as box_detail_asof. The new
+#     template above pre-emptively closes the grammar side for the true
+#     in-game-state class anyway; it stays at 0 KNOWN_MAPPINGS entries until
+#     a real attr carries family="ingame_state_asof" (registry attr +
+#     runner builder, both outside this module's scope -- see generator.py's
+#     comment on the template).
+#   - called_strike_dispersion_exceeds_binomial_noise (MLB, mechanisms.md
+#     #39): stays genuinely UNMAPPABLE regardless of atomic_unit -- it is a
+#     per-game dispersion coefficient (phi from a chi2 test across games),
+#     not a batter/pitcher/team ATTRIBUTE. Same category as gb_double_play_
+#     suppression above; no pool shape fits a coefficient-over-games stat.
+# soccer/tennis rows themselves (score_state x shot_rate etc) still need
+# their OWN leak-free trailing-tendency-by-state as-of file before they can
+# enter EITHER the existing match template or a new in-match one -- no such
+# file exists on disk for either sport today (checked this session); that
+# is a per-sport data-build task, not a grammar gap, and out of this
+# module's scope.
 KNOWN_MAPPINGS: Dict[str, List[Dict[str, str]]] = {
     "contact_quality_persists_split_half": [
         {"template_id": "mlb_pa_batter_x_pitcher", "attr_a": "contact_quality", "attr_b": "whiff_rate"},
