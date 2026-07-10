@@ -78,16 +78,38 @@ def test_build_tennis_match_frame_merges_return_and_features():
     matches = pd.DataFrame({"event_id": [1, 2], "tourney_id": ["t1", "t1"], "winner": [1, 2]})
     ret = pd.DataFrame({"event_id": [1, 2], "diff_return_asof": [0.1, -0.2]})
     feats = pd.DataFrame({"event_id": [1, 2], "diff_return_asof": [9.9, 9.9], "diff_serve_asof": [0.3, 0.4]})
-    out = b.build_tennis_match_frame(matches, ret, feats, ["diff_return_asof", "diff_serve_asof"])
+    setdetail = pd.DataFrame({"event_id": [1, 2], "avg_games_per_set_asof_diff": [1.5, -1.5]})
+    out = b.build_tennis_match_frame(matches, ret, feats,
+                                      ["diff_return_asof", "diff_serve_asof", "avg_games_per_set_asof_diff"],
+                                      setdetail=setdetail)
     assert list(out["y"]) == [1.0, 0.0]
     assert "asof__diff_return_asof" in out.columns and "asof__diff_serve_asof" in out.columns
     # a column present in BOTH ret and feats must come from ret (feats' duplicate ignored)
     assert out.loc[out["event_id"] == 1, "asof__diff_return_asof"].iloc[0] == 0.1
+    # the 3rd source (asof_setdetail.parquet) merges in too, non-null.
+    assert "asof__avg_games_per_set_asof_diff" in out.columns
+    assert out["asof__avg_games_per_set_asof_diff"].notna().all()
+
+
+def test_build_tennis_match_frame_setdetail_col_not_shadowed_by_ret_or_feats():
+    # a name present in setdetail AND (ret or feats) must come from the
+    # earlier source -- same precedence rule task-1's ret-over-feats already
+    # locks in, extended to the 3rd source.
+    matches = pd.DataFrame({"event_id": [1], "tourney_id": ["t1"], "winner": [1]})
+    ret = pd.DataFrame({"event_id": [1], "dup_col": [0.1]})
+    feats = pd.DataFrame({"event_id": [1]})
+    setdetail = pd.DataFrame({"event_id": [1], "dup_col": [9.9]})
+    out = b.build_tennis_match_frame(matches, ret, feats, ["dup_col"], setdetail=setdetail)
+    assert out.loc[0, "asof__dup_col"] == 0.1
 
 
 def test_build_soccer_match_frame_derives_home_win_from_goals():
     matches = pd.DataFrame({"event_id": [1, 2], "div": ["E0", "E0"], "fthg": [2, 0], "ftag": [1, 3]})
     feats = pd.DataFrame({"event_id": [1, 2], "diff_xg_asof": [0.4, -0.1]})
-    out = b.build_soccer_match_frame(matches, feats, ["diff_xg_asof"])
+    xg = pd.DataFrame({"event_id": [1, 2], "diff_xg_supremacy_asof": [0.2, -0.3]})
+    out = b.build_soccer_match_frame(matches, feats, ["diff_xg_asof", "diff_xg_supremacy_asof"], xg=xg)
     assert list(out["y"]) == [1.0, 0.0]
     assert "asof__diff_xg_asof" in out.columns
+    # the 3rd source (asof_xg_proxy.parquet) merges in too, non-null.
+    assert "asof__diff_xg_supremacy_asof" in out.columns
+    assert out["asof__diff_xg_supremacy_asof"].notna().all()
