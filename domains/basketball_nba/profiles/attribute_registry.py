@@ -776,4 +776,39 @@ for _attr, _desc in _CARRYOVER_SPECS:
         "verifiable_by_design": True,
     }
 
+# ---------------------------------------------------------------------------
+# IN-GAME-STATE as-of family (M10 pool-unlock lane, 2026-07): scripts/
+# platformkit/interaction_factory/generator.py's nba_ingame_state_self_cross
+# template enumerated EMPTY until a real attr carried family=
+# "ingame_state_asof" -- these 5 entries are that wiring. All are domains/
+# basketball_nba/asof_quarter_shape.py's own leak-free strictly-prior
+# season-to-date trailing means (data/domains/basketball_nba/
+# asof_quarter_shape.parquet, already built + on disk), tagged `family` so
+# they AUTO-ENTER the interaction factory's candidate space, same seam as
+# box_detail_asof/carryover_asof above. NOTE: these remain PREGAME trailing
+# priors (a team's habitual Q1/close-strength tendency BEFORE this game) --
+# the runner builder (interaction_factory/builders_ingame_state.py) uses them
+# to condition the CURRENT game's realized rest-of-game margin; see that
+# module's docstring for the exact feature/outcome shapes and honesty caveats.
+_INGAME_STATE_SPECS = [
+    ("q1_margin_asof", "Season-to-date trailing mean of this team's own Q1 scoring margin (how it starts games)."),
+    ("first_half_margin_asof", "Season-to-date trailing mean of this team's own first-half scoring margin."),
+    ("second_half_margin_asof", "Season-to-date trailing mean of this team's own second-half scoring margin."),
+    ("q4_margin_asof", "Season-to-date trailing mean of this team's own Q4 scoring margin (how it closes games)."),
+    ("quarter_volatility_asof", "Season-to-date trailing mean of this team's own per-quarter scoring volatility (stdev of own points)."),
+]
+for _attr, _desc in _INGAME_STATE_SPECS:
+    TEAM_ATTRIBUTES[_attr] = {
+        "description": _desc,
+        "entity": "team",
+        "family": "ingame_state_asof",
+        "ingredients": [{"name": _attr.replace("_asof", ""), "source": "data/domains/basketball_nba/asof_quarter_shape.parquet (via asof_quarter_shape.py, prior-only walk-forward)"}],
+        "formula": f"expanding mean of {_attr.replace('_asof', '')}, strictly prior games, snapshot-before-update",
+        "status": "DESCRIPTIVE",
+        "floor": {"n_prior": 1.0},
+        "weight_ledger_family": None,
+        "seasons": ["2025_26"],  # linescores.parquet on this corpus is 2025-10-21..2026-05-24 only
+        "verifiable_by_design": True,
+    }
+
 ATTRIBUTES: dict[str, dict] = {**PLAYER_ATTRIBUTES, **TEAM_ATTRIBUTES, **LINEUP_ATTRIBUTES}
