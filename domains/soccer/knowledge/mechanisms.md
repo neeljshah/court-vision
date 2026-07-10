@@ -251,3 +251,35 @@ calibration/mechanism receipt, not ROI.
 - **status**: REJECTED (NULL_LOCAL) -- 0/3 minute snapshots ship in both corpora; the goal-diff base already dominates and xg_diff_asof does not clear DM significance at any of the 3 checkpoints in either corpus.
 - **measured LOCAL magnitude**: min30 A n=200 Brier 0.197271->0.195606 p=0.420 | B n=200 0.170695->0.159971 p=0.578. min60 A n=200 0.127919->0.129006 p=0.678 | B n=200 0.112323->0.125312 p=0.351. min75 A n=200 0.086762->0.092818 p=0.122 | B n=200 0.093832->0.105763 p=0.270. Combined n=1200.
 - **artifact link**: `domains/soccer/validate_xg_diff_ingame.py`.
+
+---
+
+## Validated 2026-07-10 (4 -- fresh leak-free local tests, receipts in `validation_ledger.jsonl`)
+
+### 30. Home-advantage magnitude collapses at neutral venues
+- **claim**: the "home" team's goal-diff and win-rate edge is largely a true-venue effect (crowd/travel/pitch familiarity) -- it should shrink sharply when the match is played at a neutral site, even though a "home team" label is still assigned by convention.
+- **causal story**: crowd support, no travel, and pitch/weather familiarity are the standard home-advantage ingredients; none of them exist at a neutral site, so only whatever residual (seeding/fixture-quality) survives should remain.
+- **expected signature**: lower goal-diff and lower win-rate for the nominal home team at neutral venues than at true-home venues.
+- **test spec**: `domains.soccer.knowledge.validate_tournament_context.home_advantage_neutral_vs_true` -- Welch t-test (goal-diff) + chi2 (win-rate), soccer-intl full-history corpus (`data/domains/soccer_intl/results.parquet`, 49,477 rows 1872-2026, 52 unplayed WC-2026 fixtures dropped -> 49,425 played matches).
+- **status**: CONFIRMED
+- **measured LOCAL magnitude**: goal-diff true-home 0.6744 (n=36,350) vs neutral 0.3007 (n=13,075), effect +0.3738, p=2.98e-45. Win-rate true-home 0.5074 vs neutral 0.4418, effect +0.0656, p=7.91e-38. Both readings confirm: roughly half the raw goal-diff edge and about two-thirds of the win-rate edge survive at a neutral site -- a real residual (seeding/fixture strength) remains, but the bulk of home advantage is venue-tied.
+- **artifact link**: `domains/soccer/knowledge/validate_tournament_context.py::home_advantage_neutral_vs_true`; `validation_ledger.jsonl` rows `home_advantage_neutral_vs_true_goal_diff` / `home_advantage_neutral_vs_true_win_rate`.
+- **wiring**: pregame-model implication (not yet gated) -- a `neutral_venue` flag should down-weight the home-advantage term in any pregame team-strength prior; this magnitude (roughly half the goal-diff edge) is large enough to be worth a follow-up gated pregame-Brier test, not just a descriptive note.
+
+### 31. Neutral-venue split replicates across era (split-half stability)
+- **claim**: the home-advantage-collapses-at-neutral effect (#30) is not an artifact of one era of the corpus -- it should replicate independently pre- and post-2000.
+- **causal story**: if #30 were driven by a handful of early-corpus (pre-professionalization, sparser fixture) matches, splitting the 154-year corpus by era should make the effect vanish or flip in one half.
+- **expected signature**: same-sign, independently-significant goal-diff effect in both the pre-2000 and post-2000 halves.
+- **test spec**: `domains.soccer.knowledge.validate_tournament_context.home_advantage_neutral_split_half_by_era` -- same true-home-vs-neutral goal-diff comparison, re-run separately on match-year<2000 and >=2000 slices.
+- **status**: CONFIRMED
+- **measured LOCAL magnitude**: pre-2000 effect +0.2187 (n=24,062, p=7.50e-08); post-2000 effect +0.4985 (n=25,363, p=1.50e-46). Both halves independently clear the bar with the same sign -- the effect replicates, though it is more than 2x stronger post-2000 (more neutral-venue major tournaments, likely mix-shift toward higher-stakes neutral fixtures in the modern era) -- a magnitude-drift caveat, not a directional one.
+- **artifact link**: `domains/soccer/knowledge/validate_tournament_context.py::home_advantage_neutral_split_half_by_era`; `validation_ledger.jsonl` row `home_advantage_neutral_split_half_by_era`.
+
+### 32. Tournament (competitive) context lifts the scoring environment vs friendlies
+- **claim**: matches in a named competitive tournament (anything not labelled "Friendly") produce more total goals per match than friendlies.
+- **causal story**: ambiguous a priori -- tournament stakes could tighten play (more caution, fewer goals) or the opposite (stronger/more-motivated squads, knockout urgency, weaker friendly-fixture effort/rotation) could raise output. Treated as an exploratory two-sided test.
+- **expected signature**: a total-goals-per-match gap between competitive and friendly matches.
+- **test spec**: `domains.soccer.knowledge.validate_tournament_context.tournament_vs_friendly_scoring_environment` -- Welch t-test on total goals, same 49,425-match corpus.
+- **status**: CONFIRMED
+- **measured LOCAL magnitude**: total-goals/match competitive 2.9774 (n=31,037) vs friendly 2.8748 (n=18,388); effect +0.1027, p=8.52e-08. Direction is competitive-scores-more, small in absolute size (~0.1 goals/match) but well above both the significance and the declared 0.05 min-effect floor.
+- **artifact link**: `domains/soccer/knowledge/validate_tournament_context.py::tournament_vs_friendly_scoring_environment`; `validation_ledger.jsonl` row `tournament_vs_friendly_scoring_environment`.
