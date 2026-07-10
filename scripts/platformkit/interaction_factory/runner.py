@@ -211,12 +211,13 @@ def build_mlb_pa_frame(pitch_df: pd.DataFrame, attrs: List[str], *,
     present in this parquet slice) -- this is the exact quantity the
     contact_quality_persists_split_half knowledge-ledger receipt measured, so
     it is a faithful (if not byte-identical) stand-in.
-    'chase_rate' / 'edge_zone_rate' / 'first_pitch_strike_rate' back the
-    two_strike_chase_rate_rises / edge_zone_widens_with_two_strikes /
-    first_pitch_strike_suppresses_bb knowledge-ledger mechanisms (see
-    knowledge_intake.KNOWN_MAPPINGS) -- chase_rate and edge_zone_rate are
-    pitch-level rates (denominated in prior PITCHES, min_prior_pitches),
-    first_pitch_strike_rate is PA-level (one first pitch per PA, min_prior_pa).
+    'chase_rate' / 'edge_zone_rate' / 'first_pitch_strike_rate' / 'release_
+    spin_rate' back the two_strike_chase_rate_rises / edge_zone_widens_with_
+    two_strikes / first_pitch_strike_suppresses_bb / spin_rate_deception
+    knowledge-ledger mechanisms (see knowledge_intake.KNOWN_MAPPINGS) --
+    chase_rate/edge_zone_rate/release_spin_rate are pitch-level rates
+    (denominated in prior PITCHES, min_prior_pitches), first_pitch_strike_rate
+    is PA-level (one first pitch per PA, min_prior_pa).
     ponytail: 'platoon_split' (pitcher) needs a per-batter-stand as-of split
     merge -- deferred; a candidate naming it simply falls out NOT_TESTABLE
     (column absent), never invented.
@@ -228,6 +229,10 @@ def build_mlb_pa_frame(pitch_df: pd.DataFrame, attrs: List[str], *,
     # (empty asof column) rather than a KeyError.
     zone_col = d["zone"] if "zone" in d.columns else pd.Series(float("nan"), index=d.index)
     type_col = d["type"] if "type" in d.columns else pd.Series("", index=d.index)
+    # release_spin_rate is likewise OPTIONAL (spin_rate_deception mapping) --
+    # absent -> all-NaN, so asof__release_spin_rate honestly falls out
+    # NOT_TESTABLE downstream rather than a KeyError.
+    d["_spin"] = d["release_spin_rate"] if "release_spin_rate" in d.columns else float("nan")
     d = d.assign(
         is_swing=d["description"].isin(_SWING_DESCRIPTIONS),
         is_miss=d["description"].isin(_MISS_DESCRIPTIONS),
@@ -243,6 +248,7 @@ def build_mlb_pa_frame(pitch_df: pd.DataFrame, attrs: List[str], *,
         n_pitches=("is_swing", "size"), n_edge_zone=("is_edge_zone", "sum"),
         n_out_of_zone=("is_out_of_zone", "sum"), n_chase_swing=("is_chase_swing", "sum"),
         first_pitch_strike=("is_strike_pitch", "first"),
+        spin_sum=("_spin", lambda s: s.fillna(0.0).sum()), n_spin=("_spin", "count"),
     ).reset_index()
     pa = pa.sort_values(["game_date", "game_pk", "at_bat_number"]).reset_index(drop=True)
     pa["y"] = pa["events"].isin(_K_EVENTS).astype(float)
@@ -282,6 +288,10 @@ def build_mlb_pa_frame(pitch_df: pd.DataFrame, attrs: List[str], *,
         n_prior_pa_p = pgrp.cumcount()
         pa["asof__first_pitch_strike_rate"] = (
             cum_fps / n_prior_pa_p.where(n_prior_pa_p >= min_prior_pa)).where(n_prior_pa_p >= min_prior_pa)
+    if "release_spin_rate" in attrs:
+        cum_spin = pgrp["spin_sum"].transform(lambda s: s.cumsum().shift(1))
+        cum_nspin = pgrp["n_spin"].transform(lambda s: s.cumsum().shift(1))
+        pa["asof__release_spin_rate"] = cum_spin / cum_nspin.where(cum_nspin >= min_prior_pitches)
 
     keep = ["batter", "pitcher", "game_pk", "at_bat_number", "y"] + [
         "asof__" + a for a in attrs if ("asof__" + a) in pa.columns]
@@ -292,7 +302,7 @@ def _mlb_pa_builder(attrs: List[str], tpl: Dict[str, Any]) -> Optional[Dict[str,
     if not _MLB_PA_SOURCE.exists():
         return None
     cols = ["game_pk", "game_date", "at_bat_number", "pitch_number", "pitcher", "batter",
-            "events", "description", "launch_speed", "zone", "type"]
+            "events", "description", "launch_speed", "zone", "type", "release_spin_rate"]
     frame = build_mlb_pa_frame(pd.read_parquet(_MLB_PA_SOURCE, columns=cols), attrs)
     return {"frame": frame, "cluster": "pitcher", "corpus": _MLB_PA_CORPUS, "kind": "logit"}
 

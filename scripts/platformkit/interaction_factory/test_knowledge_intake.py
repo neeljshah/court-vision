@@ -86,7 +86,52 @@ def test_fixwave_alpha_mlb_mappings_use_a_registered_builder(tmp_path):
     ])
     _write_ledger(nba, [])
     cands = KI.knowledge_candidates({"mlb": mlb, "basketball_nba": nba})
-    assert len(cands) == 6  # 2 mapping rows x 3 hypotheses
+    # 2 mapping rows x 3 hypotheses, PLUS composed_candidates' chase_rate (batter)
+    # x {edge_zone_rate, first_pitch_strike_rate} (pitcher) = 6 + 2 = 8.
+    assert len(cands) == 8
     assert all(c.hypothesis_source == "knowledge" for c in cands)
     assert {"edge_zone_rate", "chase_rate", "first_pitch_strike_rate"} <= (
         {c.attr_a for c in cands} | {c.attr_b for c in cands})
+
+
+def test_composed_candidates_cross_confirmed_batter_x_confirmed_pitcher_attrs(tmp_path):
+    mlb = tmp_path / "mlb_ledger.jsonl"
+    nba = tmp_path / "nba_ledger.jsonl"
+    _write_ledger(mlb, [
+        {"hypothesis": "contact_quality_persists_split_half", "verdict": "CONFIRMED_LOCAL"},
+        {"hypothesis": "two_strike_chase_rate_rises", "verdict": "CONFIRMED_LOCAL"},
+        {"hypothesis": "edge_zone_widens_with_two_strikes", "verdict": "CONFIRMED_LOCAL"},
+        {"hypothesis": "spin_rate_deception", "verdict": "CONFIRMED_LOCAL"},
+    ])
+    _write_ledger(nba, [])
+    cands = KI.composed_candidates({"mlb": mlb, "basketball_nba": nba})
+    # 2 batter mechanism attrs (contact_quality, chase_rate) x 2 pitcher
+    # mechanism attrs (edge_zone_rate, release_spin_rate) = 4 pairs.
+    assert len(cands) == 4
+    got = {(c.attr_a, c.attr_b) for c in cands}
+    assert got == {
+        ("contact_quality", "edge_zone_rate"), ("contact_quality", "release_spin_rate"),
+        ("chase_rate", "edge_zone_rate"), ("chase_rate", "release_spin_rate"),
+    }
+    assert all(c.hypothesis_source == "knowledge" for c in cands)
+    assert all(c.template_id == "mlb_pa_batter_x_pitcher" for c in cands)
+    # never composes an attr with itself/its own entity side (no batter x batter).
+    assert all(a != b for a, b in got)
+
+
+def test_composed_candidates_needs_both_sides_confirmed(tmp_path):
+    mlb = tmp_path / "mlb_ledger.jsonl"
+    nba = tmp_path / "nba_ledger.jsonl"
+    # only a batter-side mechanism confirmed -- no pitcher-side partner -> nothing to compose.
+    _write_ledger(mlb, [{"hypothesis": "contact_quality_persists_split_half", "verdict": "CONFIRMED_LOCAL"}])
+    _write_ledger(nba, [])
+    assert KI.composed_candidates({"mlb": mlb, "basketball_nba": nba}) == []
+
+
+def test_mechanism_attr_names_are_real_registry_members():
+    # MECHANISM_ATTR must only ever name attrs that resolve in the MLB registry
+    # -- never invent one (same discipline as KNOWN_MAPPINGS).
+    reg = GEN._registry("mlb")  # noqa: SLF001 -- registry integrity check
+    for hyp, m in KI.MECHANISM_ATTR.items():
+        assert m["attr"] in reg, hyp
+        assert reg[m["attr"]]["entity"] == m["entity"], hyp

@@ -209,6 +209,18 @@ ATTRIBUTES: dict[str, dict[str, Any]] = {
         "floor": 100,
         "weight_ledger_family": "descriptive",
     },
+    "release_spin_rate": {
+        "description": "Mean release spin rate (rpm) across all pitches thrown -- added for the "
+                        "spin_rate_deception knowledge-ledger mechanism's factory mapping "
+                        "(domains/mlb/knowledge/validation_ledger.jsonl); a flat aggregate, not "
+                        "restricted to breaking pitches like the ledger's own OLS receipt.",
+        "entity": "pitcher",
+        "ingredients": ["release_spin_rate", "n_pitches"],
+        "formula": "mean(release_spin_rate)",
+        "status": "DESCRIPTIVE",
+        "floor": 100,
+        "weight_ledger_family": "descriptive",
+    },
     # --------------------------------------------------------------- catcher
     "framing": {
         "description": "Borderline called-strike rate (edge-shell takes), reused from "
