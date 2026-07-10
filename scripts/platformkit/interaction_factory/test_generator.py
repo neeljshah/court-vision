@@ -60,6 +60,32 @@ def test_next_batch_dedupes_vs_ledger_and_caps_k():
     assert first_id not in {c.candidate_id for c in batch}  # tested -> skipped
 
 
+def test_not_testable_reenumerates_once_builder_lands():
+    # A candidate graded NOT_TESTABLE (builder didn't exist yet / data was
+    # unavailable) is NOT a terminal verdict -- it must re-offer once its
+    # builder is registered, or it is skipped forever (the bug this guards).
+    full = GEN.enumerate_candidates(_NBA)
+    first_id = full[0].candidate_id
+    ledger = [{"template_id": _NBA, "candidate_id": first_id, "verdict": "NOT_TESTABLE"}]
+    assert first_id not in GEN.tested_ids(ledger, _NBA)
+    batch = GEN.next_batch(_NBA, 5, ledger)
+    assert first_id in {c.candidate_id for c in batch}
+
+
+def test_terminal_verdicts_stay_deduped_forever():
+    # Closed-class discipline: every non-NOT_TESTABLE verdict this ledger
+    # actually writes (runner.py + replicate_*.py) must remain terminal.
+    full = GEN.enumerate_candidates(_NBA)
+    first_id = full[0].candidate_id
+    terminal = [
+        "NULL", "REJECT", "KILLED", "SHIP", "SURVIVES_PREREG_PROVISIONAL",
+        "REPLICATED", "FAILED_REPLICATION_POWER_ANNOTATED", "REPLICATION_BLOCKED",
+    ]
+    for verdict in terminal:
+        ledger = [{"template_id": _NBA, "candidate_id": first_id, "verdict": verdict}]
+        assert first_id in GEN.tested_ids(ledger, _NBA), verdict
+
+
 def test_cross_pairing_mlb_is_ordered_product():
     cands = GEN.enumerate_candidates("mlb_pa_batter_x_pitcher")
     # left {K_avoidance,BB_rate} x right {platoon_split,whiff_rate} = 4 ordered pairs.
