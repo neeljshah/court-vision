@@ -21,6 +21,7 @@ from domains.mlb.game_pk_bridge import (
     build_game_pk_bridge,
     resolve_event_id,
 )
+from scripts.platformkit.join_rate_floor import assert_join_rate_floor
 
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 _PLAYER_GAMELOGS = _REPO_ROOT / "data" / "domains" / "mlb" / "player_gamelogs.parquet"
@@ -44,11 +45,9 @@ _MIN_RESOLVED_FRAC = 0.94
 def test_real_corpus_join_rate_meets_floor():
     b = build_game_pk_bridge()
     assert b.n_game_pks > 0, "expected a non-empty 2-team game_pk corpus"
-    assert b.resolved_frac >= _MIN_RESOLVED_FRAC, (
-        "game_pk->event_id join rate regressed: %.4f < floor %.4f "
-        "(resolved=%d ambiguous=%d unmatched=%d of %d)"
-        % (b.resolved_frac, _MIN_RESOLVED_FRAC, b.n_resolved, b.n_ambiguous,
-           b.n_unmatched, b.n_game_pks))
+    assert_join_rate_floor(b.n_resolved, b.n_game_pks, _MIN_RESOLVED_FRAC,
+                           label="game_pk_bridge(resolved=%d ambiguous=%d unmatched=%d)"
+                           % (b.n_resolved, b.n_ambiguous, b.n_unmatched))
     # counts must partition exactly (never double-counted, never dropped silently).
     assert b.n_resolved + b.n_ambiguous + b.n_unmatched == b.n_game_pks
     # every mapped value is a real, non-empty event_id string.
