@@ -57,11 +57,13 @@ REGISTRY: List[Dict[str, Any]] = [
     {"name": "savant_catch_probability", "sport": "mlb", "expect": "csv_leaderboard",
      "url": "https://baseballsavant.mlb.com/leaderboard/catch_probability",
      "params": {"year": "{year}", "csv": "true"}, "notes": "census rank 9"},
-    {"name": "action_network_mlb_splits", "sport": "cross_sport_market",
-     "expect": "an_scoreboard",
-     "url": "https://api.actionnetwork.com/web/v1/scoreboard/mlb", "params": {},
-     "notes": "census rank 8; offseason verdict = schema confirmed, values null; "
-              "flip to KEYLESS_CONFIRMED-with-data is THE in-season trigger"},
+    # action_network_mlb_splits RETIRED 2026-07-10 (M11 audit,
+    # docs/research/m11_frontier_deltas_2026-07-10.md): this entry probed the
+    # v1 scoreboard shape, confirmed a permanently-dead shape in-season
+    # (0/3516 non-null even live). The populated v2 shape is already landed
+    # continuously by scripts/platformkit/data_frontier/an_public_splits.py
+    # (M41) -- a probe here would only ever re-detect what M41 already
+    # captures on disk, so it is dead weight, not a missed acquisition.
     {"name": "milb_statsapi_aaa", "sport": "mlb", "expect": "statsapi_schedule",
      "url": "https://statsapi.mlb.com/api/v1/schedule",
      "params": {"sportId": "11", "date": "{today}"},
