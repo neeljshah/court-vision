@@ -122,23 +122,18 @@ def test_archetype_wildcard_now_has_a_real_builder_declared():
     assert GEN.TEMPLATES["mlb_pa_attr_x_archetype"]["feature_builder"] == "mlb_pa_archetype_asof"
 
 
-def test_ingame_state_template_family_auto_discovery_seam_works():
-    # nba_ingame_state_self_cross (M10 pool-unlock lane): a NEW atomic_unit
-    # ("team_game_ingame_state"), pool empty today because no registry attr
-    # carries family="ingame_state_asof" yet -- prove the auto-discovery seam
-    # itself works (same "writes more on its own" property as box_detail_asof/
-    # carryover_asof) without needing the real q1_margin_asof/transition_rate
-    # registry entries + runner builder wired (out of this module's scope).
-    from domains.basketball_nba.profiles.attribute_registry import ATTRIBUTES as NBA_REG
+def test_ingame_state_template_pool_now_wired():
+    # nba_ingame_state_self_cross (M10 pool-unlock lane): the auto-discovery
+    # seam (same as box_detail_asof/carryover_asof) is now REAL-wired --
+    # attribute_registry.py's _INGAME_STATE_SPECS tags 5 quarter-shape asof
+    # attrs family="ingame_state_asof" -> C(5,2)=10 self-cross pairs, no
+    # longer the empty-pool state this test previously asserted.
     assert GEN.TEMPLATES["nba_ingame_state_self_cross"]["atomic_unit"] == "team_game_ingame_state"
-    assert GEN.enumerate_candidates("nba_ingame_state_self_cross") == []  # honest: empty today
-    NBA_REG["_fake_q1_margin_asof"] = {"entity": "team", "family": "ingame_state_asof"}
-    NBA_REG["_fake_transition_rate_asof"] = {"entity": "team", "family": "ingame_state_asof"}
-    try:
-        cands = GEN.enumerate_candidates("nba_ingame_state_self_cross")
-        assert len(cands) == 1  # C(2,2) = 1 pair
-        assert {cands[0].attr_a, cands[0].attr_b} == {"_fake_q1_margin_asof", "_fake_transition_rate_asof"}
-        assert cands[0].atomic_unit == "team_game_ingame_state"
-    finally:
-        del NBA_REG["_fake_q1_margin_asof"]
-        del NBA_REG["_fake_transition_rate_asof"]
+    cands = GEN.enumerate_candidates("nba_ingame_state_self_cross")
+    assert len(cands) == 10
+    assert all(c.sport == "basketball_nba" and c.atomic_unit == "team_game_ingame_state" for c in cands)
+    pool_attrs = {a for c in cands for a in (c.attr_a, c.attr_b)}
+    assert pool_attrs == {
+        "q1_margin_asof", "first_half_margin_asof", "second_half_margin_asof",
+        "q4_margin_asof", "quarter_volatility_asof",
+    }
