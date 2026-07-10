@@ -283,3 +283,16 @@ calibration/mechanism receipt, not ROI.
 - **status**: CONFIRMED
 - **measured LOCAL magnitude**: total-goals/match competitive 2.9774 (n=31,037) vs friendly 2.8748 (n=18,388); effect +0.1027, p=8.52e-08. Direction is competitive-scores-more, small in absolute size (~0.1 goals/match) but well above both the significance and the declared 0.05 min-effect floor.
 - **artifact link**: `domains/soccer/knowledge/validate_tournament_context.py::tournament_vs_friendly_scoring_environment`; `validation_ledger.jsonl` row `tournament_vs_friendly_scoring_environment`.
+
+---
+
+## Validated 2026-07-10 (PPDA x forward shot-quality-conceded, C15)
+
+### 33. First-half pressing intensity vs second-half shot quality conceded -- LOCAL NULL
+- **claim**: a team's own first-half PPDA-proxy (pressing intensity) predicts the shot quality (xG-per-shot) it concedes in the SECOND half -- a genuine forward split, distinct from #19 (same-match PPDA vs opponent turnover rate) and #26 (direction-agnostic block-height proxy vs opponent xG, REJECTED).
+- **causal story**: a team that presses harder (lower PPDA) in the first half disrupts opponent build-up more, which should carry into fewer/lower-quality chances conceded in the second half if pressing reflects a durable tactical identity rather than a one-off spell.
+- **expected signature**: nonzero pearson r between own 1st-half PPDA-proxy and opponent's 2nd-half xG-per-shot, replicated with the same sign across >=2 independent competition groups.
+- **test spec**: `domains.soccer.knowledge.validate_ppda_shot_quality.run` -- 400-match corpus with competition metadata (corpus A=EPL 2015/16, B=FA WSL), tested independently per corpus, min n=30, bar |r|>=0.05 AND p<0.01.
+- **status**: REJECTED (NULL_LOCAL) both corpora -- A: r=0.0494, p=0.327, n=397 team-match units; B: r=0.0019, p=0.970, n=389. No evidence first-half pressing intensity forecasts second-half shot quality conceded in this local corpus.
+- **measured LOCAL magnitude**: see above (statsbomb match_meta 400-match corpus, split by competition group).
+- **artifact link**: `domains/soccer/knowledge/validate_ppda_shot_quality.py::run`; `validation_ledger.jsonl` rows `ppda_h1_vs_shot_quality_conceded_h2` (x2) + `__combined`.

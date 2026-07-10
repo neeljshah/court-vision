@@ -337,3 +337,17 @@ borderline pitches disperse MORE than pure sampling noise would predict.
 - **status**: REJECTED (NULL_LOCAL) both halves -- h1: r=0.0006, p=0.883, n=56,725; h2: r=0.0092, p=0.029 (misses alpha=0.01), n=56,529. No evidence of an interaction beyond the additive terms in this local corpus.
 - **measured LOCAL magnitude**: see above (savant_full__2025, split-half by date).
 - **artifact link**: `domains/mlb/knowledge/validate_contact_park_interaction.py::run`.
+
+---
+
+## Validated 2026-07-10 (staff-wide day-after fatigue chain, C18)
+
+### 42. Team staff-wide high-pitch-count day precedes next-day run-prevention degradation -- PROVISIONAL
+- **claim**: after a day where a team's whole pitching staff throws a lot of pitches (top-quartile team pitch count that day), the team allows more runs the very NEXT calendar day (true back-to-back, gap_days==1) than after a light-pitch-count day (bottom quartile).
+- **premise check**: neither savant_full__*.parquet nor bullpen_relief_chains.parquet has a literal `pitch_count` column; savant_full is pitch-level (1 row = 1 pitch), so team daily pitch count is derived as a row-count grouped by pitching team (home team pitches on inning_topbot=="Top", away team on "Bot") and game_date -- a plain aggregation, not a fictitious-column workaround.
+- **causal story**: a heavy team pitch-count day usually means extra innings or a bullpen-taxing blowout/comeback; the next day's available relievers are more fatigued/less optimally deployed, degrading run prevention.
+- **expected signature**: mean next-day runs-allowed higher in the top-pitch-count-quartile group than the bottom-quartile group, same direction and significant in >=2 of 3 independent season corpora.
+- **test spec**: `domains.mlb.knowledge.validate_staff_dayafter_chain.run` -- 2023/2024/2025 seasons tested independently (Welch t-test, top vs bottom quartile of prior-day team pitch count, min group n=20), bar |eff|>=0.1 AND p<0.01, combined per the reliever_b2b_fatigue convention (>=2 same-direction significant seasons -> CONFIRMED, 1 -> PROVISIONAL).
+- **status**: PROVISIONAL (1 of 3 seasons significant support) -- 2023: NULL_LOCAL (eff=+0.079, p=0.580, n=2,087); 2024: CONFIRMED_LOCAL (eff=+0.392, p=0.0043, n=2,160); 2025: NULL_LOCAL (eff=+0.327, p=0.023, misses alpha=0.01, n=2,078). All three seasons point the same (support) direction but only one clears significance -- not a replicated finding, do not quote as confirmed.
+- **measured LOCAL magnitude**: see above (savant_full__2023-2025, team-day pitch-count quartile split).
+- **artifact link**: `domains/mlb/knowledge/validate_staff_dayafter_chain.py::run`; `validation_ledger.jsonl` rows `staff_dayafter_fatigue_chain` (x3) + `__combined`.
