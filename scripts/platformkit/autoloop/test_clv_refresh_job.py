@@ -1,0 +1,89 @@
+"""Per-file test for scripts.platformkit.autoloop.clv_refresh_job.
+
+Acceptance criteria:
+1. Newest clv_reconcile_*.json < 24h old -> skip, neither reconcile_fn nor
+   scoreboard_fn is called.
+2. Newest clv_reconcile_*.json >= 24h old -> both fns called in order.
+3. No clv_reconcile_*.json at all -> treated as due, both fns called.
+4. reconcile_fn/scoreboard_fn raising propagates (isolated one level up by
+   maintenance_templates.run_all's own try/except -- not re-caught here).
+No real reconciler/scoreboard run over full history in any test.
+
+Run:
+    cd /c/Users/neelj/nba-ai-system && python -m pytest \
+        scripts/platformkit/autoloop/test_clv_refresh_job.py -q
+"""
+from __future__ import annotations
+
+import os
+import time
+
+import pytest
+
+from scripts.platformkit.autoloop import clv_refresh_job as CR
+
+
+def _touch_reconcile(tmp_path, age_h):
+    p = tmp_path / "clv_reconcile_moneyline.json"
+    p.write_text("{}", encoding="utf-8")
+    os.utime(p, (time.time() - age_h * 3600, time.time() - age_h * 3600))
+    return p
+
+
+def test_fresh_file_skips_no_calls(tmp_path):
+    _touch_reconcile(tmp_path, age_h=1.0)
+    calls = []
+    out = CR.run_clv_refresh(
+        ops_dir=tmp_path,
+        reconcile_fn=lambda: calls.append("reconcile"),
+        scoreboard_fn=lambda: calls.append("scoreboard"),
+    )
+    assert out["status"] == "skipped"
+    assert out["age_h"] == pytest.approx(1.0, abs=0.05)
+    assert calls == []
+
+
+def test_stale_file_runs_reconciler_then_scoreboard(tmp_path):
+    _touch_reconcile(tmp_path, age_h=30.0)
+    calls = []
+    out = CR.run_clv_refresh(
+        ops_dir=tmp_path,
+        reconcile_fn=lambda: calls.append("reconcile"),
+        scoreboard_fn=lambda: calls.append("scoreboard"),
+    )
+    assert out["status"] == "ran"
+    assert calls == ["reconcile", "scoreboard"]
+
+
+def test_missing_files_treated_as_due(tmp_path):
+    calls = []
+    out = CR.run_clv_refresh(
+        ops_dir=tmp_path,
+        reconcile_fn=lambda: calls.append("reconcile"),
+        scoreboard_fn=lambda: calls.append("scoreboard"),
+    )
+    assert out["status"] == "ran"
+    assert out["age_h"] is None
+    assert calls == ["reconcile", "scoreboard"]
+
+
+def test_reconcile_raise_propagates_uncaught(tmp_path):
+    _touch_reconcile(tmp_path, age_h=48.0)
+
+    def _boom():
+        raise RuntimeError("reconcile boom")
+
+    with pytest.raises(RuntimeError, match="reconcile boom"):
+        CR.run_clv_refresh(ops_dir=tmp_path, reconcile_fn=_boom,
+                           scoreboard_fn=lambda: None)
+
+
+def test_watermarks_param_accepted_and_ignored(tmp_path):
+    """Call-shape uniformity with the other maintenance jobs -- watermarks
+    is accepted positionally but never read or mutated."""
+    _touch_reconcile(tmp_path, age_h=1.0)
+    watermarks = {"unrelated": "untouched"}
+    out = CR.run_clv_refresh(watermarks, ops_dir=tmp_path,
+                             reconcile_fn=lambda: None, scoreboard_fn=lambda: None)
+    assert out["status"] == "skipped"
+    assert watermarks == {"unrelated": "untouched"}
