@@ -8,7 +8,10 @@ Acceptance criteria:
    watermark (not a shared global one) + failure isolation across sports.
 3. replication_watch: REPORTS only (never calls a fit/run function) and is
    idempotent -- a corpus file already seen is never re-reported.
-4. run_all: one sub-job raising never blocks the other two.
+4. run_all: one job raising never blocks the rest of the table (checked at
+   the real table's first entry AND generically at a fake table's middle
+   entry); out[] keys match a golden list (table-driven refactor must not
+   add/drop/rename a job key).
 
 Run:
     cd /c/Users/neelj/nba-ai-system && python -m pytest \
@@ -158,6 +161,14 @@ def test_replication_watch_never_calls_a_run_or_fit_function():
 
 
 # 4. run_all isolation ----------------------------------------------------------
+_GOLDEN_KEYS = {
+    "validate_new_stores", "weighting_refresh", "replication_watch",
+    "census_drift", "scoreboard_history", "ingame_benchmarks", "mechanism_reval",
+    "utilization_drift", "frontier_probe", "shadow_settle", "propose_gate",
+    "milb_refresh", "benchmark_refresh", "clv_refresh",
+}
+
+
 def test_run_all_isolates_one_failing_job(tmp_path):
     with mock.patch.object(MT, "run_validate_new_stores", side_effect=RuntimeError("x")), \
         mock.patch.object(MT, "run_weighting_refresh", return_value={"sports_refreshed": []}), \
@@ -173,7 +184,9 @@ def test_run_all_isolates_one_failing_job(tmp_path):
         mock.patch("scripts.platformkit.data_frontier.frontier_probe_job.run_probe_cycle",
                    return_value={"status": "skipped_cadence"}), \
         mock.patch("scripts.platformkit.autoloop.shadow_settle_job.run_shadow_settle",
-                   return_value={"status": "skipped"}):
+                   return_value={"status": "skipped"}), \
+        mock.patch("scripts.platformkit.autoloop.clv_refresh_job.run_clv_refresh",
+                   return_value={"status": "skipped", "age_h": 1.0}):
         out = MT.run_all({}, queue_fn=lambda row: None)
     assert out["validate_new_stores"]["status"] == "error"
     assert out["weighting_refresh"] == {"sports_refreshed": []}
@@ -183,3 +196,37 @@ def test_run_all_isolates_one_failing_job(tmp_path):
     assert out["utilization_drift"] == {}
     assert out["frontier_probe"] == {"status": "skipped_cadence"}
     assert out["shadow_settle"] == {"status": "skipped"}
+    assert out["clv_refresh"] == {"status": "skipped", "age_h": 1.0}
+    # golden key list: table-driven refactor must not add/drop/rename a job key
+    assert set(out.keys()) == _GOLDEN_KEYS
+
+
+def test_run_all_job_table_isolates_a_middle_entry_failure():
+    """A raise from an entry in the MIDDLE of _JOB_TABLE (not just the first)
+    must not stop later entries from running -- proves the dispatch loop
+    itself isolates, not just the first try/except by coincidence."""
+    calls = []
+
+    def _ok(key):
+        def _fn(*_a, **_kw):
+            calls.append(key)
+            return {"status": "ok"}
+        return _fn
+
+    def _boom(*_a, **_kw):
+        raise RuntimeError("boom")
+
+    fake_table = [
+        ("first", MT.__name__, "_fake_first", ()),
+        ("middle_fails", MT.__name__, "_fake_middle", ()),
+        ("last", MT.__name__, "_fake_last", ()),
+    ]
+    with mock.patch.object(MT, "_JOB_TABLE", fake_table), \
+        mock.patch.object(MT, "_fake_first", _ok("first"), create=True), \
+        mock.patch.object(MT, "_fake_middle", _boom, create=True), \
+        mock.patch.object(MT, "_fake_last", _ok("last"), create=True):
+        out = MT.run_all({})
+    assert out["first"] == {"status": "ok"}
+    assert out["middle_fails"]["status"] == "error"
+    assert out["last"] == {"status": "ok"}
+    assert calls == ["first", "last"]

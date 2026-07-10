@@ -1,12 +1,12 @@
 """scripts.platformkit.autoloop.maintenance_templates -- the zero-LLM
-pipeline-maintenance jobs (12, see run_all()) that keep the intel layer visible
+pipeline-maintenance jobs (14, see run_all()) that keep the intel layer visible
 to ask/weighting, wired as a single extra phase inside autoloop_runner.run_cycle().
 
 These are NOT prereg statistical templates (no universe/K-ledger/blocklist --
 standing_prereg.Template is for hypothesis-testing families only). Each job
 here is a plain, watermark-gated function; run_all() is the ONE hook point
 run_cycle() calls once per tick, isolated so one job's failure never blocks
-the other two or the SP-template cycle around it.
+any other job in the table.
 
 1. validate_new_stores -- pairing-gap trap (memory: an unvalidated store is
    invisible to ask/weighting). Watermark = FILESYSTEM MTIME: a store's own
@@ -66,9 +66,21 @@ gate ONLY once their own wired-shadow readiness bar (M09's shadow_settle_wired
 baseline + min_n/min_matches -- reused, not redefined) is met by new data.
 Refresh only -- zero promotion logic, promotion bar stays human. Self-resetting
 watermark: a rerun overwrites the source artifact's own baseline count.
+
+Job #14, clv_refresh (scripts.platformkit.autoloop.clv_refresh_job, M16), reruns
+the CLV reconcile + scoreboard ops artifacts once the newest clv_reconcile_*.json
+is >24h stale (they are hand/CLI-run only per freshness_sla.py, found ~114h stale).
+Refresh only -- same reconciler/scoreboard entrypoints a human would run by hand.
+
+run_all() dispatches every job through one table (key, module path, callable
+name, arg names) instead of a hand-written try/except per job: each entry is
+imported and called fresh every cycle (never cached at module import time) so
+a test's mock.patch on either this module or the job's own source module is
+picked up identically to the original per-job inline imports.
 """
 from __future__ import annotations
 
+import importlib
 import json
 import re
 from datetime import datetime, timezone
@@ -223,83 +235,61 @@ def run_replication_watch(watermarks: Dict[str, Any], *,
 
 
 # Single hook point ------------------------------------------------------------
+# (key, module path, callable name, arg names). `arg_names` may contain
+# "watermarks" (passed positionally, same as every job's own signature) and/or
+# "queue_fn" (passed as a kwarg). Local jobs (1-3 above) use this module's own
+# __name__ so a test's mock.patch.object(MT, "run_x", ...) is picked up exactly
+# as it was when run_all called the bare name directly.
+_JOB_TABLE: List[Tuple[str, str, str, Tuple[str, ...]]] = [
+    ("validate_new_stores", __name__, "run_validate_new_stores", ()),
+    ("weighting_refresh", __name__, "run_weighting_refresh", ("watermarks",)),
+    ("replication_watch", __name__, "run_replication_watch", ("watermarks", "queue_fn")),
+    # report-only census freshness (census_drift.json); rot surfaced, never fixed here
+    ("census_drift", "scripts.platformkit.census_drift", "run_check", ()),
+    # longitudinal calibration log (idempotent append; calibration only, no $)
+    ("scoreboard_history", "scripts.platformkit.scoreboard_history", "append_rows", ()),
+    # watermark-gated in-game benchmark re-runs (grows with the labeled corpora)
+    ("ingame_benchmarks", "scripts.platformkit.autoloop.ingame_benchmark_job",
+     "run_ingame_benchmarks", ("watermarks",)),
+    # watermark-gated mechanism re-validation (ledger-append only, no mechanisms.md edit)
+    ("mechanism_reval", "scripts.platformkit.autoloop.mechanism_reval_job",
+     "run_mechanism_reval", ("watermarks",)),
+    # watermark-gated stat-utilization drift census (report-only, no wiring)
+    ("utilization_drift", "scripts.platformkit.autoloop.utilization_drift_job",
+     "run_utilization_drift", ("watermarks", "queue_fn")),
+    # M11 keyless-frontier auto-probe (self-gated to daily; deltas -> frontier_deltas.jsonl)
+    ("frontier_probe", "scripts.platformkit.data_frontier.frontier_probe_job",
+     "run_probe_cycle", ()),
+    # M09 forward self-shadowing of provisional verdicts (shadow-ledger append only)
+    ("shadow_settle", "scripts.platformkit.autoloop.shadow_settle_job",
+     "run_shadow_settle", ("watermarks",)),
+    # M10 zero-LLM self-proposal: propose -> real leak-free gate -> honest ledger verdicts
+    ("propose_gate", "scripts.platformkit.autoloop.propose_gate_job",
+     "run_propose_gate", ("watermarks", "queue_fn")),
+    # M12 daily MiLB AAA rosters + call-up transactions (file-existence watermark)
+    ("milb_refresh", "scripts.platformkit.data_frontier.milb_statsapi", "run_daily", ("watermarks",)),
+    # M15 watermark-gated benchmark rerun (refresh only; promotion stays human)
+    ("benchmark_refresh", "scripts.platformkit.autoloop.benchmark_refresh_job",
+     "run_benchmark_refresh", ("watermarks",)),
+    # M16 cadence-gated CLV reconcile+scoreboard refresh (refresh only; file-mtime watermark)
+    ("clv_refresh", "scripts.platformkit.autoloop.clv_refresh_job", "run_clv_refresh", ("watermarks",)),
+]
+
+
 def run_all(watermarks: Dict[str, Any], *, queue_fn: Optional[Callable[[Dict[str, Any]], Any]] = None
            ) -> Dict[str, Any]:
-    """run_cycle()'s one call site for all 3 maintenance jobs. Each isolated:
-    a raise in one is caught here and never blocks the others."""
+    """run_cycle()'s one call site for every maintenance job in _JOB_TABLE.
+    Each entry isolated: a raise in one is caught here and never blocks the
+    rest of the table."""
     out: Dict[str, Any] = {}
-    try:
-        out["validate_new_stores"] = run_validate_new_stores()
-    except Exception as exc:  # noqa: BLE001
-        out["validate_new_stores"] = {"status": "error", "error": str(exc)[:200]}
-    try:
-        out["weighting_refresh"] = run_weighting_refresh(watermarks)
-    except Exception as exc:  # noqa: BLE001
-        out["weighting_refresh"] = {"status": "error", "error": str(exc)[:200]}
-    try:
-        out["replication_watch"] = run_replication_watch(watermarks, queue_fn=queue_fn)
-    except Exception as exc:  # noqa: BLE001
-        out["replication_watch"] = {"status": "error", "error": str(exc)[:200]}
-    try:
-        # report-only census freshness (census_drift.json); rot surfaced, never fixed here
-        from scripts.platformkit.census_drift import run_check
-        out["census_drift"] = run_check()
-    except Exception as exc:  # noqa: BLE001
-        out["census_drift"] = {"status": "error", "error": str(exc)[:200]}
-    try:
-        # longitudinal calibration log (idempotent append; calibration only, no $)
-        from scripts.platformkit.scoreboard_history import append_rows
-        out["scoreboard_history"] = append_rows()
-    except Exception as exc:  # noqa: BLE001
-        out["scoreboard_history"] = {"status": "error", "error": str(exc)[:200]}
-    try:
-        # watermark-gated in-game benchmark re-runs (grows with the labeled corpora)
-        from scripts.platformkit.autoloop.ingame_benchmark_job import run_ingame_benchmarks
-        out["ingame_benchmarks"] = run_ingame_benchmarks(watermarks)
-    except Exception as exc:  # noqa: BLE001
-        out["ingame_benchmarks"] = {"status": "error", "error": str(exc)[:200]}
-    try:
-        # watermark-gated mechanism re-validation (ledger-append only, no mechanisms.md edit)
-        from scripts.platformkit.autoloop.mechanism_reval_job import run_mechanism_reval
-        out["mechanism_reval"] = run_mechanism_reval(watermarks)
-    except Exception as exc:  # noqa: BLE001
-        out["mechanism_reval"] = {"status": "error", "error": str(exc)[:200]}
-    try:
-        # watermark-gated stat-utilization drift census (report-only, no wiring)
-        from scripts.platformkit.autoloop.utilization_drift_job import run_utilization_drift
-        out["utilization_drift"] = run_utilization_drift(watermarks, queue_fn=queue_fn)
-    except Exception as exc:  # noqa: BLE001
-        out["utilization_drift"] = {"status": "error", "error": str(exc)[:200]}
-    try:
-        # M11 keyless-frontier auto-probe (self-gated to daily; deltas -> frontier_deltas.jsonl)
-        from scripts.platformkit.data_frontier.frontier_probe_job import run_probe_cycle
-        out["frontier_probe"] = run_probe_cycle()
-    except Exception as exc:  # noqa: BLE001
-        out["frontier_probe"] = {"status": "error", "error": str(exc)[:200]}
-    try:
-        # M09 forward self-shadowing of provisional verdicts (shadow-ledger append only)
-        from scripts.platformkit.autoloop.shadow_settle_job import run_shadow_settle
-        out["shadow_settle"] = run_shadow_settle(watermarks)
-    except Exception as exc:  # noqa: BLE001
-        out["shadow_settle"] = {"status": "error", "error": str(exc)[:200]}
-    try:
-        # M10 zero-LLM self-proposal: propose -> real leak-free gate -> honest ledger verdicts
-        from scripts.platformkit.autoloop.propose_gate_job import run_propose_gate
-        out["propose_gate"] = run_propose_gate(watermarks, queue_fn=queue_fn)
-    except Exception as exc:  # noqa: BLE001
-        out["propose_gate"] = {"status": "error", "error": str(exc)[:200]}
-    try:
-        # M12 daily MiLB AAA rosters + call-up transactions (file-existence watermark)
-        from scripts.platformkit.data_frontier.milb_statsapi import run_daily
-        out["milb_refresh"] = run_daily(watermarks)
-    except Exception as exc:  # noqa: BLE001
-        out["milb_refresh"] = {"status": "error", "error": str(exc)[:200]}
-    try:
-        # M15 watermark-gated benchmark rerun (refresh only; promotion stays human)
-        from scripts.platformkit.autoloop.benchmark_refresh_job import run_benchmark_refresh
-        out["benchmark_refresh"] = run_benchmark_refresh(watermarks)
-    except Exception as exc:  # noqa: BLE001
-        out["benchmark_refresh"] = {"status": "error", "error": str(exc)[:200]}
+    for key, import_path, callable_name, arg_names in _JOB_TABLE:
+        try:
+            fn = getattr(importlib.import_module(import_path), callable_name)
+            args = tuple(watermarks for a in arg_names if a == "watermarks")
+            kwargs = {"queue_fn": queue_fn} if "queue_fn" in arg_names else {}
+            out[key] = fn(*args, **kwargs)
+        except Exception as exc:  # noqa: BLE001 -- one job's failure must never block the rest
+            out[key] = {"status": "error", "error": str(exc)[:200]}
     return out
 
 
