@@ -169,9 +169,30 @@ def test_round1_3_2026_07_10_new_confirmed_mechanisms_stay_unmapped():
             assert h in confirmed, "%s/%s not CONFIRMED_LOCAL on disk -- classification is stale" % (sport, h)
             assert h not in KI.KNOWN_MAPPINGS, "%s/%s must stay unmapped -- named blocker not resolved" % (sport, h)
 
-    # concretely verify 2 of the named blockers instead of just asserting
+    # concretely verify the 3 named blockers instead of just asserting
     # absence-from-KNOWN_MAPPINGS (a real runnable check, not just enumeration).
-    assert "ast_asof" not in GEN._registry("basketball_nba")  # noqa: SLF001
+    # UNLOCK LANE (2026-07-10, this session): fresh verify-before-register pass
+    # on all 3 named f94a0373 blockers. (1) NBA ast_asof: RESOLVED -- the
+    # literal name never had a backing column (box_detail_asof family has no
+    # ast stat -- boxdetail_asof.py's STATS dict never included "ast"), but a
+    # real leak-free as-of assist-rate column DOES exist on disk
+    # (asof_features.parquet's ast_rate_asof) and is now registered as its own
+    # inert "assist_asof" family (see attribute_registry.py) -- the mechanism
+    # itself stays out of KNOWN_MAPPINGS (unaffected, asserted above; template/
+    # builder wiring is follow-on work). (2) tennis diff_avg_games_per_set_asof
+    # and (3) soccer diff_xg_supremacy_asof: STILL HONESTLY BLOCKED -- both
+    # metrics exist leak-free on disk (tennis: asof_setdetail.parquet's
+    # avg_games_per_set_asof_diff, different suffix convention; soccer:
+    # asof_xg_proxy.parquet's diff_xg_supremacy_asof, exact name match) but
+    # NEITHER parquet is read by the builder STATIC_POOLS actually feeds
+    # (builders_task39b.py's _tennis_match_builder loads only asof_return.
+    # parquet/asof_features.parquet; _soccer_match_builder loads only asof_
+    # features.parquet). Appending the name to STATIC_POOLS without also
+    # wiring the builder to read the extra parquet would silently return
+    # NOT_TESTABLE for every pair (runner.py's fit path: `ca not in frame ->
+    # None`), masking a wiring gap as a null finding -- builders_task39b.py is
+    # out of this lane's OWNS (STATIC_POOLS only), so both stay blocked.
+    assert "ast_rate_asof" in GEN._registry("basketball_nba")  # noqa: SLF001
     assert "diff_avg_games_per_set_asof" not in GEN.STATIC_POOLS["tennis_match_asof"]
     assert "diff_xg_supremacy_asof" not in GEN.STATIC_POOLS["soccer_match_asof"]
 

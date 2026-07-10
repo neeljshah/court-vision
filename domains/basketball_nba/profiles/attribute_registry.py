@@ -811,4 +811,40 @@ for _attr, _desc in _INGAME_STATE_SPECS:
         "verifiable_by_design": True,
     }
 
+# ---------------------------------------------------------------------------
+# ASSIST-RATE as-of (unlock lane, 2026-07-10): closes the ast_asof blocker
+# named in f94a0373 for boxdetail_ast_persistence_and_margin (mechanism #44,
+# split-half persistence r=0.7189 + same-game margin r=0.4329, both p<1e-5,
+# CONFIRMED_LOCAL on espn_boxscores's box-detail corpus). VERIFIED: espn_
+# boxscores.parquet's raw home_ast/away_ast feed no as-of builder yet (
+# boxdetail_asof.py's STATS dict has no "ast" entry -- box_detail_asof family
+# stays a real blocker, NOT invented here). The real, already-on-disk,
+# leak-free as-of substitute is domains/basketball_nba/asof_features.py's own
+# ast_rate_asof (data/domains/basketball_nba/asof_features.parquet, prior-
+# only walk-forward expanding sum(team_ast)/sum(team_fgm) -- same assist
+# signal, different sidecar). Tagged a NEW family ("assist_asof", not
+# "box_detail_asof") deliberately: no TEMPLATES entry declares this family,
+# so it registers inertly (satisfies the registry-membership blocker) without
+# entering nba_boxdetail_self_cross's pool -- that pool's builder reads
+# ONLY boxdetail_asof.parquet (_nba_boxdetail_diff_col), which has no
+# ast_rate_diff_asof column; tagging family="box_detail_asof" here would
+# silently KeyError that builder. A template/builder for "assist_asof" is
+# follow-on work, out of this lane's OWNS (generator.py/runner.py read-only).
+_ASSIST_SPECS = [
+    ("ast_rate_asof", "Season-to-date trailing assist rate (team assists / team makes) -- the real leak-free proxy for the boxdetail_ast_persistence_and_margin mechanism."),
+]
+for _attr, _desc in _ASSIST_SPECS:
+    TEAM_ATTRIBUTES[_attr] = {
+        "description": _desc,
+        "entity": "team",
+        "family": "assist_asof",
+        "ingredients": [{"name": "ast_rate", "source": "data/domains/basketball_nba/asof_features.parquet (via asof_features.py, prior-only walk-forward)"}],
+        "formula": "expanding sum(team_ast) / sum(team_fgm), strictly prior games, snapshot-before-update",
+        "status": "DESCRIPTIVE",
+        "floor": {"n_prior": 1.0},
+        "weight_ledger_family": None,
+        "seasons": ["2024_25", "2025_26"],  # asof_features.parquet coverage: 2024-25 ~complete + 2025-26 partial
+        "verifiable_by_design": True,
+    }
+
 ATTRIBUTES: dict[str, dict] = {**PLAYER_ATTRIBUTES, **TEAM_ATTRIBUTES, **LINEUP_ATTRIBUTES}
