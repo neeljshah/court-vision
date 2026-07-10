@@ -290,20 +290,22 @@ clear p<0.01 + |r|>=0.15 for CONFIRMED_LOCAL.
 - **causal story**: transition offense is a coached, practiced tendency (push-the-pace identity), not game-to-game noise; more transition scoring should track winning.
 - **expected signature**: positive split-half r across teams; positive same-game r(fast_break_pts, margin).
 - **test spec**: split-half Pearson r (first-half-of-corpus-dates vs second, per team) + pooled Pearson r vs same-game margin.
-- **status**: CONFIRMED_LOCAL
+- **status**: CONFIRMED_LOCAL (replication attempted 2026-07-10 -- NOT_REPLICABLE_NO_CORPUS, see below; stays LOCAL not REPLICATED)
 - **measured LOCAL magnitude**: persistence r=0.604, p=4.1e-4 (n=30 teams); margin relation r=0.298, p=5.8e-29 (n=1,342 team-games).
 - **artifact link**: `domains/basketball_nba/knowledge/validate_boxdetail_persistence.py::hypothesis("fast_break_pts")`.
 - **wiring**: candidate for the interaction factory's box_detail family (see `boxdetail_asof.py`'s `fast_break_pts_diff_asof`); thin single-season slice (box-detail only 2026-01-20 onward) -- not yet gated for a pregame outcome edge (see `boxdetail_gate.py` for that separate SHIP/REJECT track).
+- **replication attempt (2026-07-10)**: NOT_REPLICABLE_NO_CORPUS -- fresh disk check confirms `espn_boxscores.parquet`'s `home_fast_break_pts` is non-null for 0 of the pre-2026 rows (1,977 total); the only other local `fast_break` column (`data/cache/player_breakdown_features.parquet`) is a player-SEASON aggregate (n=569, no date/game_id), wrong granularity for this row's split-half-by-date + same-game-margin design. No second team-game-level corpus exists locally. `domains/basketball_nba/knowledge/validate_replication_wave1.py::fast_break_pts_persistence_replication`.
 
 ### 35. Points-in-the-paint persistence + margin-relation
 - **claim**: a team's paint scoring is a stable team trait and relates to that game's scoring margin.
 - **causal story**: interior scoring reflects personnel (rim finishers, post touches) and offensive scheme, both season-stable; more paint points should track winning.
 - **expected signature**: positive split-half r across teams; positive same-game r(paint_pts, margin).
 - **test spec**: same design as #34.
-- **status**: CONFIRMED_LOCAL
+- **status**: CONFIRMED_LOCAL (replication attempted 2026-07-10 -- NOT_REPLICABLE_NO_CORPUS, see below; stays LOCAL not REPLICATED)
 - **measured LOCAL magnitude**: persistence r=0.699, p=1.7e-5 (n=30 teams); margin relation r=0.335, p=1.2e-36 (n=1,342 team-games) -- the strongest of the 3 box-detail rows on both legs.
 - **artifact link**: `domains/basketball_nba/knowledge/validate_boxdetail_persistence.py::hypothesis("paint_pts")`.
 - **wiring**: candidate for the interaction factory's box_detail family; thin single-season slice, same caveat as #34.
+- **replication attempt (2026-07-10)**: NOT_REPLICABLE_NO_CORPUS -- same disk check as #34: `home_paint_pts` non-null for 0 of the pre-2026 `espn_boxscores.parquet` rows; `player_breakdown_features.parquet`'s `misc_pts_paint` is again a player-season aggregate, wrong granularity. `domains/basketball_nba/knowledge/validate_replication_wave1.py::paint_pts_persistence_replication`.
 
 ### 36. Points off turnovers (tov_pts) persistence + margin-relation -- LOCAL NULL (persistence leg misses; margin leg flips sign)
 - **claim**: a team's points-off-turnovers total is a stable team trait and relates positively to that game's scoring margin.
@@ -332,10 +334,11 @@ discipline as the box-detail family above.
 ### 38. Q1 slow-start tendency persistence
 - **claim**: a team's Q1 scoring margin tendency (own_q1 - opp_q1, averaged) is a stable team trait across a season.
 - **causal story**: some teams are habitually slow starters (bench-heavy openers, cold shooting patterns) or fast starters (starter-heavy aggressive openers) as a coached identity, not game-to-game noise.
-- **status**: CONFIRMED_LOCAL
-- **measured LOCAL magnitude**: split-half persistence r=0.7171, p=8.24e-06 (n=30 teams) -- the strongest split-half persistence result in this ledger to date, stronger than rotation-size persistence (#21, r=0.681).
+- **status**: CONFIRMED (REPLICATED -- second corpus 2026-07-10)
+- **measured LOCAL magnitude**: split-half persistence r=0.7171, p=8.24e-06 (n=30 teams, `linescores.parquet`/2025-26) -- the strongest split-half persistence result in this ledger to date, stronger than rotation-size persistence (#21, r=0.681).
 - **artifact link**: `domains/basketball_nba/knowledge/validate_quarter_volatility.py::q1_slow_start_persists`.
 - **wiring**: in-game conditioning-feature candidate -- a team's trailing as-of `q1_margin_asof` (already built leak-free in `data/domains/basketball_nba/asof_quarter_shape.parquet`) as a live Q1-state prior for in-game re-pricing; this validation is the receipt that the underlying trait is real and persistent, not that the asof feature itself has been gated for an outcome edge.
+- **replication (2026-07-10)**: REPLICATED on `linescores_2024_25.parquet` (1,321 games, disjoint 2024-25 season, same design/bars ported verbatim -- ALPHA=0.01, MIN_EFFECT=0.15 unchanged). r=0.5855, p=0.0006759 (n=30 teams) -- weaker than the original but clears the bar with the same (positive/fast-starter) sign. `domains/basketball_nba/knowledge/validate_replication_wave1.py::q1_slow_start_persists_replication_2024_25`; `validation_ledger.jsonl` hypothesis=`q1_slow_start_persists_replication_2024_25`.
 
 ---
 
@@ -486,9 +489,11 @@ own >=2-corpora discipline for an affirmative).
 - **expected signature**: opponent points-per-minute in a fixed window before the timeout is higher than in the window after (window capped at period boundary, min floor to avoid degenerate tiny windows).
 - **test spec**: `domains.basketball_nba.knowledge.validate_research_wave2.timeout_interrupts_opponent_run` -- raw pbp corpus `data/nba/pbp_<game_id>_p1.json` (period-1 only, 1,289/3,611 games have a local file, 35.7% coverage, confirmed exactly this session, same corpus/coverage note as #39's foul-trouble-spillover row), timeout events identified via `event_desc` containing "Timeout", team_abbrev blank on these rows (confirmed), calling team resolved via `domains/basketball_nba/team_name_resolver.py`'s existing 30-team alias map (reused, not a new lookup); paired t-test opponent PPM in a 3-min window before vs 3-min window after (min 60s floor if truncated by a period boundary); declared bar |eff|>=0.3 pts/min AND p<0.01, split-half by date, both halves required.
 - **spec nit**: the row as seeded said "paired Welch t-test" -- Welch's correction is for INDEPENDENT unequal-variance samples, not a paired before/after design on the same timeout event. Implemented as the paired t-test (`scipy.stats.ttest_rel`) the design actually calls for.
-- **status**: CONFIRMED_LOCAL -- the raw descriptive gap replicates cleanly, both halves, same sign, well past the declared bar; not a causal claim (see source note).
+- **status**: CONFIRMED (REPLICATED -- second corpus 2026-07-10) -- the raw descriptive gap replicates cleanly, both halves of the original corpus AND a fully disjoint second corpus, same sign throughout, well past the declared bar; not a causal claim (see source note).
 - **measured LOCAL magnitude**: h1 opponent PPM after-before mean diff=-0.7314, p=2.0e-65 (n=1,357 timeouts); h2 diff=-0.7308, p=1.5e-64 (n=1,355 timeouts) -- opponent scoring slows by ~0.73 pts/min in the 3 minutes after a timeout vs the 3 minutes before, both halves essentially identical in magnitude. Consistent with the source paper's own raw-gap finding (deficit narrowing 3.74->1.20 pts) -- this row deliberately tests only that raw gap, not the paper's harder causal (selection-confound-adjusted) question.
 - **artifact link**: `domains/basketball_nba/knowledge/validate_research_wave2.py::timeout_interrupts_opponent_run` (function name kept from the seed; ledger hypothesis keys are `timeout_interrupts_opponent_run__h1`/`__h2`/`__combined`).
+- **replication (2026-07-10)**: REPLICATED on the 2022-23 season (1,230 local pbp games, fully disjoint from the original's 2023-24-dominant pool -- `player_boxscores.parquet`, the original's box source, has zero 2022-23 rows). Same design/bars ported verbatim -- ALPHA=0.01, MIN_EFFECT=0.3 pts/min, MIN_GROUP_N=20 unchanged, `game_samples`/`_paired_verdict` reused directly. Split-half: h1 eff=-0.6917 p=6.3e-58 (n in h1+h2=2,544 timeouts), h2 eff=-0.6564 p=1.8e-48 -- both halves CONFIRMED_LOCAL, same (negative) sign, magnitude close to the original's ~-0.73. `domains/basketball_nba/knowledge/validate_replication_wave1.py::timeout_interrupts_opponent_run_replication_2022_23`; `validation_ledger.jsonl` hypothesis=`timeout_interrupts_opponent_run_replication_2022_23`.
+- **premise-check note**: the task brief assumed a "2024-25 pbp" second corpus; disk check found that 2024-25 pbp coverage (48 games) is already folded inside the original's pooled 1,289-game corpus (not independent) and too thin to stand alone. The 2022-23 season was used instead -- comparable size (1,230 vs the original's 1,230-dominant 2023-24 games), genuinely disjoint, no box-score join required (raw pbp + `games.parquet` date only).
 - **source**: "The causal effect of a timeout at stopping an opposing run in the NBA" (Brill, Wyner et al., Annals of Applied Statistics / arXiv:2011.11691), https://arxiv.org/abs/2011.11691 -- finds a raw pre/post-timeout scoring-gap narrowing locally (opponent deficit 3.74->1.20 pts in the surrounding minute in their corpus) but a near-zero-to-slightly-negative CAUSAL effect once the selection confound (timeouts are called precisely during opponent runs) is accounted for. This row tests only the local RAW descriptive gap, explicitly not a causal claim -- an honest scope match to what a paired before/after design can actually support.
 
 ### 48. Rest-days DIFFERENTIAL between the two competing teams predicts margin (distinct from #14/#15's single-team-own-rest tests)
