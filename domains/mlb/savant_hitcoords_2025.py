@@ -37,6 +37,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable, Dict, List, Optional
 
+from domains.mlb.acquire_statcast_fuller import _replace_with_retry
 from domains.mlb.savant_backfill import _season_days
 from domains.mlb.savant_backfill_hitcoords import _CACHE, _day_csv_hitcoords, run_days
 
@@ -57,7 +58,10 @@ def _write_state(state: Dict[str, object], state_fp: Path) -> None:
     state_fp.parent.mkdir(parents=True, exist_ok=True)
     tmp = state_fp.with_suffix(".tmp.json")
     tmp.write_text(json.dumps(state, indent=2, default=str), encoding="ascii")
-    tmp.replace(state_fp)
+    # retried rename: a concurrent reader (AV/indexer/monitoring probe) holding
+    # the path mid-move raises transient WinError 5 -- proven 2026-07-10 when a
+    # probe crashed the first chunk's state write after 124 days landed.
+    _replace_with_retry(tmp, state_fp)
 
 
 def load_state(state_fp: Path = STATE_FP) -> Dict[str, object]:
@@ -108,13 +112,16 @@ def pull_chunk(max_seconds: float, season: int = SEASON,
         if not df.empty:
             tmp = fp.with_suffix(".tmp.parquet")
             df.to_parquet(tmp, index=False)
-            tmp.replace(fp)
+            _replace_with_retry(tmp, fp)
             fetched.append(day)
             log.info("fetched %s rows=%d", day, len(df))
         last_completed = day
-        _write_state({"season": season, "last_completed_day": last_completed,
-                      "days_total": len(days), "stopped_reason": "in_progress",
-                      "updated_at": _now_iso()}, sfp)
+        try:  # advisory only -- the per-day cache is the real resume state
+            _write_state({"season": season, "last_completed_day": last_completed,
+                          "days_total": len(days), "stopped_reason": "in_progress",
+                          "updated_at": _now_iso()}, sfp)
+        except OSError as exc:
+            log.warning("state write skipped (%s); day %s already cached", exc, day)
         time.sleep(_DELAY_S)
 
     mat = run_days(days, season, max_seconds=0.0, cache_dir=cdir)
