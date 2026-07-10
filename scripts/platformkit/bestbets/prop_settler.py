@@ -129,6 +129,12 @@ def _apply_prop_clv(settled: Dict[str, Any], side: str, taken_decimal: float,
             settled["clv_status"] = "true_close"
             settled["clv_note"] = ("prop closing two-way from %s"
                                    % (close.get("source") or "book"))
+            # D2 fix: stamp close_source (mirrors grade_paper.grade_one's contract)
+            # so settlement_correctness_audit.close_source_coverage counts this row
+            # as a real book close instead of "missing_key" (this settler previously
+            # never wrote the key at all -- a second, undocumented bypass of the
+            # close_source stamp that grade_one always applies).
+            settled["close_source"] = str(close.get("source") or "book")
             return
         except (KeyError, TypeError, ValueError):
             pass  # fall through to no_close -- never half-write a fabricated CLV
@@ -136,6 +142,10 @@ def _apply_prop_clv(settled: Dict[str, Any], side: str, taken_decimal: float,
     settled["beat_close"] = None
     settled["clv_status"] = "no_close"
     settled["clv_note"] = "player prop: no closing line; CLV unavailable (win/loss only)"
+    # Same D2 fix: no close known -> stamp "none_available" (grade_one's Level-5
+    # sentinel) rather than leaving the key absent, so a reader can tell "stamp
+    # attempted, no close" apart from a pre-fix row where the key never existed.
+    settled["close_source"] = "none_available"
 
 
 def _open_prop_rows(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
