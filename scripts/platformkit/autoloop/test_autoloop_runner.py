@@ -45,6 +45,12 @@ def _noop_maintenance(watermarks, queue_fn=None):
     return {}
 
 
+def _noop_execution(watermarks):
+    """Neutralizes the real M13/M14 composer/dryrun/reconcile/entry-timing
+    phase -- it hits live feeds by design in production; tests must not."""
+    return {}
+
+
 def _paths(tmp_path):
     return dict(
         report_path=tmp_path / "report.json", queue_path=tmp_path / "queue.jsonl",
@@ -66,7 +72,7 @@ def test_one_shot_stub_harness_report_shape_and_queue(tmp_path):
     report = AR.run_cycle(
         templates_dir=tdir, reclaim_fit_fn=stub_reclaim_fit,
         corpus_sha_fn=lambda tpl: "sha_v1", refresh_fn=lambda: None,
-        maintenance_fn=_noop_maintenance,
+        maintenance_fn=_noop_maintenance, execution_fn=_noop_execution,
         **_paths(tmp_path),
     )
     assert "ts" in report and "wall_clock_sec" in report
@@ -83,6 +89,41 @@ def test_one_shot_stub_harness_report_shape_and_queue(tmp_path):
     assert json.loads((tmp_path / "report.json").read_text())["per_template"][0]["fits_run"] == 1
 
 
+def test_execution_cadence_job_wired_and_callable(tmp_path):
+    """M13/M14 (composer->dryrun->reconcile + weekly entry-timing refresh) is
+    registered in run_cycle() and its result lands in report['execution'] --
+    the default hook (ECJ.run_all) is reachable and callable, not just an
+    injectable no-op. Mocks the heavy sub-stages so this stays a per-file
+    unit test (no live feed / network calls)."""
+    tdir = tmp_path / "templates"
+    tdir.mkdir()
+
+    calls = {"compose": 0, "dryrun": 0, "reconcile": 0, "timing": 0}
+
+    def stub_execution(watermarks):
+        from scripts.platformkit.autoloop import execution_cadence_job as ECJ
+        stages = ECJ.run_execution_stages(
+            watermarks,
+            compose_fn=lambda: calls.__setitem__("compose", calls["compose"] + 1) or {"count": 0},
+            dryrun_fn=lambda: calls.__setitem__("dryrun", calls["dryrun"] + 1) or {"n_written": 0},
+            reconcile_fn=lambda: calls.__setitem__("reconcile", calls["reconcile"] + 1) or {"n_fills": 0},
+        )
+        timing = ECJ.run_entry_timing_refresh(
+            watermarks,
+            timing_fn=lambda: calls.__setitem__("timing", calls["timing"] + 1) or {"policies": {}},
+        )
+        return {"execution_stages": stages, "entry_timing_refresh": timing}
+
+    report = AR.run_cycle(
+        templates_dir=tdir, corpus_sha_fn=lambda tpl: "sha_v1", refresh_fn=lambda: None,
+        maintenance_fn=_noop_maintenance, execution_fn=stub_execution, **_paths(tmp_path),
+    )
+    assert "execution" in report
+    assert report["execution"]["execution_stages"]["status"] == "ran"
+    assert report["execution"]["entry_timing_refresh"]["status"] == "ran"
+    assert calls == {"compose": 1, "dryrun": 1, "reconcile": 1, "timing": 1}
+
+
 def test_prereg_tamper_at_cycle_level(tmp_path):
     tdir = tmp_path / "templates"
     tdir.mkdir()
@@ -94,7 +135,7 @@ def test_prereg_tamper_at_cycle_level(tmp_path):
 
     report = AR.run_cycle(
         templates_dir=tdir, corpus_sha_fn=lambda tpl: "sha_v1",
-        refresh_fn=lambda: None, maintenance_fn=_noop_maintenance, **_paths(tmp_path),
+        refresh_fn=lambda: None, maintenance_fn=_noop_maintenance, execution_fn=_noop_execution, **_paths(tmp_path),
     )
     row = report["per_template"][0]
     assert row["prereg_tamper"] is True
@@ -119,13 +160,13 @@ def test_skipped_no_new_data_keeps_k_flat(tmp_path):
     paths = _paths(tmp_path)
     r1 = AR.run_cycle(templates_dir=tdir, reclaim_fit_fn=stub_reclaim_fit,
                       corpus_sha_fn=lambda tpl: "same_sha", refresh_fn=lambda: None,
-                      maintenance_fn=_noop_maintenance, **paths)
+                      maintenance_fn=_noop_maintenance, execution_fn=_noop_execution, **paths)
     assert r1["per_template"][0]["cum_k"] == 1
     assert calls["n"] == 1
 
     r2 = AR.run_cycle(templates_dir=tdir, reclaim_fit_fn=stub_reclaim_fit,
                       corpus_sha_fn=lambda tpl: "same_sha", refresh_fn=lambda: None,
-                      maintenance_fn=_noop_maintenance, **paths)
+                      maintenance_fn=_noop_maintenance, execution_fn=_noop_execution, **paths)
     assert r2["per_template"][0]["status"] == "skipped_no_new_data"
     assert r2["per_template"][0]["cum_k"] == 1  # unchanged -- K never inflated by a no-op tick
     assert calls["n"] == 1  # the stub harness was NOT called again
@@ -156,7 +197,7 @@ def test_factory_absent_is_honest_skipped_family(tmp_path):
 
     report = AR.run_cycle(
         templates_dir=tdir, corpus_sha_fn=lambda tpl: "sha_v1",
-        refresh_fn=lambda: None, maintenance_fn=_noop_maintenance, **_paths(tmp_path),
+        refresh_fn=lambda: None, maintenance_fn=_noop_maintenance, execution_fn=_noop_execution, **_paths(tmp_path),
     )
     row = report["per_template"][0]
     assert row["status"] == "SKIPPED_FAMILY"
@@ -172,7 +213,7 @@ def test_honesty_lint_suppresses_write(tmp_path, monkeypatch):
     report_path = tmp_path / "report.json"
     report = AR.run_cycle(
         templates_dir=tdir, corpus_sha_fn=lambda tpl: "sha_v1",
-        refresh_fn=lambda: None, maintenance_fn=_noop_maintenance, report_path=report_path,
+        refresh_fn=lambda: None, maintenance_fn=_noop_maintenance, execution_fn=_noop_execution, report_path=report_path,
         queue_path=tmp_path / "queue.jsonl", heartbeat_path=tmp_path / "hb.txt",
         k_ledger_dir=tmp_path / "k_ledger", watermark_path=tmp_path / "watermark.json",
     )
