@@ -584,3 +584,25 @@ unchanged (same 500m cut, same min_eff=0.005 bar) -- no bar was loosened.
   `altitude_effect_on_serve_ace_rate__replication_years_2021_2025`.
 
 ---
+
+## Seeded 2026-07-10 (research-wave 5 -- literature-sourced, UNTESTED, round-5 pool feedstock)
+
+Fresh mechanism hypothesis on return-position aggressiveness persistence.
+Premise-checked hard per lane instruction before writing (does the local
+corpus even carry a return-depth ingredient at all): confirmed real data
+exists at the Match Charting Project ReturnDepth table, distinct from any
+exact-coordinate ball-tracking dataset. Checked against every row above and
+`data/frontend/reject_ledger.jsonl` (535 rows, 0 keyword hits for
+`return_depth`/`return_pos`) before seeding. No validator built this lane.
+
+### 40. Return-depth aggressiveness persistence
+- **claim**: a player's rate of hitting deep/very-deep returns (vs shallow) is a persistent player-level style trait -- split-half correlated -- not previously tested in this ledger (grep clean).
+- **premise check (hard, per instruction)**: `data/domains/tennis/_raw/sackmann_pbp_repos/tennis_MatchChartingProject/charting-m-stats-ReturnDepth.csv` confirmed this session -- columns `match_id`/`player`/`row`/`returnable`/`shallow`/`deep`/`very_deep` (+ error-breakdown cols); `row`=='Total' subset: 15,115 player-match rows across 7,545 matches, 1,002 distinct players; joins to `charting-m-matches.csv`'s `Date` column for split-half date ordering.
+- **premise-check note (explicit caveat)**: this is return SHOT-DEPTH (where the return shot itself lands, a placement/quality proxy for aggressiveness), NOT exact ball-impact court-POSITION tracking (Hawk-Eye contact-point coordinates, as used in some published research) -- that finer-grained positional dataset does not exist in this local corpus. Deep/very_deep return-placement rate is the closest available "return aggressiveness" ingredient locally and is what this row actually tests; do not conflate a CONFIRMED result here with a claim about where the player physically stands to receive serve.
+- **causal story**: cited Hawk-Eye tracking research (arXiv 2202.00583) establishes deep-return positioning/placement as a real, measured style axis in professional tennis (distinct Short ~11.1m / Deep ~12.5m from-net clusters) associated with return aggressiveness; if that style is a persistent player trait rather than pure serve-quality-driven noise, a player's deep-return rate should split-half correlate.
+- **expected signature**: positive split-half Pearson r of per-player deep-return rate, `(deep+very_deep)/returnable` on the `row`=='Total' subset.
+- **test spec**: `domains.tennis.knowledge.validate_research_wave5.return_depth_aggressiveness_persistence` (not yet built) -- deep_rate = (deep+very_deep)/returnable per player-match (Total row only); split by match date (first half of date range vs second), floor >=5 matches/half & >=15 players (matches #18/#30 house floor convention); split-half Pearson r; declared bar |r|>=0.15 AND p<0.01 (matches #30/#32 bar).
+- **status**: UNTESTED
+- **source**: "A Statistical Model of Serve Return Impact Patterns in Professional Tennis" (arXiv), https://arxiv.org/pdf/2202.00583 -- defines and measures return-depth position clusters (Short ~11.1m / Deep ~12.5m from net) from Hawk-Eye tracking as a real style construct associated with return aggressiveness, the literature basis for testing whether the local charting-derived return-depth proxy shows the same player-level persistence.
+
+---

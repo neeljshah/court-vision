@@ -462,3 +462,24 @@ soccer/knowledge/validate_replication_wave1.py`.
   `substitution_timing_moderates_shift__replication_rest_competitions`.
 
 ---
+
+## Seeded 2026-07-10 (research-wave 5 -- literature-sourced, UNTESTED, round-5 pool feedstock)
+
+Fresh mechanism hypothesis on goalkeeper distribution style vs downstream
+BUILDUP chance quality, deliberately scoped DISTINCT from #20 (CONFIRMED --
+short distribution retains possession more than long, a pure pass-
+completion test). Checked against every row above and
+`data/frontend/reject_ledger.jsonl` (535 rows, 0 keyword hits for
+`goalkeep`/`gk_dist` beyond the already-CONFIRMED #20) before seeding. No
+validator built this lane.
+
+### 42. Goalkeeper distribution style vs downstream buildup xG (distinct from #20's retention-only test)
+- **claim**: short/ground goal-kick distribution leads to higher expected-goal (xG) value in the ensuing possession than long/high distribution -- a downstream BUILDUP-QUALITY question. NOT a re-test of #20: #20 (CONFIRMED) measures only whether the goal-kick pass itself is retained (0.986 short vs 0.391 long); this row asks whether the possessions that ARE retained then produce better chances, a question #20's design cannot answer.
+- **premise check**: `data/cache/statsbomb/events/*.json` (same corpus as #19-#21) confirmed this session to carry a `possession` integer field on every event (sampled file: 3,762 events, 15 goal-kick Pass events, `possession` present on all) and `shot.statsbomb_xg` on every Shot event (sampled shot xg=0.077) -- a goal-kick's `possession` id links directly to any shot(s) sharing that id.
+- **causal story**: StatsBomb's own xG Chain/xG Buildup (xGB) framework credits pre-shot possession contributions distinct from raw retention; a short goal-kick keeps the ball at the keeper's feet under less pressure and may enable a more deliberate, higher-quality buildup even though it is not always the higher-retention choice for every single pass -- this tests whether RETAINED short-distribution possessions specifically convert into better chances, not whether retention itself is higher (already answered at #20).
+- **expected signature**: positive gap, mean/median max-shot-xG-in-possession (0 if no shot occurs in that possession) for short/ground goal kicks vs long/high goal kicks.
+- **test spec**: `domains.soccer.knowledge.validate_research_wave5.gk_distribution_vs_buildup_xg` (not yet built) -- for every goal-kick Pass event, collect all Shot events sharing the same `possession` id within the same match; buildup_xg = max(`shot.statsbomb_xg`) in that possession, else 0; Mann-Whitney U (right-skewed, zero-inflated) short vs long goal-kick possessions' buildup_xg; declared bar |median or mean gap|>=0.01 xG AND p<0.01, given the ~56,262-goal-kick population #20 already established.
+- **status**: UNTESTED
+- **source**: "Upgrading Expected Goals" (StatsBomb Blog Archive), https://blogarchive.statsbomb.com/articles/soccer/upgrading-expected-goals/ -- documents the xG Chain/xG Buildup (xGB) framework crediting pre-shot possession contributions, the literature basis for testing goal-kick style against downstream chance quality rather than mere retention (already CONFIRMED at #20).
+
+---
