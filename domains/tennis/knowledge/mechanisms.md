@@ -467,3 +467,35 @@ on sport=tennis) before seeding. No validator built this lane.
 - **artifact link**: `domains/tennis/knowledge/validate_research_wave1.py::load_14d_ace_rate_tercile`, `::load_14d_first_serve_in_tercile`.
 
 ---
+
+## Seeded 2026-07-10 (research-wave 2 -- literature-sourced, UNTESTED, round-2 pool feedstock)
+
+Fresh mechanism hypotheses from different literature areas than the
+round-1 research wave (#32-34 above: tiebreak-skill persistence via
+matches.parquet, dominance-margin, extended 14-day load). Checked against
+every row above and against `data/frontend/reject_ledger.jsonl` (0 keyword
+hits for `tiebreak`/`sub.*timing`/`within.*tourn`/`tourney.*rest` on
+sport=tennis) before seeding. No validator built this lane.
+
+### 35. Tiebreak serve-order (serving first) predicts winning it, net of the literature's own weaker-player confound
+- **claim**: serving the FIRST point of a tiebreak predicts winning that tiebreak -- tested here as a raw local rate, explicitly flagging the same confound the cited literature already found (the first server in a TB is, on average, the WEAKER player entering that game, since the score sequence that produces a 6-6 tied set determines who serves first, not chance).
+- **causal story**: the theoretical mirrored serve sequence (first two points AB, next two BA, i.e. a Prouhet-Thue-Morse-like pattern) should cancel out any structural service-order advantage -- but real-world tiebreaks are not randomized, so a naive raw win-rate read risks conflating "who serves first" with "who was already playing worse."
+- **expected signature**: raw P(first-server wins the TB) vs 0.5 -- cited literature finds ~49.7% (near coin-flip, first server on average the weaker player), so the local read should be reported honestly whichever way it falls, not assumed to favor the first server.
+- **test spec**: `domains.tennis.knowledge.validate_research_wave2.tiebreak_serve_order_win_rate` (not yet built) -- `data/cache/sackmann_pbp/slam_points.parquet` (2011-2015, 543,772 points, confirmed columns `match_id`/`set_no`/`game_no`/`point_number`/`point_server`/`p1_games_won`/`p2_games_won` this session), tiebreak games identified as the `game_no` where `p1_games_won==6 AND p2_games_won==6` within a `set_no` (standard 6-6 trigger), TB winner derived from whichever side's `p1_games_won`/`p2_games_won` increments at the NEXT `game_no` after the TB game (a documented derivation from existing columns, not a fictitious one, same style as this program's other derived-outcome rows e.g. MLB's team-day pitch-count derivation), first-server = `point_server` at the minimum `point_number` within that TB's rows; one-sample t-test of first-server-won indicator against 0.5, min floor >=30 TBs for a first pass.
+- **status**: UNTESTED
+- **measured LOCAL magnitude**: n/a (not yet run).
+- **artifact link**: none yet -- UNTESTED, no validator built this lane.
+- **source**: "Does Serving First in a Tiebreak Give You an Edge?" (Jeff Sackmann, Tennis Abstract/Heavy Topspin), https://www.tennisabstract.com/blog/2015/10/14/does-serving-first-in-a-tiebreak-give-you-an-edge/ -- finds ~49.7% first-server win rate across ~2,500 WTA tiebreaks and explicitly flags that the first server is, on average, the weaker player (the confound this row's expected-signature framing accounts for); and "Testing the effect of serve order in tennis tiebreak" (ScienceDirect/Journal of Economic Behavior & Organization), https://www.sciencedirect.com/science/article/abs/pii/S0167268117303530.
+
+### 36. Within-tournament rest gap predicts serve execution/win probability (distinct from the season-level windows already closed in #13/#17/#34)
+- **claim**: the rest gap between a player's CONSECUTIVE matches WITHIN THE SAME TOURNAMENT predicts serve execution or win probability in the later match -- distinct from #13 (CONFIRMED, season-level 7-day retirement risk), #17 (REJECTED, prior-match duration), and #34 (REJECTED, season-level 14-day-load ace rate), none of which are scoped to a single tournament's own round-to-round schedule.
+- **premise check**: `data/domains/tennis/schedule_density.parquet`'s `rest_days` is GLOBAL (days since the player's most recent match, ANY tournament) -- confirmed by column inspection this session (`event_id`/`player_id`/`player_name`/`date`/`year`/`surface`/`rest_days`/`matches_last_7d`/`matches_last_14d`, no `tourney_id` column). A genuinely NEW within-tournament-scoped rest-gap derivation from `data/domains/tennis/matches.parquet` (confirmed columns `event_id`/`tourney_id`/`tourney_name`/`tourney_level`/`round`, 30,616 rows) is required -- a plain per-player-per-tourney sort + consecutive-date-diff, not a fictitious ingredient.
+- **causal story**: cited multi-day-tournament physiology literature finds measurable serve-accuracy and movement decline across consecutive days of match play WITHIN one event -- a within-tournament fatigue chain distinct from the season-level scheduling-density windows this ledger has already closed as NULL.
+- **expected signature**: negative relationship between (days since this player's PREVIOUS match in the SAME `tourney_id`) and same-match ace-rate/1st-serve-in% -- i.e. a same-tournament short turnaround (e.g. 1-day gap, common in smaller draws) predicts worse serve execution than a longer within-tournament gap.
+- **test spec**: `domains.tennis.knowledge.validate_research_wave2.within_tournament_rest_gap` (not yet built) -- derive `same_tourney_rest_days` from `matches.parquet` (`tourney_id`, `p1_id`/`p2_id`, `date`), per-player sort within each `tourney_id`, diff of consecutive match dates, joined to `match_stats.parquet` by `event_id` for `ace_rate`/`1st_in_pct` (same join pattern already used by #13/#34), ATP+WTA 2015-2025; Welch t-test/Pearson r, short within-tourney gap (<=1 day) vs longer (>=2 days), min n floor 200/bucket; declared bar |eff|>=0.01 (rate points) AND p<0.01, same bar family as #34.
+- **status**: UNTESTED
+- **measured LOCAL magnitude**: n/a (not yet run).
+- **artifact link**: none yet -- UNTESTED, no validator built this lane.
+- **source**: "Consecutive Days of Prolonged Tennis Match Play: Performance, Physical, and Perceptual Responses in Trained Players" (Gescheit et al.), https://pubmed.ncbi.nlm.nih.gov/25710259/ -- finds measurable serve-accuracy and movement decline across consecutive tournament days, the physiological basis for testing a within-tournament (not season-level) rest-gap signal.
+
+---

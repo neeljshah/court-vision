@@ -466,3 +466,33 @@ legitimate in-game state (known at halftime), not a live-mid-Q3 feature.
 - **measured LOCAL magnitude**: 2024-25 (n_close=468 team-games): Q3 std=9.447 vs Q2 std=6.089 (p=2.4e-18, clears) vs Q4 std=8.243 (p=0.00125, clears -- ratio 1.146). 2025-26 (n_close=394 team-games): Q3 std=9.004 vs Q2 std=6.121 (p=6.0e-12, clears) vs Q4 std=8.798 (p=0.672, MISSES -- ratio only 1.023). So "Q3 more volatile than Q2 in close games" is a real, replicated, honest partial finding; "Q3 more volatile than Q4 too" is not replicated.
 - **artifact link**: `domains/basketball_nba/knowledge/validate_q3_state.py::q3_volatility_close_halftime`.
 - **read for P3|m3**: a genuine, replicated lead (Q3-vs-Q2 elevated variance in tight games) worth carrying forward as a sim2 gate-candidate input in a LATER lane (sim2 modules are read-only here per this lane's charter) -- but it is PARTIAL, not CONFIRMED, and should not be treated as a full explanation of the bucket's miscalibration on its own.
+
+---
+
+## Seeded 2026-07-10 (research-wave 2 -- literature-sourced, UNTESTED, round-2 pool feedstock)
+
+Fresh mechanism hypotheses from different literature areas than the
+round-1 research wave (#42-44 above: defender-matchup skill, switch rate,
+assist persistence). Checked against every row above and against
+`data/frontend/reject_ledger.jsonl` (0 keyword hits for `timeout`/`rest_diff`
+on sport=nba) before seeding. No validator built this lane.
+
+### 47. Timeout interrupts opponent scoring run (raw pre/post gap, not a causal claim)
+- **claim**: a team calling a timeout while conceding an opponent scoring run sees that opponent's raw points-per-minute drop in the window immediately after the timeout vs the window immediately before -- the local descriptive gap this ledger can test, distinct from the harder causal question (below).
+- **causal story**: a timeout lets the trailing team reset defensive matchups/set a play, which should interrupt an opposing run's rhythm in the immediate aftermath -- tested here as a raw paired before/after gap, same design family as the CONFIRMED red-card (soccer #8) and garbage-time (#17) paired-window tests already in this program.
+- **expected signature**: opponent points-per-minute in a fixed window before the timeout is higher than in the window after (window capped at period boundary, min floor to avoid degenerate tiny windows).
+- **test spec**: `domains.basketball_nba.knowledge.validate_research_wave2.timeout_interrupts_opponent_run` (not yet built -- lane scope is UNTESTED rows only) -- raw pbp corpus `data/nba/pbp_<game_id>_p1.json` (period-1 only, 1,289/3,611 games have a local file, 35.7% coverage, same corpus/coverage note as #39's foul-trouble-spillover row), timeout events identified via `event_desc` containing "Timeout" (`event_type==0`, e.g. `'CELTICS Timeout: Regular (Full 1 Short 0)'` -- `team_abbrev` is blank on these rows, verified this session; the calling team is the name token parsed from `event_desc`, needs a 30-team name->abbrev lookup, not a fictitious column), paired Welch t-test opponent PPM in a 3-min window before vs 3-min window after (min 60s floor if truncated by a period boundary); declared bar |eff|>=0.3 pts/min AND p<0.01.
+- **status**: UNTESTED
+- **measured LOCAL magnitude**: n/a (not yet run).
+- **artifact link**: none yet -- UNTESTED, no validator built this lane.
+- **source**: "The causal effect of a timeout at stopping an opposing run in the NBA" (Brill, Wyner et al., Annals of Applied Statistics / arXiv:2011.11691), https://arxiv.org/abs/2011.11691 -- finds a raw pre/post-timeout scoring-gap narrowing locally (opponent deficit 3.74->1.20 pts in the surrounding minute in their corpus) but a near-zero-to-slightly-negative CAUSAL effect once the selection confound (timeouts are called precisely during opponent runs) is accounted for. This row tests only the local RAW descriptive gap, explicitly not a causal claim -- an honest scope match to what a paired before/after design can actually support.
+
+### 48. Rest-days DIFFERENTIAL between the two competing teams predicts margin (distinct from #14/#15's single-team-own-rest tests)
+- **claim**: the rest-days gap BETWEEN the two teams in a game (home `rest_days` minus away `rest_days`) predicts point margin beyond what either team's own isolated rest state (#14 CONFIRMED b2b-vs-rested; #15 REJECTED three-in-4) already captures -- neither existing row conditions on the OPPONENT's simultaneous rest state.
+- **causal story**: cited Wharton research finds the home ATS edge is driven by the RELATIVE rest gap (it shrinks/reverses specifically when the away team is comparably or better rested), not just whether the home team itself is tired in isolation.
+- **expected signature**: positive Pearson r between `rest_diff` (home rest_days minus away rest_days) and home team's margin.
+- **test spec**: `domains.basketball_nba.knowledge.validate_research_wave2.rest_differential_margin` (not yet built) -- `domains/basketball_nba/knowledge/_data.py::team_game_frame(load_player_boxscores())` (confirmed columns `game_id`/`team`/`is_home`/`rest_days`/`margin`, 7,222 team-games this session) self-joined on `game_id` to pair each game's home row against its away row, `rest_diff = home.rest_days - away.rest_days`, both sides' `rest_days` non-null; Pearson r vs home margin; declared bar |r|>=0.05 AND p<0.01.
+- **status**: UNTESTED
+- **measured LOCAL magnitude**: n/a (not yet run).
+- **artifact link**: none yet -- UNTESTED, no validator built this lane.
+- **source**: "The Role of Rest in the NBA Home-Court Advantage" (Oliver Entine & Dylan Small, Wharton), https://faculty.wharton.upenn.edu/wp-content/uploads/2012/04/Nba.pdf -- finds home ATS win% (~50.6% when both teams equally rested/unrested) drops meaningfully once the rest gap shifts toward the away team, i.e. the differential (not a single team's own isolated rest state) is the literature's own framing of the mechanism.
