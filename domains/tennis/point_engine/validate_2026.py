@@ -85,6 +85,17 @@ def run(n_sims: int = N_SIMS_DEFAULT, max_matches: int = MAX_MATCHES_DEFAULT) ->
     return doc
 
 
+def _match_mc_verdict(B: Dict[str, Any]) -> str:
+    """Panel-B verdict off the bootstrap CI, not the raw point estimate: a CI that
+    straddles zero is UNDERPOWERED regardless of which side the point estimate
+    favors; a significant win is still only PROVISIONAL (single MCP-charted
+    corpus, no independent second corpus yet -- see module docstring)."""
+    if not B["model_beats_climatology_crps_significant"]:
+        return "UNDERPOWERED"
+    return ("MODEL_BEATS_CLIMATOLOGY_CRPS_PROVISIONAL" if B["model_beats_climatology_crps"]
+            else "CLIMATOLOGY_BEATS_MODEL_CRPS")
+
+
 def _ledger_rows(doc: Dict[str, Any]) -> List[Dict[str, Any]]:
     ts = dt.datetime.now(dt.timezone.utc).isoformat()
     A, B = doc["panel_A_point_logloss"], doc["panel_B_match_mc"]
@@ -104,14 +115,23 @@ def _ledger_rows(doc: Dict[str, Any]) -> List[Dict[str, Any]]:
         {"hypothesis": "tennis_point_engine_2011_2013fit_2026drift_match_mc",
          "sport": "tennis", "atomic_unit": "match_mc_ensemble", "method": "tennis_point_engine_v1",
          "season": "fit_2011_2012_2013_test_2026_mcp_charted",
-         "verdict": "MODEL_BEATS_CLIMATOLOGY_CRPS" if B["model_beats_climatology_crps"] else "CLIMATOLOGY_HOLDS_OR_TIES",
+         "verdict": _match_mc_verdict(B),
          "lesson": ("match-level MC (n=%d): brier model=%.5f naive=%.5f, PIT-uniformity "
-                    "dev=%.4f, CRPS-total sim=%.4f vs climatology-normal=%.4f. Population "
-                    "caveat: MCP charted sample is non-representative."
+                    "dev=%.4f (PIT deviation this large means the ensemble is loosely "
+                    "calibrated -- treat any CRPS win here skeptically), CRPS-total "
+                    "sim=%.4f vs climatology-normal=%.4f (delta=%.4f, 95%% bootstrap CI "
+                    "[%.4f, %.4f] over n_boot=%d resamples, significant=%s). Single "
+                    "non-representative MCP-charted corpus (volunteer-selected "
+                    "high-profile matches): any beats-claim is PROVISIONAL pending an "
+                    "independent second corpus, and UNDERPOWERED whenever the CI "
+                    "straddles zero."
                     % (B["model"]["n"], B["model"]["brier_match_winner"],
                        B["naive_baseline"]["brier_match_winner"],
                        B["model"]["pit_total_uniformity_dev"], B["model"]["crps_total_sim"],
-                       B["climatology_normal"]["crps_total_climatology"])),
+                       B["climatology_normal"]["crps_total_climatology"],
+                       B["crps_vs_climatology_ci"]["mean_delta"],
+                       B["crps_vs_climatology_ci"]["ci_lo"], B["crps_vs_climatology_ci"]["ci_hi"],
+                       B["crps_vs_climatology_ci"]["n_boot"], B["crps_vs_climatology_ci"]["significant"])),
          "edge_claimed": False, "computed_at": ts},
     ]
 
