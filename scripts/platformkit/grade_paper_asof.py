@@ -83,13 +83,20 @@ def _mlb_ticker_date(bet: Dict[str, Any]) -> Optional[str]:
     return parsed[0].isoformat() if parsed else None
 
 
-def mlb_ticker_fallback_match(bet: Dict[str, Any], games: List[Dict[str, Any]]
+def mlb_ticker_fallback_match(bet: Dict[str, Any], games: List[Dict[str, Any]],
+                              *, board_date: Optional[str] = None
                               ) -> Optional[Dict[str, Any]]:
     """MLB-only fallback for grade_paper._find_final_game: split the bet's own
     KXMLBGAME ticker AWAY+HOME code tail against THIS board's own abbr set
     (hist_mlb_outcome_resolver's ticker parser + split algorithm, never a new
-    hand-rolled team-name table) and match by EXACT abbr equality. None if no
-    ticker, an ambiguous split, or no FINAL game at that exact pairing.
+    hand-rolled team-name table) and match by EXACT abbr equality.
+
+    Wrong-settle fix (review of 0889b481, proven live: 3 COL@SF tickets dated
+    26JUL09/10/11 all settled against the identical 26JUL09 8-2 final):
+    *board_date* (the date *games* was queried for, when known) must equal the
+    ticket's own embedded date. G<n> doubleheader suffix (*gnum*) indexes among
+    >1 same-pairing finals; with no G-suffix, >1 finals is AMBIGUOUS. 0 or 2+
+    candidates both return None -- an honest skip, never a guessed first match.
     """
     ticker = _mlb_ticker(bet)
     if ticker is None:
@@ -97,7 +104,9 @@ def mlb_ticker_fallback_match(bet: Dict[str, Any], games: List[Dict[str, Any]]
     parsed = _parse_mlb_ticker(ticker)
     if parsed is None:
         return None
-    _, tail, _gnum = parsed
+    tdate, tail, gnum = parsed
+    if board_date is not None and board_date != tdate.isoformat():
+        return None  # this board's date is not the ticket's own game date
     abbr_index = {str(g.get("home_abbr") or "").upper() for g in games}
     abbr_index |= {str(g.get("away_abbr") or "").upper() for g in games}
     split = _mlb_split_tail(tail, abbr_index)
@@ -105,15 +114,15 @@ def mlb_ticker_fallback_match(bet: Dict[str, Any], games: List[Dict[str, Any]]
         return None
     away, home = split
     from scripts.platformkit import grade_paper as _gp  # local: breaks the cycle
-    for g in games:
-        if g.get("state") not in _gp._FINAL_STATES:
-            continue
-        if (str(g.get("away_abbr") or "").upper() == away
-                and str(g.get("home_abbr") or "").upper() == home
-                and g.get("home_score") is not None
-                and g.get("away_score") is not None):
-            return g
-    return None
+    matches = [g for g in games if g.get("state") in _gp._FINAL_STATES
+               and str(g.get("away_abbr") or "").upper() == away
+               and str(g.get("home_abbr") or "").upper() == home
+               and g.get("home_score") is not None
+               and g.get("away_score") is not None]
+    if gnum is not None:
+        idx = gnum - 1
+        return matches[idx] if 0 <= idx < len(matches) else None
+    return matches[0] if len(matches) == 1 else None
 
 
 def _shape_bridge_games(sport: str, rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -165,36 +174,38 @@ def route_fetch(sport: str, date: Optional[str] = None) -> Dict[str, Any]:
     return _lb.todays_live_games(sport, date=espn_date)
 
 
-def _candidate_dates(bet: Dict[str, Any], *, today: Optional[str] = None) -> List[str]:
-    """Primary game-date guess for *bet*, plus a ts+1day fallback ONLY when no
-    explicit game_date was stamped (a bet recorded the evening before tip buckets
-    under the GAME date -- same caveat grade_paper_close.game_key_for_bet notes).
-
-    *today* is excluded from the fallback: this pass targets PRIOR-day finals only
-    (live_board's TODAY board also attaches in-game predictions for every live game,
-    which is expensive and pointless here -- we only need a final score). A bet whose
-    true game date IS today is naturally picked up by the next normal daily
-    grade_open_bets pass once that game goes final, not lost.
-
-    MLB KXMLBGAME rows: the ticker's own embedded date is a hard fact, preferred
-    over the ts guess below (see _mlb_ticker_date's docstring).
+def bet_expected_dates(bet: Dict[str, Any]) -> List[str]:
+    """Every calendar date *bet*'s own game could plausibly be on, INCLUDING today
+    (_candidate_dates below excludes today, for its own bounded-backlog purpose).
+    Used by grade_paper._find_final_game's settle-time date guard: a board queried
+    for a date outside this list cannot hold *bet*'s real game. Unparseable/absent
+    date info returns [] (honest "no info", never a guess) so the guard degrades to
+    a no-op instead of false-positive-rejecting a legitimate match.
     """
     if str(bet.get("sport", "")).lower() == "mlb":
         tdate = _mlb_ticker_date(bet)
         if tdate is not None:
-            return [tdate] if tdate != today else []
+            return [tdate]
     gd = str(bet.get("game_date") or "").strip()[:10]
     if gd:
-        return [gd] if gd != today else []
+        return [gd]
     ts = str(bet.get("ts") or "")[:10]
     if not ts:
         return []
     try:
         d = _dt.date.fromisoformat(ts)
     except ValueError:
-        return [ts] if ts != today else []
-    fallback = (d + _dt.timedelta(days=1)).isoformat()
-    return [dt for dt in (ts, fallback) if dt != today]
+        return []
+    return [ts, (d + _dt.timedelta(days=1)).isoformat()]
+
+
+def _candidate_dates(bet: Dict[str, Any], *, today: Optional[str] = None) -> List[str]:
+    """bet_expected_dates() with *today* excluded: this backlog pass targets
+    PRIOR-day finals only (live_board's TODAY board also attaches in-game
+    predictions for every live game, which is expensive and pointless here -- we
+    only need a final score). A bet whose true game date IS today is naturally
+    picked up by the next normal daily grade_open_bets pass, not lost here."""
+    return [d for d in bet_expected_dates(bet) if d != today]
 
 
 def backfill_as_of(
@@ -256,7 +267,7 @@ def backfill_as_of(
         sp = str(bet.get("sport", "")).lower()
         game = None
         for d in _candidate_dates(bet, today=today_s):
-            game = _gp._find_final_game(bet, _board(sp, d))
+            game = _gp._find_final_game(bet, _board(sp, d), board_date=d)
             if game is not None:
                 break
         if game is None:
@@ -288,4 +299,4 @@ def backfill_as_of(
     }
 
 
-__all__ = ["route_fetch", "backfill_as_of"]
+__all__ = ["route_fetch", "backfill_as_of", "bet_expected_dates", "mlb_ticker_fallback_match"]

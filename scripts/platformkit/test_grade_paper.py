@@ -13,6 +13,7 @@ import json
 
 from scripts.platformkit.clv_ledger import load_ledger, record_bet
 from scripts.platformkit.grade_paper import (
+    _find_final_game,
     grade_one,
     grade_open_bets,
     grade_summary,
@@ -219,6 +220,43 @@ def test_open_bets_not_final_is_pending(tmp_path):
     assert out["n_settled_now"] == 0 and out["n_pending"] == 1
     lines = [ln for ln in ledger.read_text(encoding="utf-8").splitlines() if ln.strip()]
     assert len(lines) == 1  # only the open row; nothing fabricated
+
+
+# --------------------------------------------------------------------------- #
+# Wrong-settle fix (gap ledger review of 0889b481): date guard, both the
+# _team_match loop and the MLB ticket fallback. Proven live trap: 3 separate
+# COL@SF tickets dated 26JUL09/10/11 all settled against the identical
+# 26JUL09 8-2 final -- the 26JUL11 ticket settled before its game could exist.
+# --------------------------------------------------------------------------- #
+def test_find_final_game_date_guard_rejects_wrong_date_board():
+    bet = {"sport": "mlb", "matchup": "Colorado @ San Francisco",
+           "bet_id": "pm|kalshi|KXMLBGAME-26JUL111400COLSF|home"}
+    games = [_game("San Francisco Giants", "SF", "Colorado Rockies", "COL", 8, 2)]
+    # today's board (2026-07-09) cannot satisfy a ticket dated 2026-07-11
+    assert _find_final_game(bet, games, board_date="2026-07-09") is None
+    assert _find_final_game(bet, games, board_date="2026-07-11") is not None
+
+
+def test_open_bets_future_ticket_not_settled_by_earlier_same_teams_final(tmp_path):
+    """End-to-end via grade_open_bets: a bet whose KXMLBGAME ticket is dated
+    AFTER today must stay pending, not bind to today's same-teams final.
+    Ticket date is TOMORROW (relative to the real clock, not hardcoded) so this
+    stays deterministic regardless of what day the suite actually runs."""
+    import datetime as _dtm
+    tomorrow = _dtm.datetime.now(_dtm.timezone.utc).date() + _dtm.timedelta(days=1)
+    tail = "%02d%s%02d1400COLSF" % (tomorrow.year % 100,
+                                    tomorrow.strftime("%b").upper(), tomorrow.day)
+    ledger = tmp_path / "clv_ledger.jsonl"
+    row = {"ts": "2026-07-08T12:00:00+00:00", "sport": "mlb",
+           "matchup": "Colorado @ San Francisco", "side": "home",
+           "taken_book": "kalshi", "taken_decimal": 2.0, "stake_units": 1.0,
+           "status": "open", "executed": False, "market": "moneyline",
+           "market_type": "moneyline",
+           "bet_id": "pm|kalshi|KXMLBGAME-%s|home" % tail}
+    ledger.write_text(json.dumps(row) + "\n", encoding="utf-8")
+    games = {"mlb": [_game("San Francisco Giants", "SF", "Colorado Rockies", "COL", 8, 2)]}
+    out = grade_open_bets(ledger, None, fetch_finals=_fetch_factory(games))
+    assert out["n_settled_now"] == 0 and out["n_pending"] == 1
 
 
 def test_open_bets_no_matching_game_is_pending(tmp_path):
