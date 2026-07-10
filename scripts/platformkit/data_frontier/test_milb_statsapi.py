@@ -84,6 +84,36 @@ def test_join_rate_unit(tmp_path: Path):
     assert out["n_joined"] == 2 and out["join_rate"] == 0.5
 
 
+def test_debut_watch_unit(tmp_path: Path):
+    pd = pytest.importorskip("pandas")
+    ros_fp = tmp_path / "rosters_aaa_2026-07-09.jsonl"
+    with open(ros_fp, "w", encoding="ascii") as f:
+        for pid, name in ((100, "Has Profile"), (200, "Debut One"), (300, "Debut Two")):
+            f.write(json.dumps({"player_id": pid, "player_name": name}) + "\n")
+    profiles_fp = tmp_path / "mlb_player_profiles.parquet"
+    pd.DataFrame({"entity_id": [100, 100, 999]}).to_parquet(profiles_fp)
+    out = M.debut_watch(ros_fp, profiles_fp=profiles_fp)
+    assert out["status"] == "OK"
+    assert out["as_of"] == "2026-07-09"
+    assert out["n_milb_rostered"] == 3
+    assert out["n_with_mlb_profile"] == 1
+    assert out["n_debut_candidates"] == 2
+    assert set(out["debut_candidate_sample"]) == {"Debut One", "Debut Two"}
+
+
+def test_debut_watch_no_roster(tmp_path: Path):
+    out = M.debut_watch(tmp_path / "missing.jsonl", profiles_fp=tmp_path / "missing.parquet")
+    assert out["status"] == "NO_ROSTER"
+
+
+def test_debut_watch_no_profiles_store(tmp_path: Path):
+    ros_fp = tmp_path / "rosters_aaa_2026-07-09.jsonl"
+    with open(ros_fp, "w", encoding="ascii") as f:
+        f.write(json.dumps({"player_id": 100, "player_name": "X"}) + "\n")
+    out = M.debut_watch(ros_fp, profiles_fp=tmp_path / "missing.parquet")
+    assert out["status"] == "NO_PROFILES"
+
+
 def test_join_rate_real_data_honest_rate():
     """The REAL join-rate check (MiLB ids vs savant-profile mlbam ids). Low is
     expected -- only AAA players with prior MLB pitch data can join."""
