@@ -8,7 +8,31 @@ resolver is for the literal "rank entities by this one stat" shape.
 
 Reuses the shared profiles parquet + per-sport attribute registry via
 scripts.platformkit.profiles.ask -- no new data path, no re-implemented
-fuzzy matcher (ask._norm / ask.load_profiles / ask.load_registry).
+fuzzy matcher (ask._norm / ask.load_profiles / ask.load_registry). Because
+`sport` was always a plain parameter threaded into ask.load_profiles /
+load_registry, this module needed ZERO sport-specific branching to cover
+every sport that already has a built profiles parquet -- proven live in
+test_leaderboard_resolver.py, one real top-N query per sport.
+
+Per-sport coverage (honest, checked against data/cache/profiles/ + each
+domain's attribute_registry.py on 2026-07-10):
+  - nba:    data/cache/profiles/nba_{player,team,lineup}_profiles.parquet.
+            `n` = minutes/possessions/shots depending on attribute family.
+  - mlb:    data/cache/profiles/mlb_player_profiles.parquet (batters only).
+            `n` = PA (plate appearances); e.g. K_avoidance floor=200 PA.
+  - soccer: data/cache/profiles/soccer_team_profiles.parquet (teams only,
+            no player kind built). `n` = matches (attribute's own
+            `floor_basis`, e.g. counter_threat floor=30 team_matches).
+  - tennis: data/cache/profiles/tennis_player_profiles.parquet.
+            `n` = the attribute's own charting/match point count (e.g.
+            serve_dominance floor={"charting_svc_n": 1000}).
+  - wnba:   profiles exist (wnba_{player,lineup}_profiles.parquet) but is
+            OUT OF SCOPE for this pass -- not requested, not proven here.
+  min_n stays a raw comparison against the `n` column: it is already the
+  sport-and-attribute-correct sample count because each domain's own
+  build_profiles.py wrote it that way -- no per-sport min_n table needed
+  here, and adding one would just duplicate what attribute_registry.py
+  already declares per attribute (read it there, not here).
 
 Deterministic, refuse-unregistered, matching the rest of this stack:
   - a category word must resolve to exactly ONE known attribute name for the
@@ -39,6 +63,14 @@ from scripts.platformkit.profiles import ask as _ask
 TOP_N_RE = re.compile(r"^\s*top\s+(\d+)?\s*(.+?)\s*\??\s*$", re.I)
 LEADERS_RE = re.compile(r"^\s*(.+?)\s+leaders?\s*\??\s*$", re.I)
 
+# Filler words stripped from a free-text category before description-token
+# matching -- without this, a filler word from the query (e.g. "a", "not")
+# coincidentally appearing in an unrelated attribute's prose description
+# scores a false match. Only bit for sports with big/verbose registries
+# (mlb 121 attrs, tennis 73) -- caught by the multi-sport refuse test.
+_CATEGORY_STOPWORDS = {"a", "an", "the", "is", "are", "of", "for", "to", "in", "on", "by",
+                        "and", "or", "not", "this", "that", "it", "with", "per", "its"}
+
 
 def is_ranking_query(text: str) -> bool:
     return bool(TOP_N_RE.match(text) or LEADERS_RE.match(text))
@@ -68,7 +100,7 @@ def _candidate_attributes(sport: str, category: str, df=None) -> list[str]:
     attrs = sorted(set(attrs) | set(reg))
     if category in attrs:
         return [category]
-    tset = set(_ask._norm(category).replace("_", " ").split())
+    tset = set(_ask._norm(category).replace("_", " ").split()) - _CATEGORY_STOPWORDS
     best, tied = 0.0, []
     for a in attrs:
         atoks = set(_ask._norm(a).replace("_", " ").split())

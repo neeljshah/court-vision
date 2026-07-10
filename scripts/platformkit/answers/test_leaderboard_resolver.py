@@ -125,3 +125,69 @@ def test_live_top_shooters_ambiguous_or_refused_never_improvised():
     r = R.resolve("top shooters", sport="nba")
     assert r["status"] in ("not_supported", "ambiguous")
     assert r["category"] == "ranking"
+
+
+# ---------------------------------------------------------------------------
+# Multi-sport coverage -- MLB / soccer / tennis (product follow-through of
+# the NBA-only proof above). Each entry is (sport, attribute, registry-
+# declared floor read straight off attribute_registry.py, so the stricter
+# min_n used below is a real "raise the bar further" cut, not a guess):
+#   mlb K_avoidance floor=200 PA/batter-season
+#   soccer counter_threat floor=30 team_matches
+#   tennis serve_dominance floor={"charting_svc_n": 1000}
+# A sport with no built profiles parquet in this clone is skipped -- named
+# gap, not a fake pass.
+# ---------------------------------------------------------------------------
+_MULTISPORT = [
+    ("mlb", "K_avoidance", 200),
+    ("soccer", "counter_threat", 30),
+    ("tennis", "serve_dominance", 1000),
+]
+
+
+@pytest.mark.parametrize("sport,attribute,registry_floor", _MULTISPORT)
+def test_live_top5_via_resolve_entrypoint_multisport(sport, attribute, registry_floor):
+    df = _ask.load_profiles(sport)
+    if df.empty:
+        pytest.skip(f"no {sport} profiles parquet built -- named gap, not tested")
+    r = R.resolve(f"top 5 {attribute}", sport=sport)
+    assert r["status"] == "ok", r
+    assert r["category"] == "ranking"
+    assert r["attribute"] == attribute
+    assert r["source_artifact"].endswith("_profiles.parquet")
+    assert len(r["rows"]) == 5
+    vals = [row["raw_value"] for row in r["rows"]]
+    assert vals == sorted(vals, reverse=True), "rows must be sorted raw_value descending"
+    for row in r["rows"]:
+        assert row["n"] > 0
+        # the build-time floor already ran -- every surviving row clears it.
+        assert row["n"] >= registry_floor, (
+            f"{sport} {attribute} row n={row['n']} below registry floor {registry_floor}")
+
+
+@pytest.mark.parametrize("sport,attribute,registry_floor", _MULTISPORT)
+def test_min_n_opt_in_floor_raises_the_bar_further_multisport(sport, attribute, registry_floor):
+    """min_n is an OPT-IN floor on top of the one already baked in -- passing
+    a value ABOVE the registry floor should only ever shrink (never grow)
+    the result set, on real per-sport data."""
+    df = _ask.load_profiles(sport)
+    if df.empty:
+        pytest.skip(f"no {sport} profiles parquet built -- named gap, not tested")
+    r_base = LB.leaderboard(sport, attribute, top_n=200, min_n=0.0)
+    stricter = registry_floor * 2
+    r_strict = LB.leaderboard(sport, attribute, top_n=200, min_n=stricter)
+    assert r_base["status"] == "ok"
+    assert r_strict["status"] in ("ok", "no_data")
+    if r_strict["status"] == "ok":
+        assert all(row["n"] >= stricter for row in r_strict["rows"])
+        assert len(r_strict["rows"]) <= len(r_base["rows"])
+
+
+@pytest.mark.parametrize("sport", ["mlb", "soccer", "tennis"])
+def test_unmatched_category_word_refuses_with_candidate_list_multisport(sport):
+    df = _ask.load_profiles(sport)
+    if df.empty:
+        pytest.skip(f"no {sport} profiles parquet built -- named gap, not tested")
+    r = LB.leaderboard(sport, "zzz_not_a_real_attribute_zzz", top_n=5)
+    assert r["status"] == "not_supported"
+    assert "available" in r and len(r["available"]) > 0
