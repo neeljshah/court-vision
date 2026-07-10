@@ -137,6 +137,50 @@ def test_mechanism_attr_names_are_real_registry_members():
         assert reg[m["attr"]]["entity"] == m["entity"], hyp
 
 
+def test_round1_3_2026_07_10_new_confirmed_mechanisms_stay_unmapped():
+    # Tonight's first 3 research rounds (round-1 seed/wave-2/wave-3) added 13
+    # new CONFIRMED_LOCAL hypotheses across the 4 real ledgers (wave-4's seed
+    # yielded zero CONFIRMED). Fresh premise check, same discipline as
+    # 39727abe: none maps onto the current grammar without a new registry
+    # attr / STATIC_POOLS column / atomic_unit -- see the ROUND 1-3
+    # CLASSIFICATION comment above KNOWN_MAPPINGS for the per-hypothesis
+    # blocker. This locks in both halves of that claim: (1) each hypothesis
+    # really is CONFIRMED_LOCAL on disk right now, not a stale premise, and
+    # (2) none of them leaked into KNOWN_MAPPINGS.
+    new_confirmed = {
+        "basketball_nba": [
+            "boxdetail_ast_persistence_and_margin", "defender_matchup_skill_predictive_validity",
+            "starter_minutes_vs_margin__combined", "timeout_interrupts_opponent_run__combined",
+        ],
+        "mlb": [
+            "compassionate_umpire_count_zone__combined", "mid_inning_pitching_change_interrupt__combined",
+            "pinch_sub_platoon_targeting__combined",
+        ],
+        "soccer": [
+            "block_depth_counterattack_share", "xg_rebound_cluster_calibration",
+            "xg_supremacy_persistence", "substitution_timing_moderates_shift",
+        ],
+        "tennis": ["dominance_margin_predicts_outcome_partial", "ball_cycle_serve_speed_kmh"],
+    }
+    for sport, hyps in new_confirmed.items():
+        rows = KI._load_ledger(KI.LEDGERS[sport])
+        confirmed = {r.get("hypothesis") for r in rows if r.get("verdict") == "CONFIRMED_LOCAL"}
+        for h in hyps:
+            assert h in confirmed, "%s/%s not CONFIRMED_LOCAL on disk -- classification is stale" % (sport, h)
+            assert h not in KI.KNOWN_MAPPINGS, "%s/%s must stay unmapped -- named blocker not resolved" % (sport, h)
+
+    # concretely verify 2 of the named blockers instead of just asserting
+    # absence-from-KNOWN_MAPPINGS (a real runnable check, not just enumeration).
+    assert "ast_asof" not in GEN._registry("basketball_nba")  # noqa: SLF001
+    assert "diff_avg_games_per_set_asof" not in GEN.STATIC_POOLS["tennis_match_asof"]
+    assert "diff_xg_supremacy_asof" not in GEN.STATIC_POOLS["soccer_match_asof"]
+
+    # pool count proof: real ledgers, unchanged at 16/all-MLB before and after.
+    cands = KI.knowledge_candidates()
+    assert len(cands) == 16
+    assert {c.sport for c in cands} == {"mlb"}
+
+
 def test_ingame_state_template_stays_unmapped_pending_registry_wiring():
     # M10 pool-unlock lane (this session): nba_ingame_state_self_cross now
     # exists in the grammar (generator.py) but KNOWN_MAPPINGS must not
