@@ -166,8 +166,8 @@ calibration/mechanism receipt, not ROI.
 
 ### 16. Referee card-rate individual consistency (split-half)
 - **claim**: individual referees differ in card-happiness, and that tendency is a stable personal trait.
-- **status**: NOT_TESTABLE -- 82 distinct referees officiate the 400-match corpus, but fewer than 10 have >=3 matches in BOTH season halves; too sparse for a per-referee split-half correlation on this slice (referee identity itself was confirmed joinable this session -- the gap is sample density, not the ingredient).
-- **artifact link**: `domains/soccer/knowledge/validate_referee_schedule.py::referee_card_rate_persistence`.
+- **status**: NOT_TESTABLE on the original 400-match StatsBomb slice (82 referees, fewer than 10 with >=3 matches in BOTH halves) -- UNBLOCKED 2026-07-10 by row #34's 10,251-match flat-file corpus, earned verdict REJECTED (NULL_LOCAL): split-half r=0.2999, p=0.0636, n=39 referees -- effect clears the declared |r|>=0.15 bar but misses p<0.01, so the "differ + persist" claim is not confirmed at this significance bar (directionally positive, underpowered at alpha=0.01, not a clean null).
+- **artifact link**: `domains/soccer/knowledge/validate_referee_schedule.py::referee_card_rate_persistence` (original NOT_TESTABLE reading, StatsBomb slice); `domains/soccer/knowledge/validate_referee_xg_fouls.py::referee_card_rate_persistence_at_scale` (unblocking reading, flat-file corpus); `validation_ledger.jsonl` row `referee_card_rate_persistence_at_scale`.
 
 ### 17. Yellow-card accumulation suspension effect
 - **claim**: a team missing a suspended player performs worse in that match than its baseline.
@@ -299,30 +299,31 @@ calibration/mechanism receipt, not ROI.
 
 ---
 
-## Seeded 2026-07-10 (research-wave -- literature-sourced, UNTESTED, M10 pool feedstock)
+## Seeded 2026-07-10 (research-wave -- literature-sourced, M10 pool feedstock) -- validated this session
 
 Fresh mechanism hypotheses from public football-analytics literature,
 checked against every row above and against `data/frontend/reject_ledger.jsonl`
-(535 rows) before seeding. No validator built this lane.
+(535 rows) before seeding, then validated this session (1 CONFIRMED, 2
+REJECTED/NULL_LOCAL) via `domains/soccer/knowledge/validate_referee_xg_fouls.py`.
 
 ### 34. Referee card-rate individual consistency, at scale (unblocks NOT_TESTABLE #16 with a bigger corpus)
 - **claim**: individual referees differ in card-happiness, and that tendency is a stable personal trait -- the same claim as #16, but #16 was NOT_TESTABLE on the 400-match StatsBomb slice (fewer than 10 referees with >=3 matches in both halves); a much larger local corpus now exists.
 - **causal story**: same as #16 -- referees vary in disciplinary strictness as a personal trait, not match-to-match noise.
 - **expected signature**: positive split-half correlation of per-referee card rate (or foul-to-card conversion rate), first half of the corpus's date range vs second, for referees with enough matches in both halves.
 - **test spec**: split-half Pearson r, per-referee `total_cards / total_fouls` (or raw card rate), referees with >=5 matches/half, `data/domains/soccer/referee_card_foul_profiles.parquet` (10,251 event-referee rows across multiple divisions/years) joined to `match_stats.parquet` (25,834 matches) by `event_id`; declared bar |r|>=0.15 AND p<0.01.
-- **status**: UNTESTED
-- **measured LOCAL magnitude**: n/a (not yet run).
-- **artifact link**: `data/domains/soccer/referee_card_foul_profiles.parquet` (`referee`, `total_fouls`, `total_yellow`, `total_red`, `total_cards`, `year`, `div`), `data/domains/soccer/match_stats.parquet` -- a DIFFERENT, much larger corpus than #16's 400-match StatsBomb slice, so this is a fresh data-availability attempt, not a re-run of the closed NOT_TESTABLE verdict.
+- **status**: REJECTED (NULL_LOCAL) -- premise-checked clean (both parquets load with every named column, join is 100% coverage by `event_id`, no bare/prefixed mismatch found); the ingredient exists and is testable at scale, unblocking #16 to an earned verdict, but the split-half correlation misses the declared p<0.01 bar.
+- **measured LOCAL magnitude**: split-half pearson r=0.2999 (n=39 referees, >=5 matches/half), p=0.0636 -- effect clears the |r|>=0.15 bar but is not significant at alpha=0.01 (directionally consistent with the literature's "time consistency" finding, underpowered rather than a clean null at n=39).
+- **artifact link**: `domains/soccer/knowledge/validate_referee_xg_fouls.py::referee_card_rate_persistence_at_scale`; `validation_ledger.jsonl` row `referee_card_rate_persistence_at_scale`.
 - **source**: "Are football referees really biased and inconsistent?" (Dobson & Dawson, Nottingham Trent University), https://irep.ntu.ac.uk/id/eprint/16418/1/196365_392%20Dobson%20PostPrint.pdf -- academic study rejecting the "refereeing consistency" null hypothesis (referees DO differ significantly), while separately finding a "time consistency" result (each referee's own average is stable over time) -- exactly the two-part claim (differ + persist) this row tests locally.
 
 ### 35. Trailing xG-supremacy is a stable team trait (persistence, not incremental-Brier)
 - **claim**: a team's trailing (as-of) combined xG-supremacy (attack minus defense) is internally stable -- split-half persistent -- as a team trait, independent of whether it improves win-probability Brier over a baseline (a separate, already-closed question).
 - **causal story**: if xG-supremacy reflects real, durable team quality (not shot-luck noise), a team's trailing supremacy value early in a sampling window should correlate with its trailing supremacy value later in the same window.
 - **expected signature**: positive split-half Pearson r of `diff_xg_supremacy_asof` per team, first-half-of-corpus-dates vs second.
-- **test spec**: split-half Pearson r, per-team mean `home_xg_supremacy_asof`/`away_xg_supremacy_asof` (unified to a per-team-per-date series), min n games/half; declared bar |r|>=0.20 AND p<0.01.
-- **status**: UNTESTED
-- **measured LOCAL magnitude**: n/a (not yet run).
-- **artifact link**: `data/domains/soccer/asof_xg_proxy.parquet` (25,834 matches: `home_xg_supremacy_asof`, `away_xg_supremacy_asof`, `diff_xg_supremacy_asof`).
+- **test spec**: split-half Pearson r, per-team mean `home_xg_supremacy_asof`/`away_xg_supremacy_asof` (unified to a per-team-per-date series, joined to `match_stats.parquet` for team identity + date), min n games/half declared at 10; declared bar |r|>=0.20 AND p<0.01.
+- **status**: CONFIRMED -- premise-checked clean (all named columns present, `event_id` join 100% coverage). Magnitude is large enough to be independently suspicious, so a robustness check was run before trusting it: a gap-buffered re-split (both halves trimmed 120 days off the median-date boundary, to rule out the EW-smoothing state simply bridging across the split point) gives r=0.9228, p=1.33e-53, n=127 -- effectively unchanged from the un-buffered reading, so this is not a smoothing-continuity artifact. Only 25/187 teams ever switch division, so it is also not purely a promotion/relegation division-label split in disguise; it reads as genuine multi-year team-strength persistence (big clubs stay big, small clubs stay small) rather than an artifact.
+- **measured LOCAL magnitude**: split-half pearson r=0.9254 (n=140 teams, >=10 games/half), p=5.38e-60. Robustness (120-day gap-buffered split): r=0.9228, p=1.33e-53, n=127.
+- **artifact link**: `domains/soccer/knowledge/validate_referee_xg_fouls.py::xg_supremacy_persistence`; `validation_ledger.jsonl` row `xg_supremacy_persistence`.
 - **note**: distinct from `soccer_diff_xg_supremacy_asof` in `data/frontend/reject_ledger.jsonl` (REJECT -- "ablation-positive + sig p but NULL guard FAIL... shot-based xG-proxy is team strength already priced") -- that closed the INCREMENTAL win-prob-over-market question. This row asks the prior descriptive question (is the trait itself stable), the same persistence-vs-incremental-value split already used for #28/#29 (xG-diff predictive-value REJECTS) vs this new row.
 - **source**: general xG-persistence literature underlying the widely-cited claim that "xG is more repeatable than goals across a season" (the standard justification for using xG-based team ratings at all in modern football analytics, e.g. Opta/Analyst xGOT coverage: https://theanalyst.com/2021/06/what-are-expected-goals-on-target-xgot/) -- this row tests the repeatability premise directly against the local corpus rather than assuming it.
 
@@ -331,9 +332,9 @@ checked against every row above and against `data/frontend/reject_ledger.jsonl`
 - **causal story**: a foul stops the clock and resets the opponent's attacking shape/momentum, particularly transition fouls that prevent a counter-attack from developing into a shot -- a well-known coaching tactic ("professional foul"), distinct from and untested by any card/discipline row above (which measure the foul's cost to the fouling team, not its effect on the fouled team's output).
 - **expected signature**: negative correlation between a team's `home_fouls`/`away_fouls` and the OPPONENT's `sot` in the same match, net of overall match shot volume.
 - **test spec**: Pearson r (or partial r controlling for `total_shots`), team fouls vs opponent SOT, `data/domains/soccer/match_stats.parquet` (25,834 matches, both sides pooled); declared bar |r|>=0.05 AND p<0.01 given the large n.
-- **status**: UNTESTED
-- **measured LOCAL magnitude**: n/a (not yet run).
-- **artifact link**: `data/domains/soccer/match_stats.parquet` (`home_fouls`, `away_fouls`, `home_sot`, `away_sot`, `total_shots`).
+- **status**: REJECTED (NULL_LOCAL) -- premise-checked clean (all named columns present as `home_/away_`-prefixed, no bare-name mismatch). The raw correlation is negative and "significant" only because of the huge n (a `total_shots` confound: low-shot-volume matches have both fewer fouls and fewer opponent shots); once partialled out, the direction flips positive and the magnitude stays below the declared bar -- no real suppression effect survives confound control.
+- **measured LOCAL magnitude**: raw r=-0.0149 (p=0.00072, i.e. "significant" but below the |r|>=0.05 bar and sign-misleading); partial r (controlling `total_shots`)=+0.0369, p=4.57e-17, n=51,662 team-match units pooled both sides -- clears p<0.01 but not the |r|>=0.05 effect-size bar, and the direction is the OPPOSITE of the claim once the volume confound is removed.
+- **artifact link**: `domains/soccer/knowledge/validate_referee_xg_fouls.py::fouls_suppress_opponent_sot`; `validation_ledger.jsonl` row `fouls_suppress_opponent_sot`.
 - **source**: tactical/"professional" fouling as a recognized strategic tool to stop transitions is standard coaching-analytics discourse (e.g. Opta/Analyst and StatsBomb writeups on "stopping counter-attacks"); this row is the first local test of fouls as a DEFENSIVE-suppression mechanism rather than a discipline-risk one -- no existing row in this ledger tests fouls against opponent output.
 
 ---
