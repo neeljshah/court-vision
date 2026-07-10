@@ -79,6 +79,7 @@ reprice. Follow the links to go as deep as you want at any stage.
 - [PLATFORM_HARNESS](PLATFORM_HARNESS.md) -- the platformkit build/test/gate harness underneath the CLI
 - [PRODUCT_ONE_PAGER](PRODUCT_ONE_PAGER.md) -- one-page pitch
 - [DEMO](DEMO.md) -- deterministic walkthrough (environment, CLIs, API, CV)
+- [PRODUCT_DEMO](PRODUCT_DEMO.md) -- the 15-minute path: system health, prediction, oracle receipt, composed board, honesty ledgers
 - [PUBLIC_EVIDENCE](PUBLIC_EVIDENCE.md) -- 60-second funnel scan
 - [HIRE_PACKAGE](HIRE_PACKAGE.md) / [WORLD_CLASS_CASE](WORLD_CLASS_CASE.md) / [SELL-READINESS](SELL-READINESS.md) -- portfolio framing
 

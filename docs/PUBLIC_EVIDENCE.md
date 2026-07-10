@@ -96,6 +96,29 @@ produce.
 - *Proof:* [PLAYER_INTELLIGENCE.md](PLAYER_INTELLIGENCE.md), `src/sim/scheme_prior.py`,
   `.claude/commands/workday-loop.md`.
 
+### Beyond the funnel · AUTONOMY + ORACLE — *the loop now runs itself, and answers questions honestly*
+
+- **Two previously-missing autonomy stages are now live**: forward **self-shadowing**
+  settles the loop's own provisional verdicts against real outcomes as they land, and
+  zero-LLM **self-proposal** generates + gates new hypotheses on a schedule — no human
+  trigger, no model call. A **sentinel layer** (disk pressure, exception bursts, stalled
+  heartbeats, tamper-evidence hashes) and a **one-command system-liveness harness**
+  compose every gate/ledger into one readout that refuses to report green over a down
+  section — verified this week to correctly return `OVERALL: RED` with the specific
+  failing subsystem named.
+- **A 4-sport answer-engine oracle**, built from claims already on the books: a "what
+  affects what" **effect graph** (555 nodes / 296 edges, NBA+MLB+soccer+tennis) computed
+  entirely by labeling and linking existing ledger rows — zero new statistics — plus a
+  resolver registry that REFUSES any unregistered question type instead of improvising.
+  The knowledge engine feeding it is now fully drained: **151 mechanism hypotheses closed
+  across all 4 sports** (71 CONFIRMED_LOCAL, 51 honest NULLs, the rest not locally
+  testable) — every mechanism answer carries its own verdict, sample size, p-value, and
+  source file. No folklore, no plausible-sounding guesses.
+- *Proof:* `scripts/platformkit/autoloop/{shadow_settle_job,propose_gate_job}.py`,
+  `scripts/platformkit/ops_sentinel/`, `scripts/platformkit/proof_harness/system_proof.py`,
+  `scripts/platformkit/answers/{effect_graph,resolver_registry,contract_client}.py`.
+  Walkthrough: [PRODUCT_DEMO.md](PRODUCT_DEMO.md).
+
 ---
 
 ## What was retracted (the discipline headline)
@@ -121,6 +144,7 @@ Full do-not-claim list with source-code root causes: **[JOB_EVIDENCE_PACKET.md](
 |--------------|------|
 | The honest, audited account (start here) | [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) |
 | The full README with the funnel narrative | [../README.md](../README.md) |
+| The 15-minute demo path (system health, live prediction, oracle receipt, board, ledgers) | [PRODUCT_DEMO.md](PRODUCT_DEMO.md) |
 | The 80-artifact intelligence layer | [INTELLIGENCE.md](INTELLIGENCE.md) |
 | System architecture (funnel, component by component) | [../ARCHITECTURE.md](../ARCHITECTURE.md) |
 | Known limitations + validation gaps | [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) |
