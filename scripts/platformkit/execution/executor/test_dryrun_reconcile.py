@@ -71,6 +71,47 @@ def test_dryrun_writes_asof_stamped_fills_and_is_idempotent(tmp_path):
     assert len(load_jsonl(out)) == 2
 
 
+def test_resolve_mlb_ticker_synthetic_row():
+    """M13 fix: a composed row with NO ticker/kalshi_ticker/market_id (the
+    real-world shape composer emits) still resolves via captured book_depth
+    legs + KALSHI_ABBR team-name lookup -- proves the parser seam works even
+    when no live board is available to exercise it end-to-end."""
+    legs = dryrun.leg_index([
+        {"ticker": "KXMLBGAME-26JUL121340CLEMIA-CLE"},
+        {"ticker": "KXMLBGAME-26JUL121340CLEMIA-MIA"},
+    ])
+    row = {"sport": "mlb", "game_id": "KXMLBGAME-26JUL121340CLEMIA",
+           "matchup": "Cleveland Guardians vs Miami Marlins", "side": "home"}
+    assert dryrun.resolve_mlb_ticker(row, legs) == "KXMLBGAME-26JUL121340CLEMIA-CLE"
+    away_row = dict(row, side="away")
+    assert dryrun.resolve_mlb_ticker(away_row, legs) == "KXMLBGAME-26JUL121340CLEMIA-MIA"
+    # honest misses: wrong sport, no captured legs for this game, unknown side.
+    assert dryrun.resolve_mlb_ticker(dict(row, sport="nba"), legs) is None
+    assert dryrun.resolve_mlb_ticker(dict(row, game_id="KXMLBGAME-NOPE"), legs) is None
+    assert dryrun.resolve_mlb_ticker(dict(row, side="tie"), legs) is None
+
+
+def test_dryrun_resolves_mlb_ticker_end_to_end(tmp_path):
+    """Same fix, exercised through run_dryrun end-to-end: a composer-shaped
+    row (game_id + matchup + side, no ticker) parses and fills."""
+    inp = tmp_path / "bestbets_composed.jsonl"
+    out = tmp_path / "dryrun_orders.jsonl"
+    row = {"sport": "mlb", "game_id": "KXMLBGAME-26JUL121340CLEMIA",
+           "matchup": "Cleveland Guardians vs Miami Marlins",
+           "market_type": "moneyline", "side": "home", "model_prob": 0.55}
+    _write_jsonl(inp, [row])
+    snap = {"ticker": "KXMLBGAME-26JUL121340CLEMIA-CLE", "best_bid": 0.50,
+            "best_ask": 0.56, "book_thinness": 100.0,
+            "ts": NOW.strftime("%Y-%m-%dT%H:%M:%SZ"), "sport": "mlb"}
+    depth = _depth_dir(tmp_path, [snap])
+
+    rep = dryrun.run_dryrun(inp, out, depth)
+    assert rep["n_unparseable"] == 0 and rep["n_ticker_resolved"] == 1
+    assert rep["n_written"] == 1
+    written = load_jsonl(out)[0]
+    assert written["ticker"] == "KXMLBGAME-26JUL121340CLEMIA-CLE"
+
+
 def test_dryrun_missing_input_reports_honestly(tmp_path):
     rep = dryrun.run_dryrun(tmp_path / "absent.jsonl",
                             tmp_path / "out.jsonl", _depth_dir(tmp_path, [SNAP]))
@@ -123,6 +164,22 @@ def test_reconcile_plausible_optimistic_and_not_testable(tmp_path):
     assert vt["post_fill_drift_price_units"]["n"] == 2
     assert rep["edge_claimed"] is False
     assert rep["sim_fill_vs_limit_price_units"]["n"] == 2
+
+
+def test_reconcile_skips_stale_smoke_fixture_rows(tmp_path):
+    """M13 fix: rows tagged source=smoke_composed.jsonl (the pre-wiring
+    smoke fixture) are excluded from stats even if present in the orders
+    file, and the honest skip count is reported."""
+    orders = tmp_path / "dryrun_orders.jsonl"
+    _write_jsonl(orders, [
+        {"idempotency_key": "smoke1", "source": "smoke_composed.jsonl",
+         "ticker": "KXDRY-A", "filled_qty": 5, "avg_fill_price_cents": 45.0},
+        {"idempotency_key": "real1", "source": "bestbets_composed.jsonl",
+         "ticker": "KXDRY-A", "filled_qty": 0, "avg_fill_price_cents": 0.0},
+    ])
+    rep = reconcile.run_reconcile(orders, tmp_path / "no_depth_dir")
+    assert rep["n_dryrun_rows"] == 1 and rep["n_stale_smoke_skipped"] == 1
+    assert rep["n_fills"] == 0  # the surviving row is unfilled
 
 
 def test_reconcile_later_snapshot_ignores_earlier_and_windows_out():
