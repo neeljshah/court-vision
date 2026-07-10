@@ -169,7 +169,9 @@ def test_run_all_isolates_one_failing_job(tmp_path):
         mock.patch("scripts.platformkit.autoloop.mechanism_reval_job.run_mechanism_reval",
                    return_value={}), \
         mock.patch("scripts.platformkit.autoloop.utilization_drift_job.run_utilization_drift",
-                   return_value={}):
+                   return_value={}), \
+        mock.patch("scripts.platformkit.data_frontier.frontier_probe_job.run_probe_cycle",
+                   return_value={"status": "skipped_cadence"}):
         out = MT.run_all({}, queue_fn=lambda row: None)
     assert out["validate_new_stores"]["status"] == "error"
     assert out["weighting_refresh"] == {"sports_refreshed": []}
@@ -177,3 +179,4 @@ def test_run_all_isolates_one_failing_job(tmp_path):
     assert out["ingame_benchmarks"] == {"mlb_state_bucket_benchmark": {"status": "skipped"}}
     assert out["mechanism_reval"] == {}
     assert out["utilization_drift"] == {}
+    assert out["frontier_probe"] == {"status": "skipped_cadence"}
