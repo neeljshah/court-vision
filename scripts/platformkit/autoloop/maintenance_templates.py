@@ -1,5 +1,5 @@
 """scripts.platformkit.autoloop.maintenance_templates -- the zero-LLM
-pipeline-maintenance jobs (14, see run_all()) that keep the intel layer visible
+pipeline-maintenance jobs (16, see run_all()) that keep the intel layer visible
 to ask/weighting, wired as a single extra phase inside autoloop_runner.run_cycle().
 
 These are NOT prereg statistical templates (no universe/K-ledger/blocklist --
@@ -103,10 +103,8 @@ _CORPUS_PATTERNS: List[Tuple[Path, "re.Pattern[str]", str]] = [
      re.compile(r"^savant_full__\d{4}\.parquet$"), "mlb"),
 ]
 
-
 def _now_iso() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
 
 # 1. validate_new_stores -----------------------------------------------------
 def run_validate_new_stores(claims_dir: Optional[Path] = None,
