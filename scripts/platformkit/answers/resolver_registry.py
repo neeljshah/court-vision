@@ -39,6 +39,7 @@ from datetime import datetime, timezone
 import pandas as pd
 
 from scripts.platformkit.answers import contracts as _contracts
+from scripts.platformkit.answers import effect_graph as _eg
 from scripts.platformkit.answers.registry_loader import SPORTS as _CONCEPT_SPORTS
 from scripts.platformkit.profiles import ask as _ask
 
@@ -141,6 +142,11 @@ _HISTORICAL_KEYWORDS = ("final score", "what happened", "box score", "result of"
                         "who won on", "final of")
 _MECHANISM_KEYWORDS = ("evidence", "mechanism", "hypothesis", "folklore",
                        "hold up", "does the data support", "is it true that")
+# "what affects Y" / "what does X affect" -- effect-graph queries (LANE C5),
+# routed through the SAME mechanism_effect category (verbatim graph edges are
+# just another ledger-backed receipt, not a new resolver family).
+_AFFECTS_RE = re.compile(r"^\s*what affects\s+(.+?)\s*\??\s*$", re.I)
+_WHAT_DOES_X_AFFECT_RE = re.compile(r"^\s*what does\s+(.+?)\s+affect\s*\??\s*$", re.I)
 
 
 def classify(query: str) -> str | None:
@@ -159,7 +165,7 @@ def classify(query: str) -> str | None:
         return "prediction_winprob"
     if any(k in low for k in _HISTORICAL_KEYWORDS):
         return "historical_result"
-    if any(k in low for k in _MECHANISM_KEYWORDS):
+    if any(k in low for k in _MECHANISM_KEYWORDS) or _AFFECTS_RE.match(low) or _WHAT_DOES_X_AFFECT_RE.match(low):
         return "mechanism_effect"
     if any(k in low for k in _CONCEPT_KEYWORDS):
         return "concept_rating"
@@ -271,6 +277,27 @@ def _load_ledger(sport: str) -> list[dict]:
     return rows
 
 
+def effect_graph_query(sport: str, target: str, direction: str) -> dict:
+    """'what affects <Y>' (direction="to") / 'what does <X> affect'
+    (direction="from") -- verbatim edges from the pinned LANE C5 effect graph
+    (scripts/platformkit/answers/effect_graph.py), never recomputed here."""
+    graph = _eg.load_graph()
+    if graph is None:
+        return {"status": "no_data", "category": "mechanism_effect", "sport": sport,
+                "source_artifact": _eg._OUT_PATH, "note": "effect graph not built in this clone"}
+    hits = _eg.query_edges(sport, _mech_tokens(target), direction=direction, graph=graph)
+    if not hits:
+        return {"status": "not_supported", "category": "mechanism_effect", "sport": sport,
+                "source_artifact": _eg._OUT_PATH,
+                "note": f"no graph edge found for '{target}' ({direction}) in sport '{sport}'"}
+    return {"status": "ok", "category": "mechanism_effect", "sport": sport,
+            "source_artifact": _eg._OUT_PATH, "as_of": graph["as_of"], "query": target,
+            "edges": [{"from": e["from"], "to": e["to"], "status": e["status"], "effect": e["effect"],
+                       "n": e["n"], "p": e.get("p"), "corpus": e.get("corpus"), "artifact": e["artifact"],
+                       "note": e.get("note", "")} for e in hits],
+            "framing": "LOCAL single-corpus finding(s) -- not a market-beating or causal claim"}
+
+
 def mechanism_effect(sport: str, mechanism: str) -> dict:
     """Matches free text / a mechanism name against the DISTINCT hypothesis
     names in this sport's validation ledger -- never against model memory.
@@ -278,7 +305,15 @@ def mechanism_effect(sport: str, mechanism: str) -> dict:
     e.g. tennis's 4-corpus rows) are all returned together, verbatim, under
     one answer. Multiple DIFFERENT matching hypotheses -> ambiguous with the
     candidate list (ask.py's existing convention). No match -> not_supported,
-    never improvised."""
+    never improvised. "what affects Y" / "what does X affect" queries are
+    graph lookups (effect_graph_query), handled before the hypothesis-name
+    match below."""
+    m = _AFFECTS_RE.match(mechanism)
+    if m:
+        return effect_graph_query(sport, m.group(1), "to")
+    m = _WHAT_DOES_X_AFFECT_RE.match(mechanism)
+    if m:
+        return effect_graph_query(sport, m.group(1), "from")
     path = _LEDGER_PATHS.get(sport)
     if path is None:
         return {"status": "not_supported", "category": "mechanism_effect", "sport": sport,
