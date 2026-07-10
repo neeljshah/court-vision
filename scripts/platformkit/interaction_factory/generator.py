@@ -148,6 +148,31 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
         "blocklist_attrs": [],
         "blocklist_pairs": [],
     },
+    # ---- NBA ASSIST-RATE x BOX-DETAIL cross (unlock lane, 2026-07-10) ------
+    # Closes the "assist_asof is inert" gap b418cde6 deliberately left open:
+    # ast_rate_asof was registered under its OWN family ("assist_asof", not
+    # "box_detail_asof") because box_detail_asof's builder (_nba_boxdetail_
+    # builder, builders_task39b.py) reads ONLY boxdetail_asof.parquet -- that
+    # frame has no ast_rate_diff_asof column, so widening THAT template's
+    # pool would silently KeyError the whole batch (see attribute_registry.py's
+    # comment on _ASSIST_SPECS). A separate CROSS template instead (assist_asof
+    # x box_detail_asof, 1x5=5 candidates), leaving box_detail_asof's own
+    # self_cross untouched. feature_builder is NOT yet registered in runner.py
+    # (runner._BUILDERS is outside this lane's OWNS) -- same honest
+    # "declared grammar, NOT_TESTABLE until wired" pattern as nba_shot_attr_x_
+    # state / nba_ingame_state_self_cross before its own builder landed.
+    "nba_assist_x_boxdetail_cross": {
+        "sport": "basketball_nba",
+        "atomic_unit": "team_game",
+        "outcome": "home_win",
+        "baseline": "home_win ~ elo + attr_a_diff_asof + attr_b_diff_asof",
+        "pairing": "cross",
+        "left_pool": {"entity": "team", "family": "assist_asof"},
+        "right_pool": {"entity": "team", "family": "box_detail_asof"},
+        "feature_builder": "nba_assist_boxdetail_asof",   # not yet registered -> NOT_TESTABLE
+        "blocklist_attrs": [],
+        "blocklist_pairs": [],
+    },
     # ---- MLB (2) -------------------------------------------------------
     "mlb_pa_batter_x_pitcher": {
         "sport": "mlb",
@@ -268,9 +293,11 @@ STATIC_POOLS: Dict[str, List[str]] = {
     "tennis_match_asof": [
         "diff_return_won_asof", "diff_break_pct_asof", "diff_1st_win_asof",
         "diff_2nd_win_asof", "diff_ace_rate_asof", "diff_1st_in_asof", "diff_bp_saved_asof",
+        "avg_games_per_set_asof_diff",  # asof_setdetail.parquet, unlock lane (b418cde6) -- own suffix convention
     ],
     "soccer_match_asof": [
         "diff_sot_for_asof", "diff_sot_against_asof", "diff_shots_for_asof", "diff_shots_against_asof",
+        "diff_xg_supremacy_asof",  # asof_xg_proxy.parquet, unlock lane (b418cde6)
     ],
 }
 

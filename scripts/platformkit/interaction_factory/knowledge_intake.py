@@ -99,39 +99,15 @@ LEDGERS: Dict[str, Path] = {
 # file exists on disk for either sport today (checked this session); that
 # is a per-sport data-build task, not a grammar gap, and out of this
 # module's scope.
-# ROUND 1-3 CLASSIFICATION (2026-07-10, this lane): 13 new CONFIRMED_LOCAL
-# mechanisms from tonight's first 3 research rounds (round-1 seed/wave-2/
-# wave-3; wave-4's seed yielded zero CONFIRMED). 2 borderline rows excluded
-# per the >=2-replicated-groups bar, not rounded up: foul_rate_dispersion_
-# exceeds_poisson_noise (NBA h1=NULL/h2=CONFIRMED, combined=PROVISIONAL) and
-# trailing_team_shot_rate (soccer split_A=CONFIRMED/split_B=NULL, mixed).
-# All 13 classified UNMAPPABLE -- same discipline as 39727abe, honestly, not
-# a miss: each needs a registry attr / STATIC_POOLS diff column / atomic_unit
-# that does not exist; none invented here (OWNS scope is KNOWN_MAPPINGS +
-# this module's test only -- attribute_registry.py/generator.py/runner.py
-# stay read-only). Per-hypothesis blocker (test_round1_3_2026_07_10_new_
-# confirmed_mechanisms_stay_unmapped locks these in):
-#   NBA: boxdetail_ast_persistence_and_margin (no ast_asof in box_detail_
-#     asof family), defender_matchup_skill_predictive_validity (no defender-
-#     skill registry attr/template pool), starter_minutes_vs_margin__combined
-#     (a margin-band trend, not an attr pair), timeout_interrupts_opponent_
-#     run__combined (event-level before/after, same class as gb_double_
-#     play_suppression).
-#   MLB: compassionate_umpire_count_zone__combined (count-state x zone main
-#     effect, no attr pair), mid_inning_pitching_change_interrupt__combined
-#     + pinch_sub_platoon_targeting__combined (both event-level, no is_k/
-#     home_win regression shape at all).
-#   Soccer: block_depth_counterattack_share, xg_rebound_cluster_calibration,
-#     xg_supremacy_persistence, substitution_timing_moderates_shift -- each
-#     needs a diff_*_asof column (block depth/counterattack/xG/xG-supremacy)
-#     absent from soccer_match_asof's STATIC_POOLS; substitution_timing is
-#     also an in-match state effect (class already closed for soccer).
-#   Tennis: dominance_margin_predicts_outcome_partial (needs an avg_games_
-#     per_set diff column absent from tennis_match_asof's STATIC_POOLS),
-#     ball_cycle_serve_speed_kmh (in-match ball-freshness state, wrong
-#     atomic_unit -- same class as serve_speed_decay_within_match).
-# knowledge_candidates() before/after this lane: 16/16, all MLB -- honest,
-# no new mapping this lane.
+# ROUND 1-3 CLASSIFICATION (2026-07-10): 13 new CONFIRMED_LOCAL mechanisms
+# from that session's research rounds; most stay UNMAPPABLE (no registry
+# attr / STATIC_POOLS column / atomic_unit for them -- see test_round1_3_...
+# for the locked per-hypothesis blocker list). UNLOCK LANE (2026-07-10, this
+# session): boxdetail_ast_persistence_and_margin (NBA) and dominance_margin_
+# predicts_outcome_partial (tennis) had their STATIC_POOLS/template blockers
+# closed (builders_task39b.py + generator.py, this lane) -- now MAPPED below.
+# xg_supremacy_persistence (soccer) also had its STATIC_POOLS blocker closed
+# but stays UNMAPPED on purpose -- see the comment on that row below.
 KNOWN_MAPPINGS: Dict[str, List[Dict[str, str]]] = {
     "contact_quality_persists_split_half": [
         {"template_id": "mlb_pa_batter_x_pitcher", "attr_a": "contact_quality", "attr_b": "whiff_rate"},
@@ -161,6 +137,32 @@ KNOWN_MAPPINGS: Dict[str, List[Dict[str, str]]] = {
         {"template_id": "mlb_pa_batter_x_pitcher", "attr_a": "K_avoidance", "attr_b": "release_spin_rate"},
         {"template_id": "mlb_pa_batter_x_pitcher", "attr_a": "BB_rate", "attr_b": "release_spin_rate"},
     ],
+    # UNLOCK LANE (2026-07-10): boxdetail_ast_persistence_and_margin (NBA
+    # #44, persistence r=0.7189 + margin r=0.4329) -> ast_rate_asof, onto the
+    # NEW nba_assist_x_boxdetail_cross template. feature_builder is NOT yet
+    # registered in runner._BUILDERS (out of this lane's OWNS) -- these run
+    # as honest NOT_TESTABLE until a follow-on lane wires the builder (this
+    # module never gates on builder-registration, only grammar existence).
+    "boxdetail_ast_persistence_and_margin": [
+        {"template_id": "nba_assist_x_boxdetail_cross", "attr_a": "ast_rate_asof", "attr_b": "fast_break_pts_asof"},
+        {"template_id": "nba_assist_x_boxdetail_cross", "attr_a": "ast_rate_asof", "attr_b": "paint_pts_asof"},
+    ],
+    # dominance_margin_predicts_outcome_partial (tennis #33, CONFIRMED_LOCAL
+    # logit p1_win ~ avg_games_per_set_asof_diff + rank_diff, coef/se=-2.11,
+    # p=0.0347, n=29229) -- already a real predictive win-prob test, mapped
+    # onto tennis_match_asof_self_cross (feature_builder IS registered).
+    "dominance_margin_predicts_outcome_partial": [
+        {"template_id": "tennis_match_asof_self_cross", "attr_a": "avg_games_per_set_asof_diff", "attr_b": "diff_break_pct_asof"},
+        {"template_id": "tennis_match_asof_self_cross", "attr_a": "avg_games_per_set_asof_diff", "attr_b": "diff_return_won_asof"},
+    ],
+    # xg_supremacy_persistence (soccer, CONFIRMED_LOCAL split-half r=0.9254)
+    # deliberately STAYS UNMAPPED: it validated PERSISTENCE only, and its own
+    # ledger note flags the matching PREDICTIVE question (does the same attr
+    # move win-prob) as an already-CLOSED REJECT (data/frontend/reject_
+    # ledger.jsonl: "soccer_diff_xg_supremacy_asof" -- "shot-based xG-proxy is
+    # team strength already priced"). Wiring it into soccer_match_asof_self_
+    # cross (a home_win ~ attr_a + attr_b predictive template) would
+    # re-litigate that closed verdict, not test something new.
 }
 
 # --------------------------------------------------------------------------

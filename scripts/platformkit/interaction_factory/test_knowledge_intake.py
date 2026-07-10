@@ -51,13 +51,21 @@ def test_null_or_unmapped_hypothesis_emits_nothing(tmp_path):
 
 def test_mapped_attrs_are_real_registry_members():
     # KNOWN_MAPPINGS must only ever name attrs that actually resolve in the
-    # target template's declared sport registry -- never invent one.
+    # target template's declared pool -- never invent one. Two pool shapes:
+    # registry-backed (basketball_nba/mlb, _registry(sport)) and static_pool
+    # (tennis/soccer, GEN.STATIC_POOLS -- neither sport has a _registry()).
     for mappings in KI.KNOWN_MAPPINGS.values():
         for m in mappings:
             tpl = GEN.TEMPLATES[m["template_id"]]
-            reg = GEN._registry(tpl["sport"])  # noqa: SLF001 -- registry integrity check
-            assert m["attr_a"] in reg
-            assert m["attr_b"] in reg
+            pool_spec = tpl["left_pool"]
+            if "static_pool" in pool_spec:
+                pool = set(GEN.STATIC_POOLS[pool_spec["static_pool"]])
+                assert m["attr_a"] in pool
+                assert m["attr_b"] in pool
+            else:
+                reg = GEN._registry(tpl["sport"])  # noqa: SLF001 -- registry integrity check
+                assert m["attr_a"] in reg
+                assert m["attr_b"] in reg
 
 
 def test_fixwave_alpha_mlb_mappings_use_a_registered_builder(tmp_path):
@@ -141,15 +149,18 @@ def test_round1_3_2026_07_10_new_confirmed_mechanisms_stay_unmapped():
     # Tonight's first 3 research rounds (round-1 seed/wave-2/wave-3) added 13
     # new CONFIRMED_LOCAL hypotheses across the 4 real ledgers (wave-4's seed
     # yielded zero CONFIRMED). Fresh premise check, same discipline as
-    # 39727abe: none maps onto the current grammar without a new registry
-    # attr / STATIC_POOLS column / atomic_unit -- see the ROUND 1-3
-    # CLASSIFICATION comment above KNOWN_MAPPINGS for the per-hypothesis
-    # blocker. This locks in both halves of that claim: (1) each hypothesis
-    # really is CONFIRMED_LOCAL on disk right now, not a stale premise, and
-    # (2) none of them leaked into KNOWN_MAPPINGS.
+    # 39727abe: see the ROUND 1-3 CLASSIFICATION comment above KNOWN_MAPPINGS
+    # for the per-hypothesis blocker. This locks in both halves of that claim
+    # for the ones still unmapped: (1) each hypothesis really is
+    # CONFIRMED_LOCAL on disk right now, not a stale premise, and (2) none of
+    # them leaked into KNOWN_MAPPINGS.
+    # UNLOCK LANE (2026-07-10, this session): boxdetail_ast_persistence_and_
+    # margin (NBA) and dominance_margin_predicts_outcome_partial (tennis) are
+    # now MAPPED (their STATIC_POOLS/template blockers closed this session)
+    # -- removed from this unmapped list, asserted mapped separately below.
     new_confirmed = {
         "basketball_nba": [
-            "boxdetail_ast_persistence_and_margin", "defender_matchup_skill_predictive_validity",
+            "defender_matchup_skill_predictive_validity",
             "starter_minutes_vs_margin__combined", "timeout_interrupts_opponent_run__combined",
         ],
         "mlb": [
@@ -160,7 +171,7 @@ def test_round1_3_2026_07_10_new_confirmed_mechanisms_stay_unmapped():
             "block_depth_counterattack_share", "xg_rebound_cluster_calibration",
             "xg_supremacy_persistence", "substitution_timing_moderates_shift",
         ],
-        "tennis": ["dominance_margin_predicts_outcome_partial", "ball_cycle_serve_speed_kmh"],
+        "tennis": ["ball_cycle_serve_speed_kmh"],
     }
     for sport, hyps in new_confirmed.items():
         rows = KI._load_ledger(KI.LEDGERS[sport])
@@ -168,38 +179,35 @@ def test_round1_3_2026_07_10_new_confirmed_mechanisms_stay_unmapped():
         for h in hyps:
             assert h in confirmed, "%s/%s not CONFIRMED_LOCAL on disk -- classification is stale" % (sport, h)
             assert h not in KI.KNOWN_MAPPINGS, "%s/%s must stay unmapped -- named blocker not resolved" % (sport, h)
+    # xg_supremacy_persistence (soccer, asserted CONFIRMED_LOCAL + unmapped
+    # above) stays unmapped DELIBERATELY -- its STATIC_POOLS blocker is
+    # closed (see the STATIC_POOLS assertion below), but its predictive-value
+    # question is already a closed REJECT in data/frontend/reject_ledger.jsonl
+    # (see the KNOWN_MAPPINGS comment on this hypothesis).
 
     # concretely verify the 3 named blockers instead of just asserting
     # absence-from-KNOWN_MAPPINGS (a real runnable check, not just enumeration).
-    # UNLOCK LANE (2026-07-10, this session): fresh verify-before-register pass
-    # on all 3 named f94a0373 blockers. (1) NBA ast_asof: RESOLVED -- the
-    # literal name never had a backing column (box_detail_asof family has no
-    # ast stat -- boxdetail_asof.py's STATS dict never included "ast"), but a
-    # real leak-free as-of assist-rate column DOES exist on disk
-    # (asof_features.parquet's ast_rate_asof) and is now registered as its own
-    # inert "assist_asof" family (see attribute_registry.py) -- the mechanism
-    # itself stays out of KNOWN_MAPPINGS (unaffected, asserted above; template/
-    # builder wiring is follow-on work). (2) tennis diff_avg_games_per_set_asof
-    # and (3) soccer diff_xg_supremacy_asof: STILL HONESTLY BLOCKED -- both
-    # metrics exist leak-free on disk (tennis: asof_setdetail.parquet's
-    # avg_games_per_set_asof_diff, different suffix convention; soccer:
-    # asof_xg_proxy.parquet's diff_xg_supremacy_asof, exact name match) but
-    # NEITHER parquet is read by the builder STATIC_POOLS actually feeds
-    # (builders_task39b.py's _tennis_match_builder loads only asof_return.
-    # parquet/asof_features.parquet; _soccer_match_builder loads only asof_
-    # features.parquet). Appending the name to STATIC_POOLS without also
-    # wiring the builder to read the extra parquet would silently return
-    # NOT_TESTABLE for every pair (runner.py's fit path: `ca not in frame ->
-    # None`), masking a wiring gap as a null finding -- builders_task39b.py is
-    # out of this lane's OWNS (STATIC_POOLS only), so both stay blocked.
+    # UNLOCK LANE (2026-07-10, this session): all 3 named f94a0373 blockers
+    # now RESOLVED. (1) NBA ast_asof: a real leak-free as-of assist-rate
+    # column exists (asof_features.parquet's ast_rate_asof, registry family
+    # "assist_asof") and now has its own cross template (nba_assist_x_
+    # boxdetail_cross, generator.py) -- mapped below (builder registration in
+    # runner._BUILDERS is separate, out-of-OWNS follow-on work). (2) tennis
+    # avg_games_per_set_asof_diff (asof_setdetail.parquet) and (3) soccer
+    # diff_xg_supremacy_asof (asof_xg_proxy.parquet) are now IN their
+    # STATIC_POOLS (builders_task39b.py joins the extra parquet this session).
     assert "ast_rate_asof" in GEN._registry("basketball_nba")  # noqa: SLF001
-    assert "diff_avg_games_per_set_asof" not in GEN.STATIC_POOLS["tennis_match_asof"]
-    assert "diff_xg_supremacy_asof" not in GEN.STATIC_POOLS["soccer_match_asof"]
+    assert "avg_games_per_set_asof_diff" in GEN.STATIC_POOLS["tennis_match_asof"]
+    assert "diff_xg_supremacy_asof" in GEN.STATIC_POOLS["soccer_match_asof"]
+    assert "boxdetail_ast_persistence_and_margin" in KI.KNOWN_MAPPINGS
+    assert "dominance_margin_predicts_outcome_partial" in KI.KNOWN_MAPPINGS
 
-    # pool count proof: real ledgers, unchanged at 16/all-MLB before and after.
+    # pool count proof: real ledgers, 16 before this session -> 20 after
+    # (2 boxdetail_ast_persistence_and_margin rows + 2 dominance_margin_
+    # predicts_outcome_partial rows, both real CONFIRMED_LOCAL on disk).
     cands = KI.knowledge_candidates()
-    assert len(cands) == 16
-    assert {c.sport for c in cands} == {"mlb"}
+    assert len(cands) == 20
+    assert {c.sport for c in cands} == {"mlb", "basketball_nba", "tennis"}
 
 
 def test_ingame_state_template_stays_unmapped_pending_registry_wiring():

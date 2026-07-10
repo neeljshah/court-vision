@@ -193,14 +193,25 @@ def _mlb_pa_archetype_builder(attrs: List[str], tpl: Dict[str, Any]) -> Optional
 # (generator.STATIC_POOLS) are pre-built diff_*_asof columns ALREADY on disk
 # (leak-free by their own module's construction) -- these builders only merge
 # them onto each sport's real match outcome, keyed on the shared event_id.
+# TENNIS also reads asof_setdetail.parquet (avg_games_per_set_asof_diff, its
+# own suffix convention, different from the prefix diff_*_asof of ret/feats)
+# and SOCCER also reads asof_xg_proxy.parquet (diff_xg_supremacy_asof) -- the
+# 2 unlock-lane blockers named in b418cde6 ("neither parquet is read by the
+# builder STATIC_POOLS actually feeds"); same event_id-keyed left-merge as
+# the pre-existing ret/feats joins, just a 3rd source.
 _TENNIS_MATCHES = REPO / "data" / "domains" / "tennis" / "matches.parquet"
 _TENNIS_RETURN = REPO / "data" / "domains" / "tennis" / "asof_return.parquet"
 _TENNIS_FEATURES = REPO / "data" / "domains" / "tennis" / "asof_features.parquet"
+_TENNIS_SETDETAIL = REPO / "data" / "domains" / "tennis" / "asof_setdetail.parquet"
 _TENNIS_CORPUS = "tennis_asof_return_features"
 
 
 def build_tennis_match_frame(matches: pd.DataFrame, ret: pd.DataFrame, feats: pd.DataFrame,
-                              attrs: List[str]) -> pd.DataFrame:
+                              attrs: List[str], setdetail: Optional[pd.DataFrame] = None) -> pd.DataFrame:
+    # NOTE: `setdetail` is a trailing optional kwarg (not inserted before
+    # `attrs`) so every pre-existing positional caller (runner.py's re-export,
+    # test_runner.py, replicate_tennis_2026.py -- none in this lane's OWNS)
+    # keeps working unchanged.
     m = matches[["event_id", "tourney_id", "winner"]].copy()
     m["y"] = (m["winner"] == 1).astype(float)
     r_cols = ["event_id"] + [c for c in attrs if c in ret.columns]
@@ -208,38 +219,55 @@ def build_tennis_match_frame(matches: pd.DataFrame, ret: pd.DataFrame, feats: pd
     out = m.merge(ret[r_cols], on="event_id", how="left")
     if len(f_cols) > 1:
         out = out.merge(feats[f_cols], on="event_id", how="left")
+    if setdetail is not None:
+        s_cols = ["event_id"] + [c for c in attrs if c in setdetail.columns
+                                  and c not in ret.columns and c not in feats.columns]
+        if len(s_cols) > 1:
+            out = out.merge(setdetail[s_cols], on="event_id", how="left")
     return out.rename(columns={a: "asof__" + a for a in attrs if a in out.columns})
 
 
 def _tennis_match_builder(attrs: List[str], tpl: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-    if not (_TENNIS_MATCHES.exists() and _TENNIS_RETURN.exists() and _TENNIS_FEATURES.exists()):
+    if not (_TENNIS_MATCHES.exists() and _TENNIS_RETURN.exists() and _TENNIS_FEATURES.exists()
+            and _TENNIS_SETDETAIL.exists()):
         return None
     matches = pd.read_parquet(_TENNIS_MATCHES, columns=["event_id", "tourney_id", "winner"])
     ret = pd.read_parquet(_TENNIS_RETURN)
     feats = pd.read_parquet(_TENNIS_FEATURES)
-    frame = build_tennis_match_frame(matches, ret, feats, attrs)
+    setdetail = pd.read_parquet(_TENNIS_SETDETAIL)
+    frame = build_tennis_match_frame(matches, ret, feats, attrs, setdetail=setdetail)
     return {"frame": frame, "cluster": "tourney_id", "corpus": _TENNIS_CORPUS, "kind": "logit"}
 
 
 _SOCCER_MATCHES = REPO / "data" / "domains" / "soccer" / "matches.parquet"
 _SOCCER_FEATURES = REPO / "data" / "domains" / "soccer" / "asof_features.parquet"
+_SOCCER_XG_PROXY = REPO / "data" / "domains" / "soccer" / "asof_xg_proxy.parquet"
 _SOCCER_CORPUS = "soccer_asof_features"
 
 
-def build_soccer_match_frame(matches: pd.DataFrame, feats: pd.DataFrame, attrs: List[str]) -> pd.DataFrame:
+def build_soccer_match_frame(matches: pd.DataFrame, feats: pd.DataFrame, attrs: List[str],
+                              xg: Optional[pd.DataFrame] = None) -> pd.DataFrame:
+    # NOTE: `xg` is a trailing optional kwarg (not inserted before `attrs`) so
+    # every pre-existing positional caller (runner.py's re-export,
+    # test_runner.py -- none in this lane's OWNS) keeps working unchanged.
     m = matches[["event_id", "div", "fthg", "ftag"]].copy()
     m["y"] = (m["fthg"] > m["ftag"]).astype(float)
     f_cols = ["event_id"] + [c for c in attrs if c in feats.columns]
     out = m.merge(feats[f_cols], on="event_id", how="left")
+    if xg is not None:
+        x_cols = ["event_id"] + [c for c in attrs if c in xg.columns and c not in feats.columns]
+        if len(x_cols) > 1:
+            out = out.merge(xg[x_cols], on="event_id", how="left")
     return out.rename(columns={a: "asof__" + a for a in attrs if a in out.columns})
 
 
 def _soccer_match_builder(attrs: List[str], tpl: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-    if not (_SOCCER_MATCHES.exists() and _SOCCER_FEATURES.exists()):
+    if not (_SOCCER_MATCHES.exists() and _SOCCER_FEATURES.exists() and _SOCCER_XG_PROXY.exists()):
         return None
     matches = pd.read_parquet(_SOCCER_MATCHES, columns=["event_id", "div", "fthg", "ftag"])
     feats = pd.read_parquet(_SOCCER_FEATURES)
-    frame = build_soccer_match_frame(matches, feats, attrs)
+    xg = pd.read_parquet(_SOCCER_XG_PROXY)
+    frame = build_soccer_match_frame(matches, feats, attrs, xg=xg)
     return {"frame": frame, "cluster": "div", "corpus": _SOCCER_CORPUS, "kind": "logit"}
 
 

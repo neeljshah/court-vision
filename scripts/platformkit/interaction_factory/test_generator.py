@@ -107,12 +107,14 @@ def test_static_pool_serves_tennis_soccer_without_a_registry():
 
 
 def test_tennis_soccer_templates_enumerate():
-    # 7-attr self-cross -> C(7,2)=21; 4-attr self-cross -> C(4,2)=6.
+    # unlock lane (2026-07-10): avg_games_per_set_asof_diff / diff_xg_
+    # supremacy_asof joined into STATIC_POOLS (builders_task39b.py) ->
+    # 8-attr self-cross -> C(8,2)=28; 5-attr self-cross -> C(5,2)=10.
     tennis = GEN.enumerate_candidates("tennis_match_asof_self_cross")
-    assert len(tennis) == 21
+    assert len(tennis) == 28
     assert all(c.sport == "tennis" for c in tennis)
     soccer = GEN.enumerate_candidates("soccer_match_asof_self_cross")
-    assert len(soccer) == 6
+    assert len(soccer) == 10
     assert all(c.sport == "soccer" for c in soccer)
 
 
