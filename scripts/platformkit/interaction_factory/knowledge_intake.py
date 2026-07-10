@@ -12,6 +12,10 @@ registry attribute (existing or newly added) that belongs in an existing
 template's pool. Adding a row here is the deliberate act of wiring one in --
 never automatic just because a hypothesis exists in the ledger.
 
+Also composes CONFIRMED_LOCAL x CONFIRMED_LOCAL mechanism-attr pairs (see
+composed_candidates / MECHANISM_ATTR below) -- two validated mechanisms
+crossed together, not one mechanism paired with a plain pool attr.
+
 Pure enumeration only (mirrors generator.py's contract): reads the ledger
 JSONL files and python constants, no fit, no ledger write -- runner.py's
 run_batch(..., candidates=knowledge_candidates()) owns the actual test.
@@ -86,7 +90,46 @@ KNOWN_MAPPINGS: Dict[str, List[Dict[str, str]]] = {
         {"template_id": "mlb_pa_batter_x_pitcher", "attr_a": "BB_rate", "attr_b": "first_pitch_strike_rate"},
         {"template_id": "mlb_pa_batter_x_pitcher", "attr_a": "K_avoidance", "attr_b": "first_pitch_strike_rate"},
     ],
+    # `spin_rate_deception` (MLB mechanisms.md -- OLS whiff ~ release_spin_rate
+    # + release_speed on breaking-pitch swings, p=2.2e-16, n=100280): the
+    # "cheap future win" flagged in docs/research/factory_pipe_2026-07-11.md's
+    # unmappable list ("same shape as this lane's edge_zone_rate"). Now has a
+    # real registry attr (release_spin_rate, domains/mlb/profiles/
+    # attribute_registry.py) + a matching as-of column (runner.build_mlb_pa_
+    # frame's asof__release_spin_rate) -- mapped the same way edge_zone_rate
+    # was: onto mlb_pa_batter_x_pitcher's batter pool.
+    "spin_rate_deception": [
+        {"template_id": "mlb_pa_batter_x_pitcher", "attr_a": "K_avoidance", "attr_b": "release_spin_rate"},
+        {"template_id": "mlb_pa_batter_x_pitcher", "attr_a": "BB_rate", "attr_b": "release_spin_rate"},
+    ],
 }
+
+# --------------------------------------------------------------------------
+# MECHANISM-INTERACTION COMPOSITION (build lane C2): pairwise CONFIRMED x
+# CONFIRMED candidates -- unlike KNOWN_MAPPINGS above (one validated mechanism
+# attr paired with a plain existing-pool attr), BOTH attr_a and attr_b here
+# are each independently a validated (CONFIRMED_LOCAL) mechanism's own
+# registry attribute. This is the composition step: two mechanisms that are
+# each individually real might interact in a way blind combinatorial search
+# would take far longer to stumble onto.
+#
+# MECHANISM_ATTR: hypothesis -> its own registry attribute (the one that
+# repeats across every KNOWN_MAPPINGS row for that hypothesis) + which side
+# of mlb_pa_batter_x_pitcher's batter x pitcher cross it belongs on.
+# Hand-audited, same discipline as KNOWN_MAPPINGS: a hypothesis absent here
+# contributes nothing to composition, never inferred from KNOWN_MAPPINGS.
+MECHANISM_ATTR: Dict[str, Dict[str, str]] = {
+    "contact_quality_persists_split_half": {"attr": "contact_quality", "entity": "batter"},
+    "two_strike_chase_rate_rises": {"attr": "chase_rate", "entity": "batter"},
+    "edge_zone_widens_with_two_strikes": {"attr": "edge_zone_rate", "entity": "pitcher"},
+    "first_pitch_strike_suppresses_bb": {"attr": "first_pitch_strike_rate", "entity": "pitcher"},
+    "spin_rate_deception": {"attr": "release_spin_rate", "entity": "pitcher"},
+}
+# The only template today whose two pools are exactly {batter, pitcher} attrs
+# -- the sole place composition's entity/attr shapes align with the grammar
+# (NBA/soccer/tennis have zero mapped mechanisms per docs/research/
+# factory_pipe_2026-07-11.md's unmappable list -- nothing to compose there yet).
+_COMPOSE_TEMPLATE = "mlb_pa_batter_x_pitcher"
 
 
 def _load_ledger(path: Path) -> List[Dict[str, Any]]:
@@ -115,12 +158,44 @@ def confirmed_hypotheses(ledger_paths: Dict[str, Path] = LEDGERS) -> set:
     return out
 
 
+def composed_candidates(ledger_paths: Dict[str, Path] = LEDGERS) -> List[GEN.Candidate]:
+    """CONFIRMED_LOCAL x CONFIRMED_LOCAL mechanism-attr pairs: cross every
+    batter-side mechanism attr against every pitcher-side mechanism attr
+    (both named in MECHANISM_ATTR, both hypotheses CONFIRMED_LOCAL) under
+    _COMPOSE_TEMPLATE's batter x pitcher cross grammar. Deterministic (sorted
+    by candidate_id). A mechanism missing from the ledger or not yet in
+    MECHANISM_ATTR contributes nothing -- honest, not an error."""
+    confirmed = confirmed_hypotheses(ledger_paths)
+    batter_attrs = sorted({m["attr"] for h, m in MECHANISM_ATTR.items()
+                            if m["entity"] == "batter" and h in confirmed})
+    pitcher_attrs = sorted({m["attr"] for h, m in MECHANISM_ATTR.items()
+                             if m["entity"] == "pitcher" and h in confirmed})
+    tpl = GEN.TEMPLATES[_COMPOSE_TEMPLATE]
+    out: List[GEN.Candidate] = []
+    for a in batter_attrs:
+        for b in pitcher_attrs:
+            cid = "%s::%s__x__%s::src=knowledge" % (_COMPOSE_TEMPLATE, a, b)
+            out.append(GEN.Candidate(
+                candidate_id=cid, template_id=_COMPOSE_TEMPLATE, sport=tpl["sport"],
+                atomic_unit=tpl["atomic_unit"], outcome=tpl["outcome"], attr_a=a, attr_b=b,
+                feature_builder=tpl["feature_builder"], hypothesis_source="knowledge",
+            ))
+    return sorted(out, key=lambda c: c.candidate_id)
+
+
 def knowledge_candidates(ledger_paths: Dict[str, Path] = LEDGERS) -> List[GEN.Candidate]:
     """CONFIRMED_LOCAL ledger hypotheses with a declared KNOWN_MAPPINGS entry
-    -> one Candidate per mapped (template, attr_a, attr_b), hypothesis_source=
-    'knowledge'. Deterministic (sorted by candidate_id). A hypothesis missing
-    from either the ledger or KNOWN_MAPPINGS contributes nothing -- honest,
-    not an error."""
+    -> one Candidate per mapped (template, attr_a, attr_b), PLUS every
+    CONFIRMED x CONFIRMED mechanism-composition candidate (composed_
+    candidates) -- both arms share hypothesis_source='knowledge', the field
+    the autoloop/report tooling already uses to count the knowledge arm.
+    Deterministic (sorted by candidate_id, de-duped by candidate_id -- a pair
+    could in principle appear from both arms; the composition ids are
+    disjoint from the mapping ids today since composition only crosses each
+    hypothesis's OWN mechanism attr against another hypothesis's OWN
+    mechanism attr, never against a KNOWN_MAPPINGS partner). A hypothesis
+    missing from either the ledger or a declared mapping contributes
+    nothing -- honest, not an error."""
     confirmed = confirmed_hypotheses(ledger_paths)
     out: List[GEN.Candidate] = []
     for hyp, mappings in KNOWN_MAPPINGS.items():
@@ -135,6 +210,11 @@ def knowledge_candidates(ledger_paths: Dict[str, Path] = LEDGERS) -> List[GEN.Ca
                 atomic_unit=tpl["atomic_unit"], outcome=tpl["outcome"], attr_a=a, attr_b=b,
                 feature_builder=tpl["feature_builder"], hypothesis_source="knowledge",
             ))
+    seen = {c.candidate_id for c in out}
+    for c in composed_candidates(ledger_paths):
+        if c.candidate_id not in seen:
+            out.append(c)
+            seen.add(c.candidate_id)
     return sorted(out, key=lambda c: c.candidate_id)
 
 
@@ -152,4 +232,5 @@ if __name__ == "__main__":
     raise SystemExit(main())
 
 
-__all__ = ["knowledge_candidates", "confirmed_hypotheses", "KNOWN_MAPPINGS", "LEDGERS", "main"]
+__all__ = ["knowledge_candidates", "composed_candidates", "confirmed_hypotheses",
+           "KNOWN_MAPPINGS", "MECHANISM_ATTR", "LEDGERS", "main"]
