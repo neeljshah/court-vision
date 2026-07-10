@@ -166,6 +166,7 @@ _GOLDEN_KEYS = {
     "census_drift", "scoreboard_history", "ingame_benchmarks", "mechanism_reval",
     "utilization_drift", "frontier_probe", "shadow_settle", "propose_gate",
     "milb_refresh", "benchmark_refresh", "clv_refresh", "calibration_refresh",
+    "log_reaper",
 }
 
 
