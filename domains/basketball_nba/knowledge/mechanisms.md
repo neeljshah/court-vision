@@ -285,27 +285,46 @@ box-detail slice, 2026-01-20..2026-05-24, n=1,342 team-games (671 games,
 BOTH a split-half persistence leg AND a same-game margin-relation leg to
 clear p<0.01 + |r|>=0.15 for CONFIRMED_LOCAL.
 
+**Power note (2026-07-10 PM, readout only -- no rerun this session)**:
+`boxdetail_gate.py`'s SHIP/REJECT gate was NOT_TESTABLE because its
+`_train_window_has_coverage` check finds the 70%-by-date TRAIN cutoff on
+`games.parquet` (2022-10-18..2026-04-12, 4,846 games) lands at 2025-03-06,
+entirely BEFORE box-detail coverage starts (2026-01-20 in
+`espn_boxscores.parquet`, the only file `boxdetail_asof.py` currently reads)
+-- the train window's box-detail column is all-NaN, degenerating every
+test-row value to 0. `espn_boxscores_2024_25.parquet` covers
+2024-10-22..2025-04-13, i.e. it DOES span the 2025-03-06 train cutoff --
+merging it into `boxdetail_asof.py`'s input would give the train window
+~4.3 months of real box-detail coverage before the cutoff, unblocking the
+NOT_TESTABLE verdict into an actually-evaluated SHIP/REJECT. Not done here
+(`boxdetail_asof.py`/`boxdetail_gate.py` are outside this lane's
+`knowledge/`-only scope) -- follow-up: wire the new parquet into
+`boxdetail_asof.py`'s espn-box input, rebuild `boxdetail_asof.parquet`,
+rerun `boxdetail_gate.py`.
+
 ### 34. Fast-break points persistence + margin-relation
 - **claim**: a team's fast-break scoring is a stable team trait (persists split-half) and relates to that game's scoring margin.
 - **causal story**: transition offense is a coached, practiced tendency (push-the-pace identity), not game-to-game noise; more transition scoring should track winning.
 - **expected signature**: positive split-half r across teams; positive same-game r(fast_break_pts, margin).
 - **test spec**: split-half Pearson r (first-half-of-corpus-dates vs second, per team) + pooled Pearson r vs same-game margin.
-- **status**: CONFIRMED_LOCAL (replication attempted 2026-07-10 -- NOT_REPLICABLE_NO_CORPUS, see below; stays LOCAL not REPLICATED)
+- **status**: CONFIRMED (REPLICATED -- second corpus 2026-07-10 PM)
 - **measured LOCAL magnitude**: persistence r=0.604, p=4.1e-4 (n=30 teams); margin relation r=0.298, p=5.8e-29 (n=1,342 team-games).
 - **artifact link**: `domains/basketball_nba/knowledge/validate_boxdetail_persistence.py::hypothesis("fast_break_pts")`.
 - **wiring**: candidate for the interaction factory's box_detail family (see `boxdetail_asof.py`'s `fast_break_pts_diff_asof`); thin single-season slice (box-detail only 2026-01-20 onward) -- not yet gated for a pregame outcome edge (see `boxdetail_gate.py` for that separate SHIP/REJECT track).
-- **replication attempt (2026-07-10)**: NOT_REPLICABLE_NO_CORPUS -- fresh disk check confirms `espn_boxscores.parquet`'s `home_fast_break_pts` is non-null for 0 of the pre-2026 rows (1,977 total); the only other local `fast_break` column (`data/cache/player_breakdown_features.parquet`) is a player-SEASON aggregate (n=569, no date/game_id), wrong granularity for this row's split-half-by-date + same-game-margin design. No second team-game-level corpus exists locally. `domains/basketball_nba/knowledge/validate_replication_wave1.py::fast_break_pts_persistence_replication`.
+- **replication attempt (2026-07-10 AM)**: NOT_REPLICABLE_NO_CORPUS at the time -- fresh disk check confirmed `espn_boxscores.parquet`'s `home_fast_break_pts` non-null for 0 of the pre-2026 rows (1,977 total); the only other local `fast_break` column (`data/cache/player_breakdown_features.parquet`) is a player-SEASON aggregate (n=569, no date/game_id), wrong granularity. No second team-game-level corpus existed locally yet.
+- **replication (2026-07-10 PM)**: REPLICATED on `espn_boxscores_2024_25.parquet` (1,235 games, 2024-10-22..2025-04-13, 0 event_id overlap with `espn_boxscores.parquet` -- a genuinely disjoint second corpus, same design/bars unchanged). persistence r=0.7033, p=1.46e-05 (n=30 teams); margin relation r=0.2809, p=7.56e-46 (n=2,460 team-games) -- same (positive) sign both legs. `domains/basketball_nba/knowledge/validate_replication_wave1.py::fast_break_pts_persistence_replication_2024_25`; `validation_ledger.jsonl` hypothesis=`boxdetail_fast_break_pts_persistence_replication_2024_25`.
 
 ### 35. Points-in-the-paint persistence + margin-relation
 - **claim**: a team's paint scoring is a stable team trait and relates to that game's scoring margin.
 - **causal story**: interior scoring reflects personnel (rim finishers, post touches) and offensive scheme, both season-stable; more paint points should track winning.
 - **expected signature**: positive split-half r across teams; positive same-game r(paint_pts, margin).
 - **test spec**: same design as #34.
-- **status**: CONFIRMED_LOCAL (replication attempted 2026-07-10 -- NOT_REPLICABLE_NO_CORPUS, see below; stays LOCAL not REPLICATED)
+- **status**: CONFIRMED (REPLICATED -- second corpus 2026-07-10 PM)
 - **measured LOCAL magnitude**: persistence r=0.699, p=1.7e-5 (n=30 teams); margin relation r=0.335, p=1.2e-36 (n=1,342 team-games) -- the strongest of the 3 box-detail rows on both legs.
 - **artifact link**: `domains/basketball_nba/knowledge/validate_boxdetail_persistence.py::hypothesis("paint_pts")`.
 - **wiring**: candidate for the interaction factory's box_detail family; thin single-season slice, same caveat as #34.
-- **replication attempt (2026-07-10)**: NOT_REPLICABLE_NO_CORPUS -- same disk check as #34: `home_paint_pts` non-null for 0 of the pre-2026 `espn_boxscores.parquet` rows; `player_breakdown_features.parquet`'s `misc_pts_paint` is again a player-season aggregate, wrong granularity. `domains/basketball_nba/knowledge/validate_replication_wave1.py::paint_pts_persistence_replication`.
+- **replication attempt (2026-07-10 AM)**: NOT_REPLICABLE_NO_CORPUS at the time -- same disk check as #34: `home_paint_pts` non-null for 0 of the pre-2026 `espn_boxscores.parquet` rows; `player_breakdown_features.parquet`'s `misc_pts_paint` is again a player-season aggregate, wrong granularity.
+- **replication (2026-07-10 PM)**: REPLICATED on `espn_boxscores_2024_25.parquet` (same disjoint second corpus as #34). persistence r=0.763, p=9.45e-07 (n=30 teams); margin relation r=0.248, p=8.31e-36 (n=2,460 team-games) -- same (positive) sign both legs. `domains/basketball_nba/knowledge/validate_replication_wave1.py::paint_pts_persistence_replication_2024_25`; `validation_ledger.jsonl` hypothesis=`boxdetail_paint_pts_persistence_replication_2024_25`.
 
 ### 36. Points off turnovers (tov_pts) persistence + margin-relation -- LOCAL NULL (persistence leg misses; margin leg flips sign)
 - **claim**: a team's points-off-turnovers total is a stable team trait and relates positively to that game's scoring margin.
@@ -313,6 +332,7 @@ clear p<0.01 + |r|>=0.15 for CONFIRMED_LOCAL.
 - **measured LOCAL magnitude**: persistence r=0.4485, p=0.0129 (n=30 teams, misses ALPHA=0.01); margin relation r=-0.3072, p=1.0e-30 (n=1,342 team-games).
 - **artifact link**: `domains/basketball_nba/knowledge/validate_boxdetail_persistence.py::hypothesis("tov_pts")`.
 - **wiring**: none -- do not wire until the column-attribution ambiguity above is resolved; flagged as a re-check candidate, not a confirmed mechanism.
+- **diagnostic rerun (2026-07-10 PM)**: on `espn_boxscores_2024_25.parquet` (disjoint second corpus, same as #34/#35) the NEGATIVE margin-sign flip REPRODUCES (r=-0.3344, p=2.37e-65, n=2,460) -- and this time BOTH legs clear the bar (persistence r=0.6164, p=2.86e-4, n=30 teams), i.e. CONFIRMED_LOCAL on the new corpus, still negative-signed. The flip reproducing across a fully disjoint (0 event_id overlap) corpus is evidence the negative relation is real, not a single-corpus artifact -- but the column-attribution ambiguity noted above is still unresolved, so this stays a flagged re-check candidate, not wired. `domains/basketball_nba/knowledge/validate_replication_wave1.py::tov_pts_persistence_replication_2024_25` (verdict left as measured, not forced to a REPLICATED/FAILED_REPLICATION label since the original was NULL_LOCAL not CONFIRMED_LOCAL).
 
 ---
 
@@ -407,9 +427,10 @@ this is a pure relabeling, no semantic change.
 - **causal story**: ball movement is a coached, practiced identity (motion offense vs iso-heavy); assists correlate with open, higher-percentage shots, so more assists should track both team identity and winning.
 - **expected signature**: positive split-half r across teams (identity persists); positive same-game r(ast, margin).
 - **test spec**: split-half Pearson r (first-half-of-corpus-dates vs second, per team) + pooled Pearson r vs same-game margin, `espn_boxscores.parquet` `home_ast`/`away_ast`.
-- **status**: CONFIRMED_LOCAL
+- **status**: CONFIRMED (REPLICATED -- second corpus 2026-07-10 PM)
 - **measured LOCAL magnitude**: persistence r=0.7189, p=7.63e-06 (n=30 teams); margin relation r=0.4329, p=1.06e-179 (n=3,940 team-games). NOTE: unlike #34-36, `ast` is populated corpus-wide (full 1,977-game espn_boxscores.parquet), not the thin box-detail-era slice (2026-01-20 onward, ~671 games) -- hence the larger n vs #34/#35's 1,342.
 - **artifact link**: `domains/basketball_nba/knowledge/validate_research_wave1.py::ast_persistence_and_margin` (reuses `validate_boxdetail_persistence.py`'s generic `_persistence_split_half`/`_margin_relation`/`_verdict` helpers).
+- **replication (2026-07-10 PM)**: REPLICATED on `espn_boxscores_2024_25.parquet` (1,235 games, disjoint from `espn_boxscores.parquet`, `ast` 1,230/1,235 non-null). persistence r=0.8386, p=7.24e-09 (n=30 teams); margin relation r=0.4164, p=9.34e-104 (n=2,460 team-games) -- same (positive) sign both legs. `domains/basketball_nba/knowledge/validate_replication_wave1.py::ast_persistence_replication_2024_25`; `validation_ledger.jsonl` hypothesis=`boxdetail_ast_persistence_replication_2024_25`.
 - **note**: distinct from `nba_ast_rate_diff_asof` in `data/frontend/reject_ledger.jsonl` (REJECT x many via an automated reclaim-sweep daemon, win-prob Brier-over-Elo gate, `brier_delta=-1.4e-05`, DM p=0.776 -- "priced/redundant over Elo") -- that closes assists as an INCREMENTAL WIN-PROB feature; this row is the prior descriptive question (is the trait itself stable and margin-linked at all), the same box-detail-family split already run for #34/#35. CONFIRMED here is consistent with REJECT there (real, stable trait; still priced by the market).
 - **source**: "Analyzing the Impact of Pass Volume and Quality on Recent NBA Offenses" (NBA Math), https://nbamath.com/analyzing-the-impact-of-pass-volume-and-quality-on-recent-nba-offenses/ and "A Guide To Passing Stats" (Basketball Index), https://www.bball-index.com/a-guide-to-passing-stats/ -- assist-rate/passing-quality literature as the mechanistic basis; NBA Math's own note that raw pass volume alone is not sufficient is exactly why the split-half+margin design (not a raw-count claim) is used here.
 
