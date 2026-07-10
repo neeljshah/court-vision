@@ -433,3 +433,36 @@ this is a pure relabeling, no semantic change.
 - **measured LOCAL magnitude**: gap=-0.168 pts, p=0.547 (n=1,313 home team-games).
 - **artifact link**: `domains/basketball_nba/knowledge/validate_quarter_volatility.py::home_q4_edge_exceeds_other_quarters`.
 - **wiring**: none -- honest null, no Q4-specific home-officiating effect detectable in this local corpus.
+
+---
+
+## Validated 2026-07-10 (Q3-state family -- B11 handoff, sim2 P3|m3 bucket mechanism seed)
+
+sim2's global-worst PIT/CRPS bucket is `P3|m3` (period 3, off-relative margin
+in `[-3,3)` per `possession_model.py::_MARGIN_EDGES` -- see
+`domains/basketball_nba/sim2/validate_v3.py` `NAMED` list). These 2 rows seed
+Q3-state hypotheses using ONLY on-disk realized quarter scores from BOTH
+`linescores.parquet` (2025-26, 1,313 games) and `linescores_2024_25.parquet`
+(2024-25, 1,321 games) -- 2 genuinely independent season corpora, not a
+split-half of one. "First-half-realized" state (own_q1+own_q2 margin) is
+legitimate in-game state (known at halftime), not a live-mid-Q3 feature.
+
+### 45. Q3 margin vs halftime deficit (halftime-adjustment asymmetry / reversion) -- LOCAL NULL, both corpora
+- **claim**: a team's Q3 own-margin correlates with its own first-half margin -- specifically, teams trailing at half show systematic Q3 recovery beyond noise (a coaching-adjustment or mean-reversion signature).
+- **causal story**: halftime adjustments (schematic changes, rotation tweaks) or simple regression-to-team-quality would produce a negative slope -- bigger halftime deficit predicts bigger Q3 recovery (and the mirror for teams leading big).
+- **expected signature**: pearson r(first_half_margin, q3_margin) reliably negative and non-trivial in magnitude, same sign in both corpora.
+- **test spec**: pooled team-game pearson r (both home/away rows), declared bar |r|>=0.15 AND p<0.01, both season corpora.
+- **status**: REJECTED (NULL, both corpora independently) -- no detectable relationship either direction.
+- **measured LOCAL magnitude**: 2024-25 r=-0.0146, p=0.4521, n=2,642 team-games; 2025-26 r=0.0306, p=0.1171, n=2,626 team-games. Both far below the |r|>=0.15 bar and neither clears p<0.01 -- Q3 margin looks statistically unrelated to how a team's first half went, in either direction.
+- **artifact link**: `domains/basketball_nba/knowledge/validate_q3_state.py::q3_margin_vs_halftime_deficit`.
+- **read for P3|m3**: rules out "systematic halftime recovery/give-back" as the mechanism behind the sim's worst-calibrated bucket -- whatever makes P3|m3 hard to fit, it is not a first-half-margin-linear effect on Q3 scoring.
+
+### 46. Q3 volatility elevated in games close at half -- PARTIAL (real vs Q2 in both corpora, real vs Q4 in only one)
+- **claim**: restricted to games close at halftime (|first_half_margin|<3, the sim's own margin-bucket-3 edge), Q3's own-quarter-points distribution is more volatile (higher stdev) than Q2's and Q4's -- a candidate reason the simulator underfits exactly the P3|m3 state.
+- **causal story**: a close game at half keeps both benches live (no early garbage-time damping of variance) while Q3 is also where the first real tactical counter-adjustments land, plausibly widening the realized-scoring distribution beyond Q2's more "settled" pattern.
+- **expected signature**: Levene test, Q3 own-quarter-points stdev > both Q2's and Q4's, on the close-at-half subset, both corpora.
+- **test spec**: Levene test (Q3 vs Q2, Q3 vs Q4), close-at-half subset only; declared bar p<0.01 AND Q3 stdev >=10% higher than the comparison quarter's, BOTH legs required per corpus for that corpus to count as confirmed.
+- **status**: PARTIAL -- the Q3-vs-Q2 leg replicates cleanly in both corpora; the Q3-vs-Q4 leg only clears the bar in one.
+- **measured LOCAL magnitude**: 2024-25 (n_close=468 team-games): Q3 std=9.447 vs Q2 std=6.089 (p=2.4e-18, clears) vs Q4 std=8.243 (p=0.00125, clears -- ratio 1.146). 2025-26 (n_close=394 team-games): Q3 std=9.004 vs Q2 std=6.121 (p=6.0e-12, clears) vs Q4 std=8.798 (p=0.672, MISSES -- ratio only 1.023). So "Q3 more volatile than Q2 in close games" is a real, replicated, honest partial finding; "Q3 more volatile than Q4 too" is not replicated.
+- **artifact link**: `domains/basketball_nba/knowledge/validate_q3_state.py::q3_volatility_close_halftime`.
+- **read for P3|m3**: a genuine, replicated lead (Q3-vs-Q2 elevated variance in tight games) worth carrying forward as a sim2 gate-candidate input in a LATER lane (sim2 modules are read-only here per this lane's charter) -- but it is PARTIAL, not CONFIRMED, and should not be treated as a full explanation of the bucket's miscalibration on its own.
