@@ -190,6 +190,68 @@ def test_implausible_stale_price_is_skipped():
     assert all(p["market_prob"] >= 0.05 for p in placements)  # the 0.02 side is dropped
 
 
+def test_et_date_candidates_is_single_exact_date_not_a_two_day_hedge():
+    # Real MLB tipoff: 2026-07-10 02:05 UTC == 2026-07-09 21:05 ET (EDT, UTC-4) -- the
+    # PREVIOUS calendar day for the SAME game (UTC/ET midnight-rollover). The tightened
+    # guard derives exactly ONE ET date (07-09), never a {07-09,07-10} hedge that could
+    # ALSO false-positive-match an adjacent real game on 07-10 (R1 residual root cause).
+    from scripts.platformkit.pm_trading.pm_game_date_guard import _et_date_candidates
+    assert _et_date_candidates("2026-07-10T02:05:00+00:00") == frozenset({date(2026, 7, 9)})
+    assert _et_date_candidates(None) == frozenset()
+
+
+def test_match_model_game_series_adjacent_day_no_false_bind_when_correct_game_missing():
+    # MLB SERIES shape: Houston @ Toronto plays both 07-09 and 07-10. The model board is
+    # MISSING the 07-09 game (this residual's exact trap); the 07-10 game's date_candidates
+    # come from the REAL derivation (_et_date_candidates), not a hard-coded literal, so this
+    # exercises the actual fix, not just the containment check.
+    from scripts.platformkit.pm_trading.pm_game_date_guard import _et_date_candidates
+    model_games = [
+        {"sport": "mlb", "game_id": "401099", "home": "Toronto Blue Jays",
+         "away": "Houston Astros", "pregame_probs": {"home_ml": 0.5, "away_ml": 0.5},
+         "date_candidates": _et_date_candidates("2026-07-10T23:10:00+00:00")},  # ET 07-10
+    ]
+    m = G.match_model_game(["Houston", "Toronto"], model_games, kalshi_date=date(2026, 7, 9))
+    assert m is None  # honest skip -- must NOT single-hit-bind to the adjacent 07-10 game
+
+
+def test_match_model_game_routes_through_mlb_resolver():
+    # Ticker-abbrev ID join (ingame_id_resolver_mlb), never substring: away=TOR home=HOU.
+    ticker = "KXMLBGAME-26JUL101810TORHOU"
+    model_games = [{"sport": "mlb", "game_id": "402001", "home": "Houston Astros",
+                    "away": "Toronto Blue Jays",
+                    "pregame_probs": {"home_ml": 0.60, "away_ml": 0.40}}]
+    m = G.match_model_game(["Houston", "Toronto"], model_games, ticker=ticker, sport="mlb")
+    assert m is not None
+    assert m["_roles"]["Houston"] == "home" and m["_roles"]["Toronto"] == "away"
+
+
+def test_match_model_game_resolver_ambiguous_is_honest_skip():
+    ticker = "KXMLBGAME-26JUL101810TORHOU"
+    model_games = [
+        {"sport": "mlb", "game_id": "402001", "home": "Houston Astros", "away": "Toronto Blue Jays"},
+        {"sport": "mlb", "game_id": "402002", "home": "Houston Astros", "away": "Toronto Blue Jays"},
+    ]
+    # two identical-name candidates -> resolver sees 2 abbrev hits -> honest skip, never a guess
+    m = G.match_model_game(["Houston", "Toronto"], model_games, ticker=ticker, sport="mlb")
+    assert m is None
+
+
+def test_match_model_game_unparseable_ticker_degrades_to_substring():
+    # A non-KXMLBGAME-shaped id (this test file's own synthetic fixture convention) carries
+    # no resolver info -- explicit substring fallback, not a hard failure.
+    m = G.match_model_game(["Houston", "Toronto"], _model_games("mlb"),
+                           ticker="KX-HOUTOR", sport="mlb")
+    assert m is not None and m["_roles"]["Houston"] == "home"
+
+
+def test_run_reports_matcher_route_per_sport(tmp_path):
+    out = G.run(("mlb", "soccer_intl"), ledger_path=tmp_path / "l.jsonl",
+               feed_fn=lambda s: [], model_fn=lambda s: [], place=True)
+    assert out["by_sport"]["mlb"]["matcher"] == "resolver"
+    assert out["by_sport"]["soccer_intl"]["matcher"] == "substring"
+
+
 def test_outright_no_homeaway_is_skipped(tmp_path):
     # a futures/outright row (single side, no opponent) -> no 2-team match -> no bet.
     rows = [{"sport": "soccer_intl", "game_id": "KX-WC-WINNER", "venue": "kalshi",

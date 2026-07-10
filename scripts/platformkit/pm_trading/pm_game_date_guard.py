@@ -13,13 +13,23 @@ exactly this). match_hits() below requires the model game's own date_candidates
 team-name matching runs, and returns ALL matches so the caller can honestly skip
 0-or-2+-candidate ambiguity instead of silently taking the first hit.
 
+EXACT-DATE TIGHTENING: _et_date_candidates() used to hedge {UTC calendar date, UTC date
+- 1 day} as BOTH acceptable targets. Any two games one calendar day apart -- an MLB
+SERIES! -- always have overlapping hedge windows regardless of actual game time, so if
+the correct-date game was simply absent from the model board, the adjacent-date same-
+teams game could single-hit bind on the wrong date. It now derives the ONE exact US-
+Eastern calendar date via the already-shared, zoneinfo-exact et_day helper (reused, not
+reinvented -- same module paper_today/bankroll/pnl_series already trust for this exact
+UTC->ET conversion) and returns it as a 0/1-element frozenset, so match_hits' existing
+containment check becomes an exact match with no code change needed there.
+
 Per-file test (covered via the importer's own suite):
     cd /c/Users/neelj/nba-ai-system && python -m pytest scripts/platformkit/pm_trading/test_pm_game_placer.py -q
 """
 from __future__ import annotations
 
 import re
-from datetime import date, timedelta
+from datetime import date
 from typing import Any, Dict, List, Optional, Sequence
 
 # National-team naming differs Kalshi vs model/ESPN (e.g. "Korea Republic" vs "South Korea").
@@ -58,19 +68,41 @@ def _name_matches(a: str, b: str) -> bool:
 
 
 def _et_date_candidates(tipoff: Any) -> frozenset:
-    """Calendar dates *tipoff* (ISO-8601 UTC) could show up under on Kalshi's ET-dated
-    tickers: the UTC calendar date + the day before (ET trails UTC by up to a day, never
-    ahead) -- both-candidate-dates rule for the UTC/ET seam. Empty (honest 'no info', the
-    date guard then degrades to a no-op instead of a false-positive reject) when *tipoff*
-    is missing/unparseable."""
-    s = str(tipoff or "")[:10]
+    """The model game's single EXACT US-Eastern calendar date *tipoff* (ISO-8601, any
+    offset/naive-as-UTC, or a bare date) falls on -- Kalshi's game tickers are ET-dated.
+    Returned as a 0/1-element frozenset (see module docstring: EXACT-DATE TIGHTENING).
+    Empty (honest 'no info', the date guard then degrades to a no-op instead of a false-
+    positive reject) when *tipoff* is missing/unparseable."""
+    from scripts.platformkit.paper.et_day import et_day_of
+    s = str(tipoff or "").strip()
     if not s:
         return frozenset()
     try:
-        d = date.fromisoformat(s)
+        return frozenset({date.fromisoformat(et_day_of(s))})
     except ValueError:
         return frozenset()
-    return frozenset({d, d - timedelta(days=1)})
+
+
+def _roles_for_candidates(team_sides: Sequence[str], candidates: Sequence[Dict[str, Any]]
+                          ) -> List[Dict[str, Any]]:
+    """Every *candidate* whose {home,away} map 1:1 onto the two *team_sides* by loose
+    substring team-name matching. Shared by _match_hits (date-gated substring path) and
+    pm_game_match's resolver path (a single already-identified candidate -> role labels
+    only, so this never re-decides WHICH game, only who is home/away within it)."""
+    hits: List[Dict[str, Any]] = []
+    for g in candidates:
+        home, away = str(g.get("home") or ""), str(g.get("away") or "")
+        roles: Dict[str, str] = {}
+        for side in team_sides:
+            if _name_matches(side, home) and not _name_matches(side, away):
+                roles[side] = "home"
+            elif _name_matches(side, away) and not _name_matches(side, home):
+                roles[side] = "away"
+        if set(roles.values()) == {"home", "away"}:
+            out = dict(g)
+            out["_roles"] = roles
+            hits.append(out)
+    return hits
 
 
 def _match_hits(team_sides: Sequence[str], model_games: Sequence[Dict[str, Any]],
@@ -88,20 +120,7 @@ def _match_hits(team_sides: Sequence[str], model_games: Sequence[Dict[str, Any]]
     if kalshi_date is not None:
         candidates = [g for g in model_games
                       if not (g.get("date_candidates")) or kalshi_date in g["date_candidates"]]
-    hits: List[Dict[str, Any]] = []
-    for g in candidates:
-        home, away = str(g.get("home") or ""), str(g.get("away") or "")
-        roles: Dict[str, str] = {}
-        for side in team_sides:
-            if _name_matches(side, home) and not _name_matches(side, away):
-                roles[side] = "home"
-            elif _name_matches(side, away) and not _name_matches(side, home):
-                roles[side] = "away"
-        if set(roles.values()) == {"home", "away"}:
-            out = dict(g)
-            out["_roles"] = roles
-            hits.append(out)
-    return hits
+    return _roles_for_candidates(team_sides, candidates)
 
 
-__all__ = ["_norm", "_name_matches", "_et_date_candidates", "_match_hits"]
+__all__ = ["_norm", "_name_matches", "_et_date_candidates", "_match_hits", "_roles_for_candidates"]
