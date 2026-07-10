@@ -16,6 +16,10 @@ from scripts.platformkit.benchmarks.crps_market.ingame_mlb import (
     checkpoint_ts, load_state_timeline, margin_market_points, resolve_game_pk,
     total_market_points,
 )
+from scripts.platformkit.benchmarks.crps_market.shape_control import (
+    market_crps_discretized as _market_crps_discretized,
+    shape_controlled_verdict as _shape_controlled_verdict,
+)
 
 
 def _by_key(rows):
@@ -112,3 +116,32 @@ def test_margin_market_points_home_team_keeps_polarity():
 def test_margin_market_points_unparseable_side_skipped():
     ev = _event([("bogus", "2026-07-01T00:00:00Z", 0.3)])
     assert margin_market_points(ev, pd.Timestamp("2026-07-01T00:01:00Z"), away_abbr="SD") == []
+
+
+def test_market_crps_discretized_is_deterministic_per_seed():
+    a = _market_crps_discretized(4.5, 1.2, realized=5.0, n=200, seed=7)
+    b = _market_crps_discretized(4.5, 1.2, realized=5.0, n=200, seed=7)
+    assert a == b
+
+
+def test_market_crps_discretized_varies_with_seed():
+    a = _market_crps_discretized(4.5, 1.2, realized=5.0, n=200, seed=7)
+    b = _market_crps_discretized(4.5, 1.2, realized=5.0, n=200, seed=8)
+    assert a != b
+
+
+def test_shape_controlled_verdict_downgrades_when_shape_control_disagrees():
+    verdict, note = _shape_controlled_verdict("MODEL_SHARPER", "UNDERPOWERED")
+    assert verdict == "UNDERPOWERED"
+    assert "Shape-control FAILED" in note
+
+
+def test_shape_controlled_verdict_keeps_model_sharper_when_shape_control_agrees():
+    verdict, note = _shape_controlled_verdict("MODEL_SHARPER", "MODEL_SHARPER")
+    assert verdict == "MODEL_SHARPER"
+    assert note == ""
+
+
+def test_shape_controlled_verdict_passes_through_non_model_sharper_verdicts():
+    assert _shape_controlled_verdict("UNDERPOWERED", "UNDERPOWERED") == ("UNDERPOWERED", "")
+    assert _shape_controlled_verdict("MARKET_SHARPER", "UNDERPOWERED") == ("MARKET_SHARPER", "")
