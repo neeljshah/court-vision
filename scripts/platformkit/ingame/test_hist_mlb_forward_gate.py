@@ -138,17 +138,22 @@ def test_run_forward_gate_end_to_end_synthetic(tmp_path):
     rng = random.Random(7)
     boxscore_rows = []
     tick_lines = []
+    # Each synthetic game gets its OWN day (01..15): 15 games sharing one exact
+    # (date, away, home) key would be an unrealistic 15-team doubleheader and,
+    # post-fix, the resolver correctly fails closed (ambiguous) on a shared key
+    # with no G-suffix -- see hist_mlb_outcome_resolver's doubleheader fix.
     for i in range(15):
+        day = i + 1
         home_won = rng.random() < 0.55
         hs, aws = (5, 2) if home_won else (2, 5)
-        boxscore_rows.append({"date": "2026-07-01", "home_abbr": "BAL", "away_abbr": "CHW",
+        boxscore_rows.append({"date": f"2026-07-{day:02d}", "home_abbr": "BAL", "away_abbr": "CHW",
                               "home_score": float(hs), "away_score": float(aws),
                               "status": "STATUS_FINAL"})
-        gid = f"KXMLBGAME-26JUL0112{i:02d}CWSBAL"
+        gid = f"KXMLBGAME-26JUL{day:02d}12{i:02d}CWSBAL"
         base = 0.6 if home_won else 0.4
         for j in range(10):
             p = max(0.02, min(0.98, base + rng.uniform(-0.1, 0.1)))
-            tick_lines.append(json.dumps(_tick(gid, "BAL", p, f"2026-07-01T00:{j:02d}:00Z")))
+            tick_lines.append(json.dumps(_tick(gid, "BAL", p, f"2026-07-{day:02d}T00:{j:02d}:00Z")))
     f = tmp_path / "2026-07-01.jsonl"
     f.write_text("\n".join(tick_lines) + "\n", encoding="utf-8")
 

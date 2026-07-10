@@ -86,15 +86,30 @@ def _edge_key(sport: str, game_id: str, market: str,
     ])
 
 
-def _scan_open(path: Path, key: str) -> Optional[Dict[str, Any]]:
-    """Return the FIRST existing open row with this edge_key, or None. NEVER raises."""
+def _scan_existing(path: Path, key: str) -> Optional[Dict[str, Any]]:
+    """Return the FIRST existing row (open OR settled) with this edge_key, or
+    None. NEVER raises.
+
+    FIX (2026-07-11, B2 sweep): previously only scanned status=="open" rows,
+    so a same-day re-trigger of an edge whose FIRST row had ALREADY settled
+    found no open twin and appended a brand-new duplicate OPEN row under the
+    identical edge_key. That duplicate then sits open FOREVER -- the settle
+    daemon's own idempotency guard (_settled_edge_keys) treats any edge_key
+    that already has a settled twin as done and never touches it again, so it
+    is never settled, never flagged, and never cleaned up. Measured on the
+    real ledger: 427 of 440 open paper_ingame rows were exactly this orphaned
+    duplicate (see docs/research/paper_correctness_2026-07-11.md). Scanning
+    BOTH statuses restores the module's own documented invariant ("one open
+    row per live edge... idempotent by edge_key") by treating a same-day
+    re-trigger as a no-op regardless of whether the original settled yet.
+    """
     if not path.exists():
         return None
     try:
         for row in _clv.load_ledger(path):
             if (row.get("channel") == CHANNEL_PAPER_INGAME
                     and row.get("edge_key") == key
-                    and row.get("status") == "open"):
+                    and row.get("status") in ("open", "settled")):
                 return row
     except Exception:  # noqa: BLE001 - ledger read failure is just a cache miss
         pass
@@ -169,7 +184,7 @@ def _record_inner(sport: str, game_id: str, market: str, side: str,
             "channel": CHANNEL_PAPER_INGAME,
         }
 
-    existing = _scan_open(target, key)
+    existing = _scan_existing(target, key)
     if existing is not None:
         return {**existing, "added_new": False}
 
