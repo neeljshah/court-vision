@@ -7,6 +7,8 @@ Run: python -m pytest scripts/platformkit/intel_validation/test_nba_interaction_
 """
 from __future__ import annotations
 
+import json
+
 from scripts.platformkit.intel_validation import nba_interaction_stability as m
 
 
@@ -60,3 +62,21 @@ def test_stability_zero_overlap_does_not_crash(monkeypatch):
     row = rows[0]
     assert row["n_overlap"] == 0
     assert row["pearson_r"] is None
+
+
+def test_build_summary_write_survives_numpy_scalars(tmp_path):
+    # same int64/float64-off-pandas crash class the shared claims_validator
+    # fix (_json_numpy_default) closed: a raw numpy scalar in the payload
+    # must serialize instead of raising TypeError.
+    import numpy as np
+
+    summary = {
+        "pairwise_gravity_efg_delta": [{"n_overlap": np.int64(5), "pearson_r": np.float64(0.42)}],
+        "min_overlap_for_corr": m.MIN_OVERLAP_FOR_CORR,
+    }
+    out_path = tmp_path / "interaction_stability.json"
+    out_path.write_text(json.dumps(summary, indent=1, default=m._json_numpy_default), encoding="ascii")
+
+    loaded = json.loads(out_path.read_text(encoding="ascii"))
+    assert loaded["pairwise_gravity_efg_delta"][0]["n_overlap"] == 5
+    assert abs(loaded["pairwise_gravity_efg_delta"][0]["pearson_r"] - 0.42) < 1e-9
