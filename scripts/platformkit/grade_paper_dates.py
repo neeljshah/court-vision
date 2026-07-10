@@ -12,10 +12,26 @@ from __future__ import annotations
 import datetime as _dt
 import re
 from typing import Any, Dict, List, Optional
+from zoneinfo import ZoneInfo
 
 from scripts.platformkit.ingame.hist_mlb_outcome_resolver import (
     parse_mlb_ticker as _parse_mlb_ticker,
 )
+
+_ET = ZoneInfo("America/New_York")
+
+
+def today_et_iso(now: Optional[_dt.datetime] = None) -> str:
+    """Today's calendar date in America/New_York (ET), ISO -- the settle-time
+    board_date label checked against bet_expected_dates (26c16bf6 guard).
+
+    MLB Kalshi tickets embed the ET game date. A UTC-derived label instead
+    flips to TOMORROW for any late ET game that goes final after 00:00 UTC
+    (~8-9pm ET) -- the guard then wrongly REJECTs that night's own final
+    until the next as-of pass (LANE C2, 2026-07-10).
+    """
+    dt = now if now is not None else _dt.datetime.now(_dt.timezone.utc)
+    return dt.astimezone(_ET).date().isoformat()
 
 # MLB team-alias gap (gap ledger row: 36-row backlog, 2026-07): Kalshi in-play
 # rows carry a Kalshi-house shorthand matchup label ("A's", "Chicago WS", "New
@@ -73,4 +89,4 @@ def bet_expected_dates(bet: Dict[str, Any]) -> List[str]:
     return [ts, (d + _dt.timedelta(days=1)).isoformat()]
 
 
-__all__ = ["bet_expected_dates", "_mlb_ticker", "_mlb_ticker_date"]
+__all__ = ["bet_expected_dates", "today_et_iso", "_mlb_ticker", "_mlb_ticker_date"]
