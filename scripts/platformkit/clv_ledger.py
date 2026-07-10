@@ -145,6 +145,8 @@ def record_bet(
     market: Optional[str] = None,
     event_id: Optional[str] = None,
     game_date: Optional[str] = None,
+    game_number: Optional[int] = None,
+    game_pk: Optional[int] = None,
     path: Optional[Path] = None,
     stake: Optional[float] = None,  # deprecated alias -> treated as UNITS, never $
 ) -> Dict[str, Any]:
@@ -152,6 +154,11 @@ def record_bet(
 
     UNITS ONLY -- no dollar/bankroll/pnl field. side must be 'home' or 'away'.
     The legacy stake kwarg is treated as units; a dollar stake field is NEVER written.
+
+    game_number/game_pk (optional, MLB doubleheader disambiguation): stamped only
+    when the caller resolved them at placement time (see pm_trading.paper_today_
+    support.mlb_dh_stamp); omitted -> field absent, exactly like a pre-fix row, so
+    settle-side code that does not yet look for them is unaffected.
     """
     s = str(side).strip().lower()
     if s not in (_SIDE_HOME, _SIDE_AWAY):
@@ -181,6 +188,10 @@ def record_bet(
         record["event_id"] = str(event_id)
     if game_date is not None:
         record["game_date"] = str(game_date)
+    if game_number is not None:
+        record["game_number"] = int(game_number)
+    if game_pk is not None:
+        record["game_pk"] = int(game_pk)
     record["bet_id"] = bet_id(record)
     target = Path(path) if path is not None else DEFAULT_LEDGER
     _append_line(record, target)
