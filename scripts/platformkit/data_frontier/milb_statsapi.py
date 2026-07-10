@@ -26,7 +26,7 @@ POLITENESS (binding): 1 req/s via _politeness.polite_sleep, 35s timeout, honest
 FAIL rows logged -- never worked around. ~33 requests/day at AAA-only defaults.
 
 Autoloop seam: run_daily() is the no-arg-required entrypoint for
-maintenance_templates.run_all() (job M09, PENDING-RESTART until m38 bounces).
+maintenance_templates.run_all() (job M12, PENDING-RESTART until m38 bounces).
 
 CLI: python -m scripts.platformkit.data_frontier.milb_statsapi [--sport-ids 11]
 """
@@ -179,7 +179,7 @@ def pull(sport_ids: Optional[List[int]] = None, *, as_of: Optional[str] = None,
 
 
 def run_daily(watermarks: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
-    """Autoloop maintenance-job seam (M09). File existence IS the watermark --
+    """Autoloop maintenance-job seam (M12). File existence IS the watermark --
     the `watermarks` dict is accepted for call-shape uniformity, unused."""
     return pull()
 

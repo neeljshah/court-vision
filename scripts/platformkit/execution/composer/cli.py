@@ -37,6 +37,8 @@ HONEST_NOTE = (
 
 
 def _load_timing_policies() -> Dict[str, Any]:
+    # Consumes timing_policy.json's entry_horizon (currently last_pregame_tick
+    # everywhere) as an OPERATIONAL timing default only -- never a beat-the-close claim.
     try:
         doc = json.loads(TIMING_POLICY.read_text(encoding="utf-8"))
         return doc.get("policies") or {}

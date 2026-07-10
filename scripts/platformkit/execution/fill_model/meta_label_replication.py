@@ -16,8 +16,8 @@ signature). Three checks, same bucketing, CLV language only (never $/ROI):
 
 STEP-0 PREMISE CHECK (2026-07-11, fresh reads): clv_ledger.jsonl 186 true-close
 kalshi rows (160 with edge; edge always >0 = taken-side divergence); joined mlb
-corpus 178 ticker files, 0 missing close_prob; 101/178 games overlap the paper
-corpus -> strict-disjoint population = 77 games. DIAGNOSTIC: round(close_prob)
+corpus 178 ticker files, 0 missing close_prob; 103/178 games overlap the paper
+corpus (excluded) -> strict-disjoint population = 29 usable games. DIAGNOSTIC: round(close_prob)
 == outcome in 165/178 games (92.7%) -- the in-game "close" is essentially the
 OUTCOME, so any model with outcome skill beats the close >50% at every
 divergence size. That structural mechanism, not bucket-level signal, is the
