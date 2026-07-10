@@ -28,7 +28,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from scripts.platformkit import clv_ledger as _clv
 from scripts.platformkit.clv_settle_write import write_settlement as _write_settlement
-from scripts.platformkit.frontend import live_board as _lb
+from scripts.platformkit.grade_paper_asof import route_fetch as _route_fetch
 from scripts.platformkit.grade_paper_close import close_from_store as _close_from_store
 from scripts.platformkit.grade_paper_close import fetch_boards as _fetch_boards
 from scripts.platformkit.grade_paper_close import game_key_for_bet as _game_key_for_bet
@@ -72,8 +72,14 @@ def _settle_key(bet: Dict[str, Any]) -> str:
 
 
 def _norm_tokens(text: str) -> List[str]:
-    """Lowercased alpha tokens of a team name / abbreviation, for fuzzy matchup match."""
-    return [t for t in re.split(r"[^a-z0-9]+", str(text).lower()) if t]
+    """Lowercased alpha tokens of a team name / abbreviation, for fuzzy matchup match.
+
+    Unicode-aware split (\\w matches non-ASCII letters too, e.g. NPB's kanji team
+    names): an ASCII-only split would silently reduce any non-Latin name to zero
+    tokens (the whole run of kanji/Hangul is itself a valid \\w run, not a separator),
+    which made every non-ASCII team name unmatchable. ASCII inputs are unaffected.
+    """
+    return [t for t in re.split(r"[^\w]+", str(text).lower(), flags=re.UNICODE) if t]
 
 
 def _matchup_sides(matchup: str) -> Tuple[Optional[str], Optional[str]]:
@@ -196,7 +202,16 @@ def grade_one(
             is_proxy = True
 
     if ch is not None and ca is not None:
-        settled = _clv.settle_closing_line(settled, float(ch), float(ca))
+        try:
+            settled = _clv.settle_closing_line(settled, float(ch), float(ca))
+        except Exception:  # noqa: BLE001 - a degenerate close (e.g. an arbitrage-
+            # implying booksum<1 proxy quote -- shin_devig raises rather than fabricate
+            # a fair prob) must never crash the grader. Treat exactly like Level 5 (no
+            # usable close): win/loss still settles, CLV honestly unavailable.
+            logger.debug("grade_one: bad close %r/%r for %r; falling to no-close",
+                        ch, ca, bet.get("matchup"), exc_info=True)
+            ch = ca = None
+    if ch is not None and ca is not None:
         settled["clv_is_proxy"] = bool(is_proxy)
         settled["clv_status"] = "proxy" if is_proxy else "true_close"
         # Same-venue CLV restriction needs to know WHICH book supplied the close
@@ -267,7 +282,9 @@ def grade_open_bets(
     Idempotent: a bet already settled (matching settle_key in the ledger) is skipped.
     Games that are not final are SKIPPED and counted as pending -- never fabricated.
     *fetch_finals* is injectable for tests: sport -> live_board-shaped payload (with
-    a 'games' list). Default fetches the keyless ESPN scoreboard via live_board.
+    a 'games' list). Default routes via grade_paper_asof.route_fetch (today's board;
+    kbo/npb dispatch to the npb_kbo_live_state bridge since ESPN carries neither
+    league -- see that module's docstring).
     """
     ledger_path = Path(ledger_path) if ledger_path else _clv.DEFAULT_LEDGER
     rows = _clv.load_ledger(ledger_path)
@@ -282,7 +299,7 @@ def grade_open_bets(
     already |= {r.get("bet_id") for r in settled_rows if r.get("bet_id")}
     preds = _load_predictions(predictions_path)  # optional proxy-close enrichment
 
-    fetch = fetch_finals if fetch_finals is not None else _lb.todays_live_games
+    fetch = fetch_finals if fetch_finals is not None else _route_fetch
     sports = sorted({str(b.get("sport", "")).lower() for b in open_bets})
     boards, feed_status = _fetch_boards(fetch, sports)
 
@@ -347,8 +364,11 @@ def _main(argv: Optional[List[str]] = None) -> int:
     print("GRADE PASS (paper, executed_any=False): open=%d settled_now=%d pending=%d"
           % (graded["n_open"], graded["n_settled_now"], graded["n_pending"]))
     for s in graded["settled"]:
+        # kbo/npb matchups may carry Hangul/kanji -- cp1252 console stdout would
+        # otherwise crash on a genuinely settled non-ASCII row (see grade_paper_asof).
+        matchup = str(s["matchup"]).encode("ascii", "replace").decode("ascii")
         print("  SETTLED %s [%s] %s units=%s clv=%s%s"
-              % (s["matchup"], s["side"], s["outcome"], s.get("unit_result"),
+              % (matchup, s["side"], s["outcome"], s.get("unit_result"),
                  s["clv_pct"], " (proxy)" if s.get("clv_is_proxy") else ""))
     print("SUMMARY:", json.dumps(grade_summary(ledger), indent=2, default=str))
     return 0

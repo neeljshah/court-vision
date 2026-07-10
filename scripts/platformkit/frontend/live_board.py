@@ -304,10 +304,16 @@ def _predict_for_row(row: Dict[str, Any], predictor: Any) -> None:
 
 
 def todays_live_games(sport: str, *,
+                      date: Optional[str] = None,
                       http_get: Optional[Callable[[str], Dict[str, Any]]] = None,
                       predictor_factory: Callable[[str], Any] = _build_predictor,
                       ) -> Dict[str, Any]:
-    """Today's real games + LIVE state for *sport*, with in-game predictions on live games.
+    """Today's (or *date*='YYYYMMDD') real games + LIVE state for *sport*.
+
+    *date* is an AS-OF override for ESPN's own historical scoreboard (confirmed live:
+    ``?dates=YYYYMMDD`` returns that day's board with state='post' for finals) -- used
+    by grade_paper_asof's backlog pass to resolve a game that ended on a prior day.
+    None (default) = today, unchanged behavior for every existing caller.
 
     *http_get* and *predictor_factory* are injectable (tests pass canned payloads + stubs;
     no network, no corpus). Degrades to status='unavailable' if the feed is down -- never
@@ -320,8 +326,11 @@ def todays_live_games(sport: str, *,
                 "note": f"unknown sport '{s}'; choose one of {', '.join(_ESPN_ROUTES)}"}
     getter = http_get if http_get is not None else _http_json
     site_path, league = _ESPN_ROUTES[s]
+    url = _SITE_BASE.format(path=site_path)
+    if date:
+        url = f"{url}?dates={date}"
     try:
-        payload = getter(_SITE_BASE.format(path=site_path))
+        payload = getter(url)
     except Exception as exc:  # noqa: BLE001
         logger.warning("live_board feed error %s: %s", s, exc)
         payload = {}
