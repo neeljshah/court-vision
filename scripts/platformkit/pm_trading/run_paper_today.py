@@ -35,6 +35,7 @@ from scripts.platformkit.odds_shop import devig_twoway, ev_vs_price
 from scripts.platformkit.pm_trading.paper_autobet import (
     AutoBetConfig, CHANNEL_PAPER)
 from scripts.platformkit.pm_trading import paper_today_support as S
+from scripts.platformkit.pm_trading import mlb_dh_stamp as _dh
 from scripts.platformkit.pm_trading.paper_today_support import (
     Ctx, DEFAULT_PREDICTIONS, DEFAULT_SPORTS, PAPER_EV_FLOOR)
 
@@ -132,7 +133,7 @@ def _policy_tier_and_stake(ev: float, model_prob: float, price: float,
 
 
 def _record_priced(row, sport, matchup, meta, side, price, prob, selection,
-                   ctx: Ctx) -> Optional[Dict[str, Any]]:
+                   ctx: Ctx, home: str = "", away: str = "") -> Optional[Dict[str, Any]]:
     """Record a priced two-way pick as a paper bet. None if dedup/below-floor.
 
     ONE POSITION PER MARKET: a symmetric two-way market (home ML AND away ML) must NOT
@@ -164,9 +165,18 @@ def _record_priced(row, sport, matchup, meta, side, price, prob, selection,
     # [-1, dec-1] and the bankroll curve reconciles. quarter_kelly is a measurement
     # field only (never the staked magnitude here).
     stake_units = float(flat_unit)  # 1.0 for any A/B/C tier, else 0.0 (already gated)
+    # D6 fix: MLB doubleheader-date exposure -- stamp game_number/game_pk at
+    # placement time so a DH day can be disambiguated at settle time. {} (no
+    # stamp) on any non-mlb sport, unresolved lookup, or genuine ambiguity --
+    # fail-closed, never guessed; historical rows are untouched.
+    dh_stamp: Dict[str, Any] = {}
+    if sport == "mlb" and ctx.dh_stamp_fn is not None:
+        dh_stamp = ctx.dh_stamp_fn(home, away, ctx.day, meta.get("commence_time")) or {}
     saved = _clv.record_bet(sport, matchup, side, book, float(price),
                             model_prob=float(prob), stake_units=stake_units,
-                            event_id=meta["event_id"], path=ctx.lpath)
+                            event_id=meta["event_id"],
+                            game_number=dh_stamp.get("game_number"),
+                            game_pk=dh_stamp.get("game_pk"), path=ctx.lpath)
     assert saved["executed"] is False  # honesty invariant, belt-and-braces
     assert float(saved.get("stake_units", 0.0)) == stake_units  # units, never $
     ctx.ledger_keys.add(market_key)
@@ -182,6 +192,10 @@ def _record_priced(row, sport, matchup, meta, side, price, prob, selection,
         "tier": tier_label, "flat_unit": flat_unit,
         "quarter_kelly": round(quarter_kelly, 8),
     }
+    if dh_stamp.get("game_number") is not None:
+        bet_row["game_number"] = dh_stamp["game_number"]
+    if dh_stamp.get("game_pk") is not None:
+        bet_row["game_pk"] = dh_stamp["game_pk"]
     return {"kind": "bet", "row": bet_row, "stake_units": stake_units}
 
 
@@ -251,7 +265,7 @@ def _handle_row(row, sport, matchup, home, away, meta, close, ctx: Ctx, *,
     # skipped on dedup / below the permissive EV floor) -- never also logged.
     if price is not None and side is not None:
         return _record_priced(row, sport, matchup, meta, side, price, prob,
-                              selection, ctx)
+                              selection, ctx, home=home, away=away)
     if game_state is not None and game_state != "pre":
         return None  # not a pregame model view -- never log a stale/finished one
     return _log_unpriced(row, sport, matchup, home, away, meta, close, prob,
@@ -281,6 +295,7 @@ def run_paper_cycle(
     live_fetch: Callable[..., Dict[str, Any]] = default_live_fetch,
     board_fn: Callable[..., Dict[str, Any]] = game_bet_board,
     odds_index: Callable[[str], Tuple[Any, List[OddsEvent]]] = S.odds_index,
+    dh_stamp_fn: Callable[..., Dict[str, Any]] = _dh.mlb_dh_stamp,
 ) -> Dict[str, Any]:
     """Run one PAPER cycle on TODAY's real slate across *sports*.
 
@@ -294,7 +309,8 @@ def run_paper_cycle(
     ppath = Path(predictions_path) if predictions_path is not None else DEFAULT_PREDICTIONS
     ctx = Ctx(cfg=cfg or AutoBetConfig(), day=S.today_key(), lpath=lpath, ppath=ppath,
               ledger_keys=_market_ledger_keys(_clv.load_ledger(lpath)),
-              pred_keys=S.prediction_keys(S.load_predictions(ppath)))
+              pred_keys=S.prediction_keys(S.load_predictions(ppath)),
+              dh_stamp_fn=dh_stamp_fn)
 
     out: Dict[str, Any] = {
         "as_of": S.now_iso(), "channel": CHANNEL_PAPER, "executed_any": False,

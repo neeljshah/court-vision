@@ -44,6 +44,7 @@ class Ctx:
     ppath: Path
     ledger_keys: Set = field(default_factory=set)
     pred_keys: Set = field(default_factory=set)
+    dh_stamp_fn: Optional[Callable[..., Dict[str, Any]]] = None  # D6: MLB DH stamp
 
 
 def now_iso() -> str:

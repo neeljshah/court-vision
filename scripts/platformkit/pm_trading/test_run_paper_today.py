@@ -62,6 +62,13 @@ def _odds_index_stub(sport: str):
     return _lookup, []
 
 
+def _no_dh_stamp(home, away, event_day, commence_time):
+    """NO-NETWORK stub: no doubleheader stamp resolved (the pre-D6-fix default
+    behavior). Existing tests inject this so run_paper_cycle's real MLB default
+    (mlb_dh_stamp, which hits statsapi) is never exercised off-network."""
+    return {}
+
+
 def _run(tmp_path, **kw):
     return run_paper_cycle(
         sports=("mlb",),
@@ -70,6 +77,7 @@ def _run(tmp_path, **kw):
         live_fetch=kw.get("live_fetch", _live_one_game),
         board_fn=kw.get("board_fn", _board_priced),
         odds_index=kw.get("odds_index", _odds_index_stub),
+        dh_stamp_fn=kw.get("dh_stamp_fn", _no_dh_stamp),
     )
 
 
@@ -364,3 +372,85 @@ def test_event_metadata_attached(tmp_path):
     bet = out["bets"][0]
     assert bet["event_id"] == "evt-123"
     assert bet["commence_time"] == "2026-06-17T23:00Z"
+
+
+# --------------------------------------------------------------------------- #
+# D6 fix: MLB doubleheader date exposure -- game_number/game_pk stamped at
+# PLACEMENT time so a DH day is disambiguated at settle time. Exercises the
+# REAL mlb_dh_stamp/mlb_schedule_pairs algorithm (team-pair resolve + nearest-
+# commence-time disambiguation), with an offline statsapi-schedule fixture --
+# NO network. Reproduces a real doubleheader shape (Brewers @ Cardinals).
+# --------------------------------------------------------------------------- #
+def _dh_schedule_http_two_games(url: str):
+    """Offline statsapi schedule fixture: a real doubleheader (2 games, same
+    team pair, distinct commence times) on one date."""
+    return {"dates": [{"games": [
+        {"gamePk": 111, "gameNumber": 1, "gameDate": "2026-07-07T17:15:00Z",
+         "doubleHeader": "S",
+         "teams": {"away": {"team": {"name": "Milwaukee Brewers"}},
+                   "home": {"team": {"name": "St. Louis Cardinals"}}}},
+        {"gamePk": 222, "gameNumber": 2, "gameDate": "2026-07-07T23:00:00Z",
+         "doubleHeader": "S",
+         "teams": {"away": {"team": {"name": "Milwaukee Brewers"}},
+                   "home": {"team": {"name": "St. Louis Cardinals"}}}},
+    ]}]}
+
+
+def _live_dh_game(sport: str) -> Dict[str, Any]:
+    """The SECOND (later) game of the doubleheader is today's placed board."""
+    return {"sport": sport, "status": "ok", "games": [
+        {"sport": sport, "home": "St. Louis Cardinals", "away": "Milwaukee Brewers",
+         "state": "pre", "home_score": None, "away_score": None, "clock": None},
+    ]}
+
+
+def test_mlb_doubleheader_row_stamped_with_game_number(tmp_path):
+    """A new MLB pregame row placed on a real DH date carries game_number/game_pk,
+    disambiguating which leg it belongs to (the bug this lane closes)."""
+    from functools import partial
+    from scripts.platformkit.odds_provider.base import OddsEvent
+    from scripts.platformkit.pm_trading.mlb_dh_stamp import mlb_dh_stamp
+
+    stamp_fn = partial(mlb_dh_stamp, http=_dh_schedule_http_two_games)
+
+    def _idx(sport):
+        # G2's commence_time (23:00Z) -- closer to G2 (23:00Z) than G1 (17:15Z).
+        ev = OddsEvent(event_id="evt-dh-g2", sport=sport,
+                       home="St. Louis Cardinals", away="Milwaukee Brewers",
+                       commence_time="2026-07-07T23:00:00Z",
+                       prices={"stub_book": {"home": 1.95, "away": 2.10}})
+
+        def _lookup(s, home, away):
+            return {"stub_book": {home: 1.95, away: 2.10}}
+        return _lookup, [ev]
+
+    out = _run(tmp_path, live_fetch=_live_dh_game, odds_index=_idx,
+              dh_stamp_fn=stamp_fn)
+    assert out["n_recorded"] == 1
+    bet = out["bets"][0]
+    assert bet["game_number"] == 2   # matched to the later leg by commence_time
+    assert bet["game_pk"] == 222
+    rows = L.load_ledger(tmp_path / "ledger.jsonl")
+    assert rows[0]["game_number"] == 2
+    assert rows[0]["game_pk"] == 222
+
+
+def test_mlb_single_game_day_stamped_unambiguously(tmp_path):
+    """A normal (non-DH) day: exactly one scheduled game for the pair -> always
+    stamped, no commence_time disambiguation needed."""
+    from functools import partial
+    from scripts.platformkit.pm_trading.mlb_dh_stamp import mlb_dh_stamp
+
+    def _single_game_http(url: str):
+        return {"dates": [{"games": [
+            {"gamePk": 555, "gameNumber": 1, "gameDate": "2026-07-08T17:00:00Z",
+             "teams": {"away": {"team": {"name": "Toronto Blue Jays"}},
+                       "home": {"team": {"name": "Boston Red Sox"}}}},
+        ]}]}
+
+    stamp_fn = partial(mlb_dh_stamp, http=_single_game_http)
+    out = _run(tmp_path, dh_stamp_fn=stamp_fn)
+    assert out["n_recorded"] == 1
+    bet = out["bets"][0]
+    assert bet["game_number"] == 1
+    assert bet["game_pk"] == 555
