@@ -13,18 +13,29 @@ already in the output file is skipped, never duplicated.
 If the composer input does not exist yet (it is a forward contract from the
 compose lane), the run reports input_missing honestly and writes nothing.
 
-TICKER RESOLUTION (M13 fix): composer rows never carry ticker/kalshi_ticker/
-market_id -- collect_candidates() reuses the sport/book-agnostic best-bets
-board (any book, not just Kalshi), so parse_intent() alone always returned
-None. SEAM CHOICE: resolved HERE, not in composer -- dryrun is already the
-sole Kalshi-specific IO boundary (MockKalshiExchange + book_depth/kalshi),
-so ticker resolution belongs where Kalshi concerns already live, not leaked
-into the book-agnostic composer. resolve_mlb_ticker() reuses ONLY what is
-already loaded (this run's own book_depth snapshots, split into event/leg
-ids) plus the settle path's existing team->Kalshi-code map
-(ingame_id_resolver_mlb.KALSHI_ABBR) -- no new network join, no new team map.
-MLB-only for now (KALSHI_ABBR's coverage); other sports/market_types stay an
-honest unparseable when no local resolver covers them.
+TICKER RESOLUTION (M13 fix, corrected M14): composer rows never carry
+ticker/kalshi_ticker/market_id -- collect_candidates() reuses the
+sport/book-agnostic best-bets board (any book, not just Kalshi), so
+parse_intent() alone always returned None. SEAM CHOICE: resolved HERE, not
+in composer -- dryrun is already the sole Kalshi-specific IO boundary
+(MockKalshiExchange + book_depth/kalshi), so ticker resolution belongs
+where Kalshi concerns already live, not leaked into the book-agnostic
+composer.
+
+M14 FIX (wrong-leg binding): resolve_mlb_ticker() no longer parses the
+row's `matchup` string to decide home/away -- that string's word order is
+SOURCE-DEPENDENT (some composer inputs emit "home vs away", others emit
+"away vs home", e.g. frontend/slate_dead_market_filter.py) so parsing it
+wrong-leg-bound 2 live orders (KCBAL picked -KC, real home is -BAL; TORSD
+picked -TOR, real home is -SD -- see dryrun_orders_quarantine.jsonl).
+row['side'] is the semantic true home/away side; the TRUE home/away team
+for a given game_id (Kalshi event ticker) is resolved via the AUTHORITATIVE
+ingame_id_resolver_mlb.resolve_ticker(game_id), which matches the ticker's
+away+home blob against the LIVE statsapi schedule -- the same source the
+rest of the in-game stack already trusts. An unresolvable game (no live
+statsapi match) is an honest skip (never a guessed leg), same as before.
+MLB-only for now; other sports/market_types stay an honest unparseable when
+no local resolver covers them.
 
 INVARIANTS: <=300 LOC; ASCII; stdlib only; order-time features only (the
 freshest snapshot AT run time, never a later one); never writes
@@ -44,7 +55,7 @@ from scripts.platformkit.execution.book_replay import load_jsonl
 from scripts.platformkit.execution.executor.lifecycle import (
     ExecOrder, OrderExecutor, idem_key, resolve_exchange)
 from scripts.platformkit.execution.executor.mock_exchange import MockKalshiExchange
-from scripts.platformkit.ingame.ingame_id_resolver_mlb import KALSHI_ABBR
+from scripts.platformkit.ingame import ingame_id_resolver_mlb as _resolver_mlb
 
 _REPO = Path(__file__).resolve().parents[4]
 DEFAULT_INPUT = _REPO / "data" / "frontend" / "ops" / "bestbets_composed.jsonl"
@@ -84,28 +95,6 @@ def parse_intent(row: Dict[str, Any]) -> Optional[Dict[str, Any]]:
             "sport": str(row.get("sport", "unknown"))}
 
 
-def _norm_team(name: Any) -> str:
-    return " ".join(str(name or "").lower().split())
-
-
-def _kalshi_code_for(team: str) -> Optional[str]:
-    """Team name -> Kalshi 2-3 letter code via the settle path's existing
-    KALSHI_ABBR map (statsapi full names). Kalshi-sourced board rows carry a
-    TRUNCATED dialect (e.g. 'Los Angeles D' for 'Los Angeles Dodgers'), so an
-    exact-key miss falls back to substring match -- the SAME loose-matching
-    technique pm_game_placer._name_matches already uses for this exact
-    cross-source divergence. >1 candidate match (e.g. bare 'Chicago', which
-    fits both Cubs and White Sox) is an honest skip, never a guess."""
-    t = _norm_team(team)
-    if not t:
-        return None
-    exact = KALSHI_ABBR.get(t)
-    if exact:
-        return exact
-    hits = {code for full, code in KALSHI_ABBR.items() if t in full or full in t}
-    return hits.pop() if len(hits) == 1 else None
-
-
 def leg_index(depth_rows: List[Dict[str, Any]]) -> Dict[str, Dict[str, str]]:
     """{event_id: {team_code: leg_ticker}} from CAPTURED book_depth rows this
     run already loads for fills (no new IO). A Kalshi leg ticker is
@@ -119,24 +108,34 @@ def leg_index(depth_rows: List[Dict[str, Any]]) -> Dict[str, Dict[str, str]]:
     return idx
 
 
-def resolve_mlb_ticker(row: Dict[str, Any], legs: Dict[str, Dict[str, str]]
-                       ) -> Optional[str]:
-    """MLB-only ticker resolution for a composed row that lacks one: if
-    row['game_id'] is already a captured Kalshi event id and row['side'] is
-    home/away, look up that side's leg ticker via the SAME team-name ->
-    Kalshi-code map the settle path already uses (KALSHI_ABBR) -- no new
-    team map. None on any miss (honest skip, never a guessed leg)."""
+def resolve_mlb_ticker(row: Dict[str, Any], legs: Dict[str, Dict[str, str]], *,
+                       candidates: Optional[List[Dict[str, Any]]] = None,
+                       http_get: Any = None) -> Optional[str]:
+    """MLB-only ticker resolution for a composed row that lacks one: routes
+    through the AUTHORITATIVE ingame_id_resolver_mlb.resolve_ticker(game_id)
+    for this event's real home_abbr/away_abbr (matched against the live
+    statsapi schedule by the ticker's own away+home blob) and picks
+    row['side']'s (semantic true home|away) leg from the SAME captured
+    book_depth leg index this run already loaded for fills.
+
+    NEVER infers home/away from the row's `matchup` string -- that string's
+    word order is source-dependent across composer inputs, which previously
+    wrong-leg-bound live orders (see dryrun_orders_quarantine.jsonl). None
+    on any miss (unresolved game, ambiguous match, unmapped side, or no
+    captured leg for the resolved code) -- honest skip, never a guessed
+    leg. *candidates*/*http_get* are pass-through test seams (see
+    ingame_id_resolver_mlb.resolve_ticker); production leaves them None."""
     if str(row.get("sport") or "").lower() != "mlb":
         return None
-    per_event = legs.get(str(row.get("game_id") or ""))
-    if not per_event:
-        return None
+    game_id = str(row.get("game_id") or "")
+    per_event = legs.get(game_id)
     side = row.get("side")
-    matchup = str(row.get("matchup") or "")
-    if side not in ("home", "away") or " vs " not in matchup:
+    if not per_event or side not in ("home", "away"):
         return None
-    home, _, away = matchup.partition(" vs ")
-    code = _kalshi_code_for(home.strip() if side == "home" else away.strip())
+    resolved = _resolver_mlb.resolve_ticker(game_id, candidates=candidates, http_get=http_get)
+    if not resolved:
+        return None
+    code = resolved.get(side + "_abbr")
     return per_event.get(code) if code else None
 
 
@@ -159,7 +158,8 @@ def _existing_keys(out_path: Path) -> set:
 
 def run_dryrun(input_path: Path = DEFAULT_INPUT, out_path: Path = DEFAULT_OUT,
                depth_dir: Path = BOOK_DEPTH_DIR, max_rows: int = 500,
-               exchange: Optional[MockKalshiExchange] = None) -> Dict[str, Any]:
+               exchange: Optional[MockKalshiExchange] = None,
+               mlb_candidates: Optional[List[Dict[str, Any]]] = None) -> Dict[str, Any]:
     asof = _now_iso()
     day = asof[:10]
     rows = load_jsonl(input_path)
@@ -181,7 +181,7 @@ def run_dryrun(input_path: Path = DEFAULT_INPUT, out_path: Path = DEFAULT_OUT,
     out_lines: List[str] = []
     for row in rows[:max_rows]:
         if not (row.get("ticker") or row.get("kalshi_ticker") or row.get("market_id")):
-            resolved = resolve_mlb_ticker(row, legs)
+            resolved = resolve_mlb_ticker(row, legs, candidates=mlb_candidates)
             if resolved:
                 row = dict(row, ticker=resolved)
                 report["n_ticker_resolved"] += 1
