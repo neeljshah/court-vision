@@ -62,5 +62,16 @@ def load_schedule_density() -> pd.DataFrame:
     return pd.read_parquet(TENNIS_DIR / "schedule_density.parquet")
 
 
+def load_match_stats() -> pd.DataFrame:
+    """event_id -> per-match serve stats (p1_ace_rate/p2_ace_rate/etc, 59,312
+    rows). event_id join to matches.parquet is 100% coverage on the
+    ATP-only matches.parquet side (verified research-wave-4 #39 premise
+    check); match_stats.parquet itself carries MORE distinct event_ids than
+    matches.parquet alone (a broader source scope), harmless since every
+    join below is FROM the matches side (inner, matches never loses rows)."""
+    return pd.read_parquet(TENNIS_DIR / "match_stats.parquet")
+
+
 __all__ = ["REPO", "SLAM_POINTS", "TENNIS_DIR", "LEDGER_PATH", "SURFACE_OF_TOURNEY",
-           "load_slam_points", "load_matches", "load_players", "load_schedule_density"]
+           "load_slam_points", "load_matches", "load_players", "load_schedule_density",
+           "load_match_stats"]
