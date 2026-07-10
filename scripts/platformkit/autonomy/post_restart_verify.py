@@ -36,6 +36,9 @@ see post_restart_checks.py for the check implementations + data tables):
       Kalshi 429 pacing counters (l), enrichment persisted into grade rows (m),
       sidecar retention dry-run plan (n), supervisor beat-thread + boot_initiator
       stamp (o), npb/kbo live-state bridge wiring (p).
+  (q) E3 addition: autoloop_report.json[maintenance] carries the 6 M07-M12
+      job keys + an execution key, none status=error (see
+      post_restart_readiness_checks.check_autoloop_maintenance_jobs).
 
 Every external effect (HTTP probe, kalshi fetch, live-game lookup, wall clock)
 is INJECTABLE so tests never hit a real socket, kill a PID, or restart
@@ -66,6 +69,7 @@ from scripts.platformkit.autonomy.post_restart_enrichment_checks import (
     check_m37_artifact_dirs,
 )
 from scripts.platformkit.autonomy.post_restart_readiness_checks import (
+    check_autoloop_maintenance_jobs,
     check_enrichment_persistence,
     check_grade_writer_clamp,
     check_kalshi_pacing_counters,
@@ -144,6 +148,7 @@ def run_all(*, now: Optional[float] = None,
     rows.append(check_sidecar_retention())
     rows.append(check_supervisor_beat_thread(ts, at_restart))
     rows.append(check_npb_kbo_live_state_bridge())
+    rows.append(check_autoloop_maintenance_jobs(at_restart))
 
     n_pass = sum(1 for r in rows if r["status"] == PASS)
     n_fail = sum(1 for r in rows if r["status"] == FAIL)

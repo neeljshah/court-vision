@@ -222,3 +222,55 @@ def test_npb_kbo_bridge_missing_dispatch_is_fail(monkeypatch):
     row = ready.check_npb_kbo_live_state_bridge()
     assert row["status"] == checks.FAIL
     assert "kbo" in row["evidence"]
+
+
+# --------------------------------------------------------------------------- #
+# (q) autoloop maintenance jobs armed (E3)
+# --------------------------------------------------------------------------- #
+_M07_M12 = {
+    "mechanism_reval": {"status": "ok"}, "utilization_drift": {"status": "ok"},
+    "shadow_settle": {"status": "ok"}, "propose_gate": {"status": "ok"},
+    "frontier_probe": {"status": "ok"}, "milb_refresh": {"status": "ok"},
+}
+
+
+def test_autoloop_maintenance_missing_report_is_pending(tmp_path, monkeypatch):
+    monkeypatch.setattr(ready, "_AUTOLOOP_REPORT", tmp_path / "missing.json")
+    row = ready.check_autoloop_maintenance_jobs(1000.0)
+    assert row["status"] == checks.PENDING
+
+
+def test_autoloop_maintenance_predates_restart_is_pending(tmp_path, monkeypatch):
+    rpt = tmp_path / "autoloop_report.json"
+    rpt.write_text(json.dumps({"maintenance": {}}), encoding="ascii")
+    monkeypatch.setattr(ready, "_AUTOLOOP_REPORT", rpt)
+    row = ready.check_autoloop_maintenance_jobs(rpt.stat().st_mtime + 100.0)
+    assert row["status"] == checks.PENDING
+
+
+def test_autoloop_maintenance_post_restart_missing_keys_is_fail(tmp_path, monkeypatch):
+    rpt = tmp_path / "autoloop_report.json"
+    rpt.write_text(json.dumps({"maintenance": {}}), encoding="ascii")
+    monkeypatch.setattr(ready, "_AUTOLOOP_REPORT", rpt)
+    row = ready.check_autoloop_maintenance_jobs(rpt.stat().st_mtime - 100.0)
+    assert row["status"] == checks.FAIL
+
+
+def test_autoloop_maintenance_post_restart_error_status_is_fail(tmp_path, monkeypatch):
+    rpt = tmp_path / "autoloop_report.json"
+    maintenance = dict(_M07_M12)
+    maintenance["propose_gate"] = {"status": "error", "error": "boom"}
+    rpt.write_text(json.dumps({"maintenance": maintenance, "execution": {}}), encoding="ascii")
+    monkeypatch.setattr(ready, "_AUTOLOOP_REPORT", rpt)
+    row = ready.check_autoloop_maintenance_jobs(rpt.stat().st_mtime - 100.0)
+    assert row["status"] == checks.FAIL
+    assert "propose_gate" in row["evidence"]
+
+
+def test_autoloop_maintenance_post_restart_clean_is_pass(tmp_path, monkeypatch):
+    rpt = tmp_path / "autoloop_report.json"
+    doc = {"maintenance": _M07_M12, "execution": {"execution_stages": {"status": "ran"}}}
+    rpt.write_text(json.dumps(doc), encoding="ascii")
+    monkeypatch.setattr(ready, "_AUTOLOOP_REPORT", rpt)
+    row = ready.check_autoloop_maintenance_jobs(rpt.stat().st_mtime - 100.0)
+    assert row["status"] == checks.PASS
