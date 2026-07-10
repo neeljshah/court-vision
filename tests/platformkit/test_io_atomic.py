@@ -174,3 +174,26 @@ def test_append_jsonl_atomic_stamps_run_ts_only_for_validation_ledger(tmp_path):
     append_jsonl_atomic(p, {"i": 0})
     row3 = json.loads(p.read_text(encoding="ascii").splitlines()[0])
     assert "run_ts" not in row3
+
+
+def test_append_jsonl_atomic_skips_content_duplicate_in_validation_ledger(tmp_path):
+    """Forward guard (docs/research/ledger_dedupe_audit_2026-07-10.md): a
+    re-run of the same validator against an unchanged corpus must not grow
+    the ledger -- only run_ts differs, so the append is a no-op."""
+    ledger = tmp_path / "validation_ledger.jsonl"
+    append_jsonl_atomic(ledger, {"hypothesis": "b2b_rest_penalty", "verdict": "NULL_LOCAL", "n": 100})
+    append_jsonl_atomic(ledger, {"hypothesis": "b2b_rest_penalty", "verdict": "NULL_LOCAL", "n": 100})
+    rows = [json.loads(ln) for ln in ledger.read_text(encoding="ascii").splitlines() if ln.strip()]
+    assert len(rows) == 1  # second append was a content-duplicate -> skipped
+
+    # A genuinely different row (different n) still appends normally.
+    append_jsonl_atomic(ledger, {"hypothesis": "b2b_rest_penalty", "verdict": "NULL_LOCAL", "n": 200})
+    rows = [json.loads(ln) for ln in ledger.read_text(encoding="ascii").splitlines() if ln.strip()]
+    assert len(rows) == 2
+
+    # A non-ledger jsonl file is NOT guarded -- byte-identical rows both land.
+    feed = tmp_path / "feed.jsonl"
+    append_jsonl_atomic(feed, {"i": 0})
+    append_jsonl_atomic(feed, {"i": 0})
+    feed_rows = [json.loads(ln) for ln in feed.read_text(encoding="ascii").splitlines() if ln.strip()]
+    assert len(feed_rows) == 2

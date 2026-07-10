@@ -129,6 +129,11 @@ def write_json_atomic(
     _replace_via_tmp(_as_path(path), body, encoding)
 
 
+def _content_sig(row: dict) -> str:
+    """Content signature ignoring ``run_ts`` -- for the knowledge-ledger dup guard."""
+    return json.dumps({k: v for k, v in row.items() if k != "run_ts"}, sort_keys=True, default=str)
+
+
 def append_jsonl_atomic(
     path: PathLike,
     row: Any,
@@ -152,14 +157,36 @@ def append_jsonl_atomic(
     stamped in (only if the caller didn't already set one) so re-validation
     passes are no longer indistinguishable from silent duplicates. Readers must
     tolerate its absence on pre-existing rows -- it is additive, not required.
+
+    FORWARD DUP GUARD (``validation_ledger.jsonl`` targets only,
+    docs/research/ledger_dedupe_audit_2026-07-10.md): a direct/manual
+    ``validate_*.py`` re-run against an unchanged corpus reproduces a
+    byte-identical row (content-equal minus ``run_ts``). Rather than adding a
+    guard to all ~30 call sites, this shared writer skips the append when an
+    existing row's content signature (row minus ``run_ts``) already matches.
+    # ponytail: read-scan is O(n) per append -- fine at these sizes (~100
+    # rows/ledger); promote to a cached content-sig set/index if a ledger
+    # grows enough that this write path gets hot.
     """
     target = _as_path(path)
-    if (isinstance(row, dict) and target.name == _KNOWLEDGE_LEDGER_NAME
-            and "run_ts" not in row):
+    is_ledger = target.name == _KNOWLEDGE_LEDGER_NAME
+    if isinstance(row, dict) and is_ledger and "run_ts" not in row:
         row = {**row, "run_ts": _utc_now_iso()}
     existing = ""
     if target.is_file():
         existing = target.read_text(encoding=encoding, errors="replace")
+        if isinstance(row, dict) and is_ledger and existing:
+            new_sig = _content_sig(row)
+            for ln in existing.splitlines():
+                ln = ln.strip()
+                if not ln:
+                    continue
+                try:
+                    prior = json.loads(ln)
+                except json.JSONDecodeError:
+                    continue
+                if isinstance(prior, dict) and _content_sig(prior) == new_sig:
+                    return  # duplicate content (ignoring run_ts) -- skip append
         if existing and not existing.endswith("\n"):
             # A pre-existing torn tail would otherwise glue onto our new row.
             existing += "\n"
