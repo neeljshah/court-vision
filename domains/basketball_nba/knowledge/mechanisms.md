@@ -589,3 +589,26 @@ No validator built this lane.
 - **status**: PROVISIONAL -- split-half by date: h1 (n=1806 games) phi=1.106 p=0.00099, does NOT clear the declared phi>=1.15 bar; h2 (n=1805 games) phi=1.184 p=8.9e-08, clears the bar. Only 1 of 2 replication groups confirms -- an honest single-half result, not a 2-corpora replication, so held at PROVISIONAL rather than promoted to CONFIRMED_LOCAL.
 - **artifact link**: `domains/basketball_nba/knowledge/validate_research_wave4.py::foul_rate_dispersion_exceeds_poisson_noise`; `domains/basketball_nba/knowledge/validation_ledger.jsonl`, hypothesis=`foul_rate_dispersion_exceeds_poisson_noise__combined` (+ `__h1`/`__h2`).
 - **source**: "How NBA Referees Affect Betting Lines, Totals & Player Props" (DonaghyEffect), https://www.donaghyeffect.com/nba/referees/explained -- documents that crews carry consistent foul-volume tendencies (some officials averaging notably more fouls/game than others) that measurably shift expected game totals; "The Referee Effect in the NBA" (NBAstuffer), https://www.nbastuffer.com/the-referee-effect-in-the-nba/ -- companion coverage of the same crew-tendency pattern. Neither source requires or provides individual-referee attribution on our local corpus; this row tests only the identity-free residual-dispersion signature their aggregate claims imply should exist.
+
+---
+
+## Seeded 2026-07-10 (research-wave 5 -- literature-sourced, UNTESTED, round-5 pool feedstock)
+
+Fresh mechanism hypothesis on schedule-level roster stability (between-game
+starting-lineup continuity), scoped explicitly DISTINCT from #1/#11/#30
+(all within-game stint-composition tests) and from the A10a "chemistry
+atlas cols" note (`.planning/ULTRA_DONE.md` line 102, `chemistry_score_std`/
+`_median` -- CLOSED_CONFIRMED dead/no-action, an unrelated lineup_synergy
+distribution-shape column this row does not touch). Checked against every
+row above and against `data/frontend/reject_ledger.jsonl` (535 rows, 0
+keyword hits for `roster`/`lineup_stab`) before seeding. No validator built
+this lane.
+
+### 55. Between-game starting-lineup continuity (roster-stability streak) vs point differential
+- **claim**: a team's continuity streak -- consecutive games with an unchanged 5-man OPENING lineup -- predicts that game's point differential, a schedule-level roster-stability signal distinct from #1 (within-game stint-seconds continuity x DREB), #11 (continuity x starter-disruption, NULL x3) and #30 (bench-stint continuity, reversed sign) -- none of which test between-game lineup persistence.
+- **premise check**: `data/cache/team_system/lineups/stints_2023_24.parquet` / `stints_2024_25.parquet` confirmed this session -- columns `game_id`/`team_id`/`period`/`lineup_key`/`start_s`/`pts_for`/`pts_against` present; opening lineup (first `period==1` stint by `start_s`) gives 2,460 team-game rows/season (30 teams x ~1,230 games); same-as-prior-game exact lineup_key match rate=42.9% (2024-25) -- a real, non-degenerate binary, not a rare or frozen event.
+- **causal story (confound flagged honestly)**: an unchanged starting 5 game-to-game is close to tautological for a currently healthy/undisrupted roster, so a positive effect here more plausibly reflects "team is healthy right now" than genuine chemistry accrual -- still a distinct, worth-testing schedule-level signal separate from the within-game stint-composition mechanisms already closed above; any CONFIRMED result should be read as a health/availability proxy, not a chemistry claim, until an injury-report control is added.
+- **expected signature**: positive relationship, continuity-streak length (or same-as-prior binary) vs that game's point differential (`pts_for`-`pts_against` summed across all stints for the team-game).
+- **test spec**: `domains.basketball_nba.knowledge.validate_research_wave5.lineup_continuity_streak_vs_point_diff` (not yet built) -- per (game_id,team_id) opening lineup_key = first `period==1` stint by `start_s`; sort each team's games by `game_id` (chronological proxy, same convention used elsewhere in this repo); continuity_streak = count of consecutive prior games with identical opening lineup_key; Pearson r, streak_length vs point_diff; declared bar |r|>=0.05 AND p<0.01 (large-n floor, ~2,460 rows/season); 2023-24 vs 2024-25 as the two independent-corpora replication legs (2025-26, in progress at 1,192/1,230 games, held out).
+- **status**: UNTESTED
+- **source**: "Continuity Rankings: Breaking down roster turnover for all 30 teams" (NBA.com, 2025), https://www.nba.com/news/2025-continuity-rankings; "Roster Continuity" (Basketball-Reference), https://www.basketball-reference.com/friv/continuity.html -- both document roster/lineup continuity as a real, measured league construct, but explicitly note the relationship to performance is NOT a straightforward direct predictor (a low-continuity team improved +11.1 net rating one year; a high-continuity team declined) -- literature basis for treating this as a genuinely open empirical question, not an assumed-positive one, worth testing directly on the local stint corpus.

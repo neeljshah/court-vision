@@ -544,3 +544,36 @@ lane.
 - **source**: "Stolen Base Matchup Tool" (EV Analytics), https://evanalytics.com/mlb/research/sb-matchup-tool -- documents that modern SB-decision models already condition success probability on defensive-side inputs including outfielder throwing arm alongside catcher/pitcher factors, the literature basis for treating outfield-arm reputation as a plausible baserunning-aggression deterrent worth testing directly against the local box-score corpus.
 
 ---
+
+## Seeded 2026-07-10 (research-wave 5 -- literature-sourced, UNTESTED, round-5 pool feedstock)
+
+Two fresh mechanism hypotheses: (a) game-calling variance scoped IDENTITY-
+FREE, mirroring the CONFIRMED+REPLICATED called-strike-dispersion design
+(#39/#40) but on a whiff outcome instead of a call outcome -- distinct from
+#32 (catcher-identity persistence, REJECTED NULL_LOCAL); (b) automatic-
+runner ("zombie runner") extra-innings scoring environment, rule-era aware.
+Checked against every row above and `data/frontend/reject_ledger.jsonl`
+(535 rows, 0 keyword hits for `zombie`/`ghost`/`automatic_runner`/
+`catcher` beyond the already-closed #32/#46 rows) before seeding. No
+validator built this lane.
+
+### 53. Per-game 2-strike putaway-whiff rate disperses beyond binomial noise (identity-free, mirrors #39)
+- **claim**: the per-game swinging-strike rate on 2-strike ("putaway") pitches varies across games by more than binomial sampling noise alone would produce, independent of any catcher-identity attribution -- distinct from #32 (catcher-level sequencing persistence BY IDENTITY, REJECTED NULL_LOCAL); this row applies #39's identity-free game-level dispersion design to a different outcome column (whiff, not called-strike).
+- **premise check**: `data/cache/statcast/savant_full__2025.parquet` confirmed this session -- columns `game_pk`/`strikes`/`description` present, 705,391 pitch rows / 2,406 games; 2-strike pitches n=210,696; `description` value-set includes `swinging_strike` (73,372) + `swinging_strike_blocked` (3,954) as the whiff population.
+- **causal story**: cited sequencing-analytics coverage (Driveline, "Count-dependent Pitch Profile Manipulation") documents pitchers/catchers deliberately shift pitch-mix intensity specifically in 2-strike putaway counts to maximize whiffs; if that game-calling execution quality varies meaningfully by game (weather, that day's battery pairing, scouting-report freshness) beyond pure chance, the per-game putaway-whiff rate should disperse beyond binomial noise, same identity-free logic as #39.
+- **expected signature**: quasi-binomial dispersion ratio phi=chi2/df above 1.0 (declared bar phi>=1.2 AND p<0.01, same bar as #39 since this is a direct outcome-column swap of that design).
+- **test spec**: `domains.mlb.knowledge.validate_research_wave5.putaway_whiff_dispersion_exceeds_binomial_noise` (not yet built) -- per game_pk, subset to `strikes==2` pitches; whiff = `description` in {swinging_strike, swinging_strike_blocked} vs all other 2-strike outcomes; n>=20 qualifying 2-strike pitches/game floor (same floor as #39); phi=chi2/df under the single-shared-rate null; `savant_full__2025.parquet` vs `savant_full__2024.parquet` as the two-corpora replication legs, same design as #39's own replication.
+- **status**: UNTESTED
+- **source**: internal design mirror of CONFIRMED+REPLICATED #39 (this ledger); "Count-dependent Pitch Profile Manipulation" (Driveline Baseball), https://www.drivelinebaseball.com/2021/03/count-dependent-pitch-profile-manipulation/ -- documents pitchers meaningfully shift pitch-type mix/intensity specifically in 2-strike putaway counts, the literature basis for treating 2-strike whiff execution as a plausible game-calling-sensitive, game-level dispersion candidate.
+
+### 54. Automatic-runner ("zombie runner") extra-inning home/away scoring-rate parity check, rule-era aware
+- **claim**: in automatic-runner extra innings, the home team's half-inning scoring rate is NOT measurably higher than the road team's, despite a theoretical "last licks" information advantage (home bats second, knowing the exact run target) -- testing a documented literature reversal directly on the local corpus.
+- **premise check**: `data/cache/statcast/savant_full__2025.parquet` columns `game_pk`/`inning`/`inning_topbot`/`on_2b`/`post_home_score`/`post_away_score` confirmed; `inning>=10` rows n=8,674 across 204 games (2025); `on_2b` non-null (runner present) at the first pitch of every sampled `inning>=10` half-inning (588/588 = 100%), confirming the automatic-runner rule is active for the full local window.
+- **rule-era note**: the automatic-runner rule was emergency-only 2020-2022, made PERMANENT starting 2023 (MLB.com); local corpora span 2023-2026 (`savant_full__2023/2024/2025/2026.parquet`) -- entirely inside the rule-active era, no pre-2020 mixing risk. Must NOT be extended to any pre-2020 corpus without adaptation (no automatic runner existed then) -- flagged here for whoever reuses this design.
+- **causal story**: SABR ("Ghost Stories and Zombie Invasions") and FanGraphs ("The Math Behind the Extra Innings Home Field Disadvantage") both document that home teams have NOT been winning extra innings at the rate the "last licks" information advantage would predict, and an arXiv causal-inference study (Doan, "Bunting and the ghost runner") finds home teams under-bunt relative to the win-probability-optimal rate. This row tests the literal per-half-inning scoring-rate half of that documented reversal directly on the local corpus.
+- **expected signature**: no positive home-scoring-rate edge (or a null/negative one) in `inning==10` half-innings, contradicting a naive "last licks" prior.
+- **test spec**: `domains.mlb.knowledge.validate_research_wave5.zombie_runner_home_away_scoring_rate` (not yet built) -- restrict to `inning==10` games where both halves are played (game not already decided in the top 10th); per half-inning, scored = home/away post-score minus pre-score >=1; two-sample proportion test, home bottom-10th scoring rate vs away top-10th scoring rate; declared bar |diff|>=0.05 AND p<0.05 (relaxed alpha vs the 0.01 house default, stated explicitly given the smaller single-inning-slice n).
+- **status**: UNTESTED
+- **source**: "Ghost Stories and Zombie Invasions: Testing the Myths of Extra-Inning Outcomes" (SABR), https://sabr.org/journal/article/ghost-stories-and-zombie-invasions-testing-the-myths-of-extra-inning-outcomes/; "The Math Behind the Extra Innings Home Field Disadvantage" (FanGraphs), https://blogs.fangraphs.com/the-math-behind-the-extra-innings-home-field-disadvantage/; "Automatic runner permanent, new MLB rules for position players pitching" (MLB.com), https://www.mlb.com/news/automatic-runner-permanent-new-mlb-rules-for-position-players-pitching -- documents the rule's 2020 emergency origin -> 2023 permanence, the rule-era boundary this row must respect.
+
+---
