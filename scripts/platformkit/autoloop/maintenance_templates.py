@@ -59,6 +59,13 @@ Job #12, milb_refresh (scripts.platformkit.data_frontier.milb_statsapi, M12),
 daily MiLB AAA active-roster + transactions/call-up capture via statsapi
 (sportId 11 + the MLB-side sportId-1 ledger; 1 req/s, 35s timeout). Watermark =
 the as-of-dated output file's existence -- a captured day is a CACHED no-op.
+
+Job #13, benchmark_refresh (scripts.platformkit.autoloop.benchmark_refresh_job,
+M15), reruns the MLB in-game CRPS benchmark and the soccer chain full-power
+gate ONLY once their own wired-shadow readiness bar (M09's shadow_settle_wired
+baseline + min_n/min_matches -- reused, not redefined) is met by new data.
+Refresh only -- zero promotion logic, promotion bar stays human. Self-resetting
+watermark: a rerun overwrites the source artifact's own baseline count.
 """
 from __future__ import annotations
 
@@ -287,6 +294,12 @@ def run_all(watermarks: Dict[str, Any], *, queue_fn: Optional[Callable[[Dict[str
         out["milb_refresh"] = run_daily(watermarks)
     except Exception as exc:  # noqa: BLE001
         out["milb_refresh"] = {"status": "error", "error": str(exc)[:200]}
+    try:
+        # M15 watermark-gated benchmark rerun (refresh only; promotion stays human)
+        from scripts.platformkit.autoloop.benchmark_refresh_job import run_benchmark_refresh
+        out["benchmark_refresh"] = run_benchmark_refresh(watermarks)
+    except Exception as exc:  # noqa: BLE001
+        out["benchmark_refresh"] = {"status": "error", "error": str(exc)[:200]}
     return out
 
 
