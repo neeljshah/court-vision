@@ -10,6 +10,7 @@ injected; _ls.live_states monkeypatched. Failure mode is "no bet", never a misal
 from __future__ import annotations
 
 import pathlib
+from datetime import datetime, timezone
 
 from scripts.platformkit.ingame import inplay_capture_loop as L
 
@@ -79,7 +80,8 @@ def test_threeway_market_pairs_not_bad_price(monkeypatch, tmp_path):
     hb = L.poll_once(sports=["soccer_intl"], inplay_fetch_fn=lambda s: ticks,
                      live_state_fn=lambda s, g: None, model_fn=lambda s, st: 0.55,
                      finals_fn=lambda s: [], grade_dir=tmp_path / "g",
-                     ledger_path=tmp_path / "l.jsonl")
+                     ledger_path=tmp_path / "l.jsonl",
+                     now=datetime(2026, 6, 22, 20, 0, 0, tzinfo=timezone.utc))  # ticket's own ET date
     g = hb["games"][0]
     assert g["paired"] is True and g["reason"] != "bad_price"
     assert g["devigged_price"] is not None  # 0.60/(0.60+0.25+0.20) ~ 0.571
@@ -97,11 +99,54 @@ def test_bridge_enables_ingame_bet(monkeypatch, tmp_path):
         finals_fn=lambda s: [],
         grade_dir=tmp_path / "grade",
         ledger_path=tmp_path / "ingame_ledger.jsonl",
+        now=datetime(2026, 6, 22, 20, 0, 0, tzinfo=timezone.utc),  # ticket's own ET date
     )
     assert hb["n_pairs"] == 1 and hb["n_bets"] == 1
     g = hb["games"][0]
     assert g["paired"] is True and g["bet"] is True
     assert g["action"] == "bet" and g["tier"] in ("A", "B", "C") and g["reason"] == "ok"
+
+
+_LIVE_MIL_PIT = {
+    "sport": "mlb", "home": "PIT", "away": "MIL",
+    "home_display": "Pittsburgh Pirates", "away_display": "Milwaukee Brewers",
+    "home_runs": 3.0, "away_runs": 2.0, "state_diff": 1.0,
+    "frac_elapsed": 0.7, "p0": 0.5, "p0_source": "PRIOR",
+}
+_MIL_PIT_LEGS = {"Pittsburgh Pirates": 0.465, "Milwaukee Brewers": 0.535}
+_NOW_JUL10_EVENING = datetime(2026, 7, 10, 22, 0, 0, tzinfo=timezone.utc)  # ~18:00 ET Jul 10
+
+
+def test_date_guard_rejects_tomorrow_dated_ticker(monkeypatch):
+    """Series wrong-date class: tonight's live MIL@PIT must NOT bind to tomorrow's market
+    ticket even though the team names are identical (mental-revert of the guard -> binds)."""
+    monkeypatch.setattr(L._ls, "live_states", lambda sport, **kw: [_LIVE_MIL_PIT])
+    st = L._scan_live_by_legs("mlb", _MIL_PIT_LEGS,
+                              gid="KXMLBGAME-26JUL111605MILPIT", nowdt=_NOW_JUL10_EVENING)
+    assert st is None
+
+
+def test_date_guard_allows_today_dated_ticker(monkeypatch):
+    monkeypatch.setattr(L._ls, "live_states", lambda sport, **kw: [_LIVE_MIL_PIT])
+    st = L._scan_live_by_legs("mlb", _MIL_PIT_LEGS,
+                              gid="KXMLBGAME-26JUL101840MILPIT", nowdt=_NOW_JUL10_EVENING)
+    assert st is not None
+
+
+def test_date_guard_allows_yesterday_dated_ticker(monkeypatch):
+    """Past-midnight-ET finish: a game ticketed for ET-yesterday can still be live now."""
+    monkeypatch.setattr(L._ls, "live_states", lambda sport, **kw: [_LIVE_MIL_PIT])
+    st = L._scan_live_by_legs("mlb", _MIL_PIT_LEGS,
+                              gid="KXMLBGAME-26JUL091840MILPIT", nowdt=_NOW_JUL10_EVENING)
+    assert st is not None
+
+
+def test_date_guard_noop_on_unparseable_ticker(monkeypatch):
+    """No parseable ticker date -> honest no-info -> old team-only behavior unchanged."""
+    monkeypatch.setattr(L._ls, "live_states", lambda sport, **kw: [_LIVE_MIL_PIT])
+    st = L._scan_live_by_legs("mlb", _MIL_PIT_LEGS,
+                              gid="MALFORMED-NO-DATE-MILPIT", nowdt=_NOW_JUL10_EVENING)
+    assert st is not None
 
 
 def test_no_live_game_no_bet(monkeypatch, tmp_path):
