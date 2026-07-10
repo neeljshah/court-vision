@@ -40,6 +40,8 @@ from typing import Any
 
 import pandas as pd
 
+from scripts.platformkit.intel_validation.claims_validator import _json_numpy_default
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 _INTERACTIONS_DIR = REPO_ROOT / "data" / "cache" / "team_system" / "interactions"
 _OUT_PATH = REPO_ROOT / "data" / "cache" / "team_system" / "interaction_stability.json"
@@ -106,7 +108,7 @@ def main(argv: list[str] | None = None) -> int:
     summary = build_summary()
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(json.dumps(summary, indent=1), encoding="ascii")
+    out_path.write_text(json.dumps(summary, indent=1, default=_json_numpy_default), encoding="ascii")
 
     for metric, rows in summary.items():
         if not isinstance(rows, list):
