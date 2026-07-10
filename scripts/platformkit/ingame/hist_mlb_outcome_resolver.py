@@ -231,9 +231,12 @@ class MlbTickerOutcomeResolver:
 
     def home_win(self, ticker: str) -> Optional[int]:
         """1 if home won, 0 if away won, None if unresolved/tie/not-final/
-        ambiguous-split/ambiguous-doubleheader. Checks the parsed date +/- 1
-        day (Kalshi's ET book date can roll relative to the boxscore's own
-        date convention). Never raises."""
+        ambiguous-split/ambiguous-doubleheader. Checks the parsed date and a
+        +1 day tolerance only (a late game can file on the NEXT day); -1 is
+        FORBIDDEN -- ticker and box dates are both ET, so a box row dated
+        BEFORE the ticker date is a different game of the same series (same
+        landmine ingame_outcome_label.MlbOutcomeResolver._resolve fixed
+        2026-07-07). Never raises."""
         if not self._ok:
             return None
         parsed = parse_mlb_ticker(ticker)
@@ -245,7 +248,7 @@ class MlbTickerOutcomeResolver:
         if split is None:
             return None
         away, home = split
-        for delta in (0, -1, 1):
+        for delta in (0, 1):
             score = self._pick((date + _dt.timedelta(days=delta), away, home), gnum)
             if score is not None:
                 hs, aws = score
