@@ -102,6 +102,66 @@ def test_flags_settled_before_scheduled_start():
     assert "settled_before_ticket_date" not in flags[0]["reasons"]  # dates ARE equal
 
 
+def test_flags_paper_ingame_settled_before_scheduled_start():
+    """2026-07-11 W5 class: 3x real KXMLBGAME-26JUL111605MILPIT paper_ingame rows
+    settled ~63min before their own 16:05 ET first pitch -- the paper_ingame
+    exclusion (checks 1/2, different resolver) does NOT cover this time-based
+    check; it must still fire."""
+    rows = [
+        {"sport": "mlb", "status": "settled", "channel": "paper_ingame",
+         "matchup": "KXMLBGAME-26JUL111605MILPIT",
+         "bet_id": "mlb|KXMLBGAME-26JUL111605MILPIT|win_home|away|paper_ingame|2026-07-11",
+         "settled_at": "2026-07-11T19:02:25.520837+00:00", "home_score": None, "away_score": None},
+    ]
+    flags = find_wrong_settles(rows)
+    assert len(flags) == 1
+    assert "settled_before_scheduled_start" in flags[0]["reasons"]
+    assert flags[0]["channel"] == "paper_ingame"
+
+
+def test_paper_ingame_not_flagged_by_checks_1_or_2():
+    """paper_ingame stays excluded from the fuzzy team+date matcher checks --
+    two distinct games sharing a final score/team pairing must not be flagged
+    by check 2, and an honestly-timed settle must not trip check 1."""
+    rows = [
+        {"sport": "mlb", "status": "settled", "channel": "paper_ingame",
+         "bet_id": "mlb|KXMLBGAME-26JUN301840TEXCLE|win_home|home|paper_ingame|2026-06-30",
+         "settled_at": "2026-07-01T23:34:31.951449+00:00", "home_score": 2, "away_score": 4},
+        {"sport": "mlb", "status": "settled", "channel": "paper_ingame",
+         "bet_id": "mlb|KXMLBGAME-26JUL011310TEXCLE|win_home|home|paper_ingame|2026-07-01",
+         "settled_at": "2026-07-01T23:34:32.059448+00:00", "home_score": 2, "away_score": 4},
+    ]
+    assert find_wrong_settles(rows) == []
+
+
+def test_flags_npb_ticker_settled_before_scheduled_start():
+    """2026-07-11: 3x real KXNPBGAME-26JUL12* (tomorrow's tickets) settled today
+    -- NPB channel wasn't scanned at all before this fix."""
+    rows = [
+        {"sport": "npb", "status": "settled", "channel": None,
+         "matchup": "オリックス@ロッテ",
+         "bet_id": "npb|KXNPBGAME-26JUL120400ORICHI|moneyline|home|kalshi|2026-07-10",
+         "settled_at": "2026-07-11T18:08:47.349874+00:00", "home_score": None, "away_score": None},
+    ]
+    flags = find_wrong_settles(rows)
+    assert len(flags) == 1
+    assert "settled_before_scheduled_start" in flags[0]["reasons"]
+    assert flags[0]["ticker_date"] == "2026-07-12"
+    assert flags[0]["channel"] == "npb"
+    assert flags[0]["bet_id"] == rows[0]["bet_id"]  # original ticker, never the shaped copy
+
+
+def test_kbo_ticker_clean_settle_not_flagged():
+    """A KBO ticket settled honestly (after its own scheduled start) -> no flag,
+    same false-positive discipline as the MLB checks."""
+    rows = [
+        {"sport": "kbo", "status": "settled", "channel": None,
+         "bet_id": "kbo|KXKBOGAME-26JUL090500LGDOO|moneyline|home|kalshi|2026-07-09",
+         "settled_at": "2026-07-09T20:00:00+00:00", "home_score": 3, "away_score": 1},
+    ]
+    assert find_wrong_settles(rows) == []
+
+
 def test_run_audit_is_append_only_never_rewrites_existing_flag(tmp_path):
     """A prior quarantine file's existing entries must survive byte-identical
     across a re-run that ALSO finds a brand-new flag -- human-gated quarantine,
