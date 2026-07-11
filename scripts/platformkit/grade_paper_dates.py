@@ -64,6 +64,53 @@ def _mlb_ticker_date(bet: Dict[str, Any]) -> Optional[str]:
     return parsed[0].isoformat() if parsed else None
 
 
+_MLB_TICKER_HHMM_RE = re.compile(r"KXMLBGAME-\d{2}[A-Z]{3}\d{2}(\d{2})(\d{2})")
+
+
+def _mlb_ticker_start_et(bet: Dict[str, Any]) -> Optional[_dt.datetime]:
+    """*bet*'s own KXMLBGAME ticker's full scheduled (date, ET time) as one
+    tz-aware datetime, or None if the ticker/date/hh:mm is missing or malformed.
+
+    The DATE-only guard (bet_expected_dates / _find_final_game's board_date
+    check, 26c16bf6) cannot catch a same-CALENDAR-DATE ticker whose scheduled
+    TIME is still hours in the future (2026-07-11 AZLAD wrong-settle: a ticket
+    for the 21:10 ET game settled at 01:27 ET the SAME date -- date-equal,
+    ~20h before first pitch). This combines the existing date parse with the
+    ticker's own HHMM field (present in the raw ticker, previously discarded
+    by parse_mlb_ticker's caller) to support a TIME-aware guard."""
+    ticker = _mlb_ticker(bet)
+    if ticker is None:
+        return None
+    parsed = _parse_mlb_ticker(ticker)
+    if parsed is None:
+        return None
+    game_date = parsed[0]
+    m = _MLB_TICKER_HHMM_RE.match(ticker)
+    if not m:
+        return None
+    hh, mm = int(m.group(1)), int(m.group(2))
+    if not (0 <= hh < 24 and 0 <= mm < 60):
+        return None
+    return _dt.datetime(game_date.year, game_date.month, game_date.day, hh, mm, tzinfo=_ET)
+
+
+def bet_not_yet_started(bet: Dict[str, Any], now_dt: Optional[_dt.datetime] = None) -> bool:
+    """True iff *bet*'s own MLB ticker embeds a scheduled ET start strictly AFTER
+    *now_dt* -- a game cannot be FINAL before it has even started. MLB only (the
+    only ticker shape carrying an embedded HHMM here); missing/unparseable ticker
+    or time degrades to False (old behavior, never a false-positive reject),
+    mirroring bet_expected_dates' own honesty contract."""
+    if str(bet.get("sport", "")).lower() != "mlb":
+        return False
+    start = _mlb_ticker_start_et(bet)
+    if start is None:
+        return False
+    now = now_dt if now_dt is not None else _dt.datetime.now(_dt.timezone.utc)
+    if now.tzinfo is None:
+        now = now.replace(tzinfo=_dt.timezone.utc)
+    return start > now.astimezone(_ET)
+
+
 def bet_expected_dates(bet: Dict[str, Any]) -> List[str]:
     """Every calendar date *bet*'s own game could plausibly be on, INCLUDING today
     (_candidate_dates below excludes today, for its own bounded-backlog purpose).
@@ -89,4 +136,5 @@ def bet_expected_dates(bet: Dict[str, Any]) -> List[str]:
     return [ts, (d + _dt.timedelta(days=1)).isoformat()]
 
 
-__all__ = ["bet_expected_dates", "today_et_iso", "_mlb_ticker", "_mlb_ticker_date"]
+__all__ = ["bet_expected_dates", "today_et_iso", "_mlb_ticker", "_mlb_ticker_date",
+          "bet_not_yet_started", "_mlb_ticker_start_et"]

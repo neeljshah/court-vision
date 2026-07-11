@@ -9,7 +9,7 @@ final). The date guard added in grade_paper._find_final_game / mlb_ticker_fallba
 (same lane) stops NEW wrong settles going forward; this module finds rows that were
 ALREADY settled before that fix landed.
 
-Two independent, low-false-positive checks per settled MLB KXMLBGAME row:
+Three independent, low-false-positive checks per settled MLB KXMLBGAME row:
   settled_before_ticket_date -- settled_at's calendar date is STRICTLY EARLIER than
     the ticket's own embedded game date: definitionally impossible (a game cannot be
     graded final before its own date has even started) -- airtight proof.
@@ -17,11 +17,17 @@ Two independent, low-false-positive checks per settled MLB KXMLBGAME row:
     (from the ticket tail, not the free-text matchup label) and the SAME
     (home_score, away_score) but carry DIFFERENT ticket dates -- one literal final
     bound to more than one calendar date's bet.
+  settled_before_scheduled_start -- settled_at is STRICTLY EARLIER than the
+    ticket's own embedded (date, ET time) start (2026-07-11 AZLAD wrong-settle:
+    a SAME-CALENDAR-DATE ticker whose scheduled TIME hadn't arrived yet -- the
+    first check above misses this because the calendar dates are equal, only
+    the TIME differs; airtight proof, same as check 1 but time-aware).
 
 AUDIT ONLY: never re-settles, never edits a settled row (human-gated, see
-.claude/rules/human-gated-paths.md). Writes a full-replace quarantine flag list
-(bet_ids + reason) as a sidecar, mirroring the ingame_score_drift_audit convention
-(data/frontend/ops/, write_json_atomic).
+.claude/rules/human-gated-paths.md). Quarantine flags are APPEND-ONLY: an
+existing bet_id's flag entry is never rewritten, only NEW bet_ids are added
+(data/frontend/ops/, write_json_atomic for the crash-safe full-file replace of
+the merged result).
 
 CLI:
   python -m scripts.platformkit.mlb_wrong_settle_audit
@@ -39,6 +45,7 @@ from typing import Any, Dict, List, Optional
 
 from scripts.platformkit import clv_ledger as _clv
 from scripts.platformkit.grade_paper_asof import _mlb_ticker, _mlb_ticker_date
+from scripts.platformkit.grade_paper_dates import _mlb_ticker_start_et as _ticker_start_et
 from scripts.platformkit.ingame.hist_mlb_outcome_resolver import parse_mlb_ticker as _parse_mlb_ticker
 from scripts.platformkit.io_atomic import write_json_atomic
 
@@ -118,16 +125,58 @@ def find_wrong_settles(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             for m in members:
                 _flag(m, "same_final_reused_across_dates")
 
+    # Check 3 (2026-07-11 AZLAD wrong-settle): settled_at strictly earlier than
+    # the ticket's own (date, ET time) scheduled start -- catches the same-
+    # calendar-date-different-TIME class check 1 cannot see (its dates are equal).
+    for r in mlb_settled:
+        start = _ticker_start_et(r)
+        settled = _parse_settled_at(r.get("settled_at"))
+        if start is not None and settled is not None and settled < start:
+            _flag(r, "settled_before_scheduled_start")
+
     return sorted(flags.values(), key=lambda f: str(f.get("bet_id")))
+
+
+def _parse_settled_at(settled_at: Any) -> Optional[datetime]:
+    """*settled_at* (an ISO string) as a tz-aware datetime, or None. Never raises."""
+    if not settled_at:
+        return None
+    try:
+        dt = datetime.fromisoformat(str(settled_at).replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return dt if dt.tzinfo is not None else dt.replace(tzinfo=timezone.utc)
+
+
+def _load_existing_flags(flags_path: Path) -> Dict[str, Dict[str, Any]]:
+    """bet_id -> flag entry already on disk, or {} if the file is absent/unreadable.
+    Never raises (a torn/missing sidecar degrades to "no prior flags")."""
+    if not flags_path.is_file():
+        return {}
+    try:
+        obj = json.loads(flags_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return {}
+    return {str(f.get("bet_id")): f for f in obj.get("flags", []) if f.get("bet_id")}
 
 
 def run_audit(ledger_path: Optional[Path] = None, flags_path: Optional[Path] = None
              ) -> Dict[str, Any]:
-    """One AUDIT pass: scan, write the quarantine flag list, never touch the ledger."""
+    """One AUDIT pass: scan, MERGE new flags into the quarantine file, never touch
+    the ledger. APPEND-ONLY on the flag list itself: an existing bet_id's entry is
+    reused byte-for-byte (never re-derived/overwritten), only bet_ids not already
+    present get a new entry -- a human decides what happens to a flagged row."""
     ledger_path = Path(ledger_path) if ledger_path else _clv.DEFAULT_LEDGER
     flags_path = Path(flags_path) if flags_path else DEFAULT_FLAGS_PATH
     rows = _clv.load_ledger(ledger_path)
-    flags = find_wrong_settles(rows)
+    new_flags = find_wrong_settles(rows)
+    existing = _load_existing_flags(flags_path)
+    merged = dict(existing)
+    for f in new_flags:
+        bid = str(f.get("bet_id") or "")
+        if bid and bid not in merged:
+            merged[bid] = f
+    flags = sorted(merged.values(), key=lambda f: str(f.get("bet_id")))
     n_scanned = sum(1 for r in rows if str(r.get("sport", "")).lower() == "mlb"
                     and r.get("status") == "settled" and _mlb_ticker(r) is not None
                     and r.get("channel") != _INGAME_CHANNEL)
@@ -136,9 +185,10 @@ def run_audit(ledger_path: Optional[Path] = None, flags_path: Optional[Path] = N
         "n_settled_mlb_ticker_scanned": n_scanned, "n_flagged": len(flags),
         "flags": flags,
         "note": ("AUDIT ONLY -- never re-settles or edits a settled row (human-gated); "
-                "the root-cause date guard (grade_paper._find_final_game / "
-                "grade_paper_asof.mlb_ticker_fallback_match) now blocks NEW wrong "
-                "settles of this class."),
+                "the root-cause date + start-time guards (grade_paper._find_final_game / "
+                "grade_paper_asof.mlb_ticker_fallback_match / grade_paper_dates."
+                "bet_not_yet_started) now block NEW wrong settles of this class. Flags "
+                "are append-only across runs -- an existing bet_id is never rewritten."),
     }
     write_json_atomic(flags_path, report)
     return report

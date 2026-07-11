@@ -229,12 +229,39 @@ def test_open_bets_not_final_is_pending(tmp_path):
 # 26JUL09 8-2 final -- the 26JUL11 ticket settled before its game could exist.
 # --------------------------------------------------------------------------- #
 def test_find_final_game_date_guard_rejects_wrong_date_board():
+    import datetime as _dtm
     bet = {"sport": "mlb", "matchup": "Colorado @ San Francisco",
            "bet_id": "pm|kalshi|KXMLBGAME-26JUL111400COLSF|home"}
     games = [_game("San Francisco Giants", "SF", "Colorado Rockies", "COL", 8, 2)]
+    # now_dt pinned well after the ticket's own 14:00 ET start so this test isolates
+    # the DATE guard only (the separate started-yet? time guard is covered below).
+    now_dt = _dtm.datetime(2026, 7, 11, 23, 0, tzinfo=_dtm.timezone.utc)
     # today's board (2026-07-09) cannot satisfy a ticket dated 2026-07-11
-    assert _find_final_game(bet, games, board_date="2026-07-09") is None
-    assert _find_final_game(bet, games, board_date="2026-07-11") is not None
+    assert _find_final_game(bet, games, board_date="2026-07-09", now_dt=now_dt) is None
+    assert _find_final_game(bet, games, board_date="2026-07-11", now_dt=now_dt) is not None
+
+
+def test_find_final_game_refuses_ticker_before_its_own_scheduled_start():
+    """2026-07-11 AZLAD wrong-settle, root cause: the DATE-only guard above
+    compares CALENDAR dates and misses a same-date-different-TIME ticker. Real
+    trap: KXMLBGAME-26JUL112110AZLAD (July 11, 21:10 ET first pitch) must not
+    settle off a same-teams final at 01:27 ET the SAME date -- ~20h before its
+    own scheduled start. This is the exact incident row (bet_id, matchup,
+    score) replayed at the real settle instant."""
+    import datetime as _dtm
+    bet = {"sport": "mlb", "matchup": "Los Angeles D vs Arizona", "side": "away",
+           "bet_id": "pm|kalshi|KXMLBGAME-26JUL112110AZLAD|away"}
+    games = [_game("Los Angeles Dodgers", "LAD", "Arizona Diamondbacks", "AZ", 3, 9)]
+    incident_settle_time = _dtm.datetime(2026, 7, 11, 5, 27, 10, tzinfo=_dtm.timezone.utc)
+    # REFUSED: board_date equals the ticket's own calendar date (both "2026-07-11")
+    # -- the pre-fix date-only guard alone would have let this through.
+    assert _find_final_game(bet, games, board_date="2026-07-11",
+                            now_dt=incident_settle_time) is None
+    # ALLOWED: same ticket/board-date, but now_dt AFTER the 21:10 ET start (same
+    # calendar day) -- a genuinely late-that-night final must still settle.
+    after_first_pitch = _dtm.datetime(2026, 7, 12, 2, 0, tzinfo=_dtm.timezone.utc)  # 22:00 ET Jul 11
+    assert _find_final_game(bet, games, board_date="2026-07-11",
+                            now_dt=after_first_pitch) is not None
 
 
 def test_open_bets_future_ticket_not_settled_by_earlier_same_teams_final(tmp_path):

@@ -87,3 +87,44 @@ def test_run_audit_writes_quarantine_file_and_never_touches_ledger(tmp_path, mon
     written = json.loads(flags_path.read_text(encoding="utf-8"))
     assert written["n_flagged"] == 1
     assert ledger.read_text(encoding="utf-8") == before  # ledger never rewritten
+
+
+def test_flags_settled_before_scheduled_start():
+    """2026-07-11 AZLAD wrong-settle: SAME calendar date as the ticket (check 1
+    misses this -- dates are equal), but settled_at is hours BEFORE the ticket's
+    own embedded ET start time -- definitionally impossible."""
+    rows = [_settled_row("pm|kalshi|KXMLBGAME-26JUL112110AZLAD|away",
+                         "2026-07-11T05:27:10.197994+00:00", 3, 9,
+                         matchup="Los Angeles D vs Arizona")]
+    flags = find_wrong_settles(rows)
+    assert len(flags) == 1
+    assert "settled_before_scheduled_start" in flags[0]["reasons"]
+    assert "settled_before_ticket_date" not in flags[0]["reasons"]  # dates ARE equal
+
+
+def test_run_audit_is_append_only_never_rewrites_existing_flag(tmp_path):
+    """A prior quarantine file's existing entries must survive byte-identical
+    across a re-run that ALSO finds a brand-new flag -- human-gated quarantine,
+    never a silent overwrite of a row already under review."""
+    flags_path = tmp_path / "mlb_wrong_settle_quarantine.json"
+    prior_entry = {"bet_id": "pm|kalshi|KXMLBGAME-26JUL081840ATLPIT|away",
+                   "matchup": "Pittsburgh vs Atlanta", "reasons": ["same_final_reused_across_dates"],
+                   "settled_at": "2026-07-08T02:45:21.906163+00:00",
+                   "ticker_date": "2026-07-08", "home_score": 12, "away_score": 4}
+    flags_path.write_text(json.dumps({"component": "mlb_wrong_settle_audit",
+                                      "flags": [prior_entry], "n_flagged": 1,
+                                      "generated_at": "2026-07-08T03:00:00+00:00",
+                                      "n_settled_mlb_ticker_scanned": 1}), encoding="utf-8")
+    ledger = tmp_path / "clv_ledger.jsonl"
+    new_row = _settled_row("pm|kalshi|KXMLBGAME-26JUL112110AZLAD|away",
+                           "2026-07-11T05:27:10.197994+00:00", 3, 9,
+                           matchup="Los Angeles D vs Arizona")
+    ledger.write_text(json.dumps(new_row) + "\n", encoding="utf-8")
+
+    report = run_audit(ledger_path=ledger, flags_path=flags_path)
+
+    written = json.loads(flags_path.read_text(encoding="utf-8"))
+    assert written["n_flagged"] == 2
+    by_id = {f["bet_id"]: f for f in written["flags"]}
+    assert by_id[prior_entry["bet_id"]] == prior_entry  # untouched, byte-identical
+    assert "settled_before_scheduled_start" in by_id[new_row["bet_id"]]["reasons"]
