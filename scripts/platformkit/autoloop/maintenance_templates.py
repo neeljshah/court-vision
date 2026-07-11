@@ -276,6 +276,8 @@ _JOB_TABLE: List[Tuple[str, str, str, Tuple[str, ...]]] = [
      "run_calibration_refresh", ("watermarks",)),
     # U4 log rotation: archive+truncate any logs/*.out|*.err over 50MB cap (size-check only, no watermark)
     ("log_reaper", "scripts.platformkit.autoloop.log_reaper_job", "run_log_reaper", ("watermarks",)),
+    # M18 cadence-gated eval-gate reference-core scoreboard refresh (refresh only; file-mtime watermark)
+    ("eval_gate", "scripts.platformkit.autoloop.eval_gate_job", "run_eval_gate", ("watermarks",)),
 ]
 
 
