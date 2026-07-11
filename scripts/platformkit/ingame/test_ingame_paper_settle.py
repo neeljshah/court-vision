@@ -350,6 +350,67 @@ def test_doubleheader_g1_g2_settle_against_correct_games(tmp_path):
     assert graded[single] == (4, 3)  # single-game ticker path unchanged
 
 
+# --------------------------------------------------------------------------------------- #
+# W1 FIX: forward-join kx-proxy CLV correction (paper_ingame 436/436 no_close diagnosis).  #
+# --------------------------------------------------------------------------------------- #
+def test_settle_open_appends_kx_proxy_correction_on_close_hit(tmp_path, monkeypatch):
+    from scripts.platformkit.ingame import ingame_paper_settle as psmod
+    led = _ledger(tmp_path, [_open_bet("KXMLBGAME-G1")])
+
+    def fake_grade(bet, hs, as_, path=None):
+        return {"status": "settled", "outcome": "win", "clv_status": "no_close",
+                "game_id": bet["game_id"], "sport": "mlb", "side": "home",
+                "taken_decimal": 1.9, "bet_id": "bx1"}
+
+    monkeypatch.setattr(psmod._kxm, "proxy_clv_for_row",
+                        lambda r: {**r, "clv_status": "proxy", "clv_pct": 4.2,
+                                   "clv_is_proxy": True, "bet_id": r["bet_id"]})
+    appended = []
+    monkeypatch.setattr(psmod._clv, "append_settlement",
+                        lambda row, path=None: appended.append(row) or row)
+
+    doc = ps.settle_open(ledger_path=led, score_fn=lambda g: (5, 4), grade_fn=fake_grade)
+    assert doc["settled"] == 1
+    assert len(appended) == 1
+    assert appended[0]["clv_status"] == "proxy"
+    assert appended[0]["clv_pct"] == 4.2
+
+
+def test_settle_open_omits_correction_on_kx_close_miss(tmp_path, monkeypatch):
+    from scripts.platformkit.ingame import ingame_paper_settle as psmod
+    led = _ledger(tmp_path, [_open_bet("KXMLBGAME-G1")])
+
+    def fake_grade(bet, hs, as_, path=None):
+        return {"status": "settled", "outcome": "win", "clv_status": "no_close",
+                "game_id": bet["game_id"], "sport": "mlb", "side": "home",
+                "taken_decimal": 1.9, "bet_id": "bx1"}
+
+    monkeypatch.setattr(psmod._kxm, "proxy_clv_for_row", lambda r: None)  # no derived close
+    appended = []
+    monkeypatch.setattr(psmod._clv, "append_settlement",
+                        lambda row, path=None: appended.append(row) or row)
+
+    doc = ps.settle_open(ledger_path=led, score_fn=lambda g: (5, 4), grade_fn=fake_grade)
+    assert doc["settled"] == 1
+    assert appended == []  # no correction row when there's nothing to correct with
+
+
+def test_settle_open_skips_correction_when_already_true_close(tmp_path, monkeypatch):
+    from scripts.platformkit.ingame import ingame_paper_settle as psmod
+    led = _ledger(tmp_path, [_open_bet("KXMLBGAME-G1")])
+
+    def fake_grade(bet, hs, as_, path=None):
+        return {"status": "settled", "clv_status": "true_close",
+                "game_id": bet["game_id"], "sport": "mlb", "side": "home",
+                "taken_decimal": 1.9, "bet_id": "bx1"}
+
+    called = []
+    monkeypatch.setattr(psmod._kxm, "proxy_clv_for_row", lambda r: called.append(1))
+    doc = ps.settle_open(ledger_path=led, score_fn=lambda g: (5, 4), grade_fn=fake_grade)
+    assert doc["settled"] == 1
+    assert not called  # already true_close -- never attempt a proxy downgrade
+
+
 def test_doubleheader_no_gnum_or_missing_game_stays_open(tmp_path):
     from scripts.platformkit.ingame.ingame_outcome_label import MlbOutcomeResolver
     res = MlbOutcomeResolver(box_df=_dh_box_df())
