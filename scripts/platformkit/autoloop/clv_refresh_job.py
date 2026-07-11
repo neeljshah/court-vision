@@ -26,13 +26,19 @@ Per-file test:
 """
 from __future__ import annotations
 
+import logging
 import time
 from pathlib import Path
 from typing import Any, Callable, Dict, Optional
 
 from scripts.platformkit.clv.clv_result_reconciler import _OUT_DIR as _OPS_DIR  # noqa: SLF001 -- reused, not redefined
 
+logger = logging.getLogger(__name__)
+
 _STALE_AFTER_H = 24.0
+# W1 fix: pre-step sports for kx_ticker_close.write_closes(), same default set
+# as kx_ticker_close._main's own CLI default.
+_KX_SPORTS = ("mlb", "soccer_intl")
 
 
 def _newest_reconcile_age_h(ops_dir: Path) -> Optional[float]:
@@ -58,17 +64,35 @@ def _default_scoreboard() -> Any:
     return S.main(argv=[])
 
 
+def _default_write_closes() -> Any:
+    """W1 fix: derive+persist kx-ticker close-proxies (kx_ticker_close.
+    write_closes) so paper_ingame rows have a close to join against before
+    the reconciler/scoreboard run -- same continuous cadence as M16 itself.
+    Same argv=[] discipline as the other two default_* callables: no argv
+    parsing here at all, write_closes(sport) is called directly."""
+    from scripts.platformkit.clv import kx_ticker_close as K
+    return [K.write_closes(s) for s in _KX_SPORTS]
+
+
 def run_clv_refresh(watermarks: Optional[Dict[str, Any]] = None, *,
                     ops_dir: Optional[Path] = None,
                     age_fn: Optional[Callable[[Path], Optional[float]]] = None,
                     reconcile_fn: Optional[Callable[[], Any]] = None,
-                    scoreboard_fn: Optional[Callable[[], Any]] = None) -> Dict[str, Any]:
+                    scoreboard_fn: Optional[Callable[[], Any]] = None,
+                    write_closes_fn: Optional[Callable[[], Any]] = None) -> Dict[str, Any]:
     """Refresh iff the newest clv_reconcile_*.json is >24h stale (or
-    missing). Refresh only: reconciler then scoreboard, no verdict math."""
+    missing). Pre-step: derive kx-ticker close-proxies (write_closes_fn),
+    error-isolated so a derive failure never blocks the reconcile/scoreboard
+    that follow. Then reconciler then scoreboard, no verdict math."""
     d = Path(ops_dir) if ops_dir is not None else _OPS_DIR
     age_h = (age_fn or _newest_reconcile_age_h)(d)
     if age_h is not None and age_h < _STALE_AFTER_H:
         return {"status": "skipped", "age_h": round(age_h, 1)}
+    try:
+        (write_closes_fn or _default_write_closes)()
+    except Exception:  # noqa: BLE001 -- a close-derive failure must never block CLV refresh
+        logger.warning("clv_refresh_job: kx write_closes step failed (isolated)",
+                       exc_info=True)
     (reconcile_fn or _default_reconcile)()
     (scoreboard_fn or _default_scoreboard)()
     return {"status": "ran", "age_h": age_h}

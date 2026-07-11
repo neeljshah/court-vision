@@ -43,28 +43,30 @@ def test_fresh_file_skips_no_calls(tmp_path):
     assert calls == []
 
 
-def test_stale_file_runs_reconciler_then_scoreboard(tmp_path):
+def test_stale_file_runs_write_closes_then_reconciler_then_scoreboard(tmp_path):
     _touch_reconcile(tmp_path, age_h=30.0)
     calls = []
     out = CR.run_clv_refresh(
         ops_dir=tmp_path,
+        write_closes_fn=lambda: calls.append("write_closes"),
         reconcile_fn=lambda: calls.append("reconcile"),
         scoreboard_fn=lambda: calls.append("scoreboard"),
     )
     assert out["status"] == "ran"
-    assert calls == ["reconcile", "scoreboard"]
+    assert calls == ["write_closes", "reconcile", "scoreboard"]
 
 
 def test_missing_files_treated_as_due(tmp_path):
     calls = []
     out = CR.run_clv_refresh(
         ops_dir=tmp_path,
+        write_closes_fn=lambda: calls.append("write_closes"),
         reconcile_fn=lambda: calls.append("reconcile"),
         scoreboard_fn=lambda: calls.append("scoreboard"),
     )
     assert out["status"] == "ran"
     assert out["age_h"] is None
-    assert calls == ["reconcile", "scoreboard"]
+    assert calls == ["write_closes", "reconcile", "scoreboard"]
 
 
 def test_reconcile_raise_propagates_uncaught(tmp_path):
@@ -74,8 +76,36 @@ def test_reconcile_raise_propagates_uncaught(tmp_path):
         raise RuntimeError("reconcile boom")
 
     with pytest.raises(RuntimeError, match="reconcile boom"):
-        CR.run_clv_refresh(ops_dir=tmp_path, reconcile_fn=_boom,
-                           scoreboard_fn=lambda: None)
+        CR.run_clv_refresh(ops_dir=tmp_path, write_closes_fn=lambda: None,
+                           reconcile_fn=_boom, scoreboard_fn=lambda: None)
+
+
+def test_write_closes_failure_isolated_reconcile_and_scoreboard_still_run(tmp_path):
+    """W1 fix: a write_closes derive failure must NOT block the reconcile/
+    scoreboard refresh that follows -- error-isolated, unlike reconcile_fn's
+    raise (which IS allowed to propagate, see test above)."""
+    _touch_reconcile(tmp_path, age_h=48.0)
+    calls = []
+
+    def _boom():
+        raise RuntimeError("write_closes boom")
+
+    out = CR.run_clv_refresh(
+        ops_dir=tmp_path,
+        write_closes_fn=_boom,
+        reconcile_fn=lambda: calls.append("reconcile"),
+        scoreboard_fn=lambda: calls.append("scoreboard"),
+    )
+    assert out["status"] == "ran"
+    assert calls == ["reconcile", "scoreboard"]
+
+
+def test_default_write_closes_calls_kx_ticker_close_for_known_sports(monkeypatch):
+    from scripts.platformkit.clv import kx_ticker_close as K
+    seen = []
+    monkeypatch.setattr(K, "write_closes", lambda s: seen.append(s) or {})
+    CR._default_write_closes()
+    assert seen == list(CR._KX_SPORTS)
 
 
 def test_watermarks_param_accepted_and_ignored(tmp_path):
