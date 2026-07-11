@@ -41,7 +41,6 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from scripts.platformkit import clv_ledger as _clv
-from scripts.platformkit.clv import kx_close_math as _kxm
 from scripts.platformkit.ingame import paper_ingame as _pi
 
 logger = logging.getLogger(__name__)
@@ -250,18 +249,10 @@ def settle_open(*, score_fn: Optional[ScoreFn] = None,
                 bucket["settled"] += 1
                 if ek:
                     done.add(ek)  # guard against a duplicate open twin in the same pass
-                # W1 fix: append an honestly-labelled kx-proxy CLV correction when
-                # our own tick capture derived a close for this ticker -- see
-                # kx_close_math module docstring for why this can't go through
-                # grade_live's own closing_decimal_* kwargs (Shin-devig landmine).
-                try:
-                    if res.get("clv_status") == "no_close":
-                        corr = _kxm.proxy_clv_for_row(res)
-                        if corr is not None:
-                            _clv.append_settlement(corr, path=ledger_path)
-                except Exception as exc:  # noqa: BLE001 -- must never sink the tick
-                    logger.debug("kx proxy correction failed for %s: %s",
-                                b.get("game_id"), exc)
+                # W1: no on-disk proxy twin here -- opus judge 2026-07-10 proved the
+                # append double-counts settles in paper_analytics (_iter_ledger has no
+                # bet_id dedup). The kx-proxy CLV correction happens at READ TIME via
+                # enrich_paper_ingame_no_close in clv_scoreboard/clv_result_reconciler.
             else:
                 errors += 1
         except Exception as exc:  # noqa: BLE001 -- one bad settle never stops the rest
