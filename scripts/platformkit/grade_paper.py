@@ -26,6 +26,7 @@ scripts/platformkit/; no secrets; no $-edge claim.
 # See grade_paper_one.py's docstring for the monkeypatch-routing deviation.
 from __future__ import annotations
 
+import datetime as _dt
 import json
 import logging
 import re
@@ -36,6 +37,7 @@ from scripts.platformkit import clv_ledger as _clv
 from scripts.platformkit.clv_settle_write import write_settlement as _write_settlement
 from scripts.platformkit.grade_paper_asof import route_fetch as _route_fetch
 from scripts.platformkit.grade_paper_dates import bet_expected_dates as _bet_expected_dates
+from scripts.platformkit.grade_paper_dates import bet_not_yet_started as _bet_not_yet_started
 from scripts.platformkit.grade_paper_dates import today_et_iso as _today_et_iso
 from scripts.platformkit.grade_paper_close import close_from_store as _close_from_store
 from scripts.platformkit.grade_paper_close import fetch_boards as _fetch_boards
@@ -112,7 +114,8 @@ def _team_match(label: Optional[str], game_display: str, game_abbr: Optional[str
 
 
 def _find_final_game(bet: Dict[str, Any], games: List[Dict[str, Any]],
-                     *, board_date: Optional[str] = None
+                     *, board_date: Optional[str] = None,
+                     now_dt: Optional[_dt.datetime] = None
                      ) -> Optional[Dict[str, Any]]:
     """The FINAL game whose two teams match this bet's matchup. None if not found/final.
 
@@ -134,9 +137,19 @@ def _find_final_game(bet: Dict[str, Any], games: List[Dict[str, Any]],
     else game_date/ts-derived) and *board_date* is known, a board for a date
     outside that set cannot hold this bet's real game -- skip, never guess.
     Applies to BOTH this team-match loop and the ticket fallback below.
+
+    START-TIME GUARD (2026-07-11 AZLAD wrong-settle): the DATE guard above
+    only compares calendar dates, so a same-DATE ticker whose scheduled TIME
+    is still hours away passes it untouched -- proven live: a ticket for the
+    21:10 ET game settled at 01:27 ET the SAME date (~20h before its own first
+    pitch) against a real, but DIFFERENT, same-teams final. bet_not_yet_started
+    checks the ticker's own embedded HHMM against *now_dt*; a game cannot be
+    final before its own scheduled start.
     """
     expected = _bet_expected_dates(bet)
     if expected and board_date is not None and board_date not in expected:
+        return None
+    if _bet_not_yet_started(bet, now_dt):
         return None
     left, right = _matchup_sides(bet.get("matchup", ""))
     for g in games:
@@ -188,7 +201,10 @@ def grade_open_bets(
     boards, feed_status = _fetch_boards(fetch, sports)
     # This is always "today's" board (unscoped fetch) -- feeds _find_final_game's
     # date guard so a bet whose OWN expected date isn't today can't bind to it.
-    today_s = _today_et_iso()
+    # Same instant feeds the start-time guard too (bet_not_yet_started) so both
+    # checks agree on "now".
+    now_dt = _dt.datetime.now(_dt.timezone.utc)
+    today_s = _today_et_iso(now_dt)
 
     settled_now: List[Dict[str, Any]] = []
     pending: List[Dict[str, Any]] = []
@@ -206,7 +222,7 @@ def grade_open_bets(
                       "last_decimal_home", "last_decimal_away"):
                 if bet.get(k) is None and pr.get(k) is not None:
                     bet = {**bet, k: pr[k]}
-        game = _find_final_game(bet, boards.get(sp, []), board_date=today_s)
+        game = _find_final_game(bet, boards.get(sp, []), board_date=today_s, now_dt=now_dt)
         if game is None:
             pending.append({"matchup": bet.get("matchup"), "sport": sp,
                             "reason": "no final game matched"})
