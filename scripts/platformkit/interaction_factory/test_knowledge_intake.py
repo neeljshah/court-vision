@@ -44,7 +44,11 @@ def test_null_or_unmapped_hypothesis_emits_nothing(tmp_path):
         {"hypothesis": "contact_quality_persists_split_half", "verdict": "NULL_LOCAL"},  # not CONFIRMED
         {"hypothesis": "some_other_confirmed_thing", "verdict": "CONFIRMED_LOCAL"},       # no mapping declared
     ])
-    _write_ledger(nba, [{"hypothesis": "b2b_rest_penalty", "verdict": "CONFIRMED_LOCAL"}])  # no mapping declared
+    # D3 (this lane) mapped b2b_rest_penalty -> use a hypothesis that STAYS
+    # unmapped by design instead (nba_carryover_self_cross's pool only has
+    # one possible pair, already claimed by b2b_rest_penalty -- see the D3
+    # KNOWN_MAPPINGS comment).
+    _write_ledger(nba, [{"hypothesis": "three_in_four_fatigue", "verdict": "CONFIRMED_LOCAL"}])  # no mapping declared
     cands = KI.knowledge_candidates({"mlb": mlb, "basketball_nba": nba})
     assert cands == []
 
@@ -207,8 +211,13 @@ def test_round1_3_2026_07_10_new_confirmed_mechanisms_stay_unmapped():
     # predicts_outcome_partial rows, both real CONFIRMED_LOCAL on disk).
     # WAVE-23 (2026-07-10, this session): +2 more (q1_slow_start_persists_
     # split_half, now mapped onto nba_ingame_state_self_cross) -> 22.
+    # D3 (WEEKEND_WATCHBOARD.md #D3, this lane): +9 more -- 3 NBA box-detail
+    # hypotheses (fast_break_pts/paint_pts/largest_lead persistence_and_margin,
+    # 2 rows each) + 1 NBA carryover hypothesis (b2b_rest_penalty, 1 row,
+    # only pair in that pool) + 1 tennis hypothesis (bp_save_differential_
+    # predicts_outcome_partial, 2 rows) -> 31.
     cands = KI.knowledge_candidates()
-    assert len(cands) == 22
+    assert len(cands) == 31
     assert {c.sport for c in cands} == {"mlb", "basketball_nba", "tennis"}
 
 
@@ -232,3 +241,43 @@ def test_ingame_state_template_now_mapped_via_q1_slow_start_replication():
                 "timeout_interrupts_opponent_run__combined", "compassionate_umpire_count_zone__combined",
                 "altitude_effect_on_serve_ace_rate"):
         assert hyp not in KI.KNOWN_MAPPINGS
+
+
+def test_d3_cross_sport_wiring_enumerates_per_sport(tmp_path):
+    # WEEKEND_WATCHBOARD.md #D3: KNOWN_MAPPINGS was previously MLB-heavy with
+    # only 2 NBA + 1 tennis hypotheses wired. This lane added 3 more NBA
+    # (box-detail family, mechanisms.md #34/#35/#40) + 1 NBA carryover
+    # (b2b_rest_penalty, #14) + 1 tennis (bp_save_differential, #31) -- all
+    # explicitly greenlit by their mechanisms.md "wiring" note, none blocked.
+    # One assert per sport that candidates actually enumerate off the REAL
+    # ledgers (not a synthetic fixture) -- the D4 dependency (next M10 tick
+    # enumerating tennis) needs this to be true off disk, not just in a test
+    # ledger.
+    cands = KI.knowledge_candidates()
+    nba_hyps = {"boxdetail_fast_break_pts_persistence_and_margin",
+                "boxdetail_paint_pts_persistence_and_margin",
+                "boxdetail_largest_lead_persistence_and_margin", "b2b_rest_penalty"}
+    for h in nba_hyps:
+        assert h in KI.KNOWN_MAPPINGS
+    nba_cands = [c for c in cands if c.template_id in
+                 ("nba_boxdetail_self_cross", "nba_carryover_self_cross")]
+    assert len(nba_cands) == 7  # 3 hyps x 2 rows (boxdetail) + 1 row (carryover)
+    assert {c.attr_a for c in nba_cands} >= {"fast_break_pts_asof", "paint_pts_asof",
+                                              "largest_lead_asof", "rest_days_asof"}
+
+    assert "bp_save_differential_predicts_outcome_partial" in KI.KNOWN_MAPPINGS
+    tennis_cands = [c for c in cands if c.sport == "tennis"]
+    assert len(tennis_cands) == 4  # 2 dominance_margin (pre-existing) + 2 bp_save (D3)
+    assert "diff_bp_saved_asof" in {c.attr_a for c in tennis_cands}
+
+    # soccer: honest zero -- every soccer CONFIRMED_LOCAL/REPLICATED row at
+    # HEAD is an in-match state/venue effect, none is a soccer_match_asof
+    # pregame diff_* pool attr (see the D3 KNOWN_MAPPINGS comment for the
+    # per-row reason). Not a bug: this assert is the receipt that the honest-
+    # skip decision, not an oversight, is what ships.
+    assert not any(c.sport == "soccer" for c in cands)
+    soccer_confirmed = KI._load_ledger(KI.LEDGERS["soccer"])
+    soccer_hyps = {r.get("hypothesis") for r in soccer_confirmed
+                   if r.get("verdict") in ("CONFIRMED_LOCAL", "REPLICATED")}
+    assert len(soccer_hyps) > 0  # the ledger DOES have candidates -- 0 wired is a choice, not an empty ledger
+    assert not (soccer_hyps & set(KI.KNOWN_MAPPINGS))
