@@ -37,6 +37,10 @@ if _REPO not in sys.path:
 
 from scripts.platformkit.clv_ledger import (  # canonical reader + suspect guard
     is_clv_suspect, load_ledger)
+# W1 fix: read-time historical recovery + the SEPARATE kx-proxy measurable tier
+# for paper_ingame rows (never merged into the true_close 'measurable' bucket).
+from scripts.platformkit.clv.kx_close_math import (
+    enrich_paper_ingame_no_close, is_measurable_proxy)
 
 # Friendly channel labels; an absent channel that still carries a closing line is
 # the legacy game-moneyline book (the '?' rows).
@@ -131,27 +135,38 @@ def scoreboard(ledger: Optional[Sequence[Dict[str, Any]]] = None) -> Dict[str, A
     if ledger is None:
         ledger = load_ledger()
     settled = _dedup_settled(ledger)
+    # W1 fix: read-time recovery ONLY for paper_ingame rows still labelled
+    # no_close -- every other row (wrong channel/status, or a genuine miss)
+    # passes through byte-identical. Never mutates the ledger on disk.
+    settled = [enrich_paper_ingame_no_close(r) for r in settled]
 
     by_ch: Dict[str, Dict[str, Any]] = {}
     for r in settled:
         ch = _channel_of(r)
-        b = by_ch.setdefault(ch, {"rows": [], "measurable": [], "n_suspect": 0})
+        b = by_ch.setdefault(
+            ch, {"rows": [], "measurable": [], "measurable_proxy": [], "n_suspect": 0})
         b["rows"].append(r)
         if is_clv_suspect(r):
             b["n_suspect"] += 1          # off-market line: counted, never measured
         if _is_measurable(r):
             b["measurable"].append(r)
+        elif is_measurable_proxy(r):     # SEPARATE tier -- never both (statuses differ)
+            b["measurable_proxy"].append(r)
 
     channels: Dict[str, Any] = {}
-    tot_settled = tot_measurable = tot_suspect = 0
+    tot_settled = tot_measurable = tot_suspect = tot_measurable_proxy = 0
     for ch, b in by_ch.items():
-        rows, meas = b["rows"], b["measurable"]
+        rows, meas, proxy = b["rows"], b["measurable"], b["measurable_proxy"]
         tot_settled += len(rows)
         tot_measurable += len(meas)
+        tot_measurable_proxy += len(proxy)
         tot_suspect += b["n_suspect"]
         clvs = [float(m["clv_pct"]) for m in meas]
         ci = _mean_ci(clvs)
         beats = sum(1 for c in clvs if c > 0.0)
+        clvs_proxy = [float(m["clv_pct"]) for m in proxy]
+        ci_proxy = _mean_ci(clvs_proxy)
+        beats_proxy = sum(1 for c in clvs_proxy if c > 0.0)
         channels[ch] = {
             "label": _CHANNEL_LABEL.get(ch, ch),
             "n_settled": len(rows),
@@ -163,11 +178,20 @@ def scoreboard(ledger: Optional[Sequence[Dict[str, Any]]] = None) -> Dict[str, A
             "clv_significant": ci["significant"],
             "beat_close_pct": round(100.0 * beats / len(meas), 1) if meas else None,
             "record": _wlp_units(rows),
+            # PROXY tier (kx-ticker last-tick close, W1 fix) -- honest-labels
+            # discipline: NEVER merged into the true_close fields above.
+            "n_measurable_proxy": len(proxy),
+            "clv_proxy_pct": ci_proxy["mean"],
+            "clv_proxy_ci95": [ci_proxy["lo95"], ci_proxy["hi95"]],
+            "clv_proxy_significant": ci_proxy["significant"],
+            "beat_close_proxy_pct": (round(100.0 * beats_proxy / len(proxy), 1)
+                                     if proxy else None),
         }
 
     return {
         "total_settled": tot_settled,
         "total_measurable": tot_measurable,
+        "total_measurable_proxy": tot_measurable_proxy,
         "total_suspect_excluded": tot_suspect,
         "coverage_pct": (round(100.0 * tot_measurable / tot_settled, 1)
                          if tot_settled else 0.0),
@@ -224,6 +248,12 @@ def render(board: Dict[str, Any]) -> str:
                      % (c["label"], c["n_settled"], c["n_measurable"],
                         c["coverage_pct"], clv, beat,
                         rec["wins"], rec["losses"], rec["pushes"], rec["net_units"]))
+        if c.get("n_measurable_proxy"):
+            pclv = ("%+.2f" % c["clv_proxy_pct"]) if c["clv_proxy_pct"] is not None else "  --"
+            if c["clv_proxy_significant"]:
+                pclv += "*"
+            lines.append("  |- proxy (kx last-tick, NOT true close): n=%d meanCLV%%=%s"
+                         % (c["n_measurable_proxy"], pclv))
     lines.append("-" * 78)
     lines.append("* = mean CLV 95%% CI excludes 0 (statistically distinguishable).")
     lines.append("meanCLV/beat%% shown ONLY for measurable bets; '--' = no closing "

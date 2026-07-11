@@ -285,3 +285,61 @@ def test_existing_channel_with_adequate_data_unchanged_by_extension(tmp_path, mo
     assert report["n_measurable"] == 20
     assert report["record"]["wins"] == 10
     assert report["verdict"].startswith("GENUINE_VARIANCE")
+
+
+# --------------------------------------------------------------------------------------- #
+# W1 FIX: kx-proxy measurable tier -- SEPARATE from true_close, PROXY-labelled verdict.    #
+# --------------------------------------------------------------------------------------- #
+def _proxy_row(side, taken_decimal, fair_close_prob, unit_result, event_id,
+               channel="paper_ingame", clv_pct=1.0, stake_units=1.0):
+    return {
+        "channel": channel, "status": "settled", "side": side,
+        "taken_decimal": taken_decimal, "fair_close_prob": fair_close_prob,
+        "clv_pct": clv_pct, "clv_status": "proxy", "clv_is_proxy": True,
+        "unit_result": unit_result, "stake_units": stake_units,
+        "event_id": event_id, "sport": "mlb", "game_id": "KX-%s" % event_id,
+        "bet_id": "b-%s-%s" % (event_id, side),
+    }
+
+
+def test_proxy_tier_separate_never_merged_into_true_close():
+    rows = [_proxy_row("home", 1.9, 0.55, 1.0, "e%d" % i) for i in range(3)]
+    report = reconcile_channel("paper_ingame", ledger=rows)
+    assert report["n_measurable"] == 0            # true_close tier untouched
+    assert report["clv_proxy"]["n_measurable_proxy"] == 3
+
+
+def test_paper_ingame_verdict_falls_back_to_proxy_when_true_close_thin():
+    rows = [_proxy_row("home", 2.0, 0.5, (1.0 if i % 2 == 0 else -1.0), "e%d" % i)
+            for i in range(12)]
+    report = reconcile_channel("paper_ingame", ledger=rows)
+    assert report["n_measurable"] == 0
+    assert report["clv_proxy"]["n_measurable_proxy"] == 12
+    assert "PROXY" in report["verdict"]
+    assert report["verdict"] == report["clv_proxy"]["verdict"]
+
+
+def test_non_paper_ingame_channel_verdict_never_uses_proxy_fallback():
+    # Even with plenty of proxy rows, only paper_ingame's TOP-LEVEL verdict
+    # may fall back to the proxy tier.
+    rows = [_proxy_row("home", 2.0, 0.5, 1.0, "e%d" % i, channel="paper_pm")
+            for i in range(12)]
+    report = reconcile_channel("paper_pm", ledger=rows)
+    assert report["clv_proxy"]["n_measurable_proxy"] == 12
+    assert report["verdict"].startswith("INSUFFICIENT_DATA")  # 0 true_close, not proxy-boosted
+    assert "PROXY" not in report["verdict"]
+
+
+def test_paper_ingame_verdict_stays_true_close_when_both_thin():
+    rows = [_proxy_row("home", 2.0, 0.5, 1.0, "e1")]  # 1 proxy row -- below _MIN_N
+    report = reconcile_channel("paper_ingame", ledger=rows)
+    assert report["verdict"].startswith("INSUFFICIENT_DATA")
+    assert "PROXY" not in report["verdict"]
+
+
+def test_render_shows_proxy_block():
+    from scripts.platformkit.clv.clv_result_reconciler import render
+    rows = [_proxy_row("home", 2.0, 0.5, (1.0 if i % 2 == 0 else -1.0), "e%d" % i)
+            for i in range(12)]
+    txt = render(reconcile_channel("paper_ingame", ledger=rows))
+    assert "PROXY" in txt

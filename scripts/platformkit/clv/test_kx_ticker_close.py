@@ -175,3 +175,35 @@ def test_get_close_prob_roundtrip(tmp_path):
 def test_get_close_prob_miss_returns_none(tmp_path):
     out_dir = tmp_path / "closes"
     assert K.get_close_prob("KXMLBGAME-NEVER-DERIVED", "mlb", closes_dir=out_dir) is None
+
+
+# ---------------------------------------------------------------------------
+# W1 FIX real-slice join-rate gate: after write_closes(), >=90% of a real
+# 50-row slice of settled paper_ingame bets must resolve a kx close. This is
+# the actual diagnosis this fix targets (436/436 settled paper_ingame rows
+# were clv_status='no_close'); a real join-rate check, not a synthetic one.
+# Skips (not fails) when this machine has <50 real settled paper_ingame rows
+# on disk -- honest absence of data, never a weakened threshold.
+# ---------------------------------------------------------------------------
+def test_real_slice_join_rate_after_write_closes():
+    from scripts.platformkit.ingame import paper_ingame as _pi
+
+    rows = _pi.load_ingame_bets()
+    settled = [r for r in rows if r.get("status") == "settled"]
+    if len(settled) < 50:
+        pytest.skip("fewer than 50 real settled paper_ingame rows on this machine")
+    slice_ = settled[:50]
+
+    for sport in {str(r.get("sport") or "").lower() for r in slice_ if r.get("sport")}:
+        K.write_closes(sport)  # real derive pass against real data/cache/ingame_grade
+
+    hits = 0
+    for r in slice_:
+        rec = K.get_close_prob(str(r.get("game_id")), str(r.get("sport") or ""))
+        if rec is not None:
+            hits += 1
+    rate = hits / len(slice_)
+    assert rate >= 0.90, (
+        "BLOCKED-partial: real kx-close join rate is %.1f%% (%d/%d), below the "
+        "90%% floor -- reporting honestly, not weakening the assert."
+        % (rate * 100.0, hits, len(slice_)))

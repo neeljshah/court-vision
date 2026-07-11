@@ -47,6 +47,9 @@ if _REPO not in sys.path:
 from scripts.platformkit.clv_ledger import load_ledger  # canonical reader
 from scripts.platformkit.clv.clv_scoreboard import (
     _channel_of, _dedup_settled, _is_measurable, _mean_ci, _CHANNEL_LABEL)
+# W1 fix: SEPARATE kx-proxy measurable tier, never merged into true_close.
+from scripts.platformkit.clv.kx_close_math import (
+    enrich_paper_ingame_no_close, is_measurable_proxy)
 
 _OUT_DIR = os.path.join(_REPO, "data", "frontend", "ops")
 _Z_SIG = 1.96
@@ -68,6 +71,26 @@ def _measurable_rows(channel: str, ledger: Optional[Sequence[Dict[str, Any]]] = 
     settled = _dedup_settled(ledger)
     return [r for r in settled
             if _channel_of(r) == channel and _is_measurable(r)]
+
+
+def _measurable_proxy_rows(channel: str, ledger: Optional[Sequence[Dict[str, Any]]] = None
+                           ) -> List[Dict[str, Any]]:
+    """W1 fix: the SEPARATE kx-proxy measurable tier for one channel (never
+    merged into _measurable_rows' true_close set). Applies the same read-
+    time historical recovery clv_scoreboard.scoreboard() does for paper_ingame
+    rows still labelled no_close."""
+    if ledger is None:
+        ledger = load_ledger()
+    settled = [enrich_paper_ingame_no_close(r) for r in _dedup_settled(ledger)]
+    return [r for r in settled
+            if _channel_of(r) == channel and is_measurable_proxy(r)]
+
+
+def _label_proxy(verdict: str) -> str:
+    """Stamp a verdict string's leading token with _PROXY (e.g. 'DIVERGENT'
+    -> 'DIVERGENT_PROXY') -- honest-labels discipline for the kx-proxy tier."""
+    head, sep, rest = verdict.partition(" -- ")
+    return (head + "_PROXY" + sep + rest) if sep else (verdict + "_PROXY")
 
 
 def _unit_result(row: Dict[str, Any]) -> Optional[float]:
@@ -253,6 +276,29 @@ def _verdict(n: int, z_wins: Optional[float], z_units: Optional[float]) -> str:
             "trusting the CLV number." % (direction, abs(worst)))
 
 
+def _proxy_block(proxy_rows: Sequence[Dict[str, Any]]) -> Dict[str, Any]:
+    """Same reconciliation math as the true_close tier, applied to the
+    SEPARATE kx-proxy measurable rows -- every output key/verdict PROXY-
+    labelled (honest-labels discipline, W1 fix)."""
+    n = len(proxy_rows)
+    rec = _record(proxy_rows)
+    clv_ci = _mean_ci([float(r["clv_pct"]) for r in proxy_rows if r.get("clv_pct") is not None])
+    exp = _close_implied_expectation(proxy_rows)
+    z_wins = _zscore(rec["wins"], exp["exp_wins"], exp["se_wins"])
+    z_units = _zscore(rec["net_units"], exp["exp_units"], exp["se_units"])
+    return {
+        "n_measurable_proxy": n,
+        "record": rec,
+        "clv_proxy_pct": clv_ci["mean"],
+        "clv_proxy_ci95": [clv_ci["lo95"], clv_ci["hi95"]],
+        "clv_proxy_significant": clv_ci["significant"],
+        "close_implied": exp,
+        "z_wins": z_wins,
+        "z_units": z_units,
+        "verdict": _label_proxy(_verdict(n, z_wins, z_units)),
+    }
+
+
 def reconcile_channel(channel: str,
                        ledger: Optional[Sequence[Dict[str, Any]]] = None
                       ) -> Dict[str, Any]:
@@ -281,6 +327,18 @@ def reconcile_channel(channel: str,
                  % both_pairs) if both_pairs > 0 else None,
     }
 
+    # W1 fix: SEPARATE kx-proxy tier, computed for every channel (cheap; most
+    # channels have zero proxy rows). paper_ingame's TOP-LEVEL verdict may
+    # fall back to it (PROXY-labelled) only when the true_close tier has too
+    # few rows to say anything -- every other channel's verdict stays exactly
+    # as before.
+    proxy_rows = _measurable_proxy_rows(channel, ledger)
+    clv_proxy = _proxy_block(proxy_rows)
+    verdict = _verdict(n, z_wins, z_units)
+    if (channel == "paper_ingame" and n < _MIN_N
+            and clv_proxy["n_measurable_proxy"] >= _MIN_N):
+        verdict = clv_proxy["verdict"]
+
     return {
         "channel": channel,
         "label": _CHANNEL_LABEL.get(channel, channel),
@@ -293,9 +351,10 @@ def reconcile_channel(channel: str,
         "z_wins": z_wins,
         "z_units": z_units,
         "duplicate_close_pairs_diff_event": dup_pairs,
-        "verdict": _verdict(n, z_wins, z_units),
+        "verdict": verdict,
         "single_side": single_side,
         "cross_venue_basis": _cross_venue_basis(rows),
+        "clv_proxy": clv_proxy,
     }
 
 
@@ -329,6 +388,11 @@ def render(report: Dict[str, Any]) -> str:
         lines.append("BASIS: %s (cross-venue mean CLV %s%%)"
                      % (cvb["note"],
                         ("%+.2f" % cvb["mean_clv_pct"]) if cvb.get("mean_clv_pct") is not None else "--"))
+    cp = report.get("clv_proxy") or {}
+    if cp.get("n_measurable_proxy"):
+        pclv = ("%+.2f%%" % cp["clv_proxy_pct"]) if cp["clv_proxy_pct"] is not None else "--"
+        lines.append("PROXY (kx last-tick, NOT true close): n=%d meanCLV=%s  verdict=%s"
+                     % (cp["n_measurable_proxy"], pclv, cp["verdict"]))
     lines.append("")
     lines.append("VERDICT: " + report["verdict"])
     lines.append("=" * 78)
