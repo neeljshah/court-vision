@@ -105,3 +105,60 @@ def test_render_runs():
                 unit_result=1.0, closing=2.0)]
     txt = S.render(S.scoreboard(led))
     assert "CLV SCOREBOARD" in txt and "VERDICT" in txt
+
+
+# --------------------------------------------------------------------------------------- #
+# W1 FIX: kx-proxy measurable tier -- SEPARATE from true_close, never merged.              #
+# --------------------------------------------------------------------------------------- #
+def test_proxy_row_counted_in_proxy_tier_not_true_close():
+    led = [
+        {"bet_id": "px1", "channel": "paper_ingame", "status": "settled",
+         "clv_status": "proxy", "clv_pct": 3.0, "clv_is_proxy": True,
+         "unit_result": 1.0, "settled_at": "2026-06-25T01:00:00Z", "sport": "mlb"},
+    ]
+    b = S.scoreboard(led)
+    ch = b["channels"]["paper_ingame"]
+    assert ch["n_measurable"] == 0          # never counted as true_close
+    assert ch["n_measurable_proxy"] == 1
+    assert ch["clv_proxy_pct"] == 3.0
+    assert b["total_measurable"] == 0       # top-level true_close total untouched
+    assert b["total_measurable_proxy"] == 1
+
+
+def test_no_close_paper_ingame_row_recovered_via_enrich(monkeypatch):
+    # simulate a kx close having been derived for this row's ticker.
+    monkeypatch.setattr(S, "enrich_paper_ingame_no_close",
+                        lambda r: ({**r, "clv_status": "proxy", "clv_pct": 5.0,
+                                    "clv_is_proxy": True}
+                                   if r.get("channel") == "paper_ingame" else r))
+    led = [
+        {"bet_id": "nc1", "channel": "paper_ingame", "status": "settled",
+         "clv_status": "no_close", "clv_pct": None, "unit_result": 1.0,
+         "settled_at": "2026-06-25T01:00:00Z", "sport": "mlb"},
+    ]
+    b = S.scoreboard(led)
+    ch = b["channels"]["paper_ingame"]
+    assert ch["n_measurable_proxy"] == 1
+    assert ch["n_measurable"] == 0
+
+
+def test_still_no_close_row_stays_unmeasurable_either_tier():
+    led = [
+        {"bet_id": "nc2", "channel": "paper_ingame", "status": "settled",
+         "clv_status": "no_close", "clv_pct": None, "unit_result": -1.0,
+         "settled_at": "2026-06-25T01:00:00Z", "sport": "mlb", "game_id": "NEVER-DERIVED"},
+    ]
+    b = S.scoreboard(led)
+    ch = b["channels"]["paper_ingame"]
+    assert ch["n_measurable"] == 0
+    assert ch["n_measurable_proxy"] == 0
+
+
+def test_render_shows_proxy_line_when_present():
+    led = [
+        {"bet_id": "px2", "channel": "paper_ingame", "status": "settled",
+         "clv_status": "proxy", "clv_pct": 3.0, "clv_is_proxy": True,
+         "unit_result": 1.0, "settled_at": "2026-06-25T01:00:00Z", "sport": "mlb"},
+    ]
+    txt = S.render(S.scoreboard(led))
+    assert "proxy (kx last-tick" in txt
