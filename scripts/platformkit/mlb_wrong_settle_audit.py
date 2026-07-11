@@ -38,6 +38,7 @@ Per-file test:
 from __future__ import annotations
 
 import json
+import re
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -70,7 +71,36 @@ def _team_pair_key(bet: Dict[str, Any]) -> Optional[str]:
 
 _INGAME_CHANNEL = "paper_ingame"  # settles via exact game_id match -- a DIFFERENT
 # resolver (ingame_paper_settle.py) that never calls _find_final_game /
-# mlb_ticker_fallback_match; excluded below so it is never falsely flagged.
+# mlb_ticker_fallback_match, so it is excluded from checks 1/2 (the fuzzy
+# team+date matcher class). RETIRED for check 3 (2026-07-11, W5 class): a
+# same-game_id row can still settle before its own scheduled start if the
+# exact-match resolver itself fires early on contaminated state -- proven
+# live, 3x KXMLBGAME-26JUL111605MILPIT settled ~63min before its 16:05 ET
+# first pitch. Check 3 below scans paper_ingame too; checks 1/2 still don't.
+
+_NPBKBO_TICKER_RE = re.compile(r"KX(?:NPB|KBO)GAME-[A-Z0-9]+")  # not previously
+# scanned at all (2026-07-11: 3x KXNPBGAME-26JUL12* tomorrow's tickets settled
+# today). Same date+HHMM ticket shape as KXMLBGAME -- reuses the existing MLB
+# ticker parser (_parse_mlb_ticker / _mlb_ticker_start_et) via a prefix swap
+# instead of duplicating its regex for a second ticket family.
+
+
+def _npbkbo_ticker(bet: Dict[str, Any]) -> Optional[str]:
+    """The raw KXNPBGAME-.../KXKBOGAME-... ticker embedded in *bet*'s bet_id,
+    or None."""
+    m = _NPBKBO_TICKER_RE.search(str(bet.get("bet_id") or ""))
+    return m.group(0) if m else None
+
+
+def _as_mlb_shaped_bet_id(bet: Dict[str, Any], ticker: str) -> Dict[str, Any]:
+    """Shallow copy of *bet* with its NPB/KBO ticker's bet_id prefix swapped to
+    KXMLBGAME- so the existing MLB ticker date/HHMM parser can run on it
+    unchanged. Used ONLY to compute a start time / ticker_date -- flags are
+    always recorded against the ORIGINAL row, never this shaped copy."""
+    out = dict(bet)
+    out["bet_id"] = str(bet.get("bet_id") or "").replace(
+        ticker, "KXMLBGAME-" + ticker.split("-", 1)[1])
+    return out
 
 
 def find_wrong_settles(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -91,14 +121,16 @@ def find_wrong_settles(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
     flags: Dict[str, Dict[str, Any]] = {}
 
-    def _flag(r: Dict[str, Any], reason: str) -> None:
+    def _flag(r: Dict[str, Any], reason: str, ticker_date: Optional[str] = None) -> None:
         bid = str(r.get("bet_id") or r.get("settle_key") or "")
         if not bid:
             return
         entry = flags.setdefault(bid, {
             "bet_id": bid, "matchup": r.get("matchup"),
-            "ticker_date": _mlb_ticker_date(r), "settled_at": r.get("settled_at"),
+            "ticker_date": ticker_date if ticker_date is not None else _mlb_ticker_date(r),
+            "settled_at": r.get("settled_at"),
             "home_score": r.get("home_score"), "away_score": r.get("away_score"),
+            "channel": r.get("channel") or str(r.get("sport") or "").lower() or None,
             "reasons": [],
         })
         if reason not in entry["reasons"]:
@@ -133,6 +165,30 @@ def find_wrong_settles(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         settled = _parse_settled_at(r.get("settled_at"))
         if start is not None and settled is not None and settled < start:
             _flag(r, "settled_before_scheduled_start")
+
+    # Check 3, paper_ingame class (2026-07-11, W5 class): the exact-game_id
+    # resolver can still fire early -- same signature, exclusion retired here.
+    ingame_mlb_settled = [r for r in rows
+                          if str(r.get("sport", "")).lower() == "mlb"
+                          and r.get("status") == "settled" and _mlb_ticker(r) is not None
+                          and r.get("channel") == _INGAME_CHANNEL]
+    for r in ingame_mlb_settled:
+        start = _ticker_start_et(r)
+        settled = _parse_settled_at(r.get("settled_at"))
+        if start is not None and settled is not None and settled < start:
+            _flag(r, "settled_before_scheduled_start")
+
+    # Check 3, NPB/KBO class (2026-07-11): channel not previously scanned at
+    # all. Same date+HHMM ticket shape as KXMLBGAME -- reuse the MLB parser via
+    # a prefix-swapped copy instead of a duplicate regex.
+    npbkbo_settled = [r for r in rows if r.get("status") == "settled" and _npbkbo_ticker(r) is not None]
+    for r in npbkbo_settled:
+        ticker = _npbkbo_ticker(r)
+        shaped = _as_mlb_shaped_bet_id(r, ticker)
+        start = _ticker_start_et(shaped)
+        settled = _parse_settled_at(r.get("settled_at"))
+        if start is not None and settled is not None and settled < start:
+            _flag(r, "settled_before_scheduled_start", ticker_date=_mlb_ticker_date(shaped))
 
     return sorted(flags.values(), key=lambda f: str(f.get("bet_id")))
 
@@ -187,8 +243,12 @@ def run_audit(ledger_path: Optional[Path] = None, flags_path: Optional[Path] = N
         "note": ("AUDIT ONLY -- never re-settles or edits a settled row (human-gated); "
                 "the root-cause date + start-time guards (grade_paper._find_final_game / "
                 "grade_paper_asof.mlb_ticker_fallback_match / grade_paper_dates."
-                "bet_not_yet_started) now block NEW wrong settles of this class. Flags "
-                "are append-only across runs -- an existing bet_id is never rewritten."),
+                "bet_not_yet_started) now block NEW wrong settles of this class. "
+                "2026-07-11: the paper_ingame exclusion assumption (its exact-game_id "
+                "resolver 'can't wrong-settle') is RETIRED for the settled_before_"
+                "scheduled_start check -- W5-contaminated bets defeated it live. NPB/KBO "
+                "channels are now scanned too. Flags are append-only across runs -- an "
+                "existing bet_id is never rewritten."),
     }
     write_json_atomic(flags_path, report)
     return report
