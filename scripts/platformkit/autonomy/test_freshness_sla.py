@@ -334,3 +334,37 @@ def test_daemon_names_helper_never_raises():
     from scripts.platformkit.autonomy.freshness_sla_runner import _daemon_names
     names = _daemon_names()
     assert isinstance(names, list)
+
+
+# --------------------------------------------------------------------------- #
+# W3 (2026-07-11): 5 new SlaEntry rows fill 5 of the 17 NA daemon names.
+# m1_ui / m1_api_paper / m1_api_boards stay NA on purpose (see TABLE comment).
+# --------------------------------------------------------------------------- #
+def test_w3_new_entries_present_with_paths_existing_or_declared():
+    from scripts.platformkit.autonomy.freshness_sla import TABLE, _FRONTEND, _HB
+    expected = {
+        "m1_line_daemon": (_HB / "m1_line_daemon.txt", 2700.0),
+        "m1_bankroll": (_HB / "m1_bankroll.txt", 1500.0),
+        "m5_autonomy_monitor": (_HB / "m5_autonomy_monitor.txt", 300.0),
+        "m6_ingame_loop": (_FRONTEND / "ingame" / "_heartbeat.json", 300.0),
+        "m41_public_splits": (_HB / "m41_public_splits.txt", 190000.0),
+    }
+    for name, (path, sla) in expected.items():
+        assert TABLE[name].path == path, name
+        assert TABLE[name].max_staleness_sec == sla, name
+
+
+def test_w3_skipped_names_stay_na():
+    for name in ("m1_ui", "m1_api_paper", "m1_api_boards"):
+        row = check_one(name, now=1000.0)
+        assert row["status"] == NA, name
+
+
+def test_w3_real_table_na_count_drops_to_12():
+    """Real freshness pass against the actual supervisor daemon-name list: the
+    17 pre-W3 NA rows drop to exactly 12 (17 - 5 new entries; m19-m27 stay
+    M29-covered, m1_ui/m1_api_paper/m1_api_boards stay honest NA)."""
+    from scripts.platformkit.autonomy.freshness_sla_runner import _daemon_names
+    rows = check_all(_daemon_names())
+    n_na = sum(1 for r in rows if r["status"] == NA)
+    assert n_na == 12, [r["name"] for r in rows if r["status"] == NA]

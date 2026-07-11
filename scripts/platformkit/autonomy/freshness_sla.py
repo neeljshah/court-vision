@@ -215,6 +215,21 @@ TABLE: Dict[str, SlaEntry] = {
         _OPS / "clv_reconcile_paper_ingame.json", 172800.0),
     "clv_reconcile_paper_ingame_prop": SlaEntry(
         _OPS / "clv_reconcile_paper_ingame_prop.json", 172800.0),
+
+    # --- W3 (2026-07-11): fill 5 of the 17 NA rows. m19-m27 (9 rows) NOT
+    # duplicated -- M29 already watches those, see module docstring above. m1_ui
+    # stays NA (frontend OFF at boot, user 2026-07-10). m1_api_paper (HTTP :8099)
+    # / m1_api_boards (TCP :8098) also scoped but Step-0 found neither writes a
+    # heartbeat (port-probed servers by design, predict_service/
+    # ops_port_liveness.py) -- SKIPPED, honest NA, not filled blind. Remaining 5
+    # confirmed heartbeat files exist; fresh_sec reused verbatim from each's own
+    # HEARTBEAT ReadinessSpec in supervisor/stack_specs.py (same convention as
+    # m10/m33/m34 above; each already >=2.2x its own tick interval there).
+    "m1_line_daemon": SlaEntry(_HB / "m1_line_daemon.txt", 2700.0),  # 900s*3
+    "m1_bankroll": SlaEntry(_HB / "m1_bankroll.txt", 1500.0),  # 600s*2.5
+    "m5_autonomy_monitor": SlaEntry(_HB / "m5_autonomy_monitor.txt", 300.0),  # 60s*5
+    "m6_ingame_loop": SlaEntry(_FRONTEND / "ingame" / "_heartbeat.json", 300.0),
+    "m41_public_splits": SlaEntry(_HB / "m41_public_splits.txt", 190000.0),  # 86400s*2.2
 }
 
 
