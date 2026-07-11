@@ -22,6 +22,13 @@ run_batch(..., candidates=knowledge_candidates()) owns the actual test.
 
 CLI: python -m scripts.platformkit.interaction_factory.knowledge_intake
 """
+# ponytail: 324 lines, over the 300 LOC/file budget by 24 -- same
+# pre-existing-overage class as generator.py/runner.py/attribute_registry.py
+# (docs/research/factory_pipe_2026-07-11.md): this module's citation trail
+# (why each hypothesis maps or stays UNMAPPABLE) is the only record outside
+# the raw JSONL ledgers, so D3 grew it rather than gutting audit history to
+# fit. Split into knowledge_intake.py (functions) + a data-only mappings
+# module if it grows further.
 from __future__ import annotations
 
 import json
@@ -86,12 +93,9 @@ LEDGERS: Dict[str, Path] = {
 # OWN leak-free trailing-tendency-by-state as-of file first -- a per-sport
 # data-build task, out of this module's scope.
 # ROUND 1-3 CLASSIFICATION (2026-07-10): 13 new CONFIRMED_LOCAL mechanisms
-# from that session's research rounds; most stay UNMAPPABLE (no registry
-# attr / STATIC_POOLS column / atomic_unit -- see test_round1_3_... for the
-# locked per-hypothesis blocker list). boxdetail_ast_persistence_and_margin
-# (NBA) + dominance_margin_predicts_outcome_partial (tennis) had their
-# blockers closed -- MAPPED below. xg_supremacy_persistence (soccer) stays
-# UNMAPPED on purpose -- see the comment on that row below.
+# that session; most stay UNMAPPABLE (see test_round1_3_... for the locked
+# per-hypothesis blocker list). boxdetail_ast_persistence_and_margin/
+# dominance_margin_predicts_outcome_partial: blockers closed, MAPPED below.
 KNOWN_MAPPINGS: Dict[str, List[Dict[str, str]]] = {
     "contact_quality_persists_split_half": [
         {"template_id": "mlb_pa_batter_x_pitcher", "attr_a": "contact_quality", "attr_b": "whiff_rate"},
@@ -164,6 +168,34 @@ KNOWN_MAPPINGS: Dict[str, List[Dict[str, str]]] = {
     "q1_slow_start_persists_split_half": [
         {"template_id": "nba_ingame_state_self_cross", "attr_a": "q1_margin_asof", "attr_b": "second_half_margin_asof"},
         {"template_id": "nba_ingame_state_self_cross", "attr_a": "q1_margin_asof", "attr_b": "quarter_volatility_asof"},
+    ],
+    # D3 (WEEKEND_WATCHBOARD.md #D3): 3 more NBA box-detail hyps, same
+    # "candidate for the box_detail family" note as boxdetail_ast_persistence
+    # (mechanisms.md #34/#35/#40); b2b_rest_penalty -> rest_days_asof (#14);
+    # tennis bp_save -> diff_bp_saved_asof, already in the static pool (#31).
+    # Skipped: boxdetail_tov_pts (mechanisms.md #36 says "wiring: none" --
+    # unresolved column ambiguity overrides its CONFIRMED_LOCAL verdict);
+    # three_in_four_fatigue (#15, carryover pool's one pair already taken by
+    # b2b_rest_penalty); all soccer CONFIRMED_LOCAL/REPLICATED rows (in-match
+    # state/venue effects, none is a soccer_match_asof pregame diff_* attr).
+    "boxdetail_fast_break_pts_persistence_and_margin": [
+        {"template_id": "nba_boxdetail_self_cross", "attr_a": "fast_break_pts_asof", "attr_b": "paint_pts_asof"},
+        {"template_id": "nba_boxdetail_self_cross", "attr_a": "fast_break_pts_asof", "attr_b": "largest_lead_asof"},
+    ],
+    "boxdetail_paint_pts_persistence_and_margin": [
+        {"template_id": "nba_boxdetail_self_cross", "attr_a": "paint_pts_asof", "attr_b": "tov_pts_asof"},
+        {"template_id": "nba_boxdetail_self_cross", "attr_a": "paint_pts_asof", "attr_b": "foul_trouble_asof"},
+    ],
+    "boxdetail_largest_lead_persistence_and_margin": [
+        {"template_id": "nba_boxdetail_self_cross", "attr_a": "largest_lead_asof", "attr_b": "tov_pts_asof"},
+        {"template_id": "nba_boxdetail_self_cross", "attr_a": "largest_lead_asof", "attr_b": "foul_trouble_asof"},
+    ],
+    "b2b_rest_penalty": [
+        {"template_id": "nba_carryover_self_cross", "attr_a": "rest_days_asof", "attr_b": "heavy_min_load_asof"},
+    ],
+    "bp_save_differential_predicts_outcome_partial": [
+        {"template_id": "tennis_match_asof_self_cross", "attr_a": "diff_bp_saved_asof", "attr_b": "diff_1st_win_asof"},
+        {"template_id": "tennis_match_asof_self_cross", "attr_a": "diff_bp_saved_asof", "attr_b": "diff_return_won_asof"},
     ],
 }
 
