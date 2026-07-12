@@ -103,11 +103,11 @@ def test_doubleheader_g1_g2_pick_by_start_time():
 
 def test_doubleheader_fails_closed_on_ambiguity():
     res = ol.MlbOutcomeResolver(box_df=_dh_df())
-    # no game_number + 2 same-day rows, HHMM equidistant from both (18:15Z and
-    # 23:15Z are 1095/1395 min; 20:45 ticket sits at 1245, 150min from each) ->
-    # genuinely ambiguous, never a guess. (A non-equidistant HHMM DOES now
-    # resolve via the tie-break -- see test_doubleheader_hhmm_tiebreak_*.)
-    assert res.final_score("KXMLBGAME-26JUL072045MILSTL") is None
+    # no game_number + 2 same-day rows, HHMM equidistant from both in UTC
+    # (18:15Z and 23:15Z are 1095/1395 min; a 16:45-ET ticket = 20:45Z = 1245,
+    # 150min from each) -> genuinely ambiguous, never a guess. (A non-
+    # equidistant HHMM DOES resolve -- see test_doubleheader_hhmm_tiebreak_*.)
+    assert res.final_score("KXMLBGAME-26JUL071645MILSTL") is None
     # G3 does not exist -> None
     assert res.final_score("KXMLBGAME-26JUL071415MILSTLG3") is None
 
@@ -187,18 +187,40 @@ def test_doubleheader_hhmm_tiebreak_resolves_postponement_dh():
     # the only way to split the 2 same-date finals. Reverting the tie-break
     # (i.e. going back to unconditional None on 2 rows) fails closed again --
     # nothing here depends on game_number, only on _pick_by_hhmm.
+    # start_times are UTC in the real parquet (opus judge 2026-07-12 proof:
+    # a 22:10-ET ticker maps to a 02:10Z box row). 16:05 ET opener = 20:05Z;
+    # 19:05 ET nightcap = 23:05Z. The tie-break must convert ET->UTC.
     df = pd.DataFrame([
         {"event_id": "40", "date": "2026-07-11", "home_abbr": "PIT", "away_abbr": "MIL",
          "home_score": 7.0, "away_score": 6.0, "status": "STATUS_FINAL",
-         "start_time": "2026-07-11T16:05Z"},
+         "start_time": "2026-07-11T20:05Z"},
         {"event_id": "41", "date": "2026-07-11", "home_abbr": "PIT", "away_abbr": "MIL",
          "home_score": 3.0, "away_score": 2.0, "status": "STATUS_FINAL",
-         "start_time": "2026-07-11T20:15Z"},
+         "start_time": "2026-07-11T23:05Z"},
     ])
     res = ol.MlbOutcomeResolver(box_df=df)
-    # Fri-postponed ticket (date 07-10, +1 day tolerance lands on the DH date)
+    # Fri-postponed ticket (18:40 ET -> 22:40Z): nearest = 23:05Z nightcap
     assert res.final_score("KXMLBGAME-26JUL101840MILPIT") == (3, 2)
-    # Sat ticket (date 07-11 directly)
+    # Sat opener ticket (16:05 ET -> 20:05Z): nearest = opener
+    assert res.final_score("KXMLBGAME-26JUL111605MILPIT") == (7, 6)
+    # Nightcap ticket (19:05 ET -> 23:05Z): its OWN game, never the opener
+    # (the raw-digit compare bug settled this one against the opener).
+    assert res.final_score("KXMLBGAME-26JUL111905MILPIT") == (3, 2)
+
+
+def test_doubleheader_hhmm_tiebreak_nightcap_crosses_midnight_utc():
+    # 22:10 ET nightcap = 02:10Z NEXT UTC day (minutes-of-day wraps to 130);
+    # circular distance must still bind it to its own game.
+    df = pd.DataFrame([
+        {"event_id": "44", "date": "2026-07-11", "home_abbr": "PIT", "away_abbr": "MIL",
+         "home_score": 7.0, "away_score": 6.0, "status": "STATUS_FINAL",
+         "start_time": "2026-07-11T20:05Z"},
+        {"event_id": "45", "date": "2026-07-11", "home_abbr": "PIT", "away_abbr": "MIL",
+         "home_score": 3.0, "away_score": 2.0, "status": "STATUS_FINAL",
+         "start_time": "2026-07-12T02:10Z"},
+    ])
+    res = ol.MlbOutcomeResolver(box_df=df)
+    assert res.final_score("KXMLBGAME-26JUL112210MILPIT") == (3, 2)
     assert res.final_score("KXMLBGAME-26JUL111605MILPIT") == (7, 6)
 
 
