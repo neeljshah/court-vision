@@ -278,6 +278,9 @@ _JOB_TABLE: List[Tuple[str, str, str, Tuple[str, ...]]] = [
     ("log_reaper", "scripts.platformkit.autoloop.log_reaper_job", "run_log_reaper", ("watermarks",)),
     # M18 cadence-gated eval-gate reference-core scoreboard refresh (refresh only; file-mtime watermark)
     ("eval_gate", "scripts.platformkit.autoloop.eval_gate_job", "run_eval_gate", ("watermarks",)),
+    # M19 cadence-gated pregame crps_market MLB benchmark refresh (refresh only; file-mtime watermark)
+    ("pregame_benchmark", "scripts.platformkit.autoloop.pregame_benchmark_job",
+     "run_pregame_benchmark", ("watermarks",)),
 ]
 
 
