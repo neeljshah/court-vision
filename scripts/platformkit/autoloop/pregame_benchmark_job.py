@@ -22,13 +22,12 @@ choice M15's benchmark_refresh_job made for ingame_mlb.run() (see that
 module's _default_mlb_rerun). sys.argv is untouched by this job (regression-
 tested below).
 
-STATIC WINDOW (documented, not invented): run_mlb.run() takes required
-start/end args (no built-in defaults, unlike ingame_mlb.run()'s max_games).
-This job passes the same literal 2026-06-18..2026-07-08 window run_mlb.py's
-own argparse defaults to, matching the already-hand-run evidence artifact.
-# ponytail: static window, not a rolling one -- add a rolling end-date (e.g.
-# "yesterday") when the corpus needs to extend past 2026-07-08; out of scope
-# for this refresh-only wrapper, which only mirrors the CLI's own defaults.
+ROLLING WINDOW (opus judge 2026-07-12, replaced the original static literals):
+run_mlb.run() takes required start/end args. A frozen window would re-score
+the identical corpus every 7d while stamping fresh timestamps -- alive-looking
+but inert on a live season. _rolling_window() derives end = yesterday (UTC),
+start = end - 20d (the hand-run evidence window's span), so each weekly fire
+scores the newest completed games.
 
 Cadence = pregame_crps_scoreboard_latest.json's own mtime. Self-resetting:
 a successful run overwrites that file, so the next check needs a fresh 7d
@@ -60,19 +59,28 @@ from __future__ import annotations
 
 import json
 import time
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict, Optional, Tuple
 
 _REPO = Path(__file__).resolve().parents[3]
 _LATEST_PATH = _REPO / "data" / "frontend" / "ops" / "pregame_crps_scoreboard_latest.json"
 _STALE_AFTER_H = 168.0  # 7d -- refresh-only benchmark, not a live-drifting metric
 
-# run_mlb.py's own argparse defaults (run_mlb.py:182-184), copied verbatim so
-# this job's rerun is the same window the hand-run evidence artifact used.
-_DEFAULT_START = "2026-06-18"
-_DEFAULT_END = "2026-07-08"
+# Rolling window (opus judge 2026-07-12: a frozen literal window re-scores the
+# same corpus forever while stamping fresh timestamps -- inert but alive-looking).
+# Span matches the hand-run evidence window (20 days); end = yesterday so each
+# weekly fire scores the season's newest completed games.
+_WINDOW_DAYS = 20
 _DEFAULT_MAX_GAMES = 300
+
+
+def _rolling_window(today: Optional[date] = None) -> Tuple[str, str]:
+    """(start, end) ISO dates: end = yesterday, start = end - _WINDOW_DAYS."""
+    t = today or datetime.now(timezone.utc).date()
+    end = t - timedelta(days=1)
+    start = end - timedelta(days=_WINDOW_DAYS)
+    return start.isoformat(), end.isoformat()
 
 
 def _artifact_age_h(path: Path) -> Optional[float]:
@@ -85,10 +93,12 @@ def _artifact_age_h(path: Path) -> Optional[float]:
 
 
 def _default_run() -> Dict[str, Any]:
-    """Call run_mlb.run() directly (never _main()/argparse) with its own CLI
-    default window, so no daemon argv can leak into this benchmark's args."""
+    """Call run_mlb.run() directly (never _main()/argparse) with a ROLLING
+    window ending yesterday, so no daemon argv can leak into this benchmark's
+    args and each weekly fire scores the newest completed games."""
     from scripts.platformkit.benchmarks.crps_market import run_mlb as RM
-    return RM.run(start=_DEFAULT_START, end=_DEFAULT_END, max_games=_DEFAULT_MAX_GAMES)
+    start, end = _rolling_window()
+    return RM.run(start=start, end=end, max_games=_DEFAULT_MAX_GAMES)
 
 
 def _write_ops_json(result: Dict[str, Any], out_path: Path) -> None:

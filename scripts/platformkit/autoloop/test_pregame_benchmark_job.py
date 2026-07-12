@@ -120,9 +120,10 @@ def test_watermarks_param_accepted_and_ignored(tmp_path):
     assert watermarks == {"unrelated": "untouched"}
 
 
-def test_default_run_calls_run_mlb_directly_with_cli_defaults(monkeypatch):
-    """_default_run must call run_mlb.run() (never _main()/argparse) with
-    run_mlb.py's own CLI-default window -- verifies the exact args passed."""
+def test_default_run_calls_run_mlb_directly_with_rolling_window(monkeypatch):
+    """_default_run must call run_mlb.run() (never _main()/argparse) with a
+    ROLLING window ending yesterday (opus judge 2026-07-12: frozen literals
+    re-score the same corpus forever) -- verifies the exact args passed."""
     seen = {}
 
     class _FakeRM:
@@ -133,8 +134,18 @@ def test_default_run_calls_run_mlb_directly_with_cli_defaults(monkeypatch):
 
     monkeypatch.setitem(sys.modules, "scripts.platformkit.benchmarks.crps_market.run_mlb", _FakeRM)
     result = PB._default_run()
-    assert seen == {"start": "2026-06-18", "end": "2026-07-08", "max_games": 300}
+    exp_start, exp_end = PB._rolling_window()
+    assert seen == {"start": exp_start, "end": exp_end, "max_games": 300}
     assert result["verdict"] == "UNDERPOWERED"
+
+
+def test_rolling_window_derivation():
+    """end = yesterday, start = end - 20d; a fire on 2026-07-12 must NOT
+    reproduce the old frozen 2026-06-18..2026-07-08 window."""
+    from datetime import date
+    start, end = PB._rolling_window(date(2026, 7, 12))
+    assert end == "2026-07-11" and start == "2026-06-21"
+    assert (start, end) != ("2026-06-18", "2026-07-08")
 
 
 def test_default_run_no_argv_touched(monkeypatch):
