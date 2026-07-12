@@ -21,6 +21,7 @@ from __future__ import annotations
 import glob
 from pathlib import Path
 
+import pandas as pd
 import pytest
 
 from scripts.platformkit.benchmarks.crps_market.mlb_join import (
@@ -38,13 +39,15 @@ pytestmark = pytest.mark.skipif(
            "skip the real-corpus join-rate check when absent.",
 )
 
-# Measured (2026-07-11) on data/cache/line_history/mlb/*.jsonl (2026-06-18 ..
-# 2026-07-10, 502 distinct game_ids) joined against savant_full__2026.parquet:
-# 401/502 = 79.9% resolve to a single unambiguous game_pk (the rest are
-# honestly EXCLUDED as doubleheader-ambiguous or unmatched, never guessed --
-# see build_game_join's docstring). Floor sits a few points below so ordinary
-# corpus growth does not flake this test; the historical silent regression
-# this floor exists to catch dropped the rate to ~25.7%, far below this band.
+# Measured (2026-07-12, statcast cache refreshed through 07-11) on
+# data/cache/line_history/mlb/*.jsonl (2026-06-18 .. 2026-07-12), AFTER the
+# 48h freshness exclusion below drops the still-lagging tail (600 -> 490
+# distinct game_ids): 405/490 = 82.7% resolve to a single unambiguous game_pk
+# (the rest are honestly EXCLUDED as doubleheader-ambiguous or unmatched,
+# never guessed -- see build_game_join's docstring). Floor sits well below so
+# ordinary corpus growth/lag does not flake this test; the historical silent
+# regression this floor exists to catch dropped the rate to ~25.7%, far below
+# this band.
 _MIN_RESOLVED_FRAC = 0.70
 
 
@@ -56,6 +59,14 @@ def test_real_corpus_join_rate_meets_floor():
     sg = load_statcast_games(2026)
     lt = load_line_history_totals(start, end)
     assert not lt.empty, "expected real MLB total-market rows in the date range"
+
+    # Freshness guard: a game that started <48h ago may not have its statcast
+    # row ingested yet -- that's ordinary capture lag, not a join regression.
+    # Excluding it from BOTH the numerator and denominator keeps the floor from
+    # flaking on lag alone.
+    now = pd.Timestamp.now(tz="UTC")
+    lt = lt[lt["commence_time"] <= now - pd.Timedelta(hours=48)]
+    assert not lt.empty, "expected stabilized (>=48h old) MLB total-market rows"
 
     join = build_game_join(sg, lt)
     total = lt["game_id"].nunique()

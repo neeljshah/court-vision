@@ -103,8 +103,11 @@ def test_doubleheader_g1_g2_pick_by_start_time():
 
 def test_doubleheader_fails_closed_on_ambiguity():
     res = ol.MlbOutcomeResolver(box_df=_dh_df())
-    # no game_number + 2 same-day rows -> ambiguous, never a guess
-    assert res.final_score("KXMLBGAME-26JUL071415MILSTL") is None
+    # no game_number + 2 same-day rows, HHMM equidistant from both (18:15Z and
+    # 23:15Z are 1095/1395 min; 20:45 ticket sits at 1245, 150min from each) ->
+    # genuinely ambiguous, never a guess. (A non-equidistant HHMM DOES now
+    # resolve via the tie-break -- see test_doubleheader_hhmm_tiebreak_*.)
+    assert res.final_score("KXMLBGAME-26JUL072045MILSTL") is None
     # G3 does not exist -> None
     assert res.final_score("KXMLBGAME-26JUL071415MILSTLG3") is None
 
@@ -118,12 +121,100 @@ def test_doubleheader_g1_settles_off_single_final_row():
 
 def test_next_day_ticker_never_settles_against_prior_day_final():
     # 2026-07-07 live incident: a bet on the NEXT day's game of the same series
-    # settled against the just-final earlier game via a delta=-1 day tolerance.
-    # Ticker and box dates are both ET -> a box row dated before the ticker date
-    # is a DIFFERENT game; must stay unresolved until its own final lands.
+    # settled against the just-final earlier game via a naive delta=-1 tolerance.
+    # delta=-1 is now risk-scoped (age >=2 days + empty forward buckets + a single
+    # unambiguous -1 final -- see test_delta_neg1_* below); right after the game
+    # (today pinned to +1 day, age=1) the ingest-race guard still refuses.
     res = ol.MlbOutcomeResolver(box_df=_box_df())  # box has 06-24 PHI@WSH final
-    assert res.final_score("KXMLBGAME-26JUN251845PHIWSH") is None
-    assert res.home_win("KXMLBGAME-26JUN251845PHIWSH") is None
+    today = dt.date(2026, 6, 26)
+    assert res.final_score("KXMLBGAME-26JUN251845PHIWSH", today=today) is None
+    assert res.home_win("KXMLBGAME-26JUN251845PHIWSH", today=today) is None
+
+
+def test_delta_neg1_reinstated_when_risk_scoped():
+    # AZSTL: ticker dated 2026-07-25, real final landed 2026-07-24 (delta=-1).
+    # Forward buckets (07-25, 07-26) are empty, the -1 bucket has exactly one
+    # final, and today is pinned 2 days past the ticker date -> resolves.
+    df = pd.DataFrame([
+        {"event_id": "20", "date": "2026-07-24", "home_abbr": "STL", "away_abbr": "ARI",
+         "home_score": 3.0, "away_score": 1.0, "status": "STATUS_FINAL",
+         "start_time": "2026-07-24T23:15Z"},
+    ])
+    res = ol.MlbOutcomeResolver(box_df=df)
+    today = dt.date(2026, 7, 27)  # ticker date + 2 days
+    assert res.final_score("KXMLBGAME-26JUL251840AZSTL", today=today) == (3, 1)
+    assert res.home_win("KXMLBGAME-26JUL251840AZSTL", today=today) == 1
+
+
+def test_delta_neg1_age_guard_blocks_fresh_ticker():
+    # Same shape as above but today is only 1 day past the ticker date -> the
+    # ingest-race guard refuses (the correct forward game hasn't had time to land).
+    df = pd.DataFrame([
+        {"event_id": "21", "date": "2026-07-24", "home_abbr": "STL", "away_abbr": "ARI",
+         "home_score": 3.0, "away_score": 1.0, "status": "STATUS_FINAL",
+         "start_time": "2026-07-24T23:15Z"},
+    ])
+    res = ol.MlbOutcomeResolver(box_df=df)
+    today = dt.date(2026, 7, 26)  # only 1 day past ticker date -> age guard fails
+    assert res.final_score("KXMLBGAME-26JUL251840AZSTL", today=today) is None
+
+
+def test_delta_neg1_never_consulted_when_forward_bucket_nonempty():
+    # Documented 07-07 incident shape: even though the -1 bucket is clean and the
+    # age guard would pass, a NON-empty delta-0 bucket (here: 2 finals too close
+    # together to break the HHMM tie, i.e. an unresolved-but-present bucket) means
+    # -1 must never be consulted -- guard (a) fails before guard (b)/(c) matter.
+    df = pd.DataFrame([
+        {"event_id": "30", "date": "2026-07-08", "home_abbr": "STL", "away_abbr": "MIL",
+         "home_score": 2.0, "away_score": 6.0, "status": "STATUS_FINAL",
+         "start_time": "2026-07-08T18:15Z"},
+        {"event_id": "31", "date": "2026-07-08", "home_abbr": "STL", "away_abbr": "MIL",
+         "home_score": 5.0, "away_score": 1.0, "status": "STATUS_FINAL",
+         "start_time": "2026-07-08T19:00Z"},  # only 45min apart -> tie-break refuses
+        {"event_id": "32", "date": "2026-07-07", "home_abbr": "STL", "away_abbr": "MIL",
+         "home_score": 9.0, "away_score": 0.0, "status": "STATUS_FINAL",
+         "start_time": "2026-07-07T18:15Z"},  # clean, unambiguous -1 bucket
+    ])
+    res = ol.MlbOutcomeResolver(box_df=df)
+    today = dt.date(2026, 7, 11)  # well past the age guard
+    assert res.final_score("KXMLBGAME-26JUL081415MILSTL", today=today) is None
+
+
+def test_doubleheader_hhmm_tiebreak_resolves_postponement_dh():
+    # Real MILPIT case (2026-07-11, grounded off data/domains/mlb/espn_boxscores.parquet):
+    # Fri 07-10 MIL@PIT was postponed into a Sat straight DH, so both Kalshi
+    # GAME tickers carry NO G-suffix; the HHMM tie-break (not a game_number) is
+    # the only way to split the 2 same-date finals. Reverting the tie-break
+    # (i.e. going back to unconditional None on 2 rows) fails closed again --
+    # nothing here depends on game_number, only on _pick_by_hhmm.
+    df = pd.DataFrame([
+        {"event_id": "40", "date": "2026-07-11", "home_abbr": "PIT", "away_abbr": "MIL",
+         "home_score": 7.0, "away_score": 6.0, "status": "STATUS_FINAL",
+         "start_time": "2026-07-11T16:05Z"},
+        {"event_id": "41", "date": "2026-07-11", "home_abbr": "PIT", "away_abbr": "MIL",
+         "home_score": 3.0, "away_score": 2.0, "status": "STATUS_FINAL",
+         "start_time": "2026-07-11T20:15Z"},
+    ])
+    res = ol.MlbOutcomeResolver(box_df=df)
+    # Fri-postponed ticket (date 07-10, +1 day tolerance lands on the DH date)
+    assert res.final_score("KXMLBGAME-26JUL101840MILPIT") == (3, 2)
+    # Sat ticket (date 07-11 directly)
+    assert res.final_score("KXMLBGAME-26JUL111605MILPIT") == (7, 6)
+
+
+def test_doubleheader_hhmm_tiebreak_stays_closed_when_too_close():
+    # Two finals only 45min apart -- below the 90min separation floor, so the
+    # tie-break refuses rather than guess.
+    df = pd.DataFrame([
+        {"event_id": "42", "date": "2026-07-11", "home_abbr": "PIT", "away_abbr": "MIL",
+         "home_score": 7.0, "away_score": 6.0, "status": "STATUS_FINAL",
+         "start_time": "2026-07-11T16:05Z"},
+        {"event_id": "43", "date": "2026-07-11", "home_abbr": "PIT", "away_abbr": "MIL",
+         "home_score": 3.0, "away_score": 2.0, "status": "STATUS_FINAL",
+         "start_time": "2026-07-11T16:50Z"},
+    ])
+    res = ol.MlbOutcomeResolver(box_df=df)
+    assert res.final_score("KXMLBGAME-26JUL111605MILPIT") is None
 
 
 def test_doubleheader_fails_closed_without_start_times():
