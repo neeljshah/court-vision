@@ -59,6 +59,25 @@ def _norm(abbr: str) -> str:
     return _KALSHI_TO_ESPN.get(abbr, abbr)
 
 
+def _extract_hhmm(ticker: str) -> Optional[str]:
+    """Re-parse a ticker's own HHMM digits (group 4) without changing
+    parse_mlb_ticker's public 4-tuple contract -- that function is called by
+    17+ other modules and must keep its shape."""
+    m = _TICKER_RE.match(str(ticker or "").strip())
+    return m.group(4) if m else None
+
+
+def _clock_minutes(start_time_iso: str) -> Optional[int]:
+    """HH:MM digits straight off an ISO start_time string -> minutes-of-day.
+    ponytail: compares raw clock digits, no timezone conversion (ticker HHMM
+    and box start_time agree digit-for-digit on the real corpus checked);
+    revisit if a cross-midnight/cross-TZ pair ever needs true UTC math."""
+    try:
+        return int(start_time_iso[11:13]) * 60 + int(start_time_iso[14:16])
+    except (TypeError, ValueError, IndexError):
+        return None
+
+
 def parse_mlb_ticker(ticker: str, valid_abbrs: set
                      ) -> Optional[Tuple[Any, str, str, Optional[int]]]:
     """Parse a Kalshi MLB ticker -> (date, away_abbr, home_abbr, game_number).
@@ -141,12 +160,13 @@ class MlbOutcomeResolver:
     def available(self) -> bool:
         return self._ok and bool(self._rows)
 
-    def _pick(self, key: Tuple[Any, str, str],
-              game_number: Optional[int]) -> Optional[Tuple[int, int]]:
+    def _pick(self, key: Tuple[Any, str, str], game_number: Optional[int],
+              ticker_hhmm: Optional[str] = None) -> Optional[Tuple[int, int]]:
         """Pick ONE final score for a (date, away, home) key, doubleheader-aware.
 
         game_number None + exactly 1 row -> that row (the pre-doubleheader path).
-        game_number None + 2+ rows -> None (ambiguous doubleheader, fail closed).
+        game_number None + exactly 2 rows -> HHMM tie-break (see _pick_by_hhmm);
+        None on 3+ rows (ambiguous doubleheader, fail closed).
         game_number N -> rows ordered by start_time (ISO strings sort correctly),
         G1 = earliest; N beyond the finals on disk, or 2+ rows we cannot order
         (missing start_time), -> None (fail closed, never a guess)."""
@@ -154,17 +174,46 @@ class MlbOutcomeResolver:
         if not rows:
             return None
         if game_number is None:
-            return rows[0][1] if len(rows) == 1 else None
+            if len(rows) == 1:
+                return rows[0][1]
+            if len(rows) == 2:
+                return self._pick_by_hhmm(rows, ticker_hhmm)
+            return None
         if len(rows) > 1 and any(not st for st, _ in rows):
             return None
         if game_number > len(rows):
             return None
-        # ponytail: G1 settles off a single final row (G1 always finishes first;
-        # a G1 suspended past G2 is the known ceiling -- add a ticker-HHMM vs
-        # start_time cross-check if that ever bites).
         return sorted(rows)[game_number - 1][1]
 
-    def _resolve(self, ticker: str) -> Optional[Tuple[int, int]]:
+    @staticmethod
+    def _pick_by_hhmm(rows: list, ticker_hhmm: Optional[str]
+                      ) -> Optional[Tuple[int, int]]:
+        """Postponement-created doubleheader: 2 same-date finals, no G-suffix on
+        the ticker (see module/class docstring). Break the tie by proximity to
+        the ticker's own HHMM -- but only when the two finals are >=90min apart
+        AND one is strictly closer; anything closer/tied/missing data stays
+        failed-closed (never a guessed coin flip)."""
+        if ticker_hhmm is None:
+            return None
+        sts = [st for st, _ in rows]
+        if any(not st for st in sts):
+            return None
+        minutes = [_clock_minutes(st) for st in sts]
+        if any(m is None for m in minutes):
+            return None
+        if abs(minutes[0] - minutes[1]) < 90:
+            return None
+        try:
+            tk = int(ticker_hhmm[:2]) * 60 + int(ticker_hhmm[2:])
+        except (TypeError, ValueError):
+            return None
+        diffs = [abs(m - tk) for m in minutes]
+        if diffs[0] == diffs[1]:
+            return None
+        return rows[0 if diffs[0] < diffs[1] else 1][1]
+
+    def _resolve(self, ticker: str, today: Optional[Any] = None
+                ) -> Optional[Tuple[int, int]]:
         """(home_score, away_score) for a ticker's FINAL game, else None. Never raises."""
         if not self._ok:
             return None
@@ -173,30 +222,47 @@ class MlbOutcomeResolver:
             return None
         import datetime as _dt
         date, away, home, gnum = parsed
-        # Join with a +1 day tolerance only (a late game can file on the NEXT day).
-        # delta=-1 is FORBIDDEN: ticker dates and box dates are both ET, so a box
-        # row dated BEFORE the ticker date is a different game of the same series
-        # -- observed live 2026-07-07: a bet on the 07-08 MIL@STL game settled
-        # against 07-07's just-final G1 score via delta=-1. Never again.
+        hhmm = _extract_hhmm(ticker)
+        # Join with a +1 day tolerance (a late game can file on the NEXT day).
         for delta in (0, 1):
-            score = self._pick((date + _dt.timedelta(days=delta), away, home), gnum)
+            score = self._pick((date + _dt.timedelta(days=delta), away, home), gnum, hhmm)
             if score is not None:
                 return score
-        return None
+        # delta=-1 is RISK-SCOPED, not forbidden outright: a naive -1 caused a live
+        # 2026-07-07 wrong-match (a bet on the 07-08 MIL@STL game settled against
+        # 07-07's just-final G1 score). Reinstated ONLY when (a) delta 0 AND +1
+        # buckets are BOTH truly empty (no ambiguity to paper over), (b) the -1
+        # bucket has exactly ONE final for these teams, (c) the ticker's game date
+        # is >=2 days in the past (ingest-race guard: the correct forward game
+        # must have had time to land by now). Any one guard failing -> None.
+        key0 = (date, away, home)
+        key1 = (date + _dt.timedelta(days=1), away, home)
+        if self._rows.get(key0) or self._rows.get(key1):
+            return None
+        today = today if today is not None else _dt.date.today()
+        if (today - date).days < 2:
+            return None
+        key_neg1 = (date - _dt.timedelta(days=1), away, home)
+        rows = self._rows.get(key_neg1)
+        if not rows or len(rows) != 1:
+            return None
+        return self._pick(key_neg1, gnum, hhmm)
 
-    def home_win(self, ticker: str) -> Optional[int]:
+    def home_win(self, ticker: str, today: Optional[Any] = None) -> Optional[int]:
         """1 if home won, 0 if away won, None if unresolved/tie/not-final. Never raises."""
-        score = self._resolve(ticker)
+        score = self._resolve(ticker, today)
         if score is None or score[0] == score[1]:
             return None  # ties/unresolved are not a binary home_win label
         return 1 if score[0] > score[1] else 0
 
-    def final_score(self, ticker: str) -> Optional[Tuple[int, int]]:
+    def final_score(self, ticker: str, today: Optional[Any] = None
+                    ) -> Optional[Tuple[int, int]]:
         """(home_score, away_score) for a Kalshi ticker's FINAL game, else None.
 
         Unlike home_win this also resolves ties (needed to settle a paper bet against the
-        realized score). Never raises."""
-        return self._resolve(ticker)
+        realized score). *today* overrides the age guard's "now" reference (defaults to
+        the real date; tests inject a fixed value). Never raises."""
+        return self._resolve(ticker, today)
 
 
 __all__ = [
