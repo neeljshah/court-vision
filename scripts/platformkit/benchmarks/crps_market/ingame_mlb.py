@@ -120,12 +120,45 @@ def resolve_game_pk(ticker_suffix: str, by_key: Dict[Tuple, List[int]]
 
 
 # --- live-state timeline (wall-clock anchor only, never the score) ----------
+_TICKER_DATE_RE = re.compile(r"-(\d{2})([A-Z]{3})(\d{2})\d{4}")
+_MON3 = {m: i + 1 for i, m in enumerate(
+    ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"])}
+
+
+def _ticker_game_date(path: Path) -> Optional[str]:
+    """ET game date embedded in the Kalshi ticker filename, or None."""
+    m = _TICKER_DATE_RE.search(path.stem)
+    if not m or m.group(2) not in _MON3:
+        return None
+    return f"20{m.group(1)}-{_MON3[m.group(2)]:02d}-{int(m.group(3)):02d}"
+
+
+def _et_date_of_ts(ts: str) -> str:
+    """ET calendar date of an ISO-8601 UTC timestamp string ('' if unparseable)."""
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    try:
+        dt = datetime.fromisoformat(str(ts).replace("Z", "+00:00"))
+        return dt.astimezone(ZoneInfo("America/New_York")).strftime("%Y-%m-%d")
+    except (ValueError, TypeError):
+        return ""
+
+
 def load_state_timeline(path: Path) -> pd.DataFrame:
+    # W5 read-time guard: rows captured BEFORE the ticker's own ET game date are
+    # wrong-date contamination (team-only live-state bridge, fixed 627d878f but
+    # historical mixed files remain) -- a tick cannot precede its game's ET date.
+    # Comparison is in ET (a UTC-date compare leaks Fri-evening rows past midnight).
+    game_date = _ticker_game_date(path)
     rows = []
     with open(path, encoding="utf-8") as f:
         for line in f:
             try:
                 r = json.loads(line)
+                if game_date:
+                    et_day = _et_date_of_ts(r.get("ts", ""))
+                    if et_day and et_day < game_date:
+                        continue
                 kv = dict(_STATE_RE.findall(r.get("state_summary", "")))
                 rows.append({"ts": r["ts"], "inning": int(kv["inning"])})
             except (json.JSONDecodeError, KeyError, ValueError):
