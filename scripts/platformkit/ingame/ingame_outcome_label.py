@@ -68,14 +68,19 @@ def _extract_hhmm(ticker: str) -> Optional[str]:
 
 
 def _clock_minutes(start_time_iso: str) -> Optional[int]:
-    """HH:MM digits straight off an ISO start_time string -> minutes-of-day.
-    ponytail: compares raw clock digits, no timezone conversion (ticker HHMM
-    and box start_time agree digit-for-digit on the real corpus checked);
-    revisit if a cross-midnight/cross-TZ pair ever needs true UTC math."""
+    """HH:MM digits off an ISO start_time string -> UTC minutes-of-day.
+    Box start_times in espn_boxscores.parquet are UTC (opus judge 2026-07-12
+    proved it: 22:10-ET ticker maps to 02:10Z box row)."""
     try:
         return int(start_time_iso[11:13]) * 60 + int(start_time_iso[14:16])
     except (TypeError, ValueError, IndexError):
         return None
+
+
+def _circ_diff(a: int, b: int) -> int:
+    """Circular minutes-of-day distance (nightcaps cross midnight UTC)."""
+    d = abs(a - b) % 1440
+    return min(d, 1440 - d)
 
 
 def parse_mlb_ticker(ticker: str, valid_abbrs: set
@@ -201,13 +206,18 @@ class MlbOutcomeResolver:
         minutes = [_clock_minutes(st) for st in sts]
         if any(m is None for m in minutes):
             return None
-        if abs(minutes[0] - minutes[1]) < 90:
+        if _circ_diff(minutes[0], minutes[1]) < 90:
             return None
         try:
-            tk = int(ticker_hhmm[:2]) * 60 + int(ticker_hhmm[2:])
+            # Ticker HHMM is ET; box start_times are UTC. MLB season runs
+            # entirely under EDT (UTC-4), so ET+240 mod 1440 = UTC minutes-of-
+            # day; circular distance handles nightcaps crossing midnight UTC.
+            # ponytail: fixed EDT offset -- add zoneinfo DST math only if a
+            # March/November MLB ticker ever exists.
+            tk = (int(ticker_hhmm[:2]) * 60 + int(ticker_hhmm[2:]) + 240) % 1440
         except (TypeError, ValueError):
             return None
-        diffs = [abs(m - tk) for m in minutes]
+        diffs = [_circ_diff(m, tk) for m in minutes]
         if diffs[0] == diffs[1]:
             return None
         return rows[0 if diffs[0] < diffs[1] else 1][1]
