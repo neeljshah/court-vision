@@ -148,6 +148,29 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
         "blocklist_attrs": [],
         "blocklist_pairs": [],
     },
+    # ---- NBA STATE-CONDITIONER cross (A22a, .planning/WEEKEND_PLAN_2026-07-10.md
+    # Q7 / PROVEN_EDGE_ROADMAP.md section 5.1 "state-conditioned distribution"
+    # growth item): crosses a PREGAME carryover_asof attr (rest_days_asof /
+    # heavy_min_load_asof -- mechanisms.md #14 b2b_rest_penalty, CONFIRMED)
+    # against a REALIZED ingame_state_asof attr (q1_margin_asof etc -- #34
+    # q1_slow_start_persists_split_half) to predict the REST of the current
+    # game's margin -- "condition a pregame prior on a realized-state attr".
+    # Flagship candidate: rest_days_asof x q1_margin_asof. Both pools already
+    # exist (attribute_registry.py families carryover_asof / ingame_state_asof,
+    # same ones nba_carryover_self_cross / nba_ingame_state_self_cross draw
+    # from) -- this template only crosses them, no new registry attr added.
+    "nba_state_conditioner": {
+        "sport": "basketball_nba",
+        "atomic_unit": "team_game_ingame_state",
+        "outcome": "rest_of_game_margin",
+        "baseline": "rest_of_game_margin ~ pregame_attr_a_diff_asof + state_attr_b_state_asof",
+        "pairing": "cross",
+        "left_pool": {"entity": "team", "family": "carryover_asof"},
+        "right_pool": {"entity": "team", "family": "ingame_state_asof"},
+        "feature_builder": "nba_state_conditioner_asof",   # registered -> runner._BUILDERS (builders_state_conditioner.py, A22a)
+        "blocklist_attrs": [],
+        "blocklist_pairs": [],
+    },
     # ---- NBA ASSIST-RATE x BOX-DETAIL cross (unlock lane, 2026-07-10) ------
     # Closes the "assist_asof is inert" gap b418cde6 deliberately left open:
     # ast_rate_asof was registered under its OWN family ("assist_asof", not
