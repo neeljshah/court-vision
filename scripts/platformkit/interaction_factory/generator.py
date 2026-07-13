@@ -421,6 +421,50 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
         "blocklist_attrs": [],
         "blocklist_pairs": [],
     },
+    # ---- MLB MARKET-MICROSTRUCTURE conditioning features (B5 lane, 2026-07-13) --
+    # line_move_velocity_pregame / line_move_total_abs / cross_book_
+    # divergence_at_close / time_of_last_move_frac -- computed ONLY from OUR
+    # OWN scraped line_history/mlb feed's pregame snapshots (captured_at <=
+    # commence_time, the leak trap) -- see builders_market_micro.py module
+    # docstring for the STEP0 disk-premise findings, incl. the FALSE PREMISE
+    # caught live: B3/B4's total_runs source (games_current.parquet) is
+    # stale (caps 2026-06-16, zero overlap with this odds corpus's 2026-
+    # 06-18+ window) -- substituted espn_boxscores.parquet (event_id ==
+    # this odds corpus's own game_id, exact match, no fuzzy bridge needed).
+    # CONDITIONING FEATURES ONLY -- market is the benchmark, never the prey;
+    # see .claude/rules/no-edge-claims.md.
+    "mlb_market_micro_self_cross": {
+        "sport": "mlb",
+        "atomic_unit": "game",
+        "outcome": "total_runs",
+        "baseline": "total_runs ~ attr_a + attr_b",
+        "pairing": "self_cross",
+        "left_pool": {"static_pool": "mlb_market_micro_asof"},
+        "feature_builder": "mlb_market_micro_totals_asof",
+        "blocklist_attrs": [],
+        "blocklist_pairs": [],
+    },
+    # ---- MLB MARKET-MICROSTRUCTURE x WEATHER/PARK cross (B5 lane) -- same
+    # "game"/total_runs game-grain pairing shape as mlb_weather_park_umpire_
+    # cross. Registered per the task's own instruction even though live
+    # overlap is CURRENTLY ZERO (both odds-corpus dates and weather-corpus
+    # dates verified live, disjoint) -- the builder implements the real
+    # game_pk bridge (probables.parquet's own display-name dialect matches
+    # this odds corpus verbatim) and honestly returns None (NOT_TESTABLE)
+    # until games_current.parquet is refreshed past 2026-06-16 -- see
+    # builders_market_micro.py module docstring.
+    "mlb_market_micro_weather_cross": {
+        "sport": "mlb",
+        "atomic_unit": "game",
+        "outcome": "total_runs",
+        "baseline": "total_runs ~ market_micro_attr + weather_park_attr",
+        "pairing": "cross",
+        "left_pool": {"static_pool": "mlb_market_micro_asof"},
+        "right_pool": {"static_pool": "mlb_weather_park_asof"},
+        "feature_builder": "mlb_market_micro_weather_cross_asof",
+        "blocklist_attrs": [],
+        "blocklist_pairs": [],
+    },
     # ---- TENNIS / SOCCER (task-39b) -----------------------------------
     # Neither sport has a per-entity ATTRIBUTES profile registry wired into
     # THIS factory's grammar yet (their own domains/*/profiles/attribute_
@@ -492,6 +536,12 @@ STATIC_POOLS: Dict[str, List[str]] = {
     # MLB weather x park as-of attrs (B4 lane) -- see builders_weather_park.py.
     "mlb_weather_park_asof": [
         "wind_out_mph_raw", "temp_above_park_norm_asof", "park_runs_factor_asof",
+    ],
+    # MLB market-microstructure conditioning features (B5 lane) -- see
+    # builders_market_micro.py.
+    "mlb_market_micro_asof": [
+        "line_move_velocity_pregame", "line_move_total_abs",
+        "cross_book_divergence_at_close", "time_of_last_move_frac",
     ],
 }
 
