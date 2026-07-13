@@ -274,6 +274,42 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
         "blocklist_attrs": [],
         "blocklist_pairs": [],
     },
+    # ---- MLB SP IN-GAME FATIGUE (B1 lane, 2026-07-13) ----------------------
+    # Realized-state family (velo/spin/extension deltas by pitch count +
+    # TTO index, checkpoint-local -- builders_statcast_fatigue.py) self-crossed
+    # to predict rest_of_appearance_xwoba (this SAME appearance's own pitches
+    # strictly after the checkpoint). Pool is a STATIC_POOL (generator-local,
+    # not domains/mlb/profiles/attribute_registry.py -- see builder docstring)
+    # since none of these 4 attrs exist in that registry yet.
+    "mlb_sp_ingame_fatigue_self_cross": {
+        "sport": "mlb",
+        "atomic_unit": "pitcher_appearance_checkpoint",
+        "outcome": "rest_of_appearance_xwoba",
+        "baseline": "rest_of_appearance_xwoba ~ attr_a + attr_b",
+        "pairing": "self_cross",
+        "left_pool": {"static_pool": "mlb_sp_ingame_fatigue_state"},
+        "feature_builder": "mlb_sp_ingame_fatigue_asof",
+        "blocklist_attrs": [],
+        "blocklist_pairs": [],
+    },
+    # ---- MLB SP FATIGUE STATE-CONDITIONER cross (B1 lane) -- the nba_state_
+    # conditioner pattern (85a8ee80/a0c6da5f): cross a PRIOR-GAMES pregame prior
+    # (woba_tto3_minus_tto1, strictly-prior cross-game expanding split) against
+    # the SAME realized in-game fatigue state family above, to predict
+    # rest_of_appearance_xwoba -- "condition a pregame prior on a realized-
+    # state attr".
+    "mlb_sp_fatigue_state_conditioner": {
+        "sport": "mlb",
+        "atomic_unit": "pitcher_appearance_checkpoint",
+        "outcome": "rest_of_appearance_xwoba",
+        "baseline": "rest_of_appearance_xwoba ~ prior_attr_a + state_attr_b",
+        "pairing": "cross",
+        "left_pool": {"static_pool": "mlb_sp_fatigue_prior"},
+        "right_pool": {"static_pool": "mlb_sp_ingame_fatigue_state"},
+        "feature_builder": "mlb_sp_fatigue_state_conditioner_asof",
+        "blocklist_attrs": [],
+        "blocklist_pairs": [],
+    },
     # ---- TENNIS / SOCCER (task-39b) -----------------------------------
     # Neither sport has a per-entity ATTRIBUTES profile registry wired into
     # THIS factory's grammar yet (their own domains/*/profiles/attribute_
@@ -322,6 +358,14 @@ STATIC_POOLS: Dict[str, List[str]] = {
     "soccer_match_asof": [
         "diff_sot_for_asof", "diff_sot_against_asof", "diff_shots_for_asof", "diff_shots_against_asof",
         "diff_xg_supremacy_asof",  # asof_xg_proxy.parquet, unlock lane (b418cde6)
+    ],
+    # MLB SP in-game fatigue (B1 lane) -- see builders_statcast_fatigue.py.
+    "mlb_sp_ingame_fatigue_state": [
+        "velo_delta_by_pitch_count", "spin_delta_by_pitch_count",
+        "release_extension_delta", "times_through_order",
+    ],
+    "mlb_sp_fatigue_prior": [
+        "woba_tto3_minus_tto1",
     ],
 }
 
