@@ -340,6 +340,7 @@ from scripts.platformkit.interaction_factory import builders_ingame_state as _in
 from scripts.platformkit.interaction_factory import builders_state_conditioner as _statecond  # noqa: E402
 from scripts.platformkit.interaction_factory import builders_statcast_fatigue as _scfatigue  # noqa: E402
 from scripts.platformkit.interaction_factory import builders_statcast_batquality as _scbatq  # noqa: E402
+from scripts.platformkit.interaction_factory import builders_umpire as _umpire  # noqa: E402
 
 build_nba_boxdetail_frame = _t39b.build_nba_boxdetail_frame
 build_mlb_battrack_frame = _t39b.build_mlb_battrack_frame
@@ -370,6 +371,7 @@ _BUILDERS = {
     "mlb_sp_fatigue_state_conditioner_asof": _scfatigue._mlb_sp_fatigue_state_conditioner_builder,   # B1
     "mlb_batquality_asof": _scbatq._mlb_batquality_self_cross_builder,   # B2
     "mlb_batquality_state_conditioner_asof": _scbatq._mlb_batquality_state_conditioner_builder,   # B2
+    "mlb_umpire_totals_asof": _umpire._mlb_umpire_asof_builder,   # B3
 }
 
 
