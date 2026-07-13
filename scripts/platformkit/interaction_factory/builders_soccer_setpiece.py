@@ -231,12 +231,15 @@ def _soccer_setpiece_builder(attrs: List[str], tpl: Dict[str, Any]) -> Optional[
                                columns=["event_id", "date", "div", "season", "home_team", "away_team", "fthg", "ftag"])
     spine = build_soccer_setpiece_spine(match_meta, matches[matches["season"] == 2015], _EVENTS_DIR)
     if spine.empty:
-        return {"frame": pd.DataFrame(), "cluster": "div", "corpus": _SETPIECE_CORPUS, "kind": "logit",
+        return {"frame": pd.DataFrame(), "cluster": "event_id", "corpus": _SETPIECE_CORPUS, "kind": "logit",
                 "insufficient_train_history": True,
                 "train_note": "0 StatsBomb matches bridged to matches.parquet via the team-name "
                               "join key + (date, div) -- honest coverage gap, not a code bug."}
     frame = build_soccer_setpiece_match_frame(matches, spine, attrs)
-    return {"frame": frame, "cluster": "div", "corpus": _SETPIECE_CORPUS, "kind": "logit"}
+    # Cluster on event_id (match grain, nba_boxdetail's game_id precedent), NOT
+    # "div": the StatsBomb bridge covers exactly 4 divs (E0/SP1/I1/F1), below
+    # runner.MIN_CLUSTERS=5 -- div-clustering made every candidate NOT_TESTABLE.
+    return {"frame": frame, "cluster": "event_id", "corpus": _SETPIECE_CORPUS, "kind": "logit"}
 
 
 __all__ = [
