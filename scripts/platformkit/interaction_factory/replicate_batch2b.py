@@ -36,6 +36,7 @@ from scripts.platformkit.combo.fwer_budget import DEFAULT_EPS, eps_eff
 from scripts.platformkit.interaction_factory import builders_task39b as T39B
 from scripts.platformkit.interaction_factory import generator as GEN
 from scripts.platformkit.interaction_factory import runner as IFR
+from scripts.platformkit.clv_ledger_io import ledger_lock
 from scripts.platformkit.io_atomic import append_jsonl_atomic, write_json_atomic
 
 TEMPLATE_IDS = ("mlb_pa_attr_x_archetype", "tennis_match_asof_self_cross")
@@ -197,7 +198,8 @@ def replicate(*, ledger_path: Optional[Path] = None, mlb_year: str = MLB_REPL_YE
         }
         if cand.entity_class is not None:
             row["entity_class"] = cand.entity_class
-        append_jsonl_atomic(ledger_path, row)
+        with ledger_lock(ledger_path):  # judge NIT a1eff899: same-ledger writers must share the lock
+            append_jsonl_atomic(ledger_path, row)
         out_rows.append(row)
         verdicts[cand.candidate_id] = {"verdict": v, "corpus": corpus, "effect": row["effect"],
                                         "p": row["p"], "n": row["n"], "computed_at": row["computed_at"]}

@@ -43,6 +43,7 @@ from scripts.platformkit.interaction_factory.replicate_batch2b import (
     TEMPLATE_IDS, _candidate_from_row, verdict_for, _upsert_verdicts, _queue_promotion,
     ALPHA, K_DECLARED,
 )
+from scripts.platformkit.clv_ledger_io import ledger_lock
 from scripts.platformkit.io_atomic import append_jsonl_atomic
 
 TENNIS_TEMPLATE = "tennis_match_asof_self_cross"
@@ -121,7 +122,8 @@ def replicate(*, ledger_path: Path = None) -> List[Dict[str, Any]]:
             "replication_of": b0["candidate_id"],
             "discovery_effect": b0["effect"], "discovery_p": b0["p"], "discovery_n": b0["n"],
         }
-        append_jsonl_atomic(ledger_path, row)
+        with ledger_lock(ledger_path):  # judge NIT a1eff899: same-ledger writers must share the lock
+            append_jsonl_atomic(ledger_path, row)
         out_rows.append(row)
         verdicts[cand.candidate_id] = {"verdict": row["verdict"], "corpus": corpus, "effect": row["effect"],
                                         "p": row["p"], "n": row["n"], "computed_at": row["computed_at"]}
