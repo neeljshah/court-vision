@@ -26,9 +26,13 @@ survivor".
 
 FAMILY_WORKERS maps template_id -> the worker's replicate(). nba_shot_attr_x_
 state is now registered too (replicate_nba_2026.py, 2026-07-13 -- season-based
-second corpus, same shape as replicate_survivors.py's sibling template). A
-survivor family with no registered worker is reported NO_WORKER_REGISTERED --
-an honest gap, never a guessed generic fit.
+second corpus, same shape as replicate_survivors.py's sibling template).
+nba_form_self_cross + nba_form_state_conditioner are registered too
+(replicate_nba_form_2026.py, 2026-07-13 -- STEP 0 premise check found no
+disjoint season corpus exists for this family, so both templates share ONE
+worker call that records REPLICATION_BLOCKED, same shape as replicate_
+batch2b.py's tennis path). A survivor family with no registered worker is
+reported NO_WORKER_REGISTERED -- an honest gap, never a guessed generic fit.
 
 Each worker's replicate() reprocesses its WHOLE family every call (no
 partial-candidate-list API) -- it re-selects every original SURVIVES row
@@ -77,12 +81,13 @@ from scripts.platformkit.interaction_factory import runner as IFR
 from scripts.platformkit.interaction_factory import replicate_survivors as RS
 from scripts.platformkit.interaction_factory import replicate_batch2b as B2B
 from scripts.platformkit.interaction_factory import replicate_nba_2026 as RN26
+from scripts.platformkit.interaction_factory import replicate_nba_form_2026 as RNF26
 
 STATE_KEY = "M21_replication_cadence"
 MAX_PER_TICK = 5
 
 # template_id -> the existing worker's replicate(ledger_path=...) for that
-# family. Both workers accept `ledger_path` as an optional kwarg with their
+# family. Every worker accepts `ledger_path` as an optional kwarg with its
 # own default for everything else (season / mlb_year) -- this job never
 # overrides those, same corpora a human CLI run would pick.
 FAMILY_WORKERS: Dict[str, Callable[..., List[Dict[str, Any]]]] = {
@@ -90,6 +95,8 @@ FAMILY_WORKERS: Dict[str, Callable[..., List[Dict[str, Any]]]] = {
     "mlb_pa_attr_x_archetype": B2B.replicate,
     "tennis_match_asof_self_cross": B2B.replicate,
     RN26.TEMPLATE_ID: RN26.replicate,
+    RNF26.TEMPLATE_IDS[0]: RNF26.replicate,
+    RNF26.TEMPLATE_IDS[1]: RNF26.replicate,
 }
 
 

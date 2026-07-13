@@ -504,6 +504,48 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
         "blocklist_attrs": [],
         "blocklist_pairs": [],
     },
+    # ---- MLB PUBLIC-SPLITS CROWD conditioning features (B6 lane, 2026-07-13) --
+    # public_bet_pct_home / public_money_pct_home / bet_money_divergence /
+    # public_line_gap -- computed ONLY from Action Network's own pregame
+    # snapshots (fetched_at <= start_time, the leak trap) -- see builders_
+    # public_splits.py module docstring for the STEP0 disk-premise findings,
+    # incl. a DAY-BOUNDARY LANDMINE caught live: a naive UTC-date bridge
+    # (the convention builders_market_micro._bridge_to_game_pk uses) picks
+    # the WRONG game whenever the same two teams play on back-to-back days
+    # (a normal MLB series) -- fixed via a home-team-local-timezone bridge
+    # (56/59 corpus games resolve to a unique STATUS_FINAL espn_boxscores
+    # event, 0 duplicate matches). CONDITIONING FEATURES ONLY -- market/
+    # crowd data is the benchmark, never the prey; see .claude/rules/
+    # no-edge-claims.md (no "sharp" language in any attr name).
+    "mlb_public_splits_self_cross": {
+        "sport": "mlb",
+        "atomic_unit": "game",
+        "outcome": "home_win",
+        "baseline": "home_win ~ attr_a + attr_b",
+        "pairing": "self_cross",
+        "left_pool": {"static_pool": "mlb_public_splits_asof"},
+        "feature_builder": "mlb_public_splits_totals_asof",
+        "blocklist_attrs": [],
+        "blocklist_pairs": [],
+    },
+    # ---- MLB PUBLIC-SPLITS x MARKET-MICROSTRUCTURE cross (B6 lane) -- same
+    # corpus window (line_history 2026-06-18+) and the same espn_boxscores
+    # outcome join B5 uses; live overlap verified 56/56 (every bridged
+    # public-splits game is also in B5's market-micro corpus) -- registered
+    # live-testable today, not NOT_TESTABLE. See builders_public_splits.py
+    # module docstring for the bridge details.
+    "mlb_public_splits_market_micro_cross": {
+        "sport": "mlb",
+        "atomic_unit": "game",
+        "outcome": "home_win",
+        "baseline": "home_win ~ public_splits_attr + market_micro_attr",
+        "pairing": "cross",
+        "left_pool": {"static_pool": "mlb_public_splits_asof"},
+        "right_pool": {"static_pool": "mlb_market_micro_asof"},
+        "feature_builder": "mlb_public_splits_market_micro_cross_asof",
+        "blocklist_attrs": [],
+        "blocklist_pairs": [],
+    },
     # ---- TENNIS / SOCCER (task-39b) -----------------------------------
     # Neither sport has a per-entity ATTRIBUTES profile registry wired into
     # THIS factory's grammar yet (their own domains/*/profiles/attribute_
@@ -588,6 +630,12 @@ STATIC_POOLS: Dict[str, List[str]] = {
     "mlb_market_micro_asof": [
         "line_move_velocity_pregame", "line_move_total_abs",
         "cross_book_divergence_at_close", "time_of_last_move_frac",
+    ],
+    # MLB public-splits crowd conditioning features (B6 lane) -- see
+    # builders_public_splits.py.
+    "mlb_public_splits_asof": [
+        "public_bet_pct_home", "public_money_pct_home",
+        "bet_money_divergence", "public_line_gap",
     ],
 }
 
