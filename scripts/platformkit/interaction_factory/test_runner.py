@@ -18,6 +18,7 @@ Run:
 from __future__ import annotations
 
 import json
+import threading
 
 import numpy as np
 import pandas as pd
@@ -226,6 +227,45 @@ def test_cum_k_math_only_real_tests_advance(tmp_path, monkeypatch):
     assert nt_ids <= more_ids  # non-terminal NOT_TESTABLE candidates re-enumerate
     assert all(r["verdict"] == RUN.NOT_TESTABLE for r in more)
     assert all(r["cum_K"] == 1 for r in more)  # no real test ran this batch
+
+
+def test_run_batch_concurrent_appends_no_dup_rows_sequential_cum_k(tmp_path, monkeypatch):
+    """2026-07-13 audit: two writers each reading a stale ledger before either
+    appended produced 2 duplicate (candidate_id, verdict, cum_K) rows in
+    production (interaction_factory_ledger.jsonl). run_batch now holds
+    ledger_lock across read+select+fit+append, so two threads racing the same
+    template/ledger must land zero duplicate candidate_ids and a strictly
+    sequential cum_K (no repeats, no gaps)."""
+    ledger = tmp_path / "ledger.jsonl"
+    tid = "nba_shot_offense_x_offense"  # 8-attr self_cross pool -> C(8,2)=28 candidates
+
+    monkeypatch.setitem(RUN._BUILDERS, "nba_player_offense_asof",
+                        lambda attrs, tpl: {"frame": pd.DataFrame(), "cluster": "player_id",
+                                            "corpus": "syn", "kind": "ols"})
+    # Every candidate is a real, fast, deterministic test (-> NULL) so every
+    # appended row advances cum_K, maximizing the exercised race window.
+    monkeypatch.setattr(RUN, "_fit_candidate",
+                        lambda build, cand: {"effect": 0.01, "p": 0.9, "n": 1000, "term": "fa:fb"})
+
+    errors = []
+
+    def worker():
+        try:
+            RUN.run_batch(tid, 15, ledger_path=ledger)
+        except Exception as exc:  # noqa: BLE001 -- surface any thread failure to the test
+            errors.append(exc)
+
+    threads = [threading.Thread(target=worker) for _ in range(2)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    assert not errors, errors
+    rows = [json.loads(l) for l in ledger.read_text().splitlines() if l.strip()]
+    ids = [r["candidate_id"] for r in rows]
+    assert len(ids) == len(set(ids)), "duplicate candidate_id rows after concurrent run_batch"
+    assert sorted(r["cum_K"] for r in rows) == list(range(1, len(rows) + 1))
 
 
 def test_task39b_builders_are_registered():
