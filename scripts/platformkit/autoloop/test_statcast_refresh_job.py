@@ -50,7 +50,7 @@ def test_fresh_parquet_skips_no_run_call(tmp_path):
     p = _touch_parquet(tmp_path, age_h=1.0)
     calls = []
     out = SR.run_statcast_refresh(
-        parquet_path=p, run_fn=lambda: (calls.append("run"), _fake_result())[1])
+        stamp_path=p, run_fn=lambda: (calls.append("run"), _fake_result())[1])
     assert out["status"] == "skipped"
     assert out["age_h"] == pytest.approx(1.0, abs=0.05)
     assert calls == []
@@ -60,7 +60,7 @@ def test_stale_parquet_runs_and_passes_result_through(tmp_path):
     p = _touch_parquet(tmp_path, age_h=30.0)
     calls = []
     out = SR.run_statcast_refresh(
-        parquet_path=p, run_fn=lambda: (calls.append("run"), _fake_result())[1])
+        stamp_path=p, run_fn=lambda: (calls.append("run"), _fake_result())[1])
     assert out["status"] == "ran"
     assert calls == ["run"]
     assert out["season"] == 2026
@@ -71,7 +71,7 @@ def test_missing_parquet_treated_as_due(tmp_path):
     p = tmp_path / "savant_full__2026.parquet"
     calls = []
     out = SR.run_statcast_refresh(
-        parquet_path=p, run_fn=lambda: (calls.append("run"), _fake_result())[1])
+        stamp_path=p, run_fn=lambda: (calls.append("run"), _fake_result())[1])
     assert out["status"] == "ran"
     assert out["age_h"] is None
     assert calls == ["run"]
@@ -80,7 +80,7 @@ def test_missing_parquet_treated_as_due(tmp_path):
 def test_partial_capped_status_written_honestly_not_an_error(tmp_path):
     p = tmp_path / "savant_full__2026.parquet"
     out = SR.run_statcast_refresh(
-        parquet_path=p, run_fn=lambda: _fake_result(status="PARTIAL_CAPPED"))
+        stamp_path=p, run_fn=lambda: _fake_result(status="PARTIAL_CAPPED"))
     assert out["status"] == "ran"
     assert out["parquet_status"] == "PARTIAL_CAPPED"
 
@@ -92,7 +92,7 @@ def test_run_raise_propagates_uncaught(tmp_path):
         raise RuntimeError("savant_backfill boom")
 
     with pytest.raises(RuntimeError, match="savant_backfill boom"):
-        SR.run_statcast_refresh(parquet_path=p, run_fn=_boom)
+        SR.run_statcast_refresh(stamp_path=p, run_fn=_boom)
     # stale parquet from before the raise is untouched -- next cycle retries
     assert p.read_text(encoding="utf-8") == "x"
 
@@ -102,7 +102,7 @@ def test_watermarks_param_accepted_and_ignored(tmp_path):
     is accepted positionally but never read or mutated."""
     p = _touch_parquet(tmp_path, age_h=1.0)
     watermarks = {"unrelated": "untouched"}
-    out = SR.run_statcast_refresh(watermarks, parquet_path=p, run_fn=lambda: _fake_result())
+    out = SR.run_statcast_refresh(watermarks, stamp_path=p, run_fn=lambda: _fake_result())
     assert out["status"] == "skipped"
     assert watermarks == {"unrelated": "untouched"}
 
@@ -155,3 +155,27 @@ def test_registered_in_job_table():
     assert row[1] == "scripts.platformkit.autoloop.statcast_refresh_job"
     assert row[2] == "run_statcast_refresh"
     assert "watermarks" in row[3]
+
+
+def test_failed_run_leaves_stamp_stale_so_next_tick_retries(tmp_path):
+    # Opus judge 2026-07-13 BLOCKER: savant_backfill rewrites the parquet even
+    # on FAILED_CONSECUTIVE, so a parquet-mtime watermark re-arms without
+    # retrying. The gate is now the job's OWN stamp, written only on success.
+    p = tmp_path / "statcast_refresh_latest.json"
+    out1 = SR.run_statcast_refresh(
+        stamp_path=p, run_fn=lambda: _fake_result(status="FAILED_CONSECUTIVE"))
+    assert out1["status"] == "ran" and out1["stamped"] is False
+    assert not p.exists()  # no stamp -> still due
+    out2 = SR.run_statcast_refresh(
+        stamp_path=p, run_fn=lambda: _fake_result(status="OK"))
+    assert out2["status"] == "ran" and out2["stamped"] is True  # RETRIED
+    assert p.exists()
+    out3 = SR.run_statcast_refresh(stamp_path=p, run_fn=lambda: _fake_result())
+    assert out3["status"] == "skipped"  # success stamp now gates
+
+
+def test_partial_capped_does_not_stamp(tmp_path):
+    p = tmp_path / "statcast_refresh_latest.json"
+    out = SR.run_statcast_refresh(
+        stamp_path=p, run_fn=lambda: _fake_result(status="PARTIAL_CAPPED"))
+    assert out["stamped"] is False and not p.exists()  # continues next tick
