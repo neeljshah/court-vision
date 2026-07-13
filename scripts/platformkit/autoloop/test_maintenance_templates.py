@@ -168,6 +168,7 @@ _GOLDEN_KEYS = {
     "milb_refresh", "benchmark_refresh", "clv_refresh", "calibration_refresh",
     "log_reaper", "eval_gate", "pregame_benchmark", "statcast_refresh",
     "replication_cadence", "false_discovery_accounting", "mlb_results_refresh",
+    "weekly_scoreboard_cadence",
 }
 
 
@@ -202,7 +203,9 @@ def test_run_all_isolates_one_failing_job(tmp_path):
         mock.patch("scripts.platformkit.autoloop.false_discovery_job.run_false_discovery_accounting",
                    return_value={"status": "ran", "dates_appended": []}), \
         mock.patch("scripts.platformkit.autoloop.mlb_results_refresh_job.run_mlb_results_refresh",
-                   return_value={"status": "skipped", "age_h": 1.0}):
+                   return_value={"status": "skipped", "age_h": 1.0}), \
+        mock.patch("scripts.platformkit.autoloop.scoreboard_job.run_scoreboard",
+                   return_value={"status": "skipped", "week": "2026-W28"}):
         out = MT.run_all({}, queue_fn=lambda row: None)
     assert out["validate_new_stores"]["status"] == "error"
     assert out["weighting_refresh"] == {"sports_refreshed": []}
@@ -220,6 +223,7 @@ def test_run_all_isolates_one_failing_job(tmp_path):
     assert out["replication_cadence"] == {"status": "no_pending"}
     assert out["false_discovery_accounting"] == {"status": "ran", "dates_appended": []}
     assert out["mlb_results_refresh"] == {"status": "skipped", "age_h": 1.0}
+    assert out["weekly_scoreboard_cadence"] == {"status": "skipped", "week": "2026-W28"}
     # golden key list: table-driven refactor must not add/drop/rename a job key
     assert set(out.keys()) == _GOLDEN_KEYS
 

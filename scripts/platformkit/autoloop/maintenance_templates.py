@@ -94,6 +94,14 @@ mistaken for success (no stamp); a raised ingest exception (e.g. transient curl
 network failure) is caught, not re-raised, and also leaves no stamp -- both classes
 retry next tick.
 
+Job #24, weekly_scoreboard_cadence (scripts.platformkit.autoloop.scoreboard_job, M24),
+renders the current ISO week's one-page scoreboard (scripts.platformkit.reports.
+weekly_scoreboard) once per week -- watermark is the last-rendered week LABEL
+(watermarks[STATE_KEY]["week"]), not a file mtime; a new ISO week always re-arms it
+regardless of same-week reruns, which write_week() itself already renders as an
+idempotent overwrite. A raise from write_week() propagates uncaught, isolated by
+this module's own run_all try/except, same as every other job.
+
 run_all() dispatches every job through one table (key, module path, callable
 name, arg names) instead of a hand-written try/except per job: each entry is
 imported and called fresh every cycle (never cached at module import time) so
@@ -316,6 +324,10 @@ _JOB_TABLE: List[Tuple[str, str, str, Tuple[str, ...]]] = [
     # M23 cadence-gated MLB current-results parquet refresh (refresh only; own-success watermark)
     ("mlb_results_refresh", "scripts.platformkit.autoloop.mlb_results_refresh_job",
      "run_mlb_results_refresh", ("watermarks",)),
+    # M24 weekly cadence: render the current ISO week's one-page scoreboard (own-success
+    # watermark keyed by week label; a new week always re-arms it)
+    ("weekly_scoreboard_cadence", "scripts.platformkit.autoloop.scoreboard_job",
+     "run_scoreboard", ("watermarks",)),
 ]
 
 
