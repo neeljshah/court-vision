@@ -119,25 +119,35 @@ def _devig_home_prob(home_dec: float, away_dec: float) -> Optional[float]:
 def _close_prob(sport: str, home: str, away: str, date_str: str) -> Optional[float]:
     """Best-effort devigged home win prob from the captured close, else None.
 
-    Routes through the existing resolver (scripts.platformkit.grade_paper_close
-    .close_from_store) rather than a new direct join -- this call degrades to
-    None on any lookup miss (unmapped team-name form, no captured line for that
-    date), which is the module's own documented, non-fabricating contract.
+    Tries the existing resolver first (scripts.platformkit.grade_paper_close
+    .close_from_store -- line_history captures, 2026-07-10 onward on this
+    clone). Falls back to scripts.platformkit.omni.close_lookup.pregame_close
+    (Kalshi/Polymarket settled-market price series, which reaches back to
+    2023 -- see close_lookup module docstring for the close definition and
+    devig convention). Both paths degrade to None on any miss; never a new
+    direct id join (close_lookup itself routes team resolution through the
+    existing team_resolver.canonical alias tables).
     """
     try:
         from scripts.platformkit.grade_paper_close import close_from_store
-    except Exception:  # noqa: BLE001
-        return None
-    bet = {"sport": sport, "home": home, "away": away,
-           "matchup": f"{away}@{home}", "game_date": date_str}
-    try:
+        bet = {"sport": sport, "home": home, "away": away,
+               "matchup": f"{away}@{home}", "game_date": date_str}
         res = close_from_store(bet)
+        if res is not None:
+            home_dec, away_dec, _is_true, _bh, _ba = res
+            p = _devig_home_prob(home_dec, away_dec)
+            if p is not None:
+                return p
+    except Exception:  # noqa: BLE001
+        pass
+    try:
+        from scripts.platformkit.omni.close_lookup import pregame_close
+        res2 = pregame_close(sport, date_str, home, away)
     except Exception:  # noqa: BLE001
         return None
-    if res is None:
+    if res2 is None:
         return None
-    home_dec, away_dec, _is_true, _bh, _ba = res
-    return _devig_home_prob(home_dec, away_dec)
+    return res2.get("prob_home_devig")
 
 
 # ---------------------------------------------------------------------------
