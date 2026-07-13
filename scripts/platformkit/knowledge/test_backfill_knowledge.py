@@ -76,6 +76,32 @@ def test_parse_mechanisms_labels_verbatim_no_invented_numerics(tmp_path):
     assert r3["n"] is None
 
 
+def test_parse_mechanisms_heading_label_fallback(tmp_path):
+    md_path = tmp_path / "mechanisms.md"
+    md_path.write_text(
+        "## Validated 2026-07-11 (fixture)\n\n"
+        "### 42. Fixture heading-labelled mechanism -- CONFIRMED_LOCAL "
+        "(2026-07-11 update, was PROVISIONAL)\n"
+        "- **claim**: fixture claim with the label in the heading only.\n"
+        "- **measured LOCAL magnitude**: effect 0.5, n=100.\n",
+        encoding="ascii")
+    rows = bk.parse_mechanisms(md_path, "fixture_sport")
+    assert len(rows) == 1
+    r = rows[0]
+    assert r["label"] == "CONFIRMED_LOCAL"  # verbatim token, parenthetical excluded
+    assert r["source"] == "mechanisms.md#42"
+    assert r["effect"] == 0.5
+    assert r["n"] == 100
+    # status line still wins when both forms are present (fallback fires only
+    # when no status line exists).
+    md_path.write_text(
+        "### 1. Fixture -- LOCAL NULL\n"
+        "- **status**: REJECTED (NULL_LOCAL) -- fixture.\n",
+        encoding="ascii")
+    rows = bk.parse_mechanisms(md_path, "fixture_sport")
+    assert rows[0]["label"] == "REJECTED (NULL_LOCAL) -- fixture."
+
+
 def test_parse_mechanisms_missing_file_returns_empty(tmp_path):
     assert bk.parse_mechanisms(tmp_path / "absent.md", "fixture_sport") == []
 
