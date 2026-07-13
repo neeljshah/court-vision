@@ -63,6 +63,7 @@ _NEW_COLS: Dict[str, str] = {
     "on_2b": "base-out state x contact type (GB/FB)",
     "on_3b": "base-out state x contact type (GB/FB)",
     "launch_angle": "launch-angle tightness x park factor",
+    "release_extension": "SP in-game fatigue deltas (mlb_sp_ingame_fatigue_* templates)",
     "bb_type": "base-out state x contact type (GB/FB)",  # GB/FB label
     "description": "premise-only: real per-pitch S/B/X sub-code (not wired to a "
                     "hypothesis this pass)",
