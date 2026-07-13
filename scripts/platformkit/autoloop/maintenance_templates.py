@@ -85,6 +85,15 @@ backfills one row per completed calendar date in the interaction-factory ledger
 within_noise_floor) into its OWN false_discovery_ledger.jsonl -- read-only over
 the verdict ledger, never writes it; own-success watermark (idempotent per date).
 
+Job #23, mlb_results_refresh (scripts.platformkit.autoloop.mlb_results_refresh_job,
+M23), cadence-gated refresh of data/domains/mlb/games_current.parquet (2022..present
+FINAL MLB results) -- found 27 days stale with zero freshness REDs, no daemon caller
+existed. Calls domains.mlb.ingest_current.build_current() directly (>=24h since this
+job's own success stamp); row count checked before/after so a shrink is never
+mistaken for success (no stamp); a raised ingest exception (e.g. transient curl
+network failure) is caught, not re-raised, and also leaves no stamp -- both classes
+retry next tick.
+
 run_all() dispatches every job through one table (key, module path, callable
 name, arg names) instead of a hand-written try/except per job: each entry is
 imported and called fresh every cycle (never cached at module import time) so
@@ -304,6 +313,9 @@ _JOB_TABLE: List[Tuple[str, str, str, Tuple[str, ...]]] = [
     # M22 nightly PREREG R1/R2 false-discovery accounting (own ledger; read-only over the verdict ledger)
     ("false_discovery_accounting", "scripts.platformkit.autoloop.false_discovery_job",
      "run_false_discovery_accounting", ("watermarks",)),
+    # M23 cadence-gated MLB current-results parquet refresh (refresh only; own-success watermark)
+    ("mlb_results_refresh", "scripts.platformkit.autoloop.mlb_results_refresh_job",
+     "run_mlb_results_refresh", ("watermarks",)),
 ]
 
 
