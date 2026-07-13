@@ -72,6 +72,12 @@ the CLV reconcile + scoreboard ops artifacts once the newest clv_reconcile_*.jso
 is >24h stale (they are hand/CLI-run only per freshness_sla.py, found ~114h stale).
 Refresh only -- same reconciler/scoreboard entrypoints a human would run by hand.
 
+Job #21, replication_cadence (scripts.platformkit.autoloop.replication_job, M21),
+runs the existing replicate_survivors.py / replicate_batch2b.py workers for any
+interaction-factory gate survivor (SURVIVES_PREREG_PROVISIONAL) that carries no
+replication row yet, bounded per tick; own-success watermark (no age gate --
+rescans the ledger fresh every tick).
+
 run_all() dispatches every job through one table (key, module path, callable
 name, arg names) instead of a hand-written try/except per job: each entry is
 imported and called fresh every cycle (never cached at module import time) so
@@ -284,6 +290,10 @@ _JOB_TABLE: List[Tuple[str, str, str, Tuple[str, ...]]] = [
     # M20 cadence-gated Savant/Statcast season-parquet cache refresh (refresh only; parquet-mtime watermark)
     ("statcast_refresh", "scripts.platformkit.autoloop.statcast_refresh_job",
      "run_statcast_refresh", ("watermarks",)),
+    # M21 auto-replication cadence: gate survivor -> 2nd-corpus replication via the existing
+    # replicate_survivors/replicate_batch2b workers (own-success watermark; no age gate)
+    ("replication_cadence", "scripts.platformkit.autoloop.replication_job",
+     "run_replication_cadence", ("watermarks",)),
 ]
 
 
