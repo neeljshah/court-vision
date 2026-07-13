@@ -154,6 +154,32 @@ def test_still_no_close_row_stays_unmeasurable_either_tier():
     assert ch["n_measurable_proxy"] == 0
 
 
+# --------------------------------------------------------------------------------------- #
+# Quarantine adjudication: EXCLUDE-FROM-AGGREGATES rows dropped + counted, not vanished.    #
+# --------------------------------------------------------------------------------------- #
+def test_quarantined_row_excluded_and_counted(monkeypatch):
+    monkeypatch.setattr(S, "quarantined_bet_ids", lambda: {"bad1"})
+    led = [
+        _row("bad1", "moneyline", clv_status="true_close", clv_pct=2.0,
+             unit_result=1.0, closing=2.0),
+        _row("good1", "moneyline", clv_status="true_close", clv_pct=1.0,
+             unit_result=1.0, closing=2.0),
+    ]
+    b = S.scoreboard(led)
+    assert b["total_settled"] == 1           # quarantined row dropped
+    assert b["n_excluded_quarantined"] == 1   # but counted, never silently vanished
+    assert b["channels"]["moneyline"]["n_settled"] == 1
+
+
+def test_no_quarantine_hits_is_unchanged_behavior(monkeypatch):
+    monkeypatch.setattr(S, "quarantined_bet_ids", lambda: set())
+    led = [_row("m1", "moneyline", clv_status="true_close", clv_pct=1.0,
+                unit_result=1.0, closing=2.0)]
+    b = S.scoreboard(led)
+    assert b["n_excluded_quarantined"] == 0
+    assert b["total_settled"] == 1
+
+
 def test_render_shows_proxy_line_when_present():
     led = [
         {"bet_id": "px2", "channel": "paper_ingame", "status": "settled",
