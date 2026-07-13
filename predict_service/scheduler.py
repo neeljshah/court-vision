@@ -165,6 +165,38 @@ def run_cycle(sports: Optional[List[str]] = None, *,
     return payload
 
 
+def _write_start_beat(out_dir: Optional[Union[str, Path]] = None,
+                      now_fn: Optional[NowFn] = None) -> None:
+    """Stamp an immediate boot heartbeat BEFORE the first cycle runs (m13
+    two-layer-HB pattern, memory project_m13_flap_fix_2026_06_26).
+
+    A freshly restarted process otherwise inherits whatever updated_at a prior
+    crash left in the heartbeat file; if cycle 1 is slow (e.g. a provider 429
+    boot storm), the supervisor's HEARTBEAT readiness probe judges that stale
+    timestamp against fresh_sec and kills the process before it ever completes
+    a cycle. Stamping updated_at=now here (same payload shape, prior per-sport
+    data preserved, only the note marks it a boot-beat) gives the first cycle
+    the full fresh_sec window. run_cycle()'s own beat then supersedes this on
+    completion. Never raises.
+    """
+    now_fn = now_fn or time.time
+    prior = read_heartbeat(out_dir)
+    payload = dict(prior) if isinstance(prior, dict) else {}
+    payload.update({
+        "updated_at": float(now_fn()),
+        "cycle_count": int(payload.get("cycle_count", 0) or 0),
+        "sports_run": payload.get("sports_run", []) or [],
+        "ok": int(payload.get("ok", 0) or 0),
+        "errors": int(payload.get("errors", 0) or 0),
+        "sports": payload.get("sports", {}) or {},
+        "note": "boot-beat: process started, first cycle not yet complete (no $ edge)",
+    })
+    try:
+        _atomic_write_json(heartbeat_path(out_dir), payload)
+    except Exception as exc:  # noqa: BLE001 -- a failed boot beat must not crash startup
+        logger.debug("scheduler: start beat write failed: %s", exc)
+
+
 class Clock:
     """Injectable wall clock. Default uses real time; tests pass a fake one.
 
@@ -201,6 +233,7 @@ def serve_forever(interval: int = DEFAULT_INTERVAL, *,
     tests (None = run forever). Returns the number of ticks executed.
     """
     clock = clock or Clock()
+    _write_start_beat(out_dir, now_fn=clock.now)
     last_run: Dict[str, float] = {}
     ticks = 0
     while max_ticks is None or ticks < max_ticks:
