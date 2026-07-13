@@ -207,6 +207,7 @@ teflon-quant-dashboard/
 # -- Model training runs (large artifacts, re-generable) ----------------------
 models/
 !src/models/
+!scripts/platformkit/models/
 src/detection/data/images/
 
 # -- Outreach / personal contact data (sensitive) -----------------------------
@@ -339,6 +340,7 @@ data/*.html
 /SCOUT_*.txt
 # -- nested throwaway scripts (underscore-prefixed) under any scripts/ subdir ---
 scripts/**/_*
+!scripts/platformkit/models/__init__.py
 # -- internal audit/research churn — keep LOCAL (matches the curate-only posture:
 #    only 5 of ~243 _audits docs were ever published; the rest are internal brain,
 #    like vault/ and .planning/). Already-tracked audits stay tracked.
