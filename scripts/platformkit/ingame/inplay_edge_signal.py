@@ -79,6 +79,10 @@ def devig_home_price(yes_home_prob: float,
     if pa is None or pa <= 0.0 or pa >= 1.0:
         pa = 1.0 - ph
     try:
+        if (ph + pa) < 1.0 - 1e-9:
+            # booksum<=1: devig_twoway now normalizes instead of raising
+            # (634fdd1a) -- a degenerate pair stays VOID here, never a signal.
+            return None
         dh, da = 1.0 / ph, 1.0 / pa  # implied prob -> decimal odds
         fair_h, _fair_a = _shop.devig_twoway(dh, da)
     except Exception:  # noqa: BLE001 -- a degenerate pair is VOID, not a crash

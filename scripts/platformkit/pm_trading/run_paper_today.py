@@ -227,6 +227,10 @@ def _log_unpriced(row, sport, matchup, home, away, meta, close, prob, selection,
                 probs, _z = shin_devig_decimal([close[0], draw, close[1]])
                 fh, fa = probs[0], probs[2]  # order matches [home, draw, away]
             else:
+                if (1.0 / close[0] + 1.0 / close[1]) < 1.0 - 1e-9:
+                    # booksum<=1: devig_twoway now normalizes instead of raising
+                    # (634fdd1a); a degenerate proxy must keep fair=None as before.
+                    raise ValueError("degenerate close pair")
                 fh, fa = devig_twoway(close[0], close[1])
             proxy["fair_close_prob"] = round(fh if side == "home" else fa, 6)
         except Exception:  # noqa: BLE001 -- arb/degenerate proxy -> fair stays None

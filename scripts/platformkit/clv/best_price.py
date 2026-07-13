@@ -54,9 +54,14 @@ def _both(prices: Dict[str, float], a: str, b: str) -> Optional[Tuple[float, flo
 
 
 def _safe_devig(pa: float, pb: float) -> Optional[Tuple[float, float]]:
-    """Shin devig that NEVER raises. None when the input cannot be devigged (e.g. a
-    sub-1.0 booksum = a stale/arb quote that the solver rejects)."""
+    """Shin devig that NEVER raises. None when the input cannot be devigged: a
+    sub-1.0 booksum (stale/arb quote) must yield NO fair price here -- since
+    634fdd1a devig_twoway normalizes instead of raising, the reject is explicit
+    (opus judge 2026-07-12 BLOCKER 2: a synthesized fair from a broken sharp
+    quote would mint phantom is_value/expected_clv_pct rows)."""
     try:
+        if (1.0 / pa + 1.0 / pb) < 1.0 - 1e-9:
+            return None  # strict arb only; booksum==1.0 is an honest vig-free fair
         fa, fb = devig_twoway(pa, pb)
         return float(fa), float(fb)
     except Exception:  # noqa: BLE001 -- a bad quote must not crash the scan
