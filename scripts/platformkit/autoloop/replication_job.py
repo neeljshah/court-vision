@@ -24,10 +24,11 @@ replicate_* worker ever writes that verdict), so scanning for that verdict
 with no matching replication_of elsewhere is exactly "un-replicated
 survivor".
 
-FAMILY_WORKERS maps template_id -> the worker's replicate(). A survivor
-family with no registered worker (e.g. nba_shot_attr_x_state, which has no
-replicate_*.py yet) is reported NO_WORKER_REGISTERED -- an honest gap,
-never a guessed generic fit.
+FAMILY_WORKERS maps template_id -> the worker's replicate(). nba_shot_attr_x_
+state is now registered too (replicate_nba_2026.py, 2026-07-13 -- season-based
+second corpus, same shape as replicate_survivors.py's sibling template). A
+survivor family with no registered worker is reported NO_WORKER_REGISTERED --
+an honest gap, never a guessed generic fit.
 
 Each worker's replicate() reprocesses its WHOLE family every call (no
 partial-candidate-list API) -- it re-selects every original SURVIVES row
@@ -75,6 +76,7 @@ from typing import Any, Callable, Dict, List, Optional
 from scripts.platformkit.interaction_factory import runner as IFR
 from scripts.platformkit.interaction_factory import replicate_survivors as RS
 from scripts.platformkit.interaction_factory import replicate_batch2b as B2B
+from scripts.platformkit.interaction_factory import replicate_nba_2026 as RN26
 
 STATE_KEY = "M21_replication_cadence"
 MAX_PER_TICK = 5
@@ -87,6 +89,7 @@ FAMILY_WORKERS: Dict[str, Callable[..., List[Dict[str, Any]]]] = {
     RS.TEMPLATE_ID: RS.replicate,
     "mlb_pa_attr_x_archetype": B2B.replicate,
     "tennis_match_asof_self_cross": B2B.replicate,
+    RN26.TEMPLATE_ID: RN26.replicate,
 }
 
 
