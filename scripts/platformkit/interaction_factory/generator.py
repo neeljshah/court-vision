@@ -358,6 +358,31 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
         "blocklist_attrs": [],
         "blocklist_pairs": [],
     },
+    # ---- MLB UMPIRE-CONDITIONED as-of attrs (B3 lane, 2026-07-13) ---------
+    # ump_total_runs_tendency_asof (this umpire's strictly-prior expanding
+    # mean total_runs vs the strictly-prior league mean, demeaned) x
+    # ump_called_strike_proxy_asof (this umpire's strictly-prior expanding
+    # out-of-zone-strike rate, raw) -- see builders_umpire.py module docstring
+    # for the STEP0 disk-premise findings and the PRIOR-ART honesty note: a
+    # related-but-distinct single-term hypothesis (demeaned ooz-rate alone vs
+    # total runs) was already pre-registered and REJECTED in domains/mlb/
+    # umpire_totals_gate.py -- these 2 attrs are a fresh, not-yet-tested pair
+    # for the factory's own grammar, not a re-test of that closed result.
+    # atomic_unit "game" (not "team_game"): one shared home-plate umpire per
+    # game, no home/away side to diff against, so no state-conditioner cross
+    # is registered either (no sensible pregame-prior pool shares this atomic
+    # unit -- see builder docstring).
+    "mlb_umpire_self_cross": {
+        "sport": "mlb",
+        "atomic_unit": "game",
+        "outcome": "total_runs",
+        "baseline": "total_runs ~ attr_a + attr_b",
+        "pairing": "self_cross",
+        "left_pool": {"static_pool": "mlb_umpire_asof"},
+        "feature_builder": "mlb_umpire_totals_asof",
+        "blocklist_attrs": [],
+        "blocklist_pairs": [],
+    },
     # ---- TENNIS / SOCCER (task-39b) -----------------------------------
     # Neither sport has a per-entity ATTRIBUTES profile registry wired into
     # THIS factory's grammar yet (their own domains/*/profiles/attribute_
@@ -421,6 +446,10 @@ STATIC_POOLS: Dict[str, List[str]] = {
         "batter_barrel_rate_asof_30d", "batter_barrel_rate_asof_season",
         "batter_la_sweetspot_asof_30d", "batter_la_sweetspot_asof_season",
         "pitcher_ev_allowed_asof_30d", "pitcher_ev_allowed_asof_season",
+    ],
+    # MLB umpire-conditioned as-of attrs (B3 lane) -- see builders_umpire.py.
+    "mlb_umpire_asof": [
+        "ump_total_runs_tendency_asof", "ump_called_strike_proxy_asof",
     ],
 }
 
