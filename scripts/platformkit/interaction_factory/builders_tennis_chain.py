@@ -153,10 +153,15 @@ def _tennis_chain_x_match_cross_builder(attrs: List[str], tpl: Dict[str, Any]) -
     ret = pd.read_parquet(_t39b._TENNIS_RETURN)
     feats = pd.read_parquet(_t39b._TENNIS_FEATURES)
     setdetail = pd.read_parquet(_t39b._TENNIS_SETDETAIL)
-    match_matches = matches[["event_id", "tourney_id", "winner"]]
+    match_matches = matches[["event_id", "date", "tourney_id", "winner"]]
     match_frame = _t39b.build_tennis_match_frame(match_matches, ret, feats, match_attrs, setdetail=setdetail)
 
-    merged = chain_frame.merge(match_frame.drop(columns=["y"]), on="event_id", how="inner")
+    # chain_frame already carries date + tourney_id; dropping them from the
+    # match side prevents merge suffixes (_x/_y) that hid the cluster column
+    # from the fit (the original 32-NT cause) and the reserve axis from the mask.
+    merged = chain_frame.merge(
+        match_frame.drop(columns=["y", "date", "tourney_id"], errors="ignore"),
+        on="event_id", how="inner")
     return {"frame": merged, "cluster": "tourney_id", "corpus": _CHAIN_CORPUS + "_x_match", "kind": "logit"}
 
 
