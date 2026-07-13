@@ -72,6 +72,36 @@ def test_unrecognized_sport_is_honest_refusal():
     assert result["claims"] == []
 
 
+def test_null_in_parenthetical_is_not_failed():
+    # regression: leading-token rule -- a validated row whose parenthetical
+    # mentions NULL/BLOCKED must never be classified as failed.
+    confirmed = {"label": "CONFIRMED (REPLICATED, though earlier passes were "
+                          "BLOCKED/NULL before the feature builder existed)"}
+    assert not query.is_failed(confirmed)
+    assert query._strength_rank(confirmed) == query._STRENGTH.index("CONFIRMED")
+    assert query.is_failed({"label": "REJECTED (NULL_LOCAL)"})
+    assert query.is_failed({"label": "NULL_LOCAL"})
+    assert query.is_failed({"label": "NOT_TESTABLE -- no column on disk."})
+    assert query.is_provisional({"label": "SURVIVES_PREREG_PROVISIONAL"})
+    # end-to-end: every what_failed claim fails by the leading-token rule
+    result = query.answer("what has been tested and failed for NBA", "nba")
+    for claim in result["claims"]:
+        assert query.is_failed(claim), claim["label"]
+
+
+def test_sport_extracted_from_question_text():
+    # regression: 'for NBA' in the question must scope even without sport=
+    result = query.answer("what has been tested and failed for NBA")
+    assert result["claims"]
+    assert all(c["sport"] == "basketball_nba" for c in result["claims"])
+    result = query.answer("what factors matter for baseball")
+    assert result["claims"]
+    assert all(c["sport"] == "mlb" for c in result["claims"])
+    # no sport named -> genuinely all-sports scope
+    result = query.answer("what should we not claim")
+    assert len({c["sport"] for c in result["claims"]}) > 1
+
+
 def test_all_ten_canonical_questions_are_recognized_and_label_bearing():
     assert len(query.CANONICAL_QUESTIONS) == 10
     for question, sport in query.CANONICAL_QUESTIONS:

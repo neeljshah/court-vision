@@ -1,21 +1,14 @@
-"""scripts.platformkit.knowledge.query -- deterministic answer engine over the
-knowledge store (domains/<sport>/knowledge/knowledge.jsonl, built by
+"""scripts.platformkit.knowledge.query -- deterministic answer engine over
+the knowledge store (domains/<sport>/knowledge/knowledge.jsonl, built by
 backfill_knowledge.py). No LLM calls, no embeddings: keyword-routed
-filtering + ranking over ~530 rows.
-
-Row schema: claim, mechanism, sport, effect, ci, n, corpora, label, lineage,
-last_validated, source. `label` is VERBATIM from the source -- every claim
-line below ends `[LABEL, n=X]`, never paraphrased or upgraded.
-
+filtering + ranking over ~530 rows. Labels are VERBATIM from the source --
+every claim line ends `[LABEL, n=X]`, never paraphrased or upgraded.
 HARD BOUNDARY (.claude/rules/no-edge-claims.md): calibration/mechanism
-language only. "validated_edges" = validated MECHANISM relationships, never
-a dollar edge/ROI. NULL/REJECTED rows surface only under what_failed.
-
+language only; "validated_edges" = validated MECHANISM relationships, never
+a dollar edge/ROI; NULL/REJECTED rows surface only under what_failed.
 Stat/rating/prediction/calibration questions route through
-scripts/platformkit/answers/resolver_registry.py instead (see
-docs/AI_CONSUMER_CONTRACT.md) -- this module only answers questions about
-the knowledge store itself.
-
+scripts/platformkit/answers/resolver_registry.py (docs/AI_CONSUMER_CONTRACT.md)
+-- this module only answers questions about the knowledge store itself.
 CLI: python -m scripts.platformkit.knowledge.query
 """
 from __future__ import annotations
@@ -30,13 +23,22 @@ from typing import Any, Dict, List, Optional, Tuple
 REPO = Path(__file__).resolve().parents[3]
 SPORTS = ["basketball_nba", "mlb", "soccer", "tennis"]
 _SPORT_ALIASES = {"nba": "basketball_nba", "basketball_nba": "basketball_nba",
-                   "mlb": "mlb", "soccer": "soccer", "tennis": "tennis"}
+                   "basketball": "basketball_nba", "mlb": "mlb", "baseball": "mlb",
+                   "soccer": "soccer", "tennis": "tennis"}
 
-# Free-text labels containing any of these tokens are failed/null findings.
+def _sport_from_question(question: str) -> Optional[str]:
+    """First sport word named in the question text, or None ('all sports')."""
+    for w in re.findall(r"[a-z_]+", question.lower()):
+        if w in _SPORT_ALIASES:
+            return _SPORT_ALIASES[w]
+    return None
+
+# Labels whose LEADING token starts with one of these are failed/null findings.
+# Leading-token only: "CONFIRMED (REPLICATED, ... BLOCKED/NULL ...)" is NOT
+# failed -- a parenthetical/trailing note never reclassifies the verdict.
 _FAIL_TOKENS = ("REJECTED", "NULL", "KILLED", "NOT_TESTABLE", "FAILED_REPLICATION",
                 "REPLICATION_BLOCKED")
-# Strength order (highest first), checked as substrings -- labels are messy
-# free text (see backfill_knowledge.py), not a clean enum.
+# Strength order (highest first), matched within the leading token.
 _STRENGTH = ["REPLICATED", "CONFIRMED_LOCAL", "CONFIRMED", "PARTIAL", "PROVISIONAL"]
 
 Row = Dict[str, Any]
@@ -46,7 +48,6 @@ def _normalize_sport(sport: Optional[str]) -> Optional[str]:
     if sport is None:
         return None
     return _SPORT_ALIASES.get(sport.lower(), sport.lower())
-
 
 @lru_cache(maxsize=1)
 def _load_all() -> Tuple[Row, ...]:
@@ -61,7 +62,6 @@ def _load_all() -> Tuple[Row, ...]:
                 rows.append(json.loads(line))
     return tuple(rows)
 
-
 def load_knowledge(sports: Optional[List[str]] = None) -> List[Row]:
     """All knowledge rows, cached read of the 4 jsonl files, optionally
     filtered to `sports` (aliases ok, e.g. 'nba' -> 'basketball_nba')."""
@@ -71,19 +71,24 @@ def load_knowledge(sports: Optional[List[str]] = None) -> List[Row]:
     wanted = {_normalize_sport(s) for s in sports}
     return [r for r in rows if r.get("sport") in wanted]
 
+def _lead_token(row: Row) -> str:
+    """First WORD_CHARS run of the label, e.g. 'CONFIRMED (REPLICATED...)' ->
+    'CONFIRMED', 'SURVIVES_PREREG_PROVISIONAL' -> itself, '' if no label."""
+    m = re.match(r"[A-Za-z_]+", (row.get("label") or "").strip())
+    return m.group(0) if m else ""
 
 def is_failed(row: Row) -> bool:
-    label = row.get("label") or ""
-    return any(tok in label for tok in _FAIL_TOKENS)
+    tok = _lead_token(row)
+    return bool(tok) and any(tok.startswith(f) for f in _FAIL_TOKENS)
 
 def is_provisional(row: Row) -> bool:
-    label = row.get("label") or ""
-    return "PROVISIONAL" in label or "UNDERPOWERED" in label
+    tok = _lead_token(row)
+    return "PROVISIONAL" in tok or "UNDERPOWERED" in tok
 
 def _strength_rank(row: Row) -> int:
-    label = row.get("label") or ""
+    lead = _lead_token(row)
     for i, tok in enumerate(_STRENGTH):
-        if tok in label:
+        if tok in lead:
             return i
     return len(_STRENGTH)  # unranked labels sort last
 
@@ -107,10 +112,7 @@ def _scope_rows(sport: Optional[str]) -> Tuple[List[Row], Optional[str]]:
         return [], "sport '%s' not recognized (know: %s)" % (sport, ", ".join(SPORTS))
     return load_knowledge([norm]), None
 
-
-# ---------------------------------------------------------------------------
 # Intent handlers -- each returns (answer_text, claims, caveats)
-# ---------------------------------------------------------------------------
 def _factors_for_matchup(question: str, sport: Optional[str]) -> Tuple[str, List[Row], List[str]]:
     rows, err = _scope_rows(sport)
     if err:
@@ -137,12 +139,11 @@ def _validated_edges(question: str, sport: Optional[str]) -> Tuple[str, List[Row
     lines += [_label_line(r) for r in ranked]
     return "\n".join(lines), ranked, ["LOCAL statistical findings, not a market-beating or causal claim"]
 
-
 # ponytail: filler set mirrors resolver_registry._MECH_FILLER (same shape of
 # problem -- strip question words so token-subset matching survives phrasing).
 _MECH_FILLER = {"what", "does", "the", "evidence", "say", "about", "is", "there", "for", "on",
-                "mechanism", "hypothesis", "folklore", "of", "a", "an", "in", "explain", "lookup", "we"}
-
+                "mechanism", "hypothesis", "folklore", "of", "a", "an", "in", "explain", "lookup",
+                "we"} | set(_SPORT_ALIASES)  # sport words scope the answer, never match mechanisms
 
 def _mech_tokens(s: str) -> set:
     return {t for t in re.findall(r"[a-z0-9]+", s.lower()) if t not in _MECH_FILLER}
@@ -253,9 +254,12 @@ def _closest_intents(question: str) -> List[str]:
 
 def answer(question: str, sport: str = None) -> dict:
     """Route `question` (+ optional `sport`) through the fixed intent table
-    and return {answer_text, claims, labels_present, caveats}. Unregistered
-    question shape -> honest refusal + closest supported intents, never an
-    improvised answer."""
+    and return {answer_text, claims, labels_present, caveats}. Explicit
+    `sport` arg wins; otherwise the sport named in the question text scopes
+    the answer; only a question naming no sport spans all sports.
+    Unregistered question shape -> honest refusal + closest supported
+    intents, never an improvised answer."""
+    sport = sport or _sport_from_question(question)
     intent = classify_intent(question)
     if intent is None:
         closest = _closest_intents(question)
@@ -282,7 +286,6 @@ CANONICAL_QUESTIONS: List[Tuple[str, Optional[str]]] = [
     ("what does the evidence say about back to back rest", "nba"),
 ]
 
-
 def main() -> int:
     for q, sport in CANONICAL_QUESTIONS:
         result = answer(q, sport)
@@ -292,7 +295,6 @@ def main() -> int:
             print("caveats: %s" % "; ".join(result["caveats"]))
         print()
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())
