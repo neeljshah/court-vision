@@ -4,7 +4,10 @@ Covers the discipline that separates the factory from p-hacking:
  * LEAK-GUARD: build_nba_offense_frame's as-of feature for game t uses ONLY
    strictly-prior games -- the unit's own outcome window is never in its feature.
  * K / cum-K ledger math: only REAL tests (SURVIVES|NULL) advance cum_K;
-   NOT_TESTABLE spends none; a re-run dedupes (never re-tests).
+   NOT_TESTABLE spends none; a re-run dedupes TERMINAL verdicts only --
+   NOT_TESTABLE is non-terminal and legitimately re-enumerates (generator.py
+   tested_ids docstring, fixed in f9f62354 so candidates aren't stuck forever
+   once their builder lands).
  * NOT_TESTABLE path: a template whose feature_builder is unregistered yields
    honest NOT_TESTABLE rows, cum_K flat.
 
@@ -207,12 +210,22 @@ def test_cum_k_math_only_real_tests_advance(tmp_path, monkeypatch):
     assert real[0]["verdict"] == RUN.NULL
     assert real[0]["alpha_fwer"] == 0.05  # eps_eff(0.05, cum_K=1)
 
-    # ledger persisted + a fresh run dedupes those 3 candidates.
+    # ledger persisted. A fresh run dedupes the ONE terminal (real) candidate
+    # forever, but legitimately re-enumerates the two NOT_TESTABLE ones --
+    # tested_ids() excludes NOT_TESTABLE from the terminal set (generator.py,
+    # fixed in f9f62354: a candidate graded NOT_TESTABLE before its builder
+    # existed must not be skipped forever once conditions change).
     persisted = [json.loads(l) for l in ledger.read_text().splitlines()]
     assert len(persisted) == 3
     monkeypatch.setattr(RUN, "_fit_candidate", lambda b, c: None)
     more = RUN.run_batch(tid, 3, ledger_path=ledger)
-    assert {r["candidate_id"] for r in more}.isdisjoint({r["candidate_id"] for r in rows})
+    real_id = real[0]["candidate_id"]
+    nt_ids = {r["candidate_id"] for r in nt}
+    more_ids = {r["candidate_id"] for r in more}
+    assert real_id not in more_ids  # terminal verdict never re-tested
+    assert nt_ids <= more_ids  # non-terminal NOT_TESTABLE candidates re-enumerate
+    assert all(r["verdict"] == RUN.NOT_TESTABLE for r in more)
+    assert all(r["cum_K"] == 1 for r in more)  # no real test ran this batch
 
 
 def test_task39b_builders_are_registered():
