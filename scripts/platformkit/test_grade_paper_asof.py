@@ -138,8 +138,11 @@ def test_backfill_respects_max_bets_oldest_first(tmp_path):
 
 def test_backfill_sleeps_only_between_distinct_boards(tmp_path):
     """2 bets, SAME (sport, ts-date), no match on either candidate date (empty board):
-    each bet tries [ts-date, ts-date+1] -> 2 DISTINCT boards total (deduped across
-    both bets, not 4), so exactly 1 politeness sleep fires (before the 2nd board)."""
+    each bet tries [ts-ET-date, ts-ET-date+1] -> 2 DISTINCT boards total (deduped
+    across both bets, not 4), so exactly 1 politeness sleep fires (before the 2nd
+    board). ts 00:00Z 06-20 = 20:00 ET 06-19, so the ET window is [06-19, 06-20]
+    -- the OLD ts[:10] UTC window ([06-20, 06-21]) never fetched the most likely
+    game date at all (audit finding 2026-07-12, evening-settle starvation)."""
     ledger = tmp_path / "clv_ledger.jsonl"
     _stale_bet(ledger, "2026-06-20T00:00:00+00:00", matchup="LAD @ SFG", bet_id="a")
     _stale_bet(ledger, "2026-06-20T00:01:00+00:00", matchup="CIN @ NYM", bet_id="b")
@@ -151,7 +154,7 @@ def test_backfill_sleeps_only_between_distinct_boards(tmp_path):
         return {"games": []}
 
     backfill_as_of(ledger, today="2026-06-25", fetch=fetch, _sleep=sleeps.append)
-    assert fetched == [("mlb", "2026-06-20"), ("mlb", "2026-06-21")]
+    assert fetched == [("mlb", "2026-06-19"), ("mlb", "2026-06-20")]
     assert sleeps == [1.0]
 
 

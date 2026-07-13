@@ -126,14 +126,20 @@ def bet_expected_dates(bet: Dict[str, Any]) -> List[str]:
     gd = str(bet.get("game_date") or "").strip()[:10]
     if gd:
         return [gd]
-    ts = str(bet.get("ts") or "")[:10]
+    ts = str(bet.get("ts") or "")
     if not ts:
         return []
     try:
-        d = _dt.date.fromisoformat(ts)
+        # ET, not UTC: an evening-ET bet's ts lands on TOMORROW's UTC date, so
+        # a raw ts[:10] window misses the real game date and the guard starves
+        # every prime-time settle (audit finding 2026-07-12, 00:00-04:00Z class).
+        dt_ = _dt.datetime.fromisoformat(ts.replace("Z", "+00:00"))
+        if dt_.tzinfo is None:
+            dt_ = dt_.replace(tzinfo=_dt.timezone.utc)
+        d = dt_.astimezone(ZoneInfo("America/New_York")).date()
     except ValueError:
         return []
-    return [ts, (d + _dt.timedelta(days=1)).isoformat()]
+    return [d.isoformat(), (d + _dt.timedelta(days=1)).isoformat()]
 
 
 __all__ = ["bet_expected_dates", "today_et_iso", "_mlb_ticker", "_mlb_ticker_date",
