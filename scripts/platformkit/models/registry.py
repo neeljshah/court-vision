@@ -132,10 +132,19 @@ REGISTRY = {
             {
                 "model_id": "nba_ml_gbm",
                 "model_class": "gbm",
-                "impl": "PLANNED",
-                "benchmark": "PENDING",
-                "oos_status": "PLANNED",
-                "notes": "Phase 3 lane to fill in.",
+                "impl": "scripts.platformkit.models.gbm_nba_ml",
+                "benchmark": "data/domains/nba/gbm_ml_benchmark.json",
+                "oos_status": "BENCHMARKED",
+                "notes": "xgboost (device=cuda) on 15 leak-free pregame features (walk-forward "
+                         "elo/pace/off-def-ppp/rest/b2b/L10-form; no market inputs); 4 "
+                         "chronological expanding-window folds within the single NBA season "
+                         "the odds corpus covers (2025-26; 2024-25 box has no market close, "
+                         "so the >=2-held-out-season ask isn't supported by this corpus -- "
+                         "documented as season_coverage_note in the artifact). Brier: GBM "
+                         "0.2375 vs close 0.1836 vs existing elo 0.2067, n=743 -- TRAILS the "
+                         "close outside noise (paired delta 0.0539 CI[0.037,0.0707], CI does "
+                         "not cross 0). Expected/honest: pregame GBM on a small box corpus "
+                         "does not beat the market. Not a proven edge.",
             },
         ],
     },
