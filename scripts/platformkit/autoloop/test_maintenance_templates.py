@@ -166,7 +166,7 @@ _GOLDEN_KEYS = {
     "census_drift", "scoreboard_history", "ingame_benchmarks", "mechanism_reval",
     "utilization_drift", "frontier_probe", "shadow_settle", "propose_gate",
     "milb_refresh", "benchmark_refresh", "clv_refresh", "calibration_refresh",
-    "log_reaper", "eval_gate", "pregame_benchmark",
+    "log_reaper", "eval_gate", "pregame_benchmark", "statcast_refresh",
 }
 
 
@@ -193,6 +193,8 @@ def test_run_all_isolates_one_failing_job(tmp_path):
         mock.patch("scripts.platformkit.autoloop.eval_gate_job.run_eval_gate",
                    return_value={"status": "skipped", "age_h": 1.0}), \
         mock.patch("scripts.platformkit.autoloop.pregame_benchmark_job.run_pregame_benchmark",
+                   return_value={"status": "skipped", "age_h": 1.0}), \
+        mock.patch("scripts.platformkit.autoloop.statcast_refresh_job.run_statcast_refresh",
                    return_value={"status": "skipped", "age_h": 1.0}):
         out = MT.run_all({}, queue_fn=lambda row: None)
     assert out["validate_new_stores"]["status"] == "error"
@@ -207,6 +209,7 @@ def test_run_all_isolates_one_failing_job(tmp_path):
     assert out["calibration_refresh"] == {"status": "skipped", "age_h": 1.0}
     assert out["eval_gate"] == {"status": "skipped", "age_h": 1.0}
     assert out["pregame_benchmark"] == {"status": "skipped", "age_h": 1.0}
+    assert out["statcast_refresh"] == {"status": "skipped", "age_h": 1.0}
     # golden key list: table-driven refactor must not add/drop/rename a job key
     assert set(out.keys()) == _GOLDEN_KEYS
 
