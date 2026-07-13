@@ -328,6 +328,14 @@ _JOB_TABLE: List[Tuple[str, str, str, Tuple[str, ...]]] = [
     # watermark keyed by week label; a new week always re-arms it)
     ("weekly_scoreboard_cadence", "scripts.platformkit.autoloop.scoreboard_job",
      "run_scoreboard", ("watermarks",)),
+    # M25 nightly S15.K2 incremental K refresh (own-heartbeat watermark; honest
+    # no-op logged on off-season/no-games nights -- see k_refresh_job docstring)
+    ("k_nightly_refresh", "scripts.platformkit.omni.k_refresh_job",
+     "run_k_refresh", ()),
+    # M26 escalation->funnel Stage-A intake (idempotent via claim lifecycle;
+    # re-scans lifecycle=='proposed'+escalate_to_funnel claims every tick)
+    ("k_escalation_intake", "scripts.platformkit.omni.escalation_intake",
+     "run_escalation_intake", ()),
 ]
 
 
