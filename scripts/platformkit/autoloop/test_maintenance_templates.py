@@ -168,7 +168,7 @@ _GOLDEN_KEYS = {
     "milb_refresh", "benchmark_refresh", "clv_refresh", "calibration_refresh",
     "log_reaper", "eval_gate", "pregame_benchmark", "statcast_refresh",
     "replication_cadence", "false_discovery_accounting", "mlb_results_refresh",
-    "weekly_scoreboard_cadence",
+    "weekly_scoreboard_cadence", "k_nightly_refresh", "k_escalation_intake",
 }
 
 
@@ -205,7 +205,11 @@ def test_run_all_isolates_one_failing_job(tmp_path):
         mock.patch("scripts.platformkit.autoloop.mlb_results_refresh_job.run_mlb_results_refresh",
                    return_value={"status": "skipped", "age_h": 1.0}), \
         mock.patch("scripts.platformkit.autoloop.scoreboard_job.run_scoreboard",
-                   return_value={"status": "skipped", "week": "2026-W28"}):
+                   return_value={"status": "skipped", "week": "2026-W28"}), \
+        mock.patch("scripts.platformkit.omni.k_refresh_job.run_k_refresh",
+                   return_value={"status": "no_games"}), \
+        mock.patch("scripts.platformkit.omni.escalation_intake.run_escalation_intake",
+                   return_value={"screened": 0}):
         out = MT.run_all({}, queue_fn=lambda row: None)
     assert out["validate_new_stores"]["status"] == "error"
     assert out["weighting_refresh"] == {"sports_refreshed": []}
