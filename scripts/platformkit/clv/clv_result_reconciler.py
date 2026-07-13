@@ -50,6 +50,8 @@ from scripts.platformkit.clv.clv_scoreboard import (
 # W1 fix: SEPARATE kx-proxy measurable tier, never merged into true_close.
 from scripts.platformkit.clv.kx_close_math import (
     enrich_paper_ingame_no_close, is_measurable_proxy)
+from scripts.platformkit.clv.clv_quarantine import (
+    quarantined_bet_ids, split_quarantined)
 
 _OUT_DIR = os.path.join(_REPO, "data", "frontend", "ops")
 _Z_SIG = 1.96
@@ -304,6 +306,8 @@ def reconcile_channel(channel: str,
                       ) -> Dict[str, Any]:
     """Pure (no I/O beyond the ledger read). Returns the full reconciliation report."""
     rows = _measurable_rows(channel, ledger)
+    quarantined = quarantined_bet_ids()
+    rows, n_excl_true = split_quarantined(rows, quarantined)
     n = len(rows)
     rec = _record(rows)
     clv_ci = _mean_ci([float(r["clv_pct"]) for r in rows if r.get("clv_pct") is not None])
@@ -333,6 +337,7 @@ def reconcile_channel(channel: str,
     # few rows to say anything -- every other channel's verdict stays exactly
     # as before.
     proxy_rows = _measurable_proxy_rows(channel, ledger)
+    proxy_rows, n_excl_proxy = split_quarantined(proxy_rows, quarantined)
     clv_proxy = _proxy_block(proxy_rows)
     verdict = _verdict(n, z_wins, z_units)
     if (channel == "paper_ingame" and n < _MIN_N
@@ -343,6 +348,7 @@ def reconcile_channel(channel: str,
         "channel": channel,
         "label": _CHANNEL_LABEL.get(channel, channel),
         "n_measurable": n,
+        "n_excluded_quarantined": n_excl_true + n_excl_proxy,
         "record": rec,
         "mean_clv_pct": clv_ci["mean"],
         "clv_ci95": [clv_ci["lo95"], clv_ci["hi95"]],
@@ -364,6 +370,9 @@ def render(report: Dict[str, Any]) -> str:
     lines.append("CLV RESULT RECONCILER -- %s (n=%d measurable)"
                  % (report["label"], report["n_measurable"]))
     lines.append("=" * 78)
+    if report.get("n_excluded_quarantined"):
+        lines.append("excluded %d row(s) flagged EXCLUDE-FROM-AGGREGATES by "
+                     "quarantine adjudication" % report["n_excluded_quarantined"])
     rec = report["record"]
     lines.append("realized: %d-%d-%d, net %+.2fu   mean CLV %s%s"
                  % (rec["wins"], rec["losses"], rec["pushes"], rec["net_units"],

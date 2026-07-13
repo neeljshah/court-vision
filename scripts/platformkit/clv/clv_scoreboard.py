@@ -41,6 +41,8 @@ from scripts.platformkit.clv_ledger import (  # canonical reader + suspect guard
 # for paper_ingame rows (never merged into the true_close 'measurable' bucket).
 from scripts.platformkit.clv.kx_close_math import (
     enrich_paper_ingame_no_close, is_measurable_proxy)
+from scripts.platformkit.clv.clv_quarantine import (
+    quarantined_bet_ids, split_quarantined)
 
 # Friendly channel labels; an absent channel that still carries a closing line is
 # the legacy game-moneyline book (the '?' rows).
@@ -135,6 +137,9 @@ def scoreboard(ledger: Optional[Sequence[Dict[str, Any]]] = None) -> Dict[str, A
     if ledger is None:
         ledger = load_ledger()
     settled = _dedup_settled(ledger)
+    # Quarantine adjudication (EXCLUDE-FROM-AGGREGATES rows only, fail-open
+    # otherwise) -- dropped here, counted, never silently vanished.
+    settled, n_excluded_quarantined = split_quarantined(settled, quarantined_bet_ids())
     # W1 fix: read-time recovery ONLY for paper_ingame rows still labelled
     # no_close -- every other row (wrong channel/status, or a genuine miss)
     # passes through byte-identical. Never mutates the ledger on disk.
@@ -193,6 +198,7 @@ def scoreboard(ledger: Optional[Sequence[Dict[str, Any]]] = None) -> Dict[str, A
         "total_measurable": tot_measurable,
         "total_measurable_proxy": tot_measurable_proxy,
         "total_suspect_excluded": tot_suspect,
+        "n_excluded_quarantined": n_excluded_quarantined,
         "coverage_pct": (round(100.0 * tot_measurable / tot_settled, 1)
                          if tot_settled else 0.0),
         "channels": channels,
@@ -232,6 +238,9 @@ def render(board: Dict[str, Any]) -> str:
     if board.get("total_suspect_excluded"):
         lines.append("excluded %d off-market/misparsed row(s) from CLV (fabricated "
                      "edge guard)" % board["total_suspect_excluded"])
+    if board.get("n_excluded_quarantined"):
+        lines.append("excluded %d row(s) flagged EXCLUDE-FROM-AGGREGATES by "
+                     "quarantine adjudication" % board["n_excluded_quarantined"])
     lines.append("")
     hdr = ("%-18s %5s %6s %8s %9s %7s  %s"
            % ("channel", "n", "meas", "covg%", "meanCLV%", "beat%", "W-L-P / units"))

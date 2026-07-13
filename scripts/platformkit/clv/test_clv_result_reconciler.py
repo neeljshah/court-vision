@@ -337,6 +337,27 @@ def test_paper_ingame_verdict_stays_true_close_when_both_thin():
     assert "PROXY" not in report["verdict"]
 
 
+# --------------------------------------------------------------------------------------- #
+# Quarantine adjudication: EXCLUDE-FROM-AGGREGATES rows dropped + counted, not vanished.    #
+# --------------------------------------------------------------------------------------- #
+def test_quarantined_row_excluded_and_counted(monkeypatch):
+    monkeypatch.setattr(_mod, "quarantined_bet_ids", lambda: {"b-g0-home"})
+    rows = [_row("home", 2.0, 2.0, 2.0, 1.0, 0.5, event_id="g%d" % i, clv_pct=2.0)
+            for i in range(20)]
+    report = reconcile_channel("paper_pm", ledger=rows)
+    assert report["n_measurable"] == 19
+    assert report["n_excluded_quarantined"] == 1
+
+
+def test_no_quarantine_hits_is_unchanged_behavior(monkeypatch):
+    monkeypatch.setattr(_mod, "quarantined_bet_ids", lambda: set())
+    rows = [_row("home", 2.0, 2.0, 2.0, 1.0, 0.5, event_id="g%d" % i, clv_pct=2.0)
+            for i in range(20)]
+    report = reconcile_channel("paper_pm", ledger=rows)
+    assert report["n_measurable"] == 20
+    assert report["n_excluded_quarantined"] == 0
+
+
 def test_render_shows_proxy_block():
     from scripts.platformkit.clv.clv_result_reconciler import render
     rows = [_proxy_row("home", 2.0, 0.5, (1.0 if i % 2 == 0 else -1.0), "e%d" % i)
