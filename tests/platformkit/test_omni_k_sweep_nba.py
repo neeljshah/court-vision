@@ -66,7 +66,7 @@ def test_welch_split_math():
 def test_insufficient_data_path_ledgered_and_counted(_stub_deps):
     tmp_path = _stub_deps
     df = _synthetic_frame()
-    result = ksw.run_sweep(base_dir=tmp_path, source=df, top_n=200)
+    result = ksw.run_sweep(base_dir=tmp_path, source=df, top_n=200, discovery_only=False)
     assert result["cells_mined"] > 0
     claims = cl.query(sport="nba", base_dir=tmp_path)
     insufficient = claims[claims["effect_json"].str.contains("INSUFFICIENT_DATA")]
@@ -77,12 +77,12 @@ def test_insufficient_data_path_ledgered_and_counted(_stub_deps):
 def test_idempotent_rerun_adds_near_zero_claims(_stub_deps):
     tmp_path = _stub_deps
     df = _synthetic_frame()
-    first = ksw.run_sweep(base_dir=tmp_path, source=df, top_n=200)
+    first = ksw.run_sweep(base_dir=tmp_path, source=df, top_n=200, discovery_only=False)
     assert first["claims_added"] > 0
     journal_path = tmp_path / "journal.jsonl"
     lines_after_first = journal_path.read_text(encoding="ascii").count("\n")
 
-    second = ksw.run_sweep(base_dir=tmp_path, source=df, top_n=200)
+    second = ksw.run_sweep(base_dir=tmp_path, source=df, top_n=200, discovery_only=False)
     assert second["claims_added"] == 0
     lines_after_second = journal_path.read_text(encoding="ascii").count("\n")
     assert lines_after_second == lines_after_first
@@ -91,7 +91,21 @@ def test_idempotent_rerun_adds_near_zero_claims(_stub_deps):
 def test_coverage_matrix_updated_for_mined_players(_stub_deps):
     tmp_path = _stub_deps
     df = _synthetic_frame()
-    ksw.run_sweep(base_dir=tmp_path, source=df, top_n=200)
+    ksw.run_sweep(base_dir=tmp_path, source=df, top_n=200, discovery_only=False)
     matrix = kc.load_matrix(base_dir=tmp_path)
     reactions = matrix[matrix["dimension"] == "reactions"]
     assert (reactions["status"] != "UNMINED").any()
+
+
+def test_discovery_only_excludes_2025_26_reserve_rows(_stub_deps):
+    tmp_path = _stub_deps
+    df = _synthetic_frame()  # almost entirely dated 2025-10-01 or later -> reserve
+    discovery, reserve = ksw.split_discovery_reserve(df)
+    assert (reserve["date"] >= pd.Timestamp(ksw.RESERVE_CUTOVER)).all()
+    assert (discovery["date"] < pd.Timestamp(ksw.RESERVE_CUTOVER)).all()
+    assert len(reserve) > len(discovery)  # frame is reserve-dominated by construction
+    # discovery_only=True (the default) must not mine any reserve row.
+    result = ksw.run_sweep(base_dir=tmp_path, source=df, top_n=200)
+    assert result["cells_mined"] < ksw.run_sweep(
+        base_dir=tmp_path, source=df, top_n=200, discovery_only=False
+    )["cells_mined"]

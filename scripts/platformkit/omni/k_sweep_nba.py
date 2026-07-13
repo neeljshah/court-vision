@@ -49,6 +49,10 @@ MIN_PRACTICAL_EFFECT = 1.0   # points; escalation floor on top of BH survival
 
 CONDITIONS = ("b2b_vs_rest", "home_vs_road", "high_foul_vs_low_foul")
 
+# Reserve discipline (S15.K3): 2025-26 is reserve, never mined by default.
+# Games dated on/after this cutover belong to the 2025-26 season.
+RESERVE_CUTOVER = "2025-10-01"
+
 _STATUS_PRIORITY = {"ESCALATED": 3, "MINED": 2, "INSUFFICIENT_DATA": 1}
 
 
@@ -63,6 +67,24 @@ def _load_sweep_frame(source=None) -> pd.DataFrame:
     df = df[df["min"] > 0].sort_values(["player_id", "date"]).reset_index(drop=True)
     df["rest_days"] = df.groupby("player_id")["date"].diff().dt.days - 1
     return df
+
+
+def split_discovery_reserve(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Season-boundary split: discovery = 2023-24 + 2024-25 (date < cutover),
+    reserve = 2025-26 (date >= cutover). Callers must pre-register on
+    discovery before ever touching the reserve half (S15.K3)."""
+    cutover = pd.Timestamp(RESERVE_CUTOVER)
+    return df[df["date"] < cutover].copy(), df[df["date"] >= cutover].copy()
+
+
+def remine_player_cell(df: pd.DataFrame, player_id: int, condition: str) -> dict | None:
+    """Re-mine one player's Welch split for *condition* on *df* (caller slices
+    to discovery or reserve rows first). Same shape as a per-cell record from
+    _mine_condition; None if a side is empty. Reused by k_stage_b so the
+    split/test math is never forked."""
+    g = df[df["player_id"] == player_id]
+    side_a, side_b, _, _ = _condition_labels(g, condition)
+    return _welch_split(g.loc[side_a, _STAT], g.loc[side_b, _STAT])
 
 
 def _archetype_map() -> dict:
@@ -184,8 +206,10 @@ def _claim_for_cell(cell: dict, data_asof: str | None) -> tuple[dict, bool]:
     return claim, escalate
 
 
-def run_sweep(base_dir=None, source=None, top_n: int = TOP_N_PLAYERS) -> dict:
+def run_sweep(base_dir=None, source=None, top_n: int = TOP_N_PLAYERS, discovery_only: bool = True) -> dict:
     df = _load_sweep_frame(source)
+    if discovery_only:
+        df, _ = split_discovery_reserve(df)
     active_ids = set(kc.load_active_players()["player_id"])
     games_played = df[df["player_id"].isin(active_ids)].groupby("player_id").size()
     top_ids = set(games_played.sort_values(ascending=False).head(top_n).index)
