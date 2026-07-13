@@ -281,6 +281,9 @@ _JOB_TABLE: List[Tuple[str, str, str, Tuple[str, ...]]] = [
     # M19 cadence-gated pregame crps_market MLB benchmark refresh (refresh only; file-mtime watermark)
     ("pregame_benchmark", "scripts.platformkit.autoloop.pregame_benchmark_job",
      "run_pregame_benchmark", ("watermarks",)),
+    # M20 cadence-gated Savant/Statcast season-parquet cache refresh (refresh only; parquet-mtime watermark)
+    ("statcast_refresh", "scripts.platformkit.autoloop.statcast_refresh_job",
+     "run_statcast_refresh", ("watermarks",)),
 ]
 
 
