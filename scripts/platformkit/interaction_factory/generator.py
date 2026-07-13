@@ -613,6 +613,22 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
         "blocklist_attrs": [],
         "blocklist_pairs": [],
     },
+    # ---- SOCCER SET-PIECE xG (B8 lane) -- StatsBomb open-data shot events
+    # (play_pattern 'From Corner' / 'From Free Kick') bridged to matches.parquet
+    # by team-name + (date, div); see builders_soccer_setpiece.py module
+    # docstring for the coverage/bridge details. No soccer in-game state pool
+    # exists yet -- self_cross only, no state-conditioner.
+    "soccer_setpiece_asof_self_cross": {
+        "sport": "soccer",
+        "atomic_unit": "match",
+        "outcome": "home_win",
+        "baseline": "home_win ~ attr_a + attr_b",
+        "pairing": "self_cross",
+        "left_pool": {"static_pool": "soccer_setpiece_asof"},
+        "feature_builder": "soccer_setpiece_asof",
+        "blocklist_attrs": [],
+        "blocklist_pairs": [],
+    },
 }
 
 # STATIC pools for templates whose attribute names come straight from an
@@ -639,6 +655,10 @@ STATIC_POOLS: Dict[str, List[str]] = {
     "soccer_match_asof": [
         "diff_sot_for_asof", "diff_sot_against_asof", "diff_shots_for_asof", "diff_shots_against_asof",
         "diff_xg_supremacy_asof",  # asof_xg_proxy.parquet, unlock lane (b418cde6)
+    ],
+    # Soccer set-piece xG (B8 lane) -- StatsBomb events, see builders_soccer_setpiece.py.
+    "soccer_setpiece_asof": [
+        "setpiece_xg_share_asof", "corner_xg_asof", "openplay_xg_asof",
     ],
     # MLB SP in-game fatigue (B1 lane) -- see builders_statcast_fatigue.py.
     "mlb_sp_ingame_fatigue_state": [
