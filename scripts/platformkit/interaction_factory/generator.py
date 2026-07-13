@@ -629,6 +629,34 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
         "blocklist_attrs": [],
         "blocklist_pairs": [],
     },
+    # ---- TENNIS rest/tournament-chain fatigue (B9 lane) -- orthogonal to
+    # tennis_match_asof (serve/return quality): computed straight off
+    # matches.parquet's own (date, surface, score) columns, strictly-prior
+    # per player. See builders_tennis_chain.py module docstring. Retains a
+    # `date` column (reserve discipline, RESERVED_CORPUS_SPEC.md R1/R5).
+    "tennis_chain_asof_self_cross": {
+        "sport": "tennis",
+        "atomic_unit": "match",
+        "outcome": "p1_win",
+        "baseline": "p1_win ~ attr_a + attr_b",
+        "pairing": "self_cross",
+        "left_pool": {"static_pool": "tennis_chain_asof"},
+        "feature_builder": "tennis_chain_asof",
+        "blocklist_attrs": [],
+        "blocklist_pairs": [],
+    },
+    "tennis_chain_x_match_asof_cross": {
+        "sport": "tennis",
+        "atomic_unit": "match",
+        "outcome": "p1_win",
+        "baseline": "p1_win ~ chain_attr_a + match_attr_b",
+        "pairing": "cross",
+        "left_pool": {"static_pool": "tennis_chain_asof"},
+        "right_pool": {"static_pool": "tennis_match_asof"},
+        "feature_builder": "tennis_chain_x_match_asof_cross",
+        "blocklist_attrs": [],
+        "blocklist_pairs": [],
+    },
 }
 
 # STATIC pools for templates whose attribute names come straight from an
@@ -651,6 +679,11 @@ STATIC_POOLS: Dict[str, List[str]] = {
         "diff_return_won_asof", "diff_break_pct_asof", "diff_1st_win_asof",
         "diff_2nd_win_asof", "diff_ace_rate_asof", "diff_1st_in_asof", "diff_bp_saved_asof",
         "avg_games_per_set_asof_diff",  # asof_setdetail.parquet, unlock lane (b418cde6) -- own suffix convention
+    ],
+    # TENNIS rest/tournament-chain fatigue (B9 lane) -- see builders_tennis_chain.py.
+    "tennis_chain_asof": [
+        "days_since_last_match_diff", "matches_last_14d_diff",
+        "sets_played_last_14d_diff", "surface_transition_flag_diff",
     ],
     "soccer_match_asof": [
         "diff_sot_for_asof", "diff_sot_against_asof", "diff_shots_for_asof", "diff_shots_against_asof",
