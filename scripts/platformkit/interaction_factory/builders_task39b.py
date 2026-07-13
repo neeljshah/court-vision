@@ -212,7 +212,7 @@ def build_tennis_match_frame(matches: pd.DataFrame, ret: pd.DataFrame, feats: pd
     # `attrs`) so every pre-existing positional caller (runner.py's re-export,
     # test_runner.py, replicate_tennis_2026.py -- none in this lane's OWNS)
     # keeps working unchanged.
-    m = matches[["event_id", "tourney_id", "winner"]].copy()
+    m = matches[["event_id", "date", "tourney_id", "winner"]].copy()
     m["y"] = (m["winner"] == 1).astype(float)
     r_cols = ["event_id"] + [c for c in attrs if c in ret.columns]
     f_cols = ["event_id"] + [c for c in attrs if c in feats.columns and c not in ret.columns]
@@ -231,7 +231,7 @@ def _tennis_match_builder(attrs: List[str], tpl: Dict[str, Any]) -> Optional[Dic
     if not (_TENNIS_MATCHES.exists() and _TENNIS_RETURN.exists() and _TENNIS_FEATURES.exists()
             and _TENNIS_SETDETAIL.exists()):
         return None
-    matches = pd.read_parquet(_TENNIS_MATCHES, columns=["event_id", "tourney_id", "winner"])
+    matches = pd.read_parquet(_TENNIS_MATCHES, columns=["event_id", "date", "tourney_id", "winner"])
     ret = pd.read_parquet(_TENNIS_RETURN)
     feats = pd.read_parquet(_TENNIS_FEATURES)
     setdetail = pd.read_parquet(_TENNIS_SETDETAIL)

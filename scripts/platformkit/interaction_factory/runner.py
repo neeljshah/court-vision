@@ -97,7 +97,7 @@ def build_nba_offense_frame(df: pd.DataFrame, attrs: List[str], *,
             cum_fg3 = cum_fga * 0.0  # rim/paint/mid: no 3s
         asof = (cum_fgm + 0.5 * cum_fg3) / cum_fga.where(cum_fga >= min_prior_att)
         df["asof__" + attr] = asof
-    keep = ["player_id", "game_id", "y"] + ["asof__" + a for a in attrs]
+    keep = ["player_id", "game_id", "date", "y"] + ["asof__" + a for a in attrs]
     out = df[df["total_fga"] >= min_game_fga][keep].copy()
     return out
 

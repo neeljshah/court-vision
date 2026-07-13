@@ -75,7 +75,8 @@ def test_build_mlb_battrack_frame_no_overlap_returns_empty_not_crash():
 
 
 def test_build_tennis_match_frame_merges_return_and_features():
-    matches = pd.DataFrame({"event_id": [1, 2], "tourney_id": ["t1", "t1"], "winner": [1, 2]})
+    matches = pd.DataFrame({"event_id": [1, 2], "date": pd.to_datetime(["2024-01-01", "2024-01-02"]),
+                             "tourney_id": ["t1", "t1"], "winner": [1, 2]})
     ret = pd.DataFrame({"event_id": [1, 2], "diff_return_asof": [0.1, -0.2]})
     feats = pd.DataFrame({"event_id": [1, 2], "diff_return_asof": [9.9, 9.9], "diff_serve_asof": [0.3, 0.4]})
     setdetail = pd.DataFrame({"event_id": [1, 2], "avg_games_per_set_asof_diff": [1.5, -1.5]})
@@ -95,12 +96,51 @@ def test_build_tennis_match_frame_setdetail_col_not_shadowed_by_ret_or_feats():
     # a name present in setdetail AND (ret or feats) must come from the
     # earlier source -- same precedence rule task-1's ret-over-feats already
     # locks in, extended to the 3rd source.
-    matches = pd.DataFrame({"event_id": [1], "tourney_id": ["t1"], "winner": [1]})
+    matches = pd.DataFrame({"event_id": [1], "date": pd.to_datetime(["2024-01-01"]),
+                             "tourney_id": ["t1"], "winner": [1]})
     ret = pd.DataFrame({"event_id": [1], "dup_col": [0.1]})
     feats = pd.DataFrame({"event_id": [1]})
     setdetail = pd.DataFrame({"event_id": [1], "dup_col": [9.9]})
     out = b.build_tennis_match_frame(matches, ret, feats, ["dup_col"], setdetail=setdetail)
     assert out.loc[0, "asof__dup_col"] == 0.1
+
+
+# --------------------------------------------------------------------------
+# Judge follow-up (cdf7aa4d): tennis frame must carry the reserve time-axis
+# column ("date") so replicate_reserve.py's mask actually fires for this
+# family (reserve.py DATE_COL_CANDIDATES probes "date" before "season").
+def test_build_tennis_match_frame_keeps_date_column():
+    matches = pd.DataFrame({"event_id": [1, 2], "date": pd.to_datetime(["2024-01-01", "2024-01-02"]),
+                             "tourney_id": ["t1", "t1"], "winner": [1, 2]})
+    ret = pd.DataFrame({"event_id": [1, 2], "diff_return_asof": [0.1, -0.2]})
+    feats = pd.DataFrame({"event_id": [1, 2], "diff_serve_asof": [0.3, 0.4]})
+    out = b.build_tennis_match_frame(matches, ret, feats, ["diff_return_asof", "diff_serve_asof"])
+    assert "date" in out.columns
+
+
+def test_tennis_reserved_corpus_fires_via_real_run_batch(tmp_path, monkeypatch):
+    """Fixture batch through the REAL run_batch path (reserve.reserve_mask,
+    not a fake fit) -- proves the date column now on the returned frame is
+    enough for the discipline to bind for the tennis self-cross template."""
+    from scripts.platformkit.interaction_factory import runner as R
+
+    n = 700  # clears MIN_N*2 (600) so reserve.reserve_mask actually splits, not R5 single_corpus_by_size
+    dates = pd.to_datetime(pd.date_range("2023-01-01", periods=n, freq="D"))
+    matches = pd.DataFrame({"event_id": list(range(n)), "date": dates,
+                             "tourney_id": [f"t{i % 10}" for i in range(n)],
+                             "winner": [1 if i % 2 == 0 else 2 for i in range(n)]})
+    ret = pd.DataFrame({"event_id": list(range(n)), "diff_return_won_asof": list(range(n))})
+    feats = pd.DataFrame({"event_id": list(range(n)), "diff_1st_win_asof": list(range(n))})
+
+    def fake_builder(attrs, tpl):
+        frame = b.build_tennis_match_frame(matches, ret, feats, attrs)
+        return {"frame": frame, "cluster": "tourney_id", "corpus": "syn_tennis", "kind": "logit"}
+
+    monkeypatch.setitem(R._BUILDERS, "tennis_match_asof", fake_builder)
+    ledger = tmp_path / "ledger.jsonl"
+    rows = R.run_batch("tennis_match_asof_self_cross", 1, ledger_path=ledger)
+    assert rows
+    assert rows[0]["reserved_corpus"] == "trailing_25pct_by_date"
 
 
 def test_build_soccer_match_frame_derives_home_win_from_goals():

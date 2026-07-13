@@ -73,6 +73,7 @@ def _form(n=4):
         "player_id": [1, 1, 2, 2],
         "season": ["2024-25"] * 4,
         "game_id": ["g0", "g1", "g0", "g1"],
+        "game_date": pd.to_datetime(["2024-11-01", "2024-11-03", "2024-11-01", "2024-11-03"]),
         "n_prior_games": [0, 5, 0, 5],
         "l5_pts": [float("nan"), 20.0, float("nan"), 10.0],
         "l10_pts": [float("nan"), 18.0, float("nan"), 9.0],
@@ -136,6 +137,58 @@ def test_state_conditioner_frame_drops_unknown_attr_without_crash():
     out = bft.build_nba_form_state_conditioner_frame(_form(), _poe(), ["l5_pts", "not_a_real_attr"])
     assert "asof__l5_pts" in out.columns
     assert "asof__not_a_real_attr" not in out.columns
+
+
+# --------------------------------------------------------------------------
+# Judge follow-up (cdf7aa4d): both form_trajectory frames must carry the
+# reserve time-axis column ("game_date") so replicate_reserve.py's mask
+# actually fires for this family.
+def test_self_cross_frame_keeps_game_date_column():
+    out = bft.build_nba_form_self_cross_frame(_form(), _poe(), ["l5_pts", "l10_pts"])
+    assert "game_date" in out.columns
+
+
+def test_state_conditioner_frame_keeps_game_date_column():
+    out = bft.build_nba_form_state_conditioner_frame(
+        _form(), _poe(), ["l5_pts", "clutch_efg"], min_prior_att=1)
+    assert "game_date" in out.columns
+
+
+def test_form_self_cross_reserved_corpus_fires_via_real_run_batch(tmp_path, monkeypatch):
+    """Fixture batch through the REAL run_batch path (reserve.reserve_mask,
+    not a fake fit) -- proves the game_date column now on the returned frame
+    is enough for the discipline to bind for nba_form_self_cross."""
+    from scripts.platformkit.interaction_factory import runner as R
+    import numpy as np
+
+    n = 700  # clears MIN_N*2 (600) so reserve.reserve_mask actually splits
+    rng = np.random.default_rng(1)
+    form = pd.DataFrame({
+        "player_id": [i % 20 for i in range(n)],
+        "season": ["2024-25"] * n,
+        "game_id": [f"g{i}" for i in range(n)],
+        "game_date": pd.to_datetime(pd.date_range("2023-01-01", periods=n, freq="D")),
+        "l5_pts": rng.normal(size=n),
+        "l10_pts": rng.normal(size=n),
+    })
+    poe = pd.DataFrame({
+        "player_id": [i % 20 for i in range(n)],
+        "game_id": [f"g{i}" for i in range(n)],
+        "total_fgm": rng.integers(4, 12, n),
+        "total_fga": rng.integers(8, 20, n),
+        "above_break_3_fgm": rng.integers(0, 3, n),
+        "corner3_fgm": rng.integers(0, 2, n),
+    })
+
+    def fake_builder(attrs, tpl):
+        frame = bft.build_nba_form_self_cross_frame(form, poe, attrs)
+        return {"frame": frame, "cluster": "player_id", "corpus": "syn_form", "kind": "ols"}
+
+    monkeypatch.setitem(R._BUILDERS, "nba_form_self_cross_asof", fake_builder)
+    ledger = tmp_path / "ledger.jsonl"
+    rows = R.run_batch("nba_form_self_cross", 1, ledger_path=ledger)
+    assert rows
+    assert rows[0]["reserved_corpus"] == "trailing_25pct_by_game_date"
 
 
 def test_builders_return_none_when_source_missing(monkeypatch):
