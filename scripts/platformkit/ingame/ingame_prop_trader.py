@@ -152,7 +152,12 @@ def _price_one(sport: str, prop: Any, dist: Dict[Tuple[str, str], Tuple[float, s
     if edge <= 0.0:                    # only place where OUR number sees value
         return None
     vig = (1.0 / over_f + 1.0 / under_f) - 1.0
-    if vig > _MAX_VIG or (vig > 0.0 and edge < _VIG_EDGE_MULT * vig):
+    if vig <= 0.0:
+        # arb/degenerate pair (booksum<=1): un-devigable, not tradeable. Pre-634fdd1a
+        # devig RAISED here (row skipped); the shared guard now returns a synthesized
+        # fair, so this gate must refuse explicitly (opus judge 2026-07-12 BLOCKER 1).
+        return None
+    if vig > _MAX_VIG or edge < _VIG_EDGE_MULT * vig:
         return None                    # market too wide, or edge doesn't clear the vig
     ev = ev_vs_price(model_p, price)
     if ev <= 0.0 or ev > _MAX_EV:      # below floor or implausible stale quote
