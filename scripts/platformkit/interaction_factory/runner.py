@@ -317,6 +317,7 @@ def _mlb_pa_builder(attrs: List[str], tpl: Dict[str, Any]) -> Optional[Dict[str,
 from scripts.platformkit.interaction_factory import builders_task39b as _t39b  # noqa: E402
 from scripts.platformkit.interaction_factory import builders_carryover as _carry  # noqa: E402
 from scripts.platformkit.interaction_factory import builders_ingame_state as _ingame  # noqa: E402
+from scripts.platformkit.interaction_factory import builders_state_conditioner as _statecond  # noqa: E402
 
 build_nba_boxdetail_frame = _t39b.build_nba_boxdetail_frame
 build_mlb_battrack_frame = _t39b.build_mlb_battrack_frame
@@ -338,6 +339,7 @@ _BUILDERS = {
     "mlb_carryover_asof": _carry._mlb_carryover_builder,
     "nba_ingame_state_asof": _ingame._nba_ingame_state_builder,
     "nba_assist_boxdetail_asof": _ingame._nba_assist_boxdetail_builder,
+    "nba_state_conditioner_asof": _statecond._nba_state_conditioner_builder,   # A22a
 }
 
 
