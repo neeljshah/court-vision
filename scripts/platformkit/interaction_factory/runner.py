@@ -27,6 +27,7 @@ from typing import Any, Dict, List, Optional
 import pandas as pd
 import statsmodels.formula.api as smf
 
+from scripts.platformkit.clv_ledger_io import ledger_lock
 from scripts.platformkit.combo.fwer_budget import DEFAULT_EPS, eps_eff
 from scripts.platformkit.interaction_factory import generator as GEN
 from scripts.platformkit.io_atomic import append_jsonl_atomic
@@ -460,64 +461,73 @@ def run_batch(template_id: str, k: int, *, ledger_path: Path = LEDGER_PATH,
     -- still deduped against the ledger by candidate_id, still fit/appended
     through the exact same path a blind batch uses, just a different source
     of Candidate objects. All candidates must belong to `template_id` (the
-    builder/corpus lookup below is per-template, same as a blind batch)."""
-    existing = _load_ledger(ledger_path)
-    if candidates is not None:
-        done = GEN.tested_ids(existing, template_id)
-        batch = [c for c in candidates if c.candidate_id not in done]
-    else:
-        batch = GEN.next_batch(template_id, k, existing)
-    if not batch:
-        return []
-    tpl = GEN.TEMPLATES[template_id]
-    builder = _BUILDERS.get(tpl["feature_builder"])
-    attrs = sorted({c.attr_a for c in batch} | {c.attr_b for c in batch})
-    build = None
-    if builder is not None:
-        try:
-            build = builder(attrs, tpl)
-        except Exception as exc:  # noqa: BLE001 -- an unbuildable frame is NOT_TESTABLE, not a crash
-            build = None
-    corpus = build["corpus"] if build else tpl.get("feature_builder")
-    insufficient_train = bool(build and build.get("insufficient_train_history"))
-    train_note = (build or {}).get("train_note", "")
+    builder/corpus lookup below is per-template, same as a blind batch).
 
-    running = sum(1 for r in existing
-                  if r.get("template_id") == template_id and r.get("verdict") in (SURVIVES, NULL))
-    out: List[Dict[str, Any]] = []
-    for cand in batch:
-        if insufficient_train:
-            row = _row(cand, verdict=NOT_TESTABLE, n=0, effect=None, p=None, cum_k=running,
-                       k_declared=k, alpha=None, corpus=corpus,
-                       note="insufficient_train_history: %s" % train_note)
+    read-ledger->select-batch->fit->append all run inside ledger_lock (clv_
+    ledger_io's shared cross-process advisory lock) so two concurrent callers
+    can't both read the same stale ledger and both append the same candidate
+    at the same cum_K. # ponytail: lock spans the fit loop too, not just the
+    appends -- simplest correct scope; it's best-effort/5s-timeout so a >5s
+    batch under real contention could still race (see clv_ledger_io).
+    """
+    with ledger_lock(ledger_path):
+        existing = _load_ledger(ledger_path)
+        if candidates is not None:
+            done = GEN.tested_ids(existing, template_id)
+            batch = [c for c in candidates if c.candidate_id not in done]
+        else:
+            batch = GEN.next_batch(template_id, k, existing)
+        if not batch:
+            return []
+        tpl = GEN.TEMPLATES[template_id]
+        builder = _BUILDERS.get(tpl["feature_builder"])
+        attrs = sorted({c.attr_a for c in batch} | {c.attr_b for c in batch})
+        build = None
+        if builder is not None:
+            try:
+                build = builder(attrs, tpl)
+            except Exception as exc:  # noqa: BLE001 -- an unbuildable frame is NOT_TESTABLE, not a crash
+                build = None
+        corpus = build["corpus"] if build else tpl.get("feature_builder")
+        insufficient_train = bool(build and build.get("insufficient_train_history"))
+        train_note = (build or {}).get("train_note", "")
+
+        running = sum(1 for r in existing
+                      if r.get("template_id") == template_id and r.get("verdict") in (SURVIVES, NULL))
+        out: List[Dict[str, Any]] = []
+        for cand in batch:
+            if insufficient_train:
+                row = _row(cand, verdict=NOT_TESTABLE, n=0, effect=None, p=None, cum_k=running,
+                           k_declared=k, alpha=None, corpus=corpus,
+                           note="insufficient_train_history: %s" % train_note)
+                append_jsonl_atomic(ledger_path, row)
+                out.append(row)
+                continue
+            fit = None
+            if build is not None:
+                try:
+                    fit = _fit_candidate(build, cand)
+                except Exception as exc:  # noqa: BLE001 -- one candidate's fit failure isolates
+                    fit = None
+            if build is None:
+                row = _row(cand, verdict=NOT_TESTABLE, n=0, effect=None, p=None, cum_k=running,
+                           k_declared=k, alpha=None, corpus=corpus,
+                           note="feature_builder %r unavailable or source missing" % tpl["feature_builder"])
+            elif fit is None:
+                row = _row(cand, verdict=NOT_TESTABLE, n=0, effect=None, p=None, cum_k=running,
+                           k_declared=k, alpha=None, corpus=corpus,
+                           note="insufficient rows / no variance for this pair")
+            else:
+                running += 1
+                alpha = eps_eff(eps, running)
+                v = SURVIVES if fit["p"] < alpha else NULL
+                row = _row(cand, verdict=v, n=fit["n"], effect=round(fit["effect"], 6),
+                           p=round(fit["p"], 6), cum_k=running, k_declared=k, alpha=round(alpha, 8),
+                           corpus=corpus, term=fit["term"],
+                           note="PROVISIONAL -- needs independent-corpus replication" if v == SURVIVES else "")
             append_jsonl_atomic(ledger_path, row)
             out.append(row)
-            continue
-        fit = None
-        if build is not None:
-            try:
-                fit = _fit_candidate(build, cand)
-            except Exception as exc:  # noqa: BLE001 -- one candidate's fit failure isolates
-                fit = None
-        if build is None:
-            row = _row(cand, verdict=NOT_TESTABLE, n=0, effect=None, p=None, cum_k=running,
-                       k_declared=k, alpha=None, corpus=corpus,
-                       note="feature_builder %r unavailable or source missing" % tpl["feature_builder"])
-        elif fit is None:
-            row = _row(cand, verdict=NOT_TESTABLE, n=0, effect=None, p=None, cum_k=running,
-                       k_declared=k, alpha=None, corpus=corpus,
-                       note="insufficient rows / no variance for this pair")
-        else:
-            running += 1
-            alpha = eps_eff(eps, running)
-            v = SURVIVES if fit["p"] < alpha else NULL
-            row = _row(cand, verdict=v, n=fit["n"], effect=round(fit["effect"], 6),
-                       p=round(fit["p"], 6), cum_k=running, k_declared=k, alpha=round(alpha, 8),
-                       corpus=corpus, term=fit["term"],
-                       note="PROVISIONAL -- needs independent-corpus replication" if v == SURVIVES else "")
-        append_jsonl_atomic(ledger_path, row)
-        out.append(row)
-    return out
+        return out
 
 
 def main(argv: Optional[List[str]] = None) -> int:
