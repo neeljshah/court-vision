@@ -48,6 +48,11 @@ _R_RE = re.compile(r"(?<![A-Za-z])r\s*=\s*([+-]?\d+\.?\d*(?:[eE][+-]?\d+)?)")
 _N_RE = re.compile(r"\bn\s*=\s*([\d,]+)")
 _CI_RE = re.compile(r"\bCI\s*\[([^\]]+)\]")
 _COMMIT_RE = re.compile(r"\bcommits?\s+([0-9a-f]{6,10}(?:/[0-9a-f]{6,10})*)")
+# fallback when the label lives in the HEADING, not a status line, e.g.
+# "### 42. Team staff-wide ... -- CONFIRMED_LOCAL (2026-07-11 update, ...)".
+# Uppercase label token(s) only; "(" is outside the class so parentheticals
+# stay out of the label field.
+_HEADING_LABEL_RE = re.compile(r"--\s*([A-Z][A-Z_]*(?:[ ,/]+[A-Z][A-Z_]*)*)")
 
 
 def _mechanism_row(sport: str, mech_id: str, title: str, lines: List[str],
@@ -65,6 +70,10 @@ def _mechanism_row(sport: str, mech_id: str, title: str, lines: List[str],
         if sm:
             label = sm.group(1)
             break
+    if label is None:
+        hm = _HEADING_LABEL_RE.search(title)
+        if hm:
+            label = hm.group(1).strip()
     eff_m = _EFFECT_RE.search(text) or _R_RE.search(text)
     n_m = _N_RE.search(text)
     ci_m = _CI_RE.search(text)
