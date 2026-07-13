@@ -17,21 +17,25 @@ helper paper/bankroll/pnl already use -- rather than a frozen literal. A
 frozen 2026 would silently stop refreshing the right season come next
 January; deriving it is one line and reuses an existing helper.
 
-Cadence = the season parquet's OWN mtime (data/cache/statcast/
-savant_full__<season>.parquet), not a separate ops-json -- run_season()
-already rewrites that exact file on every real run, so it is naturally
-self-resetting, same convention as M15-M19's own-artifact-mtime watermark.
+Cadence = this job's OWN success stamp (data/frontend/ops/
+statcast_refresh_latest.json), written ONLY when run_season() reports a
+terminal-success status. NOT the parquet mtime: savant_backfill re-writes
+the parquet even on FAILED_CONSECUTIVE (re-materializing cached rows), so a
+parquet-mtime watermark re-arms the 24h gate on failure and never retries
+(opus judge 2026-07-13 BLOCKER). Stamp rules:
+  OK / INSUFFICIENT_DATA  -> stamp (done for 24h; nothing left to fetch)
+  PARTIAL_CAPPED / FAILED_CONSECUTIVE / anything else -> NO stamp -> the
+  next daily tick retries/continues (PARTIAL made progress; capped runs
+  converge across ticks).
 24h (not 7d): this is a live-season data cache other jobs join against, not
 a claims validator. The `watermarks` dict param is accepted for call-shape
-uniformity with every other maintenance job; unused here (file mtime IS the
-watermark).
+uniformity with every other maintenance job; unused here.
 
 HONESTY: this job asserts no verdict of its own -- it passes run_season()'s
-own honest status (OK / PARTIAL_CAPPED / FAILED_CONSECUTIVE /
-INSUFFICIENT_DATA) through verbatim. A raise here propagates uncaught and is
-isolated one level up by maintenance_templates.run_all's own try/except,
-same as every other job in the table -- the parquet is untouched on that
-path (stale mtime persists), so the next cycle retries.
+own honest status through verbatim in parquet_status. A raise here
+propagates uncaught and is isolated one level up by
+maintenance_templates.run_all's own try/except, same as every other job in
+the table -- no stamp is written on that path, so the next cycle retries.
 
 INVARIANTS: scripts/platformkit/ only; <=300 LOC; ASCII; never writes
 data/registry/; never flips a flag.
@@ -49,8 +53,12 @@ from scripts.platformkit.paper.et_day import now_et_day
 
 _REPO = Path(__file__).resolve().parents[3]
 _CACHE_DIR = _REPO / "data" / "cache" / "statcast"
+_STAMP_PATH = _REPO / "data" / "frontend" / "ops" / "statcast_refresh_latest.json"
 _STALE_AFTER_H = 24.0  # live-season cache other jobs join against, not a claims validator
 _MAX_SECONDS = 480.0
+# run_season statuses that mean "nothing more to do until tomorrow" -- only
+# these stamp the cadence gate; capped/failed runs retry next tick.
+_STAMP_STATUSES = frozenset({"OK", "INSUFFICIENT_DATA"})
 
 
 def _current_season() -> int:
@@ -79,20 +87,35 @@ def _default_run() -> Dict[str, Any]:
     return SB.run_season(_current_season(), max_seconds=_MAX_SECONDS)
 
 
+def _write_stamp(path: Path, result: Dict[str, Any]) -> None:
+    import json
+    from datetime import datetime, timezone
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps({
+        "stamped_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "season": result.get("season"), "parquet_status": result.get("status"),
+        "days_available_total": result.get("days_available_total"),
+    }, indent=1), encoding="ascii")
+
+
 def run_statcast_refresh(watermarks: Optional[Dict[str, Any]] = None, *,
-                         parquet_path: Optional[Path] = None,
+                         stamp_path: Optional[Path] = None,
                          age_fn: Optional[Callable[[Path], Optional[float]]] = None,
                          run_fn: Optional[Callable[[], Dict[str, Any]]] = None) -> Dict[str, Any]:
-    """Refresh iff the current season's savant parquet is >24h stale (or
-    missing). Refresh only: reruns domains.mlb.savant_backfill.run_season()
-    for the current ET-year season; its own write re-arms the gate."""
-    p = Path(parquet_path) if parquet_path is not None else _parquet_path(_current_season())
-    age_h = (age_fn or _artifact_age_h)(p)
+    """Refresh iff this job's own success stamp is >24h stale (or missing).
+    The stamp is written ONLY on terminal-success statuses (_STAMP_STATUSES);
+    capped/failed runs leave it stale so the next daily tick retries."""
+    sp = Path(stamp_path) if stamp_path is not None else _STAMP_PATH
+    age_h = (age_fn or _artifact_age_h)(sp)
     if age_h is not None and age_h < _STALE_AFTER_H:
         return {"status": "skipped", "age_h": round(age_h, 1)}
     result = (run_fn or _default_run)()
+    pstatus = str(result.get("status") or "")
+    stamped = pstatus in _STAMP_STATUSES
+    if stamped:
+        _write_stamp(sp, result)
     return {"status": "ran", "age_h": age_h, "season": result.get("season"),
-           "parquet_status": result.get("status")}
+           "parquet_status": pstatus, "stamped": stamped}
 
 
 __all__ = ["run_statcast_refresh"]
