@@ -146,15 +146,24 @@ def _parse_season(path: Path, end_date: Optional[dt.date]) -> List[dict]:
 
 def build_current(
     start_year: int = 2022,
-    end_date: dt.date = dt.date(2026, 6, 16),
+    end_date: Optional[dt.date] = None,
     fetch: bool = True,
 ) -> "object":
     """Build games_current.parquet for [start_year-01-01 .. end_date] (FINAL games).
+
+    end_date=None (default) resolves to YESTERDAY (dt.date.today() - 1 day) so a
+    no-arg call always ingests through "present" -- a frozen literal here
+    (formerly dt.date(2026, 6, 16), the authoring date) is exactly what let
+    games_current.parquet go 27 days stale silently: every default-arg call kept
+    re-stopping at that fixed date forever. Explicit end_date args are unaffected.
 
     Returns the DataFrame. Schema matches the frozen games.parquet exactly so the
     two concatenate. Writes to data/domains/mlb/games_current.parquet (local).
     """
     import pandas as pd  # noqa: PLC0415
+
+    if end_date is None:
+        end_date = dt.date.today() - dt.timedelta(days=1)
 
     rows: List[dict] = []
     for year in range(start_year, end_date.year + 1):
