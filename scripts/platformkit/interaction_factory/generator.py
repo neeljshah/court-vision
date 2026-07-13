@@ -197,6 +197,45 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
         "blocklist_attrs": [],
         "blocklist_pairs": [],
     },
+    # ---- NBA FORM-TRAJECTORY conditioning family (Sonnet build lane, 2026-07-13,
+    # factory registration for 149870ff's salvaged form_trajectory_asof rebuild) --
+    # player_game grain, matching form_trajectory_asof.parquet's own keys
+    # (player_id, game_id) and nba_player_offense_asof/nba_shot_attr_x_state's
+    # grain (outcome REUSED verbatim: efg). Pool is nba_form_asof (STATIC_POOL,
+    # not domains/basketball_nba/profiles/attribute_registry.py -- see
+    # builders_form_trajectory.py docstring for why 8 of the source's 10
+    # columns are pooled, n_prior_games/baseline_pts excluded as redundant).
+    "nba_form_self_cross": {
+        "sport": "basketball_nba",
+        "atomic_unit": "player_game",
+        "outcome": "efg",
+        "baseline": "efg ~ attr_a + attr_b",
+        "pairing": "self_cross",
+        "left_pool": {"static_pool": "nba_form_asof"},
+        "feature_builder": "nba_form_self_cross_asof",   # registered -> runner._BUILDERS (builders_form_trajectory.py)
+        "blocklist_attrs": [],
+        "blocklist_pairs": [],
+    },
+    # ---- NBA FORM x STATE-POOL conditioner (Sonnet build lane) -- the nba_
+    # state_conditioner pattern (85a8ee80/a0c6da5f: PRIOR pool x REALIZED
+    # "state" pool). Right_pool is nba_shot_attr_x_state's own right_pool
+    # (late_clock_efg, clutch_efg -- the pool a0c6da5f's own commit message
+    # calls "state" pool), REUSED verbatim -- see builders_form_trajectory.py
+    # docstring for why the TEAM-grain ingame_state_asof family (85a8ee80's
+    # own right_pool) is not used here (no team_id<->abbr crosswalk on disk
+    # within this lane's OWNS scope).
+    "nba_form_state_conditioner": {
+        "sport": "basketball_nba",
+        "atomic_unit": "player_game",
+        "outcome": "efg",
+        "baseline": "efg ~ prior_attr_a + state_attr_b",
+        "pairing": "cross",
+        "left_pool": {"static_pool": "nba_form_asof"},
+        "right_pool": {"attributes": ["late_clock_efg", "clutch_efg"]},
+        "feature_builder": "nba_form_state_conditioner_asof",   # registered -> runner._BUILDERS (builders_form_trajectory.py)
+        "blocklist_attrs": [],
+        "blocklist_pairs": [],
+    },
     # ---- MLB (2) -------------------------------------------------------
     "mlb_pa_batter_x_pitcher": {
         "sport": "mlb",
@@ -505,6 +544,13 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
 # (see the tennis/soccer TEMPLATES entries above). `resolve_pool` serves these
 # without calling `_registry(sport)` at all.
 STATIC_POOLS: Dict[str, List[str]] = {
+    # NBA form-trajectory conditioning family (Sonnet build lane) -- see
+    # builders_form_trajectory.py docstring for why n_prior_games/baseline_pts
+    # are excluded from form_trajectory_asof.parquet's 10 source columns.
+    "nba_form_asof": [
+        "l5_pts", "l10_pts", "l5_min", "l10_min",
+        "l5_ts_pct", "l10_ts_pct", "trend_pts_slope10", "dev_pts_vs_baseline",
+    ],
     "tennis_match_asof": [
         "diff_return_won_asof", "diff_break_pct_asof", "diff_1st_win_asof",
         "diff_2nd_win_asof", "diff_ace_rate_asof", "diff_1st_in_asof", "diff_bp_saved_asof",
