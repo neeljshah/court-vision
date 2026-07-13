@@ -236,6 +236,40 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
         "blocklist_attrs": [],
         "blocklist_pairs": [],
     },
+    # ---- NBA ON/OFF-COURT LINEUP conditioning family (B7 lane, 2026-07-13) --
+    # player_game grain, matching nba_form_self_cross/nba_form_state_
+    # conditioner's own convention. Pool is nba_onoff_asof (STATIC_POOL) --
+    # see builders_nba_lineup.py docstring: a NEW leak-free as-of derivation
+    # (strictly-prior cumsum-shift) built directly off domains/basketball_nba/
+    # lineups/pbp_lineups.py's already-reconstructed stints_<season>.parquet
+    # (on_off.py's own season-aggregate on/off splits are NOT as-of, same
+    # caveat as lineup_5man/lineup_pair_trio -- this is the leak-free fix).
+    "nba_onoff_self_cross": {
+        "sport": "basketball_nba",
+        "atomic_unit": "player_game",
+        "outcome": "efg",
+        "baseline": "efg ~ attr_a + attr_b",
+        "pairing": "self_cross",
+        "left_pool": {"static_pool": "nba_onoff_asof"},
+        "feature_builder": "nba_onoff_self_cross_asof",   # registered -> runner._BUILDERS (builders_nba_lineup.py)
+        "blocklist_attrs": [],
+        "blocklist_pairs": [],
+    },
+    # ---- NBA ON/OFF x STATE-POOL conditioner (B7 lane) -- the nba_state_
+    # conditioner pattern (85a8ee80/a0c6da5f), same right_pool nba_form_state_
+    # conditioner reuses verbatim (late_clock_efg, clutch_efg).
+    "nba_onoff_state_conditioner": {
+        "sport": "basketball_nba",
+        "atomic_unit": "player_game",
+        "outcome": "efg",
+        "baseline": "efg ~ prior_attr_a + state_attr_b",
+        "pairing": "cross",
+        "left_pool": {"static_pool": "nba_onoff_asof"},
+        "right_pool": {"attributes": ["late_clock_efg", "clutch_efg"]},
+        "feature_builder": "nba_onoff_state_conditioner_asof",   # registered -> runner._BUILDERS (builders_nba_lineup.py)
+        "blocklist_attrs": [],
+        "blocklist_pairs": [],
+    },
     # ---- MLB (2) -------------------------------------------------------
     "mlb_pa_batter_x_pitcher": {
         "sport": "mlb",
@@ -592,6 +626,10 @@ STATIC_POOLS: Dict[str, List[str]] = {
     "nba_form_asof": [
         "l5_pts", "l10_pts", "l5_min", "l10_min",
         "l5_ts_pct", "l10_ts_pct", "trend_pts_slope10", "dev_pts_vs_baseline",
+    ],
+    # NBA on/off-court lineup family (B7 lane) -- see builders_nba_lineup.py.
+    "nba_onoff_asof": [
+        "onoff_net_on_asof", "onoff_net_off_asof", "onoff_min_share_asof",
     ],
     "tennis_match_asof": [
         "diff_return_won_asof", "diff_break_pct_asof", "diff_1st_win_asof",
