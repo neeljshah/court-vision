@@ -378,3 +378,115 @@ def test_tennis_and_soccer_match_frames_derive_win_target():
     sframe = RUN.build_soccer_match_frame(soc_matches, soc_feats, ["diff_sot_for_asof"])
     ys = sframe.set_index("event_id")["y"]
     assert ys.loc["s1"] == 1.0 and ys.loc["s2"] == 0.0
+
+
+# --------------------------------------------------------------------------
+# RESERVED_CORPUS_SPEC.md: discovery excludes the reserve slice BEFORE fit.
+
+def _seasoned_frame(n_discovery=400, n_reserve=400):
+    """A season-axis frame big enough to clear MIN_N*2 with room to spare:
+    season 2023 (n_discovery rows, real signal) + season 2024 (n_reserve rows,
+    TAMPERED outcome -- if the reserve slice leaked into discovery, the fit
+    would see it and the trap below would fail)."""
+    import numpy as np
+    rng = np.random.default_rng(0)
+    d23 = pd.DataFrame({
+        "season": 2023, "cl": rng.integers(0, 20, n_discovery),
+        "asof__a": rng.normal(size=n_discovery), "asof__b": rng.normal(size=n_discovery),
+        "y": rng.normal(size=n_discovery),
+    })
+    d24 = pd.DataFrame({
+        "season": 2024, "cl": rng.integers(0, 20, n_reserve),
+        "asof__a": rng.normal(size=n_reserve), "asof__b": rng.normal(size=n_reserve),
+        "y": 999.0,  # tampered outcome -- must never influence the discovery fit
+    })
+    return pd.concat([d23, d24], ignore_index=True)
+
+
+def _fit_reads_frame_len(build, cand):
+    """Fake _fit_candidate that reports the ACTUAL row count of the frame it
+    was handed -- proves the mask ran before the fit, not just that a
+    reserved_corpus label got attached after the fact."""
+    return {"effect": 0.01, "p": 0.9, "n": len(build["frame"]), "term": "fa:fb"}
+
+
+def test_reserved_corpus_excludes_reserve_row_from_discovery_fit(tmp_path, monkeypatch):
+    ledger = tmp_path / "ledger.jsonl"
+    tid = "nba_shot_offense_x_offense"
+    monkeypatch.setitem(RUN._BUILDERS, "nba_player_offense_asof",
+                        lambda attrs, tpl: {"frame": _seasoned_frame(), "cluster": "cl",
+                                            "corpus": "syn_seasoned", "kind": "ols"})
+    monkeypatch.setattr(RUN, "_fit_candidate", _fit_reads_frame_len)
+    rows = RUN.run_batch(tid, 1, ledger_path=ledger)
+    assert rows
+    row = rows[0]
+    # 2024 (the max/current season) has no LATER season -> not "complete";
+    # 2023 is the most-recent COMPLETE season -> reserved.
+    assert row["reserved_corpus"] == "2023"
+    # n must reflect ONLY the 2024 discovery rows (the tampered-outcome 2023
+    # rows never reached the fit) -- proves exclusion, not just labeling.
+    assert row["n"] == 400
+
+
+def test_reserved_corpus_name_lands_in_ledger_row(tmp_path, monkeypatch):
+    ledger = tmp_path / "ledger.jsonl"
+    tid = "nba_shot_offense_x_offense"
+    monkeypatch.setitem(RUN._BUILDERS, "nba_player_offense_asof",
+                        lambda attrs, tpl: {"frame": _seasoned_frame(), "cluster": "cl",
+                                            "corpus": "syn_seasoned", "kind": "ols"})
+    monkeypatch.setattr(RUN, "_fit_candidate", _fit_reads_frame_len)
+    rows = RUN.run_batch(tid, 1, ledger_path=ledger)
+    assert rows[0]["reserved_corpus"] == "2023"
+    persisted = [json.loads(l) for l in ledger.read_text().splitlines()]
+    assert persisted[0]["reserved_corpus"] == "2023"
+
+
+def test_no_time_axis_frame_unchanged_reserved_corpus_null(tmp_path, monkeypatch):
+    # nba_player_offense_asof's REAL builder output (no season/date column) --
+    # existing behavior/row count must be identical to pre-spec, field is null.
+    ledger = tmp_path / "ledger.jsonl"
+    tid = "nba_shot_offense_x_offense"
+    monkeypatch.setitem(RUN._BUILDERS, "nba_player_offense_asof",
+                        lambda attrs, tpl: {"frame": pd.DataFrame(), "cluster": "player_id",
+                                            "corpus": "syn", "kind": "ols"})
+    rows = RUN.run_batch(tid, 3, ledger_path=ledger)
+    assert rows and all(r["reserved_corpus"] is None for r in rows)
+    assert all("single_corpus_by_size" not in r for r in rows)
+
+
+def test_small_seasoned_corpus_r5_single_corpus_by_size(tmp_path, monkeypatch):
+    # a time axis exists but MIN_N*2 > rows -> no fake split, honest flag.
+    ledger = tmp_path / "ledger.jsonl"
+    tid = "nba_shot_offense_x_offense"
+    tiny = pd.DataFrame({
+        "season": [2023] * 10 + [2024] * 10,
+        "cl": list(range(20)),
+        "asof__a": [0.1] * 20, "asof__b": [0.2] * 20, "y": [0.3] * 20,
+    })
+    monkeypatch.setitem(RUN._BUILDERS, "nba_player_offense_asof",
+                        lambda attrs, tpl: {"frame": tiny, "cluster": "cl",
+                                            "corpus": "syn_tiny", "kind": "ols"})
+    rows = RUN.run_batch(tid, 1, ledger_path=ledger)
+    assert rows
+    assert rows[0]["reserved_corpus"] is None
+    assert rows[0]["single_corpus_by_size"] is True
+
+
+def test_cum_k_and_alpha_math_identical_with_reserve_seam(tmp_path, monkeypatch):
+    """Same fixture batch (fake fit, no real frame columns needed) must emit
+    the SAME cum_K/alpha sequence pre- and post-seam -- proves the reserve
+    logic never touches the FWER/cum_K math, only which rows reach the fit."""
+    ledger = tmp_path / "ledger.jsonl"
+    tid = "nba_shot_offense_x_offense"
+    monkeypatch.setitem(RUN._BUILDERS, "nba_player_offense_asof",
+                        lambda attrs, tpl: {"frame": pd.DataFrame(), "cluster": "player_id",
+                                            "corpus": "syn", "kind": "ols"})
+    monkeypatch.setattr(RUN, "_fit_candidate",
+                        lambda build, cand: {"effect": 0.03, "p": 0.9, "n": 500, "term": "fa:fb"})
+    rows = RUN.run_batch(tid, 4, ledger_path=ledger)
+    cum_ks = [r["cum_K"] for r in rows]
+    alphas = [r["alpha_fwer"] for r in rows]
+    assert cum_ks == [1, 2, 3, 4]
+    from scripts.platformkit.combo.fwer_budget import DEFAULT_EPS, eps_eff
+    expected_alphas = [round(eps_eff(DEFAULT_EPS, k), 8) for k in cum_ks]
+    assert alphas == expected_alphas
