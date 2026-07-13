@@ -162,7 +162,13 @@ def _polymarket_close(grp: pd.DataFrame, slug: str, home_key: str, away_key: str
     hrow = _last_before(grp, cutoff_ts)
     if hrow is None:
         return None
-    p = _devig(float(hrow["prob"]), None)
+    # ORIENTATION (P1-D review fix, verified 2026-07-13): the store's PM
+    # `prob` column tracks the slug's FIRST team -- the corpus AWAY team.
+    # Settlement check across every matched settled game: NBA 1281/1281 and
+    # MLB 664/666 (2 doubleheader collisions) show prob -> ~1.0 iff the
+    # slug-first (away) team won. The store's side='home' label refers to
+    # slug position, not the corpus home team. Corpus HOME prob = complement.
+    p = _devig(1.0 - float(hrow["prob"]), None)
     if p is None:
         return None
     return {"prob_home_devig": p, "source": "polymarket", "ts": int(hrow["ts"])}
