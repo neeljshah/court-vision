@@ -118,6 +118,42 @@ def test_join_rate_nba_2025_04_13_real_slice():
 
 
 # --------------------------------------------------------------------------- #
+# Orientation -- the close must be the CORPUS HOME team's probability.
+# Review-found bug (P1-D adversarial pass): PM's prob column tracks the
+# slug-FIRST team, which is the corpus AWAY team (settlement-verified
+# 1281/1281 NBA, 664/666 MLB) -- unflipped it produced per-game flipped
+# closes (e.g. 0022401187 close 0.105 vs model 0.947). These two games are
+# the known-bad anchors from that review.
+# --------------------------------------------------------------------------- #
+
+def test_orientation_bos_cha_2025_04_13_home_favorite():
+    # game 0022401187: BOS home, heavy favorite (model Elo ~0.947, BOS won).
+    res = pregame_close("nba", "2025-04-13", "BOS", "CHA")
+    assert res is not None
+    assert res["prob_home_devig"] > 0.5, "close is flipped to the away side"
+    assert abs(res["prob_home_devig"] - 0.947) < 0.2
+
+
+def test_orientation_mia_was_2025_04_13_home_favorite():
+    # game 0022401190: MIA home favorite (model Elo ~0.823).
+    res = pregame_close("nba", "2025-04-13", "MIA", "WAS")
+    assert res is not None
+    assert res["prob_home_devig"] > 0.5, "close is flipped to the away side"
+    assert abs(res["prob_home_devig"] - 0.823) < 0.2
+
+
+def test_orientation_median_gap_vs_model_under_0_2():
+    """Full-slate agreement check: a correctly-oriented close roughly agrees
+    with a well-calibrated Elo -- median |model - close| well under 0.2."""
+    from scripts.platformkit.omni.replay_harness import replay
+    df = replay("2025-04-13", "nba", write=False)
+    have = df[df["close_value_or_None"].notna()]
+    assert len(have) >= 10
+    gap = (have["model_prob_or_value"] - have["close_value_or_None"]).abs().median()
+    assert gap < 0.2, f"median |model-close| {gap:.3f} -- orientation suspect"
+
+
+# --------------------------------------------------------------------------- #
 # Misc: ticker parsing, unknown team, missing date.
 # --------------------------------------------------------------------------- #
 
