@@ -90,6 +90,10 @@ def test_build_soccer_setpiece_match_frame_derives_home_win_and_nans_unbridged()
     # the match absent from the bridge (spine) is an honest NaN, never fabricated.
     unb = out.loc[out["event_id"] == "unbridged", "asof__setpiece_xg_share_asof"].iloc[0]
     assert unb != unb  # NaN
+    # regression lock: the frame must keep per-match event_id -- it is the
+    # builder's cluster column (the StatsBomb bridge spans only 4 divs, below
+    # runner.MIN_CLUSTERS=5; div-clustering made every candidate NOT_TESTABLE).
+    assert out["event_id"].is_unique
 
 
 def test_spine_bridges_real_statsbomb_cache_to_matches_parquet():
