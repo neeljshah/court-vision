@@ -30,6 +30,7 @@ import statsmodels.formula.api as smf
 from scripts.platformkit.clv_ledger_io import ledger_lock
 from scripts.platformkit.combo.fwer_budget import DEFAULT_EPS, eps_eff
 from scripts.platformkit.interaction_factory import generator as GEN
+from scripts.platformkit.interaction_factory import reserve as RESERVE
 from scripts.platformkit.io_atomic import append_jsonl_atomic
 
 REPO = Path(__file__).resolve().parents[3]
@@ -443,8 +444,9 @@ def _fit_candidate(build: Dict[str, Any], cand: GEN.Candidate) -> Optional[Dict[
 
 
 def _row(cand: GEN.Candidate, *, verdict: str, n: int, effect, p, cum_k: int,
-         k_declared: int, alpha, corpus, term=None, note="") -> Dict[str, Any]:
-    return {
+         k_declared: int, alpha, corpus, term=None, note="",
+         reserved_corpus=None, single_corpus_by_size: bool = False) -> Dict[str, Any]:
+    row = {
         "candidate_id": cand.candidate_id, "template_id": cand.template_id, "sport": cand.sport,
         "atomic_unit": cand.atomic_unit, "outcome": cand.outcome,
         "attr_a": cand.attr_a, "attr_b": cand.attr_b, "term": term,
@@ -456,7 +458,14 @@ def _row(cand: GEN.Candidate, *, verdict: str, n: int, effect, p, cum_k: int,
         # key as "blind" (row.get("hypothesis_source", "blind")), never as an
         # error -- this is an additive schema change, not a migration.
         "hypothesis_source": cand.hypothesis_source,
+        # RESERVED_CORPUS_SPEC.md R3: name of the excluded reserve slice (None
+        # if no time axis or too small to split). Additive -- missing key on
+        # old rows means null, never an error.
+        "reserved_corpus": reserved_corpus,
     }
+    if single_corpus_by_size:
+        row["single_corpus_by_size"] = True  # R5: time axis existed but too small to split honestly
+    return row
 
 
 def _load_ledger(path: Path) -> List[Dict[str, Any]]:
@@ -517,6 +526,17 @@ def run_batch(template_id: str, k: int, *, ledger_path: Path = LEDGER_PATH,
         insufficient_train = bool(build and build.get("insufficient_train_history"))
         train_note = (build or {}).get("train_note", "")
 
+        # RESERVED_CORPUS_SPEC.md R1/R5: exclude the reserve slice BEFORE fit.
+        reserved_corpus = None
+        single_corpus_by_size = False
+        if build is not None and build.get("frame") is not None:
+            axis_col = next((c for c in RESERVE.DATE_COL_CANDIDATES if c in build["frame"].columns), None)
+            if axis_col is not None:
+                if len(build["frame"]) < MIN_N * 2:
+                    single_corpus_by_size = True
+                else:
+                    build["frame"], reserved_corpus = RESERVE.reserve_mask(build["frame"])
+
         running = sum(1 for r in existing
                       if r.get("template_id") == template_id and r.get("verdict") in (SURVIVES, NULL))
         out: List[Dict[str, Any]] = []
@@ -524,7 +544,8 @@ def run_batch(template_id: str, k: int, *, ledger_path: Path = LEDGER_PATH,
             if insufficient_train:
                 row = _row(cand, verdict=NOT_TESTABLE, n=0, effect=None, p=None, cum_k=running,
                            k_declared=k, alpha=None, corpus=corpus,
-                           note="insufficient_train_history: %s" % train_note)
+                           note="insufficient_train_history: %s" % train_note,
+                           reserved_corpus=reserved_corpus, single_corpus_by_size=single_corpus_by_size)
                 append_jsonl_atomic(ledger_path, row)
                 out.append(row)
                 continue
@@ -537,11 +558,13 @@ def run_batch(template_id: str, k: int, *, ledger_path: Path = LEDGER_PATH,
             if build is None:
                 row = _row(cand, verdict=NOT_TESTABLE, n=0, effect=None, p=None, cum_k=running,
                            k_declared=k, alpha=None, corpus=corpus,
-                           note="feature_builder %r unavailable or source missing" % tpl["feature_builder"])
+                           note="feature_builder %r unavailable or source missing" % tpl["feature_builder"],
+                           reserved_corpus=reserved_corpus, single_corpus_by_size=single_corpus_by_size)
             elif fit is None:
                 row = _row(cand, verdict=NOT_TESTABLE, n=0, effect=None, p=None, cum_k=running,
                            k_declared=k, alpha=None, corpus=corpus,
-                           note="insufficient rows / no variance for this pair")
+                           note="insufficient rows / no variance for this pair",
+                           reserved_corpus=reserved_corpus, single_corpus_by_size=single_corpus_by_size)
             else:
                 running += 1
                 alpha = eps_eff(eps, running)
@@ -549,6 +572,7 @@ def run_batch(template_id: str, k: int, *, ledger_path: Path = LEDGER_PATH,
                 row = _row(cand, verdict=v, n=fit["n"], effect=round(fit["effect"], 6),
                            p=round(fit["p"], 6), cum_k=running, k_declared=k, alpha=round(alpha, 8),
                            corpus=corpus, term=fit["term"],
+                           reserved_corpus=reserved_corpus, single_corpus_by_size=single_corpus_by_size,
                            note="PROVISIONAL -- needs independent-corpus replication" if v == SURVIVES else "")
             append_jsonl_atomic(ledger_path, row)
             out.append(row)
