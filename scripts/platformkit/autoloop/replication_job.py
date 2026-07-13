@@ -139,6 +139,7 @@ def run_replication_cadence(watermarks: Dict[str, Any], *,
     errors: Dict[str, str] = {}
     ran = 0
     budget = int(max_per_tick)
+    called: Dict[int, str] = {}  # id(worker) -> first family it ran under this tick
     for tid in sorted(pending):
         cand_rows = pending[tid]
         worker = workers.get(tid)
@@ -147,12 +148,20 @@ def run_replication_cadence(watermarks: Dict[str, Any], *,
             families[tid] = {"status": "NO_WORKER_REGISTERED", "n_pending": len(cand_rows),
                              "candidate_ids": [r["candidate_id"] for r in cand_rows]}
             continue
+        if id(worker) in called:
+            # a worker serving several family keys (e.g. batch2b) processes its
+            # whole template set in one call -- calling it again would re-append
+            # the sibling family's rows (judge NIT on 0b7e5f9e: 07-13 double-fire)
+            families[tid] = {"status": "ran_shared", "n_pending": len(cand_rows),
+                             "via_family": called[id(worker)]}
+            continue
         if len(cand_rows) > budget:
             families[tid] = {"status": "deferred_bound", "n_pending": len(cand_rows),
                              "budget_left": budget}
             continue
         try:
             appended = worker(ledger_path=lp)
+            called[id(worker)] = tid
             families[tid] = {"status": "ran", "n_pending": len(cand_rows),
                              "n_appended": len(appended)}
             budget -= len(cand_rows)

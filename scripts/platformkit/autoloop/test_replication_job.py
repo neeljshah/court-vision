@@ -71,6 +71,29 @@ def test_worker_runs_for_pending_family_and_stamps():
     assert watermarks[RJ.STATE_KEY]["total_pending_at_run"] == 1
 
 
+def test_shared_worker_called_once_across_family_keys():
+    """One worker registered under TWO family keys (the batch2b shape) must be
+    invoked exactly once per tick -- a second call re-appends the sibling
+    family's rows (the 07-13 double-fire)."""
+    rows = [_row("a1", "fam_a"), _row("b1", "fam_b")]
+    calls = []
+
+    def shared(ledger_path=None):
+        calls.append(ledger_path)
+        return [{"candidate_id": "a1", "verdict": "REPLICATED"},
+                {"candidate_id": "b1", "verdict": "REPLICATED"}]
+
+    watermarks: dict = {}
+    out = RJ.run_replication_cadence(
+        watermarks, load_ledger_fn=lambda p: rows,
+        family_workers={"fam_a": shared, "fam_b": shared})
+    assert len(calls) == 1
+    assert out["families"]["fam_a"]["status"] == "ran"
+    assert out["families"]["fam_b"] == {"status": "ran_shared", "n_pending": 1,
+                                        "via_family": "fam_a"}
+    assert out["watermark_stamped"] is True
+
+
 def test_worker_raising_isolated_no_watermark_stamp():
     rows = [_row("a1", "fam_a"), _row("b1", "fam_b")]
 
