@@ -360,8 +360,8 @@ def test_pa_archetype_frame_derives_batting_team_from_topbot():
 
 def test_tennis_and_soccer_match_frames_derive_win_target():
     matches = pd.DataFrame([
-        {"event_id": "e1", "tourney_id": "t1", "winner": 1},
-        {"event_id": "e2", "tourney_id": "t1", "winner": 2},
+        {"event_id": "e1", "date": pd.Timestamp("2024-01-01"), "tourney_id": "t1", "winner": 1},
+        {"event_id": "e2", "date": pd.Timestamp("2024-01-02"), "tourney_id": "t1", "winner": 2},
     ])
     ret = pd.DataFrame([{"event_id": "e1", "diff_return_won_asof": 0.1},
                         {"event_id": "e2", "diff_return_won_asof": -0.2}])
@@ -470,6 +470,55 @@ def test_small_seasoned_corpus_r5_single_corpus_by_size(tmp_path, monkeypatch):
     assert rows
     assert rows[0]["reserved_corpus"] is None
     assert rows[0]["single_corpus_by_size"] is True
+
+
+# --------------------------------------------------------------------------
+# Judge follow-up (cdf7aa4d): build_nba_offense_frame must carry the reserve
+# time-axis column ("date") so replicate_reserve.py's mask actually fires
+# for nba_shot_offense_x_offense/nba_offense_state_asof (previously dropped
+# by the keep-list -> reserved_corpus was silently always None).
+def test_build_nba_offense_frame_keeps_date_column():
+    frame = RUN.build_nba_offense_frame(
+        _synthetic_offense_df(), ["zone_efg_rim"], min_prior_att=1, min_game_fga=1)
+    assert "date" in frame.columns
+
+
+def test_nba_offense_reserved_corpus_fires_via_real_run_batch(tmp_path, monkeypatch):
+    """Fixture batch through the REAL run_batch path (reserve.reserve_mask,
+    not a fake fit) -- proves the date column now on the returned frame is
+    enough for the discipline to bind for nba_shot_offense_x_offense."""
+    n = 700  # clears MIN_N*2 (600) so reserve.reserve_mask actually splits
+    rng = np.random.default_rng(2)
+    df = pd.DataFrame({
+        "player_id": [i % 20 for i in range(n)],
+        "game_id": [f"g{i}" for i in range(n)],
+        "date": pd.date_range("2023-01-01", periods=n, freq="D"),
+        "total_fgm": rng.integers(4, 12, n),
+        "total_fga": rng.integers(8, 20, n),
+        "above_break_3_fgm": rng.integers(0, 3, n), "above_break_3_fga": rng.integers(1, 6, n),
+        "corner3_fgm": rng.integers(0, 2, n), "corner3_fga": rng.integers(1, 6, n),
+        "rim_fgm": rng.integers(0, 6, n), "rim_fga": rng.integers(1, 10, n),
+        "paint_fgm": rng.integers(0, 6, n), "paint_fga": rng.integers(1, 10, n),
+        "mid_fgm": rng.integers(0, 6, n), "mid_fga": rng.integers(1, 10, n),
+        "transition_fgm": rng.integers(0, 6, n), "transition_fga": rng.integers(1, 10, n),
+        "transition_fg3m": rng.integers(0, 3, n),
+        "halfcourt_fgm": rng.integers(0, 6, n), "halfcourt_fga": rng.integers(1, 10, n),
+        "halfcourt_fg3m": rng.integers(0, 3, n),
+        "late_clock_fgm": rng.integers(0, 6, n), "late_clock_fga": rng.integers(1, 10, n),
+        "late_clock_fg3m": rng.integers(0, 3, n),
+        "clutch_fgm": rng.integers(0, 6, n), "clutch_fga": rng.integers(1, 10, n),
+        "clutch_fg3m": rng.integers(0, 3, n),
+    })
+
+    def fake_builder(attrs, tpl):
+        frame = RUN.build_nba_offense_frame(df, attrs, min_prior_att=1)
+        return {"frame": frame, "cluster": "player_id", "corpus": "syn_offense", "kind": "ols"}
+
+    monkeypatch.setitem(RUN._BUILDERS, "nba_player_offense_asof", fake_builder)
+    ledger = tmp_path / "ledger.jsonl"
+    rows = RUN.run_batch("nba_shot_offense_x_offense", 1, ledger_path=ledger)
+    assert rows
+    assert rows[0]["reserved_corpus"] == "trailing_25pct_by_date"
 
 
 def test_cum_k_and_alpha_math_identical_with_reserve_seam(tmp_path, monkeypatch):

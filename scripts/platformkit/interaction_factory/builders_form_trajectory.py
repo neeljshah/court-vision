@@ -143,7 +143,7 @@ def build_nba_form_self_cross_frame(form: pd.DataFrame, poe: pd.DataFrame,
     own leak rule, 149870ff -- never faked here, only passed through)."""
     merged = form.merge(_outcome_frame(poe, min_game_fga), on=["player_id", "game_id"], how="inner")
     merged = merged.rename(columns={a: "asof__" + a for a in attrs if a in merged.columns})
-    keep = ["player_id", "game_id", "y"] + ["asof__" + a for a in attrs if ("asof__" + a) in merged.columns]
+    keep = ["player_id", "game_id", "game_date", "y"] + ["asof__" + a for a in attrs if ("asof__" + a) in merged.columns]
     return merged[keep].copy()
 
 
@@ -163,7 +163,7 @@ def build_nba_form_state_conditioner_frame(form: pd.DataFrame, poe: pd.DataFrame
     if state_attrs:
         merged = merged.merge(_state_asof_cols(poe, state_attrs, min_prior_att),
                                on=["player_id", "game_id"], how="left")
-    keep = ["player_id", "game_id", "y"] + [
+    keep = ["player_id", "game_id", "game_date", "y"] + [
         "asof__" + a for a in form_attrs + state_attrs if ("asof__" + a) in merged.columns]
     return merged[keep].copy()
 
