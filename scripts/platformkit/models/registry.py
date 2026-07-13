@@ -52,6 +52,21 @@ REGISTRY = {
                          "not a proven edge.",
             },
             {
+                "model_id": "mlb_total_runs_mechanism_stack",
+                "model_class": "mechanism_stacked",
+                "impl": "scripts.platformkit.models.mechanism_stack_mlb",
+                "benchmark": "data/domains/mlb/mechanism_stack_benchmark.json",
+                "oos_status": "BENCHMARKED",
+                "notes": "market-implied Gaussian(mu,sigma) + bounded pregame mu-shift (+0.2729 "
+                         "runs, capped 0.5) from the 1 ledger mechanism that both clears the "
+                         "REPLICATED/CONFIRMED_LOCAL(2corpora)/CONFIRMED(n>=1000) filter and has a "
+                         "pregame-knowable trigger (staff-wide day-after fatigue, CONFIRMED_LOCAL, "
+                         "2 corpora); 14 other qualifying mechanisms skipped as universal in-game "
+                         "dynamics or missing numeric effect. crps_stack 2.8604 vs crps_market 2.8549, "
+                         "paired delta -0.0054 CI[-0.0151,0.0036] n=392 -- CI crosses 0, UNDERPOWERED "
+                         "(not yet a proven edge; see data/domains/mlb/mechanism_stack_benchmark.json).",
+            },
+            {
                 "model_id": "mlb_total_runs_gbm",
                 "model_class": "gbm",
                 "impl": "PLANNED",
