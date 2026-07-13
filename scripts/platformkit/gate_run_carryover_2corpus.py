@@ -38,6 +38,7 @@ from scripts.platformkit.combo.fwer_budget import DEFAULT_EPS, eps_eff
 from scripts.platformkit.interaction_factory import builders_carryover as BC
 from scripts.platformkit.interaction_factory import generator as GEN
 from scripts.platformkit.interaction_factory import runner as IFR
+from scripts.platformkit.clv_ledger_io import ledger_lock
 from scripts.platformkit.io_atomic import append_jsonl_atomic
 
 K_DECLARED = 1
@@ -142,7 +143,8 @@ def gate_sport(template_id: str, corpus_a_tag: str, build_a: Optional[Dict[str, 
     existing = IFR._load_ledger(ledger_path)  # noqa: SLF001 -- same loader batch-1/replication use
     for tag, fit in ((corpus_a_tag, fit_a), (corpus_b_tag, fit_b)):
         if not _already_recorded(existing, cand.candidate_id, tag):
-            append_jsonl_atomic(ledger_path, _ledger_row(cand, tag, fit))
+            with ledger_lock(ledger_path):  # judge NIT a1eff899: unlocked sibling = lost-update clobber
+                append_jsonl_atomic(ledger_path, _ledger_row(cand, tag, fit))
 
     return {"template_id": template_id, "verdict": verdict, "alpha": ALPHA,
             "corpus_a": {"tag": corpus_a_tag, "fit": fit_a},
