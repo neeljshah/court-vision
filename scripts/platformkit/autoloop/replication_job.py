@@ -34,6 +34,15 @@ worker call that records REPLICATION_BLOCKED, same shape as replicate_
 batch2b.py's tennis path). A survivor family with no registered worker is
 reported NO_WORKER_REGISTERED -- an honest gap, never a guessed generic fit.
 
+R2 (RESERVED_CORPUS_SPEC.md, replicate_reserve.py, 2026-07-13): a family's
+pending rows are checked FIRST for a non-null `reserved_corpus` on any row
+(RR.replicate serves those -- one generic worker spanning every template,
+independence by construction via the reserve slice) and only fall back to
+FAMILY_WORKERS' per-template map when none carry one. This is a per-tick,
+per-family check (not a static registration) since a template's survivors
+can be a mix of pre-spec (pooled, hand-wired worker) and post-spec (reserved,
+generic worker) rows over time.
+
 Each worker's replicate() reprocesses its WHOLE family every call (no
 partial-candidate-list API) -- it re-selects every original SURVIVES row
 for its template(s) from the ledger, so calling it appends one fresh row
@@ -82,6 +91,7 @@ from scripts.platformkit.interaction_factory import replicate_survivors as RS
 from scripts.platformkit.interaction_factory import replicate_batch2b as B2B
 from scripts.platformkit.interaction_factory import replicate_nba_2026 as RN26
 from scripts.platformkit.interaction_factory import replicate_nba_form_2026 as RNF26
+from scripts.platformkit.interaction_factory import replicate_reserve as RR
 
 STATE_KEY = "M21_replication_cadence"
 MAX_PER_TICK = 5
@@ -152,7 +162,10 @@ def run_replication_cadence(watermarks: Dict[str, Any], *,
     called: Dict[int, str] = {}  # id(worker) -> first family it ran under this tick
     for tid in sorted(pending):
         cand_rows = pending[tid]
-        worker = workers.get(tid)
+        # R2: reserved_corpus on any pending row routes to the generic
+        # reserve-slice worker FIRST; only a template with zero reserved rows
+        # falls back to the hand-wired per-template map.
+        worker = RR.replicate if any(r.get("reserved_corpus") for r in cand_rows) else workers.get(tid)
         if worker is None:
             no_worker[tid] = len(cand_rows)
             families[tid] = {"status": "NO_WORKER_REGISTERED", "n_pending": len(cand_rows),

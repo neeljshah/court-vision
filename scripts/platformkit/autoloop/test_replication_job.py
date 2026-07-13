@@ -173,6 +173,52 @@ def test_dry_run_lists_without_calling_worker():
     assert isinstance(out, dict)
 
 
+def test_reserved_corpus_row_routes_to_generic_worker_over_family_map():
+    """R2: a pending row carrying reserved_corpus routes to RR.replicate
+    FIRST, even when a per-template worker is ALSO registered for that
+    family -- the fallback map never wins once a row is reserved."""
+    rows = [_row("a1", "fam_a")]
+    rows[0]["reserved_corpus"] = "2023"
+    calls = []
+
+    def rr_stub(ledger_path=None):
+        calls.append("RR")
+        return [{"candidate_id": "a1", "verdict": "REPLICATED"}]
+
+    def family_stub(ledger_path=None):
+        calls.append("family_map")
+        return []
+
+    watermarks: dict = {}
+    orig_replicate = RJ.RR.replicate
+    RJ.RR.replicate = rr_stub
+    try:
+        out = RJ.run_replication_cadence(
+            watermarks, load_ledger_fn=lambda p: rows, family_workers={"fam_a": family_stub})
+    finally:
+        RJ.RR.replicate = orig_replicate
+    assert calls == ["RR"]
+    assert out["families"]["fam_a"]["status"] == "ran"
+    assert out["watermark_stamped"] is True
+
+
+def test_no_reserved_corpus_still_falls_back_to_family_map():
+    """No row carries reserved_corpus -> unchanged pre-R2 behavior (the
+    per-template map wins), same premise every pre-spec survivor still has."""
+    rows = [_row("a1", "fam_a")]  # no reserved_corpus key at all
+    calls = []
+
+    def family_stub(ledger_path=None):
+        calls.append("family_map")
+        return []
+
+    watermarks: dict = {}
+    out = RJ.run_replication_cadence(
+        watermarks, load_ledger_fn=lambda p: rows, family_workers={"fam_a": family_stub})
+    assert calls == ["family_map"]
+    assert out["families"]["fam_a"]["status"] == "ran"
+
+
 def test_registered_in_job_table():
     from scripts.platformkit.autoloop import maintenance_templates as MT
     keys = [row[0] for row in MT._JOB_TABLE]
