@@ -43,6 +43,8 @@ API_BASE = "https://api.the-odds-api.com/v4"
 DEFAULT_REGIONS = "us"
 DEFAULT_MARKETS = "h2h"
 
+_BOOKSUM_EPS = 1e-9  # devig_twoway: booksum <= 1 + this bypasses Shin (see docstring)
+
 
 # --------------------------------------------------------------------------- #
 # Pure functions -- no network, fully unit-tested.
@@ -83,13 +85,18 @@ def best_line(book_prices: Dict[str, Dict[str, float]],
 
 
 def devig_twoway(price_a: float, price_b: float) -> Tuple[float, float]:
-    """No-vig fair probabilities for a two-way market from decimal odds.
-
-    Reuses the vetted Shin solver (scripts.platformkit.eval_gate.shin.shin_devig_decimal),
-    which accounts for favourite-longshot bias and normalises to sum 1. Returns
-    (fair_prob_a, fair_prob_b). This computes probabilities only -- never a $ edge.
+    """No-vig fair (fair_prob_a, fair_prob_b) via the vetted Shin solver
+    (eval_gate.shin.shin_devig_decimal). Probabilities only, never a $ edge.
+    booksum <= 1 + _BOOKSUM_EPS (proxy/arb pair, no overround) bypasses Shin
+    -- which requires booksum > 1 and would raise -- for a proportionally
+    normalised pair instead. Stays a plain 2-tuple (unchanged caller shape).
     """
-    probs, _z = shin_devig_decimal([float(price_a), float(price_b)])
+    pa, pb = float(price_a), float(price_b)
+    inv_a, inv_b = 1.0 / pa, 1.0 / pb
+    booksum = inv_a + inv_b
+    if booksum <= 1.0 + _BOOKSUM_EPS:
+        return inv_a / booksum, inv_b / booksum
+    probs, _z = shin_devig_decimal([pa, pb])
     return float(probs[0]), float(probs[1])
 
 
