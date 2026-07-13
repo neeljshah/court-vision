@@ -383,6 +383,44 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
         "blocklist_attrs": [],
         "blocklist_pairs": [],
     },
+    # ---- MLB WEATHER x PARK as-of attrs (B4 lane, 2026-07-13) --------------
+    # wind_out_mph_raw (today's own weather, exogenous/pregame-knowable, NOT
+    # as-of-shifted) x temp_above_park_norm_asof / park_runs_factor_asof
+    # (this park's strictly-prior expanding norms) -- see builders_weather_
+    # park.py module docstring for the STEP0 disk-premise findings (no park-
+    # orientation file exists -> wind attr is honestly raw speed, not a
+    # direction-adjusted component) and the exogenous-weather leak nuance.
+    "mlb_weather_park_self_cross": {
+        "sport": "mlb",
+        "atomic_unit": "game",
+        "outcome": "total_runs",
+        "baseline": "total_runs ~ attr_a + attr_b",
+        "pairing": "self_cross",
+        "left_pool": {"static_pool": "mlb_weather_park_asof"},
+        "feature_builder": "mlb_weather_park_totals_asof",
+        "blocklist_attrs": [],
+        "blocklist_pairs": [],
+    },
+    # ---- MLB WEATHER/PARK x UMPIRE cross (B4 lane) -- a clean same-grain
+    # ("game", outcome total_runs) cross exists (4637/4861 umpire games
+    # overlap the weather corpus, verified live) so this is registered, not
+    # skipped. Same left_pool/right_pool "cross" pairing shape mlb_sp_fatigue_
+    # state_conditioner/mlb_batquality_state_conditioner use, though
+    # semantically this is context x context (weather/park x umpire), not a
+    # pregame-prior x realized-in-game-state pairing -- see builders_weather_
+    # park.py module docstring for the honest framing note.
+    "mlb_weather_park_umpire_cross": {
+        "sport": "mlb",
+        "atomic_unit": "game",
+        "outcome": "total_runs",
+        "baseline": "total_runs ~ weather_park_attr + umpire_attr",
+        "pairing": "cross",
+        "left_pool": {"static_pool": "mlb_weather_park_asof"},
+        "right_pool": {"static_pool": "mlb_umpire_asof"},
+        "feature_builder": "mlb_weather_park_umpire_cross_asof",
+        "blocklist_attrs": [],
+        "blocklist_pairs": [],
+    },
     # ---- TENNIS / SOCCER (task-39b) -----------------------------------
     # Neither sport has a per-entity ATTRIBUTES profile registry wired into
     # THIS factory's grammar yet (their own domains/*/profiles/attribute_
@@ -450,6 +488,10 @@ STATIC_POOLS: Dict[str, List[str]] = {
     # MLB umpire-conditioned as-of attrs (B3 lane) -- see builders_umpire.py.
     "mlb_umpire_asof": [
         "ump_total_runs_tendency_asof", "ump_called_strike_proxy_asof",
+    ],
+    # MLB weather x park as-of attrs (B4 lane) -- see builders_weather_park.py.
+    "mlb_weather_park_asof": [
+        "wind_out_mph_raw", "temp_above_park_norm_asof", "park_runs_factor_asof",
     ],
 }
 
