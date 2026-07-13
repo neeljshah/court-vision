@@ -130,6 +130,56 @@ def test_per_sport_cadence_gates_runs(tmp_path):
     assert calls == ["nba", "nba"]
 
 
+def test_start_beat_written_before_first_cycle(tmp_path):
+    """m13 two-layer-HB pattern: the boot beat must land BEFORE the first
+    produce_fn call so a slow/blocking cycle 1 (e.g. a provider 429 boot
+    storm) is judged fresh against the boot beat, not a stale updated_at left
+    over from a prior crash."""
+    seen: Dict[str, Any] = {}
+
+    def _produce(sport: str, *, out_dir=None) -> str:
+        # by the time the first sport is produced, the start beat must
+        # already be on disk with a fresh updated_at and the boot note.
+        hb = scheduler.read_heartbeat(out_dir=out_dir)
+        seen["updated_at"] = hb.get("updated_at")
+        seen["note"] = hb.get("note")
+        return "%s/latest.json" % sport
+
+    clock = FakeClock(start=5000.0)
+    scheduler.serve_forever(
+        interval=10_000, clock=clock, out_dir=str(tmp_path),
+        produce_fn=_produce, sports=["nba"], max_ticks=1)
+
+    assert seen["updated_at"] == 5000.0
+    assert "boot-beat" in (seen["note"] or "")
+
+
+def test_start_beat_shape_matches_run_cycle_payload(tmp_path):
+    """The boot beat is written with run_cycle's own payload keys (no reader
+    -- supervisor or frontend -- needs a special case for the boot state)."""
+    scheduler._write_start_beat(str(tmp_path), now_fn=lambda: 42.0)
+    hb = scheduler.read_heartbeat(out_dir=str(tmp_path))
+    for key in ("updated_at", "cycle_count", "sports_run", "ok", "errors",
+                "sports", "note"):
+        assert key in hb
+    assert hb["updated_at"] == 42.0
+    assert hb["cycle_count"] == 0
+
+
+def test_per_cycle_beat_still_fires_after_start_beat(tmp_path):
+    """The start beat is a prelude, not a replacement -- run_cycle's own beat
+    must still land (and supersede the boot note) once the cycle completes."""
+    calls: List[str] = []
+    clock = FakeClock(start=1000.0)
+    scheduler.serve_forever(
+        interval=10_000, clock=clock, out_dir=str(tmp_path),
+        produce_fn=_make_produce(calls), sports=["nba"], max_ticks=1)
+    hb = scheduler.read_heartbeat(out_dir=str(tmp_path))
+    assert hb["cycle_count"] == 1
+    assert hb["sports_run"] == ["nba"]
+    assert "boot-beat" not in hb["note"]  # overwritten by the real cycle beat
+
+
 def test_empty_sports_writes_clean_heartbeat(tmp_path):
     hb = scheduler.run_cycle(
         [], out_dir=str(tmp_path),
