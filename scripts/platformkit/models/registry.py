@@ -202,10 +202,21 @@ REGISTRY = {
             {
                 "model_id": "tennis_match_gbm",
                 "model_class": "gbm",
-                "impl": "PLANNED",
-                "benchmark": "PENDING",
-                "oos_status": "PLANNED",
-                "notes": "Phase 3 lane to fill in.",
+                "impl": "scripts.platformkit.models.gbm_tennis_match",
+                "benchmark": "data/domains/tennis/gbm_match_benchmark.json",
+                "oos_status": "BENCHMARKED",
+                "notes": "xgboost (device=cuda) on 11 leak-free pregame asof features (elo/"
+                         "surface-elo from elo_tune, hold_pct/svpts_won asof, rank, surface, "
+                         "best_of, is_wta); trained ATP+WTA jointly, scored per tour. 4 "
+                         "chronological expanding folds, final fold (test>2022) matched to "
+                         "beat_the_close_ml[_wta]'s own TRAIN_YEAR_MAX=2022 split. Brier: GBM "
+                         "0.2141 vs close 0.1996 overall (atp 0.2156 vs 0.2019, wta 0.2096 vs "
+                         "0.1927), n=21074 pooled OOS -- TRAILS the close outside noise (paired "
+                         "delta 0.0145 CI[0.0132,0.0159], both tours also TRAILS individually). "
+                         "On the matched year>2022 split GBM edges out elo_platt itself (atp "
+                         "0.2157 vs 0.2177, wta 0.2118 vs 0.2133) but neither beats the close. "
+                         "top-gain features: rank_diff, surface_elo_diff, elo_diff. Expected/"
+                         "honest: GBM does not beat efficient tennis closes. Not a proven edge.",
             },
         ],
     },
