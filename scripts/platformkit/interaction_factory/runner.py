@@ -345,6 +345,7 @@ from scripts.platformkit.interaction_factory import builders_weather_park as _we
 from scripts.platformkit.interaction_factory import builders_market_micro as _marketmicro  # noqa: E402
 from scripts.platformkit.interaction_factory import builders_public_splits as _pubsplits  # noqa: E402
 from scripts.platformkit.interaction_factory import builders_form_trajectory as _formtraj  # noqa: E402
+from scripts.platformkit.interaction_factory import builders_nba_lineup as _nbalineup  # noqa: E402
 
 build_nba_boxdetail_frame = _t39b.build_nba_boxdetail_frame
 build_mlb_battrack_frame = _t39b.build_mlb_battrack_frame
@@ -384,6 +385,8 @@ _BUILDERS = {
     "mlb_public_splits_market_micro_cross_asof": _pubsplits._mlb_public_splits_market_micro_cross_builder,   # B6
     "nba_form_self_cross_asof": _formtraj._nba_form_self_cross_builder,   # Sonnet build lane, 149870ff follow-on
     "nba_form_state_conditioner_asof": _formtraj._nba_form_state_conditioner_builder,   # Sonnet build lane
+    "nba_onoff_self_cross_asof": _nbalineup._nba_onoff_self_cross_builder,   # B7 lane
+    "nba_onoff_state_conditioner_asof": _nbalineup._nba_onoff_state_conditioner_builder,   # B7 lane
 }
 
 
