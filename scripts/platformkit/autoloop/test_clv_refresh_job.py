@@ -7,6 +7,9 @@ Acceptance criteria:
 3. No clv_reconcile_*.json at all -> treated as due, both fns called.
 4. reconcile_fn/scoreboard_fn raising propagates (isolated one level up by
    maintenance_templates.run_all's own try/except -- not re-caught here).
+5. M16 output-correctness self-report: clean write of every KNOWN_CHANNELS
+   file -> output_verified True; a planted argv-garbage sibling or a missing
+   channel file -> output_verified False with the file named in anomalies.
 No real reconciler/scoreboard run over full history in any test.
 
 Run:
@@ -21,6 +24,7 @@ import time
 import pytest
 
 from scripts.platformkit.autoloop import clv_refresh_job as CR
+from scripts.platformkit.clv.clv_result_reconciler import KNOWN_CHANNELS
 
 
 def _touch_reconcile(tmp_path, age_h):
@@ -28,6 +32,12 @@ def _touch_reconcile(tmp_path, age_h):
     p.write_text("{}", encoding="utf-8")
     os.utime(p, (time.time() - age_h * 3600, time.time() - age_h * 3600))
     return p
+
+
+def _write_all_channels(tmp_path, skip=()):
+    for c in KNOWN_CHANNELS:
+        if c not in skip:
+            (tmp_path / f"clv_reconcile_{c}.json").write_text("{}", encoding="utf-8")
 
 
 def test_fresh_file_skips_no_calls(tmp_path):
@@ -117,6 +127,47 @@ def test_watermarks_param_accepted_and_ignored(tmp_path):
                              reconcile_fn=lambda: None, scoreboard_fn=lambda: None)
     assert out["status"] == "skipped"
     assert watermarks == {"unrelated": "untouched"}
+
+
+def test_output_verified_true_on_clean_run(tmp_path):
+    _touch_reconcile(tmp_path, age_h=48.0)
+    out = CR.run_clv_refresh(
+        ops_dir=tmp_path, write_closes_fn=lambda: None,
+        reconcile_fn=lambda: _write_all_channels(tmp_path),
+        scoreboard_fn=lambda: None,
+    )
+    assert out["output_verified"] is True
+    assert out["anomalies"] == []
+
+
+def test_output_verified_false_on_garbage_sibling(tmp_path):
+    _touch_reconcile(tmp_path, age_h=48.0)
+
+    def _reconcile():
+        _write_all_channels(tmp_path)
+        (tmp_path / "clv_reconcile_--interval.json").write_text("{}", encoding="utf-8")
+
+    out = CR.run_clv_refresh(
+        ops_dir=tmp_path, write_closes_fn=lambda: None,
+        reconcile_fn=_reconcile, scoreboard_fn=lambda: None,
+    )
+    assert out["output_verified"] is False
+    assert "unexpected:clv_reconcile_--interval.json" in out["anomalies"]
+
+
+def test_output_verified_false_on_missing_channel_file(tmp_path):
+    # _touch_reconcile pre-creates the "moneyline" file (used to trigger the
+    # staleness check); skip a DIFFERENT channel so this test exercises a
+    # genuinely missing file, not a stale-but-present one.
+    _touch_reconcile(tmp_path, age_h=48.0)
+    missing_channel = KNOWN_CHANNELS[1]
+    out = CR.run_clv_refresh(
+        ops_dir=tmp_path, write_closes_fn=lambda: None,
+        reconcile_fn=lambda: _write_all_channels(tmp_path, skip={missing_channel}),
+        scoreboard_fn=lambda: None,
+    )
+    assert out["output_verified"] is False
+    assert f"missing:clv_reconcile_{missing_channel}.json" in out["anomalies"]
 
 
 def test_default_callables_pass_empty_argv(monkeypatch):

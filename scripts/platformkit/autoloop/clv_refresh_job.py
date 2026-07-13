@@ -31,7 +31,7 @@ import time
 from pathlib import Path
 from typing import Any, Callable, Dict, Optional
 
-from scripts.platformkit.clv.clv_result_reconciler import _OUT_DIR as _OPS_DIR  # noqa: SLF001 -- reused, not redefined
+from scripts.platformkit.clv.clv_result_reconciler import _OUT_DIR as _OPS_DIR, KNOWN_CHANNELS  # noqa: SLF001 -- reused, not redefined
 
 logger = logging.getLogger(__name__)
 
@@ -74,6 +74,28 @@ def _default_write_closes() -> Any:
     return [K.write_closes(s) for s in _KX_SPORTS]
 
 
+def _verify_outputs(ops_dir: Path, run_started: float) -> Any:
+    """Report-only, never raises: each clv_reconcile_<channel>.json exists, parses, and is fresh; flags argv-garbage siblings (the clv_reconcile_--interval.json class)."""
+    import json
+    expected = {f"clv_reconcile_{c}.json" for c in KNOWN_CHANNELS}
+    anomalies = []
+    try:
+        for name in expected:
+            p = Path(ops_dir) / name
+            if not p.exists():
+                anomalies.append(f"missing:{name}")
+            elif p.stat().st_mtime < run_started - 1.0:
+                anomalies.append(f"stale:{name}")
+            else:
+                json.loads(p.read_text(encoding="utf-8"))
+        for p in Path(ops_dir).glob("clv_reconcile_*.json"):
+            if p.name not in expected:
+                anomalies.append(f"unexpected:{p.name}")
+    except Exception:  # noqa: BLE001 -- self-report must never raise
+        return False, ["verify_outputs_error"]
+    return (not anomalies, anomalies)
+
+
 def run_clv_refresh(watermarks: Optional[Dict[str, Any]] = None, *,
                     ops_dir: Optional[Path] = None,
                     age_fn: Optional[Callable[[Path], Optional[float]]] = None,
@@ -88,6 +110,7 @@ def run_clv_refresh(watermarks: Optional[Dict[str, Any]] = None, *,
     age_h = (age_fn or _newest_reconcile_age_h)(d)
     if age_h is not None and age_h < _STALE_AFTER_H:
         return {"status": "skipped", "age_h": round(age_h, 1)}
+    run_started = time.time()
     try:
         (write_closes_fn or _default_write_closes)()
     except Exception:  # noqa: BLE001 -- a close-derive failure must never block CLV refresh
@@ -95,7 +118,9 @@ def run_clv_refresh(watermarks: Optional[Dict[str, Any]] = None, *,
                        exc_info=True)
     (reconcile_fn or _default_reconcile)()
     (scoreboard_fn or _default_scoreboard)()
-    return {"status": "ran", "age_h": age_h}
+    verified, anomalies = _verify_outputs(d, run_started)
+    return {"status": "ran", "age_h": age_h, "output_verified": verified,
+            "anomalies": anomalies}
 
 
 __all__ = ["run_clv_refresh"]
