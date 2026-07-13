@@ -310,6 +310,54 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
         "blocklist_attrs": [],
         "blocklist_pairs": [],
     },
+    # ---- MLB BATTED-BALL QUALITY (B2 lane, 2026-07-13) ---------------------
+    # Batter EV/barrel-rate/sweet-spot + pitcher EV-allowed, both windowed
+    # (_30d / _season, strictly-as-of -- builders_statcast_batquality.py),
+    # self-crossed across the FULL 8-name pool (batter x batter, batter x
+    # pitcher, pitcher x pitcher pairs all legal, same flat-pool shape as
+    # nba_shot_offense_x_offense) to predict THIS plate appearance's own
+    # realized launch_speed on contact (real, not asof; no-batted-ball PAs
+    # honestly drop). Pool is a STATIC_POOL (generator-local, same seam as
+    # mlb_sp_ingame_fatigue_state) since none of these 4 metrics exist in
+    # domains/mlb/profiles/attribute_registry.py yet.
+    "mlb_batquality_self_cross": {
+        "sport": "mlb",
+        "atomic_unit": "plate_appearance",
+        "outcome": "bip_launch_speed",
+        "baseline": "bip_launch_speed ~ attr_a + attr_b",
+        "pairing": "self_cross",
+        "left_pool": {"static_pool": "mlb_batquality_prior"},
+        "feature_builder": "mlb_batquality_asof",
+        "blocklist_attrs": [],
+        "blocklist_pairs": [],
+    },
+    # ---- MLB BATTED-BALL-QUALITY STATE-CONDITIONER cross (B2 lane) -- the
+    # nba_state_conditioner / mlb_sp_fatigue_state_conditioner pattern: crosses
+    # a PRIOR (this pool, narrowed via `exclude` to just the 2 pitcher_ev_
+    # allowed_asof windows -- the only subset sharing this template's atomic
+    # unit, pitcher_appearance_checkpoint, with no batter to key a checkpoint
+    # row on) against mlb_sp_ingame_fatigue_state -- the SAME realized
+    # in-game-state pool bc395262 registered, and the only MLB "realized
+    # in-game state" pool that exists in generator.py today (semantically
+    # correct choice over mlb_pa_attr_x_count_state's right_pool, which is a
+    # plate_appearance-level count state with a DIFFERENT, unregistered
+    # builder/atomic-unit) -- predicting rest_of_appearance_xwoba, reusing
+    # build_mlb_fatigue_checkpoint_frame verbatim.
+    "mlb_batquality_state_conditioner": {
+        "sport": "mlb",
+        "atomic_unit": "pitcher_appearance_checkpoint",
+        "outcome": "rest_of_appearance_xwoba",
+        "baseline": "rest_of_appearance_xwoba ~ prior_attr_a + state_attr_b",
+        "pairing": "cross",
+        "left_pool": {"static_pool": "mlb_batquality_prior",
+                       "exclude": ["batter_ev_mean_asof_30d", "batter_ev_mean_asof_season",
+                                   "batter_barrel_rate_asof_30d", "batter_barrel_rate_asof_season",
+                                   "batter_la_sweetspot_asof_30d", "batter_la_sweetspot_asof_season"]},
+        "right_pool": {"static_pool": "mlb_sp_ingame_fatigue_state"},
+        "feature_builder": "mlb_batquality_state_conditioner_asof",
+        "blocklist_attrs": [],
+        "blocklist_pairs": [],
+    },
     # ---- TENNIS / SOCCER (task-39b) -----------------------------------
     # Neither sport has a per-entity ATTRIBUTES profile registry wired into
     # THIS factory's grammar yet (their own domains/*/profiles/attribute_
@@ -366,6 +414,13 @@ STATIC_POOLS: Dict[str, List[str]] = {
     ],
     "mlb_sp_fatigue_prior": [
         "woba_tto3_minus_tto1",
+    ],
+    # MLB batted-ball quality (B2 lane) -- see builders_statcast_batquality.py.
+    "mlb_batquality_prior": [
+        "batter_ev_mean_asof_30d", "batter_ev_mean_asof_season",
+        "batter_barrel_rate_asof_30d", "batter_barrel_rate_asof_season",
+        "batter_la_sweetspot_asof_30d", "batter_la_sweetspot_asof_season",
+        "pitcher_ev_allowed_asof_30d", "pitcher_ev_allowed_asof_season",
     ],
 }
 
