@@ -43,6 +43,59 @@ def test_devig_twoway_sums_to_one_and_orders_correctly():
     assert 0.0 < fb < fa < 1.0
 
 
+# --------------------------------------------------------------------------- #
+# Degenerate booksum <= 1 (proxy/stale/arb quote): Shin's solver requires
+# booksum > 1 and used to raise -- crashed every uncaught caller (a 3-day
+# m1_paper grading-tick outage). devig_twoway now bypasses Shin below this
+# threshold and returns the implied probs proportionally normalised to 1.
+# --------------------------------------------------------------------------- #
+def test_devig_twoway_subone_booksum_bypasses_shin_no_raise():
+    pa, pb = 2.10, 2.10  # 1/2.10 + 1/2.10 = 0.952381 < 1 (a two-way arb quote)
+    fa, fb = os_mod.devig_twoway(pa, pb)
+    assert abs((fa + fb) - 1.0) < 1e-9
+    assert abs(fa - 0.5) < 1e-9 and abs(fb - 0.5) < 1e-9  # symmetric -> 50/50
+
+
+def test_devig_twoway_exact_booksum_one_same_branch():
+    # booksum == 1.0 exactly (vig-free by construction, e.g. a kx-ticker naive
+    # complement) -- hits the same bypass branch as sub-1 (not Shin); implied
+    # probs already sum to 1 so they pass through unchanged.
+    fa, fb = os_mod.devig_twoway(2.0, 2.0)  # 1/2.0 + 1/2.0 == 1.0 exactly
+    assert fa == 0.5 and fb == 0.5
+
+
+def test_devig_twoway_normal_vig_matches_shin_exactly_regression():
+    # Real-vig asymmetric pair (booksum ~1.043, well above 1 + eps) -- the
+    # unchanged code path. Must match a direct shin_devig_decimal call to
+    # 1e-12: the degenerate-pair guard must not perturb existing Shin output.
+    from scripts.platformkit.eval_gate.shin import shin_devig_decimal
+    pa, pb = 1.80, 2.05
+    fa, fb = os_mod.devig_twoway(pa, pb)
+    probs, _z = shin_devig_decimal([pa, pb])
+    assert abs(fa - probs[0]) < 1e-12
+    assert abs(fb - probs[1]) < 1e-12
+    # Sanity the Shin path (not the bypass) actually ran: Shin's favourite-
+    # longshot shrinkage differs from naive proportional normalisation for an
+    # asymmetric vig pair.
+    booksum = 1.0 / pa + 1.0 / pb
+    naive_fa = (1.0 / pa) / booksum
+    assert abs(fa - naive_fa) > 1e-6
+
+
+def test_devig_twoway_live_incident_fixture_booksum_0_7477():
+    # Representative of the diagnosed live incident: degenerate proxy-close
+    # pairs with booksum in [0.72, 0.82] crashed shin_devig_decimal's
+    # `assert B > 1.0` for every uncaught caller for 3 days. This fixture
+    # reproduces that band (booksum ~0.7477) -- must not raise.
+    pa, pb = 2.05, 3.85
+    booksum = 1.0 / pa + 1.0 / pb
+    assert 0.72 < booksum < 0.82  # matches the diagnosed live-incident band
+    fa, fb = os_mod.devig_twoway(pa, pb)
+    assert abs((fa + fb) - 1.0) < 1e-9
+    assert abs(fa - (1.0 / pa) / booksum) < 1e-9
+    assert abs(fb - (1.0 / pb) / booksum) < 1e-9
+
+
 def test_detect_arb_known_arb():
     # a=2.10, b=2.10 -> 1/2.10 + 1/2.10 = 0.952381 < 1 -> arb.
     res = os_mod.detect_arb(2.10, 2.10)
@@ -90,10 +143,12 @@ def test_summarise_twoway_bundles_fields():
     out = os_mod.summarise_twoway(book_prices, "HOME", "AWAY", model_prob_a=0.55)
     assert out["best_a_book"] == "DK" and out["best_a_price"] == 2.10
     assert out["best_b_book"] == "FD" and out["best_b_price"] == 2.10
-    # 1/2.10 + 1/2.10 < 1 -> arb present. An arb has booksum < 1, so no-vig devig
-    # is undefined (Shin needs booksum > 1) -> fair_prob_* stay None (honest).
+    # 1/2.10 + 1/2.10 < 1 -> arb present. An arb has booksum < 1, so Shin has no
+    # overround to remove; devig_twoway bypasses Shin and proportionally
+    # normalises the implied probs (symmetric prices -> 0.5/0.5) instead of
+    # leaving fair_prob_* None.
     assert out["arb_pct"] is not None and out["arb_pct"] > 0
-    assert out["fair_prob_a"] is None and out["fair_prob_b"] is None
+    assert out["fair_prob_a"] == 0.5 and out["fair_prob_b"] == 0.5
     # model EV vs best price on each side
     assert abs(out["model_ev_a"] - (0.55 * 2.10 - 1.0)) < 1e-6
     assert abs(out["model_ev_b"] - (0.45 * 2.10 - 1.0)) < 1e-6
