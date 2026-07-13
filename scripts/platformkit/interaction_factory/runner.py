@@ -342,6 +342,7 @@ from scripts.platformkit.interaction_factory import builders_statcast_fatigue as
 from scripts.platformkit.interaction_factory import builders_statcast_batquality as _scbatq  # noqa: E402
 from scripts.platformkit.interaction_factory import builders_umpire as _umpire  # noqa: E402
 from scripts.platformkit.interaction_factory import builders_weather_park as _weatherpark  # noqa: E402
+from scripts.platformkit.interaction_factory import builders_market_micro as _marketmicro  # noqa: E402
 
 build_nba_boxdetail_frame = _t39b.build_nba_boxdetail_frame
 build_mlb_battrack_frame = _t39b.build_mlb_battrack_frame
@@ -375,6 +376,8 @@ _BUILDERS = {
     "mlb_umpire_totals_asof": _umpire._mlb_umpire_asof_builder,   # B3
     "mlb_weather_park_totals_asof": _weatherpark._mlb_weather_park_asof_builder,   # B4
     "mlb_weather_park_umpire_cross_asof": _weatherpark._mlb_weather_park_umpire_cross_builder,   # B4
+    "mlb_market_micro_totals_asof": _marketmicro._mlb_market_micro_asof_builder,   # B5
+    "mlb_market_micro_weather_cross_asof": _marketmicro._mlb_market_micro_weather_cross_builder,   # B5
 }
 
 
