@@ -78,6 +78,13 @@ interaction-factory gate survivor (SURVIVES_PREREG_PROVISIONAL) that carries no
 replication row yet, bounded per tick; own-success watermark (no age gate --
 rescans the ledger fresh every tick).
 
+Job #22, false_discovery_accounting (scripts.platformkit.autoloop.false_discovery_job,
+M22), nightly PREREG R1/R2 accounting (docs/research/PREREG_ALPHA_BUDGETS.md):
+backfills one row per completed calendar date in the interaction-factory ledger
+(n_tested, families_touched, expected_false_survivors, observed_survivors,
+within_noise_floor) into its OWN false_discovery_ledger.jsonl -- read-only over
+the verdict ledger, never writes it; own-success watermark (idempotent per date).
+
 run_all() dispatches every job through one table (key, module path, callable
 name, arg names) instead of a hand-written try/except per job: each entry is
 imported and called fresh every cycle (never cached at module import time) so
@@ -294,6 +301,9 @@ _JOB_TABLE: List[Tuple[str, str, str, Tuple[str, ...]]] = [
     # replicate_survivors/replicate_batch2b workers (own-success watermark; no age gate)
     ("replication_cadence", "scripts.platformkit.autoloop.replication_job",
      "run_replication_cadence", ("watermarks",)),
+    # M22 nightly PREREG R1/R2 false-discovery accounting (own ledger; read-only over the verdict ledger)
+    ("false_discovery_accounting", "scripts.platformkit.autoloop.false_discovery_job",
+     "run_false_discovery_accounting", ("watermarks",)),
 ]
 
 
