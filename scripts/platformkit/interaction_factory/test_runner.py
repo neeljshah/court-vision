@@ -50,26 +50,37 @@ def test_asof_feature_is_leak_free():
 
 
 def test_not_testable_when_builder_unregistered(tmp_path):
-    # nba_shot_attr_x_state's feature_builder (nba_offense_state_asof) is not
-    # registered -> NOT_TESTABLE (nba_stint_lineup_x_lineup now HAS a real
-    # builder -- see test_stint_and_pa_builders_are_registered below).
+    # mlb_pa_attr_x_count_state's feature_builder (mlb_pa_count_state_asof) is
+    # still genuinely unregistered -> NOT_TESTABLE (nba_shot_attr_x_state now
+    # HAS a real builder -- see test_offense_state_builder_is_registered below).
     ledger = tmp_path / "ledger.jsonl"
-    rows = RUN.run_batch("nba_shot_attr_x_state", 20, ledger_path=ledger)
+    rows = RUN.run_batch("mlb_pa_attr_x_count_state", 20, ledger_path=ledger)
     assert rows, "expected at least one candidate row"
     assert all(r["verdict"] == RUN.NOT_TESTABLE for r in rows)
     assert all(r["cum_K"] == 0 for r in rows)  # NOT_TESTABLE spends no budget
     assert all(r["edge_claimed"] is False for r in rows)
     # additive hypothesis_source field: every written row carries it, default 'blind'.
     assert all(r.get("hypothesis_source") == "blind" for r in rows)
-    # re-run dedupes: no new rows appended for already-tested candidates.
-    again = RUN.run_batch("nba_shot_attr_x_state", 20, ledger_path=ledger)
-    assert again == []
+    # NOT_TESTABLE is non-terminal (tested_ids docstring / propose_gate_job.py):
+    # a STILL-unregistered builder re-enumerates the SAME candidates every call
+    # (never deduped) -- only a terminal verdict (SURVIVES/NULL/...) dedupes.
+    again = RUN.run_batch("mlb_pa_attr_x_count_state", 20, ledger_path=ledger)
+    assert len(again) == len(rows)
+    assert all(r["verdict"] == RUN.NOT_TESTABLE for r in again)
 
 
 def test_stint_and_pa_builders_are_registered():
     # Task-50 additions: both were previously unregistered (-> NOT_TESTABLE).
     assert "nba_stint_lineup_asof" in RUN._BUILDERS
     assert "mlb_pa_asof" in RUN._BUILDERS
+
+
+def test_offense_state_builder_is_registered():
+    # nba_shot_attr_x_state's feature_builder was unregistered -> NOT_TESTABLE
+    # (factory-plumbing fix); now shares _nba_builder with nba_player_offense_asof.
+    assert "nba_offense_state_asof" in RUN._BUILDERS
+    assert RUN._BUILDERS["nba_offense_state_asof"] is RUN._nba_builder
+    assert "clutch_efg" in RUN._NBA_ATTR_COLS
 
 
 def _synthetic_stint_df():
@@ -117,6 +128,38 @@ def _synthetic_pa_df():
                       "pitch_number": 2, "pitcher": 9, "batter": 1, "events": ev,
                       "description": desc2, "launch_speed": ls})
     return pd.DataFrame(rows)
+
+
+def _synthetic_platoon_df():
+    """One pitcher, 5 chronological PAs alternating opposing-batter stand:
+    R(walk,on-base) / R(K) / L(single,on-base) / L(K) / R(K). Tests the
+    per-hand floor + leak-free cumsum-shift together (min_prior_pa_per_hand=1)."""
+    rows = []
+    for gp, stand, ev, desc in [
+        (1, "R", "walk", "ball"),
+        (2, "R", "strikeout", "swinging_strike"),
+        (3, "L", "single", "hit_into_play"),
+        (4, "L", "strikeout", "swinging_strike"),
+        (5, "R", "strikeout", "swinging_strike"),
+    ]:
+        rows.append({"game_pk": gp, "game_date": "2025-0%d-01" % gp, "at_bat_number": 1,
+                      "pitch_number": 1, "pitcher": 9, "batter": 1, "stand": stand,
+                      "events": ev, "description": desc, "launch_speed": None})
+    return pd.DataFrame(rows)
+
+
+def test_mlb_pa_platoon_split_is_leak_free_and_per_hand_floored():
+    frame = RUN.build_mlb_pa_frame(_synthetic_platoon_df(), ["platoon_split"],
+                                    min_prior_pa_per_hand=1)
+    frame = frame.reset_index(drop=True)
+    # PA1-PA3: at least one hand has zero prior PAs -> undefined, never invented.
+    assert pd.isna(frame.loc[0, "asof__platoon_split"])
+    assert pd.isna(frame.loc[1, "asof__platoon_split"])
+    assert pd.isna(frame.loc[2, "asof__platoon_split"])
+    # PA4: prior R rate = 1/2 (PA1 on-base, PA2 not), prior L rate = 1/1 (PA3 on-base).
+    assert abs(frame.loc[3, "asof__platoon_split"] - (0.5 - 1.0)) < 1e-9
+    # PA5: prior R rate = 1/2 (unchanged), prior L rate = 1/2 (PA3 on-base, PA4 not).
+    assert abs(frame.loc[4, "asof__platoon_split"] - (0.5 - 0.5)) < 1e-9
 
 
 def test_mlb_pa_frame_is_leak_free():

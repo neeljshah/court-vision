@@ -77,7 +77,7 @@ TEMPLATES: Dict[str, Dict[str, Any]] = {
             "zone_efg_rim", "zone_efg_above_break_3", "transition_efg",
         ]},
         "right_pool": {"attributes": ["late_clock_efg", "clutch_efg"]},
-        "feature_builder": "nba_offense_state_asof",   # not yet registered -> NOT_TESTABLE
+        "feature_builder": "nba_offense_state_asof",   # registered -> runner._BUILDERS (runner.py L~330)
         "blocklist_attrs": [],
         "blocklist_pairs": [],
     },

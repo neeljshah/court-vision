@@ -56,6 +56,7 @@ _NBA_ATTR_COLS = {
     "transition_efg": ("transition_fgm", "transition_fga", "transition_fg3m"),
     "halfcourt_efg": ("halfcourt_fgm", "halfcourt_fga", "halfcourt_fg3m"),
     "late_clock_efg": ("late_clock_fgm", "late_clock_fga", "late_clock_fg3m"),
+    "clutch_efg": ("clutch_fgm", "clutch_fga", "clutch_fg3m"),
 }
 def nba_source_for_season(season: str) -> Path:
     """Path to the player-offense-events parquet for one season (e.g. "2024_25").
@@ -175,10 +176,13 @@ def _nba_stint_builder(attrs: List[str], tpl: Dict[str, Any]) -> Optional[Dict[s
 MIN_PRIOR_PA = 50    # min strictly-prior PAs/swings for a batter/pitcher as-of rate
 MIN_PRIOR_BIP = 20   # min strictly-prior batted-ball events for an as-of contact_quality
 MIN_PRIOR_PITCHES = 100  # min strictly-prior pitches for a pitch-level as-of rate (edge_zone_rate, chase_rate)
+MIN_PRIOR_PA_PER_HAND = 100  # platoon_split per-hand floor (attribute_registry.py + platoon_split_index.py precedent)
 
 _MLB_PA_YEAR = "2025"
 _K_EVENTS = frozenset({"strikeout", "strikeout_double_play"})
 _BB_EVENTS = frozenset({"walk", "intent_walk"})
+_ON_BASE_EVENTS = frozenset({  # platoon_split's reaches_base ingredient
+    "single", "double", "triple", "home_run", "walk", "intent_walk", "hit_by_pitch"})
 _MISS_DESCRIPTIONS = frozenset({"swinging_strike", "swinging_strike_blocked"})
 _SWING_DESCRIPTIONS = _MISS_DESCRIPTIONS | frozenset({"foul", "foul_tip", "hit_into_play"})
 _EDGE_ZONES = frozenset({11.0, 12.0, 13.0, 14.0})  # Statcast raw zone 11-14 (just-outside-corners cells)
@@ -196,7 +200,8 @@ _MLB_PA_CORPUS = "savant_full__%s_pa" % _MLB_PA_YEAR
 def build_mlb_pa_frame(pitch_df: pd.DataFrame, attrs: List[str], *,
                         min_prior_pa: int = MIN_PRIOR_PA,
                         min_prior_bip: int = MIN_PRIOR_BIP,
-                        min_prior_pitches: int = MIN_PRIOR_PITCHES) -> pd.DataFrame:
+                        min_prior_pitches: int = MIN_PRIOR_PITCHES,
+                        min_prior_pa_per_hand: int = MIN_PRIOR_PA_PER_HAND) -> pd.DataFrame:
     """Leak-free per-plate-appearance frame built from per-pitch Statcast rows.
 
     Outcome `y` = is_k (0/1) for the PA's LAST pitch's `events`. Batter
@@ -218,21 +223,20 @@ def build_mlb_pa_frame(pitch_df: pd.DataFrame, attrs: List[str], *,
     chase_rate/edge_zone_rate/release_spin_rate are pitch-level rates
     (denominated in prior PITCHES, min_prior_pitches), first_pitch_strike_rate
     is PA-level (one first pitch per PA, min_prior_pa).
-    ponytail: 'platoon_split' (pitcher) needs a per-batter-stand as-of split
-    merge -- deferred; a candidate naming it simply falls out NOT_TESTABLE
-    (column absent), never invented.
+    'platoon_split' (pitcher) is attribute_registry.py's own formula
+    (reaches_base_vs_r - reaches_base_vs_l, floor 100 PA/hand): strictly-prior
+    on-base rate allowed split by the OPPOSING BATTER's stand ('R'/'L'),
+    cumsum-shift per pitcher same as every other as-of rate here.
     """
     d = pitch_df.sort_values(["game_pk", "at_bat_number", "pitch_number"])
-    # zone/type are OPTIONAL source columns (older callers/synthetic test frames may
-    # not carry them) -- absent -> an all-NaN/False stand-in, so edge_zone_rate/
-    # chase_rate/first_pitch_strike_rate honestly fall out NOT_TESTABLE downstream
-    # (empty asof column) rather than a KeyError.
+    # zone/type/spin/stand are OPTIONAL source columns (older callers/synthetic
+    # test frames may not carry them) -- absent -> an all-NaN/empty stand-in, so
+    # the dependent asof__ column honestly falls out NOT_TESTABLE downstream
+    # (empty/under-floor) rather than a KeyError.
     zone_col = d["zone"] if "zone" in d.columns else pd.Series(float("nan"), index=d.index)
     type_col = d["type"] if "type" in d.columns else pd.Series("", index=d.index)
-    # release_spin_rate is likewise OPTIONAL (spin_rate_deception mapping) --
-    # absent -> all-NaN, so asof__release_spin_rate honestly falls out
-    # NOT_TESTABLE downstream rather than a KeyError.
     d["_spin"] = d["release_spin_rate"] if "release_spin_rate" in d.columns else float("nan")
+    d["_stand"] = d["stand"] if "stand" in d.columns else ""
     d = d.assign(
         is_swing=d["description"].isin(_SWING_DESCRIPTIONS),
         is_miss=d["description"].isin(_MISS_DESCRIPTIONS),
@@ -249,11 +253,13 @@ def build_mlb_pa_frame(pitch_df: pd.DataFrame, attrs: List[str], *,
         n_out_of_zone=("is_out_of_zone", "sum"), n_chase_swing=("is_chase_swing", "sum"),
         first_pitch_strike=("is_strike_pitch", "first"),
         spin_sum=("_spin", lambda s: s.fillna(0.0).sum()), n_spin=("_spin", "count"),
+        stand=("_stand", "first"),
     ).reset_index()
     pa = pa.sort_values(["game_date", "game_pk", "at_bat_number"]).reset_index(drop=True)
     pa["y"] = pa["events"].isin(_K_EVENTS).astype(float)
     pa["is_bb"] = pa["events"].isin(_BB_EVENTS).astype(float)
     pa["is_bip"] = pa["launch_speed"].notna()
+    pa["is_on_base"] = pa["events"].isin(_ON_BASE_EVENTS).astype(float)
 
     bgrp = pa.groupby("batter", sort=False)
     if "K_avoidance" in attrs:
@@ -292,6 +298,19 @@ def build_mlb_pa_frame(pitch_df: pd.DataFrame, attrs: List[str], *,
         cum_spin = pgrp["spin_sum"].transform(lambda s: s.cumsum().shift(1))
         cum_nspin = pgrp["n_spin"].transform(lambda s: s.cumsum().shift(1))
         pa["asof__release_spin_rate"] = cum_spin / cum_nspin.where(cum_nspin >= min_prior_pitches)
+    if "platoon_split" in attrs:
+        # reaches_base_vs_r - reaches_base_vs_l, each hand floored independently;
+        # .groupby(pa["pitcher"]) (not pgrp) avoids relying on pgrp seeing columns
+        # added to `pa` after its own creation.
+        is_r = (pa["stand"] == "R").astype(float)
+        is_l = (pa["stand"] == "L").astype(float)
+        cum_reach_r = (pa["is_on_base"] * is_r).groupby(pa["pitcher"]).transform(lambda s: s.cumsum().shift(1))
+        cum_n_r = is_r.groupby(pa["pitcher"]).transform(lambda s: s.cumsum().shift(1))
+        cum_reach_l = (pa["is_on_base"] * is_l).groupby(pa["pitcher"]).transform(lambda s: s.cumsum().shift(1))
+        cum_n_l = is_l.groupby(pa["pitcher"]).transform(lambda s: s.cumsum().shift(1))
+        rate_r = cum_reach_r / cum_n_r.where(cum_n_r >= min_prior_pa_per_hand)
+        rate_l = cum_reach_l / cum_n_l.where(cum_n_l >= min_prior_pa_per_hand)
+        pa["asof__platoon_split"] = rate_r - rate_l
 
     keep = ["batter", "pitcher", "game_pk", "at_bat_number", "y"] + [
         "asof__" + a for a in attrs if ("asof__" + a) in pa.columns]
@@ -302,7 +321,7 @@ def _mlb_pa_builder(attrs: List[str], tpl: Dict[str, Any]) -> Optional[Dict[str,
     if not _MLB_PA_SOURCE.exists():
         return None
     cols = ["game_pk", "game_date", "at_bat_number", "pitch_number", "pitcher", "batter",
-            "events", "description", "launch_speed", "zone", "type", "release_spin_rate"]
+            "events", "description", "launch_speed", "zone", "type", "release_spin_rate", "stand"]
     frame = build_mlb_pa_frame(pd.read_parquet(_MLB_PA_SOURCE, columns=cols), attrs)
     return {"frame": frame, "cluster": "pitcher", "corpus": _MLB_PA_CORPUS, "kind": "logit"}
 
@@ -328,6 +347,10 @@ build_soccer_match_frame = _t39b.build_soccer_match_frame
 
 _BUILDERS = {
     "nba_player_offense_asof": _nba_builder,
+    # nba_shot_attr_x_state's "state" pool (late_clock_efg, clutch_efg) is the
+    # same zone/situational eFG split family, same source parquet -- reuse
+    # _nba_builder verbatim rather than a new builder file.
+    "nba_offense_state_asof": _nba_builder,
     "nba_stint_lineup_asof": _nba_stint_builder,
     "mlb_pa_asof": _mlb_pa_builder,
     "nba_boxdetail_asof": _t39b._nba_boxdetail_builder,
