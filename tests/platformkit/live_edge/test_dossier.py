@@ -56,6 +56,26 @@ def fixture_root(tmp_path: Path) -> Path:
         "## Uncovered bet shapes (backlog)\n\n- shape_one\n- shape_two\n\n## Next section\n\nother\n",
         encoding="utf-8",
     )
+
+    (le / "evidence").mkdir(parents=True)
+    (le / "evidence/rulings.json").write_text(
+        json.dumps({"rulings": [{
+            "id": "width_correction_tier1",
+            "ts": "2026-07-14T20:45:00Z",
+            "ruled_by": "fable",
+            "statement": "Width-correction class promoted TIER-1.",
+            "evidence": [
+                {"corpus": "nba_player_points", "artifact": "a.md",
+                 "class_delta": 0.0321, "ci": [0.0224, 0.0418], "p": 2.2e-10,
+                 "entities": "131/159", "commit": "49e1d184"},
+                {"corpus": "mlb_team_runs", "artifact": "b.md",
+                 "class_delta": 0.0391, "ci": [0.0334, 0.0447], "p": 1.5e-14,
+                 "entities": "26/30", "commit": "c20ca67b"},
+            ],
+            "binding_caveats": ["calibration-vs-own-baseline, NOT edge-vs-market"],
+        }]}),
+        encoding="utf-8",
+    )
     return root
 
 
@@ -81,9 +101,26 @@ def test_sections_present(fixture_root: Path):
 
 def test_reads_real_fixture_numbers(fixture_root: Path):
     text = generate(fixture_root)
-    assert "2/3 entities survive" in text
     assert "shape_one, shape_two" in text
     assert "shadow conditioner rows on disk: 2" in text
+
+
+def test_ruling_renders_tier1_in_section_a(fixture_root: Path):
+    text = generate(fixture_root)
+    assert "TIER-1" in text
+    assert "mlb_team_runs" in text and "+0.0391" in text
+    assert "calibration-vs-own-baseline, NOT edge-vs-market" in text
+    # tier-1 landed -> replication-missing line replaced by edge-vs-market line
+    assert "Independent-corpus replication" not in text
+    assert "Edge-vs-market" in text
+
+
+def test_no_ruling_falls_back_to_tier2(fixture_root: Path):
+    (fixture_root / "data/omni/live_edge/evidence/rulings.json").unlink()
+    text = generate(fixture_root)
+    assert "TIER-2 PROVISIONAL" in text
+    assert "2/3 entities survive" in text
+    assert "Independent-corpus replication" in text
 
 
 def test_refuses_banned_tokens_directly():
