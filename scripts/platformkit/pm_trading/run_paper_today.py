@@ -184,7 +184,8 @@ def _record_priced(row, sport, matchup, meta, side, price, prob, selection,
                             model_prob=float(prob), stake_units=stake_units,
                             event_id=meta["event_id"],
                             game_number=dh_stamp.get("game_number"),
-                            game_pk=dh_stamp.get("game_pk"), path=ctx.lpath)
+                            game_pk=dh_stamp.get("game_pk"), path=ctx.lpath,
+                            claim_tags=claim_tags)
     assert saved["executed"] is False  # honesty invariant, belt-and-braces
     assert float(saved.get("stake_units", 0.0)) == stake_units  # units, never $
     ctx.ledger_keys.add(market_key)

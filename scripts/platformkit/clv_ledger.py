@@ -149,6 +149,7 @@ def record_bet(
     game_pk: Optional[int] = None,
     path: Optional[Path] = None,
     stake: Optional[float] = None,  # deprecated alias -> treated as UNITS, never $
+    claim_tags: Optional[Dict[str, bool]] = None,
 ) -> Dict[str, Any]:
     """Append one open bet to the CLV ledger and return the stored record.
 
@@ -159,6 +160,13 @@ def record_bet(
     when the caller resolved them at placement time (see pm_trading.paper_today_
     support.mlb_dh_stamp); omitted -> field absent, exactly like a pre-fix row, so
     settle-side code that does not yet look for them is unaffected.
+
+    claim_tags (optional, claims-engine persistence fix): {card_id: bool} computed by
+    condition_tagger.tag at placement time. Additive, backward-compat -- omitted or
+    empty means the field is left off the record entirely, so every pre-fix row and
+    every caller that never passes it is unaffected. This is the on-disk source
+    card_grader needs to grade pregame cards (it currently finds none because no
+    caller persisted this field).
     """
     s = str(side).strip().lower()
     if s not in (_SIDE_HOME, _SIDE_AWAY):
@@ -192,6 +200,8 @@ def record_bet(
         record["game_number"] = int(game_number)
     if game_pk is not None:
         record["game_pk"] = int(game_pk)
+    if claim_tags:
+        record["claim_tags"] = dict(claim_tags)
     record["bet_id"] = bet_id(record)
     target = Path(path) if path is not None else DEFAULT_LEDGER
     _append_line(record, target)
