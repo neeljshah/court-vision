@@ -8,7 +8,9 @@ from __future__ import annotations
 
 from scripts.platformkit.live_edge.clv.clv_trial import (
     aggregate_trial, clv_distribution, conditioned_delta, market_family,
-    same_book_split, selection_policy, verdict_label)
+    prob_point_clv, robust_clv_stats, robust_verdict_label, same_book_split,
+    selection_policy, share_beating_close, stake_weighted_mean, trimmed_mean,
+    verdict_label)
 from scripts.platformkit.live_edge.shadow.shadow_ledger import grade_row
 
 
@@ -103,3 +105,56 @@ def test_aggregate_trial_end_to_end_fixture_and_never_claims_edge():
     assert "nba.moneyline" in board["families"]
     assert "mlb.total" in board["families"]
     assert set(board["per_sport"].keys()) == {"nba", "mlb"}
+
+
+# ---------------------------------------------------------------------------
+# Robust verdict -- the exact false-positive bug (longshot-skewed mean vs
+# negative median) must NOT come back AHEAD.
+# ---------------------------------------------------------------------------
+
+def _longshot_skewed_population(n_losers=20, n_winners=1):
+    """Mirrors the real 981-bet bug shape: most bets lose a little (median
+    negative, most bets don't beat close), a couple of longshots win huge on
+    a percent basis and drag the raw mean positive."""
+    losers = [-3.0] * n_losers
+    winners = [80.0] * n_winners
+    return losers + winners
+
+
+def test_share_beating_close_and_trimmed_mean_resist_longshot_skew():
+    vals = _longshot_skewed_population()
+    assert share_beating_close(vals) < 0.5
+    # raw mean is dragged positive by the longshot; trimmed mean is not.
+    assert (sum(vals) / len(vals)) > 0
+    assert trimmed_mean(vals, trim=0.1) < 0
+
+
+def test_stake_weighted_mean_matches_hand_computed():
+    vals = [10.0, -10.0]
+    weights = [3.0, 1.0]
+    assert stake_weighted_mean(vals, weights) == 5.0  # (30-10)/4
+
+
+def test_prob_point_clv_bounded_unlike_clv_pct():
+    # a longshot taken at implied .05 vs fair close .10 has clv_pct=100% but
+    # only 5 probability points -- prob_point_clv must stay bounded.
+    assert prob_point_clv(fair_close_prob=0.10, taken_implied_prob=0.05) == 5.0
+
+
+def test_robust_verdict_rejects_the_real_bug_shape_ahead_via_mean_skew():
+    vals = _longshot_skewed_population()
+    stats = robust_clv_stats(vals)
+    verdict = robust_verdict_label(stats, min_n=5)
+    # the legacy mean-CI verdict would call this AHEAD (mean > 0); the robust
+    # verdict must not, because median<0 and share<50%.
+    assert verdict != "AHEAD_OF_CLOSE (provisional)"
+    assert verdict == "BEHIND_CLOSE (provisional)"
+
+
+def test_robust_verdict_ahead_requires_all_four_conditions():
+    # a genuinely robust win: most bets beat close, median positive, trimmed
+    # CI excludes 0, probability-point agrees.
+    vals = [2.0] * 15 + [-1.0] * 5
+    pp = [1.5] * 15 + [-0.5] * 5
+    stats = robust_clv_stats(vals, prob_point_values=pp)
+    assert robust_verdict_label(stats, min_n=5) == "AHEAD_OF_CLOSE (provisional)"
