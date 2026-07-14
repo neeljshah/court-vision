@@ -117,14 +117,16 @@ def test_live_top5_gravity_via_resolve_entrypoint():
         assert row["n"] > 0
 
 
-def test_live_top_shooters_ambiguous_or_refused_never_improvised():
-    """'shooters' is a vague scouting word, not a registered attribute name --
-    the stack's philosophy (docs/analytics/ANSWER_RULES.md) is REFUSE, never
-    guess. Proves the fallback-to-raw-parquet failure mode this lane fixes:
-    the resolver now answers honestly instead of the caller reaching past it."""
+def test_live_top_shooters_resolves_composite_never_improvised():
+    """'shooters' is a vague scouting word, not a registered attribute name.
+    It USED to fall through to REFUSE (not_supported/ambiguous) here; this
+    lane maps it to a real corner3+above-break-3 composite (see
+    test_shooters_composite_* below) instead -- still never a raw guess at
+    an unregistered attribute, just a declared composite formula."""
     r = R.resolve("top shooters", sport="nba")
-    assert r["status"] in ("not_supported", "ambiguous")
+    assert r["status"] == "ok"
     assert r["category"] == "ranking"
+    assert r["attribute"] == "shooters"
 
 
 # ---------------------------------------------------------------------------
@@ -191,3 +193,79 @@ def test_unmatched_category_word_refuses_with_candidate_list_multisport(sport):
     r = LB.leaderboard(sport, "zzz_not_a_real_attribute_zzz", top_n=5)
     assert r["status"] == "not_supported"
     assert "available" in r and len(r["available"]) > 0
+
+
+# ---------------------------------------------------------------------------
+# Landmine regression: shot_zone_three_efg's `n` column is MINUTES, not
+# fg3a -- a naive min_n=100 floor let 2-3 fg3a bigs (Jaxson Hayes, Mark
+# Williams, Trayce Jackson-Davis) rank #1-3 on 1.5 "eFG" because their
+# MINUTES cleared the floor. This is the exact bug this lane fixes.
+# ---------------------------------------------------------------------------
+_LOW_VOLUME_BIGS = {1629637: "Jaxson Hayes", 1631109: "Mark Williams", 203991: "Clint Capela"}
+
+
+def test_zone_denominator_floor_excludes_low_fg3a_bigs():
+    r = LB.leaderboard("nba", "shot_zone_three_efg", top_n=10, min_n=100)
+    assert r["status"] == "ok"
+    assert r["denominator_used"] == "fg3a"
+    ids = {row["entity_id"] for row in r["rows"]}
+    assert ids.isdisjoint(_LOW_VOLUME_BIGS), (
+        f"low-fg3a bigs leaked into top-10 despite the fg3a floor: {ids & set(_LOW_VOLUME_BIGS)}")
+    # every surviving row really does clear the stated attempt floor
+    for row in r["rows"]:
+        assert row["attempts"] >= 100, row
+    # and at least one genuine high-volume shooter (elite percentile) is present
+    assert any(row["percentile"] > 95 and row["attempts"] >= 100 for row in r["rows"])
+
+
+def test_zone_denominator_default_floor_applies_without_explicit_min_n():
+    """No min_n passed -- the module still floors on a default q40-of-nonzero
+    fg3a, not on the raw (uncalled) generic n."""
+    r = LB.leaderboard("nba", "shot_zone_three_efg", top_n=10)
+    assert r["status"] == "ok"
+    assert r["denominator_used"] == "fg3a"
+    assert r["min_n"] > 0
+    ids = {row["entity_id"] for row in r["rows"]}
+    assert ids.isdisjoint(_LOW_VOLUME_BIGS)
+
+
+def test_two_fg_pct_denominator_is_fga_minus_fg3a():
+    r = LB.leaderboard("nba", "shot_zone_two_fg_pct", top_n=5, min_n=50)
+    assert r["status"] == "ok"
+    assert r["denominator_used"] == "fga-fg3a"
+    for row in r["rows"]:
+        assert row["attempts"] >= 50
+
+
+def test_non_zone_attribute_floor_behavior_unchanged():
+    """Regression: an attribute with no denominator mapping still floors on
+    the generic `n` column exactly as before, with no 'attempts' key."""
+    r = LB.leaderboard("nba", "gravity", top_n=200, min_n=2000.0)
+    assert r["status"] == "ok"
+    assert r["denominator_used"] == "n"
+    assert all(row["n"] >= 2000.0 for row in r["rows"])
+    assert all("attempts" not in row for row in r["rows"])
+
+
+# ---------------------------------------------------------------------------
+# 'shooters' composite (task 2) -- descriptive-only, floored on total 3PA.
+# ---------------------------------------------------------------------------
+def test_shooters_composite_resolves_instead_of_falling_through():
+    r = R.resolve("top 10 shooters", sport="nba")
+    assert r["status"] == "ok"
+    assert r["attribute"] == "shooters"
+    assert r["denominator_used"] == "corner3_fga+above_break_3_fga"
+    assert len(r["rows"]) == 10
+    for row in r["rows"]:
+        assert row["status_label"] == "DESCRIPTIVE"
+        assert row["attempts"] >= r["min_n"]
+    vals = [row["raw_value"] for row in r["rows"]]
+    assert vals == sorted(vals, reverse=True)
+
+
+def test_shooters_composite_excludes_low_volume_bigs():
+    r = LB.leaderboard("nba", "shooters", top_n=10, min_n=0.0)
+    assert r["status"] == "ok"
+    ids = {row["entity_id"] for row in r["rows"]}
+    assert ids.isdisjoint(_LOW_VOLUME_BIGS)
+    assert any(row["percentile"] > 95 for row in r["rows"])
