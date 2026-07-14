@@ -169,6 +169,7 @@ _GOLDEN_KEYS = {
     "log_reaper", "eval_gate", "pregame_benchmark", "statcast_refresh",
     "replication_cadence", "false_discovery_accounting", "mlb_results_refresh",
     "weekly_scoreboard_cadence", "k_nightly_refresh", "k_escalation_intake",
+    "auto_validate",
 }
 
 
