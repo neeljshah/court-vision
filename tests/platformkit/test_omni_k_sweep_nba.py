@@ -109,3 +109,25 @@ def test_discovery_only_excludes_2025_26_reserve_rows(_stub_deps):
     assert result["cells_mined"] < ksw.run_sweep(
         base_dir=tmp_path, source=df, top_n=200, discovery_only=False
     )["cells_mined"]
+
+
+def test_top_n_default_is_full_active_pool():
+    assert ksw.TOP_N_PLAYERS == 559
+
+
+def test_load_sweep_frame_uses_load_box_full_when_source_is_none(monkeypatch):
+    df = _synthetic_frame()
+    df["is_playoffs"] = False
+    monkeypatch.setattr(ksw.bsr, "load_box_full", lambda: df)
+    out = ksw._load_sweep_frame(source=None)
+    assert len(out) == len(df)
+
+
+def test_playoff_rows_excluded_from_conditional_by_default():
+    df = _synthetic_frame()
+    df["is_playoffs"] = False
+    df.loc[df["player_id"] == 3, "is_playoffs"] = True  # Charlie's rows are playoff dates
+    out = ksw._load_sweep_frame(source=df)
+    assert 3 not in set(out["player_id"])
+    out_incl = ksw._load_sweep_frame(source=df, exclude_playoffs=False)
+    assert 3 in set(out_incl["player_id"])

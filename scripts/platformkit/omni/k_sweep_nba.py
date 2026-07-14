@@ -31,6 +31,7 @@ import pandas as pd
 from scipy import stats as sps
 
 from domains.basketball_nba import memory_atlas_archetypes as archetypes
+from scripts.platformkit.omni import box_store_refresh as bsr
 from scripts.platformkit.omni import claims_ledger as cl
 from scripts.platformkit.omni import k_coverage as kc
 
@@ -42,7 +43,7 @@ _LANE = "k_sweep_nba_v1"
 _STAT = "pts"
 _DIMENSION = "reactions"
 
-TOP_N_PLAYERS = 200
+TOP_N_PLAYERS = 559  # full active pool (K-NBA-1: v1's 200 cap, runtime confirmed cheap)
 MIN_SIDE_N = 10              # pooling floor: below this, a player cell is INSUFFICIENT_DATA
 BH_ALPHA = 0.05
 MIN_PRACTICAL_EFFECT = 1.0   # points; escalation floor on top of BH survival
@@ -56,14 +57,22 @@ RESERVE_CUTOVER = "2025-10-01"
 _STATUS_PRIORITY = {"ESCALATED": 3, "MINED": 2, "INSUFFICIENT_DATA": 1}
 
 
-def _load_sweep_frame(source=None) -> pd.DataFrame:
-    """*source* is either a path to the box-rate parquet or (tests) a DataFrame."""
+def _load_sweep_frame(source=None, exclude_playoffs: bool = True) -> pd.DataFrame:
+    """*source* is None (real run: full snapshot+playoff-extension via
+    box_store_refresh.load_box_full), a path to the box-rate parquet, or
+    (tests) a DataFrame. Playoff rows are excluded from conditional tests by
+    default -- playoffs are a separate regime (precedent: pregame AST edge
+    never mined on playoff rows); pass exclude_playoffs=False to mine them."""
     cols = ["player_id", "player_name", "game_id", "date", "is_home", "pf", "pts", "min"]
     if isinstance(source, pd.DataFrame):
-        df = source[cols].copy()
+        df = source.copy()
+    elif source is None:
+        df = bsr.load_box_full()
     else:
-        src = source if source is not None else _SWEEP_SOURCE
-        df = pd.read_parquet(src, columns=cols)
+        df = pd.read_parquet(source, columns=cols)
+    if exclude_playoffs and "is_playoffs" in df.columns:
+        df = df[~df["is_playoffs"]].copy()
+    df = df[cols].copy()
     df = df[df["min"] > 0].sort_values(["player_id", "date"]).reset_index(drop=True)
     df["rest_days"] = df.groupby("player_id")["date"].diff().dt.days - 1
     return df
@@ -206,8 +215,9 @@ def _claim_for_cell(cell: dict, data_asof: str | None) -> tuple[dict, bool]:
     return claim, escalate
 
 
-def run_sweep(base_dir=None, source=None, top_n: int = TOP_N_PLAYERS, discovery_only: bool = True) -> dict:
-    df = _load_sweep_frame(source)
+def run_sweep(base_dir=None, source=None, top_n: int = TOP_N_PLAYERS, discovery_only: bool = True,
+              exclude_playoffs: bool = True) -> dict:
+    df = _load_sweep_frame(source, exclude_playoffs=exclude_playoffs)
     if discovery_only:
         df, _ = split_discovery_reserve(df)
     active_ids = set(kc.load_active_players()["player_id"])
@@ -230,15 +240,12 @@ def run_sweep(base_dir=None, source=None, top_n: int = TOP_N_PLAYERS, discovery_
         c["p_adj"] = a
     batch_overfit_est = BH_ALPHA * len(tested)
 
-    existing_ids = set(cl.query(sport="nba", base_dir=base_dir)["claim_id"])
-    claims_added, escalations, player_status = 0, 0, {}
-    for cell in all_cells:
-        claim, escalate = _claim_for_cell(cell, data_asof)
-        claim_id = cl.make_claim_id(claim["statement"], claim["scope"])
-        if claim_id not in existing_ids:
-            cl.add_claim(claim, base_dir=base_dir)
-            existing_ids.add(claim_id)
-            claims_added += 1
+    cells_and_claims = [(cell, *_claim_for_cell(cell, data_asof)) for cell in all_cells]
+    claims_added, _added_ids = cl.add_claims_batch(
+        [claim for _, claim, _ in cells_and_claims], base_dir=base_dir
+    )
+    escalations, player_status = 0, {}
+    for cell, _claim, escalate in cells_and_claims:
         if escalate:
             escalations += 1
         if cell["level"] == "player":

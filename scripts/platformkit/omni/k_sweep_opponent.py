@@ -33,6 +33,7 @@ import pathlib
 import pandas as pd
 
 from domains.basketball_nba import memory_atlas_archetypes as archetypes
+from scripts.platformkit.omni import box_store_refresh as bsr
 from scripts.platformkit.omni import claims_ledger as cl
 from scripts.platformkit.omni import k_coverage as kc
 from scripts.platformkit.omni.k_sweep_nba import (
@@ -79,14 +80,21 @@ def _team_tier_asof(source=None) -> pd.DataFrame:
     return asof[["team_tricode", "season", "asof__def_rtg", "opp_tier"]]
 
 
-def _load_sweep_frame(source=None, tier_source=None) -> pd.DataFrame:
-    """*source* is either a path to the box-rate parquet or (tests) a DataFrame."""
+def _load_sweep_frame(source=None, tier_source=None, exclude_playoffs: bool = True) -> pd.DataFrame:
+    """*source* is None (real run: full snapshot+playoff-extension via
+    box_store_refresh.load_box_full), a path to the box-rate parquet, or
+    (tests) a DataFrame. Playoff rows excluded from conditional tests by
+    default -- separate regime (see k_sweep_nba._load_sweep_frame docstring)."""
     cols = ["player_id", "player_name", "game_id", "date", "season", "team", "opp", "is_home", "pts", "min"]
     if isinstance(source, pd.DataFrame):
-        df = source[cols].copy()
+        df = source.copy()
+    elif source is None:
+        df = bsr.load_box_full()
     else:
-        src = source if source is not None else _SWEEP_SOURCE
-        df = pd.read_parquet(src, columns=cols)
+        df = pd.read_parquet(source, columns=cols)
+    if exclude_playoffs and "is_playoffs" in df.columns:
+        df = df[~df["is_playoffs"]].copy()
+    df = df[cols].copy()
     df = df[df["min"] > 0].reset_index(drop=True)
     tier = _team_tier_asof(tier_source)
     merged = df.merge(
@@ -190,8 +198,8 @@ def _claim_for_cell(cell: dict, data_asof: str | None) -> tuple[dict, bool]:
 
 
 def run_sweep(base_dir=None, source=None, tier_source=None, top_n: int = TOP_N_PLAYERS,
-              discovery_only: bool = True) -> dict:
-    df = _load_sweep_frame(source, tier_source)
+              discovery_only: bool = True, exclude_playoffs: bool = True) -> dict:
+    df = _load_sweep_frame(source, tier_source, exclude_playoffs=exclude_playoffs)
     join_rate = round(float(df["opp_tier"].notna().mean()), 4) if len(df) else 0.0
     if discovery_only:
         df, _ = split_discovery_reserve(df)
@@ -211,15 +219,12 @@ def run_sweep(base_dir=None, source=None, tier_source=None, top_n: int = TOP_N_P
         c["p_adj"] = a
     batch_overfit_est = BH_ALPHA * len(tested)
 
-    existing_ids = set(cl.query(sport="nba", base_dir=base_dir)["claim_id"])
-    claims_added, escalations, player_status = 0, 0, {}
-    for cell in all_cells:
-        claim, escalate = _claim_for_cell(cell, data_asof)
-        claim_id = cl.make_claim_id(claim["statement"], claim["scope"])
-        if claim_id not in existing_ids:
-            cl.add_claim(claim, base_dir=base_dir)
-            existing_ids.add(claim_id)
-            claims_added += 1
+    cells_and_claims = [(cell, *_claim_for_cell(cell, data_asof)) for cell in all_cells]
+    claims_added, _added_ids = cl.add_claims_batch(
+        [claim for _, claim, _ in cells_and_claims], base_dir=base_dir
+    )
+    escalations, player_status = 0, {}
+    for cell, _claim, escalate in cells_and_claims:
         if escalate:
             escalations += 1
         if cell["level"] == "player":
