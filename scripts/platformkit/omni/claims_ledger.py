@@ -122,7 +122,7 @@ def _replay_journal(base_dir=None) -> dict[str, dict]:
                     continue  # ponytail: orphan event (add row lost/out of order) -- skip, don't crash a rebuild
                 state[cid]["lifecycle"] = ev["lifecycle"]
                 if ev.get("review"):
-                    state[cid]["review"] = {**state[cid].get("review", {}), **ev["review"]}
+                    state[cid]["review"] = {**(state[cid].get("review") or {}), **(ev["review"] or {})}
     return state
 
 
