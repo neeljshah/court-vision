@@ -69,3 +69,49 @@ def test_fit_spine_discovery_raises_on_empty_train():
     df = _synthetic_state_df(seasons=("2025-26",))
     with pytest.raises(ValueError):
         SP.fit_spine_discovery(df, seed=42)
+
+
+# ---------------------------------------------------------------------------
+# v1: team identity + K-asof team-strength (touches real parquets -- cached
+# once at module scope so the 3 tests below share a single ~5s build).
+# ---------------------------------------------------------------------------
+
+@pytest.fixture(scope="module")
+def v1_frame() -> pd.DataFrame:
+    return SP.build_state_frame_v1()
+
+
+def test_v1_features_extend_v0(v1_frame):
+    assert SP.FEATURES_V1[:len(SP.FEATURES)] == SP.FEATURES
+    assert len(SP.FEATURES_V1) == len(SP.FEATURES) + 8
+    assert set(SP.FEATURES_V1).issubset(v1_frame.columns)
+
+
+def test_v1_no_leak_asof_constant_within_team_season(v1_frame):
+    """Leak guard: team_offdef_asof is a fixed PRIOR-season value -- it must
+    not vary possession-to-possession within the same (team, season). A
+    feature that drifts within-season would mean it is (wrongly) reading
+    same-season/future games instead of the frozen prior-season constant."""
+    g = v1_frame.groupby(["off_team", "season"])["off_asof_off_rtg"].nunique()
+    assert (g == 1).all(), "off_asof_off_rtg drifts within a (team, season) -- leak"
+    g2 = v1_frame.groupby(["def_team", "season"])["def_asof_def_rtg"].nunique()
+    assert (g2 == 1).all(), "def_asof_def_rtg drifts within a (team, season) -- leak"
+
+
+def test_v1_no_leak_team_identity_consistent_with_home_away(v1_frame):
+    """off_team/def_team must never collide (no self-play) and must decode
+    to a valid 0..29 tricode index -- catches an off-by-one/self-join bug
+    that would otherwise silently leak a team's own asof rating twice."""
+    assert (v1_frame["off_team_code"] != v1_frame["def_team_code"]).all()
+    assert v1_frame["off_team_code"].between(0, 29).all()
+    assert v1_frame["def_team_code"].between(0, 29).all()
+    assert (v1_frame["off_team"] != v1_frame["def_team"]).all()
+
+
+def test_v1_reproducibility_same_seed(v1_frame):
+    clf_a, _ = SP.fit_spine_discovery(v1_frame, seed=42, features=SP.FEATURES_V1)
+    clf_b, _ = SP.fit_spine_discovery(v1_frame, seed=42, features=SP.FEATURES_V1)
+    test_df = v1_frame[v1_frame["season"] == "2025-26"].reset_index(drop=True)
+    pa = SP.predict_proba(clf_a, test_df, features=SP.FEATURES_V1)
+    pb = SP.predict_proba(clf_b, test_df, features=SP.FEATURES_V1)
+    np.testing.assert_allclose(pa, pb)
