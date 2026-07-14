@@ -145,8 +145,11 @@ def build_asof_terciles(poss: pd.DataFrame) -> Tuple[pd.DataFrame, Dict[str, Any
 
 
 def attach_terciles(poss: pd.DataFrame, wide: pd.DataFrame) -> pd.DataFrame:
-    """Attach off_t/def_t/pace_t to each possession from the per-game wide table."""
-    w = wide.reset_index()
+    """Attach off_t/def_t/pace_t to each possession from the per-game wide table.
+    `wide` carries its own `season` column (same value as `poss.season` for a given
+    game_id) -- drop it before merging so pandas never suffixes season_x/season_y
+    (bdc6b03e bug class: a silent suffix collision hid an axis from downstream fits)."""
+    w = wide.reset_index().drop(columns=["season"])
     m = poss.merge(w, on="game_id", how="inner")
     m["off_t"] = np.where(m["off_is_home"], m["home_off_t"], m["away_off_t"])
     m["def_t"] = np.where(m["off_is_home"], m["away_def_t"], m["home_def_t"])
