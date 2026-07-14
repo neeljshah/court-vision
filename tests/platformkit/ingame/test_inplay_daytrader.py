@@ -268,7 +268,9 @@ def test_extra_kwarg_forwarded_into_grade_row(tmp_path):
 
 
 def test_extra_none_is_backward_compatible(tmp_path):
-    # Default (no extra passed) behaves exactly as before -- no new keys appear.
+    # Default (no extra passed) behaves exactly as before, plus the additive
+    # claim_tags field (CLAIMS-P3 wiring: condition_tagger.tag output, merged via
+    # the same extra pipeline) -- no OTHER new keys appear.
     grade_dir = tmp_path / "grade"
     d = dt.on_tick("mlb", "G11", _tick(0.80, 0.55, yes_away=0.50),
                    grade_dir=grade_dir, ledger_path=tmp_path / "l.jsonl")
@@ -276,7 +278,7 @@ def test_extra_none_is_backward_compatible(tmp_path):
     path = grade_dir / "mlb" / "G11.jsonl"
     row = json.loads(path.read_text(encoding="ascii").splitlines()[0])
     assert set(row.keys()) == {"sport", "game_id", "ts", "market_prob", "model_prob",
-                               "side", "state_summary"}
+                               "side", "state_summary", "claim_tags"}
 
 
 def test_leak_free_enter_does_not_see_the_close(tmp_path):

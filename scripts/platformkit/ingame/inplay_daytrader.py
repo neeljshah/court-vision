@@ -50,6 +50,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
+from scripts.platformkit.claims import condition_tagger as _tagger
 from scripts.platformkit.ingame import ingame_clv_per_segment as _clvseg
 from scripts.platformkit.ingame import ingame_segment_trust_multi as _trust_multi
 from scripts.platformkit.ingame import inplay_edge_signal as _sig
@@ -187,12 +188,17 @@ def on_tick(sport: str, game_id: str, tick: LiveTick, *,
         #    a complete price+model series is what the CLV/outcome arms grade).
         mp, dp = ev.get("model_prob"), ev.get("devigged_price")
         if mp is not None and dp is not None:
+            # additive claim tags (TAG ONLY, zero behavior change) -> segment-key feed
+            try:
+                claim_tags = _tagger.tag(dict(tick), "ingame")
+            except Exception:  # noqa: BLE001
+                claim_tags = {}
             cap = _lg.capture_pair_once(
                 sport, game_id, now=nowdt,
                 live_state_fn=lambda s, g: _state_summary_fn(tick),
                 model_fn=lambda st: mp,
                 market_fetch_fn=lambda s, g: dp,
-                out_dir=grade_dir, extra=extra)
+                out_dir=grade_dir, extra={**(extra or {}), "claim_tags": claim_tags})
             decision["captured"] = cap.get("status") == "captured"
 
         # 2b. SUPPRESSION (queue item 8a, conservative withhold -- mechanism only, currently
