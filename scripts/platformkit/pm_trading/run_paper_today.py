@@ -26,6 +26,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
 
 from scripts.platformkit import clv_ledger as _clv
+from scripts.platformkit.claims import condition_tagger as _tagger
 from scripts.platformkit.frontend.bet_board import game_bet_board
 from scripts.platformkit.frontend.live_board import todays_live_games
 from scripts.platformkit.odds_provider.base import OddsEvent
@@ -165,6 +166,13 @@ def _record_priced(row, sport, matchup, meta, side, price, prob, selection,
     # [-1, dec-1] and the bankroll curve reconciles. quarter_kelly is a measurement
     # field only (never the staked magnitude here).
     stake_units = float(flat_unit)  # 1.0 for any A/B/C tier, else 0.0 (already gated)
+    # additive claim tags (TAG ONLY, zero behavior change): as-of state at this call
+    # site is whatever's already in row/meta -- a card whose trigger needs a field not
+    # present here just tags False, never errors (see condition_tagger.tag).
+    try:
+        claim_tags = _tagger.tag({**row, **meta}, "pregame")
+    except Exception:  # noqa: BLE001
+        claim_tags = {}
     # D6 fix: MLB doubleheader-date exposure -- stamp game_number/game_pk at
     # placement time so a DH day can be disambiguated at settle time. {} (no
     # stamp) on any non-mlb sport, unresolved lookup, or genuine ambiguity --
@@ -191,6 +199,7 @@ def _record_priced(row, sport, matchup, meta, side, price, prob, selection,
         # Policy stamps: tier + unit sizing (NOT dollars)
         "tier": tier_label, "flat_unit": flat_unit,
         "quarter_kelly": round(quarter_kelly, 8),
+        "claim_tags": claim_tags,
     }
     if dh_stamp.get("game_number") is not None:
         bet_row["game_number"] = dh_stamp["game_number"]
