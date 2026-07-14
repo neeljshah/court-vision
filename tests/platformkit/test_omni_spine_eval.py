@@ -68,3 +68,35 @@ def test_marginal_proba_matches_train_frequency():
     assert p.shape == (3, SP.N_CLASSES)
     np.testing.assert_allclose(p[0], [2 / 6, 0, 3 / 6, 0, 1 / 6])
     np.testing.assert_allclose(p[0], p[1])  # broadcast identical rows
+
+
+def test_seed_deltas_zero_when_metrics_identical():
+    metrics = {"per_model": {"spine_v1": {"crps": 0.6, "log_loss": 1.1}}}
+    deltas, stable = SE._seed_deltas(metrics, metrics, "spine_v1")
+    assert deltas["spine_v1_crps_rel_delta"] == 0.0
+    assert deltas["spine_v1_log_loss_rel_delta"] == 0.0
+    assert stable is True
+
+
+def test_seed_deltas_flags_unstable_over_threshold():
+    a = {"per_model": {"spine_v1": {"crps": 1.0, "log_loss": 1.0}}}
+    b = {"per_model": {"spine_v1": {"crps": 1.10, "log_loss": 1.0}}}   # 10% drift
+    deltas, stable = SE._seed_deltas(a, b, "spine_v1")
+    assert deltas["spine_v1_crps_rel_delta"] > SE.SEED_STABLE_REL
+    assert stable is False
+
+
+def test_feature_importance_top10_shape_and_sorted():
+    import pandas as pd
+    from sklearn.ensemble import HistGradientBoostingClassifier
+    from scripts.platformkit.omni import spine_nba as SP
+    rng = np.random.default_rng(0)
+    n = 300
+    df = pd.DataFrame({f: rng.uniform(0, 10, n) for f in SP.FEATURES})
+    df["points"] = rng.choice([0, 1, 2, 3], size=n)
+    clf = HistGradientBoostingClassifier(max_iter=20, random_state=42)
+    clf.fit(df[SP.FEATURES].to_numpy(dtype=float), SP.points_to_class(df["points"].to_numpy()))
+    out = SE.feature_importance_top10(clf, df, SP.FEATURES, seed=42)
+    assert len(out) == len(SP.FEATURES)   # <=10, here 9 features total
+    means = [row["importance_mean"] for row in out]
+    assert means == sorted(means, reverse=True)

@@ -41,11 +41,24 @@ from domains.basketball_nba.sim2.possession_model import add_state_buckets
 
 _REPO = Path(__file__).resolve().parents[3]
 _OUT_DIR = _REPO / "data" / "omni" / "spine"
+_GAMES = _REPO / "data" / "domains" / "basketball_nba" / "games.parquet"
+_TEAM_ASOF = _REPO / "data" / "omni" / "signals_asof" / "team_offdef_asof.parquet"
 
 TRAIN_SEASON = "2024-25"           # v0 spine: discovery season ONLY
 N_CLASSES = 5                      # points class 0,1,2,3,4+ (4+ pools 4/5/6)
 FEATURES = ["period", "clock_start", "off_margin", "home_margin",
             "time_b", "margin_b", "off_t", "def_t", "pace_t"]
+# v1 additions: team IDENTITY (category code, no lineup cols exist in the
+# possession store -- confirmed at STEP 0, sim2_possessions has no player/
+# lineup columns) + K-derived season-PRIOR team strength (team_offdef_asof
+# is keyed by (team_tricode, season) where the row's value is the PRIOR
+# season's rating -- fixed before the season starts, leak-free by
+# construction; see k_sweep_opponent.py docstring for the same claim).
+FEATURES_V1 = FEATURES + [
+    "off_team_code", "def_team_code",
+    "off_asof_off_rtg", "off_asof_def_rtg", "off_asof_pace",
+    "def_asof_off_rtg", "def_asof_def_rtg", "def_asof_pace",
+]
 DEFAULT_SEED = 42
 
 
@@ -74,17 +87,51 @@ def build_state_frame(rebuild: bool = False,
     return m
 
 
-def _xy(df: pd.DataFrame) -> Tuple[np.ndarray, np.ndarray]:
-    x = df[FEATURES].to_numpy(dtype=float)
+def build_state_frame_v1(rebuild: bool = False,
+                          max_games: Optional[int] = None) -> pd.DataFrame:
+    """v0 frame + team IDENTITY (category code) + K-derived season-prior team
+    strength (off/def rtg, pace). Both joins are static per (team, season) --
+    fixed before the season starts -- so they cannot vary possession-to-
+    possession within a season (checked by the leak test)."""
+    m = build_state_frame(rebuild, max_games)
+    games = pd.read_parquet(_GAMES, columns=["game_id", "home_team", "away_team"])
+    games["game_id"] = games["game_id"].astype(str)
+    m = m.merge(games, on="game_id", how="left")
+    m["off_team"] = np.where(m["off_is_home"], m["home_team"], m["away_team"])
+    m["def_team"] = np.where(m["off_is_home"], m["away_team"], m["home_team"])
+
+    asof = pd.read_parquet(_TEAM_ASOF, columns=[
+        "team_tricode", "season", "asof__off_rtg", "asof__def_rtg", "asof__pace"])
+    off_a = asof.rename(columns={"team_tricode": "off_team",
+        "asof__off_rtg": "off_asof_off_rtg", "asof__def_rtg": "off_asof_def_rtg",
+        "asof__pace": "off_asof_pace"})
+    def_a = asof.rename(columns={"team_tricode": "def_team",
+        "asof__off_rtg": "def_asof_off_rtg", "asof__def_rtg": "def_asof_def_rtg",
+        "asof__pace": "def_asof_pace"})
+    m = m.merge(off_a, on=["off_team", "season"], how="left")
+    m = m.merge(def_a, on=["def_team", "season"], how="left")
+
+    # ponytail: plain integer category codes, not one-hot / native HGB
+    # categorical support -- 30 teams is a small vocab, HGB splits on the
+    # code fine for v1; upgrade to categorical_features= if importance
+    # shows the raw code ordering is hurting it.
+    teams = sorted(asof["team_tricode"].unique())
+    m["off_team_code"] = pd.Categorical(m["off_team"], categories=teams).codes.astype(float)
+    m["def_team_code"] = pd.Categorical(m["def_team"], categories=teams).codes.astype(float)
+    return m.drop(columns=["home_team", "away_team"])
+
+
+def _xy(df: pd.DataFrame, features: list = None) -> Tuple[np.ndarray, np.ndarray]:
+    x = df[features or FEATURES].to_numpy(dtype=float)
     y = points_to_class(df["points"].to_numpy())
     return x, y
 
 
-def fit_spine(df: pd.DataFrame, seed: int = DEFAULT_SEED
+def fit_spine(df: pd.DataFrame, seed: int = DEFAULT_SEED, features: list = None
               ) -> HistGradientBoostingClassifier:
-    """Fit the v0 spine on df (caller must have already filtered to
+    """Fit the spine on df (caller must have already filtered to
     TRAIN_SEASON -- this function does not filter, see fit_spine_discovery)."""
-    x, y = _xy(df)
+    x, y = _xy(df, features)
     clf = HistGradientBoostingClassifier(
         max_iter=200, learning_rate=0.08, max_depth=6,
         random_state=seed, categorical_features=None)
@@ -92,22 +139,24 @@ def fit_spine(df: pd.DataFrame, seed: int = DEFAULT_SEED
     return clf
 
 
-def fit_spine_discovery(state_df: pd.DataFrame, seed: int = DEFAULT_SEED
+def fit_spine_discovery(state_df: pd.DataFrame, seed: int = DEFAULT_SEED,
+                         features: list = None
                         ) -> Tuple[HistGradientBoostingClassifier, pd.DataFrame]:
     """Filter state_df to TRAIN_SEASON and fit. Returns (model, train_df) so
     callers (and the leak test) can assert the train slice's season."""
     train_df = state_df[state_df["season"] == TRAIN_SEASON].reset_index(drop=True)
     if train_df.empty:
         raise ValueError(f"no rows for TRAIN_SEASON={TRAIN_SEASON!r}")
-    return fit_spine(train_df, seed=seed), train_df
+    return fit_spine(train_df, seed=seed, features=features), train_df
 
 
-def predict_proba(clf: HistGradientBoostingClassifier, df: pd.DataFrame) -> np.ndarray:
+def predict_proba(clf: HistGradientBoostingClassifier, df: pd.DataFrame,
+                   features: list = None) -> np.ndarray:
     """[n, N_CLASSES] class-probability matrix for df (any season). Remaps
     onto the full 0..N_CLASSES-1 label space via clf.classes_ -- sklearn only
     emits columns for classes actually seen in training, which a thin/synthetic
     training slice can miss (unseen classes get probability 0)."""
-    x = df[FEATURES].to_numpy(dtype=float)
+    x = df[features or FEATURES].to_numpy(dtype=float)
     raw = clf.predict_proba(x)
     out = np.zeros((len(df), N_CLASSES))
     out[:, clf.classes_.astype(int)] = raw
