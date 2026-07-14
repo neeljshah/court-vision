@@ -27,7 +27,7 @@ from typing import Any
 
 import pandas as pd
 
-from scripts.platformkit.io_atomic import append_jsonl_atomic
+from scripts.platformkit.io_atomic import append_jsonl_atomic, write_text_atomic
 
 _CLAIMS_DIR = pathlib.Path("data/omni/claims")
 _JOURNAL_NAME = "journal.jsonl"
@@ -228,7 +228,43 @@ def flag_downstream(claim_id: str, base_dir=None) -> list[str]:
     return flagged
 
 
+def add_claims_batch(claims, base_dir=None):
+    """Add many claims in ONE atomic journal rewrite + ONE parquet rebuild.
+    ~150x faster than per-claim add_claim() at sweep volume (6k claims: 13s
+    vs ~25min — measured by the k_sweep_playprofile lane, promoted here so
+    every sweep benefits). Content-hash idempotent like add_claim.
+    Returns (added_count, claim_ids_of_added)."""
+    path = _journal_path(base_dir)
+    existing = path.read_text(encoding="ascii") if path.is_file() else ""
+    if existing and not existing.endswith("\n"):
+        existing += "\n"
+    try:
+        existing_ids = set(query(base_dir=base_dir)["claim_id"])
+    except Exception:
+        existing_ids = set()
+    lines, added_ids = [], []
+    for claim in claims:
+        claim_id = make_claim_id(claim["statement"], claim["scope"])
+        if claim_id in existing_ids:
+            continue
+        row = {
+            "event": "add", "claim_id": claim_id, "ts": _utc_now_iso(),
+            "statement": claim["statement"], "type": claim["type"],
+            "scope": claim["scope"], "topic": claim.get("topic", ""),
+            "lifecycle": claim.get("lifecycle", "proposed"),
+        }
+        for f in ("effect", "evidence", "provenance", "links", "review"):
+            row[f] = claim.get(f) or {}
+        lines.append(json.dumps(row, ensure_ascii=True, sort_keys=True, default=str))
+        existing_ids.add(claim_id)
+        added_ids.append(claim_id)
+    if lines:
+        write_text_atomic(path, existing + "\n".join(lines) + "\n", encoding="ascii")
+        rebuild_parquet(base_dir)
+    return len(added_ids), added_ids
+
+
 __all__ = [
     "make_claim_id", "add_claim", "set_lifecycle", "rebuild_parquet",
-    "query", "flag_downstream",
+    "query", "flag_downstream", "add_claims_batch",
 ]
