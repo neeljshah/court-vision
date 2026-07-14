@@ -1,18 +1,11 @@
 """LIVE-EDGE evidence dossier (lane EVIDENCE, 2026-07-14).
 
-Regenerates data/omni/live_edge/evidence/EDGE_EVIDENCE_DOSSIER.md from the
-CURRENT on-disk artifacts of the live-edge program. Never invents a number:
-every stated fact is either read directly off a parquet/jsonl file or counted
-from git/tests at generation time, with the source path printed alongside it.
-
-CLAIM DISCIPLINE (binding, see .claude/rules/no-edge-claims.md):
-  - edge_claimed is always False in this dossier's own language.
-  - No roi / $ / edge_claimed=True token may appear in the rendered text --
-    enforced by scan_banned() below, called by the CLI and by the test.
-  - Retracted numbers (18.38, 0.119, 54, 78.11, 8.94, 54.57) are never
-    printed as current results.
-
-INVARIANTS: stdlib + pandas + io_atomic only; ASCII stdout; <=300 LOC.
+Regenerates data/omni/live_edge/evidence/EDGE_EVIDENCE_DOSSIER.md from CURRENT
+on-disk artifacts + Fable's rulings.json. Never invents a number: every fact is
+read off a parquet/jsonl/json file or counted from git/tests at generation time,
+source path printed alongside. CLAIM DISCIPLINE (.claude/rules/no-edge-claims.md):
+no roi / $ / edge_claimed=True / retracted numbers -- enforced by scan_banned(),
+called by the CLI and the per-file test. stdlib + pandas + io_atomic; <=300 LOC.
 """
 from __future__ import annotations
 
@@ -78,29 +71,51 @@ def _git_commit_count(repo_root: Path, *paths: str) -> str:
         return "unknown"
 
 
+def _load_rulings(root: Path) -> list[dict]:
+    path = root / "data/omni/live_edge/evidence/rulings.json"
+    if not path.exists():
+        return []
+    return json.loads(path.read_text(encoding="utf-8")).get("rulings", [])
+
+
+def _tier1_width_ruling(root: Path) -> Optional[dict]:
+    for r in _load_rulings(root):
+        if r.get("id") == "width_correction_tier1":
+            return r
+    return None
+
+
 def _section_validated(root: Path) -> str:
-    promote = _pq(root / "data/omni/live_edge/tail_calib/promote/promote_table.parquet")
     lines = ["## (a) Validated findings (tier + stats + artifact)\n"]
-    if promote is None:
-        lines.append("- promote_table.parquet MISSING -- no validated finding to report.\n")
+    ruling = _tier1_width_ruling(root)
+    if ruling is not None:
+        lines.append(
+            f"- **TIER-1, class-level** (ruled_by={ruling['ruled_by']}, "
+            f"{ruling['ts']}, data/omni/live_edge/evidence/rulings.json): "
+            f"{ruling['statement']}\n"
+        )
+        for e in ruling.get("evidence", []):
+            lines.append(
+                f"  - corpus `{e['corpus']}`: class CRPS delta +{e['class_delta']:.4f} "
+                f"CI [+{e['ci'][0]:.4f}, +{e['ci'][1]:.4f}] p={e['p']:.3g}, "
+                f"entities {e['entities']}. artifact: {e['artifact']} (commit {e['commit']})\n"
+            )
+        for c in ruling.get("binding_caveats", []):
+            lines.append(f"  - binding caveat: {c}\n")
         return "\n".join(lines)
-    n = len(promote)
+    # fallback: no ruling file -> report from the promote gate at tier-2
+    promote = _pq(root / "data/omni/live_edge/tail_calib/promote/promote_table.parquet")
+    if promote is None:
+        lines.append("- no validated finding to report (rulings.json and promote_table.parquet both absent).\n")
+        return "\n".join(lines)
     n_surv = int(promote["survivor"].sum())
-    mean_delta = float(promote["mean_pooled"].mean())
     lines.append(
         "- **TIER-2 PROVISIONAL, class-level**: predictive-distribution WIDTH "
         "correction (tail-aware empirical quantiles vs Normal) on NBA player "
-        "points. Individual-entity gate (BH q<0.05 pooled AND same-direction "
-        f"both trailing-date halves): {n_surv}/{n} entities survive. Mean "
-        f"per-entity pooled CRPS delta (baseline-tail_aware) = {mean_delta:.4f} "
-        "(positive = tail-aware wins). Class-level pooled test (n=412, "
-        "clustered by entity): +0.0321 CI [+0.0224, +0.0418], p=2.244e-10.\n"
-        "  - artifact: data/omni/live_edge/tail_calib/promote/promote_table.parquet, "
-        "PROMOTE_REPORT.md\n"
-        "  - caveat: both trailing-date halves are 2025-26 (repo precedent: "
-        "season-resplit is NOT an independent corpus); PIT body-miscalibration "
-        "unresolved; NBA player points only. Calibration language only -- no "
-        "live-price serving authorized.\n"
+        f"points; {n_surv}/{len(promote)} entities survive the BH+halves gate. "
+        "artifact: data/omni/live_edge/tail_calib/promote/promote_table.parquet. "
+        "caveat: single-corpus season-resplit, PIT body-miscalibration unresolved; "
+        "calibration language only -- no live-price serving authorized.\n"
     )
     return "\n".join(lines)
 
@@ -204,8 +219,20 @@ def _section_operations(root: Path) -> str:
             f"{last_cycle.get('results_rows_total')}, tested={last_cycle.get('tested')}. "
             "artifact: data/omni/live_edge/autoloop/cycle_log.jsonl\n"
         )
-    lines.append("- M27 fleet job: PROPOSED, not yet armed (.planning/omni/proposed/live_edge_validate_job_PROPOSED.md).\n")
+    lines.append(f"- M27 auto_validate fleet job: {_m27_status()}.\n")
     return "\n".join(lines)
+
+
+def _m27_status() -> str:
+    """ARMED iff an 'auto_validate' row exists in the autoloop job table (code, not assumption)."""
+    try:
+        from scripts.platformkit.autoloop.maintenance_templates import _JOB_TABLE
+        if any(row[0] == "auto_validate" for row in _JOB_TABLE):
+            return ("ARMED -- registered in scripts/platformkit/autoloop/"
+                    "maintenance_templates.py _JOB_TABLE (commit 44fcac42)")
+    except Exception:
+        pass
+    return "PROPOSED, not yet armed (.planning/omni/proposed/live_edge_validate_job_PROPOSED.md)"
 
 
 def _section_not_claimable(root: Path) -> str:
@@ -221,9 +248,15 @@ def _section_not_claimable(root: Path) -> str:
         "- **Live CLV**: 0 settled live-slate rows against real close-vs-execution "
         "prices (shadow shows 8557 conditioned==unconditioned rows for 2026-07-14, "
         "no mechanism priced live yet, MLB slate ~07-17 pending).\n",
-        "- **Independent-corpus replication**: the tier-2 tail-width class has only "
-        "a 2025-26 season-resplit, not a second independent season/corpus -- "
-        "required before any tier-1 upgrade.\n",
+        (
+            "- **Edge-vs-market**: the tier-1 width class is calibration-vs-own-"
+            "baseline only; the market's implied distribution is untested (requires "
+            "live prop prices + CLV + edge_greenlight).\n"
+            if _tier1_width_ruling(root) is not None
+            else "- **Independent-corpus replication**: the tier-2 tail-width class "
+            "has only a season-resplit, not a second independent corpus -- required "
+            "before any tier-1 upgrade.\n"
+        ),
         "- **PIT body-shape**: tail-aware quantile fit has an unresolved "
         "clip-beyond-anchors artifact affecting every per-game CRPS pair.\n",
     ]
