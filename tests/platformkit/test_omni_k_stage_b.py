@@ -63,14 +63,16 @@ def test_prereg_precedes_reserve_read(tmp_path, monkeypatch):
     df = _synthetic_two_slice_frame(bump_reserve=8.0)
     call_order: list[str] = []
 
-    real_add_claim = cl.add_claim
+    real_add_claims_batch = cl.add_claims_batch
     real_remine = ksn.remine_player_cell
     remine_calls = {"n": 0}
 
-    def spy_add_claim(claim, base_dir=None):
-        if claim.get("lifecycle") == "family_pass":
+    # Note: v2 generalization batches prereg writes via add_claims_batch (not
+    # per-claim add_claim) per the 453-cell dispatch pass -- spy moved here.
+    def spy_add_claims_batch(claims, base_dir=None):
+        if any(c.get("lifecycle") == "family_pass" for c in claims):
             call_order.append("prereg")
-        return real_add_claim(claim, base_dir=base_dir)
+        return real_add_claims_batch(claims, base_dir=base_dir)
 
     def spy_remine(df_, player_id, condition):
         # First call per cell is always phase-1 discovery re-mine, second is
@@ -80,7 +82,7 @@ def test_prereg_precedes_reserve_read(tmp_path, monkeypatch):
         call_order.append(tag)
         return real_remine(df_, player_id, condition)
 
-    monkeypatch.setattr(cl, "add_claim", spy_add_claim)
+    monkeypatch.setattr(cl, "add_claims_batch", spy_add_claims_batch)
     monkeypatch.setattr(ksn, "remine_player_cell", spy_remine)
     ksb.run_stage_b(base_dir=tmp_path, source=df)
 
@@ -136,3 +138,60 @@ def test_idempotent_rerun_does_not_reprocess_already_screened_prereg(tmp_path):
     assert first["preregistered"] == second["preregistered"]
     claims = cl.query(sport="nba", base_dir=tmp_path)
     assert (claims["lifecycle"].isin(["replicated", "failed_replication"])).any()
+
+
+# -- v2 generalization: condition-dispatch across all 6 known (lane, entity_type) families.
+
+def test_dispatch_known_lane_entity_condition_combos():
+    known = [
+        ("k_sweep_nba_v1", "player", "b2b_vs_rest"),
+        ("k_sweep_opponent_v1", "player", "opp_def_tercile"),
+        ("k_sweep_synergy_v1", "player_pair", "with_without_teammate"),
+        ("k_sweep_synergy_v1", "player", "star_sits"),
+        ("k_sweep_physical_v1", "player", "conditioning_trend"),
+        ("k_sweep_playprofile_v1", "player", "zone_efg_rim_stability"),
+    ]
+    for lane, entity_type, condition in known:
+        cell = {"lane": lane, "entity_type": entity_type, "condition": condition}
+        assert ksb._is_known(cell), (lane, entity_type, condition)
+    assert not ksb._is_known({"lane": "k_sweep_synergy_v1", "entity_type": "league", "condition": "star_sits"})
+    assert not ksb._is_known({"lane": "made_up_lane_v1", "entity_type": "player", "condition": "b2b_vs_rest"})
+
+
+def test_remine_synergy_pair_and_star_sits_dispatch():
+    rows = []
+    for i in range(20):
+        # player 9 is the "star" (highest mean pts, 40) but only plays half the
+        # games -- player 1's other half (star absent) is the split under test.
+        rows.append({"team": "T", "season": "2024-25", "game_id": f"g{i}", "player_id": 1,
+                     "player_name": "A", "min": 30.0, "pts": 25.0 if i % 2 == 0 else 18.0})
+        if i % 2 == 0:
+            rows.append({"team": "T", "season": "2024-25", "game_id": f"g{i}", "player_id": 9,
+                         "player_name": "Star", "min": 30.0, "pts": 40.0})
+            rows.append({"team": "T", "season": "2024-25", "game_id": f"g{i}", "player_id": 2,
+                         "player_name": "B", "min": 30.0, "pts": 10.0})
+    played = pd.DataFrame(rows)
+
+    pair_cell = {"lane": "k_sweep_synergy_v1", "entity_type": "player_pair", "entity_ids": [1, 2], "condition": "with_without_teammate"}
+    res_pair = ksb._remine_cell(pair_cell, played, "discovery")
+    assert res_pair is not None and "delta" in res_pair
+
+    star_cell = {"lane": "k_sweep_synergy_v1", "entity_type": "player", "entity_ids": [1], "condition": "star_sits"}
+    res_star = ksb._remine_cell(star_cell, played, "discovery")
+    assert res_star is not None and "delta" in res_star
+
+
+def test_not_replicable_for_unknown_lane(tmp_path):
+    scope = {"sport": "nba", "entity_type": "player", "entity_ids": [42], "context": "mystery_condition"}
+    cl.add_claim({
+        "statement": "NBA player 42 pts delta under mystery_condition", "type": "conditional", "scope": scope,
+        "topic": "mystery.mystery_condition", "lifecycle": "escalation_screened",
+        "effect": {"verdict": "TESTED", "delta": 2.0, "n_a": 20, "n_b": 20},
+        "provenance": {"created_by_lane": "k_sweep_unknown_v1"},
+    }, base_dir=tmp_path)
+    out = ksb.run_stage_b(base_dir=tmp_path, sources={})
+    assert out["escalated_not_replicable"] >= 1
+    claims = cl.query(sport="nba", base_dir=tmp_path)
+    nr = claims[claims["lifecycle"] == "not_replicable"]
+    assert len(nr) >= 1
+    assert json.loads(nr.iloc[0]["evidence_json"])["reason"].startswith("lane=")
