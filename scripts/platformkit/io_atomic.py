@@ -83,7 +83,18 @@ def _replace_via_tmp(target: pathlib.Path, data: str, encoding: str) -> None:
             fh.write(data)
             fh.flush()
             os.fsync(fh.fileno())
-        os.replace(str(tmp), str(target))
+        # Windows: os.replace fails with WinError 5 while another process
+        # briefly holds the target open (concurrent lane read/replace).
+        # Short bounded backoff turns transient contention into a wait
+        # instead of killing a long sweep mid-run. Still fails closed.
+        for attempt in range(6):
+            try:
+                os.replace(str(tmp), str(target))
+                break
+            except PermissionError:
+                if attempt == 5:
+                    raise
+                time.sleep(0.25 * (attempt + 1))
     except BaseException:
         # Best-effort cleanup; never leave a stray tmp masquerading as state.
         try:
