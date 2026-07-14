@@ -85,23 +85,49 @@ def _tier1_width_ruling(root: Path) -> Optional[dict]:
     return None
 
 
+def _tier_label(r: dict) -> str:
+    """Ruling's own 'tier' field wins; else infer TIER-1/TIER-2 from the statement."""
+    if r.get("tier"):
+        return r["tier"]
+    if re.search(r"tier-2|provisional", r["statement"], re.I):
+        return "TIER-2, class-level"
+    return "TIER-1, class-level"
+
+
+def _render_evidence_row(e: dict) -> str:
+    """Format one evidence dict. Handles the two known shapes, else a generic key=value dump."""
+    if "corpus" in e:
+        return (
+            f"corpus `{e['corpus']}`: class CRPS delta +{e['class_delta']:.4f} "
+            f"CI [+{e['ci'][0]:.4f}, +{e['ci'][1]:.4f}] p={e['p']:.3g}, "
+            f"entities {e['entities']}. artifact: {e['artifact']} (commit {e['commit']})"
+        )
+    if "observable" in e and "class_delta" in e:
+        note = f", {e['note']}" if e.get("note") else ""
+        return (
+            f"observable `{e['observable']}`: class delta {e['class_delta']:+.4f} "
+            f"p={e['p']:.3g}, survivors {e.get('survivors', '?')}{note}"
+        )
+    return ", ".join(f"{k}={v}" for k, v in e.items())
+
+
 def _section_validated(root: Path) -> str:
     lines = ["## (a) Validated findings (tier + stats + artifact)\n"]
-    ruling = _tier1_width_ruling(root)
-    if ruling is not None:
-        lines.append(
-            f"- **TIER-1, class-level** (ruled_by={ruling['ruled_by']}, "
-            f"{ruling['ts']}, data/omni/live_edge/evidence/rulings.json): "
-            f"{ruling['statement']}\n"
-        )
-        for e in ruling.get("evidence", []):
+    findings = [r for r in _load_rulings(root) if r.get("id") != "m27_armed"]
+    if findings:
+        for r in findings:
             lines.append(
-                f"  - corpus `{e['corpus']}`: class CRPS delta +{e['class_delta']:.4f} "
-                f"CI [+{e['ci'][0]:.4f}, +{e['ci'][1]:.4f}] p={e['p']:.3g}, "
-                f"entities {e['entities']}. artifact: {e['artifact']} (commit {e['commit']})\n"
+                f"- **{_tier_label(r)}** `{r['id']}` (ruled_by={r['ruled_by']}, "
+                f"{r['ts']}, data/omni/live_edge/evidence/rulings.json): "
+                f"{r['statement']}\n"
             )
-        for c in ruling.get("binding_caveats", []):
-            lines.append(f"  - binding caveat: {c}\n")
+            if r.get("artifact"):
+                commit_sfx = f" (commit {r['commit']})" if r.get("commit") else ""
+                lines.append(f"  - artifact: {r['artifact']}{commit_sfx}\n")
+            for e in r.get("evidence", []):
+                lines.append(f"  - {_render_evidence_row(e)}\n")
+            for c in r.get("binding_caveats", []):
+                lines.append(f"  - binding caveat: {c}\n")
         return "\n".join(lines)
     # fallback: no ruling file -> report from the promote gate at tier-2
     promote = _pq(root / "data/omni/live_edge/tail_calib/promote/promote_table.parquet")

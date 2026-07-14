@@ -115,6 +115,37 @@ def test_ruling_renders_tier1_in_section_a(fixture_root: Path):
     assert "Edge-vs-market" in text
 
 
+def test_all_non_infra_rulings_render(fixture_root: Path):
+    rulings_path = fixture_root / "data/omni/live_edge/evidence/rulings.json"
+    data = json.loads(rulings_path.read_text(encoding="utf-8"))
+    data["rulings"].append({
+        "id": "m27_armed",
+        "ts": "2026-07-14T20:30:00Z",
+        "ruled_by": "fable",
+        "statement": "M27 auto_validate registered in the autoloop job table.",
+        "evidence": [{"artifact": "x.py", "commit": "44fcac42"}],
+    })
+    data["rulings"].append({
+        "id": "sgp_joint_dependence",
+        "ts": "2026-07-14T21:55:00Z",
+        "ruled_by": "fable",
+        "statement": "SGP joint-dependence calibration finding.",
+        "tier": "tier-2 provisional (single sport/corpus)",
+        "evidence": [{"metric": "energy-score delta", "value": 0.0218}],
+        "artifact": "data/omni/live_edge/joint_dist/JOINT_REPORT.md",
+        "commit": "88c4bb41",
+        "binding_caveats": ["single sport/corpus"],
+    })
+    rulings_path.write_text(json.dumps(data), encoding="utf-8")
+    text = generate(fixture_root)
+    section_a = text.split("## (a)")[1].split("## (b)")[0]
+    assert "width_correction_tier1" in section_a
+    assert "sgp_joint_dependence" in section_a
+    assert "tier-2 provisional (single sport/corpus)" in section_a
+    # m27 is infra, not a validated finding -- must not appear in section (a)
+    assert "m27_armed" not in section_a
+
+
 def test_no_ruling_falls_back_to_tier2(fixture_root: Path):
     (fixture_root / "data/omni/live_edge/evidence/rulings.json").unlink()
     text = generate(fixture_root)
