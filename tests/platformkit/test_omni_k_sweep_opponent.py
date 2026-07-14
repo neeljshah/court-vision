@@ -116,3 +116,26 @@ def test_discovery_only_excludes_2025_26_reserve_rows(_stub_deps):
     discovery, reserve = kso.split_discovery_reserve(df)
     assert len(reserve) == 0  # frame is entirely 2023-24 (discovery) by construction
     assert len(discovery) == len(df)
+
+
+def test_top_n_default_is_full_active_pool():
+    assert kso.TOP_N_PLAYERS == 559
+
+
+def test_load_sweep_frame_uses_load_box_full_when_source_is_none(monkeypatch):
+    df = _synthetic_frame()
+    df["is_playoffs"] = False
+    monkeypatch.setattr(kso.bsr, "load_box_full", lambda: df)
+    out = kso._load_sweep_frame(source=None, tier_source=_synthetic_tier_source())
+    assert len(out) == len(df)
+
+
+def test_playoff_rows_excluded_from_conditional_by_default():
+    df = _synthetic_frame()
+    df["is_playoffs"] = False
+    df.loc[df["player_id"] == 3, "is_playoffs"] = True  # Charlie's rows are playoff dates
+    tier = _synthetic_tier_source()
+    out = kso._load_sweep_frame(df, tier)
+    assert 3 not in set(out["player_id"])
+    out_incl = kso._load_sweep_frame(df, tier, exclude_playoffs=False)
+    assert 3 in set(out_incl["player_id"])
