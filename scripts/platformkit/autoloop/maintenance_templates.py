@@ -336,6 +336,11 @@ _JOB_TABLE: List[Tuple[str, str, str, Tuple[str, ...]]] = [
     # re-scans lifecycle=='proposed'+escalate_to_funnel claims every tick)
     ("k_escalation_intake", "scripts.platformkit.omni.escalation_intake",
      "run_escalation_intake", ()),
+    # M27 continuous claim validation: new/INSUFF ledger claims -> hardened
+    # validator (run_full_ledger machinery); own watermark; capped/cycle;
+    # true no-op when nothing new. NOT a promoter -- verdicts only.
+    ("auto_validate", "scripts.platformkit.live_edge.autoloop.validate_job",
+     "run_validate_cycle", ()),
 ]
 
 
