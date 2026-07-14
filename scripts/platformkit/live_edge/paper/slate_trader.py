@@ -1,6 +1,6 @@
-"""scripts.platformkit.live_edge.paper.slate_trader -- arms tennis (+ verifies
-soccer/mlb) into the PAPER-BRIDGE chain: odds -> model_prob -> event_key ->
-paper-bet -> CLV-ready.
+"""scripts.platformkit.live_edge.paper.slate_trader -- arms tennis, wnba,
+soccer + soccer_intl (+ verifies mlb) into the PAPER-BRIDGE chain: odds ->
+model_prob -> event_key -> paper-bet -> CLV-ready.
 
 STEP 0 FINDING (documented, changes the literal task instruction -- see
 resolve_identity.py for the identity-join precedent this follows): the paper
@@ -41,7 +41,7 @@ from typing import Any, Dict, List, Optional
 
 from scripts.platformkit import clv_ledger
 from scripts.platformkit.clv import clv_scoreboard
-from scripts.platformkit.live_edge.paper import bridge, tennis_model
+from scripts.platformkit.live_edge.paper import bridge, soccer_model, tennis_model, wnba_model
 from scripts.platformkit.live_edge.paper.event_key import market_family_of
 
 _REPO_ROOT = pathlib.Path(__file__).resolve().parents[4]
@@ -68,14 +68,15 @@ def _read_jsonl(path: pathlib.Path) -> List[dict]:
     return out
 
 
-def build_tennis_shadow_rows(date: str, *, line_history_dir: pathlib.Path = _LINE_HISTORY_DIR,
+def _build_model_shadow_rows(sport: str, date: str, model_fn, mechanism: str, *,
+                              line_history_dir: pathlib.Path = _LINE_HISTORY_DIR,
                               market_type: str = "moneyline") -> List[Dict[str, Any]]:
-    """Today's real tennis odds capture -> one shadow row per match, with a
-    REAL model_prob (tennis_model) as conditioned_pred. One row per game_id
-    (the home-side moneyline tick), freshest (last) capture of the day.
-    Matches with no home-side moneyline tick, or where the model returns None,
-    are honestly skipped (never fabricated)."""
-    rows = _read_jsonl(line_history_dir / "tennis" / f"{date}.jsonl")
+    """Shared builder: today's real <sport> odds capture -> one shadow row
+    per match, with a REAL model_fn(home, away) -> prob as conditioned_pred.
+    One row per game_id (the home-side moneyline tick), freshest (last)
+    capture of the day. Matches with no home-side moneyline tick, or where
+    the model returns None, are honestly skipped (never fabricated)."""
+    rows = _read_jsonl(line_history_dir / sport / f"{date}.jsonl")
     latest_home: Dict[str, dict] = {}
     for r in rows:
         if r.get("market_type") != market_type or r.get("side") != "home":
@@ -86,19 +87,48 @@ def build_tennis_shadow_rows(date: str, *, line_history_dir: pathlib.Path = _LIN
     shadow_rows: List[Dict[str, Any]] = []
     for gid, r in latest_home.items():
         home, away = r.get("home"), r.get("away")
-        pred = tennis_model.model_prob(home, away)
+        pred = model_fn(home, away)
         if pred is None or r.get("devigged_prob") is None:
             continue
         shadow_rows.append({
-            "sport": "tennis", "game": gid,
+            "sport": sport, "game": gid,
             "ts": r.get("captured_at") or f"{date}T00:00:00+00:00",
             "market": f"pregame.{market_family_of(market_type)}",
             "market_price": float(r["devigged_prob"]),
             "conditioned_pred": pred, "unconditioned_pred": float(r["devigged_prob"]),
             "book": r.get("book"), "edge_claimed": False, "is_clv_suspect": None,
-            "mechanism_applied": "tennis_elo_platt",
+            "mechanism_applied": mechanism,
         })
     return shadow_rows
+
+
+def build_tennis_shadow_rows(date: str, *, line_history_dir: pathlib.Path = _LINE_HISTORY_DIR,
+                              market_type: str = "moneyline") -> List[Dict[str, Any]]:
+    """Real tennis odds -> shadow rows via tennis_model.model_prob (Elo+Platt)."""
+    return _build_model_shadow_rows(
+        "tennis", date, tennis_model.model_prob, "tennis_elo_platt",
+        line_history_dir=line_history_dir, market_type=market_type)
+
+
+def build_wnba_shadow_rows(date: str, *, line_history_dir: pathlib.Path = _LINE_HISTORY_DIR,
+                            market_type: str = "moneyline") -> List[Dict[str, Any]]:
+    """Real wnba odds -> shadow rows via wnba_model.model_prob (leak-free Elo
+    baseline, moneyline only -- see wnba_model's own docstring)."""
+    return _build_model_shadow_rows(
+        "wnba", date, wnba_model.model_prob, "wnba_elo",
+        line_history_dir=line_history_dir, market_type=market_type)
+
+
+def build_soccer_shadow_rows(sport: str, date: str, *,
+                              line_history_dir: pathlib.Path = _LINE_HISTORY_DIR,
+                              market_type: str = "moneyline") -> List[Dict[str, Any]]:
+    """Real soccer/soccer_intl odds -> shadow rows via soccer_model.model_prob
+    (Dixon-Coles + Platt, two-way collapse -- see soccer_model's own
+    docstring). sport must be 'soccer' or 'soccer_intl' (World Cup / intl)."""
+    return _build_model_shadow_rows(
+        sport, date, lambda h, a: soccer_model.model_prob(h, a, sport=sport),
+        f"{sport}_dixon_coles_platt", line_history_dir=line_history_dir,
+        market_type=market_type)
 
 
 def load_existing_shadow_rows(sport: str, date: str, *,
@@ -123,6 +153,10 @@ def run_sport_slate(sport: str, date: str, *, threshold: float = bridge.DEFAULT_
     touch that path)."""
     if sport == "tennis":
         rows = build_tennis_shadow_rows(date, line_history_dir=line_history_dir)
+    elif sport == "wnba":
+        rows = build_wnba_shadow_rows(date, line_history_dir=line_history_dir)
+    elif sport in ("soccer", "soccer_intl"):
+        rows = build_soccer_shadow_rows(sport, date, line_history_dir=line_history_dir)
     else:
         rows = load_existing_shadow_rows(sport, date, shadow_dir=shadow_dir)
 
@@ -154,7 +188,7 @@ def run_sport_slate(sport: str, date: str, *, threshold: float = bridge.DEFAULT_
 
 
 def render_report(results: List[Dict[str, Any]]) -> str:
-    lines = ["# TENNIS-WIRE slate report (dry-run unless noted)", ""]
+    lines = ["# SLATE-TRADER report (dry-run unless noted)", ""]
     for r in results:
         lines.append(f"## {r['sport']} {r['date']}")
         lines.append(f"n_total={r['n_total']} n_resolved={r['n_resolved']} "
@@ -175,7 +209,8 @@ def render_report(results: List[Dict[str, Any]]) -> str:
 def main() -> int:
     import datetime as dt
     date = dt.datetime.now(dt.timezone.utc).date().isoformat()
-    results = [run_sport_slate(sp, date) for sp in ("tennis", "mlb", "soccer_intl")]
+    results = [run_sport_slate(sp, date)
+               for sp in ("tennis", "wnba", "soccer", "soccer_intl", "mlb")]
     report = render_report(results)
     print(report)
     out = _PAPER_DIR / "SLATE_TRADER_REPORT.md"
@@ -189,5 +224,5 @@ if __name__ == "__main__":
     raise SystemExit(main())
 
 
-__all__ = ["build_tennis_shadow_rows", "load_existing_shadow_rows", "run_sport_slate",
-           "render_report", "STAKE_UNITS_DEFAULT"]
+__all__ = ["build_tennis_shadow_rows", "build_wnba_shadow_rows", "build_soccer_shadow_rows",
+           "load_existing_shadow_rows", "run_sport_slate", "render_report", "STAKE_UNITS_DEFAULT"]
