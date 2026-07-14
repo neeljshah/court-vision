@@ -115,3 +115,50 @@ def test_v1_reproducibility_same_seed(v1_frame):
     pa = SP.predict_proba(clf_a, test_df, features=SP.FEATURES_V1)
     pb = SP.predict_proba(clf_b, test_df, features=SP.FEATURES_V1)
     np.testing.assert_allclose(pa, pb)
+
+
+# ---------------------------------------------------------------------------
+# v2: possession-grain lineup-identity rates (2024-25-fitted, fallback ladder)
+# ---------------------------------------------------------------------------
+
+@pytest.fixture(scope="module")
+def v2_frame() -> pd.DataFrame:
+    return SP.build_state_frame_v2()
+
+
+def test_v2_features_extend_v1(v2_frame):
+    assert SP.FEATURES_V2[:len(SP.FEATURES_V1)] == SP.FEATURES_V1
+    assert len(SP.FEATURES_V2) == len(SP.FEATURES_V1) + 2
+    assert set(SP.FEATURES_V2).issubset(v2_frame.columns)
+    assert set(v2_frame["off_lineup_tier_v2"].unique()) <= {"lineup", "player", "team"}
+
+
+def test_v2_lineup_rating_fit_uses_train_season_only(monkeypatch):
+    """Leak guard: the lineup/player rating tables must be fit on rows whose
+    season == TRAIN_SEASON only -- 2025-26 outcomes must never enter a fit."""
+    from scripts.platformkit.omni import lineup_possessions as LP
+    seasons_seen = []
+    orig_lineup, orig_player = LP.fit_lineup_rates, LP.fit_player_rates
+
+    def _capture_lineup(df, *a, **kw):
+        seasons_seen.append(set(df["season"].unique()))
+        return orig_lineup(df, *a, **kw)
+
+    def _capture_player(df, *a, **kw):
+        seasons_seen.append(set(df["season"].unique()))
+        return orig_player(df, *a, **kw)
+
+    monkeypatch.setattr(LP, "fit_lineup_rates", _capture_lineup)
+    monkeypatch.setattr(LP, "fit_player_rates", _capture_player)
+    SP.build_state_frame_v2()
+    assert seasons_seen, "fit functions were never called"
+    assert all(s == {SP.TRAIN_SEASON} for s in seasons_seen)
+
+
+def test_v2_reproducibility_same_seed(v2_frame):
+    clf_a, _ = SP.fit_spine_discovery(v2_frame, seed=42, features=SP.FEATURES_V2)
+    clf_b, _ = SP.fit_spine_discovery(v2_frame, seed=42, features=SP.FEATURES_V2)
+    test_df = v2_frame[v2_frame["season"] == "2025-26"].reset_index(drop=True)
+    pa = SP.predict_proba(clf_a, test_df, features=SP.FEATURES_V2)
+    pb = SP.predict_proba(clf_b, test_df, features=SP.FEATURES_V2)
+    np.testing.assert_allclose(pa, pb)

@@ -1,17 +1,17 @@
 """scripts.platformkit.omni.spine_eval -- P6 standing PBP-replay evaluator.
 
-Scores spine_nba (v0 state-only, v1 +identity/+K-asof) on the FULL held-out
-2025-26 season vs two baselines, same rows/metrics: sim2_cells (PossessionModel
-fit on FIT_SEASONS, a harder bar) and marginal (fixed class-frequency). v1
-additionally verdicts against v0 on the identical held-out rows.
+Scores spine_nba (v0 state-only, v1 +identity/+K-asof, v2 +lineup-identity) on
+the FULL held-out 2025-26 season vs sim2_cells (PossessionModel fit on
+FIT_SEASONS, a harder bar) and marginal (fixed class-frequency); v1/v2 also
+verdict against their predecessor on the identical held-out rows.
 
 Metrics (ordinal 5-class points-bucket {0,1,2,3,4+}): CRPS, log-loss,
 reliability-by-prob-bin. Verdict BEATS/TIES/TRAILS (TIES=within 1% rel).
 Seed-stability: retrain w/ 2nd seed, delta must stay <2% or reported unstable.
 
 INVARIANTS: domains/src untouched (import-only); <=300 LOC; ASCII; local
-only; no $/edge claims; ledger writes DEFERRED to end of run; v0 artifacts
-(eval_2025_26.json) never overwritten -- v1 writes its own eval_2025_26_v1.json.
+only; no $/edge claims; ledger writes DEFERRED to end of run; prior versions'
+artifacts (eval_2025_26.json, eval_2025_26_v1.json) never overwritten.
 Tests: cd /c/Users/neelj/nba-ai-system && python -m pytest tests/platformkit/test_omni_spine_eval.py -q
 """
 from __future__ import annotations
@@ -33,9 +33,11 @@ _REPO = Path(__file__).resolve().parents[3]
 _OUT_DIR = _REPO / "data" / "omni" / "spine"
 EVAL_OUT = _OUT_DIR / "eval_2025_26.json"
 EVAL_OUT_V1 = _OUT_DIR / "eval_2025_26_v1.json"     # versioned, v0 untouched
+EVAL_OUT_V2 = _OUT_DIR / "eval_2025_26_v2.json"     # versioned, v0/v1 untouched
 PREDS_OUT = _OUT_DIR / "preds" / "preds_2025_26.parquet"   # ponytail: single
 # overwritten file per run (standing evaluator re-run, not discovery sweep).
 PREDS_OUT_V1 = _OUT_DIR / "preds" / "preds_2025_26_v1.parquet"
+PREDS_OUT_V2 = _OUT_DIR / "preds" / "preds_2025_26_v2.parquet"
 TEST_SEASON = "2025-26"
 IMPORTANCE_SAMPLE = 20_000   # ponytail: permutation importance on a fixed
 # subsample (HGB has no feature_importances_); full 247k rows is needless cost.
@@ -191,108 +193,106 @@ def run() -> Dict[str, Any]:
         "model": "nba_spine_v0", "edge_claimed": False,
         "train_season": SP.TRAIN_SEASON, "test_season": TEST_SEASON,
         "fit_seasons_sim2_baseline": list(FIT_SEASONS),
-        "seed_a": metrics_a, "seed_b": {"seed": SEED_B,
-            "per_model": metrics_b["per_model"]},
-        "seed_stability": {"deltas": deltas, "threshold_rel": SEED_STABLE_REL,
-                            "seed_stable": bool(stable)},
-        "honest_note": ("Calibration/sharpness only, no dollars/edge. sim2_cells "
-                        "baseline is fit on FIT_SEASONS (2 seasons) -- a harder "
-                        "bar than spine_v0's single discovery season."),
+        "seed_a": metrics_a, "seed_b": {"seed": SEED_B, "per_model": metrics_b["per_model"]},
+        "seed_stability": {"deltas": deltas, "threshold_rel": SEED_STABLE_REL, "seed_stable": bool(stable)},
+        "honest_note": "Calibration/sharpness only, no dollars/edge. sim2_cells baseline is fit on FIT_SEASONS (2 seasons) -- a harder bar than spine_v0's single discovery season.",
     }
-    EVAL_OUT.parent.mkdir(parents=True, exist_ok=True)
-    write_json_atomic(EVAL_OUT, doc, indent=2)
-    PREDS_OUT.parent.mkdir(parents=True, exist_ok=True)
-    preds.to_parquet(PREDS_OUT, index=False)
+    _write_versioned(doc, preds, EVAL_OUT, PREDS_OUT)
     return doc
+
+
+def _run_version(state_df: pd.DataFrame, features: list, model_name: str,
+                  prev_features: list, prev_model_name: str
+                 ) -> Tuple[Dict[str, Any], pd.DataFrame, pd.DataFrame]:
+    """Shared run_v1/run_v2 body: score model_name + prev_model_name on the
+    SAME state_df -- apples-to-apples, not a re-read of a versioned artifact."""
+    metrics_prev, _preds_prev, _ = _score_all(state_df, SEED_A, features=prev_features, model_name=prev_model_name)
+    metrics_a, preds, (clf_a, test_df) = _score_all(state_df, SEED_A, features=features, model_name=model_name)
+    metrics_b, _, _ = _score_all(state_df, SEED_B, features=features, model_name=model_name)
+    deltas, stable = _seed_deltas(metrics_a, metrics_b, model_name)
+
+    mp, pp = metrics_a["per_model"][model_name], metrics_prev["per_model"][prev_model_name]
+    verdict_vs_prev = {"crps_vs_prev": _verdict(mp["crps"], pp["crps"]),
+                        "log_loss_vs_prev": _verdict(mp["log_loss"], pp["log_loss"])}
+    importance = feature_importance_top10(clf_a, test_df, features, SEED_A)
+    base = {
+        "train_season": SP.TRAIN_SEASON, "test_season": TEST_SEASON,
+        "fit_seasons_sim2_baseline": list(FIT_SEASONS),
+        "seed_a": metrics_a, "seed_b": {"seed": SEED_B, "per_model": metrics_b["per_model"]},
+        "prev_baseline": {"per_model": {prev_model_name: pp}},
+        "verdict_vs_prev": verdict_vs_prev,
+        "feature_importance_top10": importance,
+        "seed_stability": {"deltas": deltas, "threshold_rel": SEED_STABLE_REL, "seed_stable": bool(stable)},
+    }
+    return base, preds, test_df
+
+
+def _write_versioned(doc: Dict[str, Any], preds: pd.DataFrame, eval_path: Path, preds_path: Path) -> None:
+    eval_path.parent.mkdir(parents=True, exist_ok=True)
+    write_json_atomic(eval_path, doc, indent=2)
+    preds_path.parent.mkdir(parents=True, exist_ok=True)
+    preds.to_parquet(preds_path, index=False)
 
 
 def run_v1() -> Dict[str, Any]:
-    """v1 = v0 features + team identity + K-asof team-strength, scored on the
-    SAME held-out rows as v0 (one state_df underlies both feature sets) --
-    exact apples-to-apples, not a re-read of the versioned v0 artifact."""
+    """v1 = v0 features + team identity + K-asof team-strength."""
     state_df = SP.build_state_frame_v1()
-    metrics_v0, _preds_v0, _ = _score_all(state_df, SEED_A, features=SP.FEATURES, model_name="spine_v0")
-    metrics_a, preds, (clf_a, test_df) = _score_all(state_df, SEED_A, features=SP.FEATURES_V1, model_name="spine_v1")
-    metrics_b, _, _ = _score_all(state_df, SEED_B, features=SP.FEATURES_V1, model_name="spine_v1")
-    deltas, stable = _seed_deltas(metrics_a, metrics_b, "spine_v1")
-
-    v1p, v0p = metrics_a["per_model"]["spine_v1"], metrics_v0["per_model"]["spine_v0"]
-    verdict_vs_v0 = {"crps_vs_v0": _verdict(v1p["crps"], v0p["crps"]),
-                      "log_loss_vs_v0": _verdict(v1p["log_loss"], v0p["log_loss"])}
-    importance = feature_importance_top10(clf_a, test_df, SP.FEATURES_V1, SEED_A)
-
-    doc = {
-        "model": "nba_spine_v1", "edge_claimed": False,
-        "train_season": SP.TRAIN_SEASON, "test_season": TEST_SEASON,
-        "fit_seasons_sim2_baseline": list(FIT_SEASONS),
-        "features_added": SP.FEATURES_V1[len(SP.FEATURES):],
-        "seed_a": metrics_a, "seed_b": {"seed": SEED_B, "per_model": metrics_b["per_model"]},
-        "v0_baseline": {"per_model": {"spine_v0": v0p}},
-        "verdict_vs_v0": verdict_vs_v0,
-        "feature_importance_top10": importance,
-        "seed_stability": {"deltas": deltas, "threshold_rel": SEED_STABLE_REL, "seed_stable": bool(stable)},
-        "honest_note": ("Calibration/sharpness only, no dollars/edge. Adds team "
-                        "identity + K-asof (season-prior) team-strength to v0's "
-                        "state-only features; sim2_cells baseline still fit on "
-                        "FIT_SEASONS (2 seasons), a harder bar than v1's single "
-                        "discovery season."),
-    }
-    EVAL_OUT_V1.parent.mkdir(parents=True, exist_ok=True)
-    write_json_atomic(EVAL_OUT_V1, doc, indent=2)
-    PREDS_OUT_V1.parent.mkdir(parents=True, exist_ok=True)
-    preds.to_parquet(PREDS_OUT_V1, index=False)
+    base, preds, _test_df = _run_version(state_df, SP.FEATURES_V1, "spine_v1", SP.FEATURES, "spine_v0")
+    doc = {"model": "nba_spine_v1", "edge_claimed": False,
+           "features_added": SP.FEATURES_V1[len(SP.FEATURES):], **base,
+           "honest_note": "Calibration/sharpness only, no dollars/edge. Adds team identity + K-asof (season-prior) team-strength to v0's state-only features; sim2_cells baseline still fit on FIT_SEASONS (2 seasons), a harder bar than v1's single discovery season."}
+    _write_versioned(doc, preds, EVAL_OUT_V1, PREDS_OUT_V1)
     return doc
 
 
-def _ledger_claims(doc: Dict[str, Any]) -> None:
-    """Ledger model-vs-baseline verdicts. Called ONLY from __main__ (deferred)."""
-    from scripts.platformkit.omni import claims_ledger as CL
-    v = doc["seed_a"]["verdict"]
-    n = doc["seed_a"]["n_test"]
-    for statement, key in (
-        ("spine v0 next-possession CRPS vs sim2-cells engine on held-out 2025-26", "crps_vs_sim2_cells"),
-        ("spine v0 next-possession log-loss vs sim2-cells engine on held-out 2025-26", "log_loss_vs_sim2_cells"),
-        ("spine v0 next-possession CRPS vs marginal-frequency baseline on held-out 2025-26", "crps_vs_marginal"),
-    ):
-        CL.add_claim({
-            "statement": f"{statement}: {v[key]} (n={n}, seed_stable={doc['seed_stability']['seed_stable']})",
-            "type": "conditional",
-            "scope": {"sport": "basketball_nba", "context": "next_possession_spine",
-                      "seasons": [TEST_SEASON]},
-            "effect": {"metric": key, "verdict": v[key], "n": n},
-            "evidence": {"artifact": str(EVAL_OUT)},
-        })
+def run_v2() -> Dict[str, Any]:
+    """v2 = v0 features + possession-grain lineup-identity rates (2024-25-
+    fitted, fallback ladder), verdicted vs v0 (spec: vs v0/sim2_cells/marginal)."""
+    state_df = SP.build_state_frame_v2()
+    base, preds, test_df = _run_version(state_df, SP.FEATURES_V2, "spine_v2", SP.FEATURES, "spine_v0")
+    fallback_dist = {
+        "off_lineup_tier_v2": test_df["off_lineup_tier_v2"].value_counts(normalize=True).round(4).to_dict(),
+        "def_lineup_tier_v2": test_df["def_lineup_tier_v2"].value_counts(normalize=True).round(4).to_dict(),
+    }
+    doc = {"model": "nba_spine_v2", "edge_claimed": False,
+           "features_added": SP.FEATURES_V2[len(SP.FEATURES):], **base,
+           "lineup_fallback_distribution": fallback_dist,
+           "honest_note": "Calibration/sharpness only, no dollars/edge. Adds possession-count-shrunk lineup-identity offense/defense rates (2024-25-fitted, lineup->player->team fallback ladder) to v0's state-only features; sim2_cells baseline still fit on FIT_SEASONS (2 seasons), a harder bar than v2's single discovery season."}
+    _write_versioned(doc, preds, EVAL_OUT_V2, PREDS_OUT_V2)
+    return doc
 
 
-def _ledger_claims_v1(doc: Dict[str, Any]) -> None:
-    """Ledger v1's verdict claims in ONE batch call (rails: batch API)."""
+def _ledger_claims_versioned(doc: Dict[str, Any], model_label: str, prev_label: str,
+                              context: str, eval_path: Path) -> None:
+    """Ledger a version's verdict claims in ONE batch call (rails: batch API)."""
     from scripts.platformkit.omni import claims_ledger as CL
-    v, vv0, n = doc["seed_a"]["verdict"], doc["verdict_vs_v0"], doc["seed_a"]["n_test"]
+    v, vprev, n = doc["seed_a"]["verdict"], doc["verdict_vs_prev"], doc["seed_a"]["n_test"]
     stable = doc["seed_stability"]["seed_stable"]
-    claims = []
-    for statement, key, block in (
-        ("spine v1 (identity+K-asof) next-possession CRPS vs spine v0 on held-out 2025-26", "crps_vs_v0", vv0),
-        ("spine v1 next-possession log-loss vs spine v0 on held-out 2025-26", "log_loss_vs_v0", vv0),
-        ("spine v1 next-possession CRPS vs sim2-cells engine on held-out 2025-26", "crps_vs_sim2_cells", v),
-    ):
-        claims.append({
-            "statement": f"{statement}: {block[key]} (n={n}, seed_stable={stable})",
-            "type": "conditional",
-            "scope": {"sport": "basketball_nba", "context": "next_possession_spine_v1",
-                      "seasons": [TEST_SEASON]},
-            "effect": {"metric": key, "verdict": block[key], "n": n},
-            "evidence": {"artifact": str(EVAL_OUT_V1)},
-        })
+    specs = (
+        (f"{model_label} next-possession CRPS vs {prev_label} on held-out 2025-26", "crps_vs_prev", vprev),
+        (f"{model_label} next-possession log-loss vs {prev_label} on held-out 2025-26", "log_loss_vs_prev", vprev),
+        (f"{model_label} next-possession CRPS vs sim2-cells engine on held-out 2025-26", "crps_vs_sim2_cells", v),
+    )
+    claims = [{
+        "statement": f"{statement}: {block[key]} (n={n}, seed_stable={stable})", "type": "conditional",
+        "scope": {"sport": "basketball_nba", "context": context, "seasons": [TEST_SEASON]},
+        "effect": {"metric": key, "verdict": block[key], "n": n}, "evidence": {"artifact": str(eval_path)},
+    } for statement, key, block in specs]
     CL.add_claims_batch(claims)
 
 
 def _main() -> int:
     # v0 already ran+ledgered (SPINE-1, eval_2025_26.json, commit 5caee20d).
     doc1 = run_v1()
-    print("spine_eval v1: n_test=%d verdict_vs_v0=%s vs_sim2=%s seed_stable=%s" % (
-        doc1["seed_a"]["n_test"], doc1["verdict_vs_v0"],
-        doc1["seed_a"]["verdict"]["crps_vs_sim2_cells"], doc1["seed_stability"]["seed_stable"]))
-    _ledger_claims_v1(doc1)
+    print("spine_eval v1: n_test=%d verdict_vs_prev=%s seed_stable=%s" % (
+        doc1["seed_a"]["n_test"], doc1["verdict_vs_prev"], doc1["seed_stability"]["seed_stable"]))
+    _ledger_claims_versioned(doc1, "spine v1 (identity+K-asof)", "spine v0", "next_possession_spine_v1", EVAL_OUT_V1)
+
+    doc2 = run_v2()
+    print("spine_eval v2: n_test=%d verdict_vs_prev=%s seed_stable=%s fallback_off=%s" % (
+        doc2["seed_a"]["n_test"], doc2["verdict_vs_prev"], doc2["seed_stability"]["seed_stable"],
+        doc2["lineup_fallback_distribution"]["off_lineup_tier_v2"]))
+    _ledger_claims_versioned(doc2, "spine v2 (lineup identity)", "spine v0", "next_possession_spine_v2", EVAL_OUT_V2)
     return 0
 
 

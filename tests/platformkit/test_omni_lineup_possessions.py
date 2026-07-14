@@ -15,8 +15,15 @@ from __future__ import annotations
 import pandas as pd
 
 from scripts.platformkit.omni.lineup_possessions import (
+    K_SHRINK,
+    _out_path,
+    _shrink,
+    _stints_path,
     build_team_is_home,
+    fit_lineup_rates,
+    fit_player_rates,
     join_possessions,
+    lookup_rate,
     validate_stints,
 )
 
@@ -109,3 +116,72 @@ def test_join_possessions_idempotent_rerun() -> None:
     out1, _ = join_possessions(possessions, stints_g1, team_is_home)
     out2, _ = join_possessions(possessions, stints_g1, team_is_home)
     pd.testing.assert_frame_equal(out1.reset_index(drop=True), out2.reset_index(drop=True))
+
+
+def test_stints_path_and_out_path_format_season() -> None:
+    assert _stints_path("2025-26").name == "stints_2025_26.parquet"
+    assert _out_path("2025-26").name == "possession_lineups_2025_26.parquet"
+
+
+# ---------------------------------------------------------------------------
+# SPINE-3: lineup/player rate fitting + fallback ladder
+# ---------------------------------------------------------------------------
+
+def _synthetic_rating_frame() -> pd.DataFrame:
+    # Team 100 lineup A (200 poss, mean 1.2) and lineup B (1 poss, mean 3.0
+    # -- thin sample, should shrink hard toward team 100's mean).
+    rows = [{"off_lineup_ids": "1,2,3,4,5", "off_team": 100, "points": 1.2}] * 200
+    rows += [{"off_lineup_ids": "6,7,8,9,10", "off_team": 100, "points": 3.0}]
+    return pd.DataFrame(rows)
+
+
+def test_shrink_math_matches_formula() -> None:
+    out = _shrink(mean=3.0, n=1.0, prior=1.2)
+    assert out == (1.0 * 3.0 + K_SHRINK * 1.2) / (1.0 + K_SHRINK)
+
+
+def test_fit_lineup_rates_shrinks_thin_lineup_toward_team_mean() -> None:
+    df = _synthetic_rating_frame()
+    table, team_rates, league_mean = fit_lineup_rates(df, "off_lineup_ids", "off_team")
+    team_mean = team_rates[100]
+    # thin lineup B (n=1) should land very close to the team mean, not 3.0
+    assert abs(table["6,7,8,9,10"] - team_mean) < 0.05
+    # thick lineup A (n=200) should barely move off its own raw mean
+    assert abs(table["1,2,3,4,5"] - 1.2) < 0.05
+
+
+def test_fit_player_rates_expands_lineup_ids_to_players() -> None:
+    df = _synthetic_rating_frame()
+    table, team_rates, _league_mean = fit_player_rates(df, "off_lineup_ids", "off_team")
+    # player "1" appears in all 200 lineup-A possessions -> shrinks near 1.2
+    assert abs(table[("1", 100)] - 1.2) < 0.05
+    # player "6" appears in the single lineup-B possession -> shrinks hard to team mean
+    assert abs(table[("6", 100)] - team_rates[100]) < 0.05
+
+
+def test_lookup_rate_fallback_ladder() -> None:
+    lineup_table = {"1,2,3,4,5": 1.10}
+    player_table = {("1", 100): 1.05, ("2", 100): 1.15}
+    team_rates = {100: 1.08}
+    league_mean = 1.0
+
+    # rung 1: lineup seen -> lineup rate
+    rate, tier = lookup_rate("1,2,3,4,5", 100, lineup_table, player_table, team_rates, league_mean)
+    assert (rate, tier) == (1.10, "lineup")
+
+    # rung 2: lineup unseen, some players known -> player-average (team mean fills gaps)
+    rate, tier = lookup_rate("1,2,99,98,97", 100, lineup_table, player_table, team_rates, league_mean)
+    assert tier == "player"
+    assert rate == (1.05 + 1.15 + 1.08 + 1.08 + 1.08) / 5
+
+    # rung 3: lineup unseen AND all players unseen -> team mean
+    rate, tier = lookup_rate("50,51,52,53,54", 100, lineup_table, player_table, team_rates, league_mean)
+    assert (rate, tier) == (1.08, "team")
+
+    # rung 3b: lineup missing entirely (NaN) -> team mean
+    rate, tier = lookup_rate(float("nan"), 100, lineup_table, player_table, team_rates, league_mean)
+    assert (rate, tier) == (1.08, "team")
+
+    # unknown team falls back to league mean
+    rate, tier = lookup_rate(None, 999, lineup_table, player_table, team_rates, league_mean)
+    assert (rate, tier) == (1.0, "team")
