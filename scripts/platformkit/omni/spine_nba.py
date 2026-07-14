@@ -121,6 +121,52 @@ def build_state_frame_v1(rebuild: bool = False,
     return m.drop(columns=["home_team", "away_team"])
 
 
+# v2 additions: possession-count-shrunk lineup-identity offense/defense rates,
+# fitted on 2024-25 (TRAIN_SEASON) ONLY via scripts.platformkit.omni.lineup_possessions
+# (owned by this lane too). Ladder per possession: lineup seen in the 2024-25
+# fit -> its shrunk rate; lineup unseen -> mean of the 5 players' individual
+# 2024-25 on-floor rates (team mean fills any single unseen player); lineup
+# missing or all 5 players unseen -> team mean. *_tier_v2 columns record which
+# rung fired, for the fallback-distribution report in spine_eval.
+FEATURES_V2 = FEATURES_V1 + ["off_lineup_rate_v2", "def_lineup_rate_v2"]
+
+
+def build_state_frame_v2(rebuild: bool = False,
+                          max_games: Optional[int] = None) -> pd.DataFrame:
+    """v1 frame + lineup-identity rate features (see FEATURES_V2 docstring
+    above). Rating tables are fit ONCE on TRAIN_SEASON rows that have a
+    lineup-store match, then looked up for every row (train + TEST_SEASON) --
+    the lookup itself never touches 2025-26 outcomes, only the 2024-25 tables."""
+    from scripts.platformkit.omni import lineup_possessions as LP
+
+    m = build_state_frame_v1(rebuild, max_games).reset_index(drop=True)
+    m["possession_key"] = m["game_id"].astype(str) + ":" + m.groupby("game_id").cumcount().astype(str)
+
+    lp_frames = [pd.read_parquet(LP._out_path(s), columns=[
+        "possession_key", "off_lineup_ids", "def_lineup_ids"]) for s in LP.SEASONS
+        if LP._out_path(s).exists()]
+    lp = pd.concat(lp_frames, ignore_index=True)
+    m = m.merge(lp, on="possession_key", how="left")
+
+    train = m[(m["season"] == TRAIN_SEASON) & m["off_lineup_ids"].notna() & m["def_lineup_ids"].notna()]
+    off_lineup_tbl, off_team_rates, off_league_mean = LP.fit_lineup_rates(train, "off_lineup_ids", "off_team")
+    off_player_tbl, _, _ = LP.fit_player_rates(train, "off_lineup_ids", "off_team")
+    def_lineup_tbl, def_team_rates, def_league_mean = LP.fit_lineup_rates(train, "def_lineup_ids", "def_team")
+    def_player_tbl, _, _ = LP.fit_player_rates(train, "def_lineup_ids", "def_team")
+
+    def _apply_ladder(lineup_col, team_col, lineup_tbl, player_tbl, team_rates, league_mean):
+        rate = np.empty(len(m)); tier = np.empty(len(m), dtype=object)
+        for i, (lid, team) in enumerate(zip(m[lineup_col].to_numpy(), m[team_col].to_numpy())):
+            rate[i], tier[i] = LP.lookup_rate(lid, team, lineup_tbl, player_tbl, team_rates, league_mean)
+        return rate, tier
+
+    m["off_lineup_rate_v2"], m["off_lineup_tier_v2"] = _apply_ladder(
+        "off_lineup_ids", "off_team", off_lineup_tbl, off_player_tbl, off_team_rates, off_league_mean)
+    m["def_lineup_rate_v2"], m["def_lineup_tier_v2"] = _apply_ladder(
+        "def_lineup_ids", "def_team", def_lineup_tbl, def_player_tbl, def_team_rates, def_league_mean)
+    return m.drop(columns=["off_lineup_ids", "def_lineup_ids"])
+
+
 def _xy(df: pd.DataFrame, features: list = None) -> Tuple[np.ndarray, np.ndarray]:
     x = df[features or FEATURES].to_numpy(dtype=float)
     y = points_to_class(df["points"].to_numpy())
