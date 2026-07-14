@@ -264,15 +264,12 @@ def run_sweep(base_dir=None, injury_source=None, box_source=None) -> dict:
     for c, a in zip(tested, bh_adjust([c["p"] for c in tested])):
         c["p_adj"] = a
     batch_overfit_est = round(BH_ALPHA * len(tested), 4)
-    existing_ids = set(cl.query(sport="nba", base_dir=base_dir)["claim_id"])
-    claims_added, escalations, player_status = 0, 0, {}
-    for cell in all_cells:
-        claim, escalate = _claim_for_cell(cell, data_asof)
-        claim_id = cl.make_claim_id(claim["statement"], claim["scope"])
-        if claim_id not in existing_ids:
-            cl.add_claim(claim, base_dir=base_dir)
-            existing_ids.add(claim_id)
-            claims_added += 1
+    cells_and_claims = [(cell, *_claim_for_cell(cell, data_asof)) for cell in all_cells]
+    claims_added, _ = cl.add_claims_batch(
+        [claim for _, claim, _ in cells_and_claims], base_dir=base_dir
+    )
+    escalations, player_status = 0, {}
+    for cell, _claim, escalate in cells_and_claims:
         if escalate:
             escalations += 1
         if cell["level"] == "player":

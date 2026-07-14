@@ -244,15 +244,12 @@ def run_sweep(base_dir=None, source=None, top_n: int = TOP_N_PLAYERS, discovery_
         c["p_adj"] = a
     batch_overfit_est = BH_ALPHA * len(tested)
 
-    existing_ids = set(cl.query(sport="nba", base_dir=base_dir)["claim_id"])
-    claims_added, escalations, player_status = 0, 0, {}
-    for cell in all_cells:
-        claim, escalate = _claim_for_cell(cell, data_asof)
-        claim_id = cl.make_claim_id(claim["statement"], claim["scope"])
-        if claim_id not in existing_ids:
-            cl.add_claim(claim, base_dir=base_dir)
-            existing_ids.add(claim_id)
-            claims_added += 1
+    cells_and_claims = [(cell, *_claim_for_cell(cell, data_asof)) for cell in all_cells]
+    claims_added, _ = cl.add_claims_batch(
+        [claim for _, claim, _ in cells_and_claims], base_dir=base_dir
+    )
+    escalations, player_status = 0, {}
+    for cell, _claim, escalate in cells_and_claims:
         if escalate:
             escalations += 1
         status = "ESCALATED" if escalate else ("INSUFFICIENT_DATA" if cell.get("insufficient") else "MINED")
