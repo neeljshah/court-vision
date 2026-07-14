@@ -14,13 +14,17 @@ from scripts.platformkit.live_edge.clv.clean_readout import (clean_readout,
 
 
 def _row(bet_id, sport, clv_pct, clv_status, side="home", taken=2.0,
-          close_home=2.0, close_away=2.0, status="settled"):
+          close_home=2.0, close_away=2.0, status="settled",
+          fair_close_prob=None, taken_implied_prob=None, stake_units=1.0):
     return {
         "bet_id": bet_id, "sport": sport, "status": status,
         "clv_status": clv_status, "clv_pct": clv_pct,
         "side": side, "taken_decimal": taken,
         "closing_decimal_home": close_home, "closing_decimal_away": close_away,
         "settled_at": "2026-07-14T00:00:00",
+        "fair_close_prob": fair_close_prob,
+        "taken_implied_prob": taken_implied_prob,
+        "stake_units": stake_units,
     }
 
 
@@ -100,6 +104,25 @@ def test_edge_claimed_always_false_and_render_runs():
     md = render(board)
     assert "edge_claimed=False" in md
     assert "PROVISIONAL" in md
+
+
+def test_robust_verdict_rejects_longshot_skewed_ledger_the_exact_bug():
+    """Mirrors the real 981-bet false positive: 20 small same-book losers
+    (clv_pct=-3, median negative, most bets lose) + 1 longshot winner whose
+    percent-of-price CLV explodes (clv_pct=+80) drags the raw mean positive.
+    verdict_robust must come back PAR/BEHIND, never AHEAD."""
+    rows = [_row("b%d" % i, "mlb", -3.0, "true_close",
+                  fair_close_prob=0.45, taken_implied_prob=0.46)
+            for i in range(20)]
+    rows.append(_row("b_long", "mlb", 80.0, "true_close",
+                       fair_close_prob=0.10, taken_implied_prob=0.05))
+    board = clean_readout(rows)
+    ov = board["overall"]
+    assert ov["mean_clv_pct"] > 0  # the false positive is real: mean IS positive
+    assert ov["median_clv_pct"] < 0  # but the typical bet loses
+    assert ov["verdict_robust"] != "AHEAD_OF_CLOSE (provisional)"
+    assert ov["verdict_robust"] == "BEHIND_CLOSE (provisional)"
+    assert ov["robust"]["share_beating_close"] < 0.5
 
 
 if __name__ == "__main__":

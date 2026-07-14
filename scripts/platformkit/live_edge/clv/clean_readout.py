@@ -42,8 +42,9 @@ if _REPO not in sys.path:
 
 from scripts.platformkit.clv_ledger import is_clv_suspect, load_ledger
 from scripts.platformkit.clv.clv_scoreboard import _dedup_settled
-from scripts.platformkit.live_edge.clv.clv_trial import (clv_distribution,
-                                                          verdict_label)
+from scripts.platformkit.live_edge.clv.clv_trial import (
+    clv_distribution, prob_point_clv, robust_clv_stats, robust_verdict_label,
+    verdict_label)
 
 Row = Dict[str, Any]
 
@@ -73,8 +74,32 @@ def _breakdown(settled: Sequence[Row]) -> Dict[str, Any]:
     }
 
 
+def _row_stats(rows: Sequence[Row]) -> Dict[str, Any]:
+    """Legacy mean-CI dist + robust (median/share/trimmed/prob-point) stats
+    for one row population, sharing the same clv_pct extraction."""
+    clvs = [float(r["clv_pct"]) for r in rows if r.get("clv_pct") is not None]
+    pp = [prob_point_clv(r["fair_close_prob"], r["taken_implied_prob"]) for r in rows
+          if r.get("fair_close_prob") is not None and r.get("taken_implied_prob") is not None]
+    weights = [float(r.get("stake_units", 1.0)) for r in rows
+               if r.get("clv_pct") is not None]
+    dist = clv_distribution(clvs)
+    robust = robust_clv_stats(clvs, prob_point_values=pp, weights=weights)
+    return {
+        "n": dist["n"],
+        "median_clv_pct": dist["median"],
+        "iqr_clv_pct": dist["iqr"],
+        "mean_clv_pct": dist["mean"],
+        "ci95_clv_pct": dist["ci95"],
+        "verdict": verdict_label(tuple(dist["ci95"]), dist["n"]),
+        "robust": robust,
+        "verdict_robust": robust_verdict_label(robust),
+    }
+
+
 def clean_readout(ledger: Sequence[Row] = None) -> Dict[str, Any]:
-    """Build the clean same-book CLV readout dict (pure; no printing/I-O)."""
+    """Build the clean same-book CLV readout dict (pure; no printing/I-O).
+    The headline verdict is verdict_robust (outlier-resistant); the legacy
+    mean-CI verdict is kept alongside for comparison/backward compat."""
     if ledger is None:
         ledger = load_ledger()
     settled = _dedup_settled(ledger)
@@ -85,39 +110,24 @@ def clean_readout(ledger: Sequence[Row] = None) -> Dict[str, Any]:
     for r in clean:
         by_sport.setdefault(str(r.get("sport") or "unknown"), []).append(r)
 
-    per_sport: Dict[str, Any] = {}
-    for sport, rows in sorted(by_sport.items()):
-        clvs = [float(r["clv_pct"]) for r in rows if r.get("clv_pct") is not None]
-        dist = clv_distribution(clvs)
-        per_sport[sport] = {
-            "n": dist["n"],
-            "median_clv_pct": dist["median"],
-            "iqr_clv_pct": dist["iqr"],
-            "mean_clv_pct": dist["mean"],
-            "ci95_clv_pct": dist["ci95"],
-            "verdict": verdict_label(tuple(dist["ci95"]), dist["n"]),
-        }
+    per_sport: Dict[str, Any] = {sport: _row_stats(rows)
+                                 for sport, rows in sorted(by_sport.items())}
 
-    overall_clvs = [float(r["clv_pct"]) for r in clean if r.get("clv_pct") is not None]
-    overall = clv_distribution(overall_clvs)
     return {
         "edge_claimed": False,
         "provisional": True,
         "breakdown": bd,
         "per_sport": per_sport,
-        "overall": {
-            "n": overall["n"],
-            "median_clv_pct": overall["median"],
-            "iqr_clv_pct": overall["iqr"],
-            "mean_clv_pct": overall["mean"],
-            "ci95_clv_pct": overall["ci95"],
-            "verdict": verdict_label(tuple(overall["ci95"]), overall["n"]),
-        },
+        "overall": _row_stats(clean),
         "note": ("Headline = clv_status=='true_close' AND NOT is_clv_suspect "
                  "(same-book close only). proxy + no_close rows are EXCLUDED "
                  "from every headline number and reported only as counts. "
                  "CLV is in clv_pct units (percent-of-price), never $/ROI/"
-                 "bankroll. PROVISIONAL: not an edge claim until edge_greenlight."),
+                 "bankroll. verdict_robust (median/share-beating-close/"
+                 "trimmed-mean-CI/probability-point) is the honest headline; "
+                 "legacy mean-CI verdict is FOOLABLE by longshot skew and "
+                 "kept for comparison only. PROVISIONAL: not an edge claim "
+                 "until edge_greenlight."),
     }
 
 
@@ -149,22 +159,40 @@ def render(board: Dict[str, Any]) -> str:
         lines.append("| other/unlabeled status (excluded) | %d |"
                       % bd["n_other_status"])
     lines.append("")
-    lines.append("## Per-sport clean same-book CLV (units = clv_pct, "
-                  "percent-of-price; never $/ROI)")
+    lines.append("## Per-sport clean same-book CLV -- ROBUST headline "
+                  "(median/share-beating-close/trimmed-mean/prob-point; "
+                  "units = clv_pct percent-of-price except prob-point = "
+                  "probability points; never $/ROI)")
     lines.append("")
-    lines.append("| sport | n | median | IQR | mean | 95%% CI | verdict |")
-    lines.append("|---|---|---|---|---|---|---|")
+    lines.append("| sport | n | median | % beat close | trimmed mean (CI) | "
+                  "prob-point median | legacy (mean-CI) verdict | "
+                  "**ROBUST verdict** |")
+    lines.append("|---|---|---|---|---|---|---|---|")
     for sport, s in board["per_sport"].items():
-        lines.append("| %s | %d | %s | %s | %s | %s | %s |" % (
-            sport, s["n"], s["median_clv_pct"], s["iqr_clv_pct"],
-            s["mean_clv_pct"], s["ci95_clv_pct"], s["verdict"]))
+        r = s["robust"]
+        lines.append("| %s | %d | %s | %s | %s (%s) | %s | %s | **%s** |" % (
+            sport, s["n"], s["median_clv_pct"],
+            None if r["share_beating_close"] is None
+            else round(r["share_beating_close"] * 100, 1),
+            r["trimmed_mean"], r["trimmed_mean_ci95"], r["prob_point_median"],
+            s["verdict"], s["verdict_robust"]))
     ov = board["overall"]
+    ovr = ov["robust"]
     lines.append("")
     lines.append("## Overall (all sports pooled, clean same-book)")
     lines.append("")
-    lines.append("n=%d  median=%s  IQR=%s  mean=%s  95%% CI=%s  **verdict: %s**"
-                  % (ov["n"], ov["median_clv_pct"], ov["iqr_clv_pct"],
-                     ov["mean_clv_pct"], ov["ci95_clv_pct"], ov["verdict"]))
+    lines.append("n=%d  median=%s  %% beat close=%s  trimmed mean=%s (CI=%s)  "
+                  "prob-point median=%s  stake-weighted mean=%s" % (
+                      ov["n"], ov["median_clv_pct"],
+                      None if ovr["share_beating_close"] is None
+                      else round(ovr["share_beating_close"] * 100, 1),
+                      ovr["trimmed_mean"], ovr["trimmed_mean_ci95"],
+                      ovr["prob_point_median"], ovr["stake_weighted_mean"]))
+    lines.append("")
+    lines.append("legacy mean-CI verdict (FOOLABLE by longshot skew): %s"
+                  % ov["verdict"])
+    lines.append("")
+    lines.append("**ROBUST verdict (headline): %s**" % ov["verdict_robust"])
     lines.append("")
     lines.append("## What is NOT verified")
     lines.append("")
