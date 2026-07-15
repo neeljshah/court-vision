@@ -40,7 +40,7 @@ export function LiveGameRow({ entry }: { entry: LiveGameEntry }) {
   return (
     <li className="border-b border-border last:border-b-0" data-testid="live-game-row">
       <Link
-        href={`/games/${entry.sport}/${entry.game_id}`}
+        href={`/games/${entry.sport}/${entry.game_id}?m=${encodeURIComponent(`${awayLabel} @ ${homeLabel}`)}`}
         aria-label={linkAriaLabel}
         className={cn(
           "flex cursor-pointer flex-col gap-1.5 px-3 py-2 transition-colors hover:bg-surface-2",
@@ -66,7 +66,7 @@ export function LiveGameRow({ entry }: { entry: LiveGameEntry }) {
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <span className="font-data text-[11px] text-faint">
-            {entry.sport.toUpperCase()}<span className="mx-1.5">&middot;</span>{entry.game_id}
+            {entry.sport.toUpperCase()}
           </span>
           {!isDone ? (
             <SideProb

@@ -240,7 +240,7 @@ export function LiveInGamePanel({
     <div data-testid="live-ingame-panel">
       <Panel className={cn("flex flex-col", className)}>
         <PanelHead
-          title={matchupLabel ?? `${sport.toUpperCase()} / ${gameId}`}
+          title={matchupLabel ?? `${sport.toUpperCase()} live`}
           asOf={asOf}
           stale={stale}
         />
