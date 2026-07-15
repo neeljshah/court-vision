@@ -151,6 +151,46 @@ def test_poll_kalshi_depth_sticky_retention_survives_discovery_churn(tmp_path):
     assert {r["ticker"] for r in s2["rows"]} == {"KXMLBGAME-TEST-AAA", "KXMLBGAME-TEST-CCC"}
 
 
+def test_poll_kalshi_depth_protects_live_today_ticker_over_future_dated(tmp_path):
+    """Regression for the 2026-07-15 live-gap fix (book_depth_livegap_diagnosis.md):
+    a ticker whose game is TODAY must survive cap eviction even though Kalshi
+    has already opened (and this poller has already discovered) tickers for
+    LATER days. Under the pre-fix blind-FIFO eviction, today_ticker -- appended
+    first, in tick 1 -- would have been the one dropped when the cap tipped
+    over in tick 2, exactly the bug that produced the measured ~44h capture
+    gap (a same-day market silently stops being tracked)."""
+    tick = {"n": 1}
+    today_ticker = "KXMLBGAME-26JUL05AAABBB-AAA"
+    future_tickers = ["KXMLBGAME-26JUL07CCCDDD-CCC", "KXMLBGAME-26JUL08EEEFFF-EEE"]
+
+    def _http(url: str):
+        if "/markets?" in url and "series_ticker" in url:
+            if tick["n"] == 1:
+                return {"markets": [{"ticker": today_ticker}]}
+            return {"markets": [{"ticker": t} for t in future_tickers]}
+        if "orderbook" in url:
+            return _ORDERBOOK_BODY
+        if "trades" in url:
+            return _TRADES_BODY
+        raise AssertionError("unexpected url %s" % url)
+
+    now_dt = datetime(2026, 7, 5, 12, 0, 0, tzinfo=timezone.utc)
+    active: dict = {}
+    misses: dict = {}
+    poller.poll_kalshi_depth(["mlb"], http=_http, sidecar_dir=tmp_path, now=lambda: now_dt,
+                             active_by_sport=active, miss_counts=misses, max_active_per_sport=2)
+    assert active["mlb"] == [today_ticker]
+
+    tick["n"] = 2
+    poller.poll_kalshi_depth(["mlb"], http=_http, sidecar_dir=tmp_path, now=lambda: now_dt,
+                             active_by_sport=active, miss_counts=misses, max_active_per_sport=2)
+    # cap=2, 3 candidates now (today + 2 future) -> ONE future ticker is
+    # evicted, never today_ticker.
+    assert today_ticker in active["mlb"]
+    assert "KXMLBGAME-26JUL07CCCDDD-CCC" not in active["mlb"]  # oldest future -> evicted first
+    assert len(active["mlb"]) == 2
+
+
 def test_poll_kalshi_depth_evicts_after_max_consecutive_misses(tmp_path):
     """A ticker whose snapshot fails max_misses times in a row (genuinely
     closed/unreachable, not a discovery-page miss) IS evicted."""
@@ -207,7 +247,7 @@ def test_poll_once_combines_both_venues(tmp_path):
     hb = poller.poll_once(sports=["tennis"], polymarket_slugs=["slug-a"], sidecar_dir=tmp_path,
                           kalshi_http=_http_kalshi, poly_http=_poly_http,
                           now=lambda: datetime(2026, 7, 6, tzinfo=timezone.utc))
-    assert hb["kalshi"]["n_snapshotted"] == 4  # 2 series x 2 tickers, default cap 5
+    assert hb["kalshi"]["n_snapshotted"] == 4  # 2 series x 2 tickers, under default cap
     assert hb["polymarket"]["n_snapshotted"] == 1
     assert "kalshi_prev" in hb["state"]
 
