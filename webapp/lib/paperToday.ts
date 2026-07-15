@@ -37,7 +37,39 @@ export type TodayBet = {
   pnl_units?: number | null;       // settled P&L in UNITS
   clv_pct?: number | null;
   clv_status?: string | null;      // may be "INSUFFICIENT_DATA"
+  // Prop identity (market_type=="prop") -- paper_today._PLACED_FIELDS already
+  // serves these; without them a placed prop row would describe as bare
+  // "AWAY"/"prop" instead of "Player UNDER 0.5 Hits".
+  prop_player?: string | null;
+  prop_stat?: string | null;
+  prop_side?: string | null;
+  line?: number | null;
 };
+
+// Per-market_type rolling CLV + circuit-breaker state (paper_exec_summary block).
+export type MarketExecState = {
+  mean_clv_pct: number | null;
+  n: number;
+  n_proxy: number;
+  state: "LIVE" | "CAPPED" | "UNKNOWN";
+  cap_per_day: number | null;
+  placed_today: number | null;
+};
+
+export type ExecutionQuality = {
+  n_gated: number;
+  n_ungated: number;
+  avg_expected_clv_pct: number | null;
+  median_placement_latency_ms: number | null;
+};
+
+// The digest's "execution" block. Absent (older backend) or breaker module not
+// yet on disk -> callers must render honest empty/UNKNOWN states, never zeros.
+export type ExecutionBlock = {
+  by_market_type: Record<string, MarketExecState>;
+  quality: ExecutionQuality;
+  breaker_module_loaded: boolean;
+} | null;
 
 // The digest envelope served by /api/paper/today (or composed in fallback mode).
 export type PaperToday = {
@@ -54,6 +86,7 @@ export type PaperToday = {
   source: "today_route" | "fallback";
   reason?: string | null;          // honest note when degraded
   edge_claimed: boolean;           // ALWAYS false
+  execution?: ExecutionBlock;      // per-market CLV/breaker/exec-quality (may be absent)
 };
 
 function asArray(v: unknown): TodayBet[] {
@@ -118,6 +151,7 @@ function normalizeTodayDoc(doc: Record<string, unknown>): PaperToday {
     source: "today_route",
     reason: typeof doc.reason === "string" ? doc.reason : null,
     edge_claimed: false,
+    execution: (doc.execution as ExecutionBlock) ?? null,
   };
 }
 

@@ -29,12 +29,16 @@ import {
   type ClvScoreboard,
   type PnlSeries,
 } from "@/lib/p5api";
+import { getPaperToday, type PaperToday } from "@/lib/paperToday";
 import { useLiveData } from "@/lib/useLiveData";
 import type { Unavailable } from "@/lib/types";
 import { Panel, Badge, Unavailable as UnavailablePanel } from "@/components/p6/Primitives";
 import { PmTrailTable } from "@/components/paper_pm/PmTrailTable";
 import { PaperTrailSettled } from "@/components/paper_pm/PaperTrailSettled";
 import { PredictionHistoryPanel } from "@/components/paper_pm/PredictionHistoryPanel";
+import { PerMarketClvStrips } from "@/components/paper/PerMarketClvStrips";
+import { ExecutionQualityPanel } from "@/components/paper/ExecutionQualityPanel";
+import { CircuitBreakerPanel } from "@/components/paper/CircuitBreakerPanel";
 import { fmtPct } from "@/lib/utils";
 import { EMPTY_CELL } from "@/lib/tokens";
 
@@ -172,6 +176,27 @@ export default function PaperPage() {
   const trail = data?.trail ?? null;
   const clv = data?.clv ?? null;
   const rows = trail?.trail ?? [];
+
+  // Execution-quality feed (today digest's "execution" block: per-market
+  // rolling CLV, circuit-breaker state, exec-quality aggregates).
+  const todayFetcher = useCallback((s: AbortSignal) => getPaperToday(s), []);
+  const {
+    data: todayData,
+    ageSec: execAgeSec,
+    isStale: execStale,
+  } = useLiveData<PaperToday>(todayFetcher, {
+    intervalMs: 30_000,
+    staleAfterSec: 90,
+    cacheKey: "paper:today:execution",
+  });
+  const execution = todayData?.execution ?? null;
+  const execAsOf =
+    execAgeSec == null
+      ? null
+      : new Date(Date.now() - Math.max(0, execAgeSec) * 1000).toLocaleTimeString(
+          "en-US",
+          { hour12: false },
+        );
 
   // Execution engine -> paper bankroll: the FLAT-1u curve (conservative, CLV-reconciling)
   // and the edge-proportional capped quarter-Kelly OVERLAY ("try to make the most -- in
@@ -350,6 +375,13 @@ export default function PaperPage() {
           </p>
         </Panel>
       ) : null}
+
+      {/* Execution-quality panels: per-market rolling CLV, breaker state, quality */}
+      <div className="mb-6 flex flex-col gap-4">
+        <PerMarketClvStrips execution={execution} asOf={execAsOf} stale={execStale} />
+        <CircuitBreakerPanel execution={execution} asOf={execAsOf} stale={execStale} />
+        <ExecutionQualityPanel execution={execution} asOf={execAsOf} stale={execStale} />
+      </div>
 
       {/* Honest empty state -- neutral, never red, no fabricated edge claim */}
       {!showSkeleton && !hasSettled && settledClvCount === 0 ? (
