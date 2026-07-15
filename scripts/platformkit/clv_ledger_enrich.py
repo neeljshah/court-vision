@@ -198,7 +198,15 @@ def _compute_clv_fields(row: Dict[str, Any]) -> Dict[str, Any]:
     legs = _extract_closing_decimals(row)
     history_proxy: Optional[bool] = None
     close_kind: Optional[str] = None
-    if legs is None and _lookup_close_legs is not None:
+    # PERF (2026-07-15, audit-corrected): for ESPN-numeric-keyed sports a KX
+    # venue ticker id can never match line history, so scanning for the miss
+    # (seconds per row) is skipped. KBO/NPB/soccer_intl line history IS
+    # KX-keyed (audit finding #2), so those sports always take the lookup.
+    _jid = str(row.get("game_id") or row.get("event_id") or "")
+    _sport = str(row.get("sport") or "").lower()
+    _is_kx = bool(re.search(r"(^|\|)KX[A-Z0-9]", _jid.upper()))
+    _skip_history = _is_kx and _sport in ("mlb", "nba", "wnba")
+    if legs is None and not _skip_history and _lookup_close_legs is not None:
         hl = _lookup_close_legs(row)
         if hl is not None:
             legs = (hl[0], hl[1])

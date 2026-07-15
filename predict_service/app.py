@@ -128,6 +128,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# -- GZip (PERF 2026-07-15, re-applied) ----------------------------------------
+# Trail/board payloads run to megabytes of JSON; gzip cuts transfer ~10x.
+try:
+    from fastapi.middleware.gzip import GZipMiddleware  # noqa: PLC0415
+
+    app.add_middleware(GZipMiddleware, minimum_size=1000)
+except Exception as _gz_exc:  # noqa: BLE001
+    logger.warning("predict_service.app: gzip middleware unavailable (%s)", _gz_exc)
+
 
 # -- runtime honesty linter (HL-P1) -------------------------------------------
 # Lint every JSON response on the way out and FAIL CLOSED on a banned $/roi/pnl
