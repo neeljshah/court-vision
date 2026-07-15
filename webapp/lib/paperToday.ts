@@ -69,12 +69,39 @@ export type ExecutionQuality = {
   median_placement_latency_ms: number | null;
 };
 
+// One horizon's realized in-game price-move summary (probability points; NOT
+// closing-line value -- see ingame_realized_clv.py's module docstring).
+export type RealizedIngameHorizon = {
+  n: number;
+  mean_pp: number | null;
+  median_pp: number | null;
+  pct_favorable: number | null;
+};
+
+// Per-sport per-horizon (30s/120s/300s) realized in-game summary. Null when
+// the clv_grading module/sidecar isn't importable yet -- never fabricated.
+export type RealizedIngameBlock = Record<
+  string,
+  Record<string, RealizedIngameHorizon>
+> | null;
+
+// Pre-registered execution thresholds (scripts/platformkit/execution/thresholds.py),
+// surfaced next to the measured averages. Null if that lane's module isn't on disk.
+export type ExecutionThresholds = {
+  prop_expected_clv_min_pct: number;
+  ingame_expected_clv_min_pct: number;
+  ingame_max_drift_pct: number;
+  ingame_max_spread_bp: number;
+} | null;
+
 // The digest's "execution" block. Absent (older backend) or breaker module not
 // yet on disk -> callers must render honest empty/UNKNOWN states, never zeros.
 export type ExecutionBlock = {
   by_market_type: Record<string, MarketExecState>;
   quality: ExecutionQuality;
   breaker_module_loaded: boolean;
+  realized_ingame?: RealizedIngameBlock;
+  thresholds?: ExecutionThresholds;
 } | null;
 
 // The digest envelope served by /api/paper/today (or composed in fallback mode).

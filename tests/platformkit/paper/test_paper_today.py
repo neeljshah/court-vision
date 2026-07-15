@@ -62,6 +62,25 @@ def test_build_today_execution_groups_by_market_type(tmp_path):
         assert entry["state"] in ("LIVE", "CAPPED", "UNKNOWN")
 
 
+def test_build_today_execution_carries_realized_ingame_and_thresholds(tmp_path):
+    """New blocks present (possibly null if the modules aren't importable), never
+    fabricated -- just checking the keys exist so the frontend has a stable shape."""
+    ledger = tmp_path / "clv_ledger.jsonl"
+    _write_ledger(ledger, [])
+    bankroll = tmp_path / "bankroll.json"
+
+    doc = pt.build_today(clv_path=ledger, start_units=0.0, bankroll_path=bankroll)
+
+    ex = doc["execution"]
+    assert "realized_ingame" in ex
+    assert "thresholds" in ex
+    # thresholds module is a same-lane dependency that already exists on disk --
+    # assert its real pre-registered values surface, not just presence.
+    if ex["thresholds"] is not None:
+        assert ex["thresholds"]["prop_expected_clv_min_pct"] == 1.0
+        assert ex["thresholds"]["ingame_max_spread_bp"] == 800.0
+
+
 def test_placed_rows_keep_prop_identity_fields(tmp_path):
     """Regression: a placed prop row must not lose prop_player/prop_stat/prop_side/
     line -- the game-detail 'AWAY'-only bug root cause. paper_today's own

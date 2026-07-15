@@ -22,6 +22,16 @@ try:
 except ImportError:  # concurrent lane not landed on disk yet -- degrade honestly
     _breaker = None  # type: ignore[assignment]
 
+try:
+    from scripts.platformkit.clv_grading.ingame_realized_clv import summarize as _summarize_ingame
+except ImportError:  # sidecar/module not present -- degrade honestly, never fabricate
+    _summarize_ingame = None  # type: ignore[assignment]
+
+try:
+    from scripts.platformkit.execution import thresholds as _thresholds
+except ImportError:  # concurrent lane not landed on disk yet -- degrade honestly
+    _thresholds = None  # type: ignore[assignment]
+
 
 def _market_type_of(row: Dict[str, Any]) -> str:
     mt = row.get("market_type") or row.get("market")
@@ -81,12 +91,34 @@ def _exec_quality(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
     }
 
 
+def _realized_ingame() -> Optional[Dict[str, Any]]:
+    """Per-sport per-horizon realized in-game CLV summary, or None if the
+    clv_grading module/sidecar isn't importable -- never fabricated."""
+    if _summarize_ingame is None:
+        return None
+    return _summarize_ingame()
+
+
+def _thresholds_block() -> Optional[Dict[str, Any]]:
+    """Pre-registered execution thresholds, surfaced next to measured avgs."""
+    if _thresholds is None:
+        return None
+    return {
+        "prop_expected_clv_min_pct": _thresholds.PROP_EXPECTED_CLV_MIN_PCT,
+        "ingame_expected_clv_min_pct": _thresholds.INGAME_EXPECTED_CLV_MIN_PCT,
+        "ingame_max_drift_pct": _thresholds.INGAME_MAX_DRIFT_PCT,
+        "ingame_max_spread_bp": _thresholds.INGAME_MAX_SPREAD_BP,
+    }
+
+
 def build_execution_block(rows: List[Dict[str, Any]], now_iso: str) -> Dict[str, Any]:
     """The digest 'execution' block: per-market rolling CLV + breaker + exec quality."""
     return {
         "by_market_type": _per_market_clv(rows, now_iso),
         "quality": _exec_quality(rows),
         "breaker_module_loaded": _breaker is not None,
+        "realized_ingame": _realized_ingame(),
+        "thresholds": _thresholds_block(),
     }
 
 
@@ -105,6 +137,7 @@ def _demo() -> None:
     assert q["n_gated"] == 1 and q["n_ungated"] == 2
     assert q["avg_expected_clv_pct"] == 1.5
     assert q["median_placement_latency_ms"] == 200
+    assert "realized_ingame" in block and "thresholds" in block
     print("paper_exec_summary self-check OK")
 
 

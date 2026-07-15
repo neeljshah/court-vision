@@ -39,6 +39,7 @@ import { PredictionHistoryPanel } from "@/components/paper_pm/PredictionHistoryP
 import { PerMarketClvStrips } from "@/components/paper/PerMarketClvStrips";
 import { ExecutionQualityPanel } from "@/components/paper/ExecutionQualityPanel";
 import { CircuitBreakerPanel } from "@/components/paper/CircuitBreakerPanel";
+import { RealizedIngameClvPanel } from "@/components/paper/RealizedIngameClvPanel";
 import { fmtPct } from "@/lib/utils";
 import { EMPTY_CELL } from "@/lib/tokens";
 
@@ -381,6 +382,7 @@ export default function PaperPage() {
         <PerMarketClvStrips execution={execution} asOf={execAsOf} stale={execStale} />
         <CircuitBreakerPanel execution={execution} asOf={execAsOf} stale={execStale} />
         <ExecutionQualityPanel execution={execution} asOf={execAsOf} stale={execStale} />
+        <RealizedIngameClvPanel execution={execution} asOf={execAsOf} stale={execStale} />
       </div>
 
       {/* Honest empty state -- neutral, never red, no fabricated edge claim */}
