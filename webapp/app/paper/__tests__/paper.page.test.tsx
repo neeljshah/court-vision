@@ -407,7 +407,7 @@ describe("/paper -- CLV strip loading skeleton", () => {
     await renderPage();
     expect(screen.getByLabelText("Graded bets loading")).toBeInTheDocument();
     expect(screen.getByLabelText("% beat close loading")).toBeInTheDocument();
-    expect(screen.getByLabelText("Mean CLV loading")).toBeInTheDocument();
+    expect(screen.getByLabelText("CLV loading")).toBeInTheDocument();
   });
 
   it("does NOT render a literal '...' string in the CLV strip while loading", async () => {
