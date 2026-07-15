@@ -169,6 +169,51 @@ def test_summary_excludes_suspect_and_reports_robust_median(tmp_path):
     assert any(float(r["clv_pct"]) > 100.0 for r in rows)  # garbage row IS still on disk
 
 
+def test_summary_median_prefers_true_close_over_proxy():
+    # Two true-close bets (+2.0, -1.0) and one proxy-close bet (+50.0, a fat outlier
+    # a proxy grader could plausibly emit). The headline median must be computed
+    # over the two true-close rows ONLY (basis="true_close"); mean_clv_pct stays
+    # the all-rows context stat (may include the proxy) -- never the gating number.
+    true1 = {"status": "settled", "sport": "nba", "clv_pct": 2.0,
+             "clv_is_proxy": False}
+    true2 = {"status": "settled", "sport": "nba", "clv_pct": -1.0,
+             "clv_is_proxy": False}
+    proxy = {"status": "settled", "sport": "nba", "clv_pct": 50.0,
+             "clv_is_proxy": True}
+    s = clv_summary([true1, true2, proxy])
+    assert s["n_bets"] == 3
+    assert s["n_proxy"] == 1
+    assert s["clv_is_proxy"] is True
+    assert s["basis"] == "true_close"
+    assert abs(s["median_clv_pct"] - 0.5) < 1e-6      # median of [2.0, -1.0]
+    assert s["mean_clv_pct"] > 15.0                    # context mean DOES see the +50 proxy
+    sport = s["by_sport"]["nba"]
+    assert sport["n_proxy"] == 1
+    assert sport["basis"] == "true_close"
+    assert abs(sport["median_clv_pct"] - 0.5) < 1e-6
+
+
+def test_summary_median_falls_back_to_proxy_only_when_no_true_close():
+    proxy1 = {"status": "settled", "sport": "mlb", "clv_pct": 3.0,
+              "clv_is_proxy": True}
+    proxy2 = {"status": "settled", "sport": "mlb", "clv_pct": 5.0,
+              "clv_is_proxy": True}
+    s = clv_summary([proxy1, proxy2])
+    assert s["n_proxy"] == 2
+    assert s["clv_is_proxy"] is True
+    assert s["basis"] == "proxy_only"
+    assert abs(s["median_clv_pct"] - 4.0) < 1e-6
+
+
+def test_summary_no_proxy_rows_reports_clv_is_proxy_false():
+    true1 = {"status": "settled", "sport": "nba", "clv_pct": 1.0,
+             "clv_is_proxy": False}
+    s = clv_summary([true1])
+    assert s["n_proxy"] == 0
+    assert s["clv_is_proxy"] is False
+    assert s["basis"] == "true_close"
+
+
 # --- M4 lock-guarded write retrofit -----------------------------------------
 
 def test_record_bet_funnels_through_locked_append_row(tmp_path, monkeypatch):

@@ -364,8 +364,16 @@ def clv_summary(ledger: Sequence[Dict[str, Any]]) -> Dict[str, Any]:
     Off-market / misparsed rows (is_clv_suspect -- a taken price implausibly longer
     than its side's close, which fabricates a fake +CLV) are EXCLUDED from every
     statistic and reported as ``n_suspect_excluded`` so the headline mean can never
-    be inflated by a corrupt line. ``median_clv_pct`` is reported alongside the mean
-    as the outlier-robust central tendency. ``n_bets`` is the trustworthy count.
+    be inflated by a corrupt line.
+
+    Proxy-close rows (clv_is_proxy=True -- an estimated close, not a real captured
+    one) are counted separately as ``n_proxy`` (also ``clv_is_proxy``, a bool: True
+    iff any settled row is a proxy) and EXCLUDED from ``median_clv_pct`` whenever at
+    least one true-close row exists (``basis``: "true_close"); the median falls back
+    to all rows only when zero true-close rows exist yet (``basis``: "proxy_only").
+    ``mean_clv_pct`` stays the all-(non-suspect)-rows mean -- CONTEXT ONLY, may
+    include proxy closes; prefer ``median_clv_pct`` / ``basis`` for the honest
+    headline. The same true/proxy split is reported per-sport in ``by_sport``.
     """
     settled_all = [
         b for b in ledger
@@ -376,30 +384,55 @@ def clv_summary(ledger: Sequence[Dict[str, Any]]) -> Dict[str, Any]:
     n = len(settled)
     if n == 0:
         return {"n_bets": 0, "pct_beat_close": None, "mean_clv_pct": None,
-                "median_clv_pct": None, "n_suspect_excluded": n_suspect,
+                "median_clv_pct": None, "basis": None, "n_proxy": 0,
+                "clv_is_proxy": False, "n_suspect_excluded": n_suspect,
                 "by_sport": {}}
     clvs = [float(b["clv_pct"]) for b in settled]
     beats = sum(1 for c in clvs if c > 0.0)
+    n_proxy = sum(1 for b in settled if bool(b.get("clv_is_proxy", False)))
+    true_clvs = [float(b["clv_pct"]) for b in settled
+                 if not bool(b.get("clv_is_proxy", False))]
+    if true_clvs:
+        median = round(statistics.median(true_clvs), 6)
+        basis = "true_close"
+    else:
+        median = round(statistics.median(clvs), 6)
+        basis = "proxy_only"
     by_sport: Dict[str, Any] = {}
     for b in settled:
         sport = str(b.get("sport", "unknown"))
         bucket = by_sport.setdefault(sport, {"n": 0, "_sum": 0.0, "_beats": 0,
-                                             "_clvs": []})
+                                             "_clvs": [], "_true_clvs": [],
+                                             "n_proxy": 0})
         c = float(b["clv_pct"])
         bucket["n"] += 1
         bucket["_sum"] += c
         bucket["_beats"] += 1 if c > 0.0 else 0
         bucket["_clvs"].append(c)
+        if bool(b.get("clv_is_proxy", False)):
+            bucket["n_proxy"] += 1
+        else:
+            bucket["_true_clvs"].append(c)
     for sport, bucket in by_sport.items():
         cnt = bucket["n"]
         bucket["mean_clv_pct"] = round(bucket.pop("_sum") / cnt, 6)
-        bucket["median_clv_pct"] = round(statistics.median(bucket.pop("_clvs")), 6)
+        all_vals = bucket.pop("_clvs")
+        true_vals = bucket.pop("_true_clvs")
+        if true_vals:
+            bucket["median_clv_pct"] = round(statistics.median(true_vals), 6)
+            bucket["basis"] = "true_close"
+        else:
+            bucket["median_clv_pct"] = round(statistics.median(all_vals), 6)
+            bucket["basis"] = "proxy_only"
         bucket["pct_beat_close"] = round(100.0 * bucket.pop("_beats") / cnt, 4)
     return {
         "n_bets": n,
         "pct_beat_close": round(100.0 * beats / n, 4),
         "mean_clv_pct": round(sum(clvs) / n, 6),
-        "median_clv_pct": round(statistics.median(clvs), 6),
+        "median_clv_pct": median,
+        "basis": basis,
+        "n_proxy": n_proxy,
+        "clv_is_proxy": n_proxy > 0,
         "n_suspect_excluded": n_suspect,
         "by_sport": by_sport,
     }

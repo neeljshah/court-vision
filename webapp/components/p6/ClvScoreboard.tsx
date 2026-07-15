@@ -43,7 +43,11 @@ export function ClvScoreboard({
         stale={stale}
         right={
           <span className="flex items-center gap-2">
-            {clv.clv_is_proxy ? <Badge tone="amber">proxy close</Badge> : null}
+            {clv.clv_is_proxy ? (
+              <Badge tone="amber">
+                proxy close{clv.n_proxy ? ` (n=${clv.n_proxy})` : ""}
+              </Badge>
+            ) : null}
             {extraRight}
           </span>
         }
@@ -62,6 +66,16 @@ export function ClvScoreboard({
             value={clv.mean_clv_pct != null ? fmtPct(clv.mean_clv_pct) : "--"}
           />
         </div>
+        {/* Mean CLV above is ALL-rows (may include proxy closes). When any proxy
+            rows exist, surface the true-close-preferred median alongside it so
+            the headline is never silently blended -- basis says which. */}
+        {clv.n_proxy != null && clv.n_proxy > 0 && clv.median_clv_pct != null ? (
+          <p className="mt-2 text-xs text-faint">
+            median CLV ({clv.basis === "true_close" ? "true-close" : "incl. proxy"}
+            ): {fmtPct(clv.median_clv_pct)} -- excludes {clv.n_proxy} proxy close
+            {clv.n_proxy === 1 ? "" : "s"} when true-close rows exist
+          </p>
+        ) : null}
         {/* PT-P0-07: per-sport CLV breakdown -- a positive aggregate (e.g. NBA)
             must not mask a negative sport (e.g. soccer). Render each sport's own
             n / mean CLV / %-beat-close so the blend is honest. */}

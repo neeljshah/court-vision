@@ -91,7 +91,11 @@ export function RecordsClvStrip({ clv, loading = false, asOf = null }: RecordsCl
   const pctBeatClose  = scoreboard?.pct_beat_close  ?? null;
   const meanClvPct    = scoreboard?.mean_clv_pct    ?? null;
   const isProxy       = scoreboard?.clv_is_proxy    ?? false;
+  const nProxy        = scoreboard?.n_proxy         ?? null;
   const insufficient  = nBets === 0 || scoreboard === null;
+  const proxyNote     = isProxy
+    ? `(proxy close${nProxy ? `, n=${nProxy}` : ""})`
+    : undefined;
 
   // Format mean_clv_pct with sign
   function fmtClv(v: number | null): string {
@@ -165,15 +169,15 @@ export function RecordsClvStrip({ clv, loading = false, asOf = null }: RecordsCl
                 label="beat close"
                 value={fmtPctBeat(pctBeatClose)}
                 tone={beatTone}
-                note={isProxy ? "(proxy close)" : undefined}
+                note={proxyNote}
               />
 
-              {/* mean_clv_pct */}
+              {/* mean_clv_pct -- ALL rows, may include proxy closes (see proxyNote) */}
               <StatCell
                 label="mean CLV"
                 value={fmtClv(meanClvPct)}
                 tone={meanTone}
-                note={isProxy ? "(proxy close)" : undefined}
+                note={proxyNote}
               />
             </>
           )}

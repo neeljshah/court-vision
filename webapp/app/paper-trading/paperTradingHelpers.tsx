@@ -65,12 +65,14 @@ export function StatTile({
   loading,
   valueClass,
   testId,
+  note,
 }: {
   label: string;
   value: string;
   loading?: boolean;
   valueClass?: string;
   testId?: string;
+  note?: string;
 }) {
   return (
     <div className="rounded-lg border border-slate-800 bg-bg-subtle px-3 py-3">
@@ -83,12 +85,17 @@ export function StatTile({
           aria-label={`${label} loading`}
         />
       ) : (
-        <div
-          className={`mt-1 font-mono text-lg tabular-nums ${valueClass ?? "text-foreground"}`}
-          data-testid={testId}
-        >
-          {value}
-        </div>
+        <>
+          <div
+            className={`mt-1 font-mono text-lg tabular-nums ${valueClass ?? "text-foreground"}`}
+            data-testid={testId}
+          >
+            {value}
+          </div>
+          {note ? (
+            <div className="mt-0.5 font-mono text-[9px] text-muted-foreground">{note}</div>
+          ) : null}
+        </>
       )}
     </div>
   );

@@ -196,6 +196,37 @@ class TestEdgeCases:
         assert k["n_true_close"] == 2
         assert k["n_proxy_close"] == 1
 
+    def test_median_prefers_true_close_over_proxy(self):
+        # One fat proxy outlier (+40) must not enter the headline median when
+        # true-close rows exist; mean_clv_pct (context) still sees it.
+        rows = [
+            _make_row("kalshi", 1.0, is_proxy=False),
+            _make_row("kalshi", 3.0, is_proxy=False),
+            _make_row("kalshi", 40.0, is_proxy=True),
+        ]
+        result = build_venue_scoreboard(rows=rows, min_n=1)
+        k = result["by_venue"]["kalshi"]
+        assert k["basis"] == "true_close"
+        assert abs(k["median_clv_pct"] - 2.0) < 1e-6      # median of [1.0, 3.0]
+        assert k["mean_clv_pct"] > 10.0                     # context mean sees +40
+
+    def test_median_falls_back_to_proxy_only_when_no_true_close(self):
+        rows = [
+            _make_row("kalshi", 2.0, is_proxy=True),
+            _make_row("kalshi", 4.0, is_proxy=True),
+        ]
+        result = build_venue_scoreboard(rows=rows, min_n=1)
+        k = result["by_venue"]["kalshi"]
+        assert k["basis"] == "proxy_only"
+        assert abs(k["median_clv_pct"] - 3.0) < 1e-6
+
+    def test_insufficient_data_venue_has_null_median_and_basis(self):
+        rows = _make_rows("poly", 3)
+        result = build_venue_scoreboard(rows=rows, min_n=5)
+        p = result["by_venue"]["poly"]
+        assert p["median_clv_pct"] is None
+        assert p["basis"] is None
+
     def test_honest_note_present(self):
         result = build_venue_scoreboard(rows=[], min_n=5)
         assert "honest_note" in result
