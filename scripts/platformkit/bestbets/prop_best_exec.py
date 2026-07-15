@@ -185,13 +185,16 @@ def gate_and_stamp(p: Dict[str, Any], edge: Dict[str, Any], sport: str,
 
     Suppress-only: returns None to skip (never places what the legacy path
     would reject) or *p* (copied) with its taken price shopped to the best
-    book + an exec_gate audit trail + signal_ts + placement_latency_ms.
-    ledger_rows is a caller-supplied snapshot -- ponytail: the breaker cap can
-    under-count placements made earlier in the same run; refresh from disk if
-    within-run precision ever matters."""
+    book + an exec_gate audit trail + signal_ts + placement_latency_ms +
+    quote_age_s (LEVER 1 prop-side stamp, EXECUTION_BACKLOG.md #1/#5: seconds
+    between the shopped quote's as_of and now -- honest None if either
+    timestamp is unparseable). ledger_rows is a caller-supplied snapshot --
+    ponytail: the breaker cap can under-count placements made earlier in the
+    same run; refresh from disk if within-run precision ever matters."""
     import time as _time
     t0 = _time.monotonic()
-    dec = decide(edge, sport, ledger_rows, _now_iso_utc())
+    now_iso = _now_iso_utc()
+    dec = decide(edge, sport, ledger_rows, now_iso)
     latency_ms = round((_time.monotonic() - t0) * 1000.0, 2)
     if not dec["place"]:
         logger.info("prop_best_exec: skip %s reason=%s", p.get("market"), dec["reason"])
@@ -203,12 +206,33 @@ def gate_and_stamp(p: Dict[str, Any], edge: Dict[str, Any], sport: str,
     out["exec_gate"] = log
     out["signal_ts"] = edge.get("as_of")
     out["placement_latency_ms"] = latency_ms
+    out["quote_age_s"] = _quote_age_s(log.get("as_of"), now_iso)
     return out
 
 
 def _now_iso_utc() -> str:
     from datetime import datetime, timezone
     return datetime.now(timezone.utc).isoformat()
+
+
+def _quote_age_s(as_of: Optional[str], now_iso: str) -> Optional[float]:
+    """Seconds between the shopped quote's as_of and *now_iso* (LEVER 1,
+    EXECUTION_BACKLOG.md #1/#5 prop-side stamp). None if either timestamp is
+    missing/unparseable -- never fabricated."""
+    from datetime import datetime
+
+    def _parse(v: Optional[str]):
+        if not v:
+            return None
+        try:
+            return datetime.fromisoformat(str(v).replace("Z", "+00:00"))
+        except (TypeError, ValueError):
+            return None
+
+    a, n = _parse(as_of), _parse(now_iso)
+    if a is None or n is None:
+        return None
+    return round((n - a).total_seconds(), 2)
 
 
 def _demo() -> None:

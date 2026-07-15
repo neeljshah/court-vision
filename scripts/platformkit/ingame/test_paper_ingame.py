@@ -244,3 +244,32 @@ class TestRecordIngameBetWriteGuard:
             )
             assert isinstance(result, dict), "must return dict, not raise"
             assert result.get("executed") is False
+
+
+# ---------------------------------------------------------------------------
+# exec_depth stamp storage (LEVER 1, EXECUTION_BACKLOG.md #1/#5): paper_ingame
+# only STORES what the caller passes -- the sourcing (tick fields vs sidecar
+# lookup) lives in execution.ingame_exec_gate.build_exec_depth (tested there).
+# ---------------------------------------------------------------------------
+class TestExecDepthStamp:
+
+    def test_exec_depth_dict_stored_verbatim(self, tmp_path):
+        ledger = tmp_path / "test_ledger.jsonl"
+        depth = {"spread_bp": 150.0, "book_thinness": 500.0, "best_bid": 0.60,
+                 "best_ask": 0.615, "mid": 0.6075, "depth_ts": "2026-07-15T12:00:00Z"}
+        result = record_ingame_bet(
+            sport="nba", game_id="401859967", market="win_home", side="home",
+            taken_decimal=1.9, path=ledger, exec_depth=depth,
+        )
+        assert result["added_new"] is True
+        rows = _read_rows(ledger)
+        assert rows[0]["exec_depth"] == depth
+
+    def test_exec_depth_defaults_to_none_when_absent(self, tmp_path):
+        ledger = tmp_path / "test_ledger.jsonl"
+        record_ingame_bet(
+            sport="nba", game_id="401859968", market="win_home", side="home",
+            taken_decimal=1.9, path=ledger,
+        )
+        rows = _read_rows(ledger)
+        assert rows[0]["exec_depth"] is None

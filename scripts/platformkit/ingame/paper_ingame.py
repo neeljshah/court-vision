@@ -138,6 +138,7 @@ def record_ingame_bet(
     path: Optional[Path] = None,
     signal_ts: Optional[str] = None,
     exec_gate: Optional[Dict[str, Any]] = None,
+    exec_depth: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """Record one in-game paper edge to the CLV ledger with channel='paper_ingame'.
 
@@ -159,6 +160,10 @@ def record_ingame_bet(
         (latency lane). None -> latency not computable (never fabricated).
     exec_gate : dict, optional  The clearing placement-gate dict (expected_clv_gate
         .gate() + drift_pct), stored verbatim for audit.
+    exec_depth : dict, optional  Placement-time microstructure stamp (LEVER 1:
+        execution.ingame_exec_gate.build_exec_depth's spread_bp/book_thinness/
+        best_bid/best_ask/mid/depth_ts dict), stored verbatim. None when the
+        caller didn't supply one.
 
     Returns
     -------
@@ -171,7 +176,7 @@ def record_ingame_bet(
     try:
         return _record_inner(sport, game_id, market, side, taken_decimal,
                              model_prob, stake, taken_book, ts, key, target,
-                             signal_ts, exec_gate)
+                             signal_ts, exec_gate, exec_depth)
     except Exception as exc:  # noqa: BLE001 - must never raise
         logger.warning("record_ingame_bet failed game=%s key=%s: %s",
                        game_id, key, exc)
@@ -185,7 +190,8 @@ def _record_inner(sport: str, game_id: str, market: str, side: str,
                   stake: float, taken_book: str,
                   ts: str, key: str, target: Path,
                   signal_ts: Optional[str] = None,
-                  exec_gate: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+                  exec_gate: Optional[Dict[str, Any]] = None,
+                  exec_depth: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     # Write-guard: reject malformed / synthetic rows before touching the ledger.
     # Returns a structured no-op identical in shape to the idempotency path so
     # callers need no special handling.  Never raises.
@@ -232,6 +238,7 @@ def _record_inner(sport: str, game_id: str, market: str, side: str,
         "signal_ts": signal_ts,
         "placement_latency_ms": _latency_ms(signal_ts, ts),
         "exec_gate": exec_gate,
+        "exec_depth": exec_depth,
     }
     try:
         from scripts.platformkit.clv_ledger_io import append_row as _io_append
