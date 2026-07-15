@@ -117,8 +117,9 @@ def test_min_tier_drops_weaker_props():
         assert P.placement_from_edge(_priced_edge(ev_over=0.04), "mlb", min_tier="B") is None
 
 
-def test_run_min_tier_passthrough(tmp_path):
+def test_run_min_tier_passthrough(tmp_path, monkeypatch):
     # run(min_tier='A') only places tier-A edges; a tier-C edge in the board is dropped.
+    monkeypatch.setenv("CV_PROP_BEST_EXEC", "0")
     ledger = tmp_path / "l.jsonl"
     edges = [_priced_edge(player="Strong", ev_over=0.30),   # tier A
              _priced_edge(player="Weak", ev_over=0.04)]      # tier C (if it clears floor)
@@ -127,7 +128,10 @@ def test_run_min_tier_passthrough(tmp_path):
     assert all(m.startswith("prop|Strong") for m in out["placed_markets"])
 
 
-def test_run_places_into_ledger_units_only(tmp_path):
+def test_run_places_into_ledger_units_only(tmp_path, monkeypatch):
+    # legacy single-book write path (no providers injected here) -- best-exec is
+    # covered separately in tests/platformkit/bestbets/test_prop_best_exec.py.
+    monkeypatch.setenv("CV_PROP_BEST_EXEC", "0")
     ledger = tmp_path / "clv_ledger.jsonl"
     out = P.run(("mlb",), ledger_path=ledger, board_fn=_board([_priced_edge()]),
                 place=True)
@@ -143,7 +147,8 @@ def test_run_places_into_ledger_units_only(tmp_path):
     assert banned.isdisjoint(set(r.keys()))
 
 
-def test_run_is_idempotent(tmp_path):
+def test_run_is_idempotent(tmp_path, monkeypatch):
+    monkeypatch.setenv("CV_PROP_BEST_EXEC", "0")
     ledger = tmp_path / "clv_ledger.jsonl"
     board = _board([_priced_edge()])
     P.run(("mlb",), ledger_path=ledger, board_fn=board, place=True)
@@ -153,7 +158,8 @@ def test_run_is_idempotent(tmp_path):
     assert len(rows) == 1  # no duplicate row
 
 
-def test_max_per_sport_caps_placement_highest_ev_first(tmp_path):
+def test_max_per_sport_caps_placement_highest_ev_first(tmp_path, monkeypatch):
+    monkeypatch.setenv("CV_PROP_BEST_EXEC", "0")
     ledger = tmp_path / "clv_ledger.jsonl"
     edges = [_priced_edge(player="P1", ev_over=0.20),
              _priced_edge(player="P2", ev_over=0.15),

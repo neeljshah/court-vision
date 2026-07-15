@@ -7,27 +7,34 @@ prop board edges (prop_edge.build_prop_board), tiers each via the SAME pm_tradin
 the day-trader uses, and records a paper bet.
 
 HONEST FRAMING (binding):
-  * Only PRICED edges (edge_basis=="ev_vs_priced", a real two-way sportsbook line) place;
-    a model-only DFS pick'em has no price -> no EV -> no CLV (skipped).
-  * The taken price is the RAW vig-inclusive decimal ((ev+1)/p) -- the CONSERVATIVE line
-    you actually face, never the flattering no-vig number.
+  * Only PRICED edges (edge_basis=="ev_vs_priced") place; model-only DFS pick'em skipped.
+  * Legacy taken price = RAW vig-inclusive decimal ((ev+1)/p), the CONSERVATIVE line faced;
+    when CV_PROP_BEST_EXEC is on (default) it is shopped to the best cross-book price via
+    prop_best_exec.gate_and_stamp (suppress-only: can block or improve, never worsen).
   * clv_is_proxy=True ALWAYS (a prop close is a proxy) -> EV floors raised by the penalty.
-  * Rows carry market_type="prop": the game-moneyline settler (grade_paper._is_game_ml_bet)
-    SKIPS them so a prop is never mis-graded as a moneyline; they settle on their own stat
-    outcome (separate settler) -- until then PLACED + PENDING (0 P&L movement; nothing faked).
+  * Rows carry market_type="prop" so the game-moneyline settler skips them; they settle on
+    their own stat outcome -- until then PLACED + PENDING (0 P&L movement; nothing faked).
   * UNITS only, NO $ field; executed=False; edge_claimed=False; real-money default-DENY.
 
-RAILS: build only under scripts/platformkit/; ASCII; <=300 LOC; public fns NEVER raise.
+RAILS: build only under scripts/platformkit/; ASCII; public fns NEVER raise.
 Per-file test: scripts/platformkit/bestbets/test_props_paper_placer.py
 """
 from __future__ import annotations
 
 import logging
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Sequence
 
+from scripts.platformkit.bestbets import prop_best_exec as _exec
+
 logger = logging.getLogger(__name__)
+
+def _best_exec_on() -> bool:
+    """Best-exec (shop+devig CLV gate+breaker) gates every write unless off; read
+    per-call (not at import) so tests can toggle it via monkeypatch/env."""
+    return os.environ.get("CV_PROP_BEST_EXEC", "1").strip().lower() not in ("0", "false", "off")
 
 # Sports whose prop board produces priced edges today (mirrors prop_cards.DEFAULT).
 DEFAULT_PROP_SPORTS = ("soccer_intl", "mlb")
@@ -65,7 +72,6 @@ def _is_settleable(sport: str, stat: Any) -> bool:
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
-
 def _today_et() -> str:
     try:
         from scripts.platformkit.paper.et_day import now_et_day
@@ -87,12 +93,9 @@ def placement_from_edge(edge: Dict[str, Any], sport: str,
                         min_tier: Optional[str] = None) -> Optional[Dict[str, Any]]:
     """One PRICED prop board edge -> a tiered placement dict, or None (skip).
 
-    Skips: non-priced (model-only) edges, unparseable probs/EV, edges below the
-    proxy-adjusted EV floor (tier is None), and -- when *min_tier* is set -- edges weaker
-    than that tier (e.g. min_tier='B' drops tier C). The model-backed side is the higher-EV
-    side the board already chose (best_side). The raw taken decimal is reconstructed from
-    the board's ev_side + model_prob so we place at the real vig-inclusive line.
-    """
+    Skips: non-priced (model-only) edges, unparseable probs/EV, below the proxy-
+    adjusted EV floor (tier None), or weaker than *min_tier*. Side = the board's
+    higher-EV best_side; taken decimal reconstructed from ev_side + model_prob."""
     if not isinstance(edge, dict):
         return None
     if str(edge.get("edge_basis") or "") != "ev_vs_priced":
@@ -156,8 +159,7 @@ def placement_from_edge(edge: Dict[str, Any], sport: str,
 
 
 def _ledger_row(p: Dict[str, Any]) -> Dict[str, Any]:
-    """Canonical OPEN prop ledger row from a placement (mirrors clv_ledger.record_bet
-    fields + prop tags). UNITS only; no $ key. is_pm=False (sportsbook prop)."""
+    """Canonical OPEN prop ledger row from a placement. UNITS only; no $ key."""
     edge_vs_market = None
     if p.get("market_prob") is not None:
         edge_vs_market = round(float(p["model_prob"]) - float(p["market_prob"]), 6)
@@ -189,17 +191,14 @@ def _ledger_row(p: Dict[str, Any]) -> Dict[str, Any]:
         "game_date": str(p["game_date"]),
         "edge_claimed": False,
         "bet_id": str(p["bet_id"]),
+        "exec_gate": p.get("exec_gate"),
+        "signal_ts": p.get("signal_ts"),
+        "placement_latency_ms": p.get("placement_latency_ms"),
     }
 
 
-def _existing_bet_ids(ledger_path: Path) -> set:
-    try:
-        from scripts.platformkit import clv_ledger as _clv
-        return {str(r.get("bet_id")) for r in _clv.load_ledger(ledger_path)
-                if r.get("bet_id")}
-    except Exception as exc:  # noqa: BLE001
-        logger.debug("props_paper_placer: ledger read failed: %s", exc)
-        return set()
+def _existing_bet_ids(rows: List[Dict[str, Any]]) -> set:
+    return {str(r.get("bet_id")) for r in rows if r.get("bet_id")}
 
 
 def _append(row: Dict[str, Any], ledger_path: Path) -> bool:
@@ -223,9 +222,8 @@ def _board_edges(sport: str, board_fn: Callable[[str], Any],
                  *, calibration_only: bool = False) -> List[Dict[str, Any]]:
     """Priced + reliable edges from the sport's prop board; [] on any failure.
 
-    When *calibration_only*, also drop any (sport, stat) whose calibration is NOT proven
-    (replicated SHIP) -- the smarter-selection floor that concentrates stake on families we
-    have earned the right to bet (calibration, not a $ edge)."""
+    *calibration_only* also drops (sport, stat) pairs whose calibration is NOT
+    proven -- concentrates stake on families we've earned the right to bet."""
     try:
         board = board_fn(sport)
     except Exception as exc:  # noqa: BLE001
@@ -241,12 +239,10 @@ def _board_edges(sport: str, board_fn: Callable[[str], Any],
     for e in board.get("edges") or []:
         if not isinstance(e, dict):
             continue
-        # discipline: only reliable + ev_flag ok edges are placeable (mirror prop_cards
-        # reliable_only) so a weak-stat prop can never be staked.
+        # discipline: only reliable + ev_flag ok edges are placeable (mirror prop_cards).
         if not bool(e.get("reliable")) or str(e.get("ev_flag", "")) != "ok":
             continue
-        # honesty: never stake a prop we cannot grade from a keyless feed (it would pend
-        # forever). Drops e.g. WC Shots On Target (no per-player keyless realized stat).
+        # honesty: never stake a prop ungradeable from a keyless feed (would pend forever).
         if not _is_settleable(sport, e.get("stat")):
             continue
         # smarter selection: stake pregame props only where calibration is PROVEN.
@@ -268,11 +264,9 @@ def run(sports: Sequence[str] = DEFAULT_PROP_SPORTS, *,
         today: Optional[str] = None) -> Dict[str, Any]:
     """Place priced prop bets for each sport into the unified ledger. Never raises.
 
-    Idempotent: a prop whose bet_id is already in the ledger is skipped (dedup). When
-    *place* is False the placements are computed but NOT written (dry run). *max_per_sport*
-    caps NEW placements per sport (highest-EV first) so a live run does not flood the
-    record; None = no cap. Any skipped overflow is counted in by_sport["capped"]. Returns
-    an honest summary (UNITS only, no $).
+    Idempotent (bet_id dedup). *place*=False computes but does not write (dry run).
+    *max_per_sport* caps NEW placements per sport (highest-EV first, overflow counted
+    in by_sport["capped"]); None = no cap. Returns an honest summary (UNITS, no $).
     """
     _ledger = Path(ledger_path) if ledger_path else _DEFAULT_LEDGER
     _board = board_fn
@@ -280,7 +274,8 @@ def run(sports: Sequence[str] = DEFAULT_PROP_SPORTS, *,
         from scripts.platformkit.prop_edge import build_prop_board as _bpb
         _board = _bpb
     _today = today or _today_et()
-    seen = _existing_bet_ids(_ledger) if place else set()
+    ledger_rows = _exec.load_ledger_rows(_ledger) if place else []
+    seen = _existing_bet_ids(ledger_rows) if place else set()
 
     by_sport: Dict[str, Dict[str, int]] = {}
     placed: List[str] = []
@@ -288,14 +283,15 @@ def run(sports: Sequence[str] = DEFAULT_PROP_SPORTS, *,
     for sport in sports:
         edges = _board_edges(sport, _board, calibration_only=calibration_only)
         n_edges += len(edges)
-        # Build all placements first, then take highest-EV first under the cap.
-        cands = [p for p in (placement_from_edge(e, sport, today=_today, min_tier=min_tier)
-                             for e in edges) if p is not None]
-        cands.sort(key=lambda c: float(c.get("ev", 0.0)), reverse=True)
+        # (edge, placement) pairs -- edge kept for the exec gate; highest-EV first.
+        cands = [(p, e) for e in edges
+                 if (p := placement_from_edge(e, sport, today=_today, min_tier=min_tier))
+                 is not None]
+        cands.sort(key=lambda c: float(c[0].get("ev", 0.0)), reverse=True)
         s_priced = len(cands)
         n_priced += s_priced
         s_placed = s_dup = s_capped = 0
-        for p in cands:
+        for p, e in cands:
             if p["bet_id"] in seen:
                 s_dup += 1
                 n_dup += 1
@@ -305,6 +301,10 @@ def run(sports: Sequence[str] = DEFAULT_PROP_SPORTS, *,
                 n_capped += 1
                 continue
             if place:
+                if _best_exec_on():
+                    p = _exec.gate_and_stamp(p, e, sport, ledger_rows)
+                    if p is None:
+                        continue
                 if _append(_ledger_row(p), _ledger):
                     seen.add(p["bet_id"])
                     placed.append(p["market"])
