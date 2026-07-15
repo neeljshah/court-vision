@@ -10,7 +10,7 @@
 |-------|--------|--------------|--------|
 | API box-score | `nba_api` game logs 2018–present | ~20 | Wired |
 | API derived | Pace, team total, lineup on/off, ref, altitude, travel | ~12 | Wired |
-| CV spatial | defender_distance, spacing_score, fatigue, contest%, isolation | ~8 | Partial (29 games — 9 CLEAN + 20 PARTIAL of 75 attempted) |
+| CV spatial | defender_distance, spacing_score, fatigue, contest%, isolation | ~8 | Not deployed (`has_cv_data: false` in `cv_lift_report.json`; 29-game 2026-earlier corpus is historical, not in production predictions) |
 | CV temporal | Rolling shots/passes/dribbles over 5/10/20-frame windows | ~12 | Wired |
 | CV biomechanical | ankle_y, contest_arm_angle, jump_detected, shot arc, pose landmarks | ~6 | Partial |
 | Market microstructure | Pinnacle no-vig line, line velocity, steam flag, public% | ~6 | Partial |
@@ -96,7 +96,7 @@ These are the moat features — the only features in the stack that are not avai
 
 **SHAP contribution (combined CV spatial):** 31% of mass on pts model. Δ R² over API-only: +0.08.
 
-**Current limitation:** 29 usable games (9 CLEAN + 20 PARTIAL) only. Bootstrap confidence intervals on defender_distance and spacing_score are wide enough on tail markets to overlap zero at 95%. Treat as directional, not precise. Retrain at N=80 CLEAN games.
+**Current state (2026-07-15):** `data/output/cv_lift_report.json` reports `has_cv_data: false` — zero games currently have CV features in use for production predictions (confirmed at `src/prediction/prop_pergame.py:204`, SHAP ~= 0.0). The 29-game figure (9 CLEAN + 20 PARTIAL of 75 attempted) is a historical artifact from earlier development, not the current deployment status. CV infrastructure is present but not active; bootstrap CIs on defender_distance/spacing_score from that earlier corpus were wide enough on tail markets to overlap zero at 95%. Retrain at N=80 CLEAN games before reconsidering deployment.
 
 ---
 

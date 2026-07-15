@@ -4,10 +4,10 @@ Use this file as the single weekly execution snapshot. Update once per week (sam
 
 ## Current Week
 
-- Week of: `YYYY-MM-DD`
-- Program status: `green | yellow | red`
-- Primary blocker:
-- Next review date:
+- Week of: `2026-07-15`
+- Program status: `yellow` (active build, no release-blocking incident; core KPI instrumentation below still unwired)
+- Primary blocker: frontend rooms (`webapp/`) pending user go-ahead; replay model-tick join v2 (venue-slug <-> ESPN id map) open per `.planning/NOW.md`
+- Next review date: `2026-07-22`
 
 ## Core KPIs
 
@@ -41,6 +41,11 @@ Use this file as the single weekly execution snapshot. Update once per week (sam
 ## Change Log
 
 - `YYYY-MM-DD`: initialized scoreboard template
+- `2026-07-15`: filled in Current Week header from `.planning/NOW.md`; Core KPIs and
+  14-Day Sprint Progress below are still unpopulated -- no `cv_drift`/`id_switch`
+  benchmark artifacts or the named sprint-evidence files (`data/model_reports/leakage/`,
+  `.../cv_drift/`, `.../data_quality/`, `.../execution/`) exist on disk yet, so those
+  rows remain honest TBD / Not started rather than invented numbers
 
 
 ---

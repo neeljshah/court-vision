@@ -1,6 +1,6 @@
 # FINAL REPORT — Your AI Prediction + Paper-Trading System
 
-_Last verified: 2026-06-20. Honest by design: this is a **calibrated-prediction** system, not a profit product. Paper / units only. Real money is OFF (default-DENY)._
+_Last verified: 2026-07-15. Honest by design: this is a **calibrated-prediction** system, not a profit product. Paper / units only. Real money is OFF (default-DENY)._
 
 ---
 
@@ -11,9 +11,9 @@ A live, self-healing, self-improving **4-sport (NBA / MLB / soccer / tennis) AI*
 - surfaces them as **best-bets cards**, **live games**, and a **paper-trading center** with your records,
 - **paper-trades** in units (never dollars), grades itself with **CLV** (closing-line value),
 - **gets better on its own** through a do-no-harm self-improve loop,
-- runs as a **17-service supervised stack** that stays up **without Claude** and heals itself.
+- runs as a **44-service supervised stack** that stays up **without Claude** and heals itself.
 
-**Verified right now:** 17/17 services healthy · all pages styled + 200 · 3,284 prediction records surfaced · 6 live MLB best-bets cards · governance ALL PASS · `$`-leaks = 0 · real-money DENY.
+**Verified right now:** 41/44 services READY (3 restarting) · all pages styled + 200 · 5,000 prediction records surfaced · 58 best-bets cards (mixed sports) · governance ALL PASS · `$`-leaks = 0 · real-money DENY.
 
 ---
 
@@ -29,7 +29,7 @@ Then open **http://localhost:3000**:
 | Page | What it shows |
 |---|---|
 | **/bets** | Best-bets cards (player-prop + game), confidence, multi-book lines + best line, units, tier, CLV. Click a card → full detail + execution trail. |
-| **/records** | **Your 3,284 paper-prediction records** — matchup, selection, model prob, line, fair odds, result, CLV. |
+| **/records** | **Your 5,000 paper-prediction records** — matchup, selection, model prob, line, fair odds, result, CLV. |
 | **/paper-trading** | The paper-trading center: prediction-market (Kalshi/Polymarket) trail, live/done sections, running units tally. |
 | **/live** + **/games** | Live + today's games with in-game predictions (honest "none right now" when no games are live). |
 | **/models** | **How the AI is getting better** — the ratchet, per-sport calibration trends, ship/candidate timeline. |
@@ -83,7 +83,7 @@ You (the human) flip these when ready; the system never flips them itself:
 
 - **Run/control:** `go.ps1`, `stop.ps1`, `view_local.ps1`, `register_autostart.ps1` (repo root).
 - **In-depth docs:** `docs/guide/00..10` + `README.md`; truth source for claims: `docs/JOB_EVIDENCE_PACKET.md`.
-- **Backup (made today):** `C:\Users\neelj\nba-ai-backup-2026-06-20\` — full repo + auto-memory + data (~78GB, 273k files). **Copy it to an external drive / cloud** for protection against machine loss.
+- **Backup:** no dated backup directory currently exists on disk (the `nba-ai-backup-2026-06-20` copy referenced previously is gone). **Make a fresh full-repo + auto-memory + data backup** before relying on one.
 - **APIs:** predict_service (:8099) + boards (:8098); UI (:3000).
 - **Live status files:** `data/frontend/ops/supervisor_status.json`, `autonomy_status.json`.
 
@@ -91,11 +91,11 @@ You (the human) flip these when ready; the system never flips them itself:
 
 ## What was done today (this session)
 
-- Built/deepened the **all-in-one front end**: best-bets cards, click-through detail, **records surface (your 3,284)**, **paper-trading center**, live/done sections, execution browse, live auto-refresh, full a11y + polish.
-- **Surfaced the real data** that was hidden behind empty panels (records, 6 MLB best-bets cards).
+- Built/deepened the **all-in-one front end**: best-bets cards, click-through detail, **records surface (your 5,000)**, **paper-trading center**, live/done sections, execution browse, live auto-refresh, full a11y + polish.
+- **Surfaced the real data** that was hidden behind empty panels (records, 58 best-bets cards).
 - **Fixed two crash-loops** (orphaned ports 8099 then 3000) and made the orphan cleanup permanent in `stop.ps1`.
 - **Fixed the white-page** (corrupted dev cache) by switching to a stable production build.
 - Fixed honesty defects the review fleet caught (dead/stale market cards, degenerate-model edge claims, CLV row-key) → governance now ALL PASS.
-- Wrote **12 in-depth docs** (committed locally), improved **memory** (10 curation passes, connected + verified), and made a **full 78GB backup**.
+- Wrote **12 in-depth docs** (committed locally), improved **memory** (10 curation passes, connected + verified), and made a full backup at the time (since removed — see backup note above).
 
 **Status: live, stable, honest, filled, documented, backed up.** Verified green at the timestamp above.

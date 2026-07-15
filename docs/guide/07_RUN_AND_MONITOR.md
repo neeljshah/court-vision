@@ -30,7 +30,7 @@ That is the whole runbook for most days. Both scripts live in the repo root.
    human-managed gate that permits the recalibration ratchet to run. It is
    idempotent -- if it already exists the script skips silently.
 2. **Launches the supervised stack** via `boot.ps1`. The supervisor process
-   (`-m supervisor`) starts detached in a hidden window. It owns all 17 child
+   (`-m supervisor`) starts detached in a hidden window. It owns all 45 child
    services, auto-restarts anything that dies, and keeps running after this
    shell closes or after Claude exits.
 3. **Waits up to 150 seconds** for `all_ready` to turn true in
@@ -75,7 +75,7 @@ preflight verdict.
 
 ### Phase 2: Supervisor hand-off
 
-The supervisor (`supervisor/supervisor.py`) takes ownership of 17 process specs
+The supervisor (`supervisor/supervisor.py`) takes ownership of 45 process specs
 declared in `supervisor/manifest.py` + `supervisor/stack_specs.py`. It sorts them
 into a dependency-ordered DAG (topological sort) and boots them in order:
 
@@ -89,10 +89,14 @@ m1_api_boards  (TCP port 8098)   m1_paper  (heartbeat file fresh)
 m1_ui  (TCP port 3000)
 
 Independent branches (a failure is one red entry, not a cascade):
-  m1_line_daemon  m6_ingame_loop  m2_inplay  m2_inplay_capture
+  m1_bankroll  m1_line_daemon  m6_ingame_loop  m2_inplay  m2_inplay_capture
   m4_selfimprove  m7_ingame_refresh  m5_autonomy_monitor
   m8_ci_cadence  m10_best_bets_compute  m11_ingame_pred_tick
   m12_pm_paper_tick  m13_props_pred_tick
+  ...plus 28 more daemons added since 2026-06-20 (m14-m27, m29-m41 -- e.g.
+  m38_autoloop, m39_injury_facts_nba, m40_wedge_restarter,
+  m41_public_splits), each its own independent branch. See
+  `supervisor/stack_specs.py` for the full, current inventory.
 ```
 
 A child does not start until everything it `depends_on` has passed its readiness
@@ -281,7 +285,7 @@ Get-ScheduledTask -TaskName "NBA-AI-Stack-Autostart" -ErrorAction SilentlyContin
 ```
 
 From the UI, the one-line summary is always the `LiveIndicator` at the top of
-`/system`. Green `ALL SERVICES READY` means all 17 services passed their probes.
+`/system`. Green `ALL SERVICES READY` means all 45 services passed their probes.
 Amber `DEGRADED` means at least one independent branch failed (the serving spine
 may still be healthy -- check the OpsPanel). Grey `IDLE` means the supervisor
 status file is stale (stack is not running).
@@ -361,7 +365,7 @@ To preview the full dependency plan without starting anything:
 | `register_autostart.ps1` | Gate 2 (autostart): preview / register / unregister the logon task |
 | `watchdog_autostart.ps1` | Outer watchdog: re-runs boot.ps1 if the supervisor process dies |
 | `view_local.ps1` | Read-only view: UI + boards API only, no daemons |
-| `supervisor/manifest.py` | 17-service DAG: ProcSpec, RestartPolicy, ReadinessSpec, topo sort |
+| `supervisor/manifest.py` | 45-service DAG: ProcSpec, RestartPolicy, ReadinessSpec, topo sort |
 | `supervisor/stack_specs.py` | Concrete process inventory: commands, ports, heartbeat paths |
 | `supervisor/supervisor.py` | Supervisor class: boot(), supervise(), drain(), HeartbeatReaper |
 | `supervisor/health.py` | Readiness probe implementations (TCP, HTTP 200, heartbeat-fresh) |

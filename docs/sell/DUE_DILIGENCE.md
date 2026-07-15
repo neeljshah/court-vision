@@ -74,7 +74,7 @@ python -m sell.cli verify                                    # signature 0/2/3/4
 | Proof | Source | Honest verdict surfaced |
 |---|---|---|
 | Governance preflight | `governance.run_governance.run_all` | `GOVERNANCE_OK` / `GOVERNANCE_BLOCKED` (exit 0/1) |
-| Leak-free walk-forward | `eval_gate.run_gate --golden` | per-corpus `BEATS` / `MATCHES_CLOSE` / `BEHIND`; gate `NO_REGRESSION_NO_LEAK` / `GATE_FAILED` |
+| Leak-free walk-forward | `eval_gate.run_gate --golden` | per-corpus `BEATS_CLOSE` / `MATCHES_CLOSE` / `BEHIND`; gate `NO_REGRESSION_NO_LEAK` / `GATE_FAILED` |
 | In-game proof | `data/frontend/ingame/proof_nba.json` | `CALIBRATION_GAIN_VS_BASERATE`; `vs_close: UNPROVEN` |
 | Signed track record | `sell.cli` artifact | `SIGNATURE_VERIFIED` / `UNSIGNED` / `SIGNATURE_INVALID` |
 

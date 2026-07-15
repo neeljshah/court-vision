@@ -164,8 +164,10 @@ independently and purely offline (no torch, no app boot, runs in seconds):
 
 The grid uses a tri-state, not a binary: a dimension a sport hasn't built yet is `n/a`
 (gray) and does not fail the gate; a dimension that is present but broken is `red` and does.
-`soccer_intl` is intentionally census-only (no full decl seam yet), so its manifest/
-feature_spec cells are `n/a`, not red — a deliberate incremental build state, not a failure.
+As of the current build, every sport including `soccer_intl` has a working
+`ingest_manifest.py` and `feature_spec.py`, so the grid is all-green across
+census/manifest/feature_spec for every declared sport (`python -m
+scripts.platformkit.parity_matrix`).
 
 Two AST-only import guards run alongside the parity matrix
 (`scripts/platformkit/check_import_contract.py`): **kernel purity** (nothing under `kernel/`

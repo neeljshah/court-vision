@@ -6,7 +6,7 @@
 
 ## Overview
 
-The execution engine is the last mile: sized bets from the Kelly sizer flow here and get placed at the optimal venue at the best available price. It manages nine venue adapters, tracks account health across all books, routes to P2P when price is competitive, and enforces kill switches.
+The execution engine is the last mile: sized bets from the Kelly sizer flow here and get placed at the optimal venue at the best available price. It is designed to manage nine venue adapters, track account health across all books, route to P2P when price is competitive, and enforce kill switches. Currently only the generic reference layer (`src/execution/base_adapter.py`, `src/execution/book_router.py`) exists; no per-venue adapter is coded yet.
 
 No live capital is deployed until all circuit breakers are coded, tested, and the paper-trading gate is passed (≥50 paper bets, CLV beat rate ≥55%, paper ROI ≥3%).
 
@@ -76,15 +76,15 @@ System generates bet slip details (book, market, side, amount) and alerts for ma
 **Option B: Playwright automation**
 Automate web interface via headless browser. Higher throughput; higher detection risk. Books increasingly fingerprint browser automation. Implementation: `src/execution/book_router.py`
 
-Current implementation: manual queue for DraftKings and FanDuel; Playwright path in development.
+Current implementation: neither option is coded per-book yet. Only the generic reference layer exists (`src/execution/base_adapter.py`, `src/execution/book_router.py`); no DraftKings/FanDuel/BetMGM/Caesars/bet365/Fanatics adapter is implemented.
 
 ### Exchange Adapters
 
 | Exchange | API | Adapter | Notes |
 |----------|-----|---------|-------|
-| Kalshi | REST (CFTC-regulated) | `src/execution/kalshi.py` | Limit orders preferred -- captures maker rebates |
-| Polymarket | CLOB order placement | `src/execution/polymarket.py` | USDC; US residents technically prohibited |
-| Sporttrade | Connect Trade REST | `src/execution/sporttrade.py` | Exchange-model sportsbook |
+| Kalshi | REST (CFTC-regulated) | Planned (market-data reader exists at `src/venues/kalshi_reader.py`; no execution adapter coded) | Limit orders preferred -- captures maker rebates |
+| Polymarket | CLOB order placement | Planned (market-data reader exists at `src/venues/polymarket_reader.py`; no execution adapter coded) | USDC; US residents technically prohibited |
+| Sporttrade | Connect Trade REST | Planned | Exchange-model sportsbook |
 | Novig | API (sweepstakes) | Planned | Zero vig; no limiting |
 | ProphetX | API (sweepstakes) | Planned | Zero vig; no limiting |
 

@@ -142,7 +142,7 @@ conda run -n basketball_ai python scripts\execute_loop\L01_slate_ingester.py
 
 ## L02 — Fantasy points dist engine
 
-**Status:** `shipped` | **Tests:** 9/9 | **LOC:** 271
+**Status:** `shipped` | **Tests:** 9/9 | **LOC:** 421
 
 > L02_fpts_distribution.py — Fantasy Points Distribution Engine (BUILD L2).
 > 
@@ -185,7 +185,7 @@ conda run -n basketball_ai python scripts\execute_loop\L02_fpts_distribution.py
 
 ## L03 — Cash game optimizer (LP)
 
-**Status:** `shipped` | **Tests:** 16/16 | **LOC:** 364
+**Status:** `shipped` (diversity-constraint tests failing) | **Tests:** 7/16 passing (9 fail with `InfeasibleError` from scipy-greedy-fallback diversity constraint) | **LOC:** 364
 
 > L03_cash_optimizer.py — DraftKings Classic Cash-Game Lineup Optimizer (LP-based).
 > 
@@ -232,7 +232,7 @@ conda run -n basketball_ai python scripts\execute_loop\L03_cash_optimizer.py
 
 ## L04 — GPP optimizer (MC+ownership)
 
-**Status:** `shipped` | **Tests:** 10/10 | **LOC:** 532
+**Status:** `shipped` | **Tests:** 10/10 | **LOC:** 726
 
 > L04_gpp_optimizer.py — GPP DFS Lineup Optimizer (BUILD L4).
 > 
@@ -3936,7 +3936,7 @@ conda run -n basketball_ai python scripts\execute_loop\L47_regression_detector.p
 
 ## L48 — Swish demo runner
 
-**Status:** `shipped` | **Tests:** 7/7 | **LOC:** —
+**Status:** `planned` (not yet implemented — L48_demo_runner.py is absent from scripts/execute_loop/) | **Tests:** none (no test_L48* file exists) | **LOC:** —
 
 > L48_demo_runner.py — Stakeholder-facing end-to-end execute_loop demo.
 > 
@@ -3998,6 +3998,8 @@ L44.assert_paper_mode("demo") at startup and aborts gracefully if live
 ```
 
 ### How to Run
+
+Not runnable yet — the module file does not exist. Once implemented:
 
 ```bash
 conda run -n basketball_ai python scripts\execute_loop\L48_demo_runner.py

@@ -26,31 +26,31 @@ python -m scripts.platformkit.proof_harness.system_proof
 
 This composes the existing gates, sentinels, and ledgers into one ASCII table -- it
 computes nothing new, it only reads what already exists and refuses to average a down
-section into a green summary. A real run on this repo today:
+section into a green summary. A real run on this repo today (2026-07-15):
 
 ```
 SYSTEM PROOF -- one-command liveness harness
 ==============================================================================
 SECTION      STATUS            SUMMARY
 ------------------------------------------------------------------------------
-fleet        RED               1/45 heartbeats RED: m41_public_splits
+fleet        RED               1/45 heartbeats RED: m2_inplay_capture
 gates        GREEN             38/38 checks green (exit 0)
 data         RED               census: 26 ok/8 drift/1 missing; 8/8 key stores fresh
 predictions  GREEN             4/4 sport smokes returned a pregame prediction
-ledgers      GREEN             9/9 ledgers present, 0 read errors
-autonomy     PENDING-RESTART   6 job(s) pending restart
+ledgers      RED               4 ledger issue(s): validation_ledger_nba, validation_ledger_mlb, validation_ledger_soccer, validation_ledger_tennis
+autonomy     RED               cannot enumerate job registry (maintenance_templates.py unreadable/moved)
 integrity    GREEN             guard hashes match baseline
 ------------------------------------------------------------------------------
-OVERALL: RED  (2 RED section(s), 1 PENDING-RESTART section(s))
+OVERALL: RED  (4 RED section(s), 0 PENDING-RESTART section(s))
 ```
 
 **Read it as a feature, not a bug.** `fleet` names the one stale scraper by name;
-`data` names the exact census-count drifts instead of a vague "something's off"; a job
-appears `PENDING-RESTART` (not a silent pass) when its code has shipped but the daemon
-hasn't been bounced to pick it up. The harness itself was fixed one commit before this
-doc (`2eedc37e`) specifically to stop reporting decorative green on drift/staleness/an
-empty registry -- the RED above is the harness working as intended, on a real box, right
-now.
+`data` names the exact census-count drifts instead of a vague "something's off";
+`ledgers` names the exact ledger files it could not clear, and `autonomy` names the
+exact file it could not read to enumerate the job registry, instead of a silent pass.
+The harness itself was fixed one commit before this doc (`2eedc37e`) specifically to
+stop reporting decorative green on drift/staleness/an empty registry -- the RED above
+is the harness working as intended, on a real box, right now.
 
 ---
 
@@ -100,12 +100,13 @@ Ask about a mechanism that was tested and found to hold NULL (`three_in_four_fat
 the oracle is required to state a null just as plainly as a confirmed effect. It cannot
 be talked into a plausible-sounding basketball belief that was never tested: an
 unregistered question type returns `NOT_SUPPORTED`, never an improvised answer. The
-knowledge behind it is fully drained across all 4 sports -- 151 mechanism hypotheses
-closed (71 confirmed, 51 honest nulls, the rest not locally testable) -- so most factual
-"does X matter" questions about NBA/MLB/soccer/tennis already have a row to cite.
+knowledge behind it is fully drained across all 4 sports -- 287 mechanism hypotheses
+closed (130 confirmed incl. replications, 119 honest nulls, 29 not locally testable,
+the rest provisional/reject/partial) -- so most factual "does X matter" questions about
+NBA/MLB/soccer/tennis already have a row to cite.
 
 Underneath the mechanism answers sits an **effect graph** (`data/frontend/ops/effect_graph.json`,
-555 nodes / 296 edges across all 4 sports) that links every mechanism, interaction,
+627 nodes / 335 edges across all 4 sports) that links every mechanism, interaction,
 attribute, and outcome the system has ever adjudicated -- built by labeling and linking
 existing ledger rows, computing zero new statistics.
 
@@ -117,7 +118,7 @@ existing ledger rows, computing zero new statistics.
 python -c "import json; d=json.load(open('data/frontend/best_bets.json')); print(d['card_count']); print(json.dumps(d['cards'][0], indent=2))"
 ```
 
-One real card from the composed board (190 cards on the board as of this run):
+One real card from the composed board (58 cards on the board as of this run):
 
 ```json
 {
@@ -144,7 +145,7 @@ a disclaimer bolted on somewhere else.
 python -m scripts.platformkit.reject_ledger show
 ```
 
-513 recorded REJECT/DEFER verdicts across NBA/MLB signal candidates -- one row per
+645 recorded REJECT/DEFER verdicts across NBA/MLB signal candidates -- one row per
 candidate that did NOT survive the gate, with its reason, source, and date:
 
 ```

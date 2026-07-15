@@ -117,7 +117,7 @@ ship -- none did. This is the full chain:
 1. **Leak-free walk-forward (expanding window).** Sort states by timestamp; train only on
    strictly-earlier states. Purge same-team games within 48h and embargo the same matchup
    within 3 days of the boundary; assert every feature is vintage-valid (available before the
-   prediction time) or FAIL. Code: `eval_gate/walkforward.py`, `src/loop/gate.py`.
+   prediction time) or FAIL. Code: `scripts/platformkit/eval_gate/walkforward.py`, `src/loop/gate.py`.
 2. **Feature selection / slope fit INSIDE the training window.** A candidate that selects on
    full history (`select_inside=False`) is surfaced and the run FAILS -- this is exactly the
    over-fit channel that inflates full-sample lifts.
@@ -129,7 +129,7 @@ ship -- none did. This is the full chain:
    expose a broken harness (`null_shuffle_control`).
 5. **Cluster-robust Diebold-Mariano vs the close.** `d_t = loss_close - loss_model` clustered
    by `game_id` (a naive i.i.d. SE runs ~3x too narrow and manufactures fake significance).
-   SHIP requires `BSS>0` AND DM `p<0.05` AND `N>=200`. Code: `eval_gate/dm_test.py`.
+   SHIP requires `BSS>0` AND DM `p<0.05` AND `N>=200`. Code: `scripts/platformkit/eval_gate/dm_test.py`.
 6. **>=2 independent corpora + Benjamini-Hochberg FDR.** A single-corpus / single-fold lift
    is an artifact; the lift must replicate (`multifold_guard.replicated`) and survive
    multiple-comparisons correction (`benjamini_hochberg`).

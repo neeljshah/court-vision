@@ -22,53 +22,39 @@ API documentation:
 
 ## FastAPI Endpoints
 
-All endpoints are in [`api/main.py`](../../api/main.py).
+~100 endpoints across `api/main.py` and its routers (confirmed via `grep -r '@router\.\|@app\.' api/*.py`), not a small fixed set. Representative sample:
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/predict/player-props` | POST | Batch prop predictions for a slate |
-| `/predict/win-probability` | GET | Win probability for a game |
-| `/predict/game-total` | GET | Over/under prediction for game total |
-| `/portfolio/kelly-size` | POST | Kelly-fractional bet sizing |
-| `/portfolio/positions` | GET | Current active positions |
-| `/lines/current` | GET | Live lines from Odds API |
-| `/health` | GET | System health status |
-| `/models/registry` | GET | List all registered models |
-| `/calibration/metrics` | GET | Current ECE and calibration stats |
+| Endpoint | Method | Router | Description |
+|----------|--------|--------|-------------|
+| `/predictions/props/{player_id}` | GET | predictions_router.py | Prop prediction for one player |
+| `/predictions/game` | POST | predictions_router.py | Game-level prediction |
+| `/predictions/injury-risk` | POST | predictions_router.py | Injury-risk prediction |
+| `/predictions/breakout` | POST | predictions_router.py | Breakout prediction |
+| `/predictions/lineup-optimizer` | POST | predictions_router.py | Lineup optimizer |
+| `/predictions/today` | GET | predictions_router.py | Today's slate predictions |
+| `/api/lines/scan` | GET | lines_router.py | Scan current lines across books for edge |
+| `/health` | GET | main.py | System health status |
+| `/models/win` | GET | models_router.py | Win-probability model endpoint |
+| `/models/player-impact` | GET | models_router.py | Player-impact model endpoint |
 
 ### Example: Player Props Prediction
 
 ```bash
-curl -X POST http://localhost:8000/predict/player-props \
-  -H "Content-Type: application/json" \
-  -d '{
-    "game_id": "0022401234",
-    "players": ["203076", "2544", "1629029"],
-    "prop_types": ["pts", "reb", "ast"]
-  }'
+curl http://localhost:8000/predictions/props/203076
 ```
 
-Response:
+Response (see `api/predictions_router.py` `props_by_id`):
 ```json
 {
-  "predictions": {
-    "203076": {
-      "pts": {
-        "distribution_mean": 26.4,
-        "distribution_std": 5.2,
-        "lines": {
-          "24.5": {"p_over": 0.68, "p_under": 0.32},
-          "27.5": {"p_over": 0.44, "p_under": 0.56},
-          "30.5": {"p_over": 0.24, "p_under": 0.76}
-        }
-      }
-    }
-  },
-  "metadata": {
-    "model_version": "cv_17g_v2",
-    "cv_features_used": true,
-    "prediction_timestamp": "2026-05-10T09:31:00Z"
-  }
+  "player_id": 203076,
+  "player_name": "...",
+  "props": {"pts": 26.4, "reb": 5.2, "ast": 4.1},
+  "dnp_prob": 0.02,
+  "injury_risk": 0.05,
+  "suppressed": false,
+  "suppression_reason": null,
+  "confidence": "...",
+  "edges": {}
 }
 ```
 
@@ -138,7 +124,7 @@ npm start
 ```
 
 **WebSocket connection:**
-The dashboard connects to `ws://localhost:8000/ws/odds` for real-time odds updates. FastAPI handles WebSocket via `python-socketio` + Redis Pub/Sub for fan-out to multiple connected clients.
+The dashboard connects to `ws://localhost:8000/ws/live` for the live board (see `api/live_v2_app.py`). Other live sockets: `/ws/win-prob/{game_id}` and `/ws/cv/{game_id}` (both in `api/main.py`).
 
 ---
 
@@ -147,28 +133,28 @@ The dashboard connects to `ws://localhost:8000/ws/odds` for real-time odds updat
 Copy `.env.example` → `.env` and fill in:
 
 ```bash
-# NBA API
-NBA_API_DELAY=0.6          # seconds between requests (cloud IP safety)
+# Database
+DATABASE_URL=postgresql://nba_user:PASSWORD@localhost:5432/nba_ai
+REDIS_URL=redis://localhost:6379
 
-# Odds API
-ODDS_API_KEY=...           # theOddsApi.com key
-ODDS_API_TIER=paid         # free|paid
+# API Keys
+NBA_API_KEY=
+THE_ODDS_API_KEY=
 
-# B2 Storage (optional, for remote sync)
-B2_KEY_ID=...
-B2_APPLICATION_KEY=...
-B2_BUCKET=...
+# Backblaze B2 (optional, for remote sync)
+B2_BUCKET=
+B2_KEY_ID=
+B2_APP_KEY=
 
-# Betting config
-LIVE_BETTING=0             # 0 = paper mode; 1 = live (requires Phase 19 gate)
-KELLY_FRACTION=0.5         # fractional Kelly multiplier
-BANKROLL=10000             # current bankroll in dollars
-MIN_EDGE=0.03              # minimum edge to bet (3%)
-
-# Model config
-CV_FEATURES_ENABLED=1      # 0 = API-only mode
-MODEL_REGISTRY_PATH=data/models/model_registry.json
+# Exchange APIs (paper/live gate)
+LIVE_BETTING=0             # 0 = paper/dry-run (default), 1 = real orders -- global kill switch
+KALSHI_ACCESS_KEY=
+KALSHI_PRIVATE_KEY_PATH=
+POLY_PRIVATE_KEY=
+POLY_FUNDER_ADDRESS=
 ```
+
+Full, current list: [`.env.example`](../../.env.example).
 
 ---
 
@@ -179,19 +165,22 @@ MODEL_REGISTRY_PATH=data/models/model_registry.json
 curl http://localhost:8000/health
 ```
 
-Returns:
+Returns (see `health()` in `api/main.py`):
 ```json
 {
-  "status": "healthy",
-  "components": {
-    "odds_api": {"status": "ok", "last_fetch": "2026-05-10T09:30:00Z"},
-    "model_serving": {"status": "ok", "models_loaded": 19},
-    "calibration": {"status": "ok", "last_update": "2026-05-09T23:45:00Z"},
-    "database": {"status": "ok", "queue_depth": 4}
-  },
-  "alerts": []
+  "status": "ok",
+  "model_status": {
+    "possession_simulator": "loaded",
+    "player_props": "available",
+    "betting_edge": "loaded",
+    "win_probability": "available",
+    "tracking": "available",
+    "re_id": "available"
+  }
 }
 ```
+
+A separate `/health/ops` endpoint reports operational pipeline metrics (scraper lag, CLV hit rate, drift flags).
 
 **Grafana** (Phase 21): System metrics dashboard for model latency, API response times, data freshness. See [dashboard-spec.md](../architecture/dashboard-spec.md) System Health panel.
 
@@ -199,16 +188,17 @@ Returns:
 
 ## Reproducibility
 
-To reproduce the current model predictions exactly:
+There is no dedicated `scripts/reproduce.py` or `data/release/` bundle yet -- that
+release-artifact pipeline (seeded game list + SHA256 manifest + tagged release)
+is not built. Current setup path:
 
 ```bash
 bash scripts/setup_dev.sh
 cp .env.example .env  # fill API keys
-python scripts/reproduce.py --seed 42 --games data/release/v0.14/game_list.json
-sha256sum -c data/release/v0.14/output_hashes.txt
 ```
 
-Release v0.14.0-80g ships the game list, seeds, pod config, and SHA256 of every tracking JSON. A reviewer with the videos can reproduce bit-exactly.
+See [docs/JOB_EVIDENCE_PACKET.md](../JOB_EVIDENCE_PACKET.md) for what reproduction
+evidence currently exists.
 
 ---
 

@@ -16,7 +16,7 @@ ingest_fetch.py (yt-dlp + cookies)
         │
         ▼
 SQLite job queue (data/ingest/queue.db)
-[state: pending → downloading → downloaded → verified → processing → processed | failed]
+[status: queued → verified → processing → processed | failed]
         │
         ▼
 ingest_process.py (multi-worker pipeline execution)
@@ -150,21 +150,30 @@ Jobs that crash during processing leave state as 'processing' indefinitely. This
 
 ```sql
 CREATE TABLE games (
-    game_id TEXT PRIMARY KEY,
-    url TEXT,
-    state TEXT,  -- pending|downloading|downloaded|verified|processing|processed|failed
-    priority INTEGER DEFAULT 0,
-    video_path TEXT,
-    quality_score REAL,
-    quality_tier TEXT,  -- HIGH|MEDIUM|LOW|BLOCKED
-    ball_valid_pct REAL,
-    player_coverage REAL,
-    error_message TEXT,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP,
-    processed_at TIMESTAMP
+    game_id       TEXT PRIMARY KEY,
+    date          TEXT,
+    home          TEXT,
+    away          TEXT,
+    source        TEXT,
+    source_url    TEXT,
+    sha256        TEXT,
+    duration_s    REAL,
+    codec         TEXT,
+    fps           REAL,
+    quality_tier  TEXT,
+    status        TEXT NOT NULL DEFAULT 'queued',  -- queued|verified|processing|processed|failed
+    reject_reason TEXT,
+    attempts      INT DEFAULT 0,
+    created_at    TEXT,
+    updated_at    TEXT
 );
 ```
+
+Quality metrics (`ball_valid_pct`, `player_coverage`, `homography_stability`) are not
+stored columns -- they are computed on-the-fly from tracking CSVs in
+`src/ingest/quality.py` and written into `quality_tier`.
+
+Source: `src/ingest/schema.sql`.
 
 ---
 
@@ -230,9 +239,10 @@ Output: `data/tracking/GAME_ID.json` + `data/events/GAME_ID.json`
 
 ---
 
-## Current State (Session 40)
+## Current State (as of 2026-07-15, via `python scripts/ingest_status.py`)
 
-- 29 usable games (9 CLEAN + 20 PARTIAL on quality gate) of 75 attempted
+- 307 games total: 81 processed, 200 queued, 26 verified
+- Quality tiers: 9 CLEAN, 20 PARTIAL, 46 REJECT (29 usable on quality gate)
 - Target: 80 CLEAN
 - Next pod run: single RTX 3090, ~7–9 hours, ~$4 budget
 

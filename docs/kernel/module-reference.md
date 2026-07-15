@@ -36,9 +36,10 @@ side effects).
 - **Dependency-rule invariant:** this module imports only `kernel.config.*` — never a literal
   `import domains` / `from domains`. Domain discovery is delegated to
   `kernel/config/registry.py::load_sport`, which uses `importlib.import_module` on a string.
-- **Known open issue (found while reading, not yet fixed):** the NBA domain package lives at
-  `domains/nba/`, but `load_sport("basketball_nba")` expects `domains/basketball_nba/` — a naming
-  mismatch documented inline in the module's own docstring.
+- **Resolved:** the NBA domain package lives at `domains/basketball_nba/`, matching what
+  `load_sport("basketball_nba")` expects (`domains/basketball_nba/config.py` sets
+  `sport_id="basketball_nba"`). The package was renamed from `domains/nba/` in commit `b9c97a55`
+  (2026-06-12); no naming mismatch remains.
 
 ### `stats.py` — `StatSpec` + `SportStatRegistry`
 

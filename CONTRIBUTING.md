@@ -9,7 +9,7 @@ This project combines computer vision, data engineering, statistical modeling, a
 ```bash
 git clone https://github.com/neeljshah/court-vision.git
 cd court-vision
-conda create -n basketball_ai python=3.9 -y
+conda create -n basketball_ai python=3.10 -y
 conda activate basketball_ai
 cp .env.example .env
 
@@ -22,7 +22,7 @@ pip install -r requirements-predictor.txt    # or: pip install -e .  -> cv-match
 python -m pytest tests/test_ingame_leak_free.py -q
 ```
 
-Environment: Python 3.9, conda env `basketball_ai`, CUDA 11.8, RTX 4060 8GB (local). Video processing requires a CUDA-capable GPU; most tests and prediction work run CPU-only.
+Environment: Python 3.10.20, conda env `basketball_ai`, CUDA 11.8, RTX 4060 8GB (local); RunPod is Python 3.12. Video processing requires a CUDA-capable GPU; most tests and prediction work run CPU-only.
 
 ---
 
@@ -51,7 +51,7 @@ Environment: Python 3.9, conda env `basketball_ai`, CUDA 11.8, RTX 4060 8GB (loc
 
 ## Code Standards
 
-- Python 3.9
+- Python 3.10.20 (local); RunPod runs 3.12
 - Type hints on all public functions
 - Docstrings for public classes and functions
 - Avoid hidden side effects and implicit globals

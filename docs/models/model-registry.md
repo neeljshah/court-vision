@@ -1,12 +1,12 @@
-# Model Registry — 75 Models, What Each Does, Current Performance
+# Model Registry — 56 Models, What Each Does, Current Performance
 
-*75 models organized by data-requirement tier, with current performance metrics.*
+*56 models organized by data-requirement tier, with current performance metrics. (No fixed platform-wide model count — see `.planning/CANONICAL_VALUES.md`; this is the tally of models named in this doc's tiers below.)*
 
 ---
 
 ## Architecture
 
-The 75 models are organized into 6 data-requirement tiers. Tier determines when retrain is warranted, not model importance.
+The 56 models are organized into 6 data-requirement tiers. Tier determines when retrain is warranted, not model importance.
 
 | Tier | Data gate | Count | Algorithm | Production gate |
 |------|-----------|-------|-----------|-----------------|
@@ -28,7 +28,7 @@ The foundational layer. Trained on 6+ seasons of NBA API data. These are the mod
 
 | Model | Target | R² | MAE | ECE | Notes |
 |-------|--------|-----|-----|-----|-------|
-| pts_prop | Points O/U | 0.47 | 4.9 | 0.021 | Primary betting model |
+| pts_prop | Points O/U | 0.41 (holdout) | 4.12 | 0.021 | Primary betting model |
 | reb_prop | Rebounds O/U | 0.40 | 2.1 | 0.028 | Solid; reb is noisier than pts |
 | ast_prop | Assists O/U | 0.46 | 1.7 | 0.024 | Strong signal |
 | fg3m_prop | 3PM O/U | 0.28 | 1.0 | 0.035 | 3PM has high variance |
@@ -75,7 +75,7 @@ Trained but not yet generating standalone betting signal at volume. They filter 
 
 ## Tier 3 — 20+ CV Games (10 models, RETRAIN AT 80 GAMES)
 
-These models incorporate CV spatial features. Trained on 29-game subset (9 CLEAN + 20 PARTIAL of 75 attempted); R² values below are on this limited sample. All will be retrained when 80-CLEAN-game ingest completes.
+These models incorporate CV spatial features. Trained on the current CV corpus (7 full-feature / 85 tracked games; `docs/CLAUDE-state.md`); R² values below are on this limited sample. All will be retrained when the 80-CLEAN-game gate completes.
 
 **Target after retrain:** pts R² ≥ 0.55.
 
@@ -92,7 +92,7 @@ These models incorporate CV spatial features. Trained on 29-game subset (9 CLEAN
 | catch_shoot_3p | C&S 3P% | — | — | catch_shoot_flag |
 | fatigue_decay | Performance vs legs_fatigue | — | — | legs_fatigue |
 
-*Includes 29-game CV subset (9 CLEAN + 20 PARTIAL); reflects upper bound of current CV contribution.
+*Reflects the current CV corpus (7 full-feature / 85 tracked games; `docs/CLAUDE-state.md`); upper bound of current CV contribution.
 
 **No Tier 3–4 model is added to live sizing until a CV A/B test confirms Δ R² ≥ +0.05 on holdout.**
 
@@ -175,8 +175,9 @@ metrics). The load-bearing artifacts the serving graph actually reads:
   fully populated. Until then, calibration runs largely as identity passthrough
   and Kelly assumes a diagonal (independent-bet) covariance.
 - The `live_win_prob_lstm.pt` (Tier 6) is a **placeholder**, not a trained model.
-- Tier 3-5 R^2 values are on the 29-game CV subset (9 CLEAN + 20 PARTIAL) and CV
-  features carry **SHAP ~= 0** in production. They retrain at the 80-CLEAN gate;
+- Tier 3-5 R^2 values are on the current CV corpus (7 full-feature / 85 tracked
+  games; `docs/CLAUDE-state.md`) and CV features carry **SHAP ~= 0** in
+  production. They retrain at the 80-CLEAN gate;
   none enters live sizing until a CV A/B confirms delta R^2 >= +0.05 on holdout.
 
 > **Honesty rail.** Registry counts and R^2 values are model-quality / calibration

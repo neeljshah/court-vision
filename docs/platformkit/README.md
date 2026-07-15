@@ -36,7 +36,7 @@ Grouped by what they do (each verified against real code):
 | Cost / economics | `econ/`, `cost_ledger.py` | Per-venue transaction-cost model (fees as probability thresholds) + after-cost scoreboards |
 | Edge greenlight gate | `econ/edge_greenlight.py`, `greenlight_criteria.py`, `greenlight_trust_honesty.py` | Read-only nightly report; a channel is GREEN only if 7 pre-registered criteria pass on both halves of a date-parity split. A GREEN pages a human — it never places a bet or flips a flag |
 | Paper grading | `grade_paper*.py`, `paper/` | Settles paper bets, resolves closing lines with an honest fallback ladder, computes units-only scoreboards |
-| CLV ledger | `clv_ledger.py` + ~15 `clv_ledger_*.py` | Append-only, status-keyed dedup, fail-closed honesty checks, units-only write rail |
+| CLV ledger | `clv_ledger.py` + 13 `clv_ledger_*.py` | Append-only, status-keyed dedup, fail-closed honesty checks, units-only write rail |
 | Venue history | `venue_history/` | Historical Kalshi/Polymarket price-series backfill + coverage census |
 | Atlas / intelligence | `atlas/` | Builds the Obsidian-vault intelligence artifacts (person-free by default) |
 | Autoloop | `autoloop/` | The self-improving loop's zero-LLM cycle scheduler |
@@ -50,6 +50,7 @@ Grouped by what they do (each verified against real code):
 | Signal candidates | `weights/`, `l4/`, `combo/`, `market_coverage/` | Pre-registered, gated signal-discovery experiments — proposal only, never auto-promoted |
 | Prediction-market trading | `pm_trading/` | Kalshi/Polymarket paper-trading policy + sizing + a conservative advisory (never self-authorizing) real-money gate |
 | Quant | `quant/`, `quant_exec/` | Thin, audited wrappers around already-vetted CLV/sizing/devig primitives — no new math |
+| Showcase | `showcase/` | Proof Room snapshot exporter — one scrubbed, static JSON bundle (bridge/slate/calibration/claims/graveyard/machine/ledger + per-game replays) the public frontend reads; no live API exposure, no raw `data/` rows |
 
 ---
 

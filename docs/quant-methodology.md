@@ -1,4 +1,4 @@
-Status: current as of 2026-04-23.
+Status: current as of 2026-06-18.
 
 # Quant Methodology
 
@@ -152,7 +152,7 @@ is a single call and requires no hyperparameter tuning.
 **Effect in the system.** On simulated 7×7 matrices from typical NBA prop residuals,
 Ledoit-Wolf shrinkage reduces naive Kelly over-staking on correlated legs by 20–40%
 relative to the sample-covariance QP solution. Implementation: Phase 15.7 QP
-optimizer in `src/prediction/portfolio_optimizer.py` (planned).
+optimizer in `scripts/team_system/portfolio_optimizer.py`.
 
 ---
 
@@ -203,15 +203,18 @@ Reliability diagrams are in `/results`.
 
 The global calibrator conflates systematically different game contexts. A star player
 at home rested vs a rotation player on a back-to-back exhibit different calibration
-curves on the same raw score. Phase 14.8 replaces the 7 global calibrators with 7 × 6
-per-segment calibrators across six context dimensions:
+curves on the same raw score. Phase 14.8 replaces the 7 global calibrators with
+per-segment calibrators across eight segments (`src/prediction/segment_calibrator.py`
+SEGMENTS list):
 
-1. Star vs rotation player (usage rate threshold)
-2. Home vs away
-3. Back-to-back vs rested
-4. Opponent top-10 vs bottom-10 defense (pos-adjusted DRTG)
-5. Pre- vs post-All-Star Break
-6. Regular season vs playoff
+1. Star
+2. Role (rotation player)
+3. Back-to-back
+4. Early season
+5. Home
+6. Road
+7. Post-injury return
+8. Post-trade
 
 Fallback to the global calibrator when segment sample size < 50. Target: max 5%
 probability error on any reliability diagram segment.
@@ -234,7 +237,7 @@ CourtVision's signal architecture follows the Renaissance Technologies research 
 | **CVaR risk management** | Tail-risk-aware Kelly sizing (Conditional Value at Risk) | Rockafellar & Uryasev |
 | **Online portfolio selection** | Dynamic weight updates without full retrain | Cover (1991) |
 
-See [vault/Research/Renaissance Methodology.md](../vault/Research/Renaissance%20Methodology.md) for full treatment.
+See [_vault_legacy_archive/Research/Renaissance Methodology.md](../_vault_legacy_archive/Research/Renaissance%20Methodology.md) for full treatment.
 
 ---
 

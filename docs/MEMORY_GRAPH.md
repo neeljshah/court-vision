@@ -123,7 +123,7 @@ There are two related graphs, and the **person-free** invariant applies to the p
   (`hub_data.PERSON_FREE`). NAMED generators (Teams / Matchups / Seasons / Tournaments / Scouting)
   are gated OFF unless `--with-named`; only archetype/scheme/style families are emitted.
 - **`vault/` (NBA Intelligence)** — the pre-platform NBA brain: the **~690-node knowledge graph
-  (660 player + 30 team)** plus the **44 NBA atlases (28 player + 16 team)** referenced from
+  (660 player + 30 team)** plus the **48 deep atlas-section builders (30 `player_*` + 18 `team_*`)** referenced from
   [INTELLIGENCE.md](INTELLIGENCE.md). The cross-sport `_Hub.md` links to it but does not import
   its person-bearing notes into the person-free `Sports/` graph.
 

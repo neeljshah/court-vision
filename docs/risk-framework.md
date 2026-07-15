@@ -1,4 +1,6 @@
-Status: current as of 2026-04-23.
+Status: last reviewed 2026-06-18. Several sections below describe Phase 16, 30, and 37
+requirements that are still unimplemented (marked inline) -- read this as the target
+design, not a description of what currently runs.
 
 # Risk Framework
 
@@ -12,11 +14,11 @@ breakers are implemented and the Phase 19 paper-trading gate passes.
 
 ## Position Sizing Rules
 
-Position sizes are computed by the QP optimizer (Phase 15.7,
-`src/prediction/portfolio_optimizer.py`) subject to the constraints below. Until Phase
-15.7 is shipped, greedy fractional Kelly in
+Position sizes are intended to be computed by a QP optimizer (Phase 15.7,
+`src/prediction/portfolio_optimizer.py`) subject to the constraints below. Phase 15.7
+is not shipped -- that module does not exist yet -- so greedy fractional Kelly in
 [src/prediction/betting_portfolio.py](../src/prediction/betting_portfolio.py) applies
-the same numeric limits as soft constraints.
+the same numeric limits as soft constraints today.
 
 ### Per-bet constraints
 
@@ -90,8 +92,11 @@ it is never enabled autonomously.
 ## Circuit Breakers
 
 The circuit breakers below are non-negotiable requirements before `LIVE_BETTING=1`.
-They are coded into `scripts/daily_run.sh` (Phase 16) and enforced before any
-bet_selector output is executed.
+They are Phase 16 target requirements; only the `LIVE_BETTING=0` enforcement and
+alert logging exist in `scripts/daily_run.sh` today. The bet-level filters and
+intraday breakers below (ensemble spread, stale-line classifier, DNP guard,
+consecutive-loss multipliers, drawdown halt) are not yet coded and must not be
+treated as running before any bet_selector output is executed.
 
 ### Bet-level filters
 
@@ -140,13 +145,14 @@ Computed on the open portfolio at end-of-day and written to
 
 ### Monthly risk packet
 
-`scripts/gen_risk_packet.py` (Phase 37) auto-generates `vault/risk/YYYY-MM.md`
-covering: max drawdown, VaR 95%, worst single day, annualized Sharpe, CLV beat rate
-by market, and stress test results.
+`scripts/gen_risk_packet.py` (Phase 37, not yet built) would auto-generate
+`vault/risk/YYYY-MM.md` covering: max drawdown, VaR 95%, worst single day, annualized
+Sharpe, CLV beat rate by market, and stress test results.
 
 ### Stress test scenarios
 
-`scripts/stress_test.py` simulates three adverse scenarios:
+`scripts/stress_test.py` (Phase 37, not yet built) is specified to simulate three
+adverse scenarios:
 
 1. **All-correlated-leg loss day.** Every bet in the slate resolves against position.
    Simulates a "black swan" game day where the model is systematically wrong (e.g.,
@@ -180,8 +186,10 @@ correlated performance across props. Expected factors include:
 
 ### Factor hedging
 
-Each bet in `bets_YYYYMMDD.json` is tagged with `factor_loadings` (a dict of factor
-exposures). Portfolio-level factor exposure is the sum of loadings across all bets.
+Phase 30 is not yet built: no `factor_loadings` field exists in the live codebase
+today. The design calls for each bet in `bets_YYYYMMDD.json` to be tagged with
+`factor_loadings` (a dict of factor exposures), with portfolio-level factor exposure
+computed as the sum of loadings across all bets.
 
 When any single factor exposure exceeds a threshold (calibrated per factor from
 historical data), the optimizer adds a small opposing bet (typically a game total) to

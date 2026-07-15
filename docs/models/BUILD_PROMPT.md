@@ -4,7 +4,9 @@ Paste the block below into Claude Code to build out the next batch of models fro
 
 It picks unbuilt models in priority order, implements + trains + evaluates them, registers artifacts, updates docs + vault, and commits to git — one atomic commit per model. Re-run it as many times as you want; it always resumes at the next 🔲 model.
 
-**Nothing is built yet — this is a plan.** Run the prompt only when you want to start.
+**Build is underway.** 131 model artifacts exist in `data/models/`, 7 are
+registered in `data/models/model_registry.json`, and `docs/models/MODEL_UNIVERSE.md`
+marks 75 models ✅ built. Run the prompt to resume the next batch.
 
 Mirror of the Obsidian note `vault/Models/BUILD_PROMPT.md` (vault is gitignored; this is the git-tracked copy).
 

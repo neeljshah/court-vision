@@ -7,7 +7,7 @@
 - **CLV (Closing Line Value)** -- the difference between the price you got and the market's
   *closing* price on the same outcome. Positive CLV = you beat the number before it sharpened. The
   honest, forward-looking yardstick for "did we have an edge", because it is far less noisy than
-  raw profit. See [methods/clv-computation](research/edge-intelligence/_framework/methods/clv-computation.md).
+  raw profit.
 - **Edge** -- a genuine, repeatable divergence between the model's probability and the *fair*
   (devigged) market probability, where the model is correct out-of-sample. Distinct from accuracy.
 - **Calibration** -- whether predicted probabilities match observed frequencies (of events you call
@@ -56,13 +56,11 @@
 - **Win-probability anchor** -- the single calibrated per-sport win-prob that every market
   (moneyline, spread, total, in-game reprice) is derived from coherently.
 - **Poisson / Negative-Binomial (NB)** -- count distributions for player props; NB adds dispersion
-  when counts are over-dispersed (real-world variance exceeds Poisson). See
-  [poisson-vs-negbin](research/edge-intelligence/_framework/methods/poisson-vs-negbin-for-counts.md).
+  when counts are over-dispersed (real-world variance exceeds Poisson).
 - **Dispersion calibration** -- widening/narrowing a count distribution so its spread matches
   reality; a too-tight distribution fabricates fake edges.
 - **Empirical-Bayes shrinkage** -- pulling a noisy per-player rate toward a role/archetype prior in
-  proportion to how little data the player has. See
-  [empirical-bayes-shrinkage](research/edge-intelligence/_framework/methods/empirical-bayes-shrinkage.md).
+  proportion to how little data the player has.
 - **Isotonic / Platt / temperature calibration** -- methods to map raw model scores to calibrated
   probabilities. See [models/calibration](models/calibration.md).
 - **NNLS (non-negative least squares)** -- the stacking method that blends sub-models into the
@@ -75,7 +73,7 @@
   pie rather than a hand-tuned matrix. See [architecture/possession-simulator](architecture/possession-simulator.md).
 - **JointDistribution** -- the coherent score matrix from which every derived market is read.
 - **Atlas** -- a deep descriptive + correlation table of a player/team dimension (usage role, pace
-  fit, matchup splits, clutch shape, ...). 44 of them (28 player + 16 team).
+  fit, matchup splits, clutch shape, ...). 48 of them (30 player + 18 team).
 - **Archetype / playstyle** -- a role (striker, holding-mid, keeper; power-hitter, strikeout-pitcher;
   high-usage creator, 3-and-D wing, rim-runner; big-server, grinder, returner) used as the shrinkage
   prior. The graph is built on playstyles, never on people.
@@ -91,14 +89,13 @@
 - **Prop (player prop)** -- a bet on a player stat (points, rebounds, assists, strikeouts, shots...).
 - **Alt-line ladder** -- the full range of lines for one prop (over 0.5 / 1.5 / 2.5 ...).
 - **SGP (same-game parlay)** -- multiple correlated legs from one game; a coherent sim prices the
-  correlation a marginal model cannot. See [correlated-sgp](research/edge-intelligence/_framework/inefficiencies/correlated-sgp.md).
+  correlation a marginal model cannot.
 - **Vig / juice** -- the book's built-in margin; raw odds sum to >100% implied probability.
 - **Devig / Shin devig** -- removing the vig to recover the market's *fair* probability; Shin (1992)
-  accounts for informed-trader bias. See [shin-devig](research/edge-intelligence/_framework/methods/shin-devig.md).
+  accounts for informed-trader bias.
 - **EV (expected value)** -- `p * payout - 1`; the per-unit expected return of a bet.
 - **Kelly / fractional / quarter-Kelly** -- bankroll-optimal bet sizing; the system caps at a
-  fraction (quarter-Kelly) and is correlation-aware. See
-  [kelly-sizing-correlation](research/edge-intelligence/_framework/methods/kelly-sizing-correlation.md).
+  fraction (quarter-Kelly) and is correlation-aware.
 - **Tier floors (A / B / C)** -- minimum EV thresholds a bet must clear to be surfaced; below the
   floor = **no bet**. Output is in **units, never dollars**.
 - **Line shopping** -- comparing the same bet across books to take the best available price.
@@ -162,7 +159,7 @@
   [ASK_SURFACES](ASK_SURFACES.md).
 - **pairs_for_claim_stores subset loading** -- the loader composers must call instead of a bare
   `load_verified_claims()`: restricts claim-source pairs to a named subset of stores so a composer
-  never whole-loads a GB-scale bulk claim store (e.g. `nba_player_box_rate`, 34,650 rows) into
+  never whole-loads a GB-scale bulk claim store (e.g. `nba_player_box_rate`, 59,710 rows) into
   memory. See [ASK_SURFACES](ASK_SURFACES.md).
 - **STUCK detector** -- a counter of consecutive processing ticks that had open work and zero
   completions; past a threshold (e.g. 24 ticks / ~6h at a 900s settlement cadence) it flips a

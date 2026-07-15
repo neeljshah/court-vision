@@ -1,6 +1,6 @@
 # Why CourtVision Can Become The Best In The World
 
-> Updated 2026-05-18: Renaissance of sports framing added. CourtVision is an AI-native sports intelligence platform, not a prediction model.
+> Updated 2026-07-15: Renaissance of sports framing added. CourtVision is an AI-native sports intelligence platform, not a prediction model.
 
 This document is the strategic case for CourtVision as a category-defining sports intelligence platform — the Renaissance of sports.
 
@@ -11,8 +11,8 @@ This document is the strategic case for CourtVision as a category-defining sport
 CourtVision is not a prediction model. It is an agentic research system built on a sports intelligence substrate:
 
 - proprietary signal generation from broadcast computer vision,
-- structured data fusion across basketball and market context,
-- Claude-powered agents that autonomously discover, validate, ship, and retire prediction signals,
+- structured data fusion across NBA, MLB, club soccer, the World Cup, and tennis market context,
+- a deterministic, LLM-free discovery engine plus Claude agents that validate, ship, and retire prediction signals,
 - simulation-aware decision logic across six revenue surfaces,
 - and governance gates that make performance claims defensible.
 

@@ -112,7 +112,7 @@ foundation: if M is wrong, every downstream court-coordinate is wrong.
    - `_line_intersection` computes corners, 3-point line intersections
    - `cv2.getPerspectiveTransform` builds M from 4+ matched point pairs
 
-2. **Three-tier SIFT acceptance** (steady-state, every `_SIFT_INTERVAL=15` frames):
+2. **Three-tier SIFT acceptance** (steady-state, every `_SIFT_INTERVAL=300` frames):
 
    | Inlier count | Action |
    |---|---|
@@ -120,7 +120,7 @@ foundation: if M is wrong, every downstream court-coordinate is wrong.
    | `8–39` | EMA blend: `M_new = 0.3 × M_detected + 0.7 × M_prev` |
    | `≥ 40` | Hard reset to new M |
 
-3. **Drift detection** (every `_REANCHOR_INTERVAL=30` frames):
+3. **Drift detection** (every `_REANCHOR_INTERVAL=60` frames):
    - Project court boundary lines through current M
    - Measure white-pixel alignment along projected lines
    - If alignment score `< _REANCHOR_ALIGN_MIN=0.35` → force hard reset
@@ -137,9 +137,9 @@ foundation: if M is wrong, every downstream court-coordinate is wrong.
 | Constant | Value | Purpose |
 |---|---|---|
 | `_H_RESET_INLIERS` | 40 | Hard-reset threshold |
-| `_SIFT_INTERVAL` | 15 | Run SIFT every N frames |
-| `_SIFT_SCALE` | 0.5 | Downscale before SIFT (44s → ~4s overhead) |
-| `_REANCHOR_INTERVAL` | 30 | Drift check cadence (frames) |
+| `_SIFT_INTERVAL` | 300 | Run SIFT every N frames (raised from 180 for RunPod GPU saturation) |
+| `_SIFT_SCALE` | 0.35 | Downscale before SIFT (0.5→0.35: ~2x fewer keypoints, minimal quality loss) |
+| `_REANCHOR_INTERVAL` | 60 | Drift check cadence (frames, raised from 30: court stable) |
 | `_REANCHOR_ALIGN_MIN` | 0.35 | Minimum alignment score before force-reset |
 
 ### Honest Limitation
@@ -400,7 +400,8 @@ OCR backend: EasyOCR primary, PaddleOCR preferred when available.
 **Modules:** `src/features/feature_engineering.py`,
 `src/pipeline/tracking_feature_extractor.py`
 
-60+ features per player per frame, organized into families:
+29 distinct features per player per game (aggregated from per-frame tracking
+data, not one row per frame), organized into families:
 
 ### Spatial Features
 

@@ -1,15 +1,36 @@
-# React + Vite
+# Project Court Vision -- Intelligence Terminal
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + Vite frontend for CourtVision. A three-panel dashboard (AI Chat
+Console, Betting Models, Analytics) that talks to the FastAPI backend for
+NBA predictions and betting intelligence. See `index.html` for the app
+title/shell and `src/App.jsx` for the three tabs.
 
-Currently, two official plugins are available:
+- **AI Chat Console** (`AIChat` in `src/App.jsx`) -- chat query box wired to
+  `POST /chat` (`chatQuery` in `src/api.js`), plus a telemetry sidebar backed
+  by `getDashboardOverview()` (`GET /stitch/dashboard/overview`).
+- **Betting Models** (`BettingModels`) -- today's game cards from
+  `getTodayGames()` (`GET /predictions/today`).
+- **Analytics** (`AnalyticsDash`) -- CLV summary from `getCLVSummary()`
+  (`GET /analytics/clv-summary`).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+All three panels fall back to mocked/sample data in `src/App.jsx` when the
+backend is unreachable, so the UI stays usable in dev without the API
+running (see `SystemStatus` in `src/App.jsx` and the `safeFetch` fallback in
+`src/api.js`). Displayed edge/ROI/PnL figures on those fallback and demo
+views are illustrative UI sample data, not live results -- see
+`docs/JOB_EVIDENCE_PACKET.md` for what's actually verified.
 
-## React Compiler
+## Dev
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Standard Vite + React setup:
+
+```
+npm install
+npm run dev
+```
+
+Set `VITE_API_URL` to point at a non-default FastAPI backend (defaults to
+`http://localhost:8000`, see `API_BASE` in `src/api.js`).
 
 ## Expanding the ESLint configuration
 

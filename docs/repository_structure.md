@@ -33,7 +33,7 @@ nba-ai-system/
 │   │   └── utils/
 │   │       └── plot_tools.py
 │   │
-│   ├── data/                         # Data collection (24 modules)
+│   ├── data/                         # Data collection (45 modules)
 │   │   ├── bbref_scraper.py          # Basketball Reference (BPM, VORP, WS)
 │   │   ├── cache_utils.py            # TTL-aware file caching
 │   │   ├── contracts_scraper.py      # HoopsHype salary data
@@ -57,7 +57,7 @@ nba-ai-system/
 │   │   ├── shot_chart_scraper.py     # Shot chart data (221K shots)
 │   │   └── video_fetcher.py          # yt-dlp game clip downloader
 │   │
-│   ├── prediction/                   # ML model training + inference (8 modules)
+│   ├── prediction/                   # ML model training + inference (152+ modules)
 │   │   ├── clutch_efficiency.py      # Clutch efficiency composite
 │   │   ├── game_models.py            # 5 game-level models
 │   │   ├── game_prediction.py        # Pre-game prediction orchestrator
@@ -67,7 +67,7 @@ nba-ai-system/
 │   │   ├── win_probability.py        # Pre-game win probability (XGBoost)
 │   │   └── xfg_model.py              # Expected field goal (xFG v1)
 │   │
-│   ├── analytics/                    # Basketball analytics signals (20 modules)
+│   ├── analytics/                    # Basketball analytics signals (27 modules)
 │   │   ├── betting_edge.py           # CLV backtest + EV computation
 │   │   ├── defense_pressure.py       # Defensive pressure index
 │   │   ├── defensive_scheme.py       # Zone vs man detection
@@ -118,22 +118,22 @@ nba-ai-system/
 │   │           ├── inference.py
 │   │           └── train.py
 │   │
-│   ├── api/                          # FastAPI backend (Phase 13)
-│   │   ├── main.py
-│   │   ├── analytics_router.py
-│   │   └── models_router.py
-│   │
-│   ├── apps/dashboards/              # Dashboard UI (Phase 14)
-│   │   ├── app.py
-│   │   └── charts.py
-│   │
 │   └── utils/                        # Shared utilities
 │       ├── bbox_crop.py
 │       ├── frame.py
 │       └── visualize.py
 │
+├── api/                               # FastAPI backend (repo root, not src/api/) -- 31 files
+│   ├── main.py
+│   ├── live_v2_app.py
+│   ├── live_game_router.py
+│   ├── predictions_router.py
+│   ├── devig_router.py
+│   ├── analytics_router.py
+│   └── models_router.py
+│
 ├── data/                             # All data artifacts
-│   ├── models/                       # Trained model files (18 JSON/PKL)
+│   ├── models/                       # Trained model files (471 JSON/PKL)
 │   ├── nba/                          # NBA API cache (gamelogs, shots, PBP, etc.)
 │   ├── external/                     # BBRef, odds history, contracts
 │   └── games/                        # Per-game: video + tracking CSV outputs
@@ -148,8 +148,8 @@ nba-ai-system/
 │   └── schema.sql
 │
 ├── tests/                            # Test suite (pytest)
-│   ├── test_phase2.py                # 431 tracking tests
-│   └── test_phase3.py                # 21 ML model tests
+│   ├── test_phase2.py                # 84 tracking tests
+│   └── test_phase3.py                # 104 ML model tests
 │
 ├── docs/                             # Technical documentation
 │   ├── decisions.md                  # Architecture decisions

@@ -192,9 +192,12 @@ allowlisted around.
 ## Invariants
 
 - **Never pushes to public `origin`.** `scripts/platformkit/check_no_public_push.py`
-  is wired as a git pre-push hook and blocks pushes to `origin` while any
-  phase is open in `build_state.json`; all harness work is local commits
-  only.
+  is designed to run as a git pre-push hook and block pushes to `origin`
+  while any phase is open in `build_state.json`, but it is not yet installed
+  as `.git/hooks/pre-push` -- wiring it is a pending backlog item
+  (`.planning/platform/build_state.json`). Until installed, the guard is
+  enforced by the bot never pushing during open phases; all harness work is
+  local commits only.
 - **Never flips a flag ON.** Every new capability (`CV_CFG_*`, `CV_DOMAIN_*`)
   registers default-OFF; a task's `done_criteria` explicitly gates the
   ON-path behind its own recorded verdict.

@@ -37,7 +37,10 @@ Dev server (hot reload) when you want it:
 
 - `app/p6/` -- the main dashboard route (slate, CLV, ratchet, live lines,
   props panel, in-game, ops, self-improve panels).
-- `app/system/`, `app/records/`, `app/paper-trading/`, `app/bets/` -- dedicated views.
+- `app/system/`, `app/records/`, `app/paper-trading/`, `app/bets/`, `app/paper/`,
+  `app/live/`, `app/games/`, `app/progress/`, `app/risk/`, `app/today/`,
+  `app/models/`, `app/how-it-works/` -- dedicated views (13 top-level routes
+  total including `app/p6/`).
 - `components/p6/PropsPanel.tsx` -- player props (mlb + soccer_intl), reads
   `GET :8099/api/predict/props/{sport}` (route-collision fix + scraped-book
   bridge shipped 2026-07-02, commits 460fd0cb + 9bc820d4).

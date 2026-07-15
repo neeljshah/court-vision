@@ -1,11 +1,16 @@
 # Project Index -- Navigation Hub
 
-The product is a converged **4-sport (NBA / MLB / Soccer / Tennis) calibrated
-prediction platform**: one win-probability per sport anchors a coherent pregame
-surface plus an in-game repricer, behind one unified CLI. The selling point is
-RIGOR (leak-free / walk-forward / OOS discipline, with self-caught retractions),
-the measured IN-GAME conditioning edge, and honest CALIBRATION -- never a
-fabricated dollar edge.
+The product is a converged **calibrated prediction platform spanning 8 sport
+surfaces** (NBA / MLB / Soccer / Soccer-international / Tennis / WNBA / NPB /
+KBO, see `_SPORTS` in `scripts/platformkit/predict_matchup.py`) behind one
+unified CLI: one win-probability per sport anchors a coherent pregame surface
+plus an in-game repricer. The rigorously scoreboard-measured core is the
+original 4 (NBA / MLB / Soccer / Tennis) -- the other four are wired through
+the same predictor factory with narrower (moneyline-only) surfaces; see
+[SPORTS_COVERAGE.md](SPORTS_COVERAGE.md) for the per-sport coverage matrix.
+The selling point is RIGOR (leak-free / walk-forward / OOS discipline, with
+self-caught retractions), the measured IN-GAME conditioning edge, and honest
+CALIBRATION -- never a fabricated dollar edge.
 
 **Single honesty truth-source for every number:** [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md).
 Cite it; this repo does not restate retracted figures outside of it and
@@ -60,7 +65,7 @@ kernel rewrite.
 
 | Path | Contents |
 |------|----------|
-| `domains/<sport>/predictor.py` | Per-sport adapter: one calibrated win-prob anchors `predict()` / `to_jd()` (pregame) and `predict_live()` (in-game). Adapters for `basketball_nba`, `mlb`, `soccer`, `tennis`. |
+| `domains/<sport>/predictor.py` | Per-sport adapter: one calibrated win-prob anchors `predict()` / `to_jd()` (pregame) and `predict_live()` (in-game). Full `to_jd()` pregame+in-game adapters for `basketball_nba`, `mlb`, `soccer`, `soccer_intl`, `tennis`; moneyline-only adapters (no `to_jd()` yet) for `basketball_wnba`, `baseball_npb`, `baseball_kbo`. |
 | `scripts/platformkit/cohesive_read.py` (`cv-predict`) | The coherent pregame surface off the anchor: moneyline, totals, margin. |
 | `scripts/platformkit/live_read.py` (`cv-live`) | The in-game repricer: conditions the same prior on the realized state. |
 | `scripts/platformkit/predict_matchup.py` (`cv-matchup`) | The unified CLI: pregame surface + in-game reprice in one JSON read, `edge_claimed: false` baked in. |
@@ -98,7 +103,7 @@ The platform grew out of **CourtVision**, an NBA broadcast-video computer-vision
 pipeline. This is real, substantial engineering and the origin of the validation
 machinery -- but it is **lineage, not the headline**. The CV-derived features
 carry ~0 measured predictive value in production today (SHAP ~0); there is NO CV
-moat / edge claim. The product is the converged 4-sport predictor above. These
+moat / edge claim. The product is the converged predictor platform above. These
 docs document the CV pipeline as engineering evidence:
 
 | Document | Description |

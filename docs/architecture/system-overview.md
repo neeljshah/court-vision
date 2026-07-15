@@ -113,8 +113,9 @@ flowchart LR
 
 Four adapters are shipped today: `basketball_nba`, `mlb`, `soccer`, `tennis` (plus a census-only
 `soccer_intl`, and `wnba` / `baseball_kbo` / `baseball_npb` / `cross_sport_market` in varying
-stages of build-out -- see [../domains/README.md](../domains/README.md)). Adding a sport means
-writing the adapter; `kernel/` does not change.
+stages of build-out, plus `baseball_intl` (claims-only) and `nfl` (scaffold) -- see
+[../domains/README.md](../domains/README.md)). Adding a sport means writing the adapter; `kernel/`
+does not change.
 
 > **Honest status note.** Several `kernel/` subtrees named in the diagram above (`loop`,
 > `sim_framework`, `decision`) are today **reserved namespaces** -- the working logic still lives

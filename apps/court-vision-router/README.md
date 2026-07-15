@@ -80,9 +80,9 @@ Output: JSON to stdout + `example_output.json`. Includes per-venue books, per-ve
 
 ---
 
-## Status today (2026-04-24)
+## Status as of 2026-04-24 (historical snapshot)
 
-No live Lakers vs Suns game exists right now, so both venues return `"no active market found"` and routing status is `none`. That's the correct behavior — rerun on game day and you'll see books, slippage, and splits. The test suite exercises the execution engine against synthetic books so correctness doesn't depend on a live market.
+At last check, no live Lakers vs Suns game existed, so both venues returned `"no active market found"` and routing status was `none`. That's the correct behavior when no market is live — rerun on game day and you'll see books, slippage, and splits. Runtime status like this is time-dependent and not re-verified on every doc pass; the test suite exercises the execution engine against synthetic books so correctness doesn't depend on a live market.
 
 ---
 

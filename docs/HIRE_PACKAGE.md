@@ -18,8 +18,8 @@ never here): [docs/JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md). Open gaps:
 ## 1. What I built (lead with the engineering)
 
 A single solo-built git history spanning computer vision, ML, a serving platform, and an
-agentic build/validation loop -- ~3 intensive months, ~6,000 files, architected and directed
-by one person.
+agentic build/validation loop -- ~3 intensive months, 8,200+ tracked files, architected and
+directed by one person.
 
 ### Computer vision in production
 Broadcast NBA video -> court coordinates -> behavioral features, on a single consumer RTX 4060
@@ -48,7 +48,7 @@ documented, not hidden. CV is the engineering lineage, not a claimed predictive 
   behind a sport-blind kernel + per-sport adapters (adding a sport is an adapter, not a rewrite).
 
 ### Full-stack + data platform
-- **FastAPI** serving layer (~99 endpoints across 12 routers; REST + WebSocket + SSE).
+- **FastAPI** serving layer (~99 endpoints across 11 active routers; REST + WebSocket + SSE).
 - A fleet of long-running daemons with a watchdog/registry supervisor; production alerting with
   rate limiting, dead-letter queue, and per-channel circuit breakers.
 - Dual-backend persistence (PostgreSQL-first, transparent SQLite fallback) with idempotent

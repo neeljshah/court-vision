@@ -46,9 +46,9 @@ a guidance note to stderr and exits 1.
 
 ## Enabling (HUMAN-CONFIRM)
 
-A proposed registration lives at
-`docs/research/organization-sprint/PROPOSED-mcp.json`. A human reviews and merges it into the
-real `.mcp.json` (this skeleton does **not** create or edit the live `.mcp.json`).
+No proposed registration snippet exists yet. A human writes the entry (command +
+args pointing at `sports_predictor_server`) and merges it into the real `.mcp.json`
+(this skeleton does **not** create or edit the live `.mcp.json`).
 
 ## Invariants
 

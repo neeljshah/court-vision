@@ -34,7 +34,7 @@ The pipeline now has three tiers of memory defense:
 2. **Emergency cleanup** (RSS > 25GB): flush ALL buffers, force gc.collect + malloc_trim.
 3. **Hard abort** (RSS > RSS_KILL_GB, default 40GB): flush remaining data, break out of processing loop. Partial game data is preserved.
 
-External watchdog (`scripts/worker_memory_watchdog.sh`) kills workers exceeding 50GB RSS.
+External watchdog (`scripts/worker_memory_watchdog.sh`) kills workers exceeding 150GB RSS (`THRESHOLD_GB`, default 150) -- set high because peak RSS transiently reaches 50-70GB before GC/malloc_trim brings it back down; only truly runaway workers (e.g. the 112GB pathological case below) get killed.
 
 ## Estimated Performance
 

@@ -227,8 +227,10 @@ with a `leak_class`:
 ### Captured market price-history -- `data/cache/`
 
 - **Pregame line history** -- `line_history/<sport>/<date>.jsonl`: per-tick decimal
-  odds, Shin-devigged fair prob, `captured_at`, `commence_time`, and an
-  `is_true_close` flag for ticks inside the lock window before tip.
+  odds, Shin-devigged fair prob, `captured_at`, `commence_time`, book/side/market
+  fields. The file never stamps a true-vs-proxy close flag; `line_store.
+  get_close()` computes `is_true_close` downstream from timing relative to the
+  lock window.
 - **In-play tick history** -- `inplay_history/<sport>/<date>.jsonl`: flat YES-prob
   ticks `{sport, game_id, venue, market_type, side, ticker, prob, ts, phase}`
   captured every few seconds while a game is live; `_freshness.json` sidecar per

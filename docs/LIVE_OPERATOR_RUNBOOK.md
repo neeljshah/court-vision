@@ -49,10 +49,11 @@ python scripts/place_bet.py --strategy pregame --game GAME_ID --player PLAYER_ID
 ## During games
 
 ```bash
-# 1. In-play snapshot daemon (5-min cadence, fires alerts on +EV moves)
-nohup python scripts/live_inplay_daemon.py --interval-min 5 --trigger-alerts &
+# 1. Live Engine v2 orchestrator (event-driven, sub-30s reactive re-projection --
+#    replaces the old 5-min-cadence live_inplay_daemon.py; see LIVE_ENGINE_V2.md)
+python scripts/live_orchestrator.py --game-id GAME_ID --enable-dashboard
 
-# 2. Watch the live console dashboard
+# 2. (alt) Watch the live console dashboard standalone
 python scripts/live_dashboard.py
 
 # 3. Halftime bet window (~end of Q2)
@@ -130,7 +131,9 @@ python scripts/clv_report.py --range 7d --by stat
   - Wired in `src/notifications/webhook_alerts.py`
 - Logs:
   - `tail -f data/live_daemon.log` — in-play poll loop
-  - `tail -f data/lines/*.log` — line-scraper output
+  - Line-scraper output: `fetch_live_prop_lines.py` logs to stdout only (no
+    log file) -- redirect it yourself, e.g. `... >> vault/Improvements/live_prop_scraper.log 2>&1`;
+    its data output lands in `data/lines/<date>_<book>.csv`
 
 ---
 

@@ -13,6 +13,8 @@ Features:
   [x] NBA predictions
   [ ] Bulk slate download
   [ ] CLV report export (CSV/JSON)
+  [ ] live_edges
+  [ ] paper_place
   [ ] MLB predictions
   [ ] Soccer predictions
   [ ] Tennis predictions
@@ -31,6 +33,8 @@ Features:
   [x] NBA predictions
   [x] Bulk slate download
   [x] CLV report export (CSV/JSON)
+  [x] live_edges
+  [x] paper_place
   [x] MLB predictions
   [x] Soccer predictions
   [x] Tennis predictions
@@ -49,6 +53,8 @@ Features:
   [x] NBA predictions
   [x] Bulk slate download
   [x] CLV report export (CSV/JSON)
+  [x] live_edges
+  [x] paper_place
   [x] MLB predictions
   [x] Soccer predictions
   [x] Tennis predictions

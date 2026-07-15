@@ -8,8 +8,7 @@
 
 ## Tests
 
-- [ ] Unit tests pass (`python -m pytest tests/ -q`)
-- [ ] Ruff passes (`ruff check .`)
+- [ ] Per-file unit tests pass (`python -m pytest tests/path/to/test_file.py -q`) -- never run the full suite, it freezes the box
 - [ ] No new CV code without a tracking-output quality diff
 
 ## Model / metric impact

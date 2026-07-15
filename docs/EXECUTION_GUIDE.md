@@ -1,9 +1,9 @@
 # NBA AI System — 20 Perfect Games Execution Guide
 
 ## Current State
-- **30 complete games** (all 4 processing stages done)
-- **14 partial games** (missing shot_log.csv)
-- **Total 48 games** in data/games/
+- **8 complete games** (all 4 processing stages done)
+- **16 partial games** (missing shot_log.csv)
+- **Total 24 games** in data/games/
 
 ## What We're Doing
 Reprocessing all games with the **latest tracking pipeline** which includes:
@@ -24,9 +24,9 @@ python scripts/batch_validate_games.py --summary
 
 Expected output:
 ```
-Total games: 48
-Complete & OK: ~26 (will improve after reprocessing)
-Games with issues: 48 (missing player_name, etc)
+Total games: 24
+Complete & OK: ~8 (will improve after reprocessing)
+Games with issues: 24 (missing player_name, etc)
 Total rows processed: 397,283
 ```
 
@@ -43,7 +43,7 @@ Output shows:
 
 ## Phase 3: Full Reprocessing (1-2 hours)
 ```bash
-# Process all 30 complete games (runs headless, no GUI)
+# Process all 8 complete games (runs headless, no GUI)
 python scripts/batch_reprocess_games.py --frames 18000
 
 # This will:
@@ -115,7 +115,7 @@ After reprocessing, you should have:
 
 ### Performance
 - **Per-game time**: 3-4 minutes on RTX 4060 (18K frames)
-- **Total time**: ~30 games × 3 min = 90 minutes
+- **Total time**: ~8 games × 3 min = 24 minutes
 - **Memory**: Runs 1 game at a time (safe for 8GB+)
 - **Storage**: ~1-2 GB per game (cleanup old intermediates if needed)
 
@@ -171,7 +171,7 @@ cat vault/Sessions/Reprocessing_*.md
 |-------|------|--------|
 | 1 | 5 min | Validate current state |
 | 2 | 2 min | Preview with dry-run |
-| 3 | ~90 min | Reprocess all 30 games |
+| 3 | ~24 min | Reprocess all 8 games |
 | 4 | 5 min | Post-processing validation |
 | 5 | 10 min | Audit sample games |
 | **Total** | **~2 hours** | Get 20+ perfect games |

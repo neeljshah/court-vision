@@ -1,6 +1,6 @@
 # The Always-On Daemon Fleet
 
-This is the process layer nobody sees in a demo: ~40 long-lived Python loops
+This is the process layer nobody sees in a demo: 45 long-lived Python loops
 that boot alongside the FastAPI/Next.js stack and keep capturing lines,
 repricing live games, settling paper bets, and re-gating candidate signals
 with zero chat session attached. None of it claims a dollar edge -- every
@@ -10,7 +10,7 @@ doc catalogs what actually runs, how the supervisor decides a daemon is
 alive vs. merely running, and the liveness machinery that grew out of three
 real production incidents.
 
-Source: `supervisor/stack_specs.py` (the 41-`ProcSpec` inventory),
+Source: `supervisor/stack_specs.py` (the 45-`ProcSpec` inventory),
 `supervisor/manifest.py` (the DAG + readiness types), `supervisor/_restart.py`
 + `supervisor/_beat_thread.py` (spawn/backoff/heartbeat internals),
 `scripts/platformkit/autonomy/heartbeat_reaper.py`,
@@ -67,7 +67,7 @@ not a one-off patch.
 
 `Supervisor.run_forever()` used to stamp its own liveness heartbeat once per
 tick, serially *after* `supervise()` returned. `supervise()` probes every
-`ProcSpec` (41 as of this writing); each TCP/HTTP probe has its own 2.0s
+`ProcSpec` (45 as of this writing); each TCP/HTTP probe has its own 2.0s
 timeout (`supervisor/health.py`). Under fleet load, several probes stacking
 serially in the same tick could push one `supervise()` pass close to or past
 the watchdog's staleness threshold -- the watchdog then declared the
@@ -161,7 +161,7 @@ decision paths; it only spaces out HTTP calls).
 
 ---
 
-## The daemon catalog (`supervisor/stack_specs.py`, m1-m38)
+## The daemon catalog (`supervisor/stack_specs.py`, m1-m41)
 
 Every row is a real `ProcSpec`. "Cadence" is the daemon's own declared tick
 (from its `argv --interval` or runner docstring); "fresh" is the
@@ -214,9 +214,12 @@ by a sentinel instead (see next section). Heartbeats live at
 | `m36_ingame_grading_multi` | `ingame.ingame_grading_multi_runner --interval 900` | 900s | heartbeat, fresh 2000s | soccer_intl/tennis/wnba counterpart to m25+m26 (**not yet running**) | `ingame_outcome_verdict_multi.json`, `ingame_segment_trust_multi.json` |
 | `m37_ingame_enrichment` | `ingame.ingame_enrichment_runner --interval 30` | 30s | heartbeat, fresh 90s | Combined fotmob + GUMBO + book-depth capture tick (**not yet running**) | `data/frontend/ops/ingame_enrichment.json` |
 | `m38_autoloop` | `autoloop.autoloop_runner --interval 86400` | daily | heartbeat, fresh 190000s | Zero-LLM composed ratchet/reclaim-gate/claims-factory cycle (**not yet running**) | `data/frontend/ops/autoloop_report.json`, `autoloop_human_queue.jsonl` |
+| `m39_injury_facts_nba` | `edge_engine.injury_daemon --interval 21600` | 6h | heartbeat, fresh 45000s | NBA/WNBA injury-facts snapshotter, the NBA sibling of m31's MLB context snapshot (**not yet running**) | `data/cache/daemon_heartbeats/m39_injury_facts_nba.txt` |
+| `m40_wedge_restarter` | `ops_sentinel.wedge_restarter --interval 300` | 300s | heartbeat, fresh 660s | Turns a persistent output-freshness RED into a rate-limited restart request the supervisor honors (**not yet running**) | `data/cache/daemon_heartbeats/m40_wedge_restarter.txt` |
+| `m41_public_splits` | `data_frontier.an_public_splits --interval 86400` | daily | heartbeat, fresh 190000s | Action Network public-splits daily capture (**not yet running**) | `data/cache/daemon_heartbeats/m41_public_splits.txt` |
 
 A handful of daemons ("`independent branch`" in the source comments, mostly
-m19-m38) declare `depends_on=[]` on purpose: one dead feed is one red status
+m19-m41) declare `depends_on=[]` on purpose: one dead feed is one red status
 row and the rest of the fleet keeps running. The `readiness=none` group
 (m19-m27) trades a HEARTBEAT window for a daily-batch shape where a fixed
 freshness window would just flicker -- but that shape has its own blind spot,
@@ -225,12 +228,16 @@ covered next.
 ### The older watchdog layer
 
 Before `supervisor/`, a simpler pattern covered scraper/paper-trading
-daemons: `scripts/daemon_registry.json` (17 entries -- `vault_dashboard_daemon`,
+daemons: `scripts/daemon_registry.json` (28 entries -- `vault_dashboard_daemon`,
 `clv_tracker_daemon`, `middle_finder_daemon`, `line_move_detector`,
 `arb_emitter_daemon`, `nba_lineup_daemon`, `bankroll_monitor_daemon`,
-`auto_settle_daemon`, `auto_place_daemon`, `unified_scraper_orchestrator`,
-`live_bet_ranker`, `inplay_bet_ranker`, `fd_scraper`, `bov_scraper`,
-`pinnacle_scraper`, `dk_inplay_scraper`, `fd_inplay_scraper`) each carrying a
+`auto_settle_daemon`, `unified_scraper_orchestrator`, `fd_scraper`,
+`bov_scraper`, `pinnacle_scraper`, `dk_inplay_scraper`, `fd_inplay_scraper`,
+`predict_service_api`, `predict_service_scheduler`, `line_snapshot_daemon`,
+`ingame_live_loop`, `m2_inplay`, `m2_inplay_capture`, `m4_selfimprove`,
+`m7_ingame_refresh`, `m10_best_bets_compute`, `m11_ingame_pred_tick`,
+`m12_pm_paper_tick`, `cross_venue_arb`, `m13_props_pred_tick`,
+`wnba_injuries_daily`) each carrying a
 launch command, a heartbeat path, a `ps`-matched `process_match` string, and
 a `restart_cmd` already wrapped in `nohup`/`tmux`. `scripts/daemon_watchdog.py`
 sweeps this registry independently of the supervisor: a daemon is dead if its

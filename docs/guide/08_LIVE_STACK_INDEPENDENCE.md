@@ -1,6 +1,6 @@
 # 08 -- The Live, Independent Stack
 
-> **Summary:** The stack runs unattended. One command (`boot.ps1`) starts 17
+> **Summary:** The stack runs unattended. One command (`boot.ps1`) starts 45
 > supervised processes in dependency order, gates each one on a readiness probe
 > before unblocking its dependents, then auto-restarts any process that dies or
 > whose heartbeat goes stale -- with capped exponential backoff and a per-daemon
@@ -50,7 +50,7 @@ was supplied, in which case the whole boot aborts. Real money is default-DENY re
 The supervisor (`supervisor/supervisor.py`, class `Supervisor`) owns the lifecycle
 of every child process. It does four things:
 
-**Dependency-ordered boot.** The 17 process specs in `supervisor/manifest.py` form a
+**Dependency-ordered boot.** The 45 process specs in `supervisor/stack_specs.py` form a
 DAG: each spec declares `depends_on` edges. At boot the supervisor sorts that DAG
 topologically (Kahn's algorithm) and launches processes in that order. A process does
 not launch until every process it depends on has passed its readiness probe.
@@ -92,10 +92,16 @@ preventing torn state.
 
 ---
 
-## 4. The 17 supervised processes
+## 4. The supervised processes (17 of 45 documented in detail here)
 
 The manifest (`supervisor/stack_specs.py`, read by `supervisor/manifest.py`) declares
-exactly 17 `ProcSpec` entries. Here they are in boot order, grouped by their role:
+45 `ProcSpec` entries (`m1_producer` through `m41_public_splits`). The 17 below --
+the serving spine plus the earliest independent daemons -- are documented in
+detail. The remaining 28 (`m1_bankroll`, `m14_brain_rebuild` through
+`m27_ingame_paper_settle`, and `m29_output_freshness` through
+`m41_public_splits`) are additional independent daemons registered in the same
+manifest; see `supervisor/stack_specs.py` for their specs and inline rail
+comments.
 
 ### 4a. The serving spine (boots first; dependents wait on these)
 
@@ -112,7 +118,7 @@ m1_producer -> m1_api_paper -> m1_api_boards -> m1_ui
 | `m1_ui` | `npm run dev` (in `court-visions/`) | 3000 | TCP connect | The Next.js live dashboard. Skipped in `-NoUI` mode. |
 | `m1_paper` | `pm_trading.auto_loop --forever` | -- | heartbeat | The self-improving paper loop. One honest cycle: paper-trade today's real games -> grade finished games via CLV -> recalibrate (gated by eval-gate) -> line snapshot. Cadence ~20 min. Beats `data/cache/daemon_heartbeats/m1_paper.txt`; a stale beat reads NOT-READY. |
 
-### 4b. Independent branches (no `depends_on`; failure is one red entry, not a cascade)
+### 4b. Independent branches (no `depends_on`; failure is one red entry, not a cascade) -- 12 of 40 total documented here
 
 | Name | Module | Cadence | Heartbeat file | What it does |
 |---|---|---|---|---|
@@ -142,7 +148,9 @@ m1_producer -> m1_api_paper -> m1_api_boards -> m1_ui
                 |
              m1_ui
 
-Independent (no depends_on -- dead = one red entry, not a cascade):
+Independent (no depends_on -- dead = one red entry, not a cascade); 12 of 40
+documented in section 4b, plus 28 more (m1_bankroll, m14_brain_rebuild through
+m27_ingame_paper_settle, m29_output_freshness through m41_public_splits):
   m1_line_daemon
   m6_ingame_loop
   m2_inplay
@@ -155,10 +163,14 @@ Independent (no depends_on -- dead = one red entry, not a cascade):
   m11_ingame_pred_tick
   m12_pm_paper_tick
   m13_props_pred_tick
+  ... (28 more -- see supervisor/stack_specs.py)
 ```
 
-The 12 independent branches are intentionally isolated so that a broken odds
-feed or a self-improve checkpoint corruption does not cascade into the serving spine.
+All 45 processes split into a 5-process serving spine (`m1_producer` ->
+`m1_api_paper` -> `m1_api_boards` -> `m1_ui`, with `m1_paper` also depending on
+`m1_api_paper`) and 40 independent branches. The independent branches are
+intentionally isolated so that a broken odds feed or a self-improve checkpoint
+corruption does not cascade into the serving spine.
 
 ---
 
@@ -220,7 +232,7 @@ docstring as a binding contract rather than a comment:
 |---|---|
 | `boot.ps1` | Single-command boot; governance preflight; dependency-ordered start comments |
 | `supervisor/manifest.py` | `ProcSpec`, `RestartPolicy`, `ReadinessSpec` dataclasses; topological sort (`topo_order`); `manifest()` selector |
-| `supervisor/stack_specs.py` | The 17-entry process inventory (`base_specs()`); heartbeat paths; per-proc readiness windows |
+| `supervisor/stack_specs.py` | The 45-entry process inventory (`base_specs()`); heartbeat paths; per-proc readiness windows |
 | `supervisor/supervisor.py` | `Supervisor` class: `boot()`, `supervise()`, `drain()`, `run_forever()`; `HeartbeatReaper` integration |
 | `supervisor/health.py` | Readiness probe implementations (TCP, HTTP 200, heartbeat-fresh) |
 | `scripts/daemon_registry.json` | 28-daemon registry for the standalone watchdog; restart commands for both Windows and POSIX |

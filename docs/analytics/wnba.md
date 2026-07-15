@@ -13,7 +13,7 @@ sport-specific detail only.
 | CDN checkpoint states (legacy) | `data/domains/wnba/cdn_backfill_states.parquet` (+168 raw game dirs) | 504 | 3 checkpoints/game |
 | Scoreboard/linescores | `data/domains/wnba/{espn_scoreboard,linescores}.parquet` | 776 | 2024-05..2026-07 |
 | Context (injuries/referee/schedule/attendance) | `data/domains/wnba/{injuries,referee_crew_foul_rate,schedule_density,arena_attendance_context}.parquet` | 35-1,540 | current |
-| Compiled profiles | `data/cache/profiles/wnba_{player,lineup}_profiles.parquet` | 1,381 / 1,246 | rolling |
+| Compiled profiles | `data/cache/profiles/wnba_{player,lineup}_profiles.parquet` | 3,476 / 1,246 | rolling |
 | Market | `data/cache/{line,inplay,depth}_history/wnba/` | 20k+ lines / 200k+ ticks / 4 depth-days | 2026-07 through 07-08 |
 
 Biggest known development: player boxscores and full play-by-play landed
@@ -24,17 +24,23 @@ the lineup source. `lineup_exposure_descriptors` (built on the old
 checkpoint-string recipe) has not yet been re-derived from the new
 stint-level `lineup_key`. No closed classes for WNBA yet.
 
-## Attribute catalog (11 attributes, `domains/basketball_wnba/profiles/attribute_registry.py`)
+## Attribute catalog (31 attributes: 28 player + 3 lineup, `domains/basketball_wnba/profiles/attribute_registry.py`)
 
-Player (8): `on_court_impact` (team net rating on-court, **VALIDATED_CLAIM**),
-`gravity` (teammate eFG lift on vs off, **VALIDATED_CLAIM**),
-`scoring_per36` / `reb_per36` / `ast_per36` / `efg` / `usage_proxy_per36`
-(box-derived rates, all **VALIDATED_CLAIM** -- independently re-verified by
-`wnba_player_form_claims.jsonl` via a genuinely different recompute path),
-`recent_form` (last-10-games minus full-season pts/36, DESCRIPTIVE -- a
-window *delta* is not expressible in the shared claims grammar's
-single-window aggregate, so it stays DESCRIPTIVE regardless of the other
-claim families).
+Player (28): the original 8 -- `on_court_impact` (team net rating on-court,
+**VALIDATED_CLAIM**), `gravity` (teammate eFG lift on vs off,
+**VALIDATED_CLAIM**), `scoring_per36` / `reb_per36` / `ast_per36` / `efg` /
+`usage_proxy_per36` (box-derived rates, all **VALIDATED_CLAIM** --
+independently re-verified by `wnba_player_form_claims.jsonl` via a genuinely
+different recompute path), `recent_form` (last-10-games minus full-season
+pts/36, DESCRIPTIVE -- a window *delta* is not expressible in the shared
+claims grammar's single-window aggregate, so it stays DESCRIPTIVE regardless
+of the other claim families) -- plus 20 added in the attribute expansion:
+zone shooting (10, DESCRIPTIVE: rim/paint/mid/corner3/above-break-3 share and
+eFG%), `assisted_share` (1, DESCRIPTIVE), defensive on/off zone-allowed
+deltas (4, DESCRIPTIVE: rim share/eFG allowed and three share/eFG allowed,
+on-court minus off-court), and last-10 variants (5, DESCRIPTIVE:
+`scoring_per36_last10` / `reb_per36_last10` / `ast_per36_last10` /
+`efg_last10` / `usage_proxy_per36_last10`).
 
 Lineup (3): `spacing` (mean pairwise shot distance, **VALIDATED_CLAIM**),
 `matchup_net` (net pts/48 vs overlapping lineups, melted from both matchup
@@ -80,7 +86,7 @@ Status:     VALIDATED_CLAIM -- claims re-verified against source data
 
 - `python -m scripts.platformkit.profiles.ask "Sabrina Ionescu usage proxy per36" --sport wnba`
 - `python -m scripts.platformkit.profiles.ask "Jonquel Jones on court impact" --sport wnba`
-- `python -m scripts.platformkit.profiles.ask --list --sport wnba` (all 11 attributes)
+- `python -m scripts.platformkit.profiles.ask --list --sport wnba` (all 31 attributes)
 
 ## What would make this deeper
 

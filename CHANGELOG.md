@@ -39,9 +39,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
-### Changed
+### Shipped
+- **Proof Room snapshot exporter** (`scripts/platformkit/showcase/`, commit `f390b5a1`): 8 receipt-backed rooms driven off a `SPEC.md` contract, fail-closed honesty lint. Bundle verified 11/11 lint-clean on real data (45/45 fleet, 29.2M odds ticks, 21,201 cards, 102,847 fact claims with a 715-sample/689-verified split; in-game hero cites `docs/JOB_EVIDENCE_PACKET.md` numbers, not new ones).
+- **Claims engine scale-up + bulk validation** (commit `8fe05b26`): scaled to 21k pre-registered cards with autonomous bulk validation, building on the P5 consumer (shadow-route/trust-seg/proven-line) + P6 report layer.
+- **Reserved-corpus independence discipline** (commit `cdf7aa4d`): discovery now excludes a reserve slice so replication is independent by construction, not by convention.
+- **Entry-timing execution study** (commits `089e571f`, `8868f609`): timing_policy artifact + Q1 entry-timing verdict — a mix of the middle two hypotheses, not the naive one. Execution-mechanics finding, not a pricing edge.
 - **Public docs reframed around the funnel** (DATA→SIGNALS→MODELS→ENGINES→PREDICTIONS→INTELLIGENCE) and reconciled to the leak-free audited numbers; retracted +18.38%/endQ3-0.119/+54%-as-edge headlines corrected across README, ARCHITECTURE, START_HERE, AGENTS, VISION, PREDICTIONS_QUICKSTART, PLAYER_INTELLIGENCE, CEILING, PUBLIC_EVIDENCE, CLAUDE.
 - **Gitignore hardened** to robustly exclude the data/ moat (intelligence layer, registry, all parquets) — `data/intelligence/` was documented as ignored but never actually was.
+
+### Validated (honest discipline)
+- The claims/showcase layer is a receipt/proof-room build, not a new edge claim: all figures cited above trace to `docs/JOB_EVIDENCE_PACKET.md` or the fail-closed lint that gates the snapshot exporter.
 
 ## [0.17.0] - 2026-05-27 — In-play backtest + filter calibration + shadow logger
 
@@ -218,7 +225,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 [0.13.5]: https://github.com/neeljshah/court-vision/releases/tag/v0.13.5
 
 ---
-*Last verified: 2026-05-25*
+*Last verified: 2026-07-15*
 
 
 ---

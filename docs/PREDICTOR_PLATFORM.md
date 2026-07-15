@@ -141,8 +141,9 @@ One sport-blind kernel + per-sport adapters. Adding a sport is an adapter, not a
 - **`scripts/platformkit/predict_matchup.py`** (`cv-matchup`) - the unified CLI a buyer runs:
   one matchup -> pregame surface + in-game reprice in a single JSON read, with an explicit
   `"edge_claimed": false` and honest framing baked into every response.
-- **~25 leak-free / OOS proof modules** under `scripts/platformkit/proof_*` (`proof_nba`,
-  `proof_mlb`, `proof_soccer`, `proof_tennis`, plus shared `proof_common`) reproduce every
+- **62 leak-free / OOS proof modules** under `scripts/platformkit/proof_*` (`proof_nba`,
+  `proof_mlb`, `proof_soccer`, `proof_tennis`, `proof_basketball_nba`, `proof_harness`, plus
+  shared `proof_common`) reproduce every
   scorecard number: beat-the-close, in-game accuracy, as-of/leak-free gate tests, fusion, and
   calibration. The two roll-up scoreboards (`beat_the_close_scoreboard.py`,
   `ingame_scoreboard.py`) regenerate the tables in sections 3-4 from committed fixtures.

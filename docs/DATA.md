@@ -115,7 +115,7 @@ is built from 2,214 raw per-game tracking files across three seasons via
 
 | Dataset | Output | Coverage |
 |---|---|---|
-| Advanced stats (VORP, WS/48, BPM, TS%) | `bbref_advanced_{season}.json` | 736 players × 3 seasons |
+| Advanced stats (VORP, WS/48, BPM, TS%) | `bbref_advanced_{season}.json` | 736 players × 4 seasons (2022-23 to 2024-25 complete, 2025-26 partial in-progress) |
 | Player contracts / walk-year flag | `contracts_2024-25.json` | 523 players (171 walk-year) |
 
 ### Contextual and Market Sources

@@ -111,7 +111,7 @@ machinery runs end-to-end and produces an honest verdict table.
 python -m scripts.platformkit.beat_the_close_scoreboard --corpus tests/fixtures/proof
 ```
 
-REAL output (fixture/demo slice; runs in ~2s):
+REAL output (fixture/demo slice; runs in ~15s):
 
 ```
 | Sport | Market | Metric | n | Our model | Close | Gap | Verdict | Why |
@@ -136,7 +136,7 @@ model.
 python -m scripts.platformkit.ingame_scoreboard --corpus tests/fixtures/proof
 ```
 
-REAL output (fixture/demo slice; runs in ~5s):
+REAL output (fixture/demo slice; runs in ~11s):
 
 ```
 | Sport | Checkpoint | n | Metric | Conditional | Static | Delta | Verdict | Why |

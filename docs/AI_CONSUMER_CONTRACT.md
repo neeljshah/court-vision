@@ -44,7 +44,7 @@ drops a field.
 `resolver_registry.RESOLVERS` is the registry: one resolver per question
 category (`player_stat`, `rating_attribute`, `concept_rating`,
 `prediction_winprob`, `calibration_number`, `historical_result`,
-`mechanism_effect`, `edge_language`), each with its declared source artifact,
+`mechanism_effect`, `edge_language`, `ranking`), each with its declared source artifact,
 computation rule, and units. `resolver_registry.classify(query)` picks the category;
 `resolver_registry.resolve(query, sport)` returns the envelope described
 above. Per-sport claim-category rules (what may/may not be said about a
@@ -84,6 +84,7 @@ validator wrote them, plus `source_artifact` and `as_of`.
 `scripts/platformkit/answers/contract_client.py` IS this contract, executable
 -- it classifies, resolves, and formats per rules 2-4 above with no model
 call. A real LLM client should reproduce its behavior, not deviate from it.
-`scripts/platformkit/answers/test_answer_consistency_{nba,mlb}.py` proves the
-two paths (direct resolver call vs. this contract client) produce identical
-numbers for the same question.
+`scripts/platformkit/answers/test_answer_consistency_{nba,mlb,soccer,tennis}.py`
+prove the two paths (direct resolver call vs. this contract client) produce
+identical numbers for the same question; the sibling `test_answer_quality_*.py`
+files (nba, mlb, soccer, tennis, wnba) cover answer-quality checks per sport.

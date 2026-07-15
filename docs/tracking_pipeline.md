@@ -146,7 +146,7 @@ Each possession row in `possessions.csv`:
 
 `src/data/nba_enricher.py` runs after tracking:
 
-1. Fetch play-by-play for the game (`nba_api.stats.endpoints.PlayByPlayV2`)
+1. Fetch play-by-play for the game (`nba_api.stats.endpoints.playbyplayv3.PlayByPlayV3`)
 2. Time-align tracking timestamps to game clock
 3. For each shot in `shot_log.csv`: find matching play-by-play event → label `made` (True/False)
 4. For each possession in `possessions.csv`: find result (scored/turnover/foul) + score_diff at end
@@ -198,12 +198,12 @@ Cache: raw API responses saved to `data/nba/` — not re-fetched on subsequent r
 | `MAX_LOST` | 90 frames | Frames before track moved to gallery |
 | `GALLERY_TTL` | 300 frames | Frames before gallery entry expires |
 | `REID_THRESHOLD` | 0.45 | HSV histogram distance for re-ID match |
-| `_H_MIN_INLIERS` | 8 | Minimum SIFT inliers to accept new homography |
+| `_H_MIN_INLIERS` | 5 | Minimum SIFT inliers to accept new homography |
 | `_H_RESET_INLIERS` | 40 | SIFT inliers threshold for hard EMA reset |
-| `_REANCHOR_INTERVAL` | 30 | Frames between court-line drift checks |
+| `_REANCHOR_INTERVAL` | 60 | Frames between court-line drift checks |
 | `_REANCHOR_ALIGN_MIN` | 0.35 | Minimum white-pixel alignment before forcing reset |
-| `EMA_ALPHA` | 0.35 | Homography smoothing factor |
-| Kalman Q | 1e-2 | Process noise (position uncertainty) |
+| `_H_EMA_ALPHA` | 0.15 | Homography smoothing factor |
+| Kalman Q | 5e-2 | Process noise (position uncertainty) |
 | Kalman R | 0.1 | Measurement noise |
 
 ---
@@ -214,7 +214,7 @@ Cache: raw API responses saved to `data/nba/` — not re-fetched on subsequent r
 |---|---|---|
 | Homography | replay/graphic overlay or close panorama corrupts M | every court coord wrong; 2-frame confirm gate + EMA blend + drift re-anchor + last-valid fallback |
 | Ball | `ball_valid_pct = 0%` (`ball_track_suspended` stuck True, ~8% of games) | events fall back to last-known possessor coords; below 80% valid -> API-only features |
-| Tracking | ghost slots near stars; 10-slot ceiling | only ~5-6 stable slots; phantom eviction at `FREEZE_AGE=20`, speed/jump caps |
+| Tracking | ghost slots near stars; 10-slot ceiling | only ~5-6 stable slots; phantom eviction via `MAX_LOST=90`, speed/jump caps |
 | Identity | jersey-OCR noise wall (occlusion/rotation/overlay) | ~4% per-player attribution; aggregate team/position features ship-ready, per-player not |
 | Scoreboard | per-quarter `scoreboard_period` NaN / percentile-filled | per-quarter signals defeated; last-known caching on skipped frames |
 
