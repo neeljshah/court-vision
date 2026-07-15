@@ -40,6 +40,7 @@ from __future__ import annotations
 import argparse
 import json
 import statistics
+import time as _time
 from collections import defaultdict
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple
@@ -158,11 +159,29 @@ def _existing_sidecar_bet_ids(path: Path) -> set:
 
 
 def backfill(ledger_path: Optional[Path] = None, sports: Sequence[str] = DENSE_SPORTS,
-             write: bool = False, sidecar_path: Path = SIDECAR) -> Dict[str, Any]:
+             write: bool = False, sidecar_path: Path = SIDECAR,
+             min_age_s: float = 0.0, now_epoch: Optional[float] = None) -> Dict[str, Any]:
     """Grade every paper_ingame ledger bet in *sports*; optionally append to the sidecar
-    (additive, one line per bet_id -- re-running with write=True never duplicates)."""
+    (additive, one line per bet_id -- re-running with write=True never duplicates).
+
+    min_age_s: skip bets placed less than this many seconds ago (relative to
+    now_epoch, default time.time()). A bet graded before its longest horizon
+    (HORIZONS_S[-1] + SLACK_S) could have ticked would permanently lock in a
+    sidecar row missing that horizon -- write=True dedups by bet_id forever, so
+    there is no second chance. A caller grading on a tight cadence (e.g. a
+    supervised daemon) should pass min_age_s so each bet is graded exactly once,
+    after every horizon had a chance to land. Default 0.0 preserves prior
+    behavior (no filtering)."""
+    now = now_epoch if now_epoch is not None else _time.time()
     bets = [r for r in _dedup_by_bet_id(load_ledger(ledger_path)).values()
             if r.get("channel") == "paper_ingame" and r.get("sport") in sports]
+    if min_age_s > 0:
+        aged: List[Dict[str, Any]] = []
+        for r in bets:
+            ts = _epoch(r.get("ts"))
+            if ts is not None and now - ts >= min_age_s:
+                aged.append(r)
+        bets = aged
     by_sport: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
     for r in bets:
         by_sport[r["sport"]].append(r)

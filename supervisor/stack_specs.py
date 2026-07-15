@@ -165,6 +165,21 @@ _INJURY_FACTS_HB = "data/cache/daemon_heartbeats/m39_injury_facts_nba.txt"
 # (mirrors m29, the source it reads); fresh_sec=660 (>2x + margin). NO $ field, NO
 # flag flip, NO data/registry/ write, NO restart authority of its own.
 _WEDGE_RESTARTER_HB = "data/cache/daemon_heartbeats/m40_wedge_restarter.txt"
+# M42 -- the EXECUTION-QUALITY tick: closes the last manual-only hop in the
+# execution-quality loop (measured CLV -> breaker states -> digest -> webapp).
+# Every 120s it (a) runs ingame_realized_clv.backfill(write=True) ONE-SHOT per
+# bet (min-age filtered so a bet is graded only once its longest horizon could
+# have ticked -- grading earlier would permanently lock an incomplete sidecar
+# row) and (b) rebuilds paper_today.build_today() -> data/frontend/
+# paper_today.json so the per-market circuit-breaker states + execution block
+# the webapp reads stay fresh between m1_bankroll's own ~600s writes.
+# MEASUREMENT ONLY -- no bet/decision path touched, no flag flip, no
+# data/registry/ write, no $ field, no edge claim. Independent branch (no
+# depends_on) so a dead tick is itself ONE red status entry. NOT YET RUNNING --
+# registered here but requires a supervisor restart to take effect. fresh_sec
+# = 2.5x the 120s cadence + margin.
+_EXEC_QUALITY_HB = "data/cache/daemon_heartbeats/m42_exec_quality.txt"
+
 # M41 -- Action Network public-betting-splits DAILY capture (frontier queue rank 3).
 # In-season reprobe 2026-07-09 confirmed /web/v2/scoreboard/mlb bet_info
 # tickets/money percents POPULATED (1436/1696 non-null, 13 games); the puller
@@ -870,6 +885,18 @@ def base_specs() -> List[ProcSpec]:
             argv=["--interval", "86400"],
             readiness=ReadinessSpec(
                 kind=HEARTBEAT, heartbeat_path=_PUBLIC_SPLITS_HB, fresh_sec=190000.0),
+            restart_policy=_FOREVER,
+        ),
+        # M42 -- the execution-quality tick (see _EXEC_QUALITY_HB comment above).
+        # Independent branch (no depends_on) so a dead tick is itself ONE red
+        # status entry. NOT YET RUNNING -- registered here but requires a
+        # supervisor restart to take effect.
+        ProcSpec(
+            name="m42_exec_quality", kind="py",
+            module="scripts.platformkit.execution.exec_quality_daemon",
+            argv=["--interval", "120"],
+            readiness=ReadinessSpec(
+                kind=HEARTBEAT, heartbeat_path=_EXEC_QUALITY_HB, fresh_sec=300.0),
             restart_policy=_FOREVER,
         ),
     ]

@@ -110,6 +110,40 @@ def test_backfill_sidecar_append_idempotent(tmp_path, monkeypatch):
     assert len(lines2) == 2  # re-running never duplicates
 
 
+def test_backfill_min_age_filters_recent_bets(tmp_path, monkeypatch):
+    """A bet younger than min_age_s is skipped entirely (never graded, never
+    written) so it gets a real second chance once its longest horizon can land
+    -- write=True's bet_id dedup would otherwise lock in an incomplete row."""
+    ledger_path = tmp_path / "clv_ledger.jsonl"
+    sidecar_path = tmp_path / "ingame_realized_clv.jsonl"
+    now = T0 + 1000.0
+    old_bet = _bet("bet-old", "GAME1", 0.41, ts_epoch=T0)           # age 1000s
+    new_bet = _bet("bet-new", "GAME2", 0.55, ts_epoch=T0 + 950.0)   # age 50s
+    with ledger_path.open("w", encoding="utf-8") as fh:
+        for b in (old_bet, new_bet):
+            fh.write(json.dumps(b) + "\n")
+
+    dense_rows = (
+        _dense_rows("GAME1-AAA", "mlb", [(T0, 0.40, 0.42), (T0 + 30, 0.41, 0.43)])
+        + _dense_rows("GAME2-BBB", "mlb", [(T0 + 950, 0.54, 0.56), (T0 + 980, 0.50, 0.52)])
+    )
+    monkeypatch.setattr(m, "load_dense_rows", lambda: dense_rows)
+
+    out = m.backfill(ledger_path=ledger_path, sports=("mlb",), write=True,
+                     sidecar_path=sidecar_path, min_age_s=300.0, now_epoch=now)
+    assert out["n_bets"] == 1  # only the old-enough bet is graded at all
+    lines = sidecar_path.read_text(encoding="utf-8").splitlines()
+    assert len(lines) == 1
+    assert json.loads(lines[0])["bet_id"] == "bet-old"
+
+    # re-running once the new bet ages past min_age_s grades + writes it too.
+    out2 = m.backfill(ledger_path=ledger_path, sports=("mlb",), write=True,
+                      sidecar_path=sidecar_path, min_age_s=300.0, now_epoch=now + 260.0)
+    assert out2["n_bets"] == 2
+    lines2 = sidecar_path.read_text(encoding="utf-8").splitlines()
+    assert len(lines2) == 2
+
+
 def test_summarize_math(tmp_path):
     sidecar_path = tmp_path / "ingame_realized_clv.jsonl"
     rows = [
