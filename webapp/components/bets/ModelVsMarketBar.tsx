@@ -106,7 +106,7 @@ export function ModelVsMarketBar({
       {framing === "descriptive" ? (
         <div className="rounded-md border border-slate-700 bg-slate-900/60 px-3 py-2">
           <span
-            className="font-mono text-[10px] text-slate-400"
+            className="font-mono text-[10px] text-muted-foreground"
             data-testid="descriptive-note"
           >
             {DESCRIPTIVE_NOTE}
@@ -117,7 +117,7 @@ export function ModelVsMarketBar({
       {/* Model row */}
       <div className="flex items-center gap-2" data-testid="model-bar-row">
         <span
-          className="w-16 shrink-0 text-right font-mono text-[9px] uppercase tracking-widest text-slate-500"
+          className="w-16 shrink-0 text-right font-mono text-[9px] uppercase tracking-widest text-muted-foreground"
           aria-hidden="true"
         >
           Model p
@@ -139,7 +139,7 @@ export function ModelVsMarketBar({
           />
         </div>
         <span
-          className="w-12 shrink-0 font-mono text-[11px] tabular-nums text-slate-200"
+          className="w-12 shrink-0 font-mono text-[11px] tabular-nums text-foreground"
           aria-hidden="true"
         >
           {fmtProb(model_prob)}
@@ -149,7 +149,7 @@ export function ModelVsMarketBar({
       {/* Market row (devigged) */}
       <div className="flex items-center gap-2" data-testid="market-bar-row">
         <span
-          className="w-16 shrink-0 text-right font-mono text-[9px] uppercase tracking-widest text-slate-500"
+          className="w-16 shrink-0 text-right font-mono text-[9px] uppercase tracking-widest text-muted-foreground"
           aria-hidden="true"
         >
           Market p
@@ -171,7 +171,7 @@ export function ModelVsMarketBar({
           />
         </div>
         <span
-          className="w-12 shrink-0 font-mono text-[11px] tabular-nums text-slate-400"
+          className="w-12 shrink-0 font-mono text-[11px] tabular-nums text-muted-foreground"
           aria-hidden="true"
         >
           {fmtProb(market_prob)}
@@ -182,7 +182,7 @@ export function ModelVsMarketBar({
       {framing !== "descriptive" ? (
         <div className="flex items-center justify-end gap-1.5">
           <span
-            className="font-mono text-[9px] uppercase tracking-widest text-slate-600"
+            className="font-mono text-[9px] uppercase tracking-widest text-faint"
             aria-hidden="true"
           >
             Calibrated divergence
@@ -208,7 +208,7 @@ export function ModelVsMarketBar({
           className="flex items-center gap-2"
           aria-label={`signal confidence ${(confidence * 100).toFixed(0)}% -- derived from EV magnitude, not a profit claim`}
         >
-          <span className="w-16 shrink-0 text-right font-mono text-[9px] uppercase tracking-widest text-slate-600">
+          <span className="w-16 shrink-0 text-right font-mono text-[9px] uppercase tracking-widest text-faint">
             Signal
           </span>
           <div className="relative flex-1 overflow-hidden rounded-full bg-slate-800/60" style={{ height: "4px" }}>
@@ -218,14 +218,14 @@ export function ModelVsMarketBar({
               data-testid="confidence-strip"
             />
           </div>
-          <span className="w-12 shrink-0 font-mono text-[10px] tabular-nums text-slate-500">
+          <span className="w-12 shrink-0 font-mono text-[10px] tabular-nums text-muted-foreground">
             {(confidence * 100).toFixed(0)}%
           </span>
         </div>
       ) : null}
 
       {/* Honesty footnote */}
-      <p className="font-mono text-[9px] text-slate-600" aria-hidden="true">
+      <p className="font-mono text-[9px] text-faint" aria-hidden="true">
         Calibrated divergence -- not a profit claim. Units only, no $.
       </p>
     </div>

@@ -94,13 +94,13 @@ export function GameView({
         <div className="flex items-center gap-3">
           <Link
             href="/games"
-            className="rounded-sm font-mono text-xs text-slate-500 transition-colors hover:text-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
+            className="rounded-sm font-data text-xs text-faint transition-colors hover:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
           >
             &larr; games
           </Link>
           <h1 className="text-lg font-semibold tracking-tight">
-            <span className="uppercase text-slate-400">{sportLabel(sport)}</span>{" "}
-            <span className="font-mono text-slate-500">{gameId}</span>
+            <span className="uppercase text-muted-foreground">{sportLabel(sport)}</span>{" "}
+            <span className="font-data text-faint">{gameId}</span>
           </h1>
         </div>
         <ModeDot mode={mode} />
@@ -146,7 +146,7 @@ export function GameView({
         </div>
       </div>
 
-      <footer className="mt-2 text-center text-[11px] text-slate-600">
+      <footer className="mt-2 text-center font-data text-[11px] text-faint">
         One coherent prediction spines every market. Stakes are units; there is
         no dollar column. vs-close UNPROVEN. Paper only; no $ edge is claimed.
       </footer>

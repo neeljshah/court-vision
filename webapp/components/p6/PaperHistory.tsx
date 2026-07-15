@@ -8,7 +8,8 @@ import {
   type ClvScoreboard as Clv,
 } from "@/lib/p5api";
 import { useLiveData } from "@/lib/useLiveData";
-import { Panel, Unavailable, Badge } from "./Primitives";
+import { Unavailable, Badge } from "./Primitives";
+import { Panel, PanelHead } from "@/components/ui/terminal";
 import {
   Table,
   TableBody,
@@ -119,18 +120,26 @@ export function PaperHistory() {
   const settled = (clv?.n_bets ?? 0) > 0;
   const sortProps = { sortKey, sortDir, onSort };
 
+  // Real fetch-time timestamp for the panel's as-of stamp -- never fabricated.
+  const asOfIso =
+    ageSec !== null ? new Date(Date.now() - ageSec * 1000).toISOString() : null;
+
   return (
-    <Panel
-      title="Paper trade history"
-      right={
-        <span className="flex items-center gap-2">
-          <Badge tone="amber">paper mode</Badge>
-          <span className="font-mono text-[10px] text-slate-600">
-            units only - no $
+    <Panel>
+      <PanelHead
+        title="Paper trade history"
+        asOf={asOfIso}
+        stale={isStale || !!trailErr}
+        right={
+          <span className="flex items-center gap-2">
+            <Badge tone="amber">paper mode</Badge>
+            <span className="font-data text-[10px] text-faint">
+              units only - no $
+            </span>
           </span>
-        </span>
-      }
-    >
+        }
+      />
+      <div className="p-4">
       {/* CLV summary row (real zeros from API; no $ / ROI). */}
       <div className="mb-4 grid grid-cols-3 gap-3">
         <Stat
@@ -160,7 +169,7 @@ export function PaperHistory() {
         />
       </div>
       {!isLoading && !settled ? (
-        <p className="mb-3 text-[11px] text-slate-500">
+        <p className="mb-3 text-[11px] text-faint">
           No settled bets yet -- CLV populates as paper bets grade against the
           close. No edge is claimed.
         </p>
@@ -169,8 +178,8 @@ export function PaperHistory() {
       {/* Last-updated age (stale-never-green). */}
       <div
         className={cn(
-          "mb-2 font-mono text-[10px]",
-          isStale ? "text-amber-400" : "text-slate-600",
+          "mb-2 font-data text-[10px]",
+          isStale ? "text-stale" : "text-faint",
         )}
         aria-label="trail-age"
       >
@@ -204,12 +213,12 @@ export function PaperHistory() {
             variant="ghost"
             size="sm"
             onClick={clearFilters}
-            className="h-6 px-2 text-[10px] text-slate-400"
+            className="h-6 px-2 text-[10px] text-faint"
           >
             clear filters
           </Button>
         ) : null}
-        <span className="ml-auto font-mono text-[10px] text-slate-600">
+        <span className="ml-auto font-data text-[10px] text-faint">
           {filtered.length} of {allRows.length} trades
         </span>
       </fieldset>
@@ -227,18 +236,18 @@ export function PaperHistory() {
           onClear={filtersActive ? clearFilters : undefined}
         />
       ) : (
-        <ScrollArea className="h-[600px] w-full rounded-lg border border-slate-800">
+        <ScrollArea className="h-[600px] w-full border border-border">
           <Table role="grid" aria-label="Paper trade history">
             <caption className="sr-only">
               Paper trade history -- units and probability only, no dollar
               amounts.
             </caption>
-            <TableHeader className="sticky top-0 z-10 bg-bg-panel">
-              <TableRow className="border-slate-800 hover:bg-transparent">
+            <TableHeader className="sticky top-0 z-10 bg-card">
+              <TableRow className="border-border hover:bg-transparent">
                 <SortHead label="Matchup" col="matchup" {...sortProps} />
                 <SortHead label="Sport" col="sport" {...sortProps} />
                 <SortHead label="Market" col="market_type" {...sortProps} />
-                <TableHead className="h-9 px-2 text-[10px] uppercase tracking-wide text-slate-400">
+                <TableHead className="microlabel h-9 px-3">
                   Side
                 </TableHead>
                 <SortHead label="Tier" col="tier" {...sortProps} />
@@ -262,10 +271,11 @@ export function PaperHistory() {
         </ScrollArea>
       )}
 
-      <p className="mt-3 text-[11px] text-slate-600">
+      <p className="mt-3 text-[11px] text-faint">
         Paper only -- stakes are units. There is no dollar column. No edge is
         claimed. CLV (better-number-than-close) is the only honest yardstick.
       </p>
+      </div>
     </Panel>
   );
 }

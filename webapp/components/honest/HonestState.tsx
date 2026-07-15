@@ -42,7 +42,7 @@ const TONE: Record<Variant, { box: string; label: string; word: string }> = {
   // Empty -> neutral slate (not an error -- there is just nothing yet).
   empty: {
     box: "border-slate-800 bg-surface-1/40",
-    label: "text-slate-400",
+    label: "text-muted-foreground",
     word: "nothing here yet",
   },
   // Stale -> amber (last-good shown, but explicitly NOT green/fresh).
@@ -115,7 +115,7 @@ function Frame({
           </span>
         ) : null}
       </span>
-      {reason ? <span className="text-xs text-slate-500">{reason}</span> : null}
+      {reason ? <span className="text-xs text-muted-foreground">{reason}</span> : null}
       {children}
     </div>
   );

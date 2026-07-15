@@ -19,6 +19,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { tierBadgeClass, EMPTY_CELL } from "@/lib/tokens";
 import { Panel, Badge, Unavailable } from "@/components/p6/Primitives";
+import { Num, Dot } from "@/components/ui/terminal";
 
 // ---------------------------------------------------------------------------
 // Public types
@@ -77,7 +78,7 @@ function BookLinesTable({
 }) {
   if (bookLines.length === 0) {
     return (
-      <p className="py-2 text-xs text-slate-600" data-testid="no-book-lines">
+      <p className="py-2 text-xs text-faint" data-testid="no-book-lines">
         No book quotes captured yet.
       </p>
     );
@@ -86,14 +87,14 @@ function BookLinesTable({
     <div className="overflow-x-auto" data-testid="book-lines-table">
       <table className="w-full text-xs" role="table">
         <thead>
-          <tr>
+          <tr className="border-b border-border">
             {["book", "decimal odds", "line", "best"].map((h) => (
               <th
                 key={h}
                 scope="col"
                 className={cn(
-                  "py-1 text-[10px] font-medium uppercase tracking-wide text-slate-500",
-                  h === "book" ? "pr-3 text-left" : "px-2 text-right",
+                  "microlabel py-1.5",
+                  h === "book" ? "pr-3 text-left" : "px-3 text-right",
                 )}
               >
                 {h}
@@ -101,40 +102,45 @@ function BookLinesTable({
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-800/50">
+        <tbody>
           {bookLines.map((bl, i) => {
             const isBest = !!bestBook && bl.book === bestBook;
             return (
-              <tr key={`${bl.book}-${i}`} data-testid={isBest ? "best-line-row" : undefined}>
-                <td className="py-1.5 pr-3 font-mono text-slate-300">
+              <tr
+                key={`${bl.book}-${i}`}
+                data-testid={isBest ? "best-line-row" : undefined}
+                className="border-b border-border hover:bg-surface-2 last:border-0"
+              >
+                <td className="py-1.5 pr-3 font-data text-foreground">
                   {bl.book}
                   {bl.is_pm && (
-                    <span className="ml-1 text-[9px] text-purple-400">PM</span>
+                    <span className="ml-1 text-[9px] text-info">PM</span>
                   )}
                 </td>
                 <td
-                  className={cn(
-                    "px-2 py-1.5 text-right font-mono tabular-nums",
-                    isBest ? "font-semibold text-emerald-400" : "text-slate-300",
-                  )}
+                  className="px-3 py-1.5 text-right"
                   title={bl.captured_at ? `captured ${bl.captured_at}` : undefined}
                 >
-                  {fmt2(bl.decimal_odds)}
-                  {fmtLine(bl.line)}
+                  <Num className={isBest ? "font-semibold text-emerald-400" : "text-foreground"}>
+                    {fmt2(bl.decimal_odds)}
+                    {fmtLine(bl.line)}
+                  </Num>
                 </td>
-                <td className="px-2 py-1.5 text-right font-mono text-[10px] text-slate-500">
-                  {bl.line != null ? fmtLine(bl.line) : EMPTY_CELL}
+                <td className="px-3 py-1.5 text-right">
+                  <Num className="text-faint">
+                    {bl.line != null ? fmtLine(bl.line) : EMPTY_CELL}
+                  </Num>
                 </td>
-                <td className="px-2 py-1.5 text-right font-mono text-[10px]">
+                <td className="px-3 py-1.5 text-right font-data text-[10px]">
                   {isBest ? (
                     <span
                       data-testid="best-badge"
-                      className="rounded border border-emerald-900/50 bg-emerald-950/20 px-1 py-0.5 text-emerald-400"
+                      className="border border-border px-1 py-0.5 text-up"
                     >
                       best
                     </span>
                   ) : (
-                    <span className="text-slate-700">{EMPTY_CELL}</span>
+                    <span className="text-faint">{EMPTY_CELL}</span>
                   )}
                 </td>
               </tr>
@@ -148,21 +154,15 @@ function BookLinesTable({
 
 function DevigSection({ devig }: { devig: DevigResult | null }) {
   return (
-    <div className="mt-3 rounded-lg border border-slate-800 bg-slate-900/40 px-3 py-2.5" data-testid="devig-section">
-      <p className="mb-1.5 text-[10px] font-medium uppercase tracking-widest text-slate-500">
-        Shin devig (fair prob)
-      </p>
+    <div className="mt-3 border border-border bg-surface-1 px-3 py-2.5" data-testid="devig-section">
+      <p className="microlabel mb-1.5">Shin devig (fair prob)</p>
       {devig == null ? (
-        <p className="text-xs text-slate-600">Devig not computed -- no quotes.</p>
+        <p className="text-xs text-faint">Devig not computed -- no quotes.</p>
       ) : (
-        <div className="flex items-center gap-4 font-mono text-xs">
-          <span className="text-slate-400">
-            fair prob: <span className="text-slate-100">{fmtPct(devig.fair_prob)}</span>
-          </span>
-          <span className="text-slate-400">
-            vig: <span className="text-amber-400">{fmtPct(devig.vig_pct)}</span>
-          </span>
-          <span className="ml-auto text-[10px] text-slate-600">prob ratio -- no $</span>
+        <div className="flex items-center gap-4 text-xs">
+          <span className="text-muted-foreground">fair prob: <Num className="text-foreground">{fmtPct(devig.fair_prob)}</Num></span>
+          <span className="text-muted-foreground">vig: <Num className="text-foreground">{fmtPct(devig.vig_pct)}</Num></span>
+          <span className="ml-auto font-data text-[10px] text-faint">prob ratio -- no $</span>
         </div>
       )}
     </div>
@@ -171,8 +171,8 @@ function DevigSection({ devig }: { devig: DevigResult | null }) {
 
 function TrailRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between border-b border-slate-800/60 py-1.5 last:border-0">
-      <span className="text-[11px] uppercase tracking-wide text-slate-500">{label}</span>
+    <div className="flex items-center justify-between border-b border-border py-1.5 last:border-0">
+      <span className="microlabel">{label}</span>
       <span>{children}</span>
     </div>
   );
@@ -184,23 +184,24 @@ function DecisionTrail({
   const isNoBet = !decision || decision === "no_bet";
   return (
     <div className="mt-3" data-testid="decision-trail">
-      <p className="mb-1.5 text-[10px] font-medium uppercase tracking-widest text-slate-500">
+      <p className="microlabel mb-1.5 flex items-center gap-1.5">
+        <Dot state={isNoBet ? "warn" : "ok"} />
         Decision trail
       </p>
       <div className="space-y-1.5">
         <TrailRow label="model prob">
-          <span className="font-mono text-xs text-slate-200" data-testid="model-prob">
-            {modelProb != null ? fmtPct(modelProb) : EMPTY_CELL}
+          <span data-testid="model-prob">
+            <Num className="text-foreground">{modelProb != null ? fmtPct(modelProb) : EMPTY_CELL}</Num>
           </span>
         </TrailRow>
         <TrailRow label="tier">
           <span data-testid="tier-badge">
             {tier ? (
-              <span className={cn("inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-mono uppercase", tierBadgeClass(tier))}>
+              <span className={cn("inline-flex items-center border px-2 py-0.5 font-data text-[10px] uppercase", tierBadgeClass(tier))}>
                 {tier}
               </span>
             ) : (
-              <span className="font-mono text-xs text-slate-600">{EMPTY_CELL}</span>
+              <Num className="text-faint">{EMPTY_CELL}</Num>
             )}
           </span>
         </TrailRow>
@@ -210,22 +211,22 @@ function DecisionTrail({
           </span>
         </TrailRow>
         <TrailRow label="stake (units, no $)">
-          <span className="font-mono text-xs text-slate-200" data-testid="stake-units">
-            {isNoBet ? <span className="text-slate-600">no_bet</span> : fmtUnits(stakeUnits)}
+          <span data-testid="stake-units">
+            <Num className="text-foreground">{isNoBet ? <span className="text-faint">no_bet</span> : fmtUnits(stakeUnits)}</Num>
           </span>
         </TrailRow>
         <TrailRow label="CLV status">
-          <span className="font-mono text-[11px]" data-testid="clv-status">
+          <span className="font-data text-[11px]" data-testid="clv-status">
             {clvStatus === "INSUFFICIENT_DATA" || clvStatus == null ? (
               <span className="text-amber-600">INSUFFICIENT_DATA</span>
             ) : (
-              <span className="text-slate-400">{clvStatus}</span>
+              <span className="text-faint">{clvStatus}</span>
             )}
           </span>
         </TrailRow>
       </div>
       {decisionNote ? (
-        <p className="mt-2 text-[11px] leading-relaxed text-slate-500" data-testid="decision-note">
+        <p className="mt-2 text-[11px] leading-relaxed text-faint" data-testid="decision-note">
           {decisionNote}
         </p>
       ) : null}
@@ -236,12 +237,12 @@ function DecisionTrail({
 function RealMoneyDenyNote() {
   return (
     <div
-      className="mt-4 rounded-lg border border-red-900/30 bg-red-950/10 px-3 py-2"
+      className="mt-4 border border-danger/40 bg-danger/10 px-3 py-2"
       data-testid="real-money-deny"
       role="note"
       aria-label="real-money-deny"
     >
-      <p className="text-[11px] leading-relaxed text-red-400/80">
+      <p className="text-[11px] leading-relaxed text-danger">
         REAL-MONEY DENY: This system does not place real-money bets. Stakes are
         in units (no $ column). Execution is paper-only. CLV is the honest
         calibration yardstick; it may be INSUFFICIENT_DATA when no closing
@@ -262,7 +263,7 @@ export function ExecutionTrail({
   if (loading) {
     return (
       <Panel title="Execution trail" className={className}>
-        <p className="text-sm text-slate-500">checking...</p>
+        <p className="text-sm text-faint">checking...</p>
       </Panel>
     );
   }
@@ -277,7 +278,7 @@ export function ExecutionTrail({
 
   const trailProps = { decision, stakeUnits, tier, modelProb, clvStatus, decisionNote };
   const headerRight = (
-    <span className="font-mono text-[10px] text-slate-500">units only -- no $</span>
+    <span className="font-data text-[10px] text-faint">units only -- no $</span>
   );
 
   if (!bookLines || bookLines.length === 0) {
@@ -293,12 +294,12 @@ export function ExecutionTrail({
   return (
     <Panel title="Execution trail" right={headerRight} className={className}>
       <section aria-label="book lines">
-        <p className="mb-1 text-[10px] font-medium uppercase tracking-widest text-slate-500">
+        <p className="microlabel mb-1">
           Line shopping (decimal odds -- not a $ payout)
         </p>
         <BookLinesTable bookLines={bookLines} bestBook={bestBook} />
-        <p className="mt-1 text-[10px] text-slate-600">
-          Green = best line (highest decimal odds = lowest vig) at last capture.
+        <p className="mt-1 font-data text-[10px] text-faint">
+          Best line (highest decimal odds = lowest vig) at last capture.
         </p>
       </section>
       <DevigSection devig={devig} />

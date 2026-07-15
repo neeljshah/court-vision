@@ -61,22 +61,22 @@ export function GameReport({ report }: { report: Report | null }) {
         // LiveLinesPanel/freshnessStatus + LiveFreshnessPill derivation below.
         <span className="inline-flex items-center gap-1.5">
           <LiveFreshnessPill asOf={meta?.as_of} />
-          <span className="font-mono text-[10px] text-slate-500">{report.sport}</span>
+          <span className="font-mono text-[10px] text-muted-foreground">{report.sport}</span>
         </span>
       }
     >
       {/* Pregame */}
       <div className="mb-4">
-        <div className="mb-1 text-[10px] uppercase tracking-wide text-slate-500">
+        <div className="mb-1 text-[10px] uppercase tracking-wide text-muted-foreground">
           Pregame
         </div>
         {pg ? (
           <div className="flex flex-wrap items-center gap-3 text-sm">
-            <span className="font-medium text-slate-100">
+            <span className="font-medium text-foreground">
               {pg.away} @ {pg.home}
             </span>
             {pg.model_probs ? (
-              <span className="font-mono text-xs text-slate-400">
+              <span className="font-mono text-xs text-muted-foreground">
                 {Object.entries(pg.model_probs)
                   .map(([k, v]) => `${k} ${fmtPct(v, false)}`)
                   .join(" | ")}
@@ -95,12 +95,12 @@ export function GameReport({ report }: { report: Report | null }) {
 
       {/* In-game */}
       <div className="mb-4">
-        <div className="mb-1 text-[10px] uppercase tracking-wide text-slate-500">
+        <div className="mb-1 text-[10px] uppercase tracking-wide text-muted-foreground">
           In-game (live)
         </div>
         {live && live.status !== "unavailable" ? (
           <div className="flex flex-wrap items-center gap-3 text-sm">
-            <span className="font-mono text-slate-100">
+            <span className="font-mono text-foreground">
               {live.away_abbr ?? "AWAY"} {live.away_score ?? "--"} |{" "}
               {live.home_abbr ?? "HOME"} {live.home_score ?? "--"}
             </span>
@@ -119,14 +119,14 @@ export function GameReport({ report }: { report: Report | null }) {
 
       {/* Markets */}
       <div>
-        <div className="mb-1 text-[10px] uppercase tracking-wide text-slate-500">
+        <div className="mb-1 text-[10px] uppercase tracking-wide text-muted-foreground">
           Markets ({report.markets?.length ?? 0})
         </div>
         {report.markets && report.markets.length ? (
           <table className="w-full text-xs">
             <tbody className="divide-y divide-slate-800">
               {report.markets.map((m, i) => (
-                <tr key={i} className="text-slate-300">
+                <tr key={i} className="text-foreground">
                   <td className="py-1.5 font-mono">
                     {m.market_type} {m.side}
                     {m.line != null ? ` ${m.line}` : ""}
@@ -134,10 +134,10 @@ export function GameReport({ report }: { report: Report | null }) {
                   <td className="py-1.5 text-right font-mono tabular-nums">
                     {m.odds.toFixed(2)}
                   </td>
-                  <td className="py-1.5 text-right font-mono text-slate-500">
+                  <td className="py-1.5 text-right font-mono text-muted-foreground">
                     {fmtPct(m.devigged_prob, false)} devig
                   </td>
-                  <td className="py-1.5 text-right font-mono text-[10px] text-slate-600">
+                  <td className="py-1.5 text-right font-mono text-[10px] text-faint">
                     {m.book}
                     {m.clv_is_proxy ? " | proxy" : ""}
                   </td>

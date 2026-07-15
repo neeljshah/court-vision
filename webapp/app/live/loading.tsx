@@ -6,12 +6,12 @@ export default function LiveLoading() {
   return (
     <main className="mx-auto flex max-w-5xl flex-col gap-4 p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="skeleton-shimmer h-8 w-48 rounded" />
-        <div className="skeleton-shimmer h-6 w-32 rounded-full" />
+        <div className="skeleton-shimmer h-8 w-48" />
+        <div className="skeleton-shimmer h-6 w-32" />
       </div>
       <div className="flex flex-col gap-3">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="skeleton-shimmer h-16 rounded-lg" />
+          <div key={i} className="skeleton-shimmer h-16" />
         ))}
       </div>
     </main>

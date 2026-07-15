@@ -35,7 +35,7 @@ export function ExposureLimitsPanel() {
       }
     >
       {/* Tier-floor policy. */}
-      <div className="mb-2 flex items-center gap-1 font-mono text-[10px] uppercase tracking-wide text-slate-500">
+      <div className="mb-2 flex items-center gap-1 font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
         tier EV-floor policy
         <InfoTip term="floor" text={RISK_TERMS.floor} ariaLabel="what is the tier floor?" />
       </div>
@@ -54,23 +54,23 @@ export function ExposureLimitsPanel() {
               {t.tier}
             </span>
             <div className="min-w-0">
-              <div className="font-mono tabular-nums text-[12px] text-slate-200">
+              <div className="font-mono tabular-nums text-[12px] text-foreground">
                 EV &ge; {t.floor.toFixed(2)}
               </div>
-              <div className="text-[10px] text-slate-600">{t.note}</div>
+              <div className="text-[10px] text-faint">{t.note}</div>
             </div>
           </li>
         ))}
       </ul>
-      <p className="mt-2 text-[11px] leading-relaxed text-slate-500">
-        Floors are raised <span className="font-mono text-slate-300">+{PROXY_FLOOR_BUMP.toFixed(2)}</span> when
+      <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
+        Floors are raised <span className="font-mono text-foreground">+{PROXY_FLOOR_BUMP.toFixed(2)}</span> when
         the close we settle against is a PROXY (not a true settled close). Below the C floor it is an
-        honest <span className="font-mono uppercase text-slate-300">NO BET</span> -- the model matches
+        honest <span className="font-mono uppercase text-foreground">NO BET</span> -- the model matches
         the efficient close, which is a SUCCESS, not a failure.
       </p>
 
       {/* Exposure caps. */}
-      <div className="mb-2 mt-4 flex items-center gap-1 font-mono text-[10px] uppercase tracking-wide text-slate-500">
+      <div className="mb-2 mt-4 flex items-center gap-1 font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
         exposure caps
         <InfoTip term="exposure_cap" text={RISK_TERMS.exposure_cap} ariaLabel="what is an exposure cap?" />
       </div>
@@ -81,15 +81,15 @@ export function ExposureLimitsPanel() {
             className="rounded-lg border border-slate-800 bg-bg-panel/40 px-3 py-2"
           >
             <div className="flex items-center justify-between gap-2">
-              <span className="font-mono text-[11px] text-slate-300">{c.scope}</span>
-              <span className="font-mono text-[10px] uppercase tracking-wide text-slate-500">{c.cap}</span>
+              <span className="font-mono text-[11px] text-foreground">{c.scope}</span>
+              <span className="font-mono text-[10px] uppercase tracking-wide text-muted-foreground">{c.cap}</span>
             </div>
-            <div className="mt-0.5 text-[10px] text-slate-600">{c.note}</div>
+            <div className="mt-0.5 text-[10px] text-faint">{c.note}</div>
           </li>
         ))}
       </ul>
 
-      <p className="mt-3 font-mono text-[9px] uppercase tracking-wide text-slate-600">
+      <p className="mt-3 font-mono text-[9px] uppercase tracking-wide text-faint">
         descriptive limits in UNITS -- no money field -- no advice -- real money DENY (paper only)
       </p>
     </Panel>

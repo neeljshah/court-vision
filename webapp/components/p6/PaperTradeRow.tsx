@@ -2,6 +2,7 @@
 
 import type { PaperTrailRow } from "@/lib/p5api";
 import { Badge } from "./Primitives";
+import { Num } from "@/components/ui/terminal";
 import { TableCell, TableHead, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -51,7 +52,7 @@ export function SortHead({
     <TableHead
       aria-sort={ariaSort}
       className={cn(
-        "h-9 px-2 text-[10px] uppercase tracking-wide text-slate-400",
+        "microlabel h-9 px-3",
         align === "right" && "text-right",
       )}
     >
@@ -61,12 +62,12 @@ export function SortHead({
         onClick={() => onSort(col)}
         aria-label={`Sort by ${label} ${active && sortDir === "asc" ? "descending" : "ascending"}`}
         className={cn(
-          "-mx-1 h-6 px-1 text-[10px] font-medium uppercase tracking-wide text-slate-400 hover:text-slate-200",
+          "-mx-1 h-6 px-1 text-[10px] font-medium uppercase tracking-wide text-faint hover:text-foreground",
           align === "right" && "ml-auto",
         )}
       >
         {label}
-        <span className="ml-1 font-mono text-slate-500">
+        <span className="ml-1 font-data text-faint">
           {active ? (sortDir === "asc" ? "^" : "v") : ""}
         </span>
       </Button>
@@ -82,75 +83,75 @@ export function TradeRow({ row: r }: { row: PaperTrailRow }) {
   return (
     <TableRow
       className={cn(
-        "border-slate-800/60 text-slate-300",
+        "border-border text-foreground hover:bg-surface-2",
         voided && "text-muted-foreground",
       )}
     >
-      <TableCell className="px-2 py-1.5">
+      <TableCell className="px-3 py-1.5">
         <div className="font-medium">{r.matchup || r.game_id}</div>
-        <div className="font-mono text-[10px] text-slate-600">{r.game_id}</div>
+        <div className="font-data text-[10px] text-faint">{r.game_id}</div>
       </TableCell>
-      <TableCell className="px-2 py-1.5">
-        <span className="font-mono text-[10px] uppercase text-slate-400">
+      <TableCell className="px-3 py-1.5">
+        <span className="font-data text-[10px] uppercase text-faint">
           {sportLabel(r.sport)}
         </span>
       </TableCell>
-      <TableCell className="px-2 py-1.5 font-mono text-[11px]">
+      <TableCell className="px-3 py-1.5 font-data text-[11px]">
         {r.market_type || EMPTY_CELL}
       </TableCell>
-      <TableCell className="px-2 py-1.5 font-mono text-[11px] text-slate-400">
+      <TableCell className="px-3 py-1.5 font-data text-[11px] text-faint">
         {r.side || EMPTY_CELL}
       </TableCell>
-      <TableCell className="px-2 py-1.5">
+      <TableCell className="px-3 py-1.5">
         {r.tier ? (
           <span
             className={cn(
-              "inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-mono uppercase",
+              "inline-flex items-center border px-2 py-0.5 text-[10px] font-data uppercase",
               tierBadgeClass(r.tier),
             )}
           >
             {r.tier}
           </span>
         ) : (
-          <span className="text-slate-600">{EMPTY_CELL}</span>
+          <span className="text-faint">{EMPTY_CELL}</span>
         )}
       </TableCell>
-      <TableCell className="px-2 py-1.5 text-right font-mono tabular-nums">
-        {fmtProb(r.model_prob)}
+      <TableCell className="px-3 py-1.5 text-right">
+        <Num>{fmtProb(r.model_prob)}</Num>
       </TableCell>
-      <TableCell className="px-2 py-1.5 text-right font-mono tabular-nums">
-        {fmtDec(r.taken_decimal)}
+      <TableCell className="px-3 py-1.5 text-right">
+        <Num>{fmtDec(r.taken_decimal)}</Num>
       </TableCell>
       <TableCell
         className={cn(
-          "px-2 py-1.5 text-right font-mono tabular-nums",
+          "px-3 py-1.5 text-right",
           withClv ? clvCellClass(r.clv_pct) : "text-muted-foreground",
         )}
       >
         {withClv ? (
-          <span className="inline-flex items-center gap-1">
+          <Num className="inline-flex items-center gap-1">
             {r.clv_is_proxy ? (
               <span
                 title="CLV vs proxy close, not real book"
-                className="text-warning"
+                className="text-stale"
               >
                 ~
               </span>
             ) : null}
             {fmtPct(r.clv_pct as number)}
-          </span>
+          </Num>
         ) : (
-          EMPTY_CELL
+          <Num>{EMPTY_CELL}</Num>
         )}
       </TableCell>
-      <TableCell className="px-2 py-1.5">
+      <TableCell className="px-3 py-1.5">
         <Badge tone={RESULT_TONE[res]}>{res}</Badge>
       </TableCell>
-      <TableCell className="px-2 py-1.5 text-right font-mono tabular-nums">
-        {fmtUnits(r.stake_units)}
+      <TableCell className="px-3 py-1.5 text-right">
+        <Num>{fmtUnits(r.stake_units)}</Num>
       </TableCell>
       <TableCell
-        className="px-2 py-1.5 text-right font-mono text-[10px] text-slate-500"
+        className="px-3 py-1.5 text-right font-data text-[10px] text-faint"
         title={r.ts || ""}
       >
         {fmtTs(r.ts)}
@@ -169,21 +170,14 @@ export function Stat({
   valueClass?: string;
 }) {
   return (
-    <div className="rounded-lg bg-bg-subtle px-3 py-2.5">
-      <div className="text-[10px] uppercase tracking-wide text-slate-500">
-        {label}
-      </div>
+    <div className="border border-border bg-surface-1 px-3 py-2.5">
+      <div className="microlabel">{label}</div>
       {value == null ? (
         <Skeleton className="mt-1 h-6 w-16" />
       ) : (
-        <div
-          className={cn(
-            "mt-0.5 font-mono text-lg tabular-nums",
-            valueClass || "text-slate-100",
-          )}
-        >
+        <Num className={cn("mt-0.5 block text-lg", valueClass || "text-foreground")}>
           {value}
-        </div>
+        </Num>
       )}
     </div>
   );
@@ -204,9 +198,7 @@ export function FilterGroup<T extends string>({
 }) {
   return (
     <div className="flex items-center gap-1.5">
-      <span className="text-[10px] uppercase tracking-wide text-slate-500">
-        {label}
-      </span>
+      <span className="microlabel">{label}</span>
       <div className="flex flex-wrap gap-1">
         {options.map((opt) => (
           <Button
@@ -233,8 +225,8 @@ export function EmptyState({
   onClear?: () => void;
 }) {
   return (
-    <div className="flex flex-col items-center gap-2 rounded-lg border border-slate-800 bg-bg-subtle/40 px-4 py-10 text-center">
-      <p className="text-sm text-slate-500">{message}</p>
+    <div className="flex flex-col items-center gap-2 border border-border bg-surface-1/40 px-4 py-10 text-center">
+      <p className="text-sm text-faint">{message}</p>
       {onClear ? (
         <Button type="button" variant="outline" size="sm" onClick={onClear}>
           Clear filters
@@ -249,7 +241,7 @@ export function TableSkeleton() {
     <div
       aria-busy="true"
       aria-label="Loading trade history"
-      className="space-y-2 rounded-lg border border-slate-800 p-3"
+      className="space-y-2 border border-border p-3"
     >
       {Array.from({ length: 8 }).map((_, i) => (
         <Skeleton key={i} className="h-10 w-full" />

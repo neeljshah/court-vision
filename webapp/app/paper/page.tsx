@@ -85,7 +85,7 @@ function ClvStatSkeleton({ label }: { label: string }) {
       aria-busy="true"
       aria-label={`${label} loading`}
     >
-      <div className="text-[10px] uppercase tracking-wide text-slate-500">
+      <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
         {label}
       </div>
       <div
@@ -107,11 +107,11 @@ function ClvStat({
 }) {
   return (
     <div className="rounded-lg bg-bg-subtle px-3 py-2.5">
-      <div className="text-[10px] uppercase tracking-wide text-slate-500">
+      <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
         {label}
       </div>
       <div
-        className={`mt-0.5 font-mono text-lg tabular-nums ${cls ?? "text-slate-100"}`}
+        className={`mt-0.5 font-mono text-lg tabular-nums ${cls ?? "text-foreground"}`}
       >
         {value}
       </div>
@@ -120,10 +120,10 @@ function ClvStat({
 }
 
 function meanClvClass(clv: ClvScoreboard | null): string {
-  if (clv?.mean_clv_pct == null) return "text-slate-100";
+  if (clv?.mean_clv_pct == null) return "text-foreground";
   if (clv.mean_clv_pct > 0) return "text-success";
   if (clv.mean_clv_pct < 0) return "text-danger";
-  return "text-slate-100";
+  return "text-foreground";
 }
 
 // ---------------------------------------------------------------------------
@@ -166,6 +166,7 @@ export default function PaperPage() {
   } = useLiveData<PaperPageData>(fetcher, {
     intervalMs: 30_000,
     staleAfterSec: 90,
+    cacheKey: "paper:page",
   });
 
   const trail = data?.trail ?? null;
@@ -197,25 +198,25 @@ export default function PaperPage() {
       {/* Header */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold text-slate-100">
+          <h1 className="text-xl font-semibold text-foreground">
             Paper book
           </h1>
-          <p className="mt-0.5 text-[12px] text-slate-500">
+          <p className="mt-0.5 text-[12px] text-muted-foreground">
             Real settled paper bets -- units only, no dollars. CLV is the
             calibration yardstick.
           </p>
           <p
             data-testid="paper-unit-convention-note"
-            className="mt-1 text-[11px] text-slate-600"
+            className="mt-1 text-[11px] text-faint"
           >
             stake_units reflect{" "}
-            <span className="font-medium text-slate-500">
+            <span className="font-medium text-muted-foreground">
               Kelly-style (quarter-Kelly) sizing
             </span>{" "}
             and can exceed 1.0 -- distinct from the bets board&apos;s flat{" "}
-            <span className="font-mono text-slate-500">1.0-per-bet</span>{" "}
+            <span className="font-mono text-muted-foreground">1.0-per-bet</span>{" "}
             display. All values are{" "}
-            <span className="font-mono text-slate-500">UNITS</span>, never
+            <span className="font-mono text-muted-foreground">UNITS</span>, never
             dollars.
           </p>
         </div>
@@ -227,8 +228,8 @@ export default function PaperPage() {
               isStale
                 ? "text-amber-400"
                 : lastUpdatedAt !== null
-                ? "text-slate-500"
-                : "text-slate-600"
+                ? "text-muted-foreground"
+                : "text-faint"
             }`}
           >
             {isStale
@@ -294,7 +295,7 @@ export default function PaperPage() {
         <Panel
           title="Paper bankroll (UNITS only)"
           right={
-            <span className="font-mono text-[10px] text-slate-500">
+            <span className="font-mono text-[10px] text-muted-foreground">
               {kelly.kelly_n_sized != null
                 ? `${kelly.kelly_n_sized} sized`
                 : "reconciles"}
@@ -303,10 +304,10 @@ export default function PaperPage() {
         >
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-lg border border-slate-800 bg-bg-subtle/30 px-4 py-3">
-              <div className="text-[10px] uppercase tracking-wide text-slate-500">
+              <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
                 Flat 1u (conservative · CLV record)
               </div>
-              <div className="mt-1 font-mono text-lg text-slate-100">
+              <div className="mt-1 font-mono text-lg text-foreground">
                 {fmtUnits(flatCur)}
               </div>
               <div
@@ -324,10 +325,10 @@ export default function PaperPage() {
                   : "border-slate-800 bg-bg-subtle/30"
               }`}
             >
-              <div className="text-[10px] uppercase tracking-wide text-slate-500">
+              <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
                 Edge-proportional (capped 1/4-Kelly)
               </div>
-              <div className="mt-1 font-mono text-lg text-slate-100">
+              <div className="mt-1 font-mono text-lg text-foreground">
                 {fmtUnits(kelly.kelly_current_units)}
               </div>
               <div
@@ -341,7 +342,7 @@ export default function PaperPage() {
               </div>
             </div>
           </div>
-          <p className="mt-3 text-[10px] leading-relaxed text-slate-500">
+          <p className="mt-3 text-[10px] leading-relaxed text-muted-foreground">
             Both curves reconcile to the same placed bets (one position per market). The
             Kelly overlay sizes each bet by conviction to maximise expected UNIT growth --
             it is a paper track record, NOT proven profit and NOT a realized-money figure.
@@ -354,7 +355,7 @@ export default function PaperPage() {
       {!showSkeleton && !hasSettled && settledClvCount === 0 ? (
         <p
           data-testid="paper-no-settled-bets"
-          className="mb-4 text-[11px] text-slate-500"
+          className="mb-4 text-[11px] text-muted-foreground"
         >
           No settled bets yet -- CLV populates as paper bets grade against the
           close. No edge is claimed.
@@ -365,7 +366,7 @@ export default function PaperPage() {
       <Panel
         title="Settled book (real paper record)"
         right={
-          <span className="font-mono text-[10px] text-slate-500">
+          <span className="font-mono text-[10px] text-muted-foreground">
             {showSkeleton
               ? "loading"
               : `${settledRows.length} settled / ${rows.length} total`}
@@ -394,7 +395,7 @@ export default function PaperPage() {
               className={`h-6 rounded-full border px-3 text-[10px] font-mono uppercase tracking-wide transition-colors ${
                 rankMode
                   ? "border-amber-700 bg-amber-950/40 text-amber-400"
-                  : "border-slate-700 text-slate-500 hover:text-slate-300"
+                  : "border-slate-700 text-muted-foreground hover:text-foreground"
               }`}
             >
               {rankMode ? "ranked: best first" : "rank by best trades"}
@@ -422,9 +423,9 @@ export default function PaperPage() {
             }).length === 0 ? (
               <div
                 data-testid="pm-no-liquid-markets"
-                className="mt-3 rounded-lg border border-slate-800 bg-bg-subtle/30 px-4 py-4 text-center text-[11px] text-slate-500"
+                className="mt-3 rounded-lg border border-slate-800 bg-bg-subtle/30 px-4 py-4 text-center text-[11px] text-muted-foreground"
               >
-                <span className="font-semibold text-slate-400">
+                <span className="font-semibold text-muted-foreground">
                   No liquid PM markets right now.
                 </span>{" "}
                 Kalshi / Polymarket paper trades appear once the PM daemon places

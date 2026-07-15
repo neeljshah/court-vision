@@ -24,8 +24,9 @@ import { useCallback, useMemo } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { tierBadgeClass, EMPTY_CELL } from "@/lib/tokens";
-import { Panel, Badge } from "@/components/p6/Primitives";
+import { Badge } from "@/components/p6/Primitives";
 import { Empty, Unavailable } from "@/components/honest/HonestState";
+import { Panel as TerminalPanel, PanelHead, Num } from "@/components/ui/terminal";
 import { useLiveData } from "@/lib/useLiveData";
 import { api, isUnavailable } from "@/lib/p5api";
 import type { PaperTrail, PaperTrailRow } from "@/lib/types";
@@ -35,6 +36,32 @@ export interface PlacedBetsForGamePanelProps {
   sport: string;
   gameId: string;
   className?: string;
+}
+
+// Local Panel shim: p6/Primitives.Panel currently lacks asOf/stale wiring, so
+// this component composes directly from the terminal.tsx primitives instead
+// (same title/right/asOf/stale/children/className call shape used below).
+function Panel({
+  title,
+  asOf,
+  stale = false,
+  right,
+  children,
+  className,
+}: {
+  title: string;
+  asOf?: string | null;
+  stale?: boolean;
+  right?: React.ReactNode;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <TerminalPanel className={className}>
+      <PanelHead title={title} asOf={asOf} stale={stale} right={right} />
+      <div className="p-4">{children}</div>
+    </TerminalPanel>
+  );
 }
 
 type Outcome = "win" | "loss" | "push" | "void" | "pending";
@@ -66,6 +93,12 @@ function fmtPct(v: number | null): string {
   return `${sign}${(v * 100).toFixed(1)}%`;
 }
 
+// Format a fetch timestamp (ms epoch) as HH:MM:SS for the PanelHead as-of stamp.
+function fmtClock(ms: number | null): string | null {
+  if (ms == null) return null;
+  return new Date(ms).toLocaleTimeString("en-US", { hour12: false });
+}
+
 // Selection label: prop -> "Player STAT line side"; game market -> "market side line".
 function selectionLabel(r: PaperTrailRow): string {
   const mt = r.market_type ?? "moneyline";
@@ -77,22 +110,18 @@ function selectionLabel(r: PaperTrailRow): string {
 function clvCell(r: PaperTrailRow): React.ReactNode {
   if (r.clv_unavailable || r.clv_status === "no_close" || r.clv_pct == null) {
     return (
-      <span className="font-mono text-[10px] text-amber-600" data-testid="placed-clv">
-        INSUFFICIENT_DATA
+      <span data-testid="placed-clv">
+        <Num className="text-[10px] text-stale">INSUFFICIENT_DATA</Num>
       </span>
     );
   }
   const beat = r.clv_pct >= 0;
   return (
-    <span
-      className={cn(
-        "font-mono text-[10px]",
-        beat ? "text-emerald-400" : "text-rose-400",
-      )}
-      data-testid="placed-clv"
-    >
-      {fmtPct(r.clv_pct)}
-      {r.clv_is_proxy ? <span className="ml-1 text-amber-500">proxy</span> : null}
+    <span data-testid="placed-clv">
+      <Num className={cn("text-[10px]", beat ? "text-up" : "text-down")}>
+        {fmtPct(r.clv_pct)}
+      </Num>
+      {r.clv_is_proxy ? <span className="ml-1 text-stale">proxy</span> : null}
     </span>
   );
 }
@@ -102,24 +131,24 @@ function PlacedBetRow({ r }: { r: PaperTrailRow }) {
   const betId = toBetId(r);
   const isNoBet = (r.stake_units ?? 0) <= 0;
   return (
-    <tr className="text-sm" data-testid="placed-bet-row">
-      <td className="py-2 pr-3">
+    <tr className="text-sm hover:bg-surface-2" data-testid="placed-bet-row">
+      <td className="py-1.5 px-3">
         <Link
           href={`/paper/${betId}`}
-          className="font-medium text-slate-200 underline-offset-2 hover:text-slate-50 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-bg-panel"
+          className="font-medium text-foreground underline-offset-2 hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
           aria-label={`Execution detail: ${selectionLabel(r)}`}
         >
           {selectionLabel(r)}
         </Link>
-        <div className="font-mono text-[10px] text-slate-500">
+        <div className="font-data text-[10px] text-faint">
           {r.taken_book}
           {r.taken_decimal != null ? ` @ ${r.taken_decimal.toFixed(2)}` : ""}
         </div>
       </td>
-      <td className="py-2 pr-3 text-right">
+      <td className="py-1.5 px-3 text-right">
         <span
           className={cn(
-            "inline-flex items-center rounded-full border px-2 py-0.5 font-mono text-[10px] uppercase",
+            "inline-flex items-center border px-2 py-0.5 font-data text-[10px] uppercase",
             tierBadgeClass(r.tier ?? ""),
           )}
           data-testid="placed-tier"
@@ -127,22 +156,19 @@ function PlacedBetRow({ r }: { r: PaperTrailRow }) {
           {r.tier ?? EMPTY_CELL}
         </span>
       </td>
-      <td className="py-2 pr-3 text-right">
-        <span
-          className="font-mono text-xs tabular-nums text-slate-100"
-          data-testid="placed-units"
-        >
+      <td className="py-1.5 px-3 text-right">
+        <span data-testid="placed-units">
           {isNoBet ? (
-            <span className="text-slate-600">no_bet</span>
+            <span className="font-data text-xs text-faint">no_bet</span>
           ) : (
-            fmtUnits(r.stake_units)
+            <Num className="text-xs text-foreground">{fmtUnits(r.stake_units)}</Num>
           )}
         </span>
       </td>
-      <td className="py-2 pr-3 text-right">
+      <td className="py-1.5 px-3 text-right">
         <Badge tone={OUTCOME_TONE[outcome]}>{outcome}</Badge>
       </td>
-      <td className="py-2 text-right">{clvCell(r)}</td>
+      <td className="py-1.5 px-3 text-right">{clvCell(r)}</td>
     </tr>
   );
 }
@@ -162,7 +188,7 @@ export function PlacedBetsForGamePanel({
       api.getPaperTrail({ sport, limit: 2000 }, s) as Promise<PaperTrail>,
     [sport],
   );
-  const { data, isStale, error } = useLiveData<PaperTrail>(fetcher, {
+  const { data, isStale, error, lastUpdatedAt } = useLiveData<PaperTrail>(fetcher, {
     intervalMs: 30_000,
     staleAfterSec: 90,
   });
@@ -187,7 +213,7 @@ export function PlacedBetsForGamePanel({
   const totalUnits = staked.reduce((n, r) => n + (r.stake_units ?? 0), 0);
 
   const headerRight = (
-    <span className="font-mono text-[10px] text-slate-500">units only -- no $</span>
+    <span className="font-data text-[10px] text-faint">units only -- no $</span>
   );
 
   const firstLoadFailed = data == null && error != null;
@@ -195,24 +221,26 @@ export function PlacedBetsForGamePanel({
   return (
     <Panel
       title="Placed bets (this game)"
+      asOf={fmtClock(lastUpdatedAt)}
+      stale={isStale}
       right={headerRight}
       className={className}
     >
-      <p className="mb-2 text-[11px] leading-relaxed text-slate-500">
-        What the system actually <strong className="text-slate-300">staked</strong> for
+      <p className="mb-2 text-[11px] leading-relaxed text-faint">
+        What the system actually <strong className="text-foreground">staked</strong> for
         this game in the paper ledger -- the money-makers. Stake is in{" "}
-        <span className="font-mono">UNITS</span>; click a row for the full execution
+        <span className="font-data">UNITS</span>; click a row for the full execution
         trail + CLV grade. Real money is{" "}
-        <span className="font-mono uppercase text-amber-400">DENY</span>.
+        <span className="font-data uppercase text-stale">DENY</span>.
       </p>
 
       {isStale && data != null && (
         <div
           role="status"
           data-testid="placed-stale"
-          className="mb-2 rounded border border-amber-900/40 bg-amber-950/20 px-2 py-1"
+          className="mb-2 border border-warning/40 bg-warning/10 px-2 py-1"
         >
-          <span className="font-mono text-[10px] text-amber-400">
+          <span className="font-data text-[10px] text-stale">
             showing last-good placed bets (poll stale)
           </span>
         </div>
@@ -228,38 +256,35 @@ export function PlacedBetsForGamePanel({
       ) : (
         <>
           <div className="overflow-x-auto">
-            <table className="w-full" role="table">
+            <table className="w-full text-xs" role="table">
               <thead>
-                <tr className="text-left text-[10px] uppercase tracking-wide text-slate-500">
-                  <th className="pb-2 font-medium">selection</th>
-                  <th className="pb-2 text-right font-medium">tier</th>
-                  <th className="pb-2 text-right font-medium">stake (u)</th>
-                  <th className="pb-2 text-right font-medium">result</th>
-                  <th className="pb-2 text-right font-medium">CLV</th>
+                <tr className="text-left">
+                  <th className="microlabel py-1.5 px-3">selection</th>
+                  <th className="microlabel py-1.5 px-3 text-right">tier</th>
+                  <th className="microlabel py-1.5 px-3 text-right">stake (u)</th>
+                  <th className="microlabel py-1.5 px-3 text-right">result</th>
+                  <th className="microlabel py-1.5 px-3 text-right">CLV</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/50">
+              <tbody className="divide-y divide-border">
                 {staked.map((r, i) => (
                   <PlacedBetRow key={`${toBetId(r)}-${i}`} r={r} />
                 ))}
               </tbody>
             </table>
           </div>
-          <div className="mt-2 flex items-center justify-between border-t border-slate-800 pt-2">
-            <span className="font-mono text-[10px] text-slate-500">
+          <div className="mt-2 flex items-center justify-between border-t border-border pt-2">
+            <span className="font-data text-[10px] text-faint">
               {staked.length} placed bet{staked.length !== 1 ? "s" : ""}
             </span>
-            <span
-              className="font-mono text-[11px] text-slate-300"
-              data-testid="placed-total-units"
-            >
-              total staked: {totalUnits.toFixed(2)}u
+            <span data-testid="placed-total-units">
+              <Num className="text-[11px] text-foreground">total staked: {totalUnits.toFixed(2)}u</Num>
             </span>
           </div>
         </>
       )}
 
-      <p className="mt-3 text-[10px] leading-relaxed text-slate-600">
+      <p className="mt-3 text-[10px] leading-relaxed text-faint">
         Paper mode only -- "what the system would have staked to make the most
         (paper) units". No $ ROI is claimed; CLV = beat-the-close calibration
         yardstick and may be INSUFFICIENT_DATA without a true close.

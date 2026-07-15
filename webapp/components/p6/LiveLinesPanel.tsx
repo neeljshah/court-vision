@@ -1,10 +1,10 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { api, isUnavailable, SPORTS, type BestBetsEnvelope, type GameEdge } from "@/lib/p5api";
 import { Panel, Unavailable, Badge, ModeDot, timeAgoIso } from "./Primitives";
+import { Num, Delta } from "@/components/ui/terminal";
 import { useLiveData } from "@/lib/useLiveData";
-import { fmtPct } from "@/lib/utils";
 
 // LiveLinesPanel -- captured odds/lines per game across all sports.
 // Reads GET /api/v1/bestbets/{sport} for each sport, shows best_book (venue),
@@ -73,9 +73,20 @@ function LoadingShimmer() {
   );
 }
 
+type Freshness = { generatedAt: string | null; stale: boolean };
+
 // SportFeed -- per-sport block that owns its own useLiveData poller.
 // Isolating per-sport polling means a single sport failure never kills the rest.
-function SportFeed({ sport }: { sport: string }) {
+// onFreshness reports this sport's own generated_at + stale-ness up to the
+// panel head so the top-level "as of" stamp reflects real feed data, never a
+// fabricated timestamp.
+function SportFeed({
+  sport,
+  onFreshness,
+}: {
+  sport: string;
+  onFreshness: (sport: string, f: Freshness) => void;
+}) {
   const fetcher = useCallback(
     (signal: AbortSignal) => api.bestbets(sport, signal),
     [sport],
@@ -86,12 +97,18 @@ function SportFeed({ sport }: { sport: string }) {
     { intervalMs: 15_000, staleAfterSec: 30 },
   );
 
+  const generatedAt = data?.generated_at ?? null;
+  const bodyStale = isStale || freshnessStatus(generatedAt) === "stale";
+  useEffect(() => {
+    onFreshness(sport, { generatedAt, stale: bodyStale });
+  }, [sport, generatedAt, bodyStale, onFreshness]);
+
   // Before first load: show neutral 'checking' shimmer (never red for loading).
   if (isLoading && !data) {
     return (
       <div>
         <div className="mb-2 flex items-center gap-2">
-          <span className="text-xs font-semibold uppercase tracking-wide text-slate-300">
+          <span className="text-xs font-semibold uppercase tracking-wide text-foreground">
             {sport}
           </span>
           <Badge tone="slate">checking</Badge>
@@ -113,7 +130,7 @@ function SportFeed({ sport }: { sport: string }) {
   return (
     <div>
       <div className="mb-2 flex items-center gap-2">
-        <span className="text-xs font-semibold uppercase tracking-wide text-slate-300">
+        <span className="text-xs font-semibold uppercase tracking-wide text-foreground">
           {sport}
         </span>
         {freshnessPillOverride}
@@ -124,36 +141,66 @@ function SportFeed({ sport }: { sport: string }) {
       ) : !data ? (
         <LoadingShimmer />
       ) : !data.games || data.games.length === 0 ? (
-        <p className="text-xs text-slate-600">
+        <p className="text-xs text-faint">
           {data.reason || "no games on slate"}
         </p>
       ) : (
-        <table className="w-full text-xs">
-          <thead>
-            <tr className="text-left text-[10px] uppercase tracking-wide text-slate-500">
-              <th className="pb-1.5 font-medium">Game</th>
-              <th className="pb-1.5 font-medium">Market</th>
-              <th className="pb-1.5 font-medium">Venue</th>
-              <th className="pb-1.5 font-medium text-right">Odds</th>
-              <th className="pb-1.5 font-medium text-right">Div</th>
-              <th className="pb-1.5 font-medium text-right">Tier</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-800/60">
-            {data.games.slice(0, 8).map((g) => (
-              <GameRows key={g.game_id} game={g} />
-            ))}
-          </tbody>
-        </table>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="border-b border-border text-left">
+                <th className="microlabel py-1.5 px-3">Game</th>
+                <th className="microlabel py-1.5 px-3">Market</th>
+                <th className="microlabel py-1.5 px-3">Venue</th>
+                <th className="microlabel py-1.5 px-3 text-right">Odds</th>
+                <th className="microlabel py-1.5 px-3 text-right">Div</th>
+                <th className="microlabel py-1.5 px-3 text-right">Tier</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {data.games.slice(0, 8).map((g) => (
+                <GameRows key={g.game_id} game={g} />
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
 }
 
 export function LiveLinesPanel() {
+  const [freshness, setFreshness] = useState<Record<string, Freshness>>({});
+  const onFreshness = useCallback((sport: string, f: Freshness) => {
+    setFreshness((prev) =>
+      prev[sport]?.generatedAt === f.generatedAt && prev[sport]?.stale === f.stale
+        ? prev
+        : { ...prev, [sport]: f },
+    );
+  }, []);
+
+  // Panel-level asOf: the freshest per-sport generated_at we have, formatted
+  // HH:MM:SS. Panel-level stale: true if ANY sport's own feed is stale --
+  // never silently green while one sport is dead.
+  const { asOfStamp, anyStale } = useMemo(() => {
+    const entries = Object.values(freshness);
+    const stamps = entries
+      .map((f) => f.generatedAt)
+      .filter((d): d is string => Boolean(d))
+      .sort();
+    const newest = stamps.at(-1) ?? null;
+    const t = newest ? Date.parse(newest) : NaN;
+    return {
+      asOfStamp: Number.isNaN(t) ? null : new Date(t).toLocaleTimeString("en-US", { hour12: false }),
+      anyStale: entries.length > 0 && entries.some((f) => f.stale),
+    };
+  }, [freshness]);
+
   return (
     <Panel
       title="Live lines"
+      asOf={asOfStamp}
+      stale={anyStale}
       right={
         <span className="flex items-center gap-2">
           <ModeDot mode="poll" />
@@ -162,10 +209,10 @@ export function LiveLinesPanel() {
     >
       <div className="space-y-5">
         {SPORTS.map((sport) => (
-          <SportFeed key={sport} sport={sport} />
+          <SportFeed key={sport} sport={sport} onFreshness={onFreshness} />
         ))}
       </div>
-      <p className="mt-3 text-[11px] text-slate-600">
+      <p className="mt-3 text-[11px] text-faint">
         Lines captured from public keyless feeds. Venue = best book at capture
         time. Div = model prob minus devigged market prob (calibrated divergence,
         not an edge claim). Units only; no $ column.
@@ -183,9 +230,9 @@ function GameRows({ game }: { game: GameEdge }) {
 
   if (bets.length === 0) {
     return (
-      <tr className="text-slate-500">
+      <tr className="text-muted-foreground">
         <td className="py-1.5 font-mono text-[10px]">{label}</td>
-        <td colSpan={5} className="py-1.5 text-[10px] text-slate-600">
+        <td colSpan={5} className="py-1.5 text-[10px] text-faint">
           no candidates
         </td>
       </tr>
@@ -195,38 +242,40 @@ function GameRows({ game }: { game: GameEdge }) {
   return (
     <>
       {bets.slice(0, 3).map((b, i) => (
-        <tr key={`${b.market_type}-${b.side}-${i}`} className="text-slate-300">
+        <tr key={`${b.market_type}-${b.side}-${i}`} className="text-foreground hover:bg-surface-2">
           {i === 0 ? (
             <td
-              className="py-1.5 font-mono text-[10px] text-slate-400"
+              className="py-1.5 px-3 font-mono text-[10px] text-faint"
               rowSpan={Math.min(bets.length, 3)}
             >
               {label}
             </td>
           ) : null}
-          <td className="py-1.5">
+          <td className="py-1.5 px-3">
             {b.market_type}{" "}
-            <span className="text-slate-500">{b.side}</span>
+            <span className="text-muted-foreground">{b.side}</span>
             {b.line != null ? (
-              <span className="ml-1 text-slate-600">{b.line}</span>
+              <Num className="ml-1 text-faint">{b.line}</Num>
             ) : null}
           </td>
-          <td className="py-1.5 font-mono text-[10px] text-slate-400">
+          <td className="py-1.5 px-3 font-mono text-[10px] text-faint">
             {b.best_book || "--"}
           </td>
-          <td className="py-1.5 text-right font-mono tabular-nums">
-            {b.best_odds != null ? b.best_odds.toFixed(2) : "--"}
+          <td className="py-1.5 px-3 text-right">
+            <Num>{b.best_odds != null ? b.best_odds.toFixed(2) : "--"}</Num>
           </td>
-          <td className="py-1.5 text-right font-mono tabular-nums">
-            {b.model_prob != null && b.market_prob != null
-              ? fmtPct(b.model_prob - b.market_prob)
-              : "n/a"}
+          <td className="py-1.5 px-3 text-right">
+            {b.model_prob != null && b.market_prob != null ? (
+              <Delta value={b.model_prob - b.market_prob} digits={3} />
+            ) : (
+              <Num className="text-faint">n/a</Num>
+            )}
           </td>
-          <td className="py-1.5 text-right">
+          <td className="py-1.5 px-3 text-right">
             {b.tier ? (
               <Badge tone={tierTone(b.tier)}>{b.tier}</Badge>
             ) : (
-              <span className="text-slate-600">--</span>
+              <span className="text-faint">--</span>
             )}
           </td>
         </tr>

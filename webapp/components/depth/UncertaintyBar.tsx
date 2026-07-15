@@ -13,6 +13,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { InfoTip } from "./InfoTip";
+import { Num } from "@/components/ui/terminal";
 import { EMPTY_CELL } from "@/lib/tokens";
 
 export interface UncertaintyBarProps {
@@ -43,9 +44,11 @@ export function UncertaintyBar({
 }: UncertaintyBarProps) {
   if (!isProb(prob)) {
     return (
-      <div className={cn("text-xs text-muted-foreground", className)}>
+      <div className={cn("text-xs text-faint", className)}>
         {label && <span className="mr-1">{label}</span>}
-        <span title="no probability available">{EMPTY_CELL}</span>
+        <Num>
+          <span title="no probability available">{EMPTY_CELL}</span>
+        </Num>
       </div>
     );
   }
@@ -60,18 +63,18 @@ export function UncertaintyBar({
   return (
     <div className={cn("flex flex-col gap-1", className)}>
       <div className="flex items-center justify-between text-xs">
-        <span className="flex items-center gap-1 text-muted-foreground">
+        <span className="flex items-center gap-1 microlabel">
           {label ?? "probability"}
           <InfoTip term="uncertainty" />
         </span>
-        <span className="font-mono tabular-nums text-foreground">
+        <Num className="text-foreground">
           {pct(prob)}
           {hasBand && (
-            <span className="ml-1 text-muted-foreground">
+            <span className="ml-1 text-faint">
               [{pct(lo)}, {pct(hi)}]
             </span>
           )}
-        </span>
+        </Num>
       </div>
       <div
         role="meter"
@@ -79,18 +82,18 @@ export function UncertaintyBar({
         aria-valuenow={Number((prob * 100).toFixed(1))}
         aria-valuemin={0}
         aria-valuemax={100}
-        className="relative h-2 w-full rounded-full bg-muted/50"
+        className="relative h-2 w-full border border-border bg-surface-2"
       >
         {hasBand && (
           <span
             aria-hidden
-            className="absolute top-0 h-full rounded-full bg-info/30"
+            className="absolute top-0 h-full bg-muted-foreground/30"
             style={{ left: pct(lo), width: pct(hi - lo) }}
           />
         )}
         <span
           aria-hidden
-          className="absolute top-1/2 h-3 w-0.5 -translate-y-1/2 rounded-full bg-info"
+          className="absolute top-1/2 h-3 w-0.5 -translate-y-1/2 bg-foreground"
           style={{ left: pct(prob) }}
         />
       </div>

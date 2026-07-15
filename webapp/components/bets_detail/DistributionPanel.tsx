@@ -14,16 +14,44 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { UncertaintyBar } from "@/components/depth/UncertaintyBar";
 import { ProvenanceBadge } from "@/components/depth/ProvenanceBadge";
-import { Panel } from "@/components/p6/Primitives";
+import { Panel as TerminalPanel, PanelHead } from "@/components/ui/terminal";
 import { Unavailable, Empty } from "@/components/honest/HonestState";
 import { isExtUnavailable } from "@/lib/p5api_ext";
 import type { Report } from "@/lib/types";
 import type { PropsBoardEnvelope, PlayerPropRow } from "@/lib/p5api_ext";
 
+// Local Panel shim: p6/Primitives.Panel currently lacks asOf/stale wiring, so
+// this component composes directly from the terminal.tsx primitives instead
+// (same title/right/asOf/stale/children/className call shape used below).
+function Panel({
+  title,
+  asOf,
+  stale = false,
+  right,
+  children,
+  className,
+}: {
+  title: string;
+  asOf?: string | null;
+  stale?: boolean;
+  right?: React.ReactNode;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <TerminalPanel className={className}>
+      <PanelHead title={title} asOf={asOf} stale={stale} right={right} />
+      <div className="p-4">{children}</div>
+    </TerminalPanel>
+  );
+}
+
 export interface DistributionPanelProps {
   report: Report | null;
   propsData: PropsBoardEnvelope | null;
   sport: string;
+  asOf?: string | null;
+  stale?: boolean;
   className?: string;
 }
 
@@ -60,13 +88,13 @@ function engineLabel(sport: string): string {
 function PropRow({ row }: { row: PlayerPropRow }) {
   const lineStr = row.line != null ? ` ${row.line}` : "";
   return (
-    <div className="flex flex-col gap-1 border-t border-slate-800 pt-2 first:border-t-0 first:pt-0">
+    <div className="flex flex-col gap-1 border-t border-border pt-2 first:border-t-0 first:pt-0">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-slate-200">
-          {row.player} <span className="text-slate-500">{row.stat}{lineStr}</span>
+        <span className="text-xs font-medium text-foreground">
+          {row.player} <span className="text-faint">{row.stat}{lineStr}</span>
         </span>
         {row.tier && (
-          <span className="font-mono text-[10px] text-slate-500">{row.book} | tier {row.tier}</span>
+          <span className="font-data text-[10px] text-faint">{row.book} | tier {row.tier}</span>
         )}
       </div>
       <div className="grid grid-cols-2 gap-2">
@@ -90,7 +118,7 @@ function PropRow({ row }: { row: PlayerPropRow }) {
         />
       </div>
       {row.clv_is_proxy && (
-        <span className="font-mono text-[10px] text-amber-500">
+        <span className="font-data text-[10px] text-stale">
           CLV proxy (no true close)
         </span>
       )}
@@ -103,6 +131,8 @@ export function DistributionPanel({
   report,
   propsData,
   sport,
+  asOf,
+  stale = false,
   className,
 }: DistributionPanelProps) {
   const pick = headlinePick(report);
@@ -120,27 +150,29 @@ export function DistributionPanel({
   return (
     <Panel
       title="Prediction + interval"
+      asOf={asOf}
+      stale={stale}
       right={
-        <span className="font-mono text-[10px] text-slate-500">
+        <span className="font-data text-[10px] text-faint">
           probability only -- no $
         </span>
       }
       className={className}
     >
       {/* Headline game prediction */}
-      <div className="mb-4 rounded border border-slate-800 bg-surface-1/30 p-3">
+      <div className="mb-4 border border-border bg-surface-1/30 p-3">
         <div className="mb-1 flex items-center justify-between">
-          <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500">
+          <span className="microlabel">
             game prediction
           </span>
           <div className="flex items-center gap-2">
             {leak && (
               <span
                 className={cn(
-                  "rounded border px-1.5 py-0.5 font-mono text-[10px]",
+                  "border px-1.5 py-0.5 font-data text-[10px]",
                   leak.in_sample
-                    ? "border-red-900 text-red-400"
-                    : "border-emerald-900 text-emerald-400",
+                    ? "border-danger/40 text-down"
+                    : "border-success/40 text-up",
                 )}
               >
                 {leak.in_sample ? "in-sample" : "leak-free"}
@@ -149,21 +181,21 @@ export function DistributionPanel({
             <ProvenanceBadge model={engine} phase="pregame" showTip={false} />
           </div>
         </div>
-        <p className="mb-2 text-sm font-medium text-slate-100">{pick.label}</p>
+        <p className="mb-2 text-sm font-medium text-foreground">{pick.label}</p>
         <UncertaintyBar
           prob={pick.prob}
           low={pick.low}
           high={pick.high}
           label="P(pick)"
         />
-        <p className="mt-2 font-mono text-[10px] text-slate-600">
+        <p className="mt-2 font-data text-[10px] text-faint">
           vs-close UNPROVEN -- calibration, not a market edge
         </p>
       </div>
 
       {/* Props distribution */}
       <div>
-        <p className="mb-2 font-mono text-[10px] uppercase tracking-widest text-slate-500">
+        <p className="mb-2 microlabel">
           prop projections
         </p>
         {propsUnavail ? (
@@ -187,7 +219,7 @@ export function DistributionPanel({
               <PropRow key={`${r.player}-${r.stat}-${i}`} row={r} />
             ))}
             {propRows.length > 6 && (
-              <p className="text-[10px] text-slate-600">
+              <p className="text-[10px] text-faint">
                 +{propRows.length - 6} more prop lines
               </p>
             )}

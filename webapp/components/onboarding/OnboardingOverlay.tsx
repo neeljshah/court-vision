@@ -102,12 +102,12 @@ function HelpButton({ onClick }: { onClick: () => void }) {
       aria-label="Open the how-to-read-this guide"
       className={cn(
         "fixed bottom-4 right-4 z-30 flex h-10 w-10 items-center justify-center",
-        "rounded-full border border-border bg-surface-1 text-foreground shadow-lg",
-        "transition-colors hover:bg-accent",
+        "rounded-full border border-border bg-card text-foreground",
+        "transition-colors hover:bg-surface-2",
         "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
       )}
     >
-      <span aria-hidden className="text-base font-semibold">
+      <span aria-hidden className="font-data text-base font-semibold">
         ?
       </span>
     </button>
@@ -149,10 +149,12 @@ export function OnboardingOverlay() {
     <>
       <HelpButton onClick={() => setOpen(true)} />
       <Dialog open={open} onOpenChange={handleOpenChange}>
-        <DialogContent className="max-h-[85vh] max-w-2xl overflow-y-auto">
+        <DialogContent className="max-h-[85vh] max-w-2xl overflow-y-auto rounded-none border-border bg-card shadow-none">
           <DialogHeader>
-            <DialogTitle>What is this & how to read it</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="microlabel text-foreground">
+              What is this &amp; how to read it
+            </DialogTitle>
+            <DialogDescription className="text-faint">
               CourtVision is a calibrated multi-sport prediction system. Honest
               decision-support only -- read these four rails first, then use the
               page map below.
@@ -161,17 +163,15 @@ export function OnboardingOverlay() {
 
           {/* Honest rails -- the framing that governs every number. */}
           <section aria-label="Honest framing">
-            <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              The honest framing
-            </h3>
+            <h3 className="microlabel mb-2">The honest framing</h3>
             <ul className="flex flex-col gap-2">
               {RAILS.map((r) => (
                 <li
                   key={r.term}
-                  className="rounded-md border border-border bg-surface-1/50 p-2.5 text-xs"
+                  className="border border-border bg-surface-1 p-2.5 text-xs"
                 >
-                  <span className="font-medium text-foreground">{r.term}.</span>{" "}
-                  <span className="text-muted-foreground">{r.line}</span>
+                  <span className="font-data font-medium text-foreground">{r.term}.</span>{" "}
+                  <span className="text-faint">{r.line}</span>
                 </li>
               ))}
             </ul>
@@ -179,9 +179,7 @@ export function OnboardingOverlay() {
 
           {/* Page map -- one honest purpose line per product area. */}
           <section aria-label="Page guide" className="mt-1">
-            <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Where to look
-            </h3>
+            <h3 className="microlabel mb-2">Where to look</h3>
             <ul className="flex flex-col gap-1.5">
               {PAGE_GUIDE.map((p) => (
                 <li key={p.href}>
@@ -189,19 +187,19 @@ export function OnboardingOverlay() {
                     href={p.href}
                     onClick={() => handleOpenChange(false)}
                     className={cn(
-                      "block rounded-md px-2.5 py-2 text-xs transition-colors",
-                      "hover:bg-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                      "block border border-border px-2.5 py-2 text-xs transition-colors",
+                      "hover:bg-surface-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     )}
                   >
-                    <span className="font-medium text-foreground">{p.label}</span>
-                    <span className="ml-2 text-muted-foreground">{p.purpose}</span>
+                    <span className="font-data font-medium text-foreground">{p.label}</span>
+                    <span className="ml-2 text-faint">{p.purpose}</span>
                   </a>
                 </li>
               ))}
             </ul>
           </section>
 
-          <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
+          <p className="mt-1 text-[11px] leading-relaxed text-faint">
             This guide is dismissible and non-blocking. Re-open it any time with
             the &quot;?&quot; button in the bottom-right corner.
           </p>

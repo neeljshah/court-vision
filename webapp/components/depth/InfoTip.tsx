@@ -52,16 +52,17 @@ export function InfoTip({ term, text, label, ariaLabel, className }: InfoTipProp
             type="button"
             aria-label={aria}
             className={cn(
-              "inline-flex items-center gap-1 text-muted-foreground " +
+              "inline-flex items-center gap-1 text-faint " +
                 "hover:text-foreground focus:outline-none focus-visible:ring-2 " +
-                "focus-visible:ring-ring rounded-sm align-middle",
+                "focus-visible:ring-ring align-middle",
               className
             )}
           >
-            {label && <span className="text-xs">{label}</span>}
+            {label && <span className="microlabel">{label}</span>}
+            {/* Info glyph: an icon, not a card -- rounded-full is the icon shape, not decoration. */}
             <span
               aria-hidden
-              className="inline-flex h-3.5 w-3.5 items-center justify-center rounded-full border border-current text-[9px] font-semibold leading-none"
+              className="inline-flex h-3.5 w-3.5 items-center justify-center rounded-full border border-current text-[9px] font-data font-semibold leading-none"
             >
               i
             </span>
@@ -69,7 +70,7 @@ export function InfoTip({ term, text, label, ariaLabel, className }: InfoTipProp
         </TooltipTrigger>
         <TooltipContent
           role="tooltip"
-          className="max-w-xs text-xs leading-relaxed"
+          className="max-w-xs border-border bg-card text-xs leading-relaxed text-foreground"
         >
           {definition}
         </TooltipContent>

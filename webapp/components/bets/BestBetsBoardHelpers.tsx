@@ -200,12 +200,12 @@ export function SportSectionEmpty({ sport, reason }: { sport: string; reason?: s
       role="status"
       aria-label={`${sport.toUpperCase()}: none right now`}
       data-testid={`sport-section-empty-${sport}`}
-      className="rounded border border-slate-800 bg-slate-900/30 px-3 py-3"
+      className="border border-border bg-surface-2 px-3 py-3"
     >
-      <span className="font-mono text-[10px] font-semibold text-slate-500 uppercase tracking-wide">
+      <span className="microlabel">
         {sport.toUpperCase()}
       </span>
-      <p className="mt-0.5 font-mono text-[10px] text-slate-600">{label}</p>
+      <p className="mt-0.5 font-data text-[10px] text-faint">{label}</p>
     </div>
   );
 }

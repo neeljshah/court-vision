@@ -19,12 +19,12 @@ import { render, act, screen } from "@testing-library/react";
 // ---------------------------------------------------------------------------
 
 vi.mock("@/lib/p5api", () => ({
-  SPORTS: ["nba"],
+  SPORTS: ["nba", "mlb"],
   isUnavailable: (x: unknown) =>
     !!x &&
     typeof x === "object" &&
     (x as { status?: string }).status === "unavailable",
-  api: { bestbets: vi.fn() },
+  api: { bestbetsBoard: vi.fn() },
 }));
 
 type LiveDataState<T> = {
@@ -105,64 +105,65 @@ function resetLiveState() {
   };
 }
 
-// Minimal BestBet shaped like the backend response for a "bet" decision.
-// UNITS only -- no $ field anywhere. edge/ev are probability ratios.
-function mkBestBet(over: {
+// Minimal BestBetsCard shaped like the /api/bestbets/board response (flat
+// cards[], not the legacy games[]/best_bets[] envelope). UNITS only -- no $
+// field anywhere. edge_vs_market is a probability ratio, not a $ figure.
+let _cardSeq = 0;
+function mkCard(over: {
+  game_id?: string;
+  sport?: string;
   market_type?: string;
   side?: string;
   model_prob?: number;
   market_prob?: number;
-  stake_units?: number;
+  units?: number;
   tier?: string;
+  status?: string;
 }) {
+  _cardSeq += 1;
   return {
+    game_id: over.game_id ?? `game-${_cardSeq}`,
+    matchup: "NYK @ SAS",
+    sport: over.sport ?? "nba",
     market_type: over.market_type ?? "moneyline",
     side: over.side ?? "home",
     model_prob: over.model_prob ?? 0.58,
     market_prob: over.market_prob ?? 0.52,
     best_book: "fanduel",
     best_odds: 1.88,
-    line: null,
-    edge: (over.model_prob ?? 0.58) - (over.market_prob ?? 0.52),
-    ev: 0.07,
+    all_books: [],
+    edge_vs_market: (over.model_prob ?? 0.58) - (over.market_prob ?? 0.52),
+    units: over.units ?? 0.5,
     tier: over.tier ?? "A",
-    decision: "bet",
-    stake_units: over.stake_units ?? 0.5,
-    flat_unit: 0.5,
-    kelly_units: 0.4,
+    confidence: 0.7,
+    clv: null,
     clv_is_proxy: true,
+    status: over.status ?? "pregame",
   };
 }
 
-// Full EnvelopeResult shape as returned by fetchAllSports (new shape).
-function mkEnvelopeResult(
-  gamesBySport: Record<
-    string,
-    Array<{ game_id: string; home?: string; away?: string; best_bets?: ReturnType<typeof mkBestBet>[] }>
-  >,
+// Full FetchResult shape as returned by fetchAllSports (boards[sport] =
+// { board: BestBetsBoardType|null, skipped: [] }).
+function mkFetchResult(
+  cardsBySport: Record<string, ReturnType<typeof mkCard>[]>,
   unavailableReasons: Record<string, string> = {},
 ) {
-  const envelopes: Record<string, unknown> = {};
-  for (const [sport, games] of Object.entries(gamesBySport)) {
-    envelopes[sport] = {
-      sport,
-      generated_at: new Date(Date.now() - 30_000).toISOString(),
-      status: "ok",
-      count: games.length,
-      n_best_bets: games.reduce((n, g) => n + (g.best_bets?.length ?? 0), 0),
-      games: games.map((g) => ({
-        game_id: g.game_id,
-        home: g.home ?? "SAS",
-        away: g.away ?? "NYK",
+  const boards: Record<string, unknown> = {};
+  for (const [sport, cards] of Object.entries(cardsBySport)) {
+    boards[sport] = {
+      board: {
         status: "ok",
-        best_bets: g.best_bets ?? [],
-        candidates: g.best_bets ?? [],
-      })),
-      clv: { n_bets: 0, pct_beat_close: null, mean_clv_pct: null, by_sport: null, clv_is_proxy: true },
-      edge_claimed: false,
+        generated_at: new Date(Date.now() - 30_000).toISOString(),
+        cards,
+        count: cards.length,
+        sport,
+        honest_note: "calibration only",
+        edge_claimed: false,
+      },
+      skipped: [],
     };
   }
-  return { envelopes, unavailableReasons };
+  return { boards, unavailableReasons };
 }
 
 // ---------------------------------------------------------------------------
@@ -173,15 +174,10 @@ describe("BestBetsBoard (A) -- cards payload renders one row per card", () => {
   afterEach(() => vi.clearAllMocks());
 
   it("(A1) renders exactly one card-row per qualifying bet card", async () => {
-    const payload = mkEnvelopeResult({
+    const payload = mkFetchResult({
       nba: [
-        {
-          game_id: "001",
-          best_bets: [
-            mkBestBet({ model_prob: 0.58, market_prob: 0.52, stake_units: 0.5, tier: "A" }),
-            mkBestBet({ market_type: "total", side: "over", model_prob: 0.60, market_prob: 0.50, stake_units: 0.75, tier: "S" }),
-          ],
-        },
+        mkCard({ game_id: "001", model_prob: 0.58, market_prob: 0.52, units: 0.5, tier: "A" }),
+        mkCard({ game_id: "001", market_type: "total", side: "over", model_prob: 0.60, market_prob: 0.50, units: 0.75, tier: "S" }),
       ],
     });
     setLiveState({
@@ -200,14 +196,9 @@ describe("BestBetsBoard (A) -- cards payload renders one row per card", () => {
   });
 
   it("(A2) each card row carries model_prob, market_prob, units, and tier values", async () => {
-    const payload = mkEnvelopeResult({
+    const payload = mkFetchResult({
       nba: [
-        {
-          game_id: "002",
-          best_bets: [
-            mkBestBet({ model_prob: 0.62, market_prob: 0.55, stake_units: 1.0, tier: "S" }),
-          ],
-        },
+        mkCard({ game_id: "002", model_prob: 0.62, market_prob: 0.55, units: 1.0, tier: "S" }),
       ],
     });
     setLiveState({
@@ -233,13 +224,8 @@ describe("BestBetsBoard (A) -- cards payload renders one row per card", () => {
   });
 
   it("(A3) rendered board output contains NO dollar string anywhere (UNITS only rail)", async () => {
-    const payload = mkEnvelopeResult({
-      nba: [
-        {
-          game_id: "003",
-          best_bets: [mkBestBet({ stake_units: 2.5, tier: "B" })],
-        },
-      ],
+    const payload = mkFetchResult({
+      nba: [mkCard({ game_id: "003", units: 2.5, tier: "B" })],
     });
     setLiveState({
       data: payload,
@@ -258,22 +244,12 @@ describe("BestBetsBoard (A) -- cards payload renders one row per card", () => {
   });
 
   it("(A4) three cards from two sports all appear in the grid", async () => {
-    const payload = mkEnvelopeResult({
+    const payload = mkFetchResult({
       nba: [
-        {
-          game_id: "nba-g1",
-          best_bets: [
-            mkBestBet({ model_prob: 0.60, tier: "A" }),
-            mkBestBet({ market_type: "spread", model_prob: 0.55, tier: "B" }),
-          ],
-        },
+        mkCard({ game_id: "nba-g1", model_prob: 0.60, tier: "A" }),
+        mkCard({ game_id: "nba-g1", market_type: "spread", model_prob: 0.55, tier: "B" }),
       ],
-      mlb: [
-        {
-          game_id: "mlb-g1",
-          best_bets: [mkBestBet({ model_prob: 0.65, tier: "S" })],
-        },
-      ],
+      mlb: [mkCard({ game_id: "mlb-g1", sport: "mlb", model_prob: 0.65, tier: "S" })],
     });
     setLiveState({ data: payload, isLoading: false, ageSec: 20, lastUpdatedAt: Date.now() });
 
@@ -294,9 +270,9 @@ describe("BestBetsBoard (B) -- unavailable state surfaces honest reason", () => 
   afterEach(() => vi.clearAllMocks());
 
   it("(B1) when a sport is unavailable the reason banner is rendered (not blank)", async () => {
-    // nba is unavailable with a reason; the EnvelopeResult surfaces it.
+    // nba is unavailable with a reason; the FetchResult surfaces it.
     const payload = {
-      envelopes: { nba: null },
+      boards: { nba: { board: null, skipped: [] } },
       unavailableReasons: { nba: "NBA offseason -- no games scheduled" },
     };
     setLiveState({ data: payload, isLoading: false, ageSec: 5, lastUpdatedAt: Date.now() });
@@ -316,7 +292,7 @@ describe("BestBetsBoard (B) -- unavailable state surfaces honest reason", () => 
 
   it("(B2) the reason banner explicitly shows edge_claimed=false (calibration-only honest note)", async () => {
     const payload = {
-      envelopes: { nba: null },
+      boards: { nba: { board: null, skipped: [] } },
       unavailableReasons: { nba: "no live prop lines available" },
     };
     setLiveState({ data: payload, isLoading: false, ageSec: 5, lastUpdatedAt: Date.now() });
@@ -333,7 +309,7 @@ describe("BestBetsBoard (B) -- unavailable state surfaces honest reason", () => 
 
   it("(B3) board does NOT render a blank panel when unavailable -- shows reason not empty space", async () => {
     const payload = {
-      envelopes: {},
+      boards: {},
       unavailableReasons: { all: "all sports unavailable -- predict service down" },
     };
     setLiveState({ data: payload, isLoading: false, ageSec: 5, lastUpdatedAt: Date.now() });
@@ -350,7 +326,7 @@ describe("BestBetsBoard (B) -- unavailable state surfaces honest reason", () => 
 
   it("(B4) multiple unavailable sports each get their own honest reason banner", async () => {
     const payload = {
-      envelopes: { nba: null, mlb: null },
+      boards: { nba: { board: null, skipped: [] }, mlb: { board: null, skipped: [] } },
       unavailableReasons: {
         nba: "NBA offseason",
         mlb: "MLB data gap",
@@ -369,27 +345,20 @@ describe("BestBetsBoard (B) -- unavailable state surfaces honest reason", () => 
 
   it("(B5) board shows unavailable banner + cards together when one sport is ok and another is not", async () => {
     const payload = {
-      envelopes: {
+      boards: {
         nba: {
-          sport: "nba",
-          generated_at: new Date(Date.now() - 30_000).toISOString(),
-          status: "ok",
-          count: 1,
-          n_best_bets: 1,
-          games: [
-            {
-              game_id: "nba-001",
-              home: "SAS",
-              away: "NYK",
-              status: "ok",
-              best_bets: [mkBestBet({ model_prob: 0.58, tier: "A" })],
-              candidates: [],
-            },
-          ],
-          clv: { n_bets: 0, pct_beat_close: null, mean_clv_pct: null, by_sport: null, clv_is_proxy: true },
-          edge_claimed: false,
+          board: {
+            status: "ok",
+            generated_at: new Date(Date.now() - 30_000).toISOString(),
+            cards: [mkCard({ game_id: "nba-001", model_prob: 0.58, tier: "A" })],
+            count: 1,
+            sport: "nba",
+            honest_note: "calibration only",
+            edge_claimed: false,
+          },
+          skipped: [],
         },
-        mlb: null,
+        mlb: { board: null, skipped: [] },
       },
       unavailableReasons: { mlb: "MLB offseason -- no lines" },
     };

@@ -9,6 +9,7 @@
 // Each control is one defense against fooling ourselves.
 
 import { InfoTip } from "@/components/depth";
+import { Panel, PanelHead } from "@/components/ui/terminal";
 
 interface Control {
   name: string;
@@ -66,46 +67,45 @@ const CONTROLS: Control[] = [
 
 export function ValidationDiscipline() {
   return (
-    <section aria-label="validation discipline" className="flex flex-col gap-3">
-      <h2 className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-        validation discipline -- why most signals honestly reject
-      </h2>
-      <p className="text-xs leading-relaxed text-muted-foreground">
-        Markets are efficient, so most candidate signals carry no real information once
-        you stop fooling yourself. Eight stacked controls each remove one way to fool
-        yourself. A signal must clear ALL of them to ship -- and an honest{" "}
-        <span className="font-semibold text-foreground">REJECT is the product working</span>,
-        not a failure.
-      </p>
-      <ol className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-        {CONTROLS.map((c, i) => (
-          <li
-            key={c.name}
-            className="flex gap-3 rounded-lg border border-border bg-surface-1/60 p-3"
-          >
-            <span className="mt-0.5 font-mono text-[11px] font-semibold text-muted-foreground">
-              {`0${i + 1}`}
-            </span>
-            <div>
-              <div className="flex items-center gap-1 text-xs font-semibold tracking-tight text-foreground">
-                {c.name}
-                {c.plain && (
-                  <InfoTip text={c.plain} ariaLabel={`${c.name} explained simply`} />
-                )}
+    <section aria-label="validation discipline">
+    <Panel>
+      <PanelHead title="validation discipline -- why most signals honestly reject" />
+      <div className="flex flex-col gap-3 p-4">
+        <p className="text-xs leading-relaxed text-muted-foreground">
+          Markets are efficient, so most candidate signals carry no real information once
+          you stop fooling yourself. Eight stacked controls each remove one way to fool
+          yourself. A signal must clear ALL of them to ship -- and an honest{" "}
+          <span className="font-semibold text-foreground">REJECT is the product working</span>,
+          not a failure.
+        </p>
+        <ol className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          {CONTROLS.map((c, i) => (
+            <li key={c.name} className="flex gap-3 border border-border bg-surface-1 p-3">
+              <span className="mt-0.5 font-data text-[11px] font-semibold text-muted-foreground">
+                {`0${i + 1}`}
+              </span>
+              <div>
+                <div className="flex items-center gap-1 text-xs font-semibold tracking-tight text-foreground">
+                  {c.name}
+                  {c.plain && (
+                    <InfoTip text={c.plain} ariaLabel={`${c.name} explained simply`} />
+                  )}
+                </div>
+                <p className="mt-0.5 text-[11px] leading-relaxed text-muted-foreground">
+                  <span className="text-foreground/70">why it matters --</span> {c.guards}
+                </p>
               </div>
-              <p className="mt-0.5 text-[11px] leading-relaxed text-muted-foreground">
-                <span className="text-foreground/70">why it matters --</span> {c.guards}
-              </p>
-            </div>
-          </li>
-        ))}
-      </ol>
-      <p className="rounded-md border border-info/30 bg-info/5 px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
-        Only a signal that survives every control becomes a CALIBRATION prior or scouting
-        note -- and even then,{" "}
-        <span className="font-semibold text-foreground">vs_close stays UNPROVEN</span> until
-        a separate closing-line-value test passes. No dollar edge is claimed at any step.
-      </p>
+            </li>
+          ))}
+        </ol>
+        <p className="border border-info/40 bg-info/5 px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
+          Only a signal that survives every control becomes a CALIBRATION prior or scouting
+          note -- and even then,{" "}
+          <span className="font-semibold text-foreground">vs_close stays UNPROVEN</span> until
+          a separate closing-line-value test passes. No dollar edge is claimed at any step.
+        </p>
+      </div>
+    </Panel>
     </section>
   );
 }

@@ -29,23 +29,10 @@ import {
   fmtUnits, fmtSignedUnits, signedUnitsClass, settledTally,
   resolveImproveDecision, PlacedBetsTable, digestDateLabel,
 } from "./todayDigestHelpers";
+import { Panel, PanelHead, AsOf, Num } from "@/components/ui/terminal";
 
 const POLL_MS = 30_000;
 const STALE_SEC = 90;
-
-function StaleBadge({ ageSec, isStale }: { ageSec: number | null; isStale: boolean }) {
-  if (ageSec === null) return null;
-  const s = Math.max(0, ageSec);
-  const label = s < 5 ? "just now" : s < 60 ? `${s}s ago` : `${Math.floor(s / 60)}m ago`;
-  return (
-    <span className="font-mono text-[9px] uppercase tracking-wider text-slate-500" data-testid="today-age">
-      updated {label}
-      {isStale && (
-        <span className="ml-1.5 text-amber-400" data-testid="today-stale">(stale)</span>
-      )}
-    </span>
-  );
-}
 
 function StatTile({
   label, value, valueCls, sub, testId,
@@ -53,12 +40,12 @@ function StatTile({
   label: string; value: string; valueCls?: string; sub?: string; testId?: string;
 }) {
   return (
-    <div className="rounded-lg border border-slate-800 bg-bg-subtle px-3 py-2.5">
-      <div className="font-mono text-[9px] uppercase tracking-wider text-slate-500">{label}</div>
-      <div className={`mt-0.5 font-mono text-lg tabular-nums ${valueCls ?? "text-slate-100"}`} data-testid={testId}>
-        {value}
-      </div>
-      {sub ? <div className="mt-0.5 font-mono text-[9px] text-slate-600">{sub}</div> : null}
+    <div className="border border-border bg-surface-2 px-3 py-2.5">
+      <div className="microlabel">{label}</div>
+      <Num className={`mt-0.5 block text-lg ${valueCls ?? "text-foreground"}`}>
+        <span data-testid={testId}>{value}</span>
+      </Num>
+      {sub ? <div className="mt-0.5 font-data text-[9px] text-faint">{sub}</div> : null}
     </div>
   );
 }
@@ -70,7 +57,7 @@ export function HomeTodayCard() {
   const improveFetcher = useCallback((signal: AbortSignal) => api.improve(signal), []);
 
   const { data: today, ageSec, isStale, isLoading } =
-    useLiveData<PaperToday>(todayFetcher, { intervalMs: POLL_MS, staleAfterSec: STALE_SEC });
+    useLiveData<PaperToday>(todayFetcher, { intervalMs: POLL_MS, staleAfterSec: STALE_SEC, cacheKey: "home:today" });
   const { data: pnlRaw } =
     useLiveData<PnlSeries>(pnlFetcher, { intervalMs: POLL_MS, staleAfterSec: STALE_SEC });
   const { data: boardRaw } =
@@ -100,9 +87,9 @@ export function HomeTodayCard() {
   if (isLoading && today === null) {
     return (
       <section className="mx-auto max-w-5xl px-4 pt-6 sm:px-6" aria-label="today digest loading" data-testid="today-card-loading">
-        <div className="rounded-xl border border-slate-800 bg-bg-panel p-5">
-          <div className="h-6 w-40 animate-pulse rounded bg-slate-700/40" />
-        </div>
+        <Panel className="p-5">
+          <div className="h-6 w-40 animate-pulse bg-surface-2" />
+        </Panel>
       </section>
     );
   }
@@ -120,24 +107,30 @@ export function HomeTodayCard() {
 
   return (
     <section className="mx-auto max-w-5xl px-4 pt-6 sm:px-6" aria-label="today digest" data-testid="today-card">
-      <div className="rounded-xl border border-slate-800 bg-bg-panel">
-        {/* Header */}
-        <header className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 px-5 py-3">
-          <div className="flex items-baseline gap-3">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-200">
-              Today -- what the system did
-            </h2>
-            <span className="font-mono text-[11px] text-slate-500" data-testid="today-date">
-              {digestDateLabel(t)}
+      <Panel>
+        <PanelHead
+          title="Today -- what the system did"
+          asOf={
+            ageSec == null
+              ? null
+              : ageSec < 5
+                ? "just now"
+                : ageSec < 60
+                  ? `${Math.floor(ageSec)}s ago`
+                  : `${Math.floor(ageSec / 60)}m ago`
+          }
+          stale={isStale}
+          right={
+            <span className="flex items-center gap-2">
+              <span className="font-data text-[11px] text-faint" data-testid="today-date">
+                {digestDateLabel(t)}
+              </span>
+              <span className="border border-warning px-1.5 py-px font-data text-[10px] font-bold uppercase tracking-wider text-warning">
+                paper - units
+              </span>
             </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <StaleBadge ageSec={ageSec} isStale={isStale} />
-            <span className="rounded border border-amber-900/50 bg-amber-950/30 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-amber-400">
-              paper -- units
-            </span>
-          </div>
-        </header>
+          }
+        />
 
         <div className="p-5">
           {/* At-a-glance stat tiles */}
@@ -152,7 +145,7 @@ export function HomeTodayCard() {
               label="Placed (staked)"
               testId="today-placed-count"
               value={String(t.placed.length)}
-              valueCls={t.placed.length > 0 ? "text-amber-300" : "text-slate-400"}
+              valueCls={t.placed.length > 0 ? "text-primary" : "text-muted-foreground"}
               sub="money-makers bet"
             />
             <StatTile
@@ -172,37 +165,37 @@ export function HomeTodayCard() {
               label="Self-improve"
               testId="today-improve"
               value={improveDecision.label}
-              valueCls={improveDecision.tone === "ship" ? "text-emerald-400" : "text-slate-300"}
+              valueCls={improveDecision.tone === "ship" ? "text-up" : "text-foreground"}
               sub={improveDecision.tone === "ship" ? "shipped" : "hold"}
             />
           </div>
 
           {/* BANKROLL headline + compact equity sparkline ("how much you'd have made") */}
           <div
-            className="mb-4 flex flex-wrap items-center justify-between gap-4 rounded-lg border border-slate-800 bg-bg-subtle px-4 py-3"
+            className="mb-4 flex flex-wrap items-center justify-between gap-4 border border-border bg-surface-2 px-4 py-3"
             data-testid="today-bankroll"
           >
             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-              <span className="font-mono text-[9px] uppercase tracking-wider text-slate-500">Bankroll</span>
+              <span className="microlabel">Bankroll</span>
               {t.bankroll != null && t.start_units != null ? (
                 <>
-                  <span className="font-mono text-2xl font-semibold tabular-nums text-slate-100">
+                  <Num className="text-2xl font-semibold text-foreground">
                     {fmtUnits(t.bankroll)}
-                  </span>
-                  <span className="font-mono text-xs text-slate-500">/ {fmtUnits(t.start_units)} units</span>
+                  </Num>
+                  <Num className="text-xs text-faint">/ {fmtUnits(t.start_units)} units</Num>
                   {net != null && (
-                    <span className={`font-mono text-sm font-semibold tabular-nums ${signedUnitsClass(net)}`} data-testid="today-net">
-                      net {fmtSignedUnits(net)}u
-                    </span>
+                    <Num className={`text-sm font-semibold ${signedUnitsClass(net)}`}>
+                      <span data-testid="today-net">net {fmtSignedUnits(net)}u</span>
+                    </Num>
                   )}
                 </>
               ) : (
-                <span className="font-mono text-xs text-slate-500">bankroll unavailable -- no paper book yet</span>
+                <span className="font-data text-xs text-faint">bankroll unavailable -- no paper book yet</span>
               )}
             </div>
             <div className="flex flex-col items-end gap-0.5">
               <EquitySparkline values={sparkValues} startUnits={t.start_units} />
-              <span className="font-mono text-[8px] uppercase tracking-widest text-slate-600">
+              <span className="font-data text-[9px] uppercase tracking-widest text-faint">
                 paper equity (units)
               </span>
             </div>
@@ -211,10 +204,10 @@ export function HomeTodayCard() {
           {/* PLACED (staked) bets -- the money-makers the system actually bet */}
           <div className="mb-3" data-testid="today-placed-section">
             <div className="mb-2 flex items-center gap-2">
-              <span className="rounded border border-amber-700/60 bg-amber-950/40 px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wider text-amber-300">
+              <span className="border border-primary bg-surface-2 px-1.5 py-px font-data text-[10px] font-bold uppercase tracking-wider text-primary">
                 placed
               </span>
-              <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500">
+              <span className="microlabel">
                 today&apos;s staked paper bets
               </span>
             </div>
@@ -222,22 +215,22 @@ export function HomeTodayCard() {
           </div>
 
           {/* CTAs + honest footer */}
-          <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-slate-800 pt-3">
-            <Link href="/today" className="rounded-md border border-slate-700 px-3 py-1.5 font-mono text-[11px] text-slate-300 transition-colors hover:bg-accent/40" data-testid="cta-today">
+          <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-border pt-3">
+            <Link href="/today" className="border border-border px-3 py-1.5 font-data text-[11px] text-muted-foreground transition-colors hover:bg-accent/40" data-testid="cta-today">
               Full today view -&gt;
             </Link>
-            <Link href="/bets" className="rounded-md border border-slate-700 px-3 py-1.5 font-mono text-[11px] text-slate-300 transition-colors hover:bg-accent/40" data-testid="cta-bets">
+            <Link href="/bets" className="border border-border px-3 py-1.5 font-data text-[11px] text-muted-foreground transition-colors hover:bg-accent/40" data-testid="cta-bets">
               Best bets board -&gt;
             </Link>
-            <Link href="/paper-trading" className="rounded-md border border-slate-700 px-3 py-1.5 font-mono text-[11px] text-slate-300 transition-colors hover:bg-accent/40" data-testid="cta-paper">
+            <Link href="/paper-trading" className="border border-border px-3 py-1.5 font-data text-[11px] text-muted-foreground transition-colors hover:bg-accent/40" data-testid="cta-paper">
               Full equity curve -&gt;
             </Link>
-            <span className="ml-auto font-mono text-[9px] text-slate-600">
+            <span className="ml-auto font-data text-[9px] text-faint">
               PAPER -- units, not $. Real-money: DENY. CLV is the yardstick (INSUFFICIENT_DATA at small-N). No edge claimed.
             </span>
           </div>
         </div>
-      </div>
+      </Panel>
     </section>
   );
 }

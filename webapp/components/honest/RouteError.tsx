@@ -30,7 +30,7 @@ export function RouteError({
       <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-amber-400">
         {section} unavailable
       </span>
-      <p className="max-w-sm text-sm leading-relaxed text-slate-400">
+      <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
         This view failed to load. The data feed may be unavailable or still
         starting up. Nothing here is fabricated -- when data is missing the page
         says so rather than guessing a number.

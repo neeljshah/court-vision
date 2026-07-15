@@ -15,10 +15,39 @@ import { cn } from "@/lib/utils";
 import type { LinesMatrix, MarketMatrix, BookQuote, BestLineSide } from "@/lib/p5api_ext";
 import { isExtUnavailable } from "@/lib/p5api_ext";
 import { Unavailable } from "@/components/honest/HonestState";
-import { Panel } from "@/components/p6/Primitives";
+import { Panel as TerminalPanel, PanelHead, Num } from "@/components/ui/terminal";
+
+// Local Panel shim: p6/Primitives.Panel currently lacks asOf/stale wiring, so
+// this component composes directly from the terminal.tsx primitives instead
+// (same title/right/asOf/stale/children/className call shape as every panel
+// in this file already uses).
+function Panel({
+  title,
+  asOf,
+  stale = false,
+  right,
+  children,
+  className,
+}: {
+  title: string;
+  asOf?: string | null;
+  stale?: boolean;
+  right?: React.ReactNode;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <TerminalPanel className={className}>
+      <PanelHead title={title} asOf={asOf} stale={stale} right={right} />
+      <div className="p-4">{children}</div>
+    </TerminalPanel>
+  );
+}
 
 export interface BookMatrixTableProps {
   matrix: LinesMatrix | null;
+  asOf?: string | null;
+  stale?: boolean;
   className?: string;
 }
 
@@ -56,23 +85,22 @@ function QuoteCell({
 }) {
   if (!quote) {
     return (
-      <td className="px-2 py-1.5 text-right font-mono text-xs text-slate-600">
-        --
+      <td className="px-3 py-1.5 text-right">
+        <Num className="text-xs text-faint">--</Num>
       </td>
     );
   }
   return (
     <td
-      className={cn(
-        "px-2 py-1.5 text-right font-mono text-xs tabular-nums",
-        isBest ? "font-semibold text-emerald-400" : "text-slate-300",
-      )}
+      className="px-3 py-1.5 text-right"
       title={quote.captured_at ? `captured ${quote.captured_at}` : undefined}
     >
-      {fmtOdds(quote.odds)}
-      {fmtLine(quote.line)}
+      <Num className={cn("text-xs", isBest ? "font-semibold text-up" : "text-foreground")}>
+        {fmtOdds(quote.odds)}
+        {fmtLine(quote.line)}
+      </Num>
       {quote.is_pm && (
-        <span className="ml-1 text-[9px] text-purple-400">PM</span>
+        <span className="ml-1 font-data text-[9px] text-info">PM</span>
       )}
     </td>
   );
@@ -90,37 +118,37 @@ function MarketBlock({
 
   return (
     <div className="mb-4">
-      <p className="mb-1 font-mono text-[10px] uppercase tracking-widest text-slate-500">
+      <p className="mb-1 microlabel">
         {mType}
       </p>
       <div className="overflow-x-auto">
         <table className="w-full text-xs" role="table">
           <thead>
             <tr>
-              <th className="py-1 pr-3 text-left text-[10px] font-medium uppercase tracking-wide text-slate-500">
+              <th className="microlabel py-1.5 pr-3 text-left">
                 side
               </th>
               {books.map((b) => (
                 <th
                   key={b}
-                  className="px-2 py-1 text-right text-[10px] font-medium uppercase tracking-wide text-slate-500"
+                  className="microlabel px-3 py-1.5 text-right"
                 >
                   {b}
                 </th>
               ))}
-              <th className="px-2 py-1 text-right text-[10px] font-medium uppercase tracking-wide text-slate-500">
+              <th className="microlabel px-3 py-1.5 text-right">
                 best
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/50">
+          <tbody className="divide-y divide-border">
             {sides.map((side) => {
               const quotes = m.sides[side] ?? [];
               const byBook = Object.fromEntries(quotes.map((q) => [q.book, q]));
               const bestBk = bestBook(m.best, side);
               return (
-                <tr key={side}>
-                  <td className="py-1.5 pr-3 text-slate-400">{side}</td>
+                <tr key={side} className="hover:bg-surface-2">
+                  <td className="py-1.5 pr-3 text-muted-foreground">{side}</td>
                   {books.map((b) => (
                     <QuoteCell
                       key={b}
@@ -128,9 +156,9 @@ function MarketBlock({
                       isBest={bestBk === b}
                     />
                   ))}
-                  <td className="px-2 py-1.5 text-right font-mono text-[10px] text-slate-500">
+                  <td className="px-3 py-1.5 text-right font-data text-[10px] text-faint">
                     {bestBk ? (
-                      <span className="rounded border border-emerald-900/50 bg-emerald-950/20 px-1 py-0.5 text-emerald-400">
+                      <span className="border border-success/40 px-1 py-0.5 text-emerald-400">
                         {bestBk}
                       </span>
                     ) : (
@@ -148,18 +176,18 @@ function MarketBlock({
 }
 
 /** Per-market, per-book odds matrix (no $ -- decimal odds only). */
-export function BookMatrixTable({ matrix, className }: BookMatrixTableProps) {
+export function BookMatrixTable({ matrix, asOf, stale = false, className }: BookMatrixTableProps) {
   if (!matrix) {
     return (
-      <Panel title="All markets (line shopping)" className={className}>
-        <p className="text-xs text-slate-600">Loading lines...</p>
+      <Panel title="All markets (line shopping)" asOf={asOf} stale={stale} className={className}>
+        <p className="text-xs text-faint">Loading lines...</p>
       </Panel>
     );
   }
 
   if (isExtUnavailable(matrix) || matrix.status === "unavailable") {
     return (
-      <Panel title="All markets (line shopping)" className={className}>
+      <Panel title="All markets (line shopping)" asOf={asOf} stale={stale} className={className}>
         <Unavailable reason={(matrix as { reason?: string }).reason ?? "lines feed unavailable"} />
       </Panel>
     );
@@ -171,15 +199,17 @@ export function BookMatrixTable({ matrix, className }: BookMatrixTableProps) {
   return (
     <Panel
       title="All markets (line shopping)"
+      asOf={asOf}
+      stale={stale}
       right={
-        <span className="font-mono text-[10px] text-slate-500">
+        <span className="font-data text-[10px] text-faint">
           ML / total / spread -- odds only, no $
         </span>
       }
       className={className}
     >
       {isEmpty ? (
-        <p className="text-xs text-slate-600">
+        <p className="text-xs text-faint">
           No lines captured for this game yet.
         </p>
       ) : (
@@ -187,8 +217,8 @@ export function BookMatrixTable({ matrix, className }: BookMatrixTableProps) {
           <MarketBlock key={mt} mType={mt} m={matrix.markets[mt]} />
         ))
       )}
-      <p className="mt-2 text-[10px] text-slate-600">
-        Green = best decimal odds (lowest vig) at last capture.
+      <p className="mt-2 text-[10px] text-faint">
+        Best = highest decimal odds (lowest vig) at last capture.
         Decimal odds are prices, not payouts. No $ column.
       </p>
     </Panel>

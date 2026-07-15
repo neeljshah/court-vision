@@ -108,9 +108,9 @@ function HeaderCell({
               active ? (dir === 1 ? ", ascending" : ", descending") : ""
             }`}
             className={cn(
-              "rounded-sm uppercase tracking-wide hover:text-slate-300",
+              "rounded-sm uppercase tracking-wide hover:text-foreground",
               "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-              active ? "text-slate-300" : "",
+              active ? "text-foreground" : "",
             )}
           >
             {label}
@@ -177,7 +177,7 @@ export function GateLedgerPanel() {
       {err ? (
         <Unavailable reason={err} />
       ) : !data ? (
-        <p className="text-sm text-slate-500">loading...</p>
+        <p className="text-sm text-muted-foreground">loading...</p>
       ) : rows.length === 0 ? (
         <Unavailable reason="no gate verdicts recorded on disk yet" />
       ) : (
@@ -198,7 +198,7 @@ export function GateLedgerPanel() {
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
-                <tr className="text-left text-[10px] uppercase tracking-wide text-slate-500">
+                <tr className="text-left text-[10px] uppercase tracking-wide text-muted-foreground">
                   <HeaderCell label="Sport" sortKey="sport" active={sort.key === "sport"} dir={sort.dir} onSort={onSort} />
                   <HeaderCell label="Signal / layer" sortKey="layer" active={sort.key === "layer"} dir={sort.dir} onSort={onSort} />
                   <HeaderCell label="Verdict" sortKey="verdict" active={sort.key === "verdict"} dir={sort.dir} onSort={onSort} />
@@ -209,21 +209,21 @@ export function GateLedgerPanel() {
               </thead>
               <tbody className="divide-y divide-slate-800/60">
                 {sorted.map((r) => (
-                  <tr key={r.id} className="align-top text-slate-300">
-                    <td className="py-2 pr-3 font-mono text-[10px] uppercase text-slate-400">{r.sport}</td>
-                    <td className="py-2 pr-3 font-mono text-[11px] text-slate-300">
+                  <tr key={r.id} className="align-top text-foreground">
+                    <td className="py-2 pr-3 font-mono text-[10px] uppercase text-muted-foreground">{r.sport}</td>
+                    <td className="py-2 pr-3 font-mono text-[11px] text-foreground">
                       {r.layer}
                       {r.base ? (
-                        <div className="mt-0.5 max-w-[22rem] truncate font-mono text-[9px] text-slate-600" title={`base / champion: ${r.base}`}>
+                        <div className="mt-0.5 max-w-[22rem] truncate font-mono text-[9px] text-faint" title={`base / champion: ${r.base}`}>
                           base: {r.base}
                         </div>
                       ) : null}
                     </td>
                     <td className="py-2 pr-3"><VerdictCell row={r} /></td>
-                    <td className="py-2 pr-3 font-mono text-[10px] text-slate-500" title={r.deciding_stat}>
+                    <td className="py-2 pr-3 font-mono text-[10px] text-muted-foreground" title={r.deciding_stat}>
                       <span className="block max-w-[16rem] truncate">{r.deciding_stat}</span>
                     </td>
-                    <td className="py-2 pr-3 font-mono text-[11px] text-slate-400">{r.corpora || "--"}</td>
+                    <td className="py-2 pr-3 font-mono text-[11px] text-muted-foreground">{r.corpora || "--"}</td>
                     <td className="py-2 font-mono text-[10px] text-amber-600/80">
                       {r.vs_close.startsWith("UNPROVEN") ? "UNPROVEN" : r.vs_close}
                     </td>
@@ -232,7 +232,7 @@ export function GateLedgerPanel() {
               </tbody>
             </table>
           </div>
-          <p className="mt-3 text-[11px] leading-relaxed text-slate-600">
+          <p className="mt-3 text-[11px] leading-relaxed text-faint">
             {data.honest_note}
           </p>
         </>

@@ -9,6 +9,7 @@
 
 import type { PredictRecord, BestBet, GameEdge } from "@/lib/p5api";
 import { isUnavailable } from "@/lib/p5api";
+import type { Slate, SlateGame } from "@/lib/board";
 
 // The single coherent headline pick for a card: the highest-probability side of
 // the anchor (moneyline) market, in probability terms only. No $.
@@ -99,4 +100,22 @@ export const GAME_SPORTS = [
 export function sportLabel(s: string): string {
   if (s === "soccer_intl") return "SOCCER (INTL)";
   return s.toUpperCase();
+}
+
+/**
+ * Match a predict-envelope record to its /api/board/slate row by team pair.
+ * The two services can use different game_id schemes, so team names are the
+ * only reliable join key. No match -> null (honest: never fabricate a price).
+ * ponytail: best-effort string match, not a canonical team-id join; upgrade
+ * if the two services ever disagree on team-name spelling.
+ */
+export function matchSlateGame(
+  slate: Slate | null | undefined,
+  rec: Pick<PredictRecord, "home" | "away">,
+): SlateGame | null {
+  if (!slate?.games?.length) return null;
+  const key = (away: string, home: string) =>
+    `${away.trim().toUpperCase()}|${home.trim().toUpperCase()}`;
+  const want = key(rec.away, rec.home);
+  return slate.games.find((g) => key(g.away, g.home) === want) ?? null;
 }

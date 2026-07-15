@@ -46,7 +46,7 @@ function Candidate({ c }: { c: RichBacklogCandidate }) {
   return (
     <li className="rounded-lg border border-slate-800 bg-bg-panel/40 p-3">
       <div className="flex items-start justify-between gap-2">
-        <span className="font-mono text-[11px] font-semibold text-slate-200">
+        <span className="font-mono text-[11px] font-semibold text-foreground">
           {c.what || c.id}
         </span>
         {typeof c.priority === "number" ? (
@@ -56,7 +56,7 @@ function Candidate({ c }: { c: RichBacklogCandidate }) {
       <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
         {c.sport ? <Badge tone="slate">{c.sport}</Badge> : null}
         {c.category ? (
-          <span className="inline-flex items-center gap-1 font-mono text-[10px] text-slate-500">
+          <span className="inline-flex items-center gap-1 font-mono text-[10px] text-muted-foreground">
             {c.category}
             <InfoTip
               text={CATEGORY_TIP[c.category] || "discovered backlog item; measurement-only"}
@@ -66,13 +66,13 @@ function Candidate({ c }: { c: RichBacklogCandidate }) {
         ) : null}
       </div>
       {c.expected_outcome ? (
-        <p className="mt-1.5 text-[11px] leading-relaxed text-slate-500">
-          <span className="text-slate-600">expected: </span>
+        <p className="mt-1.5 text-[11px] leading-relaxed text-muted-foreground">
+          <span className="text-faint">expected: </span>
           {c.expected_outcome}
         </p>
       ) : null}
       {c.gate_action ? (
-        <p className="mt-1 text-[10px] leading-relaxed text-slate-600">
+        <p className="mt-1 text-[10px] leading-relaxed text-faint">
           <span className="font-mono uppercase tracking-wide">gate action: </span>
           {c.gate_action}
         </p>
@@ -123,12 +123,12 @@ export function BacklogPanel() {
       {err ? (
         <Unavailable reason={err} />
       ) : !data ? (
-        <p className="text-sm text-slate-500">loading...</p>
+        <p className="text-sm text-muted-foreground">loading...</p>
       ) : !backlog || all.length === 0 ? (
         <Unavailable reason="no backlog candidates discovered yet" />
       ) : (
         <>
-          <p className="mb-3 text-[11px] leading-relaxed text-slate-600">
+          <p className="mb-3 text-[11px] leading-relaxed text-faint">
             {backlog.note ||
               "Measurement-only: discovers + ranks; never fixes / ships / flips a flag."}
           </p>
@@ -166,7 +166,7 @@ export function BacklogPanel() {
               type="button"
               onClick={() => setShowAll((v) => !v)}
               aria-expanded={showAll}
-              className="mt-3 rounded-sm font-mono text-[11px] text-slate-400 underline-offset-2 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-bg-panel"
+              className="mt-3 rounded-sm font-mono text-[11px] text-muted-foreground underline-offset-2 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-bg-panel"
             >
               {showAll ? "show top 12" : `show all ${ranked.length}`}
             </button>

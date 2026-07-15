@@ -19,7 +19,7 @@ import { useLiveData } from "@/lib/useLiveData";
 import { Badge, timeAgoIso } from "@/components/p6/Primitives";
 import { freshnessStatus } from "@/components/p6/LiveLinesPanel";
 import { BetCard, type BetCardData } from "@/components/bets/BetCard";
-import { cn } from "@/lib/utils";
+import { Panel, PanelHead } from "@/components/ui/terminal";
 
 const AUTO_REFRESH_MS = 120_000;
 
@@ -124,29 +124,29 @@ function EmptyState({ sport, reason, apiReason, apiNote }: {
   const copy = REASON_COPY[reason];
   return (
     <div
-      className="rounded-lg border border-slate-800 bg-slate-900/40 px-6 py-12 text-center"
+      className="border border-border bg-surface-2 px-6 py-12 text-center"
       data-testid="sport-empty-state"
       data-reason={reason}
     >
       <p
-        className="font-mono text-sm text-slate-300"
+        className="font-data text-sm text-foreground"
         data-testid="sport-empty-headline"
       >
         {copy.headline}
       </p>
-      <p className="mt-2 text-[11px] text-slate-500">
+      <p className="mt-2 text-[11px] text-muted-foreground">
         {sport.toUpperCase()}: {copy.detail}
       </p>
       {/* Surface the raw API reason/note when present so nothing is hidden */}
       {(apiReason || apiNote) && (
         <p
-          className="mt-3 font-mono text-[10px] text-slate-600"
+          className="mt-3 font-data text-[10px] text-faint"
           data-testid="sport-empty-api-note"
         >
           API: {apiReason ?? apiNote}
         </p>
       )}
-      <p className="mt-4 font-mono text-[10px] text-slate-600">
+      <p className="mt-4 font-data text-[10px] text-faint">
         CLV may show INSUFFICIENT_DATA when no live in-play prices exist.
         Real money is default-DENY.
       </p>
@@ -163,7 +163,7 @@ function SportBetsBoard({ sport }: { sport: string }) {
 
   const { data, ageSec: _ageSec, isStale, error, isLoading } = useLiveData<
     BestBetsBoard
-  >(fetcher, { intervalMs: AUTO_REFRESH_MS, staleAfterSec: 15 * 60 });
+  >(fetcher, { intervalMs: AUTO_REFRESH_MS, staleAfterSec: 15 * 60, cacheKey: `bets:${sport}` });
 
   const asOf = data && !isUnavailable(data) ? (data as BestBetsBoard).generated_at : null;
 
@@ -190,17 +190,27 @@ function SportBetsBoard({ sport }: { sport: string }) {
   const board = data && !isUnavailable(data) ? (data as BestBetsBoard) : null;
   const emptyReason = deriveEmptyReason(board, error);
 
+  const asOfStamp = useMemo(() => {
+    if (!asOf) return null;
+    const t = Date.parse(asOf);
+    if (Number.isNaN(t)) return null;
+    return new Date(t).toLocaleTimeString("en-US", { hour12: false });
+  }, [asOf]);
+
   return (
-    <section aria-label={`${sport.toUpperCase()} best bets board`} className="flex flex-col gap-4">
-      {/* Freshness badge */}
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <AgeBadge asOf={asOf ?? null} />
-        {isStale && anyFetched && error && (
-          <span className="font-mono text-[10px] text-amber-400">
-            poll failed -- showing last-good data
-          </span>
-        )}
-      </div>
+    <Panel>
+      <PanelHead
+        title={`${sport.toUpperCase()} best bets board`}
+        asOf={asOfStamp}
+        stale={isStale}
+        right={<AgeBadge asOf={asOf ?? null} />}
+      />
+      <section aria-label={`${sport.toUpperCase()} best bets board`} className="flex flex-col gap-4 p-4">
+      {isStale && anyFetched && error && (
+        <span className="font-data text-[10px] text-stale">
+          poll failed -- showing last-good data
+        </span>
+      )}
 
       {/* Board content */}
       {isLoading && !anyFetched ? (
@@ -209,7 +219,7 @@ function SportBetsBoard({ sport }: { sport: string }) {
           data-testid="sport-board-loading"
         >
           {[1, 2, 3].map((i) => (
-            <div key={i} className="skeleton-shimmer h-64 rounded-xl" />
+            <div key={i} className="skeleton-shimmer h-64" />
           ))}
         </div>
       ) : showError ? (
@@ -242,7 +252,8 @@ function SportBetsBoard({ sport }: { sport: string }) {
           ))}
         </div>
       )}
-    </section>
+      </section>
+    </Panel>
   );
 }
 
@@ -254,38 +265,30 @@ export default function SportBetsPage() {
   return (
     <main className="mx-auto flex max-w-7xl flex-col gap-4 p-6">
       <header className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-xl font-semibold tracking-tight">
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">
           {sport.toUpperCase()} Best Bets{" "}
-          <span className="font-mono text-sm text-muted-foreground">
+          <span className="font-data text-sm text-muted-foreground">
             ranked calibrated divergence -- units only, no edge claimed
           </span>
         </h1>
-        <span className="font-mono text-[11px] text-muted-foreground">
+        <span className="font-data text-[11px] text-muted-foreground">
           paper only -- no $
         </span>
       </header>
 
       {/* Honesty banner */}
-      <section
-        aria-label="honesty banner"
-        className={cn(
-          "flex flex-wrap items-center gap-2 rounded-lg border px-4 py-3",
-          "border-amber-900/40 bg-amber-950/20 text-[12px] text-amber-200/90",
-        )}
-      >
-        <span className="font-mono uppercase tracking-wide text-amber-400">
-          units only -- no dollars
-        </span>
-        <span className="text-slate-300">
-          Cards ranked by <strong>calibrated model-vs-market divergence</strong>{" "}
-          and tier. This is <span className="font-mono">CALIBRATION</span>, not a
+      <Panel className="px-4 py-3 text-[12px] text-muted-foreground">
+        <span className="microlabel mr-2">units only -- no dollars</span>
+        <span>
+          Cards ranked by <strong className="text-foreground">calibrated model-vs-market divergence</strong>{" "}
+          and tier. This is <span className="font-data">CALIBRATION</span>, not a
           profit claim. Real money is{" "}
-          <span className="font-mono uppercase text-amber-400">DENY</span> (paper
+          <span className="font-data uppercase text-foreground">DENY</span> (paper
           only). CLV may show{" "}
-          <span className="font-mono">INSUFFICIENT_DATA</span> when no live
+          <span className="font-data">INSUFFICIENT_DATA</span> when no live
           in-play prices exist.
         </span>
-      </section>
+      </Panel>
 
       {/* Sport board */}
       <SportBetsBoard sport={sport} />

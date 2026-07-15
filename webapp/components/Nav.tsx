@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { ProductStatusBadges } from "./ProductStatusBadges";
 
 // Nav links -- the product areas of the cohesive product (FD: ONE nav).
 //   Home          /              -- the cohesive landing.
@@ -17,27 +16,27 @@ import { ProductStatusBadges } from "./ProductStatusBadges";
 //
 // Analytics / AI-Assistant / Settings: DO NOT exist; never add them.
 // Progress: replaced by Models (/models) which is the honest "getting better" view.
-const NAV_LINKS = [
-  { href: "/",             label: "Home",         short: "Home",   exact: true,  also: [] as string[] },
-  // Today = the "wake up and SEE everything for today" morning digest: best bets,
-  // PLACED (staked) bets, settled W-L, day P&L, bankroll + the paper equity curve.
-  { href: "/today",        label: "Today",        short: "Today",  exact: false, also: [] as string[] },
-  // Games = the slate-of-cards funnel (/games). The /p6 dashboard is the same
-  // product area (reachable from the /games page), so it lights up "Games" too.
-  { href: "/games",        label: "Games",        short: "Games",  exact: false, also: ["/p6"] },
-  // Bets = dedicated Best Bets board (Live in-play / Pregame today / Done settled).
-  // Also lights up for /bets/[sport]/[gameId] card detail.
-  { href: "/bets",         label: "Bets",         short: "Bets",   exact: false, also: [] as string[] },
-  // Models = AI improvement: running services + ratchet ships/rollbacks +
-  // per-sport Brier/ECE/BSS deltas + CLV 2nd-corpus status (REPLICATION_PENDING).
-  // REPLACES /progress framing; "getting better" is now here, not a static page.
+// FIVE primary destinations on the bar; everything else lives in "More".
+// (User 2026-07-15: bar was overloaded -- keep the top simple.)
+const PRIMARY_LINKS = [
+  { href: "/today",         label: "Today",  short: "Today", exact: false, also: [] as string[] },
+  { href: "/live",          label: "Live",   short: "Live",  exact: false, also: [] as string[] },
+  { href: "/games",         label: "Games",  short: "Games", exact: false, also: ["/p6"] },
+  { href: "/paper-trading", label: "Paper",  short: "Paper", exact: false, also: ["/paper", "/records"] },
+  { href: "/bets",          label: "Bets",   short: "Bets",  exact: false, also: [] as string[] },
+] as const;
+
+const MORE_LINKS = [
   { href: "/models",       label: "Models",       short: "Models", exact: false, also: ["/progress"] },
-  { href: "/how-it-works", label: "How it works", short: "How",    exact: false, also: [] as string[] },
+  { href: "/records",      label: "Records",      short: "Rec",    exact: false, also: [] as string[] },
   { href: "/system",       label: "System",       short: "System", exact: false, also: [] as string[] },
-  { href: "/paper-trading", label: "Paper Trading", short: "Paper",  exact: false, also: ["/paper"] },
-  // Records = My Paper Bets / Records: full paged prediction history with filters,
-  // live auto-refresh, CLV column. Prominent top-level link (W1-records-surface).
-  { href: "/records",      label: "Records",       short: "Rec",    exact: false, also: [] as string[] },
+  { href: "/how-it-works", label: "How it works", short: "How",    exact: false, also: [] as string[] },
+] as const;
+
+const NAV_LINKS = [
+  { href: "/", label: "Home", short: "Home", exact: true, also: [] as string[] },
+  ...PRIMARY_LINKS,
+  ...MORE_LINKS,
 ] as const;
 
 // Theme toggle -- no next-themes needed; CSS class on <html> + localStorage.
@@ -143,11 +142,11 @@ function NavLink({
       href={href}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+        "border-b-2 px-3 py-1.5 text-sm font-medium transition-colors",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         active
-          ? "bg-accent text-foreground"
-          : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
+          ? "border-primary text-foreground"
+          : "border-transparent text-muted-foreground hover:text-foreground",
       )}
     >
       {/* Show short label on md, full on lg */}
@@ -216,10 +215,7 @@ export function Nav() {
           aria-label="CourtVision home"
         >
           <span className="text-sm font-semibold tracking-tight text-foreground">
-            CourtVision
-          </span>
-          <span className="hidden font-mono text-[10px] uppercase tracking-widest text-muted-foreground sm:inline">
-            multi-sport
+            Court<span className="text-primary">Vision</span>
           </span>
         </Link>
 
@@ -227,8 +223,8 @@ export function Nav() {
         <span
           aria-label="Paper mode -- no real money"
           className={cn(
-            "shrink-0 rounded border px-1.5 py-0.5",
-            "border-amber-900/50 bg-amber-950/30 font-mono text-[10px] uppercase tracking-wider text-amber-400",
+            "shrink-0 border px-1.5 py-0.5",
+            "border-warning font-mono text-[10px] uppercase tracking-wider text-warning",
           )}
         >
           paper
@@ -240,7 +236,7 @@ export function Nav() {
           aria-label="Main"
           className="hidden flex-1 items-center gap-1 sm:flex"
         >
-          {NAV_LINKS.map((l) => (
+          {PRIMARY_LINKS.map((l) => (
             <NavLink
               key={l.href}
               href={l.href}
@@ -249,17 +245,44 @@ export function Nav() {
               active={l.href === activeHref}
             />
           ))}
+          {/* Everything secondary collapses behind a native details menu. */}
+          <details className="group relative" data-testid="nav-more">
+            <summary
+              className={cn(
+                "cursor-pointer list-none border-b-2 px-3 py-1.5 text-sm font-medium",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                MORE_LINKS.some((l) => l.href === activeHref)
+                  ? "border-primary text-foreground"
+                  : "border-transparent text-muted-foreground hover:text-foreground",
+              )}
+            >
+              More
+            </summary>
+            <div className="absolute left-0 top-full z-50 mt-1 flex min-w-40 flex-col border border-border bg-card py-1">
+              {MORE_LINKS.map((l) => (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  onClick={(e) => e.currentTarget.closest("details")?.removeAttribute("open")}
+                  className={cn(
+                    "px-3 py-2 text-sm",
+                    l.href === activeHref
+                      ? "text-foreground"
+                      : "text-muted-foreground hover:bg-accent hover:text-foreground",
+                  )}
+                >
+                  {l.label}
+                </Link>
+              ))}
+            </div>
+          </details>
         </nav>
 
         {/* Spacer on mobile so toggles push to the right */}
         <div className="flex-1 sm:hidden" />
 
-        {/* Honest product-status indicators (all_honest / self-improve / real-money).
-            Hidden below xl to keep the bar uncluttered; the Home status row shows
-            the full set on every screen size. */}
-        <div className="mr-1 hidden xl:flex">
-          <ProductStatusBadges compact />
-        </div>
+        {/* Product-status badges moved OFF the bar (user: keep the top simple);
+            the Home status row still shows the full set. */}
 
         {/* Theme toggle */}
         <ThemeToggle />
@@ -288,11 +311,11 @@ export function Nav() {
                   href={l.href}
                   aria-current={l.href === activeHref ? "page" : undefined}
                   className={cn(
-                    "block rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                    "block border-l-2 px-3 py-2 text-sm font-medium transition-colors",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     l.href === activeHref
-                      ? "bg-accent text-foreground"
-                      : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
+                      ? "border-primary bg-accent text-foreground"
+                      : "border-transparent text-muted-foreground hover:text-foreground",
                   )}
                 >
                   {l.label}

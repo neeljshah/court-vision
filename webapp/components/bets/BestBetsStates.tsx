@@ -14,15 +14,15 @@ export function UnavailableReasonBanner({ sport, reason }: { sport: string; reas
       role="status"
       aria-label={`${sport} unavailable: ${reason}`}
       data-testid={`unavailable-banner-${sport}`}
-      className="rounded border border-amber-900/40 bg-amber-950/20 px-3 py-2"
+      className="border border-border bg-surface-2 px-3 py-2"
     >
-      <span className="font-mono text-[10px] font-semibold text-amber-400 uppercase tracking-wide">
+      <span className="font-data text-[10px] font-semibold text-stale uppercase tracking-wide">
         {sport.toUpperCase()} -- no tradable cards
       </span>
-      <p className="mt-0.5 font-mono text-[10px] text-slate-400">
+      <p className="mt-0.5 font-data text-[10px] text-muted-foreground">
         {reason}
       </p>
-      <p className="mt-0.5 font-mono text-[10px] text-slate-600">
+      <p className="mt-0.5 font-data text-[10px] text-faint">
         edge_claimed=false -- calibration only
       </p>
     </div>
@@ -36,9 +36,9 @@ export function EmptySection({ status, label }: { status: BetStatus; label: stri
     done: "No settled bets graded yet.",
   };
   return (
-    <div className="rounded-lg border border-slate-800 bg-slate-900/40 px-4 py-8 text-center">
-      <span className="font-mono text-xs text-slate-500">{msgs[status]}</span>
-      <p className="mt-1 text-[11px] text-slate-600">{label}</p>
+    <div className="border border-border bg-surface-2 px-4 py-8 text-center">
+      <span className="font-data text-xs text-muted-foreground">{msgs[status]}</span>
+      <p className="mt-1 text-[11px] text-faint">{label}</p>
     </div>
   );
 }

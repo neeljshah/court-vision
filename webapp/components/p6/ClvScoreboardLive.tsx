@@ -4,7 +4,7 @@ import { useCallback } from "react";
 import { api, isUnavailable, type ClvScoreboard as Clv } from "@/lib/p5api";
 import { useLiveData } from "@/lib/useLiveData";
 import { ClvScoreboard } from "./ClvScoreboard";
-import { TickingFreshnessBadge, ModeDot } from "./Primitives";
+import { ModeDot, TickingFreshnessBadge } from "./Primitives";
 import type { Unavailable } from "@/lib/types";
 
 // ClvScoreboardLive -- fetches the portfolio-wide CLV scoreboard from
@@ -27,34 +27,25 @@ export function ClvScoreboardLive() {
     { intervalMs: 20_000, staleAfterSec: 60 },
   );
 
-  // Build an ISO string from ageSec so TickingFreshnessBadge can display it.
-  // When we have no data yet and no last-update, pass null (unavailable state).
+  // Build an ISO string from ageSec so PanelHead's as-of stamp reflects the
+  // real fetch time (never fabricated). No last-update yet -> omit asOf.
   const asOfIso =
     ageSec !== null
       ? new Date(Date.now() - ageSec * 1000).toISOString()
       : null;
 
-  return (
-    <div>
-      <div className="mb-2 flex items-center justify-between">
-        <span className="text-[10px] uppercase tracking-wide text-slate-500">
-          CLV scoreboard
-        </span>
+  return isLoading && !data ? (
+    <p className="text-sm text-faint">loading...</p>
+  ) : (
+    <ClvScoreboard
+      clv={data}
+      stale={!!(error || isStale)}
+      extraRight={
         <span className="flex items-center gap-2">
-          {error || isStale ? (
-            <span className="font-mono text-[10px] text-amber-400">
-              {error ? "feed stale/error" : "stale"}
-            </span>
-          ) : null}
           <TickingFreshnessBadge asOf={asOfIso} />
           <ModeDot mode="poll" />
         </span>
-      </div>
-      {isLoading && !data ? (
-        <p className="text-sm text-slate-500">loading...</p>
-      ) : (
-        <ClvScoreboard clv={data} />
-      )}
-    </div>
+      }
+    />
   );
 }

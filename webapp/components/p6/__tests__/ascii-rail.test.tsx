@@ -31,6 +31,7 @@ vi.mock("@/lib/store", () => ({
   useBets: () => [],
   useEVHistory: () => [],
   useAlerts: () => [],
+  useLastEventTs: () => null,
 }));
 
 // Stub: next/link (GameCard uses it; jsdom can't navigate)

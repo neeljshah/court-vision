@@ -27,7 +27,7 @@ export function ProgressView() {
   }, []);
 
   if (!data) {
-    return <p className="text-sm text-slate-500">loading progress...</p>;
+    return <p className="text-sm text-muted-foreground">loading progress...</p>;
   }
 
   const snap = data.snapshot;

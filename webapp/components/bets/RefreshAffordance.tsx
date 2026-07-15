@@ -14,13 +14,13 @@ import { cn } from "@/lib/utils";
 // AgeBadge -- data age from envelope.generated_at. NEVER green (stale-never-green).
 // Amber when stale (>15m); slate otherwise. title exposes raw ISO asOf.
 export function AgeBadge({ asOf }: { asOf: string | null }) {
-  if (!asOf) return <Badge tone="slate"><span className="font-mono text-[10px]">data age: checking</span></Badge>;
+  if (!asOf) return <Badge tone="slate"><span className="font-data text-[10px]">data age: checking</span></Badge>;
   const stale = freshnessStatus(asOf) === "stale";
   const age = timeAgoIso(asOf);
   return (
     <span title={`data as-of: ${asOf}`} data-testid="age-badge">
       <Badge tone={stale ? "amber" : "slate"}>
-        <span className="font-mono text-[10px]">{stale ? `data ${age} -- aging` : `data ${age}`}</span>
+        <span className="font-data text-[10px]">{stale ? `data ${age} -- aging` : `data ${age}`}</span>
       </Badge>
     </span>
   );
@@ -36,10 +36,10 @@ export function LivePulse({ ageSec, isStale }: { ageSec: number | null; isStale:
     <span className="inline-flex items-center gap-1.5" data-testid="live-pulse">
       <span
         className={cn("inline-block h-1.5 w-1.5 rounded-full",
-          isStale ? "bg-amber-500" : "bg-slate-500 animate-pulse")}
+          isStale ? "bg-warning" : "bg-muted-foreground animate-pulse")}
         aria-hidden="true"
       />
-      <span className="font-mono text-[10px] text-slate-500">{label}</span>
+      <span className="font-data text-[10px] text-faint">{label}</span>
     </span>
   );
 }
@@ -76,7 +76,7 @@ export function NextRefreshCountdown({
 
   return (
     <span
-      className={cn("font-mono text-[10px]", loading ? "text-slate-400" : "text-slate-500")}
+      className={cn("font-data text-[10px]", loading ? "text-muted-foreground" : "text-faint")}
       data-testid="next-refresh-countdown"
       aria-live={loading ? "polite" : "off"}
       title={`auto-refreshes every ${intervalLabel}`}
@@ -114,16 +114,16 @@ export function RefreshAffordance({
     <div className="flex flex-wrap items-center gap-2.5" aria-label="refresh controls" data-testid="refresh-affordance">
       <AgeBadge asOf={asOf} />
       <LivePulse ageSec={ageSec} isStale={isStale} />
-      <span className="font-mono text-[10px] text-slate-600" data-testid="auto-refresh-label">
+      <span className="font-data text-[10px] text-faint" data-testid="auto-refresh-label">
         auto-refreshing every {intervalLabel}
       </span>
       <NextRefreshCountdown loading={loading} lastFetchedAt={lastFetchedAt} intervalMs={intervalMs} />
       <button type="button" aria-label="Refresh best bets now" disabled={loading} onClick={onRefresh}
-        className={cn("inline-flex items-center gap-1 rounded border px-2 py-0.5",
-          "font-mono text-[10px] uppercase tracking-wide transition-colors",
-          "border-slate-700 bg-slate-900 text-slate-400",
-          "hover:border-slate-500 hover:text-slate-200 focus-visible:outline-none",
-          "focus-visible:ring-1 focus-visible:ring-slate-500 disabled:opacity-40")}>
+        className={cn("inline-flex items-center gap-1 border px-2 py-0.5",
+          "font-data text-[10px] uppercase tracking-wide transition-colors",
+          "border-border bg-transparent text-muted-foreground",
+          "hover:border-primary hover:text-foreground focus-visible:outline-none",
+          "focus-visible:ring-1 focus-visible:ring-ring disabled:opacity-40")}>
         {loading ? "refreshing..." : "refresh now"}
       </button>
     </div>

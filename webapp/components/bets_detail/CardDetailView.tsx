@@ -90,6 +90,12 @@ function fmtAge(ageSec: number | null): string {
   return `${Math.round(ageSec / 60)}m ago`;
 }
 
+// Formats a fetch/feed timestamp (ms epoch) as HH:MM:SS for PanelHead as-of stamps.
+function fmtClock(ms: number | null): string | null {
+  if (ms == null) return null;
+  return new Date(ms).toLocaleTimeString("en-US", { hour12: false });
+}
+
 export interface CardDetailViewProps {
   sport: string;
   gameId: string;
@@ -98,7 +104,7 @@ export interface CardDetailViewProps {
 /** Full card detail view -- distribution, book matrix, rationale, live box, grade. */
 export function CardDetailView({ sport, gameId }: CardDetailViewProps) {
   // Report: streaming via SSE / poll fallback (same pattern as GameView).
-  const { data: report, mode } = useStream<Report>({
+  const { data: report, mode, updatedAt: reportUpdatedAt } = useStream<Report>({
     sseUrl: streamUrl(sport, gameId),
     pollFn: async (s) => (await api.report(sport, gameId, s)) as Report,
     pollMs: 6000,
@@ -114,6 +120,7 @@ export function CardDetailView({ sport, gameId }: CardDetailViewProps) {
     ageSec: edgeAge,
     isStale: edgeStale,
     error: edgeError,
+    lastUpdatedAt: edgeUpdatedAt,
   } = useLiveData<GameEdge>(edgeFetcher, {
     intervalMs: 8000,
     staleAfterSec: 30,
@@ -138,7 +145,11 @@ export function CardDetailView({ sport, gameId }: CardDetailViewProps) {
     (s: AbortSignal) => apiExt.getLinesMatrix(sport, gameId, s) as Promise<LinesMatrix>,
     [sport, gameId],
   );
-  const { data: linesMatrix } = useLiveData<LinesMatrix>(linesFetcher, {
+  const {
+    data: linesMatrix,
+    lastUpdatedAt: linesUpdatedAt,
+    isStale: linesStale,
+  } = useLiveData<LinesMatrix>(linesFetcher, {
     intervalMs: 60000,
     staleAfterSec: 300,
   });
@@ -165,7 +176,11 @@ export function CardDetailView({ sport, gameId }: CardDetailViewProps) {
     },
     [sport, gameId],
   );
-  const { data: resultWrapper } = useLiveData<ResultRow>(resultsFetcher, {
+  const {
+    data: resultWrapper,
+    lastUpdatedAt: resultUpdatedAt,
+    isStale: resultStale,
+  } = useLiveData<ResultRow>(resultsFetcher, {
     intervalMs: 120000,
     staleAfterSec: 600,
   });
@@ -187,19 +202,19 @@ export function CardDetailView({ sport, gameId }: CardDetailViewProps) {
         <div className="flex items-center gap-3">
           <Link
             href="/bets"
-            className="rounded-sm font-mono text-xs text-slate-500 hover:text-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-bg-panel"
+            className="rounded-sm font-data text-xs text-faint hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
           >
             &larr; bets
           </Link>
           <h1 className="text-lg font-semibold tracking-tight">
-            <span className="uppercase text-slate-400">
+            <span className="uppercase text-muted-foreground">
               {sportLabel(resolvedSport)}
             </span>
             {matchup && (
-              <span className="ml-2 text-slate-200">{matchup}</span>
+              <span className="ml-2 text-foreground">{matchup}</span>
             )}
             {!matchup && (
-              <span className="ml-2 font-mono text-slate-500">{gameId}</span>
+              <span className="ml-2 font-data text-faint">{gameId}</span>
             )}
           </h1>
         </div>
@@ -207,16 +222,16 @@ export function CardDetailView({ sport, gameId }: CardDetailViewProps) {
       </header>
 
       {/* Last-updated age strip for live data (stale-never-green rail). */}
-      <div className="flex items-center gap-4 text-[10px] font-mono">
+      <div className="flex items-center gap-4 text-[10px] font-data">
         <span
-          className={edgeStale ? "text-amber-400" : "text-slate-600"}
+          className={edgeStale ? "text-stale" : "text-faint"}
           aria-label="edge-age"
         >
           edge: {edgeError ? "unavailable" : fmtAge(edgeAge)}
           {edgeStale ? " (stale)" : ""}
         </span>
         <span
-          className={ingameStale ? "text-amber-400" : "text-slate-600"}
+          className={ingameStale ? "text-stale" : "text-faint"}
           aria-label="ingame-age"
         >
           live: {fmtAge(ingameAge)}
@@ -229,18 +244,18 @@ export function CardDetailView({ sport, gameId }: CardDetailViewProps) {
         <div
           role="alert"
           aria-label="sport-mismatch-notice"
-          className="flex items-start gap-2 rounded-lg border border-amber-700/50 bg-amber-950/25 px-4 py-3 text-sm"
+          className="flex items-start gap-2 border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm"
         >
-          <span className="mt-0.5 font-mono text-xs uppercase tracking-wide text-amber-400">
+          <span className="mt-0.5 font-data text-xs uppercase tracking-wide text-stale">
             sport mismatch
           </span>
-          <span className="text-slate-300">
+          <span className="text-foreground">
             This link says{" "}
-            <span className="font-semibold text-amber-300">
+            <span className="font-semibold text-stale">
               {sportLabel(sport)}
             </span>{" "}
             but this game is{" "}
-            <span className="font-semibold text-emerald-300">
+            <span className="font-semibold text-up">
               {sportLabel(resolvedSport)}
             </span>
             . Showing correct sport.
@@ -266,9 +281,15 @@ export function CardDetailView({ sport, gameId }: CardDetailViewProps) {
             report={report}
             propsData={propsData}
             sport={sport}
+            asOf={fmtClock(reportUpdatedAt)}
+            stale={mode === "disconnected"}
           />
           {/* Per-book odds matrix (W1). */}
-          <BookMatrixTable matrix={linesMatrix} />
+          <BookMatrixTable
+            matrix={linesMatrix}
+            asOf={fmtClock(linesUpdatedAt)}
+            stale={linesStale}
+          />
           {/* Execution trail (WS5): best line + devig + decision. */}
           <ExecutionTrail
             {...linesMatrixToExecutionTrail(
@@ -277,7 +298,12 @@ export function CardDetailView({ sport, gameId }: CardDetailViewProps) {
             )}
           />
           {/* Rationale (validated signals + model notes). */}
-          <RationalePanel report={report} sport={sport} />
+          <RationalePanel
+            report={report}
+            sport={sport}
+            asOf={fmtClock(reportUpdatedAt)}
+            stale={mode === "disconnected"}
+          />
         </div>
 
         {/* Right column */}
@@ -290,11 +316,16 @@ export function CardDetailView({ sport, gameId }: CardDetailViewProps) {
           {/* Live boxscore + win-prob (W4). */}
           <LiveBoxPanel ingame={ingame} />
           {/* Settlement grade + CLV. */}
-          <SettleGradePanel edge={edge} result={result} />
+          <SettleGradePanel
+            edge={edge}
+            result={result}
+            asOf={fmtClock(resultUpdatedAt ?? edgeUpdatedAt)}
+            stale={resultStale || edgeStale}
+          />
         </div>
       </div>
 
-      <footer className="mt-2 text-center text-[11px] text-slate-600">
+      <footer className="mt-2 text-center text-[11px] text-faint">
         One coherent prediction spines every market. Stakes are units; no $ column.
         CLV = beat-the-close yardstick only. vs-close UNPROVEN. Paper mode only.
       </footer>

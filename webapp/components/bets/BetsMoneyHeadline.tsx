@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 import { api, isUnavailable } from "@/lib/p5api";
 import { useLiveData } from "@/lib/useLiveData";
 import { EquitySparkline } from "@/components/home/EquitySparkline";
+import { PanelHead } from "@/components/ui/terminal";
 import type { PnlSeries, PaperBankroll, ClvScoreboard } from "@/lib/types";
 
 const POLL_MS = 30_000;
@@ -59,19 +60,19 @@ function Stat({
 }) {
   const toneClass =
     tone === "up"
-      ? "text-emerald-400"
+      ? "text-up"
       : tone === "down"
-      ? "text-rose-400"
+      ? "text-down"
       : tone === "amber"
-      ? "text-amber-400"
-      : "text-slate-100";
+      ? "text-stale"
+      : "text-foreground";
   return (
     <div className="flex flex-col">
-      <span className="font-mono text-[9px] uppercase tracking-widest text-slate-500">
+      <span className="microlabel">
         {label}
       </span>
       <span
-        className={cn("font-mono text-sm tabular-nums", toneClass)}
+        className={cn("font-data tabular text-sm", toneClass)}
         data-testid={testid}
       >
         {value}
@@ -94,7 +95,7 @@ export function BetsMoneyHeadline() {
     [],
   );
 
-  const { data: pnlData, isStale } = useLiveData<PnlSeries>(pnlFetcher, {
+  const { data: pnlData, isStale, lastUpdatedAt } = useLiveData<PnlSeries>(pnlFetcher, {
     intervalMs: POLL_MS,
     staleAfterSec: STALE_SEC,
   });
@@ -139,32 +140,35 @@ export function BetsMoneyHeadline() {
       : "--";
 
   const meanClv = fmtMeanClv(summary?.mean_clv_pct_or_INSUFFICIENT);
+  const asOfStamp =
+    lastUpdatedAt != null ? new Date(lastUpdatedAt).toLocaleTimeString("en-US", { hour12: false }) : null;
 
   return (
     <section
       aria-label="paper money headline"
       data-testid="bets-money-headline"
-      className="rounded-xl border border-slate-800 bg-bg-panel p-4"
+      className="border border-border bg-card"
     >
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-col">
-          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-slate-500">
-            Money-makers -- paper equity (units)
-          </span>
-          <span className="mt-0.5 text-[11px] text-slate-400">
-            How much you <strong className="text-slate-200">would have made</strong>{" "}
-            staking the best bets below. PAPER simulation, units only -- no $.
-          </span>
-        </div>
-        {isStale && pnl != null && (
-          <span
-            className="font-mono text-[9px] uppercase tracking-wider text-amber-400"
-            data-testid="money-headline-stale"
-          >
-            stale -- last-good
-          </span>
-        )}
-      </div>
+      <PanelHead
+        title="Money-makers -- paper equity (units)"
+        asOf={asOfStamp}
+        stale={isStale}
+        right={
+          isStale && pnl != null ? (
+            <span
+              className="font-data text-[9px] uppercase tracking-wider text-stale"
+              data-testid="money-headline-stale"
+            >
+              stale -- last-good
+            </span>
+          ) : undefined
+        }
+      />
+      <div className="p-4">
+      <p className="text-[11px] text-muted-foreground">
+        How much you <strong className="text-foreground">would have made</strong>{" "}
+        staking the best bets below. PAPER simulation, units only -- no $.
+      </p>
 
       <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-3">
         <div className="flex items-center gap-3">
@@ -198,14 +202,14 @@ export function BetsMoneyHeadline() {
         />
         <Link
           href="/paper-trading"
-          className="ml-auto rounded-md border border-slate-700 px-3 py-1.5 font-mono text-[11px] text-slate-300 transition-colors hover:border-slate-500 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-bg-panel"
+          className="ml-auto border border-border px-3 py-1.5 font-data text-[11px] text-muted-foreground transition-colors hover:border-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-card"
           data-testid="money-equity-cta"
         >
           full equity curve -&gt;
         </Link>
       </div>
 
-      <p className="mt-3 border-t border-slate-800 pt-2 font-mono text-[9px] leading-relaxed text-slate-600">
+      <p className="mt-3 border-t border-border pt-2 font-data text-[9px] leading-relaxed text-faint">
         {clv != null && clv.n_bets > 0
           ? `${clv.n_bets} graded vs close; beat-close ${
               clv.pct_beat_close != null
@@ -216,6 +220,7 @@ export function BetsMoneyHeadline() {
         Paper only -- no $ ROI is claimed; CLV = beat-the-close calibration
         yardstick. Real money is DENY.
       </p>
+      </div>
     </section>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useSnapshots } from "@/lib/store";
 import { Activity } from "lucide-react";
+import { Panel, Num } from "@/components/ui/terminal";
 
 export function GameHeader() {
   const snaps = useSnapshots();
@@ -11,45 +12,45 @@ export function GameHeader() {
 
   if (!snap) {
     return (
-      <header className="rounded-xl border border-slate-800 bg-bg-panel p-5">
-        <div className="flex items-center gap-3 text-slate-400">
+      <Panel className="p-5">
+        <div className="flex items-center gap-3 text-muted-foreground">
           <Activity className="h-4 w-4 animate-pulse" />
-          <span className="text-sm">Waiting for the first snapshot…</span>
+          <span className="text-sm">Waiting for the first snapshot...</span>
         </div>
-      </header>
+      </Panel>
     );
   }
 
   const margin = (snap.home_score ?? 0) - (snap.away_score ?? 0);
-  const arrow = margin > 0 ? "▲" : margin < 0 ? "▼" : "▬";
+  const arrow = margin > 0 ? "+" : margin < 0 ? "-" : "=";
   const arrowColour =
-    margin > 0 ? "text-tier-a" : margin < 0 ? "text-red-400" : "text-slate-400";
+    margin > 0 ? "text-up" : margin < 0 ? "text-down" : "text-muted-foreground";
 
   return (
-    <header className="rounded-xl border border-slate-800 bg-bg-panel p-5">
+    <Panel className="p-5">
       <div className="flex items-end justify-between">
         <div>
-          <div className="flex items-baseline gap-4 text-2xl tabular font-semibold">
+          <div className="flex items-baseline gap-4 text-2xl font-semibold">
             <span>{snap.away_team || "AWAY"}</span>
-            <span className="text-slate-500">{snap.away_score ?? 0}</span>
-            <span className="text-slate-500 px-2">@</span>
+            <Num className="text-muted-foreground">{snap.away_score ?? 0}</Num>
+            <span className="px-2 text-muted-foreground">@</span>
             <span>{snap.home_team || "HOME"}</span>
-            <span className="text-slate-300">{snap.home_score ?? 0}</span>
-            <span className={`ml-3 ${arrowColour}`}>
-              {arrow} {Math.abs(margin)}
-            </span>
+            <Num className="text-foreground">{snap.home_score ?? 0}</Num>
+            <Num className={`ml-3 ${arrowColour}`}>
+              {arrow}{Math.abs(margin)}
+            </Num>
           </div>
-          <div className="mt-1 text-sm text-slate-400 tabular">
-            Q{snap.period ?? "-"} · {snap.clock ?? "--:--"} ·{" "}
-            <span className="uppercase tracking-wide text-xs text-slate-500">
+          <div className="mt-1 font-data text-sm text-muted-foreground">
+            Q{snap.period ?? "-"} - {snap.clock ?? "--:--"} -{" "}
+            <span className="microlabel">
               {snap.game_status || "?"}
             </span>
           </div>
         </div>
-        <div className="text-right text-xs text-slate-500 font-mono">
+        <div className="font-data text-right text-xs text-faint">
           game {gid}
         </div>
       </div>
-    </header>
+    </Panel>
   );
 }

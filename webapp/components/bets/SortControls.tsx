@@ -34,9 +34,7 @@ const OPTIONS: { key: SortKey; label: string; tip: string }[] = [
 export function SortControls({ value, onChange }: SortControlsProps) {
   return (
     <div className="flex items-center gap-2" role="group" aria-label="Sort best bets">
-      <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500">
-        Sort
-      </span>
+      <span className="microlabel">Sort</span>
       {OPTIONS.map((opt) => {
         const isActive = value === opt.key;
         return (
@@ -47,11 +45,11 @@ export function SortControls({ value, onChange }: SortControlsProps) {
             aria-label={`Sort by ${opt.label}`}
             onClick={() => onChange(opt.key)}
             className={cn(
-              "rounded border px-2.5 py-1 font-mono text-[10px] uppercase tracking-wide",
-              "transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500",
+              "border px-2.5 py-1 font-data text-[10px] uppercase tracking-wide",
+              "transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
               isActive
-                ? "border-slate-400 bg-slate-800 text-slate-100"
-                : "border-slate-700 bg-transparent text-slate-500 hover:text-slate-300",
+                ? "border-primary text-foreground"
+                : "border-border bg-transparent text-muted-foreground hover:text-foreground",
             )}
             aria-pressed={isActive}
           >

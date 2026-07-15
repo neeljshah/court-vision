@@ -23,6 +23,7 @@ import { useState, useCallback, useMemo } from "react";
 import { SPORTS } from "@/lib/p5api";
 import { Unavailable } from "@/components/p6/Primitives";
 import { useLiveData } from "@/lib/useLiveData";
+import { Panel, PanelHead, Num } from "@/components/ui/terminal";
 import { StatusTabs, type BetStatus } from "./StatusTabs";
 import { MarketTypeTabs, marketBucket, type MarketFilter } from "./MarketTypeTabs";
 import { SortControls, type SortKey } from "./SortControls";
@@ -67,6 +68,16 @@ export function BestBetsBoard() {
       .filter((d): d is string => Boolean(d));
     return dates.length > 0 ? (dates.sort().at(-1) ?? null) : null;
   }, [boards]);
+
+  // asOfStamp: HH:MM:SS for PanelHead. Falls back to fetch time when no feed
+  // timestamp is present so the stamp is never fabricated.
+  const asOfStamp = useMemo(() => {
+    const src = asOf ?? (lastUpdatedAt != null ? new Date(lastUpdatedAt).toISOString() : null);
+    if (!src) return null;
+    const t = Date.parse(src);
+    if (Number.isNaN(t)) return null;
+    return new Date(t).toLocaleTimeString("en-US", { hour12: false });
+  }, [asOf, lastUpdatedAt]);
 
   // perSportCards: per-sport eligible cards (post/final excluded; degenerate kept with label).
   // UI-side guard: shouldSuppressBet is applied as a second layer against backend leaks.
@@ -140,7 +151,9 @@ export function BestBetsBoard() {
 
   return (
     <PanelErrorBoundary label="best bets board">
-      <section aria-label="Best bets board" className="flex flex-col gap-4">
+      <Panel>
+        <PanelHead title="Best bets board" asOf={asOfStamp} stale={isStale} />
+        <section aria-label="Best bets board" className="flex flex-col gap-4 p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <StatusTabs value={tab} onChange={setTab} counts={counts} panelId="bets-board-panel" />
           <SortControls value={sort} onChange={setSort} />
@@ -151,7 +164,7 @@ export function BestBetsBoard() {
           {totalPropCount > 0 && (
             <span
               data-testid="prop-cap-note"
-              className="font-mono text-[10px] text-slate-600"
+              className="font-data text-[10px] text-faint"
             >
               {totalPropCount} prop card{totalPropCount !== 1 ? "s" : ""} -- board API
               caps/ranks props; filter by sport / tier / Props tab
@@ -162,16 +175,16 @@ export function BestBetsBoard() {
           asOf={asOf} ageSec={ageSec} isStale={isStale} intervalMs={AUTO_REFRESH_MS} />
         {isStale && anyFetched && error && (
           <div role="status" data-testid="stale-banner"
-            className="rounded border border-amber-900/40 bg-amber-950/20 px-3 py-2">
-            <span className="font-mono text-[10px] text-amber-400">
+            className="border border-border bg-surface-2 px-3 py-2">
+            <span className="font-data text-[10px] text-stale">
               poll failed -- showing last-good data. {error}
             </span>
           </div>
         )}
         {skippedCount > 0 && (
           <div role="status" data-testid="skipped-cards-notice"
-            className="rounded border border-slate-800 bg-slate-900/30 px-3 py-2">
-            <span className="font-mono text-[10px] text-slate-500">
+            className="border border-border bg-surface-2 px-3 py-2">
+            <span className="font-data text-[10px] text-faint">
               {skippedCount} card{skippedCount !== 1 ? "s" : ""} excluded: status=post/final
               (game already over -- not rendered as active bets)
             </span>
@@ -188,7 +201,7 @@ export function BestBetsBoard() {
           aria-labelledby={`status-tab-${tab}`}>
           {isLoading && !anyFetched ? (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {[1, 2, 3].map((i) => <div key={i} className="skeleton-shimmer h-64 rounded-xl" />)}
+              {[1, 2, 3].map((i) => <div key={i} className="skeleton-shimmer h-64" />)}
             </div>
           ) : showError ? (
             <Unavailable reason={error ?? "Could not load best bets."} />
@@ -209,13 +222,13 @@ export function BestBetsBoard() {
                   <section key={sport} aria-label={`${sport.toUpperCase()} best bets`}
                     data-testid={`sport-section-${sport}`} className="flex flex-col gap-3">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-[11px] font-semibold uppercase tracking-widest text-slate-400">
+                      <span className="microlabel">
                         {sport}
                       </span>
                       {sorted.length > 0 && (
-                        <span className="font-mono text-[10px] text-slate-600">
+                        <Num className="text-[10px] text-faint">
                           {sorted.length} card{sorted.length !== 1 ? "s" : ""}
-                        </span>
+                        </Num>
                       )}
                     </div>
                     {sorted.length === 0 ? (
@@ -237,7 +250,8 @@ export function BestBetsBoard() {
             </div>
           )}
         </div>
-      </section>
+        </section>
+      </Panel>
     </PanelErrorBoundary>
   );
 }

@@ -20,7 +20,7 @@ export default function LivePage() {
     <main className="mx-auto flex max-w-5xl flex-col gap-4 p-6">
       <LiveGamesView />
 
-      <footer className="mt-4 text-center text-[11px] text-slate-600">
+      <footer className="mt-4 text-center font-data text-[11px] text-faint">
         {HONEST_DISCLAIMER}
       </footer>
     </main>

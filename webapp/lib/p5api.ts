@@ -60,7 +60,7 @@ import type {
 export type * from "./types";
 
 export const P5_BASE =
-  process.env.NEXT_PUBLIC_P5_BASE || "http://127.0.0.1:8099";
+  process.env.NEXT_PUBLIC_P5_BASE || "/p5";
 
 import { fetchHonest } from "./fetchHonest";
 

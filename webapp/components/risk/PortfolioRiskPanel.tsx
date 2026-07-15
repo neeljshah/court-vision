@@ -39,12 +39,12 @@ function Metric({
 }) {
   return (
     <div className="rounded-lg border border-slate-800 bg-bg-panel/40 p-3">
-      <div className="flex items-center gap-1 font-mono text-[10px] uppercase tracking-wide text-slate-500">
+      <div className="flex items-center gap-1 font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
         {label}
         {term ? <InfoTip text={RISK_TERMS[term]} ariaLabel={`what is ${label}?`} /> : null}
       </div>
-      <div className="mt-1 font-mono tabular-nums text-lg text-slate-100">{value}</div>
-      {sub ? <div className="mt-0.5 text-[10px] text-slate-600">{sub}</div> : null}
+      <div className="mt-1 font-mono tabular-nums text-lg text-foreground">{value}</div>
+      {sub ? <div className="mt-0.5 text-[10px] text-faint">{sub}</div> : null}
     </div>
   );
 }
@@ -77,7 +77,7 @@ export function PortfolioRiskPanel({ sport = "all" }: { sport?: Sport | "all" })
       }
     >
       {!risk ? (
-        <p className="text-sm text-slate-500">loading...</p>
+        <p className="text-sm text-muted-foreground">loading...</p>
       ) : !ok ? (
         <Unavailable reason={risk.reason || "risk endpoint unavailable"} />
       ) : nOpen === 0 ? (
@@ -91,14 +91,14 @@ export function PortfolioRiskPanel({ sport = "all" }: { sport?: Sport | "all" })
             data-testid="unit-convention-note"
             className="mb-3 flex flex-wrap items-start gap-1.5 rounded-lg border border-slate-700/60 bg-slate-900/40 px-3 py-2 text-[11px] text-slate-400"
           >
-            <span className="font-mono uppercase tracking-wide text-slate-500">unit convention</span>
+            <span className="font-mono uppercase tracking-wide text-muted-foreground">unit convention</span>
             <span>
               Stake and exposure figures here use{" "}
-              <span className="text-slate-300 font-medium">Kelly-style (quarter-Kelly) sizing</span>{" "}
+              <span className="text-foreground font-medium">Kelly-style (quarter-Kelly) sizing</span>{" "}
               and can exceed 1.0 per bet. The bets board uses a separate{" "}
-              <span className="text-slate-300 font-medium">flat 1.0-per-bet</span>{" "}
+              <span className="text-foreground font-medium">flat 1.0-per-bet</span>{" "}
               display convention. Both are{" "}
-              <span className="font-mono text-slate-300">UNITS</span>, never currency.
+              <span className="font-mono text-foreground">UNITS</span>, never currency.
             </span>
             <InfoTip
               text="The bets board always shows stake_units = 1.0 (flat policy per bet). This risk panel shows Kelly-style (quarter-Kelly) stake_units and total_exposure_units, which reflect model-sized fractions and can exceed 1.0 when multiple legs are open. Both are UNITS -- no currency figure anywhere."
@@ -132,11 +132,11 @@ export function PortfolioRiskPanel({ sport = "all" }: { sport?: Sport | "all" })
           </div>
 
           {/* Joint < naive sum + correlation note (principle, not a fabricated number). */}
-          <div className="mt-3 flex flex-wrap items-center gap-1.5 rounded-lg border border-slate-800 bg-bg-panel/30 px-3 py-2 text-[11px] text-slate-400">
-            <span className="font-mono uppercase tracking-wide text-slate-600">joint &lt; naive sum</span>
+          <div className="mt-3 flex flex-wrap items-center gap-1.5 rounded-lg border border-slate-800 bg-bg-panel/30 px-3 py-2 text-[11px] text-muted-foreground">
+            <span className="font-mono uppercase tracking-wide text-faint">joint &lt; naive sum</span>
             <span>
               correlation-adjusted joint exposure is always{" "}
-              <span className="font-mono text-slate-300">&le;</span> the naive sum above:
+              <span className="font-mono text-foreground">&le;</span> the naive sum above:
               same-game legs are correlated (no diversification); cross-game legs combine in
               quadrature (they diversify).
             </span>
@@ -147,14 +147,14 @@ export function PortfolioRiskPanel({ sport = "all" }: { sport?: Sport | "all" })
           {/* Risk-of-Ruin -- DESCRIPTIVE, never a guarantee. */}
           <div className="mt-2 flex flex-wrap items-center gap-1.5 rounded-lg border border-amber-900/40 bg-amber-950/10 px-3 py-2 text-[11px] text-amber-300/90">
             <span className="font-mono uppercase tracking-wide text-amber-500/80">risk-of-ruin</span>
-            <span className="text-slate-400">
+            <span className="text-muted-foreground">
               {risk.risk_note ||
                 "a model-conditional descriptive stat under the model's own probabilities -- NOT a profit/safety guarantee; there is no realized-money path."}
             </span>
             <InfoTip term="ror" text={RISK_TERMS.ror} ariaLabel="what is Risk-of-Ruin?" />
           </div>
 
-          <div className="mt-2 flex items-center justify-between font-mono text-[9px] uppercase tracking-wide text-slate-600">
+          <div className="mt-2 flex items-center justify-between font-mono text-[9px] uppercase tracking-wide text-faint">
             <span className="inline-flex items-center gap-1">
               bankroll in units
               <InfoTip term="bankroll_units" text={RISK_TERMS.bankroll_units} ariaLabel="what is the bankroll unit?" />

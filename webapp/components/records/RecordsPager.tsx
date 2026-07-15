@@ -15,11 +15,11 @@ interface RecordsPagerProps {
 }
 
 const BTN_CLS = cn(
-  "inline-flex items-center rounded border px-2.5 py-1",
-  "font-mono text-[11px] uppercase tracking-wide transition-colors",
-  "border-slate-700 bg-slate-900 text-slate-400",
-  "hover:border-slate-500 hover:text-slate-200",
-  "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-500",
+  "inline-flex items-center border px-2.5 py-1",
+  "font-data text-[11px] uppercase tracking-wide transition-colors",
+  "border-border bg-secondary text-muted-foreground",
+  "hover:border-ring hover:text-foreground",
+  "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
   "disabled:cursor-not-allowed disabled:opacity-40",
 );
 
@@ -51,7 +51,7 @@ export function RecordsPager({
 
       <span
         data-testid="pager-range"
-        className="font-mono text-[11px] text-slate-500 tabular-nums"
+        className="font-data text-[11px] text-faint tabular"
         aria-live="polite"
       >
         {total === 0 ? "0 records" : `${rangeStart}-${rangeEnd} of ${total}`}

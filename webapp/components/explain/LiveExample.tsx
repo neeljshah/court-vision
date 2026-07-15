@@ -22,6 +22,7 @@ import {
   ProvenanceBadge,
   InfoTip,
 } from "@/components/depth";
+import { Panel, PanelHead } from "@/components/ui/terminal";
 
 // The home-win probability lives on the record's pregame_probs map; key names
 // vary by engine, so we look it up defensively and fall back to honest empty.
@@ -47,12 +48,15 @@ function pickExample(
 
 function EmptyExample({ note }: { note?: string }) {
   return (
-    <div className="rounded-lg border border-border bg-surface-1/60 p-4 text-xs leading-relaxed text-muted-foreground">
-      <span className="font-semibold text-foreground">No live soccer snapshot right now.</span>{" "}
-      {note ??
-        "There is no fabricated game to show -- this panel only renders a real " +
-          "prediction off the live engine. Check the Games page when a match is on the board."}
-    </div>
+    <Panel>
+      <PanelHead title="a concrete live example" />
+      <div className="p-4 text-xs leading-relaxed text-muted-foreground">
+        <span className="font-semibold text-foreground">No live soccer snapshot right now.</span>{" "}
+        {note ??
+          "There is no fabricated game to show -- this panel only renders a real " +
+            "prediction off the live engine. Check the Games page when a match is on the board."}
+      </div>
+    </Panel>
   );
 }
 
@@ -86,9 +90,10 @@ export function LiveExample() {
 
   if (state === "loading") {
     return (
-      <div className="rounded-lg border border-border bg-surface-1/60 p-4 text-xs text-muted-foreground">
-        Loading a live soccer example...
-      </div>
+      <Panel>
+        <PanelHead title="a concrete live example" />
+        <div className="p-4 text-xs text-muted-foreground">Loading a live soccer example...</div>
+      </Panel>
     );
   }
 
@@ -98,37 +103,39 @@ export function LiveExample() {
   const markets: PredictMarket[] = rec.markets ?? [];
 
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-info/30 bg-info/5 p-4">
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="rounded border border-info/50 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-info">
-          live example
-        </span>
-        <span className="text-sm font-semibold tracking-tight text-foreground">
-          {rec.home} vs {rec.away}
-        </span>
-        <ProvenanceBadge model="Dixon-Coles" phase="pregame" />
-      </div>
-      <p className="text-xs leading-relaxed text-muted-foreground">
-        This is the real output of the funnel for a live soccer match: one anchored{" "}
-        <span className="inline-flex items-center gap-1">
-          win probability
-          <InfoTip term="probability" />
-        </span>{" "}
-        with its held-out band, then the FULL coherent market surface below -- every
-        row read off the SAME engine matrix, so the marginals cannot disagree.
-      </p>
-      <UncertaintyBar prob={prob} label="P(home win)" />
-      <MarketSurfaceTable
-        markets={markets}
-        model="Dixon-Coles"
-        phase="pregame"
-        caption="The coherent surface for this match -- probability only, no price."
+    <Panel>
+      <PanelHead
+        title="a concrete live example"
+        right={
+          <span className="text-xs font-semibold tracking-tight text-foreground">
+            {rec.home} vs {rec.away}
+          </span>
+        }
       />
-      <p className="text-[11px] leading-relaxed text-muted-foreground">
-        Every number above is the live engine's own output. No dollar figure, no
-        price, and no edge is shown -- only the calibrated probability and where it
-        came from.
-      </p>
-    </div>
+      <div className="flex flex-col gap-3 p-4">
+        <ProvenanceBadge model="Dixon-Coles" phase="pregame" />
+        <p className="text-xs leading-relaxed text-muted-foreground">
+          This is the real output of the funnel for a live soccer match: one anchored{" "}
+          <span className="inline-flex items-center gap-1">
+            win probability
+            <InfoTip term="probability" />
+          </span>{" "}
+          with its held-out band, then the FULL coherent market surface below -- every
+          row read off the SAME engine matrix, so the marginals cannot disagree.
+        </p>
+        <UncertaintyBar prob={prob} label="P(home win)" />
+        <MarketSurfaceTable
+          markets={markets}
+          model="Dixon-Coles"
+          phase="pregame"
+          caption="The coherent surface for this match -- probability only, no price."
+        />
+        <p className="text-[11px] leading-relaxed text-muted-foreground">
+          Every number above is the live engine's own output. No dollar figure, no
+          price, and no edge is shown -- only the calibrated probability and where it
+          came from.
+        </p>
+      </div>
+    </Panel>
   );
 }

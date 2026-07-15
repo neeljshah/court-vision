@@ -5,7 +5,7 @@
  *
  * Renders score + quarter/clock + calibrated win-prob bar for in_progress games.
  * Shows "Final" for post-game, pregame prior for future games. Honest freshness
- * via LiveBadge (stale-never-green). Never claims $/edge -- CALIBRATION only.
+ * via PanelHead/AsOf (stale-never-green). Never claims $/edge -- CALIBRATION only.
  * Polls via useLiveDataUrl (20s; pauses when tab hidden; never crashes on failure).
  *
  * HONESTY RAILS: probability/UNITS only -- no $ -- CALIBRATION not edge.
@@ -15,7 +15,7 @@
 
 import * as React from "react";
 import { useLiveDataUrl } from "@/lib/useLiveData";
-import { LiveBadge } from "./LiveBadge";
+import { Panel, PanelHead, Num } from "@/components/ui/terminal";
 import { cn } from "@/lib/utils";
 import type { InGameFull } from "@/lib/types";
 import { P5_BASE } from "@/lib/p5api";
@@ -70,13 +70,14 @@ function parseMatchup(label: string | null): { home: string; away: string } {
 // ---------------------------------------------------------------------------
 
 function CalibLabel({ text }: { text: string }) {
-  return (
-    <span className="text-[10px] font-mono text-amber-500/80">
-      {text}
-    </span>
-  );
+  return <span className="font-data text-[10px] text-stale">{text}</span>;
 }
 
+/**
+ * Thin horizontal model-probability bar (amber, bg-s-model). Only the model
+ * side is real data here (no in-game market price feed) so the remainder
+ * renders as a neutral surface segment, never a fabricated market series.
+ */
 function WinProbBar({ pHome }: { pHome: number }) {
   const homePct = Math.round(Math.max(0, Math.min(1, pHome)) * 100);
   return (
@@ -89,11 +90,11 @@ function WinProbBar({ pHome }: { pHome: number }) {
       aria-valuemax={100}
       className="flex flex-col gap-1"
     >
-      <div className="flex h-2 overflow-hidden rounded-full bg-slate-800">
-        <div className="h-full bg-blue-500/70 transition-all" style={{ width: `${homePct}%` }} />
-        <div className="h-full bg-slate-600/60 transition-all" style={{ width: `${100 - homePct}%` }} />
+      <div className="flex h-2 overflow-hidden bg-surface-2">
+        <div className="h-full bg-s-model transition-all" style={{ width: `${homePct}%` }} />
+        <div className="h-full bg-surface-3 transition-all" style={{ width: `${100 - homePct}%` }} />
       </div>
-      <div className="flex justify-between text-[10px] font-mono text-slate-400 tabular-nums">
+      <div className="flex justify-between font-data text-[10px] tabular text-muted-foreground">
         <span>{`Home ${homePct}%`}</span>
         <CalibLabel text="CALIBRATION -- not edge" />
         <span>{`${100 - homePct}% Away`}</span>
@@ -127,16 +128,16 @@ function InProgressContent({ data, home, away }: {
     <div data-testid="in-progress-state" className="flex flex-col gap-3">
       {/* Score line */}
       <div data-testid="score-line" className="flex items-center justify-between">
-        <span className="font-mono text-base font-semibold text-slate-100 tabular-nums">
+        <span className="font-data text-base font-semibold tabular text-foreground">
           {away}{" "}
-          <span className="text-slate-300">{score?.away ?? "--"}</span>
-          <span className="mx-2 text-slate-500 font-normal text-xs">@</span>
-          <span className="text-slate-300">{score?.home ?? "--"}</span>
+          <Num className="text-foreground">{score?.away ?? "--"}</Num>
+          <span className="mx-2 text-xs font-normal text-faint">@</span>
+          <Num className="text-foreground">{score?.home ?? "--"}</Num>
           {" "}{home}
         </span>
         <span
           data-testid="quarter-clock"
-          className="font-mono text-xs font-semibold text-amber-400"
+          className="font-data text-xs font-semibold text-stale"
         >
           {periodClock}
         </span>
@@ -147,13 +148,13 @@ function InProgressContent({ data, home, away }: {
         <>
           <WinProbBar pHome={pHome} />
           {provenance.length > 0 && (
-            <span className="text-[10px] font-mono text-slate-600">
+            <span className="font-data text-[10px] text-faint">
               {provenance.join(" | ")}
             </span>
           )}
         </>
       ) : (
-        <span className="text-xs text-slate-500">{"Win prob: checking..."}</span>
+        <span className="text-xs text-muted-foreground">{"Win prob: checking..."}</span>
       )}
 
       {clvStatus != null && (
@@ -177,9 +178,9 @@ function PostContent({ data, home, away }: {
   const score = data?.score;
   return (
     <div data-testid="final-state" className="flex flex-col gap-1">
-      <span className="text-sm font-semibold text-slate-400">{"Final"}</span>
+      <span className="text-sm font-semibold text-muted-foreground">{"Final"}</span>
       {score?.home != null && score?.away != null && (
-        <span className="font-mono text-xs text-slate-500 tabular-nums">
+        <span className="font-data text-xs tabular text-faint">
           {`${away} ${score.away} -- ${home} ${score.home}`}
         </span>
       )}
@@ -192,16 +193,14 @@ function PreContent({ pregameProb }: { pregameProb: number | null }) {
     <div data-testid="pregame-state" className="flex flex-col gap-1">
       {pregameProb != null ? (
         <>
-          <span className="text-xs text-slate-400">
+          <span className="text-xs text-muted-foreground">
             {"Pregame win prob (home): "}
-            <span className="font-mono font-semibold text-slate-200">
-              {fmtProb(pregameProb)}
-            </span>
+            <Num className="font-semibold text-foreground">{fmtProb(pregameProb)}</Num>
           </span>
           <CalibLabel text="pregame calibration -- not edge" />
         </>
       ) : (
-        <span className="text-sm text-slate-500" data-testid="pregame-no-prob">
+        <span className="text-sm text-faint" data-testid="pregame-no-prob">
           {"Pregame -- no live data yet"}
         </span>
       )}
@@ -231,33 +230,32 @@ export function LiveInGamePanel({
   const { home, away } = parseMatchup(matchupLabel);
   const isFirstLoad = isLoading && data === null;
 
-  return (
-    <div
-      data-testid="live-ingame-panel"
-      className={cn(
-        "flex flex-col gap-3 rounded-xl border bg-bg-panel px-4 py-3",
-        phase === "in_progress" ? "border-amber-800/40" : "border-slate-800",
-        className,
-      )}
-    >
-      {/* Header: matchup label + freshness badge */}
-      <div className="flex items-center justify-between gap-2">
-        <span className="text-xs font-semibold uppercase tracking-wide text-slate-300">
-          {matchupLabel ?? `${sport.toUpperCase()} / ${gameId}`}
-        </span>
-        <LiveBadge ageSec={ageSec} isStale={isStale} error={error} isLoading={isLoading} />
-      </div>
+  // Real as-of stamp from the last successful poll; "--:--:--" before any data.
+  const asOf =
+    ageSec != null ? new Date(Date.now() - ageSec * 1000).toLocaleTimeString() : "--:--:--";
+  const stale = isStale || Boolean(error);
 
-      {/* Phase-driven body */}
-      {isFirstLoad ? (
-        <p className="text-sm text-slate-500" data-testid="loading-state">{"checking..."}</p>
-      ) : phase === "in_progress" && data ? (
-        <InProgressContent data={data} home={home} away={away} />
-      ) : phase === "post" ? (
-        <PostContent data={data} home={home} away={away} />
-      ) : (
-        <PreContent pregameProb={pregameProb} />
-      )}
+  return (
+    <div data-testid="live-ingame-panel">
+      <Panel className={cn("flex flex-col", className)}>
+        <PanelHead
+          title={matchupLabel ?? `${sport.toUpperCase()} / ${gameId}`}
+          asOf={asOf}
+          stale={stale}
+        />
+        <div className="flex flex-col gap-3 px-3 py-2">
+          {/* Phase-driven body */}
+          {isFirstLoad ? (
+            <p className="text-sm text-faint" data-testid="loading-state">{"checking..."}</p>
+          ) : phase === "in_progress" && data ? (
+            <InProgressContent data={data} home={home} away={away} />
+          ) : phase === "post" ? (
+            <PostContent data={data} home={home} away={away} />
+          ) : (
+            <PreContent pregameProb={pregameProb} />
+          )}
+        </div>
+      </Panel>
     </div>
   );
 }

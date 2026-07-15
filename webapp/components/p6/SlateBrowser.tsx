@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { api, isUnavailable, SPORTS, type ReportList } from "@/lib/p5api";
 import { Panel, Unavailable, Badge } from "./Primitives";
+import { Num } from "@/components/ui/terminal";
 
 type SportSlate = { sport: string; list: ReportList | null; err?: string };
 
@@ -40,17 +41,15 @@ export function SlateBrowser() {
   return (
     <Panel
       title="Today's slate (browse)"
-      right={<Badge tone="slate">{total} games</Badge>}
+      right={<Badge tone="slate"><Num>{total}</Num> games</Badge>}
     >
       <div className="space-y-4">
         {slates.map((s) => (
           <div key={s.sport}>
             <div className="mb-1 flex items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-300">
-                {s.sport}
-              </span>
+              <span className="microlabel">{s.sport}</span>
               {s.list?.generated_at ? (
-                <span className="font-mono text-[10px] text-slate-600">
+                <span className="font-mono text-[10px] text-faint">
                   {s.list.generated_at}
                 </span>
               ) : null}
@@ -58,10 +57,10 @@ export function SlateBrowser() {
             {s.err ? (
               <Unavailable reason={s.err} />
             ) : !s.list ? (
-              <p className="text-xs text-slate-600">loading…</p>
+              <p className="text-xs text-faint">loading…</p>
             ) : s.list.status === "unavailable" ||
               s.list.game_ids.length === 0 ? (
-              <p className="text-xs text-slate-600">
+              <p className="text-xs text-faint">
                 {s.list.reason || "no games available"}
               </p>
             ) : (
@@ -70,7 +69,7 @@ export function SlateBrowser() {
                   <li key={gid}>
                     <Link
                       href={`/p6/${s.sport}/${gid}`}
-                      className="block rounded-lg border border-slate-800 bg-bg-subtle px-3 py-2 font-mono text-xs text-slate-300 transition hover:border-slate-600 hover:text-slate-100"
+                      className="block border border-border bg-surface-1 px-3 py-2 font-mono text-xs text-foreground transition hover:border-slate-600 hover:bg-surface-2 hover:text-foreground"
                     >
                       {gid}
                     </Link>

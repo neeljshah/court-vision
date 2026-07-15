@@ -5,6 +5,7 @@ import { X, Sparkles } from "lucide-react";
 import { REST } from "@/lib/config";
 import type { Bet, Explanation } from "@/lib/types";
 import { cn, evClass, fmtOdds, fmtPct, tierClass } from "@/lib/utils";
+import { Num } from "@/components/ui/terminal";
 
 export function WhyDrawer({
   bet,
@@ -52,25 +53,25 @@ export function WhyDrawer({
         className="flex-1"
         onClick={onClose}
       />
-      <aside className="relative h-full w-full max-w-md overflow-y-auto border-l border-slate-800 bg-bg-panel p-6">
+      <aside className="relative h-full w-full max-w-md overflow-y-auto border-l border-border bg-card p-6">
         <header className="mb-4 flex items-start justify-between">
           <div>
-            <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-slate-500">
+            <div className="flex items-center gap-2 microlabel">
               <Sparkles className="h-3.5 w-3.5" />
               why this bet
             </div>
-            <h3 className="mt-2 text-lg font-semibold text-slate-100">
-              {bet.name} · {bet.stat.toUpperCase()} {bet.side.toUpperCase()}{" "}
+            <h3 className="mt-2 text-lg font-semibold text-foreground">
+              {bet.name} &middot; {bet.stat.toUpperCase()} {bet.side.toUpperCase()}{" "}
               {bet.line}
             </h3>
-            <p className="mt-1 text-sm text-slate-400">
-              {bet.book} {fmtOdds(bet.odds)} ·{" "}
-              <span className={evClass(bet.ev)}>{fmtPct(bet.ev)} EV</span> ·{" "}
-              K {(bet.kelly * 100).toFixed(1)}%
+            <p className="mt-1 text-sm text-muted-foreground">
+              {bet.book} {fmtOdds(bet.odds)} &middot;{" "}
+              <Num className={evClass(bet.ev)}>{fmtPct(bet.ev)} EV</Num> &middot;{" "}
+              <Num>K {(bet.kelly * 100).toFixed(1)}%</Num>
             </p>
             <span
               className={cn(
-                "mt-2 inline-block rounded-md border px-2 py-0.5 text-xs font-mono",
+                "mt-2 inline-block border px-2 py-0.5 font-data text-xs",
                 tierClass(bet.tier),
               )}
             >
@@ -80,7 +81,7 @@ export function WhyDrawer({
           <button
             type="button"
             aria-label="close drawer"
-            className="rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+            className="p-1 text-muted-foreground hover:bg-surface-2 hover:text-foreground"
             onClick={onClose}
           >
             <X className="h-5 w-5" />
@@ -88,9 +89,9 @@ export function WhyDrawer({
         </header>
 
         <section className="space-y-4">
-          {loading && <div className="text-sm text-slate-500">loading…</div>}
+          {loading && <div className="text-sm text-faint">loading...</div>}
           {err && (
-            <div className="rounded-md border border-red-800 bg-red-950/40 p-3 text-sm text-red-300">
+            <div className="border border-danger/40 bg-danger/10 p-3 text-sm text-down">
               Couldn't load explanation: {err}
             </div>
           )}
@@ -98,7 +99,7 @@ export function WhyDrawer({
             <SectionCard key={s.kind} title={s.title} body={s.body} />
           ))}
           {expl && !expl.sections.length && (
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-faint">
               No structured reasoning available yet. The engine will fill in
               context as PBP + line ticks accumulate.
             </p>
@@ -111,11 +112,11 @@ export function WhyDrawer({
 
 function SectionCard({ title, body }: { title: string; body: string }) {
   return (
-    <article className="rounded-lg border border-slate-800 bg-bg-subtle p-3">
-      <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+    <article className="border border-border bg-surface-1 p-3">
+      <h4 className="microlabel">
         {title}
       </h4>
-      <pre className="mt-1 whitespace-pre-wrap break-words font-mono text-xs leading-relaxed text-slate-200">
+      <pre className="mt-1 whitespace-pre-wrap break-words font-data text-xs leading-relaxed text-foreground">
         {body}
       </pre>
     </article>

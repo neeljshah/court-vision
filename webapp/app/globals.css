@@ -5,68 +5,120 @@
 @layer base {
   :root {
     /* ------------------------------------------------------------------ */
-    /* shadcn/ui structural tokens (dark-first; all in HSL channel triples) */
+    /* Direction A "Amber Console" tokens (dark-first; HSL channel triples) */
+    /* Source mockup: design_a_terminal_amber -- validated data palette.    */
     /* ------------------------------------------------------------------ */
-    --background:        240 10%  4%;   /* #0a0a0f  page base             */
-    --foreground:        213 27% 84%;   /* #cfd8e3  body text             */
+    --background:        222 27%  6%;   /* #0C0F15  page base             */
+    --foreground:        225 29% 93%;   /* #E7EAF2  ink                   */
 
-    --card:              240 10%  8%;   /* #13131a  card surface           */
-    --card-foreground:   213 27% 84%;
+    --card:              221 26% 10%;   /* #12161F  panel surface          */
+    --card-foreground:   225 29% 93%;
 
-    --popover:           240 10%  8%;
-    --popover-foreground: 213 27% 84%;
+    --popover:           221 26% 10%;
+    --popover-foreground: 225 29% 93%;
 
-    --primary:           217 91% 60%;   /* blue accent                     */
-    --primary-foreground: 0 0% 100%;
+    --primary:            37 74% 56%;   /* #E2A33C amber accent            */
+    --primary-foreground: 222 27%  6%;
 
-    --secondary:         240  6% 15%;   /* #1c1c25  secondary surface      */
-    --secondary-foreground: 213 27% 84%;
+    --secondary:         221 25% 12%;   /* #171C27 raised surface          */
+    --secondary-foreground: 225 29% 93%;
 
-    --muted:             240  6% 15%;
-    --muted-foreground:  215 16% 47%;   /* slate-500                       */
+    --muted:             221 25% 12%;
+    --muted-foreground:  219 14% 60%;   /* #8A93A6                         */
 
-    --accent:            240  6% 18%;   /* slightly lighter than muted     */
-    --accent-foreground: 213 27% 84%;
+    --accent:            221 24% 15%;
+    --accent-foreground: 225 29% 93%;
 
-    --destructive:         0 72% 51%;
+    --destructive:         3 70% 59%;   /* #E0554D                         */
     --destructive-foreground: 0 0% 100%;
 
-    --border:            240  6% 20%;
-    --input:             240  6% 20%;
-    --ring:              217 91% 60%;   /* focus ring matches primary      */
+    --border:            219 23% 18%;   /* #232A38                         */
+    --input:             219 23% 18%;
+    --ring:               37 74% 56%;   /* focus ring = amber              */
 
-    --radius: 0.5rem;
+    --radius: 0.125rem;                 /* square terminal corners         */
 
-    /* ------------------------------------------------------------------ */
-    /* Semantic status tokens                                               */
-    /* ------------------------------------------------------------------ */
-    --success:           142 71% 45%;   /* green-500 equivalent            */
+    /* Semantic status tokens */
+    --success:           147 46% 45%;   /* #3FA96F direction up            */
     --success-foreground: 0 0% 100%;
 
-    --warning:            38 92% 50%;   /* amber-500                       */
-    --warning-foreground:  0 0% 100%;
+    --warning:            37 74% 56%;   /* amber = stale/warning           */
+    --warning-foreground: 222 27%  6%;
 
-    --danger:              0 72% 51%;   /* same as destructive             */
+    --danger:              3 70% 59%;   /* #E0554D direction down          */
     --danger-foreground:   0 0% 100%;
 
-    --info:              199 89% 48%;   /* sky-500                         */
+    --info:              206 73% 56%;   /* #3E9BE0 market blue             */
     --info-foreground:     0 0% 100%;
 
-    /* ------------------------------------------------------------------ */
-    /* Tier tokens (S=gold, A=green, B=slate-mid, C=slate-dark)           */
-    /* ------------------------------------------------------------------ */
-    --tier-s:             43 96% 56%;   /* amber/gold #fbbf24              */
-    --tier-a:            142 71% 45%;   /* green      #22c55e              */
-    --tier-b:            215 20% 65%;   /* slate-400  #94a3b8              */
-    --tier-c:            215 25% 37%;   /* slate-600  #475569              */
+    /* Data-series tokens (palette-validator PASS on --card surface) */
+    --s-model:            36 77% 45%;   /* #C9821A our model series        */
+    --s-market:          206 73% 56%;   /* #3E9BE0 market series           */
+    --stale:              37 74% 56%;   /* amber                           */
+    --faint:             219 13% 41%;   /* #5A6375 faint ink               */
 
-    /* ------------------------------------------------------------------ */
-    /* Surface elevation steps                                              */
-    /* ------------------------------------------------------------------ */
-    --surface-0:         240 10%  4%;   /* page base                       */
-    --surface-1:         240 10%  8%;   /* card                            */
-    --surface-2:         240  8% 12%;   /* raised panel / popover base     */
-    --surface-3:         240  6% 18%;   /* input / subtle highlight        */
+    /* Tier tokens (S=amber, A=green, B=slate-mid, C=slate-dark) */
+    --tier-s:             37 74% 56%;
+    --tier-a:            147 46% 45%;
+    --tier-b:            219 14% 60%;
+    --tier-c:            219 13% 41%;
+
+    /* Surface elevation steps */
+    --surface-0:         222 27%  6%;
+    --surface-1:         221 26% 10%;
+    --surface-2:         221 25% 12%;
+    --surface-3:         219 23% 18%;
+
+    /* Data font stack -- every numeric/tabular cell wears this */
+    --font-data: ui-monospace, "Cascadia Mono", Consolas, "SF Mono", monospace;
+  }
+
+  /* Light theme (Direction A "paper console") -- active when the theme
+     toggle removes the .dark class. Contrast-audited 2026-07-15:
+     --faint 4.63:1, --warning/--stale/--tier-s 4.62:1 vs background. */
+  :root:not(.dark) {
+    --background:         40 24% 94%;   /* #F3F1EC warm paper              */
+    --foreground:        222 16% 13%;   /* #1C1F26 ink                     */
+
+    --card:               45 33% 98%;   /* #FBFAF7 panel                   */
+    --card-foreground:   222 16% 13%;
+    --popover:            45 33% 98%;
+    --popover-foreground: 222 16% 13%;
+
+    --primary:            38 80% 39%;   /* #B37B14 deep amber              */
+    --primary-foreground: 45 33% 98%;
+
+    --secondary:          42 25% 92%;   /* #F0EDE6                         */
+    --secondary-foreground: 222 16% 13%;
+    --muted:              42 25% 92%;
+    --muted-foreground:  222 10% 42%;   /* #5F6675                         */
+    --accent:             42 25% 89%;
+    --accent-foreground: 222 16% 13%;
+
+    --destructive:         4 58% 48%;   /* #C23A32                         */
+    --border:             40 17% 82%;   /* #D8D3C8                         */
+    --input:              40 17% 82%;
+    --ring:               38 80% 39%;
+
+    --success:           147 60% 31%;   /* #1F7D4D                         */
+    --warning:            38 80% 32%;   /* contrast-fixed (was 39%)        */
+    --danger:              4 58% 48%;
+    --info:              207 69% 44%;   /* #2278BD                         */
+
+    --s-model:            37 86% 36%;   /* #A96C0D                         */
+    --s-market:          207 69% 44%;   /* #2278BD                         */
+    --stale:              38 80% 32%;   /* contrast-fixed                  */
+    --faint:             219 10% 44%;   /* contrast-fixed (was 64%)        */
+
+    --tier-s:             38 80% 32%;   /* contrast-fixed                  */
+    --tier-a:            147 60% 31%;
+    --tier-b:            222 10% 42%;
+    --tier-c:            219 10% 44%;   /* contrast-fixed                  */
+
+    --surface-0:          40 24% 94%;
+    --surface-1:          45 33% 98%;
+    --surface-2:          42 25% 92%;
+    --surface-3:          40 17% 82%;
   }
 
   /* Reset border color to token everywhere */
@@ -148,6 +200,33 @@
   /* Tabular numbers for aligned numeric columns */
   .tabular {
     font-variant-numeric: tabular-nums;
+  }
+
+  /* Data font: mono stack for every numeric cell / stamp / code-ish value */
+  .font-data {
+    font-family: var(--font-data);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Direction + freshness ink */
+  .text-up    { color: hsl(var(--success)); }
+  .text-down  { color: hsl(var(--danger));  }
+  .text-stale { color: hsl(var(--stale));   }
+  .text-faint { color: hsl(var(--faint));   }
+
+  /* Data series ink (charts, prob bars) */
+  .text-s-model  { color: hsl(var(--s-model));  }
+  .text-s-market { color: hsl(var(--s-market)); }
+  .bg-s-model    { background-color: hsl(var(--s-model));  }
+  .bg-s-market   { background-color: hsl(var(--s-market)); }
+
+  /* Micro-label: uppercase, letterspaced panel/section titles */
+  .microlabel {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: hsl(var(--muted-foreground));
   }
 
   /* Tier color utilities (text) */

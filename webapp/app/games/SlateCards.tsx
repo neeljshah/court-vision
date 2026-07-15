@@ -9,14 +9,19 @@ import {
   type GameEdge,
   type BestBetsEnvelope,
 } from "@/lib/api";
-import { Panel, Unavailable, Badge } from "@/components/p6/Primitives";
+import { Unavailable } from "@/components/p6/Primitives";
 import { GameCard } from "./GameCard";
-import { GAME_SPORTS, sportLabel } from "./card-utils";
+import { GAME_SPORTS, sportLabel, matchSlateGame } from "./card-utils";
+import { SlateAgeBar } from "./SlateAgeBar";
+import { Panel, PanelHead } from "@/components/ui/terminal";
+import { cn } from "@/lib/utils";
+import { fetchSlate, type BoardSport, type Slate } from "@/lib/board";
 
 type SportState = {
   sport: string;
   env: PredictEnvelope | null;
   edges: Record<string, GameEdge>;
+  slate: Slate | null;
   err?: string;
 };
 
@@ -28,7 +33,7 @@ type SportState = {
 // slate. UNITS / probability only -- NO $.
 export function SlateCards() {
   const [states, setStates] = useState<SportState[]>(
-    GAME_SPORTS.map((s) => ({ sport: s, env: null, edges: {} })),
+    GAME_SPORTS.map((s) => ({ sport: s, env: null, edges: {}, slate: null })),
   );
 
   useEffect(() => {
@@ -71,6 +76,17 @@ export function SlateCards() {
             ),
           );
         });
+        // Board slate (best price + book per side, from /api/board/slate).
+        // Failure is non-fatal -- cards fall back to the predict envelope's
+        // own market rows, never a fabricated price.
+        fetchSlate(sport as BoardSport)
+          .then((slate) => {
+            if (cancelled) return;
+            setStates((prev) =>
+              prev.map((row) => (row.sport === sport ? { ...row, slate } : row)),
+            );
+          })
+          .catch(() => {});
       });
     };
 
@@ -92,33 +108,52 @@ export function SlateCards() {
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center justify-between">
-        <p className="font-mono text-[11px] text-slate-500">
-          one coherent prediction per game · units + tier · no $ · vs-close
+        <p className="font-data text-[11px] text-faint">
+          one coherent prediction per game - units + tier - no $ - vs-close
           UNPROVEN
         </p>
-        <Badge tone="slate">{totalLive} live games</Badge>
+        <span className="border border-border px-1.5 py-px font-data text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+          {totalLive} live games
+        </span>
       </div>
 
+      {/* Sport quick-nav: scrolls to the section below -- every sport stays
+          in the DOM at once (independent honest-empty states per sport), this
+          is just a fast jump-to. */}
+      <nav className="sticky top-0 z-10 flex gap-1 overflow-x-auto border-b border-border bg-background py-2">
+        {GAME_SPORTS.map((s) => (
+          <a
+            key={s}
+            href={`#slate-${s}`}
+            className="min-h-[32px] shrink-0 border border-border px-3 py-1.5 font-data text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:border-primary hover:text-foreground"
+          >
+            {sportLabel(s)}
+          </a>
+        ))}
+      </nav>
+
       {states.map((s) => (
-        <SportSlate key={s.sport} state={s} />
+        <div id={`slate-${s.sport}`} key={s.sport}>
+          <SportSlate state={s} />
+        </div>
       ))}
     </div>
   );
 }
 
 function SportSlate({ state }: { state: SportState }) {
-  const { sport, env, edges, err } = state;
+  const { sport, env, edges, slate, err } = state;
   const label = sportLabel(sport);
 
   let body: React.ReactNode;
   if (err) {
-    body = <Unavailable reason={err} />;
+    body = <div className="p-3"><Unavailable reason={err} /></div>;
   } else if (!env) {
-    body = <p className="text-xs text-slate-600">loading...</p>;
+    body = <p className="p-3 font-data text-xs text-faint">loading...</p>;
   } else if (env.status !== "ok") {
     // Honest offseason / no-snapshot state -- never a fabricated slate.
     body = (
-      <p className="text-xs text-slate-500">
+      <p className="p-3 font-data text-xs text-muted-foreground">
         {env.reason ||
           env.honest_note ||
           `no games available for ${label.toLowerCase()} right now (offseason / no live slate)`}
@@ -128,19 +163,20 @@ function SportSlate({ state }: { state: SportState }) {
     const preds: PredictRecord[] = env.predictions || [];
     if (preds.length === 0) {
       body = (
-        <p className="text-xs text-slate-500">
+        <p className="p-3 font-data text-xs text-muted-foreground">
           no games live now ({label.toLowerCase()})
         </p>
       );
     } else {
       body = (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 p-3 sm:grid-cols-2 xl:grid-cols-3">
           {preds.map((rec) => (
             <GameCard
               key={rec.game_id}
               sport={sport}
               rec={rec}
               edge={edges[rec.game_id] ?? null}
+              slateGame={matchSlateGame(slate, rec)}
             />
           ))}
         </div>
@@ -152,19 +188,23 @@ function SportSlate({ state }: { state: SportState }) {
     env && env.status === "ok" ? env.predictions?.length ?? 0 : 0;
 
   return (
-    <Panel
-      title={label}
-      right={
-        <span className="inline-flex items-center gap-2">
-          {env?.generated_at ? (
-            <span className="font-mono text-[10px] text-slate-600">
-              {env.generated_at}
-            </span>
-          ) : null}
-          <Badge tone={count > 0 ? "green" : "slate"}>{count} games</Badge>
-        </span>
-      }
-    >
+    <Panel>
+      <PanelHead
+        title={label}
+        right={
+          <>
+          <SlateAgeBar generatedAt={env?.generated_at ?? null} />
+          <span
+            className={cn(
+              "border px-1.5 py-px font-data text-[10px] font-bold uppercase tracking-wider",
+              count > 0 ? "border-success text-up" : "border-border text-muted-foreground",
+            )}
+          >
+            {count} games
+          </span>
+          </>
+        }
+      />
       {body}
     </Panel>
   );

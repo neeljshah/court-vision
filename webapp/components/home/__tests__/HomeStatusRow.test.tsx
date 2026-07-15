@@ -417,7 +417,7 @@ describe("HomeStatusRow -- null values stay grey (spec 4)", () => {
     await waitFor(() => expect(screen.getByText("unknown")).toBeTruthy());
 
     const unknownEl = screen.getByText("unknown");
-    const cell = unknownEl.closest("[class*='rounded-md']");
+    const cell = unknownEl.closest("[class*='border-border']");
     const dot = cell?.querySelector("[aria-hidden='true']");
     expect((dot?.className ?? "")).not.toContain("bg-success");
     expect((dot?.className ?? "")).toContain("bg-muted-foreground");
@@ -441,7 +441,7 @@ describe("HomeStatusRow -- null values stay grey (spec 4)", () => {
     await waitFor(() => expect(screen.getByText("no games live now")).toBeTruthy());
 
     const liveEl = screen.getByText("no games live now");
-    const cell = liveEl.closest("[class*='rounded-md']");
+    const cell = liveEl.closest("[class*='border-border']");
     const dot = cell?.querySelector("[aria-hidden='true']");
     expect((dot?.className ?? "")).not.toContain("bg-success");
     expect((dot?.className ?? "")).toContain("bg-muted-foreground");

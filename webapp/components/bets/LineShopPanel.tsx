@@ -42,7 +42,7 @@ export interface LineShopPanelProps {
 export function LineShopPanel({ books, side }: LineShopPanelProps) {
   if (!books || books.length === 0) {
     return (
-      <span className="font-mono text-[10px] text-slate-600">
+      <span className="font-data text-[10px] text-faint">
         no multi-book lines available
       </span>
     );
@@ -77,25 +77,25 @@ export function LineShopPanel({ books, side }: LineShopPanelProps) {
               aria-label={ariaLabel}
               data-testid={isBest ? "line-shop-best" : "line-shop-entry"}
               className={cn(
-                "inline-flex flex-col items-center gap-0.5 rounded-md border px-2 py-1",
+                "inline-flex flex-col items-center gap-0.5 border px-2 py-1",
                 isBest
-                  ? "border-tier-a/50 bg-tier-a/10"
-                  : "border-slate-700 bg-slate-900/60",
+                  ? "border-border bg-surface-3"
+                  : "border-border bg-surface-2",
                 !b.fresh && "opacity-50",
               )}
             >
               <span className="flex items-center gap-1">
                 <span
                   className={cn(
-                    "font-mono text-[9px] uppercase tracking-wide",
-                    isBest ? "text-tier-a" : "text-slate-500",
+                    "font-data text-[9px] uppercase tracking-wide",
+                    isBest ? "text-foreground" : "text-muted-foreground",
                   )}
                 >
                   {b.book}
                 </span>
                 {b.is_pm && (
                   <span
-                    className="rounded bg-slate-800 px-1 font-mono text-[8px] font-bold uppercase text-slate-400"
+                    className="bg-surface-3 px-1 font-data text-[8px] font-bold uppercase text-muted-foreground"
                     aria-hidden="true"
                   >
                     PM
@@ -103,7 +103,7 @@ export function LineShopPanel({ books, side }: LineShopPanelProps) {
                 )}
                 {isBest && (
                   <span
-                    className="rounded bg-tier-a/20 px-1 font-mono text-[8px] font-bold uppercase text-tier-a"
+                    className="bg-surface-3 px-1 font-data text-[8px] font-bold uppercase text-foreground"
                     aria-hidden="true"
                   >
                     best
@@ -111,7 +111,7 @@ export function LineShopPanel({ books, side }: LineShopPanelProps) {
                 )}
                 {!b.fresh && (
                   <span
-                    className="rounded bg-amber-950/40 px-1 font-mono text-[8px] font-bold uppercase text-amber-500"
+                    className="bg-warning/10 px-1 font-data text-[8px] font-bold uppercase text-stale"
                     aria-hidden="true"
                   >
                     stale
@@ -120,18 +120,15 @@ export function LineShopPanel({ books, side }: LineShopPanelProps) {
               </span>
               <span
                 className={cn(
-                  "font-mono text-[11px] font-semibold tabular-nums leading-none",
-                  isBest ? "text-tier-a" : "text-slate-300",
+                  "font-data tabular text-[11px] font-semibold leading-none",
+                  isBest ? "text-foreground" : "text-muted-foreground",
                 )}
               >
                 {priceStr}
               </span>
               {lineStr ? (
                 <span
-                  className={cn(
-                    "font-mono text-[9px] leading-none",
-                    isBest ? "text-tier-a/70" : "text-slate-500",
-                  )}
+                  className="font-data text-[9px] leading-none text-muted-foreground"
                 >
                   {lineStr}
                 </span>

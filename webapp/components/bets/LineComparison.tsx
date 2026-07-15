@@ -64,9 +64,9 @@ function fmtClv(clv: number | null | undefined, is_proxy?: boolean): string {
 }
 
 function clvColorClass(clv: number | null | undefined): string {
-  if (clv == null) return "text-amber-400/70";
-  if (clv > 0) return "text-slate-300";
-  return "text-slate-500";
+  if (clv == null) return "text-stale";
+  if (clv > 0) return "text-up";
+  return "text-down";
 }
 
 // ---------------------------------------------------------------------------
@@ -76,7 +76,7 @@ function clvColorClass(clv: number | null | undefined): string {
 function BestBadge() {
   return (
     <span
-      className="inline-flex items-center rounded bg-slate-600/30 px-1 font-mono text-[8px] font-bold uppercase tracking-wide text-slate-300 border border-slate-600/50"
+      className="inline-flex items-center bg-surface-3 px-1 font-data text-[8px] font-bold uppercase tracking-wide text-foreground border border-border"
       aria-hidden="true"
     >
       best
@@ -115,7 +115,7 @@ export function LineComparison({
     >
       {/* Header row */}
       <div
-        className="grid gap-x-3 font-mono text-[9px] uppercase tracking-widest text-slate-600 pb-1 border-b border-slate-800"
+        className="grid gap-x-3 microlabel pb-1 border-b border-border"
         style={{ gridTemplateColumns: "1fr auto auto auto" }}
         aria-hidden="true"
       >
@@ -161,11 +161,11 @@ export function LineComparison({
             >
               <div
                 className={cn(
-                  "grid gap-x-3 items-center rounded px-2 py-1.5",
-                  "text-[11px] font-mono tabular-nums transition-colors",
+                  "grid gap-x-3 items-center px-2 py-1.5",
+                  "text-[11px] font-data tabular transition-colors",
                   isBest
-                    ? "border border-slate-600/50 bg-slate-700/30"
-                    : "border border-transparent",
+                    ? "border border-border bg-surface-2"
+                    : "border border-transparent hover:bg-surface-2",
                 )}
                 style={{ gridTemplateColumns: "1fr auto auto auto" }}
               >
@@ -173,14 +173,14 @@ export function LineComparison({
                 <div className="flex items-center gap-1.5 min-w-0">
                   <span
                     className={cn(
-                      "truncate font-mono text-[10px] uppercase tracking-wide",
-                      isBest ? "text-slate-200" : "text-slate-400",
+                      "truncate font-data text-[10px] uppercase tracking-wide",
+                      isBest ? "text-foreground" : "text-muted-foreground",
                     )}
                   >
                     {entry.book}
                   </span>
                   {entry.line != null ? (
-                    <span className="text-[9px] text-slate-600">{lineStr}</span>
+                    <span className="text-[9px] text-faint">{lineStr}</span>
                   ) : null}
                   {isBest ? <BestBadge /> : null}
                 </div>
@@ -189,7 +189,7 @@ export function LineComparison({
                 <span
                   className={cn(
                     "text-right",
-                    isBest ? "text-slate-200" : "text-slate-400",
+                    isBest ? "text-foreground" : "text-muted-foreground",
                   )}
                   aria-hidden="true"
                 >
@@ -198,7 +198,7 @@ export function LineComparison({
 
                 {/* Devigged market probability */}
                 <span
-                  className="text-right text-slate-500"
+                  className="text-right text-faint"
                   aria-hidden="true"
                   data-testid={isBest ? "best-line-devig" : "devig-prob"}
                 >
@@ -223,7 +223,7 @@ export function LineComparison({
 
       {/* Footer footnote: honesty copy */}
       <p
-        className="mt-1 font-mono text-[8px] text-slate-700 leading-tight"
+        className="mt-1 font-data text-[8px] text-faint leading-tight"
         aria-hidden="true"
       >
         Market p = devigged implied probability. CLV = closing-line value.

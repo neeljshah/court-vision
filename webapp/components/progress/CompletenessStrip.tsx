@@ -25,10 +25,10 @@ function Cell({
       ? "border-tier-a/40 bg-tier-a/5 text-tier-a"
       : tone === "amber"
         ? "border-amber-900/50 bg-amber-950/20 text-amber-400"
-        : "border-slate-800 bg-bg-panel/40 text-slate-300";
+        : "border-slate-800 bg-bg-panel/40 text-foreground";
   return (
     <div className={`flex flex-col gap-1 rounded-lg border p-3 ${t}`}>
-      <div className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wide text-slate-500">
+      <div className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wide text-muted-foreground">
         {label}
         <InfoTip text={tip} ariaLabel={`what is ${label}?`} />
       </div>

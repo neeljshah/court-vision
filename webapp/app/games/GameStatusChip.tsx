@@ -7,6 +7,7 @@
 // No $ anywhere.
 
 import { cn } from "@/lib/utils";
+import { Dot } from "@/components/ui/terminal";
 
 type ChipStatus = "live" | "pregame" | "done";
 
@@ -37,16 +38,11 @@ export function GameStatusChip({
       <span
         aria-label="game is live"
         className={cn(
-          "inline-flex items-center gap-1.5 rounded-full px-2 py-0.5",
-          "border border-green-700/60 bg-green-950/50",
-          "font-mono text-[9px] font-semibold uppercase tracking-wider text-green-400",
+          "inline-flex items-center gap-1.5 border border-success px-1.5 py-px",
+          "font-data text-[10px] font-bold uppercase tracking-wider text-up",
         )}
       >
-        {/* Animated pulse dot -- live indicator */}
-        <span className="relative flex h-1.5 w-1.5">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
-          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-green-400" />
-        </span>
+        <Dot state="ok" />
         LIVE
       </span>
     );
@@ -56,11 +52,7 @@ export function GameStatusChip({
     return (
       <span
         aria-label="game is done"
-        className={cn(
-          "inline-flex items-center rounded-full px-2 py-0.5",
-          "border border-slate-700 bg-slate-800/40",
-          "font-mono text-[9px] font-semibold uppercase tracking-wider text-slate-500",
-        )}
+        className="inline-flex items-center border border-border px-1.5 py-px font-data text-[10px] font-bold uppercase tracking-wider text-faint"
       >
         DONE
       </span>
@@ -71,11 +63,7 @@ export function GameStatusChip({
   return (
     <span
       aria-label="game is pregame"
-      className={cn(
-        "inline-flex items-center rounded-full px-2 py-0.5",
-        "border border-slate-600/60 bg-slate-900/40",
-        "font-mono text-[9px] font-semibold uppercase tracking-wider text-slate-400",
-      )}
+      className="inline-flex items-center border border-border px-1.5 py-px font-data text-[10px] font-bold uppercase tracking-wider text-muted-foreground"
     >
       PREGAME
     </span>

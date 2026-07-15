@@ -10,10 +10,10 @@
  * RAILS:
  *   - ASCII only (no Unicode arrows, em-dashes, ellipses, etc.)
  *   - Pure + presentational: no fetching, no store access.
- *   - DONE tone is neutral (slate/muted) -- no green pulse on a finished game.
- *   - LIVE tone is amber (in-progress) -- deliberate, never green.
- *   - PREGAME tone is slate (neutral, upcoming).
- *   - Meets shadcn/Tailwind token conventions consistent with Primitives.tsx.
+ *   - DONE tone is neutral (border/muted) -- no pulse on a finished game.
+ *   - LIVE tone is amber (in-progress) -- deliberate, never success/green.
+ *   - PREGAME tone is neutral (upcoming).
+ *   - Token-driven per Direction A "Amber Console": flat borders, no rounded pill.
  *   - a11y: role="status" + aria-label conveying both status and optional period/clock.
  *   - <=300 LOC.
  */
@@ -49,16 +49,16 @@ export interface GameStatusChipProps {
 // ---------------------------------------------------------------------------
 
 /**
- * Tone per status.
+ * Tone per status -- token-driven, flat borders (no rounded surfaces, no glow).
  *
- * DONE:    slate/muted  -- no green, no pulse; the game is over.
- * LIVE:    amber        -- visually distinct and urgent without being "success green".
- * PREGAME: slate        -- neutral; not yet started.
+ * DONE:    neutral border/muted ink  -- no pulse; the game is over.
+ * LIVE:    amber (--warning)         -- visually distinct and urgent, never success/green.
+ * PREGAME: neutral border/muted ink  -- not yet started.
  */
 const STATUS_TONE: Record<GameStatus, string> = {
-  DONE:    "border-slate-700 bg-slate-800/60 text-slate-400",
-  LIVE:    "border-amber-800/60 bg-amber-950/40 text-amber-300",
-  PREGAME: "border-slate-700/60 bg-slate-800/40 text-slate-400",
+  DONE:    "border-border text-muted-foreground",
+  LIVE:    "border-warning/60 text-stale",
+  PREGAME: "border-border text-muted-foreground",
 };
 
 const SIZE_CLASSES: Record<"sm" | "md", string> = {
@@ -82,9 +82,9 @@ function LivePulse() {
       className="relative inline-flex h-1.5 w-1.5 shrink-0"
     >
       {/* Outer ping ring */}
-      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-60" />
+      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-warning opacity-60" />
       {/* Inner solid dot */}
-      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-amber-400" />
+      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-warning" />
     </span>
   );
 }
@@ -121,7 +121,7 @@ export function GameStatusChip({
       aria-label={ariaLabel}
       data-game-status={status}
       className={cn(
-        "inline-flex items-center gap-1 rounded-full border font-mono font-semibold uppercase tracking-wide",
+        "inline-flex items-center gap-1 border font-data font-semibold uppercase tracking-wide",
         STATUS_TONE[status],
         SIZE_CLASSES[size],
         className,
@@ -132,7 +132,7 @@ export function GameStatusChip({
       {isLive && period ? (
         <span
           aria-hidden="true"
-          className="ml-0.5 font-sans text-amber-400/80 normal-case tracking-normal"
+          className="ml-0.5 font-data text-stale normal-case tracking-normal"
         >
           {period}
         </span>

@@ -7,17 +7,17 @@
 // ingame=null -> skeleton shimmer (neutral checking, never green/red/stale).
 
 import * as React from "react";
-import { Panel, Badge } from "@/components/p6/Primitives";
+import { Badge } from "@/components/p6/Primitives";
 import { Unavailable, Empty, Stale } from "@/components/honest/HonestState";
 import { UncertaintyBar } from "@/components/depth/UncertaintyBar";
+import { Panel as TerminalPanel, PanelHead, Num } from "@/components/ui/terminal";
 import { isExtUnavailable } from "@/lib/p5api_ext";
 import type { InGameFull, BoxscorePlayer } from "@/lib/p5api_ext";
 import {
   LIVE_STALE_MS,
   ageMs,
   fmtAge,
-  fmtStat,
-  fmtMin,
+  fmtClockIso,
   LiveBoxSkeleton,
   AgeChip,
   StaleAgeNote,
@@ -28,6 +28,32 @@ import {
 export interface LiveBoxPanelProps {
   ingame: InGameFull | null;
   className?: string;
+}
+
+// Local Panel shim: p6/Primitives.Panel currently lacks asOf/stale wiring, so
+// this component composes directly from the terminal.tsx primitives instead
+// (same title/right/asOf/stale/children/className call shape used below).
+function Panel({
+  title,
+  asOf,
+  stale = false,
+  right,
+  children,
+  className,
+}: {
+  title: string;
+  asOf?: string | null;
+  stale?: boolean;
+  right?: React.ReactNode;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <TerminalPanel className={className}>
+      <PanelHead title={title} asOf={asOf} stale={stale} right={right} />
+      <div className="p-4">{children}</div>
+    </TerminalPanel>
+  );
 }
 
 /** Live boxscore + calibrated win-prob (CLV may be INSUFFICIENT_DATA). */
@@ -77,6 +103,8 @@ export function LiveBoxPanel({ ingame, className }: LiveBoxPanelProps) {
   return (
     <Panel
       title="Live / in-game"
+      asOf={fmtClockIso(ingame.generated_at)}
+      stale={isStale}
       right={
         <div className="flex items-center gap-2">
           {ageLabel && (
@@ -113,25 +141,25 @@ export function LiveBoxPanel({ ingame, className }: LiveBoxPanelProps) {
           {/* Score + clock */}
           <div className="mb-3 flex items-center justify-between">
             <div className="flex items-baseline gap-2">
-              <span className="text-sm font-semibold text-slate-100">{away}</span>
-              <span className="text-xl font-bold tabular-nums text-slate-100">
+              <span className="text-sm font-semibold text-foreground">{away}</span>
+              <Num className="text-xl font-bold text-foreground">
                 {ingame.away_score ?? "--"}
-              </span>
-              <span className="text-slate-600">@</span>
-              <span className="text-xl font-bold tabular-nums text-slate-100">
+              </Num>
+              <span className="text-faint">@</span>
+              <Num className="text-xl font-bold text-foreground">
                 {ingame.home_score ?? "--"}
-              </span>
-              <span className="text-sm font-semibold text-slate-100">{home}</span>
+              </Num>
+              <span className="text-sm font-semibold text-foreground">{home}</span>
             </div>
-            <div className="text-right font-mono text-xs text-slate-400">
+            <Num className="text-right text-xs text-muted-foreground">
               {ingame.period ? `Q${ingame.period}` : ""}
               {ingame.clock ? ` ${ingame.clock}` : ""}
               {ingame.frac_elapsed != null && (
-                <span className="ml-1 text-slate-600">
+                <span className="ml-1 text-faint">
                   ({(ingame.frac_elapsed * 100).toFixed(0)}% elapsed)
                 </span>
               )}
-            </div>
+            </Num>
           </div>
 
           {/* Calibrated win-prob (CALIBRATION only, not a $ edge). */}
@@ -140,7 +168,7 @@ export function LiveBoxPanel({ ingame, className }: LiveBoxPanelProps) {
               prob={ingame.p_win ?? null}
               label={`P(${home} win)`}
             />
-            <p className="mt-1 font-mono text-[10px] text-slate-600">
+            <p className="mt-1 font-data text-[10px] text-faint">
               Calibrated in-game -- static-to-conditional Brier improvement.
               CALIBRATION, not a market edge. vs-close UNPROVEN.
             </p>
@@ -160,8 +188,8 @@ export function LiveBoxPanel({ ingame, className }: LiveBoxPanelProps) {
 
       {/* Honest CLV note */}
       {ingame.clv_status === "INSUFFICIENT_DATA" && (
-        <div className="mt-3 rounded border border-amber-900/30 bg-amber-950/10 px-2 py-1.5">
-          <span className="font-mono text-[10px] text-amber-400">
+        <div className="mt-3 border border-warning/40 bg-warning/10 px-2 py-1.5">
+          <span className="font-data text-[10px] text-stale">
             IN-GAME CLV: INSUFFICIENT_DATA -- liquid in-play prices unavailable
             (NBA offseason). No CLV is fabricated.
           </span>

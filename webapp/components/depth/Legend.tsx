@@ -46,24 +46,16 @@ export function Legend({ title = "Legend", terms, items, className }: LegendProp
   return (
     <section
       aria-label={title}
-      className={cn(
-        "rounded-lg border border-border bg-surface-1/60 p-3 text-xs",
-        className
-      )}
+      className={cn("border border-border bg-surface-1 p-3 text-xs", className)}
     >
-      <h3 className="mb-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-        {title}
-      </h3>
+      <h3 className="microlabel mb-2">{title}</h3>
       <dl className="flex flex-wrap gap-x-4 gap-y-2">
         {all.map((it, i) => (
           <div key={`${it.label}-${i}`} className="flex items-center gap-1.5">
             {it.swatch && (
-              <span
-                aria-hidden
-                className={cn("inline-block h-3 w-3 rounded-sm", it.swatch)}
-              />
+              <span aria-hidden className={cn("inline-block h-3 w-3", it.swatch)} />
             )}
-            <dt className="text-foreground">{it.label}</dt>
+            <dt className="font-data text-foreground">{it.label}</dt>
             {(it.tip || it.term) && (
               <dd className="m-0">
                 <InfoTip term={it.term} text={it.tip} />

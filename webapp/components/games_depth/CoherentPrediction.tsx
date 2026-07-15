@@ -14,6 +14,7 @@
 import * as React from "react";
 import type { Report } from "@/lib/api";
 import { ProvenanceBadge, UncertaintyBar, InfoTip } from "@/components/depth";
+import { Panel, PanelHead } from "@/components/ui/terminal";
 
 export interface CoherentPredictionProps {
   report: Report | null;
@@ -66,50 +67,45 @@ export function CoherentPrediction({
   const leak = report?.pregame?.leak_guard;
 
   return (
-    <section
-      aria-label="Coherent prediction"
-      className={
-        "rounded-lg border border-slate-800 bg-bg-panel p-3 " + (className ?? "")
-      }
-    >
-      <div className="mb-2 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1.5">
-          <h3 className="font-mono text-[10px] uppercase tracking-[0.2em] text-slate-500">
-            the one prediction
-          </h3>
-          <InfoTip
-            text={
-              "One coherent prediction spines every market on this game. This is " +
-              "the highest-probability side of the pregame anchor; the full market " +
-              "surface below is derived from the same engine matrix."
-            }
-            ariaLabel="what is the coherent prediction?"
-          />
-        </div>
-        {leak ? (
-          <span
-            className={
-              "rounded border px-1.5 py-0.5 font-mono text-[10px] " +
-              (leak.in_sample
-                ? "border-red-900 text-red-400"
-                : "border-emerald-900 text-emerald-400")
-            }
-          >
-            {leak.in_sample ? "in-sample" : "leak-free"}
+    <Panel className={className}>
+      <PanelHead
+        title="the one prediction"
+        right={
+          <span className="flex items-center gap-2">
+            <InfoTip
+              text={
+                "One coherent prediction spines every market on this game. This is " +
+                "the highest-probability side of the pregame anchor; the full market " +
+                "surface below is derived from the same engine matrix."
+              }
+              ariaLabel="what is the coherent prediction?"
+            />
+            {leak ? (
+              <span
+                className={
+                  "border px-1.5 py-px font-data text-[10px] font-bold uppercase tracking-wider " +
+                  (leak.in_sample ? "border-danger text-down" : "border-success text-up")
+                }
+              >
+                {leak.in_sample ? "in-sample" : "leak-free"}
+              </span>
+            ) : null}
           </span>
-        ) : null}
+        }
+      />
+
+      <div className="p-3">
+        <div className="mb-2 text-sm font-medium text-foreground">{pick.label}</div>
+
+        <UncertaintyBar prob={pick.prob} label="P(pick)" />
+
+        <div className="mt-3 flex items-center justify-between border-t border-border pt-2">
+          <ProvenanceBadge model={engineLabel(sport)} phase="pregame" />
+          <span className="font-data text-[10px] text-faint">
+            vs-close UNPROVEN
+          </span>
+        </div>
       </div>
-
-      <div className="mb-2 text-sm font-medium text-slate-100">{pick.label}</div>
-
-      <UncertaintyBar prob={pick.prob} label="P(pick)" />
-
-      <div className="mt-3 flex items-center justify-between border-t border-slate-800 pt-2">
-        <ProvenanceBadge model={engineLabel(sport)} phase="pregame" />
-        <span className="font-mono text-[10px] text-slate-600">
-          vs-close UNPROVEN
-        </span>
-      </div>
-    </section>
+    </Panel>
   );
 }

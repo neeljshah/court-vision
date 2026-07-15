@@ -10,7 +10,7 @@ export function Sparkline({
   positive?: boolean;
 }) {
   if (!data || data.length < 2) {
-    return <div className="h-6 text-slate-600 text-xs">no data</div>;
+    return <div className="h-6 text-faint text-xs">no data</div>;
   }
   const colour = positive ? "#22c55e" : "#ef4444";
   const series = data.map((y, i) => ({ x: i, y }));

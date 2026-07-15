@@ -64,13 +64,13 @@ export function GameDetail({
         <div className="flex items-center gap-3">
           <Link
             href="/p6"
-            className="font-mono text-xs text-slate-500 hover:text-slate-300"
+            className="font-mono text-xs text-muted-foreground hover:text-foreground"
           >
             &larr; slate
           </Link>
           <h1 className="text-lg font-semibold tracking-tight">
-            <span className="uppercase text-slate-400">{sport}</span>{" "}
-            <span className="font-mono text-slate-500">{gameId}</span>
+            <span className="uppercase text-muted-foreground">{sport}</span>{" "}
+            <span className="font-mono text-muted-foreground">{gameId}</span>
           </h1>
         </div>
         <ModeDot mode={mode} />
@@ -86,7 +86,7 @@ export function GameDetail({
         </div>
       </div>
 
-      <footer className="mt-2 text-center text-[11px] text-slate-600">
+      <footer className="mt-2 text-center text-[11px] text-faint">
         Live report streams over SSE (falls back to polling). Stakes are units;
         no dollar column. Paper only; no $ edge is claimed.
       </footer>

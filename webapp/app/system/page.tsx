@@ -74,7 +74,7 @@ export default function SystemPage() {
 
       {/* Self-improve ratchet: explain READY-but-INERT + the human gate up front. */}
       <div className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-surface-1/40 px-3 py-2 text-[11px] text-muted-foreground">
-        <span className="font-mono uppercase tracking-wide text-slate-400">
+        <span className="font-mono uppercase tracking-wide text-muted-foreground">
           self-improve ratchet
         </span>
         <span>
@@ -111,7 +111,7 @@ export default function SystemPage() {
 
       {/* 4-sport in-game calibration gate verdicts (the proven measured edge = in-game prior-conditioning). */}
       <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
-        <span className="font-mono uppercase tracking-wide text-slate-400">
+        <span className="font-mono uppercase tracking-wide text-muted-foreground">
           in-game calibration gate
         </span>
         <span>

@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { api, type PropsBoard, type PlayerPropRow } from "@/lib/p5api";
 import { Panel, Unavailable, Badge, ModeDot, timeAgoIso } from "./Primitives";
+import { Num } from "@/components/ui/terminal";
 import { useLiveData } from "@/lib/useLiveData";
 import { fmtPct } from "@/lib/utils";
 
@@ -91,9 +92,19 @@ function topByDivergence(rows: PlayerPropRow[]): PlayerPropRow[] {
     .slice(0, MAX_ROWS);
 }
 
+type Freshness = { generatedAt: string | null; stale: boolean };
+
 // SportFeed -- per-sport block that owns its own useLiveData poller. Isolating
 // per-sport polling means one sport's failure never kills the other.
-function SportFeed({ sport }: { sport: string }) {
+// onFreshness reports this sport's own generated_at + stale-ness up to the
+// panel head so the top-level "as of" stamp reflects real feed data.
+function SportFeed({
+  sport,
+  onFreshness,
+}: {
+  sport: string;
+  onFreshness: (sport: string, f: Freshness) => void;
+}) {
   const fetcher = useCallback(
     (signal: AbortSignal) => api.propsBoard(sport, undefined, signal),
     [sport],
@@ -104,6 +115,12 @@ function SportFeed({ sport }: { sport: string }) {
     staleAfterSec: 60,
   });
 
+  const generatedAt = data?.generated_at ?? null;
+  const bodyStale = isStale || freshnessStatus(generatedAt) === "stale";
+  useEffect(() => {
+    onFreshness(sport, { generatedAt, stale: bodyStale });
+  }, [sport, generatedAt, bodyStale, onFreshness]);
+
   const topRows = useMemo(
     () => (data?.rows?.length ? topByDivergence(data.rows) : []),
     [data],
@@ -113,7 +130,7 @@ function SportFeed({ sport }: { sport: string }) {
     return (
       <div>
         <div className="mb-2 flex items-center gap-2">
-          <span className="text-xs font-semibold uppercase tracking-wide text-slate-300">
+          <span className="text-xs font-semibold uppercase tracking-wide text-foreground">
             {sport}
           </span>
           <Badge tone="slate">checking</Badge>
@@ -135,12 +152,12 @@ function SportFeed({ sport }: { sport: string }) {
   return (
     <div>
       <div className="mb-2 flex items-center gap-2">
-        <span className="text-xs font-semibold uppercase tracking-wide text-slate-300">
+        <span className="text-xs font-semibold uppercase tracking-wide text-foreground">
           {sport}
         </span>
         {freshnessPillOverride}
         {data && !bodyUnavailable ? (
-          <span className="ml-auto font-mono text-[10px] text-slate-600">
+          <span className="ml-auto font-mono text-[10px] text-faint">
             showing {topRows.length} of {data.count}
           </span>
         ) : null}
@@ -151,27 +168,29 @@ function SportFeed({ sport }: { sport: string }) {
       ) : !data ? (
         <LoadingShimmer />
       ) : bodyUnavailable || !data.rows || data.rows.length === 0 ? (
-        <p className="text-xs text-slate-600">
+        <p className="text-xs text-faint">
           {data.reason || data.honest_note || "no props on slate"}
         </p>
       ) : (
-        <table className="w-full text-xs">
-          <thead>
-            <tr className="text-left text-[10px] uppercase tracking-wide text-slate-500">
-              <th className="pb-1.5 font-medium">Player</th>
-              <th className="pb-1.5 font-medium">Stat</th>
-              <th className="pb-1.5 font-medium text-right">Line</th>
-              <th className="pb-1.5 font-medium">Book</th>
-              <th className="pb-1.5 font-medium text-right">P(over)</th>
-              <th className="pb-1.5 font-medium text-right">Tier</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-800/60">
-            {topRows.map((r, i) => (
-              <PropRowView key={`${r.player}-${r.stat}-${r.book}-${i}`} row={r} />
-            ))}
-          </tbody>
-        </table>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="border-b border-border text-left">
+                <th className="microlabel py-1.5 px-3">Player</th>
+                <th className="microlabel py-1.5 px-3">Stat</th>
+                <th className="microlabel py-1.5 px-3 text-right">Line</th>
+                <th className="microlabel py-1.5 px-3">Book</th>
+                <th className="microlabel py-1.5 px-3 text-right">P(over)</th>
+                <th className="microlabel py-1.5 px-3 text-right">Tier</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {topRows.map((r, i) => (
+                <PropRowView key={`${r.player}-${r.stat}-${r.book}-${i}`} row={r} />
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
@@ -179,28 +198,28 @@ function SportFeed({ sport }: { sport: string }) {
 
 function PropRowView({ row }: { row: PlayerPropRow }) {
   return (
-    <tr className="text-slate-300">
-      <td className="py-1.5">
-        <div className="text-slate-200">{row.player}</div>
+    <tr className="text-foreground hover:bg-surface-2">
+      <td className="py-1.5 px-3">
+        <div className="text-foreground">{row.player}</div>
         {row.match ? (
-          <div className="font-mono text-[10px] text-slate-600">{row.match}</div>
+          <div className="font-mono text-[10px] text-faint">{row.match}</div>
         ) : null}
       </td>
-      <td className="py-1.5 text-slate-400">{row.stat}</td>
-      <td className="py-1.5 text-right font-mono tabular-nums">
-        {row.line != null ? row.line : "--"}
+      <td className="py-1.5 px-3 text-muted-foreground">{row.stat}</td>
+      <td className="py-1.5 px-3 text-right">
+        <Num>{row.line != null ? row.line : "--"}</Num>
       </td>
-      <td className="py-1.5 font-mono text-[10px] text-slate-400">
+      <td className="py-1.5 px-3 font-mono text-[10px] text-muted-foreground">
         {row.book || "--"}
       </td>
-      <td className="py-1.5 text-right font-mono tabular-nums">
-        {row.p_over != null ? fmtPct(row.p_over, false) : "n/a"}
+      <td className="py-1.5 px-3 text-right">
+        <Num>{row.p_over != null ? fmtPct(row.p_over, false) : "n/a"}</Num>
       </td>
-      <td className="py-1.5 text-right">
+      <td className="py-1.5 px-3 text-right">
         {row.tier ? (
           <Badge tone={tierTone(row.tier)}>{row.tier}</Badge>
         ) : (
-          <span className="text-slate-600">--</span>
+          <span className="text-faint">--</span>
         )}
       </td>
     </tr>
@@ -214,9 +233,34 @@ function tierTone(tier: string): "gold" | "green" | "slate" {
 }
 
 export function PropsPanel() {
+  const [freshness, setFreshness] = useState<Record<string, Freshness>>({});
+  const onFreshness = useCallback((sport: string, f: Freshness) => {
+    setFreshness((prev) =>
+      prev[sport]?.generatedAt === f.generatedAt && prev[sport]?.stale === f.stale
+        ? prev
+        : { ...prev, [sport]: f },
+    );
+  }, []);
+
+  const { asOfStamp, anyStale } = useMemo(() => {
+    const entries = Object.values(freshness);
+    const stamps = entries
+      .map((f) => f.generatedAt)
+      .filter((d): d is string => Boolean(d))
+      .sort();
+    const newest = stamps.at(-1) ?? null;
+    const t = newest ? Date.parse(newest) : NaN;
+    return {
+      asOfStamp: Number.isNaN(t) ? null : new Date(t).toLocaleTimeString("en-US", { hour12: false }),
+      anyStale: entries.length > 0 && entries.some((f) => f.stale),
+    };
+  }, [freshness]);
+
   return (
     <Panel
       title="Player props"
+      asOf={asOfStamp}
+      stale={anyStale}
       right={
         <span className="flex items-center gap-2">
           <ModeDot mode="poll" />
@@ -225,10 +269,10 @@ export function PropsPanel() {
     >
       <div className="space-y-5">
         {PROP_SPORTS.map((sport) => (
-          <SportFeed key={sport} sport={sport} />
+          <SportFeed key={sport} sport={sport} onFreshness={onFreshness} />
         ))}
       </div>
-      <p className="mt-3 text-[11px] text-slate-600">
+      <p className="mt-3 text-[11px] text-faint">
         Calibrated P(over) from each sport&apos;s Poisson/NegBin prop model,
         priced against real scraped sportsbook/DFS lines (DraftKings/Underdog/
         PrizePicks/FanDuel). Probabilities only -- no $ edge is claimed. Rows are

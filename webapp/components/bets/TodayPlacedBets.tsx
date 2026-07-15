@@ -11,10 +11,11 @@
 // HONESTY RAILS: UNITS only -- NO "$" token; PAPER; edge_claimed=false; real-money
 // DENY; stale-never-green. ASCII only. Under 300 LOC.
 
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useLiveData } from "@/lib/useLiveData";
 import { getPaperToday, type PaperToday } from "@/lib/paperToday";
-import { PlacedBetsTable, fmtSignedUnits, signedUnitsClass } from "@/components/home/todayDigestHelpers";
+import { PlacedBetsTable } from "@/components/home/todayDigestHelpers";
+import { Panel, PanelHead, Delta } from "@/components/ui/terminal";
 
 const POLL_MS = 30_000;
 const STALE_SEC = 90;
@@ -31,46 +32,34 @@ export function TodayPlacedBets() {
     t && t.source === "fallback" ? (t.reason ?? "placed-bet feed unavailable") : null;
 
   const s = ageSec == null ? null : Math.max(0, ageSec);
-  const ageLabel =
-    s == null ? "" : s < 5 ? "just now" : s < 60 ? `${s}s ago` : `${Math.floor(s / 60)}m ago`;
+  const asOfStamp = useMemo(() => {
+    if (s == null) return null;
+    return new Date(Date.now() - s * 1000).toLocaleTimeString("en-US", { hour12: false });
+  }, [s]);
 
   return (
-    <section
-      aria-label="today's placed paper bets"
-      data-testid="bets-placed-section"
-      className="rounded-xl border border-amber-900/40 bg-amber-950/10 p-4"
-    >
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <span className="rounded border border-amber-700/60 bg-amber-950/40 px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wider text-amber-300">
-            placed
-          </span>
-          <h2 className="font-mono text-[11px] font-semibold uppercase tracking-widest text-slate-300">
-            Today&apos;s placed bets -- the money-makers the system staked
-          </h2>
-        </div>
-        <div className="flex items-center gap-2 font-mono text-[9px] uppercase tracking-wider text-slate-500">
-          {dayUnits != null && (
-            <span className={signedUnitsClass(dayUnits)} data-testid="bets-placed-day-pnl">
-              day {fmtSignedUnits(dayUnits)}u
+    <Panel>
+      <PanelHead
+        title="Today's placed bets"
+        asOf={asOfStamp}
+        stale={isStale}
+        right={
+          dayUnits != null ? (
+            <span className="flex items-center gap-1 font-data text-[10px] text-muted-foreground">
+              day <Delta value={dayUnits} digits={2} />u
             </span>
-          )}
-          {s != null && (
-            <span data-testid="bets-placed-age">
-              updated {ageLabel}
-              {isStale && <span className="ml-1 text-amber-400">(stale)</span>}
-            </span>
-          )}
-        </div>
-      </div>
+          ) : undefined
+        }
+      />
+      <section aria-label="today's placed paper bets" className="p-4">
+        <p className="mb-3 text-[11px] text-muted-foreground">
+          These are bets the system ACTUALLY STAKED in paper (placed=true) -- distinct
+          from the full candidate board below, which lists every calibrated divergence
+          regardless of whether it cleared the stake floor. UNITS only; PAPER; real-money DENY.
+        </p>
 
-      <p className="mb-3 text-[11px] text-slate-400">
-        These are bets the system ACTUALLY STAKED in paper (placed=true) -- distinct
-        from the full candidate board below, which lists every calibrated divergence
-        regardless of whether it cleared the stake floor. UNITS only; PAPER; real-money DENY.
-      </p>
-
-      <PlacedBetsTable rows={placed} fallbackNote={fallbackNote} />
-    </section>
+        <PlacedBetsTable rows={placed} fallbackNote={fallbackNote} />
+      </section>
+    </Panel>
   );
 }

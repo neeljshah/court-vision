@@ -17,6 +17,7 @@
 import { BestBetsBoard } from "@/components/bets/BestBetsBoard";
 import { BetsMoneyHeadline } from "@/components/bets/BetsMoneyHeadline";
 import { TodayPlacedBets } from "@/components/bets/TodayPlacedBets";
+import { Panel } from "@/components/ui/terminal";
 import { HONEST_DISCLAIMER } from "@/lib/api";
 
 export const metadata = {
@@ -27,37 +28,32 @@ export default function BetsPage() {
   return (
     <main className="mx-auto flex max-w-7xl flex-col gap-4 p-6">
       <header className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-xl font-semibold tracking-tight">
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">
           Best Bets{" "}
-          <span className="font-mono text-sm text-muted-foreground">
+          <span className="font-data text-sm text-muted-foreground">
             calibrated divergence -- units only, no edge claimed
           </span>
         </h1>
-        <span className="font-mono text-[11px] text-muted-foreground">
+        <span className="font-data text-[11px] text-muted-foreground">
           paper only -- no $
         </span>
       </header>
 
       {/* Honest banner: calibration framing, no profit claim */}
-      <section
-        aria-label="bets honesty banner"
-        className="flex flex-wrap items-center gap-2 rounded-lg border border-amber-900/40 bg-amber-950/20 px-4 py-3 text-[12px] text-amber-200/90"
-      >
-        <span className="font-mono uppercase tracking-wide text-amber-400">
-          units only -- no dollars
-        </span>
-        <span className="text-slate-300">
-          Cards are ranked by <strong>calibrated model-vs-market divergence</strong> and
+      <Panel className="px-4 py-3 text-[12px] text-muted-foreground">
+        <span className="microlabel mr-2">units only -- no dollars</span>
+        <span>
+          Cards are ranked by <strong className="text-foreground">calibrated model-vs-market divergence</strong> and
           confidence. This is{" "}
-          <span className="font-mono">CALIBRATION</span>, not a profit or edge claim.
+          <span className="font-data">CALIBRATION</span>, not a profit or edge claim.
           A no-bet result (model matches the efficient close) is a{" "}
-          <strong>calibration success</strong>. Real money is{" "}
-          <span className="font-mono uppercase text-amber-400">DENY</span> (paper only).
+          <strong className="text-foreground">calibration success</strong>. Real money is{" "}
+          <span className="font-data uppercase text-foreground">DENY</span> (paper only).
           CLV may show{" "}
-          <span className="font-mono">INSUFFICIENT_DATA</span> when no live in-play prices
+          <span className="font-data">INSUFFICIENT_DATA</span> when no live in-play prices
           exist -- shown honestly, never fabricated.
         </span>
-      </section>
+      </Panel>
 
       {/* MONEY HEADLINE: paper equity curve -- frames the best bets below as the
           money-makers (how much you WOULD have made, units only). */}
@@ -67,7 +63,7 @@ export default function BetsPage() {
       <TodayPlacedBets />
 
       {/* Divider note: candidate board = ALL divergence, not necessarily staked. */}
-      <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-slate-500">
+      <p className="mt-1 microlabel">
         candidate board -- all calibrated divergence (not necessarily staked)
       </p>
 

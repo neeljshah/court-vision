@@ -54,13 +54,13 @@ export function WhatsNext() {
       }
     >
       {err ? (
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-muted-foreground">
           backlog unavailable ({err}) -- honest empty, never a fabricated plan.
         </p>
       ) : !items ? (
-        <p className="text-sm text-slate-500">loading...</p>
+        <p className="text-sm text-muted-foreground">loading...</p>
       ) : items.length === 0 ? (
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-muted-foreground">
           no next items discovered -- honest empty.
         </p>
       ) : (
@@ -71,21 +71,21 @@ export function WhatsNext() {
               className="rounded-lg border border-slate-800 bg-bg-panel/40 p-2.5"
             >
               <div className="flex items-start justify-between gap-2">
-                <span className="font-mono text-[11px] font-semibold text-slate-200">
+                <span className="font-mono text-[11px] font-semibold text-foreground">
                   {c.what || c.id}
                 </span>
                 {typeof c.priority === "number" ? (
                   <Badge tone="slate">p{c.priority}</Badge>
                 ) : null}
               </div>
-              <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px] text-slate-500">
+              <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px] text-muted-foreground">
                 {c.sport ? <Badge tone="slate">{c.sport}</Badge> : null}
                 {c.category ? (
                   <span className="font-mono">{c.category}</span>
                 ) : null}
               </div>
               {c.expected_outcome ? (
-                <p className="mt-1 text-[10px] leading-relaxed text-slate-600">
+                <p className="mt-1 text-[10px] leading-relaxed text-faint">
                   expected: {c.expected_outcome}
                 </p>
               ) : null}

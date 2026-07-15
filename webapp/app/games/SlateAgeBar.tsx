@@ -24,10 +24,7 @@ export function SlateAgeBar({
 }) {
   if (!generatedAt) {
     return (
-      <span
-        aria-label="slate timestamp unavailable"
-        className="font-mono text-[10px] text-slate-600"
-      >
+      <span aria-label="slate timestamp unavailable" className="font-data text-[11px] text-faint">
         no timestamp
       </span>
     );
@@ -40,10 +37,7 @@ export function SlateAgeBar({
   return (
     <span
       aria-label={isStale ? `slate stale: ${label}` : `slate generated ${label}`}
-      className={cn(
-        "font-mono text-[10px]",
-        isStale ? "text-red-400" : "text-slate-500",
-      )}
+      className={cn("font-data text-[11px]", isStale ? "text-stale" : "text-faint")}
     >
       {isStale ? `STALE ${label}` : label}
     </span>

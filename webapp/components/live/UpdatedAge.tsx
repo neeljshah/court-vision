@@ -57,7 +57,7 @@ export function UpdatedAge({ ageSec, className }: UpdatedAgeProps) {
 
   return (
     <span
-      className={cn("text-xs tabular-nums", className)}
+      className={cn("font-data text-[11px] tabular", className)}
       aria-label={`Data updated ${humanizeAge(ageSec)}`}
     >
       {`updated ${humanizeAge(ageSec)}`}

@@ -138,7 +138,7 @@ export class PanelErrorBoundary extends Component<
           </span>
 
           {/* Honest, user-facing explanation -- no fabricated data, no raw errors */}
-          <p className="text-xs leading-relaxed text-slate-400">
+          <p className="text-xs leading-relaxed text-muted-foreground">
             This panel hit an error -- the rest of the page is unaffected.
           </p>
 

@@ -7,10 +7,10 @@
 // Pure presentational: receives rows prop; parent owns polling / data fetching.
 
 import { useMemo } from "react";
-import { cn } from "@/lib/utils";
 import { fmtPct } from "@/lib/utils";
 import { EMPTY_CELL } from "@/lib/tokens";
 import { Badge } from "@/components/p6/Primitives";
+import { Panel, PanelHead, Num } from "@/components/ui/terminal";
 import { aggregateByVenue } from "./venueAggregate";
 import type { VenueStats } from "./venueAggregate";
 import type { PaperTrailRow } from "@/lib/p5api";
@@ -33,10 +33,10 @@ function fmtClv(clv: number | null): string {
 }
 
 function clvTextClass(clv: number | null): string {
-  if (clv === null) return "text-amber-600";
-  if (clv > 0) return "text-success";
-  if (clv < 0) return "text-danger";
-  return "text-muted-foreground";
+  if (clv === null) return "text-stale";
+  if (clv > 0) return "text-up";
+  if (clv < 0) return "text-down";
+  return "text-faint";
 }
 
 // -- sub-components --
@@ -45,10 +45,10 @@ type StatCellProps = { label: string; children: React.ReactNode };
 function StatCell({ label, children }: StatCellProps) {
   return (
     <div className="flex flex-col gap-0.5">
-      <span className="text-[9px] font-mono uppercase tracking-wider text-slate-500">
+      <span className="microlabel">
         {label}
       </span>
-      <span className="font-mono text-[12px] text-slate-200">{children}</span>
+      <span className="font-data text-[12px] text-foreground">{children}</span>
     </div>
   );
 }
@@ -70,65 +70,58 @@ function VenueTile({ stats }: VenueTileProps) {
   } = stats;
 
   return (
-    <article
-      aria-label={`Venue summary for ${venue}`}
-      className={cn(
-        "rounded-xl border border-slate-800 bg-bg-panel p-4",
-        "flex flex-col gap-4",
-      )}
-      data-testid="venue-tile"
-    >
-      {/* Header */}
-      <header className="flex items-center justify-between">
-        <h3 className="font-mono text-[13px] font-semibold uppercase tracking-wide text-slate-200">
-          {venue}
-        </h3>
-        <Badge tone="slate">{total} trade{total !== 1 ? "s" : ""}</Badge>
-      </header>
+    <div data-testid="venue-tile" aria-label={`Venue summary for ${venue}`}>
+      <Panel className="flex flex-col">
+        <PanelHead
+          title={venue}
+          right={<Badge tone="slate">{total} trade{total !== 1 ? "s" : ""}</Badge>}
+        />
+        <div className="flex flex-col gap-4 p-4">
+          {/* Open / settled row */}
+          <div className="flex gap-4">
+            <StatCell label="Open">{open}</StatCell>
+            <StatCell label="Settled">{settled}</StatCell>
+          </div>
 
-      {/* Open / settled row */}
-      <div className="flex gap-4">
-        <StatCell label="Open">{open}</StatCell>
-        <StatCell label="Settled">{settled}</StatCell>
-      </div>
+          {/* Win / loss / push */}
+          <div className="flex gap-4">
+            <StatCell label="Win">
+              <span className={win > 0 ? "text-up" : "text-faint"}>
+                {win}
+              </span>
+            </StatCell>
+            <StatCell label="Loss">
+              <span className={loss > 0 ? "text-down" : "text-faint"}>
+                {loss}
+              </span>
+            </StatCell>
+            <StatCell label="Push">{push}</StatCell>
+          </div>
 
-      {/* Win / loss / push */}
-      <div className="flex gap-4">
-        <StatCell label="Win">
-          <span className={win > 0 ? "text-success" : "text-slate-400"}>
-            {win}
-          </span>
-        </StatCell>
-        <StatCell label="Loss">
-          <span className={loss > 0 ? "text-danger" : "text-slate-400"}>
-            {loss}
-          </span>
-        </StatCell>
-        <StatCell label="Push">{push}</StatCell>
-      </div>
+          {/* Divider */}
+          <div className="border-t border-border" />
 
-      {/* Divider */}
-      <div className="border-t border-slate-800/60" />
+          {/* Metrics */}
+          <div className="flex flex-wrap gap-4">
+            <StatCell label="Staked (units, no $)">
+              <Num>{fmtUnits(stake_units_total)}</Num>
+            </StatCell>
+            <StatCell label="Avg model prob"><Num>{fmtProb(model_prob_mean)}</Num></StatCell>
+            <StatCell label={`CLV (n=${clv_sample_n})`}>
+              <Num className={clvTextClass(clv_mean)}>{fmtClv(clv_mean)}</Num>
+            </StatCell>
+          </div>
 
-      {/* Metrics */}
-      <div className="flex flex-wrap gap-4">
-        <StatCell label="Staked (units, no $)">
-          {fmtUnits(stake_units_total)}
-        </StatCell>
-        <StatCell label="Avg model prob">{fmtProb(model_prob_mean)}</StatCell>
-        <StatCell label={`CLV (n=${clv_sample_n})`}>
-          <span className={clvTextClass(clv_mean)}>{fmtClv(clv_mean)}</span>
-        </StatCell>
-      </div>
-
-      {/* Honesty footnote when CLV is unavailable */}
-      {clv_mean === null ? (
-        <p className="text-[10px] leading-relaxed text-slate-600">
-          CLV shown as INSUFFICIENT_DATA -- no settled trades with a captured
-          closing line at this venue yet.
-        </p>
-      ) : null}
-    </article>
+          {/* Honesty footnote when CLV is unavailable */}
+          {clv_mean === null ? (
+            <p className="text-[10px] leading-relaxed text-faint">
+              CLV shown as INSUFFICIENT_DATA -- no settled trades with a captured
+              closing line at this venue yet.
+            </p>
+          ) : null}
+        </div>
+      </Panel>
+    </div>
   );
 }
 
@@ -153,7 +146,7 @@ export function VenueSummary({ rows, loading, error }: Props) {
         {[1, 2].map((k) => (
           <div
             key={k}
-            className="h-52 animate-pulse rounded-xl border border-slate-800 bg-bg-panel"
+            className="h-52 animate-pulse border border-border bg-card"
             data-testid="venue-skeleton"
           />
         ))}
@@ -166,17 +159,17 @@ export function VenueSummary({ rows, loading, error }: Props) {
       <div
         role="status"
         aria-label={`Venue summary unavailable: ${error}`}
-        className="rounded-lg border border-amber-900/40 bg-amber-950/20 px-3 py-3 text-sm"
+        className="border border-warning/40 bg-warning/10 px-3 py-3 text-sm"
       >
-        <span className="font-mono text-amber-400">unavailable</span>
-        <span className="ml-2 text-xs text-slate-500">{error}</span>
+        <span className="font-data text-warning">unavailable</span>
+        <span className="ml-2 text-xs text-faint">{error}</span>
       </div>
     );
   }
 
   if (venues.length === 0) {
     return (
-      <div className="rounded-lg border border-slate-800 bg-bg-subtle/40 px-4 py-10 text-center text-sm text-slate-500">
+      <div className="border border-border bg-surface-1 px-4 py-10 text-center text-sm text-faint">
         No venue data yet -- no paper trades in the trail.
       </div>
     );
@@ -189,7 +182,7 @@ export function VenueSummary({ rows, loading, error }: Props) {
           <VenueTile key={stats.venue} stats={stats} />
         ))}
       </div>
-      <p className="mt-3 text-[11px] text-slate-600">
+      <p className="mt-3 text-[11px] text-faint">
         One tile per venue the system executed on -- best available price per market.
         Paper mode -- stakes are units (no $). CLV (better-number-than-close) is
         the only honest calibration yardstick; shown as INSUFFICIENT_DATA when no

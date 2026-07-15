@@ -13,6 +13,7 @@
 import * as React from "react";
 import type { Report } from "@/lib/api";
 import { MarketSurfaceTable, Legend, InfoTip } from "@/components/depth";
+import { Panel, PanelHead } from "@/components/ui/terminal";
 
 export interface GameMarketSurfaceProps {
   report: Report | null;
@@ -39,17 +40,10 @@ export function GameMarketSurface({
   const n = markets.length;
 
   return (
-    <section
-      aria-label="Full market surface"
-      className={
-        "rounded-lg border border-slate-800 bg-bg-panel p-3 " + (className ?? "")
-      }
-    >
-      <div className="mb-2 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1.5">
-          <h3 className="font-mono text-[10px] uppercase tracking-[0.2em] text-slate-500">
-            full market surface ({n})
-          </h3>
+    <Panel className={className}>
+      <PanelHead
+        title={`full market surface (${n})`}
+        right={
           <InfoTip
             text={
               "Every market on this game, read off ONE coherent engine matrix " +
@@ -58,21 +52,23 @@ export function GameMarketSurface({
             }
             ariaLabel="what is the market surface?"
           />
-        </div>
+        }
+      />
+
+      <div className="p-3">
+        <MarketSurfaceTable
+          markets={markets}
+          model={engineLabel(sport)}
+          phase="pregame"
+          caption="One coherent market surface, spined by a single anchor. Probability only -- no price."
+        />
+
+        <Legend
+          className="mt-3"
+          title="terms"
+          terms={["probability", "devig", "provenance", "vs_close"]}
+        />
       </div>
-
-      <MarketSurfaceTable
-        markets={markets}
-        model={engineLabel(sport)}
-        phase="pregame"
-        caption="One coherent market surface, spined by a single anchor. Probability only -- no price."
-      />
-
-      <Legend
-        className="mt-3"
-        title="terms"
-        terms={["probability", "devig", "provenance", "vs_close"]}
-      />
-    </section>
+    </Panel>
   );
 }

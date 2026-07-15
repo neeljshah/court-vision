@@ -29,10 +29,10 @@ export interface SignalVerdictBadgeProps {
 }
 
 const VERDICT_STYLE: Record<SignalVerdict, string> = {
-  SHIP: "border-success/50 bg-success/10 text-success",
-  REJECT: "border-border bg-muted/40 text-muted-foreground",
-  INSUFFICIENT_DATA: "border-warning/50 bg-warning/10 text-warning",
-  TIER3_BLOCKED: "border-warning/50 bg-warning/10 text-warning",
+  SHIP: "border-success text-success",
+  REJECT: "border-border text-faint",
+  INSUFFICIENT_DATA: "border-warning text-warning",
+  TIER3_BLOCKED: "border-warning text-warning",
 };
 
 const VERDICT_LABEL: Record<SignalVerdict, string> = {
@@ -64,14 +64,14 @@ export function SignalVerdictBadge({
         variant="outline"
         title={hover}
         className={cn(
-          "font-mono text-[10px] font-semibold tracking-tight",
+          "rounded-none font-data text-[10px] font-semibold uppercase tracking-wide",
           VERDICT_STYLE[verdict]
         )}
       >
         {VERDICT_LABEL[verdict]}
       </Badge>
       {verdict === "SHIP" && (
-        <span className="text-[10px] text-muted-foreground">
+        <span className="font-data text-[10px] text-faint">
           {VERDICT_NOTE.SHIP}
         </span>
       )}

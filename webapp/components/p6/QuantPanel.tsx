@@ -12,6 +12,7 @@ import {
 } from "@/lib/p5api";
 import { useLiveData } from "@/lib/useLiveData";
 import { Panel, Unavailable, Badge } from "./Primitives";
+import { Num, Dot } from "@/components/ui/terminal";
 import { cn } from "@/lib/utils";
 
 // QuantPanel -- the quant EXECUTION surface (transparency only).
@@ -102,9 +103,9 @@ export function QuantPanel() {
       {valErr ? (
         <Unavailable reason={valErr} />
       ) : valLoading && !validate ? (
-        <p className="text-sm text-slate-500">loading...</p>
+        <p className="text-sm text-muted-foreground">loading...</p>
       ) : rows.length === 0 ? (
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-muted-foreground">
           no validation candidates for {sport} -- matching the close everywhere
           is a SUCCESS, not a miss.
         </p>
@@ -112,19 +113,19 @@ export function QuantPanel() {
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
-              <tr className="text-left text-[10px] uppercase tracking-wide text-slate-500">
-                <th className="pb-2 pr-2 font-medium">Game</th>
-                <th className="pb-2 pr-2 font-medium">Side / market</th>
-                <th className="pb-2 pr-2 font-medium">Model</th>
-                <th className="pb-2 pr-2 font-medium">Devig close</th>
-                <th className="pb-2 pr-2 font-medium">Edge</th>
-                <th className="pb-2 pr-2 font-medium">Tier</th>
-                <th className="pb-2 pr-2 font-medium">Units</th>
-                <th className="pb-2 pr-2 font-medium">Decision</th>
-                <th className="pb-2 font-medium">Gate</th>
+              <tr className="border-b border-border text-left">
+                <th className="microlabel py-1.5 px-3">Game</th>
+                <th className="microlabel py-1.5 px-3">Side / market</th>
+                <th className="microlabel py-1.5 px-3">Model</th>
+                <th className="microlabel py-1.5 px-3">Devig close</th>
+                <th className="microlabel py-1.5 px-3">Edge</th>
+                <th className="microlabel py-1.5 px-3">Tier</th>
+                <th className="microlabel py-1.5 px-3">Units</th>
+                <th className="microlabel py-1.5 px-3">Decision</th>
+                <th className="microlabel py-1.5 px-3">Gate</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
+            <tbody className="divide-y divide-border">
               {rows.map((r, i) => (
                 <QuantRow key={i} game={r.game} v={r.v} />
               ))}
@@ -134,7 +135,7 @@ export function QuantPanel() {
       )}
 
       {validate?.honest_note ? (
-        <p className="mt-3 text-[11px] text-slate-600">{validate.honest_note}</p>
+        <p className="mt-3 text-[11px] text-faint">{validate.honest_note}</p>
       ) : null}
     </Panel>
   );
@@ -150,17 +151,17 @@ function RiskStrip({
 }) {
   if (err) {
     return (
-      <div className="mb-3 rounded-lg border border-amber-900/40 bg-amber-950/20 px-3 py-2">
+      <div className="mb-3 border border-amber-900/40 bg-amber-950/20 px-3 py-2">
         <span className="font-mono text-[10px] text-amber-400">
           risk unavailable
         </span>
-        <span className="ml-2 text-[10px] text-slate-500">{err}</span>
+        <span className="ml-2 text-[10px] text-muted-foreground">{err}</span>
       </div>
     );
   }
   if (!risk) return null;
   return (
-    <div className="mb-3 rounded-lg border border-slate-800 bg-slate-900/40 px-3 py-2">
+    <div className="mb-3 border border-border bg-surface-1 px-3 py-2">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
         <Stat label="open" value={String(risk.n_open)} />
         <Stat label="exposure (u)" value={risk.total_exposure_units.toFixed(2)} />
@@ -168,7 +169,7 @@ function RiskStrip({
         <Stat label="mean (u)" value={risk.mean_units.toFixed(2)} />
         <Stat label="variance (u2)" value={risk.variance_units2.toFixed(3)} />
       </div>
-      <p className="mt-1 text-[10px] text-slate-600">
+      <p className="mt-1 text-[10px] text-faint">
         Exposure / variance are in UNITS, never dollars. RoR is a
         model-conditional descriptive stat, NOT a profit/safety guarantee.
       </p>
@@ -179,10 +180,8 @@ function RiskStrip({
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <span className="inline-flex items-baseline gap-1">
-      <span className="text-[9px] uppercase tracking-wide text-slate-500">
-        {label}
-      </span>
-      <span className="font-mono text-xs text-slate-200">{value}</span>
+      <span className="microlabel">{label}</span>
+      <Num className="text-foreground">{value}</Num>
     </span>
   );
 }
@@ -204,65 +203,73 @@ function QuantRow({
       ? (v.clv as { clv_pct: number }).clv_pct
       : null;
   return (
-    <tr className="text-slate-300">
-      <td className="py-2 pr-2 font-mono text-[10px] text-slate-400">
+    <tr className="text-foreground hover:bg-surface-2">
+      <td className="py-1.5 px-3 font-mono text-[10px] text-muted-foreground">
         {matchup}
       </td>
-      <td className="py-2 pr-2">
-        <span className="font-mono text-[10px] uppercase text-slate-300">
+      <td className="py-1.5 px-3">
+        <span className="font-mono text-[10px] uppercase text-foreground">
           {v.side}
         </span>
-        <span className="ml-1 font-mono text-[9px] text-slate-500">
+        <span className="ml-1 font-mono text-[9px] text-muted-foreground">
           {v.market}
         </span>
       </td>
-      <td className="py-2 pr-2 font-mono text-[10px]">{pct(v.model_prob)}</td>
-      <td className="py-2 pr-2 font-mono text-[10px] text-slate-400">
-        {pct(v.devigged_close)}
+      <td className="py-1.5 px-3"><Num className="text-[10px]">{pct(v.model_prob)}</Num></td>
+      <td className="py-1.5 px-3">
+        <Num className="text-[10px] text-muted-foreground">{pct(v.devigged_close)}</Num>
         {v.clv_is_proxy ? (
           <span className="ml-1 text-[8px] text-amber-600/80">proxy</span>
         ) : null}
       </td>
-      <td
-        className={cn(
-          "py-2 pr-2 font-mono text-[10px]",
-          v.edge !== null && v.edge > 0 ? "text-tier-a" : "text-slate-400",
-        )}
-      >
-        {signed(v.edge)}
+      <td className="py-1.5 px-3">
+        <Num
+          className={cn(
+            "text-[10px]",
+            v.edge !== null && v.edge > 0 ? "text-tier-a" : "text-muted-foreground",
+          )}
+        >
+          {signed(v.edge)}
+        </Num>
       </td>
-      <td className="py-2 pr-2">
+      <td className="py-1.5 px-3">
         <TierBadge tier={v.tier} />
       </td>
-      <td className="py-2 pr-2 font-mono text-[10px]">
-        {v.stake_units.toFixed(2)}u
+      <td className="py-1.5 px-3">
+        <Num className="text-[10px]">{v.stake_units.toFixed(2)}u</Num>
       </td>
-      <td className="py-2 pr-2">
-        <span
-          className={cn(
-            "inline-flex rounded border px-1.5 py-0.5 font-mono text-[9px] uppercase",
-            bet
-              ? "border-amber-900/50 bg-amber-950/30 text-amber-400"
-              : "border-slate-700 bg-slate-800 text-slate-400",
-          )}
-        >
-          {v.decision}
+      <td className="py-1.5 px-3">
+        <span className="inline-flex items-center gap-1.5">
+          <Dot state={bet ? "warn" : "ok"} />
+          <span
+            className={cn(
+              "inline-flex rounded border px-1.5 py-0.5 font-mono text-[9px] uppercase",
+              bet
+                ? "border-amber-900/50 bg-amber-950/30 text-amber-400"
+                : "border-slate-700 bg-slate-800 text-slate-400",
+            )}
+          >
+            {v.decision}
+          </span>
         </span>
         {clvPct !== null ? (
-          <span className="ml-1 font-mono text-[9px] text-slate-500">
+          <Num className={cn("ml-1 text-[9px]", clvPct >= 0 ? "text-up" : "text-down")}>
             clv {clvPct >= 0 ? "+" : ""}
             {clvPct.toFixed(1)}%
-          </span>
+          </Num>
         ) : null}
       </td>
-      <td className="py-2">
-        <span
-          className={cn(
-            "font-mono text-[9px] uppercase",
-            v.gate_proven ? "text-tier-a" : "text-slate-500",
-          )}
-        >
-          {v.gate_proven ? "proven" : "unproven"}
+      <td className="py-1.5 px-3">
+        <span className="inline-flex items-center gap-1.5">
+          <Dot state={v.gate_proven ? "ok" : "warn"} />
+          <span
+            className={cn(
+              "font-mono text-[9px] uppercase",
+              v.gate_proven ? "text-tier-a" : "text-muted-foreground",
+            )}
+          >
+            {v.gate_proven ? "proven" : "unproven"}
+          </span>
         </span>
       </td>
     </tr>
@@ -271,7 +278,7 @@ function QuantRow({
 
 function TierBadge({ tier }: { tier: string | null }) {
   if (!tier) {
-    return <span className="font-mono text-[9px] text-slate-600">--</span>;
+    return <span className="font-mono text-[9px] text-faint">--</span>;
   }
   return (
     <span className="inline-flex rounded border border-tier-a/40 bg-tier-a/10 px-1.5 py-0.5 font-mono text-[9px] uppercase text-tier-a">

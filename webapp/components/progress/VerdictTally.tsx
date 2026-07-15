@@ -30,11 +30,11 @@ function Stat({
         : "border-slate-800";
   return (
     <div className={`rounded-lg border ${ring} bg-bg-panel/40 px-3 py-2`}>
-      <div className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wide text-slate-500">
+      <div className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wide text-muted-foreground">
         {label}
         <InfoTip text={tip} ariaLabel={`what is ${label}?`} />
       </div>
-      <div className="mt-0.5 font-mono text-lg tabular-nums text-slate-100">
+      <div className="mt-0.5 font-mono text-lg tabular-nums text-foreground">
         {value}
       </div>
     </div>
@@ -75,7 +75,7 @@ export function VerdictTally({
       }
     >
       {sports.length === 0 ? (
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-muted-foreground">
           no verdicts recorded yet -- honest empty, never a fabricated tally.
         </p>
       ) : (
@@ -101,7 +101,7 @@ export function VerdictTally({
             />
           </div>
           <div className="rounded-lg border border-tier-a/30 bg-tier-a/5 p-3">
-            <div className="mb-1.5 flex items-center gap-2 text-[11px] font-semibold text-slate-200">
+            <div className="mb-1.5 flex items-center gap-2 text-[11px] font-semibold text-foreground">
               surviving signals
               <InfoTip
                 text="The only signals that cleared the leak-free gate. Each is a CALIBRATION improvement (e.g. soccer corners), not a profit edge -- vs_close stays UNPROVEN."
@@ -109,14 +109,14 @@ export function VerdictTally({
               />
             </div>
             {totals.ship === 0 ? (
-              <p className="text-[11px] text-slate-500">
+              <p className="text-[11px] text-muted-foreground">
                 none surviving -- the honest state when the close is efficient.
               </p>
             ) : (
               <div className="flex flex-wrap items-center gap-3">
                 {shippers.map((sp) => (
                   <span key={sp} className="inline-flex items-center gap-1.5">
-                    <span className="font-mono text-[11px] uppercase text-slate-300">
+                    <span className="font-mono text-[11px] uppercase text-foreground">
                       {sp}
                     </span>
                     <SignalVerdictBadge
