@@ -24,7 +24,7 @@ for machinery that currently still lives elsewhere in the repo.
 
 | Subtree | Status | What's actually there |
 |---|---|---|
-| `kernel/config/` | **Implemented** | The full `SportContext` seam — 10 files, ~9 typed sub-configs |
+| `kernel/config/` | **Implemented** | The full `SportContext` seam — 12 files, 14 typed sub-configs (9 mandatory + 5 optional) |
 | `kernel/testing/` | **Implemented** | Conformance checker, conformance kit, fixtures, golden-file comparator, sport-blind invariant checkers |
 | `kernel/validation/proof_metrics.py` | **Implemented** | Brier, ECE, reliability slope, isotonic calibration, two-sided devig, CLV sign-invariant checks |
 | `kernel/paths.py` | **Implemented** | Repo-root resolution (marker-file walk, fail-closed) |
@@ -51,7 +51,8 @@ they do not yet — check this table first.
 
 Every domain adapter constructs one `SportContext` (`kernel/config/context.py`, a frozen
 dataclass) at process start and threads it explicitly through the rest of the pipeline — no
-global mutable singleton, no import-time side effects. It aggregates 9 typed sub-configs:
+global mutable singleton, no import-time side effects. It aggregates 14 typed sub-configs: 9
+mandatory and 5 optional.
 
 | Field | Type | Module | What it captures |
 |---|---|---|---|
@@ -59,20 +60,24 @@ global mutable singleton, no import-time side effects. It aggregates 9 typed sub
 | `clock` | `GameClockConfig` | `kernel/config/clock.py` | Periods, period length, untimed-sport support (tennis), snapshot grid (e.g. `endP1/endP2/endP3`) |
 | `roster` | `RosterConfig` | `kernel/config/roster.py` | On-field count, roster size, substitution model, foul-out limit |
 | `game_state` | `GameStateConfig` | `kernel/config/game_state.py` | Blowout/clutch/garbage-time margins, with a `legacy_overrides` map that preserves disagreeing historical NBA threshold values verbatim rather than silently unifying them |
-| `entities` | `EntityRegistry` (Protocol) | `kernel/config/entities.py` | Team/player token resolution — **must raise**, never guess, on an unrecognized token |
 | `pbp_mapper` | `PBPEventMapper` (Protocol) | `kernel/config/pbp.py` | Raw play-by-play -> `CanonicalEvent` (a 10-kind enum: SCORE, MISS, TURNOVER, ...) |
 | `league_client` | `LeagueClient` (Protocol) | `kernel/config/pbp.py` | Schedule / box score / PBP / roster / gamelog / availability fetchers |
+| `entities` | `EntityRegistry` (Protocol) | `kernel/config/entities.py` | Team/player token resolution — **must raise**, never guess, on an unrecognized token |
+| `source_tiers` | `Mapping[str, int]` | `kernel/config/context.py` | Per-source trust ranking used to arbitrate conflicting feeds |
 | `atlas_schema` | `AtlasSchema` | `kernel/config/atlas_schema.py` | Player/team intelligence-atlas section names (empty is a valid launch state for a new sport) |
 | `court` / `speed` | `CourtConfig` / `SpeedConfig` (optional) | `kernel/config/court.py`, `speed.py` | Surface geometry and speed-normalization, only for sports with spatial tracking |
+| `dataset_builder` / `trainer_hook` (optional) | `Any` | `kernel/config/context.py` | Reserved hooks for sport-specific dataset construction and training, unused by any adapter yet |
+| `artifact_root` (optional) | `Path` | `kernel/config/context.py` | Root directory for this sport's model/data artifacts, defaults to `data` |
 
 `kernel/config/registry.py` is the process-global `{sport_id: SportContext}` store.
 `load_sport(sport_id)` dynamically imports `domains.<sport_id>.config` via `importlib` (a
 runtime string, never a literal `import domains...` statement) and reads its `SPORT_CONTEXT`
 attribute — this is *why* `kernel/config/context.py` itself can stay import-clean of `domains`
-and pass the kernel-purity guard (below). One open item found while reading this code: the NBA
-package physically lives at `domains/nba/`, but `load_sport("basketball_nba")` looks for
-`domains/basketball_nba/` — an unresolved naming mismatch flagged in both `context.py` and
-`registry.py`'s docstrings.
+and pass the kernel-purity guard (below). `domains/basketball_nba/config.py` registers
+`sport_id="basketball_nba"` and exports `SPORT_CONTEXT`, matching what `load_sport("basketball_nba")`
+looks for — no naming mismatch exists in the current tree (stale docstrings in `context.py` and
+`registry.py` still describe an older `domains/nba/` skeleton that no longer exists; those
+docstrings are a separate, smaller doc-drift item outside this page's scope).
 
 **Mechanical validation, not convention.** `kernel/testing/conformance.py::check_sport_context(ctx)`
 returns a list of human-readable violation strings — empty means conformant — checking every one

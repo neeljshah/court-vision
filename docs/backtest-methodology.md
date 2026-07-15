@@ -137,23 +137,24 @@ any intermediate representation.
 ## Leak-free construction -- the four guarantees, enforced in code
 
 The harness does not *assume* leak-freeness; it ASSERTS it. The reference walk-forward
-(`scripts/platformkit/eval_gate/walkforward.py`) and the gate's per-fold builder
-(`src/loop/gate.py`) enforce the same four guarantees, and a failing assertion is a hard
-FAIL, not a warning.
+(`scripts/platformkit/eval_gate/walkforward.py`) enforces four guarantees below; the gate's
+per-fold builder (`src/loop/gate.py`) enforces the expanding-window and imputation discipline
+through its own mechanism (see below), and a failing assertion is a hard FAIL, not a warning.
 
 | Guarantee | Failure it prevents | Enforced by |
 |---|---|---|
 | **Expanding window** | training on states later than the test state | sort by `state_ts`; train only on strictly-earlier states (tie-safe `>=` skip) |
 | **Purge (48h)** | same-team back-to-back autocorrelation crossing the boundary | drop same-team games within `PURGE_HOURS=48` of the test game |
 | **Embargo (3d)** | rolling-window spillover from the same matchup near the split | drop the same matchup within `EMBARGO_DAYS=3` |
-| **Vintage assertion** | a feature secretly available only after the prediction time | `assert_vintage`: every feature availability `< state_ts`, else `AssertionError("LEAK: ...")` |
+| **Vintage assertion** | a feature secretly available only after the prediction time | `assert_vintage` in `walkforward.py`: every feature availability `< state_ts`, else `AssertionError("LEAK: ...")` |
 
-In the gate the same discipline appears as expanding `_fold_bounds`, per-column TRAIN-median
-imputation (`_impute`, no leakage), and feature selection that must happen INSIDE the window
-(`select_inside`); a caller that selects on full history (`select_inside=False`) is surfaced
-so the gate FAILS the run. Point forecasts are graded RMSE + signed bias, never MAE (MAE
-rewards shrink-to-median). See [docs/quant-methodology.md](quant-methodology.md) for the full
-validation-toolkit table and the SHIP/REJECT/DEFER verdict policy.
+The gate does not carry an `assert_vintage` check of its own. In the gate the discipline appears
+as expanding `_fold_bounds`, per-column TRAIN-median imputation (`_impute`, no leakage), and
+feature selection that must happen INSIDE the window (`select_inside`); a caller that selects on
+full history (`select_inside=False`) is surfaced so the gate FAILS the run. Point forecasts are
+graded RMSE + signed bias, never MAE (MAE rewards shrink-to-median). See
+[docs/quant-methodology.md](quant-methodology.md) for the full validation-toolkit table and the
+SHIP/REJECT/DEFER verdict policy.
 
 ---
 

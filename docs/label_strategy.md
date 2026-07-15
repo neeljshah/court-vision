@@ -89,10 +89,14 @@ the best Shin-devigged price (`frontend/exec_decision.py`):
 | C | >= 0.02 | >= 0.03 |
 | no-bet | below the C floor | below the proxy C floor |
 
-The same A/B/(S) tiering is mirrored in the in-game ranker
-(`decision_engine.classify_tier`), where `S` requires both EV >= 0.08 and a
-projection delta >= 1.0 stat units. **Below the C floor is `no_bet`, not a
-weaker bet** -- see [decisions](decisions.md) DEC-015.
+The in-game ranker (`decision_engine.classify_tier`) uses its own, lower
+floors, not the frontend table above: `S` requires EV >= 0.08 plus a
+projection delta >= 1.0 stat units, `A` requires EV >= 0.04, and `B` shares
+the same 0.04 floor as `A` (calibrated 2026-05-26, raised from a 0.01
+pre-calibration floor to drop Tier C emissions -- see
+`src/prediction/decision_engine.py` TIER_S_EV/TIER_A_EV/TIER_B_EV). **Below
+the C floor is `no_bet`, not a weaker bet** -- see [decisions](decisions.md)
+DEC-015.
 
 ## Why label this way
 

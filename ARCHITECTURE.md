@@ -22,7 +22,7 @@ broken upstream stage — the system is deliberately auditable at each boundary.
 | Stage | What it does | Key modules |
 |-------|--------------|-------------|
 | **DATA** | Broadcast video → court coords; NBA Stats API; live lines from 6 books | `src/pipeline/unified_pipeline.py`, `src/data/` |
-| **SIGNALS** | 60+ spatial/temporal CV features + 80-artifact intelligence layer + discovery loop | `src/features/feature_engineering.py`, `src/loop/` |
+| **SIGNALS** | 60+ spatial/temporal CV features + 49-module intelligence layer + discovery loop | `src/features/feature_engineering.py`, `src/loop/` |
 | **MODELS** | 7 prop heads, win-prob NNLS stack, in-play residual heads, calibration layers | `src/prediction/` |
 | **ENGINES** | Possession simulator, de-vig, Kelly sizing, shadow log, decision engine | `src/prediction/betting_portfolio.py`, `src/prediction/decision_engine.py` |
 | **PREDICTIONS** | Projections + EV + sized bets, served over FastAPI (~99 endpoints) | `api/` |
@@ -245,7 +245,7 @@ src/prediction/betting_portfolio.py
   └─ Drawdown circuit breakers + isotonic win-prob override
         │
         ▼
-api/main.py  (~99 endpoints, 12 routers)
+api/main.py  (~99 endpoints, 11 routers)
   ├─ REST: props, predictions, win-prob, devig, CLV, analytics
   ├─ SSE: /sse/live_edges (cross-book arb stream)
   └─ WebSocket: live win-prob feed
@@ -358,8 +358,10 @@ The planned architecture separates this into:
 ```
 kernel/            ← sport-blind (38% of current code, today)
   ├─ loop/         ← discovery, gate, wiring, ledger
-  ├─ prediction/   ← walk_forward, conformal, calibration, Kelly
-  └─ serving/      ← FastAPI skeleton, daemons, shadow log
+  ├─ calibration/  ← walk_forward, conformal, calibration, Kelly
+  ├─ decision/     ← gate chain, EV floor
+  ├─ sim_framework/← possession/point-process sim core
+  └─ brain, config, data_infra, fusion, model_ops, spatial, testing, validation/
 
 domains/
   └─ nba/          ← today's full NBA system = the reference adapter
@@ -367,11 +369,13 @@ domains/
   └─ <sport>/      ← adding a sport = only the adapter layer
 ```
 
-### Realized today — `kernel/` + `domains/<sport>/`, four sports
+### Realized today — `kernel/` + `domains/<sport>/`, twelve adapters
 
-The direction above is now built. Four domain adapters
-(`basketball_nba`, `mlb`, `soccer`, `tennis`) run on one sport-blind kernel; a
-fifth (`soccer_intl`) is a thin census-only international predictor. Each domain
+The direction above is now built. Twelve domain adapters (`baseball_intl`,
+`baseball_kbo`, `baseball_npb`, `basketball_nba`, `basketball_wnba`,
+`cross_sport_market`, `mlb`, `nfl`, `soccer`, `soccer_intl`, `tennis`, `wnba`)
+run on one sport-blind kernel; several of the newer ones are thin census-only
+predictors rather than full CV-backed systems. Each domain
 exposes a `predictor.py` with a pregame surface (`predict` / `to_jd`) and an
 in-game repricer (`predict_live`), and one calibrated win-prob per sport anchors
 the whole market surface (moneyline / totals / spreads / props / SGP stay mutually
@@ -460,7 +464,7 @@ graph TD
 | Settlement | `src/prediction/settlement_engine.py` |
 | Loop orchestration | `src/loop/orchestrator.py` — `Orchestrator` |
 | Ship gate | `src/loop/gate.py` — `gate.evaluate()` |
-| API serving | `api/main.py` (12 routers included here) |
+| API serving | `api/main.py` (11 routers included here) |
 | Possession MC | `src/prediction/possession_simulator.py` |
 | Walk-forward harness | `src/prediction/walk_forward_backtester.py` |
 

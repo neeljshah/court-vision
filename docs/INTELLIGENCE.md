@@ -5,16 +5,19 @@
 > and [../ARCHITECTURE.md](../ARCHITECTURE.md). Cross-links:
 > [PUBLIC_EVIDENCE.md](PUBLIC_EVIDENCE.md) · [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md).
 
-The intelligence layer sits between raw CV tracking and the prediction models. It is **80 artifacts
-(~10 MB of parquet + json)** derived from broadcast-video tracking, NBA Stats API, and play-by-play
-microstructure. Every artifact answers a specific question the prediction stack would otherwise have
-to guess at: *who is this player right now, what scheme is the opponent imposing, how does this
-matchup behave, is the model confident here?*
+The intelligence layer sits between raw CV tracking and the prediction models. It is **151 artifact
+files** (parquet + json) derived from broadcast-video tracking, NBA Stats API, and play-by-play
+microstructure — the original 80-artifact core plus later additions (compound-signal hunts, CV
+sidecars, daily-picks retros). Every artifact answers a specific question the prediction stack
+would otherwise have to guess at: *who is this player right now, what scheme is the opponent
+imposing, how does this matchup behave, is the model confident here?*
 
 Artifacts are gitignored (`data/intelligence/`) — regenerable from raw tracking + NBA Stats. This
-doc is the public-facing **manifest**: what exists, what's in each file, how it plugs in.
+doc is the public-facing **manifest**: what exists, what's in each file, how it plugs in. The
+10-section inventory below documents the original 80-artifact core in full; later additions are
+not yet individually catalogued.
 
-> **Status (2026-06-11):** 80 artifacts populated. Coverage is uneven — some layers (lineup
+> **Status (2026-07-15):** 151 artifact files populated (80-artifact core + growth). Coverage is uneven — some layers (lineup
 > chemistry, similarity index) span thousands of rows; others (officials player-sensitivity,
 > absence-effects) are early and small. Per-artifact row counts are listed so maturity of each
 > signal is legible at a glance.
@@ -184,7 +187,7 @@ served model, and produces **no** betting edge versus closing lines.
 
 | Artifact | Rows | What it encodes |
 |---|---:|---|
-| `player_fingerprints.parquet` | 214 | PCA-reduced player vector + archetype assignment + distance from centroid |
+| `player_fingerprints.parquet` | 221 | PCA-reduced player vector + archetype assignment + distance from centroid |
 | `player_fingerprints_kbest.parquet` | 230 | K-best feature variant of the fingerprint (more robust to missing features) |
 | `player_archetype_definitions.json` | — | Archetype label dictionary (e.g. *Slashing Wing*, *Stretch Big*, *Rim-Runner*) |
 | `player_atlas_viz.png` + `player_atlas_feature_list.json` | — | 2D atlas viz of all players + the features that defined each axis |
@@ -395,8 +398,8 @@ a predictive edge on the served model, and claims to the contrary are retracted 
 
 ## Reproducing
 
-Builders live under `scripts/intelligence/` (and a few in `src/intelligence/`). Top-level driver
-is `scripts/intelligence/build_all.py`; per-layer scripts can be run individually. Required inputs:
+Builder modules live under `scripts/platformkit/intel_validation/` (60+ builder/validator modules);
+per-layer scripts can be run individually. Required inputs:
 `data/tracking/*` (CV tracking), `data/nba/*` (gamelogs),
 `data/cache/inplay_pbp_microstructure.parquet` (microstructure).
 
@@ -404,7 +407,7 @@ Regeneration takes ~25 min on the dev box for the full 80-artifact pass. The art
 out of git both because they're large and because they encode the proprietary derivation; the
 **schema and counts on this page are the public commitment**.
 
-*Last verified: 2026-06-11.*
+*Last verified: 2026-07-07.*
 
 **Siblings:** [PLAYER_INTELLIGENCE.md](PLAYER_INTELLIGENCE.md) (dossier showcase + scope) ·
 [MEMORY_GRAPH.md](MEMORY_GRAPH.md) (person-free knowledge graph) ·

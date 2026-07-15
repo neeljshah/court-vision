@@ -16,7 +16,7 @@ sport-specific detail only.
 | Injuries/box/framing | `data/domains/mlb/{injuries,espn_boxscores,catcher_framing_index}.parquet` | 113-3,837 | current era |
 | Bullpen fatigue chains (verified claims) | `data/cache/intel_claims/mlb_bullpen_fatigue_chains.jsonl` | 9,060 claims, 9,060/9,060 verified | 2022-2026 |
 | Live GUMBO | `data/domains/mlb/gumbo_live/<pk>.jsonl` | 47 games x ~104 ticks | 2026 live |
-| Compiled profiles | `data/cache/profiles/mlb_player_profiles.parquet` | 10,969 | rolling |
+| Compiled profiles | `data/cache/profiles/mlb_player_profiles.parquet` | 146,262 | rolling |
 
 Biggest known gap: the pre-2022 odds corpus (2010-2021) and the pitch-level
 Statcast corpus (2022-2026) are disjoint -- no historical odds exist for the
@@ -24,20 +24,22 @@ statcast era, so pitch-derived families cannot be market-joined historically.
 Closed classes (do not re-attempt): `ingame_sp_velo_fatigue`,
 `mlb_pregame_stack_L3`.
 
-## Attribute catalog (14 attributes, `domains/mlb/profiles/attribute_registry.py`)
+## Attribute catalog (17 base attributes / 121 total incl. grid expansions, `domains/mlb/profiles/attribute_registry.py`)
 
-Batter (7): `platoon_resilience` (on-base delta same-hand vs opposite-hand
+Batter (8): `platoon_resilience` (on-base delta same-hand vs opposite-hand
 pitcher, **VALIDATED_MECHANISM**), `clutch_baseout` (GB-rate delta with RISP
 vs not, **VALIDATED_MECHANISM**), `pull_tendency`, `contact_quality` (barrel
 share), `discipline_by_count` (swing-rate delta behind vs ahead in count),
-`K_avoidance`, `BB_rate` -- the other five DESCRIPTIVE.
+`K_avoidance`, `BB_rate`, `chase_rate` (flat out-of-zone swing rate) -- the
+other six DESCRIPTIVE.
 
-Pitcher (6): `mix_by_leverage` (breaking-pitch-share delta ahead vs not
+Pitcher (8): `mix_by_leverage` (breaking-pitch-share delta ahead vs not
 ahead in count, **VALIDATED_MECHANISM**), `velo_band`, `TTO_durability`
 (xwOBA delta 3rd-time-through vs 1st -- DESCRIPTIVE **by design**: the
 closest causal mechanism, starter velo-band x TTO, was tested and failed
-replication, see below), `platoon_split`, `whiff_rate`, `gb_tendency` -- the
-other five DESCRIPTIVE.
+replication, see below), `platoon_split`, `whiff_rate`, `gb_tendency`,
+`edge_zone_rate` (flat zone-11-14 pitch share), `release_spin_rate` (mean
+release spin rate) -- the other seven DESCRIPTIVE.
 
 Catcher (1): `framing` (borderline called-strike rate, **VALIDATED_CLAIM**,
 reused verbatim from the already-verified `mlb_framing_claims.jsonl`).
@@ -115,7 +117,7 @@ Status:     VALIDATED_MECHANISM -- built on a mechanism replicated on independen
 
 - `python -m scripts.platformkit.profiles.ask "Charlie Blackmon contact quality" --sport mlb`
 - `python -m scripts.platformkit.profiles.ask "Justin Turner discipline by count" --sport mlb`
-- `python -m scripts.platformkit.profiles.ask --list --sport mlb` (all 14 attributes)
+- `python -m scripts.platformkit.profiles.ask --list --sport mlb` (all 17 base attributes)
 
 ## What would make this deeper
 

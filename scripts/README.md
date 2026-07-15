@@ -21,6 +21,6 @@ This folder contains operational scripts used to run, validate, and maintain the
 
 ```bash
 python scripts/run_phase_g.py --parallel 4
-python scripts/batch_season.py --season 2025-26
+python scripts/batch_season.py --limit 5
 python scripts/validate_game.py --game-id 0022400430
 ```

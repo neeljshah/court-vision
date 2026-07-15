@@ -58,9 +58,14 @@ fire. Click any bet row to open the "Why this bet" drawer.
 | Path | Method | Purpose |
 |------|--------|---------|
 | `/api/health` | GET | liveness; reports WS client count + active games |
+| `/api/health/books` | GET | per-book staleness/volume watchdog status |
 | `/api/state`  | GET | one-shot snapshot for fresh page loads |
 | `/api/bets?limit=20` | GET | recent ranked bets |
+| `/api/shadow?limit=50` | GET | today's blocked-but-logged shadow bets, sorted by raw_ev desc |
+| `/api/book-grid?player=&stat=&line=` | GET | per-book side-by-side line+price comparison for one prop |
+| `/api/scraper-probe/{book}` | GET | probes a sportsbook's candidate endpoints from the prod IP |
 | `/api/explain` | POST | builds the "why" payload for one bet |
+| `/auth/init` | GET | issues the HttpOnly `cv_session` cookie so `/odds` never leaks the token |
 | `/ws/live`     | WebSocket | all events broadcast in real time |
 
 Every endpoint accepts `?token=...` for auth when `LIVE_V2_AUTH_TOKEN`
@@ -235,7 +240,7 @@ return 200 from your backend.
 |------|---------|
 | `api/live_v2_app.py`           | FastAPI WS + REST bridge |
 | `src/live/explanation_engine.py` | builds the "why" payload |
-| `tests/test_live_v2_app.py`    | backend regression (6 tests) |
+| `tests/test_live_v2_app.py`    | backend regression (11 tests) |
 | `tests/test_explanation_engine.py` | explanation regression (7 tests) |
 | `webapp/`                      | Next.js 14 frontend |
 | `webapp/app/page.tsx`          | dashboard root |

@@ -7,21 +7,21 @@ sport-specific detail only.
 
 | Corpus | Path | Rows | Coverage |
 |---|---|---|---|
-| Player boxscores | `data/domains/basketball_nba/player_boxscores.parquet` | 51,237 | 2024-10..2026-04 |
+| Player boxscores | `data/domains/basketball_nba/player_boxscores.parquet` | 77,744 | 2024-10..2026-04 |
 | Games/odds/linescores | `data/domains/basketball_nba/{games,odds,linescores}.parquet` | 1.3k-4.8k | 2022-10..2026-04 |
 | Possessions | `data/cache/team_system/{pbp_possessions,legacy_possessions}.parquet` | 39.5k + 508.9k | multi-season |
-| Full play-by-play | `data/cache/team_system/pbp/*.json` | 196 games x ~605 actions | 2025-26 only |
-| Quarter box | `data/cache/quarter_box/<gid>_q{1-4}.json` | 6,275 files (~1,569 games) | 2024-25 + 2025-26 |
+| Full play-by-play | `data/cache/team_system/pbp/*.json` | 1,192 files | 2025-26 only |
+| Quarter box | `data/cache/quarter_box/<gid>_q{1-4}.json` | 4,925 files | 2024-25 + 2025-26 |
 | Lineup keystone (stints/on-off/gravity/spacing/matchups) | `data/cache/team_system/lineups/*.parquet` | 10,124 stints / 550 on-off rows / 43 gravity-proxy players / 3,043 lineup-shot rows | 196-game full-pbp subset only |
 | Defender matchup states | `data/domains/basketball_nba/defender_matchup_states.parquet` | 37,395 | prior + realized |
-| Compiled profiles | `data/cache/profiles/nba_{player,lineup,team}_profiles.parquet` | 4,809 / 14,609 / 570 | rolling |
+| Compiled profiles | `data/cache/profiles/nba_{player,lineup,team}_profiles.parquet` | 58,472 / 40,408 / 2,908 | rolling |
 
 Biggest known gap: the lineup keystone (reconstruction, on/off, gravity,
 spacing) only covers the 196-game full-sub-PBP subset -- that corpus has not
 grown, so `gravity` is a thin 43-player sample. In-play tick and depth-history
 market data are empty stubs for NBA (offseason).
 
-## Attribute catalog (34 attributes, `domains/basketball_nba/profiles/attribute_registry.py`)
+## Attribute catalog (110 attributes, `domains/basketball_nba/profiles/attribute_registry.py`)
 
 Player (11): `gravity` (teammate eFG lift on vs off court, VALIDATED_CLAIM),
 `usage_absorption`, `creation` (eFG lift for assisted teammates),
@@ -48,7 +48,7 @@ All floors, formulas, and exact source columns are declared per-attribute in
 the registry file -- read it directly rather than trusting a summary for
 anything you plan to cite precisely.
 
-## Replicated mechanisms (from `prereg_hypothesis_ledger.jsonl`)
+## Replicated mechanisms (from `data/cache/intel_claims/prereg_hypothesis_ledger.jsonl`)
 
 - **Stint continuity x defensive rebound rate** (`continuity_s`). Longer
   intact 5-man stints predict a higher DREB rate. SURVIVES_PREREG on
@@ -113,7 +113,7 @@ Status:     VALIDATED_CLAIM -- claims re-verified against source data
 - `python -m scripts.platformkit.profiles.ask "Luka Doncic spacing contribution" --sport nba`
 - `python -m scripts.platformkit.profiles.ask "Lakers concession rim efg allowed" --sport nba`
 - `python -m scripts.platformkit.profiles.ask "Celtics lineup continuity avg stint" --sport nba`
-- `python -m scripts.platformkit.profiles.ask --list --sport nba` (see all 34 attributes)
+- `python -m scripts.platformkit.profiles.ask --list --sport nba` (see all 110 attributes)
 
 ## What would make this deeper
 

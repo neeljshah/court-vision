@@ -47,7 +47,7 @@ These appear in the repo only as artifacts the validation harnesses caught. Full
 
 ## Repo conventions
 
-- **Python 3.9 · conda env `basketball_ai` · CUDA 11.8 · RTX 4060 8GB**
+- **Python 3.10.20 · conda env `basketball_ai` · CUDA 11.8 · RTX 4060 8GB**
 - Max 300 LOC/file · type hints · docstrings on public API only
 - Models → `data/models/` (most are gitignored; whitelist in `.gitignore`)
 - Logs / vault → `vault/` (gitignored)
@@ -79,7 +79,7 @@ Most candidates are correctly rejected. A correct reject is not a failure — it
 - CV scale-up is 7/80 full-feature games; `defender_distance=200.0` sentinel fix (ISSUE-022) is the blocker
 - DraftKings / Caesars / MGM scrapers are IP-blocked; Pinnacle / FanDuel / Bovada / PrizePicks cover the rest
 - `sim_win_prob` polarity bug documented in `vault/Models/Polarity Bug Audit 2026-05-27.md` — gated, unpatched
-- Multi-sport `kernel/` refactor is planned but not started; current code is NBA-only
+- Multi-sport `kernel/` refactor is underway (sport-blind machinery split out of NBA-only code)
 
 Full gap inventory: [docs/KNOWN_LIMITATIONS.md](docs/KNOWN_LIMITATIONS.md).
 

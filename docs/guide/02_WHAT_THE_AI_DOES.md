@@ -28,7 +28,7 @@ Given a game scheduled tonight, the system does the following:
    the same pool of simulated paths.
 6. Passes every output through Shin/Platt calibration to convert raw model scores into
    fair-probability estimates anchored against the devigged closing line.
-7. Serves pregame predictions via the FastAPI layer (~99 endpoints).
+7. Serves pregame predictions via the FastAPI layer (100 endpoints).
 
 During a live game the system repeats a subset of those steps after each quarter checkpoint,
 conditioning the pregame prior on the realized score state, foul counts, and blowout
@@ -106,7 +106,7 @@ mean, so quantile (q50) models outperform squared-error / Huber objectives for m
 | BLK  | XGB q50 (log1p) | Biggest single-stat loop gain (-16% MAE) |
 | TOV  | XGB q50 (log1p) | log1p reduces impact of outlier games |
 
-### Honest walk-forward metrics (~51k held-out player-games)
+### Honest walk-forward metrics (356,678 held-out rows)
 
 | Stat | MAE | R^2 |
 |------|-----|-----|
@@ -259,7 +259,7 @@ finite-sample coverage guarantees without distributional assumptions.
 
 ## Step 7 -- Pregame predictions served via API
 
-The FastAPI layer (`api/main.py`, ~99 endpoints across 12 routers) serves the outputs:
+The FastAPI layer (`api/main.py`, 100 endpoints across 11 routers) serves the outputs:
 
 - `GET /predictions/props/{player}` -- per-player stat predictions with calibrated intervals
 - `GET /predictions/winprob/{home}/{away}` -- calibrated win probability
@@ -267,7 +267,7 @@ The FastAPI layer (`api/main.py`, ~99 endpoints across 12 routers) serves the ou
 - `POST /api/devig` -- convert vigged odds to fair probabilities via any of four methods
 - `GET /sse/live_edges` -- SSE stream of cross-book arbitrage opportunities
 
-The dashboard (`api/templates/`, 18 Jinja templates) renders the slate, CLV tracking,
+The dashboard (`api/templates/`, 22 Jinja templates) renders the slate, CLV tracking,
 parlay prices, line scanner, and results pages server-side.
 
 ---
@@ -342,7 +342,7 @@ get rejected.
 
 ---
 
-## The 4-sport architecture
+## The 5-sport architecture
 
 The validated machinery (walk-forward gating, calibration, the MC sim framework,
 the discovery loop, devig, shadow logging) lives in `kernel/`. Each sport implements
@@ -353,17 +353,17 @@ a thin adapter under `domains/<sport>/predictor.py` that provides:
   subtle bugs if they drift)
 - An `ingest_manifest.py` (per-corpus leak class and freshness SLA)
 
-Four sports are live: `domains/basketball_nba/`, `domains/mlb/`, `domains/soccer/`,
-`domains/tennis/`. All four share one kernel and one prediction surface.
+Five sports are live: `domains/basketball_nba/`, `domains/mlb/`, `domains/soccer/`,
+`domains/soccer_intl/`, `domains/tennis/`. All five share one kernel and one prediction surface.
 
 ```
-                         kernel/
-           +----------+----------+----------+----------+
-           |          |          |          |          |
-    basketball_nba   mlb      soccer     tennis
-       predictor.py  predictor.py  predictor.py  predictor.py
-       cohesive_read  cohesive_read  cohesive_read  cohesive_read
-       live_read      live_read      live_read      live_read
+                                  kernel/
+           +----------+----------+----------+----------+----------+
+           |          |          |          |          |          |
+    basketball_nba   mlb      soccer   soccer_intl   tennis
+       predictor.py  predictor.py  predictor.py  predictor.py  predictor.py
+       cohesive_read  cohesive_read  cohesive_read  cohesive_read  cohesive_read
+       live_read      live_read      live_read      live_read      live_read
 ```
 
 Each adapter emits a single calibrated win probability per matchup. Every other market

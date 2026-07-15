@@ -33,7 +33,7 @@ ROI, value, or "beat the market" claim is made anywhere in the UI or this docume
   all available markets, exact start time, and provenance.
 - Favicon (SVG) and a PWA web manifest; ~87KB gzip bundle.
 - Accessible (semantic list roles, aria labels, keyboard-focusable scroll region) and ASCII-only.
-- 149 tests (Vitest + React Testing Library), plus a clean `tsc` typecheck and production build.
+- 238 tests across 27 test files (Vitest + React Testing Library), plus a clean `tsc` typecheck and production build.
 
 ## Quickstart
 

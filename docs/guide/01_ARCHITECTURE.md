@@ -162,17 +162,19 @@ Each adapter lives at `domains/<sport>/` and exposes exactly two surfaces:
 - `live_read.predict_live(...)` -- in-game repricer; fuses the pregame
   prior with realized score state
 
-The four shipped adapters:
+The five shipped adapters:
 
 | Domain | Path | Model |
 |---|---|---|
 | NBA | `domains/basketball_nba/predictor.py` | NNLS stack + possession MC sim |
 | MLB | `domains/mlb/predictor.py` | pitcher-blind Elo |
 | Soccer | `domains/soccer/predictor.py` | Poisson totals |
+| Soccer (Intl) | `domains/soccer_intl/predictor.py` | Dixon-Coles bivariate-Poisson (1X2 + O/U-2.5), neutral-site aware |
 | Tennis | `domains/tennis/predictor.py` | Elo + Platt calibration |
 
-A fifth, `domains/nfl/`, is a stub (scaffolded but not validated). The
-parity matrix marks it accordingly.
+`domains/nfl/` is a stub (`feature_spec.py` + `ingest_manifest.py` only, no
+`predictor.py` -- scaffolded but not validated). The parity matrix marks it
+accordingly.
 
 **One win-prob anchors the whole surface.** Each domain's rating model
 emits a raw probability. A per-sport leak-free recalibrator (Platt /
@@ -244,10 +246,14 @@ devig, health, lines, lineup, live, predictions, props, risk, simulation,
 stitch) plus 4 WebSocket/SSE endpoints. This is the full research surface
 and CV-era legacy; the canonical serving path is predict_service above.
 
-### 7. The 17-Service Supervised Stack
+### 7. The 45-Service Supervised Stack
 
 `supervisor/manifest.py` defines a topologically-sorted process inventory.
-`manifest('default')` returns 17 `ProcSpec` entries (verified at runtime):
+`base_specs()` (`supervisor/stack_specs.py`) returns 45 `ProcSpec` entries,
+numbered `m1_producer` through `m41_public_splits` with gaps at `m3` and
+`m28` (verified: `from supervisor.stack_specs import base_specs;
+len(base_specs())` == 45). The table below is a representative slice, not
+the full roster:
 
 | Process | Port | Role |
 |---|---|---|
@@ -294,7 +300,7 @@ Current state:
 basketball_nba   green      green      green
 mlb              green      green      green
 soccer           green      green      green
-soccer_intl      green      n/a        n/a        <- census-only
+soccer_intl      green      green      green
 tennis           green      green      green
                  ------------------------------
 PARITY: GREEN (0 red cells)

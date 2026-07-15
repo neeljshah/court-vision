@@ -49,7 +49,7 @@ Every stage is re-validated by an agentic loop and a fail-closed ship gate.
    DATA            SIGNALS           MODELS            ENGINES           PREDICTIONS        INTELLIGENCE
  broadcast CV  ->  signal       ->  prop XGB (7)  ->  possession   ->  calibrated      ->  concept graph
  NBA/odds APIs     factory          win-prob          Monte Carlo      markets +           (playstyles,
- multi-book        (85 trained)     MOV-Elo           sim ->           Shin/Platt          schemes,
+ multi-book        (629 trained)    MOV-Elo           sim ->           Shin/Platt          schemes,
  scrapers          + 80-artifact    (per sport)       coherent         calibrated          dossiers)
  4-sport corpora   intel layer                        markets          probabilities
         \__________________________ agentic discover / validate / SHIP-or-REJECT loop __________________________/

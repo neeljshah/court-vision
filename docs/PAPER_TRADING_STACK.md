@@ -129,6 +129,14 @@ attached. The M18 daemon sweeps every 900 s:
   bar. Deferred rows resume on the next tick. (Before the share was registered,
   the unknown-caller default over-subscribed the ceiling on full slates --
   a 429 storm and a flapping heartbeat. The fix is a budget, not a retry.)
+- **Memoized per-sweep, not just budgeted.** A second root cause behind the
+  same m18 flap: the default resolver path built a fresh `KalshiProvider` and
+  refetched the full market list for every target row -- a 40-row sweep meant
+  40 identical fetches of the same 1-3 sports, self-inflicting 429s and
+  stretching sweeps past the heartbeat threshold on its own. `pm_close_capture.py`
+  now memoizes one governed fetch per sport per sweep (`_memoized_kalshi_fetch`,
+  2026-07-15); the provider and governor caller are unchanged, only the
+  redundant calls are gone.
 
 ## 4. Settlement -- `scripts/platformkit/ingame/ingame_paper_settle.py`
 
@@ -273,7 +281,7 @@ properties are binding:
 [`docs/BETTING.md`](BETTING.md) - [`docs/EXECUTION_GUIDE.md`](EXECUTION_GUIDE.md) -
 [`docs/JOB_EVIDENCE_PACKET.md`](JOB_EVIDENCE_PACKET.md)*
 
-*Last verified: 2026-07-07*
+*Last verified: 2026-07-15*
 
 ---
 <!-- nav-footer -->

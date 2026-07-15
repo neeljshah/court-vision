@@ -21,7 +21,11 @@ python -m src.prediction.win_probability --retrain
 | `nba/` | Play-by-play, game logs, schedules, lineups | `nba_api` via ingest pipeline |
 | `models/` | Trained model weights + metadata | Training scripts |
 | `ball_yolo/` | Ball detection training images + labels | Manual annotation |
-| `seeds/` | SQL seed data for PostgreSQL | Checked in |
+| `seeds/` | SQL seed data for PostgreSQL | Local only, not version-controlled |
 | `videos/` | Game broadcast clips | yt-dlp via ingest pipeline |
 
-Only `seeds/` and small model metadata files (registry, metrics, hyperparams) are version-controlled.
+Only this README, small helper/config files (`__init__.py`, `jersey_name_map.json`,
+`team_colors.json`), and a whitelisted subset of `models/` and `nba/` metadata
+(registry, metrics, hyperparams, and `team_stats_*.json` / `player_avgs_*.json`)
+are version-controlled. Everything else under `data/`, including `seeds/`, is
+local-only and gitignored.

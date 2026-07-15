@@ -57,7 +57,7 @@ produce.
 - 7 prop heads (q10/q50/q90), leak-free walk-forward MAE on **~51K held-out player-games/stat**:
   **PTS ~4.58 / REB ~1.90 / AST ~1.34 / FG3M ~0.88** (small ~−0.45 PTS under-bias).
   Competitive with published benchmarks. **Lead with this.**
-- Win-prob 5-way NNLS stack: **0.709 acc / 0.193 Brier** (3-fold WF).
+- Win-prob 5-way NNLS stack: **0.7169 acc / 0.188 Brier** (3-fold WF).
 - In-play endQ3 residual heads cut MAE ~46% vs pregame (mostly mechanical; **~26% over a naive
   carry-forward baseline**, WF-validated, leak-clean).
 - *Proof:* `data/models/quantile_pergame_metrics.json`, `win_prob_metrics.json`.
@@ -107,11 +107,11 @@ produce.
   section — verified this week to correctly return `OVERALL: RED` with the specific
   failing subsystem named.
 - **A 4-sport answer-engine oracle**, built from claims already on the books: a "what
-  affects what" **effect graph** (555 nodes / 296 edges, NBA+MLB+soccer+tennis) computed
+  affects what" **effect graph** (627 nodes / 335 edges, NBA+MLB+soccer+tennis) computed
   entirely by labeling and linking existing ledger rows — zero new statistics — plus a
   resolver registry that REFUSES any unregistered question type instead of improvising.
-  The knowledge engine feeding it is now fully drained: **151 mechanism hypotheses closed
-  across all 4 sports** (71 CONFIRMED_LOCAL, 51 honest NULLs, the rest not locally
+  The knowledge engine feeding it is now fully drained: **287 mechanism hypotheses closed
+  across all 4 sports** (114 CONFIRMED_LOCAL, 2 honest NULLs, the rest not locally
   testable) — every mechanism answer carries its own verdict, sample size, p-value, and
   source file. No folklore, no plausible-sounding guesses.
 - *Proof:* `scripts/platformkit/autoloop/{shadow_settle_job,propose_gate_job}.py`,

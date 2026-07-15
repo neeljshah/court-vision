@@ -19,7 +19,9 @@ pregame through in-game.
   pregame, `live_read` for in-game).
 - One command-line entry point (`scripts/platformkit/predict_matchup.py`, installed as
   `cv-matchup`).
-- ~25 leak-free / OOS proof modules that grade the platform against the market and against itself.
+- 70+ leak-free / OOS proof modules (81 including tests) that grade the platform against the
+  market and against itself -- beat-the-close, in-game, calibration, platform, and edge-hunt
+  scoreboards among them.
 
 ## WHAT IT PREDICTS (markets x sports)
 

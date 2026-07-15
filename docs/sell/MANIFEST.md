@@ -1,6 +1,6 @@
 # Evidence Pack Manifest
 
-> Generated: 2026-06-18T20:49:17.123424+00:00
+> Generated: 2026-07-15T15:41:16.102234+00:00
 > Pack version: sell.evidence_pack.v1
 > Artifacts: 3
 
@@ -17,9 +17,9 @@ from scratch. Every artifact is honesty-linted before any file is written.
 
 | Artifact                         |     Size | sha256 note              |
 |:---------------------------------|---------:|:-------------------------|
-| methodology.json                 |     1317 bytes | (see artifact on disk)   |
-| reproduce.json                   |     1033 bytes | (see artifact on disk)   |
-| track_record.signed.json         |      825 bytes | (see artifact on disk)   |
+| methodology.json                 |     1395 bytes | (see artifact on disk)   |
+| reproduce.json                   |     1384 bytes | (see artifact on disk)   |
+| track_record.signed.json         |     1756 bytes | (see artifact on disk)   |
 
 > sha256 digests are opaque cryptographic outputs (not presented results).
 > They are stored in the on-disk `manifest.json`; verify them with

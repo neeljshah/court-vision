@@ -4,11 +4,9 @@ This directory will contain reliability diagrams, CLV plots, and per-model ECE o
 
 ## Status
 
-**Nothing here yet.** The 80-game CV ingest run is in progress: 29 usable games (9 CLEAN + 20 PARTIAL on quality gate) of 75 attempted; target 80 CLEAN. Once complete, run:
+`scripts/generate_results.py` has been run and produced [`STATUS.md`](STATUS.md), [`holdout_metrics.csv`](holdout_metrics.csv), and [`holdout_metrics.png`](holdout_metrics.png) — see `STATUS.md` for the current holdout R²/MAE table and the list of gated artifacts still pending.
 
-```bash
-python scripts/generate_results.py
-```
+The 80-game CV ingest run is stalled, not progressing: as of 2026-07-15, 9 CLEAN + 20 PARTIAL of 307 tracked games (81 processed, 26 verified, 46 REJECT), still short of the 80-CLEAN target, with 0 games processed in the last 24h.
 
 Metrics available right now: [`data/models/model_registry.json`](../data/models/model_registry.json) — API-data holdout R² and MAE per model, walk-forward temporal CV.
 

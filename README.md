@@ -133,11 +133,11 @@ is bounded by data breadth, not by model breadth: the same pure best-line / Shin
 arbitrage core covers *every* event the feeds return.
 
 **The claims scale.** Every derived stat the brain will answer a question from first has to pass
-an independent validator that marks it `VERIFIED`, `MISMATCH`, or `UNVERIFIABLE` -- **52,379
+an independent validator that marks it `VERIFIED`, `MISMATCH`, or `UNVERIFIABLE` -- **101,089
 VERIFIED claim rows** stand behind the ask surfaces today, tallied live from every
-`*_validation.json` summary under `data/cache/intel_claims/` (33 claim stores, 7 sports). A
+`*_validation.json` summary under `data/cache/intel_claims/` (71 claim stores, 7 sports). A
 machine-readable **data census** (`data/frontend/ops/data_census.json`) inventories what's
-derivable from the corpus on disk per sport -- 61 derivable families across NBA, MLB, soccer,
+derivable from the corpus on disk per sport -- 67 derivable families across NBA, MLB, soccer,
 soccer_intl, tennis, WNBA, NPB, KBO, and cross-sport markets -- and ranks every still-`UNBUILT`
 one by `leverage_rank` into a single cross-sport priority queue the autoloop reads to decide what
 to build next. The full per-sport breakdown (data on disk, claim counts, biggest gap, model vs
@@ -240,13 +240,13 @@ failing subsystem named (a stale scraper heartbeat, 8 census-drift entries), not
 decorative green.
 
 On top of the funnel sits an **answer-engine oracle**: a "what affects what" **effect
-graph** (555 nodes / 296 edges across NBA, MLB, soccer, and tennis) built entirely from
+graph** (627 nodes / 335 edges across NBA, MLB, soccer, and tennis) built entirely from
 rows the knowledge engine already adjudicated -- zero new statistics computed, only
 labeled and linked -- plus a **resolver registry** that maps every supported question
 type to exactly one deterministic source and REFUSES anything unregistered rather than
 improvising a plausible-sounding answer. The knowledge engine itself is now fully
-drained across all 4 sports: 151 mechanism hypotheses closed out (71 CONFIRMED_LOCAL, 51
-honest NULLs, the rest not locally testable) -- every "does X actually happen" question
+drained across all 4 sports: 287 mechanism hypotheses closed out (115 CONFIRMED_LOCAL, 112
+honest NULLs, 29 not locally testable) -- every "does X actually happen" question
 the oracle fields carries a verdict, sample size, p-value, and source file, not folklore.
 Full account: [docs/PRODUCT_DEMO.md](docs/PRODUCT_DEMO.md).
 

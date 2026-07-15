@@ -2,7 +2,7 @@
 
 *Historical phase log. Last detailed update: 2026-04-15. For the forward roadmap see [the root ROADMAP.md](../ROADMAP.md).*
 
-> **Current state (2026-05-25):** Phases 1–13.5 complete. Phase G (CV game collection) active — 17 quality / 29 usable / 75 attempted, target 80 CLEAN. **Gate 1 (CLV validation vs Pinnacle close) NOT YET RUN — top priority.** This file is the detailed phase log; for the forward roadmap (Gate 1 → 80-game run → substrate → agentic research system → commercial surfaces) see [the root ROADMAP.md](../ROADMAP.md). For the live cycle-by-cycle ship log see [CHANGELOG.md](../CHANGELOG.md) and [docs/CLAUDE-state.md](CLAUDE-state.md).
+> **Current state (2026-05-25 snapshot; superseded by 51+ commits since — see [docs/CLAUDE-state.md](CLAUDE-state.md)):** Phases 1–13.5 complete as of this snapshot. Phase G (CV game collection) has since reached 88 game videos (target 80 CLEAN met). **Gate 1 (CLV validation vs Pinnacle close) has since RUN** — 8,360 walk-forward bets at DK/FD/MGM/BetRivers; see docs/CLAUDE-state.md for the verdict. This file is the detailed phase log; for the forward roadmap see [the root ROADMAP.md](../ROADMAP.md). For the live cycle-by-cycle ship log see [CHANGELOG.md](../CHANGELOG.md) and [docs/CLAUDE-state.md](CLAUDE-state.md).
 
 ---
 
@@ -41,7 +41,7 @@ Priority stack:
 | 4.8 | Quantitative Betting Infra | ✅ Done | Kelly + CLV + cross-book arb + portfolio construction |
 | 4.9 | Backtesting + Validation | ✅ Done | Strategy backtester, paper trading, /backtest endpoint |
 | 5 | External Factors | ✅ Done | Injury monitor, ref tracker, line monitor |
-| G | Full Game Data Collection | 🟡 Active | 17 quality / 29 usable / 75 attempted; target 80 CLEAN |
+| G | Full Game Data Collection | ✅ Done | 88 game videos collected (target 80 CLEAN met) |
 | 6 | Full Game Processing + Rich Events | ✅ Done | Rich events aggregated, CV features wired, 266 enriched possessions |
 | 7 | Tier 2–3 ML Models | ✅ Done | xFG v2, props retrained with CV features |
 | 8 | Possession Simulator v1 | ✅ Done | 7-model chain, 10K Monte Carlo <30s |
@@ -50,9 +50,9 @@ Priority stack:
 | 10.5 | Advanced CV Signals | ✅ Done | Coverage type, shot arc, biomechanics extractors |
 | 11 | Betting Infrastructure + Live | ✅ Done | live_models.py (M70-M75), BettingEdge, CLVTracker, ArbDetector |
 | 12 | Full Monte Carlo | ✅ Done | FoulTrouble/GarbageTime/Q4Usage wired, 7-stat distributions |
-| 13 | FastAPI Backend | ✅ Done | 24 endpoints across 5 routers, in-process TTL cache |
+| 13 | FastAPI Backend | ✅ Done | ~99 endpoints across 12+ routers, in-process TTL cache |
 | **13.5** | **100-game Readiness** | ✅ **Done** | Prop stack wired, isotonic calibration, dedup+crash isolation, backtest endpoint, correlation matrix, CV fatigue, STL features |
-| **Gate 1** | **CLV Validation** | 🔴 **NOT YET RUN** | ≥50 settled bets vs Pinnacle close, beat rate ≥55%, paper ROI ≥3% — gates everything downstream |
+| **Gate 1** | **CLV Validation** | ✅ **RUN** | 8,360 walk-forward bets at DK/FD/MGM/BetRivers — see docs/CLAUDE-state.md for the full verdict |
 | **14** | **80-game RunPod Run** | ⏳ **NEXT** | Stage videos to 80 CLEAN, launch pod, retrain with CV features, fit calibration, /backtest gate |
 | 15 | Analytics Dashboard | 🔲 | Next.js + D3 shot charts + 10 chart types |
 | 16 | AI Chat Interface | 🔲 | Claude API + tool use + render_chart inline |
@@ -68,24 +68,25 @@ Priority stack:
 
 **CV Pipeline**
 - YOLOv8n detection → SIFT homography → Kalman+Hungarian → OSNet re-ID (512-dim) → EasyOCR → EventDetector
-- 17 quality / 29 usable / 75 attempted games (target 80 CLEAN)
-- Remaining videos queued for the 80-game RunPod run
+- 88 game videos collected (target 80 CLEAN met)
+- See `data/` for current per-game quality breakdown
 
 **ML Models (85 trained artifacts)**
 - Win probability (5-way NNLS stack): 0.7094 acc / 0.193 Brier (3-fold walk-forward); 0.717 acc / 0.188 Brier (single-split)
-- Player props × 7 MAE (walk-forward, N=99,818): PTS 4.62, REB 1.90, AST 1.36, FG3M 0.89, TOV 0.89, STL 0.72, BLK 0.44
+- Player props × 7 holdout MAE (`data/models/model_registry.json`): PTS 4.12, REB 1.84, AST 1.52, FG3M 0.91, TOV 0.76, STL 0.48, BLK 0.42
 - Game models × 5: total, spread, blowout, first-half, pace
 - xFG v1: Brier 0.226, 221K shots
 - DNP predictor: AUC 0.979
 - Tier 4–5 models: 15 specialist models (closeout, rebound, help def, momentum, foul drawing...)
 - Full model registry in `data/models/model_registry.json`
 
-**API (24 endpoints)**
+**API (~99 endpoints across 12+ routers)**
 - `api/main.py`: /health, /simulate, /simulate_game, /over_prob, /props, /edge, /win-prob, /lineup, /backtest
 - `predictions_router.py`: /predictions/props, /injury-risk, /breakout, /lineup-optimizer, /game, /today
 - `models_router.py`: /predictions/shot, /win, /player-impact
 - `analytics_router.py`: /analytics/shot-chart, /tracking, /lineup-stats
 - `dashboard_router.py`: /chat, /analytics/clv-summary, /analytics/edges/today
+- Plus `courtvision_router.py`, `execution_router.py`, `clv_router.py`, `devig_router.py`, `lines_router.py`, `live_game_router.py`, `stitch_router.py`, `_risk_router.py`
 
 **Infrastructure**
 - Kelly + CLV + cross-book arb (betting_portfolio.py)
@@ -100,7 +101,7 @@ Priority stack:
 
 | # | Issue | Severity |
 |---|-------|---------|
-| 1 | Gate 1 (CLV validation) NOT YET RUN — gates all downstream surfaces | CRITICAL |
+| 1 | Gate 1 (CLV validation) has since RUN — see docs/CLAUDE-state.md for the verdict | (resolved) |
 | 2 | Isotonic calibration layer — verify end-to-end wiring before live sizing | CRITICAL |
 | 3 | Underprediction bias on all 7 prop models (predict below closing line) | HIGH |
 | 4 | STL R²=0.18 — add opp_to_rate + opp_pace to player_props.py | HIGH |
@@ -109,9 +110,9 @@ Priority stack:
 
 ---
 
-## Next: Gate 1, then Phase 14 — 80-Game RunPod Run
+## Next: Phase 14 — 80-Game RunPod Run (as of the 2026-05-25 snapshot)
 
-**Gate 1 first** — CLV validation gates everything: ≥50 settled bets vs Pinnacle close, beat rate ≥55%, paper ROI ≥3%. If Gate 1 fails, debug the edge thesis before any further surface investment.
+**Gate 1 has since run** — see docs/CLAUDE-state.md for the walk-forward verdict. This section is the original pre-Gate-1 plan, kept for historical context.
 
 ```bash
 bash scripts/launch_single_gpu_pod.sh <IP> <PORT>
@@ -119,11 +120,10 @@ bash scripts/watch_and_sync.sh
 ```
 
 **Phase 14 targets (80-game run):**
-- Reach 80 CLEAN games (from 29 usable today)
+- Reach 80 CLEAN games (from 29 usable at the time of this snapshot)
 - Prop model retrain with CV features → pts R² target 0.55+
 - Isotonic calibration fitted on new volume
 - /backtest gate passed for all 7 props
-- Betting mode enabled only after Gate 1 passes
 
 ---
 

@@ -8,7 +8,15 @@ This document describes every data point tracked or collected by the system, wha
 
 The primary output of the computer vision pipeline. One row per player per frame. ~25,000 rows per game clip.
 
-### Core Columns (36 total)
+### Core Columns
+
+The live CSV header has 54 columns (verified via header read); the 36 below are
+the ones consumed downstream by feature engineering and models. The remaining
+~18 (`bbox_x1/y1/x2/y2`, `ankle_x/y`, `confidence`, `scoreboard_*` raw fields,
+`contest_arm_angle`, `jump_detected`, `dribble_hand`, `ball_shot_arc_angle`,
+`ball_peak_height_px`, `ball_pass_speed_pxpf`, `direction_deg`, `drive_flag`,
+`fast_break_flag`, `possession_side`, `shot_clock_est`) are intermediate /
+detector-internal columns not yet promoted to a documented feature.
 
 | Column | Type | Description | ML Use |
 |--------|------|-------------|--------|
@@ -59,52 +67,61 @@ The primary output of the computer vision pipeline. One row per player per frame
 
 ## 2. Shot Log — `shot_log.csv`
 
-One row per detected shot event.
+One row per detected shot event. Actual header (verified, 15 columns):
 
 | Column | Type | Description | ML Use |
 |--------|------|-------------|--------|
 | `game_id` | str | NBA game ID | NBA API join |
+| `shot_id` | int | Sequential shot counter for this clip | Row identity |
 | `frame` | int | Frame of shot detection | Time alignment |
 | `timestamp` | float | Seconds from clip start | PBP matching |
-| `player_id` | int | Shooter tracker ID | Player link |
-| `player_name` | str | Shooter name | Display |
-| `team_id` | int | Shooter's team | Team attribution |
-| `x` | float | Shot origin X (court feet) | Zone classification |
-| `y` | float | Shot origin Y (court feet) | Zone classification |
-| `distance` | float | Feet from basket | Shot distance model |
-| `zone` | str | "paint" / "mid_range" / "corner_3" / "above_break_3" | xFG zone feature |
+| `player_id` | int | Shooter tracker slot ID | Player link |
+| `nba_player_id` | int | Resolved NBA.com player ID (once identity is linked) | NBA API join |
+| `team` | str | Shooter's team | Team attribution |
+| `x_position` | float | Shot origin X (court feet) | Zone classification |
+| `y_position` | float | Shot origin Y (court feet) | Zone classification |
+| `court_zone` | str | "paint" / "mid_range" / "corner_3" / "above_break_3" | xFG zone feature |
 | `defender_distance` | float | Feet from nearest defender at release | xFG input |
 | `team_spacing` | float | Offensive spacing at shot moment | xFG input |
-| `shot_clock_at_shot` | float | Shot clock reading | Pressure feature |
-| `game_clock_at_shot` | float | Game clock at shot | Clutch feature |
-| `score_diff_at_shot` | int | Score differential | Clutch feature |
+| `possession_id` | int | Possession this shot belongs to | Join to `possessions.csv` |
+| `possession_duration` | float | Seconds elapsed in possession before shot | Pressure feature |
 | `made` | bool | Shot outcome (from NBA API enrichment; NULL if not enriched) | xFG label |
-| `shot_type` | str | "2pt" / "3pt" (from NBA API) | Props model |
-| `action_type` | str | "jump_shot" / "layup" / "dunk" etc (from NBA API) | Shot type model |
+
+Note: `game_clock`/`score_diff` at shot time and NBA-API `shot_type`/`action_type`
+are not columns in this CSV -- they must be joined in from the NBA API PBP cache
+(`data/nba/pbp_<game_id>_p*.json`) by frame/timestamp if needed for a clutch or
+shot-type feature.
 
 ---
 
 ## 3. Possessions — `possessions.csv`
 
-One row per possession. Aggregated from tracking_data.csv.
+One row per possession. Aggregated from tracking_data.csv. Actual header
+(verified, 16 columns):
 
 | Column | Type | Description | ML Use |
 |--------|------|-------------|--------|
 | `game_id` | str | NBA game ID | Join |
 | `possession_id` | int | Sequential possession number | Simulator |
-| `team_id` | int | Possessing team | Attribution |
-| `possession_type` | str | transition / halfcourt / secondary_break | Play type model |
-| `play_type` | str | isolation / P&R / spot-up / cut / post-up | Play type model |
-| `duration_seconds` | float | Seconds elapsed | Pace model |
-| `outcome` | str | "made_2" / "made_3" / "missed" / "turnover" / "foul" / "timeout" | Possession value |
+| `team` | str | Possessing team | Attribution |
+| `start_frame` | int | First frame of possession | Time alignment |
+| `end_frame` | int | Last frame of possession | Time alignment |
+| `duration_frames` | int | Frame count of possession | Pace model |
+| `duration_sec` | float | Seconds elapsed | Pace model |
 | `avg_spacing` | float | Mean team spacing during possession | Spacing model |
-| `max_pressure` | float | Peak defensive pressure score | Defense model |
-| `handler_isolation` | float | Ball handler isolation score | Isolation model |
-| `paint_touches` | int | Paint touch count during possession | Drive model |
-| `drive_attempted` | bool | Whether a drive was detected | Drive model |
-| `passes_count` | int | Number of passes | Ball movement |
-| `dribbles_count` | int | Number of dribbles | Ball stagnation |
-| `shot_clock_at_shot` | float | Shot clock at shot attempt | Pressure model |
+| `avg_defensive_pressure` | float | Mean defensive pressure score | Defense model |
+| `avg_vel_toward_basket` | float | Mean ball velocity toward basket | Drive model |
+| `drive_attempts` | int | Drive attempts detected during possession | Drive model |
+| `shot_attempted` | bool | Whether a shot was attempted | Possession value |
+| `shot_frame` | int | Frame of the shot attempt (-1 if none) | Time alignment |
+| `fast_break` | bool | Whether this was a fast-break possession | Play type model |
+| `result` | str | "made_2" / "made_3" / "missed" / "turnover" / "foul" / "timeout" | Possession value |
+| `outcome_score` | float | Points scored on this possession | Possession value |
+
+Note: `max_pressure`, `handler_isolation`, `paint_touches`, `passes_count`,
+`dribbles_count`, and `shot_clock_at_shot` are not columns in this CSV -- those
+per-possession aggregates are not currently computed here (some exist per-frame
+in `tracking_data.csv` instead).
 
 ---
 
@@ -164,11 +181,16 @@ One row per possession. Aggregated from tracking_data.csv.
 
 All NBA Stats API responses, cached to disk with smart TTL.
 
+Player gamelogs are NOT one aggregated file -- they are cached one file per
+player: `gamelog_<player_id>_2024-25.json` (verified: 4,386+ individual files
+on disk). Likewise, per-game shot charts are cached per game
+(`shot_chart_<game_id>.json`), not as one season-wide aggregate; there is no
+`advanced_stats_2024-25.json` aggregate file on disk today.
+
 | File Pattern | Contents | Records |
 |-------------|----------|---------|
-| `gamelogs_2024-25.json` | Per-game box scores for all active players | 622 players |
-| `advanced_stats_2024-25.json` | Advanced stats (BPM, eFG%, TS%, USG%, PACE) | 569 players |
-| `shot_charts_2024-25.json` | Per-shot location, zone, distance, made/missed | 221,866 shots |
+| `gamelog_<player_id>_2024-25.json` | Per-game box score log for one player | one file per player (4,386+ files) |
+| `shot_chart_<game_id>.json` | Per-shot location, zone, distance, made/missed for one game | one file per game |
 | `hustle_stats_2024-25.json` | Deflections, screens, charges drawn, loose balls | 567 players |
 | `on_off_2024-25.json` | On-court vs. off-court net rating splits | 569 players |
 | `defender_zone_2024-25.json` | FG% allowed by court zone | 566 players |
@@ -228,9 +250,9 @@ data/games/gsw_lakers_2025/
 └── benchmark_results.json    # Quality metrics from last run
 ```
 
-Game clips currently available (17 clips, all short <2 min):
+Game clips currently available (24 game directories, excluding `_templates`):
 - `atl_ind_2025/`, `bos_mia_2025/`, `cavs_gsw_2016_finals_g7/`
-- `den_gsw_playoffs/`, `gsw_lakers_2025/` + 12 more
+- `den_gsw_playoffs/`, `gsw_lakers_2025/` + 19 more
 
 ---
 
@@ -360,7 +382,7 @@ Updated continuously during the season:
 
 ## Key Data Quality Notes
 
-1. **Shot enrichment gap**: 0 of 17 tracked shots have been enriched with NBA PBP outcomes yet -- requires running `run_clip.py --game-id [id]` on a real game clip. Planned for Phase 6.
+1. **Shot enrichment gap**: shots across the 24 game directories in `data/games/` have not been enriched with NBA PBP outcomes yet -- requires running `run_clip.py --game-id [id]` on a real game clip. Planned for Phase 6.
 
 2. **Identity resolution**: Jersey OCR resolves ~70% of players per clip in good lighting. Unknown players are tracked with anonymous IDs (`unknown_N`) and linked to rosters manually in `data/player_identity_map.json`.
 

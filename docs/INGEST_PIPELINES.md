@@ -90,7 +90,10 @@ with only per-process pacing produced a measured 1,678 429s/day from the
 unpaced one. The governor is a cross-process token bucket: a conservative
 shared ceiling (`BASE_RPS = 15`, half the documented keyless tier) split into
 registered per-caller shares -- capture 0.35, snapshot 0.65, feed_health 0.15,
-close_capture 0.15. Any 429 writes a pressure record to a shared state file;
+close_capture 0.15, backfill 0.10 (added after an unpaced backfill fleet
+tripped a 1,254-count 429 penalty), aggregate 0.15 (added after the
+`default_providers()` stack hit Kalshi ungoverned and stormed the venue,
+n_429_total=2606). Any 429 writes a pressure record to a shared state file;
 every caller (this process or the other daemon on its next read) halves its
 refill rate for a 30 s decay window. Fail-open throughout: a corrupt state
 file or broken clock never blocks a fetch, and `KALSHI_GOVERNOR_OFF=1` makes

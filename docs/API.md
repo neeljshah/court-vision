@@ -27,7 +27,7 @@ field is **real or the explicit `unavailable` sentinel** — never fabricated.
 
 ### The honest contract (binding, enforced by shape)
 
-The wire schema lives in `predict_service/contracts.py` (`SCHEMA_VERSION = "1.0.0"`).
+The wire schema lives in `predict_service/contracts.py` (`SCHEMA_VERSION = "1.2.0"`).
 Its dataclasses make the honesty rails structural, not a convention:
 
 - **No `$` / `roi` / `pnl` / `profit` / `bankroll` / `stake_dollars` field exists
@@ -76,7 +76,7 @@ never committed.
 
 ```jsonc
 {
-  "schema_version": "1.0.0",
+  "schema_version": "1.2.0",
   "sport": "nba",
   "generated_at": "2026-06-18T00:00:00+00:00",  // ISO-8601 UTC
   "status": "ok",                                 // or "unavailable"
@@ -280,7 +280,7 @@ static assets and Jinja dashboard templates)
 
 ## Router Map
 
-~99 endpoints across 12 routers, counted at runtime from `app.routes`.
+~99 endpoints across the routers actually mounted in `api/main.py`, counted at runtime from `app.routes`.
 
 | Router module | Mount prefix | Tags | Purpose |
 |---|---|---|---|
@@ -288,14 +288,17 @@ static assets and Jinja dashboard templates)
 | `api/models_router.py` | `/predictions` | predictions | xFG, win-prob, player EPA |
 | `api/predictions_router.py` | `/predictions` | predictions | Full prop stack, injury, breakout, lineup optimizer |
 | `api/analytics_router.py` | `/analytics` | analytics | Shot chart, tracking coords, lineup stats |
+| `api/stitch_router.py` | `/stitch` | stitch | Stitch surface (mounted; see prefix-doubling note in Known Issues) |
 | `api/dashboard_router.py` | `/` | dashboard | AI chat, CLV summary, today's edges |
 | `api/devig_router.py` | `/` | devig | Shin + 4 de-vig methods |
 | `api/clv_router.py` | `/` | clv | CLV dashboard page + data |
 | `api/live_game_router.py` | `/` | live | Per-game live projection panel |
-| `api/lines_router.py` | `/` | lines | Multi-book line scanner |
-| `api/courtvision_router.py` | `/` | courtvision | CourtVision UI (home, game, tonight, parlays) |
-| `api/_risk_router.py` | `/` | risk | Kill switch, drawdown, bankroll |
-| `api/execution_router.py` | `/` | — | Order execution stubs |
+| `api/lines_router.py` | `/` | lines | Multi-book line scanner (guarded import) |
+| `api/courtvision_router.py` | `/` | courtvision | CourtVision UI (home, game, tonight, parlays) (guarded import) |
+| `api/_risk_router.py` | `/` | risk | Kill switch, drawdown, bankroll (guarded import) |
+
+`api/execution_router.py` exists in the tree but is never imported or mounted in
+`api/main.py` — its order-execution stubs are not part of the live router map.
 
 ---
 
@@ -1006,7 +1009,7 @@ Coverage floor enforced at 30%; core betting-math tests always required to pass.
 
 *Related: [`ARCHITECTURE.md`](../ARCHITECTURE.md) · [`docs/ML_MODELS.md`](ML_MODELS.md) · [`docs/CV_TRACKING.md`](CV_TRACKING.md) · [`docs/JOB_EVIDENCE_PACKET.md`](JOB_EVIDENCE_PACKET.md)*
 
-*Last verified: 2026-06-11*
+*Last verified: 2026-07-15*
 
 
 ---

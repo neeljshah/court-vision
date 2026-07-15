@@ -119,10 +119,10 @@ NFS reads are ~38× slower for sequential video access. Missing this step conver
 
 ### H.264 Only
 
-AV1-encoded videos must be quarantined before processing — the decoder lacks AV1 hardware support:
+AV1-encoded videos must be quarantined before processing — the decoder lacks AV1 hardware support. No quarantine script exists yet (`scripts/quarantine_av1.py` is not in the repo) — check codec manually and move offenders out of the run directory:
 ```bash
-python scripts/quarantine_av1.py --scan data/videos/full_games/
-# Moves AV1 files to data/videos/full_games_av1_quarantine/
+ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of csv=p=0 data/videos/full_games/*.mp4
+# Any file reporting "av1" -> move to data/videos/full_games_av1_quarantine/ by hand
 ```
 
 ---
@@ -146,8 +146,7 @@ python -c "import decord; print('decord OK')"
 
 # 4. Stage videos to local disk (see above)
 
-# 5. Quarantine AV1 videos
-python scripts/quarantine_av1.py --scan data/videos/full_games/
+# 5. Quarantine AV1 videos (no script yet -- see "H.264 Only" above for the manual ffprobe check)
 
 # 6. Export YouTube cookies (doubles download success)
 # On local machine: install "Get cookies.txt LOCALLY" Chrome extension
@@ -321,10 +320,10 @@ The `phase_g_processed.txt` file prevents reprocessing of already-finished games
 
 Next steps (see Phase 1 in [MASTER_PLAN.md](../../MASTER_PLAN.md)):
 1. Run `python scripts/ingest_backfill_quality.py` to score all 80 games
-2. Run `python scripts/build_residuals.py --from-tracking` to regenerate prop_residuals.json
-3. Retrain Tier 3–4 models: `python scripts/train_cv_models.py --tier 3,4`
+2. Regenerate prop_residuals.json from the new tracking data (`scripts/build_residuals.py` is not built yet -- do this step manually until it exists)
+3. Retrain Tier 3-4 models (`scripts/train_cv_models.py` is not built yet -- use the existing per-model training entry points until a unified retrain script exists)
 4. Validate A/B: Δ R² ≥ +0.05 on holdout vs pre-80-game model
-5. Run calibration: `python scripts/calibrate_models.py --all-props`
+5. Run calibration (`scripts/calibrate_models.py` is not built yet -- use the existing per-model calibration path until it exists)
 6. Run SportVU validation on any 2015-16 games in the set
 
 ---

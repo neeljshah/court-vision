@@ -1,4 +1,4 @@
-Status: current as of 2026-04-23.
+Status: current as of 2026-07-15.
 
 # Signal Inventory
 
@@ -79,9 +79,10 @@ Functions: `add_context_features`, `add_external_player_features`,
 homography → Kalman+Hungarian → OSNet re-ID → EasyOCR → EventDetector).
 Post-homography computation in `src/features/feature_engineering.py`::`compute_spatial_features`.
 
-Available for 29 usable games (9 CLEAN + 20 PARTIAL) of 75 attempted; target 80 CLEAN.
-Features marked "Partial" are in the model feature set but carry imputed means for
-non-CV games.
+**~85 games tracked**; **7 games with full feature extraction** end-to-end
+(defender_distance / spacing / fatigue). Target: 80 CLEAN for the production CV-feature
+gate (Tier 3/4 model retrain). Features marked "Partial" are in the model feature set but
+carry imputed means for non-CV games.
 
 | Feature | Definition | Source function | Wired |
 |---------|-----------|----------------|-------|
@@ -94,11 +95,13 @@ non-CV games.
 | handler_isolation | Ratio of ball-handler space to court average | `compute_spatial_features` | Partial |
 | team_centroid_x | X-position of team centroid relative to basket | `compute_spatial_features` | Partial |
 
-**Total: ~8 CV spatial features. SHAP contribution on pts model: 31% combined for
-defender_distance + spacing_score + legs_fatigue. Δ R² vs API-only baseline: +0.08.**
+**Total: ~8 CV spatial features. SHAP contribution on pts model: ~0.0 for every
+CV-prefixed feature in the current production model** (`data/models/props_pts_shap_report.json`;
+see [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md)). The plumbing is complete; the lift is
+unproven — do not claim a CV predictive edge until the 80-game retrain clears.
 
-These three features are the CV moat. Their signal is not replicated by any public
-NBA dataset.
+defender_distance, spacing_score, and legs_fatigue are the intended CV moat once that
+lift is demonstrated. Their signal is not replicated by any public NBA dataset.
 
 ---
 
@@ -237,7 +240,7 @@ The discipline: record honest rejects; never fabricate a dollar ROI.
 |-------|-------|--------|
 | API box-score | ~20 | ✅ Fully wired |
 | API derived | ~12 | ✅ Fully wired |
-| CV spatial | ~8 | Partial (29/80 target — 9 CLEAN + 20 PARTIAL) |
+| CV spatial | ~8 | Partial (7 full-feature / 85 tracked; 80 CLEAN target) |
 | CV temporal | ~12 | ✅ Fully wired |
 | CV biomechanical | ~6 | Partial (not in betting stack) |
 | Market microstructure | ~6 | Partial (filter only) |

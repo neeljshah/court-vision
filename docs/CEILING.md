@@ -196,7 +196,7 @@ is the honest result, recorded as a success.
 NOW                                          CEILING
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Gate 1 not run (Oct 2026) ───────────────► Gate 1 passed (CLV validated vs Pinnacle)
-~85 CV games, SHAP=0 ────────────────────► 80 CLEAN games + retrain, SHAP > 0
+241 CV games (252 player IDs), SHAP=0 ───► 80 CLEAN games + retrain, SHAP > 0
 Season backtest: CLV ≈ 0 ────────────────► Freshness edge captured (live feed)
 Point-feature ceiling hit ───────────────► V2 substrate (shot-zone/on-court-5/defender)
 No real SGP price capture ───────────────► Joint/SGP correlation edge measurable
@@ -210,8 +210,8 @@ is already running — and it already correctly caught the inflated numbers.
 
 ---
 
-*For the full signal architecture: [vault/Plans/Signal Architecture.md](../vault/Plans/Signal%20Architecture.md)*
-*For Gate 1 step-by-step: [vault/Plans/Gate 1 Validation.md](../vault/Plans/Gate%201%20Validation.md)*
+*For the full signal architecture: [_vault_legacy_archive/Plans/Signal Architecture.md](../_vault_legacy_archive/Plans/Signal%20Architecture.md)*
+*For Gate 1 step-by-step: [_vault_legacy_archive/Plans/Gate 1 Validation.md](../_vault_legacy_archive/Plans/Gate%201%20Validation.md)*
 
 *Last verified: 2026-06-11*
 

@@ -1,7 +1,7 @@
 # Domains — the per-sport adapters
 
 Each `domains/<sport>/` package is a thin adapter over the sport-blind `kernel/` (see
-[../kernel/README.md](../kernel/README.md)). An adapter supplies a `SportContext`, a
+[../PLATFORM.md](../PLATFORM.md) for the kernel/adapter contract). An adapter supplies a `SportContext`, a
 `feature_spec.py` (the frozen train==inference base matrix), an `ingest_manifest.py` (leak-class
 + freshness contract), a rating system, a `predictor.py` exposing `predict()` / `predict_live()`
 / `to_jd()`, and — where the data supports it — signal catalogs, prop engines, gates, and an

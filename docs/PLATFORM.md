@@ -153,7 +153,7 @@ The scaffolder stamps valid-out-of-the-box `__init__` / `feature_spec` / `ingest
 basketball_nba   green           green           green
 mlb              green           green           green
 soccer           green           green           green
-soccer_intl      green           n/a             n/a          <- census-only (no decl seam yet)
+soccer_intl      green           green           green
 tennis           green           green           green
                  -------------------------------------------
 PARITY: GREEN (0 red cells)
@@ -164,7 +164,7 @@ Each cell is computed independently (`parity_matrix.py:65-116`):
 - **manifest** -- `domains.<sport>.ingest_manifest` both validates structurally (`man.validate()`) AND every declared source exists + is non-empty in the live census (`man.validate_against_inventory(inv)`).
 - **feature_spec** -- `domains.<sport>.feature_spec` loads, has a non-empty frozen catalog (`catalog_hash()`), and `build_base_matrix` produces exactly `n_features()` columns with matching names (structural parity; byte-equal-to-adapter parity is proven separately per-sport in `tests/platformkit/`).
 
-The grid is **fail-closed with a tri-state**: a dimension a sport has *not built yet* is `n/a` (gray) and does NOT fail the gate; a dimension that is PRESENT-but-broken is `red` and DOES (`is_green()` returns True only if no resolvable cell is RED -- CLI exit 2 otherwise, `parity_matrix.py:131-163`). `soccer_intl` is intentionally census-only (a thin international-fixtures predictor without the full decl seam), so its manifest/feature_spec cells are `n/a`, not red.
+The grid is **fail-closed with a tri-state**: a dimension a sport has *not built yet* is `n/a` (gray) and does NOT fail the gate; a dimension that is PRESENT-but-broken is `red` and DOES (`is_green()` returns True only if no resolvable cell is RED -- CLI exit 2 otherwise, `parity_matrix.py:131-163`). `soccer_intl` has since filled in the manifest/feature_spec seam (`domains/soccer_intl/ingest_manifest.py`, `domains/soccer_intl/feature_spec.py`, `domains/soccer_intl/predictor.py`) and is now green across all three cells like every other sport.
 
 Two AST-only guards keep the seams honest at the import layer (`scripts/platformkit/check_import_contract.py`): **kernel purity** (`kernel/` may not import `src.*` / `domains.*` / `api.*` / `scripts.*`) and the **cross-adapter ban** (`domains/<a>/` may not import `domains/<b>/`). These never execute the inspected files.
 

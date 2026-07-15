@@ -139,8 +139,8 @@ Verified constants from `src/tracking/advanced_tracker.py` and the pipeline:
 | Stage | Algorithm (real) | Key constants |
 |---|---|---|
 | 1 Decode | decord/NVDEC → PyAV CPU fallback; background prefetch queue | prefetch queue size 8; `_VRAM_FLUSH_INTERVAL=3000` (never 100) |
-| 2 Detect | YOLOv8n (`yolov8n.pt`), class 0 = person; ball: YOLOv8n-ball → Hough circles → Lucas-Kanade | conf 0.35; 640×640 input; Hough `param1=50, param2=30, r=8..25` |
-| 3 Homography | HSV line mask → `HoughLinesP` → `getPerspectiveTransform`; 3-tier SIFT acceptance + drift re-anchor | `_SIFT_INTERVAL=15`, `_H_RESET_INLIERS=40`, `_REANCHOR_INTERVAL=30`, `_REANCHOR_ALIGN_MIN=0.35` |
+| 2 Detect | YOLOv8n (`yolov8n.pt`), class 0 = person; ball: YOLOv8n-ball → Hough circles → Lucas-Kanade | conf 0.35; 640×640 input; Hough `param1=50, param2=8, r=8..25` |
+| 3 Homography | HSV line mask → `HoughLinesP` → `getPerspectiveTransform`; 3-tier SIFT acceptance + drift re-anchor | `_SIFT_INTERVAL=300` (RunPod GPU saturation), `_H_RESET_INLIERS=40`, `_REANCHOR_INTERVAL=60` (court stable), `_REANCHOR_ALIGN_MIN=0.35` |
 | 4 Track | Kalman (state `[cx,cy,vx,vy,w,h]`, constant-velocity) + Hungarian (`scipy.linear_sum_assignment`); ByteTrack-style 2-stage when lap available | `COST_GATE=0.80`, `APPEARANCE_W=0.25` (0.35 similar-color), `MAX_LOST=90`, `MAX_2D_JUMP=250` |
 | 5 Re-ID | **Production: 96-dim L1 HSV histogram** + EMA; OSNet-x0.25 (256-dim L2) structurally complete but **ImageNet weights, not domain-adapted** | `REID_THRESH=0.45`, `REID_TIE_BAND=0.05`, `APPEAR_ALPHA=0.70`, `GALLERY_TTL=300`, `HIST_BINS=32` |
 | 6 OCR | EasyOCR (PaddleOCR when available); dual-pass crop + `JerseyVotingBuffer(maxlen=3)` majority vote | confidence = fraction of 5 primary scoreboard fields read |

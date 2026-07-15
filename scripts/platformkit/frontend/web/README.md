@@ -84,8 +84,9 @@ web/
       utils.ts            # cn() helper
     components/
       ui/                 # shadcn primitives: button, card, table, select,
-                          #   badge, tabs, input
+                          #   badge, tabs, input, collapsible, dialog
       board/              # HonestBanner, BoardControls, BoardTable, useSort,
                           #   VerdictBadge, RowActions
+      game/               # BestBetCard, BetRowsTable, GameDetail, betFormat
       screens/            # BoardScreen + PlaceholderScreen (arb / +EV / tracker)
 ```

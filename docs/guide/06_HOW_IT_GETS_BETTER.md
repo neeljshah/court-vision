@@ -138,14 +138,17 @@ lines land. This whole layer is **inert** unless a human creates the
 ## What is actually happening right now (the honest status)
 
 This is the part most projects hide. The live ledger
-(`data/frontend/improve_ledger.jsonl`) currently holds **hundreds of cycles, every
-one `INSUFFICIENT_DATA`, and zero ships.** The NBA offseason means few liquid
-settled games with captured closing prices, so the loop correctly reports cold
-start instead of inventing improvements. The recalibration/CLV pipeline is built
-and tested but **measurement-only / flag-OFF** until a human enables it.
+(`data/frontend/improve_ledger.jsonl`) has grown to **4,132 cycles**, and as of
+2026-07-15 it holds **504 `SHIP` verdicts** (the first landed 2026-06-21), with the
+rest split across `HOLD`, `REJECT`, and `INSUFFICIENT_DATA`. Each `SHIP` is a
+leak-free calibration ratchet -- a Brier improvement over the frozen baseline that
+survived every gate -- **not** a dollar edge or a betting result. The
+recalibration/CLV pipeline is built and tested but remains **measurement-only /
+flag-OFF** until a human enables it.
 
-That is the intended behavior: **ships are rare and gated; "no candidate" is the
-default and is a success, not a bug.**
+That is the intended behavior: a `SHIP` verdict only fires when every gate agrees
+the candidate is genuinely better on held-out calibration; `HOLD` and
+`INSUFFICIENT_DATA` cycles are still common and are a success, not a bug.
 
 ---
 
@@ -167,8 +170,12 @@ never recomputes. Panels to watch:
 - **CLV second-corpus panel** -- shows `REPLICATION_PENDING` / `UNPROVEN` until
   real closing lines populate.
 
-The page states its own rails: `n_promoted = 0` (no real ships yet, shown
-honestly not hidden), measurement-only, paper-only, and **no `$` field anywhere**.
+The page's rails banner (`webapp/app/models/page.tsx`) still reads `n_promoted = 0`
+/ "Currently 0 ships" -- text written before the ledger grew its 504 `SHIP`
+verdicts and not yet refreshed to match. Until that copy is updated, treat the
+ledger file itself as the source of truth for ship counts, not the banner text.
+The rest of the banner's framing still holds: measurement-only, paper-only, and
+**no `$` field anywhere**.
 
 To run a cycle yourself and watch the ledger grow:
 

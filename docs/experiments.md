@@ -10,7 +10,7 @@ This document tracks model experiments, architecture iterations, and their measu
 
 **Goal:** Train pre-game win probability model on 3 seasons of NBA data.
 
-**Features (27 total):**
+**Features (68 total, per `feature_cols` in `data/models/win_probability.pkl`):**
 - Team offensive/defensive/net rating (last 30 days)
 - Pace, eFG%, TS%, TOV% (season-to-date)
 - Home/away flag
@@ -19,23 +19,25 @@ This document tracks model experiments, architecture iterations, and their measu
 - Travel distance since last game
 - Head-to-head last 3 meetings win rate
 - Recent form: last 10 games win rate
+- (feature set has since grown from the original 27 to 68; see the pickle's `feature_cols` for the full current list)
 
-**Training data:** 3,685 games (3 complete NBA seasons)
+**Training data:** 2,455 games across 2 seasons (2023-24, 2024-25) (`data/models/win_prob_metrics.json`)
 
 **Validation:** Walk-forward cross-validation (train on t-1 seasons, predict current season)
 
 **Results:**
 | Metric | Value |
 |--------|-------|
-| Accuracy | **67.7%** |
-| Brier Score | **0.204** |
+| Accuracy | **71.69%** |
+| Brier Score | **0.1880** |
 | Log Loss | 0.618 |
 | AUC-ROC | 0.72 |
 
+(Accuracy/Brier per `data/models/win_prob_metrics.json`, current model; Log Loss/AUC-ROC are from the original 2026-03-17 run and have not been re-measured against the current model.)
+
 **Baseline comparison:**
 - Vegas implied probability baseline: ~67.5% (using moneyline as probability)
-- This model: 67.7% — essentially matching Vegas on hold-out data
-- Interpretation: with NBA API features only, we're at market efficiency. CV features (Phase 7) + behavioral features (Phase 4.6) are needed to exceed it.
+- Interpretation: matching the devigged close is the honest bar here, not beating it -- see `docs/JOB_EVIDENCE_PACKET.md` for what is currently claimable. CV features (Phase 7) + behavioral features (Phase 4.6) were the planned next steps.
 
 **Top features (SHAP):**
 1. home_net_rtg (last 30 days) — 18% importance
@@ -53,7 +55,7 @@ This document tracks model experiments, architecture iterations, and their measu
 
 ### EXP-002: Win Probability — Retrain with ref + synergy features (Phase 4.6)
 
-**Status:** 🔲 Planned
+**Status:** 🔲 Planned (this entry has not been revisited since 2026-03-19; no evidence in the codebase that this retrain was run -- treat as unconfirmed, not necessarily still queued)
 
 **Hypothesis:** Adding ref_pace_tendency and synergy matchup data will improve accuracy by ~2-3%.
 
@@ -69,13 +71,12 @@ This document tracks model experiments, architecture iterations, and their measu
 
 ## Player Prop Models
 
-### EXP-003: Prop Models v1 — 30 Features (2026-03-18)
+### EXP-003: Prop Models v1 — 219 Features (2026-03-18)
 
 **Goal:** Train 7 player prop prediction models (pts/reb/ast/fg3m/stl/blk/tov).
 
 **Architecture:**
-- Algorithm: XGBoost regressor
-- Features: 30 (season stats, gamelogs, BBRef BPM, contract year, rest, travel)
+- Algorithm: LightGBM regressor (`n_features_in_` = 219 in `data/models/props_lgb_pts.pkl`; feature set has grown from the original 30 since this entry was written)
 - Training: walk-forward validation (same methodology as EXP-001)
 - Output: predicted stat value + confidence interval (P25/P75 from prediction variance)
 
@@ -125,7 +126,7 @@ This document tracks model experiments, architecture iterations, and their measu
 
 ### EXP-004: Prop Models v2 — 52 Features (Phase 4.6)
 
-**Status:** 🔲 Planned
+**Status:** 🔲 Planned (this entry has not been revisited since 2026-03-19; the live props model has since grown to 219 features, but no evidence ties that growth to this specific feature list -- treat as unconfirmed)
 
 **Hypothesis:** Adding 22 features from already-cached but unwired data will reduce MAE by ~30%.
 
@@ -194,7 +195,7 @@ This document tracks model experiments, architecture iterations, and their measu
 
 ### EXP-006: xFG v2 (Phase 7)
 
-**Status:** 🔲 Planned (requires 20+ full games with enriched CV shots)
+**Status:** 🔲 Planned (requires 20+ full games with enriched CV shots; this entry has not been revisited since 2026-03-19 -- treat as unconfirmed whether still queued)
 
 **New features:**
 - closeout_speed_mph (from CV EventDetector.events) — how fast defender closed out

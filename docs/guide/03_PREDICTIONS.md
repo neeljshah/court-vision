@@ -24,7 +24,7 @@ There are two surfaces, both read-only over the same backend:
 
 ```
   Next.js webapp (/bets, /games, /p6)  ->  reads  ->  Auto-API  http://127.0.0.1:8099
-  FastAPI/Jinja dashboard (/tonight ...) ->          (api/main.py, ~99 endpoints)
+  FastAPI/Jinja dashboard (/tonight ...) ->          (api/main.py + predict_service/app.py, ~36 endpoints)
 ```
 
 The webapp's API base is `NEXT_PUBLIC_P5_BASE`, defaulting to `http://127.0.0.1:8099`
@@ -32,7 +32,7 @@ The webapp's API base is `NEXT_PUBLIC_P5_BASE`, defaulting to `http://127.0.0.1:
 `webapp/lib/api.ts`; every fetch degrades to an explicit **Unavailable** sentinel on
 error -- it is **never green-on-missing** and never fabricates a slate.
 
-The four sports served are `nba`, `mlb`, `soccer`, `soccer_intl`, `tennis`
+The five sports served are `nba`, `mlb`, `soccer`, `soccer_intl`, `tennis`
 (`SPORTS` in `webapp/lib/p5api.ts`).
 
 ---
@@ -185,5 +185,5 @@ market is efficient, and that honest finding is the point.
 - `scripts/platformkit/predict_matchup.py` -- the buyer-facing pregame + in-game CLI.
 - `.claude/skills/predict-matchup/SKILL.md` -- how to invoke that CLI.
 - `src/prediction/live_engine.py` -- the in-game projection / repricer.
-- `api/main.py` -- the FastAPI surface (~99 endpoints) behind the Auto-API.
+- `api/main.py` -- the FastAPI surface (~36 endpoints total across `api/main.py` and `predict_service/`) behind the Auto-API.
 - `docs/JOB_EVIDENCE_PACKET.md` -- the truth source for every number and the do-not-claim list.

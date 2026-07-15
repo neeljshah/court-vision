@@ -95,9 +95,12 @@ Three options based on how confident you want to be:
 
 #### Option A — single-game smoke first (recommended, ~75 min for confidence)
 
+`ingest_one_game.py` does NOT read `NBA_POD_IP`/`NBA_POD_PORT` — it hardcodes
+`POD_IP`/`POD_PORT` at the top of the script. Edit those two constants to the
+new pod's IP/port first, then run:
+
 ```bash
-NBA_POD_IP=<ip> NBA_POD_PORT=<port> \
-    python scripts/ingest_one_game.py 0022501XXX
+python scripts/ingest_one_game.py 0022501XXX
 ```
 
 Wait for the row to appear in `nba-data-backup\.ingest_log.csv`. If OK, move
@@ -105,9 +108,11 @@ on to the batch.
 
 #### Option B — orchestrator batch with resume
 
+Same caveat as Option A — edit `POD_IP`/`POD_PORT` in `ingest_one_game.py`
+before running:
+
 ```bash
-NBA_POD_IP=<ip> NBA_POD_PORT=<port> \
-    python scripts/ingest_one_game.py --batch games.txt --resume
+python scripts/ingest_one_game.py --batch games.txt --resume
 ```
 
 `--resume` skips any game already marked OK in the log. Safe to re-run after
@@ -200,7 +205,7 @@ Plus storage. Total $10-50 for the 100-game push.
 
 - [ ] 100 games processed, all marked OK in `.ingest_log.csv`
 - [ ] Local backup has all 8 files per game, non-empty row counts
-- [ ] `python scripts/diagnose_tracking_quality.py --from-log` shows ≥80 games at B+
+- [ ] `python scripts/diagnose_tracking_quality.py --from-log` shows ≥80 games at overall grade B or higher (GPA ≥ 2.5)
 - [ ] `data/player_cv_per_game.parquet` has ≥1,500 player-game rows
 - [ ] `python scripts/prop_pergame_walk_forward.py` against `cvb_*` columns produces a result file
 

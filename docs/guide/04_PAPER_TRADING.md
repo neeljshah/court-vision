@@ -27,16 +27,16 @@ anchor.
 
 ## The two records
 
-### 1. paper_predictions.jsonl (3,284 rows as of 2026-06-20)
+### 1. paper_predictions.jsonl (22,640 rows as of 2026-07-15)
 
 **File:** `data/frontend/paper_predictions.jsonl`
 
 Every row is a real-time model prediction logged at decision time. As of the
-most recent audit the file contains 3,284 rows across three sports:
+most recent audit the file contains 22,640 rows across three sports:
 
-- MLB: 2,016 rows
-- Soccer (international): 1,000 rows
-- NBA: 268 rows
+- MLB: 15,444 rows
+- Soccer (international): 5,800 rows
+- NBA: 1,340 rows
 
 Each row captures what the model actually believed at prediction time:
 `logged_at`, `sport`, `matchup`, `model_prob` (calibrated win probability),
@@ -305,7 +305,7 @@ realmoney_gate.evaluate()  -->  eligible=False (default)  -->  human gate
 | CLV enrichment (closing-line join, corrected signs) | `src/betting/clv.py` |
 | CLV dashboard route | `api/clv_router.py` |
 | Paper predictions API route | `predict_service/frontend/paper_predictions_routes.py` |
-| Predictions JSONL (3,284 rows) | `data/frontend/paper_predictions.jsonl` |
+| Predictions JSONL (22,640 rows) | `data/frontend/paper_predictions.jsonl` |
 | PaperVenue (deterministic in-memory exchange) | `scripts/platformkit/pm_trading/venues/paper.py` |
 | Edge signal (calibrated prob vs venue price) | `scripts/platformkit/pm_trading/edge_signal.py` |
 | PM P&L blotter | `scripts/platformkit/pm_trading/pnl.py` |

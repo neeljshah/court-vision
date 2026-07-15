@@ -82,7 +82,9 @@ engine entirely.
 
 Adding an 9th+ concept: every `signals[].attribute` MUST already exist in
 `domains/basketball_nba/profiles/attribute_registry.py`'s `ATTRIBUTES` dict
-(verified by `test_concept_registry.py`) -- never invent a new raw metric
+(verified by `test_all_signal_attributes_exist_in_registry()` in
+`scripts/platformkit/answers/test_answer_quality_nba.py`, with parallel
+implementations for mlb/soccer/tennis/wnba) -- never invent a new raw metric
 inside the concept registry itself; that belongs in the attribute registry
 and its builder first. Document `weight_basis` (why included), at least one
 `context_qualifier`, and at least one `failure_mode` for every new concept --

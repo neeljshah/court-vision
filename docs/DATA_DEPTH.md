@@ -42,7 +42,7 @@ each time it runs.
 Each table is: what's on disk (`sources`), what can be derived from it (`derivable_families`,
 status BUILT / PARTIAL / UNBUILT), the single biggest data gap, and any closed classes for that
 sport. Row counts and coverage windows are copied verbatim from the census (generated
-2026-07-07) -- they drift as ingest continues; regenerate the census rather than trusting this
+2026-07-08) -- they drift as ingest continues; regenerate the census rather than trusting this
 snapshot indefinitely.
 
 ### NBA
@@ -50,8 +50,8 @@ snapshot indefinitely.
 | Source | Rows / coverage | Fields |
 |---|---|---|
 | `pbp_full` -- `data/cache/team_system/pbp/*.json` | 196 games x ~605 actions, 2025-26 only | substitutions, 2pt/3pt, rebound, foul, FT, TO, steal, block, timeout; `personId`, shot `x`/`y`, `shotDistance`, `shotResult`, clock, period, possession, running score |
-| `quarter_box` -- `data/cache/quarter_box/<gid>_q{1-4}.json` | 5,260 files (~1,315 games), 2024-25 + 2025-26 | player_id, min, pts, fga, fg3a, fta, reb, ast, pf, plus_minus, start_position |
-| `player_boxscores.parquet` | 27,816 rows, 2024-10..2026-01 | full player box, starter flag, plus_minus |
+| `quarter_box` -- `data/cache/quarter_box/<gid>_q{1-4}.json` | 6,275 files (~1,569 games), 2024-25 + 2025-26 | player_id, min, pts, fga, fg3a, fta, reb, ast, pf, plus_minus, start_position |
+| `player_boxscores.parquet` | 51,237 rows, 2024-10..2026-04 (full season backfill landed 07-07) | full player box, starter flag, plus_minus |
 | `games` / `odds` / `linescores` parquets | 1.3k-4.8k rows, 2022-10..2026-04 | rest, b2b, travel, ml/total/spread, q1-q4 |
 | `possessions` (`pbp_possessions` + `legacy_possessions`) | 39.5k + 508.9k rows, multi-season | pts, transition, second_chance, ato, in-penalty, is_clutch, poss_dur |
 | `defender_matchup_states.parquet` | 37,395 rows, prior + realized | fg_pct_allowed, switches, matchup_min |
@@ -62,11 +62,11 @@ sub-level pbp or shot x/y outside them. In-play tick + depth history are empty (
 
 | Derivable family | Recipe | Status | Leverage rank |
 |---|---|---|---|
-| `lineup_reconstruction` | quarter_box `start_position` seeds the floor 5; walk substitution actions (subType in/out, personId, clock) into a per-possession lineup table | PARTIAL | 1 |
-| `on_off_splits` | join lineup table to possession outcomes: ORtg/DRtg with player X on vs. off | UNBUILT | 2 |
-| `gravity_proxy` | teammate eFG from shot actions with X on vs. off court (needs lineup table) | UNBUILT | 3 |
-| `lineup_spacing_from_shot_xy` | zone mix / corner-3 / rim rate per 5-man unit from action x,y | UNBUILT | 4 |
-| `lineup_vs_lineup_matchups` | opposing 5-man units per possession -> synergy/counter claims | UNBUILT | -- |
+| `lineup_reconstruction` | `pbp_lineups.py` walks quarter_box `start_position` + substitution actions into `stints_2025_26.parquet` (10,124 stints) | BUILT | -- |
+| `on_off_splits` | `on_off.py` joins stints to possession outcomes -> `on_off_2025_26.parquet` (550 player-rows, net_rating_on/off_per48) | BUILT | -- |
+| `gravity_proxy` | `gravity_spacing.py` teammate eFG on vs. off -> `gravity_proxy_2025_26.parquet` (43 players; thin, bounded by the 196-game subset) | BUILT | -- |
+| `lineup_spacing_from_shot_xy` | `gravity_spacing.py` zone mix per lineup_key -> `lineup_spacing_2025_26.parquet` (3,043 rows) | BUILT | -- |
+| `lineup_vs_lineup_matchups` | `lineup_matchups.py` joins opposing stint windows -> `lineup_matchups_{2023_24,2024_25,2025_26}.parquet` | BUILT | -- |
 | `player_foul_trouble_states` | per-player foul count vs. minutes-remaining from foul actions | PARTIAL | -- |
 | `timeout_run_dynamics` | ato flag in pbp_possessions + runvar asof | BUILT | -- |
 | `clutch_playtype_profiles` | pbp_possession_features + atlas iso/PnR/clutch | BUILT | -- |
@@ -276,10 +276,6 @@ cross-sport queue -- this is literally what the autoloop reads to decide what to
 
 | Rank | Sport | Family | Why |
 |---|---|---|---|
-| 1 | nba | `lineup_reconstruction` | keystone: on/off, gravity, lineup-vs-lineup, spacing all block on it |
-| 2 | nba | `on_off_splits` | first consumer of the keystone; new claim-family class |
-| 3 | nba | `gravity_proxy` | flagship intelligence claim; pure derivation once on/off exists |
-| 4 | nba | `lineup_spacing_from_shot_xy` | turns unused shot x/y into scheme/fit intelligence |
 | 5 | kbo | `naver_relay_state_accrual` | ports the proven MLB base-out state machine to a live-daily sport in the execution lane |
 | 6 | soccer | `referee_card_foul_profiles` | cheapest new family (WNBA producer template) at 25k-match scale |
 | 7 | mlb | `bullpen_fatigue_chains` | late-inning in-game context; descriptive, distinct from the closed SP-velo class |
@@ -287,7 +283,10 @@ cross-sport queue -- this is literally what the autoloop reads to decide what to
 | 9 | tennis | `fatigue_schedule_density` | direct port of the built WNBA producer; highest-tick-volume Kalshi sport |
 | 10 | wnba | `lineup_exposure_descriptors` | only non-NBA lineup data; opens the lineup class in a second sport |
 
-Ranks 1-4 are all NBA and all downstream of the same keystone -- see the next section.
+Ranks are copied verbatim from the census, which no longer assigns ranks 1-4 -- the NBA lineup
+keystone (`lineup_reconstruction`, `on_off_splits`, `gravity_proxy`, `lineup_spacing_from_shot_xy`)
+moved from `UNBUILT` to `BUILT` on 2026-07-08 (see [the keystone section](#the-keystone-nba-lineup-reconstruction)
+below), so it dropped out of the unbuilt queue.
 
 ---
 
@@ -350,44 +349,48 @@ overrides it.
 
 ## The keystone: NBA lineup reconstruction
 
-Four of the top five NBA `UNBUILT` families in the priority queue above -- `on_off_splits`,
-`gravity_proxy`, `lineup_spacing_from_shot_xy`, `lineup_vs_lineup_matchups` -- all block on the
-same missing table: **which 5 players are on the floor, possession by possession.** Building that
-table once unlocks all four; building each independently would mean re-deriving the same lineup
-state four times.
+`on_off_splits`, `gravity_proxy`, `lineup_spacing_from_shot_xy`, and `lineup_vs_lineup_matchups`
+all blocked on the same missing table: **which 5 players are on the floor, possession by
+possession.** As of the 2026-07-08 census, that table is `BUILT` and all four downstream families
+are `BUILT` off it.
 
 **What's on disk today.** `data/cache/team_system/pbp/*.json` has full play-by-play with
 substitution actions for 196 games of the 2025-26 season -- `actionType` includes `substitution`
 with `personId`, `clock`, and `period`, plus shot `x`/`y` and `shotDistance` on every shot action.
-`data/cache/quarter_box/<gid>_q{1-4}.json` (5,260 files, ~1,315 games across 2024-25 + 2025-26)
+`data/cache/quarter_box/<gid>_q{1-4}.json` (6,275 files, ~1,569 games across 2024-25 + 2025-26)
 carries `start_position` per player per quarter -- the seed for the floor-5 at the start of each
 quarter.
 
-**The recipe.**
-1. Seed the on-court 5 at the start of each quarter from `quarter_box`'s `start_position`.
-2. Walk the pbp's `substitution` actions in clock order (`personId`, subType in/out) to update the
-   on-court set possession by possession.
-3. That per-possession lineup table (`lineup_reconstruction`, currently `PARTIAL`) is the single
-   join key for everything downstream:
-   - **`on_off_splits`** -- join the lineup table to possession outcomes for ORtg/DRtg with player
-     X on vs. off the floor.
-   - **`gravity_proxy`** -- teammate eFG with X on vs. off court, from the same join. This is the
-     flagship intelligence claim: a real, measured gravity number, not the currently-VERIFIED
-     `gravity_score` atlas claim, which is a **modeled composite**, not an on/off measurement (see
-     `compose_profile.py`'s `UNBUILT_AXES` -- the shooter trait profile already reports this gap
-     honestly rather than fabricating an on/off gravity axis from the modeled score).
-   - **`lineup_spacing_from_shot_xy`** -- zone mix / corner-3 / rim rate per 5-man unit, using the
-     shot `x`/`y` fields that already exist on disk but are currently unused for anything beyond
-     single-shot distance.
-   - **`lineup_vs_lineup_matchups`** -- once both teams' 5-man units are known per possession, the
-     opposing-unit pairing becomes a joinable key for synergy/counter claims.
+**The recipe, as built.**
+1. `domains/basketball_nba/lineups/pbp_lineups.py` seeds the on-court 5 at the start of each
+   quarter from `quarter_box`'s `start_position`, then walks the pbp's `substitution` actions in
+   clock order (`personId`, subType in/out) to update the on-court set possession by possession
+   into `stints_2025_26.parquet` (10,124 stints).
+2. That per-possession lineup table is the single join key for everything downstream:
+   - **`on_off_splits`** -- `on_off.py` joins the stints to possession outcomes for ORtg/DRtg with
+     player X on vs. off the floor -> `on_off_2025_26.parquet` (550 player-rows).
+   - **`gravity_proxy`** -- `gravity_spacing.py` computes teammate eFG with X on vs. off court from
+     the same join -> `gravity_proxy_2025_26.parquet` (43 players; thin, bounded by the 196-game
+     subset). This is the flagship intelligence claim: a real, measured gravity number, not the
+     currently-VERIFIED `gravity_score` atlas claim, which is a **modeled composite**, not an
+     on/off measurement (see `compose_profile.py`'s `UNBUILT_AXES` -- the shooter trait profile
+     already reports this gap honestly rather than fabricating an on/off gravity axis from the
+     modeled score).
+   - **`lineup_spacing_from_shot_xy`** -- `gravity_spacing.py` computes zone mix / corner-3 / rim
+     rate per 5-man unit from the shot `x`/`y` fields -> `lineup_spacing_2025_26.parquet` (3,043
+     rows).
+   - **`lineup_vs_lineup_matchups`** -- `lineup_matchups.py` joins opposing teams' stint windows
+     per possession into `lineup_matchups_{2023_24,2024_25,2025_26}.parquet`, the joinable key for
+     synergy/counter claims.
 
-**Coverage constraint, stated honestly.** The keystone table is buildable today only for the 196
-games that have full substitution-level pbp (2025-26 only) -- the 5,260-file `quarter_box` corpus
-gives quarter-start lineups for far more games (~1,315), but without substitution events in
-between, only the quarter-boundary lineup is known, not the in-quarter changes. Any claim built
-on the keystone should report which games it drew a full possession-level lineup for versus a
-quarter-boundary-only lineup, rather than silently treating the two as equivalent coverage.
+**Coverage constraint, stated honestly.** The keystone table is built today only from the 196
+games that have full substitution-level pbp (2025-26 only) -- that corpus did not grow between the
+07-07 and 07-08 census runs, so `gravity_proxy` in particular is a thin 43-player sample. The
+6,275-file `quarter_box` corpus gives quarter-start lineups for far more games (~1,569), but
+without substitution events in between, only the quarter-boundary lineup is known there, not the
+in-quarter changes. Any claim built on the keystone should report which games it drew a full
+possession-level lineup for versus a quarter-boundary-only lineup, rather than silently treating
+the two as equivalent coverage.
 
 **Tracking as the future measured-gravity tier.** The CV tracking pipeline
 (`src/pipeline/unified_pipeline.py`, see [DATA.md](DATA.md)) already produces player court

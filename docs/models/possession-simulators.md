@@ -62,7 +62,8 @@ A cell-based possession model built for the kernel/adapter split:
 - **`possession_model.py`** — a possession is a team-continuity unit (an offensive rebound
   stays "in possession"; point outcomes 0-6+). State is a 5-dimensional cell:
   `time_b` (6 buckets: Q1/Q2/Q3/Q4>3min/Q4<=3min/OT), `margin_b` (7 offense-relative
-  buckets), `off_t`/`def_t`/`pace_t` (as-of terciles) — 3,402 total cells. Cells with fewer
+  buckets), `off_t`/`def_t`/`pace_t` (as-of terciles) — 1,134 total cells (6 x 7 x 3 x 3 x 3).
+  Cells with fewer
   than 40 possessions back off to the (time, margin) marginal (42 dense cells), then to the
   global distribution — the same sparse-cell backoff pattern used throughout this codebase's
   empirical models.
@@ -118,7 +119,18 @@ outcome models through an exactly-solved Markov process over ball-strike counts:
 - **`bullpen.py`** / **`game_sim_v2.py`** — v2 adds a starter-removal hazard model and a
   pooled reliever PA-distribution (by inning bucket, leverage, tier, and days-rest
   freshness) on top of v1, specifically targeting a named v1 weakness (over-projecting
-  home-team scoring in a 7th-inning home-lead state).
+  home-team scoring in a 7th-inning home-lead state). Two further reliever-conditioning
+  candidates have since been gated on top of v2: **`bullpen_v3.py`** crossed the pooled
+  reliever distribution with a K-rate quality tier (per-pitcher or per-team), but
+  `validate_v3.py`/`validate_v3_team.py` found the tiering variable INERT (mathematically
+  identical to the plain pooled marginal once every tier cell clears the min-sample floor).
+  **`bullpen_v4.py`** instead conditions each simulated team's reliever PA-distribution
+  directly on that team's own (inning bucket, lead state) history, no tier axis, with
+  per-cell backoff to the pooled marginal (`game_sim_v3.py` supplies the two separate
+  home/away matrices this needs; gated in `validate_v4.py`). Separately,
+  **`outcome_platoon.py`** adds a same-hand (pitcher-throws vs. batter-stand) dimension to
+  the outcome table for the previously ungated inn4|margin-2 bucket, tested in
+  `validate_platoon_inn4.py`.
 - **`rung6_composite.py`** — builds a per-game composite win-probability logit from the
   actual starting nine batters and starting pitchers (first-nine-distinct-appearance-order
   lineups, event-level log5 tilt), feeding into the in-game win-prob ladder.

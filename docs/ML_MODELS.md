@@ -17,10 +17,10 @@ retracted — see `docs/JOB_EVIDENCE_PACKET.md §3-4` for root causes.
 
 | Stat | MAE | R² | Architecture |
 |------|-----|-----|--------------|
-| PTS | **4.58** | 0.51 | sqrt+Huber XGB/LGB blend + 5-seed MLP, NNLS-stacked |
+| PTS | **4.65** | 0.51 | sqrt+Huber XGB/LGB blend + 5-seed MLP, NNLS-stacked |
 | REB | **1.90** | 0.38 | LGB q50 (log1p) |
-| AST | **1.34** | 0.50 | log1p XGB+LGB + multitask MLP, NNLS-stacked |
-| FG3M | **0.88** | 0.29 | XGB q50 (log1p) |
+| AST | **1.37** | 0.50 | log1p XGB+LGB + multitask MLP, NNLS-stacked |
+| FG3M | **0.89** | 0.29 | XGB q50 (log1p) |
 | STL | **0.72** | 0.18 | XGB q50 (log1p) |
 | BLK | **0.44** | 0.16 | XGB q50 (log1p) |
 | TOV | **0.89** | 0.22 | XGB q50 (log1p) |
@@ -43,10 +43,10 @@ NNLS autonomously zeroed the XGB weight in one trained version.
 
 | Stat | Pregame MAE | endQ3 MAE | Reduction |
 |------|-------------|-----------|-----------|
-| PTS | ~4.58 | **2.46** | **-47%** |
+| PTS | ~4.65 | **2.46** | **-47%** |
 | REB | ~1.90 | **1.00** | **-47%** |
-| AST | ~1.34 | **0.68** | **-50%** |
-| FG3M | ~0.88 | **0.42** | **-53%** |
+| AST | ~1.37 | **0.68** | **-50%** |
+| FG3M | ~0.89 | **0.42** | **-53%** |
 | STL | ~0.72 | **0.32** | **-55%** |
 | BLK | ~0.44 | **0.20** | **-55%** |
 | TOV | ~0.89 | **0.45** | **-50%** |
@@ -270,7 +270,7 @@ fatigue proxy, game clock, shot clock.
 | CV-derived (Tier 4/5) | `data/models/tier4_*.pkl`, `tier5_*.pkl` | — | Gated on CV data; SHAP ≈ 0 in prod |
 
 **Model registry:** `data/models/model_registry.json` — central manifest tracking
-model lineage, data windows, and metrics. 85 models registered.
+model lineage, data windows, and metrics. 7 models registered.
 
 ---
 
@@ -465,8 +465,8 @@ note: the fix is to *inflate the interval*, not to swap in a NegBinom.
   monitoring loop has flagged.
 
 > **Honesty rail.** Per-stat OOS MAE (leak-free walk-forward, ~51k held-out
-> player-games), the figures published in the evidence packet: PTS ~4.58,
-> REB ~1.90, AST ~1.34, FG3M ~0.88, with a small consistent under-bias
+> player-games), the figures published in the evidence packet: PTS ~4.65,
+> REB ~1.90, AST ~1.37, FG3M ~0.89, with a small consistent under-bias
 > (~-0.45 PTS); STL/BLK/TOV are modeled on the same footing (see the per-stat
 > pregame-MAE table earlier in this doc; they are not separately published in
 > the evidence packet, so no standalone figure is asserted here). These

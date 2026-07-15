@@ -16,7 +16,7 @@ edge. The single honesty truth-source for every figure is
 
 | Requirement | Version |
 |---|---|
-| Python | 3.9 |
+| Python | 3.10 |
 | Environment manager | conda (recommended) |
 | GPU | RTX 4060 or equivalent recommended for CV; CPU fallback exists |
 | OS | Linux or Windows (Windows tested, macOS untested) |
@@ -28,7 +28,7 @@ edge. The single honesty truth-source for every figure is
 ```bash
 git clone https://github.com/neeljshah/court-vision.git
 cd court-vision
-conda create -n basketball_ai python=3.9 -y
+conda create -n basketball_ai python=3.10 -y
 conda activate basketball_ai
 cp .env.example .env
 ```
@@ -128,7 +128,7 @@ Start the server:
 uvicorn api.main:app --reload --port 8000
 ```
 
-Open `http://localhost:8000/docs` for the Swagger UI (~99 endpoints, 12 routers).
+Open `http://localhost:8000/docs` for the Swagger UI (~99 endpoints, 11 routers).
 
 ### Key routes to explore
 
@@ -257,7 +257,7 @@ win-prob model (XGBoost, expanding walk-forward)
 Monte Carlo possession sim (src/sim/basketball_sim.py)
       v
 FastAPI serving layer (~99 endpoints)
-Jinja dashboard (18 templates)
+Jinja dashboard (22 templates)
 Next.js frontend (webapp/)
 ```
 

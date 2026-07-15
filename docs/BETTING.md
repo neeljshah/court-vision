@@ -15,14 +15,8 @@ measures against real markets.
 The single most important result from backtesting against real closing lines is
 negative: **the market is efficient.** Against DraftKings/FanDuel/MGM closing
 lines, the model is roughly **break-even-minus-vig** overall (unfiltered figure
-~-2.00% from `gate1_full_analysis.json`).
-
-The one exception is **assists (AST): ~+4–5% ROI**, positive across three
-independently-sourced line corpora. Stress-tested and confirmed to be selection
-skill (positive in both over/under directions; beats a blind-under baseline by
-~12 pp; the flipped anti-model loses cleanly). It is book-robust but
-regime-dependent: **the edge breaks in the playoffs.** Conservative estimate is
-the right one to quote.
+~-2.00% from `gate1_full_analysis.json`). No exception has survived leak-free
+re-testing -- see the retracted AST row below.
 
 **Why state a negative result prominently?** Because it required building three
 independent grading harnesses to confirm, and because finding it is the whole
@@ -36,6 +30,7 @@ valuable than one that claims profit it cannot substantiate.
 | **+18.38% ROI on 1,535 walk-forward bets** | Market-follow grading artifact. The grader read `devig(over_odds, under_odds)` — the market's own lean — and never read the model. Prices at a flat -110 fiction. Filters tuned in-sample. At real odds: ~-4%. |
 | **endQ3 in-play Brier 0.1191** | Two Q4-derived features leaked into the model. Honest leak-free number is ~0.141. |
 | **+54% ROI / 78% hit on 55K in-play bets** | Graded against an L5 line proxy, not real closing lines. A model-quality ceiling, not a realized edge. |
+| **Assists (AST): ~+4-5% ROI "durable, book-robust edge"** | A 2026-06-27 leak-free re-test of `ast_rate_diff_asof` vs Elo found an HONEST REJECT: Brier delta -1.4e-5 (worse), DM p=0.78, fitted weight shrinks to -0.006. AST carries no incremental win-prob signal over Elo -- the earlier figure was a box/prop-grading artifact, not a team-win-prob edge. |
 | **Real CLV measurement** | First real Pinnacle-close CLV reading is October 2026. None yet exists. |
 
 These retractions are documented at the source-code level in
@@ -218,7 +213,7 @@ fair edge and EV collapse below the `C` floor (`0.02`), `tier=None`, and the row
 is returned as `decision="no_bet"` with `stake_units = 0.0`. **No-bet is the
 modal outcome** -- the market is efficient and most candidates do not clear a
 floor. See [docs/decisions.md](decisions.md) for the floor table and the
-per-policy edge floors (e.g. the playoff-AST regime guard) layered on top.
+per-policy edge floors layered on top.
 
 ---
 
@@ -340,7 +335,7 @@ win-probability inputs.
 | Metric | Value | Source |
 |---|---|---|
 | Overall ROI vs real closing lines | ~-2% (break-even-minus-vig) | `gate1_full_analysis.json` |
-| AST ROI (durable signal, reg season only) | ~+4-5% | Three independent corpora |
+| AST win-prob signal vs Elo | REJECTED (Brier delta -1.4e-5, DM p=0.78) | `docs/JOB_EVIDENCE_PACKET.md`, 2026-06-27 re-test |
 | Prop MAE -- PTS | ~4.58 | `data/cache/pregame_oof.parquet`, ~51K held-out player-games |
 | Prop MAE -- REB | ~1.90 | Same |
 | Prop MAE -- AST | ~1.34 | Same |

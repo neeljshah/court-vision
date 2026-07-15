@@ -12,8 +12,8 @@ sport-specific detail only.
 | Odds | `data/domains/tennis/odds.parquet` | 33,952 | 2015-2025 |
 | Point-by-point | `data/cache/sackmann_pbp/{slam_points,charting_points}.parquet` | 543,772 + 1,853,115 = 2,396,887 | slam 2011-15; charting broader, per-match charted points |
 | Fatigue / schedule density (verified claims) | `data/cache/intel_claims/tennis_fatigue_schedule_density.jsonl` | 10,914 claims, 10,914/10,914 verified | 2015-2026, career-to-date + per-year x surface |
-| Compiled profiles | `data/cache/profiles/tennis_player_profiles.parquet` | 4,670 | rolling |
-| Market | `data/cache/{line,inplay,depth}_history/tennis/` | 39k+ lines / 119k+ ticks / 4 depth-days | 2026-07 through 07-08 |
+| Compiled profiles | `data/cache/profiles/tennis_player_profiles.parquet` | 67,244 | rolling |
+| Market | `data/cache/{line,inplay,depth}_history/tennis/` | 39k+ lines / 119k+ ticks / 4 depth-days | 2026-07-03 through 2026-07-15 |
 
 Biggest known gap: point-by-point data is now on disk in bulk, but true
 pressure-point splits (deuce points, break-point-as-actually-played
@@ -81,7 +81,7 @@ Status:     VALIDATED_MECHANISM -- built on a mechanism replicated on independen
 
 - `python -m scripts.platformkit.profiles.ask "Carlos Alcaraz serve dominance" --sport tennis`
 - `python -m scripts.platformkit.profiles.ask "Andre Agassi surface splits serve Hard" --sport tennis`
-- `python -m scripts.platformkit.profiles.ask --list --sport tennis` (all 11 concrete attributes)
+- `python -m scripts.platformkit.profiles.ask --list --sport tennis` (all 73 attributes: 72 concrete, 1 BLOCKED)
 
 ## What would make this deeper
 

@@ -181,7 +181,7 @@ max-loss risk on correlated slates.
 
 ### Daemon stability
 
-Of the 9 production daemons, **multiple go red intermittently** (Railway deploy in rollback
+Of the 28 production daemons (`scripts/daemon_registry.json`), **multiple go red intermittently** (Railway deploy in rollback
 loop at last check; scraper heartbeats go stale on IP rotation events). Architecture is
 production-ready in source; deployment ops surface is a known weakness.
 

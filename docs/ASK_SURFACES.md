@@ -70,7 +70,7 @@ Routing is `families.classify()` -- pure regex over the question text, checked i
 `top_n` questions try a small per-family index sidecar (`ask_index.index_top_n_lookup`) before
 falling back to a full parse of `load_verified_claims()` -- a speed optimization, never a
 correctness dependency; a miss falls through to the same full-load path unchanged. This matters
-because some claim stores are large: `nba_player_box_rate` alone carries 34,650 VERIFIED rows, and
+because some claim stores are large: `nba_player_box_rate` alone carries 59,268 VERIFIED rows, and
 a naive whole-corpus load on every question would not scale.
 
 `gate_verdict` matching is topic-keyword based, not fuzzy: a question must hit a *recognized*
@@ -169,11 +169,11 @@ Condensed real output:
 ```json
 {
   "aspect": "shooter",
-  "conclusion": "Keon Ellis",
+  "conclusion": "Jarrett Allen",
   "primary": {
     "claim_id": "nba_canonical_shooter_leaderboard_full_season_2024_25",
-    "rank1": "Keon Ellis",
-    "score": 0.6882,
+    "rank1": "Jarrett Allen",
+    "score": 0.7183,
     "gate_verdict": "REJECT_NAIVE_STAYS_CANONICAL"
   },
   "disagreements": [
@@ -309,7 +309,7 @@ that looks like in practice: a real answer with its evidence trail attached, or 
 
 *Related: [`docs/INTELLIGENCE.md`](INTELLIGENCE.md) - [`docs/JOB_EVIDENCE_PACKET.md`](JOB_EVIDENCE_PACKET.md) - [`docs/SPORTS_COVERAGE.md`](SPORTS_COVERAGE.md) - [`.claude/rules/no-edge-claims.md`](../.claude/rules/no-edge-claims.md)*
 
-*Last verified: 2026-07-07*
+*Last verified: 2026-07-10*
 
 ---
 <!-- nav-footer -->

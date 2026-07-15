@@ -18,9 +18,6 @@ HONESTY RAILS (enforced in code, non-negotiable):
 - NO edge is CLAIMED. The eval_gate is the JUDGE; an honest REJECT is a SUCCESS.
   No $/ROI/+EV/"money printer" language anywhere.
 
-The candidate MAP this machine carries is
-`docs/research/organization-sprint/EDGE-TAXONOMY.md`.
-
 ---
 
 ## The pipeline: source -> extract -> vintage -> score(gate) -> combine
@@ -83,8 +80,8 @@ downstream model computes every number a forecast sees.
   `proxy_quarantine` / `is_fallback_proxy` (post-hoc reconstructions = OPTIMISTIC upper
   bound, never a headline). `combine.py` imports `assert_vintage` directly.
 - `scripts/platformkit/eval_gate/` -- the JUDGE: `walkforward.walk_forward`,
-  `scoring.brier` / `brier_skill_score`, `dm_test.diebold_mariano` (clustered),
-  `shin` (devig), `ingame_blend`. `score.py` imports these READ-ONLY.
+  `scoring.brier` / `brier_skill_score`, `dm_test.diebold_mariano` (clustered).
+  `score.py` imports these READ-ONLY.
 - `scripts/platformkit/ledger/` -- the forward-CLV record (probabilities + outcomes
   ONLY, no $ column). A SHIP verdict is not valid until recorded here with a pred_ts
   before the line move.
@@ -96,22 +93,18 @@ adapter contract: any new source plugs into [1] without touching the gate/extrac
 
 ## Running it
 
-Per-file tests only (the full suite freezes the box). From the repo root:
+Per-file tests only (the full suite freezes the box). From the repo root, run each
+test file the same way (swap the filename), e.g.:
 
 ```
 python C:/Users/neelj/anaconda3/envs/basketball_ai/python.exe -m pytest \
   scripts/platformkit/edge_engine/test_source.py -q
-python C:/Users/neelj/anaconda3/envs/basketball_ai/python.exe -m pytest \
-  scripts/platformkit/edge_engine/test_extract.py -q
-python C:/Users/neelj/anaconda3/envs/basketball_ai/python.exe -m pytest \
-  scripts/platformkit/edge_engine/test_schema.py -q
-python C:/Users/neelj/anaconda3/envs/basketball_ai/python.exe -m pytest \
-  scripts/platformkit/edge_engine/test_score.py -q
-python C:/Users/neelj/anaconda3/envs/basketball_ai/python.exe -m pytest \
-  scripts/platformkit/edge_engine/test_combine.py -q
-python C:/Users/neelj/anaconda3/envs/basketball_ai/python.exe -m pytest \
-  scripts/platformkit/edge_engine/test_schedule_fatigue_map.py -q
 ```
+
+Full file list: `test_source.py`, `test_extract.py`, `test_schema.py`,
+`test_schema_source.py`, `test_score.py`, `test_combine.py`,
+`test_schedule_fatigue_map.py`, `test_cli.py`, `test_facts_store.py`,
+`test_injury_daemon.py`, `test_injury_facts.py`, `test_news_facts.py`.
 
 The hermetic path (FileSource/MockSource -> extract_rule -> validate -> score ->
 combine) runs with zero network and zero secret, so leak-free behaviour is asserted
@@ -133,5 +126,5 @@ deterministically.
 - EXECUTION / SPEED LAYER: routing the fired adjustment to a placeable bet inside the
   5-15 min (or seconds, for steam) window is a separate human-gated build.
 
-The deliverable is the MACHINE + the MAP. No edge is claimed until a candidate passes
+The deliverable is the MACHINE. No edge is claimed until a candidate passes
 the gate on real data with forward CLV.

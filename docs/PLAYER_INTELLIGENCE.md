@@ -187,11 +187,11 @@ and high paint dwell share (z=+0.73 vs league avg).
 |------|-------|
 | Player dossiers (all archetypes, full NBA) | **1,249** |
 | Team scheme cards | **30** |
-| Players with ≥3 real CV games (dense tier) | **124** |
+| Players with ≥3 real CV games (dense tier) | **62** (of 152 total in `cv_quality_per_game.parquet`) |
 | Statistical categories per dossier | up to 28 |
 | Intelligence artifacts feeding models | **80** (see [INTELLIGENCE.md](INTELLIGENCE.md)) |
-| Archetype labels | 12 (Playmaking Big, Primary Initiator, 3&D Wing, Movement Shooter, High-Usage Scorer, Dominant Two-Way Big, Rebounding Big, Floor Spacer, Stretch Big, Playmaking Guard, Role Player, Specialist) |
-| Defensive scheme tags | 6 (Drop Coverage, Switch Heavy, Help Defense, Paint-First Defense, Pace Control, Balanced) |
+| Archetype labels | 4 (Versatile Forward, Versatile Big, Off-Ball Forward, Perimeter Shooter (Contested)) |
+| Defensive scheme tags | 9 (Drop Coverage, Switch Heavy, Help Defense, Paint-First Defense, Pace Control, Balanced, Iso Force, Active Closeouts, Perimeter Denial) |
 
 ---
 
@@ -231,8 +231,8 @@ python scripts/build_player_cv_profiles.py
 # Full team scheme card rebuild  
 python scripts/build_officials_per_team_date.py  # includes scheme builder
 
-# Intelligence layer (80 artifacts)
-python scripts/intelligence/build_all.py  # ~25 min on dev box
+# Intelligence layer (80 artifacts) -- run each section builder under intel/
+# (no single build_all.py entrypoint exists; see INTELLIGENCE.md for the per-artifact build list)
 ```
 
 Data inputs required: `data/tracking/*` (CV tracking), `data/nba/*` (gamelogs), `data/cache/profiles/PLAYER_REPORTS.json`, `data/cache/profiles/TEAM_REPORTS.json`.

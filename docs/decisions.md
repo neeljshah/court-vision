@@ -131,7 +131,7 @@ This document records key architectural decisions, the alternatives considered, 
 
 ### DEC-008: XGBoost for all ML models (not deep learning)
 
-**Decision:** Use XGBoost for all 18 currently trained models.
+**Decision:** Use XGBoost as the primary framework across the trained model set (now grown well beyond the original 18 -- 31 prop model files plus 21+ LightGBM quantile models and hundreds of total artifacts in `data/models/`; `prop_model_stack.py` supports XGBoost, LightGBM, and CatBoost).
 
 **Why XGBoost:**
 - Tabular data with 27-52 features: XGBoost outperforms neural nets at this scale
@@ -202,7 +202,7 @@ Layer 7: Live state (current score, fatigue, momentum)    — real-time
 
 ### DEC-012: Claude API for AI chat (not GPT-4 or custom LLM)
 
-**Decision:** Use Claude API (claude-opus-4-6) for the AI chat interface.
+**Decision:** Use Claude API (currently `claude-sonnet-4-6`, see `src/analytics/chat.py`) for the AI chat interface.
 
 **Why Claude:**
 - Best-in-class tool use API — clean JSON tool calls without prompt engineering

@@ -8,7 +8,7 @@
 
 The possession simulator is the reason this system generates probability distributions rather than point estimates. Every other retail tool predicts a number. This generates a full distribution over each player's statistical output.
 
-Given the lineup on the floor, the score, the time remaining, and the spatial/context features for this game, the simulator runs 10,000 possession sequences and produces: `P(stat > X)` for every player, every stat, at any threshold X.
+Given the lineup on the floor, the score, the time remaining, and the spatial/context features for this game, the simulator runs a batch of possession sequences (`n_sims` -- default 1,000 on the reference CPU engine `basketball_sim.py`, 10,000 on the GPU engine `fast_sim.py`) and produces: `P(stat > X)` for every player, every stat, at any threshold X.
 
 ---
 
@@ -72,7 +72,7 @@ Because two teammates compete for the same finite pile of possessions, a possess
 the point guard uses is one the wing cannot -- so their scoring is *mechanically*
 slightly anti-correlated, and the measured teammate pts-pts rho comes out **~ -0.10**
 against realized boxscores (no rho was imposed). This is the fix for the older
-`game_simulator`, whose imposed rho matrix produced +0.645 where reality is ~ -0.01.
+`game_simulator`, whose imposed rho matrix produced +0.645 where reality is ~ -0.10.
 
 ```
         ONE POSSESSION  (N of these per simulated game)

@@ -9,7 +9,7 @@ Operational guide for local dev, RunPod deployment, and data sync.
 ```bash
 # 1. Verify environment
 conda activate basketball_ai
-python --version      # expect 3.9.x
+python --version      # expect 3.10.x (3.10.20 local, verified 2026-07-03)
 nvcc --version        # expect CUDA 11.8 (optional — CPU-only mode works for API)
 
 # 2. Verify models exist
@@ -41,7 +41,7 @@ uvicorn api.main:app --reload
 ### Run Single Video (headless only)
 
 ```bash
-python run_clip.py \
+python scripts/run_clip.py \
   --video data/videos/full_games/game.mp4 \
   --game-id 0022300001 \
   --period 1 \
@@ -207,7 +207,7 @@ export RUNPOD_PORT=<pod_port>
 
 ---
 
-*Last verified: 2026-05-25*
+*Last verified: 2026-07-15*
 
 ---
 

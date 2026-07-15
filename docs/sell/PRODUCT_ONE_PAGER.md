@@ -3,7 +3,7 @@
 ## What it is
 
 A **calibrated multi-sport predictor** with a real, CLV-tracked paper
-trail, a live CourtVision UI (court-vision/), a self-improving autonomous
+trail, a live CourtVision UI (court-visions/), a self-improving autonomous
 loop, and a governance layer that hard-blocks dishonest artifacts before
 they ship.
 

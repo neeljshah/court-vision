@@ -6,7 +6,7 @@ two operational stages a human would otherwise run by hand each day:
 | Stage   | When  | What it does |
 |---------|-------|--------------|
 | evening | ~7pm ET (after pregame predictions land) | snapshot today's recs → refresh operator dashboard cache → fire info alert |
-| morning | ~8am ET (after games settle overnight)    | settle yesterday's snapshot → reconcile vs box score → report W/L/ROI → refresh dashboard → fire info alert |
+| morning | ~8am ET (after games settle overnight)    | back up the ledger → settle yesterday's snapshot → reconcile vs box score → report W/L/ROI → check feature drift → refresh dashboard → nightly cleanup → fire info alert |
 | all     | catch-up after a missed day               | runs evening then morning back-to-back |
 
 The orchestrator is intentionally side-effect-isolated: every step is

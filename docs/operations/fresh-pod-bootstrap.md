@@ -37,9 +37,9 @@ You need a Backblaze B2 bucket holding the artefacts that CAN'T be re-downloaded
 
 | Artefact | Size | Why critical |
 |----------|------|--------------|
-| `data/models/` | 48 MB | 111 trained ML models from cycles 26-106d — weeks of work, no other source |
-| `data/nba/` | 126 MB | NBA Stats API cache (boxscores, rosters) — re-fetchable but slow (rate-limited) |
-| `data/cache/` | 77 MB | Bankroll state, predictions parquet — operational state |
+| `data/models/` | 1,290.3 MB | 153 trained ML models (.pkl/.joblib) from cycles 26-106d — weeks of work, no other source |
+| `data/nba/` | 495.4 MB | NBA Stats API cache (boxscores, rosters) — re-fetchable but slow (rate-limited) |
+| `data/cache/` | 26,461.1 MB | Bankroll state, predictions parquet — operational state |
 | `resources/` | small | Court anchor PNGs, RectifyL/R/1.npy, osnet_x025.onnx — custom CV artefacts |
 | `/root/nba_videos/*.mp4` | 23 GB | Game video archive — only source is your laptop or YouTube re-fetch |
 

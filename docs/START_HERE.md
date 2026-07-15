@@ -96,7 +96,7 @@ nba-ai-system/
 │   ├── analytics/         # Betting edge, spacing, momentum, shot quality
 │   ├── data/              # NBA API scrapers, enrichment, database helpers
 │   └── simulation/        # Possession simulator (Monte Carlo)
-├── api/                   # FastAPI REST backend (~49 endpoints across 7 routers)
+├── api/                   # FastAPI REST backend (~100 endpoints across 12 routers)
 ├── scripts/               # Operational scripts (batch runs, training, backfills)
 ├── tests/                 # 2,661 pass on RunPod / 1040+ on core suite locally
 ├── database/              # PostgreSQL schema + migrations
@@ -158,8 +158,8 @@ python scripts/batch_season.py --season 2025-26
 
 | Metric | Value | Source |
 |--------|-------|--------|
-| Prop MAE @ q50 (leak-free WF, ~51K held-out/stat) | PTS ~4.58 · REB ~1.90 · AST ~1.34 · FG3M ~0.88 | `data/models/quantile_pergame_metrics.json` |
-| Win-prob accuracy / Brier (3-fold WF) | 0.709 / 0.193 | `data/models/win_prob_metrics.json` |
+| Prop MAE @ q50 (leak-free WF, ~51K held-out/stat) | PTS ~4.65 · REB ~1.90 · AST ~1.37 · FG3M ~0.88 | `data/models/quantile_pergame_metrics.json` |
+| Win-prob accuracy / Brier (3-fold WF) | 0.709 / 0.188 | `data/models/win_prob_metrics.json` |
 | In-play endQ3 MAE lift vs pregame | ~46% pooled (~26% over naive carry-forward, WF) | leak-clean residual heads |
 | In-play endQ3 Brier (leak-free) | ~0.141 | after removing a Q4 feature leak (caught in self-audit) |
 | Betting vs **real** closing lines | break-even-minus-vig; **AST ~+4–5%** the one durable edge | `scripts/run_gate1_full_analysis.py` → −2.00% unfiltered |
@@ -213,7 +213,7 @@ For the full phase log see [ROADMAP.md](ROADMAP.md); for the forward strategic r
 See [CONTRIBUTING.md](../CONTRIBUTING.md) for code style, PR workflow, and no-touch zones.
 
 ---
-*Last verified: 2026-05-28 against CHANGELOG.md [0.17.0] + iter61 sim-reconciliation.*
+*Last verified: 2026-06-18 (last commit touching this file: f40809b9, doc-tree connection).*
 
 
 ---

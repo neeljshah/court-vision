@@ -5,7 +5,7 @@
 > compares to the devigged closing line. See [docs/INTELLIGENCE.md](INTELLIGENCE.md) for the NBA
 > intelligence-layer manifest and [docs/ASK_SURFACES.md](ASK_SURFACES.md) for how these claims are
 > queried. Source of truth for the sources/gaps below: `data/frontend/ops/data_census.json`
-> (generated 2026-07-07, `edge_claimed: false`, standing queue input for the autoloop).
+> (generated 2026-07-08, `edge_claimed: false`, standing queue input for the autoloop).
 
 The platform runs the same six-stage funnel -- data, claims, calibration, capture, market
 benchmark -- across seven sport surfaces. Coverage is deliberately uneven: NBA and MLB have the
@@ -16,27 +16,27 @@ softened.
 
 **Claim totals** are VERIFIED rows counted from every `*_validation.json` summary under
 `data/cache/intel_claims/` and `data/frontend/ops/`, `verdict == "VERIFIED"` only (matches the
-scale in [`docs/ASK_SURFACES.md`](ASK_SURFACES.md)). Total across all stores: **52,381 VERIFIED
-claim rows** as of 2026-07-07.
+scale in [`docs/ASK_SURFACES.md`](ASK_SURFACES.md)). Total across all stores: **101,104 VERIFIED
+claim rows** as of 2026-07-10 (nearly double the 52,381 counted on 2026-07-07).
 
 ---
 
 ## NBA
 
-**Data on disk:** the deepest corpus in the platform. `player_boxscores.parquet` (27,816 rows,
-2024-10..2026-01), `games/odds/linescores.parquet` (1.3k-4.8k rows, 2022-10..2026-04, rest/b2b/
+**Data on disk:** the deepest corpus in the platform. `player_boxscores.parquet` (51,237 rows,
+2024-10..2026-04, full season backfill landed 07-07), `games/odds/linescores.parquet` (1.3k-4.8k rows, 2022-10..2026-04, rest/b2b/
 travel/ml/total/spread/quarter splits), possession-level tables (39.5k + 508.9k rows, transition/
 second-chance/ATO/clutch flags), defender-matchup states (37,395 rows), and full play-by-play with
 substitutions for 196 2025-26 games (~605 actions/game -- `data/cache/team_system/pbp/*.json`) plus
-5,260 quarter-box files (~1,315 games, 2024-25 + 2025-26).
+6,275 quarter-box files (~1,569 games, 2024-25 + 2025-26).
 
 **Capture cadence:** `scripts/platformkit/capture/capture_nba.py` (boxscore/schedule capture) plus
 the cross-sport `line_history` / `inplay_history` / `depth_history` loops
 (`data/cache/{line,inplay,depth}_history/nba/`). In-play tick and depth-history are currently
 **empty stubs for NBA** (offseason) -- the market-side capture only comes alive in-season.
 
-**Claims/intelligence:** ~36,127 VERIFIED claim rows -- dominated by `nba_player_box_rate`
-(34,650 rows) and `nba_team_box_rate` (1,440), plus the shooter-quality/canonical-shooter/profile/
+**Claims/intelligence:** ~61,665 VERIFIED claim rows -- dominated by `nba_player_box_rate`
+(59,268 rows) and `nba_team_box_rate` (2,160), plus the shooter-quality/canonical-shooter/profile/
 schedule/fit-ingredient families (`nba_shooting_claims`, `nba_canonical_shooter_claims`,
 `nba_shooter_profile_claims`, `nba_schedule_claims`, `nba_fit_ingredient_claims`,
 `nba_fit_sweep_claims`, `nba_context_shooting_claims`, `nba_quality_claims`). This is also the
@@ -60,7 +60,7 @@ block on it. **Closed classes (do not reopen):** `ingame_hot_night`, `ingame_sch
 
 **Data on disk:** Statcast pitch-level (`statcast_fuller__{2022,2023}.parquet`, ~721k rows/season,
 release speed/spin/zone/launch data), in-game pitch and at-bat state tables (2021-2026, count/
-runners/outs/leverage/SP-fatigue-adjacent fields), 47 games of GUMBO live-tick capture (~104
+runners/outs/leverage/SP-fatigue-adjacent fields), 123 games of GUMBO live-tick capture (~104
 ticks/game, 2026), a pre-Statcast-era odds+pitchers corpus (~28k rows, 2010-2021), and injury/
 framing context (`catcher_framing_index.parquet` etc).
 
@@ -69,10 +69,11 @@ that also seeds the KBO/NPB in-game push described below. Cross-sport market cap
 `data/cache/{line,inplay,depth}_history/mlb/` (3.5k lines / 260k ticks / 2.2k depth entries,
 2026-06/07 -- the deepest in-play tick coverage of any sport in the platform).
 
-**Claims/intelligence:** ~12,081 VERIFIED claim rows -- `mlb_batter_rate` (7,452) and
-`mlb_pitcher_rate` (4,434) dominate, plus `mlb_team_rate` (186), `mlb_tto_claims` (times-through-
-order, 4), and single-row-but-live families: `catcher_framing_claims`, `umpire_zone_claims`,
-`platoon_split_claims`, `mlb_plate_discipline_claims`, `mlb_pitcher_claims`.
+**Claims/intelligence:** ~21,377 VERIFIED claim rows -- `mlb_bullpen_fatigue_chains` (9,060, now
+`BUILT`), `mlb_batter_rate` (7,452), and `mlb_pitcher_rate` (4,434) dominate, plus `mlb_team_rate`
+(186), `mlb_tto_claims` (times-through-order, 4), and single-row-but-live families:
+`catcher_framing_claims`, `umpire_zone_claims`, `platoon_split_claims`, `mlb_plate_discipline_claims`,
+`mlb_pitcher_claims`.
 
 **Model + vs-close verdict:** moneyline **MATCH** (Brier 0.2429 vs close 0.239, n=13,992, gap
 +0.0039 -- walk-forward MOV-Elo; the tiny deficit is pitcher-blindness, since the close prices the
@@ -96,10 +97,10 @@ corners/fouls/cards/referee), and a 16,322-row odds corpus.
 club-level in-play tick history is an **empty stub** -- club soccer's live conditioning is not yet
 capturing.
 
-**Claims/intelligence:** club soccer's claim families are the shallowest of the built sports --
-`sot_ratio_xg_proxy` and `pressing_intensity` (10-minute cuts) are `BUILT`/`PARTIAL`; possession-
-value xG chains, formation/lineup effects, and referee card/foul profiles across the 25,834-match
-corpus are all `UNBUILT`.
+**Claims/intelligence:** `sot_ratio_xg_proxy` and `pressing_intensity` (10-minute cuts) are
+`BUILT`/`PARTIAL`; `soccer_referee_card_foul_profiles` is now `BUILT` (2,736 VERIFIED claim rows
+across the 25,834-match corpus, as of 2026-07-10). Possession-value xG chains and formation/lineup
+effects remain `UNBUILT`.
 
 **Model + vs-close verdict:** O/U-2.5 **MATCH** (Brier 0.2465 vs close 0.239, n=7,558, gap
 +0.0076 -- EW-Poisson + finishing + pooled-Platt calibration vs the devigged Pinnacle close). 1X2
@@ -148,10 +149,10 @@ Point-by-point data is **absent** -- `data/cache/sackmann_pbp/` is an empty dire
 **Capture cadence:** in-play market capture is the heaviest of any sport measured here -- 39k
 pregame lines / 119k in-play ticks / 767 depth entries (2026-07, Kalshi + Pinnacle).
 
-**Claims/intelligence:** ~2,680 VERIFIED claim rows -- `tennis_p1_match_context` (1,312) and
-`tennis_p2_match_context` (1,346) dominate, plus `tennis_claims_v3`/`v4`, `hold_claims`,
-`h2h_claims`, and `h2h_index_claims`. `hold_return_surface_splits`, `set_detail`, and
-`playstyles_h2h` are `BUILT`.
+**Claims/intelligence:** ~13,677 VERIFIED claim rows -- `tennis_fatigue_schedule_density` (10,914,
+now `BUILT`) dominates, followed by `tennis_p1_match_context` (1,312) and `tennis_p2_match_context`
+(1,346), plus `tennis_claims_v3`/`v4`, `hold_claims`, `h2h_claims`, and `h2h_index_claims`.
+`hold_return_surface_splits`, `set_detail`, and `playstyles_h2h` are `BUILT`.
 
 **Model + vs-close verdict:** match-win **BEHIND on freshness** (Brier 0.2177 vs close 0.2028,
 n=7,374 ATP, gap +0.0149 -- surface-Elo + Platt calibration vs the devigged Pinnacle close; ATP
@@ -261,27 +262,28 @@ remaining gaps needs either a freshness feed (forward-looking build) or deeper i
 conditioning, not a cleverer pregame model.
 
 **Claim corpus by sport** (VERIFIED rows, `data/cache/intel_claims/*_validation.json` +
-`data/frontend/ops/*validation*.json`, 2026-07-07):
+`data/frontend/ops/*validation*.json`, 2026-07-10):
 
 | Sport | VERIFIED claims | Dominant store |
 |---|---|---|
-| NBA | ~36,127 | `nba_player_box_rate` (34,650) |
-| MLB | ~12,081 | `mlb_batter_rate` (7,452) + `mlb_pitcher_rate` (4,434) |
-| Tennis | ~2,680 | `tennis_p1/p2_match_context` (2,658 combined) |
+| NBA | ~61,665 | `nba_player_box_rate` (59,268) |
+| MLB | ~21,377 | `mlb_bullpen_fatigue_chains` (9,060) + `mlb_batter_rate` (7,452) + `mlb_pitcher_rate` (4,434) |
+| Tennis | ~13,677 | `tennis_fatigue_schedule_density` (10,914) + `tennis_p1/p2_match_context` (2,658 combined) |
 | Soccer (intl) | ~1,461 | `soccer_intl_team_travel_rate` (1,458) |
 | WNBA | 8 | `wnba_claims` |
 | NPB | 4 | `npb_kbo_claims` (NPB half) |
 | KBO | 4 | `npb_kbo_claims` (KBO half) |
 | Cross-sport (gate verdicts) | ~16 | `intel_verdict_claims` |
 
-**Platform-wide top-10 unbuilt families** (from the census, ranked by leverage): NBA
+**Platform-wide top-10 unbuilt families** (from the census, ranked by leverage; as of 2026-07-10,
+three families formerly on this list -- soccer `referee_card_foul_profiles`, MLB
+`bullpen_fatigue_chains`, and tennis `fatigue_schedule_density` -- have shipped `BUILT` with
+VERIFIED claim rows and are covered in their sport sections above, not repeated here): NBA
 `lineup_reconstruction` (#1, keystone -- on/off, gravity, lineup-vs-lineup, and spacing all block
 on it), NBA `on_off_splits` (#2), NBA `gravity_proxy` (#3), NBA `lineup_spacing_from_shot_xy` (#4),
-KBO `naver_relay_state_accrual` (#5), soccer `referee_card_foul_profiles` (#6), MLB
-`bullpen_fatigue_chains` (#7), cross-sport `depth_imbalance_descriptors` (#8), tennis
-`fatigue_schedule_density` (#9), WNBA `lineup_exposure_descriptors` (#10). NBA lineup
-reconstruction is the single highest-leverage build because four other unbuilt families depend on
-it directly.
+KBO `naver_relay_state_accrual` (#5), cross-sport `depth_imbalance_descriptors` (#6), WNBA
+`lineup_exposure_descriptors` (#7). NBA lineup reconstruction is the single highest-leverage build
+because four other unbuilt families depend on it directly.
 
 **Do-not-reopen list** (closed with a recorded honest REJECT, cited so a future pass does not
 re-run the same test): NBA in-game hot-night/scheme-fit, MLB in-game SP-velocity fatigue, soccer
@@ -291,7 +293,7 @@ home-SOT replication, MLB pregame stack L3.
 
 *Related: [`docs/INTELLIGENCE.md`](INTELLIGENCE.md) - [`docs/ASK_SURFACES.md`](ASK_SURFACES.md) - [`docs/MARKET_EFFICIENCY_PROOF.md`](MARKET_EFFICIENCY_PROOF.md) - [`docs/JOB_EVIDENCE_PACKET.md`](JOB_EVIDENCE_PACKET.md)*
 
-*Last verified: 2026-07-07*
+*Last verified: 2026-07-10*
 
 ---
 <!-- nav-footer -->

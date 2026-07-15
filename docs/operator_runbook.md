@@ -4,13 +4,13 @@ One-page guide to driving the production betting system day-to-day. Open this
 when you sit down in the morning; you should not need any other doc to get
 through a normal slate.
 
-Maintained by R32_Y7. Last refresh: 2026-05-26.
+Maintained by R32_Y7. Last refresh: 2026-07-15.
 
 ---
 
 ## TL;DR
 
-1. **Every morning**: open `vault/MORNING.md` (auto-generated nightly).
+1. **Every morning**: open `vault/TONIGHT.md` (kept fresh by `vault_dashboard_daemon`, continuous).
 2. **Cron drives the day**: `scripts/daily_workflow.py evening` runs at 7pm ET,
    `scripts/daily_workflow.py morning` runs at 8am ET.
 3. **Dashboard**: `python scripts/mobile_html_server.py --port 8766`, then
@@ -59,14 +59,14 @@ path.
                                        ^
                                        |
                                 +-------------+         +-------------------+
-                                | MORNING.md  |<--------| nightly cleanup +  |
-                                +-------------+         | drift + reconcile  |
+                                | TONIGHT.md  |<--------| vault_dashboard_    |
+                                +-------------+         | daemon (continuous) |
                                                         +-------------------+
 ```
 
 Daemons feed the prediction caches and lines. The orchestrator drives the
 recommendation engine and writes a daily snapshot. The operator reads
-`/operator` + `MORNING.md`, picks bets, runs `place_bet.py`, and the post-game
+`/operator` + `TONIGHT.md`, picks bets, runs `place_bet.py`, and the post-game
 settle path closes the loop into CLV.
 
 ---
@@ -75,7 +75,7 @@ settle path closes the loop into CLV.
 
 | Time      | What runs                                            | What to check                       |
 |-----------|------------------------------------------------------|-------------------------------------|
-| Continuous | All 14 daemons (`scripts/daemon_registry.json`)     | `daemon_watchdog.py --once`         |
+| Continuous | All 28 daemons (`scripts/daemon_registry.json`)     | `daemon_watchdog.py --once`         |
 | Continuous | `nba_injury_report_scraper.py` (every ~15 min)      | `data/cache/nba_injuries_<date>.parquet` |
 | 7:00 pm   | `daily_workflow.py evening`                          | `vault/Improvements/daily_workflow.md` |
 | 7:00 pm   | live_rec_tracker `--snapshot` (today's recs)         | `data/cache/rec_tracker/rec_snapshot_<date>.json` |
@@ -85,7 +85,7 @@ settle path closes the loop into CLV.
 | 2:00 am   | `nightly_cleanup.py --commit`                        | `data/cache/nightly_cleanup_<date>.json` |
 | 2:00 am   | `ledger_insurance.py --backup`                       | `data/backups/pnl_ledger.csv.<date>.gz` |
 | 2:15 am   | `feature_drift_detector.py`                          | `data/cache/drift_today.json`       |
-| 8:00 am   | `daily_workflow.py morning`                          | `vault/MORNING.md` regenerated      |
+| 8:00 am   | `daily_workflow.py morning`                          | `data/cache/operator_dashboard_snapshot.html` refreshed |
 | 8:00 am   | `live_rec_tracker --settle <yesterday>`              | `data/cache/rec_tracker/rec_settled.parquet` |
 | 8:00 am   | `reconcile_settlements.py --days 1`                  | `data/cache/reconcile_<date>.json`  |
 
@@ -98,7 +98,7 @@ check Task Scheduler / cron logs first, then `vault/Improvements/alerts.md`.
 
 | Question | File to open |
 |----------|--------------|
-| "What should I bet today?" | `vault/MORNING.md` (top section: tonight's ranked recs) |
+| "What should I bet today?" | `vault/TONIGHT.md` (top section: tonight's ranked recs) |
 | "What does the system see right now?" | `http://localhost:8766/operator` |
 | "Did yesterday's recs win?" | `python scripts/live_rec_tracker.py --report --days 7` |
 | "Is anything broken?" | `vault/Improvements/alerts.md` (newest at top) |
@@ -327,14 +327,14 @@ python scripts/mobile_html_server.py --port 8766
 | `scripts/daily_workflow.py`             | Cron-able evening + morning driver   | R26_S3        |
 | `scripts/operator_dashboard.py`         | HTML page assembler                  | R22_O5        |
 | `/operator` route in `mobile_html_server.py` | HTTP serving of dashboard       | R30_W4        |
-| `vault/MORNING.md`                      | Auto-generated daily brief           | R28_U5        |
+| `vault/TONIGHT.md`                      | Auto-generated daily brief           | R28_U5        |
 | `vault/Improvements/alerts.md`          | Layered alert log (warn / critical)  | R21_N3        |
 | `scripts/live_recommendation_engine.py` | Live ranked, sized, filtered recs    | R23_P8        |
 | `M2_FAMILY_USE_MLP=1`                   | Multitask MLP m2_family override     | R31_X3        |
 | `scripts/ledger_insurance.py`           | Daily backup / restore / verify      | R27_T7        |
 | `scripts/nightly_cleanup.py`            | Cache + snapshot prune               | R28_U3        |
 | Probe archiver (R31_X4)                 | Old probe rollup into archive        | R31_X4        |
-| `scripts/daemon_watchdog.py`            | 14-daemon restart loop               | R19_L3        |
+| `scripts/daemon_watchdog.py`            | 28-daemon restart loop               | R19_L3        |
 | `scripts/daemon_registry.json`          | Watchdog config                      | R19_L3        |
 | `scripts/reconcile_settlements.py`      | Ledger vs box-truth audit            | R24_Q8        |
 | `scripts/live_rec_tracker.py`           | Snapshot + settle + report per day   | R24_Q4        |

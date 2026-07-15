@@ -49,7 +49,7 @@ Isotonic regression is more flexible but requires more data. Use it for Tier 1 m
 
 ### Implementation
 
-[`src/prediction/player_props.py`](../../src/prediction/player_props.py) — `CalibrationLayer`
+[`src/prediction/prop_model_stack.py`](../../src/prediction/prop_model_stack.py) — `CalibrationLayer`
 
 ```python
 class CalibrationLayer:
@@ -248,8 +248,8 @@ tests.
 **Primary blocker:** `prop_residuals.json` must be regenerated from the 80-game holdout. This file stores all historical `(model_probability, actual_outcome, game_id, player_id, prop_type)` records used for calibration training.
 
 **After 80-game run completes:**
-1. Run `python scripts/build_residuals.py --from-tracking` to regenerate prop_residuals.json
-2. Run `python scripts/calibrate_models.py --all-props` to fit calibrators
+1. Write and run a `build_residuals` script to regenerate `prop_residuals.json` from tracking output (does not exist yet — not started)
+2. Write and run a `calibrate_models` script to fit calibrators from those residuals (does not exist yet — not started)
 3. Validate: run calibration_curve on holdout; confirm ECE drops below 0.05 for pts/reb/ast
 4. Deploy: update CalibrationLayer in API
 

@@ -140,7 +140,7 @@ summarizes above:
   agents, run gate tiers, merge -- with no human required to click continue.
   Current honest status, pulled live from `build_status.py`: **53/83 backlog
   tasks done (63.9%)**, zero blocked, zero rejected.
-- **[docs/DAEMONS.md](DAEMONS.md)** -- the always-on daemon fleet: ~41
+- **[docs/DAEMONS.md](DAEMONS.md)** -- the always-on daemon fleet: 45
   long-lived `ProcSpec`s (`supervisor/stack_specs.py`) that capture lines,
   reprice live games, settle paper bets, and re-gate candidate signals with
   no chat session attached. Every daemon is PAPER (`executed=False`), UNITS
@@ -181,7 +181,7 @@ real suite is never invoked from the test itself.
 ## Verification
 
 The table below lists the CORE robustness invariants. The full test surface is
-`tests/platform/` (~130 files); run one file at a time to avoid pyarrow
+`tests/platform/` (306 files); run one file at a time to avoid pyarrow
 contamination and machine freeze under high memory load.
 
 Run each file **individually**  -  do not combine into a single `pytest tests/`

@@ -224,5 +224,5 @@ hype. Here is exactly what works and exactly what I have not yet validated."
 - `scripts/validate_calibration_multicorpus.py` -- multi-corpus calibration gate.
 - `src/loop/gate.py` -- the ship gate (WF + permutation + ablation + FDR).
 - `src/prediction/prop_cv_split.py` -- the self-caught 0.79-vs-0.06 overfit and fix.
-- `data/models/gate1_full_analysis.json` -- the -2.00% unfiltered vs-close result.
+- `data/cache/gate1_full_analysis.json` -- the -2.00% unfiltered vs-close result.
 - `data/cache/pregame_oof.parquet` -- the prop MAE source (byte-verified OOF predictions).

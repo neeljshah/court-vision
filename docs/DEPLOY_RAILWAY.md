@@ -68,7 +68,7 @@ Every game day you want to point at a different `LIVE_V2_GAME_IDS`:
 
 - Open Railway → your service → **Variables** → edit `LIVE_V2_GAME_IDS`
   to today's game ID → Save → Railway redeploys.
-- Find today's game ID from `scripts/discover_game_ids.py` or
+- Find today's game ID from `scripts/golive_discover_game_ids.py` or
   cdn.nba.com's `todaysScoreboard_00.json`.
 
 You can put **multiple game IDs comma-separated**:
@@ -156,10 +156,11 @@ pinning the version in `requirements-web.txt`. The leanest set that
 should always build:
 
 ```
-fastapi uvicorn[standard] websockets aiohttp requests numpy pandas scipy nba_api rich
+fastapi uvicorn[standard] websockets aiohttp requests numpy pandas scipy nba_api rich lightgbm xgboost
 ```
-(Skip lightgbm/xgboost — they're only used by the in-play projection
-model, not the pregame line shop.)
+(lightgbm/xgboost are required — the in-play projection model imports
+them at request time, so leaving them out breaks the live app, not
+just the pregame line shop.)
 
 **Dashboard shows "reconnecting..."**
 Browser devtools → Network → check the `/ws/live` request. Common causes:
