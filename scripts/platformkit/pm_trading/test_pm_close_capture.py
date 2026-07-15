@@ -152,3 +152,26 @@ def test_sweep_bounded_by_max_rows(tmp_path):
     out = sweep_closes(ledger, capture_fn=fake_cap, max_rows=1)
     assert len(calls) <= 1
     assert out.get("edge_claimed") is False
+
+
+def test_memoized_kalshi_fetch_one_call_per_sport(monkeypatch):
+    """The per-sweep memoizer fetches each sport ONCE regardless of row count
+    (the m18 429/heartbeat root cause was one full fetch PER ROW)."""
+    import scripts.platformkit.odds_provider.kalshi as _k
+    from scripts.platformkit.pm_trading.pm_close_capture import _memoized_kalshi_fetch
+    calls = []
+
+    class FakeProvider:
+        def __init__(self, **kw):
+            pass
+        def fetch(self, sport):
+            calls.append(sport)
+            return []
+
+    monkeypatch.setattr(_k, "KalshiProvider", FakeProvider)
+    fetch = _memoized_kalshi_fetch()
+    assert fetch is not None
+    for _ in range(5):
+        fetch("mlb")
+        fetch("wnba")
+    assert calls == ["mlb", "wnba"]
