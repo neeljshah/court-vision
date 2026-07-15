@@ -1,10 +1,12 @@
 "use client";
 
-// PerMarketClvStrips.tsx -- one row per market_type: 30d rolling mean CLV%,
-// sample size, and the honest true-close vs proxy-close split.
+// PerMarketClvStrips.tsx -- one row per market_type: 30d rolling MEDIAN CLV%
+// (true-close preferred; the breaker's gating stat -- see circuit_breaker.py's
+// 2026-07-15 decision, mean is a fat-tail-of-longshots artifact), sample size,
+// and the honest true-close vs proxy-close split.
 //
-// HONESTY RAILS: UNITS/probability only, no $. mean_clv_pct null (no graded
-// true closes yet) -> "--", NEVER a fabricated 0. ASCII only. <=300 LOC.
+// HONESTY RAILS: UNITS/probability only, no $. median_clv_pct null (no graded
+// rows yet) -> "--", NEVER a fabricated 0. ASCII only. <=300 LOC.
 
 import type { ExecutionBlock } from "@/lib/paperToday";
 import { EMPTY_CELL } from "@/lib/tokens";
@@ -39,7 +41,7 @@ export function PerMarketClvStrips({
     <div data-testid="per-market-clv-strips">
       <Panel>
         <PanelHead
-          title="Rolling CLV by market (30d)"
+          title="Median CLV by market (30d)"
           asOf={asOf}
           stale={stale}
           right={
@@ -58,7 +60,7 @@ export function PerMarketClvStrips({
             <table className="w-full min-w-[420px] text-left" data-testid="per-market-clv-table">
               <thead>
                 <tr className="border-b border-border">
-                  {["Market", "Mean CLV", "n", "n proxy"].map((h) => (
+                  {["Market", "Median CLV 30d", "n", "n proxy"].map((h) => (
                     <th
                       key={h}
                       className="py-1.5 px-3 font-data text-[9px] uppercase tracking-wider text-faint"
@@ -75,8 +77,8 @@ export function PerMarketClvStrips({
                     <tr key={mt} className="border-b border-border last:border-0 hover:bg-surface-2">
                       <td className="py-1.5 px-3 font-data text-[11px] text-foreground">{mt}</td>
                       <td className="py-1.5 px-3">
-                        <Num className={`text-[11px] ${clvClass(e.mean_clv_pct)}`}>
-                          {fmtClv(e.mean_clv_pct)}
+                        <Num className={`text-[11px] ${clvClass(e.median_clv_pct)}`}>
+                          {fmtClv(e.median_clv_pct)}
                         </Num>
                       </td>
                       <td className="py-1.5 px-3">

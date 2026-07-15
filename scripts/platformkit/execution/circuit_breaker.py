@@ -1,9 +1,20 @@
 """scripts.platformkit.execution.circuit_breaker -- rolling-CLV volume breaker.
 
-Volume follows MEASURED CLV, never confidence. When the rolling window's mean CLV
-is negative (or there is no graded data yet), the channel is CAPPED to a small
-daily placement count instead of cut off outright -- honest measurement continues
-at low volume rather than freezing blind. Pure dict-in/dict-out; no file IO.
+Volume follows MEASURED CLV, never confidence. When the rolling window's gating
+statistic is negative (or there is no graded data yet), the channel is CAPPED to
+a small daily placement count instead of cut off outright -- honest measurement
+continues at low volume rather than freezing blind. Pure dict-in/dict-out; no
+file IO.
+
+PRE-REGISTERED DECISION (2026-07-15, made BEFORE any forward measurement --
+see docs/research/execution-quality/moneyline_clv_mean_audit.md): the arithmetic
+mean_clv_pct on real ledger data is a fat-right-tail artifact -- a handful of
+collapsed longshot moneyline rows (clv_pct up to +2918) drag the mean to +25.9
+while the true-close median sits at +1.87. state()/allow_placement therefore
+gate on median_clv_pct (true-close rows preferred; falls back to all rows only
+when zero true-close rows exist yet), NOT on the mean. mean_clv_pct is still
+reported for context but winsorized at +/-50 so a single longshot cannot swing
+it unbounded.
 
 PAPER / UNITS only. No $ figure anywhere.
 """
@@ -28,17 +39,31 @@ def _parse_ts(value: Any) -> Optional[datetime]:
         return None
 
 
+def _median(vals: List[float]) -> Optional[float]:
+    if not vals:
+        return None
+    s = sorted(vals)
+    n = len(s)
+    mid = n // 2
+    return s[mid] if n % 2 else (s[mid - 1] + s[mid]) / 2.0
+
+
 def rolling_clv(rows: List[Dict[str, Any]], market_type: str, now_iso: str,
                  window_days: int = BREAKER_WINDOW_DAYS) -> Dict[str, Any]:
-    """Mean CLV for *market_type* over the trailing *window_days* ending at now_iso.
+    """CLV stats for *market_type* over the trailing *window_days* ending at now_iso.
 
     Rows without a graded clv_pct/clv are skipped (not yet settled). Proxy-close
-    rows (clv_is_proxy=True) are INCLUDED in the mean but counted separately as
-    n_proxy so a caller can judge data quality without discarding the rows.
+    rows (clv_is_proxy=True) are counted separately as n_proxy. Returns:
+      - median_clv_pct: true-close rows only when any exist ("basis": "true_close"),
+        else the all-rows median ("basis": "proxy_only"). This is the gating stat.
+      - mean_clv_pct: arithmetic mean of all graded rows, winsorized at +/-50 pct
+        so a single collapsed-longshot row cannot swing it unbounded
+        ("mean_winsorized": True). Context only -- never gates.
     """
     now = _parse_ts(now_iso) or datetime.now(timezone.utc)
     cutoff = now - timedelta(days=window_days)
     vals: List[float] = []
+    is_proxy_flags: List[bool] = []
     n_proxy = 0
     for row in rows or []:
         if not isinstance(row, dict):
@@ -55,24 +80,43 @@ def rolling_clv(rows: List[Dict[str, Any]], market_type: str, now_iso: str,
         if clv is None:
             continue  # not graded yet -- skip, never fabricate
         try:
-            vals.append(float(clv))
+            clv = float(clv)
         except (TypeError, ValueError):
             continue
-        if row.get("clv_is_proxy") is True:
+        is_proxy = row.get("clv_is_proxy") is True
+        vals.append(clv)
+        is_proxy_flags.append(is_proxy)
+        if is_proxy:
             n_proxy += 1
     if not vals:
-        return {"mean_clv_pct": None, "n": 0, "n_proxy": n_proxy}
-    return {"mean_clv_pct": sum(vals) / len(vals), "n": len(vals), "n_proxy": n_proxy}
+        return {"mean_clv_pct": None, "median_clv_pct": None, "n": 0,
+                "n_proxy": n_proxy, "basis": None, "mean_winsorized": True}
+    true_close_vals = [v for v, p in zip(vals, is_proxy_flags) if not p]
+    if true_close_vals:
+        median = _median(true_close_vals)
+        basis = "true_close"
+    else:
+        median = _median(vals)
+        basis = "proxy_only"
+    winsorized = [max(-50.0, min(50.0, v)) for v in vals]
+    mean = sum(winsorized) / len(winsorized)
+    return {"mean_clv_pct": mean, "median_clv_pct": median, "n": len(vals),
+            "n_proxy": n_proxy, "basis": basis, "mean_winsorized": True}
 
 
 def state(rows: List[Dict[str, Any]], market_type: str, now_iso: str) -> Dict[str, Any]:
-    """LIVE (uncapped) unless rolling CLV is None (no data) or negative -> CAPPED."""
+    """LIVE (uncapped) unless the gating median is None (no data) or negative -> CAPPED.
+
+    Gates on median_clv_pct (true-close preferred), not the mean -- see the
+    2026-07-15 pre-registered decision in the module docstring.
+    """
     roll = rolling_clv(rows, market_type, now_iso)
-    mean = roll["mean_clv_pct"]
-    capped = mean is None or mean < 0.0
+    median = roll["median_clv_pct"]
+    capped = median is None or median < 0.0
     return {
         "state": "CAPPED" if capped else "LIVE",
-        "mean_clv_pct": mean, "n": roll["n"],
+        "mean_clv_pct": roll["mean_clv_pct"], "median_clv_pct": median,
+        "n": roll["n"], "n_proxy": roll["n_proxy"], "basis": roll["basis"],
         "cap_per_day": BREAKER_CAPPED_MAX_PER_DAY if capped else None,
     }
 
@@ -117,6 +161,7 @@ def _demo() -> None:
     ]
     roll = rolling_clv(rows, "win_home", now)
     assert roll["n"] == 2 and roll["n_proxy"] == 1
+    assert roll["basis"] == "true_close" and roll["median_clv_pct"] == -5.0
     st = state(rows, "win_home", now)
     assert st["state"] == "CAPPED" and st["cap_per_day"] == BREAKER_CAPPED_MAX_PER_DAY
     empty_st = state([], "win_home", now)
