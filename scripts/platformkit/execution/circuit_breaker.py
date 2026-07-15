@@ -74,6 +74,8 @@ def rolling_clv(rows: List[Dict[str, Any]], market_type: str, now_iso: str,
         ts = _parse_ts(row.get("ts"))
         if ts is None or ts < cutoff or ts > now:
             continue
+        if row.get("clv_status") == "suspect_close":
+            continue  # degenerate close join (2026-07-15 audit) -- never gates
         clv = row.get("clv_pct")
         if clv is None:
             clv = row.get("clv")
