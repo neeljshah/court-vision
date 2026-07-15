@@ -40,8 +40,8 @@ export function tierClass(tier?: string): string {
 export function evClass(ev: number): string {
   if (ev >= 0.08) return "text-tier-s";
   if (ev >= 0.04) return "text-tier-a";
-  if (ev >= 0.01) return "text-slate-200";
-  return "text-slate-400";
+  if (ev >= 0.01) return "text-foreground";
+  return "text-muted-foreground";
 }
 
 export function timeAgo(ts: number): string {

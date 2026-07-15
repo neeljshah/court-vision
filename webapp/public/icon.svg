@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <rect width="128" height="128" fill="#0C0F15"/>
+  <rect x="12" y="12" width="104" height="104" fill="none" stroke="#232A38" stroke-width="4"/>
+  <text x="64" y="82" text-anchor="middle" font-family="Consolas, monospace" font-size="52" font-weight="700" fill="#E2A33C">CV</text>
+</svg>
