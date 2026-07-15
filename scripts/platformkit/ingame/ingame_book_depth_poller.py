@@ -11,8 +11,8 @@ ingame_book_depth_poly.py.
 
 Per-market snapshots are appended to data/cache/book_depth/<venue>/<date>.jsonl
 via an atomic-enough (append-mode, best-effort) JSONL writer. Bounded per sport
-(max_markets_per_sport) so one wide sport cannot dominate a tick; bounded overall
-(serve_bounded's duration_sec) so a live run always stops.
+(max_active_per_sport) so one wide sport cannot dominate a tick; bounded
+overall (serve_bounded's duration_sec) so a live run always stops.
 
 Kalshi trade tape (2026-07-09, execution-profile lane): _kd.snapshot_market
 already fetches the trades endpoint for last_trade_ts/trades_last_5m recency;
@@ -41,6 +41,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
 from scripts.platformkit.ingame import ingame_book_depth as _bd
+from scripts.platformkit.ingame import ingame_book_depth_retention as _retention
 from scripts.platformkit.odds_provider.http_cache import http_get_json
 from scripts.platformkit.odds_provider.kalshi_series_spec import series_for
 from scripts.platformkit.odds_provider.transport import resilient_get_json
@@ -67,10 +68,15 @@ def _append_jsonl(path: Path, row: Dict[str, Any]) -> None:
         logger.warning("ingame_book_depth_poller sidecar write failed %s: %s", path, exc)
 
 
-def _live_kalshi_tickers(sport: str, *, http: HttpGet, limit_per_series: int = 5) -> List[str]:
+def _live_kalshi_tickers(sport: str, *, http: HttpGet, limit_per_series: int = 200) -> List[str]:
     """Discover currently-open Kalshi tickers for *sport* (READ-ONLY reuse of
     kalshi_series_spec.series_for; a bare /markets?series_ticker=...&status=open
-    listing, mirroring inplay_kalshi's own discovery call). Never raises."""
+    listing, mirroring inplay_kalshi's own discovery call). limit_per_series
+    defaults to 200, SAME as inplay_kalshi.fetch_inplay's discovery call (one
+    request per series either way) -- a small page here was the root cause of
+    the live-day coverage gap (book_depth_livegap_diagnosis.md): a busy
+    sport/series can have far more than a handful of markets open at once.
+    Never raises."""
     out: List[str] = []
     for series, _market_type in series_for(sport):
         params = {"series_ticker": series, "status": "open", "limit": limit_per_series}
@@ -92,34 +98,31 @@ def _live_kalshi_tickers(sport: str, *, http: HttpGet, limit_per_series: int = 5
 def poll_kalshi_depth(sports: List[str], *, http: HttpGet = resilient_get_json,
                       sidecar_dir: Optional[Path] = None,
                       now: Optional[Callable[[], datetime]] = None,
-                      max_markets_per_sport: int = 5,
+                      max_markets_per_sport: int = 100,
                       prev_by_ticker: Optional[Dict[str, Dict[str, Any]]] = None,
                       trade_watermark_by_ticker: Optional[Dict[str, str]] = None,
                       active_by_sport: Optional[Dict[str, List[str]]] = None,
                       miss_counts: Optional[Dict[str, int]] = None,
-                      max_active_per_sport: int = 20, max_misses: int = 3,
+                      max_active_per_sport: int = 60, max_misses: int = 3,
                       ) -> Dict[str, Any]:
     """Discover + snapshot Kalshi depth across *sports*' open in-play tickers,
     appending each row to its date-sharded sidecar. Never raises: a per-market
     failure is skipped.
 
-    STICKY RETENTION (2026-07-11 fix -- gap ζ item 3): _live_kalshi_tickers'
-    discovery is a bare /markets?status=open listing capped to
-    max_markets_per_sport, with no guaranteed sort by close_time -- on a busy
-    slate a ticker discovered today can be pushed off that top-N window by
-    newer markets well before it settles, so book_depth quietly stops
-    snapshotting it while order timestamps for that same ticker (placed by the
-    paper capture loop) keep landing hours later, producing zero-overlap gaps
-    (measured median 52h). *active_by_sport* (threaded by the caller, e.g.
-    poll_once's state dict) keeps every discovered ticker in a per-sport
-    STICKY list across polls -- once seen, a ticker stays in the poll set
-    until its OWN snapshot fails *max_misses* consecutive times (i.e. the
-    market itself is actually closed/unreachable, not merely absent from one
-    tick's discovery page), bounded by max_active_per_sport so a single sport
-    can't grow the poll set unboundedly. A single-call caller that does not
-    thread active_by_sport (e.g. existing tests) sees IDENTICAL behavior to
-    before: the sticky list starts empty and simply becomes this tick's
-    (already max_markets_per_sport-capped) discovery.
+    STICKY RETENTION (2026-07-11 fix, gap zeta item 3; made DATE-AWARE
+    2026-07-15, see book_depth_livegap_diagnosis.md): discovery is a bare
+    /markets?status=open page with no guaranteed close_time sort, so a busy
+    slate can push a ticker off the top-N window well before it settles.
+    *active_by_sport* keeps every discovered ticker STICKY across polls until
+    its OWN snapshot fails *max_misses* times (market genuinely closed),
+    bounded by max_active_per_sport. On overflow, ingame_book_depth_retention.
+    evict_over_cap sacrifices FUTURE-dated tickers (>1 day out) first, so a
+    market stays tracked through its own game day regardless of how many
+    further-out markets Kalshi has since opened -- previously blind-FIFO
+    eviction dropped same-day tickers first since Kalshi opens them earliest
+    (measured gap up to ~44h). A caller that does not thread active_by_sport
+    (e.g. existing tests) is unaffected: the list starts empty and becomes
+    this tick's (max_markets_per_sport-capped) discovery.
 
     Also persists the trades tape's actual prices (already fetched inside
     snapshot_kalshi_market for recency -- no extra request) to the parallel
@@ -144,8 +147,7 @@ def poll_kalshi_depth(sports: List[str], *, http: HttpGet = resilient_get_json,
             if t not in active:
                 active.append(t)
             miss_counts[t] = 0  # rediscovered this tick -- reset any miss streak
-        if len(active) > max_active_per_sport:
-            del active[: len(active) - max_active_per_sport]  # oldest-first eviction
+        _retention.evict_over_cap(active, max_active_per_sport, now_dt)
         for ticker in tickers:
             row = _bd.snapshot_kalshi_market(ticker, http=http, now_dt=now_dt,
                                              prev=prev_by_ticker.get(ticker),
