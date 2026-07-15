@@ -28,14 +28,17 @@ from scripts.platformkit.odds_provider.inplay_kalshi import (
     MAX_429_COOLDOWN_SEC,
     PHASE,
     REQUEST_STAGGER_SEC,
+    _tick_from_market,  # exercised directly for the depth-fields honesty case (see below)
     fetch_inplay,
     fetch_price_history,
     is_liquid,
 )
 
 _ISO = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
+# best_bid/best_ask/spread_bp: additive LEVER-1 exec_depth fields (2026-07-15) --
+# see ingame_exec_gate.build_exec_depth's _DEPTH_TICK_FIELDS for the consumer.
 _CANON_KEYS = {"sport", "game_id", "venue", "market_type", "side", "ticker",
-               "prob", "line", "ts", "phase"}
+               "prob", "line", "ts", "phase", "best_bid", "best_ask", "spread_bp"}
 _MONEYLINE_LEGACY_KEYS = {"sport", "game_id", "venue", "market_type", "side",
                           "ticker", "prob", "ts", "phase"}  # pre-widening shape
 
@@ -142,6 +145,28 @@ def test_liquid_market_parses_to_canonical_inplay_tick():
     # moneyline rows stay BYTE-COMPATIBLE with the pre-widening schema (minus "line",
     # which is a new key -- every OLD key is still present and unchanged).
     assert _MONEYLINE_LEGACY_KEYS <= set(t)
+    # LEVER-1 exec_depth fields: real bid/ask/spread off the SAME live *_dollars
+    # fields the liquidity gate already required (see _LIQUID fixture above).
+    assert t["best_bid"] == 0.53 and t["best_ask"] == 0.54
+    assert abs(t["spread_bp"] - 100.0) < 1e-9   # 1c spread = 100bp of a $1 contract
+
+
+def test_tick_from_market_depth_fields_none_when_unquoted_never_fabricated():
+    # A market with a usable YES price (last_price_dollars) but NO live bid/ask quote
+    # -- a shape is_liquid() would gate out at the fetch_inplay level (it hard-requires
+    # both *_dollars sides), so this exercises _tick_from_market directly to prove the
+    # depth fields are honestly None, never a fabricated number, when genuinely absent.
+    market = {
+        "ticker": "KXMLBGAME-26JUN191420TORCHC-CHC",
+        "event_ticker": "KXMLBGAME-26JUN191420TORCHC",
+        "yes_sub_title": "CHC",
+        "last_price_dollars": 0.54,
+        "yes_bid_dollars": None, "yes_ask_dollars": None,
+    }
+    t = _tick_from_market("mlb", market, "2026-06-19T18:30:00Z", "moneyline")
+    assert t is not None
+    assert t["ticker"] == "KXMLBGAME-26JUN191420TORCHC-CHC"  # ticker is already the per-side id
+    assert t["best_bid"] is None and t["best_ask"] is None and t["spread_bp"] is None
 
 
 def test_fetch_queries_every_wired_series_for_the_sport():

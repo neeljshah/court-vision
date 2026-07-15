@@ -10,6 +10,10 @@ season (Kalshi KX*GAME/TOTAL/SPREAD/TEAMTOTAL/MATCH markets).
 Canonical tick (moneyline rows BYTE-COMPATIBLE with the pre-widening schema):
   {"sport","game_id","venue":"kalshi","market_type","side","ticker","prob" (YES
    in [0,1]), "line" (None for moneyline; the strike otherwise), "ts", "phase"}
+  Additive (fetch_inplay only): "best_bid"/"best_ask"/"spread_bp" -- the SAME
+  live *_dollars fields the liquidity gate already required; None if unquoted,
+  never fabricated. Consumed by ingame_exec_gate.build_exec_depth for the
+  placement-time microstructure stamp (see kalshi_tick_depth.py).
 
 REUSE, never duplicate: kalshi._yes_ask_prob (price) + kalshi_series_spec (the
 per-sport series list + future-game guard) + inplay_history.fetch_price_history.
@@ -58,6 +62,7 @@ from .kalshi_series_spec import (  # noqa: F401 -- _GAME_SERIES is a back-compat
     is_future_game,
     series_for,
 )
+from .kalshi_tick_depth import best_bid_ask, spread_bp
 from .transport import resilient_get_json
 
 logger = logging.getLogger(__name__)
@@ -127,7 +132,9 @@ def _tick_from_market(sport: str, market: Dict[str, Any], ts: str,
     omission is enforced by the daemon path; we never stamp a settlement bound as a
     start). *market_type* is the caller's (series_ticker, market_type) pair tag --
     "line" is None for moneyline, else the real strike (see _line_from_market).
-    Returns None if the market has no usable YES price (VOID, never faked).
+    best_bid/best_ask/spread_bp (kalshi_tick_depth) are additive from the SAME
+    live fields; None if unquoted, never fabricated. Returns None if the market
+    has no usable YES price (VOID, never faked).
     """
     prob = _yes_ask_prob(market)
     if prob is None:
@@ -136,6 +143,7 @@ def _tick_from_market(sport: str, market: Dict[str, Any], ts: str,
     if not ticker:
         return None
     game_id = str(market.get("event_ticker") or ticker).strip()
+    bid, ask = best_bid_ask(market)
     return {
         "sport": sport,
         "game_id": game_id,
@@ -147,6 +155,9 @@ def _tick_from_market(sport: str, market: Dict[str, Any], ts: str,
         "line": _line_from_market(market) if market_type != "moneyline" else None,
         "ts": ts,
         "phase": PHASE,
+        "best_bid": bid,
+        "best_ask": ask,
+        "spread_bp": spread_bp(bid, ask),
     }
 
 
