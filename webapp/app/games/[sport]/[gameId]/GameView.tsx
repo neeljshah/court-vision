@@ -36,6 +36,7 @@ import { Degraded, Unavailable } from "@/components/honest/HonestState";
 import { PanelErrorBoundary } from "@/components/honest/PanelErrorBoundary";
 import { LiveInGamePanel } from "@/components/live/LiveInGamePanel";
 import { humanizeMatchup } from "@/lib/betdesc";
+import { useSearchParams } from "next/navigation";
 import type { Unavailable as UnavailableT } from "@/lib/types";
 
 export function GameView({
@@ -45,6 +46,7 @@ export function GameView({
   sport: string;
   gameId: string;
 }) {
+  const searchParams = useSearchParams();
   // SSE is the primary channel; pollMs only governs the fallback cadence when
   // SSE is unavailable. 15s matches the "live" cadence target -- ponytail:
   // a single sensible constant rather than a pregame/live split that would
@@ -102,9 +104,12 @@ export function GameView({
   const home = report?.pregame?.home ?? edge?.home ?? null;
   const away = report?.pregame?.away ?? edge?.away ?? null;
   const matchupLabel: string | null = home && away ? `${away} @ ${home}` : null;
+  // Fallback chain for the header: streamed report names -> the ?m= label the
+  // linking page already knew -> humanized game id -> generic sport label.
+  const linkedLabel = searchParams?.get("m") ?? null;
   const headerMatchup = matchupLabel
     ? humanizeMatchup(matchupLabel)
-    : humanizeMatchup(gameId) || `${sportLabel(sport)} game`;
+    : linkedLabel || humanizeMatchup(gameId) || `${sportLabel(sport)} game`;
   const isLiveNow = !!live && /live|progress|in_play/i.test(live.status ?? live.state ?? "");
 
   // Honest "not found": both feeds have been tried at least once (not the
@@ -192,7 +197,7 @@ export function GameView({
                   sport={sport}
                   gameId={gameId}
                   pregameProb={pregameProb}
-                  matchupLabel={matchupLabel}
+                  matchupLabel={headerMatchup}
                 />
               </PanelErrorBoundary>
               <ClvScoreboard clv={clv} />

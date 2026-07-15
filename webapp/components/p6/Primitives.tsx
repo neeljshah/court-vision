@@ -37,9 +37,9 @@ export function Unavailable({ reason }: { reason?: string }) {
     <div
       role="status"
       aria-label={reason ? `unavailable: ${reason}` : "unavailable"}
-      className="flex flex-col gap-1 rounded-lg border border-amber-900/40 bg-amber-950/20 px-3 py-3 text-sm"
+      className="flex flex-col gap-1 border border-warning/40 bg-warning/10 px-3 py-3 text-sm"
     >
-      <span className="font-mono text-amber-400">unavailable</span>
+      <span className="font-mono text-stale">unavailable</span>
       {reason ? (
         <span className="text-xs text-muted-foreground">{reason}</span>
       ) : null}
