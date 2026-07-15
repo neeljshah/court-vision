@@ -29,6 +29,33 @@ logger = logging.getLogger("pm_close_capture")
 _CHANNEL = "paper_pm"
 
 
+def _memoized_kalshi_fetch() -> Optional[Callable[[str], Any]]:
+    """ONE governed Kalshi /markets fetch per SPORT per sweep, not per row.
+
+    ROOT CAUSE FIX (2026-07-15): capture_close's default path builds a fresh
+    KalshiProvider and refetches the full market list for EVERY target row --
+    a 40-row sweep = 40 identical fetches of the same 1-3 sports, which
+    self-inflicted 429s and stretched sweeps past the supervisor's 1980s
+    heartbeat threshold (m18 flap, restart #24). Same provider + governor
+    caller as before; only the redundant calls are gone. None if the provider
+    is unavailable (capture_close then degrades row-by-row exactly as before).
+    Never raises."""
+    try:
+        from scripts.platformkit.odds_provider.kalshi import KalshiProvider
+        provider = KalshiProvider(use_cache=False, governor_caller="close_capture")
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("pm_close_capture kalshi provider unavailable: %s", exc)
+        return None
+    cache: Dict[str, Any] = {}
+
+    def fetch(sport: str) -> Any:
+        if sport not in cache:
+            cache[sport] = provider.fetch(sport)
+        return cache[sport]
+
+    return fetch
+
+
 def _default_capture(row: Dict[str, Any], *, kalshi_fetch: Any = None) -> Any:
     """Default close resolver = close_capture.capture_close. Returns CloseResult|None."""
     try:
@@ -118,6 +145,8 @@ def sweep_closes(
                 "executed": False, "edge_claimed": False}
 
     cap = capture_fn or _default_capture
+    if kalshi_fetch is None and capture_fn is None:
+        kalshi_fetch = _memoized_kalshi_fetch()  # one fetch per sport, not per row
     targets = _targets(rows, _resolved_keys(rows))
     if max_rows is not None:
         targets = targets[:max_rows]
