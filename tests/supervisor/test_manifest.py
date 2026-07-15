@@ -113,6 +113,18 @@ def test_default_manifest_is_acyclic_and_ordered():
         # registry composing the P4 ratchet/reclaim-gate/claims-factory/FWER
         # harnesses verbatim; measurement/suppress-only, never promotes)
         "m38_autoloop",
+        # m39 -- NBA injury-facts snapshotter (as-of vintages appended to the
+        # injury_facts_<sport>.jsonl the gamebrief layer reads; knowledge only)
+        "m39_injury_facts_nba",
+        # m40 -- wedge restarter (reads m29 output-freshness REDs; supervisor
+        # is the sole actor; no restart authority of its own)
+        "m40_wedge_restarter",
+        # m41 -- public betting-splits capture (sentiment-vs-price rows to
+        # data/cache/public_splits/<league>/<date>.jsonl; capture only)
+        "m41_public_splits",
+        # m42 -- exec-quality daemon (min-age realized-CLV backfill + paper
+        # digest/breaker refresh every 120s; measurement only)
+        "m42_exec_quality",
     }
     _assert_topo(specs)
     # producer precedes the Auto-API which precedes the boards API which precedes UI.
