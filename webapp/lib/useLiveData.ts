@@ -59,6 +59,53 @@ export interface UseLiveDataOptions {
   enabled?: boolean;
   /** Max backoff multiplier cap (default 5x). */
   maxBackoffMultiplier?: number;
+  /**
+   * Opt-in last-known-value cache key. When set, the hook seeds its initial
+   * state from the last successful payload for this key (module memory,
+   * falling back to sessionStorage) so navigations paint INSTANTLY with
+   * honest age/stale stamps instead of skeletons, then refreshes in the
+   * background. Cached data is never presented as fresh: lastUpdatedAt is
+   * the ORIGINAL fetch time, so ageSec/isStale stay truthful.
+   */
+  cacheKey?: string;
+}
+
+// ---------------------------------------------------------------------------
+// Last-known-value cache (opt-in via cacheKey). Module map survives client
+// navigations; sessionStorage survives reloads within the tab session.
+// ---------------------------------------------------------------------------
+
+type LkvEntry = { data: unknown; ts: number };
+const _LKV = new Map<string, LkvEntry>();
+const _LKV_PREFIX = "cv-lkv:";
+
+function lkvGet(key: string): LkvEntry | null {
+  const mem = _LKV.get(key);
+  if (mem) return mem;
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.sessionStorage.getItem(_LKV_PREFIX + key);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as LkvEntry;
+    if (parsed && typeof parsed.ts === "number") {
+      _LKV.set(key, parsed);
+      return parsed;
+    }
+  } catch {
+    /* corrupt/quota -> behave as cache miss */
+  }
+  return null;
+}
+
+function lkvPut(key: string, data: unknown, ts: number): void {
+  const entry: LkvEntry = { data, ts };
+  _LKV.set(key, entry);
+  if (typeof window === "undefined") return;
+  try {
+    window.sessionStorage.setItem(_LKV_PREFIX + key, JSON.stringify(entry));
+  } catch {
+    /* quota exceeded -> memory cache still works */
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -101,6 +148,7 @@ export function useLiveData<T>(
     timeoutMs = 8_000,
     enabled = true,
     maxBackoffMultiplier = 5,
+    cacheKey,
   } = options;
 
   const [data, setData] = useState<T | null>(null);
@@ -122,6 +170,27 @@ export function useLiveData<T>(
   intervalMsRef.current = intervalMs;
   const maxBackoffMultiplierRef = useRef(maxBackoffMultiplier);
   maxBackoffMultiplierRef.current = maxBackoffMultiplier;
+
+  const cacheKeyRef = useRef(cacheKey);
+  cacheKeyRef.current = cacheKey;
+
+  // Seed from the last-known value AFTER mount (client only) so navigation
+  // paints instantly without an SSR hydration mismatch: the server always
+  // renders the loading state; the very first client effect swaps in the
+  // cached payload with its ORIGINAL timestamp (age/stale stay truthful).
+  useEffect(() => {
+    if (!cacheKey) return;
+    const seed = lkvGet(cacheKey);
+    if (seed === null || lastUpdatedAtRef.current !== null) return;
+    const seedAge = (Date.now() - seed.ts) / 1000;
+    lastUpdatedAtRef.current = seed.ts;
+    setData(seed.data as T);
+    setLastUpdatedAt(seed.ts);
+    setAgeSec(Math.round(seedAge));
+    setIsStale(seedAge > staleAfterSecRef.current);
+    setIsLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cacheKey]);
 
   const abortRef = useRef<AbortController | null>(null);
   const lastUpdatedAtRef = useRef<number | null>(null);
@@ -168,6 +237,7 @@ export function useLiveData<T>(
       setConsecutiveFailures(0);
       const now = Date.now();
       lastUpdatedAtRef.current = now;
+      if (cacheKeyRef.current) lkvPut(cacheKeyRef.current, result, now);
       setData(result as T);
       setLastUpdatedAt(now);
       setAgeSec(0);

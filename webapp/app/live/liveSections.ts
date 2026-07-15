@@ -9,7 +9,7 @@
 // signals it. Missing/absent state defaults to "pregame" (safe side).
 
 import type { PredictRecord } from "@/lib/p5api";
-import type { GameEdge, LiveState, ResultRow } from "@/lib/types";
+import type { BestBet, GameEdge, LiveState, ResultRow } from "@/lib/types";
 
 // Re-export the shared LiveState type so components can import from one place.
 export type { LiveState };
@@ -34,6 +34,16 @@ export interface ModelCall {
   correct: boolean | null;
 }
 
+// Model-vs-market probability pair for the paired amber/blue bar (Direction A
+// spec). Real data only -- taken from the best_bets envelope's leading
+// candidate, never fabricated. null when no market-priced candidate exists.
+export interface EdgeProb {
+  marketType: string;
+  side: string;
+  modelProb: number;
+  marketProb: number;
+}
+
 // A single enriched row consumed by LiveGameRow.
 export interface LiveGameEntry {
   game_id: string;
@@ -51,6 +61,8 @@ export interface LiveGameEntry {
   finalScore?: FinalScore | null;
   // DONE cards only: the model's pregame call vs the actual outcome.
   modelCall?: ModelCall | null;
+  // Model-vs-market pair for the paired bar, when a priced candidate exists.
+  edgeProb?: EdgeProb | null;
 }
 
 /**
@@ -96,6 +108,25 @@ export function extractHomeWinProb(rec: PredictRecord): number | null {
 }
 
 /**
+ * Pull the leading priced candidate (model_prob + market_prob) off a GameEdge
+ * for the paired model-vs-market bar. Returns null when absent -- never
+ * invents a market number.
+ */
+export function extractEdgeProb(edge: GameEdge | null | undefined): EdgeProb | null {
+  const candidates: BestBet[] = edge?.best_bets ?? edge?.candidates ?? [];
+  const pick = candidates.find(
+    (c) => typeof c.model_prob === "number" && typeof c.market_prob === "number",
+  );
+  if (!pick) return null;
+  return {
+    marketType: pick.market_type,
+    side: pick.side,
+    modelProb: pick.model_prob,
+    marketProb: pick.market_prob,
+  };
+}
+
+/**
  * Build a LiveGameEntry for one game by merging a PredictRecord + an optional
  * GameEdge (which carries the live state from the bestbets envelope).
  */
@@ -117,6 +148,7 @@ export function buildEntry(
     section,
     finalScore: null,
     modelCall: null,
+    edgeProb: extractEdgeProb(edge),
   };
 }
 
@@ -170,6 +202,7 @@ export function buildDoneEntryFromResult(
     section: "DONE",
     finalScore,
     modelCall,
+    edgeProb: null,
   };
 }
 

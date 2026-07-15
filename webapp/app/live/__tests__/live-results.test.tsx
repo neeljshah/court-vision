@@ -460,6 +460,7 @@ describe("(e) Honest empty state -- only when all three sources empty", () => {
     getPredict.mockReset();
     bestbets.mockReset();
     getResults.mockReset();
+    window.sessionStorage.clear();
   });
 
   afterEach(() => {
@@ -471,7 +472,16 @@ describe("(e) Honest empty state -- only when all three sources empty", () => {
     bestbets.mockResolvedValue(unavailable());
     getResults.mockResolvedValue(unavailable());
 
-    const { container } = render(<LiveGamesView />);
+    // useLiveData's last-known-value cache (cacheKey "live:games") lives in a
+    // module-level Map that survives across tests in this file (sessionStorage
+    // alone isn't enough -- the Map is checked first). An earlier populated
+    // test seeds it, and an Unavailable poll never clears last-good data
+    // (stale-never-green by design), so this test needs a fresh module
+    // instance to observe a genuinely cold cache.
+    vi.resetModules();
+    const { LiveGamesView: FreshLiveGamesView } = await import("../LiveGamesView");
+
+    const { container } = render(<FreshLiveGamesView />);
 
     await waitFor(
       () => expect(screen.getByTestId("offseason-empty-state")).toBeInTheDocument(),
