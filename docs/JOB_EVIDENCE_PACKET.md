@@ -16,7 +16,7 @@
 
 **Pitch:** Solo builder of an end-to-end computer-vision → ML → full-stack production
 system who rigorously audits and disproves his own results — senior-grade engineering
-discipline without a degree.
+discipline.
 
 **The honest headline finding (§3):** against real closing lines I found the market is
 efficient — the model is about break-even-minus-vig, with assists the one small, durable
