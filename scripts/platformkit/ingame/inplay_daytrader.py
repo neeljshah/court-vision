@@ -51,6 +51,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
 from scripts.platformkit.claims import condition_tagger as _tagger
+from scripts.platformkit.execution import ingame_exec_gate as _exec_gate
 from scripts.platformkit.ingame import ingame_clv_per_segment as _clvseg
 from scripts.platformkit.ingame import ingame_segment_trust_multi as _trust_multi
 from scripts.platformkit.ingame import inplay_edge_signal as _sig
@@ -239,12 +240,24 @@ def on_tick(sport: str, game_id: str, tick: LiveTick, *,
         bet_side = ev.get("side", _sig.SIDE)
         bet_mp = ev.get("bet_model_prob", mp)
         dec_odds = ev.get("obtainable_decimal")
+
+        # Expected-CLV + drift placement gate (execution.ingame_exec_gate): SUPPRESS-ONLY,
+        # never loosens the edge/liquidity/freshness gates already passed above.
+        gr = _exec_gate.evaluate_placement(ev, tick)
+        decision["exec_gate"] = gr["exec_gate"]
+        if gr["suppress"]:
+            decision["reason"] = gr["reason"]
+            logger.info("on_tick(%s/%s) suppressed reason=%s exec_gate=%s",
+                        sport, game_id, gr["reason"], gr["exec_gate"])
+            return decision
+
         units = _policy.stake_units(ev=ev["ev"], model_prob=bet_mp,
                                     taken_decimal=dec_odds, tier=ev["tier"],
                                     clv_is_proxy=ev["clv_is_proxy"])
         placement = _paper.record_ingame_bet(
             sport, game_id, MARKET, bet_side, float(dec_odds),
-            model_prob=bet_mp, stake=0.0, path=ledger_path)  # stake$ stays 0.0 -- units only
+            model_prob=bet_mp, stake=0.0, path=ledger_path,  # stake$ stays 0.0 -- units only
+            signal_ts=tick.get("signal_ts"), exec_gate=gr["exec_gate"])
         decision.update({
             "action": "bet", "side": bet_side, "units": units, "placement": placement,
             "position": {"status": "open", "side": bet_side, "tier": ev["tier"],

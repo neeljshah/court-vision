@@ -56,6 +56,28 @@ def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _parse_iso(value: Optional[str]) -> Optional[datetime]:
+    """Best-effort ISO-8601 parse (handles a trailing 'Z'). None on any failure."""
+    if not value:
+        return None
+    try:
+        dt = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
+    except (ValueError, TypeError):
+        return None
+
+
+def _latency_ms(signal_ts: Optional[str], placed_ts: str) -> Optional[float]:
+    """Milliseconds between *signal_ts* (when the edge was computed) and *placed_ts*
+    (when this row is written). None if signal_ts is missing/unparseable -- never
+    fabricated."""
+    sig_dt = _parse_iso(signal_ts)
+    placed_dt = _parse_iso(placed_ts)
+    if sig_dt is None or placed_dt is None:
+        return None
+    return (placed_dt - sig_dt).total_seconds() * 1000.0
+
+
 def _is_malformed_input(sport: str, game_id: str) -> bool:
     """Return True when game_id or sport would produce an invalid ledger row.
 
@@ -114,6 +136,8 @@ def record_ingame_bet(
     taken_book: str = "paper_ingame",
     *,
     path: Optional[Path] = None,
+    signal_ts: Optional[str] = None,
+    exec_gate: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """Record one in-game paper edge to the CLV ledger with channel='paper_ingame'.
 
@@ -131,6 +155,10 @@ def record_ingame_bet(
     stake : float       Paper stake (never executed, tracking only). Default 0.0.
     taken_book : str    Label for the notional book. Default "paper_ingame".
     path : Path, optional  Override ledger path (tests pass a tmp file).
+    signal_ts : str, optional  ISO ts of the tick the edge was computed from
+        (latency lane). None -> latency not computable (never fabricated).
+    exec_gate : dict, optional  The clearing placement-gate dict (expected_clv_gate
+        .gate() + drift_pct), stored verbatim for audit.
 
     Returns
     -------
@@ -142,7 +170,8 @@ def record_ingame_bet(
     key = _edge_key(sport, game_id, market, side, ts)
     try:
         return _record_inner(sport, game_id, market, side, taken_decimal,
-                             model_prob, stake, taken_book, ts, key, target)
+                             model_prob, stake, taken_book, ts, key, target,
+                             signal_ts, exec_gate)
     except Exception as exc:  # noqa: BLE001 - must never raise
         logger.warning("record_ingame_bet failed game=%s key=%s: %s",
                        game_id, key, exc)
@@ -154,7 +183,9 @@ def record_ingame_bet(
 def _record_inner(sport: str, game_id: str, market: str, side: str,
                   taken_decimal: float, model_prob: Optional[float],
                   stake: float, taken_book: str,
-                  ts: str, key: str, target: Path) -> Dict[str, Any]:
+                  ts: str, key: str, target: Path,
+                  signal_ts: Optional[str] = None,
+                  exec_gate: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     # Write-guard: reject malformed / synthetic rows before touching the ledger.
     # Returns a structured no-op identical in shape to the idempotency path so
     # callers need no special handling.  Never raises.
@@ -198,6 +229,9 @@ def _record_inner(sport: str, game_id: str, market: str, side: str,
         "executed": False,         # binding invariant: never a real bet
         "channel": CHANNEL_PAPER_INGAME,
         "edge_key": key,           # idempotency handle
+        "signal_ts": signal_ts,
+        "placement_latency_ms": _latency_ms(signal_ts, ts),
+        "exec_gate": exec_gate,
     }
     try:
         from scripts.platformkit.clv_ledger_io import append_row as _io_append

@@ -488,6 +488,11 @@ def poll_once(*, sports: Optional[List[str]] = None,
             ticks = []
         n_requests_total += int(sport_stats.get("n_requests", 0))
         n_429_total += int(sport_stats.get("n_429", 0))
+        # Batch ts (execution.ingame_exec_gate latency lane): every tick in one
+        # fetch_inplay call shares the same ts (computed once per fetch), so the
+        # first tick's ts stands for the whole batch's signal time. None if the
+        # feed returned nothing this cycle.
+        batch_ts = ticks[0].get("ts") if ticks else None
         legs_by_game = _yes_pair(list(ticks) if ticks else [])
         # DEEP enrichment: MLB gets the base-out resolver, KBO (capture-only, wave
         # kbo-alias-wire-soak) gets the relay state-row bridge; other sports pass through.
@@ -495,7 +500,7 @@ def poll_once(*, sports: Optional[List[str]] = None,
             kbo_deep_state_fn if str(sport).lower() == "kbo" else None)
         for gid, legs in legs_by_game.items():
             row = _process_game(sport, gid, legs, ls_fn, md_fn, pos_map,
-                                grade_dir, ledger_path, nowdt, sport_deep_fn)
+                                grade_dir, ledger_path, nowdt, sport_deep_fn, batch_ts)
             games_seen.append(row)
             if row.get("paired"):
                 n_live += 1
@@ -592,7 +597,8 @@ def _process_game(sport: str, gid: str, legs: Dict[str, float],
                   pos_map: Dict[str, Dict[str, Any]],
                   grade_dir: Optional[Path], ledger_path: Optional[Path],
                   nowdt: datetime,
-                  deep_state_fn: Optional[Callable[[str], Dict[str, Any]]] = None
+                  deep_state_fn: Optional[Callable[[str], Dict[str, Any]]] = None,
+                  signal_ts: Optional[str] = None
                   ) -> Dict[str, Any]:
     """Capture + paper-decide ONE live game's tick. Per-game guarded: never raises."""
     row: Dict[str, Any] = {"sport": sport, "game_id": gid, "paired": False,
@@ -660,6 +666,7 @@ def _process_game(sport: str, gid: str, legs: Dict[str, float],
             return row
         pair = _fold_draw_into_field(pair, legs)  # 3-way (soccer) -> 2-way home-vs-field
         tick = _build_tick(state, model_p, pair)
+        tick["signal_ts"] = signal_ts
         pkey = "%s/%s" % (sport, gid)
         # ENRICHMENT MEASUREMENT ONLY (LANE 1), computed BEFORE on_tick (LANE 3
         # persistence): a lookup exception can never sink a tick or change on_tick's
