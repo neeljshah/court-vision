@@ -27,10 +27,10 @@ export function fmtSignedUnits(v: number | null | undefined): string {
 }
 
 export function signedUnitsClass(v: number | null | undefined): string {
-  if (v == null) return "text-slate-400";
-  if (v > 0) return "text-emerald-400";
-  if (v < 0) return "text-rose-400";
-  return "text-slate-300";
+  if (v == null) return "text-muted-foreground";
+  if (v > 0) return "text-up";
+  if (v < 0) return "text-down";
+  return "text-foreground";
 }
 
 export function fmtProb(p: number | null | undefined): string {
@@ -122,26 +122,26 @@ export function PlacedBetRow({ bet }: { bet: TodayBet }) {
   const o = (bet.outcome ?? "pending").toLowerCase();
   const outcomeCls =
     o === "win"
-      ? "text-emerald-400"
+      ? "text-up"
       : o === "loss"
-        ? "text-rose-400"
-        : "text-slate-400";
+        ? "text-down"
+        : "text-muted-foreground";
   return (
-    <tr className="border-b border-slate-800/60 last:border-0">
-      <td className="py-1.5 pr-3 text-xs text-slate-200 truncate max-w-[150px]">
+    <tr className="border-b border-border last:border-0">
+      <td className="py-1.5 pr-3 text-xs text-foreground truncate max-w-[150px]">
         {humanizeMatchup(bet.matchup) || "--"}
       </td>
-      <td className="py-1.5 pr-3 font-mono text-[11px] text-slate-400 truncate max-w-[120px]">
+      <td className="py-1.5 pr-3 font-mono text-[11px] text-muted-foreground truncate max-w-[120px]">
         {describeBetShort({
           market_type: bet.market_type,
           side: bet.side,
           matchup: bet.matchup,
         })}
       </td>
-      <td className="py-1.5 pr-3 font-mono text-[11px] text-slate-300 tabular-nums">
+      <td className="py-1.5 pr-3 font-mono text-[11px] text-foreground tabular-nums">
         {fmtProb(bet.model_prob)}
       </td>
-      <td className="py-1.5 pr-3 font-mono text-[11px] text-slate-400">
+      <td className="py-1.5 pr-3 font-mono text-[11px] text-muted-foreground">
         {bet.tier ?? "--"}
       </td>
       <td className="py-1.5 pr-3 font-mono text-[11px] text-amber-300 tabular-nums">
@@ -150,7 +150,7 @@ export function PlacedBetRow({ bet }: { bet: TodayBet }) {
       <td className={`py-1.5 pr-3 font-mono text-[11px] font-medium ${outcomeCls}`}>
         {o}
         {bet.pnl_units != null && (o === "win" || o === "loss") ? (
-          <span className="ml-1 text-slate-500">{fmtSignedUnits(bet.pnl_units)}u</span>
+          <span className="ml-1 text-faint">{fmtSignedUnits(bet.pnl_units)}u</span>
         ) : null}
       </td>
     </tr>
@@ -172,7 +172,7 @@ export function PlacedBetsTable({
     return (
       <p
         data-testid="today-placed-empty"
-        className="font-mono text-[11px] text-slate-500"
+        className="font-mono text-[11px] text-faint"
       >
         {fallbackNote
           ? fallbackNote
@@ -185,12 +185,12 @@ export function PlacedBetsTable({
     <div className="overflow-x-auto">
       <table className="w-full min-w-[460px] text-left" data-testid="today-placed-table">
         <thead>
-          <tr className="border-b border-slate-800">
+          <tr className="border-b border-border">
             {["Matchup", "Market/Side", "Model prob", "Tier", "Stake (u)", "Result"].map(
               (h) => (
                 <th
                   key={h}
-                  className="pb-1.5 pr-3 font-mono text-[9px] uppercase tracking-wider text-slate-500"
+                  className="pb-1.5 pr-3 font-mono text-[9px] uppercase tracking-wider text-faint"
                 >
                   {h}
                 </th>
