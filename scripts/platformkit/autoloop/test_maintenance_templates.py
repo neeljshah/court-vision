@@ -169,11 +169,15 @@ _GOLDEN_KEYS = {
     "log_reaper", "eval_gate", "pregame_benchmark", "statcast_refresh",
     "replication_cadence", "false_discovery_accounting", "mlb_results_refresh",
     "weekly_scoreboard_cadence", "k_nightly_refresh", "k_escalation_intake",
-    "auto_validate",
+    "auto_validate", "card_grade",
 }
 
 
-def test_run_all_isolates_one_failing_job(tmp_path):
+@mock.patch("scripts.platformkit.autoloop.card_grade_job.run_card_grade",
+            return_value={"grade": {"status": "skipped"}, "edge_claimed": False})
+def test_run_all_isolates_one_failing_job(_cg_mock, tmp_path):
+    # card_grade mocked via decorator: the with-stack below is already at
+    # CPython's 20-nested-block cap, one more with-item is a SyntaxError.
     with mock.patch.object(MT, "run_validate_new_stores", side_effect=RuntimeError("x")), \
         mock.patch.object(MT, "run_weighting_refresh", return_value={"sports_refreshed": []}), \
         mock.patch.object(MT, "run_replication_watch", return_value={"new_reports": 0}), \

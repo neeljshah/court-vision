@@ -23,6 +23,7 @@ Paper-only. No $ fields. ASCII stdout. <=300 LOC.
 from __future__ import annotations
 
 import json
+import os
 import pathlib
 import re
 import uuid
@@ -33,7 +34,12 @@ from scripts.platformkit.io_atomic import append_jsonl_atomic
 _REPO_ROOT = pathlib.Path(__file__).resolve().parents[3]
 CARDS_PATH = _REPO_ROOT / "data" / "cache" / "claims" / "cards.jsonl"
 
-MAX_OPEN = 10
+# 2026-07-15 USER DIRECTIVE: scale to 10,000s of cards and validate as many as
+# possible autonomously. The pre-registration integrity comes from the
+# lock-before-peek + allowlisted-trigger invariants, NOT from a small open
+# count; the grader's per-card two-half gate handles the multiple-comparison
+# load (verdict rows carry family metadata for FDR accounting downstream).
+MAX_OPEN = int(os.environ.get("CV_CLAIMS_MAX_OPEN", "20000") or 20000)
 
 VALID_SCOPES = {"ingame", "pregame"}
 VALID_ENTITIES = {"team", "player", "lineup", "game"}
@@ -63,6 +69,12 @@ ALLOWED_TRIGGER_FIELDS = {
     "oreb_pctile_home", "opp_dreb_pctile_away",
     "tov_forced_pctile_home", "opp_tov_rate_pctile_away",
     "closeout_pctile_home", "opp_3pa_rate_pctile_away",
+    # as-of-tick fields ACTUALLY CARRIED by the live capture rows
+    # (data/cache/ingame_grade/<sport>/*.jsonl -- verified 2026-07-15). All are
+    # captured before the tick's outcome is known; ids are excluded on purpose.
+    "model_prob", "market_prob", "espn_wp", "spread_bp", "book_thinness",
+    "stale_quote", "xg_home", "xg_away", "xg_asof_min",
+    "mlb_pitcher_pitch_count", "mlb_bullpen_used",
 }
 
 # Fields that can be updated after outcomes_peeked=true WITHOUT counting as
@@ -86,9 +98,22 @@ def validate_trigger(trigger: str) -> tuple[bool, str]:
     return True, "ok"
 
 
+# (mtime, size) -> parsed rows. With 10,000s of cards the per-tick tagger
+# cannot afford a full JSONL re-parse per tag() call; the file is append-only
+# so (mtime, size) is a sound freshness key. One entry, module-level.
+_ROWS_CACHE: list = [None, None]  # [key, rows]
+
+
 def _read_rows() -> list[dict]:
     if not CARDS_PATH.is_file():
         return []
+    try:
+        st = CARDS_PATH.stat()
+        key = (st.st_mtime_ns, st.st_size)
+    except OSError:
+        key = None
+    if key is not None and _ROWS_CACHE[0] == key:
+        return _ROWS_CACHE[1]
     rows = []
     for line in CARDS_PATH.read_text(encoding="ascii", errors="replace").splitlines():
         line = line.strip()
@@ -98,6 +123,8 @@ def _read_rows() -> list[dict]:
             rows.append(json.loads(line))
         except json.JSONDecodeError:
             continue
+    if key is not None:
+        _ROWS_CACHE[0], _ROWS_CACHE[1] = key, rows
     return rows
 
 
@@ -174,6 +201,88 @@ def register(
     return {"ok": True, "card_id": card_id, "status": status}
 
 
+def _append_rows(rows: list[dict[str, Any]]) -> None:
+    """ONE crash-safe append for many rows: read once, write once, replace.
+    append_jsonl_atomic re-reads + rewrites the whole file PER ROW -- O(n^2)
+    I/O that took 10k-card registration from seconds to an hour."""
+    if not rows:
+        return
+    CARDS_PATH.parent.mkdir(parents=True, exist_ok=True)
+    existing = CARDS_PATH.read_text(encoding="ascii", errors="replace") if CARDS_PATH.is_file() else ""
+    if existing and not existing.endswith("\n"):
+        existing += "\n"
+    body = existing + "".join(
+        json.dumps(r, ensure_ascii=True, sort_keys=True) + "\n" for r in rows)
+    tmp = CARDS_PATH.with_suffix(".jsonl.tmp_bulk")
+    tmp.write_text(body, encoding="ascii")
+    import os as _os
+    _os.replace(str(tmp), str(CARDS_PATH))
+
+
+def register_bulk(cards: list[dict[str, Any]], source: str, ts: str) -> dict[str, Any]:
+    """Pre-register many cards in one pass (bulk-miner path). Same validation
+    as register() per card, but open-slot count is computed ONCE and rows are
+    written in ONE atomic append (register()'s per-card get_open() re-read +
+    append_jsonl_atomic's per-row full-file rewrite are both O(n^2) at 10k
+    cards). Invalid cards are skipped and reported, never written."""
+    open_now = len(get_open())
+    n_open = n_queued = 0
+    rejected: list[str] = []
+    to_write: list[dict[str, Any]] = []
+    for c in cards:
+        cond = c.get("condition") or {}
+        if (not str(c.get("mechanism") or "").strip()
+                or c.get("expected_sign") not in VALID_SIGNS
+                or cond.get("scope") not in VALID_SCOPES
+                or cond.get("entity") not in VALID_ENTITIES):
+            rejected.append("shape")
+            continue
+        ok, reason = validate_trigger(cond.get("trigger", ""))
+        if not ok:
+            rejected.append(reason)
+            continue
+        status = "OPEN" if open_now < MAX_OPEN else "QUEUED"
+        row = {
+            "card_id": f"card_{uuid.uuid4().hex[:10]}",
+            "claim": c["claim"], "condition": cond, "mechanism": c["mechanism"],
+            "expected_sign": c["expected_sign"],
+            "expected_magnitude": c.get("expected_magnitude", ""),
+            "family": c.get("family"), "cell": c.get("cell"),
+            "source": source, "registered_ts": ts,
+            "status": status, "outcomes_peeked": False,
+        }
+        to_write.append(row)
+        if status == "OPEN":
+            open_now += 1
+            n_open += 1
+        else:
+            n_queued += 1
+    _append_rows(to_write)
+    return {"ok": True, "n_open": n_open, "n_queued": n_queued,
+            "n_rejected": len(rejected), "reject_sample": rejected[:5]}
+
+
+def bulk_update(changes_by_id: dict[str, dict[str, Any]], ts: str) -> int:
+    """Apply per-card *changes* for many cards with ONE registry read (the
+    bulk grader path -- update_card()'s per-call re-read is O(n^2) at 10k
+    cards). Same protected-field discipline as update_card: a protected-field
+    change on a peeked card REJECTS that card instead of mutating it.
+    Returns rows appended."""
+    latest = get_all_latest()
+    rows: list[dict[str, Any]] = []
+    for card_id, changes in changes_by_id.items():
+        current = latest.get(card_id)
+        if current is None:
+            continue
+        if (_PROTECTED_FIELDS & set(changes)) and current.get("outcomes_peeked", False):
+            rows.append({**current, "status": "REJECTED",
+                         "reason": "post-hoc modification", "updated_ts": ts})
+            continue
+        rows.append({**current, **changes, "updated_ts": ts})
+    _append_rows(rows)
+    return len(rows)
+
+
 def update_card(card_id: str, changes: dict[str, Any], ts: str) -> dict[str, Any]:
     """Apply *changes* to a card. Protected-field changes after outcomes_peeked
     auto-REJECT the old card instead of mutating it (see module docstring)."""
@@ -217,5 +326,6 @@ def promote_queued(ts: str) -> list[str]:
 __all__ = [
     "CARDS_PATH", "MAX_OPEN", "ALLOWED_TRIGGER_FIELDS",
     "validate_trigger", "get_all_latest", "get_open", "can_edit",
-    "register", "update_card", "mark_peeked", "close_card", "promote_queued",
+    "register", "register_bulk", "update_card", "bulk_update", "mark_peeked",
+    "close_card", "promote_queued",
 ]

@@ -78,8 +78,14 @@ def test_write_status_writes_file_without_running_tests(tmp_path: Path):
     assert report["test_results"] == []
 
 
-def test_real_registry_report_is_honest_10_cards_zero_validated():
-    """Sanity check against the real on-disk registry: matches the known engine state."""
+def test_real_registry_report_is_honest_bulk_scale():
+    """Sanity check against the real on-disk registry. 2026-07-15: the bulk
+    grid miner scaled the registry to 10,000s of cards (user directive); the
+    report must count them and never overstate validation (n_validated is
+    whatever the registry actually says, not a hardcoded hope)."""
     report = cr.build_report()
-    assert report["n_cards"] == 10
-    assert report["n_validated"] == 0
+    assert report["n_cards"] >= 10000
+    from scripts.platformkit.claims import card_registry as reg
+    n_validated_registry = sum(1 for c in reg.get_all_latest().values()
+                               if c.get("status") == "VALIDATED")
+    assert report["n_validated"] == n_validated_registry

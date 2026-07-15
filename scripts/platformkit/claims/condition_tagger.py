@@ -28,8 +28,40 @@ _PY_KEYWORDS = {"and", "or", "not", "in", "is", "True", "False", "None", "abs"}
 _SAFE_GLOBALS = {"__builtins__": {}, "abs": abs, "True": True, "False": False, "None": None}
 
 
+# trigger string -> (fields, compiled code). Cards are 10,000s now; re-parsing
+# every trigger on every tick is the difference between ~ms and ~seconds.
+_COMPILED: Dict[str, Any] = {}
+
+
 def _trigger_fields(trigger: str) -> set:
     return {t for t in _FIELD_RE.findall(trigger) if t not in _PY_KEYWORDS}
+
+
+def _compiled(trigger: str):
+    """(fields, code) for *trigger*, cached. code is None if uncompilable."""
+    hit = _COMPILED.get(trigger)
+    if hit is None:
+        fields = _trigger_fields(trigger)
+        try:
+            code = compile(trigger, "<trigger>", "eval")
+        except Exception:  # noqa: BLE001 -- bad trigger -> never fires
+            code = None
+        hit = (fields, code)
+        _COMPILED[trigger] = hit
+    return hit
+
+
+def eval_trigger(trigger: str, state: Dict[str, Any]) -> bool:
+    """Fail-closed single-trigger evaluation against as-of *state*: missing
+    field, None-valued comparison, or any eval error -> False. Shared by tag()
+    (live capture) and card_grader's retro-tagging (historical as-of rows)."""
+    fields, code = _compiled(trigger)
+    if code is None or not fields or not fields.issubset(state.keys()):
+        return False
+    try:
+        return bool(eval(code, _SAFE_GLOBALS, dict(state)))  # noqa: S307 -- allowlisted fields only, no builtins
+    except Exception:  # noqa: BLE001 -- any eval hiccup -> not fired, never raise
+        return False
 
 
 def tag(state: Dict[str, Any], scope: str) -> Dict[str, bool]:
@@ -48,16 +80,8 @@ def tag(state: Dict[str, Any], scope: str) -> Dict[str, bool]:
         card_id = card.get("card_id")
         if not card_id:
             continue
-        trigger = cond.get("trigger", "")
-        fields = _trigger_fields(trigger)
-        if not fields or not fields.issubset(state.keys()):
-            out[card_id] = False
-            continue
-        try:
-            out[card_id] = bool(eval(trigger, _SAFE_GLOBALS, dict(state)))  # noqa: S307 -- allowlisted fields only, no builtins
-        except Exception:  # noqa: BLE001 -- any eval hiccup -> not fired, never raise
-            out[card_id] = False
+        out[card_id] = eval_trigger(cond.get("trigger", ""), state)
     return out
 
 
-__all__ = ["tag"]
+__all__ = ["tag", "eval_trigger"]
