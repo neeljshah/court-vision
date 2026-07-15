@@ -70,9 +70,14 @@ BASE_RPS = 15.0
 # tripping a 1,254-count 429 penalty (all feed probes RED ~50min). A small fixed
 # share (same unknown-caller trap as close_capture) plus run_all_backfills'
 # max-2-concurrent cap keeps a backfill fleet inside the shared budget.
+# aggregate added 2026-07-14: the default_providers() stack (line daemon, pm
+# paper tick, best-bets compute, frontend serve) hit Kalshi with NO governor at
+# all -- several unpaced processes stacked on the live daemons' budget and
+# 429-stormed the venue (n_429_total=2606). One call per sport per tick, so a
+# small per-process share is ample; the shared pressure file coordinates the rest.
 DEFAULT_RATE_SHARES: Dict[str, float] = {"capture": 0.35, "snapshot": 0.65,
                                          "feed_health": 0.15, "close_capture": 0.15,
-                                         "backfill": 0.10}
+                                         "backfill": 0.10, "aggregate": 0.15}
 
 # Bucket capacity: a small burst allowance (2s worth of tokens at the full
 # per-process rate) so a fresh process start doesn't have to wait from empty,
