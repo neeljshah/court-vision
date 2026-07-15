@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { api, isUnavailable, type Parity } from "@/lib/p5api";
 import { Panel, Unavailable, Badge } from "./Primitives";
+import { Dot } from "@/components/ui/terminal";
 import { cn } from "@/lib/utils";
 
 // ParityGrid -- cross-sport coverage / loop-health grid from /api/parity.
@@ -30,7 +31,7 @@ export function ParityGrid() {
   if (!data) {
     return (
       <Panel title="Parity / health grid">
-        <p className="text-sm text-slate-500">loading…</p>
+        <p className="text-sm text-muted-foreground">loading…</p>
       </Panel>
     );
   }
@@ -40,53 +41,51 @@ export function ParityGrid() {
       title="Parity / health grid"
       right={<Badge tone={data.green ? "green" : "red"}>{data.green ? "green" : "red"}</Badge>}
     >
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="text-left text-[10px] uppercase tracking-wide text-slate-500">
-            <th className="pb-2 font-medium">Sport</th>
-            {data.dimensions.map((d) => (
-              <th key={d} className="pb-2 font-medium">
-                {d}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-slate-800">
-          {data.sports.map((row) => (
-            <tr key={row.sport} className="text-slate-200">
-              <td className="py-2 font-mono text-xs">{row.sport}</td>
-              {data.dimensions.map((d) => {
-                const cell = row.cells[d];
-                return (
-                  <td key={d} className="py-2">
-                    <Cell status={cell?.status} detail={cell?.detail} />
-                  </td>
-                );
-              })}
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-border text-left">
+              <th className="microlabel py-1.5 px-3">Sport</th>
+              {data.dimensions.map((d) => (
+                <th key={d} className="microlabel py-1.5 px-3">
+                  {d}
+                </th>
+              ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {data.sports.map((row) => (
+              <tr key={row.sport} className="text-foreground hover:bg-surface-2">
+                <td className="py-1.5 px-3 font-mono text-xs">{row.sport}</td>
+                {data.dimensions.map((d) => {
+                  const cell = row.cells[d];
+                  return (
+                    <td key={d} className="py-1.5 px-3">
+                      <Cell status={cell?.status} detail={cell?.detail} />
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </Panel>
   );
 }
 
 function Cell({ status, detail }: { status?: string; detail?: string }) {
+  const dotState = status === "green" ? "ok" : status === "red" ? "bad" : "warn";
   const tone =
     status === "green"
-      ? "bg-tier-a/20 text-tier-a"
+      ? "text-tier-a"
       : status === "red"
-        ? "bg-red-950/40 text-red-400"
-        : "bg-slate-800 text-slate-500";
+        ? "text-red-400"
+        : "text-muted-foreground";
   return (
-    <span
-      title={detail}
-      className={cn(
-        "inline-flex rounded px-1.5 py-0.5 text-[10px] font-mono",
-        tone,
-      )}
-    >
-      {status || "n/a"}
+    <span title={detail} className="inline-flex items-center gap-1.5">
+      <Dot state={dotState} />
+      <span className={cn("font-mono text-[10px]", tone)}>{status || "n/a"}</span>
     </span>
   );
 }

@@ -58,10 +58,10 @@ export function BookShoppingRow({ books, side }: BookShoppingRowProps) {
               role="img"
               aria-label={ariaLabel}
               className={cn(
-                "inline-flex flex-col items-center gap-0.5 rounded-md border px-2.5 py-1.5",
+                "inline-flex flex-col items-center gap-0.5 border px-2.5 py-1.5",
                 entry.is_best
-                  ? "border-tier-a/50 bg-tier-a/10"
-                  : "border-slate-700 bg-slate-900/60",
+                  ? "border-border bg-surface-3"
+                  : "border-border bg-surface-2",
               )}
               data-testid={entry.is_best ? "best-book-pill" : "book-pill"}
             >
@@ -69,15 +69,15 @@ export function BookShoppingRow({ books, side }: BookShoppingRowProps) {
               <span className="flex items-center gap-1">
                 <span
                   className={cn(
-                    "font-mono text-[9px] uppercase tracking-widest",
-                    entry.is_best ? "text-tier-a" : "text-slate-500",
+                    "font-data text-[9px] uppercase tracking-widest",
+                    entry.is_best ? "text-foreground" : "text-muted-foreground",
                   )}
                 >
                   {entry.book}
                 </span>
                 {entry.is_best && (
                   <span
-                    className="rounded bg-tier-a/20 px-1 font-mono text-[8px] font-bold uppercase tracking-wide text-tier-a"
+                    className="bg-surface-3 px-1 font-data text-[8px] font-bold uppercase tracking-wide text-foreground"
                     aria-hidden="true"  /* spoken via the parent aria-label */
                   >
                     best
@@ -88,8 +88,8 @@ export function BookShoppingRow({ books, side }: BookShoppingRowProps) {
               {/* Odds */}
               <span
                 className={cn(
-                  "font-mono text-xs font-semibold tabular-nums leading-none",
-                  entry.is_best ? "text-tier-a" : "text-slate-300",
+                  "font-data tabular text-xs font-semibold leading-none",
+                  entry.is_best ? "text-foreground" : "text-muted-foreground",
                 )}
               >
                 {oddsStr}
@@ -97,12 +97,7 @@ export function BookShoppingRow({ books, side }: BookShoppingRowProps) {
 
               {/* Line (spread / total), if provided */}
               {entry.line != null ? (
-                <span
-                  className={cn(
-                    "font-mono text-[10px] leading-none",
-                    entry.is_best ? "text-tier-a/70" : "text-slate-500",
-                  )}
-                >
+                <span className="font-data text-[10px] leading-none text-muted-foreground">
                   {fmtLine(entry.line)}
                 </span>
               ) : null}

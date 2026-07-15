@@ -101,7 +101,7 @@ function UnavailablePanel({
       <span className="font-mono text-xs uppercase tracking-wide text-amber-400">
         unavailable
       </span>
-      <span className="text-xs text-slate-400">{error}</span>
+      <span className="text-xs text-muted-foreground">{error}</span>
       {onRetry ? (
         <button
           type="button"
@@ -126,7 +126,7 @@ function DefaultEmpty() {
     <div
       role="status"
       data-honest-state="empty"
-      className="rounded-lg border border-slate-800 bg-surface-1/40 px-3 py-3 text-sm text-slate-400"
+      className="rounded-lg border border-slate-800 bg-surface-1/40 px-3 py-3 text-sm text-muted-foreground"
     >
       Nothing here yet.
     </div>

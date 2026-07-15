@@ -60,7 +60,7 @@ export function TallyTile({
 }) {
   return (
     <div className="rounded-lg border border-slate-800 bg-bg-subtle px-3 py-2.5">
-      <div className="text-[10px] uppercase tracking-wide text-slate-500">{label}</div>
+      <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</div>
       {loading ? (
         <div
           className="mt-0.5 h-6 w-12 animate-pulse rounded bg-slate-700/50"
@@ -70,7 +70,7 @@ export function TallyTile({
         />
       ) : (
         <div
-          className={`mt-0.5 font-mono text-base tabular-nums ${valueClass ?? "text-slate-100"}`}
+          className={`mt-0.5 font-mono text-base tabular-nums ${valueClass ?? "text-foreground"}`}
           data-testid={testId}
         >
           {value}

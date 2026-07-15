@@ -9,6 +9,7 @@ import {
 } from "@/lib/p5api";
 import { useLiveData } from "@/lib/useLiveData";
 import { Panel, Unavailable, Badge } from "./Primitives";
+import { Dot } from "@/components/ui/terminal";
 
 // FacesPanel -- the unified-gateway face directory + the SINGLE honesty bit.
 // Reads GET /api/catalog (the contracted faces: prediction / execution / lines /
@@ -79,7 +80,7 @@ export function FacesPanel() {
           <ViolationList honest={honest} err={honestErr} preResolve={honestPreResolve} />
 
           {catalog.honest_note ? (
-            <p className="mt-3 text-[11px] text-slate-600">
+            <p className="mt-3 text-[11px] text-faint">
               {catalog.honest_note}
             </p>
           ) : null}
@@ -110,36 +111,61 @@ function HonestyBadge({
 }) {
   // State 1: pure pre-resolve / SSR null (no error yet)
   if (preResolve) {
-    return <Badge tone="slate">checking...</Badge>;
+    return (
+      <span className="inline-flex items-center gap-1.5">
+        <Dot state="warn" />
+        <Badge tone="slate">checking...</Badge>
+      </span>
+    );
   }
   // State 2: real feed error (catalog torn, network failure, etc.)
   if (err) {
-    return <Badge tone="red">honesty check unavailable</Badge>;
+    return (
+      <span className="inline-flex items-center gap-1.5">
+        <Dot state="bad" />
+        <Badge tone="red">honesty check unavailable</Badge>
+      </span>
+    );
   }
   // State 3: resolved honest bit
   if (!honest) {
     // last-good retained -- no data at all (should not happen post-resolve but be safe)
-    return <Badge tone="slate">checking...</Badge>;
+    return (
+      <span className="inline-flex items-center gap-1.5">
+        <Dot state="warn" />
+        <Badge tone="slate">checking...</Badge>
+      </span>
+    );
   }
   if (honest.ok) {
-    return <Badge tone="green">all honest</Badge>;
+    return (
+      <span className="inline-flex items-center gap-1.5">
+        <Dot state="ok" />
+        <Badge tone="green">all honest</Badge>
+      </span>
+    );
   }
-  return <Badge tone="red">honesty check failed</Badge>;
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <Dot state="bad" />
+      <Badge tone="red">honesty check failed</Badge>
+    </span>
+  );
 }
 
 function FaceCard({ face }: { face: CatalogFace }) {
   return (
-    <div className="rounded-lg border border-slate-800 bg-slate-900/40 p-3">
+    <div className="border border-border bg-surface-1 p-3">
       <div className="flex items-center justify-between gap-2">
-        <span className="font-mono text-xs font-semibold uppercase text-slate-200">
+        <span className="font-mono text-xs font-semibold uppercase text-foreground">
           {face.face}
         </span>
-        <span className="font-mono text-[10px] text-slate-500">
+        <span className="font-mono text-[10px] text-muted-foreground">
           v{face.version}
         </span>
       </div>
       {face.title ? (
-        <p className="mt-0.5 text-[11px] text-slate-400">{face.title}</p>
+        <p className="mt-0.5 text-[11px] text-muted-foreground">{face.title}</p>
       ) : null}
       <div className="mt-2 flex flex-wrap gap-1">
         {(face.capabilities || []).map((c) => (
@@ -152,13 +178,13 @@ function FaceCard({ face }: { face: CatalogFace }) {
         ))}
       </div>
       <div className="mt-2 flex flex-wrap gap-1.5">
-        <span className="font-mono text-[9px] text-slate-600">
+        <span className="font-mono text-[9px] text-faint">
           units: {face.units}
         </span>
-        <span className="font-mono text-[9px] text-slate-600">
+        <span className="font-mono text-[9px] text-faint">
           edge_claimed: {String(face.edge_claimed)}
         </span>
-        <span className="font-mono text-[9px] text-slate-600">
+        <span className="font-mono text-[9px] text-faint">
           real_money: {String(face.real_money_enabled)}
         </span>
       </div>
@@ -172,7 +198,7 @@ function FaceCardSkeleton() {
   return (
     <div
       aria-hidden="true"
-      className="animate-pulse rounded-lg border border-slate-800 bg-slate-900/40 p-3"
+      className="animate-pulse border border-border bg-surface-1 p-3"
     >
       {/* header row: face name + version */}
       <div className="flex items-center justify-between gap-2">
@@ -235,11 +261,11 @@ function ViolationList({
   // Real feed error: ambiguous honesty is never green -- surface the reason
   if (err) {
     return (
-      <div className="mt-3 rounded-lg border border-red-900/50 bg-red-950/30 px-3 py-2">
+      <div className="mt-3 border border-red-900/50 bg-red-950/30 px-3 py-2">
         <p className="font-mono text-[11px] text-red-400">
           honesty check unavailable -- an ambiguous honesty state is NOT green
         </p>
-        <p className="mt-0.5 text-[10px] text-slate-500">{err}</p>
+        <p className="mt-0.5 text-[10px] text-muted-foreground">{err}</p>
       </div>
     );
   }
@@ -248,7 +274,7 @@ function ViolationList({
   if (!honest || honest.ok) return null;
 
   return (
-    <div className="mt-3 rounded-lg border border-red-900/50 bg-red-950/30 px-3 py-2">
+    <div className="mt-3 border border-red-900/50 bg-red-950/30 px-3 py-2">
       <p className="font-mono text-[11px] text-red-400">
         honesty check FAILED -- {honest.violations.length} violation
         {honest.violations.length === 1 ? "" : "s"} ({honest.n_faces} faces)

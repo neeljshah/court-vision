@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { api, isUnavailable, type ImproveStatus } from "@/lib/p5api";
 import { Panel, Unavailable, Badge } from "./Primitives";
+import { Num, Dot } from "@/components/ui/terminal";
 
 // RatchetPanel -- self-improvement status from /api/improve/status. Surfaces
 // the recalibration ratchet FSM state + which calibration kinds have a promoted
@@ -30,7 +31,7 @@ export function RatchetPanel() {
   if (!data) {
     return (
       <Panel title="Self-improve ratchet">
-        <p className="text-sm text-slate-500">loading…</p>
+        <p className="text-sm text-muted-foreground">loading…</p>
       </Panel>
     );
   }
@@ -46,29 +47,33 @@ export function RatchetPanel() {
       right={<Badge tone="slate">{state}</Badge>}
     >
       <div className="flex items-center gap-2 text-sm">
-        <span className="text-slate-400">last decision</span>
-        <Badge tone={tone as "green" | "amber" | "slate"}>
-          {decision || "none"}
-        </Badge>
+        <span className="text-muted-foreground">last decision</span>
+        <span className="inline-flex items-center gap-1.5">
+          <Dot state={decision === "SHIP" ? "ok" : decision === "REJECT" ? "warn" : "warn"} />
+          <Badge tone={tone as "green" | "amber" | "slate"}>
+            {decision || "none"}
+          </Badge>
+        </span>
         {data.ratchet?.shipped_version != null ? (
-          <span className="font-mono text-xs text-slate-500">
+          <Num className="text-xs text-muted-foreground">
             v{data.ratchet.shipped_version}
-          </span>
+          </Num>
         ) : null}
       </div>
 
       <div className="mt-3">
-        <div className="text-[10px] uppercase tracking-wide text-slate-500">
-          Calibration kinds ({data.n_promoted ?? 0}/{data.n_kinds ?? data.kinds.length} promoted)
+        <div className="microlabel">
+          Calibration kinds (<Num>{data.n_promoted ?? 0}</Num>/
+          <Num>{data.n_kinds ?? data.kinds.length}</Num> promoted)
         </div>
         <ul className="mt-2 space-y-1">
           {data.kinds.map((k) => (
             <li
               key={k.kind}
-              className="flex items-center justify-between font-mono text-xs"
+              className="flex items-center justify-between px-1 py-1 font-mono text-xs hover:bg-surface-2"
             >
-              <span className="text-slate-300">{k.kind}</span>
-              <span className="text-slate-500">
+              <span className="text-foreground">{k.kind}</span>
+              <span className="text-muted-foreground">
                 {k.current_version != null
                   ? `current v${k.current_version}`
                   : "no current"}
@@ -79,7 +84,7 @@ export function RatchetPanel() {
         </ul>
       </div>
       {data.honest_note ? (
-        <p className="mt-3 text-[11px] text-slate-600">{data.honest_note}</p>
+        <p className="mt-3 text-[11px] text-faint">{data.honest_note}</p>
       ) : null}
     </Panel>
   );

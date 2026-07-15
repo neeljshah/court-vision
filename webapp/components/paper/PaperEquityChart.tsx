@@ -65,10 +65,10 @@ function EquityTooltip({
       data-testid="paper-equity-tooltip"
       className="rounded border border-slate-700 bg-slate-900 px-3 py-2 text-[11px] font-mono text-slate-300"
     >
-      <div className="mb-1 text-[10px] text-slate-400">{pt.day ?? pt.ts ?? "unknown"}</div>
+      <div className="mb-1 text-[10px] text-muted-foreground">{pt.day ?? pt.ts ?? "unknown"}</div>
       <div>
         balance:{" "}
-        <span className="text-slate-100">{fmtUnits(pt.balance_units)}u</span>
+        <span className="text-foreground">{fmtUnits(pt.balance_units)}u</span>
       </div>
       <div>
         net:{" "}
@@ -76,7 +76,7 @@ function EquityTooltip({
           {fmtSignedUnits(net)}u
         </span>
       </div>
-      <div className="text-[9px] text-slate-600">
+      <div className="text-[9px] text-faint">
         {pt.n_bets} bets / {pt.n_win}W-{pt.n_loss}L
       </div>
     </div>
@@ -93,18 +93,18 @@ function EmptyCurve({ honestNote }: { honestNote?: string }) {
       data-testid="paper-equity-empty"
       className="flex flex-col items-center justify-center gap-1 py-8 text-center"
     >
-      <span className="font-mono text-[13px] font-semibold text-slate-600">
+      <span className="font-mono text-[13px] font-semibold text-faint">
         no equity curve yet
       </span>
-      <span className="font-mono text-[11px] text-slate-700 max-w-sm">
+      <span className="font-mono text-[11px] text-faint max-w-sm">
         the curve appears once paper bets are placed and graded
       </span>
       {honestNote ? (
-        <span className="font-mono text-[9px] text-slate-800 mt-1 max-w-md">
+        <span className="font-mono text-[9px] text-faint mt-1 max-w-md">
           {honestNote.length > 100 ? honestNote.slice(0, 100) + "..." : honestNote}
         </span>
       ) : null}
-      <span className="font-mono text-[9px] text-slate-800 mt-1">
+      <span className="font-mono text-[9px] text-faint mt-1">
         UNITS only -- no dollars; no edge claimed
       </span>
     </div>
@@ -157,12 +157,12 @@ export function PaperEquityChart({
   return (
     <div data-testid="paper-equity-chart" className="w-full">
       <div className="mb-1 flex items-center justify-between">
-        <span className="font-mono text-[9px] uppercase tracking-widest text-slate-600">
+        <span className="font-mono text-[9px] uppercase tracking-widest text-faint">
           cumulative bankroll (units)
         </span>
         <span
           data-testid="paper-equity-last"
-          className="font-mono text-[12px] font-semibold text-slate-300"
+          className="font-mono text-[12px] font-semibold text-foreground"
         >
           {fmtUnits(lastBalance)}u
         </span>
@@ -198,7 +198,7 @@ export function PaperEquityChart({
         </AreaChart>
       </ResponsiveContainer>
       <div className="mt-1">
-        <span className="font-mono text-[9px] text-slate-700">
+        <span className="font-mono text-[9px] text-faint">
           {points.length} points -- dashed line = starting bankroll. UNITS only; no $.
         </span>
       </div>

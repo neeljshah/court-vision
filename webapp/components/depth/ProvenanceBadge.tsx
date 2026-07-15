@@ -47,7 +47,7 @@ export function ProvenanceBadge({
     <span className={cn("inline-flex items-center gap-1", className)}>
       <Badge
         variant="outline"
-        className="font-mono text-[10px] font-normal tracking-tight text-muted-foreground"
+        className="rounded-none border-border font-data text-[10px] font-normal tracking-tight text-faint"
         title={`source: ${label}`}
       >
         {label}

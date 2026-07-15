@@ -6,6 +6,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { Num } from "@/components/ui/terminal";
 import type { BoxscorePlayer } from "@/lib/p5api_ext";
 
 // A payload older than this is considered stale even if HTTP returned 200.
@@ -41,9 +42,17 @@ export const fmtMin = (v: number | null | undefined): string => {
   return s > 0 ? `${m}:${String(s).padStart(2, "0")}` : `${m}`;
 };
 
+/** Format an ISO feed timestamp as HH:MM:SS for a PanelHead as-of stamp. */
+export function fmtClockIso(iso: string | null | undefined): string | null {
+  if (!iso) return null;
+  const t = Date.parse(iso);
+  if (Number.isNaN(t)) return null;
+  return new Date(t).toLocaleTimeString("en-US", { hour12: false });
+}
+
 // LiveBoxSkeleton -- shimmer for ingame=null (fetch in flight). Matches the live
 // content shape: score-line + win-prob bar + boxscore rows. Never green/red.
-const SK = "skeleton-shimmer rounded";
+const SK = "skeleton-shimmer";
 export function LiveBoxSkeleton() {
   return (
     <div role="status" aria-label="Live game data loading" data-testid="live-box-skeleton" className="flex flex-col gap-4">
@@ -52,7 +61,7 @@ export function LiveBoxSkeleton() {
         <div className="flex items-baseline gap-2">
           <div className={`${SK} h-4 w-10`} />
           <div className={`${SK} h-7 w-8`} />
-          <span className="text-slate-700">@</span>
+          <span className="text-faint">@</span>
           <div className={`${SK} h-7 w-8`} />
           <div className={`${SK} h-4 w-10`} />
         </div>
@@ -70,7 +79,7 @@ export function LiveBoxSkeleton() {
           {[0,1,2,3].map((i) => <div key={i} className={`${SK} h-3 w-8`} />)}
         </div>
         {[0,1,2,3,4].map((n) => (
-          <div key={n} className="flex gap-2 py-1 border-t border-slate-800/50">
+          <div key={n} className="flex gap-2 py-1 border-t border-border">
             <div className={`${SK} h-4 flex-1`} />
             {[0,1,2,3].map((i) => <div key={i} className={`${SK} h-4 w-8`} />)}
           </div>
@@ -87,12 +96,12 @@ export function ClvStatusChip({ status }: { status: string | null | undefined })
   return (
     <span
       className={cn(
-        "inline-block rounded border px-1.5 py-0.5 font-mono text-[10px]",
+        "inline-block border px-1.5 py-0.5 font-data text-[10px]",
         isInsufficient
-          ? "border-amber-900/50 text-amber-400"
+          ? "border-warning/40 text-stale"
           : status === "true_close"
-          ? "border-emerald-900/50 text-emerald-400"
-          : "border-slate-700 text-slate-400",
+          ? "border-success/40 text-up"
+          : "border-border text-muted-foreground",
       )}
     >
       CLV: {status}
@@ -109,12 +118,12 @@ export function AgeChip({ ageLabel, generatedAt }: { ageLabel: string; generated
       data-testid="age-chip"
       title={`Feed generated_at: ${generatedAt ?? "unknown"}`}
       className={cn(
-        "inline-flex items-center gap-1 rounded border border-slate-700/60",
-        "bg-slate-800/50 px-1.5 py-0.5 font-mono text-[10px] text-slate-400",
+        "inline-flex items-center gap-1 border border-border",
+        "bg-surface-2 px-1.5 py-0.5 font-data text-[10px] text-muted-foreground",
       )}
     >
       {/* Small dot indicating feed is being received (neutral, not green/live) */}
-      <span className="h-1.5 w-1.5 rounded-full bg-slate-500" aria-hidden="true" />
+      <span className="h-1.5 w-1.5 rounded-full bg-faint" aria-hidden="true" />
       {ageLabel}
     </span>
   );
@@ -127,11 +136,11 @@ export function StaleAgeNote({ age, generatedAt }: { age: number; generatedAt: s
   return (
     <p
       data-testid="stale-age"
-      className="mt-1.5 font-mono text-[10px] text-amber-400/70"
+      className="mt-1.5 font-data text-[10px] text-stale"
     >
       Last update: {ageStr}
       {generatedAt && (
-        <span className="ml-1 text-slate-600" title={generatedAt}>
+        <span className="ml-1 text-faint" title={generatedAt}>
           ({generatedAt})
         </span>
       )}
@@ -152,36 +161,36 @@ export function BoxTable({ players }: { players: BoxscorePlayer[] }) {
         Live in-game player statistics -- points, rebounds, assists, and minutes played.
       </caption>
       <thead>
-        <tr className="text-left text-[10px] uppercase tracking-wide text-slate-500">
-          <th scope="col" className="pb-1.5 font-medium">player</th>
-          <th scope="col" className="pb-1.5 text-right font-medium">min</th>
-          <th scope="col" className="pb-1.5 text-right font-medium">pts</th>
-          <th scope="col" className="pb-1.5 text-right font-medium">reb</th>
-          <th scope="col" className="pb-1.5 text-right font-medium">ast</th>
+        <tr className="text-left">
+          <th scope="col" className="microlabel pb-1.5 px-3">player</th>
+          <th scope="col" className="microlabel pb-1.5 px-3 text-right">min</th>
+          <th scope="col" className="microlabel pb-1.5 px-3 text-right">pts</th>
+          <th scope="col" className="microlabel pb-1.5 px-3 text-right">reb</th>
+          <th scope="col" className="microlabel pb-1.5 px-3 text-right">ast</th>
         </tr>
       </thead>
-      <tbody className="divide-y divide-slate-800/50">
+      <tbody className="divide-y divide-border">
         {players.map((p, i) => (
-          <tr key={`${p.name}-${i}`} className="text-slate-300">
-            <td className="py-1.5 font-medium">
+          <tr key={`${p.name}-${i}`} className="text-foreground hover:bg-surface-2">
+            <td className="py-1.5 px-3 font-medium">
               {p.name}
               {p.team && (
-                <span className="ml-1 font-mono text-[10px] text-slate-500">
+                <span className="ml-1 font-data text-[10px] text-faint">
                   {p.team}
                 </span>
               )}
             </td>
-            <td className="py-1.5 text-right font-mono tabular-nums">
-              {fmtMin(p.min)}
+            <td className="py-1.5 px-3 text-right">
+              <Num>{fmtMin(p.min)}</Num>
             </td>
-            <td className="py-1.5 text-right font-mono tabular-nums">
-              {fmtStat(p.pts)}
+            <td className="py-1.5 px-3 text-right">
+              <Num>{fmtStat(p.pts)}</Num>
             </td>
-            <td className="py-1.5 text-right font-mono tabular-nums">
-              {fmtStat(p.reb)}
+            <td className="py-1.5 px-3 text-right">
+              <Num>{fmtStat(p.reb)}</Num>
             </td>
-            <td className="py-1.5 text-right font-mono tabular-nums">
-              {fmtStat(p.ast)}
+            <td className="py-1.5 px-3 text-right">
+              <Num>{fmtStat(p.ast)}</Num>
             </td>
           </tr>
         ))}

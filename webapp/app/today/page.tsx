@@ -25,7 +25,7 @@ export default function TodayPage() {
   return (
     <div className="pb-12">
       <header className="mx-auto max-w-5xl px-4 pt-8 sm:px-6">
-        <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-muted-foreground">
+        <p className="microlabel">
           autonomous daily cycle
         </p>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight text-foreground">

@@ -35,17 +35,17 @@ export default function PaperError({ error, reset }: ErrorProps) {
       <p className="text-sm font-semibold text-amber-400">
         Paper trail temporarily unavailable
       </p>
-      <p className="mt-2 text-xs text-slate-500">
+      <p className="mt-2 text-xs text-muted-foreground">
         The page encountered an unexpected error. No data has been lost -- paper
         trades are stored server-side. Retry to reload the latest snapshot.
       </p>
-      <p className="mt-1 text-[11px] text-slate-600">
+      <p className="mt-1 text-[11px] text-faint">
         All values are UNITS, never dollars. No edge is claimed.
       </p>
       <button
         type="button"
         onClick={reset}
-        className="mt-6 rounded-full border border-slate-700 px-5 py-1.5 text-xs text-slate-300 hover:border-slate-500 hover:text-slate-100 transition-colors"
+        className="mt-6 rounded-full border border-slate-700 px-5 py-1.5 text-xs text-foreground hover:border-slate-500 hover:text-foreground transition-colors"
       >
         Retry
       </button>

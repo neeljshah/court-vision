@@ -29,14 +29,14 @@ function clvDisplay(v: number | string | null | undefined): {
   cls: string;
 } {
   if (v === null || v === undefined || v === "INSUFFICIENT_DATA") {
-    return { text: "INSUFFICIENT_DATA", cls: "text-slate-500" };
+    return { text: "INSUFFICIENT_DATA", cls: "text-muted-foreground" };
   }
   if (typeof v === "string") {
     // any other string (e.g. "UNPROVEN") surfaced verbatim, never greened
-    return { text: v, cls: "text-slate-500" };
+    return { text: v, cls: "text-muted-foreground" };
   }
   const sign = v >= 0 ? "+" : "";
-  const cls = v > 0 ? "text-emerald-400" : v < 0 ? "text-rose-400" : "text-slate-300";
+  const cls = v > 0 ? "text-emerald-400" : v < 0 ? "text-rose-400" : "text-foreground";
   return { text: `${sign}${(v * 100).toFixed(2)}%`, cls };
 }
 
@@ -59,14 +59,14 @@ function Tile({
 }) {
   return (
     <div className="rounded-lg border border-slate-800 bg-bg-subtle px-3 py-3">
-      <div className="text-[10px] uppercase tracking-wide text-slate-500">{label}</div>
+      <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</div>
       <div
-        className={`mt-1 font-mono text-lg tabular-nums ${valueCls ?? "text-slate-100"}`}
+        className={`mt-1 font-mono text-lg tabular-nums ${valueCls ?? "text-foreground"}`}
         data-testid={testId}
       >
         {value}
       </div>
-      {sub ? <div className="mt-0.5 font-mono text-[9px] text-slate-600">{sub}</div> : null}
+      {sub ? <div className="mt-0.5 font-mono text-[9px] text-faint">{sub}</div> : null}
     </div>
   );
 }
@@ -80,9 +80,9 @@ function DailyStrip({ daily }: { daily: PnlSeries["daily"] }) {
     return (
       <p
         data-testid="paper-daily-empty"
-        className="font-mono text-[10px] text-slate-600"
+        className="font-mono text-[10px] text-faint"
       >
-        no settled days yet -- daily P&L appears once paper bets grade
+        no settled days yet -- day units appear once paper bets grade
       </p>
     );
   }
@@ -91,7 +91,7 @@ function DailyStrip({ daily }: { daily: PnlSeries["daily"] }) {
   return (
     <ul
       className="flex flex-wrap items-end gap-2"
-      aria-label="Daily paper P&L in units (last 14 days)"
+      aria-label="Daily paper units (last 14 days)"
       data-testid="paper-daily-strip"
     >
       {recent.map((d, i) => {
@@ -108,7 +108,7 @@ function DailyStrip({ daily }: { daily: PnlSeries["daily"] }) {
               style={{ height: `${h}px` }}
               aria-hidden="true"
             />
-            <span className="font-mono text-[8px] text-slate-600">
+            <span className="font-mono text-[8px] text-faint">
               {d.day ? d.day.slice(5) : "--"}
             </span>
           </li>
@@ -154,7 +154,7 @@ export function PaperEquityPanel({ series, bankroll, loading }: PaperEquityPanel
       className="mb-6 rounded-xl border border-slate-800 bg-bg-panel"
     >
       <header className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 px-4 py-2.5">
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           Bankroll &amp; equity curve
         </h2>
         <span className="font-mono text-[10px] uppercase tracking-wide text-amber-400">
@@ -172,10 +172,10 @@ export function PaperEquityPanel({ series, bankroll, loading }: PaperEquityPanel
             <div className="h-8 w-48 animate-pulse rounded bg-slate-700/40" aria-busy="true" />
           ) : currentUnits != null && startUnits != null ? (
             <>
-              <span className="font-mono text-3xl font-semibold tabular-nums text-slate-100">
+              <span className="font-mono text-3xl font-semibold tabular-nums text-foreground">
                 {fmtUnits(currentUnits)}
               </span>
-              <span className="font-mono text-sm text-slate-500">
+              <span className="font-mono text-sm text-muted-foreground">
                 / {fmtUnits(startUnits)} units
               </span>
               {netUnits != null && (
@@ -186,7 +186,7 @@ export function PaperEquityPanel({ series, bankroll, loading }: PaperEquityPanel
                       ? "text-emerald-400"
                       : netUnits < 0
                         ? "text-rose-400"
-                        : "text-slate-300"
+                        : "text-foreground"
                   }`}
                 >
                   net {fmtSignedUnits(netUnits)}u
@@ -194,7 +194,7 @@ export function PaperEquityPanel({ series, bankroll, loading }: PaperEquityPanel
               )}
             </>
           ) : (
-            <span className="font-mono text-sm text-slate-500">
+            <span className="font-mono text-sm text-muted-foreground">
               bankroll unavailable -- no paper book yet
             </span>
           )}
@@ -241,16 +241,16 @@ export function PaperEquityPanel({ series, bankroll, loading }: PaperEquityPanel
           />
         </div>
 
-        {/* Daily P&L mini strip */}
+        {/* Daily units mini strip */}
         <div>
-          <span className="mb-2 block font-mono text-[9px] uppercase tracking-widest text-slate-500">
-            Daily P&amp;L (units, last 14 days)
+          <span className="mb-2 block font-mono text-[9px] uppercase tracking-widest text-muted-foreground">
+            Day units (last 14 days)
           </span>
           <DailyStrip daily={isUnavail ? [] : series!.daily ?? []} />
         </div>
 
         {/* Honest footer */}
-        <p className="mt-4 border-t border-slate-800 pt-3 font-mono text-[10px] text-slate-600">
+        <p className="mt-4 border-t border-slate-800 pt-3 font-mono text-[10px] text-faint">
           PAPER simulation -- this is "how much you WOULD have made" in UNITS, not
           dollars. Executed: false. Real-money: DENY. No edge or profit is claimed;
           a flat/negative curve that tracks the efficient close is an honest result.

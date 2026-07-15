@@ -34,9 +34,9 @@ describe("Criterion 1 -- live state (isStale=false, no error)", () => {
     expect(screen.getByText(/updated/i)).toBeInTheDocument();
   });
 
-  it("wrapper carries a green class in live state", () => {
+  it("wrapper carries a success class in live state", () => {
     const { container } = render(<LiveBadge {...LIVE} />);
-    expect(badge(container).className).toMatch(/green/);
+    expect(badge(container).className).toMatch(/success/);
   });
 
   it("renders animate-ping (live pulse dot) in live state", () => {
@@ -69,10 +69,10 @@ describe("Criterion 2 -- stale state", () => {
     expect(screen.getByText(/stale/i)).toBeInTheDocument();
   });
 
-  it("wrapper is amber, not green", () => {
+  it("wrapper is warning-toned, not success", () => {
     const { container } = render(<LiveBadge {...STALE} />);
-    expect(badge(container).className).toMatch(/amber/);
-    expect(badge(container).className).not.toMatch(/green/);
+    expect(badge(container).className).toMatch(/warning/);
+    expect(badge(container).className).not.toMatch(/success/);
   });
 
   it("no animate-ping in stale state", () => {
@@ -85,10 +85,10 @@ describe("Criterion 2 -- stale state", () => {
     expect(container.textContent).toMatch(/1m old/i);
   });
 
-  it("error with last-good data -> stale amber, no green", () => {
+  it("error with last-good data -> stale warning-toned, no success", () => {
     const { container } = render(<LiveBadge {...ERROR_WITH_DATA} />);
-    expect(badge(container).className).toMatch(/amber/);
-    expect(badge(container).className).not.toMatch(/green/);
+    expect(badge(container).className).toMatch(/warning/);
+    expect(badge(container).className).not.toMatch(/success/);
     // 120s -> 2m old
     expect(container.textContent).toMatch(/2m old/i);
   });
@@ -103,10 +103,10 @@ describe("Criterion 3 -- checking state (isLoading, no data)", () => {
     expect(screen.getByText(/checking\.\.\./i)).toBeInTheDocument();
   });
 
-  it("wrapper has no green or amber class", () => {
+  it("wrapper has no success or warning class", () => {
     const { container } = render(<LiveBadge {...LOADING} />);
-    expect(badge(container).className).not.toMatch(/green/);
-    expect(badge(container).className).not.toMatch(/amber/);
+    expect(badge(container).className).not.toMatch(/success/);
+    expect(badge(container).className).not.toMatch(/warning/);
   });
 
   it("renders animate-spin (spinner)", () => {
@@ -135,11 +135,11 @@ describe("Criterion 4 -- unavailable state (error, no data)", () => {
     expect(screen.queryByText(/failed/i)).toBeNull();
   });
 
-  it("wrapper has no red or destructive class (neutral amber)", () => {
+  it("wrapper has no red or destructive class (neutral warning)", () => {
     const { container } = render(<LiveBadge {...ERROR_NO_DATA} />);
     expect(badge(container).className).not.toMatch(/\bred\b/);
     expect(badge(container).className).not.toMatch(/destructive/);
-    expect(badge(container).className).toMatch(/amber/);
+    expect(badge(container).className).toMatch(/warning/);
   });
 
   it("handles string errors without crash", () => {
@@ -259,14 +259,14 @@ describe("LiveBadge -- stale-never-green invariant", () => {
   ];
 
   nonLiveStates.forEach(({ label, props }) => {
-    it(`no green class when ${label}`, () => {
+    it(`no success class when ${label}`, () => {
       const { container } = render(<LiveBadge {...props} />);
-      expect(badge(container).className).not.toMatch(/green/);
+      expect(badge(container).className).not.toMatch(/success/);
     });
   });
 
-  it("green class present ONLY in the live state", () => {
+  it("success class present ONLY in the live state", () => {
     const { container } = render(<LiveBadge {...LIVE} />);
-    expect(badge(container).className).toMatch(/green/);
+    expect(badge(container).className).toMatch(/success/);
   });
 });

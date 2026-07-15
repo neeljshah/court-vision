@@ -72,13 +72,13 @@ export function VerdictTrend({
       }
     >
       {pts.length === 0 ? (
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-muted-foreground">
           no recorded-verdict history yet -- honest empty, never a fabricated line.
         </p>
       ) : (
         <div className="flex flex-col gap-2">
           <Sparkline pts={pts} />
-          <div className="flex items-center justify-between font-mono text-[10px] text-slate-500">
+          <div className="flex items-center justify-between font-mono text-[10px] text-muted-foreground">
             <span>{pts[0].date_et}</span>
             <span>{last?.date_et}</span>
           </div>

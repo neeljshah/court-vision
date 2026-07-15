@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { BestBet, PaperPlaceResult } from "@/lib/p5api";
 import { api, isUnavailable } from "@/lib/p5api";
 import { Badge } from "./Primitives";
+import { Num } from "@/components/ui/terminal";
 import { cn, fmtPct, tierClass } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -86,14 +87,14 @@ export function PaperBetDialog({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
-        className="w-full max-w-[480px] border-slate-800 bg-bg-panel"
+        className="w-full max-w-[480px] border-border bg-card"
         aria-label="Place paper bet"
       >
         <DialogHeader>
           <DialogTitle className="text-base">
             Place paper bet (paper only)
           </DialogTitle>
-          <DialogDescription className="text-xs text-slate-500">
+          <DialogDescription className="text-xs text-faint">
             Paper only -- executed is always false -- no $ amount. Stake is sized
             server-side in UNITS.
           </DialogDescription>
@@ -103,21 +104,19 @@ export function PaperBetDialog({
           <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
             <Field label="Market">
               {bet.market_type}{" "}
-              <span className="text-slate-400">{bet.side}</span>
+              <span className="text-faint">{bet.side}</span>
             </Field>
             <Field label="Line">{bet.line != null ? bet.line : "--"}</Field>
             <Field label="Odds (dec)">
-              <span className="font-mono tabular-nums">
-                {bet.best_odds.toFixed(2)}
-              </span>
+              <Num>{bet.best_odds.toFixed(2)}</Num>
             </Field>
             <Field label="Book">
-              <span className="text-slate-300">{bet.best_book}</span>
+              <span className="text-muted-foreground">{bet.best_book}</span>
             </Field>
             <Field label="Tier">
               <span
                 className={cn(
-                  "inline-flex rounded border px-1.5 py-0.5 text-[10px] font-mono",
+                  "inline-flex border px-1.5 py-0.5 text-[10px] font-data",
                   tierClass(bet.tier || undefined),
                 )}
               >
@@ -125,22 +124,18 @@ export function PaperBetDialog({
               </span>
             </Field>
             <Field label="EV (vs devig)">
-              <span className="font-mono tabular-nums">{fmtPct(bet.ev)}</span>
+              <Num>{fmtPct(bet.ev)}</Num>
             </Field>
             <Field label="Model prob">
-              <span className="font-mono tabular-nums">
-                {fmtPct(bet.model_prob, false)}
-              </span>
+              <Num>{fmtPct(bet.model_prob, false)}</Num>
             </Field>
             <Field label="Stake (units)">
-              <span className="font-mono tabular-nums">
-                {bet.stake_units.toFixed(2)}u
-              </span>
+              <Num>{bet.stake_units.toFixed(2)}u</Num>
             </Field>
           </dl>
         ) : null}
 
-        <div className="rounded-lg border border-slate-800 bg-slate-900/40 px-3 py-2 text-[11px] text-slate-500">
+        <div className="border border-border bg-surface-1 px-3 py-2 text-[11px] text-faint">
           This records a paper bet. No real money is placed. Stake is sized
           server-side in UNITS -- no $ amount is stored or displayed. CLV grades
           against the close; vs-close comparison is UNPROVEN (no in-play odds).
@@ -197,10 +192,8 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-0.5">
-      <dt className="text-[10px] uppercase tracking-wide text-slate-600">
-        {label}
-      </dt>
-      <dd className="text-slate-200">{children}</dd>
+      <dt className="microlabel">{label}</dt>
+      <dd className="text-foreground">{children}</dd>
     </div>
   );
 }

@@ -14,6 +14,7 @@
 
 import type { ClvScoreboard, Unavailable } from "@/lib/types";
 import { EMPTY_CELL } from "@/lib/tokens";
+import { Panel, PanelHead, Num } from "@/components/ui/terminal";
 
 // ---------------------------------------------------------------------------
 // StatCell
@@ -27,29 +28,27 @@ function StatCell({
 }: {
   label: string;
   value: string | number;
-  tone?: "slate" | "green" | "red" | "amber" | "muted";
+  tone?: "slate" | "up" | "down" | "stale" | "muted";
   note?: string;
 }) {
   const valueCls = (() => {
     switch (tone) {
-      case "green":  return "font-mono text-[14px] font-semibold tabular-nums text-emerald-400";
-      case "red":    return "font-mono text-[14px] font-semibold tabular-nums text-rose-400";
-      case "amber":  return "font-mono text-[14px] font-semibold tabular-nums text-amber-400";
-      case "muted":  return "font-mono text-[14px] font-semibold tabular-nums text-slate-600";
-      default:       return "font-mono text-[14px] font-semibold tabular-nums text-slate-200";
+      case "up":     return "text-[14px] font-semibold text-up";
+      case "down":   return "text-[14px] font-semibold text-down";
+      case "stale":  return "text-[14px] font-semibold text-stale";
+      case "muted":  return "text-[14px] font-semibold text-faint";
+      default:       return "text-[14px] font-semibold text-foreground";
     }
   })();
 
   return (
     <div className="flex flex-col gap-0.5">
-      <span className="font-mono text-[9px] uppercase tracking-widest text-slate-600">
-        {label}
-      </span>
-      <span className={valueCls} data-testid={`clv-strip-${label.toLowerCase().replace(/\s+/g, "-")}`}>
-        {value}
+      <span className="microlabel">{label}</span>
+      <span data-testid={`clv-strip-${label.toLowerCase().replace(/\s+/g, "-")}`}>
+        <Num className={valueCls}>{value}</Num>
       </span>
       {note ? (
-        <span className="font-mono text-[9px] text-slate-700">{note}</span>
+        <span className="font-data text-[9px] text-faint">{note}</span>
       ) : null}
     </div>
   );
@@ -63,19 +62,22 @@ interface RecordsClvStripProps {
   /** Already-fetched CLV data (or unavailable sentinel / null while loading). */
   clv:     ClvScoreboard | Unavailable | null;
   loading?: boolean;
+  /** Fetch time for the CLV feed (no upstream timestamp exists on this shape). */
+  asOf?:   string | null;
 }
 
-export function RecordsClvStrip({ clv, loading = false }: RecordsClvStripProps) {
+export function RecordsClvStrip({ clv, loading = false, asOf = null }: RecordsClvStripProps) {
   if (loading) {
     return (
-      <div
-        data-testid="records-clv-strip"
-        aria-label="CLV scoreboard loading"
-        className="flex flex-wrap gap-6 rounded border border-slate-800 bg-slate-900/30 px-4 py-3"
-      >
-        {["n-bets", "beat-close", "mean-clv"].map((k) => (
-          <div key={k} className="h-8 w-20 animate-pulse rounded bg-slate-800/50" role="presentation" />
-        ))}
+      <div data-testid="records-clv-strip" aria-label="CLV scoreboard loading">
+        <Panel>
+          <PanelHead title="CLV Scoreboard" asOf={asOf} />
+          <div className="flex flex-wrap gap-6 px-4 py-3">
+            {["n-bets", "beat-close", "mean-clv"].map((k) => (
+              <div key={k} className="h-8 w-20 animate-pulse bg-surface-2" role="presentation" />
+            ))}
+          </div>
+        </Panel>
       </div>
     );
   }
@@ -108,74 +110,75 @@ export function RecordsClvStrip({ clv, loading = false }: RecordsClvStripProps) 
   }
 
   // Tone for mean CLV
-  const meanTone: "green" | "red" | "slate" | "muted" = (() => {
+  const meanTone: "up" | "down" | "slate" | "muted" = (() => {
     if (insufficient || meanClvPct == null) return "muted";
-    return meanClvPct > 0 ? "green" : meanClvPct < 0 ? "red" : "slate";
+    return meanClvPct > 0 ? "up" : meanClvPct < 0 ? "down" : "slate";
   })();
 
   // Tone for beat-close
-  const beatTone: "green" | "red" | "slate" | "muted" = (() => {
+  const beatTone: "up" | "down" | "slate" | "muted" = (() => {
     if (insufficient || pctBeatClose == null) return "muted";
     const pct = pctBeatClose > 1 ? pctBeatClose : pctBeatClose * 100;
-    return pct >= 55 ? "green" : pct < 45 ? "red" : "slate";
+    return pct >= 55 ? "up" : pct < 45 ? "down" : "slate";
   })();
 
   return (
-    <div
-      data-testid="records-clv-strip"
-      role="region"
-      aria-label="CLV scoreboard"
-      className="flex flex-wrap items-end gap-6 rounded border border-slate-800 bg-slate-900/30 px-4 py-3"
-    >
-      {/* n_bets */}
-      <StatCell
-        label="graded bets"
-        value={nBets}
-        tone={nBets > 0 ? "slate" : "muted"}
-      />
+    <div data-testid="records-clv-strip" role="region" aria-label="CLV scoreboard">
+      <Panel>
+        <PanelHead
+          title="CLV Scoreboard"
+          asOf={asOf}
+          right={
+            <span className="font-data text-[9px] text-faint">
+              beat-the-close; calibration only -- not a market edge
+            </span>
+          }
+        />
+        <div className="flex flex-wrap items-end gap-6 px-4 py-3">
+          {/* n_bets */}
+          <StatCell
+            label="graded bets"
+            value={nBets}
+            tone={nBets > 0 ? "slate" : "muted"}
+          />
 
-      {/* Honest INSUFFICIENT_DATA gate */}
-      {insufficient ? (
-        <div className="flex flex-col gap-0.5">
-          <span className="font-mono text-[9px] uppercase tracking-widest text-slate-600">
-            CLV score
-          </span>
-          <span
-            data-testid="clv-strip-insufficient"
-            className="font-mono text-[13px] font-semibold text-slate-600"
-          >
-            INSUFFICIENT_DATA
-          </span>
-          <span className="font-mono text-[9px] text-slate-700">
-            {nBets === 0
-              ? "no graded bets with a close yet -- not enough data to score"
-              : "CLV service unavailable"}
-          </span>
+          {/* Honest INSUFFICIENT_DATA gate */}
+          {insufficient ? (
+            <div className="flex flex-col gap-0.5">
+              <span className="microlabel">CLV score</span>
+              <span
+                data-testid="clv-strip-insufficient"
+                className="font-data text-[13px] font-semibold text-faint"
+              >
+                INSUFFICIENT_DATA
+              </span>
+              <span className="font-data text-[9px] text-faint">
+                {nBets === 0
+                  ? "no graded bets with a close yet -- not enough data to score"
+                  : "CLV service unavailable"}
+              </span>
+            </div>
+          ) : (
+            <>
+              {/* pct_beat_close */}
+              <StatCell
+                label="beat close"
+                value={fmtPctBeat(pctBeatClose)}
+                tone={beatTone}
+                note={isProxy ? "(proxy close)" : undefined}
+              />
+
+              {/* mean_clv_pct */}
+              <StatCell
+                label="mean CLV"
+                value={fmtClv(meanClvPct)}
+                tone={meanTone}
+                note={isProxy ? "(proxy close)" : undefined}
+              />
+            </>
+          )}
         </div>
-      ) : (
-        <>
-          {/* pct_beat_close */}
-          <StatCell
-            label="beat close"
-            value={fmtPctBeat(pctBeatClose)}
-            tone={beatTone}
-            note={isProxy ? "(proxy close)" : undefined}
-          />
-
-          {/* mean_clv_pct */}
-          <StatCell
-            label="mean CLV"
-            value={fmtClv(meanClvPct)}
-            tone={meanTone}
-            note={isProxy ? "(proxy close)" : undefined}
-          />
-        </>
-      )}
-
-      {/* Honesty footnote */}
-      <span className="self-end font-mono text-[9px] text-slate-700">
-        CLV = beat-the-close; calibration only -- not a market edge
-      </span>
+      </Panel>
     </div>
   );
 }

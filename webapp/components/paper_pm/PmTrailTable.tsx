@@ -133,7 +133,7 @@ export function PmTrailTable({ rows, loading, error, rankMode }: Props) {
 
   if (rows.length === 0) {
     return (
-      <div className="rounded-lg border border-slate-800 bg-bg-subtle/40 px-4 py-10 text-center text-sm text-slate-500">
+      <div className="rounded-lg border border-slate-800 bg-bg-subtle/40 px-4 py-10 text-center text-sm text-muted-foreground">
         No paper trades in the PM trail yet.
       </div>
     );
@@ -152,7 +152,7 @@ export function PmTrailTable({ rows, loading, error, rankMode }: Props) {
       />
 
       <div className="flex items-center justify-between">
-        <span className="font-mono text-[10px] text-slate-600">
+        <span className="font-mono text-[10px] text-faint">
           {filtered.length} of {rows.length} trades
         </span>
         {rankMode ? (
@@ -169,7 +169,7 @@ export function PmTrailTable({ rows, loading, error, rankMode }: Props) {
           <caption className="sr-only">
             PM paper trail -- units and probability only, no dollar amounts.
           </caption>
-          <thead className="sticky top-0 z-10 bg-bg-panel text-[10px] uppercase tracking-wide text-slate-400">
+          <thead className="sticky top-0 z-10 bg-bg-panel text-[10px] uppercase tracking-wide text-muted-foreground">
             <tr className="border-b border-slate-800">
               {rankMode ? (
                 <th className="px-2 py-2 text-right">#</th>
@@ -208,7 +208,7 @@ export function PmTrailTable({ rows, loading, error, rankMode }: Props) {
         </table>
       </ScrollArea>
 
-      <p className="text-[11px] text-slate-600">
+      <p className="text-[11px] text-faint">
         Paper mode -- stakes are units (no $). CLV (better-number-than-close) is
         the only honest calibration yardstick. No edge is claimed.
       </p>
@@ -234,15 +234,15 @@ function SortTh({ col, sortKey, sortDir, onSort, disabled, align = "left", child
       aria-sort={active ? (sortDir === "asc" ? "ascending" : "descending") : "none"}
     >
       {disabled ? (
-        <span className="text-slate-400">{children}</span>
+        <span className="text-muted-foreground">{children}</span>
       ) : (
         <button
           type="button"
           onClick={() => onSort(col)}
-          className="font-medium uppercase tracking-wide text-slate-400 hover:text-slate-200"
+          className="font-medium uppercase tracking-wide text-muted-foreground hover:text-foreground"
         >
           {children}
-          <span className="ml-1 font-mono text-slate-600">
+          <span className="ml-1 font-mono text-faint">
             {active ? (sortDir === "asc" ? "^" : "v") : ""}
           </span>
         </button>

@@ -24,6 +24,7 @@ import {
   type ProduceSportStatus,
 } from "@/lib/p5api";
 import { Panel, Unavailable, Badge, timeAgoIso } from "./Primitives";
+import { Num, Dot } from "@/components/ui/terminal";
 import { useLiveData } from "@/lib/useLiveData";
 
 // A producer snapshot older than this (by its OWN generated_at, or the backend
@@ -106,6 +107,19 @@ export function SchedulerFreshnessPanel() {
     return t === "amber" || t === "red" || t === "slate";
   });
 
+  // Panel-level asOf: the freshest per-sport generated_at across the roster,
+  // formatted HH:MM:SS. Never fabricated -- null when no sport has a timestamp.
+  const newestIso = rows
+    .map((r) => r.generated_at)
+    .filter((d): d is string => Boolean(d))
+    .sort()
+    .at(-1);
+  const asOfStamp = (() => {
+    if (!newestIso) return null;
+    const t = Date.parse(newestIso);
+    return Number.isNaN(t) ? null : new Date(t).toLocaleTimeString("en-US", { hour12: false });
+  })();
+
   // Header badge: 'checking' before first load (neutral slate), amber if poll
   // went stale (isStale from useLiveData), else honest per-sport computation.
   function headerBadge() {
@@ -124,6 +138,8 @@ export function SchedulerFreshnessPanel() {
   return (
     <Panel
       title="Producer / scheduler freshness"
+      asOf={asOfStamp}
+      stale={anyStale}
       right={headerBadge()}
     >
       {error && !data ? (
@@ -140,45 +156,51 @@ export function SchedulerFreshnessPanel() {
           ))}
         </div>
       ) : (
-        <table className="w-full text-xs" aria-label="per-sport producer freshness">
-          <thead>
-            <tr className="text-left text-[10px] uppercase tracking-wide text-slate-500">
-              <th scope="col" className="pb-2 font-medium">Sport</th>
-              <th scope="col" className="pb-2 font-medium">Last update</th>
-              <th scope="col" className="pb-2 font-medium text-center">State</th>
-              <th scope="col" className="pb-2 font-medium text-right">Games</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-800/60">
-            {rows.map((s) => {
-              const tone = rowTone(s);
-              const stateText =
-                tone === "green"
-                  ? "fresh"
-                  : s.status === "missing"
-                    ? "not scheduled"
-                    : tone === "red"
-                      ? "error"
-                      : "STALE";
-              return (
-                <tr key={s.sport} className="text-slate-300" data-testid={`produce-row-${s.sport}`}>
-                  <td className="py-1.5 font-mono text-[11px] uppercase">{s.sport}</td>
-                  <td className="py-1.5 font-mono text-[10px] text-slate-400">
-                    {ageLabel(s)}
-                  </td>
-                  <td className="py-1.5 text-center">
-                    <Badge tone={tone}>{stateText}</Badge>
-                  </td>
-                  <td className="py-1.5 text-right font-mono tabular-nums text-slate-400">
-                    {s.n_games ?? 0}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs" aria-label="per-sport producer freshness">
+            <thead>
+              <tr className="border-b border-border text-left">
+                <th scope="col" className="microlabel py-1.5 px-3">Sport</th>
+                <th scope="col" className="microlabel py-1.5 px-3">Last update</th>
+                <th scope="col" className="microlabel py-1.5 px-3 text-center">State</th>
+                <th scope="col" className="microlabel py-1.5 px-3 text-right">Games</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {rows.map((s) => {
+                const tone = rowTone(s);
+                const dotState = tone === "green" ? "ok" : tone === "red" ? "bad" : "warn";
+                const stateText =
+                  tone === "green"
+                    ? "fresh"
+                    : s.status === "missing"
+                      ? "not scheduled"
+                      : tone === "red"
+                        ? "error"
+                        : "STALE";
+                return (
+                  <tr key={s.sport} className="text-foreground hover:bg-surface-2" data-testid={`produce-row-${s.sport}`}>
+                    <td className="py-1.5 px-3 font-mono text-[11px] uppercase">{s.sport}</td>
+                    <td className="py-1.5 px-3 font-mono text-[10px] text-faint">
+                      {ageLabel(s)}
+                    </td>
+                    <td className="py-1.5 px-3 text-center">
+                      <span className="inline-flex items-center gap-1.5">
+                        <Dot state={dotState} />
+                        <Badge tone={tone}>{stateText}</Badge>
+                      </span>
+                    </td>
+                    <td className="py-1.5 px-3 text-right">
+                      <Num className="text-muted-foreground">{s.n_games ?? 0}</Num>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
-      <p className="mt-3 text-[11px] text-slate-600">
+      <p className="mt-3 text-[11px] text-faint">
         Last-update age is derived from each sport&apos;s own generated_at (stale
         never reads green). A sport missing from the producer rotation shows as
         &quot;not scheduled&quot; rather than being hidden. Units only; no $.

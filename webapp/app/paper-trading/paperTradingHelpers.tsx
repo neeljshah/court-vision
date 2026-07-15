@@ -33,7 +33,8 @@ export async function fetchPaperCombined(
   signal: AbortSignal,
 ): Promise<CombinedPayload | UnavailableSentinel> {
   const [t, pt, c, pnl, bank] = await Promise.all([
-    api.getPaperTrail({ limit: 2000 }, signal),
+    // ponytail: 400 rows paints the page fast; raise if a view ever pages past it
+    api.getPaperTrail({ limit: 400 }, signal),
     api.pmTrail(undefined, signal),
     api.getPaperClv(signal),
     api.getPaperPnlSeries(signal),
@@ -73,7 +74,7 @@ export function StatTile({
 }) {
   return (
     <div className="rounded-lg border border-slate-800 bg-bg-subtle px-3 py-3">
-      <div className="text-[10px] uppercase tracking-wide text-slate-500">{label}</div>
+      <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</div>
       {loading ? (
         <div
           className="mt-1 h-7 w-14 animate-pulse rounded bg-slate-700/50"
@@ -83,7 +84,7 @@ export function StatTile({
         />
       ) : (
         <div
-          className={`mt-1 font-mono text-lg tabular-nums ${valueClass ?? "text-slate-100"}`}
+          className={`mt-1 font-mono text-lg tabular-nums ${valueClass ?? "text-foreground"}`}
           data-testid={testId}
         >
           {value}
@@ -193,10 +194,10 @@ export function toPaperTrailRows(trades: PmTrailRow[]): PaperTrailRowType[] {
 // ---------------------------------------------------------------------------
 
 export function meanClvClass(clv: ClvScoreboard | null): string {
-  if (clv?.mean_clv_pct == null) return "text-slate-100";
+  if (clv?.mean_clv_pct == null) return "text-foreground";
   if (clv.mean_clv_pct > 0) return "text-success";
   if (clv.mean_clv_pct < 0) return "text-danger";
-  return "text-slate-100";
+  return "text-foreground";
 }
 
 // mergeVenueRows -- the row set the per-venue execution breakdown aggregates: the

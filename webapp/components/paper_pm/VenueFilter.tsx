@@ -17,10 +17,10 @@ function FilterChip({ label, active, onClick }: FilterChipProps) {
       type="button"
       onClick={onClick}
       className={cn(
-        "h-6 rounded-full border px-3 text-[10px] font-mono uppercase tracking-wide transition-colors",
+        "h-6 border px-3 text-[10px] font-data uppercase tracking-wide transition-colors",
         active
-          ? "border-slate-500 bg-slate-700 text-slate-100"
-          : "border-slate-700 bg-transparent text-slate-500 hover:border-slate-500 hover:text-slate-300",
+          ? "border-primary text-primary bg-surface-2"
+          : "border-border bg-transparent text-faint hover:bg-surface-2 hover:text-foreground",
       )}
     >
       {label}
@@ -55,7 +55,7 @@ export function VenueFilter({
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
       {/* Venue chips */}
-      <span className="text-[10px] uppercase tracking-wide text-slate-600">
+      <span className="microlabel">
         Venue
       </span>
       <div className="flex flex-wrap gap-1">
@@ -70,7 +70,7 @@ export function VenueFilter({
       </div>
 
       {/* Result chips */}
-      <span className="text-[10px] uppercase tracking-wide text-slate-600">
+      <span className="microlabel">
         Result
       </span>
       <div className="flex flex-wrap gap-1">
@@ -85,7 +85,7 @@ export function VenueFilter({
       </div>
 
       {/* Tier chips */}
-      <span className="text-[10px] uppercase tracking-wide text-slate-600">
+      <span className="microlabel">
         Tier
       </span>
       <div className="flex flex-wrap gap-1">

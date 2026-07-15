@@ -21,19 +21,19 @@ export default function RecordsError({ error, reset }: ErrorProps) {
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 text-center">
-      <p className="text-[13px] text-slate-400">
+      <p className="text-[13px] text-muted-foreground">
         Records temporarily unavailable.
       </p>
-      <p className="mt-1 font-mono text-[11px] text-slate-600">
+      <p className="mt-1 font-data text-[11px] text-faint">
         {error.message ?? "unknown error"}
       </p>
-      <p className="mt-2 font-mono text-[10px] text-slate-700">
+      <p className="mt-2 font-data text-[10px] text-faint">
         No edge is claimed. Units only. Try refreshing.
       </p>
       <button
         type="button"
         onClick={reset}
-        className="mt-4 rounded border border-slate-700 bg-slate-900 px-3 py-1.5 font-mono text-[11px] text-slate-300 hover:border-slate-500 transition-colors"
+        className="mt-4 border border-border bg-secondary px-3 py-1.5 font-data text-[11px] text-muted-foreground hover:border-ring hover:text-foreground transition-colors"
       >
         retry
       </button>

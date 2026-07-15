@@ -21,9 +21,9 @@ interface RecordsFiltersProps {
 }
 
 const SELECT_CLS = cn(
-  "rounded border border-slate-700 bg-slate-900 px-2 py-1",
-  "font-mono text-[11px] text-slate-300",
-  "focus:outline-none focus:ring-1 focus:ring-slate-500",
+  "border border-border bg-secondary px-2 py-1",
+  "font-data text-[11px] text-foreground",
+  "focus:outline-none focus:ring-1 focus:ring-ring",
   "disabled:opacity-40",
 );
 
@@ -40,7 +40,7 @@ export function RecordsFilters({ value, onChange, disabled = false }: RecordsFil
       className="flex flex-wrap items-center gap-2"
     >
       <label className="flex items-center gap-1.5">
-        <span className="font-mono text-[10px] uppercase tracking-wide text-slate-500">sport</span>
+        <span className="microlabel">sport</span>
         <select
           data-testid="filter-sport"
           className={SELECT_CLS}
@@ -57,7 +57,7 @@ export function RecordsFilters({ value, onChange, disabled = false }: RecordsFil
       </label>
 
       <label className="flex items-center gap-1.5">
-        <span className="font-mono text-[10px] uppercase tracking-wide text-slate-500">result</span>
+        <span className="microlabel">result</span>
         <select
           data-testid="filter-result"
           className={SELECT_CLS}
@@ -75,7 +75,7 @@ export function RecordsFilters({ value, onChange, disabled = false }: RecordsFil
       </label>
 
       <label className="flex items-center gap-1.5">
-        <span className="font-mono text-[10px] uppercase tracking-wide text-slate-500">tier</span>
+        <span className="microlabel">tier</span>
         <select
           data-testid="filter-tier"
           className={SELECT_CLS}

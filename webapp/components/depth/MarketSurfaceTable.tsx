@@ -20,9 +20,9 @@ import {
   TableCell,
   TableCaption,
 } from "@/components/ui/table";
-import { cn } from "@/lib/utils";
 import { EMPTY_CELL } from "@/lib/tokens";
 import type { PredictMarket, Market } from "@/lib/api";
+import { Panel, PanelHead, Num } from "@/components/ui/terminal";
 import { ProvenanceBadge } from "./ProvenanceBadge";
 import { InfoTip } from "./InfoTip";
 
@@ -62,51 +62,68 @@ export function MarketSurfaceTable({
 }: MarketSurfaceTableProps) {
   if (!markets || markets.length === 0) {
     return (
-      <p className={cn("text-xs text-muted-foreground", className)}>
-        No market surface available for this game.
-      </p>
+      <Panel className={className}>
+        <PanelHead title="Market surface" />
+        <p className="p-3 text-xs text-faint">
+          No market surface available for this game.
+        </p>
+      </Panel>
     );
   }
 
   return (
-    <div className={className}>
-      <Table>
-        <TableCaption className="text-left">
-          {caption ??
-            "One coherent market surface, spined by a single anchor. Probability only -- no price."}
-        </TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead scope="col">market</TableHead>
-            <TableHead scope="col">side</TableHead>
-            <TableHead scope="col">line</TableHead>
-            <TableHead scope="col">
-              <span className="inline-flex items-center gap-1">
-                model prob
-                <InfoTip term="probability" />
-              </span>
-            </TableHead>
-            <TableHead scope="col">provenance</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {markets.map((m, i) => (
-            <TableRow key={`${m.market_type}-${m.side}-${i}`}>
-              <TableCell className="font-mono text-xs">{m.market_type}</TableCell>
-              <TableCell className="text-xs">{m.side}</TableCell>
-              <TableCell className="font-mono text-xs tabular-nums">
-                {fmtLine(m.line)}
-              </TableCell>
-              <TableCell className="font-mono text-xs tabular-nums">
-                {fmtProb(m.devigged_prob)}
-              </TableCell>
-              <TableCell>
-                <ProvenanceBadge model={model} phase={phase} showTip={false} />
-              </TableCell>
+    <Panel className={className}>
+      <PanelHead title="Market surface" />
+      <div className="overflow-x-auto">
+        <Table>
+          <TableCaption className="px-3 text-left text-faint">
+            {caption ??
+              "One coherent market surface, spined by a single anchor. Probability only -- no price."}
+          </TableCaption>
+          <TableHeader>
+            <TableRow className="hover:bg-transparent">
+              <TableHead scope="col" className="microlabel h-auto px-3 py-1.5">
+                market
+              </TableHead>
+              <TableHead scope="col" className="microlabel h-auto px-3 py-1.5">
+                side
+              </TableHead>
+              <TableHead scope="col" className="microlabel h-auto px-3 py-1.5 text-right">
+                line
+              </TableHead>
+              <TableHead scope="col" className="microlabel h-auto px-3 py-1.5 text-right">
+                <span className="inline-flex items-center justify-end gap-1">
+                  model prob
+                  <InfoTip term="probability" />
+                </span>
+              </TableHead>
+              <TableHead scope="col" className="microlabel h-auto px-3 py-1.5">
+                provenance
+              </TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+          </TableHeader>
+          <TableBody>
+            {markets.map((m, i) => (
+              <TableRow
+                key={`${m.market_type}-${m.side}-${i}`}
+                className="border-border hover:bg-surface-2"
+              >
+                <TableCell className="p-0 px-3 py-1.5 text-xs">{m.market_type}</TableCell>
+                <TableCell className="p-0 px-3 py-1.5 text-xs">{m.side}</TableCell>
+                <TableCell className="p-0 px-3 py-1.5 text-right">
+                  <Num>{fmtLine(m.line)}</Num>
+                </TableCell>
+                <TableCell className="p-0 px-3 py-1.5 text-right">
+                  <Num>{fmtProb(m.devigged_prob)}</Num>
+                </TableCell>
+                <TableCell className="p-0 px-3 py-1.5">
+                  <ProvenanceBadge model={model} phase={phase} showTip={false} />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </Panel>
   );
 }

@@ -10,15 +10,43 @@
 // a success. vs_close is UNPROVEN. No fabricated insight or number.
 
 import * as React from "react";
-import { Panel } from "@/components/p6/Primitives";
+import { Panel as TerminalPanel, PanelHead } from "@/components/ui/terminal";
 import { SignalVerdictBadge } from "@/components/depth/SignalVerdictBadge";
 import { ValidatedSignalsStrip } from "@/components/games_depth/ValidatedSignalsStrip";
 import { Empty } from "@/components/honest/HonestState";
 import type { Report } from "@/lib/types";
 
+// Local Panel shim: p6/Primitives.Panel currently lacks asOf/stale wiring, so
+// this component composes directly from the terminal.tsx primitives instead
+// (same title/right/asOf/stale/children/className call shape used below).
+function Panel({
+  title,
+  asOf,
+  stale = false,
+  right,
+  children,
+  className,
+}: {
+  title: string;
+  asOf?: string | null;
+  stale?: boolean;
+  right?: React.ReactNode;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <TerminalPanel className={className}>
+      <PanelHead title={title} asOf={asOf} stale={stale} right={right} />
+      <div className="p-4">{children}</div>
+    </TerminalPanel>
+  );
+}
+
 export interface RationalePanelProps {
   report: Report | null;
   sport: string;
+  asOf?: string | null;
+  stale?: boolean;
   className?: string;
 }
 
@@ -61,14 +89,16 @@ function extractRationale(report: Report | null): RationaleBlock[] {
 }
 
 /** Validated signals + model rationale for a game (no $ -- calibration only). */
-export function RationalePanel({ report, sport, className }: RationalePanelProps) {
+export function RationalePanel({ report, sport, asOf, stale = false, className }: RationalePanelProps) {
   const blocks = extractRationale(report);
 
   return (
     <Panel
       title="Rationale"
+      asOf={asOf}
+      stale={stale}
       right={
-        <span className="font-mono text-[10px] text-slate-500">
+        <span className="font-data text-[10px] text-faint">
           calibration only -- no $
         </span>
       }
@@ -76,7 +106,7 @@ export function RationalePanel({ report, sport, className }: RationalePanelProps
     >
       {/* Gate-tested signals for this sport (read-only reuse). */}
       <div className="mb-4">
-        <p className="mb-1.5 font-mono text-[10px] uppercase tracking-widest text-slate-500">
+        <p className="mb-1.5 microlabel">
           validated signals
         </p>
         <ValidatedSignalsStrip sport={sport} />
@@ -84,7 +114,7 @@ export function RationalePanel({ report, sport, className }: RationalePanelProps
 
       {/* Model notes / rationale from the intel block. */}
       <div>
-        <p className="mb-1.5 font-mono text-[10px] uppercase tracking-widest text-slate-500">
+        <p className="mb-1.5 microlabel">
           model notes
         </p>
         {blocks.length === 0 ? (
@@ -97,12 +127,12 @@ export function RationalePanel({ report, sport, className }: RationalePanelProps
             {blocks.map((b) => (
               <li
                 key={b.key}
-                className="rounded border border-slate-800 bg-surface-1/30 px-3 py-2"
+                className="border border-border bg-surface-1/30 px-3 py-2"
               >
-                <span className="block font-mono text-[10px] uppercase tracking-wide text-slate-500">
+                <span className="block microlabel">
                   {b.label}
                 </span>
-                <span className="block text-xs text-slate-300">{b.body}</span>
+                <span className="block text-xs text-foreground">{b.body}</span>
               </li>
             ))}
           </ul>
@@ -110,9 +140,9 @@ export function RationalePanel({ report, sport, className }: RationalePanelProps
       </div>
 
       {/* Honesty footer. */}
-      <div className="mt-3 flex flex-wrap gap-2 border-t border-slate-800 pt-2">
+      <div className="mt-3 flex flex-wrap gap-2 border-t border-border pt-2">
         <SignalVerdictBadge verdict="SHIP" stat="calibration only" />
-        <span className="self-center font-mono text-[10px] text-slate-600">
+        <span className="self-center font-data text-[10px] text-faint">
           SHIP = calibration, not a market edge. vs-close UNPROVEN.
         </span>
       </div>

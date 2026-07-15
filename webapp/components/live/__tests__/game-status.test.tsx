@@ -194,30 +194,30 @@ describe("GameStatusChip -- label and tone", () => {
     expect(screen.getByText("PREGAME")).toBeInTheDocument();
   });
 
-  it("[AC5] LIVE chip carries amber Tailwind class (not green)", () => {
+  it("[AC5] LIVE chip carries warning/stale Tailwind class (not success)", () => {
     const { container } = render(<GameStatusChip status="LIVE" />);
     const chip = container.querySelector('[data-game-status="LIVE"]');
     expect(chip).toBeInTheDocument();
-    expect(chip?.className).toMatch(/amber/);
-    expect(chip?.className).not.toMatch(/green/);
+    expect(chip?.className).toMatch(/warning|stale/);
+    expect(chip?.className).not.toMatch(/success/);
     expect(chip?.className).not.toMatch(/tier-a/);
   });
 
-  it("[AC5] DONE chip carries slate/muted Tailwind class (no amber, no green)", () => {
+  it("[AC5] DONE chip carries neutral border/muted class (no warning, no success)", () => {
     const { container } = render(<GameStatusChip status="DONE" />);
     const chip = container.querySelector('[data-game-status="DONE"]');
-    expect(chip?.className).toMatch(/slate/);
-    expect(chip?.className).not.toMatch(/amber/);
-    expect(chip?.className).not.toMatch(/green/);
+    expect(chip?.className).toMatch(/border-border|muted-foreground/);
+    expect(chip?.className).not.toMatch(/warning|stale/);
+    expect(chip?.className).not.toMatch(/success/);
     expect(chip?.className).not.toMatch(/tier-a/);
   });
 
-  it("[AC5] PREGAME chip carries slate/muted class (no amber, no green)", () => {
+  it("[AC5] PREGAME chip carries neutral border/muted class (no warning, no success)", () => {
     const { container } = render(<GameStatusChip status="PREGAME" />);
     const chip = container.querySelector('[data-game-status="PREGAME"]');
-    expect(chip?.className).toMatch(/slate/);
-    expect(chip?.className).not.toMatch(/amber/);
-    expect(chip?.className).not.toMatch(/green/);
+    expect(chip?.className).toMatch(/border-border|muted-foreground/);
+    expect(chip?.className).not.toMatch(/warning|stale/);
+    expect(chip?.className).not.toMatch(/success/);
   });
 
   it("[AC6] DONE chip contains NO green pulse (animate-ping absent)", () => {
@@ -239,10 +239,10 @@ describe("GameStatusChip -- label and tone", () => {
     expect(pulseEl).toBeInTheDocument();
   });
 
-  it("[AC7] LIVE pulse is amber-coloured (bg-amber-400)", () => {
+  it("[AC7] LIVE pulse is warning-coloured (bg-warning)", () => {
     const { container } = render(<GameStatusChip status="LIVE" />);
     const pulseEl = container.querySelector(".animate-ping");
-    expect(pulseEl?.className).toMatch(/amber/);
+    expect(pulseEl?.className).toMatch(/warning/);
   });
 });
 

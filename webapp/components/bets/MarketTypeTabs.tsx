@@ -62,21 +62,21 @@ export function MarketTypeTabs({ value, onChange, counts, panelId }: MarketTypeT
             onClick={() => onChange(tab.key)}
             data-testid={`market-tab-${tab.key}`}
             className={cn(
-              "inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5",
-              "font-mono text-[11px] uppercase tracking-wide transition-colors",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500",
+              "inline-flex items-center gap-1.5 border px-2.5 py-1",
+              "font-data text-[11px] uppercase tracking-wide transition-colors",
+              "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
               isActive
-                ? "border-slate-400 bg-slate-800 text-slate-100"
-                : "border-slate-700 bg-slate-900/40 text-slate-400 hover:text-slate-200",
+                ? "border-primary text-foreground"
+                : "border-border bg-transparent text-muted-foreground hover:text-foreground",
             )}
           >
             {tab.label}
             {count != null && count > 0 ? (
               <span
                 className={cn(
-                  "inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full px-1",
-                  "text-[9px] font-bold tabular-nums",
-                  isActive ? "bg-white/20 text-white" : "bg-slate-700 text-slate-300",
+                  "inline-flex h-4 min-w-[1rem] items-center justify-center px-1",
+                  "font-data text-[9px] tabular-nums",
+                  isActive ? "text-primary" : "text-faint",
                 )}
               >
                 {count}

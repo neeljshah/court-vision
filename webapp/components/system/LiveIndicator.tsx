@@ -188,29 +188,29 @@ export function LiveIndicator() {
             {showLoading ? "checking..." : (h?.label || "IDLE / DEGRADED")}
           </span>
         </div>
-        <p className="mt-1 text-xs text-slate-400">
+        <p className="mt-1 text-xs text-muted-foreground">
           {showLoading
             ? "polling supervisor feed..."
             : h?.sub || reason || "supervisor_status.json missing or stale"}
         </p>
         {data ? (
-          <dl className="mt-2 flex flex-wrap gap-x-5 gap-y-1 font-mono text-[11px] text-slate-500">
+          <dl className="mt-2 flex flex-wrap gap-x-5 gap-y-1 font-mono text-[11px] text-muted-foreground">
             <span>
-              uptime <span className="text-slate-300">{fmtDuration(data.uptime_sec)}</span>
+              uptime <span className="text-foreground">{fmtDuration(data.uptime_sec)}</span>
             </span>
             <span>
               services{" "}
-              <span className="text-slate-300">
+              <span className="text-foreground">
                 {data.all_ready ? "all ready" : "not all ready"}
               </span>
             </span>
             <span>
               self-heals{" "}
-              <span className="text-slate-300">{data.restarts_total} restarts</span>
+              <span className="text-foreground">{data.restarts_total} restarts</span>
             </span>
             <span>
               feed age{" "}
-              <span className="text-slate-300">{fmtDuration(data.age_sec)}</span>
+              <span className="text-foreground">{fmtDuration(data.age_sec)}</span>
             </span>
           </dl>
         ) : null}
@@ -221,7 +221,7 @@ export function LiveIndicator() {
         <Badge tone="amber">self-improve: READY-but-INERT (human-gated)</Badge>
         <Badge tone="red">real-money: DENY</Badge>
         <Badge tone="slate">in-game CLV: INSUFFICIENT_DATA (accruing)</Badge>
-        <span className="font-mono text-[10px] text-slate-600">
+        <span className="font-mono text-[10px] text-faint">
           calibration not edge - vs_close UNPROVEN - units only, no $
         </span>
       </div>
@@ -240,7 +240,7 @@ export function LiveIndicator() {
           aria-label="Supervised process roster"
         >
           <thead>
-            <tr className="text-left text-[10px] uppercase tracking-wide text-slate-500">
+            <tr className="text-left text-[10px] uppercase tracking-wide text-muted-foreground">
               <th scope="col" className="pb-2 font-medium">Service</th>
               <th scope="col" className="pb-2 font-medium text-center">State</th>
               <th scope="col" className="pb-2 font-medium text-right">Heartbeat</th>
@@ -249,7 +249,7 @@ export function LiveIndicator() {
           </thead>
           <tbody className="divide-y divide-slate-800/60">
             {data.procs.map((p) => (
-              <tr key={p.name} className="text-slate-300">
+              <tr key={p.name} className="text-foreground">
                 <td className="py-1.5 font-mono text-[11px]">{p.name}</td>
                 <td className="py-1.5 text-center">
                   <span
@@ -261,7 +261,7 @@ export function LiveIndicator() {
                     {p.degraded ? "DEGRADED" : p.state}
                   </span>
                 </td>
-                <td className="py-1.5 text-right font-mono text-[10px] text-slate-400">
+                <td className="py-1.5 text-right font-mono text-[10px] text-muted-foreground">
                   {p.heartbeat_age_sec != null
                     ? `${Math.round(p.heartbeat_age_sec)}s`
                     : "--"}
@@ -269,7 +269,7 @@ export function LiveIndicator() {
                 <td
                   className={cn(
                     "py-1.5 text-right font-mono text-[10px]",
-                    p.restarts > 0 ? "text-amber-400" : "text-slate-500",
+                    p.restarts > 0 ? "text-amber-400" : "text-muted-foreground",
                   )}
                 >
                   {p.restarts}

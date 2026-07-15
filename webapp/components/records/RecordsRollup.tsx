@@ -14,6 +14,7 @@
 
 import { useMemo } from "react";
 import type { PaperPredictionRow } from "@/lib/types";
+import { Panel, PanelHead, Num } from "@/components/ui/terminal";
 
 // ---------------------------------------------------------------------------
 // Per-sport rollup row
@@ -81,23 +82,20 @@ function Cell({
 }: {
   label: string;
   value: string | number;
-  tone?: "slate" | "green" | "red" | "amber" | "muted";
+  tone?: "slate" | "up" | "down" | "stale" | "muted";
 }) {
   const cls = {
-    slate:  "text-slate-200",
-    green:  "text-emerald-400",
-    red:    "text-rose-400",
-    amber:  "text-amber-400",
-    muted:  "text-slate-600",
+    slate:  "text-foreground",
+    up:     "text-up",
+    down:   "text-down",
+    stale:  "text-stale",
+    muted:  "text-faint",
   }[tone];
   return (
     <div className="flex flex-col gap-0.5 min-w-[44px]">
-      <span className="font-mono text-[9px] uppercase tracking-widest text-slate-600">
-        {label}
-      </span>
-      <span className={`font-mono text-[13px] font-semibold tabular-nums ${cls}`}
-            data-testid={`rollup-cell-${label.toLowerCase().replace(/\s+/g, "-")}`}>
-        {value}
+      <span className="microlabel">{label}</span>
+      <span data-testid={`rollup-cell-${label.toLowerCase().replace(/\s+/g, "-")}`}>
+        <Num className={`text-[13px] font-semibold ${cls}`}>{value}</Num>
       </span>
     </div>
   );
@@ -110,42 +108,40 @@ function Cell({
 function SportRow({ b }: { b: SportBucket }) {
   const settled  = b.wins + b.losses + b.pushes;
   const winPct   = settled > 0 ? (b.wins / settled) * 100 : null;
-  const winTone: "green" | "red" | "slate" | "muted" =
+  const winTone: "up" | "down" | "slate" | "muted" =
     winPct == null ? "muted"
-    : winPct >= 55 ? "green"
-    : winPct < 45  ? "red"
+    : winPct >= 55 ? "up"
+    : winPct < 45  ? "down"
     : "slate";
 
   const meanDiv  = b.nDiv > 0 ? b.sumDiv / b.nDiv : null;
   const divStr   = meanDiv != null
     ? `${meanDiv >= 0 ? "+" : ""}${(meanDiv * 100).toFixed(1)}pp`
     : "--";
-  const divTone: "green" | "red" | "slate" | "muted" =
-    meanDiv == null ? "muted" : meanDiv > 0 ? "green" : meanDiv < 0 ? "red" : "slate";
+  const divTone: "up" | "down" | "slate" | "muted" =
+    meanDiv == null ? "muted" : meanDiv > 0 ? "up" : meanDiv < 0 ? "down" : "slate";
 
   return (
     <div
       data-testid={`rollup-sport-${b.sport}`}
-      className="flex flex-wrap items-start gap-4 rounded border border-slate-800 bg-slate-900/40 px-4 py-2.5"
+      className="flex flex-wrap items-start gap-4 border border-border bg-surface-2 px-4 py-2.5"
     >
       {/* sport label */}
       <div className="flex flex-col gap-0.5 min-w-[64px]">
-        <span className="font-mono text-[9px] uppercase tracking-widest text-slate-600">
-          sport
-        </span>
+        <span className="microlabel">sport</span>
         <span
           data-testid={`rollup-sport-label-${b.sport}`}
-          className="font-mono text-[13px] font-semibold text-slate-100 uppercase"
+          className="font-data text-[13px] font-semibold text-foreground uppercase"
         >
           {b.sport}
         </span>
       </div>
 
       <Cell label="total" value={b.count} />
-      <Cell label="wins"  value={b.wins}  tone={b.wins > 0 ? "green" : "muted"} />
-      <Cell label="losses" value={b.losses} tone={b.losses > 0 ? "red" : "muted"} />
-      {b.pushes > 0 && <Cell label="push" value={b.pushes} tone="amber" />}
-      <Cell label="pending" value={b.pending} tone={b.pending > 0 ? "amber" : "muted"} />
+      <Cell label="wins"  value={b.wins}  tone={b.wins > 0 ? "up" : "muted"} />
+      <Cell label="losses" value={b.losses} tone={b.losses > 0 ? "down" : "muted"} />
+      {b.pushes > 0 && <Cell label="push" value={b.pushes} tone="stale" />}
+      <Cell label="pending" value={b.pending} tone={b.pending > 0 ? "stale" : "muted"} />
 
       {/* win rate */}
       <Cell
@@ -156,21 +152,20 @@ function SportRow({ b }: { b: SportBucket }) {
 
       {/* model-vs-market divergence */}
       <div className="flex flex-col gap-0.5 min-w-[56px]">
-        <span className="font-mono text-[9px] uppercase tracking-widest text-slate-600">
-          avg edge pp
-        </span>
-        <span
-          data-testid={`rollup-div-${b.sport}`}
-          className={`font-mono text-[13px] font-semibold tabular-nums ${
-            divTone === "green" ? "text-emerald-400"
-            : divTone === "red" ? "text-rose-400"
-            : "text-slate-600"
-          }`}
-        >
-          {divStr}
+        <span className="microlabel">avg edge pp</span>
+        <span data-testid={`rollup-div-${b.sport}`}>
+          <Num
+            className={`text-[13px] font-semibold ${
+              divTone === "up" ? "text-up"
+              : divTone === "down" ? "text-down"
+              : "text-faint"
+            }`}
+          >
+            {divStr}
+          </Num>
         </span>
         {meanDiv != null && (
-          <span className="font-mono text-[8px] text-slate-700">model-mkt (prob)</span>
+          <span className="font-data text-[8px] text-faint">model-mkt (prob)</span>
         )}
       </div>
     </div>
@@ -187,78 +182,73 @@ export interface RecordsRollupProps {
   loading?: boolean;
   /** Total across all pages (from the API envelope) */
   total?:   number;
+  /** Feed generation time (real timestamp from the predictions envelope). */
+  asOf?:    string | null;
 }
 
 export function RecordsRollup({
   rows,
   loading = false,
   total,
+  asOf = null,
 }: RecordsRollupProps) {
   const buckets = useMemo(() => buildBuckets(rows), [rows]);
 
   if (loading) {
     return (
-      <div
-        data-testid="records-rollup"
-        role="region"
-        aria-label="per-sport rollup loading"
-        className="space-y-2"
-      >
-        {[0, 1, 2].map((i) => (
-          <div
-            key={i}
-            className="h-14 w-full animate-pulse rounded border border-slate-800 bg-slate-800/30"
-            role="presentation"
-          />
-        ))}
+      <div data-testid="records-rollup" role="region" aria-label="per-sport rollup loading">
+        <Panel>
+          <PanelHead title="Per-Sport Breakdown" asOf={asOf} />
+          <div className="space-y-2 px-4 py-3">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="h-14 w-full animate-pulse border border-border bg-surface-2" role="presentation" />
+            ))}
+          </div>
+        </Panel>
       </div>
     );
   }
 
   if (rows.length === 0) {
     return (
-      <div
-        data-testid="records-rollup"
-        role="region"
-        aria-label="per-sport rollup"
-        className="flex items-center justify-center rounded border border-slate-800 bg-slate-900/30 px-4 py-6"
-      >
-        <span
-          data-testid="records-rollup-empty"
-          className="font-mono text-[11px] text-slate-600"
-        >
-          no records to roll up -- waiting for data
-        </span>
+      <div data-testid="records-rollup" role="region" aria-label="per-sport rollup">
+        <Panel>
+          <PanelHead title="Per-Sport Breakdown" asOf={asOf} />
+          <div className="flex items-center justify-center px-4 py-6">
+            <span data-testid="records-rollup-empty" className="font-data text-[11px] text-faint">
+              no records to roll up -- waiting for data
+            </span>
+          </div>
+        </Panel>
       </div>
     );
   }
 
   return (
-    <div
-      data-testid="records-rollup"
-      role="region"
-      aria-label="per-sport rollup"
-      className="space-y-2"
-    >
-      <div className="flex items-center justify-between">
-        <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500">
-          per-sport breakdown
-        </span>
-        {total != null && total > rows.length && (
-          <span className="font-mono text-[9px] text-slate-700">
-            showing {rows.length} of {total} total -- load more pages to expand
-          </span>
-        )}
-      </div>
+    <div data-testid="records-rollup" role="region" aria-label="per-sport rollup">
+      <Panel>
+        <PanelHead
+          title="Per-Sport Breakdown"
+          asOf={asOf}
+          right={
+            total != null && total > rows.length ? (
+              <span className="font-data text-[9px] text-faint">
+                showing {rows.length} of {total} total -- load more pages to expand
+              </span>
+            ) : undefined
+          }
+        />
+        <div className="space-y-2 px-4 py-3">
+          {buckets.map((b) => (
+            <SportRow key={b.sport} b={b} />
+          ))}
 
-      {buckets.map((b) => (
-        <SportRow key={b.sport} b={b} />
-      ))}
-
-      <p className="font-mono text-[9px] text-slate-700">
-        avg edge pp = mean(model_prob - market_prob) across rows with both values
-        -- probability-space divergence only, calibration not edge
-      </p>
+          <p className="font-data text-[9px] text-faint">
+            avg edge pp = mean(model_prob - market_prob) across rows with both values
+            -- probability-space divergence only, calibration not edge
+          </p>
+        </div>
+      </Panel>
     </div>
   );
 }

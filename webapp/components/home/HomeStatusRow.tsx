@@ -78,15 +78,13 @@ function Cell({
   value: string;
 }) {
   return (
-    <div className="flex items-center gap-2 rounded-md border border-border bg-surface-1/60 px-3 py-2">
+    <div className="flex items-center gap-2 border border-border bg-surface-1 px-3 py-2">
       <span
         className={cn("h-2 w-2 shrink-0 rounded-full", DOT[tone])}
         aria-hidden="true"
       />
       <div className="min-w-0">
-        <div className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground">
-          {label}
-        </div>
+        <div className="microlabel">{label}</div>
         <div className="truncate text-xs font-medium text-foreground">{value}</div>
       </div>
     </div>
@@ -106,16 +104,14 @@ function CheckingStrip() {
       ).map((label) => (
         <div
           key={label}
-          className="flex items-center gap-2 rounded-md border border-border bg-surface-1/60 px-3 py-2"
+          className="flex items-center gap-2 border border-border bg-surface-1 px-3 py-2"
         >
           <span
             className="h-2 w-2 shrink-0 rounded-full bg-muted-foreground opacity-40"
             aria-hidden="true"
           />
           <div className="min-w-0">
-            <div className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground">
-              {label}
-            </div>
+            <div className="microlabel">{label}</div>
             <div className="truncate text-xs font-medium text-muted-foreground/60">
               checking...
             </div>
@@ -162,7 +158,7 @@ export function HomeStatusRow() {
 
   const { data, ageSec, isStale, isLoading, error } = useLiveData<StatusPayload>(
     fetcher,
-    { intervalMs: POLL_MS, staleAfterSec: STALE_SEC },
+    { intervalMs: POLL_MS, staleAfterSec: STALE_SEC, cacheKey: "home:status" },
   );
 
   // Show the checking strip only while we've never had ANY poll response yet.
@@ -245,7 +241,7 @@ export function HomeStatusRow() {
           </div>
           {ageLabel && (
             <p
-              className="mt-1.5 text-right font-mono text-[9px] uppercase tracking-wider text-muted-foreground/60"
+              className="mt-1.5 text-right font-data text-[10px] uppercase tracking-wider text-faint"
               data-testid="last-updated-label"
               aria-live="polite"
               aria-atomic="true"
@@ -253,7 +249,7 @@ export function HomeStatusRow() {
               {ageLabel}
               {isStale && (
                 <span
-                  className="ml-2 text-warning"
+                  className="ml-2 text-stale"
                   data-testid="stale-badge"
                   aria-label="data may be stale"
                 >

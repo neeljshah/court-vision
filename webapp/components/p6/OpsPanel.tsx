@@ -8,8 +8,18 @@ import {
   type AutonomyStatus,
 } from "@/lib/p5api";
 import { Panel, Unavailable, Badge, ModeDot, timeAgoIso } from "./Primitives";
+import { Num, Dot } from "@/components/ui/terminal";
 import { useLiveData } from "@/lib/useLiveData";
 import { cn } from "@/lib/utils";
+
+// asOfStamp -- HH:MM:SS from an ISO/epoch-seconds timestamp. Never fabricated:
+// callers only pass a real feed generated_at.
+function asOfStamp(iso: string | number | null | undefined): string | null {
+  if (iso == null) return null;
+  const t = typeof iso === "number" ? iso * 1000 : Date.parse(iso);
+  if (Number.isNaN(t)) return null;
+  return new Date(t).toLocaleTimeString("en-US", { hour12: false });
+}
 
 // Shimmer placeholder while opsStatus resolves. Neutral: no green/red.
 function ServiceTableSkeleton({ rows = 5 }: { rows?: number }) {
@@ -59,7 +69,7 @@ function ReconciliationNote() {
     <div
       role="note"
       aria-label="ops-reconciliation-note"
-      className="mt-3 flex items-start gap-2 rounded-lg border border-amber-900/50 bg-amber-950/20 px-3 py-2 text-[11px] text-amber-400/90"
+      className="mt-3 flex items-start gap-2 border border-amber-900/50 bg-amber-950/20 px-3 py-2 text-[11px] text-amber-400/90"
     >
       <span className="mt-0.5 shrink-0 font-mono text-amber-500">!</span>
       <span>
@@ -125,9 +135,14 @@ export function OpsPanel() {
     return <Badge tone="slate">checking</Badge>;
   }
 
+  const panelAsOf =
+    asOfStamp(opsData?.generated_at) ?? asOfStamp(autData?.generated_at ?? null);
+
   return (
     <Panel
       title="System health + freshness"
+      asOf={panelAsOf}
+      stale={anyStale}
       right={
         <span className="flex items-center gap-2">
           <span data-testid="ops-panel-overall">
@@ -143,21 +158,23 @@ export function OpsPanel() {
         <ServiceTableSkeleton />
       ) : opsData ? (
         <>
-          <table className="w-full text-xs" aria-label="service health status">
-            <thead>
-              <tr className="text-left text-[10px] uppercase tracking-wide text-slate-500">
-                <th scope="col" className="pb-2 font-medium">Service</th>
-                <th scope="col" className="pb-2 font-medium text-center">Live</th>
-                <th scope="col" className="pb-2 font-medium">Last update</th>
-                <th scope="col" className="pb-2 font-medium">Breaker</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800/60">
-              {opsData.services.map((svc) => <ServiceRow key={svc.name} svc={svc} />)}
-            </tbody>
-          </table>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs" aria-label="service health status">
+              <thead>
+                <tr className="border-b border-border text-left">
+                  <th scope="col" className="microlabel py-1.5 px-3">Service</th>
+                  <th scope="col" className="microlabel py-1.5 px-3 text-center">Live</th>
+                  <th scope="col" className="microlabel py-1.5 px-3">Last update</th>
+                  <th scope="col" className="microlabel py-1.5 px-3">Breaker</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {opsData.services.map((svc) => <ServiceRow key={svc.name} svc={svc} />)}
+              </tbody>
+            </table>
+          </div>
           {opsData.generated_at ? (
-            <p className="mt-2 font-mono text-[10px] text-slate-600">
+            <p className="mt-2 font-mono text-[10px] text-faint">
               status snapshot: {timeAgoIso(opsData.generated_at)}
             </p>
           ) : null}
@@ -177,7 +194,7 @@ export function OpsPanel() {
       {/* Autonomy block -- inline (no sub-component) so reconciliation is synchronous */}
       <div className="mt-4 border-t border-slate-800 pt-3">
         <div className="mb-2 flex items-center justify-between">
-          <span className="text-[10px] uppercase tracking-wide text-slate-500">Autonomy status</span>
+          <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Autonomy status</span>
           {autData ? (
             autStale && overallTone(autData.overall) === "green" ? (
               <Badge tone="amber">stale</Badge>
@@ -197,7 +214,7 @@ export function OpsPanel() {
         ) : autData ? (
           <dl className="space-y-1.5 text-xs">
             <div className="flex items-center justify-between">
-              <dt className="text-slate-500">loop liveness</dt>
+              <dt className="text-muted-foreground">loop liveness</dt>
               <dd>
                 <Badge tone={overallTone(autData.loop?.liveness_severity)}>
                   {autData.loop?.liveness_severity || "unknown"}
@@ -205,16 +222,16 @@ export function OpsPanel() {
               </dd>
             </div>
             <div className="flex items-center justify-between">
-              <dt className="text-slate-500">loop cycle</dt>
-              <dd className="font-mono text-slate-300">{autData.loop?.cycle ?? "--"}</dd>
+              <dt className="text-muted-foreground">loop cycle</dt>
+              <dd className="font-mono text-foreground">{autData.loop?.cycle ?? "--"}</dd>
             </div>
             {autData.idle_reason ? (
-              <div className="rounded-md border border-slate-800 bg-slate-900/40 px-2 py-1.5 text-[11px] text-amber-500/80">
+              <div className="border border-border bg-surface-1 px-2 py-1.5 text-[11px] text-amber-500/80">
                 {autData.idle_reason}
               </div>
             ) : null}
             {autData.generated_at != null ? (
-              <p className="font-mono text-[10px] text-slate-600">
+              <p className="font-mono text-[10px] text-faint">
                 autonomy snapshot:{" "}
                 {typeof autData.generated_at === "number"
                   ? timeAgoIso(new Date(autData.generated_at * 1000).toISOString())
@@ -245,31 +262,33 @@ function breakerLabel(raw?: string | null): string {
 function ServiceRow({ svc }: { svc: OpsService }) {
   // Color is supplemental only (WCAG 1.4.1); text carries state.
   const liveText = svc.live === true ? "yes" : svc.live === false ? "no" : "--";
-  const liveTone = svc.live === true ? "text-tier-a" : svc.live === false ? "text-red-400" : "text-slate-500";
+  const liveState = svc.live === true ? "ok" : svc.live === false ? "bad" : "warn";
   const bLabel = breakerLabel(svc.breaker);
   const bState = svc.breaker?.toLowerCase() ?? null;
-  const breakerTone = !bState || bState === "closed" ? "text-tier-a" : bState === "open" ? "text-red-400" : "text-amber-400";
+  const breakerState = !bState || bState === "closed" ? "ok" : bState === "open" ? "bad" : "warn";
   const ago = svc.last_seen ? timeAgoIso(svc.last_seen) : null;
 
   return (
-    <tr className="text-slate-300">
-      <td className="py-1.5">
+    <tr className="text-foreground hover:bg-surface-2">
+      <td className="py-1.5 px-3">
         <span className={cn("font-mono text-[11px]", svc.critical ? "font-semibold" : "")}>{svc.name}</span>
         {svc.critical ? <span className="ml-1 text-[9px] uppercase text-amber-600">crit</span> : null}
       </td>
-      <td className="py-1.5 text-center" data-testid={`live-cell-${svc.name}`}>
-        <span className={cn("font-mono text-[11px]", liveTone)} aria-label={`live: ${liveText}`}>
+      <td className="py-1.5 px-3 text-center" data-testid={`live-cell-${svc.name}`}>
+        <span className="inline-flex items-center gap-1.5 font-mono text-[11px]" aria-label={`live: ${liveText}`}>
+          <Dot state={liveState} />
           {liveText}
         </span>
       </td>
-      <td className="py-1.5">
-        <span className="font-mono text-[10px] text-slate-400">{ago || (svc.fresh ? svc.fresh : "--")}</span>
+      <td className="py-1.5 px-3">
+        <span className="font-mono text-[10px] text-faint">{ago || (svc.fresh ? svc.fresh : "--")}</span>
         {svc.age_sec != null ? (
-          <span className="ml-1 text-[10px] text-slate-600">({Math.round(svc.age_sec)}s)</span>
+          <Num className="ml-1 text-[10px] text-faint">({Math.round(svc.age_sec)}s)</Num>
         ) : null}
       </td>
-      <td className="py-1.5" data-testid={`breaker-cell-${svc.name}`}>
-        <span className={cn("font-mono text-[10px]", breakerTone)} aria-label={`breaker: ${bLabel}`}>
+      <td className="py-1.5 px-3" data-testid={`breaker-cell-${svc.name}`}>
+        <span className="inline-flex items-center gap-1.5 font-mono text-[10px]" aria-label={`breaker: ${bLabel}`}>
+          <Dot state={breakerState} />
           {bLabel}
         </span>
       </td>

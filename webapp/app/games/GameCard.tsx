@@ -2,11 +2,23 @@
 
 import Link from "next/link";
 import type { PredictRecord, GameEdge } from "@/lib/p5api";
-import { Badge } from "@/components/p6/Primitives";
 import { cn, fmtPct, tierClass } from "@/lib/utils";
 import { coherentPick, keyMarkets, bestBetChip } from "./card-utils";
 import { InfoTip } from "@/components/depth";
 import { sportSignals } from "@/components/games_depth";
+import { AsOf, Num } from "@/components/ui/terminal";
+import {
+  type SlateGame,
+  bestPrice,
+  american,
+  newestCapture,
+  STALE_AFTER_MS,
+} from "@/lib/board";
+import { humanizeMatchup } from "@/lib/betdesc";
+
+function fmtProb(p: number | null | undefined): string {
+  return p == null ? "--" : p.toFixed(3).replace(/^0/, "");
+}
 
 // GameCard -- ONE matchup as a clickable card. Shows the single coherent
 // prediction (anchor probability), a few key markets, and a best-bet chip in
@@ -23,14 +35,21 @@ export function GameCard({
   sport,
   rec,
   edge,
+  slateGame,
 }: {
   sport: string;
   rec: PredictRecord;
   edge: GameEdge | null;
+  /** Matched /api/board/slate row (best price + book per side). Optional --
+   * an unmatched/unavailable board feed degrades to an honest "no board
+   * price" line, never a fabricated one. */
+  slateGame?: SlateGame | null;
 }) {
   const pick = coherentPick(rec);
   const markets = keyMarkets(rec, 3);
   const chip = bestBetChip(edge);
+  const cap = newestCapture(slateGame?.markets);
+  const boardStale = cap !== null && Date.now() - cap.getTime() > STALE_AFTER_MS;
   // How many gate-tested signals SHIP for this sport (calibration priors only).
   const ships = sportSignals(sport).filter((s) => s.verdict === "SHIP").length;
 
@@ -42,10 +61,10 @@ export function GameCard({
       href={`/games/${sport}/${rec.game_id}`}
       aria-label={linkAriaLabel}
       className={cn(
-        "group flex flex-col gap-0 rounded-xl border border-slate-800 bg-bg-panel",
-        "transition-colors hover:border-slate-600",
+        "group flex flex-col gap-0 border border-border bg-card",
+        "transition-colors hover:border-muted-foreground",
         // Focus-visible ring so keyboard users can see focus on the card.
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-bg-panel",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
       )}
     >
       {/* ------------------------------------------------------------------ */}
@@ -54,36 +73,41 @@ export function GameCard({
       <div className="flex items-start justify-between gap-2 px-4 pt-4 pb-3">
         <div className="min-w-0 flex-1">
           {/* Away @ Home -- primary headline */}
-          <div className="truncate text-[15px] font-semibold leading-snug text-slate-100">
+          <div className="truncate text-[15px] font-semibold leading-snug text-foreground">
             {rec.away}{" "}
-            <span className="font-normal text-slate-500">@</span>{" "}
+            <span className="font-normal text-muted-foreground">@</span>{" "}
             {rec.home}
           </div>
           {/* Tipoff + game id -- secondary metadata */}
-          <div className="mt-0.5 font-mono text-[10px] tracking-wide text-slate-500">
+          <div className="mt-0.5 font-data text-[10px] tracking-wide text-faint">
             {rec.tipoff || "tipoff TBD"}
-            <span className="mx-1.5 text-slate-700">&middot;</span>
-            {rec.game_id}
+            <span className="mx-1.5 text-border">&middot;</span>
+            {humanizeMatchup(rec.game_id)}
           </div>
         </div>
         {rec.leak_guard ? (
           <div className="mt-0.5 shrink-0">
-            <Badge tone={rec.leak_guard.in_sample ? "red" : "green"}>
+            <span
+              className={cn(
+                "border px-1.5 py-px font-data text-[10px] font-bold uppercase tracking-wider",
+                rec.leak_guard.in_sample ? "border-danger text-down" : "border-success text-up",
+              )}
+            >
               {rec.leak_guard.in_sample ? "in-sample" : "leak-free"}
-            </Badge>
+            </span>
           </div>
         ) : null}
       </div>
 
       {/* Horizontal rule */}
-      <div className="mx-4 border-t border-slate-800/60" />
+      <div className="mx-4 border-t border-border" />
 
       {/* ------------------------------------------------------------------ */}
       {/* Coherent prediction block: ONE probability-only headline           */}
       {/* ------------------------------------------------------------------ */}
       <div className="px-4 pt-3 pb-3">
-        <div className="flex items-center justify-between rounded-lg border border-slate-800 bg-bg-subtle px-3 py-2.5">
-          <span className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wider text-slate-500">
+        <div className="flex items-center justify-between border border-border bg-surface-2 px-3 py-2.5">
+          <span className="microlabel flex items-center gap-1">
             prediction
             <InfoTip
               text="The one coherent pick: the highest-probability side of the pregame anchor. This same engine spines every market on the game page."
@@ -91,47 +115,85 @@ export function GameCard({
             />
           </span>
           <span className="flex items-baseline gap-1.5">
-            <span className="text-sm font-semibold text-slate-100">
+            <span className="text-sm font-semibold text-foreground">
               {pick.teamLabel}
             </span>
-            <span className="font-mono text-xs text-slate-400">
+            <Num className="text-xs text-muted-foreground">
               {pick.prob != null ? fmtPct(pick.prob, false) : "--"}
-            </span>
+            </Num>
           </span>
         </div>
       </div>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Model vs market, best price + book per side (from board slate)     */}
+      {/* ------------------------------------------------------------------ */}
+      {slateGame ? (
+        <div className="mx-4 mb-3 border border-border">
+          <div className="flex items-center justify-between border-b border-border bg-surface-2 px-3 py-1">
+            <span className="microlabel">model / mkt</span>
+            {cap ? (
+              <AsOf stamp={cap.toLocaleTimeString([], { hour12: false })} stale={boardStale} />
+            ) : (
+              <span className="font-data text-[10px] text-faint">no price</span>
+            )}
+          </div>
+          {(["away", "home"] as const).map((side) => {
+            const best = bestPrice(slateGame.markets, side);
+            const modelProb =
+              side === "home" ? rec.pregame_probs?.home_ml : rec.pregame_probs?.away_ml;
+            return (
+              <div
+                key={side}
+                className="flex items-center justify-between gap-2 border-t border-border px-3 py-1.5 font-data text-[11px] first:border-t-0"
+              >
+                <span className="truncate text-muted-foreground">
+                  {side === "home" ? rec.home : rec.away}
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="text-s-model">{fmtProb(modelProb)}</span>
+                  <span className="text-faint">/</span>
+                  <span className="text-s-market">{fmtProb(best?.devigged_prob)}</span>
+                  <Num className="ml-1 text-faint">{american(best?.odds)}</Num>
+                  <span className="text-faint">{best?.book ?? "--"}</span>
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      ) : null}
 
       {/* ------------------------------------------------------------------ */}
       {/* Key markets: devigged probability/odds rows (no $)                 */}
       {/* ------------------------------------------------------------------ */}
       {markets.length ? (
         <ul
-          className="mx-4 mb-3 divide-y divide-slate-800/50 rounded-lg border border-slate-800/60"
+          className="mx-4 mb-3 divide-y divide-border border border-border"
           aria-label="key markets (devigged probability, no $)"
         >
           {markets.map((m, i) => (
             <li
               key={`${m.market_type ?? "m"}|${m.side ?? "s"}|${m.line ?? ""}|${i}`}
-              className="flex items-center justify-between px-3 py-2 font-mono text-[11px]"
+              className="flex items-center justify-between px-3 py-1.5 font-data text-[11px]"
             >
-              <span className="truncate text-slate-400">
+              <span className="truncate text-muted-foreground">
                 {m.market_type} {m.side}
                 {m.line != null ? ` ${m.line}` : ""}
               </span>
-              <span className="ml-2 shrink-0 tabular-nums text-slate-500">
+              <Num className="ml-2 shrink-0 text-faint">
                 {m.odds != null ? m.odds.toFixed(2) : "--"}
                 {m.devigged_prob != null
                   ? ` | ${fmtPct(m.devigged_prob, false)}`
                   : ""}
                 {m.clv_is_proxy ? (
-                  <span className="ml-1 text-amber-600/80">proxy</span>
+                  <span className="ml-1 text-stale">proxy</span>
                 ) : null}
-              </span>
+              </Num>
             </li>
           ))}
         </ul>
       ) : (
-        <p className="mx-4 mb-3 font-mono text-[11px] text-slate-700">
+        <p className="mx-4 mb-3 font-data text-[11px] text-faint">
           no market rows
         </p>
       )}
@@ -139,7 +201,7 @@ export function GameCard({
       {/* ------------------------------------------------------------------ */}
       {/* Best-bet chip footer: UNITS + tier, or honest NO BET. NO $.        */}
       {/* ------------------------------------------------------------------ */}
-      <div className="mt-auto flex items-center justify-between border-t border-slate-800 px-4 py-3">
+      <div className="mt-auto flex items-center justify-between border-t border-border px-4 py-3">
         {chip.decision === "bet" ? (
           <span
             className="inline-flex items-center gap-1.5"
@@ -147,7 +209,7 @@ export function GameCard({
           >
             <span
               className={cn(
-                "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-mono font-semibold uppercase tracking-wide",
+                "inline-flex items-center gap-1.5 border px-2 py-1 font-data text-[10px] font-semibold uppercase tracking-wide",
                 tierClass(chip.tier || undefined),
               )}
             >
@@ -165,8 +227,8 @@ export function GameCard({
             className="inline-flex items-center gap-1.5"
             aria-label="no bet: no candidate cleared the tier floor"
           >
-            {/* Muted slate chip -- visually distinct from a live-bet tier chip */}
-            <span className="inline-flex items-center rounded-full border border-slate-700 bg-slate-800/60 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wide text-slate-500">
+            {/* Muted chip -- visually distinct from a live-bet tier chip */}
+            <span className="inline-flex items-center border border-border bg-surface-2 px-2 py-1 font-data text-[10px] uppercase tracking-wide text-faint">
               no bet (below floor)
             </span>
             <InfoTip
@@ -176,7 +238,7 @@ export function GameCard({
           </span>
         )}
         <span
-          className="font-mono text-[10px] text-slate-600 transition-colors group-hover:text-slate-400"
+          className="font-data text-[10px] text-faint transition-colors group-hover:text-muted-foreground"
           aria-hidden
         >
           {ships > 0 ? `${ships} calib signal - ` : ""}open game &rarr;

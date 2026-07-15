@@ -1,15 +1,16 @@
 /**
  * LiveBadge -- shared presentational primitive that visualizes the useLiveData
  * contract honestly. Pure props-driven; does NOT fetch or poll.
+ * Direction A "Amber Console": flat, token-driven freshness stamp.
  *
  * States (exclusive priority: loading > error > stale > live):
  *   loading (isLoading && ageSec===null)  -> neutral "checking..." spinner
  *   error   (error && ageSec===null)      -> neutral "unavailable" (amber, NOT red-failed)
- *   stale   (isStale || error w/ last-good) -> amber "stale (Xm old)", no green pulse
- *   live    (!isStale && !error)          -> green pulse dot + "updated Xs ago"
+ *   stale   (isStale || error w/ last-good) -> amber "stale (Xm old)", no live pulse
+ *   live    (!isStale && !error)          -> success pulse dot + "updated Xs ago"
  *
  * Honesty rails (match RAILS in workstream spec):
- *   - stale-never-green: green pulse ONLY when not stale and not errored.
+ *   - stale-never-green: live pulse ONLY when not stale and not errored.
  *   - unavailable is neutral amber, never red "failed".
  *   - "checking" (not "loading" / "connecting") while no data yet.
  *   - No dollar figures; ASCII only.
@@ -48,13 +49,15 @@ export interface LiveBadgeProps {
   isLoading?: boolean;
   /** Optional class name forwarded to the wrapper span. */
   className?: string;
+  /** Optional test hook forwarded to the wrapper span. */
+  "data-testid"?: string;
 }
 
 // ---------------------------------------------------------------------------
 // Internal sub-components (inline for <= 300 LOC budget)
 // ---------------------------------------------------------------------------
 
-/** Green pulse dot -- only rendered in the "live" state. */
+/** Success pulse dot -- only rendered in the "live" (fresh) state. */
 function LivePulseDot({ className }: { className?: string }) {
   return (
     <span
@@ -62,9 +65,9 @@ function LivePulseDot({ className }: { className?: string }) {
       aria-hidden="true"
     >
       {/* Ping ring */}
-      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
       {/* Solid center */}
-      <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
+      <span className="relative inline-flex h-2 w-2 rounded-full bg-success" />
     </span>
   );
 }
@@ -73,7 +76,7 @@ function LivePulseDot({ className }: { className?: string }) {
 function CheckingSpinner({ className }: { className?: string }) {
   return (
     <svg
-      className={cn("h-3 w-3 animate-spin text-slate-400", className)}
+      className={cn("h-3 w-3 animate-spin text-faint", className)}
       aria-hidden="true"
       viewBox="0 0 24 24"
       fill="none"
@@ -109,6 +112,7 @@ export function LiveBadge({
   error,
   isLoading = false,
   className,
+  "data-testid": dataTestId,
 }: LiveBadgeProps) {
   const hasError = Boolean(error);
   const hasData = ageSec !== null;
@@ -136,34 +140,35 @@ export function LiveBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium",
-        // Live: subtle green-tinted surface
-        isLiveState && "bg-green-950/40 text-green-400 border border-green-800/50",
-        // Stale: amber surface
-        isStaleState && "bg-amber-950/40 text-amber-400 border border-amber-800/50",
-        // Checking: neutral muted surface
-        isCheckingState && "bg-muted/40 text-muted-foreground border border-border",
-        // Unavailable: neutral amber surface (NOT red/destructive)
-        isUnavailableState && "bg-amber-950/30 text-amber-500 border border-amber-900/40",
+        "inline-flex items-center gap-1.5 border px-2 py-0.5 font-data text-[11px]",
+        // Live (fresh): success ink, flat border -- never rounded/glowing
+        isLiveState && "border-success/40 text-success",
+        // Stale: amber/stale ink (freshness violation)
+        isStaleState && "border-warning/40 text-stale",
+        // Checking: neutral faint ink
+        isCheckingState && "border-border text-faint",
+        // Unavailable: neutral amber (NOT red/destructive)
+        isUnavailableState && "border-warning/40 text-stale",
         className,
       )}
+      data-testid={dataTestId}
       role="status"
       aria-live="polite"
       aria-atomic="true"
       aria-label={derivedAriaLabel({ isLiveState, isStaleState, isCheckingState, isUnavailableState, ageSec })}
     >
-      {/* Live state: green pulse + updated age */}
+      {/* Live state: success pulse + updated age */}
       {isLiveState && (
         <>
           <LivePulseDot />
-          <UpdatedAge ageSec={ageSec} className="text-green-400" />
+          <UpdatedAge ageSec={ageSec} className="text-success" />
         </>
       )}
 
       {/* Stale state: amber dot + stale label + age when available */}
       {isStaleState && (
         <>
-          <span className="h-2 w-2 shrink-0 rounded-full bg-amber-500" aria-hidden="true" />
+          <span className="h-2 w-2 shrink-0 rounded-full bg-warning" aria-hidden="true" />
           <span>
             {"stale"}
             {hasData && (
@@ -188,7 +193,7 @@ export function LiveBadge({
       {/* Unavailable state: neutral amber, NOT "failed" */}
       {isUnavailableState && (
         <>
-          <span className="h-2 w-2 shrink-0 rounded-full bg-amber-600/70" aria-hidden="true" />
+          <span className="h-2 w-2 shrink-0 rounded-full bg-warning/70" aria-hidden="true" />
           <span>{"unavailable"}</span>
         </>
       )}

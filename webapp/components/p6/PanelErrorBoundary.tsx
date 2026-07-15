@@ -24,11 +24,11 @@ function FallbackPanel({ label, detail }: { label: string; detail?: string }) {
       className="flex flex-col gap-1 rounded-lg border border-amber-900/40 bg-amber-950/20 px-4 py-4 text-sm"
     >
       <span className="font-mono text-amber-400">unavailable</span>
-      <span className="text-[11px] text-slate-500">
+      <span className="text-[11px] text-muted-foreground">
         {label} could not be displayed. Reload the page to retry.
       </span>
       {detail ? (
-        <span className="font-mono text-[10px] text-slate-600">{detail}</span>
+        <span className="font-mono text-[10px] text-faint">{detail}</span>
       ) : null}
     </div>
   );

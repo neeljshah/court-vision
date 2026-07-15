@@ -7,13 +7,14 @@
 import { cn } from "@/lib/utils";
 import { fmtPct } from "@/lib/utils";
 import { EMPTY_CELL } from "@/lib/tokens";
+import { Num } from "@/components/ui/terminal";
 import type { PaperTrailRow } from "@/lib/p5api";
 
 function clvCellClass(v: number | null): string {
-  if (v == null) return "text-muted-foreground";
-  if (v > 0) return "text-success";
-  if (v < 0) return "text-danger";
-  return "text-muted-foreground";
+  if (v == null) return "text-faint";
+  if (v > 0) return "text-up";
+  if (v < 0) return "text-down";
+  return "text-faint";
 }
 
 function isSettledWithClose(r: PaperTrailRow): boolean {
@@ -39,26 +40,24 @@ export function ClvInline({ row, showStatus }: Props) {
     // pending / no-close / void -- NEVER render a 0-fill value.
     const label =
       row.status === "open" ? "pending" : row.clv_unavailable ? "no-close" : EMPTY_CELL;
-    return (
-      <span className="font-mono text-[11px] text-muted-foreground">{label}</span>
-    );
+    return <Num className="text-[11px] text-faint">{label}</Num>;
   }
 
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 font-mono text-[11px]",
+        "inline-flex items-center gap-1 text-[11px]",
         clvCellClass(row.clv_pct),
       )}
     >
       {isProxy ? (
-        <span title="CLV vs proxy close, not real book" className="text-warning">
+        <span title="CLV vs proxy close, not real book" className="text-stale">
           ~
         </span>
       ) : null}
-      <span>{fmtPct(row.clv_pct as number)}</span>
+      <Num>{fmtPct(row.clv_pct as number)}</Num>
       {showStatus && row.clv_status ? (
-        <span className="text-[10px] text-muted-foreground">
+        <span className="text-[10px] text-faint">
           ({row.clv_status})
         </span>
       ) : null}

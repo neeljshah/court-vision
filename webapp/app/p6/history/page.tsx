@@ -14,16 +14,16 @@ export default function PaperHistoryPage() {
       <header className="flex items-center justify-between">
         <h1 className="text-xl font-semibold tracking-tight">
           Paper trade history{" "}
-          <span className="font-mono text-slate-500">audit</span>
+          <span className="font-mono text-muted-foreground">audit</span>
         </h1>
-        <span className="font-mono text-[11px] text-slate-600">
+        <span className="font-mono text-[11px] text-faint">
           reads P5 Auto-API -- paper-only -- no $ claimed
         </span>
       </header>
 
       <PaperHistory />
 
-      <footer className="mt-4 text-center text-[11px] text-slate-600">
+      <footer className="mt-4 text-center text-[11px] text-faint">
         Paper only -- stakes are units. There is no dollar column and no ROI. No
         $ edge is claimed. CLV (better-number-than-close) is the only honest
         yardstick; vs-close is UNPROVEN where no in-play odds are available.

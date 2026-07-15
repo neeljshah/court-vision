@@ -34,7 +34,7 @@ export default function PaperTradingPage() {
 
   const {
     data, ageSec, isStale, error, isLoading: loading,
-  } = useLiveData<CombinedPayload>(fetcher, { intervalMs: 30_000, staleAfterSec: 90 });
+  } = useLiveData<CombinedPayload>(fetcher, { intervalMs: 30_000, staleAfterSec: 90, cacheKey: "paper-trading:combined" });
 
   const [rankMode, setRankMode] = useState(false);
 
@@ -78,8 +78,8 @@ export default function PaperTradingPage() {
       {/* Header */}
       <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold text-slate-100">Paper Trading Center</h1>
-          <p className="mt-0.5 text-[12px] text-slate-500">
+          <h1 className="text-xl font-semibold text-foreground">Paper Trading Center</h1>
+          <p className="mt-0.5 text-[12px] text-muted-foreground">
             Real settled book (primary) + Kalshi / Polymarket trail (secondary).
             Units and probability only. No dollars.
             {!loading && (
@@ -118,9 +118,9 @@ export default function PaperTradingPage() {
       {/* Unit convention clarifier */}
       <div
         data-testid="unit-convention-clarifier"
-        className="mb-5 rounded-lg border border-slate-800 bg-bg-subtle/60 px-4 py-2.5 text-[11px] text-slate-400"
+        className="mb-5 rounded-lg border border-slate-800 bg-bg-subtle/60 px-4 py-2.5 text-[11px] text-muted-foreground"
       >
-        <span className="font-semibold text-slate-300">Units convention:</span>{" "}
+        <span className="font-semibold text-foreground">Units convention:</span>{" "}
         Stakes are in <span className="font-mono font-semibold">UNITS</span>, not dollars.
         Quarter-Kelly sizing -- a stake can exceed 1.0u when the model is highly confident.
         No dollar edge is claimed. CLV (beat-the-close) is the only honest calibration yardstick.
@@ -143,10 +143,10 @@ export default function PaperTradingPage() {
           value={loading ? EMPTY_CELL : String(tally.nSettled)} />
         <StatTile label="Win" testId="tally-win" loading={loading}
           value={loading ? EMPTY_CELL : String(tally.nWin)}
-          valueClass={tally.nWin > 0 ? "text-success" : "text-slate-100"} />
+          valueClass={tally.nWin > 0 ? "text-success" : "text-foreground"} />
         <StatTile label="Loss" testId="tally-loss" loading={loading}
           value={loading ? EMPTY_CELL : String(tally.nLoss)}
-          valueClass={tally.nLoss > 0 ? "text-danger" : "text-slate-100"} />
+          valueClass={tally.nLoss > 0 ? "text-danger" : "text-foreground"} />
         <StatTile label="Push" testId="tally-push" loading={loading}
           value={loading ? EMPTY_CELL : String(tally.nPush)} />
         <StatTile label="Units staked" testId="tally-units-staked" loading={loading}
@@ -183,7 +183,7 @@ export default function PaperTradingPage() {
               "rounded-full border px-3 py-1 text-[11px] font-mono transition-colors",
               scope === key
                 ? "border-amber-500/70 bg-amber-950/40 text-amber-300"
-                : "border-slate-700 text-slate-400 hover:bg-slate-800/40"
+                : "border-border text-muted-foreground hover:bg-surface-2"
             )}
           >
             {label} ({n})
@@ -194,11 +194,14 @@ export default function PaperTradingPage() {
       {/* OPEN POSITIONS: trail rows, OpenPositions filters status=open||!graded */}
       <section
         data-testid="open-positions-section"
-        aria-label="Open paper positions"
         className="mb-6"
       >
-        <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-slate-500">
-          Open positions{scope !== "all" ? ` -- ${scope === "wc" ? "World Cup" : "in-game"}` : ""}
+        <h2
+          aria-label="Open paper positions"
+          className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground"
+        >
+          Open positions ({doneSummary.nOpen})
+          {scope !== "all" ? ` -- ${scope === "wc" ? "World Cup" : "in-game"}` : ""}
         </h2>
         <PanelErrorBoundary label="open positions">
           <OpenPositions rows={viewRows} loading={loading && !trail} error={error} />
@@ -209,7 +212,7 @@ export default function PaperTradingPage() {
       <Panel
         title="Settled book (real paper record)"
         right={
-          <span className="font-mono text-[10px] text-slate-500">
+          <span className="font-mono text-[10px] text-muted-foreground">
             {loading
               ? "loading"
               : `${trailRows.filter((r) => r.graded && r.status !== "open").length} settled / ${trailRows.length} total`}
@@ -231,7 +234,7 @@ export default function PaperTradingPage() {
         aria-label="Done and settled summary"
         className="mb-5 mt-6"
       >
-        <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-slate-500">
+        <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
           Done / settled summary
         </h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
@@ -241,10 +244,10 @@ export default function PaperTradingPage() {
             value={loading ? EMPTY_CELL : String(doneSummary.nSettled)} />
           <StatTile label="Win" testId="done-win" loading={loading}
             value={loading ? EMPTY_CELL : String(doneSummary.nWin)}
-            valueClass={doneSummary.nWin > 0 ? "text-success" : "text-slate-100"} />
+            valueClass={doneSummary.nWin > 0 ? "text-success" : "text-foreground"} />
           <StatTile label="Loss" testId="done-loss" loading={loading}
             value={loading ? EMPTY_CELL : String(doneSummary.nLoss)}
-            valueClass={doneSummary.nLoss > 0 ? "text-danger" : "text-slate-100"} />
+            valueClass={doneSummary.nLoss > 0 ? "text-danger" : "text-foreground"} />
           <StatTile label="Push" testId="done-push" loading={loading}
             value={loading ? EMPTY_CELL : String(doneSummary.nPush)} />
           <StatTile label="Void" testId="done-void" loading={loading}
@@ -261,10 +264,10 @@ export default function PaperTradingPage() {
         aria-label="Per-venue paper trading summary"
         className="mb-5 mt-2"
       >
-        <h2 className="mb-1 text-[11px] font-semibold uppercase tracking-widest text-slate-500">
+        <h2 className="mb-1 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
           Per-venue breakdown{scope !== "all" ? ` -- ${scope === "wc" ? "World Cup" : "in-game"}` : ""}
         </h2>
-        <p className="mb-3 text-[11px] text-slate-600">
+        <p className="mb-3 text-[11px] text-faint">
           Where each paper bet executed -- best available price per market across
           sportsbooks, DFS prop books, Kalshi / Polymarket, and live in-game. Units only.
         </p>
@@ -279,12 +282,12 @@ export default function PaperTradingPage() {
           data-testid="no-paper-trades"
           role="status"
           aria-label="No live PM game markets right now"
-          className="mb-4 rounded-lg border border-slate-800 bg-bg-subtle/40 px-4 py-6 text-center text-sm text-slate-500"
+          className="mb-4 rounded-lg border border-slate-800 bg-bg-subtle/40 px-4 py-6 text-center text-sm text-muted-foreground"
         >
-          <p data-testid="pm-empty-pm-game-markets" className="font-medium text-slate-400">
+          <p data-testid="pm-empty-pm-game-markets" className="font-medium text-muted-foreground">
             No live PM game markets right now.
           </p>
-          <p className="mt-1 text-xs text-slate-600">
+          <p className="mt-1 text-xs text-faint">
             Trades appear once the PM daemon places paper bets on live Kalshi / Polymarket markets.
             Executed: false. Real-money: DENY. No edge is claimed.
           </p>
@@ -301,7 +304,7 @@ export default function PaperTradingPage() {
             className={`h-6 rounded-full border px-3 text-[10px] font-mono uppercase tracking-wide transition-colors ${
               rankMode
                 ? "border-amber-700 bg-amber-950/40 text-amber-400"
-                : "border-slate-700 text-slate-500 hover:text-slate-300"
+                : "border-slate-700 text-muted-foreground hover:text-foreground"
             }`}
           >
             {rankMode ? "ranked: best first" : "rank by best trades"}
@@ -319,7 +322,7 @@ export default function PaperTradingPage() {
         )}
       </Panel>
 
-      <p className="mt-4 text-[11px] text-slate-600">
+      <p className="mt-4 text-[11px] text-faint">
         Paper mode -- stakes are units (no dollars). CLV (better-number-than-close) is
         the only honest calibration yardstick. No edge is claimed.
       </p>

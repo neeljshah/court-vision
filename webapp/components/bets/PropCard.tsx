@@ -52,8 +52,8 @@ export function PropCard({ card, books }: PropCardProps) {
       data-testid="prop-card-article"
       data-model-only={isModelOnly ? "true" : "false"}
       className={cn(
-        "rounded-xl border bg-bg-panel transition-colors",
-        card.status === "live" ? "border-amber-900/60" : "border-slate-800",
+        "border bg-card transition-colors",
+        card.status === "live" ? "border-warning/60" : "border-border",
       )}
     >
       <div className="p-4">
@@ -62,24 +62,24 @@ export function PropCard({ card, books }: PropCardProps) {
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap">
               {statusDot(card.status)}
-              <span className="font-mono text-[11px] text-slate-500">{card.sport.toUpperCase()}</span>
-              <span className="rounded bg-slate-800 px-1.5 font-mono text-[9px] uppercase tracking-wide text-slate-400">
+              <span className="microlabel">{card.sport.toUpperCase()}</span>
+              <span className="bg-surface-2 px-1.5 microlabel">
                 prop
               </span>
               {tipoffStr ? (
-                <span className="font-mono text-[10px] text-slate-500">{tipoffStr}</span>
+                <span className="font-data text-[10px] text-faint">{tipoffStr}</span>
               ) : null}
             </div>
-            <div className="mt-0.5 font-semibold text-slate-100 truncate">{player}</div>
-            <div className="mt-0.5 font-mono text-xs text-slate-400">
+            <div className="mt-0.5 font-semibold text-foreground truncate">{player}</div>
+            <div className="mt-0.5 font-data text-xs text-muted-foreground">
               {stat}
               {lineStr != null ? ` ${lineStr}` : ""}{" "}
-              <span className="text-slate-300">{card.side}</span>
+              <span className="text-foreground">{card.side}</span>
             </div>
           </div>
           <span
             className={cn(
-              "inline-flex rounded border px-2 py-1 font-mono text-[11px] font-semibold shrink-0",
+              "inline-flex border px-2 py-1 font-data text-[11px] font-semibold shrink-0",
               tierClass(card.tier ?? undefined),
             )}
             aria-label={card.tier ? `tier ${card.tier}` : "untiered"}
@@ -92,25 +92,25 @@ export function PropCard({ card, books }: PropCardProps) {
         {/* Model-only badge OR priced divergence */}
         {isModelOnly ? (
           <div
-            className="mt-3 rounded-md border border-amber-900/40 bg-amber-950/20 px-3 py-2"
+            className="mt-3 border border-warning/40 bg-warning/10 px-3 py-2"
             data-testid="model-only-badge"
             role="status"
             aria-label="model-only: no market line, no edge claimed"
           >
-            <span className="font-mono text-[10px] font-semibold uppercase tracking-wide text-amber-400">
+            <span className="font-data text-[10px] font-semibold uppercase tracking-wide text-warning">
               model-only (no line)
             </span>
-            <p className="mt-0.5 font-mono text-[10px] text-slate-500">
+            <p className="mt-0.5 font-data text-[10px] text-faint">
               No market line for this prop -- a calibrated projection only. No edge is claimed.
             </p>
           </div>
         ) : (
           <div className="mt-3 flex items-center justify-end gap-1.5" data-testid="prop-divergence">
-            <span className="font-mono text-[9px] uppercase tracking-widest text-slate-600">
+            <span className="microlabel">
               Calibrated divergence
             </span>
             <span
-              className="inline-flex items-center rounded border border-slate-600 bg-slate-700/60 px-2 py-0.5 font-mono text-[10px] font-semibold tabular-nums text-slate-200"
+              className="inline-flex items-center border border-border bg-surface-3 px-2 py-0.5 font-data text-[10px] font-semibold tabular text-foreground"
               aria-label={`calibrated divergence ${formatDivergence(edge ?? 0)} -- not an edge or profit claim`}
             >
               {showEdge ? formatDivergence(edge!) : "--"}
@@ -121,18 +121,18 @@ export function PropCard({ card, books }: PropCardProps) {
         {/* Model prob / projection / market prob */}
         <div className="mt-3 grid grid-cols-3 gap-2">
           <div className="flex flex-col">
-            <span className="font-mono text-[9px] uppercase tracking-widest text-slate-500">Model p({card.side})</span>
-            <span className="font-mono text-sm tabular-nums text-slate-100">{fmtProbPct(card.model_prob)}</span>
+            <span className="microlabel">Model p({card.side})</span>
+            <span className="font-data tabular text-sm text-foreground">{fmtProbPct(card.model_prob)}</span>
           </div>
           <div className="flex flex-col">
-            <span className="font-mono text-[9px] uppercase tracking-widest text-slate-500">Proj</span>
-            <span className="font-mono text-sm tabular-nums text-slate-200" data-testid="prop-proj">
+            <span className="microlabel">Proj</span>
+            <span className="font-data tabular text-sm text-foreground" data-testid="prop-proj">
               {card.proj != null ? card.proj.toFixed(1) : "--"}
             </span>
           </div>
           <div className="flex flex-col">
-            <span className="font-mono text-[9px] uppercase tracking-widest text-slate-500">Market p</span>
-            <span className="font-mono text-sm tabular-nums text-slate-400">
+            <span className="microlabel">Market p</span>
+            <span className="font-data tabular text-sm text-muted-foreground">
               {card.market_prob != null ? fmtProbPct(card.market_prob) : "INSUF"}
             </span>
           </div>
@@ -141,19 +141,19 @@ export function PropCard({ card, books }: PropCardProps) {
         {/* Best book + units */}
         <div className="mt-3 flex items-center gap-3 flex-wrap">
           <div className="flex flex-col">
-            <span className="font-mono text-[9px] uppercase tracking-widest text-slate-500">Best book</span>
-            <span className="font-mono text-xs text-slate-200">
+            <span className="microlabel">Best book</span>
+            <span className="font-data text-xs text-foreground">
               {isModelOnly ? "no line" : card.best_book || "--"}
             </span>
           </div>
           <div className="flex flex-col ml-auto text-right">
-            <span className="font-mono text-[9px] uppercase tracking-widest text-slate-500">Units</span>
+            <span className="microlabel">Units</span>
             <span
-              className="font-mono text-sm tabular-nums text-slate-100"
+              className="font-data tabular text-sm text-foreground"
               aria-label={`${card.units.toFixed(1)} UNITS -- stake in units not dollars`}
               data-testid="units-value"
             >
-              {card.units.toFixed(1)} <span className="text-[10px] uppercase text-slate-400">UNITS</span>
+              {card.units.toFixed(1)} <span className="text-[10px] uppercase text-muted-foreground">UNITS</span>
             </span>
           </div>
         </div>
@@ -161,7 +161,7 @@ export function PropCard({ card, books }: PropCardProps) {
         {/* Line shopping (priced props only) */}
         {!isModelOnly && books && books.length > 0 ? (
           <div className="mt-3">
-            <span className="mb-1 block font-mono text-[9px] uppercase tracking-widest text-slate-500">
+            <span className="mb-1 block microlabel">
               Line shopping
             </span>
             <LineShopPanel books={books} side={card.side} />
@@ -175,10 +175,10 @@ export function PropCard({ card, books }: PropCardProps) {
 
         {/* honest note */}
         {card.honest_note ? (
-          <p className="mt-2 font-mono text-[9px] text-slate-600">{card.honest_note}</p>
+          <p className="mt-2 font-data text-[9px] text-faint">{card.honest_note}</p>
         ) : null}
 
-        <div className="mt-2 border-t border-slate-800 pt-2 text-right">
+        <div className="mt-2 border-t border-border pt-2 text-right">
           <Badge tone="slate">units only -- no $</Badge>
         </div>
 
@@ -187,11 +187,11 @@ export function PropCard({ card, books }: PropCardProps) {
             <Link
               href={detailHref}
               className={cn(
-                "group inline-flex w-full items-center justify-center gap-1.5 rounded-lg border",
-                "border-slate-700 bg-slate-900/60 px-3 py-2",
-                "font-mono text-[11px] text-slate-400 transition-colors",
-                "hover:border-slate-500 hover:text-slate-200",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-1 focus-visible:ring-offset-bg-panel",
+                "group inline-flex w-full items-center justify-center gap-1.5 border",
+                "border-border bg-surface-2 px-3 py-2",
+                "font-data text-[11px] text-muted-foreground transition-colors",
+                "hover:border-muted-foreground hover:text-foreground",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-card",
               )}
               aria-label={detailLinkLabel}
               data-testid="bet-card-detail-link"
@@ -202,9 +202,9 @@ export function PropCard({ card, books }: PropCardProps) {
           ) : (
             <span
               className={cn(
-                "inline-flex w-full cursor-not-allowed items-center justify-center gap-1.5 rounded-lg border",
-                "border-slate-800 bg-slate-900/30 px-3 py-2",
-                "font-mono text-[11px] text-slate-600",
+                "inline-flex w-full cursor-not-allowed items-center justify-center gap-1.5 border",
+                "border-border bg-surface-1 px-3 py-2",
+                "font-data text-[11px] text-faint",
               )}
               aria-disabled="true"
               data-testid="bet-card-detail-link-disabled"

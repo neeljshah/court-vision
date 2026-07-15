@@ -15,7 +15,7 @@
 import { fetchHonest } from "./fetchHonest";
 
 export const P5_EXT_BASE =
-  process.env.NEXT_PUBLIC_P5_BASE || "http://127.0.0.1:8099";
+  process.env.NEXT_PUBLIC_P5_BASE || "/p5";
 
 // ---------------------------------------------------------------------------
 // Shared fetch helpers (private to this module)

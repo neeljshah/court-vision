@@ -24,12 +24,12 @@ function SportRow({ sport, s }: { sport: string; s: ProgressPerSport }) {
   return (
     <li className="flex flex-col gap-1">
       <div className="flex items-center justify-between text-xs">
-        <span className="font-mono uppercase tracking-wide text-slate-300">
+        <span className="font-mono uppercase tracking-wide text-foreground">
           {sport}
         </span>
-        <span className="font-mono tabular-nums text-slate-200">
+        <span className="font-mono tabular-nums text-foreground">
           {cov.toFixed(1)}%
-          <span className="ml-1 text-[10px] text-slate-500">
+          <span className="ml-1 text-[10px] text-muted-foreground">
             ({tested} tested, {s.n_untested_remaining} untested)
           </span>
         </span>
@@ -85,7 +85,7 @@ export function CoverageBars({
       }
     >
       {sports.length === 0 ? (
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-muted-foreground">
           no per-sport coverage available -- honest empty, never a fabricated bar.
         </p>
       ) : (
@@ -95,7 +95,7 @@ export function CoverageBars({
               <SportRow key={sp} sport={sp} s={perSport![sp]} />
             ))}
           </ul>
-          <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-slate-500">
+          <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-muted-foreground">
             <span className="inline-flex items-center gap-1">
               <span className="inline-block h-2 w-2 rounded-sm bg-tier-a/70" /> ship
               (calibration only)

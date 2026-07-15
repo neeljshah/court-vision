@@ -11,6 +11,7 @@
 import { useEffect, useState } from "react";
 import { getProductStatus } from "@/lib/api";
 import type { ProductStatus } from "@/lib/api";
+import { Panel, PanelHead } from "@/components/ui/terminal";
 
 const STEPS = [
   "Replay live games to grade each served prediction (CALIBRATION, not $).",
@@ -28,14 +29,9 @@ function ModePill({ status }: { status: ProductStatus | null }) {
     ? "self-improve: ENABLED"
     : "self-improve: READY (not enabled)";
   // INERT/unknown read amber-neutral, never green; only an actual ENABLE reads green.
-  const tone =
-    mode === "ENABLED"
-      ? "border-tier-a text-tier-a bg-tier-a/10"
-      : "border-warning/40 text-warning bg-warning/5";
+  const tone = mode === "ENABLED" ? "border-tier-a text-tier-a" : "border-warning text-warning";
   return (
-    <span
-      className={`inline-block rounded border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider ${tone}`}
-    >
+    <span className={`border px-1.5 py-px font-data text-[10px] uppercase tracking-wider ${tone}`}>
       {label}
     </span>
   );
@@ -53,13 +49,11 @@ export function SelfImproveExplainer() {
   }, []);
 
   return (
-    <section aria-label="self-improve ratchet" className="flex flex-col gap-3">
-      <h2 className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-        the self-improve ratchet -- ready, not enabled
-      </h2>
-      <div className="rounded-lg border border-border bg-surface-1/60 p-4">
-        <ModePill status={status} />
-        <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+    <section aria-label="self-improve ratchet">
+    <Panel>
+      <PanelHead title="the self-improve ratchet -- ready, not enabled" right={<ModePill status={status} />} />
+      <div className="p-4">
+        <p className="text-xs leading-relaxed text-muted-foreground">
           The system can grade its own predictions and propose a recalibration -- but the
           loop is a <span className="font-semibold text-foreground">measurement-only</span>{" "}
           ratchet that is built and READY yet INERT (the human gate is OFF). It can only
@@ -69,16 +63,17 @@ export function SelfImproveExplainer() {
         <ol className="mt-3 flex flex-col gap-2">
           {STEPS.map((s, i) => (
             <li key={i} className="flex gap-3 text-[11px] leading-relaxed text-muted-foreground">
-              <span className="font-mono font-semibold text-muted-foreground">{`0${i + 1}`}</span>
+              <span className="font-data font-semibold text-muted-foreground">{`0${i + 1}`}</span>
               <span>{s}</span>
             </li>
           ))}
         </ol>
-        <p className="mt-3 rounded border border-warning/30 bg-warning/5 px-2.5 py-1.5 text-[11px] leading-relaxed text-muted-foreground">
+        <p className="mt-3 border border-warning/40 bg-warning/5 px-2.5 py-1.5 text-[11px] leading-relaxed text-muted-foreground">
           Real-money execution is default-DENY (paper mode only). The ratchet only ever
           improves CALIBRATION -- it can never manufacture a market edge.
         </p>
       </div>
+    </Panel>
     </section>
   );
 }

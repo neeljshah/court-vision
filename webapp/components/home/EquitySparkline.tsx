@@ -44,7 +44,7 @@ export function EquitySparkline({
     return (
       <span
         data-testid="today-sparkline-empty"
-        className="font-mono text-[9px] text-slate-600"
+        className="font-data text-[10px] text-faint"
       >
         no equity curve yet -- units only, no $
       </span>
@@ -53,7 +53,7 @@ export function EquitySparkline({
 
   const last = values[values.length - 1];
   const up = startUnits == null ? true : last >= startUnits;
-  const color = up ? "#34d399" : "#f87171"; // emerald-400 / rose-400
+  const color = up ? "hsl(var(--success))" : "hsl(var(--danger))";
 
   // Baseline y for the start-units reference line (only when in range).
   const min = Math.min(...values);
@@ -80,12 +80,12 @@ export function EquitySparkline({
           y1={baselineY}
           x2={width}
           y2={baselineY}
-          stroke="#475569"
+          stroke="hsl(var(--border))"
           strokeWidth={1}
           strokeDasharray="2 2"
         />
       )}
-      <path d={path} fill="none" stroke={color} strokeWidth={1.5} />
+      <path d={path} fill="none" stroke={color} strokeWidth={2} />
     </svg>
   );
 }

@@ -3,34 +3,31 @@
 import type { ReactNode } from "react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { PanelHead, Panel as TerminalPanel } from "@/components/ui/terminal";
 
-// Panel -- standard dark card matching the existing webapp styling.
+// Panel -- p6 adapter over the Direction A terminal Panel/PanelHead.
+// Accepts optional asOf/stale so panels can carry the freshness stamp
+// (stale renders amber, never silently green).
 export function Panel({
   title,
   right,
   children,
   className,
+  asOf,
+  stale,
 }: {
   title: string;
   right?: ReactNode;
   children: ReactNode;
   className?: string;
+  asOf?: string | null;
+  stale?: boolean;
 }) {
   return (
-    <section
-      className={cn(
-        "rounded-xl border border-slate-800 bg-bg-panel",
-        className,
-      )}
-    >
-      <header className="flex items-center justify-between border-b border-slate-800 px-4 py-2.5">
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-          {title}
-        </h2>
-        {right}
-      </header>
+    <TerminalPanel className={className}>
+      <PanelHead title={title} right={right} asOf={asOf ?? undefined} stale={stale} />
       <div className="p-4">{children}</div>
-    </section>
+    </TerminalPanel>
   );
 }
 
@@ -44,7 +41,7 @@ export function Unavailable({ reason }: { reason?: string }) {
     >
       <span className="font-mono text-amber-400">unavailable</span>
       {reason ? (
-        <span className="text-xs text-slate-500">{reason}</span>
+        <span className="text-xs text-muted-foreground">{reason}</span>
       ) : null}
     </div>
   );
@@ -119,7 +116,7 @@ export function FreshnessBadge({
     <span className="inline-flex items-center gap-1.5">
       <Badge tone={tone}>{status || (ago ? `as of ${ago}` : "live")}</Badge>
       {source ? (
-        <span className="font-mono text-[10px] text-slate-500">{source}</span>
+        <span className="font-mono text-[10px] text-muted-foreground">{source}</span>
       ) : null}
     </span>
   );
@@ -209,7 +206,7 @@ export function TickingFreshnessBadge({
         <span data-testid="ticking-age-label">{label}</span>
       </Badge>
       {source ? (
-        <span className="font-mono text-[10px] text-slate-500">{source}</span>
+        <span className="font-mono text-[10px] text-muted-foreground">{source}</span>
       ) : null}
     </span>
   );
@@ -232,7 +229,7 @@ export function ModeDot({
   } as const;
   const m = map[mode];
   return (
-    <span className="inline-flex items-center gap-1.5 text-[10px] font-mono text-slate-500">
+    <span className="inline-flex items-center gap-1.5 text-[10px] font-mono text-muted-foreground">
       <span className={cn("h-1.5 w-1.5 rounded-full", m.c)} />
       {m.t}
     </span>

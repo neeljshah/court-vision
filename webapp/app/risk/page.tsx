@@ -48,7 +48,7 @@ export default function RiskPage() {
       >
         <div className="flex flex-wrap items-center gap-2">
           <span className="font-mono uppercase tracking-wide text-amber-400">units, not dollars</span>
-          <span className="text-slate-300">
+          <span className="text-foreground">
             Everything here is <strong>descriptive unit-space risk</strong> -- there is{" "}
             <span className="font-mono">NO $</span> field anywhere. Risk-of-Ruin and variance are
             model-conditional <em>descriptive</em> stats, never a profit/safety guarantee and never

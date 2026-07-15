@@ -31,25 +31,10 @@ export interface StatusTabsProps {
   panelId?: string;
 }
 
-const TABS: { key: BetStatus; label: string; tone: string; active: string }[] = [
-  {
-    key: "live",
-    label: "Live",
-    tone: "text-amber-400 border-amber-900/50 bg-amber-950/20",
-    active: "border-amber-400 bg-amber-950/40 text-amber-200",
-  },
-  {
-    key: "pregame",
-    label: "Pregame",
-    tone: "text-slate-400 border-slate-700 bg-slate-900/40",
-    active: "border-slate-400 bg-slate-800 text-slate-100",
-  },
-  {
-    key: "done",
-    label: "Done",
-    tone: "text-slate-500 border-slate-800 bg-transparent",
-    active: "border-slate-500 bg-slate-900 text-slate-200",
-  },
+const TABS: { key: BetStatus; label: string }[] = [
+  { key: "live", label: "Live" },
+  { key: "pregame", label: "Pregame" },
+  { key: "done", label: "Done" },
 ];
 
 const DEFAULT_PANEL_ID = "bets-board-panel";
@@ -91,7 +76,7 @@ export function StatusTabs({
     <nav
       role="tablist"
       aria-label="Bet status filter"
-      className="flex gap-1.5"
+      className="flex gap-4 border-b border-border"
     >
       {TABS.map((tab, index) => {
         const isActive = value === tab.key;
@@ -108,19 +93,21 @@ export function StatusTabs({
             onClick={() => onChange(tab.key)}
             onKeyDown={(e) => handleKeyDown(e, index)}
             className={cn(
-              "inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5",
-              "font-mono text-[11px] uppercase tracking-wide",
-              "transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500",
-              isActive ? tab.active : tab.tone,
+              "inline-flex items-center gap-1.5 border-b-2 px-1 py-2",
+              "font-data text-[11px] uppercase tracking-wide",
+              "transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+              isActive
+                ? "border-primary text-foreground"
+                : "border-transparent text-muted-foreground hover:text-foreground",
             )}
           >
             {tab.label}
             {count != null && count > 0 ? (
               <span
                 className={cn(
-                  "inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full px-1",
-                  "text-[9px] font-bold tabular-nums",
-                  isActive ? "bg-white/20 text-white" : "bg-slate-700 text-slate-300",
+                  "inline-flex h-4 min-w-[1rem] items-center justify-center px-1",
+                  "font-data text-[9px] tabular-nums",
+                  isActive ? "text-primary" : "text-faint",
                 )}
               >
                 {count}

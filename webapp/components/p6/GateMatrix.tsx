@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { api, isUnavailable, type InGameGates, type GateSport } from "@/lib/p5api";
 import { Panel, Unavailable, Badge } from "./Primitives";
+import { Dot } from "@/components/ui/terminal";
 import { cn } from "@/lib/utils";
 
 // GateMatrix -- 4-sport in-game calibration gate verdict matrix.
@@ -50,28 +51,30 @@ export function GateMatrix() {
       {err ? (
         <Unavailable reason={err} />
       ) : !data ? (
-        <p className="text-sm text-slate-500">loading...</p>
+        <p className="text-sm text-muted-foreground">loading...</p>
       ) : (
         <>
-          <table className="w-full text-xs">
-            <thead>
-              <tr className="text-left text-[10px] uppercase tracking-wide text-slate-500">
-                <th className="pb-2 font-medium">Sport</th>
-                <th className="pb-2 font-medium">Verdict</th>
-                <th className="pb-2 font-medium">vs close</th>
-                <th className="pb-2 font-medium">Label</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800/60">
-              {SPORT_ORDER.map((sport) => {
-                const row = data.sports.find((s) => s.sport === sport);
-                return <GateRow key={sport} sport={sport} row={row || null} />;
-              })}
-            </tbody>
-          </table>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b border-border text-left">
+                  <th className="microlabel py-1.5 px-3">Sport</th>
+                  <th className="microlabel py-1.5 px-3">Verdict</th>
+                  <th className="microlabel py-1.5 px-3">vs close</th>
+                  <th className="microlabel py-1.5 px-3">Label</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {SPORT_ORDER.map((sport) => {
+                  const row = data.sports.find((s) => s.sport === sport);
+                  return <GateRow key={sport} sport={sport} row={row || null} />;
+                })}
+              </tbody>
+            </table>
+          </div>
 
           {data.honest_note ? (
-            <p className="mt-3 text-[11px] text-slate-600">{data.honest_note}</p>
+            <p className="mt-3 text-[11px] text-faint">{data.honest_note}</p>
           ) : null}
         </>
       )}
@@ -88,9 +91,9 @@ function GateRow({
 }) {
   if (!row) {
     return (
-      <tr className="text-slate-500">
-        <td className="py-2 font-mono text-xs uppercase">{sport}</td>
-        <td colSpan={3} className="py-2 text-[10px] text-slate-600">
+      <tr className="text-muted-foreground">
+        <td className="py-1.5 px-3 font-mono text-xs uppercase">{sport}</td>
+        <td colSpan={3} className="py-1.5 px-3 text-[10px] text-faint">
           no gate data
         </td>
       </tr>
@@ -105,20 +108,23 @@ function GateRow({
   const rejected = verdict === "REJECT";
 
   return (
-    <tr className="text-slate-300">
-      <td className="py-2 font-mono text-xs uppercase font-semibold text-slate-200">
+    <tr className="text-foreground hover:bg-surface-2">
+      <td className="py-1.5 px-3 font-mono text-xs uppercase font-semibold text-foreground">
         {sport}
       </td>
-      <td className="py-2">
-        <VerdictBadge verdict={verdict} passed={passed} rejected={rejected} />
+      <td className="py-1.5 px-3">
+        <span className="inline-flex items-center gap-1.5">
+          <Dot state={passed ? "ok" : rejected ? "warn" : "warn"} />
+          <VerdictBadge verdict={verdict} passed={passed} rejected={rejected} />
+        </span>
       </td>
-      <td className="py-2">
+      <td className="py-1.5 px-3">
         <span className="font-mono text-[10px] text-amber-600/80">
           {row.vs_close || "UNPROVEN"}
         </span>
       </td>
-      <td className="py-2">
-        <span className="font-mono text-[10px] text-slate-600">
+      <td className="py-1.5 px-3">
+        <span className="font-mono text-[10px] text-faint">
           {row.honest_label || "CALIBRATION"}
         </span>
       </td>
@@ -137,7 +143,7 @@ function VerdictBadge({
 }) {
   if (!verdict) {
     return (
-      <span className="inline-flex rounded border border-slate-700 px-1.5 py-0.5 text-[10px] font-mono text-slate-500">
+      <span className="inline-flex rounded border border-slate-700 px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
         n/a
       </span>
     );

@@ -4,6 +4,7 @@ import { api, type PaperTrail as PaperTrailEnvelope, type PaperTrailRow } from "
 import { useStream } from "@/lib/useStream";
 import { P5_BASE } from "@/lib/p5api";
 import { Panel, Unavailable, Badge, ModeDot } from "./Primitives";
+import { Num } from "@/components/ui/terminal";
 import { deriveResult, showClv as rowHasClv } from "./paper-history-utils";
 import { cn, fmtPct } from "@/lib/utils";
 import { EMPTY_CELL } from "@/lib/tokens";
@@ -47,24 +48,24 @@ export function PaperTrail() {
   return (
     <Panel title="Live paper trail" right={<ModeDot mode={mode} />}>
       {!data ? (
-        <p className="text-sm text-slate-500">connecting...</p>
+        <p className="text-sm text-faint">connecting...</p>
       ) : status === "unavailable" ? (
         <Unavailable reason={(data as { reason?: string }).reason} />
       ) : rows.length === 0 ? (
-        <p className="text-sm text-slate-500">No paper trades yet.</p>
+        <p className="text-sm text-faint">No paper trades yet.</p>
       ) : (
-        <div className="max-h-[420px] overflow-y-auto">
+        <div className="max-h-[420px] overflow-x-auto overflow-y-auto">
           <table className="w-full text-xs">
-            <thead className="sticky top-0 bg-bg-panel">
-              <tr className="text-left text-[10px] uppercase tracking-wide text-slate-500">
-                <th className="pb-2">Matchup</th>
-                <th className="pb-2">Side</th>
-                <th className="pb-2 text-right">Model P</th>
-                <th className="pb-2 text-right">CLV</th>
-                <th className="pb-2 text-right">Result</th>
+            <thead className="sticky top-0 bg-card">
+              <tr className="microlabel text-left">
+                <th className="px-3 py-1.5">Matchup</th>
+                <th className="px-3 py-1.5">Side</th>
+                <th className="px-3 py-1.5 text-right">Model P</th>
+                <th className="px-3 py-1.5 text-right">CLV</th>
+                <th className="px-3 py-1.5 text-right">Result</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800">
+            <tbody className="divide-y divide-border">
               {/* EVERY trade -- no slice. Settled history persists on both paths. */}
               {rows.map((r, i) => (
                 <Row key={`${r.game_id}-${r.market_type}-${r.side}-${i}`} row={r} />
@@ -73,7 +74,7 @@ export function PaperTrail() {
           </table>
         </div>
       )}
-      <p className="mt-3 text-[11px] text-slate-600">
+      <p className="mt-3 text-[11px] text-faint">
         Paper only -- executed is always false. Stakes are units; there is no
         dollar column. No $ edge is claimed.
       </p>
@@ -87,40 +88,47 @@ function Row({ row: r }: { row: PaperTrailRow }) {
   // renders "--", NEVER 0.0.
   const showClv = rowHasClv(r);
   return (
-    <tr className={cn("text-slate-300", res === "void" && "text-muted-foreground")}>
-      <td className="py-1.5">
+    <tr
+      className={cn(
+        "hover:bg-surface-2",
+        res === "void" ? "text-muted-foreground" : "text-foreground",
+      )}
+    >
+      <td className="px-3 py-1.5">
         <div className="font-medium">{r.matchup || r.game_id}</div>
-        <div className="font-mono text-[10px] text-slate-600">
+        <div className="font-data text-[10px] text-faint">
           {r.sport}
           {r.tier ? ` - ${r.tier}` : ""}
         </div>
       </td>
-      <td className="py-1.5 font-mono">{r.side}</td>
-      <td className="py-1.5 text-right font-mono tabular-nums">
-        {r.model_prob != null ? `${(r.model_prob * 100).toFixed(1)}%` : EMPTY_CELL}
+      <td className="px-3 py-1.5 font-data">{r.side}</td>
+      <td className="px-3 py-1.5 text-right">
+        <Num>
+          {r.model_prob != null ? `${(r.model_prob * 100).toFixed(1)}%` : EMPTY_CELL}
+        </Num>
       </td>
       <td
         className={cn(
-          "py-1.5 text-right font-mono tabular-nums",
+          "px-3 py-1.5 text-right",
           showClv
             ? (r.clv_pct as number) > 0
-              ? "text-success"
+              ? "text-up"
               : (r.clv_pct as number) < 0
-                ? "text-danger"
+                ? "text-down"
                 : "text-muted-foreground"
             : "text-muted-foreground",
         )}
       >
         {showClv ? (
-          <span>
-            {r.clv_is_proxy ? <span className="text-warning">~</span> : null}
+          <Num>
+            {r.clv_is_proxy ? <span className="text-stale">~</span> : null}
             {fmtPct(r.clv_pct as number)}
-          </span>
+          </Num>
         ) : (
-          EMPTY_CELL
+          <Num>{EMPTY_CELL}</Num>
         )}
       </td>
-      <td className="py-1.5 text-right">
+      <td className="px-3 py-1.5 text-right">
         <Badge tone={RESULT_TONE[res]}>{res}</Badge>
       </td>
     </tr>

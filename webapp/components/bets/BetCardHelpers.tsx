@@ -38,7 +38,7 @@ export function clvLabel(clv: number | null, proxy: boolean): React.ReactNode {
   if (clv === null) {
     return (
       <span
-        className="font-mono text-[10px] text-amber-400/80"
+        className="font-data text-[10px] text-stale"
         aria-label="CLV: INSUFFICIENT_DATA -- no live prices available"
       >
         CLV: INSUFFICIENT_DATA
@@ -47,7 +47,7 @@ export function clvLabel(clv: number | null, proxy: boolean): React.ReactNode {
   }
   return (
     <span
-      className={cn("font-mono text-[10px]", clv > 0 ? "text-tier-a" : "text-red-400")}
+      className={cn("font-data tabular text-[10px]", clv > 0 ? "text-up" : "text-down")}
       aria-label={`CLV ${clv > 0 ? "+" : ""}${(clv * 100).toFixed(1)}%${proxy ? " (proxy)" : ""}`}
     >
       CLV {clv > 0 ? "+" : ""}{(clv * 100).toFixed(1)}%
@@ -60,14 +60,15 @@ export function clvLabel(clv: number | null, proxy: boolean): React.ReactNode {
 export function statusDot(status: BetCardData["status"]): React.ReactNode {
   const map = {
     live: { cls: "bg-amber-400 animate-pulse", label: "LIVE" },
-    pregame: { cls: "bg-slate-500", label: "PREGAME" },
+    pregame: { cls: "bg-muted-foreground", label: "PREGAME" },
+    // DONE: visible neutral (not the near-invisible bg-slate-700, not green, not pulsing).
     done: { cls: "bg-slate-500", label: "DONE" },
   } as const;
   const { cls, label } = map[status];
   return (
-    <span className="inline-flex items-center gap-1.5 font-mono text-[10px] text-slate-400">
+    <span className="inline-flex items-center gap-1.5 font-data text-[10px] text-muted-foreground">
       <span
-        className={cn("h-1.5 w-1.5 rounded-full", cls)}
+        className={cn("h-1.5 w-1.5", cls)}
         data-testid={`status-dot-${status}`}
         aria-hidden="true"
       />
@@ -134,28 +135,28 @@ export function SuppressedCard({ card }: { card: BetCardData }) {
   return (
     <article
       aria-label={`${card.matchup} -- ${card.market_type} ${card.side} -- ${label}`}
-      className="rounded-xl border border-slate-800 bg-bg-panel"
+      className="border border-border bg-card"
       data-testid="bet-card-article"
       data-suppress-reason={reason ?? "none"}
     >
       <div className="p-4 flex flex-col gap-2">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="font-mono text-[11px] text-slate-500">{card.sport.toUpperCase()}</span>
+          <span className="microlabel">{card.sport.toUpperCase()}</span>
           {card.tier && (
-            <span className={cn("inline-flex rounded border px-2 py-0.5 font-mono text-[11px] font-semibold", tierClass(card.tier))}>
+            <span className={cn("inline-flex border px-2 py-0.5 font-data text-[11px] font-semibold", tierClass(card.tier))}>
               {card.tier}
             </span>
           )}
         </div>
-        <div className="font-semibold text-slate-100 truncate">{card.matchup}</div>
-        <div className="font-mono text-xs text-slate-400">{card.market_type} <span className="text-slate-300">{card.side}</span></div>
+        <div className="font-semibold text-foreground truncate">{card.matchup}</div>
+        <div className="font-data text-xs text-muted-foreground">{card.market_type} <span className="text-foreground">{card.side}</span></div>
         {/* Explicit no_bet / settled label -- never decision=bet */}
         <div
           className={cn(
-            "mt-1 rounded border px-3 py-2 font-mono text-[11px]",
+            "mt-1 border px-3 py-2 font-data text-[11px]",
             isDegenerate
-              ? "border-amber-900/40 bg-amber-950/20 text-amber-400"
-              : "border-slate-700 bg-slate-900/40 text-slate-400",
+              ? "border-warning/40 bg-warning/10 text-warning"
+              : "border-border bg-surface-2 text-muted-foreground",
           )}
           data-testid={isDegenerate ? "degenerate-no-bet-label" : "settled-no-bet-label"}
           role="status"
@@ -165,24 +166,24 @@ export function SuppressedCard({ card }: { card: BetCardData }) {
         </div>
         {/* Calibrated divergence (context only) */}
         <div className="flex gap-3 items-center flex-wrap">
-          <span className="font-mono text-[9px] uppercase tracking-widest text-slate-600">Calibrated divergence (context only)</span>
-          <span className="font-mono text-xs text-slate-500 tabular-nums">
+          <span className="microlabel">Calibrated divergence (context only)</span>
+          <span className="font-data tabular text-xs text-faint">
             {card.edge_vs_market != null ? fmtPct(card.edge_vs_market) : "--"}
           </span>
         </div>
         {/* edge_vs_market label -- always "calibrated divergence", never profit */}
-        <div className="border-t border-slate-800 pt-2 text-right">
+        <div className="border-t border-border pt-2 text-right">
           <Badge tone="slate">calibrated divergence -- no $ edge</Badge>
         </div>
         <div>
           <Link
             href={detailHref}
             className={cn(
-              "group inline-flex w-full items-center justify-center gap-1.5 rounded-lg border",
-              "border-slate-700 bg-slate-900/60 px-3 py-2",
-              "font-mono text-[11px] text-slate-400 transition-colors",
-              "hover:border-slate-500 hover:text-slate-200",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-1 focus-visible:ring-offset-bg-panel",
+              "group inline-flex w-full items-center justify-center gap-1.5 border",
+              "border-border bg-surface-2 px-3 py-2",
+              "font-data text-[11px] text-muted-foreground transition-colors",
+              "hover:border-muted-foreground hover:text-foreground",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-card",
             )}
             aria-label={`View details: ${card.matchup} ${card.market_type} ${card.side}`}
             data-testid="bet-card-detail-link"

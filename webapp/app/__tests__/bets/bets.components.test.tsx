@@ -92,22 +92,28 @@ describe("BetCard", () => {
   });
 
   it("divergence label has exactly one plus sign (no double-plus regression)", () => {
-    // edge_vs_market=0.06 -> fmtPct(0.06) -> '+6.0%'; must render '+6.0%' not '++6.0%'
+    // edge_vs_market=0.06 -> formatDivergence(0.06) -> '+6.0pp' (WS6: calibrated-divergence
+    // pp framing, regression-locked by BetCard.test.tsx); must render '+6.0pp' not '++6.0pp'
     render(<BetCard card={makeBetCard({ edge_vs_market: 0.06 })} />);
-    expect(screen.getByText("+6.0%")).toBeTruthy();
+    expect(screen.getByText("+6.0pp")).toBeTruthy();
     // Absence of double-plus is the regression lock
-    expect(screen.queryByText("++6.0%")).toBeNull();
+    expect(screen.queryByText("++6.0pp")).toBeNull();
   });
 
   it("negative divergence renders without a plus sign", () => {
-    // edge_vs_market=-0.04 -> fmtPct(-0.04) -> '-4.0%'
+    // edge_vs_market=-0.04 -> formatDivergence(-0.04) -> '-4.0pp'
     render(<BetCard card={makeBetCard({ edge_vs_market: -0.04 })} />);
-    expect(screen.getByText("-4.0%")).toBeTruthy();
+    expect(screen.getByText("-4.0pp")).toBeTruthy();
   });
 
-  it("shows units with 'u' suffix and no dollar sign", () => {
+  it("shows units with explicit UNITS label and no dollar sign", () => {
+    // WS6: explicit "UNITS" label replaces the old 'u' suffix (regression-locked
+    // by BetCard.test.tsx "no 'u' suffix").
     const { container } = render(<BetCard card={makeBetCard({ units: 0.75 })} />);
-    expect(screen.getByText("0.75u")).toBeTruthy();
+    const unitsEl = container.querySelector("[data-testid='units-value']");
+    // units.toFixed(1): 0.75 -> "0.8"
+    expect(unitsEl?.textContent ?? "").toContain("0.8");
+    expect((unitsEl?.textContent ?? "").toUpperCase()).toContain("UNITS");
     const txt = container.textContent ?? "";
     // No dollar value ($ followed by digits)
     expect(/\$\s*\d/.test(txt)).toBe(false);
@@ -151,8 +157,10 @@ describe("BetCard", () => {
   });
 
   it("shows units-only badge (no dollar text)", () => {
+    // The honesty footnote inside ModelVsMarketBar also matches /units only/i,
+    // so assert at least one match rather than a single unique element.
     render(<BetCard card={makeBetCard()} />);
-    expect(screen.getByText(/units only/i)).toBeTruthy();
+    expect(screen.getAllByText(/units only/i).length).toBeGreaterThan(0);
   });
 
   // ---------------------------------------------------------------------------
@@ -325,66 +333,51 @@ describe("BookShoppingRow", () => {
 // ---------------------------------------------------------------------------
 // BestBetsBoard tests -- honesty-critical board logic
 //
-// BestBetsBoard calls api.bestbets for each sport in SPORTS (5 sports).
-// We mock @/lib/p5api.api.bestbets to return only for "nba" and Unavailable
-// for the rest, keeping assertions clean.
+// BestBetsBoard calls api.bestbetsBoard({sport}, signal) for each sport in
+// SPORTS (the W-wave board endpoint -- flat cards[], not the legacy
+// games[]/best_bets[] envelope). We mock @/lib/p5api.api.bestbetsBoard to
+// return only for "nba" and Unavailable for the rest, keeping assertions clean.
 
 import { BestBetsBoard } from "@/components/bets/BestBetsBoard";
-import type { BestBetsEnvelope, Unavailable } from "@/lib/p5api";
+import type { Unavailable, BestBetsBoard as BestBetsBoardType, BestBetsCard } from "@/lib/p5api";
 
 const BOARD_HOUR_MS = 60 * 60_000;
 
+function makeCard(overrides: Partial<BestBetsCard> = {}): BestBetsCard {
+  return {
+    game_id: "0022401234",
+    matchup: "NYK @ SAS",
+    sport: "nba",
+    market_type: "moneyline",
+    side: "home",
+    model_prob: 0.55,
+    market_prob: 0.50,
+    best_book: "kalshi",
+    best_odds: 1.90,
+    all_books: [],
+    edge_vs_market: 0.05,
+    units: 0.5,
+    tier: "B",
+    confidence: 0.6,
+    clv: null,
+    clv_is_proxy: true,
+    status: "pregame",
+    ...overrides,
+  };
+}
+
 function makeBoardEnvelope(
   generated_at: string,
-  bets: Array<{
-    decision?: string;
-    market_type?: string;
-    side?: string;
-    ev?: number;
-    tier?: string;
-    stake_units?: number;
-    clv_is_proxy?: boolean;
-  }> = [],
-): BestBetsEnvelope {
+  cards: BestBetsCard[] = [],
+): BestBetsBoardType {
   return {
-    sport: "nba",
-    generated_at,
     status: "ok",
-    count: bets.length,
-    n_best_bets: bets.filter((b) => (b.decision ?? "bet") === "bet").length,
+    generated_at,
+    cards,
+    count: cards.length,
+    sport: "nba",
+    honest_note: "calibration only",
     edge_claimed: false,
-    games: [
-      {
-        game_id: "0022401234",
-        home: "SAS",
-        away: "NYK",
-        status: "pregame",
-        best_bets: bets.map((b) => ({
-          market_type: b.market_type ?? "moneyline",
-          side: b.side ?? "home",
-          model_prob: 0.55,
-          market_prob: 0.50,
-          best_book: "kalshi",
-          best_odds: 1.90,
-          line: null,
-          edge: 0.05,
-          ev: b.ev ?? 0.05,
-          tier: b.tier ?? "B",
-          decision: b.decision ?? "bet",
-          stake_units: b.stake_units ?? 0.5,
-          flat_unit: 1.0,
-          kelly_units: 0.5,
-          clv_is_proxy: b.clv_is_proxy ?? true,
-        })),
-      },
-    ],
-    clv: {
-      n_bets: 0,
-      pct_beat_close: null,
-      mean_clv_pct: null,
-      by_sport: {},
-      clv_is_proxy: true,
-    },
   };
 }
 
@@ -392,28 +385,29 @@ function makeBoardEnvelope(
 const UNAVAILABLE = { status: "unavailable", reason: "offline" } satisfies Unavailable;
 
 describe("BestBetsBoard -- honesty-critical board logic", () => {
-  let originalBestbets: typeof import("@/lib/p5api").api.bestbets;
+  let originalBestbetsBoard: typeof import("@/lib/p5api").api.bestbetsBoard;
 
   beforeEach(async () => {
     const mod = await import("@/lib/p5api");
-    originalBestbets = mod.api.bestbets;
+    originalBestbetsBoard = mod.api.bestbetsBoard;
   });
 
   afterEach(async () => {
     const mod = await import("@/lib/p5api");
-    mod.api.bestbets = originalBestbets;
+    mod.api.bestbetsBoard = originalBestbetsBoard;
     vi.restoreAllMocks();
   });
 
-  it("drops no_bet candidates -- only decision==='bet' items render", async () => {
+  it("drops settled candidates -- only non-post/final cards render", async () => {
     const recentTs = new Date(Date.now() - 5_000).toISOString();
     const envelope = makeBoardEnvelope(recentTs, [
-      { decision: "bet",    market_type: "moneyline_kept", side: "home" },
-      { decision: "no_bet", market_type: "total_dropped",  side: "over" },
+      makeCard({ market_type: "moneyline_kept", side: "home", status: "pregame" }),
+      // status=post -- excluded entirely by fetchAllSports (game already over)
+      makeCard({ game_id: "g2", market_type: "total_dropped", side: "over", status: "post" }),
     ]);
     const mod = await import("@/lib/p5api");
-    mod.api.bestbets = vi.fn(async (sport: string) =>
-      sport === "nba" ? envelope : UNAVAILABLE,
+    mod.api.bestbetsBoard = vi.fn(async (params?: { sport?: string }) =>
+      params?.sport === "nba" ? envelope : UNAVAILABLE,
     );
 
     render(<BestBetsBoard />);
@@ -421,18 +415,18 @@ describe("BestBetsBoard -- honesty-critical board logic", () => {
     await waitFor(() => {
       expect(screen.queryAllByText(/moneyline_kept/i).length).toBeGreaterThan(0);
     });
-    // The no_bet market_type must NOT appear anywhere in the rendered output
+    // The settled market_type must NOT appear anywhere in the rendered output
     expect(screen.queryAllByText(/total_dropped/i)).toHaveLength(0);
   });
 
   it("shows aging badge (amber, not green) when generated_at is hours old", async () => {
     const staleTs = new Date(Date.now() - 3 * BOARD_HOUR_MS).toISOString();
     const envelope = makeBoardEnvelope(staleTs, [
-      { decision: "bet", market_type: "moneyline", side: "home" },
+      makeCard({ market_type: "moneyline", side: "home" }),
     ]);
     const mod = await import("@/lib/p5api");
-    mod.api.bestbets = vi.fn(async (sport: string) =>
-      sport === "nba" ? envelope : UNAVAILABLE,
+    mod.api.bestbetsBoard = vi.fn(async (params?: { sport?: string }) =>
+      params?.sport === "nba" ? envelope : UNAVAILABLE,
     );
 
     render(<BestBetsBoard />);
@@ -456,16 +450,18 @@ describe("BestBetsBoard -- honesty-critical board logic", () => {
 
   it("shows honest empty state when all sports return Unavailable", async () => {
     const mod = await import("@/lib/p5api");
-    mod.api.bestbets = vi.fn(async () => UNAVAILABLE);
+    mod.api.bestbetsBoard = vi.fn(async () => UNAVAILABLE);
 
     const { container } = render(<BestBetsBoard />);
 
     await waitFor(() => {
       const txt = container.textContent ?? "";
       const hasHonestMsg =
-        /No qualifying pregame bets/i.test(txt) ||
+        /No bet decisions cleared the tier floor/i.test(txt) ||
         /predict service may be offline/i.test(txt) ||
-        /No data returned/i.test(txt);
+        /No data returned/i.test(txt) ||
+        /no tradable cards/i.test(txt) ||
+        /none right now/i.test(txt);
       expect(hasHonestMsg).toBe(true);
     });
   });
@@ -476,12 +472,10 @@ describe("BestBetsBoard -- honesty-critical board logic", () => {
 
   it("renders a manual refresh control with an accessible label", async () => {
     const recentTs = new Date(Date.now() - 5_000).toISOString();
-    const envelope = makeBoardEnvelope(recentTs, [
-      { decision: "bet", market_type: "moneyline", side: "home" },
-    ]);
+    const envelope = makeBoardEnvelope(recentTs, [makeCard()]);
     const mod = await import("@/lib/p5api");
-    mod.api.bestbets = vi.fn(async (sport: string) =>
-      sport === "nba" ? envelope : UNAVAILABLE,
+    mod.api.bestbetsBoard = vi.fn(async (params?: { sport?: string }) =>
+      params?.sport === "nba" ? envelope : UNAVAILABLE,
     );
 
     render(<BestBetsBoard />);
@@ -495,14 +489,12 @@ describe("BestBetsBoard -- honesty-critical board logic", () => {
 
   it("clicking refresh now re-invokes the fetch (load called again)", async () => {
     const recentTs = new Date(Date.now() - 5_000).toISOString();
-    const envelope = makeBoardEnvelope(recentTs, [
-      { decision: "bet", market_type: "moneyline", side: "home" },
-    ]);
+    const envelope = makeBoardEnvelope(recentTs, [makeCard()]);
     const mod = await import("@/lib/p5api");
-    const mockFn = vi.fn(async (sport: string) =>
-      sport === "nba" ? envelope : UNAVAILABLE,
+    const mockFn = vi.fn(async (params?: { sport?: string }) =>
+      params?.sport === "nba" ? envelope : UNAVAILABLE,
     );
-    mod.api.bestbets = mockFn;
+    mod.api.bestbetsBoard = mockFn;
 
     render(<BestBetsBoard />);
 
@@ -528,8 +520,8 @@ describe("BestBetsBoard -- honesty-critical board logic", () => {
     const recentTs = new Date(Date.now() - 5_000).toISOString();
     const envelope = makeBoardEnvelope(recentTs, []);
     const mod = await import("@/lib/p5api");
-    mod.api.bestbets = vi.fn(async (sport: string) =>
-      sport === "nba" ? envelope : UNAVAILABLE,
+    mod.api.bestbetsBoard = vi.fn(async (params?: { sport?: string }) =>
+      params?.sport === "nba" ? envelope : UNAVAILABLE,
     );
 
     const { container } = render(<BestBetsBoard />);
@@ -547,8 +539,8 @@ describe("BestBetsBoard -- honesty-critical board logic", () => {
     const recentTs = new Date(Date.now() - 5_000).toISOString();
     const envelope = makeBoardEnvelope(recentTs, []);
     const mod = await import("@/lib/p5api");
-    mod.api.bestbets = vi.fn(async (sport: string) =>
-      sport === "nba" ? envelope : UNAVAILABLE,
+    mod.api.bestbetsBoard = vi.fn(async (params?: { sport?: string }) =>
+      params?.sport === "nba" ? envelope : UNAVAILABLE,
     );
 
     const { container } = render(<BestBetsBoard />);
@@ -568,8 +560,8 @@ describe("BestBetsBoard -- honesty-critical board logic", () => {
     const staleTs = new Date(Date.now() - 3 * BOARD_HOUR_MS).toISOString();
     const envelope = makeBoardEnvelope(staleTs, []);
     const mod = await import("@/lib/p5api");
-    mod.api.bestbets = vi.fn(async (sport: string) =>
-      sport === "nba" ? envelope : UNAVAILABLE,
+    mod.api.bestbetsBoard = vi.fn(async (params?: { sport?: string }) =>
+      params?.sport === "nba" ? envelope : UNAVAILABLE,
     );
 
     render(<BestBetsBoard />);
@@ -590,7 +582,7 @@ describe("BestBetsBoard -- honesty-critical board logic", () => {
 
   it("Live, Pregame, Done tabs still render after affordance is added", async () => {
     const mod = await import("@/lib/p5api");
-    mod.api.bestbets = vi.fn(async () => UNAVAILABLE);
+    mod.api.bestbetsBoard = vi.fn(async () => UNAVAILABLE);
 
     render(<BestBetsBoard />);
 
@@ -603,9 +595,9 @@ describe("BestBetsBoard -- honesty-critical board logic", () => {
     // Use a never-resolving promise to hold the loading state
     let resolveLoad!: (v: unknown) => void;
     const mod = await import("@/lib/p5api");
-    mod.api.bestbets = vi.fn(
+    mod.api.bestbetsBoard = vi.fn(
       () => new Promise((res) => { resolveLoad = res; }),
-    ) as typeof mod.api.bestbets;
+    ) as typeof mod.api.bestbetsBoard;
 
     const { container } = render(<BestBetsBoard />);
 
@@ -648,9 +640,10 @@ vi.mock("next/navigation", () => ({
 const mockBestbetsBoard = vi.hoisted(() => vi.fn());
 
 // We override the existing p5api mock to also expose bestbetsBoard.
-// Since the existing mock patches api.bestbets in afterEach, we use a
+// Since the existing mock patches api.bestbetsBoard in afterEach, we use a
 // separate describe block with its own mock setup.
-import type { BestBetsBoard as BestBetsBoardType, BestBetsCard } from "@/lib/p5api";
+// (BestBetsBoardType / BestBetsCard already imported above for the
+// BestBetsBoard describe block -- reused here.)
 
 function makeBestBetsCard(overrides: Partial<BestBetsCard> = {}): BestBetsCard {
   return {
@@ -728,8 +721,8 @@ describe("Sport bets board (/bets/[sport]) -- P0 acceptance tests", () => {
     expect(screen.queryAllByText("A").length).toBeGreaterThan(0);
     expect(screen.queryAllByText("B").length).toBeGreaterThan(0);
 
-    // Units suffix visible for each card
-    const unitEls = screen.queryAllByText(/0\.\d+u/);
+    // Units value visible for each card (WS6: explicit "UNITS" label, no 'u' suffix)
+    const unitEls = container.querySelectorAll("[data-testid='units-value']");
     expect(unitEls.length).toBeGreaterThan(0);
   });
 
@@ -794,8 +787,8 @@ describe("Sport bets board (/bets/[sport]) -- P0 acceptance tests", () => {
     });
 
     const txt = container.textContent ?? "";
-    // Honest messaging: no qualifying bets, no fabricated cards
-    expect(/No qualifying bets/i.test(txt)).toBe(true);
+    // Honest messaging: no calibrated bets, no fabricated cards
+    expect(/No calibrated bets right now/i.test(txt)).toBe(true);
     // No fabricated profit claim in empty state
     expect(/\$\s*\d/.test(txt)).toBe(false);
     // CLV INSUFFICIENT_DATA note shown in empty state

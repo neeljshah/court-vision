@@ -42,18 +42,18 @@ export function BacklogBurndown({
       }
     >
       {t === null || r === null ? (
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-muted-foreground">
           backlog count unavailable -- honest empty, never a fabricated burn-down.
         </p>
       ) : (
         <div className="flex flex-col gap-3">
           <div className="flex items-end justify-between">
             <div>
-              <div className="font-mono text-2xl tabular-nums text-slate-100">
+              <div className="font-mono text-2xl tabular-nums text-foreground">
                 {closed}
-                <span className="text-sm text-slate-500"> / {t} closed</span>
+                <span className="text-sm text-muted-foreground"> / {t} closed</span>
               </div>
-              <div className="text-[11px] text-slate-500">
+              <div className="text-[11px] text-muted-foreground">
                 {r} remaining in the queue
               </div>
             </div>
@@ -73,7 +73,7 @@ export function BacklogBurndown({
               style={{ width: `${pct}%`, display: "block" }}
             />
           </div>
-          <p className="text-[11px] leading-relaxed text-slate-600">
+          <p className="text-[11px] leading-relaxed text-faint">
             Measurement-only: the backlog DISCOVERS + RANKS work; it never fixes,
             ships, or flips a flag. Most items close as a recorded REJECT (a
             success) -- the market is efficient.

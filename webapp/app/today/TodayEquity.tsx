@@ -23,9 +23,9 @@ export function TodayEquity() {
   const bankrollFetcher = useCallback((s: AbortSignal) => api.getPaperBankroll(s), []);
 
   const { data: pnlRaw, isLoading } =
-    useLiveData<PnlSeries>(pnlFetcher, { intervalMs: POLL_MS, staleAfterSec: STALE_SEC });
+    useLiveData<PnlSeries>(pnlFetcher, { intervalMs: POLL_MS, staleAfterSec: STALE_SEC, cacheKey: "today:pnl" });
   const { data: bankrollRaw } =
-    useLiveData<PaperBankroll>(bankrollFetcher, { intervalMs: POLL_MS, staleAfterSec: STALE_SEC });
+    useLiveData<PaperBankroll>(bankrollFetcher, { intervalMs: POLL_MS, staleAfterSec: STALE_SEC, cacheKey: "today:bankroll" });
 
   const pnl: PnlSeries | null = pnlRaw && !isUnavailable(pnlRaw) ? (pnlRaw as PnlSeries) : null;
   const bankroll: PaperBankroll | null =
@@ -37,11 +37,11 @@ export function TodayEquity() {
       aria-label="paper equity curve"
       data-testid="today-equity"
     >
-      <h2 className="mb-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+      <h2 className="microlabel mb-2">
         how much you would have made -- paper, units
       </h2>
       <PaperEquityPanel series={pnl} bankroll={bankroll} loading={isLoading && pnl === null} />
-      <p className="mb-8 mt-1 text-center font-mono text-[10px] text-slate-600">
+      <p className="mb-8 mt-1 text-center font-data text-[10px] text-faint">
         This is a PAPER track record / hypothesis -- units, not dollars. CLV
         (beat-the-close) is the yardstick (INSUFFICIENT_DATA at small-N), not a
         realized profit. Real-money: DENY. No edge is claimed.

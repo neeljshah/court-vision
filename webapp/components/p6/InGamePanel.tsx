@@ -10,6 +10,7 @@ import {
 } from "@/lib/p5api";
 import { useLiveData } from "@/lib/useLiveData";
 import { Panel, Unavailable, Badge, ModeDot, TickingFreshnessBadge } from "./Primitives";
+import { Num } from "@/components/ui/terminal";
 import { fmtPct } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import type { Unavailable as UnavailableType } from "@/lib/types";
@@ -120,27 +121,29 @@ export function InGamePanel() {
       ) : null}
 
       {isLoading && results.length === 0 ? (
-        <p className="text-sm text-slate-500">loading...</p>
+        <p className="text-sm text-muted-foreground">loading...</p>
       ) : results.length === 0 ? (
-        <p className="text-sm text-slate-500">No games on slate.</p>
+        <p className="text-sm text-muted-foreground">No games on slate.</p>
       ) : (
-        <table className="w-full text-xs">
-          <thead>
-            <tr className="text-left text-[10px] uppercase tracking-wide text-slate-500">
-              <th className="pb-2 font-medium">Game</th>
-              <th className="pb-2 font-medium text-right">P(home win)</th>
-              <th className="pb-2 font-medium">State</th>
-              <th className="pb-2 font-medium">Provenance / CLV</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-800/60">
-            {results.map((r) => (
-              <GameRow key={`${r.sport}/${r.game_id}`} result={r} />
-            ))}
-          </tbody>
-        </table>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="border-b border-border text-left">
+                <th className="microlabel py-1.5 px-3">Game</th>
+                <th className="microlabel py-1.5 px-3 text-right">P(home win)</th>
+                <th className="microlabel py-1.5 px-3">State</th>
+                <th className="microlabel py-1.5 px-3">Provenance / CLV</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {results.map((r) => (
+                <GameRow key={`${r.sport}/${r.game_id}`} result={r} />
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
-      <p className="mt-3 text-[11px] text-slate-600">
+      <p className="mt-3 text-[11px] text-faint">
         CALIBRATION only. vs-close is UNPROVEN (no in-play odds available).
         p(home) = calibrated OOS probability; degrades to pregame prior when
         no live state. CLV may be INSUFFICIENT_DATA when no closing line exists.
@@ -154,11 +157,11 @@ function GameRow({ result }: { result: GameResult }) {
 
   if (err) {
     return (
-      <tr className="text-slate-500">
-        <td className="py-1.5 font-mono text-[10px]">
+      <tr className="text-muted-foreground">
+        <td className="py-1.5 px-3 font-mono text-[10px]">
           {sport}/{game_id}
         </td>
-        <td colSpan={3} className="py-1.5 text-[10px] text-slate-600">
+        <td colSpan={3} className="py-1.5 px-3 text-[10px] text-faint">
           {err.length > 60 ? err.slice(0, 60) + "..." : err}
         </td>
       </tr>
@@ -192,59 +195,60 @@ function GameRow({ result }: { result: GameResult }) {
     clvStatus === "INSUFFICIENT_DATA" || clvStatus === null;
 
   return (
-    <tr className={cn("text-slate-300", isLive ? "text-slate-100" : "")}>
-      <td className="py-1.5">
-        <div className="font-mono text-[10px] text-slate-400">
+    <tr className={cn("text-foreground hover:bg-surface-2", isLive ? "text-foreground" : "")}>
+      <td className="py-1.5 px-3">
+        <div className="font-mono text-[10px] text-muted-foreground">
           {sport}/{game_id}
         </div>
         {homeAbbr && awayAbbr ? (
           <div className="text-[11px]">
             {awayAbbr} @ {homeAbbr}
             {liveStatus ? (
-              <span className="ml-1 text-slate-500">{liveStatus}</span>
+              <span className="ml-1 text-muted-foreground">{liveStatus}</span>
             ) : null}
           </div>
         ) : null}
       </td>
-      <td className="py-1.5 text-right font-mono tabular-nums text-sm">
+      <td className="py-1.5 px-3 text-right">
         {pWin != null ? (
-          <span
-            className={cn(
-              "font-semibold",
-              pWin > 0.6
-                ? "text-tier-a"
-                : pWin < 0.4
-                  ? "text-red-400"
-                  : "text-slate-200",
-              isPrior ? "opacity-80" : "",
-            )}
-            title={isPrior ? "pregame prior p0 (no live state)" : undefined}
-          >
-            {fmtPct(pWin)}
+          <span title={isPrior ? "pregame prior p0 (no live state)" : undefined}>
+            <Num
+              className={cn(
+                "text-sm font-semibold",
+                pWin > 0.6
+                  ? "text-tier-a"
+                  : pWin < 0.4
+                    ? "text-red-400"
+                    : "text-foreground",
+                isPrior ? "opacity-80" : "",
+              )}
+            >
+              {fmtPct(pWin)}
+            </Num>
             {isPrior ? (
-              <span className="ml-1 text-[9px] text-slate-500">p0</span>
+              <span className="ml-1 text-[9px] text-muted-foreground">p0</span>
             ) : null}
           </span>
         ) : (
-          <span className="text-slate-600">unavailable</span>
+          <span className="text-faint">unavailable</span>
         )}
       </td>
-      <td className="py-1.5">
+      <td className="py-1.5 px-3">
         <Badge tone={isLive ? "green" : "slate"}>
           {isLive ? "live" : "pregame"}
         </Badge>
       </td>
-      <td className="py-1.5 font-mono text-[10px] text-slate-500">
+      <td className="py-1.5 px-3 font-mono text-[10px] text-muted-foreground">
         {provenance}
         {model ? (
-          <span className="ml-1 text-slate-600">· {model}</span>
+          <span className="ml-1 text-faint">· {model}</span>
         ) : null}
         {/* CLV status -- INSUFFICIENT_DATA rendered literally, never as 0/green. */}
         {isLive ? (
           <span
             className={cn(
               "ml-1",
-              clvIsInsufficient ? "text-slate-600" : "text-amber-600",
+              clvIsInsufficient ? "text-faint" : "text-amber-600",
             )}
             data-testid="clv-status"
           >

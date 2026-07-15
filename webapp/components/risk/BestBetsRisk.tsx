@@ -76,14 +76,14 @@ export function BestBetsRisk() {
       }
     >
       {!anyLoaded ? (
-        <p className="text-sm text-slate-500">loading...</p>
+        <p className="text-sm text-muted-foreground">loading...</p>
       ) : all.length === 0 ? (
         <Unavailable reason="No paper pick clears a tier floor right now. Matching the efficient close is a SUCCESS, not a failure -- so there is nothing to risk. (NBA offseason; MLB / World Cup are the live sports.)" />
       ) : (
         <ul className="grid grid-cols-1 gap-2 lg:grid-cols-2">
           {all.map((r, i) => (
             <div key={`${r.sport}-${r.gameId}-${r.market}-${i}`}>
-              <div className="mb-1 font-mono text-[9px] uppercase tracking-[0.2em] text-slate-600">
+              <div className="mb-1 font-mono text-[9px] uppercase tracking-[0.2em] text-faint">
                 {sportLabel(r.sport)}
               </div>
               <ul>

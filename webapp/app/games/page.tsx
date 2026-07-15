@@ -22,13 +22,13 @@ export default function GamesPage() {
       <header className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-xl font-semibold tracking-tight">
           Games{" "}
-          <span className="font-mono text-sm text-muted-foreground">
+          <span className="font-data text-sm text-muted-foreground">
             today&apos;s slate
           </span>
         </h1>
         <Link
           href="/p6"
-          className="rounded-md border border-border bg-surface-1 px-3 py-1.5 font-mono text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          className="border border-border bg-surface-1 px-3 py-1.5 font-data text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
         >
           Dashboard &rarr;
         </Link>
@@ -36,7 +36,7 @@ export default function GamesPage() {
 
       <SlateCards />
 
-      <footer className="mt-4 text-center text-[11px] text-slate-600">
+      <footer className="mt-4 text-center font-data text-[11px] text-faint">
         {HONEST_DISCLAIMER}
       </footer>
     </main>

@@ -21,7 +21,7 @@ import { fetchHonest } from "./fetchHonest";
 import type { Unavailable, PnlSeries, PaperBankroll } from "./types";
 
 export const P5_BASE =
-  process.env.NEXT_PUBLIC_P5_BASE || "http://127.0.0.1:8099";
+  process.env.NEXT_PUBLIC_P5_BASE || "/p5";
 
 // One placed / pending / settled paper bet in the today digest. UNITS only.
 export type TodayBet = {

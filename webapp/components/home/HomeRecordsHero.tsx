@@ -10,6 +10,7 @@ import Link from "next/link";
 import { api, isUnavailable } from "@/lib/p5api";
 import { useLiveData } from "@/lib/useLiveData";
 import type { PaperPredictions, PaperPredictionRow, ClvScoreboard, Unavailable } from "@/lib/types";
+import { Panel, PanelHead, Num } from "@/components/ui/terminal";
 
 const POLL_MS   = 30_000;
 const STALE_SEC = 90;
@@ -32,8 +33,8 @@ function fmtTier(tier: string | null | undefined): string {
 
 function outcomeClass(outcome: string | null | undefined): string {
   const v = (outcome ?? "").toLowerCase();
-  if (v === "win")  return "text-emerald-600 dark:text-emerald-400";
-  if (v === "loss") return "text-red-500 dark:text-red-400";
+  if (v === "win")  return "text-up";
+  if (v === "loss") return "text-down";
   return "text-muted-foreground";
 }
 
@@ -53,7 +54,7 @@ function AgeBadge({
 
   return (
     <span
-      className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground/60"
+      className="font-data text-[11px] text-faint"
       data-testid="records-hero-age"
     >
       updated {label}
@@ -72,20 +73,20 @@ function AgeBadge({
 
 function PreviewRow({ row }: { row: PaperPredictionRow }) {
   return (
-    <tr className="border-b border-border/40 last:border-0">
-      <td className="py-1.5 pr-3 text-xs text-foreground truncate max-w-[140px]" data-testid="row-matchup">
+    <tr className="border-b border-border last:border-0 hover:bg-surface-2">
+      <td className="truncate max-w-[140px] px-3 py-1.5 text-xs text-foreground" data-testid="row-matchup">
         {row.matchup ?? "--"}
       </td>
-      <td className="py-1.5 pr-3 text-xs text-muted-foreground truncate max-w-[100px]">
+      <td className="truncate max-w-[100px] px-3 py-1.5 text-xs text-muted-foreground">
         {row.market_type ?? row.side ?? "--"}
       </td>
-      <td className="py-1.5 pr-3 text-xs text-foreground tabular-nums" data-testid="row-model-prob">
-        {fmtProb(row.model_prob)}
+      <td className="px-3 py-1.5 text-right text-xs" data-testid="row-model-prob">
+        <Num>{fmtProb(row.model_prob)}</Num>
       </td>
-      <td className="py-1.5 pr-3 text-xs text-muted-foreground" data-testid="row-tier">
+      <td className="px-3 py-1.5 text-xs text-muted-foreground" data-testid="row-tier">
         {fmtTier(row.tier)}
       </td>
-      <td className={`py-1.5 pr-3 text-xs font-medium ${outcomeClass(row.outcome)}`} data-testid="row-outcome">
+      <td className={`px-3 py-1.5 text-xs font-medium ${outcomeClass(row.outcome)}`} data-testid="row-outcome">
         {fmtOutcome(row.outcome)}
       </td>
     </tr>
@@ -95,11 +96,11 @@ function PreviewRow({ row }: { row: PaperPredictionRow }) {
 function HonestEmpty() {
   return (
     <div
-      className="rounded-lg border border-border/50 bg-surface-1/40 px-4 py-6 text-center"
+      className="border border-border bg-surface-1 px-4 py-6 text-center"
       data-testid="records-hero-empty"
     >
       <p className="text-sm text-muted-foreground">No paper records yet.</p>
-      <p className="mt-1 text-xs text-muted-foreground/70">
+      <p className="mt-1 text-xs text-faint">
         Records appear here once the prediction pipeline runs and logs results.
         Paper mode only -- no real-money positions.
       </p>
@@ -111,13 +112,11 @@ function ClvStrip({ clv }: { clv: ClvScoreboard | null }) {
   if (clv === null) {
     return (
       <div
-        className="mt-3 rounded border border-border/30 bg-surface-1/30 px-3 py-2"
+        className="mt-3 border border-border px-3 py-2"
         data-testid="clv-strip"
         data-clv-state="loading"
       >
-        <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground/50">
-          CLV -- loading...
-        </span>
+        <span className="microlabel">CLV -- loading...</span>
       </div>
     );
   }
@@ -127,16 +126,14 @@ function ClvStrip({ clv }: { clv: ClvScoreboard | null }) {
 
   return (
     <div
-      className="mt-3 rounded border border-border/30 bg-surface-1/30 px-3 py-2"
+      className="mt-3 border border-border px-3 py-2"
       data-testid="clv-strip"
       data-clv-state={isInsufficient ? "insufficient" : "ok"}
     >
-      <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground/60 mr-3">
-        CLV
-      </span>
+      <span className="microlabel mr-3">CLV</span>
       {isInsufficient ? (
         <span
-          className="text-[11px] text-warning"
+          className="text-[11px] text-stale"
           data-testid="clv-insufficient"
         >
           INSUFFICIENT_DATA -- n_bets=0; no bets graded against a real close yet.
@@ -149,7 +146,7 @@ function ClvStrip({ clv }: { clv: ClvScoreboard | null }) {
             ? ` -- beat close: ${(clv.pct_beat_close * 100).toFixed(1)}%`
             : " -- beat-close: pending"}
           {clv.clv_is_proxy && (
-            <span className="ml-1.5 text-muted-foreground/60">(proxy close)</span>
+            <span className="ml-1.5 text-faint">(proxy close)</span>
           )}
         </span>
       )}
@@ -174,7 +171,7 @@ export function HomeRecordsHero() {
 
   const { data, ageSec, isStale, isLoading, error } = useLiveData<PaperPredictions>(
     predFetcher,
-    { intervalMs: POLL_MS, staleAfterSec: STALE_SEC },
+    { intervalMs: POLL_MS, staleAfterSec: STALE_SEC, cacheKey: "home:preds" },
   );
 
   const { data: clvData } = useLiveData<ClvScoreboard>(
@@ -194,9 +191,9 @@ export function HomeRecordsHero() {
         aria-label="paper bets record loading"
         data-testid="records-hero-loading"
       >
-        <div className="rounded-lg border border-border bg-surface-1/60 p-5">
-          <p className="text-xs text-muted-foreground/60">Loading paper bets record...</p>
-        </div>
+        <Panel className="p-5">
+          <p className="font-data text-xs text-faint">Loading paper bets record...</p>
+        </Panel>
       </section>
     );
   }
@@ -209,12 +206,12 @@ export function HomeRecordsHero() {
         aria-label="paper bets record unavailable"
         data-testid="records-hero-unavailable"
       >
-        <div className="rounded-lg border border-border bg-surface-1/60 p-5">
+        <Panel className="p-5">
           <p className="text-xs text-muted-foreground">
             Paper bets record temporarily unavailable. The predict service may be
             offline. Data will refresh automatically.
           </p>
-        </div>
+        </Panel>
       </section>
     );
   }
@@ -227,15 +224,13 @@ export function HomeRecordsHero() {
       className="mx-auto max-w-5xl px-4 py-6 sm:px-6"
       aria-label="paper bets record"
     >
-      <div className="rounded-lg border border-border bg-surface-1/60 p-5">
+      <Panel>
+        <PanelHead title="My Paper Bets / Records" right={<AgeBadge ageSec={ageSec} isStale={isStale} />} />
 
-        {/* Header row */}
-        <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-              My Paper Bets / Records
-            </p>
-            <div className="mt-1 flex items-baseline gap-2">
+        <div className="p-5">
+          {/* Headline count */}
+          <div className="mb-4">
+            <div className="flex items-baseline gap-2">
               <span
                 className="text-3xl font-semibold tabular-nums text-foreground"
                 data-testid="records-hero-total"
@@ -246,63 +241,60 @@ export function HomeRecordsHero() {
                 total paper predictions
               </span>
             </div>
-            <p className="mt-0.5 text-[11px] text-muted-foreground/70">
+            <p className="mt-0.5 text-[11px] text-faint">
               Units only -- no real-money positions; calibration, not edge.
             </p>
           </div>
-          <AgeBadge ageSec={ageSec} isStale={isStale} />
-        </div>
 
-        {/* Preview table or honest-empty */}
-        {total === 0 ? (
-          <HonestEmpty />
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[440px] text-left" data-testid="records-hero-table">
-              <thead>
-                <tr className="border-b border-border/60">
-                  {["Matchup", "Market/Side", "Model prob", "Tier", "Result"].map(
-                    (h) => (
-                      <th
-                        key={h}
-                        className="pb-1.5 pr-3 font-mono text-[9px] uppercase tracking-wider text-muted-foreground"
-                      >
-                        {h}
-                      </th>
-                    ),
-                  )}
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((row, i) => (
-                  <PreviewRow key={row.game_id ?? row.ts ?? i} row={row} />
-                ))}
-              </tbody>
-            </table>
+          {/* Preview table or honest-empty */}
+          {total === 0 ? (
+            <HonestEmpty />
+          ) : (
+            <div className="overflow-x-auto border border-border">
+              <table className="w-full min-w-[440px] text-left" data-testid="records-hero-table">
+                <thead>
+                  <tr className="border-b border-border">
+                    {["Matchup", "Market/Side", "Model prob", "Tier", "Result"].map(
+                      (h) => (
+                        <th key={h} className="microlabel px-3 py-1.5 text-left">
+                          {h}
+                        </th>
+                      ),
+                    )}
+                  </tr>
+                </thead>
+                <tbody>
+                  {/* key gets an index suffix: game_id repeats when a game has multiple bets */}
+                  {rows.map((row, i) => (
+                    <PreviewRow key={`${row.game_id ?? row.ts ?? "r"}-${i}`} row={row} />
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* CLV strip */}
+          <ClvStrip clv={clv} />
+
+          {/* CTA links -- primary: /records and /bets */}
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Link
+              href="/records"
+              className="border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
+              data-testid="cta-records"
+            >
+              All records -&gt;
+            </Link>
+            <Link
+              href="/bets"
+              className="border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
+              data-testid="cta-bets"
+            >
+              Bets -&gt;
+            </Link>
           </div>
-        )}
-
-        {/* CLV strip */}
-        <ClvStrip clv={clv} />
-
-        {/* CTA links -- primary: /records and /bets */}
-        <div className="mt-4 flex flex-wrap gap-3">
-          <Link
-            href="/records"
-            className="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
-            data-testid="cta-records"
-          >
-            All records -&gt;
-          </Link>
-          <Link
-            href="/bets"
-            className="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
-            data-testid="cta-bets"
-          >
-            Bets -&gt;
-          </Link>
         </div>
-      </div>
+      </Panel>
     </section>
   );
 }

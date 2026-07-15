@@ -39,11 +39,11 @@ function Stat({
 }) {
   return (
     <div className={"flex flex-col gap-0.5 " + (className ?? "")}>
-      <span className="flex items-center gap-1 font-mono text-[10px] uppercase tracking-wide text-slate-500">
+      <span className="flex items-center gap-1 font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
         {label}
         {term ? <InfoTip text={RISK_TERMS[term]} ariaLabel={`what is ${label}?`} /> : null}
       </span>
-      <span className="font-mono tabular-nums text-sm text-slate-200">{value}</span>
+      <span className="font-mono tabular-nums text-sm text-foreground">{value}</span>
     </div>
   );
 }
@@ -55,10 +55,10 @@ export function BestBetRiskCard({ row }: { row: BetRiskRow }) {
     <li className="rounded-lg border border-slate-800 bg-bg-panel/50 p-3">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <div className="truncate font-mono text-[12px] font-semibold text-slate-100">
+          <div className="truncate font-mono text-[12px] font-semibold text-foreground">
             {row.matchup}
           </div>
-          <div className="mt-0.5 font-mono text-[10px] text-slate-500">{row.market}</div>
+          <div className="mt-0.5 font-mono text-[10px] text-muted-foreground">{row.market}</div>
         </div>
         {isBet ? (
           <span className={"inline-flex items-center gap-1"}>
@@ -85,8 +85,8 @@ export function BestBetRiskCard({ row }: { row: BetRiskRow }) {
           <Stat label="devig close" value={pctOrDash(row.devigClose)} term="devig" />
         </div>
       ) : (
-        <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-slate-400">
-          <span className="font-mono uppercase tracking-wide text-slate-600">below floor:</span>
+        <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
+          <span className="font-mono uppercase tracking-wide text-faint">below floor:</span>
           <span>{row.reason || "EV below the C floor -- the model matches the efficient close (a SUCCESS)."}</span>
           <InfoTip term="floor" text={RISK_TERMS.floor} ariaLabel="what is the tier floor?" />
         </div>
@@ -94,7 +94,7 @@ export function BestBetRiskCard({ row }: { row: BetRiskRow }) {
 
       <div className="mt-2 flex items-center justify-between">
         <ProvenanceBadge phase="exec_decision" model="capped quarter-Kelly" showTip={false} />
-        <span className="font-mono text-[9px] uppercase tracking-wide text-slate-600">
+        <span className="font-mono text-[9px] uppercase tracking-wide text-faint">
           units only -- no money
         </span>
       </div>

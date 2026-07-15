@@ -6,6 +6,7 @@ import { Panel, Unavailable, Badge } from "./Primitives";
 import { PaperBetDialog } from "./PaperBetDialog";
 import { cn, fmtPct, tierClass } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Num } from "@/components/ui/terminal";
 
 // BestBets -- renders best_bets in UNITS ONLY. There is deliberately NO dollar
 // column anywhere. Below-floor candidates (decision='no_bet') are shown muted.
@@ -45,45 +46,47 @@ export function BestBets({
       right={<Badge tone="slate">units only &middot; no $</Badge>}
     >
       {bets.length === 0 ? (
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-faint">
           No candidate clears the tier floor right now.
         </p>
       ) : (
-        <table className="w-full text-sm" role="table" aria-label="Best bet candidates">
-          <thead>
-            <tr className="text-left text-[10px] uppercase tracking-wide text-slate-500">
-              <th className="pb-2 font-medium">Market</th>
-              <th className="pb-2 font-medium">Tier</th>
-              <th className="pb-2 font-medium text-right">EV</th>
-              <th className="pb-2 font-medium text-right">Stake (u)</th>
-              <th className="pb-2 font-medium text-right">Action</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-800">
-            {bets.map((b, i) => (
-              <BetRow
-                key={`${b.market_type}-${b.side}-${i}`}
-                b={b}
-                isPlaced={!!placed[betKey(b)]}
-                onPlace={() => setDialogBet(b)}
-              />
-            ))}
-          </tbody>
-        </table>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm" role="table" aria-label="Best bet candidates">
+            <thead>
+              <tr className="microlabel text-left">
+                <th className="px-3 py-1.5 font-medium">Market</th>
+                <th className="px-3 py-1.5 font-medium">Tier</th>
+                <th className="px-3 py-1.5 font-medium text-right">EV</th>
+                <th className="px-3 py-1.5 font-medium text-right">Stake (u)</th>
+                <th className="px-3 py-1.5 font-medium text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {bets.map((b, i) => (
+                <BetRow
+                  key={`${b.market_type}-${b.side}-${i}`}
+                  b={b}
+                  isPlaced={!!placed[betKey(b)]}
+                  onPlace={() => setDialogBet(b)}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {noBets.length > 0 ? (
-        <details className="mt-3 text-xs text-slate-500">
+        <details className="mt-3 text-xs text-faint">
           <summary className="cursor-pointer select-none">
             {noBets.length} below-floor candidate(s) -- no bet
           </summary>
           <ul className="mt-2 space-y-1">
             {noBets.map((c, i) => (
-              <li key={i} className="flex justify-between font-mono">
+              <li key={i} className="flex justify-between font-data">
                 <span>
                   {c.market_type} {c.side}
                 </span>
-                <span className="text-slate-600">
+                <span className="text-faint">
                   EV {fmtPct(c.ev)} &middot; {c.reason || "below floor"}
                 </span>
               </li>
@@ -121,20 +124,20 @@ function BetRow({
 }) {
   const isBet = b.decision === "bet";
   return (
-    <tr className="text-slate-200">
-      <td className="py-2">
+    <tr className="hover:bg-surface-2">
+      <td className="px-3 py-1.5">
         <div className="font-medium">
-          {b.market_type} <span className="text-slate-400">{b.side}</span>
+          {b.market_type} <span className="text-faint">{b.side}</span>
         </div>
-        <div className="font-mono text-[10px] text-slate-500">
+        <div className="font-data text-[10px] text-faint">
           {b.best_book} @ {b.best_odds.toFixed(2)}
           {b.line != null ? ` | ${b.line}` : ""}
         </div>
       </td>
-      <td className="py-2">
+      <td className="px-3 py-1.5">
         <span
           className={cn(
-            "inline-flex rounded border px-1.5 py-0.5 text-[10px] font-mono",
+            "inline-flex border px-1.5 py-0.5 text-[10px] font-data",
             tierClass(b.tier || undefined),
           )}
           aria-label={`Tier ${b.tier || "none"}`}
@@ -142,11 +145,13 @@ function BetRow({
           {b.tier || "--"}
         </span>
       </td>
-      <td className="py-2 text-right font-mono tabular-nums">{fmtPct(b.ev)}</td>
-      <td className="py-2 text-right font-mono tabular-nums">
-        {b.stake_units.toFixed(2)}u
+      <td className="px-3 py-1.5 text-right">
+        <Num>{fmtPct(b.ev)}</Num>
       </td>
-      <td className="py-2 text-right">
+      <td className="px-3 py-1.5 text-right">
+        <Num>{b.stake_units.toFixed(2)}u</Num>
+      </td>
+      <td className="px-3 py-1.5 text-right">
         {isPlaced ? (
           <Badge tone="green">open paper</Badge>
         ) : isBet ? (
@@ -165,4 +170,3 @@ function BetRow({
     </tr>
   );
 }
-

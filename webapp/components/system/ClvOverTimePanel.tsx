@@ -44,7 +44,7 @@ export function ClvOverTimePanel() {
       {!data && err ? (
         <Unavailable reason={err} />
       ) : !data && isLoading ? (
-        <p className="text-sm text-slate-500">loading...</p>
+        <p className="text-sm text-muted-foreground">loading...</p>
       ) : !data ? (
         <Unavailable reason="clv-over-time unavailable" />
       ) : (
@@ -62,7 +62,7 @@ export function ClvOverTimePanel() {
               }
             />
           </div>
-          <p className="text-[11px] leading-relaxed text-slate-600">
+          <p className="text-[11px] leading-relaxed text-faint">
             {data.label ||
               "CLV / calibration in probability space, no currency."}{" "}
             vs close:{" "}
@@ -80,11 +80,11 @@ export function ClvOverTimePanel() {
 function Stat({ label, value, tip }: { label: string; value: string; tip?: string }) {
   return (
     <div className="rounded-lg border border-slate-800 bg-bg-panel/40 px-3 py-2">
-      <div className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wide text-slate-500">
+      <div className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wide text-muted-foreground">
         {label}
         {tip ? <InfoTip text={tip} ariaLabel={`what is ${label}?`} /> : null}
       </div>
-      <div className="mt-0.5 font-mono text-sm text-slate-200">{value}</div>
+      <div className="mt-0.5 font-mono text-sm text-foreground">{value}</div>
     </div>
   );
 }
