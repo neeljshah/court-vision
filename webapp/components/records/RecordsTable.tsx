@@ -10,6 +10,7 @@
 import type { PaperPredictionRow } from "@/lib/types";
 import { tierClass } from "@/lib/utils";
 import { EMPTY_CELL } from "@/lib/tokens";
+import { humanizeMatchup, describeBetShort } from "@/lib/betdesc";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -132,24 +133,21 @@ function RecordsRow({ row }: { row: PaperPredictionRow }) {
             href={detailHref}
             data-testid="records-row-link"
             className="hover:underline hover:text-slate-100 transition-colors"
-            aria-label={`View detail for ${row.matchup ?? row.game_id}`}
+            aria-label={`View detail for ${humanizeMatchup(row.matchup ?? row.game_id)}`}
           >
-            <span data-testid="records-matchup">{row.matchup}</span>
+            <span data-testid="records-matchup">{humanizeMatchup(row.matchup)}</span>
           </a>
         ) : (
-          <span data-testid="records-matchup">{row.matchup}</span>
+          <span data-testid="records-matchup">{humanizeMatchup(row.matchup)}</span>
         )}
         {row.sport
           ? <span className="ml-1 font-mono text-[9px] uppercase text-slate-600">{row.sport}</span>
           : null}
       </td>
 
-      {/* Market / Side */}
+      {/* Market / Side -- human bet description (props, team ML, totals, spread) */}
       <td className="py-2 pr-3 font-mono text-slate-400">
-        {row.market_type ?? EMPTY_CELL}
-        {row.side
-          ? <span className="ml-1 text-slate-600">{row.side}</span>
-          : null}
+        {describeBetShort(row)}
       </td>
 
       {/* model_prob as percentage */}

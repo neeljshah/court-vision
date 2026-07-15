@@ -9,6 +9,7 @@
 
 import type { TodayBet, PaperToday } from "@/lib/paperToday";
 import type { ImproveStatus } from "@/lib/types";
+import { humanizeMatchup, describeBetShort } from "@/lib/betdesc";
 
 // ---------------------------------------------------------------------------
 // Formatters
@@ -128,11 +129,14 @@ export function PlacedBetRow({ bet }: { bet: TodayBet }) {
   return (
     <tr className="border-b border-slate-800/60 last:border-0">
       <td className="py-1.5 pr-3 text-xs text-slate-200 truncate max-w-[150px]">
-        {bet.matchup ?? "--"}
+        {humanizeMatchup(bet.matchup) || "--"}
       </td>
       <td className="py-1.5 pr-3 font-mono text-[11px] text-slate-400 truncate max-w-[120px]">
-        {bet.market_type ?? "--"}
-        {bet.side ? ` ${bet.side}` : ""}
+        {describeBetShort({
+          market_type: bet.market_type,
+          side: bet.side,
+          matchup: bet.matchup,
+        })}
       </td>
       <td className="py-1.5 pr-3 font-mono text-[11px] text-slate-300 tabular-nums">
         {fmtProb(bet.model_prob)}

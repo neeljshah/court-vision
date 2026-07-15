@@ -241,9 +241,10 @@ describe("BetCard -- matchup and market", () => {
     expect(screen.getByText("NYK @ SAS")).toBeInTheDocument();
   });
 
-  it("renders the side label", () => {
+  it("renders the side as a human bet description (team ML)", () => {
+    // side "away" + matchup "NYK @ SAS" + moneyline -> "NYK ML" (describeBet)
     render(<BetCard card={makeCard({ side: "away" })} />);
-    expect(screen.getByText("away")).toBeInTheDocument();
+    expect(screen.getByText("NYK ML")).toBeInTheDocument();
   });
 
   it("renders sport in uppercase", () => {

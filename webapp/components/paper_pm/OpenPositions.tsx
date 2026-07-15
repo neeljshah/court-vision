@@ -16,6 +16,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { EMPTY_CELL, tierBadgeClass } from "@/lib/tokens";
+import { humanizeMatchup, describeBetShort } from "@/lib/betdesc";
 import type { PaperTrailRow } from "@/lib/p5api";
 
 // ---------------------------------------------------------------------------
@@ -51,7 +52,7 @@ function OpenPositionRow({ row }: { row: PaperTrailRow }) {
       data-testid="open-position-row"
     >
       <td className="px-2 py-1.5">
-        <span className="font-medium">{row.matchup || row.game_id}</span>
+        <span className="font-medium">{humanizeMatchup(row.matchup || row.game_id)}</span>
         <span className="ml-1.5 font-mono text-[10px] text-slate-500">
           {row.sport?.toUpperCase()}
         </span>
@@ -68,7 +69,7 @@ function OpenPositionRow({ row }: { row: PaperTrailRow }) {
       <td className="px-2 py-1.5 font-mono text-[11px] text-slate-400">
         {row.prop_side
           ? `${row.prop_side}${row.line != null ? ` ${row.line}` : ""}`
-          : row.side || EMPTY_CELL}
+          : describeBetShort(row)}
       </td>
       <td className="px-2 py-1.5">
         {row.tier ? (

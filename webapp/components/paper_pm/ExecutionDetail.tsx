@@ -12,6 +12,7 @@ import { EMPTY_CELL, tierBadgeClass } from "@/lib/tokens";
 import { Badge, Unavailable, Panel } from "@/components/p6/Primitives";
 import { ClvInline } from "./ClvInline";
 import { deriveResult } from "./PmTradeRow";
+import { humanizeMatchup, describeBet } from "@/lib/betdesc";
 import type { PaperTrailRow } from "@/lib/p5api";
 
 function fmtProb(p: number | null): string {
@@ -111,12 +112,10 @@ export function ExecutionDetail({ row, loading, error }: Props) {
         {/* Selection: matchup + market + side (the traded position) */}
         <DetailRow label="Selection">
           <span data-testid="detail-selection" className="font-mono text-slate-100">
-            {[row.matchup || row.game_id, row.market_type, row.side]
-              .filter(Boolean)
-              .join(" / ")}
+            {`${humanizeMatchup(row.matchup || row.game_id)} / ${describeBet(row)}`}
           </span>
         </DetailRow>
-        <DetailRow label="Matchup">{row.matchup || row.game_id}</DetailRow>
+        <DetailRow label="Matchup">{humanizeMatchup(row.matchup || row.game_id)}</DetailRow>
         <DetailRow label="Sport">
           <span className="font-mono uppercase">{row.sport || EMPTY_CELL}</span>
         </DetailRow>
