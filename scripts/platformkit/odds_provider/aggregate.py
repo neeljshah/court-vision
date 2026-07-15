@@ -235,7 +235,11 @@ def default_providers(http_get: Optional[Callable[[str], Any]] = None,
     provs: List[Any] = [
         EspnProvider(use_cache=use_cache, **kw),
         FanDuelProvider(use_cache=use_cache, **kw),
-        KalshiProvider(use_cache=use_cache, **kw),
+        # governor_caller="aggregate": every default_providers() daemon (line
+        # daemon, pm paper tick, best-bets, frontend) previously hit Kalshi
+        # UNGOVERNED and collectively starved the governed live daemons
+        # (429 storm 2026-07-14, n_429_total=2606).
+        KalshiProvider(use_cache=use_cache, governor_caller="aggregate", **kw),
         PolymarketProvider(use_cache=use_cache, **kw),
         PinnacleProvider(use_cache=use_cache, **kw),
     ]
