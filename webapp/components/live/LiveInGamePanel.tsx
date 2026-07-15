@@ -224,6 +224,7 @@ export function LiveInGamePanel({
     intervalMs: 20_000,
     staleAfterSec: 90,
     timeoutMs: 8_000,
+    cacheKey: `game:${sport}:${gameId}:ingame-full`,
   });
 
   const phase = derivePhase(data);

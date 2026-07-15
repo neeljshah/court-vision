@@ -491,6 +491,49 @@ describe("GameView -- honest stream states", () => {
   });
 });
 
+// --- GameView unknown game id -- honest "not found", never a blank page -----
+
+describe("GameView -- unknown game id", () => {
+  beforeEach(() => {
+    ingame.mockResolvedValue({ status: "unavailable", reason: "no in-game" });
+    bestbetsGame.mockResolvedValue({ status: "unavailable", reason: "no such game" });
+    report.mockResolvedValue({ status: "unavailable", reason: "no such game" });
+    resetLiveData();
+  });
+
+  it("renders an honest not-found panel (no crash, no blank page) when both feeds resolve unavailable", async () => {
+    // A permanently-unavailable endpoint never sets `data` and never flips
+    // isLoading false (see useLiveData contract) -- the "we tried" signal is
+    // `error` being set, which the hook DOES set on every unavailable poll.
+    streamState.data = null;
+    streamState.mode = "poll";
+    liveDataState.data = null;
+    liveDataState.error = "no such game";
+    liveDataState.isLoading = true;
+
+    const { container } = render(<GameView sport="nba" gameId="does-not-exist" />);
+
+    await waitFor(() =>
+      expect(screen.getByText(/No game found/i)).toBeInTheDocument(),
+    );
+    // The best-bets / game-report grid must NOT render alongside the honest
+    // not-found panel -- one clear message, not a half-populated page.
+    expect(screen.queryByTestId("best-bets")).toBeNull();
+    expect(screen.queryByTestId("game-report")).toBeNull();
+    assertNoDollar(container);
+  });
+
+  it("does not show not-found while the first fetch is still in flight (isLoading)", () => {
+    streamState.data = null;
+    streamState.mode = "idle";
+    liveDataState.data = null;
+    liveDataState.isLoading = true;
+
+    render(<GameView sport="nba" gameId="does-not-exist" />);
+    expect(screen.queryByText(/No game found/i)).toBeNull();
+  });
+});
+
 // --- GameView LiveInGamePanel mount + PanelErrorBoundary isolation ----------
 
 describe("GameView -- LiveInGamePanel + PanelErrorBoundary", () => {
