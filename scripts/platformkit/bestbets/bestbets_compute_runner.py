@@ -31,6 +31,7 @@ import json
 import logging
 import os
 import pathlib
+import threading
 import time
 from typing import Any, Callable, Dict, List, Optional
 
@@ -118,30 +119,68 @@ def _atomic_write(path: pathlib.Path, doc: Dict[str, Any]) -> bool:
 # Tick
 # ---------------------------------------------------------------------------
 
+# ponytail: slow ticks (offseason feeds waiting out timeouts) can exceed the
+# supervisor's 300s heartbeat window, so the daemon was killed MID-TICK forever
+# (observed 2026-07-15: restart #24, zero completed ticks all day). Run the
+# compute in a worker thread and beat with a FRESH stamp every slice while it
+# runs; past the deadline stop beating (hang detection stays honest -- the
+# supervisor reaps us within its window) and publish a degraded envelope. The
+# abandoned thread is daemonized/leaked; upgrade path = cancellable compute.
+_BEAT_SLICE_SEC = 30.0
+_COMPUTE_DEADLINE_SEC = 900.0
+
+
 def tick(*, now: float,
          compute_fn: Optional[Callable[[float], List[Dict[str, Any]]]] = None,
          output_path: Optional[pathlib.Path] = None) -> Dict[str, Any]:
     """One compute cycle: build cards -> atomic write -> heartbeat. Never raises.
 
-    Returns the envelope that was written (degraded on compute failure).
-    Heartbeat is beat AFTER the write.
+    Returns the envelope that was written (degraded on compute failure or
+    deadline). Beats a fresh heartbeat every _BEAT_SLICE_SEC while the compute
+    runs so a slow-but-alive tick is not reaped as hung.
     """
     _compute = compute_fn if compute_fn is not None else _compute_cards
     path = output_path if output_path is not None else _OUTPUT_PATH
 
-    try:
-        cards = _compute(now)
-        ok = True
-        note = ""
-    except Exception as exc:  # noqa: BLE001
-        logger.debug("bestbets tick compute raised: %s", exc)
+    result: Dict[str, Any] = {}
+
+    def _work() -> None:
+        try:
+            result["cards"] = _compute(now)
+        except Exception as exc:  # noqa: BLE001
+            result["exc"] = exc
+
+    worker = threading.Thread(target=_work, daemon=True,
+                              name="bestbets-compute")
+    worker.start()
+    waited = 0.0
+    while worker.is_alive() and waited < _COMPUTE_DEADLINE_SEC:
+        worker.join(_BEAT_SLICE_SEC)
+        waited += _BEAT_SLICE_SEC
+        if worker.is_alive():
+            _beat()  # fresh stamp: alive, tick still in flight
+
+    if worker.is_alive():
+        logger.debug("bestbets tick compute exceeded %ss deadline",
+                     _COMPUTE_DEADLINE_SEC)
+        cards: List[Dict[str, Any]] = []
+        ok = False
+        note = "compute_deadline"
+    elif "exc" in result:
+        logger.debug("bestbets tick compute raised: %s", result["exc"])
         cards = []
         ok = False
-        note = type(exc).__name__
+        note = type(result["exc"]).__name__
+    else:
+        cards = result.get("cards", [])
+        ok = True
+        note = ""
 
     envelope = _make_envelope(cards, now, ok=ok, note=note)
     _atomic_write(path, envelope)
-    _beat(now)
+    # Fresh stamp, NOT tick-start `now`: stamping start time made every slow
+    # tick's heartbeat instantly stale on completion -> reap loop.
+    _beat()
     return envelope
 
 
