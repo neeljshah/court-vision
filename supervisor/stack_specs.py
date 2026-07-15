@@ -189,6 +189,21 @@ _EXEC_QUALITY_HB = "data/cache/daemon_heartbeats/m42_exec_quality.txt"
 # fresh_sec = 2x the 86400s cadence + margin (mirrors m38's daily-daemon shape).
 _PUBLIC_SPLITS_HB = "data/cache/daemon_heartbeats/m41_public_splits.txt"
 
+# M43 -- the SETTLEMENT SWEEP (EXECUTION_BACKLOG.md lever 7). Hundreds of open
+# paper positions aged >=7d (320 true after identity-pairing correction; the
+# backlog doc's 698 included 377 phantom opens m27 had already settled under
+# minted-bet_id twins) sit unsettled even though a settler already exists per
+# channel/market (backfill_as_of / prop_settler.settle_open_props /
+# ingame_paper_settle.settle_open) -- nothing SWEEPS the aged backlog through
+# them on a schedule. Hourly this retries the aged backlog via those existing
+# (imported, never reimplemented) settlers, then appends an honest VOID twin
+# for any row that is provably unroutable (malformed identity, or no resolver
+# wired for that sport/market) -- see scripts.platformkit.paper.settle_sweep's
+# module docstring for the VOID encoding rationale. Settlement/measurement
+# only: no $ field, no flag flip, no data/registry/ write, no edge claim.
+# fresh_sec = 2.5x the 3600s cadence + margin (mirrors m42's ratio).
+_SETTLE_SWEEP_HB = "data/cache/daemon_heartbeats/m43_settle_sweep.txt"
+
 _FOREVER = RestartPolicy(max_retries=None, backoff_base_sec=2.0, backoff_cap_sec=60.0)
 
 # The Next.js UI directory. Default "court-visions" (the original wired app);
@@ -897,6 +912,18 @@ def base_specs() -> List[ProcSpec]:
             argv=["--interval", "120"],
             readiness=ReadinessSpec(
                 kind=HEARTBEAT, heartbeat_path=_EXEC_QUALITY_HB, fresh_sec=300.0),
+            restart_policy=_FOREVER,
+        ),
+        # M43 -- the settlement-sweep tick (see _SETTLE_SWEEP_HB comment above).
+        # Independent branch (no depends_on) so a dead tick is itself ONE red
+        # status entry. NOT YET RUNNING -- registered here but requires a
+        # supervisor restart to take effect.
+        ProcSpec(
+            name="m43_settle_sweep", kind="py",
+            module="scripts.platformkit.paper.settle_sweep_daemon",
+            argv=["--interval", "3600"],
+            readiness=ReadinessSpec(
+                kind=HEARTBEAT, heartbeat_path=_SETTLE_SWEEP_HB, fresh_sec=9000.0),
             restart_policy=_FOREVER,
         ),
     ]

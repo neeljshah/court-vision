@@ -125,6 +125,9 @@ def test_default_manifest_is_acyclic_and_ordered():
         # m42 -- exec-quality daemon (min-age realized-CLV backfill + paper
         # digest/breaker refresh every 120s; measurement only)
         "m42_exec_quality",
+        # m43 -- settlement-sweep daemon (retries the aged >=7d open paper
+        # backlog via existing settlers; hourly; VOIDs unroutable rows only)
+        "m43_settle_sweep",
     }
     _assert_topo(specs)
     # producer precedes the Auto-API which precedes the boards API which precedes UI.
