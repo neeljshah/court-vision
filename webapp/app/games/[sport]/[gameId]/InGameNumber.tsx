@@ -44,6 +44,7 @@ export function InGameNumber({
     intervalMs: 15_000,
     staleAfterSec: 45,
     timeoutMs: 8_000,
+    cacheKey: `game:${sport}:${gameId}:ingame`,
   });
 
   // On the very first load (no data yet, no prior good state) show neutral "checking".
