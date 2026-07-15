@@ -194,12 +194,24 @@ export type ClvBySport = {
   n: number;
   mean_clv_pct: number | null;
   pct_beat_close: number | null;
+  // median_clv_pct/basis: true-close-preferred headline (basis omitted on older
+  // server builds -- always guard with `?? null` / optional chaining).
+  median_clv_pct?: number | null;
+  basis?: "true_close" | "proxy_only" | null;
+  n_proxy?: number;
 };
 
 export type ClvScoreboard = {
   n_bets: number;
   pct_beat_close: number | null;
+  // mean_clv_pct is the ALL-rows mean -- CONTEXT ONLY, may include proxy closes.
   mean_clv_pct: number | null;
+  // median_clv_pct is the true-close-preferred headline; basis says which rows it
+  // came from ("true_close" normally, "proxy_only" only when zero true-close rows
+  // exist yet). Optional: older server builds may omit these.
+  median_clv_pct?: number | null;
+  basis?: "true_close" | "proxy_only" | null;
+  n_proxy?: number;
   by_sport: Record<string, ClvBySport> | null;
   clv_is_proxy: boolean;
   note?: string;
@@ -799,7 +811,12 @@ export type QuantRisk = {
 export type QuantClvSummary = {
   n_bets: number;
   pct_beat_close: number | null;
+  // mean_clv_pct is the ALL-rows mean -- CONTEXT ONLY, may include proxy closes.
   mean_clv_pct: number | null;
+  // true-close-preferred headline; see ClvScoreboard for basis semantics.
+  median_clv_pct?: number | null;
+  basis?: "true_close" | "proxy_only" | null;
+  n_proxy?: number;
   by_sport: Record<string, ClvBySport>;
   clv_is_proxy: boolean;
   vs_close_proven: boolean; // ALWAYS false unless gate-proven

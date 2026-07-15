@@ -159,6 +159,11 @@ export default function PaperTradingPage() {
             : clv?.mean_clv_pct != null ? fmtPct(clv.mean_clv_pct)
             : EMPTY_CELL
           }
+          note={
+            !loading && clv?.clv_is_proxy
+              ? `(proxy close${clv.n_proxy ? `, n=${clv.n_proxy}` : ""})`
+              : undefined
+          }
         />
       </div>
 

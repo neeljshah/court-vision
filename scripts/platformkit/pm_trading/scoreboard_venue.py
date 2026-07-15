@@ -13,7 +13,9 @@ OUTPUT SHAPE
   "by_venue": {
     "<venue_key>": {
       "n":              <int>,
-      "mean_clv_pct":   <float | null>,
+      "mean_clv_pct":   <float | null>,   # ALL rows -- context only, may include proxy
+      "median_clv_pct": <float | null>,   # true-close-preferred headline, see basis
+      "basis":          <"true_close" | "proxy_only" | null>,
       "beat_close_rate":<float | null>,   # fraction in [0, 1] (NOT pct)
       "n_true_close":   <int>,
       "n_proxy_close":  <int>
@@ -26,13 +28,14 @@ OUTPUT SHAPE
 
 Venues with n < min_n are reported as INSUFFICIENT_DATA in the
 ``insufficient_data_venues`` list; their ``by_venue`` entry still carries
-the raw n but mean_clv_pct and beat_close_rate are null.
+the raw n but mean_clv_pct/median_clv_pct/basis and beat_close_rate are null.
 
 INVARIANTS: <=300 LOC; ASCII only; no secrets; no $ / pnl / ROI field;
 build only under scripts/platformkit/; per-file test only.
 """
 from __future__ import annotations
 
+import statistics
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
@@ -96,27 +99,41 @@ def _bucket_stats(
 ) -> Dict[str, Any]:
     """Compute CLV stats for a set of already-settled rows.
 
-    Returns nulls for mean_clv_pct and beat_close_rate when n < min_n
+    Returns nulls for mean_clv_pct/median_clv_pct/beat_close_rate when n < min_n
     (INSUFFICIENT_DATA semantics).
+
+    median_clv_pct is the true-close-preferred headline (basis="true_close"),
+    falling back to all rows only when the venue has zero true-close rows yet
+    (basis="proxy_only") -- see n_proxy_close. mean_clv_pct stays the all-rows
+    mean: CONTEXT ONLY, may include proxy closes; prefer median_clv_pct/basis.
     """
     n = len(rows)
+    n_true = sum(1 for r in rows if not r.get("clv_is_proxy", True))
+    n_proxy = sum(1 for r in rows if r.get("clv_is_proxy", False))
     if n == 0 or n < min_n:
-        n_true = sum(1 for r in rows if not r.get("clv_is_proxy", True))
-        n_proxy = sum(1 for r in rows if r.get("clv_is_proxy", False))
         return {
             "n": n,
             "mean_clv_pct": None,
+            "median_clv_pct": None,
+            "basis": None,
             "beat_close_rate": None,
             "n_true_close": n_true,
             "n_proxy_close": n_proxy,
         }
     clvs = [float(r["clv_pct"]) for r in rows]
     beats = sum(1 for c in clvs if c > 0.0)
-    n_true = sum(1 for r in rows if not r.get("clv_is_proxy", True))
-    n_proxy = sum(1 for r in rows if r.get("clv_is_proxy", False))
+    true_clvs = [float(r["clv_pct"]) for r in rows if not r.get("clv_is_proxy", False)]
+    if true_clvs:
+        median = round(statistics.median(true_clvs), 6)
+        basis = "true_close"
+    else:
+        median = round(statistics.median(clvs), 6)
+        basis = "proxy_only"
     return {
         "n": n,
         "mean_clv_pct": round(sum(clvs) / n, 6),
+        "median_clv_pct": median,
+        "basis": basis,
         "beat_close_rate": round(beats / n, 6),   # fraction [0, 1], not %
         "n_true_close": n_true,
         "n_proxy_close": n_proxy,

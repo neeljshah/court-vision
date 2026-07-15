@@ -18,6 +18,7 @@ Per-file test:
 """
 from __future__ import annotations
 
+import statistics
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -55,6 +56,24 @@ def grade_bucket(rows_in: List[Dict[str, Any]]) -> Dict[str, Any]:
                     if r.get("clv_pct") is not None and _clv.is_clv_suspect(r))
     cv = [float(r["clv_pct"]) for r in rows_in
           if r.get("clv_pct") is not None and not _clv.is_clv_suspect(r)]
+    # Proxy-close rows (clv_is_proxy=True) are counted (n_proxy) and excluded from
+    # median_clv_pct whenever a true-close row exists (basis="true_close"); mean_clv_pct
+    # stays the all-non-suspect-rows mean -- CONTEXT ONLY, may include proxy closes.
+    n_proxy = sum(1 for r in rows_in
+                  if r.get("clv_pct") is not None and not _clv.is_clv_suspect(r)
+                  and bool(r.get("clv_is_proxy", False)))
+    true_cv = [float(r["clv_pct"]) for r in rows_in
+               if r.get("clv_pct") is not None and not _clv.is_clv_suspect(r)
+               and not bool(r.get("clv_is_proxy", False))]
+    if true_cv:
+        median_clv_pct: Optional[float] = round(statistics.median(true_cv), 6)
+        basis: Optional[str] = "true_close"
+    elif cv:
+        median_clv_pct = round(statistics.median(cv), 6)
+        basis = "proxy_only"
+    else:
+        median_clv_pct = None
+        basis = None
     return {
         "n_total": len(rows_in),
         "n_void": len(void),
@@ -67,6 +86,9 @@ def grade_bucket(rows_in: List[Dict[str, Any]]) -> Dict[str, Any]:
         "n_priced_units": len(units),
         "n_with_clv": len(cv),
         "n_clv_suspect_excluded": n_suspect,
+        "n_proxy": n_proxy,
+        "median_clv_pct": median_clv_pct,
+        "basis": basis,
         "mean_clv_pct": round(sum(cv) / len(cv), 6) if cv else None,
         "pct_beat_close": (round(100.0 * sum(1 for c in cv if c > 0) / len(cv), 4)
                            if cv else None),
