@@ -464,3 +464,82 @@ def test_drift_rejection_suppresses_adverse_moved_price(tmp_path):
     assert d["exec_gate"]["drift_pct"] is not None and d["exec_gate"]["drift_pct"] < 0.0
     assert not ledger.exists() or "open" not in ledger.read_text(encoding="ascii")
     _no_dollar_field(d)
+
+
+# --------------------------------------------------------------------------------------- #
+# 9 (LEVER 1 + LEVER 2 + LEVER 3 wiring): tier sizing, exec_depth stamp, spread suppress.  #
+# --------------------------------------------------------------------------------------- #
+def test_tier_sizing_wires_stake_into_ledger_row(tmp_path):
+    # CV_TIER_SIZING default ON -> the ledger stake reflects execution.sizing.stake_for
+    # for whichever tier this edge actually cleared (never the legacy hardcoded 0.0).
+    from scripts.platformkit.execution import sizing as _sizing
+    ledger = tmp_path / "ledger.jsonl"
+    grade_dir = tmp_path / "grade"
+    d = dt.on_tick("mlb", "401859993", _tick(0.80, 0.55, yes_away=0.50),
+                   grade_dir=grade_dir, ledger_path=ledger)
+    assert d["action"] == "bet"
+    expected = _sizing.stake_for(d["tier"], "moneyline")
+    assert d["placement"]["stake"] == expected
+    assert expected in (1.0, 1.5, 2.0)
+    _no_dollar_field(d)
+
+
+def test_tier_sizing_env_off_falls_back_to_legacy_zero_stake(tmp_path, monkeypatch):
+    monkeypatch.setenv("CV_TIER_SIZING", "0")
+    ledger = tmp_path / "ledger.jsonl"
+    grade_dir = tmp_path / "grade"
+    d = dt.on_tick("mlb", "401859994", _tick(0.80, 0.55, yes_away=0.50),
+                   grade_dir=grade_dir, ledger_path=ledger)
+    assert d["action"] == "bet"
+    assert d["placement"]["stake"] == 0.0  # toggle off -> exact legacy behavior
+
+
+def test_exec_depth_threaded_into_placement_honest_null(tmp_path):
+    # This tick carries no depth fields and no ticker -> the stamp is the honest
+    # null dict (LEVER 1), never fabricated, and still lands on the ledger row.
+    ledger = tmp_path / "ledger.jsonl"
+    grade_dir = tmp_path / "grade"
+    d = dt.on_tick("mlb", "401859995", _tick(0.80, 0.55, yes_away=0.50),
+                   grade_dir=grade_dir, ledger_path=ledger)
+    assert d["action"] == "bet"
+    assert d["placement"]["exec_depth"]["reason"] == "no_depth_source"
+
+
+def test_exec_depth_threaded_from_tick_fields(tmp_path):
+    ledger = tmp_path / "ledger.jsonl"
+    grade_dir = tmp_path / "grade"
+    t = _tick(0.80, 0.55, yes_away=0.50)
+    t["spread_bp"], t["best_bid"], t["best_ask"] = 120.0, 0.60, 0.615
+    d = dt.on_tick("mlb", "401859996", t, grade_dir=grade_dir, ledger_path=ledger)
+    assert d["action"] == "bet"
+    depth = d["placement"]["exec_depth"]
+    assert depth["spread_bp"] == 120.0
+    assert abs(depth["mid"] - 0.6075) < 1e-9
+
+
+def test_wide_spread_suppresses_the_entry(tmp_path):
+    # LEVER 3: a > 800bp spread suppresses the marginal ENTER even though the
+    # expected-CLV + drift gates both clear.
+    ledger = tmp_path / "ledger.jsonl"
+    grade_dir = tmp_path / "grade"
+    t = _tick(0.80, 0.55, yes_away=0.50)
+    t["spread_bp"] = 900.0
+    d = dt.on_tick("mlb", "401859997", t, grade_dir=grade_dir, ledger_path=ledger)
+    assert d["action"] == "no_bet"
+    assert d["reason"] == "spread_too_wide"
+    assert d["placement"] is None
+    assert d["exec_gate"]["spread_flag"] is True
+    assert not ledger.exists() or "open" not in ledger.read_text(encoding="ascii")
+    _no_dollar_field(d)
+
+
+def test_unknown_spread_does_not_suppress_the_entry(tmp_path):
+    # No spread field anywhere on this tick -- missing data must never silently
+    # kill the channel; the entry still places.
+    ledger = tmp_path / "ledger.jsonl"
+    grade_dir = tmp_path / "grade"
+    d = dt.on_tick("mlb", "401859998", _tick(0.80, 0.55, yes_away=0.50),
+                   grade_dir=grade_dir, ledger_path=ledger)
+    assert d["action"] == "bet"
+    assert d["exec_gate"]["spread_unknown"] is True
+    assert d["exec_gate"]["spread_flag"] is False

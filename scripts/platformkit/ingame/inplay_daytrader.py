@@ -52,6 +52,7 @@ from typing import Any, Callable, Dict, List, Optional
 
 from scripts.platformkit.claims import condition_tagger as _tagger
 from scripts.platformkit.execution import ingame_exec_gate as _exec_gate
+from scripts.platformkit.execution import sizing as _sizing
 from scripts.platformkit.ingame import ingame_clv_per_segment as _clvseg
 from scripts.platformkit.ingame import ingame_segment_trust_multi as _trust_multi
 from scripts.platformkit.ingame import inplay_edge_signal as _sig
@@ -241,9 +242,10 @@ def on_tick(sport: str, game_id: str, tick: LiveTick, *,
         bet_mp = ev.get("bet_model_prob", mp)
         dec_odds = ev.get("obtainable_decimal")
 
-        # Expected-CLV + drift placement gate (execution.ingame_exec_gate): SUPPRESS-ONLY,
-        # never loosens the edge/liquidity/freshness gates already passed above.
-        gr = _exec_gate.evaluate_placement(ev, tick)
+        # Expected-CLV + drift + max-spread placement gate (execution.ingame_exec_gate):
+        # SUPPRESS-ONLY, never loosens the edge/liquidity/freshness gates already passed
+        # above. Also builds the placement-time depth stamp (LEVER 1) threaded below.
+        gr = _exec_gate.evaluate_placement(ev, tick, ticker=tick.get("ticker"), now=nowdt)
         decision["exec_gate"] = gr["exec_gate"]
         if gr["suppress"]:
             decision["reason"] = gr["reason"]
@@ -254,10 +256,16 @@ def on_tick(sport: str, game_id: str, tick: LiveTick, *,
         units = _policy.stake_units(ev=ev["ev"], model_prob=bet_mp,
                                     taken_decimal=dec_odds, tier=ev["tier"],
                                     clv_is_proxy=ev["clv_is_proxy"])
+        # LEVER 2 (tier-based sizing, team markets only, pre-registered 2026-07-15):
+        # this channel trades only the anchor moneyline market (MARKET). CV_TIER_SIZING
+        # off preserves the legacy flat-0.0 stake exactly (no behavior change if disabled).
+        stake = (_sizing.stake_for(ev["tier"], "moneyline")
+                if _sizing.tier_sizing_enabled() else 0.0)
         placement = _paper.record_ingame_bet(
             sport, game_id, MARKET, bet_side, float(dec_odds),
-            model_prob=bet_mp, stake=0.0, path=ledger_path,  # stake$ stays 0.0 -- units only
-            signal_ts=tick.get("signal_ts"), exec_gate=gr["exec_gate"])
+            model_prob=bet_mp, stake=stake, path=ledger_path,  # units, never $
+            signal_ts=tick.get("signal_ts"), exec_gate=gr["exec_gate"],
+            exec_depth=gr["exec_depth"])
         decision.update({
             "action": "bet", "side": bet_side, "units": units, "placement": placement,
             "position": {"status": "open", "side": bet_side, "tier": ev["tier"],

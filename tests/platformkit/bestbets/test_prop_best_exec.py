@@ -111,6 +111,21 @@ def test_gate_and_stamp_stamps_ledger_fields():
     assert "exec_gate" in out and out["exec_gate"]["book"] == "mgm"
     assert out["signal_ts"] == "2026-07-15T00:00:00Z"
     assert out["placement_latency_ms"] is not None
+    # LEVER 1 (prop-side stamp, EXECUTION_BACKLOG.md #1/#5): quote_age_s present.
+    assert "quote_age_s" in out
+    assert isinstance(out["quote_age_s"], float)
+
+
+# (f) LEVER 1 prop-side stamp: quote_age_s = now - shopped quote's as_of --------
+
+def test_quote_age_s_matches_formula():
+    assert X._quote_age_s("2026-07-15T00:00:00+00:00", "2026-07-15T00:00:10+00:00") == 10.0
+    assert X._quote_age_s("2026-07-15T00:00:00Z", "2026-07-15T00:01:00Z") == 60.0
+
+
+def test_quote_age_s_honest_none_on_bad_input():
+    assert X._quote_age_s(None, "2026-07-15T00:00:00Z") is None
+    assert X._quote_age_s("not-a-timestamp", "2026-07-15T00:00:00Z") is None
 
 
 if __name__ == "__main__":
@@ -119,4 +134,6 @@ if __name__ == "__main__":
     test_one_sided_market_fails_closed()
     test_breaker_capped_blocks_past_cap()
     test_gate_and_stamp_stamps_ledger_fields()
+    test_quote_age_s_matches_formula()
+    test_quote_age_s_honest_none_on_bad_input()
     print("test_prop_best_exec self-checks OK")
