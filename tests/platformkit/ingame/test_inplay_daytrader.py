@@ -412,3 +412,55 @@ def test_real_unmocked_trust_lookup_h1_is_not_suppressed_today(tmp_path):
     assert d["reason"] != "segment_adverse_suppressed"
     assert d["placement"]["added_new"] is True
     _no_dollar_field(d)
+
+
+# --------------------------------------------------------------------------------------- #
+# 8 (execution.ingame_exec_gate wiring): expected-CLV gate + latency/drift fields.         #
+# --------------------------------------------------------------------------------------- #
+def test_exec_gate_suppresses_below_threshold_placement(tmp_path, monkeypatch):
+    # Force the expected-CLV floor absurdly high so even a normally-qualifying edge is
+    # suppressed -- proves the gate is load-bearing (SUPPRESS-ONLY: never fires without
+    # the floor, but must fire when the floor demands it).
+    monkeypatch.setattr(dt._exec_gate, "INGAME_EXPECTED_CLV_MIN_PCT", 1000.0)
+    ledger = tmp_path / "ledger.jsonl"
+    grade_dir = tmp_path / "grade"
+    d = dt.on_tick("mlb", "401859990", _tick(0.80, 0.55, yes_away=0.50),
+                   grade_dir=grade_dir, ledger_path=ledger)
+    assert d["action"] == "no_bet"
+    assert d["reason"] == "expected_clv_below_floor"
+    assert d["placement"] is None
+    assert d["exec_gate"]["passed"] is False
+    assert not ledger.exists() or "open" not in ledger.read_text(encoding="ascii")
+    _no_dollar_field(d)
+
+
+def test_ledger_row_carries_signal_ts_latency_and_exec_gate(tmp_path):
+    ledger = tmp_path / "ledger.jsonl"
+    grade_dir = tmp_path / "grade"
+    d = dt.on_tick("mlb", "401859991",
+                   _tick(0.80, 0.55, yes_away=0.50, signal_ts="2026-07-15T12:00:00Z"),
+                   grade_dir=grade_dir, ledger_path=ledger)
+    assert d["action"] == "bet"
+    placed = d["placement"]
+    assert placed["signal_ts"] == "2026-07-15T12:00:00Z"
+    assert isinstance(placed["placement_latency_ms"], float)
+    assert placed["placement_latency_ms"] >= 0.0
+    assert placed["exec_gate"]["passed"] is True
+    assert placed["exec_gate"]["drift_pct"] is None  # no fresher price supplied
+    _no_dollar_field(placed)
+
+
+def test_drift_rejection_suppresses_adverse_moved_price(tmp_path):
+    # A fresher price for the taken side has moved adversely (decimal fell) by more
+    # than INGAME_MAX_DRIFT_PCT since the signal was computed -> suppressed, not placed.
+    ledger = tmp_path / "ledger.jsonl"
+    grade_dir = tmp_path / "grade"
+    t = _tick(0.80, 0.55, yes_away=0.50)
+    t["fresh_obtainable_decimal"] = 1.05  # far below the signal-time obtainable decimal
+    d = dt.on_tick("mlb", "401859992", t, grade_dir=grade_dir, ledger_path=ledger)
+    assert d["action"] == "no_bet"
+    assert d["reason"] == "drift"
+    assert d["placement"] is None
+    assert d["exec_gate"]["drift_pct"] is not None and d["exec_gate"]["drift_pct"] < 0.0
+    assert not ledger.exists() or "open" not in ledger.read_text(encoding="ascii")
+    _no_dollar_field(d)
