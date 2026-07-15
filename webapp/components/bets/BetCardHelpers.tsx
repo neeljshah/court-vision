@@ -59,10 +59,10 @@ export function clvLabel(clv: number | null, proxy: boolean): React.ReactNode {
 // statusDot: inline dot + label for live/pregame/done statuses.
 export function statusDot(status: BetCardData["status"]): React.ReactNode {
   const map = {
-    live: { cls: "bg-amber-400 animate-pulse", label: "LIVE" },
+    live: { cls: "bg-warning animate-pulse", label: "LIVE" },
     pregame: { cls: "bg-muted-foreground", label: "PREGAME" },
     // DONE: visible neutral (not the near-invisible bg-slate-700, not green, not pulsing).
-    done: { cls: "bg-slate-500", label: "DONE" },
+    done: { cls: "bg-muted-foreground", label: "DONE" },
   } as const;
   const { cls, label } = map[status];
   return (

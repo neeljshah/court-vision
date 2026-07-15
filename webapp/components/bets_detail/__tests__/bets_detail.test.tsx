@@ -263,7 +263,7 @@ describe("BookMatrixTable -- per-book odds matrix", () => {
   it("highlights the best book", () => {
     const { container } = render(<BookMatrixTable matrix={LINES_MATRIX} />);
     // Best book for home side is Kalshi -- should appear as best badge.
-    const bestBadges = container.querySelectorAll(".text-emerald-400");
+    const bestBadges = container.querySelectorAll(".text-up");
     expect(bestBadges.length).toBeGreaterThan(0);
   });
 

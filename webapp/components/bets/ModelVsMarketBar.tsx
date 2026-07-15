@@ -5,7 +5,7 @@
 // HONESTY RAILS:
 //   - Divergence is labeled "calibrated divergence" -- NEVER "edge" or "profit"
 //   - Negative divergence (model below market) is a valid under/away signal, not an error
-//   - Colors: model bar = slate-300; market bar = slate-500 (neutral opposing pair)
+//   - Colors: model bar = --s-model amber; market bar = --s-market blue (source colors)
 //   - No green for a positive divergence, no red for a negative divergence
 //   - Units only; no $ anywhere
 //   - When framing='descriptive' suppresses the divergence signal, shows neutral state
@@ -58,9 +58,9 @@ function fmtProb(p: number): string {
 
 // Divergence magnitude tag: classifies the signal for the label chip.
 function divergenceToneClass(divergence: number, is_signal: boolean): string {
-  if (!is_signal) return "text-slate-400 bg-slate-800/60 border-slate-700";
+  if (!is_signal) return "text-muted-foreground bg-surface-3 border-border";
   // Both directions of signal use the same slate-200 tone (honest: not green for over, not red for under)
-  return "text-slate-200 bg-slate-700/60 border-slate-600";
+  return "text-foreground bg-surface-3 border-muted-foreground";
 }
 
 // ---------------------------------------------------------------------------
@@ -104,7 +104,7 @@ export function ModelVsMarketBar({
     >
       {/* Descriptive overlay */}
       {framing === "descriptive" ? (
-        <div className="rounded-md border border-slate-700 bg-slate-900/60 px-3 py-2">
+        <div className="rounded-md border border-border bg-surface-2 px-3 py-2">
           <span
             className="font-mono text-[10px] text-muted-foreground"
             data-testid="descriptive-note"
@@ -122,12 +122,12 @@ export function ModelVsMarketBar({
         >
           Model p
         </span>
-        <div className="relative flex-1 overflow-hidden rounded-full bg-slate-800" style={{ height: "10px" }}>
+        <div className="relative flex-1 overflow-hidden rounded-full bg-surface-3" style={{ height: "10px" }}>
           <div
             className={cn(
               "absolute inset-y-0 left-0 rounded-full transition-all duration-300",
               BAR_HEIGHT,
-              "bg-slate-300",
+              "bg-s-model",
             )}
             style={{ width: modelPct }}
             role="meter"
@@ -154,12 +154,12 @@ export function ModelVsMarketBar({
         >
           Market p
         </span>
-        <div className="relative flex-1 overflow-hidden rounded-full bg-slate-800" style={{ height: "10px" }}>
+        <div className="relative flex-1 overflow-hidden rounded-full bg-surface-3" style={{ height: "10px" }}>
           <div
             className={cn(
               "absolute inset-y-0 left-0 rounded-full transition-all duration-300",
               BAR_HEIGHT,
-              "bg-slate-500",
+              "bg-s-market",
             )}
             style={{ width: marketPct }}
             role="meter"
@@ -212,9 +212,9 @@ export function ModelVsMarketBar({
           <span className="w-16 shrink-0 text-right font-mono text-[9px] uppercase tracking-widest text-faint">
             Signal
           </span>
-          <div className="relative flex-1 overflow-hidden rounded-full bg-slate-800/60" style={{ height: "4px" }}>
+          <div className="relative flex-1 overflow-hidden rounded-full bg-surface-3" style={{ height: "4px" }}>
             <div
-              className="absolute inset-y-0 left-0 rounded-full bg-slate-600 transition-all duration-300"
+              className="absolute inset-y-0 left-0 rounded-full bg-muted-foreground transition-all duration-300"
               style={{ width: `${Math.min(100, Math.max(2, confidence * 100)).toFixed(0)}%` }}
               data-testid="confidence-strip"
             />

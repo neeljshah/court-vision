@@ -106,7 +106,7 @@ export function BetCard({ card }: BetCardProps) {
         "rounded-xl border bg-bg-panel transition-colors",
         card.status === "live"
           ? "border-amber-900/60"
-          : "border-slate-800",
+          : "border-border",
       )}
       data-testid="bet-card-article"
     >
@@ -116,10 +116,10 @@ export function BetCard({ card }: BetCardProps) {
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap">
               {statusDot(card.status)}
-              <span className="font-mono text-[11px] text-slate-500">{card.sport.toUpperCase()}</span>
+              <span className="font-mono text-[11px] text-faint">{card.sport.toUpperCase()}</span>
               {tipoffStr ? (
                 <span
-                  className="font-mono text-[10px] text-slate-500"
+                  className="font-mono text-[10px] text-faint"
                   data-testid="tipoff-display"
                   aria-label={`Tipoff: ${tipoffStr}`}
                 >
@@ -127,10 +127,10 @@ export function BetCard({ card }: BetCardProps) {
                 </span>
               ) : null}
             </div>
-            <div className="mt-0.5 font-semibold text-slate-100 truncate">
+            <div className="mt-0.5 font-semibold text-foreground truncate">
               {humanizeMatchup(card.matchup)}
             </div>
-            <div className="mt-0.5 font-mono text-xs text-slate-300">
+            <div className="mt-0.5 font-mono text-xs text-foreground">
               {describeBet({
                 market_type: card.market_type,
                 side: card.side,
@@ -169,27 +169,27 @@ export function BetCard({ card }: BetCardProps) {
         {/* Best line + units */}
         <div className="mt-3 flex items-center gap-3 flex-wrap">
           <div className="flex flex-col">
-            <span className="font-mono text-[9px] uppercase tracking-widest text-slate-500">Best book</span>
-            <span className="font-mono text-xs text-slate-200">
+            <span className="font-mono text-[9px] uppercase tracking-widest text-faint">Best book</span>
+            <span className="font-mono text-xs text-foreground">
               {card.best_book}
               {card.best_odds != null ? (
-                <span className="ml-1 text-slate-400" data-testid="odds-value">
+                <span className="ml-1 text-muted-foreground" data-testid="odds-value">
                   {fmtAmericanOdds(card.best_odds)}
                 </span>
               ) : null}
             </span>
           </div>
           <div className="flex flex-col ml-auto text-right">
-            <span className="font-mono text-[9px] uppercase tracking-widest text-slate-500">Units</span>
+            <span className="font-mono text-[9px] uppercase tracking-widest text-faint">Units</span>
             {/* WS6: explicit "UNITS" label, never "$" */}
             <span
-              className="font-mono text-sm text-slate-100 tabular-nums cursor-help"
+              className="font-mono text-sm text-foreground tabular-nums cursor-help"
               title={UNITS_TIP}
               aria-label={`${card.units.toFixed(1)} UNITS, quarter-Kelly sizing capped -- stake in units not dollars`}
               data-testid="units-value"
             >
               {card.units.toFixed(1)}{" "}
-              <span className="text-[10px] text-slate-400 uppercase">UNITS</span>
+              <span className="text-[10px] text-muted-foreground uppercase">UNITS</span>
             </span>
           </div>
         </div>
@@ -197,14 +197,14 @@ export function BetCard({ card }: BetCardProps) {
         {/* Line shopping -- prefer richer books[] (price/fresh/is_pm), else all_books */}
         {card.books && card.books.length > 0 ? (
           <div className="mt-3">
-            <span className="mb-1 block font-mono text-[9px] uppercase tracking-widest text-slate-500">
+            <span className="mb-1 block font-mono text-[9px] uppercase tracking-widest text-faint">
               Line shopping
             </span>
             <LineShopPanel books={card.books} side={card.side} />
           </div>
         ) : card.all_books.length > 0 ? (
           <div className="mt-3">
-            <span className="mb-1 block font-mono text-[9px] uppercase tracking-widest text-slate-500">
+            <span className="mb-1 block font-mono text-[9px] uppercase tracking-widest text-faint">
               All books
             </span>
             <BookShoppingRow books={card.all_books} side={card.side} />
@@ -217,7 +217,7 @@ export function BetCard({ card }: BetCardProps) {
         </div>
 
         {/* Honest units-only note */}
-        <div className="mt-2 border-t border-slate-800 pt-2 text-right">
+        <div className="mt-2 border-t border-border pt-2 text-right">
           <Badge tone="slate">units only -- no $</Badge>
         </div>
 
@@ -230,10 +230,10 @@ export function BetCard({ card }: BetCardProps) {
               href={detailHref}
               className={cn(
                 "group inline-flex w-full items-center justify-center gap-1.5 rounded-lg border",
-                "border-slate-700 bg-slate-900/60 px-3 py-2",
-                "font-mono text-[11px] text-slate-400 transition-colors",
-                "hover:border-slate-500 hover:text-slate-200",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-1 focus-visible:ring-offset-bg-panel",
+                "border-border bg-surface-2 px-3 py-2",
+                "font-mono text-[11px] text-muted-foreground transition-colors",
+                "hover:border-muted-foreground hover:text-foreground",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-bg-panel",
               )}
               aria-label={detailLinkLabel}
               data-testid="bet-card-detail-link"
@@ -246,8 +246,8 @@ export function BetCard({ card }: BetCardProps) {
             <span
               className={cn(
                 "inline-flex w-full cursor-not-allowed items-center justify-center gap-1.5 rounded-lg border",
-                "border-slate-800 bg-slate-900/30 px-3 py-2",
-                "font-mono text-[11px] text-slate-600",
+                "border-border bg-card px-3 py-2",
+                "font-mono text-[11px] text-faint",
               )}
               aria-disabled="true"
               data-testid="bet-card-detail-link-disabled"

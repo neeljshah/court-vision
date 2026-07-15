@@ -158,7 +158,7 @@ function MarketBlock({
                   ))}
                   <td className="px-3 py-1.5 text-right font-data text-[10px] text-faint">
                     {bestBk ? (
-                      <span className="border border-success/40 px-1 py-0.5 text-emerald-400">
+                      <span className="border border-success/40 px-1 py-0.5 text-up">
                         {bestBk}
                       </span>
                     ) : (

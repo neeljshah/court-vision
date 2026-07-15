@@ -70,32 +70,33 @@ describe("BetCard -- divergence framing (honesty rail)", () => {
     expect(divEl?.className ?? "").not.toMatch(/text-green/);
   });
 
-  it("negative divergence renders a neutral/slate class", () => {
+  it("negative divergence renders a neutral token class (never red/green)", () => {
     const { container } = render(<BetCard card={makeCard({ edge_vs_market: -0.06 })} />);
     const divEl = container.querySelector("[data-testid='divergence-chip']");
     expect(divEl).not.toBeNull();
     const cls = divEl?.className ?? "";
     // Should be one of the two honest neutral classes
-    expect(cls.includes("text-slate-200") || cls.includes("text-slate-400")).toBe(true);
+    expect(cls.includes("text-foreground") || cls.includes("text-muted-foreground")).toBe(true);
+    expect(cls.includes("text-up") || cls.includes("text-down")).toBe(false);
   });
 
-  it("small-magnitude divergence (< 5pp) renders muted slate-400", () => {
+  it("small-magnitude divergence (< 5pp) renders muted neutral token", () => {
     const { container } = render(<BetCard card={makeCard({ edge_vs_market: 0.02 })} />);
     const divEl = container.querySelector("[data-testid='divergence-chip']");
-    expect(divEl?.className ?? "").toContain("text-slate-400");
+    expect(divEl?.className ?? "").toContain("text-muted-foreground");
   });
 
-  it("large-magnitude negative divergence (>= 5pp abs) renders slate-200", () => {
+  it("large-magnitude negative divergence (>= 5pp abs) renders foreground token", () => {
     const { container } = render(<BetCard card={makeCard({ edge_vs_market: -0.08 })} />);
     const divEl = container.querySelector("[data-testid='divergence-chip']");
-    expect(divEl?.className ?? "").toContain("text-slate-200");
+    expect(divEl?.className ?? "").toContain("text-foreground");
     expect(divEl?.className ?? "").not.toMatch(/text-red/);
   });
 
-  it("large-magnitude positive divergence (>= 5pp abs) renders slate-200", () => {
+  it("large-magnitude positive divergence (>= 5pp abs) renders foreground token", () => {
     const { container } = render(<BetCard card={makeCard({ edge_vs_market: 0.07 })} />);
     const divEl = container.querySelector("[data-testid='divergence-chip']");
-    expect(divEl?.className ?? "").toContain("text-slate-200");
+    expect(divEl?.className ?? "").toContain("text-foreground");
   });
 });
 
@@ -258,13 +259,13 @@ describe("BetCard -- matchup and market", () => {
 // ---------------------------------------------------------------------------
 
 describe("BetCard -- DONE status dot contrast", () => {
-  it("DONE dot uses a visible neutral class (bg-slate-500 or bg-slate-600)", () => {
+  it("DONE dot uses a visible neutral token (bg-muted-foreground)", () => {
     const { container } = render(<BetCard card={makeCard({ status: "done" })} />);
     const dot = container.querySelector("[data-testid='status-dot-done']");
     expect(dot).not.toBeNull();
     const cls = dot?.className ?? "";
-    // Must carry a legible neutral -- bg-slate-500 or bg-slate-600 are acceptable
-    expect(cls.includes("bg-slate-500") || cls.includes("bg-slate-600")).toBe(true);
+    // Must carry a legible neutral token, readable in BOTH themes
+    expect(cls.includes("bg-muted-foreground")).toBe(true);
   });
 
   it("DONE dot does NOT use the near-invisible bg-slate-700 class", () => {
@@ -292,7 +293,7 @@ describe("BetCard -- DONE status dot contrast", () => {
     const liveDot = liveCtr.querySelector("[data-testid='status-dot-live']");
 
     // LIVE must be amber + pulse (not a static neutral)
-    expect(liveDot?.className ?? "").toContain("bg-amber-400");
+    expect(liveDot?.className ?? "").toContain("bg-warning");
     expect(liveDot?.className ?? "").toContain("animate-pulse");
     // DONE must NOT pulse
     expect(doneDot?.className ?? "").not.toContain("animate-pulse");
