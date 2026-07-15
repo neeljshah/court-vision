@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import json as _json
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from scripts.platformkit.clv_ledger_enrich import enrich_rows
 
@@ -131,10 +131,32 @@ def _filter(
     return out
 
 
+# Enrichment does per-row close lookups, so a full ledger pass costs seconds
+# even warm. Cache the enriched trail keyed on ledger mtime (re-applied
+# 2026-07-15 after an external git-restore wiped it).
+# ponytail: process-local dict cache; move to disk if multi-proc ever needs it.
+_ENRICH_CACHE: Dict[str, Tuple[float, List[Dict[str, Any]]]] = {}
+
+
+def _enriched_trail(path: Optional[Path]) -> List[Dict[str, Any]]:
+    """Enriched trail rows, cached on the ledger file's mtime."""
+    target = path if path is not None else _DEFAULT_LEDGER
+    try:
+        mtime = target.stat().st_mtime
+    except OSError:
+        mtime = -1.0
+    key = str(target)
+    hit = _ENRICH_CACHE.get(key)
+    if hit is not None and hit[0] == mtime:
+        return hit[1]
+    rows = enrich_rows(_read_trail(path))
+    _ENRICH_CACHE[key] = (mtime, rows)
+    return rows
+
+
 def _pm_enriched(path: Optional[Path]) -> List[Dict[str, Any]]:
     """Return enriched, PM-only trail rows."""
-    rows = enrich_rows(_read_trail(path))
-    return [r for r in rows if bool(r.get("is_pm", False))]
+    return [r for r in _enriched_trail(path) if bool(r.get("is_pm", False))]
 
 
 # ---------------------------------------------------------------------------
@@ -232,7 +254,7 @@ def trade_detail(
 
     # -- 2. Fallback: collapsed trail searched by game_id
     try:
-        trail = enrich_rows(_read_trail(ledger_path))
+        trail = _enriched_trail(ledger_path)
     except Exception:  # noqa: BLE001
         trail = []
     match = next((r for r in trail if str(r.get("game_id") or "") == bet_id), None)
