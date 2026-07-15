@@ -12,13 +12,17 @@ calibrated anchor. It is *deep*: under each team number sits a per-player projec
 distribution, a ~190-feature prop stack, 44 player/team "atlases", playstyle archetypes, a
 coherent possession-level Monte-Carlo simulator, and a ~100-file edge-intelligence corpus that
 catalogs -- per sport -- every data source, every market, every beatable pocket, and every
-modeling lever with an honest ship/reject verdict. And it is *honest*: the pregame number
-MATCHES the devigged closing line within noise on efficient markets (a success, not a target to
-beat), in-game conditioning is a measured calibration win 4/4 sports, and **no dollar edge, ROI,
-or "beat the close" is ever claimed** -- candidate edges are surfaced, tiered by evidence, and
-only ever proven by forward closing-line value (CLV), never asserted.
+modeling lever with an honest ship/reject verdict. And it is *honest*: pregame, the model
+tracks the devigged closing line within sampling noise on team-strength markets and never
+beats it (the close's Brier is a few thousandths lower on every row -- see the measured table
+in the thesis section); in-game -- where conditioning on the realized game state makes the
+model's own Brier much lower -- the distributional tests read slightly model-favorable at some
+checkpoints but are UNDERPOWERED/PROVISIONAL, so the honest read is "possibly slightly ahead,
+not enough to call an edge." **No dollar edge, ROI, or "beat the close" is ever claimed** --
+candidate edges are surfaced, tiered by evidence, and only ever proven by forward closing-line
+value (CLV), never asserted.
 
-Built by **[Neel Shah](https://neelshahportfolio.netlify.app)** -- solo human architect and
+Built by **[Neel Shah](https://github.com/neeljshah)** -- solo human architect and
 director of an agentic build pipeline. Engineering judgment, ship/reject decisions, and the
 validation methodology are mine. Open to **ML / data / quant / founding-engineer** roles ->
 [neeljshah22@gmail.com](mailto:neeljshah22@gmail.com)
@@ -171,12 +175,35 @@ The deepest, most actionable part of the brain is the **player-prop engine**, an
 search for *genuine* edge concentrates -- precisely because that is where edge can plausibly
 exist.
 
-**The thesis (load-bearing).** Sharp mainline markets (moneyline / spread / total on liquid
-sports) are efficient -- the brain MATCHES the devigged close and claims nothing more. The
-*beatable* pockets are different in kind: **lazily-priced soft / DFS player props**, **live /
-in-game lag**, **stale lines on slow books**, **prediction-market vs sportsbook divergence**, and
-**correlated SGPs a coherent sim can price but a book misprices**. The brain is built to surface
-and paper-trade exactly those -- and to *cut* effort where it has proven there is no edge.
+**The thesis (load-bearing), with the measured numbers.** Sharp mainline markets (moneyline /
+spread / total on liquid sports) are efficient pregame. Leak-free, out-of-sample, vs the
+Shin-devigged close ([docs/MARKET_EFFICIENCY_PROOF.md](docs/MARKET_EFFICIENCY_PROOF.md)):
+
+| Market | n | Model Brier/RMSE | Close | Verdict |
+|---|---|---|---|---|
+| NBA moneyline | 372 | 0.1735 | 0.1672 | MATCH (within noise) |
+| MLB moneyline | 13,992 | 0.2429 | 0.2390 | MATCH (within noise) |
+| Soccer O/U 2.5 | 7,558 | 0.2465 | 0.2390 | MATCH (within noise) |
+| ATP match-win | 7,374 | 0.2177 | 0.2028 | BEHIND (freshness gap) |
+| NBA / MLB totals (RMSE) | 372 / 1,679 | 19.17 / 4.72 | 18.11 / 4.44 | BEHIND (freshness gap) |
+
+Nothing beats the close pregame; the close is a few thousandths sharper on every row. That is
+the expected honest outcome, not a failure.
+
+**In-game is different -- and honestly labelled.** Conditioning on the realized game state
+drops the model's own Brier sharply (NBA 0.209 -> 0.159, MLB 0.241 -> 0.126 vs the
+pregame-static baseline; calibration, not edge -- a live book sees the score too). Against the
+in-game *market*, the distributional (CRPS) checkpoint tests currently read slightly
+model-favorable at some late-game checkpoints but carry UNDERPOWERED / PROVISIONAL verdicts at
+today's sample sizes -- the honest read is "possibly slightly ahead in-game, not enough to
+claim an edge." Two things are explicitly **untested**: performance against
+instantly-updating live lines at real tick latency (all comparisons use captured price series,
+not live execution), and forward paper excess-vs-close, which at n=36 settled is NOT
+SIGNIFICANT (CI includes zero). The *beatable* pockets the brain hunts are different in kind:
+**lazily-priced soft / DFS player props**, **live / in-game lag**, **stale lines on slow
+books**, **prediction-market vs sportsbook divergence**, and **correlated SGPs a coherent sim
+can price but a book misprices**. The brain is built to surface and paper-trade exactly those
+-- and to *cut* effort where it has proven there is no edge.
 
 **How a prop edge is found, end to end:** scrape the soft DFS / book line -> build the player's
 full distribution from leak-free history (empirical-Bayes shrunk to the role archetype, blended
