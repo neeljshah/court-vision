@@ -35,6 +35,7 @@ import it, and only when actually used.
 """
 from __future__ import annotations
 
+import concurrent.futures
 import json
 import logging
 import os
@@ -49,6 +50,30 @@ from .http_cache import http_get_json
 from .stealth_fetch import stealth_get_json
 
 logger = logging.getLogger(__name__)
+
+# ponytail: stealth_get/browser_get delegate to 3rd-party libs (scrapling/
+# playwright) whose own `timeout=` kwarg is NOT independently verified to
+# bound a hang (confirmed live: m1_paper wedged at near-zero CPU inside a
+# feed fetch, never returning). A thread + future.result(timeout=) is the
+# stdlib way to hard-cap ANY call regardless of what it blocks on internally.
+# Ceiling = declared timeout + 5s grace (let the library's own timeout fire
+# first if it works; force-abandon it if it doesn't). The stray thread is
+# daemonized and leaked on timeout -- Python cannot kill a thread -- but that
+# is far cheaper than wedging the whole research loop forever.
+_WATCHDOG_GRACE_SEC = 5.0
+_watchdog_pool = concurrent.futures.ThreadPoolExecutor(
+    max_workers=4, thread_name_prefix="odds-watchdog")
+
+
+def _bounded_call(fn: Callable[..., Any], url: str, timeout: float) -> Any:
+    """Call fn(url, timeout) but never block longer than timeout+grace."""
+    fut = _watchdog_pool.submit(fn, url, timeout)
+    try:
+        return fut.result(timeout=timeout + _WATCHDOG_GRACE_SEC)
+    except concurrent.futures.TimeoutError as exc:
+        raise TimeoutError(
+            f"transport watchdog: {getattr(fn, '__name__', fn)} exceeded "
+            f"{timeout + _WATCHDOG_GRACE_SEC}s for {url}") from exc
 
 _REPO = Path(__file__).resolve().parents[3]
 _DEFAULT_PREFS_PATH = _REPO / "data" / "cache" / "odds_transport" / "transport_prefs.json"
@@ -206,7 +231,7 @@ def resilient_get_json(
     preferred = _preferred_tier(host, prefs_path=prefs_path, now=now)
     if preferred == "stealth":
         try:
-            result = stealth_get(url, timeout)
+            result = _bounded_call(stealth_get, url, timeout)
             mark_stealth_first(host, tier="stealth", prefs_path=prefs_path, now=now)
             return result
         except Exception as exc:  # noqa: BLE001 -- preferred-tier hosts still fall back
@@ -215,7 +240,7 @@ def resilient_get_json(
             return plain_get(url, timeout)
     if preferred == "browser" and browser_on:
         try:
-            result = browser_get(url, timeout)
+            result = _bounded_call(browser_get, url, timeout)
             mark_stealth_first(host, tier="browser", prefs_path=prefs_path, now=now)
             return result
         except Exception as exc:  # noqa: BLE001 -- preferred-tier hosts still fall back
@@ -229,12 +254,12 @@ def resilient_get_json(
         if not _is_blocked_shaped(plain_exc):
             raise
         try:
-            result = stealth_get(url, timeout)
+            result = _bounded_call(stealth_get, url, timeout)
         except Exception as stealth_exc:  # noqa: BLE001 -- honest degrade / maybe tier 3
             logger.debug("stealth fallback also failed for %s: %s", host, stealth_exc)
             if browser_on and _is_blocked_shaped(stealth_exc):
                 try:
-                    result = browser_get(url, timeout)
+                    result = _bounded_call(browser_get, url, timeout)
                 except Exception as browser_exc:  # noqa: BLE001 -- honest degrade
                     logger.debug("browser fallback also failed for %s: %s",
                                 host, browser_exc)

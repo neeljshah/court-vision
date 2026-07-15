@@ -113,6 +113,31 @@ def test_stealth_failure_reraises_original_plain_error(tmp_path, monkeypatch):
     assert exc_info.value.code == 401
 
 
+def test_hanging_stealth_get_is_bounded_not_wedged(tmp_path, monkeypatch):
+    """Root-cause regression test for the m1_paper wedge: a stealth_get that
+    never returns (simulates a 3rd-party lib ignoring its own timeout=) must
+    NOT block resilient_get_json forever -- the watchdog reraises the
+    original plain error within timeout+grace instead."""
+    import time as _time
+
+    monkeypatch.delenv("CV_STEALTH_FALLBACK", raising=False)
+
+    def plain_get(url, timeout=20.0):
+        raise urllib.error.HTTPError(url, 429, "too many requests", None, None)
+
+    def stealth_get(url, timeout=20.0):
+        _time.sleep(timeout + 60)  # simulate a lib that ignores timeout=
+        return {"should": "never return"}
+
+    started = _time.monotonic()
+    with pytest.raises(urllib.error.HTTPError) as exc_info:
+        resilient_get_json(URL, timeout=0.2, plain_get=plain_get,
+                           stealth_get=stealth_get, prefs_path=_prefs_path(tmp_path))
+    elapsed = _time.monotonic() - started
+    assert exc_info.value.code == 429
+    assert elapsed < 10.0  # bounded by timeout(0.2) + grace(5s), not 60s+
+
+
 def test_non_blocked_error_reraises_without_stealth(tmp_path, monkeypatch):
     monkeypatch.delenv("CV_STEALTH_FALLBACK", raising=False)
     calls = {"stealth": 0}
