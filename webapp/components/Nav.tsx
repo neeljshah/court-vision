@@ -213,9 +213,13 @@ export function Nav() {
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
           )}
           aria-label="CourtVision home"
+          aria-current={basePath === "/" ? "page" : undefined}
         >
           <span className="text-sm font-semibold tracking-tight text-foreground">
             Court<span className="text-primary">Vision</span>
+          </span>
+          <span className="hidden font-mono text-[10px] uppercase tracking-widest text-muted-foreground sm:inline">
+            multi-sport
           </span>
         </Link>
 
