@@ -11,6 +11,7 @@ TS = "2026-07-14T00:00:00Z"
 @pytest.fixture(autouse=True)
 def _isolated_cards_path(tmp_path, monkeypatch):
     monkeypatch.setattr(reg, "CARDS_PATH", tmp_path / "cards.jsonl")
+    monkeypatch.setattr(reg, "_ROWS_CACHE", [None, None])
     yield
 
 
@@ -63,7 +64,8 @@ def test_register_rejects_postgame_leak_field():
     assert reg.get_all_latest() == {}
 
 
-def test_ten_cap_new_card_queues():
+def test_ten_cap_new_card_queues(monkeypatch):
+    monkeypatch.setattr(reg, "MAX_OPEN", 10)
     for i in range(10):
         res = _register(i)
         assert res["status"] == "OPEN"
@@ -73,7 +75,8 @@ def test_ten_cap_new_card_queues():
     assert len(reg.get_open()) == 10
 
 
-def test_promote_queued_fills_freed_slot():
+def test_promote_queued_fills_freed_slot(monkeypatch):
+    monkeypatch.setattr(reg, "MAX_OPEN", 10)
     ids = [_register(i)["card_id"] for i in range(10)]
     queued = _register(10)
     assert queued["status"] == "QUEUED"

@@ -318,6 +318,10 @@ _JOB_TABLE: List[Tuple[str, str, str, Tuple[str, ...]]] = [
     # replicate_survivors/replicate_batch2b workers (own-success watermark; no age gate)
     ("replication_cadence", "scripts.platformkit.autoloop.replication_job",
      "run_replication_cadence", ("watermarks",)),
+    # M22 card mine+grade cadence: top up the 10k+ mechanical hypothesis grid, bulk-grade
+    # on corpus growth (corpus-bytes watermark; verdicts to card_ledger; REJECT expected)
+    ("card_grade", "scripts.platformkit.autoloop.card_grade_job",
+     "run_card_grade", ("watermarks",)),
     # M22 nightly PREREG R1/R2 false-discovery accounting (own ledger; read-only over the verdict ledger)
     ("false_discovery_accounting", "scripts.platformkit.autoloop.false_discovery_job",
      "run_false_discovery_accounting", ("watermarks",)),
