@@ -18,6 +18,7 @@ import { Panel, Badge, Unavailable as UnavailablePanel } from "@/components/p6/P
 import { AgeBadge } from "@/components/bets/BestBetsBoard";
 import { fmtPct, tierClass } from "@/lib/utils";
 import { EMPTY_CELL } from "@/lib/tokens";
+import { humanizeMatchup, describeBetShort } from "@/lib/betdesc";
 
 // ---------------------------------------------------------------------------
 // PredictionHistoryRow -- one table row. UNITS only; no $ anywhere.
@@ -64,12 +65,11 @@ function PredictionHistoryRow({ row }: { row: PaperPredictionRow }) {
       className="border-b border-slate-800/60 text-[11px] hover:bg-slate-800/20 transition-colors"
     >
       <td className="py-2 pr-3 pl-2 font-mono text-slate-200">
-        {row.matchup}
+        {humanizeMatchup(row.matchup)}
         {row.sport ? <span className="ml-1 text-slate-600 uppercase text-[9px]">{row.sport}</span> : null}
       </td>
       <td className="py-2 pr-3 font-mono text-slate-400">
-        {row.market_type ?? EMPTY_CELL}
-        {row.side ? <span className="ml-1 text-slate-600">{row.side}</span> : null}
+        {describeBetShort(row)}
       </td>
       <td className="py-2 pr-3 font-mono tabular-nums text-slate-200">{probStr}</td>
       <td className="py-2 pr-3 font-mono tabular-nums text-slate-500">{marketStr}</td>

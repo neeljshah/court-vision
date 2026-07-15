@@ -23,6 +23,7 @@ import { ExecutionDetail } from "@/components/paper_pm/ExecutionDetail";
 import { toBetId } from "@/components/paper_pm/PmTradeRow";
 import { ExecutionTrail } from "@/components/execution/ExecutionTrail";
 import { paperRowToExecutionTrail } from "@/components/paper_pm/paperTrailAdapter";
+import { humanizeMatchup } from "@/lib/betdesc";
 
 // ---------------------------------------------------------------------------
 // matchRow -- find the row matching the URL betId.
@@ -127,7 +128,7 @@ export default function BetDetailPage() {
           </li>
           <li aria-hidden="true">/</li>
           <li className="font-mono text-slate-400">
-            {row ? (row.matchup || row.game_id) : decodeURIComponent(betId)}
+            {row ? humanizeMatchup(row.matchup || row.game_id) : decodeURIComponent(betId)}
           </li>
         </ol>
       </nav>

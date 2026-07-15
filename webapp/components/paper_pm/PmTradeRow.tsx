@@ -9,6 +9,7 @@ import { fmtPct } from "@/lib/utils";
 import { EMPTY_CELL, tierBadgeClass } from "@/lib/tokens";
 import { Badge } from "@/components/p6/Primitives";
 import { ClvInline } from "./ClvInline";
+import { humanizeMatchup, describeBetShort } from "@/lib/betdesc";
 import type { PaperTrailRow } from "@/lib/p5api";
 
 type DerivedResult = "win" | "loss" | "void" | "pending";
@@ -78,7 +79,7 @@ export function PmTradeRow({ row, rank }: Props) {
       ) : null}
       <td className="px-2 py-1.5">
         <Link href={`/paper/${betId}`} className="hover:underline">
-          <span className="font-medium">{row.matchup || row.game_id}</span>
+          <span className="font-medium">{humanizeMatchup(row.matchup || row.game_id)}</span>
           <span className="ml-1.5 font-mono text-[10px] text-slate-600">
             {row.sport?.toUpperCase()}
           </span>
@@ -88,7 +89,7 @@ export function PmTradeRow({ row, rank }: Props) {
         {row.market_type || EMPTY_CELL}
       </td>
       <td className="px-2 py-1.5 font-mono text-[11px] text-slate-400">
-        {row.side || EMPTY_CELL}
+        {describeBetShort(row)}
       </td>
       <td className="px-2 py-1.5">
         {row.tier ? (

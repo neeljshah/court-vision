@@ -31,6 +31,7 @@ import { formatDivergence, isDivergenceSignal } from "./cardDepth";
 import { PropCard } from "./PropCard";
 import { LineShopPanel } from "./LineShopPanel";
 import type { BookShopEntry } from "@/lib/types";
+import { humanizeMatchup, describeBet } from "@/lib/betdesc";
 
 export interface BetCardData {
   game_id: string;
@@ -127,12 +128,15 @@ export function BetCard({ card }: BetCardProps) {
               ) : null}
             </div>
             <div className="mt-0.5 font-semibold text-slate-100 truncate">
-              {card.matchup}
+              {humanizeMatchup(card.matchup)}
             </div>
-            <div className="mt-0.5 font-mono text-xs text-slate-400">
-              {card.market_type}
-              {card.line != null ? ` ${card.line > 0 ? "+" : ""}${card.line}` : ""}{" "}
-              <span className="text-slate-300">{card.side}</span>
+            <div className="mt-0.5 font-mono text-xs text-slate-300">
+              {describeBet({
+                market_type: card.market_type,
+                side: card.side,
+                line: card.line,
+                matchup: card.matchup,
+              })}
             </div>
           </div>
           {/* Tier badge */}
