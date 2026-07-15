@@ -136,6 +136,10 @@ export function PlacedBetRow({ bet }: { bet: TodayBet }) {
           market_type: bet.market_type,
           side: bet.side,
           matchup: bet.matchup,
+          prop_player: bet.prop_player,
+          prop_stat: bet.prop_stat,
+          prop_side: bet.prop_side,
+          line: bet.line,
         })}
       </td>
       <td className="py-1.5 pr-3 font-mono text-[11px] text-foreground tabular-nums">

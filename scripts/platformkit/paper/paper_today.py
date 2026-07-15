@@ -36,6 +36,7 @@ from typing import Any, Dict, List, Optional, Sequence
 from scripts.platformkit import clv_ledger as _clv
 from scripts.platformkit.paper import bankroll as _bank
 from scripts.platformkit.paper import et_day as _et
+from scripts.platformkit.paper import paper_exec_summary as _exec
 from scripts.platformkit.paper import pnl_normalize as _nz
 
 # Min true-close sample before a mean CLV is reported as a number; below it the
@@ -241,6 +242,10 @@ def build_today(
         "n_clv": len(_clv_values(settled)),
         "min_clv_n": MIN_CLV_N,
         "reconciles": rec["reconciles"],
+        # Per-market rolling CLV + circuit-breaker state + execution-quality
+        # aggregates. Degrades to "UNKNOWN"/nulls if the breaker module (owned by
+        # a concurrent lane) is not yet on disk -- never fabricated.
+        "execution": _exec.build_execution_block(placed_rows, _now_iso()),
         "honest_note": _HONEST_NOTE,
         "edge_claimed": False,
         "executed": False,

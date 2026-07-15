@@ -180,6 +180,12 @@ export type BestBet = {
   kelly_units: number;
   clv_is_proxy: boolean;
   reason?: string;
+  // Prop identity (market_type=="prop") -- optional until frontend/exec_decision.py
+  // whitelists them through (see docs/research/organization-sprint/
+  // PROPOSED-exec_decision-prop-fields.md). Harmless when absent.
+  prop_player?: string | null;
+  prop_stat?: string | null;
+  prop_side?: string | null;
 };
 
 // Per-sport CLV breakdown entry (clv_ledger.clv_summary by_sport bucket).
