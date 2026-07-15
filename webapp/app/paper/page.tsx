@@ -105,10 +105,12 @@ function ClvStat({
   label,
   value,
   cls,
+  sub,
 }: {
   label: string;
   value: string;
   cls?: string;
+  sub?: string;
 }) {
   return (
     <div className="rounded-lg bg-bg-subtle px-3 py-2.5">
@@ -120,14 +122,34 @@ function ClvStat({
       >
         {value}
       </div>
+      {sub ? (
+        <div className="mt-0.5 text-[10px] text-faint">{sub}</div>
+      ) : null}
     </div>
   );
 }
 
-function meanClvClass(clv: ClvScoreboard | null): string {
-  if (clv?.mean_clv_pct == null) return "text-foreground";
-  if (clv.mean_clv_pct > 0) return "text-success";
-  if (clv.mean_clv_pct < 0) return "text-danger";
+// headlineClv -- median (true-close) preferred, mean as an honest fallback
+// labelled as such until the service is serving median_clv_pct. Note: the
+// wire values are already percent-scale (e.g. 35.8687 == 35.87%), NOT a
+// 0-1 fraction, so they are divided by 100 before going through fmtPct
+// (which multiplies by 100 for the usual fraction inputs elsewhere in the
+// app -- passing the raw percent straight in double-multiplies, e.g. the
+// 3586.9% bug).
+function headlineClv(clv: ClvScoreboard | null): {
+  label: string;
+  pct: number | null;
+} {
+  if (clv?.median_clv_pct != null) {
+    return { label: "Median CLV (true-close)", pct: clv.median_clv_pct };
+  }
+  return { label: "Mean CLV (mean, incl. outliers)", pct: clv?.mean_clv_pct ?? null };
+}
+
+function headlineClvClass(pct: number | null): string {
+  if (pct == null) return "text-foreground";
+  if (pct > 0) return "text-success";
+  if (pct < 0) return "text-danger";
   return "text-foreground";
 }
 
@@ -287,30 +309,33 @@ export default function PaperPage() {
           <>
             <ClvStatSkeleton label="Graded bets" />
             <ClvStatSkeleton label="% beat close" />
-            <ClvStatSkeleton label="Mean CLV" />
+            <ClvStatSkeleton label="CLV" />
           </>
         ) : (
           <>
             <ClvStat
               label="Graded bets"
               value={String(settledClvCount > 0 ? settledClvCount : settledRows.length)}
+              sub={
+                clv?.n_proxy != null ? `n_proxy ${clv.n_proxy}` : undefined
+              }
             />
             <ClvStat
-              label="% beat close"
+              label="% beat close (of true-close graded)"
               value={
                 clv?.pct_beat_close != null
-                  ? fmtPct(clv.pct_beat_close, false)
+                  ? fmtPct(clv.pct_beat_close / 100, false)
                   : EMPTY_CELL
               }
             />
             <ClvStat
-              label="Mean CLV"
+              label={headlineClv(clv).label}
               value={
-                clv?.mean_clv_pct != null
-                  ? fmtPct(clv.mean_clv_pct)
+                headlineClv(clv).pct != null
+                  ? fmtPct((headlineClv(clv).pct as number) / 100)
                   : EMPTY_CELL
               }
-              cls={meanClvClass(clv)}
+              cls={headlineClvClass(headlineClv(clv).pct)}
             />
           </>
         )}
