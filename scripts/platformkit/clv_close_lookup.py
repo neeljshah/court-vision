@@ -61,7 +61,11 @@ def _mem_load() -> None:
                 if jid is None:
                     continue
                 legs = rec.get("legs")
-                ts = float(rec.get("ts") or 0.0)
+                # Legacy entries lack ts: treat as fresh-at-load. They were
+                # computed post-settlement (offline warm), so their misses are
+                # final; expiring them re-triggers the full scan storm whose
+                # GIL-bound JSON parsing starves the event loop (the wedge).
+                ts = float(rec.get("ts") or time.time())
                 _MEM[str(jid)] = (
                     tuple(legs) if isinstance(legs, list) and len(legs) == 3 else None,
                     ts,
