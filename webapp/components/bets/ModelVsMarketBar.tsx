@@ -206,7 +206,8 @@ export function ModelVsMarketBar({
       {confidence != null && confidence > 0 && framing !== "descriptive" ? (
         <div
           className="flex items-center gap-2"
-          aria-label={`signal confidence ${(confidence * 100).toFixed(0)}% -- derived from EV magnitude, not a profit claim`}
+          aria-label={`signal strength proxy ${(confidence * 100).toFixed(0)}% -- derived from EV magnitude, not a profit claim`}
+          title="signal strength proxy -- derived from EV magnitude, not a fabricated confidence"
         >
           <span className="w-16 shrink-0 text-right font-mono text-[9px] uppercase tracking-widest text-faint">
             Signal

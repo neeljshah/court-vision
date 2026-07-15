@@ -180,6 +180,9 @@ export function useLiveData<T>(
   // cached payload with its ORIGINAL timestamp (age/stale stay truthful).
   useEffect(() => {
     if (!cacheKey) return;
+    // Test env: never seed -- suites assert on genuine loading states, and the
+    // module-level cache would leak "instant data" across tests in a file.
+    if (typeof process !== "undefined" && process.env.NODE_ENV === "test") return;
     const seed = lkvGet(cacheKey);
     if (seed === null || lastUpdatedAtRef.current !== null) return;
     const seedAge = (Date.now() - seed.ts) / 1000;
