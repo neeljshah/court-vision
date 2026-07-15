@@ -122,3 +122,16 @@ def test_allow_placement_capped_respects_daily_cap():
     assert out2["placed_today"] == BREAKER_CAPPED_MAX_PER_DAY
     assert out2["allowed"] is False
     assert out2["reason"] == "cap_reached"
+
+
+def test_suspect_close_rows_never_enter_the_window():
+    now = "2026-07-15T12:00:00Z"
+    rows = [
+        {"market_type": "moneyline", "ts": "2026-07-10T00:00:00Z", "clv_pct": 2.0},
+        {"market_type": "moneyline", "ts": "2026-07-11T00:00:00Z",
+         "clv_pct": 15928.6, "clv_status": "suspect_close"},
+    ]
+    roll = cb.rolling_clv(rows, "moneyline", now)
+    assert roll["n"] == 1
+    assert roll["median_clv_pct"] == 2.0
+    assert roll["mean_clv_pct"] == 2.0
