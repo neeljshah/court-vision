@@ -41,7 +41,8 @@ def _per_market_clv(rows: List[Dict[str, Any]], now_iso: str) -> Dict[str, Dict[
     out: Dict[str, Dict[str, Any]] = {}
     for mt in _market_types(rows):
         if _breaker is None:
-            out[mt] = {"mean_clv_pct": None, "n": 0, "n_proxy": 0,
+            out[mt] = {"mean_clv_pct": None, "median_clv_pct": None, "n": 0,
+                       "n_proxy": 0, "basis": None, "mean_winsorized": True,
                        "state": "UNKNOWN", "cap_per_day": None, "placed_today": None}
             continue
         roll = _breaker.rolling_clv(rows, mt, now_iso)

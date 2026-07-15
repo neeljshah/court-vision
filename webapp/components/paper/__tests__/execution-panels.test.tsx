@@ -11,8 +11,16 @@ import { ExecutionQualityPanel } from "@/components/paper/ExecutionQualityPanel"
 
 const EXEC: ExecutionBlock = {
   by_market_type: {
-    prop: { mean_clv_pct: 1.25, n: 10, n_proxy: 1, state: "LIVE", cap_per_day: null, placed_today: 3 },
-    moneyline: { mean_clv_pct: -0.5, n: 4, n_proxy: 0, state: "CAPPED", cap_per_day: 5, placed_today: 1 },
+    prop: {
+      mean_clv_pct: 1.4, median_clv_pct: 1.25, mean_winsorized: true,
+      n: 10, n_proxy: 1, basis: "true_close",
+      state: "LIVE", cap_per_day: null, placed_today: 3,
+    },
+    moneyline: {
+      mean_clv_pct: 8.0, median_clv_pct: -0.5, mean_winsorized: true,
+      n: 4, n_proxy: 0, basis: "true_close",
+      state: "CAPPED", cap_per_day: 5, placed_today: 1,
+    },
   },
   quality: {
     n_gated: 2, n_ungated: 8, avg_expected_clv_pct: 1.4, median_placement_latency_ms: 220,
@@ -28,13 +36,14 @@ describe("PerMarketClvStrips", () => {
     );
   });
 
-  it("renders a row per market with signed CLV", () => {
+  it("renders a row per market with signed median CLV (not the mean)", () => {
     render(<PerMarketClvStrips execution={EXEC} />);
     const table = screen.getByTestId("per-market-clv-table");
     expect(table).toHaveTextContent("prop");
-    expect(table).toHaveTextContent("+1.25%");
+    expect(table).toHaveTextContent("+1.25%"); // median, not the +1.4 mean
     expect(table).toHaveTextContent("moneyline");
-    expect(table).toHaveTextContent("-0.50%");
+    expect(table).toHaveTextContent("-0.50%"); // median stays negative despite +8.0 mean
+    expect(table).not.toHaveTextContent("+8.00%");
   });
 });
 

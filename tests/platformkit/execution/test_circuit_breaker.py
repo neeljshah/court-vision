@@ -31,21 +31,50 @@ def test_rolling_clv_means_only_graded_rows_in_window():
     assert out["n"] == 2
     assert out["n_proxy"] == 1
     assert abs(out["mean_clv_pct"] - 4.0) < 1e-9
+    assert out["mean_winsorized"] is True
+    # true-close rows exist (the 10.0 row) -> median uses true-close only
+    assert out["basis"] == "true_close"
+    assert out["median_clv_pct"] == 10.0
 
 
 def test_rolling_clv_no_data_returns_none():
     out = cb.rolling_clv([], "win_home", NOW)
-    assert out["mean_clv_pct"] is None and out["n"] == 0
+    assert out["mean_clv_pct"] is None and out["median_clv_pct"] is None
+    assert out["n"] == 0 and out["basis"] is None
 
 
-def test_state_live_when_mean_positive():
+def test_rolling_clv_proxy_only_falls_back_to_all_rows_median():
+    rows = [
+        _row("win_home", "2026-07-10T00:00:00Z", clv_pct=-1.0, proxy=True),
+        _row("win_home", "2026-07-11T00:00:00Z", clv_pct=3.0, proxy=True),
+    ]
+    out = cb.rolling_clv(rows, "win_home", NOW)
+    assert out["basis"] == "proxy_only"
+    assert out["median_clv_pct"] == 1.0  # median of [-1.0, 3.0], no true-close rows
+
+
+def test_rolling_clv_mean_winsorized_but_median_stable_under_outlier():
+    """A single collapsed-longshot row (clv_pct=+2918) must not swing the median,
+    and the mean is clipped to +50 rather than exploding -- the audited artifact.
+    """
+    rows = [
+        _row("moneyline", "2026-07-10T00:00:00Z", clv_pct=1.0),
+        _row("moneyline", "2026-07-11T00:00:00Z", clv_pct=2.0),
+        _row("moneyline", "2026-07-12T00:00:00Z", clv_pct=2918.0),  # the outlier row
+    ]
+    out = cb.rolling_clv(rows, "moneyline", NOW)
+    assert out["median_clv_pct"] == 2.0  # unmoved by the outlier
+    assert abs(out["mean_clv_pct"] - (1.0 + 2.0 + 50.0) / 3.0) < 1e-9  # winsorized at +50
+
+
+def test_state_live_when_median_positive():
     rows = [_row("win_home", "2026-07-10T00:00:00Z", clv_pct=3.0)]
     st = cb.state(rows, "win_home", NOW)
     assert st["state"] == "LIVE"
     assert st["cap_per_day"] is None
 
 
-def test_state_capped_when_mean_negative():
+def test_state_capped_when_median_negative():
     rows = [_row("win_home", "2026-07-10T00:00:00Z", clv_pct=-3.0)]
     st = cb.state(rows, "win_home", NOW)
     assert st["state"] == "CAPPED"
@@ -56,6 +85,21 @@ def test_state_capped_when_no_data():
     st = cb.state([], "win_home", NOW)
     assert st["state"] == "CAPPED"
     assert st["cap_per_day"] == BREAKER_CAPPED_MAX_PER_DAY
+
+
+def test_state_gates_on_median_not_mean_outlier_row():
+    """The pre-registered fix: a longshot row inflates the mean to positive but
+    the median stays negative -- state must follow the median (stay CAPPED).
+    """
+    rows = [
+        _row("moneyline", "2026-07-10T00:00:00Z", clv_pct=-3.0),
+        _row("moneyline", "2026-07-11T00:00:00Z", clv_pct=-2.0),
+        _row("moneyline", "2026-07-12T00:00:00Z", clv_pct=500.0),  # outlier
+    ]
+    st = cb.state(rows, "moneyline", NOW)
+    assert st["mean_clv_pct"] > 0  # mean (even winsorized) is dragged positive
+    assert st["median_clv_pct"] < 0
+    assert st["state"] == "CAPPED"  # gate follows the median, not the mean
 
 
 def test_allow_placement_live_always_allowed():

@@ -47,10 +47,16 @@ export type TodayBet = {
 };
 
 // Per-market_type rolling CLV + circuit-breaker state (paper_exec_summary block).
+// Breaker gates on median_clv_pct (true-close preferred; "proxy_only" basis is an
+// honest fallback), NOT the mean -- see circuit_breaker.py's 2026-07-15
+// pre-registered decision. mean_clv_pct is winsorized at +/-50 and context-only.
 export type MarketExecState = {
   mean_clv_pct: number | null;
+  median_clv_pct: number | null;
+  mean_winsorized: boolean;
   n: number;
   n_proxy: number;
+  basis: "true_close" | "proxy_only" | null;
   state: "LIVE" | "CAPPED" | "UNKNOWN";
   cap_per_day: number | null;
   placed_today: number | null;
