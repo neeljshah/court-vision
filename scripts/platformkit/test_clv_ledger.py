@@ -143,6 +143,27 @@ def test_offmarket_taken_price_is_clv_suspect():
                                "closing_decimal_home": 1.80, "closing_decimal_away": 2.20})
     # Missing the side's close -> cannot judge -> NOT flagged (kept).
     assert not is_clv_suspect({"side": "home", "taken_decimal": 12.0})
+    # A row already stamped clv_status="suspect_close" is ALWAYS suspect, so every
+    # read-time aggregate routing through is_clv_suspect excludes backfilled rows too.
+    assert is_clv_suspect({"clv_status": "suspect_close"})
+
+
+def test_is_suspect_close_registered_rule():
+    from scripts.platformkit.clv_ledger import is_suspect_close
+    # Degenerate join: taken 56.0 vs fair-close decimal 1.86 (prob 0.539) -> ratio
+    # 0.033 < 1/3 and |clv_pct| 2918 > 50 -> suspect (the +15928% class of bug).
+    assert is_suspect_close(56.0, 2918.0, 0.539)
+    # Collapsed close: taken 6.25 vs fair-close decimal 1.01 (prob 0.99) -> suspect.
+    assert is_suspect_close(6.25, 518.75, 0.99)
+    # Negative degenerate: fair-close 7.65 vs taken 2.08 -> ratio 3.68 > 3 -> suspect.
+    assert is_suspect_close(2.08, -72.8, 1.0 / 7.65)
+    # Legit longshot: taken 5.0, fair-close decimal 1.7 (ratio 0.34, just inside 1/3)
+    # with clv_pct 195 -> NOT suspect (the decimal-ratio gate protects real longshots).
+    assert not is_suspect_close(5.0, 195.0, 1.0 / 1.7)
+    # |clv_pct| below threshold -> never suspect regardless of ratio.
+    assert not is_suspect_close(56.0, 20.0, 0.539)
+    # Missing fair_close_prob -> cannot judge the decimal -> NOT flagged (kept).
+    assert not is_suspect_close(56.0, 2918.0, None)
 
 
 def test_summary_excludes_suspect_and_reports_robust_median(tmp_path):

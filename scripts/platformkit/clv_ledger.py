@@ -294,6 +294,44 @@ _MIN_GAME_ID_LEN = 3  # e.g. "gg" (len=2) is malformed; real IDs are e.g. "40185
 _MAX_TAKEN_CLOSE_RATIO = float(
     os.environ.get("CLV_MAX_TAKEN_CLOSE_RATIO", "2.5") or 2.5)
 
+# --- suspect_close write-time guard (pre-registered 2026-07-15) --------------
+# A settled row whose |clv_pct| exceeds SUSPECT_CLV_PCT *AND* whose implied fair-
+# close decimal (1/fair_close_prob) is implausible vs the taken decimal (ratio
+# outside [1/RATIO, RATIO]) is stamped clv_status="suspect_close" at grade time.
+# BOTH conditions are required: |clv_pct|>50 alone would wrongly flag legit
+# longshots (audit moneyline_clv_mean_audit.md: legit p95 = +119.9). The decimal-
+# ratio gate is what separates a real longshot (fair 6.0 taken 10.0, ratio 0.6 ->
+# kept) from a degenerate join (fair 1.86 taken 56.0, ratio 0.03 -> suspect) or a
+# collapsed close (fair 1.01 taken 6.25, ratio 0.16 -> suspect). See
+# docs/research/execution-quality/suspect_close_audit.md for the full rule.
+SUSPECT_CLV_PCT = float(os.environ.get("CLV_SUSPECT_PCT", "50") or 50)
+SUSPECT_DECIMAL_RATIO = float(os.environ.get("CLV_SUSPECT_RATIO", "3") or 3)
+
+
+def is_suspect_close(
+    taken_decimal: Any, clv_pct: Any, fair_close_prob: Any,
+) -> bool:
+    """True iff a graded row's CLV is a degenerate-close artifact per the
+    pre-registered rule: |clv_pct| > SUSPECT_CLV_PCT AND the fair-close decimal is
+    implausible vs the taken decimal (ratio > RATIO or < 1/RATIO).
+
+    Requires BOTH signals; when either input is missing/unusable we cannot confirm
+    implausibility, so the row is NOT flagged (kept). Pure; never raises.
+    """
+    try:
+        clv = abs(float(clv_pct))
+        taken = float(taken_decimal)
+        fair_p = float(fair_close_prob)
+    except (TypeError, ValueError):
+        return False
+    if clv <= SUSPECT_CLV_PCT:
+        return False
+    if not (taken > 0.0 and 0.0 < fair_p <= 1.0):
+        return False
+    fair_dec = 1.0 / fair_p
+    ratio = fair_dec / taken
+    return ratio > SUSPECT_DECIMAL_RATIO or ratio < (1.0 / SUSPECT_DECIMAL_RATIO)
+
 
 def is_clv_suspect(row: Dict[str, Any]) -> bool:
     """True iff a settled row's taken price is implausibly longer than its side's
@@ -301,7 +339,13 @@ def is_clv_suspect(row: Dict[str, Any]) -> bool:
 
     Judged ONLY when the bet side's closing decimal is present and valid; otherwise
     we cannot tell, so the row is NOT flagged (kept). Pure; never raises.
+
+    A row already stamped clv_status="suspect_close" (write-time guard or backfill)
+    is ALWAYS suspect, so every read-time aggregate that routes through this
+    predicate excludes it without a separate clause.
     """
+    if str(row.get("clv_status")) == "suspect_close":
+        return True
     try:
         taken = float(row.get("taken_decimal"))
         side = str(row.get("side", "")).strip().lower()
@@ -441,4 +485,5 @@ def clv_summary(ledger: Sequence[Dict[str, Any]]) -> Dict[str, Any]:
 __all__ = [
     "record_bet", "bet_id", "compute_clv", "settle_closing_line",
     "append_settlement", "load_ledger", "clv_summary", "is_clv_suspect",
+    "is_suspect_close",
 ]

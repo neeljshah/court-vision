@@ -130,6 +130,15 @@ def grade_one(
     if ch is not None and ca is not None:
         settled["clv_is_proxy"] = bool(is_proxy)
         settled["clv_status"] = "proxy" if is_proxy else "true_close"
+        # suspect_close guard (pre-registered 2026-07-15): a degenerate close join
+        # or off-market taken price fabricates a huge fake CLV (e.g. +2918% from a
+        # 56.0 taken vs a 1.82 close). Stamp such rows suspect_close so they keep the
+        # raw clv_pct but drop out of every true-close aggregate (is_clv_suspect
+        # short-circuits on this status). clv_is_proxy is left as-is (a separate axis).
+        if _clv.is_suspect_close(
+            taken_decimal, settled.get("clv_pct"), settled.get("fair_close_prob")
+        ):
+            settled["clv_status"] = "suspect_close"
         # Same-venue CLV restriction needs to know WHICH book supplied the close
         # (line_store mixes books with zero venue awareness -- see
         # docs/research/PROPOSED_same_venue_close_restriction.md). Only line_store
