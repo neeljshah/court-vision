@@ -271,6 +271,19 @@ robustness test matrix see **[PLATFORM_TOOLING.md](PLATFORM_TOOLING.md)**. For t
 end-to-end CV-origin map see **[../ARCHITECTURE.md](../ARCHITECTURE.md)**; for the six
 core decision systems see **[architecture/system-overview.md](architecture/system-overview.md)**.
 
+### System intelligence map (machine-readable dataflow graph)
+
+For "how does X work / what produces Y / what consumes Z" -- a curated,
+disk-verified graph of writers/daemons/producers/stores/resolvers/webapp
+routes and their `writes`/`reads`/`serves`/`registers` edges, built by
+`scripts/platformkit/analytics_verify/system_map.py` into
+`data/cache/analytics_verify/system_map.json` (gitignored, local-only). Query
+it via the same fail-closed resolver contract as everything else in
+[ANALYTICS_CONTRACT.md](ANALYTICS_CONTRACT.md):
+`resolver_registry.resolve(query, category="system_map", node=<node_id>)`.
+The graph never claims a node exists without a disk check --
+`verified: true|false` on every node, `edge_claimed: false` always.
+
 ---
 
 ## The Build Program -- kernel extraction, live status

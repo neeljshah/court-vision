@@ -26,6 +26,10 @@ to (never re-implements) the systems that already exist:
         (LANE E; fail-closed over data/cache/analytics_verify/*.json --
         no_data if the artifact is absent, refused if it isn't stamped
         edge_claimed:false or is older than the staleness bound)
+    system_map -> scripts.platformkit.analytics_verify.answers.system_map
+        (LANE F; the declared, disk-verified dataflow graph -- "how does the
+        system work" / "what produces X" / "what consumes Y", same fail-closed
+        gate as the other analytics_verify categories)
     edge_language     -> always REFUSED (see .claude/rules/no-edge-claims.md)
 
 Every resolve() call returns one envelope shape:
@@ -172,6 +176,13 @@ RESOLVERS: dict[str, dict] = {
         "computation": "verbatim conflict rows from the cross-claim consistency scan, optionally filtered by family",
         "units": "n/a -- structured conflict records", "rounding": "none -- verbatim from artifact",
     },
+    "system_map": {
+        "resolver": "scripts.platformkit.analytics_verify.answers.system_map",
+        "source_artifact": "data/cache/analytics_verify/system_map.json",
+        "computation": "verbatim node/edge lookup on the declared, disk-verified dataflow graph "
+                        "(scripts/platformkit/analytics_verify/system_map.py); whole-graph summary if no node given",
+        "units": "n/a -- structured graph nodes/edges", "rounding": "none -- verbatim from artifact",
+    },
 }
 
 _CONCEPT_KEYWORDS = ("best", "who has", "vs ", " versus ", "why is", "fit team", "does ", "compare")
@@ -186,6 +197,8 @@ _ANALYTICS_ATTRIBUTION_KEYWORDS = ("attribution", "clv attribution", "link metho
 _ANALYTICS_SURVIVAL_KEYWORDS = ("claim survival", "card decay", "decayed card", "survival rate")
 _ANALYTICS_VERIFICATION_KEYWORDS = ("sentinel", "verification check", "discrepant", "recomputed value")
 _ANALYTICS_CONTRADICTION_KEYWORDS = ("contradiction", "conflicting claim", "inconsistent claim")
+_SYSTEM_MAP_KEYWORDS = ("system map", "how does the system", "what produces", "what consumes",
+                        "dataflow", "data flow")
 # "what affects Y" / "what does X affect" -- effect-graph queries (LANE C5),
 # routed through the SAME mechanism_effect category (verbatim graph edges are
 # just another ledger-backed receipt, not a new resolver family).
@@ -219,6 +232,8 @@ def classify(query: str) -> str | None:
         return "analytics_verification"
     if any(k in low for k in _ANALYTICS_CONTRADICTION_KEYWORDS):
         return "analytics_contradictions"
+    if any(k in low for k in _SYSTEM_MAP_KEYWORDS):
+        return "system_map"
     if any(k in low for k in _MECHANISM_KEYWORDS) or _AFFECTS_RE.match(low) or _WHAT_DOES_X_AFFECT_RE.match(low):
         return "mechanism_effect"
     if any(k in low for k in _CONCEPT_KEYWORDS):
@@ -431,6 +446,8 @@ def resolve(query: str, sport: str = "nba", category: str | None = None, **kwarg
         return _analytics.verification(sport, kwargs.get("stat"))
     if cat == "analytics_contradictions":
         return _analytics.contradictions(sport, kwargs.get("family"))
+    if cat == "system_map":
+        return _analytics.system_map(sport, kwargs.get("node"), query)
     if cat == "ranking":
         return _lb.resolve_query(sport, query, top_n=kwargs.get("top_n"), min_n=kwargs.get("min_n", 0.0),
                                   window=kwargs.get("window"), kind=kwargs.get("kind"),
