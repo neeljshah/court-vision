@@ -21,6 +21,9 @@ from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
+from scripts.platformkit.analytics_verify.id_bridge import (
+    BRIDGE, apply_bridge_join, build as build_bridge, iter_jsonl)
+
 ROOT = Path(__file__).resolve().parents[3]
 GRADED = ROOT / "data/frontend/paper_predictions_graded.jsonl"
 CLV = ROOT / "data/frontend/clv_ledger.jsonl"
@@ -40,20 +43,6 @@ HONEST_NOTE = (
 
 def utcnow() -> str:
     return datetime.now(timezone.utc).isoformat()
-
-
-def iter_jsonl(path: Path):
-    if not path.exists():
-        return
-    with path.open(encoding="utf-8") as fh:
-        for line in fh:
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                yield json.loads(line)
-            except json.JSONDecodeError:
-                continue
 
 
 def _scope(rec: dict) -> str:
@@ -155,12 +144,14 @@ def attribute(bets, card_index, ingame_idx):
             v = _best_ingame_clv(ig)
             if v is not None:
                 clv, proxy = v, False
+        joined_bid = b.get("_ckey_bet_id")  # ckey bridge match (graded<->clv)
         base = {
-            "pred_key": b["pred_key"], "bet_id": b["bet_id"],
+            "pred_key": b["pred_key"], "bet_id": b["bet_id"] or joined_bid,
             "event_id": b["event_id"], "sport": b["sport"],
             "market": b["market"], "clv_pct": clv, "clv_is_proxy": proxy,
             "unit_result": b["unit_result"], "outcome": b["outcome"],
             "settled_at": b["settled_at"], "attributed_at": now,
+            "join_basis": "ckey" if joined_bid else "none",
             "edge_claimed": False,
         }
         tags = _tag_map(b["claim_tags"])
@@ -171,9 +162,11 @@ def attribute(bets, card_index, ingame_idx):
                        "link_method": "claim_tags" if fired else "condition_match",
                        "confidence": 1.0 if fired else 0.5}
         else:
+            # ckey bridge join (bet/event grain) beats the coarse scope fallback.
             yield {**base, "card_id": None,
                    "claim_family": f"scope:{b['scope']}",
-                   "link_method": "condition_match", "confidence": 0.2}
+                   "link_method": "ckey" if joined_bid else "condition_match",
+                   "confidence": 0.7 if joined_bid else 0.2}
 
 
 def existing_keys(path=LEDGER) -> set:
@@ -264,8 +257,10 @@ def atomic_write_json(obj, path=ROLLUP):
 
 
 def run(graded=GRADED, clv=CLV, ingame=INGAME, cards=CARDS,
-        ledger=LEDGER, rollup=ROLLUP):
+        ledger=LEDGER, rollup=ROLLUP, bridge=BRIDGE):
+    build_bridge(graded, clv, bridge)  # refresh the ckey join spine first
     bets = list(load_settled(graded, clv))
+    bridge_join_rate = apply_bridge_join(bets, bridge)  # graded<->clv via ckey
     wanted = set()
     for b in bets:
         if isinstance(b["claim_tags"], dict):
@@ -275,6 +270,7 @@ def run(graded=GRADED, clv=CLV, ingame=INGAME, cards=CARDS,
     rows = list(attribute(bets, card_index, ingame_idx))
     appended = append_ledger(rows, ledger)
     jr = compute_join_rates(graded, clv, ingame)
+    jr["graded_clv_ckey_bridge"] = bridge_join_rate  # unified bet/ckey join spine
     snap = build_rollup(ledger, jr)
     atomic_write_json(snap, rollup)
     return {"settled_bets": len(bets), "rows_generated": len(rows),
