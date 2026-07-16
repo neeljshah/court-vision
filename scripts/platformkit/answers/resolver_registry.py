@@ -21,6 +21,11 @@ to (never re-implements) the systems that already exist:
         ("does mechanism X hold up locally" -- verbatim ledger row(s):
         verdict/effect/n/p/corpus/note, LOCAL-only framing baked into the
         answer, never improvised for an unregistered mechanism)
+    analytics_attribution / analytics_claim_survival / analytics_verification /
+    analytics_contradictions -> scripts.platformkit.analytics_verify.answers
+        (LANE E; fail-closed over data/cache/analytics_verify/*.json --
+        no_data if the artifact is absent, refused if it isn't stamped
+        edge_claimed:false or is older than the staleness bound)
     edge_language     -> always REFUSED (see .claude/rules/no-edge-claims.md)
 
 Every resolve() call returns one envelope shape:
@@ -38,6 +43,7 @@ from datetime import datetime, timezone
 
 import pandas as pd
 
+from scripts.platformkit.analytics_verify import answers as _analytics
 from scripts.platformkit.answers import contracts as _contracts
 from scripts.platformkit.answers import effect_graph as _eg
 from scripts.platformkit.answers import leaderboard_resolver as _lb
@@ -141,6 +147,31 @@ RESOLVERS: dict[str, dict] = {
                         "fuzzy category word that matches 0 or 2+ attributes is REFUSED with candidates, never guessed",
         "units": "attribute-native (see attribute_registry.py per sport)", "rounding": "as stored, no rounding",
     },
+    "analytics_attribution": {
+        "resolver": "scripts.platformkit.analytics_verify.answers.attribution",
+        "source_artifact": "data/cache/analytics_verify/attribution_rollup.json",
+        "computation": "verbatim by_family[family] / by_card[card_id] CLV-attribution receipt -- never recomputed",
+        "units": "receipt-native (mean/median CLV pct, beat-close pct, counts, as stored)",
+        "rounding": "none -- verbatim from artifact",
+    },
+    "analytics_claim_survival": {
+        "resolver": "scripts.platformkit.analytics_verify.answers.claim_survival",
+        "source_artifact": "data/cache/analytics_verify/claim_survival.json",
+        "computation": "verbatim card-decay scoreboard -- verdict counts + 7d/30d/60d survival fractions",
+        "units": "counts + fractions, as stored", "rounding": "none -- verbatim from artifact",
+    },
+    "analytics_verification": {
+        "resolver": "scripts.platformkit.analytics_verify.answers.verification",
+        "source_artifact": "data/cache/analytics_verify/sentinel_report.json",
+        "computation": "verbatim sentinel re-derivation check(s) -- served_value vs recomputed_value + verdict",
+        "units": "stat-native served/recomputed values + verdict enum", "rounding": "none -- verbatim from artifact",
+    },
+    "analytics_contradictions": {
+        "resolver": "scripts.platformkit.analytics_verify.answers.contradictions",
+        "source_artifact": "data/cache/analytics_verify/contradiction_report.json",
+        "computation": "verbatim conflict rows from the cross-claim consistency scan, optionally filtered by family",
+        "units": "n/a -- structured conflict records", "rounding": "none -- verbatim from artifact",
+    },
 }
 
 _CONCEPT_KEYWORDS = ("best", "who has", "vs ", " versus ", "why is", "fit team", "does ", "compare")
@@ -151,6 +182,10 @@ _HISTORICAL_KEYWORDS = ("final score", "what happened", "box score", "result of"
                         "who won on", "final of")
 _MECHANISM_KEYWORDS = ("evidence", "mechanism", "hypothesis", "folklore",
                        "hold up", "does the data support", "is it true that")
+_ANALYTICS_ATTRIBUTION_KEYWORDS = ("attribution", "clv attribution", "link method", "join rate")
+_ANALYTICS_SURVIVAL_KEYWORDS = ("claim survival", "card decay", "decayed card", "survival rate")
+_ANALYTICS_VERIFICATION_KEYWORDS = ("sentinel", "verification check", "discrepant", "recomputed value")
+_ANALYTICS_CONTRADICTION_KEYWORDS = ("contradiction", "conflicting claim", "inconsistent claim")
 # "what affects Y" / "what does X affect" -- effect-graph queries (LANE C5),
 # routed through the SAME mechanism_effect category (verbatim graph edges are
 # just another ledger-backed receipt, not a new resolver family).
@@ -176,6 +211,14 @@ def classify(query: str) -> str | None:
         return "historical_result"
     if _lb.is_ranking_query(low):
         return "ranking"
+    if any(k in low for k in _ANALYTICS_ATTRIBUTION_KEYWORDS):
+        return "analytics_attribution"
+    if any(k in low for k in _ANALYTICS_SURVIVAL_KEYWORDS):
+        return "analytics_claim_survival"
+    if any(k in low for k in _ANALYTICS_VERIFICATION_KEYWORDS):
+        return "analytics_verification"
+    if any(k in low for k in _ANALYTICS_CONTRADICTION_KEYWORDS):
+        return "analytics_contradictions"
     if any(k in low for k in _MECHANISM_KEYWORDS) or _AFFECTS_RE.match(low) or _WHAT_DOES_X_AFFECT_RE.match(low):
         return "mechanism_effect"
     if any(k in low for k in _CONCEPT_KEYWORDS):
@@ -380,6 +423,14 @@ def resolve(query: str, sport: str = "nba", category: str | None = None, **kwarg
         return historical_result(sport, kwargs.get("team", ""), kwargs.get("opponent"), kwargs.get("date"))
     if cat == "mechanism_effect":
         return mechanism_effect(sport, kwargs.get("mechanism") or query)
+    if cat == "analytics_attribution":
+        return _analytics.attribution(sport, kwargs.get("family"), kwargs.get("card_id"))
+    if cat == "analytics_claim_survival":
+        return _analytics.claim_survival(sport)
+    if cat == "analytics_verification":
+        return _analytics.verification(sport, kwargs.get("stat"))
+    if cat == "analytics_contradictions":
+        return _analytics.contradictions(sport, kwargs.get("family"))
     if cat == "ranking":
         return _lb.resolve_query(sport, query, top_n=kwargs.get("top_n"), min_n=kwargs.get("min_n", 0.0),
                                   window=kwargs.get("window"), kind=kwargs.get("kind"),
