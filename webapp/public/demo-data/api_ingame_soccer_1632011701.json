@@ -1,0 +1,1 @@
+{"status": "no_live_state", "sport": "soccer", "game_id": "1632011701", "p0": 0.4051, "served": {"sport": "soccer", "p_win": 0.4051, "model": "p0", "verdict": "REPLICATED", "provenance": ["no live state -> degrade to pregame prior p0"], "vs_close": "UNPROVEN -- CALIBRATION only (held-out Brier), not a market edge"}}

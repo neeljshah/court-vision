@@ -1,0 +1,1 @@
+{"status": "no_live_state", "sport": "mlb", "game_id": "KXMLBGAME-26JUL182008SFSEA", "p0": 0.5227, "served": {"sport": "mlb", "p_win": 0.5227, "model": "p0", "verdict": "REPLICATED", "provenance": ["no live state -> degrade to pregame prior p0"], "vs_close": "UNPROVEN -- CALIBRATION only (held-out Brier), not a market edge"}}
