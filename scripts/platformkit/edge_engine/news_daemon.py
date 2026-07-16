@@ -1,80 +1,68 @@
-"""scripts.platformkit.edge_engine.injury_daemon -- supervised M39 entry.
+"""scripts.platformkit.edge_engine.news_daemon -- supervised M45 entry.
 
-THE GAP: injury_facts.store_injuries (ESPN availability feed -> structured fact
-rows) had NO scheduled caller. m31's MLB context snapshot writes MLB injuries to
-a SEPARATE parquet context store, not this JSONL fact chain -- so
-injury_facts_mlb.jsonl was itself frozen at whatever the one-shot CLI backfill
-left it. This daemon covers every ESPN-injuries-wired sport (nba, wnba, mlb) on
-one 6h cadence: it fetches the ESPN injuries feed for each, SNAPSHOT-DATES every
-row (as-of usable history: the same injury re-captured on a new day is a fresh
-vintage row; a same-day re-run adds 0), and beats the M39 heartbeat.
+THE GAP: news_facts.store_news (ESPN news feed -> headline fact rows) had NO
+scheduled caller anywhere -- news_facts_nba.jsonl / news_facts_mlb.jsonl were
+frozen at whatever the one-shot CLI backfill left them. This daemon is the news
+sibling of m39's injury_daemon (same loop/heartbeat skeleton): every ~6h it
+fetches the ESPN news feed for each wired sport and beats the M45 heartbeat.
+Dedupe is (headline, published) -- the store is naturally append-only vintage
+history without a snapshot_date stamp (unlike injury status, a headline+
+timestamp pair never needs re-dating).
 
-KNOWLEDGE/SUBSTRATE ONLY -- adds data depth, not edge. Snapshot-append JSONL with
-snapshot_date vintages; downstream joins must be as-of on snapshot_date. Independent
-branch (no depends_on): a dead tick is one red status entry, never blocks the stack.
-NO $ field, NO flag flip, NO data/registry/ write.
+KNOWLEDGE/SUBSTRATE ONLY -- adds data depth, not edge. NO $ field, NO flag flip,
+NO data/registry/ write.
 
-Heartbeat: m39_injury_facts_nba -> data/cache/daemon_heartbeats/m39_injury_facts_nba.txt
-Cadence: DEFAULT_INTERVAL_SEC = 21600 s (4 snapshots/day; injury reports move on
-hour scales, not minutes -- mirrors m31_mlb_context).
+Heartbeat: m45_news_facts -> data/cache/daemon_heartbeats/m45_news_facts.txt
+Cadence: DEFAULT_INTERVAL_SEC = 21600 s (4 snapshots/day; mirrors m39/m31).
 Repo-internal only; ASCII only; <=300 LOC.
 
-Per-file test: scripts/platformkit/edge_engine/test_injury_daemon.py
+Per-file test: scripts/platformkit/edge_engine/test_news_daemon.py
 """
 from __future__ import annotations
 
-import datetime as _dt
 import logging
 from pathlib import Path
 from typing import Any, Callable, Dict, Optional, Tuple
 
 try:  # package import
-    from scripts.platformkit.edge_engine.injury_facts import store_injuries  # type: ignore
+    from scripts.platformkit.edge_engine.news_facts import store_news  # type: ignore
 except ImportError:  # direct-script / per-file-test fallback
     import sys
     sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
-    from scripts.platformkit.edge_engine.injury_facts import store_injuries  # type: ignore
+    from scripts.platformkit.edge_engine.news_facts import store_news  # type: ignore
 
-logger = logging.getLogger("injury_daemon")
+logger = logging.getLogger("news_daemon")
 
-HEARTBEAT_COMPONENT = "m39_injury_facts_nba"
+HEARTBEAT_COMPONENT = "m45_news_facts"
 DEFAULT_INTERVAL_SEC = 21600.0
 
-# Every sport the ESPN injuries feed is wired for (injury_facts.WIRED_SPORTS). m31's
-# MLB context snapshot writes a separate parquet store, not injury_facts_mlb.jsonl --
-# so mlb needs this daemon too, same as nba/wnba.
-SPORTS: Tuple[str, ...] = ("nba", "wnba", "mlb")
+# Sports the ESPN news feed is wired for (news_facts._SPORT_PATHS).
+SPORTS: Tuple[str, ...] = ("nba", "mlb")
 
 
 def _beat(now_epoch: Optional[float] = None) -> None:
-    """Write the M39 liveness heartbeat. Never raises."""
+    """Write the M45 liveness heartbeat. Never raises."""
     try:
         from ops.liveness import heartbeat
         heartbeat(HEARTBEAT_COMPONENT, _now=now_epoch)
     except Exception as exc:  # noqa: BLE001
-        logger.debug("injury_daemon heartbeat skipped: %s", exc)
-
-
-def _today_iso() -> str:
-    return _dt.date.today().isoformat()
+        logger.debug("news_daemon heartbeat skipped: %s", exc)
 
 
 def tick(*, now: float,
          sports: Tuple[str, ...] = SPORTS,
-         snapshot_date: Optional[str] = None,
          http_get: Optional[Callable[[str], Dict[str, Any]]] = None,
          store_fn: Optional[Callable[..., Tuple[int, int]]] = None) -> Dict[str, Any]:
-    """One tick: snapshot-date + store injuries for each wired basketball sport,
-    then heartbeat. Never raises; one sport raising never sinks the others."""
-    snap = snapshot_date or _today_iso()
-    store = store_fn if store_fn is not None else store_injuries
-    doc: Dict[str, Any] = {"snapshot_date": snap, "sports": {}}
+    """One tick: fetch + store news for each wired sport, then heartbeat. Never
+    raises; one sport raising never sinks the others."""
+    store = store_fn if store_fn is not None else store_news
+    doc: Dict[str, Any] = {"sports": {}}
     for sport in sports:
         try:
-            fetched, added = store(sport, http_get=http_get, snapshot_date=snap)
+            fetched, added = store(sport, http_get=http_get)
             doc["sports"][sport] = {"fetched": int(fetched), "added": int(added)}
         except Exception as exc:  # noqa: BLE001 -- one bad feed must not sink the tick
-            logger.warning("injury_daemon %s tick raised: %s", sport, exc)
+            logger.warning("news_daemon %s tick raised: %s", sport, exc)
             doc["sports"][sport] = {"error": type(exc).__name__}
     _beat(now)
     return doc
@@ -88,7 +76,7 @@ def run(*, interval_sec: float = DEFAULT_INTERVAL_SEC,
         sleep: Optional[Callable[[float], None]] = None,
         max_ticks: Optional[int] = None,
         should_stop: Optional[Callable[[], bool]] = None) -> int:
-    """Run the injury-snapshot loop forever (or max_ticks). Never raises out;
+    """Run the news-fetch loop forever (or max_ticks). Never raises out;
     everything injectable for offline tests. Returns ticks executed."""
     import time as _time
     _clock = clock if clock is not None else _time.time
@@ -113,8 +101,7 @@ def run(*, interval_sec: float = DEFAULT_INTERVAL_SEC,
         summary = " ".join(
             "%s=%s/%s" % (sp, d.get("added", "?"), d.get("fetched", d.get("error", "?")))
             for sp, d in doc.get("sports", {}).items())
-        print("%s | tick=%d date=%s %s" % (
-            HEARTBEAT_COMPONENT, ticks, doc.get("snapshot_date"), summary), flush=True)
+        print("%s | tick=%d %s" % (HEARTBEAT_COMPONENT, ticks, summary), flush=True)
         ticks += 1
         if max_ticks is not None and ticks >= max_ticks:
             break
@@ -128,17 +115,17 @@ def run(*, interval_sec: float = DEFAULT_INTERVAL_SEC,
 def _main() -> int:  # pragma: no cover
     import argparse
     p = argparse.ArgumentParser(
-        description="Supervised NBA/WNBA injury snapshotter (M39): ESPN injuries "
-                    "feed -> snapshot-dated fact rows every 6h. Substrate, no $.")
+        description="Supervised NBA/MLB news snapshotter (M45): ESPN news feed "
+                    "-> headline fact rows every 6h. Substrate, no $.")
     p.add_argument("--interval", type=float, default=DEFAULT_INTERVAL_SEC)
     a = p.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
-    print("injury_daemon | started interval=%ss component=%s"
+    print("news_daemon | started interval=%ss component=%s"
           % (a.interval, HEARTBEAT_COMPONENT), flush=True)
     try:
         run(interval_sec=a.interval)
     except KeyboardInterrupt:
-        print("injury_daemon | stopped by KeyboardInterrupt", flush=True)
+        print("news_daemon | stopped by KeyboardInterrupt", flush=True)
     return 0
 
 
