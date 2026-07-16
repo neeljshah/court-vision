@@ -215,6 +215,14 @@ export type ClvScoreboard = {
   by_sport: Record<string, ClvBySport> | null;
   clv_is_proxy: boolean;
   note?: string;
+  // Raw-ledger tallies from frontend.paper_trail.clv_summary (optional -- older
+  // server builds may omit). n_no_close = settled rows with no gradeable close
+  // (excluded from n_bets); n_bets + n_no_close == true settled-bet count.
+  // n_open here counts RAW open-status ledger rows (NOT collapsed) -- prefer
+  // /api/paper/open's `count` for the true current-open figure.
+  n_no_close?: number;
+  n_open?: number;
+  n_total_rows?: number;
 };
 
 export type GameEdge = {
@@ -243,26 +251,13 @@ export type BestBetsEnvelope = {
   reason?: string;
 };
 
+// /api/paper/open reuses frontend.paper_trail.read_trail (collapsed, UNCAPPED --
+// no `limit` query param) filtered to status=="open", so `count`/`open` here are
+// the TRUE current-open figures, unlike the capped /api/paper/trail response.
 export type PaperOpen = {
   status: string;
   count: number;
-  open: Array<{
-    game_id: string;
-    matchup?: string;
-    sport: string;
-    side: string;
-    taken_book?: string;
-    taken_decimal?: number;
-    model_prob?: number;
-    model_ev?: number;
-    tier?: string | null;
-    graded?: boolean;
-    outcome?: string | null;
-    clv_pct?: number | null;
-    beat_close?: boolean | null;
-    executed?: boolean;
-    ts?: string;
-  }>;
+  open: PaperTrailRow[];
   reason?: string;
 };
 

@@ -28,6 +28,7 @@ import {
   type PaperTrail,
   type ClvScoreboard,
   type PnlSeries,
+  type PaperOpen,
 } from "@/lib/p5api";
 import { getPaperToday, type PaperToday } from "@/lib/paperToday";
 import { useLiveData } from "@/lib/useLiveData";
@@ -51,6 +52,11 @@ interface PaperPageData {
   trail: PaperTrail | null;
   clv: ClvScoreboard | null;
   series: PnlSeries | null;
+  // Uncapped open positions (from /api/paper/open) -- the primary trail fetch
+  // below is capped at limit=2000 and can drop every open row once settled
+  // rows alone fill the cap; this fetch has no limit param, so it is always
+  // the true, complete open-book source.
+  open: PaperOpen | null;
 }
 
 // The capped quarter-Kelly overlay fields the bankroll daemon adds to the series
@@ -163,10 +169,11 @@ export default function PaperPage() {
   // Primary fetch: real paper trail + CLV scoreboard.
   const fetcher = useCallback(
     async (signal: AbortSignal): Promise<PaperPageData | Unavailable> => {
-      const [t, c, s] = await Promise.all([
+      const [t, c, s, o] = await Promise.all([
         api.getPaperTrail({ limit: 2000 }, signal),
         api.getPaperClv(signal),
         api.getPaperPnlSeries(signal),
+        api.paperOpenSport(undefined, signal),
       ]);
       if (isUnavailable(t)) {
         return {
@@ -178,6 +185,7 @@ export default function PaperPage() {
         trail: t as PaperTrail,
         clv: isUnavailable(c) ? null : (c as ClvScoreboard),
         series: isUnavailable(s) ? null : (s as PnlSeries),
+        open: isUnavailable(o) ? null : (o as PaperOpen),
       };
     },
     [],
@@ -238,6 +246,19 @@ export default function PaperPage() {
   const hasSettled = settledRows.length > 0;
   // CLV summary: use /api/paper/clv n_bets as authoritative settled count.
   const settledClvCount = clv?.n_bets ?? 0;
+
+  // TRUE (uncapped) totals -- /api/paper/trail hard-caps at limit=2000, which
+  // silently drops open rows once settled rows alone fill the cap (the
+  // reported bug: "2000 settled / 2000 total" with OPEN showing 0 while
+  // hundreds of open bets exist). Fix without touching the human-gated
+  // frontend/ route: source the open count from the UNCAPPED /api/paper/open
+  // endpoint, and the settled count from /api/paper/clv's raw-ledger tallies
+  // (n_bets = gradeable settled, n_no_close = settled-but-no-close -- their
+  // sum is the true settled-bet count regardless of the trail page cap).
+  const openRowsFull = data?.open?.open ?? [];
+  const nOpenTrue = data?.open?.count ?? openRowsFull.length;
+  const nSettledTrue = (clv?.n_bets ?? 0) + (clv?.n_no_close ?? 0);
+  const nTotalTrue = nSettledTrue + nOpenTrue;
 
   const showSkeleton = isLoading && data === null;
 
@@ -428,7 +449,7 @@ export default function PaperPage() {
           <span className="font-mono text-[10px] text-muted-foreground">
             {showSkeleton
               ? "loading"
-              : `${settledRows.length} settled / ${rows.length} total`}
+              : `${nSettledTrue} settled / ${nOpenTrue} open / ${nTotalTrue} total`}
           </span>
         }
       >
@@ -437,6 +458,8 @@ export default function PaperPage() {
         ) : (
           <PaperTrailSettled
             rows={rows}
+            openRows={openRowsFull}
+            tallyOverride={{ nSettled: nSettledTrue, nOpen: nOpenTrue }}
             loading={isLoading && data === null}
             error={error}
           />

@@ -173,16 +173,37 @@ type Props = {
   error?: string | null;
   /** If true, only show settled (graded) rows; open rows go to a secondary section. */
   settledOnly?: boolean;
+  /** Uncapped open rows (from /api/paper/open) -- overrides the open-position
+   * source so open bets aren't silently dropped when `rows` is server-capped. */
+  openRows?: PaperTrailRow[];
+  /** True (uncapped) settled/open counts -- overrides the derived-from-`rows`
+   * tally when `rows` is a capped/truncated page (e.g. /api/paper/trail limit). */
+  tallyOverride?: Partial<import("./settledTallyHelpers").SettledTally>;
 };
 
-export function PaperTrailSettled({ rows, loading, error, settledOnly }: Props) {
-  const tally = useMemo(() => deriveSettledTally(rows), [rows]);
+export function PaperTrailSettled({
+  rows,
+  loading,
+  error,
+  settledOnly,
+  openRows,
+  tallyOverride,
+}: Props) {
+  const tally = useMemo(
+    () => ({ ...deriveSettledTally(rows), ...tallyOverride }),
+    [rows, tallyOverride],
+  );
 
   const settledRows = useMemo(
     () => rows.filter((r) => r.graded && r.status !== "open"),
     [rows],
   );
   const displayRows = settledOnly ? settledRows : rows;
+  // Honest cap note: the true settled total (tallyOverride) can exceed the
+  // settled rows actually shipped in this capped page.
+  const trueSettledTotal = tallyOverride?.nSettled;
+  const isTruncated =
+    trueSettledTotal != null && trueSettledTotal > settledRows.length;
 
   if (loading && rows.length === 0) {
     return (
@@ -232,6 +253,17 @@ export function PaperTrailSettled({ rows, loading, error, settledOnly }: Props) 
           close. No edge is claimed.
         </div>
       ) : (
+        <>
+        {isTruncated && (
+          <p
+            data-testid="settled-cap-note"
+            className="text-[11px] text-amber-400"
+          >
+            Showing {settledRows.length} most recent of {trueSettledTotal} settled
+            records (server page cap). Full record: {trueSettledTotal} settled,{" "}
+            {tallyOverride?.nOpen ?? tally.nOpen} open.
+          </p>
+        )}
         <ScrollArea className="h-[480px] w-full rounded-lg border border-slate-800">
           <table
             className="min-w-full text-left"
@@ -266,11 +298,14 @@ export function PaperTrailSettled({ rows, loading, error, settledOnly }: Props) 
             </tbody>
           </table>
         </ScrollArea>
+        </>
       )}
 
       {/* Open positions -- only shown when not settledOnly mode.
-          Delegates to <OpenPositions> to avoid duplicating its render logic. */}
-      {!settledOnly && <OpenPositions rows={rows} loading={loading} />}
+          Delegates to <OpenPositions> to avoid duplicating its render logic.
+          openRows (uncapped, from /api/paper/open) takes priority over the
+          possibly server-capped `rows` so placed-but-unsettled bets always show. */}
+      {!settledOnly && <OpenPositions rows={openRows ?? rows} loading={loading} />}
 
       <p className="text-[11px] text-slate-600">
         Paper mode -- stakes are units (no $). CLV (better-number-than-close) is
