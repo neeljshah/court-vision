@@ -268,7 +268,13 @@ def _check_prereg_integrity(root: str) -> Dict[str, Any]:
     return {"name": name, "pass": True, "na": False, "detail": "ok"}
 
 _F_FRESHNESS_KEYS = ("ingame_segment_trust", "ingame_segment_trust_multi", "reject_ledger",  # STALE fails, R-d
-                     "l4_gate_prereg", "execution_quality", "clv_scoreboard", "ingame_clv_verdict")
+                     "execution_quality", "clv_scoreboard", "ingame_clv_verdict")
+# l4_gate_prereg deliberately excluded: it is a write-once pre-registration
+# stamp (2026-07-04) -- staying untouched for 172800s+ is the CORRECT state,
+# not staleness. mtime-freshness would have permanently RED'd this gate 48h
+# after pre-registration. Its real integrity check is content-based
+# (_check_prereg_integrity's sha256 pin below), which runs regardless of age.
+# Found + fixed in the 2026-07-16 freshness_sla audit.
 
 def cv_honesty_status(report: Dict[str, Any], *, root: Optional[str] = None) -> Dict[str, Any]:
     """NOT_REFUTED only if all 5 checks pass with zero NOT_APPLICABLE."""

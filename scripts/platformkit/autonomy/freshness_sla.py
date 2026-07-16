@@ -207,6 +207,14 @@ TABLE: Dict[str, SlaEntry] = {
         _OPS / "ingame_segment_trust_multi.json", 93600.0),
     "ingame_clv_verdict": SlaEntry(
         _OPS / "ingame_clv_verdict.json", 93600.0),
+    # NOTE (2026-07-16 audit): l4_gate_prereg.json is a write-once prereg
+    # stamp (2026-07-04) -- by design it should NEVER be touched again (that
+    # IS its integrity guarantee), so this row will read RED past 48h
+    # forever. That is expected/honest, not a bug in THIS table -- the bug
+    # was greenlight_trust_honesty.py gating on this row's mtime, fixed
+    # there (l4_gate_prereg removed from _F_FRESHNESS_KEYS; its real check
+    # is the sha256 content pin in _check_prereg_integrity). This row stays
+    # in TABLE for dashboard visibility only.
     "l4_gate_prereg": SlaEntry(
         _OPS / "l4_gate_prereg.json", 172800.0),
     "reject_ledger": SlaEntry(
