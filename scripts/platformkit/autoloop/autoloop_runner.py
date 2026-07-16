@@ -30,6 +30,7 @@ COMPONENT = "m38_autoloop"
 DEFAULT_INTERVAL_SEC = 86400.0
 
 REPORT_PATH = _REPO / "data" / "frontend" / "ops" / "autoloop_report.json"
+CYCLE_HISTORY_PATH = _REPO / "data" / "frontend" / "ops" / "autoloop_cycle_history.jsonl"
 HUMAN_QUEUE_PATH = _REPO / "data" / "frontend" / "ops" / "autoloop_human_queue.jsonl"
 HEARTBEAT_PATH = _REPO / "data" / "cache" / "daemon_heartbeats" / "m38_autoloop.txt"
 STOP_FLAG_PATH = _REPO / ".bot_state" / "live_status.json"
@@ -141,6 +142,37 @@ def _refresh_scoreboards() -> None:
         pass
 
 
+def _append_cycle_history(report: Dict[str, Any], execution: Dict[str, Any],
+                          history_path: Optional[Path] = None) -> None:
+    """Append one compact history line for THIS cycle -- report.json is
+    overwritten every cycle (write_json_atomic), so per-cycle evidence
+    otherwise vanishes. All fields pulled from objects already in scope
+    (never recomputed); missing -> null. Append failure must never fail
+    the cycle."""
+    per_template = report.get("per_template", [])
+    dryrun = ((execution.get("execution_stages") or {}).get("dryrun") or {})
+    reconcile = ((execution.get("execution_stages") or {}).get("reconcile") or {})
+    row = {
+        "finished_at": report.get("ts"),
+        "wall_clock_s": report.get("wall_clock_sec"),
+        "fits_run": sum(t.get("fits_run", 0) for t in per_template),
+        "rejected": sum(t.get("rejected", 0) for t in per_template),
+        "ship_review_queued": sum(t.get("ship_review_queued", 0) for t in per_template),
+        "skipped_no_new_data": sum(1 for t in per_template if t.get("status") == "skipped_no_new_data"),
+        "dryrun": {
+            "n_intents": dryrun.get("n_intents"),
+            "n_fills": reconcile.get("n_fills"),
+            "n_unparseable": dryrun.get("n_unparseable"),
+        },
+        "reconcile_verdict": (reconcile.get("vs_later_tape") or {}).get("verdict"),
+        "cum_k_delta": None,  # ponytail: not cheaply available in this scope; add if a cheap source shows up
+    }
+    try:
+        append_jsonl_atomic(history_path or CYCLE_HISTORY_PATH, row)
+    except Exception as exc:  # noqa: BLE001 -- append is best-effort, never fails the cycle
+        print("%s | cycle_history append FAILED %s" % (COMPONENT, str(exc)[:160]), flush=True)
+
+
 # The cycle
 def _base_row(tpl: SP.Template, k_ledger_dir: Optional[Path]) -> Dict[str, Any]:
     return {
@@ -236,7 +268,8 @@ def run_cycle(*, templates_dir: Optional[Path] = None,
              execution_fn: Optional[Callable[[Dict[str, Any]], Dict[str, Any]]] = None,
              report_path: Optional[Path] = None, queue_path: Optional[Path] = None,
              heartbeat_path: Optional[Path] = None, k_ledger_dir: Optional[Path] = None,
-             watermark_path: Optional[Path] = None, clock: Optional[Callable[[], float]] = None) -> Dict[str, Any]:
+             watermark_path: Optional[Path] = None, clock: Optional[Callable[[], float]] = None,
+             history_path: Optional[Path] = None) -> Dict[str, Any]:
     """One idempotent tick. Never raises. Returns the cycle report dict (also
     written atomically, honesty-linted first -- a tripped report is NOT written)."""
     t0 = (clock or _time.time)()
@@ -274,6 +307,8 @@ def run_cycle(*, templates_dir: Optional[Path] = None,
         write_json_atomic(report_path or REPORT_PATH, report)
     else:
         report["_write_suppressed"] = "honesty_lint_tripped"
+
+    _append_cycle_history(report, execution, history_path=history_path)
 
     try:
         hb = heartbeat_path or HEARTBEAT_PATH
@@ -337,4 +372,5 @@ if __name__ == "__main__":
 
 
 __all__ = ["run_cycle", "serve_forever", "should_stop_default", "main",
-          "REPORT_PATH", "HUMAN_QUEUE_PATH", "HEARTBEAT_PATH", "STOP_FLAG_PATH"]
+          "REPORT_PATH", "HUMAN_QUEUE_PATH", "HEARTBEAT_PATH", "STOP_FLAG_PATH",
+          "CYCLE_HISTORY_PATH"]

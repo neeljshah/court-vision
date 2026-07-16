@@ -55,7 +55,7 @@ def _paths(tmp_path):
     return dict(
         report_path=tmp_path / "report.json", queue_path=tmp_path / "queue.jsonl",
         heartbeat_path=tmp_path / "hb.txt", k_ledger_dir=tmp_path / "k_ledger",
-        watermark_path=tmp_path / "watermark.json",
+        watermark_path=tmp_path / "watermark.json", history_path=tmp_path / "history.jsonl",
     )
 
 
@@ -219,6 +219,53 @@ def test_honesty_lint_suppresses_write(tmp_path, monkeypatch):
     )
     assert report.get("_write_suppressed") == "honesty_lint_tripped"
     assert not report_path.exists()
+
+
+def test_cycle_history_appends_one_line_per_cycle(tmp_path):
+    """report.json is overwritten each cycle; the history jsonl must instead
+    grow by exactly one parseable line per completed cycle."""
+    tdir = tmp_path / "templates"
+    tdir.mkdir()
+    _write_template(tdir / "t06.json", kind="reclaim_fit", universe=["sig_a"])
+
+    def stub_reclaim_fit(template, eligible):
+        return {"fits_run": 1, "rejected": 0, "ship_review_queued": 1,
+               "human_rows": [], "new_deduped_k": 1}
+
+    paths = _paths(tmp_path)
+    AR.run_cycle(templates_dir=tdir, reclaim_fit_fn=stub_reclaim_fit,
+                corpus_sha_fn=lambda tpl: "sha_v1", refresh_fn=lambda: None,
+                maintenance_fn=_noop_maintenance, execution_fn=_noop_execution, **paths)
+    lines = paths["history_path"].read_text(encoding="ascii").splitlines()
+    assert len(lines) == 1
+    row = json.loads(lines[0])
+    assert row["fits_run"] == 1 and row["ship_review_queued"] == 1
+    assert "finished_at" in row and "wall_clock_s" in row
+    assert row["dryrun"]["n_intents"] is None  # _noop_execution -> no dryrun object -> null, never recomputed
+
+    AR.run_cycle(templates_dir=tdir, reclaim_fit_fn=stub_reclaim_fit,
+                corpus_sha_fn=lambda tpl: "sha_v2", refresh_fn=lambda: None,
+                maintenance_fn=_noop_maintenance, execution_fn=_noop_execution, **paths)
+    lines = paths["history_path"].read_text(encoding="ascii").splitlines()
+    assert len(lines) == 2
+    for l in lines:
+        json.loads(l)  # each line independently parseable
+
+
+def test_cycle_history_append_ioerror_does_not_raise(tmp_path, monkeypatch):
+    tdir = tmp_path / "templates"
+    tdir.mkdir()
+    _write_template(tdir / "t07.json", kind="reclaim_fit", universe=["sig_a"])
+
+    def boom(*a, **k):
+        raise OSError("disk full")
+
+    monkeypatch.setattr(AR, "append_jsonl_atomic", boom)
+    report = AR.run_cycle(
+        templates_dir=tdir, corpus_sha_fn=lambda tpl: "sha_v1", refresh_fn=lambda: None,
+        maintenance_fn=_noop_maintenance, execution_fn=_noop_execution, **_paths(tmp_path),
+    )
+    assert "ts" in report  # cycle completed despite the append failure
 
 
 def test_should_stop_default_fail_safe_on_unreadable_flag(tmp_path, monkeypatch):
