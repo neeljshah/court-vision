@@ -1,10 +1,15 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+
+// next/image does not auto-prefix basePath when images.unoptimized is true
+// (export mode) -- same landmine as lib/fetchHonest.ts's BASE_PATH.
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 // Nav links -- the product areas of the cohesive product (FD: ONE nav).
 //   Home          /              -- the cohesive landing.
@@ -215,6 +220,14 @@ export function Nav() {
           aria-label="CourtVision home"
           aria-current={basePath === "/" ? "page" : undefined}
         >
+          <Image
+            src={`${BASE_PATH}/brand/icon-192.png`}
+            alt=""
+            width={24}
+            height={24}
+            className="h-6 w-6"
+            priority
+          />
           <span className="text-sm font-semibold tracking-tight text-foreground">
             Court<span className="text-primary">Vision</span>
           </span>

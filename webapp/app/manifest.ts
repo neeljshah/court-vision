@@ -1,6 +1,10 @@
 import type { MetadataRoute } from "next";
 
 // PWA manifest so the Bet Board installs to a phone home screen.
+// BASE_PATH matches lib/fetchHonest.ts -- next/image + metadata icons don't
+// auto-prefix basePath in unoptimized export mode.
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "CourtVision Board",
@@ -12,7 +16,8 @@ export default function manifest(): MetadataRoute.Manifest {
     background_color: "#0C0F15",
     theme_color: "#0C0F15",
     icons: [
-      { src: "/icon.svg", sizes: "any", type: "image/svg+xml", purpose: "any" },
+      { src: `${BASE_PATH}/brand/icon-192.png`, sizes: "192x192", type: "image/png", purpose: "any" },
+      { src: `${BASE_PATH}/brand/icon-512.png`, sizes: "512x512", type: "image/png", purpose: "any" },
     ],
   };
 }
