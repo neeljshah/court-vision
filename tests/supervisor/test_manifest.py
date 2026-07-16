@@ -128,6 +128,9 @@ def test_default_manifest_is_acyclic_and_ordered():
         # m43 -- settlement-sweep daemon (retries the aged >=7d open paper
         # backlog via existing settlers; hourly; VOIDs unroutable rows only)
         "m43_settle_sweep",
+        # m44 -- hourly exec-evidence time series (append-only CLV/gate/
+        # latency/prop-calibration vintages to exec_evidence_series.jsonl)
+        "m44_exec_evidence",
     }
     _assert_topo(specs)
     # producer precedes the Auto-API which precedes the boards API which precedes UI.
