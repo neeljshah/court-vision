@@ -73,6 +73,14 @@ _BENIGN_REASON_MARKERS = (
     "no player-prop markets", "empty fixture", "empty/invalid fixtures",
 )
 
+# Reason substrings meaning "a rate-limit blip, not a broken scraper" -- e.g.
+# live kalshi 429s from back-to-back capture/snapshot daemons hammering the
+# same host (see _default_providers() docstring). Classified GREEN (tagged
+# transient_degrade, row still visible) so one rate-limit blip can't flip
+# overall RED; a REAL auth/timeout/parse fault on the same provider still
+# classifies RED as before.
+_TRANSIENT_REASON_MARKERS = ("429", "too many requests")
+
 # Sports that are capture-only / no-model (verdicts come from a resolver like
 # kalshi/kbo results, never from a live in-game model dispatch) AND have a
 # KNOWN structural venue gap: pinnacle carries no league-id mapping for them
@@ -95,6 +103,9 @@ _CAPTURE_ONLY_BENIGN_MARKERS = ("no live league ids",)
 def _classify_reason(reason: str, sport: Optional[str] = None) -> str:
     low = (reason or "").lower()
     for marker in _BENIGN_REASON_MARKERS:
+        if marker in low:
+            return GREEN
+    for marker in _TRANSIENT_REASON_MARKERS:
         if marker in low:
             return GREEN
     if sport in CAPTURE_ONLY_SPORTS:
@@ -136,6 +147,8 @@ def probe_one(provider: Any, sport: str) -> Dict[str, Any]:
         if status == GREEN and sport in CAPTURE_ONLY_SPORTS and any(
                 m in reason.lower() for m in _CAPTURE_ONLY_BENIGN_MARKERS):
             row["capture_only_degrade"] = True
+        if status == GREEN and any(m in reason.lower() for m in _TRANSIENT_REASON_MARKERS):
+            row["transient_degrade"] = True
         return row
     if isinstance(res, list):
         row.update(status=GREEN, reason=None, n_events=len(res))

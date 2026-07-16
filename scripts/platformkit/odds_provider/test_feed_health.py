@@ -329,3 +329,42 @@ def test_promote_persistent_drift_resets_when_type_change_clears(tmp_path):
 def test_soft_red_is_distinct_from_red_never_flips_overall():
     # soft_red is its own token in the overlay only; scan()'s overall stays keyed on RED.
     assert _feed_health.SOFT_RED != _feed_health.RED
+
+
+# --------------------------------------------------------------------------- #
+# 429 rate-limit transient classification (fix lane F3, 2026-07-15): a live
+# kalshi/pinnacle rate-limit blip must not read as a broken scraper.
+# --------------------------------------------------------------------------- #
+
+def test_probe_one_429_is_green_transient_not_red():
+    prov = _FakeProvider("kalshi", {"mlb": {
+        "status": "unavailable", "reason": "kalshi markets failed: HTTP Error 429"}})
+    row = probe_one(prov, "mlb")
+    assert row["status"] == GREEN
+    assert row["transient_degrade"] is True
+
+
+def test_probe_one_too_many_requests_is_green_transient():
+    prov = _FakeProvider("pinnacle", {"soccer_intl": {
+        "status": "unavailable", "reason": "pinnacle: too many requests"}})
+    row = probe_one(prov, "soccer_intl")
+    assert row["status"] == GREEN
+    assert row["transient_degrade"] is True
+
+
+def test_probe_one_real_auth_fault_not_tagged_transient():
+    prov = _FakeProvider("pinnacle", {"soccer_intl": {
+        "status": "unavailable", "reason": "pinnacle matchups call failed (401)"}})
+    row = probe_one(prov, "soccer_intl")
+    assert row["status"] == RED
+    assert "transient_degrade" not in row
+
+
+def test_scan_429_blip_does_not_flip_overall_red():
+    prov = _FakeProvider("kalshi", {
+        "mlb": {"status": "unavailable", "reason": "HTTP Error 429"},
+        "nba": [1, 2],
+    })
+    doc = scan(("mlb", "nba"), providers=[prov])
+    assert doc["overall"] == GREEN
+    assert doc["n_red"] == 0

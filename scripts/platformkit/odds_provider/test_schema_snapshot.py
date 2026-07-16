@@ -25,6 +25,7 @@ Acceptance criteria:
 """
 from __future__ import annotations
 
+import datetime
 import json
 
 from scripts.platformkit.odds_provider.schema_snapshot import (
@@ -169,7 +170,11 @@ def test_check_sport_flags_drift_on_dropped_field(tmp_path):
 
     dropped = {k: v for k, v in _ROW.items() if k != "devigged_prob"}
     (sport_dir / "2026-06-23.jsonl").write_text(json.dumps(dropped), encoding="utf-8")
-    check_doc = check_sport("nba", base_dir=line_history, snapshot_dir=snap_dir)
+    # today pinned near the baseline date (1 day old) -- this test exercises
+    # fresh drift, not the stale_baseline path (see test_check_sport_old_
+    # baseline_drift_reports_stale_baseline below for that).
+    check_doc = check_sport("nba", base_dir=line_history, snapshot_dir=snap_dir,
+                             today=datetime.date(2026, 6, 23))
     assert check_doc["providers"]["espn"]["status"] == "drift"
     assert "devigged_prob" in check_doc["providers"]["espn"]["missing_keys"]
 
@@ -187,6 +192,55 @@ def test_snapshot_sport_missing_capture_dir_empty_providers(tmp_path):
     doc = snapshot_sport("nba", base_dir=tmp_path / "nonexistent")
     assert doc["providers"] == {}
     assert doc["capture_file"] is None
+
+
+# --- stale_baseline (2026-07-15, fix lane F3): an old baseline that drifts on a
+# field that was null when snapshotted (e.g. devigged_prob) self-identifies as
+# "stale_baseline" instead of counting as live drift forever. ------------------
+
+def test_check_sport_recent_drift_still_reports_drift(tmp_path):
+    line_history = tmp_path / "line_history"
+    sport_dir = line_history / "nba"
+    sport_dir.mkdir(parents=True)
+    (sport_dir / "2026-06-22.jsonl").write_text(json.dumps(_ROW), encoding="utf-8")
+    snap_dir = tmp_path / "snapshots"
+    snapshot_sport("nba", base_dir=line_history, snapshot_dir=snap_dir)
+
+    dropped = {k: v for k, v in _ROW.items() if k != "devigged_prob"}
+    (sport_dir / "2026-06-23.jsonl").write_text(json.dumps(dropped), encoding="utf-8")
+    check_doc = check_sport("nba", base_dir=line_history, snapshot_dir=snap_dir,
+                             today=datetime.date(2026, 6, 24))
+    assert check_doc["providers"]["espn"]["status"] == "drift"
+
+
+def test_check_sport_old_baseline_drift_reports_stale_baseline(tmp_path):
+    line_history = tmp_path / "line_history"
+    sport_dir = line_history / "nba"
+    sport_dir.mkdir(parents=True)
+    (sport_dir / "2026-06-22.jsonl").write_text(json.dumps(_ROW), encoding="utf-8")
+    snap_dir = tmp_path / "snapshots"
+    snapshot_sport("nba", base_dir=line_history, snapshot_dir=snap_dir)
+
+    dropped = {k: v for k, v in _ROW.items() if k != "devigged_prob"}
+    (sport_dir / "2026-07-20.jsonl").write_text(json.dumps(dropped), encoding="utf-8")
+    check_doc = check_sport("nba", base_dir=line_history, snapshot_dir=snap_dir,
+                             today=datetime.date(2026, 7, 20))  # baseline 28 days old
+    info = check_doc["providers"]["espn"]
+    assert info["status"] == "stale_baseline"
+    assert info["baseline_age_days"] == 28
+
+
+def test_check_sport_old_baseline_no_drift_stays_ok(tmp_path):
+    line_history = tmp_path / "line_history"
+    sport_dir = line_history / "nba"
+    sport_dir.mkdir(parents=True)
+    (sport_dir / "2026-06-22.jsonl").write_text(json.dumps(_ROW), encoding="utf-8")
+    snap_dir = tmp_path / "snapshots"
+    snapshot_sport("nba", base_dir=line_history, snapshot_dir=snap_dir)
+
+    check_doc = check_sport("nba", base_dir=line_history, snapshot_dir=snap_dir,
+                             today=datetime.date(2026, 7, 20))
+    assert check_doc["providers"]["espn"]["status"] == "ok"
 
 
 def test_against_real_samples():
