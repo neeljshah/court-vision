@@ -31,6 +31,7 @@ ARTIFACTS = {
     "claim_survival": "data/cache/analytics_verify/claim_survival.json",
     "verification": "data/cache/analytics_verify/sentinel_report.json",
     "contradictions": "data/cache/analytics_verify/contradiction_report.json",
+    "system_map": "data/cache/analytics_verify/system_map.json",
 }
 
 
@@ -155,18 +156,55 @@ def contradictions(sport: str = "all", family: str | None = None) -> dict:
     return {**base, "conflicts": conflicts}
 
 
+def system_map(sport: str = "all", node: str | None = None, question: str | None = None) -> dict:
+    """analytics.system_map -- 'how does the system work / what produces X /
+    what consumes Y'. Verbatim off the declared, disk-verified dataflow graph
+    (scripts/platformkit/analytics_verify/system_map.py). With no `node`,
+    returns the whole-graph summary; with `node`, returns that node plus its
+    inbound (what produces it) and outbound (what it produces/reads) edges.
+    `question` is accepted for call-site symmetry with other resolvers but is
+    not used to re-classify -- callers pass `node` explicitly."""
+    fail, ctx = _load("system_map", "system_map", sport)
+    if fail:
+        return fail
+    data, as_of, path = ctx
+    base = {"status": "ok", "category": "system_map", "sport": sport, "source_artifact": path,
+            "as_of": as_of, "honest_note": data.get("honest_note"),
+            "n_nodes": data.get("n_nodes"), "n_edges": data.get("n_edges"),
+            "n_verified": data.get("n_verified"), "n_unverified": data.get("n_unverified")}
+    if not node:
+        return {**base, "nodes": [n["id"] for n in data.get("nodes", [])]}
+    nodes_by_id = {n["id"]: n for n in data.get("nodes", [])}
+    match = nodes_by_id.get(node)
+    if match is None:
+        return {"status": "no_data", "category": "system_map", "sport": sport, "source_artifact": path,
+                "as_of": as_of, "note": f"no node id={node!r}. Available: {sorted(nodes_by_id)}"}
+    # an edge {src, dst, relation} reads as "src <relation> dst" (e.g. src
+    # WRITES dst, src READS dst). For the queried node as dst: a writes/
+    # serves/registers edge means src produced it; a reads edge means src
+    # consumes it. relation=="reads" with node as src (this node reading
+    # something else) is an outbound dependency, not part of either list.
+    edges = data.get("edges", [])
+    produced_by = [e for e in edges if e["dst"] == node and e.get("relation") in ("writes", "serves", "registers")]
+    consumed_by = [e for e in edges if e["dst"] == node and e.get("relation") == "reads"]
+    return {**base, "node": match, "produced_by": produced_by, "consumed_by": consumed_by}
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description="Query the analytics-verification resolvers directly.")
-    p.add_argument("kind", choices=["attribution", "claim_survival", "verification", "contradictions"])
+    p.add_argument("kind", choices=["attribution", "claim_survival", "verification", "contradictions",
+                                     "system_map"])
     p.add_argument("--sport", default="all")
     p.add_argument("--family")
     p.add_argument("--card-id")
     p.add_argument("--stat")
+    p.add_argument("--node")
     a = p.parse_args(argv)
     fn = {"attribution": lambda: attribution(a.sport, a.family, a.card_id),
           "claim_survival": lambda: claim_survival(a.sport),
           "verification": lambda: verification(a.sport, a.stat),
-          "contradictions": lambda: contradictions(a.sport, a.family)}[a.kind]
+          "contradictions": lambda: contradictions(a.sport, a.family),
+          "system_map": lambda: system_map(a.sport, a.node)}[a.kind]
     print(json.dumps(fn(), indent=2, default=str))
 
 

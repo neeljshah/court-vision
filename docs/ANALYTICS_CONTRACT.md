@@ -27,6 +27,7 @@ Every artifact carries `generated_at` (or `as_of`), `edge_claimed` (must be
 | `claim_survival.json` | `python -m scripts.platformkit.analytics_verify.regrader` | `generated_at, edge_claimed, honest_note, n_cards_total, n_eligible, verdict_counts, survival: {7d/30d/60d fractions or null}, decayed_cards, insufficient_cards` |
 | `sentinel_report.json` | `python -m scripts.platformkit.analytics_verify.sentinel` | `as_of, edge_claimed, honest_note, checks: [{stat, served_value, recomputed_value, delta, verdict, ...}], n_verified, n_discrepant, n_stale, n_uncheckable, overall` |
 | `contradiction_report.json` | `python -m scripts.platformkit.analytics_verify.contradiction` | `as_of, edge_claimed, honest_note, families_scanned, n_claims, conflicts: [...], by_family_consistency, n_conflicts_by_kind` |
+| `system_map.json` | `python -m scripts.platformkit.analytics_verify.system_map` | `generated_at, edge_claimed, honest_note, n_nodes, n_edges, n_verified, n_unverified, nodes: [{id, kind, path, description, verified, mtime}], edges: [{src, dst, relation}]` |
 
 Extra/unknown keys in any artifact are tolerated by the resolvers (lenient
 reading); nothing outside the schema above is guaranteed present.
@@ -42,6 +43,10 @@ new categories are registered:
 - `analytics_claim_survival` (no args)
 - `analytics_verification` (args: `stat?`)
 - `analytics_contradictions` (args: `family?`)
+- `system_map` (args: `node?`) -- "how does the system work / what produces X /
+  what consumes Y"; whole-graph summary if `node` omitted, else that node's
+  `produced_by`/`consumed_by` edges. Curated dataflow graph, disk-verified per
+  node, `edge_claimed: false`; see [PLATFORM.md](PLATFORM.md#system-intelligence-map-machine-readable-dataflow-graph).
 
 ```python
 from scripts.platformkit.answers import resolver_registry as R
