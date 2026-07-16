@@ -22,10 +22,13 @@ from __future__ import annotations
 
 import argparse
 import logging
+import time
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
 
 from scripts.platformkit import clv_ledger as _clv
+from scripts.platformkit.execution import expected_clv_gate as _exec_gate
+from scripts.platformkit.execution.thresholds import INGAME_EXPECTED_CLV_MIN_PCT
 from scripts.platformkit.claims import condition_tagger as _tagger
 from scripts.platformkit.frontend.bet_board import game_bet_board
 from scripts.platformkit.frontend.live_board import todays_live_games
@@ -46,6 +49,20 @@ from scripts.platformkit.pm_trading.paper_today_support import (
 # model; see kalshi_listing.py module docstring). Additive: every other sport
 # is UNCHANGED (still routes through todays_live_games/ESPN).
 _KALSHI_LISTING_SPORTS = frozenset({"npb", "kbo"})
+
+# Pregame execution-quality floor: reuse the SAME pre-registered expected-CLV bar
+# as the in-game channel (thresholds.py, registered 2026-07-15, BEFORE measurement)
+# -- one execution-quality bar across channels, not tuned post-hoc. Mirrors
+# inplay_daytrader's use of expected_clv_gate.gate; here fair_prob = the calibrated
+# model prob (the model IS the fair-value estimate). SUPPRESS-ONLY: an additional
+# lower net below the EV floor + policy tier already applied; never loosens them.
+# NOTE: ev_vs_price and expected_clv_pct are the SAME quantity (p*price-1), and the
+# policy tier-C floor (ev>=0.02 = 2.0%) is STRICTER than this 1.0% floor, so under
+# the current policy config the tier gate always dominates and this block never
+# independently fires -- it is a genuine lower net that only activates if a future
+# policy loosens the tier floors below 1%. The STAMP (exec_gate/latency on every
+# placed row) is the load-bearing effect for the m44 exec-evidence reader.
+_PREGAME_EXPECTED_CLV_MIN_PCT = INGAME_EXPECTED_CLV_MIN_PCT
 
 
 def default_live_fetch(sport: str) -> Dict[str, Any]:
@@ -143,6 +160,7 @@ def _record_priced(row, sport, matchup, meta, side, price, prob, selection,
     >= 0.5) and dedup per market (sport, matchup, line, day), NOT per side, so the
     opposing side cannot also land. A distinct market (different line) keeps its key.
     """
+    _t0 = time.perf_counter()  # placement-path latency clock (stamped in ms below)
     market_key = (sport, matchup, row.get("line"), ctx.day)
     if market_key in ctx.ledger_keys or float(prob) < 0.5:
         return None  # already placed this market, or the side the model does not back
@@ -180,12 +198,28 @@ def _record_priced(row, sport, matchup, meta, side, price, prob, selection,
     dh_stamp: Dict[str, Any] = {}
     if sport == "mlb" and ctx.dh_stamp_fn is not None:
         dh_stamp = ctx.dh_stamp_fn(home, away, ctx.day, meta.get("commence_time")) or {}
+    # Execution-quality gate (pregame twin of inplay_daytrader's exec_gate). fair_prob
+    # = calibrated model prob. BLOCK on gate fail -> mirror the in-game SUPPRESS policy
+    # (an additional lower net below the EV floor + tier above). CRASH-SAFE: a gate
+    # error records the row UNGATED with an exec_gate_error note, never blocks m1_paper.
+    exec_gate: Optional[Dict[str, Any]] = None
+    exec_gate_error: Optional[str] = None
+    try:
+        exec_gate = _exec_gate.gate(taken_decimal=float(price), fair_prob=float(prob),
+                                    threshold_pct=_PREGAME_EXPECTED_CLV_MIN_PCT)
+        if not exec_gate.get("passed", False):
+            return None  # below expected-CLV floor -> suppress (mirror in-game)
+    except Exception as exc:  # noqa: BLE001 -- gate must NEVER block a placement row
+        exec_gate, exec_gate_error = None, type(exc).__name__
+    placement_latency_ms = (time.perf_counter() - _t0) * 1000.0
     saved = _clv.record_bet(sport, matchup, side, book, float(price),
                             model_prob=float(prob), stake_units=stake_units,
                             event_id=meta["event_id"],
                             game_number=dh_stamp.get("game_number"),
                             game_pk=dh_stamp.get("game_pk"), path=ctx.lpath,
-                            claim_tags=claim_tags)
+                            claim_tags=claim_tags, exec_gate=exec_gate,
+                            placement_latency_ms=placement_latency_ms,
+                            exec_gate_error=exec_gate_error)
     assert saved["executed"] is False  # honesty invariant, belt-and-braces
     assert float(saved.get("stake_units", 0.0)) == stake_units  # units, never $
     ctx.ledger_keys.add(market_key)

@@ -173,6 +173,9 @@ def record_bet(
     path: Optional[Path] = None,
     stake: Optional[float] = None,  # deprecated alias -> treated as UNITS, never $
     claim_tags: Optional[Dict[str, bool]] = None,
+    exec_gate: Optional[Dict[str, Any]] = None,
+    placement_latency_ms: Optional[float] = None,
+    exec_gate_error: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Append one open bet to the CLV ledger and return the stored record.
 
@@ -190,6 +193,14 @@ def record_bet(
     every caller that never passes it is unaffected. This is the on-disk source
     card_grader needs to grade pregame cards (it currently finds none because no
     caller persisted this field).
+
+    exec_gate / placement_latency_ms / exec_gate_error (optional, exec-quality
+    stamps -- pregame twin of the in-game paper_ingame fields): the placement-gate
+    dict (expected_clv_gate.gate()'s {passed, expected_clv_pct, ...}), the
+    measured placement latency in ms, and an error marker if the gate raised.
+    ADDITIVE -- each is stamped only when not None, so bet_id/ckey and every
+    pre-fix row/caller are byte-identical when omitted. The m44 exec-evidence
+    reader counts rows whose exec_gate is a dict and reads placement_latency_ms.
     """
     s = str(side).strip().lower()
     if s not in (_SIDE_HOME, _SIDE_AWAY):
@@ -225,6 +236,12 @@ def record_bet(
         record["game_pk"] = int(game_pk)
     if claim_tags:
         record["claim_tags"] = dict(claim_tags)
+    if exec_gate is not None:
+        record["exec_gate"] = dict(exec_gate)
+    if placement_latency_ms is not None:
+        record["placement_latency_ms"] = float(placement_latency_ms)
+    if exec_gate_error is not None:
+        record["exec_gate_error"] = str(exec_gate_error)
     ck = event_ckey(record)
     if ck:
         record["ckey"] = ck  # additive cross-ledger join key (new rows only)

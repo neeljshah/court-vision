@@ -18,10 +18,13 @@ raise. Test: scripts/platformkit/pm_trading/test_pm_game_placer.py
 from __future__ import annotations
 
 import logging
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Sequence
 
+from scripts.platformkit.execution import expected_clv_gate as _exec_gate
+from scripts.platformkit.execution.thresholds import INGAME_EXPECTED_CLV_MIN_PCT
 from scripts.platformkit.pm_trading.pm_game_date_guard import _et_date_candidates, _name_matches
 from scripts.platformkit.pm_trading.pm_game_match import (
     _split_sides, group_by_game, match_hits, match_model_game, route_for,
@@ -209,7 +212,7 @@ def run(sports: Sequence[str] = DEFAULT_PM_GAME_SPORTS, *,
     seen = _existing_bet_ids(_ledger) if place else set()
     by_sport: Dict[str, Dict[str, int]] = {}
     placed: List[str] = []
-    n_games = n_matched = n_placed = n_dup = n_capped = n_ambiguous = 0
+    n_games = n_matched = n_placed = n_dup = n_capped = n_ambiguous = n_suppressed = 0
     for sport in sports:
         games = group_by_game(_feed(sport))
         model_games = _model(sport)
@@ -229,9 +232,33 @@ def run(sports: Sequence[str] = DEFAULT_PM_GAME_SPORTS, *,
             cands.extend(placements_from_game(g, hits[0], min_tier=min_tier))
         cands.sort(key=lambda c: float(c.get("ev", 0.0)), reverse=True)
         n_matched += s_matched
-        s_placed = s_dup = s_capped = 0
+        s_placed = s_dup = s_capped = s_suppressed = 0
         for p in cands:
+            _t0 = time.perf_counter()  # placement-path latency clock (ms, stamped below)
+            # Execution-quality gate (pregame twin of run_paper_today / inplay exec_gate):
+            # fair_prob = calibrated model prob; taken_decimal = 1/devigged exchange price.
+            # SUPPRESS on fail (mirror the pregame/in-game block; behavior-neutral under the
+            # current policy since the tier floor already dominates the 1% exec floor).
+            # CRASH-SAFE: a gate error records the row UNGATED with an exec_gate_error note,
+            # never blocks m1_paper. The STAMP is the load-bearing effect for m44.
+            exec_gate: Optional[Dict[str, Any]] = None
+            exec_gate_error: Optional[str] = None
+            try:
+                exec_gate = _exec_gate.gate(taken_decimal=float(p["taken_decimal"]),
+                                            fair_prob=float(p["model_prob"]),
+                                            threshold_pct=INGAME_EXPECTED_CLV_MIN_PCT)
+                if not exec_gate.get("passed", False):
+                    s_suppressed += 1
+                    n_suppressed += 1
+                    continue  # below expected-CLV floor -> suppress
+            except Exception as exc:  # noqa: BLE001 -- gate must NEVER block a placement row
+                exec_gate, exec_gate_error = None, type(exc).__name__
             row = _ledger_row(p)
+            if exec_gate is not None:
+                row["exec_gate"] = exec_gate
+            if exec_gate_error is not None:
+                row["exec_gate_error"] = exec_gate_error
+            row["placement_latency_ms"] = (time.perf_counter() - _t0) * 1000.0
             if row["bet_id"] in seen:
                 s_dup += 1
                 n_dup += 1
@@ -247,10 +274,11 @@ def run(sports: Sequence[str] = DEFAULT_PM_GAME_SPORTS, *,
                 n_placed += 1
         by_sport[sport] = {"games": len(games), "matched": s_matched,
                            "placed": s_placed, "dup_skipped": s_dup, "capped": s_capped,
+                           "suppressed": s_suppressed,
                            "ambiguous_skipped": s_ambiguous, "matcher": route_for(sport)}
     return {"ts": _now_iso(), "n_games": n_games, "n_matched": n_matched,
             "n_placed": n_placed, "n_dup_skipped": n_dup, "n_capped": n_capped,
-            "n_ambiguous_skipped": n_ambiguous,
+            "n_ambiguous_skipped": n_ambiguous, "n_suppressed": n_suppressed,
             "by_sport": by_sport, "placed_bet_ids": placed, "place": bool(place),
             "executed": False, "edge_claimed": False, "honest_note": _HONEST_NOTE}
 
