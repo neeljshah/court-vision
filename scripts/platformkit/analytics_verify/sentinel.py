@@ -81,11 +81,13 @@ def _is_stale(as_of: Any) -> bool:
 
 
 def _check(
-    name: str, served_file: Path, served_key: str, served: Any, recomputed: Any,
+    stat: str, served_file: Path, served_key: str, served: Any, recomputed: Any,
     *, tolerance: float = 1e-6, reason: Optional[str] = None,
 ) -> Dict[str, Any]:
+    # public schema (docs/ANALYTICS_CONTRACT.md): stat, served_value,
+    # recomputed_value, delta, verdict -- served_file/served_key kept for context.
     row: Dict[str, Any] = {
-        "check": name, "served_file": served_file.name, "served_key": served_key,
+        "stat": stat, "served_file": served_file.name, "served_key": served_key,
     }
     if reason is not None:
         row["verdict"] = "UNCHECKABLE"
@@ -97,13 +99,13 @@ def _check(
         return row
     if isinstance(served, str) or isinstance(recomputed, str):
         # non-numeric sentinel values (e.g. "INSUFFICIENT_DATA") must match exactly
-        row["served"] = served
-        row["recomputed"] = recomputed
+        row["served_value"] = served
+        row["recomputed_value"] = recomputed
         row["verdict"] = "VERIFIED" if served == recomputed else "DISCREPANT"
         return row
     delta = abs(float(served) - float(recomputed))
-    row["served"] = served
-    row["recomputed"] = recomputed
+    row["served_value"] = served
+    row["recomputed_value"] = recomputed
     row["delta"] = round(delta, 6)
     row["tolerance"] = tolerance
     row["verdict"] = "VERIFIED" if delta <= tolerance else "DISCREPANT"
@@ -147,14 +149,14 @@ def grade_summary_checks(clv_path: Optional[Path] = None,
               "flat_unit_wins", "flat_unit_losses"]
     if served is None:
         for f in fields:
-            checks.append(_check(f"grade_summary.{f}", path, f, None, None,
+            checks.append(_check(f, path, f, None, None,
                                   reason="served file missing/unreadable"))
         return checks
     recomputed = _recompute_grade_summary(clv_path)
     stale = _is_stale(served.get("as_of"))
     for f in fields:
         tol = 0.01 if f in ("mean_clv_pct", "pct_beat_close") else 1e-6
-        row = _check(f"grade_summary.{f}", path, f, served.get(f), recomputed[f],
+        row = _check(f, path, f, served.get(f), recomputed[f],
                       tolerance=tol)
         if stale and row["verdict"] != "UNCHECKABLE":
             row["verdict"] = "STALE"
@@ -196,20 +198,20 @@ def pnl_series_checks(clv_path: Optional[Path] = None,
     checks: List[Dict[str, Any]] = []
     if served is None:
         for f in fields:
-            checks.append(_check(f"pnl_series.summary.{f}", path, f, None, None,
+            checks.append(_check(f, path, f, None, None,
                                   reason="served file missing/unreadable"))
         return checks
     summary = served.get("summary")
     if not isinstance(summary, dict):
         for f in fields:
-            checks.append(_check(f"pnl_series.summary.{f}", path, f, None, None,
+            checks.append(_check(f, path, f, None, None,
                                   reason="served summary block missing"))
         return checks
     recomputed = _recompute_pnl_summary(clv_path, bankroll_path)
     stale = _is_stale(served.get("generated_at"))
     for f in fields:
         tol = 0.01 if f in ("total_units", "current_units") else 1e-6
-        row = _check(f"pnl_series.summary.{f}", path, f, summary.get(f),
+        row = _check(f, path, f, summary.get(f),
                       recomputed[f], tolerance=tol)
         if stale and row["verdict"] != "UNCHECKABLE":
             row["verdict"] = "STALE"

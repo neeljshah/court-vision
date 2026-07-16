@@ -105,12 +105,12 @@ def test_conflict_kinds_and_skip_path(tmp_path):
     all_seen = set(report["families_scanned"]) | skipped_names
     assert "fam_sign_a.index" not in all_seen
 
-    # by_family_consistency has an entry per scanned family (score = 1 - conflicts/pairs,
-    # per spec; can go below 0 when one comparable pair yields multiple conflict kinds).
+    # by_family_consistency has an entry per scanned family (score = 1 -
+    # conflicts/pairs, clamped to [0.0, 1.0]).
     for fam in report["families_scanned"]:
         rec = report["by_family_consistency"][fam]
         assert isinstance(rec["consistency"], float)
-        assert rec["consistency"] <= 1.0
+        assert 0.0 <= rec["consistency"] <= 1.0
 
     assert report["n_claims"] > 0
     assert report["n_comparable_pairs"] > 0

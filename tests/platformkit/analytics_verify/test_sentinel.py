@@ -57,7 +57,7 @@ def test_grade_summary_verified(tmp_path):
     served_path.write_text(json.dumps(served))
 
     checks = S.grade_summary_checks(clv_path, served_path)
-    verdicts = {c["check"]: c["verdict"] for c in checks}
+    verdicts = {c["stat"]: c["verdict"] for c in checks}
     assert all(v == "VERIFIED" for v in verdicts.values()), verdicts
 
 
@@ -73,9 +73,9 @@ def test_grade_summary_discrepant(tmp_path):
     served_path.write_text(json.dumps(served))
 
     checks = S.grade_summary_checks(clv_path, served_path)
-    by_name = {c["check"]: c for c in checks}
-    assert by_name["grade_summary.n_settled"]["verdict"] == "DISCREPANT"
-    assert by_name["grade_summary.n_settled"]["delta"] == 5
+    by_name = {c["stat"]: c for c in checks}
+    assert by_name["n_settled"]["verdict"] == "DISCREPANT"
+    assert by_name["n_settled"]["delta"] == 5
 
 
 def test_grade_summary_uncheckable_missing_file(tmp_path):
