@@ -26,6 +26,16 @@ Action on WEDGED: kill THAT PID ONLY (never any other proc); the supervisor's
 normal restart/backoff path relaunches it. This module NEVER spawns/restarts --
 it only DECIDES and (via the injected killer) kills.
 
+2026-07-15 AMENDMENT (bounded dead-time ceiling, docs/research/execution-quality/
+live_coherence_audit_2026-07-15.md): the AND-gate above kept a real, low-CPU
+(I/O-blocked) :8099 wedge alive for 65 ticks (5.5min+ confirmed dead, prior
+episode 2.8h) -- CPU never crossed 50% and the CPU probe read null. Per the
+orchestrator/user's explicit "no lag, keep everything live" directive, an
+INDEPENDENT ceiling is added ABOVE the pinned AND-gate (untouched): if the SAME
+port times out continuously (still LISTENING) for DEADTIME_CEILING_SEC (10 min)
+of WALL TIME -- regardless of tick count or CPU -- kill anyway
+(``reason="deadtime_ceiling"``). Bounds worst-case dead-time to ~10 min.
+
 STATE PERSISTENCE
 ------------------
 Consecutive-timeout + sustained-high-CPU streaks must survive across ticks (the
@@ -71,11 +81,15 @@ TIMEOUT_FLOOR_SEC = 10.0                # a probe must exceed this to count as "
 CPU_PCT_THRESHOLD = 50.0                # sustained CPU% floor
 CPU_SUSTAINED_SEC = 120.0               # how long CPU must stay above the floor
 
+# 2026-07-15 amendment: independent, CPU-agnostic ceiling (see module docstring).
+DEADTIME_CEILING_SEC = 600.0            # 10 min of unbroken timeouts -> kill anyway
+
 def _new_state(name: str) -> Dict[str, Any]:
     return {
         "name": name,
         "consecutive_timeouts": 0,
         "cpu_high_since": None,   # epoch when CPU first crossed the threshold, or None
+        "timeout_streak_since": None,  # epoch the current unbroken timeout streak began
         "last_verdict": KEEP,
         "last_kill_at": None,
     }
@@ -101,12 +115,14 @@ class HttpWedgeReaper:
         timeout_floor_sec: float = TIMEOUT_FLOOR_SEC,
         cpu_pct_threshold: float = CPU_PCT_THRESHOLD,
         cpu_sustained_sec: float = CPU_SUSTAINED_SEC,
+        deadtime_ceiling_sec: float = DEADTIME_CEILING_SEC,
     ) -> None:
         self._clock = clock or time.time
         self._n_threshold = max(1, int(consecutive_timeout_threshold))
         self._timeout_floor = float(timeout_floor_sec)
         self._cpu_threshold = float(cpu_pct_threshold)
         self._cpu_sustained_sec = float(cpu_sustained_sec)
+        self._deadtime_ceiling_sec = float(deadtime_ceiling_sec)
         self._state: Dict[str, Dict[str, Any]] = {}
 
     # ------------------------------------------------------------------ #
@@ -163,9 +179,10 @@ class HttpWedgeReaper:
 
             if not port_listening:
                 # Port closed -> this is a crash (supervisor's normal path), not
-                # a wedge. Reset both streaks so a later relaunch starts clean.
+                # a wedge. Reset all streaks so a later relaunch starts clean.
                 st["consecutive_timeouts"] = 0
                 st["cpu_high_since"] = None
+                st["timeout_streak_since"] = None
                 return self._verdict(st, KEEP, {
                     "reason": "port_not_listening", "port_listening": False,
                 })
@@ -177,8 +194,11 @@ class HttpWedgeReaper:
             )
             if counts_as_timeout:
                 st["consecutive_timeouts"] = int(st.get("consecutive_timeouts", 0)) + 1
+                if st.get("timeout_streak_since") is None:
+                    st["timeout_streak_since"] = now
             else:
                 st["consecutive_timeouts"] = 0
+                st["timeout_streak_since"] = None
 
             # -- sustained-CPU streak -------------------------------------------
             cpu_high_since = st.get("cpu_high_since")
@@ -197,6 +217,15 @@ class HttpWedgeReaper:
             )
 
             timeout_tripped = st["consecutive_timeouts"] >= self._n_threshold
+            timeout_streak_since = st.get("timeout_streak_since")
+            deadtime_sec = (
+                round(now - float(timeout_streak_since), 1)
+                if timeout_streak_since is not None else 0.0
+            )
+            deadtime_tripped = (
+                timeout_streak_since is not None
+                and (now - float(timeout_streak_since)) >= self._deadtime_ceiling_sec
+            )
             detail = {
                 "port_listening": True,
                 "consecutive_timeouts": st["consecutive_timeouts"],
@@ -209,7 +238,15 @@ class HttpWedgeReaper:
                 "cpu_sustained_required_sec": self._cpu_sustained_sec,
                 "timeout_tripped": timeout_tripped,
                 "cpu_tripped": cpu_sustained,
+                "deadtime_sec": deadtime_sec,
+                "deadtime_ceiling_sec": self._deadtime_ceiling_sec,
+                "deadtime_tripped": deadtime_tripped,
             }
+
+            def _reset_streaks() -> None:
+                st["consecutive_timeouts"] = 0
+                st["cpu_high_since"] = None
+                st["timeout_streak_since"] = None
 
             if timeout_tripped and cpu_sustained:
                 st["last_kill_at"] = now
@@ -217,8 +254,15 @@ class HttpWedgeReaper:
                 # a clean window (mirrors heartbeat_reaper.note_restarted intent,
                 # but the CALLER kills; we just clear our own bookkeeping here so
                 # a repeated observe() before the relaunch lands doesn't double-count).
-                st["consecutive_timeouts"] = 0
-                st["cpu_high_since"] = None
+                _reset_streaks()
+                return self._verdict(st, KILL, detail)
+
+            if deadtime_tripped:
+                # 2026-07-15 ceiling: CPU-independent -- a wedge stuck low-CPU/
+                # I/O-blocked for the full ceiling window is killed anyway.
+                st["last_kill_at"] = now
+                detail["reason"] = "deadtime_ceiling"
+                _reset_streaks()
                 return self._verdict(st, KILL, detail)
 
             return self._verdict(st, KEEP, detail)
@@ -243,6 +287,7 @@ __all__ = [
     "TIMEOUT_FLOOR_SEC",
     "CPU_PCT_THRESHOLD",
     "CPU_SUSTAINED_SEC",
+    "DEADTIME_CEILING_SEC",
     "DEFAULT_STATE_PATH",
     "DEFAULT_DECISIONS_PATH",
     "load_state_file",

@@ -59,12 +59,24 @@ def http_probe(url: str, *, timeout: float = _HTTP_PROBE_TIMEOUT_SEC) -> Dict[st
                 "status": 0, "error": type(exc).__name__}
 
 
+# 2026-07-15 fix: psutil.Process.cpu_percent(interval=0/None) measures usage
+# SINCE THE LAST CALL on that same Process object. The runner used to build a
+# fresh Process() every tick, so every call was "first call" forever -> always
+# the meaningless baseline (the audit's cpu_pct=null finding). Caching the
+# handle across ticks (module-level, per-pid) means tick N+1 reads a real delta
+# since tick N.
+_PROC_CACHE: Dict[int, Any] = {}
+
+
 def pid_cpu_percent(pid: int, *, psutil_mod: Optional[Any] = None,
-                     interval: float = 0.0) -> Optional[float]:
+                     interval: float = 0.0,
+                     _cache: Optional[Dict[int, Any]] = None) -> Optional[float]:
     """Recent CPU utilization (percent, can exceed 100 on multi-core) for *pid*.
 
     psutil is OPTIONAL: returns None (UNKNOWN, never counts toward a kill) if
     unavailable, the pid does not exist, or any probe step fails. Never raises.
+    The underlying Process handle is cached per-pid (see module note above) so
+    only the very first-ever observation of a pid is the meaningless baseline.
     """
     mod = psutil_mod
     if mod is None:
@@ -72,11 +84,17 @@ def pid_cpu_percent(pid: int, *, psutil_mod: Optional[Any] = None,
             import psutil as mod  # type: ignore[no-redef]
         except Exception:  # noqa: BLE001
             return None
+    cache = _PROC_CACHE if _cache is None else _cache
+    key = int(pid)
     try:
-        proc = mod.Process(int(pid))
+        proc = cache.get(key)
+        if proc is None:
+            proc = mod.Process(key)
+            cache[key] = proc
         pct = proc.cpu_percent(interval=interval)
         return float(pct) if isinstance(pct, (int, float)) else None
     except Exception:  # noqa: BLE001 -- pid gone / access denied / bad psutil state
+        cache.pop(key, None)
         return None
 
 

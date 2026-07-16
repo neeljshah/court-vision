@@ -15,6 +15,7 @@ from scripts.platformkit.autonomy.http_wedge_reaper import (
     CONSECUTIVE_TIMEOUT_THRESHOLD,
     CPU_PCT_THRESHOLD,
     CPU_SUSTAINED_SEC,
+    DEADTIME_CEILING_SEC,
     KEEP,
     KILL,
     TIMEOUT_FLOOR_SEC,
@@ -137,6 +138,90 @@ def test_recovery_clears_timeout_streak():
     v = r.observe("svc", port_listening=True, probe_timed_out=False,
                   probe_elapsed_sec=0.1, cpu_pct=99.0)
     assert v["detail"]["consecutive_timeouts"] == 0
+
+
+def test_deadtime_ceiling_kills_low_cpu_wedge_after_ten_minutes():
+    """2026-07-15 ceiling: low-CPU wedge (the real incident) still gets killed
+    once the SAME unbroken timeout streak spans >= DEADTIME_CEILING_SEC, with
+    cpu_pct staying low/None the whole time."""
+    r = HttpWedgeReaper(clock=lambda: 0.0)
+    r.observe("svc", port_listening=True, probe_timed_out=True,
+              probe_elapsed_sec=TIMEOUT_FLOOR_SEC + 1.0, cpu_pct=None)
+
+    r2 = HttpWedgeReaper(clock=lambda: DEADTIME_CEILING_SEC + 1.0)
+    r2.load_state(r.dump_state())
+    v = r2.observe("svc", port_listening=True, probe_timed_out=True,
+                   probe_elapsed_sec=TIMEOUT_FLOOR_SEC + 1.0, cpu_pct=None)
+    assert v["verdict"] == KILL
+    assert v["detail"]["reason"] == "deadtime_ceiling"
+    assert v["detail"]["cpu_tripped"] is False
+    dumped = r2.dump_state()["svc"]
+    assert dumped["consecutive_timeouts"] == 0
+    assert dumped["timeout_streak_since"] is None
+
+
+def test_healthy_port_never_hits_deadtime_ceiling():
+    """A port that keeps responding fine never accrues a timeout streak, so the
+    ceiling never trips even after a long observation window."""
+    r = HttpWedgeReaper(clock=lambda: 0.0)
+    r.observe("svc", port_listening=True, probe_timed_out=False,
+              probe_elapsed_sec=0.05, cpu_pct=5.0)
+
+    r2 = HttpWedgeReaper(clock=lambda: DEADTIME_CEILING_SEC * 10)
+    r2.load_state(r.dump_state())
+    v = r2.observe("svc", port_listening=True, probe_timed_out=False,
+                   probe_elapsed_sec=0.05, cpu_pct=5.0)
+    assert v["verdict"] == KEEP
+    assert v["detail"]["deadtime_tripped"] is False
+
+
+def test_brief_blip_single_timeout_never_kills():
+    """A single timeout followed by recovery resets the streak -- one blip is
+    never enough, even close to the ceiling window."""
+    r = HttpWedgeReaper(clock=lambda: 0.0)
+    r.observe("svc", port_listening=True, probe_timed_out=True,
+              probe_elapsed_sec=TIMEOUT_FLOOR_SEC + 1.0, cpu_pct=None)
+
+    r2 = HttpWedgeReaper(clock=lambda: DEADTIME_CEILING_SEC - 1.0)
+    r2.load_state(r.dump_state())
+    # Recovers before the ceiling -- streak resets, no kill.
+    v = r2.observe("svc", port_listening=True, probe_timed_out=False,
+                   probe_elapsed_sec=0.05, cpu_pct=None)
+    assert v["verdict"] == KEEP
+    assert v["detail"]["consecutive_timeouts"] == 0
+
+    r3 = HttpWedgeReaper(clock=lambda: DEADTIME_CEILING_SEC + 1.0)
+    r3.load_state(r2.dump_state())
+    v3 = r3.observe("svc", port_listening=True, probe_timed_out=True,
+                    probe_elapsed_sec=TIMEOUT_FLOOR_SEC + 1.0, cpu_pct=None)
+    # Streak restarted at t=DEADTIME_CEILING_SEC-1's recovery point -> far from
+    # the ceiling again, so still KEEP.
+    assert v3["verdict"] == KEEP
+
+
+def test_pid_cpu_percent_primed_then_numeric_on_second_tick():
+    """The production CPU probe caches the psutil.Process handle per-pid so the
+    SECOND call (a later reaper tick) reads a real delta instead of being
+    perpetually null/0.0 (the audit's cpu_pct=null finding). Pure fake mod --
+    never touches a real PID."""
+    from scripts.platformkit.autonomy.http_wedge_probe import pid_cpu_percent
+
+    calls = {"n": 0}
+
+    class _FakeProc:
+        def cpu_percent(self, interval=0.0):
+            calls["n"] += 1
+            return 0.0 if calls["n"] == 1 else 42.0
+
+    class _FakeMod:
+        def Process(self, pid):
+            return _FakeProc()
+
+    cache: dict = {}
+    first = pid_cpu_percent(4242, psutil_mod=_FakeMod(), _cache=cache)
+    second = pid_cpu_percent(4242, psutil_mod=_FakeMod(), _cache=cache)
+    assert first == 0.0
+    assert second == 42.0
 
 
 # --------------------------------------------------------------------------- #
