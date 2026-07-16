@@ -310,3 +310,52 @@ def test_outright_no_homeaway_is_skipped(tmp_path):
     out = G.run(("soccer_intl",), ledger_path=tmp_path / "l.jsonl",
                 feed_fn=lambda s: rows, model_fn=lambda s: [], place=True)
     assert out["n_placed"] == 0
+
+
+# --- exec-quality stamps (F1: pregame exec-gate wiring, pm_game_placer twin) -------
+def test_run_placed_pm_row_carries_exec_gate_and_latency(tmp_path):
+    # model 0.62 vs devigged market ~0.421 -> huge +EV -> clears the 1% exec floor, so
+    # the placed paper_pm row must carry an exec_gate dict (passed) + placement_latency_ms,
+    # exactly like the in-game / run_paper_today rows the m44 reader counts.
+    ledger = tmp_path / "l.jsonl"
+    out = G.run(("mlb",), ledger_path=ledger, feed_fn=lambda s: _kalshi_rows(),
+                model_fn=_model_games, place=True)
+    assert out["n_placed"] >= 1 and out["n_suppressed"] == 0
+    rows = [json.loads(ln) for ln in ledger.read_text().splitlines() if ln.strip()]
+    assert rows
+    r = rows[0]
+    assert isinstance(r["exec_gate"], dict) and r["exec_gate"]["passed"] is True
+    assert r["exec_gate"]["expected_clv_pct"] >= 1.0
+    assert isinstance(r["placement_latency_ms"], (int, float))
+    assert "exec_gate_error" not in r
+
+
+def test_run_gate_exception_still_records_ungated(tmp_path):
+    # A gate crash must NEVER lose the placement row: it is recorded ungated with an
+    # exec_gate_error note (crash-safety -- m1_paper never dies on a gate error).
+    ledger = tmp_path / "l.jsonl"
+
+    def _boom(**kw):
+        raise RuntimeError("boom")
+
+    from unittest.mock import patch
+    with patch.object(G._exec_gate, "gate", _boom):
+        out = G.run(("mlb",), ledger_path=ledger, feed_fn=lambda s: _kalshi_rows(),
+                    model_fn=_model_games, place=True)
+    assert out["n_placed"] >= 1  # gate error must NOT drop the row
+    r = [json.loads(ln) for ln in ledger.read_text().splitlines() if ln.strip()][0]
+    assert r.get("exec_gate_error") == "RuntimeError"
+    assert "exec_gate" not in r  # ungated on error
+    assert isinstance(r["placement_latency_ms"], (int, float))
+
+
+def test_run_below_exec_floor_suppressed(tmp_path):
+    # Raising the exec floor above the candidate's expected-CLV suppresses the placement
+    # (mirror the pregame/in-game block); nothing is written.
+    ledger = tmp_path / "l.jsonl"
+    from unittest.mock import patch
+    with patch.object(G, "INGAME_EXPECTED_CLV_MIN_PCT", 1e6):
+        out = G.run(("mlb",), ledger_path=ledger, feed_fn=lambda s: _kalshi_rows(),
+                    model_fn=_model_games, place=True)
+    assert out["n_placed"] == 0 and out["n_suppressed"] >= 1
+    assert not ledger.exists() or ledger.read_text().strip() == ""
