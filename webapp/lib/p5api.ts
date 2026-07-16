@@ -138,10 +138,13 @@ export const api = {
     getJson<ReportList>(`/api/report/${sport}`, s),
   report: (sport: string, gid: string, s?: AbortSignal) =>
     getJson<Report>(`/api/report/${sport}/${gid}`, s),
+  // Served by the webapp's own /api/bestbets route (reads data/frontend/
+  // best_bets.json off disk -- decoupled from the wedge-prone :8099 live
+  // /api/v1/bestbets/{sport} route). NOT prefixed with P5_BASE.
   bestbets: (sport: string, s?: AbortSignal) =>
-    getJson<BestBetsEnvelope>(`/api/v1/bestbets/${sport}`, s),
+    fetchHonest<BestBetsEnvelope>(`/api/bestbets/${sport}`, { signal: s }),
   bestbetsGame: (sport: string, gid: string, s?: AbortSignal) =>
-    getJson<GameEdge & { clv?: ClvScoreboard }>(`/api/v1/bestbets/${sport}/${gid}`, s),
+    fetchHonest<GameEdge & { clv?: ClvScoreboard }>(`/api/bestbets/${sport}/${gid}`, { signal: s }),
   paperOpen: (s?: AbortSignal) => getJson<PaperOpen>(`/api/paper/open`, s),
   paperClv: (s?: AbortSignal) => getJson<ClvScoreboard>(`/api/paper/clv`, s),
   improve: (s?: AbortSignal) => getJson<ImproveStatus>(`/api/improve/status`, s),
