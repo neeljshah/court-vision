@@ -1,6 +1,3 @@
-<p align="center">
-  <img src="webapp/public/brand/courtvision-logo.png" alt="CourtVision" width="220">
-</p>
 
 # CourtVision -- a multi-sport prediction + decision-support AI with deep per-player intelligence
 
