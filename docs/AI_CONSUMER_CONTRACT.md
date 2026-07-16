@@ -44,7 +44,9 @@ drops a field.
 `resolver_registry.RESOLVERS` is the registry: one resolver per question
 category (`player_stat`, `rating_attribute`, `concept_rating`,
 `prediction_winprob`, `calibration_number`, `historical_result`,
-`mechanism_effect`, `edge_language`, `ranking`), each with its declared source artifact,
+`mechanism_effect`, `edge_language`, `ranking`, plus the descriptive-intel
+categories `injury_report`, `news_context`, `schedule_context`,
+`scouting_report`, `comparables`, and `matchup_preview`), each with its declared source artifact,
 computation rule, and units. `resolver_registry.classify(query)` picks the category;
 `resolver_registry.resolve(query, sport)` returns the envelope described
 above. Per-sport claim-category rules (what may/may not be said about a
@@ -79,12 +81,49 @@ validator wrote them, plus `source_artifact` and `as_of`.
   NOT_SUPPORTED per rule 4, never improvise a mechanism that isn't in the
   ledger.
 
+## Intel categories: injuries, news, schedule, scouting, comparables, matchup, win-prob
+
+Six additional categories return DESCRIPTIVE context, quoted verbatim from a
+source artifact under the same fail-closed envelope. Each fails closed the same
+way every other category does: an absent artifact -> `no_data`, a stale/zero-row
+match -> `no_data`/`refused`, never a fabricated value. None of them is an edge
+or profit claim (rule 6 still binds).
+
+- `injury_report` / `news_context` -- newest-first injury-status rows / news
+  items for a team or player, read verbatim off the edge-engine fact stores.
+  Absent store -> `no_data`; if the newest matched row is older than the 7-day
+  staleness bound -> `refused` (injuries and news churn weekly, so a stale
+  answer is worse than none). Pass `team=`/`player=` (or phrase the query
+  "injury report for <team>").
+- `schedule_context` -- rest days / back-to-back / games-in-last-7 for one team,
+  computed directly off the public games calendar (NBA/MLB only, same corpora
+  as `historical_result`). Descriptive schedule physics, not a prediction; the
+  envelope's `framing` field says so -- repeat it.
+- `scouting_report` -- a multi-axis descriptive VECTOR for one player (per-concept
+  ratings + shooting facet + top raw-attribute percentiles). Axes are reported
+  independently and NEVER collapsed into one score; a player who resolves on no
+  axis -> `no_data` naming the miss.
+- `comparables` -- the K nearest players by RMS Euclidean distance over shared
+  attribute percentiles. "Statistically similar profile", never a projection;
+  a target below the shared-attribute floor -> `refused`.
+- `matchup_preview` -- fans out over the shipped resolvers (win-prob + team
+  profiles + style pairing + injuries + schedule) and quotes each block's own
+  envelope verbatim. A block's own `no_data`/`refused` marks it absent in
+  `blocks_absent` WITHOUT failing the overall preview; read `blocks_ok` to see
+  which sub-answers landed.
+- `prediction_winprob` -- now resolves a live calibrated probability by running
+  the buyer-facing predictor as a subprocess (it authors no new number; the
+  probability is quoted verbatim). On a clone with no forecast corpus it fails
+  closed to `no_data`. Pass `home=`/`away=` (or phrase "win probability
+  <HOME> vs <AWAY>"). Still probability only -- never a dollar edge.
+
 ## Reference implementation
 
 `scripts/platformkit/answers/contract_client.py` IS this contract, executable
 -- it classifies, resolves, and formats per rules 2-4 above with no model
 call. A real LLM client should reproduce its behavior, not deviate from it.
-`scripts/platformkit/answers/test_answer_consistency_{nba,mlb,soccer,tennis}.py`
+`scripts/platformkit/answers/test_answer_consistency_{nba,mlb,soccer,tennis,intel}.py`
 prove the two paths (direct resolver call vs. this contract client) produce
-identical numbers for the same question; the sibling `test_answer_quality_*.py`
+identical numbers for the same question (the `intel` file covers the six
+descriptive-intel categories plus the rewired `prediction_winprob`); the sibling `test_answer_quality_*.py`
 files (nba, mlb, soccer, tennis, wnba) cover answer-quality checks per sport.
