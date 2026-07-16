@@ -169,15 +169,20 @@ _GOLDEN_KEYS = {
     "log_reaper", "eval_gate", "pregame_benchmark", "statcast_refresh",
     "replication_cadence", "false_discovery_accounting", "mlb_results_refresh",
     "weekly_scoreboard_cadence", "k_nightly_refresh", "k_escalation_intake",
-    "auto_validate", "card_grade",
+    "auto_validate", "card_grade", "analytics_verify", "econ_scoreboard_refresh",
 }
 
 
+@mock.patch("scripts.platformkit.autoloop.econ_scoreboard_refresh_job.run_econ_scoreboard_refresh",
+            return_value={"status": "skipped", "age_h": 1.0})
+@mock.patch("scripts.platformkit.analytics_verify.cycle.run_cycle",
+            return_value={"status": "ok"})
 @mock.patch("scripts.platformkit.autoloop.card_grade_job.run_card_grade",
             return_value={"grade": {"status": "skipped"}, "edge_claimed": False})
-def test_run_all_isolates_one_failing_job(_cg_mock, tmp_path):
-    # card_grade mocked via decorator: the with-stack below is already at
-    # CPython's 20-nested-block cap, one more with-item is a SyntaxError.
+def test_run_all_isolates_one_failing_job(_cg_mock, _av_mock, _econ_mock, tmp_path):
+    # card_grade/analytics_verify/econ_scoreboard_refresh mocked via decorator:
+    # the with-stack below is already at CPython's 20-nested-block cap, one
+    # more with-item is a SyntaxError.
     with mock.patch.object(MT, "run_validate_new_stores", side_effect=RuntimeError("x")), \
         mock.patch.object(MT, "run_weighting_refresh", return_value={"sports_refreshed": []}), \
         mock.patch.object(MT, "run_replication_watch", return_value={"new_reports": 0}), \
@@ -233,6 +238,8 @@ def test_run_all_isolates_one_failing_job(_cg_mock, tmp_path):
     assert out["false_discovery_accounting"] == {"status": "ran", "dates_appended": []}
     assert out["mlb_results_refresh"] == {"status": "skipped", "age_h": 1.0}
     assert out["weekly_scoreboard_cadence"] == {"status": "skipped", "week": "2026-W28"}
+    assert out["analytics_verify"] == {"status": "ok"}
+    assert out["econ_scoreboard_refresh"] == {"status": "skipped", "age_h": 1.0}
     # golden key list: table-driven refactor must not add/drop/rename a job key
     assert set(out.keys()) == _GOLDEN_KEYS
 
