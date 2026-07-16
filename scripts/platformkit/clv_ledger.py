@@ -133,6 +133,29 @@ def bet_id(record: Dict[str, Any]) -> str:
                      str(record.get("side") or ""), book, _game_date(record)])
 
 
+def event_ckey(record: Dict[str, Any]) -> Optional[str]:
+    """Canonical CROSS-LEDGER event key for *record*: the stable str form of
+    make_event_key(sport, game_date, home, away, market). Additive join spine so a
+    clv bet and a graded prediction on the SAME game+market collapse to one token
+    even though bet_id/pred_key stay independent (event_id overlap = 0).
+
+    matchup is 'Away@Home' (ESPN convention); split so home/away canonicalize
+    correctly. Absent-tolerant and never raises -- a row that cannot be keyed just
+    gets no ckey, exactly like a pre-fix row.
+    """
+    try:
+        from scripts.platformkit.live_edge.paper.event_key import make_event_key
+        away, _, home = str(record.get("matchup") or "").partition("@")
+        if not home:  # not an 'Away@Home' spelling -> single-token best effort
+            home, away = away, ""
+        market = str(record.get("market") or record.get("market_type") or "").lower()
+        ek = make_event_key(record.get("sport"), _game_date(record),
+                            home, away, market)
+        return "|".join(ek)
+    except Exception:  # noqa: BLE001 -- ckey is best-effort; never block a write
+        return None
+
+
 def record_bet(
     sport: str,
     matchup: str,
@@ -202,6 +225,9 @@ def record_bet(
         record["game_pk"] = int(game_pk)
     if claim_tags:
         record["claim_tags"] = dict(claim_tags)
+    ck = event_ckey(record)
+    if ck:
+        record["ckey"] = ck  # additive cross-ledger join key (new rows only)
     record["bet_id"] = bet_id(record)
     target = Path(path) if path is not None else DEFAULT_LEDGER
     _append_line(record, target)
@@ -486,7 +512,7 @@ def clv_summary(ledger: Sequence[Dict[str, Any]]) -> Dict[str, Any]:
 
 
 __all__ = [
-    "record_bet", "bet_id", "compute_clv", "settle_closing_line",
+    "record_bet", "bet_id", "event_ckey", "compute_clv", "settle_closing_line",
     "append_settlement", "load_ledger", "clv_summary", "is_clv_suspect",
     "is_suspect_close",
 ]

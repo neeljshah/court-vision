@@ -33,7 +33,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
-from scripts.platformkit.clv_ledger import compute_clv
+from scripts.platformkit.clv_ledger import compute_clv, event_ckey as _event_ckey
 from scripts.platformkit.clv_ledger_migrate import BANNED_KEYS
 from scripts.platformkit.paper import finals_fetch as _ff
 from scripts.platformkit.paper import market_resolver as _mr
@@ -192,7 +192,9 @@ def grade_one_pred(
         "executed": False,
         "edge_claimed": False,
         **_clv_fields(row, home_team, away_team),  # true_close > proxy > no_close
-        "pred_key": pred_key(row),
+        "pred_key": pred_key(row),  # additive cross-ledger join key via clv_ledger.event_ckey
+        "ckey": _event_ckey({"sport": row.get("sport"), "matchup": row.get("matchup"),
+            "market": row.get("group"), "game_date": str(row.get("commence_time") or row.get("logged_at") or "")[:10]}),
         "channel": "paper_prediction",
     })
     return graded
