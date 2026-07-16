@@ -15,7 +15,11 @@ import { NextResponse } from "next/server";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 
-export const dynamic = "force-dynamic"; // never cache a liveness read
+// Snapshot demo build (output:'export') can't ship a force-dynamic route --
+// this is never called by the client there anyway (fetchHonest redirects to
+// /demo-data/*.json first); stub it so the static export still builds.
+export const dynamic =
+  process.env.NEXT_PUBLIC_DATA_MODE === "snapshot" ? "force-static" : "force-dynamic";
 export const runtime = "nodejs";
 
 // The supervisor refreshes updated_at every loop tick (~seconds). Anything older
@@ -83,6 +87,9 @@ function unavailable(reason: string) {
 }
 
 export async function GET() {
+  if (process.env.NEXT_PUBLIC_DATA_MODE === "snapshot") {
+    return unavailable("static demo build -- no supervisor process");
+  }
   let raw: string;
   try {
     raw = await fs.readFile(STATUS_PATH, "utf-8");

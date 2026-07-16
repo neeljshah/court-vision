@@ -17,6 +17,30 @@
 
 import type { Unavailable } from "./types";
 
+// ---------------------------------------------------------------------------
+// Snapshot data mode -- static-demo build (NEXT_PUBLIC_DATA_MODE=snapshot).
+// GET requests are redirected to a pre-baked JSON file under /demo-data/ so the
+// exported site needs no backend at all. Inlined by Next at build time.
+// ponytail: path -> filename is a dumb slug (strip query, non-alnum -> "_");
+// the exporter (scripts/platformkit/publish_demo/export_snapshot.py) must slug
+// identically so client requests resolve to files it wrote.
+// ---------------------------------------------------------------------------
+export const isSnapshotMode = process.env.NEXT_PUBLIC_DATA_MODE === "snapshot";
+
+// Next's basePath (set to /court-vision in next.config.mjs when SNAPSHOT) is
+// NOT auto-prepended to plain fetch() calls -- only to Link/Image/router nav.
+// Mirror it here via a public env var so a GitHub Pages project-site build
+// resolves /demo-data/*.json correctly instead of 404ing at the site root.
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
+export function snapshotPath(url: string): string {
+  // Keep the query string in the slug -- several endpoints (board/slate,
+  // produce/status) differ ONLY by ?sport=, so dropping it would collide
+  // different sports onto one file. The exporter must slug identically.
+  const slug = url.replace(/^\/+/, "").replace(/[^a-zA-Z0-9]+/g, "_");
+  return `${BASE_PATH}/demo-data/${slug}.json`;
+}
+
 export interface FetchHonestOptions {
   /** Caller's abort signal (page unmount). Composed with the timeout. */
   signal?: AbortSignal;
@@ -125,11 +149,15 @@ export async function fetchHonest<T>(
     signal: options.signal,
     body: options.body,
   };
+  // Snapshot mode: GET-only demo build, redirect to the baked static file.
+  // POSTs (placePaper etc.) have no snapshot equivalent -- fall through to the
+  // live URL, which 404s and degrades to Unavailable, same as any dead backend.
+  const targetUrl = isSnapshotMode && o.body === undefined ? snapshotPath(url) : url;
   let lastReason = "fetch failed";
   for (let i = 0; i <= o.retries; i++) {
     if (o.signal?.aborted) return unavailable("request aborted");
     try {
-      return await attempt<T>(url, o);
+      return await attempt<T>(targetUrl, o);
     } catch (e) {
       const re = e as { retryable?: boolean; reason?: string };
       lastReason = re?.reason ?? lastReason;

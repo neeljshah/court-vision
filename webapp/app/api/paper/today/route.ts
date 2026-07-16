@@ -22,7 +22,11 @@ import { NextResponse } from "next/server";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 
-export const dynamic = "force-dynamic"; // never cache a daily-cycle read
+// Snapshot demo build (output:'export') can't ship a force-dynamic route --
+// this is never called by the client there anyway (fetchHonest redirects to
+// /demo-data/*.json first); stub it so the static export still builds.
+export const dynamic =
+  process.env.NEXT_PUBLIC_DATA_MODE === "snapshot" ? "force-static" : "force-dynamic";
 export const runtime = "nodejs";
 
 // Repo root is the webapp's parent dir. The daily cycle writes the canonical doc
@@ -48,6 +52,9 @@ function unavailable(reason: string) {
 }
 
 export async function GET() {
+  if (process.env.NEXT_PUBLIC_DATA_MODE === "snapshot") {
+    return unavailable("static demo build -- no paper_today.json cycle");
+  }
   let raw: string;
   try {
     raw = await fs.readFile(TODAY_PATH, "utf-8");

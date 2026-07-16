@@ -17,7 +17,7 @@
 //   - Cleans up timeout + visibilitychange listener on unmount.
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { fetchHonest } from "./fetchHonest";
+import { fetchHonest, isSnapshotMode } from "./fetchHonest";
 import type { Unavailable } from "./types";
 
 // ---------------------------------------------------------------------------
@@ -262,6 +262,9 @@ export function useLiveData<T>(
       pollTimeoutRef.current = null;
     }
     if (!pollingActiveRef.current) return;
+    // Snapshot demo build: single load, no re-poll -- there is no live backend.
+    // The baked "generated_at" in the snapshot payload is the honest asOf stamp.
+    if (isSnapshotMode) return;
     const delay = backoffDelay(
       intervalMsRef.current,
       consecutiveFailuresRef.current,

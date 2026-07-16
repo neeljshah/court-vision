@@ -14,7 +14,12 @@ import { NextResponse } from "next/server";
 import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 
-export const dynamic = "force-dynamic";
+// Snapshot demo build (output:'export') can't ship a force-dynamic route.
+// systemApi.ts's getLocalJson degrades to Unavailable on any non-2xx/network
+// error already, so the System page's rich ledger/backlog panels just show
+// honest "unavailable" in the demo -- no live artifact reads there anyway.
+export const dynamic =
+  process.env.NEXT_PUBLIC_DATA_MODE === "snapshot" ? "force-static" : "force-dynamic";
 
 // data/ lives two levels up from webapp/ (repo root). cwd is the webapp dir.
 const REPO_ROOT = path.resolve(process.cwd(), "..");
