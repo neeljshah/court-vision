@@ -13,8 +13,13 @@ from __future__ import annotations
 
 import json
 import subprocess
+import sys
 import time
 from typing import Any, Dict, List, Optional
+
+# Mirror proc_win.py: hide the console window of every powershell probe --
+# without this the 30s process-table cadence flashes a visible terminal.
+_CREATE_NO_WINDOW = 0x08000000 if sys.platform == "win32" else 0
 
 # TICK-COST FIX (2026-07-10): every liveness call (is_alive(verify_cmdline=True)
 # via cmdline_for_pid, plus find_by_match) re-spawned PowerShell to enumerate the
@@ -58,6 +63,7 @@ def ps_process_table(*, max_age_sec: float = _TABLE_TTL_SEC) -> List[Dict[str, A
         out = subprocess.run(
             ["powershell", "-NoProfile", "-NonInteractive", "-Command", ps_script],
             capture_output=True, text=True, timeout=15, check=False,
+            creationflags=_CREATE_NO_WINDOW,
         ).stdout
     except Exception:  # noqa: BLE001 -- powershell unavailable / timeout
         return rows
