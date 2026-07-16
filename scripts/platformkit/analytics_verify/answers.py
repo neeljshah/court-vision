@@ -38,9 +38,12 @@ def _parse_dt(raw) -> datetime | None:
     if not raw:
         return None
     try:
-        return datetime.fromisoformat(str(raw).replace("Z", "+00:00"))
+        dt = datetime.fromisoformat(str(raw).replace("Z", "+00:00"))
     except ValueError:
         return None
+    # naive timestamps (no tz) are assumed UTC, mirroring sentinel._is_stale --
+    # otherwise the aware-minus-naive subtraction below raises TypeError.
+    return dt if dt.tzinfo is not None else dt.replace(tzinfo=timezone.utc)
 
 
 def _load(kind: str, category: str, sport: str) -> tuple[dict | None, tuple[dict, str, str] | None]:

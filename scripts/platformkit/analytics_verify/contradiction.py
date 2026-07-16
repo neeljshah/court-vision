@@ -1,18 +1,15 @@
 """Claims contradiction auditor.
 
-Streams the verified-claims stores (data/cache/intel_claims/*.jsonl), normalizes
-each ranking claim, and flags internal contradictions across families:
+Streams the verified-claims stores (data/cache/intel_claims/*.jsonl),
+normalizes each ranking claim, and flags contradictions across families:
 SIGN_CONFLICT, RANK_CONFLICT, VALUE_CONFLICT, STALE_PAIR (informational).
-Descriptive/calibration language only -- never a $/ROI/edge claim. Read-only on
-data/cache/intel_claims/. Stdlib only, memory-light: streams line-by-line and
-retains only ONE canonical (latest) ranking per (family, metric, window).
-
-Scoped limitations (see honest_note in the output report): windows compared by
-EXACT string match only; each family capped at MAX_LINES_PER_FAMILY lines
-(large per-entity-pointer stores republish the same ranking per pointer
-entity, so a modest cap already reaches every distinct metric+window combo);
-SIGN_CONFLICT = opposite arithmetic sign of value for the same
-entity+metric+window (rate/skill values here, not directional forecasts).
+Descriptive/calibration language only -- never a $/ROI/edge claim. Read-only,
+stdlib only, memory-light: streams line-by-line, keeps only ONE canonical
+(latest) ranking per (family, metric, window). Scoped limitations (see
+honest_note in the report): windows compared by EXACT string match only;
+each family capped at MAX_LINES_PER_FAMILY lines; SIGN_CONFLICT = opposite
+arithmetic sign of value for the same entity+metric+window (rate/skill
+values, not directional forecasts).
 """
 from __future__ import annotations
 
@@ -237,11 +234,14 @@ def run(store_dir: str = STORE_DIR_DEFAULT, out_path: str = OUT_PATH_DEFAULT,
             rec["n_claims"] += 1
             rec["n_pairs"] += max(size - 1, 0) + 1  # +1 for its own stale self-check
     for c in conflicts:
-        for fam in (c["family_a"], c["family_b"]):
+        # dedupe family_a/family_b: a self-pair conflict (STALE_PAIR within one
+        # family) must count once, not twice, against that family's tally.
+        for fam in {c["family_a"], c["family_b"]}:
             if fam in by_family_consistency:
                 by_family_consistency[fam]["n_conflicts"] += 1
     for family, rec in by_family_consistency.items():
-        rec["consistency"] = round(1.0 - rec["n_conflicts"] / max(rec["n_pairs"], 1), 4)
+        score = 1.0 - rec["n_conflicts"] / max(rec["n_pairs"], 1)
+        rec["consistency"] = round(max(0.0, min(1.0, score)), 4)
 
     n_index_files = len(glob.glob(os.path.join(store_dir, "*.index.jsonl")))
     total_jsonl = len(glob.glob(os.path.join(store_dir, "*.jsonl")))

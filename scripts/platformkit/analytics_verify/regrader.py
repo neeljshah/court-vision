@@ -1,20 +1,15 @@
 """Claim survival regrader -- re-score ever-VALIDATED claim cards on POST-validation evidence.
 
-Reads (never mutates) the claims engine's own files:
-  data/cache/claims/card_ledger.jsonl   -- graded cards (verdict, graded_at)
-  data/cache/claims/cards.jsonl         -- card claim + condition{entity,scope,trigger,window}
-and post-validation evidence:
-  data/frontend/paper_predictions_graded.jsonl  -- pregame settled CLV rows
-  data/frontend/ingame_realized_clv.jsonl       -- in-game realized CLV rows
-
-For every card whose ledger verdict is terminal-positive it collects linked outcomes
-settled AFTER the card's graded_at, computes a post-validation CLV metric per horizon
-(7/30/60 day), and emits a regrade verdict: HOLDS / DECAYED / INSUFFICIENT.
-
-Demotion is a PROPOSAL appended to this module's OWN ledger, surfaced for the
-autoloop / human -- it never rewrites the claims engine's files.
-
-Calibration / CLV language only. No dollars, no ROI, no edge. Stdlib only.
+Reads (never mutates) the claims engine's own files (card_ledger.jsonl,
+cards.jsonl under data/cache/claims/) and post-validation evidence
+(paper_predictions_graded.jsonl, ingame_realized_clv.jsonl under
+data/frontend/). For every card whose ledger verdict is terminal-positive it
+collects linked outcomes settled AFTER the card's graded_at, computes a
+post-validation CLV metric per horizon (7/30/60 day), and emits a regrade
+verdict: HOLDS / DECAYED / INSUFFICIENT. Demotion is a PROPOSAL appended to
+this module's OWN ledger, surfaced for the autoloop / human -- it never
+rewrites the claims engine's files. Calibration / CLV language only. No
+dollars, no ROI, no edge. Stdlib only.
 
 Run:
     cd /c/Users/neelj/nba-ai-system && python -m scripts.platformkit.analytics_verify.regrader
@@ -118,6 +113,14 @@ def _evidence_rows(scope: str, cards_ingame: Path, cards_pregame: Path) -> Itera
                 yield ts, float(clv), row
 
 
+def _fired_tags(tags: Any) -> set:
+    """claim_tags -> set of fired card_ids. Accepts the real dict-of-bool
+    shape ({card_id: fired_bool}) or a bare list/tuple of fired card_ids."""
+    if isinstance(tags, dict):
+        return {k for k, v in tags.items() if v}
+    return set(tags) if isinstance(tags, (list, tuple)) else set()
+
+
 def _link(card: dict, graded_at: datetime, scope: str, ev_ingame: Path, ev_pregame: Path):
     """Return (link_method, [(settled_ts, clv_pct, row), ...]) for outcomes settled AFTER graded_at."""
     card_id = card.get("card_id")
@@ -127,8 +130,7 @@ def _link(card: dict, graded_at: datetime, scope: str, ev_ingame: Path, ev_prega
     for ts, clv, row in _evidence_rows(scope, ev_ingame, ev_pregame):
         if ts <= graded_at:
             continue
-        tags = row.get("claim_tags")
-        if isinstance(tags, (list, tuple)) and card_id in tags:
+        if card_id in _fired_tags(row.get("claim_tags")):
             tagged.append((ts, clv, row))
             continue
         if sport and str(row.get("sport", "")).lower() != sport:
@@ -257,7 +259,7 @@ def run(
                 fh.write(json.dumps(r) + "\n")
 
     survival = {
-        str(h): (round(hd[0] / hd[1], 4) if hd[1] else None)
+        f"{h}d": (round(hd[0] / hd[1], 4) if hd[1] else None)
         for h, hd in horizon_holds.items()
     }
     snapshot = {
@@ -285,7 +287,7 @@ def main(argv: list[str] | None = None) -> int:
     print(
         f"[regrader] eligible={snap['n_eligible']}/{snap['n_cards_total']} "
         f"rows_appended={snap['_rows_appended']} verdicts={snap['verdict_counts']} "
-        f"survival7/30/60={snap['survival'].get('7')}/{snap['survival'].get('30')}/{snap['survival'].get('60')} "
+        f"survival7/30/60={snap['survival'].get('7d')}/{snap['survival'].get('30d')}/{snap['survival'].get('60d')} "
         f"decayed={len(snap['decayed_cards'])} insufficient={snap['insufficient_cards']}"
     )
     if snap["n_eligible"] == 0:

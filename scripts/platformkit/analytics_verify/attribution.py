@@ -4,18 +4,12 @@ licensed them, roll up per-claim-family realized performance.
 CALIBRATION / CLV ONLY -- never dollars, ROI, or edge. Every output carries
 edge_claimed=false.
 
-STEP-0 data reality (measured 2026-07-15, cite in honest_note):
-  * paper_predictions_graded.jsonl: settled bets carry NO claim linkage and
-    clv_pct is null for all of them (no close captured).
-  * clv_ledger.jsonl: 2208 settled rows, 1284 with clv_pct; only a handful
-    carry claim_tags and NO card's condition fired (all tags false).
-  * graded<->clv share zero event_ids; ingame_realized_clv has no event_ids.
-So there is NO id-join between the settled-bet ledger and the claim/CLV
-ledgers. Linkage is therefore:
-  1. claim_tags: a card whose condition FIRED (tag==true) -> "licensed".
-  2. condition_match(candidate): bet was screened against a card set (the
-     claim_tags dict) but none fired -> lower-confidence per-card link.
-  3. condition_match(scope): fallback -- bet's scope matches a card family.
+Data reality (2026-07-15): graded/clv ledgers share zero event_ids and no
+card's claim_tags condition has ever fired, so there is no id-join. Linkage
+is therefore: (1) claim_tags -- a card tag that FIRED -> "licensed"; (2)
+condition_match(candidate) -- screened against a claim_tags set but none
+fired -> lower-confidence per-card link; (3) condition_match(scope) --
+fallback on the bet's scope matching a card family.
 """
 from __future__ import annotations
 
@@ -77,48 +71,33 @@ def _fnum(v):
         return None
 
 
+def _norm(r: dict, source: str) -> dict:
+    """graded and clv ledgers use different field names for the same concept;
+    normalize both to one shape."""
+    if source == "graded":
+        pred_key = r.get("pred_key"); key = pred_key or r.get("event_id")
+        market, side = r.get("group") or r.get("market"), r.get("selection") or r.get("side")
+    else:
+        pred_key = None
+        key = r.get("bet_id") or r.get("event_id")
+        market, side = r.get("market") or r.get("market_type"), r.get("side")
+    return {
+        "key": key, "pred_key": pred_key, "bet_id": r.get("bet_id"),
+        "event_id": r.get("event_id"), "sport": r.get("sport"),
+        "market": market, "side": side, "scope": _scope(r),
+        "outcome": r.get("outcome"), "unit_result": _fnum(r.get("unit_result")),
+        "clv_pct": _fnum(r.get("clv_pct")), "clv_is_proxy": bool(r.get("clv_is_proxy")),
+        "settled_at": r.get("settled_at"), "claim_tags": r.get("claim_tags") or None,
+        "source": source,
+    }
+
+
 def load_settled(graded=GRADED, clv=CLV):
     """Yield normalized settled bets from both ledgers (they are disjoint)."""
-    for r in iter_jsonl(graded):
-        if r.get("status") not in ("settled", "graded"):
-            continue
-        yield {
-            "key": r.get("pred_key") or r.get("event_id"),
-            "pred_key": r.get("pred_key"),
-            "bet_id": r.get("bet_id"),
-            "event_id": r.get("event_id"),
-            "sport": r.get("sport"),
-            "market": r.get("group") or r.get("market"),
-            "side": r.get("selection") or r.get("side"),
-            "scope": _scope(r),
-            "outcome": r.get("outcome"),
-            "unit_result": _fnum(r.get("unit_result")),
-            "clv_pct": _fnum(r.get("clv_pct")),
-            "clv_is_proxy": bool(r.get("clv_is_proxy")),
-            "settled_at": r.get("settled_at"),
-            "claim_tags": r.get("claim_tags") or None,
-            "source": "graded",
-        }
-    for r in iter_jsonl(clv):
-        if r.get("status") not in ("settled", "graded"):
-            continue
-        yield {
-            "key": r.get("bet_id") or r.get("event_id"),
-            "pred_key": None,
-            "bet_id": r.get("bet_id"),
-            "event_id": r.get("event_id"),
-            "sport": r.get("sport"),
-            "market": r.get("market") or r.get("market_type"),
-            "side": r.get("side"),
-            "scope": _scope(r),
-            "outcome": r.get("outcome"),
-            "unit_result": _fnum(r.get("unit_result")),
-            "clv_pct": _fnum(r.get("clv_pct")),
-            "clv_is_proxy": bool(r.get("clv_is_proxy")),
-            "settled_at": r.get("settled_at"),
-            "claim_tags": r.get("claim_tags") or None,
-            "source": "clv",
-        }
+    for path, source in ((graded, "graded"), (clv, "clv")):
+        for r in iter_jsonl(path):
+            if r.get("status") in ("settled", "graded"):
+                yield _norm(r, source)
 
 
 def build_card_index(wanted: set, cards=CARDS) -> dict:
@@ -156,6 +135,14 @@ def _best_ingame_clv(rec: dict):
     return None
 
 
+def _tag_map(tags) -> dict:
+    """Normalize claim_tags to {card_id: fired_bool}: dict-of-bool (real
+    ledgers) as-is, or a bare list/tuple of fired card_ids -> all-fired."""
+    if isinstance(tags, dict):
+        return tags
+    return {cid: True for cid in tags} if isinstance(tags, (list, tuple)) else {}
+
+
 def attribute(bets, card_index, ingame_idx):
     """One row per (bet, claim/card) link."""
     now = utcnow()
@@ -176,8 +163,8 @@ def attribute(bets, card_index, ingame_idx):
             "settled_at": b["settled_at"], "attributed_at": now,
             "edge_claimed": False,
         }
-        tags = b["claim_tags"]
-        if isinstance(tags, dict) and tags:
+        tags = _tag_map(b["claim_tags"])
+        if tags:
             for cid, fired in tags.items():
                 fam = card_index.get(cid, {}).get("family", "unknown")
                 yield {**base, "card_id": cid, "claim_family": fam,
@@ -252,26 +239,17 @@ def build_rollup(ledger=LEDGER, join_rates=None) -> dict:
 
 
 def compute_join_rates(graded=GRADED, clv=CLV, ingame=INGAME, limit=None) -> dict:
-    def eids(p):
+    def _ids(p, field):
         s = set()
         for i, r in enumerate(iter_jsonl(p)):
             if limit and i >= limit:
                 break
-            if r.get("event_id"):
-                s.add(str(r["event_id"]))
+            if r.get(field):
+                s.add(str(r[field]))
         return s
 
-    def bids(p):
-        s = set()
-        for i, r in enumerate(iter_jsonl(p)):
-            if limit and i >= limit:
-                break
-            if r.get("bet_id"):
-                s.add(str(r["bet_id"]))
-        return s
-
-    g_e, c_e = eids(graded), eids(clv)
-    c_b, i_b = bids(clv), bids(ingame)
+    g_e, c_e = _ids(graded, "event_id"), _ids(clv, "event_id")
+    c_b, i_b = _ids(clv, "bet_id"), _ids(ingame, "bet_id")
     return {
         "graded_clv_event_overlap": round(len(g_e & c_e) / len(g_e), 4) if g_e else None,
         "clv_ingame_bet_overlap": round(len(c_b & i_b) / len(c_b), 4) if c_b else None,

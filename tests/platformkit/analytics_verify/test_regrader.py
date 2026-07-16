@@ -53,7 +53,7 @@ def test_holds(tmp_path):
     _write(ev_pre, [{"sport": "nba", "settled_at": "2026-01-02T00:00:00Z", "clv_pct": 2.0} for _ in range(30)])
     snap = _run(tmp_path, ledger, cards, ev_pre, ev_in, min_n=25)
     assert snap["n_eligible"] == 1
-    assert snap["survival"]["7"] == 1.0 and snap["survival"]["60"] == 1.0
+    assert snap["survival"]["7d"] == 1.0 and snap["survival"]["60d"] == 1.0
     assert snap["decayed_cards"] == [] and snap["insufficient_cards"] == 0
     rows = list(R._iter_jsonl(tmp_path / "regrade_ledger.jsonl"))
     assert {r["regrade_verdict"] for r in rows} == {"HOLDS"}
@@ -65,7 +65,7 @@ def test_decayed(tmp_path):
     # 30 post rows all negative CLV -> sign flip -> DECAYED.
     _write(ev_pre, [{"sport": "nba", "settled_at": "2026-01-02T00:00:00Z", "clv_pct": -3.0} for _ in range(30)])
     snap = _run(tmp_path, ledger, cards, ev_pre, ev_in, min_n=25)
-    assert snap["survival"]["30"] == 0.0
+    assert snap["survival"]["30d"] == 0.0
     assert len(snap["decayed_cards"]) == 1 and snap["decayed_cards"][0]["card_id"] == "c1"
     verds = {r["regrade_verdict"] for r in R._iter_jsonl(tmp_path / "regrade_ledger.jsonl")}
     assert verds == {"DECAYED"}
@@ -75,7 +75,7 @@ def test_insufficient(tmp_path):
     ledger, cards, ev_pre, ev_in = _fixture(tmp_path)
     _write(ev_pre, [{"sport": "nba", "settled_at": "2026-01-02T00:00:00Z", "clv_pct": 2.0} for _ in range(3)])
     snap = _run(tmp_path, ledger, cards, ev_pre, ev_in, min_n=25)
-    assert snap["survival"]["7"] is None  # nobody decided
+    assert snap["survival"]["7d"] is None  # nobody decided
     assert snap["insufficient_cards"] == 1
     verds = {r["regrade_verdict"] for r in R._iter_jsonl(tmp_path / "regrade_ledger.jsonl")}
     assert verds == {"INSUFFICIENT"}
@@ -94,7 +94,7 @@ def test_ingame_scope_linkage(tmp_path):
     _write(ev_in, [{"bet_id": f"nba|G|win_home|home|paper_ingame|2026-02-0{(i % 9) + 1}",
                     "sport": "nba", "ingame_realized_clv_300s": 1.5} for i in range(30)])
     snap = _run(tmp_path, ledger, cards, ev_pre, ev_in, min_n=25)
-    assert snap["survival"]["60"] == 1.0
+    assert snap["survival"]["60d"] == 1.0
     assert {r["link_method"] for r in R._iter_jsonl(tmp_path / "regrade_ledger.jsonl")} == {"condition_match"}
 
 
@@ -105,7 +105,17 @@ def test_claim_tags_link_method(tmp_path):
     snap = _run(tmp_path, ledger, cards, ev_pre, ev_in, min_n=25)
     # tag match overrides the sport mismatch
     assert {r["link_method"] for r in R._iter_jsonl(tmp_path / "regrade_ledger.jsonl")} == {"claim_tags"}
-    assert snap["survival"]["7"] == 1.0
+    assert snap["survival"]["7d"] == 1.0
+
+
+def test_claim_tags_dict_shape(tmp_path):
+    # real clv_ledger.jsonl rows carry claim_tags as {card_id: fired_bool}, not a list.
+    ledger, cards, ev_pre, ev_in = _fixture(tmp_path)
+    _write(ev_pre, [{"sport": "other", "settled_at": "2026-01-02T00:00:00Z", "clv_pct": 1.0,
+                     "claim_tags": {"c1": True, "other_card": False}} for _ in range(30)])
+    snap = _run(tmp_path, ledger, cards, ev_pre, ev_in, min_n=25)
+    assert {r["link_method"] for r in R._iter_jsonl(tmp_path / "regrade_ledger.jsonl")} == {"claim_tags"}
+    assert snap["survival"]["7d"] == 1.0
 
 
 def test_zero_eligible_when_no_positive_verdict(tmp_path):
@@ -113,7 +123,7 @@ def test_zero_eligible_when_no_positive_verdict(tmp_path):
     _write(ev_pre, [{"sport": "nba", "settled_at": "2026-01-02T00:00:00Z", "clv_pct": 2.0} for _ in range(30)])
     snap = _run(tmp_path, ledger, cards, ev_pre, ev_in)
     assert snap["n_eligible"] == 0 and snap["_rows_appended"] == 0
-    assert snap["survival"]["7"] is None
+    assert snap["survival"]["7d"] is None
 
 
 def test_idempotent_same_day(tmp_path):
