@@ -6,6 +6,7 @@ import { cn, fmtPct, tierClass } from "@/lib/utils";
 import { coherentPick, keyMarkets, bestBetChip } from "./card-utils";
 import { InfoTip } from "@/components/depth";
 import { sportSignals } from "@/components/games_depth";
+import { GameStatusChip } from "./GameStatusChip";
 import { AsOf, Num } from "@/components/ui/terminal";
 import {
   type SlateGame,
@@ -85,8 +86,14 @@ export function GameCard({
             {humanizeMatchup(rec.game_id)}
           </div>
         </div>
-        {rec.leak_guard ? (
-          <div className="mt-0.5 shrink-0">
+        <div className="mt-0.5 flex shrink-0 flex-col items-end gap-1">
+          <GameStatusChip tipoff={rec.tipoff} liveState={edge?.live?.status ?? edge?.status} />
+          {edge?.live?.home_score != null && edge?.live?.away_score != null ? (
+            <span className="font-data text-xs tabular text-foreground">
+              {edge.live.away_score} <span className="text-faint">-</span> {edge.live.home_score}
+            </span>
+          ) : null}
+          {rec.leak_guard ? (
             <span
               className={cn(
                 "border px-1.5 py-px font-data text-[10px] font-bold uppercase tracking-wider",
@@ -95,8 +102,8 @@ export function GameCard({
             >
               {rec.leak_guard.in_sample ? "in-sample" : "leak-free"}
             </span>
-          </div>
-        ) : null}
+          ) : null}
+        </div>
       </div>
 
       {/* Horizontal rule */}

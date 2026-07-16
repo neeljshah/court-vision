@@ -23,6 +23,7 @@ import { useLiveData } from "@/lib/useLiveData";
 import { useStream } from "@/lib/useStream";
 import { GameReport } from "@/components/p6/GameReport";
 import { BestBets } from "@/components/p6/BestBets";
+import { BoxScorePanel } from "@/components/p6/BoxScorePanel";
 import { ClvScoreboard } from "@/components/p6/ClvScoreboard";
 import { ModeDot } from "@/components/p6/Primitives";
 import { sportLabel } from "../../card-utils";
@@ -200,6 +201,7 @@ export function GameView({
                   matchupLabel={headerMatchup}
                 />
               </PanelErrorBoundary>
+              <BoxScorePanel sport={sport} gameId={gameId} />
               <ClvScoreboard clv={clv} />
               {/* Which gate-tested signals feed this sport (verdict chips). */}
               <ValidatedSignalsStrip sport={sport} />
