@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="webapp/public/brand/courtvision-logo.png" alt="CourtVision" width="220">
+</p>
+
 # CourtVision -- a multi-sport prediction + decision-support AI with deep per-player intelligence
 
 **One calibrated AI brain that, across five sports, prices every market from a single coherent
