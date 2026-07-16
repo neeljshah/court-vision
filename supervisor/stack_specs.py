@@ -220,6 +220,16 @@ _SETTLE_SWEEP_HB = "data/cache/daemon_heartbeats/m43_settle_sweep.txt"
 # fresh_sec = 2.5x the 3600s cadence + margin (mirrors m42/m43's ratio).
 _EXEC_EVIDENCE_HB = "data/cache/daemon_heartbeats/m44_exec_evidence.txt"
 
+# M45 -- the NBA/MLB news-facts snapshotter (F2 fix lane, 2026-07-15). Sibling of
+# m39's injury snapshotter: news_facts.store_news (ESPN news feed -> headline fact
+# rows) had NO scheduled caller, so news_facts_nba/mlb.jsonl were frozen at the
+# one-shot CLI backfill. Every 6h this fetches the ESPN news feed for each wired
+# sport (nba, mlb). Independent branch (no depends_on) so a dead tick is itself
+# ONE red status entry. NOT YET RUNNING -- registered here but requires a
+# supervisor restart to take effect. fresh_sec = 2x the 21600s cadence + margin
+# (mirrors m39).
+_NEWS_FACTS_HB = "data/cache/daemon_heartbeats/m45_news_facts.txt"
+
 _FOREVER = RestartPolicy(max_retries=None, backoff_base_sec=2.0, backoff_cap_sec=60.0)
 
 # The Next.js UI directory. Default "court-visions" (the original wired app);
@@ -952,6 +962,18 @@ def base_specs() -> List[ProcSpec]:
             argv=["--interval", "3600"],
             readiness=ReadinessSpec(
                 kind=HEARTBEAT, heartbeat_path=_EXEC_EVIDENCE_HB, fresh_sec=9000.0),
+            restart_policy=_FOREVER,
+        ),
+        # M45 -- the NBA/MLB news-facts snapshotter (see _NEWS_FACTS_HB comment
+        # above). Independent branch (no depends_on) so a dead tick is itself ONE
+        # red status entry. NOT YET RUNNING -- registered here but requires a
+        # supervisor restart to take effect.
+        ProcSpec(
+            name="m45_news_facts", kind="py",
+            module="scripts.platformkit.edge_engine.news_daemon",
+            argv=["--interval", "21600"],
+            readiness=ReadinessSpec(
+                kind=HEARTBEAT, heartbeat_path=_NEWS_FACTS_HB, fresh_sec=45000.0),
             restart_policy=_FOREVER,
         ),
     ]
