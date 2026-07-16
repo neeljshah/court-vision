@@ -58,7 +58,10 @@ _HONEST_NOTE = (
     "price, so cumulative_units == sum of graded placed-bet unit_results (the "
     "reconcile() proof). 'How much you'd have made' is a paper track record in units, "
     "NOT realized profit and NOT a $ ROI; no edge is claimed. CLV (better-than-close) "
-    "is the honest yardstick -- INSUFFICIENT_DATA means no close was captured."
+    "is the honest yardstick -- INSUFFICIENT_DATA means no close was captured. "
+    "headline_clv_pct_or_INSUFFICIENT (median) is the headline number, not the "
+    "longshot-inflated mean_clv_pct_or_INSUFFICIENT. n_settled_alltime is the "
+    "graded (post-filter) count, smaller than the raw ledger's settled count by design."
 )
 
 
@@ -157,6 +160,21 @@ def _mean_clv(rows: Sequence[Dict[str, Any]], *, min_n: int = MIN_CLV_N) -> Any:
     return round(sum(vals) / len(vals), 6)
 
 
+def _median_clv(rows: Sequence[Dict[str, Any]], *, min_n: int = MIN_CLV_N) -> Any:
+    """Median clv_pct -- the HEADLINE figure (2026-07-15 audit fix): the mean is
+    longshot-inflated (a handful of big-price hits drag it well above the
+    per-market-type medians), so the top-level number this digest leads with is
+    the median, not the mean. Same INSUFFICIENT_DATA floor as _mean_clv."""
+    vals = sorted(_clv_values(rows))
+    if len(vals) < min_n:
+        return "INSUFFICIENT_DATA"
+    n = len(vals)
+    mid = n // 2
+    if n % 2:
+        return round(vals[mid], 6)
+    return round((vals[mid - 1] + vals[mid]) / 2.0, 6)
+
+
 def reconcile(
     placed: Sequence[Dict[str, Any]], *, start_units: float,
 ) -> Dict[str, Any]:
@@ -236,8 +254,15 @@ def build_today(
         "current_units": rec["current_units"],
         "net_units": rec["cumulative_units"],
         "n_placed_alltime": len(placed_rows),
+        # "graded" = post select_clv_positions + normalize_flat (drops void/push/
+        # no-result + dedups same-side double-identity); smaller than the raw
+        # ledger's settled count by design -- see 2026-07-15 audit note #3.
         "n_settled_alltime": rec["n_settled"],
+        "n_settled_alltime_label": "graded",
         "n_open": len(open_rows),
+        # HEADLINE figure (2026-07-15 audit fix): median, not mean -- the mean is
+        # longshot-inflated and disagrees with the honest per-market medians.
+        "headline_clv_pct_or_INSUFFICIENT": _median_clv(settled),
         "mean_clv_pct_or_INSUFFICIENT": _mean_clv(settled),
         "n_clv": len(_clv_values(settled)),
         "min_clv_n": MIN_CLV_N,
@@ -254,4 +279,4 @@ def build_today(
 
 __all__ = ["load_placed", "reconcile", "build_today", "MIN_CLV_N",
            "_today_utc", "_settle_day", "_record_day", "_view_row",
-           "_mean_clv", "_clv_values"]
+           "_mean_clv", "_median_clv", "_clv_values"]
