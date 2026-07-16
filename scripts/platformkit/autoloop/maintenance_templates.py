@@ -345,6 +345,9 @@ _JOB_TABLE: List[Tuple[str, str, str, Tuple[str, ...]]] = [
     # true no-op when nothing new. NOT a promoter -- verdicts only.
     ("auto_validate", "scripts.platformkit.live_edge.autoloop.validate_job",
      "run_validate_cycle", ()),
+    # M28 analytics_verify cycle: sentinel/regrader/contradiction/attribution
+    # in-process -> analytics_verify_digest.json (feeds improvement_finder)
+    ("analytics_verify", "scripts.platformkit.analytics_verify.cycle", "run_cycle", ()),
 ]
 
 
