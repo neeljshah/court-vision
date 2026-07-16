@@ -49,6 +49,7 @@ CATEGORIES = (
     "UNTESTED_DATA", "EXPOSE_COHERENT_MARKET", "SURFACE_VALIDATED_PRIOR",
     "STALE_GREEN_RISK", "COHERENCE_GAP", "FRAGILITY", "LOC_VIOLATION",
     "ORPHAN_MODULE", "MISSING_TEST", "TIER3_ACQUISITION", "PARITY_GAP",
+    "DECAYED_CLAIM", "DISCREPANT_STAT", "CLAIM_CONTRADICTION",
 )
 # Category -> base priority (coverage / honesty-criticality, NOT promised edge).
 _BASE = {
@@ -56,6 +57,7 @@ _BASE = {
     "STALE_GREEN_RISK": 78, "COHERENCE_GAP": 70, "SURFACE_VALIDATED_PRIOR": 68,
     "FRAGILITY": 60, "MISSING_TEST": 55, "ORPHAN_MODULE": 50,
     "LOC_VIOLATION": 45, "TIER3_ACQUISITION": 40,
+    "DECAYED_CLAIM": 78, "DISCREPANT_STAT": 82, "CLAIM_CONTRADICTION": 65,
 }
 HONEST_NOTE = ("MEASUREMENT-ONLY: discovers+ranks; never fixes/ships/flags. "
                "A REJECT is a closed dead-end, never force-fed as a feature. "
@@ -324,6 +326,17 @@ def scan_stale_green_and_autonomy() -> List[Candidate]:
     return cands
 
 
+def scan_analytics_verify() -> List[Candidate]:
+    """DECAYED_CLAIM / DISCREPANT_STAT / CLAIM_CONTRADICTION -- scan logic lives
+    in analytics_verify/cycle.py (this file is over the 300 LOC cap already);
+    this is thin glue. Absent artifacts -> [] (no crash)."""
+    try:
+        from scripts.platformkit.analytics_verify.cycle import scan_finder_candidates
+        return [Candidate(**d) for d in scan_finder_candidates()]
+    except Exception:  # noqa: BLE001 -- a scan failure must never block the rest of the finder
+        return []
+
+
 def discover() -> List[Candidate]:
     closed = load_verdicted_signals()
     cands: List[Candidate] = []
@@ -332,6 +345,7 @@ def discover() -> List[Candidate]:
     cands += scan_parity_gaps()
     cands += scan_repo_health()
     cands += scan_stale_green_and_autonomy()
+    cands += scan_analytics_verify()
     return rank_and_dedupe(cands)
 
 
