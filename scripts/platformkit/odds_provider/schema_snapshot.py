@@ -22,6 +22,7 @@ Per-file test: scripts/platformkit/odds_provider/test_schema_snapshot.py
 from __future__ import annotations
 
 import argparse
+import datetime
 import json
 import os
 from pathlib import Path
@@ -32,6 +33,14 @@ _SNAPSHOT_DIR = _REPO / "data" / "cache" / "schema_snapshots"
 _LINE_HISTORY_DIR = _REPO / "data" / "cache" / "line_history"
 
 MAX_DEPTH = 4
+
+# A baseline this old is itself the fossil -- a field that was null/absent when
+# the snapshot was taken (e.g. devigged_prob before it was wired up) drifts
+# EVERY scan forever once the real payload fills in, never because the live
+# feed broke. 'stale_baseline' self-identifies that case instead of counting
+# as persistent drift (see feed_health._schema_drift_notes, which only feeds
+# status=="drift" rows into the soft_red promotion counter).
+_STALE_BASELINE_DAYS = 14
 
 
 def _type_name(value: Any) -> str:
@@ -234,10 +243,26 @@ def snapshot_sport(sport: str, *, base_dir: Optional[Path] = None,
     return result
 
 
+def _baseline_age_days(dated: Optional[str], *, today: Optional[datetime.date] = None) -> Optional[int]:
+    """Days between a snapshot's "dated" stem (YYYY-MM-DD) and *today*. None on
+    missing/malformed input -- never raises. *today* is injectable for tests."""
+    if not dated:
+        return None
+    try:
+        d = datetime.date.fromisoformat(str(dated))
+        return ((today or datetime.date.today()) - d).days
+    except Exception:  # noqa: BLE001
+        return None
+
+
 def check_sport(sport: str, *, base_dir: Optional[Path] = None,
-                 snapshot_dir: Optional[Path] = None) -> Dict[str, Any]:
+                 snapshot_dir: Optional[Path] = None,
+                 today: Optional[datetime.date] = None) -> Dict[str, Any]:
     """Compare the LATEST capture for *sport* against each provider's stored
-    snapshot. No stored snapshot yet -> reported, not failed (run `snapshot` first)."""
+    snapshot. No stored snapshot yet -> reported, not failed (run `snapshot` first).
+    A drifted provider whose baseline is >= _STALE_BASELINE_DAYS old is reported
+    as "stale_baseline" instead of "drift" -- a fossil re-baseline problem, not
+    live feed breakage (see _STALE_BASELINE_DAYS docstring)."""
     result: Dict[str, Any] = {"sport": sport, "capture_file": None, "providers": {}}
     found = _latest_by_provider(sport, base_dir)
     if found is None:
@@ -256,6 +281,11 @@ def check_sport(sport: str, *, base_dir: Optional[Path] = None,
         diff["status"] = "ok" if diff["ok"] else "drift"
         diff["sample_size"] = len(records)
         diff["snapshot_dated"] = snap_doc.get("dated")
+        if diff["status"] == "drift":
+            age = _baseline_age_days(snap_doc.get("dated"), today=today)
+            if age is not None and age >= _STALE_BASELINE_DAYS:
+                diff["status"] = "stale_baseline"
+                diff["baseline_age_days"] = age
         result["providers"][provider] = diff
     return result
 
