@@ -33,8 +33,8 @@ CYCLE_MAX_LINES_PER_FAMILY = 5000
 
 HONEST_NOTE = (
     "MEASUREMENT-ONLY autoloop tick over analytics_verify's own producers. "
-    "No dollars, no ROI, no edge. Contradiction conflicts are DESCRIPTIVE "
-    "consistency signals, not a market edge."
+    "Calibration and consistency signals only; nothing here implies market "
+    "advantage. Contradiction conflicts are DESCRIPTIVE consistency signals."
 )
 
 
