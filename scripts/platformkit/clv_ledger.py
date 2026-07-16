@@ -382,6 +382,9 @@ def load_ledger(path: Optional[Path] = None) -> List[Dict[str, Any]]:
 
     Applies _is_synthetic_row at read time: test-sport rows and short game_id
     rows are dropped before returning. On-disk file is never mutated.
+
+    Uncached -- for a memoized read use clv_summary_cache.cached_load_ledger,
+    which wraps this with an (path, mtime, size) memo (PERF 2026-07-15).
     """
     target = Path(path) if path is not None else DEFAULT_LEDGER
     if not target.exists():
