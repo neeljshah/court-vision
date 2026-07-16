@@ -204,6 +204,22 @@ _PUBLIC_SPLITS_HB = "data/cache/daemon_heartbeats/m41_public_splits.txt"
 # fresh_sec = 2.5x the 3600s cadence + margin (mirrors m42's ratio).
 _SETTLE_SWEEP_HB = "data/cache/daemon_heartbeats/m43_settle_sweep.txt"
 
+# M44 -- the hourly EXEC-EVIDENCE TIME SERIES (EXECUTION_BACKLOG follow-on to
+# m42). paper_today.json is overwritten every ~2min and keeps no history --
+# this appends ONE line/hour to data/frontend/exec_evidence_series.jsonl:
+# per-market_type median_clv_pct (true-close preferred, via circuit_breaker)
+# + breaker state, execution-quality aggregates (gated/ungated, avg expected
+# CLV, median placement latency), the realized in-game CLV summary, and prop
+# calibration evidence (n / hit rate / median model_prob) by (sport, stat)
+# over props settled in the trailing 30d -- the forward record for any future
+# recalibration decision. Append-only, hourly-idempotent, never rewritten.
+# Measurement only: no bet/decision path touched, no flag flip, no
+# data/registry/ write, no $ field, no edge claim. Independent branch (no
+# depends_on) so a dead tick is itself ONE red status entry. NOT YET RUNNING
+# -- registered here but requires a supervisor restart to take effect.
+# fresh_sec = 2.5x the 3600s cadence + margin (mirrors m42/m43's ratio).
+_EXEC_EVIDENCE_HB = "data/cache/daemon_heartbeats/m44_exec_evidence.txt"
+
 _FOREVER = RestartPolicy(max_retries=None, backoff_base_sec=2.0, backoff_cap_sec=60.0)
 
 # The Next.js UI directory. Default "court-visions" (the original wired app);
@@ -924,6 +940,18 @@ def base_specs() -> List[ProcSpec]:
             argv=["--interval", "3600"],
             readiness=ReadinessSpec(
                 kind=HEARTBEAT, heartbeat_path=_SETTLE_SWEEP_HB, fresh_sec=9000.0),
+            restart_policy=_FOREVER,
+        ),
+        # M44 -- the hourly exec-evidence time series tick (see _EXEC_EVIDENCE_HB
+        # comment above). Independent branch (no depends_on) so a dead tick is
+        # itself ONE red status entry. NOT YET RUNNING -- registered here but
+        # requires a supervisor restart to take effect.
+        ProcSpec(
+            name="m44_exec_evidence", kind="py",
+            module="scripts.platformkit.evidence.exec_evidence_daemon",
+            argv=["--interval", "3600"],
+            readiness=ReadinessSpec(
+                kind=HEARTBEAT, heartbeat_path=_EXEC_EVIDENCE_HB, fresh_sec=9000.0),
             restart_policy=_FOREVER,
         ),
     ]
