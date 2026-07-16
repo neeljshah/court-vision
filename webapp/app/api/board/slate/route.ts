@@ -5,8 +5,20 @@ import { NextRequest, NextResponse } from "next/server";
 const UPSTREAM =
   process.env.BOARD_UPSTREAM || "http://127.0.0.1:8098";
 
+// Snapshot demo build (output:'export') can't ship a dynamic route -- never
+// called by the client there anyway (fetchHonest redirects to
+// /demo-data/*.json first); stub it so the static export still builds.
+export const dynamic =
+  process.env.NEXT_PUBLIC_DATA_MODE === "snapshot" ? "force-static" : "force-dynamic";
+
 export async function GET(req: NextRequest) {
   const sport = req.nextUrl.searchParams.get("sport") ?? "nba";
+  if (process.env.NEXT_PUBLIC_DATA_MODE === "snapshot") {
+    return NextResponse.json(
+      { sport, status: "unavailable", games: [], note: "static demo build -- no boards service" },
+      { status: 503 },
+    );
+  }
   try {
     const res = await fetch(
       `${UPSTREAM}/api/slate?sport=${encodeURIComponent(sport)}`,

@@ -39,12 +39,14 @@ export type Slate = {
   generated_at?: string | null;
 };
 
+import { fetchHonest } from "./fetchHonest";
+
 export async function fetchSlate(sport: BoardSport): Promise<Slate> {
-  const res = await fetch(`${BOARD_BASE}/api/board/slate?sport=${sport}`, {
-    cache: "no-store",
-  });
-  if (!res.ok) throw new Error(`slate ${sport}: HTTP ${res.status}`);
-  return res.json();
+  const r = await fetchHonest<Slate>(`${BOARD_BASE}/api/board/slate?sport=${sport}`);
+  if (r && typeof r === "object" && (r as { status?: string }).status === "unavailable") {
+    throw new Error(`slate ${sport}: ${(r as { reason?: string }).reason ?? "unavailable"}`);
+  }
+  return r as Slate;
 }
 
 /** Best (highest decimal odds) moneyline price per side across books. */
