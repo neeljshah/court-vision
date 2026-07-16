@@ -102,6 +102,14 @@ regardless of same-week reruns, which write_week() itself already renders as an
 idempotent overwrite. A raise from write_week() propagates uncaught, isolated by
 this module's own run_all try/except, same as every other job.
 
+Job #29, econ_scoreboard_refresh (scripts.platformkit.autoloop.
+econ_scoreboard_refresh_job, M29), cadence-gated refresh of the 3 hand/CLI-run
+econ scoreboards (after_cost_scoreboard.json, beat_the_line.json,
+execution_quality.json) -- found 13.8d/13.8d/9.5d stale (2026-07-16 audit),
+no ProcSpec/daemon existed. Mirrors clv_refresh_job (M16); execution_quality
+also gates greenlight_trust_honesty, so this un-sticks a permanently-withheld
+greenlight.
+
 run_all() dispatches every job through one table (key, module path, callable
 name, arg names) instead of a hand-written try/except per job: each entry is
 imported and called fresh every cycle (never cached at module import time) so
@@ -348,6 +356,12 @@ _JOB_TABLE: List[Tuple[str, str, str, Tuple[str, ...]]] = [
     # M28 analytics_verify cycle: sentinel/regrader/contradiction/attribution
     # in-process -> analytics_verify_digest.json (feeds improvement_finder)
     ("analytics_verify", "scripts.platformkit.analytics_verify.cycle", "run_cycle", ()),
+    # M29 cadence-gated after_cost/beat_the_line/execution_quality econ-scoreboard
+    # refresh (refresh only; oldest-of-3 file-mtime watermark). execution_quality
+    # is also a fail-closed input to greenlight_trust_honesty -- staleness there
+    # silently withholds every greenlight.
+    ("econ_scoreboard_refresh", "scripts.platformkit.autoloop.econ_scoreboard_refresh_job",
+     "run_econ_scoreboard_refresh", ("watermarks",)),
 ]
 
 
