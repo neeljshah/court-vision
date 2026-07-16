@@ -59,6 +59,30 @@ def answer(query: str, sport: str = "nba", **kwargs) -> str:
                               f"({f['corpus']}): {f['note']}" for f in env["findings"])
         return (f"{env['hypothesis']}: {findings} | {env['framing']} "
                 f"| source: {env['source_artifact']} | as-of: {env['as_of']}")
+    # --- intel categories (wave 3): quote each envelope's receipt fields verbatim ---
+    if cat in ("edge_facts_injury_report", "edge_facts_news_context"):
+        label = "injury report" if cat.endswith("injury_report") else "news"
+        who = env.get("matched_entity") or env.get("team") or env.get("player")
+        return (f"{label} for {who}: {env['n']} row(s) "
+                f"| source: {env['source_artifact']} | as-of: {env['as_of']}")
+    if cat == "schedule_context":
+        return (f"schedule context {env['team']}: rest_days={env.get('rest_days')} is_b2b={env.get('is_b2b')} "
+                f"games_in_last_7={env['games_in_last_7']} "
+                f"| source: {env['source_artifact']} | as-of: {env['as_of']}")
+    if cat == "scouting_report":
+        ah = env.get("axes_hit", {})
+        return (f"scouting report for {env['player']}: {ah.get('concepts')}/{ah.get('concepts_total')} concept axes "
+                f"| source: {env['source_artifact']} | as-of: {env['as_of']}")
+    if cat == "player_comparables":
+        names = ", ".join(n["entity_name"] for n in env.get("neighbors", []))
+        return (f"comparables to {env['player']}: {names} "
+                f"| source: {env['source_artifact']} | as-of: {env['as_of']}")
+    if cat == "matchup_preview":
+        return (f"matchup preview {env['away']} @ {env['home']}: blocks_ok={env['blocks_ok']} "
+                f"| source: {env['source_artifact']} | as-of: {env['as_of']}")
+    if cat == "winprob":
+        return (f"win prob {env['away']} @ {env['home']}: p_home_win={env.get('p_home_win')} "
+                f"| source: {env['source_artifact']} | as-of: {env['as_of']}")
     return f"UNHANDLED category {cat}"
 
 
