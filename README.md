@@ -30,6 +30,18 @@ validation methodology are mine. Open to **ML / data / quant / founding-engineer
 
 ---
 
+## Use it with YOUR Claude (2 minutes, any laptop)
+
+This repo ships a working **MCP server** — connect it to Claude Code or Claude
+Desktop and ask it anything: scouting reports, comparables, matchup previews,
+verified claim rankings, all fail-closed with receipts. One command downloads
+the latest descriptive-intelligence data pack (no betting data, no live feeds)
+and prints your exact Claude config.
+
+**Start here: [docs/USE_WITH_CLAUDE.md](docs/USE_WITH_CLAUDE.md)** · server details: [docs/MCP_SERVER.md](docs/MCP_SERVER.md)
+
+---
+
 ## Explore the whole system, link by link
 
 This README is the front door. **[docs/INDEX.md](docs/INDEX.md) is the full map** -- every tracked
