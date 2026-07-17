@@ -6,13 +6,14 @@ scripts.platformkit.answers.resolver_registry.resolve(), one entry per
 (injury_report, news_context, schedule_context, scouting_report, comparables,
 matchup_preview, prediction_winprob, calibration_number, ranking,
 historical_result, mechanism_effect, system_map) x 5 sports (nba, mlb, wnba,
-tennis, soccer) = 60 entries, PLUS 4 verified_claims rows (the 13th category,
+tennis, soccer) = 60 entries, PLUS 5 verified_claims rows (the 13th category,
 the RESOLVER BRIDGE: provenance-by-claim_id + family discovery over the
 auto-discovered intel_claims store -- 2 from the original bridge wave, 2 more
 from wave-2/3 covering nba_venue_split provenance + a no-sport-token family
-listing that surfaces line_history_consensus) and 3 depth-wave-1 rows (below
+listing that surfaces line_history_consensus, 1 more from the light lane
+covering nba_rest_adjusted_form provenance) and 3 depth-wave-1 rows (below
 the grid, ids wnba_ranking_zone_context / mlb_mechanism_effect_injury_recency /
-tennis_ranking_playstyle_fit) covering the new claim families -- 67 total.
+tennis_ranking_playstyle_fit) covering the new claim families -- 68 total.
 
 Every `expect` block was GROUNDED by actually running the question once
 through resolve() in this repo on 2026-07-17 (one long-lived process,
@@ -222,6 +223,21 @@ QA_BANK: List[QAEntry] = [
             "including line_history_consensus_claims (soccer+intl VERIFIED, tennis single-book "
             "reject) -- proves the bridge surfaces newest families without a per-sport query"),
 ]
+
+# id collides with the "nba_venue_split" verified_claims row above (both are
+# sport=nba, category=verified_claims, and _e()'s id is f"{sp}_{cat}") --
+# appended separately with an explicit unique id, same pattern as the
+# depth-wave-1 rows below.
+QA_BANK.append({
+    "id": "nba_rest_adjusted_form_verified_claims",
+    "question": "show the evidence for nba_rest_adjusted_form_short_minus_long_rest_ppg_espn_boxscores_2023_24_to_2025_26",
+    "sport": "nba",
+    "expect": {"category": "verified_claims", "status_one_of": ["ok"], "receipt_required": True,
+               "must_contain_keys": ["claim_id", "validator_verdict", "source_artifact"]},
+    "tier": "FULL",
+    "note": "light-lane: provenance for a real VERIFIED nba_rest_adjusted_form claim_id "
+            "(short-rest-minus-long-rest PPG split) via ask()",
+})
 
 # -- depth-wave-1 claim families (2026-07-17) -----------------------------
 # wnba_zone_context_claims / mlb_injury_recency_claims / tennis_playstyle_fit_claims
