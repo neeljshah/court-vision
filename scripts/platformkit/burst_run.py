@@ -144,8 +144,12 @@ _STEP_SPECS: List[Tuple[str, bool, str]] = [
 
 
 def _log(line: str) -> None:
-    print(line)
-    sys.stdout.flush()
+    # ponytail: stderr, not stdout -- the MCP server's run_burst tool calls
+    # run_burst() in-process while stdout carries JSON-RPC framing; a stray
+    # stdout print here desyncs that stream. Progress lines are diagnostics,
+    # not data, so stderr is the correct channel for both callers (CLI + MCP).
+    print(line, file=sys.stderr)
+    sys.stderr.flush()
 
 
 def run_burst(*, steps: Optional[List[str]] = None, skip_slow: bool = False,

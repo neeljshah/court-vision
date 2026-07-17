@@ -27,7 +27,16 @@ _SPORT = {"type": "string", "description": "nba | mlb | soccer | tennis (default
 def _ask(args: Dict[str, Any]) -> Dict[str, Any]:
     from scripts.platformkit.answers import resolver_registry as r
     kw = {k: v for k, v in args.items() if k not in ("query", "sport", "category")}
-    return r.resolve(args["query"], args.get("sport", "nba"), args.get("category"), **kw)
+    envelope = r.resolve(args["query"], args.get("sport", "nba"), args.get("category"), **kw)
+    # ponytail: some resolver branches (e.g. concept_rating no_data) omit
+    # source_artifact even though the category's registry entry names one --
+    # backfill it here so every envelope is equally self-explaining, without
+    # touching resolver_registry.py's per-category return statements.
+    if "source_artifact" not in envelope:
+        meta = r.RESOLVERS.get(envelope.get("category"), {})
+        if meta.get("source_artifact"):
+            envelope["source_artifact"] = meta["source_artifact"]
+    return envelope
 
 
 def _scouting_report(args: Dict[str, Any]) -> Dict[str, Any]:
@@ -83,7 +92,12 @@ def _run_burst(args: Dict[str, Any]) -> Dict[str, Any]:
     steps = args.get("steps")
     if isinstance(steps, str):
         steps = [s.strip() for s in steps.split(",") if s.strip()]
-    return burst_run.run_burst(steps=steps, skip_slow=args.get("skip_slow", False))
+    report = burst_run.run_burst(steps=steps, skip_slow=args.get("skip_slow", False))
+    # ponytail: burst_run.py's own report shape has no top-level status (other
+    # callers/tests pin that shape) -- add it here at the MCP boundary so this
+    # is the only one of 9 tools that doesn't break the fail-closed contract.
+    report.setdefault("status", "aborted" if report.get("aborted_reason") else "ok")
+    return report
 
 
 def _system_health(args: Dict[str, Any]) -> Dict[str, Any]:
@@ -191,13 +205,20 @@ TOOLS: List[Dict[str, Any]] = [
         "name": "win_probability",
         "description": (
             "Calibrated pre-game (or in-game) win probability, quoted verbatim off predict_matchup "
-            "-- authors no new number. Pass ingame_state (score/time/etc.) for a live re-priced "
-            "number. This is a CALIBRATED probability, NOT a dollar edge or beat-the-market claim."
+            "-- authors no new number. Pass ingame_state for a live re-priced number, but it must "
+            "be COMPLETE for the sport or it is silently ignored and pregame is returned instead "
+            "(same p_home_win as omitting it -- check response 'ingame' vs 'ingame_note' to tell "
+            "which happened). Required keys per sport, ALL must be present: "
+            "nba/wnba/soccer = elapsed, home_score, away_score; "
+            "mlb = inning, half ('top'|'bottom'), home_score, away_score; "
+            "tennis = sets_home, sets_away (optionally games_home + games_away, surface). "
+            "This is a CALIBRATED probability, NOT a dollar edge or beat-the-market claim."
         ),
         "inputSchema": {
             "type": "object",
             "properties": {"sport": _SPORT, "home": {"type": "string"}, "away": {"type": "string"},
-                           "ingame_state": {"type": "object", "description": "optional live state (score, period, clock...)"}},
+                           "ingame_state": {"type": "object",
+                                            "description": "optional live state; see tool description for the exact required-key set per sport -- an incomplete state is silently dropped, not rejected"}},
             "required": ["sport", "home", "away"],
         },
         "handler": _win_probability,
@@ -222,7 +243,8 @@ TOOLS: List[Dict[str, Any]] = [
             "The verified-analytics receipts. kind selects the ledger view: attribution "
             "(which card produced which claim), claim_survival (how many claims survive "
             "re-grading), verification (independent-corpus re-checks), contradictions (claims "
-            "that disagree), system_map (how the pieces connect). Fail-closed: absent artifact "
+            "that disagree -- can be a LARGE payload, the full conflict dump, no paging), "
+            "system_map (how the pieces connect). Fail-closed: absent artifact "
             "-> no_data; a claim missing edge_claimed:false -> refused; a receipt staler than "
             "48h -> refused. Cite source_artifact + as_of."
         ),
@@ -241,17 +263,21 @@ TOOLS: List[Dict[str, Any]] = [
         "name": "run_burst",
         "description": (
             "EXECUTES A MAINTENANCE BURST -- TAKES MINUTES, hits the network, writes to disk. Not "
-            "a query. Runs the one-shot burst (line_snapshot, settle_sweep, pnl_bestbets, "
-            "analytics_verify, feed_health, freshness_sla) in a single RSS-guarded process and "
-            "returns the report. Pass steps to run a subset. Use system_health for a cheap "
-            "read-only status instead when you do not need to refresh."
+            "a query. Runs the one-shot burst in a single RSS-guarded process and returns the "
+            "report: {status: ok|aborted, started, steps: [{name, status, secs, rss_mb_after}], "
+            "edge_claimed, honest_note}. Steps, tagged by cost: line_snapshot (network), "
+            "settle_sweep (network), feed_health (network) are SLOW; pnl_bestbets, "
+            "analytics_verify, freshness_sla are cheap/local-only. skip_slow=true runs only the "
+            "cheap three. Pass steps to run a specific subset instead. For a read that touches "
+            "nothing (no network, no disk write), use system_health -- but note it only replays "
+            "the LAST run_burst report, it does not refresh feed_health itself."
         ),
         "inputSchema": {
             "type": "object",
             "properties": {
                 "steps": {"type": "string",
-                          "description": "optional comma list: line_snapshot,settle_sweep,pnl_bestbets,analytics_verify,feed_health,freshness_sla"},
-                "skip_slow": {"type": "boolean", "description": "skip network steps"},
+                          "description": "optional comma list: line_snapshot,settle_sweep,pnl_bestbets,analytics_verify,feed_health,freshness_sla (first three are network/slow)"},
+                "skip_slow": {"type": "boolean", "description": "run only the cheap local-only steps (pnl_bestbets, analytics_verify, freshness_sla)"},
             },
         },
         "handler": _run_burst,
