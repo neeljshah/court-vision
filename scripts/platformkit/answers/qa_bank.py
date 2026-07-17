@@ -6,11 +6,13 @@ scripts.platformkit.answers.resolver_registry.resolve(), one entry per
 (injury_report, news_context, schedule_context, scouting_report, comparables,
 matchup_preview, prediction_winprob, calibration_number, ranking,
 historical_result, mechanism_effect, system_map) x 5 sports (nba, mlb, wnba,
-tennis, soccer) = 60 entries, PLUS 2 verified_claims rows (the 13th category,
+tennis, soccer) = 60 entries, PLUS 4 verified_claims rows (the 13th category,
 the RESOLVER BRIDGE: provenance-by-claim_id + family discovery over the
-auto-discovered intel_claims store) and 3 depth-wave-1 rows (below the grid,
-ids wnba_ranking_zone_context / mlb_mechanism_effect_injury_recency /
-tennis_ranking_playstyle_fit) covering the new claim families -- 65 total.
+auto-discovered intel_claims store -- 2 from the original bridge wave, 2 more
+from wave-2/3 covering nba_venue_split provenance + a no-sport-token family
+listing that surfaces line_history_consensus) and 3 depth-wave-1 rows (below
+the grid, ids wnba_ranking_zone_context / mlb_mechanism_effect_injury_recency /
+tennis_ranking_playstyle_fit) covering the new claim families -- 67 total.
 
 Every `expect` block was GROUNDED by actually running the question once
 through resolve() in this repo on 2026-07-17 (one long-lived process,
@@ -208,6 +210,17 @@ QA_BANK: List[QAEntry] = [
        "what claim families exist for tennis?", "ok", "FULL",
        ["families", "n_families", "source_artifact"],
        note="bridge: family discovery -- cheap per-store validation summaries, sport parsed from query"),
+    _e("verified_claims", "nba",
+       "show the evidence for nba_venue_split_home_minus_away_ppg_espn_boxscores_2023_24_to_2025_26",
+       "ok", "FULL", ["claim_id", "validator_verdict", "source_artifact"],
+       note="wave-2: provenance for a real VERIFIED nba_venue_split claim_id (DEN-altitude "
+            "home-minus-away PPG sanity) via ask()"),
+    _e("verified_claims", "soccer",
+       "what claim families exist?", "ok", "FULL",
+       ["families", "n_families", "source_artifact"],
+       note="wave-3: family discovery, no sport token in the query -> lists all 77 families "
+            "including line_history_consensus_claims (soccer+intl VERIFIED, tennis single-book "
+            "reject) -- proves the bridge surfaces newest families without a per-sport query"),
 ]
 
 # -- depth-wave-1 claim families (2026-07-17) -----------------------------
@@ -272,7 +285,7 @@ SPORTS: List[str] = sorted({e["sport"] for e in QA_BANK})
 
 
 def by_tier(tier: str) -> List[QAEntry]:
-    """SMOKE entries (~15, no-subprocess-cost categories only) or FULL (all 63)."""
+    """SMOKE entries (~15, no-subprocess-cost categories only) or FULL (all 67)."""
     if tier == "FULL":
         return list(QA_BANK)
     return [e for e in QA_BANK if e["tier"] == tier]
