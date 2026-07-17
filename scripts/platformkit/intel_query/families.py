@@ -33,6 +33,15 @@ ALL_FAMILIES = (FAMILY_TOP_N, FAMILY_ENTITY_LOOKUP, FAMILY_PROVENANCE, FAMILY_GA
 _TOP_N_RE = re.compile(
     r"\btop\s*[- ]?\s*(\d+)\b|\bbest\s+(\d+)\b", re.IGNORECASE
 )
+# numberless ranking phrasings ("top soccer teams by gf diff", "best home
+# advantage teams", "leaders in whiff rate") -- classified top_n with
+# top_n=None (answer layer applies its default N). Added 2026-07-17 for the
+# answer-anything coverage push; a match still needs a metric to resolve
+# downstream, so misfires refuse honestly rather than mis-answer.
+_TOP_NONUM_RE = re.compile(
+    r"\btop\s+[a-z]|\bbest\s+[a-z]|\bleaders?\s+(?:in|by)\b|\bwho\s+leads\b",
+    re.IGNORECASE,
+)
 _PROVENANCE_WORDS = re.compile(
     r"\b(how do you know|show (?:me )?(?:the )?evidence|prove|provenance|"
     r"source(?:s)? for|where does that come from)\b",
@@ -220,8 +229,8 @@ def classify(question: str) -> ParsedQuestion:
         )
 
     top_n_match = _TOP_N_RE.search(text)
-    if top_n_match:
-        n_str = top_n_match.group(1) or top_n_match.group(2)
+    if top_n_match or _TOP_NONUM_RE.search(text):
+        n_str = (top_n_match.group(1) or top_n_match.group(2)) if top_n_match else None
         return ParsedQuestion(
             family=FAMILY_TOP_N,
             top_n=int(n_str) if n_str else None,

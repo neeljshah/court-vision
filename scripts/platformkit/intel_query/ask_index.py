@@ -97,6 +97,12 @@ _METRIC_SYNONYMS: dict[str, str] = {
     "team 3 point percentage": "team_fg3_pct",
     "team three point percentage": "team_fg3_pct",
     "team true shooting": "team_ts_pct",
+    # venue-split families (2026-07-17): idiom aliases; literal metric names
+    # ("gf diff", "home minus away ppg") already route via the name-derived
+    # fallback in metric_names.py.
+    "home advantage": "winrate_diff",            # soccer_team_venue_split
+    "home court advantage": "home_minus_away_ppg",  # nba_venue_split
+    "venue split": "home_minus_away_ppg",
 }
 
 # A claim's criteria.entity_key NAME already tells you its entity type --
@@ -153,8 +159,10 @@ def extract_metric_synonym(text: str) -> str | None:
     """Longest-alias-match lookup into _METRIC_SYNONYMS: never
     first-keyword-wins -- e.g. "team free throw percentage" must resolve to
     team_ft_pct, not the shorter "free throw percentage" -> ft_reliability
-    alias that is also a substring of it. Returns the REAL metric name, or
-    None if no alias appears in `text` at all."""
+    alias that is also a substring of it. Falls back to the name-derived
+    metric map (metric_names.py, 2026-07-17: closes the 337-unaliased-
+    metrics gap -- saying a metric's literal name now routes) when no hand
+    alias matches. Returns the REAL metric name, or None."""
     lower = (text or "").lower()
     best_alias_len = -1
     best_metric: str | None = None
@@ -162,7 +170,11 @@ def extract_metric_synonym(text: str) -> str | None:
         if alias in lower and len(alias) > best_alias_len:
             best_alias_len = len(alias)
             best_metric = metric
-    return best_metric
+    if best_metric is not None:
+        return best_metric
+    from scripts.platformkit.intel_query.metric_names import (
+        DEFAULT_CLAIMS_DIR, metric_from_name)
+    return metric_from_name(text, DEFAULT_CLAIMS_DIR)
 
 
 def _display_path(path: Path, repo_root: Path) -> str:

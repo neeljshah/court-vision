@@ -42,10 +42,11 @@ def _sport_in_query(low: str) -> str | None:
 
 
 def _norm_row(r: dict[str, Any]) -> dict[str, Any]:
-    """One ranking row -> compact excerpt row. Accepts either name key
-    (player_name from ask's entity_lookup, entity_name from the WNBA/zone
-    families) -- the ONLY place this normalization lives."""
-    name = r.get("player_name") or r.get("entity_name")
+    """One ranking row -> compact excerpt row. Accepts any of the name keys
+    used across families (player_name from ask's entity_lookup, entity_name
+    from the WNBA/zone families, team from the venue-split families) -- the
+    ONLY place this normalization lives."""
+    name = r.get("player_name") or r.get("entity_name") or r.get("team")
     return {"rank": r.get("rank"), "name": name, "value": r.get("value"), "n": r.get("n")}
 
 
