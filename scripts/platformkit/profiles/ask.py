@@ -34,12 +34,32 @@ def _norm(s) -> str:
     return "".join(c for c in s if not unicodedata.combining(c))
 
 
+_CACHE_KEY: tuple | None = None
+_CACHE_DF: pd.DataFrame | None = None
+
+
 def load_profiles(sport: str | None = None) -> pd.DataFrame:
     """Concat every <sport>_<kind>_profiles.parquet into one long frame,
-    tagging sport + kind from the filename."""
-    frames = []
+    tagging sport + kind from the filename.
+
+    Single-slot memo keyed on (sport, matched-files+mtimes): callers like
+    compose_scout reload the same sport's frame ~8x per request (once per
+    concept via answer_superlative), and a consistency sweep does that for
+    every player -- re-reading + re-decompressing a 72MB frame each time was
+    the 8GB thrash. Returns the SAME object on a hit; every caller only
+    boolean-indexes it (which copies), none mutate it in place, so sharing is
+    safe. The key carries file mtimes, so a rebuilt parquet invalidates.
+    ponytail: one slot, not an LRU -- a hit needs the same sport as the last
+    call, which is the dominant per-request pattern. Upgrade to per-sport LRU
+    only if cross-sport interleaving ever becomes a hot loop."""
+    global _CACHE_KEY, _CACHE_DF
     pat = os.path.join(PROFILES_DIR, f"{sport or '*'}_*_profiles.parquet")
-    for path in sorted(glob.glob(pat)):
+    paths = sorted(glob.glob(pat))
+    key = (sport, tuple((p, os.path.getmtime(p)) for p in paths))
+    if key == _CACHE_KEY and _CACHE_DF is not None:
+        return _CACHE_DF
+    frames = []
+    for path in paths:
         base = os.path.basename(path)[: -len("_profiles.parquet")]
         parts = base.split("_")
         sp, kind = parts[0], parts[-1]
@@ -51,9 +71,9 @@ def load_profiles(sport: str | None = None) -> pd.DataFrame:
             continue
         df["sport"], df["kind"] = sp, kind
         frames.append(df)
-    if not frames:
-        return pd.DataFrame()
-    return pd.concat(frames, ignore_index=True)
+    result = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
+    _CACHE_KEY, _CACHE_DF = key, result
+    return result
 
 
 def load_registry(sport: str) -> dict:
