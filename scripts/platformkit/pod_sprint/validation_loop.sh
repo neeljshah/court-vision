@@ -7,6 +7,8 @@
 # trend line comes from a fail-closed artifact written this cycle.
 #   nohup bash scripts/platformkit/pod_sprint/validation_loop.sh &
 set -u
+exec 9>/workspace/validation_loop.lock
+flock -n 9 || { echo "validation_loop already running"; exit 1; }
 REPO="$(cd "$(dirname "$0")/../../.." && pwd)"
 PY="${VENV_PY:-/workspace/venv/bin/python}"
 LOGS="${SPRINT_LOGS:-/workspace/sprint_logs}"
