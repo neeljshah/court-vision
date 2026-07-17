@@ -7,7 +7,9 @@ categories (per docs/research/resolver_coverage_2026_07_17.md's own count:
 injury_report, news_context, schedule_context, scouting_report, comparables,
 matchup_preview, prediction_winprob, calibration_number, ranking,
 historical_result, mechanism_effect, system_map) x 5 sports (nba, mlb, wnba,
-tennis, soccer) = 60 entries.
+tennis, soccer) = 60 entries, PLUS 3 depth-wave-1 rows (below the grid, ids
+wnba_ranking_zone_context / mlb_mechanism_effect_injury_recency /
+tennis_ranking_playstyle_fit) covering the new claim families -- 63 total.
 
 Every `expect` block was GROUNDED by actually running the question once
 through resolve() in this repo on 2026-07-17 (one long-lived process,
@@ -193,12 +195,69 @@ QA_BANK: List[QAEntry] = [
     _e("system_map", "soccer", "system map", "ok", "SMOKE", ["n_nodes", "n_edges", "nodes"]),
 ]
 
+# -- depth-wave-1 claim families (2026-07-17) -----------------------------
+# wnba_zone_context_claims / mlb_injury_recency_claims / tennis_playstyle_fit_claims
+# live in data/cache/intel_claims/*.jsonl and are proven reachable, with
+# receipts, through scripts.platformkit.intel_query.ask.ask() (auto-discovered
+# by its filename-pairing convention -- verified for real on 2026-07-17:
+# `ask("How do you know? Show the evidence for <claim_id>.")` -> answerable:True
+# for all 3 families' claim_ids). resolver_registry.resolve() -- the ONLY
+# surface qa_runner actually calls -- does NOT yet route to that store: its
+# mechanism_effect resolver reads domains/<sport>/knowledge/validation_ledger.jsonl
+# (a different store, unrelated hypothesis names) and wnba isn't even wired
+# into _LEDGER_PATHS. The 3 rows below exercise the CLOSEST real resolve()
+# reachable surface for each family (same underlying attribute for wnba's
+# zone_rim_efg via the ranking/leaderboard path; an honest not_supported for
+# mlb's evidence phrasing; the real ambiguous multi-attribute collision for
+# tennis's "surface tilt") and record the true status -- this is a known
+# resolver_registry coverage gap, not a bug in the new claim families
+# themselves (all 3 are VERIFIED, n_mismatch=0, served correctly by ask()).
+QA_BANK.append({
+    "id": "wnba_ranking_zone_context",
+    "question": "zone_rim_efg leaders",
+    "sport": "wnba",
+    "expect": {"category": "ranking", "status_one_of": ["ok"], "receipt_required": True,
+               "must_contain_keys": ["attribute", "rows", "source_artifact"]},
+    "tier": "FULL",
+    "note": "depth-wave-1 wnba_zone_context_claims: same underlying zone_rim_efg attribute "
+            "the claims family full-pop-ranks, reached here via the profiles/leaderboard path "
+            "(not the intel_claims store itself -- that store is reachable via "
+            "intel_query.ask.ask(), verified answerable:true separately, not yet wired into "
+            "resolver_registry)",
+})
+QA_BANK.append({
+    "id": "mlb_mechanism_effect_injury_recency",
+    "question": "what does the evidence say about mlb_injury_recency_days_since_latest",
+    "sport": "mlb",
+    "expect": {"category": "mechanism_effect", "status_one_of": ["not_supported"], "receipt_required": False,
+               "must_contain_keys": []},
+    "tier": "FULL",
+    "note": "depth-wave-1 mlb_injury_recency_claims: honest not_supported -- resolver_registry's "
+            "mechanism_effect only matches domains/mlb/knowledge/validation_ledger.jsonl hypothesis "
+            "names, a different store than data/cache/intel_claims/mlb_injury_recency_claims.jsonl. "
+            "The claim IS answerable:true through intel_query.ask.ask() (verified separately) -- "
+            "resolver_registry just doesn't route to that store yet, a known coverage gap.",
+})
+QA_BANK.append({
+    "id": "tennis_ranking_playstyle_fit",
+    "question": "surface tilt leaders",
+    "sport": "tennis",
+    "expect": {"category": "ranking", "status_one_of": ["ambiguous"], "receipt_required": False,
+               "must_contain_keys": ["candidates"]},
+    "tier": "FULL",
+    "note": "depth-wave-1 tennis_playstyle_fit_claims: real ambiguous collision against the "
+            "profiles registry's own surface_splits_{return,serve}_{Clay,Grass,Hard} attributes "
+            "(a different store than the claim family's grass_wr-clay_wr formula in "
+            "data/cache/intel_claims/tennis_playstyle_fit_claims.jsonl, which IS answerable:true "
+            "through intel_query.ask.ask(), verified separately).",
+})
+
 CATEGORIES: List[str] = sorted({e["expect"]["category"] for e in QA_BANK})
 SPORTS: List[str] = sorted({e["sport"] for e in QA_BANK})
 
 
 def by_tier(tier: str) -> List[QAEntry]:
-    """SMOKE entries (~15, no-subprocess-cost categories only) or FULL (all 60)."""
+    """SMOKE entries (~15, no-subprocess-cost categories only) or FULL (all 63)."""
     if tier == "FULL":
         return list(QA_BANK)
     return [e for e in QA_BANK if e["tier"] == tier]

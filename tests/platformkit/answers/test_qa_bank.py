@@ -37,7 +37,7 @@ def test_bank_schema_valid():
 def test_bank_covers_12_categories_x_5_sports():
     assert len(B.CATEGORIES) == 12
     assert len(B.SPORTS) == 5
-    assert len(B.QA_BANK) == 60
+    assert len(B.QA_BANK) == 63
 
 
 def test_by_tier_smoke_is_cheap_subset_of_full():
