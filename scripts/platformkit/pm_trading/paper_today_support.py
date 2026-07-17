@@ -179,6 +179,31 @@ def prediction_keys(rows: Sequence[Dict[str, Any]]) -> set:
              prediction_event_day(r)) for r in rows}
 
 
+def _row_pred_key(r: Dict[str, Any]) -> Tuple[str, str, str, str]:
+    return (str(r.get("sport")), str(r.get("matchup")), str(r.get("selection")),
+            prediction_event_day(r))
+
+
+def prediction_keys_from_file(path: Path) -> set:
+    """Streaming twin of prediction_keys(load_predictions(path)): reads *path*
+    line-by-line, keeping only the key set (never the full row list) in memory.
+    The predictions store is 11MB+ and growing -- materializing every row just
+    to reduce to keys wastes memory the caller never needs (PERF)."""
+    out: set = set()
+    if not path.exists():
+        return out
+    with path.open("r", encoding="utf-8") as fh:
+        for line in fh:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                out.add(_row_pred_key(json.loads(line)))
+            except json.JSONDecodeError:
+                continue
+    return out
+
+
 def log_prediction(rec: Dict[str, Any], *, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8") as fh:
@@ -225,6 +250,6 @@ __all__ = [
     "Ctx", "DEFAULT_PREDICTIONS", "DEFAULT_SPORTS", "PAPER_EV_FLOOR",
     "now_iso", "today_key", "odds_index", "event_meta", "side_of",
     "close_proxy_decimals", "close_proxy_draw_decimal", "ledger_keys",
-    "prediction_keys", "prediction_event_day", "log_prediction",
-    "load_predictions", "iter_rows", "live_state",
+    "prediction_keys", "prediction_keys_from_file", "prediction_event_day",
+    "log_prediction", "load_predictions", "iter_rows", "live_state",
 ]

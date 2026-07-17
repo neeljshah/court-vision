@@ -27,6 +27,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
 
 from scripts.platformkit import clv_ledger as _clv
+from scripts.platformkit import clv_summary_cache as _clv_cache
 from scripts.platformkit.execution import expected_clv_gate as _exec_gate
 from scripts.platformkit.execution.thresholds import INGAME_EXPECTED_CLV_MIN_PCT
 from scripts.platformkit.claims import condition_tagger as _tagger
@@ -357,7 +358,7 @@ def run_paper_cycle(
     ppath = Path(predictions_path) if predictions_path is not None else DEFAULT_PREDICTIONS
     ctx = Ctx(cfg=cfg or AutoBetConfig(), day=S.today_key(), lpath=lpath, ppath=ppath,
               ledger_keys=_market_ledger_keys(_clv.load_ledger(lpath)),
-              pred_keys=S.prediction_keys(S.load_predictions(ppath)),
+              pred_keys=S.prediction_keys_from_file(ppath),
               dh_stamp_fn=dh_stamp_fn)
 
     out: Dict[str, Any] = {
@@ -415,7 +416,11 @@ def run_paper_cycle(
         out["n_recorded"] += n_rec
         out["n_logged"] += n_log
     out["staked_total_units"] = round(staked, 6)
-    out["clv_summary"] = _clv.clv_summary(_clv.load_ledger(lpath))
+    # cached_clv_summary re-derives fresh on any mtime/size change (bets placed
+    # above this call appended to lpath) -- same semantics as
+    # _clv.clv_summary(_clv.load_ledger(lpath)), memoized for repeat readers
+    # (PERF: avoids a second full ledger re-parse in this same cycle).
+    out["clv_summary"] = _clv_cache.cached_clv_summary(lpath)
     return out
 
 
