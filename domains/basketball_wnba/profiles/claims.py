@@ -43,7 +43,7 @@ def build_claim(attr: str) -> dict[str, Any]:
 
     _OUT_DIR.mkdir(parents=True, exist_ok=True)
     src_path = _OUT_DIR / f"wnba_profile_source_{attr}.parquet"
-    src_cols = raw[["entity_id", "raw_value", "n"]].reset_index(drop=True)
+    src_cols = raw[["entity_id", "entity_name", "raw_value", "n"]].reset_index(drop=True)
     pq.write_table(pa.Table.from_pandas(src_cols, preserve_index=False), src_path)
 
     qualifiers = raw[raw["n"] >= floor].sort_values("raw_value", ascending=False).head(TOP_N)
