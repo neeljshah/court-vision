@@ -93,6 +93,10 @@ def serve(stdin=None, stdout=None) -> None:
             stdout.write(json.dumps(_error(None, -32700, "parse error")) + "\n")
             stdout.flush()
             continue
+        if not isinstance(msg, dict):
+            stdout.write(json.dumps(_error(None, -32600, "invalid request")) + "\n")
+            stdout.flush()
+            continue
         resp = dispatch(msg)
         if resp is not None:
             stdout.write(json.dumps(resp) + "\n")
