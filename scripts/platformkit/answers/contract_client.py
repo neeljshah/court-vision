@@ -83,6 +83,13 @@ def answer(query: str, sport: str = "nba", **kwargs) -> str:
     if cat == "winprob":
         return (f"win prob {env['away']} @ {env['home']}: p_home_win={env.get('p_home_win')} "
                 f"| source: {env['source_artifact']} | as-of: {env['as_of']}")
+    if cat == "verified_claims":
+        if "families" in env:  # discovery: list_claim_families
+            fams = ", ".join(f["family"] for f in env["families"])
+            return (f"claim families ({env['n_families']}): {fams} "
+                    f"| source: {env['source_artifact']} | as-of: {env['as_of']}")
+        return (f"verified claim {env['claim_id']}: verdict={env['validator_verdict']} "
+                f"| source: {env['source_artifact']} | as-of: {env['as_of']}")
     return f"UNHANDLED category {cat}"
 
 

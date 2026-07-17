@@ -2,14 +2,15 @@
 
 A DECLARED (data-only) bank of graded questions over
 scripts.platformkit.answers.resolver_registry.resolve(), one entry per
-(category, sport) combo across the registry's 12 registered question
-categories (per docs/research/resolver_coverage_2026_07_17.md's own count:
-injury_report, news_context, schedule_context, scouting_report, comparables,
+(category, sport) combo across the registry's 12-category grid
+(injury_report, news_context, schedule_context, scouting_report, comparables,
 matchup_preview, prediction_winprob, calibration_number, ranking,
 historical_result, mechanism_effect, system_map) x 5 sports (nba, mlb, wnba,
-tennis, soccer) = 60 entries, PLUS 3 depth-wave-1 rows (below the grid, ids
-wnba_ranking_zone_context / mlb_mechanism_effect_injury_recency /
-tennis_ranking_playstyle_fit) covering the new claim families -- 63 total.
+tennis, soccer) = 60 entries, PLUS 2 verified_claims rows (the 13th category,
+the RESOLVER BRIDGE: provenance-by-claim_id + family discovery over the
+auto-discovered intel_claims store) and 3 depth-wave-1 rows (below the grid,
+ids wnba_ranking_zone_context / mlb_mechanism_effect_injury_recency /
+tennis_ranking_playstyle_fit) covering the new claim families -- 65 total.
 
 Every `expect` block was GROUNDED by actually running the question once
 through resolve() in this repo on 2026-07-17 (one long-lived process,
@@ -193,6 +194,20 @@ QA_BANK: List[QAEntry] = [
     _e("system_map", "wnba", "system map", "ok", "FULL", ["n_nodes", "n_edges", "nodes"]),
     _e("system_map", "tennis", "system map", "ok", "FULL", ["n_nodes", "n_edges", "nodes"]),
     _e("system_map", "soccer", "system map", "ok", "SMOKE", ["n_nodes", "n_edges", "nodes"]),
+
+    # -- verified_claims (RESOLVER BRIDGE, 2026-07-17) --------------------
+    # The two capabilities of the new category: provenance-by-claim_id (wrap
+    # ask()) and family discovery. Both reach the auto-discovered intel_claims
+    # store through resolve() -- the surface qa_runner actually calls -- which
+    # the depth-wave-1 rows above documented as a known coverage gap now closed.
+    _e("verified_claims", "wnba",
+       "show the evidence for wnba_zone_context_zone_rim_efg_full_2026", "ok", "FULL",
+       ["claim_id", "validator_verdict", "source_artifact"],
+       note="bridge: provenance for a real VERIFIED wnba_zone_context claim_id via ask()"),
+    _e("verified_claims", "tennis",
+       "what claim families exist for tennis?", "ok", "FULL",
+       ["families", "n_families", "source_artifact"],
+       note="bridge: family discovery -- cheap per-store validation summaries, sport parsed from query"),
 ]
 
 # -- depth-wave-1 claim families (2026-07-17) -----------------------------
