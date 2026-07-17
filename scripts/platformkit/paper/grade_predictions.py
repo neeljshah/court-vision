@@ -85,20 +85,20 @@ def _unit_result(outcome: Optional[str], dec: float, units: float) -> Optional[f
     return None
 
 
-def _load_jsonl(path: Path) -> List[Dict[str, Any]]:
+def _load_jsonl(path: Path):
+    """Yield each parsed row of *path* -- a generator, not a materialized list, so a
+    single-pass caller (e.g. a dedup-key comprehension) never retains every row."""
     if not path.exists():
-        return []
-    out: List[Dict[str, Any]] = []
+        return
     with path.open("r", encoding="utf-8") as fh:
         for line in fh:
             line = line.strip()
             if not line:
                 continue
             try:
-                out.append(json.loads(line))
+                yield json.loads(line)
             except json.JSONDecodeError:
                 continue
-    return out
 
 
 _NO_CLOSE = {"clv_pct": None, "beat_close": None,
@@ -222,8 +222,8 @@ def grade_predictions(
     """
     ppath = Path(predictions_path) if predictions_path else DEFAULT_PREDICTIONS
     gpath = Path(graded_path) if graded_path else DEFAULT_GRADED
-    preds = _load_jsonl(ppath)
-    done = {r.get("pred_key") for r in _load_jsonl(gpath) if r.get("pred_key")}
+    preds = list(_load_jsonl(ppath))  # multiple passes below (for loop + len()) -> list
+    done = {r.get("pred_key") for r in _load_jsonl(gpath) if r.get("pred_key")}  # single-pass: stream
 
     fetch = final_fetch if final_fetch is not None else (
         lambda eid, sp: _ff.final_for_event(eid, sp))
