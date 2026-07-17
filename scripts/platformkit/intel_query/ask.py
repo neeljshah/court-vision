@@ -368,12 +368,15 @@ def _answer_top_n(parsed, question: str, verified: dict[str, dict[str, Any]]) ->
     return _format_top_n_answer(parsed, question, row)
 
 
-def _answer_entity_lookup(parsed, question: str, verified: dict[str, dict[str, Any]]) -> dict[str, Any]:
+def _answer_entity_lookup(parsed, question: str, candidates: list[dict[str, Any]]) -> dict[str, Any]:
+    """`candidates` is the caller's pre-assembled row list (index fast-path
+    hits + any residual full-load rows for families lacking a fresh index)
+    -- this function only does the final name-match + answer/evidence
+    assembly, so the index fast path and the full-load fallback (see
+    ask()'s FAMILY_ENTITY_LOOKUP branch) can never drift in answer SHAPE."""
     if not parsed.entity_name:
         return _unanswerable("could not extract a player/entity name from the question", question)
     name_key = parsed.entity_name.strip().lower()
-    ranking_claims = [r for r in verified.values() if r.get("kind") == "ranking"]
-    candidates = _filter_by_hints(ranking_claims, parsed)
     hits = []
     for row in candidates:
         for r in row.get("ranking", []):
@@ -657,14 +660,32 @@ def ask(question: str) -> dict[str, Any]:
             parsed, question, max(residual_candidates, key=lambda r: r.get("computed_at", ""))
         )
 
+    if parsed.family == FAMILY_ENTITY_LOOKUP:
+        # Same index-fast-path / stale-residual split as FAMILY_TOP_N above
+        # (spec sec 4): a family with a fresh .index.jsonl is answered by
+        # seek+read alone (ask_index.index_entity_lookup), never by
+        # load_verified_claims -- that whole-store load is exactly what put
+        # 2.8GB of nba_player_box_rate in memory for a single-player
+        # question (2026-07-16). Only families WITHOUT a fresh index fall
+        # back to a full load, and even then it is scoped to just those
+        # stale pairs, never the whole corpus.
+        if not parsed.entity_name:
+            return _unanswerable("could not extract a player/entity name from the question", question)
+        # NOT ascii-folded here, matching _answer_entity_lookup's original
+        # name_key exactly (only the candidate's player_name gets folded,
+        # both here via ask_index._ascii_fold and there via _ascii_name) --
+        # this is a behavior-preserving port, not a new normalization rule.
+        name_key = parsed.entity_name.strip().lower()
+        fast_hits = ask_index.index_entity_lookup(parsed, name_key, INTEL_CLAIMS_DIR, REPO_ROOT)
+        stale_pairs = tuple((v, p) for v, p in CLAIM_SOURCE_PAIRS if not ask_index.is_index_fresh(p.stem, INTEL_CLAIMS_DIR))
+        residual_rows = [r for r in load_verified_claims(stale_pairs).values() if r.get("kind") == "ranking"]
+        residual_candidates = _filter_by_hints(residual_rows, parsed)
+        return _answer_entity_lookup(parsed, question, fast_hits + residual_candidates)
+
     verified = load_verified_claims(max_lines_per_file=_QUERY_SURFACE_MAX_LINES)
     if not verified:
         return _unanswerable("no VERIFIED claims are currently available", question)
 
-    if parsed.family == FAMILY_TOP_N:
-        return _answer_top_n(parsed, question, verified)
-    if parsed.family == FAMILY_ENTITY_LOOKUP:
-        return _answer_entity_lookup(parsed, question, verified)
     if parsed.family == FAMILY_PROVENANCE:
         return _answer_provenance(parsed, question, verified)
     if parsed.family == FAMILY_GATE_VERDICT:
