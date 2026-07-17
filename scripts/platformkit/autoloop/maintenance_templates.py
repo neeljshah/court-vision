@@ -153,11 +153,11 @@ def run_validate_new_stores(claims_dir: Optional[Path] = None,
     isolated and never blocks the rest."""
     d = Path(claims_dir) if claims_dir is not None else _DEFAULT_CLAIMS_DIR
     fn = validate_fn or validate_and_write
-    scanned = validated = failed = 0
+    scanned = validated = failed = skipped = 0
     failed_stores: List[str] = []
     if not d.is_dir():
         return {"stores_scanned": 0, "stores_validated": 0, "stores_failed": 0,
-               "failed_stores": failed_stores}
+               "stores_skipped": 0, "failed_stores": failed_stores}
     for p in sorted(d.glob("*.jsonl")):
         if p.name.endswith(".index.jsonl"):
             continue
@@ -166,13 +166,21 @@ def run_validate_new_stores(claims_dir: Optional[Path] = None,
         if vpath.exists() and vpath.stat().st_mtime >= p.stat().st_mtime:
             continue  # already paired+fresh -- mtime IS the watermark
         try:
-            fn(str(p))
-            validated += 1
+            result = fn(str(p))
+            # validate_and_write returns {"skipped": True, ...} for a known
+            # non-ranking-claim store (verdict/ledger kind) instead of writing
+            # a misleading <stem>_validation.json -- don't count that as a
+            # real validation, but it's not a failure either.
+            if isinstance(result, dict) and result.get("skipped"):
+                skipped += 1
+            else:
+                validated += 1
         except Exception as exc:  # noqa: BLE001 -- one bad store must not block the next
             failed += 1
             failed_stores.append("%s: %s" % (p.stem, str(exc)[:120]))
     return {"stores_scanned": scanned, "stores_validated": validated,
-           "stores_failed": failed, "failed_stores": failed_stores}
+           "stores_failed": failed, "stores_skipped": skipped,
+           "failed_stores": failed_stores}
 
 
 # 2. weighting_refresh --------------------------------------------------------
