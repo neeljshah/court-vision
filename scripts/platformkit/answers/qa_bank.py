@@ -13,7 +13,9 @@ from wave-2/3 covering nba_venue_split provenance + a no-sport-token family
 listing that surfaces line_history_consensus, 1 more from the light lane
 covering nba_rest_adjusted_form provenance) and 3 depth-wave-1 rows (below
 the grid, ids wnba_ranking_zone_context / mlb_mechanism_effect_injury_recency /
-tennis_ranking_playstyle_fit) covering the new claim families -- 68 total.
+tennis_ranking_playstyle_fit) covering the new claim families, and 2
+prediction_quality rows (the 14th category, 2026-07-17: fail-closed readout
+of the pod-sprint prediction_eval artifact) -- 70 total.
 
 Every `expect` block was GROUNDED by actually running the question once
 through resolve() in this repo on 2026-07-17 (one long-lived process,
@@ -294,6 +296,30 @@ QA_BANK.append({
             "(a different store than the claim family's grass_wr-clay_wr formula in "
             "data/cache/intel_claims/tennis_playstyle_fit_claims.jsonl, which IS answerable:true "
             "through intel_query.ask.ask(), verified separately).",
+})
+
+QA_BANK.append({
+    "id": "prediction_quality_readout",
+    "question": "how good are the predictions?",
+    "sport": "nba",
+    "expect": {"category": "prediction_quality",
+               "status_one_of": ["ok", "no_data"], "receipt_required": False,
+               "must_contain_keys": []},
+    "tier": "FULL",
+    "note": "fail-closed readout of data/cache/prediction_eval/prediction_eval.json (written by "
+            "pod_sprint.prediction_eval). no_data is the honest answer until the artifact is "
+            "generated on this box; ok quotes the OOS scoreboard + eval-gate receipt verbatim.",
+})
+QA_BANK.append({
+    "id": "prediction_quality_sport_filter",
+    "question": "prediction quality for mlb",
+    "sport": "mlb",
+    "expect": {"category": "prediction_quality",
+               "status_one_of": ["ok", "no_data"], "receipt_required": False,
+               "must_contain_keys": []},
+    "tier": "FULL",
+    "note": "sport filter comes from the query text (sport_in_query), not resolve()'s sport "
+            "default -- a bare quality question returns every sport's row.",
 })
 
 CATEGORIES: List[str] = sorted({e["expect"]["category"] for e in QA_BANK})

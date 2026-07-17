@@ -246,6 +246,14 @@ RESOLVERS: dict[str, dict] = {
                         "verbatim; 'what claim families exist' lists each store's cheap validation summary",
         "units": "claim-native (ranking rows/caveats as stored)", "rounding": "none -- verbatim from the claim row",
     },
+    "prediction_quality": {
+        "resolver": "scripts.platformkit.answers.prediction_quality_resolver.resolve",
+        "source_artifact": "data/cache/prediction_eval/prediction_eval.json",
+        "computation": "quotes the fail-closed prediction-eval artifact verbatim: OOS leak-free scoreboard "
+                        "(Brier/RMSE vs tuned baseline / naive mean) + eval-gate receipt; artifact absent or "
+                        "blocked -> no_data, never recomputed here",
+        "units": "Brier (binary) / RMSE (expected-score), as stored", "rounding": "none -- verbatim",
+    },
     "matchup_preview": {
         "resolver": "scripts.platformkit.intel_query.compose_matchup.compose_matchup",
         "source_artifact": "scripts/platformkit/intel_query/compose_matchup.py (fan-out over shipped resolvers)",
@@ -259,6 +267,8 @@ _CONCEPT_KEYWORDS = ("best", "who has", "vs ", " versus ", "why is", "fit team",
 _PREDICTION_KEYWORDS = ("win probability", "who wins", "will win", "predict", "forecast", "project the",
                         "spread", "moneyline", "odds for")
 _CALIBRATION_KEYWORDS = ("brier", "ece", "calibrat*")
+_PREDICTION_QUALITY_KEYWORDS = ("prediction quality", "how good are the predictions", "prediction eval",
+                                "oos readout", "oos scoreboard", "vs the close", "versus the close")
 _HISTORICAL_KEYWORDS = ("final score", "what happened", "box score", "result of", "score of the game",
                         "who won on", "final of")
 _MECHANISM_KEYWORDS = ("evidence", "mechanism", "hypothesis", "folklore",
@@ -315,6 +325,10 @@ def classify(query: str) -> str | None:
     low = query.lower()
     if any(_word_boundary_hit(low, k) for k in _CALIBRATION_KEYWORDS):
         return "calibration_number"
+    # before _PREDICTION_KEYWORDS: "prediction quality" must not be swallowed
+    # by the bare "predict" substring -> prediction_winprob.
+    if any(k in low for k in _PREDICTION_QUALITY_KEYWORDS):
+        return "prediction_quality"
     if any(k in low for k in _PREDICTION_KEYWORDS):
         return "prediction_winprob"
     if any(k in low for k in _HISTORICAL_KEYWORDS):
@@ -611,6 +625,9 @@ def resolve(query: str, sport: str = "nba", category: str | None = None, **kwarg
         return mechanism_effect(sport, kwargs.get("mechanism") or query)
     if cat == "verified_claims":
         return _claims.resolve(query, sport, **kwargs)
+    if cat == "prediction_quality":
+        from scripts.platformkit.answers import prediction_quality_resolver as _pq
+        return _pq.resolve(kwargs.get("sport_filter") or _pq.sport_in_query(query))
     if cat == "analytics_attribution":
         return _analytics.attribution(sport, kwargs.get("family"), kwargs.get("card_id"))
     if cat == "analytics_claim_survival":
