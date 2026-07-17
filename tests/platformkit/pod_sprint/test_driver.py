@@ -44,6 +44,21 @@ def test_required_failure_halts_optional_does_not(sandbox, monkeypatch):
     assert summary["halted_at"] == "hard"
 
 
+def test_prediction_eval_fails_closed(sandbox, monkeypatch, tmp_path):
+    from scripts.platformkit.pod_sprint import prediction_eval as pe
+    monkeypatch.setattr(pe, "STATE_PATH", tmp_path / "nope.json")
+
+    def boom():
+        raise RuntimeError("no data on this box")
+    import scripts.platformkit.platform_scoreboard as ps
+    monkeypatch.setattr(ps, "build_scoreboard", boom)
+    rep = pe.compose()
+    assert rep["status"] == "blocked"
+    assert "no data" in rep["blocked_reason"]
+    assert rep["eval_gate"]["status"] == "missing"
+    assert rep["n_sports_scored"] == 0
+
+
 def test_resume_skips_done_jobs(sandbox, monkeypatch):
     monkeypatch.setattr(driver, "JOBS", [_job("a", "print('hi')")])
     assert driver.main([]) == 0

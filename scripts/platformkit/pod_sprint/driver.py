@@ -72,6 +72,12 @@ JOBS: list[dict] = [
         "timeout_s": 7200,
         "required": False,
     },
+    {
+        "name": "prediction_eval",
+        "argv": [PY, "-m", "scripts.platformkit.pod_sprint.prediction_eval"],
+        "timeout_s": 7200,
+        "required": False,
+    },
 ]
 
 MAX_ATTEMPTS = 2
