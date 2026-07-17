@@ -1,15 +1,12 @@
-"""Claim attribution: join settled predictions back to the claims/cards that
-licensed them, roll up per-claim-family realized performance.
+"""Claim attribution: join settled predictions back to the claims/cards that licensed
+them, roll up per-claim-family realized performance. CALIBRATION / CLV ONLY -- never
+dollars, ROI, or edge. Every output carries edge_claimed=false.
 
-CALIBRATION / CLV ONLY -- never dollars, ROI, or edge. Every output carries
-edge_claimed=false.
-
-Data reality (2026-07-15): graded/clv ledgers share zero event_ids and no
-card's claim_tags condition has ever fired, so there is no id-join. Linkage
-is therefore: (1) claim_tags -- a card tag that FIRED -> "licensed"; (2)
-condition_match(candidate) -- screened against a claim_tags set but none
-fired -> lower-confidence per-card link; (3) condition_match(scope) --
-fallback on the bet's scope matching a card family.
+Data reality (2026-07-15): graded/clv ledgers share zero event_ids and no card's
+claim_tags condition has ever fired, so there is no id-join. Linkage is therefore:
+(1) claim_tags -- a card tag that FIRED -> "licensed"; (2) condition_match(candidate)
+-- screened against a claim_tags set but none fired -> lower-confidence per-card link;
+(3) condition_match(scope) -- fallback on the bet's scope matching a card family.
 """
 from __future__ import annotations
 
@@ -169,17 +166,20 @@ def attribute(bets, card_index, ingame_idx):
                    "confidence": 0.7 if joined_bid else 0.2}
 
 
-def existing_keys(path=LEDGER) -> set:
-    seen = set()
-    for r in iter_jsonl(path):
-        seen.add((r.get("pred_key") or r.get("bet_id"), r.get("card_id")))
-    return seen
+def existing_keys(rows) -> set:
+    """Dedup key set from already-read ledger rows (no file I/O -- caller
+    supplies a single shared read, see run())."""
+    return {(r.get("pred_key") or r.get("bet_id"), r.get("card_id")) for r in rows}
 
 
-def append_ledger(rows, path=LEDGER):
+def append_ledger(rows, old_rows, path=LEDGER):
+    """Append new unique rows to path. old_rows is the ledger's current
+    content, read once by the caller and shared with build_rollup -- avoids
+    re-scanning the ledger file a second time in the same run(). Returns the
+    list of newly appended rows."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    seen = existing_keys(path)
-    n = 0
+    seen = existing_keys(old_rows)
+    new = []
     with path.open("a", encoding="utf-8") as fh:
         for r in rows:
             k = (r.get("pred_key") or r.get("bet_id"), r.get("card_id"))
@@ -187,8 +187,8 @@ def append_ledger(rows, path=LEDGER):
                 continue
             seen.add(k)
             fh.write(json.dumps(r) + "\n")
-            n += 1
-    return n
+            new.append(r)
+    return new
 
 
 def _agg(rows):
@@ -206,8 +206,9 @@ def _agg(rows):
     }
 
 
-def build_rollup(ledger=LEDGER, join_rates=None) -> dict:
-    rows = list(iter_jsonl(ledger))
+def build_rollup(rows, join_rates=None) -> dict:
+    """rows is the ledger's full (old + newly appended) content, passed in by
+    run() from its single shared read -- never re-reads the ledger file."""
     by_family = defaultdict(list)
     by_card = defaultdict(list)
     mix = Counter()
@@ -258,9 +259,10 @@ def atomic_write_json(obj, path=ROLLUP):
 
 def run(graded=GRADED, clv=CLV, ingame=INGAME, cards=CARDS,
         ledger=LEDGER, rollup=ROLLUP, bridge=BRIDGE):
-    build_bridge(graded, clv, bridge)  # refresh the ckey join spine first
+    bridge_stats = build_bridge(graded, clv, bridge)  # refresh the ckey join spine first
     bets = list(load_settled(graded, clv))
-    bridge_join_rate = apply_bridge_join(bets, bridge)  # graded<->clv via ckey
+    # reuse build_bridge's own pred_key->bet_id map -- skips re-reading bridge file
+    bridge_join_rate = apply_bridge_join(bets, bridge, bmap=bridge_stats.get("bmap"))
     wanted = set()
     for b in bets:
         if isinstance(b["claim_tags"], dict):
@@ -268,13 +270,14 @@ def run(graded=GRADED, clv=CLV, ingame=INGAME, cards=CARDS,
     card_index = build_card_index(wanted, cards)
     ingame_idx = load_ingame_clv(ingame)
     rows = list(attribute(bets, card_index, ingame_idx))
-    appended = append_ledger(rows, ledger)
+    old_rows = list(iter_jsonl(ledger))  # single read, shared by dedup + rollup below
+    new_rows = append_ledger(rows, old_rows, ledger)
     jr = compute_join_rates(graded, clv, ingame)
     jr["graded_clv_ckey_bridge"] = bridge_join_rate  # unified bet/ckey join spine
-    snap = build_rollup(ledger, jr)
+    snap = build_rollup(old_rows + new_rows, jr)
     atomic_write_json(snap, rollup)
     return {"settled_bets": len(bets), "rows_generated": len(rows),
-            "rows_appended": appended, "families": len(snap["by_family"]),
+            "rows_appended": len(new_rows), "families": len(snap["by_family"]),
             "cards": len(snap["by_card"]), "join_rates": jr,
             "link_method_mix": snap["link_method_mix"]}
 
