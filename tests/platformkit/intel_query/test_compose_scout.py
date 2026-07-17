@@ -36,6 +36,43 @@ def test_known_player_is_multi_axis_vector_with_shooting_facet():
     assert r["raw_attributes"]["status"] == "ok"
     assert len(r["raw_attributes"]["attributes"]) >= 1
     assert r["axes_hit"]["shooting_facet"] is True
+    # injury_context block: always present, NBA -> mlb_injury_recency is n/a.
+    assert "injury_context" in r
+    assert r["injury_context"]["injury_facts"]["status"] in ("ok", "no_data", "refused")
+    assert r["injury_context"]["mlb_injury_recency"]["status"] == "not_applicable"
+
+
+def test_injury_context_absent_injury_store_reports_reason_not_kill_dossier():
+    """No injury facts store built (or lookup raises) -> injury_facts marked
+    absent with a reason; the rest of the dossier is unaffected."""
+    block = cs._injury_facts_block("nba", "Nobody Real Player")
+    assert block["status"] in ("no_data", "refused")
+    assert block.get("note") or block.get("status") == "refused"
+
+
+def test_injury_context_mlb_recency_block_absent_claim_reports_no_data(monkeypatch):
+    def _raise(*a, **kw):
+        raise RuntimeError("store missing")
+
+    monkeypatch.setattr(
+        "scripts.platformkit.intel_query.ask.load_verified_claims", _raise, raising=False
+    )
+    block = cs._mlb_injury_recency_block(123456)
+    assert block["status"] == "no_data"
+    assert "note" in block
+
+
+def test_injury_context_mlb_recency_not_in_ranking_when_id_absent():
+    r = cs._injury_context("mlb", "Some Player", entity_id=999999999)
+    assert r["mlb_injury_recency"]["status"] in ("ok", "not_in_ranking", "no_data")
+    if r["mlb_injury_recency"]["status"] == "not_in_ranking":
+        assert "citation" in r["mlb_injury_recency"]
+        assert r["mlb_injury_recency"]["citation"]["claim_id"] == cs._MLB_INJURY_RECENCY_CLAIM_ID
+
+
+def test_injury_context_non_mlb_sport_is_not_applicable():
+    r = cs._injury_context("tennis", "Roger Federer", entity_id=None)
+    assert r["mlb_injury_recency"]["status"] == "not_applicable"
 
 
 def test_unknown_player_is_unanswerable_no_data():
