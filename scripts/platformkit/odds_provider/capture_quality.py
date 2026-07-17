@@ -8,6 +8,17 @@ close coverage is already gapped. This reads back
 data/cache/line_history/<sport>/<date>.jsonl (snapshot.py's write_quotes()
 output) and scores today's capture against yesterday's.
 
+PER-PROVIDER GAP (fixed here): the sport-level aggregate (n_rows/n_games/
+n_venues) can stay GREEN even when ONE provider goes fully silent -- a
+single-venue provider (e.g. pinnacle, the closing-line source) can produce
+ZERO rows while other venues keep the aggregate healthy. _provider_drops()
+buckets rows by provider (same "book" -> provider split as schema_snapshot's
+_provider_of) and flags a REGRESSION, naming the provider, when a provider
+with real coverage yesterday (>= _MIN_PROVIDER_ROWS_FOR_SIGNAL rows) produced
+zero today. schema_snapshot.check_sport only diffs the SHAPE of providers
+that ARE present -- it never notices one going missing; this is the
+presence/row-count check that gap needs.
+
 COVERAGE MEASUREMENT ONLY -- no $ field, no ROI, no edge claim, no flag flip,
 no data/registry/ write. A quiet/empty day (offseason sport) is NO_DATA, not
 a failure.
@@ -38,6 +49,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence
 
+from .schema_snapshot import _provider_of
+
 _REPO = Path(__file__).resolve().parents[3]
 DEFAULT_HISTORY_DIR = _REPO / "data" / "cache" / "line_history"
 _OUT_PATH = _REPO / "data" / "frontend" / "ops" / "capture_quality.json"
@@ -57,6 +70,11 @@ _VENUE_DROP_THRESHOLD = 2
 # today's elapsed-normalized hourly rate below this fraction of yesterday's
 # full-day hourly rate is a REGRESSION.
 _RATE_FLOOR_FRACTION = 0.5
+
+# A provider needs at least this many rows YESTERDAY to count as "real
+# coverage" for the per-provider drop check below -- a provider that barely
+# showed up (1-2 rows) going quiet today is noise, not a signal.
+_MIN_PROVIDER_ROWS_FOR_SIGNAL = 5
 
 
 def _now() -> datetime:
@@ -85,6 +103,7 @@ def measure(sport: str, date_str: str, *, base_dir: Optional[Path] = None) -> Di
         "sport": sport, "date": date_str, "n_rows": 0, "n_games": 0, "n_venues": 0,
         "venues_per_game": 0.0, "tail_share": 0.0, "max_gap_min": None,
         "first_ts": None, "last_ts": None, "n_corrupt": 0, "no_file": False,
+        "rows_by_provider": {},
     }
     if not path.exists():
         out["no_file"] = True
@@ -93,6 +112,7 @@ def measure(sport: str, date_str: str, *, base_dir: Optional[Path] = None) -> Di
         game_venues: Dict[str, set] = {}
         venues: set = set()
         timestamps: List[datetime] = []
+        rows_by_provider: Dict[str, int] = {}
         n_rows = n_tail = n_priced = 0
         with path.open("r", encoding="utf-8") as fh:
             for raw in fh:
@@ -116,6 +136,8 @@ def measure(sport: str, date_str: str, *, base_dir: Optional[Path] = None) -> Di
                         game_venues[game_id].add(book)
                 if book:
                     venues.add(book)
+                    provider = _provider_of(book)
+                    rows_by_provider[provider] = rows_by_provider.get(provider, 0) + 1
                 ts = _parse_ts(row.get("captured_at"))
                 if ts is not None:
                     timestamps.append(ts)
@@ -131,6 +153,7 @@ def measure(sport: str, date_str: str, *, base_dir: Optional[Path] = None) -> Di
         out["n_rows"] = n_rows
         out["n_games"] = len(game_venues)
         out["n_venues"] = len(venues)
+        out["rows_by_provider"] = rows_by_provider
         if game_venues:
             out["venues_per_game"] = sum(len(v) for v in game_venues.values()) / len(game_venues)
         out["tail_share"] = (n_tail / n_priced) if n_priced else 0.0
@@ -163,13 +186,48 @@ def _hourly_rate(day: Dict[str, Any], *, full_day: bool, now: datetime) -> float
     return (day.get("n_rows", 0) or 0) / hours
 
 
-def _verdict(today: Dict[str, Any], yesterday: Dict[str, Any], *, now: datetime) -> str:
+def _expected_providers() -> Optional[set]:
+    """The provider names capture_quality expects to see, reusing feed_health's
+    SAME provider stack (so the two lists never drift apart). Returns None (not
+    an empty set) on any failure/import error -- callers then fall back to an
+    UNFILTERED per-provider comparison rather than silently skipping the check.
+    Constructing the provider objects is offline (no network call; fetch() is
+    never invoked here)."""
+    try:
+        from .feed_health import _default_providers
+        names = {getattr(p, "name", None) for p in _default_providers()}
+        names.discard(None)
+        return names or None
+    except Exception:  # noqa: BLE001 -- must never sink capture_quality
+        return None
+
+
+def _provider_drops(today: Dict[str, Any], yesterday: Dict[str, Any], *,
+                     min_rows: int = _MIN_PROVIDER_ROWS_FOR_SIGNAL,
+                     expected: Optional[set] = None) -> List[str]:
+    """Providers present in *yesterday* with >= min_rows rows that are absent
+    or zero in *today* -- the per-provider drop a sport-level aggregate (venue
+    count / overall rate) can mask (see module docstring, THE GAP). When
+    *expected* is given, a provider outside it is never flagged (avoids a
+    false positive on a one-off/malformed "book" label)."""
+    yest_by = yesterday.get("rows_by_provider") or {}
+    today_by = today.get("rows_by_provider") or {}
+    dropped = [p for p, n in yest_by.items()
+               if n >= min_rows and (today_by.get(p, 0) or 0) == 0
+               and (expected is None or p in expected)]
+    return sorted(dropped)
+
+
+def _verdict(today: Dict[str, Any], yesterday: Dict[str, Any], *, now: datetime,
+             dropped_providers: Optional[Sequence[str]] = None) -> str:
     """GREEN / REGRESSION / NO_DATA -- see scoreboard() docstring for the rule."""
     today_empty = (today.get("n_rows", 0) or 0) == 0
     if today_empty and (yesterday.get("n_rows", 0) or 0) == 0:
         return NO_DATA
     if (yesterday.get("n_games", 0) or 0) < _MIN_GAMES_FOR_SIGNAL:
         return GREEN if not today_empty else NO_DATA  # no baseline to regress against
+    if dropped_providers:
+        return REGRESSION
     venue_drop = (yesterday.get("n_venues", 0) or 0) - (today.get("n_venues", 0) or 0)
     if venue_drop >= _VENUE_DROP_THRESHOLD:
         return REGRESSION
@@ -186,16 +244,20 @@ def scoreboard(sports: Sequence[str] = DEFAULT_SPORTS, *, now: Optional[datetime
 
     Verdict rule (see module docstring for the elapsed-normalization rationale):
       NO_DATA     -- both days empty (an offseason sport; not a failure).
-      REGRESSION  -- yesterday had real coverage (n_games >= 3) AND EITHER
+      REGRESSION  -- yesterday had real coverage (n_games >= 3) AND ANY OF:
                      today's elapsed-normalized hourly rate < 50% of
-                     yesterday's full-day hourly rate, OR n_venues dropped by
-                     2+ (today vs yesterday).
+                     yesterday's full-day hourly rate; n_venues dropped by 2+
+                     (today vs yesterday); OR a single provider that had real
+                     coverage yesterday (>= _MIN_PROVIDER_ROWS_FOR_SIGNAL rows)
+                     produced ZERO rows today (provider_regression names it --
+                     see _provider_drops, THE GAP in the module docstring).
       GREEN       -- everything else (including "no baseline to regress
                      against yet").
     """
     nowdt = now if now is not None else _now()
     today_str = nowdt.date().isoformat()
     yest_str = (nowdt - timedelta(days=1)).date().isoformat()
+    expected_providers = _expected_providers()
     by_sport: Dict[str, Any] = {}
     n_regression = 0
     n_no_data = 0
@@ -203,17 +265,20 @@ def scoreboard(sports: Sequence[str] = DEFAULT_SPORTS, *, now: Optional[datetime
         try:
             today = measure(sport, today_str, base_dir=base_dir)
             yesterday = measure(sport, yest_str, base_dir=base_dir)
-            verdict = _verdict(today, yesterday, now=nowdt)
+            dropped = _provider_drops(today, yesterday, expected=expected_providers)
+            verdict = _verdict(today, yesterday, now=nowdt, dropped_providers=dropped)
         except Exception as exc:  # noqa: BLE001 -- one bad sport must not sink the board
             today = {"sport": sport, "date": today_str, "error": "%s: %s" % (
                 type(exc).__name__, exc)}
             yesterday = {"sport": sport, "date": yest_str}
+            dropped = []
             verdict = NO_DATA
         if verdict == REGRESSION:
             n_regression += 1
         elif verdict == NO_DATA:
             n_no_data += 1
-        by_sport[sport] = {"today": today, "yesterday": yesterday, "verdict": verdict}
+        by_sport[sport] = {"today": today, "yesterday": yesterday, "verdict": verdict,
+                           "provider_regression": dropped}
 
     overall = REGRESSION if n_regression else (
         NO_DATA if n_no_data == len(sports) else GREEN)
@@ -228,7 +293,10 @@ def scoreboard(sports: Sequence[str] = DEFAULT_SPORTS, *, now: Optional[datetime
             "write_quotes output). Coverage measurement only -- no $ field, no ROI, "
             "no edge claim. Early-in-the-day comparisons are noisy; REGRESSION uses "
             "an elapsed-normalized hourly rate (today's partial day vs yesterday's "
-            "full day) as mitigation -- see module docstring."
+            "full day) as mitigation -- see module docstring. by_sport[sport]."
+            "provider_regression names any provider with real coverage yesterday "
+            "that produced zero rows today, even when the sport-level aggregate "
+            "stays healthy (see THE GAP / PER-PROVIDER GAP in the module docstring)."
         ),
     }
 
@@ -280,6 +348,10 @@ def render(doc: Dict[str, Any]) -> str:
             today.get("n_venues", 0) or 0, today.get("venues_per_game", 0.0) or 0.0,
             (today.get("tail_share", 0.0) or 0.0) * 100.0,
             ("%.1f" % gap) if gap is not None else "-"))
+    for sport in doc.get("sports", []):
+        dropped = (doc.get("by_sport", {}) or {}).get(sport, {}).get("provider_regression") or []
+        if dropped:
+            lines.append("  PROVIDER DROP  %-12s %s" % (sport, ", ".join(dropped)))
     lines += ["-" * 78, "OVERALL: " + doc.get("overall", "?"), "=" * 78]
     return "\n".join(lines)
 

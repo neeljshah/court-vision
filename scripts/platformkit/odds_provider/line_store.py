@@ -24,7 +24,10 @@ GAME_KEY (canonical, documented):
 
 LOCK WINDOW: a quote captured within DEFAULT_LOCK_WINDOW_MIN minutes BEFORE
 commence_time (and not after it) is "at lock" -> a true close. A row without a
-commence_time can never be a true close (we cannot prove it was at lock).
+commence_time can never be a true close (we cannot prove it was at lock). A
+row with captured_at_suspect=True (markets.py's clock-trust guard tripped for
+that tick) can ALSO never be at lock -- its own captured_at is not trusted
+against commence_time -- so it is PROXY-only, same as a missing commence_time.
 
 All readers return None / empty on missing history and NEVER raise.
 
@@ -243,7 +246,18 @@ def get_latest_batch(sport: str, game_ids: Any, *, base: Optional[Path] = None
 
 
 def _within_lock(row: Dict[str, Any], window_min: int) -> bool:
-    """True iff *row* was captured within window_min minutes BEFORE its tipoff."""
+    """True iff *row* was captured within window_min minutes BEFORE its tipoff.
+
+    A row stamped captured_at_suspect=True (markets.py's clock-trust guard --
+    its captured_at disagreed with the poller's own wall-clock by more than
+    CAPTURED_AT_SUSPECT_WINDOW_SEC at capture time, e.g. an NTP step / VM
+    resume mid-poll) can NEVER be "at lock": we cannot trust ITS captured_at
+    against commence_time, so it is PROXY-only -- it may still surface as the
+    last-observed close in get_close(), but it is never promoted to a TRUE
+    close.
+    """
+    if row.get("captured_at_suspect"):
+        return False
     commence = _parse_ts(row.get("commence_time"))
     if commence is None:
         return False

@@ -149,3 +149,55 @@ def test_now_fallback_when_no_as_of():
     quotes = quotes_from_aggregate("nba", agg=agg, now=now)
     assert quotes and all(
         q.captured_at == "2026-06-18T21:00:00+00:00" for q in quotes)
+
+
+# ---------------------------------------------------------------------------
+# CLOCK-TRUST GUARD (captured_at_suspect) -- go-live defect A
+# ---------------------------------------------------------------------------
+
+def test_captured_at_not_suspect_when_now_agrees_with_as_of():
+    """Happy path: *now* (the poller's own clock, read moments after as_of was
+    stamped) agrees with as_of within the window -> never suspect."""
+    now = datetime(2026, 6, 18, 20, 2, 0, tzinfo=timezone.utc)  # 2 min after as_of
+    quotes = quotes_from_aggregate("nba", agg=_AGG, now=now)
+    assert quotes and all(q.captured_at_suspect is False for q in quotes)
+
+
+def test_captured_at_suspect_on_clock_divergence():
+    """A poller-clock step: *now* disagrees with the slate's as_of by more than
+    CAPTURED_AT_SUSPECT_WINDOW_SEC (5 min) -> every quote from this tick is
+    stamped captured_at_suspect=True, but captured_at itself is unchanged
+    (still the honest as_of -- we never fabricate a different capture time)."""
+    now = datetime(2026, 6, 18, 21, 0, 0, tzinfo=timezone.utc)  # 1h after as_of
+    quotes = quotes_from_aggregate("nba", agg=_AGG, now=now)
+    assert quotes and all(q.captured_at_suspect is True for q in quotes)
+    assert all(q.captured_at == _CAPTURED for q in quotes)
+
+
+def test_captured_at_suspect_just_inside_window_is_not_suspect():
+    now = datetime(2026, 6, 18, 20, 4, 59, tzinfo=timezone.utc)  # 299s after as_of
+    quotes = quotes_from_aggregate("nba", agg=_AGG, now=now)
+    assert quotes and all(q.captured_at_suspect is False for q in quotes)
+
+
+def test_captured_at_suspect_just_outside_window_is_suspect():
+    now = datetime(2026, 6, 18, 20, 5, 1, tzinfo=timezone.utc)  # 301s after as_of
+    quotes = quotes_from_aggregate("nba", agg=_AGG, now=now)
+    assert quotes and all(q.captured_at_suspect is True for q in quotes)
+
+
+def test_captured_at_suspect_on_unparseable_as_of():
+    agg = dict(_AGG)
+    agg["as_of"] = "not-a-timestamp"
+    quotes = quotes_from_aggregate("nba", agg=agg)
+    assert quotes and all(q.captured_at_suspect is True for q in quotes)
+    assert all(q.captured_at == "not-a-timestamp" for q in quotes)  # never fabricated
+
+
+def test_captured_at_suspect_never_fires_on_now_fallback():
+    """No as_of at all -> captured_at is stamped from *now* itself, so there is
+    nothing to disagree with -- never suspect regardless of *now*."""
+    agg = {"sport": "nba", "status": "ok", "events": _AGG["events"][:1]}
+    now = datetime(2026, 6, 18, 21, 0, 0, tzinfo=timezone.utc)
+    quotes = quotes_from_aggregate("nba", agg=agg, now=now)
+    assert quotes and all(q.captured_at_suspect is False for q in quotes)

@@ -6,7 +6,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from scripts.platformkit.odds_provider.capture_quality import (
-    GREEN, NO_DATA, REGRESSION, load_status, measure, render, scoreboard, write_status)
+    GREEN, NO_DATA, REGRESSION, _provider_drops, load_status, measure, render,
+    scoreboard, write_status)
 
 
 def _row(game_id="g1", book="espn:DraftKings", odds=1.9, ts="2026-07-03T10:00:00+00:00"):
@@ -188,3 +189,103 @@ def test_render_is_ascii(tmp_path):
     assert text.encode("ascii")  # raises UnicodeEncodeError if not pure ASCII
     assert "CAPTURE QUALITY" in text
     assert "OVERALL:" in text
+
+
+# ---------------------------------------------------------------------------
+# Per-provider row-drop detection -- go-live defect B
+# ---------------------------------------------------------------------------
+
+def test_measure_buckets_rows_by_provider(tmp_path):
+    rows = [_row(game_id="g1", book="espn:DraftKings"),
+            _row(game_id="g1", book="pinnacle"),
+            _row(game_id="g2", book="espn:FanDuel")]
+    _write_day(tmp_path, "mlb", "2026-07-03", rows)
+    out = measure("mlb", "2026-07-03", base_dir=tmp_path)
+    # "espn:DraftKings" and "espn:FanDuel" both bucket under provider "espn".
+    assert out["rows_by_provider"] == {"espn": 2, "pinnacle": 1}
+
+
+def test_provider_drops_flags_a_provider_that_went_to_zero():
+    yesterday = {"rows_by_provider": {"espn": 50, "pinnacle": 20}}
+    today = {"rows_by_provider": {"espn": 48}}  # pinnacle absent entirely
+    assert _provider_drops(today, yesterday) == ["pinnacle"]
+
+
+def test_provider_drops_ignores_below_signal_threshold():
+    # pinnacle had only 2 rows yesterday (< _MIN_PROVIDER_ROWS_FOR_SIGNAL=5) --
+    # too little coverage to call a real drop.
+    yesterday = {"rows_by_provider": {"espn": 50, "pinnacle": 2}}
+    today = {"rows_by_provider": {"espn": 48}}
+    assert _provider_drops(today, yesterday) == []
+
+
+def test_provider_drops_ignores_provider_still_present():
+    yesterday = {"rows_by_provider": {"espn": 50, "pinnacle": 20}}
+    today = {"rows_by_provider": {"espn": 48, "pinnacle": 1}}  # still >0, not a drop
+    assert _provider_drops(today, yesterday) == []
+
+
+def test_provider_drops_filtered_by_expected_set():
+    # A malformed/one-off "book" label that vanishes is never flagged when an
+    # expected-provider allowlist is supplied and it is not on that list.
+    yesterday = {"rows_by_provider": {"espn": 50, "weird_test_label": 10}}
+    today = {"rows_by_provider": {"espn": 48}}
+    assert _provider_drops(today, yesterday, expected={"espn", "pinnacle"}) == []
+    assert _provider_drops(today, yesterday, expected=None) == ["weird_test_label"]
+
+
+def test_scoreboard_regression_on_masked_provider_drop(tmp_path):
+    """THE masked-aggregate case (module docstring PER-PROVIDER GAP): pinnacle
+    (a single-venue provider) goes fully silent today while espn keeps the
+    sport-level aggregate (rate, venue count) healthy enough that the OLD
+    checks alone would stay GREEN -- only losing 1 of 2 venues (below the
+    venue_drop>=2 threshold) at an unchanged aggregate rate. The new
+    per-provider check must still catch it and name "pinnacle"."""
+    yest_rows = []
+    for h in range(24):
+        for g in ("g1", "g2", "g3"):
+            ts = "2026-07-02T%02d:00:00+00:00" % h
+            yest_rows.append(_row(game_id=g, book="espn:DraftKings", ts=ts))
+            yest_rows.append(_row(game_id=g, book="pinnacle", ts=ts))
+    _write_day(tmp_path, "mlb", "2026-07-02", yest_rows)
+    # Yesterday's combined hourly rate = 6 rows/hr (3 games x 2 venues).
+    # Today: pinnacle produces ZERO rows; espn alone matches that same 6/hr
+    # rate (2 espn rows/game/hr) so the rate-collapse check does NOT fire.
+    today_rows = []
+    for h in range(6):
+        for g in ("g1", "g2", "g3"):
+            ts = "2026-07-03T%02d:00:00+00:00" % h
+            today_rows.append(_row(game_id=g, book="espn:DraftKings", ts=ts))
+            today_rows.append(_row(game_id=g, book="espn:DraftKings", ts=ts))
+    _write_day(tmp_path, "mlb", "2026-07-03", today_rows)
+    now = datetime(2026, 7, 3, 6, 30, 0, tzinfo=timezone.utc)
+    doc = scoreboard(("mlb",), now=now, base_dir=tmp_path)
+    # Prove the OLD signals alone stay non-collapsing (the masking premise):
+    # only 1 venue lost (2 -> 1, below the >=2 drop threshold).
+    assert doc["by_sport"]["mlb"]["yesterday"]["n_venues"] == 2
+    assert doc["by_sport"]["mlb"]["today"]["n_venues"] == 1
+    # The new provider-drop check still fires and names the provider.
+    assert doc["by_sport"]["mlb"]["verdict"] == REGRESSION
+    assert doc["by_sport"]["mlb"]["provider_regression"] == ["pinnacle"]
+    assert doc["overall"] == REGRESSION
+
+
+def test_scoreboard_provider_regression_empty_on_healthy_case(tmp_path):
+    # Sanity: the healthy-case fixture (both providers keep capturing) never
+    # names a provider regression.
+    yest_rows = []
+    for h in range(24):
+        for g in ("g1", "g2", "g3"):
+            yest_rows.append(_row(game_id=g, book="espn:DraftKings",
+                                   ts="2026-07-02T%02d:00:00+00:00" % h))
+    _write_day(tmp_path, "mlb", "2026-07-02", yest_rows)
+    today_rows = []
+    for h in range(6):
+        for g in ("g1", "g2", "g3"):
+            today_rows.append(_row(game_id=g, book="espn:DraftKings",
+                                    ts="2026-07-03T%02d:00:00+00:00" % h))
+    _write_day(tmp_path, "mlb", "2026-07-03", today_rows)
+    now = datetime(2026, 7, 3, 6, 30, 0, tzinfo=timezone.utc)
+    doc = scoreboard(("mlb",), now=now, base_dir=tmp_path)
+    assert doc["by_sport"]["mlb"]["verdict"] == GREEN
+    assert doc["by_sport"]["mlb"]["provider_regression"] == []

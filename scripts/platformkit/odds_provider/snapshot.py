@@ -24,6 +24,8 @@ JSONL ROW SHAPE (one line per quote; the contract line_store.py reads):
     "line": float|None, "odds": float (decimal > 1.0), "book": str,
     "devigged_prob": float|None,
     "captured_at": ISO-8601 UTC,        # when this quote was observed
+    "captured_at_suspect": bool,        # True -> poller-clock guard tripped;
+                                         # line_store never treats this as a TRUE close
     "commence_time": ISO-8601 UTC|None  # tipoff/lock time, when known
   }
 
@@ -98,6 +100,10 @@ def _row_from_quote(q: MarketQuote, commence: Optional[str]) -> Optional[Dict[st
         "devigged_prob": (float(q.devigged_prob)
                           if getattr(q, "devigged_prob", None) is not None else None),
         "captured_at": captured_at,
+        # markets.py's clock-trust guard (CAPTURED_AT_SUSPECT_WINDOW_SEC): True
+        # when this tick's captured_at disagreed with the poller's own clock --
+        # line_store treats a suspect row as PROXY-only, never a TRUE close.
+        "captured_at_suspect": bool(getattr(q, "captured_at_suspect", False)),
         "commence_time": (str(commence) if commence else None),
     }
 

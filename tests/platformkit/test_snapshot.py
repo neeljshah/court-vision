@@ -86,3 +86,15 @@ def test_date_bucket_falls_back_to_now(tmp_path):
     res = write_quotes([q], out_dir=tmp_path,
                        now=datetime(2026, 6, 18, tzinfo=timezone.utc))
     assert res["skipped"] == 1
+
+
+def test_captured_at_suspect_persists_to_row(tmp_path):
+    write_quotes([_quote(captured_at_suspect=True)], out_dir=tmp_path)
+    rows = _read_jsonl(tmp_path / "nba" / "2026-06-18.jsonl")
+    assert rows[0]["captured_at_suspect"] is True
+
+
+def test_captured_at_suspect_defaults_false(tmp_path):
+    write_quotes([_quote()], out_dir=tmp_path)
+    rows = _read_jsonl(tmp_path / "nba" / "2026-06-18.jsonl")
+    assert rows[0]["captured_at_suspect"] is False

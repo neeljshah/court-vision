@@ -15,11 +15,12 @@ from scripts.platformkit.odds_provider.line_store import (
 TIP = "2026-06-18T23:00:00+00:00"  # tipoff / lock time
 
 
-def _q(captured_at, side="home", odds=1.91):
+def _q(captured_at, side="home", odds=1.91, suspect=False):
     return MarketQuote(
         sport="nba", game_id="G1", home="Knicks", away="Spurs",
         market_type=MONEYLINE, side=side, line=None, odds=odds,
-        book="espn:DraftKings", captured_at=captured_at, devigged_prob=None)
+        book="espn:DraftKings", captured_at=captured_at, devigged_prob=None,
+        captured_at_suspect=suspect)
 
 
 def _seed(tmp_path, captures, *, commence=TIP):
@@ -138,3 +139,47 @@ def test_true_close_requires_all_market_sides_at_lock(tmp_path):
     closes, is_true = get_close("G1", base=tmp_path)
     assert is_true is False
     assert (MONEYLINE, "home") in closes and (MONEYLINE, "away") in closes
+
+
+# ---------------------------------------------------------------------------
+# CLOCK-TRUST GUARD (captured_at_suspect) -- go-live defect A
+# ---------------------------------------------------------------------------
+
+def test_suspect_row_at_lock_time_is_never_a_true_close(tmp_path):
+    # Timing alone would qualify (5 min before the 23:00 tip, inside the 30-min
+    # lock window), but the row is stamped captured_at_suspect=True (markets.py's
+    # clock-trust guard tripped) -- it must NEVER be promoted to a TRUE close.
+    write_quotes([_q("2026-06-18T22:55:00+00:00", odds=2.0, suspect=True)],
+                 out_dir=tmp_path, commence_by_game={"G1": TIP})
+    closes, is_true = get_close("G1", base=tmp_path)
+    assert is_true is False  # PROXY-only, even though it is the only/last tick
+    assert closes[(MONEYLINE, "home")]["odds"] == 2.0
+    assert closes[(MONEYLINE, "home")]["captured_at_suspect"] is True
+
+
+def test_suspect_row_falls_back_to_non_suspect_at_lock_tick(tmp_path):
+    # An earlier suspect tick sits inside the lock window, but a LATER
+    # non-suspect tick is also at-lock -> the honest (non-suspect) tick wins
+    # as the true close, not the suspect one.
+    write_quotes([_q("2026-06-18T22:50:00+00:00", odds=1.80, suspect=True)],
+                 out_dir=tmp_path, commence_by_game={"G1": TIP})
+    write_quotes([_q("2026-06-18T22:58:00+00:00", odds=2.00, suspect=False)],
+                 out_dir=tmp_path, commence_by_game={"G1": TIP})
+    closes, is_true = get_close("G1", base=tmp_path)
+    assert is_true is True
+    assert closes[(MONEYLINE, "home")]["odds"] == 2.00
+    assert closes[(MONEYLINE, "home")]["captured_at_suspect"] is False
+
+
+def test_non_suspect_close_within_window_is_still_a_true_close(tmp_path):
+    # Happy path (not-suspect): unaffected by the clock-trust guard -- same
+    # at-lock tick classification as before the fix.
+    _seed(tmp_path, [
+        ("2026-06-18T18:00:00+00:00", 1.80),
+        ("2026-06-18T22:55:00+00:00", 2.00),
+    ])
+    res = get_close("G1", base=tmp_path)
+    closes, is_true = res
+    assert is_true is True
+    assert closes[(MONEYLINE, "home")]["odds"] == 2.00
+    assert closes[(MONEYLINE, "home")].get("captured_at_suspect") is False

@@ -25,6 +25,23 @@ Three-way moneyline (soccer):
   instead -- we NEVER fabricate a draw price. The resulting MarketQuote for the
   draw leg has side='draw'.
 
+CLOCK-TRUST GUARD (captured_at_suspect): captured_at is stamped from the
+poller box's OWN wall-clock (http_cache._fetched_at / aggregate.as_of), then
+later compared by line_store against the provider's ABSOLUTE commence_time to
+decide a TRUE close. Those are two uses of the SAME box clock with no
+external reconciliation. If that clock steps between the as_of stamp (taken
+during the fetch) and *now* (read moments later, at the top of the same poll
+tick -- see line_snapshot_daemon.poll_once), the two readings diverge and the
+close classification silently corrupts. When |now - as_of| exceeds
+CAPTURED_AT_SUSPECT_WINDOW_SEC we stamp every quote from this tick
+captured_at_suspect=True; line_store's _within_lock() treats a suspect row as
+PROXY-only (never a TRUE close). KNOWN LIMIT: this only catches a clock STEP
+*within* one poll tick. A UNIFORM box-clock drift (as_of and now drift
+together, e.g. the box is always +N minutes off true time) is invisible to
+this in-process check -- that is an OPS guarantee (bounded-step NTP /
+chrony + drift alerting on the poller host), not something this module can
+detect from inside a single process. We do not build that ops system here.
+
 INVARIANTS: build only under scripts/platformkit/; <=300 LOC; ASCII only;
 stdlib dataclasses; no network here (agg/now injectable for offline tests).
 """
@@ -43,6 +60,10 @@ MONEYLINE = "moneyline"
 SPREAD = "spread"
 TOTAL = "total"
 
+# |now - as_of| beyond this many seconds -> captured_at_suspect=True (see the
+# CLOCK-TRUST GUARD module docstring section above).
+CAPTURED_AT_SUSPECT_WINDOW_SEC = 300  # 5 min
+
 
 @dataclass
 class MarketQuote:
@@ -57,7 +78,10 @@ class MarketQuote:
     moneyline & spread, 'over'/'under' for total. line is the handicap/total
     (None for moneyline). odds is DECIMAL (> 1.0). devigged_prob is the no-vig
     fair probability for *side* (None until a two-way pair is devigged).
-    captured_at is ISO-8601 UTC (the slate's as_of / now).
+    captured_at is ISO-8601 UTC (the slate's as_of / now). captured_at_suspect
+    is True when this tick's as_of disagreed with the poller's own clock by
+    more than CAPTURED_AT_SUSPECT_WINDOW_SEC (see the CLOCK-TRUST GUARD module
+    docstring section) -- line_store never treats a suspect row as a TRUE close.
     """
 
     sport: str
@@ -71,6 +95,7 @@ class MarketQuote:
     book: str
     captured_at: str
     devigged_prob: Optional[float] = None
+    captured_at_suspect: bool = False
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -90,11 +115,26 @@ class MarketQuote:
         }
 
 
-def _now_iso(now: Optional[datetime]) -> str:
+def _now_dt(now: Optional[datetime]) -> datetime:
     dt = now if now is not None else datetime.now(timezone.utc)
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.utc)
-    return dt.astimezone(timezone.utc).isoformat(timespec="seconds")
+    return dt.astimezone(timezone.utc)
+
+
+def _now_iso(now: Optional[datetime]) -> str:
+    return _now_dt(now).isoformat(timespec="seconds")
+
+
+def _parse_iso(value: str) -> Optional[datetime]:
+    """Best-effort ISO-8601 -> aware UTC datetime, or None. Never raises."""
+    try:
+        dt = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
 
 
 def _decimal(value: Any) -> Optional[float]:
@@ -223,18 +263,19 @@ def _two_way_quotes(ctx: Dict[str, str], venue: str, market_type: str,
     return out
 
 
-def _quote(ctx: Dict[str, str], venue: str, market_type: str, side: str,
+def _quote(ctx: Dict[str, Any], venue: str, market_type: str, side: str,
            line: Optional[float], odds: float,
            fair: Optional[float]) -> MarketQuote:
     return MarketQuote(
         sport=ctx["sport"], game_id=ctx["game_id"], home=ctx["home"],
         away=ctx["away"], market_type=market_type, side=side, line=line,
         odds=odds, book=venue, captured_at=ctx["captured_at"],
-        devigged_prob=fair)
+        devigged_prob=fair,
+        captured_at_suspect=bool(ctx.get("captured_at_suspect", False)))
 
 
-def _event_quotes(event: Dict[str, Any], sport: str,
-                  captured_at: str) -> List[MarketQuote]:
+def _event_quotes(event: Dict[str, Any], sport: str, captured_at: str,
+                  captured_at_suspect: bool = False) -> List[MarketQuote]:
     """All team-market quotes for one merged aggregate event (skips malformed)."""
     home = str(event.get("home") or "").strip()
     away = str(event.get("away") or "").strip()
@@ -242,8 +283,9 @@ def _event_quotes(event: Dict[str, Any], sport: str,
     prices = event.get("prices")
     if not home or not away or not game_id or not isinstance(prices, dict):
         return []
-    ctx = {"sport": sport, "game_id": game_id, "home": home, "away": away,
-           "captured_at": captured_at}
+    ctx: Dict[str, Any] = {"sport": sport, "game_id": game_id, "home": home,
+                           "away": away, "captured_at": captured_at,
+                           "captured_at_suspect": captured_at_suspect}
     out: List[MarketQuote] = []
     for venue, sides in prices.items():
         if not venue or not isinstance(sides, dict):
@@ -265,20 +307,39 @@ def quotes_from_aggregate(sport: str, *, agg: Optional[Dict[str, Any]] = None,
     Parses each merged event's per-venue moneyline plus any extended spread /
     total nodes a venue quotes. Malformed entries are omitted; we NEVER
     fabricate a line or a price. Returns [] when the slate is unavailable.
+
+    CLOCK-TRUST GUARD: when the slate carries a real as_of, every quote is
+    stamped captured_at_suspect=True if as_of disagrees with *now* (or the
+    live wall-clock when *now* is None) by more than
+    CAPTURED_AT_SUSPECT_WINDOW_SEC, or if as_of does not parse -- see the
+    module docstring. The *now*-absent fallback path (no as_of at all) always
+    stamps captured_at=now and is never suspect (there is nothing to disagree
+    with).
     """
     payload = agg if agg is not None else aggregate(sport)
     if not isinstance(payload, dict) or payload.get("status") != "ok":
         return []
-    captured_at = str(payload.get("as_of") or "").strip() or _now_iso(now)
+    as_of_raw = str(payload.get("as_of") or "").strip()
+    suspect = False
+    if as_of_raw:
+        captured_at = as_of_raw
+        as_of_dt = _parse_iso(as_of_raw)
+        if as_of_dt is None:
+            suspect = True  # unverifiable clock claim -- never trust it as TRUE-close-eligible
+        else:
+            drift = abs((_now_dt(now) - as_of_dt).total_seconds())
+            suspect = drift > CAPTURED_AT_SUSPECT_WINDOW_SEC
+    else:
+        captured_at = _now_iso(now)
     sport_key = str(payload.get("sport") or sport or "").lower()
     out: List[MarketQuote] = []
     for event in payload.get("events", []) or []:
         if isinstance(event, dict):
-            out.extend(_event_quotes(event, sport_key, captured_at))
+            out.extend(_event_quotes(event, sport_key, captured_at, suspect))
     return out
 
 
 __all__ = [
     "MarketQuote", "quotes_from_aggregate",
-    "MONEYLINE", "SPREAD", "TOTAL",
+    "MONEYLINE", "SPREAD", "TOTAL", "CAPTURED_AT_SUSPECT_WINDOW_SEC",
 ]
