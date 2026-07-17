@@ -131,6 +131,86 @@ def test_entity_lookup_finds_named_player(fixture_sources):
     assert result["answer"]["rankings"][0]["rank"] == 1
 
 
+# --- entity_lookup index fast path (2026-07-16 memory fix) -----------------
+#
+# entity_lookup used to be the ONLY family with no index fast path: every
+# question fell through to load_verified_claims, which whole-loads every
+# VERIFIED row of every store into memory for the life of the call. For
+# nba_player_box_rate (2.8GB / 59,710 rows, each a duplicated ~44KB
+# full-league ranking blob) that meant multi-GB resident just to answer a
+# single-player question. These tests prove ask_index.index_entity_lookup
+# seeks+reads only VERIFIED, hint-matching byte ranges -- never a MISMATCH
+# row sharing the same metric/window, never the whole store.
+
+def test_entity_lookup_index_fast_path_and_fallback_agree(indexable_fixture):
+    tmp_path, family, _claims_path, _validation_path = indexable_fixture
+    q = "Where does Delta Player rank on composite in window=idx_test_window_v1?"
+    fast_result = ask_mod.ask(q)
+    assert fast_result["answerable"] is True
+    assert fast_result["answer"]["rankings"][0]["value"] == 0.7
+
+    (tmp_path / f"{family}.index.jsonl").unlink()  # force missing-index fallback
+    fallback_result = ask_mod.ask(q)
+    assert fallback_result == fast_result  # SAME answer, found via a different path
+
+
+def test_entity_lookup_fast_path_seeks_only_verified_byte_ranges(tmp_path, monkeypatch):
+    """Proves the fast path SEEKS the underlying claims file rather than
+    scanning it: a MISMATCH-verdict row sharing the exact same metric/
+    window as the VERIFIED hit (and a different value, so a leak is
+    detectable) must never be seeked -- its verdict is known from the
+    small .index.jsonl alone -- and the total seek count must equal
+    exactly the VERIFIED rows, never all 3 rows in the file."""
+    from scripts.platformkit.intel_query.claims_index import build_index
+    from scripts.platformkit.intel_query import ask_index as ask_index_mod
+
+    family = "ent_fast_fam"
+    verified_row = _ranking_claim(
+        "ent_fast_verified", "composite", "v1",
+        [{"rank": 1, "player_id": 1, "player_name": "Delta Player", "value": 0.7, "n": 25}],
+    )
+    mismatch_row = _ranking_claim(
+        "ent_fast_mismatch", "composite", "v1",
+        [{"rank": 1, "player_id": 2, "player_name": "Delta Player", "value": 0.9, "n": 25}],
+    )
+    other_row = _ranking_claim(
+        "ent_fast_other", "other_metric", "v2",
+        [{"rank": 1, "player_id": 3, "player_name": "Echo Player", "value": 0.4, "n": 25}],
+    )
+    claims_path, validation_path = _write_indexable_pair(
+        tmp_path, family, [verified_row, mismatch_row, other_row],
+        {"ent_fast_verified": "VERIFIED", "ent_fast_mismatch": "MISMATCH", "ent_fast_other": "VERIFIED"},
+    )
+    build_index(family, tmp_path)
+
+    monkeypatch.setattr(ask_mod, "INTEL_CLAIMS_DIR", tmp_path)
+    monkeypatch.setattr(ask_mod, "CLAIM_SOURCE_PAIRS", ((validation_path, claims_path),))
+
+    seek_calls: list[tuple] = []
+    real_seek = ask_index_mod.seek_claim_row
+
+    def _tracking_seek(path, offset):
+        seek_calls.append((path, offset))
+        return real_seek(path, offset)
+
+    monkeypatch.setattr(ask_index_mod, "seek_claim_row", _tracking_seek)
+
+    result = ask_mod.ask("Where does Delta Player rank on composite in window=v1?")
+    assert result["answerable"] is True
+    assert result["answer"]["rankings"][0]["value"] == 0.7  # VERIFIED row's value, not mismatch's 0.9
+
+    # Bounded: exactly 1 seek. "composite" is a recognized metric alias
+    # (families._METRIC_ALIASES), so metric_hints=["composite"] excludes
+    # other_row (metric="other_metric") via the index alone -- no seek.
+    # mismatch_row shares metric+window with the hit but verdict!=VERIFIED
+    # -- also excluded via the index alone, never touched, never seeked.
+    # Only ent_fast_verified (VERIFIED, metric=composite, window=v1)
+    # survives the index pre-filter and gets seeked -- never a linear
+    # readlines()/full-file scan of the 3-row store.
+    assert len(seek_calls) == 1
+    assert seek_calls[0] == (claims_path, 0)  # the VERIFIED row's own byte_offset (first line)
+
+
 def test_provenance_returns_criteria_and_caveats(fixture_sources):
     result = ask_mod.ask("How do you know? Show the evidence for fixture_composite_last_20.")
     assert result["answerable"] is True

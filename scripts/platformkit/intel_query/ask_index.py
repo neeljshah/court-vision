@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import json
 import re
+import unicodedata
 from pathlib import Path
 from typing import Any
 
@@ -263,3 +264,98 @@ def index_top_n_lookup(parsed, claims_dir: Path, repo_root: Path) -> dict[str, A
         _validator_source=_display_path(claims_dir / f"{best_claims_path.stem}_validation.json", repo_root),
         _producer_source=_display_path(best_claims_path, repo_root),
     )
+
+
+def _ascii_fold(name: str) -> str:
+    """Diacritic-insensitive fold -- duplicated (not imported) from ask.py's
+    `_ascii_name`, which the entity-name comparison below must match
+    exactly; ask.py imports THIS module, so importing back would cycle."""
+    decomposed = unicodedata.normalize("NFKD", name)
+    return "".join(ch for ch in decomposed if not unicodedata.combining(ch))
+
+
+def index_entity_lookup(parsed, name_key: str, claims_dir: Path, repo_root: Path) -> list[dict[str, Any]]:
+    """Entity-lookup fast path (2026-07-16 memory fix): same verdict /
+    metric / window / entity_type pre-filter as index_top_n_lookup, read
+    entirely from the small `.index.jsonl` sidecar -- but SEEKS+READS every
+    surviving candidate (not just the most-recent one), since an entity
+    lookup wants every VERIFIED ranking claim the entity appears in, not
+    one winner.
+
+    Root cause fixed: entity_lookup's only path used to be
+    `load_verified_claims`, which materializes every VERIFIED row of every
+    store into a dict for the life of the call. For nba_player_box_rate
+    (2.8GB / 59,710 rows, each row a ~44KB full-league ranking blob) that
+    is multi-GB resident just to answer a single-player question. Here
+    each candidate row is read, checked for `name_key`, and DISCARDED
+    immediately if it is not a hit -- peak memory is O(1) row plus the
+    small hit list, never the whole store.
+
+    Only scans families with a FRESH index (`is_index_fresh`); a stale or
+    missing index contributes NO rows here for that family -- the caller
+    (ask.py) must full-load exactly that family from CLAIM_SOURCE_PAIRS as
+    the residual, the same fallback contract index_top_n_lookup already
+    established.
+
+    Per-(metric, window) dedup within a family (self-critique after a real-
+    corpus RSS run still hit ~2GB): a `kind=ranking` claim IS the full
+    leaderboard for one (metric, window) -- there is only one true ordering,
+    so every VERIFIED claim_id sharing that pair is the SAME leaderboard,
+    individually re-validated once per contained entity (confirmed by
+    content-hash equality on 5 sampled nba_player_box_rate rows sharing a
+    (metric, window), 2026-07-16). nba_player_box_rate alone carries up to
+    457 VERIFIED claim_ids per (metric, window) group -- without this dedup
+    a common player (in every metric's leaderboard) accumulates hundreds of
+    byte-identical ~44KB rows PER metric across dozens of metrics/windows,
+    which is exactly what re-inflated peak RSS past 2GB on an unhinted
+    query. Reading (and keeping, if a hit) only the FIRST VERIFIED row per
+    (metric, window) is content-equivalent to reading every duplicate."""
+    metric_synonym = extract_metric_synonym(parsed.raw)
+    entity_type = question_entity_type(parsed.raw)
+    allowed_metrics = set(parsed.metric_hints)
+    if metric_synonym is not None:
+        allowed_metrics.add(metric_synonym)
+    hits: list[dict[str, Any]] = []
+    for family in discover_families(claims_dir):
+        if not is_index_fresh(family, claims_dir):
+            continue
+        index_path = claims_dir / f"{family}.index.jsonl"
+        claims_path = claims_dir / f"{family}.jsonl"
+        try:
+            with open(index_path, "r", encoding="ascii", errors="strict") as f:
+                index_lines = f.readlines()
+        except (OSError, UnicodeDecodeError):
+            continue
+        seen_groups: set[tuple[Any, Any]] = set()
+        for line in index_lines:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                idx_row = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if idx_row.get("verdict") != VERIFIED:
+                continue
+            if allowed_metrics and idx_row.get("metric") not in allowed_metrics:
+                continue
+            if parsed.window_hint and idx_row.get("window") != parsed.window_hint:
+                continue
+            if not entity_key_matches(idx_row.get("entity_key"), entity_type):
+                continue
+            group = (idx_row.get("metric"), idx_row.get("window"))
+            if group in seen_groups:
+                continue  # duplicate leaderboard -- already read (or ruled out) for this family
+            seen_groups.add(group)
+            row = seek_claim_row(claims_path, idx_row.get("byte_offset", 0))
+            if row is None or row.get("kind") != "ranking":
+                continue
+            if not any(_ascii_fold(str(r.get("player_name", ""))).strip().lower() == name_key
+                       for r in row.get("ranking", [])):
+                continue  # discarded here -- never retained past this check
+            hits.append(dict(
+                row,
+                _validator_source=_display_path(claims_dir / f"{family}_validation.json", repo_root),
+                _producer_source=_display_path(claims_path, repo_root),
+            ))
+    return hits
