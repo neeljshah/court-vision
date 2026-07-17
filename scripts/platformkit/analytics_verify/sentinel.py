@@ -118,8 +118,10 @@ def _check(
 # the true-close mean). Uses the shared clv_ledger.load_ledger loader (same
 # synthetic-row drop the writer relies on) but does its OWN aggregation.
 # ---------------------------------------------------------------------------
-def _recompute_grade_summary(clv_path: Optional[Path] = None) -> Dict[str, Any]:
-    rows = _clv.load_ledger(clv_path)
+def _recompute_grade_summary(clv_path: Optional[Path] = None,
+                              rows: Optional[List[Dict[str, Any]]] = None) -> Dict[str, Any]:
+    if rows is None:
+        rows = _clv.load_ledger(clv_path)
     settled = [r for r in rows if r.get("status") == "settled"]
     clv_rows = [r for r in settled if r.get("clv_pct") is not None]
     true_clvs = [float(r["clv_pct"]) for r in clv_rows
@@ -141,7 +143,8 @@ def _recompute_grade_summary(clv_path: Optional[Path] = None) -> Dict[str, Any]:
 
 
 def grade_summary_checks(clv_path: Optional[Path] = None,
-                          served_path: Optional[Path] = None) -> List[Dict[str, Any]]:
+                          served_path: Optional[Path] = None,
+                          rows: Optional[List[Dict[str, Any]]] = None) -> List[Dict[str, Any]]:
     path = served_path or GRADE_SUMMARY_PATH
     served = _read_json(path)
     checks: List[Dict[str, Any]] = []
@@ -152,7 +155,7 @@ def grade_summary_checks(clv_path: Optional[Path] = None,
             checks.append(_check(f, path, f, None, None,
                                   reason="served file missing/unreadable"))
         return checks
-    recomputed = _recompute_grade_summary(clv_path)
+    recomputed = _recompute_grade_summary(clv_path, rows=rows)
     stale = _is_stale(served.get("as_of"))
     for f in fields:
         tol = 0.01 if f in ("mean_clv_pct", "pct_beat_close") else 1e-6
@@ -173,8 +176,13 @@ def grade_summary_checks(clv_path: Optional[Path] = None,
 # flat-1-unit restaked (pnl_normalize.normalize_flat). Own aggregation from there.
 # ---------------------------------------------------------------------------
 def _recompute_pnl_summary(clv_path: Optional[Path] = None,
-                            bankroll_path: Optional[Path] = None) -> Dict[str, Any]:
-    placed = _today.load_placed(clv_path)
+                            bankroll_path: Optional[Path] = None,
+                            rows: Optional[List[Dict[str, Any]]] = None) -> Dict[str, Any]:
+    # rows (pre-loaded via _clv.load_ledger, shared with grade_summary in the
+    # same build_report() call) skips a second full read of the same file;
+    # _is_placed is the same filter load_placed applies on top of load_ledger.
+    placed = [r for r in rows if _today._is_placed(r)] if rows is not None \
+        else _today.load_placed(clv_path)
     settled = [r for r in placed if r.get("status") == "settled"]
     settled = _nz.select_clv_positions(settled)
     flat = _nz.normalize_flat(settled)
@@ -191,7 +199,8 @@ def _recompute_pnl_summary(clv_path: Optional[Path] = None,
 
 def pnl_series_checks(clv_path: Optional[Path] = None,
                        bankroll_path: Optional[Path] = None,
-                       served_path: Optional[Path] = None) -> List[Dict[str, Any]]:
+                       served_path: Optional[Path] = None,
+                       rows: Optional[List[Dict[str, Any]]] = None) -> List[Dict[str, Any]]:
     path = served_path or PNL_SERIES_PATH
     served = _read_json(path)
     fields = ["n_bets", "n_win", "n_loss", "total_units", "current_units"]
@@ -207,7 +216,7 @@ def pnl_series_checks(clv_path: Optional[Path] = None,
             checks.append(_check(f, path, f, None, None,
                                   reason="served summary block missing"))
         return checks
-    recomputed = _recompute_pnl_summary(clv_path, bankroll_path)
+    recomputed = _recompute_pnl_summary(clv_path, bankroll_path, rows=rows)
     stale = _is_stale(served.get("generated_at"))
     for f in fields:
         tol = 0.01 if f in ("total_units", "current_units") else 1e-6
@@ -224,9 +233,10 @@ def build_report(*, clv_path: Optional[Path] = None,
                   bankroll_path: Optional[Path] = None,
                   grade_summary_path: Optional[Path] = None,
                   pnl_series_path: Optional[Path] = None) -> Dict[str, Any]:
+    rows = _clv.load_ledger(clv_path)  # single read, shared by both check sets below
     checks = (
-        grade_summary_checks(clv_path, grade_summary_path)
-        + pnl_series_checks(clv_path, bankroll_path, pnl_series_path)
+        grade_summary_checks(clv_path, grade_summary_path, rows=rows)
+        + pnl_series_checks(clv_path, bankroll_path, pnl_series_path, rows=rows)
     )
     n_verified = sum(1 for c in checks if c["verdict"] == "VERIFIED")
     n_discrepant = sum(1 for c in checks if c["verdict"] == "DISCREPANT")

@@ -109,6 +109,7 @@ def build(graded: Path = GRADED, clv: Path = CLV, out: Path = BRIDGE
 
     n_graded = n_matched = n_appended = 0
     n_backfilled = 0  # rows whose ckey was recomputed (not stamped)
+    bmap: Dict[Any, Any] = {}  # pred_key -> first bet_id, same shape apply_bridge_join wants
     with out.open("a", encoding="utf-8") as fh:
         for r in iter_jsonl(graded):
             if r.get("status") not in ("settled", "graded"):
@@ -125,6 +126,8 @@ def build(graded: Path = GRADED, clv: Path = CLV, out: Path = BRIDGE
             if not bids:
                 continue
             n_matched += 1
+            if pk and pk not in bmap:
+                bmap[pk] = bids[0]
             for bid in bids:
                 if (pk, bid) in seen:
                     continue
@@ -145,21 +148,28 @@ def build(graded: Path = GRADED, clv: Path = CLV, out: Path = BRIDGE
         "join_rate": join_rate, "rows_appended": n_appended,
         "ckey_backfilled": n_backfilled, "clv_ckeys": len(clv_idx),
         "bridge_path": str(out), "edge_claimed": False,
+        "bmap": bmap,  # this call's pred_key->bet_id map, reusable by apply_bridge_join
     }
 
 
-def apply_bridge_join(bets: List[Dict[str, Any]], bridge: Path = BRIDGE
+def apply_bridge_join(bets: List[Dict[str, Any]], bridge: Path = BRIDGE,
+                       bmap: Optional[Dict[Any, Any]] = None
                       ) -> Optional[float]:
     """Enrich normalized attribution *bets* in place using the ckey bridge: a
     graded bet whose pred_key is bridged to a clv bet_id inherits that clv row's
     claim_tags + CLV (graded rows carry neither) and is stamped _ckey_bet_id so
     the caller can link it at bet/ckey grain. Returns the honest fraction of
-    graded bets that gained a ckey join. Shared here so attribution stays <=300."""
-    bmap: Dict[Any, Any] = {}
-    for r in iter_jsonl(bridge):
-        pk = r.get("pred_key")
-        if pk and pk not in bmap:
-            bmap[pk] = r.get("bet_id")
+    graded bets that gained a ckey join. Shared here so attribution stays <=300.
+
+    bmap, if given (e.g. build()'s own return value), is used as-is instead of
+    re-reading the bridge file -- callers that already built() in the same run
+    skip a redundant full scan. Default (None) reads *bridge* from disk."""
+    if bmap is None:
+        bmap = {}
+        for r in iter_jsonl(bridge):
+            pk = r.get("pred_key")
+            if pk and pk not in bmap:
+                bmap[pk] = r.get("bet_id")
     clv_by_bet = {b["bet_id"]: b for b in bets
                   if b.get("source") == "clv" and b.get("bet_id")}
     n_graded = n_joined = 0

@@ -1,15 +1,13 @@
 """Claim survival regrader -- re-score ever-VALIDATED claim cards on POST-validation evidence.
 
-Reads (never mutates) the claims engine's own files (card_ledger.jsonl,
-cards.jsonl under data/cache/claims/) and post-validation evidence
-(paper_predictions_graded.jsonl, ingame_realized_clv.jsonl under
-data/frontend/). For every card whose ledger verdict is terminal-positive it
-collects linked outcomes settled AFTER the card's graded_at, computes a
-post-validation CLV metric per horizon (7/30/60 day), and emits a regrade
-verdict: HOLDS / DECAYED / INSUFFICIENT. Demotion is a PROPOSAL appended to
-this module's OWN ledger, surfaced for the autoloop / human -- it never
-rewrites the claims engine's files. Calibration / CLV language only. No
-dollars, no ROI, no edge. Stdlib only.
+Reads (never mutates) the claims engine's own files (card_ledger.jsonl, cards.jsonl under
+data/cache/claims/) and post-validation evidence (paper_predictions_graded.jsonl,
+ingame_realized_clv.jsonl under data/frontend/). For every card whose ledger verdict is
+terminal-positive it collects linked outcomes settled AFTER the card's graded_at, computes a
+post-validation CLV metric per horizon (7/30/60 day), and emits a regrade verdict: HOLDS /
+DECAYED / INSUFFICIENT. Demotion is a PROPOSAL appended to this module's OWN ledger, surfaced
+for the autoloop / human -- it never rewrites the claims engine's files. Calibration / CLV
+language only. No dollars, no ROI, no edge. Stdlib only.
 
 Run:
     cd /c/Users/neelj/nba-ai-system && python -m scripts.platformkit.analytics_verify.regrader
@@ -156,16 +154,22 @@ def _regrade_one(linked, graded_at: datetime, window_days: int, min_n: int, deca
 
 def _eligible_cards(ledger: Path, cards: Path):
     """Join ledger (terminal-positive verdict) to card definitions."""
-    graded: dict[str, dict] = {}
-    total = 0
+    graded, total = {}, 0
     for row in _iter_jsonl(ledger):
         total += 1
         cid = row.get("card_id")
         if cid and str(row.get("verdict", "")).upper() in POSITIVE_VERDICTS:
             graded[cid] = row  # last wins
-    defs = {row["card_id"]: row for row in _iter_jsonl(cards) if row.get("card_id") in graded}
-    elig = [(cid, graded[cid], defs.get(cid, {})) for cid in graded]
-    return total, elig
+    if not graded:
+        return total, []  # skip the 30MB cards.jsonl scan when nothing is eligible
+    defs = {}
+    for row in _iter_jsonl(cards):  # mirrors attribution.build_card_index
+        cid = row.get("card_id")
+        if cid in graded:
+            defs[cid] = row
+        if len(defs) == len(graded):
+            break
+    return total, [(cid, graded[cid], defs.get(cid, {})) for cid in graded]
 
 
 def _atomic_write_json(path: Path, obj: dict) -> None:
@@ -235,18 +239,12 @@ def run(
                 continue
             seen.add(key)
             new_rows.append({
-                "card_id": cid,
-                "regraded_at": now.isoformat(),
-                "original_verdict": led.get("verdict"),
-                "graded_at": led.get("graded_at"),
-                "window_days": h,
-                "n_post": n_post,
-                "post_median_clv_pct": med,
-                "post_pct_beat_close": pct_beat,
-                "regrade_verdict": verdict,
-                "reason": reason,
-                "link_method": link_method,
-                "edge_claimed": False,
+                "card_id": cid, "regraded_at": now.isoformat(),
+                "original_verdict": led.get("verdict"), "graded_at": led.get("graded_at"),
+                "window_days": h, "n_post": n_post,
+                "post_median_clv_pct": med, "post_pct_beat_close": pct_beat,
+                "regrade_verdict": verdict, "reason": reason,
+                "link_method": link_method, "edge_claimed": False,
             })
         if decayed_reason is not None:
             decayed_cards.append({"card_id": cid, "reason": decayed_reason})
