@@ -4,3 +4,4 @@
 {"id": "gbm_tennis_match_v1", "cmd": "python -m scripts.platformkit.models.gbm_tennis_match", "timeout_s": 14400, "note": "tennis GBM challenger vs close, GPU"}
 {"id": "mechanism_stack_mlb_v1", "cmd": "python -m scripts.platformkit.models.mechanism_stack_mlb", "timeout_s": 14400, "note": "MLB mechanism-stack challenger re-run at pod scale"}
 {"id": "gbm_nba_seed_stability_v1", "cmd": "python -m scripts.platformkit.pod_sprint.gbm_seed_stability", "timeout_s": 14400, "note": "is the sweep's 0.2065 Brier stable across seeds, or a seed artifact?"}
+{"id": "ingame_nba_winprob_full_v1", "cmd": "python -m scripts.platformkit.benchmarks.crps_market.ingame_nba_winprob", "timeout_s": 14400, "note": "FULL 1593-game NBA in-game winprob vs Polymarket in-play at 4 checkpoints (~6000 dispatch calls) -- the new in-game lane at real power"}
