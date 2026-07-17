@@ -115,3 +115,45 @@ def test_unknown_tool_is_protocol_error():
     out, proc = _roundtrip(reqs)
     resp = {m.get("id"): m for m in out}[9]
     assert "error" in resp, resp
+
+
+def test_run_burst_stdout_is_pure_jsonrpc_and_envelope_has_status():
+    """Regression for the protocol-desync crash: burst_run._log() must not
+    print progress lines onto stdout, or a strict line-by-line JSON-RPC
+    reader breaks on the first '[burst] ...' line. Also asserts the run_burst
+    envelope carries the standard top-level status field like every other tool."""
+    reqs = [
+        {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}},
+        {"jsonrpc": "2.0", "id": 2, "method": "tools/call",
+         "params": {"name": "run_burst",
+                    "arguments": {"steps": "freshness_sla", "skip_slow": True}}},
+    ]
+    out, proc = _roundtrip(reqs)
+    assert proc.returncode == 0, proc.stderr
+    # every non-blank stdout line must parse as JSON -- a strict client would
+    # otherwise die on a stray "[burst] ..." text line interleaved mid-stream.
+    for line in proc.stdout.splitlines():
+        if line.strip():
+            json.loads(line)
+    call = {m.get("id"): m for m in out}[2]["result"]
+    env = json.loads(call["content"][0]["text"])
+    assert env["status"] in ("ok", "aborted"), env
+    assert "steps" in env
+
+
+def test_ask_no_data_backfills_source_artifact():
+    """concept_rating (and other) no_data branches in resolver_registry.py
+    omit source_artifact; the ask tool must backfill it from the category's
+    registry entry so every envelope is equally self-explaining."""
+    reqs = [
+        {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}},
+        {"jsonrpc": "2.0", "id": 2, "method": "tools/call",
+         "params": {"name": "ask",
+                    "arguments": {"query": "who is the best catcher by framing?", "sport": "mlb"}}},
+    ]
+    out, proc = _roundtrip(reqs)
+    assert proc.returncode == 0, proc.stderr
+    call = {m.get("id"): m for m in out}[2]["result"]
+    env = json.loads(call["content"][0]["text"])
+    if env["status"] == "no_data" and env.get("category") in {"concept_rating"}:
+        assert env.get("source_artifact"), env

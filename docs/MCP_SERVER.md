@@ -47,10 +47,10 @@ retracted-number list.
 | `scouting_report(sport, player)` | Multi-axis descriptive scouting vector: per-concept rating+percentile, shooting facet, raw attributes. Never collapsed to one number. |
 | `comparables(sport, player, k)` | K nearest players by RMS-normalized Euclidean distance over shared attribute percentiles. |
 | `matchup_preview(sport, home, away)` | Fan-out preview: win prob + both profiles + style matchup + injuries + schedule context. Blocks that are absent are named in `blocks_absent`. |
-| `win_probability(sport, home, away, ingame_state?)` | Calibrated pre-game or in-game win probability, quoted verbatim off `predict_matchup`. A calibrated probability, not an edge. |
+| `win_probability(sport, home, away, ingame_state?)` | Calibrated pre-game or in-game win probability, quoted verbatim off `predict_matchup`. A calibrated probability, not an edge. `ingame_state` must be COMPLETE for the sport or it is silently dropped (pregame is returned instead, same `p_home_win`): `nba`/`wnba`/`soccer` need `elapsed, home_score, away_score`; `mlb` needs `inning, half, home_score, away_score`; `tennis` needs `sets_home, sets_away` (optionally `games_home, games_away, surface`). |
 | `injury_report(sport, team_or_player)` | Newest-first injury rows off the fact store, 7-day staleness gate. |
-| `analytics_receipts(kind)` | Verified-analytics ledger views: `attribution`, `claim_survival`, `verification`, `contradictions`, `system_map`. |
-| `run_burst(steps?)` | **Executes a maintenance burst -- takes minutes, hits the network, writes to disk.** Not a query. Refreshes line snapshots, settlements, analytics, feed/freshness health. |
+| `analytics_receipts(kind)` | Verified-analytics ledger views: `attribution`, `claim_survival`, `verification`, `contradictions` (can be a large full conflict dump), `system_map`. |
+| `run_burst(steps?, skip_slow?)` | **Executes a maintenance burst -- takes minutes, hits the network, writes to disk.** Not a query. `line_snapshot`/`settle_sweep`/`feed_health` are network-slow; `pnl_bestbets`/`analytics_verify`/`freshness_sla` are cheap/local-only (`skip_slow=true` runs just those three). Returns `{status: ok\|aborted, steps: [...], ...}`. |
 | `system_health` | Cheap read-only status: last burst report, freshness-SLA summary, fleet on/off. No network, no compute. |
 
 ## Example: request / response
