@@ -7,10 +7,18 @@ Run: cd /c/Users/neelj/nba-ai-system && python -m pytest tests/platformkit/answe
 """
 from __future__ import annotations
 
+import json
+
 import pandas as pd
 import pytest
 
 from scripts.platformkit.answers import schedule_context_resolver as R
+from scripts.platformkit.intel_query import ask as ask_mod
+
+# captured BEFORE the autouse _synthetic_calendar fixture (below) stubs the
+# module attribute R._schedule_claims out for every other test in this file
+# -- the FIX 1 proof test needs the REAL function, not the stub.
+_REAL_SCHEDULE_CLAIMS = R._schedule_claims
 
 # AAA: games 2025-01-01, 2025-01-03, 2025-01-04 (last two are a real b2b).
 _CAL = pd.DataFrame([
@@ -89,3 +97,48 @@ def test_nba_claims_code_convention_accepted():
     assert r["status"] == "ok"
     assert r["team"] == "GSW"  # echoed back in claims convention
     assert r["is_b2b"] is True
+
+
+def test_schedule_claims_never_reads_other_stores(tmp_path, monkeypatch):
+    """FIX 1 (P0) proof: a bare load_verified_claims() whole-loads every
+    *.jsonl under data/cache/intel_claims/ (GB-scale bulk rate stores
+    included) just to keep this one 15KB nba_schedule_claims family.
+    _schedule_claims must route through pairs_for_claim_stores so a decoy
+    'fat' store sitting right next to it is NEVER opened."""
+    schedule_claims_path = tmp_path / "nba_schedule_claims.jsonl"
+    schedule_validation_path = tmp_path / "nba_schedule_claims_validation.json"
+    decoy_claims_path = tmp_path / "nba_player_box_rate_claims.jsonl"
+    decoy_validation_path = tmp_path / "nba_player_box_rate_claims_validation.json"
+
+    schedule_claims_path.write_text(
+        json.dumps({"claim_id": "nba_schedule_rest_days_rank",
+                    "criteria": {"metric": "rest_days"},
+                    "ranking": [{"team": "LAL", "value": 1.5, "rank": 3, "n": 82, "n_games": 82}]}) + "\n",
+        encoding="ascii")
+    schedule_validation_path.write_text(json.dumps(
+        {"details": [{"claim_id": "nba_schedule_rest_days_rank", "verdict": "VERIFIED"}]}), encoding="ascii")
+
+    decoy_claims_path.write_text(
+        json.dumps({"claim_id": "decoy_fat_claim", "ranking": []}) + "\n", encoding="ascii")
+    decoy_validation_path.write_text(json.dumps(
+        {"details": [{"claim_id": "decoy_fat_claim", "verdict": "VERIFIED"}]}), encoding="ascii")
+
+    monkeypatch.setattr(ask_mod, "CLAIM_SOURCE_PAIRS", (
+        (schedule_validation_path, schedule_claims_path),
+        (decoy_validation_path, decoy_claims_path),
+    ))
+
+    opened = []
+    real_load_jsonl = ask_mod._load_jsonl
+
+    def _tracking_load_jsonl(path):
+        opened.append(path)
+        return real_load_jsonl(path)
+
+    monkeypatch.setattr(ask_mod, "_load_jsonl", _tracking_load_jsonl)
+
+    out = _REAL_SCHEDULE_CLAIMS("nba", "LAL")
+
+    assert schedule_claims_path in opened
+    assert decoy_claims_path not in opened  # the declared-store scope, proven
+    assert out and out[0]["claim_id"] == "nba_schedule_rest_days_rank"

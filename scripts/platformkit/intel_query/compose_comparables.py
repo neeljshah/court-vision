@@ -1,9 +1,14 @@
 """compose_comparables(sport, player, k=5) -> K nearest players by Euclidean
 distance over registered attribute PERCENTILES (numpy only, no sklearn).
 
-Reuses data/cache/profiles/<sport>_player_profiles.parquet (long format:
-entity_id, entity_name, window, attribute, raw_value, percentile, ...) --
-the SAME artifact + schema profiles/ask.py reads. Attribute descriptions are
+Loads through the SAME memoized scripts.platformkit.profiles.ask.load_profiles
+(sport) compose_scout.py uses -- no second parquet reader here, and a repeat
+call in the same process hits the shared single-slot memo instead of
+re-reading data/cache/profiles/<sport>_*_profiles.parquet (long format:
+entity_id, entity_name, window, attribute, raw_value, percentile, kind, ...).
+Filtered to kind=='player' before pivoting (load_profiles concats every
+player/team/lineup parquet for the sport; only player rows belong in a
+player-comparables KNN). Attribute descriptions are
 enriched from domains/<domain>/profiles/attribute_registry.py when available
 (the parquet's own `attribute` column is the ground truth for which
 attributes are "player"-entity for a sport -- the builder only ever writes
@@ -39,7 +44,8 @@ from datetime import datetime, timezone
 import numpy as np
 import pandas as pd
 
-PROFILES_DIR = os.path.join("data", "cache", "profiles")
+from scripts.platformkit.profiles import ask as _profiles
+
 MIN_SHARED_ATTRS = 5
 CATEGORY = "player_comparables"
 # ask.load_registry's domains.<sport> import is wrong for nba/wnba (the
@@ -78,14 +84,9 @@ def _load_attribute_descriptions(sport: str) -> dict:
     return {}
 
 
-def _load_player_profiles(sport: str, profiles_dir: str) -> tuple[pd.DataFrame, str]:
-    path = os.path.join(profiles_dir, f"{sport}_player_profiles.parquet")
-    if not os.path.exists(path):
-        return pd.DataFrame(), path
-    try:
-        return pd.read_parquet(path), path
-    except Exception:
-        return pd.DataFrame(), path
+def _player_profiles_path(sport: str) -> str:
+    # same naming compose_scout.py's _profiles_path(sport, "player") reports
+    return os.path.join(_profiles.PROFILES_DIR, f"{sport}_player_profiles.parquet")
 
 
 def _pivot_percentiles(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]:
@@ -113,9 +114,11 @@ def _match_entity(names: pd.Series, player: str) -> int | None:
 
 
 def compose_comparables(sport: str, player: str, k: int = 5,
-                         profiles_dir: str = PROFILES_DIR,
                          floor: int = MIN_SHARED_ATTRS) -> dict:
-    df, path = _load_player_profiles(sport, profiles_dir)
+    path = _player_profiles_path(sport)
+    df = _profiles.load_profiles(sport)
+    if not df.empty:
+        df = df[df["kind"] == "player"].reset_index(drop=True)
     if df.empty:
         return _envelope("no_data", sport, path,
                           note=f"no player profile parquet built for sport={sport!r} in this clone")
