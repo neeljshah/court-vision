@@ -99,6 +99,36 @@ def test_nba_claims_code_convention_accepted():
     assert r["is_b2b"] is True
 
 
+def test_mlb_free_text_team_name_resolves_via_canonicalizer(tmp_path, monkeypatch):
+    """2026-07-17 pod coverage-stress defect 1: mlb had ZERO free-text
+    team-name -> calendar-code resolution (only nba's branch resolved
+    names), and the leading-article strip was nba-only too -- 'the Astros'/
+    'Yankees'/'the Red Sox' must resolve to the calendar's own codes
+    (HOU/NYY/BOS) via the shared team_resolver.canonical, not fail with the
+    literal free text as the team column value."""
+    cal = pd.DataFrame([
+        {"home_team": "HOU", "away_team": "NYY", "date": pd.Timestamp("2025-01-01")},
+        {"home_team": "NYY", "away_team": "BOS", "date": pd.Timestamp("2025-01-03")},
+    ])
+    path = tmp_path / "mlb_cal.parquet"
+    cal.to_parquet(path)
+    monkeypatch.setitem(R._CALENDAR_PATHS, "mlb", (str(path), "home_team", "away_team"))
+
+    r = R.resolve("mlb", "the Astros", "2025-01-02")
+    assert r["status"] == "ok" and r["team"] == "HOU"
+
+    r = R.resolve("mlb", "Yankees", "2025-01-04")
+    assert r["status"] == "ok" and r["team"] == "NYY"
+
+    r = R.resolve("mlb", "the Red Sox", "2025-01-04")
+    assert r["status"] == "ok" and r["team"] == "BOS"
+
+    # a code that's ALREADY a direct match skips the canonicalizer fallback
+    # entirely (no behavior change for the already-working exact-code path)
+    r = R.resolve("mlb", "HOU", "2025-01-02")
+    assert r["status"] == "ok" and r["team"] == "HOU"
+
+
 def test_schedule_claims_never_reads_other_stores(tmp_path, monkeypatch):
     """FIX 1 (P0) proof: a bare load_verified_claims() whole-loads every
     *.jsonl under data/cache/intel_claims/ (GB-scale bulk rate stores

@@ -15,7 +15,11 @@ covering nba_rest_adjusted_form provenance) and 3 depth-wave-1 rows (below
 the grid, ids wnba_ranking_zone_context / mlb_mechanism_effect_injury_recency /
 tennis_ranking_playstyle_fit) covering the new claim families, and 2
 prediction_quality rows (the 14th category, 2026-07-17: fail-closed readout
-of the pod-sprint prediction_eval artifact) -- 70 total.
+of the pod-sprint prediction_eval artifact) -- 70, PLUS 4 more rows from the
+2026-07-17 pod coverage-stress gap report (schedule_context interrogative
+lead-in + article/code-resolution regressions, a prediction_quality word
+-order classify() regression, and a mechanism_effect->claims-bridge grounding
+row) -- 74 total.
 
 Every `expect` block was GROUNDED by actually running the question once
 through resolve() in this repo on 2026-07-17 (one long-lived process,
@@ -101,7 +105,11 @@ QA_BANK: List[QAEntry] = [
     _e("schedule_context", "nba", "back to back for the Lakers", "ok", "SMOKE",
        ["rest_days", "is_b2b", "games_in_last_7"],
        note="regression: gap-6 lead-in strip for 'back to back for X' phrasing"),
-    _e("schedule_context", "mlb", "schedule context for Yankees", "no_data", "FULL"),
+    _e("schedule_context", "mlb", "schedule context for Yankees", "ok", "FULL",
+       ["rest_days", "is_b2b", "games_in_last_7"],
+       note="regression: 2026-07-17 pod coverage-stress gap -- 'Yankees' was never resolved to the "
+            "calendar's own code (mlb had no free-text team-name resolution at all); now ok via "
+            "team_resolver.canonical (was no_data)"),
     _e("schedule_context", "wnba", "schedule context for Las Vegas Aces", "not_supported", "FULL"),
     _e("schedule_context", "tennis", "schedule context for Roger Federer", "not_supported", "FULL"),
     _e("schedule_context", "soccer", "schedule context for Manchester City WFC", "not_supported", "FULL"),
@@ -320,6 +328,67 @@ QA_BANK.append({
     "tier": "FULL",
     "note": "sport filter comes from the query text (sport_in_query), not resolve()'s sport "
             "default -- a bare quality question returns every sport's row.",
+})
+
+# -- 2026-07-17 pod coverage-stress gap report (5 answer-layer defects) ---
+# Each row below was GROUNDED post-fix by actually running the question
+# through resolver_registry.resolve() in this repo (see the defect-fix
+# commit); a correct status that DIDN'T change (the catcher-framing row) is
+# recorded honestly, not upgraded to a status the fix doesn't actually reach.
+QA_BANK.append({
+    "id": "nba_schedule_context_interrogative_lead_in",
+    "question": "How many rest days do the Bucks have before their next game?",
+    "sport": "nba",
+    "expect": {"category": "schedule_context", "status_one_of": ["ok"], "receipt_required": True,
+               "must_contain_keys": ["rest_days", "is_b2b", "games_in_last_7"]},
+    "tier": "FULL",
+    "note": "defect-1: an interrogative wrapper ('how many rest days do the X have...') left the "
+            "ENTIRE question as the team string -- _LEAD_RE only matched a lead-in anchored at "
+            "position 0. Now stripped via a new interrogative lead-in alternative plus a trailing "
+            "-clause cut (was ok/no_data -- the whole sentence never matched a calendar row).",
+})
+QA_BANK.append({
+    "id": "mlb_schedule_context_article_and_code",
+    "question": "rest days for the Astros",
+    "sport": "mlb",
+    "expect": {"category": "schedule_context", "status_one_of": ["ok"], "receipt_required": True,
+               "must_contain_keys": ["rest_days", "is_b2b", "games_in_last_7"]},
+    "tier": "FULL",
+    "note": "defect-1: the leading article strip was nba-only (schedule_context_resolver's 'the' "
+            "regex only ran inside the nba branch), and mlb had zero free-text team-name -> "
+            "calendar-code resolution -- 'the Astros' now resolves to code HOU via "
+            "team_resolver.canonical (was no_data, team='the Astros').",
+})
+QA_BANK.append({
+    "id": "wnba_prediction_quality_word_order",
+    "question": "how good are the WNBA predictions",
+    "sport": "wnba",
+    "expect": {"category": "prediction_quality", "status_one_of": ["ok", "no_data"], "receipt_required": False,
+               "must_contain_keys": []},
+    "tier": "FULL",
+    "note": "defect-2: the sport token inserted mid-phrase ('how good are the WNBA predictions') "
+            "defeated the literal 'how good are the predictions' string match, so the bare "
+            "'predict' substring in _PREDICTION_KEYWORDS won first -> prediction_winprob. classify() "
+            "now also fires prediction_quality whenever a query names both 'how good' and a "
+            "'predict*' token, in either order. no_data is the honest status until "
+            "prediction_eval.json is generated on this box (was category=prediction_winprob).",
+})
+QA_BANK.append({
+    "id": "mlb_catcher_framing_mechanism_effect",
+    "question": "what does the evidence say about catcher framing runs saved",
+    "sport": "mlb",
+    "expect": {"category": "mechanism_effect", "status_one_of": ["not_supported"], "receipt_required": False,
+               "must_contain_keys": []},
+    "tier": "FULL",
+    "note": "defect-3: resolve() now falls back to claims_resolver.resolve() (the VERIFIED-claims "
+            "bridge) whenever mechanism_effect returns not_supported/no_data -- correctness proven "
+            "via a monkeypatched unit test. Grounded here for real: this EXACT phrasing stays "
+            "honestly not_supported even with the bridge wired, because intel_query.ask's family "
+            "classifier needs a 'top N' shape or an explicit claim_id/'how do you know' phrasing, "
+            "and free-text 'what does the evidence say about X' matches neither -- a separate, "
+            "out-of-scope gap in ask()'s NL matching, not in this fallback. The catcher_framing "
+            "family IS reachable (verified live: 'top 10 catcher framing' -> answerable), just not "
+            "through this literal sentence. Status unchanged by the fix; recorded honestly.",
 })
 
 CATEGORIES: List[str] = sorted({e["expect"]["category"] for e in QA_BANK})

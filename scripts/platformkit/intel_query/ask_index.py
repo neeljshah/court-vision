@@ -103,6 +103,18 @@ _METRIC_SYNONYMS: dict[str, str] = {
     "home advantage": "winrate_diff",            # soccer_team_venue_split
     "home court advantage": "home_minus_away_ppg",  # nba_venue_split
     "venue split": "home_minus_away_ppg",
+    # shooter/scorer quality (nba_quality_claims, 2026-07-17): VERIFIED,
+    # weights declared+frozen pre-scoring. Deliberately NOT the "canonical
+    # shooter" naive_comp -- that eFG-flavored composite ranks rim-running
+    # centers (Allen/Gafford/Hayes) on top, which is a metric trap, not an
+    # answer to "who is the best shooter".
+    "best shooter": "shooter_quality_v1",
+    "best shooters": "shooter_quality_v1",
+    "shooter quality": "shooter_quality_v1",
+    "shooting quality": "shooter_quality_v1",
+    "best scorer": "scorer_quality_v1",
+    "best scorers": "scorer_quality_v1",
+    "scorer quality": "scorer_quality_v1",
 }
 
 # A claim's criteria.entity_key NAME already tells you its entity type --

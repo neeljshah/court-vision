@@ -49,6 +49,7 @@ import pandas as pd
 
 from domains.basketball_nba import team_name_resolver as _nba_names
 from scripts.platformkit.intel_query.ask import load_verified_claims, pairs_for_claim_stores
+from scripts.platformkit.odds_provider.team_resolver import canonical as _team_canonical
 
 FRAMING = "schedule physics is public-calendar descriptive context, not a prediction or edge claim"
 
@@ -108,17 +109,33 @@ def resolve(sport: str, team: str, date: str | None = None) -> dict:
     if not os.path.exists(path):
         return {"status": "no_data", "category": "schedule_context", "sport": sport,
                 "source_artifact": path, "framing": FRAMING}
-    team_u = team.upper()
+    # Free-text team names ("the Celtics", "the Astros") -> strip the leading
+    # article before any code resolution -- every sport (previously nba-only,
+    # which left "the Astros"/"the Red Sox" un-stripped for mlb).
+    team_stripped = re.sub(r"^the\s+", "", team.strip(), flags=re.I)
+    team_u = team_stripped.upper()
     if sport == "nba":
-        # Free-text team names ("the Celtics", "Boston Celtics") -> corpus
+        # Free-text team names ("Celtics", "Boston Celtics") -> corpus
         # 3-letter code via the existing NBA alias table; unresolvable names
         # fall through unchanged and hit the honest zero-rows no_data below.
-        full = _nba_names.resolve(re.sub(r"^the\s+", "", team.strip(), flags=re.I))
+        full = _nba_names.resolve(team_stripped)
         if full:
             team_u = full
     calendar_team = _calendar_code(sport, team_u)
     claims_team = _claims_code(sport, team_u)
     df = pd.read_parquet(path)
+    if sport != "nba" and calendar_team not in set(df[home_col]) | set(df[away_col]):
+        # Free-text/nickname ("Yankees", "Astros") -> THIS calendar's own
+        # code, via the existing cross-repo canonicalizer (never a new
+        # matcher): compare the canonical key for the query text against the
+        # canonical key of every code actually present in this calendar, and
+        # adopt whichever code matches. An unresolved name falls through
+        # unchanged and hits the honest zero-rows no_data below.
+        target_key = _team_canonical(sport, team_stripped)
+        for code in pd.unique(pd.concat([df[home_col], df[away_col]])):
+            if _team_canonical(sport, code) == target_key:
+                calendar_team = claims_team = code
+                break
     as_of = pd.Timestamp(date) if date else pd.Timestamp(datetime.now(timezone.utc).date())
     games = df[(df[home_col] == calendar_team) | (df[away_col] == calendar_team)].sort_values("date")
     if games.empty:

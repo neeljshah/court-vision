@@ -326,8 +326,11 @@ def classify(query: str) -> str | None:
     if any(_word_boundary_hit(low, k) for k in _CALIBRATION_KEYWORDS):
         return "calibration_number"
     # before _PREDICTION_KEYWORDS: "prediction quality" must not be swallowed
-    # by the bare "predict" substring -> prediction_winprob.
-    if any(k in low for k in _PREDICTION_QUALITY_KEYWORDS):
+    # by the bare "predict" substring -> prediction_winprob. The literal
+    # phrase list above misses word-order variants ("how good are the WNBA
+    # predictions?") -- catch any query naming both "how good" and a
+    # "predict*" token, regardless of what sits between them.
+    if any(k in low for k in _PREDICTION_QUALITY_KEYWORDS) or ("how good" in low and "predict" in low):
         return "prediction_quality"
     if any(k in low for k in _PREDICTION_KEYWORDS):
         return "prediction_winprob"
@@ -566,17 +569,28 @@ _LEAD_RE = re.compile(
     r"news context(?: (?:for|about|on))?|latest news(?: (?:for|about|on))?|"
     r"recent news(?: (?:for|about|on))?|news(?: (?:for|about|on))?|"
     r"schedule context(?: for)?|schedule(?: for)?|rest days(?: for)?|"
-    r"back[- ]to[- ]back(?: for)?|b2b(?: for)?|days of rest(?: for)?|"
+    r"how many (?:rest days|back[- ]to[- ]back games) do(?:es)?(?: the)?|"
+    r"back[- ]to[- ]back(?: for)?|b2b(?: for)?|days of rest(?: for)?|are(?: the)?|"
     r"matchup preview(?: for)?|game preview(?: for)?|preview|"
     r"win probability(?: (?:for|of))?|win prob(?: (?:for|of))?|who wins"
     r")\s+", re.I)
 _VS_RE = re.compile(r"\s+(?:vs\.?|versus|@|at)\s+", re.I)
+# Interrogative wrapper questions ("How many rest days do the Bucks HAVE
+# before their next game?", "Are the Lakers ON a back-to-back tonight?") leave
+# a trailing verb/preposition clause behind after _LEAD_RE strips the front --
+# cut at the first such filler word (word-boundary, so it never fires inside
+# a real name like "Boston" or "Orlando"). Applied AFTER the lead-in strip,
+# same ponytail regex-not-NER discipline as _LEAD_RE above.
+_TRAIL_RE = re.compile(r"\s+(?:have|has|do|does|is|are|on)\b.*$", re.I)
 
 
 def _entity_from_query(query: str) -> str:
-    """Strip a known lead-in phrase and trailing '?' -- the remainder is the
-    team/player. Returns the trimmed query unchanged if no lead-in matched."""
-    return _LEAD_RE.sub("", query, count=1).strip().strip("?").strip()
+    """Strip a known lead-in phrase, a trailing interrogative clause, and a
+    leading article -- the remainder is the team/player. Returns the trimmed
+    query unchanged if nothing matched."""
+    stripped = _LEAD_RE.sub("", query, count=1).strip().strip("?").strip()
+    stripped = _TRAIL_RE.sub("", stripped).strip()
+    return re.sub(r"^the\s+", "", stripped, flags=re.I)
 
 
 def _split_matchup(text: str) -> tuple[str | None, str | None]:
@@ -622,7 +636,20 @@ def resolve(query: str, sport: str = "nba", category: str | None = None, **kwarg
     if cat == "historical_result":
         return historical_result(sport, kwargs.get("team", ""), kwargs.get("opponent"), kwargs.get("date"))
     if cat == "mechanism_effect":
-        return mechanism_effect(sport, kwargs.get("mechanism") or query)
+        result = mechanism_effect(sport, kwargs.get("mechanism") or query)
+        # RESOLVER BRIDGE fallback: the validation-ledger hypothesis match can
+        # miss a real, VERIFIED claim family that answers the same question
+        # under a different name (e.g. no ledger hypothesis mentions "runs
+        # saved", but the catcher_framing claim family may). Only tried on a
+        # miss, and only replaces the envelope if the bridge itself lands ok
+        # -- a claims no_data/not_supported never overrides the honest
+        # mechanism envelope (still the more specific of two refusals).
+        if result["status"] in ("not_supported", "no_data"):
+            bridged = _claims.resolve(query, sport, **kwargs)
+            if bridged.get("status") == "ok":
+                return {**bridged,
+                        "note": "mechanism ledger had no match; answered from the VERIFIED claims store"}
+        return result
     if cat == "verified_claims":
         return _claims.resolve(query, sport, **kwargs)
     if cat == "prediction_quality":

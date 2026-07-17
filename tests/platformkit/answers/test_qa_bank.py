@@ -37,9 +37,10 @@ def test_bank_schema_valid():
 def test_bank_covers_14_categories_x_5_sports():
     # 12-category grid + verified_claims (the RESOLVER BRIDGE, 2026-07-17)
     # + prediction_quality (pod-sprint prediction_eval readout, 2026-07-17)
+    # + 4 rows from the 2026-07-17 pod coverage-stress gap report (defects 1/2/3)
     assert len(B.CATEGORIES) == 14
     assert len(B.SPORTS) == 5
-    assert len(B.QA_BANK) == 70
+    assert len(B.QA_BANK) == 74
 
 
 def test_by_tier_smoke_is_cheap_subset_of_full():

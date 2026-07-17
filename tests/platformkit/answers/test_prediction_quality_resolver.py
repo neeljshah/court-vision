@@ -19,6 +19,12 @@ def test_classifier_routes_quality_not_winprob():
     assert classify("how good are the predictions?") == "prediction_quality"
     assert classify("prediction quality for mlb") == "prediction_quality"
     assert classify("show the oos scoreboard") == "prediction_quality"
+    # 2026-07-17 pod coverage-stress defect 2: a sport token inserted mid
+    # -phrase ("how good are the WNBA predictions?") defeated the literal
+    # "how good are the predictions" string match, so the bare "predict"
+    # substring in _PREDICTION_KEYWORDS won first -> prediction_winprob.
+    assert classify("how good are the WNBA predictions?") == "prediction_quality"
+    assert classify("How good are the predictions for MLB?") == "prediction_quality"
     # bare winprob phrasing still routes to the winprob resolver
     assert classify("predict lakers vs celtics") == "prediction_winprob"
 
