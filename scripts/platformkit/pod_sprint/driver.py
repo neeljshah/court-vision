@@ -55,8 +55,20 @@ JOBS: list[dict] = [
         "required": False,
     },
     {
+        "name": "claims_qa_full",
+        "argv": [PY, "-m", "scripts.platformkit.answers.qa_runner", "--tier", "FULL"],
+        "timeout_s": 10800,
+        "required": False,
+    },
+    {
         "name": "train_gbm_nba",
         "argv": [PY, "-m", "scripts.platformkit.models.gbm_nba_ml"],
+        "timeout_s": 14400,
+        "required": False,
+    },
+    {
+        "name": "train_gbm_sweep",
+        "argv": [PY, "-m", "scripts.platformkit.pod_sprint.gbm_sweep"],
         "timeout_s": 14400,
         "required": False,
     },
