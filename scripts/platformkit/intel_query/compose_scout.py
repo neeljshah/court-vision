@@ -66,19 +66,31 @@ def _as_of(path: str) -> str | None:
     return datetime.fromtimestamp(os.path.getmtime(path), tz=timezone.utc).isoformat()
 
 
-def _resolve_entity(df, player: str) -> tuple[Any, str] | None:
-    """(entity_id, entity_name) for the single best name match, or None if no
-    match / ambiguous -- reuses profiles.ask's fuzzy resolver, never guesses."""
+def _resolve_entity(df, player: str) -> tuple[str, Any]:
+    """(status, payload) -- reuses profiles.ask's fuzzy resolver, never
+    guesses. status is one of:
+      "no_entity"  -> payload None (zero hits)
+      "ambiguous"  -> payload [candidate entity_name, ...] (2+ DISTINCT ids)
+      "ok"         -> payload (entity_id, entity_name)
+    Candidates are grouped by entity_id, not raw entity_name: the profiles
+    parquet can carry two different entity_name spellings for the SAME id
+    (e.g. nba_player_profiles.parquet has both "Luka Doncic" and an accented
+    spelling for entity_id 1629029 -- an upstream builder data bug, see
+    docs/research/resolver_coverage_2026_07_17.md gap 2). Grouping by id is
+    the resolver-side fix so a dup-spelling row never inflates a real 2-way
+    tie into a false 3-way one."""
     if df.empty:
-        return None
-    best, hits = _profiles._match_entities(df, _profiles._norm(player).split())
+        return "no_entity", None
+    _best, hits = _profiles._match_entities(df, _profiles._norm(player).split())
     if not hits:
-        return None
-    uniq = {(e, n) for e, n, _sp in hits}
-    if len(uniq) != 1:
-        return None
-    eid, ename, _sp = hits[0]
-    return eid, ename
+        return "no_entity", None
+    by_eid: dict[Any, str] = {}
+    for eid, ename, _sp in hits:
+        by_eid.setdefault(eid, ename)
+    if len(by_eid) != 1:
+        return "ambiguous", list(by_eid.values())
+    (eid, ename), = by_eid.items()
+    return "ok", (eid, ename)
 
 
 def _concept_axis(sport: str, kind: str, concept: str, entity_id: Any,
@@ -144,12 +156,19 @@ def compose_scout(sport: str, player: str, kind: str = "player", top_n: int = 8)
     df = _profiles.load_profiles(sport)
     if not df.empty:
         df = df[df["kind"] == kind].reset_index(drop=True)
-    resolved = _resolve_entity(df, player)
+    resolve_status, resolved = _resolve_entity(df, player)
+
+    if resolve_status == "ambiguous":
+        return {"status": "ambiguous", "category": CATEGORY, "sport": sport, "player": player,
+                "source_artifact": source_artifact, "as_of": as_of, "answerable": False,
+                "candidates": resolved,
+                "note": f"{len(resolved)} distinct players match this name -- narrow your query",
+                "edge_claimed": False}
 
     concept_axes: list[dict[str, Any]] = []
     raw_attributes: dict[str, Any] = {"status": "no_data", "note": "player not resolved in profiles"}
     entity_name = player
-    if resolved is not None:
+    if resolve_status == "ok":
         entity_id, entity_name = resolved
         for concept in reg.list_concepts():
             concept_axes.append(_concept_axis(sport, kind, concept, entity_id, reg_module, source_artifact))

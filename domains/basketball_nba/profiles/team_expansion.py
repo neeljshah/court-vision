@@ -21,7 +21,7 @@ from domains.basketball_nba.prereg.nba_hypotheses import build_continuity_dreb_t
 from domains.basketball_nba.profiles.profile_compute import (
     REPO_ROOT, finalize_rows, rel_sources,
 )
-from domains.basketball_nba.profiles.team_attributes import _tricode_to_team_id
+from domains.basketball_nba.profiles.team_attributes import _team_id_to_name, _tricode_to_team_id
 
 _LINEUPS = REPO_ROOT / "data" / "cache" / "team_system" / "lineups"
 _GAMES = REPO_ROOT / "data" / "domains" / "basketball_nba" / "games.parquet"
@@ -71,10 +71,11 @@ def build_zone_offense_diet(season: str) -> list[dict]:
         d["share"] = d["fga"] / d["total_fga"]
         d["efg"] = (mult * d["fgm"] / d["fga"]).where(d["fga"] > 0)
         d["fga_per_game"] = d["fga"] / d["n_games"]
+        d["entity_name"] = d["team_id"].map(_team_id_to_name()).fillna("")
         for metric, col in (("share", "share"), ("efg", "efg"), ("fga_per_game", "fga_per_game")):
             sub = d.dropna(subset=[col])
             out_rows.extend(finalize_rows(
-                sub, entity_col="team_id", name_col=None, raw_col=col, n_col="n_games",
+                sub, entity_col="team_id", name_col="entity_name", raw_col=col, n_col="n_games",
                 window=_window(season), attribute=f"zone_offense_{zone}_{metric}", status="DESCRIPTIVE",
                 sources=rel_sources(stints_src), ingredient_cols=["fga", "fgm", "total_fga"],
             ))
@@ -112,9 +113,10 @@ def build_home_away_net_rating(season: str) -> list[dict]:
         ).reset_index()
         g = g[(g["n_games"] >= 10.0) & (g["elapsed_s"] > 0)].copy()
         g["raw_value"] = (g["pts_for"] - g["pts_against"]) / g["elapsed_s"] * 48.0 * 60.0
+        g["entity_name"] = g["team_id"].map(_team_id_to_name()).fillna("")
         splits[side] = g.set_index("team_id")["raw_value"]
         rows.extend(finalize_rows(
-            g, entity_col="team_id", name_col=None, raw_col="raw_value", n_col="n_games",
+            g, entity_col="team_id", name_col="entity_name", raw_col="raw_value", n_col="n_games",
             window=_window(season), attribute=f"net_rating_{side}", status="DESCRIPTIVE",
             sources=rel_sources(stints_src, _GAMES), ingredient_cols=["pts_for", "pts_against", "elapsed_s"],
         ))
@@ -123,8 +125,9 @@ def build_home_away_net_rating(season: str) -> list[dict]:
         diff = (splits["home"] - splits["away"]).dropna().rename("raw_value").reset_index()
         n_games_both = team_game.groupby("team_id")["game_id"].nunique().rename("n_games").reset_index()
         diff = diff.merge(n_games_both, on="team_id", how="left")
+        diff["entity_name"] = diff["team_id"].map(_team_id_to_name()).fillna("")
         rows.extend(finalize_rows(
-            diff, entity_col="team_id", name_col=None, raw_col="raw_value", n_col="n_games",
+            diff, entity_col="team_id", name_col="entity_name", raw_col="raw_value", n_col="n_games",
             window=_window(season), attribute="net_rating_home_away_diff", status="DESCRIPTIVE",
             sources=rel_sources(stints_src, _GAMES), ingredient_cols=[],
         ))
@@ -142,8 +145,9 @@ def build_defensive_continuity(season: str) -> list[dict]:
         return []
     grp = tagged.groupby("team_id").agg(raw_value=("continuity_s", "mean"), n=("continuity_s", "count")).reset_index()
     grp = grp[grp["n"] >= 50.0]
+    grp["entity_name"] = grp["team_id"].map(_team_id_to_name()).fillna("")
     return finalize_rows(
-        grp, entity_col="team_id", name_col=None, raw_col="raw_value", n_col="n",
+        grp, entity_col="team_id", name_col="entity_name", raw_col="raw_value", n_col="n",
         window=_window(season), attribute="avg_defensive_continuity_s", status="VALIDATED_MECHANISM",
         sources=rel_sources(stints_src), ingredient_cols=["n"],
     )
