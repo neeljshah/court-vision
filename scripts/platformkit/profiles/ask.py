@@ -18,6 +18,19 @@ import unicodedata
 
 import pandas as pd
 
+# Arrow's default mimalloc pool RETAINS freed segments as reserved virtual
+# address space (bytes_allocated reports 0 while VMS climbs and never falls):
+# measured +264MB retained over 25 reloads of a 120KB parquet vs +11MB with
+# the system pool. Pre-memo, that compounding is what drove audit lanes to
+# ~19.6GB virtual and crashed the box. The system pool returns memory to the
+# OS on free. ponytail: process-wide switch, per-read memory_pool= if another
+# hot pyarrow path in the same proc ever needs mimalloc's alloc speed.
+try:
+    import pyarrow as _pa
+    _pa.set_memory_pool(_pa.system_memory_pool())
+except Exception:
+    pass  # fastparquet-only envs: no pool to configure
+
 PROFILES_DIR = os.path.join("data", "cache", "profiles")
 SPORTS = ["nba", "mlb", "tennis", "soccer", "wnba"]
 STATUS_MEANING = {
