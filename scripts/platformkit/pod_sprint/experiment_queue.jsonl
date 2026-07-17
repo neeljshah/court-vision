@@ -1,0 +1,6 @@
+{"id": "crps_pregame_mlb_totals_v1", "cmd": "python -m scripts.platformkit.benchmarks.crps_market.run_mlb", "timeout_s": 7200, "note": "pregame totals CRPS vs devigged market dist, full statcast+line_history scale"}
+{"id": "crps_ingame_mlb_v1", "cmd": "python -m scripts.platformkit.benchmarks.crps_market.ingame_mlb", "timeout_s": 7200, "note": "in-game conditional distributional CRPS vs market -- THE moat lane, full corpus (prior n=55 PROVISIONAL)"}
+{"id": "crps_ingame_soccer_v1", "cmd": "python -m scripts.platformkit.benchmarks.crps_market.ingame_soccer", "timeout_s": 7200, "note": "in-game soccer distributional CRPS vs market"}
+{"id": "gbm_tennis_match_v1", "cmd": "python -m scripts.platformkit.models.gbm_tennis_match", "timeout_s": 14400, "note": "tennis GBM challenger vs close, GPU"}
+{"id": "mechanism_stack_mlb_v1", "cmd": "python -m scripts.platformkit.models.mechanism_stack_mlb", "timeout_s": 14400, "note": "MLB mechanism-stack challenger re-run at pod scale"}
+{"id": "gbm_nba_seed_stability_v1", "cmd": "python -m scripts.platformkit.pod_sprint.gbm_seed_stability", "timeout_s": 14400, "note": "is the sweep's 0.2065 Brier stable across seeds, or a seed artifact?"}
