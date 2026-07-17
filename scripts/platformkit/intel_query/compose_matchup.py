@@ -46,7 +46,7 @@ from typing import Any
 from scripts.platformkit.answers.edge_facts_resolver import injury_report
 from scripts.platformkit.answers.schedule_context_resolver import resolve as schedule_resolve
 from scripts.platformkit.answers.winprob_dispatch import dispatch as winprob_dispatch
-from scripts.platformkit.intel_query.ask import load_verified_claims
+from scripts.platformkit.intel_query.ask import load_verified_claims, pairs_for_claim_stores
 from scripts.platformkit.profiles import ask as _profiles_ask
 
 CATEGORY = "matchup_preview"
@@ -114,7 +114,13 @@ def _style_matchup_block(sport: str) -> dict[str, Any]:
         return {"status": "not_supported", "category": category, "sport": sport,
                 "note": f"no VERIFIED style-matchup claim family wired for sport {sport!r} "
                         f"-- available: {sorted(_STYLE_FAMILY_PREFIXES)}"}
-    verified = load_verified_claims()
+    # Scope the load to just this sport's small style stores -- a bare
+    # load_verified_claims() whole-loads every *.jsonl under intel_claims/
+    # (nba_player_box_rate is 2.8GB / 59k VERIFIED rows), the 6.1GB-RSS
+    # incident on resolve('matchup preview ...'). Each store is <prefix>_claims
+    # .jsonl (mirrors compose_best/_profile + schedule_context 75a44d8c).
+    stores = tuple(f"{p}_claims.jsonl" for p in prefixes)
+    verified = load_verified_claims(pairs_for_claim_stores(stores))
     matched = [row for cid, row in verified.items() if cid.startswith(prefixes)]
     if not matched:
         return {"status": "no_data", "category": category, "sport": sport,
