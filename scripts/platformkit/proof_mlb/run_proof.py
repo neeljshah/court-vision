@@ -70,6 +70,12 @@ def _fmt_v1(v1: Dict[str, Any], league: Optional[str]) -> str:
             continue
         if corpus.get("regime_note"):
             lines += [f"  REGIME NOTE: {corpus['regime_note']}", ""]
+        if league == "AL" and label == "2018-19":
+            lines += ["  KNOWN GAP: AL 2018-19 isotonic calibrator (fit AL 2010-17) is "
+                      "OOS-overconfident (slope ~0.66); raw p_home_elo is a global, "
+                      "league/DH-blind Elo (K/HFA constants in domains/mlb/config.py) -- "
+                      "recalibration cannot add discriminative power the signal never "
+                      "captured. Documented non-stationarity; stays an honest FAIL.", ""]
         lines += [
             f"### Corpus {label}",
             f"  n_eval             : {corpus.get('n_eval')}",

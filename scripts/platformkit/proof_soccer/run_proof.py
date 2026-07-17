@@ -82,6 +82,12 @@ def _fmt_v1(v1: Dict[str, Any]) -> str:
         if "error" in corpus:
             lines += [f"### Corpus {label}: ERROR — {corpus['error']}", ""]
             continue
+        if not corpus.get("corpus_ok", True):
+            lines += ["  KNOWN GAP: eval-window slope/ECE miss (2023-24 slope ~0.69; 2025 "
+                      "slope ~0.28) -- stale 2015-2022 isotonic fit vs newer seasons. "
+                      "Per-division recalibration was already tested and REFUTED "
+                      "(proof_soccer/division_calibration.py: pooled recal absorbs the "
+                      "division mean-shift). Documented drift; stays an honest FAIL.", ""]
         lines += [
             f"### Corpus {label}",
             f"  n_eval             : {corpus.get('n_eval')}",
