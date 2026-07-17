@@ -11,6 +11,13 @@ HONEST UNANSWERABLE: no VERIFIED claim covers the question, or the family
 can't be classified -> {"answerable": False, "reason": ..., "nearest_supported_families": [...]}.
 Never falls back to raw computation; never answers from an UNVERIFIABLE/MISMATCH claim.
 
+This module is the thin facade: claim loading + the ask() dispatcher live
+here; the per-family answer formatters (top_n/entity_lookup/provenance/
+gate_verdict + the best_x/shooter_profile hooks) live in ask_families.py,
+and the FIT family (compose_fit) lives in ask_fit.py -- both split out to
+respect the <=300 LOC/file rail and re-exported here so every existing
+caller/test import path is unchanged.
+
 CLI:
     python -m scripts.platformkit.intel_query.ask "Who are the top 5 best shooters (composite) in window=last_20?"
     python -m scripts.platformkit.intel_query.ask --demo
@@ -19,7 +26,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import sys
 import unicodedata
 from pathlib import Path
@@ -33,38 +39,6 @@ from scripts.platformkit.intel_query.families import (
     FAMILY_TOP_N,
     classify,
     describe_families,
-    gate_verdict_match_score,
-    match_gate_verdict_candidates,
-)
-
-# FIT is a compose_fit(player, team)-only family (explicit args, not a
-# free-text question routed through families.classify), so it is defined
-# here rather than added to families.py's question-classifier enum.
-FAMILY_FIT = "fit"
-
-# ONE-CONCLUSION composer family: "who is the best shooter" (singular,
-# all-factors-weighed) is a DIFFERENT question from "top 5 best shooters"
-# (a ranking list, already routed to FAMILY_TOP_N by families.classify).
-# Checked BEFORE the existing family dispatch so it never disturbs top_n's
-# "best shooters" plural/top-N phrasing. Only "shooter" is wired v1 --
-# _BEST_ASPECT_ALIASES maps a recognized alias phrase to a compose_best()
-# aspect key; an unrecognized "best X" phrase falls through to the existing
-# families.classify dispatch unchanged.
-FAMILY_BEST = "best"
-_BEST_ASPECT_ALIASES: dict[str, str] = {"shooter": "shooter", "shooters": "shooter"}
-_BEST_SINGLE_RE = re.compile(r"\bbest\s+(shooter|shooters)\b", re.IGNORECASE)
-_TOP_N_ANYWHERE_RE = re.compile(r"\btop\s*[- ]?\s*\d+\b", re.IGNORECASE)
-
-# SHOOTER TRAIT PROFILE family: "what kind of shooter is X?" is a VECTOR
-# question (multi-axis profile), not a ranking/scalar question -- routed to
-# compose_profile(), which assembles per-axis VERIFIED claims and never
-# collapses them into one score. Checked before families.classify (same
-# pattern as FAMILY_BEST above).
-FAMILY_SHOOTER_PROFILE = "shooter_profile"
-_PROFILE_RE = re.compile(
-    r"\bwhat kind of shooter is\s+(?P<name>[A-Za-z][A-Za-z .'\-]*?)\s*\??\s*$"
-    r"|\bshooter profile (?:for|of)\s+(?P<name2>[A-Za-z][A-Za-z .'\-]*?)\s*\??\s*$",
-    re.IGNORECASE,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -153,32 +127,6 @@ def pairs_for_claim_stores(store_names: tuple[str, ...],
     wanted = set(store_names)
     return tuple(p for p in pairs if p[1].name in wanted)
 
-
-# claim_id of each fit-ingredient claim compose_fit() joins -- a static
-# registry (not a glob) so compose_fit only ever reads claims this lane
-# named, matching the CLAIM_SOURCE_PAIRS pattern above.
-_FIT_ARCHETYPE_CLAIM_ID = "nba_fit_archetype_profile_current"
-_FIT_SCHEME_CLAIM_ID = "nba_fit_team_scheme_identity_current"
-_FIT_VACANCY_CLAIM_ID = "nba_fit_role_vacancy_by_team_posgroup_current"
-
-# compose_fit joins claims from exactly these two stores (3 ingredient claims
-# + the validity gate verdict). A bare load_verified_claims() would whole-load
-# EVERY store including nba_player_box_rate (2.8GB / 59k VERIFIED rows) -- the
-# same footgun as the 6.1GB compose_matchup incident -- so scope like
-# compose_best/_profile do (pairs_for_claim_stores).
-_FIT_CLAIM_STORES = ("nba_fit_ingredient_claims.jsonl", "gate_verdict_claims.jsonl")
-
-# PROGRAM v3 closure: the pre-registered fit-validity gate's REJECT verdict
-# (does scheme fit predict post-move performance? -- see
-# data/domains/nba/fit_validity_gate_verdict.json, read-only truth, never
-# regenerated here) is cited inline in every compose_fit() answer so the
-# SCOUTING composition never implies validity it does not have.
-_FIT_VALIDITY_CLAIM_ID = "nba_fit_validity_gate_verdict"
-
-# Words a SCOUTING fit answer must never contain -- compose_fit() is a
-# descriptive composition of three VERIFIED ingredient claims, never a
-# prediction (no-edge-claims rule).
-_FORBIDDEN_FIT_WORDS = ("predict", "will improve", "expected gain", "edge")
 
 VERIFIED = "VERIFIED"
 
@@ -296,321 +244,36 @@ def _unanswerable(reason: str, question: str) -> dict[str, Any]:
     }
 
 
-def _filter_by_hints(rows: list[dict[str, Any]], parsed) -> list[dict[str, Any]]:
-    # Per-file schema tolerance: a claims row from a store this lane hasn't
-    # seen yet might be missing "criteria" entirely -- treat that as "does
-    # not match this hint" rather than KeyError-ing the whole ask() call.
-    #
-    # BUG FIX: families.classify's metric_hints alias dict has no synonym
-    # for phrasings like "free throw percentage", so metric_hints can come
-    # back EMPTY for a real, answerable metric -- and an empty metric_hints
-    # used to skip metric filtering entirely, letting an unrelated claim
-    # (wrong metric, wrong entity type) win by recency. ask_index's
-    # extract_metric_synonym covers the phrasings that exist in the actual
-    # claim corpus; entity_key_matches rejects a claim whose entity_key
-    # (player vs team) contradicts a question that names an entity type
-    # unambiguously ("players" must never be answered by a team claim).
-    metric_synonym = ask_index.extract_metric_synonym(parsed.raw)
-    entity_type = ask_index.question_entity_type(parsed.raw)
-    allowed_metrics = set(parsed.metric_hints)
-    if metric_synonym is not None:
-        allowed_metrics.add(metric_synonym)
-    candidates = rows
-    if allowed_metrics:
-        candidates = [r for r in candidates if r.get("criteria", {}).get("metric") in allowed_metrics]
-    if parsed.window_hint:
-        candidates = [r for r in candidates if r.get("criteria", {}).get("window") == parsed.window_hint]
-    candidates = [
-        r for r in candidates if ask_index.entity_key_matches(r.get("criteria", {}).get("entity_key"), entity_type)
-    ]
-    return candidates
-
-
-def _format_top_n_answer(parsed, question: str, row: dict[str, Any]) -> dict[str, Any]:
-    """Shared formatter: BOTH the index fast path and the full-load slow
-    path call this on their winning row, so the two can never drift in
-    answer SHAPE -- only in how the winning row was found."""
-    ranking = [dict(r) for r in row.get("ranking", [])]
-    for r in ranking:
-        if "player_name" in r:
-            r["player_name"] = _ascii_name(str(r["player_name"]))
-    ranking = ranking[:parsed.top_n or 10]
-    return {
-        "answerable": True, "question": question, "family": FAMILY_TOP_N,
-        "answer": {
-            "metric": row.get("criteria", {}).get("metric"), "window": row.get("criteria", {}).get("window"),
-            "ranking": ranking, "n_considered": row.get("n_considered"),
-            "n_excluded_below_floor": row.get("n_excluded_below_floor"),
-            "caveats": row.get("caveats", []),
-        },
-        "evidence": [_claim_evidence(row)],
-    }
-
-
-def _answer_top_n(parsed, question: str, verified: dict[str, dict[str, Any]]) -> dict[str, Any]:
-    # UNANSWERABLE-over-wrong-answer: a top-N question whose metric resolved
-    # to NOTHING (no families.py alias, no ask_index synonym) must never be
-    # answered by whatever unrelated claim is most recent -- that recency
-    # guess IS the reported bug. Entity lookups are exempt: metric-less
-    # "where does <name> rank" legitimately searches every ranking claim.
-    if not parsed.metric_hints and ask_index.extract_metric_synonym(parsed.raw) is None:
-        return _unanswerable(
-            "could not map the requested metric to any known claims metric "
-            "(no alias or synonym matched) -- refusing to guess", question
-        )
-    ranking_claims = [r for r in verified.values() if r.get("kind") == "ranking"]
-    candidates = _filter_by_hints(ranking_claims, parsed)
-    if not candidates:
-        return _unanswerable(
-            "no VERIFIED ranking claim matches the requested metric/window", question
-        )
-    row = max(candidates, key=lambda r: r.get("computed_at", ""))  # most-recent tie-break
-    return _format_top_n_answer(parsed, question, row)
-
-
-def _answer_entity_lookup(parsed, question: str, candidates: list[dict[str, Any]]) -> dict[str, Any]:
-    """`candidates` is the caller's pre-assembled row list (index fast-path
-    hits + any residual full-load rows for families lacking a fresh index)
-    -- this function only does the final name-match + answer/evidence
-    assembly, so the index fast path and the full-load fallback (see
-    ask()'s FAMILY_ENTITY_LOOKUP branch) can never drift in answer SHAPE."""
-    if not parsed.entity_name:
-        return _unanswerable("could not extract a player/entity name from the question", question)
-    name_key = parsed.entity_name.strip().lower()
-    hits = []
-    for row in candidates:
-        for r in row.get("ranking", []):
-            if _ascii_name(str(r.get("player_name", ""))).strip().lower() == name_key:
-                hits.append((row, r))
-    if not hits:
-        return _unanswerable(
-            f"no VERIFIED ranking claim has an entry for entity_name={parsed.entity_name!r} "
-            "(the entity may exist but did not clear the claim's min_sample floor)",
-            question,
-        )
-    answers = [
-        {
-            "metric": row.get("criteria", {}).get("metric"), "window": row.get("criteria", {}).get("window"),
-            "rank": r.get("rank"), "value": r.get("value"), "n": r.get("n"),
-        }
-        for row, r in hits
-    ]
-    evidence = [_claim_evidence(row) for row, _r in hits]
-    return {
-        "answerable": True, "question": question, "family": FAMILY_ENTITY_LOOKUP,
-        "answer": {"entity_name": parsed.entity_name, "rankings": answers},
-        "evidence": evidence,
-    }
-
-
-def _answer_provenance(parsed, question: str, verified: dict[str, dict[str, Any]]) -> dict[str, Any]:
-    if not parsed.claim_id or parsed.claim_id not in verified:
-        return _unanswerable(
-            "no VERIFIED claim_id was named (or recognized) in the question", question
-        )
-    row = verified[parsed.claim_id]
-    return {
-        "answerable": True, "question": question, "family": FAMILY_PROVENANCE,
-        "answer": {
-            "claim_id": row["claim_id"], "question_answered_by_claim": row.get("question"),
-            "criteria": row.get("criteria"), "n_considered": row.get("n_considered"),
-            "n_excluded_below_floor": row.get("n_excluded_below_floor"),
-            "caveats": row.get("caveats", []),
-        },
-        "evidence": [_claim_evidence(row)],
-    }
-
-
-def _answer_gate_verdict(parsed, question: str, verified: dict[str, dict[str, Any]]) -> dict[str, Any]:
-    # Deterministic ranking (score DESC, claim_id ASC). If 2+ candidates tie
-    # the top score with DIFFERENT verdicts, report ambiguity honestly.
-    candidates = match_gate_verdict_candidates(parsed, verified)
-    if not candidates:
-        return _unanswerable(
-            "no VERIFIED gate-verdict claim matches this question's topic", question
-        )
-    row = candidates[0]
-    if len(candidates) > 1:
-        top_score = gate_verdict_match_score(parsed, row)
-        tied = [c for c in candidates if gate_verdict_match_score(parsed, c) == top_score]
-        distinct_verdicts = {c.get("verdict") for c in tied}
-        if len(tied) > 1 and len(distinct_verdicts) > 1:
-            return {
-                "answerable": True,
-                "question": question,
-                "family": FAMILY_GATE_VERDICT,
-                "note": "multiple matching verdicts with equal match score -- ambiguous topic",
-                "candidates": [c.get("claim_id") for c in tied],
-            }
-    return {
-        "answerable": True, "question": question, "family": FAMILY_GATE_VERDICT,
-        "answer": {
-            "gate_module": row.get("gate_module"), "verdict": row.get("verdict"),
-            "primary_number": row.get("primary_number"), "corpus_ids": row.get("corpus_ids", []),
-            "planted_null_passed": row.get("planted_null_passed"),
-            "edge_claimed": row.get("edge_claimed", False), "verdict_file": row.get("verdict_file"),
-            "caveats": row.get("caveats", []),
-        },
-        "evidence": [_claim_evidence(row)],
-    }
-
-
-def _find_by_key(rows: list[dict[str, Any]], key: str, name_key: str) -> dict[str, Any] | None:
-    """First ranking entry whose `key` field ASCII-folds/lowercases to
-    name_key. name_key is already normalized by the caller."""
-    for r in rows:
-        if key in r and _ascii_name(str(r[key])).strip().lower() == name_key:
-            return r
-    return None
-
-
-def _fit_unanswerable(player: str, team: str, missing_ingredient: str, reason: str) -> dict[str, Any]:
-    return {
-        "answerable": False,
-        "family": FAMILY_FIT,
-        "player": _ascii_name(player),
-        "team": team,
-        "missing_ingredient": missing_ingredient,
-        "reason": _ascii_name(reason),
-    }
-
-
-def compose_fit(player: str, team: str) -> dict[str, Any]:
-    """Join the 3 VERIFIED fit-ingredient claims (archetype/attribute
-    profile, team scheme identity, role vacancy) into one SCOUTING
-    composition -- descriptive only, never predictive. If ANY ingredient is
-    below its stated floor or absent for this player/team, returns honest
-    UNANSWERABLE naming the exact missing ingredient (never guesses, never
-    silently composes from a partial join)."""
-    verified = load_verified_claims(pairs_for_claim_stores(_FIT_CLAIM_STORES))
-    name_key = _ascii_name(player).strip().lower()
-    team_key = team.strip().upper()
-
-    archetype_claim = verified.get(_FIT_ARCHETYPE_CLAIM_ID)
-    if not archetype_claim:
-        return _fit_unanswerable(
-            player, team, "archetype_profile",
-            f"claim {_FIT_ARCHETYPE_CLAIM_ID!r} is not currently VERIFIED/available",
-        )
-    profile = _find_by_key(archetype_claim.get("ranking", []), "player_name", name_key)
-    if not profile:
-        return _fit_unanswerable(
-            player, team, "archetype_profile",
-            f"{player!r} has no VERIFIED archetype/attribute row (absent from the claim, "
-            f"or below its stated minutes floor -- see {_FIT_ARCHETYPE_CLAIM_ID}'s caveats)",
-        )
-
-    scheme_claim = verified.get(_FIT_SCHEME_CLAIM_ID)
-    if not scheme_claim:
-        return _fit_unanswerable(
-            team, team, "team_scheme_identity",
-            f"claim {_FIT_SCHEME_CLAIM_ID!r} is not currently VERIFIED/available",
-        )
-    scheme = _find_by_key(scheme_claim.get("ranking", []), "team", team_key.lower())
-    if not scheme:
-        return _fit_unanswerable(
-            player, team, "team_scheme_identity",
-            f"team {team!r} has no VERIFIED scheme-identity row in {_FIT_SCHEME_CLAIM_ID}",
-        )
-
-    vacancy_claim = verified.get(_FIT_VACANCY_CLAIM_ID)
-    if not vacancy_claim:
-        return _fit_unanswerable(
-            player, team, "role_vacancy",
-            f"claim {_FIT_VACANCY_CLAIM_ID!r} is not currently VERIFIED/available",
-        )
-    posgroup = profile.get("posgroup")
-    vacancy_key = f"{team_key}|{posgroup}"
-    vacancy = _find_by_key(vacancy_claim.get("ranking", []), "team_posgroup", vacancy_key.lower())
-    if not vacancy:
-        return _fit_unanswerable(
-            player, team, "role_vacancy",
-            f"team_posgroup {vacancy_key!r} has no VERIFIED role-vacancy row (thin sample "
-            f"-- see {_FIT_VACANCY_CLAIM_ID}'s min_sample floor)",
-        )
-
-    answer = {
-        "player": _ascii_name(str(profile.get("player_name"))), "team": team_key,
-        "archetype_profile": {
-            "posgroup": profile.get("posgroup"), "archetype": profile.get("archetype"),
-            "creation": profile.get("creation"), "playmaking": profile.get("playmaking"),
-            "spacing": profile.get("spacing"), "rim_pressure": profile.get("rim_pressure"),
-            "rebounding": profile.get("rebounding"), "rim_protect": profile.get("rim_protect"),
-            "perimeter_d": profile.get("perimeter_d"), "self_create": profile.get("self_create"),
-            "usage_pct": profile.get("usage_pct"),
-        },
-        "team_scheme_identity": {
-            "dominant_tag": scheme.get("dominant_tag"), "best_scheme": scheme.get("best_scheme"),
-            "confidence": scheme.get("confidence"),
-        },
-        "role_vacancy": {"team_posgroup": vacancy.get("team_posgroup"), "vacancy_share": vacancy.get("value"),
-                          "n": vacancy.get("n")},
-        "note": (
-            "SCOUTING composition of 3 VERIFIED descriptive ingredients -- purely descriptive, "
-            "no market/$ claim. Composition is descriptive; the validity gate returned REJECT "
-            "on 2026-07-05."
-        ),
-    }
-    text_blob = json.dumps(answer).lower()
-    for word in _FORBIDDEN_FIT_WORDS:
-        if word in text_blob:
-            return _fit_unanswerable(
-                player, team, "forbidden_word_guard",
-                f"composed answer would contain forbidden predictive word {word!r} -- refusing",
-            )
-
-    evidence = [_claim_evidence(archetype_claim), _claim_evidence(scheme_claim),
-                _claim_evidence(vacancy_claim)]
-    validity_claim = verified.get(_FIT_VALIDITY_CLAIM_ID)
-    if validity_claim:
-        evidence.append(_claim_evidence(validity_claim))
-
-    return {
-        "answerable": True, "family": FAMILY_FIT, "player": _ascii_name(player), "team": team,
-        "answer": answer,
-        "evidence": evidence,
-    }
-
-
-def _try_best_x(question: str) -> dict[str, Any] | None:
-    """Minimal hook for the ONE-CONCLUSION composer: a singular "best <X>"
-    question (not "top N best <X>", which stays FAMILY_TOP_N) with a wired
-    aspect alias routes to compose_best(); anything else returns None so
-    ask() falls through to its existing family dispatch unchanged."""
-    text = question or ""
-    if _TOP_N_ANYWHERE_RE.search(text):
-        return None
-    m = _BEST_SINGLE_RE.search(text)
-    if not m:
-        return None
-    aspect = _BEST_ASPECT_ALIASES.get(m.group(1).lower())
-    if aspect is None:
-        return None
-    from scripts.platformkit.intel_query.compose_best import compose_best  # local import: avoid import cycle
-
-    result = compose_best(aspect)
-    result["family"] = FAMILY_BEST
-    result["question"] = question
-    return result
-
-
-def _try_shooter_profile(question: str) -> dict[str, Any] | None:
-    """"what kind of shooter is <name>" / "shooter profile for <name>" ->
-    compose_profile(name); anything else returns None so ask() falls through
-    to the existing family dispatch unchanged."""
-    m = _PROFILE_RE.search(question or "")
-    if not m:
-        return None
-    name = (m.group("name") or m.group("name2") or "").strip()
-    if not name:
-        return None
-    from scripts.platformkit.intel_query.compose_profile import compose_profile  # local: avoid import cycle
-
-    result = compose_profile(name)
-    result["family"] = FAMILY_SHOOTER_PROFILE
-    result["question"] = question
-    result["answerable"] = result.get("status") == "OK"
-    return result
+# Split modules (see module docstring). Imported here -- after the utilities
+# and loaders above are defined -- so ask_families.py/ask_fit.py's own
+# top-level `from scripts.platformkit.intel_query.ask import ...` (of
+# _ascii_name/_claim_evidence/_unanswerable/load_verified_claims/
+# pairs_for_claim_stores) resolves against THIS module's already-populated
+# namespace instead of racing a circular import. Re-exported by name (not
+# `import *`) so every existing `from ...ask import X` caller/test keeps
+# working unchanged.
+from scripts.platformkit.intel_query.ask_families import (  # noqa: E402
+    FAMILY_BEST,
+    FAMILY_SHOOTER_PROFILE,
+    _answer_entity_lookup,
+    _answer_gate_verdict,
+    _answer_provenance,
+    _filter_by_hints,
+    _format_top_n_answer,
+    _try_best_x,
+    _try_shooter_profile,
+)
+from scripts.platformkit.intel_query.ask_fit import (  # noqa: E402
+    FAMILY_FIT,
+    _FIT_ARCHETYPE_CLAIM_ID,
+    _FIT_SCHEME_CLAIM_ID,
+    _FIT_VACANCY_CLAIM_ID,
+    _FIT_VALIDITY_CLAIM_ID,
+    _find_by_key,
+    _FORBIDDEN_FIT_WORDS,
+    _fit_unanswerable,
+    compose_fit,
+)
 
 
 def ask(question: str) -> dict[str, Any]:
