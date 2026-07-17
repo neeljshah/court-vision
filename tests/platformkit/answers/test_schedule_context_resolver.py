@@ -131,9 +131,9 @@ def test_schedule_claims_never_reads_other_stores(tmp_path, monkeypatch):
     opened = []
     real_load_jsonl = ask_mod._load_jsonl
 
-    def _tracking_load_jsonl(path):
+    def _tracking_load_jsonl(path, max_lines=None):
         opened.append(path)
-        return real_load_jsonl(path)
+        return real_load_jsonl(path, max_lines)
 
     monkeypatch.setattr(ask_mod, "_load_jsonl", _tracking_load_jsonl)
 

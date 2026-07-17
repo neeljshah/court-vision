@@ -662,8 +662,11 @@ def fixture_fit_sources(tmp_path, monkeypatch):
     """One VERIFIED row for each of the 3 fit-ingredient claims (Fixture
     Star on ATL, posgroup WING) -- a full-pop compose_fit lookup should
     join all three cleanly."""
-    claims_path = tmp_path / "fit_claims.jsonl"
-    validation_path = tmp_path / "fit_validation.json"
+    # store name must be in ask._FIT_CLAIM_STORES -- compose_fit now scopes the
+    # load via pairs_for_claim_stores so a bare whole-corpus load can't OOM on
+    # the 2.8GB nba_player_box_rate store.
+    claims_path = tmp_path / "nba_fit_ingredient_claims.jsonl"
+    validation_path = tmp_path / "nba_fit_ingredient_claims_validation.json"
     archetype_claim, scheme_claim, vacancy_claim = _fixture_fit_claims()
 
     with open(claims_path, "w", encoding="ascii") as f:
@@ -893,3 +896,46 @@ def test_real_repo_compose_fit_note_cites_validity_reject_inline():
     blob = json.dumps(result["answer"]).lower()
     for forbidden in ask_mod._FORBIDDEN_FIT_WORDS:
         assert forbidden not in blob
+
+
+# --- P0: streaming _load_jsonl + per-file line cap (unbounded-load fix) ------
+def test_load_jsonl_streams_and_caps(tmp_path):
+    """_load_jsonl is a STREAMING generator (never materializes the whole
+    file -- the old readlines() spiked 2.8GB on nba_player_box_rate) and
+    `max_lines` caps physical lines READ. A malformed line is still skipped."""
+    path = tmp_path / "s.jsonl"
+    with open(path, "w", encoding="ascii") as f:
+        f.write(json.dumps({"claim_id": "a"}) + "\n")
+        f.write(json.dumps({"claim_id": "b"}) + "\n")
+        f.write("{ not json\n")            # malformed -> skipped, not raised
+        f.write(json.dumps({"claim_id": "c"}) + "\n")
+        f.write(json.dumps({"claim_id": "d"}) + "\n")
+
+    gen = ask_mod._load_jsonl(path)
+    assert iter(gen) is gen                 # a generator, not a list
+    assert [r["claim_id"] for r in ask_mod._load_jsonl(path)] == ["a", "b", "c", "d"]
+    # cap=2 reads only the first 2 physical lines -> only a, b parsed
+    assert [r["claim_id"] for r in ask_mod._load_jsonl(path, max_lines=2)] == ["a", "b"]
+    # missing file yields nothing (fail-open), still an iterator
+    assert list(ask_mod._load_jsonl(tmp_path / "nope.jsonl")) == []
+
+
+def test_load_verified_claims_max_lines_per_file_truncates(tmp_path, monkeypatch):
+    """A fat store (6 VERIFIED rows) truncates at the per-file cap; claim_ids
+    past the cap are honestly absent. Default None loads all of them -- the
+    full-scan consumers (coverage report / fit-sweep validators) rely on that."""
+    claims_path = tmp_path / "fat.jsonl"
+    validation_path = tmp_path / "fat_validation.json"
+    ids = [f"fat_{i}" for i in range(6)]
+    with open(claims_path, "w", encoding="ascii") as f:
+        for cid in ids:
+            f.write(json.dumps({"claim_id": cid, "kind": "ranking"}) + "\n")
+    validation_path.write_text(json.dumps(
+        {"details": [{"claim_id": cid, "verdict": "VERIFIED"} for cid in ids]}), encoding="ascii")
+    pairs = ((validation_path, claims_path),)
+
+    capped = ask_mod.load_verified_claims(pairs, max_lines_per_file=3)
+    assert set(capped) == {"fat_0", "fat_1", "fat_2"}      # rows past line 3 truncated
+    assert "fat_5" not in capped
+    full = ask_mod.load_verified_claims(pairs)              # default None -> no cap
+    assert set(full) == set(ids)

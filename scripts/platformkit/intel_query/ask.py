@@ -23,7 +23,7 @@ import re
 import sys
 import unicodedata
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
 
 from scripts.platformkit.intel_query import ask_index
 from scripts.platformkit.intel_query.families import (
@@ -69,6 +69,16 @@ _PROFILE_RE = re.compile(
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 INTEL_CLAIMS_DIR = REPO_ROOT / "data" / "cache" / "intel_claims"
+
+# The generic ask() dispatch (entity_lookup/provenance/gate_verdict) can't be
+# scoped to a fixed store set the way the composers are -- it searches every
+# store. Cap physical lines read PER FILE so a store that later grows to
+# millions of rows can't OOM the surface. 100k comfortably exceeds every
+# current store (largest is nba_player_box_rate at 59,710 lines), so this
+# truncates nothing today -- it is forward-defense, not a behavior change.
+# ponytail: a line cap; the fat store is few-huge-lines so scoping (below),
+# not this cap, is what actually bounds today's memory.
+_QUERY_SURFACE_MAX_LINES = 100_000
 
 # One producer JSONL predates the "<stem>_validation.json in the same
 # directory" naming convention every OTHER store follows, and its
@@ -151,6 +161,13 @@ _FIT_ARCHETYPE_CLAIM_ID = "nba_fit_archetype_profile_current"
 _FIT_SCHEME_CLAIM_ID = "nba_fit_team_scheme_identity_current"
 _FIT_VACANCY_CLAIM_ID = "nba_fit_role_vacancy_by_team_posgroup_current"
 
+# compose_fit joins claims from exactly these two stores (3 ingredient claims
+# + the validity gate verdict). A bare load_verified_claims() would whole-load
+# EVERY store including nba_player_box_rate (2.8GB / 59k VERIFIED rows) -- the
+# same footgun as the 6.1GB compose_matchup incident -- so scope like
+# compose_best/_profile do (pairs_for_claim_stores).
+_FIT_CLAIM_STORES = ("nba_fit_ingredient_claims.jsonl", "gate_verdict_claims.jsonl")
+
 # PROGRAM v3 closure: the pre-registered fit-validity gate's REJECT verdict
 # (does scheme fit predict post-move performance? -- see
 # data/domains/nba/fit_validity_gate_verdict.json, read-only truth, never
@@ -196,37 +213,47 @@ def _display_path(path: Path) -> str:
         return str(path)
 
 
-def _load_jsonl(path: Path) -> list[dict[str, Any]]:
-    """Per-LINE fail-open: one malformed line (e.g. a concurrent writer
-    caught mid-append/mid-flush) is skipped rather than raising and losing
-    every OTHER already-well-formed row/claim in the same file."""
+def _load_jsonl(path: Path, max_lines: int | None = None) -> Iterator[dict[str, Any]]:
+    """Per-LINE fail-open STREAMING reader: yields one parsed row at a time so
+    a GB-scale store is never materialized whole. The old readlines() pulled a
+    2.8GB store into a single str list -> the 2026-07-07 MemoryError; the
+    caller filters row-by-row and keeps only what it wants. One malformed line
+    (a concurrent writer caught mid-append/mid-flush) is skipped, not raised.
+    `max_lines` caps physical lines READ per file (None = no cap): a full-scan
+    consumer passes None; a query surface passes a cap so a store that grows to
+    millions of lines can't run it out of memory."""
     if not path.exists():
-        return []
-    rows = []
+        return
     try:
         with open(path, "r", encoding="ascii", errors="strict") as f:
-            lines = f.readlines()
+            for i, line in enumerate(f):
+                if max_lines is not None and i >= max_lines:
+                    return
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    yield json.loads(line)
+                except json.JSONDecodeError:
+                    continue
     except (UnicodeDecodeError, OSError):
-        return []
-    for line in lines:
-        line = line.strip()
-        if not line:
-            continue
-        try:
-            rows.append(json.loads(line))
-        except json.JSONDecodeError:
-            continue
-    return rows
+        return
 
 
-def load_verified_claims(pairs: tuple[tuple[Path, Path], ...] | None = None) -> dict[str, dict[str, Any]]:
+def load_verified_claims(pairs: tuple[tuple[Path, Path], ...] | None = None,
+                         max_lines_per_file: int | None = None) -> dict[str, dict[str, Any]]:
     """{claim_id: claim_row} for every claim_id whose validator verdict is
     exactly VERIFIED. A claim_id absent from (or non-VERIFIED in) its
     validation summary is NOT included -- MISMATCH/UNVERIFIABLE stays
     invisible to ask(). `pairs` lets a caller load a SUBSET of stores (see
     ask()'s top_n short-circuit); None (default) re-reads the CURRENT
     module-level CLAIM_SOURCE_PAIRS (not a function-def-time default, so
-    tests that monkeypatch it still take effect)."""
+    tests that monkeypatch it still take effect).
+
+    `max_lines_per_file` caps physical lines read per store (None = no cap,
+    the DEFAULT): full-scan consumers (claims_coverage_report, the fit-sweep
+    validators) need every row, so a default cap would silently truncate them.
+    Query surfaces that can't scope to a fixed store set pass a cap instead."""
     if pairs is None:
         pairs = CLAIM_SOURCE_PAIRS
     verified: dict[str, dict[str, Any]] = {}
@@ -239,7 +266,7 @@ def load_verified_claims(pairs: tuple[tuple[Path, Path], ...] | None = None) -> 
         }
         if not verified_ids:
             continue
-        for row in _load_jsonl(claims_path):
+        for row in _load_jsonl(claims_path, max_lines_per_file):
             cid = row.get("claim_id")
             if cid in verified_ids:
                 row = dict(row)
@@ -452,7 +479,7 @@ def compose_fit(player: str, team: str) -> dict[str, Any]:
     below its stated floor or absent for this player/team, returns honest
     UNANSWERABLE naming the exact missing ingredient (never guesses, never
     silently composes from a partial join)."""
-    verified = load_verified_claims()
+    verified = load_verified_claims(pairs_for_claim_stores(_FIT_CLAIM_STORES))
     name_key = _ascii_name(player).strip().lower()
     team_key = team.strip().upper()
 
@@ -630,7 +657,7 @@ def ask(question: str) -> dict[str, Any]:
             parsed, question, max(residual_candidates, key=lambda r: r.get("computed_at", ""))
         )
 
-    verified = load_verified_claims()
+    verified = load_verified_claims(max_lines_per_file=_QUERY_SURFACE_MAX_LINES)
     if not verified:
         return _unanswerable("no VERIFIED claims are currently available", question)
 
