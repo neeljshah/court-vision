@@ -13,12 +13,23 @@ NETWORK: zero.
 from __future__ import annotations
 
 import json
+import unicodedata
 from pathlib import Path
 from typing import Any, Iterable
 
 import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
+
+
+def _ascii_name(name: str) -> str:
+    """NFKD-fold to plain ASCII (mirrors intel_query/ask.py's _ascii_name) so
+    an accented and a plain spelling of the same entity_id (e.g. a player
+    name with a diacritic vs its bare-letter form) collapse to one canonical
+    string in the shared-schema parquet instead of two duplicate rows."""
+    decomposed = unicodedata.normalize("NFKD", str(name))
+    return "".join(ch for ch in decomposed if not unicodedata.combining(ch))
+
 
 RATING_FLOOR = 25.0
 RATING_SLOPE = 0.74
@@ -92,7 +103,7 @@ def finalize_rows(
         eid = int(r[entity_col]) if entity_id_int else str(r[entity_col])
         rows.append({
             "entity_id": eid,
-            "entity_name": str(r[name_col]) if name_col else "",
+            "entity_name": _ascii_name(r[name_col]) if name_col else "",
             "window": window,
             "attribute": attribute,
             "raw_value": round(float(r[raw_col]), 6),

@@ -10,7 +10,7 @@ import json
 import pandas as pd
 
 from domains.basketball_nba.profiles.profile_compute import (
-    exclude_negative_ids, finalize_rows, ingredients_json, percentile_rank, rating_2k,
+    _ascii_name, exclude_negative_ids, finalize_rows, ingredients_json, percentile_rank, rating_2k,
 )
 
 
@@ -84,6 +84,37 @@ def test_finalize_rows_floor_and_schema():
         assert 0.0 <= r["percentile"] <= 100.0
         assert 25.0 <= r["rating_2k"] <= 99.0
         json.loads(r["ingredients"])  # must be valid json
+
+
+def test_finalize_rows_canonicalizes_accented_name_variants():
+    """Two source rows for the SAME entity_id carrying an accented and a
+    plain spelling (e.g. a builder pulling from two upstream feeds) must
+    stamp the IDENTICAL ascii-folded entity_name -- otherwise the parquet
+    grows duplicate spellings that inflate resolver ambiguity candidates."""
+    accented = "Luka Dončić"  # "Luka Doncic" with diacritics
+    plain = "Luka Doncic"
+    assert _ascii_name(accented) == plain  # sanity: folds to the plain form
+
+    df_a = pd.DataFrame({
+        "player_id": [1629029], "player_name": [accented],
+        "raw_value": [0.42], "n_min": [500.0],
+    })
+    df_b = pd.DataFrame({
+        "player_id": [1629029], "player_name": [plain],
+        "raw_value": [0.55], "n_min": [600.0],
+    })
+    rows_a = finalize_rows(
+        df_a, entity_col="player_id", name_col="player_name", raw_col="raw_value", n_col="n_min",
+        window="season_2025_26", attribute="attr_a", status="DESCRIPTIVE", sources="a.parquet",
+        ingredient_cols=["raw_value"],
+    )
+    rows_b = finalize_rows(
+        df_b, entity_col="player_id", name_col="player_name", raw_col="raw_value", n_col="n_min",
+        window="season_2025_26", attribute="attr_b", status="DESCRIPTIVE", sources="b.parquet",
+        ingredient_cols=["raw_value"],
+    )
+    names = {rows_a[0]["entity_name"], rows_b[0]["entity_name"]}
+    assert names == {plain}  # one canonical spelling per entity_id, not two
 
 
 def test_finalize_rows_lineup_key_stays_string():
