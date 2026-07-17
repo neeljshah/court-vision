@@ -42,8 +42,10 @@ pip install -r requirements.txt
 
 ## 3. Connect Claude
 
-**Claude Code** -- the repo's `.mcp.json` already declares the server. Open the
-repo in Claude Code and approve `courtvision` when prompted.
+**Claude Code** -- `.mcp.json` is gitignored (it's per-machine config), so a
+fresh clone does **not** ship one. The installer prints the exact JSON to save
+as `.mcp.json` at the repo root (step 2 output, section "2a"). Save it, reopen
+the repo in Claude Code, and approve `courtvision` when prompted.
 
 **Claude Desktop** -- Settings > Developer > Edit Config, then add (the installer
 prints this with your absolute path filled in):
