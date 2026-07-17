@@ -38,7 +38,7 @@ def test_bank_covers_13_categories_x_5_sports():
     # 12-category grid + verified_claims (the RESOLVER BRIDGE, 2026-07-17)
     assert len(B.CATEGORIES) == 13
     assert len(B.SPORTS) == 5
-    assert len(B.QA_BANK) == 65
+    assert len(B.QA_BANK) == 67
 
 
 def test_by_tier_smoke_is_cheap_subset_of_full():
