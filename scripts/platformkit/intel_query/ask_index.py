@@ -103,15 +103,28 @@ _METRIC_SYNONYMS: dict[str, str] = {
     "home advantage": "winrate_diff",            # soccer_team_venue_split
     "home court advantage": "home_minus_away_ppg",  # nba_venue_split
     "venue split": "home_minus_away_ppg",
-    # shooter/scorer quality (nba_quality_claims, 2026-07-17): VERIFIED,
+    # shooter quality (2026-07-17): RETARGETED shooter_quality_v1 ->
+    # shooter_composite_v2. Both are VERIFIED; v1 is TS%/eFG%/FT%-flavored
+    # (efficiency-heavy pillars) and still puts Durant/LaVine/Powell top-3 --
+    # efficient FINISHERS, not volume 3-point shooters, a metric trap for
+    # "who is the best shooter". v2 (shooter_composite_v2_claims.jsonl) is
+    # the basketball-smart multi-axis answer: percentile-weighted volume
+    # (fg3a_per_game) + efficiency (fg3_pct) + difficulty (pullup_combined_
+    # freq, unassisted_share_3pm) + gravity_score + ft_reliability, frozen
+    # weights, over a fg3a_per_game>=4.0 qualified pool -- so it is the one
+    # this alias now routes to for the natural "best shooter" question. v1
+    # stays on disk/VERIFIED (untouched) for anyone asking for it by its
+    # literal metric name.
+    "best shooter": "shooter_composite_v2",
+    "best shooters": "shooter_composite_v2",
+    "shooter quality": "shooter_composite_v2",
+    "shooting quality": "shooter_composite_v2",
+    # scorer quality (nba_quality_claims, 2026-07-17): VERIFIED,
     # weights declared+frozen pre-scoring. Deliberately NOT the "canonical
     # shooter" naive_comp -- that eFG-flavored composite ranks rim-running
     # centers (Allen/Gafford/Hayes) on top, which is a metric trap, not an
-    # answer to "who is the best shooter".
-    "best shooter": "shooter_quality_v1",
-    "best shooters": "shooter_quality_v1",
-    "shooter quality": "shooter_quality_v1",
-    "shooting quality": "shooter_quality_v1",
+    # answer to "who is the best shooter". Unchanged by the shooter
+    # retarget above -- "scorer" is a distinct question from "shooter".
     "best scorer": "scorer_quality_v1",
     "best scorers": "scorer_quality_v1",
     "scorer quality": "scorer_quality_v1",
