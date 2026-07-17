@@ -362,6 +362,10 @@ _JOB_TABLE: List[Tuple[str, str, str, Tuple[str, ...]]] = [
     # silently withholds every greenlight.
     ("econ_scoreboard_refresh", "scripts.platformkit.autoloop.econ_scoreboard_refresh_job",
      "run_econ_scoreboard_refresh", ("watermarks",)),
+    # M30 answer-quality regression bank: SMOKE-tier re-verify of resolver_registry.resolve()
+    # every burst/cycle (qa_bank_report.json). Cheap no-subprocess categories only; own
+    # report file, no watermark needed (idempotent re-check, not a one-shot refresh).
+    ("qa_bank_smoke", "scripts.platformkit.answers.qa_runner", "run_smoke_job", ()),
 ]
 
 
