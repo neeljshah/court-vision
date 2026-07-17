@@ -122,6 +122,71 @@ def _concept_axis(sport: str, kind: str, concept: str, entity_id: Any,
     }
 
 
+_MLB_INJURY_RECENCY_CLAIM_ID = "mlb_injury_recency_days_since_latest"
+_MLB_INJURY_RECENCY_STORE = ("mlb_injury_recency_claims.jsonl",)
+
+
+def _injury_facts_block(sport: str, player: str) -> dict[str, Any]:
+    """Latest injury-status rows for this player via edge_facts_resolver's
+    fail-closed, 7d-staleness-gated injury_report. Lazy-imported + exception-
+    wrapped: a missing/broken injury store (soccer/tennis have none) must
+    never break the rest of the dossier."""
+    try:
+        from scripts.platformkit.answers.edge_facts_resolver import injury_report
+        return injury_report(sport, player=player)
+    except Exception as exc:  # noqa: BLE001 -- fail-closed, never kill the dossier
+        return {"status": "no_data", "category": "edge_facts_injury_report", "sport": sport,
+                "note": f"injury_report lookup raised {exc.__class__.__name__}: {exc}"}
+
+
+def _mlb_injury_recency_block(entity_id: Any) -> dict[str, Any]:
+    """MLB-only: this player's rank/value in the VERIFIED
+    mlb_injury_recency_claims ranking (days_since_latest), read via the same
+    load_verified_claims/pairs_for_claim_stores path compose_matchup uses --
+    never a bare load_verified_claims() (whole-store loads OOM on GB stores).
+    subject_id in that claim keys on ESPN athlete id while profiles.entity_id
+    is MLBAM id (no crosswalk wired) -- a player is honestly reported
+    not_in_ranking rather than guessed when the ids don't line up."""
+    category = "mlb_injury_recency_claim"
+    try:
+        from scripts.platformkit.intel_query.ask import load_verified_claims, pairs_for_claim_stores
+        verified = load_verified_claims(pairs_for_claim_stores(_MLB_INJURY_RECENCY_STORE))
+    except Exception as exc:  # noqa: BLE001 -- fail-closed, never kill the dossier
+        return {"status": "no_data", "category": category,
+                "note": f"claims lookup raised {exc.__class__.__name__}: {exc}"}
+    row = verified.get(_MLB_INJURY_RECENCY_CLAIM_ID)
+    if row is None:
+        return {"status": "no_data", "category": category,
+                "note": f"no VERIFIED claim {_MLB_INJURY_RECENCY_CLAIM_ID!r} currently available"}
+    citation = {"claim_id": row["claim_id"], "as_of": row.get("computed_at"),
+                "source_artifact": row.get("_producer_source")}
+    hit = next((r for r in row.get("ranking", []) if r.get("subject_id") == str(entity_id)), None)
+    if hit is None:
+        return {"status": "not_in_ranking", "category": category, "citation": citation,
+                "note": "player's profile entity_id not found in this claim's subject_id ranking "
+                        "(id-space mismatch or genuinely absent from the injury-fact corpus)"}
+    return {"status": "ok", "category": category, "citation": citation,
+            "rank": hit["rank"], "days_since_latest": hit["value"], "n_facts": hit["n"]}
+
+
+def _injury_context(sport: str, player: str, entity_id: Any | None) -> dict[str, Any]:
+    """Optional injury block: per-sub-block fail-closed, mirrors
+    compose_matchup's pattern -- absent data marks that sub-block absent
+    with a reason, never kills the dossier."""
+    block: dict[str, Any] = {"injury_facts": _injury_facts_block(sport, player)}
+    if sport != "mlb":
+        block["mlb_injury_recency"] = {
+            "status": "not_applicable", "category": "mlb_injury_recency_claim",
+            "note": "recency-claim ranking is MLB-only"}
+    elif entity_id is None:
+        block["mlb_injury_recency"] = {
+            "status": "no_data", "category": "mlb_injury_recency_claim",
+            "note": "player not resolved to a profiles entity_id"}
+    else:
+        block["mlb_injury_recency"] = _mlb_injury_recency_block(entity_id)
+    return block
+
+
 def _top_raw_attrs(df, entity_id: Any, top_n: int, source_artifact: str) -> dict[str, Any]:
     """Player's top-N raw attribute percentiles (latest window per attribute),
     read verbatim off the profiles parquet -- descriptive, never combined."""
@@ -168,6 +233,7 @@ def compose_scout(sport: str, player: str, kind: str = "player", top_n: int = 8)
     concept_axes: list[dict[str, Any]] = []
     raw_attributes: dict[str, Any] = {"status": "no_data", "note": "player not resolved in profiles"}
     entity_name = player
+    entity_id: Any | None = None
     if resolve_status == "ok":
         entity_id, entity_name = resolved
         for concept in reg.list_concepts():
@@ -204,6 +270,7 @@ def compose_scout(sport: str, player: str, kind: str = "player", top_n: int = 8)
         "concept_axes": concept_axes,
         "shooting_facet": shooting_facet,
         "raw_attributes": raw_attributes,
+        "injury_context": _injury_context(sport, entity_name, entity_id),
         "axes_hit": {"concepts": len(concept_hits), "concepts_total": len(reg.list_concepts()),
                      "shooting_facet": shooting_ok, "raw_attributes": raw_hit},
         "note": ("DESCRIPTIVE multi-axis scouting vector -- each axis reported with its own rating, "
