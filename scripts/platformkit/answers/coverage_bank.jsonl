@@ -1,0 +1,176 @@
+{"q": "What is Nikola Jokic's gravity rating this season?", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "What's Paul George's rim pressure numbers on defense?", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "What's Coby White's clutch free-throw rate?", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "What is Julius Randle's offensive rebound rate?", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "Who are the shot_zone_three_efg leaders this season?", "sport": "nba", "kind": "ranking", "expects_answer": true}
+{"q": "Top 5 gravity leaders in the NBA right now.", "sport": "nba", "kind": "ranking", "expects_answer": true}
+{"q": "Give me a scouting report on Nikola Jokic.", "sport": "nba", "kind": "scouting", "expects_answer": true}
+{"q": "What's the scouting report for Jamal Murray?", "sport": "nba", "kind": "scouting", "expects_answer": true}
+{"q": "Scouting report for Kevin Durant, please.", "sport": "nba", "kind": "scouting", "expects_answer": true}
+{"q": "Which players are comparable to OG Anunoby?", "sport": "nba", "kind": "comparables", "expects_answer": true}
+{"q": "Find players similar to Tyrese Maxey.", "sport": "nba", "kind": "comparables", "expects_answer": true}
+{"q": "Who is Julius Randle's closest player comp?", "sport": "nba", "kind": "comparables", "expects_answer": true}
+{"q": "Preview Lakers vs Celtics.", "sport": "nba", "kind": "matchup", "expects_answer": true}
+{"q": "Give me a matchup preview for Nuggets vs Bucks.", "sport": "nba", "kind": "matchup", "expects_answer": true}
+{"q": "What's the game preview for Celtics vs Nuggets?", "sport": "nba", "kind": "matchup", "expects_answer": true}
+{"q": "How many rest days do the Bucks have before their next game?", "sport": "nba", "kind": "schedule", "expects_answer": true}
+{"q": "Are the Lakers on a back-to-back tonight?", "sport": "nba", "kind": "schedule", "expects_answer": true}
+{"q": "What's the injury report for the Celtics?", "sport": "nba", "kind": "injury", "expects_answer": true}
+{"q": "Is Grayson Allen injured right now?", "sport": "nba", "kind": "injury", "expects_answer": true}
+{"q": "Show me the evidence for nba_venue_split_home_minus_away_ppg_espn_boxscores_2023_24_to_2025_26.", "sport": "nba", "kind": "claims", "expects_answer": true}
+{"q": "How do you know nba_rest_adjusted_form_short_minus_long_rest_ppg_espn_boxscores_2023_24_to_2025_26 is real?", "sport": "nba", "kind": "claims", "expects_answer": true}
+{"q": "What verified claim families exist for nba?", "sport": "nba", "kind": "claims", "expects_answer": true}
+{"q": "How good are the predictions for NBA games this season?", "sport": "nba", "kind": "quality", "expects_answer": true}
+{"q": "What's the win probability for Lakers vs Celtics tonight?", "sport": "nba", "kind": "prediction", "expects_answer": true}
+{"q": "What's KD's usage absorption number looking like this year?", "sport": "nba", "kind": "hard_phrasing", "expects_answer": true}
+{"q": "How's KCP's three-point shot rate these days?", "sport": "nba", "kind": "hard_phrasing", "expects_answer": true}
+{"q": "Scouting report for Nikolah Jokic", "sport": "nba", "kind": "hard_phrasing", "expects_answer": true}
+{"q": "Hey, quick one -- back to back for the Bucks?", "sport": "nba", "kind": "hard_phrasing", "expects_answer": true}
+{"q": "What's Tyrese Maxey's rest-adjusted scoring split broken down by which team he's facing?", "sport": "nba", "kind": "multi_hop", "expects_answer": false}
+{"q": "If OG Anunoby and Marcus Smart matched up head-to-head, how would their numbers stack up against each other?", "sport": "nba", "kind": "multi_hop", "expects_answer": false}
+{"q": "What was Nikola Jokic's true shooting percentage in his rookie season?", "sport": "nba", "kind": "history", "expects_answer": false}
+{"q": "What was the final score of the last Lakers-Celtics Finals matchup?", "sport": "nba", "kind": "history", "expects_answer": false}
+{"q": "How has Kentavious Caldwell-Pope's gravity rating trended over his entire career?", "sport": "nba", "kind": "history", "expects_answer": false}
+{"q": "What's the combined win probability if both Jamal Murray and Julius Randle are out for their respective teams in a Nuggets vs Bucks game?", "sport": "nba", "kind": "multi_hop", "expects_answer": false}
+{"q": "What's the betting edge on tonight's Lakers vs Celtics game?", "sport": "nba", "kind": "prediction", "expects_answer": false}
+{"q": "Is Nikola Jokic's rebounding prop a positive EV bet right now?", "sport": "nba", "kind": "quality", "expects_answer": false}
+{"q": "Aaron Judge barrel rate", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "Jose Altuve sprint speed", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "what is Yuli Gurriel's exit velocity", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "top 10 mlb hitters by barrel rate", "sport": "mlb", "kind": "ranking", "expects_answer": true}
+{"q": "leaderboard for sprint speed in mlb", "sport": "mlb", "kind": "ranking", "expects_answer": true}
+{"q": "scouting report for Charlie Blackmon", "sport": "mlb", "kind": "scouting", "expects_answer": true}
+{"q": "scout report for Justin Turner", "sport": "mlb", "kind": "scouting", "expects_answer": true}
+{"q": "players comparable to Andrew McCutchen", "sport": "mlb", "kind": "comparables", "expects_answer": true}
+{"q": "who is similar to Evan Longoria statistically", "sport": "mlb", "kind": "comparables", "expects_answer": true}
+{"q": "matchup preview Yankees vs Red Sox", "sport": "mlb", "kind": "matchup", "expects_answer": true}
+{"q": "game preview Astros vs Dodgers", "sport": "mlb", "kind": "matchup", "expects_answer": true}
+{"q": "schedule context for Yankees", "sport": "mlb", "kind": "schedule", "expects_answer": true}
+{"q": "rest days for the Astros", "sport": "mlb", "kind": "schedule", "expects_answer": true}
+{"q": "back to back for the Red Sox", "sport": "mlb", "kind": "schedule", "expects_answer": true}
+{"q": "injury report for Dodgers", "sport": "mlb", "kind": "injury", "expects_answer": true}
+{"q": "is Justin Turner injured", "sport": "mlb", "kind": "injury", "expects_answer": true}
+{"q": "injury status for Tommy Pham", "sport": "mlb", "kind": "injury", "expects_answer": true}
+{"q": "news context for Astros", "sport": "mlb", "kind": "news", "expects_answer": true}
+{"q": "latest news about Aaron Judge", "sport": "mlb", "kind": "news", "expects_answer": true}
+{"q": "what claim families exist for mlb", "sport": "mlb", "kind": "claims", "expects_answer": true}
+{"q": "how do you know mlb_injury_recency_days_since_latest", "sport": "mlb", "kind": "claims", "expects_answer": true}
+{"q": "what does the evidence say about catcher framing runs saved", "sport": "mlb", "kind": "mechanism", "expects_answer": true}
+{"q": "does the data support umpire zone bias affecting called strikes", "sport": "mlb", "kind": "mechanism", "expects_answer": true}
+{"q": "how good are the predictions for mlb", "sport": "mlb", "kind": "quality", "expects_answer": true}
+{"q": "mlb prediction quality vs the close", "sport": "mlb", "kind": "quality", "expects_answer": true}
+{"q": "win probability for Astros vs Dodgers", "sport": "mlb", "kind": "prediction", "expects_answer": true}
+{"q": "who wins Yankees vs Red Sox", "sport": "mlb", "kind": "prediction", "expects_answer": true}
+{"q": "brier score for mlb calibration", "sport": "mlb", "kind": "calibration", "expects_answer": true}
+{"q": "final score of the last Yankees Red Sox game", "sport": "mlb", "kind": "history", "expects_answer": true}
+{"q": "quick, what's Aaron Judges launch angle look like these days", "sport": "mlb", "kind": "hard_phrasing", "expects_answer": true}
+{"q": "scout report for Jose Altuvee", "sport": "mlb", "kind": "hard_phrasing", "expects_answer": true}
+{"q": "so I'm doing some homework for fantasy, can you tell me JD Martinez's hard hit rate", "sport": "mlb", "kind": "hard_phrasing", "expects_answer": true}
+{"q": "hey can you pull up the injury report for the Bombers", "sport": "mlb", "kind": "hard_phrasing", "expects_answer": true}
+{"q": "who was the probable starting pitcher for the Dodgers on 2019-08-14 and how did his catcher's framing grade that game", "sport": "mlb", "kind": "multi_hop", "expects_answer": false}
+{"q": "compare Evan Longoria's 2008 rookie season chase rate to his final season with the Rays", "sport": "mlb", "kind": "history", "expects_answer": false}
+{"q": "scouting report for Wander Franco", "sport": "mlb", "kind": "scouting", "expects_answer": false}
+{"q": "umpire zone tendencies for Angel Hernandez specifically", "sport": "mlb", "kind": "stat", "expects_answer": false}
+{"q": "what mechanism explains Tommy Pham's platoon splits against left-handed sinkerballers", "sport": "mlb", "kind": "mechanism", "expects_answer": false}
+{"q": "players comparable to Evan Longoria filtered to only Rays-era seasons", "sport": "mlb", "kind": "multi_hop", "expects_answer": false}
+{"q": "how many minor league at bats did Yuli Gurriel have in Cuba before defecting", "sport": "mlb", "kind": "history", "expects_answer": false}
+{"q": "matchup preview for the Astros vs the Dodgers back in the 2017 World Series", "sport": "mlb", "kind": "multi_hop", "expects_answer": false}
+{"q": "what's the positive EV play on Yankees vs Red Sox tonight", "sport": "mlb", "kind": "claims", "expects_answer": false}
+{"q": "give me the ROI edge for betting Aaron Judge over 1.5 total bases", "sport": "mlb", "kind": "claims", "expects_answer": false}
+{"q": "What is Breanna Stewart's scoring per 36 minutes this season?", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "Jonquel Jones rebounds per 36 minutes this season", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "What's Sabrina Ionescu's effective field goal percentage this season?", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "What percentile is Monique Billings's gravity rating in?", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "zone_rim_efg leaders", "sport": "wnba", "kind": "ranking", "expects_answer": true}
+{"q": "top 5 gravity", "sport": "wnba", "kind": "ranking", "expects_answer": true}
+{"q": "def_rim_efg_allowed_delta leaders", "sport": "wnba", "kind": "ranking", "expects_answer": true}
+{"q": "Scouting report for Breanna Stewart", "sport": "wnba", "kind": "scouting", "expects_answer": true}
+{"q": "Scout report on Jonquel Jones", "sport": "wnba", "kind": "scouting", "expects_answer": true}
+{"q": "Players comparable to Sabrina Ionescu", "sport": "wnba", "kind": "comparables", "expects_answer": true}
+{"q": "Who is similar to Caitlin Clark in playstyle?", "sport": "wnba", "kind": "comparables", "expects_answer": true}
+{"q": "Preview Las Vegas Aces vs New York Liberty", "sport": "wnba", "kind": "matchup", "expects_answer": true}
+{"q": "Game preview Aces at Liberty", "sport": "wnba", "kind": "matchup", "expects_answer": true}
+{"q": "Injury report for Las Vegas Aces", "sport": "wnba", "kind": "injury", "expects_answer": true}
+{"q": "Injury report for New York Liberty", "sport": "wnba", "kind": "injury", "expects_answer": true}
+{"q": "Show the evidence for wnba_zone_context_zone_rim_efg_full_2026", "sport": "wnba", "kind": "claims", "expects_answer": true}
+{"q": "How do you know Jonquel Jones's gravity number is accurate? Show the evidence for wnba_zone_context_gravity_full_2026.", "sport": "wnba", "kind": "claims", "expects_answer": true}
+{"q": "What claim families exist for wnba?", "sport": "wnba", "kind": "claims", "expects_answer": true}
+{"q": "How good are the WNBA predictions?", "sport": "wnba", "kind": "quality", "expects_answer": true}
+{"q": "What's the prediction quality for wnba this season?", "sport": "wnba", "kind": "quality", "expects_answer": true}
+{"q": "Win probability for Las Vegas Aces vs New York Liberty", "sport": "wnba", "kind": "prediction", "expects_answer": true}
+{"q": "Who wins New York Liberty vs Las Vegas Aces?", "sport": "wnba", "kind": "prediction", "expects_answer": true}
+{"q": "What's Stewie averaging in points per 36 this season?", "sport": "wnba", "kind": "hard_phrasing", "expects_answer": true}
+{"q": "Scouting report for Sabrina Ionesco", "sport": "wnba", "kind": "hard_phrasing", "expects_answer": true}
+{"q": "Whats Kelsy Mitchell's efg this season", "sport": "wnba", "kind": "hard_phrasing", "expects_answer": true}
+{"q": "So I was wondering, could you pull up the scouting report for Paige Bueckers real quick?", "sport": "wnba", "kind": "hard_phrasing", "expects_answer": true}
+{"q": "Which Aces player currently on the injury report also ranks in the top 5 for gravity rating?", "sport": "wnba", "kind": "multi_hop", "expects_answer": false}
+{"q": "What is Rebekah Gardner's gravity rating specifically in games against the Liberty this season?", "sport": "wnba", "kind": "multi_hop", "expects_answer": false}
+{"q": "What is Breanna Stewart's injury status?", "sport": "wnba", "kind": "injury", "expects_answer": false}
+{"q": "What was the final score the last time the Aces played the Liberty?", "sport": "wnba", "kind": "history", "expects_answer": false}
+{"q": "What's the calibration Brier score for the WNBA model?", "sport": "wnba", "kind": "calibration", "expects_answer": false}
+{"q": "How many days of rest will the Las Vegas Aces have before facing the Liberty?", "sport": "wnba", "kind": "schedule", "expects_answer": false}
+{"q": "What's the ROI on betting Sabrina Ionescu's assists prop tonight?", "sport": "wnba", "kind": "prediction", "expects_answer": false}
+{"q": "Does the model give the Las Vegas Aces a real edge against the market tonight?", "sport": "wnba", "kind": "prediction", "expects_answer": false}
+{"q": "What is Roger Federer's serve dominance rating?", "sport": "tennis", "kind": "stat", "expects_answer": true}
+{"q": "Novak Djokovic's return strength", "sport": "tennis", "kind": "stat", "expects_answer": true}
+{"q": "What's Carlos Alcaraz's break-point serve rating?", "sport": "tennis", "kind": "stat", "expects_answer": true}
+{"q": "Ekaterina Alexandrova's second serve reliability", "sport": "tennis", "kind": "stat", "expects_answer": true}
+{"q": "Who leads tennis in serve dominance?", "sport": "tennis", "kind": "ranking", "expects_answer": true}
+{"q": "Second serve reliability leaders in tennis", "sport": "tennis", "kind": "ranking", "expects_answer": true}
+{"q": "Scouting report for Bianca Andreescu", "sport": "tennis", "kind": "scouting", "expects_answer": true}
+{"q": "Scout report for Andre Agassi", "sport": "tennis", "kind": "scouting", "expects_answer": true}
+{"q": "Scouting report for Roberto Bautista Agut", "sport": "tennis", "kind": "scouting", "expects_answer": true}
+{"q": "Players comparable to Roger Federer", "sport": "tennis", "kind": "comparables", "expects_answer": true}
+{"q": "Who is similar to Mirra Andreeva on tour?", "sport": "tennis", "kind": "comparables", "expects_answer": true}
+{"q": "Player comps for Ashleigh Barty", "sport": "tennis", "kind": "comparables", "expects_answer": true}
+{"q": "Preview Carlos Alcaraz vs Novak Djokovic", "sport": "tennis", "kind": "matchup", "expects_answer": true}
+{"q": "Matchup preview for Ekaterina Alexandrova vs Bianca Andreescu", "sport": "tennis", "kind": "matchup", "expects_answer": true}
+{"q": "Game preview: Felix Auger Aliassime vs Roberto Bautista Agut", "sport": "tennis", "kind": "matchup", "expects_answer": true}
+{"q": "Win probability for Roger Federer vs Novak Djokovic", "sport": "tennis", "kind": "prediction", "expects_answer": true}
+{"q": "Who wins between Ashleigh Barty and Mirra Andreeva?", "sport": "tennis", "kind": "prediction", "expects_answer": true}
+{"q": "What is the calibration Brier score for tennis?", "sport": "tennis", "kind": "calibration", "expects_answer": true}
+{"q": "What claim families exist for tennis?", "sport": "tennis", "kind": "claims", "expects_answer": true}
+{"q": "List claim families for tennis", "sport": "tennis", "kind": "claims", "expects_answer": true}
+{"q": "How good are the predictions for tennis?", "sport": "tennis", "kind": "quality", "expects_answer": true}
+{"q": "uhh can you just gimme the scout report for Novak Djokovik real quick", "sport": "tennis", "kind": "hard_phrasing", "expects_answer": true}
+{"q": "ok forget all that, just show me the win probability for Alcaraz vs Djokovic please", "sport": "tennis", "kind": "hard_phrasing", "expects_answer": true}
+{"q": "who's Ashleigh Barty most similar to on tour", "sport": "tennis", "kind": "hard_phrasing", "expects_answer": true}
+{"q": "Barty's serve numbers on grass, real quick", "sport": "tennis", "kind": "hard_phrasing", "expects_answer": true}
+{"q": "Schedule context for Novak Djokovic", "sport": "tennis", "kind": "schedule", "expects_answer": false}
+{"q": "Injury report for Carlos Alcaraz", "sport": "tennis", "kind": "injury", "expects_answer": false}
+{"q": "Latest news about Roger Federer", "sport": "tennis", "kind": "news", "expects_answer": false}
+{"q": "What's the head-to-head record between Federer and Djokovic?", "sport": "tennis", "kind": "history", "expects_answer": false}
+{"q": "Scouting report for Daniil Medvedev", "sport": "tennis", "kind": "scouting", "expects_answer": false}
+{"q": "Who is Andre Agassi most comparable to, and what's that player's win probability against Carlos Alcaraz on clay?", "sport": "tennis", "kind": "multi_hop", "expects_answer": false}
+{"q": "What's the betting edge on Djokovic beating Alcaraz this week?", "sport": "tennis", "kind": "prediction", "expects_answer": false}
+{"q": "Is there positive EV on backing Federer against Djokovic in their next meeting?", "sport": "tennis", "kind": "prediction", "expects_answer": false}
+{"q": "What is Brighton's home strength rating?", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "What's Chelsea's clean sheet rate this season?", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "How high is Everton's discipline rate?", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "What percentile is Leicester in for corner rate?", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "clean_sheet_rate leaders", "sport": "soccer", "kind": "ranking", "expects_answer": true}
+{"q": "top 5 home_strength", "sport": "soccer", "kind": "ranking", "expects_answer": true}
+{"q": "discipline_rate leaders", "sport": "soccer", "kind": "ranking", "expects_answer": true}
+{"q": "Preview Chelsea vs Everton", "sport": "soccer", "kind": "matchup", "expects_answer": true}
+{"q": "Give me a matchup preview for Brentford vs Cardiff", "sport": "soccer", "kind": "matchup", "expects_answer": true}
+{"q": "Matchup preview: Leicester vs Man United", "sport": "soccer", "kind": "matchup", "expects_answer": true}
+{"q": "What's the win probability for Brighton vs Lille?", "sport": "soccer", "kind": "prediction", "expects_answer": true}
+{"q": "Who wins between Norwich and Bournemouth?", "sport": "soccer", "kind": "prediction", "expects_answer": true}
+{"q": "What is the calibration Brier score for soccer?", "sport": "soccer", "kind": "calibration", "expects_answer": true}
+{"q": "Does the evidence support that scoring the first goal wins soccer matches?", "sport": "soccer", "kind": "mechanism", "expects_answer": true}
+{"q": "Is it true that momentum from the last result carries into the next match in soccer?", "sport": "soccer", "kind": "mechanism", "expects_answer": true}
+{"q": "Show me the evidence for market_book_dispersion_most_dispersed_close_alltime", "sport": "soccer", "kind": "claims", "expects_answer": true}
+{"q": "What's the provenance for line_history_consensus_coverage_breadth_recent_window?", "sport": "soccer", "kind": "claims", "expects_answer": true}
+{"q": "What's the prediction quality for soccer?", "sport": "soccer", "kind": "quality", "expects_answer": true}
+{"q": "yo what's brighton's home strength like these days", "sport": "soccer", "kind": "hard_phrasing", "expects_answer": true}
+{"q": "that 'Man Utd' team -- what's their clean sheet rate?", "sport": "soccer", "kind": "hard_phrasing", "expects_answer": true}
+{"q": "so like whats the discipline rate for Levicester", "sport": "soccer", "kind": "hard_phrasing", "expects_answer": true}
+{"q": "ok two things -- what's Chelsea's home strength, and also who wins if they play Everton", "sport": "soccer", "kind": "hard_phrasing", "expects_answer": true}
+{"q": "What's the injury report for Chelsea?", "sport": "soccer", "kind": "injury", "expects_answer": false}
+{"q": "How many days of rest does Norwich have before their next match?", "sport": "soccer", "kind": "schedule", "expects_answer": false}
+{"q": "Can I get a scouting report on Bournemouth's starting goalkeeper?", "sport": "soccer", "kind": "scouting", "expects_answer": false}
+{"q": "Which of these ten teams has both the widest book-dispersion on totals and the best clean sheet rate?", "sport": "soccer", "kind": "multi_hop", "expects_answer": false}
+{"q": "What was the cross-book consensus tightening on soccer totals back in the 2015-16 season?", "sport": "soccer", "kind": "claims", "expects_answer": false}
+{"q": "What's the book dispersion on Wrexham's matches this season?", "sport": "soccer", "kind": "claims", "expects_answer": false}
+{"q": "What's the ROI edge on backing Brentford to beat the close this weekend?", "sport": "soccer", "kind": "prediction", "expects_answer": false}
+{"q": "Does Everton have positive EV against the market moneyline right now?", "sport": "soccer", "kind": "prediction", "expects_answer": false}
