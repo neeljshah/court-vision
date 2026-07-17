@@ -1,0 +1,204 @@
+"""scripts.platformkit.answers.qa_bank -- the ANSWER-QUALITY REGRESSION BANK.
+
+A DECLARED (data-only) bank of graded questions over
+scripts.platformkit.answers.resolver_registry.resolve(), one entry per
+(category, sport) combo across the registry's 12 registered question
+categories (per docs/research/resolver_coverage_2026_07_17.md's own count:
+injury_report, news_context, schedule_context, scouting_report, comparables,
+matchup_preview, prediction_winprob, calibration_number, ranking,
+historical_result, mechanism_effect, system_map) x 5 sports (nba, mlb, wnba,
+tennis, soccer) = 60 entries.
+
+Every `expect` block was GROUNDED by actually running the question once
+through resolve() in this repo on 2026-07-17 (one long-lived process,
+sport-grouped, see scratchpad probe script -- not committed, throwaway
+harness). A correct `no_data`/`not_supported`/`ambiguous` IS the honest
+current status for several rows (thin fixtures on a fresh box, sports not
+wired for a category, etc.) -- qa_runner asserts the observed status stays in
+`status_one_of`, not that everything resolves `ok`. If reality drifts (a
+store gets built, a sport gets wired), UPDATE the expectation here to match
+the new verified truth -- never weaken the runner to paper over a real
+regression.
+
+Includes the audit's named regression cases, each tagged in its `note`:
+  - id nba_scouting_report: "scout report for Luka Doncik" (misspelled,
+    gap-2/gap-5 lead-in-strip + ambiguous-name-not-swallowed regression)
+  - id nba_schedule_context: "back to back for the Lakers" (gap-6 lead-in
+    strip regression)
+  - id nba_comparables: "players comparable to Steph Curry" (gap-3 nickname
+    fuzzy-match regression)
+  - id tennis_comparables: "players comparable to Roger Federer" (gap-1
+    string entity_id CRASH regression -- tennis ids are slugs, not ints)
+
+Per-file test:
+  cd /c/Users/neelj/nba-ai-system && python -m pytest \
+    tests/platformkit/answers/test_qa_bank.py -q
+"""
+from __future__ import annotations
+
+from typing import Any, Dict, List, TypedDict
+
+
+class QAExpect(TypedDict, total=False):
+    category: str
+    status_one_of: List[str]
+    receipt_required: bool
+    must_contain_keys: List[str]
+
+
+class QAEntry(TypedDict):
+    id: str
+    question: str
+    sport: str
+    expect: QAExpect
+    tier: str  # "SMOKE" | "FULL"
+
+
+def _e(cat: str, sp: str, q: str, status: str, tier: str, keys: List[str] | None = None,
+       note: str = "") -> QAEntry:
+    return {
+        "id": f"{sp}_{cat}",
+        "question": q,
+        "sport": sp,
+        "expect": {
+            "category": cat,
+            "status_one_of": [status],
+            "receipt_required": status == "ok",
+            "must_contain_keys": keys or [],
+        },
+        "tier": tier,
+        "note": note,
+    }
+
+
+QA_BANK: List[QAEntry] = [
+    # -- injury_report ---------------------------------------------------
+    _e("injury_report", "nba", "injury report for Lakers", "no_data", "SMOKE"),
+    _e("injury_report", "mlb", "injury report for Yankees", "ok", "SMOKE",
+       ["matched_entity", "rows", "as_of"]),
+    _e("injury_report", "wnba", "injury report for Las Vegas Aces", "ok", "FULL",
+       ["matched_entity", "rows", "as_of"]),
+    _e("injury_report", "tennis", "injury report for Roger Federer", "no_data", "FULL"),
+    _e("injury_report", "soccer", "injury report for Manchester City WFC", "no_data", "FULL"),
+
+    # -- news_context -----------------------------------------------------
+    _e("news_context", "nba", "news context for Lakers", "no_data", "FULL"),
+    _e("news_context", "mlb", "news context for Yankees", "ok", "SMOKE",
+       ["matched_entity", "rows", "as_of"]),
+    _e("news_context", "wnba", "news context for Las Vegas Aces", "no_data", "FULL"),
+    _e("news_context", "tennis", "news context for Roger Federer", "no_data", "FULL"),
+    _e("news_context", "soccer", "news context for Manchester City WFC", "no_data", "FULL"),
+
+    # -- schedule_context ---------------------------------------------------
+    _e("schedule_context", "nba", "back to back for the Lakers", "ok", "SMOKE",
+       ["rest_days", "is_b2b", "games_in_last_7"],
+       note="regression: gap-6 lead-in strip for 'back to back for X' phrasing"),
+    _e("schedule_context", "mlb", "schedule context for Yankees", "no_data", "FULL"),
+    _e("schedule_context", "wnba", "schedule context for Las Vegas Aces", "not_supported", "FULL"),
+    _e("schedule_context", "tennis", "schedule context for Roger Federer", "not_supported", "FULL"),
+    _e("schedule_context", "soccer", "schedule context for Manchester City WFC", "not_supported", "FULL"),
+
+    # -- scouting_report ------------------------------------------------
+    _e("scouting_report", "nba", "scout report for Luka Doncik", "ambiguous", "SMOKE",
+       ["candidates"],
+       note="regression: gap-2/gap-5 -- misspelled name + 'scout report for' lead-in must "
+            "surface AMBIGUOUS with candidates, never a false no_data"),
+    _e("scouting_report", "mlb", "scouting report for Aaron Judge", "ok", "SMOKE",
+       ["concept_axes", "raw_attributes", "shooting_facet"]),
+    _e("scouting_report", "wnba", "scouting report for A'ja Wilson", "ok", "FULL",
+       ["concept_axes", "raw_attributes", "shooting_facet"]),
+    _e("scouting_report", "tennis", "scouting report for Roger Federer", "ok", "FULL",
+       ["concept_axes", "raw_attributes", "shooting_facet"]),
+    _e("scouting_report", "soccer", "scouting report for Erling Haaland", "no_data", "FULL"),
+
+    # -- comparables --------------------------------------------------------
+    _e("comparables", "nba", "players comparable to Steph Curry", "ok", "SMOKE",
+       ["neighbors", "entity_id", "k"],
+       note="regression: gap-3 -- nickname 'Steph Curry' must resolve via the shared "
+            "ask.py fuzzy matcher, not comparables' own stricter one"),
+    _e("comparables", "mlb", "players comparable to Aaron Judge", "ok", "FULL",
+       ["neighbors", "entity_id", "k"]),
+    _e("comparables", "wnba", "players comparable to A'ja Wilson", "ok", "FULL",
+       ["neighbors", "entity_id", "k"]),
+    _e("comparables", "tennis", "players comparable to Roger Federer", "ok", "SMOKE",
+       ["neighbors", "entity_id", "k"],
+       note="regression: gap-1 -- tennis entity_id is a string slug ('agassi_a'); "
+            "must NOT crash on int(entity_id)"),
+    _e("comparables", "soccer", "players comparable to Erling Haaland", "no_data", "FULL"),
+
+    # -- matchup_preview ------------------------------------------------
+    _e("matchup_preview", "nba", "preview Lakers vs Celtics", "ok", "FULL",
+       ["blocks", "blocks_ok", "blocks_absent", "home", "away"]),
+    _e("matchup_preview", "mlb", "preview Yankees vs Red Sox", "ok", "FULL",
+       ["blocks", "blocks_ok", "blocks_absent", "home", "away"]),
+    _e("matchup_preview", "wnba", "preview Las Vegas Aces vs New York Liberty", "ok", "FULL",
+       ["blocks", "blocks_ok", "blocks_absent", "home", "away"]),
+    _e("matchup_preview", "tennis", "preview Roger Federer vs Novak Djokovic", "ok", "FULL",
+       ["blocks", "blocks_ok", "blocks_absent", "home", "away"]),
+    _e("matchup_preview", "soccer", "preview Manchester City WFC vs Arsenal", "ok", "FULL",
+       ["blocks", "blocks_ok", "blocks_absent", "home", "away"]),
+
+    # -- prediction_winprob -----------------------------------------------
+    _e("prediction_winprob", "nba", "win probability Lakers vs Celtics", "ok", "FULL",
+       ["p_home_win", "pregame", "home", "away"]),
+    _e("prediction_winprob", "mlb", "win probability Yankees vs Red Sox", "ok", "FULL",
+       ["p_home_win", "pregame", "home", "away"]),
+    _e("prediction_winprob", "wnba", "win probability Las Vegas Aces vs New York Liberty",
+       "ok", "FULL", ["p_home_win", "pregame", "home", "away"]),
+    _e("prediction_winprob", "tennis", "win probability Roger Federer vs Novak Djokovic",
+       "ok", "FULL", ["p_home_win", "pregame", "home", "away"]),
+    _e("prediction_winprob", "soccer", "win probability Manchester City WFC vs Arsenal",
+       "ok", "FULL", ["p_home_win", "pregame", "home", "away"]),
+
+    # -- calibration_number -------------------------------------------------
+    _e("calibration_number", "nba", "what is the calibration brier score for nba", "ok", "SMOKE",
+       ["baseline_brier", "improved_brier", "baseline_ece", "improved_ece"]),
+    _e("calibration_number", "mlb", "what is the calibration brier score for mlb", "ok", "FULL",
+       ["baseline_brier", "improved_brier", "baseline_ece", "improved_ece"]),
+    _e("calibration_number", "wnba", "what is the calibration brier score for wnba", "no_data", "SMOKE"),
+    _e("calibration_number", "tennis", "what is the calibration brier score for tennis", "ok", "FULL",
+       ["baseline_brier", "improved_brier", "baseline_ece", "improved_ece"]),
+    _e("calibration_number", "soccer", "what is the calibration brier score for soccer", "ok", "FULL",
+       ["baseline_brier", "improved_brier", "baseline_ece", "improved_ece"]),
+
+    # -- ranking --------------------------------------------------------
+    _e("ranking", "nba", "top 5 assist leaders", "not_supported", "SMOKE", ["available"]),
+    _e("ranking", "mlb", "top 5 assist leaders", "not_supported", "FULL", ["available"]),
+    _e("ranking", "wnba", "top 5 assist leaders", "not_supported", "FULL", ["available"]),
+    _e("ranking", "tennis", "top 5 assist leaders", "not_supported", "FULL", ["available"]),
+    _e("ranking", "soccer", "top 5 assist leaders", "not_supported", "FULL", ["available"]),
+
+    # -- historical_result --------------------------------------------------
+    _e("historical_result", "nba", "final score of Lakers vs Celtics", "no_data", "SMOKE"),
+    _e("historical_result", "mlb", "final score of Yankees vs Red Sox", "no_data", "FULL"),
+    _e("historical_result", "wnba", "final score of Las Vegas Aces vs New York Liberty",
+       "not_supported", "FULL"),
+    _e("historical_result", "tennis", "final score of Roger Federer vs Novak Djokovic",
+       "not_supported", "FULL"),
+    _e("historical_result", "soccer", "final score of Manchester City WFC vs Arsenal",
+       "not_supported", "FULL"),
+
+    # -- mechanism_effect -------------------------------------------------
+    _e("mechanism_effect", "nba", "what affects gravity", "not_supported", "SMOKE"),
+    _e("mechanism_effect", "mlb", "what affects gravity", "not_supported", "FULL"),
+    _e("mechanism_effect", "wnba", "what affects gravity", "not_supported", "FULL"),
+    _e("mechanism_effect", "tennis", "what affects gravity", "not_supported", "FULL"),
+    _e("mechanism_effect", "soccer", "what affects gravity", "not_supported", "FULL"),
+
+    # -- system_map -----------------------------------------------------
+    _e("system_map", "nba", "system map", "ok", "SMOKE", ["n_nodes", "n_edges", "nodes"]),
+    _e("system_map", "mlb", "system map", "ok", "FULL", ["n_nodes", "n_edges", "nodes"]),
+    _e("system_map", "wnba", "system map", "ok", "FULL", ["n_nodes", "n_edges", "nodes"]),
+    _e("system_map", "tennis", "system map", "ok", "FULL", ["n_nodes", "n_edges", "nodes"]),
+    _e("system_map", "soccer", "system map", "ok", "SMOKE", ["n_nodes", "n_edges", "nodes"]),
+]
+
+CATEGORIES: List[str] = sorted({e["expect"]["category"] for e in QA_BANK})
+SPORTS: List[str] = sorted({e["sport"] for e in QA_BANK})
+
+
+def by_tier(tier: str) -> List[QAEntry]:
+    """SMOKE entries (~15, no-subprocess-cost categories only) or FULL (all 60)."""
+    if tier == "FULL":
+        return list(QA_BANK)
+    return [e for e in QA_BANK if e["tier"] == tier]
