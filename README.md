@@ -53,6 +53,7 @@ thorough read is a multi-day tour.
 - **New here?** -> [docs/INDEX.md](docs/INDEX.md) (the map) and the [GLOSSARY](docs/GLOSSARY.md)
   (CLV, leak-free, walk-forward, Shin devig, Brier, Kelly, ...)
 - **Want the honest numbers first?** -> [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md)
+- **What's actually strong (in-game accuracy + the one real edge)?** -> [docs/IN_GAME_SHOWCASE.md](docs/IN_GAME_SHOWCASE.md)
 - **Want the guided tour?** -> [docs/research/project-deep-dive/00-MASTER.md](docs/research/project-deep-dive/00-MASTER.md)
   (13-chapter end-to-end walkthrough)
 - **How AI built it?** -> [docs/BUILT_WITH_CLAUDE.md](docs/BUILT_WITH_CLAUDE.md)
