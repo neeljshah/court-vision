@@ -95,6 +95,26 @@ JOBS: list[dict] = [
 MAX_ATTEMPTS = 2
 
 
+_LOCK_HANDLE = None  # module-held so the lock lives for the process
+
+
+def _acquire_singleton() -> bool:
+    """One driver per STATE_PATH. POSIX flock on a sidecar lockfile; on
+    platforms without fcntl (Windows dev box) the guard is a no-op."""
+    global _LOCK_HANDLE
+    try:
+        import fcntl
+    except ImportError:  # ponytail: Windows = dev-only, races not a concern
+        return True
+    STATE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    _LOCK_HANDLE = open(STATE_PATH.with_suffix(".lock"), "w")
+    try:
+        fcntl.flock(_LOCK_HANDLE, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        return True
+    except OSError:
+        return False
+
+
 def _load_state() -> dict:
     if STATE_PATH.exists():
         return json.loads(STATE_PATH.read_text())
@@ -114,6 +134,12 @@ def _run_job(job: dict, state: dict) -> str:
     rec = state.setdefault(name, {"attempts": 0})
     if rec.get("status") == "ok":
         return "ok"
+    if rec["attempts"] >= MAX_ATTEMPTS:
+        # retries exhausted in a PRIOR invocation: terminal. A rerun must not
+        # burn another full-timeout attempt forever -- use --retry to re-arm.
+        print(f"[sprint] {name} attempts exhausted ({rec['attempts']}) -- "
+              "skipping (use --retry to re-arm)", flush=True)
+        return rec.get("status", "fail")
     LOG_DIR.mkdir(parents=True, exist_ok=True)
     log_path = LOG_DIR / f"{name}.log"
     rec["attempts"] += 1
@@ -145,9 +171,19 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", nargs="*", help="run only these job names")
     ap.add_argument("--fresh", action="store_true", help="ignore prior state")
+    ap.add_argument("--retry", nargs="*", metavar="JOB",
+                    help="re-arm these exhausted-failed jobs (attempt counter reset)")
     args = ap.parse_args(argv)
 
+    if not _acquire_singleton():
+        print("[sprint] another driver instance is live -- refusing to race "
+              "on the shared state file.", flush=True)
+        return 2
+
     state = {} if args.fresh else _load_state()
+    for name in (args.retry or []):
+        if name in state:
+            state[name] = {"attempts": 0}
     for job in JOBS:
         if args.only and job["name"] not in args.only:
             continue

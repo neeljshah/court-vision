@@ -80,12 +80,16 @@ def _run_tennis() -> SportMetrics:
     path = _REPO_ROOT / "data" / "domains" / "tennis" / "matches.parquet"
     matches = _pd.read_parquet(path)
 
+    # Blend selected on the TRAIN years ONLY (<= TRAIN_YEAR_MAX). Selecting on
+    # the scored test rows was a confirmed selection-on-test leak (audit
+    # 2026-07-17): test-argmin picked 0.3 while honest train-argmin picks a
+    # different blend -- the reported baseline was optimistically biased.
     best_blend, best_b = 0.0, float("inf")
     for bl in BLEND_GRID:
         wf = _walk_forward_blend(matches, bl)
-        test = wf[_pd.to_datetime(wf["date"]).dt.year > TRAIN_YEAR_MAX]
-        p = test["win_prob_p1"].to_numpy(dtype=float)
-        y = (test["winner"] == 1).to_numpy(dtype=float)
+        tr = wf[_pd.to_datetime(wf["date"]).dt.year <= TRAIN_YEAR_MAX]
+        p = tr["win_prob_p1"].to_numpy(dtype=float)
+        y = (tr["winner"] == 1).to_numpy(dtype=float)
         b = _b(p, y)
         if b < best_b:
             best_b, best_blend = b, bl

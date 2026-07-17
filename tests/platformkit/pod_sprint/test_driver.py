@@ -66,3 +66,16 @@ def test_resume_skips_done_jobs(sandbox, monkeypatch):
     assert driver.main([]) == 0  # resume: job already ok, not rerun
     assert json.loads(
         (sandbox / "state.json").read_text())["a"]["ended"] == first
+
+
+def test_exhausted_job_terminal_on_rerun_until_retry(sandbox, monkeypatch):
+    monkeypatch.setattr(driver, "JOBS", [_job("bad", "raise SystemExit(1)")])
+    assert driver.main([]) == 1
+    assert json.loads(
+        (sandbox / "state.json").read_text())["bad"]["attempts"] == 2
+    assert driver.main([]) == 1  # rerun must NOT burn another attempt
+    assert json.loads(
+        (sandbox / "state.json").read_text())["bad"]["attempts"] == 2
+    assert driver.main(["--retry", "bad"]) == 1  # re-armed: attempts reset+rerun
+    assert json.loads(
+        (sandbox / "state.json").read_text())["bad"]["attempts"] == 2
