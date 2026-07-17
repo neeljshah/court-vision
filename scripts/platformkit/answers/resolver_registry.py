@@ -61,6 +61,7 @@ from datetime import datetime, timezone
 import pandas as pd
 
 from scripts.platformkit.analytics_verify import answers as _analytics
+from scripts.platformkit.answers import claims_resolver as _claims
 from scripts.platformkit.answers import contracts as _contracts
 from scripts.platformkit.answers import edge_facts_resolver as _edge_facts
 from scripts.platformkit.answers import effect_graph as _eg
@@ -237,6 +238,14 @@ RESOLVERS: dict[str, dict] = {
                         "(>=5 shared-attribute floor) -- descriptive 'similar profile', never a projection",
         "units": "RMS percentile-point distance", "rounding": "4 decimals",
     },
+    "verified_claims": {
+        "resolver": "scripts.platformkit.answers.claims_resolver.resolve",
+        "source_artifact": "data/cache/intel_claims/*.jsonl (+ *_validation.json), via intel_query.ask.ask()",
+        "computation": "wraps the auto-discovering, fail-closed VERIFIED-claims engine (ask()) -- authors no "
+                        "new number: quotes the claim_id + ranking excerpt + caveats + validator verdict "
+                        "verbatim; 'what claim families exist' lists each store's cheap validation summary",
+        "units": "claim-native (ranking rows/caveats as stored)", "rounding": "none -- verbatim from the claim row",
+    },
     "matchup_preview": {
         "resolver": "scripts.platformkit.intel_query.compose_matchup.compose_matchup",
         "source_artifact": "scripts/platformkit/intel_query/compose_matchup.py (fan-out over shipped resolvers)",
@@ -278,6 +287,20 @@ _MATCHUP_PREVIEW_KEYWORDS = ("preview", "matchup preview", "matchup between", "g
 # just another ledger-backed receipt, not a new resolver family).
 _AFFECTS_RE = re.compile(r"^\s*what affects\s+(.+?)\s*\??\s*$", re.I)
 _WHAT_DOES_X_AFFECT_RE = re.compile(r"^\s*what does\s+(.+?)\s+affect\s*\??\s*$", re.I)
+# --- verified_claims (RESOLVER BRIDGE): reach the auto-discovered VERIFIED
+# claim families (intel_query.ask). Two triggers, both conservative:
+#  1. provenance BY an explicit claim_id -- placed BEFORE mechanism_effect
+#     because bare "evidence" is a mechanism keyword; gating on a snake_case
+#     claim_id token means prose mechanism queries ("evidence about clutch
+#     usage compression") are NEVER intercepted (they carry no claim_id).
+#  2. discovery/family words -- placed at the END so it never shadows an
+#     earlier specific category; "claim(s)"/"claim family" appear in no other
+#     keyword set (verified via the full classify regression battery).
+_CLAIM_ID_RE = re.compile(r"\b[a-z][a-z0-9]*(?:_[a-z0-9-]+){2,}\b", re.I)
+_CLAIM_PROVENANCE_RE = re.compile(
+    r"\b(how do you know|show (?:me )?(?:the )?evidence|prove|provenance|verified claim)\b", re.I)
+_VERIFIED_CLAIMS_KEYWORDS = ("verified claim", "claim family", "claim families", "list claim")
+_CLAIM_WORD_RE = re.compile(r"\bclaims?\b", re.I)
 
 
 def classify(query: str) -> str | None:
@@ -308,6 +331,11 @@ def classify(query: str) -> str | None:
         return "analytics_contradictions"
     if any(k in low for k in _SYSTEM_MAP_KEYWORDS):
         return "system_map"
+    # verified_claims trigger 1: provenance naming an explicit claim_id -- must
+    # win over mechanism_effect's bare "evidence" keyword (a prose mechanism
+    # query has no claim_id token, so this never diverts one).
+    if _CLAIM_PROVENANCE_RE.search(low) and _CLAIM_ID_RE.search(low):
+        return "verified_claims"
     if any(k in low for k in _MECHANISM_KEYWORDS) or _AFFECTS_RE.match(low) or _WHAT_DOES_X_AFFECT_RE.match(low):
         return "mechanism_effect"
     if any(k in low for k in _INJURY_KEYWORDS):
@@ -322,6 +350,11 @@ def classify(query: str) -> str | None:
         return "comparables"
     if any(k in low for k in _MATCHUP_PREVIEW_KEYWORDS):
         return "matchup_preview"
+    # verified_claims trigger 2: discovery/family words (end of chain, after
+    # every specific category -- the family-ish fallback for a claim question
+    # nothing else matched, routed to ask() which is itself fail-closed).
+    if any(k in low for k in _VERIFIED_CLAIMS_KEYWORDS) or _CLAIM_WORD_RE.search(low):
+        return "verified_claims"
     if any(k in low for k in _CONCEPT_KEYWORDS):
         return "concept_rating"
     if "rating" in low or "percentile" in low or "2k" in low:
@@ -576,6 +609,8 @@ def resolve(query: str, sport: str = "nba", category: str | None = None, **kwarg
         return historical_result(sport, kwargs.get("team", ""), kwargs.get("opponent"), kwargs.get("date"))
     if cat == "mechanism_effect":
         return mechanism_effect(sport, kwargs.get("mechanism") or query)
+    if cat == "verified_claims":
+        return _claims.resolve(query, sport, **kwargs)
     if cat == "analytics_attribution":
         return _analytics.attribution(sport, kwargs.get("family"), kwargs.get("card_id"))
     if cat == "analytics_claim_survival":

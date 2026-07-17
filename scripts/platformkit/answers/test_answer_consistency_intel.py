@@ -97,6 +97,26 @@ def test_prediction_winprob_agrees():
     assert d["category"] == "winprob"  # envelope carries winprob_dispatch's own category
 
 
+def test_verified_claims_provenance_agrees():
+    # RESOLVER BRIDGE: 'show the evidence for <claim_id>' reaches the
+    # auto-discovered VERIFIED claim families through resolve() (not only ask()).
+    # as_of is the claim's stable computed_at (same file every call).
+    d = _agree("show the evidence for wnba_zone_context_zone_rim_efg_full_2026", "wnba",
+               ("claim_id", "validator_verdict"))
+    if d["status"] == "ok":
+        assert d["claim_id"] == "wnba_zone_context_zone_rim_efg_full_2026"
+
+
+def test_verified_claims_family_list_agrees():
+    d = R.resolve("what claim families exist for tennis?", "tennis")
+    rendered = _ascii(CC.answer("what claim families exist for tennis?", "tennis"))
+    if d["status"] == "ok":
+        assert d["n_families"] >= 1 and _ascii(d["source_artifact"]) in rendered
+        assert _ascii(d["families"][0]["family"]) in rendered
+    else:
+        assert _PREFIX[d["status"]] in rendered
+
+
 def test_classify_routes_new_categories_without_shadowing_existing():
     """The new keyword checks must route their own queries AND leave every
     pre-wave-3 category winning its own keywords (mechanism/concept especially)."""
@@ -106,6 +126,11 @@ def test_classify_routes_new_categories_without_shadowing_existing():
     assert R.classify("scouting report for Trae Young") == "scouting_report"
     assert R.classify("who is comparable to Trae Young") == "comparables"
     assert R.classify("preview NYY vs BOS") == "matchup_preview"
+    # verified_claims bridge: provenance-by-claim_id + family discovery, and it
+    # must NOT steal the mechanism_effect "evidence" (prose, no claim_id) queries
+    assert R.classify("show the evidence for wnba_zone_context_zone_rim_efg_full_2026") == "verified_claims"
+    assert R.classify("what claim families exist for tennis") == "verified_claims"
+    assert R.classify("what does the evidence say about clutch usage compression") == "mechanism_effect"
     # existing categories unchanged
     assert R.classify("best gravity") == "concept_rating"
     assert R.classify("Trae Young vs LaMelo Ball on gravity") == "concept_rating"
