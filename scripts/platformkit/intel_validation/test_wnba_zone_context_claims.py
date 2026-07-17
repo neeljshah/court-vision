@@ -27,11 +27,28 @@ from scripts.platformkit.intel_validation import wnba_zone_context_claims as zc
 
 @pytest.fixture()
 def fixture_source(tmp_path, monkeypatch):
-    # entity_id, raw_value, n -- one row below FLOOR (n=8), rest qualify
+    # entity_id, entity_name, raw_value, n -- one row below FLOOR (n=8), rest qualify
     df = pd.DataFrame({
         "entity_id": ["100", "101", "102", "103"],
+        "entity_name": ["A. Wilson", "B. Stewart", "C. Below", "D. Ionescu"],
         "raw_value": [0.55, 0.62, 0.48, 0.70],
         "n": [15, 30, 8, 22],
+    })
+    src_dir = tmp_path / "intel_claims"
+    src_dir.mkdir(parents=True)
+    pq.write_table(pa.Table.from_pandas(df, preserve_index=False), src_dir / "wnba_profile_source_zone_rim_efg.parquet")
+    monkeypatch.setattr(zc, "REPO_ROOT", tmp_path)
+    monkeypatch.setattr(zc, "_SRC_DIR", src_dir)
+    return src_dir
+
+
+@pytest.fixture()
+def fixture_source_nameless(tmp_path, monkeypatch):
+    # legacy source snapshot with no entity_name column -- graceful degrade
+    df = pd.DataFrame({
+        "entity_id": ["200", "201"],
+        "raw_value": [0.44, 0.58],
+        "n": [12, 25],
     })
     src_dir = tmp_path / "intel_claims"
     src_dir.mkdir(parents=True)
@@ -63,8 +80,15 @@ def test_golden_top_entity_and_below_floor_absent(fixture_source):
     claim = zc.build_claim("zone_rim_efg")
     assert claim["ranking"][0]["entity_id"] == "103"  # raw_value=0.70, highest
     assert claim["ranking"][0]["value"] == 0.70
+    assert claim["ranking"][0]["entity_name"] == "D. Ionescu"
     ranked_ids = {r["entity_id"] for r in claim["ranking"]}
     assert "102" not in ranked_ids  # below-floor entity never ranked
+
+
+def test_entity_name_fallback_for_nameless_source(fixture_source_nameless):
+    claim = zc.build_claim("zone_rim_efg")
+    assert claim["ranking"][0]["entity_id"] == "201"
+    assert claim["ranking"][0]["entity_name"] == "201"  # falls back to entity_id
 
 
 def test_validator_independently_reverifies(fixture_source):

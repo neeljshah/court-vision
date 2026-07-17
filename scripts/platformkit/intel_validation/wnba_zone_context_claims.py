@@ -99,8 +99,9 @@ def build_claim(dim: str) -> dict[str, Any]:
     qualifiers = qualifiers.sort_values("raw_value", ascending=False).reset_index(drop=True)
 
     ranking = [
-        {"rank": i, "entity_id": str(r.entity_id), "value": round(float(r.raw_value), 4),
-         "n": round(float(r.n), 2)}
+        {"rank": i, "entity_id": str(r.entity_id),
+         "entity_name": str(getattr(r, "entity_name", r.entity_id)),
+         "value": round(float(r.raw_value), 4), "n": round(float(r.n), 2)}
         for i, r in enumerate(qualifiers.itertuples(index=False), start=1)
     ]
     desc = DIMENSIONS[dim]
@@ -129,6 +130,8 @@ def build_claim(dim: str) -> dict[str, Any]:
             "claims.py); the source snapshot itself is READ ONLY here, never rebuilt.",
             "DESCRIPTIVE zone/context ranking only -- not a predictor of future performance, "
             "no market or dollar edge claimed.",
+            "entity_name is a display field only, not part of the validated raw_value identity "
+            "(falls back to entity_id for legacy name-less source snapshots).",
         ],
     }
 
