@@ -42,10 +42,12 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 from datetime import datetime, timedelta, timezone
 
 import pandas as pd
 
+from domains.basketball_nba import team_name_resolver as _nba_names
 from scripts.platformkit.intel_query.ask import load_verified_claims, pairs_for_claim_stores
 
 FRAMING = "schedule physics is public-calendar descriptive context, not a prediction or edge claim"
@@ -107,6 +109,13 @@ def resolve(sport: str, team: str, date: str | None = None) -> dict:
         return {"status": "no_data", "category": "schedule_context", "sport": sport,
                 "source_artifact": path, "framing": FRAMING}
     team_u = team.upper()
+    if sport == "nba":
+        # Free-text team names ("the Celtics", "Boston Celtics") -> corpus
+        # 3-letter code via the existing NBA alias table; unresolvable names
+        # fall through unchanged and hit the honest zero-rows no_data below.
+        full = _nba_names.resolve(re.sub(r"^the\s+", "", team.strip(), flags=re.I))
+        if full:
+            team_u = full
     calendar_team = _calendar_code(sport, team_u)
     claims_team = _claims_code(sport, team_u)
     df = pd.read_parquet(path)

@@ -13,7 +13,7 @@ from __future__ import annotations
 import pandas as pd
 
 from domains.basketball_nba.profiles.profile_compute import REPO_ROOT, finalize_rows, rel_sources
-from domains.basketball_nba.profiles.team_attributes import _tricode_to_team_id
+from domains.basketball_nba.profiles.team_attributes import _team_id_to_name, _tricode_to_team_id
 
 _BOX = REPO_ROOT / "data" / "domains" / "basketball_nba" / "player_boxscores.parquet"
 _BOX_SEASONS = {"2024_25", "2025_26"}
@@ -46,8 +46,9 @@ def build_bench_min_share(season: str) -> list[dict]:
     ).reset_index()
     grp = grp[(grp["n_games"] >= 10.0) & (grp["total_min"] > 0)].copy()
     grp["raw_value"] = grp["bench_min"] / grp["total_min"]
+    grp["entity_name"] = grp["team_id"].map(_team_id_to_name()).fillna("")
     return finalize_rows(
-        grp, entity_col="team_id", name_col=None, raw_col="raw_value", n_col="n_games",
+        grp, entity_col="team_id", name_col="entity_name", raw_col="raw_value", n_col="n_games",
         window=_window(season), attribute="bench_min_share", status="DESCRIPTIVE",
         sources=rel_sources(_BOX), ingredient_cols=["bench_min", "total_min"],
     )
@@ -76,12 +77,13 @@ def build_team_reb_ft(season: str) -> list[dict]:
     ).reset_index()
     grp["opp_missed_fga"] = grp["team"].map(opp_missed)
     grp = grp[grp["n_games"] >= 10.0].copy()
+    grp["entity_name"] = grp["team_id"].map(_team_id_to_name()).fillna("")
 
     rows: list[dict] = []
     o = grp.copy()
     o["raw_value"] = o["oreb"] / (o["fga"] - o["fgm"])
     rows.extend(finalize_rows(
-        o, entity_col="team_id", name_col=None, raw_col="raw_value", n_col="n_games",
+        o, entity_col="team_id", name_col="entity_name", raw_col="raw_value", n_col="n_games",
         window=_window(season), attribute="oreb_pct_team", status="DESCRIPTIVE",
         sources=rel_sources(_BOX), ingredient_cols=["oreb", "fga", "fgm"],
     ))
@@ -90,7 +92,7 @@ def build_team_reb_ft(season: str) -> list[dict]:
     d = d[d["opp_missed_fga"] > 0]
     d["raw_value"] = d["dreb"] / d["opp_missed_fga"]
     rows.extend(finalize_rows(
-        d, entity_col="team_id", name_col=None, raw_col="raw_value", n_col="n_games",
+        d, entity_col="team_id", name_col="entity_name", raw_col="raw_value", n_col="n_games",
         window=_window(season), attribute="dreb_pct_team", status="DESCRIPTIVE",
         sources=rel_sources(_BOX), ingredient_cols=["dreb", "opp_missed_fga"],
     ))
@@ -98,7 +100,7 @@ def build_team_reb_ft(season: str) -> list[dict]:
     f = grp.copy()
     f["raw_value"] = f["fta"] / f["fga"]
     rows.extend(finalize_rows(
-        f, entity_col="team_id", name_col=None, raw_col="raw_value", n_col="n_games",
+        f, entity_col="team_id", name_col="entity_name", raw_col="raw_value", n_col="n_games",
         window=_window(season), attribute="ft_rate_team", status="DESCRIPTIVE",
         sources=rel_sources(_BOX), ingredient_cols=["fta", "fga"],
     ))
@@ -106,7 +108,7 @@ def build_team_reb_ft(season: str) -> list[dict]:
     p = grp.copy()
     p["raw_value"] = p["pf"] / p["n_games"]
     rows.extend(finalize_rows(
-        p, entity_col="team_id", name_col=None, raw_col="raw_value", n_col="n_games",
+        p, entity_col="team_id", name_col="entity_name", raw_col="raw_value", n_col="n_games",
         window=_window(season), attribute="pf_per_game_team", status="DESCRIPTIVE",
         sources=rel_sources(_BOX), ingredient_cols=["pf"], higher_is_better=False,
     ))

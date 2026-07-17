@@ -7,6 +7,7 @@ NETWORK: zero.
 from __future__ import annotations
 
 import json
+from functools import lru_cache
 
 import pandas as pd
 
@@ -22,6 +23,25 @@ _LINEUPS = _TS / "lineups"
 _COMPOSITION = _TS / "composition"
 _ATLAS_TRANSITION = REPO_ROOT / "data" / "cache" / "atlas_team_transition_defense.parquet"
 _BOX = REPO_ROOT / "data" / "domains" / "basketball_nba" / "player_boxscores.parquet"
+
+# Static tricode -> franchise display name table (30 entries, never changes
+# mid-season) -- every team builder below stamps entity_name off this via
+# _team_id_to_name(); before this fix every row from this file wrote
+# entity_name="" (name_col=None everywhere), which silently broke
+# matchup_preview's NBA team-name fuzzy match (docs/research/
+# resolver_coverage_2026_07_17.md gap 4).
+_TRICODE_TEAM_NAME = {
+    "ATL": "Atlanta Hawks", "BKN": "Brooklyn Nets", "BOS": "Boston Celtics",
+    "CHA": "Charlotte Hornets", "CHI": "Chicago Bulls", "CLE": "Cleveland Cavaliers",
+    "DAL": "Dallas Mavericks", "DEN": "Denver Nuggets", "DET": "Detroit Pistons",
+    "GSW": "Golden State Warriors", "HOU": "Houston Rockets", "IND": "Indiana Pacers",
+    "LAC": "LA Clippers", "LAL": "Los Angeles Lakers", "MEM": "Memphis Grizzlies",
+    "MIA": "Miami Heat", "MIL": "Milwaukee Bucks", "MIN": "Minnesota Timberwolves",
+    "NOP": "New Orleans Pelicans", "NYK": "New York Knicks", "OKC": "Oklahoma City Thunder",
+    "ORL": "Orlando Magic", "PHI": "Philadelphia 76ers", "PHX": "Phoenix Suns",
+    "POR": "Portland Trail Blazers", "SAC": "Sacramento Kings", "SAS": "San Antonio Spurs",
+    "TOR": "Toronto Raptors", "UTA": "Utah Jazz", "WAS": "Washington Wizards",
+}
 
 
 def _window(season: str) -> str:
@@ -42,6 +62,15 @@ def _tricode_to_team_id(season_label: str = "2025-26") -> dict[str, int]:
     return merged.groupby("team")["team_id"].agg(lambda s: int(s.mode().iat[0])).to_dict()
 
 
+@lru_cache(maxsize=4)
+def _team_id_to_name(season_label: str = "2025-26") -> dict[int, str]:
+    """team_id -> franchise display name, layering the tricode crosswalk
+    above onto the static _TRICODE_TEAM_NAME table. lru_cache: every builder
+    below calls this once per season; the crosswalk itself reads 2 small
+    parquets, no need to re-read them per attribute."""
+    return {tid: _TRICODE_TEAM_NAME.get(tri, "") for tri, tid in _tricode_to_team_id(season_label).items()}
+
+
 def build_shot_diet(season: str) -> list[dict]:
     if season != "2025_26":
         return []
@@ -52,10 +81,11 @@ def build_shot_diet(season: str) -> list[dict]:
     grp = df.groupby("team_id").agg(**{c: (c, "mean") for c in SHOT_DIET_COLS},
                                      n_games=("game_id", "count")).reset_index()
     grp = grp[grp["n_games"] >= 10.0]
+    grp["entity_name"] = grp["team_id"].map(_team_id_to_name()).fillna("")
     rows = []
     for col in SHOT_DIET_COLS:
         rows.extend(finalize_rows(
-            grp, entity_col="team_id", name_col=None, raw_col=col, n_col="n_games",
+            grp, entity_col="team_id", name_col="entity_name", raw_col=col, n_col="n_games",
             window=_window(season), attribute=f"shot_diet_{col}", status="DESCRIPTIVE", sources=rel_sources(src),
             ingredient_cols=[col],
         ))
@@ -70,10 +100,11 @@ def build_concession(season: str) -> list[dict]:
         return []
     df = pd.read_parquet(src)
     df = df[df["n_shots_faced"] >= 500.0].rename(columns={"defense_team_id": "team_id"})
+    df["entity_name"] = df["team_id"].map(_team_id_to_name()).fillna("")
     rows = []
     for col in CONCESSION_COLS:
         rows.extend(direct_column_rows(
-            df, entity_col="team_id", name_col=None, cols=[col], n_col="n_shots_faced",
+            df, entity_col="team_id", name_col="entity_name", cols=[col], n_col="n_shots_faced",
             window=_window(season), status="DESCRIPTIVE", sources=rel_sources(src),
             attr_prefix="concession_", higher_is_better=col not in CONCESSION_LOWER_IS_BETTER,
         ))
@@ -98,12 +129,13 @@ def build_transition_rate(season: str) -> list[dict]:
             continue
         if n_games is None or opp_pg is None or n_games < 50.0:
             continue
-        rows.append({"team_id": team_id, "raw_value": float(opp_pg), "n": float(n_games)})
+        rows.append({"team_id": team_id, "entity_name": _TRICODE_TEAM_NAME.get(r.team_tricode, ""),
+                     "raw_value": float(opp_pg), "n": float(n_games)})
     if not rows:
         return []
     d = pd.DataFrame(rows)
     return finalize_rows(
-        d, entity_col="team_id", name_col=None, raw_col="raw_value", n_col="n",
+        d, entity_col="team_id", name_col="entity_name", raw_col="raw_value", n_col="n",
         window=_window(season), attribute="transition_rate_allowed", status="DESCRIPTIVE",
         sources=rel_sources(_ATLAS_TRANSITION, _BOX, _LINEUPS / "on_off_2025_26.parquet"),
         ingredient_cols=["raw_value", "n"], higher_is_better=False,
@@ -119,8 +151,9 @@ def build_lineup_continuity(season: str) -> list[dict]:
         raw_value=("elapsed_s", "mean"), n_stints=("elapsed_s", "count"), n_games=("game_id", "nunique"),
     ).reset_index()
     grp = grp[grp["n_games"] >= 10.0]
+    grp["entity_name"] = grp["team_id"].map(_team_id_to_name()).fillna("")
     return finalize_rows(
-        grp, entity_col="team_id", name_col=None, raw_col="raw_value", n_col="n_games",
+        grp, entity_col="team_id", name_col="entity_name", raw_col="raw_value", n_col="n_games",
         window=_window(season), attribute="lineup_continuity_avg_stint_s", status="VALIDATED_MECHANISM",
         sources=rel_sources(src), ingredient_cols=["n_stints"],
     )
@@ -135,8 +168,9 @@ def build_pace_proxy(season: str) -> list[dict]:
     df = pd.read_parquet(src)
     grp = df.groupby("team_id").agg(raw_value=("total_fga", "mean"), n_games=("game_id", "count")).reset_index()
     grp = grp[grp["n_games"] >= 10.0]
+    grp["entity_name"] = grp["team_id"].map(_team_id_to_name()).fillna("")
     return finalize_rows(
-        grp, entity_col="team_id", name_col=None, raw_col="raw_value", n_col="n_games",
+        grp, entity_col="team_id", name_col="entity_name", raw_col="raw_value", n_col="n_games",
         window=_window(season), attribute="pace_proxy_fga_per_game", status="DESCRIPTIVE",
         sources=rel_sources(src), ingredient_cols=["raw_value"],
     )

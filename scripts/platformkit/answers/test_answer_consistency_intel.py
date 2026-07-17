@@ -115,3 +115,17 @@ def test_classify_routes_new_categories_without_shadowing_existing():
     assert R.classify("what is the calibration brier score for nba") == "calibration_number"
     assert R.classify("win probability NYY vs BOS") == "prediction_winprob"
     assert R.classify("Trae Young gravity") == "player_stat"
+
+
+def test_lead_re_strips_scout_report_and_back_to_back_prefixes():
+    """gap 5/6 (docs/research/resolver_coverage_2026_07_17.md): the 'scout
+    report' lead-in didn't strip a trailing 'for'/'on' the way 'scouting
+    report' does, and schedule_context's own documented trigger phrase
+    ('back to back for X') wasn't in the lead-strip list at all."""
+    assert R._entity_from_query("scout report for Luka Doncic") == "Luka Doncic"
+    assert R._entity_from_query("scout report on Luka Doncic") == "Luka Doncic"
+    assert R._entity_from_query("scouting report for Luka Doncic") == "Luka Doncic"  # unchanged
+    stripped = R._entity_from_query("back to back for the Celtics")
+    assert stripped.lower().endswith("celtics") and "back to back" not in stripped.lower()
+    assert R._entity_from_query("back-to-back for the Lakers").lower().endswith("lakers")
+    assert R._entity_from_query("b2b for the Nuggets").lower().endswith("nuggets")

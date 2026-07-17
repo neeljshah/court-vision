@@ -132,6 +132,12 @@ def _match_entities(df: pd.DataFrame, q_tokens: list[str]):
         if not etoks:
             continue
         score = sum(1 for t in etoks if t in q_tokens)
+        # prefix half-credit: "steph" -> "stephen" breaks the exact-token tie
+        # with "seth curry" toward the intended player (>=3 chars so a bare
+        # initial never counts). ponytail: additive 0.5, never outranks a
+        # full-token hit on its own.
+        score += 0.5 * sum(1 for t in etoks
+                           if any(q != t and len(q) >= 3 and t.startswith(q) for q in q_tokens))
         if _norm(name) in " ".join(q_tokens):  # full-name substring bonus
             score = max(score, len(etoks))
         if score > best:

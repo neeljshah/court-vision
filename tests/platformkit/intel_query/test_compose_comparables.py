@@ -96,3 +96,37 @@ def test_thin_intersection_is_refused(tmp_path):
 def test_no_data_when_parquet_absent(tmp_path):
     result = compose_comparables(SPORT, "Player A")
     assert result["status"] == "no_data"
+
+
+def test_string_entity_id_does_not_crash(tmp_path):
+    """P0 fix (docs/research/resolver_coverage_2026_07_17.md gap 1): slug-id
+    sports (tennis, and presumably soccer) must not crash on int(entity_id)
+    -- entity_id is whatever type the parquet's own column holds."""
+    rows = []
+    for attr, pct in zip(ATTRS, [10, 20, 30, 40, 50, 60]):
+        rows.append(_row("federer_r", "Roger Federer", attr, pct))
+    for attr, pct in zip(ATTRS, [12, 22, 32, 42, 52, 62]):
+        rows.append(_row("agassi_a", "Andre Agassi", attr, pct))
+    pd.DataFrame(rows).to_parquet(tmp_path / "tennis_player_profiles.parquet")
+
+    result = compose_comparables("tennis", "Roger Federer", k=1)
+    assert result["status"] == "ok"
+    assert result["entity_id"] == "federer_r"
+    assert result["neighbors"][0]["entity_id"] == "agassi_a"
+
+
+def test_nickname_resolves_via_shared_matcher(tmp_path):
+    """gap 3: comparables used a narrower exact/substring-only matcher than
+    the rest of the registry -- "Steph Curry" must resolve to "Stephen Curry"
+    the same way scouting_report's shared fuzzy matcher already does."""
+    rows = []
+    for attr, pct in zip(ATTRS, [10, 20, 30, 40, 50, 60]):
+        rows.append(_row(1, "Stephen Curry", attr, pct))
+    for attr, pct in zip(ATTRS, [12, 22, 32, 42, 52, 62]):
+        rows.append(_row(2, "Klay Thompson", attr, pct))
+    _write_profiles(tmp_path, rows)
+
+    result = compose_comparables(SPORT, "Steph Curry", k=1)
+    assert result["status"] == "ok"
+    assert result["entity_id"] == 1
+    assert result["player"] == "Stephen Curry"

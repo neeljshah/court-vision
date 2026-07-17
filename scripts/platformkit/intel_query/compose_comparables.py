@@ -44,6 +44,7 @@ from datetime import datetime, timezone
 import numpy as np
 import pandas as pd
 
+from scripts.platformkit.intel_query import compose_scout as _scout
 from scripts.platformkit.profiles import ask as _profiles
 
 MIN_SHARED_ATTRS = 5
@@ -51,12 +52,6 @@ CATEGORY = "player_comparables"
 # ask.load_registry's domains.<sport> import is wrong for nba/wnba (the
 # domain folder is basketball_<sport>) -- same fix attribute_gate.py applies.
 _DOMAIN = {"nba": "basketball_nba", "wnba": "basketball_wnba"}
-
-
-def _norm(s) -> str:
-    s = str(s or "").lower()
-    s = unicodedata.normalize("NFKD", s)
-    return "".join(c for c in s if not unicodedata.combining(c))
 
 
 def _now() -> str:
@@ -100,17 +95,12 @@ def _pivot_percentiles(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]:
     return wide, names
 
 
-def _match_entity(names: pd.Series, player: str) -> int | None:
-    """Normalized-exact match preferred; else a UNIQUE substring hit. Zero or
-    ambiguous (>1) matches both return None -> caller reports no_data."""
-    key = _norm(player)
-    exact = [eid for eid, nm in names.items() if _norm(nm) == key]
-    if len(exact) == 1:
-        return exact[0]
-    sub = [eid for eid, nm in names.items() if key and key in _norm(nm)]
-    if len(sub) == 1:
-        return sub[0]
-    return None
+def _json_id(x):
+    """entity_id may be a numpy scalar (NBA/MLB int64) or a plain str (tennis/
+    soccer slug ids like 'agassi_a') -- coerce numpy scalars to native Python
+    types for json.dumps, but never force int() on it (that was the P0 crash
+    on string ids, see docs/research/resolver_coverage_2026_07_17.md gap 1)."""
+    return x.item() if hasattr(x, "item") else x
 
 
 def compose_comparables(sport: str, player: str, k: int = 5,
@@ -123,17 +113,24 @@ def compose_comparables(sport: str, player: str, k: int = 5,
         return _envelope("no_data", sport, path,
                           note=f"no player profile parquet built for sport={sport!r} in this clone")
 
-    wide, names = _pivot_percentiles(df)
-    eid = _match_entity(names, player)
-    if eid is None:
+    # Same fuzzy resolver + ambiguous-vs-absent distinction scouting_report
+    # uses (gap 3 -- this module used to reimplement a narrower exact/substring
+    # matcher that missed nicknames like "Steph Curry" -> "Stephen Curry").
+    resolve_status, resolved = _scout._resolve_entity(df, player)
+    if resolve_status == "ambiguous":
+        return _envelope("ambiguous", sport, path, player=player, candidates=resolved,
+                          note=f"{len(resolved)} distinct players match this name -- narrow your query")
+    if resolve_status != "ok":
         return _envelope("no_data", sport, path,
                           player=player,
                           note="no unique entity matched this player name in the profile parquet")
+    eid, _ename = resolved
 
+    wide, names = _pivot_percentiles(df)
     target = wide.loc[eid]
     target_attrs = set(target.dropna().index)
     if len(target_attrs) < floor:
-        return _envelope("refused", sport, path, player=player, entity_id=int(eid), floor=floor,
+        return _envelope("refused", sport, path, player=player, entity_id=_json_id(eid), floor=floor,
                           note=f"target player has only {len(target_attrs)} registered attributes "
                                f"on file, below the floor of {floor}")
 
@@ -150,17 +147,17 @@ def compose_comparables(sport: str, player: str, k: int = 5,
         ov = other[shared].to_numpy(dtype=float)
         dist = float(np.sqrt(np.mean((tv - ov) ** 2)))  # RMS, not raw sum -- see module docstring
         neighbors.append({
-            "entity_id": int(other_eid), "entity_name": names.loc[other_eid],
+            "entity_id": _json_id(other_eid), "entity_name": names.loc[other_eid],
             "distance": round(dist, 4), "n_attrs": len(shared),
             "attributes_used": [{"attribute": a, "description": descriptions.get(a, "")} for a in shared],
         })
 
     if not neighbors:
-        return _envelope("refused", sport, path, player=player, entity_id=int(eid), floor=floor,
+        return _envelope("refused", sport, path, player=player, entity_id=_json_id(eid), floor=floor,
                           note=f"no candidate cleared the >={floor} shared-attribute intersection floor")
 
     neighbors.sort(key=lambda n: (n["distance"], n["entity_id"]))
-    return _envelope("ok", sport, path, player=names.loc[eid], entity_id=int(eid), k=k, floor=floor,
+    return _envelope("ok", sport, path, player=names.loc[eid], entity_id=_json_id(eid), k=k, floor=floor,
                       neighbors=neighbors[:k],
                       note="statistically similar profile (Euclidean over shared percentile attributes) "
                            "-- descriptive only, never a projection")

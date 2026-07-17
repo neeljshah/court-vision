@@ -17,6 +17,7 @@ import pandas as pd
 from domains.basketball_nba.lineups.pbp_lineups import _elapsed_s, _period_length_s
 from domains.basketball_nba.lineups.zone_onoff import _PBP_BY_SEASON
 from domains.basketball_nba.profiles.profile_compute import REPO_ROOT, finalize_rows, rel_sources
+from domains.basketball_nba.profiles.team_attributes import _team_id_to_name
 
 _LINEUPS = REPO_ROOT / "data" / "cache" / "team_system" / "lineups"
 CLUTCH_REMAINING_S = 300.0  # 5 min
@@ -77,6 +78,7 @@ def build_clutch(season: str) -> list[dict]:
     if agg.empty:
         return []
     agg["net"] = agg["pts_for"] - agg["pts_against"]
+    agg["entity_name"] = agg["team_id"].map(_team_id_to_name()).fillna("")
 
     rows: list[dict] = []
     for attr, col, higher_better in (
@@ -85,7 +87,7 @@ def build_clutch(season: str) -> list[dict]:
         ("clutch_def_pts_per_game", "pts_against", False),
     ):
         rows.extend(finalize_rows(
-            agg, entity_col="team_id", name_col=None, raw_col=col, n_col="n_games",
+            agg, entity_col="team_id", name_col="entity_name", raw_col=col, n_col="n_games",
             window=_window(season), attribute=attr, status="DESCRIPTIVE",
             sources=rel_sources(stints_src), ingredient_cols=["pts_for", "pts_against"],
             higher_is_better=higher_better,

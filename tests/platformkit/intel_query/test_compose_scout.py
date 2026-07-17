@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import os
 
+import pandas as pd
 import pytest
 
 from scripts.platformkit.intel_query import compose_scout as cs
@@ -49,3 +50,60 @@ def test_sport_without_registry_is_no_data():
     assert r["status"] == "no_data"
     assert r["answerable"] is False
     assert "no concept registry" in r["note"]
+
+
+def test_resolve_entity_dedupes_dup_spelling_of_same_id():
+    """gap 2 (docs/research/resolver_coverage_2026_07_17.md): the parquet
+    can carry two different entity_name spellings for the SAME entity_id
+    (nba_player_profiles.parquet has plain + accented "Luka Doncic" both
+    under 1629029) -- that must collapse to ONE candidate, not inflate a
+    real 2-way tie (vs "Luka Garza") into a false 3-way ambiguity."""
+    df = pd.DataFrame([
+        {"entity_id": 1629029, "entity_name": "Luka Doncic", "sport": "nba"},
+        {"entity_id": 1629029, "entity_name": "Luka Dončić", "sport": "nba"},  # accented dup spelling
+        {"entity_id": 99, "entity_name": "Luka Garza", "sport": "nba"},
+    ])
+    status, payload = cs._resolve_entity(df, "Luka")
+    assert status == "ambiguous"
+    assert len(payload) == 2  # 2 distinct entity_ids, not 3
+
+
+def test_resolve_entity_unique_match_is_ok():
+    df = pd.DataFrame([{"entity_id": 1, "entity_name": "LeBron James", "sport": "nba"}])
+    status, payload = cs._resolve_entity(df, "LeBron James")
+    assert status == "ok"
+    assert payload == (1, "LeBron James")
+
+
+def test_resolve_entity_no_match_is_no_entity():
+    df = pd.DataFrame([{"entity_id": 1, "entity_name": "LeBron James", "sport": "nba"}])
+    status, payload = cs._resolve_entity(df, "Zzzq Notaplayer Xyz")
+    assert status == "no_entity"
+    assert payload is None
+
+
+def test_compose_scout_surfaces_ambiguous_with_candidates():
+    """compose_scout's top-level envelope must expose status='ambiguous' +
+    candidates, not collapse into a misleading 'no scouting data' no_data
+    (the original gap-2 symptom)."""
+
+    class _FakeReg:
+        def list_concepts(self):
+            return []
+
+    orig_get_registry = cs.get_registry
+    orig_load_profiles = cs._profiles.load_profiles
+    try:
+        cs.get_registry = lambda sport: _FakeReg()
+        df = pd.DataFrame([
+            {"entity_id": 1629029, "entity_name": "Luka Doncic", "sport": "nba", "kind": "player"},
+            {"entity_id": 1629029, "entity_name": "Luka Dončić", "sport": "nba", "kind": "player"},
+            {"entity_id": 99, "entity_name": "Luka Garza", "sport": "nba", "kind": "player"},
+        ])
+        cs._profiles.load_profiles = lambda sport: df
+        r = cs.compose_scout("nba", "Luka")
+        assert r["status"] == "ambiguous"
+        assert len(r["candidates"]) == 2
+    finally:
+        cs.get_registry = orig_get_registry
+        cs._profiles.load_profiles = orig_load_profiles

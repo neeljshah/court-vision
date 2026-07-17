@@ -512,13 +512,14 @@ def mechanism_effect(sport: str, mechanism: str) -> dict:
 # ---------------------------------------------------------------------------
 _LEAD_RE = re.compile(
     r"^\s*(?:"
-    r"scouting report(?: (?:for|on))?|scout report|scouting|"
+    r"scouting report(?: (?:for|on))?|scout report(?: (?:for|on))?|scouting|"
     r"who (?:is|are) comparable to|(?:players? )?comparables?(?: (?:for|to))?|comparable to|"
     r"similar(?: players?)? to|player comps?(?: (?:for|to))?|"
     r"injury report(?: (?:for|on))?|injury status(?: (?:for|of))?|injuries(?: (?:for|of))?|"
     r"news context(?: (?:for|about|on))?|latest news(?: (?:for|about|on))?|"
     r"recent news(?: (?:for|about|on))?|news(?: (?:for|about|on))?|"
     r"schedule context(?: for)?|schedule(?: for)?|rest days(?: for)?|"
+    r"back[- ]to[- ]back(?: for)?|b2b(?: for)?|days of rest(?: for)?|"
     r"matchup preview(?: for)?|game preview(?: for)?|preview|"
     r"win probability(?: (?:for|of))?|win prob(?: (?:for|of))?|who wins"
     r")\s+", re.I)
