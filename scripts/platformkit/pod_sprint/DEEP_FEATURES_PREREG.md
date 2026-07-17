@@ -58,3 +58,15 @@ X1 pace_product interaction, X2 style: rim-pressure vs rim-protection
 Execution: harness runs family-by-family on the pod GPU (each ~2 min),
 then greedy forward selection over CI-surviving families, then the final
 composed candidate vs close. Everything logged, every null recorded.
+
+## Family R -- referee crew condition (coach-panel survivor, added 2026-07-17)
+R1 crew_b2b_fatigue: crews on zero days rest call fewer marginal fouls.
+   Test: crew_rest_days from data/nba/officials/officials_*.json joined to
+   player_boxscores (pf, fta) via games.parquet dates; outcome = TEAM-
+   BASELINE-ADJUSTED total PF and FTA (mechanisms.md #54 adjustment method,
+   reused); OLS on crew_b2b flag, split-half by season, ~4900 games.
+   DECLARED CONFOUND: crew assignment is non-random (rested crews get
+   marquee games) -- report the marquee-proxy check (national-TV-ish:
+   weekend/prime slots) alongside. Surface: descriptive claim family +
+   mechanism ledger entry first; totals/pace conditioning input ONLY if
+   the descriptive effect replicates split-half.
