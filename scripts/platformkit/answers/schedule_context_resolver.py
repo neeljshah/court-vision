@@ -8,10 +8,15 @@ Reuses (read-only):
     already reads (data/domains/<sport>/{linescores,games}.parquet) -- same
     files, mirrored here as a local table because this resolver computes a
     DIFFERENT shape (rest/b2b/density) than historical_result's final score.
-  - scripts.platformkit.intel_query.ask.load_verified_claims() for the
-    nba_schedule_claims.jsonl VERIFIED rows (rest/b2b/road-trip rankings) --
-    the pinned 2024-25 numbers ride alongside the live calendar computation,
-    never re-derived here.
+  - scripts.platformkit.intel_query.ask.load_verified_claims(), scoped via
+    pairs_for_claim_stores(("nba_schedule_claims.jsonl",)) to JUST that one
+    store, for the nba_schedule_claims.jsonl VERIFIED rows (rest/b2b/road-trip
+    rankings) -- the pinned 2024-25 numbers ride alongside the live calendar
+    computation, never re-derived here. A bare load_verified_claims() call
+    whole-loads EVERY store in data/cache/intel_claims (GB-scale bulk rate
+    stores included) to keep a 15KB family -- see pairs_for_claim_stores'
+    own docstring (the 2026-07-07 MemoryError guard compose_best.py and
+    compose_profile.py already route through).
 
 Per-sport coverage (honest): nba (linescores.parquet) and mlb (games.parquet)
 only -- same two sports historical_result covers. Any other sport -> not_supported.
@@ -41,9 +46,14 @@ from datetime import datetime, timedelta, timezone
 
 import pandas as pd
 
-from scripts.platformkit.intel_query.ask import load_verified_claims
+from scripts.platformkit.intel_query.ask import load_verified_claims, pairs_for_claim_stores
 
 FRAMING = "schedule physics is public-calendar descriptive context, not a prediction or edge claim"
+
+# the ONLY store this resolver reads -- loaded via pairs_for_claim_stores so a
+# bare load_verified_claims() never whole-loads the other (GB-scale) stores
+# under data/cache/intel_claims/ to keep this one 15KB family.
+_SCHEDULE_CLAIM_STORES: tuple[str, ...] = ("nba_schedule_claims.jsonl",)
 
 # same two (path, home_col, away_col) triples resolver_registry.historical_result
 # reads -- mirrored, not imported (different resolver, same source files).
@@ -72,7 +82,8 @@ def _schedule_claims(sport: str, team_claims_code: str) -> list[dict]:
     if sport != "nba":
         return []
     out = []
-    for cid, row in sorted(load_verified_claims().items()):
+    verified = load_verified_claims(pairs_for_claim_stores(_SCHEDULE_CLAIM_STORES))
+    for cid, row in sorted(verified.items()):
         if not cid.startswith("nba_schedule_"):
             continue
         for entry in row.get("ranking", []):
