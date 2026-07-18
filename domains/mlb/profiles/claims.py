@@ -106,7 +106,13 @@ def build_all_claims() -> list[dict[str, Any]]:
             claims.append(build_claim(attr, season, frame, name_lookup))
     for year in LEADERBOARD_YEARS:
         for attr in LEADERBOARD_BUILDERS:
-            claims.append(build_claim_leaderboard(attr, year, name_lookup))
+            try:
+                claims.append(build_claim_leaderboard(attr, year, name_lookup))
+            except FileNotFoundError as exc:
+                # bat_tracking_2025.csv was quarantined as a byte-identical
+                # dup of 2024 (savant year-param bug) -- an absent year file
+                # is an honestly-declared gap, never a crash (2026-07-18).
+                print(f"SKIP {attr} {year}: source csv absent ({exc})")
     # An empty ranking means the data cannot support the preregistered floor
     # (e.g. region_*_waste: max n=40 vs floor 50). Claiming nothing is not a
     # claim -- skip emission honestly rather than shipping UNVERIFIABLE rows
