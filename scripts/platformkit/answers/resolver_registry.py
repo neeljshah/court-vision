@@ -298,7 +298,8 @@ _SCHEDULE_KEYWORDS = ("schedule context", "rest days", "back to back", "back-to-
                       "days of rest", "schedule for")
 _SCOUT_KEYWORDS = ("scouting report", "scout report", "scouting")
 _COMPARABLES_KEYWORDS = ("comparable", "comparables", "similar players", "similar to", "player comp")
-_MATCHUP_PREVIEW_KEYWORDS = ("preview", "matchup preview", "matchup between", "game preview")
+_MATCHUP_PREVIEW_KEYWORDS = ("preview", "matchup preview", "matchup between", "game preview",
+                             "head-to-head", "head to head", "h2h")
 # "what affects Y" / "what does X affect" -- effect-graph queries (LANE C5),
 # routed through the SAME mechanism_effect category (verbatim graph edges are
 # just another ledger-backed receipt, not a new resolver family).
@@ -640,7 +641,7 @@ def _entity_from_query(query: str) -> str:
     return re.sub(r"^the\s+", "", stripped, flags=re.I)
 
 
-_BETWEEN_RE = re.compile(r"^\s*between\s+(.+?)\s+and\s+(.+?)\s*$", re.I)
+_BETWEEN_RE = re.compile(r"\bbetween\s+(.+?)\s+and\s+(.+?)\s*[.?!]*\s*$", re.I)
 
 
 def _injury_player_from_query(query: str) -> str | None:
@@ -662,7 +663,7 @@ def _split_matchup(text: str) -> tuple[str | None, str | None]:
     Ashleigh Barty and Mirra Andreeva", never uses vs/versus/@/at)."""
     m = _VS_RE.search(text)
     if not m:
-        m2 = _BETWEEN_RE.match(text)
+        m2 = _BETWEEN_RE.search(text)
         if m2:
             left, right = m2.group(1).strip(), m2.group(2).strip()
             if left and right:
@@ -680,6 +681,11 @@ def _matchup_teams(query: str, kwargs: dict) -> tuple[str | None, str | None]:
     home, away = kwargs.get("home"), kwargs.get("away")
     if not (home and away):
         h, a = _split_matchup(_entity_from_query(query))
+        if not (h and a):
+            # lead-in strip can mangle unusual phrasings ('What is the
+            # head-to-head record between X and Y?' -> 'What'); the raw
+            # query still parses via the between/vs patterns
+            h, a = _split_matchup(query)
         home, away = home or h, away or a
     return home, away
 
