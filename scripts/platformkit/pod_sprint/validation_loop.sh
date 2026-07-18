@@ -1,10 +1,16 @@
 #!/usr/bin/env bash
 # Continuous validation loop -- the pod re-validates the WHOLE system on a
-# cycle until the pod dies. Each cycle: pull new code/bank -> re-validate
-# every claim family (independent recompute) -> QA bank FULL -> coverage
-# stress -> prediction_eval refresh -> append one trend line to
+# cycle until the pod dies. Each cycle: pull new code/bank -> SELF-HEAL
+# regen any family whose producer changed this pull -> re-validate every
+# claim family (independent recompute) -> QA bank FULL -> coverage stress ->
+# prediction_eval refresh -> append one trend line to
 # validation_cycles.jsonl. Honest by construction: every number in the
 # trend line comes from a fail-closed artifact written this cycle.
+#
+# SELF-HEAL (added 2026-07-18): re-validating a store against changed
+# producer code without ever REGENERATING it inflates the mismatch counter
+# on a stale store, not real data corruption -- see
+# scripts/platformkit/pod_sprint/regen_manifest.py's module docstring.
 #   nohup bash scripts/platformkit/pod_sprint/validation_loop.sh &
 set -u
 exec 9>/workspace/validation_loop.lock
@@ -14,6 +20,7 @@ PY="${VENV_PY:-/workspace/venv/bin/python}"
 LOGS="${SPRINT_LOGS:-/workspace/sprint_logs}"
 CYCLES="$LOGS/validation_cycles.jsonl"
 SLEEP_BETWEEN="${SLEEP_BETWEEN:-1200}"  # 20 min between cycles
+REGEN_TIMEOUT="${REGEN_TIMEOUT:-900}"   # per-family regen bound (pod has GNU timeout)
 mkdir -p "$LOGS"
 cd "$REPO"
 
@@ -21,7 +28,39 @@ cycle=0
 while true; do
     cycle=$((cycle + 1))
     T0=$(date -Is)
+    BEFORE=$(git rev-parse HEAD 2>/dev/null || echo "")
     git pull -q 2>/dev/null || true   # pick up new families/bank/code
+    AFTER=$(git rev-parse HEAD 2>/dev/null || echo "")
+
+    # 0. SELF-HEAL: regen any family whose producer changed this pull. No
+    # change this cycle -> skip entirely (cheap, the common case).
+    RLOG="$LOGS/cycle_regen.log"; : > "$RLOG"
+    N_REGEN_OK=0
+    N_REGEN_FAIL=0
+    if [ -n "$BEFORE" ] && [ -n "$AFTER" ] && [ "$BEFORE" != "$AFTER" ]; then
+        CHANGED=$(git diff --name-only "$BEFORE" "$AFTER" -- 'scripts/platformkit/intel_validation/*.py' 'domains/*.py' 'domains/**/*.py' 2>/dev/null)
+        FAMILIES=$(
+            for f in $CHANGED; do
+                "$PY" -m scripts.platformkit.pod_sprint.regen_manifest --producer "$f" 2>>"$RLOG"
+            done | sort -u
+        )
+        for fam in $FAMILIES; do
+            CMD=$("$PY" -m scripts.platformkit.pod_sprint.regen_manifest --family "$fam" 2>>"$RLOG")
+            if [ -z "$CMD" ]; then
+                echo "[regen] $fam: no resolvable regen command, skipped" >> "$RLOG"
+                continue
+            fi
+            echo "[regen] $fam starting $(date -Is): $CMD" >> "$RLOG"
+            # unquoted on purpose: CMD is our own trusted "python -m ..." string
+            timeout "$REGEN_TIMEOUT" $PY -m ${CMD#python -m } >> "$RLOG" 2>&1
+            if [ $? -eq 0 ]; then
+                N_REGEN_OK=$((N_REGEN_OK + 1))
+            else
+                N_REGEN_FAIL=$((N_REGEN_FAIL + 1))
+            fi
+            echo "[regen] $fam ended $(date -Is)" >> "$RLOG"
+        done
+    fi
 
     # 1. re-validate every claim family (skip sidecars); count verdicts
     VLOG="$LOGS/cycle_claims.log"; : > "$VLOG"
@@ -50,6 +89,6 @@ while true; do
     "$PY" -m scripts.platformkit.pod_sprint.prediction_eval \
         > "$LOGS/cycle_predeval.log" 2>&1
 
-    echo "{\"cycle\":$cycle,\"started\":\"$T0\",\"ended\":\"$(date -Is)\",\"claims_total\":${N_VER:-0},\"claims_verified\":${N_OK:-0},\"claims_mismatch\":${N_MIS:-0},\"qa\":\"${QA:-na}\",\"coverage_rate\":${COV:-null}}" >> "$CYCLES"
+    echo "{\"cycle\":$cycle,\"started\":\"$T0\",\"ended\":\"$(date -Is)\",\"regen_ok\":$N_REGEN_OK,\"regen_failed\":$N_REGEN_FAIL,\"claims_total\":${N_VER:-0},\"claims_verified\":${N_OK:-0},\"claims_mismatch\":${N_MIS:-0},\"qa\":\"${QA:-na}\",\"coverage_rate\":${COV:-null}}" >> "$CYCLES"
     sleep "$SLEEP_BETWEEN"
 done
