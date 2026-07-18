@@ -178,7 +178,10 @@ QA_BANK: List[QAEntry] = [
        ["baseline_brier", "improved_brier", "baseline_ece", "improved_ece"]),
 
     # -- ranking --------------------------------------------------------
-    _e("ranking", "nba", "top 5 assist leaders", "not_supported", "SMOKE", ["available"]),
+    # ok since 2026-07-18: ranking-route miss falls back to the claims path
+    # (ast_per_game is a VERIFIED claim); other sports stay not_supported
+    # via the claims sport guard.
+    _e("ranking", "nba", "top 5 assist leaders", "ok", "SMOKE"),
     _e("ranking", "mlb", "top 5 assist leaders", "not_supported", "FULL", ["available"]),
     _e("ranking", "wnba", "top 5 assist leaders", "not_supported", "FULL", ["available"]),
     _e("ranking", "tennis", "top 5 assist leaders", "not_supported", "FULL", ["available"]),

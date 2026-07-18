@@ -247,6 +247,23 @@ def list_claim_families(sport: str | None = None) -> dict[str, Any]:
             "n_families": len(fams), "families": fams}
 
 
+_SPORT_PREFIXES = {"nba", "mlb", "wnba", "tennis", "soccer", "npb", "kbo",
+                   "baseball", "basketball"}
+_SPORT_SYNONYMS = {"nba": {"nba", "basketball"}, "mlb": {"mlb", "baseball"},
+                   "wnba": {"wnba"}}
+
+
+def _env_matches_sport(env: dict[str, Any], sport: str) -> bool:
+    """True when the answering store's name prefix matches the requested
+    sport, or the store is cross-sport (no sport prefix at all)."""
+    src = str(env.get("source_artifact") or env.get("family") or "")
+    base = src.replace("\\", "/").rsplit("/", 1)[-1]
+    prefix = base.split("_", 1)[0].lower()
+    if prefix not in _SPORT_PREFIXES:
+        return True  # cross-sport family (kalshi_, market_, line_, ...)
+    return prefix in _SPORT_SYNONYMS.get(sport, {sport})
+
+
 def resolve(query: str, sport: str = "nba", **kwargs) -> dict[str, Any]:
     """Single entrypoint for the verified_claims category. A family-discovery
     question routes to list_claim_families (sport parsed from the query, else
@@ -255,6 +272,14 @@ def resolve(query: str, sport: str = "nba", **kwargs) -> dict[str, Any]:
     if kwargs.get("list_families") or "famil" in low or ("list" in low and "claim" in low):
         return list_claim_families(_sport_in_query(low))
     wrapped = _wrap_ask(query, sport)
+    if wrapped.get("status") == "ok" and not _env_matches_sport(wrapped, sport):
+        # sport guard (2026-07-18): ask() scans every family, so
+        # sport='mlb' + 'top 5 assist leaders' answered with the NBA
+        # store. A wrong-sport answer is worse than an honest miss.
+        wrapped = {"status": "no_data", "category": CATEGORY, "sport": sport,
+                   "source_artifact": _CLAIMS_DIR_REL,
+                   "note": f"only a different sport's claim store matches this "
+                           f"question (asked sport={sport!r})"}
     if wrapped.get("status") == "no_data":
         for route in _FAMILY_ROUTES:
             pattern, family_stem = route()
