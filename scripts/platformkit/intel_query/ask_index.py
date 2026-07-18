@@ -161,6 +161,14 @@ _METRIC_SYNONYMS: dict[str, str] = {
     "vs breaking balls": "vs_pitch_type_delta",
     "platoon split": "context_platoon_delta",
     "crushes fastballs": "vs_pitch_type_delta",
+    # nba_rest_context (2026-07-18): schedule/fatigue-conditioned player
+    # splits -- "b2b drop"/"back to back efficiency"/"rest split" all route
+    # to the headline TS%-drop metric; "b2b resilient" is the DISTINCT
+    # pts-per-36 delta metric (smallest/most-positive change = most resilient).
+    "b2b drop": "b2b_ts_drop",
+    "back to back efficiency": "b2b_ts_drop",
+    "rest split": "b2b_ts_drop",
+    "b2b resilient": "b2b_pts36_delta",
 }
 
 # Shooter-composite family (2026-07-19): "best shooters"/"top shooters"/
