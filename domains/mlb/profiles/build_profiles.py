@@ -27,6 +27,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 from domains.mlb.profiles.attribute_registry import ATTRIBUTES, rating_2k
+from domains.mlb.profiles.ingredients_batted_ball import BUILDERS as BATTED_BALL_BUILDERS
 from domains.mlb.profiles.ingredients_batter import BUILDERS as BATTER_BUILDERS
 from domains.mlb.profiles.ingredients_batter_grid import BUILDERS as BATTER_GRID_BUILDERS
 from domains.mlb.profiles.ingredients_batter_zones import BUILDERS as BATTER_ZONE_BUILDERS
@@ -62,6 +63,7 @@ _BUILDERS: dict[str, Callable[[pd.DataFrame], pd.DataFrame]] = {
     **BATTER_BUILDERS, **PITCHER_BUILDERS, **CATCHER_BUILDERS,
     **BATTER_GRID_BUILDERS, **PITCHER_GRID_BUILDERS,
     **BATTER_ZONE_BUILDERS, **PITCHER_ZONE_BUILDERS,
+    **BATTED_BALL_BUILDERS,
 }
 _ALL_BUILDER_ATTRS = set(_BUILDERS) | set(LEADERBOARD_BUILDERS)
 # a builder with no registry entry is a real bug (an orphaned attribute

@@ -615,6 +615,46 @@ ATTRIBUTES["sp_rest_days_asof"] = {
 
 ATTRIBUTES.update(_leaderboard_attributes())
 
+# ------------------------------------------------------------------ batted-ball quality (Family 1, 2026-07-18)
+# Raw contact-quality metrics missing from the original 14 -- see
+# domains/mlb/profiles/ingredients_batted_ball.py for the builders + the
+# verified-against-real-data numbers (avg EV 88.3, hard-hit share 0.390,
+# barrel share 0.078, league BABIP 0.290 on 2024 savant_hitcoords). All BIP
+# (type=='X') except babip, which uses the events column directly.
+ATTRIBUTES["avg_exit_velocity"] = {
+    "description": "Average exit velocity (mph) on batted balls (BIP, type=='X').",
+    "entity": "batter",
+    "ingredients": ["avg_exit_velocity", "n_batted_balls"],
+    "formula": "mean(launch_speed), type=='X'",
+    "status": "DESCRIPTIVE", "floor": 50, "weight_ledger_family": "descriptive",
+}
+ATTRIBUTES["hard_hit_rate"] = {
+    "description": "Share of batted balls (BIP) hit at exit velocity >= 95 mph.",
+    "entity": "batter",
+    "ingredients": ["hard_hit_rate", "n_batted_balls"],
+    "formula": "mean(launch_speed >= 95), type=='X'",
+    "status": "DESCRIPTIVE", "floor": 50, "weight_ledger_family": "descriptive",
+}
+ATTRIBUTES["barrel_rate"] = {
+    "description": "Barrel share of batted balls (Statcast launch_speed_angle==6 -- "
+                    "the SAME code contact_quality already uses, exposed under a "
+                    "second, token-matchable name; see ingredients_batted_ball.py).",
+    "entity": "batter",
+    "ingredients": ["barrel_rate", "n_batted_balls"],
+    "formula": "mean(launch_speed_angle == 6)",
+    "status": "DESCRIPTIVE", "floor": 50, "weight_ledger_family": "descriptive",
+}
+ATTRIBUTES["babip"] = {
+    "description": "Batting average on balls in play: (H - HR) / (AB - K - HR + SF), "
+                    "AB excludes walk/HBP/sac events (standard MLB at-bat definition).",
+    "entity": "batter",
+    "ingredients": ["n_h", "n_hr", "n_k", "n_sf", "n_ab"],
+    "formula": "(n_h - n_hr) / (n_ab - n_k - n_hr + n_sf)",
+    "status": "DESCRIPTIVE",
+    "floor": 100,  # self-declared AB floor, no spec number given
+    "weight_ledger_family": "descriptive",
+}
+
 ENTITIES = ("batter", "pitcher", "catcher", "fielder")
 STATUSES = ("VALIDATED_MECHANISM", "VALIDATED_CLAIM", "DESCRIPTIVE")
 
