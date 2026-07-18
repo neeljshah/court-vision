@@ -49,13 +49,16 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence
 
+from .feed_health import DEFAULT_SPORTS
 from .schema_snapshot import _provider_of
 
 _REPO = Path(__file__).resolve().parents[3]
 DEFAULT_HISTORY_DIR = _REPO / "data" / "cache" / "line_history"
 _OUT_PATH = _REPO / "data" / "frontend" / "ops" / "capture_quality.json"
 
-DEFAULT_SPORTS = ("nba", "mlb", "soccer", "soccer_intl", "tennis")
+# Single source of truth: reuse feed_health.DEFAULT_SPORTS (adds wnba/npb, which
+# this module previously omitted -- see golive_hardening_backlog_2026_07_17.json
+# finding #3) instead of a second hardcoded tuple that can silently drift apart.
 
 GREEN = "GREEN"
 REGRESSION = "REGRESSION"

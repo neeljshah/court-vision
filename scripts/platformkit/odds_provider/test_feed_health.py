@@ -360,11 +360,73 @@ def test_probe_one_real_auth_fault_not_tagged_transient():
     assert "transient_degrade" not in row
 
 
-def test_scan_429_blip_does_not_flip_overall_red():
+def test_scan_429_blip_does_not_flip_overall_red(tmp_path):
     prov = _FakeProvider("kalshi", {
         "mlb": {"status": "unavailable", "reason": "HTTP Error 429"},
         "nba": [1, 2],
     })
-    doc = scan(("mlb", "nba"), providers=[prov])
+    doc = scan(("mlb", "nba"), providers=[prov],
+               transient_counter_path=tmp_path / "transient_429_counters.json")
     assert doc["overall"] == GREEN
     assert doc["n_red"] == 0
+
+
+# --------------------------------------------------------------------------- #
+# persistent 429 escalation (go-live hardening finding #2, 2026-07-17): a 429
+# that persists across CONSECUTIVE scans is a dead provider, not a blip --
+# escalate to RED after _TRANSIENT_THRESHOLD=3 consecutive occurrences.
+# --------------------------------------------------------------------------- #
+
+def test_promote_persistent_transient_stays_green_before_threshold(tmp_path):
+    counter = tmp_path / "transient_429_counters.json"
+    prov = _FakeProvider("kalshi", {"mlb": {
+        "status": "unavailable", "reason": "HTTP Error 429"}})
+    for _ in range(2):
+        rows = [probe_one(prov, "mlb")]
+        _feed_health.promote_persistent_transient(rows, counter_path=counter)
+        assert rows[0]["status"] == GREEN
+        assert rows[0]["transient_degrade"] is True
+
+
+def test_promote_persistent_transient_escalates_to_red_after_threshold(tmp_path):
+    counter = tmp_path / "transient_429_counters.json"
+    prov = _FakeProvider("kalshi", {"mlb": {
+        "status": "unavailable", "reason": "HTTP Error 429"}})
+    rows = None
+    for _ in range(3):
+        rows = [probe_one(prov, "mlb")]
+        _feed_health.promote_persistent_transient(rows, counter_path=counter)
+    assert rows[0]["status"] == RED
+    assert rows[0]["consecutive_transient_429"] == 3
+    assert "persistent_429:" in rows[0]["reason"]
+
+
+def test_promote_persistent_transient_resets_on_recovery(tmp_path):
+    counter = tmp_path / "transient_429_counters.json"
+    prov_429 = _FakeProvider("kalshi", {"mlb": {
+        "status": "unavailable", "reason": "HTTP Error 429"}})
+    prov_ok = _FakeProvider("kalshi", {"mlb": [1, 2]})
+    for _ in range(2):
+        rows = [probe_one(prov_429, "mlb")]
+        _feed_health.promote_persistent_transient(rows, counter_path=counter)
+    recovered = [probe_one(prov_ok, "mlb")]
+    _feed_health.promote_persistent_transient(recovered, counter_path=counter)
+    assert recovered[0]["status"] == GREEN
+    import json as _json
+    counters = _json.loads(counter.read_text(encoding="ascii"))
+    assert counters["mlb|kalshi"] == 0
+    # A fresh 429 streak after a recovery starts back at 1, not 3.
+    rows = [probe_one(prov_429, "mlb")]
+    _feed_health.promote_persistent_transient(rows, counter_path=counter)
+    assert rows[0]["status"] == GREEN
+
+
+def test_scan_escalates_persistent_429_to_red_overall(tmp_path):
+    counter = tmp_path / "transient_429_counters.json"
+    prov = _FakeProvider("kalshi", {"mlb": {
+        "status": "unavailable", "reason": "HTTP Error 429"}})
+    doc = None
+    for _ in range(3):
+        doc = scan(("mlb",), providers=[prov], transient_counter_path=counter)
+    assert doc["overall"] == RED
+    assert doc["n_red"] == 1

@@ -61,6 +61,58 @@ def test_load_status_missing_file_is_empty(tmp_path):
     assert of.load_status(path=tmp_path / "nope.json") == []
 
 
+# --------------------------------------------------------------------------- #
+# stale_inputs (go-live hardening finding #4, 2026-07-17): the artifact stamps
+# newest_input_mtime and flags stale_inputs when nothing checked this cycle has
+# advanced since the artifact's OWN previous write.
+# --------------------------------------------------------------------------- #
+
+def test_first_write_never_flags_stale_inputs(tmp_path):
+    out = tmp_path / "output_freshness.json"
+    rows = [{"name": "a", "status": of.GREEN, "age_sec": 10.0}]
+    of.write_status(rows, out_path=out, now=1000.0)
+    doc = json.loads(out.read_text())
+    assert doc["newest_input_mtime"] == 990.0
+    assert doc["stale_inputs"] is False
+
+
+def test_unchanged_input_between_writes_flags_stale_inputs(tmp_path):
+    out = tmp_path / "output_freshness.json"
+    # Cycle 1 @ t=1000: source file last touched at t=990 (age_sec=10).
+    of.write_status([{"name": "a", "status": of.GREEN, "age_sec": 10.0}],
+                    out_path=out, now=1000.0)
+    # Cycle 2 @ t=1300: the SAME source file, still last touched at t=990
+    # (age_sec grew to 310) -- nothing advanced between the two sentinel ticks.
+    of.write_status([{"name": "a", "status": of.GREEN, "age_sec": 310.0}],
+                    out_path=out, now=1300.0)
+    doc = json.loads(out.read_text())
+    assert doc["newest_input_mtime"] == 990.0
+    assert doc["stale_inputs"] is True
+
+
+def test_advancing_input_between_writes_clears_stale_inputs(tmp_path):
+    out = tmp_path / "output_freshness.json"
+    of.write_status([{"name": "a", "status": of.GREEN, "age_sec": 10.0}],
+                    out_path=out, now=1000.0)
+    # Cycle 2: the source file WAS touched again (age_sec=10 relative to the
+    # new now) -- a fresh input since the last write.
+    of.write_status([{"name": "a", "status": of.GREEN, "age_sec": 10.0}],
+                    out_path=out, now=1300.0)
+    doc = json.loads(out.read_text())
+    assert doc["newest_input_mtime"] == 1290.0
+    assert doc["stale_inputs"] is False
+
+
+def test_rows_missing_age_sec_never_crash_stale_inputs_check(tmp_path):
+    out = tmp_path / "output_freshness.json"
+    rows = [{"name": "a", "status": of.RED, "age_sec": None, "reason": "missing"}]
+    ok = of.write_status(rows, out_path=out, now=1000.0)
+    assert ok is True
+    doc = json.loads(out.read_text())
+    assert doc["newest_input_mtime"] is None
+    assert doc["stale_inputs"] is False
+
+
 def test_merge_freshness_into_services_degrades_only():
     services = [{"name": "m25_ingame_outcome_verdict", "severity": "ok"},
                 {"name": "m1_paper", "severity": "ok"},

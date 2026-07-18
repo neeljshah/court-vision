@@ -46,6 +46,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import pandas as pd
 import pyarrow as pa
 
@@ -137,6 +138,11 @@ def _build_dim_claim(
     mask = pd.Series(True, index=value_s.index)
     for col, floor in min_sample.items():
         mask &= floor_cols[col] >= floor
+    # Zero (or non-finite) denominator entities (e.g. ast_to_tov for a
+    # zero-turnover sample) must never reach the ranking as NaN/inf -- same
+    # honest-exclusion idiom as the floor mask above, folded into the same
+    # n_excluded count rather than a second bucket.
+    mask &= np.isfinite(value_s.astype(float))
     ids_kept = value_s.index[mask]
     n_excluded = n_considered - len(ids_kept)
 

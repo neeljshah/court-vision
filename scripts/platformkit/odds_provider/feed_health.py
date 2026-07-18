@@ -81,6 +81,15 @@ _BENIGN_REASON_MARKERS = (
 # classifies RED as before.
 _TRANSIENT_REASON_MARKERS = ("429", "too many requests")
 
+# A 429/rate-limit blip stays GREEN once, but a provider that is 429ing on
+# EVERY scan is not a blip -- it is silently dead (see golive_hardening_backlog
+# finding #2). Same persistent-counter shape as the schema-drift counter above;
+# promote_persistent_transient() escalates a (sport,provider) pair to RED (not
+# soft_red -- an indefinite 429 IS an outage, unlike schema noise) once it has
+# been transient_degrade on >=_TRANSIENT_THRESHOLD CONSECUTIVE scans.
+_TRANSIENT_COUNTER_PATH = _REPO / "data" / "cache" / "transient_429_counters.json"
+_TRANSIENT_THRESHOLD = 3
+
 # Sports that are capture-only / no-model (verdicts come from a resolver like
 # kalshi/kbo results, never from a live in-game model dispatch) AND have a
 # KNOWN structural venue gap: pinnacle carries no league-id mapping for them
@@ -213,6 +222,41 @@ def promote_persistent_drift(notes: Dict[str, Any], *,
     return notes
 
 
+def promote_persistent_transient(rows: List[Dict[str, Any]], *,
+                                 counter_path: Optional[Path] = None,
+                                 threshold: int = _TRANSIENT_THRESHOLD) -> List[Dict[str, Any]]:
+    """Escalate a (sport, provider) row from GREEN/transient_degrade to RED once
+    it has 429'd/rate-limited on >=*threshold* CONSECUTIVE scans, backed by a
+    small persistent counter (reuses the schema-drift counter's on-disk shape).
+    A scan where the pair is NOT transient this time (real GREEN, a real RED
+    fault, or simply absent) resets its counter to 0. Unlike schema-drift's
+    soft_red (which never flips the top-level status), this DOES flip the row
+    to RED -- an indefinitely-429ing provider is a real outage, not noise.
+    Mutates + returns *rows*. Never raises."""
+    path = counter_path if counter_path is not None else _TRANSIENT_COUNTER_PATH
+    try:
+        counters = _load_drift_counters(path)
+        seen: set = set()
+        for row in rows or []:
+            key = "%s|%s" % (row.get("sport"), row.get("provider"))
+            seen.add(key)
+            if row.get("transient_degrade"):
+                counters[key] = counters.get(key, 0) + 1
+                if counters[key] >= threshold:
+                    row["status"] = RED
+                    row["reason"] = "persistent_429:%s" % (row.get("reason") or "")
+                    row["consecutive_transient_429"] = counters[key]
+            else:
+                counters[key] = 0
+        for key in list(counters):        # reset any pair not seen this scan
+            if key not in seen:
+                counters[key] = 0
+        _save_drift_counters(counters, path)
+    except Exception:  # noqa: BLE001 -- promotion must never sink feed_health
+        pass
+    return rows
+
+
 def _schema_drift_notes(sports: Sequence[str], *,
                         counter_path: Optional[Path] = None) -> Dict[str, Any]:
     """Best-effort schema-drift overlay per sport. Never raises; a sport with
@@ -235,11 +279,15 @@ def scan(
     sports: Sequence[str] = DEFAULT_SPORTS,
     *, providers: Optional[Sequence[Any]] = None,
     provider_fn: Optional[Callable[[], Sequence[Any]]] = None,
+    transient_counter_path: Optional[Path] = None,
 ) -> Dict[str, Any]:
     """Probe every (provider, sport) pair. Never raises.
 
     ``providers`` injects a fixed list (offline tests); ``provider_fn`` injects a
     factory (matches aggregate's own laziness); default reuses the live stack.
+    ``transient_counter_path`` overrides the persistent 429-streak counter file
+    (tests should always pass a tmp_path here so the shared repo counter never
+    accumulates state across unrelated test runs).
     """
     if providers is not None:
         provs = list(providers)
@@ -252,6 +300,8 @@ def scan(
     for prov in provs:
         for sport in sports:
             rows.append(probe_one(prov, sport))
+
+    promote_persistent_transient(rows, counter_path=transient_counter_path)
 
     n_red = sum(1 for r in rows if r["status"] == RED)
     by_provider: Dict[str, Any] = {}
@@ -376,4 +426,5 @@ if __name__ == "__main__":
 
 __all__ = ["GREEN", "RED", "SOFT_RED", "DEFAULT_SPORTS", "PROVIDER_HOSTS",
            "CAPTURE_ONLY_SPORTS", "probe_one", "scan", "heal", "write_status",
-           "load_status", "render", "promote_persistent_drift"]
+           "load_status", "render", "promote_persistent_drift",
+           "promote_persistent_transient"]

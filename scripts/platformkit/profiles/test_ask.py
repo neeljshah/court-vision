@@ -84,6 +84,67 @@ def test_missing_profiles_graceful(tmp_path, monkeypatch):
     assert "No profiles built yet" in out
 
 
+def _make_soccer_dupe_profiles(tmp_path):
+    rows = [
+        # upstream data bug: a fallback row where entity_id == entity_name,
+        # duplicating the real numeric-id row below (verified live, 2026-07
+        # -17: 7 soccer teams carry exactly this pattern, e.g. Chelsea/
+        # Everton/Arsenal each have BOTH a real numeric-string id AND a
+        # placeholder id literally equal to the name).
+        dict(entity_id="Chelsea", entity_name="Chelsea", window="2024-25", attribute="formation_primary_xg",
+             raw_value=1.1, percentile=50, rating_2k=60, n=10,
+             ingredients="{}", status="DESCRIPTIVE", sources="soccer/x"),
+        dict(entity_id="33", entity_name="Chelsea", window="2024-25", attribute="clean_sheet_rate",
+             raw_value=0.42, percentile=70, rating_2k=77, n=38,
+             ingredients="{}", status="DESCRIPTIVE", sources="soccer/x"),
+        # a genuinely DIFFERENT, non-colliding name (the real women's club) --
+        # must never be affected by the dedup below.
+        dict(entity_id="971", entity_name="Chelsea FCW", window="2024-25", attribute="clean_sheet_rate",
+             raw_value=0.55, percentile=80, rating_2k=84, n=20,
+             ingredients="{}", status="DESCRIPTIVE", sources="soccer/x"),
+    ]
+    p = tmp_path / "soccer_team_profiles.parquet"
+    pd.DataFrame(rows).to_parquet(p)
+    return tmp_path
+
+
+def test_fallback_id_duplicate_does_not_create_false_ambiguity(tmp_path, monkeypatch):
+    """2026-07-17 pod coverage-stress defect 4: 'What's Chelsea's clean sheet
+    rate?' resolved AMBIGUOUS with two candidates that printed identically
+    ('Chelsea (soccer)' twice) -- root cause was a duplicate profile row
+    (entity_id == entity_name placeholder) shadowing the real numeric-id row,
+    not a genuine two-team collision. Must now resolve to the real row."""
+    monkeypatch.setattr(ask, "PROFILES_DIR", str(_make_soccer_dupe_profiles(tmp_path)))
+    # possessive phrasing, matching the real defect report verbatim -- "chelsea's"
+    # (with apostrophe) resolves "Chelsea" only via the full-name substring bonus,
+    # never an exact "chelsea" token match, so it does NOT also tie "Chelsea FCW"
+    # (a real different name that must stay untouched by the dedup).
+    r = ask.answer_lookup("What's Chelsea's clean sheet rate this season?", "soccer")
+    assert r["status"] == "ok"
+    assert r["row"]["entity_id"] == "33"
+    assert r["row"]["raw_value"] == 0.42
+
+
+def test_genuinely_different_named_entities_still_ambiguous(tmp_path, monkeypatch):
+    """The dedup must only drop a same-NAME fallback-id duplicate -- a real
+    two-entity name collision (two different real, non-fallback ids sharing
+    one name) still returns ambiguous with candidates."""
+    rows = [
+        dict(entity_id="10", entity_name="Park", window="2024-25", attribute="clean_sheet_rate",
+             raw_value=0.3, percentile=40, rating_2k=55, n=10,
+             ingredients="{}", status="DESCRIPTIVE", sources="soccer/x"),
+        dict(entity_id="20", entity_name="Park", window="2024-25", attribute="clean_sheet_rate",
+             raw_value=0.6, percentile=90, rating_2k=90, n=10,
+             ingredients="{}", status="DESCRIPTIVE", sources="soccer/x"),
+    ]
+    p = tmp_path / "soccer_team_profiles.parquet"
+    pd.DataFrame(rows).to_parquet(p)
+    monkeypatch.setattr(ask, "PROFILES_DIR", str(tmp_path))
+    r = ask.answer_lookup("Park clean sheet rate", "soccer")
+    assert r["status"] == "ambiguous"
+    assert len(r["candidates"]) == 2
+
+
 def test_weight_hook_unweighted(tmp_path, monkeypatch):
     # synthetic registry: two nba attributes declare families, one soccer
     fake = {

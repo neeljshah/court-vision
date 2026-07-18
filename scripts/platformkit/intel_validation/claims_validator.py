@@ -136,6 +136,14 @@ def validate_claim(claim: dict[str, Any]) -> ClaimVerdict:
             return ClaimVerdict(claim_id, "UNVERIFIABLE", reason=f"aggregate recompute error: {e}")
         except Exception as e:  # noqa: BLE001 -- fail closed, never silently skip
             return ClaimVerdict(claim_id, "UNVERIFIABLE", reason=f"aggregate recompute error: {e}")
+        # Zero/non-finite denominator entities (e.g. ast_to_tov with
+        # sum(tov)==0) never enter a ranking -- same honest-exclusion idiom
+        # the producer applies (claims_factory._build_dim_claim), folded
+        # into the same n_excluded count so the independent recompute stays
+        # consistent with what a non-NaN-emitting producer would publish.
+        finite_mask = np.isfinite(recomputed["_value"])
+        n_excluded += int((~finite_mask).sum())
+        recomputed = recomputed[finite_mask]
         id_col = criteria["aggregate"]["group_by"]
         if id_col != entity_key:
             return ClaimVerdict(

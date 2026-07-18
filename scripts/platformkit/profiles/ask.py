@@ -122,6 +122,26 @@ def load_registry(sport: str) -> dict:
     return reg
 
 
+def _drop_fallback_id_dupes(hits: list) -> list:
+    """A profile builder that can't resolve a real id sometimes falls back to
+    entity_id == entity_name (verified live: 7 soccer team rows, e.g.
+    entity_id 'Chelsea' sitting alongside the real id '33', both
+    entity_name 'Chelsea') -- an upstream duplicate row, not a second real
+    entity. Drop the placeholder row whenever a real-id row shares its exact
+    name, so a plain team name resolves to one entity instead of a false
+    AMBIGUOUS. A genuinely different name (e.g. 'Chelsea FCW', the women's
+    club) is a different group here and untouched -- a real two-entity tie
+    still returns ambiguous with candidates."""
+    by_name: dict[str, list] = {}
+    for h in hits:
+        by_name.setdefault(h[1], []).append(h)
+    out: list = []
+    for group in by_name.values():
+        real = [h for h in group if str(h[0]) != str(h[1])]
+        out.extend(real if real else group)
+    return out
+
+
 def _match_entities(df: pd.DataFrame, q_tokens: list[str]):
     """Score each distinct entity by name-token overlap with the query.
     Returns (best_score, [(entity_id, entity_name, sport), ...] at best score)."""
@@ -157,7 +177,7 @@ def _match_entities(df: pd.DataFrame, q_tokens: list[str]):
                         seen.add(e)
                         hits.append(e)
         best = 1 if hits else 0
-    return best, hits
+    return best, _drop_fallback_id_dupes(hits)
 
 
 def _match_attribute(sub: pd.DataFrame, tokens: list[str], reg: dict) -> str | None:

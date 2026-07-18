@@ -18,6 +18,7 @@ import math
 from datetime import datetime, timezone
 from typing import Any
 
+import numpy as np
 import pandas as pd
 
 from scripts.platformkit.intel_validation.aggregate_recompute import recompute_aggregate
@@ -54,6 +55,12 @@ def _recompute_group(
             return None, None, 0, f"aggregate recompute error: {e}"
         except Exception as e:  # noqa: BLE001 -- fail closed, never silently skip
             return None, None, 0, f"aggregate recompute error: {e}"
+        # Zero/non-finite denominator entities never enter a ranking -- SAME
+        # fix as claims_validator.py's inline aggregate branch (parity is
+        # this module's contract, see module docstring).
+        finite_mask = np.isfinite(recomputed["_value"])
+        n_excluded += int((~finite_mask).sum())
+        recomputed = recomputed[finite_mask]
         id_col = criteria["aggregate"]["group_by"]
         if id_col != entity_key:
             return None, None, 0, (

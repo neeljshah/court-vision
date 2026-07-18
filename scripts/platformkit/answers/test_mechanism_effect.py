@@ -174,3 +174,33 @@ def test_contract_client_renders_ambiguous(frozen_nba_ledger):
 def test_contract_client_renders_not_supported(frozen_nba_ledger):
     rendered = CC.answer("what does the evidence say about teleportation field advantage", sport="nba")
     assert rendered.startswith("NOT_SUPPORTED")
+
+
+# ---------------------------------------------------------------------------
+# RESOLVER BRIDGE fallback (2026-07-17 pod coverage-stress defect 3): a
+# not_supported/no_data mechanism_effect result retries the VERIFIED-claims
+# bridge (claims_resolver.resolve) before giving up. Proven here with a
+# monkeypatched claims_resolver so the wiring is verified independent of
+# whether any real claim family happens to match today's exact phrasing --
+# see qa_bank.py's grounded, honestly-still-not_supported catcher-framing row
+# for the real-data behavior (ask()'s NL matching, a separate gap, is why
+# that literal sentence doesn't trip the bridge today).
+# ---------------------------------------------------------------------------
+def test_mechanism_not_supported_falls_back_to_claims_bridge_when_it_answers(frozen_nba_ledger, monkeypatch):
+    bridged = {"status": "ok", "category": "verified_claims", "sport": "mlb",
+               "source_artifact": "data/cache/intel_claims/catcher_framing_claims.jsonl",
+               "as_of": "2026-07-08T00:00:00", "claim_id": "mlb_catcher_framing_top50_2022_2023",
+               "validator_verdict": "VERIFIED", "ranking_excerpt": [], "caveats": [], "evidence": []}
+    monkeypatch.setattr(R._claims, "resolve", lambda query, sport, **kw: bridged)
+    r = R.resolve("what does the evidence say about catcher framing runs saved", sport="mlb")
+    assert r["status"] == "ok"
+    assert r["claim_id"] == "mlb_catcher_framing_top50_2022_2023"
+    assert r["note"] == "mechanism ledger had no match; answered from the VERIFIED claims store"
+
+
+def test_mechanism_not_supported_keeps_original_envelope_when_bridge_also_misses(frozen_nba_ledger, monkeypatch):
+    monkeypatch.setattr(R._claims, "resolve",
+                        lambda query, sport, **kw: {"status": "no_data", "category": "verified_claims"})
+    r = R.resolve("what does the evidence say about teleportation field advantage", sport="nba")
+    assert r["status"] == "not_supported"
+    assert "Registered hypotheses" in r["note"]  # original mechanism envelope, untouched

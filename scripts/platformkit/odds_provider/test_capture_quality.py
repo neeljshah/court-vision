@@ -6,8 +6,18 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from scripts.platformkit.odds_provider.capture_quality import (
-    GREEN, NO_DATA, REGRESSION, _provider_drops, load_status, measure, render,
-    scoreboard, write_status)
+    DEFAULT_SPORTS, GREEN, NO_DATA, REGRESSION, _provider_drops, load_status,
+    measure, render, scoreboard, write_status)
+from scripts.platformkit.odds_provider.feed_health import (
+    DEFAULT_SPORTS as _FEED_HEALTH_DEFAULT_SPORTS)
+
+
+def test_default_sports_matches_feed_health_single_source_of_truth():
+    # go-live hardening finding #3 (2026-07-17): capture_quality previously
+    # hardcoded its own DEFAULT_SPORTS and omitted wnba/npb even though
+    # feed_health's was widened to include both on 2026-07-03.
+    assert DEFAULT_SPORTS == _FEED_HEALTH_DEFAULT_SPORTS
+    assert {"wnba", "npb"} <= set(DEFAULT_SPORTS)
 
 
 def _row(game_id="g1", book="espn:DraftKings", odds=1.9, ts="2026-07-03T10:00:00+00:00"):

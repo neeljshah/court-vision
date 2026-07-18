@@ -106,18 +106,48 @@ def check_all(table: Optional[Dict[str, _Entry]] = None,
 
 def write_status(rows: List[Dict[str, Any]], *, out_path: Optional[Path] = None,
                  now: Optional[float] = None) -> bool:
-    """Atomically write the freshness rows (tmp + os.replace). Never raises."""
+    """Atomically write the freshness rows (tmp + os.replace). Never raises.
+
+    STALE-INPUT VISIBILITY (go-live hardening finding #4, 2026-07-17): this
+    artifact was previously recomputed+written every tick regardless of whether
+    any of the CHECKED inputs (the m19-m27 output files rows[] reports on) had
+    actually advanced since the LAST time this artifact itself was written --
+    silently masking a scenario where the sentinel keeps re-deriving the same
+    verdict from unchanged source data. newest_input_mtime (derived from each
+    row's own age_sec) is now stamped into the artifact, and stale_inputs is
+    True when that newest input is OLDER than this artifact's own previous
+    generated_at -- i.e. nothing checked this cycle has changed since the prior
+    write. A missing/unreadable previous artifact never sets stale_inputs.
+    """
     try:
         path = Path(out_path) if out_path is not None else STATUS_PATH
         ts = float(now) if now is not None else time.time()
         n_red = sum(1 for r in rows if r.get("status") == RED)
+        input_mtimes = [ts - r["age_sec"] for r in (rows or [])
+                        if isinstance(r, dict) and isinstance(r.get("age_sec"), (int, float))]
+        newest_input_mtime = max(input_mtimes) if input_mtimes else None
+        prev_generated_at = None
+        try:
+            if path.exists():
+                prev_generated_at = json.loads(
+                    path.read_text(encoding="ascii")).get("generated_at")
+        except Exception:  # noqa: BLE001 -- an unreadable prior write is not stale_inputs
+            prev_generated_at = None
+        stale_inputs = bool(
+            newest_input_mtime is not None
+            and isinstance(prev_generated_at, (int, float))
+            and newest_input_mtime < prev_generated_at)
         doc = {
             "generated_at": ts, "component": COMPONENT, "rows": list(rows or []),
             "n_daemons": len(rows or []), "n_red": n_red,
             "overall": RED if n_red else GREEN,
+            "newest_input_mtime": newest_input_mtime,
+            "stale_inputs": stale_inputs,
             "honest_note": ("output-freshness only; NO restart authority; read-only; "
                             "no $ field; a wedged (alive-but-silent) daemon shows RED "
-                            "here even though the supervisor still sees it as running."),
+                            "here even though the supervisor still sees it as running. "
+                            "stale_inputs=true means none of this cycle's checked inputs "
+                            "have advanced since this artifact's own previous write."),
         }
         path.parent.mkdir(parents=True, exist_ok=True)
         tmp = path.with_suffix(path.suffix + ".tmp")

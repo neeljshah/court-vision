@@ -250,6 +250,36 @@ def test_generate_family_unknown_family_raises(grid_and_out):
         cf.generate_family("test_sport", "nonexistent_family", grid, out_dir)
 
 
+def test_zero_denominator_excluded_never_emits_nan(tmp_path):
+    """A ratio dim (ast_to_tov-shaped: num=sum(ast), den=sum(tov)) must
+    exclude a zero-turnover player instead of emitting NaN/inf -- honestly
+    counted in n_excluded_below_floor, same idiom as a below-floor exclusion.
+    Regression test for the 442-row NaN class (player_id=0, sum(tov)=0)."""
+    rows = _synthetic_boxscore_rows()
+    rows["ast"] = 5
+    rows["tov"] = rows["player_id"].map({1: 2, 2: 2, 3: 0})  # player 3: zero TOV all season
+
+    grid = _tiny_grid(str(tmp_path / "box.parquet").replace("\\", "/"))
+    grid["families"][0]["dims"] = [{"metric": "ast_to_tov", "agg": {"num": "sum(ast)", "den": "sum(tov)"}}]
+    rows.to_parquet(tmp_path / "box.parquet")
+
+    out_dir = tmp_path / "out"
+    res = cf.generate_family("test_sport", "test_fam", grid, out_dir)
+    assert res["n_excluded_below_floor"] > 0
+
+    lines = (out_dir / "test_fam.jsonl").read_text(encoding="ascii").strip().split("\n")
+    for line in lines:
+        claim = json.loads(line)
+        ranked_ids = {row["player_id"] for row in claim["ranking"]}
+        assert 3 not in ranked_ids, "zero-tov player 3 must be excluded, not ranked"
+        for row in claim["ranking"]:
+            v = row["value"]
+            assert v == v, f"{claim['claim_id']}: NaN value emitted"  # v==v is False iff NaN
+            assert v not in (float("inf"), float("-inf")), f"{claim['claim_id']}: inf value emitted"
+        verdict = validate_claim(claim)
+        assert verdict.verdict == "VERIFIED", f"{claim['claim_id']}: {verdict.reason}"
+
+
 def test_no_edge_language_in_any_claim(grid_and_out):
     _BANNED = ("18.38", "0.119", "+54", "78.11", "8.94", "54.57", "roi", "bankroll", "pnl")
     grid, out_dir = grid_and_out

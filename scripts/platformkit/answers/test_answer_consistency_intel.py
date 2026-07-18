@@ -154,3 +154,16 @@ def test_lead_re_strips_scout_report_and_back_to_back_prefixes():
     assert stripped.lower().endswith("celtics") and "back to back" not in stripped.lower()
     assert R._entity_from_query("back-to-back for the Lakers").lower().endswith("lakers")
     assert R._entity_from_query("b2b for the Nuggets").lower().endswith("nuggets")
+
+
+def test_entity_from_query_strips_interrogative_wrappers_and_articles():
+    """2026-07-17 pod coverage-stress gap report, defect 1: an interrogative
+    wrapper question left the WHOLE question as the extracted entity (no
+    known lead-in phrase sat at position 0), and a leading article ('the')
+    was never stripped at all -- 'the Astros' stayed 'the Astros'."""
+    assert R._entity_from_query(
+        "How many rest days do the Bucks have before their next game?") == "Bucks"
+    assert R._entity_from_query("Are the Lakers on a back-to-back tonight?") == "Lakers"
+    assert R._entity_from_query("rest days for the Astros") == "Astros"
+    assert R._entity_from_query("back to back for the Red Sox") == "Red Sox"
+    assert R._entity_from_query("schedule context for Yankees") == "Yankees"  # unchanged: no article present
