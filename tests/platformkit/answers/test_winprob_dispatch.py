@@ -8,6 +8,8 @@ from __future__ import annotations
 
 import json
 import subprocess
+import threading
+import time
 
 import pytest
 
@@ -74,3 +76,31 @@ def test_timeout_is_no_data(monkeypatch):
     r = D.dispatch("mlb", "NYY", "BOS")
     assert r["status"] == "no_data"
     assert "timed out" in r["note"]
+
+
+def test_concurrent_dispatch_is_serialized(monkeypatch):
+    # golive_hardening_backlog #10: no cap on concurrent subprocess launches
+    # (total-outage risk -- box_ram_crashes_2026_07_16). Two threads calling
+    # dispatch() at once must never run subprocess.run simultaneously.
+    concurrent = 0
+    max_concurrent = 0
+    lock = threading.Lock()
+
+    def _slow_run(*a, **k):
+        nonlocal concurrent, max_concurrent
+        with lock:
+            concurrent += 1
+            max_concurrent = max(max_concurrent, concurrent)
+        time.sleep(0.05)
+        with lock:
+            concurrent -= 1
+        return _Proc(0, json.dumps(_FIXED_RESULT), "")
+
+    monkeypatch.setattr(subprocess, "run", _slow_run)
+    threads = [threading.Thread(target=D.dispatch, args=("mlb", "NYY", "BOS"))
+               for _ in range(3)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    assert max_concurrent == 1

@@ -355,13 +355,27 @@ _SYSTEM_MAP_KEYWORDS = ("system map", "how does the system", "what produces", "w
 # -- but "preview"/"matchup"/"comparable" appear in no concept keyword, so a
 # real concept question ("X vs Y on gravity") still falls through to concept.
 _INJURY_KEYWORDS = ("injury report", "injury status", "injuries for", "injuries of", "is injured", "hurt list",
-                    "out tonight")
+                    "out tonight",
+                    # 2026-07-18 coverage_stress extension: real bank phrasings naming
+                    # "injur*" in a shape none of the phrases above catch ("documented
+                    # injuries", "injury history", "injury designation", "due to
+                    # injury") were falling through to the player_stat default shape
+                    # (an honest but avoidable no_data -- these never name a real
+                    # registered attribute either).
+                    "documented injuries", "injury history", "injury designation", "due to injury")
 # "Is <Name> injured [right now]?" -- the name sits BETWEEN "is" and "injured",
 # so the plain substring check above (which needs the literal phrase "is
 # injured" adjacent) never fires on real phrasing. Captures the name so
 # resolve() can pass it as player= (a personal name, never a team) instead of
 # the team= extraction the older "injury report for <team>" lead-in uses.
 _INJURY_IS_RE = re.compile(r"\bis\s+(.+?)\s+injured\b", re.I)
+# Same "is <Name> ..." shape, different tail ("Is Sabrina Ionescu currently
+# dealing with any documented injuries?", "Is Caitlin Clark listed with any
+# injury designation right now?" -- real bank phrasing, 2026-07-18). Gated on
+# an explicit injur* token elsewhere in the query so it never steals an
+# unrelated "is X currently the MVP"-shaped question.
+_INJURY_IS_BROAD_RE = re.compile(
+    r"\bis\s+(.+?)\s+(?:currently\s+dealing\s+with|listed\s+with|dealing\s+with)\b", re.I)
 _NEWS_KEYWORDS = ("news context", "latest news", "news about", "news for", "recent news")
 _SCHEDULE_KEYWORDS = ("schedule context", "rest days", "back to back", "back-to-back", "b2b",
                       "days of rest", "schedule for",
@@ -771,6 +785,14 @@ _LEAD_RE = re.compile(
     r"matchup preview(?: for)?|game preview(?: for)?|preview|"
     r"win probability(?: (?:for|of))?|win prob(?: (?:for|of))?|who wins"
     r")\s+", re.I)
+# Interrogative wrapper ("What's the injury report for the Celtics?", "What
+# is the schedule context for the Bucks?") sits BEFORE the whole _LEAD_RE
+# alternation (which is anchored at position 0), so a real lead-in phrase
+# ("injury report for") never gets a chance to match -- found live 2026-07-18
+# in coverage_stress (the WHOLE raw query fell through to team=, an honest
+# but avoidable no_data). Stripped first, unconditionally; a query that
+# doesn't start with this wrapper is untouched.
+_INTERROGATIVE_WRAP_RE = re.compile(r"^\s*what(?:'s|s|\s+is|\s+are)?\s+(?:the\s+)?", re.I)
 _VS_RE = re.compile(r"\s+(?:vs\.?|versus|@|at)\s+", re.I)
 # Interrogative wrapper questions ("How many rest days do the Bucks HAVE
 # before their next game?", "Are the Lakers ON a back-to-back tonight?") leave
@@ -782,10 +804,11 @@ _TRAIL_RE = re.compile(r"\s+(?:have|has|do|does|is|are|on)\b.*$", re.I)
 
 
 def _entity_from_query(query: str) -> str:
-    """Strip a known lead-in phrase, a trailing interrogative clause, and a
-    leading article -- the remainder is the team/player. Returns the trimmed
-    query unchanged if nothing matched."""
-    stripped = _LEAD_RE.sub("", query, count=1).strip().strip("?").strip()
+    """Strip a leading interrogative wrapper, a known lead-in phrase, a
+    trailing interrogative clause, and a leading article -- the remainder is
+    the team/player. Returns the trimmed query unchanged if nothing matched."""
+    unwrapped = _INTERROGATIVE_WRAP_RE.sub("", query, count=1)
+    stripped = _LEAD_RE.sub("", unwrapped, count=1).strip().strip("?").strip()
     stripped = _TRAIL_RE.sub("", stripped).strip()
     return re.sub(r"^the\s+", "", stripped, flags=re.I)
 
@@ -800,11 +823,14 @@ _PLAYS_RE = re.compile(
 
 
 def _injury_player_from_query(query: str) -> str | None:
-    """Player name for an 'is X injured [right now]' phrasing -- this always
+    """Player name for an 'is X injured [right now]' phrasing (or the broader
+    'is X currently dealing with .../listed with ...' shape) -- this always
     names a PERSON, never a team, so it feeds injury_report's player= kwarg
     directly (unlike the older 'injury report for <team>' lead-in, which
     _entity_from_query/_LEAD_RE strips into team=)."""
     m = _INJURY_IS_RE.search(query)
+    if not m and "injur" in query.lower():
+        m = _INJURY_IS_BROAD_RE.search(query)
     if not m:
         return None
     return re.sub(r"^\s*the\s+", "", m.group(1).strip(), flags=re.I)
@@ -976,6 +1002,16 @@ def resolve(query: str, sport: str = "nba", category: str | None = None, **kwarg
         player = kwargs.get("player") or _injury_player_from_query(query)
         team = kwargs.get("team") if player else (kwargs.get("team") or _entity_from_query(query))
         result = _edge_facts.injury_report(sport, team=team, player=player)
+        # A lead-in like "injury status for <Name>"/"injury report for <Name>"
+        # names a PLAYER as often as a TEAM ("injury status for Tommy Pham"),
+        # but _entity_from_query always feeds the extraction into team= first
+        # (found live 2026-07-18: real bank phrasing). A team-lookup miss on
+        # an entity nobody passed explicitly as team= is retried once as a
+        # player -- never overrides a caller's own explicit team=.
+        if (result["status"] == "no_data" and team and not player and not kwargs.get("team")):
+            retry = _edge_facts.injury_report(sport, player=team)
+            if retry["status"] == "ok":
+                return retry
         # A resolved PLAYER name (real phrasing, "is X injured") that matched
         # zero rows in a STORE THAT EXISTS is an honest "not currently listed"
         # answer, not a failure -- distinct from an absent store (real
@@ -988,8 +1024,17 @@ def resolve(query: str, sport: str = "nba", category: str | None = None, **kwarg
                     "note": f"{player} not found on the current injury report as of {as_of}"}
         return result
     if cat == "news_context":
-        return _edge_facts.news_context(sport, team=kwargs.get("team") or _entity_from_query(query),
-                                        player=kwargs.get("player"))
+        team = kwargs.get("team") or _entity_from_query(query)
+        player_kw = kwargs.get("player")
+        result = _edge_facts.news_context(sport, team=team, player=player_kw)
+        # Same team/player ambiguity as injury_report above ("latest news
+        # about Aaron Judge" extracts a PERSON into team=) -- retry once as
+        # player on a team-lookup miss, never overriding an explicit team=.
+        if (result["status"] == "no_data" and team and not player_kw and not kwargs.get("team")):
+            retry = _edge_facts.news_context(sport, player=team)
+            if retry["status"] == "ok":
+                return retry
+        return result
     if cat == "schedule_context":
         team = kwargs.get("team") or _entity_from_query(query)
         if any(k in query.lower() for k in _SCHEDULE_SPLIT_KEYWORDS):

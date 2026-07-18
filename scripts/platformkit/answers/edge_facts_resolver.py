@@ -31,6 +31,7 @@ except ImportError:  # direct-script / per-file-test fallback
     import sys
     sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
     from scripts.platformkit.edge_engine import facts_store as FS  # type: ignore
+from scripts.platformkit.odds_provider.team_resolver import canonical as _team_canonical
 
 STALE_DAYS = 7.0  # both injury and news facts churn weekly -- same bound for both categories
 _FUZZY_CUTOFF = 0.6
@@ -53,14 +54,39 @@ def _row_ts(row: dict) -> str | None:
     return row.get("fetched_at") or row.get("published")
 
 
-def _match_rows(rows: list[dict], field: str, entity: str) -> tuple[list[dict], str | None]:
-    """Exact (case-insensitive) match first; fuzzy fallback over the distinct
-    values actually present. Returns (matched_rows, matched_value_or_None)."""
+def _canon_match(entity: str, candidates: list[str], sport: str | None) -> str | None:
+    """Nickname->full-name bridge for TEAM fields only (never player names):
+    fact-store rows carry the full display name ("Los Angeles Dodgers",
+    "Boston Celtics") but real queries name the bare nickname ("Dodgers",
+    "Celtics") -- difflib's whole-string ratio scores that pair too low
+    (length mismatch) to ever fuzzy-match. Reuses the SAME cross-repo
+    canonicalizer schedule_context_resolver already relies on for this exact
+    problem (scripts.platformkit.odds_provider.team_resolver.canonical) --
+    no new alias table. sport=None (player-field calls) skips this step."""
+    if not sport:
+        return None
+    target = _team_canonical(sport, entity)
+    if not target or target.endswith(":"):
+        return None
+    for c in candidates:
+        if _team_canonical(sport, c) == target:
+            return c
+    return None
+
+
+def _match_rows(rows: list[dict], field: str, entity: str, sport: str | None = None) -> tuple[list[dict], str | None]:
+    """Exact (case-insensitive) match first; canonical nickname match (team
+    fields only, via `sport`); fuzzy fallback over the distinct values
+    actually present. Returns (matched_rows, matched_value_or_None)."""
     needle = entity.strip().lower()
     exact = [r for r in rows if str(r.get(field, "")).strip().lower() == needle]
     if exact:
         return exact, entity
     candidates = sorted({str(r.get(field)) for r in rows if r.get(field)})
+    if field == "team":
+        canon = _canon_match(entity, candidates, sport)
+        if canon is not None:
+            return [r for r in rows if str(r.get(field)) == canon], canon
     close = difflib.get_close_matches(entity, candidates, n=1, cutoff=_FUZZY_CUTOFF)
     if not close:
         return [], None
@@ -68,13 +94,17 @@ def _match_rows(rows: list[dict], field: str, entity: str) -> tuple[list[dict], 
     return [r for r in rows if str(r.get(field)) == matched_value], matched_value
 
 
-def _match_list_field(rows: list[dict], field: str, entity: str) -> tuple[list[dict], str | None]:
+def _match_list_field(rows: list[dict], field: str, entity: str, sport: str | None = None) -> tuple[list[dict], str | None]:
     """Same as _match_rows but `field` holds a list per row (news teams/players)."""
     needle = entity.strip().lower()
     exact = [r for r in rows if any(str(v).strip().lower() == needle for v in r.get(field) or [])]
     if exact:
         return exact, entity
     candidates = sorted({str(v) for r in rows for v in (r.get(field) or [])})
+    if field == "teams":
+        canon = _canon_match(entity, candidates, sport)
+        if canon is not None:
+            return [r for r in rows if canon in (r.get(field) or [])], canon
     close = difflib.get_close_matches(entity, candidates, n=1, cutoff=_FUZZY_CUTOFF)
     if not close:
         return [], None
@@ -116,7 +146,7 @@ def injury_report(sport: str, team: str | None = None, player: str | None = None
     if player:
         matched, matched_value = _match_rows(matched, "player_name", player)
     if team and matched:
-        matched, matched_value = _match_rows(matched, "team", team)
+        matched, matched_value = _match_rows(matched, "team", team, sport=sport)
     if not matched:
         return {"status": "no_data", "category": category, "sport": sport, "source_artifact": str(path),
                 "note": f"no injury row matched team={team!r} player={player!r}"}
@@ -146,7 +176,7 @@ def news_context(sport: str, team: str | None = None, player: str | None = None)
     if player:
         matched, matched_value = _match_list_field(matched, "players", player)
     if team and matched:
-        matched, matched_value = _match_list_field(matched, "teams", team)
+        matched, matched_value = _match_list_field(matched, "teams", team, sport=sport)
     if not matched:
         return {"status": "no_data", "category": category, "sport": sport, "source_artifact": str(path),
                 "note": f"no news row matched team={team!r} player={player!r}"}

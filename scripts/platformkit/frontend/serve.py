@@ -176,6 +176,15 @@ def _read_ps_store_slate(sport: str) -> Optional[Dict[str, Any]]:
         return None
     if env.status != "ok" or not env.predictions:
         return None
+    if _snapshot_is_stale(env.generated_at):
+        # golive_hardening_backlog_2026_07_17 finding #13: a stalled producer
+        # (scheduler wedged, or repeated write failures) left this the ONLY
+        # read path with no staleness guard -- _demote_if_all_past only fires
+        # once games have started, not while a slate is still upcoming. Apply
+        # the same TTL used by the legacy snapshot path so a stall degrades
+        # to the live-compute/"unavailable" fallback instead of silently
+        # serving an arbitrarily old envelope as status="ok".
+        return None
     edgemap = {}
     for e in env.edges:
         edgemap.setdefault(e.game_id, []).append(e.to_dict())

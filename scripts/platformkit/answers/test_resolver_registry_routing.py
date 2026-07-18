@@ -141,6 +141,58 @@ def test_injury_report_team_phrasing_regression_unaffected(monkeypatch, tmp_path
     assert out["player"] is None
 
 
+def test_is_x_currently_dealing_with_injuries_extracts_player():
+    """'Is <Name> currently dealing with any documented injuries?' / 'Is
+    <Name> listed with any injury designation right now?' -- broader 'is X
+    ...' shapes than the plain 'is X injured' regex (real bank phrasing,
+    2026-07-18 fix); gated on an explicit injur* token so it never fires on
+    an unrelated 'is X currently the MVP' question."""
+    assert R.classify("Is Sabrina Ionescu currently dealing with any documented injuries?") == "injury_report"
+    assert R._injury_player_from_query(
+        "Is Sabrina Ionescu currently dealing with any documented injuries?") == "Sabrina Ionescu"
+    assert R._injury_player_from_query(
+        "Is Caitlin Clark listed with any injury designation right now?") == "Caitlin Clark"
+    assert R._injury_player_from_query("Is Nikola Jokic currently the MVP favorite?") is None
+
+
+def test_injury_status_for_person_retries_as_player(monkeypatch, tmp_path):
+    """'injury status for <Name>' extracts the name into team= first (the
+    generic _entity_from_query path) -- when that name is actually a PLAYER
+    ('injury status for Tommy Pham', real bank phrasing), a team-lookup miss
+    must retry once as player= rather than dead-ending on no_data
+    (2026-07-18 fix)."""
+    monkeypatch.setattr(R._edge_facts.FS, "FACTS_DIR", tmp_path)
+    path = R._edge_facts.FS.path_for("injury", "mlb")
+    R._edge_facts.FS.append_new(path, [
+        {"player_name": "Tommy Pham", "team": "Arizona Diamondbacks", "status": "DAY_TO_DAY", "detail": "d",
+         "report_date": "2026-07-16", "source": "espn", "source_url": "u1",
+         "fetched_at": R._edge_facts.FS.utc_now_iso()},
+    ], lambda r: (r["player_name"], r["fetched_at"]))
+    out = R.resolve("injury status for Tommy Pham", sport="mlb")
+    assert out["status"] == "ok"
+    assert out["rows"][0]["player_name"] == "Tommy Pham"
+
+
+def test_news_context_about_person_retries_as_player(monkeypatch, tmp_path):
+    monkeypatch.setattr(R._edge_facts.FS, "FACTS_DIR", tmp_path)
+    path = R._edge_facts.FS.path_for("news", "mlb")
+    R._edge_facts.FS.append_new(path, [
+        {"headline": "Judge update", "url": "u1", "published": R._edge_facts.FS.utc_now_iso(),
+         "source": "espn_news", "sport": "mlb", "categories": [], "teams": [], "players": ["Aaron Judge"]},
+    ], lambda r: (r["headline"], r["published"]))
+    out = R.resolve("latest news about Aaron Judge", sport="mlb")
+    assert out["status"] == "ok"
+    assert out["matched_entity"] == "Aaron Judge"
+
+
+def test_injury_report_explicit_team_kwarg_never_retried_as_player(monkeypatch, tmp_path):
+    """An explicit team= kwarg from a caller is never silently reinterpreted
+    as a player on a miss (only the free-text extraction path retries)."""
+    monkeypatch.setattr(R._edge_facts.FS, "FACTS_DIR", tmp_path)
+    out = R.resolve("injury report", sport="nba", team="Nonexistent Team Zzz")
+    assert out["status"] == "no_data"
+
+
 # ---------------------------------------------------------------------------
 # FIX 3 -- compound-question splitting
 # ---------------------------------------------------------------------------

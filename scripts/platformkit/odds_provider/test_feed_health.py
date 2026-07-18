@@ -430,3 +430,58 @@ def test_scan_escalates_persistent_429_to_red_overall(tmp_path):
         doc = scan(("mlb",), providers=[prov], transient_counter_path=counter)
     assert doc["overall"] == RED
     assert doc["n_red"] == 1
+
+
+# --------------------------------------------------------------------------- #
+# persistent zero-event tracking (go-live hardening finding #5, 2026-07-17): a
+# bare [] every scan (silent parser regression) must not stay invisibly GREEN
+# forever -- flag it additively after _ZERO_EVENT_THRESHOLD=3 consecutive scans,
+# without flipping status/n_red/overall (a real empty slate is honest, not RED).
+# --------------------------------------------------------------------------- #
+
+def test_promote_persistent_zero_events_stays_unflagged_before_threshold(tmp_path):
+    counter = tmp_path / "zero_event_counters.json"
+    prov = _FakeProvider("pinnacle", {"mlb": []})
+    for _ in range(2):
+        rows = [probe_one(prov, "mlb")]
+        _feed_health.promote_persistent_zero_events(rows, counter_path=counter)
+        assert rows[0]["status"] == GREEN
+        assert "zero_event_persistent" not in rows[0]
+
+
+def test_promote_persistent_zero_events_flags_after_threshold(tmp_path):
+    counter = tmp_path / "zero_event_counters.json"
+    prov = _FakeProvider("pinnacle", {"mlb": []})
+    rows = None
+    for _ in range(3):
+        rows = [probe_one(prov, "mlb")]
+        _feed_health.promote_persistent_zero_events(rows, counter_path=counter)
+    assert rows[0]["status"] == GREEN  # additive only -- never flips to RED
+    assert rows[0]["zero_event_persistent"] is True
+    assert rows[0]["consecutive_zero_events"] == 3
+
+
+def test_promote_persistent_zero_events_resets_on_real_data(tmp_path):
+    counter = tmp_path / "zero_event_counters.json"
+    prov_empty = _FakeProvider("pinnacle", {"mlb": []})
+    prov_data = _FakeProvider("pinnacle", {"mlb": [1, 2]})
+    for _ in range(2):
+        rows = [probe_one(prov_empty, "mlb")]
+        _feed_health.promote_persistent_zero_events(rows, counter_path=counter)
+    recovered = [probe_one(prov_data, "mlb")]
+    _feed_health.promote_persistent_zero_events(recovered, counter_path=counter)
+    assert "zero_event_persistent" not in recovered[0]
+    import json as _json
+    counters = _json.loads(counter.read_text(encoding="ascii"))
+    assert counters["mlb|pinnacle"] == 0
+
+
+def test_scan_zero_events_never_flips_overall_or_n_red(tmp_path):
+    counter = tmp_path / "zero_event_counters.json"
+    prov = _FakeProvider("pinnacle", {"mlb": []})
+    doc = None
+    for _ in range(3):
+        doc = scan(("mlb",), providers=[prov], zero_event_counter_path=counter)
+    assert doc["overall"] == GREEN
+    assert doc["n_red"] == 0
+    assert doc["rows"][0]["zero_event_persistent"] is True

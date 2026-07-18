@@ -190,3 +190,40 @@ def test_api_props_never_calls_bare_unfiltered_providers(monkeypatch):
     assert len(calls) == 1
     _, kwargs = calls[0]
     assert kwargs.get("providers") == []
+
+
+def _fake_ps_env(generated_at, sport="mlb"):
+    from datetime import datetime, timezone  # noqa: PLC0415
+    from predict_service.contracts import PredictionRecord, SnapshotEnvelope  # noqa: PLC0415
+    return SnapshotEnvelope(
+        sport=sport,
+        generated_at=generated_at,
+        status="ok",
+        predictions=[PredictionRecord(sport=sport, game_id="g1", home="NYY", away="BOS")],
+    )
+
+
+class _FakePsStore:
+    def __init__(self, env):
+        self._env = env
+
+    def read_latest(self, sport):  # noqa: ANN001
+        return self._env
+
+
+def test_read_ps_store_slate_fresh_envelope_is_served(monkeypatch):
+    from datetime import datetime, timezone  # noqa: PLC0415
+    fresh = datetime.now(timezone.utc).isoformat()
+    monkeypatch.setattr(serve_mod, "_ps_store", _FakePsStore(_fake_ps_env(fresh)))
+    out = serve_mod._read_ps_store_slate("mlb")
+    assert out is not None
+    assert out["served_from"] == "predict_service_store"
+
+
+def test_read_ps_store_slate_stale_envelope_is_a_miss(monkeypatch):
+    # golive_hardening_backlog #13: a stalled producer's hours-old envelope must
+    # degrade to a cache miss (fall back to live compute), not serve as status='ok'.
+    from datetime import datetime, timedelta, timezone  # noqa: PLC0415
+    stale = (datetime.now(timezone.utc) - timedelta(hours=2)).isoformat()
+    monkeypatch.setattr(serve_mod, "_ps_store", _FakePsStore(_fake_ps_env(stale)))
+    assert serve_mod._read_ps_store_slate("mlb") is None

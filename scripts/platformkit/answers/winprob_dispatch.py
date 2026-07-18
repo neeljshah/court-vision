@@ -22,6 +22,7 @@ import argparse
 import json
 import subprocess
 import sys
+import threading
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -29,6 +30,10 @@ from typing import Any, Dict, Optional
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 _SOURCE_ARTIFACT = "scripts/platformkit/predict_matchup.py"
 _TIMEOUT_S = 60
+# ponytail: process-local cap, not cross-process -- matches the "one heavy
+# python at a time" rule (memory: box_ram_crashes_2026_07_16). Upgrade to a
+# cross-process lock file if concurrent callers ever span multiple processes.
+_SUBPROC_GATE = threading.BoundedSemaphore(1)
 
 # generic ingame_state key -> predict_matchup CLI flag (sport-appropriate
 # interpretation happens inside predict_matchup's own live_kwargs(); we just
@@ -72,8 +77,9 @@ def dispatch(sport: str, home: str, away: str,
     args = _build_args(sport, home, away, ingame_state)
     cmd = [sys.executable, "-m", "scripts.platformkit.predict_matchup", *args]
     try:
-        proc = subprocess.run(cmd, cwd=str(_REPO_ROOT), capture_output=True,
-                              text=True, timeout=_TIMEOUT_S)
+        with _SUBPROC_GATE:
+            proc = subprocess.run(cmd, cwd=str(_REPO_ROOT), capture_output=True,
+                                  text=True, timeout=_TIMEOUT_S)
     except subprocess.TimeoutExpired:
         return {**base, "status": "no_data",
                 "note": f"predict_matchup timed out after {_TIMEOUT_S}s"}

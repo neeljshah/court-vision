@@ -27,6 +27,7 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+import threading
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -36,6 +37,9 @@ _PREDICT_MOD = "scripts.platformkit.predict_matchup"
 _RECAL_MOD = "scripts.platformkit.recal_report"
 _SPORTS = ("nba", "mlb", "soccer", "tennis")
 _ALIASES = {"basketball_nba": "nba"}
+# ponytail: process-local cap on concurrent heavy subprocess launches -- same
+# "one heavy python at a time" rule as winprob_dispatch.py's gate.
+_SUBPROC_GATE = threading.BoundedSemaphore(1)
 # Canonical (current) edge-map location; legacy copy lives under _vault_legacy_archive.
 _EDGE_MAP_DIR = _REPO_ROOT / "vault" / "_Edge_Maps"
 
@@ -68,9 +72,10 @@ def _run_cli(args: List[str]) -> Dict[str, Any]:
     """
     cmd = [sys.executable, "-m", *args]
     try:
-        proc = subprocess.run(
-            cmd, cwd=str(_REPO_ROOT), capture_output=True, text=True, timeout=600,
-        )
+        with _SUBPROC_GATE:
+            proc = subprocess.run(
+                cmd, cwd=str(_REPO_ROOT), capture_output=True, text=True, timeout=600,
+            )
         return {
             "ok": proc.returncode == 0,
             "stdout": proc.stdout,

@@ -129,6 +129,30 @@ def test_news_context_stale_is_refused(tmp_path, monkeypatch):
     assert out["status"] == "refused"
 
 
+def test_injury_report_nickname_matches_full_team_name(tmp_path, monkeypatch):
+    """'Celtics' (bare nickname, real query phrasing) must match a store row
+    keyed by the full display name 'Boston Celtics' -- difflib's whole-string
+    fuzzy ratio scores that pair too low (length mismatch) to ever match on
+    its own; the canonical() bridge (2026-07-18 fix) closes this gap."""
+    _write_injury_rows(monkeypatch, tmp_path, [
+        {"player_name": "Jayson Tatum", "team": "Boston Celtics", "status": "OUT", "detail": "d",
+         "report_date": "2026-07-12", "source": "espn", "source_url": "u1", "fetched_at": _iso(0.1)},
+    ])
+    out = R.injury_report("nba", team="Celtics")
+    assert out["status"] == "ok"
+    assert out["matched_entity"] == "Boston Celtics"
+
+
+def test_news_context_nickname_matches_full_team_name(tmp_path, monkeypatch):
+    _write_news_rows(monkeypatch, tmp_path, [
+        {"headline": "story", "url": "u1", "published": _iso(0.1), "source": "espn_news",
+         "sport": "nba", "categories": [], "teams": ["Boston Celtics"], "players": []},
+    ])
+    out = R.news_context("nba", team="Celtics")
+    assert out["status"] == "ok"
+    assert out["matched_entity"] == "Boston Celtics"
+
+
 def test_resolve_dispatches_by_category_and_rejects_unknown(tmp_path, monkeypatch):
     _write_injury_rows(monkeypatch, tmp_path, [
         {"player_name": "Trae Young", "team": "Atlanta Hawks", "status": "OUT", "detail": "d",

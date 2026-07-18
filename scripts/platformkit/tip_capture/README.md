@@ -28,3 +28,31 @@ never blocks the row).
 (schedule-driven loop). Singleton via POSIX flock (no-op off-POSIX) at
 `data/cache/tip_capture/tip_capture.lock`. Heartbeat:
 `data/cache/daemon_heartbeats/tip_capture.txt`.
+
+## ingame_capture -- live tick capture
+
+Companion daemon for games already IN PROGRESS (`ingame_capture.py`). Every
+~60s it captures every currently-live NBA/WNBA/MLB game (via the existing
+`ingame.ingame_live_state.live_states()` ESPN live-scoreboard reader -- no new
+transport) and appends one row to
+`data/cache/tip_capture/<sport>/ingame_<date>.jsonl` (date=capture date UTC):
+```json
+{"capture_ts": "...", "sport": "nba", "game_id": "...", "home": "...",
+ "away": "...", "period": 3, "inning": null, "clock": 411.0,
+ "score_home": 58, "score_away": 55, "source": "ingame_capture",
+ "model_sha": "<git HEAD sha>",
+ "payload": {"winprob": {...}, "market": {...}, "pbp_tail": {...}}}
+```
+`period`/`clock` are basketball-only (nba/wnba); `inning` is mlb-only -- the
+other is `null` rather than fabricated. `payload.winprob` re-prices
+`answers.winprob_dispatch.dispatch()` off the live score/clock/inning state.
+`payload.market` reuses `capture.capture_market` byte-identical to the
+pregame daemon. `payload.pbp_tail` is the last ~5 ESPN plays (via
+`espn_wp_reference.fetch_summary`'s `plays[]`), with `on_floor` participant
+names when the feed carries them.
+
+Own singleton lock (`ingame_capture.lock`) and heartbeat
+(`data/cache/daemon_heartbeats/ingame_capture.txt`) so this runs alongside
+`daemon.py` without contention. Run:
+`python -m scripts.platformkit.tip_capture.ingame_capture --once` (cron) or
+bare (60s loop, `--tick-sec` to override).

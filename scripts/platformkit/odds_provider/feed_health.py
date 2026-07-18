@@ -90,6 +90,17 @@ _TRANSIENT_REASON_MARKERS = ("429", "too many requests")
 _TRANSIENT_COUNTER_PATH = _REPO / "data" / "cache" / "transient_429_counters.json"
 _TRANSIENT_THRESHOLD = 3
 
+# A bare [] (n_events=0) is classified GREEN like any real result -- a silent
+# parser regression that always yields zero rows without ever raising or
+# hitting is_unavailable() would stay GREEN forever (see golive_hardening_backlog
+# finding #5). Same persistent-counter shape as the other two counters above;
+# a run of >=_ZERO_EVENT_THRESHOLD CONSECUTIVE zero-event GREEN scans is
+# flagged additively (status is left GREEN -- a real empty slate, e.g.
+# off-season, is honest and not an outage) so the JSON stays inspectable
+# without changing n_red/by_provider/overall semantics.
+_ZERO_EVENT_COUNTER_PATH = _REPO / "data" / "cache" / "zero_event_counters.json"
+_ZERO_EVENT_THRESHOLD = 3
+
 # Sports that are capture-only / no-model (verdicts come from a resolver like
 # kalshi/kbo results, never from a live in-game model dispatch) AND have a
 # KNOWN structural venue gap: pinnacle carries no league-id mapping for them
@@ -257,6 +268,39 @@ def promote_persistent_transient(rows: List[Dict[str, Any]], *,
     return rows
 
 
+def promote_persistent_zero_events(rows: List[Dict[str, Any]], *,
+                                   counter_path: Optional[Path] = None,
+                                   threshold: int = _ZERO_EVENT_THRESHOLD) -> List[Dict[str, Any]]:
+    """Flag a (sport, provider) row that has returned n_events==0 GREEN on
+    >=*threshold* CONSECUTIVE scans (see golive_hardening_backlog finding #5).
+    Additive only -- status stays GREEN (an honest empty slate is not an
+    outage), so n_red/by_provider/overall are unchanged; consumers that want
+    the signal read zero_event_persistent/consecutive_zero_events off the row.
+    A scan where the pair is not zero-event GREEN this time resets its
+    counter to 0. Mutates + returns *rows*. Never raises."""
+    path = counter_path if counter_path is not None else _ZERO_EVENT_COUNTER_PATH
+    try:
+        counters = _load_drift_counters(path)
+        seen: set = set()
+        for row in rows or []:
+            key = "%s|%s" % (row.get("sport"), row.get("provider"))
+            seen.add(key)
+            if row.get("status") == GREEN and row.get("n_events") == 0:
+                counters[key] = counters.get(key, 0) + 1
+                if counters[key] >= threshold:
+                    row["zero_event_persistent"] = True
+                    row["consecutive_zero_events"] = counters[key]
+            else:
+                counters[key] = 0
+        for key in list(counters):        # reset any pair not seen this scan
+            if key not in seen:
+                counters[key] = 0
+        _save_drift_counters(counters, path)
+    except Exception:  # noqa: BLE001 -- promotion must never sink feed_health
+        pass
+    return rows
+
+
 def _schema_drift_notes(sports: Sequence[str], *,
                         counter_path: Optional[Path] = None) -> Dict[str, Any]:
     """Best-effort schema-drift overlay per sport. Never raises; a sport with
@@ -280,14 +324,15 @@ def scan(
     *, providers: Optional[Sequence[Any]] = None,
     provider_fn: Optional[Callable[[], Sequence[Any]]] = None,
     transient_counter_path: Optional[Path] = None,
+    zero_event_counter_path: Optional[Path] = None,
 ) -> Dict[str, Any]:
     """Probe every (provider, sport) pair. Never raises.
 
     ``providers`` injects a fixed list (offline tests); ``provider_fn`` injects a
     factory (matches aggregate's own laziness); default reuses the live stack.
-    ``transient_counter_path`` overrides the persistent 429-streak counter file
-    (tests should always pass a tmp_path here so the shared repo counter never
-    accumulates state across unrelated test runs).
+    ``transient_counter_path``/``zero_event_counter_path`` override the
+    persistent streak-counter files (tests should always pass a tmp_path here
+    so the shared repo counters never accumulate state across unrelated runs).
     """
     if providers is not None:
         provs = list(providers)
@@ -302,6 +347,7 @@ def scan(
             rows.append(probe_one(prov, sport))
 
     promote_persistent_transient(rows, counter_path=transient_counter_path)
+    promote_persistent_zero_events(rows, counter_path=zero_event_counter_path)
 
     n_red = sum(1 for r in rows if r["status"] == RED)
     by_provider: Dict[str, Any] = {}
@@ -427,4 +473,4 @@ if __name__ == "__main__":
 __all__ = ["GREEN", "RED", "SOFT_RED", "DEFAULT_SPORTS", "PROVIDER_HOSTS",
            "CAPTURE_ONLY_SPORTS", "probe_one", "scan", "heal", "write_status",
            "load_status", "render", "promote_persistent_drift",
-           "promote_persistent_transient"]
+           "promote_persistent_transient", "promote_persistent_zero_events"]

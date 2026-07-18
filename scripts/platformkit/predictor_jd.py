@@ -26,6 +26,7 @@ INVARIANTS: never edit src/ or kernel/; reuse the domain predictors; <=300 LOC; 
 """
 from __future__ import annotations
 
+import time
 from typing import Any, Dict, List, Optional, Tuple
 
 # Representative demo matchups per sport (two strong sides / top players present in the corpus).
@@ -43,6 +44,13 @@ _DEMO_MATCHUPS: Dict[str, Dict[str, Any]] = {
 
 # Lazily-built, cached predictor instances (corpus replay is expensive -- do it once per sport).
 _PREDICTOR_CACHE: Dict[str, Any] = {}
+# Build wall-clock (time.time()) per cached sport -- backs the TTL below (see
+# golive_hardening_backlog_2026_07_17 finding #7: this cache never expired,
+# so an always-on process kept serving a frozen predictor snapshot forever
+# while the source parquet was refreshed underneath it). Mirrors the
+# 3600s TTL discipline already used by frontend/serve.py's snapshot cache.
+_PREDICTOR_CACHE_BUILT_AT: Dict[str, float] = {}
+_PREDICTOR_TTL_SECONDS = 3600.0
 # Cached JDs (None is a valid cached value meaning "tried and failed/unavailable").
 _JD_CACHE: Dict[str, Any] = {}
 _JD_CACHE_SET: set = set()
@@ -120,7 +128,11 @@ def _build_predictor(sport: str) -> Optional[Any]:
     """
     s = sport.lower()
     if s in _PREDICTOR_CACHE:
-        return _PREDICTOR_CACHE[s]
+        built_at = _PREDICTOR_CACHE_BUILT_AT.get(s, 0.0)
+        if (time.time() - built_at) < _PREDICTOR_TTL_SECONDS:
+            return _PREDICTOR_CACHE[s]
+        # TTL expired -- fall through and rebuild so a long-lived process
+        # (e.g. :8098) eventually picks up a refreshed corpus on disk.
     pred: Optional[Any] = None
     try:
         if s == "nba":
@@ -182,6 +194,7 @@ def _build_predictor(sport: str) -> Optional[Any]:
                 pred = None
 
     _PREDICTOR_CACHE[s] = pred
+    _PREDICTOR_CACHE_BUILT_AT[s] = time.time()
     return pred
 
 
@@ -211,6 +224,7 @@ def get_demo_jd(sport: str) -> Optional[Any]:
 def clear_cache() -> None:
     """Drop cached predictors/JDs (used by tests to force a fresh build)."""
     _PREDICTOR_CACHE.clear()
+    _PREDICTOR_CACHE_BUILT_AT.clear()
     _JD_CACHE.clear()
     _JD_CACHE_SET.clear()
 

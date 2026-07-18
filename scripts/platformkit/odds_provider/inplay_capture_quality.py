@@ -42,17 +42,27 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Set
 
 from scripts.platformkit.odds_provider.capture_quality import (
-    GREEN, NO_DATA, REGRESSION, _hourly_rate, _now, _parse_ts)
+    GREEN, NO_DATA, REGRESSION, _expected_providers, _hourly_rate, _now,
+    _parse_ts, _provider_drops)
+from scripts.platformkit.odds_provider.schema_snapshot import _provider_of
 
 _REPO = Path(__file__).resolve().parents[3]
 DEFAULT_HISTORY_DIR = _REPO / "data" / "cache" / "inplay_history"
 _OUT_PATH = _REPO / "data" / "frontend" / "ops" / "inplay_capture_quality.json"
-DEFAULT_SPORTS = ("nba", "mlb", "soccer", "soccer_intl", "tennis")
+# Single source of truth: reuse feed_health.DEFAULT_SPORTS (adds wnba/npb --
+# see golive_hardening_backlog_2026_07_17.json finding #4) instead of a
+# second hardcoded tuple that can silently drift apart from the pregame sibling.
+from scripts.platformkit.odds_provider.feed_health import DEFAULT_SPORTS
 _MONEYLINE = "moneyline"
 # Same regression thresholds as the pregame sibling -- see capture_quality.py
 # for the elapsed-normalization rationale (reused verbatim here).
 _MIN_GAMES_FOR_SIGNAL = 3
 _RATE_FLOOR_FRACTION = 0.5
+# A provider ("venue" field -- kalshi is the only live one today, but the
+# schema allows others) needs this many rows YESTERDAY to count as "real
+# coverage" for the per-provider drop check -- see capture_quality.py's
+# _MIN_PROVIDER_ROWS_FOR_SIGNAL (same rationale, reused verbatim here).
+_MIN_PROVIDER_ROWS_FOR_SIGNAL = 5
 
 
 def measure_inplay(sport: str, date_str: str, *, base_dir: Optional[Path] = None) -> Dict[str, Any]:
@@ -68,6 +78,7 @@ def measure_inplay(sport: str, date_str: str, *, base_dir: Optional[Path] = None
         "n_market_types": 0, "rows_by_market_type": {}, "tail_share": 0.0,
         "max_gap_min": None, "first_ts": None, "last_ts": None,
         "median_ticks_per_game": 0.0, "n_corrupt": 0, "no_file": False,
+        "rows_by_provider": {},
     }
     if not path.exists():
         out["no_file"] = True
@@ -77,6 +88,7 @@ def measure_inplay(sport: str, date_str: str, *, base_dir: Optional[Path] = None
         venues: Set[str] = set()
         market_types: Dict[str, int] = {}
         distinct_ts: Set[str] = set()
+        rows_by_provider: Dict[str, int] = {}
         n_rows = n_tail = n_ml_priced = 0
         with path.open("r", encoding="utf-8") as fh:
             for raw in fh:
@@ -98,6 +110,8 @@ def measure_inplay(sport: str, date_str: str, *, base_dir: Optional[Path] = None
                 venue = str(row.get("venue") or "")
                 if venue:
                     venues.add(venue)
+                    provider = _provider_of(venue)
+                    rows_by_provider[provider] = rows_by_provider.get(provider, 0) + 1
                 mtype = str(row.get("market_type") or "unknown")
                 market_types[mtype] = market_types.get(mtype, 0) + 1
                 if row.get("ts"):
@@ -114,6 +128,7 @@ def measure_inplay(sport: str, date_str: str, *, base_dir: Optional[Path] = None
         out["n_rows"] = n_rows
         out["n_games"] = len(game_ticks)
         out["n_venues"] = len(venues)
+        out["rows_by_provider"] = rows_by_provider
         out["n_market_types"] = len(market_types)
         out["rows_by_market_type"] = dict(sorted(market_types.items()))
         out["tail_share"] = (n_tail / n_ml_priced) if n_ml_priced else 0.0
@@ -166,17 +181,24 @@ def _mtypes(day: Dict[str, Any]) -> Set[str]:
     return set((day.get("rows_by_market_type") or {}).keys()) - {_MONEYLINE, "unknown"}
 
 
-def _verdict(today: Dict[str, Any], yesterday: Dict[str, Any], *, now: datetime) -> str:
+def _verdict(today: Dict[str, Any], yesterday: Dict[str, Any], *, now: datetime,
+             dropped_providers: Optional[Sequence[str]] = None) -> str:
     """GREEN / REGRESSION / NO_DATA. Mirrors capture_quality's elapsed-
     normalized rate-collapse rule, PLUS an in-play-only trigger: yesterday had
     non-moneyline rows (total/spread/team_total) while today has none despite
     live rows -- a market-type coverage drop the pregame sibling can't see.
+    dropped_providers mirrors capture_quality's per-provider row floor (see
+    golive_hardening_backlog_2026_07_17.json finding #1): a provider with
+    real coverage yesterday that produced zero rows today is a REGRESSION
+    even while other providers keep the sport-level aggregate looking healthy.
     """
     today_empty = (today.get("n_rows", 0) or 0) == 0
     if today_empty and (yesterday.get("n_rows", 0) or 0) == 0:
         return NO_DATA
     if (yesterday.get("n_games", 0) or 0) < _MIN_GAMES_FOR_SIGNAL:
         return GREEN if not today_empty else NO_DATA  # no baseline to regress against
+    if dropped_providers:
+        return REGRESSION
     if _mtypes(yesterday) and not _mtypes(today) and not today_empty:
         return REGRESSION
     today_rate = _hourly_rate(today, full_day=False, now=now)
@@ -195,6 +217,7 @@ def scoreboard_inplay(sports: Sequence[str] = DEFAULT_SPORTS, *,
     nowdt = now if now is not None else _now()
     today_str = nowdt.date().isoformat()
     yest_str = (nowdt - timedelta(days=1)).date().isoformat()
+    expected_providers = _expected_providers()
     by_sport: Dict[str, Any] = {}
     n_regression = 0
     n_no_data = 0
@@ -202,17 +225,22 @@ def scoreboard_inplay(sports: Sequence[str] = DEFAULT_SPORTS, *,
         try:
             today = measure_inplay(sport, today_str, base_dir=base_dir)
             yesterday = measure_inplay(sport, yest_str, base_dir=base_dir)
-            verdict = _verdict(today, yesterday, now=nowdt)
+            dropped = _provider_drops(today, yesterday,
+                                      min_rows=_MIN_PROVIDER_ROWS_FOR_SIGNAL,
+                                      expected=expected_providers)
+            verdict = _verdict(today, yesterday, now=nowdt, dropped_providers=dropped)
         except Exception as exc:  # noqa: BLE001 -- one bad sport must not sink the board
             today = {"sport": sport, "date": today_str, "error": "%s: %s" % (
                 type(exc).__name__, exc)}
             yesterday = {"sport": sport, "date": yest_str}
+            dropped = []
             verdict = NO_DATA
         if verdict == REGRESSION:
             n_regression += 1
         elif verdict == NO_DATA:
             n_no_data += 1
-        by_sport[sport] = {"today": today, "yesterday": yesterday, "verdict": verdict}
+        by_sport[sport] = {"today": today, "yesterday": yesterday, "verdict": verdict,
+                           "provider_regression": dropped}
 
     overall = REGRESSION if n_regression else (
         NO_DATA if n_no_data == len(sports) else GREEN)

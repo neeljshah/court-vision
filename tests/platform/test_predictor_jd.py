@@ -5,6 +5,8 @@ Run ONLY this file (full pytest freezes the box):
 """
 from __future__ import annotations
 
+import time
+
 import scripts.platformkit.predictor_jd as pj
 from scripts.platformkit.predictor_jd import demo_matchup, get_demo_jd, clear_cache
 
@@ -51,3 +53,22 @@ def test_get_demo_jd_degrades_to_none_on_predictor_failure(monkeypatch):
 def test_get_demo_jd_unknown_sport_is_none():
     clear_cache()
     assert get_demo_jd("cricket") is None
+
+
+def test_build_predictor_cache_expires_after_ttl():
+    # golive_hardening_backlog #7: _PREDICTOR_CACHE never expired, so a
+    # long-lived process kept serving a frozen predictor forever.
+    clear_cache()
+    sentinel_old = object()
+    pj._PREDICTOR_CACHE["nba"] = sentinel_old
+    pj._PREDICTOR_CACHE_BUILT_AT["nba"] = 0.0  # far in the past -> expired
+    fresh = pj._build_predictor("nba")
+    assert fresh is not sentinel_old  # TTL forced a real rebuild
+    assert pj._PREDICTOR_CACHE_BUILT_AT["nba"] > 0.0
+
+    # A cache entry built just now is served WITHOUT rebuilding.
+    sentinel_new = object()
+    pj._PREDICTOR_CACHE["nba"] = sentinel_new
+    pj._PREDICTOR_CACHE_BUILT_AT["nba"] = time.time()
+    assert pj._build_predictor("nba") is sentinel_new
+    clear_cache()

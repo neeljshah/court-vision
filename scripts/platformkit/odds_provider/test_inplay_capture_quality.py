@@ -6,8 +6,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from scripts.platformkit.odds_provider.inplay_capture_quality import (
-    GREEN, NO_DATA, REGRESSION, completeness, load_status, measure_inplay, render,
-    scoreboard_inplay, write_status)
+    DEFAULT_SPORTS, GREEN, NO_DATA, REGRESSION, completeness, load_status,
+    measure_inplay, render, scoreboard_inplay, write_status)
 
 
 def _row(game_id="g1", venue="kalshi", market_type="moneyline", prob=0.6,
@@ -197,6 +197,34 @@ def test_write_status_never_raises_on_bad_path():
             raise RuntimeError("bad path")
     ok = write_status({"overall": GREEN}, out_path=_Boom())
     assert ok is False
+
+
+def test_default_sports_includes_wnba_and_npb():
+    # golive_hardening_backlog #4: was missing wnba/npb, unlike feed_health.
+    assert "wnba" in DEFAULT_SPORTS
+    assert "npb" in DEFAULT_SPORTS
+
+
+def test_measure_tracks_rows_by_provider(tmp_path):
+    # golive_hardening_backlog #1: per-provider row floor -- inplay sibling
+    # had zero rows_by_provider tracking at all.
+    rows = [_row(venue="kalshi"), _row(venue="kalshi"), _row(venue="other")]
+    _write_day(tmp_path, "mlb", "2026-07-03", rows)
+    out = measure_inplay("mlb", "2026-07-03", base_dir=tmp_path)
+    assert out["rows_by_provider"] == {"kalshi": 2, "other": 1}
+
+
+def test_scoreboard_regression_on_provider_drop(tmp_path):
+    # Yesterday kalshi had real coverage; today kalshi produced zero rows
+    # despite another (non-expected) venue keeping the aggregate non-empty.
+    yest_rows = _full_day_rows("2026-07-02")  # all venue="kalshi" by default
+    _write_day(tmp_path, "mlb", "2026-07-02", yest_rows)
+    today_rows = [_row(game_id="g1", venue="other", ts="2026-07-03T10:00:00Z")]
+    _write_day(tmp_path, "mlb", "2026-07-03", today_rows)
+    now = datetime(2026, 7, 3, 12, 0, 0, tzinfo=timezone.utc)
+    doc = scoreboard_inplay(("mlb",), now=now, base_dir=tmp_path)
+    assert doc["by_sport"]["mlb"]["verdict"] == REGRESSION
+    assert "kalshi" in doc["by_sport"]["mlb"]["provider_regression"]
 
 
 def test_render_is_ascii(tmp_path):
