@@ -28,3 +28,4 @@
 {"id": "regen_nba_context_defadj_v2", "cmd": "python -m scripts.platformkit.intel_validation.nba_context_shooting_defadj_claims", "timeout_s": 7200, "note": "re-run at latest master (already ran in chain2; idempotent refresh)"}
 {"id": "kalshi_own_lines_backtest_nba_v1", "cmd": "python -m scripts.platformkit.kalshi_complete.backtest --sport nba", "timeout_s": 7200, "note": "phase-1 own-lines self-backtest on pod corpus (laptop: TRAILS_CLOSE n=743)"}
 {"id": "kalshi_own_lines_backtest_mlb_v1", "cmd": "python -m scripts.platformkit.kalshi_complete.backtest --sport mlb", "timeout_s": 7200, "note": "phase-1 own-lines self-backtest on pod corpus (laptop: TRAILS_CLOSE n=27974 decisive)"}
+{"id": "calib_grid_mlb_model_v2", "cmd": "python -m scripts.platformkit.calibration_grid.mlb_grid --model-per-bucket 12", "timeout_s": 21600, "note": "v1 used --model-per-bucket 8 < the prereg model_n>=10 gate -- every bucket failed by construction; 12 matches the NBA run"}
