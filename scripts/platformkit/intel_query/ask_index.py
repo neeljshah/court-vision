@@ -170,6 +170,14 @@ _METRIC_SYNONYMS: dict[str, str] = {
     "back to back efficiency": "b2b_ts_drop",
     "rest split": "b2b_ts_drop",
     "b2b resilient": "b2b_pts36_delta",
+    # nba_teammate_context (2026-07-18): teammate-effects family -- "who
+    # lifts whom". Added as a SEPARATE end-of-dict block per merge-conflict
+    # convention (multiple concurrent lanes append aliases here).
+    "best duos": "pair_lift",
+    "pair lift": "pair_lift",
+    "plays better with": "pair_lift",
+    "teammate effect": "pair_lift",
+    "gravity teammate": "gravity_teammate_delta",
 }
 
 # Shooter-composite family (2026-07-19): "best shooters"/"top shooters"/
