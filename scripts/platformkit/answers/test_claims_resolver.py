@@ -134,6 +134,45 @@ def test_non_referee_question_unaffected_by_family_fallback(monkeypatch):
     assert env["status"] == "no_data"
 
 
+# --- REVIEW FINDING 2 (2026-07-19): _env_matches_sport prefix-only inference
+# wrongly passed ANY unprefixed store for every sport (catcher_framing_claims
+# -> prefix "catcher", not a sport token -> treated as cross-sport). Fixed
+# with a declared mapping: known single-sport unprefixed families are named
+# explicitly; a genuinely unrecognized prefix now fails CLOSED. ------------
+def test_env_matches_sport_catcher_framing_mlb_only():
+    env = {"source_artifact": "data/cache/intel_claims/catcher_framing_claims__season_2025_snapshot.parquet"}
+    assert C._env_matches_sport(env, "mlb") is True
+    assert C._env_matches_sport(env, "nba") is False
+
+
+def test_env_matches_sport_umpire_zone_mlb_only():
+    env = {"source_artifact": "data/cache/intel_claims/umpire_zone_claims.jsonl"}
+    assert C._env_matches_sport(env, "mlb") is True
+    assert C._env_matches_sport(env, "nba") is False
+
+
+def test_env_matches_sport_shooter_composite_nba_only():
+    env = {"family": "shooter_composite_v2_claims"}
+    assert C._env_matches_sport(env, "nba") is True
+    assert C._env_matches_sport(env, "mlb") is False
+
+
+def test_env_matches_sport_kalshi_passes_every_sport():
+    env = {"source_artifact": "data/cache/intel_claims/kalshi_sportsbook_prob_gap_claims.jsonl"}
+    for sport in ("nba", "mlb", "wnba", "tennis", "soccer"):
+        assert C._env_matches_sport(env, sport) is True
+
+
+def test_env_matches_sport_unrecognized_prefix_fails_closed():
+    """An unrecognized prefix (neither a known sport nor a declared
+    cross-sport family) must DENY, not silently pass every sport -- this was
+    the exact shape of the bug ('catcher' fell into the old 'anything
+    unrecognized is cross-sport' bucket)."""
+    env = {"source_artifact": "some_made_up_family_claims.jsonl"}
+    assert C._env_matches_sport(env, "nba") is False
+    assert C._env_matches_sport(env, "mlb") is False
+
+
 # --- family discovery --------------------------------------------------------
 def test_list_claim_families_real_repo_ok():
     d = C.list_claim_families()

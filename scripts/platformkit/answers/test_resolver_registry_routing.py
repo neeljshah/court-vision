@@ -189,6 +189,68 @@ def test_new_claims_reroute_does_not_regress_existing_ranking_routes():
         assert R.classify(q) == "ranking", q
 
 
+# ---------------------------------------------------------------------------
+# REVIEW FINDING 1 (2026-07-19) -- the generalized reroute above was calling
+# extract_metric_synonym's PLAIN form, which falls back to metric_names.py's
+# name-derived matcher (matches ANY >=4-char metric-name word, e.g.
+# 'gravity'/'spacing'/'usage') -- over-broad for a bare cue-word gate, so it
+# could steal comparables/scouting/concept questions into verified_claims
+# (which can't serve them -> lost to no_data). Fixed by (a) passing
+# curated_only=True at the call site and (b) skipping the reroute outright
+# when the query already names a _SCOUT/_COMPARABLES keyword shape.
+# ---------------------------------------------------------------------------
+def test_generalized_reroute_still_fires_on_real_curated_hits():
+    """Regression: every currently-passing probe must keep reaching
+    verified_claims through the (now curated_only) reroute."""
+    for q in ("most b2b resilient players this season",
+              "which batters crush fastballs",
+              "clay specialists",
+              "which sports show the widest kalshi vs sportsbook gap"):
+        assert R.classify(q) == "verified_claims", q
+
+
+def test_generalized_reroute_no_regression_on_ranking_routes():
+    for q in ("top 5 gravity", "top shooters", "gravity leaders"):
+        assert R.classify(q) == "ranking", q
+
+
+def test_comparables_query_unaffected_no_regression():
+    assert R.classify("players comparable to Steph Curry") == "comparables"
+
+
+def test_generalized_reroute_passes_curated_only_true(monkeypatch):
+    """Direct proof the call site restricts to curated hits: a fake
+    extract_metric_synonym that only 'matches' when curated_only is falsy
+    (standing in for the old, over-broad name-derived fallback) must NOT
+    steal the query into verified_claims."""
+    import scripts.platformkit.intel_query.ask_index as ask_index_mod
+
+    def fake_extract(text, curated_only=False):
+        return None if curated_only else "leaked_metric"
+
+    monkeypatch.setattr(ask_index_mod, "extract_metric_synonym", fake_extract)
+    assert R.classify("most versatile bench wings") != "verified_claims"
+
+
+def test_generalized_reroute_skips_when_query_is_comparables_shaped(monkeypatch):
+    """Belt-and-suspenders guard: even if extract_metric_synonym were to
+    return a hit (e.g. a future curated alias coincidentally overlapping
+    comparables phrasing), a query naming a _COMPARABLES_KEYWORDS shape must
+    never be rerouted to verified_claims ahead of the real comparables
+    composer."""
+    import scripts.platformkit.intel_query.ask_index as ask_index_mod
+
+    monkeypatch.setattr(ask_index_mod, "extract_metric_synonym", lambda text, curated_only=False: "some_metric")
+    assert R.classify("who are the most similar players to Luka Doncic") == "comparables"
+
+
+def test_generalized_reroute_skips_when_query_is_scout_shaped(monkeypatch):
+    import scripts.platformkit.intel_query.ask_index as ask_index_mod
+
+    monkeypatch.setattr(ask_index_mod, "extract_metric_synonym", lambda text, curated_only=False: "some_metric")
+    assert R.classify("who are the top scouting report subjects") == "scouting_report"
+
+
 def test_resolve_compound_envelope_ok_if_any_part_ok(monkeypatch):
     def fake_classify(q):
         return "player_stat" if "Randle" in q else "mechanism_effect"
