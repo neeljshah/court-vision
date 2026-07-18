@@ -34,7 +34,9 @@ separate human flip and DEFAULT-DENY. UNITS / probability only -- there is NO $ 
 pnl / stake$ field anywhere. edge_claimed is always False. A single game/tick is
 INSUFFICIENT_DATA (one game is variance, not signal). LEAK-FREE: model_prob is computed
 from state-as-of-this-tick by the injected model_fn; the close is the held-out yardstick,
-never an input to enter/size.
+never an input to enter/size. VENUE-GATED (binding): PAPER DECISIONS (enter/re-enter) are
+Kalshi-only for now -- see DEFAULT_PAPER_VENUES / CV_PAPER_VENUES. capture_pair_once's
+grade series stays venue-agnostic and is never gated by this.
 
 INVARIANTS: build only under scripts/platformkit/ingame/; <=300 LOC; ASCII only; no
 network at import; no data/registry write, no flag flip, no autostart; never edits
@@ -46,6 +48,7 @@ Per-file test:
 from __future__ import annotations
 
 import logging
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
@@ -73,6 +76,31 @@ LiveTick = Dict[str, Any]
 StateFn = Callable[[LiveTick], Optional[Dict[str, Any]]]
 
 MARKET = "win_home"  # one anchor moneyline market per game (HOME side)
+
+# PAPER-DECISION venue allowlist: Kalshi-only for now. Gates ENTER/RE-ENTER ONLY --
+# capture_pair_once's grade series stays venue-agnostic (unaffected). Override via env
+# CV_PAPER_VENUES (comma-separated) or on_tick(paper_venues=..., tests only). A tick
+# with no "venue" field defaults to "kalshi" (today's only wired price source; see
+# inplay_capture_loop._default_inplay_fetch), not to a silent block.
+DEFAULT_PAPER_VENUES = ("kalshi",)
+
+
+def _paper_venue_allowlist() -> frozenset:
+    """DEFAULT_PAPER_VENUES, overridable via CV_PAPER_VENUES (comma-separated). Never raises."""
+    raw = os.environ.get("CV_PAPER_VENUES", "")
+    if not raw.strip():
+        return frozenset(v.lower() for v in DEFAULT_PAPER_VENUES)
+    return frozenset(v.strip().lower() for v in raw.split(",") if v.strip())
+
+
+def _venue_allowed(tick: LiveTick, paper_venues: Optional[Any]) -> bool:
+    """True iff this tick's venue (default 'kalshi' -- see DEFAULT_PAPER_VENUES docstring)
+    is in the effective allowlist (*paper_venues* override, else CV_PAPER_VENUES env,
+    else DEFAULT_PAPER_VENUES)."""
+    venue = str(tick.get("venue", "kalshi")).strip().lower()
+    allowed = (frozenset(str(v).strip().lower() for v in paper_venues)
+              if paper_venues is not None else _paper_venue_allowlist())
+    return venue in allowed
 
 
 def _now_iso() -> str:
@@ -144,7 +172,8 @@ def on_tick(sport: str, game_id: str, tick: LiveTick, *,
             now: Optional[datetime] = None,
             grade_dir: Optional[Path] = None,
             ledger_path: Optional[Path] = None,
-            extra: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+            extra: Optional[Dict[str, Any]] = None,
+            paper_venues: Optional[Any] = None) -> Dict[str, Any]:
     """Process ONE live in-play tick: capture the pair, decide enter/hold/exit, size+place.
 
     *position* is the engine's open position for this game/side (None = FLAT). Returns a
@@ -215,6 +244,13 @@ def on_tick(sport: str, game_id: str, tick: LiveTick, *,
         if ev["action"] == "bet" and _segment_is_adverse(sport, tick):
             decision["reason"] = "segment_adverse_suppressed"
             return decision  # no_bet: captured above already ran; suppress the marginal entry
+
+        # 2c. PAPER VENUE ALLOWLIST (binding: Kalshi-only paper decisions for now -- see
+        # DEFAULT_PAPER_VENUES). Capture above already ran regardless -- this only ever
+        # turns a would-be "bet" into "no_bet"; it never manufactures a bet.
+        if ev["action"] == "bet" and not _venue_allowed(tick, paper_venues):
+            decision["reason"] = "venue_not_allowed:%s" % str(tick.get("venue", "kalshi")).strip().lower()
+            return decision
 
         # 3. enter / hold / exit.
         if ev["action"] != "bet":

@@ -543,3 +543,81 @@ def test_unknown_spread_does_not_suppress_the_entry(tmp_path):
     assert d["action"] == "bet"
     assert d["exec_gate"]["spread_unknown"] is True
     assert d["exec_gate"]["spread_flag"] is False
+
+
+# --------------------------------------------------------------------------------------- #
+# 10 (venue allowlist): PAPER decisions are Kalshi-only for now (DEFAULT_PAPER_VENUES).   #
+# capture_pair_once's grade series must stay venue-agnostic regardless.                   #
+# --------------------------------------------------------------------------------------- #
+def test_kalshi_venue_bets_normally(tmp_path):
+    ledger = tmp_path / "ledger.jsonl"
+    grade_dir = tmp_path / "grade"
+    t = _tick(0.80, 0.55, yes_away=0.50)
+    t["venue"] = "kalshi"
+    d = dt.on_tick("mlb", "401860001", t, grade_dir=grade_dir, ledger_path=ledger)
+    assert d["action"] == "bet"
+    assert d["captured"] is True
+    _no_dollar_field(d)
+
+
+def test_non_kalshi_venue_suppresses_the_decision_but_still_captures(tmp_path):
+    ledger = tmp_path / "ledger.jsonl"
+    grade_dir = tmp_path / "grade"
+    t = _tick(0.80, 0.55, yes_away=0.50)
+    t["venue"] = "polymarket"
+    d = dt.on_tick("mlb", "401860002", t, grade_dir=grade_dir, ledger_path=ledger)
+    assert d["action"] == "no_bet"
+    assert d["reason"] == "venue_not_allowed:polymarket"
+    assert d["placement"] is None
+    assert d["captured"] is True  # grading stays venue-agnostic
+    path = grade_dir / "mlb" / "401860002.jsonl"
+    assert path.exists()
+    assert not ledger.exists() or "open" not in ledger.read_text(encoding="ascii")
+    _no_dollar_field(d)
+
+
+def test_missing_venue_field_defaults_to_kalshi_and_bets(tmp_path):
+    # Today's real production ticks (inplay_capture_loop._build_tick) carry no "venue"
+    # key at all -- the only wired price source is already Kalshi -- so a missing venue
+    # must default to allowed, not to a silent block.
+    ledger = tmp_path / "ledger.jsonl"
+    grade_dir = tmp_path / "grade"
+    d = dt.on_tick("mlb", "401860003", _tick(0.80, 0.55, yes_away=0.50),
+                   grade_dir=grade_dir, ledger_path=ledger)
+    assert d["action"] == "bet"
+
+
+def test_env_override_widens_the_allowlist(tmp_path, monkeypatch):
+    monkeypatch.setenv("CV_PAPER_VENUES", "kalshi,polymarket")
+    ledger = tmp_path / "ledger.jsonl"
+    grade_dir = tmp_path / "grade"
+    t = _tick(0.80, 0.55, yes_away=0.50)
+    t["venue"] = "polymarket"
+    d = dt.on_tick("mlb", "401860004", t, grade_dir=grade_dir, ledger_path=ledger)
+    assert d["action"] == "bet"
+    assert d["placement"]["added_new"] is True
+
+
+def test_param_override_widens_the_allowlist(tmp_path):
+    ledger = tmp_path / "ledger.jsonl"
+    grade_dir = tmp_path / "grade"
+    t = _tick(0.80, 0.55, yes_away=0.50)
+    t["venue"] = "polymarket"
+    d = dt.on_tick("mlb", "401860005", t, grade_dir=grade_dir, ledger_path=ledger,
+                   paper_venues=("kalshi", "polymarket"))
+    assert d["action"] == "bet"
+    assert d["placement"]["added_new"] is True
+
+
+def test_param_override_can_also_narrow_and_exclude_kalshi(tmp_path):
+    # An explicit override to a venue set that EXCLUDES kalshi suppresses a kalshi tick
+    # too -- proves the param truly overrides the default, not merely widens it.
+    ledger = tmp_path / "ledger.jsonl"
+    grade_dir = tmp_path / "grade"
+    t = _tick(0.80, 0.55, yes_away=0.50)
+    t["venue"] = "kalshi"
+    d = dt.on_tick("mlb", "401860006", t, grade_dir=grade_dir, ledger_path=ledger,
+                   paper_venues=("polymarket",))
+    assert d["action"] == "no_bet"
+    assert d["reason"] == "venue_not_allowed:kalshi"
+    assert d["captured"] is True

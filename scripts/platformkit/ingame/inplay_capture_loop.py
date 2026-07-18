@@ -82,7 +82,13 @@ DEFAULT_HEARTBEAT = _REPO_ROOT / "data" / "cache" / "ingame_grade" / "_capture_h
 # gates + grading-multi corpus start filling from the moment of restart. This is
 # CORRECT and DELIBERATE (no live model exists yet), mirroring the same None-safe
 # convention ingame_sp_shadow.py documents for its shadow probe.
-DEFAULT_SPORTS: List[str] = ["mlb", "soccer_intl", "tennis", "wnba", "npb", "kbo"]
+# nba ADDED (live-board-nba-branch lane): live_board.live_model_home_prob now has an nba
+# branch (domains/basketball_nba/ingame_shadow's predictor served for real), so nba ticks
+# reach book pairing + on_tick/capture_pair_once instead of the permanent no_model_prob
+# early exit. model_prob_nba_shadow (this same predictor, kept as the shadow field) becomes
+# a byte-identical duplicate of model_prob for nba from this wave forward -- both stay
+# wired; the shadow column is now redundant-but-harmless, not removed here.
+DEFAULT_SPORTS: List[str] = ["mlb", "soccer_intl", "tennis", "wnba", "npb", "kbo", "nba"]
 
 # RELAXED in-game EV floor per sport (opt-in): the strict pre-registered floor (policy tier C
 # = +0.02 EV, +0.01 proxy = +0.03) rarely fires in-game because the calibrated model tracks

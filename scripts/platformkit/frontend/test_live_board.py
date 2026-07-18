@@ -286,8 +286,11 @@ def test_live_model_home_prob_soccer(monkeypatch):
 
 def test_live_model_home_prob_skips_unsupported_and_unresolved(monkeypatch):
     monkeypatch.setitem(lb._PREDICTOR_CACHE, "soccer_intl", _StubLiveIntlPredictor())
-    # unsupported sport -> None (never fabricates a number)
+    # nba IS wired, but this state has no period/clock/scores -> honest None, not a
+    # fabricated number (see test_live_model_home_prob_nba_* below for the wired path).
     assert lb.live_model_home_prob("nba", {"home": "BOS", "frac_elapsed": 0.5}) is None
+    # a genuinely unsupported sport -> None (never fabricates a number)
+    assert lb.live_model_home_prob("cricket", {"home": "IND", "frac_elapsed": 0.5}) is None
     # missing frac_elapsed -> None
     assert lb.live_model_home_prob("soccer_intl",
                                    {"home": "ARG", "home_display": "Argentina",
@@ -296,3 +299,29 @@ def test_live_model_home_prob_skips_unsupported_and_unresolved(monkeypatch):
     assert lb.live_model_home_prob("soccer_intl",
                                    {"home": "ARG", "away": "AUT",
                                     "frac_elapsed": 0.5}) is None
+
+
+class _StubNbaShadow:
+    """Deterministic stand-in for domains.basketball_nba.ingame_shadow's singleton --
+    same contract as the real NbaIngameShadow.shadow_prob: None on incomplete state."""
+    def shadow_prob(self, sport, home, away, state):
+        if state.get("period") is None or state.get("clock") is None:
+            return None
+        if state.get("home_score") is None or state.get("away_score") is None:
+            return None
+        return 0.62
+
+
+def test_live_model_home_prob_nba_complete_state(monkeypatch):
+    import domains.basketball_nba.ingame_shadow as nba_shadow
+    monkeypatch.setattr(nba_shadow, "get_shadow", lambda: _StubNbaShadow())
+    st = {"home": "BOS", "away": "LAL", "period": 3, "clock": 200.0,
+          "home_score": 62.0, "away_score": 58.0}
+    assert lb.live_model_home_prob("nba", st) == 0.62
+
+
+def test_live_model_home_prob_nba_incomplete_state_is_none(monkeypatch):
+    import domains.basketball_nba.ingame_shadow as nba_shadow
+    monkeypatch.setattr(nba_shadow, "get_shadow", lambda: _StubNbaShadow())
+    # no period/clock/scores at all -> honest None, never a guessed number
+    assert lb.live_model_home_prob("nba", {"home": "BOS", "away": "LAL"}) is None

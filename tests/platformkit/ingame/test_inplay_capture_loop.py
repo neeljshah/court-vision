@@ -304,6 +304,55 @@ def test_default_sports_widened_to_npb_and_kbo():
     assert _spec.series_for("kbo")
 
 
+def test_default_sports_widened_to_nba():
+    # live_board.live_model_home_prob now has an nba branch (see test_live_board.py's
+    # test_live_model_home_prob_nba_*), so nba joins the default roster.
+    assert "nba" in loop.DEFAULT_SPORTS
+
+
+def test_nba_model_fn_wired_no_longer_early_exits(tmp_path, monkeypatch):
+    """Exercises the REAL production default model_fn (_default_model_fn ->
+    live_board.live_model_home_prob), NOT an injected stub, to prove nba no longer
+    early-exits at reason=no_model_prob now that live_board's nba branch + this
+    module's DEFAULT_SPORTS are both wired. No network, no real predictor build:
+    only the ingame_shadow singleton is monkeypatched to a deterministic stub."""
+    from domains.basketball_nba import ingame_shadow as nba_shadow
+
+    class _StubShadow:
+        def shadow_prob(self, sport, home, away, state):
+            return 0.66
+
+    monkeypatch.setattr(nba_shadow, "get_shadow", lambda: _StubShadow())
+
+    def _nba_state_fn(sport, gid):
+        return {"sport": sport, "game_id": gid, "home": "BOS", "away": "LAL",
+                "period": 3, "clock": 200.0, "home_score": 62.0, "away_score": 58.0,
+                "state_diff": 4.0, "frac_elapsed": 0.55, "p0": 0.6, "p0_source": "PRIOR"}
+
+    def _nba_fetch(sport):
+        # probs must sum to >= 1.0 (a real overround) -- 0.55/0.47 mirrors the mlb
+        # fixture (_inplay_fetch) above; 0.60/0.38 (sums < 1.0) is a degenerate VOID
+        # pair that devig_home_price correctly refuses to price.
+        return [
+            {"sport": sport, "game_id": "KXNBAGAME-26JAN01BOSLAL", "venue": "kalshi",
+             "market_type": "moneyline", "side": "BOS", "prob": 0.55, "phase": "in_play"},
+            {"sport": sport, "game_id": "KXNBAGAME-26JAN01BOSLAL", "venue": "kalshi",
+             "market_type": "moneyline", "side": "LAL", "prob": 0.47, "phase": "in_play"},
+        ]
+
+    grade_dir = tmp_path / "grade"
+    hb = loop.poll_once(sports=["nba"], live_state_fn=_nba_state_fn,
+                        inplay_fetch_fn=_nba_fetch, finals_fn=_finals_none,
+                        grade_dir=grade_dir, ledger_path=tmp_path / "l.jsonl",
+                        heartbeat_path=tmp_path / "hb.json")
+    g = hb["games"][0]
+    assert g["reason"] != "no_model_prob"
+    assert g["paired"] is True
+    assert g["model_prob"] == 0.66
+    assert hb["n_pairs"] == 1
+    _no_dollar_field(hb)
+
+
 def _npb_fetch(sport):
     return [
         {"sport": sport, "game_id": "KXNPBGAME-26JUL050500YOKYAK-YOK", "venue": "kalshi",

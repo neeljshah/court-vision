@@ -125,9 +125,9 @@ def live_model_home_prob(sport: str, state: Dict[str, Any]) -> Optional[float]:
     model_fn calls. Reuses the domain predictor's CALIBRATED, leak-free predict_live
     (read-only) on the realized live state (absolute score + minute + pregame lambdas).
 
-    SOCCER / WORLD CUP ONLY for now (the 1X2 in-game model is wired + calibrated there);
-    any other sport returns None so the caller SKIPS the pair cleanly -- it NEVER fabricates
-    a number. Never raises (a model miss is a clean skip, not a crashed tick).
+    Wired for mlb, nba, soccer, and soccer_intl; any other sport returns None so the caller
+    SKIPS the pair cleanly -- it NEVER fabricates a number. Never raises (a model miss is a
+    clean skip, not a crashed tick).
 
     NPB/KBO are NOT wired: both sports' BASE fits are HONEST_NEGATIVE, disqualified by the
     same planted pure-noise control (data/domains/{npb,kbo}/ingame_base_fit_verdict.json,
@@ -142,6 +142,16 @@ def live_model_home_prob(sport: str, state: Dict[str, Any]) -> Optional[float]:
         if s == "mlb":
             from scripts.platformkit.ingame.mlb_live_model import mlb_home_prob
             return mlb_home_prob(state)
+        # NBA in-game: the W146/W156 temperature-recalibrated NBAPredictor.predict_live,
+        # already proven out as domains/basketball_nba/ingame_shadow's measurement-only
+        # shadow probe (see that module's docstring) -- served here for real, unchanged.
+        # The independent frozen-coefficient ladder (nba_logistic_pricer) stays a shadow
+        # column only (inplay_capture_loop.model_prob_nba_ladder_shadow); not served.
+        if s == "nba":
+            from domains.basketball_nba.ingame_shadow import get_shadow
+            home = state.get("home_display") or state.get("home")
+            away = state.get("away_display") or state.get("away")
+            return get_shadow().shadow_prob(s, home, away, state)
         if s not in ("soccer", "soccer_intl"):
             return None
         home = resolve_team(s, state.get("home"), state.get("home_display"))

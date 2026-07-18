@@ -54,8 +54,64 @@ def test_own_quote_ok_shape(monkeypatch):
     assert "profit" not in dumped.lower()
 
 
+def test_remaining_frac_nba_and_mlb():
+    assert ol.remaining_frac("nba", None) is None
+    assert ol.remaining_frac("nba", {"elapsed": 0.0}) == 1.0
+    assert ol.remaining_frac("nba", {"elapsed": 48.0}) == 0.0
+    assert ol.remaining_frac("nba", {"elapsed": 24.0}) == 0.5
+    assert ol.remaining_frac("wnba", {"elapsed": 20.0}) == 0.5
+    # mlb: bottom of the 8th of 9 -> progress 7.5/9 elapsed, 1.5/9 remaining
+    frac = ol.remaining_frac("mlb", {"inning": 8, "half": "bottom"})
+    assert abs(frac - (1.5 / 9.0)) < 1e-9
+    assert ol.remaining_frac("mlb", {"inning": 1}) is None  # missing half
+
+
+def test_n_eff_for_state_tightens_late_never_widens():
+    # pregame / no state -> unchanged baseline
+    assert ol.n_eff_for_state("nba", None) == ol.DEFAULT_N_EFF
+    # tip-off (remaining_frac=1) -> baseline
+    assert ol.n_eff_for_state("nba", {"elapsed": 0.0}) == ol.DEFAULT_N_EFF
+    # late game -> n_eff must RISE (tighter band), never fall below baseline
+    late = ol.n_eff_for_state("nba", {"elapsed": 46.0})
+    assert late > ol.DEFAULT_N_EFF
+    # floor at 0.1 remaining_frac caps the tightening at 10x
+    final_seconds = ol.n_eff_for_state("nba", {"elapsed": 47.99})
+    assert final_seconds <= ol.DEFAULT_N_EFF / 0.1 + 1e-6
+    # monotone: half_width using the late n_eff must be <= half_width at baseline
+    hw_base = ol.band_half_width(0.5, n_eff=ol.DEFAULT_N_EFF)
+    hw_late = ol.band_half_width(0.5, n_eff=late)
+    assert hw_late <= hw_base
+
+
+def test_own_quote_ingame_forwards_state_and_tightens_band(monkeypatch):
+    captured = {}
+
+    def _fake_dispatch(sport, home, away, ingame_state=None):
+        captured["ingame_state"] = ingame_state
+        return {"status": "ok", "as_of": "2026-07-18T00:00:00+00:00", "p_home_win": 0.7,
+                "pregame": {"p_home_win": 0.55, "honest_note": "calibration only"},
+                "ingame": {"p_home_win": 0.7}}
+    monkeypatch.setattr(ol, "dispatch", _fake_dispatch)
+
+    state = {"elapsed": 46.0, "home_score": 100, "away_score": 90}
+    row = ol.own_quote("nba", "BOS", "MIA", ingame_state=state)
+    assert captured["ingame_state"] == state  # CLI-built dict reaches dispatch() verbatim
+    assert row["status"] == "ok" and row["p_fair"] == 0.7
+    assert "heuristic" in row["band_basis"]
+
+    pregame_row = ol.own_quote("nba", "BOS", "MIA", ingame_state=None)
+    # same p not guaranteed equal (fake ignores state for p), but the late-game
+    # band must be no wider than a pregame band at the same n_eff-derived p.
+    hw_ingame = row["ask"] - row["bid"]
+    hw_pregame_equiv = ol.quote_from_p(0.7, ol.DEFAULT_N_EFF)
+    assert hw_ingame <= (hw_pregame_equiv["ask"] - hw_pregame_equiv["bid"])
+
+
 if __name__ == "__main__":
     test_half_width_floor()
     test_half_width_monotone_decreasing_in_n_eff()
     test_quote_contains_p_fair()
+    test_remaining_frac_nba_and_mlb()
+    test_n_eff_for_state_tightens_late_never_widens()
+    test_own_quote_ingame_forwards_state_and_tightens_band()
     print("own_lines synthetic checks OK")
