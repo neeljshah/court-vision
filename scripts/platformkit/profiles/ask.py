@@ -92,9 +92,17 @@ def load_profiles(sport: str | None = None) -> pd.DataFrame:
 def load_registry(sport: str) -> dict:
     """Defensive read of domains/<sport>/profiles/attribute_registry.py.
     Returns {attribute: {description, weight_ledger_family}}. Skips if absent."""
-    try:
-        mod = importlib.import_module(f"domains.{sport}.profiles.attribute_registry")
-    except Exception:
+    # sport slug != domain package for nba/wnba (found live 2026-07-18:
+    # 'nba' silently returned {} so description matching never worked)
+    pkgs = {"nba": "basketball_nba", "wnba": "basketball_wnba"}
+    mod = None
+    for pkg in (pkgs.get(sport, sport), sport):
+        try:
+            mod = importlib.import_module(f"domains.{pkg}.profiles.attribute_registry")
+            break
+        except Exception:
+            continue
+    if mod is None:
         return {}
     reg: dict = {}
     for cand in ("ATTRIBUTES", "REGISTRY", "ATTRIBUTE_REGISTRY", "attributes"):
@@ -184,21 +192,28 @@ def _match_attribute(sub: pd.DataFrame, tokens: list[str], reg: dict) -> str | N
     """Fuzzy-match an attribute for one entity from leftover query tokens,
     also matching registry descriptions."""
     attrs = list(sub["attribute"].unique())
-    tset = set(tokens)
-    # substring / token overlap on attribute names
+    # singular/plural-blind: 'rebound' must match 'rebounds' (found live
+    # 2026-07-18: 'offensive rebound rate' missed oreb_per36's description)
+    def _stem(ws):
+        return {w[:-1] if w.endswith("s") and len(w) > 3 else w for w in ws}
+    tset = _stem(tokens)
+    # ONE combined score per attribute: name-token overlap >=2 wins outright
+    # (exact attribute phrasing), otherwise name+description overlap decides
+    # -- a lone generic name token ('rate') must not beat a 2-token
+    # description match ('offensive rebound' -> oreb_per36).
     best, chosen = 0, None
     for a in attrs:
-        atoks = set(_norm(a).replace("_", " ").split())
-        score = len(atoks & tset)
+        atoks = _stem(_norm(a).replace("_", " ").split())
+        nscore = len(atoks & tset)
+        if nscore >= 2:
+            return a
+        desc = _norm(reg.get(a, {}).get("description", ""))
+        dscore = len(tset & _stem(desc.split())) if desc else 0
+        score = nscore + dscore
         if score > best:
             best, chosen = score, a
     if chosen:
         return chosen
-    # registry-description match
-    for a in attrs:
-        desc = _norm(reg.get(a, {}).get("description", ""))
-        if desc and tset & set(desc.split()):
-            return a
     # difflib on names
     near = difflib.get_close_matches(" ".join(tokens), [_norm(a) for a in attrs], n=1, cutoff=0.5)
     if near:
