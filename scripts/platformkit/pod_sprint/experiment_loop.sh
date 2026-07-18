@@ -20,7 +20,8 @@ run_exp() { # id cmd timeout
     grep -q "\"id\": \"$id\"" "$LEDGER" 2>/dev/null && return 1  # already done
     echo "[exp] $id starting $(date -Is)"
     local t0=$SECONDS
-    timeout "$timeout_s" $PY -m "${cmd#python -m }" > "$LOGS/$id.log" 2>&1
+    # unquoted on purpose: queue rows are trusted and may carry CLI args
+    timeout "$timeout_s" $PY -m ${cmd#python -m } > "$LOGS/$id.log" 2>&1
     local rc=$?
     echo "{\"id\": \"$id\", \"rc\": $rc, \"secs\": $((SECONDS - t0)), \"ended\": \"$(date -Is)\"}" >> "$LEDGER"
     return 0
