@@ -158,12 +158,106 @@ def resolve(sport: str, team: str, date: str | None = None) -> dict:
             "prior_game_date": prior_date.date().isoformat()}
 
 
+# ---------------------------------------------------------------------------
+# home_road_split (extension) -- home/road game-count balance for one team's
+# season: overall, 1st/2nd half (split at that season's own date median),
+# longest home stand / road trip, and remaining home/road given `as_of`
+# WITHIN a season already fully on file (never a future/unplayed season --
+# see docs/research/organization-sprint spec's UNANSWERABLE list for the
+# real "next fixtures" case, which this does not touch).
+# Duplicates resolve()'s team/calendar lookup (~15 lines) rather than
+# refactoring it out -- ponytail: keeps this addition purely ADDITIVE, zero
+# risk to resolve()'s existing tested behavior.
+# ---------------------------------------------------------------------------
+
+def _season_label(sport: str, dates: pd.Series) -> pd.Series:
+    """MLB season = calendar year (no straddle). NBA/other = the year the
+    season STARTS (Aug-Jul span), so an Oct 2024-Apr 2025 season is one
+    label ('2024') even though it crosses a calendar-year boundary."""
+    if sport == "mlb":
+        return dates.dt.year
+    return dates.dt.year.where(dates.dt.month >= 8, dates.dt.year - 1)
+
+
+def _counts(sub: pd.DataFrame) -> dict:
+    home_n = int(sub["is_home"].sum())
+    return {"home": home_n, "road": int(len(sub) - home_n), "total": int(len(sub))}
+
+
+def home_road_split(sport: str, team: str, as_of: str | None = None) -> dict:
+    sport = sport.lower()
+    cfg = _CALENDAR_PATHS.get(sport)
+    if cfg is None:
+        return {"status": "not_supported", "category": "schedule_context", "sport": sport,
+                "framing": FRAMING, "note": f"schedule_context not wired for sport '{sport}' "
+                                             f"-- available: {sorted(_CALENDAR_PATHS)}"}
+    path, home_col, away_col = cfg
+    if not os.path.exists(path):
+        return {"status": "no_data", "category": "schedule_context", "sport": sport,
+                "source_artifact": path, "framing": FRAMING}
+    team_stripped = re.sub(r"^the\s+", "", team.strip(), flags=re.I)
+    team_u = team_stripped.upper()
+    if sport == "nba":
+        full = _nba_names.resolve(team_stripped)
+        if full:
+            team_u = full
+    calendar_team = _calendar_code(sport, team_u)
+    claims_team = _claims_code(sport, team_u)
+    df = pd.read_parquet(path)
+    if sport != "nba" and calendar_team not in set(df[home_col]) | set(df[away_col]):
+        target_key = _team_canonical(sport, team_stripped)
+        for code in pd.unique(pd.concat([df[home_col], df[away_col]])):
+            if _team_canonical(sport, code) == target_key:
+                calendar_team = claims_team = code
+                break
+    games = df[(df[home_col] == calendar_team) | (df[away_col] == calendar_team)].sort_values("date").reset_index(drop=True)
+    if games.empty:
+        return {"status": "no_data", "category": "schedule_context", "sport": sport, "source_artifact": path,
+                "framing": FRAMING, "note": f"zero rows matched team={team!r} (calendar code {calendar_team!r})"}
+    games = games.assign(is_home=games[home_col] == calendar_team, season=_season_label(sport, games["date"]))
+
+    target_season = None
+    if as_of:
+        as_of_ts = pd.Timestamp(as_of)
+        target_season = _season_label(sport, pd.Series([as_of_ts])).iloc[0]
+    if target_season is None or target_season not in set(games["season"]):
+        target_season = games["season"].iloc[-1]  # most recent season on file
+    season_games = games[games["season"] == target_season].sort_values("date").reset_index(drop=True)
+    median_date = season_games["date"].median()
+    first_half = season_games[season_games["date"] <= median_date]
+    second_half = season_games[season_games["date"] > median_date]
+
+    # longest consecutive home stand / road trip within the season, in date order
+    runs = (season_games["is_home"] != season_games["is_home"].shift()).cumsum()
+    run_sizes = season_games.groupby(runs)["is_home"].agg(["first", "size"])
+    home_runs = run_sizes.loc[run_sizes["first"], "size"]
+    road_runs = run_sizes.loc[~run_sizes["first"], "size"]
+    longest_home_stand = int(home_runs.max()) if len(home_runs) else 0
+    longest_road_trip = int(road_runs.max()) if len(road_runs) else 0
+
+    remaining = None
+    if as_of:
+        remaining = _counts(season_games[season_games["date"] > pd.Timestamp(as_of)])
+
+    return {"status": "ok", "category": "schedule_context", "sport": sport, "source_artifact": path,
+            "as_of": as_of or str(season_games["date"].iloc[-1].date()), "framing": FRAMING, "team": claims_team,
+            "season": str(target_season), "season_totals": _counts(season_games),
+            "first_half": _counts(first_half), "second_half": _counts(second_half),
+            "longest_home_stand": longest_home_stand, "longest_road_trip": longest_road_trip,
+            "remaining": remaining, "career_totals": _counts(games)}
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description="Query the schedule-context resolver directly.")
     p.add_argument("sport")
     p.add_argument("team")
     p.add_argument("--date", default=None, help="YYYY-MM-DD, default today (UTC)")
+    p.add_argument("--home-road-split", action="store_true", dest="home_road_split",
+                   help="report home/road split instead of rest/b2b")
     a = p.parse_args(argv)
+    if a.home_road_split:
+        print(json.dumps(home_road_split(a.sport, a.team, a.date), indent=2, default=str))
+        return
     print(json.dumps(resolve(a.sport, a.team, a.date), indent=2, default=str))
 
 

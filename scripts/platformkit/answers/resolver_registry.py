@@ -62,9 +62,11 @@ import pandas as pd
 
 from scripts.platformkit.analytics_verify import answers as _analytics
 from scripts.platformkit.answers import claims_resolver as _claims
+from scripts.platformkit.answers import conditional_winprob_resolver as _conditional_winprob
 from scripts.platformkit.answers import contracts as _contracts
 from scripts.platformkit.answers import edge_facts_resolver as _edge_facts
 from scripts.platformkit.answers import effect_graph as _eg
+from scripts.platformkit.answers import h2h_history_resolver as _h2h_history
 from scripts.platformkit.answers import leaderboard_resolver as _lb
 from scripts.platformkit.answers import player_compare as _pc
 from scripts.platformkit.answers import schedule_context_resolver as _schedule
@@ -271,6 +273,28 @@ RESOLVERS: dict[str, dict] = {
                         "quoted verbatim under its own block; a block's no_data never fails the overall preview",
         "units": "per-block native (see each block's own envelope)", "rounding": "none -- verbatim from blocks",
     },
+    "h2h_history": {
+        "resolver": "scripts.platformkit.answers.h2h_history_resolver.resolve",
+        "source_artifact": "data/domains/basketball_nba/linescores.parquet | data/domains/mlb/games.parquet | "
+                            "data/domains/soccer/matches.parquet | data/domains/tennis/atlas_h2h.parquet",
+        "computation": "series aggregate over every completed meeting between a team/player PAIR -- games played, "
+                        "W/L(/D) split, mean+cumulative point/run/goal differential (home- and pair-perspective), "
+                        "last-5 form, and (tennis) a per-surface split; complements historical_result (ONE game's "
+                        "score) and matchup_preview's h2h/head-to-head route (the predictive fan-out), zero rows "
+                        "-> no_data, never fabricated",
+        "units": "games/wins native counts; differential in points(NBA)/runs(MLB)/goals(soccer)",
+        "rounding": "differential mean 2 decimals, cumulative integer",
+    },
+    "conditional_winprob": {
+        "resolver": "scripts.platformkit.answers.conditional_winprob_resolver.resolve",
+        "source_artifact": "data/domains/basketball_nba/games.parquet | data/domains/mlb/games.parquet | "
+                            "data/domains/soccer/matches.parquet",
+        "computation": "descriptive P(home win) split by rest bucket (b2b vs non-b2b, plus a b2b_or_1d/2-3d/4d_plus "
+                        "table) computed directly off the public games calendar -- NOT a conditional path inside "
+                        "predict_matchup.py (it has none); n + Wilson 95% CI per cell so a thin split is visible, "
+                        "calibration language only, never a market edge or an invented conditional probability",
+        "units": "probability 0-1 + integer n per cell", "rounding": "4 decimals",
+    },
 }
 
 # "sharpest" (2026-07-18, coverage_stress Family D): a bare superlative
@@ -287,6 +311,35 @@ _PREDICTION_QUALITY_KEYWORDS = ("prediction quality", "how good are the predicti
                                 "oos readout", "oos scoreboard", "vs the close", "versus the close")
 _HISTORICAL_KEYWORDS = ("final score", "what happened", "box score", "result of", "score of the game",
                         "who won on", "final of")
+# h2h_history (Family 1, NEW) -- a SERIES aggregate ("historical/all-time
+# record", "run/goal/point differential"), distinct from historical_result's
+# ONE-game score above and from matchup_preview's bare "h2h"/"head-to-head"
+# preview route below. Checked right after historical_result (specific
+# phrasing, no token overlap with either) and BEFORE _MATCHUP_PREVIEW_KEYWORDS
+# so a compound phrase like "head-to-head goal differential" is intercepted
+# here, not lost to the predictive preview -- matchup_preview keeps every
+# bare h2h/head-to-head query that names no differential/historical/series
+# token (never stolen).
+_H2H_HISTORY_KEYWORDS = ("run differential", "goal differential", "point differential",
+                         "historical h2h", "historical head-to-head", "historical head to head",
+                         "all-time record", "all time record", "head-to-head record", "h2h record",
+                         "leads the series", "series record", "historical record")
+# conditional_winprob (Family 2, NEW) -- descriptive rest-conditioned win-rate
+# delta ("how does win prob change on a back-to-back/short rest"). Checked
+# BEFORE _PREDICTION_KEYWORDS (a literal "win probability" naming a rest
+# condition must not fall to the single point-forecast prediction_winprob
+# route) and therefore also before _SCHEDULE_KEYWORDS's bare "back-to-back"/
+# "b2b"/"rest days" tokens (checked much later) -- a per-team rest-days
+# LOOKUP ("rest days for the Bucks") still routes to schedule_context
+# unaffected, since none of ITS phrasings appear here.
+# "on a b2b"/"on a back-to-back" are ALSO the existing, documented per-team
+# schedule_context shape ("Are the Lakers ON a back-to-back tonight?" --
+# see _TRAIL_RE's own docstring example below) -- those two phrases only
+# count as conditional_winprob when paired with an explicit win-rate/
+# probability signal word; unpaired, they stay the unchanged schedule lookup.
+_CONDITIONAL_KEYWORDS = ("on short rest", "on rest", "rest help")
+_CONDITIONAL_AMBIGUOUS_KEYWORDS = ("on a b2b", "on a back-to-back", "on a back to back")
+_CONDITIONAL_SIGNAL_KEYWORDS = ("win prob", "win rate", "does win", "home win")
 _MECHANISM_KEYWORDS = ("evidence", "mechanism", "hypothesis", "folklore",
                        "hold up", "does the data support", "is it true that")
 _ANALYTICS_ATTRIBUTION_KEYWORDS = ("attribution", "clv attribution", "link method", "join rate")
@@ -311,7 +364,22 @@ _INJURY_KEYWORDS = ("injury report", "injury status", "injuries for", "injuries 
 _INJURY_IS_RE = re.compile(r"\bis\s+(.+?)\s+injured\b", re.I)
 _NEWS_KEYWORDS = ("news context", "latest news", "news about", "news for", "recent news")
 _SCHEDULE_KEYWORDS = ("schedule context", "rest days", "back to back", "back-to-back", "b2b",
-                      "days of rest", "schedule for")
+                      "days of rest", "schedule for",
+                      # Family 3 extension (home/road split) -- schedule_split_extend keeps
+                      # this ONE category (schedule_context), just a wider keyword net; the
+                      # split-specific sub-phrases below double as the resolve()-time switch
+                      # (_SCHEDULE_SPLIT_KEYWORDS) between rest/b2b vs home/road split.
+                      "home road split", "home/road split", "home-road balance", "home road balance",
+                      "second half of the season", "home stand", "road trip", "remaining schedule",
+                      "home games in the second half", "road games in the second half",
+                      "home-heavy", "home heavy", "road-heavy", "road heavy")
+# Sub-phrases of _SCHEDULE_KEYWORDS above that mean "home/road split", not
+# "rest/b2b" -- resolve()'s schedule_context branch checks this list to pick
+# schedule_context_resolver.home_road_split() over its plain resolve().
+_SCHEDULE_SPLIT_KEYWORDS = ("home road split", "home/road split", "home-road balance", "home road balance",
+                            "second half of the season", "home stand", "road trip", "remaining schedule",
+                            "home games in the second half", "road games in the second half",
+                            "home-heavy", "home heavy", "road-heavy", "road heavy")
 _SCOUT_KEYWORDS = ("scouting report", "scout report", "scouting")
 _COMPARABLES_KEYWORDS = ("comparable", "comparables", "similar players", "similar to", "player comp")
 _MATCHUP_PREVIEW_KEYWORDS = ("preview", "matchup preview", "matchup between", "game preview",
@@ -379,10 +447,16 @@ def classify(query: str) -> str | None:
     # "predict*" token, regardless of what sits between them.
     if any(k in low for k in _PREDICTION_QUALITY_KEYWORDS) or ("how good" in low and "predict" in low):
         return "prediction_quality"
+    if any(k in low for k in _CONDITIONAL_KEYWORDS) or (
+            any(k in low for k in _CONDITIONAL_AMBIGUOUS_KEYWORDS)
+            and any(k in low for k in _CONDITIONAL_SIGNAL_KEYWORDS)):
+        return "conditional_winprob"
     if any(k in low for k in _PREDICTION_KEYWORDS):
         return "prediction_winprob"
     if any(k in low for k in _HISTORICAL_KEYWORDS):
         return "historical_result"
+    if any(k in low for k in _H2H_HISTORY_KEYWORDS):
+        return "h2h_history"
     if _REFEREE_RE.search(low):
         return "verified_claims"
     if _CLAIMS_REROUTE_RE.search(low):
@@ -685,8 +759,15 @@ _LEAD_RE = re.compile(
     r"news context(?: (?:for|about|on))?|latest news(?: (?:for|about|on))?|"
     r"recent news(?: (?:for|about|on))?|news(?: (?:for|about|on))?|"
     r"schedule context(?: for)?|schedule(?: for)?|rest days(?: for)?|"
-    r"how many (?:rest days|back[- ]to[- ]back games) do(?:es)?(?: the)?|"
+    r"how many (?:rest days|back[- ]to[- ]back games|home games(?: in the (?:first|second) half)?|"
+    r"road games(?: in the (?:first|second) half)?) do(?:es)?(?: the)?|"
     r"back[- ]to[- ]back(?: for)?|b2b(?: for)?|days of rest(?: for)?|are(?: the)?|"
+    r"home[- /]road split(?: for)?|home stand(?: for)?|road trip(?: for)?|remaining schedule(?: for)?|"
+    r"historical h2h(?: (?:run|goal|point) differential)?(?: (?:for|between))?|"
+    r"historical head[- ]to[- ]head(?: record)?(?: (?:for|between))?|"
+    r"(?:historical|all[- ]time|series) record(?: (?:for|between))?|"
+    r"head[- ]to[- ]head record(?: (?:for|between))?|h2h record(?: (?:for|between))?|"
+    r"(?:run|goal|point) differential(?: (?:for|between))?|"
     r"matchup preview(?: for)?|game preview(?: for)?|preview|"
     r"win probability(?: (?:for|of))?|win prob(?: (?:for|of))?|who wins"
     r")\s+", re.I)
@@ -838,6 +919,18 @@ def resolve(query: str, sport: str = "nba", category: str | None = None, **kwarg
         return calibration_number(sport)
     if cat == "historical_result":
         return historical_result(sport, kwargs.get("team", ""), kwargs.get("opponent"), kwargs.get("date"))
+    if cat == "h2h_history":
+        team_a = kwargs.get("team_a") or kwargs.get("home")
+        team_b = kwargs.get("team_b") or kwargs.get("away")
+        if not (team_a and team_b):
+            team_a, team_b = _matchup_teams(query, kwargs)
+        if not (team_a and team_b):
+            return {"status": "no_data", "category": "h2h_history", "sport": sport,
+                    "note": "could not parse two teams from query -- pass team_a=/team_b= or 'TEAM_A vs TEAM_B'"}
+        return _h2h_history.resolve(sport, team_a, team_b, as_of=kwargs.get("as_of") or kwargs.get("date"))
+    if cat == "conditional_winprob":
+        return _conditional_winprob.resolve(sport, as_of=kwargs.get("as_of") or kwargs.get("date"),
+                                            team=kwargs.get("team"))
     if cat == "mechanism_effect":
         result = mechanism_effect(sport, kwargs.get("mechanism") or query)
         # RESOLVER BRIDGE fallback: the validation-ledger hypothesis match can
@@ -887,7 +980,10 @@ def resolve(query: str, sport: str = "nba", category: str | None = None, **kwarg
         return _edge_facts.news_context(sport, team=kwargs.get("team") or _entity_from_query(query),
                                         player=kwargs.get("player"))
     if cat == "schedule_context":
-        return _schedule.resolve(sport, kwargs.get("team") or _entity_from_query(query), date=kwargs.get("date"))
+        team = kwargs.get("team") or _entity_from_query(query)
+        if any(k in query.lower() for k in _SCHEDULE_SPLIT_KEYWORDS):
+            return _schedule.home_road_split(sport, team, kwargs.get("date"))
+        return _schedule.resolve(sport, team, date=kwargs.get("date"))
     if cat == "scouting_report":
         return _scout.compose_scout(sport, kwargs.get("player") or _entity_from_query(query),
                                     kind=kwargs.get("kind", "player"), top_n=kwargs.get("top_n", 8))

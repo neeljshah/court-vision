@@ -172,3 +172,92 @@ def test_schedule_claims_never_reads_other_stores(tmp_path, monkeypatch):
     assert schedule_claims_path in opened
     assert decoy_claims_path not in opened  # the declared-store scope, proven
     assert out and out[0]["claim_id"] == "nba_schedule_rest_days_rank"
+
+
+# ---------------------------------------------------------------------------
+# home_road_split (Family 3 extension) -- home/road balance, 1st/2nd half,
+# longest stand/trip, remaining-given-as_of. Each test overwrites the
+# fixture's synthetic calendar with its own richer season, same pattern
+# test_nba_claims_code_convention_accepted already uses above.
+# ---------------------------------------------------------------------------
+
+def _season_cal(pairs):
+    """pairs: list of (date_str, is_home) for team AAA vs a filler opponent."""
+    rows = []
+    for d, is_home in pairs:
+        if is_home:
+            rows.append({"home_abbr": "AAA", "away_abbr": "ZZZ", "date": pd.Timestamp(d)})
+        else:
+            rows.append({"home_abbr": "ZZZ", "away_abbr": "AAA", "date": pd.Timestamp(d)})
+    return pd.DataFrame(rows)
+
+
+def test_home_road_split_season_totals_and_halves(tmp_path, monkeypatch):
+    # NBA-style season straddling the calendar-year boundary (Oct-Apr):
+    # 4 home then 4 road games, evenly split for a clean median.
+    pairs = [(f"2024-10-{10+i:02d}", True) for i in range(4)] + \
+            [(f"2025-01-{10+i:02d}", False) for i in range(4)]
+    cal = _season_cal(pairs)
+    path = tmp_path / "season.parquet"
+    cal.to_parquet(path)
+    monkeypatch.setitem(R._CALENDAR_PATHS, "nba", (str(path), "home_abbr", "away_abbr"))
+
+    r = R.home_road_split("nba", "AAA")
+    assert r["status"] == "ok"
+    assert r["season"] == "2024"  # season label = the year it STARTS
+    assert r["season_totals"] == {"home": 4, "road": 4, "total": 8}
+    assert r["first_half"]["home"] == 4 and r["first_half"]["road"] == 0
+    assert r["second_half"]["home"] == 0 and r["second_half"]["road"] == 4
+    assert r["longest_home_stand"] == 4
+    assert r["longest_road_trip"] == 4
+    assert r["career_totals"] == {"home": 4, "road": 4, "total": 8}
+
+
+def test_home_road_split_remaining_given_as_of(tmp_path, monkeypatch):
+    pairs = [("2024-10-10", True), ("2024-10-15", False), ("2024-11-01", True), ("2024-11-05", False)]
+    cal = _season_cal(pairs)
+    path = tmp_path / "season2.parquet"
+    cal.to_parquet(path)
+    monkeypatch.setitem(R._CALENDAR_PATHS, "nba", (str(path), "home_abbr", "away_abbr"))
+
+    r = R.home_road_split("nba", "AAA", as_of="2024-10-20")
+    assert r["status"] == "ok"
+    assert r["remaining"] == {"home": 1, "road": 1, "total": 2}  # the two Nov games
+
+
+def test_home_road_split_picks_season_containing_as_of(tmp_path, monkeypatch):
+    # two distinct seasons on file; as_of names the EARLIER one
+    pairs = [("2023-10-10", True), ("2023-11-10", False), ("2024-10-10", True), ("2024-11-10", False)]
+    cal = _season_cal(pairs)
+    path = tmp_path / "season3.parquet"
+    cal.to_parquet(path)
+    monkeypatch.setitem(R._CALENDAR_PATHS, "nba", (str(path), "home_abbr", "away_abbr"))
+
+    r = R.home_road_split("nba", "AAA", as_of="2023-12-01")
+    assert r["season"] == "2023"
+    assert r["season_totals"] == {"home": 1, "road": 1, "total": 2}
+    assert r["career_totals"] == {"home": 2, "road": 2, "total": 4}  # both seasons combined
+
+
+def test_home_road_split_mlb_season_is_calendar_year(tmp_path, monkeypatch):
+    cal = pd.DataFrame([
+        {"home_team": "HOU", "away_team": "NYY", "date": pd.Timestamp("2024-04-01")},
+        {"home_team": "NYY", "away_team": "HOU", "date": pd.Timestamp("2024-08-01")},
+    ])
+    path = tmp_path / "mlb_season.parquet"
+    cal.to_parquet(path)
+    monkeypatch.setitem(R._CALENDAR_PATHS, "mlb", (str(path), "home_team", "away_team"))
+
+    r = R.home_road_split("mlb", "HOU")
+    assert r["status"] == "ok"
+    assert r["season"] == "2024"  # calendar-year season, no Aug-Jul straddle for mlb
+
+
+def test_home_road_split_unmatched_team_is_no_data():
+    r = R.home_road_split("nba", "ZZZZZ")
+    assert r["status"] == "no_data"
+
+
+def test_home_road_split_unsupported_sport_is_not_supported():
+    r = R.home_road_split("soccer", "ARS")
+    assert r["status"] == "not_supported"
