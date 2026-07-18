@@ -195,7 +195,15 @@ def _match_attribute(sub: pd.DataFrame, tokens: list[str], reg: dict) -> str | N
     # singular/plural-blind: 'rebound' must match 'rebounds' (found live
     # 2026-07-18: 'offensive rebound rate' missed oreb_per36's description)
     def _stem(ws):
-        return {w[:-1] if w.endswith("s") and len(w) > 3 else w for w in ws}
+        # strip punctuation first ('season.' must equal 'season'), then
+        # plural-blind
+        out = set()
+        for w in ws:
+            w = w.strip(".,()%/-:;!?")
+            if not w:
+                continue
+            out.add(w[:-1] if w.endswith("s") and len(w) > 3 else w)
+        return out
     # stopwords never count toward a match -- else garbage input scores 1
     # against any description containing 'a'/'not' and mis-matches
     _STOP = {"a", "an", "the", "of", "per", "not", "is", "in", "on", "for",
