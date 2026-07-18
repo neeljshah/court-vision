@@ -581,6 +581,26 @@ PLAYER_ATTRIBUTES["pf_per36"] = {
     "seasons": ["2024_25", "2025_26"],
     "verifiable_by_design": True,
 }
+for _attr, _cols, _formula, _desc in (
+    ("oreb_per36", ["oreb", "min"], "sum(oreb) / sum(min) * 36", "Offensive rebounds per 36 minutes (box-derived, no PBP join)."),
+    ("oreb_share", ["oreb", "reb"], "sum(oreb) / sum(reb)", "Share of this player's own total rebounds that are offensive."),
+    ("dreb_per36", ["dreb", "min"], "sum(dreb) / sum(min) * 36", "Defensive rebounds per 36 minutes (box-derived, no PBP join)."),
+    ("dreb_share", ["dreb", "reb"], "sum(dreb) / sum(reb)", "Share of this player's own total rebounds that are defensive."),
+    ("stocks_per36", ["stl", "blk", "min"], "(sum(stl) + sum(blk)) / sum(min) * 36", "Steals plus blocks per 36 minutes."),
+    ("ast_to_tov", ["ast", "tov"], "sum(ast) / sum(tov)", "Assist-to-turnover ratio."),
+):
+    PLAYER_ATTRIBUTES[_attr] = {
+        "description": _desc,
+        "entity": "player",
+        "ingredients": [{"name": c, "source": "data/domains/basketball_nba/player_boxscores.parquet"} for c in _cols],
+        "formula": _formula,
+        "status": "DESCRIPTIVE",
+        "floor": {"min_sum": 200.0},
+        "weight_ledger_family": None,
+        "seasons": ["2024_25", "2025_26"],
+        "verifiable_by_design": True,
+    }
+
 for _side, _floor_key in (("on", "min_on"), ("off", "min_off")):
     PLAYER_ATTRIBUTES[f"opp_ft_rate_allowed_{_side}"] = {
         "description": f"Opponent FT-attempts-per-FGA while this player's lineup is {_side}-court (lower = fewer free points conceded).",

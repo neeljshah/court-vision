@@ -12,6 +12,7 @@ import pandas as pd
 
 from domains.basketball_nba.profiles.lineup_attributes import build_all_lineup_rows
 from domains.basketball_nba.profiles.player_attributes import build_all_player_rows
+from domains.basketball_nba.profiles.player_box_derived import build_all_player_box_derived_rows
 from domains.basketball_nba.profiles.player_defense_zones import build_all_player_defense_zone_rows
 from domains.basketball_nba.profiles.player_fouls import build_all_player_fouls_rows
 from domains.basketball_nba.profiles.player_rebounding import build_all_player_rebounding_rows
@@ -54,6 +55,7 @@ def build(seasons: list[str] = SEASONS, out_dir=_OUT_DIR) -> dict[str, pd.DataFr
     player_rows = (
         build_all_player_rows(seasons) + build_all_player_defense_zone_rows(seasons)
         + build_all_player_rebounding_rows(seasons) + build_all_player_fouls_rows(seasons)
+        + build_all_player_box_derived_rows(seasons)
     )
     team_rows = (
         build_all_team_rows(seasons) + build_all_team_expansion_rows(seasons)

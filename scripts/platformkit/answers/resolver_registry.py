@@ -285,7 +285,14 @@ _SYSTEM_MAP_KEYWORDS = ("system map", "how does the system", "what produces", "w
 # preview query ("preview X vs Y") also contains concept's generic "vs " token
 # -- but "preview"/"matchup"/"comparable" appear in no concept keyword, so a
 # real concept question ("X vs Y on gravity") still falls through to concept.
-_INJURY_KEYWORDS = ("injury report", "injury status", "injuries for", "injuries of", "is injured", "hurt list")
+_INJURY_KEYWORDS = ("injury report", "injury status", "injuries for", "injuries of", "is injured", "hurt list",
+                    "out tonight")
+# "Is <Name> injured [right now]?" -- the name sits BETWEEN "is" and "injured",
+# so the plain substring check above (which needs the literal phrase "is
+# injured" adjacent) never fires on real phrasing. Captures the name so
+# resolve() can pass it as player= (a personal name, never a team) instead of
+# the team= extraction the older "injury report for <team>" lead-in uses.
+_INJURY_IS_RE = re.compile(r"\bis\s+(.+?)\s+injured\b", re.I)
 _NEWS_KEYWORDS = ("news context", "latest news", "news about", "news for", "recent news")
 _SCHEDULE_KEYWORDS = ("schedule context", "rest days", "back to back", "back-to-back", "b2b",
                       "days of rest", "schedule for")
@@ -317,6 +324,23 @@ _CLAIM_WORD_RE = re.compile(r"\bclaims?\b", re.I)
 # leaderboard resolver. Singular "official" deliberately excluded ("official
 # injury report" must keep routing to injury_report).
 _REFEREE_RE = re.compile(r"\b(referees?|refs|officials|officiating|officiated|crew chief)\b", re.I)
+# 2026-07-19 merge -- 3 new claim families (shooter_composite_v2_asof_approx,
+# nba_context_shooting_defadj, nba_lineup_context) whose obvious phrasings were
+# swallowed by is_ranking_query/concept_rating's generic "best"/"leaders"
+# checks below BEFORE ever reaching the verified_claims/ask() engine that
+# actually has the answer (a no_data/not_supported false gap, not missing
+# data). Checked before both -- deliberately narrow (specific new-family
+# phrases only, not a bare "best"/"top" catch-all) so it does NOT re-route
+# "top 5 gravity" or "top shooters" (both already correctly answered by the
+# ranking/leaderboard_resolver profile-attribute composite -- a real, shipped,
+# DIFFERENT mechanism from the intel_claims store; see
+# test_leaderboard_resolver.py's test_live_top5_gravity_via_resolve_entrypoint
+# and test_live_top_shooters_resolves_composite_never_improvised).
+_CLAIMS_REROUTE_RE = re.compile(
+    r"\bbest shooters?\b|\bshooter composite\b|\bbest shooter ranking\b|"
+    r"\bdefense[- ]adjusted (?:true shooting|ts)\b|"
+    r"\bon[- ]off net rating\b|\bon/off impact\b",
+    re.I)
 
 
 def classify(query: str) -> str | None:
@@ -344,6 +368,8 @@ def classify(query: str) -> str | None:
         return "historical_result"
     if _REFEREE_RE.search(low):
         return "verified_claims"
+    if _CLAIMS_REROUTE_RE.search(low):
+        return "verified_claims"
     if _lb.is_ranking_query(low):
         return "ranking"
     if any(k in low for k in _ANALYTICS_ATTRIBUTION_KEYWORDS):
@@ -363,7 +389,7 @@ def classify(query: str) -> str | None:
         return "verified_claims"
     if any(k in low for k in _MECHANISM_KEYWORDS) or _AFFECTS_RE.match(low) or _WHAT_DOES_X_AFFECT_RE.match(low):
         return "mechanism_effect"
-    if any(k in low for k in _INJURY_KEYWORDS):
+    if any(k in low for k in _INJURY_KEYWORDS) or _INJURY_IS_RE.search(low):
         return "injury_report"
     if any(k in low for k in _NEWS_KEYWORDS):
         return "news_context"
@@ -601,11 +627,33 @@ def _entity_from_query(query: str) -> str:
     return re.sub(r"^the\s+", "", stripped, flags=re.I)
 
 
+_BETWEEN_RE = re.compile(r"^\s*between\s+(.+?)\s+and\s+(.+?)\s*$", re.I)
+
+
+def _injury_player_from_query(query: str) -> str | None:
+    """Player name for an 'is X injured [right now]' phrasing -- this always
+    names a PERSON, never a team, so it feeds injury_report's player= kwarg
+    directly (unlike the older 'injury report for <team>' lead-in, which
+    _entity_from_query/_LEAD_RE strips into team=)."""
+    m = _INJURY_IS_RE.search(query)
+    if not m:
+        return None
+    return re.sub(r"^\s*the\s+", "", m.group(1).strip(), flags=re.I)
+
+
 def _split_matchup(text: str) -> tuple[str | None, str | None]:
     """Parse 'HOME vs AWAY' / 'AWAY @ HOME' -> (home, away). '@'/'at' means the
-    first team is the visitor (away @ home); 'vs'/'versus' keeps first as home."""
+    first team is the visitor (away @ home); 'vs'/'versus' keeps first as home.
+    Also parses 'between HOME and AWAY' (the '_LEAD_RE' strip on "who wins ..."
+    leaves this shape untouched -- real bank phrasing, e.g. "who wins between
+    Ashleigh Barty and Mirra Andreeva", never uses vs/versus/@/at)."""
     m = _VS_RE.search(text)
     if not m:
+        m2 = _BETWEEN_RE.match(text)
+        if m2:
+            left, right = m2.group(1).strip(), m2.group(2).strip()
+            if left and right:
+                return left, right
         return None, None
     left, right = text[:m.start()].strip(), text[m.end():].strip()
     if not left or not right:
@@ -623,6 +671,59 @@ def _matchup_teams(query: str, kwargs: dict) -> tuple[str | None, str | None]:
     return home, away
 
 
+def _infer_sport_from_entities(home: str, away: str) -> str | None:
+    """Best-effort sport inference for a matchup query with no reliable sport
+    context (e.g. 'who wins between Ashleigh Barty and Mirra Andreeva' -- no
+    sport TOKEN in the text), reusing the SAME entity-name matching machinery
+    profiles/ask.py's player_stat resolver already uses (load_profiles +
+    _match_entities) -- never a new NER/model. Returns the one sport BOTH
+    names resolve to; None if either name is unmatched or the two names
+    resolve to different sports (an honest 'don't know', never a guess)."""
+    df = _ask.load_profiles()
+    if df.empty:
+        return None
+
+    def _sports_for(name: str) -> set[str]:
+        tokens = _ask._norm(name).split()
+        _, hits = _ask._match_entities(df, tokens)
+        return {sp for _, _, sp in hits}
+
+    common = _sports_for(home) & _sports_for(away)
+    return next(iter(common)) if len(common) == 1 else None
+
+
+# ---------------------------------------------------------------------------
+# Compound-question splitter (conservative -- marker list, not NLP). Splits
+# ONLY on an explicit conjunction marker; a query with none of these markers
+# (including a combined-conditional like "combined win probability if both X
+# and Y are out", which names no marker below) is untouched and falls through
+# to normal single-question classify()/dispatch, honest no_data included.
+# ---------------------------------------------------------------------------
+_COMPOUND_PREFIX_RE = re.compile(r"^\s*(?:ok\s+)?two things\s*[-:]*\s*", re.I)
+_COMPOUND_NUMBERED_RE = re.compile(
+    r"^\s*(?:1[\.\):]|first[,:])\s*(.+?)\s*(?:2[\.\):]|second[,:])\s*(.+)$", re.I)
+_COMPOUND_MARKERS = (" and also ", "; also ", ";also ")
+
+
+def _split_compound(query: str) -> list[str] | None:
+    """None if `query` names no explicit conjunction marker (the common
+    case -- untouched). Else the 2 (or more, for a numbered list) parts,
+    each resolved independently by resolve()'s caller."""
+    q = (query or "").strip()
+    m = _COMPOUND_NUMBERED_RE.match(q)
+    if m:
+        return [m.group(1).strip(" ,"), m.group(2).strip(" ,")]
+    q2 = _COMPOUND_PREFIX_RE.sub("", q, count=1)
+    low = q2.lower()
+    for marker in _COMPOUND_MARKERS:
+        idx = low.find(marker)
+        if idx != -1:
+            part1, part2 = q2[:idx].strip(" ,-"), q2[idx + len(marker):].strip(" ,-")
+            if part1 and part2:
+                return [part1, part2]
+    return None
+
+
 # ---------------------------------------------------------------------------
 # Single dispatch entrypoint
 # ---------------------------------------------------------------------------
@@ -630,6 +731,13 @@ def resolve(query: str, sport: str = "nba", category: str | None = None, **kwarg
     """The one function every consumer (human, CLI, or an LLM following
     docs/AI_CONSUMER_CONTRACT.md) calls. Never improvises past a registered
     resolver; an unclassified or unregistered category is NOT_SUPPORTED."""
+    if category is None:
+        parts = _split_compound(query)
+        if parts is not None:
+            sub_envelopes = [resolve(p, sport, **kwargs) for p in parts]
+            overall = "ok" if any(e.get("status") == "ok" for e in sub_envelopes) else sub_envelopes[0]["status"]
+            return {"status": overall, "category": "compound_question", "sport": sport,
+                    "query": query, "parts": sub_envelopes}
     cat = category or classify(query)
     if cat is None or cat not in RESOLVERS:
         return {"status": "not_supported", "category": cat, "query": query,
@@ -674,8 +782,20 @@ def resolve(query: str, sport: str = "nba", category: str | None = None, **kwarg
     if cat == "system_map":
         return _analytics.system_map(sport, kwargs.get("node"), query)
     if cat == "injury_report":
-        return _edge_facts.injury_report(sport, team=kwargs.get("team") or _entity_from_query(query),
-                                         player=kwargs.get("player"))
+        player = kwargs.get("player") or _injury_player_from_query(query)
+        team = kwargs.get("team") if player else (kwargs.get("team") or _entity_from_query(query))
+        result = _edge_facts.injury_report(sport, team=team, player=player)
+        # A resolved PLAYER name (real phrasing, "is X injured") that matched
+        # zero rows in a STORE THAT EXISTS is an honest "not currently listed"
+        # answer, not a failure -- distinct from an absent store (real
+        # no_data) or an unresolvable name (player is None -> untouched below).
+        if result["status"] == "no_data" and player and _edge_facts.FS.path_for("injury", sport).is_file():
+            as_of = datetime.fromtimestamp(
+                _edge_facts.FS.path_for("injury", sport).stat().st_mtime, tz=timezone.utc).isoformat()
+            return {"status": "ok", "category": result["category"], "sport": sport,
+                    "source_artifact": result["source_artifact"], "as_of": as_of, "player": player,
+                    "note": f"{player} not found on the current injury report as of {as_of}"}
+        return result
     if cat == "news_context":
         return _edge_facts.news_context(sport, team=kwargs.get("team") or _entity_from_query(query),
                                         player=kwargs.get("player"))
@@ -702,7 +822,16 @@ def resolve(query: str, sport: str = "nba", category: str | None = None, **kwarg
         if not (home and away):
             return {"status": "no_data", "category": cat, "sport": sport,
                     "note": "could not parse home/away from query -- pass home=/away= or 'HOME vs AWAY'"}
-        return _winprob.dispatch(sport, home, away, ingame_state=kwargs.get("ingame_state"))
+        # A query with no sport TOKEN ("who wins between Ashleigh Barty and
+        # Mirra Andreeva") relies entirely on the caller's `sport` kwarg,
+        # which defaults to "nba" -- wrong for a tennis/soccer matchup. Infer
+        # from the entity names (same machinery player_stat lookups use) and
+        # PREFER it when it resolves unambiguously; an inconclusive/conflicting
+        # inference (no profile data in this clone, or a genuinely unmatched
+        # name) falls back to the caller's own `sport`, never forced to
+        # no_data -- that would break every already-correct explicit-sport call.
+        dispatch_sport = _infer_sport_from_entities(home, away) or sport
+        return _winprob.dispatch(dispatch_sport, home, away, ingame_state=kwargs.get("ingame_state"))
     if cat in ("player_stat", "rating_attribute"):
         if sport not in _ask.SPORTS:
             return {"status": "not_supported", "category": cat, "sport": sport,
