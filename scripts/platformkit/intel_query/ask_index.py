@@ -170,6 +170,10 @@ _METRIC_SYNONYMS: dict[str, str] = {
     "back to back efficiency": "b2b_ts_drop",
     "rest split": "b2b_ts_drop",
     "b2b resilient": "b2b_pts36_delta",
+    # kalshi_sportsbook_prob_gap (2026-07-18): market-level descriptive family
+    "kalshi vs sportsbook": "mean_abs_gap",
+    "kalshi sportsbook gap": "mean_abs_gap",
+    "prediction market vs sportsbook": "mean_abs_gap",
     # nba_teammate_context (2026-07-18): teammate-effects family -- "who
     # lifts whom". Added as a SEPARATE end-of-dict block per merge-conflict
     # convention (multiple concurrent lanes append aliases here).
