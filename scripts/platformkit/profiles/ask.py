@@ -151,9 +151,29 @@ def _drop_fallback_id_dupes(hits: list) -> list:
     return out
 
 
+# Bare-initialism nicknames the token matcher can never derive from the
+# roster name itself (coverage_stress known-open: "KCP" scored 0 against
+# "Kentavious Caldwell-Pope"). Curated, tiny; expanded IN _match_entities so
+# every caller (player_stat lookups, leaderboards, compare) benefits.
+_NICKNAMES: dict[str, list[str]] = {
+    "kcp": ["kentavious", "caldwell", "pope"],
+    "cp3": ["chris", "paul"],
+    "sga": ["shai", "gilgeous", "alexander"],
+    "pg13": ["paul", "george"],
+    "dlo": ["dangelo", "russell"],
+    "kat": ["karl", "anthony", "towns"],
+    "jjj": ["jaren", "jackson"],
+    "gtj": ["gary", "trent"],
+}
+
+
 def _match_entities(df: pd.DataFrame, q_tokens: list[str]):
     """Score each distinct entity by name-token overlap with the query.
     Returns (best_score, [(entity_id, entity_name, sport), ...] at best score)."""
+    # strip the possessive then punctuation for the nickname key only
+    # ("kcp's" -> "kcp"); the original token is kept when no nickname matches.
+    q_tokens = [x for t in q_tokens
+                for x in _NICKNAMES.get(re.sub(r"[^a-z0-9]", "", re.sub(r"'s$", "", t)), [t])]
     ents = df[["entity_id", "entity_name", "sport"]].drop_duplicates()
     best, hits = 0, []
     for eid, name, sp in ents.itertuples(index=False):

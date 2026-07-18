@@ -78,6 +78,13 @@ LEADERS_RE = re.compile(r"^\s*(.+?)\s+leaders?\s*\??\s*$", re.I)
 # stress Family D). Only NBA has a wired player->team crosswalk today (see
 # _nba_player_team_crosswalk below); other sports honestly not_supported.
 LEADS_TEAM_RE = re.compile(r"^\s*who\s+leads\s+the\s+(.+?)\s+in\s+(.+?)\s*\??\s*$", re.I)
+# "Who shoots (the) most efficiently (overall / as a scorer)?" -- no metric
+# trigger word anywhere (coverage_stress known-open 2026-07-18). "as a
+# scorer" = true shooting (pts per shooting possession); bare/"overall" =
+# eFG. Both attributes already exist in the NBA registry -- pure routing.
+EFFICIENT_RE = re.compile(
+    r"^\s*who\s+shoots\s+(?:the\s+)?most\s+efficient(?:ly)?"
+    r"\s*(overall|as\s+a\s+scorer)?\s*\??\s*$", re.I)
 
 # Free-text category aliases -- pure routing onto attributes that already
 # exist (coverage_stress Family D: "data already there, no new column").
@@ -131,7 +138,8 @@ _CATEGORY_STOPWORDS = {"a", "an", "the", "is", "are", "of", "for", "to", "in", "
 
 
 def is_ranking_query(text: str) -> bool:
-    return bool(TOP_N_RE.match(text) or LEADERS_RE.match(text) or LEADS_TEAM_RE.match(text))
+    return bool(TOP_N_RE.match(text) or LEADERS_RE.match(text)
+                or LEADS_TEAM_RE.match(text) or EFFICIENT_RE.match(text))
 
 
 def parse_team_query(text: str) -> tuple[str | None, str | None]:
@@ -146,6 +154,10 @@ def parse_team_query(text: str) -> tuple[str | None, str | None]:
 def parse_query(text: str) -> tuple[str, int | None]:
     """Free-text -> (category_text, top_n_or_None). "top 10 shooters" ->
     ("shooters", 10); "gravity leaders" -> ("gravity", None)."""
+    m = EFFICIENT_RE.match(text)
+    if m:
+        qual = (m.group(1) or "").lower()
+        return ("ts_pct" if "scorer" in qual else "efg"), 1
     m = TOP_N_RE.match(text)
     if m:
         n = int(m.group(1)) if m.group(1) else None

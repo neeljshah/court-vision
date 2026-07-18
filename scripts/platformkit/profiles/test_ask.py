@@ -53,6 +53,17 @@ def test_substring_match(tmp_path, monkeypatch):
     assert "James Harden" in out and "ast = 9.2" in out
 
 
+def test_nickname_initialism_resolves(tmp_path, monkeypatch):
+    monkeypatch.setattr(ask, "PROFILES_DIR", str(_make_profiles(tmp_path)))
+    rows = [dict(entity_id=9, entity_name="Kentavious Caldwell-Pope", window="2024-25",
+                 attribute="rebounding", raw_value=2.5, percentile=40, rating_2k=75, n=60,
+                 ingredients=json.dumps({"reb": 2.5}), status="DESCRIPTIVE",
+                 sources="nba_api/boxscore")]
+    pd.DataFrame(rows).to_parquet(tmp_path / "nba_extra_profiles.parquet")
+    out = ask.answer("KCP's rebounding")  # possessive initialism -> nickname map
+    assert "Kentavious Caldwell-Pope" in out
+
+
 def test_typo_difflib(tmp_path, monkeypatch):
     monkeypatch.setattr(ask, "PROFILES_DIR", str(_make_profiles(tmp_path)))
     out = ask.answer("doncicc scoring")  # surname typo -> difflib

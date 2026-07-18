@@ -39,6 +39,16 @@ def test_is_ranking_query_true_for_top_and_leaders_false_otherwise():
     assert not LB.is_ranking_query("Trae Young gravity")
 
 
+def test_efficiency_phrasing_routes_and_parses():
+    # coverage_stress known-open 2026-07-18: no metric trigger word anywhere
+    for q, cat in [("Who shoots most efficiently overall?", "efg"),
+                   ("Who shoots the most efficiently as a scorer?", "ts_pct"),
+                   ("who shoots most efficiently", "efg")]:
+        assert LB.is_ranking_query(q.lower()) or LB.is_ranking_query(q)
+        assert LB.parse_query(q) == (cat, 1)
+    assert not LB.is_ranking_query("who shoots threes")
+
+
 # ---------------------------------------------------------------------------
 # Registration -- classify() routes ranking phrasing to the new category,
 # and the registry entry exists.
