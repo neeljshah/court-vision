@@ -401,7 +401,7 @@ QA_BANK.append({
     "sport": "nba",
     "expect": {
         "category": "verified_claims",
-        "status_one_of": ["ok", "no_data"],
+        "status_one_of": ["ok"],
         "receipt_required": False,
         "must_contain_keys": [],
     },
@@ -409,10 +409,42 @@ QA_BANK.append({
     "note": "nba_referee_crew_ft family (2/2 VERIFIED, grounded 2026-07-18): the "
             "_REFEREE_RE classify route is the assertion here -- referee/official "
             "phrasings must reach verified_claims, never player_stat/ranking. "
-            "KNOWN GAP documented honestly: ask()'s entity matching does not yet "
-            "cover name-keyed claim stores (entity_id == official name, no "
-            "numeric id), so family-level referee queries can return no_data; "
-            "tighten status_one_of to ['ok'] when that matcher gap closes.",
+            "GAP CLOSED 2026-07-19: claims_resolver.resolve() now falls back to "
+            "_family_top_claims (every VERIFIED ranking claim in the named family, "
+            "with receipts) whenever ask()'s NL matcher can resolve neither a "
+            "specific metric nor a family listing but the query still names a "
+            "known family route (referee vocabulary -> nba_referee_crew_ft_claims). "
+            "Proven synthetically (test_claims_resolver.py: "
+            "test_family_level_referee_question_lists_family_claims, "
+            "test_qa_bank_referee_routing_phrasing_now_ok) since this worktree has "
+            "no data/. ORCHESTRATOR MUST CONFIRM on real data: "
+            "python -c \"from scripts.platformkit.answers import resolver_registry as R; "
+            "print(R.resolve('top officials by fta per game officiated'))\" -> status ok, "
+            "family=nba_referee_crew_ft_claims, non-empty claims list.",
+})
+QA_BANK.append({
+    "id": "nba_referee_crew_ft_name_match",
+    "question": "where does Leon Wood rank on mean fta among nba officials",
+    "sport": "nba",
+    "expect": {
+        "category": "verified_claims",
+        "status_one_of": ["ok", "no_data"],
+        "receipt_required": False,
+        "must_contain_keys": [],
+    },
+    "tier": "FULL",
+    "note": "Companion to nba_referee_crew_ft_routing: a SPECIFIC referee name "
+            "must match its claim row now that _answer_entity_lookup checks "
+            "entity_id (the name-keyed field nba_referee_crew_ft uses) alongside "
+            "player_name/entity_name, not player_name alone. 'Leon Wood' is a real "
+            "entity_id value in the live nba_referee_crew_ft_claims.jsonl mean_pf/"
+            "mean_fta rankings (2026-07-18 snapshot) -- status_one_of stays "
+            "['ok','no_data'] only because a future re-run of the referee "
+            "producer could drop/rename that specific official, not because the "
+            "matcher itself is still in doubt (proven via "
+            "test_ask.py::test_entity_lookup_matches_name_keyed_row, synthetic). "
+            "ORCHESTRATOR MUST CONFIRM on real data: same resolve() call with "
+            "this question -> status ok, answer.entity_name == 'Leon Wood'.",
 })
 
 

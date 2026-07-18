@@ -67,9 +67,11 @@ def _sport_in_query(low: str) -> str | None:
 def _norm_row(r: dict[str, Any]) -> dict[str, Any]:
     """One ranking row -> compact excerpt row. Accepts any of the name keys
     used across families (player_name from ask's entity_lookup, entity_name
-    from the WNBA/zone families, team from the venue-split families) -- the
-    ONLY place this normalization lives."""
-    name = r.get("player_name") or r.get("entity_name") or r.get("team")
+    from the WNBA/zone families, team from the venue-split families,
+    entity_id from NAME-KEYED families like nba_referee_crew_ft where the
+    entity_id VALUE is the official's name, not a numeric id) -- the ONLY
+    place this normalization lives."""
+    name = r.get("player_name") or r.get("entity_name") or r.get("team") or r.get("entity_id")
     return {"rank": r.get("rank"), "name": name, "value": r.get("value"), "n": r.get("n")}
 
 
@@ -123,6 +125,74 @@ def _wrap_ask(query: str, sport: str) -> dict[str, Any]:
     }
 
 
+# FAMILY-LEVEL fallback (2026-07-19): a question that names a known family's
+# vocabulary (today: referee/official) but whose NL phrasing ask() can't map
+# to one specific metric ("which referee crews inflate free throws", "top
+# officials by fta per game officiated") must not just fall to no_data --
+# it should list that ONE family's VERIFIED ranking claims directly. Keyed
+# off resolver_registry's OWN referee regex (imported lazily below to avoid
+# the claims_resolver<->resolver_registry import cycle -- resolver_registry
+# imports this module at top level) so the two never drift on what counts
+# as a "referee question". Generalizes only as far as today's name-keyed
+# stores go (referees); a new name-keyed family needs one more entry here,
+# not a new mechanism.
+def _referee_route() -> tuple[Any, str]:
+    from scripts.platformkit.answers.resolver_registry import _REFEREE_RE
+    return _REFEREE_RE, "nba_referee_crew_ft_claims"
+
+
+_FAMILY_ROUTES = (_referee_route,)
+
+
+def _family_top_claims(family_stem: str, query: str, sport: str, top: int = 5) -> dict[str, Any]:
+    """ONE named family's VERIFIED ranking claims (top rows per metric), for
+    when a family-level question can't be narrowed to one metric/entity.
+    Scoped load via pairs_for_claim_stores -- never a corpus-wide scan, same
+    discipline every other composer in this module already follows."""
+    from scripts.platformkit.intel_query.ask import (
+        CLAIM_SOURCE_PAIRS, load_verified_claims, pairs_for_claim_stores)
+
+    pairs = pairs_for_claim_stores((f"{family_stem}.jsonl",), CLAIM_SOURCE_PAIRS)
+    if not pairs:
+        return {"status": "no_data", "category": CATEGORY, "sport": sport,
+                "source_artifact": _CLAIMS_DIR_REL,
+                "note": f"no claim store found for family {family_stem!r}"}
+    verified = load_verified_claims(pairs)
+    ranking_claims = [r for r in verified.values() if r.get("kind") == "ranking"]
+    if not ranking_claims:
+        return {"status": "no_data", "category": CATEGORY, "sport": sport,
+                "source_artifact": _CLAIMS_DIR_REL,
+                "note": f"no VERIFIED ranking claims in family {family_stem!r}"}
+    ranking_claims.sort(key=lambda r: str(r.get("claim_id", "")))
+    claims_out = [
+        {
+            "claim_id": row["claim_id"],
+            "metric": row.get("criteria", {}).get("metric"),
+            "window": row.get("criteria", {}).get("window"),
+            "top": [_norm_row(r) for r in row.get("ranking", [])[:top]],
+        }
+        for row in ranking_claims
+    ]
+    return {
+        "status": "ok", "category": CATEGORY, "sport": sport,
+        "source_artifact": ranking_claims[0].get("_producer_source", _CLAIMS_DIR_REL),
+        "family": family_stem,
+        "note": "family-level answer: the question named this family but no single "
+                "metric/entity was resolved, so every VERIFIED ranking claim in it "
+                "is returned",
+        "claims": claims_out,
+        "evidence": [_claim_evidence(r) for r in ranking_claims],
+    }
+
+
+def _claim_evidence(row: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "claim_id": row["claim_id"], "validator_verdict": "VERIFIED",
+        "validator_source": row.get("_validator_source"),
+        "producer_source": row.get("_producer_source"), "as_of": row.get("computed_at"),
+    }
+
+
 def list_claim_families(sport: str | None = None) -> dict[str, Any]:
     """Discovery: every (validation, claims) pair ask() auto-discovered, with
     each store's cheap validation summary (n_claims / n_verified). Reads only
@@ -164,4 +234,13 @@ def resolve(query: str, sport: str = "nba", **kwargs) -> dict[str, Any]:
     low = (query or "").lower()
     if kwargs.get("list_families") or "famil" in low or ("list" in low and "claim" in low):
         return list_claim_families(_sport_in_query(low))
-    return _wrap_ask(query, sport)
+    wrapped = _wrap_ask(query, sport)
+    if wrapped.get("status") == "no_data":
+        for route in _FAMILY_ROUTES:
+            pattern, family_stem = route()
+            if pattern.search(low):
+                fallback = _family_top_claims(family_stem, query, sport)
+                if fallback.get("status") == "ok":
+                    return fallback
+                break  # a matched route with nothing to show stays no_data (honest)
+    return wrapped

@@ -138,7 +138,14 @@ def _answer_entity_lookup(parsed, question: str, candidates: list[dict[str, Any]
     hits = []
     for row in candidates:
         for r in row.get("ranking", []):
-            if _ascii_name(str(r.get("player_name", ""))).strip().lower() == name_key:
+            # NAME-KEYED stores (e.g. nba_referee_crew_ft: entity_key=
+            # "entity_id" but the entity_id VALUE is the official's name,
+            # not a numeric id) carry no "player_name" field at all -- only
+            # checking that one key silently dropped every such row. Same
+            # fallback chain claims_resolver._norm_row already uses for
+            # display; applied here too so a named entity actually matches.
+            row_name = r.get("player_name") or r.get("entity_name") or r.get("entity_id") or ""
+            if _ascii_name(str(row_name)).strip().lower() == name_key:
                 hits.append((row, r))
     if not hits:
         return _unanswerable(
