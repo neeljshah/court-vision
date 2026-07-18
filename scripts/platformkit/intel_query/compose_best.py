@@ -2,25 +2,24 @@
 
 Capstone composer: "who is the best <aspect>, all factors weighed, ONE
 conclusion" -- built from VERIFIED claims only (via ask.load_verified_claims,
-never ad-hoc jsonl parsing), following a DECLARED composition rule that is
-emitted verbatim as composition_rule so the conclusion is auditable:
+never ad-hoc jsonl parsing), following a DECLARED composition rule emitted
+verbatim as composition_rule so the conclusion is auditable:
 
     1. PRIMARY AXIS: the pre-registered predictive-validity gate verdict
        (read from disk at runtime, never hardcoded) selects which VERIFIED
-       ranking claim is the primary/canonical one. If the gate verdict ever
-       flips, this composer follows it -- no baked-in "naive wins".
+       ranking claim is primary/canonical; follows the gate if it flips.
     2. ATTRIBUTION AXES annotate the #1 primary-axis player with other
-       VERIFIED claims' rank/value for that SAME player -- they never
-       override the primary axis, only add context.
-    3. HONEST DISAGREEMENT: when an attribution axis's own #1 differs from
-       the primary axis's #1, that is surfaced explicitly, with the gate
-       citation explaining why the primary axis still wins.
+       VERIFIED claims' rank/value for that SAME player -- never override.
+    3. HONEST DISAGREEMENT: an attribution axis's own #1 differing from the
+       primary axis's #1 is surfaced explicitly, citing why primary wins.
+
+Season awareness (compose_best_season.py): requested_season=None is
+byte-identical to old behavior; a window mismatch substitutes a declared
+season_fallback VERIFIED claim, or adds an honest mismatch caveat.
 
 Fail-closed: if the primary claim (or the gate verdict file) is missing/not
 VERIFIED, returns {"status": "UNANSWERABLE", "missing": [...]} -- never a
-guessed name. An attribution axis being unavailable does NOT block the
-conclusion; it is annotated as unavailable (attribution is optional context,
-never load-bearing for the primary answer).
+guessed name. An unavailable attribution axis does NOT block the conclusion.
 """
 from __future__ import annotations
 
@@ -32,6 +31,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from scripts.platformkit.intel_query import compose_best_season
 from scripts.platformkit.intel_query.ask import (
     REPO_ROOT,
     _ascii_name,
@@ -41,12 +41,13 @@ from scripts.platformkit.intel_query.ask import (
     pairs_for_claim_stores,
 )
 
-# The ONLY stores this composer reads (see pairs_for_claim_stores docstring --
-# a bare load_verified_claims() whole-loads GB-scale bulk rate stores).
+# The ONLY stores this composer reads (bare load_verified_claims() whole-
+# loads GB-scale bulk rate stores). Last entry: season_fallback claim below.
 _BEST_STORES: tuple[str, ...] = (
     "nba_canonical_shooter_claims.jsonl",
     "nba_quality_claims.jsonl",
     "nba_context_shooting_claims.jsonl",
+    "shooter_composite_v2_claims.jsonl",
 )
 
 COMPOSITION_RULE = (
@@ -76,11 +77,8 @@ class _AttributionAxis:
 
 @dataclass(frozen=True)
 class _DomainFilter:
-    """A pre-declared domain restriction on the PRIMARY ranking pool, applied
-    before rank-1 selection -- e.g. an external league's own statistical-
-    qualification minimum. This is a DOMAIN restriction cited to an outside
-    convention, never a tuned/fitted threshold, so it lives here as data, not
-    buried inside compose_best()'s logic."""
+    """Pre-declared domain restriction on the PRIMARY ranking pool -- e.g.
+    an external league's qualification minimum, never a tuned threshold."""
     field: str
     min: float
     source: str
@@ -93,6 +91,8 @@ class _AspectConfig:
     verdict_to_primary_claim: dict[str, str]
     attribution_axes: tuple[_AttributionAxis, ...]
     domain_filter: _DomainFilter | None = None
+    # season -> VERIFIED claim_id on window mismatch; None -> caveat instead.
+    season_fallback: dict[str, str] | None = None
 
 
 # ponytail: only "shooter" wired v1 (task says no speculative aspects) --
@@ -114,6 +114,9 @@ _ASPECT_CONFIGS: dict[str, _AspectConfig] = {
         domain_filter=_DomainFilter(
             field="fg3m", min=82, source="NBA official 3P% qualification minimum (82 3PM)"
         ),
+        season_fallback={
+            "2025-26": "shooter_composite_v2_asof_approx_full_season_2025_26",
+        },
     ),
 }
 
@@ -151,9 +154,8 @@ def _apply_domain_filter(
     ranking: list[dict[str, Any]], domain_filter: _DomainFilter
 ) -> tuple[list[dict[str, Any]], dict[str, Any]] | None:
     """Restrict `ranking` to rows meeting domain_filter before rank-1
-    selection. Returns (filtered_rows, unfiltered_rank1_block) or None if the
-    domain field is missing from the ranking rows -- fail-closed, the caller
-    must turn None into UNANSWERABLE rather than silently skip the filter."""
+    selection. None if the domain field is missing -- caller turns that
+    into UNANSWERABLE rather than silently skipping the filter."""
     if not all(domain_filter.field in r for r in ranking):
         return None
     unfiltered_rank1 = min(ranking, key=lambda r: r.get("rank", float("inf")))
@@ -168,9 +170,10 @@ def _apply_domain_filter(
     return filtered, unfiltered_block
 
 
-def compose_best(aspect: str = "shooter") -> dict[str, Any]:
-    """ONE conclusion for `aspect`, composed per COMPOSITION_RULE. See module
-    docstring for the fail-closed contract."""
+def compose_best(aspect: str = "shooter", requested_season: str | None = None) -> dict[str, Any]:
+    """ONE conclusion for `aspect`, composed per COMPOSITION_RULE (module
+    docstring). requested_season=None reproduces old behavior byte-for-byte;
+    see compose_best_season.resolve for the substitution-vs-caveat contract."""
     config = _ASPECT_CONFIGS.get(aspect)
     if config is None:
         return _unanswerable(aspect, [f"aspect {aspect!r} has no declared composition config"])
@@ -192,12 +195,15 @@ def compose_best(aspect: str = "shooter") -> dict[str, Any]:
     if primary_claim is None:
         return _unanswerable(aspect, [f"primary claim not VERIFIED/available: {primary_claim_id}"])
 
+    season = compose_best_season.resolve(config, verified, primary_claim, primary_claim_id, requested_season)
+    primary_claim, primary_claim_id = season.claim, season.claim_id
+
     ranking = primary_claim.get("ranking", [])
     if not ranking:
         return _unanswerable(aspect, [f"primary claim {primary_claim_id} has an empty ranking"])
 
     unfiltered_rank1: dict[str, Any] | None = None
-    if config.domain_filter is not None:
+    if config.domain_filter is not None and not season.using_fallback:
         applied = _apply_domain_filter(ranking, config.domain_filter)
         if applied is None:
             return _unanswerable(
@@ -220,6 +226,8 @@ def compose_best(aspect: str = "shooter") -> dict[str, Any]:
     attribution: list[dict[str, Any]] = []
     disagreements: list[dict[str, Any]] = []
     caveats: list[str] = list(primary_claim.get("caveats", []))
+    if season.caveat:
+        caveats = [season.caveat] + caveats
     provenance: list[dict[str, Any]] = [_claim_evidence(primary_claim)]
 
     for ax in config.attribution_axes:
@@ -260,13 +268,10 @@ def compose_best(aspect: str = "shooter") -> dict[str, Any]:
         "aspect": aspect,
         "conclusion": conclusion_name,
         "composition_rule": COMPOSITION_RULE,
-        "primary": {
-            "claim_id": primary_claim_id,
-            "rank1": conclusion_name,
-            "score": rank1.get("value"),
-            "gate_verdict": verdict_value,
-            "gate_verdict_file": _display_path(config.verdict_file),
-        },
+        "primary": compose_best_season.build_primary_block(
+            primary_claim_id, conclusion_name, rank1, verdict_value,
+            _display_path(config.verdict_file), requested_season, season.using_fallback,
+        ),
         "attribution": attribution,
         "disagreements": disagreements,
         "caveats": caveats,

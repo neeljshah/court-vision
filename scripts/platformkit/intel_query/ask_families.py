@@ -237,8 +237,13 @@ def _try_best_x(question: str) -> dict[str, Any] | None:
     if aspect is None:
         return None
     from scripts.platformkit.intel_query.compose_best import compose_best  # local import: avoid import cycle
+    from scripts.platformkit.intel_query.compose_best_season import detect_requested_season
 
-    result = compose_best(aspect)
+    # No-token call keeps the EXACT pre-season-awareness call signature
+    # (aspect only) -- byte-stable, and matches existing fakes/tests that
+    # monkeypatch compose_best with a single-arg signature.
+    requested_season = detect_requested_season(question)
+    result = compose_best(aspect, requested_season=requested_season) if requested_season else compose_best(aspect)
     result["family"] = FAMILY_BEST
     result["question"] = question
     return result
