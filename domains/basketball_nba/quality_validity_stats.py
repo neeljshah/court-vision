@@ -15,7 +15,9 @@ RNG_SEED = 20260704  # fixed seed, declared before any result was inspected
 
 
 def spearman(x: pd.Series, y: pd.Series) -> float:
-    rho, _ = spearmanr(x, y)
+    # object-dtype inputs crash scipy/numpy corrcoef on the pod (numpy 2.x);
+    # cast at the shared root so every caller is covered.
+    rho, _ = spearmanr(np.asarray(x, dtype=float), np.asarray(y, dtype=float))
     return float(rho)
 
 

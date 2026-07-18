@@ -995,7 +995,7 @@ def test_real_repo_lebron_james_rank_lookup_is_verified():
     assert result["answerable"] is True
     assert result["answer"]["entity_name"] == "LeBron James"
     usage_hit = next(
-        r for r in result["answer"]["rankings"] if r["metric"] == "usage_pct" and r["window"] == "current"
+        r for r in result["answer"]["rankings"] if r["metric"] == "usage_pct" and r["window"] == "career_to_date"
     )
     assert usage_hit["rank"] == 95
     assert any(e["validator_verdict"] == "VERIFIED" for e in result["evidence"])
