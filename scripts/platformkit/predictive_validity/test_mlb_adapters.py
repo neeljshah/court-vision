@@ -7,6 +7,7 @@ Run: cd /c/Users/neelj/nba-ai-system && python -m pytest \
 """
 from __future__ import annotations
 
+import numpy as np
 import pandas as pd
 
 from domains.mlb.matchup.pitch_mix_profiles import classify_terminal_k
@@ -205,6 +206,76 @@ def _synthetic_putaway_k(n_entities=4, n_pre=35, n_fwd=15):
             rows.append(_k_row(eid, 200000 + eid * 1000 + i,
                                 pd.Timestamp("2022-08-02") + pd.Timedelta(days=i), 1 if i % 3 == 0 else 0))
     return pd.DataFrame(rows)
+
+
+# --------------------------------------------------------------------------- #
+# batter_context adapter: literal zero baseline degeneracy, leak-freedom, floor
+# --------------------------------------------------------------------------- #
+def _ctx_row(entity_id, game_pk, date, xwoba, velo_bucket):
+    return {"entity_id": entity_id, "game_pk": game_pk, "game_date": pd.Timestamp(date),
+            "xwoba": xwoba, "velo_bucket": velo_bucket}
+
+
+def test_context_metric_asof_bucket_math_and_floor():
+    rows = [_ctx_row(1, 1000 + i, "2022-05-01", 0.5, "hi") for i in range(25)]
+    rows += [_ctx_row(1, 2000 + i, "2022-05-01", 0.2, "lo") for i in range(25)]
+    rows += [_ctx_row(2, 3000 + i, "2022-05-01", 0.5, "hi") for i in range(10)]  # below floor=20
+    rows += [_ctx_row(2, 4000 + i, "2022-05-01", 0.2, "lo") for i in range(25)]
+    df = pd.DataFrame(rows)
+    out = A._context_metric_asof(df, CUTOFF)
+    row1 = out[out["entity_id"] == 1].iloc[0]
+    assert abs(row1["value"] - (0.5 - 0.2)) < 1e-9
+    assert 2 not in set(out["entity_id"])  # below CONTEXT_MIN_VELO_PA_ASOF on the hi side
+
+
+def test_context_baseline_is_literal_zero():
+    rows = [_ctx_row(1, 1000 + i, "2022-05-01", 0.5, "hi") for i in range(25)]
+    rows += [_ctx_row(1, 2000 + i, "2022-05-01", 0.2, "lo") for i in range(25)]
+    df = pd.DataFrame(rows)
+    baseline = A._context_baseline_asof(df, CUTOFF)
+    assert (baseline["value"] == 0.0).all()
+    assert set(baseline["entity_id"]) == set(A._context_metric_asof(df, CUTOFF)["entity_id"])
+
+
+def test_context_metric_asof_leak_free():
+    rows = [_ctx_row(1, 1000 + i, "2022-05-01", 0.5, "hi") for i in range(25)]
+    rows += [_ctx_row(1, 2000 + i, "2022-05-01", 0.2, "lo") for i in range(25)]
+    df = pd.DataFrame(rows)
+    before = A._context_metric_asof(df, CUTOFF)
+    leaked = pd.concat([df, pd.DataFrame([_ctx_row(1, 9999, "2023-09-01", 0.9, "hi")])], ignore_index=True)
+    after = A._context_metric_asof(leaked, CUTOFF)
+    assert before[before["entity_id"] == 1].iloc[0]["value"] == after[after["entity_id"] == 1].iloc[0]["value"]
+
+
+def test_context_forward_outcome_window_and_n_forward():
+    pre = [_ctx_row(1, 1000 + i, "2022-05-01", 0.5, "hi") for i in range(25)]
+    pre += [_ctx_row(1, 2000 + i, "2022-05-01", 0.2, "lo") for i in range(25)]
+    fwd_hi = [_ctx_row(1, 5000 + i, pd.Timestamp("2023-08-02") + pd.Timedelta(days=i), 0.6, "hi") for i in range(20)]
+    fwd_lo = [_ctx_row(1, 6000 + i, pd.Timestamp("2023-08-02") + pd.Timedelta(days=i), 0.3, "lo") for i in range(20)]
+    df = pd.DataFrame(pre + fwd_hi + fwd_lo)
+    out = A._context_forward_outcome(df, CUTOFF, forward_games=200)
+    row1 = out[out["entity_id"] == 1].iloc[0]
+    assert abs(row1["outcome"] - (0.6 - 0.3)) < 1e-9
+    assert row1["n_forward"] == 40  # 20 hi + 20 lo forward games, pre-cutoff rows excluded
+
+
+def test_batter_context_test_runs_through_harness_with_degenerate_baseline():
+    rows = []
+    for eid in range(1, 5):
+        for i in range(25):
+            rows.append(_ctx_row(eid, 100000 + eid * 1000 + i, "2022-05-01", 0.5, "hi"))
+            rows.append(_ctx_row(eid, 150000 + eid * 1000 + i, "2022-05-01", 0.2, "lo"))
+        for i in range(20):
+            rows.append(_ctx_row(eid, 200000 + eid * 1000 + i,
+                                  pd.Timestamp("2023-08-02") + pd.Timedelta(days=i), 0.6, "hi"))
+            rows.append(_ctx_row(eid, 250000 + eid * 1000 + i,
+                                  pd.Timestamp("2023-08-02") + pd.Timedelta(days=i), 0.3, "lo"))
+    df = pd.DataFrame(rows)
+    test = A.batter_context_test(df, forward_games=200)
+    result = run_metric_test(test)
+    assert result["verdict"] in {"PREDICTIVE_VERIFIED", "DESCRIPTIVE_ONLY", "UNDERPOWERED"}
+    # a literal-zero baseline has no variance -> rho_baseline is NaN for every fold
+    assert all(np.isnan(f.get("rho_baseline", float("nan"))) for f in result["per_cutoff"] if f["status"] == "OK")
 
 
 def test_putaway_test_runs_through_harness_and_yields_verdict():

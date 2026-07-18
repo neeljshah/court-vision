@@ -6,10 +6,12 @@ validation files, print an ASCII verdict table.
 Fails closed per-test (clean message, exit 0, NO artifact written for that
 test) when its source parquet(s) are absent -- the expected path in this
 isolated worktree (data/ is gitignored and absent here); real-data smokes run
-post-merge against the real corpus. The two tests read DIFFERENT corpora
-(savant_full__2023/2024 for framing, statcast_fuller__2022/2023 for putaway --
-see mlb_adapters.py's CORPUS DEVIATION docstring), so one can run while the
-other reports NO_DATA.
+post-merge against the real corpus. The three tests read from up to two
+DIFFERENT corpora (savant_full__2023/2024 for framing, statcast_fuller__
+2022/2023 for putaway + batter_context -- see mlb_adapters.py's CORPUS
+DEVIATION docstring), so any subset can run while the rest report NO_DATA.
+batter_context uses its own FORWARD_GAMES_CONTEXT (large, to reach across the
+2022/2023 season boundary), NOT the shared --forward-games CLI arg.
 """
 from __future__ import annotations
 
@@ -22,7 +24,9 @@ from scripts.platformkit.predictive_validity.artifacts import (
 from scripts.platformkit.predictive_validity.harness import run_metric_test
 from scripts.platformkit.predictive_validity.mlb_adapters import (
     FORWARD_GAMES,
+    batter_context_test,
     framing_test,
+    load_batter_context_source,
     load_framing_source,
     load_putaway_source,
     putaway_test,
@@ -53,6 +57,12 @@ def _build_tests(forward_games: int) -> list:
     except (FileNotFoundError, ValueError, OSError) as exc:
         print(f"NO_DATA: statcast_fuller__2022/2023 unavailable ({exc}); "
               f"mlb_pitcher_putaway predictive_validity run skipped.")
+    try:
+        ctx = load_batter_context_source()
+        tests.append(batter_context_test(ctx))  # own FORWARD_GAMES_CONTEXT, not the CLI arg
+    except (FileNotFoundError, ValueError, OSError) as exc:
+        print(f"NO_DATA: statcast_fuller__2022/2023 unavailable ({exc}); "
+              f"mlb_batter_context predictive_validity run skipped.")
     return tests
 
 
