@@ -68,11 +68,17 @@ _STATCAST_DIR = _REPO_ROOT / "data" / "cache" / "statcast"
 PUTAWAY_STATCAST_PATHS = {
     2022: _STATCAST_DIR / "statcast_fuller__2022.parquet",
     2023: _STATCAST_DIR / "statcast_fuller__2023.parquet",
+    # 2025 acquired 2026-07-18 (2024 fuller never existed -- the corpus gap
+    # is declared, as-of history simply spans it). These are REPLICATION
+    # folds on unseen data; every floor/threshold above is unchanged.
+    2025: _STATCAST_DIR / "statcast_fuller__2025.parquet",
 }
-FRAMING_SEASONS = ("2023", "2024")
+FRAMING_SEASONS = ("2023", "2024", "2025")
 
-FRAMING_CUTOFFS = ["2023-08-01", "2023-09-01", "2024-06-01", "2024-07-01", "2024-08-01"]
-PUTAWAY_CUTOFFS = ["2022-08-01", "2022-09-01", "2023-06-01", "2023-07-01", "2023-08-01"]
+FRAMING_CUTOFFS = ["2023-08-01", "2023-09-01", "2024-06-01", "2024-07-01", "2024-08-01",
+                   "2025-06-01", "2025-07-01", "2025-08-01"]
+PUTAWAY_CUTOFFS = ["2022-08-01", "2022-09-01", "2023-06-01", "2023-07-01", "2023-08-01",
+                   "2025-06-01", "2025-07-01", "2025-08-01"]
 FORWARD_GAMES = 20
 MIN_FORWARD_GAMES = 12
 FRAMING_MIN_ENTITIES_PER_FOLD = 20

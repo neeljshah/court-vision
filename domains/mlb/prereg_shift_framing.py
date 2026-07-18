@@ -75,7 +75,8 @@ from domains.mlb.prereg.stats_common import LEDGER_PATH, append_ledger, blocked_
 REPO_ROOT = Path(__file__).resolve().parents[2]
 _STATCAST_DIR = REPO_ROOT / "data" / "cache" / "statcast"
 _SAVANT_FP = {"2023": _STATCAST_DIR / "savant_full__2023.parquet",
-              "2024": _STATCAST_DIR / "savant_full__2024.parquet"}
+              "2024": _STATCAST_DIR / "savant_full__2024.parquet",
+              "2025": _STATCAST_DIR / "savant_full__2025.parquet"}
 
 SPORT = "mlb"
 ALPHA = 0.05 / 2  # K=2, plain Bonferroni -- declared in the brief before running
