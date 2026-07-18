@@ -252,7 +252,13 @@ def validate_claims_file_batched(path) -> ValidationSummary:
             claim = json.loads(stripped)
             idx = n_lines
             n_lines += 1
-            if not claim.get("criteria", {}).get("formula"):
+            if claim.get("kind") in ("gate_verdict", "verdict"):
+                # SAME dispatch as claims_validator.validate_claim (parity is
+                # this module's contract): verdict-kind claims check against
+                # their cited verdict_file, never the formula recompute path.
+                from scripts.platformkit.intel_validation.verdict_claim_check import validate_verdict_claim
+                results[idx] = validate_verdict_claim(claim)
+            elif not claim.get("criteria", {}).get("formula"):
                 results[idx] = ClaimVerdict(
                     claim.get("claim_id", "<missing-id>"), "UNVERIFIABLE", reason="criteria.formula missing"
                 )

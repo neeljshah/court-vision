@@ -109,6 +109,12 @@ def _entity_id_str(row: Any, entity_key: Any) -> str:
 
 def validate_claim(claim: dict[str, Any]) -> ClaimVerdict:
     claim_id = claim.get("claim_id", "<missing-id>")
+    if claim.get("kind") in ("gate_verdict", "verdict"):
+        # Non-ranking verdict claims verify against their cited verdict_file
+        # artifact instead of a formula recompute (checker lives in
+        # verdict_claim_check.py -- this module is over the LOC cap already).
+        from scripts.platformkit.intel_validation.verdict_claim_check import validate_verdict_claim
+        return validate_verdict_claim(claim)
     criteria = claim.get("criteria", {})
     formula = criteria.get("formula")
     metric = criteria.get("metric")

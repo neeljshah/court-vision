@@ -107,7 +107,16 @@ def build_all_claims() -> list[dict[str, Any]]:
     for year in LEADERBOARD_YEARS:
         for attr in LEADERBOARD_BUILDERS:
             claims.append(build_claim_leaderboard(attr, year, name_lookup))
-    return claims
+    # An empty ranking means the data cannot support the preregistered floor
+    # (e.g. region_*_waste: max n=40 vs floor 50). Claiming nothing is not a
+    # claim -- skip emission honestly rather than shipping UNVERIFIABLE rows
+    # (and never lower a floor to make a ranking appear).
+    kept = [c for c in claims if c["ranking"]]
+    for c in claims:
+        if not c["ranking"]:
+            print(f"SKIP {c['claim_id']}: 0 of {c['n_considered']} rows clear "
+                  f"min_sample floor -- claim not emitted")
+    return kept
 
 
 def write_claims(claims: list[dict[str, Any]], out_path: Path = _CLAIMS_OUT) -> Path:
