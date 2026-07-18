@@ -161,6 +161,7 @@ _METRIC_SYNONYMS: dict[str, str] = {
     "vs breaking balls": "vs_pitch_type_delta",
     "platoon split": "context_platoon_delta",
     "crushes fastballs": "vs_pitch_type_delta",
+    "crush fastballs": "vs_pitch_type_delta",
     # nba_rest_context (2026-07-18): schedule/fatigue-conditioned player
     # splits -- "b2b drop"/"back to back efficiency"/"rest split" all route
     # to the headline TS%-drop metric; "b2b resilient" is the DISTINCT

@@ -42,7 +42,11 @@ _TOP_N_RE = re.compile(
 # 2026-07-19 -- "defense adjusted true shooting leaders" has no "in"/"by"
 # after "leaders" and previously fell through to family=None.
 _TOP_NONUM_RE = re.compile(
-    r"\btop\s+[a-z]|\bbest\s+[a-z]|\bleaders?\s+(?:in|by)\b|\bwho\s+leads\b|\bleaders?\s*[.?!]*\s*$",
+    r"\btop\s+[a-z]|\bbest\s+[a-z]|\bleaders?\s+(?:in|by)\b|\bwho\s+leads\b|\bleaders?\s*[.?!]*\s*$"
+    # "most <adj> players" / "which batters/players/teams <metric phrase>"
+    # (2026-07-18): ranking-cue shapes with no top/best token fell to
+    # family=None even when the metric synonym resolved downstream.
+    r"|\bmost\s+[a-z]|\bwhich\s+(?:players?|batters?|pitchers?|hitters?|teams?|officials?|referees?)\b",
     re.IGNORECASE,
 )
 _PROVENANCE_WORDS = re.compile(

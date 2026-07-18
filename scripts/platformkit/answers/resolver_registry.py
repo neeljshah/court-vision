@@ -372,6 +372,16 @@ def classify(query: str) -> str | None:
         return "verified_claims"
     if _lb.is_ranking_query(low):
         return "ranking"
+    # generalized reroute (2026-07-18), AFTER the ranking route so the
+    # leaderboard resolver keeps every phrasing it already serves: a
+    # ranking-cue question whose metric phrase resolves through ask_index's
+    # synonym dict belongs to the claims path -- shape-guess buckets
+    # (schedule/concept/player_stat) were swallowing new family metrics
+    # ('most b2b resilient players' -> schedule_context).
+    if re.search(r"\b(which|most|best|top|who are|leaders?)\b", low):
+        from scripts.platformkit.intel_query.ask_index import extract_metric_synonym
+        if extract_metric_synonym(low) is not None:
+            return "verified_claims"
     if any(k in low for k in _ANALYTICS_ATTRIBUTION_KEYWORDS):
         return "analytics_attribution"
     if any(k in low for k in _ANALYTICS_SURVIVAL_KEYWORDS):

@@ -73,7 +73,16 @@ def run(forward_games: int = FORWARD_GAMES) -> list[dict]:
 
     results = []
     for test in tests:
-        result = run_metric_test(test)
+        if test.family == "mlb_batter_context":
+            # constant zero-split baseline: two-arm bootstrap is undefined
+            # (crashes np.percentile on empty array -- found live 2026-07-18);
+            # use the shared zero-baseline path instead.
+            from scripts.platformkit.predictive_validity.run_nba_rest_context import (
+                run_zero_baseline_test,
+            )
+            result = run_zero_baseline_test(test)
+        else:
+            result = run_metric_test(test)
         path = write_predictive_validity_artifact(result)
         stamp_validation(result["family"], result["metric_name"], result["verdict"],
                           result["mean_rho_metric"], result["bootstrap_delta_ci"], result["n_folds"])
