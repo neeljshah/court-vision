@@ -155,6 +155,12 @@ _METRIC_SYNONYMS: dict[str, str] = {
     "rim protection on off": "rim_protection_delta",
     "rim protection on-off": "rim_protection_delta",
     "best spacing lineup": "spacing_mean_dist",
+    # mlb_batter_context (batter xwOBA context splits)
+    "vs velocity": "vs_velocity_delta",
+    "against high velocity": "vs_velocity_delta",
+    "vs breaking balls": "vs_pitch_type_delta",
+    "platoon split": "context_platoon_delta",
+    "crushes fastballs": "vs_pitch_type_delta",
 }
 
 # Shooter-composite family (2026-07-19): "best shooters"/"top shooters"/

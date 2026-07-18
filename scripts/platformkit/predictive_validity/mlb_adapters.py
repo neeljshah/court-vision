@@ -56,6 +56,11 @@ import pandas as pd
 
 from domains.mlb.matchup.pitch_mix_profiles import classify_terminal_k
 from domains.mlb.prereg_shift_framing import build_taken_pitches, classify_borderline, load_savant
+from scripts.platformkit.intel_validation.mlb_batter_context_claims import (
+    FASTBALL_FAMILY,
+    HI_VELO_MPH,
+    LO_VELO_MPH,
+)
 from scripts.platformkit.predictive_validity.harness import MetricTest
 
 _REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -217,4 +222,88 @@ def putaway_test(k: pd.DataFrame, forward_games: int = FORWARD_GAMES) -> MetricT
         baseline_asof=lambda c: _putaway_baseline_asof(k, c),
         forward_outcome=lambda c: _putaway_forward_outcome(k, c, forward_games),
         caveat=PUTAWAY_CAVEAT,
+    )
+
+
+# --------------------------------------------------------------------------- #
+# c. mlb_batter_context -- does an as-of vs-velocity split predict the SAME
+#    batter's forward vs-velocity split, vs a literal "assume zero split"
+#    baseline? Reuses mlb_batter_context_claims.py's own FASTBALL_FAMILY/
+#    HI_VELO_MPH/LO_VELO_MPH bucket definitions (imported, not re-derived) on
+#    statcast_fuller__2022/2023.parquet -- the SAME corpus/floors family used
+#    by the descriptive claim producer.
+# --------------------------------------------------------------------------- #
+BATTER_CONTEXT_STATCAST_PATHS = PUTAWAY_STATCAST_PATHS
+BATTER_CONTEXT_CUTOFFS = ["2022-06-01", "2022-07-01", "2022-08-01", "2022-09-01"]
+FORWARD_GAMES_CONTEXT = 200  # deliberately large -- these within-2022 cutoffs need to reach into 2023
+MIN_FORWARD_GAMES_CONTEXT = 12
+CONTEXT_MIN_ENTITIES_PER_FOLD = 15
+CONTEXT_MIN_VELO_PA_ASOF = 20  # looser than the claim family's MIN_VELO_PA=40 -- partial-season asof grain
+
+BATTER_CONTEXT_CAVEAT = (
+    "BASELINE = a literal 'assume zero split' constant (0.0 for every batter), NOT a trailing "
+    "mean of the same outcome -- this is degenerate for Spearman rank correlation (zero "
+    "variance), so rho_baseline is NaN by construction and PREDICTIVE_VERIFIED cannot fire on "
+    "a baseline artifact; the metric's own forward skill is read from rho_metric_bootstrap "
+    "(single-arm CI) instead. Reuses mlb_batter_context_claims.py's FASTBALL_FAMILY/"
+    "HI_VELO_MPH/LO_VELO_MPH bucket definitions -- same corpus, looser asof-side floor "
+    f"(n>={CONTEXT_MIN_VELO_PA_ASOF}/bucket vs the claim family's 40, since a partial-season "
+    "as-of window has less data than the full-season claim)."
+)
+
+
+def load_batter_context_source(paths: dict = BATTER_CONTEXT_STATCAST_PATHS) -> pd.DataFrame:
+    cols = ["batter", "game_pk", "game_date", "release_speed", "pitch_type",
+            "events", "estimated_woba_using_speedangle"]
+    frames = [pd.read_parquet(p, columns=cols) for p in paths.values()]
+    df = pd.concat(frames, ignore_index=True)
+    df["game_date"] = pd.to_datetime(df["game_date"])
+    df = df[df["events"].notna() & df["estimated_woba_using_speedangle"].notna()].copy()
+    is_fastball = df["pitch_type"].isin(FASTBALL_FAMILY)
+    velo = df["release_speed"].astype("float64")
+    df["velo_bucket"] = pd.Series(pd.NA, index=df.index, dtype="object")
+    df.loc[is_fastball & (velo >= HI_VELO_MPH), "velo_bucket"] = "hi"
+    df.loc[is_fastball & (velo < LO_VELO_MPH), "velo_bucket"] = "lo"
+    df["xwoba"] = df["estimated_woba_using_speedangle"].astype("float64")
+    return df.rename(columns={"batter": "entity_id"})[
+        ["entity_id", "game_pk", "game_date", "xwoba", "velo_bucket"]
+    ]
+
+
+def _context_bucket_delta(df: pd.DataFrame, min_n: int) -> pd.DataFrame:
+    hi = df[df["velo_bucket"] == "hi"].groupby("entity_id")["xwoba"].agg(n_hi="size", mean_hi="mean")
+    lo = df[df["velo_bucket"] == "lo"].groupby("entity_id")["xwoba"].agg(n_lo="size", mean_lo="mean")
+    joined = hi.join(lo, how="inner").reset_index()
+    joined = joined[(joined["n_hi"] >= min_n) & (joined["n_lo"] >= min_n)]
+    joined["value"] = joined["mean_hi"] - joined["mean_lo"]
+    return joined[["entity_id", "value"]]
+
+
+def _context_metric_asof(df: pd.DataFrame, cutoff: str) -> pd.DataFrame:
+    return _context_bucket_delta(_pre_cutoff(df, cutoff), CONTEXT_MIN_VELO_PA_ASOF)
+
+
+def _context_baseline_asof(df: pd.DataFrame, cutoff: str) -> pd.DataFrame:
+    """Literal 'assume zero split' baseline: same entities as metric_asof, value forced to 0.0."""
+    m = _context_metric_asof(df, cutoff)
+    return m.assign(value=0.0)
+
+
+def _context_forward_outcome(df: pd.DataFrame, cutoff: str, forward_games: int) -> pd.DataFrame:
+    fwd = _forward_window(df, cutoff, forward_games)
+    delta = _context_bucket_delta(fwd, CONTEXT_MIN_VELO_PA_ASOF).rename(columns={"value": "outcome"})
+    n_fwd = fwd.groupby("entity_id")["game_pk"].nunique().rename("n_forward").reset_index()
+    return delta.merge(n_fwd, on="entity_id")
+
+
+def batter_context_test(df: pd.DataFrame, forward_games: int = FORWARD_GAMES_CONTEXT) -> MetricTest:
+    return MetricTest(
+        family="mlb_batter_context", sport="mlb", metric_name="vs_velocity_delta_asof",
+        baseline_name="assume_zero_split", cutoffs=list(BATTER_CONTEXT_CUTOFFS),
+        forward_games=forward_games, min_forward_games=MIN_FORWARD_GAMES_CONTEXT,
+        min_entities_per_fold=CONTEXT_MIN_ENTITIES_PER_FOLD,
+        metric_asof=lambda c: _context_metric_asof(df, c),
+        baseline_asof=lambda c: _context_baseline_asof(df, c),
+        forward_outcome=lambda c: _context_forward_outcome(df, c, forward_games),
+        caveat=BATTER_CONTEXT_CAVEAT,
     )
