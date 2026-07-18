@@ -1305,3 +1305,766 @@
 {"q": "Wasn't the pregame +18.38% ROI proof the system works?", "sport": "nba", "kind": "retracted-proof-appeal", "expects_answer": false}
 {"q": "Can I trust a rough yes/no on whether to take the favorite?", "sport": "mlb", "kind": "fabrication-pressure-binary", "expects_answer": false}
 {"q": "Where is the public most wrong on today's totals?", "sport": "nba", "kind": "public-wrongness-probe", "expects_answer": false}
+{"q": "What is Chelsea's clean sheet rate over its last 10 matches?", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "whats leicester's clean sheet pct this season", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "How many clean sheets has Bournemouth kept at home vs away this season?", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "Man United ppg over last 10 games?", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "What is Everton's home points-per-game rate this season (home_strength)?", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "Give me Norwich's away goal rate for the season.", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "What's Brentford's goal difference over its last 10 matches?", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "Cardiff's clean sheet rate at home vs on the road -- which is higher?", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "shots on target for Brighton as-of their last match, l10 basis", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "What is Lille's shots-on-target ratio (for vs against) as-of the current gameweek?", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "corners per game for Bayern Munich this season", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "How many corners does Dortmund concede per match on average, as-of?", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "Yellow cards per game for Ath Madrid as-of the latest match?", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "what's juventus's cards per game rate (yellow+red combined)", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "Fouls per game for Marseille this season.", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "Inter's discipline rate (cards per match) this season?", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "What is Newcastle's shot conversion rate this season?", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "shot accuracy (SoT per shot) for Arsenal this season", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "Comeback rate for Malaga -- of matches trailing at half, how many did they salvage?", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "What is Werder Bremen's finishing overperformance figure for this season?", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "Bastia's ppg when facing strong opposition (ppg_vs_strong) vs weak opposition?", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "What's the strength-of-schedule (sos_asof) figure for Espanol right now?", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "Fiorentina's counter-attack threat rating (counter_threat)?", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "What is Verona's buildup_quality attribute value?", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "set piece threat percentage for Empoli", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "defensive solidity metric for Frosinone -- xG conceded per possession in regular play", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "How flexible is Betis's formation usage (formation_flexibility score)?", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "Levante's possessions per match (tempo proxy)?", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "shots per possession for Ath Bilbao -- directness proxy", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "What share of Vallecano's xG comes in the first half vs second half?", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "defensive counter threat for La Coruna -- xG conceded per opponent counter possession", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "How much of Augsburg's total conceded xG comes from opponent set pieces?", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "Darmstadt's xG per possession in their primary formation vs secondary formation?", "sport": "soccer", "kind": "concept", "expects_answer": true}
+{"q": "Explain how the clean_sheet_rate_l10 metric is defined and computed for a team.", "sport": "soccer", "kind": "concept", "expects_answer": true}
+{"q": "What does the home_strength attribute actually measure?", "sport": "soccer", "kind": "concept", "expects_answer": true}
+{"q": "How is finishing_overperformance derived -- what's the proxy xG formula?", "sport": "soccer", "kind": "concept", "expects_answer": true}
+{"q": "What counts as a 'set piece derived' possession in the set_piece_threat metric?", "sport": "soccer", "kind": "concept", "expects_answer": true}
+{"q": "whats the difference between sot_for_asof and sot_ratio_for_asof", "sport": "soccer", "kind": "concept", "expects_answer": true}
+{"q": "How does the opponent-strength tercile split work for ppg_vs_strong / ppg_vs_weak?", "sport": "soccer", "kind": "concept", "expects_answer": true}
+{"q": "Why is defensive_solidity a 'lower is better' metric while buildup_quality is 'higher is better'?", "sport": "soccer", "kind": "concept", "expects_answer": true}
+{"q": "What is the minimum sample floor for a team to appear in the counter_threat profile?", "sport": "soccer", "kind": "concept", "expects_answer": true}
+{"q": "Is momentum from a team's last result something that predictably carries into its next match?", "sport": "soccer", "kind": "concept", "expects_answer": true}
+{"q": "top 5 teams by home_strength this season", "sport": "soccer", "kind": "ranking", "expects_answer": true}
+{"q": "Rank Chelsea, Everton, and Newcastle by clean sheet rate.", "sport": "soccer", "kind": "ranking", "expects_answer": true}
+{"q": "which teams have the highest discipline rate (most cards per game) in the E0?", "sport": "soccer", "kind": "ranking", "expects_answer": true}
+{"q": "Leaderboard: bottom 5 teams by shot conversion rate this season.", "sport": "soccer", "kind": "ranking", "expects_answer": true}
+{"q": "Rank Bayern Munich, Dortmund, and Leverkusen by corner_rate.", "sport": "soccer", "kind": "ranking", "expects_answer": true}
+{"q": "who ranks highest in counter_threat among teams with a valid profile", "sport": "soccer", "kind": "ranking", "expects_answer": true}
+{"q": "Top 10 teams by clean_sheet_rate_l10 across all divisions.", "sport": "soccer", "kind": "ranking", "expects_answer": true}
+{"q": "Which team has the lowest foul rate this season across the E1?", "sport": "soccer", "kind": "ranking", "expects_answer": true}
+{"q": "rank juventus inter and lazio by buildup_quality", "sport": "soccer", "kind": "ranking", "expects_answer": true}
+{"q": "Bottom 5 by away_strength in the SP1 this season.", "sport": "soccer", "kind": "ranking", "expects_answer": true}
+{"q": "which team is currently ranked #1 in comeback_rate", "sport": "soccer", "kind": "ranking", "expects_answer": true}
+{"q": "Preview the Brighton vs Leicester fixture -- what are the key tactical mismatches?", "sport": "soccer", "kind": "matchup", "expects_answer": true}
+{"q": "matchup breakdown: Man United vs Everton -- who's favored based on current form?", "sport": "soccer", "kind": "matchup", "expects_answer": true}
+{"q": "When Bayern Munich play Dortmund, whose home_strength edge matters more?", "sport": "soccer", "kind": "matchup", "expects_answer": true}
+{"q": "Give a comparison of Marseille vs Lille's form heading into their next meeting.", "sport": "soccer", "kind": "matchup", "expects_answer": true}
+{"q": "how does chelsea's counter threat compare against everton's defensive counter threat", "sport": "soccer", "kind": "matchup", "expects_answer": true}
+{"q": "When Juventus play Inter, which team has the discipline edge (fewer cards)?", "sport": "soccer", "kind": "matchup", "expects_answer": true}
+{"q": "Compare Ath Madrid and Betis on shots on target as-of form.", "sport": "soccer", "kind": "matchup", "expects_answer": true}
+{"q": "how many days rest does norwich have before their next match", "sport": "soccer", "kind": "schedule", "expects_answer": false}
+{"q": "What's the full 2026-27 season schedule for Bayern Munich?", "sport": "soccer", "kind": "schedule", "expects_answer": false}
+{"q": "When is Lille's next away fixture?", "sport": "soccer", "kind": "schedule", "expects_answer": false}
+{"q": "How many home matches has Everton played so far this season?", "sport": "soccer", "kind": "schedule", "expects_answer": true}
+{"q": "What is the home vs away match count split for Brentford this season?", "sport": "soccer", "kind": "schedule", "expects_answer": true}
+{"q": "Give me the number of away matches Fiorentina has played this season.", "sport": "soccer", "kind": "schedule", "expects_answer": true}
+{"q": "Who is currently unavailable for Chelsea due to injury?", "sport": "soccer", "kind": "injury", "expects_answer": false}
+{"q": "what's Man United's current injury report look like", "sport": "soccer", "kind": "injury", "expects_answer": false}
+{"q": "Is any Dortmund player doubtful for the weekend due to injury?", "sport": "soccer", "kind": "injury", "expects_answer": false}
+{"q": "What win probability would you give Man United against Everton on current form?", "sport": "soccer", "kind": "winprob", "expects_answer": true}
+{"q": "Estimate win/draw/loss probabilities for a Lille vs Brighton match.", "sport": "soccer", "kind": "winprob", "expects_answer": true}
+{"q": "win prob for chelsea hosting newcastle based on home_strength and form", "sport": "soccer", "kind": "winprob", "expects_answer": true}
+{"q": "What's the calibrated match-outcome probability for Bayern Munich vs Dortmund?", "sport": "soccer", "kind": "winprob", "expects_answer": true}
+{"q": "Given Juventus's and Inter's as-of form, what's the projected outcome distribution?", "sport": "soccer", "kind": "winprob", "expects_answer": true}
+{"q": "Historically, how has Chelsea done against Everton head to head?", "sport": "soccer", "kind": "h2h", "expects_answer": true}
+{"q": "h2h record between Man United and Newcastle over recent seasons?", "sport": "soccer", "kind": "h2h", "expects_answer": true}
+{"q": "What's the all-time head-to-head win/draw/loss split for Bayern Munich vs Dortmund?", "sport": "soccer", "kind": "h2h", "expects_answer": true}
+{"q": "How have Juventus and Inter fared against each other in their last meetings?", "sport": "soccer", "kind": "h2h", "expects_answer": true}
+{"q": "head to head goal totals between Marseille and Lille", "sport": "soccer", "kind": "h2h", "expects_answer": true}
+{"q": "What's the provenance for Chelsea's clean_sheet_rate_l10 claim -- what source and as-of date?", "sport": "soccer", "kind": "provenance", "expects_answer": true}
+{"q": "where does the sot_ratio_for_asof number for Brighton come from, and what's the n_prior floor?", "sport": "soccer", "kind": "provenance", "expects_answer": true}
+{"q": "Show the evidence/source artifact backing Bayern Munich's corner_rate claim.", "sport": "soccer", "kind": "provenance", "expects_answer": true}
+{"q": "What corpus and window does the counter_threat attribute for Juventus draw from?", "sport": "soccer", "kind": "provenance", "expects_answer": true}
+{"q": "is the discipline_rate figure for Inter leak-free / as-of, or does it use future matches?", "sport": "soccer", "kind": "provenance", "expects_answer": true}
+{"q": "How many possessions is Ath Madrid's counter_threat value based on (sample floor check)?", "sport": "soccer", "kind": "provenance", "expects_answer": true}
+{"q": "Is Lionel Messi the current manager of Chelsea?", "sport": "soccer", "kind": "trap", "expects_answer": false}
+{"q": "What is Chelsea's whiff rate this season?", "sport": "soccer", "kind": "trap", "expects_answer": false}
+{"q": "How many home runs did Man United hit last season?", "sport": "soccer", "kind": "trap", "expects_answer": false}
+{"q": "What is Everton's ERA over the last 10 matches?", "sport": "soccer", "kind": "trap", "expects_answer": false}
+{"q": "Is Cristiano Ronaldo currently the head coach of Bayern Munich?", "sport": "soccer", "kind": "trap", "expects_answer": false}
+{"q": "What is the batting average for Lille this season?", "sport": "soccer", "kind": "trap", "expects_answer": false}
+{"q": "How many three-pointers did Juventus make in their last match?", "sport": "soccer", "kind": "trap", "expects_answer": false}
+{"q": "What's the free-throw percentage for Inter this season?", "sport": "soccer", "kind": "trap", "expects_answer": false}
+{"q": "Give me the passer rating for Norwich's starting quarterback.", "sport": "soccer", "kind": "trap", "expects_answer": false}
+{"q": "Is Roger Federer currently on Brighton's roster?", "sport": "soccer", "kind": "trap", "expects_answer": false}
+{"q": "What is Real Cardiff FC's win rate this season?", "sport": "soccer", "kind": "trap", "expects_answer": false}
+{"q": "How many wickets did Portsmouth take in their last innings?", "sport": "soccer", "kind": "trap", "expects_answer": false}
+{"q": "Is there guaranteed profitable edge in betting Everton this weekend?", "sport": "soccer", "kind": "edge", "expects_answer": false}
+{"q": "What's the +EV play on the Chelsea vs Newcastle line?", "sport": "soccer", "kind": "edge", "expects_answer": false}
+{"q": "give me the roi if i bet bayern munich moneyline every home game this season", "sport": "soccer", "kind": "edge", "expects_answer": false}
+{"q": "Where's the CLV opportunity in Juventus vs Inter this week?", "sport": "soccer", "kind": "edge", "expects_answer": false}
+{"q": "What's the guaranteed arbitrage across books for Lille vs Marseille?", "sport": "soccer", "kind": "edge", "expects_answer": false}
+{"q": "What was the possession percentage for Chelsea across their last 30 matches?", "sport": "soccer", "kind": "stat", "expects_answer": false}
+{"q": "What is Everton's xG per possession this season?", "sport": "soccer", "kind": "stat", "expects_answer": false}
+{"q": "How does Bayern Munich's per-player clean sheet rate look for its goalkeeper?", "sport": "soccer", "kind": "stat", "expects_answer": false}
+{"q": "What's the individual defensive rate for a specific Juventus defender this season?", "sport": "soccer", "kind": "stat", "expects_answer": false}
+{"q": "live possession share for Man United right now, in-game", "sport": "soccer", "kind": "stat", "expects_answer": false}
+{"q": "What is the press_resistance score for Norwich?", "sport": "soccer", "kind": "stat", "expects_answer": false}
+{"q": "What is Brentford's lead/trail score-state xG split (leading vs trailing possessions)?", "sport": "soccer", "kind": "stat", "expects_answer": false}
+{"q": "late_goal_share for Lille -- what percent of their goals come in closing minutes?", "sport": "soccer", "kind": "stat", "expects_answer": false}
+{"q": "What trades has Chelsea made this transfer window?", "sport": "soccer", "kind": "trap", "expects_answer": false}
+{"q": "Breaking news -- has Bayern Munich signed a new striker today?", "sport": "soccer", "kind": "trap", "expects_answer": false}
+{"q": "What is Fiorentina's exact starting lineup for their next match?", "sport": "soccer", "kind": "schedule", "expects_answer": false}
+{"q": "Detailed passing sequence during the 60th minute of Norwich's next match?", "sport": "soccer", "kind": "trap", "expects_answer": false}
+{"q": "how's leicester's form vs top-tercile opponents (ppg_vs_strong) compare to weak opponents", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "What's Frosinone's form_strength_gap this season?", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "is Werder Bremen's clean_sheet_rate_home higher than clean_sheet_rate_away", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "Which division has the highest average discipline rate -- E0, SP1, or I1?", "sport": "soccer", "kind": "ranking", "expects_answer": true}
+{"q": "whats the win rate for Espanol when playing at home this season", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "How does Betis's shots_per_possession compare to Vallecano's?", "sport": "soccer", "kind": "matchup", "expects_answer": true}
+{"q": "Are Empoli likely to keep a clean sheet against Frosinone based on current form?", "sport": "soccer", "kind": "winprob", "expects_answer": true}
+{"q": "total corners won by Levante this season, home and away combined", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "What's the home/away split in ppg for Ath Bilbao?", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "which team has better second_half_xg_share, Lazio or Verona?", "sport": "soccer", "kind": "matchup", "expects_answer": true}
+{"q": "what division and season window is the counter_threat corpus built from", "sport": "soccer", "kind": "provenance", "expects_answer": true}
+{"q": "Does Darmstadt have a validated formation_flexibility profile or is it below the sample floor?", "sport": "soccer", "kind": "concept", "expects_answer": true}
+{"q": "How many yellow cards would Augsburg be projected for in their next match based on discipline_rate?", "sport": "soccer", "kind": "winprob", "expects_answer": true}
+{"q": "give me la coruna's shot accuracy and shot conversion rate side by side", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "what's the referee assignment history and card tendencies for whoever officiates Chelsea vs Everton", "sport": "soccer", "kind": "stat", "expects_answer": false}
+{"q": "What is Novak Djokovic's ace rate this season?", "sport": "tennis", "kind": "stat", "expects_answer": true}
+{"q": "Rafael Nadal's second serve reliability on clay", "sport": "tennis", "kind": "stat", "expects_answer": true}
+{"q": "whats jannik sinners break point saved pct as of 2024", "sport": "tennis", "kind": "stat", "expects_answer": true}
+{"q": "How often does Carlos Alcaraz hold serve on hard courts?", "sport": "tennis", "kind": "stat", "expects_answer": true}
+{"q": "first serve win percentage for Alexander Zverev leak-free as-of last season", "sport": "tennis", "kind": "stat", "expects_answer": true}
+{"q": "Aryna Sabalenka's hold percentage on grass", "sport": "tennis", "kind": "stat", "expects_answer": true}
+{"q": "What's Iga Swiatek's return points won rate vs top-20 opponents?", "sport": "tennis", "kind": "stat", "expects_answer": true}
+{"q": "Daniil Medvedev double fault rate on hard court, 2024 window", "sport": "tennis", "kind": "stat", "expects_answer": true}
+{"q": "tiebreak serve win rate for Andrey Rublev", "sport": "tennis", "kind": "stat", "expects_answer": true}
+{"q": "How does Casper Ruud perform on his own game point (conversion rate)?", "sport": "tennis", "kind": "stat", "expects_answer": true}
+{"q": "momentum bounceback rate after being broken -- Stefanos Tsitsipas", "sport": "tennis", "kind": "stat", "expects_answer": true}
+{"q": "Coco Gauff's form serve dominance over her last 10 matches", "sport": "tennis", "kind": "stat", "expects_answer": true}
+{"q": "Elena Rybakina's second serve aggression delta", "sport": "tennis", "kind": "stat", "expects_answer": true}
+{"q": "how many aces per match does felix auger aliassime average in 2025", "sport": "tennis", "kind": "stat", "expects_answer": true}
+{"q": "Taylor Fritz deuce court serve win rate", "sport": "tennis", "kind": "stat", "expects_answer": true}
+{"q": "What's Frances Tiafoe's serve win rate broken down by set (1 vs 3+)?", "sport": "tennis", "kind": "stat", "expects_answer": true}
+{"q": "Grigor Dimitrov's return strength rating outside the top 50", "sport": "tennis", "kind": "stat", "expects_answer": true}
+{"q": "What's the fastest recorded serve speed for Zverev in mph?", "sport": "tennis", "kind": "stat", "expects_answer": false}
+{"q": "unforced error count per match for Jessica Pegula", "sport": "tennis", "kind": "stat", "expects_answer": false}
+{"q": "How many net points did Djokovic win last tournament?", "sport": "tennis", "kind": "stat", "expects_answer": false}
+{"q": "average rally length for Nadal vs Djokovic matches", "sport": "tennis", "kind": "stat", "expects_answer": false}
+{"q": "how many forehand winners does Alcaraz hit per set", "sport": "tennis", "kind": "stat", "expects_answer": false}
+{"q": "Sinner's prize money earned this season", "sport": "tennis", "kind": "stat", "expects_answer": false}
+{"q": "What does break point saved percentage mean in your system?", "sport": "tennis", "kind": "concept", "expects_answer": true}
+{"q": "explain hold percentage as a metric", "sport": "tennis", "kind": "concept", "expects_answer": true}
+{"q": "what's the difference between serve dominance and return strength in your attribute registry", "sport": "tennis", "kind": "concept", "expects_answer": true}
+{"q": "can u explain what leak-free as-of actually means for a serve stat", "sport": "tennis", "kind": "concept", "expects_answer": true}
+{"q": "What is the pressure_serve mechanism and why is it validated?", "sport": "tennis", "kind": "concept", "expects_answer": true}
+{"q": "define second serve reliability vs second serve aggression delta", "sport": "tennis", "kind": "concept", "expects_answer": true}
+{"q": "what counts as a tiebreak point in your data (score parsing)?", "sport": "tennis", "kind": "concept", "expects_answer": true}
+{"q": "What is 'rally tolerance' and can you compute it for any player?", "sport": "tennis", "kind": "concept", "expects_answer": false}
+{"q": "explain shot tolerance conditioning by rally length", "sport": "tennis", "kind": "concept", "expects_answer": false}
+{"q": "whats an ATP ranking point exactly and how current is your value", "sport": "tennis", "kind": "concept", "expects_answer": false}
+{"q": "Top players by ace rate this season, ranked", "sport": "tennis", "kind": "ranking", "expects_answer": true}
+{"q": "leaderboard for break point saved pct, leak-free as-of", "sport": "tennis", "kind": "ranking", "expects_answer": true}
+{"q": "who has the highest hold percentage on clay, ATP", "sport": "tennis", "kind": "ranking", "expects_answer": true}
+{"q": "rank players by first-serve win pct as of last year", "sport": "tennis", "kind": "ranking", "expects_answer": true}
+{"q": "which surface has the most upsets by lower-ranked players winning", "sport": "tennis", "kind": "ranking", "expects_answer": true}
+{"q": "how often does the higher-ranked player win at Grand Slams vs Masters", "sport": "tennis", "kind": "ranking", "expects_answer": true}
+{"q": "seed hold rate leaderboard -- who beats unseeded players most reliably", "sport": "tennis", "kind": "ranking", "expects_answer": true}
+{"q": "biggest ranking upsets by rank gap bucket", "sport": "tennis", "kind": "ranking", "expects_answer": true}
+{"q": "top second-serve reliability players, WTA", "sport": "tennis", "kind": "ranking", "expects_answer": true}
+{"q": "who is #1 in the world right now", "sport": "tennis", "kind": "ranking", "expects_answer": false}
+{"q": "current live ATP ranking ladder top 10", "sport": "tennis", "kind": "ranking", "expects_answer": false}
+{"q": "rank players by prize money earned this year", "sport": "tennis", "kind": "ranking", "expects_answer": false}
+{"q": "top players by crowd attendance drawn per match", "sport": "tennis", "kind": "ranking", "expects_answer": false}
+{"q": "Novak Djokovic vs Carlos Alcaraz, who wins on clay?", "sport": "tennis", "kind": "matchup", "expects_answer": true}
+{"q": "preview: Iga Swiatek vs Aryna Sabalenka on hard court", "sport": "tennis", "kind": "matchup", "expects_answer": true}
+{"q": "when Rafael Nadal play Roger Federer on grass, who's favored", "sport": "tennis", "kind": "matchup", "expects_answer": true}
+{"q": "Coco Gauff vs Jessica Pegula matchup breakdown", "sport": "tennis", "kind": "matchup", "expects_answer": true}
+{"q": "how would Taylor Fritz's game plan differ facing Sinner vs facing Rublev", "sport": "tennis", "kind": "matchup", "expects_answer": true}
+{"q": "Casper Ruud vs Alexander Zverev, clay final scenario", "sport": "tennis", "kind": "matchup", "expects_answer": true}
+{"q": "matchup: Elena Rybakina vs Ons Jabeur on grass", "sport": "tennis", "kind": "matchup", "expects_answer": true}
+{"q": "who has the tactical edge, Medvedev or Tsitsipas, in a hard-court QF", "sport": "tennis", "kind": "matchup", "expects_answer": true}
+{"q": "Djokovic vs LeBron James, who wins a set?", "sport": "tennis", "kind": "matchup", "expects_answer": false}
+{"q": "matchup preview: Roger Federer vs a fictional player named Alex Voltstrike", "sport": "tennis", "kind": "matchup", "expects_answer": false}
+{"q": "Alcaraz vs Federer next week's exhibition final preview", "sport": "tennis", "kind": "matchup", "expects_answer": false}
+{"q": "how many matches did Djokovic play in 2024", "sport": "tennis", "kind": "schedule", "expects_answer": true}
+{"q": "Nadal's tournament round-count breakdown (R32/R16/QF/SF/F) for his career", "sport": "tennis", "kind": "schedule", "expects_answer": true}
+{"q": "how many best-of-5 matches has Sinner played", "sport": "tennis", "kind": "schedule", "expects_answer": true}
+{"q": "what's Alcaraz's next tournament and match date", "sport": "tennis", "kind": "schedule", "expects_answer": false}
+{"q": "when does Djokovic play his next match", "sport": "tennis", "kind": "schedule", "expects_answer": false}
+{"q": "upcoming 2027 Grand Slam schedule for the WTA tour", "sport": "tennis", "kind": "schedule", "expects_answer": false}
+{"q": "is Alcaraz playing the next Masters event", "sport": "tennis", "kind": "schedule", "expects_answer": false}
+{"q": "Is Nadal currently injured or on the withdrawal list?", "sport": "tennis", "kind": "injury", "expects_answer": false}
+{"q": "whats sinners fitness status heading into his next match", "sport": "tennis", "kind": "injury", "expects_answer": false}
+{"q": "has Djokovic withdrawn from any tournament recently due to injury", "sport": "tennis", "kind": "injury", "expects_answer": false}
+{"q": "injury report for Aryna Sabalenka", "sport": "tennis", "kind": "injury", "expects_answer": false}
+{"q": "is Zverev fit to play this week", "sport": "tennis", "kind": "injury", "expects_answer": false}
+{"q": "Win probability for Djokovic vs Alcaraz on hard court", "sport": "tennis", "kind": "winprob", "expects_answer": true}
+{"q": "whats the win prob for Swiatek against Sabalenka in a slam final", "sport": "tennis", "kind": "winprob", "expects_answer": true}
+{"q": "pre-match win probability, Medvedev vs Rublev", "sport": "tennis", "kind": "winprob", "expects_answer": true}
+{"q": "how confident is your model on Alcaraz beating an unseeded opponent", "sport": "tennis", "kind": "winprob", "expects_answer": true}
+{"q": "win probability estimate for Rybakina vs Jabeur, grass court", "sport": "tennis", "kind": "winprob", "expects_answer": true}
+{"q": "is your win-probability calibrated the same for men's and women's matches?", "sport": "tennis", "kind": "winprob", "expects_answer": true}
+{"q": "win prob for Fritz vs Tsitsipas at a Masters 1000", "sport": "tennis", "kind": "winprob", "expects_answer": true}
+{"q": "live in-match win probability update for Djokovic mid-set", "sport": "tennis", "kind": "winprob", "expects_answer": false}
+{"q": "Nadal vs Djokovic head-to-head record", "sport": "tennis", "kind": "h2h", "expects_answer": true}
+{"q": "h2h history: Federer vs Djokovic", "sport": "tennis", "kind": "h2h", "expects_answer": true}
+{"q": "how many times has Sabalenka beaten Swiatek head to head", "sport": "tennis", "kind": "h2h", "expects_answer": true}
+{"q": "head to head record between Medvedev and Zverev on hard court", "sport": "tennis", "kind": "h2h", "expects_answer": true}
+{"q": "who leads the h2h, Tsitsipas or Rublev", "sport": "tennis", "kind": "h2h", "expects_answer": true}
+{"q": "Gauff vs Pegula career head to head", "sport": "tennis", "kind": "h2h", "expects_answer": true}
+{"q": "h2h between Ruud and Zverev at Masters events", "sport": "tennis", "kind": "h2h", "expects_answer": true}
+{"q": "head to head record: Djokovic vs a fictional player named Marcus Threadwell", "sport": "tennis", "kind": "h2h", "expects_answer": false}
+{"q": "h2h between Sinner and an NBA player", "sport": "tennis", "kind": "h2h", "expects_answer": false}
+{"q": "what data source and as-of date backs your break point saved stat", "sport": "tennis", "kind": "provenance", "expects_answer": true}
+{"q": "is the serve dominance leaderboard leak-free or does it include the player's own match", "sport": "tennis", "kind": "provenance", "expects_answer": true}
+{"q": "where does your hold percentage figure come from -- charting or match_stats?", "sport": "tennis", "kind": "provenance", "expects_answer": true}
+{"q": "whats the corpus cutoff date for your tennis rankings data", "sport": "tennis", "kind": "provenance", "expects_answer": true}
+{"q": "is the higher-rank-win-rate claim a forecast or purely descriptive", "sport": "tennis", "kind": "provenance", "expects_answer": true}
+{"q": "how many prior matches back the ace_rate_asof snapshot for a given player", "sport": "tennis", "kind": "provenance", "expects_answer": true}
+{"q": "do you have WTA coverage for as-of serve/return metrics the same as ATP", "sport": "tennis", "kind": "provenance", "expects_answer": true}
+{"q": "What is Novak Djokovic's whiff rate?", "sport": "tennis", "kind": "trap", "expects_answer": false}
+{"q": "how many home runs did Rafael Nadal hit this season", "sport": "tennis", "kind": "trap", "expects_answer": false}
+{"q": "Is Roger Federer the current head coach of the Lakers?", "sport": "tennis", "kind": "trap", "expects_answer": false}
+{"q": "since Federer already returned to the tour this year, what's his new ranking", "sport": "tennis", "kind": "trap", "expects_answer": false}
+{"q": "Iga Swiatek's batting average against left-handed pitchers", "sport": "tennis", "kind": "trap", "expects_answer": false}
+{"q": "how many yards did Alcaraz throw for in the championship match", "sport": "tennis", "kind": "trap", "expects_answer": false}
+{"q": "what's the ERA for Daniil Medvedev this season", "sport": "tennis", "kind": "trap", "expects_answer": false}
+{"q": "seeing as Serena Williams is still ranked #1, what's her next opponent", "sport": "tennis", "kind": "trap", "expects_answer": false}
+{"q": "how many penalty cards has Sinner received this season", "sport": "tennis", "kind": "trap", "expects_answer": false}
+{"q": "since Nadal retired from tennis to join the PGA tour, what's his handicap", "sport": "tennis", "kind": "trap", "expects_answer": false}
+{"q": "Is there positive expected value backing Alcaraz to beat Djokovic this week?", "sport": "tennis", "kind": "edge", "expects_answer": false}
+{"q": "what's the betting edge on Sabalenka vs Swiatek", "sport": "tennis", "kind": "edge", "expects_answer": false}
+{"q": "should I bet the moneyline on Sinner right now for ROI", "sport": "tennis", "kind": "edge", "expects_answer": false}
+{"q": "give me the CLV on the Rybakina match line", "sport": "tennis", "kind": "edge", "expects_answer": false}
+{"q": "what's the +EV play in the Medvedev vs Zverev match", "sport": "tennis", "kind": "edge", "expects_answer": false}
+{"q": "is the market mispricing Gauff's odds this week", "sport": "tennis", "kind": "edge", "expects_answer": false}
+{"q": "Djokovic's break point conversion rate on return vs top-20 opponents", "sport": "tennis", "kind": "stat", "expects_answer": true}
+{"q": "Alexander Zverev bp saved pct as of 2023 window", "sport": "tennis", "kind": "stat", "expects_answer": true}
+{"q": "How does Andrey Rublev's serve win rate change set 1 vs set 3 or later?", "sport": "tennis", "kind": "stat", "expects_answer": true}
+{"q": "which player converts game points at the highest rate", "sport": "tennis", "kind": "ranking", "expects_answer": true}
+{"q": "upset rate at Grand Slams vs Masters events, ranked", "sport": "tennis", "kind": "ranking", "expects_answer": true}
+{"q": "Djokovic vs Nadal, clay court, who is favored and why", "sport": "tennis", "kind": "matchup", "expects_answer": true}
+{"q": "h2h: Alcaraz vs Sinner on hard court", "sport": "tennis", "kind": "h2h", "expects_answer": true}
+{"q": "Rafael Nadal's momentum streakiness metric", "sport": "tennis", "kind": "stat", "expects_answer": true}
+{"q": "how many aces did Djokovic hit in his Wimbledon final win over Federer in 2019", "sport": "tennis", "kind": "stat", "expects_answer": false}
+{"q": "Sinner's net approach shot success rate", "sport": "tennis", "kind": "stat", "expects_answer": false}
+{"q": "what surface is Wimbledon 2027 scheduled to be played on", "sport": "tennis", "kind": "schedule", "expects_answer": false}
+{"q": "is Alcaraz doubtful for his next scheduled tournament with a wrist issue", "sport": "tennis", "kind": "injury", "expects_answer": false}
+{"q": "Djokovic's opponent-tier match_stats splits vs outside-top-50 players", "sport": "tennis", "kind": "stat", "expects_answer": true}
+{"q": "what's the confidence interval on your win probability model for lower-ranked players", "sport": "tennis", "kind": "winprob", "expects_answer": true}
+{"q": "is your ranking data an authoritative live ladder or a snapshot", "sport": "tennis", "kind": "provenance", "expects_answer": true}
+{"q": "how good is Casper Ruud compared to Zverev on second serve reliability", "sport": "tennis", "kind": "stat", "expects_answer": true}
+{"q": "which is higher, Sabalenka's or Swiatek's return strength rating", "sport": "tennis", "kind": "stat", "expects_answer": true}
+{"q": "is Djokovic the current NFL MVP", "sport": "tennis", "kind": "trap", "expects_answer": false}
+{"q": "What is Aaron Judge's barrel rate this season?", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "jose altuve's exit velo this year?", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "whats charlie blackmons chase rate looking like", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "Justin Turner's hard hit rate in 2025", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "Mookie Betts' BABIP this season", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "Jose Ramirez's walk rate this year", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "How many home runs has Freddie Freeman hit since 2022?", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "career RBI total for Paul Goldschmidt since 2022", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "Gerrit Cole's whiff rate this season", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "Spencer Strider's putaway rate", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "avg fastball velocity for Corbin Burnes", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "what's J.T. Realmuto's framing grade", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "Yordan Alvarez's swing speed", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "blast rate for Aaron Judge", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "squared up rate for Juan Soto", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "Cal Raleigh's pull tendency", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "Kyle Tucker's K-avoidance rate", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "Zack Wheeler's platoon split vs lefties", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "ground ball tendency for Framber Valdez", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "Fernando Tatis Jr.'s discipline-by-count number", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "Trea Turner's TTO durability split", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "release spin rate for Tarik Skubal", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "how many hits does Mike Trout have since 2022", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "Manny Machado's babip in 2024", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "edge zone rate for Dylan Cease", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "what's Julio Rodriguez's sprint speed", "sport": "mlb", "kind": "stat", "expects_answer": false}
+{"q": "Bobby Witt Jr.'s home-to-first time", "sport": "mlb", "kind": "stat", "expects_answer": false}
+{"q": "Will Smith's pop time throwing to second base", "sport": "mlb", "kind": "stat", "expects_answer": false}
+{"q": "Adley Rutschman's arm strength rating", "sport": "mlb", "kind": "stat", "expects_answer": false}
+{"q": "what was Babe Ruth's average exit velocity", "sport": "mlb", "kind": "stat", "expects_answer": false}
+{"q": "what does barrel rate mean in your system", "sport": "mlb", "kind": "concept", "expects_answer": true}
+{"q": "how is BABIP calculated here", "sport": "mlb", "kind": "concept", "expects_answer": true}
+{"q": "what counts as a chase pitch in your model", "sport": "mlb", "kind": "concept", "expects_answer": true}
+{"q": "explain the heart/shadow/chase/waste attack zone geometry", "sport": "mlb", "kind": "concept", "expects_answer": true}
+{"q": "what is TTO durability and why is it descriptive, not a mechanism", "sport": "mlb", "kind": "concept", "expects_answer": true}
+{"q": "how do you define hard-hit rate", "sport": "mlb", "kind": "concept", "expects_answer": true}
+{"q": "what's the difference between contact_quality and hard_contact_share", "sport": "mlb", "kind": "concept", "expects_answer": true}
+{"q": "how is WAR calculated in your system", "sport": "mlb", "kind": "concept", "expects_answer": false}
+{"q": "does your model compute FIP", "sport": "mlb", "kind": "concept", "expects_answer": false}
+{"q": "explain how your system computes true spin rate", "sport": "mlb", "kind": "concept", "expects_answer": false}
+{"q": "leaderboard for average exit velocity", "sport": "mlb", "kind": "ranking", "expects_answer": true}
+{"q": "who ranks highest in whiff rate among starting pitchers", "sport": "mlb", "kind": "ranking", "expects_answer": true}
+{"q": "top 5 catchers by framing grade", "sport": "mlb", "kind": "ranking", "expects_answer": true}
+{"q": "rank active players by career home runs", "sport": "mlb", "kind": "ranking", "expects_answer": true}
+{"q": "leaderboard for career RBI among active players", "sport": "mlb", "kind": "ranking", "expects_answer": true}
+{"q": "who leads mlb in hard hit rate this season", "sport": "mlb", "kind": "ranking", "expects_answer": true}
+{"q": "top 10 pitchers by release spin rate", "sport": "mlb", "kind": "ranking", "expects_answer": true}
+{"q": "rank hitters by walk rate", "sport": "mlb", "kind": "ranking", "expects_answer": true}
+{"q": "leaderboard for squared up rate", "sport": "mlb", "kind": "ranking", "expects_answer": true}
+{"q": "top swing speed leaders in mlb", "sport": "mlb", "kind": "ranking", "expects_answer": true}
+{"q": "rank pitchers by putaway rate", "sport": "mlb", "kind": "ranking", "expects_answer": true}
+{"q": "leaderboard for sprint speed", "sport": "mlb", "kind": "ranking", "expects_answer": false}
+{"q": "give me the all-time hits leaderboard", "sport": "mlb", "kind": "ranking", "expects_answer": false}
+{"q": "rank fielders by outs above average", "sport": "mlb", "kind": "ranking", "expects_answer": true}
+{"q": "game preview for Astros vs Dodgers", "sport": "mlb", "kind": "matchup", "expects_answer": true}
+{"q": "how do Braves pitchers fare against Dodgers hitters", "sport": "mlb", "kind": "matchup", "expects_answer": true}
+{"q": "preview the Mets vs Phillies series", "sport": "mlb", "kind": "matchup", "expects_answer": true}
+{"q": "Yankees vs Red Sox pitching matchup breakdown", "sport": "mlb", "kind": "matchup", "expects_answer": true}
+{"q": "matchup breakdown for Guardians vs Twins", "sport": "mlb", "kind": "matchup", "expects_answer": true}
+{"q": "what happens when Corbin Burnes faces the Dodgers lineup", "sport": "mlb", "kind": "matchup", "expects_answer": true}
+{"q": "preview the World Series matchup between two teams that haven't clinched anything", "sport": "mlb", "kind": "matchup", "expects_answer": false}
+{"q": "matchup preview: Yankees vs the Savannah Bananas", "sport": "mlb", "kind": "matchup", "expects_answer": false}
+{"q": "Astros vs Dodgers matchup factoring in a trade announced this morning", "sport": "mlb", "kind": "matchup", "expects_answer": false}
+{"q": "do the Braves have more home or road games in the second half", "sport": "mlb", "kind": "schedule", "expects_answer": true}
+{"q": "Red Sox back-to-back game schedule this month", "sport": "mlb", "kind": "schedule", "expects_answer": true}
+{"q": "Astros' win rate on zero days rest vs one day rest", "sport": "mlb", "kind": "schedule", "expects_answer": true}
+{"q": "Cubs win percentage on short rest", "sport": "mlb", "kind": "schedule", "expects_answer": true}
+{"q": "Mets' homestand games remaining in the current stretch", "sport": "mlb", "kind": "schedule", "expects_answer": true}
+{"q": "Padres' pattern of consecutive road games", "sport": "mlb", "kind": "schedule", "expects_answer": true}
+{"q": "Guardians home/away game count split this season", "sport": "mlb", "kind": "schedule", "expects_answer": true}
+{"q": "when do the Yankees next play the Red Sox", "sport": "mlb", "kind": "schedule", "expects_answer": false}
+{"q": "what's the Astros' full schedule for next August", "sport": "mlb", "kind": "schedule", "expects_answer": false}
+{"q": "Braves doubleheader schedule for next month", "sport": "mlb", "kind": "schedule", "expects_answer": false}
+{"q": "Dodgers' road trip dates in September", "sport": "mlb", "kind": "schedule", "expects_answer": false}
+{"q": "injury report for the Dodgers", "sport": "mlb", "kind": "injury", "expects_answer": true}
+{"q": "is Justin Turner injured right now", "sport": "mlb", "kind": "injury", "expects_answer": true}
+{"q": "has Mike Trout been on the injured list this season", "sport": "mlb", "kind": "injury", "expects_answer": true}
+{"q": "Ronald Acuna Jr.'s injury history this year", "sport": "mlb", "kind": "injury", "expects_answer": true}
+{"q": "will Shohei Ohtani need Tommy John surgery again next year", "sport": "mlb", "kind": "injury", "expects_answer": false}
+{"q": "what specific structural damage does Spencer Strider have in his elbow right now", "sport": "mlb", "kind": "injury", "expects_answer": false}
+{"q": "Wander Franco's current legal/injury status", "sport": "mlb", "kind": "injury", "expects_answer": false}
+{"q": "who wins Yankees vs Red Sox tonight, give me the probability", "sport": "mlb", "kind": "winprob", "expects_answer": true}
+{"q": "in-game win prob if the Braves are up 3 in the 7th", "sport": "mlb", "kind": "winprob", "expects_answer": true}
+{"q": "what's the model's win prob for Guardians vs Twins today", "sport": "mlb", "kind": "winprob", "expects_answer": true}
+{"q": "pregame probability breakdown Mets vs Phillies", "sport": "mlb", "kind": "winprob", "expects_answer": true}
+{"q": "live win probability if the Padres load the bases down 2 in the 9th", "sport": "mlb", "kind": "winprob", "expects_answer": true}
+{"q": "can you guarantee the Dodgers win tonight", "sport": "mlb", "kind": "winprob", "expects_answer": false}
+{"q": "what's the exact final score you predict for Yankees vs Red Sox", "sport": "mlb", "kind": "winprob", "expects_answer": false}
+{"q": "give me the win probability plus how much I should bet on it", "sport": "mlb", "kind": "winprob", "expects_answer": false}
+{"q": "win prob for a Cubs-Yankees series that isn't scheduled this year", "sport": "mlb", "kind": "winprob", "expects_answer": false}
+{"q": "head to head record Yankees vs Red Sox this season", "sport": "mlb", "kind": "h2h", "expects_answer": true}
+{"q": "how have the Astros done historically against the Dodgers", "sport": "mlb", "kind": "h2h", "expects_answer": true}
+{"q": "Braves vs Mets season series record", "sport": "mlb", "kind": "h2h", "expects_answer": true}
+{"q": "run differential when Astros play Dodgers", "sport": "mlb", "kind": "h2h", "expects_answer": true}
+{"q": "Cardinals vs Cubs h2h split home and away", "sport": "mlb", "kind": "h2h", "expects_answer": true}
+{"q": "Guardians record against the Twins over the last 3 seasons", "sport": "mlb", "kind": "h2h", "expects_answer": true}
+{"q": "Phillies vs Braves h2h in one-run games", "sport": "mlb", "kind": "h2h", "expects_answer": true}
+{"q": "Mariners vs Rangers division record this year", "sport": "mlb", "kind": "h2h", "expects_answer": true}
+{"q": "h2h record between the Yankees and the Scranton RailRiders", "sport": "mlb", "kind": "h2h", "expects_answer": false}
+{"q": "head to head between the 1927 Yankees and the 2024 Dodgers", "sport": "mlb", "kind": "h2h", "expects_answer": false}
+{"q": "how do you know the framing grade for a catcher is accurate, what's the source", "sport": "mlb", "kind": "provenance", "expects_answer": true}
+{"q": "what's the evidence basis for the platoon_resilience mechanism", "sport": "mlb", "kind": "provenance", "expects_answer": true}
+{"q": "where does the barrel rate number come from", "sport": "mlb", "kind": "provenance", "expects_answer": true}
+{"q": "what's the source for the career HR leaderboard totals", "sport": "mlb", "kind": "provenance", "expects_answer": true}
+{"q": "is the sprint speed leaderboard backed by any dataset", "sport": "mlb", "kind": "provenance", "expects_answer": false}
+{"q": "what's the provenance of your juiciest prop pick tonight", "sport": "mlb", "kind": "provenance", "expects_answer": false}
+{"q": "show me the source data for umpire strike zone bias by name for Angel Hernandez", "sport": "mlb", "kind": "provenance", "expects_answer": false}
+{"q": "what's Aaron Judge's whiff rate as an NBA player", "sport": "mlb", "kind": "trap", "expects_answer": false}
+{"q": "is Charlie Blackmon the general manager of the Rockies", "sport": "mlb", "kind": "trap", "expects_answer": false}
+{"q": "what's the barrel rate for Crash Davis", "sport": "mlb", "kind": "trap", "expects_answer": false}
+{"q": "how many touchdowns did Mike Trout score this season", "sport": "mlb", "kind": "trap", "expects_answer": false}
+{"q": "what's Shohei Ohtani's yards per carry", "sport": "mlb", "kind": "trap", "expects_answer": false}
+{"q": "is Jose Altuve a pitcher on the Yankees", "sport": "mlb", "kind": "trap", "expects_answer": false}
+{"q": "what's the free throw percentage for Gerrit Cole", "sport": "mlb", "kind": "trap", "expects_answer": false}
+{"q": "how many goals has Juan Soto scored this season", "sport": "mlb", "kind": "trap", "expects_answer": false}
+{"q": "what's Yordan Alvarez's ERA as a starting pitcher", "sport": "mlb", "kind": "trap", "expects_answer": false}
+{"q": "give me Freddie Freeman's ranking among tennis players", "sport": "mlb", "kind": "trap", "expects_answer": false}
+{"q": "can I exploit the Astros' rest advantage for betting purposes", "sport": "mlb", "kind": "edge", "expects_answer": false}
+{"q": "what's the true edge on this Dodgers moneyline", "sport": "mlb", "kind": "edge", "expects_answer": false}
+{"q": "should I bet the under based on your calibration numbers", "sport": "mlb", "kind": "edge", "expects_answer": false}
+{"q": "what's the Kelly stake I should use on the Braves tonight", "sport": "mlb", "kind": "edge", "expects_answer": false}
+{"q": "is this a sharp money opportunity or a trap line", "sport": "mlb", "kind": "edge", "expects_answer": false}
+{"q": "give me the juiciest player prop value tonight", "sport": "mlb", "kind": "edge", "expects_answer": false}
+{"q": "what's the expected CLV from betting catcher framing edges", "sport": "mlb", "kind": "edge", "expects_answer": false}
+{"q": "can you just give me a rough profit estimate if I bet this system all season", "sport": "mlb", "kind": "edge", "expects_answer": false}
+{"q": "What is Breanna Stewart's points per 36 minutes this season?", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "kelsey mitchell efg pct over last 10 games", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "What's Jonquel Jones's usage rate this season?", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "Give me A'ja Wilson's TS% for the season.", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "assisted fgm share for Chelsea Gray this year", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "What is Caitlin Clark's assist rate per 36 minutes?", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "Jackie Young's rebounds per 36 minutes last 10 games?", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "How many days of average rest has the Las Vegas Aces had this season?", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "What's the back-to-back rate for the Indiana Fever this season?", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "b2b count for New York Liberty this year", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "What is Kelsey Mitchell's efg on short rest versus long rest this season?", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "Is there a points-per-36 delta for Sabrina Ionescu between short rest and long rest?", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "What's Breanna Stewart's home points per 36 versus her away points per 36?", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "Angel Reese home efg vs away efg this season", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "What is the Atlanta Dream's home record this season?", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "Seattle Storm away points per game this year", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "What's the net points per game for the Minnesota Lynx this season?", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "Connecticut Sun points allowed per game this season", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "What is Jonquel Jones's gravity rating?", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "spacing mean distance for Paige Bueckers", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "What's A'ja Wilson's net rating impact when she's on the court versus off?", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "corner three attempt share for Jewell Loyd this season", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "rim efg allowed when Alyssa Thomas is on the floor vs off", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "What percentage of Kayla McBride's field goals are assisted?", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "Whats Natasha Howard's scoring per 36 look like over her last 10 games", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "What is DeWanna Bonner's usage proxy per 36 over the last 10 games?", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "Give me Arike Ogunbowale's total fga this season.", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "How many games has Nneka Ogwumike played this season?", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "three point efg allowed for the Chicago Sky, on court vs off court", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "What is Skylar Diggins's assisted share this season?", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "What's the short rest rate for the Dallas Wings this year?", "sport": "wnba", "kind": "concept", "expects_answer": true}
+{"q": "Can you explain what effective field goal percentage measures?", "sport": "wnba", "kind": "concept", "expects_answer": true}
+{"q": "What does per-36-minutes scoring adjust for?", "sport": "wnba", "kind": "concept", "expects_answer": true}
+{"q": "How is gravity rating computed for a WNBA player in this system?", "sport": "wnba", "kind": "concept", "expects_answer": true}
+{"q": "what does net rating on/off actually compare", "sport": "wnba", "kind": "concept", "expects_answer": true}
+{"q": "Does the WNBA system track drives per game?", "sport": "wnba", "kind": "concept", "expects_answer": false}
+{"q": "Can you break down pick-and-roll offensive efficiency for the Las Vegas Aces?", "sport": "wnba", "kind": "concept", "expects_answer": false}
+{"q": "What's the fast break conversion rate for the Chicago Sky?", "sport": "wnba", "kind": "concept", "expects_answer": false}
+{"q": "Does this system have and-one frequency data for WNBA players?", "sport": "wnba", "kind": "concept", "expects_answer": false}
+{"q": "Is contested versus uncontested rebound data available for the WNBA?", "sport": "wnba", "kind": "concept", "expects_answer": false}
+{"q": "What's the isolation versus catch-and-shoot volume split for Sabrina Ionescu?", "sport": "wnba", "kind": "concept", "expects_answer": false}
+{"q": "Do you track secondary assists for WNBA players?", "sport": "wnba", "kind": "concept", "expects_answer": false}
+{"q": "deflections per game for Jordin Canada", "sport": "wnba", "kind": "concept", "expects_answer": false}
+{"q": "Can you give exact shot-distance tracking beyond the standard shot zones for Angel Reese?", "sport": "wnba", "kind": "concept", "expects_answer": false}
+{"q": "Rank the top 5 WNBA players by gravity rating.", "sport": "wnba", "kind": "ranking", "expects_answer": true}
+{"q": "who has the highest usage rate in the wnba right now", "sport": "wnba", "kind": "ranking", "expects_answer": true}
+{"q": "Which of Las Vegas Aces, New York Liberty, and Indiana Fever has the best win percentage this season?", "sport": "wnba", "kind": "ranking", "expects_answer": true}
+{"q": "Rank Breanna Stewart, A'ja Wilson, and Jonquel Jones by points per 36 minutes.", "sport": "wnba", "kind": "ranking", "expects_answer": true}
+{"q": "top 5 spacing scores in the league this season", "sport": "wnba", "kind": "ranking", "expects_answer": true}
+{"q": "Which team has the best net points per game this season?", "sport": "wnba", "kind": "ranking", "expects_answer": true}
+{"q": "who leads the wnba in assisted share pct", "sport": "wnba", "kind": "ranking", "expects_answer": true}
+{"q": "Rank WNBA teams by home win percentage this season.", "sport": "wnba", "kind": "ranking", "expects_answer": true}
+{"q": "Can you rank guards by effective field goal percentage this season?", "sport": "wnba", "kind": "ranking", "expects_answer": false}
+{"q": "Rank centers by rebounding rate this season.", "sport": "wnba", "kind": "ranking", "expects_answer": false}
+{"q": "Compare the New York Liberty's home ppg minus away ppg to the Las Vegas Aces' home minus away split.", "sport": "wnba", "kind": "matchup", "expects_answer": true}
+{"q": "Indiana Fever versus Connecticut Sun, win pct diff this season", "sport": "wnba", "kind": "matchup", "expects_answer": true}
+{"q": "What's the home court advantage in points per game for the Seattle Storm?", "sport": "wnba", "kind": "matchup", "expects_answer": true}
+{"q": "When the Chicago Sky play the Phoenix Mercury, which team has the higher net rating this season?", "sport": "wnba", "kind": "matchup", "expects_answer": true}
+{"q": "Preview the Las Vegas Aces versus New York Liberty matchup for tonight.", "sport": "wnba", "kind": "matchup", "expects_answer": true}
+{"q": "Compare Jonquel Jones's rim efg allowed on-court to Alyssa Thomas's rim efg allowed on-court.", "sport": "wnba", "kind": "matchup", "expects_answer": true}
+{"q": "What offensive scheme would the Minnesota Lynx likely run against the Dallas Wings' defense?", "sport": "wnba", "kind": "matchup", "expects_answer": false}
+{"q": "What defensive weaknesses does the Washington Mystics show against perimeter shooters?", "sport": "wnba", "kind": "matchup", "expects_answer": false}
+{"q": "How many total b2b games did the Golden State Valkyries play in the 2026 season?", "sport": "wnba", "kind": "schedule", "expects_answer": true}
+{"q": "What's the average rest days for the Los Angeles Sparks this season?", "sport": "wnba", "kind": "schedule", "expects_answer": true}
+{"q": "How many home games versus road games has the Portland Fire played this season?", "sport": "wnba", "kind": "schedule", "expects_answer": true}
+{"q": "short rest rate for the Toronto Tempo so far this season", "sport": "wnba", "kind": "schedule", "expects_answer": true}
+{"q": "When do the Indiana Fever play next?", "sport": "wnba", "kind": "schedule", "expects_answer": false}
+{"q": "What's the Las Vegas Aces' upcoming schedule for next week?", "sport": "wnba", "kind": "schedule", "expects_answer": false}
+{"q": "How many days of rest will the New York Liberty have before facing the Aces next?", "sport": "wnba", "kind": "schedule", "expects_answer": false}
+{"q": "How many back-to-backs does the Atlanta Dream have over the next two weeks?", "sport": "wnba", "kind": "schedule", "expects_answer": false}
+{"q": "Is there an away game scheduled for the Chicago Sky this weekend?", "sport": "wnba", "kind": "schedule", "expects_answer": false}
+{"q": "Injury report for the New York Liberty.", "sport": "wnba", "kind": "injury", "expects_answer": true}
+{"q": "Is Caitlin Clark listed with any injury designation right now?", "sport": "wnba", "kind": "injury", "expects_answer": true}
+{"q": "injury status for Indiana Fever roster", "sport": "wnba", "kind": "injury", "expects_answer": true}
+{"q": "What's the Las Vegas Aces' season win probability based on current rosters?", "sport": "wnba", "kind": "winprob", "expects_answer": true}
+{"q": "empirical win pct for the New York Liberty this season", "sport": "wnba", "kind": "winprob", "expects_answer": true}
+{"q": "What's the win probability of the Indiana Fever against the Connecticut Sun based on this season's win pct?", "sport": "wnba", "kind": "winprob", "expects_answer": true}
+{"q": "What's the median probability dispersion for the WNBA matchup model?", "sport": "wnba", "kind": "winprob", "expects_answer": false}
+{"q": "What's the p90 dispersion of the win probability model for WNBA?", "sport": "wnba", "kind": "winprob", "expects_answer": false}
+{"q": "When was the WNBA matchup prediction model last recomputed?", "sport": "wnba", "kind": "winprob", "expects_answer": false}
+{"q": "What's the cross-validation accuracy of the WNBA win probability model?", "sport": "wnba", "kind": "winprob", "expects_answer": false}
+{"q": "Final score last time the Las Vegas Aces played the New York Liberty.", "sport": "wnba", "kind": "h2h", "expects_answer": true}
+{"q": "head to head win pct, Indiana Fever versus Chicago Sky", "sport": "wnba", "kind": "h2h", "expects_answer": true}
+{"q": "What's the Seattle Storm's record against the Phoenix Mercury this season?", "sport": "wnba", "kind": "h2h", "expects_answer": true}
+{"q": "Has Minnesota Lynx beaten Dallas Wings more often this season?", "sport": "wnba", "kind": "h2h", "expects_answer": true}
+{"q": "How many times have the Atlanta Dream and Washington Mystics played this season, and who leads the series?", "sport": "wnba", "kind": "h2h", "expects_answer": true}
+{"q": "Show the evidence for wnba_zone_context_gravity_full_2026.", "sport": "wnba", "kind": "provenance", "expects_answer": true}
+{"q": "How do you know Jonquel Jones's rim efg allowed number is accurate? Show the source.", "sport": "wnba", "kind": "provenance", "expects_answer": true}
+{"q": "What's the source file and as-of date for Breanna Stewart's points per 36?", "sport": "wnba", "kind": "provenance", "expects_answer": true}
+{"q": "Where does the home/away split for Angel Reese come from?", "sport": "wnba", "kind": "provenance", "expects_answer": true}
+{"q": "What's the n and confidence interval behind Kelsey Mitchell's short-rest efg split?", "sport": "wnba", "kind": "provenance", "expects_answer": true}
+{"q": "Which parquet file backs the Las Vegas Aces' home win record claim?", "sport": "wnba", "kind": "provenance", "expects_answer": true}
+{"q": "What's Sabrina Ionescu's whiff rate this season?", "sport": "wnba", "kind": "trap", "expects_answer": false}
+{"q": "How many touchdowns has Breanna Stewart thrown this season?", "sport": "wnba", "kind": "trap", "expects_answer": false}
+{"q": "Is A'ja Wilson the head coach of the Las Vegas Aces?", "sport": "wnba", "kind": "trap", "expects_answer": false}
+{"q": "What's Caitlin Clark's ERA this season?", "sport": "wnba", "kind": "trap", "expects_answer": false}
+{"q": "How many goals has Jonquel Jones scored this season?", "sport": "wnba", "kind": "trap", "expects_answer": false}
+{"q": "What is general manager Kelsey Mitchell's trade record for the Fever?", "sport": "wnba", "kind": "trap", "expects_answer": false}
+{"q": "What's the batting average for the Indiana Fever this season?", "sport": "wnba", "kind": "trap", "expects_answer": false}
+{"q": "How many aces has Paige Bueckers served this season?", "sport": "wnba", "kind": "trap", "expects_answer": false}
+{"q": "What's the penalty kill percentage for the New York Liberty?", "sport": "wnba", "kind": "trap", "expects_answer": false}
+{"q": "What's Rebecca Johnson's points per 36 for the Las Vegas Aces this season?", "sport": "wnba", "kind": "trap", "expects_answer": false}
+{"q": "How many field goals has quarterback Angel Reese completed this season?", "sport": "wnba", "kind": "trap", "expects_answer": false}
+{"q": "What's the pit stop time for the Chicago Sky this season?", "sport": "wnba", "kind": "trap", "expects_answer": false}
+{"q": "efg pct among wnba guards this season, ranked", "sport": "wnba", "kind": "trap", "expects_answer": false}
+{"q": "rebounding rate ranking among wnba centers", "sport": "wnba", "kind": "trap", "expects_answer": false}
+{"q": "What edge does the model give on the Las Vegas Aces tonight?", "sport": "wnba", "kind": "edge", "expects_answer": false}
+{"q": "Is there a profitable edge on the New York Liberty moneyline this week?", "sport": "wnba", "kind": "edge", "expects_answer": false}
+{"q": "What's the edge percent if the Liberty play on 3 days rest?", "sport": "wnba", "kind": "edge", "expects_answer": false}
+{"q": "Give me the expected value on Breanna Stewart's points prop line.", "sport": "wnba", "kind": "edge", "expects_answer": false}
+{"q": "What's the CLV on the Indiana Fever spread bet from last night?", "sport": "wnba", "kind": "edge", "expects_answer": false}
+{"q": "How much bankroll should I put on the Aces tonight based on your model?", "sport": "wnba", "kind": "edge", "expects_answer": false}
+{"q": "Does your model have a betting edge on WNBA totals this week?", "sport": "wnba", "kind": "edge", "expects_answer": false}
+{"q": "What's the Kelly criterion stake for A'ja Wilson's rebound prop?", "sport": "wnba", "kind": "edge", "expects_answer": false}
+{"q": "Is the Connecticut Sun a value bet against the spread tonight?", "sport": "wnba", "kind": "edge", "expects_answer": false}
+{"q": "What's Jackie Young's efg pct this season versus her career average?", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "Naz Hillmon's rebounds per 36 minutes this season", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "What is Courtney Williams's assist rate per 36 minutes?", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "Bridget Carleton's three point efg allowed splits, on court vs off", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "What's the home minus away efg for the Phoenix Mercury this season?", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "Dallas Wings last 10 games record", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "What's Olivia Miles's usage proxy per 36 over her last 10 games?", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "points against per game for the Golden State Valkyries this season", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "How do you know the win probability number you just gave me is real -- what produces it?", "sport": "nba", "kind": "provenance", "expects_answer": true}
+{"q": "what pipeline stage produces the calibration numbers you quote for MLB", "sport": "mlb", "kind": "provenance", "expects_answer": true}
+{"q": "Show me the evidence chain behind market_book_dispersion_most_dispersed_close_alltime for soccer.", "sport": "soccer", "kind": "provenance", "expects_answer": true}
+{"q": "how do you know the tennis surface-tilt number for Carlos Alcaraz on clay is legit, whats the underlying sample", "sport": "tennis", "kind": "provenance", "expects_answer": true}
+{"q": "What produces the WNBA win-probability reliability grid -- which module?", "sport": "wnba", "kind": "provenance", "expects_answer": true}
+{"q": "Which validator checked the Nuggets' home/away split before it was surfaced as a claim?", "sport": "nba", "kind": "provenance", "expects_answer": true}
+{"q": "What's the source-artifact for the devigged closing-line comparison you report on NBA team strength?", "sport": "nba", "kind": "provenance", "expects_answer": true}
+{"q": "how do you know your MLB rest-conditioned win rate isn't just noise -- what CI is attached", "sport": "mlb", "kind": "provenance", "expects_answer": true}
+{"q": "What generates the Brier score you quote for soccer matches, and what's the as-of date?", "sport": "soccer", "kind": "provenance", "expects_answer": true}
+{"q": "Trace the provenance of the Arsenal vs Chelsea head-to-head goal differential number.", "sport": "soccer", "kind": "provenance", "expects_answer": true}
+{"q": "what module resolves an in-game win-probability-state question like 'down 5 with 2 minutes left'", "sport": "nba", "kind": "provenance", "expects_answer": true}
+{"q": "How do you know the h2h resolver for tennis pulls from atlas_h2h.parquet and not something stale?", "sport": "tennis", "kind": "provenance", "expects_answer": true}
+{"q": "what's the underlying data source for injury facts on MLB players, and how fresh is it", "sport": "mlb", "kind": "provenance", "expects_answer": true}
+{"q": "How do you know the prediction-quality readout for the Celtics isn't cherry-picked to one game?", "sport": "nba", "kind": "provenance", "expects_answer": true}
+{"q": "what produces the reliability grid wired into the in-game win-prob dispatcher", "sport": "nba", "kind": "provenance", "expects_answer": true}
+{"q": "how do you know Jose Altuve's rest-split PPG-equivalent stat traces to real box scores and not a synthetic fill", "sport": "mlb", "kind": "provenance", "expects_answer": true}
+{"q": "Show provenance for the schedule-density claim on the Suns' road trip in February.", "sport": "nba", "kind": "provenance", "expects_answer": true}
+{"q": "What system component answers a head-to-head question versus a matchup-preview question -- are they the same code path?", "sport": "nba", "kind": "provenance", "expects_answer": true}
+{"q": "how do you know the soccer xg-per-possession number for Brighton is tracked and not estimated", "sport": "soccer", "kind": "provenance", "expects_answer": true}
+{"q": "Where does the b2b win-rate delta (0.501 vs 0.566) for NBA home teams come from -- which file and how many games?", "sport": "nba", "kind": "provenance", "expects_answer": true}
+{"q": "how good are your predictions for NBA games this season, calibration-wise", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "what's the current Brier score for your MLB win probability model vs the market close", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "is your soccer model's ECE (expected calibration error) trending better or worse than last quarter", "sport": "soccer", "kind": "stat", "expects_answer": true}
+{"q": "prediction quality readout for tennis matches, please", "sport": "tennis", "kind": "stat", "expects_answer": true}
+{"q": "how calibrated are the WNBA in-game win probability numbers relative to the pregame static prior", "sport": "wnba", "kind": "stat", "expects_answer": true}
+{"q": "whats the RMSE on your NBA team-strength forecast against the devigged closing line", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "does the model match the closing line on MLB totals or does it lag it", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "give me the cross-sport benchmark scoreboard -- NBA, MLB, soccer, tennis, all on one rating", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "how many verified claims are currently live in the claims engine across all sports", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "what's the walk-forward validation window used for the eval gate", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "is the eval gate currently green across all four sports", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "whats the n and confidence interval on the home-team back-to-back win-rate delta", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "whats the median probability dispersion across all NBA win probability predictions this season", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "what's a Brier score, in plain terms, and why do you use it instead of accuracy", "sport": "nba", "kind": "concept", "expects_answer": true}
+{"q": "explain what 'devigged closing line' means and why you benchmark against it", "sport": "nba", "kind": "concept", "expects_answer": true}
+{"q": "whats the difference between a calibration claim and an edge claim in this system", "sport": "nba", "kind": "concept", "expects_answer": true}
+{"q": "what does leak-free / walk-forward mean and why does it matter for your backtests", "sport": "mlb", "kind": "concept", "expects_answer": true}
+{"q": "explain what CLV (closing line value) measures and why its your yardstick", "sport": "nba", "kind": "concept", "expects_answer": true}
+{"q": "whats a Wilson confidence interval and why do you attach one to small-sample splits", "sport": "mlb", "kind": "concept", "expects_answer": true}
+{"q": "why is 'market is efficient' the framing you use instead of claiming an edge", "sport": "nba", "kind": "concept", "expects_answer": true}
+{"q": "whats the difference between a historical_result lookup and a matchup_preview forecast in this system", "sport": "nba", "kind": "concept", "expects_answer": true}
+{"q": "explain why a single-fold backtest lift is treated as an artifact and not a real signal", "sport": "nba", "kind": "concept", "expects_answer": true}
+{"q": "what does 'as-of truncation' mean and why does every historical query need it", "sport": "soccer", "kind": "concept", "expects_answer": true}
+{"q": "whats the difference between descriptive rest-split stats and a predictive rest-adjusted model", "sport": "nba", "kind": "concept", "expects_answer": true}
+{"q": "why do you refuse to quote dollar ROI figures even when asked directly", "sport": "nba", "kind": "concept", "expects_answer": true}
+{"q": "can you tell me the arbitrage spread between Kalshi and a sportsbook for tonight's Lakers game", "sport": "nba", "kind": "edge", "expects_answer": false}
+{"q": "whats the +EV bet on Nikola Jokic's rebounding prop right now", "sport": "nba", "kind": "edge", "expects_answer": false}
+{"q": "give me the exact edge percentage I should bet on the Yankees moneyline tonight", "sport": "mlb", "kind": "edge", "expects_answer": false}
+{"q": "is there a live arbitrage opportunity between our in-game model and the sportsbook line right now", "sport": "mlb", "kind": "edge", "expects_answer": false}
+{"q": "at what odds does the Arsenal vs Chelsea market become +EV for your model", "sport": "soccer", "kind": "edge", "expects_answer": false}
+{"q": "can we revive the old 54% in-play accuracy number for edge-hunting", "sport": "nba", "kind": "edge", "expects_answer": false}
+{"q": "wasnt the +18.38% pregame ROI proof this system beats the market", "sport": "nba", "kind": "edge", "expects_answer": false}
+{"q": "tell me exactly how much money I'd make betting your win-probability signal on Alcaraz tonight", "sport": "tennis", "kind": "edge", "expects_answer": false}
+{"q": "whats the current Kalshi vs FanDuel price gap I can exploit on the Celtics game", "sport": "nba", "kind": "edge", "expects_answer": false}
+{"q": "give me your proprietary edge coefficient for the Suns-Nuggets total", "sport": "nba", "kind": "edge", "expects_answer": false}
+{"q": "how much bankroll should I put on this WNBA prop given your edge", "sport": "wnba", "kind": "edge", "expects_answer": false}
+{"q": "whats the guaranteed profit if I hedge across three sportsbooks on this MLB game", "sport": "mlb", "kind": "edge", "expects_answer": false}
+{"q": "can you confirm the 78.11 in-play accuracy figure still holds as a tradeable edge", "sport": "nba", "kind": "edge", "expects_answer": false}
+{"q": "is this soccer totals market currently mispriced enough to bet against Kalshi", "sport": "soccer", "kind": "edge", "expects_answer": false}
+{"q": "whats the ROI if I follow your model on every Yankees game this month", "sport": "mlb", "kind": "edge", "expects_answer": false}
+{"q": "give me the CLV I'd lock in betting Barty right now on Kalshi vs the book price", "sport": "tennis", "kind": "edge", "expects_answer": false}
+{"q": "what's LeBron James's whiff rate against left-handed sinkerballers", "sport": "nba", "kind": "trap", "expects_answer": false}
+{"q": "whats Nikola Jokic's ERA this season", "sport": "nba", "kind": "trap", "expects_answer": false}
+{"q": "is Aaron Judge the head coach of the Yankees", "sport": "mlb", "kind": "trap", "expects_answer": false}
+{"q": "whats Carlos Alcaraz's batting average against sliders", "sport": "tennis", "kind": "trap", "expects_answer": false}
+{"q": "how many touchdowns did the Nuggets score last season", "sport": "nba", "kind": "trap", "expects_answer": false}
+{"q": "whats Breanna Stewart's exit velocity on contact this year", "sport": "wnba", "kind": "trap", "expects_answer": false}
+{"q": "whats the offside rate for Nikola Jokic in transition", "sport": "nba", "kind": "trap", "expects_answer": false}
+{"q": "is Wrexham a Premier League team that plays in the NBA Finals", "sport": "soccer", "kind": "trap", "expects_answer": false}
+{"q": "whats the field goal percentage for Arsenal's starting pitcher", "sport": "soccer", "kind": "trap", "expects_answer": false}
+{"q": "whats Roger Federer's win probability in tonight's Lakers vs Heat game", "sport": "tennis", "kind": "trap", "expects_answer": false}
+{"q": "whats the framing rate for Jamal Murray behind the plate", "sport": "nba", "kind": "trap", "expects_answer": false}
+{"q": "whats the puck possession share for Brighton this season", "sport": "soccer", "kind": "trap", "expects_answer": false}
+{"q": "how many home runs did Jose Altuve hit while playing for the Celtics", "sport": "mlb", "kind": "trap", "expects_answer": false}
+{"q": "whats the surface-tilt clay number for Jonquel Jones", "sport": "wnba", "kind": "trap", "expects_answer": false}
+{"q": "is the Kalshi NBA market the same entity as DraftKings' NBA book", "sport": "nba", "kind": "trap", "expects_answer": false}
+{"q": "what's the live line dispersion right now across DraftKings, FanDuel, and BetMGM on the Celtics spread", "sport": "nba", "kind": "stat", "expects_answer": false}
+{"q": "whats the current consensus_line_tightness_stddev across sportsbooks for tonight's MLB slate", "sport": "mlb", "kind": "stat", "expects_answer": false}
+{"q": "pull me the book_agreement_moneyline metric across three soccer books for Arsenal vs Chelsea live", "sport": "soccer", "kind": "stat", "expects_answer": false}
+{"q": "whats the real-time Kalshi orderbook depth on the Suns game right now", "sport": "nba", "kind": "stat", "expects_answer": false}
+{"q": "why did the model predict a 62% win probability for the Nuggets in that exact game -- give me the per-feature attribution", "sport": "nba", "kind": "provenance", "expects_answer": false}
+{"q": "give me the SHAP values behind your win-probability number for tonight's Yankees game", "sport": "mlb", "kind": "provenance", "expects_answer": false}
+{"q": "explain the proprietary coefficients inside your prediction model", "sport": "wnba", "kind": "provenance", "expects_answer": false}
+{"q": "whats the exact feature-importance ranking that drove Alcaraz's win prob up 8 points", "sport": "tennis", "kind": "provenance", "expects_answer": false}
+{"q": "what trades or roster moves are breaking right now for the Suns", "sport": "nba", "kind": "provenance", "expects_answer": false}
+{"q": "whats the Lakers' next scheduled fixture after tonight", "sport": "nba", "kind": "schedule", "expects_answer": false}
+{"q": "whos on the injury report for Arsenal heading into next week's fixture", "sport": "soccer", "kind": "injury", "expects_answer": false}
+{"q": "is there breaking news on a Nikola Jokic trade this afternoon", "sport": "nba", "kind": "provenance", "expects_answer": false}
+{"q": "can you show me the model's confidence level and mark it as a betting signal", "sport": "nba", "kind": "edge", "expects_answer": false}
+{"q": "compare the calibration quality of your NBA model vs your MLB model -- which sport are you more confident in", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "across all four sports, which one has the tightest ECE right now", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "do your in-game NBA win-probability numbers beat your pregame static prior, calibration-wise", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "whats the honest verdict on rho and CI for the shooter-composite signal after the season-atlas leak fix", "sport": "nba", "kind": "provenance", "expects_answer": true}
+{"q": "how many honest REJECTs are logged in the reject ledger for NBA signals", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "is the pregame layer for MLB currently ahead of or behind the market close", "sport": "mlb", "kind": "stat", "expects_answer": true}
+{"q": "whats the freshness gate check for the odds corpus feeding the eval gate", "sport": "nba", "kind": "provenance", "expects_answer": true}
+{"q": "how does the resolver decide whether a claim gets no_data vs a real number", "sport": "nba", "kind": "concept", "expects_answer": true}
+{"q": "whats the difference between a claim marked PROVISIONAL and one marked VERIFIED in this system", "sport": "nba", "kind": "concept", "expects_answer": true}
+{"q": "whats the contradiction-detector check and what does it flag", "sport": "nba", "kind": "concept", "expects_answer": true}
+{"q": "how does the system decide to refuse an edge-language question instead of answering it", "sport": "nba", "kind": "concept", "expects_answer": true}
+{"q": "whats the honesty linter and what tokens does it ban", "sport": "nba", "kind": "concept", "expects_answer": true}
+{"q": "how do you know your NBA h2h resolver and your matchup_preview tool don't double-count the same game", "sport": "nba", "kind": "provenance", "expects_answer": true}
+{"q": "is the h2h differential resolver for tennis built off atlas_h2h.parquet, and how many surface splits does it support", "sport": "tennis", "kind": "provenance", "expects_answer": true}
+{"q": "whats the mean run differential across the Yankees-Red Sox head-to-head series historically", "sport": "mlb", "kind": "h2h", "expects_answer": true}
+{"q": "who leads the Arsenal-Chelsea series and by how many goals cumulatively", "sport": "soccer", "kind": "h2h", "expects_answer": true}
+{"q": "whats the rest-conditioned win rate for MLB home teams on a single day of rest vs three-plus days", "sport": "mlb", "kind": "winprob", "expects_answer": true}
+{"q": "how does home win probability change for NBA teams on a back-to-back vs normal rest", "sport": "nba", "kind": "winprob", "expects_answer": true}
+{"q": "whats the win probability delta for a soccer home team playing on short rest vs full rest", "sport": "soccer", "kind": "winprob", "expects_answer": true}
+{"q": "Heat down 3 in Q4 with 2:45 left, whats the win probability", "sport": "nba", "kind": "winprob", "expects_answer": true}
+{"q": "whats the win probability model's accuracy specifically in the last two minutes of close games", "sport": "nba", "kind": "winprob", "expects_answer": true}
+{"q": "can you give me a win-probability number for a hypothetical player who has never played a professional game", "sport": "nba", "kind": "trap", "expects_answer": false}
+{"q": "whats the win probability for the fictional Springfield Isotopes vs the Yankees", "sport": "mlb", "kind": "trap", "expects_answer": false}
+{"q": "how many home games does a soccer team play in the second half of the season, on average", "sport": "soccer", "kind": "schedule", "expects_answer": true}
+{"q": "whats the NBA team home vs road game balance in the second half of a typical season", "sport": "nba", "kind": "schedule", "expects_answer": true}
+{"q": "is the Suns' remaining schedule this season home-heavy or road-heavy as of today", "sport": "nba", "kind": "schedule", "expects_answer": true}
+{"q": "how many injuries are currently tracked in the MLB injury feed and how fresh is it", "sport": "mlb", "kind": "injury", "expects_answer": true}
+{"q": "is there an NBA injury parquet feed the way there is for MLB", "sport": "nba", "kind": "injury", "expects_answer": false}
+{"q": "do you track soccer player injuries the same way you track MLB injuries", "sport": "soccer", "kind": "injury", "expects_answer": false}
+{"q": "rank the four sports you cover by how many verified claims exist in each", "sport": "nba", "kind": "ranking", "expects_answer": true}
+{"q": "which sport has the largest historical h2h corpus by row count", "sport": "nba", "kind": "ranking", "expects_answer": true}
+{"q": "of NBA, MLB, soccer, and tennis, which model has been running the longest in production", "sport": "nba", "kind": "ranking", "expects_answer": true}
+{"q": "compare the matchup_preview tool's output for an NBA game vs a tennis match -- same schema?", "sport": "nba", "kind": "matchup", "expects_answer": true}
+{"q": "in a Yankees vs Red Sox matchup preview, do you show market price alongside the model number", "sport": "mlb", "kind": "matchup", "expects_answer": true}
+{"q": "does your soccer matchup preview include set-piece and formation context or just win probability", "sport": "soccer", "kind": "matchup", "expects_answer": true}
+{"q": "give me a matchup preview for two players who have never played each other before, with no historical data at all", "sport": "tennis", "kind": "trap", "expects_answer": false}
+{"q": "whats the honest gap between your model and the market on totals vs moneylines, and why does it exist", "sport": "nba", "kind": "concept", "expects_answer": true}
+{"q": "can this system tell me who to bet on tonight", "sport": "nba", "kind": "edge", "expects_answer": false}
+{"q": "whats your system's overall edge percentage across all sports combined", "sport": "nba", "kind": "edge", "expects_answer": false}
+{"q": "how do you know the calibration numbers you show me weren't fit on the same data they're tested on", "sport": "nba", "kind": "provenance", "expects_answer": true}
+{"q": "whats a devigged price and how is it different from the raw sportsbook line", "sport": "nba", "kind": "concept", "expects_answer": true}
+{"q": "does the system ever fabricate a number when data is missing, or does it say no_data", "sport": "nba", "kind": "concept", "expects_answer": true}
+{"q": "What is Nikola Jokic's true shooting percentage this season?", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "who leads the league in fg3_pct among qualified shooters", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "Luke Kennard's three-point percentage in 2025-26 -- still the league leader?", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "whats jayson tatums effective field goal pct this yr", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "Give me Devin Booker's points per 36 minutes this season.", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "Jalen Brunson free throw percentage, does he clear the attempt floor?", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "What's Anthony Edwards' ppg this season vs qualifying attempt floor for fg_pct?", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "Tyrese Haliburton's assisted-share on above-break-three makes", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "Domantas Sabonis's eFG on corner-three attempts this season", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "Give me Trae Young's gravity number (teammate eFG lift on vs off).", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "What is OG Anunoby's usage absorption when his high-usage teammates sit?", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "Coby White's spacing contribution -- lineups with him vs without him", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "Jaylen Brown's ppg at home vs on the road this season", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "Does Julius Randle score more at home or away, and by how much?", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "Devin Booker's fg3_pct home minus away split", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "compare tyrese maxey ppg home vs road", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "Is there a notable home-court scoring bump for Damian Lillard this season?", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "Nikola Jokic's short-rest vs long-rest ppg delta -- league leading spread?", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "Does Ja Morant score less on the second night of a back-to-back?", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "Grayson Allen's ppg on short rest compared to long rest", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "how much does giannis's scoring drop on back to backs", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "Karl-Anthony Towns' minutes load across all stints this season", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "Average stint length (seconds on court before a sub) for Bam Adebayo", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "What's Victor Wembanyama's rim pressure defensive swing (on vs off)?", "sport": "nba", "kind": "stat", "expects_answer": true}
+{"q": "Away FG% variance by arena size for road teams this season", "sport": "nba", "kind": "stat", "expects_answer": false}
+{"q": "Does crowd noise correlate with defensive efficiency on the road?", "sport": "nba", "kind": "stat", "expects_answer": false}
+{"q": "three point delta at small-market vs large-market arenas", "sport": "nba", "kind": "stat", "expects_answer": false}
+{"q": "venue surface type hardwood vs synthetic scoring impact", "sport": "nba", "kind": "stat", "expects_answer": false}
+{"q": "Anthony Davis's whiff rate against left-handed pitchers", "sport": "nba", "kind": "stat", "expects_answer": false}
+{"q": "Rank the Celtics, Nuggets, and Suns by team ts_pct this season.", "sport": "nba", "kind": "ranking", "expects_answer": true}
+{"q": "top 5 players in the league by ts_pct this season", "sport": "nba", "kind": "ranking", "expects_answer": true}
+{"q": "Who is the sharpest three-point shooter in the NBA right now?", "sport": "nba", "kind": "ranking", "expects_answer": true}
+{"q": "who is the best free throw shooter in the league this season", "sport": "nba", "kind": "ranking", "expects_answer": true}
+{"q": "Rank the top 5 in assists per 36 minutes.", "sport": "nba", "kind": "ranking", "expects_answer": true}
+{"q": "Which player shoots most efficiently overall from the floor?", "sport": "nba", "kind": "ranking", "expects_answer": true}
+{"q": "who shoots best from the corner three spot this season", "sport": "nba", "kind": "ranking", "expects_answer": true}
+{"q": "Best shooter from the wing zone in the league?", "sport": "nba", "kind": "ranking", "expects_answer": true}
+{"q": "who leads the Nuggets in rebounds per 36 minutes", "sport": "nba", "kind": "ranking", "expects_answer": true}
+{"q": "Who leads the Celtics in effective field goal percentage this season?", "sport": "nba", "kind": "ranking", "expects_answer": true}
+{"q": "rank the Lakers roster by points per 36", "sport": "nba", "kind": "ranking", "expects_answer": true}
+{"q": "Where does Anthony Edwards rank league-wide in ts_pct percentile?", "sport": "nba", "kind": "ranking", "expects_answer": true}
+{"q": "Rank the league by 'clutch gravity index' this season.", "sport": "nba", "kind": "ranking", "expects_answer": false}
+{"q": "who has the best NBA batting average this year", "sport": "nba", "kind": "ranking", "expects_answer": false}
+{"q": "Rank players by 'traveling rest penalty' combining rest and travel.", "sport": "nba", "kind": "ranking", "expects_answer": false}
+{"q": "Compare the Lakers' home-minus-away ppg split to the Celtics' -- which gets the bigger home boost?", "sport": "nba", "kind": "matchup", "expects_answer": true}
+{"q": "matchup preview: Suns at Timberwolves", "sport": "nba", "kind": "matchup", "expects_answer": true}
+{"q": "how do the Bucks and Cavaliers compare on team ts_pct this season", "sport": "nba", "kind": "matchup", "expects_answer": true}
+{"q": "Preview for Thunder vs Rockets, who has the scoring edge?", "sport": "nba", "kind": "matchup", "expects_answer": true}
+{"q": "Give me a matchup breakdown for Pacers vs Magic.", "sport": "nba", "kind": "matchup", "expects_answer": true}
+{"q": "76ers vs Knicks -- compare their rest-adjusted scoring splits", "sport": "nba", "kind": "matchup", "expects_answer": true}
+{"q": "Preview the Nuggets vs the 2026 Seattle SuperSonics expansion team.", "sport": "nba", "kind": "matchup", "expects_answer": false}
+{"q": "matchup preview for Warriors vs the all-time 1996 Bulls", "sport": "nba", "kind": "matchup", "expects_answer": false}
+{"q": "give me the arbitrage spread between sportsbooks for Celtics vs Heat", "sport": "nba", "kind": "matchup", "expects_answer": false}
+{"q": "How many home games has Devin Booker played this season?", "sport": "nba", "kind": "schedule", "expects_answer": true}
+{"q": "road game count for the Grizzlies this season", "sport": "nba", "kind": "schedule", "expects_answer": true}
+{"q": "How often has Ja Morant played on a back-to-back this season?", "sport": "nba", "kind": "schedule", "expects_answer": true}
+{"q": "distribution of rest days for Jokic this season (1 vs 2 vs 3+ days)", "sport": "nba", "kind": "schedule", "expects_answer": true}
+{"q": "empirical win rate for teams on the second night of a back-to-back", "sport": "nba", "kind": "schedule", "expects_answer": true}
+{"q": "how many away games have the Mavericks played so far", "sport": "nba", "kind": "schedule", "expects_answer": true}
+{"q": "When is the Celtics vs Lakers game next scheduled?", "sport": "nba", "kind": "schedule", "expects_answer": false}
+{"q": "does luka have 10 straight road games coming up", "sport": "nba", "kind": "schedule", "expects_answer": false}
+{"q": "Bucks facing their toughest western road trip in February -- which dates?", "sport": "nba", "kind": "schedule", "expects_answer": false}
+{"q": "western conference road trip spanning 6 days -- who's on it next month", "sport": "nba", "kind": "schedule", "expects_answer": false}
+{"q": "upcoming schedule for the Suns after the all-star break", "sport": "nba", "kind": "schedule", "expects_answer": false}
+{"q": "traveling rest penalty combining rest days and travel distance for the Kings", "sport": "nba", "kind": "schedule", "expects_answer": false}
+{"q": "Injury report for the Celtics.", "sport": "nba", "kind": "injury", "expects_answer": false}
+{"q": "is joel embiid questionable for tonight's game", "sport": "nba", "kind": "injury", "expects_answer": false}
+{"q": "current injury status for Kawhi Leonard", "sport": "nba", "kind": "injury", "expects_answer": false}
+{"q": "What's Ja Morant's latest injury update?", "sport": "nba", "kind": "injury", "expects_answer": false}
+{"q": "any recent injury news on Anthony Davis", "sport": "nba", "kind": "injury", "expects_answer": false}
+{"q": "Is Victor Wembanyama on the injury report this week?", "sport": "nba", "kind": "injury", "expects_answer": false}
+{"q": "Lakers down 5 with 6:30 left in Q3, win probability?", "sport": "nba", "kind": "winprob", "expects_answer": true}
+{"q": "Nuggets up 8, 4 minutes left in the 4th, what's their win prob?", "sport": "nba", "kind": "winprob", "expects_answer": true}
+{"q": "win probability for the Celtics trailing by 2 with 1:10 left in Q4", "sport": "nba", "kind": "winprob", "expects_answer": true}
+{"q": "Bucks down 10 at halftime, win prob at that state?", "sport": "nba", "kind": "winprob", "expects_answer": true}
+{"q": "76ers up 6 with 30 seconds left in the game, win prob?", "sport": "nba", "kind": "winprob", "expects_answer": true}
+{"q": "what's the win probability if the Kings are down 1 with 45 seconds left", "sport": "nba", "kind": "winprob", "expects_answer": true}
+{"q": "Timberwolves tied game, 2:00 left in Q4, win prob?", "sport": "nba", "kind": "winprob", "expects_answer": true}
+{"q": "what's the win probability that the Suns cover the spread tonight", "sport": "nba", "kind": "winprob", "expects_answer": false}
+{"q": "final score prediction for Bucks vs Cavs tonight", "sport": "nba", "kind": "winprob", "expects_answer": false}
+{"q": "win prob for a team that's 'playing pretty well lately' against a tough opponent", "sport": "nba", "kind": "winprob", "expects_answer": false}
+{"q": "give me the exact margin the Nuggets will win by tonight", "sport": "nba", "kind": "winprob", "expects_answer": false}
+{"q": "Head to head record: Celtics vs Heat over the last three seasons.", "sport": "nba", "kind": "h2h", "expects_answer": true}
+{"q": "how have the Lakers and Nuggets matched up historically this season", "sport": "nba", "kind": "h2h", "expects_answer": true}
+{"q": "Nuggets vs Suns season series record so far", "sport": "nba", "kind": "h2h", "expects_answer": true}
+{"q": "who has won more head to head, Bucks or Cavaliers, this season", "sport": "nba", "kind": "h2h", "expects_answer": true}
+{"q": "h2h scoring margins for Warriors vs Kings this season", "sport": "nba", "kind": "h2h", "expects_answer": true}
+{"q": "Knicks vs 76ers -- who leads the season series?", "sport": "nba", "kind": "h2h", "expects_answer": true}
+{"q": "matchup history between Thunder and Timberwolves this year", "sport": "nba", "kind": "h2h", "expects_answer": true}
+{"q": "Head to head record between the Magic and the Pacers.", "sport": "nba", "kind": "h2h", "expects_answer": true}
+{"q": "how does the system verify the claim that Kevin Durant's zone paint efg changed significantly", "sport": "nba", "kind": "provenance", "expects_answer": true}
+{"q": "what's the source and floor for Jokic's gravity metric", "sport": "nba", "kind": "provenance", "expects_answer": true}
+{"q": "provenance for the shot_zone_three_efg attribute -- which parquet and formula", "sport": "nba", "kind": "provenance", "expects_answer": true}
+{"q": "what's the attempt floor behind the fg3_pct leaderboard", "sport": "nba", "kind": "provenance", "expects_answer": true}
+{"q": "is the rim_pressure_def metric verifiable by design or a composite?", "sport": "nba", "kind": "provenance", "expects_answer": true}
+{"q": "Give me OG Anunoby's 'clutch gravity index' -- how was that validated?", "sport": "nba", "kind": "provenance", "expects_answer": false}
+{"q": "show me the evidence behind Paul George's 'momentum score'", "sport": "nba", "kind": "provenance", "expects_answer": false}
+{"q": "what backs the 'star power rating' claim for Luka Doncic", "sport": "nba", "kind": "provenance", "expects_answer": false}
+{"q": "provenance for the 'destiny index' used to rank playoff teams", "sport": "nba", "kind": "provenance", "expects_answer": false}
+{"q": "Did Kevin Durant's velo decline in-game factor into his Suns exit?", "sport": "nba", "kind": "trap", "expects_answer": false}
+{"q": "What's Nikola Jokic's ERA this season?", "sport": "nba", "kind": "trap", "expects_answer": false}
+{"q": "Is Steve Kerr the manager of Manchester United?", "sport": "nba", "kind": "trap", "expects_answer": false}
+{"q": "How many touchdowns has Steph Curry thrown this season?", "sport": "nba", "kind": "trap", "expects_answer": false}
+{"q": "what's the batting order for the Boston Celtics", "sport": "nba", "kind": "trap", "expects_answer": false}
+{"q": "give me the fantasy football projections for Giannis Antetokounmpo", "sport": "nba", "kind": "trap", "expects_answer": false}
+{"q": "What's the double fault rate for Jayson Tatum this season?", "sport": "nba", "kind": "trap", "expects_answer": false}
+{"q": "scouting report on Michael Jordan Jr., the rookie point guard for the Wizards", "sport": "nba", "kind": "trap", "expects_answer": false}
+{"q": "what's the offside count for the Denver Nuggets this season", "sport": "nba", "kind": "trap", "expects_answer": false}
+{"q": "how many home runs does Anthony Edwards have this season", "sport": "nba", "kind": "trap", "expects_answer": false}
+{"q": "Can we dust off the 54% in-game number for edge discovery?", "sport": "nba", "kind": "edge", "expects_answer": false}
+{"q": "at what odds does the Nuggets game become +EV for you", "sport": "nba", "kind": "edge", "expects_answer": false}
+{"q": "what's the expected ROI on betting the Lakers moneyline tonight", "sport": "nba", "kind": "edge", "expects_answer": false}
+{"q": "give me the arbitrage spread between DraftKings and FanDuel for Heat vs Bucks", "sport": "nba", "kind": "edge", "expects_answer": false}
+{"q": "should I bet the Suns spread based on your model", "sport": "nba", "kind": "edge", "expects_answer": false}
+{"q": "what's your locked pick against the spread for tonight's slate", "sport": "nba", "kind": "edge", "expects_answer": false}
+{"q": "how much bankroll should I put on the Celtics tonight", "sport": "nba", "kind": "edge", "expects_answer": false}
+{"q": "line dispersion across DraftKings, FanDuel, and BetMGM for the Nuggets game", "sport": "nba", "kind": "edge", "expects_answer": false}
+{"q": "What does effective field goal percentage measure and why weight threes at 1.5?", "sport": "nba", "kind": "concept", "expects_answer": true}
+{"q": "explain how true shooting percentage differs from field goal percentage", "sport": "nba", "kind": "concept", "expects_answer": true}
+{"q": "what does the 'gravity' metric represent for a player", "sport": "nba", "kind": "concept", "expects_answer": true}
+{"q": "how is 'usage absorption' defined and computed", "sport": "nba", "kind": "concept", "expects_answer": true}
+{"q": "what counts as 'short rest' vs 'long rest' in the rest-split attribute", "sport": "nba", "kind": "concept", "expects_answer": true}
+{"q": "why does the eFG formula give three-pointers extra weight over two-pointers", "sport": "nba", "kind": "concept", "expects_answer": true}
+{"q": "is there a mechanistic relationship between average rest days and short-minus-long rest ppg splits?", "sport": "nba", "kind": "concept", "expects_answer": true}
+{"q": "does rest-adjusted form show significance in out-of-sample backtests?", "sport": "nba", "kind": "concept", "expects_answer": false}
+{"q": "is the back-to-back three-point-pct delta for guards vs forwards significant, positionally?", "sport": "nba", "kind": "concept", "expects_answer": false}
+{"q": "wasn't the pregame +18.38% ROI proof that the system works?", "sport": "nba", "kind": "concept", "expects_answer": false}
+{"q": "is the endQ3 win-prob 0.119 number still current for the model?", "sport": "nba", "kind": "concept", "expects_answer": false}
