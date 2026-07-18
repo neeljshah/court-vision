@@ -286,6 +286,27 @@ _METRIC_SYNONYMS: dict[str, str] = {
     "home away split": "home_minus_away_hr_rate",
     "batter rest split": "rest_minus_b2b_hr_rate",
     "days rest split": "rest_minus_b2b_hr_rate",
+    # --- wnba/tennis parity (2026-07-18) ---
+    # tennis_h2h_claims (h2h_win_share) + tennis_claims_v3 return family
+    # (return_won_asof, break_pct_asof) -- both VERIFIED, indexed stores with
+    # zero NL alias today (build spec's "resolver-reach" fix: unlocks h2h +
+    # return-metric + break-point-conversion fail categories with zero new
+    # data). Surface-context aliases already existed above this block.
+    "head to head": "h2h_win_share",
+    "head-to-head": "h2h_win_share",
+    "h2h record": "h2h_win_share",
+    "h2h win rate": "h2h_win_share",
+    "head to head record": "h2h_win_share",
+    "return points won": "return_won_asof",
+    "return win percentage": "return_won_asof",
+    "return win pct": "return_won_asof",
+    "best returner": "return_won_asof",
+    "returner quality": "return_won_asof",
+    "break point conversion": "break_pct_asof",
+    "break points converted": "break_pct_asof",
+    "break point conversion rate": "break_pct_asof",
+    "break percentage": "break_pct_asof",
+    "break pct": "break_pct_asof",
 }
 
 # Shooter-composite family (2026-07-19): "best shooters"/"top shooters"/

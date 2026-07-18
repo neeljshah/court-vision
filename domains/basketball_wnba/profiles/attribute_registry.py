@@ -263,9 +263,103 @@ ATTRIBUTES: dict[str, dict[str, Any]] = {
         "weight_ledger_family": "descriptive",
         "source_files": ["data/cache/team_system/lineups/stints_wnba_2026.parquet"],
     },
+    # -------------------------------------------------- player: rest split
+    # 2026-07-18 build spec (wnba_schedule_rest): short-rest (<=2d) vs
+    # long-rest (>=3d) per-36/efg delta. n=min(n_short,n_long) compound floor
+    # idiom (see ingredients_schedule_rest.py docstring HONESTY FLAG -- most
+    # players fail this floor by design, an honest evidenced refusal).
+    "rest_split_pts_per36": {
+        "description": "Points per 36 minutes on <=2 days rest minus on >=3 days rest (positive = performs "
+                        "better on short rest). Bootstrap CI95 on the delta lives in ingredients.delta_ci95.",
+        "entity": "player", "ingredients": ["short_rest_value", "long_rest_value", "n_short", "n_long"],
+        "formula": "pts_per36(rest<=2) - pts_per36(rest>=3)", "status": "DESCRIPTIVE", "floor": 5,
+        "weight_ledger_family": "descriptive", "source_files": _BOXSCORE_SRC,
+    },
+    "rest_split_efg": {
+        "description": "Effective FG% on <=2 days rest minus on >=3 days rest (positive = shoots better on "
+                        "short rest). Bootstrap CI95 on the delta lives in ingredients.delta_ci95.",
+        "entity": "player", "ingredients": ["short_rest_value", "long_rest_value", "n_short", "n_long"],
+        "formula": "efg(rest<=2) - efg(rest>=3)", "status": "DESCRIPTIVE", "floor": 5,
+        "weight_ledger_family": "descriptive", "source_files": _BOXSCORE_SRC,
+    },
+    # ---------------------------------------------------- team: schedule/rest
+    # 2026-07-18 build spec: derived from boxscore team_id's own distinct
+    # (team_id, game_date) sequence -- entity_name falls back to str(team_id)
+    # (no id->name map on disk for this namespace, see module docstring).
+    "avg_rest_days": {
+        "description": "Mean days of rest between this team's consecutive games this season.",
+        "entity": "team", "ingredients": ["b2b_count", "games_with_known_rest"],
+        "formula": "mean(rest_days)", "status": "DESCRIPTIVE", "floor": 10,
+        "weight_ledger_family": "descriptive", "source_files": _BOXSCORE_SRC,
+    },
+    "b2b_rate": {
+        "description": "Share of this team's games played on <=1 day of rest (true back-to-backs).",
+        "entity": "team", "ingredients": ["b2b_count", "games_with_known_rest"],
+        "formula": "mean(rest_days<=1)", "status": "DESCRIPTIVE", "floor": 10,
+        "weight_ledger_family": "descriptive", "source_files": _BOXSCORE_SRC,
+    },
+    "short_rest_rate": {
+        "description": "Share of this team's games played on <=2 days of rest.",
+        "entity": "team", "ingredients": ["b2b_count", "games_with_known_rest"],
+        "formula": "mean(rest_days<=2)", "status": "DESCRIPTIVE", "floor": 10,
+        "weight_ledger_family": "descriptive", "source_files": _BOXSCORE_SRC,
+    },
+    # ---------------------------------------------------------- team: form
+    # 2026-07-18 build spec (wnba_team_form), off espn_scoreboard.parquet
+    # (season=='2026' only -- see ingredients_team_form.py docstring for why
+    # multi-season pooling was declined). entity_id/name = team full name
+    # string, a DIFFERENT namespace than the schedule-rest team attributes above.
+    **{
+        _name: {
+            "description": _desc, "entity": "team", "ingredients": _ingredients,
+            "formula": _formula, "status": "DESCRIPTIVE", "floor": 10,
+            "weight_ledger_family": "descriptive",
+            "source_files": ["data/domains/wnba/espn_scoreboard.parquet"],
+        }
+        for _name, _desc, _formula, _ingredients in [
+            ("win_pct", "Season win percentage (all games).", "mean(win)", ["wins", "games"]),
+            ("home_win_pct", "Win percentage in home games only.", "mean(win | is_home)",
+             ["wins_home", "games_home"]),
+            ("away_win_pct", "Win percentage in away games only.", "mean(win | ~is_home)",
+             ["wins_away", "games_away"]),
+            ("home_ppg", "Points scored per game, home games only.", "mean(pts_for | is_home)",
+             ["pts_for", "games_home"]),
+            ("away_ppg", "Points scored per game, away games only.", "mean(pts_for | ~is_home)",
+             ["pts_for", "games_away"]),
+            ("home_away_ppg_diff", "Home PPG minus away PPG (home-court scoring advantage).",
+             "home_ppg - away_ppg", ["home_ppg", "away_ppg"]),
+            ("points_for_pg", "Points scored per game, full season.", "mean(pts_for)", ["pts_for", "games"]),
+            ("points_against_pg", "Points allowed per game, full season.", "mean(pts_against)",
+             ["pts_against", "games"]),
+            ("net_ppg", "Net points per game (pts_for - pts_against), full season.",
+             "mean(pts_for - pts_against)", ["pts_for", "pts_against"]),
+            ("last10_win_pct", "Win percentage over the last 10 games played (by date).",
+             "mean(win) over last 10 games", ["win", "games_in_window"]),
+        ]
+    },
+    # ------------------------------------------------- player: home/away split
+    # 2026-07-18 build spec (wnba_player_home_away), off player_boxscores'
+    # own is_home column. Compound floor n=min(home_games,away_games)>=8.
+    **{
+        _name: {
+            "description": _desc, "entity": "player", "ingredients": [f"home_{_metric}", f"away_{_metric}",
+                                                                        "n_home", "n_away"],
+            "formula": _formula, "status": "DESCRIPTIVE", "floor": 8,
+            "weight_ledger_family": "descriptive", "source_files": _BOXSCORE_SRC,
+        }
+        for _name, _metric, _desc, _formula in [
+            ("home_pts_per36", "pts_per36", "Points per 36 minutes, home games only.", "36*sum(pts)/sum(minutes)"),
+            ("away_pts_per36", "pts_per36", "Points per 36 minutes, away games only.", "36*sum(pts)/sum(minutes)"),
+            ("home_efg", "efg", "Effective FG%, home games only.", "(sum(fgm)+0.5*sum(fg3m))/sum(fga)"),
+            ("away_efg", "efg", "Effective FG%, away games only.", "(sum(fgm)+0.5*sum(fg3m))/sum(fga)"),
+            ("home_away_pts_per36_diff", "pts_per36", "Home pts/36 minus away pts/36.",
+             "home_pts_per36 - away_pts_per36"),
+            ("home_away_efg_diff", "efg", "Home eFG% minus away eFG%.", "home_efg - away_efg"),
+        ]
+    },
 }
 
-ENTITIES = ("player", "lineup")
+ENTITIES = ("player", "lineup", "team")
 STATUSES = ("VALIDATED_CLAIM", "DESCRIPTIVE")
 
 
