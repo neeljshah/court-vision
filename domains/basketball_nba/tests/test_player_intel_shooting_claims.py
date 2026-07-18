@@ -45,6 +45,70 @@ def _synthetic_two_season_df():
     return pd.DataFrame(rows)
 
 
+def _synthetic_mismatch_repro_df():
+    """Frame reproducing the real-data MISMATCH defect: player 1 appears
+    under TWO name spellings for the SAME player_id (diacritic variant) with
+    a 1-game hot splinter, plus a genuine 1-game player 3. The old
+    (player_id, player_name) grouping split player 1, letting the splinter
+    pass the per-game rate floor with n=1 and top the eFG ranking the
+    validator (grouping by player_id alone) then MISMATCHed."""
+    rows = []
+    # player 1: 20 ordinary games as "Kristaps Porzingis" + 1 hot game under
+    # the accented spelling (escapes keep this source file ASCII-only) --
+    # same player_id.
+    for gi, d in enumerate(pd.date_range("2025-10-21", periods=20, freq="2D")):
+        rows.append({"game_id": f"g{gi}", "date": d, "season": "2025-26",
+                     "player_id": 1, "player_name": "Kristaps Porzingis",
+                     "fgm": 4, "fga": 10, "fg3m": 1, "fg3a": 4, "ftm": 2, "fta": 2, "pts": 11})
+    rows.append({"game_id": "g_hot", "date": pd.Timestamp("2025-12-01"), "season": "2025-26",
+                 "player_id": 1, "player_name": "Kristaps Porzi\u0146\u0123is",
+                 "fgm": 8, "fga": 10, "fg3m": 4, "fg3a": 5, "ftm": 0, "fta": 0, "pts": 20})
+    # player 2: 21 steady, efficient games -- the honest rank-1.
+    for gi, d in enumerate(pd.date_range("2025-10-22", periods=21, freq="2D")):
+        rows.append({"game_id": f"h{gi}", "date": d, "season": "2025-26",
+                     "player_id": 2, "player_name": "Jarrett Allen",
+                     "fgm": 7, "fga": 10, "fg3m": 0, "fg3a": 1, "ftm": 3, "fta": 4, "pts": 17})
+    # player 3: a GENUINE 1-game player, perfect shooting, fga_pg=10>=5 --
+    # must be excluded by the declared games floor, in both lanes.
+    rows.append({"game_id": "z1", "date": pd.Timestamp("2025-11-01"), "season": "2025-26",
+                 "player_id": 3, "player_name": "Ten Day Contract",
+                 "fgm": 10, "fga": 10, "fg3m": 5, "fg3a": 5, "ftm": 0, "fta": 0, "pts": 25})
+    return pd.DataFrame(rows)
+
+
+def test_emission_matches_validator_recompute_name_split_and_one_game(tmp_path, monkeypatch):
+    """Regression for the real-data MISMATCH (claimed 204001 n=1 vs
+    recomputed 1628386 n=82): the emitted season eFG ranking must be
+    IDENTICAL to claims_validator's independent recompute of the claim's own
+    declared criteria, including for a name-split player_id and a genuine
+    1-game player."""
+    from scripts.platformkit.intel_validation.claims_validator import validate_claim
+
+    df = _synthetic_mismatch_repro_df()
+    box_path = tmp_path / "player_boxscores.parquet"
+    df.to_parquet(box_path)
+    monkeypatch.setattr(
+        "scripts.platformkit.intel_validation.claims_validator.REPO_ROOT", tmp_path,
+    )
+
+    claims = build_claims(df, "season_2025-26", top_n=10)
+    efg = [c for c in claims if c["criteria"]["metric"] == "efg_pct"][0]
+
+    # name-split player 1 is ONE entity: merged 21 games, not a 1-game splinter
+    ranked = {r["player_id"]: r for r in efg["ranking"]}
+    assert 1 in ranked and ranked[1]["n"] == 21
+    # genuine 1-game player 3 excluded by the DECLARED games floor
+    assert 3 not in ranked
+    assert efg["criteria"]["min_sample"]["games"] == 20
+    # steady efficient player 2 is rank 1 (0.70 eFG beats player 1's merged eFG)
+    assert efg["ranking"][0]["player_id"] == 2
+
+    # end-to-end: the validator's independent recompute agrees -> VERIFIED
+    efg["source_files"] = ["player_boxscores.parquet"]
+    verdict = validate_claim(efg)
+    assert verdict.verdict == "VERIFIED", verdict.reason
+
+
 def test_build_claims_season_caveat_reflects_actual_rows_synthetic():
     """Runnable-without-data/ sibling of the real_df version above: the
     caveat's row count/date range must match the synthetic frame, not a

@@ -56,6 +56,11 @@ MIN_FG3A_PG_COMPOSITE = 1.0
 
 MIN_FG3A_PG_3PT_TABLE = 4.0
 MIN_FGA_PG_EFF_TABLE = 5.0
+# per-game RATE floors alone let a 1-game sample qualify (5 fga in one game
+# passes fga_pg>=5.0); single-metric tables now also require the same games
+# floor the composite always declared, and it is DECLARED in min_sample so
+# the validator enforces the identical thing.
+MIN_GAMES_SINGLE_METRIC = MIN_GAMES_COMPOSITE
 
 COMPOSITE_WEIGHTS = {"ts_pct": 0.55, "efg_pct": 0.30, "ft_pct": 0.15}
 
@@ -84,7 +89,14 @@ def _aggregate(rows: pd.DataFrame) -> pd.DataFrame:
         FT%   = FTM / FTA
         3P%   = FG3M / FG3A
     """
-    g = rows.groupby(["player_id", "player_name"], as_index=False).agg(
+    # group_by player_id ONLY -- the claims contract declares aggregate.group_by
+    # = "player_id" and the independent validator recomputes on that key alone.
+    # Grouping by (player_id, player_name) here silently SPLIT a player whose
+    # name appears under two spellings in the parquet (e.g. with/without
+    # diacritics) into separate rows, letting a 1-game splinter pass the
+    # per-game rate floors and top a ranking the validator then MISMATCHed.
+    g = rows.groupby("player_id", as_index=False).agg(
+        player_name=("player_name", "last"),
         games=("game_id", "nunique"),
         fgm=("fgm", "sum"),
         fga=("fga", "sum"),
@@ -152,6 +164,7 @@ def rank_single_metric(table: pd.DataFrame, metric: str) -> tuple[pd.DataFrame, 
         mask = table["fga_pg"] >= MIN_FGA_PG_EFF_TABLE
     else:
         raise ValueError(f"unsupported single metric: {metric}")
+    mask = mask & (table["games"] >= MIN_GAMES_SINGLE_METRIC)
     survivors = table[mask].copy()
     excluded = int((~mask).sum())
     survivors = survivors.sort_values(metric, ascending=False).reset_index(drop=True)

@@ -27,6 +27,7 @@ from domains.basketball_nba.player_intel_shooting import (
     MIN_FGA_PG_COMPOSITE,
     MIN_FGA_PG_EFF_TABLE,
     MIN_GAMES_COMPOSITE,
+    MIN_GAMES_SINGLE_METRIC,
     compute_window_table,
     load_boxscores,
     rank_composite,
@@ -162,15 +163,18 @@ def build_claims(df: pd.DataFrame, window: str, top_n: int = 10) -> list[dict]:
     })
 
     for metric, floor_label in (
-        ("fg3_pct", f"fg3a_pg>={MIN_FG3A_PG_3PT_TABLE}"),
-        ("ts_pct", f"fga_pg>={MIN_FGA_PG_EFF_TABLE}"),
-        ("efg_pct", f"fga_pg>={MIN_FGA_PG_EFF_TABLE}"),
+        ("fg3_pct", f"fg3a_pg>={MIN_FG3A_PG_3PT_TABLE}, games>={MIN_GAMES_SINGLE_METRIC}"),
+        ("ts_pct", f"fga_pg>={MIN_FGA_PG_EFF_TABLE}, games>={MIN_GAMES_SINGLE_METRIC}"),
+        ("efg_pct", f"fga_pg>={MIN_FGA_PG_EFF_TABLE}, games>={MIN_GAMES_SINGLE_METRIC}"),
     ):
         survivors, excluded = rank_single_metric(table, metric)
+        # games floor DECLARED alongside the rate floor -- a per-game rate
+        # floor alone lets a 1-game sample qualify; the validator enforces
+        # exactly this min_sample dict, so emission and recompute agree.
         min_sample = (
-            {"fg3a_pg": MIN_FG3A_PG_3PT_TABLE}
+            {"fg3a_pg": MIN_FG3A_PG_3PT_TABLE, "games": MIN_GAMES_SINGLE_METRIC}
             if metric == "fg3_pct"
-            else {"fga_pg": MIN_FGA_PG_EFF_TABLE}
+            else {"fga_pg": MIN_FGA_PG_EFF_TABLE, "games": MIN_GAMES_SINGLE_METRIC}
         )
         claims.append({
             "claim_id": f"nba_shooting_{metric}_{window}",
