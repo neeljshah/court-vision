@@ -41,16 +41,20 @@ FORWARD_GAMES = 20
 MIN_ENTITIES_PER_FOLD = 80
 
 GRAVITY_CAVEAT = (
-    "atlas spacing_gravity.gravity_score is a season-level aggregate used as a stable "
-    "style descriptor for a mid-season cutoff (per quality_validity_gate.py's DIFFICULTY/"
-    "GRAVITY-pillar caveat); it is not recomputed pre-T from boxscores the way TS%/FG3%/"
-    "FT% metrics elsewhere in this menu are."
+    "TEMPORAL LEAK CEILING, stated plainly: atlas spacing_gravity.gravity_score is a "
+    "FULL-SEASON aggregate whose computation window OVERLAPS the forward-outcome window "
+    "at every cutoff (no pre-T variant exists). Any forward skill it shows is therefore "
+    "an UPPER BOUND, not a leak-free result -- and it still came out DESCRIPTIVE_ONLY, "
+    "which is the conservative direction. Never promote this metric to "
+    "PREDICTIVE_VERIFIED while the ingredient is season-level."
 )
 SHOOTER_COMPOSITE_CAVEAT = (
-    "shooter_composite_v2_asof_approx: an AS-OF APPROXIMATION of shooter_composite_v2 -- "
-    "the full index's pullup-frequency/unassisted-share ingredients are season-level atlas "
-    "snapshots with no pre-T variant, so this approximation OMITS them and blends only "
-    "fg3a_per_game/fg3_pct/ft_pct (pre-T boxscore) + gravity_score (season-level atlas)."
+    "shooter_composite_v2_asof_approx: an AS-OF APPROXIMATION of shooter_composite_v2 "
+    "blending ONLY strictly pre-cutoff boxscore ingredients (fg3a_per_game/fg3_pct/"
+    "ft_pct percentiles). The full index's pullup-frequency/unassisted-share/gravity "
+    "ingredients are season-level atlas snapshots whose windows overlap the forward "
+    "outcome, so they are EXCLUDED here (gravity was removed 2026-07-18 after review "
+    "flagged the overlap as a leak that could mint a false PREDICTIVE_VERIFIED)."
 )
 
 
@@ -161,15 +165,15 @@ def _trailing_fg3_baseline_asof(box: pd.DataFrame, cutoff: str) -> pd.DataFrame:
 
 
 def _shooter_composite_v2_asof_metric(box: pd.DataFrame, cutoff: str) -> pd.DataFrame:
+    # Strictly pre-cutoff boxscore ingredients ONLY -- the atlas gravity
+    # ingredient was removed (its season window overlaps the forward outcome;
+    # see SHOOTER_COMPOSITE_CAVEAT).
     pre = _pre_cutoff_agg(box, cutoff, season_only=False)
-    sg = load_atlas("spacing_gravity")[["player_id", "gravity_score"]]
-    merged = pre.merge(sg, on="player_id", how="left")
-    pct = pd.DataFrame({"player_id": merged["player_id"]})
-    pct["fg3a_pctile"] = _percentile(merged["fg3a_per_game"])
-    pct["fg3_pctile"] = _percentile(merged["fg3_pct"])
-    pct["ft_pctile"] = _percentile(merged["ft_pct"])
-    pct["gravity_pctile"] = _percentile(merged["gravity_score"])
-    comp_cols = ["fg3a_pctile", "fg3_pctile", "ft_pctile", "gravity_pctile"]
+    pct = pd.DataFrame({"player_id": pre["player_id"]})
+    pct["fg3a_pctile"] = _percentile(pre["fg3a_per_game"])
+    pct["fg3_pctile"] = _percentile(pre["fg3_pct"])
+    pct["ft_pctile"] = _percentile(pre["ft_pct"])
+    comp_cols = ["fg3a_pctile", "fg3_pctile", "ft_pctile"]
     pct["value"] = pct[comp_cols].mean(axis=1, skipna=True)
     out = pct.dropna(subset=["value"])
     return out[["player_id", "value"]].rename(columns={"player_id": "entity_id"})

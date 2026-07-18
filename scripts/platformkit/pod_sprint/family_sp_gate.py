@@ -67,13 +67,32 @@ def _bootstrap_ci(delta: np.ndarray, b: int = 3000, seed: int = 0) -> List[float
 
 def build_sp_diff(sp_quality: pd.DataFrame, games: pd.DataFrame) -> pd.DataFrame:
     """Join home/away starter asof values onto games by (date, team); sp_diff
-    = home - away, NaN (dropped) unless BOTH sides have a prior start."""
+    = home - away, NaN (dropped) unless BOTH sides have a prior start.
+
+    DOUBLEHEADERS EXCLUDED (declared): the two frames share no game-level key
+    (statcast game_pk vs games' date+teams+game_seq), so a (date, team) join
+    on a DH date fans out rows and can mispair starters -- inflating n and
+    narrowing the bootstrap CI (review finding 2026-07-18). Any (date, team)
+    appearing more than once on EITHER side is dropped from both before the
+    join (~2-5% of MLB games). Honest under-coverage beats duplicated
+    non-iid rows."""
     if sp_quality.empty or games.empty:
         return pd.DataFrame()
     sp = sp_quality.copy()
     sp["game_date"] = pd.to_datetime(sp["game_date"]).dt.date
     g = games.copy()
     g["date"] = pd.to_datetime(g["date"]).dt.date
+
+    dh_keys = set()
+    for frame, date_col, team_cols in ((sp, "game_date", ["team"]),
+                                       (g, "date", ["home_team", "away_team"])):
+        for tc in team_cols:
+            counts = frame.groupby([date_col, tc]).size()
+            dh_keys.update(counts[counts > 1].index.tolist())
+    if dh_keys:
+        sp = sp[~sp.apply(lambda r: (r["game_date"], r["team"]) in dh_keys, axis=1)]
+        g = g[~g.apply(lambda r: (r["date"], r["home_team"]) in dh_keys
+                       or (r["date"], r["away_team"]) in dh_keys, axis=1)]
 
     home = sp.rename(columns={"team": "home_team", "sp_xwoba_against_asof": "home_sp_asof"})
     away = sp.rename(columns={"team": "away_team", "sp_xwoba_against_asof": "away_sp_asof"})

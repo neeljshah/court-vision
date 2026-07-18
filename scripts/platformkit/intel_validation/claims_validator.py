@@ -147,7 +147,7 @@ def validate_claim(claim: dict[str, Any]) -> ClaimVerdict:
         # the producer applies (claims_factory._build_dim_claim), folded
         # into the same n_excluded count so the independent recompute stays
         # consistent with what a non-NaN-emitting producer would publish.
-        finite_mask = np.isfinite(recomputed["_value"])
+        finite_mask = np.isfinite(recomputed["_value"].astype(float))
         n_excluded += int((~finite_mask).sum())
         recomputed = recomputed[finite_mask]
         id_col = criteria["aggregate"]["group_by"]

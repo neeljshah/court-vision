@@ -58,7 +58,7 @@ def _recompute_group(
         # Zero/non-finite denominator entities never enter a ranking -- SAME
         # fix as claims_validator.py's inline aggregate branch (parity is
         # this module's contract, see module docstring).
-        finite_mask = np.isfinite(recomputed["_value"])
+        finite_mask = np.isfinite(recomputed["_value"].astype(float))
         n_excluded += int((~finite_mask).sum())
         recomputed = recomputed[finite_mask]
         id_col = criteria["aggregate"]["group_by"]
