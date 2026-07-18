@@ -191,6 +191,50 @@ _METRIC_SYNONYMS: dict[str, str] = {
     "best on grass": "grass_wr",
     "best on hard court": "hard_wr",
     "surface split": "clay_minus_hard",
+    # --- mlb leaderboards/splits (2026-07-18) ---
+    # Family 1 (mlb_batted_ball_quality) lives in mlb_player_profiles.parquet,
+    # served by leaderboard_resolver -- NOT this claims-metric dict. These 4
+    # entries are a defense-in-depth fallback only: resolver_registry's
+    # "ranking" branch calls leaderboard_resolver FIRST and only consults this
+    # dict if THAT returns no_data/not_supported. Verified live (registry +
+    # leaderboard_resolver._candidate_attributes, 2026-07-18) that "hard hit
+    # rate"/"barrel rate"/"exit velocity"/"babip" each already resolve to a
+    # SINGLE registered attribute on the first try (their own name-token
+    # overlap beats every other "_rate"-suffixed attribute) -- this fallback
+    # should never actually fire, kept only for a stale/missing profiles parquet.
+    "exit velocity": "avg_exit_velocity",
+    "hard hit rate": "hard_hit_rate",
+    "barrel rate": "barrel_rate",
+    "babip leaders": "babip",
+    "babip": "babip",
+    # sprint speed: DELIBERATELY NOT aliased. No sprint-speed/feet-per-second
+    # source exists anywhere in data/cache/ (spec_mlb.md's UNANSWERABLE list,
+    # verified via grep -rilE 'sprint_speed|feet_per_sec' data/cache/ ->
+    # empty). Aliasing it to a real metric would fabricate an answer; a
+    # KNOWN pre-existing bug (not fixed here, out of this family's scope --
+    # leaderboard_resolver.py is shared cross-sport code) already lets
+    # "sprint speed" fuzzy-match the unrelated swing_speed (bat speed)
+    # attribute on the leaderboard-resolver path directly, before this dict
+    # is ever consulted -- flagged separately, not papered over here.
+    # mlb_career_counting_leaders family (career totals since 2022, NOT lifetime)
+    "career home runs": "career_hr",
+    "career homers": "career_hr",
+    "career rbi": "career_rbi",
+    "career rbis": "career_rbi",
+    "active home run leaders": "career_hr_active",
+    "active rbi leaders": "career_rbi_active",
+    # mlb_batter_splits family (home/away + rest-day splits, headline metric
+    # = hr_rate delta). NOTE: bare "rest split" is ALREADY claimed above by
+    # nba_rest_context's b2b_ts_drop -- reusing it here would silently
+    # redirect every NBA "rest split" question to this MLB metric (a later
+    # duplicate dict-literal key wins) and would never even be reached for
+    # an MLB question phrased that way (the earlier NBA mapping wins the
+    # lookup first regardless). Distinct phrasing used instead so both stay
+    # independently reachable -- see spec_mlb.md Family 3.
+    "home/away split": "home_minus_away_hr_rate",
+    "home away split": "home_minus_away_hr_rate",
+    "batter rest split": "rest_minus_b2b_hr_rate",
+    "days rest split": "rest_minus_b2b_hr_rate",
 }
 
 # Shooter-composite family (2026-07-19): "best shooters"/"top shooters"/
