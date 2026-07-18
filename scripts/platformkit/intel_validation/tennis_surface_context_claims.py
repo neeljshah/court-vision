@@ -107,7 +107,9 @@ def _build_snapshot(long_df: pd.DataFrame, tour: str, window_start: str | None) 
     across the three surfaces only)."""
     sub = long_df[long_df["tour"].str.upper() == tour]
     if window_start is not None:
-        sub = sub[sub["date"] >= window_start]
+        # real parquet stores datetime.date objects; comparing those to a
+        # str raises TypeError (found live 2026-07-18) -- normalize first
+        sub = sub[pd.to_datetime(sub["date"]) >= pd.Timestamp(window_start)]
     wins = sub.pivot_table(index="player_id", columns="surface", values="win", aggfunc="sum", fill_value=0)
     ns = sub.pivot_table(index="player_id", columns="surface", values="win", aggfunc="count", fill_value=0)
     names = sub.drop_duplicates(subset=["player_id"]).set_index("player_id")["player_name"]

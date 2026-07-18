@@ -381,7 +381,7 @@ def classify(query: str) -> str | None:
     # 'best' is deliberately absent from the cue list: "best X" must stay a
     # concept superlative (ANSWER_RULES.md); a concept miss falls back to
     # the claims path post-hoc in resolve() instead.
-    if re.search(r"\b(which|most|top|who are|leaders?)\b", low):
+    if re.search(r"\b(which|most|top|who are|leaders?|specialists?)\b", low):
         from scripts.platformkit.intel_query.ask_index import extract_metric_synonym
         if extract_metric_synonym(low) is not None:
             return "verified_claims"

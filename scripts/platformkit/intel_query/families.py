@@ -47,7 +47,7 @@ _TOP_NONUM_RE = re.compile(
     # (2026-07-18): ranking-cue shapes with no top/best token fell to
     # family=None even when the metric synonym resolved downstream.
     r"|\bmost\s+[a-z]|\bwhich\s+(?:players?|batters?|pitchers?|hitters?|teams?|officials?|referees?|sports?|markets?|duos?|lineups?)\b"
-    r"|\bwidest\s+[a-z]",
+    r"|\bwidest\s+[a-z]|\bspecialists?\b",
     re.IGNORECASE,
 )
 _PROVENANCE_WORDS = re.compile(

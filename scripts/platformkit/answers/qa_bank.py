@@ -504,3 +504,24 @@ QA_BANK.append({
             "needed load_registry nba->basketball_nba pkg fix + combined "
             "name+description scoring (2026-07-18).",
 })
+
+QA_BANK.append({
+    "id": "tennis_surface_clay_specialists",
+    "question": "clay specialists",
+    "sport": "tennis",
+    "expect": {"category": "verified_claims", "status_one_of": ["ok"],
+               "receipt_required": True, "must_contain_keys": []},
+    "tier": "FULL",
+    "note": "tennis_surface_context family (night sprint 3): clay-minus-hard "
+            "win-rate gap ranking; probe returned Ugo Humbert 2026-07-18.",
+})
+QA_BANK.append({
+    "id": "tennis_surface_best_grass",
+    "question": "best on grass",
+    "sport": "tennis",
+    "expect": {"category": "verified_claims", "status_one_of": ["ok"],
+               "receipt_required": True, "must_contain_keys": []},
+    "tier": "FULL",
+    "note": "grass form ranking (floor >=15 grass matches declared); probe "
+            "returned Carlos Alcaraz .9394 2026-07-18.",
+})
