@@ -458,3 +458,46 @@ def by_tier(tier: str) -> List[QAEntry]:
     if tier == "FULL":
         return list(QA_BANK)
     return [e for e in QA_BANK if e["tier"] == tier]
+
+
+# -- night sprint 3 (2026-07-18): context-conditioned families, all probed on
+#    real data by the orchestrator before these rows were written.
+for _id, _q, _sp in [
+    ("nba_context_defadj_leaders", "defense adjusted true shooting leaders", "nba"),
+    ("nba_lineup_onoff_leaders", "best lineup on-off net rating players this season", "nba"),
+    ("nba_rest_b2b_resilient", "most b2b resilient players this season", "nba"),
+    ("nba_teammate_best_duos", "best duos this season", "nba"),
+    ("mlb_batter_vs_velocity", "best hitters against high velocity", "mlb"),
+    ("mlb_batter_crush_fastballs", "which batters crush fastballs", "mlb"),
+    ("kalshi_sportsbook_widest_gap", "which sports show the widest kalshi vs sportsbook gap", "nba"),
+]:
+    QA_BANK.append({
+        "id": _id, "question": _q, "sport": _sp,
+        "expect": {"category": "verified_claims", "status_one_of": ["ok"],
+                   "receipt_required": True, "must_contain_keys": []},
+        "tier": "FULL",
+        "note": "night-sprint-3 context family; real-data probe returned ok w/ "
+                "receipts 2026-07-18 (see NOW.md cycles 3-6).",
+    })
+QA_BANK.append({
+    "id": "nba_composer_best_shooters_passthrough",
+    "question": "who are the best shooters in the nba this season",
+    "sport": "nba",
+    "expect": {"category": "verified_claims", "status_one_of": ["ok"],
+               "receipt_required": True, "must_contain_keys": []},
+    "tier": "FULL",
+    "note": "composer-shaped ask() answers (aspect/conclusion) must pass through "
+            "claims_resolver (were dropped to no_data pre-2026-07-18). KNOWN GAP: "
+            "composer is not season-aware (cites 2024-25 canonical).",
+})
+QA_BANK.append({
+    "id": "nba_player_stat_oreb_rate",
+    "question": "What is Julius Randle's offensive rebound rate?",
+    "sport": "nba",
+    "expect": {"category": "player_stat", "status_one_of": ["ok"],
+               "receipt_required": True, "must_contain_keys": []},
+    "tier": "FULL",
+    "note": "box-derived attribute (oreb_per36) via registry-description match; "
+            "needed load_registry nba->basketball_nba pkg fix + combined "
+            "name+description scoring (2026-07-18).",
+})

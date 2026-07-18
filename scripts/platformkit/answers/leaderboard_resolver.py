@@ -138,6 +138,12 @@ def _candidate_attributes(sport: str, category: str, df=None) -> list[str]:
             best, tied = score, [a]
         elif score == best and score > 0:
             tied.append(a)
+    # a lone description-token hit (score 1) is not evidence -- with the
+    # registry now actually loading (nba pkg fix 2026-07-18), garbage input
+    # shares one word with SOME description; require a name-token match
+    # (score>=2) or the difflib typo path (0.5). REFUSE beats guess.
+    if 0.5 < best < 2:
+        return []
     return tied
 
 

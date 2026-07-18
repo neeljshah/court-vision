@@ -378,7 +378,10 @@ def classify(query: str) -> str | None:
     # synonym dict belongs to the claims path -- shape-guess buckets
     # (schedule/concept/player_stat) were swallowing new family metrics
     # ('most b2b resilient players' -> schedule_context).
-    if re.search(r"\b(which|most|best|top|who are|leaders?)\b", low):
+    # 'best' is deliberately absent from the cue list: "best X" must stay a
+    # concept superlative (ANSWER_RULES.md); a concept miss falls back to
+    # the claims path post-hoc in resolve() instead.
+    if re.search(r"\b(which|most|top|who are|leaders?)\b", low):
         from scripts.platformkit.intel_query.ask_index import extract_metric_synonym
         if extract_metric_synonym(low) is not None:
             return "verified_claims"
@@ -824,9 +827,21 @@ def resolve(query: str, sport: str = "nba", category: str | None = None, **kwarg
                     "note": "could not parse home/away from query -- pass home=/away= or 'HOME vs AWAY'"}
         return _matchup.compose_matchup(sport, home, away, date=kwargs.get("date"))
     if cat == "ranking":
-        return _lb.resolve_query(sport, query, top_n=kwargs.get("top_n"), min_n=kwargs.get("min_n", 0.0),
-                                  window=kwargs.get("window"), kind=kwargs.get("kind"),
-                                  ascending=kwargs.get("ascending", False), category=kwargs.get("attribute"))
+        env = _lb.resolve_query(sport, query, top_n=kwargs.get("top_n"), min_n=kwargs.get("min_n", 0.0),
+                                 window=kwargs.get("window"), kind=kwargs.get("kind"),
+                                 ascending=kwargs.get("ascending", False), category=kwargs.get("attribute"))
+        if env.get("status") in ("no_data", "not_supported"):
+            # leaderboard miss + resolvable claims metric -> the claims path
+            # answers instead ('top 5 assist leaders': profiles have no
+            # assist attribute but ast_per_game is a VERIFIED claim,
+            # found 2026-07-18). Claims-path miss keeps the leaderboard
+            # envelope (its 'available' listing is the more useful refusal).
+            from scripts.platformkit.intel_query.ask_index import extract_metric_synonym
+            if extract_metric_synonym(query.lower()) is not None:
+                claims_env = _claims.resolve(query, sport=sport)
+                if claims_env.get("status") == "ok":
+                    return claims_env
+        return env
     if cat == "prediction_winprob":
         home, away = _matchup_teams(query, kwargs)
         if not (home and away):
@@ -864,6 +879,15 @@ def resolve(query: str, sport: str = "nba", category: str | None = None, **kwarg
         result = _contracts.answer_question(query, sport, kwargs.get("window"), kwargs.get("concept"),
                                              kwargs.get("kind", "player"))
         if "error" in result:
+            # concept miss + resolvable claims metric -> claims path (same
+            # post-miss pattern as the ranking route: 'best hitters against
+            # high velocity' is a claims metric, not a concept). Claims miss
+            # keeps the concept refusal envelope.
+            from scripts.platformkit.intel_query.ask_index import extract_metric_synonym
+            if extract_metric_synonym(query.lower()) is not None:
+                claims_env = _claims.resolve(query, sport=sport)
+                if claims_env.get("status") == "ok":
+                    return claims_env
             return {"status": "no_data", "category": cat, "sport": sport, "note": result["error"]}
         return {"status": "ok", "category": cat, "sport": sport,
                  "source_artifact": f"domains/{ 'basketball_nba' if sport=='nba' else sport }/concepts/concept_registry.py",

@@ -171,6 +171,7 @@ _METRIC_SYNONYMS: dict[str, str] = {
     "rest split": "b2b_ts_drop",
     "b2b resilient": "b2b_pts36_delta",
     # kalshi_sportsbook_prob_gap (2026-07-18): market-level descriptive family
+    "assist leaders": "ast_per_game",
     "kalshi vs sportsbook": "mean_abs_gap",
     "kalshi sportsbook gap": "mean_abs_gap",
     "prediction market vs sportsbook": "mean_abs_gap",

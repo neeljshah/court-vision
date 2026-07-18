@@ -196,7 +196,11 @@ def _match_attribute(sub: pd.DataFrame, tokens: list[str], reg: dict) -> str | N
     # 2026-07-18: 'offensive rebound rate' missed oreb_per36's description)
     def _stem(ws):
         return {w[:-1] if w.endswith("s") and len(w) > 3 else w for w in ws}
-    tset = _stem(tokens)
+    # stopwords never count toward a match -- else garbage input scores 1
+    # against any description containing 'a'/'not' and mis-matches
+    _STOP = {"a", "an", "the", "of", "per", "not", "is", "in", "on", "for",
+             "and", "or", "to", "with", "by", "vs", "what", "his", "her"}
+    tset = _stem(tokens) - _STOP
     # ONE combined score per attribute: name-token overlap >=2 wins outright
     # (exact attribute phrasing), otherwise name+description overlap decides
     # -- a lone generic name token ('rate') must not beat a 2-token
@@ -212,7 +216,10 @@ def _match_attribute(sub: pd.DataFrame, tokens: list[str], reg: dict) -> str | N
         score = nscore + dscore
         if score > best:
             best, chosen = score, a
-    if chosen:
+    # single-token evidence is too weak on its own (any desc sharing one
+    # generic word would win for garbage input); exact-ish single names
+    # still resolve via the difflib stage below.
+    if chosen and best >= 2:
         return chosen
     # difflib on names
     near = difflib.get_close_matches(" ".join(tokens), [_norm(a) for a in attrs], n=1, cutoff=0.5)

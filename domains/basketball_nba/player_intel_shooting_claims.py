@@ -34,7 +34,12 @@ from domains.basketball_nba.player_intel_shooting import (
     window_rows,
 )
 
-CLAIMS_PATH = Path("data/cache/intel_claims/nba_shooting_claims.jsonl")
+# own store (2026-07-18): this producer and basketball_claims.py both wrote
+# nba_shooting_claims.jsonl, silently clobbering each other's claims
+# (last-writer-wins; ft_reliability vanished the night of the season
+# refresh). Same-named metrics from two snapshots must not share one
+# store -- one true ordering per (metric, window).
+CLAIMS_PATH = Path("data/cache/intel_claims/nba_player_intel_shooting_claims.jsonl")
 ANSWERS_PATH = Path("data/cache/intel_claims/nba_shooting_answers.md")
 
 # Machine-executable aggregate expressions (whitelist grammar: sum/mean/count/
