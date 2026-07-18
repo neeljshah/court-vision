@@ -99,12 +99,19 @@ def _entity_key(claim_or_criteria: dict[str, Any]) -> Any:
     return claim_or_criteria.get("entity_key", "player_id")
 
 
+def _native(x: Any) -> Any:
+    """numpy scalar -> native python. numpy>=2 reprs np.int64(1) inside a
+    tuple, so str(tuple) comparison false-mismatched identical ids (caught
+    2026-07-18: wnba_lineup rank-1 'mismatch' with byte-identical values)."""
+    return x.item() if hasattr(x, "item") else x
+
+
 def _entity_id_str(row: Any, entity_key: Any) -> str:
     """Stringify the entity id for comparison. entity_key list -> tuple of
     the named columns (pair-keyed); scalar -> the single column value."""
     if isinstance(entity_key, list):
-        return str(tuple(row[c] for c in entity_key))
-    return str(row[entity_key])
+        return str(tuple(_native(row[c]) for c in entity_key))
+    return str(_native(row[entity_key]))
 
 
 def validate_claim(claim: dict[str, Any]) -> ClaimVerdict:
