@@ -994,7 +994,17 @@ def resolve(query: str, sport: str = "nba", category: str | None = None, **kwarg
         team = kwargs.get("team") or _entity_from_query(query)
         if any(k in query.lower() for k in _SCHEDULE_SPLIT_KEYWORDS):
             return _schedule.home_road_split(sport, team, kwargs.get("date"))
-        return _schedule.resolve(sport, team, date=kwargs.get("date"))
+        env = _schedule.resolve(sport, team, date=kwargs.get("date"))
+        if env.get("status") in ("no_data", "not_supported"):
+            # season-aggregate rest attributes (avg_rest_days, b2b_rate) live
+            # in the profiles, not the live calendar -- 'Aces average rest
+            # days this season' must not dead-end when the calendar resolver
+            # can't serve the sport (found live 2026-07-18)
+            r = _ask.answer_lookup(query, sport, kwargs.get("window"))
+            if r.get("status") == "ok":
+                return {"status": "ok", "category": "player_stat", "sport": sport, **{
+                    k: v for k, v in r.items() if k != "status"}}
+        return env
     if cat == "scouting_report":
         return _scout.compose_scout(sport, kwargs.get("player") or _entity_from_query(query),
                                     kind=kwargs.get("kind", "player"), top_n=kwargs.get("top_n", 8))
@@ -1014,9 +1024,11 @@ def resolve(query: str, sport: str = "nba", category: str | None = None, **kwarg
                                  window=kwargs.get("window"), kind=kwargs.get("kind"),
                                  ascending=kwargs.get("ascending", False), category=kwargs.get("attribute"),
                                  team=kwargs.get("team"))
-        if env.get("status") in ("no_data", "not_supported"):
-            # leaderboard miss + resolvable claims metric -> the claims path
-            # answers instead ('top 5 assist leaders': profiles have no
+        if env.get("status") in ("no_data", "not_supported", "ambiguous"):
+            # leaderboard miss OR fuzzy tie + resolvable claims metric -> the
+            # claims path answers instead ('bp saved pct asof leaders' tied
+            # several profile attrs while the exact metric is a VERIFIED
+            # claim; 'top 5 assist leaders': profiles have no
             # assist attribute but ast_per_game is a VERIFIED claim,
             # found 2026-07-18). Claims-path miss keeps the leaderboard
             # envelope (its 'available' listing is the more useful refusal).

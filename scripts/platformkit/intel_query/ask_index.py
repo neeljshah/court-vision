@@ -292,6 +292,12 @@ _METRIC_SYNONYMS: dict[str, str] = {
     # zero NL alias today (build spec's "resolver-reach" fix: unlocks h2h +
     # return-metric + break-point-conversion fail categories with zero new
     # data). Surface-context aliases already existed above this block.
+    "upset prone": "higher_rank_win_rate",
+    "most upset prone": "higher_rank_win_rate",
+    "upset rate": "higher_rank_win_rate",
+    "average rest days": "avg_rest_days",
+    "bp saved pct": "bp_saved_pct_asof",
+    "break points saved": "bp_saved_pct_asof",
     "head to head": "h2h_win_share",
     "head-to-head": "h2h_win_share",
     "h2h record": "h2h_win_share",
