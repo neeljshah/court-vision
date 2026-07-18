@@ -99,6 +99,26 @@ def _wrap_ask(query: str, sport: str) -> dict[str, Any]:
     from scripts.platformkit.intel_query.ask import ask  # lazy: keeps resolver import light
 
     resp = ask(query)
+    if resp.get("aspect") and resp.get("conclusion"):
+        # Composer shape (one-conclusion answers: aspect/conclusion/
+        # provenance) has no 'answerable' key -- without this branch a
+        # composed answer was silently dropped to no_data (found live
+        # 2026-07-18: 'best shooters this season'). Pass it through with
+        # its own receipts; never re-rank it here.
+        prov = (resp.get("provenance") or [{}])[0]
+        return {
+            "status": "ok", "category": CATEGORY, "sport": sport,
+            "source_artifact": (prov.get("source_files") or [_CLAIMS_DIR_REL])[0],
+            "as_of": prov.get("as_of"),
+            "family": resp.get("family"),
+            "claim_id": (resp.get("primary") or {}).get("claim_id"),
+            "validator_verdict": prov.get("validator_verdict", "VERIFIED"),
+            "conclusion": resp.get("conclusion"),
+            "composition_rule": resp.get("composition_rule"),
+            "attribution": resp.get("attribution"),
+            "caveats": resp.get("caveats", []),
+            "edge_claimed": False,
+        }
     if not resp.get("answerable"):
         return {
             "status": "no_data", "category": CATEGORY, "sport": sport,
