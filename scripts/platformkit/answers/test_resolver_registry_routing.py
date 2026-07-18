@@ -251,6 +251,115 @@ def test_generalized_reroute_skips_when_query_is_scout_shaped(monkeypatch):
     assert R.classify("who are the top scouting report subjects") == "scouting_report"
 
 
+# ---------------------------------------------------------------------------
+# ADDED SCOPE (2026-07-19) -- 3 new resolver families from the cross-sport
+# answer-coverage spec: h2h_history (Family 1, series aggregate), Family 2 conditional_winprob
+# (rest-conditioned win-rate delta), and schedule_split_extend (Family 3, folded
+# into the existing schedule_context category). Every probe below also proves
+# the pre-existing matchup_preview/historical_result/schedule_context/
+# prediction_winprob routes those families sit next to are UNCHANGED.
+# ---------------------------------------------------------------------------
+def test_h2h_history_routes_on_differential_and_series_phrasing():
+    for q in ("historical h2h run differential Yankees vs Red Sox",
+              "head-to-head goal differential Arsenal Chelsea",
+              "who leads the series and by how many runs",
+              "historical head-to-head record Lakers Celtics",
+              "all-time record Lakers vs Celtics"):
+        assert R.classify(q) == "h2h_history", q
+
+
+def test_h2h_history_does_not_steal_bare_matchup_preview_routes():
+    """A bare h2h/head-to-head query naming no differential/historical/series
+    token stays matchup_preview's predictive fan-out -- never stolen."""
+    for q in ("head-to-head Lakers vs Celtics", "matchup preview Lakers vs Celtics",
+              "game preview Lakers vs Celtics", "h2h Lakers Celtics"):
+        assert R.classify(q) == "matchup_preview", q
+
+
+def test_h2h_history_does_not_regress_historical_result():
+    for q in ("what happened in the Lakers game last night", "final score Lakers Celtics",
+              "box score for the Lakers game"):
+        assert R.classify(q) == "historical_result", q
+
+
+def test_conditional_winprob_routes_on_rest_conditioned_phrasing():
+    for q in ("how does home win prob change on a back-to-back",
+              "win rate on short rest in MLB",
+              "does rest help the home team",
+              "how does the win probability model adjust when a team plays on short rest"):
+        assert R.classify(q) == "conditional_winprob", q
+
+
+def test_conditional_winprob_does_not_regress_bare_schedule_lookup():
+    """'is/are TEAM on a b2b/back-to-back' -- the existing, documented
+    per-team schedule_context shape (_TRAIL_RE's own docstring example) --
+    must NOT be stolen by the new ambiguous-but-unpaired b2b/back-to-back
+    tokens (no win-rate/probability signal word present)."""
+    for q in ("is the Lakers on a back-to-back tonight", "are the Lakers on a b2b tonight",
+              "rest days for the Bucks", "back-to-back for the Celtics"):
+        assert R.classify(q) == "schedule_context", q
+
+
+def test_conditional_winprob_does_not_regress_prediction_winprob():
+    for q in ("win probability Lakers vs Celtics", "who wins Lakers vs Celtics"):
+        assert R.classify(q) == "prediction_winprob", q
+
+
+def test_schedule_split_extend_routes_to_schedule_context():
+    for q in ("how many home games in the second half do the Lakers have",
+              "is their remaining schedule home-heavy",
+              "home road split for the Warriors",
+              "longest road trip for the Nets"):
+        assert R.classify(q) == "schedule_context", q
+
+
+def test_h2h_history_dispatch_parses_two_teams(monkeypatch):
+    captured = {}
+
+    def fake_resolve(sport, team_a, team_b, as_of=None):
+        captured.update(sport=sport, team_a=team_a, team_b=team_b, as_of=as_of)
+        return {"status": "ok", "category": "h2h_history"}
+
+    monkeypatch.setattr(R._h2h_history, "resolve", fake_resolve)
+    out = R.resolve("historical h2h run differential Yankees vs Red Sox", sport="mlb")
+    assert out["status"] == "ok"
+    assert captured["team_a"] == "Yankees" and captured["team_b"] == "Red Sox"
+
+
+def test_conditional_winprob_dispatch_passes_sport_through(monkeypatch):
+    captured = {}
+
+    def fake_resolve(sport, as_of=None, team=None):
+        captured.update(sport=sport, as_of=as_of, team=team)
+        return {"status": "ok", "category": "conditional_winprob"}
+
+    monkeypatch.setattr(R._conditional_winprob, "resolve", fake_resolve)
+    out = R.resolve("win rate on short rest in MLB", sport="mlb")
+    assert out["status"] == "ok"
+    assert captured["sport"] == "mlb"
+
+
+def test_schedule_context_dispatch_picks_home_road_split_on_split_keywords(monkeypatch):
+    captured = {}
+
+    def fake_split(sport, team, as_of=None):
+        captured["called"] = "split"
+        return {"status": "ok", "category": "schedule_context"}
+
+    def fake_resolve(sport, team, date=None):
+        captured["called"] = "rest"
+        return {"status": "ok", "category": "schedule_context"}
+
+    monkeypatch.setattr(R._schedule, "home_road_split", fake_split)
+    monkeypatch.setattr(R._schedule, "resolve", fake_resolve)
+
+    R.resolve("home road split for the Warriors", sport="nba")
+    assert captured["called"] == "split"
+
+    R.resolve("rest days for the Bucks", sport="nba")
+    assert captured["called"] == "rest"
+
+
 def test_resolve_compound_envelope_ok_if_any_part_ok(monkeypatch):
     def fake_classify(q):
         return "player_stat" if "Randle" in q else "mechanism_effect"
