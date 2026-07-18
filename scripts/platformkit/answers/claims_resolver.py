@@ -26,12 +26,35 @@ existing caller).
 """
 from __future__ import annotations
 
+import json
+from pathlib import Path
 from typing import Any
 
 CATEGORY = "verified_claims"
 _CLAIMS_DIR_REL = "data/cache/intel_claims/"
 # wnba MUST precede nba so "wnba" isn't swallowed by the "nba" substring test.
 _SPORT_TOKENS = ("wnba", "tennis", "soccer", "mlb", "nba")
+_REPO_ROOT = Path(__file__).resolve().parents[3]
+
+
+def _load_predictive_validity(validator_source: str | None) -> dict[str, Any]:
+    """Read the SAME on-disk validation JSON validator_verdict was sourced
+    from (validator_source is that file's repo-relative display path) and
+    pull out its top-level "predictive_validity" key -- the compact summary
+    scripts.platformkit.predictive_validity.artifacts.stamp_validation()
+    merges in. Fail-open: missing/malformed file or absent key -> {} (never
+    breaks the ok envelope; a family with no predictive-validity run yet is
+    simply silent on this field)."""
+    if not validator_source:
+        return {}
+    path = Path(validator_source)
+    if not path.is_absolute():
+        path = _REPO_ROOT / path
+    try:
+        doc = json.loads(path.read_text(encoding="ascii"))
+    except (OSError, json.JSONDecodeError, UnicodeDecodeError):
+        return {}
+    return doc.get("predictive_validity", {}) if isinstance(doc, dict) else {}
 
 
 def _sport_in_query(low: str) -> str | None:
@@ -93,6 +116,7 @@ def _wrap_ask(query: str, sport: str) -> dict[str, Any]:
         "claim_id": claim_id,
         "validator_verdict": ev0.get("validator_verdict", "VERIFIED"),
         "validator_source": ev0.get("validator_source"),
+        "predictive_validity": _load_predictive_validity(ev0.get("validator_source")),
         "ranking_excerpt": _excerpt(answer, query),
         "caveats": answer.get("caveats", []),
         "evidence": evidence,
@@ -118,6 +142,7 @@ def list_claim_families(sport: str | None = None) -> dict[str, Any]:
             "n_claims": summary.get("n_claims"),
             "n_verified": summary.get("n_verified"),
             "edge_claimed": summary.get("edge_claimed", False),
+            "predictive_validity": summary.get("predictive_validity", {}),
         })
         gen = summary.get("generated_at")
         if gen and (newest is None or gen > newest):
