@@ -131,6 +131,51 @@ def test_entity_lookup_finds_named_player(fixture_sources):
     assert result["answer"]["rankings"][0]["rank"] == 1
 
 
+@pytest.fixture
+def fixture_name_keyed_sources(tmp_path, monkeypatch):
+    """A NAME-KEYED store shaped like nba_referee_crew_ft: entity_key=
+    "entity_id" but the ranking rows carry no player_name/entity_name field
+    at all -- the entity_id VALUE IS the official's name. Root-cause fix
+    target: _answer_entity_lookup used to only ever check "player_name"."""
+    claims_path = tmp_path / "claims.jsonl"
+    validation_path = tmp_path / "validation.json"
+    row = {
+        "claim_id": "fixture_referee_mean_fta_alltime",
+        "kind": "ranking",
+        "question": "NBA official mean fta environment, alltime?",
+        "criteria": {"metric": "mean_fta", "window": "alltime", "entity_key": "entity_id"},
+        "ranking": [
+            {"rank": 1, "entity_id": "Leon Wood", "value": 46.2, "n_games": 120},
+            {"rank": 2, "entity_id": "Rodney Mott", "value": 44.1, "n_games": 90},
+        ],
+        "source_files": ["data/fake/referee_source.parquet"],
+        "computed_at": "2026-07-18T00:00:00+00:00",
+    }
+    with open(claims_path, "w", encoding="ascii") as f:
+        f.write(json.dumps(row) + "\n")
+    validation_path.write_text(json.dumps({
+        "component": "intel_claims_validation", "n_claims": 1,
+        "details": [{"claim_id": "fixture_referee_mean_fta_alltime", "verdict": "VERIFIED", "reason": "ok"}],
+    }), encoding="ascii")
+    monkeypatch.setattr(ask_mod, "INTEL_CLAIMS_DIR", tmp_path)
+    monkeypatch.setattr(ask_mod, "CLAIM_SOURCE_PAIRS", ((validation_path, claims_path),))
+    return validation_path, claims_path
+
+
+def test_entity_lookup_matches_name_keyed_row(fixture_name_keyed_sources):
+    """A referee named directly (entity_id-as-name row) must match, not
+    fall to honest-unanswerable just because the row has no player_name."""
+    result = ask_mod.ask("Where does Leon Wood rank on mean fta in window=alltime?")
+    assert result["answerable"] is True
+    assert result["answer"]["entity_name"] == "Leon Wood"
+    assert result["answer"]["rankings"][0]["rank"] == 1
+
+
+def test_entity_lookup_unrelated_name_still_unanswerable(fixture_name_keyed_sources):
+    result = ask_mod.ask("Where does Fake Nobody rank on mean fta in window=alltime?")
+    assert result["answerable"] is False
+
+
 # --- entity_lookup index fast path (2026-07-16 memory fix) -----------------
 #
 # entity_lookup used to be the ONLY family with no index fast path: every
