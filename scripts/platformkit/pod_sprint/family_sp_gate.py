@@ -152,7 +152,13 @@ def _not_testable(reason: str) -> Dict[str, object]:
 
 def run(games: Optional[pd.DataFrame] = None, sp_quality: Optional[pd.DataFrame] = None) -> Dict[str, object]:
     if games is None:
-        games = pd.read_parquet(_GAMES_PATH) if _GAMES_PATH.exists() else pd.DataFrame()
+        # games.parquet ends at 2021; games_current.parquet (same schema)
+        # carries 2022+ -- without the union the 2022 train / 2023 test
+        # seasons are empty and the gate fail-closes (found 2026-07-18).
+        frames = [pd.read_parquet(p) for p in (_GAMES_PATH, _GAMES_PATH.with_name("games_current.parquet"))
+                  if p.exists()]
+        games = (pd.concat(frames, ignore_index=True).drop_duplicates(subset="event_id")
+                 if frames else pd.DataFrame())
     if games.empty:
         return _not_testable(f"games.parquet absent/empty at {_GAMES_PATH} -- fail-closed, no scoring run.")
 
