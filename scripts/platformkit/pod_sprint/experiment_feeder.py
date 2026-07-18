@@ -216,10 +216,15 @@ def find_new_rows(
     )
     out: List[Dict[str, Any]] = []
     seen: Set[str] = set()
+    seen_cmds: Set[str] = set()
     for row in candidates:
-        if row["id"] in existing_ids or row["id"] in seen:
+        # dedupe by cmd too: two checkpoints can propose the IDENTICAL
+        # follow-up run under different ids (end_q1 + end_q3 replication) --
+        # running it twice buys nothing (caught live 2026-07-18).
+        if row["id"] in existing_ids or row["id"] in seen or row["cmd"] in seen_cmds:
             continue
         seen.add(row["id"])
+        seen_cmds.add(row["cmd"])
         out.append(row)
         if len(out) >= max_rows:
             break

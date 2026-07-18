@@ -150,14 +150,29 @@ def test_find_new_rows_dedupes_against_existing_ids(tmp_path):
     assert second == []
 
 
-def test_find_new_rows_respects_max_rows_cap(tmp_path):
+def test_find_new_rows_respects_max_rows_cap(tmp_path, monkeypatch):
+    # 8 candidates with DISTINCT cmds (identical cmds now dedupe -- see
+    # find_new_rows' seen_cmds) -> the cap, not the dedup, must bind.
+    fake = [{"id": f"r{i}", "cmd": f"python -m x --v {i}", "timeout_s": 60, "note": "n"}
+            for i in range(8)]
+    monkeypatch.setattr(ef, "_find_newsprior_rows", lambda p: fake)
+    missing = tmp_path / "missing.json"
+    rows = ef.find_new_rows(set(), max_rows=5, newsprior_path=missing, state_lag_path=missing, pred_eval_path=missing)
+    assert len(rows) == 5
+
+
+def test_find_new_rows_dedupes_identical_cmds(tmp_path):
+    # two CLOSES_GAP checkpoints propose the SAME replication cmd under
+    # different ids -> only one survives (caught live 2026-07-18).
     np_ = _write(tmp_path / "verdict.json", {
         "train_frac": 0.7, "n_games_considered": 400,
-        "checkpoints": {f"cp{i}": {"verdict_vs_market": "NO_CHANGE"} for i in range(8)},
+        "checkpoints": {"end_q1": {"verdict_vs_market": "CLOSES_GAP"},
+                         "end_q3": {"verdict_vs_market": "CLOSES_GAP"}},
     })
     missing = tmp_path / "missing.json"
     rows = ef.find_new_rows(set(), max_rows=5, newsprior_path=np_, state_lag_path=missing, pred_eval_path=missing)
-    assert len(rows) == 5
+    cmds = [r["cmd"] for r in rows]
+    assert len(cmds) == len(set(cmds))
 
 
 def test_existing_ids_reads_queue_and_ledger_jsonl(tmp_path):
