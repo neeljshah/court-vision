@@ -103,6 +103,19 @@ def dispatch(sport: str, home: str, away: str,
     prob_block = out.get("ingame") or out.get("pregame") or {}
     if "p_home_win" in prob_block:
         out["p_home_win"] = prob_block["p_home_win"]
+
+    # State-bucket calibration caveat (additive, never changes status/fields above).
+    # Lazy import to keep this module import-light; never let a caveat-layer bug
+    # break the envelope -- fail closed to an honest "lookup failed" caveat.
+    if ingame_state:
+        try:
+            from scripts.platformkit.calibration_grid import caveats as _caveats
+            cal = _caveats.caveat_for(sport, ingame_state)
+            out["state_bucket"] = cal.get("state_bucket")
+            out["bucket_calibration"] = cal
+        except Exception:  # noqa: BLE001 -- caveat lookup must never break the envelope
+            out["state_bucket"] = None
+            out["bucket_calibration"] = {"can_price": False, "reason": "caveat lookup failed"}
     return out
 
 
