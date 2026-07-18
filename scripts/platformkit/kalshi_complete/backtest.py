@@ -59,7 +59,12 @@ _NOTE = ("Pregame expectation: model MATCHES or TRAILS the devigged close -- "
          "calibration-of-band measure, not a hit rate. edge_claimed is always False.")
 
 
-def _shin_close_prob_two(pi_h: float, pi_a: float) -> float:
+def _shin_close_prob_two(pi_h: float, pi_a: float) -> Optional[float]:
+    """None for bad close rows (booksum <= 1 = stale/one-sided line in the
+    historical odds corpus -- shin asserts on it; found live on MLB
+    2026-07-18). Callers drop None rows and count them honestly."""
+    if (pi_h + pi_a) <= 1.0:
+        return None
     p, _z = shin_devig([pi_h, pi_a])
     return float(p[0])
 
@@ -81,6 +86,7 @@ def load_nba(corpus: Optional[Path] = None):
         _shin_close_prob_two(american_to_prob(h), american_to_prob(a))
         for h, a in zip(raw["home_ml"], raw["away_ml"])
     ]
+    raw = raw.dropna(subset=["p_close"])  # bad-close rows (booksum<=1) dropped, counted by n
     m = box.merge(raw[["date", "home_abbr", "away_abbr", "p_close"]],
                   on=["date", "home_abbr", "away_abbr"], how="inner").reset_index(drop=True)
     m["y"] = (m["home_pts"] > m["away_pts"]).astype(float)
@@ -104,6 +110,7 @@ def load_mlb(corpus: Optional[Path] = None):
         _shin_close_prob_two(american_to_prob(h), american_to_prob(a))
         for h, a in zip(odds["ml_close_home_am"], odds["ml_close_away_am"])
     ]
+    odds = odds.dropna(subset=["p_close"])  # bad-close rows (booksum<=1) dropped
     m = games.merge(odds[["event_id", "p_close"]], on="event_id", how="inner")
     m = m.sort_values(["date", "game_seq", "event_id"]).reset_index(drop=True)
     m["y"] = (m["home_runs"] > m["away_runs"]).astype(float)
