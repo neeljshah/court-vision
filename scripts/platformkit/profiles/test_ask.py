@@ -145,6 +145,41 @@ def test_genuinely_different_named_entities_still_ambiguous(tmp_path, monkeypatc
     assert len(r["candidates"]) == 2
 
 
+def _make_sibling_attr_profiles(tmp_path):
+    """Three sibling attributes whose names are token supersets of each other
+    (ppg_home / ppg_away are each a 2-token subset of the 4-token
+    ppg_home_minus_away) -- the exact shape that exposed the 2026-07-18
+    first-match-wins bug below."""
+    rows = [
+        dict(entity_id=1, entity_name="Tyrese Maxey", window="season_2024_25", attribute="ppg_home",
+             raw_value=28.0, percentile=80, rating_2k=84, n=20, ingredients="{}",
+             status="DESCRIPTIVE", sources="synthetic"),
+        dict(entity_id=1, entity_name="Tyrese Maxey", window="season_2024_25", attribute="ppg_away",
+             raw_value=24.0, percentile=60, rating_2k=70, n=20, ingredients="{}",
+             status="DESCRIPTIVE", sources="synthetic"),
+        dict(entity_id=1, entity_name="Tyrese Maxey", window="season_2024_25", attribute="ppg_home_minus_away",
+             raw_value=4.0, percentile=70, rating_2k=77, n=20, ingredients="{}",
+             status="DESCRIPTIVE", sources="synthetic"),
+    ]
+    p = tmp_path / "nba_player_profiles.parquet"
+    pd.DataFrame(rows).to_parquet(p)
+    return tmp_path
+
+
+def test_sibling_attribute_name_overlap_picks_best_not_first(tmp_path, monkeypatch):
+    """BUG FIX regression (2026-07-18): _match_attribute used to `return` on
+    the FIRST attribute scoring nscore>=2, so 'home minus away ppg' (a real
+    4-token name-overlap with ppg_home_minus_away) silently resolved to the
+    shorter sibling ppg_home (a 2-token overlap) instead, whichever the
+    profiles parquet happened to list first. Must now pick the highest
+    name-token overlap."""
+    monkeypatch.setattr(ask, "PROFILES_DIR", str(_make_sibling_attr_profiles(tmp_path)))
+    r = ask.answer_lookup("Maxey home minus away ppg this season", "nba")
+    assert r["status"] == "ok"
+    assert r["row"]["attribute"] == "ppg_home_minus_away"
+    assert r["row"]["raw_value"] == 4.0
+
+
 def test_weight_hook_unweighted(tmp_path, monkeypatch):
     # synthetic registry: two nba attributes declare families, one soccer
     fake = {

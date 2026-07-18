@@ -226,17 +226,31 @@ def _match_attribute(sub: pd.DataFrame, tokens: list[str], reg: dict) -> str | N
     # (exact attribute phrasing), otherwise name+description overlap decides
     # -- a lone generic name token ('rate') must not beat a 2-token
     # description match ('offensive rebound' -> oreb_per36).
+    #
+    # BUG FIX (2026-07-18): this used to `return a` on the FIRST attribute
+    # scoring nscore>=2, not the BEST one -- a sibling-attribute family whose
+    # names are token supersets of each other (ppg_home / ppg_away /
+    # ppg_home_minus_away all share "ppg"+"home" or "ppg"+"away") silently
+    # resolved to the SHORTER sibling regardless of query intent ("home minus
+    # away ppg" matched ppg_home, never reaching ppg_home_minus_away). Now
+    # every nscore>=2 candidate is collected and the highest-nscore one wins
+    # (still always beating any description-only candidate, unchanged).
     best, chosen = 0, None
+    best_name_score, name_chosen = 0, None
     for a in attrs:
         atoks = _stem(_norm(a).replace("_", " ").split())
         nscore = len(atoks & tset)
         if nscore >= 2:
-            return a
+            if nscore > best_name_score:
+                best_name_score, name_chosen = nscore, a
+            continue
         desc = _norm(reg.get(a, {}).get("description", ""))
         dscore = len(tset & _stem(desc.split())) if desc else 0
         score = nscore + dscore
         if score > best:
             best, chosen = score, a
+    if name_chosen:
+        return name_chosen
     # single-token evidence is too weak on its own (any desc sharing one
     # generic word would win for garbage input); exact-ish single names
     # still resolve via the difflib stage below.
