@@ -152,6 +152,14 @@ def live_model_home_prob(sport: str, state: Dict[str, Any]) -> Optional[float]:
             home = state.get("home_display") or state.get("home")
             away = state.get("away_display") or state.get("away")
             return get_shadow().shadow_prob(s, home, away, state)
+        # WNBA in-game: the walk-forward-fitted anchored blend (2024 fit -> 2025
+        # validate -> 2026 OOS, data/domains/wnba/ingame_blend_check.json) via
+        # WNBAAdapter.predict_live, same shadow-module pattern as nba above.
+        if s == "wnba":
+            from scripts.platformkit.ingame.wnba_ingame_shadow import get_shadow as _wshadow
+            home = state.get("home_display") or state.get("home")
+            away = state.get("away_display") or state.get("away")
+            return _wshadow().shadow_prob(s, home, away, state)
         if s not in ("soccer", "soccer_intl"):
             return None
         home = resolve_team(s, state.get("home"), state.get("home_display"))

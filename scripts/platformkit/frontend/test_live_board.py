@@ -325,3 +325,17 @@ def test_live_model_home_prob_nba_incomplete_state_is_none(monkeypatch):
     monkeypatch.setattr(nba_shadow, "get_shadow", lambda: _StubNbaShadow())
     # no period/clock/scores at all -> honest None, never a guessed number
     assert lb.live_model_home_prob("nba", {"home": "BOS", "away": "LAL"}) is None
+
+
+def test_live_model_home_prob_wnba_complete_state(monkeypatch):
+    import scripts.platformkit.ingame.wnba_ingame_shadow as wshadow
+    monkeypatch.setattr(wshadow, "get_shadow", lambda: _StubNbaShadow())  # same contract
+    st = {"home": "LVA", "away": "NYL", "period": 2, "clock": 320.0,
+          "home_score": 41.0, "away_score": 38.0}
+    assert lb.live_model_home_prob("wnba", st) == 0.62
+
+
+def test_live_model_home_prob_wnba_incomplete_state_is_none(monkeypatch):
+    import scripts.platformkit.ingame.wnba_ingame_shadow as wshadow
+    monkeypatch.setattr(wshadow, "get_shadow", lambda: _StubNbaShadow())
+    assert lb.live_model_home_prob("wnba", {"home": "LVA", "away": "NYL"}) is None
