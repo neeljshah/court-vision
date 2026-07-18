@@ -295,3 +295,19 @@ def test_batched_validation_anti_fake_tamper_flips_only_affected_claims(tmp_path
     # The career-window claim reads a COMPLETELY DIFFERENT source file and
     # must be completely unaffected by the season-file tamper.
     assert after_verdicts["career_asttotov_verified"] == "VERIFIED"
+
+
+def test_write_summary_preserves_predictive_validity(tmp_path):
+    """The pod validation loop rewrites every *_validation.json each cycle --
+    the predictive_validity stamp (a different, slower pipeline) must survive."""
+    import json
+    from scripts.platformkit.intel_validation.claims_validator import (
+        ValidationSummary, write_summary,
+    )
+    out = tmp_path / "fam_validation.json"
+    out.write_text(json.dumps({"n_claims": 1, "predictive_validity": {
+        "m1": {"verdict": "PREDICTIVE_VERIFIED"}}}), encoding="ascii")
+    write_summary(ValidationSummary(generated_at="t"), out)
+    doc = json.loads(out.read_text(encoding="ascii"))
+    assert doc["predictive_validity"]["m1"]["verdict"] == "PREDICTIVE_VERIFIED"
+    assert doc["component"] == "intel_claims_validation"

@@ -69,11 +69,17 @@ def stamp_validation(family: str, metric_name: str, verdict: str, rho_metric_mea
                       delta_ci: dict[str, Any], n_folds: int,
                       validation_dir: str = VALIDATION_DIR) -> str:
     """Merge {metric_name: {verdict, rho_metric_mean, delta_ci, n_folds, as_of}}
-    into <validation_dir>/<family>_validation.json's top-level
-    "predictive_validity" key. Read-modify-write; creates the file (with only
-    that key) if the claims-side validator hasn't produced one yet in this
-    environment -- never touches the claims .jsonl."""
-    path = Path(validation_dir) / f"{family}_validation.json"
+    into the family's REAL validation sidecar's top-level "predictive_validity"
+    key. Store naming varies (mlb_batter_rate.jsonl vs shooter_composite_v2_
+    claims.jsonl), so the sidecar is resolved off whichever claims store
+    actually exists: <family>.jsonl -> <family>_validation.json, else
+    <family>_claims.jsonl -> <family>_claims_validation.json. Read-modify-
+    write; creates the file (with only that key) if the claims-side validator
+    hasn't produced one yet -- never touches the claims .jsonl."""
+    d = Path(validation_dir)
+    stem = family if (d / f"{family}.jsonl").exists() else (
+        f"{family}_claims" if (d / f"{family}_claims.jsonl").exists() else family)
+    path = d / f"{stem}_validation.json"
     doc: dict[str, Any] = {}
     if path.exists():
         try:

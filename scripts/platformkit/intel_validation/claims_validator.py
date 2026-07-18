@@ -314,6 +314,16 @@ def write_summary(summary: ValidationSummary, output_path: Path) -> None:
         "edge_claimed": summary.edge_claimed,
         "details": summary.details,
     }
+    # The predictive_validity stamp (predictive_validity/artifacts.py) lives in
+    # this same file and is produced by a DIFFERENT, slower pipeline -- carry it
+    # over so every re-validation cycle (the pod loop rewrites these every 20
+    # min) does not silently clobber it.
+    try:
+        prior = json.loads(output_path.read_text(encoding="ascii"))
+        if isinstance(prior, dict) and "predictive_validity" in prior:
+            payload["predictive_validity"] = prior["predictive_validity"]
+    except (OSError, json.JSONDecodeError, UnicodeDecodeError):
+        pass
     with open(output_path, "w", encoding="ascii", errors="strict") as f:
         json.dump(payload, f, indent=2, default=_json_numpy_default)
 
