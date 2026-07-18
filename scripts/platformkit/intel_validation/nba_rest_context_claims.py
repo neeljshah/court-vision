@@ -219,9 +219,17 @@ def build_claims_for_season(snap: pd.DataFrame, season: str, snapshot_path: Path
 
 
 def write_claims(claims: list[dict[str, Any]], out_path: Path = _CLAIMS_OUT) -> Path:
+    """Empty-ranking claims are never written (mirrors nba_teammate_context_
+    claims.py's skip idiom): a zero-qualifier season must not emit a
+    vacuous ranking claim -- it is SKIP-printed and dropped."""
     out_path.parent.mkdir(parents=True, exist_ok=True)
+    kept = [c for c in claims if c["ranking"]]
+    for claim in claims:
+        if not claim["ranking"]:
+            print(f"SKIP {claim['claim_id']}: 0 of {claim['n_considered']} "
+                  "players clear the floors -- claim not emitted")
     with open(out_path, "w", encoding="ascii", errors="strict") as f:
-        for claim in claims:
+        for claim in kept:
             f.write(json.dumps(claim) + "\n")
     return out_path
 

@@ -60,13 +60,19 @@ from scripts.platformkit.intel_validation.shooter_composite_v2_claims import (
 )
 
 _SNAPSHOT_PATH = _CLAIMS_DIR / "shooter_composite_v2_asof_approx_snapshot.parquet"
-_CLAIMS_OUT = _CLAIMS_DIR / "shooter_composite_v2_claims.jsonl"  # same store, additive row
+# own store (2026-07-19 review fix): this module and shooter_composite_v2_
+# claims.py both used to write shooter_composite_v2_claims.jsonl, silently
+# clobbering each other's claims (last-writer-wins -- same anti-pattern
+# fixed for player_intel_shooting_claims.py in 8ec45e5c). This producer now
+# writes ONLY its own 2025-26 asof_approx claim to its own store; the full-
+# index claim stays shooter_composite_v2_claims.py's exclusive output.
+_CLAIMS_OUT = _CLAIMS_DIR / "shooter_composite_v2_asof_approx_claims.jsonl"
 
 _INGREDIENT_COLS = ["fg3a_per_game", "fg3_pct", "ft_pct"]
 MIN_INGREDIENTS_PRESENT = 2  # >=2/3, same ~2/3 coverage bar as the full index's 4/6
 
 ATLAS_GAP_CAVEAT = (
-    "ATLAS-UNAVAILABLE-2025-26: shooter_composite_v2's other 3 ingredients "
+    "ATLAS-UNAVAILABLE-2025-26: shooter_composite_v2's other 4 ingredients "
     "(pullup_combined_freq, unassisted_share_3pm, gravity_score, ft_reliability) need "
     "atlas_player_*.parquet, single-season 2024-25-era snapshots with no season column, "
     "unavailable for 2025-26 (NBA API blocked, cannot re-harvest) -- never silently reused. "
@@ -172,17 +178,7 @@ def build_season_claim(season: str) -> dict[str, Any]:
 
 
 def main() -> int:
-    from scripts.platformkit.intel_validation.shooter_composite_v2_claims import (
-        build_claim as build_full_index_claim,
-        compute_snapshot as compute_full_index_snapshot,
-        load_raw as load_full_index_raw,
-        _write_snapshot as write_full_index_snapshot,
-        QUALIFY_SEASON,
-    )
-
-    full_snap = compute_full_index_snapshot(load_full_index_raw())
-    write_full_index_snapshot(full_snap)
-    claims = [build_full_index_claim(full_snap, QUALIFY_SEASON), build_season_claim("2025-26")]
+    claims = [build_season_claim("2025-26")]
     out_path = write_claims_to(claims, _CLAIMS_OUT)
 
     for c in claims:

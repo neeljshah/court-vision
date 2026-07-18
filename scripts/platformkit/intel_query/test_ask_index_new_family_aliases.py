@@ -95,8 +95,10 @@ def test_shooter_asof_approx_end_to_end_index_lookup(tmp_path):
     rows = [_ranking_row("s1", "shooter_composite_v2_asof_approx", "season_2025_26",
                           "2026-07-19T00:00:00+00:00",
                           [{"rank": 1, "player_id": 1, "player_name": "Alpha", "value": 0.9}])]
-    _write_family(tmp_path, "shooter_composite_v2_claims", rows, {"s1": "VERIFIED"})
-    build_index("shooter_composite_v2_claims", tmp_path)
+    # own-store layout (2026-07-19 review fix): the asof_approx claim lives in
+    # shooter_composite_v2_asof_approx_claims.jsonl, not the sibling's store.
+    _write_family(tmp_path, "shooter_composite_v2_asof_approx_claims", rows, {"s1": "VERIFIED"})
+    build_index("shooter_composite_v2_asof_approx_claims", tmp_path)
 
     parsed = ParsedQuestion(family="top_n", top_n=5,
                             raw="who are the best shooters in the nba this season?")

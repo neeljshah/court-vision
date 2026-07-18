@@ -182,6 +182,22 @@ def test_write_answers_md_contains_table(tmp_path, monkeypatch, real_df):
     assert "| rank | player | value | n games |" in text
 
 
+def test_write_answers_md_header_has_no_hardcoded_date(tmp_path, monkeypatch):
+    """Regression (2026-07-19 review fix): the answers-md header carried a
+    hardcoded '2025-26 (partial, through 2026-01-19)' literal that went
+    stale; coverage now lives only in the per-claim caveats derived from
+    disk. Synthetic frame -- runnable without data/."""
+    import re
+    import domains.basketball_nba.player_intel_shooting_claims as mod
+    out = tmp_path / "answers.md"
+    monkeypatch.setattr(mod, "ANSWERS_PATH", out)
+    claims = build_claims(_synthetic_two_season_df(), "season_2024-25", top_n=3)
+    write_answers_md(claims)
+    header = out.read_text(encoding="ascii").split("## ")[0]
+    assert not re.search(r"\d{4}-\d{2}-\d{2}", header)  # no YYYY-MM-DD literal
+    assert "partial, through" not in header
+
+
 def test_claims_declare_executable_aggregate_and_window_spec(real_df):
     """Contract extension: every claim must carry aggregate + window_spec +
     value_precision, the derived exprs must cover every min_sample floor

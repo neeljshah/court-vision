@@ -225,6 +225,7 @@ def build_delta_claim(metric_key: str, window_label: str, snapshot_path: Path,
         "computed_at": datetime.now(timezone.utc).isoformat(),
         "n_considered": n_considered,
         "n_excluded_below_floor": n_excluded,
+        "edge_claimed": False,
         "caveats": [
             spec["sign_note"],
             _PA_DEF_CAVEAT,

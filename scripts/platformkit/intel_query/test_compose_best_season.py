@@ -133,6 +133,36 @@ def test_season_matched_substitution_carries_receipts_and_caveats(season_aspect_
     assert {e["claim_id"] for e in result["provenance"]} == {_FALLBACK_2025}
 
 
+def test_fallback_found_in_its_own_asof_approx_store(tmp_path, monkeypatch):
+    """Store-split regression (review fix): the 2025-26 asof_approx claim now
+    lives in shooter_composite_v2_asof_approx_claims.jsonl. That name must be
+    in _BEST_STORES or pairs_for_claim_stores filters it out and the
+    substitution silently degrades to the mismatch-caveat path."""
+    primary_path = tmp_path / "nba_canonical_shooter_claims.jsonl"
+    fallback_path = tmp_path / "shooter_composite_v2_asof_approx_claims.jsonl"
+    primary = _ranking_claim(_PRIMARY_2024, "2024-25", "Old Canonical Player", ["c1"])
+    fallback = _ranking_claim(_FALLBACK_2025, "2025-26", "New Season Player", ["c2"])
+    primary_path.write_text(json.dumps(primary) + "\n", encoding="ascii")
+    fallback_path.write_text(json.dumps(fallback) + "\n", encoding="ascii")
+    validation_path = tmp_path / "validation.json"
+    validation_path.write_text(json.dumps({
+        "component": "fixture_validation", "n_claims": 2,
+        "details": [{"claim_id": _PRIMARY_2024, "verdict": "VERIFIED", "reason": "ok"},
+                    {"claim_id": _FALLBACK_2025, "verdict": "VERIFIED", "reason": "ok"}],
+    }), encoding="ascii")
+    monkeypatch.setattr(ask_mod, "CLAIM_SOURCE_PAIRS",
+                        ((validation_path, primary_path), (validation_path, fallback_path)))
+
+    verdict_file = tmp_path / "verdict.json"
+    verdict_file.write_text(json.dumps({"verdict": "REJECT_X"}), encoding="ascii")
+    config = _season_config(verdict_file, season_fallback={"2025-26": _FALLBACK_2025})
+    monkeypatch.setattr(cb_mod, "_ASPECT_CONFIGS", {"fixture_season": config})
+
+    result = cb_mod.compose_best("fixture_season", requested_season="2025-26")
+    assert result["conclusion"] == "New Season Player"
+    assert result["primary"]["claim_id"] == _FALLBACK_2025
+
+
 def test_season_matching_primary_directly_needs_no_substitution(season_aspect_with_fallback):
     # requesting the season the gate-canonical claim ALREADY carries -- no
     # substitution, no caveat, just labelled gate-canonical.
