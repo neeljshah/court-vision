@@ -273,7 +273,13 @@ RESOLVERS: dict[str, dict] = {
     },
 }
 
-_CONCEPT_KEYWORDS = ("best", "who has", "vs ", " versus ", "why is", "fit team", "does ", "compare")
+# "sharpest" (2026-07-18, coverage_stress Family D): a bare superlative
+# adjective with no "best" token ("who is the sharpest shooter?") was falling
+# through every classify() branch to the default player_stat shape (an
+# honest but wrong "no_entity" refusal -- "sharpest shooter" isn't a player
+# name). Added alongside "best" rather than a new branch: same superlative
+# question shape, same concept_rating->leaderboard-fallback handling below.
+_CONCEPT_KEYWORDS = ("best", "sharpest", "who has", "vs ", " versus ", "why is", "fit team", "does ", "compare")
 _PREDICTION_KEYWORDS = ("win probability", "who wins", "will win", "predict", "forecast", "project the",
                         "spread", "moneyline", "odds for")
 _CALIBRATION_KEYWORDS = ("brier", "ece", "calibrat*")
@@ -639,6 +645,30 @@ def mechanism_effect(sport: str, mechanism: str) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# Bare-superlative -> raw-attribute leaderboard bridge (coverage_stress
+# Family D): "who is the best/sharpest free throw shooter" names no
+# registered CONCEPT (concept_rating's answer_question errors), but the
+# residual phrase after the lead-in IS a real registered attribute (ft_pct)
+# -- a top-1 leaderboard answers it instead of an honest-but-avoidable
+# no_data. Mirrors the existing concept-miss->claims / concept-miss->
+# player_compare fallback pattern in resolve()'s concept_rating branch.
+_SUPERLATIVE_LEAD_RE = re.compile(
+    r"^\s*(?:who\s+(?:is|are|has|shoots?|leads?)\s+(?:the\s+)?|"
+    r"what\s+is\s+(?:the\s+)?|which\s+player\s+(?:is|shoots?)\s+(?:the\s+)?)?"
+    r"(?:best|sharpest|highest|lowest)\s+(?:from\s+(?:the\s+)?)?", re.I)
+_SUPERLATIVE_TRAIL_RE = re.compile(r"\s+in\s+the\s+(?:nba|league)\s*$", re.I)
+
+
+def _superlative_category(query: str) -> str | None:
+    m = _SUPERLATIVE_LEAD_RE.search(query.lower())
+    if not m:
+        return None
+    residual = query[m.end():].strip().strip("?").strip()
+    residual = _SUPERLATIVE_TRAIL_RE.sub("", residual).strip()
+    return residual or None
+
+
+# ---------------------------------------------------------------------------
 # Free-text entity extraction for the intel categories (wave 3). The classifier
 # only routes; these strip the lead-in phrase so `resolve("scouting report for
 # Trae Young")` finds "Trae Young". Explicit player=/team=/home=/away= kwargs
@@ -875,7 +905,8 @@ def resolve(query: str, sport: str = "nba", category: str | None = None, **kwarg
     if cat == "ranking":
         env = _lb.resolve_query(sport, query, top_n=kwargs.get("top_n"), min_n=kwargs.get("min_n", 0.0),
                                  window=kwargs.get("window"), kind=kwargs.get("kind"),
-                                 ascending=kwargs.get("ascending", False), category=kwargs.get("attribute"))
+                                 ascending=kwargs.get("ascending", False), category=kwargs.get("attribute"),
+                                 team=kwargs.get("team"))
         if env.get("status") in ("no_data", "not_supported"):
             # leaderboard miss + resolvable claims metric -> the claims path
             # answers instead ('top 5 assist leaders': profiles have no
@@ -944,6 +975,16 @@ def resolve(query: str, sport: str = "nba", category: str | None = None, **kwarg
                 cmp_env = _pc.compare(query, sport=sport, **kwargs)
                 if cmp_env.get("status") == "ok":
                     return cmp_env
+            # concept miss + a bare superlative naming no CONCEPT but a real
+            # registered ATTRIBUTE ("who is the best free throw shooter") ->
+            # top-1 leaderboard. A leaderboard miss (not_supported/no_data/
+            # ambiguous) keeps this concept refusal (still the more specific
+            # of the two honest envelopes).
+            cat_text = _superlative_category(query)
+            if cat_text:
+                lb_env = _lb.leaderboard(sport, cat_text, top_n=kwargs.get("top_n", 1))
+                if lb_env.get("status") == "ok":
+                    return lb_env
             return {"status": "no_data", "category": cat, "sport": sport, "note": result["error"]}
         return {"status": "ok", "category": cat, "sport": sport,
                  "source_artifact": f"domains/{ 'basketball_nba' if sport=='nba' else sport }/concepts/concept_registry.py",

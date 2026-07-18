@@ -601,6 +601,99 @@ for _attr, _cols, _formula, _desc in (
         "verifiable_by_design": True,
     }
 
+# ---------------------------------------------------------------------------
+# SHOOTING-RATE family (coverage_stress Family A, spec sec 11): fg3_pct/
+# ft_pct/fg_pct/efg/ts_pct/pts_per36/ppg -- real attempt-volume floors, not a
+# games-only floor (see claims_grid.py's FIX-ROUND NOTE for why a games-only
+# floor is unsafe for a shooting PERCENTAGE). Builder:
+# domains/basketball_nba/profiles/player_box_shooting.py.
+# ---------------------------------------------------------------------------
+for _attr, _cols, _formula, _desc, _floor_key, _floor_val in (
+    ("fg3_pct", ["fg3m", "fg3a"], "sum(fg3m) / sum(fg3a)",
+     "Three point percentage: made three point field goals divided by attempted three point field goals.",
+     "fg3a_sum", 100.0),
+    ("ft_pct", ["ftm", "fta"], "sum(ftm) / sum(fta)",
+     "Free throw percentage: made free throws divided by attempted free throws.",
+     "fta_sum", 50.0),
+    ("fg_pct", ["fgm", "fga"], "sum(fgm) / sum(fga)",
+     "Field goal percentage: made field goals divided by attempted field goals.",
+     "fga_sum", 200.0),
+    ("efg", ["fgm", "fg3m", "fga"], "(sum(fgm) + 0.5*sum(fg3m)) / sum(fga)",
+     "Effective field goal percentage: field goal percentage adjusted so a made three counts extra.",
+     "fga_sum", 200.0),
+    ("ts_pct", ["pts", "fga", "fta"], "sum(pts) / (2*(sum(fga)+0.44*sum(fta)))",
+     "True shooting percentage: scoring efficiency accounting for field goals, three pointers, and free throws.",
+     "fga_sum", 200.0),
+    ("pts_per36", ["pts", "min"], "sum(pts) / sum(min) * 36",
+     "Points scored per 36 minutes played.",
+     "min_sum", 200.0),
+    ("ppg", ["pts", "game_id"], "sum(pts) / count_distinct(game_id)",
+     "Points per game -- this player's own season scoring average.",
+     "min_sum", 200.0),
+):
+    PLAYER_ATTRIBUTES[_attr] = {
+        "description": _desc,
+        "entity": "player",
+        "ingredients": [{"name": c, "source": "data/domains/basketball_nba/player_boxscores.parquet"} for c in _cols],
+        "formula": _formula,
+        "status": "DESCRIPTIVE",
+        "floor": {_floor_key: _floor_val},
+        "weight_ledger_family": None,
+        "seasons": ["2024_25", "2025_26"],
+        "verifiable_by_design": True,
+    }
+
+# ---------------------------------------------------------------------------
+# VENUE SPLIT family (coverage_stress Family B, spec sec 21): ppg_home/away/
+# home_minus_away, player-grain (distinct from the TEAM-grain net_rating_home/
+# away/home_away_diff above). Floor >=15 home AND >=15 away games. Builder:
+# domains/basketball_nba/profiles/player_box_splits.py.
+# ---------------------------------------------------------------------------
+for _side in ("home", "away", "home_minus_away"):
+    PLAYER_ATTRIBUTES[f"ppg_{_side}"] = {
+        "description": (
+            f"Points per game in {_side.replace('_', ' ')} games." if _side != "home_minus_away"
+            else "Points per game at home minus points per game away (home court scoring split)."
+        ),
+        "entity": "player",
+        "ingredients": [{"name": "pts", "source": "data/domains/basketball_nba/player_boxscores.parquet"},
+                         {"name": "is_home", "source": "data/domains/basketball_nba/player_boxscores.parquet"}],
+        "formula": "mean(pts) split by is_home, home minus away for the diff variant",
+        "status": "DESCRIPTIVE",
+        "floor": {"n_home": 15.0, "n_away": 15.0},
+        "weight_ledger_family": None,
+        "seasons": ["2024_25", "2025_26"],
+        "verifiable_by_design": False,  # conditional (is_home==0/1) split, not a bare groupby
+    }
+
+# ---------------------------------------------------------------------------
+# REST SPLIT family (coverage_stress Family C, spec sec 31): ppg_short_rest/
+# long_rest/short_minus_long_rest, player-grain. rest_days = this player's own
+# date minus his prior game's own date (shift(1) within player_id, same
+# season). short_rest = rest_days<=1; long_rest = rest_days>=3. Floor >=8
+# games in EACH bucket. Descriptive only -- rest is a schedule-known pre-game
+# covariate, no forecast; a SEPARATE predictive-rest gate is owned by
+# nba_rest_adjusted_form_claims.py (out of scope here). Builder:
+# domains/basketball_nba/profiles/player_box_splits.py.
+# ---------------------------------------------------------------------------
+for _side in ("short_rest", "long_rest", "short_minus_long_rest"):
+    PLAYER_ATTRIBUTES[f"ppg_{_side}"] = {
+        "description": (
+            f"Points per game on {_side.replace('_', ' ')} (schedule-known days-since-prior-game bucket)."
+            if _side != "short_minus_long_rest"
+            else "Points per game on short rest minus points per game on long rest (rest-driven scoring split)."
+        ),
+        "entity": "player",
+        "ingredients": [{"name": "pts", "source": "data/domains/basketball_nba/player_boxscores.parquet"},
+                         {"name": "date (own prior-game gap)", "source": "data/domains/basketball_nba/player_boxscores.parquet"}],
+        "formula": "mean(pts) split by rest_days<=1 vs rest_days>=3, short minus long for the diff variant",
+        "status": "DESCRIPTIVE",
+        "floor": {"n_short_rest": 8.0, "n_long_rest": 8.0},
+        "weight_ledger_family": None,
+        "seasons": ["2024_25", "2025_26"],
+        "verifiable_by_design": False,  # derived rest_days column (per-player date shift), not a bare groupby
+    }
+
 for _side, _floor_key in (("on", "min_on"), ("off", "min_off")):
     PLAYER_ATTRIBUTES[f"opp_ft_rate_allowed_{_side}"] = {
         "description": f"Opponent FT-attempts-per-FGA while this player's lineup is {_side}-court (lower = fewer free points conceded).",
