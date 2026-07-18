@@ -176,6 +176,65 @@ def test_entity_lookup_unrelated_name_still_unanswerable(fixture_name_keyed_sour
     assert result["answerable"] is False
 
 
+# --- officials-domain gate + index fast-path name matching (probe fixes ------
+# 2026-07-19): real-data probes caught two regressions the first synthetic
+# fixtures missed. (1) "top officials by <player metric>" was answered by the
+# PLAYER family -- officials are not players; an officials question must never
+# be won by a player/team row even when the metric token matches. (2) the
+# referee family has a FRESH index, so index_entity_lookup's name check (not
+# the slow path's) decided the answer, and it still only looked at
+# player_name -- the entity_id-as-name fallback has to live there too.
+@pytest.fixture
+def fixture_officials_vs_players(tmp_path, monkeypatch):
+    from scripts.platformkit.intel_query.claims_index import build_index
+
+    player_row = _ranking_claim(
+        "nba_player_box_fta_per_game_alltime", "fta_per_game", "alltime",
+        [{"rank": 1, "player_id": 1, "player_name": "Giannis Antetokounmpo", "value": 11.2, "n": 500}],
+    )
+    referee_row = {
+        "claim_id": "nba_referee_crew_ft_mean_fta_environment_alltime",
+        "kind": "ranking",
+        "question": "NBA official mean fta environment, alltime?",
+        "criteria": {"metric": "mean_fta", "window": "alltime", "entity_key": "entity_id"},
+        "ranking": [{"rank": 1, "entity_id": "Leon Wood", "value": 46.2, "n_games": 120}],
+        "source_files": ["data/fake/referee_source.parquet"],
+        "computed_at": "2026-07-18T00:00:00+00:00",
+    }
+    pairs = []
+    for family, row in (("nba_player_box_rate", player_row), ("nba_referee_crew_ft_claims", referee_row)):
+        claims_path, validation_path = _write_indexable_pair(
+            tmp_path, family, [row], {row["claim_id"]: "VERIFIED"})
+        build_index(family, tmp_path)
+        pairs.append((validation_path, claims_path))
+    monkeypatch.setattr(ask_mod, "INTEL_CLAIMS_DIR", tmp_path)
+    monkeypatch.setattr(ask_mod, "CLAIM_SOURCE_PAIRS", tuple(pairs))
+    return tmp_path
+
+
+def test_officials_question_never_answered_by_player_claim(fixture_officials_vs_players):
+    """PROBE 1 regression: the player metric alias fires ("free throw
+    attempts per game" -> fta_per_game) but the officials token must
+    suppress the player family -- honest unanswerable, never Giannis."""
+    result = ask_mod.ask("top officials by free throw attempts per game")
+    assert result["answerable"] is False
+
+
+def test_players_question_still_answered_by_player_claim(fixture_officials_vs_players):
+    result = ask_mod.ask("top 3 players by free throw attempts per game")
+    assert result["answerable"] is True
+    assert result["answer"]["ranking"][0]["player_name"] == "Giannis Antetokounmpo"
+
+
+def test_entity_lookup_name_keyed_via_index_fast_path(fixture_officials_vs_players):
+    """PROBE 2 regression: with a FRESH index, index_entity_lookup (not the
+    slow path) does the name match -- entity_id-as-name must hit there."""
+    result = ask_mod.ask("where does Leon Wood rank on mean fta among nba officials")
+    assert result["answerable"] is True
+    assert result["answer"]["entity_name"] == "Leon Wood"
+    assert result["answer"]["rankings"][0]["rank"] == 1
+
+
 # --- entity_lookup index fast path (2026-07-16 memory fix) -----------------
 #
 # entity_lookup used to be the ONLY family with no index fast path: every

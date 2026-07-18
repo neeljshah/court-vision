@@ -112,6 +112,18 @@ def test_qa_bank_referee_routing_phrasing_now_ok(tmp_path, monkeypatch):
     assert env["claims"][0]["top"][0]["name"] == "Leon Wood"
 
 
+def test_named_referee_beats_family_fallback(tmp_path, monkeypatch):
+    """PROBE 2 (2026-07-19): a SPECIFIC referee name must return that
+    official's own entity_lookup answer -- the family-level listing is the
+    LAST resort, only for questions that name no resolvable entity."""
+    _write_referee_fixture(tmp_path, monkeypatch)
+    env = C.resolve("where does Leon Wood rank on mean fta among nba officials")
+    assert env["status"] == "ok"
+    assert "claims" not in env  # not the family-level listing
+    assert env["family"] == "entity_lookup"
+    assert env["ranking_excerpt"] == [] or env.get("claim_id")  # entity answer envelope
+
+
 def test_non_referee_question_unaffected_by_family_fallback(monkeypatch):
     # a no_data answer for a query that names NO known family route must
     # stay no_data -- the fallback only fires on a recognized family regex.

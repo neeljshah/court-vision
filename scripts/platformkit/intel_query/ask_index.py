@@ -38,6 +38,7 @@ VERIFIED = "VERIFIED"
 
 ENTITY_TYPE_PLAYER = "player"
 ENTITY_TYPE_TEAM = "team"
+ENTITY_TYPE_OFFICIAL = "official"
 
 # Natural-language metric synonyms -> the REAL metric name used in
 # criteria.metric across data/cache/intel_claims/*.jsonl. Enumerated from
@@ -141,6 +142,16 @@ _METRIC_SYNONYMS: dict[str, str] = {
 # family already follows.
 _PLAYERS_WORD_RE = re.compile(r"\bplayers?\b", re.IGNORECASE)
 _TEAMS_WORD_RE = re.compile(r"\bteams?\b", re.IGNORECASE)
+# Officials/referees are a THIRD entity domain (probe regression 2026-07-19:
+# "top officials by fta per game" was answered by nba_player_box_rate --
+# officials are not players). Token set mirrors resolver_registry._REFEREE_RE
+# (singular "official" deliberately excluded there to protect "official
+# injury report"; same here). entity_key alone cannot distinguish an
+# official store (nba_referee_crew_ft uses generic "entity_id"), so the
+# gate below checks the CLAIM ID for referee vocabulary instead.
+_OFFICIALS_WORD_RE = re.compile(
+    r"\b(referees?|refs|officials|officiating|officiated|crew chief)\b", re.IGNORECASE)
+_OFFICIAL_FAMILY_RE = re.compile(r"referee|official|umpire|crew_chief", re.IGNORECASE)
 
 
 def _entity_key_type(entity_key: Any) -> str:
@@ -155,11 +166,16 @@ def _entity_key_type(entity_key: Any) -> str:
 
 
 def question_entity_type(text: str) -> str | None:
-    """"players"/"player" or "teams"/"team" token in the question text ->
-    the entity type the answer MUST be. None if the question names
-    neither (or names both, ambiguously) -- callers must not filter by
-    entity type in that case, only when it is unambiguous."""
+    """"players"/"player", "teams"/"team", or referee/officials vocabulary
+    in the question text -> the entity type the answer MUST be. None if the
+    question names none (or names several, ambiguously) -- callers must not
+    filter by entity type in that case, only when it is unambiguous.
+    Officials win outright when present: "top officials by fta per game"
+    contains no player/team token, and a query mixing officials with
+    players/teams is about officiating context, not a player leaderboard."""
     text = text or ""
+    if _OFFICIALS_WORD_RE.search(text):
+        return ENTITY_TYPE_OFFICIAL
     has_players = bool(_PLAYERS_WORD_RE.search(text))
     has_teams = bool(_TEAMS_WORD_RE.search(text))
     if has_players and not has_teams:
@@ -169,14 +185,25 @@ def question_entity_type(text: str) -> str | None:
     return None
 
 
-def entity_key_matches(entity_key: Any, entity_type: str | None) -> bool:
+def entity_key_matches(entity_key: Any, entity_type: str | None, claim_id: str = "") -> bool:
     """True if entity_type is None (question named no entity type, so every
-    row passes) or entity_key classifies as entity_type. Takes the raw
+    row passes) or the row classifies as entity_type. Takes the raw
     entity_key VALUE (not a row) so one function works for both the flat
     index-sidecar shape (top-level "entity_key") and the full claim-row
-    shape (nested under "criteria") -- callers pass whichever they have."""
+    shape (nested under "criteria") -- callers pass whichever they have.
+
+    ENTITY_TYPE_OFFICIAL is decided by `claim_id` (referee/official/umpire
+    vocabulary in the id), because official stores use a generic entity_key
+    ("entity_id") that classifies as player -- an officials question must
+    NEVER be answered by a player/team row, and this claim_id gate is what
+    stops a player-metric match ("fta per game") from winning it.
+    # ponytail: player/team questions do not symmetrically exclude official
+    # rows (metric names never collide there today); add the reverse gate
+    # only if a real collision shows up."""
     if entity_type is None:
         return True
+    if entity_type == ENTITY_TYPE_OFFICIAL:
+        return bool(_OFFICIAL_FAMILY_RE.search(str(claim_id)))
     return _entity_key_type(entity_key) == entity_type
 
 
@@ -285,7 +312,7 @@ def index_top_n_lookup(parsed, claims_dir: Path, repo_root: Path) -> dict[str, A
                 continue
             if parsed.window_hint and idx_row.get("window") != parsed.window_hint:
                 continue
-            if not entity_key_matches(idx_row.get("entity_key"), entity_type):
+            if not entity_key_matches(idx_row.get("entity_key"), entity_type, idx_row.get("claim_id", "")):
                 continue
             computed_at = idx_row.get("computed_at") or ""
             if computed_at <= best_computed_at:
@@ -378,7 +405,7 @@ def index_entity_lookup(parsed, name_key: str, claims_dir: Path, repo_root: Path
                 continue
             if parsed.window_hint and idx_row.get("window") != parsed.window_hint:
                 continue
-            if not entity_key_matches(idx_row.get("entity_key"), entity_type):
+            if not entity_key_matches(idx_row.get("entity_key"), entity_type, idx_row.get("claim_id", "")):
                 continue
             group = (idx_row.get("metric"), idx_row.get("window"))
             if group in seen_groups:
@@ -387,8 +414,15 @@ def index_entity_lookup(parsed, name_key: str, claims_dir: Path, repo_root: Path
             row = seek_claim_row(claims_path, idx_row.get("byte_offset", 0))
             if row is None or row.get("kind") != "ranking":
                 continue
-            if not any(_ascii_fold(str(r.get("player_name", ""))).strip().lower() == name_key
-                       for r in row.get("ranking", [])):
+            # Same NAME-KEYED fallback chain as ask_families._answer_entity_lookup
+            # (probe regression 2026-07-19: the referee family has a fresh index,
+            # so THIS check -- not the slow path's -- decided the answer, and it
+            # still only looked at player_name, dropping entity_id-as-name rows).
+            if not any(
+                _ascii_fold(str(r.get("player_name") or r.get("entity_name") or r.get("entity_id") or "")
+                            ).strip().lower() == name_key
+                for r in row.get("ranking", [])
+            ):
                 continue  # discarded here -- never retained past this check
             hits.append(dict(
                 row,
