@@ -183,6 +183,14 @@ _METRIC_SYNONYMS: dict[str, str] = {
     "plays better with": "pair_lift",
     "teammate effect": "pair_lift",
     "gravity teammate": "gravity_teammate_delta",
+    # tennis_surface_context (2026-07-18): surface-conditioned form family --
+    # clay/hard gap, per-surface form, grass adaptability. Added as a
+    # SEPARATE end-of-dict block per merge-conflict convention.
+    "clay specialists": "clay_minus_hard",
+    "best on clay": "clay_wr",
+    "best on grass": "grass_wr",
+    "best on hard court": "hard_wr",
+    "surface split": "clay_minus_hard",
 }
 
 # Shooter-composite family (2026-07-19): "best shooters"/"top shooters"/
