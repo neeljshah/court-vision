@@ -395,6 +395,27 @@ CATEGORIES: List[str] = sorted({e["expect"]["category"] for e in QA_BANK})
 SPORTS: List[str] = sorted({e["sport"] for e in QA_BANK})
 
 
+QA_BANK.append({
+    "id": "nba_referee_crew_ft_routing",
+    "question": "top officials by fta per game officiated",
+    "sport": "nba",
+    "expect": {
+        "category": "verified_claims",
+        "status_one_of": ["ok", "no_data"],
+        "receipt_required": False,
+        "must_contain_keys": [],
+    },
+    "tier": "FULL",
+    "note": "nba_referee_crew_ft family (2/2 VERIFIED, grounded 2026-07-18): the "
+            "_REFEREE_RE classify route is the assertion here -- referee/official "
+            "phrasings must reach verified_claims, never player_stat/ranking. "
+            "KNOWN GAP documented honestly: ask()'s entity matching does not yet "
+            "cover name-keyed claim stores (entity_id == official name, no "
+            "numeric id), so family-level referee queries can return no_data; "
+            "tighten status_one_of to ['ok'] when that matcher gap closes.",
+})
+
+
 def by_tier(tier: str) -> List[QAEntry]:
     """SMOKE entries (~15, no-subprocess-cost categories only) or FULL (all 67)."""
     if tier == "FULL":

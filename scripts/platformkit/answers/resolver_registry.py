@@ -311,6 +311,12 @@ _CLAIM_PROVENANCE_RE = re.compile(
     r"\b(how do you know|show (?:me )?(?:the )?evidence|prove|provenance|verified claim)\b", re.I)
 _VERIFIED_CLAIMS_KEYWORDS = ("verified claim", "claim family", "claim families", "list claim")
 _CLAIM_WORD_RE = re.compile(r"\bclaims?\b", re.I)
+# Referee/official vocabulary -> verified_claims (the nba_referee_crew_ft
+# family is the ONLY referee data surface). Checked before is_ranking_query
+# so "top officials by ..." reaches the claims store instead of the
+# leaderboard resolver. Singular "official" deliberately excluded ("official
+# injury report" must keep routing to injury_report).
+_REFEREE_RE = re.compile(r"\b(referees?|refs|officials|officiating|officiated|crew chief)\b", re.I)
 
 
 def classify(query: str) -> str | None:
@@ -336,6 +342,8 @@ def classify(query: str) -> str | None:
         return "prediction_winprob"
     if any(k in low for k in _HISTORICAL_KEYWORDS):
         return "historical_result"
+    if _REFEREE_RE.search(low):
+        return "verified_claims"
     if _lb.is_ranking_query(low):
         return "ranking"
     if any(k in low for k in _ANALYTICS_ATTRIBUTION_KEYWORDS):

@@ -38,9 +38,11 @@ def test_bank_covers_14_categories_x_5_sports():
     # 12-category grid + verified_claims (the RESOLVER BRIDGE, 2026-07-17)
     # + prediction_quality (pod-sprint prediction_eval readout, 2026-07-17)
     # + 4 rows from the 2026-07-17 pod coverage-stress gap report (defects 1/2/3)
+    # + 1 row 2026-07-18: nba_referee_crew_ft routing (referee vocabulary ->
+    #   verified_claims; family grounded 2/2 VERIFIED)
     assert len(B.CATEGORIES) == 14
     assert len(B.SPORTS) == 5
-    assert len(B.QA_BANK) == 74
+    assert len(B.QA_BANK) == 75
 
 
 def test_by_tier_smoke_is_cheap_subset_of_full():
