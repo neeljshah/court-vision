@@ -191,6 +191,35 @@ _METRIC_SYNONYMS: dict[str, str] = {
     "best on grass": "grass_wr",
     "best on hard court": "hard_wr",
     "surface split": "clay_minus_hard",
+    # --- soccer team-form (2026-07-18) ---
+    # 4 new claim families (soccer_team_form_asof, soccer_team_shot_asof,
+    # soccer_team_discipline_asof, soccer_team_oppstrength_form) covering
+    # the team-grain resolver fails: clean sheet rate, form, home/away
+    # split, shots on target, corners, discipline/cards, opponent-strength
+    # form. Bare "form" is deliberately NOT aliased (a raw substring match
+    # against "platform"/"performance"/"information" etc. would misroute
+    # unrelated questions -- see extract_metric_synonym's substring-match
+    # contract); "team form"/"recent form" are specific enough to be safe.
+    "clean sheet rate": "clean_sheet_rate_l10",
+    "clean sheets": "clean_sheet_rate_l10",
+    "clean sheet rate this season": "clean_sheet_rate_season",
+    "team form": "ppg_l10",
+    "recent form": "ppg_l10",
+    "current form": "ppg_l10",
+    "home form": "ppg_home_l10",
+    "away form": "ppg_away_l10",
+    "discipline rate": "cards_per_game_asof",
+    "cards rate": "cards_per_game_asof",
+    "cards per game": "cards_per_game_asof",
+    "yellow cards per game": "yellow_per_game_asof",
+    "red cards per game": "red_per_game_asof",
+    "shots on target": "sot_for_asof",
+    "shots on target per game": "sot_for_asof",
+    "corners": "corners_for_asof",
+    "corners per game": "corners_for_asof",
+    "opponent strength form": "form_strength_gap",
+    "opponent-strength form": "form_strength_gap",
+    "strength of schedule": "sos_asof",
 }
 
 # Shooter-composite family (2026-07-19): "best shooters"/"top shooters"/
