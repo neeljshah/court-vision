@@ -68,11 +68,45 @@ from __future__ import annotations
 import difflib
 import json
 import re
+from pathlib import Path
 
 from scripts.platformkit.profiles import ask as _ask
 
 TOP_N_RE = re.compile(r"^\s*top\s+(\d+)?\s*(.+?)\s*\??\s*$", re.I)
 LEADERS_RE = re.compile(r"^\s*(.+?)\s+leaders?\s*\??\s*$", re.I)
+# "Who leads the Nuggets in reb per36?" -- team-scoped leaderboard (coverage_
+# stress Family D). Only NBA has a wired player->team crosswalk today (see
+# _nba_player_team_crosswalk below); other sports honestly not_supported.
+LEADS_TEAM_RE = re.compile(r"^\s*who\s+leads\s+the\s+(.+?)\s+in\s+(.+?)\s*\??\s*$", re.I)
+
+# Free-text category aliases -- pure routing onto attributes that already
+# exist (coverage_stress Family D: "data already there, no new column").
+# Checked BEFORE the fuzzy scorer in _candidate_attributes so a real alias
+# always wins over a coincidental token overlap. "open looks" is deliberately
+# absent -- no contested/open shot-quality column exists anywhere on disk
+# (honest gap, not guessed).
+_CATEGORY_ALIASES: dict[str, str] = {
+    "corner three": "zone_efg_corner3", "corner 3": "zone_efg_corner3",
+    "corner threes": "zone_efg_corner3", "the corner three": "zone_efg_corner3",
+    "wing": "zone_efg_above_break_3", "wing three": "zone_efg_above_break_3",
+    "deep": "zone_efg_above_break_3", "deep three": "zone_efg_above_break_3",
+    "deep threes": "zone_efg_above_break_3",
+    # NOTE: "sharpest shooter"/"best shooter" need no alias here -- resolver_
+    # registry's _SUPERLATIVE_LEAD_RE strips the superlative word itself,
+    # leaving the residual category "shooter"/"shooters", which leaderboard()
+    # already special-cases via _SHOOTER_STEMS -> the existing corner3+
+    # above-break-3 blended composite (_shooters_composite below).
+    "free throw shooter": "ft_pct", "free throw shooters": "ft_pct",
+    # disambiguation aliases (2026-07-18): the generic fuzzy scorer ties or
+    # under-scores these common phrasings against several coincidentally
+    # overlapping attributes (e.g. "three point percentage" ties efg/fg3_pct/
+    # shot_zone_three_efg/shot_zone_three_rate_per36; "points per game" loses
+    # to the clutch_*_per_game family) -- pinned here rather than reworking
+    # the shared scorer.
+    "three point percentage": "fg3_pct", "three-point percentage": "fg3_pct",
+    "3 point percentage": "fg3_pct", "3-point percentage": "fg3_pct",
+    "points per game": "ppg",
+}
 
 # attribute -> ingredient key(s) that give the REAL volume denominator for
 # this attribute (a leading "-" subtracts that key). See module docstring
@@ -97,7 +131,16 @@ _CATEGORY_STOPWORDS = {"a", "an", "the", "is", "are", "of", "for", "to", "in", "
 
 
 def is_ranking_query(text: str) -> bool:
-    return bool(TOP_N_RE.match(text) or LEADERS_RE.match(text))
+    return bool(TOP_N_RE.match(text) or LEADERS_RE.match(text) or LEADS_TEAM_RE.match(text))
+
+
+def parse_team_query(text: str) -> tuple[str | None, str | None]:
+    """"Who leads the Nuggets in reb per36?" -> ("Nuggets", "reb per36").
+    (None, None) if `text` isn't this shape."""
+    m = LEADS_TEAM_RE.match(text)
+    if not m:
+        return None, None
+    return m.group(1).strip(), m.group(2).strip()
 
 
 def parse_query(text: str) -> tuple[str, int | None]:
@@ -124,6 +167,9 @@ def _candidate_attributes(sport: str, category: str, df=None) -> list[str]:
     attrs = sorted(set(attrs) | set(reg))
     if category in attrs:
         return [category]
+    alias = _CATEGORY_ALIASES.get(_ask._norm(category))
+    if alias and alias in attrs:
+        return [alias]
     tset = set(_ask._norm(category).replace("_", " ").split()) - _CATEGORY_STOPWORDS
     best, tied = 0.0, []
     for a in attrs:
@@ -240,16 +286,52 @@ def _shooters_composite(sport: str, df, top_n: int, min_n: float, window: str | 
     }
 
 
+_NBA_BOX = Path(__file__).resolve().parents[3] / "data" / "domains" / "basketball_nba" / "player_boxscores.parquet"
+
+
+def _nba_player_team_crosswalk() -> dict:
+    """player_id -> latest known team tricode, off player_boxscores.parquet's
+    own team column (sorted by date, last row per player wins -- a mid-season
+    trade resolves to the player's CURRENT team). {} if the box isn't built."""
+    if not _NBA_BOX.exists():
+        return {}
+    import pandas as pd
+    box = pd.read_parquet(_NBA_BOX, columns=["player_id", "team", "date"])
+    return box.sort_values("date").groupby("player_id")["team"].last().to_dict()
+
+
+def _resolve_team_tricode(team: str) -> str | None:
+    from domains.basketball_nba.team_name_resolver import resolve as _resolve
+    return _resolve(team)
+
+
 def leaderboard(sport: str, category: str, top_n: int = 10, min_n: float = 0.0,
                  window: str | None = None, kind: str | None = None,
-                 ascending: bool = False) -> dict:
+                 ascending: bool = False, team: str | None = None) -> dict:
     """Top-N entities for `category` (an exact attribute name, or a fuzzy
     word resolved to exactly one candidate). status: not_supported (sport
     unwired, or zero attributes matched) | ambiguous (2+ candidates -- name
-    one explicitly) | no_data | ok."""
+    one explicitly) | no_data | ok. `team` (coverage_stress Family D) scopes
+    the leaderboard to one NBA team's current roster -- only nba is wired
+    (player_boxscores.parquet is the crosswalk source); other sports honestly
+    not_supported for this param."""
     if sport not in _ask.SPORTS:
         return {"status": "not_supported", "category": "ranking", "sport": sport,
                 "note": f"sport not wired for profile lookups. Available: {_ask.SPORTS}"}
+    team_ids: set | None = None
+    if team:
+        if sport != "nba":
+            return {"status": "not_supported", "category": "ranking", "sport": sport,
+                    "note": f"team-scoped leaderboard only wired for sport='nba' (got {sport!r})"}
+        tricode = _resolve_team_tricode(team)
+        if tricode is None:
+            return {"status": "not_supported", "category": "ranking", "sport": sport,
+                    "note": f"'{team}' did not resolve to a known NBA team"}
+        crosswalk = _nba_player_team_crosswalk()
+        if not crosswalk:
+            return {"status": "no_data", "category": "ranking", "sport": sport,
+                    "note": "no player->team crosswalk available (player_boxscores.parquet not built)"}
+        team_ids = {pid for pid, tri in crosswalk.items() if tri == tricode}
     df = _ask.load_profiles(sport)
     if _norm_stem(category) in _SHOOTER_STEMS:
         return _shooters_composite(sport, df, top_n, min_n, window, kind, ascending)
@@ -269,6 +351,11 @@ def leaderboard(sport: str, category: str, top_n: int = 10, min_n: float = 0.0,
     sub = df[(df["sport"] == sport) & (df["attribute"] == attribute)]
     if kind:
         sub = sub[sub["kind"] == kind]
+    if team_ids is not None:
+        sub = sub[sub["entity_id"].isin(team_ids)]
+        if sub.empty:
+            return {"status": "no_data", "category": "ranking", "sport": sport, "attribute": attribute,
+                    "note": f"zero rows for team={team!r} (resolved {tricode!r}) on attribute '{attribute}'"}
     if sub.empty:
         return {"status": "no_data", "category": "ranking", "sport": sport, "attribute": attribute,
                 "note": f"no rows for attribute '{attribute}' (kind={kind!r})"}
@@ -306,6 +393,7 @@ def leaderboard(sport: str, category: str, top_n: int = 10, min_n: float = 0.0,
         "status": "ok", "category": "ranking", "sport": sport, "attribute": attribute,
         "window": used_window, "min_n": round(float(effective_min_n), 1), "top_n": int(top_n),
         "ascending": ascending, "denominator_used": denominator_used,
+        **({"team": team} if team_ids is not None else {}),
         "source_artifact": f"data/cache/profiles/{sport}_*_profiles.parquet",
         "rows": [
             {"rank": i + 1, "entity_name": r.entity_name, "entity_id": r.entity_id,
@@ -319,9 +407,14 @@ def leaderboard(sport: str, category: str, top_n: int = 10, min_n: float = 0.0,
 
 def resolve_query(sport: str, query: str, top_n: int | None = None, min_n: float = 0.0,
                    window: str | None = None, kind: str | None = None, ascending: bool = False,
-                   category: str | None = None) -> dict:
+                   category: str | None = None, team: str | None = None) -> dict:
     """Entry point for resolver_registry.resolve() -- parses "top N <cat>" /
-    "<cat> leaders" free text when `category` isn't given explicitly."""
+    "<cat> leaders" / "who leads the <TEAM> in <cat>" free text when
+    `category`/`team` aren't given explicitly."""
+    if not category and not team:
+        parsed_team, parsed_cat = parse_team_query(query)
+        if parsed_team:
+            team, category = parsed_team, parsed_cat
     cat_text, parsed_n = (category, None) if category else parse_query(query)
     return leaderboard(sport, cat_text, top_n=top_n or parsed_n or 10, min_n=min_n,
-                        window=window, kind=kind, ascending=ascending)
+                        window=window, kind=kind, ascending=ascending, team=team)

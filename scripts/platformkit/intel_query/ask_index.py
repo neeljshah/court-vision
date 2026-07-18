@@ -191,6 +191,28 @@ _METRIC_SYNONYMS: dict[str, str] = {
     "best on grass": "grass_wr",
     "best on hard court": "hard_wr",
     "surface split": "clay_minus_hard",
+    # --- nba player splits (2026-07-18) ---
+    # coverage_stress Family B/C routing: these two literal phrasings had no
+    # synonym entry (only the idioms "home court advantage"/"venue split"
+    # existed, both -> home_minus_away_ppg, the TEAM-grain nba_venue_split_
+    # claims metric). Adding the literal phrase closes a direct-wording gap
+    # for the SAME already-VERIFIED team metric -- no new claim, pure routing.
+    # NOTE: player-GRAIN home/away and rest splits are answered by new profile
+    # attributes (ppg_home_minus_away, ppg_short_minus_long_rest -- see
+    # domains/basketball_nba/profiles/player_box_splits.py) through the
+    # player_stat resolver, which does not consult this dict at all; these
+    # two entries only help a TEAM-grain or generic phrasing reach the
+    # existing claims-store metric.
+    "home minus away ppg": "home_minus_away_ppg",
+    "home away split": "home_minus_away_ppg",
+    # "rest split" is ALREADY aliased above (nba_rest_context block) to
+    # b2b_ts_drop -- not duplicated here. "short minus long rest ppg" is a
+    # DIFFERENT literal phrasing pointing at the closest existing metric:
+    # b2b_pts36_delta (pts_per36(b2b) - pts_per36(rest>=2 days), player-grain,
+    # nba_rest_context_claims.py) -- checked before building a new claim
+    # (root-cause: a player-grain rest split already exists, just as a
+    # per-36 rate rather than a raw per-game average).
+    "short minus long rest ppg": "b2b_pts36_delta",
 }
 
 # Shooter-composite family (2026-07-19): "best shooters"/"top shooters"/
