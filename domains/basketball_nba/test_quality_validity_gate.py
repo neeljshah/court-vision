@@ -18,6 +18,7 @@ from domains.basketball_nba.quality_validity_gate import (
     MIN_PLAYERS_PER_CUTOFF,
     QUALIFY_MIN_FGA,
     QUALIFY_MIN_GAMES,
+    _agg_pre_t,
     rank_at_cutoff,
     run_gate,
 )
@@ -132,6 +133,81 @@ def test_rank_at_cutoff_is_leak_free_no_future_rows_used():
     if r is not None:
         table = r["table"]
         assert (table["naive_comp"] > 0.3).all()
+
+
+def test_agg_pre_t_dedupes_duplicate_player_id_different_name_spelling():
+    """Root-cause regression test (2026-07-18 crash): player_boxscores.parquet
+    carries inconsistent name-string spellings for the SAME player_id across
+    dates (e.g. "Nikola Jokic" vs the diacritic spelling -- 18 player_ids
+    verified live). _agg_pre_t used to group by player_id+player_name, which
+    silently split one player's pre-T games/FGA across two rows; once merged
+    with the (player_id-only) forward table and set_index("player_id") in
+    rank_at_cutoff, that produced a duplicate index label -- the direct cause
+    of percentile_rank's ValueError('cannot reindex on an axis with duplicate
+    labels'). Must collapse to exactly one row per player_id."""
+    rows = pd.DataFrame({
+        "game_id": [1, 2, 3],
+        "date": pd.to_datetime(["2024-11-01", "2024-11-05", "2024-11-10"]),
+        "player_id": [203999, 203999, 203999],
+        "player_name": ["Nikola Jokic", "Nikola Jokic", "Nikola Jokic-diacritic"],
+        "fgm": [10, 8, 9], "fga": [15, 14, 13], "fg3m": [1, 1, 2], "fg3a": [3, 2, 4],
+        "ftm": [4, 3, 5], "fta": [5, 4, 6], "pts": [25, 20, 25],
+    })
+    agg = _agg_pre_t(rows)
+    assert len(agg) == 1
+    row = agg.iloc[0]
+    assert row["player_id"] == 203999
+    assert row["games"] == 3
+    assert row["fga"] == 15 + 14 + 13
+
+
+def test_rank_at_cutoff_dedupes_duplicate_player_id_no_crash():
+    """End-to-end regression for the exact reported crash: a player_id whose
+    pre-T boxscore rows carry two independently-qualifying name spellings
+    (mirrors the real Nikola Jokic 203999 case, where both the ASCII and
+    diacritic spellings individually clear the >=20-games/>=200-FGA floor)
+    used to survive into `qual` as two rows, and after the merge + set_index
+    ("player_id") in rank_at_cutoff left a duplicate index label that crashed
+    percentile_rank. Confirms the _agg_pre_t fix collapses both spellings to
+    one row before that indexing ever happens, exercised through the real
+    rank_at_cutoff merge/percentile path (not just the helper in isolation)."""
+    dup_dates = pd.date_range("2024-09-01", periods=50, freq="D")
+    other_dates_pre = pd.date_range("2024-10-22", periods=25, freq="D")
+    dates_post = pd.date_range("2024-12-05", periods=10, freq="D")
+    dup_pid = 999999
+    rows = []
+    for i, d in enumerate(dup_dates):
+        name = "Nikola Jokic" if i < 25 else "Nikola Jokic-diacritic"
+        rows.append({
+            "game_id": f"dup_{i}", "date": d, "season": "2024-25",
+            "player_id": dup_pid, "player_name": name,
+            "fgm": 5, "fga": 10, "fg3m": 1, "fg3a": 3, "ftm": 2, "fta": 2, "pts": 13,
+        })
+    for i, d in enumerate(dates_post):
+        rows.append({
+            "game_id": f"dup_post_{i}", "date": d, "season": "2024-25",
+            "player_id": dup_pid, "player_name": "Nikola Jokic-diacritic",
+            "fgm": 5, "fga": 10, "fg3m": 1, "fg3a": 3, "ftm": 2, "fta": 2, "pts": 13,
+        })
+    for p in range(120):
+        pid = p + 1
+        for i, d in enumerate(other_dates_pre):
+            rows.append({
+                "game_id": f"pre_{p}_{i}", "date": d, "season": "2024-25",
+                "player_id": pid, "player_name": f"Player{p}",
+                "fgm": 5, "fga": 10, "fg3m": 1, "fg3a": 3, "ftm": 2, "fta": 2, "pts": 13,
+            })
+        for i, d in enumerate(dates_post):
+            rows.append({
+                "game_id": f"post_{p}_{i}", "date": d, "season": "2024-25",
+                "player_id": pid, "player_name": f"Player{p}",
+                "fgm": 5, "fga": 10, "fg3m": 1, "fg3a": 3, "ftm": 2, "fta": 2, "pts": 13,
+            })
+    box = pd.DataFrame(rows)
+    r = rank_at_cutoff(box, "2024-12-01")  # must not raise ValueError
+    assert r is not None
+    table = r["table"]
+    assert (table["player_id"] == dup_pid).sum() <= 1
 
 
 def test_run_gate_returns_honest_reject_or_ship_never_raises():

@@ -105,7 +105,12 @@ def write_answers_md(gate: GateResult, claims: list[dict]) -> None:
             lines.append(f"| {r['rank']} | {r['player_name']} | {r['value']} | {r['coverage']} | {r['n']} |")
         lines.append("")
     ANSWERS_PATH.parent.mkdir(parents=True, exist_ok=True)
-    ANSWERS_PATH.write_text("\n".join(lines), encoding="ascii")
+    # errors="replace": player_name is raw source data and can carry non-ASCII
+    # diacritics (e.g. "Jokic" with a caron) -- same convention as
+    # asof_reclaim_gate.py / boxdetail_gate.py in this directory. The
+    # machine-readable CLAIMS_PATH JSONL above already keeps full fidelity
+    # via ensure_ascii=True (\uXXXX escapes); this file is human-facing only.
+    ANSWERS_PATH.write_text("\n".join(lines), encoding="ascii", errors="replace")
 
 
 def run() -> GateResult:

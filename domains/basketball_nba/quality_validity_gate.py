@@ -65,7 +65,14 @@ MIN_PLAYERS_PER_CUTOFF = 100
 
 
 def _agg_pre_t(rows: pd.DataFrame) -> pd.DataFrame:
-    g = rows.groupby(["player_id", "player_name"], as_index=False).agg(
+    """Sum pre-T box counts per player_id ONLY (never player_id+player_name --
+    see quality_indices.aggregate_season docstring for why: the same
+    player_id carries inconsistent name spellings across dates in
+    player_boxscores.parquet, and grouping on both columns splits one
+    player's games into two rows -- the source of the duplicate player_id
+    that later crashes percentile_rank's .loc assignment once re-indexed."""
+    g = rows.sort_values("date").groupby("player_id", as_index=False).agg(
+        player_name=("player_name", "last"),
         games=("game_id", "nunique"),
         fgm=("fgm", "sum"), fga=("fga", "sum"),
         fg3m=("fg3m", "sum"), fg3a=("fg3a", "sum"),

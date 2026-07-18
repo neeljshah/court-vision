@@ -8,7 +8,7 @@ the spec. Scoring/percentile logic lives in quality_indices_score.py (kept
 separate to stay under the 300-LOC/file cap).
 
 Qualifying population (season 2024-25): n_games >= 20 AND fga_sum >= 200
-(329 players, verified live this session).
+(330 players, re-verified live 2026-07-18 -- the prior 329 was stale).
 
 Data sources (read-only, never rebuilt here): player_boxscores.parquet +
 10 atlas_player_*.parquet files, per the factor->file->column map in the
@@ -115,9 +115,21 @@ def load_boxscores(path: str = BOXSCORE_PATH) -> pd.DataFrame:
 
 
 def aggregate_season(df: pd.DataFrame, season: str = QUALIFY_SEASON) -> pd.DataFrame:
-    """Sum raw box counts per player over one season, derive rate stats."""
-    rows = df[df["season"] == season]
-    g = rows.groupby(["player_id", "player_name"], as_index=False).agg(
+    """Sum raw box counts per player over one season, derive rate stats.
+
+    Groups by player_id ONLY (never player_id+player_name): the raw boxscore
+    rows carry inconsistent name spellings for the same player_id across
+    dates (e.g. "Nikola Jokic" vs "Nikola Jokic" with diacritics -- 18
+    player_ids affected, verified live on player_boxscores.parquet). Grouping
+    by both columns silently splits one player's games/FGA across two rows,
+    which undercounts them against the qualifying floor and (once re-joined
+    downstream by player_id alone) produces a duplicate player_id row --
+    ranking a player twice, which is wrong regardless of whether it crashes.
+    player_name is resolved separately as the most-recent spelling on file
+    (rows sorted by date first)."""
+    rows = df[df["season"] == season].sort_values("date")
+    g = rows.groupby("player_id", as_index=False).agg(
+        player_name=("player_name", "last"),
         games=("game_id", "nunique"),
         fgm=("fgm", "sum"), fga=("fga", "sum"),
         fg3m=("fg3m", "sum"), fg3a=("fg3a", "sum"),
