@@ -791,6 +791,12 @@ def _entity_from_query(query: str) -> str:
 
 
 _BETWEEN_RE = re.compile(r"\bbetween\s+(.+?)\s+and\s+(.+?)\s*[.?!]*\s*$", re.I)
+# "when the Astros play the Dodgers" / "Lakers host the Celtics" -- verb-form
+# matchup phrasing with no vs/@/between separator (found live 2026-07-18)
+_PLAYS_RE = re.compile(
+    r"\b(?:when\s+|if\s+)?(?:the\s+)?([A-Z][\w.'-]*(?:\s+[A-Z][\w.'-]*)?)\s+"
+    r"(?:plays?|hosts?|faces?|meets?|takes?\s+on)\s+(?:the\s+)?"
+    r"([A-Z][\w.'-]*(?:\s+[A-Z][\w.'-]*)?)\s*[.?!]*\s*$")
 
 
 def _injury_player_from_query(query: str) -> str | None:
@@ -815,6 +821,11 @@ def _split_matchup(text: str) -> tuple[str | None, str | None]:
         m2 = _BETWEEN_RE.search(text)
         if m2:
             left, right = m2.group(1).strip(), m2.group(2).strip()
+            if left and right:
+                return left, right
+        m3 = _PLAYS_RE.search(text)
+        if m3:
+            left, right = m3.group(1).strip(), m3.group(2).strip()
             if left and right:
                 return left, right
         return None, None
