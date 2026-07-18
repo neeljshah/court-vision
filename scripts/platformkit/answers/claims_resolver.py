@@ -248,20 +248,42 @@ def list_claim_families(sport: str | None = None) -> dict[str, Any]:
 
 
 _SPORT_PREFIXES = {"nba", "mlb", "wnba", "tennis", "soccer", "npb", "kbo",
-                   "baseball", "basketball"}
-_SPORT_SYNONYMS = {"nba": {"nba", "basketball"}, "mlb": {"mlb", "baseball"},
+                   "baseball", "basketball",
+                   # single-sport families whose store name carries no
+                   # sport-TOKEN prefix, only a domain word (2026-07-19 fix:
+                   # checked claims_factory.py -- per-family claim rows carry
+                   # no "sport" key, and these stores' *_validation.json
+                   # carries no "sport" field either, so there is no cheap
+                   # dynamic source to read; declared here by hand instead,
+                   # same discipline as the rest of this set).
+                   "catcher", "umpire", "platoon", "shooter"}
+_SPORT_SYNONYMS = {"nba": {"nba", "basketball", "shooter"},
+                   "mlb": {"mlb", "baseball", "catcher", "umpire", "platoon"},
                    "wnba": {"wnba"}}
+# Genuinely cross-sport / market-level families (no single sport owns them,
+# so every sport passes). This used to be the ONLY fallback -- "any prefix
+# we don't recognize passes" -- which wrongly let single-sport stores like
+# catcher_framing_claims through for every sport too (found 2026-07-19:
+# 'catcher' isn't a sport-token prefix, so it fell into that same bucket).
+# Those known single-sport-but-unprefixed stores are now declared in
+# _SPORT_PREFIXES/_SPORT_SYNONYMS above instead; an unrecognized prefix that
+# matches NEITHER whitelist now fails closed (see _env_matches_sport).
+CROSS_SPORT_PREFIXES = {"kalshi", "market", "line", "cross", "gate"}
 
 
 def _env_matches_sport(env: dict[str, Any], sport: str) -> bool:
     """True when the answering store's name prefix matches the requested
-    sport, or the store is cross-sport (no sport prefix at all)."""
+    sport (via _SPORT_PREFIXES/_SPORT_SYNONYMS, including the declared
+    unprefixed single-sport families above), or the store is a declared
+    cross-sport family (CROSS_SPORT_PREFIXES). An unrecognized prefix --
+    naming neither a known sport nor a declared cross-sport family -- fails
+    CLOSED (DENY): a wrong-sport answer is worse than an honest miss."""
     src = str(env.get("source_artifact") or env.get("family") or "")
     base = src.replace("\\", "/").rsplit("/", 1)[-1]
     prefix = base.split("_", 1)[0].lower()
-    if prefix not in _SPORT_PREFIXES:
-        return True  # cross-sport family (kalshi_, market_, line_, ...)
-    return prefix in _SPORT_SYNONYMS.get(sport, {sport})
+    if prefix in _SPORT_PREFIXES:
+        return prefix in _SPORT_SYNONYMS.get(sport, {sport})
+    return prefix in CROSS_SPORT_PREFIXES
 
 
 def resolve(query: str, sport: str = "nba", **kwargs) -> dict[str, Any]:

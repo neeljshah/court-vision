@@ -284,14 +284,22 @@ def entity_key_matches(entity_key: Any, entity_type: str | None, claim_id: str =
     return _entity_key_type(entity_key) == entity_type
 
 
-def extract_metric_synonym(text: str) -> str | None:
+def extract_metric_synonym(text: str, curated_only: bool = False) -> str | None:
     """Longest-alias-match lookup into _METRIC_SYNONYMS: never
     first-keyword-wins -- e.g. "team free throw percentage" must resolve to
     team_ft_pct, not the shorter "free throw percentage" -> ft_reliability
     alias that is also a substring of it. Falls back to the name-derived
     metric map (metric_names.py, 2026-07-17: closes the 337-unaliased-
     metrics gap -- saying a metric's literal name now routes) when no hand
-    alias matches. Returns the REAL metric name, or None."""
+    alias matches. Returns the REAL metric name, or None.
+
+    `curated_only=True` skips that name-derived fallback entirely -- only
+    the shooter-alias regex + the hand-curated _METRIC_SYNONYMS dict can
+    match. For call sites where the broad, unaliased name-derived fallback
+    (matching ANY >=4-char metric-name word, e.g. "gravity"/"spacing"/
+    "usage") would steal a non-metric question (comparables/scouting) that
+    merely happens to contain a metric-shaped word -- resolver_registry's
+    generalized synonym reroute is the one confirmed case (2026-07-19)."""
     lower = (text or "").lower()
     if _SHOOTER_ALIAS_RE.search(lower):
         return "shooter_composite_v2_asof_approx" if _SEASON_TOKEN_RE.search(lower) else "shooter_composite_v2"
@@ -303,6 +311,8 @@ def extract_metric_synonym(text: str) -> str | None:
             best_metric = metric
     if best_metric is not None:
         return best_metric
+    if curated_only:
+        return None
     from scripts.platformkit.intel_query.metric_names import (
         DEFAULT_CLAIMS_DIR, metric_from_name)
     return metric_from_name(text, DEFAULT_CLAIMS_DIR)

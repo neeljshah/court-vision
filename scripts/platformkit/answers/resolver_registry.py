@@ -392,10 +392,22 @@ def classify(query: str) -> str | None:
     # 'best' is deliberately absent from the cue list: "best X" must stay a
     # concept superlative (ANSWER_RULES.md); a concept miss falls back to
     # the claims path post-hoc in resolve() instead.
+    # curated_only=True (fix 2026-07-19): extract_metric_synonym's plain
+    # name-derived fallback (metric_names.py) matches ANY >=4-char metric-
+    # name word ('gravity', 'spacing', 'usage', ...) -- over-broad for a
+    # bare cue-word gate, so it was stealing comparables/scouting/concept
+    # questions into verified_claims (which can't serve them -> lost to
+    # no_data). Restricted to the hand-curated dict (+ shooter alias) hits
+    # only. The _SCOUT/_COMPARABLES guard below is belt-and-suspenders for
+    # the same failure mode if a future curated alias ever overlaps their
+    # keyword shapes.
     if re.search(r"\b(which|most|top|who are|leaders?|specialists?)\b", low):
-        from scripts.platformkit.intel_query.ask_index import extract_metric_synonym
-        if extract_metric_synonym(low) is not None:
-            return "verified_claims"
+        is_scout_or_comparables = (any(k in low for k in _SCOUT_KEYWORDS)
+                                    or any(k in low for k in _COMPARABLES_KEYWORDS))
+        if not is_scout_or_comparables:
+            from scripts.platformkit.intel_query.ask_index import extract_metric_synonym
+            if extract_metric_synonym(low, curated_only=True) is not None:
+                return "verified_claims"
     if any(k in low for k in _ANALYTICS_ATTRIBUTION_KEYWORDS):
         return "analytics_attribution"
     if any(k in low for k in _ANALYTICS_SURVIVAL_KEYWORDS):
