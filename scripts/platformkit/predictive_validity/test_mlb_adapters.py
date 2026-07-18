@@ -116,6 +116,54 @@ def test_framing_forward_outcome_window_and_leak():
 
 
 # --------------------------------------------------------------------------- #
+# _forward_window: corpus-gap horizon bound (MAX_FORWARD_HORIZON_DAYS)
+# --------------------------------------------------------------------------- #
+def test_forward_window_excludes_rows_beyond_horizon_across_a_year_gap():
+    # Synthetic year-gap corpus: 2023 season, then a missing 2024, then 2025 --
+    # exactly the statcast_fuller shape (2022/2023/2025, no 2024).
+    cutoff = "2023-08-01"
+    rows = []
+    # only 5 real forward games left in the pre-gap season (thin tail)
+    for i in range(5):
+        rows.append(_taken_row(1, 8000 + i, pd.Timestamp("2023-08-02") + pd.Timedelta(days=i), 1))
+    # then a corpus gap (no 2024 rows at all), then 2025 rows that would have
+    # filled out rank<20 under the OLD unbounded rank-only window
+    for i in range(15):
+        rows.append(_taken_row(1, 9000 + i, pd.Timestamp("2025-04-01") + pd.Timedelta(days=i), 1))
+    df = pd.DataFrame(rows)
+    out = A._forward_window(df, cutoff, n=20)
+    assert (out["game_date"] < pd.Timestamp("2024-01-01")).all()  # zero post-gap rows
+    assert len(out) == 5  # only the real pre-gap tail survives the horizon bound
+
+
+def test_forward_window_keeps_normal_season_boundary_span_within_horizon():
+    # A cutoff near season end reaching into the following contiguous season
+    # (no missing year) must be unaffected -- e.g. framing's real
+    # 2023/2024/2025 corpus, or an offseason gap well under 250 days.
+    cutoff = "2023-09-01"
+    rows = [_taken_row(1, 8000 + i, pd.Timestamp("2024-04-01") + pd.Timedelta(days=i), 1)
+            for i in range(10)]  # ~7 months later, well within MAX_FORWARD_HORIZON_DAYS=250
+    df = pd.DataFrame(rows)
+    out = A._forward_window(df, cutoff, n=20)
+    assert len(out) == 10  # nothing dropped -- within-horizon span is untouched
+
+
+def test_forward_window_horizon_thinning_still_lets_min_forward_games_fail_close():
+    # A fold thinned below MIN_FORWARD_GAMES by the horizon filter must still be
+    # caught by the harness's existing n_forward floor -- the gate composes.
+    cutoff = "2023-08-01"
+    rows = [_taken_row(1, 8000 + i, pd.Timestamp("2023-08-02") + pd.Timedelta(days=i), 1)
+            for i in range(5)]  # only 5 real forward rows
+    rows += [_taken_row(1, 9000 + i, pd.Timestamp("2025-04-01") + pd.Timedelta(days=i), 1)
+             for i in range(15)]  # would pad rank<20 to 20 under the old bug
+    df = pd.DataFrame(rows)
+    out = A._framing_forward_outcome(df, cutoff, forward_games=20)
+    row1 = out[out["entity_id"] == 1].iloc[0]
+    assert row1["n_forward"] == 5  # thinned by the horizon bound
+    assert row1["n_forward"] < A.MIN_FORWARD_GAMES  # harness would SKIP this fold, fail-closed
+
+
+# --------------------------------------------------------------------------- #
 # putaway adapter: recent-form vs full-history, leak-freedom
 # --------------------------------------------------------------------------- #
 def _k_row(entity_id, game_pk, date, is_swinging):

@@ -81,6 +81,16 @@ PUTAWAY_CUTOFFS = ["2022-08-01", "2022-09-01", "2023-06-01", "2023-07-01", "2023
                    "2025-06-01", "2025-07-01", "2025-08-01"]
 FORWARD_GAMES = 20
 MIN_FORWARD_GAMES = 12
+# Prereg: a forward window must stay within the season following its cutoff --
+# never silently span a missing-year corpus gap. statcast_fuller has no 2024
+# (only 2022/2023/2025); a fixed-GAME-COUNT forward window (rank<n by game_pk,
+# ignoring date gaps) would otherwise splice a 2023 cutoff's "next N games"
+# onto 2025 rows once 2023's own remaining games run out -- not a valid
+# forward test. 250 days comfortably covers a normal in-season or
+# season-to-season offseason span (the framing corpus IS contiguous across
+# 2023/2024/2025, so its <250-day folds are unaffected) while being far
+# shorter than the ~2-season gap a missing year creates.
+MAX_FORWARD_HORIZON_DAYS = 250
 FRAMING_MIN_ENTITIES_PER_FOLD = 20
 PUTAWAY_MIN_ENTITIES_PER_FOLD = 40
 MIN_BORDERLINE_PRECUTOFF = 20  # metric-side floor, catcher's own pre-cutoff borderline takes
@@ -125,14 +135,23 @@ def _last_n_games(df: pd.DataFrame, cutoff: str, n: int) -> pd.DataFrame:
 def _forward_window(df: pd.DataFrame, cutoff: str, n: int) -> pd.DataFrame:
     """Rows from each entity's NEXT n distinct games (by game_pk) with
     game_date >= cutoff -- row-count window, games-with-opportunity grain
-    (mirrors nba_adapters._forward_n_games, generalized off game_pk)."""
+    (mirrors nba_adapters._forward_n_games, generalized off game_pk).
+
+    Bounded to MAX_FORWARD_HORIZON_DAYS after the cutoff: a fixed-game-count
+    window alone assumes season contiguity, which is false across a missing
+    corpus year (statcast_fuller has no 2024) -- a game beyond the horizon is
+    dropped even if its rank was < n, so a pre-gap cutoff's "forward" games
+    never silently become post-gap rows from the next available season.
+    """
     t0 = pd.Timestamp(cutoff)
     rows = df[df["game_date"] >= t0]
     games = (rows[["entity_id", "game_pk", "game_date"]].drop_duplicates()
              .sort_values(["entity_id", "game_date", "game_pk"]))
     games["rank"] = games.groupby("entity_id").cumcount()
     keep = games[games["rank"] < n][["entity_id", "game_pk"]]
-    return rows.merge(keep, on=["entity_id", "game_pk"], how="inner")
+    window = rows.merge(keep, on=["entity_id", "game_pk"], how="inner")
+    horizon = t0 + pd.Timedelta(days=MAX_FORWARD_HORIZON_DAYS)
+    return window[window["game_date"] <= horizon]
 
 
 def _rate(df: pd.DataFrame, value_col: str, min_n: int = 0) -> pd.DataFrame:

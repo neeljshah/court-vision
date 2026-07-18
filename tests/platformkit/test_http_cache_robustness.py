@@ -14,6 +14,7 @@ the backoff never actually sleeps.
 """
 from __future__ import annotations
 
+import os
 import urllib.error
 
 import pytest
@@ -77,6 +78,37 @@ def test_cache_write_is_atomic_tmp_replace_no_tmp_left(tmp_path, monkeypatch):
         ttl=60.0, now=lambda: 5010.0)
     assert hit2 is True
     assert body2 == body
+
+
+def test_tmp_write_path_is_unique_per_writer_same_url(tmp_path, monkeypatch):
+    """Two concurrent writers for the SAME url must never alias one tmp inode
+    (the confirmed bug: path.with_suffix('.tmp') was one shared name per URL --
+    a torn/aliased write was possible under concurrent same-URL writes)."""
+    monkeypatch.setattr(hc, "_CACHE_DIR", tmp_path)
+    path = hc._cache_path(URL)
+    fd1, tmp1 = hc._tmp_write_path(path)
+    fd2, tmp2 = hc._tmp_write_path(path)
+    try:
+        assert tmp1 != tmp2  # distinct tmp names for the same target path
+        assert os.path.exists(tmp1) and os.path.exists(tmp2)
+    finally:
+        os.close(fd1)
+        os.close(fd2)
+        os.remove(tmp1)
+        os.remove(tmp2)
+
+
+def test_disk_cache_write_leaves_no_tmp_litter(tmp_path, monkeypatch):
+    monkeypatch.setattr(hc, "_CACHE_DIR", tmp_path)
+
+    def fake_get(_url):
+        return {"markets": ["x"]}
+
+    body, _fetched, hit = hc.disk_cache_get_meta(
+        URL, http_get=fake_get, ttl=60.0, now=lambda: 5000.0)
+    assert hit is False
+    assert body == {"markets": ["x"]}
+    assert list(tmp_path.glob("*.tmp")) == []  # no leftover tmp file after a clean write
 
 
 def test_expired_entry_refetches_live(tmp_path, monkeypatch):

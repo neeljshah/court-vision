@@ -32,6 +32,7 @@ import hashlib
 import json
 import logging
 import os
+import tempfile
 import time
 import urllib.error
 import urllib.request
@@ -131,6 +132,17 @@ def _cache_path(url: str) -> Path:
     return _CACHE_DIR / f"{h}.json"
 
 
+def _tmp_write_path(path: Path) -> Tuple[int, str]:
+    """Open a fresh, atomically-unique tmp file next to *path* (open fd + name).
+
+    Was ``path.with_suffix(path.suffix + ".tmp")`` -- ONE shared tmp name per
+    URL, so two concurrent same-URL writers could alias the same tmp inode
+    (torn JSON possible). ``tempfile.mkstemp`` guarantees OS-level unique
+    creation, so distinct writers never collide even within one process.
+    """
+    return tempfile.mkstemp(dir=str(path.parent), prefix=path.name + ".", suffix=".tmp")
+
+
 def disk_cache_get_meta(
     url: str,
     *,
@@ -180,12 +192,21 @@ def disk_cache_get_meta(
         _CACHE_DIR.mkdir(parents=True, exist_ok=True)
         # Atomic tmp + os.replace (mirrors transport._save_prefs in this same
         # tree): a reader of this cache entry must never see a half-written
-        # (torn) JSON file from a concurrent writer/crash.
-        tmp = path.with_suffix(path.suffix + ".tmp")
-        with tmp.open("w", encoding="utf-8") as fh:
-            json.dump({"_fetched_at": fetched_at, "_fetched_epoch": fetched_epoch,
-                       "_body": body}, fh)
-        os.replace(str(tmp), str(path))
+        # (torn) JSON file from a concurrent writer/crash. The tmp name itself
+        # is per-writer-unique (see _tmp_write_path) so two concurrent
+        # same-URL writers never alias one tmp inode.
+        fd, tmp_name = _tmp_write_path(path)
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as fh:
+                json.dump({"_fetched_at": fetched_at, "_fetched_epoch": fetched_epoch,
+                           "_body": body}, fh)
+            os.replace(tmp_name, str(path))
+        except Exception:
+            try:
+                os.remove(tmp_name)
+            except OSError:
+                pass
+            raise
     except Exception as exc:  # noqa: BLE001 -- cache write must never sink a fetch
         logger.debug("odds cache write skipped for %s: %s", url, exc)
     return body, fetched_at, False
