@@ -85,7 +85,10 @@ def _e(cat: str, sp: str, q: str, status: str, tier: str, keys: List[str] | None
 
 QA_BANK: List[QAEntry] = [
     # -- injury_report ---------------------------------------------------
-    _e("injury_report", "nba", "injury report for Lakers", "no_data", "SMOKE"),
+    # ok since 2026-07-18: team-nickname canonical bridge made the edge_facts
+    # injury store reachable for bare "Lakers" (was an honest no_data before).
+    _e("injury_report", "nba", "injury report for Lakers", "ok", "SMOKE",
+       ["matched_entity", "rows", "as_of"]),
     _e("injury_report", "mlb", "injury report for Yankees", "ok", "SMOKE",
        ["matched_entity", "rows", "as_of"]),
     _e("injury_report", "wnba", "injury report for Las Vegas Aces", "ok", "FULL",
@@ -94,7 +97,9 @@ QA_BANK: List[QAEntry] = [
     _e("injury_report", "soccer", "injury report for Manchester City WFC", "no_data", "FULL"),
 
     # -- news_context -----------------------------------------------------
-    _e("news_context", "nba", "news context for Lakers", "no_data", "FULL"),
+    # ok since 2026-07-18: same nickname bridge as nba_injury_report above.
+    _e("news_context", "nba", "news context for Lakers", "ok", "FULL",
+       ["matched_entity", "rows", "as_of"]),
     _e("news_context", "mlb", "news context for Yankees", "ok", "SMOKE",
        ["matched_entity", "rows", "as_of"]),
     _e("news_context", "wnba", "news context for Las Vegas Aces", "no_data", "FULL"),
@@ -299,14 +304,14 @@ QA_BANK.append({
     "id": "tennis_ranking_playstyle_fit",
     "question": "surface tilt leaders",
     "sport": "tennis",
-    "expect": {"category": "ranking", "status_one_of": ["ambiguous"], "receipt_required": False,
-               "must_contain_keys": ["candidates"]},
+    "expect": {"category": "verified_claims", "status_one_of": ["ok"], "receipt_required": True,
+               "must_contain_keys": ["ranking_excerpt", "validator_verdict"]},
     "tier": "FULL",
-    "note": "depth-wave-1 tennis_playstyle_fit_claims: real ambiguous collision against the "
-            "profiles registry's own surface_splits_{return,serve}_{Clay,Grass,Hard} attributes "
-            "(a different store than the claim family's grass_wr-clay_wr formula in "
-            "data/cache/intel_claims/tennis_playstyle_fit_claims.jsonl, which IS answerable:true "
-            "through intel_query.ask.ask(), verified separately).",
+    "note": "ok since 2026-07-18: the ranking-cue -> curated-claims reroute now serves the "
+            "validator-VERIFIED tennis_playstyle_fit_surface_tilt_career claim directly, "
+            "resolving the old ambiguous collision against the profiles registry's "
+            "surface_splits_{return,serve}_{Clay,Grass,Hard} attributes (that collision was "
+            "an honest refusal, this is the better answer -- receipts attached).",
 })
 
 QA_BANK.append({
