@@ -442,9 +442,14 @@ QA_BANK.append({
             "['ok','no_data'] only because a future re-run of the referee "
             "producer could drop/rename that specific official, not because the "
             "matcher itself is still in doubt (proven via "
-            "test_ask.py::test_entity_lookup_matches_name_keyed_row, synthetic). "
-            "ORCHESTRATOR MUST CONFIRM on real data: same resolve() call with "
-            "this question -> status ok, answer.entity_name == 'Leon Wood'.",
+            "test_ask.py::test_entity_lookup_matches_name_keyed_row AND "
+            "test_entity_lookup_name_keyed_via_index_fast_path -- the referee "
+            "family has a fresh index, so index_entity_lookup's name check is "
+            "the one that decides; it now uses the same player_name/entity_name/"
+            "entity_id fallback chain). ORCHESTRATOR MUST CONFIRM on real data: "
+            "same resolve() call with this question -> status ok, "
+            "family == 'entity_lookup' (NOT the family-level claims listing), "
+            "evidence[0].claim_id startswith 'nba_referee_crew_ft'.",
 })
 
 

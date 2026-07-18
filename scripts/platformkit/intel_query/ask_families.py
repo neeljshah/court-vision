@@ -79,7 +79,9 @@ def _filter_by_hints(rows: list[dict[str, Any]], parsed) -> list[dict[str, Any]]
     if parsed.window_hint:
         candidates = [r for r in candidates if r.get("criteria", {}).get("window") == parsed.window_hint]
     candidates = [
-        r for r in candidates if ask_index.entity_key_matches(r.get("criteria", {}).get("entity_key"), entity_type)
+        r for r in candidates
+        if ask_index.entity_key_matches(
+            r.get("criteria", {}).get("entity_key"), entity_type, r.get("claim_id", ""))
     ]
     return candidates
 
