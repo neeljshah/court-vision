@@ -66,12 +66,12 @@ MIN_TEAM_OTHER_FG3A = 500
 MIN_REST_SIDE_FG3A = 30
 
 
-def _load_season_rows() -> pd.DataFrame:
+def _load_season_rows(season: str = SEASON) -> pd.DataFrame:
     df = pd.read_parquet(
         _BOXSCORES,
         columns=["game_id", "date", "season", "team", "player_id", "player_name", "fg3m", "fg3a"],
     )
-    return df[df["season"] == SEASON].copy()
+    return df[df["season"] == season].copy()
 
 
 def _name_lookup(rows: pd.DataFrame) -> dict[int, str]:
@@ -143,7 +143,7 @@ def _rel(path: Path) -> str:
 
 def _assemble_claim(
     write_cols: pd.DataFrame, path: Path, metric_col: str, min_sample: dict[str, float],
-    names: dict[int, str], question: str, caveats: list[str], has_team: bool,
+    names: dict[int, str], question: str, caveats: list[str], has_team: bool, season: str = SEASON,
 ) -> dict[str, Any]:
     """Shared claim-assembly: floor-filter, rank desc, build ranking rows +
     the SHARED CLAIMS CONTRACT dict. All three dims here are a plain-column
@@ -170,13 +170,13 @@ def _assemble_claim(
         ranking.append(entry)
 
     return {
-        "claim_id": f"nba_{metric_col}_{SEASON}",
+        "claim_id": f"nba_{metric_col}_{season}",
         "kind": "ranking",
         "question": question,
         "criteria": {
             "metric": metric_col,
             "formula": metric_col,
-            "window": f"season_{SEASON}_nba",
+            "window": f"season_{season}_nba",
             "window_spec": None,
             "aggregate": None,
             "min_sample": min_sample,

@@ -31,6 +31,7 @@ from domains.basketball_nba.player_intel_shooting import (
     load_boxscores,
     rank_composite,
     rank_single_metric,
+    window_rows,
 )
 
 CLAIMS_PATH = Path("data/cache/intel_claims/nba_shooting_claims.jsonl")
@@ -119,7 +120,7 @@ def build_claims(df: pd.DataFrame, window: str, top_n: int = 10) -> list[dict]:
     computed_at = _now_iso()
 
     comp_survivors, comp_excluded = rank_composite(table)
-    comp_caveats = list(_window_caveats(window))
+    comp_caveats = list(_window_caveats(window, df))
     if len(comp_survivors) == 0:
         comp_caveats.append(
             f"EMPTY RESULT: 0 of {n_considered} players clear all composite floors "
@@ -186,24 +187,31 @@ def build_claims(df: pd.DataFrame, window: str, top_n: int = 10) -> list[dict]:
             "computed_at": computed_at,
             "n_considered": n_considered,
             "n_excluded_below_floor": excluded,
-            "caveats": _window_caveats(window),
+            "caveats": _window_caveats(window, df),
         })
     return claims
 
 
-def _window_caveats(window: str) -> list[str]:
-    if window == "season_2025-26":
+def _window_caveats(window: str, df: pd.DataFrame) -> list[str]:
+    """Season-window caveats derive their row-count/date-range text from the
+    ACTUAL rows on disk each run (never a hardcoded snapshot) -- a season
+    that was partial when this file was last edited (e.g. 2025-26 mid-season)
+    reads as full automatically once the boxscores parquet is refreshed,
+    with no stale-caveat drift."""
+    if window.startswith("season_"):
+        rows = window_rows(df, window)
+        n_rows = int(len(rows))
+        if n_rows == 0:
+            return [f"NO ROWS on disk for {window}."]
+        date_min, date_max = rows["date"].min(), rows["date"].max()
         return [
-            "PARTIAL SEASON: only 1630 player-game rows on disk (2025-10-21 to "
-            "2026-01-19, 74 games worth of team-slates) -- not a full 82-game season.",
-            "Small-sample variance is higher than a full season; treat as in-progress form.",
+            f"{n_rows} player-game rows on disk for {window} "
+            f"({date_min.date()} to {date_max.date()})."
         ]
-    if window == "season_2024-25":
-        return ["Full season on disk: 2024-10-22 to 2025-04-13, 26186 player-game rows."]
     if window == "last_20":
         return [
             f"Recency window = last {LAST_N_GAMES} games PLAYED per player (equal weight, "
-            "not exponentially decayed), pooled across 2024-25 and 2025-26 rows on disk.",
+            "not exponentially decayed), pooled across every season's rows on disk.",
             "Players who changed teams mid-window are pooled across teams (this module "
             "does not split by team).",
         ]

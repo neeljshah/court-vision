@@ -224,22 +224,31 @@ def write_claims(claims: list[dict[str, Any]], out_path: Path = _CLAIMS_OUT) -> 
     return out_path
 
 
+# Emitted seasons when --season is not given: 2024-25 (unchanged/byte-stable,
+# no atlas ingredient used here -- naive_comp is boxscore-only) + 2025-26
+# (boxscores.parquet now covers the full season, additive row in the SAME
+# store, 2024-25 row untouched).
+DEFAULT_SEASONS = (QUALIFY_SEASON, "2025-26")
+
+
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Emit NBA canonical shooter leaderboard ranking claim")
+    parser = argparse.ArgumentParser(description="Emit NBA canonical shooter leaderboard ranking claim(s)")
     parser.add_argument("--output", type=str, default=str(_CLAIMS_OUT))
-    parser.add_argument("--season", type=str, default=QUALIFY_SEASON)
+    parser.add_argument("--season", type=str, default=None, help="single season override; default emits both DEFAULT_SEASONS")
     args = parser.parse_args(argv)
 
-    claim = build_canonical_shooter_claim(args.season)
-    out_path = write_claims([claim], Path(args.output))
+    seasons = [args.season] if args.season else list(DEFAULT_SEASONS)
+    claims = [build_canonical_shooter_claim(s) for s in seasons]
+    out_path = write_claims(claims, Path(args.output))
 
-    print(
-        f"{claim['claim_id']}: top_name={claim['top_name']!r} "
-        f"n_considered={claim['n_considered']} n_excluded_below_floor={claim['n_excluded_below_floor']}"
-    )
-    for r in claim["ranking"][:5]:
-        print(f"  #{r['rank']} {r['player_name']} value={r['value']}")
-    print(f"wrote 1 claim -> {out_path}")
+    for claim in claims:
+        print(
+            f"{claim['claim_id']}: top_name={claim['top_name']!r} "
+            f"n_considered={claim['n_considered']} n_excluded_below_floor={claim['n_excluded_below_floor']}"
+        )
+        for r in claim["ranking"][:5]:
+            print(f"  #{r['rank']} {r['player_name']} value={r['value']}")
+    print(f"wrote {len(claims)} claims -> {out_path}")
     return 0
 
 

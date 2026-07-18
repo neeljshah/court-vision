@@ -36,7 +36,8 @@ from domains.basketball_nba.quality_indices import load_atlas
 from scripts.platformkit.predictive_validity.harness import MetricTest
 
 CUTOFFS = ["2023-12-01", "2024-01-01", "2024-02-01",
-           "2024-12-01", "2025-01-01", "2025-02-01"]
+           "2024-12-01", "2025-01-01", "2025-02-01",
+           "2025-12-01", "2026-01-01", "2026-02-01"]
 FORWARD_GAMES = 20
 MIN_ENTITIES_PER_FOLD = 80
 
