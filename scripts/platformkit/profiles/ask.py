@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import difflib
+import re
 import glob
 import importlib
 import json
@@ -194,14 +195,26 @@ def _match_attribute(sub: pd.DataFrame, tokens: list[str], reg: dict) -> str | N
     attrs = list(sub["attribute"].unique())
     # singular/plural-blind: 'rebound' must match 'rebounds' (found live
     # 2026-07-18: 'offensive rebound rate' missed oreb_per36's description)
+    _CANON = {"pts": "point", "pt": "point", "reb": "rebound", "rebs": "rebound",
+              "ast": "assist", "asts": "assist", "stl": "steal", "blk": "block",
+              "tov": "turnover", "fg": "field-goal", "min": "minute", "mins": "minute"}
+
     def _stem(ws):
-        # strip punctuation first ('season.' must equal 'season'), then
-        # plural-blind
+        # strip punctuation ('season.' == 'season'); split letter-digit
+        # boundaries ('per36' also yields 'per' + '36'); canonical box-stat
+        # abbreviations ('pts' == 'points'); then plural-blind
         out = set()
+        queue = []
         for w in ws:
             w = w.strip(".,()%/-:;!?")
             if not w:
                 continue
+            queue.append(w)
+            parts = re.findall(r"[a-z]+|\d+", w)
+            if len(parts) > 1:
+                queue.extend(parts)
+        for w in queue:
+            w = _CANON.get(w, w)
             out.add(w[:-1] if w.endswith("s") and len(w) > 3 else w)
         return out
     # stopwords never count toward a match -- else garbage input scores 1
