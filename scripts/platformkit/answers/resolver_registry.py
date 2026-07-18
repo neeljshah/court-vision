@@ -66,6 +66,7 @@ from scripts.platformkit.answers import contracts as _contracts
 from scripts.platformkit.answers import edge_facts_resolver as _edge_facts
 from scripts.platformkit.answers import effect_graph as _eg
 from scripts.platformkit.answers import leaderboard_resolver as _lb
+from scripts.platformkit.answers import player_compare as _pc
 from scripts.platformkit.answers import schedule_context_resolver as _schedule
 from scripts.platformkit.answers import winprob_dispatch as _winprob
 from scripts.platformkit.answers.registry_loader import SPORTS as _CONCEPT_SPORTS
@@ -254,6 +255,15 @@ RESOLVERS: dict[str, dict] = {
                         "blocked -> no_data, never recomputed here",
         "units": "Brier (binary) / RMSE (expected-score), as stored", "rounding": "none -- verbatim",
     },
+    "player_comparison": {
+        "resolver": "scripts.platformkit.answers.player_compare.compare",
+        "source_artifact": "data/cache/profiles/<sport>_player_profiles.parquet",
+        "computation": "reuses profiles/ask.py's fuzzy attribute matcher on the leftover query tokens; if a "
+                        "metric resolves, returns both entities' raw_value + which is higher; if none resolves, "
+                        "a declared default shared-attribute side-by-side (intersection, capped) -- never a "
+                        "single-sided guess, and both sides must be the SAME sport",
+        "units": "attribute-native per row (see attribute_registry.py per sport)", "rounding": "4 decimals",
+    },
     "matchup_preview": {
         "resolver": "scripts.platformkit.intel_query.compose_matchup.compose_matchup",
         "source_artifact": "scripts/platformkit/intel_query/compose_matchup.py (fan-out over shipped resolvers)",
@@ -413,6 +423,22 @@ def classify(query: str) -> str | None:
         return "scouting_report"
     if any(k in low for k in _COMPARABLES_KEYWORDS):
         return "comparables"
+    # player_comparison (2026-07-18): a comparison SHAPE ('vs'/'better than'/
+    # 'stack up'/'compared to'/'A and B matched up'/...) naming two entities
+    # that BOTH resolve as PLAYERS via the same profiles machinery winprob's
+    # sport-inference uses. Checked BEFORE _MATCHUP_PREVIEW_KEYWORDS because
+    # 'head-to-head'/'matchup between' also describe a two-PLAYER question
+    # (the entity-kind check inside is_two_player_comparison is what actually
+    # keeps team questions safe: "Lakers vs Celtics head-to-head" still
+    # resolves both names as TEAMS -> False -> falls through to
+    # matchup_preview unchanged). Guarded against `_CONCEPT_KEYWORDS` so it
+    # never shadows concept_rating's existing "vs "/"does "/"compare" route
+    # (e.g. "Trae Young vs LaMelo Ball on gravity" is a named-CONCEPT
+    # comparison, not a raw-attribute one -- qa_bank/test_answer_quality_nba.py
+    # cover it). A concept_rating MISS still reaches this composer via the
+    # bridge in resolve()'s concept_rating branch below.
+    if not any(k in low for k in _CONCEPT_KEYWORDS) and _pc.is_two_player_comparison(query):
+        return "player_comparison"
     if any(k in low for k in _MATCHUP_PREVIEW_KEYWORDS):
         return "matchup_preview"
     # verified_claims trigger 2: discovery/family words (end of chain, after
@@ -826,6 +852,8 @@ def resolve(query: str, sport: str = "nba", category: str | None = None, **kwarg
     if cat == "comparables":
         return _comparables.compose_comparables(sport, kwargs.get("player") or _entity_from_query(query),
                                                 k=kwargs.get("k", 5))
+    if cat == "player_comparison":
+        return _pc.compare(query, sport, **kwargs)
     if cat == "matchup_preview":
         home, away = _matchup_teams(query, kwargs)
         if not (home and away):
@@ -894,6 +922,16 @@ def resolve(query: str, sport: str = "nba", category: str | None = None, **kwarg
                 claims_env = _claims.resolve(query, sport=sport)
                 if claims_env.get("status") == "ok":
                     return claims_env
+            # concept miss + a real two-player comparison shape ('vs '/'does '
+            # /'compare' already routed here via _CONCEPT_KEYWORDS, but the
+            # query names no registered CONCEPT -- e.g. "X vs Y -- who carries
+            # higher three-point volume") -> the raw-attribute composer
+            # answers instead. A composer no_data keeps this concept refusal
+            # (the more specific of the two honest envelopes).
+            if _pc.is_two_player_comparison(query):
+                cmp_env = _pc.compare(query, sport=sport, **kwargs)
+                if cmp_env.get("status") == "ok":
+                    return cmp_env
             return {"status": "no_data", "category": cat, "sport": sport, "note": result["error"]}
         return {"status": "ok", "category": cat, "sport": sport,
                  "source_artifact": f"domains/{ 'basketball_nba' if sport=='nba' else sport }/concepts/concept_registry.py",
