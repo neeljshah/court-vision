@@ -236,10 +236,13 @@ def write_claims(all_claims: list[dict]) -> None:
 
 def write_answers_md(all_claims: list[dict]) -> None:
     lines = ["# NBA Shooting Intel -- Answers (auto-generated, do not hand-edit)", ""]
+    # No hardcoded season/date coverage here (a "partial, through <date>"
+    # literal went stale) -- each claim's caveats already carry the derived
+    # row-count/date-range from _window_caveats, computed from disk each run.
     lines.append(
         "Source: data/domains/basketball_nba/player_boxscores.parquet "
-        "(raw per-player-per-game rows). Seasons on disk: 2024-25 (full), "
-        "2025-26 (partial, through 2026-01-19)."
+        "(raw per-player-per-game rows); per-window coverage is stated in "
+        "each section's CAVEAT lines, derived from the rows on disk."
     )
     lines.append("")
     for c in all_claims:

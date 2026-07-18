@@ -48,6 +48,9 @@ _BEST_STORES: tuple[str, ...] = (
     "nba_quality_claims.jsonl",
     "nba_context_shooting_claims.jsonl",
     "shooter_composite_v2_claims.jsonl",
+    # 2026-07-19 store split: the 2025-26 asof_approx season_fallback claim
+    # moved to its own store (was clobbering shooter_composite_v2_claims.jsonl).
+    "shooter_composite_v2_asof_approx_claims.jsonl",
 )
 
 COMPOSITION_RULE = (

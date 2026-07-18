@@ -140,3 +140,6 @@ def test_build_all_claims_never_empty_with_data(tmp_path, monkeypatch):
     claims = m.build_all_claims(tmp_path)
     assert len(claims) == 6  # 3 metrics x (1 year + 1 pooled)
     assert all(c["ranking"] is not None for c in claims)  # rankings key always present (may be [])
+    # invariant (2026-07-19 review fix): every emitted claim declares
+    # edge_claimed False, matching every sibling claim producer.
+    assert all(c["edge_claimed"] is False for c in claims)

@@ -121,6 +121,20 @@ def test_honest_caveats_and_edge_claimed_false(small_floors):
         assert "floor" in blob.lower() or "n_b2b" in blob
 
 
+def test_zero_qualifier_season_emits_nothing_and_prints_skip(tmp_path, capsys):
+    # DEFAULT floors (10/20/100) -- nobody in the tiny fixture qualifies, so
+    # every ranking is empty: write_claims must emit NO rows + print SKIP
+    # (mirrors nba_teammate_context_claims' skip idiom).
+    snap = rc.build_snapshot(_box(), SEASON)
+    claims = rc.build_claims_for_season(snap, SEASON, rc._OUT_DIR / "unused.parquet")
+    assert all(not c["ranking"] for c in claims)
+
+    out_path = rc.write_claims(claims, tmp_path / "out.jsonl")
+    assert out_path.read_text(encoding="ascii") == ""
+    captured = capsys.readouterr().out
+    assert captured.count("SKIP") == len(claims)
+
+
 def test_validator_verifies_end_to_end(small_floors, tmp_path, monkeypatch):
     monkeypatch.setattr(rc, "REPO_ROOT", tmp_path.parent)
     snap = rc.build_snapshot(_box(), SEASON)
