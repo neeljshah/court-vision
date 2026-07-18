@@ -30,7 +30,9 @@ from domains.basketball_wnba.profiles.ingredients_home_away import BUILDERS as H
 from domains.basketball_wnba.profiles.ingredients_last10 import BUILDERS as LAST10_BUILDERS
 from domains.basketball_wnba.profiles.ingredients_lineup import BUILDERS as LINEUP_BUILDERS
 from domains.basketball_wnba.profiles.ingredients_player import BUILDERS as PLAYER_BUILDERS
-from domains.basketball_wnba.profiles.ingredients_schedule_rest import BUILDERS as SCHEDULE_REST_BUILDERS
+from domains.basketball_wnba.profiles.ingredients_schedule_rest import (
+    BUILDERS as SCHEDULE_REST_BUILDERS, attach_team_names,
+)
 from domains.basketball_wnba.profiles.ingredients_team_form import BUILDERS as TEAM_FORM_BUILDERS
 from domains.basketball_wnba.profiles.ingredients_zone import BUILDERS as ZONE_BUILDERS
 from domains.basketball_wnba.profiles.source_shots import load_all_shots
@@ -69,7 +71,10 @@ _FRAME_LOADERS: dict[str, Callable[[], pd.DataFrame]] = {
     **{attr: (lambda: pd.read_parquet(_LINEUPS_DIR / "zone_onoff_wnba_2026.parquet")) for attr in DEFZONE_BUILDERS},
     **{attr: load_boxscores for attr in LAST10_BUILDERS},
     **{attr: load_boxscores for attr in HOME_AWAY_BUILDERS},
-    **{attr: load_boxscores for attr in SCHEDULE_REST_BUILDERS},
+    # schedule-rest: boxscores + scoreboard-resolved team_name so the team
+    # attrs land on the SAME display-name entity as team_form (07-18 fix)
+    **{attr: (lambda: attach_team_names(load_boxscores(), _load_scoreboard()))
+       for attr in SCHEDULE_REST_BUILDERS},
     **{attr: _load_scoreboard for attr in TEAM_FORM_BUILDERS},
 }
 assert set(_FRAME_LOADERS) == set(ATTRIBUTES), f"loader/registry mismatch: {set(ATTRIBUTES) ^ set(_FRAME_LOADERS)}"

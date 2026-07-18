@@ -283,26 +283,27 @@ ATTRIBUTES: dict[str, dict[str, Any]] = {
         "weight_ledger_family": "descriptive", "source_files": _BOXSCORE_SRC,
     },
     # ---------------------------------------------------- team: schedule/rest
-    # 2026-07-18 build spec: derived from boxscore team_id's own distinct
-    # (team_id, game_date) sequence -- entity_name falls back to str(team_id)
-    # (no id->name map on disk for this namespace, see module docstring).
-    "avg_rest_days": {
-        "description": "Mean days of rest between this team's consecutive games this season.",
-        "entity": "team", "ingredients": ["b2b_count", "games_with_known_rest"],
-        "formula": "mean(rest_days)", "status": "DESCRIPTIVE", "floor": 10,
-        "weight_ledger_family": "descriptive", "source_files": _BOXSCORE_SRC,
-    },
-    "b2b_rate": {
-        "description": "Share of this team's games played on <=1 day of rest (true back-to-backs).",
-        "entity": "team", "ingredients": ["b2b_count", "games_with_known_rest"],
-        "formula": "mean(rest_days<=1)", "status": "DESCRIPTIVE", "floor": 10,
-        "weight_ledger_family": "descriptive", "source_files": _BOXSCORE_SRC,
-    },
-    "short_rest_rate": {
-        "description": "Share of this team's games played on <=2 days of rest.",
-        "entity": "team", "ingredients": ["b2b_count", "games_with_known_rest"],
-        "formula": "mean(rest_days<=2)", "status": "DESCRIPTIVE", "floor": 10,
-        "weight_ledger_family": "descriptive", "source_files": _BOXSCORE_SRC,
+    # 2026-07-18 build spec: rest derived from boxscore team_id's own distinct
+    # (team_id, game_date) sequence; entity_id/name = espn_scoreboard display
+    # name via ingredients_schedule_rest.attach_team_names (SAME entity space
+    # as the team_form attrs below -- 07-18 fix, numeric-id twin entities made
+    # these unreachable by name).
+    **{
+        _name: {
+            "description": _desc, "entity": "team",
+            "ingredients": ["b2b_count", "games_with_known_rest"],
+            "formula": _formula, "status": "DESCRIPTIVE", "floor": 10,
+            "weight_ledger_family": "descriptive",
+            "source_files": _BOXSCORE_SRC + ["data/domains/wnba/espn_scoreboard.parquet"],
+        }
+        for _name, _desc, _formula in [
+            ("avg_rest_days", "Mean days of rest between this team's consecutive games this season.",
+             "mean(rest_days)"),
+            ("b2b_rate", "Share of this team's games played on <=1 day of rest (true back-to-backs).",
+             "mean(rest_days<=1)"),
+            ("short_rest_rate", "Share of this team's games played on <=2 days of rest.",
+             "mean(rest_days<=2)"),
+        ]
     },
     # ---------------------------------------------------------- team: form
     # 2026-07-18 build spec (wnba_team_form), off espn_scoreboard.parquet

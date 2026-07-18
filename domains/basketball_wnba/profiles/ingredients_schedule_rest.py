@@ -9,10 +9,15 @@ Team-grain (entity="team", floor=TEAM_FLOOR games-with-known-rest):
   computed from each team's own distinct (team_id, game_date) sequence, so a
   team's first game in the corpus has no prior game and is EXCLUDED (rest
   undefined, never zero-filled).
-  entity_name falls back to str(team_id): this source's namespace has no
-  team_id->name map on disk -- same degraded fallback scripts.platformkit.
-  profiles.ask's _drop_fallback_id_dupes docstring already describes for
-  other sports (entity_id == entity_name).
+  entity_id/entity_name = the espn_scoreboard DISPLAY NAME ("Las Vegas
+  Aces"), resolved from boxscore numeric team_id by attach_team_names()'s
+  home-date vote-join -- the SAME entity space ingredients_team_form.py
+  uses, so one team carries BOTH families' attributes (2026-07-18 fix: the
+  numeric-id twin entity made these attrs unreachable by name). Verified on
+  real data: all 15 WNBA teams map with the winner >=3 votes ahead of any
+  runner-up; the two national-team exhibition ids (NIGERIA/JAPAN, no home
+  games in the scoreboard) fall back to str(team_id) and can never clear
+  the floor=10 anyway.
 
 Player-grain (entity="player", floor=PLAYER_FLOOR = min(n_short, n_long)):
   rest_split_pts_per36, rest_split_efg -- delta (short-rest minus long-rest)
@@ -46,11 +51,39 @@ from typing import Callable
 
 import pandas as pd
 
+from domains.basketball_wnba.profiles.ingredients_team_form import SEASON
+
 TEAM_FLOOR = 10  # games-with-known-rest, declared (spec gave no explicit team floor for this family)
 SHORT_REST_MAX = 2  # days -- PLAYER split short-rest group (looser than b2b's <=1 cut, see HONESTY FLAG)
 LONG_REST_MIN = 3
 BOOTSTRAP_ITERS = 2000
 BOOTSTRAP_SEED = 7
+
+
+def attach_team_names(box: pd.DataFrame, scoreboard: pd.DataFrame) -> pd.DataFrame:
+    """Attach a team_name column (espn_scoreboard display name -- the entity
+    space ingredients_team_form.py keys on) to the boxscore frame by
+    HOME-DATE VOTE: for each team_id, join its distinct home game_dates to
+    the scoreboard's home_team names on that date and take the majority name.
+    A team's true name appears on every one of its home dates; a co-hosting
+    name only on shared dates -- verified unambiguous on real 2026 data
+    (winner >=3 votes clear). Unmapped ids (national-team exhibitions with
+    no scoreboard home games) get NaN team_name -> builders fall back to
+    str(team_id).
+    ponytail: vote-join instead of a hardcoded id->name table -- expansion
+    teams keep working without a fossil dict; revisit only if a future
+    season's boxscore drops is_home."""
+    sb = scoreboard[scoreboard["season"].astype(str) == SEASON].copy()
+    sb["date_str"] = pd.to_datetime(sb["date"]).dt.strftime("%Y-%m-%d")
+    home = box[box["is_home"]].drop_duplicates(["team_id", "game_date"])[["team_id", "game_date"]].copy()
+    home["game_date"] = pd.to_datetime(home["game_date"]).dt.strftime("%Y-%m-%d")
+    joined = home.merge(sb[["date_str", "home_team"]], left_on="game_date", right_on="date_str")
+    votes = joined.groupby(["team_id", "home_team"]).size().reset_index(name="n")
+    best = votes.sort_values(["n", "home_team"]).groupby("team_id").tail(1)  # deterministic tie-break
+    name_map = dict(zip(best["team_id"], best["home_team"]))
+    out = box.copy()
+    out["team_name"] = out["team_id"].map(name_map)
+    return out
 
 
 def _team_game_rest(df: pd.DataFrame) -> pd.DataFrame:
@@ -79,8 +112,15 @@ def _team_rest_metric_builder(metric: str) -> Callable[[pd.DataFrame], pd.DataFr
         b2b_count = g["rest_days"].apply(lambda s: int((s <= 1).sum()))
         out = pd.DataFrame({"team_id": value.index, "raw_value": value.values, "n": n.values,
                              "b2b_count": b2b_count.values})
-        out["entity_id"] = out["team_id"].astype(str)
-        out["entity_name"] = out["entity_id"]  # no team_id->name map on disk for this source, see docstring
+        # display-name entity space (same as ingredients_team_form) via the
+        # loader-attached team_name column; str(team_id) fallback for
+        # unmapped ids or a frame loaded without attach_team_names.
+        if "team_name" in df.columns:
+            names = df.dropna(subset=["team_name"]).drop_duplicates("team_id").set_index("team_id")["team_name"]
+        else:
+            names = pd.Series(dtype=object)
+        out["entity_id"] = out["team_id"].map(lambda t: str(names.get(t, t)))
+        out["entity_name"] = out["entity_id"]
         out["ingredients"] = out.apply(lambda r: {
             "b2b_count": int(r.b2b_count), "games_with_known_rest": int(r.n),
         }, axis=1)

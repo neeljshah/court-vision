@@ -14,7 +14,10 @@ import pandas as pd
 import pytest
 
 from domains.basketball_wnba.profiles.attribute_registry import ATTRIBUTES
-from domains.basketball_wnba.profiles.ingredients_schedule_rest import BUILDERS, _team_game_rest
+from domains.basketball_wnba.profiles.ingredients_schedule_rest import (
+    BUILDERS, _team_game_rest, attach_team_names,
+)
+from domains.basketball_wnba.profiles.ingredients_team_form import BUILDERS as TEAM_FORM_BUILDERS
 
 
 def _make_dates(n: int, deltas: list[int]) -> list[date]:
@@ -105,6 +108,48 @@ def test_player_rest_split_hand_computed_delta_and_ci_determinism():
     floor = ATTRIBUTES["rest_split_pts_per36"]["floor"]
     qualified = out_pts[out_pts["n"] >= floor]
     assert "200" not in qualified.index
+
+
+def _synthetic_scoreboard() -> pd.DataFrame:
+    """espn_scoreboard-shaped frame covering team 1's home dates (Team X) --
+    with a SECOND game (Team Y home) on one shared date so the vote must
+    disambiguate, plus team 2 (Team Z) home games."""
+    dates1 = _make_dates(13, [2, 4])
+    rows = []
+    for d in dates1:
+        rows.append({"date": str(d), "season": "2026", "home_team": "Team X", "away_team": "Other",
+                     "home_score": 80, "away_score": 70, "home_win": 1.0})
+    # co-hosted date: Team Y also home on team 1's first date (vote noise)
+    rows.append({"date": str(dates1[0]), "season": "2026", "home_team": "Team Y", "away_team": "Other2",
+                 "home_score": 90, "away_score": 60, "home_win": 1.0})
+    for d in ["2026-02-01", "2026-02-03", "2026-02-04", "2026-02-08"]:
+        rows.append({"date": d, "season": "2026", "home_team": "Team Z", "away_team": "Team X",
+                     "home_score": 75, "away_score": 85, "home_win": 0.0})
+    return pd.DataFrame(rows)
+
+
+def test_attach_team_names_vote_map_and_unmapped_fallback():
+    box = _synthetic_frame()
+    named = attach_team_names(box, _synthetic_scoreboard())
+    by_team = named.dropna(subset=["team_name"]).drop_duplicates("team_id").set_index("team_id")["team_name"]
+    assert by_team[1] == "Team X"  # majority (13 votes) beats the co-hosted date's 1 Team Y vote
+    # team 2 is is_home=False in every boxscore row -> no home votes -> NaN name
+    assert named[named["team_id"] == 2]["team_name"].isna().all()
+    out = BUILDERS["b2b_rate"](named).set_index("entity_id")
+    assert "Team X" in out.index      # mapped: display-name entity
+    assert "2" in out.index           # unmapped: str(team_id) fallback
+
+
+def test_rest_and_form_builders_share_one_entity_id():
+    """THE 07-18 fix's contract: for a team present in both sources, the
+    schedule-rest builders and the team_form builders must emit the SAME
+    entity_id (espn display name), so one profile entity carries both
+    families' attributes -- no numeric-id twin."""
+    box = _synthetic_frame()
+    sb = _synthetic_scoreboard()
+    rest_ids = set(BUILDERS["avg_rest_days"](attach_team_names(box, sb))["entity_id"])
+    form_ids = set(TEAM_FORM_BUILDERS["win_pct"](sb)["entity_id"])
+    assert "Team X" in rest_ids and "Team X" in form_ids
 
 
 if __name__ == "__main__":
