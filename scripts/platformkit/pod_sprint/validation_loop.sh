@@ -30,9 +30,11 @@ while true; do
         "$PY" -m scripts.platformkit.intel_validation.claims_validator "$f" \
             --output "${f%.jsonl}_validation.json" >> "$VLOG" 2>&1
     done
-    N_VER=$(grep -ho 'n_claims=[0-9]*' "$VLOG" | cut -d= -f2 | paste -sd+ | bc 2>/dev/null || echo 0)
-    N_OK=$(grep -ho 'verified=[0-9]*' "$VLOG" | cut -d= -f2 | paste -sd+ | bc 2>/dev/null || echo 0)
-    N_MIS=$(grep -ho 'mismatch=[0-9]*' "$VLOG" | cut -d= -f2 | paste -sd+ | bc 2>/dev/null || echo 0)
+    # awk, not bc: the pod image ships without bc, which silently zeroed
+    # these counters in the trend line (caught 2026-07-18 cycle 1).
+    N_VER=$(grep -ho 'n_claims=[0-9]*' "$VLOG" | cut -d= -f2 | awk '{s+=$1} END {print s+0}')
+    N_OK=$(grep -ho 'verified=[0-9]*' "$VLOG" | cut -d= -f2 | awk '{s+=$1} END {print s+0}')
+    N_MIS=$(grep -ho 'mismatch=[0-9]*' "$VLOG" | cut -d= -f2 | awk '{s+=$1} END {print s+0}')
 
     # 2. QA bank FULL
     "$PY" -m scripts.platformkit.answers.qa_runner --tier FULL \
