@@ -178,9 +178,14 @@ def disk_cache_get_meta(
     fetched_at = _epoch_to_iso(fetched_epoch)
     try:
         _CACHE_DIR.mkdir(parents=True, exist_ok=True)
-        with path.open("w", encoding="utf-8") as fh:
+        # Atomic tmp + os.replace (mirrors transport._save_prefs in this same
+        # tree): a reader of this cache entry must never see a half-written
+        # (torn) JSON file from a concurrent writer/crash.
+        tmp = path.with_suffix(path.suffix + ".tmp")
+        with tmp.open("w", encoding="utf-8") as fh:
             json.dump({"_fetched_at": fetched_at, "_fetched_epoch": fetched_epoch,
                        "_body": body}, fh)
+        os.replace(str(tmp), str(path))
     except Exception as exc:  # noqa: BLE001 -- cache write must never sink a fetch
         logger.debug("odds cache write skipped for %s: %s", url, exc)
     return body, fetched_at, False

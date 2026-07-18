@@ -73,6 +73,18 @@ def test_capacity_scales_with_rate_share(tmp_path):
     assert snap_gov._capacity > cap_gov._capacity
 
 
+def test_unknown_caller_gets_small_fallback_share_not_half(tmp_path):
+    """A typo'd/unregistered caller string must NOT get half the fleet budget --
+    only a small (0.05) default share, well below every registered caller."""
+    gov = krg.KalshiRateGovernor(caller="totally_unregistered_typo",
+                                 state_path=tmp_path / "u.json",
+                                 clock=_FakeClock().now, sleep_fn=lambda s: None)
+    assert gov._base_rate == pytest.approx(max(0.1, krg.BASE_RPS * 0.05))
+    registered = krg.KalshiRateGovernor(caller="capture", state_path=tmp_path / "r.json",
+                                        clock=_FakeClock().now, sleep_fn=lambda s: None)
+    assert gov._capacity < registered._capacity
+
+
 def test_explicit_rate_share_overrides_caller_default(tmp_path):
     gov_default = krg.KalshiRateGovernor(caller="capture", state_path=tmp_path / "a.json",
                                          clock=_FakeClock().now, sleep_fn=lambda s: None)

@@ -54,6 +54,31 @@ def test_cached_body_reports_original_fetched_at_not_now(tmp_path, monkeypatch):
     assert fetched2 == fetched1  # ORIGINAL fetch time, never re-stamped to now()
 
 
+def test_cache_write_is_atomic_tmp_replace_no_tmp_left(tmp_path, monkeypatch):
+    """The cache-file write on a miss must go tmp + os.replace (like
+    transport._save_prefs) so a reader never sees a half-written meta file, and
+    the sibling .tmp must be gone afterward."""
+    monkeypatch.setattr(hc, "_CACHE_DIR", tmp_path)
+
+    def fake_get(_url):
+        return {"markets": ["a", "b"]}
+
+    body, _fetched, hit = hc.disk_cache_get_meta(
+        URL, http_get=fake_get, ttl=60.0, now=lambda: 5000.0)
+    assert hit is False
+    assert body == {"markets": ["a", "b"]}
+    cache_path = hc._cache_path(URL)
+    assert cache_path.exists()
+    assert not cache_path.with_suffix(cache_path.suffix + ".tmp").exists()
+    # A second call within the TTL reads the same body back from disk (proves
+    # the written file is a complete, loadable JSON document, not a torn write).
+    body2, _f2, hit2 = hc.disk_cache_get_meta(
+        URL, http_get=lambda _u: (_ for _ in ()).throw(AssertionError("no network")),
+        ttl=60.0, now=lambda: 5010.0)
+    assert hit2 is True
+    assert body2 == body
+
+
 def test_expired_entry_refetches_live(tmp_path, monkeypatch):
     monkeypatch.setattr(hc, "_CACHE_DIR", tmp_path)
     clock = {"t": 2000.0}

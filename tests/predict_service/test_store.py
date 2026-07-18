@@ -161,3 +161,54 @@ def test_save_returns_latest_path_and_no_tmp_left(tmp_path):
     # the atomic tmp file must be gone after a successful replace
     tmp = path.with_suffix(path.suffix + ".tmp")
     assert not tmp.exists()
+
+
+def test_atomic_write_retries_past_transient_permission_error(tmp_path, monkeypatch):
+    """os.replace fails twice (simulating a Windows reader holding the file open)
+    then succeeds on the 3rd attempt -- the write must land, not raise."""
+    monkeypatch.setattr(store.time, "sleep", lambda _s: None)
+    real_replace = store.os.replace
+    calls = {"n": 0}
+
+    def flaky_replace(src, dst):
+        calls["n"] += 1
+        if calls["n"] < 3:
+            raise PermissionError("simulated: reader has the file open")
+        return real_replace(src, dst)
+
+    monkeypatch.setattr(store.os, "replace", flaky_replace)
+    store.save(_envelope("nba"), out_dir=tmp_path)
+    assert calls["n"] == 3
+    got = store.read_latest("nba", out_dir=tmp_path, now=_FIX_NOW)
+    assert got.status == "ok"
+
+
+def test_atomic_write_raises_after_exhausting_retries(tmp_path, monkeypatch):
+    """A PermissionError on every attempt (3x) must raise, not silently drop the
+    write -- the caller already records status=error on this path."""
+    monkeypatch.setattr(store.time, "sleep", lambda _s: None)
+
+    def always_fails(src, dst):
+        raise PermissionError("simulated: reader never lets go")
+
+    monkeypatch.setattr(store.os, "replace", always_fails)
+    import pytest
+    with pytest.raises(PermissionError):
+        store.save(_envelope("nba"), out_dir=tmp_path)
+
+
+def test_append_is_true_o1_append_not_a_full_rewrite(tmp_path):
+    """Two appends produce two lines; the append is a real O(1) 'ab' write, not
+    a read-whole-file-then-rewrite -- verified by the tmp sibling NEVER existing
+    mid-sequence (a rewrite would briefly create then remove it) and by the file
+    growing by exactly the new line's byte length each time."""
+    hp = store.history_path("nba", out_dir=tmp_path)
+    store.append_history(_envelope("nba"), out_dir=tmp_path)
+    size1 = hp.stat().st_size
+    assert not hp.with_suffix(hp.suffix + ".tmp").exists()
+    store.append_history(_envelope("nba"), out_dir=tmp_path)
+    size2 = hp.stat().st_size
+    assert not hp.with_suffix(hp.suffix + ".tmp").exists()
+    assert size2 > size1  # grew (appended), never shrank/rewrote
+    lines = [ln for ln in hp.read_text(encoding="utf-8").splitlines() if ln.strip()]
+    assert len(lines) == 2

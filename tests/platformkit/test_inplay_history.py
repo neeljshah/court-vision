@@ -11,6 +11,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from scripts.platformkit.odds_provider import inplay_history as ih
 from scripts.platformkit.odds_provider.inplay_history import (
     fetch_price_history,
     fetch_price_history_polymarket,
@@ -108,6 +109,45 @@ def test_empty_or_bad_body_yields_empty_list():
 
     assert fetch_price_history("S", "T", 0, 1, http=_boom) == []
     assert fetch_price_history_polymarket("x", http=_boom) == []
+
+
+def test_kalshi_candles_governor_caller_gates_the_request(monkeypatch):
+    """governor_caller="inplay_history" resolves a REAL governor and acquires a
+    token before the HTTP call; the default (None, every pre-existing caller)
+    resolves to governor=None so before_request is a no-op."""
+    calls = []
+    real_before = ih._governor_before
+
+    def spy_before(governor, sport):
+        calls.append(governor is not None)
+        return real_before(governor, sport)
+
+    monkeypatch.setattr(ih, "_governor_before", spy_before)
+    fetch_price_history("", "KXWCGAME-26JUN18MEXKOR-MEX", 0, 1, 60,
+                        sport="soccer_intl", http=_fake_http(_KALSHI_BODY),
+                        governor_caller="inplay_history")
+    assert calls == [True]
+
+    calls.clear()
+    fetch_price_history("", "KXWCGAME-26JUN18MEXKOR-MEX", 0, 1, 60,
+                        sport="soccer_intl", http=_fake_http(_KALSHI_BODY))
+    assert calls == [False]  # unpaced by default -- byte-identical for old callers
+
+
+def test_kalshi_candles_429_reports_to_governor(monkeypatch):
+    """A 429 on the governed path must report_429 so the shared backoff engages."""
+    import urllib.error
+
+    reported = []
+    monkeypatch.setattr(ih, "_governor_report_429", lambda gov: reported.append(gov))
+
+    def raise_429(url):
+        raise urllib.error.HTTPError(url, 429, "Too Many Requests", {}, None)
+
+    fetch_price_history("", "T-1", 0, 1, http=raise_429,
+                        governor_caller="inplay_history")
+    assert len(reported) == 1
+    assert reported[0] is not None
 
 
 def test_committed_real_fixtures_are_valid_schema():

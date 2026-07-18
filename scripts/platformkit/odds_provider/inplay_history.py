@@ -10,21 +10,21 @@ harness consumes:
    "ts": str (ISO-8601 UTC, e.g. "2026-06-18T22:30:00Z")}
 
 Sources (NO auth -- only trading needs keys):
-  * Kalshi candlesticks:
-      GET /series/{series}/markets/{ticker}/candlesticks
-          ?start_ts=&end_ts=&period_interval={1|60|1440}
-    Each candle: end_period_ts (unix s) + price.close_dollars (a YES dollar value
-    in [0,1] == implied prob) with a yes_bid/yes_ask mid fallback. NOTE: the live
-    public API quotes the *_dollars fields ALREADY in [0,1] (not cents), so prob =
-    that value directly; if a raw integer-cents 'price' field is ever seen instead
-    we divide by 100 (see _candle_prob).
-  * Polymarket CLOB prices-history:
-      GET /prices-history?market={clob_token_id}&interval={1h|1d|max}&fidelity=
-    Returns {"history":[{"t":unix_s,"p":prob_in_[0,1]}, ...]} -- p is already a
-    probability (CLOB mid/last), used directly.
+  * Kalshi candlesticks: GET /series/{series}/markets/{ticker}/candlesticks
+    ?start_ts=&end_ts=&period_interval={1|60|1440}. Each candle: end_period_ts
+    (unix s) + price.close_dollars (a YES dollar value in [0,1] == implied
+    prob) with a yes_bid/yes_ask mid fallback. The live public API quotes
+    *_dollars fields ALREADY in [0,1]; a raw integer-cents 'price' is divided
+    by 100 (see _candle_prob).
+  * Polymarket CLOB prices-history: GET /prices-history?market={clob_token_id}
+    &interval={1h|1d|max}&fidelity=. Returns {"history":[{"t":unix_s,
+    "p":prob_in_[0,1]}, ...]} -- p is already a probability, used directly.
 
 The http getter is INJECTED so tests run offline on canned payloads. We NEVER
 fabricate a point: a malformed / out-of-range candle is SKIPPED, not invented.
+Cross-process pacing (finding 20, previously unpaced): the Kalshi candlestick
+fetch takes an optional governor_caller (kalshi_rate_governor), None =
+unpaced/byte-identical. Polymarket is a different venue, not Kalshi-paced.
 
 INVARIANTS: build only under scripts/platformkit/; <=300 LOC; ASCII only;
 stdlib only; no $-edge claims. Per-file test:
@@ -39,6 +39,9 @@ from datetime import datetime, timezone
 from typing import Any, Callable, Dict, List, Optional
 
 from .http_cache import http_get_json
+from .kalshi_pacing import is_429 as _is_429
+from .kalshi_rate_governor import before_request as _governor_before
+from .kalshi_rate_governor import report_429 as _governor_report_429, resolve_governor as _resolve_governor
 
 logger = logging.getLogger(__name__)
 
@@ -62,11 +65,9 @@ def _iso_utc(unix_seconds: Any) -> Optional[str]:
 def _to_prob(value: Any) -> Optional[float]:
     """Coerce a price to an implied prob in [0,1].
 
-    The Kalshi public API quotes *_dollars already in [0,1]; a bare INTEGER-cents
-    value in [2,100] is divided by 100. A value in (1,2) is ambiguous/malformed
-    and rejected (a real prob never exceeds 1; a real cents value is an integer).
-    Out-of-range / non-numeric -> None.
-    """
+    The Kalshi public API quotes *_dollars already in [0,1]; a bare INTEGER-
+    cents value in [2,100] is divided by 100. A value in (1,2) is
+    ambiguous/malformed and rejected. Out-of-range / non-numeric -> None."""
     try:
         v = float(value)
     except (TypeError, ValueError):
@@ -123,13 +124,16 @@ def fetch_price_history(
     market_type: str = "moneyline",
     game_id: str = "",
     http: HttpGet = http_get_json,
+    governor_caller: Optional[str] = None,
 ) -> List[Tick]:
     """Kalshi candlesticks -> list of canonical tick-dicts (chronological).
 
     *series_ticker* may be empty -> derived from *market_ticker*. *start_ts*/
     *end_ts* are unix seconds; *period_interval* is minutes (1|60|1440). *http*
-    is injected for offline tests. Never raises: a network/parse failure or empty
-    body yields []; an unusable candle is skipped (never fabricated).
+    is injected for offline tests. *governor_caller* opt-in cross-process
+    pacing (None = unpaced, byte-identical for every pre-existing caller).
+    Never raises: a network/parse failure or empty body yields []; an unusable
+    candle is skipped (never fabricated).
     """
     series = series_ticker or series_from_ticker(market_ticker)
     params = urllib.parse.urlencode({
@@ -138,10 +142,14 @@ def fetch_price_history(
     })
     url = "%s/series/%s/markets/%s/candlesticks?%s" % (
         KALSHI_BASE, series, market_ticker, params)
+    governor = _resolve_governor(governor_caller)
+    _governor_before(governor, sport)
     try:
         body = http(url)
     except Exception as exc:  # noqa: BLE001 -- degrade, never bubble
         logger.warning("kalshi candlesticks failed for %s: %s", market_ticker, exc)
+        if _is_429(exc):
+            _governor_report_429(governor)
         return []
     candles = body.get("candlesticks") if isinstance(body, dict) else None
     if not isinstance(candles, list):
@@ -177,10 +185,9 @@ def fetch_price_history_polymarket(
 ) -> List[Tick]:
     """Polymarket CLOB prices-history -> list of canonical tick-dicts.
 
-    *clob_token_id* is a market token id; *interval* one of {1h|1d|max}; *fidelity*
-    is the bar width in minutes. *http* injected for offline tests. Never raises:
-    failures/empty -> []; a point with no usable prob/ts is skipped.
-    """
+    *clob_token_id* is a market token id; *interval* one of {1h|1d|max};
+    *fidelity* is the bar width in minutes. *http* injected for offline tests.
+    Never raises: failures/empty -> []; an unusable point is skipped."""
     params = urllib.parse.urlencode({
         "market": str(clob_token_id), "interval": interval,
         "fidelity": int(fidelity),
@@ -250,6 +257,8 @@ def _capture_cli(argv: Optional[List[str]] = None) -> int:
     ap.add_argument("--fidelity", type=int, default=1)
     ap.add_argument("--lookback-days", type=int, default=3)
     ap.add_argument("--max-rows", type=int, default=200)
+    ap.add_argument("--governor-caller", default="inplay_history",
+                    help="kalshi_rate_governor caller id (empty string = unpaced)")
     ap.add_argument("--out", required=True)
     a = ap.parse_args(argv)
 
@@ -258,7 +267,7 @@ def _capture_cli(argv: Optional[List[str]] = None) -> int:
         ticks = fetch_price_history(
             a.series, a.ticker, now - a.lookback_days * 86400, now,
             a.period_interval, sport=a.sport, side=a.side,
-            market_type=a.market_type)
+            market_type=a.market_type, governor_caller=a.governor_caller or None)
     else:
         ticks = fetch_price_history_polymarket(
             a.token, a.interval, a.fidelity, sport=a.sport, side=a.side,

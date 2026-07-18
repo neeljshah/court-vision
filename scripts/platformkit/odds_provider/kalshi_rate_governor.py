@@ -75,9 +75,14 @@ BASE_RPS = 15.0
 # all -- several unpaced processes stacked on the live daemons' budget and
 # 429-stormed the venue (n_429_total=2606). One call per sport per tick, so a
 # small per-process share is ample; the shared pressure file coordinates the rest.
+# depth_capture / inplay_history added 2026-07-18 (go-live hardening audit,
+# findings 19/20): both were listed above as UNWIRED Kalshi callers. Both are
+# bounded, non-hot-loop passes (a CLI snapshot / a historical candle backfill),
+# so a small fixed share is enough.
 DEFAULT_RATE_SHARES: Dict[str, float] = {"capture": 0.35, "snapshot": 0.65,
                                          "feed_health": 0.15, "close_capture": 0.15,
-                                         "backfill": 0.10, "aggregate": 0.15}
+                                         "backfill": 0.10, "aggregate": 0.15,
+                                         "depth_capture": 0.10, "inplay_history": 0.10}
 
 # Bucket capacity: a small burst allowance (2s worth of tokens at the full
 # per-process rate) so a fresh process start doesn't have to wait from empty,
@@ -160,7 +165,10 @@ class KalshiRateGovernor:
                 clock: ClockFn = _now,
                 sleep_fn: SleepFn = time.sleep) -> None:
         self._caller = caller
-        share = rate_share if rate_share is not None else DEFAULT_RATE_SHARES.get(caller, 0.5)
+        # Unknown caller (a typo'd/unregistered caller string) gets a SMALL
+        # default share, not half the fleet budget -- a typo must not silently
+        # grant itself the same headroom as a registered, reviewed daemon.
+        share = rate_share if rate_share is not None else DEFAULT_RATE_SHARES.get(caller, 0.05)
         self._base_rate = max(0.1, base_rps * share)
         self._capacity = self._base_rate * BURST_SECONDS
         self._tokens = self._capacity

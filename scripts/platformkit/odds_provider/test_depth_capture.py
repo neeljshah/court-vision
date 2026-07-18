@@ -205,6 +205,39 @@ def test_run_capture_pass_writes_dated_jsonl_and_aggregates_stats(tmp_path):
     assert summary["n_requests_total"] > 0
 
 
+def test_capture_depth_snapshot_governor_caller_gates_every_request(monkeypatch):
+    """governor_caller="depth_capture" resolves a REAL governor and acquires a
+    token before EVERY listing + orderbook call; the default (None, every
+    pre-existing caller) resolves to governor=None so before_request is a no-op."""
+    listing_body = {"markets": [{"ticker": "T-1", "event_ticker": "E-1"}]}
+    empty_listing = {"markets": []}
+    book_body = _book([["0.5", "10.0"]], [])
+
+    def fake_http(url):
+        if "/orderbook" in url:
+            return book_body
+        if "series_ticker=KXMLBGAME&" in url:
+            return listing_body
+        return empty_listing
+
+    calls = []
+    real_before = dc._governor_before
+
+    def spy_before(governor, sport):
+        calls.append(governor is not None)
+        return real_before(governor, sport)
+
+    monkeypatch.setattr(dc, "_governor_before", spy_before)
+    dc.capture_depth_snapshot("mlb", http=fake_http, governor_caller="depth_capture")
+    assert calls  # at least one before_request call was made
+    assert all(calls)  # every call resolved a REAL (non-None) governor
+
+    calls.clear()
+    dc.capture_depth_snapshot("mlb", http=fake_http)  # governor_caller=None (default)
+    assert calls
+    assert not any(calls)  # unpaced by default -- byte-identical for old callers
+
+
 def test_run_capture_pass_per_sport_failure_isolated(tmp_path, monkeypatch):
     def boom_snapshot(sport, **kwargs):
         if sport == "mlb":

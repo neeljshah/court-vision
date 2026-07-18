@@ -239,6 +239,14 @@ def default_providers(http_get: Optional[Callable[[str], Any]] = None,
         # daemon, pm paper tick, best-bets, frontend) previously hit Kalshi
         # UNGOVERNED and collectively starved the governed live daemons
         # (429 storm 2026-07-14, n_429_total=2606).
+        # Espn/FanDuel/Polymarket/Pinnacle/OddsApi are NOT wired to
+        # kalshi_rate_governor (finding 21, 2026-07-18): that module is
+        # calibrated + keyed specifically for Kalshi (BASE_RPS ~ Kalshi's
+        # documented rps ceiling, 429 detection via kalshi_pacing.is_429,
+        # one shared state file). Reusing it for these unrelated hosts would
+        # wrongly couple their backoff to Kalshi's. Correct fix = a separate
+        # generic per-host governor (new module) -- out of scope here, flagged
+        # as follow-up.
         KalshiProvider(use_cache=use_cache, governor_caller="aggregate", **kw),
         PolymarketProvider(use_cache=use_cache, **kw),
         PinnacleProvider(use_cache=use_cache, **kw),

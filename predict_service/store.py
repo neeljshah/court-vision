@@ -7,11 +7,12 @@ Two artifacts per sport under data/frontend/predict_service/<sport>/:
   * latest.json  -- the current snapshot, written ATOMICALLY (tmp + os.replace) so
                     a concurrent reader sees either the OLD file or the COMPLETE new
                     one, never a half-written (torn) file.
-  * history.jsonl -- append-only: every save appends one line CRASH-SAFELY (the
-                    whole file is rewritten via tmp + os.replace), so a crash mid-
-                    append can never leave a torn trailing line for a reader to choke
-                    on; nothing existing is ever overwritten. The honest, immutable
-                    record of what we predicted.
+  * history.jsonl -- append-only: every save appends one line via a true O(1)
+                    ``open(..., "ab")`` write (never a full-file read+rewrite);
+                    a crash mid-append can leave a torn trailing line, tolerated
+                    by read_history()'s per-line try/except (skipped, never a
+                    crash). Nothing existing is ever overwritten. The honest,
+                    immutable record of what we predicted.
 
 read_latest(sport) NEVER raises and NEVER returns a partial object: a missing,
 empty, or corrupt latest.json degrades to a status='unavailable' sentinel
@@ -33,6 +34,8 @@ from __future__ import annotations
 import json
 import logging
 import os
+import random
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
@@ -87,11 +90,41 @@ def _as_envelope(envelope: EnvelopeLike) -> SnapshotEnvelope:
                     % (type(envelope).__name__,))
 
 
+# os.replace retry: on Windows, os.replace(tmp, path) raises PermissionError when
+# another process/handle has *path* open for read (no POSIX-style atomic rename-
+# over-an-open-file) -- reproduced 200/200 against a concurrent reader. A short
+# retry lets the reader's transient handle close before we give up for real.
+_REPLACE_RETRY_ATTEMPTS = 3
+_REPLACE_RETRY_MIN_SEC = 0.05
+_REPLACE_RETRY_MAX_SEC = 0.15
+
+
+def _replace_with_retry(tmp: Path, path: Path,
+                        sleep_fn: Any = time.sleep) -> None:
+    """os.replace(tmp, path) with a small retry on Windows PermissionError.
+
+    Retries up to _REPLACE_RETRY_ATTEMPTS times with a short jittered backoff
+    between attempts; re-raises the final PermissionError so the caller's
+    existing except-and-log (status=error) path still fires. A non-Permission
+    error is never retried -- it surfaces immediately, as before.
+    """
+    for attempt in range(1, _REPLACE_RETRY_ATTEMPTS + 1):
+        try:
+            os.replace(tmp, path)
+            return
+        except PermissionError:
+            if attempt >= _REPLACE_RETRY_ATTEMPTS:
+                raise
+            sleep_fn(random.uniform(_REPLACE_RETRY_MIN_SEC, _REPLACE_RETRY_MAX_SEC))
+
+
 def _atomic_write_json(path: Path, payload: Dict[str, Any]) -> None:
     """Write *payload* as JSON to *path* atomically (tmp file + os.replace).
 
     The tmp file is flushed + fsynced before the rename so the bytes are on disk
-    before latest.json points at them. os.replace is atomic on the same filesystem.
+    before latest.json points at them. os.replace is atomic on the same filesystem;
+    on Windows a reader holding *path* open can make the rename raise
+    PermissionError transiently -- _replace_with_retry absorbs that.
     """
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(path.suffix + ".tmp")
@@ -99,50 +132,44 @@ def _atomic_write_json(path: Path, payload: Dict[str, Any]) -> None:
         json.dump(payload, fh, default=str, ensure_ascii=True)
         fh.flush()
         os.fsync(fh.fileno())
-    os.replace(tmp, path)
+    _replace_with_retry(tmp, path)
 
 
 def _append_jsonl_line(path: Path, line: str) -> None:
-    """Append *line* (no trailing newline) to *path* CRASH-SAFELY.
+    """Append *line* (no trailing newline) to *path* as a true O(1) append.
 
-    A bare ``open(path, "a")`` can lose its tail on a crash mid-write, leaving a
-    torn last line a reader chokes on across the long overnight loop. Instead read
-    the existing bytes, concat the new line, and swap the whole file in via a sibling
-    tmp + os.replace (atomic on one volume) -- every line, including the new one, is
-    complete. Prefers scripts.platformkit.io_atomic; falls back to a local tmp+replace
-    if platformkit cannot import. On-disk SHAPE is identical to the prior bare append.
+    A bare ``open(path, "ab")`` write + fsync -- no read-whole-file-then-rewrite,
+    so a large history.jsonl appends in constant time regardless of its size.
+    Torn-tail risk from a crash mid-write is already tolerated by
+    read_history()'s per-line try/except (a partial last line is skipped, never
+    crashes the reader). The only cheap (O(1), last-byte) check kept from the
+    old read+rewrite path: if a PRE-EXISTING torn tail (no trailing newline) is
+    on disk, a leading newline is written first so the new line never glues onto
+    it -- checked via a single seek-to-end + 1-byte read, not a full-file read.
     """
-    try:
-        from scripts.platformkit.io_atomic import write_text_atomic  # noqa: PLC0415
-    except Exception:  # noqa: BLE001 -- platformkit unavailable: local fallback
-        write_text_atomic = None  # type: ignore[assignment]
-    existing = ""
+    needs_leading_newline = False
     if path.is_file():
-        existing = path.read_text(encoding="utf-8", errors="replace")
-        if existing and not existing.endswith("\n"):
-            # A pre-existing torn tail must not glue onto our new row.
-            existing += "\n"
-    payload = existing + line + "\n"
-    if write_text_atomic is not None:
-        write_text_atomic(path, payload, encoding="utf-8")
-        return
-    # Local tmp+replace fallback (same discipline as io_atomic).
-    tmp = path.with_suffix(path.suffix + ".tmp")
-    with tmp.open("w", encoding="utf-8") as fh:
-        fh.write(payload)
+        size = path.stat().st_size
+        if size > 0:
+            with path.open("rb") as fh:
+                fh.seek(-1, os.SEEK_END)
+                needs_leading_newline = fh.read(1) != b"\n"
+    with path.open("ab") as fh:
+        if needs_leading_newline:
+            fh.write(b"\n")
+        fh.write(line.encode("utf-8") + b"\n")
         fh.flush()
         os.fsync(fh.fileno())
-    os.replace(tmp, path)
 
 
 def append_history(envelope: EnvelopeLike,
                    out_dir: Optional[Union[str, Path]] = None) -> Path:
     """Append one envelope as a JSON line to <sport>/history.jsonl (append-only).
 
-    Never overwrites an existing line, and the append is CRASH-SAFE (tmp+replace),
-    so a crash mid-append cannot leave a torn trailing line. Returns the history
-    path. Raises only on a genuine I/O failure (callers that must not raise should
-    use save()).
+    Never overwrites an existing line. The append is O(1) (open(...,"ab")); a
+    crash mid-append can leave a torn trailing line, tolerated by
+    read_history()'s per-line try/except. Returns the history path. Raises only
+    on a genuine I/O failure (callers that must not raise should use save()).
     """
     env = _as_envelope(envelope)
     path = history_path(env.sport, out_dir)
