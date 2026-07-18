@@ -26,6 +26,38 @@ def real_df():
     return load_boxscores()
 
 
+def _synthetic_two_season_df():
+    """Synthetic player-game rows, two seasons, no disk I/O -- lets the
+    caveat-derivation logic (and only that) be exercised in a worktree with
+    no data/ on disk. Not a substitute for the real_df-based contract tests
+    above, which need the real parquet and are skipped here."""
+    rows = []
+    for season, dates in (
+        ("2024-25", pd.date_range("2024-10-22", periods=6, freq="2D")),
+        ("2025-26", pd.date_range("2025-10-21", periods=3, freq="2D")),
+    ):
+        for gi, d in enumerate(dates):
+            rows.append({
+                "game_id": f"{season}_{gi}", "date": d, "season": season,
+                "player_id": 1, "player_name": "Synthetic Player",
+                "fga": 10, "fg3a": 4, "fg3m": 2, "fgm": 5, "fta": 3, "ftm": 2, "pts": 14,
+            })
+    return pd.DataFrame(rows)
+
+
+def test_build_claims_season_caveat_reflects_actual_rows_synthetic():
+    """Runnable-without-data/ sibling of the real_df version above: the
+    caveat's row count/date range must match the synthetic frame, not a
+    hardcoded string, for BOTH seasons."""
+    from domains.basketball_nba.player_intel_shooting import window_rows
+    df = _synthetic_two_season_df()
+    for window in ("season_2024-25", "season_2025-26"):
+        claims = build_claims(df, window, top_n=5)
+        n_rows = len(window_rows(df, window))
+        assert any(str(n_rows) in cav for cav in claims[0]["caveats"])
+        assert "PARTIAL SEASON" not in " ".join(claims[0]["caveats"])
+
+
 def test_build_claims_contract_shape(real_df):
     claims = build_claims(real_df, "season_2024-25", top_n=10)
     assert len(claims) == 4  # composite + fg3_pct + ts_pct + efg_pct
@@ -46,9 +78,14 @@ def test_build_claims_ranking_sorted_desc(real_df):
     assert values == sorted(values, reverse=True)
 
 
-def test_build_claims_partial_season_caveat(real_df):
+def test_build_claims_season_caveat_reflects_actual_rows(real_df):
+    """Caveat text is derived from the rows actually on disk each run (never
+    a hardcoded row-count/date snapshot) so a season that later completes
+    doesn't leave a stale 'PARTIAL SEASON' claim behind."""
+    from domains.basketball_nba.player_intel_shooting import window_rows
     claims = build_claims(real_df, "season_2025-26", top_n=5)
-    assert any("PARTIAL SEASON" in cav for cav in claims[0]["caveats"])
+    n_rows = len(window_rows(real_df, "season_2025-26"))
+    assert any(str(n_rows) in cav for cav in claims[0]["caveats"])
 
 
 def test_build_claims_n_considered_matches_unique_players(real_df):

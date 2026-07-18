@@ -61,8 +61,6 @@ FG3M_QUALIFY_MIN = 82
 
 _SNAPSHOT_COLS = ["player_id", "player_name", "games", "fg3m", "fg3a"]
 
-CLAIM_ID = f"nba_shooter_profile_fg3_pct_qualified_{QUALIFY_SEASON}"
-
 
 def _pool_table(season: str) -> pd.DataFrame:
     """The same 329-qualifier pool (games>=20, fga>=200) every sibling
@@ -70,10 +68,21 @@ def _pool_table(season: str) -> pd.DataFrame:
     return qualifying_pool(aggregate_season(load_boxscores(), season=season))
 
 
+def _snapshot_path(season: str) -> Path:
+    # QUALIFY_SEASON (2024-25) keeps the ORIGINAL fixed filename byte-stable
+    # -- shooter_composite_v2_claims.py's 2024-25 path reads it by that exact
+    # name. Any other season gets its own season-scoped file so a second
+    # season's run can never clobber the first season's re-validation source.
+    if season == QUALIFY_SEASON:
+        return _SNAPSHOT_PATH
+    return _SNAPSHOT_PATH.with_name(f"nba_shooter_profile_fg3_snapshot_{season.replace('-', '_')}.parquet")
+
+
 def build_fg3_pct_qualified_claim(season: str = QUALIFY_SEASON) -> dict[str, Any]:
     pool = _pool_table(season)[_SNAPSHOT_COLS].copy()
-    _SNAPSHOT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    pq.write_table(pa.Table.from_pandas(pool, preserve_index=False), _SNAPSHOT_PATH)
+    snapshot_path = _snapshot_path(season)
+    snapshot_path.parent.mkdir(parents=True, exist_ok=True)
+    pq.write_table(pa.Table.from_pandas(pool, preserve_index=False), snapshot_path)
 
     qualifiers = pool[pool["fg3m"] >= FG3M_QUALIFY_MIN].copy()
     qualifiers["fg3_pct"] = qualifiers["fg3m"] / qualifiers["fg3a"]
@@ -94,9 +103,9 @@ def build_fg3_pct_qualified_claim(season: str = QUALIFY_SEASON) -> dict[str, Any
         for i, row in enumerate(qualifiers.itertuples(index=False), start=1)
     ]
 
-    rel_source = str(_SNAPSHOT_PATH.relative_to(REPO_ROOT)).replace("\\", "/")
+    rel_source = str(snapshot_path.relative_to(REPO_ROOT)).replace("\\", "/")
     return {
-        "claim_id": CLAIM_ID,
+        "claim_id": f"nba_shooter_profile_fg3_pct_qualified_{season}",
         "kind": "ranking",
         "question": (
             "Which NBA players qualifying for the official 3P% leaderboard "
@@ -143,21 +152,28 @@ def write_claims(claims: list[dict[str, Any]], out_path: Path = _CLAIMS_OUT) -> 
     return out_path
 
 
+# 2024-25 unchanged/byte-stable (boxscore-only, no atlas ingredient here) +
+# 2025-26 additive (boxscores.parquet now covers the full season).
+DEFAULT_SEASONS = (QUALIFY_SEASON, "2025-26")
+
+
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Emit the NBA shooter-profile fg3_pct ranking claim")
+    parser = argparse.ArgumentParser(description="Emit the NBA shooter-profile fg3_pct ranking claim(s)")
     parser.add_argument("--output", type=str, default=str(_CLAIMS_OUT))
-    parser.add_argument("--season", type=str, default=QUALIFY_SEASON)
+    parser.add_argument("--season", type=str, default=None, help="single season override; default emits both DEFAULT_SEASONS")
     args = parser.parse_args(argv)
 
-    claim = build_fg3_pct_qualified_claim(args.season)
-    out_path = write_claims([claim], Path(args.output))
-    top = claim["ranking"][0] if claim["ranking"] else None
-    print(
-        f"{claim['claim_id']}: n_considered={claim['n_considered']} "
-        f"n_excluded_below_floor={claim['n_excluded_below_floor']} "
-        f"top={top['player_name'] if top else None} value={top['value'] if top else None}"
-    )
-    print(f"wrote 1 claim -> {out_path}")
+    seasons = [args.season] if args.season else list(DEFAULT_SEASONS)
+    claims = [build_fg3_pct_qualified_claim(s) for s in seasons]
+    out_path = write_claims(claims, Path(args.output))
+    for claim in claims:
+        top = claim["ranking"][0] if claim["ranking"] else None
+        print(
+            f"{claim['claim_id']}: n_considered={claim['n_considered']} "
+            f"n_excluded_below_floor={claim['n_excluded_below_floor']} "
+            f"top={top['player_name'] if top else None} value={top['value'] if top else None}"
+        )
+    print(f"wrote {len(claims)} claims -> {out_path}")
     return 0
 
 

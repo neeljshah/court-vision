@@ -24,12 +24,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
 
 from domains.basketball_nba.quality_claim_builders import build_gate_claim, build_ranking_claim, rank_of, write_verdict
 from domains.basketball_nba.quality_indices import QUALIFY_SEASON, SCORER_WEIGHTS, SHOOTER_WEIGHTS
 from domains.basketball_nba.quality_indices_score import run as run_indices
 from domains.basketball_nba.quality_validity_gate import GateResult, run_gate
+from domains.basketball_nba.quality_validity_gate_claims_2025_26 import build_season_claims
 
 CLAIMS_PATH = Path("data/cache/intel_claims/nba_quality_claims.jsonl")
 ANSWERS_PATH = Path("data/cache/intel_claims/nba_quality_answers.md")
@@ -159,6 +159,11 @@ def run() -> GateResult:
         index_name="scorer",
         season=QUALIFY_SEASON,
     ))
+
+    # 2025-26 additive rows (atlas-degraded, see quality_validity_gate_claims_
+    # 2025_26.py): gate 3a stays QUALIFY_SEASON-only, its cutoffs/spec
+    # behavior unaffected -- season is only threaded through claim emission.
+    claims.extend(build_season_claims({"shooter": SHOOTER_WEIGHTS, "scorer": SCORER_WEIGHTS}, "2025-26"))
 
     write_claims(claims)
     write_answers_md(gate, claims)

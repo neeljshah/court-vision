@@ -136,7 +136,7 @@ def build_road_trip_streak_snapshot(game_snapshot: pd.DataFrame) -> tuple[Path, 
 def _build_mean_claim(
     claim_id: str, question: str, metric: str, formula: str,
     col: str, snapshot: pd.DataFrame, source_path: Path,
-    round_digits: int, definition_caveat: str, dropna: bool = False,
+    round_digits: int, definition_caveat: str, dropna: bool = False, season: str = _SEASON,
 ) -> dict[str, Any]:
     """Shared builder for the 4 rate/mean dims -- SAME shape (group-by team,
     mean of one column, n_games floor, desc rank), differing only in which
@@ -160,7 +160,7 @@ def _build_mean_claim(
         "kind": "ranking",
         "question": question,
         "criteria": {
-            "metric": metric, "formula": formula, "window": _SEASON,
+            "metric": metric, "formula": formula, "window": season,
             "min_sample": {"n_games": MIN_GAMES_FLOOR}, "direction": "desc",
             "value_precision": round_digits, "entity_key": "team",
             "aggregate": {"group_by": "team", "derived": {"n_games": "mean(n_games)"}},
