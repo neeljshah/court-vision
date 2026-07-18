@@ -120,6 +120,45 @@ def test_floor_excludes_below_threshold_player():
         os.remove(path)
 
 
+def test_zero_denominator_batter_excluded_and_still_validator_verified():
+    """Real-corpus regression (2026-07-18, 6/10 UNVERIFIABLE): a pitcher-like
+    entity clears the 20-games floor in BOTH cells but has zero AB/PA in one
+    -- the declared min_sample must exclude him so the validator's row-wise
+    recompute never divides by zero, and the producer must not rank him."""
+    hi = pd.DataFrame({
+        "player_id": [1, 3], "n_games_hi": [25, 30], "sum_hr_hi": [10, 0], "sum_rbi_hi": [20, 0],
+        "sum_hits_hi": [100, 0], "sum_ab_hi": [250, 0], "sum_k_hi": [50, 0], "sum_tb_hi": [150, 0],
+        "sum_pa_hi": [270, 0],  # player 3: 30 games, ZERO AB/PA (pitcher batting never)
+    })
+    lo = pd.DataFrame({
+        "player_id": [1, 3], "n_games_lo": [25, 30], "sum_hr_lo": [2, 0], "sum_rbi_lo": [5, 0],
+        "sum_hits_lo": [50, 1], "sum_ab_lo": [250, 4], "sum_k_lo": [80, 2], "sum_tb_lo": [60, 1],
+        "sum_pa_lo": [270, 4],
+    })
+    joined = hi.merge(lo, on="player_id")
+    import tempfile
+    import os
+    fd, path = tempfile.mkstemp(suffix=".parquet")
+    os.close(fd)
+    try:
+        joined.to_parquet(path)
+        from pathlib import Path
+        for metric in ("avg", "k_rate", "tb_per_pa"):
+            claim = msc.build_delta_claim(metric, "home_away", Path(path), {1: "Epsilon"})
+            assert [r["player_id"] for r in claim["ranking"]] == [1], metric
+            assert claim["n_excluded_below_floor"] == 1, metric
+            den = msc._METRICS[metric][1]
+            assert claim["criteria"]["min_sample"][f"{den}_hi"] == 1, metric
+            verdict = validate_claim(claim)
+            assert verdict.verdict == "VERIFIED", f"{metric}: {verdict.reason}"
+        # n_games-denominator metrics need no extra guard (floor 20 > 0 already)
+        claim = msc.build_delta_claim("hr_rate", "home_away", Path(path), {})
+        assert set(claim["criteria"]["min_sample"]) == {"n_games_hi", "n_games_lo"}
+        assert validate_claim(claim).verdict == "VERIFIED"
+    finally:
+        os.remove(path)
+
+
 def test_no_edge_language():
     joined = pd.DataFrame({
         "player_id": [1], "n_games_hi": [25], "sum_hr_hi": [10], "sum_rbi_hi": [20],

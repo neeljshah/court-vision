@@ -28,9 +28,14 @@ rbi_rate=RBI/games, avg=hits/AB, k_rate=K/PA_approx, tb_per_pa=TB/PA_approx.
 PA_approx = AB+BB+HBP (this box-score gamelog has no sac-fly/sac-bunt
 columns, so it under-counts true PA slightly -- declared in every caveat).
 
-min_sample floor: n_games >= 20 in EACH cell (a self-declared descriptive
+min_sample floors: n_games >= 20 in EACH cell (a self-declared descriptive
 floor, no spec number given -- verified 1,519/2,530 batters clear it on the
-home/away axis, 649/2,447 on the rest axis on the real corpus).
+home/away axis, 649/2,447 on the rest axis on the real corpus), PLUS a
+>= 1 zero-denominator guard on the metric's AB/PA denominator columns for
+the avg/k_rate/tb_per_pa variants (real-corpus finding 2026-07-18: pitchers
+clear the 20-games floor with zero AB/PA in a cell -- without the declared
+guard the validator's row-wise recompute dies on float division by zero and
+the producer would rank them as inf/NaN).
 
 LEAK: purely descriptive/retrospective full-window splits -- rest_days uses
 only each player's PRIOR game date, so it is inherently as-of, but no
@@ -139,9 +144,25 @@ def build_delta_claim(metric_key: str, axis: str, snapshot_path: Path,
     num, den = _METRICS[metric_key]
     _, hi_label, lo_label, prefix = _AXES[axis]
     floor = MIN_GAMES_FLOOR
+    # ONE min_sample dict drives BOTH the producer mask below and the declared
+    # criteria -- claims_validator applies exactly these floors
+    # (_apply_min_sample_floors) BEFORE evaluating the row-wise formula, so a
+    # zero-denominator entity (e.g. a pitcher with 20+ games but 0 AB/PA in a
+    # cell) must be excluded HERE or the validator's scalar division crashes
+    # (real-corpus finding 2026-07-18: 6/10 claims UNVERIFIABLE 'float
+    # division by zero'). n_games denominators are already floored at 20;
+    # AB/PA denominators get an explicit >= 1 zero-guard (not a quality
+    # floor -- the games floor is the family's declared quality cut).
+    min_sample: dict[str, Any] = {"n_games_hi": floor, "n_games_lo": floor}
+    if den != "n_games":
+        min_sample[f"{den}_hi"] = 1
+        min_sample[f"{den}_lo"] = 1
     raw = pd.read_parquet(snapshot_path)
     n_considered = len(raw)
-    qualifiers = raw[(raw["n_games_hi"] >= floor) & (raw["n_games_lo"] >= floor)].copy()
+    mask = pd.Series(True, index=raw.index)
+    for col, f in min_sample.items():
+        mask &= raw[col] >= f
+    qualifiers = raw[mask].copy()
     n_excluded = n_considered - len(qualifiers)
     if len(qualifiers):
         rate_hi = qualifiers[f"{num}_hi"] / qualifiers[f"{den}_hi"]
@@ -172,7 +193,7 @@ def build_delta_claim(metric_key: str, axis: str, snapshot_path: Path,
             "window": f"mlb_batter_splits_{axis}",
             "window_spec": None,
             "aggregate": None,
-            "min_sample": {"n_games_hi": floor, "n_games_lo": floor},
+            "min_sample": min_sample,
             "direction": "desc",
             "value_precision": 4,
             "entity_key": "player_id",
@@ -192,8 +213,11 @@ def build_delta_claim(metric_key: str, axis: str, snapshot_path: Path,
             if axis == "rest" else
             "home/away derived via game_pk join to the savant union (OAK->ATH alias applied); "
             "unmatched game_pk rows (~0.22% of gamelog rows) are excluded, never guessed.",
-            f"min_sample floor: n_games >= {floor} in EACH cell "
-            f"({len(qualifiers)}/{n_considered} batters qualify).",
+            f"min_sample floors: {min_sample} "
+            f"({len(qualifiers)}/{n_considered} batters qualify). The n_games floors are "
+            "the family's quality cut; any AB/PA denominator floor (>= 1) is a "
+            "zero-denominator guard so entities with zero denominator in a cell (e.g. "
+            "pitchers batting) are excluded, never ranked as inf/NaN.",
             f"FULL POPULATION: all {len(qualifiers)} batters clearing the floor are ranked here "
             "(no top-N truncation) -- below-floor batters honestly counted in "
             "n_excluded_below_floor, never silently dropped.",
