@@ -129,7 +129,48 @@ _METRIC_SYNONYMS: dict[str, str] = {
     "best scorer": "scorer_quality_v1",
     "best scorers": "scorer_quality_v1",
     "scorer quality": "scorer_quality_v1",
+    # 2026-07-19 merge -- 3 new claim families with zero NL aliases (coverage
+    # gap: resolve()/ask() returned no_data/not_supported on the obvious
+    # phrasing even though the metric exists and is VERIFIED). shooter alias
+    # phrases are handled by _SHOOTER_ALIAS_RE below (season-token-aware --
+    # see extract_metric_synonym), not this dict, so they are NOT duplicated
+    # here.
+    "defense adjusted true shooting": "def_adj_ts_pct",
+    "defense-adjusted ts": "def_adj_ts_pct",
+    "def adj ts": "def_adj_ts_pct",
+    "shoot better against weak defenses": "ts_pct_weak_minus_tough",
+    "weak vs tough defense split": "ts_pct_weak_minus_tough",
+    "weak versus tough defense split": "ts_pct_weak_minus_tough",
+    "weak vs tough defense": "fg3_pct_weak_minus_tough",
+    "scheme sensitive scorers": "scheme_ts_pct_best_minus_worst",
+    "ts swing by scheme": "scheme_ts_pct_best_minus_worst",
+    "usage when trailing vs leading": "trailing_fga_pg_minus_leading_fga_pg",
+    "usage when trailing versus leading": "trailing_fga_pg_minus_leading_fga_pg",
+    "shot volume collapse when leading": "trailing_fga_pg_minus_leading_fga_pg",
+    "on off net rating": "net_rating_delta",
+    "on-off net rating": "net_rating_delta",
+    "on/off impact": "net_rating_delta",
+    "teammates shoot better with him on": "teammate_efg_lift",
+    "gravity proxy": "gravity_proxy",
+    "rim protection on off": "rim_protection_delta",
+    "rim protection on-off": "rim_protection_delta",
+    "best spacing lineup": "spacing_mean_dist",
 }
+
+# Shooter-composite family (2026-07-19): "best shooters"/"top shooters"/
+# "shooter composite"/"best shooter ranking" all name the SAME question, but
+# the family now has TWO VERIFIED metric variants -- the frozen-window
+# shooter_composite_v2 and the season-to-date shooter_composite_v2_asof_approx
+# added in the same merge. A season token ("this season", "2025-26") in the
+# question means the asker wants the CURRENT, in-progress season -- route
+# those to the asof variant; everything else keeps the pre-existing
+# shooter_composite_v2 behavior unchanged (checked BEFORE the plain dict
+# loop so this one family gets the conditional pick; every other alias above
+# is a fixed, unconditional string).
+_SHOOTER_ALIAS_RE = re.compile(
+    r"\bbest shooters?\b|\btop shooters?\b|\bshooter composite\b|\bbest shooter ranking\b|"
+    r"\bshooter quality\b|\bshooting quality\b", re.IGNORECASE)
+_SEASON_TOKEN_RE = re.compile(r"\bthis season\b|\b2025-26\b|\b2025_26\b|\b2025-2026\b", re.IGNORECASE)
 
 # A claim's criteria.entity_key NAME already tells you its entity type --
 # every team-shaped family observed in data/cache/intel_claims/ names its
@@ -216,6 +257,8 @@ def extract_metric_synonym(text: str) -> str | None:
     metrics gap -- saying a metric's literal name now routes) when no hand
     alias matches. Returns the REAL metric name, or None."""
     lower = (text or "").lower()
+    if _SHOOTER_ALIAS_RE.search(lower):
+        return "shooter_composite_v2_asof_approx" if _SEASON_TOKEN_RE.search(lower) else "shooter_composite_v2"
     best_alias_len = -1
     best_metric: str | None = None
     for alias, metric in _METRIC_SYNONYMS.items():

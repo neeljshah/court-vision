@@ -38,8 +38,11 @@ _TOP_N_RE = re.compile(
 # top_n=None (answer layer applies its default N). Added 2026-07-17 for the
 # answer-anything coverage push; a match still needs a metric to resolve
 # downstream, so misfires refuse honestly rather than mis-answer.
+# "...<metric words> leaders" (bare trailing "leaders", no "in"/"by") added
+# 2026-07-19 -- "defense adjusted true shooting leaders" has no "in"/"by"
+# after "leaders" and previously fell through to family=None.
 _TOP_NONUM_RE = re.compile(
-    r"\btop\s+[a-z]|\bbest\s+[a-z]|\bleaders?\s+(?:in|by)\b|\bwho\s+leads\b",
+    r"\btop\s+[a-z]|\bbest\s+[a-z]|\bleaders?\s+(?:in|by)\b|\bwho\s+leads\b|\bleaders?\s*[.?!]*\s*$",
     re.IGNORECASE,
 )
 _PROVENANCE_WORDS = re.compile(
