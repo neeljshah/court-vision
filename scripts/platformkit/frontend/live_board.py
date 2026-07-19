@@ -125,7 +125,7 @@ def live_model_home_prob(sport: str, state: Dict[str, Any]) -> Optional[float]:
     model_fn calls. Reuses the domain predictor's CALIBRATED, leak-free predict_live
     (read-only) on the realized live state (absolute score + minute + pregame lambdas).
 
-    Wired for mlb, nba, soccer, and soccer_intl; any other sport returns None so the caller
+    Wired for mlb, nba, wnba, tennis, soccer, and soccer_intl; any other sport returns None so the caller
     SKIPS the pair cleanly -- it NEVER fabricates a number. Never raises (a model miss is a
     clean skip, not a crashed tick).
 
@@ -160,6 +160,17 @@ def live_model_home_prob(sport: str, state: Dict[str, Any]) -> Optional[float]:
             home = state.get("home_display") or state.get("home")
             away = state.get("away_display") or state.get("away")
             return _wshadow().shadow_prob(s, home, away, state)
+        # TENNIS in-game (promoted 2026-07-19, same shadow->served path wnba/nba
+        # took): TennisPredictor.predict_live behind domains/tennis/ingame_shadow,
+        # backed by the REPLICATED base+prior calibration surface
+        # (data/cache/ingame/models/tennis_ingame.json, n_games=40588). Paper
+        # decisions stay bounded by the breaker + divergence gate; shadow column
+        # keeps logging alongside (byte-identical from this wave, same as nba's).
+        if s == "tennis":
+            from domains.tennis.ingame_shadow import get_shadow as _tshadow
+            home = state.get("home_display") or state.get("home")
+            away = state.get("away_display") or state.get("away")
+            return _tshadow().shadow_prob(s, home, away, state)
         if s not in ("soccer", "soccer_intl"):
             return None
         home = resolve_team(s, state.get("home"), state.get("home_display"))
