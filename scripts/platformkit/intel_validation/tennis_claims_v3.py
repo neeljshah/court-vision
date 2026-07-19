@@ -195,7 +195,9 @@ def build_ranking_claim(source_key: str, metric: MetricSpec, tour: str) -> dict[
     out_path, snapshot, n_considered, n_excluded = build_metric_snapshot(source_key, metric, tour)
     qualifiers = snapshot[snapshot["n_prior"] >= MIN_N_PRIOR].copy()
     qualifiers = qualifiers.dropna(subset=["value"])
-    qualifiers = qualifiers.sort_values("value", ascending=False).reset_index(drop=True)
+    # tie-break: value DESC, THEN player_id ASC -- matches claims_validator.py's
+    # generic recompute tie-break, see tennis_ranking_claims.py docstring.
+    qualifiers = qualifiers.sort_values(["value", "player_id"], ascending=[False, True]).reset_index(drop=True)
     # FULL POPULATION: every qualifier above the floor is ranked, no head(N).
     top = qualifiers
 

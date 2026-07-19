@@ -63,7 +63,9 @@ def build_surface_tilt_claim(atlas: pd.DataFrame, names: dict[int, str]) -> dict
     tilt_pool = floored.dropna(subset=["grass_wr", "clay_wr"]).copy()
     n_excluded_no_surface_data = n_considered - len(tilt_pool)
     tilt_pool["surface_tilt"] = tilt_pool["grass_wr"] - tilt_pool["clay_wr"]
-    tilt_pool = tilt_pool.sort_values("surface_tilt", ascending=False).reset_index(drop=True)
+    # tie-break: value DESC, THEN player_id ASC -- matches claims_validator.py's
+    # generic recompute tie-break, see tennis_ranking_claims.py docstring.
+    tilt_pool = tilt_pool.sort_values(["surface_tilt", "player_id"], ascending=[False, True]).reset_index(drop=True)
 
     ranking = []
     for i, row in enumerate(tilt_pool.itertuples(index=False), start=1):
@@ -112,7 +114,9 @@ def build_overall_win_rate_claim(atlas: pd.DataFrame, names: dict[int, str]) -> 
     floored = atlas[atlas["total_matches"] >= MIN_TOTAL_MATCHES].copy()
     n_considered = len(atlas)
     n_excluded = n_considered - len(floored)
-    floored = floored.sort_values("ov_wr", ascending=False).reset_index(drop=True)
+    # tie-break: value DESC, THEN player_id ASC -- matches claims_validator.py's
+    # generic recompute tie-break, see tennis_ranking_claims.py docstring.
+    floored = floored.sort_values(["ov_wr", "player_id"], ascending=[False, True]).reset_index(drop=True)
 
     ranking = []
     for i, row in enumerate(floored.itertuples(index=False), start=1):

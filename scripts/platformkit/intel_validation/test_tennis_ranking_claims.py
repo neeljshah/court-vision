@@ -155,6 +155,39 @@ def test_player_rank_snapshot_keeps_last_seen_and_orders_ascending(tmp_path, mon
     assert values == sorted(values)
 
 
+def test_player_rank_snapshot_tied_values_order_deterministic(tmp_path, monkeypatch):
+    """2026-07-18 regression: three players tied at rank=50.0 must always come
+    out player_id-ASCENDING, regardless of the row order the source frame
+    arrives in (simulating dict/groupby iteration-order nondeterminism)."""
+    def _build(order: list[int]) -> list[dict]:
+        rows = {
+            1: {"event_id": "e1", "date": "2025-01-01", "p1_id": 1, "p2_id": 9,
+                "p1_name": "P1", "p2_name": "X", "p1_rank": 50.0, "p2_rank": 900.0},
+            2: {"event_id": "e2", "date": "2025-01-01", "p1_id": 2, "p2_id": 9,
+                "p1_name": "P2", "p2_name": "X", "p1_rank": 50.0, "p2_rank": 900.0},
+            3: {"event_id": "e3", "date": "2025-01-01", "p1_id": 3, "p2_id": 9,
+                "p1_name": "P3", "p2_name": "X", "p1_rank": 50.0, "p2_rank": 900.0},
+        }
+        return [rows[i] for i in order]
+
+    def _run(order: list[int]):
+        matches = pd.DataFrame(_build(order))
+        matches_path = tmp_path / f"matches_{'_'.join(map(str, order))}.parquet"
+        _write_parquet(matches, matches_path)
+        monkeypatch.setattr(trc, "REPO_ROOT", tmp_path)
+        monkeypatch.setattr(trc, "_OUT_DIR", tmp_path / "intel_claims")
+        monkeypatch.setitem(trc._MATCHES, "atp", matches_path)
+        claim = trc._player_rank_snapshot_claim("atp")
+        assert claim is not None
+        return [r["player_id"] for r in claim["ranking"] if r["value"] == pytest.approx(50.0)]
+
+    order_a = _run([1, 2, 3])
+    order_b = _run([3, 1, 2])  # shuffled input order -- output must not change
+    assert order_a == [1, 2, 3]
+    assert order_b == [1, 2, 3]
+    assert order_a == order_b
+
+
 if __name__ == "__main__":
     import sys
     sys.exit(pytest.main([__file__, "-q"]))

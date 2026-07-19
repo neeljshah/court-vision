@@ -117,7 +117,9 @@ def build_metric_claim(metric_name: str, out_path: Path, snapshot: pd.DataFrame)
     qualifiers = snapshot.dropna(subset=[metric_name])
     qualifiers = qualifiers[qualifiers["n_prior"] >= MIN_N_PRIOR]
     n_excluded = n_considered - len(qualifiers)
-    ranked = qualifiers.sort_values(metric_name, ascending=False).reset_index(drop=True)
+    # tie-break: value DESC, THEN player_id ASC -- matches claims_validator.py's
+    # generic recompute tie-break, see tennis_ranking_claims.py docstring.
+    ranked = qualifiers.sort_values([metric_name, "player_id"], ascending=[False, True]).reset_index(drop=True)
     rel_source = str(out_path.relative_to(REPO_ROOT)).replace("\\", "/")
     ranking = [
         {"rank": i + 1, "player_id": int(row.player_id), "player_name": str(row.player_name),

@@ -189,7 +189,26 @@ def validate_claim(claim: dict[str, Any]) -> ClaimVerdict:
         id_col = entity_key
 
     ascending = direction == "asc"
-    recomputed = recomputed.sort_values("_value", ascending=ascending).reset_index(drop=True)
+    if claim_id.startswith("tennis_"):
+        # TENNIS-ONLY tie-break: value in declared direction, THEN entity_key
+        # ASC. Every tennis producer (tennis_ranking_claims.py and siblings)
+        # now sorts its ranking with this exact (value, entity_key ASC)
+        # convention -- see tennis_ranking_claims.py module docstring -- to
+        # fix 13 persistent MISMATCH verdicts caused by pandas sort_values
+        # not guaranteeing a stable order across tied metric values (2026-07-18).
+        # Gated to claim_id.startswith("tennis_") only: this recompute path is
+        # shared by every sport, and other sports' on-disk claims stores were
+        # generated under the OLD undefined tie order -- applying this globally
+        # would false-MISMATCH any pre-existing tie in another sport's store
+        # (confirmed live against mlb_pitcher_claims.jsonl during this fix).
+        tie_break_cols = entity_key if isinstance(entity_key, list) else [entity_key]
+        sort_cols = ["_value", *tie_break_cols]
+        sort_ascending = [ascending] + [True] * len(tie_break_cols)
+        recomputed = recomputed.sort_values(
+            sort_cols, ascending=sort_ascending, kind="mergesort"
+        ).reset_index(drop=True)
+    else:
+        recomputed = recomputed.sort_values("_value", ascending=ascending).reset_index(drop=True)
 
     # Compare rank-by-rank against the claimed ranking.
     for claimed_row in sorted(claimed_ranking, key=lambda r: r["rank"]):

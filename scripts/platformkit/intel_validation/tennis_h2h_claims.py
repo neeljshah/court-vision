@@ -103,7 +103,10 @@ def build_ranking_claim() -> dict[str, Any]:
 
     qualifiers = pairs[pairs["meetings"] >= MIN_MEETINGS].copy()
     qualifiers["h2h_win_share"] = qualifiers["wins_p1"] / qualifiers["meetings"]
-    qualifiers = qualifiers.sort_values("h2h_win_share", ascending=False).reset_index(drop=True)
+    # tie-break: value DESC, THEN pair entity_key (p1_id, p2_id) ASC -- matches
+    # claims_validator.py's generic recompute tie-break, see tennis_ranking_claims.py docstring.
+    qualifiers = qualifiers.sort_values(["h2h_win_share", "p1_id", "p2_id"],
+                                         ascending=[False, True, True]).reset_index(drop=True)
     # FULL PAIR POPULATION: every qualifying pair above the floor gets a row
     # (no head(N) slice) -- below-floor pairs are already counted in
     # n_excluded above, never dropped from n_considered.

@@ -154,7 +154,9 @@ def build_ranking_claim(
     qualifiers = sub[sub["n_matches"] >= MIN_N_MATCHES_ON_SURFACE].copy()
     qualifiers = qualifiers.dropna(subset=[metric.column])
     n_excluded = n_considered - len(qualifiers)
-    qualifiers = qualifiers.sort_values(metric.column, ascending=False).reset_index(drop=True)
+    # tie-break: value DESC, THEN player_id ASC -- matches claims_validator.py's
+    # generic recompute tie-break, see tennis_ranking_claims.py docstring.
+    qualifiers = qualifiers.sort_values([metric.column, "player_id"], ascending=[False, True]).reset_index(drop=True)
 
     # player_name is NOT written to the snapshot parquet (kept numeric-only,
     # matching tennis_claims_v3.py's snapshot shape exactly) -- it is joined

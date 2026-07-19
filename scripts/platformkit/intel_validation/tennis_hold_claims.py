@@ -133,7 +133,9 @@ def build_ranking_claim(tour: str) -> dict[str, Any]:
     out_path, snapshot, n_considered, n_excluded = build_tour_snapshot(tour)
     qualifiers = snapshot[snapshot["n_prior"] >= MIN_N_PRIOR].copy()
     qualifiers = qualifiers.dropna(subset=["hold_pct_asof"])
-    qualifiers = qualifiers.sort_values("hold_pct_asof", ascending=False).reset_index(drop=True)
+    # tie-break: value DESC, THEN player_id ASC -- matches claims_validator.py's
+    # generic recompute tie-break, see tennis_ranking_claims.py docstring.
+    qualifiers = qualifiers.sort_values(["hold_pct_asof", "player_id"], ascending=[False, True]).reset_index(drop=True)
     # FULL POPULATION: every qualifier above the floor gets a row (no head(N)
     # slice) -- below-floor entities are already counted in n_excluded above.
     top = qualifiers

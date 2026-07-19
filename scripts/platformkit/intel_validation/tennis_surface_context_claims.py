@@ -156,7 +156,9 @@ def _ranking_from(snapshot: pd.DataFrame, floor_cols: dict[str, int], metric_col
         mask &= snapshot[col].fillna(0) >= floor
     qualifiers = snapshot[mask].dropna(subset=[metric_col]).copy()
     n_excluded = n_considered - len(qualifiers)
-    qualifiers = qualifiers.sort_values(metric_col, ascending=ascending).reset_index(drop=True)
+    # tie-break: value in declared direction, THEN player_id ASC -- matches
+    # claims_validator.py's generic recompute tie-break, see tennis_ranking_claims.py docstring.
+    qualifiers = qualifiers.sort_values([metric_col, "player_id"], ascending=[ascending, True]).reset_index(drop=True)
     ranking = []
     for i, row in enumerate(qualifiers.itertuples(index=False), start=1):
         entry = {

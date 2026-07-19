@@ -34,6 +34,14 @@ CONFOUNDS: retirements counted as decided (winner authoritative regardless);
 draws/seeding are not random, so a gap partly reflects scheduling, not pure
 skill -- same confound tennis_surface_context_claims.py already states.
 
+TIE-BREAK CONVENTION (2026-07-18 nondeterminism fix -- 13 persistent MISMATCH
+verdicts traced to unstable sort_values on tied metric values, whose relative
+order pandas' default quicksort does not guarantee across runs/processes):
+every ranking sort here is (metric_value in its declared direction, THEN
+entity_key ASCENDING) so ties resolve identically every run. claims_validator.
+py's generic recompute (validate_claim) applies the SAME secondary tie-break
+on entity_key so the independent recompute matches byte-for-byte.
+
 CLI:
     python -m scripts.platformkit.intel_validation.tennis_ranking_claims
 """
@@ -121,7 +129,9 @@ def _cut_ranking_claims(df: pd.DataFrame, cut_col: str, cut_label: str, tour: st
     tour_label = tour.upper()
     claims = []
     for direction_name, ascending in (("favorites_dominate", False), ("most_upset_prone", True)):
-        ranked = qualifiers.sort_values("higher_rank_win_rate", ascending=ascending).reset_index(drop=True)
+        # tie-break: value in declared direction, THEN entity_key (cut_col) ASC (see module docstring)
+        ranked = qualifiers.sort_values(["higher_rank_win_rate", cut_col],
+                                         ascending=[ascending, True]).reset_index(drop=True)
         ranking = [
             {"rank": i + 1, cut_col: getattr(row, cut_col),
              "value": round(float(row.higher_rank_win_rate), 4), "n": int(row.n)}
@@ -177,7 +187,9 @@ def _seed_hold_claim(tour: str = "atp") -> dict[str, Any] | None:
         return None
     out_path = _write_snapshot(snapshot, "tennis_ranking_snapshot_seed_atp.parquet")
     rel_source = str(out_path.relative_to(REPO_ROOT)).replace("\\", "/")
-    ranked = qualifiers.sort_values("seed_hold_rate", ascending=False).reset_index(drop=True)
+    # tie-break: value DESC, THEN entity_key (tourney_level) ASC (see module docstring)
+    ranked = qualifiers.sort_values(["seed_hold_rate", "tourney_level"],
+                                     ascending=[False, True]).reset_index(drop=True)
     ranking = [
         {"rank": i + 1, "tourney_level": row.tourney_level, "value": round(float(row.seed_hold_rate), 4),
          "n": int(row.n)}
@@ -221,7 +233,8 @@ def _player_rank_snapshot_claim(tour: str) -> dict[str, Any] | None:
     cols = snapshot[["player_id", "player_name", "rank"]].reset_index(drop=True)
     out_path = _write_snapshot(cols, f"tennis_ranking_snapshot_players_{tour}.parquet")
     rel_source = str(out_path.relative_to(REPO_ROOT)).replace("\\", "/")
-    ranked = snapshot.sort_values("rank", ascending=True).reset_index(drop=True)
+    # tie-break: rank ASC, THEN entity_key (player_id) ASC (see module docstring)
+    ranked = snapshot.sort_values(["rank", "player_id"], ascending=[True, True]).reset_index(drop=True)
     ranking = [
         {"rank": i + 1, "player_id": int(row.player_id), "player_name": str(row.player_name),
          "value": round(float(getattr(row, "rank")), 4), "n": 1}
