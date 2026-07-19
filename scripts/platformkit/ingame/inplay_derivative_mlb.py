@@ -263,7 +263,10 @@ def poll_once(*, fetch_fn: Optional[FetchFn] = None,
                 continue
             _paper.record_ingame_bet(
                 SPORT, gid, market_label, ev["side"], float(ev["obtainable_decimal"]),
-                model_prob=ev.get("bet_model_prob"), path=ledger_path,
+                model_prob=ev.get("bet_model_prob"),
+                # flat declared 1u stake (day-1 rows omitted it -> settled at 0
+                # units; outcome/CLV measurement was unaffected)
+                stake=1.0, path=ledger_path,
                 signal_ts=ts, exec_gate=gr["exec_gate"], exec_depth=gr["exec_depth"])
             n_bets += 1
 
