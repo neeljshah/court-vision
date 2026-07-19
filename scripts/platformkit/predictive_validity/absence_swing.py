@@ -132,7 +132,7 @@ def score_index(name: str, series: dict[int, float], swing: pd.DataFrame | None 
     """Spearman rho of an index's per-player values against absence swing
     (pooled across seasons -- a player with multiple qualifying seasons
     contributes his most-recent-season swing). Bootstrap CI resamples
-    players, 2000 iters, seed 0-fixed (RNG_SEED)."""
+    players, 2000 iters, fixed declared seed (RNG_SEED=20260718)."""
     if swing is None:
         swing = compute_swing()
     if swing.empty or not series:

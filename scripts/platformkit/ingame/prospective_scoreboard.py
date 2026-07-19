@@ -65,8 +65,11 @@ PREREGISTERED_AT = "2026-07-19T04:30:00Z"
 MIN_GAMES = 30  # below this a checkpoint stays PENDING regardless of the point estimate
 
 # Checkpoint predicates read the parsed state_summary dict. First tick row
-# satisfying the predicate anchors the checkpoint (state AT-or-just-AFTER the
-# boundary, the same convention as ingame_nba_winprob's checkpoint_row).
+# satisfying the predicate anchors the checkpoint: state AT-or-just-AFTER the
+# boundary (Q2 open). NOTE this is the OPPOSITE side of the boundary from
+# ingame_nba_winprob.checkpoint_row's last-before-anchor convention -- fine
+# here (model+market read in the same tick, self-consistent), but do not
+# compare deltas across the two corpora without accounting for it.
 # clock counts DOWN within a period (seconds remaining).
 _BASKETBALL = [
     ("end_q1", lambda s: s.get("period", 0) >= 2),
@@ -103,6 +106,13 @@ def parse_state_summary(text: Any) -> Dict[str, float]:
     return out
 
 
+def _norm_ts(ts: str) -> str:
+    """Normalize an ISO timestamp for safe lexicographic compare/sort: strip a
+    Z/offset suffix and any fractional seconds -> 'YYYY-MM-DDTHH:MM:SS'."""
+    t = ts.replace("Z", "").split("+")[0]
+    return t.split(".")[0]
+
+
 def _prob01(v: Any) -> Optional[float]:
     try:
         f = float(v)
@@ -132,7 +142,7 @@ def load_game(path: Path) -> Optional[Dict[str, Any]]:
                 ts = str(row.get("ts") or "")
                 if mp is None or kp is None or not ts:
                     continue
-                ticks.append((ts, parse_state_summary(row.get("state_summary")), mp, kp))
+                ticks.append((_norm_ts(ts), parse_state_summary(row.get("state_summary")), mp, kp))
     except OSError:
         return None
     if y is None or not ticks:
@@ -181,7 +191,7 @@ def run(grade_dir: Optional[Path] = None, *, preregistered_at: str = PREREGISTER
             game = load_game(f)
             if game is None:
                 continue
-            if game["first_ts"] < preregistered_at:
+            if game["first_ts"] < _norm_ts(preregistered_at):
                 n_excluded_pre_prereg += 1
                 continue
             pairs = checkpoint_pairs(game, sport)

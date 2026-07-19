@@ -55,6 +55,11 @@ def _spread_suppress_enabled() -> bool:
     return os.environ.get("CV_INGAME_MAX_SPREAD", "1").strip().lower() not in ("0", "false", "off")
 
 
+def _divergence_suppress_enabled() -> bool:
+    """CV_INGAME_MAX_DIVERGENCE env toggle, default ON (parity with the spread gate)."""
+    return os.environ.get("CV_INGAME_MAX_DIVERGENCE", "1").strip().lower() not in ("0", "false", "off")
+
+
 def _parse_depth_ts(value: Optional[str]) -> Optional[datetime]:
     """Best-effort ISO-8601 parse (handles a trailing 'Z'). None on any failure."""
     if not value:
@@ -186,7 +191,7 @@ def evaluate_placement(ev: Dict[str, Any], tick: Dict[str, Any], *,
     div = (abs(float(fair_prob) - float(devig))
            if fair_prob is not None and devig is not None else None)
     g["divergence"] = round(div, 6) if div is not None else None
-    if div is not None and div > INGAME_MAX_DIVERGENCE:
+    if div is not None and div > INGAME_MAX_DIVERGENCE and _divergence_suppress_enabled():
         return {"suppress": True, "reason": "divergence_stale_quote", "exec_gate": g,
                 "exec_depth": depth}
     if drift is not None and drift <= -INGAME_MAX_DRIFT_PCT:

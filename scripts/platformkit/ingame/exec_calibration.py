@@ -188,6 +188,11 @@ def divergence_and_warnings(ledger_rows: List[Dict[str, Any]]) -> Dict[str, Any]
 
     market_prob at bet time = fill price (1/taken_decimal), the same fair-price proxy
     exec_gate.fair_prob already uses; the ledger has no separate market_prob field.
+    BASIS NOTE: this is VIG-INCLUSIVE, whereas ingame_exec_gate's live divergence
+    gate uses the DEVIGGED price -- the two "0.15" numbers are related but not on
+    the same basis (this one runs slightly hotter by ~half the spread). Same for
+    adverse_selection's fill_prob vs the grade file's devigged market_prob: the
+    signed mean carries a systematic vig component, disclosed here, not corrected.
     """
     vals: List[float] = []
     warnings: List[Dict[str, Any]] = []

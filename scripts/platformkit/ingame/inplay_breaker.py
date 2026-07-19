@@ -29,7 +29,11 @@ CHANNEL = "paper_ingame"
 
 
 def _load_channel_rows(ledger_path: Optional[Path]) -> List[Dict[str, Any]]:
-    """The ledger's paper_ingame rows (never raises; [] on any problem)."""
+    """The ledger's paper_ingame rows (never raises; [] on any problem).
+
+    ponytail: full-ledger scan per ENTER tick, O(total ledger). Fine while the
+    shared jsonl is small (in-game bets are rare); switch to a tail-read or
+    BREAKER_WINDOW_DAYS date-window if the ledger grows past ~100k lines."""
     try:
         if ledger_path is None:
             from scripts.platformkit.clv_ledger import DEFAULT_LEDGER
