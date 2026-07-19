@@ -58,6 +58,7 @@ from scripts.platformkit.execution import ingame_exec_gate as _exec_gate
 from scripts.platformkit.execution import sizing as _sizing
 from scripts.platformkit.ingame import ingame_clv_per_segment as _clvseg
 from scripts.platformkit.ingame import ingame_segment_trust_multi as _trust_multi
+from scripts.platformkit.ingame import inplay_breaker as _breaker
 from scripts.platformkit.ingame import inplay_edge_signal as _sig
 from scripts.platformkit.ingame import live_grade as _lg
 from scripts.platformkit.ingame import paper_ingame as _paper
@@ -251,6 +252,17 @@ def on_tick(sport: str, game_id: str, tick: LiveTick, *,
         if ev["action"] == "bet" and not _venue_allowed(tick, paper_venues):
             decision["reason"] = "venue_not_allowed:%s" % str(tick.get("venue", "kalshi")).strip().lower()
             return decision
+
+        # 2d. MEDIAN-CLV BREAKER (suppress-only, fail-open): a negative rolling
+        # median CLV on graded paper_ingame rows CAPS placements per day
+        # (execution.circuit_breaker, pre-registered 2026-07-15). Capture above
+        # already ran; this can only turn a would-be bet into no_bet.
+        if ev["action"] == "bet":
+            br = _breaker.allow(MARKET, nowdt, ledger_path)
+            decision["breaker"] = {k: br.get(k) for k in ("state", "placed_today", "reason")}
+            if not br.get("allowed", True):
+                decision["reason"] = "breaker_capped"
+                return decision
 
         # 3. enter / hold / exit.
         if ev["action"] != "bet":
