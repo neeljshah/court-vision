@@ -110,10 +110,9 @@ def _default_state(sport: str, ticks: List[Dict[str, Any]], gid: str,
     try:
         from scripts.platformkit.ingame import inplay_capture_loop as _cap
         from scripts.platformkit.ingame import ingame_live_state as _ls
-        codes = _align.ticker_team_codes(gid)
-        if codes is None:
+        splits = _align.ticker_team_splits(gid)
+        if not splits:
             return None
-        legs = {codes[0]: 1.0, codes[1]: 1.0}
         states = cache.get("states")
         if states is None:
             try:
@@ -121,7 +120,14 @@ def _default_state(sport: str, ticks: List[Dict[str, Any]], gid: str,
             except Exception:  # noqa: BLE001 -- a scan failure -> no bridge this cycle
                 states = []
             cache["states"] = states
-        return _cap._scan_live_by_legs(sport, legs, gid=gid, nowdt=nowdt, states=states)
+        # The blob split is ambiguous (2-3 letters/side); the scan's BOTH-teams-
+        # must-match rule makes trying every candidate safe -- first full match wins.
+        for a, b in splits:
+            st = _cap._scan_live_by_legs(sport, {a: 1.0, b: 1.0}, gid=gid,
+                                         nowdt=nowdt, states=states)
+            if st is not None:
+                return st
+        return None
     except Exception as exc:  # noqa: BLE001 -- bridge failure -> honest skip, never a crash
         logger.debug("inplay_derivative_mlb state bridge failed %s: %s", gid, exc)
         return None

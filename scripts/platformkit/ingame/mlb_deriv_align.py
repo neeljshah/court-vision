@@ -44,7 +44,12 @@ _GRID_SORTED: Tuple[float, ...] = tuple(sorted(_GRID))
 # MLB Kalshi ticker team-code blob: "...-25JUL18NYYBOS[-...]" -> ("NYY","BOS"). Only
 # the well-known 3+3 shape is handled; anything else -> None (never guessed). Mirrors
 # kalshi_series_spec._TICKER_DATE_RE's date parse, extended to the team-code tail.
-_TICKER_TEAMS_RE = re.compile(r"-\d{2}[A-Z]{3}\d{2}([A-Z]{6})")
+# date (26JUL19) then OPTIONAL start time (1335) then the team blob at the
+# ticker tail. Team codes are 2-3 letters each so the blob is 4-6 letters and
+# the split point is ambiguous (ATHAZ = ATH+AZ) -- ticker_team_codes returns
+# the 3+3 best guess; ticker_team_splits returns every candidate split for the
+# live-state bridge, whose BOTH-teams-must-match rule disambiguates safely.
+_TICKER_TEAMS_RE = re.compile(r"-\d{2}[A-Z]{3}\d{2}\d{0,4}([A-Z]{4,6})$")
 
 
 def ticker_team_codes(ref: Any) -> Optional[Tuple[str, str]]:
@@ -59,6 +64,21 @@ def ticker_team_codes(ref: Any) -> Optional[Tuple[str, str]]:
         return blob[:3], blob[3:]
     except (TypeError, ValueError):
         return None
+
+
+def ticker_team_splits(ref: Any) -> list:
+    """Every candidate (code_a, code_b) split of the ticker's team blob
+    (2-3 letters per side). The caller's both-teams-must-match live-state
+    scan picks the real one; an unmatched candidate is harmless. Never raises."""
+    try:
+        m = _TICKER_TEAMS_RE.search(str(ref or "").upper())
+        if not m:
+            return []
+        blob = m.group(1)
+        return [(blob[:i], blob[i:]) for i in range(2, len(blob) - 1)
+                if 2 <= len(blob) - i <= 3 and i <= 3]
+    except (TypeError, ValueError):
+        return []
 
 
 def _fmt(line: float) -> str:
