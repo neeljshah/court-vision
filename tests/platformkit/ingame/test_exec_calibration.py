@@ -57,13 +57,17 @@ def test_adverse_selection_away_side_sign_flip(tmp_path):
         {"ts": "2026-07-19T00:10:00+00:00", "market_prob": 0.80},  # home prob rose -> away side hurt
     ]
     _write_jsonl(grade_dir / "mlb" / "G2.jsonl", grade_rows)
+    # ASYMMETRIC decimal (audit 2026-07-19): 2.0 -> fill_p 0.5 is a fixed point
+    # of 1-x, which HID a double-flip bug. 1.667 -> fill_p ~0.5999 is not.
     ledger_rows = [{
         "ts": "2026-07-19T00:00:00+00:00", "sport": "mlb", "game_id": "G2", "side": "away",
-        "taken_decimal": 2.0, "channel": "paper_ingame",
+        "taken_decimal": 1.667, "channel": "paper_ingame",
     }]
     out = m.adverse_selection(ledger_rows, grade_dir)
     assert out["mlb"]["n"] == 1
-    # away frame: fill_p = 1-0.5=0.5, post_p = 1-0.80=0.20 -> adverse_move = -0.30
+    # fill_p is ALREADY away-frame (chosen leg's decimal): 1/1.667 = 0.5999.
+    # post_p away frame: 1-0.80 = 0.20 -> adverse_move = 0.20-0.5999 = -0.3999.
+    assert abs(out["mlb"]["mean"] - (0.20 - 1.0 / 1.667)) < 1e-9
     assert out["mlb"]["mean"] < 0
 
 

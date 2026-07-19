@@ -167,8 +167,12 @@ def adverse_selection(ledger_rows: List[Dict[str, Any]], grade_dir: Path) -> Dic
         if post_p is None:
             continue
         side = r.get("side")
+        # fill_p (1/taken_decimal) is ALREADY in the CHOSEN side's frame (the
+        # ledger stores the chosen leg's decimal); only the home-aligned grade
+        # market_prob needs flipping into the away frame. Double-flipping
+        # fill_p mixed frames and INVERTED the away-side adverse sign
+        # (adversarial audit 2026-07-19).
         if side == "away":
-            fill_p = 1.0 - fill_p
             post_p = 1.0 - post_p
         elif side != "home":
             continue

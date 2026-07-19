@@ -141,6 +141,10 @@ def allow_placement(rows: List[Dict[str, Any]], market_type: str, now_iso: str) 
         mt = row.get("market_type") or row.get("market")
         if str(mt) != str(market_type):
             continue
+        # A settlement appends a TWIN row for the same edge; counting it would
+        # double-count same-day settles toward cap_per_day (audit 2026-07-19).
+        if str(row.get("status") or "").lower() in ("settled", "void"):
+            continue
         ts = _parse_ts(row.get("ts"))
         if ts is not None and ts.date() == today:
             placed_today += 1
