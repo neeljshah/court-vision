@@ -456,9 +456,15 @@ def test_nba_ticker_missing_settle_row_stays_open(tmp_path):
 def test_doubleheader_no_gnum_or_missing_game_stays_open(tmp_path):
     from scripts.platformkit.ingame.ingame_outcome_label import MlbOutcomeResolver
     res = MlbOutcomeResolver(box_df=_dh_box_df())
-    # no G suffix on a 2-row day (ambiguous) + a G2 whose day has only G1 final
+    # no G suffix, HHMM equidistant from both starts in UTC (18:15Z/23:15Z vs a
+    # 16:45-ET=20:45Z ticket, 150min from each) -> genuinely ambiguous, never a
+    # guess. (Same fixture as test_doubleheader_fails_closed_on_ambiguity in
+    # test_ingame_outcome_label.py -- a non-equidistant HHMM DOES resolve via
+    # the HHMM tie-break added in 8a2329bc7/f9296a024, which is why the old
+    # 1415-HHMM ticker here -- exactly G1's own start time -- stopped being
+    # ambiguous and this test started failing.)
     led = _ledger(tmp_path, [
-        _open_bet("KXMLBGAME-26JUL071415MILSTL"),
+        _open_bet("KXMLBGAME-26JUL071645MILSTL"),
     ])
     fn = ps._dispatch_score_fn(res.final_score, None)
     doc = ps.settle_open(ledger_path=led, score_fn=fn,
