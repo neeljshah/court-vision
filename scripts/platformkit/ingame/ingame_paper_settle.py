@@ -42,6 +42,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from scripts.platformkit import clv_ledger as _clv
 from scripts.platformkit.ingame import paper_ingame as _pi
+from scripts.platformkit.ingame.ingame_paper_settle_basket import nba_score_fn as _nba_score_fn
 
 logger = logging.getLogger(__name__)
 
@@ -162,7 +163,8 @@ def _dispatch_score_fn(mlb_fn: Optional[ScoreFn],
                        tennis_fn: Optional[ScoreFn] = None,
                        wnba_fn: Optional[ScoreFn] = None,
                        npb_fn: Optional[ScoreFn] = None,
-                       kbo_fn: Optional[ScoreFn] = None) -> ScoreFn:
+                       kbo_fn: Optional[ScoreFn] = None,
+                       nba_fn: Optional[ScoreFn] = None) -> ScoreFn:
     """Route a ticker to the resolver matching its Kalshi series prefix. A
     ticker neither resolver recognises (or an inert resolver) -> None, never a
     guess -- the bet just stays open."""
@@ -176,6 +178,8 @@ def _dispatch_score_fn(mlb_fn: Optional[ScoreFn],
             return tennis_fn(ticker)
         if t.startswith("KXWNBAGAME") and wnba_fn is not None:
             return wnba_fn(ticker)
+        if t.startswith("KXNBAGAME") and nba_fn is not None:
+            return nba_fn(ticker)
         if t.startswith("KXNPBGAME") and npb_fn is not None:
             return npb_fn(ticker)
         if t.startswith("KXKBOGAME") and kbo_fn is not None:
@@ -186,14 +190,15 @@ def _dispatch_score_fn(mlb_fn: Optional[ScoreFn],
 
 def _default_score_fn() -> ScoreFn:
     """Build the combined ticker->final-score resolver (MLB + WC soccer + WNBA +
-    NPB + KBO, all offline parquet reads; tennis disk-first/live-ESPN-fallback).
-    A sport whose resolver is unavailable simply never matches -- its bets stay
-    open, never fabricated. NOTE: npb/kbo currently place NO bets (no live
-    model wired -- see inplay_capture_loop.DEFAULT_SPORTS), so this settle arm
-    for them is a no-op today (nothing to settle) and becomes active the
-    moment a future lane wires a live model for either sport."""
+    NBA + NPB + KBO, all offline parquet reads; tennis disk-first/live-ESPN-
+    fallback). A sport whose resolver is unavailable simply never matches --
+    its bets stay open, never fabricated. NOTE: npb/kbo currently place NO
+    bets (no live model wired -- see inplay_capture_loop.DEFAULT_SPORTS), so
+    this settle arm for them is a no-op today (nothing to settle) and becomes
+    active the moment a future lane wires a live model for either sport."""
     return _dispatch_score_fn(_mlb_score_fn(), _soccer_score_fn(), _tennis_score_fn(),
-                              _wnba_score_fn(), _npb_score_fn(), _kbo_score_fn())
+                              _wnba_score_fn(), _npb_score_fn(), _kbo_score_fn(),
+                              _nba_score_fn())
 
 
 def _settled_edge_keys(rows: List[Dict[str, Any]]) -> set:

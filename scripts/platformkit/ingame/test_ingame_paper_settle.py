@@ -373,6 +373,86 @@ def test_settle_open_never_appends_ledger_rows(tmp_path, monkeypatch):
     assert appended == []
 
 
+# --------------------------------------------------------------------------------------- #
+# NBA dispatch wiring (KXNBAGAME) -- reuses the EXISTING nba_outcome_resolver as-is via     #
+# ingame_paper_settle_basket.nba_score_fn; mirrors the WNBA coverage above.                 #
+# --------------------------------------------------------------------------------------- #
+def _nba_bet(gid, side="home", ek=None):
+    return {"channel": "paper_ingame", "status": "open", "sport": "nba",
+            "game_id": gid, "side": side, "market": "win_home",
+            "taken_decimal": 1.9, "model_prob": 0.6,
+            "edge_key": ek or ("nba|%s|win_home|%s|2026-07-05" % (gid, side))}
+
+
+def test_dispatch_routes_nba_ticker_by_prefix():
+    nba_calls = []
+
+    def nba_fn(t):
+        nba_calls.append(t)
+        return (101, 98)
+
+    fn = ps._dispatch_score_fn(None, None, nba_fn=nba_fn)
+    assert fn("KXNBAGAME-26JUN13NYKSAS-SAS") == (101, 98)
+    assert fn("KXMLBGAME-x") is None  # no mlb resolver injected -> unresolved
+    assert nba_calls == ["KXNBAGAME-26JUN13NYKSAS-SAS"]
+
+
+def test_dispatch_missing_nba_resolver_leaves_ticker_unresolved():
+    fn = ps._dispatch_score_fn(None, None, nba_fn=None)
+    assert fn("KXNBAGAME-26JUN13NYKSAS-SAS") is None
+
+
+def test_settle_open_nba_batch_via_injected_nba_score_fn(tmp_path):
+    ticker = "KXNBAGAME-26JUN13NYKSAS-SAS"
+    led = _ledger(tmp_path, [_nba_bet(ticker)])
+    score_fn = ps._dispatch_score_fn(None, None, nba_fn=lambda t: (101, 98))
+
+    def fake_grade(bet, hs, as_, path=None):
+        return {"status": "settled", "outcome": "win" if hs > as_ else "loss"}
+
+    doc = ps.settle_open(ledger_path=led, score_fn=score_fn, grade_fn=fake_grade)
+    assert doc["settled"] == 1
+    assert doc["by_sport"]["nba"]["settled"] == 1
+
+
+def test_settle_open_nba_away_side_bet_grades_correctly(tmp_path):
+    # home wins 101-98; an away-side bet must still settle (not just home-side).
+    ticker = "KXNBAGAME-26JUN13NYKSAS-SAS"
+    led = _ledger(tmp_path, [_nba_bet(ticker, side="away")])
+    score_fn = ps._dispatch_score_fn(None, None, nba_fn=lambda t: (101, 98))
+    graded = []
+
+    def fake_grade(bet, hs, as_, path=None):
+        graded.append((bet["side"], hs, as_))
+        outcome = "loss" if bet["side"] == "away" else "win"  # away lost since home>away
+        return {"status": "settled", "outcome": outcome}
+
+    doc = ps.settle_open(ledger_path=led, score_fn=score_fn, grade_fn=fake_grade)
+    assert doc["settled"] == 1
+    assert graded == [("away", 101, 98)]
+
+
+def test_nba_score_fn_inert_without_games_parquet(monkeypatch, tmp_path):
+    # NbaOutcomeResolver() with no local parquet -> available=False -> nba_score_fn
+    # returns None (the bet stays open, never a fabricated settle).
+    from scripts.platformkit.ingame import nba_outcome_resolver as nr
+    monkeypatch.setattr(nr, "DEFAULT_GAMES_PARQUET", tmp_path / "missing.parquet")
+    from scripts.platformkit.ingame.ingame_paper_settle_basket import nba_score_fn
+    assert nba_score_fn() is None
+
+
+def test_nba_ticker_missing_settle_row_stays_open(tmp_path):
+    # resolver available but this specific game has no matching final row -> None.
+    ticker = "KXNBAGAME-26JUN13NYKSAS-SAS"
+    led = _ledger(tmp_path, [_nba_bet(ticker)])
+    score_fn = ps._dispatch_score_fn(None, None, nba_fn=lambda t: None)
+    doc = ps.settle_open(ledger_path=led, score_fn=score_fn,
+                         grade_fn=lambda *a, **k: {"status": "settled"})
+    assert doc["settled"] == 0
+    assert doc["still_open"] == 1
+    assert doc["by_sport"]["nba"]["open"] == 1
+
+
 def test_doubleheader_no_gnum_or_missing_game_stays_open(tmp_path):
     from scripts.platformkit.ingame.ingame_outcome_label import MlbOutcomeResolver
     res = MlbOutcomeResolver(box_df=_dh_box_df())
