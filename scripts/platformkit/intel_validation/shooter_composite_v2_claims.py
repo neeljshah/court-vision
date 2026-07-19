@@ -75,6 +75,7 @@ import pyarrow.parquet as pq
 
 from domains.basketball_nba.quality_claim_builders import rank_of
 from domains.basketball_nba.quality_indices import QUALIFY_SEASON
+from scripts.platformkit.predictive_validity.validity_ladder import ladder_caveat
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 _CLAIMS_DIR = REPO_ROOT / "data" / "cache" / "intel_claims"
@@ -235,6 +236,7 @@ def build_claim(snap: pd.DataFrame, season: str = QUALIFY_SEASON, snapshot_path:
             "so a single static arithmetic formula cannot re-derive the score from raw columns alone) -- same "
             "pattern as soccer_team_venue_split_claims.py's precomputed diff columns.",
             "DESCRIPTIVE/SCOUTING ranking only -- no forecast, no market claim, no dollar edge.",
+            ladder_caveat("shooter_composite_v2"),
         ],
     }
 

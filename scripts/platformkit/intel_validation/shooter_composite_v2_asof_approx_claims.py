@@ -45,6 +45,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 from domains.basketball_nba.quality_claim_builders import rank_of
+from scripts.platformkit.predictive_validity.validity_ladder import ladder_caveat
 from domains.basketball_nba.quality_indices import (
     QUALIFY_MIN_FGA,
     QUALIFY_MIN_GAMES,
@@ -167,6 +168,7 @@ def build_claim(snap: pd.DataFrame, season: str, snapshot_path: Path = _SNAPSHOT
             "RECOMPUTABILITY: criteria.formula is an IDENTITY read of the precomputed "
             "shooter_composite_v2_asof_approx column in this claim's own snapshot parquet.",
             "DESCRIPTIVE/SCOUTING ranking only -- no forecast, no market claim, no dollar edge.",
+            ladder_caveat("shooter_composite_v2_asof_approx"),
         ],
     }
 

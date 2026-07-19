@@ -50,7 +50,7 @@ from scripts.platformkit.intel_validation.shooter_composite_v2_claims import (
     _CLAIMS_DIR,
     _rel,
 )
-from scripts.platformkit.predictive_validity.absence_swing import validity_caveat
+from scripts.platformkit.predictive_validity.validity_ladder import ladder_caveat
 
 _BOX_PATH = REPO_ROOT / "data" / "domains" / "basketball_nba" / "player_boxscores.parquet"
 _PROFILES_PATH = REPO_ROOT / "data" / "cache" / "profiles" / "nba_player_profiles.parquet"
@@ -182,7 +182,7 @@ def build_claim(snap: pd.DataFrame, snapshot_path: Path = _SNAPSHOT_PATH) -> dic
         "n_considered": n_considered,
         "n_excluded_below_floor": n_considered - len(survivors),
         "edge_claimed": False,
-        "caveats": [RECEIPT_CAVEAT, validity_caveat("nba_defender_v4_individual")],
+        "caveats": [RECEIPT_CAVEAT, ladder_caveat("nba_defender_v4_individual")],
     }
 
 

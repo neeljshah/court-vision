@@ -46,6 +46,8 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 
+from scripts.platformkit.predictive_validity.validity_ladder import ladder_caveat
+
 from scripts.platformkit.intel_validation.shooter_composite_v2_claims import (
     REPO_ROOT,
     _CLAIMS_DIR,
@@ -168,7 +170,7 @@ def build_claim(snap: pd.DataFrame, snapshot_path: Path = _SNAPSHOT_PATH) -> dic
         "n_considered": n_considered,
         "n_excluded_below_floor": n_considered - len(survivors),
         "edge_claimed": False,
-        "caveats": [ATTRIBUTION_CAVEAT],
+        "caveats": [ATTRIBUTION_CAVEAT, ladder_caveat("nba_defender_v2_context")],
     }
 
 
