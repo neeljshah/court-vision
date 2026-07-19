@@ -62,6 +62,13 @@ while true; do
         done
     fi
 
+    # 0.5. rebuild claim indexes (all families, cheap): a regenerated store
+    # with a stale .index.jsonl makes ask()'s fast path SKIP the family and
+    # silently serve a legacy store instead -- the exact "best shooter isn't
+    # the validated index" failure (root-caused 2026-07-19).
+    "$PY" -m scripts.platformkit.intel_query.claims_index \
+        > "$LOGS/cycle_index.log" 2>&1
+
     # 1. re-validate every claim family (skip sidecars); count verdicts
     VLOG="$LOGS/cycle_claims.log"; : > "$VLOG"
     for f in data/cache/intel_claims/*.jsonl; do

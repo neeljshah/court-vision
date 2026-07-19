@@ -227,3 +227,27 @@ def test_index_top_n_lookup_team_question_still_finds_team_metric(tmp_path):
     row = ask_index.index_top_n_lookup(parsed, tmp_path, REPO_ROOT)
     assert row is not None
     assert row["claim_id"] == "team_a1"
+
+
+def test_index_top_n_lookup_prefers_higher_validity_tier_over_recency(tmp_path, monkeypatch):
+    # Two families answer the same metric/window: fam_low is NEWER but tier-0,
+    # fam_t2 is OLDER but T2_PREDICTIVE -- the ladder must win over recency,
+    # and recency must still break ties within a tier.
+    low = [_ranking_row("a1", "pts", "season", "2026-07-01T00:00:00+00:00",
+                        [{"rank": 1, "player_id": 1, "player_name": "Newer", "value": 9.0}])]
+    t2 = [_ranking_row("b1", "pts", "season", "2026-01-01T00:00:00+00:00",
+                       [{"rank": 1, "player_id": 2, "player_name": "Valid", "value": 8.0}])]
+    _write_family(tmp_path, "fam_low", low, {"a1": "VERIFIED"})
+    _write_family(tmp_path, "fam_t2", t2, {"b1": "VERIFIED"})
+    build_index("fam_low", tmp_path)
+    build_index("fam_t2", tmp_path)
+    monkeypatch.setattr(ask_index, "_ladder_cache", {"fam_t2": 2, "fam_low": 0})
+
+    parsed = ParsedQuestion(family="top_n", top_n=5, metric_hints=["pts"], window_hint="season")
+    row = ask_index.index_top_n_lookup(parsed, tmp_path, REPO_ROOT)
+    assert row is not None and row["claim_id"] == "b1"  # T2 beats newer T0
+
+    # Same tier -> recency wins (legacy behavior preserved).
+    monkeypatch.setattr(ask_index, "_ladder_cache", {"fam_t2": 0, "fam_low": 0})
+    row = ask_index.index_top_n_lookup(parsed, tmp_path, REPO_ROOT)
+    assert row is not None and row["claim_id"] == "a1"

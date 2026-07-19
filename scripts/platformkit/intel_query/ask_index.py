@@ -34,6 +34,33 @@ from typing import Any
 
 from scripts.platformkit.intel_query.claims_index import discover_families, is_index_fresh
 
+# Validity-ladder tier preference (read-only; data/cache/benchmarks/
+# validity_ladder.json is composed elsewhere and never recomputed here).
+# Unknown families rank 0 = same as T0, so non-tiered families keep the
+# legacy newest-wins behavior exactly.
+_TIER_RANK = {"T3_MARKET": 3, "T2_PREDICTIVE": 2, "T1_CRITERION": 1}
+_ladder_cache: dict[str, int] | None = None
+
+
+def _tier_rank(family: str) -> int:
+    """Rank of *family* in the validity ladder (0 when absent/unreadable)."""
+    global _ladder_cache
+    if _ladder_cache is None:
+        tiers: dict[str, int] = {}
+        try:
+            path = Path(__file__).resolve().parents[3] / "data" / "cache" / \
+                "benchmarks" / "validity_ladder.json"
+            doc = json.loads(path.read_text(encoding="utf-8"))
+            for name, entry in (doc.get("indexes") or {}).items():
+                tiers[name] = _TIER_RANK.get(str(entry.get("tier")), 0)
+        except Exception:  # noqa: BLE001 -- no ladder -> legacy behavior
+            tiers = {}
+        _ladder_cache = tiers
+    # On-disk family stems carry a _claims suffix the ladder keys lack
+    # (nba_defender_v4_individual_claims -> nba_defender_v4_individual).
+    return _ladder_cache.get(family, _ladder_cache.get(
+        family[:-7] if family.endswith("_claims") else family, 0))
+
 VERIFIED = "VERIFIED"
 
 ENTITY_TYPE_PLAYER = "player"
@@ -498,7 +525,9 @@ def index_top_n_lookup(parsed, claims_dir: Path, repo_root: Path) -> dict[str, A
         return None
     best_row: dict[str, Any] | None = None
     best_claims_path: Path | None = None
-    best_computed_at = ""
+    # Selection key: (validity tier, computed_at) -- a higher-tier index beats
+    # a newer lower-tier one; recency only breaks ties WITHIN a tier.
+    best_key: tuple[int, str] = (-1, "")
     for family in discover_families(claims_dir):
         if not is_index_fresh(family, claims_dir):
             continue
@@ -526,12 +555,13 @@ def index_top_n_lookup(parsed, claims_dir: Path, repo_root: Path) -> dict[str, A
             if not entity_key_matches(idx_row.get("entity_key"), entity_type, idx_row.get("claim_id", "")):
                 continue
             computed_at = idx_row.get("computed_at") or ""
-            if computed_at <= best_computed_at:
+            key = (_tier_rank(family), computed_at)
+            if key <= best_key:
                 continue
             candidate_row = seek_claim_row(claims_path, idx_row.get("byte_offset", 0))
             if candidate_row is None or candidate_row.get("kind") != "ranking":
                 continue
-            best_row, best_claims_path, best_computed_at = candidate_row, claims_path, computed_at
+            best_row, best_claims_path, best_key = candidate_row, claims_path, key
     if best_row is None:
         return None
     return dict(
