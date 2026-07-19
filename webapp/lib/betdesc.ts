@@ -35,11 +35,18 @@ function isKxTicker(s: string): boolean {
 //   KXMLBGAME-26JUL181510CINCOL -> "CIN @ COL"   (26 JUL 18, 15:10, CIN@COL)
 // After "GAME-": YY(2) + MON(3 letters) + DDHHMM(6 digits) + AWAY3 + HOME3.
 function decodeKx(t: string): string {
-  const m = t.match(/GAME-\d{2}[A-Z]{3}\d{6}([A-Z]{3})([A-Z]{3})$/);
-  if (m) return `${m[1]} @ ${m[2]}`;
-  // Unknown KX shape: salvage the trailing 6 letters as AWAY3+HOME3 if present.
-  // ponytail: assumes 3+3 team codes (the documented pattern); leagues with 2/4-char
-  // codes fall through to "Kalshi market" rather than mis-split.
+  // GAME/TOTAL/SPREAD series all share <date><HHMM?><teamblob> tails; time is
+  // optional (some tickers omit it) and team codes are 2-3 letters each, so
+  // the blob is 4-6 letters. 6 letters -> unambiguous 3+3; other lengths are
+  // ambiguous (LADAL = LA+DAL or LAD+AL) -> show the raw blob rather than
+  // guess wrong or hide behind "Kalshi market".
+  const m = t.match(/-\d{2}[A-Z]{3}\d{2,6}([A-Z]{4,6})$/);
+  if (m) {
+    const blob = m[1];
+    if (blob.length === 6) return `${blob.slice(0, 3)} @ ${blob.slice(3)}`;
+    return blob;
+  }
+  // Unknown KX shape: salvage an exactly-6-letter tail as AWAY3+HOME3.
   const tail = t.match(/([A-Z]{3})([A-Z]{3})$/);
   if (tail) return `${tail[1]} @ ${tail[2]}`;
   return "Kalshi market";
@@ -130,7 +137,22 @@ function propLabel(row: BetDescFields, short: boolean): string {
 // --- describeBet -----------------------------------------------------------
 
 export function describeBet(row: BetDescFields): string {
-  const mt = (row.market_type ?? "").toLowerCase();
+  let mt = (row.market_type ?? "").toLowerCase();
+  // In-play derivative rows encode everything in a composite market key
+  // (total_10.5_over / spread_1.5_home) with side kept as home/away
+  // bookkeeping -- normalize to the totals/spread paths instead of letting
+  // the home/away side masquerade as a moneyline.
+  const comp = ((row as { market?: string | null }).market ?? row.market_type ?? "")
+    .toLowerCase()
+    .match(/^(total|spread)_([\d.]+)_([a-z]+)$/);
+  if (comp) {
+    // Run-line convention: the home side lays the line (home -1.5), the away
+    // side takes it (+1.5); totals lines are unsigned.
+    const ln = Number(comp[2]);
+    const signed = comp[1] === "spread" && comp[3] === "home" ? -ln : ln;
+    row = { ...row, line: signed, side: comp[3] };
+    mt = comp[1];
+  }
 
   // Player prop -> "Ildemaro Vargas UNDER 0.5 Hits"
   if (isProp(row)) return propLabel(row, false);

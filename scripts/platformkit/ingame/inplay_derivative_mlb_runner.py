@@ -45,6 +45,17 @@ def acquire_lock(path: Path) -> bool:
         return False
 
 
+def _beat() -> None:
+    """ops.liveness heartbeat for component m2_inplay_deriv. Never raises --
+    the ops audit 2026-07-19 flagged this file's docstring promised a liveness
+    heartbeat that was never actually written."""
+    try:
+        from ops.liveness import heartbeat
+        heartbeat("m2_inplay_deriv")
+    except Exception:  # noqa: BLE001 -- liveness is observability, never fatal
+        logger.debug("inplay_derivative_mlb_runner heartbeat skipped", exc_info=True)
+
+
 def release_lock(path: Path) -> None:
     try:
         path.unlink(missing_ok=True)
@@ -66,6 +77,7 @@ def run(*, once: bool = False, interval: Optional[float] = None,
         while True:
             hb = poll_once()
             n_ticks += 1
+            _beat()  # ops.liveness txt heartbeat (m2_inplay_deriv) -- stale-never-green
             print("inplay_derivative_mlb | tick: games=%d captured=%d bets=%d settled=%s"
                   % (hb["n_games"], hb["n_captured"], hb["n_bets"], hb["settled"]), flush=True)
             if once:

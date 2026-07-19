@@ -122,3 +122,24 @@ describe("describeBet -- never renders an opaque 'prop away'", () => {
     expect(describeBet({ market_type: "moneyline", side: "away", matchup: "CIN @ COL" })).not.toBe("moneyline away");
   });
 });
+
+describe("derivative composite markets + short team blobs (2026-07-19)", () => {
+  it("decodes TOTAL-series tickers with an HHMM block", () => {
+    expect(humanizeMatchup("KXMLBTOTAL-26JUL191335TEXATL")).toBe("TEX @ ATL");
+  });
+  it("shows the raw blob for ambiguous 5-letter team codes, never 'Kalshi market'", () => {
+    expect(humanizeMatchup("KXWNBAGAME-26JUL19LADAL")).toBe("LADAL");
+  });
+  it("renders a composite total market as OVER <line>, not a moneyline", () => {
+    expect(
+      describeBet({ market: "total_10.5_over", side: "home",
+                    matchup: "KXMLBTOTAL-26JUL191335TEXATL" } as never),
+    ).toBe("OVER 10.5");
+  });
+  it("renders a composite spread market with the covering team", () => {
+    expect(
+      describeBet({ market: "spread_1.5_home", side: "home",
+                    matchup: "KXMLBGAME-26JUL191335TEXATL" } as never),
+    ).toBe("ATL -1.5");
+  });
+});
