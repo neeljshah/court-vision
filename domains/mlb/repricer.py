@@ -47,6 +47,37 @@ _REMAINING_CUM = tuple(
 # keep a regulation TIE live with a small residual lambda instead of freezing the markets
 # (a tie goes to EXTRA INNINGS where more runs WILL score, so the over must not be frozen).
 _EXTRA_INNING_FRAC = 1.0 / _MLB_FULL_INNINGS
+# Home bats last in extra innings (sudden death: home only needs to take the lead, away
+# must finish its turn regardless) -- a well-documented structural MLB effect distinct from
+# a team's season-strength home edge (already baked into lam_home/lam_away pregame). ~0.54
+# is the commonly cited long-run MLB home win rate; used here as an EXTERNAL, principled
+# anchor for the extra-innings lambda split -- NOT fit to the calibration-grid eval corpus.
+_EXTRAS_HOME_WIN_TARGET = 0.54
+
+
+def _tilt_extras_split(lam_h: float, lam_a: float, r_h: float, r_a: float,
+                       target: float) -> tuple[float, float]:
+    """Sum-preserving lambda tilt so the (tied-start) NegBinom tie-adjusted ML == target.
+
+    Mirrors domains.mlb.predictor._anchor_nb_tiesplit's bisection but kept local so the
+    repricer doesn't import the predictor module (repricer stays a pure math/numpy layer).
+    """
+    from domains.mlb.negbinom_engine import runs_matrix_nb  # noqa: PLC0415
+    s = lam_h + lam_a
+    if s <= 0:
+        return lam_h, lam_a
+    lo, hi = 0.02, 0.98
+    for _ in range(30):
+        f = 0.5 * (lo + hi)
+        P = runs_matrix_nb(s * f, s * (1.0 - f), r_h, r_a)
+        n = P.shape[0]
+        p = float(P[np.tril_indices(n, -1)].sum() + 0.5 * np.trace(P))
+        if p < target:
+            lo = f
+        else:
+            hi = f
+    f = 0.5 * (lo + hi)
+    return s * f, s * (1.0 - f)
 
 
 def _remaining_frac(innings_played: float, *, homogeneous: bool = False) -> float:
@@ -106,13 +137,27 @@ class MLBRepricer:
         h0, a0 = int(state.home_score), int(state.away_score)
 
         if frac <= 0.0:
-            # Regulation over. If the game is DECIDED (h0 != a0) the markets are deterministic.
-            # If it is TIED it goes to EXTRA INNINGS where more runs WILL score, so DON'T freeze
-            # the over / pin the run-line: simulate one extra inning's worth of residual runs.
-            if h0 != a0:
-                return self._final_state_surface(h0, a0, state)
+            # frac<=0.0 only happens when innings_played >= 9, which (given innings_played =
+            # inning - 1 + 0.5*bottom) only occurs at inning >= 10 -- i.e. this branch is
+            # ALWAYS extra innings, never a completed regulation game. A trailing team in
+            # extras still gets its at-bat (or the game wouldn't be live), so freezing the
+            # market to a deterministic 0/1 here was the bug: down-1-in-extras collapsed to
+            # p_home=0.000 vs a measured ~30% comeback rate (mlb_reliability_map.json,
+            # extras|diff_-01, n=451). Simulate one extra inning's worth of residual runs
+            # for BOTH tied and unequal scores instead of short-circuiting to "decided".
+            # TRADEOFF: reuses the fixed 1-inning residual lambda for every extras state
+            # (10th vs 15th look identical) -- coarser than a real innings-remaining model,
+            # but a principled floor beats a hard 0/1 that a 2.56M-pitch backtest refutes.
             frac = _EXTRA_INNING_FRAC
             remaining = frac * _MLB_FULL_INNINGS
+            # Bats-last tilt: re-split the RESIDUAL (already frac-scaled) lambda toward the
+            # structural home-field anchor (see _EXTRAS_HOME_WIN_TARGET above) -- tilting
+            # must happen at the thinned scale, since a NegBinom split's implied win-prob
+            # is not scale-invariant under thinning with fixed r (same mis-specification the
+            # HONESTY note above already flags for the lam *= frac approximation).
+            lam_home, lam_away = _tilt_extras_split(
+                lam_home * frac, lam_away * frac, r_home, r_away, _EXTRAS_HOME_WIN_TARGET)
+            frac = 1.0
 
         P_rem = runs_matrix_nb(max(1e-6, lam_home * frac), max(1e-6, lam_away * frac),
                                r_home, r_away)
