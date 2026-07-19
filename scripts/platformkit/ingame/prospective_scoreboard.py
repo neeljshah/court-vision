@@ -85,6 +85,14 @@ CHECKPOINTS: Dict[str, List[Tuple[str, Any]]] = {
         ("end_inn6", lambda s: s.get("inning", 0) >= 7),
         ("end_inn8", lambda s: s.get("inning", 0) >= 9),
     ],
+    # soccer_intl state_summary carries minute (grade rows from the capture
+    # chain); model is the validated live predictor. Added 2026-07-19 for
+    # evidence throughput -- same PENDING-until-CI discipline as every sport.
+    "soccer_intl": [
+        ("min30", lambda s: s.get("minute", 0) >= 30),
+        ("halftime", lambda s: s.get("minute", 0) >= 46),
+        ("min75", lambda s: s.get("minute", 0) >= 75),
+    ],
 }
 
 

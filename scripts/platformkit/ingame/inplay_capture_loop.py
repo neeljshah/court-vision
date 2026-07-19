@@ -130,7 +130,12 @@ def _priority_sports(sport_list: List[str],
 # relaxed floor surfaces the marginal in-game edges (tier C) so the CLV corpus actually fills.
 # MLB added 2026-06-29 (was soccer-only) so in-game places across sports, not just the WC.
 _INGAME_RELAXED_EV_FLOOR: Dict[str, float] = {
-    "soccer_intl": 0.01, "soccer": 0.01, "mlb": 0.01}
+    "soccer_intl": 0.01, "soccer": 0.01, "mlb": 0.01,
+    # wnba ADDED 2026-07-19 (evidence-throughput lever, same declared rationale
+    # as mlb/soccer above): the walk-forward-validated WNBA blend serves live,
+    # but the strict floor almost never fired -> the paper CLV corpus could not
+    # fill. PAPER measurement only; the breaker + divergence gate bound it.
+    "wnba": 0.01}
 
 # Phase-aware cadence (seconds): poll fast while in-play games are live, slow when quiet.
 LIVE_INTERVAL_SEC = 20.0
