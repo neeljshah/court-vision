@@ -89,6 +89,29 @@ while true; do
     "$PY" -m scripts.platformkit.pod_sprint.prediction_eval \
         > "$LOGS/cycle_predeval.log" 2>&1
 
+    # 5. pregame snapshot refresh EVERY cycle -- the in-play paper chain's p0
+    # (live_p0 -> mlb_live_model) reads data/frontend/predict_service/<sport>/
+    # latest.json; a missing/stale snapshot silently kills MLB pair capture
+    # (root-caused 2026-07-19: pod had NO snapshot store -> zero MLB pairs).
+    for s in mlb wnba nba; do
+        timeout 300 "$PY" -m predict_service.produce --sport "$s" \
+            >> "$LOGS/cycle_snapshot.log" 2>&1
+    done
+
+    # 6. DAILY forward-measurement scoreboards (once per UTC day): prospective
+    # checkpoint grading (PENDING until the CI earns it), exec calibration,
+    # live-feature leak-free gate. Cheap, honest, append their own history.
+    TODAY=$(date -u +%F)
+    if [ "${LAST_SCOREBOARD_DAY:-}" != "$TODAY" ]; then
+        "$PY" -m scripts.platformkit.ingame.prospective_scoreboard \
+            > "$LOGS/cycle_prospective.log" 2>&1
+        "$PY" -m scripts.platformkit.ingame.exec_calibration \
+            > "$LOGS/cycle_execcal.log" 2>&1
+        "$PY" -m scripts.platformkit.tip_capture.feature_gate_runner \
+            > "$LOGS/cycle_featgate.log" 2>&1
+        LAST_SCOREBOARD_DAY="$TODAY"
+    fi
+
     echo "{\"cycle\":$cycle,\"started\":\"$T0\",\"ended\":\"$(date -Is)\",\"regen_ok\":$N_REGEN_OK,\"regen_failed\":$N_REGEN_FAIL,\"claims_total\":${N_VER:-0},\"claims_verified\":${N_OK:-0},\"claims_mismatch\":${N_MIS:-0},\"qa\":\"${QA:-na}\",\"coverage_rate\":${COV:-null}}" >> "$CYCLES"
     sleep "$SLEEP_BETWEEN"
 done
