@@ -129,7 +129,11 @@ def _t1_receipt(index_name: str, key: Optional[str], doc: Optional[dict[str, Any
     if not key or not doc:
         return None
     entry = doc.get("indexes", {}).get(key)
-    if not entry or entry.get("n", 0) <= 0 or entry.get("verdict") != "VALID_SIGNAL":
+    # VALID_SIGNAL_PARTIAL_JUDGE (offense judge w/ construction overlap, e.g.
+    # gravity) grants T1 too -- the partial-independence label rides along in
+    # the receipt so the caveat discloses it.
+    if not entry or entry.get("n", 0) <= 0 or entry.get("verdict") not in (
+            "VALID_SIGNAL", "VALID_SIGNAL_PARTIAL_JUDGE"):
         return None
     ci = entry["ci"]
     return {
