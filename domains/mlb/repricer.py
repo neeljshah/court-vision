@@ -137,9 +137,16 @@ class MLBRepricer:
         h0, a0 = int(state.home_score), int(state.away_score)
 
         if frac <= 0.0:
-            # frac<=0.0 only happens when innings_played >= 9, which (given innings_played =
-            # inning - 1 + 0.5*bottom) only occurs at inning >= 10 -- i.e. this branch is
-            # ALWAYS extra innings, never a completed regulation game. A trailing team in
+            # Guard (opus review): frac<=0 is only PROVABLY extras when innings_played came
+            # from the feed ('innings_played' in extra => inning-1+0.5*bottom >= 9 => inning
+            # >= 10) or the state carries a real inning >= 10. On the DEGRADED elapsed-
+            # minutes fallback, a long completed regulation game can also reach frac<=0 --
+            # an unequal score there is a decided game, not live extras: keep deterministic.
+            real_extras = ("innings_played" in extra) or (
+                int(getattr(state, "inning", 0) or 0) >= 10)
+            if not real_extras and h0 != a0:
+                return self._final_state_surface(h0, a0, state)
+            # Otherwise this is live extra innings. A trailing team in
             # extras still gets its at-bat (or the game wouldn't be live), so freezing the
             # market to a deterministic 0/1 here was the bug: down-1-in-extras collapsed to
             # p_home=0.000 vs a measured ~30% comeback rate (mlb_reliability_map.json,

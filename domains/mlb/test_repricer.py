@@ -79,3 +79,14 @@ if __name__ == "__main__":
     test_regular_innings_unchanged()
     test_decided_regulation_state_unaffected()
     print("OK")
+
+
+def test_degraded_elapsed_fallback_decided_game_stays_deterministic():
+    """opus-review guard: when innings_played comes only from the elapsed-minutes
+    APPROXIMATION (no feed innings, no real inning attr) and the score is unequal,
+    a frac<=0 state is a COMPLETED regulation game, not live extras -> deterministic."""
+    st = _GS(9.0, 5, 3)
+    st.extra = {}                 # no feed innings_played
+    st.elapsed_minutes = 9.0 * 20.0   # elapsed fallback pushes innings_played >= 9
+    out = MLBRepricer().reprice(st)
+    assert out["ml_home"] == 1.0

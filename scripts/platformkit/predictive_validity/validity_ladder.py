@@ -202,10 +202,11 @@ def build_ladder() -> dict[str, Any]:
             "never recomputes a correlation or a verdict. Tier = highest rung "
             "with a LIVE receipt; T3_MARKET is reserved and never auto-granted. "
             "Judge-never-ingredient: none of these judge signals feed any "
-            "index's own computation. An offense-side absence-swing judge "
-            "(absence_swing_offense_validity.json) does not exist yet -- "
-            "offensive indexes (gravity, shooter composites) honestly stay "
-            "below T1 until it does."
+            "index's own computation. Offense-side judge "
+            "(absence_swing_offense_validity.json): read when present -- "
+            "gravity's T1 via it carries a declared partial-overlap "
+            "disclosure (VALID_SIGNAL_PARTIAL_JUDGE); when the artifact is "
+            "absent, offensive indexes honestly stay below T1."
         ),
         "edge_claimed": False,
     }
