@@ -39,7 +39,7 @@ def _state_fn_base(sport, gid):
 
 def _model_fn(sport, state):
     # As-of-this-tick P(home win) -- a clear +edge vs the 0.55 YES(home) price below.
-    return 0.80
+    return 0.65
 
 
 def _inplay_fetch(sport):
@@ -140,16 +140,16 @@ def test_one_cycle_captures_pair_with_prior_and_paper_decides(tmp_path):
     g = hb["games"][0]
     assert g["paired"] is True
     assert g["p0_source"] == "PRIOR"                 # the PROVEN prior, not BASE
-    assert g["model_prob"] == 0.80
+    assert g["model_prob"] == 0.65
     assert g["devigged_price"] is not None and 0.0 < g["devigged_price"] < 1.0
-    # model (0.80) is well above the ~0.54 devigged price -> a paper ENTER fires.
+    # model (0.65) is above the ~0.54 devigged price -> a paper ENTER fires.
     assert g["bet"] is True and g["action"] == "bet"
     assert hb["n_bets"] == 1
     # The leak-free grade pair was captured to the per-game file.
     path = grade_dir / "mlb" / "KXMLBGAME-26JUN191840CWSDET.jsonl"
     rows = [json.loads(x) for x in path.read_text(encoding="ascii").splitlines() if x.strip()]
     assert len(rows) == 1 and rows[0]["side"] == "home"
-    assert rows[0]["model_prob"] == 0.80
+    assert rows[0]["model_prob"] == 0.65
     # measurement-only honesty rails.
     assert hb["measurement_only"] is True and hb["executed"] is False
     assert hb["edge_claimed"] is False and hb["units"] == "probability"
@@ -612,7 +612,7 @@ def test_wnba_shadow_field_present_and_none_safe(tmp_path, monkeypatch):
     g = hb["games"][0]
     # additive field present; decision (bet/action/model_prob) is UNCHANGED by it.
     assert g["model_prob_wnba_shadow"] == 0.71
-    assert g["bet"] is True and g["model_prob"] == 0.80
+    assert g["bet"] is True and g["model_prob"] == 0.65
 
 
 def test_wnba_shadow_poisoned_get_shadow_is_none_never_raises(tmp_path, monkeypatch):
@@ -631,7 +631,7 @@ def test_wnba_shadow_poisoned_get_shadow_is_none_never_raises(tmp_path, monkeypa
     g = hb["games"][0]
     assert g["model_prob_wnba_shadow"] is None
     # decision path fully unaffected by the poisoned shadow prober.
-    assert g["bet"] is True and g["model_prob"] == 0.80
+    assert g["bet"] is True and g["model_prob"] == 0.65
 
 
 # --------------------------------------------------------------------------------------- #
@@ -657,7 +657,7 @@ def test_nba_ladder_shadow_field_present_and_none_safe(tmp_path, monkeypatch):
     # additive field present; the EXISTING nba shadow field + decision are untouched by it.
     assert g["model_prob_nba_ladder_shadow"] == 0.63
     assert "model_prob_nba_shadow" in g
-    assert g["bet"] is True and g["model_prob"] == 0.80
+    assert g["bet"] is True and g["model_prob"] == 0.65
 
 
 def test_nba_ladder_shadow_poisoned_pricer_is_none_never_raises(tmp_path, monkeypatch):
@@ -675,7 +675,7 @@ def test_nba_ladder_shadow_poisoned_pricer_is_none_never_raises(tmp_path, monkey
                         heartbeat_path=tmp_path / "hb.json")
     g = hb["games"][0]
     assert g["model_prob_nba_ladder_shadow"] is None
-    assert g["bet"] is True and g["model_prob"] == 0.80
+    assert g["bet"] is True and g["model_prob"] == 0.65
 
 
 def test_nba_ladder_shadow_non_nba_sport_is_none():
@@ -712,7 +712,7 @@ def test_enrichment_fields_present_and_none_safe_with_no_sidecars(tmp_path):
     for key in ("xg_home", "xg_away", "xg_asof_min", "spread_bp", "book_thinness",
                "stale_quote", "espn_wp"):
         assert key in g and g[key] is None
-    assert g["bet"] is True and g["model_prob"] == 0.80
+    assert g["bet"] is True and g["model_prob"] == 0.65
 
 
 def test_enrichment_on_vs_off_decision_output_identical(tmp_path, monkeypatch):
@@ -770,7 +770,7 @@ def test_enrichment_poisoned_facade_never_raises_decision_unaffected(tmp_path, m
                "stale_quote", "espn_wp"):
         assert g.get(key) is None
     # decision path fully unaffected by the poisoned enrichment facade.
-    assert g["bet"] is True and g["model_prob"] == 0.80
+    assert g["bet"] is True and g["model_prob"] == 0.65
 
 
 # --------------------------------------------------------------------------------------- #
@@ -808,7 +808,7 @@ def test_enrichment_persists_into_grade_row(tmp_path, monkeypatch):
     assert row["spread_bp"] == 42.0 and row["book_thinness"] == 7
     assert row["espn_wp"] == 0.59
     # Core pair/alignment keys are untouched by the additive merge.
-    assert row["model_prob"] == 0.80 and row["side"] == "home"
+    assert row["model_prob"] == 0.65 and row["side"] == "home"
     assert set(row.keys()) >= {"sport", "game_id", "ts", "market_prob", "model_prob",
                                "side", "state_summary", "spread_bp", "book_thinness",
                                "stale_quote", "espn_wp"}
@@ -848,7 +848,7 @@ def test_mlb_identity_fields_persist_into_grade_row(tmp_path):
     assert row["mlb_ondeck_id"] == 700000
     assert row["mlb_bullpen_used"] == [656492]
     # core pairing/decision keys are untouched by the additive identity merge.
-    assert row["model_prob"] == 0.80 and row["side"] == "home"
+    assert row["model_prob"] == 0.65 and row["side"] == "home"
 
 
 def test_mlb_identity_fields_none_safe_when_unresolved(tmp_path):
@@ -859,7 +859,7 @@ def test_mlb_identity_fields_none_safe_when_unresolved(tmp_path):
     for key in ("mlb_batter_id", "mlb_pitcher_id", "mlb_pitcher_pitch_count",
                "mlb_ondeck_id", "mlb_bullpen_used"):
         assert key in g and g[key] is None
-    assert g["bet"] is True and g["model_prob"] == 0.80
+    assert g["bet"] is True and g["model_prob"] == 0.65
 
 
 # --------------------------------------------------------------------------------------- #
@@ -883,7 +883,7 @@ def test_grade_write_failure_counted_and_isolated_per_tick(tmp_path):
         calls["n"] += 1
         if calls["n"] == 1:
             raise RuntimeError("simulated per-game grade-write failure")
-        return 0.80
+        return 0.65
 
     grade_dir = tmp_path / "grade"
     hb1 = loop.poll_once(sports=["mlb"], live_state_fn=_state_fn_prior,
@@ -949,7 +949,7 @@ def test_heartbeat_carries_pacing_counters_zero_for_legacy_1arg_fetch_fn(tmp_pat
     assert hb["n_429_total"] == 0
     assert "cycle_duration_sec" in hb and hb["cycle_duration_sec"] >= 0.0
     g = hb["games"][0]
-    assert g["bet"] is True and g["model_prob"] == 0.80  # decision path unaffected
+    assert g["bet"] is True and g["model_prob"] == 0.65  # decision path unaffected
 
 
 def test_heartbeat_aggregates_stats_from_a_pacing_aware_fetch_fn(tmp_path):
@@ -1194,7 +1194,7 @@ def test_shadow_history_poisoned_module_never_raises_into_poll_once(tmp_path, mo
                        heartbeat_path=tmp_path / "hb.json")
     # the heartbeat write (which happens before the hook) still succeeded, and the
     # decision path is fully unaffected by the poisoned shadow_history module.
-    assert hb["games"][0]["bet"] is True and hb["games"][0]["model_prob"] == 0.80
+    assert hb["games"][0]["bet"] is True and hb["games"][0]["model_prob"] == 0.65
     assert (tmp_path / "hb.json").is_file()
 
 
@@ -1223,3 +1223,123 @@ def test_shadow_history_history_dir_isolated_from_real_default_via_heartbeat_pat
     assert real_default_after == real_default_before, (
         "poll_once must never write shadow rows to the real DEFAULT_HISTORY_DIR "
         "when a tmp heartbeat_path was supplied")
+
+
+# --------------------------------------------------------------------------------------- #
+# LATENCY LANE: per-game signal_ts (not one sport-wide batch value), one ESPN team-bridge   #
+# scan shared per sport/tick, and decision-relevant-sports-first ordering.                  #
+# --------------------------------------------------------------------------------------- #
+def test_ts_by_game_prefers_each_games_own_moneyline_tick_ts():
+    ticks = [
+        {"game_id": "G1", "side": "A", "prob": 0.5, "market_type": "moneyline", "ts": "T1"},
+        {"game_id": "G2", "side": "B", "prob": 0.4, "market_type": "moneyline", "ts": "T2"},
+        # a later, unrelated total-market row for G1 must never override G1's own ts.
+        {"game_id": "G1", "side": "Over 8.5", "prob": 0.7, "market_type": "total", "ts": "T3"},
+    ]
+    assert loop._ts_by_game(ticks) == {"G1": "T1", "G2": "T2"}
+
+
+def test_ts_by_game_ignores_ticks_with_no_ts_or_no_gid():
+    ticks = [{"game_id": "G1", "side": "A", "prob": 0.5, "market_type": "moneyline"},
+             {"game_id": "", "side": "A", "prob": 0.5, "market_type": "moneyline", "ts": "T1"}]
+    assert loop._ts_by_game(ticks) == {}
+
+
+def test_poll_once_uses_each_games_own_tick_ts_as_signal_ts(tmp_path, monkeypatch):
+    # Two games in one sport this tick, each fetched at a DIFFERENT real time (mirrors
+    # inplay_kalshi's now-per-series stamping) -- each game's tick["signal_ts"] (the
+    # value fed into inplay_daytrader.on_tick, and from there paper_ingame's
+    # placement_latency_ms) must be ITS OWN tick's ts, never a shared batch value from
+    # an unrelated game. Spies on on_tick directly so this is independent of whatever
+    # enter/no_bet gate on_tick's OWN pipeline decides (not this lane's concern).
+    seen_ts = {}
+    real_on_tick = loop._dt.on_tick
+
+    def _spy_on_tick(sport, gid, tick, **kw):
+        seen_ts[gid] = tick.get("signal_ts")
+        return real_on_tick(sport, gid, tick, **kw)
+
+    monkeypatch.setattr(loop._dt, "on_tick", _spy_on_tick)
+
+    def _two_game_fetch(sport):
+        return [
+            {"sport": sport, "game_id": "KXMLBGAME-G1", "venue": "kalshi",
+             "market_type": "moneyline", "side": "DET", "prob": 0.55,
+             "phase": "in_play", "ts": "2026-07-19T00:00:00Z"},
+            {"sport": sport, "game_id": "KXMLBGAME-G1", "venue": "kalshi",
+             "market_type": "moneyline", "side": "CWS", "prob": 0.47,
+             "phase": "in_play", "ts": "2026-07-19T00:00:00Z"},
+            {"sport": sport, "game_id": "KXMLBGAME-G2", "venue": "kalshi",
+             "market_type": "moneyline", "side": "BOS", "prob": 0.55,
+             "phase": "in_play", "ts": "2026-07-19T00:00:05Z"},
+            {"sport": sport, "game_id": "KXMLBGAME-G2", "venue": "kalshi",
+             "market_type": "moneyline", "side": "NYY", "prob": 0.47,
+             "phase": "in_play", "ts": "2026-07-19T00:00:05Z"},
+        ]
+
+    def _state_fn(sport, gid):
+        home, away = ("DET", "CWS") if gid == "KXMLBGAME-G1" else ("BOS", "NYY")
+        return {"sport": sport, "game_id": gid, "home": home, "away": away,
+                "state_diff": 1.0, "frac_elapsed": 0.3, "p0": 0.5, "p0_source": "PRIOR"}
+
+    loop.poll_once(sports=["mlb"], live_state_fn=_state_fn, model_fn=_model_fn,
+                   inplay_fetch_fn=_two_game_fetch, finals_fn=_finals_none,
+                   grade_dir=tmp_path / "grade", ledger_path=tmp_path / "l.jsonl",
+                   heartbeat_path=tmp_path / "hb.json")
+    assert seen_ts == {"KXMLBGAME-G1": "2026-07-19T00:00:00Z",
+                       "KXMLBGAME-G2": "2026-07-19T00:00:05Z"}
+
+
+def test_cached_live_states_fetches_once_per_sport_per_cycle():
+    # Two games whose live_state_fn misses (forcing the team-bridge scan) must share ONE
+    # underlying live_states(sport) fetch this tick, not one fetch PER game.
+    calls = []
+
+    def _spy_live_states(sport):
+        calls.append(sport)
+        return [{"home_display": "DET", "away_display": "CWS", "state_diff": 1.0,
+                 "frac_elapsed": 0.3, "p0": 0.5, "p0_source": "PRIOR"},
+                {"home_display": "BOS", "away_display": "NYY", "state_diff": 0.0,
+                 "frac_elapsed": 0.2, "p0": 0.5, "p0_source": "PRIOR"}]
+
+    cache: dict = {}
+    s1 = loop._cached_live_states("mlb", cache)
+    s2 = loop._cached_live_states("mlb", cache)
+    assert s1 is s2  # same memoized object, not re-fetched
+    assert cache == {"mlb": s1}
+
+
+def test_cached_live_states_none_cache_falls_back_to_direct_fetch(monkeypatch):
+    monkeypatch.setattr(loop._ls, "live_states", lambda s: [{"home_display": "X"}])
+    assert loop._cached_live_states("mlb", None) == [{"home_display": "X"}]
+
+
+def test_priority_sports_open_position_first_then_model_sports_mlb_pinned():
+    # tennis/wnba are capture-only; nba/soccer_intl/mlb have live models -- mlb pinned
+    # first among models. A sport with an OPEN position outranks everything else.
+    order = loop._priority_sports(
+        ["tennis", "nba", "wnba", "soccer_intl", "mlb", "npb"],
+        pos_map={"wnba/KX-1": {"status": "open"}})
+    assert order[0] == "wnba"                       # open position -> highest priority
+    assert order[1:4] == ["mlb", "soccer_intl", "nba"]  # model sports, mlb first
+    assert order[4:] == ["tennis", "npb"]            # capture-only, original relative order
+
+
+def test_priority_sports_no_positions_stable_relative_order_within_tiers():
+    order = loop._priority_sports(["kbo", "tennis", "nba", "mlb"], pos_map={})
+    assert order == ["mlb", "nba", "kbo", "tennis"]
+
+
+def test_priority_sports_closed_position_does_not_count_as_open():
+    order = loop._priority_sports(["tennis", "mlb"],
+                                  pos_map={"tennis/KX-1": None, "mlb/KX-2": {}})
+    assert order == ["mlb", "tennis"]  # neither pos_map entry is truthy -> no open bump
+
+
+def test_live_interval_sec_env_override(monkeypatch):
+    monkeypatch.delenv("CV_INPLAY_LIVE_INTERVAL", raising=False)
+    assert loop._live_interval_sec() == loop.LIVE_INTERVAL_SEC
+    monkeypatch.setenv("CV_INPLAY_LIVE_INTERVAL", "10")
+    assert loop._live_interval_sec() == 10.0
+    monkeypatch.setenv("CV_INPLAY_LIVE_INTERVAL", "not-a-number")
+    assert loop._live_interval_sec() == loop.LIVE_INTERVAL_SEC  # invalid -> unchanged default

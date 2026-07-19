@@ -162,7 +162,7 @@ def _tick_from_market(sport: str, market: Dict[str, Any], ts: str,
 
 
 def _fetch_one_series(sport: str, series: str, market_type: str, *, http: HttpGet,
-                      ts: str, now_dt: datetime, max_spread: float,
+                      ts: Optional[str], now_dt: datetime, max_spread: float,
                       min_volume: float, min_size: float,
                       stats: Optional[Dict[str, Any]] = None,
                       sleep_fn: SleepFn = time.sleep,
@@ -170,6 +170,12 @@ def _fetch_one_series(sport: str, series: str, market_type: str, *, http: HttpGe
                       n_active_sports: int = 1) -> List[Tick]:
     """Ticks for ONE (series_ticker, market_type) pair. [] on any failure -- a single
     series failing (network, bad body) must never sink the sport's other series.
+
+    *ts*: caller-supplied stamp (tests pass *now_iso* -> deterministic, identical on
+    every series). None (production default) -> HONEST PER-SERIES timestamp taken
+    right after THIS series' own HTTP response lands, not the batch start -- avoids
+    a later-staggered series inheriting an earlier, stale pre-fetch ts (latency fix;
+    ts is a measurement field only, never a decision input).
 
     *stats*, if given, is MUTATED in place (kalshi_pacing.record_request/record_429).
     On a 429 (kalshi_pacing.is_429) this also takes a short, capped cool-down
@@ -190,6 +196,7 @@ def _fetch_one_series(sport: str, series: str, market_type: str, *, http: HttpGe
             cooldown_after_429(exc, sleep_fn)
             _governor_report_429(governor)
         return []
+    fetch_ts = ts if ts is not None else _now_iso()  # per-series stamp at actual response time
     markets = body.get("markets") if isinstance(body, dict) else None
     if not isinstance(markets, list):
         return []
@@ -208,7 +215,7 @@ def _fetch_one_series(sport: str, series: str, market_type: str, *, http: HttpGe
         if not is_liquid(m, max_spread=max_spread, min_volume=min_volume,
                          min_size=min_size):
             continue  # illiquid / untraded -> VOID, never a fake in-play price
-        tick = _tick_from_market(sport, m, ts, market_type)
+        tick = _tick_from_market(sport, m, fetch_ts, market_type)
         if tick is not None:
             out.append(tick)
     return out
@@ -251,8 +258,13 @@ def fetch_inplay(sport: str, *, http: HttpGet = resilient_get_json,
     pairs = series_for(sport)
     if not pairs:
         return []
-    ts = now_iso or _now_iso()
-    now_dt = _parse_iso_now(ts)
+    # ts: None in production (default) -> each series stamps its OWN tick at its actual
+    # HTTP response time in _fetch_one_series (honest, avoids inflating measured latency
+    # for later-staggered series). An explicit now_iso (tests) still wins everywhere, for
+    # deterministic byte-identical output. now_dt (future-game guard) is independent of
+    # this and always resolves to a real instant either way.
+    ts = now_iso
+    now_dt = _parse_iso_now(ts) if ts is not None else datetime.now(timezone.utc)
     governor = _resolve_governor(governor_caller)
     out: List[Tick] = []
     for i, (series, market_type) in enumerate(pairs):

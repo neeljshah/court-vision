@@ -43,10 +43,11 @@ Per-file test:
 from __future__ import annotations
 
 import logging
+import os
 import time
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from scripts.platformkit.ingame import inplay_daytrader as _dt
 from scripts.platformkit.ingame import ingame_live_state as _ls
@@ -90,6 +91,34 @@ DEFAULT_HEARTBEAT = _REPO_ROOT / "data" / "cache" / "ingame_grade" / "_capture_h
 # wired; the shadow column is now redundant-but-harmless, not removed here.
 DEFAULT_SPORTS: List[str] = ["mlb", "soccer_intl", "tennis", "wnba", "npb", "kbo", "nba"]
 
+# Sports with a REAL live in-game model wired (_default_model_fn -> live_board.
+# live_model_home_prob's actual dispatch) -- these are the only sports whose tick can
+# reach a placement decision; tennis/wnba/npb/kbo are capture-only (always
+# reason="no_model_prob"). Order = processing priority (mlb pinned first, per season).
+_MODEL_SPORTS: Tuple[str, ...] = ("mlb", "soccer_intl", "nba")
+
+
+def _priority_sports(sport_list: List[str],
+                     pos_map: Dict[str, Dict[str, Any]]) -> List[str]:
+    """Stable-reorder *sport_list* so decision-relevant sports process first this tick.
+
+    Priority (highest first): (1) a sport with an OPEN paper position (needs its exit
+    check every tick), (2) a sport with a live model wired (_MODEL_SPORTS, mlb first),
+    (3) everything else, in its original relative order (stable sort). Pure; never
+    raises -- an unreadable pos_map key is simply not counted as an open position."""
+    open_sports = set()
+    for k, v in pos_map.items():
+        if v:
+            open_sports.add(str(k).split("/", 1)[0])
+
+    def _key(s: str) -> Tuple[int, int]:
+        sl = str(s).lower()
+        has_pos = 0 if sl in open_sports else 1
+        model_rank = _MODEL_SPORTS.index(sl) if sl in _MODEL_SPORTS else len(_MODEL_SPORTS)
+        return (has_pos, model_rank)
+
+    return sorted(sport_list, key=_key)
+
 # RELAXED in-game EV floor per sport (opt-in): the strict pre-registered floor (policy tier C
 # = +0.02 EV, +0.01 proxy = +0.03) rarely fires in-game because the calibrated model tracks
 # an efficient market. A lower floor surfaces genuine smaller divergences (e.g. right after a
@@ -106,6 +135,26 @@ _INGAME_RELAXED_EV_FLOOR: Dict[str, float] = {
 # Phase-aware cadence (seconds): poll fast while in-play games are live, slow when quiet.
 LIVE_INTERVAL_SEC = 20.0
 IDLE_INTERVAL_SEC = 120.0
+
+# ENV-TUNABLE live cadence (default stays LIVE_INTERVAL_SEC=20 -- a tunable, not a flip).
+# Governor math (kalshi_rate_governor DEFAULT_RATE_SHARES["capture"]=0.35 * BASE_RPS=15
+# = 5.25 tokens/sec): the widest current slate (DEFAULT_SPORTS' 19 series requests/cycle,
+# kalshi_series_spec.SERIES_SPEC) demands ~0.95 req/s at the 20s default and ~1.9 req/s at
+# a 10s cadence -- both well under the capture caller's own 5.25 tok/s share (10s uses
+# ~36%), so CV_INPLAY_LIVE_INTERVAL=10 is arithmetically safe to opt into without
+# starving the governor's other callers or tripping its own bucket.
+_ENV_LIVE_INTERVAL = "CV_INPLAY_LIVE_INTERVAL"
+
+
+def _live_interval_sec() -> float:
+    """LIVE_INTERVAL_SEC, overridable via the CV_INPLAY_LIVE_INTERVAL env var (seconds).
+    Absent/invalid/non-positive -> the unchanged 20.0 default. Never raises."""
+    raw = os.environ.get(_ENV_LIVE_INTERVAL, "")
+    try:
+        v = float(raw)
+        return v if v > 0 else LIVE_INTERVAL_SEC
+    except (TypeError, ValueError):
+        return LIVE_INTERVAL_SEC
 
 # LANE 4b (depth capture, OPTIONAL, OFF by default): order-book depth changes far more
 # slowly than top-of-book price, so the hook fires only every Nth tick instead of every
@@ -300,9 +349,65 @@ def _team_in_legs(team: str, legs: Dict[str, float]) -> bool:
                for lab in legs)
 
 
+def _ts_by_game(ticks: List[Dict[str, Any]]) -> Dict[str, str]:
+    """Each game_id -> the ts of its OWN moneyline tick (first one seen), mirroring
+    _yes_pair's per-game grouping + market_type filter.
+
+    LATENCY/HONESTY FIX (signal-to-placement latency cut): poll_once used to stamp
+    signal_ts from ticks[0] -- a single SPORT-WIDE value -- for every game that sport
+    polled this tick, even after inplay_kalshi.fetch_inplay started stamping each
+    series' ticks at their own real HTTP-response time (see inplay_kalshi.
+    _fetch_one_series). Reusing an unrelated (possibly earlier-fetched) game/series'
+    ts inflated placement_latency_ms for every game but the first. This gives each
+    game its OWN observed-price ts instead. Measurement field only -- never touches
+    a decision. Never raises."""
+    out: Dict[str, str] = {}
+    for t in ticks:
+        if not isinstance(t, dict):
+            continue
+        mt = t.get("market_type")
+        if mt is not None and str(mt) != "moneyline":
+            continue
+        gid = str(t.get("game_id") or "")
+        ts = t.get("ts")
+        if gid and ts and gid not in out:
+            out[gid] = ts
+    return out
+
+
+def _cached_live_states(sport: str, cache: Optional[Dict[str, List[Dict[str, Any]]]]
+                        ) -> Optional[List[Dict[str, Any]]]:
+    """Lazily fetch+memoize _ls.live_states(sport) ONCE per sport per poll_once cycle.
+
+    LATENCY FIX (biggest single win in this lane): _scan_live_by_legs previously called
+    _ls.live_states(sport) -- a FULL ESPN scoreboard fetch -- for EVERY live game of a
+    sport, every tick (on top of the ALSO-wasted per-game ls_fn(sport, gid) lookup,
+    which misses by construction since gid is a Kalshi ticker, not an ESPN id -- see
+    _scan_live_by_legs' own docstring). For a sport with N live games that is 2N serial
+    ESPN round trips per tick. Caching the scan ONCE per sport (shared across that
+    sport's games THIS tick) cuts it to N+1. *cache* is None -> old behavior (direct
+    fetch every call, e.g. any caller that does not opt in); a caching caller passes
+    the SAME dict across a poll_once cycle's games. Never raises: a fetch failure
+    memoizes [] (matches _ls.live_states' own fail-open [] contract) so a bad sport
+    doesn't retry-storm the feed for its remaining games this tick.
+    """
+    if cache is None:
+        try:
+            return _ls.live_states(sport)
+        except Exception:  # noqa: BLE001 -- no cache path degrades to old direct-fetch safety
+            return []
+    if sport not in cache:
+        try:
+            cache[sport] = _ls.live_states(sport)
+        except Exception:  # noqa: BLE001 -- a scan failure memoizes empty, never retried this tick
+            cache[sport] = []
+    return cache[sport]
+
+
 def _scan_live_by_legs(sport: str, legs: Dict[str, float],
                        gid: Optional[str] = None,
-                       nowdt: Optional[datetime] = None) -> Optional[Dict[str, Any]]:
+                       nowdt: Optional[datetime] = None,
+                       states: Optional[List[Dict[str, Any]]] = None) -> Optional[Dict[str, Any]]:
     """Bridge a Kalshi-keyed game to its ESPN live state by TEAM.
 
     The capture loop keys games by their Kalshi ticker (e.g. KXWCGAME-26JUN22ARGAUT), which
@@ -319,14 +424,20 @@ def _scan_live_by_legs(sport: str, legs: Dict[str, float],
     KXMLBGAME-26JUL111610BOSNYM). gid's own ET ticker date must be today or yesterday
     (yesterday allowed for a game still live just after ET midnight); a ticker dated
     tomorrow-or-later is rejected before the scan even runs. An unparseable/absent gid is
-    honest no-info -- the guard is a no-op and behavior is unchanged."""
+    honest no-info -- the guard is a no-op and behavior is unchanged.
+
+    *states*: an optional pre-fetched _ls.live_states(sport) list (see
+    _cached_live_states) -- the caller supplies this so N games in the same sport/tick
+    share ONE ESPN scoreboard fetch instead of each triggering its own. None (default,
+    every existing/test call site) -> fetches live directly, byte-identical to before.
+    """
     try:
         game_date = _ticker_game_date(gid)
         if game_date is not None:
             today = date.fromisoformat(_now_et_day(nowdt))
             if game_date not in (today, today - timedelta(days=1)):
                 return None
-        for st in _ls.live_states(sport):
+        for st in (states if states is not None else _ls.live_states(sport)):
             if not isinstance(st, dict):
                 continue
             home = str(st.get("home_display") or st.get("home") or "")
@@ -467,6 +578,16 @@ def poll_once(*, sports: Optional[List[str]] = None,
     fetch_fn = inplay_fetch_fn or _default_inplay_fetch
     fin_fn = finals_fn or _default_finals
     pos_map = positions if positions is not None else {}
+    # LATENCY (decision-relevant sports first): within one poll_once cycle, sports are
+    # processed serially (fetch -> per-game live-state/model/decide), so a sport late in
+    # sport_list waits behind every earlier sport's full processing. A sport with an open
+    # paper position (needs its exit check) or a live in-game model (mlb/soccer_intl/nba
+    # -- the sports whose ticks can actually reach a placement decision, per
+    # _default_model_fn's real dispatch) is decision-relevant; capture-only sports
+    # (tennis/wnba/npb/kbo -- no model wired yet, always reason=no_model_prob) are not.
+    # Reordering here changes only WHEN a sport is processed this tick, never what price/
+    # model/decision it gets -- additive, zero change to any single game's outcome.
+    sport_list = _priority_sports(sport_list, pos_map)
     nowdt = now or datetime.now(timezone.utc)
     cycle_start = time.monotonic()
 
@@ -494,19 +615,26 @@ def poll_once(*, sports: Optional[List[str]] = None,
             ticks = []
         n_requests_total += int(sport_stats.get("n_requests", 0))
         n_429_total += int(sport_stats.get("n_429", 0))
-        # Batch ts (execution.ingame_exec_gate latency lane): every tick in one
-        # fetch_inplay call shares the same ts (computed once per fetch), so the
-        # first tick's ts stands for the whole batch's signal time. None if the
-        # feed returned nothing this cycle.
+        # Batch ts fallback only (rare: a game with a liquid leg carrying no ts at all).
+        # PER-GAME ts is the normal path now (_ts_by_game) -- see its docstring: each
+        # game gets ITS OWN tick's ts (in turn each series' ts is stamped at ITS OWN
+        # HTTP response time by inplay_kalshi._fetch_one_series), not one sport-wide
+        # batch value shared by every game this sport polls this tick.
         batch_ts = ticks[0].get("ts") if ticks else None
-        legs_by_game = _yes_pair(list(ticks) if ticks else [])
+        ticks_list = list(ticks) if ticks else []
+        legs_by_game = _yes_pair(ticks_list)
+        ts_by_game = _ts_by_game(ticks_list)
         # DEEP enrichment: MLB gets the base-out resolver, KBO (capture-only, wave
         # kbo-alias-wire-soak) gets the relay state-row bridge; other sports pass through.
         sport_deep_fn = deep_state_fn if str(sport).lower() == "mlb" else (
             kbo_deep_state_fn if str(sport).lower() == "kbo" else None)
+        # One ESPN team-bridge scan cache per sport per tick, shared by every game of
+        # this sport below (see _cached_live_states) -- was previously one fetch PER GAME.
+        live_states_cache: Dict[str, List[Dict[str, Any]]] = {}
         for gid, legs in legs_by_game.items():
             row = _process_game(sport, gid, legs, ls_fn, md_fn, pos_map,
-                                grade_dir, ledger_path, nowdt, sport_deep_fn, batch_ts)
+                                grade_dir, ledger_path, nowdt, sport_deep_fn,
+                                ts_by_game.get(gid, batch_ts), live_states_cache)
             games_seen.append(row)
             if row.get("paired"):
                 n_live += 1
@@ -604,16 +732,22 @@ def _process_game(sport: str, gid: str, legs: Dict[str, float],
                   grade_dir: Optional[Path], ledger_path: Optional[Path],
                   nowdt: datetime,
                   deep_state_fn: Optional[Callable[[str], Dict[str, Any]]] = None,
-                  signal_ts: Optional[str] = None
+                  signal_ts: Optional[str] = None,
+                  live_states_cache: Optional[Dict[str, List[Dict[str, Any]]]] = None
                   ) -> Dict[str, Any]:
-    """Capture + paper-decide ONE live game's tick. Per-game guarded: never raises."""
+    """Capture + paper-decide ONE live game's tick. Per-game guarded: never raises.
+
+    *live_states_cache*: threaded from poll_once, shared across every game of THIS
+    sport/tick, so the team-name ESPN bridge scan (_scan_live_by_legs) fires at most
+    ONCE per sport per tick instead of once per game (see _cached_live_states)."""
     row: Dict[str, Any] = {"sport": sport, "game_id": gid, "paired": False,
                            "bet": False, "reason": ""}
     try:
         state = ls_fn(sport, gid)
         if not isinstance(state, dict):
             # gid is a Kalshi ticker, not an ESPN id -> bridge to the live game by team.
-            state = _scan_live_by_legs(sport, legs, gid=gid, nowdt=nowdt)
+            state = _scan_live_by_legs(sport, legs, gid=gid, nowdt=nowdt,
+                                       states=_cached_live_states(sport, live_states_cache))
         if not isinstance(state, dict):
             # KBO REORDER (kbo-reorder-verify lane, capture-only): ESPN cannot resolve a
             # KBO live state at all (ESPN doesn't carry the league), so this branch is
@@ -982,7 +1116,7 @@ def serve_forever(interval: Optional[float] = None, *,
         if max_ticks is not None and ticks >= max_ticks:
             break
         wait = float(interval) if interval is not None else (
-            LIVE_INTERVAL_SEC if hb.get("n_live") else IDLE_INTERVAL_SEC)
+            _live_interval_sec() if hb.get("n_live") else IDLE_INTERVAL_SEC)
         try:
             sleep(wait)
         except Exception as exc:  # noqa: BLE001 -- a clock error never sinks the loop

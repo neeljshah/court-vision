@@ -497,3 +497,57 @@ def test_fetch_inplay_stats_none_by_default_no_behavior_change():
     ticks = fetch_inplay("mlb", http=_fake_http([_LIQUID]), now_iso="2026-06-19T18:30:00Z",
                          stagger_sec=0.0)
     assert len(ticks) == 1
+
+
+# --------------------------------------------------------------------------------------- #
+# LATENCY FIX: with now_iso OMITTED (the real production path), each series stamps its     #
+# OWN tick(s) at ITS OWN fetch time -- not one shared pre-fetch batch value. An explicit    #
+# now_iso (every other test in this file) still wins everywhere, byte-identical.            #
+# --------------------------------------------------------------------------------------- #
+def test_fetch_inplay_no_now_iso_stamps_each_series_independently(monkeypatch):
+    from scripts.platformkit.odds_provider import inplay_kalshi as _ik
+
+    counter = {"n": 0}
+
+    def _fake_now_iso():
+        counter["n"] += 1
+        return "2026-07-19T00:00:%02dZ" % counter["n"]
+
+    monkeypatch.setattr(_ik, "_now_iso", _fake_now_iso)
+
+    _total_market = dict(_LIQUID, ticker="KXMLBTOTAL-26JUN191420TORCHC-O85",
+                         event_ticker="KXMLBTOTAL-26JUN191420TORCHC", floor_strike=8.5)
+
+    def _router(url):
+        if "series_ticker=KXMLBGAME" in url:
+            return {"markets": [_LIQUID]}
+        if "series_ticker=KXMLBTOTAL" in url:
+            return {"markets": [_total_market]}
+        return {"markets": []}
+
+    ticks = fetch_inplay("mlb", http=_router, stagger_sec=0.0)
+    by_type = {t["market_type"]: t["ts"] for t in ticks}
+    assert set(by_type) == {"moneyline", "total"}
+    # each series called _now_iso at ITS OWN turn -> different stamps, neither is stale.
+    assert by_type["moneyline"] != by_type["total"]
+    assert counter["n"] >= 2  # every series (including empty ones) stamped once
+
+
+def test_fetch_inplay_explicit_now_iso_still_wins_every_series(monkeypatch):
+    # Regression guard: an explicit now_iso (every OTHER test in this file) must remain
+    # byte-identical on every series -- the per-series stamping is production-default only.
+    from scripts.platformkit.odds_provider import inplay_kalshi as _ik
+    monkeypatch.setattr(_ik, "_now_iso", lambda: "SHOULD-NEVER-BE-CALLED")
+
+    _total_market = dict(_LIQUID, ticker="KXMLBTOTAL-26JUN191420TORCHC-O85",
+                         event_ticker="KXMLBTOTAL-26JUN191420TORCHC", floor_strike=8.5)
+
+    def _router(url):
+        if "series_ticker=KXMLBGAME" in url:
+            return {"markets": [_LIQUID]}
+        if "series_ticker=KXMLBTOTAL" in url:
+            return {"markets": [_total_market]}
+        return {"markets": []}
+
+    ticks = fetch_inplay("mlb", http=_router, now_iso="2026-06-19T18:30:00Z", stagger_sec=0.0)
+    assert all(t["ts"] == "2026-06-19T18:30:00Z" for t in ticks)
