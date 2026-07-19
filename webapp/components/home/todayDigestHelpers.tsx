@@ -134,6 +134,7 @@ export function PlacedBetRow({ bet }: { bet: TodayBet }) {
       <td className="py-1.5 pr-3 font-mono text-[11px] text-muted-foreground truncate max-w-[120px]">
         {describeBetShort({
           market_type: bet.market_type,
+          market: bet.market,
           side: bet.side,
           matchup: bet.matchup,
           prop_player: bet.prop_player,

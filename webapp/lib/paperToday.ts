@@ -29,6 +29,7 @@ export type TodayBet = {
   sport?: string | null;
   matchup?: string | null;
   market_type?: string | null;
+  market?: string | null;          // composite deriv key (total_10.5_over etc.)
   side?: string | null;
   model_prob?: number | null;
   tier?: string | null;

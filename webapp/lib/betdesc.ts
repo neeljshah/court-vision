@@ -16,6 +16,7 @@
 
 export interface BetDescFields {
   market_type?: string | null;
+  market?: string | null; // composite deriv key (total_10.5_over / spread_1.5_home)
   side?: string | null;
   line?: number | null;
   prop_player?: string | null;
