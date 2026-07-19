@@ -280,6 +280,40 @@ def test_zero_denominator_excluded_never_emits_nan(tmp_path):
         assert verdict.verdict == "VERIFIED", f"{claim['claim_id']}: {verdict.reason}"
 
 
+def test_tennis_family_tied_values_break_by_entity_key_asc(tmp_path):
+    """Regression for the tennis_p1_match_context / tennis_p2_match_context
+    MISMATCH class (2026-07-19, 395/1312 mismatches on pod): two entities
+    with an EXACT tied value must rank in entity_key ASC order and must
+    independently VERIFY against claims_validator.validate_claim, which
+    applies this same tie-break only when claim_id.startswith('tennis_')
+    (claims_validator.py:192-209). Player 20 and player 10 both average
+    exactly 10.0 pts/game -- without the tie-break fix, plain
+    sort_values(ascending=False) has undefined order across the tie and can
+    disagree with the validator's stable (value, entity_key ASC) recompute."""
+    rows = _synthetic_boxscore_rows()
+    rows["player_id"] = rows["player_id"].map({1: 20, 2: 10, 3: 30})
+    src = tmp_path / "box.parquet"
+    rows.to_parquet(src)
+    grid = _tiny_grid(str(src).replace("\\", "/"))
+    grid["families"][0]["family"] = "tennis_test_fam"
+
+    res = cf.generate_family("test_sport", "tennis_test_fam", grid, tmp_path / "out")
+    lines = (tmp_path / "out" / "tennis_test_fam.jsonl").read_text(encoding="ascii").strip().split("\n")
+    career_claims = [json.loads(line) for line in lines if line and json.loads(line)["criteria"]["window"] == "career_to_date"]
+    assert career_claims
+
+    claim = career_claims[0]
+    tied = [row for row in claim["ranking"] if row["value"] == pytest.approx(10.0)]
+    tied_ids = [row["player_id"] for row in tied]
+    assert set(tied_ids) >= {10, 20}, f"expected tied players 10,20 in ranking, got {tied_ids}"
+    # entity_key ASC among the tied block -> 10 must be ranked ahead of 20.
+    assert tied_ids.index(10) < tied_ids.index(20)
+
+    for row_claim in career_claims:
+        verdict = validate_claim(row_claim)
+        assert verdict.verdict == "VERIFIED", f"{row_claim['claim_id']}: {verdict.reason}"
+
+
 def test_no_edge_language_in_any_claim(grid_and_out):
     _BANNED = ("18.38", "0.119", "+54", "78.11", "8.94", "54.57", "roi", "bankroll", "pnl")
     grid, out_dir = grid_and_out

@@ -152,7 +152,20 @@ def _build_dim_claim(
     elif name_col and name_col in rows.columns:
         names_map = dict(rows.drop_duplicates(subset=[group_by]).set_index(group_by)[name_col])
 
-    ranked = value_s.loc[ids_kept].sort_values(ascending=False)
+    kept_s = value_s.loc[ids_kept]
+    if family["family"].startswith("tennis_"):
+        # TENNIS-ONLY tie-break: value DESC (declared direction), THEN
+        # entity_key ASC, stable sort -- matches claims_validator.py's
+        # validate_claim tie-break (gated on claim_id.startswith("tennis_"))
+        # so grid-factory-produced tennis families (tennis_p1_match_context /
+        # tennis_p2_match_context) resolve tied metric values identically to
+        # the independent recompute, same fix class as tennis_ranking_
+        # claims.py's 2026-07-18 fix (see claims_validator.py:192-209).
+        tie_df = kept_s.rename("value").rename_axis(entity_key).reset_index()
+        tie_df = tie_df.sort_values(["value", entity_key], ascending=[False, True], kind="mergesort")
+        ranked = tie_df.set_index(entity_key)["value"]
+    else:
+        ranked = kept_s.sort_values(ascending=False)
     ranking = []
     for i, (eid, val) in enumerate(ranked.items(), start=1):
         entry: dict[str, Any] = {
