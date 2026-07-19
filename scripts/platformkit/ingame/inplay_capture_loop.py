@@ -161,6 +161,18 @@ def _live_interval_sec() -> float:
     except (TypeError, ValueError):
         return LIVE_INTERVAL_SEC
 
+
+def _idle_interval_sec() -> float:
+    """IDLE_INTERVAL_SEC, overridable via CV_INPLAY_IDLE_INTERVAL (seconds) --
+    bounds how late the loop notices a slate going live. Same contract as
+    _live_interval_sec: absent/invalid/non-positive -> unchanged 120s default."""
+    raw = os.environ.get("CV_INPLAY_IDLE_INTERVAL", "")
+    try:
+        v = float(raw)
+        return v if v > 0 else IDLE_INTERVAL_SEC
+    except (TypeError, ValueError):
+        return IDLE_INTERVAL_SEC
+
 # LANE 4b (depth capture, OPTIONAL, OFF by default): order-book depth changes far more
 # slowly than top-of-book price, so the hook fires only every Nth tick instead of every
 # tick. At the live cadence (20s) this is ~5 minutes; at idle cadence (120s) it is ~30
@@ -1121,7 +1133,7 @@ def serve_forever(interval: Optional[float] = None, *,
         if max_ticks is not None and ticks >= max_ticks:
             break
         wait = float(interval) if interval is not None else (
-            _live_interval_sec() if hb.get("n_live") else IDLE_INTERVAL_SEC)
+            _live_interval_sec() if hb.get("n_live") else _idle_interval_sec())
         try:
             sleep(wait)
         except Exception as exc:  # noqa: BLE001 -- a clock error never sinks the loop
