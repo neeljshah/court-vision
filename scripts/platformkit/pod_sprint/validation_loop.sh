@@ -97,6 +97,11 @@ while true; do
         timeout 300 "$PY" -m predict_service.produce --sport "$s" \
             >> "$LOGS/cycle_snapshot.log" 2>&1
     done
+    # 5b. settle open paper_ingame ledger rows (single idempotent pass; a game
+    # not yet final stays open, never force-settled). Without this the median-
+    # CLV breaker never sees graded rows and the channel stays capped forever.
+    timeout 300 "$PY" -m scripts.platformkit.ingame.ingame_paper_settle \
+        >> "$LOGS/cycle_settle.log" 2>&1
 
     # 6. DAILY forward-measurement scoreboards (once per UTC day): prospective
     # checkpoint grading (PENDING until the CI earns it), exec calibration,
