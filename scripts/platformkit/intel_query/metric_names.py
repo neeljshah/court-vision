@@ -77,8 +77,15 @@ def metric_from_name(text: str, claims_dir: Path) -> str | None:
 
     Ambiguity at the winning length (two DIFFERENT metrics) -> None:
     refusing is honest, guessing is not.
+
+    Text is underscore-normalized the same way `_phrase()` normalizes
+    metric names (underscores -> spaces) before matching -- otherwise a
+    literal "usage_pct" in a question never matches the "usage pct" phrase
+    key, and a short, unrelated real metric name that happens to appear as
+    a bare word (e.g. a metric literally named "rank") wins by default
+    (regression 2026-07-19: "rank on usage_pct" resolved to "rank").
     """
-    low = (text or "").lower()
+    low = (text or "").lower().replace("_", " ")
     names = _name_map(claims_dir)
     best_len = -1
     best: set[str] | None = None
