@@ -20,7 +20,8 @@ from typing import Any, Dict, Optional
 
 from scripts.platformkit.execution import expected_clv_gate as _gate
 from scripts.platformkit.execution.thresholds import (
-    INGAME_EXPECTED_CLV_MIN_PCT, INGAME_MAX_DRIFT_PCT, INGAME_MAX_SPREAD_BP,
+    INGAME_EXPECTED_CLV_MIN_PCT, INGAME_MAX_DIVERGENCE, INGAME_MAX_DRIFT_PCT,
+    INGAME_MAX_SPREAD_BP,
 )
 from scripts.platformkit.ingame import ingame_book_depth as _bd
 
@@ -176,6 +177,18 @@ def evaluate_placement(ev: Dict[str, Any], tick: Dict[str, Any], *,
     g["spread_bp"] = spread_bp
     g["spread_unknown"] = spread_bp is None
     g["spread_flag"] = bool(spread_bp is not None and spread_bp > INGAME_MAX_SPREAD_BP)
+    # MAX-DIVERGENCE GATE (declared 2026-07-19 from exec_calibration measurement,
+    # see thresholds.INGAME_MAX_DIVERGENCE): a model-vs-devigged gap beyond the cap
+    # in-play is a stale/thin-quote artifact, not signal -- suppress the placement
+    # (the grade pair upstream already captured it, so measurement continues).
+    # Missing devig NEVER suppresses.
+    devig = ev.get("bet_devigged_price", ev.get("devigged_price"))
+    div = (abs(float(fair_prob) - float(devig))
+           if fair_prob is not None and devig is not None else None)
+    g["divergence"] = round(div, 6) if div is not None else None
+    if div is not None and div > INGAME_MAX_DIVERGENCE:
+        return {"suppress": True, "reason": "divergence_stale_quote", "exec_gate": g,
+                "exec_depth": depth}
     if drift is not None and drift <= -INGAME_MAX_DRIFT_PCT:
         return {"suppress": True, "reason": "drift", "exec_gate": g, "exec_depth": depth}
     if not g.get("passed", False):

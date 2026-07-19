@@ -59,7 +59,7 @@ def test_devig_home_price_removes_vig_and_is_home_aligned():
 
 
 def test_edge_is_model_minus_devigged_price():
-    ev = sig.evaluate(model_prob=0.70, yes_home_prob=0.55, yes_away_prob=0.50,
+    ev = sig.evaluate(model_prob=0.65, yes_home_prob=0.55, yes_away_prob=0.50,
                       calibration_justified=True, is_liquid=True, is_fresh=True)
     assert ev["devigged_price"] is not None
     # edge = model - devigged (HOME-aligned); model well above price -> positive edge.
@@ -73,7 +73,7 @@ def test_edge_is_model_minus_devigged_price():
 # --------------------------------------------------------------------------------------- #
 def test_big_edge_clears_a_tier_and_bets():
     # Model 0.80 vs a ~0.55 fair price -> large +EV -> a tier -> action bet.
-    ev = sig.evaluate(model_prob=0.80, yes_home_prob=0.55, yes_away_prob=0.50,
+    ev = sig.evaluate(model_prob=0.65, yes_home_prob=0.55, yes_away_prob=0.50,
                       calibration_justified=True, is_liquid=True, is_fresh=True)
     assert ev["action"] == "bet"
     assert ev["tier"] in ("A", "B", "C")
@@ -112,14 +112,14 @@ def test_proxy_penalty_raises_the_floor():
 # 3. liquidity / freshness / justification gates                                           #
 # --------------------------------------------------------------------------------------- #
 def test_illiquid_is_no_bet_even_with_big_edge():
-    ev = sig.evaluate(model_prob=0.85, yes_home_prob=0.55, yes_away_prob=0.50,
+    ev = sig.evaluate(model_prob=0.65, yes_home_prob=0.55, yes_away_prob=0.50,
                       calibration_justified=True, is_liquid=False, is_fresh=True)
     assert ev["action"] == "no_bet"
     assert ev["reason"] == "illiquid"
 
 
 def test_stale_is_no_bet():
-    ev = sig.evaluate(model_prob=0.85, yes_home_prob=0.55, yes_away_prob=0.50,
+    ev = sig.evaluate(model_prob=0.65, yes_home_prob=0.55, yes_away_prob=0.50,
                       calibration_justified=True, is_liquid=True, is_fresh=False)
     assert ev["action"] == "no_bet"
     assert ev["reason"] == "stale"
@@ -127,7 +127,7 @@ def test_stale_is_no_bet():
 
 def test_unjustified_divergence_is_noise_no_bet():
     # A big edge from an UN-gated lean is NOISE -- never traded.
-    ev = sig.evaluate(model_prob=0.85, yes_home_prob=0.55, yes_away_prob=0.50,
+    ev = sig.evaluate(model_prob=0.65, yes_home_prob=0.55, yes_away_prob=0.50,
                       calibration_justified=False, is_liquid=True, is_fresh=True)
     assert ev["action"] == "no_bet"
     assert ev["reason"] == "not_calibration_justified"
@@ -144,7 +144,7 @@ def test_enter_places_paper_bet_units_only(tmp_path):
     # exercises the REAL placement path the live daemon hits with 9-char ESPN ids.
     gid = "401859967"
     d = dt.on_tick("mlb", gid,
-                   _tick(0.80, 0.55, yes_away=0.50, home_score=3, away_score=1, inning=5),
+                   _tick(0.65, 0.55, yes_away=0.50, home_score=3, away_score=1, inning=5),
                    grade_dir=grade_dir, ledger_path=ledger)
     assert d["action"] == "bet"
     assert d["captured"] is True
@@ -165,7 +165,7 @@ def test_second_enter_same_game_side_day_is_idempotent(tmp_path):
     ledger = tmp_path / "ledger.jsonl"
     grade_dir = tmp_path / "grade"
     gid = "401859968"  # realistic id -> clears the write-guard, so idempotency is what's tested
-    t = _tick(0.80, 0.55, yes_away=0.50)
+    t = _tick(0.65, 0.55, yes_away=0.50)
     d1 = dt.on_tick("mlb", gid, t, grade_dir=grade_dir, ledger_path=ledger)
     # 2nd ENTER from FLAT (position not threaded) -> the (sport,game,market,side,day)
     # edge_key already has an OPEN row -> the ledger idempotency check drops the duplicate.
@@ -181,7 +181,7 @@ def test_hold_when_already_in_position_places_nothing_new(tmp_path):
     ledger = tmp_path / "ledger.jsonl"
     grade_dir = tmp_path / "grade"
     pos = {"status": "open", "side": "home", "edge_key": "k"}
-    d = dt.on_tick("mlb", "G3", _tick(0.80, 0.55, yes_away=0.50),
+    d = dt.on_tick("mlb", "G3", _tick(0.65, 0.55, yes_away=0.50),
                    position=pos, grade_dir=grade_dir, ledger_path=ledger)
     assert d["action"] == "hold"
 
@@ -194,7 +194,7 @@ def test_edge_flip_to_other_side_reenters(tmp_path):
     grade_dir = tmp_path / "grade"
     pos = {"status": "open", "side": "home", "edge_key": "home-key"}
     d = dt.on_tick("mlb", "401859970",
-                   _tick(0.20, 0.55, yes_away=0.50),  # home model 0.20 << fair -> away +EV
+                   _tick(0.40, 0.55, yes_away=0.50),  # home model 0.40 << fair -> away +EV
                    position=pos, grade_dir=grade_dir, ledger_path=ledger)
     assert d["action"] == "bet"
     assert d["side"] == "away"
@@ -209,7 +209,7 @@ def test_same_side_edge_still_holds_not_reenter(tmp_path):
     ledger = tmp_path / "ledger.jsonl"
     grade_dir = tmp_path / "grade"
     pos = {"status": "open", "side": "home", "edge_key": "home-key"}
-    d = dt.on_tick("mlb", "401859971", _tick(0.80, 0.55, yes_away=0.50),
+    d = dt.on_tick("mlb", "401859971", _tick(0.65, 0.55, yes_away=0.50),
                    position=pos, grade_dir=grade_dir, ledger_path=ledger)
     assert d["action"] == "hold"
     assert d["reason"] == "hold_existing"
@@ -222,7 +222,7 @@ def test_same_side_edge_still_holds_not_reenter(tmp_path):
 def test_no_bet_tick_still_captures_for_grade_series(tmp_path):
     grade_dir = tmp_path / "grade"
     # Illiquid -> no_bet, but the pair is still captured (a complete series is graded).
-    d = dt.on_tick("mlb", "G4", _tick(0.80, 0.55, yes_away=0.50, liquid=False),
+    d = dt.on_tick("mlb", "G4", _tick(0.65, 0.55, yes_away=0.50, liquid=False),
                    grade_dir=grade_dir, ledger_path=tmp_path / "l.jsonl")
     assert d["action"] == "no_bet"
     assert d["captured"] is True
@@ -258,7 +258,7 @@ def test_run_series_captures_and_single_game_grade_is_insufficient(tmp_path):
 # --------------------------------------------------------------------------------------- #
 def test_extra_kwarg_forwarded_into_grade_row(tmp_path):
     grade_dir = tmp_path / "grade"
-    d = dt.on_tick("mlb", "G10", _tick(0.80, 0.55, yes_away=0.50),
+    d = dt.on_tick("mlb", "G10", _tick(0.65, 0.55, yes_away=0.50),
                    grade_dir=grade_dir, ledger_path=tmp_path / "l.jsonl",
                    extra={"xg_home": 1.5, "espn_wp": 0.58})
     assert d["captured"] is True
@@ -272,7 +272,7 @@ def test_extra_none_is_backward_compatible(tmp_path):
     # claim_tags field (CLAIMS-P3 wiring: condition_tagger.tag output, merged via
     # the same extra pipeline) -- no OTHER new keys appear.
     grade_dir = tmp_path / "grade"
-    d = dt.on_tick("mlb", "G11", _tick(0.80, 0.55, yes_away=0.50),
+    d = dt.on_tick("mlb", "G11", _tick(0.65, 0.55, yes_away=0.50),
                    grade_dir=grade_dir, ledger_path=tmp_path / "l.jsonl")
     assert d["captured"] is True
     path = grade_dir / "mlb" / "G11.jsonl"
@@ -286,7 +286,7 @@ def test_leak_free_enter_does_not_see_the_close(tmp_path):
     # close (a LATER, higher price) is never an input: an early tick with a +edge bets the
     # SAME way regardless of what the (future) closing price will be.
     grade_dir = tmp_path / "grade"
-    early = _tick(0.80, 0.55, yes_away=0.50)
+    early = _tick(0.65, 0.55, yes_away=0.50)
     d = dt.on_tick("mlb", "G7", early, grade_dir=grade_dir,
                    ledger_path=tmp_path / "l.jsonl")
     assert d["action"] == "bet"
@@ -318,7 +318,7 @@ def test_adverse_segment_suppresses_the_marginal_entry(tmp_path, monkeypatch):
         lambda sport: {"segments": {"H1": {"trust": "ADVERSE"}}})
     gid = "401859980"
     d = dt.on_tick("soccer_intl", gid,
-                   _tick(0.80, 0.55, yes_away=0.50, minute=20),
+                   _tick(0.65, 0.55, yes_away=0.50, minute=20),
                    grade_dir=grade_dir, ledger_path=ledger)
     assert d["action"] == "no_bet"
     assert d["reason"] == "segment_adverse_suppressed"
@@ -342,7 +342,7 @@ def test_non_adverse_segment_bets_normally(tmp_path, monkeypatch):
         lambda sport: {"segments": {"H1": {"trust": "NEUTRAL"}}})
     gid = "401859981"
     d = dt.on_tick("soccer_intl", gid,
-                   _tick(0.80, 0.55, yes_away=0.50, minute=20),
+                   _tick(0.65, 0.55, yes_away=0.50, minute=20),
                    grade_dir=grade_dir, ledger_path=ledger)
     assert d["action"] == "bet"
     assert d["reason"] != "segment_adverse_suppressed"
@@ -362,7 +362,7 @@ def test_trust_lookup_raising_is_unchanged_behavior(tmp_path, monkeypatch):
     monkeypatch.setattr(dt._trust_multi, "build_trust_for_sport", _boom)
     gid = "401859982"
     d = dt.on_tick("soccer_intl", gid,
-                   _tick(0.80, 0.55, yes_away=0.50, minute=20),
+                   _tick(0.65, 0.55, yes_away=0.50, minute=20),
                    grade_dir=grade_dir, ledger_path=ledger)
     assert d["action"] == "bet"
     assert d["reason"] != "segment_adverse_suppressed"
@@ -389,7 +389,7 @@ def test_real_unmocked_trust_lookup_does_not_suppress_a_no_clock_soccer_tick(tmp
     ledger = tmp_path / "ledger.jsonl"
     gid = "401859983"
     d = dt.on_tick("soccer_intl", gid,
-                   _tick(0.80, 0.55, yes_away=0.50),  # no minute/half -> segment UNK
+                   _tick(0.65, 0.55, yes_away=0.50),  # no minute/half -> segment UNK
                    grade_dir=grade_dir, ledger_path=ledger)
     assert d["action"] == "bet"
     assert d["reason"] != "segment_adverse_suppressed"
@@ -406,7 +406,7 @@ def test_real_unmocked_trust_lookup_h1_is_not_suppressed_today(tmp_path):
     ledger = tmp_path / "ledger.jsonl"
     gid = "401859984"
     d = dt.on_tick("soccer_intl", gid,
-                   _tick(0.80, 0.55, yes_away=0.50, minute=20),
+                   _tick(0.65, 0.55, yes_away=0.50, minute=20),
                    grade_dir=grade_dir, ledger_path=ledger)
     assert d["action"] == "bet"
     assert d["reason"] != "segment_adverse_suppressed"
@@ -424,7 +424,7 @@ def test_exec_gate_suppresses_below_threshold_placement(tmp_path, monkeypatch):
     monkeypatch.setattr(dt._exec_gate, "INGAME_EXPECTED_CLV_MIN_PCT", 1000.0)
     ledger = tmp_path / "ledger.jsonl"
     grade_dir = tmp_path / "grade"
-    d = dt.on_tick("mlb", "401859990", _tick(0.80, 0.55, yes_away=0.50),
+    d = dt.on_tick("mlb", "401859990", _tick(0.65, 0.55, yes_away=0.50),
                    grade_dir=grade_dir, ledger_path=ledger)
     assert d["action"] == "no_bet"
     assert d["reason"] == "expected_clv_below_floor"
@@ -438,7 +438,7 @@ def test_ledger_row_carries_signal_ts_latency_and_exec_gate(tmp_path):
     ledger = tmp_path / "ledger.jsonl"
     grade_dir = tmp_path / "grade"
     d = dt.on_tick("mlb", "401859991",
-                   _tick(0.80, 0.55, yes_away=0.50, signal_ts="2026-07-15T12:00:00Z"),
+                   _tick(0.65, 0.55, yes_away=0.50, signal_ts="2026-07-15T12:00:00Z"),
                    grade_dir=grade_dir, ledger_path=ledger)
     assert d["action"] == "bet"
     placed = d["placement"]
@@ -455,7 +455,7 @@ def test_drift_rejection_suppresses_adverse_moved_price(tmp_path):
     # than INGAME_MAX_DRIFT_PCT since the signal was computed -> suppressed, not placed.
     ledger = tmp_path / "ledger.jsonl"
     grade_dir = tmp_path / "grade"
-    t = _tick(0.80, 0.55, yes_away=0.50)
+    t = _tick(0.65, 0.55, yes_away=0.50)
     t["fresh_obtainable_decimal"] = 1.05  # far below the signal-time obtainable decimal
     d = dt.on_tick("mlb", "401859992", t, grade_dir=grade_dir, ledger_path=ledger)
     assert d["action"] == "no_bet"
@@ -475,7 +475,7 @@ def test_tier_sizing_wires_stake_into_ledger_row(tmp_path):
     from scripts.platformkit.execution import sizing as _sizing
     ledger = tmp_path / "ledger.jsonl"
     grade_dir = tmp_path / "grade"
-    d = dt.on_tick("mlb", "401859993", _tick(0.80, 0.55, yes_away=0.50),
+    d = dt.on_tick("mlb", "401859993", _tick(0.65, 0.55, yes_away=0.50),
                    grade_dir=grade_dir, ledger_path=ledger)
     assert d["action"] == "bet"
     expected = _sizing.stake_for(d["tier"], "moneyline")
@@ -488,7 +488,7 @@ def test_tier_sizing_env_off_falls_back_to_legacy_zero_stake(tmp_path, monkeypat
     monkeypatch.setenv("CV_TIER_SIZING", "0")
     ledger = tmp_path / "ledger.jsonl"
     grade_dir = tmp_path / "grade"
-    d = dt.on_tick("mlb", "401859994", _tick(0.80, 0.55, yes_away=0.50),
+    d = dt.on_tick("mlb", "401859994", _tick(0.65, 0.55, yes_away=0.50),
                    grade_dir=grade_dir, ledger_path=ledger)
     assert d["action"] == "bet"
     assert d["placement"]["stake"] == 0.0  # toggle off -> exact legacy behavior
@@ -499,7 +499,7 @@ def test_exec_depth_threaded_into_placement_honest_null(tmp_path):
     # null dict (LEVER 1), never fabricated, and still lands on the ledger row.
     ledger = tmp_path / "ledger.jsonl"
     grade_dir = tmp_path / "grade"
-    d = dt.on_tick("mlb", "401859995", _tick(0.80, 0.55, yes_away=0.50),
+    d = dt.on_tick("mlb", "401859995", _tick(0.65, 0.55, yes_away=0.50),
                    grade_dir=grade_dir, ledger_path=ledger)
     assert d["action"] == "bet"
     assert d["placement"]["exec_depth"]["reason"] == "no_depth_source"
@@ -508,7 +508,7 @@ def test_exec_depth_threaded_into_placement_honest_null(tmp_path):
 def test_exec_depth_threaded_from_tick_fields(tmp_path):
     ledger = tmp_path / "ledger.jsonl"
     grade_dir = tmp_path / "grade"
-    t = _tick(0.80, 0.55, yes_away=0.50)
+    t = _tick(0.65, 0.55, yes_away=0.50)
     t["spread_bp"], t["best_bid"], t["best_ask"] = 120.0, 0.60, 0.615
     d = dt.on_tick("mlb", "401859996", t, grade_dir=grade_dir, ledger_path=ledger)
     assert d["action"] == "bet"
@@ -522,7 +522,7 @@ def test_wide_spread_suppresses_the_entry(tmp_path):
     # expected-CLV + drift gates both clear.
     ledger = tmp_path / "ledger.jsonl"
     grade_dir = tmp_path / "grade"
-    t = _tick(0.80, 0.55, yes_away=0.50)
+    t = _tick(0.65, 0.55, yes_away=0.50)
     t["spread_bp"] = 900.0
     d = dt.on_tick("mlb", "401859997", t, grade_dir=grade_dir, ledger_path=ledger)
     assert d["action"] == "no_bet"
@@ -538,7 +538,7 @@ def test_unknown_spread_does_not_suppress_the_entry(tmp_path):
     # kill the channel; the entry still places.
     ledger = tmp_path / "ledger.jsonl"
     grade_dir = tmp_path / "grade"
-    d = dt.on_tick("mlb", "401859998", _tick(0.80, 0.55, yes_away=0.50),
+    d = dt.on_tick("mlb", "401859998", _tick(0.65, 0.55, yes_away=0.50),
                    grade_dir=grade_dir, ledger_path=ledger)
     assert d["action"] == "bet"
     assert d["exec_gate"]["spread_unknown"] is True
@@ -552,7 +552,7 @@ def test_unknown_spread_does_not_suppress_the_entry(tmp_path):
 def test_kalshi_venue_bets_normally(tmp_path):
     ledger = tmp_path / "ledger.jsonl"
     grade_dir = tmp_path / "grade"
-    t = _tick(0.80, 0.55, yes_away=0.50)
+    t = _tick(0.65, 0.55, yes_away=0.50)
     t["venue"] = "kalshi"
     d = dt.on_tick("mlb", "401860001", t, grade_dir=grade_dir, ledger_path=ledger)
     assert d["action"] == "bet"
@@ -563,7 +563,7 @@ def test_kalshi_venue_bets_normally(tmp_path):
 def test_non_kalshi_venue_suppresses_the_decision_but_still_captures(tmp_path):
     ledger = tmp_path / "ledger.jsonl"
     grade_dir = tmp_path / "grade"
-    t = _tick(0.80, 0.55, yes_away=0.50)
+    t = _tick(0.65, 0.55, yes_away=0.50)
     t["venue"] = "polymarket"
     d = dt.on_tick("mlb", "401860002", t, grade_dir=grade_dir, ledger_path=ledger)
     assert d["action"] == "no_bet"
@@ -582,7 +582,7 @@ def test_missing_venue_field_defaults_to_kalshi_and_bets(tmp_path):
     # must default to allowed, not to a silent block.
     ledger = tmp_path / "ledger.jsonl"
     grade_dir = tmp_path / "grade"
-    d = dt.on_tick("mlb", "401860003", _tick(0.80, 0.55, yes_away=0.50),
+    d = dt.on_tick("mlb", "401860003", _tick(0.65, 0.55, yes_away=0.50),
                    grade_dir=grade_dir, ledger_path=ledger)
     assert d["action"] == "bet"
 
@@ -591,7 +591,7 @@ def test_env_override_widens_the_allowlist(tmp_path, monkeypatch):
     monkeypatch.setenv("CV_PAPER_VENUES", "kalshi,polymarket")
     ledger = tmp_path / "ledger.jsonl"
     grade_dir = tmp_path / "grade"
-    t = _tick(0.80, 0.55, yes_away=0.50)
+    t = _tick(0.65, 0.55, yes_away=0.50)
     t["venue"] = "polymarket"
     d = dt.on_tick("mlb", "401860004", t, grade_dir=grade_dir, ledger_path=ledger)
     assert d["action"] == "bet"
@@ -601,7 +601,7 @@ def test_env_override_widens_the_allowlist(tmp_path, monkeypatch):
 def test_param_override_widens_the_allowlist(tmp_path):
     ledger = tmp_path / "ledger.jsonl"
     grade_dir = tmp_path / "grade"
-    t = _tick(0.80, 0.55, yes_away=0.50)
+    t = _tick(0.65, 0.55, yes_away=0.50)
     t["venue"] = "polymarket"
     d = dt.on_tick("mlb", "401860005", t, grade_dir=grade_dir, ledger_path=ledger,
                    paper_venues=("kalshi", "polymarket"))
@@ -614,7 +614,7 @@ def test_param_override_can_also_narrow_and_exclude_kalshi(tmp_path):
     # too -- proves the param truly overrides the default, not merely widens it.
     ledger = tmp_path / "ledger.jsonl"
     grade_dir = tmp_path / "grade"
-    t = _tick(0.80, 0.55, yes_away=0.50)
+    t = _tick(0.65, 0.55, yes_away=0.50)
     t["venue"] = "kalshi"
     d = dt.on_tick("mlb", "401860006", t, grade_dir=grade_dir, ledger_path=ledger,
                    paper_venues=("polymarket",))

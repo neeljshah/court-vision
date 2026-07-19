@@ -23,8 +23,14 @@ BREAKER_CAPPED_MAX_PER_DAY: int = 5  # per market_type while rolling CLV < 0.
 # mean 7.4pp give-up. Not tuned post-hoc -- see this file's module docstring.
 INGAME_MAX_SPREAD_BP: float = 800.0
 
+# Declared 2026-07-19 from exec_calibration measurement (data/cache/benchmarks/
+# exec_calibration.json): a model-vs-devigged-market gap this large in-play is a
+# stale/thin-quote artifact, not signal (first flagged specimen: model .264 vs
+# market .035, "expected CLV +653%"). Declared cap, never fitted on outcomes.
+INGAME_MAX_DIVERGENCE: float = 0.15
+
 __all__ = [
     "PROP_EXPECTED_CLV_MIN_PCT", "INGAME_EXPECTED_CLV_MIN_PCT",
     "INGAME_MAX_DRIFT_PCT", "BREAKER_WINDOW_DAYS", "BREAKER_CAPPED_MAX_PER_DAY",
-    "INGAME_MAX_SPREAD_BP",
+    "INGAME_MAX_SPREAD_BP", "INGAME_MAX_DIVERGENCE",
 ]
