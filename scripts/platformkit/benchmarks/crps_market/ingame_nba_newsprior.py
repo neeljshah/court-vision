@@ -77,7 +77,6 @@ _OUT = _REPO / "data" / "cache" / "benchmarks" / "ingame_nba_newsprior_verdict.j
 _COLS = ["game_id", "game_date", "ts", "period", "game_clock_s", "score_home",
          "score_away", "market_prob", "traded", "market_ticker", "outcome_home_win"]
 _EPS = 1e-6
-_MIN_TRAIN = len(FEATURE_COLUMNS) + 5
 
 
 def _logit(p: np.ndarray) -> np.ndarray:
@@ -103,17 +102,17 @@ def _gap_verdict(delta: np.ndarray) -> Tuple[str, List[float]]:
     return "NO_CHANGE", ci
 
 
-def fit_logit_shift(train_rows: List[dict]) -> np.ndarray:
+def fit_logit_shift(train_rows: List[dict], cols: List[str] = FEATURE_COLUMNS) -> np.ndarray:
     """GLM(Binomial) offset-fit -- see module docstring. Returns
     [intercept, *feature_betas]; an all-zero vector (no adjustment) if the
     train split is too small or the fit fails to converge."""
-    n = len(FEATURE_COLUMNS)
-    if len(train_rows) < _MIN_TRAIN:
+    n = len(cols)
+    if len(train_rows) < n + 5:
         return np.zeros(n + 1)
     y = np.array([r["y"] for r in train_rows], dtype=float)
     offset = _logit(np.array([r["model_p"] for r in train_rows], dtype=float))
     X = sm.add_constant(
-        np.array([[r[c] for c in FEATURE_COLUMNS] for r in train_rows], dtype=float),
+        np.array([[r[c] for c in cols] for r in train_rows], dtype=float),
         has_constant="add")
     try:
         fit = sm.GLM(y, X, family=sm.families.Binomial(), offset=offset).fit()
@@ -122,8 +121,9 @@ def fit_logit_shift(train_rows: List[dict]) -> np.ndarray:
         return np.zeros(n + 1)
 
 
-def apply_shift(model_p: float, feat_row: Dict[str, float], beta: np.ndarray) -> float:
-    x = np.array([1.0] + [feat_row[c] for c in FEATURE_COLUMNS])
+def apply_shift(model_p: float, feat_row: Dict[str, float], beta: np.ndarray,
+                cols: List[str] = FEATURE_COLUMNS) -> float:
+    x = np.array([1.0] + [feat_row[c] for c in cols])
     return float(_sigmoid(_logit(np.array([model_p]))[0] + float(x @ beta)))
 
 
@@ -138,7 +138,7 @@ def walk_forward_split(game_ids: List, gdate_lookup, train_frac: float
     return order, set(order[:n_train])
 
 
-def score_checkpoint(rows: List[dict]) -> dict:
+def score_checkpoint(rows: List[dict], cols: List[str] = FEATURE_COLUMNS) -> dict:
     """rows: per-game dicts tagged split=train/test with model_p, market_p,
     y, and FEATURE_COLUMNS -- fits the logit shift on the train rows only and
     scores paired Brier on the test rows only. Pulled out as a pure function
@@ -150,11 +150,11 @@ def score_checkpoint(rows: List[dict]) -> dict:
         return {"n_train": len(train_rows), "n_test": 0,
                 "verdict_vs_unadjusted": "UNDERPOWERED", "verdict_vs_market": "UNDERPOWERED"}
 
-    beta = fit_logit_shift(train_rows)
+    beta = fit_logit_shift(train_rows, cols)
     model_p = np.array([r["model_p"] for r in test_rows])
     market_p = np.array([r["market_p"] for r in test_rows])
     y = [r["y"] for r in test_rows]
-    adj_p = np.array([apply_shift(r["model_p"], r, beta) for r in test_rows])
+    adj_p = np.array([apply_shift(r["model_p"], r, beta, cols) for r in test_rows])
 
     b_unadj = np.array([brier([p], [yy]) for p, yy in zip(model_p, y)])
     b_adj = np.array([brier([p], [yy]) for p, yy in zip(adj_p, y)])
@@ -177,7 +177,12 @@ def score_checkpoint(rows: List[dict]) -> dict:
     }
 
 
-def run(max_games: int = 50, train_frac: float = 0.7) -> dict:
+def run(max_games: int = 50, train_frac: float = 0.7,
+        drop_features: List[str] = (), run_id: str = "") -> dict:
+    cols = [c for c in FEATURE_COLUMNS if c not in set(drop_features)]
+    unknown = sorted(set(drop_features) - set(FEATURE_COLUMNS))
+    if unknown:
+        raise SystemExit(f"unknown --drop-features: {unknown}")
     df = pd.read_parquet(_DATA, columns=_COLS)
     df = df[df["traded"]].copy()
     df["elapsed_minutes"] = [
@@ -223,11 +228,12 @@ def run(max_games: int = 50, train_frac: float = 0.7) -> dict:
             })
 
     checkpoints_out: Dict[str, dict] = {
-        label: score_checkpoint(per_checkpoint[label]) for label in [c[0] for c in CHECKPOINTS]}
+        label: score_checkpoint(per_checkpoint[label], cols) for label in [c[0] for c in CHECKPOINTS]}
 
     result: Dict[str, Any] = {
         "sport": "nba", "edge_claimed": False,
         "hypothesis": "tip-time-information-adjusted prior closes the v3 end_q1 gap",
+        "run_id": run_id, "dropped_features": sorted(drop_features),
         "n_games_considered": len(order), "n_train_games": len(train_ids),
         "n_test_games": len(order) - len(train_ids), "train_frac": train_frac,
         "n_ticker_parse_fail": n_ticker_fail, "n_model_dispatch_fail": n_model_fail,
@@ -244,8 +250,11 @@ def run(max_games: int = 50, train_frac: float = 0.7) -> dict:
             "PROVISIONAL even then. No dollar/ROI claim anywhere."
         ),
     }
-    _OUT.parent.mkdir(parents=True, exist_ok=True)
-    _OUT.write_text(json.dumps(result, indent=2, ensure_ascii=True), encoding="utf-8")
+    # run_id suffixes the artifact so replicate/ablate runs never clobber the
+    # canonical verdict (last-writer-wins collision, 2026-07-18 landmine).
+    out = _OUT if not run_id else _OUT.with_name(f"{_OUT.stem}_{run_id}.json")
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(result, indent=2, ensure_ascii=True), encoding="utf-8")
     return result
 
 
@@ -253,8 +262,13 @@ def _main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--max-games", type=int, default=50)
     ap.add_argument("--train-frac", type=float, default=0.7)
+    ap.add_argument("--drop-features", default="",
+                    help="comma-separated FEATURE_COLUMNS to ablate from the fit")
+    ap.add_argument("--run-id", default="",
+                    help="suffix for the verdict artifact (replicate/ablate runs)")
     a = ap.parse_args(argv)
-    doc = run(a.max_games, a.train_frac)
+    drops = [c for c in a.drop_features.split(",") if c]
+    doc = run(a.max_games, a.train_frac, drops, a.run_id)
     print(json.dumps(doc, indent=2, ensure_ascii=True))
     return 0
 
