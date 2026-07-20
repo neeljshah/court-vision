@@ -26,6 +26,10 @@ import time
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 _RESULTS_PATH = os.path.join(PROJECT_DIR, "data", "models",
                               "winprob_walk_forward_results.json")
+# Fresh-clone fallback: data/ is gitignored, so the committed copy of the same
+# derived metrics (2KB, fold stats only) lives in results/ for reproducibility.
+_RESULTS_FALLBACK = os.path.join(PROJECT_DIR, "results",
+                                 "winprob_walk_forward_results.json")
 
 # Claims from PREDICTIONS_QUICKSTART.md cycle 50 refresh.
 CLAIM_ACC_WF = 0.71
@@ -42,17 +46,21 @@ def main() -> int:
                     help="Also fail if results file is older than 30 days.")
     args = ap.parse_args()
 
-    if not os.path.exists(_RESULTS_PATH):
-        print(f"[fail] missing {os.path.relpath(_RESULTS_PATH, PROJECT_DIR)}")
+    results_path = _RESULTS_PATH if os.path.exists(_RESULTS_PATH) else _RESULTS_FALLBACK
+    if not os.path.exists(results_path):
+        print(f"[fail] missing {os.path.relpath(_RESULTS_PATH, PROJECT_DIR)} "
+              f"and fallback {os.path.relpath(_RESULTS_FALLBACK, PROJECT_DIR)}")
         print("       Run scripts/winprob_walk_forward.py first.")
         return 1
+    if results_path is _RESULTS_FALLBACK:
+        print("  (using committed results/ copy -- fresh clone, data/ not present)")
 
-    with open(_RESULTS_PATH, encoding="utf-8") as f:
+    with open(results_path, encoding="utf-8") as f:
         payload = json.load(f)
     acc = float(payload.get("acc_mean", 0.0))
     brier = float(payload.get("brier_mean", 0.0))
     n_folds = int(payload.get("n_folds", 0))
-    file_age_days = (time.time() - os.path.getmtime(_RESULTS_PATH)) / 86400
+    file_age_days = (time.time() - os.path.getmtime(results_path)) / 86400
 
     d_acc = acc - CLAIM_ACC_WF
     d_brier = brier - CLAIM_BRIER_WF

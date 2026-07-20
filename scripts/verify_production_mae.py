@@ -35,13 +35,14 @@ from src.prediction.prop_pergame import (  # noqa: E402
 )
 import json
 
-# Claims from PREDICTIONS_QUICKSTART.md (cycle 40 honest table).
+# Claims from PREDICTIONS_QUICKSTART.md (re-measured 2026-07-20 on the
+# grown corpus, 20,354 holdout rows).
 QUICKSTART_MAE = {
-    "pts":  4.62,
-    "reb":  1.90,
-    "ast":  1.36,
+    "pts":  4.83,
+    "reb":  1.92,
+    "ast":  1.39,
     "fg3m": 0.89,
-    "stl":  0.72,
+    "stl":  0.71,
     "blk":  0.44,
     "tov":  0.89,
 }
@@ -108,23 +109,45 @@ def _score_blend(stat: str, X: np.ndarray) -> Optional[np.ndarray]:
     return np.clip(blend, 0.0, None)
 
 
+def _train_time_columns(stat: str, fallback: list) -> list:
+    """Feature columns the persisted model was actually trained on.
+
+    feature_columns() reflects TODAY's feature builder; the pkl on disk was
+    trained on the (possibly shorter) list recorded in _meta.json at train
+    time. Scoring with today's list is the 85-vs-129 shape-mismatch crash.
+    """
+    try:
+        with open(os.path.join(_MODEL_DIR, "_meta.json"), encoding="utf-8") as f:
+            meta = json.load(f)
+        cols = meta["stats"][stat]["feature_columns"]
+        if cols:
+            return list(cols)
+    except Exception:
+        pass
+    return fallback
+
+
 def main() -> int:
     print("Loading pergame dataset...", flush=True)
     rows, _fc = build_pergame_dataset(min_prior=0)
     holdout = _holdout_slice(rows)
     cols = feature_columns()
-    print(f"  rows={len(rows)} | holdout={len(holdout)} | features={len(cols)}\n",
+    print(f"  rows={len(rows)} | holdout={len(holdout)} | features(now)={len(cols)}\n",
           flush=True)
-
-    X = np.array([[float(r.get(c, 0.0) or 0.0) for c in cols]
-                  for r in holdout], dtype=float)
 
     drift = []
     print(f"{'stat':<5} {'claim':>6} {'live':>7} {'delta':>7}  {'dispatch':<8}  {'verdict':<10}")
     print("-" * 56)
+    X_cache: dict = {}
     for stat in STATS:
         y_true = np.array([float(r[f"target_{stat}"]) for r in holdout], dtype=float)
         dispatch = "q50" if stat in _USE_Q50_STATS else "blend"
+        scols = tuple(_train_time_columns(stat, cols))
+        if scols not in X_cache:
+            X_cache[scols] = np.array(
+                [[float(r.get(c, 0.0) or 0.0) for c in scols] for r in holdout],
+                dtype=float)
+        X = X_cache[scols]
         if stat in _USE_Q50_STATS:
             pred = _score_q50(stat, X)
         else:

@@ -15,13 +15,14 @@ How to generate predictions from this codebase.
 ## Honest Baseline (Leak-Free Walk-Forward)
 
 Prop accuracy, ~51K held-out player-games, OOF predictions
-(`data/cache/pregame_oof.parquet`):
+(`data/cache/pregame_oof.parquet`; re-measured 2026-07-20 by
+`scripts/verify_production_mae.py` on the grown corpus — 20,354 holdout rows):
 
 | Stat | MAE | Model recipe |
 |---|---|---|
-| PTS | ~4.58 | sqrt + Huber XGB/LGB blend + 5-seed MLP, NNLS-stacked |
-| REB | ~1.90 | log1p LGB quantile q50 |
-| AST | ~1.34 | log1p XGB+LGB + multitask MLP, NNLS-stacked |
+| PTS | ~4.83 | sqrt + Huber XGB/LGB blend + 5-seed MLP, NNLS-stacked |
+| REB | ~1.92 | log1p LGB quantile q50 |
+| AST | ~1.39 | log1p XGB+LGB + multitask MLP, NNLS-stacked |
 | FG3M | ~0.88 | log1p XGB quantile q50 |
 | STL | ~0.72 | log1p XGB quantile q50 |
 | BLK | ~0.44 | log1p XGB quantile q50 |
