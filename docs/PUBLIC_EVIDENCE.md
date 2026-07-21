@@ -60,6 +60,10 @@ produce.
 - Win-prob 5-way NNLS stack: **0.7169 acc / 0.188 Brier** (3-fold WF).
 - In-play endQ3 residual heads cut MAE ~46% vs pregame (mostly mechanical; **~26% over a naive
   carry-forward baseline**, WF-validated, leak-clean).
+- **The one measured calibration win: in-game conditioning** — fusing the pregame prior with
+  realized mid-game state sharpens win-prob calibration **Brier 0.209 → 0.159 (NBA), 0.241 → 0.126
+  (MLB)**, real-corpus OOS, `edge_claimed=False` (a live book sees the score too).
+  Full receipts: [INGAME_PROOF.md](INGAME_PROOF.md).
 - *Proof:* `data/models/quantile_pergame_metrics.json`, `win_prob_metrics.json`.
 
 ### 4 · ENGINES — *production toolchain*
