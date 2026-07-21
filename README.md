@@ -30,6 +30,18 @@ validation methodology are mine. Open to **ML / data / quant / founding-engineer
 
 ---
 
+### The measured win: in-game conditioning
+
+Conditioning on the realized game state is the one calibration result that clears every honesty
+rail: Brier drops sharply and leak-free, out-of-sample, on real corpora -- **NBA 0.209 -> 0.159,
+MLB 0.241 -> 0.126** (`edge_claimed: false`). The end-of-Q3 projection heads add a leak-clean
+**~26% MAE lift over a naive carry-forward baseline** (quoted alone, never paired with the
+separate endQ3 win-probability Brier, which carries its own Q4 leak). A live book sees the same
+realized state, so this is forecaster *quality*, not a dollar edge. Full proof and framing:
+[docs/INGAME_PROOF.md](docs/INGAME_PROOF.md).
+
+---
+
 ## Use it with YOUR Claude (2 minutes, any laptop)
 
 This repo ships a working **MCP server** — connect it to Claude Code or Claude
