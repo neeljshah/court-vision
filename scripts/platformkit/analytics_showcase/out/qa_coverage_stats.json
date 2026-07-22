@@ -1,0 +1,232 @@
+{
+  "generated_at": "2026-07-22T22:42:09.953987+00:00",
+  "status": "ok",
+  "edge_claimed": false,
+  "inputs_tried": [
+    "data\\cache\\analytics_verify\\qa_bank_report.json",
+    "data\\cache\\analytics_verify\\coverage_stress_report.json"
+  ],
+  "qa_regression_bank": {
+    "source": "data\\cache\\analytics_verify\\qa_bank_report.json",
+    "as_of": "2026-07-19T03:43:26.318754+00:00",
+    "tier": "FULL",
+    "n_entries": 87,
+    "n_pass": 87,
+    "n_fail": 0,
+    "honest_note": "Answer-quality regression bank over resolver_registry.resolve() -- fail-closed status/receipt checks only. A correct no_data/not_supported/ambiguous is a PASS, not a failure. Calibration/consistency measurement only; no edge/ROI claim."
+  },
+  "coverage_stress": {
+    "source": "data\\cache\\analytics_verify\\coverage_stress_report.json",
+    "as_of": "2026-07-18T08:49:58.172820+00:00",
+    "n_rows": 1307,
+    "n_expects_answer_true": 863,
+    "n_expects_answer_true_ok": 316,
+    "coverage_rate": 0.3662,
+    "coverage_rate_note": "honest headline: n_expects_answer_true_ok / n_expects_answer_true ONLY -- expects_answer=false rows are excluded (a correct no_data/not_supported/ambiguous/refused there is a design PASS, not counted toward or against coverage)",
+    "status_totals_all_rows": {
+      "ok": 399,
+      "no_data": 560,
+      "not_supported": 42,
+      "ambiguous": 181,
+      "refused": 125,
+      "error": 0
+    },
+    "per_sport": {
+      "nba": {
+        "n": 352,
+        "ok": 126,
+        "no_data": 158,
+        "not_supported": 3,
+        "ambiguous": 27,
+        "refused": 38,
+        "error": 0
+      },
+      "mlb": {
+        "n": 310,
+        "ok": 78,
+        "no_data": 111,
+        "not_supported": 9,
+        "ambiguous": 77,
+        "refused": 35,
+        "error": 0
+      },
+      "wnba": {
+        "n": 216,
+        "ok": 65,
+        "no_data": 99,
+        "not_supported": 16,
+        "ambiguous": 20,
+        "refused": 16,
+        "error": 0
+      },
+      "tennis": {
+        "n": 213,
+        "ok": 89,
+        "no_data": 70,
+        "not_supported": 7,
+        "ambiguous": 28,
+        "refused": 19,
+        "error": 0
+      },
+      "soccer": {
+        "n": 216,
+        "ok": 41,
+        "no_data": 122,
+        "not_supported": 7,
+        "ambiguous": 29,
+        "refused": 17,
+        "error": 0
+      }
+    },
+    "per_category_by_volume": [
+      {
+        "category": "player_stat",
+        "n": 571,
+        "ok": 207,
+        "refusal": 364,
+        "ok_rate": 0.3625
+      },
+      {
+        "category": "concept_rating",
+        "n": 208,
+        "ok": 7,
+        "refusal": 201,
+        "ok_rate": 0.0337
+      },
+      {
+        "category": "edge_language",
+        "n": 125,
+        "ok": 0,
+        "refusal": 125,
+        "ok_rate": 0.0
+      },
+      {
+        "category": "prediction_winprob",
+        "n": 85,
+        "ok": 0,
+        "refusal": 85,
+        "ok_rate": 0.0
+      },
+      {
+        "category": "verified_claims",
+        "n": 43,
+        "ok": 28,
+        "refusal": 15,
+        "ok_rate": 0.6512
+      },
+      {
+        "category": "schedule_context",
+        "n": 38,
+        "ok": 7,
+        "refusal": 31,
+        "ok_rate": 0.1842
+      },
+      {
+        "category": "matchup_preview",
+        "n": 27,
+        "ok": 24,
+        "refusal": 3,
+        "ok_rate": 0.8889
+      },
+      {
+        "category": "calibration_number",
+        "n": 27,
+        "ok": 26,
+        "refusal": 1,
+        "ok_rate": 0.963
+      },
+      {
+        "category": "winprob",
+        "n": 26,
+        "ok": 26,
+        "refusal": 0,
+        "ok_rate": 1.0
+      },
+      {
+        "category": "player_comparables",
+        "n": 24,
+        "ok": 12,
+        "refusal": 12,
+        "ok_rate": 0.5
+      },
+      {
+        "category": "scouting_report",
+        "n": 23,
+        "ok": 15,
+        "refusal": 8,
+        "ok_rate": 0.6522
+      },
+      {
+        "category": "mechanism_effect",
+        "n": 22,
+        "ok": 0,
+        "refusal": 22,
+        "ok_rate": 0.0
+      },
+      {
+        "category": "edge_facts_injury_report",
+        "n": 21,
+        "ok": 5,
+        "refusal": 16,
+        "ok_rate": 0.2381
+      },
+      {
+        "category": "player_comparison",
+        "n": 17,
+        "ok": 16,
+        "refusal": 1,
+        "ok_rate": 0.9412
+      },
+      {
+        "category": "rating_attribute",
+        "n": 16,
+        "ok": 10,
+        "refusal": 6,
+        "ok_rate": 0.625
+      },
+      {
+        "category": "ranking",
+        "n": 13,
+        "ok": 8,
+        "refusal": 5,
+        "ok_rate": 0.6154
+      },
+      {
+        "category": "prediction_quality",
+        "n": 7,
+        "ok": 5,
+        "refusal": 2,
+        "ok_rate": 0.7143
+      },
+      {
+        "category": "edge_facts_news_context",
+        "n": 6,
+        "ok": 1,
+        "refusal": 5,
+        "ok_rate": 0.1667
+      },
+      {
+        "category": "historical_result",
+        "n": 5,
+        "ok": 0,
+        "refusal": 5,
+        "ok_rate": 0.0
+      },
+      {
+        "category": "system_map",
+        "n": 2,
+        "ok": 2,
+        "refusal": 0,
+        "ok_rate": 1.0
+      },
+      {
+        "category": "compound_question",
+        "n": 1,
+        "ok": 0,
+        "refusal": 1,
+        "ok_rate": 0.0
+      }
+    ]
+  },
+  "headline": "answer engine: 87/87 regression-bank checks pass (fail-closed statuses graded as PASS); honest coverage 36.6% of answerable questions -- refusals (no_data/not_supported/ambiguous/refused) are the fail-closed design, not a defect"
+}

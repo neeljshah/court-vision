@@ -14,6 +14,11 @@ Every showcase module lives under `scripts/platformkit/analytics_showcase/`, wri
 `out/`, and (where it renders one) a PNG to `docs/img/`. Each is built to run once and be
 re-checked; the numbers shown are the values on disk as of the last run.
 
+**Corpus scale:** across all sports the system has generated 103,048 claims in 103 families;
+101,865 (98.85%) fall inside a validation sample -- 101,864 verified, 0 mismatched, 1
+unverifiable. That is **sidecar sample coverage** (per-family self-check at generation time),
+**not** an independent full-corpus re-audit. Source: `analytics_showcase/out/claims_corpus_meta.json`.
+
 ---
 
 ## 1. Calibration and market-comparison
@@ -31,6 +36,7 @@ plainly, because that is the honest verdict.
 | Win-prob walk-forward folds | Per-fold leak-free walk-forward Brier for the NBA in-game win-prob model | `docs/img/winprob_walkforward_folds.png` | (chart) | Walk-forward, leak-free after the Q4-feature removal; see the retraction story for the leak that was caught. |
 | NBA in-game Brier vs market | End-of-quarter model Brier against the devigged in-game market | `docs/img/nba_ingame_brier_vs_market.png` | (chart) | See [ingame-conditioning](evidence/ingame-conditioning.md). Provisional n; verdicts honest incl. market-sharper. |
 | Soccer calibration pack | Murphy model-vs-market decomposition + ECE by minute-bucket + Brier by disagreement-bucket for soccer_intl | `analytics_showcase/out/soccer_calibration_pack.json` | `docs/img/soccer_calibration_pack.png` | soccer_intl corpus: n=9003 rows -- far smaller than mlb/nba, wider CIs, single-fold reads not durable. Murphy: model Brier 0.2279 vs market 0.1427 (gap=+0.0852); market leads. Minute-bucket ECE (weighted): 0.3580. At the biggest disagreements (>=.10, n=4406) model closer only 21.5%. `edge_claimed: false`. |
+| Statcast coverage (MLB framing inputs) | 2025 statcast pitch corpus: pitch-type mix, velo spread, and framing-metric input completeness | `analytics_showcase/out/statcast_showcase.json` | `docs/img/statcast_showcase.png` | DESCRIPTIVE coverage only -- **no** predictive/edge claim of its own. 693,037 pitches, 19 pitch types (FF 31.8%, SI 15.5%, SL 14.3%); framing-ingredient columns 99.6-100% non-null. Cites the framing `PREDICTIVE_VERIFIED` receipt as context (rho 0.418 vs 0.272 baseline, 8 folds, 7 sign-holding) **without recomputing it**, preserving that receipt's corpus-deviation caveat (built on `savant_full__2023/2024`, not `statcast_fuller`, which lacks a `description` column). |
 
 Evidence pages: [calibration-decomposition](evidence/calibration-decomposition.md) -
 [devig-stack](evidence/devig-stack.md) - [ingame-conditioning](evidence/ingame-conditioning.md).
@@ -61,6 +67,7 @@ paper over the gap.
 | Analytic | What it measures | Artifact | Chart | Honest caveat |
 |---|---|---|---|---|
 | Paper execution audit | Paper-bet ledger: placement divergence `\|model_prob - implied_prob(price)\|`, fill/suppress split, settled outcomes | `analytics_showcase/out/paper_execution_audit.json` (+ `.md`) | -- | Units are probability points, **not dollars**. n=83 records; divergence median 0.092 pp -- a pre-trade sizing input, not realized CLV. `realized_clv_pct` is **null** for all 37 settled rows: no independent closing-price feed captured on this channel. |
+| Market microstructure measurement | Kalshi quote cadence, price-move size, model-vs-market divergence, overround from the rescued pod backup | `analytics_showcase/out/tick_microstructure.json` | `docs/img/tick_microstructure.png` | MEASUREMENT (latency/cadence), **not a trading signal**. MLB Kalshi total-market: median inter-tick gap 35s (mean 80s, p90 170s); median `\|dprob\|` 0.02 (p90 0.09); model-vs-market divergence median 0.116 (p90 0.225) -- annotated as calibration-gap, **not edge**. WNBA capture cadence median 88s; overround median 0.01 (p90 0.03). Thin data: single-day-ish backup, **no NBA coverage** -- a snapshot measurement, not a durable multi-day corpus. |
 
 Evidence page: [devig-stack](evidence/devig-stack.md). See also the Shin devig endpoint
 `POST /api/devig` and the correlation-aware Kelly sizing (`kelly_corr`).
@@ -76,6 +83,8 @@ confirms, and keep a running graveyard of rejected signals.
 |---|---|---|---|---|
 | Honesty exhibit | Per-sport validation-ledger tally: confirmed / null / not-testable / failed-replication | `analytics_showcase/out/honesty_exhibit.json` | `docs/img/honesty_exhibit.png` | Nulls (351) outnumber confirms (168) 2.1x across sports. The interaction-factory ledger alone is 239 nulls vs 38 confirms (n=1,003). Publishing nulls is the point. |
 | Reject graveyard | Every SHIP/REJECT/DEFER verdict from the leak-free gate | `analytics_showcase/out/reject_graveyard.json` | `docs/img/reject_graveyard.png` | 804 total verdict rows; 68 distinct (sport, signal) currently on a REJECT-family verdict; 627 REJECT vs 95 SHIP. A REJECT is honest market-efficiency evidence, not a failure. |
+| Claims-corpus scale | Per-family generated-claim volume with validation-sidecar coverage across all sports | `analytics_showcase/out/claims_corpus_meta.json` | `docs/img/claims_corpus_meta.png` | 103 claim families, 103,048 generated claims; 99/103 families carry a `*_validation.json` sidecar. 101,865 claims (98.85%) fell inside a validation sample -- 101,864 verified, 0 mismatched, 1 unverifiable. This is **sidecar sample coverage** (per-family self-check at generation time), **not** an independent full-corpus re-audit. Volume split: NBA 62,227 / MLB 21,519 / tennis 13,709 / soccer 4,275 largest. Freshest family file 3 days stale. Bookkeeping, not a new proof. |
+| Answer-engine QA coverage | Fail-closed answer engine measured on its own QA regression + coverage-stress banks | `analytics_showcase/out/qa_coverage_stats.json` | `docs/img/qa_coverage_stats.png` | QA regression bank 87/87 pass (fail-closed -- a correct no_data/not_supported/ambiguous counts as PASS). Coverage-stress: honest coverage 36.6% (316/863 answerable-expected resolved) across 1,307 rows; per-sport ok-rate soccer 19% to tennis 42%. The rest are deliberate refusals (missing corpora / unsupported combos / 125 pure `edge_language` refusals at 100% refused), not silent wrong answers. Read from `data/cache/analytics_verify/` artifacts (as_of 07-18/07-19); no engine re-run. |
 | Tennis gate receipts | Two REAL preregistered tennis gate verdicts: pregame-prior cross-corpus (ATP<->WTA) + in-game surface-context detail | `analytics_showcase/out/tennis_showcase.json` | `docs/img/tennis_showcase.png` | CALIBRATION only (held-out Brier / Diebold-Mariano) -- never a market edge or $ claim; vs_close UNPROVEN. Pregame cross-corpus prior: **REPLICATED** both directions (ATP-train/WTA-test Brier 0.1698->0.1597 n=40516 test states; WTA-train/ATP-test 0.155->0.1432 n=14559; DM clustered by game_id). Surface-specific hold prior: **REJECT** -- does not beat surface-blind on either tour (ATP pooled delta +0.000121, WTA +0.002492, both wrong-signed); planted-null control correctly dies. An honest REJECT is a success. |
 
 Evidence pages: [retraction-story](evidence/retraction-story.md) -

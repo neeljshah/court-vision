@@ -87,6 +87,7 @@ reprice. Follow the links to go as deep as you want at any stage.
 - [evidence/market-disagreement](evidence/market-disagreement.md) -- when we disagree with the market, who wins -- bucketed by disagreement size, over time
 - [ANALYTICS_CATALOG](ANALYTICS_CATALOG.md) -- every analytic the system computes: artifact path, chart, honest caveat, in one catalog
 - [evidence/industry-metrics](evidence/industry-metrics.md) -- the industry player-metric landscape mapped: three honest approximations built, RAPM-family declared out of reach
+- [evidence/analytical-depth](evidence/analytical-depth.md) -- the recorded-analytics inventory as evidence: 23 modules, the claims-corpus generated-vs-validated split, the Statcast base, tick microstructure, fail-closed QA coverage
 
 ### Product / platform
 - [PREDICTOR_PLATFORM](PREDICTOR_PLATFORM.md) -- full product: thesis, scorecards, architecture
