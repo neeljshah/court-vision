@@ -409,6 +409,30 @@ python -m scripts.platformkit.ingame_scoreboard        --corpus tests/fixtures/p
 **[docs/KNOWN_LIMITATIONS.md](docs/KNOWN_LIMITATIONS.md)**. We never claim a dollar edge / ROI /
 beating the close / a CV predictive moat (CV SHAP ~ 0 in production today).
 
+**See the receipts, not just the claims.** Every calibration number is published two ways:
+
+- **[RECEIPTS.md](RECEIPTS.md)** -- the append-only, honesty-gated ledger. Each row is read
+  verbatim from a machine-readable artifact on disk (path cited per row, nothing hand-typed),
+  verdicts include the losses (`MARKET_SHARPER`, `UNDERPOWERED`) exactly as measured. The same
+  ledger renders as a browsable page in the webapp at **`/receipts`**.
+- **Evidence pages** -- one per claim family, each running claim -> receipt -> reproduce:
+  [retraction-story](docs/evidence/retraction-story.md) (the flagship: the instruments that
+  refuted my own headline numbers) -
+  [ingame-conditioning](docs/evidence/ingame-conditioning.md) (the one measured calibration win,
+  market losses stated plainly) -
+  [calibration-decomposition](docs/evidence/calibration-decomposition.md) (my own Brier gap vs
+  the market split into reliability vs resolution, plus the ranked list of the game states my
+  model handles worst -- charts: [reliability](docs/img/reliability_model_vs_market.png),
+  [state-calibration heatmap](docs/img/state_calibration_heatmap.png)) -
+  [devig-stack](docs/evidence/devig-stack.md) (four devig methods; the Shin-devigged close as the
+  honest yardstick) -
+  [leak-instruments](docs/evidence/leak-instruments.md) (walk-forward guard, truncation
+  invariance, multi-corpus gate, ship gate) -
+  [agent-fleet-direction](docs/evidence/agent-fleet-direction.md) (directing the agent fleet under
+  fail-closed gates) -
+  [cv-pipeline](docs/evidence/cv-pipeline.md) (broadcast video to court coordinates, with the
+  not-demonstrated list stated).
+
 ---
 
 ## Origin / NBA computer-vision lineage (engineering history, not the headline)

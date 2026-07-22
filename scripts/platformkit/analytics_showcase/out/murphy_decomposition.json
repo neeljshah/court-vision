@@ -1,0 +1,334 @@
+{
+  "edge_claimed": false,
+  "method": "10-bin Murphy decomposition (Brier = reliability - resolution + uncertainty)",
+  "sports": {
+    "mlb": {
+      "n_rows": 78986,
+      "model_prob": {
+        "n": 78986,
+        "brier": 0.237684,
+        "reliability": 0.012701,
+        "resolution": 0.023628,
+        "uncertainty": 0.248092,
+        "reconstructed_brier": 0.237166,
+        "bins": [
+          {
+            "bin_lo": 0.0,
+            "bin_hi": 0.1,
+            "n": 5127,
+            "mean_p": 0.0512,
+            "mean_y": 0.2331
+          },
+          {
+            "bin_lo": 0.1,
+            "bin_hi": 0.2,
+            "n": 4495,
+            "mean_p": 0.1588,
+            "mean_y": 0.2525
+          },
+          {
+            "bin_lo": 0.2,
+            "bin_hi": 0.3,
+            "n": 4708,
+            "mean_p": 0.2453,
+            "mean_y": 0.3031
+          },
+          {
+            "bin_lo": 0.3,
+            "bin_hi": 0.4,
+            "n": 7071,
+            "mean_p": 0.3611,
+            "mean_y": 0.2826
+          },
+          {
+            "bin_lo": 0.4,
+            "bin_hi": 0.5,
+            "n": 14736,
+            "mean_p": 0.4568,
+            "mean_y": 0.3916
+          },
+          {
+            "bin_lo": 0.5,
+            "bin_hi": 0.6,
+            "n": 17652,
+            "mean_p": 0.5436,
+            "mean_y": 0.4619
+          },
+          {
+            "bin_lo": 0.6,
+            "bin_hi": 0.7,
+            "n": 9214,
+            "mean_p": 0.6456,
+            "mean_y": 0.5745
+          },
+          {
+            "bin_lo": 0.7,
+            "bin_hi": 0.8,
+            "n": 5364,
+            "mean_p": 0.748,
+            "mean_y": 0.6743
+          },
+          {
+            "bin_lo": 0.8,
+            "bin_hi": 0.9,
+            "n": 5866,
+            "mean_p": 0.8473,
+            "mean_y": 0.7335
+          },
+          {
+            "bin_lo": 0.9,
+            "bin_hi": 1.0,
+            "n": 4753,
+            "mean_p": 0.9541,
+            "mean_y": 0.6632
+          }
+        ]
+      },
+      "market_prob": {
+        "n": 78986,
+        "brier": 0.206653,
+        "reliability": 0.006061,
+        "resolution": 0.047124,
+        "uncertainty": 0.248092,
+        "reconstructed_brier": 0.20703,
+        "bins": [
+          {
+            "bin_lo": 0.0,
+            "bin_hi": 0.1,
+            "n": 4176,
+            "mean_p": 0.0527,
+            "mean_y": 0.0321
+          },
+          {
+            "bin_lo": 0.1,
+            "bin_hi": 0.2,
+            "n": 3827,
+            "mean_p": 0.1487,
+            "mean_y": 0.173
+          },
+          {
+            "bin_lo": 0.2,
+            "bin_hi": 0.3,
+            "n": 2997,
+            "mean_p": 0.2468,
+            "mean_y": 0.1728
+          },
+          {
+            "bin_lo": 0.3,
+            "bin_hi": 0.4,
+            "n": 4788,
+            "mean_p": 0.3598,
+            "mean_y": 0.236
+          },
+          {
+            "bin_lo": 0.4,
+            "bin_hi": 0.5,
+            "n": 15028,
+            "mean_p": 0.4503,
+            "mean_y": 0.3871
+          },
+          {
+            "bin_lo": 0.5,
+            "bin_hi": 0.6,
+            "n": 26309,
+            "mean_p": 0.5498,
+            "mean_y": 0.4497
+          },
+          {
+            "bin_lo": 0.6,
+            "bin_hi": 0.7,
+            "n": 8350,
+            "mean_p": 0.6432,
+            "mean_y": 0.5841
+          },
+          {
+            "bin_lo": 0.7,
+            "bin_hi": 0.8,
+            "n": 4357,
+            "mean_p": 0.7422,
+            "mean_y": 0.6672
+          },
+          {
+            "bin_lo": 0.8,
+            "bin_hi": 0.9,
+            "n": 4026,
+            "mean_p": 0.8517,
+            "mean_y": 0.8105
+          },
+          {
+            "bin_lo": 0.9,
+            "bin_hi": 1.0,
+            "n": 5128,
+            "mean_p": 0.9486,
+            "mean_y": 0.9563
+          }
+        ]
+      }
+    },
+    "soccer_intl": {
+      "n_rows": 9003,
+      "model_prob": {
+        "n": 9003,
+        "brier": 0.227887,
+        "reliability": 0.092837,
+        "resolution": 0.038185,
+        "uncertainty": 0.238877,
+        "reconstructed_brier": 0.293529,
+        "bins": [
+          {
+            "bin_lo": 0.0,
+            "bin_hi": 0.1,
+            "n": 2012,
+            "mean_p": 0.0446,
+            "mean_y": 0.4963
+          },
+          {
+            "bin_lo": 0.1,
+            "bin_hi": 0.2,
+            "n": 1578,
+            "mean_p": 0.1446,
+            "mean_y": 0.4189
+          },
+          {
+            "bin_lo": 0.2,
+            "bin_hi": 0.3,
+            "n": 1670,
+            "mean_p": 0.2472,
+            "mean_y": 0.4476
+          },
+          {
+            "bin_lo": 0.3,
+            "bin_hi": 0.4,
+            "n": 773,
+            "mean_p": 0.3488,
+            "mean_y": 0.7167
+          },
+          {
+            "bin_lo": 0.4,
+            "bin_hi": 0.5,
+            "n": 684,
+            "mean_p": 0.4532,
+            "mean_y": 0.8238
+          },
+          {
+            "bin_lo": 0.5,
+            "bin_hi": 0.6,
+            "n": 634,
+            "mean_p": 0.547,
+            "mean_y": 0.7003
+          },
+          {
+            "bin_lo": 0.6,
+            "bin_hi": 0.7,
+            "n": 446,
+            "mean_p": 0.6455,
+            "mean_y": 0.6603
+          },
+          {
+            "bin_lo": 0.7,
+            "bin_hi": 0.8,
+            "n": 296,
+            "mean_p": 0.7509,
+            "mean_y": 0.9628
+          },
+          {
+            "bin_lo": 0.8,
+            "bin_hi": 0.9,
+            "n": 577,
+            "mean_p": 0.8456,
+            "mean_y": 0.9879
+          },
+          {
+            "bin_lo": 0.9,
+            "bin_hi": 1.0,
+            "n": 333,
+            "mean_p": 0.9457,
+            "mean_y": 1.0
+          }
+        ]
+      },
+      "market_prob": {
+        "n": 9003,
+        "brier": 0.142726,
+        "reliability": 0.053423,
+        "resolution": 0.082761,
+        "uncertainty": 0.238877,
+        "reconstructed_brier": 0.209538,
+        "bins": [
+          {
+            "bin_lo": 0.0,
+            "bin_hi": 0.1,
+            "n": 1421,
+            "mean_p": 0.0489,
+            "mean_y": 0.1671
+          },
+          {
+            "bin_lo": 0.1,
+            "bin_hi": 0.2,
+            "n": 1186,
+            "mean_p": 0.1536,
+            "mean_y": 0.2226
+          },
+          {
+            "bin_lo": 0.2,
+            "bin_hi": 0.3,
+            "n": 1482,
+            "mean_p": 0.2406,
+            "mean_y": 0.5958
+          },
+          {
+            "bin_lo": 0.3,
+            "bin_hi": 0.4,
+            "n": 963,
+            "mean_p": 0.351,
+            "mean_y": 0.6402
+          },
+          {
+            "bin_lo": 0.4,
+            "bin_hi": 0.5,
+            "n": 623,
+            "mean_p": 0.4477,
+            "mean_y": 0.7737
+          },
+          {
+            "bin_lo": 0.5,
+            "bin_hi": 0.6,
+            "n": 721,
+            "mean_p": 0.551,
+            "mean_y": 0.8641
+          },
+          {
+            "bin_lo": 0.6,
+            "bin_hi": 0.7,
+            "n": 791,
+            "mean_p": 0.6491,
+            "mean_y": 0.8559
+          },
+          {
+            "bin_lo": 0.7,
+            "bin_hi": 0.8,
+            "n": 552,
+            "mean_p": 0.7356,
+            "mean_y": 0.8687
+          },
+          {
+            "bin_lo": 0.8,
+            "bin_hi": 0.9,
+            "n": 940,
+            "mean_p": 0.8421,
+            "mean_y": 0.9197
+          },
+          {
+            "bin_lo": 0.9,
+            "bin_hi": 1.0,
+            "n": 324,
+            "mean_p": 0.9257,
+            "mean_y": 1.0
+          }
+        ]
+      }
+    }
+  },
+  "verdict": "mlb: model Brier 0.2377 is worse than market 0.2067 (gap=+0.0310); driven mainly by resolution (information, not fixable by recalibration) (reliability_gap=+0.0066, resolution_gap=-0.0235). soccer_intl: model Brier 0.2279 is worse than market 0.1427 (gap=+0.0852); driven mainly by resolution (information, not fixable by recalibration) (reliability_gap=+0.0394, resolution_gap=-0.0446).",
+  "plot_written": true
+}
