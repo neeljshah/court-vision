@@ -40,6 +40,8 @@ separate endQ3 win-probability Brier, which carries its own Q4 leak). A live boo
 realized state, so this is forecaster *quality*, not a dollar edge. Full proof and framing:
 [docs/INGAME_PROOF.md](docs/INGAME_PROOF.md).
 
+![NBA in-game win-prob Brier, model vs market by checkpoint (n=1593; market sharper at end_q1 -- losses shown, that is the point)](docs/img/nba_ingame_brier_vs_market.png)
+
 ---
 
 ## Use it with YOUR Claude (2 minutes, any laptop)
