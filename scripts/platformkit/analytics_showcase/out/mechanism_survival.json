@@ -1,0 +1,174 @@
+{
+  "source": "domains/*/knowledge/validation_ledger.jsonl (4 sports)",
+  "note": "Survival rate = share of TESTABLE hypotheses whose latest recorded verdict is CONFIRMED_LOCAL / CONFIRMED_LOCAL_incl_2026_OOS / REPLICATED. A NULL/REJECT is honest market-efficiency evidence, not a failure. No $/edge/ROI claim.",
+  "verdict_taxonomy": {
+    "confirmed": [
+      "CONFIRMED_LOCAL",
+      "CONFIRMED_LOCAL_incl_2026_OOS",
+      "REPLICATED"
+    ],
+    "not_testable": [
+      "NOT_REPLICABLE_NO_CORPUS",
+      "NOT_TESTABLE"
+    ],
+    "tested_not_confirmed": "everything else (NULL, NULL_LOCAL, REJECT, PARTIAL, PROVISIONAL, FAILED_REPLICATION, ARTIFACT_CONFIRMED)"
+  },
+  "category_keyword_map": {
+    "rest_fatigue": [
+      "rest",
+      "fatigue",
+      "b2b",
+      "load",
+      "durability",
+      "recovery",
+      "tired"
+    ],
+    "travel": [
+      "travel",
+      "timezone",
+      "altitude"
+    ],
+    "streak_momentum": [
+      "streak",
+      "momentum",
+      "continuity",
+      "hot_",
+      "cold_"
+    ],
+    "matchup": [
+      "matchup",
+      "platoon",
+      "h2h",
+      "opponent",
+      "specialization",
+      "surface",
+      "interaction"
+    ],
+    "weather_park": [
+      "weather",
+      "park",
+      "climate",
+      "rain"
+    ],
+    "official_referee": [
+      "referee",
+      "umpire",
+      "call",
+      "zone",
+      "strike"
+    ],
+    "situational": "catch-all (no keyword match)"
+  },
+  "overall": {
+    "n": 287,
+    "n_testable": 256,
+    "n_confirmed": 129,
+    "n_not_testable": 31,
+    "not_testable_share": 0.108,
+    "survival_rate": 0.5039
+  },
+  "by_sport": {
+    "basketball_nba": {
+      "n": 82,
+      "n_testable": 75,
+      "n_confirmed": 42,
+      "n_not_testable": 7,
+      "not_testable_share": 0.0854,
+      "survival_rate": 0.56
+    },
+    "mlb": {
+      "n": 86,
+      "n_testable": 78,
+      "n_confirmed": 31,
+      "n_not_testable": 8,
+      "not_testable_share": 0.093,
+      "survival_rate": 0.3974
+    },
+    "nba": {
+      "n": 3,
+      "n_testable": 3,
+      "n_confirmed": 3,
+      "n_not_testable": 0,
+      "not_testable_share": 0.0,
+      "survival_rate": 1.0
+    },
+    "soccer": {
+      "n": 64,
+      "n_testable": 56,
+      "n_confirmed": 29,
+      "n_not_testable": 8,
+      "not_testable_share": 0.125,
+      "survival_rate": 0.5179
+    },
+    "tennis": {
+      "n": 52,
+      "n_testable": 44,
+      "n_confirmed": 24,
+      "n_not_testable": 8,
+      "not_testable_share": 0.1538,
+      "survival_rate": 0.5455
+    }
+  },
+  "by_category": {
+    "situational": {
+      "n": 174,
+      "n_testable": 155,
+      "n_confirmed": 81,
+      "n_not_testable": 19,
+      "not_testable_share": 0.1092,
+      "survival_rate": 0.5226
+    },
+    "rest_fatigue": {
+      "n": 42,
+      "n_testable": 36,
+      "n_confirmed": 11,
+      "n_not_testable": 6,
+      "not_testable_share": 0.1429,
+      "survival_rate": 0.3056
+    },
+    "matchup": {
+      "n": 27,
+      "n_testable": 25,
+      "n_confirmed": 13,
+      "n_not_testable": 2,
+      "not_testable_share": 0.0741,
+      "survival_rate": 0.52
+    },
+    "streak_momentum": {
+      "n": 23,
+      "n_testable": 23,
+      "n_confirmed": 11,
+      "n_not_testable": 0,
+      "not_testable_share": 0.0,
+      "survival_rate": 0.4783
+    },
+    "official_referee": {
+      "n": 14,
+      "n_testable": 12,
+      "n_confirmed": 9,
+      "n_not_testable": 2,
+      "not_testable_share": 0.1429,
+      "survival_rate": 0.75
+    },
+    "travel": {
+      "n": 4,
+      "n_testable": 4,
+      "n_confirmed": 4,
+      "n_not_testable": 0,
+      "not_testable_share": 0.0,
+      "survival_rate": 1.0
+    },
+    "weather_park": {
+      "n": 3,
+      "n_testable": 1,
+      "n_confirmed": 0,
+      "n_not_testable": 2,
+      "not_testable_share": 0.6667,
+      "survival_rate": 0.0
+    }
+  },
+  "novelty": {
+    "verdict": "N/A -- this is an internal measurement-hygiene artifact (a scoreboard over our own hypothesis ledger), not a market-facing analytic method. No prior-art search performed; the closest prior-art notes on file are for the market information-arrival curve (INCREMENTAL vs arXiv 2606.07811) and the over/underreaction spectrum (INCREMENTAL vs Moskowitz 2021 / Choi & Hui 2014) -- neither of those covers a hypothesis-survival scoreboard, so this artifact carries no borrowed novelty claim of its own."
+  },
+  "edge_claimed": false
+}

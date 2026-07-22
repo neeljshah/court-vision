@@ -87,7 +87,14 @@ reprice. Follow the links to go as deep as you want at any stage.
 - [evidence/market-disagreement](evidence/market-disagreement.md) -- when we disagree with the market, who wins -- bucketed by disagreement size, over time
 - [ANALYTICS_CATALOG](ANALYTICS_CATALOG.md) -- every analytic the system computes: artifact path, chart, honest caveat, in one catalog
 - [evidence/industry-metrics](evidence/industry-metrics.md) -- the industry player-metric landscape mapped: three honest approximations built, RAPM-family declared out of reach
+- [evidence/player-props](evidence/player-props.md) -- the 7-stat projection stack measured two ways, each number bound to its label
+- [evidence/answer-engine](evidence/answer-engine.md) -- the fail-closed answer engine: one resolver per question, refusals measured (125/125 edge-language refused)
+- [evidence/data-layer](evidence/data-layer.md) -- keyless, leak-safe, self-auditing data platform (statcast 693k, claims corpus 103k, matchup matrix 291k)
+- [evidence/possession-simulator](evidence/possession-simulator.md) -- possession Monte Carlo whose teammate correlation emerges from mechanics, graded by state cell
+- [evidence/operations-reliability](evidence/operations-reliability.md) -- unattended systems that fail visibly: sentinels, watchdog, and the health readout that honestly reports RED
+- [evidence/knowledge-engine](evidence/knowledge-engine.md) -- sports folklore in, preregistered verdicts out: 50.4% survival over 256 testable mechanisms, nulls published
 - [evidence/analytical-depth](evidence/analytical-depth.md) -- the recorded-analytics inventory as evidence: 23 modules, the claims-corpus generated-vs-validated split, the Statcast base, tick microstructure, fail-closed QA coverage
+- [evidence/novel-analytics](evidence/novel-analytics.md) -- uniquely-auditable measurements: five market-microstructure/calibration analytics, each with its honest prior-art verdict (2 INCREMENTAL, 1 ALREADY_DONE, 1 N/A) and the market beating our in-game model stated in numbers
 
 ### Product / platform
 - [PREDICTOR_PLATFORM](PREDICTOR_PLATFORM.md) -- full product: thesis, scorecards, architecture
