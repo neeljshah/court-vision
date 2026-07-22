@@ -180,5 +180,13 @@ def main() -> int:
     return 0
 
 
+def check() -> int:
+    assert _OUT_JSON.exists() and _OUT_JSON.stat().st_size > 0, _OUT_JSON
+    assert _OUT_PNG.exists() and _OUT_PNG.stat().st_size > 0, _OUT_PNG
+    print("OK: comeback_atlas self-check passed")
+    return 0
+
+
 if __name__ == "__main__":
-    raise SystemExit(main())
+    import sys
+    raise SystemExit(check() if "--check" in sys.argv else main())

@@ -239,5 +239,12 @@ def main():
     print(json.dumps(result, indent=2)[:3000])
 
 
+def check():
+    assert OUT_JSON.exists() and OUT_JSON.stat().st_size > 0, OUT_JSON
+    assert OUT_PNG.exists() and OUT_PNG.stat().st_size > 0, OUT_PNG
+    print("OK: tick_microstructure self-check passed")
+
+
 if __name__ == "__main__":
-    main()
+    import sys
+    check() if "--check" in sys.argv else main()

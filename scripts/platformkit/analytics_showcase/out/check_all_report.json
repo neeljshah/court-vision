@@ -1,0 +1,164 @@
+[
+  {
+    "module": "agent_fleet_history.py",
+    "status": "PASS",
+    "seconds": 0.2,
+    "as_of": "2026-07-22T23:25:09.933544+00:00"
+  },
+  {
+    "module": "aging_curve_lite.py",
+    "status": "PASS",
+    "seconds": 0.75,
+    "as_of": "2026-07-22T23:25:10.681057+00:00"
+  },
+  {
+    "module": "box_value_index.py",
+    "status": "PASS",
+    "seconds": 1.13,
+    "as_of": "2026-07-22T23:25:11.810225+00:00"
+  },
+  {
+    "module": "calibration_over_time.py",
+    "status": "PASS",
+    "seconds": 0.66,
+    "as_of": "2026-07-22T23:25:12.470225+00:00"
+  },
+  {
+    "module": "claims_corpus_meta.py",
+    "status": "PASS",
+    "seconds": 0.09,
+    "as_of": "2026-07-22T23:25:12.561232+00:00"
+  },
+  {
+    "module": "comeback_atlas.py",
+    "status": "PASS",
+    "seconds": 0.26,
+    "as_of": "2026-07-22T23:25:12.822687+00:00"
+  },
+  {
+    "module": "cross_sport_scoreboard.py",
+    "status": "PASS",
+    "seconds": 0.09,
+    "as_of": "2026-07-22T23:25:12.912691+00:00"
+  },
+  {
+    "module": "cv_tracking_stats.py",
+    "status": "PASS",
+    "seconds": 0.13,
+    "as_of": "2026-07-22T23:25:13.046687+00:00"
+  },
+  {
+    "module": "dossier_completeness.py",
+    "status": "PASS",
+    "seconds": 0.1,
+    "as_of": "2026-07-22T23:25:13.144688+00:00"
+  },
+  {
+    "module": "honesty_exhibit.py",
+    "status": "PASS",
+    "seconds": 0.11,
+    "as_of": "2026-07-22T23:25:13.254688+00:00"
+  },
+  {
+    "module": "info_arrival_curve.py",
+    "status": "PASS",
+    "seconds": 0.67,
+    "as_of": "2026-07-22T23:25:13.929014+00:00"
+  },
+  {
+    "module": "kernel_transfer.py",
+    "status": "PASS",
+    "seconds": 0.09,
+    "as_of": "2026-07-22T23:25:14.018013+00:00"
+  },
+  {
+    "module": "market_disagreement_profile.py",
+    "status": "PASS",
+    "seconds": 0.1,
+    "as_of": "2026-07-22T23:25:14.118013+00:00"
+  },
+  {
+    "module": "market_overreaction.py",
+    "status": "PASS",
+    "seconds": 0.67,
+    "as_of": "2026-07-22T23:25:14.784064+00:00"
+  },
+  {
+    "module": "mechanism_survival.py",
+    "status": "PASS",
+    "seconds": 0.1,
+    "as_of": "2026-07-22T23:25:14.884070+00:00"
+  },
+  {
+    "module": "murphy_decomposition.py",
+    "status": "PASS",
+    "seconds": 0.1,
+    "as_of": "2026-07-22T23:25:14.981063+00:00"
+  },
+  {
+    "module": "on_off_showcase.py",
+    "status": "PASS",
+    "seconds": 0.67,
+    "as_of": "2026-07-22T23:25:15.648577+00:00"
+  },
+  {
+    "module": "paper_execution_audit.py",
+    "status": "PASS",
+    "seconds": 0.11,
+    "as_of": "2026-07-22T23:25:15.763577+00:00"
+  },
+  {
+    "module": "player_metric_landscape.py",
+    "status": "PASS",
+    "seconds": 1.11,
+    "as_of": "2026-07-22T23:25:16.870682+00:00"
+  },
+  {
+    "module": "qa_coverage_stats.py",
+    "status": "PASS",
+    "seconds": 0.1,
+    "as_of": "2026-07-22T23:25:16.968683+00:00"
+  },
+  {
+    "module": "reject_graveyard.py",
+    "status": "PASS",
+    "seconds": 0.12,
+    "as_of": "2026-07-22T23:25:17.092686+00:00"
+  },
+  {
+    "module": "residual_anatomy.py",
+    "status": "PASS",
+    "seconds": 1.4,
+    "as_of": "2026-07-22T23:25:18.496193+00:00"
+  },
+  {
+    "module": "soccer_calibration_pack.py",
+    "status": "PASS",
+    "seconds": 0.11,
+    "as_of": "2026-07-22T23:25:18.608708+00:00"
+  },
+  {
+    "module": "statcast_showcase.py",
+    "status": "PASS",
+    "seconds": 1.43,
+    "as_of": "2026-07-22T23:25:20.038215+00:00"
+  },
+  {
+    "module": "state_conditioned_calibration.py",
+    "status": "PASS",
+    "seconds": 1.53,
+    "as_of": "2026-07-22T23:25:21.565738+00:00"
+  },
+  {
+    "module": "tennis_showcase.py",
+    "status": "PASS",
+    "seconds": 0.67,
+    "as_of": "2026-07-22T23:25:22.238238+00:00"
+  },
+  {
+    "module": "tick_microstructure.py",
+    "status": "PASS",
+    "seconds": 0.1,
+    "as_of": "2026-07-22T23:25:22.342239+00:00"
+  }
+]

@@ -230,5 +230,12 @@ def main():
         print(f"wrote {OUT_JSON}")
 
 
+def check():
+    assert os.path.exists(OUT_JSON) and os.path.getsize(OUT_JSON) > 0, OUT_JSON
+    assert os.path.exists(OUT_PNG) and os.path.getsize(OUT_PNG) > 0, OUT_PNG
+    print("OK: claims_corpus_meta self-check passed")
+
+
 if __name__ == "__main__":
-    main()
+    import sys
+    check() if "--check" in sys.argv else main()

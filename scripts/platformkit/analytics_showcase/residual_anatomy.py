@@ -18,7 +18,11 @@ import argparse
 import json
 import os
 
-from state_conditioned_calibration import SPORTS, load_records, prob_bucket
+try:  # -m package invocation (check_all) vs bare-script invocation
+    from scripts.platformkit.analytics_showcase.state_conditioned_calibration import (
+        SPORTS, load_records, prob_bucket)
+except ImportError:
+    from state_conditioned_calibration import SPORTS, load_records, prob_bucket
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 OUT_JSON = os.path.join(ROOT, "scripts", "platformkit", "analytics_showcase", "out", "residual_anatomy.json")
