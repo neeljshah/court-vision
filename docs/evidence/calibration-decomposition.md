@@ -70,7 +70,7 @@ bucket)`, and per-bucket calibration error `|mean_p - mean_y|` is computed for b
 market. The ranked worst-bucket list is, in the module's own words, "the improvement
 backlog."
 
-**Source:** `out/state_conditioned_calibration.json` (`edge_claimed: false`). Heatmap:
+**Source:** `scripts/platformkit/analytics_showcase/out/state_conditioned_calibration.json` (`edge_claimed: false`). Heatmap:
 `docs/img/state_calibration_heatmap.png`. The `mlb_clean` corpus was found byte-identical to
 `mlb` (verified via `filecmp`) and is logged in `skipped` to avoid double-counting.
 
