@@ -1,0 +1,80 @@
+{
+  "source": "docs/JOB_EVIDENCE_PACKET.md",
+  "note": "Support = raw input-column coverage only, never a claim that a branded metric is reproduced.",
+  "coverage": {
+    "rows": 77744,
+    "unique_players": 807,
+    "unique_games": 3611,
+    "seasons": [
+      "2023-24",
+      "2024-25",
+      "2025-26"
+    ],
+    "box_col_missing_pct": {
+      "min": 0.0,
+      "pts": 0.0,
+      "reb": 0.0,
+      "oreb": 0.0,
+      "dreb": 0.0,
+      "ast": 0.0,
+      "stl": 0.0,
+      "blk": 0.0,
+      "tov": 0.0,
+      "fgm": 0.0,
+      "fga": 0.0,
+      "fg3m": 0.0,
+      "fg3a": 0.0,
+      "ftm": 0.0,
+      "fta": 0.0,
+      "pf": 0.0,
+      "plus_minus": 0.0
+    }
+  },
+  "metric_families": {
+    "box_only_value_index (APPROX, not BPM/EPM)": {
+      "inputs_needed": "box_cols",
+      "verdict": "supported",
+      "why": "Full box (min/pts/reb/ast/stl/blk/tov/fg/ft/pf/plus_minus) present, 0% missing. Transparent linear weights only -- no RAPM target to fit against."
+    },
+    "on_off_differential (unadjusted precursor to RAPM)": {
+      "inputs_needed": "plus_minus,min",
+      "verdict": "supported",
+      "why": "plus_minus + min present per player-game; already built as atlas_player_usage_role.on_off_net_diff. Labeled unadjusted/biased, not RAPM."
+    },
+    "box_rate_now_cast (per-36, DARKO-lite BOX ONLY)": {
+      "inputs_needed": "box_cols,min",
+      "verdict": "supported",
+      "why": "Per-36 rate stats computable directly from min + counting stats. NOT a claim of DPM/DARKO -- box rates only."
+    },
+    "playmaking_creation_profile (APPROX)": {
+      "inputs_needed": "ast,tov,fga",
+      "verdict": "partial",
+      "why": "ast/tov/fga present but no potential-assists, passes-made, or touches -- creation volume only, not quality."
+    },
+    "shot_selection_descriptor (zone-baseline eFG)": {
+      "inputs_needed": "fga,fg3a,fgm,fg3m",
+      "verdict": "partial",
+      "why": "Makes/attempts by 2/3 present so rim-vs-3 rate and eFG% are computable, but no shot-location/zone/distance column -- no true zone baseline."
+    },
+    "gravity_proxy (CV subset only)": {
+      "inputs_needed": "none in this table",
+      "verdict": "partial",
+      "why": "Needs broadcast-CV defender-distance tracking; this parquet is box-score only. CV coverage is a separate 241-game/17,254-row/252-player subset -- flag cv_coverage, do not extrapolate league-wide."
+    },
+    "lineup_synergy (descriptive, unadjusted)": {
+      "inputs_needed": "none",
+      "verdict": "not_supported",
+      "why": "No on-court lineup / stint identifier column in this table."
+    },
+    "aging_curve": {
+      "inputs_needed": "none",
+      "verdict": "not_supported",
+      "why": "No birthdate/age column; only 3 season snapshots (2023-24..2025-26) -- too thin even if age were derivable."
+    },
+    "RAPM/xRAPM/EPM/DARKO-DPM/LEBRON/BPM/RAPTOR/qSQ/qSI/qSP/EPV/official_Gravity": {
+      "inputs_needed": "none",
+      "verdict": "not_supported",
+      "why": "Do-not-fake list: all require a league-wide RAPM target or continuous tracking data we do not have. Never reproduce or label as these metrics."
+    }
+  }
+}
