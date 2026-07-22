@@ -83,6 +83,7 @@ reprice. Follow the links to go as deep as you want at any stage.
 - [evidence/leak-instruments](evidence/leak-instruments.md) -- the leakage-catching instruments (walk-forward guard, truncation invariance, multi-corpus gate, ship gate)
 - [evidence/cv-pipeline](evidence/cv-pipeline.md) -- broadcast video to court coordinates on a consumer GPU, with the not-demonstrated list stated
 - [evidence/calibration-decomposition](evidence/calibration-decomposition.md) -- our Brier gap vs the market decomposed (reliability vs resolution) + the ranked worst-bucket list
+- [evidence/mcp-live-demo](evidence/mcp-live-demo.md) -- three real MCP envelopes captured live: receipt-backed answers, the caveat ladder, and the system disclosing when the market is sharper
 
 ### Product / platform
 - [PREDICTOR_PLATFORM](PREDICTOR_PLATFORM.md) -- full product: thesis, scorecards, architecture
