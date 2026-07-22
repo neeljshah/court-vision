@@ -68,7 +68,7 @@ overnight.
 | Orchestration / checkpoint-resume loop driver | `src/loop/orchestrator.py`, `scripts/loop/run_loop.py` |
 | Protected-tree enforcement (agents cannot edit `src/`, `api/`) | `scripts/bot_guards/pre_edit_check.py` |
 | No-edge / honesty language enforcement | `governance/honesty_linter.py`; [docs/HONESTY_SYSTEM.md](../HONESTY_SYSTEM.md) |
-| 513 recorded REJECT/DEFER verdicts (negative-result count dwarfs the positive) | `scripts/platformkit/reject_ledger.py`; JOB_EVIDENCE_PACKET s2 |
+| 513 recorded REJECT/DEFER verdicts per JOB_EVIDENCE_PACKET s2 (a 2026-07-22 recount reads 804 full-history rows resolving to 68 distinct buried signals -- see the graveyard disclosure) | `scripts/platformkit/reject_ledger.py`; `scripts/platformkit/analytics_showcase/out/reject_graveyard.json` |
 | Orchestration playbook (described; local-only, gitignored) | `.claude/commands/workday-loop.md` -- not committed; machinery it drives is the row above |
 
 ---
@@ -94,6 +94,10 @@ git log --format='%(trailers:key=Co-Authored-By)' | grep -ci Claude
 # history of REJECT/DEFER verdicts, re-adjudications included)
 python -m scripts.platformkit.reject_ledger show
 ```
+
+![Agent-fleet build history: authorship split and round-the-clock commit cadence from git log](../img/agent_fleet_history.png)
+
+*Figure: the authorship split and the build cadence, straight from `git log` (recount 2026-07-22; 3,224 commits, 2026-03-09 to 2026-07-22). 95.75% of commits carry the `GSD Executor` agent identity and 67.9% carry a `Co-Authored-By: Claude` trailer; commits land across every hour and weekday rather than a 9-5 pattern -- consistent with one director running an agent fleet around the clock. This is a build-provenance measurement, not a claim about code quality or edge. The fresh git-log share (95.75%) runs a little above the ~91% recorded in JOB_EVIDENCE_PACKET s4 because it is a later recount over more commits; the packet stays the truth-source. Data: [`scripts/platformkit/analytics_showcase/out/agent_fleet_history.json`](../../scripts/platformkit/analytics_showcase/out/agent_fleet_history.json), reproduced by the recount commands above.*
 
 The reject ledger is the honesty exhibit at scale: the count of candidates that did *not*
 survive the gate dwarfs the count that did, which is the expected shape of honest signal

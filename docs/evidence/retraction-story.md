@@ -77,6 +77,34 @@ signal was REJECTED across >=2 independent corpora.
 
 ---
 
+## The honest-rejects trail, visualized
+
+The self-refutation is not confined to the four headline retractions above -- it is the
+default outcome across every sport's validation ledger.
+
+![Verdict mix across each sport's validation ledger: nulls outnumber confirms 2.1x](../img/honesty_exhibit.png)
+
+*Figure: verdict mix in every sport's validation ledger. Nulls (351) outnumber confirms
+(168) by 2.1x across the four domain ledgers (NBA, MLB, soccer, tennis). The
+`interaction_factory` ledger is shown as its own bar (1,003 rows, 709 of them
+not-testable) rather than folded into that ratio, since it is a different-scale source. The
+point of the exhibit is the ratio itself -- the system logs and keeps its honest rejects
+instead of hiding them. Data:
+[`scripts/platformkit/analytics_showcase/out/honesty_exhibit.json`](../../scripts/platformkit/analytics_showcase/out/honesty_exhibit.json).*
+
+![Reject ledger over time: 804 raw verdict rows resolve to 68 distinct buried signals](../img/reject_graveyard.png)
+
+*Figure: the reject ledger over time. 804 total recorded verdict rows in full history resolve
+to just 68 distinct (sport, signal) pairs still sitting on a reject-family verdict at their
+latest test -- roughly a 12:1 gap, because the same signals are re-tested by repeated
+asof-reclaim sweeps (510 of 627 REJECT rows) rather than being 627 distinct dead ideas. The
+68 is the honest "how many ideas are actually buried" number; the JSON discloses the gap
+explicitly in its `history_vs_latest_disclosure` field. A REJECT is market-efficiency
+evidence, not a failure, and no dollar/edge/ROI is claimed. Data:
+[`scripts/platformkit/analytics_showcase/out/reject_graveyard.json`](../../scripts/platformkit/analytics_showcase/out/reject_graveyard.json).*
+
+---
+
 ## Reproduce on a fresh clone
 
 Fresh-clone reproducibility was fixed 2026-07-20 (commit `eb95e13b8`). Before that,
