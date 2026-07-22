@@ -542,3 +542,8 @@ scripts/playoff_pregame_edge.py
 scripts/stake_sizing_backtest.py
 scripts/gate1_filtered_vs_vegas.py
 scripts/ingame/grade_ingame_vs_vegas.py
+
+# untracked 2026-07-21: stale/internal scratch that leaked $-edge language or local paths (no-edge rail)
+config/strategy_d.yaml.iter18_proposed
+scripts/int116_output.txt
+scripts/coordination_log.md

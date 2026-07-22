@@ -237,7 +237,7 @@ CourtVision's signal architecture follows the Renaissance Technologies research 
 | **CVaR risk management** | Tail-risk-aware Kelly sizing (Conditional Value at Risk) | Rockafellar & Uryasev |
 | **Online portfolio selection** | Dynamic weight updates without full retrain | Cover (1991) |
 
-See [_vault_legacy_archive/Research/Renaissance Methodology.md](../_vault_legacy_archive/Research/Renaissance%20Methodology.md) for full treatment.
+The full treatment lives in the local vault archive (not in the public clone).
 
 ---
 

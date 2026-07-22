@@ -237,7 +237,7 @@ python scripts/build_officials_per_team_date.py  # includes scheme builder
 
 Data inputs required: `data/tracking/*` (CV tracking), `data/nba/*` (gamelogs), `data/cache/profiles/PLAYER_REPORTS.json`, `data/cache/profiles/TEAM_REPORTS.json`.
 
-The per-player vault notes (1,249 `.md` files) are gitignored — regenerable from `PLAYER_REPORTS.json`. See [vault/Intelligence/Players_Index.md](../vault/Intelligence/Players_Index.md) for the full browsable index (grouped by team and by archetype) in the local Obsidian vault.
+The per-player vault notes (1,249 `.md` files) are gitignored -- regenerable from `PLAYER_REPORTS.json`. The full browsable index (grouped by team and by archetype, `vault/Intelligence/Players_Index.md`) lives in the local Obsidian vault, not the public clone.
 
 **Siblings:** [INTELLIGENCE.md](INTELLIGENCE.md) (80-artifact manifest + build mechanism) ·
 [MEMORY_GRAPH.md](MEMORY_GRAPH.md) (the person-free knowledge graph) ·

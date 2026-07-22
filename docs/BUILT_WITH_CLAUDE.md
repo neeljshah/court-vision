@@ -4,7 +4,7 @@
 > ship-gates.** This document explains that pipeline in depth: who plans, who writes code, how work
 > stays honest, and -- importantly -- why **the running product contains no Claude at all**.
 >
-> Navigation: [Index](INDEX.md) - [Home](../README.md) - deeper research: [AI-leverage corpus](research/ai-leverage-2026-06-16/00-README.md) - [Claude-org research](research/claude-org/01_official_best_practices.md)
+> Navigation: [Index](INDEX.md) - [Home](../README.md)
 
 ---
 
@@ -63,9 +63,8 @@ signatures, the test result, file:line refs -- never a wall of pasted code.
 - **Two standing roles** run continuously: **MEMORY** (curate durable facts) and **ORGANIZATION**
   (keep the repo + docs pristine), with a pass after every phase so quality compounds.
 
-See the deeper write-ups: [anthropic-agent-patterns](research/ai-leverage-2026-06-16/briefs/anthropic-agent-patterns.md),
-[agentic-orchestration](research/ai-leverage-2026-06-16/briefs/agentic-orchestration.md),
-[claude-skills](research/ai-leverage-2026-06-16/briefs/claude-skills.md).
+Deeper write-ups on these agent patterns (anthropic-agent-patterns, agentic-orchestration,
+claude-skills) live in the internal research corpus, not the public clone.
 
 ---
 
@@ -107,9 +106,8 @@ market-follow ROI artifact, a Q4 look-ahead leak, an L5-proxy "edge" that was re
 Building the instrument that refutes your own hype is the point. Full account:
 [JOB_EVIDENCE_PACKET](JOB_EVIDENCE_PACKET.md) - [KNOWN_LIMITATIONS](KNOWN_LIMITATIONS.md).
 
-Blueprint: [eval-gate](research/ai-leverage-2026-06-16/blueprints/eval-gate.md) -
-[calibration-scoring](research/ai-leverage-2026-06-16/briefs/calibration-scoring.md) -
-[evals-quality](research/ai-leverage-2026-06-16/briefs/evals-quality.md).
+Design blueprints for the eval gate, calibration-scoring, and evals-quality live in the
+internal research corpus.
 
 ---
 
@@ -118,7 +116,7 @@ Blueprint: [eval-gate](research/ai-leverage-2026-06-16/blueprints/eval-gate.md) 
 - **Persistent auto-memory** -- durable facts (locked decisions + why, what shipped + its honest
   verdict, landmines, cross-session state) live in an indexed memory store, curated under a size
   cap. It is how a fresh session knows what already failed and why, instead of re-deriving it.
-  Design notes: [claude-org/03_memory_architecture](research/claude-org/03_memory_architecture.md).
+  Design notes on the memory architecture live in the internal research corpus.
 - **Hooks enforce the invariants mechanically**, not on trust. A PreToolUse hook hard-blocks
   `git push origin`, a full `pytest` run (which freezes the box), and `--force`. Other guards block
   edits to human-gated trees and block flipping a feature flag on while unattended.
@@ -143,15 +141,13 @@ settled game it updates ratings, re-fits calibration on a rolling window, widens
 search, requires cross-corpus replication, and atomically swaps in a new artifact (with
 auto-rollback on regression). It emits proposals but never touches memory, the registry, or feature
 flags directly. This is what lets the system get sharper over time without a human or an LLM in the
-loop. Blueprints: [claude-build-loop](research/ai-leverage-2026-06-16/blueprints/claude-build-loop.md) -
-[freshness-pipeline](research/ai-leverage-2026-06-16/blueprints/freshness-pipeline.md) -
-[ingame-blend](research/ai-leverage-2026-06-16/blueprints/ingame-blend.md).
+loop. Design blueprints for the build loop, freshness pipeline, and in-game blend live in the
+internal research corpus.
 
 ---
 
 ## Where to go next
-- The full AI-leverage corpus (mastery, patterns, MCP, skills, productization): [00-README](research/ai-leverage-2026-06-16/00-README.md)
-- How the eval/proving spine is wired in code: [research/project-deep-dive/06-eval-proving-spine](research/project-deep-dive/06-eval-proving-spine.md)
+- The deeper AI-leverage research corpus (patterns, MCP, skills, eval/proving-spine wiring) is internal / local-only
 - The honest results that machinery produced: [PROOFS](PROOFS.md) - [ML_MODELS](ML_MODELS.md)
 - Back to the map: [INDEX](INDEX.md)
 

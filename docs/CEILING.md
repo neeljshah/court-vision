@@ -212,8 +212,7 @@ is already running — and it already correctly caught the inflated numbers.
 
 ---
 
-*For the full signal architecture: [_vault_legacy_archive/Plans/Signal Architecture.md](../_vault_legacy_archive/Plans/Signal%20Architecture.md)*
-*For Gate 1 step-by-step: [_vault_legacy_archive/Plans/Gate 1 Validation.md](../_vault_legacy_archive/Plans/Gate%201%20Validation.md)*
+*The full signal-architecture write-up and the Gate-1 step-by-step live in the local vault archive (not in the public clone).*
 
 *Last verified: 2026-06-11*
 

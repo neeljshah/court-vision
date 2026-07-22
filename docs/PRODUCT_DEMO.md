@@ -100,13 +100,12 @@ Ask about a mechanism that was tested and found to hold NULL (`three_in_four_fat
 the oracle is required to state a null just as plainly as a confirmed effect. It cannot
 be talked into a plausible-sounding basketball belief that was never tested: an
 unregistered question type returns `NOT_SUPPORTED`, never an improvised answer. The
-knowledge behind it is fully drained across all 4 sports -- 287 mechanism hypotheses
-closed (130 confirmed incl. replications, 119 honest nulls, 29 not locally testable,
-the rest provisional/reject/partial) -- so most factual "does X matter" questions about
+knowledge behind it is fully drained across all 4 sports -- 197 mechanism hypotheses
+closed (89 confirmed, 74 honest nulls, 34 not locally testable/other) -- so most factual "does X matter" questions about
 NBA/MLB/soccer/tennis already have a row to cite.
 
 Underneath the mechanism answers sits an **effect graph** (`data/frontend/ops/effect_graph.json`,
-627 nodes / 335 edges across all 4 sports) that links every mechanism, interaction,
+555 nodes / 296 edges across all 4 sports) that links every mechanism, interaction,
 attribute, and outcome the system has ever adjudicated -- built by labeling and linking
 existing ledger rows, computing zero new statistics.
 

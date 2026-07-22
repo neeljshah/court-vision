@@ -193,4 +193,4 @@ Do not deploy capital on a system that has not passed this test.
 
 ---
 
-*See [edge-taxonomy.md](edge-taxonomy.md) for the theoretical basis of each edge. See [calibration.md](../models/calibration.md) for implementation details of probability calibration.*
+*The theoretical basis of each edge is in the internal edge-taxonomy corpus (local-only). See [calibration.md](../models/calibration.md) for implementation details of probability calibration.*

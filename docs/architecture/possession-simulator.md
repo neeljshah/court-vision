@@ -283,7 +283,7 @@ def evaluate_sgp(legs: list[BetLeg], n_paths=10_000) -> float:
     return hits / n_paths
 ```
 
-The joint probability naturally captures game-level correlation (all legs that depend on pace, opponent defense, game script fire or miss together). Compare to the book's SGP price (multiply individual leg probabilities × formulaic discount). When yours is higher: +EV SGP. See edge 20 in [edge-taxonomy.md](../research/edge-taxonomy.md).
+The joint probability naturally captures game-level correlation (all legs that depend on pace, opponent defense, game script fire or miss together). Compare to the book's SGP price (multiply individual leg probabilities x formulaic discount). When yours is higher: +EV SGP. (Edge 20 in the internal edge-taxonomy corpus, local-only.)
 
 ### How the joint matrix is built (it isn't a matrix -- it's the samples)
 

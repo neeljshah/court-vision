@@ -293,13 +293,13 @@ failing subsystem named (a stale scraper heartbeat, 8 census-drift entries), not
 decorative green.
 
 On top of the funnel sits an **answer-engine oracle**: a "what affects what" **effect
-graph** (627 nodes / 335 edges across NBA, MLB, soccer, and tennis) built entirely from
+graph** (555 nodes / 296 edges across NBA, MLB, soccer, and tennis) built entirely from
 rows the knowledge engine already adjudicated -- zero new statistics computed, only
 labeled and linked -- plus a **resolver registry** that maps every supported question
 type to exactly one deterministic source and REFUSES anything unregistered rather than
 improvising a plausible-sounding answer. The knowledge engine itself is now fully
-drained across all 4 sports: 287 mechanism hypotheses closed out (115 CONFIRMED_LOCAL, 112
-honest NULLs, 29 not locally testable) -- every "does X actually happen" question
+drained across all 4 sports: 197 mechanism hypotheses closed out (89 CONFIRMED_LOCAL, 74
+honest NULLs, 34 not locally testable/other) -- every "does X actually happen" question
 the oracle fields carries a verdict, sample size, p-value, and source file, not folklore.
 Full account: [docs/PRODUCT_DEMO.md](docs/PRODUCT_DEMO.md).
 
@@ -468,6 +468,7 @@ Solo-built (human-directed agentic pipeline). Available for senior ML / data / q
 founding-engineer roles.
 
 - **Start here:** [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md) -- the honest, audited account
+- **Resume (PDF):** [docs/assets/NeelShahResume.pdf](docs/assets/NeelShahResume.pdf)
 - **Portfolio:** [neelshahportfolio.netlify.app](https://neelshahportfolio.netlify.app)
 - **Email:** [neeljshah22@gmail.com](mailto:neeljshah22@gmail.com)
 
