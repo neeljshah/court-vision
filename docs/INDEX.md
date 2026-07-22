@@ -69,6 +69,8 @@ reprice. Follow the links to go as deep as you want at any stage.
 - [PROOFS](PROOFS.md) -- the provability index: every claim -> its runnable leak-free proof
 - [MARKET_EFFICIENCY_PROOF](MARKET_EFFICIENCY_PROOF.md) -- the full-season walk-forward showing mainlines are efficient
 - [INGAME_PROOF](INGAME_PROOF.md) -- the one measured calibration win: in-game conditioning sharpens the win-prob forecaster (calibration, not a dollar edge)
+- [CALIBRATION_DIAGRAM](CALIBRATION_DIAGRAM.md) -- reliability table + Murphy Brier decomposition (self-checked), worked on the pre-conditioning baseline
+- [EVAL_PLATFORM_MAPPING](EVAL_PLATFORM_MAPPING.md) -- the existing gates mapped to the eval primitives Braintrust/Galileo/Arize productize
 - [CEILING](CEILING.md) -- the realistic bounds on edge claims
 - [CALIBRATION_RECORD](CALIBRATION_RECORD.md) -- per-sport calibration audit
 
