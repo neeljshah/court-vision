@@ -81,6 +81,7 @@ reprice. Follow the links to go as deep as you want at any stage.
 - [evidence/agent-fleet-direction](evidence/agent-fleet-direction.md) -- directing an agent fleet under fail-closed gates (~91% agent-authored, disclosed)
 - [evidence/devig-stack](evidence/devig-stack.md) -- four devig methods from scratch; the Shin-devigged close as the honest yardstick
 - [evidence/leak-instruments](evidence/leak-instruments.md) -- the leakage-catching instruments (walk-forward guard, truncation invariance, multi-corpus gate, ship gate)
+- [evidence/cv-pipeline](evidence/cv-pipeline.md) -- broadcast video to court coordinates on a consumer GPU, with the not-demonstrated list stated
 
 ### Product / platform
 - [PREDICTOR_PLATFORM](PREDICTOR_PLATFORM.md) -- full product: thesis, scorecards, architecture

@@ -1,0 +1,193 @@
+{
+  "generated_at": "2026-07-22T19:58:00Z",
+  "batch_date": "2026-07-22",
+  "batch_hash": "6eba592d3a77",
+  "rows": [
+    {
+      "sport_market": "mlb/total_runs",
+      "checkpoint": "pregame",
+      "model": "2.9331 (CRPS)",
+      "market": "2.8808 (CRPS)",
+      "delta_ci": "-0.0523 [-0.1657, 0.0482]",
+      "n": 300,
+      "verdict": "UNDERPOWERED",
+      "src": "scripts/platformkit/benchmarks/crps_market/last_run_mlb.json"
+    },
+    {
+      "sport_market": "mlb",
+      "checkpoint": "home_margin|end_inning_3",
+      "model": "2.3943 (CRPS)",
+      "market": "2.8443 (CRPS)",
+      "delta_ci": "0.4499 [-0.0206, 1.0687]",
+      "n": 20,
+      "verdict": "UNDERPOWERED",
+      "src": "scripts/platformkit/benchmarks/crps_market/last_run_ingame_mlb.json"
+    },
+    {
+      "sport_market": "mlb",
+      "checkpoint": "home_margin|end_inning_5",
+      "model": "1.6806 (CRPS)",
+      "market": "2.5360 (CRPS)",
+      "delta_ci": "0.8555 [0.3259, 1.4888]",
+      "n": 26,
+      "verdict": "UNDERPOWERED",
+      "src": "scripts/platformkit/benchmarks/crps_market/last_run_ingame_mlb.json"
+    },
+    {
+      "sport_market": "mlb",
+      "checkpoint": "home_margin|end_inning_6",
+      "model": "1.4476 (CRPS)",
+      "market": "2.4059 (CRPS)",
+      "delta_ci": "0.9583 [0.2409, 1.8046]",
+      "n": 22,
+      "verdict": "UNDERPOWERED",
+      "src": "scripts/platformkit/benchmarks/crps_market/last_run_ingame_mlb.json"
+    },
+    {
+      "sport_market": "mlb",
+      "checkpoint": "home_margin|end_inning_7",
+      "model": "1.3449 (CRPS)",
+      "market": "2.4109 (CRPS)",
+      "delta_ci": "1.0660 [0.2656, 1.9602]",
+      "n": 21,
+      "verdict": "UNDERPOWERED",
+      "src": "scripts/platformkit/benchmarks/crps_market/last_run_ingame_mlb.json"
+    },
+    {
+      "sport_market": "mlb",
+      "checkpoint": "home_margin|end_inning_8",
+      "model": "0.4873 (CRPS)",
+      "market": "2.2813 (CRPS)",
+      "delta_ci": "1.7940 [0.8721, 3.0590]",
+      "n": 21,
+      "verdict": "UNDERPOWERED",
+      "src": "scripts/platformkit/benchmarks/crps_market/last_run_ingame_mlb.json"
+    },
+    {
+      "sport_market": "mlb",
+      "checkpoint": "total_runs|end_inning_3",
+      "model": "2.5416 (CRPS)",
+      "market": "2.6307 (CRPS)",
+      "delta_ci": "0.0891 [-0.3032, 0.5064]",
+      "n": 49,
+      "verdict": "UNDERPOWERED",
+      "src": "scripts/platformkit/benchmarks/crps_market/last_run_ingame_mlb.json"
+    },
+    {
+      "sport_market": "mlb",
+      "checkpoint": "total_runs|end_inning_5",
+      "model": "1.7340 (CRPS)",
+      "market": "1.9944 (CRPS)",
+      "delta_ci": "0.2604 [-0.0526, 0.5751]",
+      "n": 54,
+      "verdict": "UNDERPOWERED",
+      "src": "scripts/platformkit/benchmarks/crps_market/last_run_ingame_mlb.json"
+    },
+    {
+      "sport_market": "mlb",
+      "checkpoint": "total_runs|end_inning_6",
+      "model": "1.3103 (CRPS)",
+      "market": "1.9495 (CRPS)",
+      "delta_ci": "0.6392 [0.3174, 0.9632]",
+      "n": 54,
+      "verdict": "MODEL_SHARPER_PROVISIONAL",
+      "src": "scripts/platformkit/benchmarks/crps_market/last_run_ingame_mlb.json"
+    },
+    {
+      "sport_market": "mlb",
+      "checkpoint": "total_runs|end_inning_7",
+      "model": "1.0273 (CRPS)",
+      "market": "1.7600 (CRPS)",
+      "delta_ci": "0.7327 [0.4131, 1.0810]",
+      "n": 55,
+      "verdict": "MODEL_SHARPER_PROVISIONAL",
+      "src": "scripts/platformkit/benchmarks/crps_market/last_run_ingame_mlb.json"
+    },
+    {
+      "sport_market": "mlb",
+      "checkpoint": "total_runs|end_inning_8",
+      "model": "0.5117 (CRPS)",
+      "market": "1.9318 (CRPS)",
+      "delta_ci": "1.4201 [0.9659, 1.8977]",
+      "n": 49,
+      "verdict": "MODEL_SHARPER_PROVISIONAL",
+      "src": "scripts/platformkit/benchmarks/crps_market/last_run_ingame_mlb.json"
+    },
+    {
+      "sport_market": "nba",
+      "checkpoint": "end_q1",
+      "model": "0.2006 (Brier)",
+      "market": "0.1922 (Brier)",
+      "delta_ci": "-0.0084 [-0.0161, -0.0008]",
+      "n": 1592,
+      "verdict": "MARKET_SHARPER_PROVISIONAL",
+      "src": "scripts/platformkit/benchmarks/crps_market/last_run_ingame_nba_winprob_ALLGAMES_v3.json"
+    },
+    {
+      "sport_market": "nba",
+      "checkpoint": "halftime",
+      "model": "0.1677 (Brier)",
+      "market": "0.1638 (Brier)",
+      "delta_ci": "-0.0040 [-0.0098, 0.0015]",
+      "n": 1593,
+      "verdict": "UNDERPOWERED",
+      "src": "scripts/platformkit/benchmarks/crps_market/last_run_ingame_nba_winprob_ALLGAMES_v3.json"
+    },
+    {
+      "sport_market": "nba",
+      "checkpoint": "end_q3",
+      "model": "0.1233 (Brier)",
+      "market": "0.1244 (Brier)",
+      "delta_ci": "0.0011 [-0.0028, 0.0052]",
+      "n": 1593,
+      "verdict": "UNDERPOWERED",
+      "src": "scripts/platformkit/benchmarks/crps_market/last_run_ingame_nba_winprob_ALLGAMES_v3.json"
+    },
+    {
+      "sport_market": "nba",
+      "checkpoint": "q4_under5",
+      "model": "0.0938 (Brier)",
+      "market": "0.0957 (Brier)",
+      "delta_ci": "0.0019 [-0.0010, 0.0048]",
+      "n": 1593,
+      "verdict": "UNDERPOWERED",
+      "src": "scripts/platformkit/benchmarks/crps_market/last_run_ingame_nba_winprob_ALLGAMES_v3.json"
+    },
+    {
+      "sport_market": "soccer_intl/brier",
+      "checkpoint": "home_win_prob|minute_60",
+      "model": "0.2961 (Brier)",
+      "market": "0.2030 (Brier)",
+      "delta_ci": "-0.0931 [-0.1570, -0.0336]",
+      "n": 22,
+      "verdict": "UNDERPOWERED",
+      "src": "scripts/platformkit/benchmarks/crps_market/last_run_ingame_soccer.json"
+    },
+    {
+      "sport_market": "soccer_intl/brier",
+      "checkpoint": "home_win_prob|minute_75",
+      "model": "0.3719 (Brier)",
+      "market": "0.2645 (Brier)",
+      "delta_ci": "-0.1075 [-0.1885, -0.0316]",
+      "n": 17,
+      "verdict": "UNDERPOWERED",
+      "src": "scripts/platformkit/benchmarks/crps_market/last_run_ingame_soccer.json"
+    },
+    {
+      "sport_market": "nba/pregame_winprob",
+      "checkpoint": "3-fold walk-forward (mean)",
+      "model": "0.1930 (Brier, std 0.0084)",
+      "market": "no market baseline in artifact",
+      "delta_ci": "n/a",
+      "n": 1473,
+      "verdict": "NO_MARKET_COMPARISON_IN_ARTIFACT",
+      "src": "results/winprob_walk_forward_results.json"
+    }
+  ],
+  "skipped": [],
+  "honest_rejects": {
+    "count": 513,
+    "as_of": "2026-07-10",
+    "source": "scripts/platformkit/reject_ledger.py"
+  }
+}

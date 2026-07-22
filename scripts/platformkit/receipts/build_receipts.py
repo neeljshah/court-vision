@@ -7,6 +7,7 @@ root. Pure read-and-format -- no compute, no network.
 Usage:
     python -m scripts.platformkit.receipts.build_receipts
     python -m scripts.platformkit.receipts.build_receipts --check
+    python -m scripts.platformkit.receipts.build_receipts --json
 """
 from __future__ import annotations
 
@@ -21,6 +22,12 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 RECEIPTS_PATH = REPO_ROOT / "RECEIPTS.md"
 CRPS_DIR = REPO_ROOT / "scripts" / "platformkit" / "benchmarks" / "crps_market"
 RESULTS_DIR = REPO_ROOT / "results"
+RECEIPTS_JSON_PATH = REPO_ROOT / "webapp" / "public" / "receipts.json"
+
+# Static, as-of labeled -- source: `python -m scripts.platformkit.reject_ledger
+# show` per docs/JOB_EVIDENCE_PACKET.md row "The reject ledger as an honesty
+# exhibit at scale". Update the number+date together if the ledger is re-run.
+HONEST_REJECTS = {"count": 513, "as_of": "2026-07-10", "source": "scripts/platformkit/reject_ledger.py"}
 
 # ponytail: exact retracted-number tokens from .claude/rules/no-edge-claims.md;
 # extend this list if the rule file grows, no need to auto-sync it.
@@ -225,8 +232,36 @@ def validate(text: str) -> int:
     return 0
 
 
+def build_json() -> int:
+    """Emit webapp/public/receipts.json -- same rows RECEIPTS.md renders, for
+    the static /receipts page (webapp is a static export, no live backend)."""
+    rows, skipped, used_paths = collect_rows()
+    batch_hash = content_hash(used_paths)
+    today = date.today().isoformat()
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    payload = {
+        "generated_at": now,
+        "batch_date": today,
+        "batch_hash": batch_hash,
+        "rows": rows,
+        "skipped": skipped,
+        "honest_rejects": HONEST_REJECTS,
+    }
+    text = json.dumps(payload, indent=2)
+    violations = [tok for tok in BANNED_TOKENS if tok in text]
+    if violations:
+        print(f"ABORT: banned tokens present in receipts.json: {violations}", file=sys.stderr)
+        return 1
+    RECEIPTS_JSON_PATH.parent.mkdir(parents=True, exist_ok=True)
+    RECEIPTS_JSON_PATH.write_text(text, encoding="utf-8")
+    print(f"Wrote {RECEIPTS_JSON_PATH} ({len(rows)} rows, batch {batch_hash}).")
+    return 0
+
+
 def main() -> int:
     check_only = "--check" in sys.argv
+    if "--json" in sys.argv:
+        return build_json()
     if check_only and RECEIPTS_PATH.exists():
         return validate(RECEIPTS_PATH.read_text(encoding="utf-8"))
     if check_only:
