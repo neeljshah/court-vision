@@ -93,6 +93,7 @@ reprice. Follow the links to go as deep as you want at any stage.
 - [evidence/possession-simulator](evidence/possession-simulator.md) -- possession Monte Carlo whose teammate correlation emerges from mechanics, graded by state cell
 - [evidence/operations-reliability](evidence/operations-reliability.md) -- unattended systems that fail visibly: sentinels, watchdog, and the health readout that honestly reports RED
 - [evidence/knowledge-engine](evidence/knowledge-engine.md) -- sports folklore in, preregistered verdicts out: 50.4% survival over 256 testable mechanisms, nulls published
+- [evidence/execution-honesty](evidence/execution-honesty.md) -- the paper-execution stack with no path to a real order, whose audit publishes its own nulls
 - [evidence/analytical-depth](evidence/analytical-depth.md) -- the recorded-analytics inventory as evidence: 23 modules, the claims-corpus generated-vs-validated split, the Statcast base, tick microstructure, fail-closed QA coverage
 - [evidence/novel-analytics](evidence/novel-analytics.md) -- uniquely-auditable measurements: five market-microstructure/calibration analytics, each with its honest prior-art verdict (2 INCREMENTAL, 1 ALREADY_DONE, 1 N/A) and the market beating our in-game model stated in numbers
 
