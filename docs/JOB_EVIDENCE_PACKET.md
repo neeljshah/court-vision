@@ -270,7 +270,7 @@ the repo will catch each one — which is disqualifying for a no-degree candidat
 
 **Pre-outreach housekeeping (status as of 2026-06-11):**
 
-1. **the-odds-api key** — scripts that hard-code it are now in `.gitignore`. **Still a manual step:** rotate the key and move it to `.env` (`os.environ`), since prior revisions remain in git history.
+1. **the-odds-api key** — RESOLVED 2026-07-22 (user decision): the service is abandoned — the system uses its own odds feeds. No literal key exists in any tracked file (verified by git grep); the historical key remains only in old git revisions and is treated as dead. Optional 2-min step: deactivate the old key in the-odds-api account settings. This item no longer gates any launch.
 2. **Personal phone number** — both files untracked from the public repo (kept local, gitignored) as of 2026-06-07. Prior revisions remain in git history; a full history scrub is a separate, destructive step not taken here.
 3. **Public docs reconciliation** — README and PUBLIC_EVIDENCE.md front the retraction explicitly. CLAUDE.md has been reconciled with the honest numbers.
 
