@@ -15,7 +15,7 @@ profit is claimed anywhere in this document or the codebase. See
 
 ## The Core Thesis
 
-The NBA engine took ~1,470 commits to reach production quality. The key insight
+The NBA engine took ~3,206 commits to reach production quality. The key insight
 was that the hard, compounding machinery is sport-agnostic:
 
 - Walk-forward validation with assertion-level leak guards

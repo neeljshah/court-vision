@@ -90,7 +90,9 @@ This is a SUCCESS: it means the gate works and the surviving claims can be trust
 
 ### 5. Prop MAE (leak-free walk-forward, ~51k held-out player-games per stat)
 
-- PTS MAE ~4.58, REB ~1.90, AST ~1.34, FG3M ~0.88
+- PTS MAE ~4.83, REB ~1.92, AST ~1.39, FG3M ~0.89 (re-measured 2026-07-20 on the grown
+  corpus by `scripts/verify_production_mae.py`; earlier smaller-corpus figures were
+  4.58/1.90/1.34/0.88)
 
 These are competitive with published prop-model benchmarks. Small consistent under-bias
 (~-0.45 PTS). Source: `data/cache/pregame_oof.parquet`; OOF predictions are byte-identical
@@ -106,9 +108,9 @@ live results.
 
 | Retracted number | Root cause | What to say instead |
 |---|---|---|
-| **+18.38% pregame ROI** (also +15.04% flat; per-stat splits BLK +26% / STL +17%) | Market-follow grading artifact. The grader bets the market's own devigged direction, never reads the model. Priced at flat -110 fiction. Filters tuned in-sample on the same file. Model vs real closes: ~-2% unfiltered (`gate1_full_analysis.json`). | "Break-even-minus-vig vs real closes (~-2% to -5%). AST ~+4-5% is the one durable pregame edge." |
+| **+18.38% pregame ROI** (also +15.04% flat; per-stat splits BLK +26% / STL +17%) | Market-follow grading artifact. The grader bets the market's own devigged direction, never reads the model. Priced at flat -110 fiction. Filters tuned in-sample on the same file. Model vs real closes: ~-2% unfiltered (`gate1_full_analysis.json`). | "Break-even-minus-vig vs real closes (~-2% to -5%). No dollar/ROI edge is claimed -- the earlier 'AST ~+4-5% durable edge' is retracted (2026-07-21, regime-dependent)." |
 | **endQ3 in-play Brier 0.1191 "inside Pinnacle's range"** | Two features computed from Q4 data (`halftime_pace_shift`, `trailing_team_q4_usg_hhi`) let the model peek at the quarter it predicts. Cited source file actually reports 0.1354, not 0.1191. | "Leak-free walk-forward endQ3 Brier ~0.141, after removing a Q4 feature leak I found in my own pipeline." |
-| **+54.57% ROI / 78.11% hit rate on 55,073 in-play bets** | Graded against an L5 rolling-average line proxy, not real sharp closes. L5 lines are softer than Pinnacle/DK. | "L5-proxy model-quality ceiling only. Best estimate vs real lines: +15-25%. Not a tradeable result." |
+| **+54.57% ROI / 78.11% hit rate on 55,073 in-play bets** | Graded against an L5 rolling-average line proxy, not real sharp closes. L5 lines are softer than Pinnacle/DK. | "L5-proxy model-quality ceiling only. No realized-ROI estimate quoted; nothing counts until graded against real closing lines (first real CLV Oct 2026). Not a tradeable result." |
 | **+8.94pp aggregate CLV** | Circular: computed on the same model-unused, devig-direction corpus. No Pinnacle closing-line archive existed at computation time. | Do not quote a CLV figure. "Real sharp-book CLV can't be measured yet; I built the methodology that will measure it." |
 
 Root causes documented in `docs/KNOWN_LIMITATIONS.md` (retraction table). Proof artifacts

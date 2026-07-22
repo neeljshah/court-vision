@@ -18,10 +18,12 @@ project is what it *refused* to claim.
 
 Against real sportsbook closing lines, the prop models are roughly break-even-minus-vig.
 The market is efficient; the system confirms that, rather than hiding it behind inflated
-numbers. What survived adversarial self-audit: leak-free prop MAE of PTS ~4.58 / REB ~1.90
-/ AST ~1.34 / FG3M ~0.88, win-probability accuracy 70.9% / Brier 0.193, one durable
-~+4–5% signal on assists (regime-dependent, breaks in playoffs), and a broadcast-video
-CV pipeline that runs at ~$0.10–0.13 per game on a consumer GPU.
+numbers. What survived adversarial self-audit: leak-free prop MAE of PTS ~4.83 / REB ~1.92
+/ AST ~1.39 / FG3M ~0.89 (re-measured 2026-07-20 on the grown corpus; earlier smaller-corpus
+figures were 4.58/1.90/1.34/0.88), win-probability accuracy 70.9% / Brier 0.193, and a
+broadcast-video CV pipeline that runs at ~$0.10–0.13 per game on a consumer GPU. (The earlier
+"one durable ~+4–5% signal on assists" claim is RETRACTED 2026-07-21 — regime-dependent, broke
+in the playoffs; no dollar/ROI edge is claimed anywhere.)
 
 What this is **not**: a profitable betting operation, a P&L track record, or a system
 with a demonstrated edge on closing lines. The first real forward Pinnacle closing-line
@@ -99,9 +101,9 @@ ARM B writes new atlas sections into the player intelligence layer — not hallu
 summaries, but derived statistical findings with explicit REAL-vs-unknown marking, point-in-
 time-correct computation, and confound flagging.
 
-The loop is what caught and retracted the system's own inflated headline numbers. It's also
-what found the one durable edge (assists) and documented exactly why it survives and where
-it breaks. An agent loop that only ever ships is just automated overfit. The value is in
+The loop is what caught and retracted the system's own inflated headline numbers — including
+its own former "durable assists edge," retracted 2026-07-21 as regime-dependent once it broke
+in the playoffs. An agent loop that only ever ships is just automated overfit. The value is in
 the honest REJECTs.
 
 The loop architecture is domain-agnostic by design. The gate, the ledger, the hypothesis

@@ -89,7 +89,7 @@ A cell-based possession model built for the kernel/adapter split:
   worst-performing v2 buckets.
 
 Both NBA engines feed `predictor.py::to_jd()` for coherent joint-distribution sampling and
-the in-game repricing layer (see [`../domains/basketball_nba.md`](../domains/basketball_nba.md) for the full
+the in-game repricing layer (see [`../LIVE_ENGINE_V2.md`](../LIVE_ENGINE_V2.md) for the full
 predictor/repricer chain).
 
 ---

@@ -110,17 +110,18 @@ mean, so quantile (q50) models outperform squared-error / Huber objectives for m
 
 | Stat | MAE | R^2 |
 |------|-----|-----|
-| PTS  | 4.58 | 0.51 |
-| REB  | 1.90 | 0.38 |
-| AST  | 1.34 | 0.50 |
-| FG3M | 0.88 | 0.29 |
+| PTS  | 4.83 | 0.51 |
+| REB  | 1.92 | 0.38 |
+| AST  | 1.39 | 0.50 |
+| FG3M | 0.89 | 0.29 |
 | STL  | 0.72 | 0.18 |
 | BLK  | 0.44 | 0.16 |
 | TOV  | 0.89 | 0.22 |
 
-Source: `data/cache/pregame_oof.parquet`, `data/models/quantile_pergame_metrics.json`.
-OOF predictions are byte-identical to the calibration frame; folds have monotonically
-non-overlapping holdout windows.
+PTS/REB/AST/FG3M re-measured 2026-07-20 on the grown corpus (earlier smaller-corpus
+figures were 4.58/1.90/1.34/0.88). Source: `data/cache/pregame_oof.parquet`,
+`data/models/quantile_pergame_metrics.json`. OOF predictions are byte-identical to the
+calibration frame; folds have monotonically non-overlapping holdout windows.
 
 ### The stacking layer
 

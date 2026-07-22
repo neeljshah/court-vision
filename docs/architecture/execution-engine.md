@@ -32,7 +32,7 @@ cleared the floors and the dual gate. A below-floor candidate is `decision="no_b
 upstream and is never handed to a venue. Stakes carried into routing are unit
 counts / bankroll fractions, not dollars; the venue layer converts to a real
 order amount only under live capital, which is human-gated (below). Full math:
-[decisions](decisions.md) DEC-014..017 and [BETTING](BETTING.md).
+[decisions](../decisions.md) DEC-014..017 and [BETTING](../BETTING.md).
 
 ---
 
@@ -153,8 +153,8 @@ and API-free: `src/prediction/bet_selector.py` writes `bets_YYYYMMDD.json`
 won/lost/push from line vs actual; `src/betting/clv.py::enrich_pnl_with_clv`
 joins each settled bet to its closing snapshot and `aggregate_clv` reports the
 beat-close rate and the `clv_vs_roi_corr` honesty check. CLV is positive when you
-held a better number than the close (side-aware sign -- see [BETTING](BETTING.md)).
-Operational runbook: [EXECUTION_GUIDE](EXECUTION_GUIDE.md).
+held a better number than the close (side-aware sign -- see [BETTING](../BETTING.md)).
+Operational runbook: [EXECUTION_GUIDE](../EXECUTION_GUIDE.md).
 
 ---
 

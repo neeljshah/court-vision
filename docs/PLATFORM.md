@@ -6,7 +6,7 @@
 
 ## The Thesis
 
-The NBA system took months and 1,470 commits to reach production quality. A naive port to a second sport would cost another several months each -- because the machinery would be rebuilt from scratch every time.
+The NBA system took months and 3,206 commits to reach production quality. A naive port to a second sport would cost another several months each -- because the machinery would be rebuilt from scratch every time.
 
 The insight is that the hard, compounding work is sport-agnostic:
 

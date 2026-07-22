@@ -498,7 +498,7 @@ Prop backtest gate. Cached 24h. `stat` ∈ {pts, reb, ast, fg3m, stl, blk, tov}.
 {
   "stat": "pts",
   "n": 1240,
-  "mae": 4.58,
+  "mae": 4.83,
   "hit_rate_over": 0.512,
   "roi_at_break_even_odds": -0.020,
   "passed_gate": false,

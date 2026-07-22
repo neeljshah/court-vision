@@ -17,14 +17,17 @@ retracted — see `docs/JOB_EVIDENCE_PACKET.md §3-4` for root causes.
 
 | Stat | MAE | R² | Architecture |
 |------|-----|-----|--------------|
-| PTS | **4.65** | 0.51 | sqrt+Huber XGB/LGB blend + 5-seed MLP, NNLS-stacked |
-| REB | **1.90** | 0.38 | LGB q50 (log1p) |
-| AST | **1.37** | 0.50 | log1p XGB+LGB + multitask MLP, NNLS-stacked |
+| PTS | **4.83** | 0.51 | sqrt+Huber XGB/LGB blend + 5-seed MLP, NNLS-stacked |
+| REB | **1.92** | 0.38 | LGB q50 (log1p) |
+| AST | **1.39** | 0.50 | log1p XGB+LGB + multitask MLP, NNLS-stacked |
 | FG3M | **0.89** | 0.29 | XGB q50 (log1p) |
 | STL | **0.72** | 0.18 | XGB q50 (log1p) |
 | BLK | **0.44** | 0.16 | XGB q50 (log1p) |
 | TOV | **0.89** | 0.22 | XGB q50 (log1p) |
 
+PTS/REB/AST/FG3M re-measured 2026-07-20 on the grown corpus by
+`scripts/verify_production_mae.py` (earlier smaller-corpus figures were
+4.58/1.90/1.34/0.88; the 4.65/1.37 intermediate readings are superseded).
 Source: `data/models/quantile_pergame_metrics.json`, `data/cache/pregame_oof.parquet`
 (OOF predictions byte-identical to calibration frame; folds have monotonic non-overlapping
 holdout windows; N=99,818 player-game rows in training universe).
@@ -59,8 +62,9 @@ carry-forward baseline is ~26%, validated walk-forward.
 
 Against real DraftKings/FanDuel/MGM **closing** lines: model is roughly
 break-even-minus-vig overall (~-2% unfiltered from `gate1_full_analysis.json`).
-One genuine exception: **AST ~+4–5% ROI**, positive on three independent line
-corpora, book-robust but regime-dependent (breaks in playoffs).
+No dollar/ROI edge is claimed. (An earlier "AST ~+4–5% ROI" exception is
+**RETRACTED 2026-07-21** — it was regime-dependent, broke in the playoffs, and
+under the no-edge-claims rail no dollar/ROI edge is claimed anywhere.)
 The market is efficient on closing lines; that is the honest, sophisticated finding.
 
 ---
@@ -464,16 +468,16 @@ note: the fix is to *inflate the interval*, not to swap in a NegBinom.
 - a **quarantine list** (`quarantine_state.json`) that can null out a stat the
   monitoring loop has flagged.
 
-> **Honesty rail.** Per-stat OOS MAE (leak-free walk-forward, ~51k held-out
-> player-games), the figures published in the evidence packet: PTS ~4.65,
-> REB ~1.90, AST ~1.37, FG3M ~0.89, with a small consistent under-bias
-> (~-0.45 PTS); STL/BLK/TOV are modeled on the same footing (see the per-stat
-> pregame-MAE table earlier in this doc; they are not separately published in
-> the evidence packet, so no standalone figure is asserted here). These
-> are accuracy/sharpness numbers competitive with published prop benchmarks -
-> **not** an ROI or beat-the-close claim. Against real closing lines the prop
-> book is roughly break-even-minus-vig; assists is the one small, durable,
-> regime-dependent exception and breaks in the playoffs.
+> **Honesty rail.** Per-stat OOS MAE (leak-free walk-forward), the figures published
+> in the evidence packet: PTS ~4.83, REB ~1.92, AST ~1.39, FG3M ~0.89 (re-measured
+> 2026-07-20 on the grown corpus; earlier smaller-corpus figures were 4.58/1.90/1.34/0.88),
+> with a small consistent under-bias (~-0.45 PTS); STL/BLK/TOV are modeled on the same
+> footing (see the per-stat pregame-MAE table earlier in this doc; they are not
+> separately published in the evidence packet, so no standalone figure is asserted
+> here). These are accuracy/sharpness numbers competitive with published prop
+> benchmarks - **not** an ROI or beat-the-close claim. Against real closing lines the
+> prop book is roughly break-even-minus-vig; no dollar/ROI edge is claimed (an earlier
+> "durable assists exception" is RETRACTED 2026-07-21 as regime-dependent).
 
 ---
 

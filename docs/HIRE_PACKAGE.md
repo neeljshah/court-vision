@@ -38,8 +38,9 @@ not black-box wrappers:
 documented, not hidden. CV is the engineering lineage, not a claimed predictive moat.)*
 
 ### ML modeling + a converged 4-sport predictor
-- Leak-free walk-forward prop models (PTS MAE ~4.58, REB ~1.90, AST ~1.34, FG3M ~0.88 on ~51k
-  held-out player-games), competitive with published benchmarks.
+- Leak-free walk-forward prop models (PTS MAE ~4.83, REB ~1.92, AST ~1.39, FG3M ~0.89,
+  re-measured 2026-07-20 on the grown corpus; earlier smaller-corpus figures were
+  4.58/1.90/1.34/0.88), competitive with published benchmarks.
 - A possession-level **Monte Carlo simulator** where teammate scoring competes for a shared pie
   -- the correct negative teammate correlation EMERGES from the mechanics instead of a
   hand-tuned matrix.

@@ -217,7 +217,7 @@ src/features/feature_engineering.py
 Model Stack  (see docs/ML_MODELS.md for full inventory)
   ├─ Tier 1 — PREGAME
   │    ├─ 7 prop models (XGB/LGB/MLP NNLS stack, q50 primary)
-  │    │   MAE: PTS ~4.58 | REB ~1.90 | AST ~1.34 | FG3M ~0.88
+  │    │   MAE: PTS ~4.83 | REB ~1.92 | AST ~1.39 | FG3M ~0.89 (re-measured 2026-07-20; was 4.58/1.90/1.34/0.88)
   │    ├─ Win-prob: 5-way NNLS (XGBoost + logistics)
   │    │   0.709 acc / 0.193 Brier (3-fold walk-forward)
   │    └─ Game-level: total, spread, blowout, pace, first-half

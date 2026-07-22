@@ -7,10 +7,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 > **⚠️ Retraction note (2026-06-09):** earlier entries cite headline numbers
 > (+18.38% pre-game ROI, endQ3 Brier 0.119, +54% in-play ROI, +8.94pp CLV) that a
 > later self-audit **retracted** as measurement artifacts. Honest versions:
-> break-even-minus-vig vs real closes (assists ~+4–5% the one durable edge),
-> leak-free endQ3 Brier ~0.141, and the +54% is an L5-proxy ceiling — not realized
-> edge. These historical entries are kept as an honest record of what was claimed
-> when. Full account: [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md).
+> break-even-minus-vig vs real closes (no dollar/ROI edge is claimed; the "assists
+> ~+4–5% durable edge" cited in historical entries below was itself RETRACTED
+> 2026-07-21 as regime-dependent), leak-free endQ3 Brier ~0.141, and the +54% is an
+> L5-proxy ceiling — not realized edge. These historical entries are kept as an honest
+> record of what was claimed when. Full account: [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md).
 
 ## [0.18.0] - 2026-06 — Multi-sport platform direction + in-game projector + self-improving loop
 
@@ -28,7 +29,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Validated (honest discipline)
 - Markets are efficient: pregame spread/total CLV explains 0.13%/0.29% of line movement; correlation with outcome 0.001.
-- AST ~+4–5% ROI remains the one durable edge (regular season only; breaks in playoffs — do not bet AST in playoffs).
+- Every candidate edge was ultimately rejected or retracted by the gates; the strongest (assists ~+4-5% ROI) was RETRACTED 2026-07-21 as regime-dependent. No ROI/dollar edge is claimed anywhere.
 - In-game win-prob Brier 0.34–0.40 (Q1–Q3): coin-flip territory — no in-game edge on current architecture.
 - Zero real money placed; first real CLV reading October 2026.
 
@@ -36,6 +37,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - +18.38% pre-game ROI: market-follow grading artifact
 - endQ3 Brier 0.119: Q4 data leak; honest ~0.141
 - +54% in-play ROI: L5-proxy ceiling, not realized edge
+- assists ~+4-5% ROI "durable edge": regime-dependent (broke in playoffs); retracted 2026-07-21
 
 ## [Unreleased]
 
@@ -71,7 +73,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - **Calibration honesty check**: predicted-EV deciles map ±5% to realized return (decile 1: −0.890 pred / −0.884 real; decile 9: +0.799 pred / +0.794 real).
 
 ### Caveats
-- The +54.57% ROI uses an **L5 line proxy**, not real Pinnacle closing lines. Real-money ROI estimate: **+15–25%**, materially lower. The +54% is a model-quality ceiling, not a deployment forecast. First real closing-line CLV reading begins October 2026.
+- The +54.57% ROI uses an **L5 line proxy**, not real Pinnacle closing lines. It is a model-quality ceiling, not a deployment forecast, and no realized-ROI estimate is quoted — nothing counts until it is graded against real closing lines. First real closing-line CLV reading begins October 2026.
 
 ### Verified
 - 63/63 in-play tests pass (shadow logger, settlement, snapshot replay, calibration, daily ROI, decision engine gates).

@@ -219,9 +219,9 @@ on disk). Likewise, per-game shot charts are cached per game
 | File | Model | Key Metric |
 |------|-------|------------|
 | `win_probability.pkl` | Pre-game win probability (5-way NNLS stack) | 0.7094 acc / 0.193 Brier (WF); 0.717 / 0.188 (single-split) |
-| `props_pts.json` | Points prop model (sqrt+Huber blend) | MAE 4.62 (walk-forward) |
-| `props_reb.json` | Rebounds prop model (LGB-q50) | MAE 1.90 (walk-forward) |
-| `props_ast.json` | Assists prop model (multitask MLP) | MAE 1.36 (walk-forward) |
+| `props_pts.json` | Points prop model (sqrt+Huber blend) | MAE 4.83 (WF, re-measured 2026-07-20) |
+| `props_reb.json` | Rebounds prop model (LGB-q50) | MAE 1.92 (WF, re-measured 2026-07-20) |
+| `props_ast.json` | Assists prop model (multitask MLP) | MAE 1.39 (WF, re-measured 2026-07-20) |
 | `props_fg3m.json` | 3-pointers made prop model (XGB-q50) | MAE 0.89 (walk-forward) |
 | `props_stl.json` | Steals prop model (XGB-q50) | MAE 0.72 (walk-forward) |
 | `props_blk.json` | Blocks prop model (XGB-q50) | MAE 0.44 (walk-forward, -16% session win) |

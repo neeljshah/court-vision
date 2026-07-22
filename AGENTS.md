@@ -30,9 +30,9 @@ Stack: YOLOv8n → SIFT homography → Kalman+Hungarian → OSNet re-ID 512-dim 
 ## Honest numbers (leak-free, retracted headlines documented)
 
 - **CV pipeline:** broadcast video → court coordinates at **~$0.10/game** on a consumer RTX 4060
-- **Prop MAE:** PTS ~4.58 / REB ~1.90 / AST ~1.34 / FG3M ~0.88 (walk-forward, ~51K held-out rows)
+- **Prop MAE:** PTS ~4.83 / REB ~1.92 / AST ~1.39 / FG3M ~0.89 (walk-forward, re-measured 2026-07-20 on the grown corpus; earlier smaller-corpus figures were 4.58/1.90/1.34/0.88)
 - **Win-prob:** 0.709 accuracy / 0.193 Brier (walk-forward, leak-free)
-- **Betting vs real closes:** market is efficient — break-even-minus-vig overall; AST ~+4–5% is the one durable edge (breaks in playoffs)
+- **Betting vs real closes:** market is efficient — break-even-minus-vig overall; no dollar/ROI edge is claimed (the earlier "AST ~+4–5%" durable-edge claim is RETRACTED 2026-07-21 — regime-dependent, broke in playoffs)
 - **In-play backtest 78%/+54%** is an L5-proxy ceiling, not realized edge; first real CLV October 2026; zero real money placed
 
 **Retracted numbers — do not repeat as current wins:**

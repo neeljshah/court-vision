@@ -336,10 +336,10 @@ win-probability inputs.
 |---|---|---|
 | Overall ROI vs real closing lines | ~-2% (break-even-minus-vig) | `gate1_full_analysis.json` |
 | AST win-prob signal vs Elo | REJECTED (Brier delta -1.4e-5, DM p=0.78) | `docs/JOB_EVIDENCE_PACKET.md`, 2026-06-27 re-test |
-| Prop MAE -- PTS | ~4.58 | `data/cache/pregame_oof.parquet`, ~51K held-out player-games |
-| Prop MAE -- REB | ~1.90 | Same |
-| Prop MAE -- AST | ~1.34 | Same |
-| Prop MAE -- FG3M | ~0.88 | Same |
+| Prop MAE -- PTS | ~4.83 | `data/cache/pregame_oof.parquet`; re-measured 2026-07-20 on grown corpus (was 4.58) |
+| Prop MAE -- REB | ~1.92 | Same (was 1.90) |
+| Prop MAE -- AST | ~1.39 | Same (was 1.34) |
+| Prop MAE -- FG3M | ~0.89 | Same (was 0.88) |
 | Win-prob walk-forward accuracy | 0.709 | `winprob_walk_forward_results.json` |
 | Win-prob walk-forward Brier | 0.193 | Same |
 | endQ3 Brier (leak-free) | ~0.141 | After removing two Q4-derived features |
