@@ -66,22 +66,26 @@ beat the line. The ceiling is structural, not an implementation gap.
 
 ## Current Model State (2026-06-11)
 
-### Player Prop Models — Leak-Free Walk-Forward MAE
+### Player Prop Models -- Leak-Free Production-Holdout MAE
 
-Walk-forward temporal CV, ~51K held-out player-games/stat. Source: `data/cache/pregame_oof.parquet`.
+20,354-row chronological holdout (last 20% by date), production inference path.
+Source: `scripts/verify_production_mae.py`, re-measured 2026-07-20.
 
 | Stat | MAE | Notes |
 |------|-----|-------|
-| PTS  | **4.83** | Small ~-0.45 under-bias; CV lift unproven (SHAP=0) |
+| PTS  | **4.83** | CV lift unproven (SHAP=0) |
 | REB  | **1.92** | Solid on role players |
 | AST  | **1.39** | Strong MAE; candidate edge RETRACTED 2026-07-21 (regime-dependent; no ROI edge claimed) |
 | FG3M | **0.89** | Needs spatial closeout speed to break ceiling |
-| TOV  | 0.89 | Marginal — use selectively |
-| STL  | 0.72 | Near break-even — filter hard |
-| BLK  | 0.44 | -16% session win; high variance |
+| TOV  | 0.89 | Marginal -- use selectively |
+| STL  | 0.71 | Near break-even -- filter hard |
+| BLK  | 0.44 | High variance |
 
-> These are competitive with published prop-model benchmarks. **This is the honest core accuracy
-> claim — lead with it.** Do not quote the stale 4.62/1.36 figures from earlier runs.
+> Competitive with published prop-model benchmarks. **This is the honest core accuracy
+> claim -- lead with it.** The separate walk-forward OOF measurement (~51K rows/stat,
+> `data/cache/pregame_oof.parquet`) reads PTS 4.58 / BLK 0.515 and carries the ~-0.45
+> PTS under-bias; quote it only under that OOF label. Do not quote the stale 4.62/1.36
+> figures from earlier runs.
 
 ### Win-Probability Model (5-way NNLS stack)
 
@@ -124,15 +128,18 @@ inexhaustible — the ceiling just needs to be attacked at the right frontier.
 
 ### Prop Ceilings (with full signal architecture)
 
+Current MAE = the 20,354-row production-holdout table above
+(`scripts/verify_production_mae.py`, 2026-07-20).
+
 | Stat | Current MAE | CV lift (est) | Ceiling MAE | Key signal unlock |
 |------|-------------|---------------|-------------|------------------|
-| PTS  | 4.83 | -0.15 to -0.25 | 4.58–4.68 | defender_distance, minutes model (requires 80 CV games + retrain) |
-| REB  | 1.92 | -0.08 to -0.12 | 1.80–1.84 | CV positioning, box-out detection |
-| AST  | 1.39 | -0.06 to -0.10 | 1.29–1.33 | CV spacing, drive kickout rate |
-| FG3M | 0.89 | -0.05 to -0.08 | 0.81–0.84 | closeout speed, catch-vs-pull-up |
-| BLK  | 0.44 | -0.02 to -0.04 | 0.40–0.42 | rim protection positioning |
-| TOV  | 0.89 | -0.04 to -0.07 | 0.82–0.85 | CV pressure at handoff |
-| STL  | 0.72 | -0.03 to -0.05 | 0.67–0.69 | passing lane activity |
+| PTS  | 4.83 | -0.15 to -0.25 | 4.58-4.68 | defender_distance, minutes model (requires 80 CV games + retrain) |
+| REB  | 1.92 | -0.08 to -0.12 | 1.80-1.84 | CV positioning, box-out detection |
+| AST  | 1.39 | -0.06 to -0.10 | 1.29-1.33 | CV spacing, drive kickout rate |
+| FG3M | 0.89 | -0.05 to -0.08 | 0.81-0.84 | closeout speed, catch-vs-pull-up |
+| BLK  | 0.44 | -0.02 to -0.04 | 0.40-0.42 | rim protection positioning |
+| TOV  | 0.89 | -0.04 to -0.07 | 0.82-0.85 | CV pressure at handoff |
+| STL  | 0.71 | -0.03 to -0.05 | 0.66-0.68 | passing lane activity |
 
 *CV lift estimates are conditional on 80-game gate clearing AND SHAP confirming non-zero lift
 in retrain. Current SHAP = 0 — these are the ceiling, not the current state.*
@@ -148,10 +155,11 @@ in retrain. Current SHAP = 0 — these are the ceiling, not the current state.*
   correctly REJECTS on the current frontier — that is the correct behavior.
 - Not a claim of any real-money edge. Zero real money placed, by design.
 
-**The honest current position:** 7 prop models with walk-forward MAE locked in
-(PTS 4.83 / REB 1.92 / AST 1.39 / FG3M 0.89, re-measured 2026-07-20), win-prob at 0.709 acc / 0.193 Brier (WF),
-market efficient on closing-line props (AST edge RETRACTED 2026-07-21 as regime-dependent;
-no ROI edge claimed), Gate 1 pending (Oct 2026).
+**The honest current position:** 7 prop models with production-holdout MAE locked in
+(PTS 4.83 / REB 1.92 / AST 1.39 / FG3M 0.89; 20,354-row chronological holdout,
+`scripts/verify_production_mae.py`, re-measured 2026-07-20), win-prob at 0.709 acc /
+0.193 Brier (WF), market efficient on closing-line props (AST edge RETRACTED 2026-07-21
+as regime-dependent; no ROI edge claimed), Gate 1 pending (Oct 2026).
 
 ---
 

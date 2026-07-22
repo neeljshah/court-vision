@@ -60,12 +60,12 @@ Fixture rows (graded): 120 [model-in-corpus]
 
 Conditioning the SAME pregame intelligence prior on the realized mid-game state sharpens the win-prob forecaster (lower Brier = sharper). FORECASTER QUALITY / calibration, NOT a $ edge -- a live book also sees the score, so no DM-vs-close applies and edge_claimed stays False. SCOPING: real-PRIVATE-corpus OOS numbers; on the committed SYNTHETIC fixture the NBA row prints no-improvement (a synthetic-anchor artifact, not a refutation). Reproduced by scripts/platformkit/proof_<sport>/ingame_accuracy.py, rolled up in scripts/platformkit/ingame_scoreboard.py.
 
-| sport | checkpoint | static Brier | conditional Brier | gain | source | corpus scope |
-|-------|-----------|--------------|-------------------|------|--------|--------------|
-| NBA | end Q1/Q2/Q3 | 0.209 | 0.159 | -0.050 | [model in-corpus, real-corpus] | real-corpus OOS = the win; committed fixture prints no-improvement (synthetic-anchor) |
-| MLB | after inning 3/5/7 | 0.241 | 0.126 | -0.115 | [model in-corpus, real-corpus] | real-corpus OOS; reproduces on the committed fixture |
+| sport | checkpoint | static Brier | score-only Brier (rating-blind) | conditional Brier | gain (model-prior share) | source | corpus scope |
+|-------|-----------|--------------|--------------------------------|-------------------|--------------------------|--------|--------------|
+| NBA | end Q1/Q2/Q3 | 0.209 | 0.172 | 0.159 | -0.050 (prior adds -0.014, ~27%) | [model in-corpus, real-corpus] | real-corpus OOS = the win; committed fixture prints no-improvement (synthetic-anchor) |
+| MLB | after inning 3/5/7 | 0.241 | 0.128 | 0.126 | -0.115 (prior adds -0.001, ~1%) | [model in-corpus, real-corpus] | real-corpus OOS; reproduces on the committed fixture |
 
-MLB/Soccer/Tennis in-game wins reproduce on the committed fixture; the NBA win is real-corpus-only (VALIDATION_PENDING on a fresh clone). The sharpest forecaster FUSES the pregame rating prior with the realized state -- not either alone. No $ edge; edge_claimed = False.
+MLB/Soccer/Tennis in-game wins reproduce on the committed fixture; the NBA win is real-corpus-only (VALIDATION_PENDING on a fresh clone). Honest attribution: most of the lift is conditioning on the realized score itself -- a rating-blind score-only arm already reaches 0.172 (NBA) / 0.128 (MLB). In NBA the pregame rating prior still adds a measured -0.014 Brier over score-only; in MLB the prior is washed out by mid-game (-0.001) and the realized state carries essentially the whole gain. Full three-arm table: docs/INGAME_PROOF.md section 2a. No $ edge; edge_claimed = False.
 
 ## 3a. Per-sport calibration record (consolidated, vs the devigged close)
 
@@ -141,7 +141,8 @@ tennis — for cross-sport simplicity). This is the honest cost of the one-objec
 not hidden.
 
 **In-game static -> conditional framing (repeat, for the 2026-07 record):** the one measured
-calibration win stays the fusion of the pregame prior with realized mid-game state (section 3);
+calibration win stays in-game state conditioning (section 3), with the model prior's marginal
+share quantified there (NBA -0.014, MLB -0.001 vs a rating-blind score-only arm);
 nothing above changes that. **WTA calibration:** the live temperature recalibrator
 (`proof_tennis/wta_temp_live.py`, T=1.36, holdout ECE 0.045 -> 0.019) is a calibration fix, not
 a market-vs-close row — it does not appear in section 3a because WTA has no comparable closing-

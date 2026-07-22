@@ -106,7 +106,7 @@ mean, so quantile (q50) models outperform squared-error / Huber objectives for m
 | BLK  | XGB q50 (log1p) | Biggest single-stat loop gain (-16% MAE) |
 | TOV  | XGB q50 (log1p) | log1p reduces impact of outlier games |
 
-### Honest walk-forward metrics (356,678 held-out rows)
+### Honest holdout metrics (20,354-row production-model chronological holdout)
 
 | Stat | MAE | R^2 |
 |------|-----|-----|
@@ -114,14 +114,18 @@ mean, so quantile (q50) models outperform squared-error / Huber objectives for m
 | REB  | 1.92 | 0.38 |
 | AST  | 1.39 | 0.50 |
 | FG3M | 0.89 | 0.29 |
-| STL  | 0.72 | 0.18 |
+| STL  | 0.71 | 0.18 |
 | BLK  | 0.44 | 0.16 |
 | TOV  | 0.89 | 0.22 |
 
-PTS/REB/AST/FG3M re-measured 2026-07-20 on the grown corpus (earlier smaller-corpus
-figures were 4.58/1.90/1.34/0.88). Source: `data/cache/pregame_oof.parquet`,
-`data/models/quantile_pergame_metrics.json`. OOF predictions are byte-identical to the
-calibration frame; folds have monotonically non-overlapping holdout windows.
+MAE column: last-20%-by-date chronological holdout (20,354 player-game rows) scored
+through the production inference path by `scripts/verify_production_mae.py`,
+re-measured 2026-07-20 (the script fails if any stat drifts >0.02 from this table).
+R^2 + architecture: `data/models/quantile_pergame_metrics.json` (99,818 player-game
+rows in the training universe). The separate walk-forward OOF measurement (~51K
+rows/stat, `data/cache/pregame_oof.parquet`, OOF byte-identical to the calibration
+frame) reads PTS 4.58 / REB 1.90 / AST 1.34 / FG3M 0.88 / BLK 0.515 -- quote it only
+under that OOF label; full split in `docs/JOB_EVIDENCE_PACKET.md`.
 
 ### The stacking layer
 

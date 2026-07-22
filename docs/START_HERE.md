@@ -158,7 +158,7 @@ python scripts/batch_season.py --season 2025-26
 
 | Metric | Value | Source |
 |--------|-------|--------|
-| Prop MAE @ q50 (leak-free WF, ~51K held-out/stat) | PTS ~4.65 · REB ~1.90 · AST ~1.37 · FG3M ~0.88 | `data/models/quantile_pergame_metrics.json` |
+| Prop MAE @ q50 (leak-free, 20,354-row production-model chronological holdout) | PTS ~4.83 / REB ~1.92 / AST ~1.39 / FG3M ~0.89 | `scripts/verify_production_mae.py` (re-measured 2026-07-20) |
 | Win-prob accuracy / Brier (3-fold WF) | 0.709 / 0.188 | `data/models/win_prob_metrics.json` |
 | In-play endQ3 MAE lift vs pregame | ~46% pooled (~26% over naive carry-forward, WF) | leak-clean residual heads |
 | In-play endQ3 Brier (leak-free) | ~0.141 | after removing a Q4 feature leak (caught in self-audit) |

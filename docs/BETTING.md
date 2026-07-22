@@ -336,7 +336,7 @@ win-probability inputs.
 |---|---|---|
 | Overall ROI vs real closing lines | ~-2% (break-even-minus-vig) | `gate1_full_analysis.json` |
 | AST win-prob signal vs Elo | REJECTED (Brier delta -1.4e-5, DM p=0.78) | `docs/JOB_EVIDENCE_PACKET.md`, 2026-06-27 re-test |
-| Prop MAE -- PTS | ~4.83 | `data/cache/pregame_oof.parquet`; re-measured 2026-07-20 on grown corpus (was 4.58) |
+| Prop MAE -- PTS | ~4.83 | `scripts/verify_production_mae.py` (20,354-row chronological holdout, 2026-07-20; OOF measurement 4.58/1.90/1.34/0.88 lives in `pregame_oof.parquet`) |
 | Prop MAE -- REB | ~1.92 | Same (was 1.90) |
 | Prop MAE -- AST | ~1.39 | Same (was 1.34) |
 | Prop MAE -- FG3M | ~0.89 | Same (was 0.88) |

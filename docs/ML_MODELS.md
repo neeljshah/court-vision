@@ -13,24 +13,26 @@ All metrics below are **leak-free walk-forward** unless noted otherwise.
 The inflated +18.38% ROI, endQ3 Brier 0.119, and +54% in-play ROI figures have been
 retracted — see `docs/JOB_EVIDENCE_PACKET.md §3-4` for root causes.
 
-### Prop Model MAE (pregame, walk-forward, ~51k held-out player-games)
+### Prop Model MAE (pregame, 20,354-row production-model chronological holdout)
 
-| Stat | MAE | R² | Architecture |
+| Stat | MAE | R^2 | Architecture |
 |------|-----|-----|--------------|
 | PTS | **4.83** | 0.51 | sqrt+Huber XGB/LGB blend + 5-seed MLP, NNLS-stacked |
 | REB | **1.92** | 0.38 | LGB q50 (log1p) |
 | AST | **1.39** | 0.50 | log1p XGB+LGB + multitask MLP, NNLS-stacked |
 | FG3M | **0.89** | 0.29 | XGB q50 (log1p) |
-| STL | **0.72** | 0.18 | XGB q50 (log1p) |
+| STL | **0.71** | 0.18 | XGB q50 (log1p) |
 | BLK | **0.44** | 0.16 | XGB q50 (log1p) |
 | TOV | **0.89** | 0.22 | XGB q50 (log1p) |
 
-PTS/REB/AST/FG3M re-measured 2026-07-20 on the grown corpus by
-`scripts/verify_production_mae.py` (earlier smaller-corpus figures were
-4.58/1.90/1.34/0.88; the 4.65/1.37 intermediate readings are superseded).
-Source: `data/models/quantile_pergame_metrics.json`, `data/cache/pregame_oof.parquet`
-(OOF predictions byte-identical to calibration frame; folds have monotonic non-overlapping
-holdout windows; N=99,818 player-game rows in training universe).
+MAE column: last-20%-by-date chronological holdout (20,354 player-game rows) scored
+through the production inference path by `scripts/verify_production_mae.py`,
+re-measured 2026-07-20 (the script fails if any stat drifts >0.02 from this table).
+R^2 + architecture: `data/models/quantile_pergame_metrics.json` (99,818 player-game
+rows in the training universe). The separate walk-forward OOF measurement (~51K
+rows/stat, `data/cache/pregame_oof.parquet`, OOF byte-identical to the calibration
+frame) reads PTS 4.58 / REB 1.90 / AST 1.34 / FG3M 0.88 / BLK 0.515 -- quote it only
+under that OOF label; full split in `docs/JOB_EVIDENCE_PACKET.md`.
 
 ### Win Probability (pregame)
 
@@ -468,16 +470,16 @@ note: the fix is to *inflate the interval*, not to swap in a NegBinom.
 - a **quarantine list** (`quarantine_state.json`) that can null out a stat the
   monitoring loop has flagged.
 
-> **Honesty rail.** Per-stat OOS MAE (leak-free walk-forward), the figures published
-> in the evidence packet: PTS ~4.83, REB ~1.92, AST ~1.39, FG3M ~0.89 (re-measured
-> 2026-07-20 on the grown corpus; earlier smaller-corpus figures were 4.58/1.90/1.34/0.88),
-> with a small consistent under-bias (~-0.45 PTS); STL/BLK/TOV are modeled on the same
-> footing (see the per-stat pregame-MAE table earlier in this doc; they are not
-> separately published in the evidence packet, so no standalone figure is asserted
-> here). These are accuracy/sharpness numbers competitive with published prop
-> benchmarks - **not** an ROI or beat-the-close claim. Against real closing lines the
-> prop book is roughly break-even-minus-vig; no dollar/ROI edge is claimed (an earlier
-> "durable assists exception" is RETRACTED 2026-07-21 as regime-dependent).
+> **Honesty rail.** Per-stat OOS MAE (20,354-row production-model chronological
+> holdout, `scripts/verify_production_mae.py`, re-measured 2026-07-20), the figures
+> published in the evidence packet: PTS ~4.83, REB ~1.92, AST ~1.39, FG3M ~0.89,
+> STL ~0.71, BLK ~0.44, TOV ~0.89. The separate walk-forward OOF measurement (~51K
+> rows/stat, `data/cache/pregame_oof.parquet`) reads PTS 4.58 / BLK 0.515 with a small
+> consistent PTS under-bias (~-0.45) and is quoted only under that OOF label. These are
+> accuracy/sharpness numbers competitive with published prop benchmarks - **not** an
+> ROI or beat-the-close claim. Against real closing lines the prop book is roughly
+> break-even-minus-vig; no dollar/ROI edge is claimed (an earlier "durable assists
+> exception" is RETRACTED 2026-07-21 as regime-dependent).
 
 ---
 

@@ -158,16 +158,24 @@ recruiter or interviewer can check them directly.
 These are the metrics that hold up. Each is paired with what the *inflated* version
 claimed, so the candidate can pre-empt the gap rather than be caught by it.
 
-### Prediction accuracy (leak-free walk-forward, ~51k held-out player-games per stat)
+### Prediction accuracy (two measurements, labeled -- never mix their numbers)
 
-- **PTS MAE ~4.83, REB ~1.92, AST ~1.39, FG3M ~0.89** (re-measured 2026-07-20 by
-  `scripts/verify_production_mae.py` on the grown corpus, 20,354 holdout rows; the earlier
-  2026-06-11 figures were PTS 4.58 / REB 1.90 / AST 1.34 / FG3M 0.88 on the smaller corpus),
-  with a small consistent under-bias (~-0.45 PTS). The original OOF measurement came from
-  `data/cache/pregame_oof.parquet` (OOF predictions byte-identical to the calibration frame's,
-  max abs diff 0.0 over 319,081 rows, monotonic non-overlapping holdout windows).
-- These are competitive with published prop-model benchmarks. **This is the honest core
-  accuracy claim — lead with it.**
+- **Production-model chronological holdout (the public, re-runnable lead number):
+  PTS MAE 4.83, REB 1.92, AST 1.39, FG3M 0.89, STL 0.71, BLK 0.44, TOV 0.89** --
+  last-20%-by-date holdout, 20,354 player-game rows, scored through the production
+  inference path by `scripts/verify_production_mae.py` (re-measured 2026-07-20; the
+  script exits nonzero if any stat drifts more than 0.02 from these claims). Every
+  public doc leads with this set under this label.
+- Walk-forward OOF measurement (internal artifact, `data/cache/pregame_oof.parquet`,
+  gitignored): PTS 4.58, REB 1.90, AST 1.34, FG3M 0.88, STL 0.71, BLK 0.515, TOV 0.88
+  on ~51K held-out player-games per stat (50,954 rows/stat), with a small consistent
+  PTS under-bias (~-0.45). OOF predictions are byte-identical to the calibration
+  frame's (max abs diff 0.0 over 319,081 rows, monotonic non-overlapping holdout
+  windows). Quote these only under this OOF label -- a 4.83/0.44 number must never be
+  paired with the ~51K/OOF citation (they are different measurements; on the OOF frame
+  BLK reads 0.515, not 0.44).
+- Both measurements are leak-free and competitive with published prop-model benchmarks.
+  **The holdout set is the honest core accuracy claim -- lead with it.**
 
 ### Win-probability model
 

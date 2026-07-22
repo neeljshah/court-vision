@@ -53,6 +53,30 @@ Section 4). They are different models measured on different targets.
 
 ---
 
+## 2a. What the model actually adds (three-arm decomposition)
+
+The static -> conditional Brier endpoints in Section 2 bundle two very different sources
+of lift, so the honest split is measured with a third arm: a RATING-BLIND baseline that
+conditions on the realized score/state alone, with no pregame model prior. Same corpora,
+same harnesses (`scripts/platformkit/proof_nba/ingame_accuracy.py`,
+`scripts/platformkit/proof_mlb/ingame_accuracy.py`; real-corpus OOS,
+VALIDATION_PENDING on a fresh clone).
+
+| Sport | static (prior only) | score-only (rating-blind) | combined (prior + state) | mechanical share | model-prior share |
+|---|---|---|---|---|---|
+| NBA | 0.209 | 0.172 | 0.159 | -0.037 of -0.050 (~73%) | -0.014 (~27%) |
+| MLB | 0.241 | 0.128 | 0.126 | -0.113 of -0.115 (~99%) | -0.001 (~1%) |
+
+Read it plainly: most of the Brier lift is the scoreboard itself -- anyone watching the
+game, including a live book, gets the mechanical share for free. The model's own pregame
+rating prior adds the last ~0.014 Brier in NBA -- a real, measured contribution over a
+score-only forecaster -- and is essentially washed out by mid-game in MLB (~0.001). The
+0.209 -> 0.159 / 0.241 -> 0.126 endpoints are true, but the full delta is never presented
+as model skill: the model-prior column is the part that is ours. Calibration only;
+edge_claimed = False.
+
+---
+
 ## 3. How it's validated (the harness is adversarial to its author)
 
 The conditioning win is only meaningful because the gate around it is built to refute,
@@ -134,6 +158,10 @@ have.
   The measured Brier improvement is forecaster sharpness on a real OOS corpus, not a
   demonstrated ability to beat a live in-game price. No DM-vs-close test applies to an
   in-game number, and none is claimed.
+- **Most of the Brier lift is mechanical too.** The three-arm decomposition (Section 2a)
+  attributes ~73% of the NBA lift and ~99% of the MLB lift to conditioning on the
+  realized score alone; the model's pregame prior contributes the remaining ~0.014 (NBA)
+  / ~0.001 (MLB). The prior's contribution is stated at that size and never larger.
 - **Most of the ~46% endQ3 MAE lift is mechanical.** Three of four quarters of box score
   are already observed by end of Q3. The learned-head value-add over a naive carry-forward
   baseline is the ~26% figure -- that is the one to lead with.

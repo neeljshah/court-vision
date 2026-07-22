@@ -54,17 +54,20 @@ produce.
 
 ### 3 · MODELS — *the honest core accuracy claim*
 
-- 7 prop heads (q10/q50/q90), leak-free walk-forward MAE on **~51K held-out player-games/stat**:
-  **PTS ~4.83 / REB ~1.92 / AST ~1.39 / FG3M ~0.89** (small ~−0.45 PTS under-bias;
-  re-measured 2026-07-20 on the grown corpus, 20,354 holdout rows).
+- 7 prop heads (q10/q50/q90), leak-free MAE on a **20,354-row production-model
+  chronological holdout** (last 20% by date, production inference path; re-measured
+  2026-07-20 by `scripts/verify_production_mae.py`, which fail-closes on >0.02 drift):
+  **PTS ~4.83 / REB ~1.92 / AST ~1.39 / FG3M ~0.89**.
   Competitive with published benchmarks. **Lead with this.**
 - Win-prob 5-way NNLS stack: **0.709 acc / 0.193 Brier** (3-fold WF).
 - In-play endQ3 residual heads cut MAE ~46% vs pregame (mostly mechanical; **~26% over a naive
   carry-forward baseline**, WF-validated, leak-clean).
-- **The one measured calibration win: in-game conditioning** — fusing the pregame prior with
-  realized mid-game state sharpens win-prob calibration **Brier 0.209 → 0.159 (NBA), 0.241 → 0.126
-  (MLB)**, real-corpus OOS, `edge_claimed=False` (a live book sees the score too).
-  Full receipts: [INGAME_PROOF.md](INGAME_PROOF.md).
+- **The one measured calibration win: in-game conditioning** -- conditioning on realized
+  mid-game state sharpens win-prob calibration **Brier 0.209 -> 0.159 (NBA), 0.241 -> 0.126
+  (MLB)**, real-corpus OOS, `edge_claimed=False` (a live book sees the score too). Decomposed
+  honestly: a rating-blind score-only baseline already reaches 0.172 (NBA) / 0.128 (MLB);
+  the model's own pregame prior adds the last ~0.014 (NBA) / ~0.001 (MLB).
+  Full three-arm receipts: [INGAME_PROOF.md](INGAME_PROOF.md) section 2a.
 - *Proof:* `data/models/quantile_pergame_metrics.json`, `win_prob_metrics.json`.
 
 ### 4 · ENGINES — *production toolchain*

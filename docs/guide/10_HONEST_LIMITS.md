@@ -88,15 +88,17 @@ overfit signature, caught in real time by the gate.
 
 This is a SUCCESS: it means the gate works and the surviving claims can be trusted.
 
-### 5. Prop MAE (leak-free walk-forward, ~51k held-out player-games per stat)
+### 5. Prop MAE (leak-free, 20,354-row production-model chronological holdout)
 
-- PTS MAE ~4.83, REB ~1.92, AST ~1.39, FG3M ~0.89 (re-measured 2026-07-20 on the grown
-  corpus by `scripts/verify_production_mae.py`; earlier smaller-corpus figures were
-  4.58/1.90/1.34/0.88)
+- PTS MAE ~4.83, REB ~1.92, AST ~1.39, FG3M ~0.89 (last-20%-by-date holdout scored
+  through the production inference path by `scripts/verify_production_mae.py`,
+  re-measured 2026-07-20; the script fail-closes on >0.02 drift)
 
-These are competitive with published prop-model benchmarks. Small consistent under-bias
-(~-0.45 PTS). Source: `data/cache/pregame_oof.parquet`; OOF predictions are byte-identical
-to the calibration frame (max abs diff 0.0 over 319,081 rows).
+These are competitive with published prop-model benchmarks. The separate walk-forward
+OOF measurement (~51K rows/stat, `data/cache/pregame_oof.parquet`; OOF predictions
+byte-identical to the calibration frame, max abs diff 0.0 over 319,081 rows) reads
+PTS 4.58 / BLK 0.515 with a small consistent PTS under-bias (~-0.45) -- quote it only
+under that OOF label, never mixed with the holdout numbers above.
 
 ---
 
@@ -227,4 +229,5 @@ hype. Here is exactly what works and exactly what I have not yet validated."
 - `src/loop/gate.py` -- the ship gate (WF + permutation + ablation + FDR).
 - `src/prediction/prop_cv_split.py` -- the self-caught 0.79-vs-0.06 overfit and fix.
 - `data/cache/gate1_full_analysis.json` -- the -2.00% unfiltered vs-close result.
-- `data/cache/pregame_oof.parquet` -- the prop MAE source (byte-verified OOF predictions).
+- `data/cache/pregame_oof.parquet` -- the walk-forward OOF measurement (byte-verified
+  OOF predictions; the headline holdout MAE comes from `scripts/verify_production_mae.py`).

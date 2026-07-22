@@ -14,11 +14,12 @@ How to generate predictions from this codebase.
 
 ---
 
-## Honest Baseline (Leak-Free Walk-Forward)
+## Honest Baseline (Leak-Free Production-Model Holdout)
 
-Prop accuracy, ~51K held-out player-games, OOF predictions
-(`data/cache/pregame_oof.parquet`; re-measured 2026-07-20 by
-`scripts/verify_production_mae.py` on the grown corpus — 20,354 holdout rows):
+Prop accuracy on the 20,354-row chronological holdout (last 20% by date), scored
+through the production inference path by `scripts/verify_production_mae.py`
+(re-measured 2026-07-20; the script exits nonzero if any stat drifts >0.02 --
+run it yourself from the clone):
 
 | Stat | MAE | Model recipe |
 |---|---|---|
@@ -26,9 +27,13 @@ Prop accuracy, ~51K held-out player-games, OOF predictions
 | REB | ~1.92 | log1p LGB quantile q50 |
 | AST | ~1.39 | log1p XGB+LGB + multitask MLP, NNLS-stacked |
 | FG3M | ~0.89 | log1p XGB quantile q50 |
-| STL | ~0.72 | log1p XGB quantile q50 |
+| STL | ~0.71 | log1p XGB quantile q50 |
 | BLK | ~0.44 | log1p XGB quantile q50 |
 | TOV | ~0.89 | log1p XGB quantile q50 |
+
+(The separate walk-forward OOF measurement -- ~51K rows/stat,
+`data/cache/pregame_oof.parquet`, local-only -- reads PTS 4.58 / BLK 0.515 and is
+quoted only under that label; see `docs/JOB_EVIDENCE_PACKET.md`.)
 
 Win-probability walk-forward: **0.709 accuracy / 0.193 Brier**.
 
