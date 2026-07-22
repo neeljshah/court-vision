@@ -73,6 +73,14 @@ reprice. Follow the links to go as deep as you want at any stage.
 - [EVAL_PLATFORM_MAPPING](EVAL_PLATFORM_MAPPING.md) -- the existing gates mapped to the eval primitives Braintrust/Galileo/Arize productize
 - [CEILING](CEILING.md) -- the realistic bounds on edge claims
 - [CALIBRATION_RECORD](CALIBRATION_RECORD.md) -- per-sport calibration audit
+- [RECEIPTS](../RECEIPTS.md) -- append-only receipts ledger: every calibration number read verbatim from a machine artifact, verdicts include losses
+
+### Evidence pages (claim -> receipt -> reproduce, one per claim family)
+- [evidence/retraction-story](evidence/retraction-story.md) -- the flagship: the instruments that refuted my own headline numbers
+- [evidence/ingame-conditioning](evidence/ingame-conditioning.md) -- the one measured calibration win, market-comparison losses stated plainly
+- [evidence/agent-fleet-direction](evidence/agent-fleet-direction.md) -- directing an agent fleet under fail-closed gates (~91% agent-authored, disclosed)
+- [evidence/devig-stack](evidence/devig-stack.md) -- four devig methods from scratch; the Shin-devigged close as the honest yardstick
+- [evidence/leak-instruments](evidence/leak-instruments.md) -- the leakage-catching instruments (walk-forward guard, truncation invariance, multi-corpus gate, ship gate)
 
 ### Product / platform
 - [PREDICTOR_PLATFORM](PREDICTOR_PLATFORM.md) -- full product: thesis, scorecards, architecture
