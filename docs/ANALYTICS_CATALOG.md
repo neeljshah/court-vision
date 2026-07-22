@@ -114,11 +114,15 @@ What the intelligence layer covers, and -- critically -- which branded advanced 
 | Analytic | What it measures | Artifact | Chart | Honest caveat |
 |---|---|---|---|---|
 | Player-metric landscape | Raw input-column coverage mapped to which value-metric families are supportable | `analytics_showcase/out/player_metric_landscape.json` | `docs/img/player_metric_landscape.png` | 77,744 rows, 807 players, 3 seasons, 0% box-column missing. "Supported" means the raw inputs exist, never that a branded metric is reproduced. Box-only value index is APPROX -- **not** BPM/EPM (no RAPM target to fit). On-off is unadjusted, a biased precursor to RAPM. |
+| Box-only value index | Per-36 linear box value index, Win-Score/Berri (2006) convention, frozen weights | `analytics_showcase/out/box_value_index.json` | `docs/img/box_value_index.png` | 501/807 players over 750-min floor; weights declared once, not tuned to output. Top 10 is the expected 2023-26 MVP-tier cluster (face-valid). **NOT** RAPM/EPM/DARKO/LEBRON/BPM -- box counting stats only, blk/stl the sole defensive ingredients. Diacritic-split player ids fragment some rows (upstream join bug, unfixed). DESCRIPTIVE_ONLY. |
+| On/off net-rating differential | `net_rating_on_per48 - net_rating_off_per48` per player-season | `analytics_showcase/out/on_off_showcase.json` | `docs/img/on_off_showcase.png` | 2024-25 top Jokic +23.713 (n_ranked 353, median +0.195); 2025-26 top Wembanyama +17.043 (n_ranked 350, median +0.127). ROSTER CONFOUND on every row: not a causal impact estimate; who shares the floor is uncontrolled. Unadjusted precursor to RAPM. DESCRIPTIVE_ONLY. |
+| Aging curve (honest refusal) | Whether an age curve is buildable from the data on hand | `analytics_showcase/out/aging_curve_lite.json` | (none -- refusal) | Verdict `not_buildable`: no birthdate/age column in any `data/domains/basketball_nba/` parquet, only 3 season snapshots. Returns the refusal instead of a fabricated curve; matches the landscape audit's `aging_curve: not_supported`. |
 | Dossier completeness | Per-category fill rate across the player-report corpus | `analytics_showcase/out/dossier_completeness.json` | `docs/img/dossier_completeness.png` | 1,249 dossiers, 28 categories, median completeness 0.464. Coverage varies widely (rebounding 0.95, pace-fit 0.01) -- a completeness map, not a quality score. |
 
-For the full RAPM-family reasoning and the do-not-fake metric list, see
+For the full RAPM-family reasoning and the do-not-fake metric list, see the public evidence
+page [evidence/industry-metrics.md](evidence/industry-metrics.md), the underlying
 [research/INDUSTRY_ANALYTICS_NBA.md](../jobsearch/research/INDUSTRY_ANALYTICS_NBA.md) *(local
-only)* and the packet.
+only)*, and the packet.
 
 ---
 
