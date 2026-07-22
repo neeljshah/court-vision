@@ -9,6 +9,8 @@ the provenance trail: each dated section below is append-only and keyed to a
 content hash of the source artifacts, so re-running the generator never
 duplicates a section.
 
+**Navigate:** [Full doc map](docs/INDEX.md) - [Home](README.md) - [Evidence pages](docs/evidence/) - [Glossary](docs/GLOSSARY.md)
+
 <!-- receipts-batch: 6eba592d3a77 -->
 ## 2026-07-22 -- batch 6eba592d3a77
 _generated 2026-07-22T19:46:55Z UTC by scripts/platformkit/receipts/build_receipts.py_

@@ -54,6 +54,8 @@ never a dollar edge, ROI, or bankroll result; verdicts include losses
 the provenance trail: each dated section below is append-only and keyed to a
 content hash of the source artifacts, so re-running the generator never
 duplicates a section.
+
+**Navigate:** [Full doc map](docs/INDEX.md) - [Home](README.md) - [Evidence pages](docs/evidence/) - [Glossary](docs/GLOSSARY.md)
 """
 
 
