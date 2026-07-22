@@ -6,9 +6,11 @@ How to generate predictions from this codebase.
 > is the truth source for all numbers. This file covers HOW to run the CLIs.
 >
 > **Betting read (honest):** vs real closing lines the market is efficient —
-> break-even-minus-vig overall; AST ~+4–5% ROI is the one durable edge (breaks
-> in playoffs). The earlier "+18.38% ROI" was a market-follow grading artifact
-> (retracted). Source-of-truth JSON: `data/models/quantile_pergame_metrics.json`.
+> the model is break-even-minus-vig overall, with no verified live edge. This
+> is a calibrated predictor, not an ROI product. The earlier "+18.38% ROI" was
+> a market-follow grading artifact (retracted), and the earlier AST edge has
+> not survived as a live claim. Source-of-truth JSON:
+> `data/models/quantile_pergame_metrics.json`.
 
 ---
 
@@ -23,7 +25,7 @@ Prop accuracy, ~51K held-out player-games, OOF predictions
 | PTS | ~4.83 | sqrt + Huber XGB/LGB blend + 5-seed MLP, NNLS-stacked |
 | REB | ~1.92 | log1p LGB quantile q50 |
 | AST | ~1.39 | log1p XGB+LGB + multitask MLP, NNLS-stacked |
-| FG3M | ~0.88 | log1p XGB quantile q50 |
+| FG3M | ~0.89 | log1p XGB quantile q50 |
 | STL | ~0.72 | log1p XGB quantile q50 |
 | BLK | ~0.44 | log1p XGB quantile q50 |
 | TOV | ~0.89 | log1p XGB quantile q50 |
@@ -91,8 +93,8 @@ python scripts/compare_to_lines.py example_lines.csv --kelly --bankroll 1000
 Output: ranked by estimated EV, with Kelly-sized stake suggestions.
 
 > **Honest framing:** these are estimates. The model is approximately
-> break-even-minus-vig against real closing lines overall. AST is the one
-> signal with a documented durable edge (~+4–5% ROI, regular season only).
+> break-even-minus-vig against real closing lines overall — a calibrated
+> predictor, not a verified betting edge. No live $ edge is claimed.
 
 To normalize DraftKings or PrizePicks exports to the canonical schema first:
 
@@ -140,8 +142,12 @@ Both scripts exit 0 within tolerance, 1 with a drift report. Safe to wire
 into CI.
 
 > **Fresh-clone caveat:** `verify_winprob.py` reads a cached walk-forward
-> results file (`data/models/winprob_walk_forward_results.json`). Run
-> `scripts/winprob_walk_forward.py` first if the file does not exist.
+> results file (`data/models/winprob_walk_forward_results.json`) and falls
+> back to the committed `results/` copy on a fresh clone. Run
+> `scripts/winprob_walk_forward.py` first if neither exists.
+> `verify_production_mae.py` needs the trained `.pkl` models under
+> `data/models/` (local-only, gitignored); on a fresh clone it reports
+> "all models absent" and exits 0 — that is expected, not drift.
 
 ---
 

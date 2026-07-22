@@ -27,17 +27,16 @@ modest **+1-2%**, reported as a shading, not a windfall.
 > the graded live-line corpus is small. I report in-game as an **accuracy**
 > result and am growing the corpus before making any profit claim.
 
-## Pregame -- one durable edge, and an efficient market
+## Pregame -- an efficient market, honestly reported
 
 Against real DK/FanDuel/MGM **closing** lines, the production prop model is
-**roughly break-even-minus-vig** overall. The one stat with a **durable,
-book-robust, cross-season** edge is **assists (~+4-5% ROI, regular season)** --
-verified to be genuine selection skill (positive in both over/under directions,
-beats a blind baseline, survives on an independently-sourced book) and honestly
-bounded (it **breaks in the playoffs**; the higher in-window figures are
-regime-inflated peaks). Calibrating the other stats moves them *toward* the
-line -- which is why "calibrate everything" converges to break-even, and why I
-don't claim a broad edge.
+**roughly break-even-minus-vig** overall. The strongest candidate (assists)
+was stress-tested hard -- and ultimately **retracted (2026-07-21)**: it was
+regime-dependent (broke in the playoffs), and under the no-edge-claims rail
+no ROI edge is claimed anywhere (see
+[JOB_EVIDENCE_PACKET](JOB_EVIDENCE_PACKET.md)). Calibrating the other stats
+moves them *toward* the line -- which is why "calibrate everything" converges
+to break-even, and why I claim no edge.
 
 ## The methodology is the point
 

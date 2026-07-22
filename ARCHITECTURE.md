@@ -252,9 +252,10 @@ api/main.py  (~99 endpoints, 11 routers)
 ```
 
 **Honest market read:** against real closing lines (DK/FD/MGM), the model is
-roughly break-even-minus-vig overall. AST shows a small durable edge (~+4–5%,
-breaks in playoffs). The +18.38% ROI figure is retracted — it was a
-market-follow grading artifact (see `docs/JOB_EVIDENCE_PACKET.md §4`).
+roughly break-even-minus-vig overall. The strongest candidate (assists) was
+stress-tested then RETRACTED 2026-07-21 as regime-dependent (broke in playoffs);
+no ROI/dollar edge is claimed anywhere. The +18.38% ROI figure is likewise
+retracted — a market-follow grading artifact (see `docs/JOB_EVIDENCE_PACKET.md §4`).
 
 ---
 

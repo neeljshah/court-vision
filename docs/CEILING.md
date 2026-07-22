@@ -17,7 +17,7 @@ structure** — not a smarter model on existing features.
 
 | Tier | What unlocks it | Betting read | Intelligence read |
 |------|-----------------|--------------|-------------------|
-| **Now** (MEASURED) | Leak-free prop MAE · 80-artifact intel · agentic loop | **Break-even-minus-vig** vs real closes; **AST ~+4–5%** durable (not playoffs) | Funnel live end-to-end; CV features wired (SHAP ≈ 0 today) |
+| **Now** (MEASURED) | Leak-free prop MAE · 80-artifact intel · agentic loop | **Break-even-minus-vig** vs real closes; AST edge RETRACTED 2026-07-21 (regime-dependent; no ROI edge claimed) | Funnel live end-to-end; CV features wired (SHAP ≈ 0 today) |
 | +Pinnacle Gate 1 (Oct 2026) | First real sharp-close CLV archive | First *true* edge measurement vs sharp closes | — |
 | +80 CV games live | Spatial features actually move the model | CV moat converts plumbing → measured lift (unproven) | Per-player behavioral signal at scale |
 | +Possession sim + real SGP capture | Joint pricing on live markets | Same-game-parlay edge (if any) becomes measurable | Full-distribution game understanding |
@@ -26,8 +26,9 @@ structure** — not a smarter model on existing features.
 **Important caveats — read before quoting any number:**
 
 - The honest **Now** read: vs real DK/FD/MGM/Pinnacle closing lines the market is efficient —
-  break-even-minus-vig overall, with **assists ~+4–5% ROI** the one durable, book-robust edge
-  (breaks in playoffs; size conservative).
+  break-even-minus-vig overall. The strongest candidate (assists) was stress-tested then
+  **RETRACTED (2026-07-21) as regime-dependent** (broke in playoffs); no ROI/dollar edge is
+  claimed anywhere. Honest rejects are the result.
 - The **+18.38% / +8.94pp CLV** figures are retracted as market-follow grading artifacts.
   See [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) and [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md).
 - The forward tiers are **directional headroom, not forecasts.** Real sharp-close CLV cannot be
@@ -73,7 +74,7 @@ Walk-forward temporal CV, ~51K held-out player-games/stat. Source: `data/cache/p
 |------|-----|-------|
 | PTS  | **4.58** | Small ~-0.45 under-bias; CV lift unproven (SHAP=0) |
 | REB  | **1.90** | Solid on role players |
-| AST  | **1.34** | Best edge stat; ~+4–5% ROI durable (not playoffs) |
+| AST  | **1.34** | Strong MAE; candidate edge RETRACTED 2026-07-21 (regime-dependent; no ROI edge claimed) |
 | FG3M | **0.88** | Needs spatial closeout speed to break ceiling |
 | TOV  | 0.89 | Marginal — use selectively |
 | STL  | 0.72 | Near break-even — filter hard |
@@ -149,8 +150,8 @@ in retrain. Current SHAP = 0 — these are the ceiling, not the current state.*
 
 **The honest current position:** 7 prop models with walk-forward MAE locked in
 (PTS 4.58 / REB 1.90 / AST 1.34 / FG3M 0.88), win-prob at 0.709 acc / 0.193 Brier (WF),
-AST ~+4–5% the one durable edge, market efficient on all other closing-line props,
-Gate 1 pending (Oct 2026).
+market efficient on closing-line props (AST edge RETRACTED 2026-07-21 as regime-dependent;
+no ROI edge claimed), Gate 1 pending (Oct 2026).
 
 ---
 
@@ -178,8 +179,9 @@ what the public + box-score substrate can know versus what the sharp close alrea
 | **Joint / SGP correlation structure** | Same-game-parlay correlation is a market that may be mispriced even when each leg's mainline is efficient; the possession sim prices it off joint samples. | UNMEASURED (needs real SGP price capture; edge_claimed=False) |
 
 4. **Honesty bound.** Every number on this page is calibration / sharpness or
-   break-even-minus-vig vs efficient closes. AST ~+4-5% is the one durable, book-robust ROI
-   slice (breaks in playoffs; size conservative). The inflated +18.38% / +8.94pp CLV figures
+   break-even-minus-vig vs efficient closes. The strongest candidate edge (assists) was
+   stress-tested then RETRACTED 2026-07-21 as regime-dependent (broke in playoffs); no
+   ROI/dollar edge is claimed anywhere. The inflated +18.38% / +8.94pp CLV figures
    are RETRACTED market-follow artifacts and appear only in their retraction context in
    [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) / [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md).
 

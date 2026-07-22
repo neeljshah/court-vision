@@ -19,8 +19,9 @@ system who rigorously audits and disproves his own results — senior-grade engi
 discipline.
 
 **The honest headline finding (§3):** against real closing lines I found the market is
-efficient — the model is about break-even-minus-vig, with assists the one small, durable
-edge. That is a sophisticated and honest result, and I have the harnesses that prove it.
+efficient — the model is about break-even-minus-vig, and every candidate edge, including
+my strongest (assists), was ultimately rejected or retracted by my own gates. That is a
+sophisticated and honest result, and I have the harnesses that prove it.
 
 He is a self-taught, hands-on systems engineer who built a complete NBA broadcast-video
 CV pipeline, a multi-output ML prediction stack, and a multi-service FastAPI/daemon
@@ -83,9 +84,9 @@ recruiter or interviewer can check them directly.
 | Fractional-Kelly sizing with correlation penalty, drawdown breaker, isotonic-calibrated input | `src/prediction/betting_portfolio.py::kelly_corr` (quarter-Kelly, persisted prop-correlation matrix shrink, drawdown halt, cap, isotonic win-prob override) | "Implemented fractional-Kelly bankroll management wired to calibrated probabilities — correlation-aware, drawdown-gated, capped." |
 | Self-caught overfit, hard-corrected | `src/prediction/prop_cv_split.py` documents a leaky grid-search (train R² ~0.79 vs honest holdout ~0.06 on stl/blk) and applies corrective regularization that takes precedence over the stale tuned params | "Caught a real leakage-driven overfit in my own pipeline — 0.79 CV R² vs 0.06 leak-free holdout — and hard-coded the corrective regularization so the mistake can't silently reappear." |
 | Written validation doctrine (CLV over ROI, null hypothesis, no K-fold on time series) | `docs/research/validation-methodology.md` | "Documented a disciplined methodology that treats beating the sharp closing line (CLV, significance-tested) as the proof of edge above noisy ROI, and bans K-fold CV on time-ordered data." |
-| 4-sport real-data edge hunt: pregame MATCHES the Shin-devigged close within noise on team-strength markets across 6 independent corpora (NBA/MLB moneyline, soccer O/U); totals/ATP trail only by the freshness gap | `scripts/platformkit/edge_hunt_scoreboard.py`, `scripts/platformkit/beat_the_close_scoreboard.py`, `docs/MARKET_EFFICIENCY_PROOF.md` (recorded table reproduces `docs/research/organization-sprint/EDGE-HUNT-RESULTS.md`) | "Ran a real-data forecasting edge hunt across four sports and six independent corpora and showed my own calibrated model MATCHES the efficient closing line within noise on team-strength markets -- the honest best case for an efficient market. Calibration/sharpness, not a $ edge." |
+| 4-sport real-data edge hunt: pregame MATCHES the Shin-devigged close within noise on team-strength markets across 6 independent corpora (NBA/MLB moneyline, soccer O/U); totals/ATP trail only by the freshness gap | `scripts/platformkit/edge_hunt_scoreboard.py`, `scripts/platformkit/beat_the_close_scoreboard.py`, `docs/MARKET_EFFICIENCY_PROOF.md` (recorded scoreboard table) | "Ran a real-data forecasting edge hunt across four sports and six independent corpora and showed my own calibrated model MATCHES the efficient closing line within noise on team-strength markets -- the honest best case for an efficient market. Calibration/sharpness, not a $ edge." |
 | Every candidate signal REJECTED across >=2 independent corpora; positive full-sample lifts SIGN-FLIP across calendar halves = caught overfit signature | `scripts/platformkit/edge_hunt_schedule.py` (NBA H1/H2 sub-corpora output), `scripts/platformkit/hunt_line_movement.py` (MLB NL/AL CLV-capture), `scripts/platformkit/edge_hunt_scoreboard.py` | "Scored every schedule/fatigue/totals/CLV candidate through the real leak-free gate; all rejected on >=2 corpora, and I caught my own signals that looked positive full-sample then reversed sign out-of-sample -- the overfit signature. The market is efficient on price; the self-audit is the result." |
-| In-game conditioning is the one measured calibration win (NBA Brier 0.209 -> 0.159, MLB 0.241 -> 0.126), scoped real-corpus-only, edge_claimed=False | `scripts/platformkit/ingame_scoreboard.py`, `scripts/platformkit/proof_nba/ingame_accuracy.py`, `scripts/platformkit/proof_mlb/ingame_accuracy.py` | "The one measured win is in-game conditioning -- fusing the pregame rating prior with the realized mid-game state sharpens the win-prob forecaster (calibration, not a $ edge; a live book sees the score too). Scoped honestly: real-corpus OOS is the win, the committed synthetic fixture prints no-improvement." |
+| In-game conditioning is the one measured calibration win (NBA Brier 0.209 -> 0.159, MLB 0.241 -> 0.126), scoped real-corpus-only, edge_claimed=False | `docs/INGAME_PROOF.md` (receipts), `scripts/platformkit/ingame_scoreboard.py`, `scripts/platformkit/proof_nba/ingame_accuracy.py`, `scripts/platformkit/proof_mlb/ingame_accuracy.py` | "The one measured win is in-game conditioning -- fusing the pregame rating prior with the realized mid-game state sharpens the win-prob forecaster (calibration, not a $ edge; a live book sees the score too). Scoped honestly: real-corpus OOS is the win, the committed synthetic fixture prints no-improvement." |
 
 ### D. Full-stack surfaces (founding-engineer / generalist breadth)
 
@@ -159,10 +160,12 @@ claimed, so the candidate can pre-empt the gap rather than be caught by it.
 
 ### Prediction accuracy (leak-free walk-forward, ~51k held-out player-games per stat)
 
-- **PTS MAE ~4.58, REB ~1.90, AST ~1.34, FG3M ~0.88**, with a small consistent under-bias
-  (~-0.45 PTS). Computed directly from `data/cache/pregame_oof.parquet`; the OOF predictions
-  are byte-identical to the calibration frame's predictions (max abs diff 0.0 over 319,081
-  rows), and folds have monotonic non-overlapping holdout windows.
+- **PTS MAE ~4.83, REB ~1.92, AST ~1.39, FG3M ~0.89** (re-measured 2026-07-20 by
+  `scripts/verify_production_mae.py` on the grown corpus, 20,354 holdout rows; the earlier
+  2026-06-11 figures were PTS 4.58 / REB 1.90 / AST 1.34 / FG3M 0.88 on the smaller corpus),
+  with a small consistent under-bias (~-0.45 PTS). The original OOF measurement came from
+  `data/cache/pregame_oof.parquet` (OOF predictions byte-identical to the calibration frame's,
+  max abs diff 0.0 over 319,081 rows, monotonic non-overlapping holdout windows).
 - These are competitive with published prop-model benchmarks. **This is the honest core
   accuracy claim — lead with it.**
 
@@ -177,13 +180,15 @@ claimed, so the candidate can pre-empt the gap rather than be caught by it.
 - Against real DraftKings/FanDuel/MGM **closing** lines, the model is **roughly
   break-even-minus-vig overall** (~-2% to -5%; -2.00% unfiltered from `gate1_full_analysis.json`).
   The market is efficient on closing lines.
-- **The one genuinely positive, repeatable stat is assists (AST): ~+4–5% ROI**, positive on
-  three independently-sourced line corpora. Stress-tested — selection skill, not under-bias
-  artifact; positive in both over/under directions; beats a blind-under baseline by ~12pp.
-  **Book-robust but regime-dependent — breaks in the playoffs.** Size on the conservative number.
+- **RETRACTED (2026-07-21): the earlier "assists ~+4–5% ROI durable edge" claim is superseded
+  and must not be quoted as a live result.** It was regime-dependent (broke in the playoffs)
+  and, under the no-edge-claims rail, no dollar/ROI edge is claimed anywhere. The historical
+  measurement remains in the gate artifacts (`gate1_full_analysis.json`) as a record of the
+  stress-testing methodology, nothing more.
 - **The honest framing:** "Against real closing lines I found the market is efficient — the
-  model is about break-even-minus-vig, with assists the one small, durable edge. That is a
-  sophisticated and honest result, and I have the harnesses that prove it."
+  model is about break-even-minus-vig. Every candidate edge, including my strongest (assists),
+  was ultimately rejected or retracted by my own gates. That is a sophisticated and honest
+  result, and I have the harnesses that prove it."
 
 ### In-game (end-of-Q3) projection MAE lift — leak-clean
 
@@ -239,7 +244,7 @@ the repo will catch each one — which is disqualifying for a no-degree candidat
 
 | Do NOT claim | Why it fails | Say instead |
 |---|---|---|
-| **"+18.38% ROI on 1,535 walk-forward bets vs real closing lines"** (also +15.04% flat, and per-stat splits BLK +26% / STL +17% / etc.) | **Market-follow artifact, confirmed at the source-code level.** The grader picks bet direction from `devig(over_odds, under_odds)` — the market's own lean — and never reads the model (the eval CSV has no prediction column); prices at a flat -110 fiction; filters tuned in-sample on the same file. At real odds ~-4%; the model's own number is -2.00%. | "Roughly break-even-minus-vig vs real closing lines; assists ~+4–5% is the one durable edge." |
+| **"+18.38% ROI on 1,535 walk-forward bets vs real closing lines"** (also +15.04% flat, and per-stat splits BLK +26% / STL +17% / etc.) | **Market-follow artifact, confirmed at the source-code level.** The grader picks bet direction from `devig(over_odds, under_odds)` — the market's own lean — and never reads the model (the eval CSV has no prediction column); prices at a flat -110 fiction; filters tuned in-sample on the same file. At real odds ~-4%; the model's own number is -2.00%. | "Roughly break-even-minus-vig vs real closing lines; every candidate edge, including assists, was ultimately rejected or retracted by my own gates." |
 | **"endQ3 in-play Brier 0.1191, inside Pinnacle's range"** | **Leak-inflated AND mis-sourced.** Fed two Q4-derived features (peeks at the predicted quarter); cited file actually reports 0.1354. | "Leak-free walk-forward endQ3 Brier ~0.141, after I removed a Q4 feature leak I found in my own pipeline." |
 | **"+54.57% ROI / 78.11% hit on 55,073 in-play bets"** | Graded against an **L5 line proxy**, not real closing lines. A model-quality ceiling, not a tradeable result. | "On a soft L5 proxy the in-play backtest hits 78%/+54% — I treat that strictly as a model-quality ceiling, never as realized edge." |
 | **"Aggregate CLV +8.94pp"** | Circular — computed on the same model-unused, devig-direction corpus. No real Pinnacle-close CLV exists yet; first reading dated Oct 2026. Full-season backtest shows CLV ≈ 0 vs real closes. | Don't quote a CLV figure. "Real closing-line CLV can't be measured yet; I built the methodology that will measure it." |
@@ -248,8 +253,8 @@ the repo will catch each one — which is disqualifying for a no-degree candidat
 | **"Position accuracy ±12–18 inches" / "0 ID switches" / "track stability 1.0"** | No ground-truth labels exist; `evaluate.py` returns `self_evaluation: True`, not validated MOT metrics. | "Outputs court coordinates via homography; positional accuracy and MOT metrics are not yet benchmarked against labeled ground truth." |
 | **"CV features are a predictive moat / edge sportsbooks lack"** | **Zero measured predictive value today** — every CV feature SHAP importance = 0.0 in production prop models; `cv_lift_report.json` is `has_cv_data: false`. | "CV-derived features are wired in as a potential future edge; they don't yet move the model (SHAP ~0). Credible thesis and complete plumbing, not a demonstrated advantage." |
 | **"I trained a deep re-ID model"** | The shipped OSNet weights are **ImageNet-pretrained, not NBA-fine-tuned**; production appearance model is the HSV histogram. | "I reimplemented the OSNet architecture in PyTorch and run it with ImageNet-pretrained weights." |
-| **"Built over 13 months"** | **Not supported by git** — history spans ~3 months (2026-03-09 to 2026-05-31). | "An intensive ~3-month solo build (1,470 commits, Mar–May 2026)." Drop the 13-month figure entirely. |
-| **"Solo-built / I wrote 1,470 commits"** (implied hand-typed) | **~91% of commits are agent-authored** (GSD Executor); ~54% carry a Claude co-author trailer. | "Solo human architect/director of an agentic build pipeline. The engineering judgment, ship/reject decisions, and validation methodology are mine." |
+| **"Built over 13 months"** | **Not supported by git** — history spans ~4.5 months (2026-03-09 to 2026-07-21). | "An intensive solo build (3,206 commits, Mar–Jul 2026)." Drop the 13-month figure entirely. |
+| **"Solo-built / I wrote 3,206 commits"** (implied hand-typed) | **~91% of commits are agent-authored** (GSD Executor); ~54% carry a Claude co-author trailer. | "Solo human architect/director of an agentic build pipeline. The engineering judgment, ship/reject decisions, and validation methodology are mine." |
 | **"70 iterations / 29 ships / 41 reverts" as a code-artifact or ledger count** | Only ~39 iter files on disk; exactly one revert doc exists; no machine-checkable ledger backs the 29/41 split. | "Ran a documented iteration campaign; most candidates were correctly rejected by the gate, by design." |
 | **"All ~7,400 tests pass / full suite is green"** | **Not currently true** — ~97–98% pass locally with a documented tail (DB/GPU/optional-dep/version drift), a few real logic-drift failures, and a native pyarrow segfault on Windows. CI enforces only a 30% coverage floor. | "~7,400 tests, ~97–98% passing, with a documented tail tracked in KNOWN_LIMITATIONS. Core betting-math and in-play subsets pass clean." |
 | **"Run my verify scripts to reproduce the headlines"** | `verify_production_mae.py` **crashes** with an 85-vs-129 feature mismatch; `verify_winprob.py` reads an uncommitted cache and **fails from a fresh clone**. | "I built a self-auditing verification harness; closing the fresh-clone reproducibility gap is known work." |

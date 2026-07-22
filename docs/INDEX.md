@@ -68,6 +68,7 @@ reprice. Follow the links to go as deep as you want at any stage.
 - [KNOWN_LIMITATIONS](KNOWN_LIMITATIONS.md) -- open gaps, unproven claims, honest nulls
 - [PROOFS](PROOFS.md) -- the provability index: every claim -> its runnable leak-free proof
 - [MARKET_EFFICIENCY_PROOF](MARKET_EFFICIENCY_PROOF.md) -- the full-season walk-forward showing mainlines are efficient
+- [INGAME_PROOF](INGAME_PROOF.md) -- the one measured calibration win: in-game conditioning sharpens the win-prob forecaster (calibration, not a dollar edge)
 - [CEILING](CEILING.md) -- the realistic bounds on edge claims
 - [CALIBRATION_RECORD](CALIBRATION_RECORD.md) -- per-sport calibration audit
 
@@ -148,10 +149,10 @@ reprice. Follow the links to go as deep as you want at any stage.
 ### How AI built this (the factory)
 - [BUILT_WITH_CLAUDE](BUILT_WITH_CLAUDE.md) -- the Opus-orchestrator / Sonnet-executor pipeline in depth
 
-### Other research
-- [research/competitive-landscape](research/competitive-landscape.md) - [research/market-microstructure](research/market-microstructure.md) - [research/edge-taxonomy](research/edge-taxonomy.md) - [research/precedent-analysis](research/precedent-analysis.md) - [research/data-sources](research/data-sources.md)
-- Sprint: [research/organization-sprint/SPRINT-SUMMARY](research/organization-sprint/SPRINT-SUMMARY.md) - [EVERY-MARKET-MAP](research/organization-sprint/EVERY-MARKET-MAP.md) - [EDGE-HUNT-RESULTS](research/organization-sprint/EDGE-HUNT-RESULTS.md)
-- Betting product: [research/betting-product/01_competitor_teardown](research/betting-product/01_competitor_teardown.md) ... [04_freshness_arch](research/betting-product/04_freshness_arch.md)
+### Research
+- [research/validation-methodology](research/validation-methodology.md) -- the CLV-over-ROI validation doctrine (the one public research note)
+
+*(Other internal research -- competitive landscape, market microstructure, edge taxonomy, the organization-sprint and betting-product folders -- is kept LOCAL-ONLY and gitignored, so it is intentionally not linked from this public index.)*
 
 ---
 

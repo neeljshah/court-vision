@@ -3,7 +3,7 @@
 **What:** AI-native NBA intelligence platform evolving toward a domain-agnostic, multi-sport forecasting + decision engine. CV tracking + NBA API + 85 trained signals + 80-artifact intelligence layer → Monte Carlo possession sim → calibrated predictions. Claude agents autonomously discover, validate, and ship (or reject) prediction signals.
 **Architecture direction:** sport-blind `kernel/` (the validated machinery) + `domains/<sport>/` adapters — see [docs/PLATFORM.md](docs/PLATFORM.md).
 **Stack:** YOLOv8n → SIFT homography → Kalman+Hungarian → OSNet re-ID → EasyOCR → EventDetector → FastAPI → Claude agents
-**Built by:** [Neel Shah](https://neelshahportfolio.netlify.app) — solo human architect/director of an agentic build pipeline (1,470 commits, Mar–May 2026). [neeljshah22@gmail.com](mailto:neeljshah22@gmail.com)
+**Built by:** [Neel Shah](https://neelshahportfolio.netlify.app) — solo human architect/director of an agentic build pipeline (3,206 commits, Mar–Jul 2026). [neeljshah22@gmail.com](mailto:neeljshah22@gmail.com)
 **The funnel:** DATA → SIGNALS → MODELS → ENGINES → PREDICTIONS → INTELLIGENCE, with an agentic loop that re-validates every stage.
 
 ---

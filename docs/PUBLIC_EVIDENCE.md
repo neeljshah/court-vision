@@ -13,7 +13,7 @@ agentic loop that re-validates every stage. Each stage refines the one above it.
 
 ## The one-paragraph version
 
-End-to-end NBA intelligence system, intensive ~3-month solo build (1,470 commits, Mar–May 2026),
+End-to-end NBA intelligence system, intensive solo build (3,206 commits, Mar–Jul 2026),
 human-architected over an agentic build pipeline. Broadcast video → court coordinates (CV pipeline
 on a consumer GPU at **~$0.10–0.13/game**) → 80-artifact intelligence layer → 7 prop models +
 in-play snapshot heads → devig / sim / decision engines → calibrated predictions → 1,249-dossier
@@ -55,9 +55,10 @@ produce.
 ### 3 · MODELS — *the honest core accuracy claim*
 
 - 7 prop heads (q10/q50/q90), leak-free walk-forward MAE on **~51K held-out player-games/stat**:
-  **PTS ~4.58 / REB ~1.90 / AST ~1.34 / FG3M ~0.88** (small ~−0.45 PTS under-bias).
+  **PTS ~4.83 / REB ~1.92 / AST ~1.39 / FG3M ~0.89** (small ~−0.45 PTS under-bias;
+  re-measured 2026-07-20 on the grown corpus, 20,354 holdout rows).
   Competitive with published benchmarks. **Lead with this.**
-- Win-prob 5-way NNLS stack: **0.7169 acc / 0.188 Brier** (3-fold WF).
+- Win-prob 5-way NNLS stack: **0.709 acc / 0.193 Brier** (3-fold WF).
 - In-play endQ3 residual heads cut MAE ~46% vs pregame (mostly mechanical; **~26% over a naive
   carry-forward baseline**, WF-validated, leak-clean).
 - **The one measured calibration win: in-game conditioning** — fusing the pregame prior with
@@ -82,11 +83,14 @@ produce.
 - **Against real closing lines, the market is efficient.** Full-season WF backtest (truncation-
   invariance proven): model Brier 0.208 vs close 0.198; spread/total CLV ≈ 0; corr-with-outcome
   = 0.001. PBP Finals replay: win-prob Brier 0.34–0.40 in-series (worse than coin flip).
-- Prop edge is roughly break-even-minus-vig (~-2% to -5%). **Assists ~+4–5% ROI** is the one
-  durable, book-robust edge (selection skill, not under-bias; positive in both over/under
-  directions) — but **it breaks in the playoffs.**
-- In-play backtest 78% hit / +54% ROI on 55,073 bets is an **L5-proxy ceiling**, not realized
-  edge. Real-money estimate +15–25%. First real CLV **Oct 2026**. **Zero real money placed, by design.**
+- Prop backtests match the market within noise; **no durable positive edge survives cross-corpus.**
+  Every candidate signal was rejected on ≥2 independent corpora, and positive full-sample lifts
+  sign-flip out-of-sample — the overfit signature, caught by the gate. Calibration/sharpness, not a
+  $ edge.
+- The old in-play backtest headline was an **L5-proxy model-quality ceiling, retracted as a
+  tradeable figure** (see the retraction table below and
+  [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md)). Real closing-line CLV can't be measured yet
+  (first reading **Oct 2026**); the methodology to measure it is built. **Zero real money placed, by design.**
 - Served over FastAPI **~99 endpoints / 12 routers** + 18-template trading desk + Next.js frontend.
 
 ### 6 · INTELLIGENCE — *the apex*
@@ -111,13 +115,14 @@ produce.
   section — verified this week to correctly return `OVERALL: RED` with the specific
   failing subsystem named.
 - **A 4-sport answer-engine oracle**, built from claims already on the books: a "what
-  affects what" **effect graph** (627 nodes / 335 edges, NBA+MLB+soccer+tennis) computed
+  affects what" **effect graph** (555 nodes / 296 edges, NBA+MLB+soccer+tennis) computed
   entirely by labeling and linking existing ledger rows — zero new statistics — plus a
   resolver registry that REFUSES any unregistered question type instead of improvising.
-  The knowledge engine feeding it is now fully drained: **287 mechanism hypotheses closed
-  across all 4 sports** (114 CONFIRMED_LOCAL, 2 honest NULLs, the rest not locally
-  testable) — every mechanism answer carries its own verdict, sample size, p-value, and
-  source file. No folklore, no plausible-sounding guesses.
+  The knowledge engine feeding it is now fully drained: **197 mechanism hypotheses closed
+  across all 4 sports** (89 CONFIRMED_LOCAL, 74 honest NULLs, 34 not-testable/other) —
+  the large NULL share is the expected shape of a real audit, and every mechanism answer
+  carries its own verdict, sample size, p-value, and source file. No folklore, no
+  plausible-sounding guesses.
 - *Proof:* `scripts/platformkit/autoloop/{shadow_settle_job,propose_gate_job}.py`,
   `scripts/platformkit/ops_sentinel/`, `scripts/platformkit/proof_harness/system_proof.py`,
   `scripts/platformkit/answers/{effect_graph,resolver_registry,contract_client}.py`.
@@ -132,11 +137,11 @@ the honest version was written down and the inflated one retired:
 
 | Retracted | Root cause | Honest version |
 |---|---|---|
-| +18.38% ROI on 1,535 bets | Market-follow grading artifact (model never read; flat -110 fiction; in-sample filters) | Break-even-minus-vig vs real closes; AST ~+4–5% the one durable edge |
+| +18.38% ROI on 1,535 bets | Market-follow grading artifact (model never read; flat -110 fiction; in-sample filters) | Break-even-minus-vig vs real closes; market efficient, no durable $ edge claimed |
 | endQ3 Brier 0.119 "Pinnacle-class" | Q4 feature leak (`halftime_pace_shift`, `trailing_team_q4_usg_hhi`); source file reads 0.1354, not 0.1191 | Leak-free ~0.141 (caught own pipeline Q4 leak) |
-| +54% in-play ROI | L5-proxy ceiling only; real estimate +15–25% | First CLV Oct 2026 |
-| "Season edge proven" | Full-season WF: CLV ≈ 0; model explains 0.13%/0.29% of line move | Market is efficient; AST is only measured edge |
-| "13-month build" / "hand-typed 1,470 commits" | Git history spans ~3 months; ~91% commits agent-authored under direction | ~3-month build; solo human architect/director of an agentic pipeline |
+| +54% in-play ROI | L5-proxy model-quality ceiling, not a tradeable/realized result | No $ figure quoted; first real CLV Oct 2026 |
+| "Season edge proven" | Full-season WF: CLV ≈ 0; model explains 0.13%/0.29% of line move | Market is efficient; well-calibrated but does not beat the close |
+| "13-month build" / "hand-typed 3,206 commits" | Git history spans ~3 months; ~91% commits agent-authored under direction | ~3-month build; solo human architect/director of an agentic pipeline |
 
 Full do-not-claim list with source-code root causes: **[JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md)**.
 

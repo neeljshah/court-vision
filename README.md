@@ -65,9 +65,9 @@ thorough read is a multi-day tour.
 - **New here?** -> [docs/INDEX.md](docs/INDEX.md) (the map) and the [GLOSSARY](docs/GLOSSARY.md)
   (CLV, leak-free, walk-forward, Shin devig, Brier, Kelly, ...)
 - **Want the honest numbers first?** -> [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md)
-- **What's actually strong (in-game accuracy + the one real edge)?** -> [docs/IN_GAME_SHOWCASE.md](docs/IN_GAME_SHOWCASE.md)
-- **Want the guided tour?** -> [docs/research/project-deep-dive/00-MASTER.md](docs/research/project-deep-dive/00-MASTER.md)
-  (13-chapter end-to-end walkthrough)
+- **What's actually strong (in-game accuracy, calibration-only)?** -> [docs/IN_GAME_SHOWCASE.md](docs/IN_GAME_SHOWCASE.md)
+- **Want the guided demo path?** -> [docs/PRODUCT_DEMO.md](docs/PRODUCT_DEMO.md)
+  (system health -> a live prediction -> an oracle query with a receipt -> the honesty ledgers)
 - **How AI built it?** -> [docs/BUILT_WITH_CLAUDE.md](docs/BUILT_WITH_CLAUDE.md)
 
 **Deep-dive layer (new)** -> [DAEMONS](docs/DAEMONS.md) - [PLATFORM_HARNESS](docs/PLATFORM_HARNESS.md) -
@@ -274,7 +274,7 @@ Honest scope: the descriptive/atlas intelligence is a deep *scouting + correlati
 predict-time-input the funnel is still wiring in (measured point-accuracy lift on the served
 model is ~0 today and is reported as such, not oversold). The corpus's value is making the entire
 search for edge systematic, grounded, and honest. See
-[docs/research/edge-intelligence/README.md](docs/research/edge-intelligence/README.md).
+[docs/INTELLIGENCE.md](docs/INTELLIGENCE.md).
 
 ---
 
@@ -430,7 +430,7 @@ CV internals: [docs/CV_TRACKING.md](docs/CV_TRACKING.md).
 | [docs/INDEX.md](docs/INDEX.md) | **The full map** -- every document, by role and by funnel stage (start here to go deep) |
 | [docs/BUILT_WITH_CLAUDE.md](docs/BUILT_WITH_CLAUDE.md) | The agentic build pipeline -- Opus orchestrator + Sonnet executors under hard ship-gates |
 | [docs/GLOSSARY.md](docs/GLOSSARY.md) | Every term defined once (CLV, leak-free, walk-forward, Shin devig, Brier, Kelly, ...) |
-| [docs/research/edge-intelligence/README.md](docs/research/edge-intelligence/README.md) | The deep-intelligence corpus index -- the brain's map of every edge, source, and lever |
+| [docs/INTELLIGENCE.md](docs/INTELLIGENCE.md) | The deep-intelligence corpus index -- the brain's map of every edge, source, and lever |
 | [docs/PREDICTOR_PLATFORM.md](docs/PREDICTOR_PLATFORM.md) | Full platform: thesis, scorecards, architecture, why it sells |
 | [docs/PROOFS.md](docs/PROOFS.md) | The provability index -- every claim -> the runnable leak-free proof |
 | [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md) | The single honesty truth-source -- every number + the do-not-claim list |

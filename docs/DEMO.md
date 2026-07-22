@@ -148,9 +148,10 @@ Open `http://localhost:8000/docs` for the Swagger UI (~99 endpoints, 11 routers)
 
 Any "edge %" or "EV" displayed in the `/api/props/edges` view is an
 **estimate** from a model that has been shown to be approximately
-break-even-minus-vig against real closing lines overall. The one durable
-signal is AST (~+4-5% ROI, regular season only). Do not interpret any
-displayed edge value as a guaranteed positive-expectation bet.
+break-even-minus-vig against real closing lines overall. The strongest
+candidate signal (assists) was stress-tested then RETRACTED 2026-07-21 as
+regime-dependent (broke in playoffs); no ROI/dollar edge is claimed anywhere.
+Do not interpret any displayed edge value as a guaranteed positive-expectation bet.
 
 The dashboard is useful for observing the decision-layer mechanics
 (de-vig -> edge -> Kelly -> CLV tracking) as an engineering demonstration.
@@ -161,8 +162,9 @@ The dashboard is useful for observing the decision-layer mechanics
 
 These are the original NBA-only prop CLIs from the CV lineage. Any displayed
 "edge %" or "EV" is an estimate from a model shown to be approximately
-break-even-minus-vig vs real closing lines (AST the one durable regular-season
-signal); treat them as an engineering demonstration, not a claimed edge. The
+break-even-minus-vig vs real closing lines (the strongest candidate, assists,
+was stress-tested then RETRACTED 2026-07-21 as regime-dependent; no ROI edge
+claimed); treat them as an engineering demonstration, not a claimed edge. The
 product-level predictor is the `predict_matchup` CLI above.
 
 ### Single player

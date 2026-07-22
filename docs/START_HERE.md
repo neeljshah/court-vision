@@ -162,10 +162,10 @@ python scripts/batch_season.py --season 2025-26
 | Win-prob accuracy / Brier (3-fold WF) | 0.709 / 0.188 | `data/models/win_prob_metrics.json` |
 | In-play endQ3 MAE lift vs pregame | ~46% pooled (~26% over naive carry-forward, WF) | leak-clean residual heads |
 | In-play endQ3 Brier (leak-free) | ~0.141 | after removing a Q4 feature leak (caught in self-audit) |
-| Betting vs **real** closing lines | break-even-minus-vig; **AST ~+4–5%** the one durable edge | `scripts/run_gate1_full_analysis.py` → −2.00% unfiltered |
+| Betting vs **real** closing lines | break-even-minus-vig; AST edge RETRACTED 2026-07-21 (regime-dependent; no ROI edge claimed) — see JOB_EVIDENCE_PACKET | `scripts/run_gate1_full_analysis.py` → −2.00% unfiltered |
 | CV pipeline | 17,254 cv_features rows / 241 games / 252 players · ~$0.10–0.13/game | `data/nba_ai.db` |
 | DNP predictor AUC | 0.979 | committed metrics |
-| In-play paper-ceiling ROI (L5 line proxy, n=55,073) | 78% hit / +54% — **ceiling, not edge**; real est. +15–25% | ⚠️ L5 proxy, first real CLV Oct 2026 |
+| In-play paper-ceiling ROI (L5 line proxy, n=55,073) | 78% hit / +54% — **ceiling, not edge**; no realized estimate quoted | ⚠️ L5 proxy, first real CLV Oct 2026 |
 | Shots in training data | 221,866 | |
 
 **Retracted (artifacts the harness caught):** +18.38% ROI (market-follow grading bug → real break-even-minus-vig), endQ3 0.119 (Q4 leak → ~0.141), +54% in-play (L5 proxy). Full account: [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md).
