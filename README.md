@@ -416,7 +416,9 @@ beating the close / a CV predictive moat (CV SHAP ~ 0 in production today).
 - **[RECEIPTS.md](RECEIPTS.md)** -- the append-only, honesty-gated ledger. Each row is read
   verbatim from a machine-readable artifact on disk (path cited per row, nothing hand-typed),
   verdicts include the losses (`MARKET_SHARPER`, `UNDERPOWERED`) exactly as measured. The same
-  ledger renders as a browsable page in the webapp at **`/receipts`**.
+  ledger renders as a browsable page, live at
+  **[neeljshah.github.io/court-vision/receipts.html](https://neeljshah.github.io/court-vision/receipts.html)**
+  (static snapshot, as-of date shown on the page).
 - **Evidence pages** -- one per claim family, each running claim -> receipt -> reproduce:
   [retraction-story](docs/evidence/retraction-story.md) (the flagship: the instruments that
   refuted my own headline numbers) -
