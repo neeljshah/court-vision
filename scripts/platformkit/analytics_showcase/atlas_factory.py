@@ -51,6 +51,21 @@ def card_path(sport: str, entity: str) -> Path:
     return REPO_ROOT / "docs" / "img" / "atlas" / sport / f"{slugify(entity)}.png"
 
 
+def resolve_card_path(stored_path: str) -> Path:
+    """Translate a manifest-stored card_path to the CURRENT repo root.
+
+    Manifests bake in an absolute path from whatever machine generated them
+    (e.g. a Windows dev box: C:\\Users\\...\\docs\\img\\atlas\\...). CI runs on a
+    fresh Linux clone at a different root, so that absolute path is dead --
+    re-derive it from the portable "docs/img/atlas/..." tail instead.
+    """
+    norm = stored_path.replace("\\", "/")
+    marker = "docs/img/atlas"
+    idx = norm.find(marker)
+    assert idx != -1, f"card_path has no {marker!r} segment: {stored_path!r}"
+    return REPO_ROOT / norm[idx:]
+
+
 def _save_with_size_guard(fig, path: Path, dpi: int, max_bytes: int = MAX_CARD_BYTES) -> tuple[int, int]:
     # ponytail: one retry at half dpi covers the realistic oversize case -- if it's
     # still too big after that, panel count/content is the real problem, not dpi.

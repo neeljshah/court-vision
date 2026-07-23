@@ -24,9 +24,9 @@ import pandas as pd
 
 try:
     from scripts.platformkit.analytics_showcase.atlas_factory import (
-        card_figure, write_manifest, slugify, card_path, REPO_ROOT, OUT_DIR)
+        card_figure, write_manifest, slugify, card_path, resolve_card_path, REPO_ROOT, OUT_DIR)
 except ImportError:
-    from atlas_factory import card_figure, write_manifest, slugify, card_path, REPO_ROOT, OUT_DIR
+    from atlas_factory import card_figure, write_manifest, slugify, card_path, resolve_card_path, REPO_ROOT, OUT_DIR
 
 SPORT = "nba"
 SOURCE_ARTIFACT = "data/domains/basketball_nba/player_boxscores.parquet"
@@ -182,7 +182,7 @@ def _check():
         f"manifest says {manifest['n_entries']} entries but {len(disk_pngs)} PNGs on disk in {CARD_DIR}"
     )
     for entry in manifest["entries"][:2]:
-        p = Path(entry["card_path"])
+        p = resolve_card_path(entry["card_path"])
         assert p.exists() and p.stat().st_size > 0, f"card missing/empty: {p}"
     assert slugify("Nikola Jokic") == "nikola_jokic"  # atlas_factory helper still wired correctly
     print(f"check ok: {manifest['n_entries']} manifest entries == {len(disk_pngs)} PNGs on disk")

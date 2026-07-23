@@ -29,11 +29,11 @@ from pathlib import Path
 
 try:
     from scripts.platformkit.analytics_showcase.atlas_factory import (
-        card_figure, write_manifest, slugify, card_path, REPO_ROOT, OUT_DIR)
+        card_figure, write_manifest, slugify, card_path, resolve_card_path, REPO_ROOT, OUT_DIR)
     from scripts.platformkit.analytics_showcase.state_conditioned_calibration import (
         PROB_BINS, PROB_LABELS, prob_bucket)
 except ImportError:
-    from atlas_factory import card_figure, write_manifest, slugify, card_path, REPO_ROOT, OUT_DIR
+    from atlas_factory import card_figure, write_manifest, slugify, card_path, resolve_card_path, REPO_ROOT, OUT_DIR
     from state_conditioned_calibration import PROB_BINS, PROB_LABELS, prob_bucket
 
 ATLAS_BUCKET = "calibration"  # atlas_factory "sport" slot -> flat docs/img/atlas/calibration/
@@ -286,7 +286,7 @@ def _check():
     disk_pngs = list(CARD_DIR.glob("*.png"))
     assert manifest["n_entries"] == len(disk_pngs), f"manifest says {manifest['n_entries']} entries but {len(disk_pngs)} PNGs on disk in {CARD_DIR}"
     for entry in manifest["entries"][:2]:
-        p = Path(entry["card_path"])
+        p = resolve_card_path(entry["card_path"])
         assert p.exists() and p.stat().st_size > 0, f"card missing/empty: {p}"
     print(f"check ok: {manifest['n_entries']} manifest entries == {len(disk_pngs)} PNGs on disk")
 

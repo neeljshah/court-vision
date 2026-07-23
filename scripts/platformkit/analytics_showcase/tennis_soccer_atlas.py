@@ -31,9 +31,9 @@ from pathlib import Path
 
 try:
     from scripts.platformkit.analytics_showcase.atlas_factory import (
-        card_figure, write_manifest, slugify, card_path, REPO_ROOT, OUT_DIR)
+        card_figure, write_manifest, slugify, card_path, resolve_card_path, REPO_ROOT, OUT_DIR)
 except ImportError:
-    from atlas_factory import card_figure, write_manifest, slugify, card_path, REPO_ROOT, OUT_DIR
+    from atlas_factory import card_figure, write_manifest, slugify, card_path, resolve_card_path, REPO_ROOT, OUT_DIR
 
 STORE_DIR = REPO_ROOT / "data" / "cache" / "intel_claims"
 TENNIS_FAMILY = "tennis_surface_context_claims"
@@ -280,7 +280,7 @@ def _check_sport(sport: str, card_dir: Path) -> tuple:
     assert manifest["n_entries"] == len(disk_pngs), (
         f"{sport}: manifest says {manifest['n_entries']} entries but {len(disk_pngs)} PNGs on disk in {card_dir}")
     for entry in manifest["entries"][:2]:
-        p = Path(entry["card_path"])
+        p = resolve_card_path(entry["card_path"])
         assert p.exists() and p.stat().st_size > 0, f"{sport}: card missing/empty: {p}"
     return manifest["n_entries"], len(disk_pngs)
 
