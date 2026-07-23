@@ -1,0 +1,390 @@
+{
+  "label": "DESCRIPTIVE_ONLY",
+  "source": "data/domains/basketball_nba/player_boxscores.parquet + docs/JOB_EVIDENCE_PACKET.md",
+  "methodology": {
+    "form_metric": "10-game minute-weighted per-36 rolling value of the frozen Win-Score-style box composite (WEIGHTS_PER36, reused verbatim from box_value_index.py; Berri 2006 convention).",
+    "window_games": 10,
+    "weights_per36": {
+      "pts": 1.0,
+      "reb": 1.0,
+      "stl": 1.0,
+      "blk": 0.7,
+      "ast": 0.7,
+      "fga": -0.7,
+      "fta": -0.4,
+      "tov": -1.0,
+      "pf": -0.4
+    },
+    "weights_frozen": true,
+    "weights_tuned_to_output": false,
+    "normalization": "per-36 minutes, minute-weighted over the window (sum stats / sum min)",
+    "mover_delta": "last retained window form minus first retained window form over the observed span (trajectory; windows may abut, not claimed disjoint).",
+    "bands_basis": "pooled over every retained 10-game window (player-game weighted)",
+    "floors": "min>=8/game, window_total_min>=120, >=20 qualifying games",
+    "seasons_pooled": [
+      "2023-24",
+      "2024-25",
+      "2025-26"
+    ]
+  },
+  "not_this": [
+    "NOT a live hot/cold streak or predictive signal (net-change over the whole span)",
+    "NOT BPM/EPM/RAPM/DARKO (box-composite only, same limits as box_value_index.py)",
+    "NOT age/opponent/role adjusted (raw box rates only)",
+    "NOT player_id-deduped (accented names split across ids upstream -- carried through)"
+  ],
+  "input_coverage": {
+    "rows": 77744,
+    "unique_players": 807,
+    "seasons": [
+      "2023-24",
+      "2024-25",
+      "2025-26"
+    ],
+    "players_with_retained_window": 619,
+    "movers_eligible": 562,
+    "pooled_windows": 61298
+  },
+  "league_percentile_bands": {
+    "metric": "10-game rolling per-36 box composite",
+    "p10": 8.95,
+    "p25": 11.003,
+    "p50": 13.754,
+    "p75": 16.92,
+    "p90": 20.113
+  },
+  "top_movers_risers": [
+    {
+      "player_name": "Victor Wembanyama",
+      "delta": 19.821,
+      "first_form": 18.048,
+      "last_form": 37.869,
+      "last_form_league_pctile": 100.0,
+      "n_qual_games": 179,
+      "qual_minutes": 5429.9,
+      "first_date": "2023-11-12",
+      "last_date": "2026-04-10"
+    },
+    {
+      "player_name": "Donovan Clingan",
+      "delta": 13.551,
+      "first_form": 16.391,
+      "last_form": 29.942,
+      "last_form_league_pctile": 99.7,
+      "n_qual_games": 135,
+      "qual_minutes": 3218.3,
+      "first_date": "2024-11-08",
+      "last_date": "2026-04-08"
+    },
+    {
+      "player_name": "Andrew Wiggins",
+      "delta": 11.268,
+      "first_form": 6.452,
+      "last_form": 17.72,
+      "last_form_league_pctile": 79.7,
+      "n_qual_games": 192,
+      "qual_minutes": 5624.9,
+      "first_date": "2023-11-11",
+      "last_date": "2026-04-01"
+    },
+    {
+      "player_name": "Stephon Castle",
+      "delta": 10.815,
+      "first_form": 8.381,
+      "last_form": 19.196,
+      "last_form_league_pctile": 86.7,
+      "n_qual_games": 146,
+      "qual_minutes": 4135.5,
+      "first_date": "2024-11-09",
+      "last_date": "2026-04-12"
+    },
+    {
+      "player_name": "Isaiah Hartenstein",
+      "delta": 10.501,
+      "first_form": 15.465,
+      "last_form": 25.966,
+      "last_form_league_pctile": 98.6,
+      "n_qual_games": 178,
+      "qual_minutes": 4595.6,
+      "first_date": "2023-11-13",
+      "last_date": "2026-04-08"
+    },
+    {
+      "player_name": "Jaxson Hayes",
+      "delta": 10.371,
+      "first_form": 9.429,
+      "last_form": 19.8,
+      "last_form_league_pctile": 89.0,
+      "n_qual_games": 168,
+      "qual_minutes": 3057.5,
+      "first_date": "2023-11-27",
+      "last_date": "2026-04-05"
+    },
+    {
+      "player_name": "Taj Gibson",
+      "delta": 9.763,
+      "first_form": 4.841,
+      "last_form": 14.604,
+      "last_form_league_pctile": 57.5,
+      "n_qual_games": 45,
+      "qual_minutes": 611.0,
+      "first_date": "2024-02-14",
+      "last_date": "2026-04-12"
+    },
+    {
+      "player_name": "Richaun Holmes",
+      "delta": 9.591,
+      "first_form": 15.136,
+      "last_form": 24.727,
+      "last_form_league_pctile": 97.8,
+      "n_qual_games": 50,
+      "qual_minutes": 993.3,
+      "first_date": "2024-01-31",
+      "last_date": "2025-03-31"
+    },
+    {
+      "player_name": "Nickeil Alexander-Walker",
+      "delta": 9.299,
+      "first_form": 8.863,
+      "last_form": 18.162,
+      "last_form_league_pctile": 82.0,
+      "n_qual_games": 237,
+      "qual_minutes": 6426.8,
+      "first_date": "2023-11-14",
+      "last_date": "2026-04-06"
+    },
+    {
+      "player_name": "Zaccharie Risacher",
+      "delta": 9.085,
+      "first_form": 8.935,
+      "last_form": 18.02,
+      "last_form_league_pctile": 81.3,
+      "n_qual_games": 135,
+      "qual_minutes": 3233.2,
+      "first_date": "2024-11-08",
+      "last_date": "2026-03-30"
+    },
+    {
+      "player_name": "Isaiah Collier",
+      "delta": 9.075,
+      "first_form": 4.732,
+      "last_form": 13.807,
+      "last_form_league_pctile": 50.5,
+      "n_qual_games": 128,
+      "qual_minutes": 3347.4,
+      "first_date": "2024-11-27",
+      "last_date": "2026-03-18"
+    },
+    {
+      "player_name": "Scoot Henderson",
+      "delta": 9.015,
+      "first_form": 3.543,
+      "last_form": 12.558,
+      "last_form_league_pctile": 39.3,
+      "n_qual_games": 150,
+      "qual_minutes": 4074.8,
+      "first_date": "2023-12-02",
+      "last_date": "2026-04-08"
+    },
+    {
+      "player_name": "Tidjane Salaun",
+      "delta": 8.986,
+      "first_form": 7.477,
+      "last_form": 16.463,
+      "last_form_league_pctile": 72.0,
+      "n_qual_games": 90,
+      "qual_minutes": 1794.6,
+      "first_date": "2024-11-16",
+      "last_date": "2026-02-22"
+    },
+    {
+      "player_name": "Cade Cunningham",
+      "delta": 8.893,
+      "first_form": 9.95,
+      "last_form": 18.843,
+      "last_form_league_pctile": 85.2,
+      "n_qual_games": 192,
+      "qual_minutes": 6617.9,
+      "first_date": "2023-11-10",
+      "last_date": "2026-03-15"
+    },
+    {
+      "player_name": "Cameron Payne",
+      "delta": 8.888,
+      "first_form": 7.88,
+      "last_form": 16.768,
+      "last_form_league_pctile": 74.0,
+      "n_qual_games": 157,
+      "qual_minutes": 2671.3,
+      "first_date": "2023-11-13",
+      "last_date": "2026-03-25"
+    }
+  ],
+  "top_movers_fallers": [
+    {
+      "player_name": "Myles Turner",
+      "delta": -11.043,
+      "first_form": 20.431,
+      "last_form": 9.387,
+      "last_form_league_pctile": 12.6,
+      "n_qual_games": 214,
+      "qual_minutes": 5999.6,
+      "first_date": "2023-11-12",
+      "last_date": "2026-04-03"
+    },
+    {
+      "player_name": "Eugene Omoruyi",
+      "delta": -10.211,
+      "first_form": 22.195,
+      "last_form": 11.984,
+      "last_form_league_pctile": 33.9,
+      "n_qual_games": 23,
+      "qual_minutes": 306.0,
+      "first_date": "2024-02-22",
+      "last_date": "2024-04-14"
+    },
+    {
+      "player_name": "Danilo Gallinari",
+      "delta": -9.406,
+      "first_form": 18.0,
+      "last_form": 8.594,
+      "last_form_league_pctile": 8.2,
+      "n_qual_games": 37,
+      "qual_minutes": 569.0,
+      "first_date": "2023-11-17",
+      "last_date": "2024-04-12"
+    },
+    {
+      "player_name": "Ben Simmons",
+      "delta": -9.232,
+      "first_form": 19.58,
+      "last_form": 10.348,
+      "last_form_league_pctile": 19.5,
+      "n_qual_games": 66,
+      "qual_minutes": 1478.2,
+      "first_date": "2024-02-08",
+      "last_date": "2025-04-13"
+    },
+    {
+      "player_name": "Moritz Wagner",
+      "delta": -9.126,
+      "first_form": 18.613,
+      "last_form": 9.486,
+      "last_form_league_pctile": 13.3,
+      "n_qual_games": 135,
+      "qual_minutes": 2344.6,
+      "first_date": "2023-11-14",
+      "last_date": "2026-03-19"
+    },
+    {
+      "player_name": "Jay Huff",
+      "delta": -9.027,
+      "first_form": 21.961,
+      "last_form": 12.934,
+      "last_form_league_pctile": 42.8,
+      "n_qual_games": 111,
+      "qual_minutes": 2192.1,
+      "first_date": "2024-11-08",
+      "last_date": "2026-04-05"
+    },
+    {
+      "player_name": "Tre Mann",
+      "delta": -8.942,
+      "first_form": 18.265,
+      "last_form": 9.324,
+      "last_form_league_pctile": 12.2,
+      "n_qual_games": 82,
+      "qual_minutes": 1888.5,
+      "first_date": "2024-02-22",
+      "last_date": "2026-02-26"
+    },
+    {
+      "player_name": "Khris Middleton",
+      "delta": -8.727,
+      "first_form": 17.422,
+      "last_form": 8.695,
+      "last_form_league_pctile": 8.7,
+      "n_qual_games": 149,
+      "qual_minutes": 3664.2,
+      "first_date": "2023-11-17",
+      "last_date": "2026-04-10"
+    },
+    {
+      "player_name": "Jonathan Isaac",
+      "delta": -8.425,
+      "first_form": 18.939,
+      "last_form": 10.514,
+      "last_form_league_pctile": 20.9,
+      "n_qual_games": 155,
+      "qual_minutes": 2401.3,
+      "first_date": "2023-11-17",
+      "last_date": "2026-03-01"
+    },
+    {
+      "player_name": "Jase Richardson",
+      "delta": -8.391,
+      "first_form": 14.039,
+      "last_form": 5.648,
+      "last_form_league_pctile": 1.1,
+      "n_qual_games": 27,
+      "qual_minutes": 453.0,
+      "first_date": "2025-12-26",
+      "last_date": "2026-03-23"
+    },
+    {
+      "player_name": "Jalen Smith",
+      "delta": -7.761,
+      "first_form": 23.69,
+      "last_form": 15.928,
+      "last_form_league_pctile": 68.1,
+      "n_qual_games": 168,
+      "qual_minutes": 3057.8,
+      "first_date": "2023-11-22",
+      "last_date": "2026-03-23"
+    },
+    {
+      "player_name": "Will Richard",
+      "delta": -7.632,
+      "first_form": 14.756,
+      "last_form": 7.124,
+      "last_form_league_pctile": 3.3,
+      "n_qual_games": 65,
+      "qual_minutes": 1356.5,
+      "first_date": "2025-11-12",
+      "last_date": "2026-04-12"
+    },
+    {
+      "player_name": "Ricky Council IV",
+      "delta": -7.577,
+      "first_form": 17.954,
+      "last_form": 10.377,
+      "last_form_league_pctile": 19.8,
+      "n_qual_games": 72,
+      "qual_minutes": 1401.8,
+      "first_date": "2024-03-20",
+      "last_date": "2025-04-13"
+    },
+    {
+      "player_name": "Cam Thomas",
+      "delta": -7.052,
+      "first_form": 15.607,
+      "last_form": 8.555,
+      "last_form_league_pctile": 8.0,
+      "n_qual_games": 130,
+      "qual_minutes": 3719.7,
+      "first_date": "2023-12-02",
+      "last_date": "2026-03-21"
+    },
+    {
+      "player_name": "Gary Harris",
+      "delta": -6.793,
+      "first_form": 13.652,
+      "last_form": 6.859,
+      "last_form_league_pctile": 2.7,
+      "n_qual_games": 131,
+      "qual_minutes": 2532.8,
+      "first_date": "2023-11-22",
+      "last_date": "2026-04-03"
+    }
+  ]
+}

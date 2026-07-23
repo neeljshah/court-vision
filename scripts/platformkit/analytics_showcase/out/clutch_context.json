@@ -1,0 +1,70 @@
+{
+  "label": "DESCRIPTIVE_ONLY",
+  "edge_claimed": false,
+  "as_of": "2026-07-23T03:21:53.803282+00:00",
+  "input": "data/domains/basketball_nba/player_boxscores.parquet",
+  "chart": null,
+  "status": "not_buildable",
+  "reason": "player_boxscores.parquet is FULL-GAME aggregate; it carries no period/clutch grain, so late-game per-36 SHIFTS cannot be computed from it without fabricating the split.",
+  "fields_present": [
+    "game_id",
+    "date",
+    "season",
+    "team",
+    "opp",
+    "is_home",
+    "player_id",
+    "player_name",
+    "starter",
+    "min",
+    "pts",
+    "reb",
+    "oreb",
+    "dreb",
+    "ast",
+    "stl",
+    "blk",
+    "tov",
+    "fgm",
+    "fga",
+    "fg3m",
+    "fg3a",
+    "ftm",
+    "fta",
+    "pf",
+    "plus_minus"
+  ],
+  "fields_needed": {
+    "grain_discriminator_any_of": [
+      "period",
+      "clutch",
+      "is_clutch",
+      "q4_min",
+      "clutch_min"
+    ],
+    "explanation": "EITHER a `period` column (making the parquet one row per player-game-period -- long/tidy) OR an explicit late-game/clutch stat block (e.g. clutch_min + clutch_<stat>). Given a `period` grain, late-game is period >= 4 (Q4 + OT).",
+    "plus_box_stats_at_that_grain": [
+      "pts",
+      "reb",
+      "ast",
+      "stl",
+      "blk",
+      "tov",
+      "fga",
+      "fta",
+      "pf"
+    ],
+    "minutes_field_at_that_grain": "min"
+  },
+  "where_the_grain_actually_lives": {
+    "raw_cache": "data/cache/quarter_box/<game_id>_q<period>.json (per-period player box lines DO exist here)",
+    "why_absent_downstream": "domains/basketball_nba/ingest_boxscores.py SUMS those quarter files into ONE full-game row per (player, game); the period grain is discarded at ingest.",
+    "fix_location": "upstream data layer (re-ingest keeping `period`); out of scope for this read-only showcase module."
+  },
+  "declared_floors_when_buildable": {
+    "min_late_minutes_total": 200,
+    "min_qualifying_games": 15,
+    "normalization": "per-36 over SUMMED minutes at the grain, not per-game averaged"
+  },
+  "story": "Late-game per-36 SHIFT analytic NOT BUILT: the NBA boxscores parquet is full-game aggregate with no period/clutch grain. Honest refusal -- names the exact fields a re-ingest would need (and where the grain already lives) rather than manufacturing clutch numbers off full-game rows."
+}

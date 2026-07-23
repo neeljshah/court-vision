@@ -1,0 +1,835 @@
+{
+  "edge_claimed": false,
+  "descriptive_only": true,
+  "seed": 20260722,
+  "n_boot": 1000,
+  "ci_pct": [
+    2.5,
+    97.5
+  ],
+  "cluster_unit": "game_id",
+  "min_games_per_bin_floor": 5,
+  "method": "cluster bootstrap (resample game_id with replacement, re-bin) on 10-bin reliability curves",
+  "source_artifact": "data/cache/ingame_grade_joined/{mlb,soccer_intl}",
+  "as_of": "2026-07-23T03:21:27.493056+00:00",
+  "sports": {
+    "mlb": {
+      "n_rows": 78986,
+      "n_games": 227,
+      "low_power": false,
+      "sides": {
+        "model_prob": {
+          "label": "model",
+          "brier": 0.237684,
+          "n_eligible_bins": 10,
+          "n_significant_bins": 4,
+          "n_within_noise_bins": 6,
+          "bins": [
+            {
+              "bin_lo": 0.0,
+              "bin_hi": 0.1,
+              "n": 5127,
+              "n_games": 133,
+              "mean_p": 0.0512,
+              "mean_y": 0.2331,
+              "gap": 0.1819,
+              "mean_y_ci": [
+                0.1549,
+                0.3239
+              ],
+              "gap_ci": [
+                0.104,
+                0.2738
+              ],
+              "significant": true,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.1,
+              "bin_hi": 0.2,
+              "n": 4495,
+              "n_games": 137,
+              "mean_p": 0.1588,
+              "mean_y": 0.2525,
+              "gap": 0.0937,
+              "mean_y_ci": [
+                0.1644,
+                0.3482
+              ],
+              "gap_ci": [
+                0.0061,
+                0.1901
+              ],
+              "significant": true,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.2,
+              "bin_hi": 0.3,
+              "n": 4708,
+              "n_games": 132,
+              "mean_p": 0.2453,
+              "mean_y": 0.3031,
+              "gap": 0.0578,
+              "mean_y_ci": [
+                0.2142,
+                0.4161
+              ],
+              "gap_ci": [
+                -0.0301,
+                0.1678
+              ],
+              "significant": false,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.3,
+              "bin_hi": 0.4,
+              "n": 7071,
+              "n_games": 146,
+              "mean_p": 0.3611,
+              "mean_y": 0.2826,
+              "gap": -0.0785,
+              "mean_y_ci": [
+                0.1933,
+                0.3795
+              ],
+              "gap_ci": [
+                -0.1684,
+                0.0192
+              ],
+              "significant": false,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.4,
+              "bin_hi": 0.5,
+              "n": 14736,
+              "n_games": 167,
+              "mean_p": 0.4568,
+              "mean_y": 0.3916,
+              "gap": -0.0653,
+              "mean_y_ci": [
+                0.2918,
+                0.4983
+              ],
+              "gap_ci": [
+                -0.165,
+                0.0397
+              ],
+              "significant": false,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.5,
+              "bin_hi": 0.6,
+              "n": 17652,
+              "n_games": 186,
+              "mean_p": 0.5436,
+              "mean_y": 0.4619,
+              "gap": -0.0818,
+              "mean_y_ci": [
+                0.3685,
+                0.5575
+              ],
+              "gap_ci": [
+                -0.1736,
+                0.0137
+              ],
+              "significant": false,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.6,
+              "bin_hi": 0.7,
+              "n": 9214,
+              "n_games": 160,
+              "mean_p": 0.6456,
+              "mean_y": 0.5745,
+              "gap": -0.0711,
+              "mean_y_ci": [
+                0.4605,
+                0.6989
+              ],
+              "gap_ci": [
+                -0.1862,
+                0.0543
+              ],
+              "significant": false,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.7,
+              "bin_hi": 0.8,
+              "n": 5364,
+              "n_games": 130,
+              "mean_p": 0.748,
+              "mean_y": 0.6743,
+              "gap": -0.0737,
+              "mean_y_ci": [
+                0.5621,
+                0.7845
+              ],
+              "gap_ci": [
+                -0.1865,
+                0.036
+              ],
+              "significant": false,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.8,
+              "bin_hi": 0.9,
+              "n": 5866,
+              "n_games": 138,
+              "mean_p": 0.8473,
+              "mean_y": 0.7335,
+              "gap": -0.1138,
+              "mean_y_ci": [
+                0.628,
+                0.8243
+              ],
+              "gap_ci": [
+                -0.2206,
+                -0.02
+              ],
+              "significant": true,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.9,
+              "bin_hi": 1.0,
+              "n": 4753,
+              "n_games": 118,
+              "mean_p": 0.9541,
+              "mean_y": 0.6632,
+              "gap": -0.2909,
+              "mean_y_ci": [
+                0.5539,
+                0.773
+              ],
+              "gap_ci": [
+                -0.4022,
+                -0.1822
+              ],
+              "significant": true,
+              "low_n": false
+            }
+          ]
+        },
+        "market_prob": {
+          "label": "market",
+          "brier": 0.206653,
+          "n_eligible_bins": 10,
+          "n_significant_bins": 0,
+          "n_within_noise_bins": 10,
+          "bins": [
+            {
+              "bin_lo": 0.0,
+              "bin_hi": 0.1,
+              "n": 4176,
+              "n_games": 99,
+              "mean_p": 0.0527,
+              "mean_y": 0.0321,
+              "gap": -0.0206,
+              "mean_y_ci": [
+                0.0046,
+                0.0723
+              ],
+              "gap_ci": [
+                -0.0478,
+                0.0191
+              ],
+              "significant": false,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.1,
+              "bin_hi": 0.2,
+              "n": 3827,
+              "n_games": 114,
+              "mean_p": 0.1487,
+              "mean_y": 0.173,
+              "gap": 0.0243,
+              "mean_y_ci": [
+                0.0562,
+                0.3035
+              ],
+              "gap_ci": [
+                -0.0926,
+                0.1549
+              ],
+              "significant": false,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.2,
+              "bin_hi": 0.3,
+              "n": 2997,
+              "n_games": 123,
+              "mean_p": 0.2468,
+              "mean_y": 0.1728,
+              "gap": -0.074,
+              "mean_y_ci": [
+                0.0918,
+                0.2723
+              ],
+              "gap_ci": [
+                -0.1548,
+                0.0267
+              ],
+              "significant": false,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.3,
+              "bin_hi": 0.4,
+              "n": 4788,
+              "n_games": 141,
+              "mean_p": 0.3598,
+              "mean_y": 0.236,
+              "gap": -0.1238,
+              "mean_y_ci": [
+                0.1206,
+                0.4015
+              ],
+              "gap_ci": [
+                -0.2397,
+                0.0393
+              ],
+              "significant": false,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.4,
+              "bin_hi": 0.5,
+              "n": 15028,
+              "n_games": 190,
+              "mean_p": 0.4503,
+              "mean_y": 0.3871,
+              "gap": -0.0632,
+              "mean_y_ci": [
+                0.262,
+                0.5172
+              ],
+              "gap_ci": [
+                -0.1895,
+                0.0682
+              ],
+              "significant": false,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.5,
+              "bin_hi": 0.6,
+              "n": 26309,
+              "n_games": 206,
+              "mean_p": 0.5498,
+              "mean_y": 0.4497,
+              "gap": -0.1002,
+              "mean_y_ci": [
+                0.3484,
+                0.5589
+              ],
+              "gap_ci": [
+                -0.2016,
+                0.0084
+              ],
+              "significant": false,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.6,
+              "bin_hi": 0.7,
+              "n": 8350,
+              "n_games": 167,
+              "mean_p": 0.6432,
+              "mean_y": 0.5841,
+              "gap": -0.0592,
+              "mean_y_ci": [
+                0.4307,
+                0.7254
+              ],
+              "gap_ci": [
+                -0.2161,
+                0.0818
+              ],
+              "significant": false,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.7,
+              "bin_hi": 0.8,
+              "n": 4357,
+              "n_games": 137,
+              "mean_p": 0.7422,
+              "mean_y": 0.6672,
+              "gap": -0.075,
+              "mean_y_ci": [
+                0.537,
+                0.7812
+              ],
+              "gap_ci": [
+                -0.2036,
+                0.0397
+              ],
+              "significant": false,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.8,
+              "bin_hi": 0.9,
+              "n": 4001,
+              "n_games": 119,
+              "mean_p": 0.8514,
+              "mean_y": 0.81,
+              "gap": -0.0414,
+              "mean_y_ci": [
+                0.7057,
+                0.8991
+              ],
+              "gap_ci": [
+                -0.1452,
+                0.0462
+              ],
+              "significant": false,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.9,
+              "bin_hi": 1.0,
+              "n": 5153,
+              "n_games": 106,
+              "mean_p": 0.9483,
+              "mean_y": 0.9559,
+              "gap": 0.0076,
+              "mean_y_ci": [
+                0.9126,
+                0.9868
+              ],
+              "gap_ci": [
+                -0.0354,
+                0.0379
+              ],
+              "significant": false,
+              "low_n": false
+            }
+          ]
+        }
+      }
+    },
+    "soccer_intl": {
+      "n_rows": 9003,
+      "n_games": 51,
+      "low_power": false,
+      "sides": {
+        "model_prob": {
+          "label": "model",
+          "brier": 0.227887,
+          "n_eligible_bins": 10,
+          "n_significant_bins": 8,
+          "n_within_noise_bins": 2,
+          "bins": [
+            {
+              "bin_lo": 0.0,
+              "bin_hi": 0.1,
+              "n": 2012,
+              "n_games": 34,
+              "mean_p": 0.0446,
+              "mean_y": 0.4963,
+              "gap": 0.4517,
+              "mean_y_ci": [
+                0.2839,
+                0.6762
+              ],
+              "gap_ci": [
+                0.2381,
+                0.6333
+              ],
+              "significant": true,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.1,
+              "bin_hi": 0.2,
+              "n": 1578,
+              "n_games": 36,
+              "mean_p": 0.1446,
+              "mean_y": 0.4189,
+              "gap": 0.2743,
+              "mean_y_ci": [
+                0.2529,
+                0.6031
+              ],
+              "gap_ci": [
+                0.1112,
+                0.4571
+              ],
+              "significant": true,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.2,
+              "bin_hi": 0.3,
+              "n": 1670,
+              "n_games": 29,
+              "mean_p": 0.2472,
+              "mean_y": 0.4476,
+              "gap": 0.2004,
+              "mean_y_ci": [
+                0.2574,
+                0.7008
+              ],
+              "gap_ci": [
+                0.0116,
+                0.4515
+              ],
+              "significant": true,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.3,
+              "bin_hi": 0.4,
+              "n": 773,
+              "n_games": 19,
+              "mean_p": 0.3488,
+              "mean_y": 0.7167,
+              "gap": 0.3679,
+              "mean_y_ci": [
+                0.4844,
+                0.8966
+              ],
+              "gap_ci": [
+                0.1386,
+                0.543
+              ],
+              "significant": true,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.4,
+              "bin_hi": 0.5,
+              "n": 684,
+              "n_games": 14,
+              "mean_p": 0.4532,
+              "mean_y": 0.8238,
+              "gap": 0.3707,
+              "mean_y_ci": [
+                0.523,
+                0.9828
+              ],
+              "gap_ci": [
+                0.0732,
+                0.5317
+              ],
+              "significant": true,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.5,
+              "bin_hi": 0.6,
+              "n": 634,
+              "n_games": 13,
+              "mean_p": 0.547,
+              "mean_y": 0.7003,
+              "gap": 0.1533,
+              "mean_y_ci": [
+                0.5427,
+                0.9486
+              ],
+              "gap_ci": [
+                -0.0014,
+                0.398
+              ],
+              "significant": false,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.6,
+              "bin_hi": 0.7,
+              "n": 446,
+              "n_games": 12,
+              "mean_p": 0.6455,
+              "mean_y": 0.6603,
+              "gap": 0.0148,
+              "mean_y_ci": [
+                0.5068,
+                0.9045
+              ],
+              "gap_ci": [
+                -0.1464,
+                0.2683
+              ],
+              "significant": false,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.7,
+              "bin_hi": 0.8,
+              "n": 296,
+              "n_games": 9,
+              "mean_p": 0.7509,
+              "mean_y": 0.9628,
+              "gap": 0.212,
+              "mean_y_ci": [
+                0.7799,
+                1.0
+              ],
+              "gap_ci": [
+                0.0431,
+                0.2598
+              ],
+              "significant": true,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.8,
+              "bin_hi": 0.9,
+              "n": 577,
+              "n_games": 9,
+              "mean_p": 0.8456,
+              "mean_y": 0.9879,
+              "gap": 0.1422,
+              "mean_y_ci": [
+                0.9324,
+                1.0
+              ],
+              "gap_ci": [
+                0.0779,
+                0.1632
+              ],
+              "significant": true,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.9,
+              "bin_hi": 1.0,
+              "n": 333,
+              "n_games": 12,
+              "mean_p": 0.9457,
+              "mean_y": 1.0,
+              "gap": 0.0543,
+              "mean_y_ci": [
+                1.0,
+                1.0
+              ],
+              "gap_ci": [
+                0.0328,
+                0.0817
+              ],
+              "significant": true,
+              "low_n": false
+            }
+          ]
+        },
+        "market_prob": {
+          "label": "market",
+          "brier": 0.142726,
+          "n_eligible_bins": 10,
+          "n_significant_bins": 6,
+          "n_within_noise_bins": 4,
+          "bins": [
+            {
+              "bin_lo": 0.0,
+              "bin_hi": 0.1,
+              "n": 1421,
+              "n_games": 29,
+              "mean_p": 0.0489,
+              "mean_y": 0.1671,
+              "gap": 0.1182,
+              "mean_y_ci": [
+                0.0458,
+                0.3304
+              ],
+              "gap_ci": [
+                -0.0009,
+                0.2804
+              ],
+              "significant": false,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.1,
+              "bin_hi": 0.2,
+              "n": 1186,
+              "n_games": 27,
+              "mean_p": 0.1536,
+              "mean_y": 0.2226,
+              "gap": 0.069,
+              "mean_y_ci": [
+                0.0982,
+                0.4777
+              ],
+              "gap_ci": [
+                -0.0522,
+                0.3208
+              ],
+              "significant": false,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.2,
+              "bin_hi": 0.3,
+              "n": 1482,
+              "n_games": 28,
+              "mean_p": 0.2406,
+              "mean_y": 0.5958,
+              "gap": 0.3553,
+              "mean_y_ci": [
+                0.403,
+                0.7647
+              ],
+              "gap_ci": [
+                0.159,
+                0.5241
+              ],
+              "significant": true,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.3,
+              "bin_hi": 0.4,
+              "n": 963,
+              "n_games": 23,
+              "mean_p": 0.351,
+              "mean_y": 0.6402,
+              "gap": 0.2891,
+              "mean_y_ci": [
+                0.5066,
+                0.8064
+              ],
+              "gap_ci": [
+                0.1598,
+                0.4589
+              ],
+              "significant": true,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.4,
+              "bin_hi": 0.5,
+              "n": 623,
+              "n_games": 22,
+              "mean_p": 0.4477,
+              "mean_y": 0.7737,
+              "gap": 0.3259,
+              "mean_y_ci": [
+                0.5437,
+                0.9649
+              ],
+              "gap_ci": [
+                0.094,
+                0.5143
+              ],
+              "significant": true,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.5,
+              "bin_hi": 0.6,
+              "n": 721,
+              "n_games": 19,
+              "mean_p": 0.551,
+              "mean_y": 0.8641,
+              "gap": 0.3131,
+              "mean_y_ci": [
+                0.6399,
+                0.995
+              ],
+              "gap_ci": [
+                0.1006,
+                0.4381
+              ],
+              "significant": true,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.6,
+              "bin_hi": 0.7,
+              "n": 791,
+              "n_games": 18,
+              "mean_p": 0.6491,
+              "mean_y": 0.8559,
+              "gap": 0.2068,
+              "mean_y_ci": [
+                0.657,
+                0.9941
+              ],
+              "gap_ci": [
+                0.0008,
+                0.3497
+              ],
+              "significant": true,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.7,
+              "bin_hi": 0.8,
+              "n": 552,
+              "n_games": 20,
+              "mean_p": 0.7356,
+              "mean_y": 0.8687,
+              "gap": 0.133,
+              "mean_y_ci": [
+                0.7032,
+                0.9942
+              ],
+              "gap_ci": [
+                -0.0351,
+                0.2614
+              ],
+              "significant": false,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.8,
+              "bin_hi": 0.9,
+              "n": 929,
+              "n_games": 20,
+              "mean_p": 0.8414,
+              "mean_y": 0.9187,
+              "gap": 0.0773,
+              "mean_y_ci": [
+                0.7562,
+                1.0
+              ],
+              "gap_ci": [
+                -0.0753,
+                0.1659
+              ],
+              "significant": false,
+              "low_n": false
+            },
+            {
+              "bin_lo": 0.9,
+              "bin_hi": 1.0,
+              "n": 335,
+              "n_games": 8,
+              "mean_p": 0.9249,
+              "mean_y": 1.0,
+              "gap": 0.0751,
+              "mean_y_ci": [
+                1.0,
+                1.0
+              ],
+              "gap_ci": [
+                0.0622,
+                0.0914
+              ],
+              "significant": true,
+              "low_n": false
+            }
+          ]
+        }
+      }
+    }
+  },
+  "skipped": [
+    {
+      "sport": "mlb_clean",
+      "reason": "byte-identical duplicate of mlb corpus -- excluded to avoid double counting"
+    }
+  ],
+  "verdict": "mlb/model: 4/10 eligible bins have a calibration-gap 95% CI that excludes 0; 6 within noise. mlb/market: 0/10 eligible bins have a calibration-gap 95% CI that excludes 0; 10 within noise. soccer_intl/model: 8/10 eligible bins have a calibration-gap 95% CI that excludes 0; 2 within noise. soccer_intl/market: 6/10 eligible bins have a calibration-gap 95% CI that excludes 0; 4 within noise.",
+  "plot_written": true
+}

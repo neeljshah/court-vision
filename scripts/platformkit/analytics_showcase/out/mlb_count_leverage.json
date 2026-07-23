@@ -1,0 +1,491 @@
+{
+  "status": "ok",
+  "sport": "mlb",
+  "label": "DESCRIPTIVE_ONLY",
+  "caveat": "DESCRIPTIVE_ONLY count-leverage showcase over the local 2025 statcast pull: pitch-type mix and per-pitch outcome PROXIES (type S/B/X share, in-zone share) by count-leverage class. `type`==S conflates called+swinging+foul (no per-pitch swing/take in this corpus). Not a predictor; no edge/ROI/$ claim.",
+  "source": "data/cache/statcast/statcast_fuller__2025.parquet",
+  "as_of": "2026-07-23T03:22:53.232861+00:00",
+  "n_pitches_total": 693037,
+  "n_pitches_valid_count": 693037,
+  "floors": {
+    "class_min_n": 500,
+    "chart_top_pitch_types": 5,
+    "mix_top_per_class": 10,
+    "proxy_note": "every rate is over its own non-null denominator (n_type / n_zone), never the raw class count"
+  },
+  "leverage_definitions": {
+    "behind": "balls > strikes (pitcher behind; hitter's count)",
+    "even": "balls == strikes",
+    "ahead": "strikes > balls (pitcher ahead)",
+    "two_strike": "strikes == 2 (putaway lens -- OVERLAPS the partition)",
+    "three_ball": "balls == 3 (must-throw-strike lens -- OVERLAPS the partition)",
+    "partition_note": "behind/even/ahead is a mutually-exclusive, exhaustive partition; two_strike/three_ball are overlapping lenses (counts NOT additive with the partition)."
+  },
+  "chart_pitch_types": [
+    "FF",
+    "SI",
+    "SL",
+    "CH",
+    "ST"
+  ],
+  "by_leverage_class": [
+    {
+      "class": "behind",
+      "overlapping": false,
+      "definition": "balls > strikes (pitcher behind; hitter's count)",
+      "n": 183042,
+      "pitch_type_n": 181462,
+      "pitch_mix_top": [
+        {
+          "pitch_type": "FF",
+          "n": 63970,
+          "pct": 35.25
+        },
+        {
+          "pitch_type": "SI",
+          "n": 34992,
+          "pct": 19.28
+        },
+        {
+          "pitch_type": "SL",
+          "n": 23846,
+          "pct": 13.14
+        },
+        {
+          "pitch_type": "FC",
+          "n": 16880,
+          "pct": 9.3
+        },
+        {
+          "pitch_type": "CH",
+          "n": 16350,
+          "pct": 9.01
+        },
+        {
+          "pitch_type": "ST",
+          "n": 9851,
+          "pct": 5.43
+        },
+        {
+          "pitch_type": "CU",
+          "n": 7850,
+          "pct": 4.33
+        },
+        {
+          "pitch_type": "FS",
+          "n": 4126,
+          "pct": 2.27
+        },
+        {
+          "pitch_type": "KC",
+          "n": 2146,
+          "pct": 1.18
+        },
+        {
+          "pitch_type": "SV",
+          "n": 622,
+          "pct": 0.34
+        }
+      ],
+      "outcome_proxies": {
+        "n_type": 183042,
+        "strike_rate_type_S": 0.4981,
+        "ball_rate": 0.3065,
+        "inplay_rate_type_X": 0.1954,
+        "n_zone": 181462,
+        "in_zone_rate": 0.5855
+      }
+    },
+    {
+      "class": "even",
+      "overlapping": false,
+      "definition": "balls == strikes",
+      "n": 305712,
+      "pitch_type_n": 304924,
+      "pitch_mix_top": [
+        {
+          "pitch_type": "FF",
+          "n": 95441,
+          "pct": 31.3
+        },
+        {
+          "pitch_type": "SI",
+          "n": 50444,
+          "pct": 16.54
+        },
+        {
+          "pitch_type": "SL",
+          "n": 43362,
+          "pct": 14.22
+        },
+        {
+          "pitch_type": "CH",
+          "n": 28498,
+          "pct": 9.35
+        },
+        {
+          "pitch_type": "FC",
+          "n": 23814,
+          "pct": 7.81
+        },
+        {
+          "pitch_type": "ST",
+          "n": 23412,
+          "pct": 7.68
+        },
+        {
+          "pitch_type": "CU",
+          "n": 22561,
+          "pct": 7.4
+        },
+        {
+          "pitch_type": "FS",
+          "n": 8757,
+          "pct": 2.87
+        },
+        {
+          "pitch_type": "KC",
+          "n": 5658,
+          "pct": 1.86
+        },
+        {
+          "pitch_type": "SV",
+          "n": 1534,
+          "pct": 0.5
+        }
+      ],
+      "outcome_proxies": {
+        "n_type": 305712,
+        "strike_rate_type_S": 0.4822,
+        "ball_rate": 0.3597,
+        "inplay_rate_type_X": 0.1581,
+        "n_zone": 304924,
+        "in_zone_rate": 0.5274
+      }
+    },
+    {
+      "class": "ahead",
+      "overlapping": false,
+      "definition": "strikes > balls (pitcher ahead)",
+      "n": 204283,
+      "pitch_type_n": 204107,
+      "pitch_mix_top": [
+        {
+          "pitch_type": "FF",
+          "n": 60824,
+          "pct": 29.8
+        },
+        {
+          "pitch_type": "SL",
+          "n": 32149,
+          "pct": 15.75
+        },
+        {
+          "pitch_type": "CH",
+          "n": 26422,
+          "pct": 12.95
+        },
+        {
+          "pitch_type": "SI",
+          "n": 21700,
+          "pct": 10.63
+        },
+        {
+          "pitch_type": "ST",
+          "n": 19418,
+          "pct": 9.51
+        },
+        {
+          "pitch_type": "CU",
+          "n": 16078,
+          "pct": 7.88
+        },
+        {
+          "pitch_type": "FC",
+          "n": 11173,
+          "pct": 5.47
+        },
+        {
+          "pitch_type": "FS",
+          "n": 9590,
+          "pct": 4.7
+        },
+        {
+          "pitch_type": "KC",
+          "n": 4608,
+          "pct": 2.26
+        },
+        {
+          "pitch_type": "SV",
+          "n": 1271,
+          "pct": 0.62
+        }
+      ],
+      "outcome_proxies": {
+        "n_type": 204283,
+        "strike_rate_type_S": 0.4034,
+        "ball_rate": 0.4132,
+        "inplay_rate_type_X": 0.1834,
+        "n_zone": 204107,
+        "in_zone_rate": 0.4039
+      }
+    },
+    {
+      "class": "two_strike",
+      "overlapping": true,
+      "definition": "strikes == 2 (putaway lens -- OVERLAPS the partition)",
+      "n": 207101,
+      "pitch_type_n": 206876,
+      "pitch_mix_top": [
+        {
+          "pitch_type": "FF",
+          "n": 66158,
+          "pct": 31.98
+        },
+        {
+          "pitch_type": "SL",
+          "n": 32713,
+          "pct": 15.81
+        },
+        {
+          "pitch_type": "CH",
+          "n": 24296,
+          "pct": 11.74
+        },
+        {
+          "pitch_type": "SI",
+          "n": 21684,
+          "pct": 10.48
+        },
+        {
+          "pitch_type": "ST",
+          "n": 18960,
+          "pct": 9.16
+        },
+        {
+          "pitch_type": "CU",
+          "n": 16318,
+          "pct": 7.89
+        },
+        {
+          "pitch_type": "FC",
+          "n": 10604,
+          "pct": 5.13
+        },
+        {
+          "pitch_type": "FS",
+          "n": 9259,
+          "pct": 4.48
+        },
+        {
+          "pitch_type": "KC",
+          "n": 4814,
+          "pct": 2.33
+        },
+        {
+          "pitch_type": "SV",
+          "n": 1305,
+          "pct": 0.63
+        }
+      ],
+      "outcome_proxies": {
+        "n_type": 207101,
+        "strike_rate_type_S": 0.421,
+        "ball_rate": 0.3584,
+        "inplay_rate_type_X": 0.2206,
+        "n_zone": 206876,
+        "in_zone_rate": 0.4324
+      }
+    },
+    {
+      "class": "three_ball",
+      "overlapping": true,
+      "definition": "balls == 3 (must-throw-strike lens -- OVERLAPS the partition)",
+      "n": 56806,
+      "pitch_type_n": 56216,
+      "pitch_mix_top": [
+        {
+          "pitch_type": "FF",
+          "n": 23572,
+          "pct": 41.93
+        },
+        {
+          "pitch_type": "SI",
+          "n": 10938,
+          "pct": 19.46
+        },
+        {
+          "pitch_type": "SL",
+          "n": 6646,
+          "pct": 11.82
+        },
+        {
+          "pitch_type": "FC",
+          "n": 4692,
+          "pct": 8.35
+        },
+        {
+          "pitch_type": "CH",
+          "n": 3709,
+          "pct": 6.6
+        },
+        {
+          "pitch_type": "ST",
+          "n": 2701,
+          "pct": 4.8
+        },
+        {
+          "pitch_type": "CU",
+          "n": 1976,
+          "pct": 3.52
+        },
+        {
+          "pitch_type": "FS",
+          "n": 1068,
+          "pct": 1.9
+        },
+        {
+          "pitch_type": "KC",
+          "n": 558,
+          "pct": 0.99
+        },
+        {
+          "pitch_type": "SV",
+          "n": 165,
+          "pct": 0.29
+        }
+      ],
+      "outcome_proxies": {
+        "n_type": 56806,
+        "strike_rate_type_S": 0.499,
+        "ball_rate": 0.2643,
+        "inplay_rate_type_X": 0.2367,
+        "n_zone": 56216,
+        "in_zone_rate": 0.6106
+      }
+    }
+  ],
+  "by_exact_count": [
+    {
+      "balls": 0,
+      "strikes": 0,
+      "leverage_class": "even",
+      "n": 178407,
+      "top_pitch_type": "FF",
+      "top_pitch_pct": 32.77,
+      "strike_rate_type_S": 0.5038,
+      "in_zone_rate": 0.5503
+    },
+    {
+      "balls": 0,
+      "strikes": 1,
+      "leverage_class": "ahead",
+      "n": 89820,
+      "top_pitch_type": "FF",
+      "top_pitch_pct": 28.24,
+      "strike_rate_type_S": 0.4231,
+      "in_zone_rate": 0.4604
+    },
+    {
+      "balls": 0,
+      "strikes": 2,
+      "leverage_class": "ahead",
+      "n": 46656,
+      "top_pitch_type": "FF",
+      "top_pitch_pct": 31.77,
+      "strike_rate_type_S": 0.3603,
+      "in_zone_rate": 0.3241
+    },
+    {
+      "balls": 1,
+      "strikes": 0,
+      "leverage_class": "behind",
+      "n": 67516,
+      "top_pitch_type": "FF",
+      "top_pitch_pct": 31.04,
+      "strike_rate_type_S": 0.499,
+      "in_zone_rate": 0.5626
+    },
+    {
+      "balls": 1,
+      "strikes": 1,
+      "leverage_class": "even",
+      "n": 69473,
+      "top_pitch_type": "FF",
+      "top_pitch_pct": 27.95,
+      "strike_rate_type_S": 0.4542,
+      "in_zone_rate": 0.5116
+    },
+    {
+      "balls": 1,
+      "strikes": 2,
+      "leverage_class": "ahead",
+      "n": 67807,
+      "top_pitch_type": "FF",
+      "top_pitch_pct": 30.51,
+      "strike_rate_type_S": 0.4069,
+      "in_zone_rate": 0.3841
+    },
+    {
+      "balls": 2,
+      "strikes": 0,
+      "leverage_class": "behind",
+      "n": 23053,
+      "top_pitch_type": "FF",
+      "top_pitch_pct": 37.59,
+      "strike_rate_type_S": 0.5169,
+      "in_zone_rate": 0.6017
+    },
+    {
+      "balls": 2,
+      "strikes": 1,
+      "leverage_class": "behind",
+      "n": 35667,
+      "top_pitch_type": "FF",
+      "top_pitch_pct": 31.17,
+      "strike_rate_type_S": 0.4827,
+      "in_zone_rate": 0.5787
+    },
+    {
+      "balls": 2,
+      "strikes": 2,
+      "leverage_class": "even",
+      "n": 57832,
+      "top_pitch_type": "FF",
+      "top_pitch_pct": 30.81,
+      "strike_rate_type_S": 0.4493,
+      "in_zone_rate": 0.4757
+    },
+    {
+      "balls": 3,
+      "strikes": 0,
+      "leverage_class": "behind",
+      "n": 7457,
+      "top_pitch_type": "FF",
+      "top_pitch_pct": 65.12,
+      "strike_rate_type_S": 0.5723,
+      "in_zone_rate": 0.6293
+    },
+    {
+      "balls": 3,
+      "strikes": 1,
+      "leverage_class": "behind",
+      "n": 14543,
+      "top_pitch_type": "FF",
+      "top_pitch_pct": 42.5,
+      "strike_rate_type_S": 0.5004,
+      "in_zone_rate": 0.6284
+    },
+    {
+      "balls": 3,
+      "strikes": 2,
+      "leverage_class": "behind",
+      "n": 34806,
+      "top_pitch_type": "FF",
+      "top_pitch_pct": 37.06,
+      "strike_rate_type_S": 0.4827,
+      "in_zone_rate": 0.5994
+    }
+  ],
+  "chart": "docs/img/mlb_count_leverage.png"
+}

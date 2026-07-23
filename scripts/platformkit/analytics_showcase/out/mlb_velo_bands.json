@@ -1,0 +1,739 @@
+{
+  "status": "ok",
+  "sport": "mlb",
+  "caveat": "DESCRIPTIVE_ONLY: league release-speed distribution and in-season median-velo drift for the local 2025 statcast pull. Not a predictive, edge, or ROI claim -- nothing here is modeled, forecast, or priced. In-season velo ramp-up is a known physical effect, reported descriptively. See docs/JOB_EVIDENCE_PACKET.md.",
+  "floors": {
+    "band_share_min_pitches_per_type": 500,
+    "drift_min_pitches_per_cell": 200,
+    "chart_top_n_pitch_types": 6,
+    "note": "pitch types / (type,month) cells below floor are dropped, not smoothed; thin edge-of-season months (Mar/Oct) typically fall below the cell floor and vanish"
+  },
+  "source": "data/cache/statcast/statcast_fuller__2025.parquet",
+  "n_pitches_raw": 693037,
+  "n_analyzed": 690490,
+  "band_edges_mph": [
+    0,
+    80,
+    83,
+    86,
+    89,
+    92,
+    95,
+    98,
+    101,
+    200
+  ],
+  "band_labels": [
+    "<80",
+    "80-83",
+    "83-86",
+    "86-89",
+    "89-92",
+    "92-95",
+    "95-98",
+    "98-101",
+    "101+"
+  ],
+  "velo_band_shares_by_pitch_type": [
+    {
+      "pitch_type": "FF",
+      "n": 220233,
+      "median_velo": 94.5,
+      "band_share_pct": {
+        "<80": 0.0,
+        "80-83": 0.0,
+        "83-86": 0.2,
+        "86-89": 1.58,
+        "89-92": 13.06,
+        "92-95": 41.94,
+        "95-98": 34.78,
+        "98-101": 8.0,
+        "101+": 0.44
+      }
+    },
+    {
+      "pitch_type": "SI",
+      "n": 107135,
+      "median_velo": 94.0,
+      "band_share_pct": {
+        "<80": 0.0,
+        "80-83": 0.16,
+        "83-86": 1.02,
+        "86-89": 3.64,
+        "89-92": 18.23,
+        "92-95": 41.33,
+        "95-98": 30.41,
+        "98-101": 5.06,
+        "101+": 0.14
+      }
+    },
+    {
+      "pitch_type": "SL",
+      "n": 99357,
+      "median_velo": 86.4,
+      "band_share_pct": {
+        "<80": 3.08,
+        "80-83": 7.97,
+        "83-86": 31.83,
+        "86-89": 40.64,
+        "89-92": 14.91,
+        "92-95": 1.47,
+        "95-98": 0.1,
+        "98-101": 0.0,
+        "101+": 0.0
+      }
+    },
+    {
+      "pitch_type": "CH",
+      "n": 71270,
+      "median_velo": 86.3,
+      "band_share_pct": {
+        "<80": 7.99,
+        "80-83": 11.89,
+        "83-86": 25.94,
+        "86-89": 35.25,
+        "89-92": 16.05,
+        "92-95": 2.57,
+        "95-98": 0.3,
+        "98-101": 0.0,
+        "101+": 0.0
+      }
+    },
+    {
+      "pitch_type": "ST",
+      "n": 52681,
+      "median_velo": 82.7,
+      "band_share_pct": {
+        "<80": 17.35,
+        "80-83": 35.73,
+        "83-86": 35.45,
+        "86-89": 10.96,
+        "89-92": 0.51,
+        "92-95": 0.0,
+        "95-98": 0.0,
+        "98-101": 0.0,
+        "101+": 0.0
+      }
+    },
+    {
+      "pitch_type": "FC",
+      "n": 51867,
+      "median_velo": 89.6,
+      "band_share_pct": {
+        "<80": 0.12,
+        "80-83": 1.14,
+        "83-86": 8.43,
+        "86-89": 30.79,
+        "89-92": 39.38,
+        "92-95": 15.73,
+        "95-98": 2.86,
+        "98-101": 1.53,
+        "101+": 0.03
+      }
+    },
+    {
+      "pitch_type": "CU",
+      "n": 46489,
+      "median_velo": 79.9,
+      "band_share_pct": {
+        "<80": 50.41,
+        "80-83": 33.65,
+        "83-86": 13.36,
+        "86-89": 2.5,
+        "89-92": 0.08,
+        "92-95": 0.0,
+        "95-98": 0.0,
+        "98-101": 0.0,
+        "101+": 0.0
+      }
+    },
+    {
+      "pitch_type": "FS",
+      "n": 22473,
+      "median_velo": 86.3,
+      "band_share_pct": {
+        "<80": 1.07,
+        "80-83": 14.38,
+        "83-86": 31.07,
+        "86-89": 32.88,
+        "89-92": 13.81,
+        "92-95": 4.85,
+        "95-98": 1.05,
+        "98-101": 0.9,
+        "101+": 0.0
+      }
+    },
+    {
+      "pitch_type": "KC",
+      "n": 12412,
+      "median_velo": 83.0,
+      "band_share_pct": {
+        "<80": 26.61,
+        "80-83": 22.88,
+        "83-86": 27.73,
+        "86-89": 20.71,
+        "89-92": 2.06,
+        "92-95": 0.0,
+        "95-98": 0.0,
+        "98-101": 0.0,
+        "101+": 0.0
+      }
+    },
+    {
+      "pitch_type": "SV",
+      "n": 3427,
+      "median_velo": 81.8,
+      "band_share_pct": {
+        "<80": 22.88,
+        "80-83": 46.1,
+        "83-86": 25.68,
+        "86-89": 5.31,
+        "89-92": 0.03,
+        "92-95": 0.0,
+        "95-98": 0.0,
+        "98-101": 0.0,
+        "101+": 0.0
+      }
+    },
+    {
+      "pitch_type": "EP",
+      "n": 970,
+      "median_velo": 50.1,
+      "band_share_pct": {
+        "<80": 100.0,
+        "80-83": 0.0,
+        "83-86": 0.0,
+        "86-89": 0.0,
+        "89-92": 0.0,
+        "92-95": 0.0,
+        "95-98": 0.0,
+        "98-101": 0.0,
+        "101+": 0.0
+      }
+    },
+    {
+      "pitch_type": "FA",
+      "n": 854,
+      "median_velo": 67.9,
+      "band_share_pct": {
+        "<80": 90.05,
+        "80-83": 4.8,
+        "83-86": 3.63,
+        "86-89": 1.52,
+        "89-92": 0.0,
+        "92-95": 0.0,
+        "95-98": 0.0,
+        "98-101": 0.0,
+        "101+": 0.0
+      }
+    },
+    {
+      "pitch_type": "FO",
+      "n": 721,
+      "median_velo": 83.0,
+      "band_share_pct": {
+        "<80": 2.77,
+        "80-83": 45.63,
+        "83-86": 44.94,
+        "86-89": 6.66,
+        "89-92": 0.0,
+        "92-95": 0.0,
+        "95-98": 0.0,
+        "98-101": 0.0,
+        "101+": 0.0
+      }
+    }
+  ],
+  "monthly_drift_by_pitch_type": [
+    {
+      "pitch_type": "FF",
+      "n": 220233,
+      "n_months": 6,
+      "first_month": 4,
+      "last_month": 9,
+      "median_velo_delta_first_to_last_mph": 0.4,
+      "months": [
+        {
+          "month": 4,
+          "n": 36052,
+          "median_velo": 94.2,
+          "mean_velo": 94.15
+        },
+        {
+          "month": 5,
+          "n": 38125,
+          "median_velo": 94.5,
+          "mean_velo": 94.42
+        },
+        {
+          "month": 6,
+          "n": 35943,
+          "median_velo": 94.7,
+          "mean_velo": 94.61
+        },
+        {
+          "month": 7,
+          "n": 34083,
+          "median_velo": 94.7,
+          "mean_velo": 94.6
+        },
+        {
+          "month": 8,
+          "n": 39779,
+          "median_velo": 94.5,
+          "mean_velo": 94.57
+        },
+        {
+          "month": 9,
+          "n": 36251,
+          "median_velo": 94.6,
+          "mean_velo": 94.67
+        }
+      ]
+    },
+    {
+      "pitch_type": "SI",
+      "n": 107135,
+      "n_months": 6,
+      "first_month": 4,
+      "last_month": 9,
+      "median_velo_delta_first_to_last_mph": 0.5,
+      "months": [
+        {
+          "month": 4,
+          "n": 17611,
+          "median_velo": 93.6,
+          "mean_velo": 93.38
+        },
+        {
+          "month": 5,
+          "n": 18579,
+          "median_velo": 94.0,
+          "mean_velo": 93.83
+        },
+        {
+          "month": 6,
+          "n": 18321,
+          "median_velo": 94.1,
+          "mean_velo": 93.83
+        },
+        {
+          "month": 7,
+          "n": 16963,
+          "median_velo": 94.0,
+          "mean_velo": 93.87
+        },
+        {
+          "month": 8,
+          "n": 19192,
+          "median_velo": 94.1,
+          "mean_velo": 93.91
+        },
+        {
+          "month": 9,
+          "n": 16469,
+          "median_velo": 94.1,
+          "mean_velo": 93.96
+        }
+      ]
+    },
+    {
+      "pitch_type": "SL",
+      "n": 99357,
+      "n_months": 6,
+      "first_month": 4,
+      "last_month": 9,
+      "median_velo_delta_first_to_last_mph": 0.5,
+      "months": [
+        {
+          "month": 4,
+          "n": 16269,
+          "median_velo": 86.1,
+          "mean_velo": 85.82
+        },
+        {
+          "month": 5,
+          "n": 17489,
+          "median_velo": 86.4,
+          "mean_velo": 86.2
+        },
+        {
+          "month": 6,
+          "n": 16844,
+          "median_velo": 86.4,
+          "mean_velo": 86.13
+        },
+        {
+          "month": 7,
+          "n": 15544,
+          "median_velo": 86.6,
+          "mean_velo": 86.49
+        },
+        {
+          "month": 8,
+          "n": 17599,
+          "median_velo": 86.6,
+          "mean_velo": 86.39
+        },
+        {
+          "month": 9,
+          "n": 15612,
+          "median_velo": 86.6,
+          "mean_velo": 86.43
+        }
+      ]
+    },
+    {
+      "pitch_type": "CH",
+      "n": 71270,
+      "n_months": 6,
+      "first_month": 4,
+      "last_month": 9,
+      "median_velo_delta_first_to_last_mph": 0.1,
+      "months": [
+        {
+          "month": 4,
+          "n": 11872,
+          "median_velo": 86.2,
+          "mean_velo": 85.71
+        },
+        {
+          "month": 5,
+          "n": 12190,
+          "median_velo": 86.4,
+          "mean_velo": 85.85
+        },
+        {
+          "month": 6,
+          "n": 11427,
+          "median_velo": 86.3,
+          "mean_velo": 85.88
+        },
+        {
+          "month": 7,
+          "n": 10532,
+          "median_velo": 86.3,
+          "mean_velo": 85.86
+        },
+        {
+          "month": 8,
+          "n": 13125,
+          "median_velo": 86.3,
+          "mean_velo": 85.83
+        },
+        {
+          "month": 9,
+          "n": 12124,
+          "median_velo": 86.3,
+          "mean_velo": 85.98
+        }
+      ]
+    },
+    {
+      "pitch_type": "ST",
+      "n": 52681,
+      "n_months": 6,
+      "first_month": 4,
+      "last_month": 9,
+      "median_velo_delta_first_to_last_mph": 0.6,
+      "months": [
+        {
+          "month": 4,
+          "n": 9566,
+          "median_velo": 82.3,
+          "mean_velo": 82.09
+        },
+        {
+          "month": 5,
+          "n": 9207,
+          "median_velo": 82.8,
+          "mean_velo": 82.5
+        },
+        {
+          "month": 6,
+          "n": 8499,
+          "median_velo": 82.8,
+          "mean_velo": 82.61
+        },
+        {
+          "month": 7,
+          "n": 7783,
+          "median_velo": 82.9,
+          "mean_velo": 82.81
+        },
+        {
+          "month": 8,
+          "n": 9348,
+          "median_velo": 82.8,
+          "mean_velo": 82.66
+        },
+        {
+          "month": 9,
+          "n": 8278,
+          "median_velo": 82.9,
+          "mean_velo": 82.74
+        }
+      ]
+    },
+    {
+      "pitch_type": "FC",
+      "n": 51867,
+      "n_months": 6,
+      "first_month": 4,
+      "last_month": 9,
+      "median_velo_delta_first_to_last_mph": 0.3,
+      "months": [
+        {
+          "month": 4,
+          "n": 9036,
+          "median_velo": 89.4,
+          "mean_velo": 89.55
+        },
+        {
+          "month": 5,
+          "n": 9023,
+          "median_velo": 89.6,
+          "mean_velo": 89.68
+        },
+        {
+          "month": 6,
+          "n": 9410,
+          "median_velo": 89.9,
+          "mean_velo": 89.83
+        },
+        {
+          "month": 7,
+          "n": 8244,
+          "median_velo": 89.7,
+          "mean_velo": 89.9
+        },
+        {
+          "month": 8,
+          "n": 8897,
+          "median_velo": 89.5,
+          "mean_velo": 89.5
+        },
+        {
+          "month": 9,
+          "n": 7257,
+          "median_velo": 89.7,
+          "mean_velo": 89.69
+        }
+      ]
+    },
+    {
+      "pitch_type": "CU",
+      "n": 46489,
+      "n_months": 6,
+      "first_month": 4,
+      "last_month": 9,
+      "median_velo_delta_first_to_last_mph": 0.6,
+      "months": [
+        {
+          "month": 4,
+          "n": 6948,
+          "median_velo": 79.6,
+          "mean_velo": 79.39
+        },
+        {
+          "month": 5,
+          "n": 7444,
+          "median_velo": 79.7,
+          "mean_velo": 79.41
+        },
+        {
+          "month": 6,
+          "n": 7950,
+          "median_velo": 80.1,
+          "mean_velo": 79.72
+        },
+        {
+          "month": 7,
+          "n": 7601,
+          "median_velo": 79.9,
+          "mean_velo": 79.66
+        },
+        {
+          "month": 8,
+          "n": 8677,
+          "median_velo": 79.9,
+          "mean_velo": 79.6
+        },
+        {
+          "month": 9,
+          "n": 7869,
+          "median_velo": 80.2,
+          "mean_velo": 80.0
+        }
+      ]
+    },
+    {
+      "pitch_type": "FS",
+      "n": 22473,
+      "n_months": 6,
+      "first_month": 4,
+      "last_month": 9,
+      "median_velo_delta_first_to_last_mph": -0.2,
+      "months": [
+        {
+          "month": 4,
+          "n": 4278,
+          "median_velo": 86.1,
+          "mean_velo": 86.34
+        },
+        {
+          "month": 5,
+          "n": 4118,
+          "median_velo": 86.4,
+          "mean_velo": 86.65
+        },
+        {
+          "month": 6,
+          "n": 3294,
+          "median_velo": 86.1,
+          "mean_velo": 86.25
+        },
+        {
+          "month": 7,
+          "n": 3394,
+          "median_velo": 86.7,
+          "mean_velo": 86.68
+        },
+        {
+          "month": 8,
+          "n": 3894,
+          "median_velo": 86.5,
+          "mean_velo": 86.52
+        },
+        {
+          "month": 9,
+          "n": 3495,
+          "median_velo": 85.9,
+          "mean_velo": 86.26
+        }
+      ]
+    },
+    {
+      "pitch_type": "KC",
+      "n": 12412,
+      "n_months": 6,
+      "first_month": 4,
+      "last_month": 9,
+      "median_velo_delta_first_to_last_mph": 0.1,
+      "months": [
+        {
+          "month": 4,
+          "n": 1765,
+          "median_velo": 82.7,
+          "mean_velo": 82.29
+        },
+        {
+          "month": 5,
+          "n": 2330,
+          "median_velo": 83.3,
+          "mean_velo": 83.04
+        },
+        {
+          "month": 6,
+          "n": 2115,
+          "median_velo": 84.0,
+          "mean_velo": 83.5
+        },
+        {
+          "month": 7,
+          "n": 1972,
+          "median_velo": 82.7,
+          "mean_velo": 82.21
+        },
+        {
+          "month": 8,
+          "n": 2278,
+          "median_velo": 82.6,
+          "mean_velo": 82.38
+        },
+        {
+          "month": 9,
+          "n": 1952,
+          "median_velo": 82.8,
+          "mean_velo": 82.51
+        }
+      ]
+    },
+    {
+      "pitch_type": "SV",
+      "n": 3427,
+      "n_months": 6,
+      "first_month": 4,
+      "last_month": 9,
+      "median_velo_delta_first_to_last_mph": 0.1,
+      "months": [
+        {
+          "month": 4,
+          "n": 436,
+          "median_velo": 81.8,
+          "mean_velo": 81.79
+        },
+        {
+          "month": 5,
+          "n": 717,
+          "median_velo": 81.8,
+          "mean_velo": 81.76
+        },
+        {
+          "month": 6,
+          "n": 744,
+          "median_velo": 82.0,
+          "mean_velo": 81.85
+        },
+        {
+          "month": 7,
+          "n": 636,
+          "median_velo": 81.6,
+          "mean_velo": 81.5
+        },
+        {
+          "month": 8,
+          "n": 463,
+          "median_velo": 82.0,
+          "mean_velo": 82.02
+        },
+        {
+          "month": 9,
+          "n": 431,
+          "median_velo": 81.9,
+          "mean_velo": 81.89
+        }
+      ]
+    },
+    {
+      "pitch_type": "FO",
+      "n": 721,
+      "n_months": 2,
+      "first_month": 4,
+      "last_month": 5,
+      "median_velo_delta_first_to_last_mph": -0.9,
+      "months": [
+        {
+          "month": 4,
+          "n": 223,
+          "median_velo": 84.1,
+          "mean_velo": 84.07
+        },
+        {
+          "month": 5,
+          "n": 213,
+          "median_velo": 83.2,
+          "mean_velo": 83.23
+        }
+      ]
+    }
+  ],
+  "chart_pitch_types": [
+    "FF",
+    "SI",
+    "SL",
+    "CH",
+    "ST",
+    "FC"
+  ]
+}

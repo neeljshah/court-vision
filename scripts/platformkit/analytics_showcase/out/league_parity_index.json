@@ -1,0 +1,105 @@
+{
+  "label": "DESCRIPTIVE_ONLY",
+  "source": "data/domains/basketball_nba/player_boxscores.parquet + docs/JOB_EVIDENCE_PACKET.md",
+  "methodology": {
+    "unit": "team-game points = sum of a team's players' pts within one game_id",
+    "game_filter": "only game_ids with exactly 2 distinct teams; higher score wins (ties excluded from margins)",
+    "win_share_gini": "Gini of per-team win counts (wins/total-wins sum to 1); 0 = balanced, (N-1)/N = one team hoards all",
+    "win_share_hhi": "Herfindahl of win shares; balanced floor = 1/N; normalized = (HHI-1/N)/(1-1/N)",
+    "win_pct_stdev": "std of team win percentage -- games-normalized companion (robust to unequal game counts)",
+    "margin_dispersion": "mean/std of absolute final margin + pct of games decided by <= 5 points",
+    "not_a_forecast": true,
+    "not_this": [
+      "NOT a prediction of any future season's parity (describes seasons already played)",
+      "NOT reg-season-only (pooled with any playoff games in the parquet, which inflate win concentration)",
+      "NOT strength-of-schedule adjusted (opponent-raw win counts)"
+    ]
+  },
+  "declared_floors": {
+    "min_games_per_season": 200,
+    "rule": "season below the floor is flagged meets_games_floor=false and excluded from the Lorenz chart",
+    "close_game_pts": 5,
+    "full_regular_season_games_reference": 1230
+  },
+  "input_coverage": {
+    "rows": 77744,
+    "games_total": 3611,
+    "games_two_team": 3611,
+    "games_dropped_not_two_team": 0,
+    "seasons": [
+      "2023-24",
+      "2024-25",
+      "2025-26"
+    ],
+    "date_max": "2026-04-12"
+  },
+  "extremes_descriptive": {
+    "most_balanced_season": {
+      "season": "2023-24",
+      "win_share_gini": 0.177
+    },
+    "least_balanced_season": {
+      "season": "2025-26",
+      "win_share_gini": 0.2004
+    }
+  },
+  "seasons": [
+    {
+      "season": "2023-24",
+      "n_games": 1230,
+      "n_decided_games": 1230,
+      "n_ties_or_undecided": 0,
+      "n_teams": 30,
+      "meets_games_floor": true,
+      "looks_partial_vs_full_season": false,
+      "win_share_gini": 0.177,
+      "win_share_hhi": 0.0368,
+      "hhi_balanced_floor_1_over_n": 0.0333,
+      "win_share_hhi_normalized": 0.0036,
+      "win_pct_stdev": 0.1636,
+      "margin_mean_abs": 12.58,
+      "margin_stdev_abs": 9.53,
+      "pct_close_games_le5": 23.3,
+      "max_wins": 64,
+      "min_wins": 14
+    },
+    {
+      "season": "2024-25",
+      "n_games": 1225,
+      "n_decided_games": 1225,
+      "n_ties_or_undecided": 0,
+      "n_teams": 30,
+      "meets_games_floor": true,
+      "looks_partial_vs_full_season": true,
+      "win_share_gini": 0.1798,
+      "win_share_hhi": 0.0367,
+      "hhi_balanced_floor_1_over_n": 0.0333,
+      "win_share_hhi_normalized": 0.0035,
+      "win_pct_stdev": 0.1629,
+      "margin_mean_abs": 12.71,
+      "margin_stdev_abs": 9.59,
+      "pct_close_games_le5": 25.2,
+      "max_wins": 67,
+      "min_wins": 17
+    },
+    {
+      "season": "2025-26",
+      "n_games": 1156,
+      "n_decided_games": 1156,
+      "n_ties_or_undecided": 0,
+      "n_teams": 30,
+      "meets_games_floor": true,
+      "looks_partial_vs_full_season": true,
+      "win_share_gini": 0.2004,
+      "win_share_hhi": 0.0375,
+      "hhi_balanced_floor_1_over_n": 0.0333,
+      "win_share_hhi_normalized": 0.0043,
+      "win_pct_stdev": 0.1667,
+      "margin_mean_abs": 13.03,
+      "margin_stdev_abs": 9.76,
+      "pct_close_games_le5": 25.5,
+      "max_wins": 64,
+      "min_wins": 16
+    }
+  ]
+}
