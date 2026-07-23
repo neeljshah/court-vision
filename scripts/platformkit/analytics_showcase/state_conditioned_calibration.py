@@ -19,7 +19,7 @@ from collections import defaultdict
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 CORPUS_DIR = os.path.join(ROOT, "data", "cache", "ingame_grade_joined")
-OUT_JSON = os.path.join(ROOT, "out", "state_conditioned_calibration.json")
+OUT_JSON = os.path.join(ROOT, "scripts", "platformkit", "analytics_showcase", "out", "state_conditioned_calibration.json")
 OUT_PNG = os.path.join(ROOT, "docs", "img", "state_calibration_heatmap.png")
 
 PROB_BINS = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]

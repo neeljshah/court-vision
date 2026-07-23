@@ -22,8 +22,8 @@ BACKUP_DIR = os.path.join(ROOT, "data", "pod_backup_2026_07_20", "frontend")
 LEDGER_PATH = os.path.join(BACKUP_DIR, "clv_ledger.jsonl")
 SETTLE_STATUS_PATH = os.path.join(BACKUP_DIR, "ops", "ingame_paper_settle_status.json")
 TODAY_PATH = os.path.join(BACKUP_DIR, "paper_today.json")
-OUT_JSON = os.path.join(ROOT, "out", "paper_execution_audit.json")
-OUT_MD = os.path.join(ROOT, "out", "paper_execution_audit.md")
+OUT_JSON = os.path.join(ROOT, "scripts", "platformkit", "analytics_showcase", "out", "paper_execution_audit.json")
+OUT_MD = os.path.join(ROOT, "scripts", "platformkit", "analytics_showcase", "out", "paper_execution_audit.md")
 
 
 def load_ledger(path):
