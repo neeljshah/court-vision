@@ -43,8 +43,10 @@ from collections import defaultdict
 try:  # -m package invocation (check_all) vs bare-script invocation
     from scripts.platformkit.analytics_showcase.state_conditioned_calibration import (
         SPORTS, load_records)
+    from scripts.platformkit.analytics_showcase._clone_safe import verify_recorded_artifact
 except ImportError:
     from state_conditioned_calibration import SPORTS, load_records
+    from _clone_safe import verify_recorded_artifact
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 OUT_JSON = os.path.join(ROOT, "scripts", "platformkit", "analytics_showcase", "out", "residual_autocorrelation.json")
@@ -249,6 +251,16 @@ def check():
     vals, skip = per_game_autocorr(series)
     assert len(vals["model"]) == 1 and vals["model"][0] > 0.5, vals  # rising path => strong +autocorr
     assert skip["market"]["flat"] == 1, skip  # flat market residual counted flat, not as 0
+
+    if not any(load_records(sport)[0] for sport in SPORTS):
+        # local corpus (data/cache/ingame_grade_joined/, gitignored) absent --
+        # e.g. on a fresh clone. run() unconditionally overwrites OUT_JSON, so we
+        # must not call it here, or it clobbers the committed artifact. Fall back
+        # to verifying the committed artifact instead.
+        def validate(d):
+            assert d["sports"], "no sports produced output"
+        verify_recorded_artifact(OUT_JSON, validate, "residual_autocorrelation")
+        return
 
     result = run()
     assert result["sports"], "no sports produced output"

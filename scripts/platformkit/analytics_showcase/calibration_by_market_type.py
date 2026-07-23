@@ -24,8 +24,10 @@ import statistics as stats
 
 try:  # -m package invocation (check_all) vs bare-script invocation
     from scripts.platformkit.analytics_showcase.state_conditioned_calibration import load_records
+    from scripts.platformkit.analytics_showcase._clone_safe import verify_recorded_artifact
 except ImportError:  # pragma: no cover - bare-script invocation
     from state_conditioned_calibration import load_records
+    from _clone_safe import verify_recorded_artifact
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 OUT_JSON = os.path.join(REPO_ROOT, "scripts", "platformkit", "analytics_showcase", "out", "calibration_by_market_type.json")
@@ -53,7 +55,6 @@ def brier(pairs):
     n = len(pairs)
     return sum((p - y) ** 2 for p, y in pairs) / n if n else None
 
-
 def ece_10bin(pairs):
     """n-weighted |mean_p - mean_y| over N_BINS equal-width bins (calibration,
     not accuracy). Returns None on empty input."""
@@ -70,7 +71,6 @@ def ece_10bin(pairs):
         my = sum(y for _, y in b) / len(b)
         tot += (len(b) / n) * abs(mp - my)
     return round(tot, 6)
-
 
 def score_labeled(sport):
     """Score one moneyline market type. Reuses load_records (JSONL rows) and
@@ -113,7 +113,6 @@ def score_labeled(sport):
         brier_gap_model_minus_market=round(mb - kb, 6) if (mb is not None and kb is not None) else None,
     )
     return out
-
 
 def measure_unlabeled(deriv_dir, desc):
     """Read totals quote-tracks column-selectively (market_prob/model_prob/line/
@@ -163,7 +162,6 @@ def measure_unlabeled(deriv_dir, desc):
     )
     return out
 
-
 def make_chart(market_types):
     import matplotlib
     matplotlib.use("Agg")
@@ -209,7 +207,6 @@ def make_chart(market_types):
     fig.savefig(OUT_PNG, dpi=140)
     plt.close(fig)
 
-
 def build_verdict(market_types):
     scored = [(k, v) for k, v in market_types.items() if v.get("scored")]
     unscored = [k for k, v in market_types.items() if not v.get("scored")]
@@ -219,7 +216,6 @@ def build_verdict(market_types):
     tail = f" Unscorable market types (no resolved outcome, disclosed not fabricated): {', '.join(unscored)}." if unscored else ""
     return ("Brier scored only for market types whose corpora carry resolved outcomes: "
             + "; ".join(parts) + "." + tail) if parts else ("No market type met the n floor." + tail)
-
 
 def run():
     result = {
@@ -252,10 +248,7 @@ def run():
         result["market_types"][key] = measure_unlabeled(deriv_dir, desc)
 
     result["verdict"] = build_verdict(result["market_types"])
-
     os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
-    with open(OUT_JSON, "w", encoding="utf-8") as f:
-        json.dump(result, f, indent=2)
 
     if any(v.get("scored") for v in result["market_types"].values()):
         make_chart(result["market_types"])
@@ -271,6 +264,14 @@ def run():
 def check():
     assert brier([(1.0, 1.0), (0.0, 0.0)]) == 0.0  # perfect predictor -> Brier 0
     assert ece_10bin([(0.5, 1.0), (0.5, 0.0)]) == 0.0  # bin mean_p 0.5 == mean_y 0.5
+    # run() unconditionally overwrites OUT_JSON -- if the local corpus is absent
+    # (gitignored, e.g. fresh clone) don't call it, or it clobbers the artifact.
+    if not any(load_records(sport)[0] for sport, _ in LABELED.values()):
+        def validate(d):
+            s = [v for v in d["market_types"].values() if v.get("scored")]
+            assert s and all(v["n_usable_model"] > 0 and 0.0 < v["model_brier"] < 1.0 for v in s)
+        verify_recorded_artifact(OUT_JSON, validate, "calibration_by_market_type")
+        return
     result = run()
     assert os.path.exists(OUT_JSON) and os.path.getsize(OUT_JSON) > 0, OUT_JSON
     mt = result["market_types"]

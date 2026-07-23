@@ -49,8 +49,10 @@ import matplotlib.pyplot as plt
 
 try:  # package-qualified (python -m ...) with bare-script fallback
     from scripts.platformkit.analytics_showcase.info_arrival_curve import load_rows, CORPORA
+    from scripts.platformkit.analytics_showcase._clone_safe import verify_recorded_artifact
 except ImportError:  # pragma: no cover - bare-script invocation from the showcase dir
     from info_arrival_curve import load_rows, CORPORA
+    from _clone_safe import verify_recorded_artifact
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 OUT_JSON = os.path.join(REPO_ROOT, "scripts", "platformkit", "analytics_showcase", "out", "market_convergence.json")
@@ -210,6 +212,17 @@ def check():
     assert abs(bc[1]["mean_entropy_market_bits"] - 1.0) < 1e-9, bc
     # below-floor checkpoint is dropped, not reported
     assert by_checkpoint([(2, 0.6, 0.4, 1.0, 0.5)] * (MIN_N - 1), MIN_N) == {}
+
+    if not any(load_rows(sport, pattern) for sport, pattern in CORPORA.items()):
+        # local corpus (data/cache/ingame_grade_joined/, gitignored) absent --
+        # e.g. on a fresh clone. run() unconditionally overwrites OUT_JSON, so we
+        # must not call it here, or it clobbers the committed artifact. Fall back
+        # to verifying the committed artifact instead.
+        def validate(d):
+            total = sum(len(v) for v in d["checkpoints"].values())
+            assert total > 0, "no checkpoints above floor -- outputs empty"
+        verify_recorded_artifact(OUT_JSON, validate, "market_convergence")
+        return
 
     payload = run()
     total = sum(len(v) for v in payload["checkpoints"].values())
