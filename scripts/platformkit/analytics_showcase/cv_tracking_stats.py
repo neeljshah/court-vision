@@ -17,6 +17,11 @@ import sqlite3
 import statistics
 from pathlib import Path
 
+try:  # -m package invocation (check_all) vs bare-script invocation
+    from scripts.platformkit.analytics_showcase._clone_safe import verify_recorded_artifact
+except ImportError:
+    from _clone_safe import verify_recorded_artifact
+
 DB = Path(__file__).resolve().parents[3] / "data" / "nba_ai.db"
 OUT_DIR = Path(__file__).resolve().parent / "out"
 IMG_DIR = Path(__file__).resolve().parents[3] / "docs" / "img"
@@ -114,11 +119,21 @@ def main():
     ap.add_argument("--check", action="store_true", help="self-check only, no writes")
     args = ap.parse_args()
 
-    con = sqlite3.connect(str(DB))
     try:
-        stats = compute_stats(con)
-    finally:
-        con.close()
+        con = sqlite3.connect(str(DB))
+        try:
+            stats = compute_stats(con)
+        finally:
+            con.close()
+    except sqlite3.OperationalError:
+        if not args.check:
+            raise
+        def validate(d):
+            assert d["total_rows"] > 0
+            assert d["n_games"] > 0
+            assert len(d["top20_most_tracked_player_ids"]) > 0
+        verify_recorded_artifact(OUT_DIR / "cv_tracking_stats.json", validate, "cv_tracking_stats")
+        return
 
     if args.check:
         assert stats["total_rows"] > 0

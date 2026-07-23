@@ -21,6 +21,7 @@ import os
 import re
 
 from scripts.platformkit.reject_ledger import load, graveyard, REJECT_VERDICTS
+from scripts.platformkit.analytics_showcase._clone_safe import verify_recorded_artifact
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 OUT_JSON = os.path.join(REPO_ROOT, "scripts", "platformkit", "analytics_showcase", "out", "reject_graveyard.json")
@@ -132,6 +133,16 @@ def main():
     args = ap.parse_args()
 
     result = build()
+
+    if args.check and result["full_history_row_count"] == 0:
+        # local ledger (data/frontend/reject_ledger.jsonl, gitignored) absent --
+        # e.g. on a fresh clone. Fall back to verifying the committed artifact.
+        def validate(d):
+            assert d["full_history_row_count"] > 0
+            assert d["latest_per_signal_graveyard_count"] > 0
+            assert d["full_history_row_count"] >= d["latest_per_signal_graveyard_count"]
+        verify_recorded_artifact(OUT_JSON, validate, "reject_graveyard")
+        return
 
     if args.check:
         assert result["full_history_row_count"] > 0

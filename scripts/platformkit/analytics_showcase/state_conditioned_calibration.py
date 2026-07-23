@@ -18,6 +18,11 @@ import re
 from collections import defaultdict
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+try:  # -m package invocation (check_all) vs bare-script invocation
+    from scripts.platformkit.analytics_showcase._clone_safe import verify_recorded_artifact
+except ImportError:
+    from _clone_safe import verify_recorded_artifact
+
 CORPUS_DIR = os.path.join(ROOT, "data", "cache", "ingame_grade_joined")
 OUT_JSON = os.path.join(ROOT, "scripts", "platformkit", "analytics_showcase", "out", "state_conditioned_calibration.json")
 OUT_PNG = os.path.join(ROOT, "docs", "img", "state_calibration_heatmap.png")
@@ -244,9 +249,24 @@ def run():
     return result
 
 
+def _corpus_present():
+    return any(load_records(sport)[0] for sport in SPORTS)
+
+
 def check():
     """Minimal self-check: run() produces a JSON with n-weighted ECE that is
-    consistent with a hand-recomputation from ranked_worst_buckets."""
+    consistent with a hand-recomputation from ranked_worst_buckets. Probes
+    corpus presence FIRST -- run() unconditionally overwrites OUT_JSON, so
+    when the local corpus (data/cache/ingame_grade_joined/, gitignored) is
+    absent we must not call run() at all, or it clobbers the committed
+    artifact with an empty result before we can verify it."""
+    if not _corpus_present():
+        def validate(d):
+            assert d["ranked_worst_buckets"], "expected at least one worst bucket"
+            b = d["ranked_worst_buckets"]
+            assert b[0]["calibration_error"] >= b[-1]["calibration_error"]
+        verify_recorded_artifact(OUT_JSON, validate, "state_conditioned_calibration")
+        return
     result = run()
     assert result["ranked_worst_buckets"], "expected at least one worst bucket"
     top = result["ranked_worst_buckets"][0]

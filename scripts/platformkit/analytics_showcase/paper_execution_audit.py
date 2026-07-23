@@ -17,6 +17,11 @@ import json
 import os
 import statistics
 
+try:  # -m package invocation (check_all) vs bare-script invocation
+    from scripts.platformkit.analytics_showcase._clone_safe import verify_recorded_artifact
+except ImportError:
+    from _clone_safe import verify_recorded_artifact
+
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 BACKUP_DIR = os.path.join(ROOT, "data", "pod_backup_2026_07_20", "frontend")
 LEDGER_PATH = os.path.join(BACKUP_DIR, "clv_ledger.jsonl")
@@ -181,8 +186,21 @@ def run():
 
 
 def check():
-    """Minimal self-check: run against the real corpus and assert invariants."""
-    report = run()
+    """Minimal self-check: run against the real corpus and assert invariants.
+    Falls back to verifying the committed artifact when the local backup
+    corpus (data/pod_backup_2026_07_20/, gitignored) is absent -- e.g. on a
+    fresh clone."""
+    try:
+        report = run()
+    except FileNotFoundError:
+        def validate(d):
+            assert d["edge_claimed"] is False
+            assert d["n_records"] == 83
+            assert d["n_executed_filled"] == 0
+            assert d["divergence_at_placement_pp"]["n"] > 0
+            assert d["realized_clv_pct"] is None
+        verify_recorded_artifact(OUT_JSON, validate, "paper_execution_audit")
+        return
     assert report["edge_claimed"] is False
     assert report["n_records"] == 83
     assert report["n_executed_filled"] == 0

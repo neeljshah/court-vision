@@ -21,8 +21,10 @@ import os
 try:  # -m package invocation (check_all) vs bare-script invocation
     from scripts.platformkit.analytics_showcase.state_conditioned_calibration import (
         SPORTS, load_records, prob_bucket)
+    from scripts.platformkit.analytics_showcase._clone_safe import verify_recorded_artifact
 except ImportError:
     from state_conditioned_calibration import SPORTS, load_records, prob_bucket
+    from _clone_safe import verify_recorded_artifact
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 OUT_JSON = os.path.join(ROOT, "scripts", "platformkit", "analytics_showcase", "out", "residual_anatomy.json")
@@ -130,8 +132,24 @@ def run():
     return result
 
 
+def _corpus_present():
+    return any(load_records(sport)[0] for sport in SPORTS)
+
+
 def check():
-    """Minimal self-check: ranked list is sorted desc and mass ties to n * mean."""
+    """Minimal self-check: ranked list is sorted desc and mass ties to n * mean.
+    Probes corpus presence FIRST -- run() unconditionally overwrites OUT_JSON,
+    so when the local corpus (data/cache/ingame_grade_joined/, gitignored) is
+    absent we must not call run() at all, or it clobbers the committed
+    artifact with an empty result before we can verify it."""
+    if not _corpus_present():
+        def validate(d):
+            assert d["ranked_worst_segments"], "expected at least one worst segment"
+            r = d["ranked_worst_segments"]
+            assert all(r[i]["total_abs_residual_mass"] >= r[i + 1]["total_abs_residual_mass"]
+                       for i in range(len(r) - 1)), "not sorted desc"
+        verify_recorded_artifact(OUT_JSON, validate, "residual_anatomy")
+        return
     result = run()
     assert result["ranked_worst_segments"], "expected at least one worst segment"
     ranked = result["ranked_worst_segments"]
