@@ -1,6 +1,11 @@
 
 # CourtVision -- a multi-sport prediction + decision-support AI with deep per-player intelligence
 
+[![proof-harness](https://github.com/neeljshah/court-vision/actions/workflows/proof.yml/badge.svg)](https://github.com/neeljshah/court-vision/actions/workflows/proof.yml)
+*The badge re-runs every analytics module's own `--check` self-verification (`check_all.py`, 52 modules)
+on a bare clone -- committed-artifact verification only, no private data; it proves the receipts
+re-verify, not that any claim beats a market. Reproduce it yourself: [REPRODUCE.md](REPRODUCE.md).*
+
 **One calibrated AI brain that, across five sports, prices every market from a single coherent
 engine, drills all the way down to per-player prop distributions, reprices live as the game
 unfolds, and hunts for edge in the soft pockets where it can actually exist -- proving every
