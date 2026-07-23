@@ -1,0 +1,49 @@
+# proof-harness -- re-runs the analytics_showcase self-checks on a bare ubuntu
+# clone (no data/, no secrets) so a red badge means the committed proof rotted.
+# Green means: committed out/*.json artifacts + fixture scoreboards still verify
+# under `python -m <module> --check`. It is self-verified "Functional" (ACM
+# taxonomy), NOT third-party "Results Reproduced" -- see REPRODUCE.md.
+#
+# Dep list (numpy/pandas/matplotlib) was determined by grepping every
+# top-level import across scripts/platformkit/analytics_showcase/*.py: because
+# check_all.py invokes each module as `python -m <mod> --check`, top-level
+# imports run even for modules whose --check body only re-reads a committed
+# JSON. No requirements file needed -- three packages, installed inline.
+name: proof-harness
+
+on:
+  push:
+    branches: [master, main]
+    paths:
+      - "scripts/platformkit/analytics_showcase/**"
+      - "docs/evidence/**"
+  schedule:
+    - cron: "0 13 * * 1"  # weekly Monday drift guard
+  workflow_dispatch:
+
+jobs:
+  proof:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install showcase deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install "numpy>=1.24" "pandas>=2.0" "matplotlib>=3.8"
+
+      - name: Run check_all.py (fails the job on any non-zero exit)
+        run: python scripts/platformkit/analytics_showcase/check_all.py
+
+      - name: Upload check_all report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: check_all_report
+          path: scripts/platformkit/analytics_showcase/out/check_all_report.json
+          if-no-files-found: warn

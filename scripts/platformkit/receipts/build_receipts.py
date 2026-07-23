@@ -23,11 +23,46 @@ RECEIPTS_PATH = REPO_ROOT / "RECEIPTS.md"
 CRPS_DIR = REPO_ROOT / "scripts" / "platformkit" / "benchmarks" / "crps_market"
 RESULTS_DIR = REPO_ROOT / "results"
 RECEIPTS_JSON_PATH = REPO_ROOT / "webapp" / "public" / "receipts.json"
+REJECT_LEDGER_PATH = REPO_ROOT / "data" / "frontend" / "reject_ledger.jsonl"
 
-# Static, as-of labeled -- source: `python -m scripts.platformkit.reject_ledger
-# show` per docs/JOB_EVIDENCE_PACKET.md row "The reject ledger as an honesty
-# exhibit at scale". Update the number+date together if the ledger is re-run.
-HONEST_REJECTS = {"count": 513, "as_of": "2026-07-10", "source": "scripts/platformkit/reject_ledger.py"}
+# A row's source artifact decides its registration label. Prospective-scoreboard
+# snapshots (once E1c wires them in) are the only genuinely pre-registered rows;
+# everything else here reads a historical benchmark artifact captured after the
+# fact -- label it Retrospective so the header claim matches what is on disk.
+def _registration_label(src: str) -> str:
+    return "Pre-registered (forward)" if "prospective" in src else "Retrospective (recorded)"
+
+
+def _honest_rejects() -> dict:
+    """Dynamic reject-ledger count, read directly off the jsonl (no import of
+    reject_ledger.py -- avoids its module side effects; this is a straight
+    line-count + distinct-key scan, source of truth: data/frontend/reject_ledger.jsonl).
+    total = every verdict row ever appended (append-only ledger); distinct =
+    unique (sport, signal) pairs currently represented -- do not conflate the two.
+    """
+    total = 0
+    distinct = set()
+    if REJECT_LEDGER_PATH.exists():
+        with REJECT_LEDGER_PATH.open(encoding="utf-8") as fh:
+            for line in fh:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    rec = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                total += 1
+                distinct.add((rec.get("sport"), rec.get("signal")))
+    return {
+        "total_verdict_rows": total,
+        "distinct_signals": len(distinct),
+        "as_of": date.today().isoformat(),
+        "source": "data/frontend/reject_ledger.jsonl",
+    }
+
+
+HONEST_REJECTS = _honest_rejects()
 
 # ponytail: exact retracted-number tokens from .claude/rules/no-edge-claims.md;
 # extend this list if the rule file grows, no need to auto-sync it.
@@ -46,10 +81,15 @@ ARTIFACT_FILES = [
 
 HEADER = """# RECEIPTS.md
 
-Pre-registered, honesty-gated receipts ledger. Every row below is read
-verbatim from a machine-readable artifact on disk (path cited per row) --
-no number here is hand-typed. This file claims calibration/sharpness only,
-never a dollar edge, ROI, or bankroll result; verdicts include losses
+Honesty-gated receipts ledger. Every row below is read verbatim from a
+machine-readable artifact on disk (path cited per row) -- no number here is
+hand-typed. Each row carries its own Registration label: "Retrospective
+(recorded)" means the source artifact was captured before this ledger read
+it (a historical benchmark run); "Pre-registered (forward)" means the
+checkpoint and verdict rule were declared before the outcome was known (the
+prospective scoreboard). Do not read "ledger" as "every row pre-registered"
+-- check the column. This file claims calibration/sharpness only, never a
+dollar edge, ROI, or bankroll result; verdicts include losses
 (MARKET_SHARPER, UNDERPOWERED) exactly as measured. Immutable git history is
 the provenance trail: each dated section below is append-only and keyed to a
 content hash of the source artifacts, so re-running the generator never
@@ -176,13 +216,13 @@ def content_hash(used_paths: list[str]) -> str:
 
 def render_table(rows: list[dict]) -> str:
     lines = [
-        "| Sport/Market | Checkpoint | Model | Market | Delta (95% CI) | n | Verdict | Source artifact |",
-        "|---|---|---|---|---|---|---|---|",
+        "| Sport/Market | Checkpoint | Model | Market | Delta (95% CI) | n | Verdict | Registration | Source artifact |",
+        "|---|---|---|---|---|---|---|---|---|",
     ]
     for r in rows:
         lines.append(
             f"| {r['sport_market']} | {r['checkpoint']} | {r['model']} | {r['market']} | "
-            f"{r['delta_ci']} | {r['n']} | {r['verdict']} | `{r['src']}` |"
+            f"{r['delta_ci']} | {r['n']} | {r['verdict']} | {_registration_label(r['src'])} | `{r['src']}` |"
         )
     return "\n".join(lines)
 
