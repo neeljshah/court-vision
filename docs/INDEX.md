@@ -87,6 +87,7 @@ reprice. Follow the links to go as deep as you want at any stage.
 - [evidence/mcp-live-demo](evidence/mcp-live-demo.md) -- three real MCP envelopes captured live: receipt-backed answers, the caveat ladder, and the system disclosing when the market is sharper
 - [evidence/market-disagreement](evidence/market-disagreement.md) -- when we disagree with the market, who wins -- bucketed by disagreement size, over time
 - [ANALYTICS_CATALOG](ANALYTICS_CATALOG.md) -- every analytic the system computes: artifact path, chart, honest caveat, in one catalog
+- [ATLAS](ATLAS.md) -- the card-atlas gallery: 1,549 floor-gated `DESCRIPTIVE_ONLY` entity cards across 7 packs (NBA players/teams, MLB pitching/batters, calibration, tennis, soccer), served by the MCP `atlas_card` resolver
 - [evidence/industry-metrics](evidence/industry-metrics.md) -- the industry player-metric landscape mapped: three honest approximations built, RAPM-family declared out of reach
 - [evidence/player-props](evidence/player-props.md) -- the 7-stat projection stack measured two ways, each number bound to its label
 - [evidence/answer-engine](evidence/answer-engine.md) -- the fail-closed answer engine: one resolver per question, refusals measured (125/125 edge-language refused)
@@ -97,6 +98,7 @@ reprice. Follow the links to go as deep as you want at any stage.
 - [evidence/execution-honesty](evidence/execution-honesty.md) -- the paper-execution stack with no path to a real order, whose audit publishes its own nulls
 - [evidence/novel-analytics](evidence/novel-analytics.md) -- frontier measurements with adversarial prior-art checks attached: information-arrival, overreaction spectrum, mechanism survival, comeback atlas, kernel transfer -- honest INCREMENTAL verdicts included
 - [evidence/ai-engineering](evidence/ai-engineering.md) -- the five 2026 AI-eng hiring skills mapped to committed artifacts: evals, fail-closed answers, MCP, guardrails, cost-aware routing
+- [evidence/entity-atlas](evidence/entity-atlas.md) -- 1,549 per-entity analytics cards with declared floors and manifest-verified counts, served fail-closed by the atlas_card resolver
 - [evidence/analytical-depth](evidence/analytical-depth.md) -- the recorded-analytics inventory as evidence: 23 modules, the claims-corpus generated-vs-validated split, the Statcast base, tick microstructure, fail-closed QA coverage
 - [evidence/novel-analytics](evidence/novel-analytics.md) -- uniquely-auditable measurements: five market-microstructure/calibration analytics, each with its honest prior-art verdict (2 INCREMENTAL, 1 ALREADY_DONE, 1 N/A) and the market beating our in-game model stated in numbers
 

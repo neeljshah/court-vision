@@ -157,6 +157,29 @@ the truth source remains [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md).
 
 ---
 
+## 9. Card atlases (descriptive entity cards)
+
+One PNG per entity, gated by a declared sample floor and stamped `DESCRIPTIVE_ONLY` -- box-score /
+rate / calibration readouts, never a projection or edge. 1,549 cards across 7 packs, built by 6
+factory modules on the shared `analytics_showcase/atlas_factory.py` (each manifest carries
+`descriptive_only: true` and an `n_entries` count; counts below are verbatim from those manifests
+and equal the on-disk PNG count). Full gallery + reproduce: [ATLAS](ATLAS.md).
+
+| Analytic | What it measures | Artifact | Chart | Honest caveat |
+|---|---|---|---|---|
+| NBA player atlas | Per-36 pts/reb/ast by season + career FG/3P/FT% shooting splits, one card per qualified player | `analytics_showcase/out/atlas_nba_manifest.json` | `docs/img/atlas/nba/` (482 PNGs) | DESCRIPTIVE_ONLY. 482/807 players over the declared career-minutes>=800 floor; box-score rates only, no projection, **not** BPM/EPM/RAPM. Diacritic-split player ids fragment a few rows (upstream join, unfixed). |
+| NBA team atlas | Points/gm composition (2P/3P/FT), a box-score pace proxy/gm, and top-5 minutes leaders' PRA/36, one card per team | `analytics_showcase/out/atlas_nba_teams_manifest.json` | `docs/img/atlas/nba_teams/` (30 PNGs) | DESCRIPTIVE_ONLY. All 30 teams (each >=200 team-games across 3 seasons). Pace is a single-side box-score proxy (`FGA-OREB+TOV+0.44*FTA`), not tracked possessions. |
+| MLB pitch atlas | Velocity percentiles, count-state usage, and ball/strike/in-play outcome mix, by pitch type, pitching staff, and count | `analytics_showcase/out/atlas_mlb_pitch_manifest.json` | `docs/img/atlas/mlb_pitch/` (61 PNGs) | DESCRIPTIVE_ONLY, 2025 Statcast (as_of 2025-09-28). 19 pitch types + 30 staffs + 12 counts. No per-pitch swing/miss column in this pull -> outcome mix substitutes for whiff rate; smallest type n=7 shown for completeness. |
+| MLB batter atlas | Velocity/pitch-type seen, rulebook-zone rate, and exit-velo / estimated-wOBA-on-contact, one card per qualified batter | `analytics_showcase/out/atlas_mlb_batters_manifest.json` | `docs/img/atlas/mlb_batters/` (485 PNGs) | DESCRIPTIVE_ONLY, 2025 Statcast. 485/671 batters over the pitches-faced>=300 floor. Contact-panel n is batted balls; no launch-angle/whiff column in this pull, so no barrel profile or whiff rate. |
+| Calibration atlas | Model-vs-market ECE by game-time checkpoint, and realized mean-outcome by prob-band x time bucket, for MLB + international soccer | `analytics_showcase/out/atlas_calibration_manifest.json` | `docs/img/atlas/calibration/` (26 PNGs) | DESCRIPTIVE_ONLY calibration readout, n>=30/card declared floor. Market ECE beats model at most checkpoints (e.g. MLB inning 1: model 0.1329 vs market 0.0903) -- stated plainly, a backlog map, not an edge. |
+| Tennis + soccer atlas | Tennis: career/recent surface win-rates + clay-minus-hard skew + grass adaptation per ATP player. Soccer: trailing-10 ppg/GF/GA/GD/win-rate/clean-sheet per club | `analytics_showcase/out/atlas_tennis_manifest.json` + `analytics_showcase/out/atlas_soccer_manifest.json` | `docs/img/atlas/tennis/` (278) + `docs/img/atlas/soccer/` (187) | DESCRIPTIVE_ONLY. Per-metric sample floors; a metric below floor shows `n/a`, never fabricated. Tennis is ATP singles only in this build; soccer is trailing-10 as-of corpus end, not live form. |
+
+Gallery + reproduce commands: [ATLAS](ATLAS.md). Served at query time by the fail-closed MCP
+`atlas_card` resolver (`scripts/platformkit/answers/atlas_resolver.py`), which returns
+`descriptive_only: true` and `edge_claimed: false` on every hit.
+
+---
+
 ## Do not claim
 
 These are documented **measurement artifacts**. They appear in this repo only inside explicit

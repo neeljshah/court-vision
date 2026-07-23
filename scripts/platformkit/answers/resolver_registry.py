@@ -44,6 +44,9 @@ to (never re-implements) the systems that already exist:
     prediction_winprob -> scripts.platformkit.answers.winprob_dispatch (subprocess
         over predict_matchup.py; authors no new number, quotes the probability verbatim)
     edge_language     -> always REFUSED (see .claude/rules/no-edge-claims.md)
+    atlas_card        -> scripts.platformkit.answers.atlas_resolver (name-normalized
+        entity lookup across every built analytics_showcase atlas manifest --
+        card_path + key_numbers + floors quoted verbatim, never recomputed)
 
 Every resolve() call returns one envelope shape:
     {status: "ok"|"refused"|"not_supported"|"no_data",
@@ -61,6 +64,7 @@ from datetime import datetime, timezone
 import pandas as pd
 
 from scripts.platformkit.analytics_verify import answers as _analytics
+from scripts.platformkit.answers import atlas_resolver as _atlas
 from scripts.platformkit.answers import claims_resolver as _claims
 from scripts.platformkit.answers import conditional_winprob_resolver as _conditional_winprob
 from scripts.platformkit.answers import contracts as _contracts
@@ -295,6 +299,15 @@ RESOLVERS: dict[str, dict] = {
                         "calibration language only, never a market edge or an invented conditional probability",
         "units": "probability 0-1 + integer n per cell", "rounding": "4 decimals",
     },
+    "atlas_card": {
+        "resolver": "scripts.platformkit.answers.atlas_resolver.resolve",
+        "source_artifact": "scripts/platformkit/analytics_showcase/out/atlas_*_manifest.json",
+        "computation": "name-normalized entity lookup across every built atlas manifest -- returns "
+                        "card_path + key_numbers + floors verbatim from the matched entry, never "
+                        "recomputed; entity absent from every manifest -> no_data, never fuzzy-invented",
+        "units": "manifest-native key_numbers (see each atlas_*.py builder for its own units)",
+        "rounding": "none -- verbatim from the manifest entry",
+    },
 }
 
 # "sharpest" (2026-07-18, coverage_stress Family D): a bare superlative
@@ -477,6 +490,13 @@ def classify(query: str) -> str | None:
         return "verified_claims"
     if _lb.is_ranking_query(low):
         return "ranking"
+    # atlas_card (NEW) -- "card for <entity>" / "show <entity> atlas": a
+    # dedicated regex shape (atlas_resolver.is_atlas_card_query), zero token
+    # overlap with any keyword list in this file (grepped) so this placement
+    # is safe -- kept next to `ranking` since both are single-entity lookups
+    # dispatched to their own resolver module.
+    if _atlas.is_atlas_card_query(low):
+        return "atlas_card"
     # generalized reroute (2026-07-18), AFTER the ranking route so the
     # leaderboard resolver keeps every phrasing it already serves: a
     # ranking-cue question whose metric phrase resolves through ask_index's
@@ -1083,6 +1103,13 @@ def resolve(query: str, sport: str = "nba", category: str | None = None, **kwarg
                 if claims_env.get("status") == "ok":
                     return claims_env
         return env
+    if cat == "atlas_card":
+        entity = kwargs.get("entity") or _atlas.parse_entity(query)
+        if not entity:
+            return {"status": "no_data", "category": cat, "sport": sport,
+                    "source_artifact": _atlas._OUT_DIR_REL,
+                    "note": "could not parse an entity from query -- pass entity= explicitly"}
+        return _atlas.resolve(entity, sport_filter=kwargs.get("sport_filter"))
     if cat == "prediction_winprob":
         home, away = _matchup_teams(query, kwargs)
         if not (home and away):
