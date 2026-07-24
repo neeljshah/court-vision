@@ -1,0 +1,22 @@
+{
+ "slug": "fs",
+ "pack": "mlb_pitch",
+ "display_name": "Splitter (FS)",
+ "one_liner": "The splitter is a putaway pitch: 42.7% of all splitters in 2025 were thrown with the pitcher ahead in the count, versus just 18.4% when behind.",
+ "three_things": [
+  "The biggest ahead-vs-behind tilt of the four pitches profiled here: 42.7% ahead, only 18.4% behind.",
+  "A relatively rare, slow offering: 22,473 thrown (3.24% of all pitches), median 86.3 mph.",
+  "It nearly vanishes on 3-0 (0.1% of splitters) and clusters in two-strike counts like 0-2 (10.52%)."
+ ],
+ "context_note": "Descriptive only, over a single 2025 Statcast pull. The count shares are of this pitch's OWN usage (what share of splitters fall in each count), not the share of any count that is a splitter. The strike bucket merges called, swinging, and foul strikes (no per-pitch swing/take in this corpus), so it is not a whiff rate. 'Biggest tilt of these four' is scoped to the four pitch types written up in this pack. Not a prediction; no edge claim.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:FS].key_numbers.count_leverage_pct.pitcher_ahead", "value": 42.7},
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:FS].key_numbers.count_leverage_pct.pitcher_behind", "value": 18.4},
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:FS].key_numbers.n_pitches", "value": 22473},
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:FS].key_numbers.pct_of_all_pitches", "value": 3.24},
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:FS].key_numbers.velo_p50", "value": 86.3},
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:FS].key_numbers.count_state_pct.3-0", "value": 0.1},
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:FS].key_numbers.count_state_pct.0-2", "value": 10.52}
+ ],
+ "as_of": "2025-09-28"
+}

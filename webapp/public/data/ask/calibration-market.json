@@ -1,0 +1,666 @@
+{
+  "bucket": "calibration-market",
+  "note": "Every number is copied verbatim from a committed artifact (path in source_artifact). This is a calibrated predictor, not a betting product: no dollar edge, ROI, or profit is claimed anywhere. Honest nulls are the point, not a defect.",
+  "entries": [
+    {
+      "q": "Does the model actually beat the betting market?",
+      "alt_phrasings": ["can you beat the market", "is the model better than the market", "does it outperform the odds"],
+      "a": {
+        "status": "ok",
+        "answer": "Pregame, no: on team-strength markets the leak-free forecaster MATCHES the Shin-devigged closing line within noise (NBA moneyline Brier 0.1735 vs the close's 0.1672; MLB moneyline 0.2429 vs 0.2390) but beats nothing. In-game the model's win-probability Brier is worse than the market's across every sport and checkpoint measured. Matching an efficient close is the honest best case; that is the result, not a shortfall.",
+        "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
+        "as_of": "2026-07-07"
+      },
+      "tags": ["model-vs-market", "efficiency", "brier"]
+    },
+    {
+      "q": "Is the market efficient?",
+      "alt_phrasings": ["are sports betting markets efficient", "is the closing line sharp", "can markets be beaten pregame"],
+      "a": {
+        "status": "ok",
+        "answer": "On every pregame slice measured, yes. A real-data edge hunt across four sports and six independent corpora rejected every candidate schedule/fatigue/form/h2h/totals signal, requiring BSS>0 AND Diebold-Mariano p<0.05 AND N>=200 on at least two corpora; nothing cleared the bar. Positive full-sample lifts reversed sign across calendar halves, which is the overfit signature, not an edge.",
+        "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
+        "as_of": "2026-07-07"
+      },
+      "tags": ["efficiency", "signal-rejection", "overfit"]
+    },
+    {
+      "q": "Is there anywhere the model out-sharpens the market at all?",
+      "alt_phrasings": ["where does the model win", "does it beat the market anywhere", "any spot the model is sharper"],
+      "a": {
+        "status": "ok",
+        "answer": "In 3 of 17 head-to-head checkpoints, all of them MLB late-inning run-totals: end of inning 6 (paired delta 0.6392, n=54), inning 7 (0.7327, n=55) and inning 8 (1.4201, n=49). Every one is flagged MODEL_SHARPER_PROVISIONAL on small samples. Most other rows are underpowered or favor the market.",
+        "source_artifact": "webapp/public/data/showcase/cross_sport_scoreboard.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["model-vs-market", "mlb", "provisional"]
+    },
+    {
+      "q": "In-game, does the win-probability model beat the market's win probability?",
+      "alt_phrasings": ["is the live win prob sharper than the market", "in-play model vs market", "does the model beat live odds"],
+      "a": {
+        "status": "ok",
+        "answer": "No. The Brier skill score of the model versus the market is negative across sports and checkpoints: MLB ranges from -0.079 to -0.464, soccer from -0.470 to -1.079. The model does not beat the market's Brier at any in-game grain. Both crush a base-rate baseline, but that is expected for in-game win-prob and is not an edge.",
+        "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["model-vs-market", "in-game", "bss"]
+    },
+    {
+      "q": "How close is the model to the NBA closing line?",
+      "alt_phrasings": ["nba model vs close", "how good is the nba prediction vs the market", "nba moneyline calibration"],
+      "a": {
+        "status": "ok",
+        "answer": "Very close: on NBA moneyline the model's Brier is 0.1735 versus the devigged close's 0.1672 over 372 games, a gap of +0.0063, labeled MATCH (within sampling noise). It does not beat the close, which is the honest ceiling for an efficient market.",
+        "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
+        "as_of": "2026-07-07"
+      },
+      "tags": ["nba", "model-vs-market", "closing-line"]
+    },
+    {
+      "q": "How does the model do against the MLB moneyline close?",
+      "alt_phrasings": ["mlb model vs market", "mlb moneyline calibration", "baseball prediction vs the odds"],
+      "a": {
+        "status": "ok",
+        "answer": "It matches within noise: MLB moneyline model Brier 0.2429 versus the close's 0.2390 over 13,992 games, a gap of +0.0039, labeled MATCH. As with NBA, the model tracks the sharp close but does not beat it.",
+        "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
+        "as_of": "2026-07-07"
+      },
+      "tags": ["mlb", "model-vs-market", "closing-line"]
+    },
+    {
+      "q": "Does the model match the market on soccer?",
+      "alt_phrasings": ["soccer over under vs market", "soccer model calibration pregame", "football o/u vs the close"],
+      "a": {
+        "status": "ok",
+        "answer": "On the soccer Over/Under-2.5 market the model's Brier is 0.2465 versus the close's 0.2390 over 7,558 matches, a gap of +0.0076, labeled MATCH within noise. Team-strength win markets match; the model does not beat them.",
+        "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
+        "as_of": "2026-07-07"
+      },
+      "tags": ["soccer", "model-vs-market", "totals"]
+    },
+    {
+      "q": "How does the model do on tennis pregame versus the market?",
+      "alt_phrasings": ["tennis match-win vs the close", "atp prediction vs market", "tennis calibration pregame"],
+      "a": {
+        "status": "ok",
+        "answer": "It trails slightly: on ATP match-win the model's Brier is 0.2177 versus the close's 0.2028 over 7,374 matches, a gap of +0.0149, labeled BEHIND. The gap is attributed to same-day freshness (lineups, conditions) the public model cannot see, not a model defect.",
+        "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
+        "as_of": "2026-07-07"
+      },
+      "tags": ["tennis", "model-vs-market", "freshness"]
+    },
+    {
+      "q": "Does the model keep up with the market on totals?",
+      "alt_phrasings": ["over under model vs market", "totals calibration", "does the model match the total line"],
+      "a": {
+        "status": "ok",
+        "answer": "Totals trail the close by a freshness gap. NBA total RMSE is 19.17 for the model versus 18.11 for the close (n=372, gap +1.06); MLB total RMSE is 4.72 versus 4.44 (n=1,679, gap +0.28). Both are labeled BEHIND, attributed to injuries/lineups/pitcher/park/weather the market prices and the model cannot see.",
+        "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
+        "as_of": "2026-07-07"
+      },
+      "tags": ["totals", "model-vs-market", "freshness"]
+    },
+    {
+      "q": "When the model and the market disagree, who tends to be right in MLB?",
+      "alt_phrasings": ["who wins on disagreement", "is the model right when it differs from the market", "model vs market when they split mlb"],
+      "a": {
+        "status": "ok",
+        "answer": "The market. On the largest MLB disagreements (>=0.10 probability apart, n=33,402) the model is the closer forecaster only 37.7% of the time, with model Brier 0.2827 versus market Brier 0.2103. Bigger disagreement means the market is usually the one that is right.",
+        "source_artifact": "webapp/public/data/showcase/market_disagreement_profile.json",
+        "as_of": "unknown"
+      },
+      "tags": ["model-vs-market", "disagreement", "mlb"]
+    },
+    {
+      "q": "What happens on the biggest model-vs-market disagreements in soccer?",
+      "alt_phrasings": ["soccer disagreement who is right", "does the model win when it differs on soccer", "big soccer disagreement outcome"],
+      "a": {
+        "status": "ok",
+        "answer": "The market wins even more decisively than in MLB. On the largest soccer disagreements (>=0.10 apart, n=4,406) the model is closer only 21.5% of the time, with model Brier 0.3306 versus market Brier 0.1720. Wide disagreement is a signal the model is off, not that it found something.",
+        "source_artifact": "webapp/public/data/showcase/market_disagreement_profile.json",
+        "as_of": "unknown"
+      },
+      "tags": ["model-vs-market", "disagreement", "soccer"]
+    },
+    {
+      "q": "Why doesn't being accurate mean beating the market?",
+      "alt_phrasings": ["accuracy vs edge", "why is calibration not enough", "does higher accuracy beat the odds"],
+      "a": {
+        "status": "ok",
+        "answer": "Because the gap is in resolution (information), not reliability (calibration). A Murphy decomposition of MLB in-game win-prob shows the model Brier 0.2377 versus market 0.2067, a gap of +0.0310 whose reliability part is only +0.0066 while the resolution part is -0.0235. Recalibrating a well-calibrated model cannot recover information the market already has.",
+        "source_artifact": "webapp/public/data/showcase/murphy_decomposition.json",
+        "as_of": "unknown"
+      },
+      "tags": ["calibration", "resolution", "murphy"]
+    },
+    {
+      "q": "Are the predictions actually well calibrated?",
+      "alt_phrasings": ["is the model calibrated", "how calibrated is it", "do the probabilities match reality"],
+      "a": {
+        "status": "ok",
+        "answer": "Partly. On MLB in-game win-prob, 4 of 10 probability bins have a calibration-gap 95% confidence interval that excludes zero (6 within noise), while the market has 0 of 10 miscalibrated bins. On soccer the model is worse (8 of 10 bins off), on a much smaller 51-game corpus. The market is better calibrated than the model in both sports.",
+        "source_artifact": "webapp/public/data/showcase/calibration_stability.json",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["calibration", "reliability", "model-vs-market"]
+    },
+    {
+      "q": "Is the model overconfident?",
+      "alt_phrasings": ["does it overstate certainty", "is it too confident at the extremes", "overconfidence at high probabilities"],
+      "a": {
+        "status": "ok",
+        "answer": "Yes, at the high end. In the MLB in-game 0.9-1.0 bin the model's mean predicted probability is 0.9541 but the outcomes only came in at 0.6632, a calibration gap of -0.2909 whose CI excludes zero. When it says a team is nearly certain to win, it wins closer to two-thirds of the time.",
+        "source_artifact": "webapp/public/data/showcase/calibration_stability.json",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["calibration", "overconfidence", "mlb"]
+    },
+    {
+      "q": "What is a Brier score and what is the model's?",
+      "alt_phrasings": ["explain brier score", "what brier does the model get", "how is probability accuracy measured"],
+      "a": {
+        "status": "ok",
+        "answer": "The Brier score is the mean squared error of a probability forecast (lower is better, 0.25 is a coin flip on a balanced outcome). On the MLB in-game win-prob corpus the model scores 0.237684 and the market 0.206653; on soccer the model is 0.227887 and the market 0.142726. The market is lower (better) in both.",
+        "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["calibration", "brier", "definition"]
+    },
+    {
+      "q": "How do the model's and market's ECE compare?",
+      "alt_phrasings": ["expected calibration error model vs market", "ece comparison", "which is better calibrated by ece"],
+      "a": {
+        "status": "ok",
+        "answer": "On MLB in-game moneyline the model's expected calibration error is 0.097325 versus the market's 0.070965; on soccer match-result the model is 0.275568 versus the market's 0.201885. The market is better calibrated on both, and the soccer numbers are large because that corpus is small and noisy.",
+        "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
+        "as_of": "unknown"
+      },
+      "tags": ["calibration", "ece", "model-vs-market"]
+    },
+    {
+      "q": "Is calibration improving month over month?",
+      "alt_phrasings": ["is it getting better over time", "calibration trend", "does calibration improve across months"],
+      "a": {
+        "status": "ok",
+        "answer": "Slightly, on MLB: the model's monthly Brier went from 0.2404 (2026-06) to 0.2357 (2026-07), and the market's from 0.2243 to 0.1938. The market improved more, so the model did not close the gap. Soccer moved the other way (model 0.331 in 2026-07), but that corpus is small.",
+        "source_artifact": "webapp/public/data/showcase/calibration_over_time.json",
+        "as_of": "unknown"
+      },
+      "tags": ["calibration", "trend", "over-time"]
+    },
+    {
+      "q": "How good is the soccer model's calibration?",
+      "alt_phrasings": ["soccer calibration quality", "is the soccer model calibrated", "football in-game calibration"],
+      "a": {
+        "status": "ok",
+        "answer": "Weak, and on a small corpus. The soccer in-game model's Brier is 0.2279 versus the market's 0.1427 (gap +0.0852), and its minute-bucket weighted expected calibration error is 0.3580 over 9,003 rows. With only 51 games, single-fold reads are not durable, so it is flagged as descriptive.",
+        "source_artifact": "webapp/public/data/showcase/soccer_calibration_pack.json",
+        "as_of": "unknown"
+      },
+      "tags": ["soccer", "calibration", "small-sample"]
+    },
+    {
+      "q": "Is the model-vs-market gap fixable by recalibrating?",
+      "alt_phrasings": ["can recalibration close the gap", "would isotonic fixing help", "is the shortfall calibration or information"],
+      "a": {
+        "status": "ok",
+        "answer": "No. The Murphy decomposition attributes the shortfall mainly to resolution, not reliability: MLB reliability gap +0.0066 versus resolution gap -0.0235, soccer reliability gap +0.0394 versus resolution gap -0.0446. Recalibration fixes reliability; the missing piece is information the market has, which recalibration cannot manufacture.",
+        "source_artifact": "webapp/public/data/showcase/murphy_decomposition.json",
+        "as_of": "unknown"
+      },
+      "tags": ["calibration", "resolution", "recalibration"]
+    },
+    {
+      "q": "Does the model beat a simple base-rate baseline?",
+      "alt_phrasings": ["is it better than climatology", "does it beat the base rate", "bss vs climatology"],
+      "a": {
+        "status": "ok",
+        "answer": "In MLB, yes: the Brier skill score of the model versus a constant base-rate (climatology) baseline is positive, +0.042 overall and up to +0.143 mid-game. In soccer it is negative overall (-0.3134), so the soccer model does not even clear the base rate there. Beating climatology is expected for in-game win-prob and is not an edge over the market.",
+        "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["calibration", "bss", "baseline"]
+    },
+    {
+      "q": "Does conditioning on the in-game state actually sharpen the forecast?",
+      "alt_phrasings": ["does in-game conditioning help", "is the live model sharper than pregame", "does mid-game state improve calibration"],
+      "a": {
+        "status": "ok",
+        "answer": "Yes, this is the one measured calibration win. Fusing the pregame rating prior with the realized mid-game state improves win-probability Brier from 0.209 to 0.159 in NBA and 0.241 to 0.126 in MLB on real out-of-sample corpora. It is calibration only, not an edge: a live book sees the same score, so no beat-the-market test applies.",
+        "source_artifact": "docs/INGAME_PROOF.md",
+        "as_of": "unknown"
+      },
+      "tags": ["in-game", "calibration", "conditioning"]
+    },
+    {
+      "q": "How much of the in-game improvement is the model versus just the scoreboard?",
+      "alt_phrasings": ["is the live lift real skill or mechanical", "how much does the model prior add in-game", "scoreboard vs model contribution"],
+      "a": {
+        "status": "ok",
+        "answer": "Most of it is the scoreboard. A three-arm split against a rating-blind score-only baseline shows NBA going 0.209 (prior only) to 0.172 (score-only) to 0.159 (combined), so the model's own prior adds the last ~0.014 Brier (~27%) over watching the score. In MLB the model prior adds only ~0.001 (~1%); by mid-game the scoreboard washes it out.",
+        "source_artifact": "docs/INGAME_PROOF.md",
+        "as_of": "unknown"
+      },
+      "tags": ["in-game", "attribution", "mechanical"]
+    },
+    {
+      "q": "What is the honest end-of-Q3 win-probability Brier?",
+      "alt_phrasings": ["endq3 brier leak free", "third quarter win prob accuracy", "q3 brier number"],
+      "a": {
+        "status": "ok",
+        "answer": "The leak-free walk-forward end-of-Q3 win-probability Brier is about 0.141, measured after removing two 4th-quarter-derived features that had let an earlier model peek at the quarter it was predicting. A controlled A/B put the leak's inflation at about 4% relative. This is framed as a leak caught in the pipeline, not a competitive number.",
+        "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["in-game", "leak", "brier"]
+    },
+    {
+      "q": "What did the full-season win-probability backtest find versus the close?",
+      "alt_phrasings": ["season backtest vs close", "walk forward win prob result", "full season market efficiency proof"],
+      "a": {
+        "status": "ok",
+        "answer": "That the model is well calibrated but does not beat the market. On a leak-free, truncation-invariance-proven full-season backtest the win-prob Brier was 0.208 for the model versus 0.198 for the closing line, and spread/total closing-line value was about zero (correlation with outcome 0.001). It is the cleanest market-efficiency proof in the system.",
+        "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["backtest", "efficiency", "win-probability"]
+    },
+    {
+      "q": "How good is the win-probability model on its own?",
+      "alt_phrasings": ["win prob model accuracy", "standalone win probability quality", "how accurate is the win prob stack"],
+      "a": {
+        "status": "ok",
+        "answer": "The 5-way NNLS win-probability stack scores 0.709 accuracy and 0.193 Brier in 3-fold walk-forward validation. That is a solid, well-calibrated forecaster; it just does not beat sharp closing lines, which is a separate and harder bar.",
+        "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["win-probability", "calibration", "accuracy"]
+    },
+    {
+      "q": "Which sport has the best-calibrated market probabilities?",
+      "alt_phrasings": ["which market is sharpest", "lowest brier market", "most predictable sport by the market"],
+      "a": {
+        "status": "ok",
+        "answer": "By raw in-game market Brier, soccer is lowest at 0.142726 and MLB is 0.206653, but the two are not directly comparable because base rates differ (soccer home-win base rate 0.6055, MLB 0.4563). The takeaway is that in both sports the market's Brier is lower than the model's, so the market is the sharper forecaster.",
+        "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["predictability", "brier", "cross-sport"]
+    },
+    {
+      "q": "Is the model tighter to the close in NBA or MLB?",
+      "alt_phrasings": ["nba vs mlb which is closer to market", "which sport does the model track best", "closest match to the close"],
+      "a": {
+        "status": "ok",
+        "answer": "MLB, marginally: the model's moneyline Brier gap to the close is +0.0039 in MLB (0.2429 vs 0.2390, n=13,992) versus +0.0063 in NBA (0.1735 vs 0.1672, n=372). Both are MATCH within noise, and the NBA sample is much smaller.",
+        "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
+        "as_of": "2026-07-07"
+      },
+      "tags": ["nba", "mlb", "closing-line"]
+    },
+    {
+      "q": "Does a tennis prior trained on one tour transfer to the other?",
+      "alt_phrasings": ["atp to wta transfer", "does the tennis model generalize across tours", "cross corpus tennis calibration"],
+      "a": {
+        "status": "ok",
+        "answer": "Yes, calibration transfers cross-corpus. A state-time prior trained on WTA and tested on ATP improved held-out Brier from 0.1698 (base) to 0.1597, and the reverse direction from 0.155 to 0.1432, both with Diebold-Mariano p=0.0, verdict REPLICATED. It is calibration only versus a state-time baseline, never a market edge, and no in-play odds join exists.",
+        "source_artifact": "webapp/public/data/showcase/tennis_showcase.json",
+        "as_of": "unknown"
+      },
+      "tags": ["tennis", "cross-corpus", "calibration"]
+    },
+    {
+      "q": "Did the surface-specific tennis prior beat the surface-blind one?",
+      "alt_phrasings": ["does court surface improve the tennis model", "surface specific hold prior result", "clay grass hard prior test"],
+      "a": {
+        "status": "ok",
+        "answer": "No, that one was rejected. A surface-specific hold prior did not beat the surface-blind baseline on either tour: ATP pooled Brier 0.165518 (surface) versus 0.165397 (blind), WTA 0.153053 versus 0.150561. The planted null died as designed, verdict REJECT.",
+        "source_artifact": "webapp/public/data/showcase/tennis_showcase.json",
+        "as_of": "unknown"
+      },
+      "tags": ["tennis", "signal-rejection", "surface"]
+    },
+    {
+      "q": "Is the NBA getting less competitive?",
+      "alt_phrasings": ["nba parity trend", "are nba teams more lopsided", "league balance over seasons"],
+      "a": {
+        "status": "ok",
+        "answer": "Slightly less balanced across the three seasons on disk. The win-share Gini rose from 0.177 in 2023-24 (most balanced) to 0.2004 in 2025-26 (least balanced). This is descriptive of seasons already played, not a forecast, and it pools any playoff games that inflate win concentration.",
+        "source_artifact": "webapp/public/data/showcase/league_parity_index.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "parity", "descriptive"]
+    },
+    {
+      "q": "How many NBA games are decided by five points or fewer?",
+      "alt_phrasings": ["share of close nba games", "how often are nba games tight", "close game rate nba"],
+      "a": {
+        "status": "ok",
+        "answer": "Between 23.3% and 25.5% of games across the three seasons measured (23.3% in 2023-24, 25.2% in 2024-25, 25.5% in 2025-26), with mean absolute final margins of 12.58, 12.71 and 13.03 points. Roughly a quarter of games are one-possession-tight at the buzzer.",
+        "source_artifact": "webapp/public/data/showcase/league_parity_index.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "margins", "descriptive"]
+    },
+    {
+      "q": "Which sport has the widest model-vs-market calibration gap?",
+      "alt_phrasings": ["biggest gap to the market", "where is the model furthest behind", "worst sport for the model"],
+      "a": {
+        "status": "ok",
+        "answer": "Soccer. The model's in-game Brier trails the market by +0.0852 in soccer (0.2279 vs 0.1427) versus +0.0310 in MLB (0.2377 vs 0.2067). The soccer corpus is also the smallest (9,003 rows), so its numbers carry wider uncertainty.",
+        "source_artifact": "webapp/public/data/showcase/murphy_decomposition.json",
+        "as_of": "unknown"
+      },
+      "tags": ["cross-sport", "calibration", "soccer"]
+    },
+    {
+      "q": "Do in-game prices overreact to score changes?",
+      "alt_phrasings": ["do live markets overreact", "price overshoot after a move", "market overreaction test"],
+      "a": {
+        "status": "ok",
+        "answer": "It depends on the sport. After an in-game price move, MLB prices land a few points above the eventual outcome (moved-to-minus-outcome +0.0801 to +0.0518 across move sizes, a small overshoot), while soccer prices sit well below it (-0.1945 to -0.3648, an undershoot). This is a documented structural description labeled INCREMENTAL, explicitly not a claimed edge, and some soccer buckets are tiny (n=21).",
+        "source_artifact": "webapp/public/data/showcase/market_overreaction.json",
+        "as_of": "unknown"
+      },
+      "tags": ["overreaction", "in-game", "structure"]
+    },
+    {
+      "q": "Does the market get sharper as an MLB game goes on?",
+      "alt_phrasings": ["does the market improve through the game", "in-game market sharpening mlb", "who pulls ahead late in a game"],
+      "a": {
+        "status": "ok",
+        "answer": "Yes, and its lead over the model widens. The market's Brier advantage over the model grows from -0.015 at the first checkpoint to -0.0902 by the ninth inning. As information arrives, the market absorbs it faster than the model does.",
+        "source_artifact": "webapp/public/data/showcase/info_arrival_curve.json",
+        "as_of": "unknown"
+      },
+      "tags": ["in-game", "information", "mlb"]
+    },
+    {
+      "q": "Does the model commit to an outcome faster than the market?",
+      "alt_phrasings": ["does the model get confident faster", "entropy decay model vs market", "who hedges longer"],
+      "a": {
+        "status": "ok",
+        "answer": "In MLB, yes, and that is a warning sign. By the ninth checkpoint the model's forecast uncertainty has collapsed to 0.3656 bits while the market still sits at 0.7244, and their disagreement widens from 0.07 early to 0.2791 late. Paired with the overconfidence seen in the calibration exhibits, growing certain faster than the market is a flag, not a strength.",
+        "source_artifact": "webapp/public/data/showcase/market_convergence.json",
+        "as_of": "unknown"
+      },
+      "tags": ["in-game", "entropy", "overconfidence"]
+    },
+    {
+      "q": "Does the closing line get sharper than earlier lines?",
+      "alt_phrasings": ["is the close sharper than earlier", "does the line tighten toward tip off", "closing line sharpening"],
+      "a": {
+        "status": "ok",
+        "answer": "In the WNBA sample it does: the devigged market Brier sharpens from 0.2454 at T-6h to 0.2280 at the close (delta +0.0174 over 30 games). This is the expected pattern of a market improving as game time approaches, though the window is a single capture and flagged provisional.",
+        "source_artifact": "webapp/public/data/showcase/micro_closing_decay.json",
+        "as_of": "2026-07-17"
+      },
+      "tags": ["closing-line", "wnba", "sharpening"]
+    },
+    {
+      "q": "Does the soccer line sharpen toward the close too?",
+      "alt_phrasings": ["soccer closing line behavior", "does the football line tighten", "soccer close vs early"],
+      "a": {
+        "status": "ok",
+        "answer": "Not in this sample, but it is underpowered. Soccer Brier went from 0.1355 at T-24h to 0.1374 at the close (delta -0.0019 over just 13 games), so no sharpening is visible and the read is flagged UNDERPOWERED. Too few games to conclude either way.",
+        "source_artifact": "webapp/public/data/showcase/micro_closing_decay.json",
+        "as_of": "2026-07-17"
+      },
+      "tags": ["closing-line", "soccer", "underpowered"]
+    },
+    {
+      "q": "Is closing-line value real?",
+      "alt_phrasings": ["is clv a real thing", "is the close sharper than the open", "does the line move toward truth"],
+      "a": {
+        "status": "ok",
+        "answer": "Yes, as a market phenomenon: on MLB the close beats the open on log-loss (Diebold-Mariano p=0.0010, N=27,975), with the close carrying a Brier skill of +0.43% over the open. The line does move toward the truth from open to close. That sharpening belongs to the market, not to a retrospective model.",
+        "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
+        "as_of": "2026-07-07"
+      },
+      "tags": ["clv", "closing-line", "mlb"]
+    },
+    {
+      "q": "Can a model capture the open-to-close line move?",
+      "alt_phrasings": ["can you predict the line move", "does the model see the close coming", "harvest clv with a model"],
+      "a": {
+        "status": "ok",
+        "answer": "No. A leak-free open-time model has essentially zero correlation with the realized open-to-close move: correlation of (model probability minus opener) with (close minus open) is +0.0038, 95% CI [-0.046, +0.055], i.e. indistinguishable from zero. The move is same-day information/speed, not a cleverer feature a retrospective model can extract.",
+        "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
+        "as_of": "2026-07-07"
+      },
+      "tags": ["clv", "line-movement", "efficiency"]
+    },
+    {
+      "q": "Is the in-game overreaction finding novel?",
+      "alt_phrasings": ["is this a new discovery", "has overreaction been shown before", "novelty of the market tests"],
+      "a": {
+        "status": "ok",
+        "answer": "No, and it says so. The in-game overreaction result is labeled INCREMENTAL because it replicates Moskowitz-style reversion tests, and the information-arrival instrument closely resembles a June 2026 prediction-market paper (arXiv 2606.07811, 409,512 rows, finding 0.64-for-one contemporaneous absorption). These are honest replications on the corpora on disk, not first-ever claims.",
+        "source_artifact": "webapp/public/data/showcase/info_arrival_curve.json",
+        "as_of": "unknown"
+      },
+      "tags": ["novelty", "overreaction", "literature"]
+    },
+    {
+      "q": "Do you publish your failed hypotheses?",
+      "alt_phrasings": ["do you show your nulls", "how many null results", "do you hide the misses"],
+      "a": {
+        "status": "ok",
+        "answer": "Yes, and they outnumber the wins. Across five validation ledgers there are 351 nulls versus 168 confirms, a 2.1x ratio: NBA 45 confirmed / 31 null, MLB 32 / 37, soccer 29 / 24, tennis 24 / 20, and the interaction factory 38 confirmed / 239 null / 709 not-testable. A system that only ever confirmed would not be credible.",
+        "source_artifact": "webapp/public/data/showcase/honesty_exhibit.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["honesty", "nulls", "methodology"]
+    },
+    {
+      "q": "How many candidate market signals were rejected?",
+      "alt_phrasings": ["how many signals failed the gate", "reject rate of candidates", "did signals get thrown out"],
+      "a": {
+        "status": "ok",
+        "answer": "Every pregame candidate in the edge hunt was rejected across at least two corpora, and the two-way interaction factory alone logged 239 nulls, 709 not-testable and only 38 confirmed out of 1,003 candidates. A large null/not-testable majority is the gate doing its job, not a shortfall.",
+        "source_artifact": "webapp/public/data/showcase/honesty_exhibit.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["signal-rejection", "gate", "honesty"]
+    },
+    {
+      "q": "Did any signal look good full-sample then fall apart?",
+      "alt_phrasings": ["did a signal overfit", "sign flipping signals", "any signal reverse out of sample"],
+      "a": {
+        "status": "ok",
+        "answer": "Yes, and catching them is the point. NBA schedule signals (back-to-back, three-in-four, rest, travel) showed positive full-season lifts that reversed sign across the two calendar halves, the classic overfit signature. Since the schedule is known long before any line moves, the whole sample is a clean test bed, and the gate rejected them.",
+        "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
+        "as_of": "2026-07-07"
+      },
+      "tags": ["overfit", "sign-flip", "nba"]
+    },
+    {
+      "q": "What is the single measured win in the whole system?",
+      "alt_phrasings": ["what actually works", "the one real result", "biggest genuine finding"],
+      "a": {
+        "status": "ok",
+        "answer": "In-game conditioning. Fusing the pregame rating prior with the realized mid-game state sharpens win-probability calibration (NBA Brier 0.209 to 0.159, MLB 0.241 to 0.126) on real out-of-sample corpora. It is a calibration win, not a market edge: a live book sees the same score, so no beat-the-market claim is made.",
+        "source_artifact": "docs/INGAME_PROOF.md",
+        "as_of": "unknown"
+      },
+      "tags": ["in-game", "calibration", "headline"]
+    },
+    {
+      "q": "Does the in-game model beat the market's NBA win probability at the end of Q1?",
+      "alt_phrasings": ["nba end q1 model vs market", "first quarter win prob comparison", "early nba in-game vs market"],
+      "a": {
+        "status": "ok",
+        "answer": "No, the market is sharper. At end-of-Q1 the paired model-minus-market Brier delta is -0.0084 (95% CI [-0.0161, -0.0008], n=1,592), verdict MARKET_SHARPER_PROVISIONAL. Later NBA checkpoints are underpowered with intervals spanning zero.",
+        "source_artifact": "webapp/public/data/showcase/cross_sport_scoreboard.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["nba", "in-game", "model-vs-market"]
+    },
+    {
+      "q": "How big are the corpora behind these calibration numbers?",
+      "alt_phrasings": ["sample size of the calibration data", "how many games and rows", "corpus size"],
+      "a": {
+        "status": "ok",
+        "answer": "The MLB in-game corpus is 78,986 graded rows across 227 games and the soccer corpus is 9,003 rows across 51 games. The MLB sample is large enough for cluster-bootstrapped reliability curves; the 51-game soccer sample is small, so its single-fold reads are flagged as not durable.",
+        "source_artifact": "webapp/public/data/showcase/calibration_stability.json",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["sample-size", "corpus", "methodology"]
+    },
+    {
+      "q": "Are single-fold results trustworthy?",
+      "alt_phrasings": ["can you trust one split", "is a single window enough", "why require multiple corpora"],
+      "a": {
+        "status": "ok",
+        "answer": "No. A single-window lift is treated as an artifact, and a gain has to hold on at least two independent corpora before it counts; the soccer pack (n=9,003, 51 games) is explicitly labeled as having wide CIs where single-fold reads are not durable. The edge hunt's rejected candidates were precisely the ones that looked positive full-sample then sign-flipped.",
+        "source_artifact": "webapp/public/data/showcase/soccer_calibration_pack.json",
+        "as_of": "unknown"
+      },
+      "tags": ["methodology", "replication", "multi-corpus"]
+    },
+    {
+      "q": "Does the market already price schedule facts like back-to-backs and rest?",
+      "alt_phrasings": ["is rest already in the line", "does the market know about b2b", "schedule edge in the odds"],
+      "a": {
+        "status": "ok",
+        "answer": "Yes. NBA back-to-back, three-in-four, rest, travel, altitude and home-court probes all rejected against the devigged close (home-court advantage was fully absorbed in the devig). The market already prices deterministic calendar physics, so these known facts are not exploitable information.",
+        "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
+        "as_of": "2026-07-07"
+      },
+      "tags": ["schedule", "efficiency", "nba"]
+    },
+    {
+      "q": "How does the model's pregame MLB run-total forecast compare to the market?",
+      "alt_phrasings": ["mlb total runs crps vs market", "pregame totals model vs market baseball", "run total sharpness pregame"],
+      "a": {
+        "status": "ok",
+        "answer": "Statistically tied on the data available. On MLB pregame total-runs the paired CRPS delta versus the market is -0.0523 (95% CI [-0.1657, 0.0482], n=300), verdict UNDERPOWERED, with 80% interval coverage of 0.75 for the model versus 0.81 for the market. No difference is established either way.",
+        "source_artifact": "webapp/public/data/showcase/cross_sport_scoreboard.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["mlb", "totals", "crps"]
+    },
+    {
+      "q": "Why is the MLB run-total Brier left blank in the market-type breakdown?",
+      "alt_phrasings": ["why no brier for mlb totals", "unscored totals market", "null brier by design"],
+      "a": {
+        "status": "ok",
+        "answer": "Because there is no resolved outcome to score against. The MLB run-total quote-tracks carry 2,113 rescued in-game ticks but no settlement join, so scoring them would mean inventing labels; the Brier is reported null by design and only the model-vs-market divergence (median 0.116128) is disclosed. Refusing to fabricate a score is the discipline being demonstrated.",
+        "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
+        "as_of": "unknown"
+      },
+      "tags": ["honesty", "totals", "no-fabrication"]
+    },
+    {
+      "q": "Does in-game conditioning let you beat a live book?",
+      "alt_phrasings": ["can you beat live in-play odds", "is the in-game win an edge", "does the live model beat the live market"],
+      "a": {
+        "status": "ok",
+        "answer": "No, and no such claim is made. The in-game Brier improvement (NBA 0.209 to 0.159, MLB 0.241 to 0.126) is forecaster sharpness on a real out-of-sample corpus, but a live book sees the same score at the same time, so it is not a demonstrated ability to beat a live price. It is calibration, not edge.",
+        "source_artifact": "docs/INGAME_PROOF.md",
+        "as_of": "unknown"
+      },
+      "tags": ["in-game", "calibration", "no-edge"]
+    },
+    {
+      "q": "Where is the in-game model most miscalibrated?",
+      "alt_phrasings": ["worst calibrated in-game bucket", "where does the model fail most", "biggest live calibration error"],
+      "a": {
+        "status": "ok",
+        "answer": "In late soccer states at low probabilities. The worst-ranked bucket is soccer minute 75-90+, predicted-probability band 0.2-0.4, where the model's mean prediction was 0.2117 but the outcome rate was 1.0 (calibration error 0.7883, n=10). Late-game low-probability soccer is where the model is furthest from reality relative to the market.",
+        "source_artifact": "webapp/public/data/showcase/state_conditioned_calibration.json",
+        "as_of": "unknown"
+      },
+      "tags": ["in-game", "calibration", "soccer"]
+    },
+    {
+      "q": "Does the model or the market misfire more on late MLB favorites?",
+      "alt_phrasings": ["late inning heavy favorites calibration", "mlb late favorite miscalibration", "who is off on strong late leads"],
+      "a": {
+        "status": "ok",
+        "answer": "The model. In late MLB innings (7+) for the 0.8-1.0 band the model predicted 0.9211 but teams only won 0.6853 of the time (calibration error 0.2357, n=5,037), while the market's same-band error was just 0.0206. The model badly overrates late favorites relative to the market.",
+        "source_artifact": "webapp/public/data/showcase/state_conditioned_calibration.json",
+        "as_of": "unknown"
+      },
+      "tags": ["mlb", "in-game", "overconfidence"]
+    },
+    {
+      "q": "Should I bet the model's pick when it disagrees with the market?",
+      "alt_phrasings": ["is it a bet when model differs from market", "fade the market on disagreement", "act on model vs market gap"],
+      "a": {
+        "status": "refused",
+        "answer": "This is a calibrated predictor, not betting advice, so I will not tell you what to bet. For context only: the data shows the opposite of an opportunity, since on the largest model-vs-market disagreements the market is the more accurate side (the model is closer only 37.7% of the time in MLB and 21.5% in soccer). No dollar edge is claimed anywhere.",
+        "source_artifact": "webapp/public/data/showcase/market_disagreement_profile.json",
+        "as_of": "unknown"
+      },
+      "tags": ["refused", "no-betting-advice", "disagreement"]
+    },
+    {
+      "q": "What ROI or profit does this system produce?",
+      "alt_phrasings": ["how much money does it make", "what is the return on investment", "is it profitable"],
+      "a": {
+        "status": "refused",
+        "answer": "No ROI, profit, or dollar-edge figure is produced or claimed; this is a calibration-and-sharpness project, not a betting-return product. Zero real money has been placed. The honest finding is that the model matches efficient closing lines within noise and beats none of them, which is measured in Brier and BSS, not dollars.",
+        "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["refused", "no-roi", "efficiency"]
+    },
+    {
+      "q": "Give me a profitable strategy based on the calibration findings.",
+      "alt_phrasings": ["turn the calibration into a betting system", "how to profit from this", "monetize the edge"],
+      "a": {
+        "status": "refused",
+        "answer": "There is no profitable strategy to hand over, and I do not give betting advice. Every candidate pregame signal was rejected across at least two corpora and the model does not beat the market's Brier at any in-game grain, so the system's own evidence points to market efficiency rather than an exploitable edge.",
+        "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
+        "as_of": "2026-07-07"
+      },
+      "tags": ["refused", "no-betting-advice", "efficiency"]
+    },
+    {
+      "q": "Does the model beat Pinnacle's closing line specifically?",
+      "alt_phrasings": ["clv versus pinnacle", "beat the sharpest book", "pinnacle close comparison"],
+      "a": {
+        "status": "no_data",
+        "answer": "There is no Pinnacle-specific closing-line-value corpus on disk to answer this. Closing-line value is measured forward, never claimed retrospectively, and no real sharp-book CLV reading has been produced yet. What is measured is the model matching devigged consensus closes within noise, not any single book.",
+        "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["no-data", "clv", "closing-line"]
+    },
+    {
+      "q": "How does the model do on NFL or NHL?",
+      "alt_phrasings": ["nfl calibration", "hockey predictions", "other sports beyond the four"],
+      "a": {
+        "status": "no_data",
+        "answer": "No data. The measured corpora are NBA, MLB, soccer and tennis; NFL and NHL are not covered, so there are no calibration or market-comparison numbers to report for them.",
+        "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["no-data", "coverage", "cross-sport"]
+    },
+    {
+      "q": "Which sportsbook is slowest to move its lines?",
+      "alt_phrasings": ["slowest book to update", "which bookmaker lags", "book-by-book line speed"],
+      "a": {
+        "status": "no_data",
+        "answer": "This is not measured. The market-comparison work uses devigged consensus/market probabilities, not per-book reaction speed, so there is no artifact ranking individual sportsbooks by how fast they move.",
+        "source_artifact": "webapp/public/data/showcase/info_arrival_curve.json",
+        "as_of": "unknown"
+      },
+      "tags": ["no-data", "book-speed", "market-microstructure"]
+    },
+    {
+      "q": "Which games tonight are the market getting wrong?",
+      "alt_phrasings": ["what games is the market mispricing now", "tonight's mispriced games", "live market errors right now"],
+      "a": {
+        "status": "no_data",
+        "answer": "This corpus holds retrospective calibration and market-comparison measurements, not a live tonight feed, so there is nothing here that identifies mispriced games in real time. And the standing finding is that on large disagreements the market is usually the accurate side, so a gap is not evidence the market is wrong.",
+        "source_artifact": "webapp/public/data/showcase/market_disagreement_profile.json",
+        "as_of": "unknown"
+      },
+      "tags": ["no-data", "live", "disagreement"]
+    }
+  ]
+}

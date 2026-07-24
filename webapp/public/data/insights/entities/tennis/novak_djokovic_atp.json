@@ -1,0 +1,22 @@
+{
+  "slug": "novak_djokovic_atp",
+  "pack": "tennis",
+  "display_name": "Novak Djokovic (ATP)",
+  "one_liner": "Djokovic's grass_wr_career 0.9167 is the highest surface win rate of any player in this set.",
+  "three_things": [
+    "Nearly surface-agnostic: career win rates of 0.9167 on grass, 0.8632 on hard, 0.8226 on clay.",
+    "Recent form holds up strongly: hard_wr_recent 0.8404 and clay_wr_recent 0.7872.",
+    "Small clay-vs-hard gap in both windows (clay_minus_hard_career -0.0406, clay_minus_hard_recent -0.0532)."
+  ],
+  "context_note": "Descriptive career and recent-form surface win rates as of the corpus end, not a prediction and not an edge claim. Per-surface floors apply (n>=30 career, independent floors for recent form); below-floor metrics show n/a, and nothing here adjusts for era, opponent quality, or draw.",
+  "cited": [
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Novak Djokovic (ATP)].key_numbers.grass_wr_career", "value": 0.9167},
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Novak Djokovic (ATP)].key_numbers.hard_wr_career", "value": 0.8632},
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Novak Djokovic (ATP)].key_numbers.clay_wr_career", "value": 0.8226},
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Novak Djokovic (ATP)].key_numbers.hard_wr_recent", "value": 0.8404},
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Novak Djokovic (ATP)].key_numbers.clay_wr_recent", "value": 0.7872},
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Novak Djokovic (ATP)].key_numbers.clay_minus_hard_career", "value": -0.0406},
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Novak Djokovic (ATP)].key_numbers.clay_minus_hard_recent", "value": -0.0532}
+  ],
+  "as_of": "2026-07-19T03:41:37.066640+00:00"
+}

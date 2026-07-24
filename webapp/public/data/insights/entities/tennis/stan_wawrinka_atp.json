@@ -1,0 +1,20 @@
+{
+  "slug": "stan_wawrinka_atp",
+  "pack": "tennis",
+  "display_name": "Stan Wawrinka (ATP)",
+  "one_liner": "Wawrinka's recent win rates trail his career on both surfaces -- hard_wr_recent 0.434 against a hard_wr_career of 0.618.",
+  "three_things": [
+    "Career hard is a touch above clay (hard_wr_career 0.618, clay_wr_career 0.5804).",
+    "Recent form is down across the board: hard_wr_recent 0.434, clay_wr_recent 0.4167.",
+    "Grass is the weak surface -- grass_adapt_career -0.1153, with career grass win rate below the floor (n/a)."
+  ],
+  "context_note": "Descriptive career and recent-form surface win rates as of the corpus end, not a prediction and not an edge claim. Recent-form figures can reflect thin post-floor samples; per-surface floors apply (n>=30) and below-floor metrics show n/a. No adjustment for era, opponent quality, or draw.",
+  "cited": [
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Stan Wawrinka (ATP)].key_numbers.hard_wr_recent", "value": 0.434},
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Stan Wawrinka (ATP)].key_numbers.hard_wr_career", "value": 0.618},
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Stan Wawrinka (ATP)].key_numbers.clay_wr_career", "value": 0.5804},
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Stan Wawrinka (ATP)].key_numbers.clay_wr_recent", "value": 0.4167},
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Stan Wawrinka (ATP)].key_numbers.grass_adapt_career", "value": -0.1153}
+  ],
+  "as_of": "2026-07-19T03:41:37.066640+00:00"
+}

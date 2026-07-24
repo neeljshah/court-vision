@@ -1,0 +1,15 @@
+{
+ "id": "nba_matchup_grid",
+ "title": "Matchup grid: the fastest and slowest pairings in the league",
+ "headline_insight": "Pooled over three seasons and 870 team pairings, Atlanta versus Indiana is the highest-scoring matchup at a mean of 255.7 combined points over 10 meetings, while Charlotte versus Portland is the lowest at 197.0 -- a 58-point gap between the league's fastest and slowest recurring games.",
+ "what_it_means": "Every game is reduced to two team-point totals and pooled by pairing to describe how much scoring each recurring matchup has actually produced. The spread is large: an ATL-IND game has averaged nearly 60 more combined points than a CHA-POR game, a real stylistic signature of who plays fast and loose versus slow and grinding. This describes games already played -- it is not a forecast of any future meeting.",
+ "how_to_read": "Each pairing's mean_total is the combined-points average over its meetings and mean_margin is the row-minus-column point differential (pooled home and away, not a venue split); pairings need at least 2 meetings to appear.",
+ "why_it_matters": "It is a compact, honest descriptor of matchup-level scoring texture -- useful context for a totals model, explicitly labeled as history rather than prediction.",
+ "caveat": "DESCRIPTIVE_ONLY: NOT a prediction of any future matchup, NOT a home/away split (the per-player table carries no venue flag), and pooled across the 2023-24 to 2025-26 seasons.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/nba_matchup_grid.json", "field": "extremes_descriptive.highest_scoring_pairing (ATL vs IND) mean_total / n_meetings", "value": "255.7 / 10"},
+  {"path": "webapp/public/data/showcase/nba_matchup_grid.json", "field": "extremes_descriptive.lowest_scoring_pairing (CHA vs POR) mean_total", "value": 197.0},
+  {"path": "webapp/public/data/showcase/nba_matchup_grid.json", "field": "mask.pairings_kept", "value": 870}
+ ],
+ "as_of": "through 2026-04-12 (2023-24 to 2025-26)"
+}

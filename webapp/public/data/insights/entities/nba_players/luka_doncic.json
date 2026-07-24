@@ -1,0 +1,20 @@
+{
+  "slug": "luka_doncic",
+  "pack": "nba_players",
+  "display_name": "Luka Doncic",
+  "one_liner": "Luka Doncic produces 31.9 points, 8.6 assists, and 8.4 rebounds per 36 minutes across the sample.",
+  "three_things": [
+    "The scoring-plus-playmaking load is heavy: 31.9 points and 8.6 assists per 36 minutes.",
+    "He rebounds at 8.4 per 36 minutes, high for a lead guard.",
+    "Efficiency is solid but not elite: 47.4 percent from the field and 37.3 percent from three."
+  ],
+  "context_note": "Numbers are per-36-minute rates over a 3-season sample (seasons_played: 3), not per-game and not a full career; the manifest is descriptive_only, with no adjustment for opponent, teammates, role, or shot difficulty and a career_min_minutes>=800 inclusion floor. A rate says nothing about usage or shot quality.",
+  "cited": [
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Luka Doncic].key_numbers.career_pts_per36", "value": 31.9},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Luka Doncic].key_numbers.career_ast_per36", "value": 8.6},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Luka Doncic].key_numbers.career_reb_per36", "value": 8.4},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Luka Doncic].key_numbers.career_fg_pct", "value": 47.4},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Luka Doncic].key_numbers.career_fg3_pct", "value": 37.3}
+  ],
+  "as_of": "2026-04-12"
+}

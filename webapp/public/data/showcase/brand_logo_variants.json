@@ -1,0 +1,74 @@
+{
+ "edge_claimed": false,
+ "method": "tile-local bimodal-cluster background key (see module docstring), trim, composite",
+ "source": "webapp/public/brand/courtvision-logo.png",
+ "checkerboard_detected": {
+  "tile_px": 22,
+  "gap_threshold": 9.0,
+  "bg_frac": 0.3892
+ },
+ "mark_trimmed_size": [
+  1008,
+  1056
+ ],
+ "palette": {
+  "n_opaque_px": 657536,
+  "metal_mean_rgb": [
+   171.7,
+   172.6,
+   173.8
+  ],
+  "accent_mean_rgb": [
+   211.2,
+   169.9,
+   127.6
+  ],
+  "accent_px_frac": 0.0228
+ },
+ "bg_colors": {
+  "dark": [
+   11,
+   14,
+   19
+  ],
+  "light": [
+   248,
+   249,
+   250
+  ]
+ },
+ "outputs": {
+  "logo-on-dark.png": [
+   1218,
+   1266
+  ],
+  "logo-on-light.png": [
+   1218,
+   1266
+  ],
+  "logo-square-dark.png": [
+   1024,
+   1024
+  ],
+  "logo-square-light.png": [
+   1024,
+   1024
+  ],
+  "favicon-192.png": [
+   192,
+   192
+  ],
+  "favicon-512.png": [
+   512,
+   512
+  ],
+  "logo-mono-white.png": [
+   1008,
+   1056
+  ],
+  "logo-mono-dark.png": [
+   1008,
+   1056
+  ]
+ }
+}

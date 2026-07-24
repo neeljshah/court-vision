@@ -1,0 +1,19 @@
+{
+ "id": "qa_coverage_stats",
+ "title": "QA coverage: fail-closed answer engine, all checks green",
+ "headline_insight": "The answer engine passes 87/87 regression-bank checks and honestly answers 36.6% of answerable questions -- refusals are the fail-closed design, not a defect.",
+ "what_it_means": "Every one of 87 regression-bank checks passes (fail-closed statuses count as PASS), and on a 1,307-row coverage stress test the engine answers 36.62% of the questions it deems answerable and declines the rest. Every one of 125 edge-language questions was refused (ok_rate 0.0), which is exactly the intended behavior.",
+ "how_to_read": "Coverage rate is answered-ok divided by expects-answer-true rows only; no_data / not_supported / ambiguous / refused categories are excluded from the denominator by design.",
+ "why_it_matters": "A predictor that refuses edge and ROI questions and returns no_data when it lacks data is safer than one that always answers, and the green regression bank proves that behavior is stable.",
+ "caveat": "The 36.6% figure counts only rows flagged expects_answer=true; a large share of real questions still resolve to no_data (560 of the 1,307 stress rows).",
+ "cited": [
+  {"path": "webapp/public/data/showcase/qa_coverage_stats.json", "field": "qa_regression_bank.n_pass", "value": 87},
+  {"path": "webapp/public/data/showcase/qa_coverage_stats.json", "field": "qa_regression_bank.n_entries", "value": 87},
+  {"path": "webapp/public/data/showcase/qa_coverage_stats.json", "field": "qa_regression_bank.n_fail", "value": 0},
+  {"path": "webapp/public/data/showcase/qa_coverage_stats.json", "field": "coverage_stress.coverage_rate", "value": 0.3662},
+  {"path": "webapp/public/data/showcase/qa_coverage_stats.json", "field": "coverage_stress.n_rows", "value": 1307},
+  {"path": "webapp/public/data/showcase/qa_coverage_stats.json", "field": "coverage_stress.per_category_by_volume (edge_language).ok_rate", "value": 0.0},
+  {"path": "webapp/public/data/showcase/qa_coverage_stats.json", "field": "coverage_stress.status_totals_all_rows.no_data", "value": 560}
+ ],
+ "as_of": "2026-07-22T22:42:09Z"
+}

@@ -1,0 +1,19 @@
+{
+  "slug": "anthony_davis",
+  "pack": "nba_players",
+  "display_name": "Anthony Davis",
+  "one_liner": "Anthony Davis posts 25.4 points and 12.7 rebounds per 36 minutes on 53.5 percent shooting.",
+  "three_things": [
+    "A true two-way big line: 25.4 points and 12.7 rebounds per 36 minutes.",
+    "Interior efficiency is strong at 53.5 percent from the field.",
+    "The floor-spacing is limited, with a 27.6 percent three-point mark."
+  ],
+  "context_note": "Numbers are per-36-minute rates over a 3-season sample (seasons_played: 3), not per-game and not a full career; the manifest is descriptive_only, with no adjustment for opponent, teammates, role, or shot difficulty and a career_min_minutes>=800 inclusion floor. A low three-point rate reflects a limited-volume, interior-focused shot profile.",
+  "cited": [
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Anthony Davis].key_numbers.career_pts_per36", "value": 25.4},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Anthony Davis].key_numbers.career_reb_per36", "value": 12.7},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Anthony Davis].key_numbers.career_fg_pct", "value": 53.5},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Anthony Davis].key_numbers.career_fg3_pct", "value": 27.6}
+  ],
+  "as_of": "2026-04-12"
+}

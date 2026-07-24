@@ -1,0 +1,21 @@
+{
+  "slug": "kawhi_leonard",
+  "pack": "nba_players",
+  "display_name": "Kawhi Leonard",
+  "one_liner": "Kawhi Leonard's shooting line is 51.1 / 40.4 / 87.9 from the field, three, and the line while scoring 27.1 points per 36 minutes.",
+  "three_things": [
+    "Efficient across every zone: 51.1 percent from the field, 40.4 from three, 87.9 at the line.",
+    "The scoring rate is 27.1 points per 36 minutes across 164 games.",
+    "Assist rate is low at 3.8 per 36 minutes, a scorer more than a distributor."
+  ],
+  "context_note": "Numbers are per-36-minute rates over a 3-season sample (seasons_played: 3), not per-game and not a full career; the manifest is descriptive_only, with no adjustment for opponent, teammates, role, or shot difficulty and a career_min_minutes>=800 inclusion floor. Shooting percentages are unadjusted for shot difficulty.",
+  "cited": [
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Kawhi Leonard].key_numbers.career_fg_pct", "value": 51.1},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Kawhi Leonard].key_numbers.career_fg3_pct", "value": 40.4},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Kawhi Leonard].key_numbers.career_ft_pct", "value": 87.9},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Kawhi Leonard].key_numbers.career_pts_per36", "value": 27.1},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Kawhi Leonard].key_numbers.career_ast_per36", "value": 3.8},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Kawhi Leonard].key_numbers.career_games", "value": 164}
+  ],
+  "as_of": "2026-04-12"
+}

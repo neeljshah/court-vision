@@ -1,0 +1,21 @@
+{
+  "slug": "kevin_durant",
+  "pack": "nba_players",
+  "display_name": "Kevin Durant",
+  "one_liner": "Kevin Durant's line reads 52.3 / 41.8 / 85.8 from the field, three, and the line while scoring 26.0 points per 36 minutes.",
+  "three_things": [
+    "Rare efficiency across all three shooting zones: 52.3 percent from the field, 41.8 from three, 85.8 at the line.",
+    "The scoring rate is 26.0 points per 36 minutes over 215 games, one of the larger game counts in this set.",
+    "Playmaking is secondary at 4.6 assists per 36 minutes, in line with a score-first role."
+  ],
+  "context_note": "Numbers are per-36-minute rates over a 3-season sample (seasons_played: 3), not per-game and not a full career; the manifest is descriptive_only, with no adjustment for opponent, teammates, role, or shot difficulty and a career_min_minutes>=800 inclusion floor. A rate says nothing about usage or the quality of the shots taken.",
+  "cited": [
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Kevin Durant].key_numbers.career_fg_pct", "value": 52.3},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Kevin Durant].key_numbers.career_fg3_pct", "value": 41.8},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Kevin Durant].key_numbers.career_ft_pct", "value": 85.8},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Kevin Durant].key_numbers.career_pts_per36", "value": 26.0},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Kevin Durant].key_numbers.career_ast_per36", "value": 4.6},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Kevin Durant].key_numbers.career_games", "value": 215}
+  ],
+  "as_of": "2026-04-12"
+}

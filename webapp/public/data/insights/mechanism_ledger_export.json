@@ -1,0 +1,18 @@
+{
+ "id": "mechanism_ledger_export",
+ "title": "Mechanism ledger export: the raw evidence table",
+ "headline_insight": "The full ledger exports 287 tested mechanisms -- 130 confirmed, 126 null, 31 not testable -- each with its effect size, p-value, and corpus pointer.",
+ "what_it_means": "This is the raw evidence table behind the survival scoreboard: every named mechanism with its verdict and a pointer to the exact corpus and sample that produced it. NBA's back-to-back rest penalty, for instance, confirmed at an effect of -1.73 (p 0.005645490426098632) on a 4,732-game corpus.",
+ "how_to_read": "Each row is one mechanism run; the bucket field collapses many verdict labels (CONFIRMED_LOCAL, NULL, REJECT, NOT_TESTABLE, and so on) into confirmed / null / not_testable.",
+ "why_it_matters": "Publishing the effect, p-value, and corpus for every mechanism including the nulls is what lets an outside reader re-derive any claim instead of trusting a summary number.",
+ "caveat": "as_of is the recorded run_ts and is null for runs that predate run_ts stamping, so many rows carry no timestamp and a single mechanism can appear multiple times across corpora.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/mechanism_ledger_export.json", "field": "overall_counts.confirmed", "value": 130},
+  {"path": "webapp/public/data/showcase/mechanism_ledger_export.json", "field": "overall_counts.null", "value": 126},
+  {"path": "webapp/public/data/showcase/mechanism_ledger_export.json", "field": "overall_counts.not_testable", "value": 31},
+  {"path": "webapp/public/data/showcase/mechanism_ledger_export.json", "field": "overall_counts.total", "value": 287},
+  {"path": "webapp/public/data/showcase/mechanism_ledger_export.json", "field": "by_sport.basketball_nba.mechanisms[0] (b2b_rest_penalty) effect", "value": -1.73},
+  {"path": "webapp/public/data/showcase/mechanism_ledger_export.json", "field": "by_sport.basketball_nba.mechanisms[0] (b2b_rest_penalty) p", "value": 0.005645490426098632}
+ ],
+ "as_of": "run_ts-stamped rows through 2026-07-10; older rows unstamped"
+}

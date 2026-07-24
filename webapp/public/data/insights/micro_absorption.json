@@ -1,0 +1,16 @@
+{
+ "id": "micro_absorption",
+ "title": "Pregame line movement concentrates in the final hour (NBA most of all)",
+ "headline_insight": "In the NBA, roughly a third of all pregame line movement lands in the final hour before tip -- final_hour_movement_share 0.3247, the highest of any measured sport.",
+ "what_it_means": "Across our own scraped consensus prices, the market sits quiet most of the day and then repriices sharply as the game nears -- almost certainly lineup news, late scratches, and sharp money arriving close to start. In the NBA the per-snapshot price motion inside the last hour (0-1h mean_abs_move 0.00117) is about seventeen times the size of the early-window motion (6h+ mean_abs_move 7e-05).",
+ "how_to_read": "Bars are minutes-to-start buckets; height is the mean absolute devigged-probability move between consecutive snapshots, and final_hour_movement_share is the fraction of total absolute movement that happens in the last 60 minutes.",
+ "why_it_matters": "It marks WHEN the market's information actually arrives; a model that freezes its inputs hours before tip is blind to exactly the window where most of the repricing occurs.",
+ "caveat": "descriptive_only, edge_claimed false -- this is consecutive-snapshot movement from our own scraped line_history (min_moves_floor 20), a microstructure measurement, not a trading signal.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/micro_absorption.json", "field": "sports.nba.final_hour_movement_share", "value": 0.3247},
+  {"path": "webapp/public/data/showcase/micro_absorption.json", "field": "sports.nba.move_by_bucket.0-1h.mean_abs_move", "value": 0.00117},
+  {"path": "webapp/public/data/showcase/micro_absorption.json", "field": "sports.nba.move_by_bucket.6h+.mean_abs_move", "value": "7e-05"},
+  {"path": "webapp/public/data/showcase/micro_absorption.json", "field": "sports.mlb.final_hour_movement_share", "value": 0.1813}
+ ],
+ "as_of": "2026-07-24"
+}

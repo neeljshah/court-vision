@@ -1,0 +1,18 @@
+{
+ "id": "cross_sport_scoreboard",
+ "title": "The model beats the market in 3 of 17 checkpoints -- all provisional",
+ "headline_insight": "Across 17 head-to-head checkpoints the model out-sharpens the market in only three, all MLB late-inning run-totals (end innings 6, 7 and 8), and every one is still flagged PROVISIONAL.",
+ "what_it_means": "One rating object is scored out-of-sample against the market across sports and game states. Most rows are UNDERPOWERED (their confidence interval spans zero) or favor the market. The only rows where the model is sharper are MLB total-runs forecasts from the 6th inning on -- plausibly because a late-game run-total is a countable, low-news quantity the sim handles well.",
+ "how_to_read": "Each row's paired_delta_mean is model-minus-market skill; positive favors the model, but trust it only when the verdict reads MODEL_SHARPER and the 95% interval clears zero.",
+ "why_it_matters": "It is an honest scoreboard that names the handful of spots worth pursuing instead of claiming a broad edge.",
+ "caveat": "Even the three winning rows rest on small samples (n=54, 55, 49) and are labeled PROVISIONAL; the NBA end_q1 winprob row shows the market sharper (paired_delta_mean -0.0084).",
+ "cited": [
+  {"path": "webapp/public/data/showcase/cross_sport_scoreboard.json", "field": "n_rows", "value": 17},
+  {"path": "webapp/public/data/showcase/cross_sport_scoreboard.json", "field": "rows[mlb_ingame total_runs|end_inning_6].paired_delta_mean", "value": 0.6392},
+  {"path": "webapp/public/data/showcase/cross_sport_scoreboard.json", "field": "rows[mlb_ingame total_runs|end_inning_8].paired_delta_mean", "value": 1.4201},
+  {"path": "webapp/public/data/showcase/cross_sport_scoreboard.json", "field": "rows[mlb_ingame total_runs|end_inning_6].verdict", "value": "MODEL_SHARPER_PROVISIONAL"},
+  {"path": "webapp/public/data/showcase/cross_sport_scoreboard.json", "field": "rows[nba winprob|end_q1].paired_delta_mean", "value": -0.0084},
+  {"path": "webapp/public/data/showcase/cross_sport_scoreboard.json", "field": "rows[nba winprob|end_q1].verdict", "value": "MARKET_SHARPER_PROVISIONAL"}
+ ],
+ "as_of": "2026-07-22T20:15:22.041778+00:00"
+}

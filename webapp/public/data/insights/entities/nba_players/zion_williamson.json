@@ -1,0 +1,20 @@
+{
+  "slug": "zion_williamson",
+  "pack": "nba_players",
+  "display_name": "Zion Williamson",
+  "one_liner": "Zion Williamson scores 26.9 points per 36 minutes on 58.0 percent shooting, though his free-throw rate sits at 69.6 percent.",
+  "three_things": [
+    "Interior scoring is elite: 26.9 points per 36 minutes on 58.0 percent from the field.",
+    "The free-throw line is the clear weak point at 69.6 percent.",
+    "He appears in 157 games across the three-season window."
+  ],
+  "context_note": "Numbers are per-36-minute rates over a 3-season sample (seasons_played: 3), not per-game and not a full career; the manifest is descriptive_only, with no adjustment for opponent, teammates, role, or shot difficulty and a career_min_minutes>=800 inclusion floor. The high field-goal percentage reflects a rim-heavy shot diet, and the 28.6 percent three-point mark shows the range is limited.",
+  "cited": [
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Zion Williamson].key_numbers.career_pts_per36", "value": 26.9},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Zion Williamson].key_numbers.career_fg_pct", "value": 58.0},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Zion Williamson].key_numbers.career_ft_pct", "value": 69.6},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Zion Williamson].key_numbers.career_games", "value": 157},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Zion Williamson].key_numbers.career_fg3_pct", "value": 28.6}
+  ],
+  "as_of": "2026-04-12"
+}

@@ -1,0 +1,216 @@
+// app/(analytics)/analytics/players/[pack]/[slug]/page.tsx -- one entity's card.
+//
+// Reading-Room entity experience (mockups/entity.html): descriptive banner, the
+// HTML card numbers (each wearing a Receipt), the Scout note (one_liner + chips),
+// "what stands out" (three_things), the reading note (context_note), a floors box,
+// and cross-links. Server component, static export: reads the staged atlas manifest
+// + the precomputed insight envelope at build. No client fetch, no live data.
+//
+// Export cost: generateStaticParams enumerates ALL 1,549 entities across 7 packs
+// (see players/page.tsx report). Each page is tiny and data-free at runtime.
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { Receipt, type ReceiptData } from "@/components/analytics/Receipt";
+import { ScoutNote, type ScoutEnvelope } from "@/components/analytics/ScoutNote";
+import { ScoutQuestions } from "@/components/analytics/ScoutQuestions";
+
+type KN = Record<string, unknown>;
+type Entry = { entity: string; card_path: string; key_numbers: KN; floors?: string; as_of?: string };
+type Manifest = { descriptive_only?: boolean; entries: Entry[] };
+type Insight = {
+  slug: string; display_name: string; one_liner: string;
+  three_things?: string[]; context_note?: string;
+  cited?: Array<{ path: string; field?: string; value: unknown }>; as_of?: string;
+};
+
+type Pack = { slug: string; manifest: string; label: string; sport: string; noun: string; related: string[] };
+const PACKS: Pack[] = [
+  { slug: "nba_players", manifest: "atlas_nba_manifest.json", label: "NBA players", sport: "NBA", noun: "career per-36 rates", related: ["player_metric_landscape", "nba_consistency_profiles", "aging_curve_lite"] },
+  { slug: "nba_teams", manifest: "atlas_nba_teams_manifest.json", label: "NBA teams", sport: "NBA", noun: "measured team rates", related: ["home_away_anatomy", "blowout_dynamics", "on_off_showcase"] },
+  { slug: "mlb_batters", manifest: "atlas_mlb_batters_manifest.json", label: "MLB batters", sport: "MLB", noun: "measured plate-discipline and contact rates", related: ["statcast_showcase", "mlb_velo_bands"] },
+  { slug: "mlb_pitch", manifest: "atlas_mlb_pitch_manifest.json", label: "MLB pitch types", sport: "MLB", noun: "measured pitch-level distributions", related: ["pitch_sequencing", "mlb_count_leverage"] },
+  { slug: "soccer", manifest: "atlas_soccer_manifest.json", label: "Soccer teams", sport: "Soccer", noun: "measured recent-form rates", related: ["soccer_form_stability", "soccer_calibration_pack"] },
+  { slug: "tennis", manifest: "atlas_tennis_manifest.json", label: "Tennis players", sport: "Tennis", noun: "measured surface win rates", related: ["tennis_surface_transfer", "tennis_showcase"] },
+  { slug: "calibration", manifest: "atlas_calibration_manifest.json", label: "Calibration checkpoints", sport: "Cross-sport", noun: "measured calibration checkpoints", related: ["state_conditioned_calibration", "calibration_over_time"] },
+];
+
+const SHOWCASE = join(process.cwd(), "public", "data", "showcase");
+const INSIGHTS = join(process.cwd(), "public", "data", "insights", "entities");
+
+function base(p: string): string {
+  return (p.split(/[\\/]/).pop() || p).replace(/\.[a-z0-9]+$/i, "");
+}
+function slugify(s: string): string {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+}
+// Deterministic (slug, entry) pairs. Slug = card_path basename (matches the 60
+// insight slugs 1:1); the one dup in 1,549 (mlb_pitch KC) falls back to slugify.
+function withSlugs(entries: Entry[]): Array<{ slug: string; entry: Entry }> {
+  const seen = new Set<string>();
+  return entries.map((entry) => {
+    let s = base(entry.card_path);
+    if (seen.has(s)) s = slugify(entry.entity);
+    seen.add(s);
+    return { slug: s, entry };
+  });
+}
+function readManifest(pack: Pack): Manifest | null {
+  try { return JSON.parse(readFileSync(join(SHOWCASE, pack.manifest), "utf-8")) as Manifest; }
+  catch { return null; }
+}
+function readInsight(pack: string, slug: string): Insight | null {
+  try { return JSON.parse(readFileSync(join(INSIGHTS, pack, `${slug}.json`), "utf-8")) as Insight; }
+  catch { return null; }
+}
+
+function fmt(v: unknown): string {
+  if (v === null || v === undefined) return "--";
+  if (typeof v === "boolean") return v ? "yes" : "no";
+  if (typeof v === "number") return Number.isInteger(v) ? String(v) : String(parseFloat(v.toFixed(3)));
+  return String(v);
+}
+function label(k: string): string {
+  return k.replace(/^career_/, "").replace(/_/g, " ")
+    .replace(/\bpct\b/g, "%").replace(/per36/g, "/36")
+    .replace(/\bfg3\b/g, "3P").replace(/\bfg\b/g, "FG").replace(/\bft\b/g, "FT")
+    .replace(/\bpts\b/g, "PTS").replace(/\breb\b/g, "REB").replace(/\bast\b/g, "AST").trim();
+}
+// scalar key_numbers only (skip ids + nested dicts) -> stat cells.
+function statCells(kn: KN): Array<[string, unknown]> {
+  return Object.entries(kn).filter(([k, v]) =>
+    !/_id$/.test(k) && (typeof v === "number" || typeof v === "string" || typeof v === "boolean"));
+}
+function nameFor(entry: Entry): string {
+  const full = entry.key_numbers.team_full_name;
+  if (typeof full === "string" && full) return full;
+  return entry.entity.replace(/^(pitch_type|team):/, "$1 ").replace(/_/g, " ");
+}
+
+export function generateStaticParams() {
+  const out: Array<{ pack: string; slug: string }> = [];
+  for (const p of PACKS) {
+    const m = readManifest(p);
+    if (!m) continue;
+    for (const { slug } of withSlugs(m.entries)) out.push({ pack: p.slug, slug });
+  }
+  return out;
+}
+
+export function generateMetadata({ params }: { params: { pack: string; slug: string } }) {
+  const pack = PACKS.find((p) => p.slug === params.pack);
+  const m = pack && readManifest(pack);
+  const hit = m && withSlugs(m.entries).find((x) => x.slug === params.slug);
+  const name = readInsight(params.pack, params.slug)?.display_name || (hit && nameFor(hit.entry)) || "Entity";
+  return {
+    title: pack ? `${name} -- ${pack.label}` : "Entity",
+    description: `Descriptive reference card for ${name}: measured historical rates, not a prediction. edge_claimed: false.`,
+  };
+}
+
+const REPO = "webapp/public/data/showcase";
+const box = { background: "var(--paper-raised)", border: "1px solid var(--rule)", borderRadius: 10, padding: 18, boxShadow: "var(--shadow-card)", marginBottom: 20 } as const;
+
+export default function EntityPage({ params }: { params: { pack: string; slug: string } }) {
+  const pack = PACKS.find((p) => p.slug === params.pack);
+  if (!pack) notFound();
+  const manifest = readManifest(pack);
+  const hit = manifest && withSlugs(manifest.entries).find((x) => x.slug === params.slug);
+  if (!manifest || !hit) notFound();
+  const entry = hit.entry;
+  const insight = readInsight(params.pack, params.slug);
+  const name = insight?.display_name || nameFor(entry);
+  const asOf = insight?.as_of || entry.as_of || null;
+  const cells = statCells(entry.key_numbers);
+
+  const chips: ReceiptData[] = (insight?.cited || []).slice(0, 4).map((c) => ({
+    value: fmt(c.value), label: "descriptive_only", sourceArtifact: c.path,
+    asOf: insight?.as_of, verdict: "descriptive_only",
+  }));
+  const envelope: ScoutEnvelope = insight
+    ? { status: "descriptive_only", prose: insight.one_liner, chips }
+    : { status: "no_data", prose: "" };
+
+  const questions = [
+    `How does ${name} profile in ${pack.sport}?`,
+    `What sample sits behind ${name}'s numbers?`,
+    `Where else does ${name} appear across CourtVision?`,
+  ];
+
+  return (
+    <div className="wrap" style={{ paddingBottom: 8 }}>
+      <nav aria-label="Breadcrumb" style={{ fontSize: 13, color: "var(--ink-3)", padding: "22px 0 6px" }}>
+        <Link href="/analytics/players" style={{ color: "var(--ink-3)" }}>Entities</Link>
+        {" \u203A "}
+        <Link href={`/analytics/players#${pack.slug}`} style={{ color: "var(--ink-3)" }}>{pack.label}</Link>
+        {" \u203A "}<span style={{ color: "var(--ink-2)" }}>{name}</span>
+      </nav>
+
+      <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "var(--paper-tint)", border: "1px solid var(--rule-strong)", borderRadius: 8, padding: "8px 14px", fontSize: 13, color: "var(--ink-2)", margin: "8px 0 26px" }}>
+        <span className="dot d-desc" style={{ width: 8, height: 8 }} />
+        Descriptive only -- no edge claimed. These are {pack.noun}, not projections.
+      </div>
+
+      <header style={{ borderBottom: "1px solid var(--rule-strong)", paddingBottom: 22, marginBottom: 30 }}>
+        <div className="overline">{pack.label} &middot; {pack.sport}{asOf ? ` \u00B7 as of ${asOf}` : ""}</div>
+        <h1 className="serif" style={{ fontWeight: 500, fontSize: "clamp(2.4rem,5vw,3.4rem)", lineHeight: 1.05, letterSpacing: "-.02em", marginTop: 4 }}>{name}</h1>
+        <div style={{ color: "var(--ink-2)", marginTop: 6, fontSize: 15 }}>Descriptive card &middot; floors-gated &middot; the HTML card, not a PNG.</div>
+      </header>
+
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 40, alignItems: "flex-start" }}>
+        <div style={{ flex: "3 1 440px", minWidth: 0 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 1, background: "var(--rule)", border: "1px solid var(--rule)", borderRadius: 12, overflow: "hidden" }}>
+            {cells.map(([k, v]) => (
+              <div key={k} style={{ background: "var(--paper-raised)", padding: "18px 16px" }}>
+                <div style={{ fontSize: 12, color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: ".06em", fontWeight: 600 }}>{label(k)}</div>
+                <div className="serif tnum" style={{ fontWeight: 500, fontSize: "2.1rem", lineHeight: 1, margin: "8px 0 10px" }}>{fmt(v)}</div>
+                <Receipt sourceArtifact={`${REPO}/${pack.manifest}`} asOf={asOf || undefined} verdict="descriptive_only" label="descriptive_only" value={fmt(v)} />
+              </div>
+            ))}
+          </div>
+
+          <ScoutNote envelope={envelope} />
+
+          {insight?.three_things?.length ? (
+            <section style={{ marginTop: 28 }}>
+              <h2 className="serif" style={{ fontWeight: 500, fontSize: 20, marginBottom: 10 }}>What stands out</h2>
+              <ul style={{ margin: 0, paddingLeft: 20, color: "var(--ink-2)", fontSize: 16, lineHeight: 1.6 }}>
+                {insight.three_things.map((t, i) => <li key={i} style={{ marginBottom: 6 }}>{t}</li>)}
+              </ul>
+            </section>
+          ) : null}
+
+          {insight?.context_note ? (
+            <section style={{ marginTop: 24, background: "var(--paper-tint)", borderRadius: 10, padding: "16px 18px" }}>
+              <div className="overline" style={{ marginBottom: 6 }}>Reading note</div>
+              <p style={{ margin: 0, color: "var(--ink-2)", fontSize: 14.5, lineHeight: 1.6 }}>{insight.context_note}</p>
+            </section>
+          ) : null}
+        </div>
+
+        <aside style={{ flex: "1 1 240px" }}>
+          {entry.floors ? (
+            <div style={box}>
+              <h3 className="serif" style={{ fontWeight: 500, fontSize: 20, marginBottom: 10 }}>Floors</h3>
+              <div className="mono" style={{ fontSize: 12, color: "var(--ink-3)", lineHeight: 1.55, wordBreak: "break-word" }}>{entry.floors}</div>
+            </div>
+          ) : null}
+          <div style={box}>
+            <h3 className="serif" style={{ fontWeight: 500, fontSize: 20, marginBottom: 8 }}>Where this appears</h3>
+            {pack.related.map((id) => (
+              <Link key={id} href={`/analytics/m/${id}`} style={{ display: "block", padding: "9px 0", borderBottom: "1px solid var(--rule)", fontSize: 14 }}>
+                {id.replace(/_/g, " ")}
+              </Link>
+            ))}
+            <Link href={`/analytics/players#${pack.slug}`} style={{ display: "block", padding: "9px 0", fontSize: 14 }}>
+              All {pack.label} &rarr;
+            </Link>
+          </div>
+        </aside>
+      </div>
+
+      <ScoutQuestions questions={questions} heading={`Ask Scout about ${name}`} />
+    </div>
+  );
+}

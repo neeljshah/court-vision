@@ -1,0 +1,18 @@
+{
+ "id": "market_convergence",
+ "title": "In MLB the model gets certain faster than the market -- and drifts further from it",
+ "headline_insight": "By the 9th MLB checkpoint the model's forecast uncertainty has collapsed to 0.3656 bits while the market still sits at 0.7244, and their disagreement widens from 0.07 early to 0.2791 late.",
+ "what_it_means": "This outcome-free view tracks two things over game time: how far apart the forecasters sit (gap) and how much uncertainty each still carries (entropy, in bits). In MLB the model's uncertainty falls faster than the market's -- the model commits to an outcome while the market stays hedged -- and the gap between them grows through the game. In soccer they instead converge (gap shrinks by -0.0486) as entropy decays toward zero.",
+ "how_to_read": "Higher entropy means more uncertainty (1.0 bit at a coin-flip, 0.0 at a certainty); watch whether the model line drops below the market line as the game runs.",
+ "why_it_matters": "A model that grows confident faster than the market is a flag -- paired with the overconfidence seen in the calibration exhibits, it suggests the late-game certainty is not fully earned.",
+ "caveat": "This is a labeled STANDARD_INSTRUMENT with no outcomes attached; entropy decay late in a game is expected, so it describes behavior rather than scoring accuracy.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/market_convergence.json", "field": "checkpoints.mlb.9.mean_entropy_model_bits", "value": 0.3656},
+  {"path": "webapp/public/data/showcase/market_convergence.json", "field": "checkpoints.mlb.9.mean_entropy_market_bits", "value": 0.7244},
+  {"path": "webapp/public/data/showcase/market_convergence.json", "field": "summary.mlb.gap_first", "value": 0.07},
+  {"path": "webapp/public/data/showcase/market_convergence.json", "field": "summary.mlb.gap_last", "value": 0.2791},
+  {"path": "webapp/public/data/showcase/market_convergence.json", "field": "summary.soccer_intl.gap_delta_last_minus_first", "value": -0.0486},
+  {"path": "webapp/public/data/showcase/market_convergence.json", "field": "novelty.verdict", "value": "STANDARD_INSTRUMENT"}
+ ],
+ "as_of": "unknown"
+}

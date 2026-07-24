@@ -1,0 +1,15 @@
+{
+ "id": "clutch_context",
+ "title": "Clutch shifts: an honest refusal, not a fabricated split",
+ "headline_insight": "The late-game per-36 SHIFT analytic is NOT BUILT: the NBA boxscores parquet is a full-game aggregate with no period or clutch grain, so a Q4/OT split cannot be computed from it without fabricating the numbers.",
+ "what_it_means": "Rather than manufacture 'clutch' stats off full-game rows, the module refuses and documents exactly why: the per-period player box lines exist in the raw cache, but the ingest step sums them into one full-game row per player and discards the period grain. It even names the fields a re-ingest would need -- a period column (late-game = period >= 4) plus the box stats and minutes at that grain -- so the fix is specified, just out of scope for a read-only showcase.",
+ "how_to_read": "There is no chart here; status is not_buildable, and the value is the reason plus the where_the_grain_actually_lives and fields_needed blocks that scope the fix.",
+ "why_it_matters": "It is the clearest demonstration of the platform's data-honesty rule -- a documented NO_DATA with a repair path is treated as a success, not a gap papered over with invented clutch splits.",
+ "caveat": "The period grain is discarded upstream at ingest (ingest_boxscores.py sums quarter files into one full-game row); recovering it is a data-layer re-ingest, out of scope for this module.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/clutch_context.json", "field": "status", "value": "not_buildable"},
+  {"path": "webapp/public/data/showcase/clutch_context.json", "field": "reason", "value": "player_boxscores.parquet is FULL-GAME aggregate; it carries no period/clutch grain, so late-game per-36 SHIFTS cannot be computed from it without fabricating the split."},
+  {"path": "webapp/public/data/showcase/clutch_context.json", "field": "where_the_grain_actually_lives.raw_cache", "value": "data/cache/quarter_box/<game_id>_q<period>.json (per-period player box lines DO exist here)"}
+ ],
+ "as_of": "2026-07-23T03:21:53Z"
+}

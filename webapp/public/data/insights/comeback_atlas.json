@@ -1,0 +1,16 @@
+{
+ "id": "comeback_atlas",
+ "title": "Comeback atlas: where the model nails the game state",
+ "headline_insight": "For a 1-to-5 point lead with 24-36 minutes left, the model's mean win probability is 0.6204 across 898 games and teams in that state actually won 62.03% of the time -- a near-perfect calibration match.",
+ "what_it_means": "The reliability map is reshaped into a lead-by-time-remaining atlas of 84 game-state buckets, each carrying the model's win probability, the in-play market price, and the realized outcome frequency. In the bulk of regulation states the model tracks reality closely, like the 1-5 point early lead above. The honest exception is overtime: with a 1-5 lead in OT the model says 0.7113 while teams actually won 98.3% and the market priced 97.6% -- the model under-rates how decisive a late lead is, and the market is better there.",
+ "how_to_read": "Each cell compares model_mean_prob, market_mean_prob, and outcome_rate for a bucket; buckets with fewer than 30 games are masked from the headline but still listed.",
+ "why_it_matters": "It is a pure calibration exhibit -- model versus market versus what really happened, by game state -- showing both where the forecaster is trustworthy and exactly where it still trails the market.",
+ "caveat": "Calibration/reliability measurement only, never a $/ROI/edge claim. Buckets below 30 games are masked; the widest gaps sit in thin overtime cells.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/comeback_atlas.json", "field": "cells (lead_+01_05|rem_24_36|reg) model_mean_prob", "value": 0.6204},
+  {"path": "webapp/public/data/showcase/comeback_atlas.json", "field": "cells (lead_+01_05|rem_24_36|reg) outcome_rate", "value": 0.6203},
+  {"path": "webapp/public/data/showcase/comeback_atlas.json", "field": "worst_model_market_gap_unmasked[0] (lead_+01_05|ot|ot) model_mean_prob / market_mean_prob / outcome_rate", "value": "0.7113 / 0.9763 / 0.983"},
+  {"path": "webapp/public/data/showcase/comeback_atlas.json", "field": "n_buckets_total", "value": 84}
+ ],
+ "as_of": "unknown (source artifact records no as_of)"
+}

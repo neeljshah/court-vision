@@ -1,0 +1,16 @@
+{
+ "id": "residual_autocorrelation",
+ "title": "Within-game errors barely change tick to tick",
+ "headline_insight": "Within an MLB game, the model's win-probability errors are almost frozen from one row to the next -- the median lag-1 residual autocorrelation is 0.9809 across 222 games.",
+ "what_it_means": "Because the outcome is fixed and the probability path is smooth, consecutive in-game rows are nearly identical, so the ~78,986 in-game MLB rows carry far fewer than 78,986 independent observations. This is a guardrail about how to count evidence, not a claim about any team -- the same near-1.0 autocorrelation holds for the market path too.",
+ "how_to_read": "Each game contributes one lag-1 autocorrelation of its within-game signed residual series; values near 1.0 mean rows move together, so the effective sample size is much smaller than the raw row count.",
+ "why_it_matters": "It is the reason honest tests here cluster by game rather than by row -- treating every tick as independent would massively overstate confidence in any in-game finding.",
+ "caveat": "descriptive_only, no edge/ROI claim; share of games with autocorrelation >= 0.9 is 0.955 for the model. Games with too few rows or flat residuals are skipped.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/residual_autocorrelation.json", "field": "sports.mlb.model.median", "value": 0.9809},
+  {"path": "webapp/public/data/showcase/residual_autocorrelation.json", "field": "sports.mlb.model.n_games", "value": 222},
+  {"path": "webapp/public/data/showcase/residual_autocorrelation.json", "field": "sports.mlb.n_records", "value": 78986},
+  {"path": "webapp/public/data/showcase/residual_autocorrelation.json", "field": "sports.mlb.model.share_ge_0_9", "value": 0.955}
+ ],
+ "as_of": "unknown (artifact carries no as_of field)"
+}

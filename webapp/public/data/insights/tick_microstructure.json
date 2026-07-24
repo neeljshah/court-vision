@@ -1,0 +1,16 @@
+{
+ "id": "tick_microstructure",
+ "title": "How fast the in-game market ticks, and how big each step is",
+ "headline_insight": "In-game MLB total-market quotes on Kalshi update at a median of 35.0 seconds between ticks, and each move is small -- a median 0.02 change in market probability.",
+ "what_it_means": "This is the plumbing of a live prediction market: prices refresh on the order of tens of seconds and step in roughly two-cent increments, not big jumps. On the WNBA board the market's built-in spread (overround) sits near a penny at the median (0.01), which is how thin the quoted vig is.",
+ "how_to_read": "inter_tick_seconds is the gap between consecutive quotes on the same market line; price_move_size is the absolute change in market probability between those ticks; overround is 1/home_decimal + 1/away_decimal - 1 per snapshot.",
+ "why_it_matters": "Cadence and step size set the resolution of any live comparison -- you cannot react faster than the market prints, and small steps mean the tape moves in a steady drift rather than lurches.",
+ "caveat": "Labelled a market-microstructure MEASUREMENT (latency/cadence), NOT a trading signal; sample is small (21 MLB quote tracks over 5 files; 2 WNBA files). The model-vs-market divergence figure in this artifact is a calibration-gap measurement, not an edge.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/tick_microstructure.json", "field": "sports.mlb.inter_tick_seconds.median", "value": 35.0},
+  {"path": "webapp/public/data/showcase/tick_microstructure.json", "field": "sports.mlb.price_move_size.median", "value": 0.02},
+  {"path": "webapp/public/data/showcase/tick_microstructure.json", "field": "sports.wnba.kalshi_overround.median", "value": 0.01},
+  {"path": "webapp/public/data/showcase/tick_microstructure.json", "field": "sports.mlb.n_quote_tracks", "value": 21}
+ ],
+ "as_of": "2026-07-22"
+}

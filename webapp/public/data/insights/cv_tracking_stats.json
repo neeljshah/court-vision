@@ -1,0 +1,17 @@
+{
+ "id": "cv_tracking_stats",
+ "title": "CV Tracking Stats",
+ "headline_insight": "The computer-vision tracker has produced 17,254 feature rows across 241 games and 252 players, a volume readout only.",
+ "what_it_means": "This is a coverage count of the tracking layer, not an accuracy claim: 29 distinct feature names, a median of 56 tracked rows per game, and a median of 2 distinct players tracked per game. No multi-object-tracking quality metric is benchmarked.",
+ "how_to_read": "Read it as counts of rows, games and players plus per-game distributions; the top-tracked list is player ids by row count.",
+ "why_it_matters": "It states the scale of what the tracking pipeline has emitted, useful for scope without overclaiming.",
+ "caveat": "Volume and coverage stats only, with no accuracy or quality claims (MOT metrics are unbenchmarked, see JOB_EVIDENCE_PACKET s4). There is no season breakdown because the box-score join on (game_id, player_id) returns 0 matching rows.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/cv_tracking_stats.json", "field": "total_rows", "value": 17254},
+  {"path": "webapp/public/data/showcase/cv_tracking_stats.json", "field": "n_games", "value": 241},
+  {"path": "webapp/public/data/showcase/cv_tracking_stats.json", "field": "n_players", "value": 252},
+  {"path": "webapp/public/data/showcase/cv_tracking_stats.json", "field": "rows_per_game.median", "value": 56},
+  {"path": "webapp/public/data/showcase/cv_tracking_stats.json", "field": "n_distinct_feature_names", "value": 29}
+ ],
+ "as_of": "2026-05-29 02:36:41"
+}

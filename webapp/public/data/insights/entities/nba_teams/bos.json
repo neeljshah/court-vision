@@ -1,0 +1,20 @@
+{
+  "slug": "bos",
+  "pack": "nba_teams",
+  "display_name": "Boston Celtics",
+  "one_liner": "By total minutes across the 3-season sample the Boston Celtics' most-used player is Derrick White, at 7,576.2 minutes -- not either All-Star forward.",
+  "three_things": [
+    "Derrick White logs the most total minutes on the team (7,576.2), a reminder the minutes leader is not always the marquee name.",
+    "His combined PRA-per-36 rate is 27.4.",
+    "The team plays at a low 97.5 pace proxy while scoring 114.9 points per game in the latest season."
+  ],
+  "context_note": "The 'top contributor' is the player with the most total minutes for the team across the sample, not necessarily the best or highest-scoring player -- which is why a complementary starter can lead here. PRA-per-36 sums points, rebounds, and assists per 36 minutes and is a raw box rate, not an impact metric. ppg_latest_season is a single-season team average while the rest of the sample spans three seasons; pace_proxy is a proxy, not official possession-based pace. The manifest is descriptive_only with no schedule or opponent adjustment.",
+  "cited": [
+    {"path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json", "field": "entries[entity=BOS].key_numbers.top_contributor", "value": "Derrick White"},
+    {"path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json", "field": "entries[entity=BOS].key_numbers.top_contributor_minutes", "value": 7576.2},
+    {"path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json", "field": "entries[entity=BOS].key_numbers.top_contributor_pra_per36", "value": 27.4},
+    {"path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json", "field": "entries[entity=BOS].key_numbers.pace_proxy_latest_season", "value": 97.5},
+    {"path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json", "field": "entries[entity=BOS].key_numbers.ppg_latest_season", "value": 114.9}
+  ],
+  "as_of": "2026-04-12"
+}

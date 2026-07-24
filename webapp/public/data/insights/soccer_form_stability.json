@@ -1,0 +1,16 @@
+{
+ "id": "soccer_form_stability",
+ "title": "Two ways of ranking national teams agree moderately",
+ "headline_insight": "Ranking 153 shared national teams by trailing-10 form win-rate versus net-xG strength gives a Spearman rho of 0.6419 -- moderate agreement between two independent lenses, not a temporal persistence test.",
+ "what_it_means": "This is a parallel-forms check: a recent-form ranking and a full-history strength ranking land in broadly the same order (Pearson r 0.6369 alongside the rho 0.6419). Read it as convergent validity -- the two measures see the same underlying quality -- rather than as proof that form persists over time.",
+ "how_to_read": "Each point is a national team plotted by its trailing-10 form win-rate against its net-xG strength score; a tighter, more monotonic scatter is a higher rank correlation.",
+ "why_it_matters": "The intended stronger test -- a temporal split-half (first-half vs second-half of a season) -- cannot be built here: the claim store holds only one as-of ranking vector per metric, with no within-season time series to cut into halves.",
+ "caveat": "DESCRIPTIVE_ONLY, edge_claimed false; NOT a temporal split-half and NOT a predictor (soccer_intl's predictive gate is CLOSED upstream). Form win-rate is quantized to one decimal (tie_fraction_form 0.9346), which inflates ties and pulls the correlation toward zero.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/soccer_form_stability.json", "field": "concordance.spearman_rho", "value": 0.6419},
+  {"path": "webapp/public/data/showcase/soccer_form_stability.json", "field": "concordance.pearson_r", "value": 0.6369},
+  {"path": "webapp/public/data/showcase/soccer_form_stability.json", "field": "concordance.n_overlap", "value": 153},
+  {"path": "webapp/public/data/showcase/soccer_form_stability.json", "field": "temporal_split_half.status", "value": "NOT_AVAILABLE_IN_STORE"}
+ ],
+ "as_of": "2026-07-23"
+}

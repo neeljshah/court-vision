@@ -1,0 +1,16 @@
+{
+ "id": "nba_consistency_profiles",
+ "title": "Consistency profiles: Luka is the league's steadiest star",
+ "headline_insight": "Of 579 qualified players, Luka Doncic is the most consistent game to game, with a shrunk composite coefficient of variation of 0.3448 -- well under the league median of 0.6235 -- edging out Nikola Jokic at 0.3456.",
+ "what_it_means": "Consistency is measured as the coefficient of variation (spread relative to average) of per-36 points, rebounds, and assists across a player's games, shrunk toward the league mean for players with fewer games. Doncic and Jokic sitting at the top means their nightly production barely wobbles -- roughly half the game-to-game variability of a median rotation player -- which is exactly what you'd expect from high-usage engines who touch the ball every possession. Low volatility is not the same as high value: a low-minute role player can post a steady, small stat line too.",
+ "how_to_read": "composite_cv_shrunk is the headline number (lower = steadier); compare each player against the distribution's median of 0.6235.",
+ "why_it_matters": "Game-to-game variance is the raw ingredient of any player-prop or projection interval -- knowing who is metronomic versus streaky shapes how wide those intervals should be.",
+ "caveat": "DESCRIPTIVE_ONLY and NOT predictive: CV inflates mechanically for low-mean stats, so rebound/assist CVs are not on the same scale as points across archetypes, and no opponent/rest/role adjustment is applied.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/nba_consistency_profiles.json", "field": "most_consistent_top15[0] (Luka Doncic) composite_cv_shrunk", "value": 0.3448},
+  {"path": "webapp/public/data/showcase/nba_consistency_profiles.json", "field": "most_consistent_top15[1] (Nikola Jokic) composite_cv_shrunk", "value": 0.3456},
+  {"path": "webapp/public/data/showcase/nba_consistency_profiles.json", "field": "composite_cv_distribution.median", "value": 0.6235},
+  {"path": "webapp/public/data/showcase/nba_consistency_profiles.json", "field": "input_coverage.players_meeting_floor", "value": 579}
+ ],
+ "as_of": "2026-04-12"
+}

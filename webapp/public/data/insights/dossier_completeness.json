@@ -1,0 +1,17 @@
+{
+ "id": "dossier_completeness",
+ "title": "Dossier completeness: an honest inventory of coverage",
+ "headline_insight": "1,249 player dossiers span 28 analytic categories, but the median dossier is only 46.4% complete.",
+ "what_it_means": "The player-intelligence layer holds 1,249 dossiers across 28 categories, and coverage is deliberately uneven. Rebounding profile fills 95.4% of dossiers while pace fit fills just 1.0%, so the depth a given player gets depends heavily on which questions the underlying data can answer.",
+ "how_to_read": "category_fill_rate is the share of dossiers that have each category populated; the categories-filled distribution shows how many of the 28 categories each individual dossier reaches.",
+ "why_it_matters": "It is an honest inventory of what the intelligence actually covers versus what is still sparse, with no pretense that every player is fully profiled.",
+ "caveat": "Completeness measures field population, not correctness; a filled category is not a claim that the metric inside it has been validated.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/dossier_completeness.json", "field": "dossiers_count", "value": 1249},
+  {"path": "webapp/public/data/showcase/dossier_completeness.json", "field": "categories_total", "value": 28},
+  {"path": "webapp/public/data/showcase/dossier_completeness.json", "field": "median_completeness_score", "value": 0.464},
+  {"path": "webapp/public/data/showcase/dossier_completeness.json", "field": "category_fill_rate.rebounding_profile", "value": 0.9544},
+  {"path": "webapp/public/data/showcase/dossier_completeness.json", "field": "category_fill_rate.pace_fit", "value": 0.0104}
+ ],
+ "as_of": "not stamped in artifact"
+}

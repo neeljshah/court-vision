@@ -1,0 +1,96 @@
+{
+ "stat_name": "Overreaction Harvest Gap",
+ "abbrev": "OHG",
+ "edge_claimed": false,
+ "descriptive_only": true,
+ "is_honest_null": true,
+ "metric_definition": "Structural market overshoot at large in-game moves, scaled by how far short our model falls of beating the market at max disagreement -- a measured failure to harvest, not an edge.",
+ "formula": "OHG = (n-weighted mean |moved_to - outcome| over {3-6pt,6-10pt,10pt+}) * (0.5 - model_closer_rate at >=.10 disagreement).",
+ "source_artifacts": [
+  "scripts/platformkit/analytics_showcase/out/market_overreaction.json",
+  "scripts/platformkit/analytics_showcase/out/market_disagreement_profile.json"
+ ],
+ "prior_art_verdict": "NOVEL_SELF_CRITICAL_CROSS",
+ "prior_art_citation": "Overreaction/reversion is Moskowitz (2021, Journal of Finance, 'Asset Pricing and Sports Betting') and Choi & Hui (2014, JEBO) -- market_overreaction.json's own block flags the component INCREMENTAL. Disagreement skill is standard forecast verification. Crossing them into 'the market is wrong AND we still can't cash it' is a measured-FAILURE diagnostic that no one publishes (papers publish edges, not confessions). Do not claim the components as new.",
+ "declared_confounds": [
+  "MANDATORY: OHG is an honest NULL -- at max disagreement the market is usually right (model_closer_rate 0.38 mlb / 0.22 soccer). It measures a FAILURE to harvest, NOT an edge.",
+  "consecutive-row grain, in-game; mlb + soccer_intl only.",
+  "soccer tail buckets are tiny (n=21-103), so the soccer overreaction magnitude is noisy."
+ ],
+ "results": [
+  {
+   "sport": "soccer_intl",
+   "overreaction_abs_mean": 0.2856,
+   "overreaction_buckets_used": [
+    {
+     "bucket": "3-6pt",
+     "n": 103,
+     "abs_moved_to_minus_outcome": 0.2779
+    },
+    {
+     "bucket": "6-10pt",
+     "n": 21,
+     "abs_moved_to_minus_outcome": 0.3648
+    },
+    {
+     "bucket": "10pt+",
+     "n": 91,
+     "abs_moved_to_minus_outcome": 0.276
+    }
+   ],
+   "model_can_beat_model_closer_rate": 0.2152,
+   "max_disagreement_bucket": ">=.10",
+   "max_disagreement_n": 4406,
+   "model_brier_at_max_disagree": 0.330582,
+   "market_brier_at_max_disagree": 0.172027,
+   "ohg": 0.0813,
+   "market_usually_right_at_max_disagree": true
+  },
+  {
+   "sport": "mlb",
+   "overreaction_abs_mean": 0.0721,
+   "overreaction_buckets_used": [
+    {
+     "bucket": "3-6pt",
+     "n": 2860,
+     "abs_moved_to_minus_outcome": 0.0801
+    },
+    {
+     "bucket": "6-10pt",
+     "n": 1069,
+     "abs_moved_to_minus_outcome": 0.0656
+    },
+    {
+     "bucket": "10pt+",
+     "n": 794,
+     "abs_moved_to_minus_outcome": 0.0518
+    }
+   ],
+   "model_can_beat_model_closer_rate": 0.3773,
+   "max_disagreement_bucket": ">=.10",
+   "max_disagreement_n": 33402,
+   "model_brier_at_max_disagree": 0.282705,
+   "market_brier_at_max_disagree": 0.210258,
+   "ohg": 0.0088,
+   "market_usually_right_at_max_disagree": true
+  }
+ ],
+ "headline": "soccer_intl: overshoot 0.286 but model beats market only 22% of the time at max disagreement -> OHG 0.081 (a failure to harvest, not an edge); mlb: overshoot 0.072 but model beats market only 38% of the time at max disagreement -> OHG 0.009 (a failure to harvest, not an edge)",
+ "index_card": {
+  "stat_name": "Overreaction Harvest Gap",
+  "abbrev": "OHG",
+  "module": "novel_overreaction_harvest_gap",
+  "formula": "OHG = (n-weighted mean |moved_to - outcome| over {3-6pt,6-10pt,10pt+}) * (0.5 - model_closer_rate at >=.10 disagreement).",
+  "prior_art_verdict": "NOVEL_SELF_CRITICAL_CROSS",
+  "headline": "soccer_intl: overshoot 0.286 but model beats market only 22% of the time at max disagreement -> OHG 0.081 (a failure to harvest, not an edge); mlb: overshoot 0.072 but model beats market only 38% of the time at max disagreement -> OHG 0.009 (a failure to harvest, not an edge)",
+  "edge_claimed": false,
+  "is_honest_null": true,
+  "source_artifacts": [
+   "scripts/platformkit/analytics_showcase/out/market_overreaction.json",
+   "scripts/platformkit/analytics_showcase/out/market_disagreement_profile.json"
+  ],
+  "chart": "docs/img/novel_overreaction_harvest_gap.png",
+  "n_results": 2
+ },
+ "plot_written": true
+}

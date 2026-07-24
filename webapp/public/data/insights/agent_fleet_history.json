@@ -1,0 +1,18 @@
+{
+ "id": "agent_fleet_history",
+ "title": "Agent fleet history: the build is an agentic pipeline",
+ "headline_insight": "3,224 commits from 2026-03-09 to 2026-07-22, 95.75% of them agent-authored -- the build itself is the product.",
+ "what_it_means": "Over roughly four months the repo took 3,224 commits, of which 95.75% were agent-authored and 67.9% were co-authored by Claude. Output came in bursts: the busiest single day was 2026-05-26 with 275 commits.",
+ "how_to_read": "The daily-commit series and the hour-by-weekday heat grid show when the fleet was active; weekly_agent_share tracks the agent-authored fraction week over week.",
+ "why_it_matters": "It documents that this system was built by an autonomous agent fleet under a human director rather than hand-written, so the process is part of what is being shown.",
+ "caveat": "Agent-authorship is inferred from commit author and co-author trailers and counts commits, not lines changed or reviewed quality.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/agent_fleet_history.json", "field": "total_commits", "value": 3224},
+  {"path": "webapp/public/data/showcase/agent_fleet_history.json", "field": "agent_authored_pct", "value": 0.9575},
+  {"path": "webapp/public/data/showcase/agent_fleet_history.json", "field": "claude_coauthored_pct", "value": 0.679},
+  {"path": "webapp/public/data/showcase/agent_fleet_history.json", "field": "date_range", "value": ["2026-03-09", "2026-07-22"]},
+  {"path": "webapp/public/data/showcase/agent_fleet_history.json", "field": "busiest_days[0].date", "value": "2026-05-26"},
+  {"path": "webapp/public/data/showcase/agent_fleet_history.json", "field": "busiest_days[0].commits", "value": 275}
+ ],
+ "as_of": "2026-07-22"
+}

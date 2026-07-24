@@ -1,0 +1,16 @@
+{
+ "id": "soccer_calibration_pack",
+ "title": "Soccer Calibration Pack",
+ "headline_insight": "On this international-soccer corpus the market is sharper than the model: model Brier is 0.227887 versus market 0.142726 over 9,003 rows, and the gap is widest exactly where the two disagree most.",
+ "what_it_means": "When model and market diverge by 0.10 or more (n=4406), the model is the closer forecast only 21.52% of the time. Late-game calibration also drifts, with expected calibration error climbing to 0.4978 in the 75-91 minute bucket. This is a published null, not a win.",
+ "how_to_read": "The Murphy decomposition splits Brier into reliability and resolution; the disagreement buckets show who is closer when model and market pull apart; the minute buckets show calibration error over the clock.",
+ "why_it_matters": "It is honest market-efficiency evidence, the model does not beat the market here, reported as-is rather than hidden.",
+ "caveat": "The soccer_intl corpus is only 9,003 rows, far smaller than MLB or NBA, so confidence intervals are wide and single-fold reads are not durable.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/soccer_calibration_pack.json", "field": "murphy.model_prob.brier", "value": 0.227887},
+  {"path": "webapp/public/data/showcase/soccer_calibration_pack.json", "field": "murphy.market_prob.brier", "value": 0.142726},
+  {"path": "webapp/public/data/showcase/soccer_calibration_pack.json", "field": "disagreement_buckets[>=.10].model_wins_rate", "value": 0.2152},
+  {"path": "webapp/public/data/showcase/soccer_calibration_pack.json", "field": "minute_ece.overall_weighted_ece", "value": 0.358}
+ ],
+ "as_of": "n=9003 soccer_intl corpus (no generation timestamp in artifact)"
+}

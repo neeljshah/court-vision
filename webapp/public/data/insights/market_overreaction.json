@@ -1,0 +1,18 @@
+{
+ "id": "market_overreaction",
+ "title": "Price moves overshoot in MLB, undershoot in soccer",
+ "headline_insight": "After an in-game price move, MLB prices land a few points above the eventual outcome (moved-to-minus-outcome +0.0518 to +0.0801 across move sizes), while in soccer the moved-to price sits well below it (-0.1945 to -0.3648).",
+ "what_it_means": "This is the classic price-move-versus-outcome test, bucketed by move size. In MLB, wherever the price moved to, the outcome came in a few points lower -- a small overshoot. In soccer the moved-to price sat well below the eventual outcome -- an undershoot. The directions differ by sport, and the effect is one the finance literature already documents.",
+ "how_to_read": "moved_to_minus_outcome is the moved-to price minus the realized outcome rate; positive means the move overshot, negative means it undershot.",
+ "why_it_matters": "It maps whether in-game markets over- or under-react per sport -- useful structural description, explicitly not a claimed edge.",
+ "caveat": "The authors label this INCREMENTAL, not novel -- it replicates Moskowitz-style reversion tests -- and some soccer buckets are tiny (the 6-10pt bucket is n=21) and unreliable.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/market_overreaction.json", "field": "buckets.mlb.3-6pt.moved_to_minus_outcome", "value": 0.0801},
+  {"path": "webapp/public/data/showcase/market_overreaction.json", "field": "buckets.mlb.10pt+.moved_to_minus_outcome", "value": 0.0518},
+  {"path": "webapp/public/data/showcase/market_overreaction.json", "field": "buckets.soccer_intl.0-1pt.moved_to_minus_outcome", "value": -0.1945},
+  {"path": "webapp/public/data/showcase/market_overreaction.json", "field": "buckets.soccer_intl.6-10pt.moved_to_minus_outcome", "value": -0.3648},
+  {"path": "webapp/public/data/showcase/market_overreaction.json", "field": "buckets.soccer_intl.6-10pt.n", "value": 21},
+  {"path": "webapp/public/data/showcase/market_overreaction.json", "field": "novelty.verdict", "value": "INCREMENTAL"}
+ ],
+ "as_of": "unknown"
+}

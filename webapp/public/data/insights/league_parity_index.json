@@ -1,0 +1,16 @@
+{
+ "id": "league_parity_index",
+ "title": "League Parity Index",
+ "headline_insight": "The NBA drifted slightly less balanced across three seasons: the win-share Gini rose from 0.177 in 2023-24 to 0.2004 in 2025-26.",
+ "what_it_means": "Even at the top of that range the league is very balanced (0 is perfectly even), so the shift is small. Roughly a quarter of games are decided by 5 points or fewer, edging up from 23.3% to 25.5%, and the average absolute final margin sits around 12.6 to 13.0 points.",
+ "how_to_read": "Each season's win concentration is summarized by a Gini of team win shares (lower is more balanced) plus close-game share and margin dispersion.",
+ "why_it_matters": "It is a descriptive read on competitive balance over time, a companion to strength-of-schedule work rather than a forecast.",
+ "caveat": "NOT a forecast of any future season; NOT strength-of-schedule adjusted (opponent-raw win counts); pooled with any playoff games in the parquet, which inflate win concentration. The 2024-25 and 2025-26 rows are flagged as looking partial versus a full 1230-game season.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/league_parity_index.json", "field": "seasons[2023-24].win_share_gini", "value": 0.177},
+  {"path": "webapp/public/data/showcase/league_parity_index.json", "field": "seasons[2025-26].win_share_gini", "value": 0.2004},
+  {"path": "webapp/public/data/showcase/league_parity_index.json", "field": "seasons[2023-24].pct_close_games_le5", "value": 23.3},
+  {"path": "webapp/public/data/showcase/league_parity_index.json", "field": "seasons[2025-26].pct_close_games_le5", "value": 25.5}
+ ],
+ "as_of": "2026-04-12"
+}

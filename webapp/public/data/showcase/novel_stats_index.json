@@ -1,0 +1,109 @@
+{
+ "edge_claimed": false,
+ "generated_at": "2026-07-24T03:18:51.879510+00:00",
+ "method": "composition only -- each card copied from its module's own novel_*.json output",
+ "n_stats": 6,
+ "stats": [
+  {
+   "stat_name": "Line Half-Life",
+   "abbrev": "LHL",
+   "module": "novel_line_half_life",
+   "formula": "bucket_move=n*mean_abs_move per horizon bucket; G(h)=cum far->near / total; half_life = h where G(h)=0.50 (interpolated).",
+   "prior_art_verdict": "NOVEL_PACKAGING",
+   "headline": "soccer_intl completes half its pre-game line motion by 2.7h before tip; nba not until 4.8h. tennis, wnba move most of their line >6h before tip.",
+   "edge_claimed": false,
+   "source_artifacts": [
+    "scripts/platformkit/analytics_showcase/out/micro_absorption.json"
+   ],
+   "chart": "docs/img/novel_line_half_life.png",
+   "n_results": 5,
+   "artifact": "scripts/platformkit/analytics_showcase/out/novel_line_half_life.json",
+   "is_honest_null": false
+  },
+  {
+   "stat_name": "Live-Clock Fraction",
+   "abbrev": "LCF",
+   "module": "novel_live_clock_fraction",
+   "formula": "LCF = decided_clockfrac_median at the non-masked threshold whose decided_frac_of_games is closest to 0.50 (higher = contested later).",
+   "prior_art_verdict": "INCREMENTAL_NOVEL",
+   "headline": "mlb stays contested later (LCF 0.833) than soccer_intl (LCF 0.748). (nba comeback-rate cross-check 0.0146)",
+   "edge_claimed": false,
+   "source_artifacts": [
+    "scripts/platformkit/analytics_showcase/out/blowout_dynamics.json",
+    "scripts/platformkit/analytics_showcase/out/xsport_structure.json"
+   ],
+   "chart": "docs/img/novel_live_clock_fraction.png",
+   "n_results": 2,
+   "artifact": "scripts/platformkit/analytics_showcase/out/novel_live_clock_fraction.json",
+   "is_honest_null": false
+  },
+  {
+   "stat_name": "Load-Bearing Index",
+   "abbrev": "LBI",
+   "module": "novel_load_bearing_index",
+   "formula": "LBI_a = max_player (p_win_with - p_win_without) [Elo on/off]; LBI_b = max_player (win_rate_active - win_rate_missed) [raw]; agreement = same #1 player.",
+   "prior_art_verdict": "INCREMENTAL",
+   "headline": "Most one-star-fragile: DEN (Nikola Joki\u0107, delta_winprob 0.5822). Two estimators name the same #1 player for 1/30 teams (directional cross-check, different seasons).",
+   "edge_claimed": false,
+   "source_artifacts": [
+    "scripts/platformkit/analytics_showcase/out/cf_star_removal.json",
+    "scripts/platformkit/analytics_showcase/out/ctx_lineup_proxy.json"
+   ],
+   "chart": "docs/img/novel_load_bearing_index.png",
+   "n_results": 30,
+   "artifact": "scripts/platformkit/analytics_showcase/out/novel_load_bearing_index.json",
+   "is_honest_null": false
+  },
+  {
+   "stat_name": "Market Foresight Premium",
+   "abbrev": "MFP",
+   "module": "novel_market_foresight_premium",
+   "formula": "MFP(t) = ((naive-market)/naive - (naive-model)/naive) / max(entropy_market_bits, 0.15)",
+   "prior_art_verdict": "INCREMENTAL",
+   "headline": "mlb: MFP rises from 0.06 to 0.24 over the game (mean 0.25); soccer_intl: MFP rises from 0.64 to 1.71 over the game (mean 0.92)",
+   "edge_claimed": false,
+   "source_artifacts": [
+    "scripts/platformkit/analytics_showcase/out/info_arrival_curve.json",
+    "scripts/platformkit/analytics_showcase/out/market_convergence.json"
+   ],
+   "chart": "docs/img/novel_market_foresight_premium.png",
+   "n_results": 2,
+   "artifact": "scripts/platformkit/analytics_showcase/out/novel_market_foresight_premium.json",
+   "is_honest_null": false
+  },
+  {
+   "stat_name": "Overreaction Harvest Gap",
+   "abbrev": "OHG",
+   "module": "novel_overreaction_harvest_gap",
+   "formula": "OHG = (n-weighted mean |moved_to - outcome| over {3-6pt,6-10pt,10pt+}) * (0.5 - model_closer_rate at >=.10 disagreement).",
+   "prior_art_verdict": "NOVEL_SELF_CRITICAL_CROSS",
+   "headline": "soccer_intl: overshoot 0.286 but model beats market only 22% of the time at max disagreement -> OHG 0.081 (a failure to harvest, not an edge); mlb: overshoot 0.072 but model beats market only 38% of the time at max disagreement -> OHG 0.009 (a failure to harvest, not an edge)",
+   "edge_claimed": false,
+   "is_honest_null": true,
+   "source_artifacts": [
+    "scripts/platformkit/analytics_showcase/out/market_overreaction.json",
+    "scripts/platformkit/analytics_showcase/out/market_disagreement_profile.json"
+   ],
+   "chart": "docs/img/novel_overreaction_harvest_gap.png",
+   "n_results": 2,
+   "artifact": "scripts/platformkit/analytics_showcase/out/novel_overreaction_harvest_gap.json"
+  },
+  {
+   "stat_name": "Schedule Fatigue Tax",
+   "abbrev": "SFT",
+   "module": "novel_schedule_fatigue_tax",
+   "formula": "SFT_credible = b2b_freq * (-1.73 pts/100 ORtg); SFT_descriptive = b2b_freq * (-0.315 composite/36).",
+   "prior_art_verdict": "INCREMENTAL",
+   "headline": "Most-taxed schedule: DEN 2025-26 (-0.38 pts/100 ORtg season-averaged); least: MEM 2025-26 (-0.27). League schedule-inequality range 0.11 pts/100 across 90 team-seasons.",
+   "edge_claimed": false,
+   "source_artifacts": [
+    "scripts/platformkit/analytics_showcase/out/schedule_density.json"
+   ],
+   "chart": "docs/img/novel_schedule_fatigue_tax.png",
+   "n_results": 90,
+   "artifact": "scripts/platformkit/analytics_showcase/out/novel_schedule_fatigue_tax.json",
+   "is_honest_null": false
+  }
+ ],
+ "skipped": []
+}

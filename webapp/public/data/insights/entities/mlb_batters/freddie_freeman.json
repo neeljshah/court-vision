@@ -1,0 +1,23 @@
+{
+ "slug": "freddie_freeman",
+ "pack": "mlb_batters",
+ "display_name": "Freddie Freeman",
+ "one_liner": "Freddie Freeman kept squaring the ball up in 2025: a .346 estimated wOBA on contact over 835 batted balls.",
+ "three_things": [
+  "High contact volume -- 835 batted balls, among the most in this group.",
+  "A line-drive profile more than raw thump: 84.3 mph average exit velocity, 102.3 mph at the 90th percentile.",
+  "Four-seam fastballs were 31.5% of the 2,372 pitches he saw; 49.0% landed in the rulebook zone."
+ ],
+ "context_note": "Descriptive only, from a single 2025 Statcast pull (>=300 pitches-faced floor). Contact numbers are over the 835 batted balls only, not all 2,372 pitches, and estimated wOBA on contact is a batted-ball model that ignores walks and strikeouts. No swing/miss or launch-angle column in this pull, so no whiff rate or barrel profile. Not park- or opponent-adjusted; not a prediction. 'Among the most' is scoped to these twelve hitters.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Freddie Freeman].key_numbers.avg_estimated_woba_on_contact", "value": 0.346},
+  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Freddie Freeman].key_numbers.n_batted_balls", "value": 835},
+  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Freddie Freeman].key_numbers.avg_exit_velo", "value": 84.3},
+  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Freddie Freeman].key_numbers.exit_velo_p90", "value": 102.3},
+  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Freddie Freeman].key_numbers.top_pitch_type_seen", "value": "FF"},
+  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Freddie Freeman].key_numbers.top_pitch_type_seen_pct", "value": 31.5},
+  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Freddie Freeman].key_numbers.pitches_faced", "value": 2372},
+  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Freddie Freeman].key_numbers.pct_pitches_in_rulebook_zone", "value": 49.0}
+ ],
+ "as_of": "2025-09-28"
+}

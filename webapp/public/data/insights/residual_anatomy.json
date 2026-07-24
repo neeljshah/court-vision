@@ -1,0 +1,16 @@
+{
+ "id": "residual_anatomy",
+ "title": "Where the model's error backlog actually sits",
+ "headline_insight": "The single largest slice of the model's cumulative error is early-inning coin-flip games -- MLB innings 1-3 at a .4-.6 model probability carries 6063.25 in total absolute residual mass (mean_abs_residual 0.4912 over 12,344 rows).",
+ "what_it_means": "Ranking every sport x game-state x probability-band segment by total absolute error shows the improvement backlog is concentrated where little has happened and the outcome is genuinely uncertain -- early, near-50/50 states. That is where fixing the model would remove the most cumulative error.",
+ "how_to_read": "Each segment reports n rows, mean absolute residual, and total_abs_residual_mass (n times mean); the ranked list puts the biggest total error slices first.",
+ "why_it_matters": "It turns a vague 'the model is off' into a prioritized to-do list -- the top segments are all early-to-mid MLB innings in the uncertain probability bands.",
+ "caveat": "No significance test here; total residual mass scales with row count, so high-volume buckets rank high partly by size, not only by per-row error. edge_claimed false.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/residual_anatomy.json", "field": "ranked_worst_segments[0].total_abs_residual_mass", "value": 6063.25},
+  {"path": "webapp/public/data/showcase/residual_anatomy.json", "field": "ranked_worst_segments[0].mean_abs_residual", "value": 0.4912},
+  {"path": "webapp/public/data/showcase/residual_anatomy.json", "field": "ranked_worst_segments[0].n", "value": 12344},
+  {"path": "webapp/public/data/showcase/residual_anatomy.json", "field": "ranked_worst_segments[0].time_bucket", "value": "early(inn1-3)"}
+ ],
+ "as_of": "unknown (artifact carries no as_of field)"
+}

@@ -1,0 +1,20 @@
+{
+  "slug": "giannis_antetokounmpo",
+  "pack": "nba_players",
+  "display_name": "Giannis Antetokounmpo",
+  "one_liner": "Giannis Antetokounmpo posts 32.0 points and 12.1 rebounds per 36 minutes on 60.9 percent shooting from the field.",
+  "three_things": [
+    "The 60.9 percent field-goal rate is elite for a 32.0-points-per-36 scorer, reflecting a rim-heavy shot diet.",
+    "He rebounds at 12.1 per 36 minutes, doubling as an interior anchor.",
+    "The clear weaknesses are outside and at the line: 27.4 percent from three and 64.0 percent on free throws."
+  ],
+  "context_note": "Numbers are per-36-minute rates over a 3-season sample (seasons_played: 3), not per-game and not a full career; the manifest is descriptive_only, with no adjustment for opponent, teammates, role, or shot difficulty and a career_min_minutes>=800 inclusion floor. The high field-goal percentage largely reflects where the shots come from, not touch from range.",
+  "cited": [
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Giannis Antetokounmpo].key_numbers.career_pts_per36", "value": 32.0},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Giannis Antetokounmpo].key_numbers.career_reb_per36", "value": 12.1},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Giannis Antetokounmpo].key_numbers.career_fg_pct", "value": 60.9},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Giannis Antetokounmpo].key_numbers.career_fg3_pct", "value": 27.4},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Giannis Antetokounmpo].key_numbers.career_ft_pct", "value": 64.0}
+  ],
+  "as_of": "2026-04-12"
+}

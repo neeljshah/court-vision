@@ -1,0 +1,16 @@
+{
+ "id": "schedule_density",
+ "title": "The back-to-back tax, measured in the box score",
+ "headline_insight": "On the second night of a back-to-back, NBA per-36 box-composite production dips about 0.315 versus rested games (13.591 vs 13.905) -- small, but it stacks with schedule compression.",
+ "what_it_means": "Fatigue shows up in the box score but modestly at the player level: the raw pooled per-36 penalty is -0.315 for a back-to-back, -0.217 for 3-games-in-4-days, and -0.193 for 4-in-6. These lenses overlap, so their counts do not add up -- a back-to-back that closes a cluster is also a 3-in-4.",
+ "how_to_read": "The rested baseline is games with >= 2 days rest and no compression; each density class shows its pooled per-36 mean and the delta beneath the baseline.",
+ "why_it_matters": "The significance-tested version of this effect lives in a separate receipt: -1.73 pts/100 team ORtg (rested minus back-to-back), n 4732, p 0.0056 -- so the descriptive dip here is the player-level footprint of a team effect that clears a real test.",
+ "caveat": "DESCRIPTIVE_ONLY, edge_claimed false; raw pooled per-36 means, NOT roster/opponent/minutes/home-away adjusted and NOT significance-tested in this module; overlapping classes are not additive.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/schedule_density.json", "field": "per36_deltas.b2b.composite_per36_delta_vs_rested", "value": -0.315},
+  {"path": "webapp/public/data/showcase/schedule_density.json", "field": "per36_deltas.b2b.composite_per36", "value": 13.591},
+  {"path": "webapp/public/data/showcase/schedule_density.json", "field": "rested_baseline_per36.composite_per36", "value": 13.905},
+  {"path": "webapp/public/data/showcase/schedule_density.json", "field": "mechanism_receipt.effect_cited_from_receipt", "value": "-1.73 pts/100 team ORtg (rested minus b2b), n=4732, p=0.0056"}
+ ],
+ "as_of": "unknown (artifact carries no as_of field); seasons pooled 2023-24, 2024-25, 2025-26"
+}

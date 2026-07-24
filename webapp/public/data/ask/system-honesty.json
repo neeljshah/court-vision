@@ -1,0 +1,665 @@
+{
+  "bucket": "system-honesty",
+  "entries": [
+    {
+      "q": "How does this system grade itself?",
+      "alt_phrasings": ["how do you check your own work", "what keeps you honest", "how is the system self-audited"],
+      "a": {
+        "status": "ok",
+        "answer": "Every named mechanism the system tests is written to an append-only validation ledger with its verdict, effect size, p-value, and the corpus it ran on. The scoreboard over those ledgers currently counts 287 rows across four sports, of which 129 of 256 testable hypotheses survived as confirmed -- a survival rate of 0.5039. A confirmed, a null, and a not-testable are all recorded and counted; a system that only ever confirmed would not be credible.",
+        "source_artifact": "webapp/public/data/showcase/mechanism_survival.json",
+        "as_of": "2026-07-11"
+      },
+      "tags": ["self-grading", "ledger", "methodology"]
+    },
+    {
+      "q": "How many of your claims are verified versus null?",
+      "alt_phrasings": ["confirmed vs failed hypotheses", "what fraction held up", "verified to null ratio"],
+      "a": {
+        "status": "ok",
+        "answer": "In the forward claim scoreboard over 259 hypothesis families, 121 are verified, 99 are null, 28 not-testable, 7 retracted, and 4 provisional. That is a ratio of 1.107 nulls-or-worse per confirm. The nulls are kept and published on purpose -- they are the honest shape of a real search, not a defect.",
+        "source_artifact": "webapp/public/data/showcase/fwd_claim_scoreboard.json",
+        "as_of": "2026-07-11"
+      },
+      "tags": ["verified-vs-null", "ledger", "self-grading"]
+    },
+    {
+      "q": "Do nulls actually outnumber your confirmed findings?",
+      "alt_phrasings": ["do you publish your failures", "how many things did not work", "null count vs confirm count"],
+      "a": {
+        "status": "ok",
+        "answer": "Yes. Across the four sport ledgers plus a 1,003-row interaction-factory sweep, nulls (351) outnumber confirms (168) by about 2.1x. In MLB the balance actually inverts, 32 confirmed against 37 null. Keeping the failures visible is the entire point of the exhibit.",
+        "source_artifact": "webapp/public/data/showcase/honesty_exhibit.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["nulls", "honesty-exhibit", "self-grading"]
+    },
+    {
+      "q": "What was the biggest result you had to retract?",
+      "alt_phrasings": ["what did you get wrong", "your worst overclaim", "a headline number that fell apart"],
+      "a": {
+        "status": "ok",
+        "answer": "The most-cited retraction was an early pregame return-on-investment headline that turned out to be a market-follow grading artifact: the grader picked bet direction from the market's own devigged favorite and never actually read the model, priced at a flat -110 fiction, with filters tuned in-sample on the same file. Read against real closing lines the model is roughly break-even-minus-vig, about -2.00% unfiltered. The instrument that caught it was built by the same person who made the claim.",
+        "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["retraction", "roi-artifact", "self-caught"]
+    },
+    {
+      "q": "Tell me about the in-play backtest headline you pulled back.",
+      "alt_phrasings": ["the 55k in-play bets result", "retracted in-play accuracy", "L5 proxy ceiling"],
+      "a": {
+        "status": "ok",
+        "answer": "An in-play backtest once posted eye-catching accuracy and return figures on 55,073 bets, but those were settled against a soft L5 rolling-average line proxy, not real sharp closing lines. That makes it a model-quality ceiling, not a tradeable or realized result, so both figures were retracted and no dollar number is quoted in their place. The first real closing-line-value reading is not expected until October 2026.",
+        "source_artifact": "docs/KNOWN_LIMITATIONS.md",
+        "as_of": "2026-06-11"
+      },
+      "tags": ["retraction", "in-play", "L5-proxy"]
+    },
+    {
+      "q": "Did you find a leak in your own win-probability model?",
+      "alt_phrasings": ["lookahead bug you caught", "the end-of-Q3 Brier leak", "did a feature peek at the future"],
+      "a": {
+        "status": "ok",
+        "answer": "Yes. The end-of-third-quarter win-probability model was fed two features computed from fourth-quarter data (halftime_pace_shift and trailing_team_q4_usg_hhi), so it was peeking at the quarter it was supposed to predict, and the famous Brier headline was also mis-sourced from the cited file. After removing the two leaking features the honest leak-free walk-forward Brier is about 0.141. It is framed as a leak caught in my own pipeline, not as a competitive number.",
+        "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["leak", "win-probability", "self-caught"]
+    },
+    {
+      "q": "How big is the reject pile?",
+      "alt_phrasings": ["how many signals did you kill", "rejected candidate count", "signal graveyard size"],
+      "a": {
+        "status": "ok",
+        "answer": "The reject ledger holds 804 recorded verdict rows, of which 628 are on a REJECT-family verdict (627 explicit REJECT) against 95 SHIP and 45 SHIP_REVIEW. As of their latest test, 68 distinct sport-signal pairs currently sit on a reject verdict. A REJECT is honest market-efficiency evidence, not a failure -- no dollar or edge claim rides on any of it.",
+        "source_artifact": "webapp/public/data/showcase/reject_graveyard.json",
+        "as_of": "2026-07-18"
+      },
+      "tags": ["reject-ledger", "signals", "honesty"]
+    },
+    {
+      "q": "Why do you reject so many signals?",
+      "alt_phrasings": ["most common reason for a reject", "how signals die", "why does the gate kill candidates"],
+      "a": {
+        "status": "ok",
+        "answer": "By reason category, the largest bucket of rejects is the as-of reclaim sweep at 510, followed by prescreen-delta (20), walk-forward ablation (18), and seed-stability (17). By sport the reject rows split NBA 426, soccer 205, MLB 118, tennis 55. Most candidates simply do not clear a leak-free gate that was built to refute, not confirm.",
+        "source_artifact": "webapp/public/data/showcase/reject_graveyard.json",
+        "as_of": "2026-07-18"
+      },
+      "tags": ["reject-ledger", "gate", "methodology"]
+    },
+    {
+      "q": "Does the system claim a betting edge?",
+      "alt_phrasings": ["do you beat the sportsbook", "is this a profit product", "is there a real edge"],
+      "a": {
+        "status": "ok",
+        "answer": "No. Every committed analytics artifact carries edge_claimed=false, and against real closing lines the finding is that the market is efficient. This is a calibrated predictor whose honest win is matching the devigged close within noise, plus a measured in-game conditioning improvement -- not a dollar edge. Accuracy is not edge, and an honest reject is treated as a success.",
+        "source_artifact": "docs/PUBLIC_EVIDENCE.md",
+        "as_of": "2026-06-11"
+      },
+      "tags": ["no-edge", "market-efficiency", "framing"]
+    },
+    {
+      "q": "How well does the model do against the market's own probabilities?",
+      "alt_phrasings": ["Brier skill score vs market", "do you beat the market's Brier", "is the model sharper than the price"],
+      "a": {
+        "status": "ok",
+        "answer": "It does not beat the market's Brier. The in-game Brier skill score of model versus market is at or below zero everywhere: for MLB all-innings the model Brier is 0.237684 against the market's 0.206653 (skill score -0.1502), and for international soccer all-minutes it is 0.227887 against 0.142726 (skill score -0.5967). Both model and market crush the base-rate baseline, which is expected and is not an edge.",
+        "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["brier", "market-efficiency", "calibration"]
+    },
+    {
+      "q": "What did the full-season backtest actually prove?",
+      "alt_phrasings": ["season-long walk-forward result", "are you well calibrated but not profitable", "the market efficiency proof"],
+      "a": {
+        "status": "ok",
+        "answer": "The full-season leak-free walk-forward backtest (with truncation-invariance proven) shows the model is well-calibrated but does not beat the close: season Brier 0.208 versus the closing line's 0.198. Spread and total pregame closing-line value is essentially zero, with correlation-with-outcome of 0.001. That negative result is exactly what a rigorous validation framework is supposed to produce.",
+        "source_artifact": "docs/PUBLIC_EVIDENCE.md",
+        "as_of": "2026-06-11"
+      },
+      "tags": ["market-efficiency", "calibration", "backtest"]
+    },
+    {
+      "q": "What is the one measured win the system does claim?",
+      "alt_phrasings": ["what actually works", "in-game conditioning result", "your best honest finding"],
+      "a": {
+        "status": "ok",
+        "answer": "The one measured calibration win is in-game conditioning: fusing the pregame rating prior with the realized mid-game state sharpens the win-probability forecaster, moving Brier from 0.209 to 0.159 for NBA and 0.241 to 0.126 for MLB on real out-of-sample corpora. It is labeled calibration, not a dollar edge, because a live book sees the score too. edge_claimed stays false.",
+        "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["in-game", "calibration", "measured-win"]
+    },
+    {
+      "q": "What happened in the playoff replay validation?",
+      "alt_phrasings": ["PBP Finals replay result", "playoff win probability accuracy", "did you have a playoff edge"],
+      "a": {
+        "status": "ok",
+        "answer": "Replaying the Finals games G1 through G3 through the in-game projector produced a pooled win-probability Brier of 0.34 to 0.40 in-series -- worse than a coin flip. That is the cleanest proof in the system that the playoff market is efficient and there is no pregame playoff edge. It is reported as an honest negative result.",
+        "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["playoffs", "negative-result", "win-probability"]
+    },
+    {
+      "q": "How was this AI actually built?",
+      "alt_phrasings": ["who wrote the code", "was it hand-typed", "how solo is this build"],
+      "a": {
+        "status": "ok",
+        "answer": "It is a solo human-architected build over an agentic pipeline: across 3,224 commits from 2026-03-09 to 2026-07-22, about 95.75% are agent-authored and 67.9% carry a Claude co-author trailer. The busiest single day logged 275 commits. The honest framing is one human directing the pipeline and owning the ship/reject and validation decisions, not one person hand-typing thousands of commits.",
+        "source_artifact": "webapp/public/data/showcase/agent_fleet_history.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["how-built", "agentic-pipeline", "commits"]
+    },
+    {
+      "q": "Was this really built over 13 months?",
+      "alt_phrasings": ["how long did the build take", "build duration", "timeline of the project"],
+      "a": {
+        "status": "ok",
+        "answer": "No -- an earlier 13-month figure is not supported by git and was dropped. The commit history spans 2026-03-09 to 2026-07-22, roughly four and a half months. The honest description is an intensive solo build across that window.",
+        "source_artifact": "webapp/public/data/showcase/agent_fleet_history.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["how-built", "timeline", "retraction"]
+    },
+    {
+      "q": "How many fact-claims has the system generated, and how many are actually verified?",
+      "alt_phrasings": ["claims corpus size", "generated vs validated claims", "how many claims checked"],
+      "a": {
+        "status": "ok",
+        "answer": "The claims corpus holds 103,048 generated fact-claims across 103 families; 99 families carry a validation sidecar and 4 do not. Of 101,865 claims sampled for validation, 101,864 verified with 0 mismatches and 1 unverifiable -- covering 98.85% of generated claims. The metadata is explicit that generated outnumbers verified by design, so 'verified' never silently means 'generated'.",
+        "source_artifact": "webapp/public/data/showcase/claims_corpus_meta.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["claims-corpus", "verification", "generated-vs-validated"]
+    },
+    {
+      "q": "Did you once claim more verified claims than you could back up?",
+      "alt_phrasings": ["the 52,343 verified claims number", "a claim count with no artifact", "unbacked verified figure"],
+      "a": {
+        "status": "ok",
+        "answer": "Yes -- an earlier figure of roughly 52,343 verified claims has no surviving artifact and is not claimed. The corpus is now presented as its honest split instead: 103,048 generated fact-claims with a validation sample verifying 101,864 of 101,865 sampled. The generated/validated distinction is stated up front on purpose.",
+        "source_artifact": "webapp/public/data/showcase/claims_corpus_meta.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["claims-corpus", "retraction", "honesty"]
+    },
+    {
+      "q": "Which sports have the most tested hypotheses, and how many held up?",
+      "alt_phrasings": ["survival rate by sport", "per-sport confirmed count", "where do hypotheses survive most"],
+      "a": {
+        "status": "ok",
+        "answer": "By survival rate, NBA leads at 0.56 (42 confirmed of 75 testable), tennis 0.5455, soccer 0.5179, and MLB the lowest at 0.3974. Across all four the overall survival rate is 0.5039 on 256 testable hypotheses. Roughly half surviving is the expected shape when the gate is genuinely trying to refute each candidate.",
+        "source_artifact": "webapp/public/data/showcase/mechanism_survival.json",
+        "as_of": "2026-07-11"
+      },
+      "tags": ["survival-rate", "by-sport", "self-grading"]
+    },
+    {
+      "q": "What kinds of effects survive your gate, and which mostly fail?",
+      "alt_phrasings": ["survival by category", "do rest and fatigue signals hold up", "which effect families are weakest"],
+      "a": {
+        "status": "ok",
+        "answer": "By category, officiating effects survive best at 0.75 and the small travel bucket at 1.0, while rest-and-fatigue effects survive weakest at just 0.3056 (11 of 36 testable). That is a useful honesty signal: the folk-wisdom rest-and-fatigue story mostly does not replicate under a leak-free gate. Every bucket is reported as-is, with no dollar or edge claim attached.",
+        "source_artifact": "webapp/public/data/showcase/mechanism_survival.json",
+        "as_of": "2026-07-11"
+      },
+      "tags": ["survival-rate", "categories", "rest-fatigue"]
+    },
+    {
+      "q": "Give me an example of a mechanism that did confirm.",
+      "alt_phrasings": ["a signal that survived", "confirmed NBA effect", "something that held up"],
+      "a": {
+        "status": "ok",
+        "answer": "The back-to-back rest penalty in NBA confirmed with an effect of -1.73 points of margin (p=0.005645) on a 4,732-row corpus, meaning teams on zero days rest averaged worse margins than those with a day off. Home-court advantage also confirmed at about 3.4 points. The ledger stores each with its p-value and corpus so the number can be reproduced, not taken on faith.",
+        "source_artifact": "webapp/public/data/showcase/mechanism_ledger_export.json",
+        "as_of": "2026-07-11"
+      },
+      "tags": ["confirmed", "mechanism", "example"]
+    },
+    {
+      "q": "Give me an example of a mechanism that came back null.",
+      "alt_phrasings": ["a signal that failed", "a null NBA effect", "something that did not replicate"],
+      "a": {
+        "status": "ok",
+        "answer": "Rest-differential-versus-margin came back null: the correlation between home-minus-away rest and home margin was about -0.018 with p well above any threshold, so no usable effect. A star-injury usage-vacuum event study and pace-mismatch variance also landed null. These sit in the same ledger as the confirms, counted rather than quietly dropped.",
+        "source_artifact": "webapp/public/data/showcase/mechanism_ledger_export.json",
+        "as_of": "2026-07-11"
+      },
+      "tags": ["null", "mechanism", "example"]
+    },
+    {
+      "q": "Do any of your findings flip verdict when you re-test them?",
+      "alt_phrasings": ["do results change on re-run", "flipped hypotheses", "sign-flip signals"],
+      "a": {
+        "status": "ok",
+        "answer": "Yes, and the system keeps the whole history rather than the flattering last row. Five families are flagged as flipped -- for example NBA three-in-four fatigue went null then confirmed on a larger corpus, and an MLB staff-day-after fatigue chain went null, confirmed, then null again. A positive full-sample lift that sign-flips out of sample is treated as the overfit signature and caught, not published.",
+        "source_artifact": "webapp/public/data/showcase/fwd_claim_scoreboard.json",
+        "as_of": "2026-07-11"
+      },
+      "tags": ["flipped", "overfit", "self-grading"]
+    },
+    {
+      "q": "How many hypotheses has the interaction factory tested?",
+      "alt_phrasings": ["two-way interaction sweep", "composed candidate results", "interaction factory nulls"],
+      "a": {
+        "status": "ok",
+        "answer": "The interaction factory that composes confirmed single-mechanism findings into two-way candidates has adjudicated 1,003 of them: 709 not-testable, 239 null, 38 confirmed, and 17 failed-replication. The large not-testable and null majority is the gate doing its job, not a shortfall. The not-testable rows are untested combinations, evidence for nothing either way.",
+        "source_artifact": "webapp/public/data/showcase/honesty_exhibit.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["interaction-factory", "nulls", "composition"]
+    },
+    {
+      "q": "Does the answer engine ever refuse to answer?",
+      "alt_phrasings": ["can the system say no data", "does it decline questions", "how often does it refuse"],
+      "a": {
+        "status": "ok",
+        "answer": "Yes, refusing is a designed behavior. In a 1,307-question coverage stress test the status split was 399 ok, 560 no_data, 42 not_supported, 181 ambiguous, 125 refused, and 0 errors, for an honest coverage rate of 0.3662 on the questions that expect an answer. A correct no_data or not_supported is scored as a design pass, not a failure -- the engine is fail-closed rather than improvising.",
+        "source_artifact": "webapp/public/data/showcase/qa_coverage_stats.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["fail-closed", "answer-engine", "refusal"]
+    },
+    {
+      "q": "What happens when someone asks the system for an edge or ROI?",
+      "alt_phrasings": ["does it answer edge questions", "how does it handle profit questions", "edge-language handling"],
+      "a": {
+        "status": "ok",
+        "answer": "It refuses all of them. In the coverage stress test the edge-language category had 125 questions with an ok-rate of 0.0 -- every single one was refused -- and the prediction-winprob category likewise refused all 85. That refusal is enforced by the no-edge rail, not left to a model's discretion.",
+        "source_artifact": "webapp/public/data/showcase/qa_coverage_stats.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["no-edge", "refusal", "fail-closed"]
+    },
+    {
+      "q": "Is the answer-engine regression bank passing?",
+      "alt_phrasings": ["QA bank status", "do the answer checks pass", "regression bank result"],
+      "a": {
+        "status": "ok",
+        "answer": "Yes -- the answer-quality regression bank runs 87 checks and all 87 pass at the FULL tier, with 0 failures. Those are fail-closed status and receipt checks: a correct no_data, not_supported, or ambiguous response counts as a pass. It measures answer consistency, not any edge.",
+        "source_artifact": "webapp/public/data/showcase/qa_coverage_stats.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["qa-bank", "regression", "fail-closed"]
+    },
+    {
+      "q": "Do the public showcase numbers actually reproduce?",
+      "alt_phrasings": ["are the exhibits self-checking", "do the modules pass", "can I reproduce the site numbers"],
+      "a": {
+        "status": "ok",
+        "answer": "Every showcase builder module carries a self-check, and the latest check-all report shows all of them returning PASS. Separately, the repo's check_all self-check passes 52 of 52 on a bare clone and runs green in public CI, where the trail also preserves the first run that honestly failed 46 of 52 on a path-portability bug before it was fixed. Keeping the red run in the history is the discipline, not an embarrassment.",
+        "source_artifact": "webapp/public/data/showcase/check_all_report.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["reproducibility", "self-check", "CI"]
+    },
+    {
+      "q": "What is the model's prop-stat accuracy, and is it leak-free?",
+      "alt_phrasings": ["prop model MAE", "how accurate are the player projections", "points prediction error"],
+      "a": {
+        "status": "ok",
+        "answer": "On a 20,354-row production-model chronological holdout (last 20% by date, run through the production inference path), the mean absolute errors are PTS 4.83, REB 1.92, AST 1.39, and FG3M 0.89. The verify script fail-closes if any stat drifts more than 0.02 from these. It is leak-free and competitive with published prop-model benchmarks, and this holdout set is the honest lead accuracy claim.",
+        "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["accuracy", "prop-models", "leak-free"]
+    },
+    {
+      "q": "What is the win-probability model's headline accuracy?",
+      "alt_phrasings": ["win prob Brier", "how good is the win probability", "NNLS stack accuracy"],
+      "a": {
+        "status": "ok",
+        "answer": "The five-way NNLS win-probability stack reads 0.709 accuracy and 0.193 Brier under three-fold walk-forward validation. That is a calibration number, reported without any claim that it beats a closing line -- the full-season test shows it does not.",
+        "source_artifact": "docs/PUBLIC_EVIDENCE.md",
+        "as_of": "2026-06-11"
+      },
+      "tags": ["win-probability", "calibration", "accuracy"]
+    },
+    {
+      "q": "Do the computer-vision features add predictive value today?",
+      "alt_phrasings": ["is CV a moat", "do tracking features help the model", "CV feature importance"],
+      "a": {
+        "status": "ok",
+        "answer": "Not yet. Every CV-derived feature carries SHAP importance of about 0.0 in the production prop models today, and the CV-lift report reads has_cv_data false. The plumbing is complete and the thesis is credible, but it is honestly labeled as not-yet-a-measured-edge rather than a moat.",
+        "source_artifact": "docs/PUBLIC_EVIDENCE.md",
+        "as_of": "2026-06-11"
+      },
+      "tags": ["computer-vision", "SHAP", "honest-caveat"]
+    },
+    {
+      "q": "How many games has the tracking pipeline actually processed?",
+      "alt_phrasings": ["CV coverage", "tracked game count", "how much video was tracked"],
+      "a": {
+        "status": "ok",
+        "answer": "The CV features table holds 17,254 rows across 241 games covering 252 distinct real NBA player IDs, with 29 distinct feature names. The volume is real, but the file itself notes these are coverage stats only -- no accuracy or MOT metric is claimed, because those are not benchmarked against labeled ground truth.",
+        "source_artifact": "webapp/public/data/showcase/cv_tracking_stats.json",
+        "as_of": "2026-05-29"
+      },
+      "tags": ["computer-vision", "coverage", "honest-caveat"]
+    },
+    {
+      "q": "How many players does the tracker actually hold per game?",
+      "alt_phrasings": ["does it track all 10 players", "tracker slot stability", "players tracked per frame"],
+      "a": {
+        "status": "ok",
+        "answer": "Across the tracked games the distinct-players-per-game averages 2.63 with a maximum of 8, so the claim of reliable 10-player broadcast tracking is not demonstrated. The detector finds all ten players, but stable slot identity across occlusions is limited. Those are volume figures with no positional-accuracy claim attached.",
+        "source_artifact": "webapp/public/data/showcase/cv_tracking_stats.json",
+        "as_of": "2026-05-29"
+      },
+      "tags": ["computer-vision", "tracker", "honest-caveat"]
+    },
+    {
+      "q": "How complete are the per-player dossiers?",
+      "alt_phrasings": ["dossier fill rate", "how full are the player profiles", "player intelligence completeness"],
+      "a": {
+        "status": "ok",
+        "answer": "There are 1,249 dossiers spanning 28 categories, with a median completeness score of 0.464. Fill rates vary widely and honestly: rebounding profile is well-filled at 0.9544 and foul-drawing at 0.8655, while pace-fit (0.0104), turnover profile (0.0144), and matchup splits (0.0849) are sparse. The gaps are surfaced rather than hidden.",
+        "source_artifact": "webapp/public/data/showcase/dossier_completeness.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["dossiers", "completeness", "honest-caveat"]
+    },
+    {
+      "q": "Is the re-identification network trained on NBA footage?",
+      "alt_phrasings": ["did you train the re-ID model", "is OSNet fine-tuned", "re-ID weights origin"],
+      "a": {
+        "status": "ok",
+        "answer": "No. The shipped OSNet weights are ImageNet-pretrained, not NBA-fine-tuned, and the production appearance model is actually the HSV color histogram. The honest claim is that the OSNet omni-scale architecture was reimplemented in PyTorch and runs with ImageNet weights -- not that a deep re-ID model was trained on basketball.",
+        "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["computer-vision", "re-ID", "honest-caveat"]
+    },
+    {
+      "q": "How accurate is per-player CV attribution?",
+      "alt_phrasings": ["can you attribute tracking to individuals", "player-level CV accuracy", "slot identity accuracy"],
+      "a": {
+        "status": "ok",
+        "answer": "Per-player CV attribution is about 4% accurate -- slot identities are not stable across long occlusions. Aggregate team-level and position-level CV features are ship-ready, but individual attribution is openly documented as weak. This is stated in the known-limitations file rather than buried.",
+        "source_artifact": "docs/KNOWN_LIMITATIONS.md",
+        "as_of": "2026-06-11"
+      },
+      "tags": ["computer-vision", "attribution", "honest-caveat"]
+    },
+    {
+      "q": "Are all your tests passing?",
+      "alt_phrasings": ["is the test suite green", "test pass rate", "do all tests pass"],
+      "a": {
+        "status": "ok",
+        "answer": "Not 100%. There are roughly 7,400 tests collected, passing at about 97 to 98% locally, with a documented tail from DB, GPU, optional-dependency, and version drift plus a native pyarrow segfault on Windows. The critical betting-math core and in-play subsets pass clean, and a full-green claim is explicitly not made.",
+        "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["tests", "honest-caveat", "coverage"]
+    },
+    {
+      "q": "Is there a known bug you have not fixed yet?",
+      "alt_phrasings": ["unpatched bugs", "the sim_win_prob polarity issue", "open defects"],
+      "a": {
+        "status": "ok",
+        "answer": "Yes -- the sim_win_prob feature is polarity-inverted at the source, with correlation to home-won of about -0.194, and it remains unpatched because the fix needs a coordinated model retrain cascade. The v1 models learned to flip it internally so they are fine, but the in-play heads carry a silent effect. It is surfaced publicly precisely because it is real, measurable, and not yet fixed.",
+        "source_artifact": "docs/KNOWN_LIMITATIONS.md",
+        "as_of": "2026-06-11"
+      },
+      "tags": ["known-bug", "sim", "honesty"]
+    },
+    {
+      "q": "How big and how separated is the codebase?",
+      "alt_phrasings": ["how many modules", "research vs production code", "code size"],
+      "a": {
+        "status": "ok",
+        "answer": "The codebase is about 430 Python modules, and roughly 130 of them under the prediction folder are a research surface with only about 12 load-bearing in the live deployment graph. The FastAPI layer serves about 99 endpoints across 12 routers. Being explicit that most of the surface is experiment, not production, is a judgment claim, not a size brag.",
+        "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["architecture", "how-built", "research-vs-runtime"]
+    },
+    {
+      "q": "How many mechanism hypotheses have you closed across all sports?",
+      "alt_phrasings": ["total hypotheses adjudicated", "confirmed null not-testable split", "knowledge engine drain"],
+      "a": {
+        "status": "ok",
+        "answer": "The knowledge-engine mechanism ledger currently exports 287 rows across four sports, bucketed as 130 confirmed, 126 null, and 31 not-testable. A large null share is the expected shape of a real audit, and every row keeps its verdict, effect size, p-value, and source corpus. No dollar or edge claim rides on any of them.",
+        "source_artifact": "webapp/public/data/showcase/mechanism_ledger_export.json",
+        "as_of": "2026-07-11"
+      },
+      "tags": ["mechanism-ledger", "confirmed-null", "self-grading"]
+    },
+    {
+      "q": "Does the paper-trading ledger prove you make money?",
+      "alt_phrasings": ["paper execution results", "does the paper ledger show profit", "execution audit outcome"],
+      "a": {
+        "status": "ok",
+        "answer": "No. The paper execution ledger has 83 logged bets, every one with executed=false -- none were real fills -- and realized closing-line-value is null for all 37 settled rows because no independent close feed was captured for that channel. The only quantity it can speak to is placement-time divergence (model versus taken price), median about 0.092 probability points, which is an execution measurement, not a proven edge. It records no-close honestly rather than backfilling a number.",
+        "source_artifact": "webapp/public/data/showcase/paper_execution_audit.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["paper-trading", "no-edge", "honest-degradation"]
+    },
+    {
+      "q": "Has any real money been placed?",
+      "alt_phrasings": ["do you bet real money", "is this live trading", "real stakes placed"],
+      "a": {
+        "status": "ok",
+        "answer": "Zero real money has been placed, by design. It is gated behind a sharp-book closing-line-value reading that cannot start until October 2026, plus CV-depth and deployment-stability work. Until that gate runs, no real-money execution is considered justified.",
+        "source_artifact": "docs/KNOWN_LIMITATIONS.md",
+        "as_of": "2026-06-11"
+      },
+      "tags": ["no-real-money", "gating", "honesty"]
+    },
+    {
+      "q": "Across sports, does the model beat the market at any game state?",
+      "alt_phrasings": ["cross-sport scoreboard", "any state where model is sharper", "where does model win vs market"],
+      "a": {
+        "status": "ok",
+        "answer": "Mostly no. Across 17 cross-sport rows, most are underpowered (confidence interval spans zero) or market-sharper -- for example NBA end-of-first-quarter win-probability has a paired delta of -0.0084, flagged market-sharper and still provisional. The only model-sharper rows are late-inning MLB total-runs, and even those are labeled provisional pending more data. Every row is reported as-is.",
+        "source_artifact": "webapp/public/data/showcase/cross_sport_scoreboard.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["cross-sport", "market-efficiency", "provisional"]
+    },
+    {
+      "q": "Where does the model lose to the market -- calibration or information?",
+      "alt_phrasings": ["Murphy decomposition", "reliability vs resolution gap", "why does the model trail"],
+      "a": {
+        "status": "ok",
+        "answer": "It is mostly an information gap, not a calibration one. The Murphy decomposition shows the MLB model Brier of 0.2377 trails the market's 0.2067 (a gap of +0.0310) driven mainly by resolution, and the soccer model's 0.2279 trails 0.1427 the same way. Resolution gaps are information the market has and the model does not -- they cannot be closed by recalibration.",
+        "source_artifact": "webapp/public/data/showcase/cross_sport_scoreboard.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["murphy-decomposition", "market-efficiency", "information-gap"]
+    },
+    {
+      "q": "How many claims per sport does the corpus hold?",
+      "alt_phrasings": ["claims by sport", "per-sport claim counts", "which sport has most claims"],
+      "a": {
+        "status": "ok",
+        "answer": "By sport the generated claims break down as NBA 62,227, MLB 21,519, tennis 13,709, and soccer 4,275, with smaller unlabeled cross-sport and WNBA sets. All are ranking-kind claims validated against their own sidecars, with edge_claimed false throughout. The counts are volume of descriptive statements, not proven edges.",
+        "source_artifact": "webapp/public/data/showcase/claims_corpus_meta.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["claims-corpus", "by-sport", "volume"]
+    },
+    {
+      "q": "Is the aggregate closing-line-value figure you once cited real?",
+      "alt_phrasings": ["the CLV number you retracted", "aggregate CLV claim", "was CLV circular"],
+      "a": {
+        "status": "ok",
+        "answer": "No -- an earlier aggregate closing-line-value figure was circular, computed on the same corpus where the model was never actually read. No real Pinnacle-close CLV exists yet; the full-season backtest shows CLV near zero versus real closes. So no CLV number is quoted; only the methodology that will eventually measure it is built.",
+        "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["retraction", "CLV", "circular"]
+    },
+    {
+      "q": "Was the assists edge you talked up ever real?",
+      "alt_phrasings": ["the assist signal retraction", "your strongest candidate edge", "did AST hold up"],
+      "a": {
+        "status": "ok",
+        "answer": "It was retracted on 2026-07-21 as regime-dependent -- it broke in the playoffs, and the in-series PBP replay confirmed no model edge in playoff games. Under the no-edge rail, no dollar or ROI edge is claimed anywhere; the assist candidate stands as an honest reject, not a live edge. The historical measurement stays in the gate artifacts only as a record of the stress-testing method.",
+        "source_artifact": "docs/KNOWN_LIMITATIONS.md",
+        "as_of": "2026-06-11"
+      },
+      "tags": ["retraction", "assists", "regime-dependent"]
+    },
+    {
+      "q": "What is the honest read on the overall betting result versus real closes?",
+      "alt_phrasings": ["net result vs closing lines", "are you profitable against the close", "break-even or better"],
+      "a": {
+        "status": "ok",
+        "answer": "Against real DraftKings, FanDuel, and MGM closing lines the model is roughly break-even-minus-vig overall, about -2% to -5%, with -2.00% unfiltered from the gate analysis. The market is efficient on closing lines. Every candidate edge, including the strongest one, was ultimately rejected or retracted by my own gates.",
+        "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["market-efficiency", "no-edge", "honest-read"]
+    },
+    {
+      "q": "How much of the in-game MAE improvement is real skill versus just mechanical?",
+      "alt_phrasings": ["is the in-game lift mechanical", "learned value add in-game", "how much of the 46% is skill"],
+      "a": {
+        "status": "ok",
+        "answer": "Most of it is mechanical. The end-of-Q3 residual heads cut prediction MAE by about 46% pooled, but three of four quarters of box score are simply observed by then; over a naive carry-forward in-game baseline the learned-head value-add is about 26%, walk-forward validated. The honest framing states it that way rather than claiming the full 46% as skill, and the MAE lift is never bundled with the leaked endQ3 Brier.",
+        "source_artifact": "docs/PUBLIC_EVIDENCE.md",
+        "as_of": "2026-06-11"
+      },
+      "tags": ["in-game", "mechanical-vs-skill", "honest-framing"]
+    },
+    {
+      "q": "How was the answer engine designed to stay honest about what it does not know?",
+      "alt_phrasings": ["resolver registry design", "how does it avoid making things up", "no-folklore design"],
+      "a": {
+        "status": "ok",
+        "answer": "It routes every question through a resolver registry that maps each supported question type to exactly one deterministic source and refuses anything unregistered rather than improvising. In the coverage stress test that produced 560 no_data and 125 refused out of 1,307 questions, all treated as design passes. Every mechanism answer carries its verdict, sample size, p-value, and source file, so it is reproduced byte-for-byte rather than free-associated.",
+        "source_artifact": "webapp/public/data/showcase/qa_coverage_stats.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["answer-engine", "resolver-registry", "fail-closed"]
+    },
+    {
+      "q": "Do you keep retracted findings in the ledger or delete them?",
+      "alt_phrasings": ["do you erase failures", "retracted rows kept", "history preservation"],
+      "a": {
+        "status": "ok",
+        "answer": "They are kept and counted. The forward claim scoreboard explicitly holds 7 retracted families alongside 121 verified and 99 null, and the story field states that a system which only ever confirmed would not be credible. Verdict history is ordered by run timestamp so a flip is visible, not overwritten.",
+        "source_artifact": "webapp/public/data/showcase/fwd_claim_scoreboard.json",
+        "as_of": "2026-07-11"
+      },
+      "tags": ["retraction", "ledger", "history-preservation"]
+    },
+    {
+      "q": "Which categories does the answer engine answer well versus refuse?",
+      "alt_phrasings": ["answerable categories", "where does coverage hold", "ok-rate by question type"],
+      "a": {
+        "status": "ok",
+        "answer": "Deterministic, source-backed categories answer well: win-probability at ok-rate 1.0, calibration numbers 0.963, matchup previews 0.8889, and verified claims 0.6512. Categories that would require an edge or an unbacked opinion refuse hardest: edge-language, prediction-winprob, and mechanism-effect all sit at 0.0. The split is the design working as intended.",
+        "source_artifact": "webapp/public/data/showcase/qa_coverage_stats.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["answer-engine", "coverage", "ok-rate"]
+    },
+    {
+      "q": "What share of commits did a human hand-author?",
+      "alt_phrasings": ["human vs agent commits", "how much did the person type", "agent authorship share"],
+      "a": {
+        "status": "ok",
+        "answer": "About 95.75% of the 3,224 commits are agent-authored, so roughly 4% were hand-authored by the human. Around 67.9% carry a Claude co-author trailer. The honest description is a human architect and director of an agentic build pipeline who owns the engineering judgment and the ship-or-reject decisions.",
+        "source_artifact": "webapp/public/data/showcase/agent_fleet_history.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["how-built", "agent-authorship", "honesty"]
+    },
+    {
+      "q": "What is the system's realized ROI?",
+      "alt_phrasings": ["your return on investment", "profit percentage", "realized profit number"],
+      "a": {
+        "status": "no_data",
+        "answer": "There is no realized ROI to report: zero real money has been placed, and no dollar or ROI edge is claimed anywhere, with edge_claimed=false on every artifact. The paper execution ledger's 83 logged bets are all executed=false, and realized closing-line-value is null for the settled rows. The honest yardstick, better-than-close CLV, cannot be measured until an independent close feed accumulates from October 2026.",
+        "source_artifact": "webapp/public/data/showcase/paper_execution_audit.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["no-data", "no-edge", "roi"]
+    },
+    {
+      "q": "What is your Sharpe ratio or bankroll growth?",
+      "alt_phrasings": ["risk-adjusted return", "bankroll performance", "Sharpe number"],
+      "a": {
+        "status": "no_data",
+        "answer": "No Sharpe ratio or bankroll-growth figure exists, because no real money has been staked and the paper ledger is units-only with no dollars. Any such number would require realized returns the system does not have. The system reports this gap rather than manufacturing a figure.",
+        "source_artifact": "docs/KNOWN_LIMITATIONS.md",
+        "as_of": "2026-06-11"
+      },
+      "tags": ["no-data", "no-edge", "risk-metrics"]
+    },
+    {
+      "q": "Can you tell me the system's percentage edge over the sportsbook?",
+      "alt_phrasings": ["how much edge do you have", "edge in percent", "your advantage over the book"],
+      "a": {
+        "status": "refused",
+        "answer": "No edge figure is provided -- this is a calibrated predictor, not an edge product, and the no-edge rail refuses edge and ROI language outright. In the answer-engine stress test all 125 edge-language questions were refused, ok-rate 0.0. Against real closes the honest finding is that the market is efficient.",
+        "source_artifact": "webapp/public/data/showcase/qa_coverage_stats.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["refused", "no-edge", "edge-language"]
+    },
+    {
+      "q": "What is your current closing-line-value track record?",
+      "alt_phrasings": ["CLV performance", "how do you beat the close", "realized CLV number"],
+      "a": {
+        "status": "no_data",
+        "answer": "There is no realized closing-line-value track record yet: in the paper execution ledger, clv_pct is null for all 37 settled rows because no independent close feed was captured for that channel. No historical sharp-book closing archive exists publicly either, so the first real reading is roughly October 2026 onward. The methodology to measure it is built; the number is honestly absent.",
+        "source_artifact": "webapp/public/data/showcase/paper_execution_audit.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["no-data", "CLV", "gating"]
+    },
+    {
+      "q": "Does the possession simulator have a proven betting edge?",
+      "alt_phrasings": ["is the sim profitable", "same-game-parlay edge", "sim edge claim"],
+      "a": {
+        "status": "no_data",
+        "answer": "No betting edge is claimed for the possession simulator -- only its structure is validated. The correct negative teammate correlation of about -0.10 emerges from the mechanics with no hand-tuned matrix, and the same-game-parlay pricing is structurally correct, but there is no real parlay-price capture to grade against. Team totals also run slightly high, so the side is trusted more than the over.",
+        "source_artifact": "docs/KNOWN_LIMITATIONS.md",
+        "as_of": "2026-06-11"
+      },
+      "tags": ["no-data", "simulator", "structure-only"]
+    },
+    {
+      "q": "Does the system have a real-money profit track record I can look at?",
+      "alt_phrasings": ["show me the profit history", "is there a money track record", "proven profitable history"],
+      "a": {
+        "status": "no_data",
+        "answer": "There is no real-money profit track record, by design -- zero money has been placed and the paper ledger's bets are all executed=false. Today's snapshot returns INSUFFICIENT_DATA for CLV, because no close was captured. What exists is a units-only paper track and the harnesses that will grade a real one once a sharp-book close feed accumulates.",
+        "source_artifact": "webapp/public/data/showcase/paper_execution_audit.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["no-data", "no-real-money", "track-record"]
+    },
+    {
+      "q": "Is the Kelly bankroll sizing fully calibrated?",
+      "alt_phrasings": ["is Kelly ready", "correlation matrix populated", "bankroll sizing status"],
+      "a": {
+        "status": "no_data",
+        "answer": "Not fully -- the Kelly correlation matrix is currently unpopulated, so until it is computed the sizing assumes independent bets, which overstates max-loss risk on correlated slates. The fractional-Kelly machinery (quarter-Kelly, drawdown breaker, isotonic-calibrated input) exists, but this specific calibration input is a known gap. It is disclosed rather than assumed complete.",
+        "source_artifact": "docs/KNOWN_LIMITATIONS.md",
+        "as_of": "2026-06-11"
+      },
+      "tags": ["no-data", "kelly", "known-gap"]
+    },
+    {
+      "q": "What is the honest one-line summary of what this system is?",
+      "alt_phrasings": ["what are you really", "sum up the honest pitch", "one-sentence honest description"],
+      "a": {
+        "status": "ok",
+        "answer": "It is a calibrated multi-sport forecasting system whose strongest signal is that the same builder built the instruments that caught and retracted his own inflated headline numbers. The market-efficiency finding -- well-calibrated but does not beat the close -- is the cleanest output a rigorous validation framework can produce. Accuracy is not edge, and honest rejects are counted as successes.",
+        "source_artifact": "docs/PUBLIC_EVIDENCE.md",
+        "as_of": "2026-06-11"
+      },
+      "tags": ["framing", "honesty", "summary"]
+    }
+  ]
+}

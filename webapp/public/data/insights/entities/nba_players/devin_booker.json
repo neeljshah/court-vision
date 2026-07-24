@@ -1,0 +1,21 @@
+{
+  "slug": "devin_booker",
+  "pack": "nba_players",
+  "display_name": "Devin Booker",
+  "one_liner": "Devin Booker averages 26.5 points and 6.8 assists per 36 minutes on 88.4 percent free-throw shooting.",
+  "three_things": [
+    "A scorer who also runs offense: 26.5 points and 6.8 assists per 36 minutes.",
+    "He is excellent at the line, converting 88.4 percent of free throws.",
+    "Durability is a plus, with 207 games and 7,387.8 minutes in the window."
+  ],
+  "context_note": "Numbers are per-36-minute rates over a 3-season sample (seasons_played: 3), not per-game and not a full career; the manifest is descriptive_only, with no adjustment for opponent, teammates, role, or shot difficulty and a career_min_minutes>=800 inclusion floor. Three-point efficiency of 34.1 percent is unadjusted for shot mix.",
+  "cited": [
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Devin Booker].key_numbers.career_pts_per36", "value": 26.5},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Devin Booker].key_numbers.career_ast_per36", "value": 6.8},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Devin Booker].key_numbers.career_ft_pct", "value": 88.4},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Devin Booker].key_numbers.career_games", "value": 207},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Devin Booker].key_numbers.career_minutes", "value": 7387.8},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Devin Booker].key_numbers.career_fg3_pct", "value": 34.1}
+  ],
+  "as_of": "2026-04-12"
+}

@@ -1,0 +1,20 @@
+{
+  "slug": "ja_morant",
+  "pack": "nba_players",
+  "display_name": "Ja Morant",
+  "one_liner": "Ja Morant dishes 9.0 assists and scores 26.6 points per 36 minutes, but appears in just 79 games across the window.",
+  "three_things": [
+    "A high 9.0 assists per 36 minutes anchors his playmaking, among the top guard rates in this pack.",
+    "He scores at a 26.6-points-per-36 rate to go with the playmaking.",
+    "Availability is the caveat: only 79 games and 2,405.0 minutes over the sample, the smallest game count here."
+  ],
+  "context_note": "Numbers are per-36-minute rates over a 3-season sample (seasons_played: 3), not per-game and not a full career; the manifest is descriptive_only, with no adjustment for opponent, teammates, role, or shot difficulty and a career_min_minutes>=800 inclusion floor. With only 79 games this rate line rests on the smallest sample in the pack, and three-point touch is a weak spot at 29.0 percent.",
+  "cited": [
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Ja Morant].key_numbers.career_ast_per36", "value": 9.0},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Ja Morant].key_numbers.career_pts_per36", "value": 26.6},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Ja Morant].key_numbers.career_games", "value": 79},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Ja Morant].key_numbers.career_minutes", "value": 2405.0},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Ja Morant].key_numbers.career_fg3_pct", "value": 29.0}
+  ],
+  "as_of": "2026-04-12"
+}

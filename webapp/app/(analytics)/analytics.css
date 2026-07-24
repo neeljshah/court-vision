@@ -1,0 +1,126 @@
+/* analytics.css -- CourtVision Analytics (Product 2) tokens + chrome.
+   Imported ONLY by app/(analytics)/layout.tsx. The analytics group has its own
+   root <html>/<body>, so the terminal's globals.css never loads here -- true zero
+   bleed. DESIGN_ANALYTICS Sec. 1 (palette) + Sec. 2 (type) + Sec. 3 (space/motion).
+   Light is the default; dark is opt-in via [data-theme="dark"]. Warm ivory, Fraunces
+   display, slate accent, amber reserved as the graphic "signal" mark. No glow, no neon. */
+
+/* ---- theme-independent design tokens ---- */
+:root {
+  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-franklin), -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --radius-chip: 4px; --radius-btn: 8px; --radius-card: 10px;
+  --radius-panel: 14px; --radius-pill: 999px;
+  --shadow-card: 0 1px 2px rgba(40,30,20,.05), 0 4px 16px rgba(40,30,20,.06);
+  --shadow-raise: 0 2px 4px rgba(40,30,20,.06), 0 12px 32px rgba(40,30,20,.10);
+  --ease-ui: cubic-bezier(.2,.8,.2,1); --dur-fast: 120ms; --dur-base: 220ms;
+  --ease-soft: cubic-bezier(.16,1,.3,1); --dur-slow: 360ms; --dur-hero: 2400ms;
+}
+
+/* ---- light (default) ---- */
+:root, :root[data-theme="light"] {
+  --paper: #FAF6EE; --paper-raised: #FFFEFB; --paper-tint: #F5EFE3;
+  --ink: #1A1714; --ink-2: #4A423B; --ink-3: #6E665F;
+  --rule: #E6DFD3; --rule-strong: #D8CFC0;
+  --accent: #1D5C7A; --accent-ink-on: #FFFFFF;
+  --signal: #C6852B; --signal-ink: #9A6414;
+  --confirmed: #1E6B45; --null: #8A8078; --null-ink: #6E665F;
+  --not-testable: #9A6414; --reject: #A6412F; --focus-ring: #1D5C7A;
+}
+
+/* ---- dark (opt-in) ---- */
+:root[data-theme="dark"] {
+  --paper: #1B1815; --paper-raised: #24201C; --paper-tint: #2C2721;
+  --ink: #F0EAE0; --ink-2: #C3BAAD; --ink-3: #8E8578;
+  --rule: #35302A; --rule-strong: #4A4238;
+  --accent: #6FB3CE; --accent-ink-on: #101418;
+  --signal: #E2A33C; --signal-ink: #E2A33C;
+  --confirmed: #5FB287; --null: #A79C8E; --null-ink: #A79C8E;
+  --not-testable: #D9A44C; --reject: #D98466; --focus-ring: #6FB3CE;
+}
+
+/* ---- reset (scoped to this root only; terminal styles are never loaded here) ---- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  background: var(--paper); color: var(--ink);
+  font-family: var(--font-sans); font-size: 16px; line-height: 1.6;
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  min-height: 100vh; display: flex; flex-direction: column;
+}
+main { flex: 1 0 auto; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 2px; }
+img, svg { max-width: 100%; }
+:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+
+/* ---- shared design-system utilities (reused by every analytics component) ---- */
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+.overline { font-weight: 700; font-size: 11px; letter-spacing: .13em; text-transform: uppercase; color: var(--ink-3); }
+.serif { font-family: var(--font-display); }
+.mono { font-family: var(--font-mono); }
+.tnum { font-feature-settings: 'tnum' 1; }
+/* verdict semantics -- honesty is a token: null is NEUTRAL slate, never red */
+.dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; flex: 0 0 auto; }
+.d-conf { background: var(--confirmed); }
+.d-null { background: var(--null); }
+.d-desc { background: var(--ink-3); }
+.d-prov { background: var(--not-testable); }
+.d-reject { background: var(--reject); }
+
+/* ================= NAV (product pillars + subtle terminal cross-link) ================= */
+.a-nav { border-bottom: 1px solid var(--rule); background: var(--paper); position: sticky; top: 0; z-index: 20; }
+.a-navrow { display: flex; align-items: center; gap: 24px; height: 64px; }
+.a-lockup { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
+.a-lockup:hover { text-decoration: none; }
+.a-mark {
+  width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center;
+  background: radial-gradient(circle at 35% 30%, #e9e4da, #b9b0a3 60%, #8f8578);
+  box-shadow: inset 0 0 0 2px #ccc4b6;
+}
+.a-mark span { color: var(--signal); font-weight: 800; font-size: 15px; line-height: 1; transform: translateY(-1px); }
+.a-name { font-family: var(--font-display); font-weight: 500; font-size: 20px; letter-spacing: -.01em; color: var(--ink); }
+.a-kicker { font-weight: 700; font-size: 10px; letter-spacing: .14em; color: var(--ink-3); border-left: 1px solid var(--rule-strong); padding-left: 8px; margin-left: 2px; }
+.navlinks { display: flex; gap: 18px; margin-left: auto; font-size: 14px; font-weight: 500; overflow-x: auto; scrollbar-width: none; }
+.navlinks::-webkit-scrollbar { display: none; }
+.navlinks a { color: var(--ink-2); white-space: nowrap; padding-bottom: 2px; border-bottom: 2px solid transparent; transition: color var(--dur-fast) var(--ease-ui); }
+.navlinks a:hover { color: var(--ink); text-decoration: none; }
+.navlinks a.active { color: var(--ink); border-bottom-color: var(--accent); }
+.a-theme {
+  flex: 0 0 auto; display: grid; place-items: center; width: 34px; height: 34px;
+  border: 1px solid var(--rule-strong); border-radius: var(--radius-btn);
+  background: var(--paper-raised); color: var(--ink-2); cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease-ui), color var(--dur-fast) var(--ease-ui);
+}
+.a-theme:hover { border-color: var(--accent); color: var(--ink); }
+.a-theme svg { width: 17px; height: 17px; }
+.a-theme .sun { display: none; }
+.a-theme .moon { display: block; }
+:root[data-theme="dark"] .a-theme .sun { display: block; }
+:root[data-theme="dark"] .a-theme .moon { display: none; }
+
+/* ================= FOOTER (honesty line + logo-on-light + terminal cross-link) ======= */
+.a-footer { border-top: 1px solid var(--rule); background: var(--paper); margin-top: 64px; padding: 40px 0 64px; }
+.a-foot-top { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.a-foot-mark { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+  background: radial-gradient(circle at 35% 30%, #e9e4da, #b9b0a3 60%, #8f8578); box-shadow: inset 0 0 0 2px #ccc4b6; }
+.a-foot-mark span { color: var(--signal); font-weight: 800; font-size: 13px; line-height: 1; transform: translateY(-1px); }
+.a-foot-name { font-family: var(--font-display); font-weight: 500; font-size: 17px; color: var(--ink); }
+.a-honesty { max-width: 680px; color: var(--ink-2); font-size: 14.5px; line-height: 1.6; }
+.a-honesty .k { font-weight: 700; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--signal-ink); }
+.a-meta { margin-top: 14px; font-family: var(--font-mono); font-size: 12px; color: var(--ink-3); }
+.a-foot-links { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 18px; font-size: 14px; font-weight: 500; }
+.a-foot-links a { color: var(--ink-2); }
+.a-foot-links a:hover { color: var(--ink); }
+.a-xlink { margin-top: 16px; font-size: 14px; font-weight: 600; color: var(--accent); display: inline-block; }
+
+/* ---- motion discipline: honor reduced-motion everywhere ---- */
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
+}
+
+@media (max-width: 720px) {
+  .a-navrow { gap: 14px; }
+  .a-kicker { display: none; }
+}

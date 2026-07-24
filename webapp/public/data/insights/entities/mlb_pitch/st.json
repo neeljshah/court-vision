@@ -1,0 +1,23 @@
+{
+ "slug": "st",
+ "pack": "mlb_pitch",
+ "display_name": "Sweeper (ST)",
+ "one_liner": "The sweeper is thrown to put hitters away, not to catch up: 36.9% of sweepers in 2025 came with the pitcher ahead in the count, only 18.7% when behind.",
+ "three_things": [
+  "A putaway-leaning breaker: 36.9% ahead, 18.7% behind, 44.4% even.",
+  "The slowest of the four pitches profiled here: median 82.7 mph across 52,681 thrown (7.6% of all pitches).",
+  "It nearly vanishes on 3-0 (0.09%) and concentrates in two-strike counts like 0-2 (9.58%)."
+ ],
+ "context_note": "Descriptive only, over a single 2025 Statcast pull. The count shares are of this pitch's OWN usage (what share of sweepers fall in each count/leverage class), not the share of any count that is a sweeper. The strike bucket merges called, swinging, and foul strikes (no per-pitch swing/take in this corpus), so it is not a whiff rate. 'Slowest of these four' is scoped to the four pitch types written up in this pack. Not a prediction; no edge claim.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:ST].key_numbers.count_leverage_pct.pitcher_ahead", "value": 36.9},
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:ST].key_numbers.count_leverage_pct.pitcher_behind", "value": 18.7},
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:ST].key_numbers.count_leverage_pct.even", "value": 44.4},
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:ST].key_numbers.velo_p50", "value": 82.7},
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:ST].key_numbers.n_pitches", "value": 52681},
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:ST].key_numbers.pct_of_all_pitches", "value": 7.6},
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:ST].key_numbers.count_state_pct.3-0", "value": 0.09},
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:ST].key_numbers.count_state_pct.0-2", "value": 9.58}
+ ],
+ "as_of": "2025-09-28"
+}

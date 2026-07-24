@@ -1,0 +1,17 @@
+{
+ "id": "kernel_transfer",
+ "title": "Kernel transfer: one honest cross-sport calibration axis",
+ "headline_insight": "Only 2 of 4 sports have a market-side reliability number, and in both the model is less reliable than the market -- MLB gap 0.00664, soccer 0.039414.",
+ "what_it_means": "The kernel-transfer table composes Murphy reliability across NBA, MLB, soccer, and tennis, but only MLB and soccer have a market probability to decompose against. In both, the model's calibration component trails the market's. The gaps agree in sign but differ in magnitude by roughly 5.9x, which is suggestive rather than a proven pattern.",
+ "how_to_read": "Reliability is a Brier component on a 0-to-1 probability scale where lower is better; CRPS and no-market rows are verdict text only and are never forced onto that reliability axis.",
+ "why_it_matters": "It is an honest cross-sport calibration comparison with a comparability gate, so a distributional (CRPS) score is never mixed with a binary (Brier) one just to fill a table.",
+ "caveat": "n=2 sports is not enough to call this a general cross-sport pattern; it is a same-direction coincidence worth re-checking if a third sport gets a market-side decomposition, not a claim.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/kernel_transfer.json", "field": "n_rows", "value": 5},
+  {"path": "webapp/public/data/showcase/kernel_transfer.json", "field": "rows[0] (mlb moneyline_ingame).reliability_gap", "value": 0.00664},
+  {"path": "webapp/public/data/showcase/kernel_transfer.json", "field": "rows[2] (soccer_intl moneyline_ingame).reliability_gap", "value": 0.039414},
+  {"path": "webapp/public/data/showcase/kernel_transfer.json", "field": "rows[0] (mlb moneyline_ingame).n", "value": 78986},
+  {"path": "webapp/public/data/showcase/kernel_transfer.json", "field": "rows[2] (soccer_intl moneyline_ingame).n", "value": 9003}
+ ],
+ "as_of": "2026-07-22T22:55:23Z"
+}

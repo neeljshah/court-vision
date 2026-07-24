@@ -1,0 +1,21 @@
+{
+  "slug": "kyrie_irving",
+  "pack": "nba_players",
+  "display_name": "Kyrie Irving",
+  "one_liner": "Kyrie Irving shoots 91.0 percent from the line and 40.6 percent from three while scoring 25.6 points per 36 minutes.",
+  "three_things": [
+    "The efficiency is guard-elite: 40.6 percent from three and 91.0 percent at the free-throw line.",
+    "He scores at a 25.6-points-per-36 rate on 48.6 percent overall field-goal shooting.",
+    "His window here spans two seasons and 108 games, a shorter sample than the three-season stars."
+  ],
+  "context_note": "Numbers are per-36-minute rates over a 2-season sample (seasons_played: 2), not per-game and not a full career; the manifest is descriptive_only, with no adjustment for opponent, teammates, role, or shot difficulty and a career_min_minutes>=800 inclusion floor. The two-season window makes this a smaller sample than most stars in the pack.",
+  "cited": [
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Kyrie Irving].key_numbers.career_ft_pct", "value": 91.0},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Kyrie Irving].key_numbers.career_fg3_pct", "value": 40.6},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Kyrie Irving].key_numbers.career_pts_per36", "value": 25.6},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Kyrie Irving].key_numbers.career_fg_pct", "value": 48.6},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Kyrie Irving].key_numbers.seasons_played", "value": 2},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Kyrie Irving].key_numbers.career_games", "value": 108}
+  ],
+  "as_of": "2026-04-12"
+}

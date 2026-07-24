@@ -1,0 +1,20 @@
+{
+ "id": "honesty_exhibit",
+ "title": "Honesty exhibit: we publish our nulls",
+ "headline_insight": "Nulls (351) outnumber confirms (168) 2.1x -- we publish our nulls.",
+ "what_it_means": "Across four sport ledgers plus a 1,003-row interaction-factory sweep, far more tested hypotheses came back null than confirmed. NBA logged 45 confirms against 31 nulls; MLB actually inverted, 32 confirms to 37 nulls; and the interaction factory alone recorded 239 nulls and 709 not-testable against just 38 confirms.",
+ "how_to_read": "Each sport row is one validation ledger file, bucketed as confirmed / null / not_testable / failed_replication / other in that order.",
+ "why_it_matters": "A search process that mostly returns nulls is the expected signature of an efficient market, so keeping the failures visible is the whole point of the exhibit.",
+ "caveat": "The interaction-factory row is dominated by 709 not-testable entries, which are untested combinations, not evidence for or against anything.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/honesty_exhibit.json", "field": "headline", "value": "nulls (351) outnumber confirms (168) 2.1x -- we publish our nulls"},
+  {"path": "webapp/public/data/showcase/honesty_exhibit.json", "field": "sports[0] (nba) confirmed", "value": 45},
+  {"path": "webapp/public/data/showcase/honesty_exhibit.json", "field": "sports[0] (nba) null", "value": 31},
+  {"path": "webapp/public/data/showcase/honesty_exhibit.json", "field": "sports[1] (mlb) confirmed", "value": 32},
+  {"path": "webapp/public/data/showcase/honesty_exhibit.json", "field": "sports[1] (mlb) null", "value": 37},
+  {"path": "webapp/public/data/showcase/honesty_exhibit.json", "field": "sports[4] (interaction_factory) null", "value": 239},
+  {"path": "webapp/public/data/showcase/honesty_exhibit.json", "field": "sports[4] (interaction_factory) not_testable", "value": 709},
+  {"path": "webapp/public/data/showcase/honesty_exhibit.json", "field": "sports[4] (interaction_factory) confirmed", "value": 38}
+ ],
+ "as_of": "2026-07-22T20:26:10Z"
+}

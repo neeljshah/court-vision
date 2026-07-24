@@ -1,0 +1,17 @@
+{
+ "id": "tennis_surface_transfer",
+ "title": "Tennis Surface Transfer",
+ "headline_insight": "The most extreme clay-over-hard specialist in the ATP career snapshot is Luciano Darderi, a 0.4603 clay-minus-hard win-rate gap, 0.6825 on clay against 0.2222 on hard.",
+ "what_it_means": "Surface specialization is real and large for a few players but modest for most: across the 184 qualifying ATP-career players the median clay-minus-hard gap is only +0.0149, and 58.15% tilt at all toward clay. The women's combos are empty here, the sample-size floor eliminated every WTA player.",
+ "how_to_read": "Each player's clay win rate minus hard win rate (and a grass-adaptability index), floored at 25 clay and 25 hard matches, summarized per tour and window.",
+ "why_it_matters": "It is a descriptive map of who actually transfers between surfaces, the raw split behind any surface-aware reasoning.",
+ "caveat": "Opponent strength is NOT controlled, so a gap partly reflects scheduling and seeding rather than surface skill alone; retirements count as decided matches; DESCRIPTIVE_ONLY, no forecast and no market or ROI edge.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/tennis_surface_transfer.json", "field": "combos.atp_career.clay_hard_gap.most_clay_favoring[0].clay_minus_hard", "value": 0.4603},
+  {"path": "webapp/public/data/showcase/tennis_surface_transfer.json", "field": "combos.atp_career.clay_hard_gap.most_clay_favoring[0].clay_wr", "value": 0.6825},
+  {"path": "webapp/public/data/showcase/tennis_surface_transfer.json", "field": "combos.atp_career.clay_hard_gap.distribution.p50", "value": 0.0149},
+  {"path": "webapp/public/data/showcase/tennis_surface_transfer.json", "field": "combos.atp_career.clay_hard_gap.n_qualifying", "value": 184},
+  {"path": "webapp/public/data/showcase/tennis_surface_transfer.json", "field": "combos.wta_career.clay_hard_gap.n_qualifying", "value": 0}
+ ],
+ "as_of": "tennis_surface_context snapshots (no generation timestamp in artifact)"
+}

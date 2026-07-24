@@ -1,0 +1,19 @@
+{
+  "slug": "mlb_inning_9",
+  "pack": "calibration",
+  "display_name": "MLB in-game win prob -- inning 9",
+  "one_liner": "At MLB inning 9 the model's calibration error is far above the market's: model_ece 0.2034 vs market_ece 0.071 over n=2282 checkpoints.",
+  "three_things": [
+    "The honest late-game limitation: model_ece 0.2034 is nearly triple market_ece 0.071 here.",
+    "Calibration degrades as the game ends -- a sharper contrast than the mid-game inning-5 window.",
+    "Sample thins out late (n=2282 vs 6021 at inning 5), but stays well above the n>=30 floor."
+  ],
+  "context_note": "Descriptive expected-calibration-error on one in-game segment, not a prediction, not an edge or ROI claim. This is a segment where the market is better calibrated than the model; it is reported precisely because honest null and negative results are kept, not hidden. ECE on a single corpus is noisy.",
+  "cited": [
+    {"path": "webapp/public/data/showcase/atlas_calibration_manifest.json", "field": "entries[entity=mlb inning 9].key_numbers.model_ece", "value": 0.2034},
+    {"path": "webapp/public/data/showcase/atlas_calibration_manifest.json", "field": "entries[entity=mlb inning 9].key_numbers.market_ece", "value": 0.071},
+    {"path": "webapp/public/data/showcase/atlas_calibration_manifest.json", "field": "entries[entity=mlb inning 9].key_numbers.n", "value": 2282},
+    {"path": "webapp/public/data/showcase/atlas_calibration_manifest.json", "field": "entries[entity=mlb inning 5].key_numbers.n", "value": 6021}
+  ],
+  "as_of": "2026-07-23T01:39:22.086535+00:00"
+}

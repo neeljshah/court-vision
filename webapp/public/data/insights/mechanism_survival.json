@@ -1,0 +1,19 @@
+{
+ "id": "mechanism_survival",
+ "title": "Mechanism survival: about half of testable ideas hold up",
+ "headline_insight": "Only about half of testable mechanisms survive -- overall survival rate is 0.5039 across 256 testable hypotheses.",
+ "what_it_means": "Of 287 hypotheses in the four sport ledgers, 256 were testable and 129 confirmed on their latest verdict, a 50.4% survival rate. Survival splits by sport: NBA holds up best at 0.56 while MLB is weakest at 0.3974.",
+ "how_to_read": "Survival is the share of TESTABLE hypotheses whose latest verdict is confirmed or replicated; not-testable rows are excluded from the denominator.",
+ "why_it_matters": "A survival rate near 50% across four independent sports is what an honest search looks like, neither everything confirming (overfit) nor nothing confirming (no signal at all).",
+ "caveat": "Category-level rates on tiny samples are not durable: rest_fatigue survives at just 0.3056 and weather_park at 0.0 on a single testable row.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/mechanism_survival.json", "field": "overall.survival_rate", "value": 0.5039},
+  {"path": "webapp/public/data/showcase/mechanism_survival.json", "field": "overall.n_testable", "value": 256},
+  {"path": "webapp/public/data/showcase/mechanism_survival.json", "field": "overall.n_confirmed", "value": 129},
+  {"path": "webapp/public/data/showcase/mechanism_survival.json", "field": "by_sport.basketball_nba.survival_rate", "value": 0.56},
+  {"path": "webapp/public/data/showcase/mechanism_survival.json", "field": "by_sport.mlb.survival_rate", "value": 0.3974},
+  {"path": "webapp/public/data/showcase/mechanism_survival.json", "field": "by_category.rest_fatigue.survival_rate", "value": 0.3056},
+  {"path": "webapp/public/data/showcase/mechanism_survival.json", "field": "by_category.weather_park.survival_rate", "value": 0.0}
+ ],
+ "as_of": "not stamped in artifact"
+}

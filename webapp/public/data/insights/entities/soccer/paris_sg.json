@@ -1,0 +1,23 @@
+{
+  "slug": "paris_sg",
+  "pack": "soccer",
+  "display_name": "Paris SG",
+  "one_liner": "Paris SG kept a clean sheet in 54.55% of its season matches (clean_sheet_rate_season 0.5455) -- the highest season shutout rate in this set.",
+  "three_things": [
+    "Unusually road-strong: ppg_away_l10 2.4 actually tops ppg_home_l10 2.2.",
+    "Tight at the back recently too: clean_sheet_rate_l10 0.6 with ga_l10 0.8.",
+    "Well-rounded form: gf_l10 2.1, gd_l10 +1.3, winrate_l10 0.7."
+  ],
+  "context_note": "Descriptive last-10 and season rates as of the corpus end, not a prediction and not an edge claim. An away-over-home tilt across a short window is often noise, not a structural trait; these figures carry no opponent, injury, or venue adjustment.",
+  "cited": [
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Paris SG].key_numbers.clean_sheet_rate_season", "value": 0.5455},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Paris SG].key_numbers.ppg_away_l10", "value": 2.4},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Paris SG].key_numbers.ppg_home_l10", "value": 2.2},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Paris SG].key_numbers.clean_sheet_rate_l10", "value": 0.6},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Paris SG].key_numbers.ga_l10", "value": 0.8},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Paris SG].key_numbers.gf_l10", "value": 2.1},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Paris SG].key_numbers.gd_l10", "value": 1.3},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Paris SG].key_numbers.winrate_l10", "value": 0.7}
+  ],
+  "as_of": "2026-07-18T17:21:08.108324+00:00"
+}

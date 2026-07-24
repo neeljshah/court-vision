@@ -1,0 +1,16 @@
+{
+ "id": "cf_pace_variance",
+ "title": "Pace as a variance lever: real but modest",
+ "headline_insight": "Across the NBA's observed pace range (about 92 to 104 possessions), an 80% favorite's upset probability rises only from 19.5% at the fastest pace to 20.9% at the slowest -- a 1.4-point swing.",
+ "what_it_means": "Fewer possessions mean fewer chances for the better team to separate, so the underdog's chances grow as pace slows -- the sqrt(N) scaling of a possession-margin model. But because real NBA pace barely moves game to game, the mechanical effect on any single matchup is small: a couple of upset-probability points, not a coin flip. A slow, grind-it-out game genuinely helps the underdog, just not by much.",
+ "how_to_read": "Each curve fixes a favorite's strength at reference pace, then reprices its upset probability at every pace on the grid; the slow-minus-fast swing is the whole span of that effect.",
+ "why_it_matters": "It quantifies a piece of basketball folklore -- 'slow it down to beat a better team' -- and shows the honest size of the effect, which matters for how much a live model should move when tempo runs hot or cold.",
+ "caveat": "COUNTERFACTUAL floor: per-possession scoring margin and variance are held pace-invariant, so this isolates the mechanical variance effect only, not behavioral changes (teams that push pace may also change shot quality). Margin is assumed Normal (CLT over ~100 possessions), weaker for short in-game windows.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/cf_pace_variance.json", "field": "curves[2].by_pace[7].upset_prob (pace 104)", "value": 0.1951},
+  {"path": "webapp/public/data/showcase/cf_pace_variance.json", "field": "curves[2].by_pace[0].upset_prob (pace 92)", "value": 0.2095},
+  {"path": "webapp/public/data/showcase/cf_pace_variance.json", "field": "curves[2].upset_swing_slow_minus_fast", "value": 0.0144},
+  {"path": "webapp/public/data/showcase/cf_pace_variance.json", "field": "mc_validation.abs_diff", "value": 0.0042}
+ ],
+ "as_of": "2026-07-23"
+}

@@ -1,0 +1,16 @@
+{
+ "id": "aging_curve_lite",
+ "title": "Aging curve: honestly not buildable here",
+ "headline_insight": "Aging curves are not buildable from this data -- no birthdate or age column exists in any NBA table and only 3 season snapshots are on hand, so the honest move is to not pretend we have a curve.",
+ "what_it_means": "Aging-curve methods need age-labeled player-seasons across many seasons (delta and GAM methods want thousands of paired seasons). This repo has 3 season snapshots (2023-24, 2024-25, 2025-26) and no age field at all, so a curve cannot be honestly estimated. The codebase's own audit and an independent industry-analytics note both reach the same DEFER verdict.",
+ "how_to_read": "The status field reads not_buildable; there is no chart to read here, the module is a documented gap rather than a result.",
+ "why_it_matters": "Recording what cannot be built, and exactly why, is as much a part of the honest ledger as the analytics that can be built.",
+ "caveat": "This is a data-availability limit, not a claim that aging effects do not exist; add age labels and more seasons and the module becomes testable.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/aging_curve_lite.json", "field": "status", "value": "not_buildable"},
+  {"path": "webapp/public/data/showcase/aging_curve_lite.json", "field": "n_seasons", "value": 3},
+  {"path": "webapp/public/data/showcase/aging_curve_lite.json", "field": "age_source_found", "value": null},
+  {"path": "webapp/public/data/showcase/aging_curve_lite.json", "field": "seasons_available", "value": ["2023-24", "2024-25", "2025-26"]}
+ ],
+ "as_of": "not stamped in artifact"
+}

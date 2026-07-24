@@ -1,0 +1,17 @@
+{
+ "id": "player_metric_landscape",
+ "title": "Player metric landscape: where the honest line is drawn",
+ "headline_insight": "From 77,744 box-score rows the system can honestly build box-only value and unadjusted on/off, but RAPM, EPM, DARKO, BPM and RAPTOR are all marked do-not-fake because the inputs do not exist.",
+ "what_it_means": "The landscape maps which player metrics the raw data actually supports. Full box scores (0% missing across 807 players and 3,611 games) support a transparent box-only value index, per-36 rates, and unadjusted on/off. But branded impact metrics require a league-wide RAPM target or continuous tracking the repo does not have, so they are explicitly not reproduced.",
+ "how_to_read": "Each metric family carries a verdict of supported, partial, or not_supported alongside the exact input columns it would need.",
+ "why_it_matters": "It draws a hard line between what is honestly computable from box data and what would amount to faking a proprietary metric under a borrowed name.",
+ "caveat": "Support means raw input-column coverage only, never a claim that a branded metric is reproduced; the gravity proxy, for example, rests on a 241-game CV subset, not league-wide coverage.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/player_metric_landscape.json", "field": "coverage.rows", "value": 77744},
+  {"path": "webapp/public/data/showcase/player_metric_landscape.json", "field": "coverage.unique_players", "value": 807},
+  {"path": "webapp/public/data/showcase/player_metric_landscape.json", "field": "coverage.unique_games", "value": 3611},
+  {"path": "webapp/public/data/showcase/player_metric_landscape.json", "field": "metric_families.box_only_value_index (APPROX, not BPM/EPM).verdict", "value": "supported"},
+  {"path": "webapp/public/data/showcase/player_metric_landscape.json", "field": "metric_families.RAPM/xRAPM/EPM/DARKO-DPM/LEBRON/BPM/RAPTOR/qSQ/qSI/qSP/EPV/official_Gravity.verdict", "value": "not_supported"}
+ ],
+ "as_of": "not stamped in artifact"
+}

@@ -1,0 +1,17 @@
+{
+ "id": "tennis_showcase",
+ "title": "Tennis Showcase",
+ "headline_insight": "A time-decayed in-game prior transfers cleanly across tours: fit on WTA and tested on ATP, held-out Brier improves from 0.155 to 0.1432 (delta 0.01184), verdict REPLICATED, while a surface-specific hold prior is REJECTED.",
+ "what_it_means": "The base (state, time) model, fit on one tour and tested leak-free on the other, is beaten by adding the prior in both directions, calibration only, no market claim. But making the hold prior surface-specific does not help: the pooled Brier change is only +0.000121 on ATP and +0.002492 on WTA, so the planted null dies.",
+ "how_to_read": "Two preregistered gate receipts, the cross-corpus pregame prior (lower held-out Brier is better) and the in-game surface-context layer (H1 surface-specific versus H0 surface-blind).",
+ "why_it_matters": "It shows a genuine cross-corpus calibration win sitting next to an honest reject, the gate catches both rather than only the wins.",
+ "caveat": "CALIBRATION only (held-out Brier / Diebold-Mariano), never a market edge or dollar claim. Tennis has a served live model but no in-game grade corpus locally, so this surfaces the two receipts that exist, not a recomputed in-game summary.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/tennis_showcase.json", "field": "pregame_prior_cross_corpus.directions.wta_train_atp_test.brier_base", "value": 0.155},
+  {"path": "webapp/public/data/showcase/tennis_showcase.json", "field": "pregame_prior_cross_corpus.directions.wta_train_atp_test.brier_prior", "value": 0.1432},
+  {"path": "webapp/public/data/showcase/tennis_showcase.json", "field": "pregame_prior_cross_corpus.directions.wta_train_atp_test.brier_delta", "value": 0.01184},
+  {"path": "webapp/public/data/showcase/tennis_showcase.json", "field": "ingame_surface_context.tours.atp.pooled_delta_h1_minus_h0", "value": 0.000121},
+  {"path": "webapp/public/data/showcase/tennis_showcase.json", "field": "ingame_surface_context.tours.wta.pooled_delta_h1_minus_h0", "value": 0.002492}
+ ],
+ "as_of": "gate_tennis.json + surface_hold_verdict.json receipts (no generation timestamp in artifact)"
+}

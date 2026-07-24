@@ -1,0 +1,22 @@
+{
+ "slug": "mike_trout",
+ "pack": "mlb_batters",
+ "display_name": "Mike Trout",
+ "one_liner": "Pitchers attacked Mike Trout with heat in 2025: 45.5% of the pitches he saw were four-seam fastballs, by far the most fastball-heavy diet in this group.",
+ "three_things": [
+  "That diet came in hot -- the median pitch he saw was 92.5 mph, the highest median velocity in this set.",
+  "He still did damage: 90th-percentile exit velocity 104.6 mph, .361 estimated wOBA on contact.",
+  "A comparatively small contact sample: 589 batted balls over 2,440 pitches seen."
+ ],
+ "context_note": "Descriptive only, from a single 2025 Statcast pull (>=300 pitches-faced floor). The 589 batted balls is a small sample, so the contact numbers carry more noise than the higher-volume hitters here. Estimated wOBA on contact is a batted-ball model over those 589 balls, not all 2,440 pitches, and says nothing about walks or strikeouts. No swing/miss or launch-angle column in this pull. Not park- or opponent-adjusted; not a prediction. 'Most fastball-heavy/highest median' is scoped to these twelve hitters.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Mike Trout].key_numbers.top_pitch_type_seen", "value": "FF"},
+  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Mike Trout].key_numbers.top_pitch_type_seen_pct", "value": 45.5},
+  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Mike Trout].key_numbers.velo_seen_p50", "value": 92.5},
+  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Mike Trout].key_numbers.exit_velo_p90", "value": 104.6},
+  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Mike Trout].key_numbers.avg_estimated_woba_on_contact", "value": 0.361},
+  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Mike Trout].key_numbers.n_batted_balls", "value": 589},
+  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Mike Trout].key_numbers.pitches_faced", "value": 2440}
+ ],
+ "as_of": "2025-09-28"
+}

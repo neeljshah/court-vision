@@ -1,0 +1,15 @@
+{
+ "id": "on_off_showcase",
+ "title": "On/off net rating: huge at the top, near zero in the middle",
+ "headline_insight": "In the 2025-26 slice, Victor Wembanyama posts the biggest on/off net-rating swing at +17.043 per 48 -- yet the median qualified player sits at just +0.127, so most on/off gaps are noise around zero.",
+ "what_it_means": "On/off net rating asks how much better a team's point differential is with a player on the floor versus off it. The stars separate hard -- Wembanyama in 2025-26, Jokic at +23.713 the season before -- but the full distribution hugs zero, which is the point: a big on/off number is rare and easy to misread. Who a player shares the floor with is tangled up with coach trust, opponent strength, and garbage-time minutes, so the raw delta flatters bench-anchoring bigs and punishes stars whose backups happen to play easy minutes.",
+ "how_to_read": "top_15 and bottom_15 are the extremes of each season's ranking; the distribution block (median, p25, p75) shows how tightly the middle clusters.",
+ "why_it_matters": "It is the raw material behind the star-removal counterfactual, and the near-zero median is the guardrail against reading any single on/off figure as a clean impact number.",
+ "caveat": "ROSTER CONFOUND: this on/off delta is NOT a causal player-impact estimate -- floor-sharing correlates with coach trust, opponent strength, and garbage-time usage, none controlled for. DESCRIPTIVE_ONLY until an earned predictive-validity receipt says otherwise.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/on_off_showcase.json", "field": "seasons.2025_26.top_15[0] (Victor Wembanyama) net_rating_delta", "value": 17.043},
+  {"path": "webapp/public/data/showcase/on_off_showcase.json", "field": "seasons.2025_26.distribution.median", "value": 0.127},
+  {"path": "webapp/public/data/showcase/on_off_showcase.json", "field": "seasons.2024_25.top_15[0] (Nikola Jokic) net_rating_delta", "value": 23.713}
+ ],
+ "as_of": "2024_25 (1230-game) and 2025_26 (196-game) slices"
+}

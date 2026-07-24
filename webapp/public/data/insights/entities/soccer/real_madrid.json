@@ -1,0 +1,24 @@
+{
+  "slug": "real_madrid",
+  "pack": "soccer",
+  "display_name": "Real Madrid",
+  "one_liner": "Real Madrid's away form barely trails its home form over the last 10: ppg_away_l10 1.9 against ppg_home_l10 2.5.",
+  "three_things": [
+    "Balanced recent record: ppg_l10 2.0 with winrate_l10 0.6 and gd_l10 +0.7.",
+    "Cleaner sheets on the road than at home this season (clean_sheet_rate_away 0.4 vs clean_sheet_rate_home 0.2).",
+    "Modest scoring for a top side -- gf_l10 1.7 with ga_l10 1.0 -- so the margin comes from control, not volume."
+  ],
+  "context_note": "Descriptive last-10 and season rates as of the corpus end, not a prediction and not an edge claim. Home/away splits over a handful of matches are noisy; these figures carry no opponent-strength, injury, or fixture-congestion adjustment.",
+  "cited": [
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Real Madrid].key_numbers.ppg_away_l10", "value": 1.9},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Real Madrid].key_numbers.ppg_home_l10", "value": 2.5},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Real Madrid].key_numbers.ppg_l10", "value": 2.0},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Real Madrid].key_numbers.winrate_l10", "value": 0.6},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Real Madrid].key_numbers.gd_l10", "value": 0.7},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Real Madrid].key_numbers.clean_sheet_rate_away", "value": 0.4},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Real Madrid].key_numbers.clean_sheet_rate_home", "value": 0.2},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Real Madrid].key_numbers.gf_l10", "value": 1.7},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Real Madrid].key_numbers.ga_l10", "value": 1.0}
+  ],
+  "as_of": "2026-07-18T17:21:08.108324+00:00"
+}

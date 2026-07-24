@@ -1,0 +1,21 @@
+{
+  "slug": "bayern_munich",
+  "pack": "soccer",
+  "display_name": "Bayern Munich",
+  "one_liner": "Bayern Munich scored 3.2 goals per game over its last 10 (gf_l10 3.2) -- the heaviest attack in this set.",
+  "three_things": [
+    "Firepower drives the profile: gf_l10 3.2 and gd_l10 +1.8, the widest goal margin here.",
+    "Just as strong on the road: ppg_away_l10 2.6 actually matches ppg_home_l10 2.3.",
+    "The attack outshines the defense -- ga_l10 1.4 is ordinary, so the edge is scoring, not shutouts (clean_sheet_rate_season 0.3636)."
+  ],
+  "context_note": "Descriptive last-10 and season rates as of the corpus end, not a prediction and not an edge claim. Goals-for over 10 matches swings with schedule strength; these rates carry no opponent, injury, or venue adjustment and revert as the window rolls.",
+  "cited": [
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Bayern Munich].key_numbers.gf_l10", "value": 3.2},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Bayern Munich].key_numbers.gd_l10", "value": 1.8},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Bayern Munich].key_numbers.ppg_away_l10", "value": 2.6},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Bayern Munich].key_numbers.ppg_home_l10", "value": 2.3},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Bayern Munich].key_numbers.ga_l10", "value": 1.4},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Bayern Munich].key_numbers.clean_sheet_rate_season", "value": 0.3636}
+  ],
+  "as_of": "2026-07-18T17:21:08.108324+00:00"
+}

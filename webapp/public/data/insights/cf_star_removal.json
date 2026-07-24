@@ -1,0 +1,16 @@
+{
+ "id": "cf_star_removal",
+ "title": "Star Removal: what one player is worth in win-prob points",
+ "headline_insight": "Take Nikola Jokic off Denver and, on a neutral floor against a league-average team, the Nuggets' win probability falls from 0.634 to 0.0517 -- a 0.5822 swing, the largest of any team's top on/off player.",
+ "what_it_means": "Each team's biggest on/off swing player is mapped onto the Elo win-prob curve to ask a blunt what-if: how much of this roster's strength walks out the door with that one name. Jokic's swing is enormous because Denver's on-court net rating collapses without him and the logistic curve turns that into a near-total win-prob wipeout. The numbers are a ceiling, not a clean causal player value -- a full-lineup on-vs-off gap gets attributed to one man.",
+ "how_to_read": "Each row is a team's most on/off-swingy player; p_win_with vs p_win_without are that team's neutral-site win probabilities against a 1500-Elo opponent with the player in and out, and delta_winprob is the gap.",
+ "why_it_matters": "It puts a single, comparable win-prob price tag on star dependence across all 30 teams, which is exactly the kind of context a matchup forecast has to reason about when a name lands on the injury report.",
+ "caveat": "CEILING: the on/off net-rating delta overstates marginal individual value -- it is a full-lineup swing with no control for teammates, opponent, coach trust, or garbage time (roster confound), and the net-rating-to-Elo conversion is a single frozen constant, not a fit. DESCRIPTIVE_ONLY, not a causal or edge claim.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/cf_star_removal.json", "field": "teams[0].player_name (DEN)", "value": "Nikola Jokic"},
+  {"path": "webapp/public/data/showcase/cf_star_removal.json", "field": "teams[0].p_win_with", "value": 0.634},
+  {"path": "webapp/public/data/showcase/cf_star_removal.json", "field": "teams[0].p_win_without", "value": 0.0517},
+  {"path": "webapp/public/data/showcase/cf_star_removal.json", "field": "teams[0].delta_winprob", "value": 0.5822}
+ ],
+ "as_of": "2024-25 (Elo end-of-season) x 2024_25 on/off slice"
+}

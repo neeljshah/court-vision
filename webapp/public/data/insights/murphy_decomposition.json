@@ -1,0 +1,18 @@
+{
+ "id": "murphy_decomposition",
+ "title": "Where the MLB gap lives: information, not calibration",
+ "headline_insight": "In MLB the model's reliability is within 0.0066 Brier of the market's, but its resolution trails by 0.0235 -- the shortfall is missing information, not miscalibration.",
+ "what_it_means": "A Murphy decomposition splits a Brier score into reliability (are the probabilities honest), resolution (do they separate winners from losers), and an irreducible uncertainty term. The MLB in-game model is almost as well-calibrated as the market (reliability differs by only +0.0066) but separates outcomes less sharply (resolution trails by -0.0235). That means re-scaling the probabilities cannot close the gap -- the market simply knows things the model does not.",
+ "how_to_read": "Each reliability curve plots predicted probability against actual outcome frequency across 10 bins; the closer the curve hugs the diagonal, the more honest the numbers.",
+ "why_it_matters": "It pinpoints the deficit as an information problem, not a calibration bug, so the right fix is better inputs (lineups, weather, late news), not recalibration.",
+ "caveat": "Soccer's gap is far larger (model Brier 0.227887 vs market 0.142726) and its reconstructed Brier (0.293529) diverges from the direct Brier, a sign the 10-bin decomposition is coarse on the smaller n=9003 soccer corpus.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/murphy_decomposition.json", "field": "sports.mlb.model_prob.brier", "value": 0.237684},
+  {"path": "webapp/public/data/showcase/murphy_decomposition.json", "field": "sports.mlb.market_prob.brier", "value": 0.206653},
+  {"path": "webapp/public/data/showcase/murphy_decomposition.json", "field": "verdict (reliability_gap / resolution_gap)", "value": "reliability_gap=+0.0066, resolution_gap=-0.0235"},
+  {"path": "webapp/public/data/showcase/murphy_decomposition.json", "field": "sports.soccer_intl.model_prob.brier", "value": 0.227887},
+  {"path": "webapp/public/data/showcase/murphy_decomposition.json", "field": "sports.soccer_intl.market_prob.brier", "value": 0.142726},
+  {"path": "webapp/public/data/showcase/murphy_decomposition.json", "field": "sports.soccer_intl.model_prob.reconstructed_brier", "value": 0.293529}
+ ],
+ "as_of": "unknown"
+}

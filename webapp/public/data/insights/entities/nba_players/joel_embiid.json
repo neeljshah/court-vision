@@ -1,0 +1,20 @@
+{
+  "slug": "joel_embiid",
+  "pack": "nba_players",
+  "display_name": "Joel Embiid",
+  "one_liner": "Joel Embiid's scoring rate is 33.3 points per 36 minutes, but he appears in only 93 games across the three-season window.",
+  "three_things": [
+    "When on the floor he is dominant: 33.3 points and 10.3 rebounds per 36 minutes.",
+    "Availability is the headline caveat -- just 93 games and 2,977.5 minutes over three seasons.",
+    "He shoots a guard-like 87.4 percent from the free-throw line for a center."
+  ],
+  "context_note": "Numbers are per-36-minute rates over a 3-season sample (seasons_played: 3), not per-game and not a full career; the manifest is descriptive_only, with no adjustment for opponent, teammates, role, or shot difficulty and a career_min_minutes>=800 inclusion floor. The 93-game count means the rate line rests on a smaller sample than most stars here, and per-36 rates do not reflect missed availability.",
+  "cited": [
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Joel Embiid].key_numbers.career_pts_per36", "value": 33.3},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Joel Embiid].key_numbers.career_reb_per36", "value": 10.3},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Joel Embiid].key_numbers.career_games", "value": 93},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Joel Embiid].key_numbers.career_minutes", "value": 2977.5},
+    {"path": "webapp/public/data/showcase/atlas_nba_manifest.json", "field": "entries[entity=Joel Embiid].key_numbers.career_ft_pct", "value": 87.4}
+  ],
+  "as_of": "2026-04-12"
+}

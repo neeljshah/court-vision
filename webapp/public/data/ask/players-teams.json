@@ -1,0 +1,665 @@
+{
+  "bucket": "players-teams",
+  "entries": [
+    {
+      "q": "What kind of player is Nikola Jokic, statistically?",
+      "alt_phrasings": ["Tell me about Nikola Jokic", "Jokic stat line", "How good is Jokic by the numbers?"],
+      "a": {
+        "status": "ok",
+        "answer": "Over a 3-season sample Jokic averages 28.4 points, 12.8 rebounds, and 10.1 assists per 36 minutes across 210 games -- a triple-double rate line from the center spot. His shooting is efficient too, at 57.6 percent from the field and 38.9 percent from three. These are per-36 rates over three seasons, not per-game and not opponent-adjusted, and a per-36 triple-double rate is not the same as per-game averages.",
+        "source_artifact": "webapp/public/data/insights/entities/nba_players/nikola_jokic.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "player", "jokic", "profile", "center"]
+    },
+    {
+      "q": "Is Jokic really passing like a guard from the center position?",
+      "alt_phrasings": ["How good a passer is Jokic for a big?", "Jokic assist rate", "Does Jokic play like a point-center?"],
+      "a": {
+        "status": "ok",
+        "answer": "His 10.1 assists per 36 minutes is a guard-level playmaking rate from a center, which is the headline of his profile. He pairs that with 12.8 rebounds and 28.4 points per 36 over the 3-season window. It is a raw box rate with no adjustment for teammates or role, so read it as production, not a measured impact number.",
+        "source_artifact": "webapp/public/data/insights/entities/nba_players/nikola_jokic.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "player", "jokic", "playmaking"]
+    },
+    {
+      "q": "How efficient is Giannis, and where does he struggle?",
+      "alt_phrasings": ["Giannis strengths and weaknesses", "Is Giannis a good shooter?", "Tell me about Giannis Antetokounmpo"],
+      "a": {
+        "status": "ok",
+        "answer": "Giannis posts 32.0 points and 12.1 rebounds per 36 minutes on 60.9 percent shooting -- elite efficiency that mostly reflects a rim-heavy shot diet. The clear weak spots are outside and at the line: 27.4 percent from three and 64.0 percent on free throws. The high field-goal rate is about where the shots come from, not touch from range.",
+        "source_artifact": "webapp/public/data/insights/entities/nba_players/giannis_antetokounmpo.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "player", "giannis", "efficiency", "shooting"]
+    },
+    {
+      "q": "Who is the most consistent star game to game?",
+      "alt_phrasings": ["Which player is the steadiest night to night?", "Most consistent NBA player", "Who has the lowest game-to-game variance?"],
+      "a": {
+        "status": "ok",
+        "answer": "Of 579 qualified players, Luka Doncic is the most consistent game to game, with a shrunk composite coefficient of variation of 0.3448 -- well under the league median of 0.6235 -- edging Nikola Jokic at 0.3456. That means their per-36 points, rebounds, and assists barely wobble, roughly half the swing of a median rotation player. Low volatility is not the same as high value, and the measure is descriptive with no opponent or rest adjustment.",
+        "source_artifact": "webapp/public/data/insights/nba_consistency_profiles.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "player", "luka", "jokic", "consistency", "variance"]
+    },
+    {
+      "q": "What does Luka Doncic's production look like?",
+      "alt_phrasings": ["Tell me about Luka Doncic", "Luka stat line", "How much does Luka do on the floor?"],
+      "a": {
+        "status": "ok",
+        "answer": "Luka produces 31.9 points, 8.6 assists, and 8.4 rebounds per 36 minutes -- a heavy scoring-plus-playmaking load, with the rebounding rate high for a lead guard. Efficiency is solid but not elite at 47.4 percent from the field and 37.3 percent from three. The numbers are per-36 rates over three seasons and say nothing about usage or shot quality.",
+        "source_artifact": "webapp/public/data/insights/entities/nba_players/luka_doncic.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "player", "luka", "profile"]
+    },
+    {
+      "q": "How efficient is Shai Gilgeous-Alexander for a guard?",
+      "alt_phrasings": ["SGA stat line", "Tell me about Shai Gilgeous-Alexander", "Is SGA an efficient scorer?"],
+      "a": {
+        "status": "ok",
+        "answer": "SGA scores 33.3 points per 36 minutes on unusually clean guard efficiency -- 53.5 percent from the field and 88.4 percent from the line -- across 218 games, among the highest game counts in this pack. High field-goal percentage for a guard often reflects a mid-range and rim-heavy diet, which the raw rate does not separate. It is a per-36 rate over three seasons, not opponent-adjusted.",
+        "source_artifact": "webapp/public/data/insights/entities/nba_players/shai_gilgeous_alexander.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "player", "sga", "efficiency", "durability"]
+    },
+    {
+      "q": "What makes Stephen Curry's profile unusual?",
+      "alt_phrasings": ["Curry shooting numbers", "Tell me about Stephen Curry", "How good a shooter is Curry?"],
+      "a": {
+        "status": "ok",
+        "answer": "The shooting is the whole story: 40.0 percent from three and 92.7 percent at the free-throw line, alongside 28.9 points per 36 minutes over 187 games. His overall field-goal mark is a comparatively modest 45.3 percent, which is consistent with a high three-point diet rather than worse touch. Field-goal percentage here is unadjusted for shot location.",
+        "source_artifact": "webapp/public/data/insights/entities/nba_players/stephen_curry.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "player", "curry", "shooting"]
+    },
+    {
+      "q": "How efficient is Kevin Durant across the three shooting zones?",
+      "alt_phrasings": ["Durant shooting splits", "Tell me about Kevin Durant", "Is KD still efficient?"],
+      "a": {
+        "status": "ok",
+        "answer": "Durant's line reads 52.3 / 41.8 / 85.8 from the field, three, and the line -- rare efficiency across all three zones -- while scoring 26.0 points per 36 minutes over 215 games. Playmaking is secondary at 4.6 assists per 36, in line with a score-first role. A rate says nothing about usage or the quality of the shots taken.",
+        "source_artifact": "webapp/public/data/insights/entities/nba_players/kevin_durant.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "player", "durant", "shooting", "efficiency"]
+    },
+    {
+      "q": "What stands out about Victor Wembanyama's numbers?",
+      "alt_phrasings": ["Tell me about Wembanyama", "Wemby rebounding", "How good is Victor Wembanyama already?"],
+      "a": {
+        "status": "ok",
+        "answer": "Wembanyama grabs 13.1 rebounds and scores 27.8 points per 36 minutes while stretching to the three-point line at 34.2 percent -- the 13.1 rebounding rate is the highest among the stars profiled in this pack. The sample is still young at 179 games across three seasons. The rebounding comparison is only against these 20 star players, not the full league.",
+        "source_artifact": "webapp/public/data/insights/entities/nba_players/victor_wembanyama.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "player", "wembanyama", "rebounding"]
+    },
+    {
+      "q": "Is Wembanyama actually getting better, or is that just hype?",
+      "alt_phrasings": ["Who is the league's biggest form riser?", "Is Wemby trending up?", "Which player improved the most?"],
+      "a": {
+        "status": "ok",
+        "answer": "By the box-composite form measure, Wembanyama is the league's biggest riser: his 10-game rolling per-36 box composite climbed +19.821, roughly doubling from 18.048 to 37.869 -- the 100th league percentile. The mirror image is Myles Turner, the biggest faller at -11.043. This is a trajectory read over the whole span, not a live hot-streak call, and it is box-composite only, not an adjusted impact metric.",
+        "source_artifact": "webapp/public/data/insights/nba_form_curves.json",
+        "as_of": "2023-24 to 2025-26"
+      },
+      "tags": ["nba", "player", "wembanyama", "form", "trend"]
+    },
+    {
+      "q": "How does LeBron James still look efficient this deep into his career?",
+      "alt_phrasings": ["Tell me about LeBron James", "LeBron stat line", "Is LeBron still productive?"],
+      "a": {
+        "status": "ok",
+        "answer": "Across the 3-season sample LeBron shot 52.3 percent from the field while averaging 24.8 points and 8.3 assists per 36 minutes over 201 games -- a rich field-goal mark for a perimeter creator carrying a heavy playmaking load. Free throws are the soft spot at 75.6 percent, the weakest number in an otherwise efficient line. The rate says nothing about how those minutes were used or against whom.",
+        "source_artifact": "webapp/public/data/insights/entities/nba_players/lebron_james.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "player", "lebron", "efficiency"]
+    },
+    {
+      "q": "What is the catch with Joel Embiid's numbers?",
+      "alt_phrasings": ["Tell me about Joel Embiid", "Embiid availability", "Is Embiid durable?"],
+      "a": {
+        "status": "ok",
+        "answer": "When on the floor Embiid is dominant -- 33.3 points and 10.3 rebounds per 36 minutes, plus a guard-like 87.4 percent from the line for a center. The headline caveat is availability: just 93 games and 2,977.5 minutes over three seasons, a smaller sample than most stars here. Per-36 rates do not reflect that missed availability.",
+        "source_artifact": "webapp/public/data/insights/entities/nba_players/joel_embiid.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "player", "embiid", "availability"]
+    },
+    {
+      "q": "How much has Ja Morant actually played over this window?",
+      "alt_phrasings": ["Tell me about Ja Morant", "Ja Morant games played", "Is Ja Morant's sample reliable?"],
+      "a": {
+        "status": "ok",
+        "answer": "Ja dishes 9.0 assists and scores 26.6 points per 36 minutes, among the top guard playmaking rates in this pack -- but he appears in just 79 games and 2,405.0 minutes over the sample, the smallest game count here. His three-point touch is a weak spot at 29.0 percent. With only 79 games the rate line rests on the thinnest sample in the group.",
+        "source_artifact": "webapp/public/data/insights/entities/nba_players/ja_morant.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "player", "ja-morant", "availability", "playmaking"]
+    },
+    {
+      "q": "How has James Harden's role changed?",
+      "alt_phrasings": ["Tell me about James Harden", "Is Harden more of a passer now?", "Harden scoring vs playmaking"],
+      "a": {
+        "status": "ok",
+        "answer": "Harden's role has shifted toward setup: 8.7 assists per 36 minutes against a 21.7-point scoring rate, and he logs the largest game count in this pack at 219. His 42.4 percent field-goal mark reflects a heavy three-point and drawn-foul diet the raw rate does not separate, and he stays reliable at the line at 87.7 percent. The game-count comparison is only against the 20 stars in this pack.",
+        "source_artifact": "webapp/public/data/insights/entities/nba_players/james_harden.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "player", "harden", "role", "playmaking"]
+    },
+    {
+      "q": "Is Kawhi Leonard still a three-level scorer?",
+      "alt_phrasings": ["Tell me about Kawhi Leonard", "Kawhi shooting line", "How efficient is Kawhi?"],
+      "a": {
+        "status": "ok",
+        "answer": "Kawhi's shooting line is 51.1 / 40.4 / 87.9 from the field, three, and the line -- efficient in every zone -- while scoring 27.1 points per 36 minutes over 164 games. His assist rate is low at 3.8 per 36, a scorer more than a distributor. Shooting percentages are unadjusted for shot difficulty.",
+        "source_artifact": "webapp/public/data/insights/entities/nba_players/kawhi_leonard.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "player", "kawhi", "shooting"]
+    },
+    {
+      "q": "How does Anthony Edwards combine scoring and range?",
+      "alt_phrasings": ["Tell me about Anthony Edwards", "Ant Edwards shooting", "Is Anthony Edwards durable?"],
+      "a": {
+        "status": "ok",
+        "answer": "Edwards logs 27.7 points per 36 minutes with real range at 38.6 percent from three, and he is durable -- 217 games and 7,730.4 minutes in the window, backed by an 82.4 percent free-throw mark. Minutes and games speak to availability, not to how efficiently those minutes were used. All figures are per-36 rates over three seasons.",
+        "source_artifact": "webapp/public/data/insights/entities/nba_players/anthony_edwards.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "player", "anthony-edwards", "shooting", "durability"]
+    },
+    {
+      "q": "What is Anthony Davis's statistical identity?",
+      "alt_phrasings": ["Tell me about Anthony Davis", "AD two-way profile", "Is Anthony Davis a floor spacer?"],
+      "a": {
+        "status": "ok",
+        "answer": "Davis posts a true two-way big line -- 25.4 points and 12.7 rebounds per 36 minutes on strong 53.5 percent interior shooting. The floor-spacing is limited, with a 27.6 percent three-point mark that reflects a low-volume, interior-focused shot profile. These are per-36 rates over three seasons, unadjusted for role or opponent.",
+        "source_artifact": "webapp/public/data/insights/entities/nba_players/anthony_davis.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "player", "anthony-davis", "two-way"]
+    },
+    {
+      "q": "Where is Zion Williamson elite and where is he weak?",
+      "alt_phrasings": ["Tell me about Zion Williamson", "Zion interior scoring", "Zion free throw problem"],
+      "a": {
+        "status": "ok",
+        "answer": "Zion's interior scoring is elite -- 26.9 points per 36 minutes on 58.0 percent from the field -- but the free-throw line is a clear weak point at 69.6 percent, and his 28.6 percent three-point mark shows the range is limited. He appears in 157 games across the three-season window. The high field-goal rate reflects a rim-heavy shot diet.",
+        "source_artifact": "webapp/public/data/insights/entities/nba_players/zion_williamson.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "player", "zion", "interior", "free-throws"]
+    },
+    {
+      "q": "Is Jimmy Butler a high-volume scorer?",
+      "alt_phrasings": ["Tell me about Jimmy Butler", "Jimmy Butler efficiency", "How does Butler score?"],
+      "a": {
+        "status": "ok",
+        "answer": "Butler's scoring is efficient rather than high-volume: 21.5 points per 36 minutes on 50.6 percent shooting, plus 6.0 rebounds and 5.7 assists per 36 across 152 games and an 85.5 percent free-throw mark. A lower per-36 scoring rate reflects role and shot volume, not necessarily lower impact.",
+        "source_artifact": "webapp/public/data/insights/entities/nba_players/jimmy_butler_iii.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "player", "jimmy-butler", "efficiency"]
+    },
+    {
+      "q": "What is Kyrie Irving's efficiency like?",
+      "alt_phrasings": ["Tell me about Kyrie Irving", "Kyrie shooting numbers", "Is Kyrie an efficient guard?"],
+      "a": {
+        "status": "ok",
+        "answer": "Kyrie's efficiency is guard-elite: 40.6 percent from three and 91.0 percent at the free-throw line, on a 25.6-points-per-36 rate and 48.6 percent overall shooting. His window here spans two seasons and 108 games, a smaller sample than the three-season stars. Numbers are per-36 rates, unadjusted for shot difficulty.",
+        "source_artifact": "webapp/public/data/insights/entities/nba_players/kyrie_irving.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "player", "kyrie", "shooting", "sample-size"]
+    },
+    {
+      "q": "How good is Damian Lillard at the free-throw line?",
+      "alt_phrasings": ["Tell me about Damian Lillard", "Dame free throw percentage", "Lillard scoring and playmaking"],
+      "a": {
+        "status": "ok",
+        "answer": "Lillard's 92.1 percent free-throw mark is among the best in this pack of stars, and he blends scoring and playmaking at 24.8 points and 7.1 assists per 36 minutes. His overall 43.5 percent field-goal rate is consistent with a deep-range, high-volume shot diet. The two-season window is a smaller sample than most.",
+        "source_artifact": "webapp/public/data/insights/entities/nba_players/damian_lillard.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "player", "lillard", "free-throws"]
+    },
+    {
+      "q": "Is Devin Booker just a scorer, or does he create too?",
+      "alt_phrasings": ["Tell me about Devin Booker", "Booker assists", "Booker free throw shooting"],
+      "a": {
+        "status": "ok",
+        "answer": "Booker is a scorer who also runs offense: 26.5 points and 6.8 assists per 36 minutes, and he is excellent at the line at 88.4 percent. Durability is a plus with 207 games and 7,387.8 minutes in the window, while his 34.1 percent three-point efficiency is unadjusted for shot mix.",
+        "source_artifact": "webapp/public/data/insights/entities/nba_players/devin_booker.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "player", "booker", "scoring", "playmaking"]
+    },
+    {
+      "q": "What is Jayson Tatum's box profile?",
+      "alt_phrasings": ["Tell me about Jayson Tatum", "Tatum rebounding and scoring", "Is Tatum a good three-point shooter?"],
+      "a": {
+        "status": "ok",
+        "answer": "Tatum is a wing scorer who also rebounds -- 26.5 points and 8.6 rebounds per 36 minutes over 162 games -- and he gets to the line and converts at 82.4 percent. His three-point efficiency is average at 35.5 percent, a volume-over-touch profile from deep. Numbers are per-36 rates unadjusted for shot difficulty.",
+        "source_artifact": "webapp/public/data/insights/entities/nba_players/jayson_tatum.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "player", "tatum", "wing"]
+    },
+    {
+      "q": "How much is Jokic worth to Denver in win probability?",
+      "alt_phrasings": ["Denver with and without Jokic", "What happens to the Nuggets without Jokic?", "Jokic star value"],
+      "a": {
+        "status": "ok",
+        "answer": "On a neutral floor against a league-average team, mapping Denver's on/off swing onto the Elo win-prob curve drops the Nuggets from 0.634 with Jokic to 0.0517 without -- a 0.5822 swing, the largest of any team's top on/off player. That figure is a ceiling, not a clean player value: it attributes a full-lineup on-vs-off gap to one man, with no control for teammates, opponent, or garbage time. It is descriptive, not a betting number.",
+        "source_artifact": "webapp/public/data/insights/cf_star_removal.json",
+        "as_of": "2024-25 (Elo end-of-season) x 2024_25 on/off slice"
+      },
+      "tags": ["nba", "star-value", "with-without", "jokic", "denver"]
+    },
+    {
+      "q": "How does OKC's win probability change with and without SGA?",
+      "alt_phrasings": ["Thunder without Shai", "SGA star removal", "OKC with and without SGA"],
+      "a": {
+        "status": "ok",
+        "answer": "On a neutral floor versus a league-average opponent, the star-removal exercise moves OKC from 0.7829 with Shai Gilgeous-Alexander to 0.2658 without -- a 0.5171 win-prob swing. Like every row in this exhibit it is a ceiling built from an on/off net-rating delta, a roster confound rather than a controlled individual value, and it is descriptive only.",
+        "source_artifact": "webapp/public/data/insights/cf_star_removal.json",
+        "as_of": "2024-25 (Elo end-of-season) x 2024_25 on/off slice"
+      },
+      "tags": ["nba", "star-value", "with-without", "sga", "okc"]
+    },
+    {
+      "q": "Why is the biggest on/off player on some teams a role player and not the star?",
+      "alt_phrasings": ["Why isn't Curry Golden State's top on/off guy?", "Why is Luke Kornet ahead of Tatum on Boston?", "Is on/off a good measure of stars?"],
+      "a": {
+        "status": "ok",
+        "answer": "Because raw on/off is a full-lineup swing, not an individual-value estimate, it often flatters bench-anchoring role players: the exhibit's top on/off name is Luke Kornet on Boston (0.2785 swing), Gui Santos on Golden State (0.2378), Dorian Finney-Smith on the Lakers (0.4656), Monte Morris in Phoenix (0.2593), and Isaac Okoro in Cleveland (0.303) -- not Tatum, Curry, LeBron, Booker, or Mitchell. Floor-sharing correlates with coach trust, opponent strength, and garbage-time minutes, none of which are controlled. Treat a big on/off number as a flag to investigate, not a verdict.",
+        "source_artifact": "webapp/public/data/insights/cf_star_removal.json",
+        "as_of": "2024-25 (Elo end-of-season) x 2024_25 on/off slice"
+      },
+      "tags": ["nba", "on-off", "roster-confound", "star-value", "caveat"]
+    },
+    {
+      "q": "Does a huge on/off number really mean a player is that valuable?",
+      "alt_phrasings": ["Is on/off net rating trustworthy?", "How big are most on/off numbers?", "Is on/off noisy?"],
+      "a": {
+        "status": "ok",
+        "answer": "The stars separate hard at the top -- Victor Wembanyama led the 2025-26 slice at +17.043 per 48 and Jokic was +23.713 the season before -- but the median qualified player sits at just +0.127, so most on/off gaps are noise around zero. That near-zero median is the guardrail: a big on/off figure is rare and easy to misread, because who a player shares the floor with is tangled up with opponent strength and garbage time. It is descriptive only until an earned predictive receipt says otherwise.",
+        "source_artifact": "webapp/public/data/insights/on_off_showcase.json",
+        "as_of": "2024_25 and 2025_26 slices"
+      },
+      "tags": ["nba", "on-off", "wembanyama", "caveat", "variance"]
+    },
+    {
+      "q": "Which players top a simple box-score value index?",
+      "alt_phrasings": ["Best players by box value", "Box value index leaders", "Who ranks highest on raw box production?"],
+      "a": {
+        "status": "ok",
+        "answer": "A frozen, untuned box-score value index puts Nikola Jokic on top at 30.86 points of value per 36 minutes, ahead of Giannis Antetokounmpo (27.558) and Victor Wembanyama (26.261), pooled over 77,744 rows and ranking the 501 players past the 750-minute floor. Recovering the consensus star order from weights fixed in advance is a sanity check on the box-score data, not a claim to reproduce RAPM, EPM, or BPM. Accented names split across two IDs upstream, so Jokic can appear twice in the top rows.",
+        "source_artifact": "webapp/public/data/insights/box_value_index.json",
+        "as_of": "2023-24 through 2025-26"
+      },
+      "tags": ["nba", "player", "box-value", "jokic", "giannis", "wembanyama"]
+    },
+    {
+      "q": "Which team scored the most per game in the latest season of the sample?",
+      "alt_phrasings": ["Highest scoring NBA team", "Who put up the most points per game?", "Top offense by ppg"],
+      "a": {
+        "status": "ok",
+        "answer": "Denver posted the highest latest-season scoring in the sample at 121.4 points per game, and Nikola Jokic anchors the roster at 51.2 points-plus-rebounds-plus-assists per 36 minutes -- the top such contributor rate across all 30 teams. ppg is a single-season team average while the rest of the sample spans three seasons, and PRA-per-36 is a raw box rate, not an impact metric.",
+        "source_artifact": "webapp/public/data/insights/entities/nba_teams/den.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "team", "denver", "scoring", "jokic"]
+    },
+    {
+      "q": "Which team played at the fastest pace?",
+      "alt_phrasings": ["Fastest NBA team by pace", "Highest pace proxy team", "Who plays the fastest?"],
+      "a": {
+        "status": "ok",
+        "answer": "By the pace proxy in the latest season, Miami is the fastest at 105.8, and it also scored 120.4 points per game with Bam Adebayo as its most-used player at a 35.2 PRA-per-36 rate. Pace_proxy is a proxy, not official possession-based pace, and the manifest is descriptive with no schedule or opponent adjustment.",
+        "source_artifact": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "team", "miami", "pace", "bam-adebayo"]
+    },
+    {
+      "q": "Which team played at the slowest pace?",
+      "alt_phrasings": ["Slowest NBA team", "Lowest pace proxy", "Who grinds it out most?"],
+      "a": {
+        "status": "ok",
+        "answer": "Boston played at the lowest pace proxy in the sample at 97.5 while still scoring 114.9 points per game in the latest season. A quirk of the data: the Celtics' most-used player by total minutes is Derrick White at 7,576.2, a reminder the minutes leader is not always the marquee name. Pace_proxy is a proxy, not official pace, and top-contributor is a minutes ranking, not a best-player ranking.",
+        "source_artifact": "webapp/public/data/insights/entities/nba_teams/bos.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "team", "boston", "pace", "derrick-white"]
+    },
+    {
+      "q": "Who logged the most minutes for Golden State -- surely Curry?",
+      "alt_phrasings": ["Warriors top minutes player", "Golden State most-used player", "Is Curry the Warriors' minutes leader?"],
+      "a": {
+        "status": "ok",
+        "answer": "No -- the Warriors' most-used player by total minutes across the 3-season sample is Brandin Podziemski at 6,018.4 minutes, a young wing, not Stephen Curry. His combined PRA-per-36 is 27.1, and the team scored 114.6 points per game at a 101.7 pace proxy. The 'top contributor' is a minutes ranking, so a high-minutes role player can outrank a star with heavier per-game impact but fewer minutes.",
+        "source_artifact": "webapp/public/data/insights/entities/nba_teams/gsw.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "team", "golden-state", "minutes", "podziemski", "curry"]
+    },
+    {
+      "q": "Who is the Lakers' most-used player and what is his rate?",
+      "alt_phrasings": ["Lakers top contributor", "LeBron minutes for the Lakers", "LA Lakers most minutes"],
+      "a": {
+        "status": "ok",
+        "answer": "The Lakers' most-used player by total minutes is LeBron James at 6,940.9 minutes, posting a 40.5 combined PRA-per-36 rate, and the team scored 116.3 points per game at a middle-of-the-pack 99.8 pace proxy. PRA-per-36 is a raw box rate, not an impact metric, and ppg is a single-season figure.",
+        "source_artifact": "webapp/public/data/insights/entities/nba_teams/lal.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "team", "lakers", "lebron", "minutes"]
+    },
+    {
+      "q": "How dominant is SGA's box production for the Thunder?",
+      "alt_phrasings": ["OKC top contributor rate", "Thunder most-used player", "SGA PRA per 36 for OKC"],
+      "a": {
+        "status": "ok",
+        "answer": "Shai Gilgeous-Alexander leads Oklahoma City at 45.4 points-plus-rebounds-plus-assists per 36 minutes across 245 team-games, one of the highest top-contributor rates in the sample, and he is also the minutes leader at 7,375.7. The team scored 119.0 points per game in the latest season. PRA-per-36 is a box rate, not an impact metric.",
+        "source_artifact": "webapp/public/data/insights/entities/nba_teams/okc.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "team", "okc", "sga"]
+    },
+    {
+      "q": "Which team scored the fewest points per game?",
+      "alt_phrasings": ["Lowest scoring NBA team", "Weakest offense by ppg", "Fewest points per game"],
+      "a": {
+        "status": "ok",
+        "answer": "In the latest season of the sample Brooklyn scored the fewest at 106.2 points per game, with Nic Claxton its most-used player at a 28.2 PRA-per-36 rate. ppg here is a single-season team average, descriptive with no opponent or schedule adjustment.",
+        "source_artifact": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "team", "brooklyn", "scoring"]
+    },
+    {
+      "q": "How much does Milwaukee's box production run through Giannis?",
+      "alt_phrasings": ["Bucks top contributor", "Giannis PRA per 36 for Milwaukee", "Milwaukee scoring and pace"],
+      "a": {
+        "status": "ok",
+        "answer": "Giannis Antetokounmpo leads Milwaukee at 50.9 points-plus-rebounds-plus-assists per 36 minutes -- one of the two highest top-contributor rates in the sample alongside Jokic -- while the Bucks scored 109.3 points per game at a 98.4 pace proxy. That team scoring is on the low end of the league; PRA-per-36 is a box rate, not an impact metric.",
+        "source_artifact": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "team", "milwaukee", "giannis"]
+    },
+    {
+      "q": "Who carries Cleveland's box production?",
+      "alt_phrasings": ["Cavs top contributor", "Donovan Mitchell for Cleveland", "Cleveland most-used player"],
+      "a": {
+        "status": "ok",
+        "answer": "Donovan Mitchell is Cleveland's most-used player at a 39.3 PRA-per-36 rate over 6,482.5 minutes, and the Cavaliers scored 119.6 points per game at a 102.1 pace proxy in the latest season. PRA-per-36 sums points, rebounds, and assists per 36 minutes as a raw box rate, not a measured impact number.",
+        "source_artifact": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "team", "cleveland", "donovan-mitchell"]
+    },
+    {
+      "q": "What does Cade Cunningham's box rate look like for Detroit?",
+      "alt_phrasings": ["Pistons top contributor", "Cade Cunningham PRA per 36", "Detroit most-used player"],
+      "a": {
+        "status": "ok",
+        "answer": "Cade Cunningham leads Detroit at a 40.6 PRA-per-36 rate over 6,622.9 minutes, and the Pistons scored 117.4 points per game at a 102.5 pace proxy. It is a raw box rate over the 3-season sample, not adjusted for opponent or role.",
+        "source_artifact": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "team", "detroit", "cade-cunningham"]
+    },
+    {
+      "q": "How much does New York run through Jalen Brunson?",
+      "alt_phrasings": ["Knicks top contributor", "Jalen Brunson PRA per 36", "New York most-used player"],
+      "a": {
+        "status": "ok",
+        "answer": "Jalen Brunson is the Knicks' most-used player at a 37.9 PRA-per-36 rate over 7,566.2 minutes, and New York scored 115.7 points per game at a slow 98.2 pace proxy. PRA-per-36 is a box rate, descriptive only, with no schedule or opponent adjustment.",
+        "source_artifact": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "team", "new-york", "jalen-brunson"]
+    },
+    {
+      "q": "How big is home-court advantage in the box score?",
+      "alt_phrasings": ["Does home court actually help?", "Home vs away shooting", "How much do home teams shoot better?"],
+      "a": {
+        "status": "ok",
+        "answer": "Pooled over 74,450 player-games, the home edge is small and lives mostly in shooting: home teams shoot 47.479 percent from the field versus 46.833 on the road (+0.647 points) and 36.632 versus 35.867 from three (+0.765), while the typical player's home-minus-away scoring gap is just +0.04 points per game. It is a faint, league-wide tilt, not the outsized boost fans assume. Descriptive only.",
+        "source_artifact": "webapp/public/data/insights/home_away_anatomy.json",
+        "as_of": "2023-24 to 2025-26"
+      },
+      "tags": ["nba", "context", "home-away", "shooting"]
+    },
+    {
+      "q": "Does playing on the second night of a back-to-back hurt production?",
+      "alt_phrasings": ["Back-to-back fatigue effect", "Do players slump on no rest?", "How much does a back-to-back cost?"],
+      "a": {
+        "status": "ok",
+        "answer": "Fatigue shows up modestly at the player level: on the second night of a back-to-back, per-36 box-composite production dips about 0.315 versus rested games (13.591 vs 13.905), with smaller dips for 3-games-in-4 and 4-in-6. A significance-tested team version puts it at -1.73 points per 100 possessions of offensive rating (rested minus back-to-back, n=4732, p=0.0056). The player-level figure is descriptive and not opponent- or minutes-adjusted.",
+        "source_artifact": "webapp/public/data/insights/schedule_density.json",
+        "as_of": "2023-24 to 2025-26"
+      },
+      "tags": ["nba", "context", "rest", "back-to-back", "fatigue"]
+    },
+    {
+      "q": "How much does a player's shooting swing with matchup, venue, and rest?",
+      "alt_phrasings": ["Are players context-sensitive shooters?", "Does defense tier move efficiency much?", "How streaky is shooting by context?"],
+      "a": {
+        "status": "ok",
+        "answer": "Very little. Of the 50 highest-minute players, the most context-sensitive shooter is Payton Pritchard, whose True Shooting percentage swings by only about 4.4 points on average across defense tier, venue, and rest, with his biggest single split being +6.0 TS points on the second night of a back-to-back. Most of the top 50 sit lower, so efficiency is far stickier across context than road-warrior narratives suggest. Cells below 10 player-games are dropped, and it is raw split dispersion, not a causal claim.",
+        "source_artifact": "webapp/public/data/insights/ctx_player_splits.json",
+        "as_of": "2023-24 to 2025-26"
+      },
+      "tags": ["nba", "context", "splits", "shooting", "pritchard"]
+    },
+    {
+      "q": "Which recurring matchup produces the most points, and which the fewest?",
+      "alt_phrasings": ["Highest scoring NBA matchup", "Fastest and slowest team pairings", "Which head-to-head goes over the most?"],
+      "a": {
+        "status": "ok",
+        "answer": "Pooled over three seasons and 870 team pairings, Atlanta versus Indiana is the highest-scoring matchup at a mean of 255.7 combined points over 10 meetings, while Charlotte versus Portland is the lowest at 197.0 -- a 58-point gap between the league's fastest and slowest recurring games. This describes games already played, not a forecast of any future meeting, and it is not a home/away split.",
+        "source_artifact": "webapp/public/data/insights/nba_matchup_grid.json",
+        "as_of": "through 2026-04-12 (2023-24 to 2025-26)"
+      },
+      "tags": ["nba", "matchup", "totals", "atlanta", "indiana"]
+    },
+    {
+      "q": "Does slowing the game down really help the underdog?",
+      "alt_phrasings": ["Does pace help the weaker team?", "How much does tempo change upset odds?", "Pace and variance for underdogs"],
+      "a": {
+        "status": "ok",
+        "answer": "It helps, but only a little. Across the NBA's observed pace range of about 92 to 104 possessions, an 80 percent favorite's upset probability rises only from 19.5 percent at the fastest pace to 20.9 percent at the slowest -- a 1.4-point swing. Fewer possessions mean fewer chances for the better team to separate, but real NBA pace barely moves game to game, so the mechanical effect on any single matchup is small. This isolates the variance mechanism only, holding per-possession scoring fixed.",
+        "source_artifact": "webapp/public/data/insights/cf_pace_variance.json",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["nba", "context", "pace", "variance", "underdog"]
+    },
+    {
+      "q": "How much does the Pelicans' win probability move with and without Zion?",
+      "alt_phrasings": ["New Orleans with and without Zion", "Zion star removal", "Pelicans star dependence"],
+      "a": {
+        "status": "ok",
+        "answer": "In the star-removal exhibit, New Orleans moves from 0.3292 with Zion Williamson to 0.0469 without on a neutral floor versus a league-average team -- a 0.2823 swing, off a low starting team strength. It is a ceiling built from an on/off net-rating delta with a roster confound, descriptive only, not a betting number.",
+        "source_artifact": "webapp/public/data/insights/cf_star_removal.json",
+        "as_of": "2024-25 (Elo end-of-season) x 2024_25 on/off slice"
+      },
+      "tags": ["nba", "star-value", "with-without", "zion", "new-orleans"]
+    },
+    {
+      "q": "What is Wembanyama's star value to San Antonio in this exhibit?",
+      "alt_phrasings": ["Spurs with and without Wembanyama", "Wemby star removal", "San Antonio star dependence"],
+      "a": {
+        "status": "ok",
+        "answer": "San Antonio moves from 0.3901 with Victor Wembanyama to 0.112 without on a neutral floor against a league-average opponent -- a 0.2781 win-prob swing. As with every row, it is a ceiling from a roster-confounded on/off delta, not a controlled individual value, and it is descriptive rather than an edge claim.",
+        "source_artifact": "webapp/public/data/insights/cf_star_removal.json",
+        "as_of": "2024-25 (Elo end-of-season) x 2024_25 on/off slice"
+      },
+      "tags": ["nba", "star-value", "with-without", "wembanyama", "san-antonio"]
+    },
+    {
+      "q": "Does the system know when a late-game lead is basically safe?",
+      "alt_phrasings": ["Is the win-prob model calibrated late in games?", "How well does it read game state?", "Late lead win probability accuracy"],
+      "a": {
+        "status": "ok",
+        "answer": "In the bulk of regulation states it tracks reality closely: for a 1-to-5 point lead with 24-36 minutes left, the model's mean win probability is 0.6204 across 898 games and teams in that state actually won 62.03 percent of the time. The honest exception is overtime -- with a 1-5 lead in OT the model says 0.7113 while teams actually won 98.3 percent and the market priced 97.6 percent, so it under-rates how decisive a late lead is and the market is better there. This is a calibration exhibit, never a profit claim.",
+        "source_artifact": "webapp/public/data/insights/comeback_atlas.json",
+        "as_of": "reliability map (source records no as_of)"
+      },
+      "tags": ["nba", "clutch", "game-state", "calibration", "win-probability"]
+    },
+    {
+      "q": "Can you give me Jokic's clutch or fourth-quarter splits?",
+      "alt_phrasings": ["Late-game stats for Jokic", "How does Jokic play in the clutch?", "Fourth quarter per-36 for a player"],
+      "a": {
+        "status": "no_data",
+        "answer": "Not from this data. The NBA boxscores table is a full-game aggregate with no period or clutch grain, so a Q4 or overtime per-36 split cannot be computed without fabricating it -- and the module refuses rather than invent one. The per-period box lines do exist in the raw cache, but the ingest step sums them into one full-game row and discards the period grain, so recovering clutch splits is a data-layer re-ingest that is out of scope here.",
+        "source_artifact": "webapp/public/data/insights/clutch_context.json",
+        "as_of": "2026-07-23T03:21:53Z"
+      },
+      "tags": ["nba", "clutch", "no-data", "not-buildable"]
+    },
+    {
+      "q": "Which teams are best at protecting leads versus storming back?",
+      "alt_phrasings": ["Front-runner vs comeback teams", "Per-team halftime comeback profile", "Who holds leads and who rallies?"],
+      "a": {
+        "status": "no_data",
+        "answer": "A per-team front-runner-versus-comeback profile is not buildable from this slice: zero of 30 teams clear the floor of at least two games both leading and trailing at halftime in the 26-game corpus, so per-team labels would be 1-2 game noise. The only robust readout is league-level -- second-half margin regresses on halftime margin with a slope of 0.2885, and a team that led at half went on to a +1.346 second-half margin on average. The module declines to print per-team rankings rather than over-claim.",
+        "source_artifact": "webapp/public/data/insights/ctx_team_states.json",
+        "as_of": "2026-05-21 16:05:11"
+      },
+      "tags": ["nba", "team", "no-data", "not-buildable", "game-state"]
+    },
+    {
+      "q": "Can you give me a player's aging curve or age-adjusted projection?",
+      "alt_phrasings": ["What does the aging curve say?", "Is this player past his prime by the model?", "Age-adjusted decline for a player"],
+      "a": {
+        "status": "no_data",
+        "answer": "Aging curves are not buildable from this data. No birthdate or age column exists in any NBA table, and only three season snapshots (2023-24, 2024-25, 2025-26) are on hand, while aging-curve methods need age-labeled player-seasons across many seasons. The codebase's own audit reaches the same defer verdict; add age labels and more seasons and it becomes testable.",
+        "source_artifact": "webapp/public/data/insights/aging_curve_lite.json",
+        "as_of": "not stamped in artifact"
+      },
+      "tags": ["nba", "player", "no-data", "not-buildable", "aging"]
+    },
+    {
+      "q": "What is this player's RAPM, EPM, or DARKO?",
+      "alt_phrasings": ["Give me an impact metric like EPM", "Player RAPM value", "What does DARKO say about him?"],
+      "a": {
+        "status": "no_data",
+        "answer": "Those are not reproduced. From 77,744 box-score rows the system can honestly build a box-only value index, per-36 rates, and unadjusted on/off, but RAPM, xRAPM, EPM, DARKO, LEBRON, BPM, and RAPTOR are all marked do-not-fake because the required league-wide RAPM target or continuous tracking inputs do not exist in the repo. Support means raw input-column coverage only, never a claim to reproduce a branded metric under a borrowed name.",
+        "source_artifact": "webapp/public/data/insights/player_metric_landscape.json",
+        "as_of": "not stamped in artifact"
+      },
+      "tags": ["nba", "player", "no-data", "not-supported", "impact-metrics"]
+    },
+    {
+      "q": "Can you rank every NBA team by true offensive rating or possessions?",
+      "alt_phrasings": ["Give me real pace and ORtg per team", "Possession-based team ratings", "Official pace for all teams"],
+      "a": {
+        "status": "no_data",
+        "answer": "Not at that grain from the team manifest. The team cards carry ppg_latest_season and a pace_proxy, but pace_proxy is explicitly a proxy, not official possession-based pace, and ppg is a single-season average with no schedule or opponent adjustment. A true possession-based offensive rating and official pace are not what this descriptive manifest provides, so ranking teams by them here would overstate what the data supports.",
+        "source_artifact": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "team", "no-data", "pace", "caveat"]
+    },
+    {
+      "q": "Is Jokic's 0.58 win-probability swing a clean measure of his individual value?",
+      "alt_phrasings": ["Is the star-removal number causal?", "Can I trust the with/without win prob as player value?", "Does star removal isolate one player?"],
+      "a": {
+        "status": "ok",
+        "answer": "No -- it is explicitly a ceiling, not a clean causal player value. The 0.5822 swing comes from attributing a full-lineup on-vs-off net-rating gap to one man, with no control for teammates, opponent, coach trust, or garbage time, and the net-rating-to-Elo conversion is a single frozen constant, not a fit. It is a comparable, honest price tag on star dependence, useful as matchup context but labeled descriptive-only, not an edge or a true individual-value estimate.",
+        "source_artifact": "webapp/public/data/insights/cf_star_removal.json",
+        "as_of": "2024-25 (Elo end-of-season) x 2024_25 on/off slice"
+      },
+      "tags": ["nba", "star-value", "caveat", "roster-confound"]
+    },
+    {
+      "q": "Does Giannis's high field-goal percentage mean he is a great shooter?",
+      "alt_phrasings": ["Is Giannis a good shooter because of 60 percent FG?", "What does Giannis's 60.9 percent really mean?", "Giannis shooting vs finishing"],
+      "a": {
+        "status": "ok",
+        "answer": "Not in the way it sounds -- his 60.9 percent from the field largely reflects a rim-heavy shot diet, not touch from range. The range and line numbers tell the other half: 27.4 percent from three and 64.0 percent on free throws. So the elite field-goal rate is about where the shots come from, which the raw percentage does not separate from shooting skill.",
+        "source_artifact": "webapp/public/data/insights/entities/nba_players/giannis_antetokounmpo.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "player", "giannis", "shooting", "caveat"]
+    },
+    {
+      "q": "Between Luka and Jokic, who is the steadier producer?",
+      "alt_phrasings": ["Luka vs Jokic consistency", "Who is more metronomic, Luka or Jokic?", "Compare Doncic and Jokic game-to-game variance"],
+      "a": {
+        "status": "ok",
+        "answer": "They are essentially tied at the top, with Luka Doncic just ahead: a shrunk composite coefficient of variation of 0.3448 for Doncic versus 0.3456 for Jokic, both far under the league median of 0.6235 among 579 players. Their nightly production barely wobbles, roughly half the game-to-game variability of a median rotation player. Lower CV means steadier, not necessarily more valuable, and no opponent or rest adjustment is applied.",
+        "source_artifact": "webapp/public/data/insights/nba_consistency_profiles.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "player", "consistency", "luka", "jokic", "comparison"]
+    },
+    {
+      "q": "How much does Milwaukee's win probability depend on Giannis in the star-removal exhibit?",
+      "alt_phrasings": ["Bucks with and without Giannis", "Giannis star removal", "Milwaukee star dependence"],
+      "a": {
+        "status": "ok",
+        "answer": "Milwaukee moves from 0.6059 with Giannis Antetokounmpo to 0.1617 without on a neutral floor versus a league-average team -- a 0.4441 win-prob swing, among the largest for a team's clear lead star. Like every row it is a ceiling from a roster-confounded on/off delta, descriptive and not a causal or betting number.",
+        "source_artifact": "webapp/public/data/insights/cf_star_removal.json",
+        "as_of": "2024-25 (Elo end-of-season) x 2024_25 on/off slice"
+      },
+      "tags": ["nba", "star-value", "with-without", "giannis", "milwaukee"]
+    },
+    {
+      "q": "Which is the more reliable star profile, Kawhi Leonard or Kevin Durant on efficiency?",
+      "alt_phrasings": ["Kawhi vs Durant shooting", "Compare Kawhi and KD efficiency", "Who shoots better across zones, Kawhi or Durant?"],
+      "a": {
+        "status": "ok",
+        "answer": "Both are three-level shooters with nearly matched lines: Kawhi at 51.1 / 40.4 / 87.9 and Durant at 52.3 / 41.8 / 85.8 from the field, three, and the line. Kawhi scores 27.1 points per 36 to Durant's 26.0, and both are low-assist, score-first roles (3.8 and 4.6 assists per 36). These are per-36 rates unadjusted for shot difficulty, so treat them as efficiency profiles, not a ranking of impact.",
+        "source_artifact": "webapp/public/data/insights/entities/nba_players/kevin_durant.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "player", "kawhi", "durant", "comparison", "shooting"]
+    },
+    {
+      "q": "Who is the biggest faller in form over the sample?",
+      "alt_phrasings": ["Which player trended down the most?", "Biggest form decline NBA", "Who lost the most box production?"],
+      "a": {
+        "status": "ok",
+        "answer": "Myles Turner is the biggest faller, with his 10-game rolling per-36 box composite down -11.043 over the observed span -- the mirror image of Wembanyama's league-leading +19.821 rise to 37.869. This is a net change over the whole multi-season span, a trajectory read rather than a current streak, and it is box-composite only, not age- or opponent-adjusted.",
+        "source_artifact": "webapp/public/data/insights/nba_form_curves.json",
+        "as_of": "2023-24 to 2025-26"
+      },
+      "tags": ["nba", "player", "form", "myles-turner", "trend"]
+    },
+    {
+      "q": "How many players and games sit behind these NBA player numbers?",
+      "alt_phrasings": ["What is the data coverage for player metrics?", "How big is the box-score sample?", "How many rows feed the player analytics?"],
+      "a": {
+        "status": "ok",
+        "answer": "The box-score layer covers 77,744 player-game rows spanning 807 unique players and 3,611 games, with full box scores at zero percent missing. That coverage supports box-only value, per-36 rates, and unadjusted on/off, but it is the reason branded impact metrics are declined -- the raw inputs for RAPM or continuous tracking are not present. Coverage means input-column completeness, not a claim about any adjusted metric.",
+        "source_artifact": "webapp/public/data/insights/player_metric_landscape.json",
+        "as_of": "not stamped in artifact"
+      },
+      "tags": ["nba", "coverage", "data", "sample-size"]
+    },
+    {
+      "q": "Is the atlas 'top contributor' the same as a team's best player?",
+      "alt_phrasings": ["Does top contributor mean best player?", "What does top contributor actually measure?", "Why is a role player listed as top contributor?"],
+      "a": {
+        "status": "ok",
+        "answer": "No -- the 'top contributor' is simply the player with the most total minutes for a team across the sample, not the best or highest-scoring one. That is why Boston's is Derrick White (7,576.2 minutes) and Golden State's is Brandin Podziemski (6,018.4), not the marquee names, while on Denver and Oklahoma City it happens to coincide with the lead star. The metric alongside it, PRA-per-36, is a raw box rate, not an impact measure.",
+        "source_artifact": "webapp/public/data/insights/entities/nba_teams/gsw.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "team", "top-contributor", "caveat", "minutes"]
+    }
+  ]
+}

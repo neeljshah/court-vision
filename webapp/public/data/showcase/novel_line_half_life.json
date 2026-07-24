@@ -1,0 +1,128 @@
+{
+ "stat_name": "Line Half-Life",
+ "abbrev": "LHL",
+ "edge_claimed": false,
+ "descriptive_only": true,
+ "metric_definition": "Per sport, the number of hours before tip by which half of the pre-game absolute line motion is complete.",
+ "formula": "bucket_move=n*mean_abs_move per horizon bucket; G(h)=cum far->near / total; half_life = h where G(h)=0.50 (interpolated).",
+ "source_artifacts": [
+  "scripts/platformkit/analytics_showcase/out/micro_absorption.json"
+ ],
+ "as_of": "2026-07-24",
+ "prior_art_verdict": "NOVEL_PACKAGING",
+ "prior_art_citation": "Line-movement timing (early-sharp vs late-injury/public money) is discussed qualitatively everywhere (Boyd's Bets opening-vs-closing; PicksOffice; GamingToday); price-impact half-life is a securities-microstructure staple (Kyle 1985; Amihud 2002). The underlying line-movement concept is NOT new; only the single per-sport half-life constant is the fresh packaging.",
+ "declared_confounds": [
+  "bucket_move sums ABSOLUTE per-tick moves -> this is churn/activity, not net price travel; back-and-forth noise and correlated consensus books inflate it.",
+  "Only 4 coarse horizon buckets, so the 0.50 crossing is linearly interpolated.",
+  "soccer EXCLUDED: all mass in the 6h+ bucket with mean_abs_move 0.0 (timestamp-coverage artifact).",
+  "nba is bimodal (early motion + a real 0-1h spike, final_hour_share 0.3247) which a single half-life hides -- read alongside the final_hour_movement_share column.",
+  "Sports whose crossing falls inside the open-ended 6h+ bucket cannot be pinned (reported as '>6h', half_life_hours=null)."
+ ],
+ "results": [
+  {
+   "sport": "soccer_intl",
+   "half_life_hours": 2.7461,
+   "crossing_in_open_bucket": false,
+   "half_life_label": "2.75",
+   "final_hour_movement_share": 0.261,
+   "total_abs_move": 49.34988,
+   "cumulative_fraction_by_boundary_h": {
+    "6.0": 0.3212,
+    "3.0": 0.4656,
+    "1.0": 0.7365,
+    "0.0": 1.0
+   },
+   "n_move_pairs": 164072
+  },
+  {
+   "sport": "mlb",
+   "half_life_hours": 3.6709,
+   "crossing_in_open_bucket": false,
+   "half_life_label": "3.67",
+   "final_hour_movement_share": 0.1813,
+   "total_abs_move": 168.48331,
+   "cumulative_fraction_by_boundary_h": {
+    "6.0": 0.3356,
+    "3.0": 0.5474,
+    "1.0": 0.8143,
+    "0.0": 1.0
+   },
+   "n_move_pairs": 1307128
+  },
+  {
+   "sport": "nba",
+   "half_life_hours": 4.7567,
+   "crossing_in_open_bucket": false,
+   "half_life_label": "4.76",
+   "final_hour_movement_share": 0.3247,
+   "total_abs_move": 23.28469,
+   "cumulative_fraction_by_boundary_h": {
+    "6.0": 0.4305,
+    "3.0": 0.5982,
+    "1.0": 0.6794,
+    "0.0": 1.0
+   },
+   "n_move_pairs": 182054
+  },
+  {
+   "sport": "tennis",
+   "half_life_hours": null,
+   "crossing_in_open_bucket": true,
+   "half_life_label": ">6.0",
+   "final_hour_movement_share": 0.107,
+   "total_abs_move": 83.16391,
+   "cumulative_fraction_by_boundary_h": {
+    "6.0": 0.5426,
+    "3.0": 0.7314,
+    "1.0": 0.8902,
+    "0.0": 1.0
+   },
+   "n_move_pairs": 809986
+  },
+  {
+   "sport": "wnba",
+   "half_life_hours": null,
+   "crossing_in_open_bucket": true,
+   "half_life_label": ">6.0",
+   "final_hour_movement_share": 0.1176,
+   "total_abs_move": 80.65411,
+   "cumulative_fraction_by_boundary_h": {
+    "6.0": 0.6441,
+    "3.0": 0.7653,
+    "1.0": 0.8827,
+    "0.0": 1.0
+   },
+   "n_move_pairs": 333540
+  }
+ ],
+ "excluded": [
+  {
+   "sport": "kbo",
+   "reason": "only 0 pregame move pairs (< MIN_MOVES=20)"
+  },
+  {
+   "sport": "npb",
+   "reason": "only 0 pregame move pairs (< MIN_MOVES=20)"
+  },
+  {
+   "sport": "soccer",
+   "reason": "timestamp-coverage artifact (all mass in 6h+, mean_abs_move 0.0)"
+  }
+ ],
+ "headline": "soccer_intl completes half its pre-game line motion by 2.7h before tip; nba not until 4.8h. tennis, wnba move most of their line >6h before tip.",
+ "index_card": {
+  "stat_name": "Line Half-Life",
+  "abbrev": "LHL",
+  "module": "novel_line_half_life",
+  "formula": "bucket_move=n*mean_abs_move per horizon bucket; G(h)=cum far->near / total; half_life = h where G(h)=0.50 (interpolated).",
+  "prior_art_verdict": "NOVEL_PACKAGING",
+  "headline": "soccer_intl completes half its pre-game line motion by 2.7h before tip; nba not until 4.8h. tennis, wnba move most of their line >6h before tip.",
+  "edge_claimed": false,
+  "source_artifacts": [
+   "scripts/platformkit/analytics_showcase/out/micro_absorption.json"
+  ],
+  "chart": "docs/img/novel_line_half_life.png",
+  "n_results": 5
+ },
+ "plot_written": true
+}

@@ -1,0 +1,19 @@
+{
+ "id": "calibration_by_market_type",
+ "title": "No outcome, no Brier: the totals market is left null by design",
+ "headline_insight": "The MLB run-total market carries 2113 rescued in-game ticks but no resolved outcomes, so its Brier is reported null by design -- only the median model-vs-market divergence (0.116128) is disclosed, never a fabricated score.",
+ "what_it_means": "Calibration only means something when predictions can be checked against what actually happened. Two market types carry settled outcomes and get scored (MLB moneyline: model 0.237684 vs market 0.206653; soccer match result: 0.227887 vs 0.142726). The totals quote-tracks were rescued from live data but never joined to a settlement, so scoring them would mean inventing labels -- instead only the disagreement is reported.",
+ "how_to_read": "Each row is a market type; a real Brier appears only where has_outcome is true, otherwise the row shows n and a divergence stat with the reason it cannot be scored.",
+ "why_it_matters": "It is a discipline demonstration -- the system refuses to manufacture a number it cannot back, which is the entire point of the calibration-first framing.",
+ "caveat": "The divergence figure (median 0.116128 over 2113 ticks) measures how far the two forecasters sit apart, not accuracy -- with no outcomes it cannot say which side was right.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/calibration_by_market_type.json", "field": "market_types.mlb_total.n_rows", "value": 2113},
+  {"path": "webapp/public/data/showcase/calibration_by_market_type.json", "field": "market_types.mlb_total.model_vs_market_divergence.median", "value": 0.116128},
+  {"path": "webapp/public/data/showcase/calibration_by_market_type.json", "field": "market_types.mlb_total.brier", "value": null},
+  {"path": "webapp/public/data/showcase/calibration_by_market_type.json", "field": "market_types.mlb_moneyline.model_brier", "value": 0.237684},
+  {"path": "webapp/public/data/showcase/calibration_by_market_type.json", "field": "market_types.mlb_moneyline.market_brier", "value": 0.206653},
+  {"path": "webapp/public/data/showcase/calibration_by_market_type.json", "field": "market_types.soccer_match.model_brier", "value": 0.227887},
+  {"path": "webapp/public/data/showcase/calibration_by_market_type.json", "field": "market_types.soccer_match.market_brier", "value": 0.142726}
+ ],
+ "as_of": "unknown"
+}

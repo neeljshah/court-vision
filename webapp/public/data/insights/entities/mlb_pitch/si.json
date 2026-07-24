@@ -1,0 +1,21 @@
+{
+ "slug": "si",
+ "pack": "mlb_pitch",
+ "display_name": "Sinker (SI)",
+ "one_liner": "The sinker is a get-me-over strike pitch: 32.7% of all sinkers in 2025 were thrown with the pitcher behind in the count, more than the 20.3% thrown when ahead.",
+ "three_things": [
+  "It leans opposite to the splitter -- thrown more when behind (32.7%) than ahead (20.3%), a pitch used to steal a strike.",
+  "A first-pitch staple: 31.3% of all sinkers came on 0-0.",
+  "The highest in-play rate of the four pitches profiled here -- 21.1% -- fitting a contact-inducing pitch; 107,136 thrown, median 94.0 mph."
+ ],
+ "context_note": "Descriptive only, over a single 2025 Statcast pull. The count shares are of this pitch's OWN usage (what share of sinkers fall in each count/leverage class), not the share of any count that is a sinker. The strike bucket merges called, swinging, and foul strikes, so it is not a whiff rate; in-play is the batted-ball share. 'Highest in-play of these four' is scoped to the four pitch types written up in this pack. Not a prediction; no edge claim.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:SI].key_numbers.count_leverage_pct.pitcher_behind", "value": 32.7},
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:SI].key_numbers.count_leverage_pct.pitcher_ahead", "value": 20.3},
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:SI].key_numbers.count_state_pct.0-0", "value": 31.3},
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:SI].key_numbers.outcome_mix_pct.in-play", "value": 21.1},
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:SI].key_numbers.n_pitches", "value": 107136},
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:SI].key_numbers.velo_p50", "value": 94.0}
+ ],
+ "as_of": "2025-09-28"
+}

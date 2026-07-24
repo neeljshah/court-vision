@@ -1,0 +1,22 @@
+{
+  "slug": "liverpool",
+  "pack": "soccer",
+  "display_name": "Liverpool",
+  "one_liner": "Liverpool scored 2.0 goals per game over its last 10 but conceded 1.7 (ga_l10 1.7) -- an open, high-event profile.",
+  "three_things": [
+    "The attack carries it: gf_l10 2.0, yet gd_l10 is only +0.3 because of the leaky defense.",
+    "Shutouts are rare lately -- clean_sheet_rate_l10 0.1, one clean sheet in the last 10.",
+    "Home is where the points are: ppg_home_l10 1.9 vs ppg_away_l10 1.1 (winrate_l10 0.4)."
+  ],
+  "context_note": "Descriptive last-10 and season rates as of the corpus end, not a prediction and not an edge claim. A one-in-ten clean-sheet count is small-sample by nature; these figures carry no opponent, injury, or venue adjustment and can swing sharply as the window rolls.",
+  "cited": [
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Liverpool].key_numbers.gf_l10", "value": 2.0},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Liverpool].key_numbers.ga_l10", "value": 1.7},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Liverpool].key_numbers.gd_l10", "value": 0.3},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Liverpool].key_numbers.clean_sheet_rate_l10", "value": 0.1},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Liverpool].key_numbers.ppg_home_l10", "value": 1.9},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Liverpool].key_numbers.ppg_away_l10", "value": 1.1},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Liverpool].key_numbers.winrate_l10", "value": 0.4}
+  ],
+  "as_of": "2026-07-18T17:21:08.108324+00:00"
+}

@@ -1,0 +1,22 @@
+{
+ "slug": "shohei_ohtani",
+ "pack": "mlb_batters",
+ "display_name": "Shohei Ohtani",
+ "one_liner": "Shohei Ohtani's contact quality played at superstar level in 2025: a .424 estimated wOBA on the balls he put in play.",
+ "three_things": [
+  "Serious top-end thump: 90th-percentile exit velocity 108.4 mph, among the hardest in this group.",
+  "Consistently hard on average -- 87.2 mph mean exit velocity over 784 batted balls.",
+  "He worked through 2,833 pitches, 29.1% of them four-seam fastballs."
+ ],
+ "context_note": "Descriptive only, from a single 2025 Statcast pull (>=300 pitches-faced floor). Contact numbers are over the 784 batted balls only, not the full 2,833 pitches, and estimated wOBA on contact is a batted-ball model -- it says nothing about walks, strikeouts, or actual results. No swing/miss or launch-angle column in this pull, so no whiff rate or barrel profile. Batter-side only (his pitching is not in this card). Not park- or opponent-adjusted; not a prediction.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Shohei Ohtani].key_numbers.avg_estimated_woba_on_contact", "value": 0.424},
+  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Shohei Ohtani].key_numbers.exit_velo_p90", "value": 108.4},
+  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Shohei Ohtani].key_numbers.avg_exit_velo", "value": 87.2},
+  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Shohei Ohtani].key_numbers.n_batted_balls", "value": 784},
+  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Shohei Ohtani].key_numbers.pitches_faced", "value": 2833},
+  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Shohei Ohtani].key_numbers.top_pitch_type_seen", "value": "FF"},
+  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Shohei Ohtani].key_numbers.top_pitch_type_seen_pct", "value": 29.1}
+ ],
+ "as_of": "2025-09-28"
+}

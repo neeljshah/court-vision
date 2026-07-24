@@ -1,0 +1,15 @@
+{
+ "id": "blowout_dynamics",
+ "title": "Point of no return: when a lead becomes permanent",
+ "headline_insight": "Across 178 MLB games, a 2-run gap becomes permanent by a median of inning 6.0 in 75.3% of games, while a 5-run gap only locks in by a median of inning 7.5 and in just 27.0% of games -- bigger cushions clinch later and rarer.",
+ "what_it_means": "For each game the module reads only the score path and finds the point of no return: the first moment a margin threshold holds to the final whistle. The pattern is intuitive but now measured -- small leads (2 runs) become safe around the middle innings in most games, while large leads (5 runs) are, by definition, built later and in far fewer games. This module carries MLB and international soccer only; the NBA cut is not present in this artifact.",
+ "how_to_read": "For each (sport, threshold), decided_frac_of_games is how often that gap ever became permanent and decided_clock_median is the typical clinch time; cells below the game floor are masked.",
+ "why_it_matters": "It grounds 'safe lead' intuition in real clinch-time distributions -- the kind of state-timing map a live win-probability model needs to know when a game is effectively over.",
+ "caveat": "Descriptive game-flow only, no edge/ROI claim. It reads the score path, not any model or market probability, and a (sport, threshold) cell below the 10-game floor is masked from the headline (e.g. soccer above a 1-goal gap).",
+ "cited": [
+  {"path": "webapp/public/data/showcase/blowout_dynamics.json", "field": "sports.mlb.thresholds[0] (2 runs) decided_clock_median / decided_frac_of_games", "value": "6.0 / 0.7528"},
+  {"path": "webapp/public/data/showcase/blowout_dynamics.json", "field": "sports.mlb.thresholds[3] (5 runs) decided_clock_median / decided_frac_of_games", "value": "7.5 / 0.2697"},
+  {"path": "webapp/public/data/showcase/blowout_dynamics.json", "field": "sports.mlb.n_games_usable", "value": 178}
+ ],
+ "as_of": "unknown (source artifact records no as_of)"
+}

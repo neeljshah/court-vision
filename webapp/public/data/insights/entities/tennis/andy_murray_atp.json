@@ -1,0 +1,20 @@
+{
+  "slug": "andy_murray_atp",
+  "pack": "tennis",
+  "display_name": "Andy Murray (ATP)",
+  "one_liner": "Murray's recent hard-court win rate (hard_wr_recent 0.4878) sits well below his career mark on the surface (hard_wr_career 0.6732).",
+  "three_things": [
+    "Best career surface is grass (grass_wr_career 0.7455), just ahead of clay (0.7344).",
+    "Recent hard-court form has fallen off: hard_wr_recent 0.4878 against a 0.6732 career rate.",
+    "Clay career win rate edges hard (clay_minus_hard_career +0.0612)."
+  ],
+  "context_note": "Descriptive career and recent-form surface win rates as of the corpus end, not a prediction and not an edge claim. Recent-form gaps can reflect thin post-floor samples as much as true decline; per-surface floors apply (n>=30) and below-floor metrics show n/a. No adjustment for era, opponent quality, or draw.",
+  "cited": [
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Andy Murray (ATP)].key_numbers.hard_wr_recent", "value": 0.4878},
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Andy Murray (ATP)].key_numbers.hard_wr_career", "value": 0.6732},
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Andy Murray (ATP)].key_numbers.grass_wr_career", "value": 0.7455},
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Andy Murray (ATP)].key_numbers.clay_wr_career", "value": 0.7344},
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Andy Murray (ATP)].key_numbers.clay_minus_hard_career", "value": 0.0612}
+  ],
+  "as_of": "2026-07-19T03:41:37.066640+00:00"
+}

@@ -1,0 +1,19 @@
+{
+  "slug": "juan_martin_del_potro_atp",
+  "pack": "tennis",
+  "display_name": "Juan Martin del Potro (ATP)",
+  "one_liner": "Hard court is clearly del Potro's surface: hard_wr_career 0.754, ahead of clay by a clay-minus-hard gap of -0.1254.",
+  "three_things": [
+    "The strength is hard court: hard_wr_career 0.754 vs clay_wr_career 0.6286.",
+    "One of the larger hard-over-clay gaps in this set (clay_minus_hard_career -0.1254).",
+    "Grass career win rate is below the 30-match floor and shows n/a -- the card is partial (4 of 10 metrics)."
+  ],
+  "context_note": "Descriptive career surface win rates as of the corpus end, not a prediction and not an edge claim. Per-surface floors apply (hard/clay/grass n>=30); below-floor metrics show n/a, and nothing here adjusts for era, opponent quality, or draw.",
+  "cited": [
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Juan Martin del Potro (ATP)].key_numbers.hard_wr_career", "value": 0.754},
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Juan Martin del Potro (ATP)].key_numbers.clay_wr_career", "value": 0.6286},
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Juan Martin del Potro (ATP)].key_numbers.clay_minus_hard_career", "value": -0.1254},
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Juan Martin del Potro (ATP)].status", "value": "partial (4/10 metrics)"}
+  ],
+  "as_of": "2026-07-19T03:41:37.066640+00:00"
+}

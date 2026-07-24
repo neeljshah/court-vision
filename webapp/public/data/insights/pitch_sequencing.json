@@ -1,0 +1,16 @@
+{
+ "id": "pitch_sequencing",
+ "title": "Pitch Sequencing",
+ "headline_insight": "Pitchers repeat themselves most when they are behind: after a four-seamer in a three-ball count the very next pitch is another four-seamer 57.85% of the time, versus 43.23% across all counts.",
+ "what_it_means": "Pitch selection is sticky, and stickiest exactly when the pitcher must throw a strike. When ahead the FF-to-FF repeat drops to 39.44% and the mix diversifies. Off-speed pitches self-repeat too, a slider follows a slider 35.35% of the time across all counts.",
+ "how_to_read": "Each cell is P(next pitch type given the previous pitch type) within one plate appearance, one matrix per count-leverage class. Rows sum to at most 1; the remainder is next-pitch types off the top-8 axis.",
+ "why_it_matters": "It is a readable Markov view of how sequences build, and it shows count pressure narrowing a pitcher's choices, descriptive context over 512,289 transitions.",
+ "caveat": "DESCRIPTIVE_ONLY; strict pitch-number adjacency within a plate appearance; pitch_type is Statcast's auto-classified code. Not a predictor; no edge or ROI claim.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/pitch_sequencing.json", "field": "by_class[three_ball].prob_matrix[FF][FF]", "value": 0.5785},
+  {"path": "webapp/public/data/showcase/pitch_sequencing.json", "field": "by_class[all].prob_matrix[FF][FF]", "value": 0.4323},
+  {"path": "webapp/public/data/showcase/pitch_sequencing.json", "field": "by_class[ahead].prob_matrix[FF][FF]", "value": 0.3944},
+  {"path": "webapp/public/data/showcase/pitch_sequencing.json", "field": "n_transitions", "value": 512289}
+ ],
+ "as_of": "2026-07-24T01:10:01.692059+00:00"
+}

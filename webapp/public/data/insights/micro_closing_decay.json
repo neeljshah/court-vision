@@ -1,0 +1,16 @@
+{
+ "id": "micro_closing_decay",
+ "title": "Does the market get sharper toward the close?",
+ "headline_insight": "For the WNBA, the devigged market's Brier score improves as the game nears -- from 0.245445 six hours out (T-6h) to 0.228045 at the close, across 30 games.",
+ "what_it_means": "A sharper (lower) Brier at the close means the market is a better-calibrated forecaster the closer you get to tip -- consistent with fresh information arriving late. For international soccer the same test does not sharpen, but that read is underpowered (13 games) and provisional.",
+ "how_to_read": "Each horizon bucket (T-24h, T-6h, T-1h, close) reports the Brier of the consensus devigged home-win probability scored against the settled result; lower is better and a downward step toward the close is the sharpening.",
+ "why_it_matters": "It tells you how much the closing number is worth over an earlier snapshot -- the yardstick a forecaster has to match, and the window where late information is priced.",
+ "caveat": "Single capture window -- provisional, not durable; soccer_intl is flagged underpowered; NBA, MLB, tennis and club soccer are not_joinable here (line_history ids do not key to an on-disk outcome table). edge_claimed false.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/micro_closing_decay.json", "field": "sports.wnba.buckets.T-6h.brier", "value": 0.245445},
+  {"path": "webapp/public/data/showcase/micro_closing_decay.json", "field": "sports.wnba.buckets.close.brier", "value": 0.228045},
+  {"path": "webapp/public/data/showcase/micro_closing_decay.json", "field": "sports.wnba.n_games_joined", "value": 30},
+  {"path": "webapp/public/data/showcase/micro_closing_decay.json", "field": "sports.soccer_intl.close_vs_t24h_paired.underpowered", "value": true}
+ ],
+ "as_of": "2026-07-17"
+}

@@ -1,0 +1,16 @@
+{
+ "id": "ctx_lineup_proxy",
+ "title": "With-or-without-you: the average swing is basically zero",
+ "headline_insight": "Across 408 qualified players, a team's win rate with the player active versus missing swings by only +0.0087 on average -- the extremes are loud (Brandon Miller: Charlotte 63.1% with him, 17.6% without) but small-sample and confounded.",
+ "what_it_means": "This is a RAPM-free proxy for player impact: compare a team's win rate in the games a player played versus sat, inside his own tenure window. The average delta sitting near zero is the honest takeaway -- most 'the team is lost without him' stories don't survive when you actually split the games. The eye-popping individual numbers ride on a handful of missed games and everything a raw with/without ignores: which other stars were also out, whether the sit-games were blowout rests, who replaced him.",
+ "how_to_read": "delta_win_rate is win-rate-active minus win-rate-missed; each entry carries a Wald 95% CI offset that is wide for players with few missed games.",
+ "why_it_matters": "It shows why the platform treats on/off and with/without as descriptive context, not a plug-and-play player value -- the signal is real but drowned in roster confounds until an earned predictive receipt says otherwise.",
+ "caveat": "WITH/WITHOUT = ROSTER CONFOUND: why a player missed games is entangled with injury clustering, rest scheduling, blowout pulls, and a different replacement lineup, none controlled for. DESCRIPTIVE_ONLY, not a predictive or edge claim.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/ctx_lineup_proxy.json", "field": "n_qualified", "value": 408},
+  {"path": "webapp/public/data/showcase/ctx_lineup_proxy.json", "field": "delta_summary.mean", "value": 0.0087},
+  {"path": "webapp/public/data/showcase/ctx_lineup_proxy.json", "field": "top_help[0].player_name / win_rate_active / win_rate_missed", "value": "Brandon Miller 0.6308 vs 0.1765"},
+  {"path": "webapp/public/data/showcase/ctx_lineup_proxy.json", "field": "top_help[0].delta_win_rate", "value": 0.4543}
+ ],
+ "as_of": "2025-26 regular season (through 2026-04-12)"
+}

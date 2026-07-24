@@ -1,0 +1,17 @@
+{
+ "id": "nba_form_curves",
+ "title": "The league's biggest form movers, up and down",
+ "headline_insight": "Victor Wembanyama is the league's biggest form riser: his 10-game rolling per-36 box composite climbed +19.821 over the observed span, ending at 37.869 -- the 100th league percentile.",
+ "what_it_means": "This tracks each player's trajectory as a 10-game minute-weighted per-36 box composite, then measures the net change from first retained window to last. Wembanyama's box production roughly doubled from 18.048 to 37.869; the league median band sits at 13.754, which is how far above the middle his finish is. The mirror image is Myles Turner, the biggest faller at -11.043.",
+ "how_to_read": "Each mover shows first_form and last_form (window box-composite values) and the delta between them; last_form_league_pctile places the ending level against the whole league.",
+ "why_it_matters": "It surfaces who is trending sharply in either direction over multiple seasons -- a trajectory read, not a live hot-streak call.",
+ "caveat": "DESCRIPTIVE_ONLY -- box-composite only (NOT BPM/EPM/RAPM/DARKO), NOT age/opponent/role adjusted, and NOT player_id-deduped (accented names can split across ids). Delta is a net change over the whole span, not a current streak.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/nba_form_curves.json", "field": "top_movers_risers[0].player_name", "value": "Victor Wembanyama"},
+  {"path": "webapp/public/data/showcase/nba_form_curves.json", "field": "top_movers_risers[0].delta", "value": 19.821},
+  {"path": "webapp/public/data/showcase/nba_form_curves.json", "field": "top_movers_risers[0].last_form", "value": 37.869},
+  {"path": "webapp/public/data/showcase/nba_form_curves.json", "field": "top_movers_risers[0].last_form_league_pctile", "value": 100.0},
+  {"path": "webapp/public/data/showcase/nba_form_curves.json", "field": "top_movers_fallers[0].delta", "value": -11.043}
+ ],
+ "as_of": "unknown (artifact carries no as_of field); seasons pooled 2023-24, 2024-25, 2025-26"
+}

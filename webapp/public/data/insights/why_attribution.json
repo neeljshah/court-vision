@@ -1,0 +1,16 @@
+{
+ "id": "why_attribution",
+ "title": "Why Attribution",
+ "headline_insight": "The largest single calibrated win-prob swing between adjacent buckets is a soccer collapse: a team at .4-.6 in minutes 15-30 that falls to .2-.4 by minutes 30-45 loses 0.7683 of realized win probability (min support n=120).",
+ "what_it_means": "Any in-game probability move can be decomposed into the adjacent time-bucket transition it crossed, with impact measured as the difference in realized win rate between the two states rather than an observed frequency. MLB's biggest drop is a mid-game .8-1 team collapsing to 0-.2 late, worth -0.5395.",
+ "how_to_read": "Each row is a transition between consecutive time buckets; the delta is mean_y(B) minus mean_y(A), the realized (calibrated) win rate of each state.",
+ "why_it_matters": "It turns a raw probability move into a readable what-changed story anchored to real state transitions.",
+ "caveat": "mean_y is treated as the calibrated win prob; transitions are restricted to consecutive buckets with no skipping; buckets thinner than n=30 are dropped. NBA is skipped because only a checkpoint-Brier file exists, with no per-state realized win rate to attribute.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/why_attribution.json", "field": "biggest_drops[0].winprob_delta", "value": -0.7683},
+  {"path": "webapp/public/data/showcase/why_attribution.json", "field": "biggest_drops[0].min_support_n", "value": 120},
+  {"path": "webapp/public/data/showcase/why_attribution.json", "field": "biggest_drops[3].winprob_delta", "value": -0.5395},
+  {"path": "webapp/public/data/showcase/why_attribution.json", "field": "skipped[0].sport", "value": "nba"}
+ ],
+ "as_of": "source_as_of null in artifact (derived from state_conditioned_calibration.json)"
+}

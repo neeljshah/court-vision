@@ -1,0 +1,16 @@
+{
+ "id": "home_away_anatomy",
+ "title": "Home court, dissected: a thin, mostly-shooting advantage",
+ "headline_insight": "Pooled over 74,450 player-games, the home advantage at the box-score grain is small and lives mostly in shooting: home teams shoot 47.479% from the field versus 46.833% on the road (+0.647 points) and 36.632% versus 35.867% from three (+0.765 points), while the typical player's home-minus-away scoring gap is just +0.04 points per game.",
+ "what_it_means": "Breaking home court into its statistical parts shows it is not a scoring explosion -- it is a sliver of extra shooting accuracy (field goal, three, and free-throw percentages all tick up a fraction of a point at home) plus tiny bumps in assists and blocks. The per-player point distribution is nearly centered on zero, meaning 'home cooking' is a faint, league-wide tilt rather than a big individual boost for most players.",
+ "how_to_read": "league_shooting_pct gives the pooled home-vs-away percentages and their point gaps; player_distribution shows how the home-minus-away scoring gap is spread across 543 players (median near zero).",
+ "why_it_matters": "It calibrates how much a forecast should lean on venue -- a real but modest shooting effect, not the outsized home advantage fans often assume.",
+ "caveat": "DESCRIPTIVE_ONLY. Known data issue: diacritic-split player_ids (an upstream name-join bug) can fragment one player across two ids, unfixed here; floors require 15 player-games per side.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/home_away_anatomy.json", "field": "pooled.league_shooting_pct.fg_pct (home_pct/away_pct/delta_pp)", "value": "47.479 / 46.833 / 0.647"},
+  {"path": "webapp/public/data/showcase/home_away_anatomy.json", "field": "pooled.league_shooting_pct.fg3_pct.delta_pp", "value": 0.765},
+  {"path": "webapp/public/data/showcase/home_away_anatomy.json", "field": "pooled.player_distribution.median_delta (pts)", "value": 0.0389},
+  {"path": "webapp/public/data/showcase/home_away_anatomy.json", "field": "input_coverage.rows_valid", "value": 74450}
+ ],
+ "as_of": "2023-24 to 2025-26"
+}

@@ -1,0 +1,17 @@
+{
+ "id": "paper_execution_audit",
+ "title": "Paper execution audit: degrades honestly when the close is missing",
+ "headline_insight": "83 paper bets were logged, all executed=False, and realized CLV is unmeasurable for every settled row -- the ledger records 'no close captured' rather than fabricating a number.",
+ "what_it_means": "This is a paper-only execution ledger: 83 logged bets, none of them real fills, and 37 settled by final score. Realized closing-line value is null for all 37 because no independent closing-price feed was wired for this channel, so the corpus honestly records the gap instead of backfilling a figure.",
+ "how_to_read": "The one quantity this ledger can actually speak to is placement-time divergence between the model's number and the price taken, whose median is 0.09204799999999999 probability points -- a pre-trade sizing input, not realized edge.",
+ "why_it_matters": "It shows the execution track exists and fails safe: when the close cannot be measured, it reports INSUFFICIENT_DATA rather than inventing a better-than-close result.",
+ "caveat": "clv_pct is null for all 37 settled rows because no independent closing feed was captured, so no better-than-close (CLV) claim is possible from this corpus.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/paper_execution_audit.json", "field": "n_records", "value": 83},
+  {"path": "webapp/public/data/showcase/paper_execution_audit.json", "field": "n_executed_filled", "value": 0},
+  {"path": "webapp/public/data/showcase/paper_execution_audit.json", "field": "status_split.settled", "value": 37},
+  {"path": "webapp/public/data/showcase/paper_execution_audit.json", "field": "divergence_at_placement_pp.median", "value": 0.09204799999999999},
+  {"path": "webapp/public/data/showcase/paper_execution_audit.json", "field": "realized_clv_pct", "value": null}
+ ],
+ "as_of": "2026-07-24T01:10:00Z"
+}

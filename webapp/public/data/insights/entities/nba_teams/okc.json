@@ -1,0 +1,20 @@
+{
+  "slug": "okc",
+  "pack": "nba_teams",
+  "display_name": "Oklahoma City Thunder",
+  "one_liner": "Shai Gilgeous-Alexander leads the Oklahoma City Thunder at 45.4 points-plus-rebounds-plus-assists per 36 minutes across 245 team-games.",
+  "three_things": [
+    "SGA's 45.4 combined PRA-per-36 is among the highest top-contributor rates in the sample.",
+    "He is also the team's minutes leader at 7,375.7 total minutes.",
+    "The team scored 119.0 points per game in the latest season of the sample."
+  ],
+  "context_note": "The 'top contributor' is the player with the most total minutes for the team, which for Oklahoma City coincides with its lead star. PRA-per-36 sums points, rebounds, and assists per 36 minutes and is a raw box rate, not an impact metric. ppg_latest_season is a single-season team average while the rest of the sample spans three seasons; pace_proxy is a proxy, not official possession-based pace. The manifest is descriptive_only with no schedule or opponent adjustment.",
+  "cited": [
+    {"path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json", "field": "entries[entity=OKC].key_numbers.top_contributor", "value": "Shai Gilgeous-Alexander"},
+    {"path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json", "field": "entries[entity=OKC].key_numbers.top_contributor_pra_per36", "value": 45.4},
+    {"path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json", "field": "entries[entity=OKC].key_numbers.top_contributor_minutes", "value": 7375.7},
+    {"path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json", "field": "entries[entity=OKC].key_numbers.games_total", "value": 245},
+    {"path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json", "field": "entries[entity=OKC].key_numbers.ppg_latest_season", "value": 119.0}
+  ],
+  "as_of": "2026-04-12"
+}

@@ -1,0 +1,16 @@
+{
+ "id": "ctx_player_splits",
+ "title": "Context splits: even the streakiest scorers barely move",
+ "headline_insight": "Of the 50 highest-minute players, the most context-sensitive shooter is Payton Pritchard, whose True Shooting % swings by only about 4.4 points on average across defense tier, venue, and rest -- his biggest single split is +6.0 TS points on the second night of a back-to-back.",
+ "what_it_means": "Each player's efficiency is sliced three ways -- top-10 vs bottom-10 defenses, home vs away, and back-to-back vs rested -- to see whose shooting is most schedule-dependent. The headline is how little moves: the single most context-sensitive of the league's workhorses averages a ~4-point TS swing, and most of the top 50 sit lower. Player efficiency is far stickier across context than the 'he's a road warrior / he feasts on tired legs' narratives suggest.",
+ "how_to_read": "context_sensitivity_score is the mean absolute TS% gap across the three dimensions; the per-dimension delta_ts_pct fields show which split drives it.",
+ "why_it_matters": "It sets an honest expectation for how much a matchup or rest situation should nudge a player projection -- for most stars, only slightly.",
+ "caveat": "DESCRIPTIVE_ONLY: cells below 10 player-games are dropped as insufficient, first games of a team-season have unknown rest, and no opponent/lineup adjustment is applied -- raw split dispersion only, not a causal or edge claim.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/ctx_player_splits.json", "field": "players[0].player_name", "value": "Payton Pritchard"},
+  {"path": "webapp/public/data/showcase/ctx_player_splits.json", "field": "players[0].context_sensitivity_score", "value": 0.0441},
+  {"path": "webapp/public/data/showcase/ctx_player_splits.json", "field": "players[0].splits.rest.delta_ts_pct", "value": 0.0597},
+  {"path": "webapp/public/data/showcase/ctx_player_splits.json", "field": "coverage.players_analysed", "value": 50}
+ ],
+ "as_of": "2023-24 to 2025-26 (77,744 input rows)"
+}

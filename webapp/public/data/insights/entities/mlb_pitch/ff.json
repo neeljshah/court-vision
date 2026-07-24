@@ -1,0 +1,24 @@
+{
+ "slug": "ff",
+ "pack": "mlb_pitch",
+ "display_name": "Four-Seam Fastball (FF)",
+ "one_liner": "The four-seam fastball is the pitch thrown in every count: 31.78% of all pitches in the 2025 pull, and its usage barely tilts by leverage (27.6% when ahead vs 29.0% when behind).",
+ "three_things": [
+  "It is the sport's default: 220,235 four-seamers, 31.78% of everything thrown.",
+  "Leverage barely moves it -- 27.6% ahead, 43.3% even, 29.0% behind -- the flattest count profile of the four pitches profiled here.",
+  "Median velocity 94.5 mph; outcomes split 49.6% strike, 34.0% ball, 16.4% in play."
+ ],
+ "context_note": "Descriptive only, over a single 2025 Statcast pull. The count-leverage shares are of this pitch's OWN usage (what share of four-seamers fall in each leverage class) -- they are not the share of any given count that is a four-seam. The strike bucket merges called, swinging, and foul strikes (no per-pitch swing/take in this corpus), so it is not a whiff rate. 'Flattest of these four' is scoped to the four pitch types written up in this pack. Not a prediction; no edge claim.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:FF].key_numbers.n_pitches", "value": 220235},
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:FF].key_numbers.pct_of_all_pitches", "value": 31.78},
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:FF].key_numbers.count_leverage_pct.pitcher_ahead", "value": 27.6},
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:FF].key_numbers.count_leverage_pct.even", "value": 43.3},
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:FF].key_numbers.count_leverage_pct.pitcher_behind", "value": 29.0},
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:FF].key_numbers.velo_p50", "value": 94.5},
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:FF].key_numbers.outcome_mix_pct.strike", "value": 49.6},
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:FF].key_numbers.outcome_mix_pct.ball", "value": 34.0},
+  {"path": "webapp/public/data/showcase/atlas_mlb_pitch_manifest.json", "field": "entries[entity=pitch_type:FF].key_numbers.outcome_mix_pct.in-play", "value": 16.4}
+ ],
+ "as_of": "2025-09-28"
+}

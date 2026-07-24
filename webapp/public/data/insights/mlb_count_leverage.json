@@ -1,0 +1,16 @@
+{
+ "id": "mlb_count_leverage",
+ "title": "MLB Count Leverage",
+ "headline_insight": "Fall behind 3-0 and the pitcher almost always reaches for the heater: on a 3-0 count a four-seam fastball is the pitch 65.12% of the time, thrown in the strike zone 62.93% of the time.",
+ "what_it_means": "Count state strongly shapes what gets thrown. In a must-throw-a-strike 3-0 hole the four-seam share (65.12%) roughly doubles its ~30% share in even and ahead counts, and the in-zone rate climbs because the hitter usually is not swinging. As the pitcher gets ahead the mix broadens toward sliders and changeups and the in-zone rate drops.",
+ "how_to_read": "The chart shows pitch-type mix by count-leverage class; the table breaks it down to each exact ball-strike count. Every rate is over its own non-null denominator, not the raw class count.",
+ "why_it_matters": "It is a clean descriptive baseline for how leverage drives pitch selection over 693,037 pitches, useful context before any modeling.",
+ "caveat": "DESCRIPTIVE_ONLY over the local 2025 Statcast pull; the type==S strike rate conflates called, swinging and foul strikes (no per-pitch swing/take in this corpus). Not a predictor; no edge or ROI claim.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/mlb_count_leverage.json", "field": "by_exact_count[balls=3,strikes=0].top_pitch_pct", "value": 65.12},
+  {"path": "webapp/public/data/showcase/mlb_count_leverage.json", "field": "by_exact_count[balls=3,strikes=0].in_zone_rate", "value": 0.6293},
+  {"path": "webapp/public/data/showcase/mlb_count_leverage.json", "field": "by_exact_count[balls=3,strikes=0].top_pitch_type", "value": "FF"},
+  {"path": "webapp/public/data/showcase/mlb_count_leverage.json", "field": "n_pitches_total", "value": 693037}
+ ],
+ "as_of": "2026-07-24T01:09:50.473536+00:00"
+}

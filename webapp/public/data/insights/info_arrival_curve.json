@@ -1,0 +1,16 @@
+{
+ "id": "info_arrival_curve",
+ "title": "The market's calibration lead over the model widens as the game unfolds",
+ "headline_insight": "In MLB, the market's Brier stays below the model's at every inning checkpoint, and the gap widens as the game progresses -- market_minus_model_brier goes from -0.015 in the 1st inning to -0.0902 by the 9th.",
+ "what_it_means": "A negative market-minus-model Brier means the market is the better-calibrated forecaster. The gap is small early and grows late: as more of the game is revealed, the market incorporates it faster and more sharply than our state-only model. That widening gap is the freshness we do not yet see, not a flaw the model can close on its own inputs.",
+ "how_to_read": "One point per game-time checkpoint; market_minus_model_brier below zero means the market scored a lower (better) Brier than the model at that stage, and a more-negative value means a larger calibration gap.",
+ "why_it_matters": "It pins down exactly where and by how much the model trails the live market -- the improvement backlog is late-game -- and it does so on corpora we actually hold (MLB by inning, international soccer by 5-minute bucket) with a score-only naive baseline for context.",
+ "caveat": "Novelty verdict is INCREMENTAL -- the same paired model/market/outcome Brier instrument appears in prior work; do not claim first-ever. Late checkpoints thin out (9th-inning n 2282), so read the tail cautiously.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/info_arrival_curve.json", "field": "checkpoints.mlb.1.market_minus_model_brier", "value": -0.015},
+  {"path": "webapp/public/data/showcase/info_arrival_curve.json", "field": "checkpoints.mlb.9.market_minus_model_brier", "value": -0.0902},
+  {"path": "webapp/public/data/showcase/info_arrival_curve.json", "field": "checkpoints.mlb.9.n", "value": 2282},
+  {"path": "webapp/public/data/showcase/info_arrival_curve.json", "field": "novelty.verdict", "value": "INCREMENTAL"}
+ ],
+ "as_of": "unknown (artifact carries no as_of/generated_at field)"
+}

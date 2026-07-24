@@ -1,0 +1,22 @@
+{
+  "slug": "arsenal",
+  "pack": "soccer",
+  "display_name": "Arsenal",
+  "one_liner": "Over its last 10 matches Arsenal conceded just 0.6 goals per game (ga_l10 0.6) -- the stingiest back line in this set.",
+  "three_things": [
+    "Elite recent defense: ga_l10 0.6 paired with a clean sheet in over half of season matches (clean_sheet_rate_season 0.5135).",
+    "Won 8 of the last 10 by points weight (winrate_l10 0.8, ppg_l10 2.4) with gd_l10 +1.1.",
+    "The defense travels: clean_sheet_rate_home 0.6 vs clean_sheet_rate_away 0.5 -- little home/away gap."
+  ],
+  "context_note": "Descriptive last-10 and season rates as of the corpus end, not a prediction and not an edge claim. Trailing-10 windows are small; a hot or cold 10-game stretch moves ppg_l10 and clean-sheet rates a lot, and these figures carry no roster, injury, or fixture-strength adjustment.",
+  "cited": [
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Arsenal].key_numbers.ga_l10", "value": 0.6},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Arsenal].key_numbers.clean_sheet_rate_season", "value": 0.5135},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Arsenal].key_numbers.winrate_l10", "value": 0.8},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Arsenal].key_numbers.ppg_l10", "value": 2.4},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Arsenal].key_numbers.gd_l10", "value": 1.1},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Arsenal].key_numbers.clean_sheet_rate_home", "value": 0.6},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Arsenal].key_numbers.clean_sheet_rate_away", "value": 0.5}
+  ],
+  "as_of": "2026-07-18T17:21:08.108324+00:00"
+}

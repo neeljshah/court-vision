@@ -1,0 +1,17 @@
+{
+ "id": "claims_corpus_meta",
+ "title": "Claims Corpus Meta",
+ "headline_insight": "The intelligence layer holds 103,048 generated claims across 103 families, and a validation sample covering 98.85% of them recorded 0 mismatches.",
+ "what_it_means": "Almost all of these are ranking statements (101,862 of them). NBA dominates the corpus with 62,227 claims across 31 families, followed by MLB at 21,519, tennis at 13,709, and soccer at 4,275. Verification is a sidecar sample rather than a full audit, and generated claims outnumber verified ones by design.",
+ "how_to_read": "Read the totals, then the per-sport family and claim counts, then each family's own validation sidecar (verified / mismatch / unverifiable).",
+ "why_it_matters": "It sizes the breadth of the descriptive claims corpus and shows the verification is honest about being a sample, not a completeness proof.",
+ "caveat": "Verified counts are sidecar SAMPLE counts, not full-corpus audits; generated claims outnumber verified claims by design; 4 of the 103 families have no validation sidecar.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/claims_corpus_meta.json", "field": "totals.n_claims_generated", "value": 103048},
+  {"path": "webapp/public/data/showcase/claims_corpus_meta.json", "field": "totals.n_families", "value": 103},
+  {"path": "webapp/public/data/showcase/claims_corpus_meta.json", "field": "generated_vs_validated.pct_of_generated_claims_covered_by_a_validation_sample", "value": 98.85},
+  {"path": "webapp/public/data/showcase/claims_corpus_meta.json", "field": "generated_vs_validated.n_mismatch", "value": 0},
+  {"path": "webapp/public/data/showcase/claims_corpus_meta.json", "field": "sport_breakdown[nba].n_claims", "value": 62227}
+ ],
+ "as_of": "2026-07-22T22:32:37.123787+00:00"
+}

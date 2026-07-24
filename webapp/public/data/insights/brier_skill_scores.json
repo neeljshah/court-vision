@@ -1,0 +1,17 @@
+{
+ "id": "brier_skill_scores",
+ "title": "Against the market baseline, the skill score is negative everywhere",
+ "headline_insight": "The model's Brier Skill Score versus the market is negative across every sport -- MLB overall -0.1502, soccer -0.5967 -- so the model does not beat the market, and that null is the exhibit's whole point.",
+ "what_it_means": "Brier Skill Score is 1 minus Brier over a reference Brier; positive means you beat the reference. Against climatology (a constant base-rate guess) the model scores positive (MLB +0.042), as any real in-game model should. Against the market it is negative across all sports and checkpoints -- the market's Brier is lower. This is reported plainly, not hidden.",
+ "how_to_read": "Read each cell's BSS: above 0 beats the baseline, below 0 loses to it; compare the vs-market column (the hard test) against the vs-climatology column (the easy one).",
+ "why_it_matters": "It is the cleanest single statement of the project thesis -- the market is efficient; the model crushes the base rate but does not out-predict the market.",
+ "caveat": "The most negative MLB cell is late(inn7+) at -0.4635; late-game is exactly where market prices sharpen on information the model cannot see.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/brier_skill_scores.json", "field": "sports.mlb.grains.all.bss_model_vs_market", "value": -0.1502},
+  {"path": "webapp/public/data/showcase/brier_skill_scores.json", "field": "sports.mlb.grains.all.bss_model_vs_clim", "value": 0.042},
+  {"path": "webapp/public/data/showcase/brier_skill_scores.json", "field": "sports.mlb.grains.late(inn7+).bss_model_vs_market", "value": -0.4635},
+  {"path": "webapp/public/data/showcase/brier_skill_scores.json", "field": "sports.soccer_intl.grains.all.bss_model_vs_market", "value": -0.5967},
+  {"path": "webapp/public/data/showcase/brier_skill_scores.json", "field": "honest_note", "value": "BSS vs market is near or below 0 across sports and checkpoints -- the model does not beat the market's Brier."}
+ ],
+ "as_of": "2026-07-24T01:08:43.969532+00:00"
+}

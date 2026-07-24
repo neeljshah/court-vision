@@ -1,0 +1,17 @@
+{
+ "as_of": "2026-07-23",
+ "doc_source": "docs/INGAME_PROOF.md",
+ "included": [
+  "winprob_walk_forward_results.json",
+  "state_conditioned_calibration.json",
+  "murphy_decomposition.json",
+  "calibration_stability.json",
+  "brier_skill_scores.json",
+  "cross_sport_scoreboard.json"
+ ],
+ "skipped_uncommitted": [
+  "data/cache/ingame_grade_joined/mlb",
+  "data/cache/ingame_grade_joined/soccer_intl"
+ ],
+ "note": "docs/INGAME_PROOF.md cites source scripts (proof_nba/proof_mlb ingame_accuracy.py, ticker_settlement_join.py) and the raw settlement-join cache, not a committed JSON receipt for the 0.209->0.159 headline; the files above are the committed, already-verified aggregates over the same real corpus."
+}

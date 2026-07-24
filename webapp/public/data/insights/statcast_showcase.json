@@ -1,0 +1,18 @@
+{
+ "id": "statcast_showcase",
+ "title": "Statcast Showcase",
+ "headline_insight": "The 2025 Statcast pull holds 693,037 pitches, and the framing ingredients (plate location, zone edges) are present on 99.63% of them.",
+ "what_it_means": "That coverage is enough to compute catcher-framing-style metrics from location. Four-seam fastballs are the most common pitch at 31.78% of the pull, sinkers next at 15.46%. A separate preregistered framing check (surfaced here as context only) reports a borderline called-strike-rate metric tracking its target more tightly than a declared naive baseline, with the sign holding in 7 of 8 folds and a verdict of PREDICTIVE_VERIFIED.",
+ "how_to_read": "The distribution table is the pitch-type mix, the percentile table is velocity by pitch type, and the coverage table is column completeness. The framing block is cited context, not recomputed in this showcase.",
+ "why_it_matters": "It shows the raw-material depth behind the MLB metrics, a coverage statement rather than a performance claim.",
+ "caveat": "Descriptive data-coverage only; this showcase does NOT recompute any predictive-validity result. The framing rho is context carried from a corpus-deviation recompute (cutoffs shifted one season to match data that exists), compared to a declared naive baseline, never versus the market close.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/statcast_showcase.json", "field": "n_pitches", "value": 693037},
+  {"path": "webapp/public/data/showcase/statcast_showcase.json", "field": "framing_ingredient_coverage[plate_x].non_null_pct", "value": 99.63},
+  {"path": "webapp/public/data/showcase/statcast_showcase.json", "field": "pitch_type_distribution[FF].pct", "value": 31.78},
+  {"path": "webapp/public/data/showcase/statcast_showcase.json", "field": "framing_claim_context.mean_rho_metric", "value": 0.4178038586805298},
+  {"path": "webapp/public/data/showcase/statcast_showcase.json", "field": "framing_claim_context.mean_rho_baseline", "value": 0.2716927633346492},
+  {"path": "webapp/public/data/showcase/statcast_showcase.json", "field": "framing_claim_context.sign_holds_folds", "value": 7}
+ ],
+ "as_of": "2025 Statcast pull (no generation timestamp in artifact)"
+}

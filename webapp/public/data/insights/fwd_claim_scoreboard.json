@@ -1,0 +1,21 @@
+{
+ "id": "fwd_claim_scoreboard",
+ "title": "Forward claim scoreboard: every hypothesis, kept on the books",
+ "headline_insight": "Across 259 claim families the nulls-or-worse (134) slightly outnumber the 121 verified, an honest ratio of 1.107 nulls per confirm.",
+ "what_it_means": "The system tracks every sport-by-hypothesis family it has ever tested and keeps the failures on the record. Of 259 distinct families, 121 currently sit verified, 99 came back null, 28 were not testable, and 7 were retracted. A grader that only ever confirmed would not be credible; this one publishes more misses than hits.",
+ "how_to_read": "Each row is one sport x hypothesis family, its status is the most recent verdict in the ledger, and 5 families flipped verdict across reruns (e.g. NBA three-in-four fatigue went NULL then CONFIRMED).",
+ "why_it_matters": "Keeping nulls, not-testables, and retractions in the same ledger as the confirms is the credibility mechanism, it shows the self-grading is real rather than curated.",
+ "caveat": "Current status is just the last ledger entry, and many rows predate run_ts stamping (run_ts is null), so ordering within a family can be undated.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/fwd_claim_scoreboard.json", "field": "summary.n_families", "value": 259},
+  {"path": "webapp/public/data/showcase/fwd_claim_scoreboard.json", "field": "summary.by_status.verified", "value": 121},
+  {"path": "webapp/public/data/showcase/fwd_claim_scoreboard.json", "field": "summary.by_status.null", "value": 99},
+  {"path": "webapp/public/data/showcase/fwd_claim_scoreboard.json", "field": "summary.by_status.not_testable", "value": 28},
+  {"path": "webapp/public/data/showcase/fwd_claim_scoreboard.json", "field": "summary.by_status.retracted", "value": 7},
+  {"path": "webapp/public/data/showcase/fwd_claim_scoreboard.json", "field": "summary.nulls_or_worse", "value": 134},
+  {"path": "webapp/public/data/showcase/fwd_claim_scoreboard.json", "field": "summary.honest_ratio_nulls_per_confirm", "value": 1.107},
+  {"path": "webapp/public/data/showcase/fwd_claim_scoreboard.json", "field": "summary.n_flipped", "value": 5},
+  {"path": "webapp/public/data/showcase/fwd_claim_scoreboard.json", "field": "n_ledger_rows", "value": 287}
+ ],
+ "as_of": "2026-07-11T16:48:14Z"
+}

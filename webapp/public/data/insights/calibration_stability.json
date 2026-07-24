@@ -1,0 +1,19 @@
+{
+ "id": "calibration_stability",
+ "title": "Bootstrap by game: the market's MLB calibration is statistically perfect",
+ "headline_insight": "Resampling whole games 1000 times, 0 of 10 MLB market probability bins deviate from the diagonal beyond noise, while the model misses in 4 of 10 -- worst at the top, where 0.9541-favorites win just 0.6632 (gap -0.2909).",
+ "what_it_means": "A cluster bootstrap (resampling game_id, 1000 draws) asks which calibration gaps survive sampling noise. For the market, none do -- its in-game MLB prices are indistinguishable from perfectly calibrated. The model has four real misses, the largest being overconfidence on near-locks: the 0.9-1.0 bin predicts 0.9541 but wins only 0.6632.",
+ "how_to_read": "Each bin shows a gap (predicted minus actual) with a 95% confidence interval; if the interval excludes 0, the miss is real rather than noise.",
+ "why_it_matters": "It separates genuine model weaknesses from statistical mirages, so improvement effort goes only to gaps that will still be there next month.",
+ "caveat": "Soccer is much noisier -- 8 of 10 model bins and even 6 of 10 market bins deviate significantly on just 51 games, so the small corpus limits any firm conclusion there.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/calibration_stability.json", "field": "sports.mlb.sides.market_prob.n_significant_bins", "value": 0},
+  {"path": "webapp/public/data/showcase/calibration_stability.json", "field": "sports.mlb.sides.model_prob.n_significant_bins", "value": 4},
+  {"path": "webapp/public/data/showcase/calibration_stability.json", "field": "sports.mlb.sides.model_prob.bins[0.9-1.0].mean_p", "value": 0.9541},
+  {"path": "webapp/public/data/showcase/calibration_stability.json", "field": "sports.mlb.sides.model_prob.bins[0.9-1.0].mean_y", "value": 0.6632},
+  {"path": "webapp/public/data/showcase/calibration_stability.json", "field": "sports.mlb.sides.model_prob.bins[0.9-1.0].gap", "value": -0.2909},
+  {"path": "webapp/public/data/showcase/calibration_stability.json", "field": "n_boot", "value": 1000},
+  {"path": "webapp/public/data/showcase/calibration_stability.json", "field": "sports.soccer_intl.sides.model_prob.n_significant_bins", "value": 8}
+ ],
+ "as_of": "2026-07-23T03:21:27.493056+00:00"
+}

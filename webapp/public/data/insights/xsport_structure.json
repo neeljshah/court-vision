@@ -1,0 +1,19 @@
+{
+ "id": "xsport_structure",
+ "title": "One methodology, one buildable sport: NBA's market is near-perfectly calibrated",
+ "headline_insight": "Under a single shared reliability methodology, only NBA's market map clears the honesty floor -- and there the market's in-game ECE is 0.0064 across 1593 games.",
+ "what_it_means": "The same three-part check (calibration, favorite-vs-longshot bias, comeback rate) is run per sport. NBA passes: market ECE 0.0064, and favorites at 0.60-plus win 0.8997 of the time against a 0.8948 implied price, a gap of just +0.005. MLB, soccer and tennis lacked buckets meeting the n>=30 floor, so they are marked not_buildable rather than guessed.",
+ "how_to_read": "The table has one row per sport; a status of ok carries the metrics, while not_buildable carries the reason it could not be computed.",
+ "why_it_matters": "It shows the methodology is portable and the honesty floor is real -- three of four sports do not clear it and say so outright.",
+ "caveat": "This is a single-sport result today (NBA only); MLB, soccer and tennis are not_buildable, and tennis has no reliability map at all.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/xsport_structure.json", "field": "sports.nba.market_ece", "value": 0.0064},
+  {"path": "webapp/public/data/showcase/xsport_structure.json", "field": "sports.nba.n_games_total", "value": 1593},
+  {"path": "webapp/public/data/showcase/xsport_structure.json", "field": "sports.nba.favorite_longshot.favorite_ge_0.60.mean_outcome", "value": 0.8997},
+  {"path": "webapp/public/data/showcase/xsport_structure.json", "field": "sports.nba.favorite_longshot.favorite_ge_0.60.mean_market_prob", "value": 0.8948},
+  {"path": "webapp/public/data/showcase/xsport_structure.json", "field": "sports.nba.favorite_longshot.favorite_ge_0.60.gap_outcome_minus_prob", "value": 0.005},
+  {"path": "webapp/public/data/showcase/xsport_structure.json", "field": "sports.mlb.status", "value": "not_buildable"},
+  {"path": "webapp/public/data/showcase/xsport_structure.json", "field": "sports.tennis.status", "value": "not_buildable"}
+ ],
+ "as_of": "2026-07-18T06:31:12.434974+00:00"
+}

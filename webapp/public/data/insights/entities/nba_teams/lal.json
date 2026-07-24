@@ -1,0 +1,20 @@
+{
+  "slug": "lal",
+  "pack": "nba_teams",
+  "display_name": "Los Angeles Lakers",
+  "one_liner": "Across the 3-season sample the Los Angeles Lakers' most-used player by total minutes is LeBron James, at 40.5 points-plus-rebounds-plus-assists per 36 minutes.",
+  "three_things": [
+    "LeBron James leads the team in total minutes (6,940.9) and posts a 40.5 combined PRA-per-36 rate.",
+    "The team scored 116.3 points per game in the latest season of the sample.",
+    "The pace proxy is a middle-of-the-pack 99.8."
+  ],
+  "context_note": "The 'top contributor' is the player with the most total minutes for the team across the sample, not necessarily the best or highest-scoring player. PRA-per-36 sums points, rebounds, and assists per 36 minutes and is a raw box rate, not an impact metric. ppg_latest_season is a single-season team average while the rest of the sample spans three seasons; pace_proxy is a proxy, not official possession-based pace. The manifest is descriptive_only with no schedule or opponent adjustment.",
+  "cited": [
+    {"path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json", "field": "entries[entity=LAL].key_numbers.top_contributor", "value": "LeBron James"},
+    {"path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json", "field": "entries[entity=LAL].key_numbers.top_contributor_pra_per36", "value": 40.5},
+    {"path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json", "field": "entries[entity=LAL].key_numbers.top_contributor_minutes", "value": 6940.9},
+    {"path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json", "field": "entries[entity=LAL].key_numbers.ppg_latest_season", "value": 116.3},
+    {"path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json", "field": "entries[entity=LAL].key_numbers.pace_proxy_latest_season", "value": 99.8}
+  ],
+  "as_of": "2026-04-12"
+}

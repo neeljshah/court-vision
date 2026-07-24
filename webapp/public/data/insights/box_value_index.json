@@ -1,0 +1,16 @@
+{
+ "id": "box_value_index",
+ "title": "Box Value Index",
+ "headline_insight": "A frozen box-score value index puts Nikola Jokic on top at 30.86 points of value per 36 minutes, ahead of Giannis Antetokounmpo (27.558) and Victor Wembanyama (26.261).",
+ "what_it_means": "This is a transparent Win-Score-style linear index with weights fixed in advance, not tuned to any target. Its top is the expected 2023-26 MVP-tier cluster (Jokic, Giannis, Wembanyama, Doncic, Davis, Embiid, SGA), so it passes face validity. It pooled 77,744 player-game rows and ranks the 501 players who cleared the 750-minute floor.",
+ "how_to_read": "The table ranks players by box_value_index_per36; a higher number means more box-score production packed into 36 minutes.",
+ "why_it_matters": "Recovering the consensus star order from frozen, untuned weights is a sanity check on the underlying box-score data layer.",
+ "caveat": "DESCRIPTIVE_ONLY; explicitly NOT RAPM/EPM/DARKO/LEBRON or Basketball-Reference BPM (box counting stats only, no pace/position/team adjustments). Accented names are split across two distinct player_ids upstream, so Jokic appears twice in the top rows, a data-layer join issue, not fixed here.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/box_value_index.json", "field": "top_30[rank=1].box_value_index_per36", "value": 30.86},
+  {"path": "webapp/public/data/showcase/box_value_index.json", "field": "top_30[rank=3].box_value_index_per36", "value": 27.558},
+  {"path": "webapp/public/data/showcase/box_value_index.json", "field": "top_30[rank=4].box_value_index_per36", "value": 26.261},
+  {"path": "webapp/public/data/showcase/box_value_index.json", "field": "input_coverage.players_meeting_minutes_floor", "value": 501}
+ ],
+ "as_of": "seasons 2023-24 through 2025-26 (no generation timestamp in artifact)"
+}

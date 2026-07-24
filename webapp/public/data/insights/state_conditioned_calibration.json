@@ -1,0 +1,19 @@
+{
+ "id": "state_conditioned_calibration",
+ "title": "The model's biggest miss: overconfident late-game favorites",
+ "headline_insight": "Late in MLB games, when the model calls a team 0.9211 to win, it actually wins only 0.6853 of the time -- a 0.2357 calibration error and the model's single biggest well-sampled miss (n=5037).",
+ "what_it_means": "This exhibit buckets every graded in-game prediction by confidence band and game phase to find where the model drifts furthest from reality. The worst high-sample bucket is late-inning heavy favorites: the model is overconfident, treating near-locks as more certain than they turn out to be. Tinier buckets look even worse but rest on almost no data.",
+ "how_to_read": "Each row is a (game-phase x probability band) cell; calibration_error is the absolute distance between what the model said (mean_p) and what happened (mean_y).",
+ "why_it_matters": "It is a ranked improvement backlog -- it names the exact game states to fix first, weighted by how much data backs each miss.",
+ "caveat": "The very worst rows in ranked_worst_buckets have tiny n (the top one, calibration_error 0.7883, is only n=10) and are noise-dominated; the n-weighted ECE summary (mlb model 0.079 vs market 0.0591) is the stable read.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/state_conditioned_calibration.json", "field": "sports.mlb.buckets late(inn7+)/.8-1/model mean_p", "value": 0.9211},
+  {"path": "webapp/public/data/showcase/state_conditioned_calibration.json", "field": "sports.mlb.buckets late(inn7+)/.8-1/model mean_y", "value": 0.6853},
+  {"path": "webapp/public/data/showcase/state_conditioned_calibration.json", "field": "sports.mlb.buckets late(inn7+)/.8-1/model calibration_error", "value": 0.2357},
+  {"path": "webapp/public/data/showcase/state_conditioned_calibration.json", "field": "sports.mlb.buckets late(inn7+)/.8-1/model n", "value": 5037},
+  {"path": "webapp/public/data/showcase/state_conditioned_calibration.json", "field": "sports.mlb.model_ece_n_weighted", "value": 0.079},
+  {"path": "webapp/public/data/showcase/state_conditioned_calibration.json", "field": "sports.mlb.market_ece_n_weighted", "value": 0.0591},
+  {"path": "webapp/public/data/showcase/state_conditioned_calibration.json", "field": "ranked_worst_buckets[0].calibration_error (n=10)", "value": 0.7883}
+ ],
+ "as_of": "unknown"
+}

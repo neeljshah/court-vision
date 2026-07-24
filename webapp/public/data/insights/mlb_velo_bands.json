@@ -1,0 +1,16 @@
+{
+ "id": "mlb_velo_bands",
+ "title": "MLB Velo Bands",
+ "headline_insight": "The median four-seam fastball in the 2025 pull sits at 94.5 mph, with 34.78% of four-seamers landing in the 95-98 mph band and 8.0% in 98-101.",
+ "what_it_means": "The modern fastball is genuinely fast: a third of four-seamers reach 95-98 mph and another 8% cross 98. Breaking and off-speed pitches live far lower on the scale, sliders around 86.4 mph and curveballs around 79.9. Velocity also ramps up over the season, the four-seam median rising 0.4 mph from a 94.2 April to a 94.6 September.",
+ "how_to_read": "The band table gives each pitch type's share across mph buckets; the monthly section tracks median velocity by month to show the in-season ramp.",
+ "why_it_matters": "It is the descriptive velocity landscape of a full season of pitches, the raw distribution behind any stuff or velo-based work.",
+ "caveat": "DESCRIPTIVE_ONLY; in-season velo ramp-up is a known physical effect reported as-is. Thin edge-of-season months (Mar/Oct) fall below the per-cell floor and vanish. Nothing here is modeled, forecast or priced.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/mlb_velo_bands.json", "field": "velo_band_shares_by_pitch_type[FF].median_velo", "value": 94.5},
+  {"path": "webapp/public/data/showcase/mlb_velo_bands.json", "field": "velo_band_shares_by_pitch_type[FF].band_share_pct.95-98", "value": 34.78},
+  {"path": "webapp/public/data/showcase/mlb_velo_bands.json", "field": "velo_band_shares_by_pitch_type[FF].band_share_pct.98-101", "value": 8.0},
+  {"path": "webapp/public/data/showcase/mlb_velo_bands.json", "field": "monthly_drift_by_pitch_type[FF].median_velo_delta_first_to_last_mph", "value": 0.4}
+ ],
+ "as_of": "2025 Statcast season pull (no generation timestamp in artifact)"
+}

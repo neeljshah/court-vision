@@ -1,0 +1,16 @@
+{
+ "id": "ctx_team_states",
+ "title": "Front-runner vs comeback: honestly not buildable here",
+ "headline_insight": "Zero of 30 teams clear the floor of at least 2 games both leading AND trailing at halftime in this 26-game corpus, so a per-team front-runner-vs-comeback profile is NOT buildable; the only robust readout is league-level -- second-half margin regresses on halftime margin with a slope of 0.2885.",
+ "what_it_means": "The intended analytic -- which teams protect leads versus storm back -- needs each team to appear in both halftime states enough times, and this thin 26-game slice simply doesn't have the sample, so the module refuses to print per-team labels rather than dress up 1-2 game noise as a tendency. What does survive is the pooled pattern: on average a team that led at half went on to a +1.346 second-half margin, its trailing counterpart -1.346, and the weak positive slope means halftime edges tended to hold or slightly compound in this sample.",
+ "how_to_read": "The league_mean_reversion block is the reliable stat (n = 52 team-games); every per-team row is flagged masked_below_floor and is illustrative only.",
+ "why_it_matters": "It is a clean example of the system sizing its own corpus and declining to over-claim -- an honest 'not buildable yet' beats a fabricated team ranking.",
+ "caveat": "Thin corpus: most teams appear 1-2 times, so per-team splits are 0-2 games and are masked, never printed as stable. Descriptive stat, not an edge claim.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/ctx_team_states.json", "field": "n_teams_placed_on_quadrant", "value": 0},
+  {"path": "webapp/public/data/showcase/ctx_team_states.json", "field": "n_games", "value": 26},
+  {"path": "webapp/public/data/showcase/ctx_team_states.json", "field": "league_mean_reversion.slope_2h_on_half", "value": 0.2885},
+  {"path": "webapp/public/data/showcase/ctx_team_states.json", "field": "league_mean_reversion.mean_2h_margin_when_led_at_half", "value": 1.346}
+ ],
+ "as_of": "2026-05-21 16:05:11"
+}

@@ -1,0 +1,18 @@
+{
+ "id": "reject_graveyard",
+ "title": "Reject graveyard: signals killed by the leak-free gate",
+ "headline_insight": "628 REJECT-family rows sit in the graveyard against only 95 SHIP verdicts -- a reject is honest market-efficiency evidence, not a failure.",
+ "what_it_means": "The ledger has logged 804 total verdict rows across all reruns; 628 of them are rejects and just 95 signals ever earned a SHIP. The single largest reason for rejection (510 rows) was the as-of reclaim sweep, signals that looked promising until leakage was removed and then died.",
+ "how_to_read": "The raw counts double-count retested signals; the distinct-signal view (latest_per_signal_graveyard_count) shows 68 unique (sport, signal) pairs currently sitting on a reject verdict.",
+ "why_it_matters": "The reject rate is the discipline made visible, signals get killed automatically when the leak-free test says so, which is what an efficient market should produce.",
+ "caveat": "The 804 total rows include the same signal retested many times plus rows whose latest verdict later flipped to SHIP, so raw counts overstate the number of distinct dead signals (68 distinct remain).",
+ "cited": [
+  {"path": "webapp/public/data/showcase/reject_graveyard.json", "field": "full_history_row_count", "value": 804},
+  {"path": "webapp/public/data/showcase/reject_graveyard.json", "field": "reject_row_count", "value": 628},
+  {"path": "webapp/public/data/showcase/reject_graveyard.json", "field": "latest_per_signal_graveyard_count", "value": 68},
+  {"path": "webapp/public/data/showcase/reject_graveyard.json", "field": "verdicts_by_type.SHIP", "value": 95},
+  {"path": "webapp/public/data/showcase/reject_graveyard.json", "field": "rejects_by_reason_category.asof_reclaim_sweep", "value": 510},
+  {"path": "webapp/public/data/showcase/reject_graveyard.json", "field": "history_rows_by_sport.nba", "value": 426}
+ ],
+ "as_of": "2026-07-18"
+}

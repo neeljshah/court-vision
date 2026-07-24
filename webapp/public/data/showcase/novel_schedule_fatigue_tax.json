@@ -1,0 +1,778 @@
+{
+ "stat_name": "Schedule Fatigue Tax",
+ "abbrev": "SFT",
+ "edge_claimed": false,
+ "descriptive_only": true,
+ "metric_definition": "Per team-season points tax from back-to-back congestion: its b2b frequency times the tested b2b performance penalty.",
+ "formula": "SFT_credible = b2b_freq * (-1.73 pts/100 ORtg); SFT_descriptive = b2b_freq * (-0.315 composite/36).",
+ "source_artifacts": [
+  "scripts/platformkit/analytics_showcase/out/schedule_density.json"
+ ],
+ "b2b_ortg_effect_pts_per100": -1.73,
+ "composite_per36_delta_vs_rested": -0.315,
+ "mechanism_receipt": {
+  "claim": "b2b_rest_penalty",
+  "verdict": "CONFIRMED_LOCAL",
+  "effect_cited_from_receipt": "-1.73 pts/100 team ORtg (rested minus b2b), n=4732, p=0.0056"
+ },
+ "prior_art_verdict": "INCREMENTAL",
+ "prior_art_citation": "The b2b fatigue effect is heavily documented (3-5% scoring drop / 1-3 pts / ~44% win rate / 2-4 pt spread adjust; academic 'Basketball performance affected by schedule congestion', ResearchGate 339933590). CITE the effect as prior art. The per-team-season aggregation into a points 'tax' plus a league schedule-inequality spread, anchored to the repo's own tested b2b_rest_penalty receipt, is the fresh packaging -- the effect is not new.",
+ "declared_confounds": [
+  "per-36 deltas are raw pooled means, NOT roster/opponent/minutes/home-away adjusted.",
+  "the three density classes (b2b, 3in4, 4in6) OVERLAP and are NON-additive; this formula deliberately uses b2b alone -- summing b2b+3in4+4in6 would double-count congestion.",
+  "the -1.73 pts/100 anchor is a single-corpus CONFIRMED_LOCAL effect: a DESCRIPTIVE tax, not a forecast, and not re-tested here.",
+  "b2b_ortg_effect sign is normalized to a fatigue penalty (negative), matching the negative composite_per36 delta and the mechanism framing; the receipt labels its magnitude 'rested minus b2b'."
+ ],
+ "schedule_inequality": {
+  "n_team_seasons": 90,
+  "sft_credible_min": -0.3771,
+  "sft_credible_max": -0.2699,
+  "sft_credible_range": 0.1072,
+  "sft_credible_std": 0.0252,
+  "b2b_freq_min": 0.156,
+  "b2b_freq_max": 0.218,
+  "per_season_b2b_freq_range": {
+   "2023-24": 0.048,
+   "2024-25": 0.051,
+   "2025-26": 0.062
+  }
+ },
+ "results": [
+  {
+   "team": "DEN",
+   "season": "2025-26",
+   "b2b_games": 17,
+   "b2b_freq": 0.218,
+   "sft_descriptive_composite_per36": -0.0687,
+   "sft_credible_pts_per100_ortg": -0.3771
+  },
+  {
+   "team": "ATL",
+   "season": "2024-25",
+   "b2b_games": 17,
+   "b2b_freq": 0.21,
+   "sft_descriptive_composite_per36": -0.0662,
+   "sft_credible_pts_per100_ortg": -0.3633
+  },
+  {
+   "team": "HOU",
+   "season": "2024-25",
+   "b2b_games": 17,
+   "b2b_freq": 0.21,
+   "sft_descriptive_composite_per36": -0.0662,
+   "sft_credible_pts_per100_ortg": -0.3633
+  },
+  {
+   "team": "GSW",
+   "season": "2023-24",
+   "b2b_games": 17,
+   "b2b_freq": 0.207,
+   "sft_descriptive_composite_per36": -0.0652,
+   "sft_credible_pts_per100_ortg": -0.3581
+  },
+  {
+   "team": "LAC",
+   "season": "2024-25",
+   "b2b_games": 17,
+   "b2b_freq": 0.207,
+   "sft_descriptive_composite_per36": -0.0652,
+   "sft_credible_pts_per100_ortg": -0.3581
+  },
+  {
+   "team": "SAS",
+   "season": "2024-25",
+   "b2b_games": 16,
+   "b2b_freq": 0.2,
+   "sft_descriptive_composite_per36": -0.063,
+   "sft_credible_pts_per100_ortg": -0.346
+  },
+  {
+   "team": "MIA",
+   "season": "2025-26",
+   "b2b_games": 15,
+   "b2b_freq": 0.2,
+   "sft_descriptive_composite_per36": -0.063,
+   "sft_credible_pts_per100_ortg": -0.346
+  },
+  {
+   "team": "POR",
+   "season": "2025-26",
+   "b2b_games": 15,
+   "b2b_freq": 0.2,
+   "sft_descriptive_composite_per36": -0.063,
+   "sft_credible_pts_per100_ortg": -0.346
+  },
+  {
+   "team": "MIL",
+   "season": "2024-25",
+   "b2b_games": 16,
+   "b2b_freq": 0.198,
+   "sft_descriptive_composite_per36": -0.0624,
+   "sft_credible_pts_per100_ortg": -0.3425
+  },
+  {
+   "team": "OKC",
+   "season": "2024-25",
+   "b2b_games": 16,
+   "b2b_freq": 0.198,
+   "sft_descriptive_composite_per36": -0.0624,
+   "sft_credible_pts_per100_ortg": -0.3425
+  },
+  {
+   "team": "CLE",
+   "season": "2024-25",
+   "b2b_games": 16,
+   "b2b_freq": 0.195,
+   "sft_descriptive_composite_per36": -0.0614,
+   "sft_credible_pts_per100_ortg": -0.3373
+  },
+  {
+   "team": "DEN",
+   "season": "2024-25",
+   "b2b_games": 16,
+   "b2b_freq": 0.195,
+   "sft_descriptive_composite_per36": -0.0614,
+   "sft_credible_pts_per100_ortg": -0.3373
+  },
+  {
+   "team": "NOP",
+   "season": "2024-25",
+   "b2b_games": 16,
+   "b2b_freq": 0.195,
+   "sft_descriptive_composite_per36": -0.0614,
+   "sft_credible_pts_per100_ortg": -0.3373
+  },
+  {
+   "team": "PHX",
+   "season": "2024-25",
+   "b2b_games": 16,
+   "b2b_freq": 0.195,
+   "sft_descriptive_composite_per36": -0.0614,
+   "sft_credible_pts_per100_ortg": -0.3373
+  },
+  {
+   "team": "SAC",
+   "season": "2024-25",
+   "b2b_games": 16,
+   "b2b_freq": 0.195,
+   "sft_descriptive_composite_per36": -0.0614,
+   "sft_credible_pts_per100_ortg": -0.3373
+  },
+  {
+   "team": "GSW",
+   "season": "2025-26",
+   "b2b_games": 16,
+   "b2b_freq": 0.195,
+   "sft_descriptive_composite_per36": -0.0614,
+   "sft_credible_pts_per100_ortg": -0.3373
+  },
+  {
+   "team": "PHX",
+   "season": "2025-26",
+   "b2b_games": 16,
+   "b2b_freq": 0.195,
+   "sft_descriptive_composite_per36": -0.0614,
+   "sft_credible_pts_per100_ortg": -0.3373
+  },
+  {
+   "team": "PHI",
+   "season": "2025-26",
+   "b2b_games": 14,
+   "b2b_freq": 0.187,
+   "sft_descriptive_composite_per36": -0.0589,
+   "sft_credible_pts_per100_ortg": -0.3235
+  },
+  {
+   "team": "MIA",
+   "season": "2024-25",
+   "b2b_games": 15,
+   "b2b_freq": 0.185,
+   "sft_descriptive_composite_per36": -0.0583,
+   "sft_credible_pts_per100_ortg": -0.3201
+  },
+  {
+   "team": "WAS",
+   "season": "2024-25",
+   "b2b_games": 15,
+   "b2b_freq": 0.185,
+   "sft_descriptive_composite_per36": -0.0583,
+   "sft_credible_pts_per100_ortg": -0.3201
+  },
+  {
+   "team": "CHA",
+   "season": "2025-26",
+   "b2b_games": 14,
+   "b2b_freq": 0.184,
+   "sft_descriptive_composite_per36": -0.058,
+   "sft_credible_pts_per100_ortg": -0.3183
+  },
+  {
+   "team": "LAC",
+   "season": "2025-26",
+   "b2b_games": 14,
+   "b2b_freq": 0.184,
+   "sft_descriptive_composite_per36": -0.058,
+   "sft_credible_pts_per100_ortg": -0.3183
+  },
+  {
+   "team": "ATL",
+   "season": "2023-24",
+   "b2b_games": 15,
+   "b2b_freq": 0.183,
+   "sft_descriptive_composite_per36": -0.0576,
+   "sft_credible_pts_per100_ortg": -0.3166
+  },
+  {
+   "team": "CHA",
+   "season": "2023-24",
+   "b2b_games": 15,
+   "b2b_freq": 0.183,
+   "sft_descriptive_composite_per36": -0.0576,
+   "sft_credible_pts_per100_ortg": -0.3166
+  },
+  {
+   "team": "CLE",
+   "season": "2023-24",
+   "b2b_games": 15,
+   "b2b_freq": 0.183,
+   "sft_descriptive_composite_per36": -0.0576,
+   "sft_credible_pts_per100_ortg": -0.3166
+  },
+  {
+   "team": "DET",
+   "season": "2023-24",
+   "b2b_games": 15,
+   "b2b_freq": 0.183,
+   "sft_descriptive_composite_per36": -0.0576,
+   "sft_credible_pts_per100_ortg": -0.3166
+  },
+  {
+   "team": "LAC",
+   "season": "2023-24",
+   "b2b_games": 15,
+   "b2b_freq": 0.183,
+   "sft_descriptive_composite_per36": -0.0576,
+   "sft_credible_pts_per100_ortg": -0.3166
+  },
+  {
+   "team": "LAL",
+   "season": "2023-24",
+   "b2b_games": 15,
+   "b2b_freq": 0.183,
+   "sft_descriptive_composite_per36": -0.0576,
+   "sft_credible_pts_per100_ortg": -0.3166
+  },
+  {
+   "team": "ORL",
+   "season": "2023-24",
+   "b2b_games": 15,
+   "b2b_freq": 0.183,
+   "sft_descriptive_composite_per36": -0.0576,
+   "sft_credible_pts_per100_ortg": -0.3166
+  },
+  {
+   "team": "SAC",
+   "season": "2023-24",
+   "b2b_games": 15,
+   "b2b_freq": 0.183,
+   "sft_descriptive_composite_per36": -0.0576,
+   "sft_credible_pts_per100_ortg": -0.3166
+  },
+  {
+   "team": "BKN",
+   "season": "2024-25",
+   "b2b_games": 15,
+   "b2b_freq": 0.183,
+   "sft_descriptive_composite_per36": -0.0576,
+   "sft_credible_pts_per100_ortg": -0.3166
+  },
+  {
+   "team": "CHA",
+   "season": "2024-25",
+   "b2b_games": 15,
+   "b2b_freq": 0.183,
+   "sft_descriptive_composite_per36": -0.0576,
+   "sft_credible_pts_per100_ortg": -0.3166
+  },
+  {
+   "team": "DET",
+   "season": "2024-25",
+   "b2b_games": 15,
+   "b2b_freq": 0.183,
+   "sft_descriptive_composite_per36": -0.0576,
+   "sft_credible_pts_per100_ortg": -0.3166
+  },
+  {
+   "team": "MEM",
+   "season": "2024-25",
+   "b2b_games": 15,
+   "b2b_freq": 0.183,
+   "sft_descriptive_composite_per36": -0.0576,
+   "sft_credible_pts_per100_ortg": -0.3166
+  },
+  {
+   "team": "NYK",
+   "season": "2024-25",
+   "b2b_games": 15,
+   "b2b_freq": 0.183,
+   "sft_descriptive_composite_per36": -0.0576,
+   "sft_credible_pts_per100_ortg": -0.3166
+  },
+  {
+   "team": "PHI",
+   "season": "2024-25",
+   "b2b_games": 15,
+   "b2b_freq": 0.183,
+   "sft_descriptive_composite_per36": -0.0576,
+   "sft_credible_pts_per100_ortg": -0.3166
+  },
+  {
+   "team": "TOR",
+   "season": "2024-25",
+   "b2b_games": 15,
+   "b2b_freq": 0.183,
+   "sft_descriptive_composite_per36": -0.0576,
+   "sft_credible_pts_per100_ortg": -0.3166
+  },
+  {
+   "team": "SAS",
+   "season": "2025-26",
+   "b2b_games": 15,
+   "b2b_freq": 0.183,
+   "sft_descriptive_composite_per36": -0.0576,
+   "sft_credible_pts_per100_ortg": -0.3166
+  },
+  {
+   "team": "UTA",
+   "season": "2025-26",
+   "b2b_games": 14,
+   "b2b_freq": 0.179,
+   "sft_descriptive_composite_per36": -0.0564,
+   "sft_credible_pts_per100_ortg": -0.3097
+  },
+  {
+   "team": "TOR",
+   "season": "2025-26",
+   "b2b_games": 13,
+   "b2b_freq": 0.178,
+   "sft_descriptive_composite_per36": -0.0561,
+   "sft_credible_pts_per100_ortg": -0.3079
+  },
+  {
+   "team": "CLE",
+   "season": "2025-26",
+   "b2b_games": 14,
+   "b2b_freq": 0.177,
+   "sft_descriptive_composite_per36": -0.0558,
+   "sft_credible_pts_per100_ortg": -0.3062
+  },
+  {
+   "team": "BKN",
+   "season": "2025-26",
+   "b2b_games": 13,
+   "b2b_freq": 0.176,
+   "sft_descriptive_composite_per36": -0.0554,
+   "sft_credible_pts_per100_ortg": -0.3045
+  },
+  {
+   "team": "WAS",
+   "season": "2025-26",
+   "b2b_games": 13,
+   "b2b_freq": 0.176,
+   "sft_descriptive_composite_per36": -0.0554,
+   "sft_credible_pts_per100_ortg": -0.3045
+  },
+  {
+   "team": "IND",
+   "season": "2024-25",
+   "b2b_games": 14,
+   "b2b_freq": 0.175,
+   "sft_descriptive_composite_per36": -0.0551,
+   "sft_credible_pts_per100_ortg": -0.3027
+  },
+  {
+   "team": "NOP",
+   "season": "2025-26",
+   "b2b_games": 13,
+   "b2b_freq": 0.173,
+   "sft_descriptive_composite_per36": -0.0545,
+   "sft_credible_pts_per100_ortg": -0.2993
+  },
+  {
+   "team": "SAC",
+   "season": "2025-26",
+   "b2b_games": 13,
+   "b2b_freq": 0.173,
+   "sft_descriptive_composite_per36": -0.0545,
+   "sft_credible_pts_per100_ortg": -0.2993
+  },
+  {
+   "team": "BKN",
+   "season": "2023-24",
+   "b2b_games": 14,
+   "b2b_freq": 0.171,
+   "sft_descriptive_composite_per36": -0.0539,
+   "sft_credible_pts_per100_ortg": -0.2958
+  },
+  {
+   "team": "BOS",
+   "season": "2023-24",
+   "b2b_games": 14,
+   "b2b_freq": 0.171,
+   "sft_descriptive_composite_per36": -0.0539,
+   "sft_credible_pts_per100_ortg": -0.2958
+  },
+  {
+   "team": "CHI",
+   "season": "2023-24",
+   "b2b_games": 14,
+   "b2b_freq": 0.171,
+   "sft_descriptive_composite_per36": -0.0539,
+   "sft_credible_pts_per100_ortg": -0.2958
+  },
+  {
+   "team": "DAL",
+   "season": "2023-24",
+   "b2b_games": 14,
+   "b2b_freq": 0.171,
+   "sft_descriptive_composite_per36": -0.0539,
+   "sft_credible_pts_per100_ortg": -0.2958
+  },
+  {
+   "team": "HOU",
+   "season": "2023-24",
+   "b2b_games": 14,
+   "b2b_freq": 0.171,
+   "sft_descriptive_composite_per36": -0.0539,
+   "sft_credible_pts_per100_ortg": -0.2958
+  },
+  {
+   "team": "MEM",
+   "season": "2023-24",
+   "b2b_games": 14,
+   "b2b_freq": 0.171,
+   "sft_descriptive_composite_per36": -0.0539,
+   "sft_credible_pts_per100_ortg": -0.2958
+  },
+  {
+   "team": "MIL",
+   "season": "2023-24",
+   "b2b_games": 14,
+   "b2b_freq": 0.171,
+   "sft_descriptive_composite_per36": -0.0539,
+   "sft_credible_pts_per100_ortg": -0.2958
+  },
+  {
+   "team": "OKC",
+   "season": "2023-24",
+   "b2b_games": 14,
+   "b2b_freq": 0.171,
+   "sft_descriptive_composite_per36": -0.0539,
+   "sft_credible_pts_per100_ortg": -0.2958
+  },
+  {
+   "team": "PHI",
+   "season": "2023-24",
+   "b2b_games": 14,
+   "b2b_freq": 0.171,
+   "sft_descriptive_composite_per36": -0.0539,
+   "sft_credible_pts_per100_ortg": -0.2958
+  },
+  {
+   "team": "PHX",
+   "season": "2023-24",
+   "b2b_games": 14,
+   "b2b_freq": 0.171,
+   "sft_descriptive_composite_per36": -0.0539,
+   "sft_credible_pts_per100_ortg": -0.2958
+  },
+  {
+   "team": "POR",
+   "season": "2023-24",
+   "b2b_games": 14,
+   "b2b_freq": 0.171,
+   "sft_descriptive_composite_per36": -0.0539,
+   "sft_credible_pts_per100_ortg": -0.2958
+  },
+  {
+   "team": "TOR",
+   "season": "2023-24",
+   "b2b_games": 14,
+   "b2b_freq": 0.171,
+   "sft_descriptive_composite_per36": -0.0539,
+   "sft_credible_pts_per100_ortg": -0.2958
+  },
+  {
+   "team": "GSW",
+   "season": "2024-25",
+   "b2b_games": 14,
+   "b2b_freq": 0.171,
+   "sft_descriptive_composite_per36": -0.0539,
+   "sft_credible_pts_per100_ortg": -0.2958
+  },
+  {
+   "team": "LAL",
+   "season": "2024-25",
+   "b2b_games": 14,
+   "b2b_freq": 0.171,
+   "sft_descriptive_composite_per36": -0.0539,
+   "sft_credible_pts_per100_ortg": -0.2958
+  },
+  {
+   "team": "MIN",
+   "season": "2024-25",
+   "b2b_games": 14,
+   "b2b_freq": 0.171,
+   "sft_descriptive_composite_per36": -0.0539,
+   "sft_credible_pts_per100_ortg": -0.2958
+  },
+  {
+   "team": "ORL",
+   "season": "2024-25",
+   "b2b_games": 14,
+   "b2b_freq": 0.171,
+   "sft_descriptive_composite_per36": -0.0539,
+   "sft_credible_pts_per100_ortg": -0.2958
+  },
+  {
+   "team": "UTA",
+   "season": "2024-25",
+   "b2b_games": 14,
+   "b2b_freq": 0.171,
+   "sft_descriptive_composite_per36": -0.0539,
+   "sft_credible_pts_per100_ortg": -0.2958
+  },
+  {
+   "team": "DAL",
+   "season": "2025-26",
+   "b2b_games": 13,
+   "b2b_freq": 0.171,
+   "sft_descriptive_composite_per36": -0.0539,
+   "sft_credible_pts_per100_ortg": -0.2958
+  },
+  {
+   "team": "HOU",
+   "season": "2025-26",
+   "b2b_games": 14,
+   "b2b_freq": 0.171,
+   "sft_descriptive_composite_per36": -0.0539,
+   "sft_credible_pts_per100_ortg": -0.2958
+  },
+  {
+   "team": "LAL",
+   "season": "2025-26",
+   "b2b_games": 14,
+   "b2b_freq": 0.171,
+   "sft_descriptive_composite_per36": -0.0539,
+   "sft_credible_pts_per100_ortg": -0.2958
+  },
+  {
+   "team": "OKC",
+   "season": "2025-26",
+   "b2b_games": 14,
+   "b2b_freq": 0.171,
+   "sft_descriptive_composite_per36": -0.0539,
+   "sft_credible_pts_per100_ortg": -0.2958
+  },
+  {
+   "team": "DET",
+   "season": "2025-26",
+   "b2b_games": 12,
+   "b2b_freq": 0.164,
+   "sft_descriptive_composite_per36": -0.0517,
+   "sft_credible_pts_per100_ortg": -0.2837
+  },
+  {
+   "team": "NYK",
+   "season": "2025-26",
+   "b2b_games": 13,
+   "b2b_freq": 0.163,
+   "sft_descriptive_composite_per36": -0.0513,
+   "sft_credible_pts_per100_ortg": -0.282
+  },
+  {
+   "team": "IND",
+   "season": "2025-26",
+   "b2b_games": 12,
+   "b2b_freq": 0.162,
+   "sft_descriptive_composite_per36": -0.051,
+   "sft_credible_pts_per100_ortg": -0.2803
+  },
+  {
+   "team": "MIN",
+   "season": "2025-26",
+   "b2b_games": 12,
+   "b2b_freq": 0.162,
+   "sft_descriptive_composite_per36": -0.051,
+   "sft_credible_pts_per100_ortg": -0.2803
+  },
+  {
+   "team": "ORL",
+   "season": "2025-26",
+   "b2b_games": 12,
+   "b2b_freq": 0.162,
+   "sft_descriptive_composite_per36": -0.051,
+   "sft_credible_pts_per100_ortg": -0.2803
+  },
+  {
+   "team": "MIL",
+   "season": "2025-26",
+   "b2b_games": 12,
+   "b2b_freq": 0.16,
+   "sft_descriptive_composite_per36": -0.0504,
+   "sft_credible_pts_per100_ortg": -0.2768
+  },
+  {
+   "team": "DEN",
+   "season": "2023-24",
+   "b2b_games": 13,
+   "b2b_freq": 0.159,
+   "sft_descriptive_composite_per36": -0.0501,
+   "sft_credible_pts_per100_ortg": -0.2751
+  },
+  {
+   "team": "IND",
+   "season": "2023-24",
+   "b2b_games": 13,
+   "b2b_freq": 0.159,
+   "sft_descriptive_composite_per36": -0.0501,
+   "sft_credible_pts_per100_ortg": -0.2751
+  },
+  {
+   "team": "MIA",
+   "season": "2023-24",
+   "b2b_games": 13,
+   "b2b_freq": 0.159,
+   "sft_descriptive_composite_per36": -0.0501,
+   "sft_credible_pts_per100_ortg": -0.2751
+  },
+  {
+   "team": "MIN",
+   "season": "2023-24",
+   "b2b_games": 13,
+   "b2b_freq": 0.159,
+   "sft_descriptive_composite_per36": -0.0501,
+   "sft_credible_pts_per100_ortg": -0.2751
+  },
+  {
+   "team": "NOP",
+   "season": "2023-24",
+   "b2b_games": 13,
+   "b2b_freq": 0.159,
+   "sft_descriptive_composite_per36": -0.0501,
+   "sft_credible_pts_per100_ortg": -0.2751
+  },
+  {
+   "team": "NYK",
+   "season": "2023-24",
+   "b2b_games": 13,
+   "b2b_freq": 0.159,
+   "sft_descriptive_composite_per36": -0.0501,
+   "sft_credible_pts_per100_ortg": -0.2751
+  },
+  {
+   "team": "SAS",
+   "season": "2023-24",
+   "b2b_games": 13,
+   "b2b_freq": 0.159,
+   "sft_descriptive_composite_per36": -0.0501,
+   "sft_credible_pts_per100_ortg": -0.2751
+  },
+  {
+   "team": "UTA",
+   "season": "2023-24",
+   "b2b_games": 13,
+   "b2b_freq": 0.159,
+   "sft_descriptive_composite_per36": -0.0501,
+   "sft_credible_pts_per100_ortg": -0.2751
+  },
+  {
+   "team": "WAS",
+   "season": "2023-24",
+   "b2b_games": 13,
+   "b2b_freq": 0.159,
+   "sft_descriptive_composite_per36": -0.0501,
+   "sft_credible_pts_per100_ortg": -0.2751
+  },
+  {
+   "team": "BOS",
+   "season": "2024-25",
+   "b2b_games": 13,
+   "b2b_freq": 0.159,
+   "sft_descriptive_composite_per36": -0.0501,
+   "sft_credible_pts_per100_ortg": -0.2751
+  },
+  {
+   "team": "CHI",
+   "season": "2024-25",
+   "b2b_games": 13,
+   "b2b_freq": 0.159,
+   "sft_descriptive_composite_per36": -0.0501,
+   "sft_credible_pts_per100_ortg": -0.2751
+  },
+  {
+   "team": "DAL",
+   "season": "2024-25",
+   "b2b_games": 13,
+   "b2b_freq": 0.159,
+   "sft_descriptive_composite_per36": -0.0501,
+   "sft_credible_pts_per100_ortg": -0.2751
+  },
+  {
+   "team": "POR",
+   "season": "2024-25",
+   "b2b_games": 13,
+   "b2b_freq": 0.159,
+   "sft_descriptive_composite_per36": -0.0501,
+   "sft_credible_pts_per100_ortg": -0.2751
+  },
+  {
+   "team": "BOS",
+   "season": "2025-26",
+   "b2b_games": 13,
+   "b2b_freq": 0.159,
+   "sft_descriptive_composite_per36": -0.0501,
+   "sft_credible_pts_per100_ortg": -0.2751
+  },
+  {
+   "team": "ATL",
+   "season": "2025-26",
+   "b2b_games": 12,
+   "b2b_freq": 0.158,
+   "sft_descriptive_composite_per36": -0.0498,
+   "sft_credible_pts_per100_ortg": -0.2733
+  },
+  {
+   "team": "CHI",
+   "season": "2025-26",
+   "b2b_games": 12,
+   "b2b_freq": 0.158,
+   "sft_descriptive_composite_per36": -0.0498,
+   "sft_credible_pts_per100_ortg": -0.2733
+  },
+  {
+   "team": "MEM",
+   "season": "2025-26",
+   "b2b_games": 12,
+   "b2b_freq": 0.156,
+   "sft_descriptive_composite_per36": -0.0491,
+   "sft_credible_pts_per100_ortg": -0.2699
+  }
+ ],
+ "headline": "Most-taxed schedule: DEN 2025-26 (-0.38 pts/100 ORtg season-averaged); least: MEM 2025-26 (-0.27). League schedule-inequality range 0.11 pts/100 across 90 team-seasons.",
+ "index_card": {
+  "stat_name": "Schedule Fatigue Tax",
+  "abbrev": "SFT",
+  "module": "novel_schedule_fatigue_tax",
+  "formula": "SFT_credible = b2b_freq * (-1.73 pts/100 ORtg); SFT_descriptive = b2b_freq * (-0.315 composite/36).",
+  "prior_art_verdict": "INCREMENTAL",
+  "headline": "Most-taxed schedule: DEN 2025-26 (-0.38 pts/100 ORtg season-averaged); least: MEM 2025-26 (-0.27). League schedule-inequality range 0.11 pts/100 across 90 team-seasons.",
+  "edge_claimed": false,
+  "source_artifacts": [
+   "scripts/platformkit/analytics_showcase/out/schedule_density.json"
+  ],
+  "chart": "docs/img/novel_schedule_fatigue_tax.png",
+  "n_results": 90
+ },
+ "plot_written": true
+}

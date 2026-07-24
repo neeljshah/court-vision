@@ -1,0 +1,318 @@
+{
+ "stat_name": "Market Foresight Premium",
+ "abbrev": "MFP",
+ "edge_claimed": false,
+ "descriptive_only": true,
+ "metric_definition": "The market's excess resolving power over a scoreboard-only model, per bit of uncertainty still left in the game, by checkpoint.",
+ "formula": "MFP(t) = ((naive-market)/naive - (naive-model)/naive) / max(entropy_market_bits, 0.15)",
+ "source_artifacts": [
+  "scripts/platformkit/analytics_showcase/out/info_arrival_curve.json",
+  "scripts/platformkit/analytics_showcase/out/market_convergence.json"
+ ],
+ "entropy_floor_bits": 0.15,
+ "prior_art_verdict": "INCREMENTAL",
+ "prior_art_citation": "The absorption instrument (paired model/market/naive Brier by game-time) is arXiv 2606.07811 ('When Do Markets Fully Process Public Information', Kalshi/NBA), which info_arrival_curve.json's own novelty block flags INCREMENTAL. Entropy decay is textbook (Shannon). Do NOT claim first-ever on the components -- only the skill-gap-PER-BIT normalization (the unpublished cross of the two separate literatures) is claimed.",
+ "declared_confounds": [
+  "'model' is one specific state-only forecaster, so MFP conflates genuine news the market prices (lineups, momentum) with plain model misspecification.",
+  "Entropy -> 0 late in a game would explode the ratio; the 0.15-bit floor caps that.",
+  "mlb (inning) and soccer_intl (5-min bucket) only; different clock units, not equated."
+ ],
+ "results": {
+  "mlb": {
+   "checkpoints": [
+    {
+     "checkpoint": "1",
+     "n": 7646,
+     "market_skill": 0.013,
+     "model_skill": -0.0479,
+     "entropy_market_bits": 0.9669,
+     "entropy_floored": false,
+     "mfp": 0.063
+    },
+    {
+     "checkpoint": "2",
+     "n": 5921,
+     "market_skill": 0.0619,
+     "model_skill": -0.0272,
+     "entropy_market_bits": 0.9259,
+     "entropy_floored": false,
+     "mfp": 0.0963
+    },
+    {
+     "checkpoint": "3",
+     "n": 6333,
+     "market_skill": 0.0619,
+     "model_skill": -0.0205,
+     "entropy_market_bits": 0.8731,
+     "entropy_floored": false,
+     "mfp": 0.0944
+    },
+    {
+     "checkpoint": "4",
+     "n": 6266,
+     "market_skill": 0.066,
+     "model_skill": -0.0289,
+     "entropy_market_bits": 0.8417,
+     "entropy_floored": false,
+     "mfp": 0.1127
+    },
+    {
+     "checkpoint": "5",
+     "n": 6021,
+     "market_skill": 0.1074,
+     "model_skill": -0.0184,
+     "entropy_market_bits": 0.7923,
+     "entropy_floored": false,
+     "mfp": 0.1588
+    },
+    {
+     "checkpoint": "6",
+     "n": 6478,
+     "market_skill": 0.1664,
+     "model_skill": -0.0253,
+     "entropy_market_bits": 0.7629,
+     "entropy_floored": false,
+     "mfp": 0.2513
+    },
+    {
+     "checkpoint": "7",
+     "n": 6311,
+     "market_skill": 0.233,
+     "model_skill": -0.0689,
+     "entropy_market_bits": 0.7219,
+     "entropy_floored": false,
+     "mfp": 0.4182
+    },
+    {
+     "checkpoint": "8",
+     "n": 5276,
+     "market_skill": 0.3141,
+     "model_skill": -0.0409,
+     "entropy_market_bits": 0.6979,
+     "entropy_floored": false,
+     "mfp": 0.5086
+    },
+    {
+     "checkpoint": "9",
+     "n": 2282,
+     "market_skill": 0.3254,
+     "model_skill": -0.0519,
+     "entropy_market_bits": 0.7244,
+     "entropy_floored": false,
+     "mfp": 0.5208
+    },
+    {
+     "checkpoint": "10",
+     "n": 94,
+     "market_skill": 0.0146,
+     "model_skill": -0.1926,
+     "entropy_market_bits": 0.8761,
+     "entropy_floored": false,
+     "mfp": 0.2365
+    }
+   ],
+   "n_checkpoints": 10,
+   "mfp_first": 0.063,
+   "mfp_last": 0.2365,
+   "mfp_mean": 0.2461,
+   "mfp_delta_last_minus_first": 0.1735
+  },
+  "soccer_intl": {
+   "checkpoints": [
+    {
+     "checkpoint": "0",
+     "n": 165,
+     "market_skill": 0.4649,
+     "model_skill": -0.0599,
+     "entropy_market_bits": 0.8209,
+     "entropy_floored": false,
+     "mfp": 0.6393
+    },
+    {
+     "checkpoint": "5",
+     "n": 238,
+     "market_skill": 0.4422,
+     "model_skill": -0.1471,
+     "entropy_market_bits": 0.8399,
+     "entropy_floored": false,
+     "mfp": 0.7016
+    },
+    {
+     "checkpoint": "10",
+     "n": 224,
+     "market_skill": 0.4624,
+     "model_skill": -0.1698,
+     "entropy_market_bits": 0.8363,
+     "entropy_floored": false,
+     "mfp": 0.7559
+    },
+    {
+     "checkpoint": "15",
+     "n": 233,
+     "market_skill": 0.4191,
+     "model_skill": -0.2145,
+     "entropy_market_bits": 0.8082,
+     "entropy_floored": false,
+     "mfp": 0.784
+    },
+    {
+     "checkpoint": "20",
+     "n": 215,
+     "market_skill": 0.3729,
+     "model_skill": -0.1946,
+     "entropy_market_bits": 0.8275,
+     "entropy_floored": false,
+     "mfp": 0.6858
+    },
+    {
+     "checkpoint": "25",
+     "n": 218,
+     "market_skill": 0.2859,
+     "model_skill": -0.2676,
+     "entropy_market_bits": 0.8131,
+     "entropy_floored": false,
+     "mfp": 0.6807
+    },
+    {
+     "checkpoint": "30",
+     "n": 219,
+     "market_skill": 0.2424,
+     "model_skill": -0.3711,
+     "entropy_market_bits": 0.7788,
+     "entropy_floored": false,
+     "mfp": 0.7877
+    },
+    {
+     "checkpoint": "35",
+     "n": 198,
+     "market_skill": 0.2194,
+     "model_skill": -0.3224,
+     "entropy_market_bits": 0.7556,
+     "entropy_floored": false,
+     "mfp": 0.7171
+    },
+    {
+     "checkpoint": "40",
+     "n": 211,
+     "market_skill": 0.2018,
+     "model_skill": -0.4252,
+     "entropy_market_bits": 0.7406,
+     "entropy_floored": false,
+     "mfp": 0.8466
+    },
+    {
+     "checkpoint": "45",
+     "n": 429,
+     "market_skill": 0.313,
+     "model_skill": -0.2648,
+     "entropy_market_bits": 0.744,
+     "entropy_floored": false,
+     "mfp": 0.7766
+    },
+    {
+     "checkpoint": "50",
+     "n": 197,
+     "market_skill": -0.0278,
+     "model_skill": -0.6128,
+     "entropy_market_bits": 0.6522,
+     "entropy_floored": false,
+     "mfp": 0.897
+    },
+    {
+     "checkpoint": "55",
+     "n": 202,
+     "market_skill": -0.0718,
+     "model_skill": -0.5369,
+     "entropy_market_bits": 0.616,
+     "entropy_floored": false,
+     "mfp": 0.7549
+    },
+    {
+     "checkpoint": "60",
+     "n": 194,
+     "market_skill": -0.0404,
+     "model_skill": -0.5287,
+     "entropy_market_bits": 0.6276,
+     "entropy_floored": false,
+     "mfp": 0.7781
+    },
+    {
+     "checkpoint": "65",
+     "n": 156,
+     "market_skill": -0.1567,
+     "model_skill": -0.7093,
+     "entropy_market_bits": 0.6637,
+     "entropy_floored": false,
+     "mfp": 0.8325
+    },
+    {
+     "checkpoint": "70",
+     "n": 154,
+     "market_skill": -0.352,
+     "model_skill": -0.9791,
+     "entropy_market_bits": 0.6739,
+     "entropy_floored": false,
+     "mfp": 0.9304
+    },
+    {
+     "checkpoint": "75",
+     "n": 136,
+     "market_skill": -0.1634,
+     "model_skill": -0.9658,
+     "entropy_market_bits": 0.7377,
+     "entropy_floored": false,
+     "mfp": 1.0877
+    },
+    {
+     "checkpoint": "80",
+     "n": 131,
+     "market_skill": -0.2661,
+     "model_skill": -1.1949,
+     "entropy_market_bits": 0.6955,
+     "entropy_floored": false,
+     "mfp": 1.3354
+    },
+    {
+     "checkpoint": "85",
+     "n": 101,
+     "market_skill": -0.522,
+     "model_skill": -1.5904,
+     "entropy_market_bits": 0.5922,
+     "entropy_floored": false,
+     "mfp": 1.8041
+    },
+    {
+     "checkpoint": "90",
+     "n": 37,
+     "market_skill": -0.3982,
+     "model_skill": -1.1476,
+     "entropy_market_bits": 0.4394,
+     "entropy_floored": false,
+     "mfp": 1.7056
+    }
+   ],
+   "n_checkpoints": 19,
+   "mfp_first": 0.6393,
+   "mfp_last": 1.7056,
+   "mfp_mean": 0.9211,
+   "mfp_delta_last_minus_first": 1.0663
+  }
+ },
+ "headline": "mlb: MFP rises from 0.06 to 0.24 over the game (mean 0.25); soccer_intl: MFP rises from 0.64 to 1.71 over the game (mean 0.92)",
+ "index_card": {
+  "stat_name": "Market Foresight Premium",
+  "abbrev": "MFP",
+  "module": "novel_market_foresight_premium",
+  "formula": "MFP(t) = ((naive-market)/naive - (naive-model)/naive) / max(entropy_market_bits, 0.15)",
+  "prior_art_verdict": "INCREMENTAL",
+  "headline": "mlb: MFP rises from 0.06 to 0.24 over the game (mean 0.25); soccer_intl: MFP rises from 0.64 to 1.71 over the game (mean 0.92)",
+  "edge_claimed": false,
+  "source_artifacts": [
+   "scripts/platformkit/analytics_showcase/out/info_arrival_curve.json",
+   "scripts/platformkit/analytics_showcase/out/market_convergence.json"
+  ],
+  "chart": "docs/img/novel_market_foresight_premium.png",
+  "n_results": 2
+ },
+ "plot_written": true
+}

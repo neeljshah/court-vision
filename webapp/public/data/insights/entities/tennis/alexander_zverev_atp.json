@@ -1,0 +1,22 @@
+{
+  "slug": "alexander_zverev_atp",
+  "pack": "tennis",
+  "display_name": "Alexander Zverev (ATP)",
+  "one_liner": "Clay is Zverev's best surface in both windows -- clay_wr_career 0.7466 and clay_wr_recent 0.7531.",
+  "three_things": [
+    "Remarkably steady career-to-recent: clay 0.7466/0.7531 and hard 0.6906/0.6933.",
+    "Clay tops hard in both windows (clay_minus_hard_career +0.056, clay_minus_hard_recent +0.0598).",
+    "Grass is the softest of the three surfaces (grass_wr_career 0.6618)."
+  ],
+  "context_note": "Descriptive career and recent-form surface win rates as of the corpus end, not a prediction and not an edge claim. Per-surface floors apply (n>=30 career, independent floors for recent form); below-floor metrics show n/a, and nothing here adjusts for era, opponent quality, or draw.",
+  "cited": [
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Alexander Zverev (ATP)].key_numbers.clay_wr_career", "value": 0.7466},
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Alexander Zverev (ATP)].key_numbers.clay_wr_recent", "value": 0.7531},
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Alexander Zverev (ATP)].key_numbers.hard_wr_career", "value": 0.6906},
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Alexander Zverev (ATP)].key_numbers.hard_wr_recent", "value": 0.6933},
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Alexander Zverev (ATP)].key_numbers.clay_minus_hard_career", "value": 0.056},
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Alexander Zverev (ATP)].key_numbers.clay_minus_hard_recent", "value": 0.0598},
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Alexander Zverev (ATP)].key_numbers.grass_wr_career", "value": 0.6618}
+  ],
+  "as_of": "2026-07-19T03:41:37.066640+00:00"
+}

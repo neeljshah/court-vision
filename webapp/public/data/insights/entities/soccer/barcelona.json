@@ -1,0 +1,22 @@
+{
+  "slug": "barcelona",
+  "pack": "soccer",
+  "display_name": "Barcelona",
+  "one_liner": "Barcelona averaged a perfect 3.0 points per home game over its last 10 home matches (ppg_home_l10 3.0) -- it won every one.",
+  "three_things": [
+    "Top of this set by overall recent form: ppg_l10 2.7 and winrate_l10 0.9 (nine wins in ten).",
+    "A dominant profile on both ends: gf_l10 2.2 and ga_l10 0.7 leave gd_l10 +1.5, the best margin here.",
+    "Home fortress vs. good-not-great away: ppg_home_l10 3.0 against ppg_away_l10 2.1."
+  ],
+  "context_note": "Descriptive last-10 and season rates as of the corpus end, not a prediction and not an edge claim. A perfect 3.0 home ppg is a 10-game artifact -- it says nothing about the next fixture, opponent quality, or lineup, and reverts as the window rolls.",
+  "cited": [
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Barcelona].key_numbers.ppg_home_l10", "value": 3.0},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Barcelona].key_numbers.ppg_l10", "value": 2.7},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Barcelona].key_numbers.winrate_l10", "value": 0.9},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Barcelona].key_numbers.gf_l10", "value": 2.2},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Barcelona].key_numbers.ga_l10", "value": 0.7},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Barcelona].key_numbers.gd_l10", "value": 1.5},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Barcelona].key_numbers.ppg_away_l10", "value": 2.1}
+  ],
+  "as_of": "2026-07-18T17:21:08.108324+00:00"
+}

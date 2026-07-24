@@ -1,0 +1,19 @@
+{
+  "slug": "rafael_nadal_atp",
+  "pack": "tennis",
+  "display_name": "Rafael Nadal (ATP)",
+  "one_liner": "Clay is unmistakably Nadal's surface: clay_wr_career 0.8564, ahead of hard court by a clay-minus-hard gap of +0.0953.",
+  "three_things": [
+    "The clay calling card: clay_wr_career 0.8564 vs hard_wr_career 0.7611.",
+    "One of the largest positive clay-over-hard splits among the marquee names (clay_minus_hard_career +0.0953).",
+    "Grass career win rate sits below the 30-match floor and shows n/a -- the card is partial (4 of 10 metrics)."
+  ],
+  "context_note": "Descriptive career surface win rates as of the corpus end, not a prediction and not an edge claim. Per-surface floors apply (hard/clay/grass n>=30); below-floor metrics show n/a, and nothing here adjusts for era, opponent quality, or draw.",
+  "cited": [
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Rafael Nadal (ATP)].key_numbers.clay_wr_career", "value": 0.8564},
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Rafael Nadal (ATP)].key_numbers.hard_wr_career", "value": 0.7611},
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Rafael Nadal (ATP)].key_numbers.clay_minus_hard_career", "value": 0.0953},
+    {"path": "webapp/public/data/showcase/atlas_tennis_manifest.json", "field": "entries[entity=Rafael Nadal (ATP)].status", "value": "partial (4/10 metrics)"}
+  ],
+  "as_of": "2026-07-19T03:41:37.066640+00:00"
+}

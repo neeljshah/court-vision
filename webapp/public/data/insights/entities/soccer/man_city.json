@@ -1,0 +1,23 @@
+{
+  "slug": "man_city",
+  "pack": "soccer",
+  "display_name": "Man City",
+  "one_liner": "Man City kept a clean sheet in half of its last 10 matches (clean_sheet_rate_l10 0.5) while conceding just 0.8 goals per game.",
+  "three_things": [
+    "Both ends humming: gf_l10 2.0 and ga_l10 0.8 for gd_l10 +1.2.",
+    "Clean sheets are a season-long trait, not a hot streak (clean_sheet_rate_season 0.4324).",
+    "Slightly home-leaning form: ppg_home_l10 2.4 vs ppg_away_l10 1.7, overall ppg_l10 2.2."
+  ],
+  "context_note": "Descriptive last-10 and season rates as of the corpus end, not a prediction and not an edge claim. Clean-sheet rate over 10 games is a coarse count; these figures carry no opponent, injury, or venue adjustment and revert as the window rolls.",
+  "cited": [
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Man City].key_numbers.clean_sheet_rate_l10", "value": 0.5},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Man City].key_numbers.ga_l10", "value": 0.8},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Man City].key_numbers.gf_l10", "value": 2.0},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Man City].key_numbers.gd_l10", "value": 1.2},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Man City].key_numbers.clean_sheet_rate_season", "value": 0.4324},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Man City].key_numbers.ppg_home_l10", "value": 2.4},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Man City].key_numbers.ppg_away_l10", "value": 1.7},
+    {"path": "webapp/public/data/showcase/atlas_soccer_manifest.json", "field": "entries[entity=Man City].key_numbers.ppg_l10", "value": 2.2}
+  ],
+  "as_of": "2026-07-18T17:21:08.108324+00:00"
+}

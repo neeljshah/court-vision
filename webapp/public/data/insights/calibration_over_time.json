@@ -1,0 +1,19 @@
+{
+ "id": "calibration_over_time",
+ "title": "MLB calibration is improving month over month -- but still trails the market",
+ "headline_insight": "The MLB model's calibration error fell from 0.1165 in June to 0.0834 in July, yet the market stayed sharper in both months (0.0944, then 0.0635).",
+ "what_it_means": "Splitting the record by calendar month checks whether the model is stable or drifting. MLB is encouraging -- the model got better-calibrated as July games came in (ECE 0.1165 to 0.0834) -- but the market improved in lockstep and kept its lead. Soccer went the other way: the model's monthly Brier climbed from 0.1729 to 0.331.",
+ "how_to_read": "Each cell is one sport-month; lower Brier and ECE are better, and the honest comparison is the model row against the market row within the same month.",
+ "why_it_matters": "A model whose numbers hold steady across months is trustworthy; one whose numbers swing (soccer) needs more data before any monthly split can be believed.",
+ "caveat": "July soccer rests on only n=3129 rows, so its worse numbers may reflect a small, harder sample rather than genuine month-over-month degradation.",
+ "cited": [
+  {"path": "webapp/public/data/showcase/calibration_over_time.json", "field": "mlb.2026-06.model_ece", "value": 0.1165},
+  {"path": "webapp/public/data/showcase/calibration_over_time.json", "field": "mlb.2026-07.model_ece", "value": 0.0834},
+  {"path": "webapp/public/data/showcase/calibration_over_time.json", "field": "mlb.2026-06.market_ece", "value": 0.0944},
+  {"path": "webapp/public/data/showcase/calibration_over_time.json", "field": "mlb.2026-07.market_ece", "value": 0.0635},
+  {"path": "webapp/public/data/showcase/calibration_over_time.json", "field": "soccer_intl.2026-06.model_brier", "value": 0.1729},
+  {"path": "webapp/public/data/showcase/calibration_over_time.json", "field": "soccer_intl.2026-07.model_brier", "value": 0.331},
+  {"path": "webapp/public/data/showcase/calibration_over_time.json", "field": "soccer_intl.2026-07.n", "value": 3129}
+ ],
+ "as_of": "unknown"
+}
