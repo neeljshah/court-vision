@@ -1,0 +1,73 @@
+{
+  "stat_name": "Live-Clock Fraction",
+  "abbrev": "LCF",
+  "edge_claimed": false,
+  "descriptive_only": true,
+  "metric_definition": "The 0-1 share of a sport's game clock that stays genuinely contested before the score gap crosses a point-of-no-return (near-median threshold).",
+  "formula": "LCF = decided_clockfrac_median at the non-masked threshold whose decided_frac_of_games is closest to 0.50 (higher = contested later).",
+  "source_artifacts": [
+    "scripts/platformkit/analytics_showcase/out/blowout_dynamics.json",
+    "scripts/platformkit/analytics_showcase/out/xsport_structure.json"
+  ],
+  "prior_art_verdict": "INCREMENTAL_NOVEL",
+  "prior_art_citation": "The within-sport method EXISTS: blowout_dynamics.json's own prior_art block cites Bill James safe-lead heuristics and win-probability clinch points ('Not a new method; do not claim first-ever'). Only the normalized cross-sport live-clock axis is the contribution.",
+  "declared_confounds": [
+    "thresholds are NOT truly equated across sports (2 runs != any goal margin != any NBA margin) and clock units differ (innings vs minutes), so the cross-sport ranking is indicative, not metric.",
+    "buildable for mlb + soccer_intl ONLY -- nba/tennis have no blowout corpus (honest not_buildable).",
+    "the near-median threshold is chosen by proximity to 0.50 decided_frac_of_games; soccer_intl has only one non-masked threshold, so no choice is exercised there."
+  ],
+  "results": [
+    {
+      "sport": "mlb",
+      "unit": "runs",
+      "clock_field": "inning",
+      "near_median_threshold": 3,
+      "decided_frac_of_games": 0.5337,
+      "n_games_decided": 95,
+      "n_games_total": 178,
+      "live_clock_fraction": 0.8333
+    },
+    {
+      "sport": "soccer_intl",
+      "unit": "goals",
+      "clock_field": "minute",
+      "near_median_threshold": 1,
+      "decided_frac_of_games": 0.4828,
+      "n_games_decided": 14,
+      "n_games_total": 29,
+      "live_clock_fraction": 0.7475
+    }
+  ],
+  "not_buildable": [
+    {
+      "sport": "nba",
+      "reason": "no blowout corpus"
+    },
+    {
+      "sport": "tennis",
+      "reason": "no blowout corpus"
+    }
+  ],
+  "companion_cross_check": {
+    "nba_comeback_rate": 0.0146,
+    "nba_favorite_hold_rate": 0.9854,
+    "note": "independent decisiveness cross-check from xsport_structure; nba has no LCF (no blowout corpus)."
+  },
+  "headline": "mlb stays contested later (LCF 0.833) than soccer_intl (LCF 0.748). (nba comeback-rate cross-check 0.0146)",
+  "index_card": {
+    "stat_name": "Live-Clock Fraction",
+    "abbrev": "LCF",
+    "module": "novel_live_clock_fraction",
+    "formula": "LCF = decided_clockfrac_median at the non-masked threshold whose decided_frac_of_games is closest to 0.50 (higher = contested later).",
+    "prior_art_verdict": "INCREMENTAL_NOVEL",
+    "headline": "mlb stays contested later (LCF 0.833) than soccer_intl (LCF 0.748). (nba comeback-rate cross-check 0.0146)",
+    "edge_claimed": false,
+    "source_artifacts": [
+      "scripts/platformkit/analytics_showcase/out/blowout_dynamics.json",
+      "scripts/platformkit/analytics_showcase/out/xsport_structure.json"
+    ],
+    "chart": "docs/img/novel_live_clock_fraction.png",
+    "n_results": 2
+  },
+  "plot_written": true
+}

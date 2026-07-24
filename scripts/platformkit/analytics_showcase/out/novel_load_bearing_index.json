@@ -1,0 +1,497 @@
+{
+  "stat_name": "Load-Bearing Index",
+  "abbrev": "LBI",
+  "edge_claimed": false,
+  "descriptive_only": true,
+  "metric_definition": "Per team, the win-prob dependence on its single most-indispensable player, under two independent estimators, with a cross-method agreement flag.",
+  "formula": "LBI_a = max_player (p_win_with - p_win_without) [Elo on/off]; LBI_b = max_player (win_rate_active - win_rate_missed) [raw]; agreement = same #1 player.",
+  "source_artifacts": [
+    "scripts/platformkit/analytics_showcase/out/cf_star_removal.json",
+    "scripts/platformkit/analytics_showcase/out/ctx_lineup_proxy.json"
+  ],
+  "as_of": {
+    "estimator_a": "2024-25 (Elo end-of-season) x 2024_25 on/off slice",
+    "estimator_b": "2025-26 regular season (through 2026-04-12)"
+  },
+  "prior_art_verdict": "INCREMENTAL",
+  "prior_art_citation": "On/Off Win Probability tables (inpredictable, stats.inpredictable.com/nba/onoff.php), 'record-without-star' splits, and player-impact-on-win-chances (arXiv 1604.03186) all exist. Single-method fragility is NOT new. The novel twist is a standardized league-wide fragility ranking CROSS-VALIDATED by two independent estimators with an agreement flag.",
+  "declared_confounds": [
+    "both estimators carry the ROSTER CONFOUND both source files label explicitly: why a player missed is entangled with injury clustering, rest, blowout pulls, and replacement lineup -- none controlled. NOT a causal player-impact estimate.",
+    "the feeds cover DIFFERENT seasons (Elo on/off = 2024-25; raw with/without = 2025-26), so agreement is DIRECTIONAL corroboration, not a paired estimate.",
+    "estimator (a) is win prob vs a league-average opponent on a neutral floor; estimator (b) is raw team win-rate active-vs-missed. The two axes are related but not the same scale."
+  ],
+  "agreement_summary": {
+    "n_teams_both_estimators": 30,
+    "n_agree": 1,
+    "agree_rate": 0.0333
+  },
+  "results": [
+    {
+      "team": "DEN",
+      "estimator_a_elo_onoff": {
+        "player_name": "Nikola Joki\u0107",
+        "delta_winprob": 0.5822,
+        "on_off_net_rating_delta": 23.713
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "Aaron Gordon",
+        "delta_win_rate": 0.1818,
+        "n_active": 36,
+        "n_missed": 44
+      },
+      "agreement_same_player": false
+    },
+    {
+      "team": "OKC",
+      "estimator_a_elo_onoff": {
+        "player_name": "Shai Gilgeous-Alexander",
+        "delta_winprob": 0.5171,
+        "on_off_net_rating_delta": 15.763
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "Ajay Mitchell",
+        "delta_win_rate": 0.2685,
+        "n_active": 57,
+        "n_missed": 23
+      },
+      "agreement_same_player": false
+    },
+    {
+      "team": "LAL",
+      "estimator_a_elo_onoff": {
+        "player_name": "Dorian Finney-Smith",
+        "delta_winprob": 0.4656,
+        "on_off_net_rating_delta": 14.944
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "Rui Hachimura",
+        "delta_win_rate": 0.2626,
+        "n_active": 68,
+        "n_missed": 14
+      },
+      "agreement_same_player": false
+    },
+    {
+      "team": "MIL",
+      "estimator_a_elo_onoff": {
+        "player_name": "Giannis Antetokounmpo",
+        "delta_winprob": 0.4441,
+        "on_off_net_rating_delta": 14.231
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "Kyle Kuzma",
+        "delta_win_rate": 0.3659,
+        "n_active": 69,
+        "n_missed": 12
+      },
+      "agreement_same_player": false
+    },
+    {
+      "team": "LAC",
+      "estimator_a_elo_onoff": {
+        "player_name": "Ivica Zubac",
+        "delta_winprob": 0.4051,
+        "on_off_net_rating_delta": 11.965
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "Brook Lopez",
+        "delta_win_rate": 0.4038,
+        "n_active": 75,
+        "n_missed": 7
+      },
+      "agreement_same_player": false
+    },
+    {
+      "team": "IND",
+      "estimator_a_elo_onoff": {
+        "player_name": "Pascal Siakam",
+        "delta_winprob": 0.3872,
+        "on_off_net_rating_delta": 11.457
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "Pascal Siakam",
+        "delta_win_rate": 0.2075,
+        "n_active": 62,
+        "n_missed": 15
+      },
+      "agreement_same_player": true
+    },
+    {
+      "team": "ORL",
+      "estimator_a_elo_onoff": {
+        "player_name": "Franz Wagner",
+        "delta_winprob": 0.3816,
+        "on_off_net_rating_delta": 13.851
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "Moritz Wagner",
+        "delta_win_rate": 0.1833,
+        "n_active": 36,
+        "n_missed": 5
+      },
+      "agreement_same_player": false
+    },
+    {
+      "team": "CHI",
+      "estimator_a_elo_onoff": {
+        "player_name": "Lonzo Ball",
+        "delta_winprob": 0.3758,
+        "on_off_net_rating_delta": 13.374
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "Jalen Smith",
+        "delta_win_rate": 0.3327,
+        "n_active": 53,
+        "n_missed": 19
+      },
+      "agreement_same_player": false
+    },
+    {
+      "team": "ATL",
+      "estimator_a_elo_onoff": {
+        "player_name": "Mouhamed Gueye",
+        "delta_winprob": 0.3668,
+        "on_off_net_rating_delta": 13.562
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "Dyson Daniels",
+        "delta_win_rate": 0.1789,
+        "n_active": 76,
+        "n_missed": 5
+      },
+      "agreement_same_player": false
+    },
+    {
+      "team": "CLE",
+      "estimator_a_elo_onoff": {
+        "player_name": "Isaac Okoro",
+        "delta_winprob": 0.303,
+        "on_off_net_rating_delta": 8.728
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "Sam Merrill",
+        "delta_win_rate": 0.2115,
+        "n_active": 52,
+        "n_missed": 28
+      },
+      "agreement_same_player": false
+    },
+    {
+      "team": "DAL",
+      "estimator_a_elo_onoff": {
+        "player_name": "Dereck Lively II",
+        "delta_winprob": 0.2878,
+        "on_off_net_rating_delta": 9.34
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "Naji Marshall",
+        "delta_win_rate": 0.3378,
+        "n_active": 74,
+        "n_missed": 5
+      },
+      "agreement_same_player": false
+    },
+    {
+      "team": "NOP",
+      "estimator_a_elo_onoff": {
+        "player_name": "Zion Williamson",
+        "delta_winprob": 0.2823,
+        "on_off_net_rating_delta": 15.772
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "Karlo Matkovi\u0107",
+        "delta_win_rate": 0.3038,
+        "n_active": 62,
+        "n_missed": 12
+      },
+      "agreement_same_player": false
+    },
+    {
+      "team": "NYK",
+      "estimator_a_elo_onoff": {
+        "player_name": "Karl-Anthony Towns",
+        "delta_winprob": 0.2821,
+        "on_off_net_rating_delta": 7.982
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "Jalen Brunson",
+        "delta_win_rate": 0.2471,
+        "n_active": 74,
+        "n_missed": 7
+      },
+      "agreement_same_player": false
+    },
+    {
+      "team": "BOS",
+      "estimator_a_elo_onoff": {
+        "player_name": "Luke Kornet",
+        "delta_winprob": 0.2785,
+        "on_off_net_rating_delta": 8.218
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "Neemias Queta",
+        "delta_win_rate": 0.0842,
+        "n_active": 76,
+        "n_missed": 5
+      },
+      "agreement_same_player": false
+    },
+    {
+      "team": "SAS",
+      "estimator_a_elo_onoff": {
+        "player_name": "Victor Wembanyama",
+        "delta_winprob": 0.2781,
+        "on_off_net_rating_delta": 11.135
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "Carter Bryant",
+        "delta_win_rate": 0.2433,
+        "n_active": 71,
+        "n_missed": 11
+      },
+      "agreement_same_player": false
+    },
+    {
+      "team": "MEM",
+      "estimator_a_elo_onoff": {
+        "player_name": "Ja Morant",
+        "delta_winprob": 0.2731,
+        "on_off_net_rating_delta": 8.072
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "Santi Aldama",
+        "delta_win_rate": 0.2752,
+        "n_active": 43,
+        "n_missed": 6
+      },
+      "agreement_same_player": false
+    },
+    {
+      "team": "BKN",
+      "estimator_a_elo_onoff": {
+        "player_name": "Day'Ron Sharpe",
+        "delta_winprob": 0.2669,
+        "on_off_net_rating_delta": 14.902
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "Ochai Agbaji",
+        "delta_win_rate": 0.2,
+        "n_active": 20,
+        "n_missed": 6
+      },
+      "agreement_same_player": false
+    },
+    {
+      "team": "PHX",
+      "estimator_a_elo_onoff": {
+        "player_name": "Monte Morris",
+        "delta_winprob": 0.2593,
+        "on_off_net_rating_delta": 8.334
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "Ryan Dunn",
+        "delta_win_rate": 0.1548,
+        "n_active": 70,
+        "n_missed": 12
+      },
+      "agreement_same_player": false
+    },
+    {
+      "team": "MIA",
+      "estimator_a_elo_onoff": {
+        "player_name": "Davion Mitchell",
+        "delta_winprob": 0.2517,
+        "on_off_net_rating_delta": 8.354
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "Kasparas Jaku\u010dionis",
+        "delta_win_rate": 0.3061,
+        "n_active": 53,
+        "n_missed": 9
+      },
+      "agreement_same_player": false
+    },
+    {
+      "team": "GSW",
+      "estimator_a_elo_onoff": {
+        "player_name": "Gui Santos",
+        "delta_winprob": 0.2378,
+        "on_off_net_rating_delta": 6.653
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "Moses Moody",
+        "delta_win_rate": 0.3,
+        "n_active": 60,
+        "n_missed": 10
+      },
+      "agreement_same_player": false
+    },
+    {
+      "team": "POR",
+      "estimator_a_elo_onoff": {
+        "player_name": "Jabari Walker",
+        "delta_winprob": 0.2364,
+        "on_off_net_rating_delta": 7.676
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "Rayan Rupert",
+        "delta_win_rate": 0.3988,
+        "n_active": 48,
+        "n_missed": 7
+      },
+      "agreement_same_player": false
+    },
+    {
+      "team": "HOU",
+      "estimator_a_elo_onoff": {
+        "player_name": "Steven Adams",
+        "delta_winprob": 0.2327,
+        "on_off_net_rating_delta": 6.503
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "JD Davison",
+        "delta_win_rate": 0.2637,
+        "n_active": 28,
+        "n_missed": 52
+      },
+      "agreement_same_player": false
+    },
+    {
+      "team": "SAC",
+      "estimator_a_elo_onoff": {
+        "player_name": "Domantas Sabonis",
+        "delta_winprob": 0.2249,
+        "on_off_net_rating_delta": 6.611
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "Maxime Raynaud",
+        "delta_win_rate": 0.1588,
+        "n_active": 74,
+        "n_missed": 8
+      },
+      "agreement_same_player": false
+    },
+    {
+      "team": "UTA",
+      "estimator_a_elo_onoff": {
+        "player_name": "John Collins",
+        "delta_winprob": 0.2156,
+        "on_off_net_rating_delta": 15.371
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "Lauri Markkanen",
+        "delta_win_rate": 0.3423,
+        "n_active": 42,
+        "n_missed": 16
+      },
+      "agreement_same_player": false
+    },
+    {
+      "team": "TOR",
+      "estimator_a_elo_onoff": {
+        "player_name": "Jakob Poeltl",
+        "delta_winprob": 0.2093,
+        "on_off_net_rating_delta": 7.751
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "Immanuel Quickley",
+        "delta_win_rate": 0.169,
+        "n_active": 70,
+        "n_missed": 12
+      },
+      "agreement_same_player": false
+    },
+    {
+      "team": "MIN",
+      "estimator_a_elo_onoff": {
+        "player_name": "Naz Reid",
+        "delta_winprob": 0.2092,
+        "on_off_net_rating_delta": 5.85
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "Jaden McDaniels",
+        "delta_win_rate": 0.1027,
+        "n_active": 73,
+        "n_missed": 8
+      },
+      "agreement_same_player": false
+    },
+    {
+      "team": "WAS",
+      "estimator_a_elo_onoff": {
+        "player_name": "Richaun Holmes",
+        "delta_winprob": 0.2032,
+        "on_off_net_rating_delta": 14.126
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "Khris Middleton",
+        "delta_win_rate": 0.2863,
+        "n_active": 34,
+        "n_missed": 15
+      },
+      "agreement_same_player": false
+    },
+    {
+      "team": "CHA",
+      "estimator_a_elo_onoff": {
+        "player_name": "Moussa Diabat\u00e9",
+        "delta_winprob": 0.1505,
+        "on_off_net_rating_delta": 7.99
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "Brandon Miller",
+        "delta_win_rate": 0.4543,
+        "n_active": 65,
+        "n_missed": 17
+      },
+      "agreement_same_player": false
+    },
+    {
+      "team": "DET",
+      "estimator_a_elo_onoff": {
+        "player_name": "Tobias Harris",
+        "delta_winprob": 0.1447,
+        "on_off_net_rating_delta": 4.139
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "Duncan Robinson",
+        "delta_win_rate": 0.3532,
+        "n_active": 77,
+        "n_missed": 5
+      },
+      "agreement_same_player": false
+    },
+    {
+      "team": "PHI",
+      "estimator_a_elo_onoff": {
+        "player_name": "Guerschon Yabusele",
+        "delta_winprob": 0.1371,
+        "on_off_net_rating_delta": 5.279
+      },
+      "estimator_b_raw_withwithout": {
+        "player_name": "Jared McCain",
+        "delta_win_rate": 0.3089,
+        "n_active": 37,
+        "n_missed": 7
+      },
+      "agreement_same_player": false
+    }
+  ],
+  "headline": "Most one-star-fragile: DEN (Nikola Joki\u0107, delta_winprob 0.5822). Two estimators name the same #1 player for 1/30 teams (directional cross-check, different seasons).",
+  "index_card": {
+    "stat_name": "Load-Bearing Index",
+    "abbrev": "LBI",
+    "module": "novel_load_bearing_index",
+    "formula": "LBI_a = max_player (p_win_with - p_win_without) [Elo on/off]; LBI_b = max_player (win_rate_active - win_rate_missed) [raw]; agreement = same #1 player.",
+    "prior_art_verdict": "INCREMENTAL",
+    "headline": "Most one-star-fragile: DEN (Nikola Joki\u0107, delta_winprob 0.5822). Two estimators name the same #1 player for 1/30 teams (directional cross-check, different seasons).",
+    "edge_claimed": false,
+    "source_artifacts": [
+      "scripts/platformkit/analytics_showcase/out/cf_star_removal.json",
+      "scripts/platformkit/analytics_showcase/out/ctx_lineup_proxy.json"
+    ],
+    "chart": "docs/img/novel_load_bearing_index.png",
+    "n_results": 30
+  },
+  "plot_written": true
+}
