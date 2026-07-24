@@ -1,0 +1,240 @@
+{
+  "edge_claimed": false,
+  "descriptive_only": true,
+  "method": "pregame per-series consecutive-snapshot |devigged_prob| movement, bucketed by minutes-to-commence, from own scraped line_history",
+  "as_of": "2026-07-24",
+  "source": "data/cache/line_history/<sport>/*.jsonl",
+  "min_moves_floor": 20,
+  "buckets_minutes": [
+    {
+      "label": "6h+",
+      "lo": 360.0,
+      "hi": null
+    },
+    {
+      "label": "3-6h",
+      "lo": 180.0,
+      "hi": 360.0
+    },
+    {
+      "label": "1-3h",
+      "lo": 60.0,
+      "hi": 180.0
+    },
+    {
+      "label": "0-1h",
+      "lo": 0.0,
+      "hi": 60.0
+    }
+  ],
+  "sports": {
+    "kbo": {
+      "n_series_used": 0,
+      "n_pregame_snapshots": 0,
+      "n_move_pairs": 0,
+      "status": "insufficient_data",
+      "reason": "only 0 pregame move pairs (< MIN_MOVES=20)"
+    },
+    "mlb": {
+      "n_series_used": 5794,
+      "n_pregame_snapshots": 1403814,
+      "n_move_pairs": 1307128,
+      "status": "ok",
+      "interval_minutes": {
+        "median": 1.083,
+        "p90": 2.033,
+        "mean": 2.205
+      },
+      "move_by_bucket": {
+        "6h+": {
+          "n": 629662,
+          "mean_abs_move": 9e-05
+        },
+        "3-6h": {
+          "n": 275150,
+          "mean_abs_move": 0.00013
+        },
+        "1-3h": {
+          "n": 237286,
+          "mean_abs_move": 0.00019
+        },
+        "0-1h": {
+          "n": 165030,
+          "mean_abs_move": 0.00019
+        }
+      },
+      "total_abs_move": 168.48331,
+      "final_hour_abs_move": 30.5383,
+      "final_hour_movement_share": 0.1813
+    },
+    "nba": {
+      "n_series_used": 160,
+      "n_pregame_snapshots": 183478,
+      "n_move_pairs": 182054,
+      "status": "ok",
+      "interval_minutes": {
+        "median": 1.117,
+        "p90": 1.183,
+        "mean": 1.866
+      },
+      "move_by_bucket": {
+        "6h+": {
+          "n": 145520,
+          "mean_abs_move": 7e-05
+        },
+        "3-6h": {
+          "n": 18046,
+          "mean_abs_move": 0.00022
+        },
+        "1-3h": {
+          "n": 12004,
+          "mean_abs_move": 0.00016
+        },
+        "0-1h": {
+          "n": 6484,
+          "mean_abs_move": 0.00117
+        }
+      },
+      "total_abs_move": 23.28469,
+      "final_hour_abs_move": 7.56165,
+      "final_hour_movement_share": 0.3247
+    },
+    "npb": {
+      "n_series_used": 0,
+      "n_pregame_snapshots": 0,
+      "n_move_pairs": 0,
+      "status": "insufficient_data",
+      "reason": "only 0 pregame move pairs (< MIN_MOVES=20)"
+    },
+    "soccer": {
+      "n_series_used": 66,
+      "n_pregame_snapshots": 606832,
+      "n_move_pairs": 565548,
+      "status": "ok",
+      "interval_minutes": {
+        "median": 1.1,
+        "p90": 3.4,
+        "mean": 3.131
+      },
+      "move_by_bucket": {
+        "6h+": {
+          "n": 565548,
+          "mean_abs_move": 0.0
+        },
+        "3-6h": {
+          "n": 0,
+          "mean_abs_move": null
+        },
+        "1-3h": {
+          "n": 0,
+          "mean_abs_move": null
+        },
+        "0-1h": {
+          "n": 0,
+          "mean_abs_move": null
+        }
+      },
+      "total_abs_move": 1.65892,
+      "final_hour_abs_move": 0.0,
+      "final_hour_movement_share": 0.0
+    },
+    "soccer_intl": {
+      "n_series_used": 494,
+      "n_pregame_snapshots": 169976,
+      "n_move_pairs": 164072,
+      "status": "ok",
+      "interval_minutes": {
+        "median": 1.067,
+        "p90": 1.533,
+        "mean": 3.198
+      },
+      "move_by_bucket": {
+        "6h+": {
+          "n": 87414,
+          "mean_abs_move": 0.00018
+        },
+        "3-6h": {
+          "n": 33692,
+          "mean_abs_move": 0.00021
+        },
+        "1-3h": {
+          "n": 25036,
+          "mean_abs_move": 0.00053
+        },
+        "0-1h": {
+          "n": 17930,
+          "mean_abs_move": 0.00072
+        }
+      },
+      "total_abs_move": 49.34988,
+      "final_hour_abs_move": 12.88173,
+      "final_hour_movement_share": 0.261
+    },
+    "tennis": {
+      "n_series_used": 2510,
+      "n_pregame_snapshots": 840232,
+      "n_move_pairs": 809986,
+      "status": "ok",
+      "interval_minutes": {
+        "median": 1.117,
+        "p90": 1.217,
+        "mean": 2.374
+      },
+      "move_by_bucket": {
+        "6h+": {
+          "n": 552542,
+          "mean_abs_move": 8e-05
+        },
+        "3-6h": {
+          "n": 102532,
+          "mean_abs_move": 0.00015
+        },
+        "1-3h": {
+          "n": 107840,
+          "mean_abs_move": 0.00012
+        },
+        "0-1h": {
+          "n": 47072,
+          "mean_abs_move": 0.00019
+        }
+      },
+      "total_abs_move": 83.16391,
+      "final_hour_abs_move": 8.90167,
+      "final_hour_movement_share": 0.107
+    },
+    "wnba": {
+      "n_series_used": 920,
+      "n_pregame_snapshots": 334592,
+      "n_move_pairs": 333540,
+      "status": "ok",
+      "interval_minutes": {
+        "median": 1.117,
+        "p90": 1.167,
+        "mean": 2.086
+      },
+      "move_by_bucket": {
+        "6h+": {
+          "n": 209548,
+          "mean_abs_move": 0.00025
+        },
+        "3-6h": {
+          "n": 58014,
+          "mean_abs_move": 0.00017
+        },
+        "1-3h": {
+          "n": 41512,
+          "mean_abs_move": 0.00023
+        },
+        "0-1h": {
+          "n": 24466,
+          "mean_abs_move": 0.00039
+        }
+      },
+      "total_abs_move": 80.65411,
+      "final_hour_abs_move": 9.48613,
+      "final_hour_movement_share": 0.1176
+    }
+  },
+  "status": "ok",
+  "plot_written": true
+}

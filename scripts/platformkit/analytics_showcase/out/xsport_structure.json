@@ -1,0 +1,90 @@
+{
+  "edge_claimed": false,
+  "method": "one reliability-map methodology across sports: tick-weighted market ECE/Brier (b), favorite (>=0.60) vs longshot (<=0.40) outcome-minus-implied gap (a), near-decided (>=0.85) favorite-loses comeback rate (c)",
+  "floors": "per-bucket n_games>=30 AND non-null market_mean_prob; tick-weighted aggregates; tennis has no map -> not_buildable, never guessed; edge_claimed=False",
+  "source_maps": {
+    "nba": "nba_reliability_map.json",
+    "mlb": "mlb_reliability_map.json",
+    "soccer": "soccer_reliability_map.json"
+  },
+  "as_of": "2026-07-18T06:31:12.434974+00:00",
+  "sports": {
+    "nba": {
+      "status": "ok",
+      "sport_from_map": "nba",
+      "as_of": "2026-07-18T06:31:12.434974+00:00",
+      "n_games_total": 1593,
+      "n_buckets_usable": 77,
+      "market_ece": 0.0064,
+      "market_brier": 0.0739,
+      "favorite_longshot": {
+        "favorite_ge_0.60": {
+          "n_buckets": 35,
+          "n_ticks": 243727,
+          "n_games": 13423,
+          "mean_market_prob": 0.8948,
+          "mean_outcome": 0.8997,
+          "gap_outcome_minus_prob": 0.005
+        },
+        "longshot_le_0.40": {
+          "n_buckets": 30,
+          "n_ticks": 172402,
+          "n_games": 7636,
+          "mean_market_prob": 0.0694,
+          "mean_outcome": 0.0682,
+          "gap_outcome_minus_prob": -0.0012
+        }
+      },
+      "comeback_proxy": {
+        "threshold_market_prob": 0.85,
+        "n_buckets": 23,
+        "n_ticks": 171220,
+        "n_games": 5578,
+        "favorite_hold_rate": 0.9854,
+        "comeback_rate": 0.0146
+      }
+    },
+    "mlb": {
+      "status": "not_buildable",
+      "reason": "no bucket had market_mean_prob and n_games>=30"
+    },
+    "soccer": {
+      "status": "not_buildable",
+      "reason": "no bucket had market_mean_prob and n_games>=30"
+    },
+    "tennis": {
+      "status": "not_buildable",
+      "reason": "no reliability map (data/cache/calibration_grid/tennis_reliability_map.json absent)"
+    }
+  },
+  "table": [
+    {
+      "sport": "nba",
+      "status": "ok",
+      "n_games": 1593,
+      "n_buckets_usable": 77,
+      "market_ece": 0.0064,
+      "market_brier": 0.0739,
+      "fav_gap": 0.005,
+      "dog_gap": -0.0012,
+      "comeback_rate": 0.0146
+    },
+    {
+      "sport": "mlb",
+      "status": "not_buildable",
+      "n_games": null
+    },
+    {
+      "sport": "soccer",
+      "status": "not_buildable",
+      "n_games": null
+    },
+    {
+      "sport": "tennis",
+      "status": "not_buildable",
+      "n_games": null
+    }
+  ],
+  "verdict": "Same methodology, per-sport n honest. nba: market ECE=0.006 (n_games=1593), fav_gap=+0.005/dog_gap=-0.001 (favorite-longshot-consistent), comeback~0.015. Not buildable: mlb, soccer, tennis.",
+  "plot_written": true
+}

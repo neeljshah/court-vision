@@ -1,0 +1,6176 @@
+{
+  "edge_claimed": false,
+  "as_of": "2026-07-11T16:48:14Z",
+  "method": "Per claim family (sport x hypothesis) from the 4 validation ledgers: verdict history ordered by run_ts, current status = last entry. Families with >1 distinct status flagged flipped.",
+  "story": "The product is the self-grading. Nulls, not-testables and retractions are kept in the ledger and counted; a system that only ever confirmed would not be credible.",
+  "n_ledger_rows": 287,
+  "summary": {
+    "n_families": 259,
+    "by_status": {
+      "verified": 121,
+      "provisional": 4,
+      "null": 99,
+      "not_testable": 28,
+      "retracted": 7
+    },
+    "by_status_per_sport": {
+      "basketball_nba": {
+        "null": 26,
+        "verified": 39,
+        "not_testable": 7,
+        "provisional": 2
+      },
+      "mlb": {
+        "null": 32,
+        "verified": 31,
+        "not_testable": 8,
+        "retracted": 6,
+        "provisional": 1
+      },
+      "soccer": {
+        "null": 21,
+        "verified": 27,
+        "not_testable": 8,
+        "provisional": 1,
+        "retracted": 1
+      },
+      "tennis": {
+        "null": 20,
+        "verified": 24,
+        "not_testable": 5
+      }
+    },
+    "confirms": 121,
+    "nulls_or_worse": 134,
+    "honest_ratio_nulls_per_confirm": 1.107,
+    "n_flipped": 5,
+    "as_of": "2026-07-11T16:48:14Z"
+  },
+  "flipped_families": [
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "three_in_four_fatigue",
+      "n_entries": 2,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": true,
+      "verdict_sequence": [
+        "NULL_LOCAL",
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "player_boxscores_2024_25_2025_26",
+          "n": 4762,
+          "effect": -0.916
+        },
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "player_boxscores_2024_25_2025_26",
+          "n": 7222,
+          "effect": -1.213
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "reliever_3in3d_fatigue",
+      "n_entries": 3,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": true,
+      "verdict_sequence": [
+        "NULL_LOCAL",
+        "NULL_LOCAL",
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "bullpen_relief_chains+savant_full__2023-2025",
+          "n": 9054,
+          "effect": 0.01839
+        },
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "bullpen_relief_chains+savant_full__2023-2025",
+          "n": 8897,
+          "effect": -0.03538
+        },
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "bullpen_relief_chains+savant_full__2023-2025",
+          "n": 8927,
+          "effect": -0.04412
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "reliever_3in3d_fatigue__combined",
+      "n_entries": 2,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": true,
+      "verdict_sequence": [
+        "PROVISIONAL",
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "PROVISIONAL",
+          "status": "provisional",
+          "run_ts": null,
+          "corpus": "bullpen_relief_chains+savant_full__2023-2025",
+          "n": 26878,
+          "effect": null
+        },
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "bullpen_relief_chains+savant_full__2023-2025",
+          "n": 26878,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "staff_dayafter_fatigue_chain",
+      "n_entries": 3,
+      "first_seen": "2026-07-10T08:23:40Z",
+      "last_seen": "2026-07-10T08:23:40Z",
+      "current_status": "null",
+      "flipped": true,
+      "verdict_sequence": [
+        "NULL_LOCAL",
+        "CONFIRMED_LOCAL",
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T08:23:40Z",
+          "corpus": "savant_full__2023-2025_team_day_pitchcount",
+          "n": 2087,
+          "effect": 0.0789
+        },
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T08:23:40Z",
+          "corpus": "savant_full__2023-2025_team_day_pitchcount",
+          "n": 2160,
+          "effect": 0.3915
+        },
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T08:23:40Z",
+          "corpus": "savant_full__2023-2025_team_day_pitchcount",
+          "n": 2078,
+          "effect": 0.3266
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "break_point_conversion_by_set_number",
+      "n_entries": 2,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": true,
+      "verdict_sequence": [
+        "NOT_TESTABLE",
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": null,
+          "corpus": "slam_points_2011_2015",
+          "n": 34145,
+          "effect": -0.017
+        },
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "slam_points_2011_2015",
+          "n": 34145,
+          "effect": -0.017
+        }
+      ]
+    }
+  ],
+  "families": [
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "assist_hub_concentration_offrtg",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "player_boxscores_2025_26+quarter_box+four_factor_env",
+          "n": 30,
+          "effect": 4.2094
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "b2b_rest_penalty",
+      "n_entries": 2,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL",
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "player_boxscores_2024_25_2025_26",
+          "n": 4732,
+          "effect": -1.73
+        },
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "player_boxscores_2024_25_2025_26",
+          "n": 7192,
+          "effect": -1.955
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "b2b_x_margin_starter_minutes__combined",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T10:57:31Z",
+      "last_seen": "2026-07-10T10:57:31Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T10:57:31Z",
+          "corpus": "player_boxscores_team_game_frame_7192_teamgames_nonnull_rest (split-half by date)",
+          "n": 7192,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "b2b_x_margin_starter_minutes__h1",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T10:57:31Z",
+      "last_seen": "2026-07-10T10:57:31Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T10:57:31Z",
+          "corpus": "player_boxscores_team_game_frame_7192_teamgames_nonnull_rest (split-half by date)",
+          "n": 3596,
+          "effect": -0.0372
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "b2b_x_margin_starter_minutes__h2",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T10:57:31Z",
+      "last_seen": "2026-07-10T10:57:31Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T10:57:31Z",
+          "corpus": "player_boxscores_team_game_frame_7192_teamgames_nonnull_rest (split-half by date)",
+          "n": 3596,
+          "effect": -0.0998
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "bench_continuity_dreb",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "player_boxscores_2024_25_2025_26+stints_2024_25+zone_onoff_2024_25",
+          "n": 76418,
+          "effect": -0.00019
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "boxdetail_ast_persistence_and_margin",
+      "n_entries": 2,
+      "first_seen": "2026-07-10T08:59:16Z",
+      "last_seen": "2026-07-10T09:01:17Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL",
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T08:59:16Z",
+          "corpus": "espn_boxscores_boxdetail_2026_01_20_onward",
+          "n": null,
+          "effect": null
+        },
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T09:01:17Z",
+          "corpus": "espn_boxscores_full_1977games",
+          "n": null,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "boxdetail_ast_persistence_replication_2024_25",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T15:28:56Z",
+      "last_seen": "2026-07-10T15:28:56Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "REPLICATED"
+      ],
+      "history": [
+        {
+          "verdict": "REPLICATED",
+          "status": "verified",
+          "run_ts": "2026-07-10T15:28:56Z",
+          "corpus": "replication_wave1_second_corpus",
+          "n": null,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "boxdetail_fast_break_pts_persistence_and_margin",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "espn_boxscores_boxdetail_2026_01_20_onward",
+          "n": null,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "boxdetail_fast_break_pts_persistence_replication_2024_25",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T15:28:56Z",
+      "last_seen": "2026-07-10T15:28:56Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "REPLICATED"
+      ],
+      "history": [
+        {
+          "verdict": "REPLICATED",
+          "status": "verified",
+          "run_ts": "2026-07-10T15:28:56Z",
+          "corpus": "replication_wave1_second_corpus",
+          "n": null,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "boxdetail_largest_lead_persistence_and_margin",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T08:41:56Z",
+      "last_seen": "2026-07-10T08:41:56Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T08:41:56Z",
+          "corpus": "espn_boxscores_boxdetail_2026_01_20_onward",
+          "n": null,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "boxdetail_largest_lead_persistence_q8_2023_24",
+      "n_entries": 1,
+      "first_seen": "2026-07-11T16:48:14Z",
+      "last_seen": "2026-07-11T16:48:14Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-11T16:48:14Z",
+          "corpus": "espn_boxscores_2023_24",
+          "n": null,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "boxdetail_largest_lead_persistence_q8_2024_25",
+      "n_entries": 1,
+      "first_seen": "2026-07-11T16:48:14Z",
+      "last_seen": "2026-07-11T16:48:14Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-11T16:48:14Z",
+          "corpus": "espn_boxscores_2024_25",
+          "n": null,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "boxdetail_largest_lead_persistence_q8_orig_2026_slice",
+      "n_entries": 1,
+      "first_seen": "2026-07-11T16:48:14Z",
+      "last_seen": "2026-07-11T16:48:14Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-11T16:48:14Z",
+          "corpus": "espn_boxscores_orig_2026_slice",
+          "n": null,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "boxdetail_largest_lead_persistence_q8_pooled3season",
+      "n_entries": 1,
+      "first_seen": "2026-07-11T16:48:14Z",
+      "last_seen": "2026-07-11T16:48:14Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "REPLICATED"
+      ],
+      "history": [
+        {
+          "verdict": "REPLICATED",
+          "status": "verified",
+          "run_ts": "2026-07-11T16:48:14Z",
+          "corpus": "espn_boxscores_3season_pooled_2023_24_thru_2026",
+          "n": null,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "boxdetail_paint_pts_persistence_and_margin",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "espn_boxscores_boxdetail_2026_01_20_onward",
+          "n": null,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "boxdetail_paint_pts_persistence_replication_2024_25",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T15:28:56Z",
+      "last_seen": "2026-07-10T15:28:56Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "REPLICATED"
+      ],
+      "history": [
+        {
+          "verdict": "REPLICATED",
+          "status": "verified",
+          "run_ts": "2026-07-10T15:28:56Z",
+          "corpus": "replication_wave1_second_corpus",
+          "n": null,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "boxdetail_tov_pts_persistence_and_margin",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "espn_boxscores_boxdetail_2026_01_20_onward",
+          "n": null,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "boxdetail_tov_pts_persistence_replication_2024_25",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T15:28:56Z",
+      "last_seen": "2026-07-10T15:28:56Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T15:28:56Z",
+          "corpus": "replication_wave1_second_corpus",
+          "n": null,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "clutch_free_throw_pressure_dip",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "not_testable",
+      "flipped": false,
+      "verdict_sequence": [
+        "NOT_TESTABLE"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": null,
+          "corpus": "premise_check_only",
+          "n": 0,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "clutch_lineup_shortening",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "player_boxscores_2024_25_2025_26+stints_2024_25+zone_onoff_2024_25",
+          "n": 1052,
+          "effect": -6.3384
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "clutch_usage_compression",
+      "n_entries": 2,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL",
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "player_boxscores_2024_25_2025_26",
+          "n": 255,
+          "effect": 0.6734
+        },
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "player_boxscores_2024_25_2025_26",
+          "n": 8164,
+          "effect": 0.5031
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "defender_matchup_skill_predictive_validity",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T08:59:16Z",
+      "last_seen": "2026-07-10T08:59:16Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T08:59:16Z",
+          "corpus": "defender_matchup_states_37395rows",
+          "n": null,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "fast_break_pts_persistence_replication",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T13:36:47Z",
+      "last_seen": "2026-07-10T13:36:47Z",
+      "current_status": "not_testable",
+      "flipped": false,
+      "verdict_sequence": [
+        "NOT_REPLICABLE_NO_CORPUS"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_REPLICABLE_NO_CORPUS",
+          "status": "not_testable",
+          "run_ts": "2026-07-10T13:36:47Z",
+          "corpus": "replication_wave1_second_corpus",
+          "n": 0,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "foul_rate_dispersion_exceeds_poisson_noise__combined",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T12:14:11Z",
+      "last_seen": "2026-07-10T12:14:11Z",
+      "current_status": "provisional",
+      "flipped": false,
+      "verdict_sequence": [
+        "PROVISIONAL"
+      ],
+      "history": [
+        {
+          "verdict": "PROVISIONAL",
+          "status": "provisional",
+          "run_ts": "2026-07-10T12:14:11Z",
+          "corpus": "player_boxscores_team_game_pf_loo_season_mean (split-half by date)",
+          "n": 3611,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "foul_rate_dispersion_exceeds_poisson_noise__h1",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T12:14:11Z",
+      "last_seen": "2026-07-10T12:14:11Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T12:14:11Z",
+          "corpus": "player_boxscores_team_game_pf_loo_season_mean (split-half by date)",
+          "n": 1806,
+          "effect": 1.1061
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "foul_rate_dispersion_exceeds_poisson_noise__h2",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T12:14:11Z",
+      "last_seen": "2026-07-10T12:14:11Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T12:14:11Z",
+          "corpus": "player_boxscores_team_game_pf_loo_season_mean (split-half by date)",
+          "n": 1805,
+          "effect": 1.1837
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "foul_trouble_efficiency_shift__combined",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T08:09:18Z",
+      "last_seen": "2026-07-10T08:09:18Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T08:09:18Z",
+          "corpus": "player_boxscores+pbp_p1_json (1289 games, split-half by date)",
+          "n": 11907,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "foul_trouble_efficiency_shift__h1",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T08:09:18Z",
+      "last_seen": "2026-07-10T08:09:18Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T08:09:18Z",
+          "corpus": "player_boxscores+pbp_p1_json (1289 games, split-half by date)",
+          "n": 5972,
+          "effect": -0.09861
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "foul_trouble_efficiency_shift__h2",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T08:09:18Z",
+      "last_seen": "2026-07-10T08:09:18Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T08:09:18Z",
+          "corpus": "player_boxscores+pbp_p1_json (1289 games, split-half by date)",
+          "n": 5935,
+          "effect": -0.03406
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "foul_trouble_minutes_reduction",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "player_boxscores_2025_26+quarter_box+four_factor_env",
+          "n": 12310,
+          "effect": -0.3683
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "foul_trouble_usage_shift__combined",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T08:09:18Z",
+      "last_seen": "2026-07-10T08:09:18Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T08:09:18Z",
+          "corpus": "player_boxscores+pbp_p1_json (1289 games, split-half by date)",
+          "n": 11907,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "foul_trouble_usage_shift__h1",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T08:09:18Z",
+      "last_seen": "2026-07-10T08:09:18Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T08:09:18Z",
+          "corpus": "player_boxscores+pbp_p1_json (1289 games, split-half by date)",
+          "n": 5972,
+          "effect": 0.00712
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "foul_trouble_usage_shift__h2",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T08:09:18Z",
+      "last_seen": "2026-07-10T08:09:18Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T08:09:18Z",
+          "corpus": "player_boxscores+pbp_p1_json (1289 games, split-half by date)",
+          "n": 5935,
+          "effect": 0.02403
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "ft_rate_environment_wins",
+      "n_entries": 2,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL",
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "player_boxscores_2024_25_2025_26+four_factor_env",
+          "n": 30,
+          "effect": 0.0729
+        },
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "player_boxscores_2024_25_2025_26+four_factor_env",
+          "n": 30,
+          "effect": 0.0373
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "garbage_time_bench_inflation",
+      "n_entries": 2,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL",
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "player_boxscores_2024_25_2025_26",
+          "n": 25307,
+          "effect": 0.0405
+        },
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "player_boxscores_2024_25_2025_26",
+          "n": 38254,
+          "effect": 0.0417
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "home_court_advantage_magnitude",
+      "n_entries": 2,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL",
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "player_boxscores_2024_25_2025_26",
+          "n": 4762,
+          "effect": 3.395
+        },
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "player_boxscores_2024_25_2025_26",
+          "n": 7222,
+          "effect": 3.704
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "home_q4_edge_exceeds_other_quarters",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T08:41:58Z",
+      "last_seen": "2026-07-10T08:41:58Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T08:41:58Z",
+          "corpus": "linescores_derive_realized_team_games",
+          "n": 1313,
+          "effect": -0.1678
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "lineup_continuity_streak_vs_point_diff__2023-24",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T15:32:11Z",
+      "last_seen": "2026-07-10T15:32:11Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T15:32:11Z",
+          "corpus": "stints_2023_24+2024_25",
+          "n": 2460,
+          "effect": 0.0535
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "lineup_continuity_streak_vs_point_diff__2024-25",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T15:32:11Z",
+      "last_seen": "2026-07-10T15:32:11Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T15:32:11Z",
+          "corpus": "stints_2023_24+2024_25",
+          "n": 2460,
+          "effect": 0.0788
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "lineup_continuity_streak_vs_point_diff__combined",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T15:32:11Z",
+      "last_seen": "2026-07-10T15:32:11Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T15:32:11Z",
+          "corpus": "stints_2023_24+2024_25",
+          "n": 4920,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "pace_mismatch_variance",
+      "n_entries": 2,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL",
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "player_boxscores_2024_25_2025_26+four_factor_env",
+          "n": 4762,
+          "effect": 0.538
+        },
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "player_boxscores_2024_25_2025_26+four_factor_env",
+          "n": 7222,
+          "effect": 0.73
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "paint_pts_persistence_replication",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T13:36:48Z",
+      "last_seen": "2026-07-10T13:36:48Z",
+      "current_status": "not_testable",
+      "flipped": false,
+      "verdict_sequence": [
+        "NOT_REPLICABLE_NO_CORPUS"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_REPLICABLE_NO_CORPUS",
+          "status": "not_testable",
+          "run_ts": "2026-07-10T13:36:48Z",
+          "corpus": "replication_wave1_second_corpus",
+          "n": 0,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "player_b2b_scoring_dip",
+      "n_entries": 2,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL",
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "player_boxscores_2024_25_2025_26",
+          "n": 42996,
+          "effect": -0.0056
+        },
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "player_boxscores_2024_25_2025_26",
+          "n": 65103,
+          "effect": -0.0053
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "q1_slow_start_persists_replication_2024_25",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T13:36:47Z",
+      "last_seen": "2026-07-10T13:36:47Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "REPLICATED"
+      ],
+      "history": [
+        {
+          "verdict": "REPLICATED",
+          "status": "verified",
+          "run_ts": "2026-07-10T13:36:47Z",
+          "corpus": "replication_wave1_second_corpus",
+          "n": 30,
+          "effect": 0.5855
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "q1_slow_start_persists_split_half",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "linescores_derive_realized_team_games",
+          "n": 30,
+          "effect": 0.7171
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "q2_blowout_early_bench_deployment",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T11:47:58Z",
+      "last_seen": "2026-07-10T11:47:58Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL",
+          "status": "null",
+          "run_ts": "2026-07-10T11:47:58Z",
+          "corpus": "linescores_2024_25+2025_26+player_boxscores",
+          "n": null,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "q2_foul_pace_state_interaction",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T11:47:58Z",
+      "last_seen": "2026-07-10T11:47:58Z",
+      "current_status": "not_testable",
+      "flipped": false,
+      "verdict_sequence": [
+        "NOT_TESTABLE"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": "2026-07-10T11:47:58Z",
+          "corpus": "linescores_2024_25+2025_26+player_boxscores",
+          "n": 0,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "q2_lead_extension_beyond_ar",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T11:47:58Z",
+      "last_seen": "2026-07-10T11:47:58Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "REPLICATED"
+      ],
+      "history": [
+        {
+          "verdict": "REPLICATED",
+          "status": "verified",
+          "run_ts": "2026-07-10T11:47:58Z",
+          "corpus": "linescores_2024_25+2025_26+player_boxscores",
+          "n": null,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "q3_margin_vs_halftime_deficit",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T09:24:03Z",
+      "last_seen": "2026-07-10T09:24:03Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL",
+          "status": "null",
+          "run_ts": "2026-07-10T09:24:03Z",
+          "corpus": "linescores_2024_25+2025_26_team_game_quarters",
+          "n": null,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "q3_volatility_close_halftime",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T09:24:03Z",
+      "last_seen": "2026-07-10T09:24:03Z",
+      "current_status": "provisional",
+      "flipped": false,
+      "verdict_sequence": [
+        "PARTIAL"
+      ],
+      "history": [
+        {
+          "verdict": "PARTIAL",
+          "status": "provisional",
+          "run_ts": "2026-07-10T09:24:03Z",
+          "corpus": "linescores_2024_25+2025_26_team_game_quarters",
+          "n": null,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "quarter_volatility_persists_and_relates_to_margin_variance",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "linescores_derive_realized_team_games",
+          "n": null,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "rest_differential_margin__combined",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T09:43:51Z",
+      "last_seen": "2026-07-10T09:43:51Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T09:43:51Z",
+          "corpus": "player_boxscores_team_game_frame_7222_teamgames (split-half by date)",
+          "n": 3596,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "rest_differential_margin__h1",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T09:43:51Z",
+      "last_seen": "2026-07-10T09:43:51Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T09:43:51Z",
+          "corpus": "player_boxscores_team_game_frame_7222_teamgames (split-half by date)",
+          "n": 1798,
+          "effect": -0.018
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "rest_differential_margin__h2",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T09:43:51Z",
+      "last_seen": "2026-07-10T09:43:51Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T09:43:51Z",
+          "corpus": "player_boxscores_team_game_frame_7222_teamgames (split-half by date)",
+          "n": 1798,
+          "effect": -0.0105
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "rim_pressure_def_dreb",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "player_boxscores_2024_25_2025_26+stints_2024_25+zone_onoff_2024_25",
+          "n": 512,
+          "effect": 0.0479
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "rotation_size_persists_split_half",
+      "n_entries": 2,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL",
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "player_boxscores_2024_25_2025_26+four_factor_env",
+          "n": 30,
+          "effect": 0.6807
+        },
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "player_boxscores_2024_25_2025_26+four_factor_env",
+          "n": 30,
+          "effect": 0.6855
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "rotation_size_stability_vs_net_rating",
+      "n_entries": 2,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL",
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "player_boxscores_2024_25_2025_26+four_factor_env",
+          "n": 60,
+          "effect": -0.054
+        },
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "player_boxscores_2024_25_2025_26+four_factor_env",
+          "n": 90,
+          "effect": -0.0213
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "star_injury_usage_vacuum_event_study",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "player_boxscores_2025_26+quarter_box+four_factor_env",
+          "n": 12764,
+          "effect": 0.0019
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "starter_minutes_vs_margin__combined",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T10:57:31Z",
+      "last_seen": "2026-07-10T10:57:31Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T10:57:31Z",
+          "corpus": "player_boxscores_team_game_frame_7222_teamgames (split-half by date)",
+          "n": 7222,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "starter_minutes_vs_margin__h1",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T10:57:31Z",
+      "last_seen": "2026-07-10T10:57:31Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T10:57:31Z",
+          "corpus": "player_boxscores_team_game_frame_7222_teamgames (split-half by date)",
+          "n": 3612,
+          "effect": -1.0689
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "starter_minutes_vs_margin__h2",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T10:57:31Z",
+      "last_seen": "2026-07-10T10:57:31Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T10:57:31Z",
+          "corpus": "player_boxscores_team_game_frame_7222_teamgames (split-half by date)",
+          "n": 3610,
+          "effect": -0.9262
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "switch_rate_defensive_efficiency",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T08:59:16Z",
+      "last_seen": "2026-07-10T08:59:16Z",
+      "current_status": "not_testable",
+      "flipped": false,
+      "verdict_sequence": [
+        "NOT_TESTABLE"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": "2026-07-10T08:59:16Z",
+          "corpus": "asof_defender_rollup_1656games",
+          "n": 3282,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "three_in_four_fatigue",
+      "n_entries": 2,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": true,
+      "verdict_sequence": [
+        "NULL_LOCAL",
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "player_boxscores_2024_25_2025_26",
+          "n": 4762,
+          "effect": -0.916
+        },
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "player_boxscores_2024_25_2025_26",
+          "n": 7222,
+          "effect": -1.213
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "timeout_interrupts_opponent_run__combined",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T09:43:51Z",
+      "last_seen": "2026-07-10T09:43:51Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T09:43:51Z",
+          "corpus": "pbp_p1_json_timeout_windows (1289 games w/ timeout samples, split-half by date)",
+          "n": 2712,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "timeout_interrupts_opponent_run__h1",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T09:43:51Z",
+      "last_seen": "2026-07-10T09:43:51Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T09:43:51Z",
+          "corpus": "pbp_p1_json_timeout_windows (1289 games w/ timeout samples, split-half by date)",
+          "n": 1357,
+          "effect": -0.7314
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "timeout_interrupts_opponent_run__h2",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T09:43:51Z",
+      "last_seen": "2026-07-10T09:43:51Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T09:43:51Z",
+          "corpus": "pbp_p1_json_timeout_windows (1289 games w/ timeout samples, split-half by date)",
+          "n": 1355,
+          "effect": -0.7308
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "timeout_interrupts_opponent_run_replication_2022_23",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T13:36:47Z",
+      "last_seen": "2026-07-10T13:36:47Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "REPLICATED"
+      ],
+      "history": [
+        {
+          "verdict": "REPLICATED",
+          "status": "verified",
+          "run_ts": "2026-07-10T13:36:47Z",
+          "corpus": "replication_wave1_second_corpus",
+          "n": 2544,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "transition_frequency_pace_mismatch",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "not_testable",
+      "flipped": false,
+      "verdict_sequence": [
+        "NOT_TESTABLE"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": null,
+          "corpus": "premise_check_only",
+          "n": 0,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "transition_frequency_pace_mismatch__combined",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T08:24:58Z",
+      "last_seen": "2026-07-10T08:24:58Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T08:24:58Z",
+          "corpus": "team_system_pbp_actions+games (event-level, season 2025-26)",
+          "n": 2312,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "transition_rate_margin_relation",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T08:24:58Z",
+      "last_seen": "2026-07-10T08:24:58Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T08:24:58Z",
+          "corpus": "team_system_pbp_actions+games (event-level, season 2025-26)",
+          "n": 1077,
+          "effect": 0.1452
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "transition_rate_split_half_persistence",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T08:24:58Z",
+      "last_seen": "2026-07-10T08:24:58Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T08:24:58Z",
+          "corpus": "team_system_pbp_actions+games (event-level, season 2025-26)",
+          "n": 30,
+          "effect": 0.9581
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "travel_timezone_fatigue",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "not_testable",
+      "flipped": false,
+      "verdict_sequence": [
+        "NOT_TESTABLE"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": null,
+          "corpus": "premise_check_only",
+          "n": 0,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "usage_redistribution_persistence",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "player_boxscores_2025_26+quarter_box+four_factor_env",
+          "n": 1657,
+          "effect": 0.8005
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "baserunning_aggression_vs_outfield_arm_deterrence__combined",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T12:14:56Z",
+      "last_seen": "2026-07-10T12:14:56Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T12:14:56Z",
+          "corpus": "espn_boxscores",
+          "n": 7746,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "baserunning_aggression_vs_outfield_arm_deterrence__h1",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T12:14:56Z",
+      "last_seen": "2026-07-10T12:14:56Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T12:14:56Z",
+          "corpus": "espn_boxscores",
+          "n": 3886,
+          "effect": 0.0177
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "baserunning_aggression_vs_outfield_arm_deterrence__h2",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T12:14:56Z",
+      "last_seen": "2026-07-10T12:14:56Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T12:14:56Z",
+          "corpus": "espn_boxscores",
+          "n": 3860,
+          "effect": -0.0136
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "big_inning_leadoff_gating",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "savant_full__2025",
+          "n": 42783,
+          "effect": 0.0959
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "bullpen_day_scoring_structure__combined",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T11:04:38Z",
+      "last_seen": "2026-07-10T11:04:38Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T11:04:38Z",
+          "corpus": "savant_full__2025",
+          "n": 20508,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "bullpen_day_scoring_structure__h1",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T11:04:38Z",
+      "last_seen": "2026-07-10T11:04:38Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T11:04:38Z",
+          "corpus": "player_gamelogs+games_current",
+          "n": 10280,
+          "effect": 0.0125
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "bullpen_day_scoring_structure__h2",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T11:04:38Z",
+      "last_seen": "2026-07-10T11:04:38Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T11:04:38Z",
+          "corpus": "player_gamelogs+games_current",
+          "n": 10228,
+          "effect": 0.0819
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "bullpen_leverage_chaining",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "not_testable",
+      "flipped": false,
+      "verdict_sequence": [
+        "NOT_TESTABLE"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": null,
+          "corpus": "savant_full__2025",
+          "n": 0,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "called_strike_deviation_relates_to_total_runs",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "savant_full__2025",
+          "n": 2406,
+          "effect": 0.0084
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "called_strike_dispersion_exceeds_binomial_noise",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "savant_full__2025",
+          "n": 2406,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "called_strike_dispersion_exceeds_binomial_noise__replication_2024",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T13:33:26Z",
+      "last_seen": "2026-07-10T13:33:26Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "REPLICATED"
+      ],
+      "history": [
+        {
+          "verdict": "REPLICATED",
+          "status": "verified",
+          "run_ts": "2026-07-10T13:33:26Z",
+          "corpus": "savant_full__2024",
+          "n": 2428,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "catcher_framing_multiseason_trend",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T09:43:14Z",
+      "last_seen": "2026-07-10T09:43:14Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T09:43:14Z",
+          "corpus": "savant_full__2023+2024+2025",
+          "n": 51,
+          "effect": -0.00086
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "catcher_game_calling_persistence",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "savant_full__2025",
+          "n": 66,
+          "effect": 0.168
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "compassionate_umpire_count_zone__combined",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T09:01:43Z",
+      "last_seen": "2026-07-10T09:01:43Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T09:01:43Z",
+          "corpus": "savant_full__2025 (split-half by date)",
+          "n": 49342,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "compassionate_umpire_count_zone__h1",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T09:01:43Z",
+      "last_seen": "2026-07-10T09:01:43Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T09:01:43Z",
+          "corpus": "savant_full__2025 (split-half by date)",
+          "n": 24994,
+          "effect": -0.07654
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "compassionate_umpire_count_zone__h2",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T09:01:43Z",
+      "last_seen": "2026-07-10T09:01:43Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T09:01:43Z",
+          "corpus": "savant_full__2025 (split-half by date)",
+          "n": 24348,
+          "effect": -0.08067
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "compassionate_umpire_count_zone__replication_2024",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T13:33:26Z",
+      "last_seen": "2026-07-10T13:33:26Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "REPLICATED"
+      ],
+      "history": [
+        {
+          "verdict": "REPLICATED",
+          "status": "verified",
+          "run_ts": "2026-07-10T13:33:26Z",
+          "corpus": "savant_full__2024",
+          "n": 50058,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "contact_park_interaction__combined",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T08:11:05Z",
+      "last_seen": "2026-07-10T08:11:05Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T08:11:05Z",
+          "corpus": "savant_full__2025 (split-half by date)",
+          "n": 113254,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "contact_park_interaction__h1",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T08:11:05Z",
+      "last_seen": "2026-07-10T08:11:05Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T08:11:05Z",
+          "corpus": "savant_full__2025 (split-half by date)",
+          "n": 56725,
+          "effect": 0.0006
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "contact_park_interaction__h2",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T08:11:05Z",
+      "last_seen": "2026-07-10T08:11:05Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T08:11:05Z",
+          "corpus": "savant_full__2025 (split-half by date)",
+          "n": 56529,
+          "effect": 0.0092
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "contact_quality_persists_split_half",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "savant_full__2025",
+          "n": 430,
+          "effect": 0.5932
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "defensive_efficiency_conversion",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "savant_full__2025",
+          "n": 30,
+          "effect": 0.2358
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "edge_zone_widens_with_two_strikes",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "savant_full__2025",
+          "n": 702794,
+          "effect": 0.10488
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "first_pitch_strike_suppresses_bb",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "savant_full__2025",
+          "n": 160137,
+          "effect": -0.095
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "gb_double_play_suppression",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "savant_full__2025",
+          "n": 21209,
+          "effect": 0.29563
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "high_leverage_strand_prevention",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "savant_full__2025",
+          "n": 210,
+          "effect": 0.1863
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "infield_shift_suppresses_gb_babip",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "savant_full__2025",
+          "n": 51829,
+          "effect": -0.00582
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "iso_strand_variance_compression",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "savant_full__2025",
+          "n": 30,
+          "effect": 0.428
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "leverage_index_conversion",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "not_testable",
+      "flipped": false,
+      "verdict_sequence": [
+        "NOT_TESTABLE"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": null,
+          "corpus": "savant_full__2025",
+          "n": 123316,
+          "effect": -0.0063
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "lineup_slot_run_value",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "not_testable",
+      "flipped": false,
+      "verdict_sequence": [
+        "NOT_TESTABLE"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": null,
+          "corpus": "premise_check_only",
+          "n": 0,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "meta_label_divergence_bucket_Q1",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "retracted",
+      "flipped": false,
+      "verdict_sequence": [
+        "FAILED_REPLICATION"
+      ],
+      "history": [
+        {
+          "verdict": "FAILED_REPLICATION",
+          "status": "retracted",
+          "run_ts": null,
+          "corpus": "ingame_grade_joined_mlb_synthetic_checkpoints_disjoint",
+          "n": 20,
+          "effect": 0.45
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "meta_label_divergence_bucket_Q2",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "retracted",
+      "flipped": false,
+      "verdict_sequence": [
+        "FAILED_REPLICATION"
+      ],
+      "history": [
+        {
+          "verdict": "FAILED_REPLICATION",
+          "status": "retracted",
+          "run_ts": null,
+          "corpus": "ingame_grade_joined_mlb_synthetic_checkpoints_disjoint",
+          "n": 19,
+          "effect": 0.3158
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "meta_label_divergence_bucket_Q3",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "retracted",
+      "flipped": false,
+      "verdict_sequence": [
+        "FAILED_REPLICATION"
+      ],
+      "history": [
+        {
+          "verdict": "FAILED_REPLICATION",
+          "status": "retracted",
+          "run_ts": null,
+          "corpus": "ingame_grade_joined_mlb_synthetic_checkpoints_disjoint",
+          "n": 19,
+          "effect": 0.3158
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "meta_label_divergence_bucket_Q4",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "retracted",
+      "flipped": false,
+      "verdict_sequence": [
+        "FAILED_REPLICATION"
+      ],
+      "history": [
+        {
+          "verdict": "FAILED_REPLICATION",
+          "status": "retracted",
+          "run_ts": null,
+          "corpus": "ingame_grade_joined_mlb_synthetic_checkpoints_disjoint",
+          "n": 18,
+          "effect": 0.3333
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "meta_label_divergence_bucket_table_all_positive",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "ARTIFACT_CONFIRMED"
+      ],
+      "history": [
+        {
+          "verdict": "ARTIFACT_CONFIRMED",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "ingame_grade_joined_mlb_synthetic_checkpoints_disjoint+paper_temporal_split",
+          "n": 76,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "mid_inning_pitching_change_interrupt__combined",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T11:04:38Z",
+      "last_seen": "2026-07-10T11:04:38Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T11:04:38Z",
+          "corpus": "savant_full__2025",
+          "n": 4153,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "mid_inning_pitching_change_interrupt__h1",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T11:04:38Z",
+      "last_seen": "2026-07-10T11:04:38Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T11:04:38Z",
+          "corpus": "savant_full__2025",
+          "n": 2074,
+          "effect": -0.06091
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "mid_inning_pitching_change_interrupt__h2",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T11:04:38Z",
+      "last_seen": "2026-07-10T11:04:38Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T11:04:38Z",
+          "corpus": "savant_full__2025",
+          "n": 2079,
+          "effect": -0.07592
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "milb_debut_freshness_flag",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "retracted",
+      "flipped": false,
+      "verdict_sequence": [
+        "REJECT"
+      ],
+      "history": [
+        {
+          "verdict": "REJECT",
+          "status": "retracted",
+          "run_ts": null,
+          "corpus": "games_current_season_2026__savant_debut_proxy",
+          "n": 39,
+          "effect": 0.000394
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "oaa_trailing_fielding_quality_babip_conversion",
+      "n_entries": 2,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "retracted",
+      "flipped": false,
+      "verdict_sequence": [
+        "REJECT",
+        "REJECT"
+      ],
+      "history": [
+        {
+          "verdict": "REJECT",
+          "status": "retracted",
+          "run_ts": null,
+          "corpus": "savant_playlevel__2025_2026",
+          "n": 55063,
+          "effect": null
+        },
+        {
+          "verdict": "REJECT",
+          "status": "retracted",
+          "run_ts": null,
+          "corpus": "savant_playlevel__2025_2026",
+          "n": 55063,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "of_alignment_xbh_suppression__combined",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T09:01:43Z",
+      "last_seen": "2026-07-10T09:01:43Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T09:01:43Z",
+          "corpus": "savant_full__2025 (split-half by date)",
+          "n": 61150,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "of_alignment_xbh_suppression__h1",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T09:01:43Z",
+      "last_seen": "2026-07-10T09:01:43Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T09:01:43Z",
+          "corpus": "savant_full__2025 (split-half by date)",
+          "n": 30883,
+          "effect": -0.01202
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "of_alignment_xbh_suppression__h2",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T09:01:43Z",
+      "last_seen": "2026-07-10T09:01:43Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T09:01:43Z",
+          "corpus": "savant_full__2025 (split-half by date)",
+          "n": 30267,
+          "effect": 0.01458
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "park_factor_run_modulation_split_half",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "savant_full__2025",
+          "n": 30,
+          "effect": 0.3364
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "pinch_sub_platoon_targeting__combined",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T11:04:38Z",
+      "last_seen": "2026-07-10T11:04:38Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T11:04:38Z",
+          "corpus": "savant_full__2025",
+          "n": 4311,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "pinch_sub_platoon_targeting__h1",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T11:04:38Z",
+      "last_seen": "2026-07-10T11:04:38Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T11:04:38Z",
+          "corpus": "savant_full__2025",
+          "n": 2098,
+          "effect": -0.1744
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "pinch_sub_platoon_targeting__h2",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T11:04:38Z",
+      "last_seen": "2026-07-10T11:04:38Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T11:04:38Z",
+          "corpus": "savant_full__2025",
+          "n": 2213,
+          "effect": -0.1844
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "pitch_efficiency_durability",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "savant_full__2025",
+          "n": 207,
+          "effect": -0.2544
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "platoon_split_persistence",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T09:41:38Z",
+      "last_seen": "2026-07-10T09:41:38Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T09:41:38Z",
+          "corpus": "savant_full__2025",
+          "n": 301,
+          "effect": 0.0604
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "putaway_whiff_dispersion_exceeds_binomial_noise__2024",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T15:35:27Z",
+      "last_seen": "2026-07-10T15:35:27Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T15:35:27Z",
+          "corpus": "savant_full__2025",
+          "n": 2428,
+          "effect": 1.2853
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "putaway_whiff_dispersion_exceeds_binomial_noise__2025",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T15:35:27Z",
+      "last_seen": "2026-07-10T15:35:27Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T15:35:27Z",
+          "corpus": "savant_full__2025",
+          "n": 2406,
+          "effect": 1.2174
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "putaway_whiff_dispersion_exceeds_binomial_noise__combined",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T15:35:27Z",
+      "last_seen": "2026-07-10T15:35:27Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T15:35:27Z",
+          "corpus": "savant_full__2025",
+          "n": 4834,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "reliever_3in3d_fatigue",
+      "n_entries": 3,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": true,
+      "verdict_sequence": [
+        "NULL_LOCAL",
+        "NULL_LOCAL",
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "bullpen_relief_chains+savant_full__2023-2025",
+          "n": 9054,
+          "effect": 0.01839
+        },
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "bullpen_relief_chains+savant_full__2023-2025",
+          "n": 8897,
+          "effect": -0.03538
+        },
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "bullpen_relief_chains+savant_full__2023-2025",
+          "n": 8927,
+          "effect": -0.04412
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "reliever_3in3d_fatigue__combined",
+      "n_entries": 2,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": true,
+      "verdict_sequence": [
+        "PROVISIONAL",
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "PROVISIONAL",
+          "status": "provisional",
+          "run_ts": null,
+          "corpus": "bullpen_relief_chains+savant_full__2023-2025",
+          "n": 26878,
+          "effect": null
+        },
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "bullpen_relief_chains+savant_full__2023-2025",
+          "n": 26878,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "reliever_b2b_fatigue",
+      "n_entries": 3,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL",
+        "NULL_LOCAL",
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "bullpen_relief_chains+savant_full__2023-2025",
+          "n": 15484,
+          "effect": -0.0049
+        },
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "bullpen_relief_chains+savant_full__2023-2025",
+          "n": 15605,
+          "effect": -0.00835
+        },
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "bullpen_relief_chains+savant_full__2023-2025",
+          "n": 15629,
+          "effect": -0.00877
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "reliever_b2b_fatigue__combined",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "bullpen_relief_chains+savant_full__2023-2025",
+          "n": 46718,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "same_type_repeat_whiff__combined",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T09:01:43Z",
+      "last_seen": "2026-07-10T09:01:43Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T09:01:43Z",
+          "corpus": "savant_full__2025 (split-half by date)",
+          "n": 276914,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "same_type_repeat_whiff__h1",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T09:01:43Z",
+      "last_seen": "2026-07-10T09:01:43Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T09:01:43Z",
+          "corpus": "savant_full__2025 (split-half by date)",
+          "n": 139160,
+          "effect": 0.00915
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "same_type_repeat_whiff__h2",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T09:01:43Z",
+      "last_seen": "2026-07-10T09:01:43Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T09:01:43Z",
+          "corpus": "savant_full__2025 (split-half by date)",
+          "n": 137754,
+          "effect": 0.0129
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "sequencing_and_cluster_luck",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "not_testable",
+      "flipped": false,
+      "verdict_sequence": [
+        "NOT_TESTABLE"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": null,
+          "corpus": "premise_check_only",
+          "n": 0,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "speed_baserunning_advancement_value",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "not_testable",
+      "flipped": false,
+      "verdict_sequence": [
+        "NOT_TESTABLE"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": null,
+          "corpus": "premise_check_only",
+          "n": 0,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "spin_rate_deception",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "savant_full__2025",
+          "n": 100280,
+          "effect": 4.327e-05
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "staff_dayafter_fatigue_chain",
+      "n_entries": 3,
+      "first_seen": "2026-07-10T08:23:40Z",
+      "last_seen": "2026-07-10T08:23:40Z",
+      "current_status": "null",
+      "flipped": true,
+      "verdict_sequence": [
+        "NULL_LOCAL",
+        "CONFIRMED_LOCAL",
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T08:23:40Z",
+          "corpus": "savant_full__2023-2025_team_day_pitchcount",
+          "n": 2087,
+          "effect": 0.0789
+        },
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T08:23:40Z",
+          "corpus": "savant_full__2023-2025_team_day_pitchcount",
+          "n": 2160,
+          "effect": 0.3915
+        },
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T08:23:40Z",
+          "corpus": "savant_full__2023-2025_team_day_pitchcount",
+          "n": 2078,
+          "effect": 0.3266
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "staff_dayafter_fatigue_chain__combined",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T08:23:40Z",
+      "last_seen": "2026-07-10T08:23:40Z",
+      "current_status": "provisional",
+      "flipped": false,
+      "verdict_sequence": [
+        "PROVISIONAL"
+      ],
+      "history": [
+        {
+          "verdict": "PROVISIONAL",
+          "status": "provisional",
+          "run_ts": "2026-07-10T08:23:40Z",
+          "corpus": "savant_full__2023-2025_team_day_pitchcount",
+          "n": 6325,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "staff_dayafter_fatigue_chain__fisher3",
+      "n_entries": 1,
+      "first_seen": "2026-07-11T13:34:57Z",
+      "last_seen": "2026-07-11T13:34:57Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-11T13:34:57Z",
+          "corpus": "savant_full__2023-2026_team_day_pitchcount_pooled",
+          "n": 6325,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "staff_dayafter_fatigue_chain__fisher4_incl_2026oos",
+      "n_entries": 1,
+      "first_seen": "2026-07-11T13:34:57Z",
+      "last_seen": "2026-07-11T13:34:57Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL_incl_2026_OOS"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL_incl_2026_OOS",
+          "status": "verified",
+          "run_ts": "2026-07-11T13:34:57Z",
+          "corpus": "savant_full__2023-2026_team_day_pitchcount_pooled",
+          "n": 7535,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "staff_dayafter_fatigue_chain__oos_2026",
+      "n_entries": 1,
+      "first_seen": "2026-07-11T13:34:57Z",
+      "last_seen": "2026-07-11T13:34:57Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-11T13:34:57Z",
+          "corpus": "savant_full__2023-2026_team_day_pitchcount_pooled",
+          "n": 1210,
+          "effect": 0.191
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "stolen_base_breakeven_rate",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "not_testable",
+      "flipped": false,
+      "verdict_sequence": [
+        "NOT_TESTABLE"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": null,
+          "corpus": "savant_full__2025",
+          "n": 0,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "sweet_spot_consistency",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "savant_full__2025",
+          "n": 430,
+          "effect": 0.1942
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "tto_decay_net_of_velo",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "savant_full__2025",
+          "n": 179383,
+          "effect": 0.01218
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "tto_x_platoon_interaction__combined",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T09:41:38Z",
+      "last_seen": "2026-07-10T09:41:38Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T09:41:38Z",
+          "corpus": "savant_full__2025",
+          "n": 179393,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "tto_x_platoon_interaction__h1",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T09:41:38Z",
+      "last_seen": "2026-07-10T09:41:38Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T09:41:38Z",
+          "corpus": "savant_full__2025",
+          "n": 90807,
+          "effect": -0.00076
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "tto_x_platoon_interaction__h2",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T09:41:38Z",
+      "last_seen": "2026-07-10T09:41:38Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T09:41:38Z",
+          "corpus": "savant_full__2025",
+          "n": 88586,
+          "effect": -0.00626
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "two_strike_chase_rate_rises",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "savant_full__2025",
+          "n": 702794,
+          "effect": 0.11077
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "umpire_zone_call_consistency",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "not_testable",
+      "flipped": false,
+      "verdict_sequence": [
+        "NOT_TESTABLE"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": null,
+          "corpus": "premise_check_only",
+          "n": 0,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "walk_economy_baserunner_inflation",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "savant_full__2025",
+          "n": 12218,
+          "effect": 0.065
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "weather_park_hr_modulation",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "not_testable",
+      "flipped": false,
+      "verdict_sequence": [
+        "NOT_TESTABLE"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": null,
+          "corpus": "savant_full__2025",
+          "n": 0,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "zombie_runner_home_away_scoring_rate",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T15:35:28Z",
+      "last_seen": "2026-07-10T15:35:28Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T15:35:28Z",
+          "corpus": "savant_full__2025",
+          "n": 408,
+          "effect": 0.0294
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "away_goal_timing_asymmetry",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "statsbomb_match_meta__400+matches_json",
+          "n": 330,
+          "effect": 0.0048
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "block_depth_counterattack_share",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T11:06:44Z",
+      "last_seen": "2026-07-10T11:06:44Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T11:06:44Z",
+          "corpus": "statsbomb_events_full__4235_matches",
+          "n": 8462,
+          "effect": 0.11262
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "block_depth_counterattack_share__split_A",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T11:14:45Z",
+      "last_seen": "2026-07-10T11:14:45Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T11:14:45Z",
+          "corpus": "statsbomb_events_full__split_half",
+          "n": 4232,
+          "effect": 0.12906
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "block_depth_counterattack_share__split_B",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T11:14:45Z",
+      "last_seen": "2026-07-10T11:14:45Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T11:14:45Z",
+          "corpus": "statsbomb_events_full__split_half",
+          "n": 4230,
+          "effect": 0.09497
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "corner_delivery_side_conversion",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "not_testable",
+      "flipped": false,
+      "verdict_sequence": [
+        "NOT_TESTABLE"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": null,
+          "corpus": "statsbomb_match_meta__400+matches_json",
+          "n": 0,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "defensive_block_height_vs_opponent_xg",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "statsbomb_events_full_cache",
+          "n": 6872,
+          "effect": 0.0078
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "extra_time_knockout_fatigue",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "not_testable",
+      "flipped": false,
+      "verdict_sequence": [
+        "NOT_TESTABLE"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": null,
+          "corpus": "statsbomb_match_meta__400+matches_json",
+          "n": 0,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "finishing_skill_persists_split_half",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "statsbomb_match_meta__400",
+          "n": 124,
+          "effect": -0.0238
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "first_goal_timing_win_effect",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "statsbomb_match_meta__400",
+          "n": 310,
+          "effect": 0.3484
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "fixture_congestion_short_rest_effect",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "statsbomb_match_meta__400",
+          "n": 380,
+          "effect": 0.0445
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "fouls_suppress_opponent_sot",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T08:59:42Z",
+      "last_seen": "2026-07-10T08:59:42Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T08:59:42Z",
+          "corpus": "soccer_flatfile_25834_matches",
+          "n": 51662,
+          "effect": 0.0369
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "gk_distribution_vs_buildup_xg",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T15:46:46Z",
+      "last_seen": "2026-07-10T15:46:46Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T15:46:46Z",
+          "corpus": "statsbomb_events_full_cache",
+          "n": 69395,
+          "effect": 0.0041
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "goalkeeper_distribution_vs_retention",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "statsbomb_events_full_cache",
+          "n": 56262,
+          "effect": 0.5954
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "home_advantage_by_matchweek_tercile",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "statsbomb_match_meta__400+matches_json",
+          "n": 200,
+          "effect": 0.1071
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "home_advantage_crowd_component",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "not_testable",
+      "flipped": false,
+      "verdict_sequence": [
+        "NOT_TESTABLE"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": null,
+          "corpus": "statsbomb_match_meta__400+matches_json",
+          "n": 0,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "home_advantage_neutral_split_half_by_era",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "soccer_intl_results__49425_played",
+          "n": 49425,
+          "effect": 0.2187
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "home_advantage_neutral_vs_true_goal_diff",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "soccer_intl_results__49425_played",
+          "n": 49425,
+          "effect": 0.3738
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "home_advantage_neutral_vs_true_win_rate",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "soccer_intl_results__49425_played",
+          "n": 49425,
+          "effect": 0.0656
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "injury_time_added_goals_rate",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "statsbomb_events_full_cache",
+          "n": 9846,
+          "effect": 0.00321
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "leading_team_shot_rate_suppression",
+      "n_entries": 2,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL",
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "statsbomb_events_full__3443_matches",
+          "n": 3352,
+          "effect": 0.02423
+        },
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "statsbomb_events_full__4235_matches",
+          "n": 4122,
+          "effect": 0.02429
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "momentum_last_result_effect",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "statsbomb_match_meta__400",
+          "n": 380,
+          "effect": 0.0798
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "penalty_conversion_stability_split_half",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "not_testable",
+      "flipped": false,
+      "verdict_sequence": [
+        "NOT_TESTABLE"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": null,
+          "corpus": "statsbomb_match_meta__400",
+          "n": 0,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "ppda_h1_vs_shot_quality_conceded_h2",
+      "n_entries": 2,
+      "first_seen": "2026-07-10T08:22:03Z",
+      "last_seen": "2026-07-10T08:22:03Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL",
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T08:22:03Z",
+          "corpus": "statsbomb_match_meta_400__A_epl_B_wsl",
+          "n": 397,
+          "effect": 0.0494
+        },
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T08:22:03Z",
+          "corpus": "statsbomb_match_meta_400__A_epl_B_wsl",
+          "n": 389,
+          "effect": 0.0019
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "ppda_h1_vs_shot_quality_conceded_h2__combined",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T08:22:03Z",
+      "last_seen": "2026-07-10T08:22:03Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T08:22:03Z",
+          "corpus": "statsbomb_match_meta_400__A_epl_B_wsl",
+          "n": 786,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "pressing_ppda_vs_turnover_rate",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "statsbomb_events_full_cache",
+          "n": 6886,
+          "effect": -0.558
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "prior_xg_pregame_beats_goals_poisson_base",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "statsbomb_asof_pregame__A_B",
+          "n": 324,
+          "effect": -0.0086836
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "red_card_suppresses_shot_rate",
+      "n_entries": 2,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL",
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "statsbomb_events_full__3443_matches",
+          "n": 428,
+          "effect": -0.03385
+        },
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "statsbomb_events_full__4235_matches",
+          "n": 481,
+          "effect": -0.03385
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "referee_card_rate_persistence",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "not_testable",
+      "flipped": false,
+      "verdict_sequence": [
+        "NOT_TESTABLE"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": null,
+          "corpus": "statsbomb_match_meta__400+matches_json",
+          "n": 0,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "referee_card_rate_persistence_at_scale",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T08:59:42Z",
+      "last_seen": "2026-07-10T08:59:42Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T08:59:42Z",
+          "corpus": "soccer_flatfile_25834_matches",
+          "n": 39,
+          "effect": 0.2999
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "setpiece_vs_openplay_conversion",
+      "n_entries": 2,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL",
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "statsbomb_events_full__3443_matches",
+          "n": 86343,
+          "effect": -0.03489
+        },
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "statsbomb_events_full__4235_matches",
+          "n": 106721,
+          "effect": -0.03583
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "setpiece_xg_persistence__by_competition",
+      "n_entries": 1,
+      "first_seen": "2026-07-11T15:43:41Z",
+      "last_seen": "2026-07-11T15:43:41Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-11T15:43:41Z",
+          "corpus": "statsbomb_events_full__research_wave4_competition",
+          "n": 9,
+          "effect": 0.39438
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "setpiece_xg_persistence__by_date",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T12:31:54Z",
+      "last_seen": "2026-07-10T12:31:54Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T12:31:54Z",
+          "corpus": "statsbomb_events_full__research_wave4",
+          "n": 52,
+          "effect": 0.38782
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "setpiece_xg_persistence__by_index",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T12:31:54Z",
+      "last_seen": "2026-07-10T12:31:54Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T12:31:54Z",
+          "corpus": "statsbomb_events_full__research_wave4",
+          "n": 54,
+          "effect": 0.27827
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "setpiece_xg_share_vs_possession",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "statsbomb_events_full_cache",
+          "n": 6879,
+          "effect": 0.0288
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "squad_rotation_cup_vs_league",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "not_testable",
+      "flipped": false,
+      "verdict_sequence": [
+        "NOT_TESTABLE"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": null,
+          "corpus": "statsbomb_match_meta__400+matches_json",
+          "n": 0,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "state_conditioned_shot_model_vs_naive_full_power",
+      "n_entries": 2,
+      "first_seen": "2026-07-10T08:28:38Z",
+      "last_seen": "2026-07-10T08:28:38Z",
+      "current_status": "provisional",
+      "flipped": false,
+      "verdict_sequence": [
+        "PROVISIONAL",
+        "PROVISIONAL"
+      ],
+      "history": [
+        {
+          "verdict": "PROVISIONAL",
+          "status": "provisional",
+          "run_ts": null,
+          "corpus": "statsbomb_match_meta_full__3126_matches_20_competitions",
+          "n": 3126,
+          "effect": -0.004755
+        },
+        {
+          "verdict": "PROVISIONAL",
+          "status": "provisional",
+          "run_ts": "2026-07-10T08:28:38Z",
+          "corpus": "statsbomb_match_meta_full__3882_matches_43_competitions",
+          "n": 3882,
+          "effect": -0.004585
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "substitution_shot_rate_change",
+      "n_entries": 2,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL",
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "statsbomb_events_full__3443_matches",
+          "n": 6729,
+          "effect": 0.00863
+        },
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "statsbomb_events_full__4235_matches",
+          "n": 8304,
+          "effect": 0.00862
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "substitution_timing_moderates_shift",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T09:44:56Z",
+      "last_seen": "2026-07-10T09:44:56Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T09:44:56Z",
+          "corpus": "statsbomb_events_full__4235_matches",
+          "n": 4732,
+          "effect": 0.03629
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "substitution_timing_moderates_shift__replication_big4_2015_16",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T13:55:32Z",
+      "last_seen": "2026-07-10T13:55:32Z",
+      "current_status": "retracted",
+      "flipped": false,
+      "verdict_sequence": [
+        "FAILED_REPLICATION"
+      ],
+      "history": [
+        {
+          "verdict": "FAILED_REPLICATION",
+          "status": "retracted",
+          "run_ts": "2026-07-10T13:55:32Z",
+          "corpus": "disjoint_competition_group",
+          "n": 1691,
+          "effect": 0.01861
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "substitution_timing_moderates_shift__replication_rest_competitions",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T13:55:32Z",
+      "last_seen": "2026-07-10T13:55:32Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "REPLICATED"
+      ],
+      "history": [
+        {
+          "verdict": "REPLICATED",
+          "status": "verified",
+          "run_ts": "2026-07-10T13:55:32Z",
+          "corpus": "disjoint_competition_group",
+          "n": 2725,
+          "effect": 0.04043
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "substitution_timing_moderates_shift__split_A",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T10:08:30Z",
+      "last_seen": "2026-07-10T10:08:30Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T10:08:30Z",
+          "corpus": "statsbomb_events_full__split_half",
+          "n": 2369,
+          "effect": 0.03165
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "substitution_timing_moderates_shift__split_B",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T10:08:30Z",
+      "last_seen": "2026-07-10T10:08:30Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T10:08:30Z",
+          "corpus": "statsbomb_events_full__split_half",
+          "n": 2363,
+          "effect": 0.04066
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "tactical_shift_shot_rate_change",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "statsbomb_events_full_cache",
+          "n": 4356,
+          "effect": 0.02051
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "tournament_vs_friendly_scoring_environment",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "soccer_intl_results__49425_played",
+          "n": 49425,
+          "effect": 0.1027
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "trailing_team_shot_rate",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T09:44:56Z",
+      "last_seen": "2026-07-10T09:44:56Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T09:44:56Z",
+          "corpus": "statsbomb_events_full__4235_matches",
+          "n": 4122,
+          "effect": 0.02031
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "trailing_team_shot_rate__split_A",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T10:08:30Z",
+      "last_seen": "2026-07-10T10:08:30Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T10:08:30Z",
+          "corpus": "statsbomb_events_full__split_half",
+          "n": 2073,
+          "effect": 0.02189
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "trailing_team_shot_rate__split_B",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T10:08:30Z",
+      "last_seen": "2026-07-10T10:08:30Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T10:08:30Z",
+          "corpus": "statsbomb_events_full__split_half",
+          "n": 2049,
+          "effect": 0.01871
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "trailing_team_shot_rate__split_competition_A",
+      "n_entries": 1,
+      "first_seen": "2026-07-11T15:31:29Z",
+      "last_seen": "2026-07-11T15:31:29Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-11T15:31:29Z",
+          "corpus": "statsbomb_events_full__competition_split",
+          "n": 1947,
+          "effect": 0.02129
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "trailing_team_shot_rate__split_competition_B",
+      "n_entries": 1,
+      "first_seen": "2026-07-11T15:31:29Z",
+      "last_seen": "2026-07-11T15:31:29Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-11T15:31:29Z",
+          "corpus": "statsbomb_events_full__competition_split",
+          "n": 1899,
+          "effect": 0.01926
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "weather_pitch_condition_effect",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "not_testable",
+      "flipped": false,
+      "verdict_sequence": [
+        "NOT_TESTABLE"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": null,
+          "corpus": "statsbomb_match_meta__400",
+          "n": 0,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "xg_diff_asof_adds_to_score_minute_ingame_base",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "statsbomb_asof_ingame__A_B__min30_60_75",
+          "n": 1200,
+          "effect": -0.0129888
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "xg_rebound_cluster_calibration",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T11:06:44Z",
+      "last_seen": "2026-07-10T11:06:44Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T11:06:44Z",
+          "corpus": "statsbomb_events_full__4235_matches",
+          "n": 99284,
+          "effect": 0.10411
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "xg_rebound_cluster_calibration__split_A",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T11:14:45Z",
+      "last_seen": "2026-07-10T11:14:45Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T11:14:45Z",
+          "corpus": "statsbomb_events_full__split_half",
+          "n": 49833,
+          "effect": 0.10239
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "xg_rebound_cluster_calibration__split_B",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T11:14:45Z",
+      "last_seen": "2026-07-10T11:14:45Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T11:14:45Z",
+          "corpus": "statsbomb_events_full__split_half",
+          "n": 49451,
+          "effect": 0.10584
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "xg_supremacy_persistence",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T08:59:42Z",
+      "last_seen": "2026-07-10T08:59:42Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T08:59:42Z",
+          "corpus": "soccer_flatfile_25834_matches",
+          "n": 140,
+          "effect": 0.9254
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "xg_supremacy_persistence__replication_continental_top4",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T13:55:32Z",
+      "last_seen": "2026-07-10T13:55:32Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "REPLICATED"
+      ],
+      "history": [
+        {
+          "verdict": "REPLICATED",
+          "status": "verified",
+          "run_ts": "2026-07-10T13:55:32Z",
+          "corpus": "disjoint_competition_group",
+          "n": 91,
+          "effect": 0.9495
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "xg_supremacy_persistence__replication_english_pyramid",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T13:55:32Z",
+      "last_seen": "2026-07-10T13:55:32Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "REPLICATED"
+      ],
+      "history": [
+        {
+          "verdict": "REPLICATED",
+          "status": "verified",
+          "run_ts": "2026-07-10T13:55:32Z",
+          "corpus": "disjoint_competition_group",
+          "n": 49,
+          "effect": 0.8469
+        }
+      ]
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "yellow_card_suspension_effect",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "not_testable",
+      "flipped": false,
+      "verdict_sequence": [
+        "NOT_TESTABLE"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": null,
+          "corpus": "statsbomb_match_meta__400+matches_json",
+          "n": 0,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "age_prime_band_advantage",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "atp_wta_matches_2015_2025",
+          "n": 69693,
+          "effect": -0.00184
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "altitude_effect_on_serve_ace_rate",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "travel_scouting_matches_atp_wta_2015_2025",
+          "n": 27463,
+          "effect": -0.0083
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "altitude_effect_on_serve_ace_rate__replication_years_2015_2020",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T13:50:52Z",
+      "last_seen": "2026-07-10T13:50:52Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "REPLICATED"
+      ],
+      "history": [
+        {
+          "verdict": "REPLICATED",
+          "status": "verified",
+          "run_ts": "2026-07-10T13:50:52Z",
+          "corpus": "travel_scouting_disjoint_year_slice",
+          "n": 14329,
+          "effect": -0.0078
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "altitude_effect_on_serve_ace_rate__replication_years_2021_2025",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T13:50:52Z",
+      "last_seen": "2026-07-10T13:50:52Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "REPLICATED"
+      ],
+      "history": [
+        {
+          "verdict": "REPLICATED",
+          "status": "verified",
+          "run_ts": "2026-07-10T13:50:52Z",
+          "corpus": "travel_scouting_disjoint_year_slice",
+          "n": 13134,
+          "effect": -0.0089
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "ball_cycle_ace_rate",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T11:00:57Z",
+      "last_seen": "2026-07-10T11:00:57Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T11:00:57Z",
+          "corpus": "slam_points",
+          "n": 256477,
+          "effect": 0.0041
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "ball_cycle_ace_rate__split_A",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T11:00:58Z",
+      "last_seen": "2026-07-10T11:00:58Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T11:00:58Z",
+          "corpus": "slam_points__split_half",
+          "n": 128238,
+          "effect": 0.0032
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "ball_cycle_ace_rate__split_B",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T11:00:58Z",
+      "last_seen": "2026-07-10T11:00:58Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T11:00:58Z",
+          "corpus": "slam_points__split_half",
+          "n": 128239,
+          "effect": 0.005
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "ball_cycle_serve_speed_kmh",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T11:00:57Z",
+      "last_seen": "2026-07-10T11:00:57Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T11:00:57Z",
+          "corpus": "slam_points",
+          "n": 256477,
+          "effect": -1.668
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "ball_cycle_serve_speed_kmh__split_A",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T11:00:58Z",
+      "last_seen": "2026-07-10T11:00:58Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T11:00:58Z",
+          "corpus": "slam_points__split_half",
+          "n": 128238,
+          "effect": -1.5865
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "ball_cycle_serve_speed_kmh__split_B",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T11:00:58Z",
+      "last_seen": "2026-07-10T11:00:58Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T11:00:58Z",
+          "corpus": "slam_points__split_half",
+          "n": 128239,
+          "effect": -1.7488
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "best_of_5_vs_3_upset_rate",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "matches_atp_wta_2015_2025",
+          "n": 40802,
+          "effect": -0.3059
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "bp_save_differential_predicts_outcome_partial",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "match_stats_atp_wta_2015_2025",
+          "n": 27937,
+          "effect": 4.0083
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "bp_save_skill_persistence_partial",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "match_stats_atp_wta_2015_2025",
+          "n": 338,
+          "effect": -0.09
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "break_point_conversion_by_set_number",
+      "n_entries": 2,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": true,
+      "verdict_sequence": [
+        "NOT_TESTABLE",
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": null,
+          "corpus": "slam_points_2011_2015",
+          "n": 34145,
+          "effect": -0.017
+        },
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "slam_points_2011_2015",
+          "n": 34145,
+          "effect": -0.017
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "clay_grass_specialization_persistence",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "matches_atp_wta_2015_2025",
+          "n": 171,
+          "effect": 0.3003
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "deciding_set_hold_rate_shift",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "slam_points_2011_2015",
+          "n": 361890,
+          "effect": -0.00803
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "deuce_game_length_next_server_fatigue",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "slam_points_2011_2015",
+          "n": 67225,
+          "effect": -0.0313
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "dominance_margin_predicts_outcome_partial",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T09:02:39Z",
+      "last_seen": "2026-07-10T09:02:39Z",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": "2026-07-10T09:02:39Z",
+          "corpus": "matches_asof_setdetail_schedule_density_atp_wta",
+          "n": 29229,
+          "effect": -0.0468
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "double_fault_rate_by_set_number",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "slam_points_2011_2015",
+          "n": 543158,
+          "effect": -0.0069
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "fatigue_load_correlates_with_retirement",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "atp_wta_matches_2015_2025",
+          "n": 30616,
+          "effect": 0.0883
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "first_set_winner_match_win_rate",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "atp_wta_matches_2015_2025",
+          "n": 41634,
+          "effect": 0.3071
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "h2h_recency_vs_ranking",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "matches_atp_wta_2015_2025",
+          "n": 3583,
+          "effect": 1.4493
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "height_x_surface_interaction",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "matches_atp_wta_2015_2025",
+          "n": 12130,
+          "effect": 0.0257
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "lefty_advantage_on_return",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "atp_wta_matches_2015_2025",
+          "n": 4189,
+          "effect": 0.035
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "load_14d_ace_rate_tercile",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T09:02:39Z",
+      "last_seen": "2026-07-10T09:02:39Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T09:02:39Z",
+          "corpus": "matches_asof_setdetail_schedule_density_atp_wta",
+          "n": 29256,
+          "effect": 0.0054
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "load_14d_first_serve_in_tercile",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T09:02:39Z",
+      "last_seen": "2026-07-10T09:02:39Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T09:02:39Z",
+          "corpus": "matches_asof_setdetail_schedule_density_atp_wta",
+          "n": 29256,
+          "effect": 0.0097
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "long_travel_effect_on_win_prob_partial",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "travel_scouting_matches_atp_wta_2015_2025",
+          "n": 26950,
+          "effect": -0.0699
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "point_to_point_momentum",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "slam_points_2011_2015",
+          "n": 456383,
+          "effect": 0.0216
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "post_break_hold_rate",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T11:00:57Z",
+      "last_seen": "2026-07-10T11:00:57Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T11:00:57Z",
+          "corpus": "slam_points",
+          "n": 21208,
+          "effect": 0.0051
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "post_break_hold_rate__split_A",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T11:00:58Z",
+      "last_seen": "2026-07-10T11:00:58Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T11:00:58Z",
+          "corpus": "slam_points__split_half",
+          "n": 10522,
+          "effect": 0.0067
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "post_break_hold_rate__split_B",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T11:00:58Z",
+      "last_seen": "2026-07-10T11:00:58Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T11:00:58Z",
+          "corpus": "slam_points__split_half",
+          "n": 10686,
+          "effect": 0.0036
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "prior_match_duration_fatigue",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "matches_atp_wta_2015_2025",
+          "n": 71398,
+          "effect": -0.0076
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "rally_length_clay_vs_grass",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "slam_points_2011_2015",
+          "n": 55707,
+          "effect": -0.025
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "rally_length_distribution_by_round",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "not_testable",
+      "flipped": false,
+      "verdict_sequence": [
+        "NOT_TESTABLE"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": null,
+          "corpus": "premise_check_only",
+          "n": 0,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "ranking_gap_nonlinearity",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": null,
+          "corpus": "atp_wta_matches_2015_2025",
+          "n": 40802,
+          "effect": 0.002179
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "retirement_rate_by_round_and_surface",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "matches_atp_wta_2015_2025",
+          "n": 41886,
+          "effect": 0.0189
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "return_depth_aggressiveness_persistence",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T15:43:18Z",
+      "last_seen": "2026-07-10T15:43:18Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T15:43:18Z",
+          "corpus": "match_charting_project_return_depth",
+          "n": 75,
+          "effect": 0.1348
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "second_serve_discount_by_surface",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "not_testable",
+      "flipped": false,
+      "verdict_sequence": [
+        "NOT_TESTABLE"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": null,
+          "corpus": "premise_check_only",
+          "n": 0,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "serve_advantage_by_surface",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "slam_points_2011_2015",
+          "n": 541604,
+          "effect": -0.02021
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "serve_speed_decay_within_match",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "slam_points_2011_2015",
+          "n": 2804,
+          "effect": -0.9041
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "surface_speed_drift_by_round",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T12:14:36Z",
+      "last_seen": "2026-07-10T12:14:36Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T12:14:36Z",
+          "corpus": "matches_match_stats",
+          "n": 674,
+          "effect": 0.0041
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "surface_speed_drift_by_round__split_A",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T12:14:36Z",
+      "last_seen": "2026-07-10T12:14:36Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T12:14:36Z",
+          "corpus": "matches_match_stats__split_half",
+          "n": 351,
+          "effect": 0.0043
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "surface_speed_drift_by_round__split_B",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T12:14:36Z",
+      "last_seen": "2026-07-10T12:14:36Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T12:14:36Z",
+          "corpus": "matches_match_stats__split_half",
+          "n": 323,
+          "effect": 0.004
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "tiebreak_serve_order_win_rate",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T09:39:55Z",
+      "last_seen": "2026-07-10T09:39:55Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T09:39:55Z",
+          "corpus": "slam_points",
+          "n": 1281,
+          "effect": 0.0035
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "tiebreak_skill_persistence_partial",
+      "n_entries": 1,
+      "first_seen": "2026-07-10T09:02:39Z",
+      "last_seen": "2026-07-10T09:02:39Z",
+      "current_status": "null",
+      "flipped": false,
+      "verdict_sequence": [
+        "NULL_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "run_ts": "2026-07-10T09:02:39Z",
+          "corpus": "matches_asof_setdetail_schedule_density_atp_wta",
+          "n": 206,
+          "effect": 0.0745
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "tiebreak_skill_persistence_split_half",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "not_testable",
+      "flipped": false,
+      "verdict_sequence": [
+        "NOT_TESTABLE"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": null,
+          "corpus": "premise_check_only",
+          "n": 0,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "upset_rate_by_round",
+      "n_entries": 1,
+      "first_seen": "undated",
+      "last_seen": "undated",
+      "current_status": "verified",
+      "flipped": false,
+      "verdict_sequence": [
+        "CONFIRMED_LOCAL"
+      ],
+      "history": [
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "run_ts": null,
+          "corpus": "matches_atp_wta_2015_2025",
+          "n": 40794,
+          "effect": 0.0754
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "within_tournament_rest_gap_ace_rate",
+      "n_entries": 2,
+      "first_seen": "2026-07-10T09:39:55Z",
+      "last_seen": "2026-07-10T09:41:14Z",
+      "current_status": "not_testable",
+      "flipped": false,
+      "verdict_sequence": [
+        "NOT_TESTABLE",
+        "NOT_TESTABLE"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": "2026-07-10T09:39:55Z",
+          "corpus": "matches_match_stats_atp_wta",
+          "n": 36996,
+          "effect": null
+        },
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": "2026-07-10T09:41:14Z",
+          "corpus": "matches_match_stats_atp_wta",
+          "n": 36996,
+          "effect": null
+        }
+      ]
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "within_tournament_rest_gap_first_serve",
+      "n_entries": 2,
+      "first_seen": "2026-07-10T09:39:55Z",
+      "last_seen": "2026-07-10T09:41:14Z",
+      "current_status": "not_testable",
+      "flipped": false,
+      "verdict_sequence": [
+        "NOT_TESTABLE",
+        "NOT_TESTABLE"
+      ],
+      "history": [
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": "2026-07-10T09:39:55Z",
+          "corpus": "matches_match_stats_atp_wta",
+          "n": 36996,
+          "effect": null
+        },
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "run_ts": "2026-07-10T09:41:14Z",
+          "corpus": "matches_match_stats_atp_wta",
+          "n": 36996,
+          "effect": null
+        }
+      ]
+    }
+  ]
+}

@@ -63,6 +63,7 @@ Uniquely-auditable analytics, each with its honest prior-art verdict attached.
 |---|---|---|
 | [novel-analytics](novel-analytics.md) | Five market-microstructure/calibration analytics, each with its honest prior-art verdict (2 INCREMENTAL, 1 ALREADY_DONE, 1 N/A), and the market beating our in-game model stated in numbers. | Information-arrival curve: `market_minus_model_brier` is negative at *every* checkpoint and widens late -- MLB -0.015 (inn1) -> -0.0902 (inn9), soccer -0.1122 (0') -> -0.1891 (85') (`info_arrival_curve.json`). |
 | [analytical-depth](analytical-depth.md) | The recorded-analytics inventory as evidence: 23 modules, the claims-corpus generated-vs-validated split, the Statcast base, tick microstructure, fail-closed QA coverage. | 23 self-contained analytics modules, each reads real artifacts and re-runs to the same provenance-stamped number; the 693,037-pitch Statcast base sits under the MLB metrics. |
+| [true-intelligence](true-intelligence.md) | The counterfactual/context/microstructure/forward-graded/cross-sport wave -- *what-if*, *why*, *when*, *who-grades-the-graders* -- with the not_buildable verdicts shown as prominently as the wins. | Forward claim scoreboard: 259 families, 121 verified vs 134 null-or-worse, honest nulls-per-confirm ratio 1.107, 5 flipped (`fwd_claim_scoreboard.json`); counterfactual star-removal Jokic +0.582 win-prob pts (roster-confounded CEILING, `cf_star_removal.json`). |
 
 ---
 

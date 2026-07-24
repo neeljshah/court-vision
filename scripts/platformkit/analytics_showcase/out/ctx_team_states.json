@@ -1,0 +1,331 @@
+{
+  "edge_claimed": false,
+  "as_of": "2026-05-21 16:05:11",
+  "source_artifact": "data/nba_ai.db :: play_by_play (sport='nba')",
+  "method": "halftime margin & second-half margin per team-game from running pbp scores; split each team's games by led/trailed at half",
+  "min_games_per_split": 2,
+  "n_games": 26,
+  "n_team_games": 52,
+  "n_teams_placed_on_quadrant": 0,
+  "team_verdict": "0 teams meet the n>=2-per-split floor (led AND trailed at half): per-team front-runner vs comeback separation is NOT buildable from this 26-game corpus. Use the league-level mean-reversion stat as the headline.",
+  "league_mean_reversion": {
+    "n_team_games": 52,
+    "buildable": true,
+    "slope_2h_on_half": 0.2885,
+    "intercept": -0.0,
+    "pearson_r": 0.2266,
+    "mean_2h_margin_when_led_at_half": 1.346,
+    "n_led": 26,
+    "mean_2h_margin_when_trailed_at_half": -1.346,
+    "n_trailed": 26,
+    "interpretation": "slope < 0 => 2nd-half margin reverts against the halftime lead (mean reversion); ~0 => leads persist; > 0 => leads compound. Descriptive stat, not an edge claim."
+  },
+  "teams": [
+    {
+      "team": "ATL",
+      "n_games": 2,
+      "n_led_at_half": 1,
+      "n_trailed_at_half": 1,
+      "front_runner_2h_margin": 1.0,
+      "comeback_2h_margin": 8.0,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    },
+    {
+      "team": "BKN",
+      "n_games": 2,
+      "n_led_at_half": 1,
+      "n_trailed_at_half": 1,
+      "front_runner_2h_margin": -8.0,
+      "comeback_2h_margin": -12.0,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    },
+    {
+      "team": "BOS",
+      "n_games": 2,
+      "n_led_at_half": 2,
+      "n_trailed_at_half": 0,
+      "front_runner_2h_margin": 7.0,
+      "comeback_2h_margin": null,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    },
+    {
+      "team": "CHA",
+      "n_games": 2,
+      "n_led_at_half": 0,
+      "n_trailed_at_half": 2,
+      "front_runner_2h_margin": null,
+      "comeback_2h_margin": 7.5,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    },
+    {
+      "team": "CHI",
+      "n_games": 2,
+      "n_led_at_half": 0,
+      "n_trailed_at_half": 2,
+      "front_runner_2h_margin": null,
+      "comeback_2h_margin": 0.5,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    },
+    {
+      "team": "CLE",
+      "n_games": 3,
+      "n_led_at_half": 3,
+      "n_trailed_at_half": 0,
+      "front_runner_2h_margin": 8.333,
+      "comeback_2h_margin": null,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    },
+    {
+      "team": "DAL",
+      "n_games": 1,
+      "n_led_at_half": 0,
+      "n_trailed_at_half": 1,
+      "front_runner_2h_margin": null,
+      "comeback_2h_margin": 13.0,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    },
+    {
+      "team": "DEN",
+      "n_games": 2,
+      "n_led_at_half": 0,
+      "n_trailed_at_half": 2,
+      "front_runner_2h_margin": null,
+      "comeback_2h_margin": -3.5,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    },
+    {
+      "team": "DET",
+      "n_games": 2,
+      "n_led_at_half": 1,
+      "n_trailed_at_half": 1,
+      "front_runner_2h_margin": -15.0,
+      "comeback_2h_margin": -2.0,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    },
+    {
+      "team": "GSW",
+      "n_games": 2,
+      "n_led_at_half": 2,
+      "n_trailed_at_half": 0,
+      "front_runner_2h_margin": 25.5,
+      "comeback_2h_margin": null,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    },
+    {
+      "team": "HOU",
+      "n_games": 2,
+      "n_led_at_half": 1,
+      "n_trailed_at_half": 1,
+      "front_runner_2h_margin": -16.0,
+      "comeback_2h_margin": 26.0,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    },
+    {
+      "team": "IND",
+      "n_games": 2,
+      "n_led_at_half": 0,
+      "n_trailed_at_half": 2,
+      "front_runner_2h_margin": null,
+      "comeback_2h_margin": 3.0,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    },
+    {
+      "team": "LAC",
+      "n_games": 2,
+      "n_led_at_half": 1,
+      "n_trailed_at_half": 1,
+      "front_runner_2h_margin": -1.0,
+      "comeback_2h_margin": 5.0,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    },
+    {
+      "team": "LAL",
+      "n_games": 1,
+      "n_led_at_half": 1,
+      "n_trailed_at_half": 0,
+      "front_runner_2h_margin": -6.0,
+      "comeback_2h_margin": null,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    },
+    {
+      "team": "MEM",
+      "n_games": 2,
+      "n_led_at_half": 2,
+      "n_trailed_at_half": 0,
+      "front_runner_2h_margin": -17.5,
+      "comeback_2h_margin": null,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    },
+    {
+      "team": "MIA",
+      "n_games": 1,
+      "n_led_at_half": 0,
+      "n_trailed_at_half": 1,
+      "front_runner_2h_margin": null,
+      "comeback_2h_margin": -15.0,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    },
+    {
+      "team": "MIL",
+      "n_games": 2,
+      "n_led_at_half": 2,
+      "n_trailed_at_half": 0,
+      "front_runner_2h_margin": -4.0,
+      "comeback_2h_margin": null,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    },
+    {
+      "team": "MIN",
+      "n_games": 2,
+      "n_led_at_half": 0,
+      "n_trailed_at_half": 2,
+      "front_runner_2h_margin": null,
+      "comeback_2h_margin": 6.0,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    },
+    {
+      "team": "NOP",
+      "n_games": 1,
+      "n_led_at_half": 1,
+      "n_trailed_at_half": 0,
+      "front_runner_2h_margin": 11.0,
+      "comeback_2h_margin": null,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    },
+    {
+      "team": "NYK",
+      "n_games": 2,
+      "n_led_at_half": 1,
+      "n_trailed_at_half": 1,
+      "front_runner_2h_margin": 9.0,
+      "comeback_2h_margin": -4.0,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    },
+    {
+      "team": "OKC",
+      "n_games": 1,
+      "n_led_at_half": 1,
+      "n_trailed_at_half": 0,
+      "front_runner_2h_margin": 8.0,
+      "comeback_2h_margin": null,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    },
+    {
+      "team": "ORL",
+      "n_games": 2,
+      "n_led_at_half": 2,
+      "n_trailed_at_half": 0,
+      "front_runner_2h_margin": 13.5,
+      "comeback_2h_margin": null,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    },
+    {
+      "team": "PHI",
+      "n_games": 2,
+      "n_led_at_half": 0,
+      "n_trailed_at_half": 2,
+      "front_runner_2h_margin": null,
+      "comeback_2h_margin": -3.0,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    },
+    {
+      "team": "PHX",
+      "n_games": 1,
+      "n_led_at_half": 1,
+      "n_trailed_at_half": 0,
+      "front_runner_2h_margin": -5.0,
+      "comeback_2h_margin": null,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    },
+    {
+      "team": "POR",
+      "n_games": 1,
+      "n_led_at_half": 0,
+      "n_trailed_at_half": 1,
+      "front_runner_2h_margin": null,
+      "comeback_2h_margin": -24.0,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    },
+    {
+      "team": "SAC",
+      "n_games": 1,
+      "n_led_at_half": 1,
+      "n_trailed_at_half": 0,
+      "front_runner_2h_margin": -6.0,
+      "comeback_2h_margin": null,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    },
+    {
+      "team": "SAS",
+      "n_games": 1,
+      "n_led_at_half": 1,
+      "n_trailed_at_half": 0,
+      "front_runner_2h_margin": -13.0,
+      "comeback_2h_margin": null,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    },
+    {
+      "team": "TOR",
+      "n_games": 2,
+      "n_led_at_half": 1,
+      "n_trailed_at_half": 1,
+      "front_runner_2h_margin": 2.0,
+      "comeback_2h_margin": -10.0,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    },
+    {
+      "team": "UTA",
+      "n_games": 2,
+      "n_led_at_half": 0,
+      "n_trailed_at_half": 2,
+      "front_runner_2h_margin": null,
+      "comeback_2h_margin": -9.0,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    },
+    {
+      "team": "WAS",
+      "n_games": 2,
+      "n_led_at_half": 0,
+      "n_trailed_at_half": 2,
+      "front_runner_2h_margin": null,
+      "comeback_2h_margin": -11.5,
+      "placed_on_quadrant": false,
+      "masked_below_floor": true
+    }
+  ],
+  "floors_and_assumptions": [
+    "Thin corpus: most teams appear 1-2x, so per-team splits are 0-2 games; teams below MIN_GAMES_PER_SPLIT in either split are masked, never printed as stable.",
+    "Halftime = end of period 2; final includes OT if present (max period snapshot).",
+    "Home/away labeled by score-increment votes; ties/degenerate games dropped.",
+    "League stat is the robust n=team_games result; per-team is illustrative only."
+  ]
+}

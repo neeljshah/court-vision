@@ -1,0 +1,131 @@
+{
+  "edge_claimed": false,
+  "method": "Consensus (median) devigged market P(home win) bucketed by hours-to-start into T-24h/T-6h/T-1h/close, scored Brier + log-loss vs the settled ESPN outcome; paired within-game close-vs-T-24h delta.",
+  "assumptions": [
+    "Market prob = home-side devigged_prob from line_history (consensus median across books/ticks in each horizon window).",
+    "Binary event scored is 'home team wins'; a soccer draw counts as home-loss (y=0).",
+    "Snapshots >72h before start are ignored (opening/stale noise); only 0<=horizon<=72h used.",
+    "Per-bucket n<20 flagged underpowered; single capture window -- provisional, not durable."
+  ],
+  "anchors": [
+    {
+      "label": "T-24h",
+      "target_hours_before_start": 24.0,
+      "accept_window_h": [
+        12.0,
+        48.0
+      ]
+    },
+    {
+      "label": "T-6h",
+      "target_hours_before_start": 6.0,
+      "accept_window_h": [
+        3.0,
+        12.0
+      ]
+    },
+    {
+      "label": "T-1h",
+      "target_hours_before_start": 1.0,
+      "accept_window_h": [
+        0.5,
+        3.0
+      ]
+    },
+    {
+      "label": "close",
+      "target_hours_before_start": 0.0,
+      "accept_window_h": [
+        0.0,
+        0.5
+      ]
+    }
+  ],
+  "sports": {
+    "wnba": {
+      "as_of": "2026-07-17",
+      "n_games_joined": 30,
+      "buckets": {
+        "T-24h": {
+          "n": 0
+        },
+        "T-6h": {
+          "n": 26,
+          "brier": 0.245445,
+          "logloss": 0.698423,
+          "mean_prob": 0.5463,
+          "underpowered": false
+        },
+        "T-1h": {
+          "n": 29,
+          "brier": 0.227515,
+          "logloss": 0.65717,
+          "mean_prob": 0.5586,
+          "underpowered": false
+        },
+        "close": {
+          "n": 29,
+          "brier": 0.228045,
+          "logloss": 0.655127,
+          "mean_prob": 0.5569,
+          "underpowered": false
+        }
+      },
+      "close_vs_t24h_paired": {
+        "n": 0
+      }
+    },
+    "soccer_intl": {
+      "as_of": "2026-07-17",
+      "n_games_joined": 13,
+      "buckets": {
+        "T-24h": {
+          "n": 7,
+          "brier": 0.135518,
+          "logloss": 0.434684,
+          "mean_prob": 0.3907,
+          "underpowered": true
+        },
+        "T-6h": {
+          "n": 12,
+          "brier": 0.140881,
+          "logloss": 0.447337,
+          "mean_prob": 0.3893,
+          "underpowered": true
+        },
+        "T-1h": {
+          "n": 13,
+          "brier": 0.136126,
+          "logloss": 0.437849,
+          "mean_prob": 0.4147,
+          "underpowered": true
+        },
+        "close": {
+          "n": 13,
+          "brier": 0.137424,
+          "logloss": 0.440583,
+          "mean_prob": 0.4126,
+          "underpowered": true
+        }
+      },
+      "close_vs_t24h_paired": {
+        "n": 7,
+        "brier_t24h": 0.135518,
+        "brier_close": 0.156807,
+        "brier_delta_t24h_minus_close": -0.021289,
+        "close_sharper": false,
+        "underpowered": true
+      }
+    }
+  },
+  "not_joinable": {
+    "nba": "line_history covers the 2026 window; no ESPN-keyed NBA outcome table on disk spans it (games.parquet uses NBA-stats ids).",
+    "mlb": "line_history uses ESPN/odds-api ids; games.parquet uses date-team keys (20100404-BOS-NYY-1) -- 0 direct joins.",
+    "soccer": "club-league feed with only ~20 games and no on-disk ESPN-keyed outcome table.",
+    "tennis": "player-hashed match ids; no ESPN-keyed match-outcome table on disk.",
+    "kbo": "line_history rows carry no commence_time (game_id=0) -- hours-to-start is undefined.",
+    "npb": "line_history rows carry no commence_time (game_id=0) -- hours-to-start is undefined."
+  },
+  "verdict": "wnba: Brier sharpens toward the close -- T-6h=0.2454 -> close=0.2280 (delta=+0.0174, n_games=30). soccer_intl: Brier does NOT sharpen toward the close -- T-24h=0.1355 -> close=0.1374 (delta=-0.0019, n_games=13) (UNDERPOWERED).",
+  "plot_written": true
+}

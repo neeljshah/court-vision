@@ -99,6 +99,7 @@ reprice. Follow the links to go as deep as you want at any stage.
 - [evidence/novel-analytics](evidence/novel-analytics.md) -- frontier measurements with adversarial prior-art checks attached: information-arrival, overreaction spectrum, mechanism survival, comeback atlas, kernel transfer -- honest INCREMENTAL verdicts included
 - [evidence/ai-engineering](evidence/ai-engineering.md) -- the five 2026 AI-eng hiring skills mapped to committed artifacts: evals, fail-closed answers, MCP, guardrails, cost-aware routing
 - [evidence/entity-atlas](evidence/entity-atlas.md) -- 1,549 per-entity analytics cards with declared floors and manifest-verified counts, served fail-closed by the atlas_card resolver
+- [evidence/true-intelligence](evidence/true-intelligence.md) -- the counterfactual/context/microstructure/forward-graded/cross-sport wave: what-if, why, when, who-grades-the-graders, with not_buildable verdicts shown beside the wins (fwd scoreboard 121 verified vs 134 null-or-worse)
 - [evidence/analytical-depth](evidence/analytical-depth.md) -- the recorded-analytics inventory as evidence: 23 modules, the claims-corpus generated-vs-validated split, the Statcast base, tick microstructure, fail-closed QA coverage
 - [evidence/novel-analytics](evidence/novel-analytics.md) -- uniquely-auditable measurements: five market-microstructure/calibration analytics, each with its honest prior-art verdict (2 INCREMENTAL, 1 ALREADY_DONE, 1 N/A) and the market beating our in-game model stated in numbers
 
