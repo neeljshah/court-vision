@@ -1,0 +1,458 @@
+{
+  "status": "ok",
+  "generated_at": "2026-07-24T22:39:47.027837+00:00",
+  "descriptive_only": true,
+  "edge_claimed": false,
+  "headline": "Descriptive Q4-vs-Q1-Q3 per-36 scoring, rebounding, and assist rate shift per player, from local per-quarter boxes -- not a late-game-skill or predictive claim.",
+  "method": "Per-player Q4 vs Q1-Q3 per-36 rates from local per-quarter player boxes; a floor of >=25 Q4 appearances. Descriptive historical splits, not a clutch metric and not a prediction.",
+  "un_refusal_note": "The site's clutch_context module honestly REFUSED a clutch number because the grain was wrong. This is what it took to turn that refusal into an honest number: not 'clutch', just the measured Q4-vs-earlier per-36 shift. Published alongside the refusal.",
+  "refusal_artifact": "scripts/platformkit/analytics_showcase/out/clutch_context.json",
+  "observation_window": {
+    "n_games": 1231,
+    "seasons": "2024-25, 2025-26 present in this cache",
+    "note": "a fixed set of games in this cache, not the current season"
+  },
+  "floors": "q4_games>=25 and q13_min>=100 and q4_min>=25",
+  "n_considered": 626,
+  "n_qualified": 409,
+  "pts_shift": {
+    "top_risers": [
+      {
+        "player_name": "Sandro Mamukelashvili",
+        "q4_pts_per36": 29.26,
+        "q13_pts_per36": 15.74,
+        "shift": 13.52,
+        "q4_games": 52
+      },
+      {
+        "player_name": "Doug McDermott",
+        "q4_pts_per36": 20.33,
+        "q13_pts_per36": 11.5,
+        "shift": 8.83,
+        "q4_games": 31
+      },
+      {
+        "player_name": "Anfernee Simons",
+        "q4_pts_per36": 27.92,
+        "q13_pts_per36": 19.42,
+        "shift": 8.5,
+        "q4_games": 68
+      },
+      {
+        "player_name": "Zion Williamson",
+        "q4_pts_per36": 36.59,
+        "q13_pts_per36": 28.84,
+        "shift": 7.75,
+        "q4_games": 32
+      },
+      {
+        "player_name": "Norman Powell",
+        "q4_pts_per36": 30.74,
+        "q13_pts_per36": 23.03,
+        "shift": 7.72,
+        "q4_games": 53
+      },
+      {
+        "player_name": "Collin Gillespie",
+        "q4_pts_per36": 21.19,
+        "q13_pts_per36": 13.73,
+        "shift": 7.46,
+        "q4_games": 30
+      },
+      {
+        "player_name": "Jamal Cain",
+        "q4_pts_per36": 17.94,
+        "q13_pts_per36": 11.0,
+        "shift": 6.94,
+        "q4_games": 35
+      },
+      {
+        "player_name": "Tristan Thompson",
+        "q4_pts_per36": 10.72,
+        "q13_pts_per36": 4.15,
+        "shift": 6.57,
+        "q4_games": 35
+      },
+      {
+        "player_name": "CJ McCollum",
+        "q4_pts_per36": 28.24,
+        "q13_pts_per36": 21.78,
+        "shift": 6.45,
+        "q4_games": 53
+      },
+      {
+        "player_name": "Donovan Mitchell",
+        "q4_pts_per36": 32.95,
+        "q13_pts_per36": 26.63,
+        "shift": 6.32,
+        "q4_games": 71
+      },
+      {
+        "player_name": "Luka Garza",
+        "q4_pts_per36": 24.32,
+        "q13_pts_per36": 18.16,
+        "shift": 6.16,
+        "q4_games": 30
+      },
+      {
+        "player_name": "Olivier-Maxence Prosper",
+        "q4_pts_per36": 16.33,
+        "q13_pts_per36": 10.18,
+        "shift": 6.15,
+        "q4_games": 43
+      },
+      {
+        "player_name": "Zach LaVine",
+        "q4_pts_per36": 28.45,
+        "q13_pts_per36": 22.34,
+        "shift": 6.11,
+        "q4_games": 70
+      },
+      {
+        "player_name": "Thomas Bryant",
+        "q4_pts_per36": 20.68,
+        "q13_pts_per36": 14.85,
+        "shift": 5.83,
+        "q4_games": 49
+      },
+      {
+        "player_name": "Neemias Queta",
+        "q4_pts_per36": 16.93,
+        "q13_pts_per36": 11.15,
+        "shift": 5.78,
+        "q4_games": 56
+      }
+    ],
+    "top_fallers": [
+      {
+        "player_name": "Nikola Jovi\u0107",
+        "q4_pts_per36": 9.87,
+        "q13_pts_per36": 18.49,
+        "shift": -8.61,
+        "q4_games": 36
+      },
+      {
+        "player_name": "Domantas Sabonis",
+        "q4_pts_per36": 14.39,
+        "q13_pts_per36": 21.93,
+        "shift": -7.54,
+        "q4_games": 57
+      },
+      {
+        "player_name": "Branden Carlson",
+        "q4_pts_per36": 15.27,
+        "q13_pts_per36": 22.04,
+        "shift": -6.77,
+        "q4_games": 31
+      },
+      {
+        "player_name": "Myles Turner",
+        "q4_pts_per36": 13.63,
+        "q13_pts_per36": 20.32,
+        "shift": -6.69,
+        "q4_games": 62
+      },
+      {
+        "player_name": "Micah Potter",
+        "q4_pts_per36": 3.44,
+        "q13_pts_per36": 10.12,
+        "shift": -6.68,
+        "q4_games": 27
+      },
+      {
+        "player_name": "Gary Harris",
+        "q4_pts_per36": 1.88,
+        "q13_pts_per36": 8.43,
+        "shift": -6.55,
+        "q4_games": 31
+      },
+      {
+        "player_name": "Andre Drummond",
+        "q4_pts_per36": 8.92,
+        "q13_pts_per36": 15.41,
+        "shift": -6.49,
+        "q4_games": 25
+      },
+      {
+        "player_name": "Steven Adams",
+        "q4_pts_per36": 4.87,
+        "q13_pts_per36": 11.27,
+        "shift": -6.4,
+        "q4_games": 39
+      },
+      {
+        "player_name": "Tim Hardaway Jr.",
+        "q4_pts_per36": 9.25,
+        "q13_pts_per36": 15.62,
+        "shift": -6.37,
+        "q4_games": 67
+      },
+      {
+        "player_name": "Josh Okogie",
+        "q4_pts_per36": 10.97,
+        "q13_pts_per36": 17.11,
+        "shift": -6.14,
+        "q4_games": 29
+      },
+      {
+        "player_name": "V\u00edt Krej\u010d\u00ed",
+        "q4_pts_per36": 8.63,
+        "q13_pts_per36": 14.73,
+        "shift": -6.1,
+        "q4_games": 53
+      },
+      {
+        "player_name": "Lonzo Ball",
+        "q4_pts_per36": 6.73,
+        "q13_pts_per36": 12.7,
+        "shift": -5.97,
+        "q4_games": 34
+      },
+      {
+        "player_name": "Kristaps Porzi\u0146\u0123is",
+        "q4_pts_per36": 19.49,
+        "q13_pts_per36": 25.41,
+        "shift": -5.92,
+        "q4_games": 37
+      },
+      {
+        "player_name": "Jaylin Williams",
+        "q4_pts_per36": 8.98,
+        "q13_pts_per36": 14.78,
+        "shift": -5.8,
+        "q4_games": 36
+      },
+      {
+        "player_name": "Michael Porter Jr.",
+        "q4_pts_per36": 15.68,
+        "q13_pts_per36": 21.32,
+        "shift": -5.64,
+        "q4_games": 66
+      }
+    ]
+  },
+  "reb_shift": {
+    "top_risers": [
+      {
+        "player_name": "Dalen Terry",
+        "q4_reb_per36": 7.49,
+        "q13_reb_per36": 3.66,
+        "shift": 3.82,
+        "q4_games": 51
+      },
+      {
+        "player_name": "Trey Jemison III",
+        "q4_reb_per36": 11.81,
+        "q13_reb_per36": 8.46,
+        "shift": 3.34,
+        "q4_games": 34
+      },
+      {
+        "player_name": "Jae'Sean Tate",
+        "q4_reb_per36": 9.03,
+        "q13_reb_per36": 5.88,
+        "shift": 3.15,
+        "q4_games": 46
+      },
+      {
+        "player_name": "Ariel Hukporti",
+        "q4_reb_per36": 9.88,
+        "q13_reb_per36": 6.75,
+        "shift": 3.13,
+        "q4_games": 25
+      },
+      {
+        "player_name": "Kelly Olynyk",
+        "q4_reb_per36": 10.7,
+        "q13_reb_per36": 7.6,
+        "shift": 3.1,
+        "q4_games": 34
+      },
+      {
+        "player_name": "Andre Jackson Jr.",
+        "q4_reb_per36": 9.31,
+        "q13_reb_per36": 6.45,
+        "shift": 2.86,
+        "q4_games": 35
+      },
+      {
+        "player_name": "Tari Eason",
+        "q4_reb_per36": 11.34,
+        "q13_reb_per36": 8.57,
+        "shift": 2.77,
+        "q4_games": 48
+      },
+      {
+        "player_name": "Charles Bassey",
+        "q4_reb_per36": 16.39,
+        "q13_reb_per36": 13.71,
+        "shift": 2.68,
+        "q4_games": 26
+      },
+      {
+        "player_name": "Deandre Ayton",
+        "q4_reb_per36": 13.66,
+        "q13_reb_per36": 10.98,
+        "shift": 2.68,
+        "q4_games": 36
+      },
+      {
+        "player_name": "Jett Howard",
+        "q4_reb_per36": 5.04,
+        "q13_reb_per36": 2.38,
+        "shift": 2.65,
+        "q4_games": 53
+      },
+      {
+        "player_name": "Johnny Furphy",
+        "q4_reb_per36": 7.83,
+        "q13_reb_per36": 5.25,
+        "shift": 2.58,
+        "q4_games": 41
+      },
+      {
+        "player_name": "Christian Koloko",
+        "q4_reb_per36": 11.15,
+        "q13_reb_per36": 8.58,
+        "shift": 2.57,
+        "q4_games": 33
+      },
+      {
+        "player_name": "Max Strus",
+        "q4_reb_per36": 8.14,
+        "q13_reb_per36": 5.63,
+        "shift": 2.51,
+        "q4_games": 40
+      },
+      {
+        "player_name": "Baylor Scheierman",
+        "q4_reb_per36": 7.29,
+        "q13_reb_per36": 4.92,
+        "shift": 2.37,
+        "q4_games": 31
+      },
+      {
+        "player_name": "Tre Jones",
+        "q4_reb_per36": 6.55,
+        "q13_reb_per36": 4.18,
+        "shift": 2.36,
+        "q4_games": 39
+      }
+    ]
+  },
+  "ast_shift": {
+    "top_risers": [
+      {
+        "player_name": "Blake Wesley",
+        "q4_ast_per36": 8.36,
+        "q13_ast_per36": 4.76,
+        "shift": 3.6,
+        "q4_games": 49
+      },
+      {
+        "player_name": "Pat Spencer",
+        "q4_ast_per36": 8.48,
+        "q13_ast_per36": 5.23,
+        "shift": 3.26,
+        "q4_games": 31
+      },
+      {
+        "player_name": "Maxi Kleber",
+        "q4_ast_per36": 4.68,
+        "q13_ast_per36": 1.72,
+        "shift": 2.95,
+        "q4_games": 30
+      },
+      {
+        "player_name": "Rob Dillingham",
+        "q4_ast_per36": 8.53,
+        "q13_ast_per36": 5.6,
+        "shift": 2.93,
+        "q4_games": 38
+      },
+      {
+        "player_name": "Dejounte Murray",
+        "q4_ast_per36": 10.19,
+        "q13_ast_per36": 7.32,
+        "shift": 2.88,
+        "q4_games": 26
+      },
+      {
+        "player_name": "Jalen Pickett",
+        "q4_ast_per36": 7.62,
+        "q13_ast_per36": 4.88,
+        "shift": 2.74,
+        "q4_games": 41
+      },
+      {
+        "player_name": "Shake Milton",
+        "q4_ast_per36": 6.08,
+        "q13_ast_per36": 3.63,
+        "shift": 2.45,
+        "q4_games": 48
+      },
+      {
+        "player_name": "Reed Sheppard",
+        "q4_ast_per36": 5.55,
+        "q13_ast_per36": 3.38,
+        "shift": 2.17,
+        "q4_games": 44
+      },
+      {
+        "player_name": "Aaron Holiday",
+        "q4_ast_per36": 4.86,
+        "q13_ast_per36": 2.87,
+        "shift": 1.99,
+        "q4_games": 58
+      },
+      {
+        "player_name": "Jordan Goodwin",
+        "q4_ast_per36": 4.38,
+        "q13_ast_per36": 2.49,
+        "shift": 1.89,
+        "q4_games": 27
+      },
+      {
+        "player_name": "Craig Porter Jr.",
+        "q4_ast_per36": 5.84,
+        "q13_ast_per36": 3.99,
+        "shift": 1.84,
+        "q4_games": 44
+      },
+      {
+        "player_name": "Micah Potter",
+        "q4_ast_per36": 3.01,
+        "q13_ast_per36": 1.24,
+        "shift": 1.77,
+        "q4_games": 27
+      },
+      {
+        "player_name": "Ousmane Dieng",
+        "q4_ast_per36": 3.92,
+        "q13_ast_per36": 2.3,
+        "shift": 1.62,
+        "q4_games": 33
+      },
+      {
+        "player_name": "Rayan Rupert",
+        "q4_ast_per36": 2.58,
+        "q13_ast_per36": 1.01,
+        "shift": 1.57,
+        "q4_games": 46
+      },
+      {
+        "player_name": "Orlando Robinson",
+        "q4_ast_per36": 4.67,
+        "q13_ast_per36": 3.11,
+        "shift": 1.56,
+        "q4_games": 32
+      }
+    ]
+  },
+  "confounds": [
+    "Q4 minutes are heavily lineup- and blowout-dependent: stars sit in blowouts, benches play garbage time -- this is NOT playing-time-neutral.",
+    "per-36 on small Q4 minutes is noisy even at the floor; treat as descriptive, not a ranking of ability.",
+    "NOT a clutch metric (clutch requires score/time context this does not have) and NOT predictive.",
+    "fixed historical game set; not current-season."
+  ]
+}

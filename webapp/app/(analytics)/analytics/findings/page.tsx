@@ -54,6 +54,12 @@ const FINDINGS: Array<{ href: string; title: string; blurb: string }> = [
     blurb:
       "The honest split: structural fatigue, rest, and clutch effects are confirmed and some replicated, while the individual hot/cold carryover shapes -- even a player's own B2B dip at n=65,103 -- come back null.",
   },
+  {
+    href: "/analytics/findings/q4-shift",
+    title: "The fourth-quarter shift",
+    blurb:
+      "The module that honestly refused a clutch number, turned into a descriptive one: per-player Q4-vs-earlier per-36 shifts over 1,231 games -- published with the blowout/garbage-time confound in plain sight, never as a clutch or predictive claim.",
+  },
 ];
 
 const h1: CSSProperties = {

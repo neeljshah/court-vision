@@ -1,11 +1,11 @@
 {
  "generated_from": "scripts/platformkit/analytics_showcase/out",
- "module_count": 67,
+ "module_count": 68,
  "atlas_card_count": 1549,
  "checks_green": {
   "green": true,
-  "pass": 86,
-  "total": 86
+  "pass": 87,
+  "total": 87
  },
  "edge_claimed": false,
  "modules": [
@@ -61,7 +61,7 @@
    "chart_path": "docs/img/brier_skill_scores.png",
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T22:21:26.985690+00:00",
+   "as_of": "2026-07-24T22:44:00.836191+00:00",
    "evidence_page": null
   },
   {
@@ -215,7 +215,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T22:21:33.955451+00:00",
+   "as_of": "2026-07-24T22:44:07.695139+00:00",
    "evidence_page": null
   },
   {
@@ -369,7 +369,7 @@
    "chart_path": "docs/img/mlb_count_leverage.png",
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T22:22:09.598608+00:00",
+   "as_of": "2026-07-24T22:44:43.452557+00:00",
    "evidence_page": null
   },
   {
@@ -446,7 +446,18 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T22:22:14.535045+00:00",
+   "as_of": "2026-07-24T22:44:48.414846+00:00",
+   "evidence_page": null
+  },
+  {
+   "id": "nba_q4_shift",
+   "title": "Nba Q4 Shift",
+   "one_line": "Descriptive Q4-vs-Q1-Q3 per-36 scoring, rebounding, and assist rate shift per player, from local per-quarter boxes -- not a late-game-skill or predictive claim.",
+   "out_path": "scripts/platformkit/analytics_showcase/out/nba_q4_shift.json",
+   "chart_path": null,
+   "status": "ok",
+   "edge_claimed": false,
+   "as_of": "2026-07-24T22:39:47.027837+00:00",
    "evidence_page": null
   },
   {
@@ -523,7 +534,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T22:22:19.472959+00:00",
+   "as_of": "2026-07-24T22:44:53.410465+00:00",
    "evidence_page": null
   },
   {
@@ -545,7 +556,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T22:22:19.998770+00:00",
+   "as_of": "2026-07-24T22:44:53.946412+00:00",
    "evidence_page": null
   },
   {
@@ -556,7 +567,7 @@
    "chart_path": "docs/img/pitch_sequencing.png",
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T22:22:20.812007+00:00",
+   "as_of": "2026-07-24T22:44:54.761673+00:00",
    "evidence_page": null
   },
   {
@@ -677,7 +688,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T22:22:29.314638+00:00",
+   "as_of": "2026-07-24T22:45:03.330389+00:00",
    "evidence_page": null
   },
   {
@@ -721,7 +732,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T22:22:31.156482+00:00",
+   "as_of": "2026-07-24T22:45:05.193595+00:00",
    "evidence_page": null
   },
   {
