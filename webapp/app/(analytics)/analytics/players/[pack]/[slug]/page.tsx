@@ -1,17 +1,17 @@
 // app/(analytics)/analytics/players/[pack]/[slug]/page.tsx -- one entity's card.
 //
 // Reading-Room entity experience (mockups/entity.html): descriptive banner, the
-// HTML card numbers (each wearing a Receipt), the Scout note (one_liner + chips),
-// "what stands out" (three_things), the reading note (context_note), a floors box,
-// and cross-links. Server component, static export: reads the staged atlas manifest
-// + the precomputed insight envelope at build. No client fetch, no live data.
-//
-// Export cost: generateStaticParams enumerates ALL 1,549 entities across 7 packs
-// (see players/page.tsx report). Each page is tiny and data-free at runtime.
+// HTML card numbers (each wearing a Receipt and, when ranked, a PercentileBar),
+// the Scout note (one_liner + chips), "what stands out" (three_things), the
+// reading note (context_note), a floors box, and cross-links. Server component,
+// static export: reads the staged atlas manifest + the precomputed insight
+// envelope at build (data-free at runtime). generateStaticParams enumerates
+// ALL 1,549 entities across 7 packs (see players/page.tsx report).
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { PercentileBar } from "@/components/analytics/PercentileBar";
 import { Receipt, type ReceiptData } from "@/components/analytics/Receipt";
 import { ScoutNote, type ScoutEnvelope } from "@/components/analytics/ScoutNote";
 import { ScoutQuestions } from "@/components/analytics/ScoutQuestions";
@@ -78,6 +78,13 @@ function moduleTitle(id: string): string {
     } catch { _modTitles = {}; }
   }
   return _modTitles[id] || id.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+type PctPack = { n_in_pack: number; entities: Record<string, Record<string, number>> };
+// Parsed once per build, like _modTitles above; calibration (26 entities, under the artifact's min_n_ranked=30 floor) ships an empty entities map, so no bar renders there.
+let _percentiles: Record<string, PctPack> | null = null;
+function packPercentiles(pack: string): PctPack | null {
+  if (!_percentiles) { try { _percentiles = (JSON.parse(readFileSync(join(SHOWCASE, "entity_percentiles.json"), "utf-8")) as { packs?: Record<string, PctPack> }).packs || {}; } catch { _percentiles = {}; } }
+  return _percentiles[pack] || null;
 }
 // Only surface Scout pills whose answer actually lives in the committed corpus.
 // The corpus entry's source_artifact IS this entity's insight file, so match on
@@ -168,6 +175,8 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
   // collapse to a clean date; descriptive labels pass through.
   const asOf = asOfDate(insight?.as_of || entry.as_of) || null;
   const cells = statCells(entry.key_numbers);
+  const pctPack = packPercentiles(params.pack);
+  const entityPcts = pctPack?.entities[params.slug];
 
   // The receipt popover header names WHAT this number cites (the field path), like
   // m/[id]/page.tsx does -- not the verdict token, which the dot + verdict already
@@ -227,11 +236,20 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
               <div key={k} style={{ background: "var(--paper-raised)", padding: "18px 16px" }}>
                 <div style={{ fontSize: 12, color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: ".06em", fontWeight: 600 }}>{label(k)}</div>
                 <div className={isNum ? "serif tnum" : undefined} style={isNum ? { fontWeight: 500, fontSize: "2.1rem", lineHeight: 1, margin: "8px 0 10px" } : { fontWeight: 600, fontSize: "1.05rem", lineHeight: 1.3, margin: "8px 0 10px", color: "var(--ink)" }}>{fmtCell(k, v)}</div>
+                {isNum && pctPack && typeof entityPcts?.[k] === "number" ? <PercentileBar pct={entityPcts[k]} nInPack={pctPack.n_in_pack} /> : null}
                 <Receipt sourceArtifact={`${REPO}/${pack.manifest}`} asOf={asOf || undefined} verdict="descriptive_only" label="descriptive_only" value={fmtCell(k, v)} />
               </div>
               );
             })}
           </div>
+
+          {pctPack && cells.some(([k, v]) => typeof v === "number" && typeof entityPcts?.[k] === "number") ? (
+            // Shown only when >=1 bar rendered above; direction-free by design (no good/bad).
+            <div style={{ marginTop: 10, fontSize: 13, color: "var(--ink-3)" }}>
+              Bars show where this card sits within its own pack ({pctPack.n_in_pack} {pack.label.toLowerCase()}), by simple rank of the measured value. Higher is only higher -- no quality judgement is implied.{" "}
+              <Receipt sourceArtifact={`${REPO}/entity_percentiles.json`} asOf={asOf || undefined} verdict="descriptive_only" label="descriptive_only" />
+            </div>
+          ) : null}
 
           <ScoutNote envelope={envelope} />
 

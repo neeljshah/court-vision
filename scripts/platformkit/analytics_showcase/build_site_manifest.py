@@ -30,6 +30,8 @@ _SKIP = {
     "brand_logo_variants.json",
     "evidence_index.json",
     "share_ledger.json",
+    # Per-entity percentile ranks feeding the entity-card bars, not a catalog module.
+    "entity_percentiles.json",
 }
 
 # Fields, in priority order, whose value is an honest one-line summary of a module.

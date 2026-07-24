@@ -2,469 +2,475 @@
   {
     "module": "_clone_safe.py",
     "status": "PASS",
-    "seconds": 0.08,
-    "as_of": "2026-07-24T18:45:32.374540+00:00"
+    "seconds": 0.06,
+    "as_of": "2026-07-24T20:09:56.580479+00:00"
   },
   {
     "module": "agent_fleet_history.py",
     "status": "PASS",
-    "seconds": 0.21,
-    "as_of": "2026-07-24T18:45:32.582487+00:00"
+    "seconds": 0.16,
+    "as_of": "2026-07-24T20:09:56.744410+00:00"
   },
   {
     "module": "aging_curve_lite.py",
     "status": "PASS",
-    "seconds": 0.64,
-    "as_of": "2026-07-24T18:45:33.220632+00:00"
+    "seconds": 0.48,
+    "as_of": "2026-07-24T20:09:57.221636+00:00"
   },
   {
     "module": "atlas_factory.py",
     "status": "PASS",
-    "seconds": 0.77,
-    "as_of": "2026-07-24T18:45:33.987991+00:00"
+    "seconds": 0.63,
+    "as_of": "2026-07-24T20:09:57.855521+00:00"
   },
   {
     "module": "atlas_manifest_relpath.py",
     "status": "PASS",
-    "seconds": 0.16,
-    "as_of": "2026-07-24T18:45:34.143071+00:00"
+    "seconds": 0.1,
+    "as_of": "2026-07-24T20:09:57.957952+00:00"
   },
   {
     "module": "blowout_dynamics.py",
     "status": "PASS",
-    "seconds": 0.22,
-    "as_of": "2026-07-24T18:45:34.364510+00:00"
+    "seconds": 0.16,
+    "as_of": "2026-07-24T20:09:58.120624+00:00"
   },
   {
     "module": "box_value_index.py",
     "status": "PASS",
-    "seconds": 0.97,
-    "as_of": "2026-07-24T18:45:35.331081+00:00"
+    "seconds": 0.73,
+    "as_of": "2026-07-24T20:09:58.852479+00:00"
   },
   {
     "module": "brand_logo_variants.py",
     "status": "PASS",
-    "seconds": 0.35,
-    "as_of": "2026-07-24T18:45:35.677156+00:00"
+    "seconds": 0.25,
+    "as_of": "2026-07-24T20:09:59.103105+00:00"
   },
   {
     "module": "brier_skill_scores.py",
     "status": "PASS",
-    "seconds": 3.27,
-    "as_of": "2026-07-24T18:45:38.944191+00:00"
+    "seconds": 1.38,
+    "as_of": "2026-07-24T20:10:00.486141+00:00"
   },
   {
     "module": "build_ask_corpus.py",
     "status": "PASS",
-    "seconds": 0.08,
-    "as_of": "2026-07-24T18:45:39.023204+00:00"
+    "seconds": 0.06,
+    "as_of": "2026-07-24T20:10:00.544523+00:00"
   },
   {
     "module": "build_evidence_index.py",
     "status": "PASS",
-    "seconds": 0.08,
-    "as_of": "2026-07-24T18:45:39.101839+00:00"
+    "seconds": 0.06,
+    "as_of": "2026-07-24T20:10:00.604930+00:00"
   },
   {
     "module": "build_site_manifest.py",
     "status": "PASS",
-    "seconds": 0.08,
-    "as_of": "2026-07-24T18:45:39.182672+00:00"
+    "seconds": 0.06,
+    "as_of": "2026-07-24T20:10:00.666443+00:00"
   },
   {
     "module": "calibration_atlas.py",
     "status": "PASS",
-    "seconds": 0.57,
-    "as_of": "2026-07-24T18:45:39.757648+00:00"
+    "seconds": 0.46,
+    "as_of": "2026-07-24T20:10:01.123748+00:00"
   },
   {
     "module": "calibration_by_market_type.py",
     "status": "PASS",
-    "seconds": 1.63,
-    "as_of": "2026-07-24T18:45:41.386806+00:00"
+    "seconds": 1.58,
+    "as_of": "2026-07-24T20:10:02.707337+00:00"
   },
   {
     "module": "calibration_over_time.py",
     "status": "PASS",
-    "seconds": 0.57,
-    "as_of": "2026-07-24T18:45:41.961868+00:00"
+    "seconds": 0.45,
+    "as_of": "2026-07-24T20:10:03.161118+00:00"
   },
   {
     "module": "calibration_stability.py",
     "status": "PASS",
-    "seconds": 0.26,
-    "as_of": "2026-07-24T18:45:42.222415+00:00"
+    "seconds": 0.17,
+    "as_of": "2026-07-24T20:10:03.334898+00:00"
   },
   {
     "module": "cf_pace_variance.py",
     "status": "PASS",
-    "seconds": 0.11,
-    "as_of": "2026-07-24T18:45:42.333658+00:00"
+    "seconds": 0.07,
+    "as_of": "2026-07-24T20:10:03.406751+00:00"
   },
   {
     "module": "cf_star_removal.py",
     "status": "PASS",
-    "seconds": 0.1,
-    "as_of": "2026-07-24T18:45:42.430269+00:00"
+    "seconds": 0.06,
+    "as_of": "2026-07-24T20:10:03.465668+00:00"
   },
   {
     "module": "claims_corpus_meta.py",
     "status": "PASS",
-    "seconds": 0.07,
-    "as_of": "2026-07-24T18:45:42.503965+00:00"
+    "seconds": 0.06,
+    "as_of": "2026-07-24T20:10:03.522069+00:00"
   },
   {
     "module": "clutch_context.py",
     "status": "PASS",
-    "seconds": 0.08,
-    "as_of": "2026-07-24T18:45:42.581678+00:00"
+    "seconds": 0.06,
+    "as_of": "2026-07-24T20:10:03.577868+00:00"
   },
   {
     "module": "comeback_atlas.py",
     "status": "PASS",
-    "seconds": 0.22,
-    "as_of": "2026-07-24T18:45:42.804284+00:00"
+    "seconds": 0.16,
+    "as_of": "2026-07-24T20:10:03.733619+00:00"
   },
   {
     "module": "cross_sport_scoreboard.py",
     "status": "PASS",
-    "seconds": 0.08,
-    "as_of": "2026-07-24T18:45:42.885237+00:00"
+    "seconds": 0.06,
+    "as_of": "2026-07-24T20:10:03.790133+00:00"
   },
   {
     "module": "ctx_lineup_proxy.py",
     "status": "PASS",
-    "seconds": 0.8,
-    "as_of": "2026-07-24T18:45:43.682418+00:00"
+    "seconds": 0.59,
+    "as_of": "2026-07-24T20:10:04.378332+00:00"
   },
   {
     "module": "ctx_player_splits.py",
     "status": "PASS",
-    "seconds": 1.33,
-    "as_of": "2026-07-24T18:45:45.010285+00:00"
+    "seconds": 1.07,
+    "as_of": "2026-07-24T20:10:05.450295+00:00"
   },
   {
     "module": "ctx_team_states.py",
     "status": "PASS",
-    "seconds": 0.25,
-    "as_of": "2026-07-24T18:45:45.258329+00:00"
+    "seconds": 0.16,
+    "as_of": "2026-07-24T20:10:05.610412+00:00"
   },
   {
     "module": "cv_tracking_stats.py",
     "status": "PASS",
-    "seconds": 0.22,
-    "as_of": "2026-07-24T18:45:45.474390+00:00"
+    "seconds": 0.09,
+    "as_of": "2026-07-24T20:10:05.697941+00:00"
   },
   {
     "module": "dossier_completeness.py",
     "status": "PASS",
-    "seconds": 0.09,
-    "as_of": "2026-07-24T18:45:45.562014+00:00"
+    "seconds": 0.06,
+    "as_of": "2026-07-24T20:10:05.756941+00:00"
+  },
+  {
+    "module": "entity_percentiles.py",
+    "status": "PASS",
+    "seconds": 0.07,
+    "as_of": "2026-07-24T20:10:05.830454+00:00"
   },
   {
     "module": "fwd_claim_scoreboard.py",
     "status": "PASS",
-    "seconds": 0.82,
-    "as_of": "2026-07-24T18:45:46.381535+00:00"
+    "seconds": 0.66,
+    "as_of": "2026-07-24T20:10:06.488480+00:00"
   },
   {
     "module": "home_away_anatomy.py",
     "status": "PASS",
-    "seconds": 0.98,
-    "as_of": "2026-07-24T18:45:47.363715+00:00"
+    "seconds": 0.77,
+    "as_of": "2026-07-24T20:10:07.260036+00:00"
   },
   {
     "module": "honesty_exhibit.py",
     "status": "PASS",
-    "seconds": 0.09,
-    "as_of": "2026-07-24T18:45:47.457503+00:00"
+    "seconds": 0.07,
+    "as_of": "2026-07-24T20:10:07.329163+00:00"
   },
   {
     "module": "info_arrival_curve.py",
     "status": "PASS",
-    "seconds": 0.57,
-    "as_of": "2026-07-24T18:45:48.029186+00:00"
+    "seconds": 0.46,
+    "as_of": "2026-07-24T20:10:07.791739+00:00"
   },
   {
     "module": "kernel_transfer.py",
     "status": "PASS",
-    "seconds": 0.09,
-    "as_of": "2026-07-24T18:45:48.121482+00:00"
+    "seconds": 0.06,
+    "as_of": "2026-07-24T20:10:07.849450+00:00"
   },
   {
     "module": "league_parity_index.py",
     "status": "PASS",
-    "seconds": 0.96,
-    "as_of": "2026-07-24T18:45:49.084243+00:00"
+    "seconds": 0.74,
+    "as_of": "2026-07-24T20:10:08.593624+00:00"
   },
   {
     "module": "market_convergence.py",
     "status": "PASS",
-    "seconds": 1.74,
-    "as_of": "2026-07-24T18:45:50.823324+00:00"
+    "seconds": 1.62,
+    "as_of": "2026-07-24T20:10:10.218304+00:00"
   },
   {
     "module": "market_disagreement_profile.py",
     "status": "PASS",
-    "seconds": 0.09,
-    "as_of": "2026-07-24T18:45:50.915535+00:00"
+    "seconds": 0.06,
+    "as_of": "2026-07-24T20:10:10.280772+00:00"
   },
   {
     "module": "market_overreaction.py",
     "status": "PASS",
-    "seconds": 0.58,
-    "as_of": "2026-07-24T18:45:51.495004+00:00"
+    "seconds": 0.45,
+    "as_of": "2026-07-24T20:10:10.728446+00:00"
   },
   {
     "module": "mechanism_ledger_export.py",
     "status": "PASS",
-    "seconds": 0.09,
-    "as_of": "2026-07-24T18:45:51.584931+00:00"
+    "seconds": 0.07,
+    "as_of": "2026-07-24T20:10:10.793796+00:00"
   },
   {
     "module": "mechanism_survival.py",
     "status": "PASS",
-    "seconds": 0.09,
-    "as_of": "2026-07-24T18:45:51.674635+00:00"
+    "seconds": 0.07,
+    "as_of": "2026-07-24T20:10:10.860840+00:00"
   },
   {
     "module": "micro_absorption.py",
     "status": "PASS",
-    "seconds": 27.04,
-    "as_of": "2026-07-24T18:46:18.714562+00:00"
+    "seconds": 25.36,
+    "as_of": "2026-07-24T20:10:36.223133+00:00"
   },
   {
     "module": "micro_closing_decay.py",
     "status": "PASS",
-    "seconds": 4.27,
-    "as_of": "2026-07-24T18:46:22.985556+00:00"
+    "seconds": 3.96,
+    "as_of": "2026-07-24T20:10:40.182052+00:00"
   },
   {
     "module": "mlb_batter_atlas.py",
     "status": "PASS",
-    "seconds": 0.96,
-    "as_of": "2026-07-24T18:46:23.946446+00:00"
+    "seconds": 0.72,
+    "as_of": "2026-07-24T20:10:40.905310+00:00"
   },
   {
     "module": "mlb_count_leverage.py",
     "status": "PASS",
-    "seconds": 1.73,
-    "as_of": "2026-07-24T18:46:25.681124+00:00"
+    "seconds": 1.46,
+    "as_of": "2026-07-24T20:10:42.367776+00:00"
   },
   {
     "module": "mlb_pitch_atlas.py",
     "status": "PASS",
-    "seconds": 0.97,
-    "as_of": "2026-07-24T18:46:26.645389+00:00"
+    "seconds": 0.76,
+    "as_of": "2026-07-24T20:10:43.130250+00:00"
   },
   {
     "module": "mlb_velo_bands.py",
     "status": "PASS",
-    "seconds": 0.99,
-    "as_of": "2026-07-24T18:46:27.636830+00:00"
+    "seconds": 0.72,
+    "as_of": "2026-07-24T20:10:43.847927+00:00"
   },
   {
     "module": "murphy_decomposition.py",
     "status": "PASS",
-    "seconds": 0.1,
-    "as_of": "2026-07-24T18:46:27.737546+00:00"
+    "seconds": 0.06,
+    "as_of": "2026-07-24T20:10:43.911785+00:00"
   },
   {
     "module": "nba_consistency_profiles.py",
     "status": "PASS",
-    "seconds": 0.98,
-    "as_of": "2026-07-24T18:46:28.716941+00:00"
+    "seconds": 0.73,
+    "as_of": "2026-07-24T20:10:44.643061+00:00"
   },
   {
     "module": "nba_form_curves.py",
     "status": "PASS",
-    "seconds": 1.0,
-    "as_of": "2026-07-24T18:46:29.717519+00:00"
+    "seconds": 0.72,
+    "as_of": "2026-07-24T20:10:45.363891+00:00"
   },
   {
     "module": "nba_matchup_grid.py",
     "status": "PASS",
-    "seconds": 0.97,
-    "as_of": "2026-07-24T18:46:30.683368+00:00"
+    "seconds": 0.74,
+    "as_of": "2026-07-24T20:10:46.100236+00:00"
   },
   {
     "module": "nba_player_atlas.py",
     "status": "PASS",
-    "seconds": 0.97,
-    "as_of": "2026-07-24T18:46:31.652483+00:00"
+    "seconds": 0.71,
+    "as_of": "2026-07-24T20:10:46.810306+00:00"
   },
   {
     "module": "nba_team_atlas.py",
     "status": "PASS",
-    "seconds": 0.95,
-    "as_of": "2026-07-24T18:46:32.606261+00:00"
+    "seconds": 0.74,
+    "as_of": "2026-07-24T20:10:47.545772+00:00"
   },
   {
     "module": "novel_line_half_life.py",
     "status": "PASS",
-    "seconds": 0.69,
-    "as_of": "2026-07-24T18:46:33.296986+00:00"
+    "seconds": 0.59,
+    "as_of": "2026-07-24T20:10:48.136198+00:00"
   },
   {
     "module": "novel_live_clock_fraction.py",
     "status": "PASS",
-    "seconds": 0.67,
-    "as_of": "2026-07-24T18:46:33.966541+00:00"
+    "seconds": 0.53,
+    "as_of": "2026-07-24T20:10:48.667247+00:00"
   },
   {
     "module": "novel_load_bearing_index.py",
     "status": "PASS",
-    "seconds": 0.73,
-    "as_of": "2026-07-24T18:46:34.696490+00:00"
+    "seconds": 0.58,
+    "as_of": "2026-07-24T20:10:49.250609+00:00"
   },
   {
     "module": "novel_market_foresight_premium.py",
     "status": "PASS",
-    "seconds": 0.75,
-    "as_of": "2026-07-24T18:46:35.446302+00:00"
+    "seconds": 0.61,
+    "as_of": "2026-07-24T20:10:49.858197+00:00"
   },
   {
     "module": "novel_overreaction_harvest_gap.py",
     "status": "PASS",
-    "seconds": 0.67,
-    "as_of": "2026-07-24T18:46:36.114757+00:00"
+    "seconds": 0.53,
+    "as_of": "2026-07-24T20:10:50.391514+00:00"
   },
   {
     "module": "novel_schedule_fatigue_tax.py",
     "status": "PASS",
-    "seconds": 0.71,
-    "as_of": "2026-07-24T18:46:36.823852+00:00"
+    "seconds": 0.57,
+    "as_of": "2026-07-24T20:10:50.966899+00:00"
   },
   {
     "module": "novel_stats_index.py",
     "status": "PASS",
-    "seconds": 0.12,
-    "as_of": "2026-07-24T18:46:36.943025+00:00"
+    "seconds": 0.1,
+    "as_of": "2026-07-24T20:10:51.064527+00:00"
   },
   {
     "module": "on_off_showcase.py",
     "status": "PASS",
-    "seconds": 0.57,
-    "as_of": "2026-07-24T18:46:37.514529+00:00"
+    "seconds": 0.46,
+    "as_of": "2026-07-24T20:10:51.519841+00:00"
   },
   {
     "module": "paper_execution_audit.py",
     "status": "PASS",
-    "seconds": 0.15,
-    "as_of": "2026-07-24T18:46:37.669271+00:00"
+    "seconds": 0.07,
+    "as_of": "2026-07-24T20:10:51.592335+00:00"
   },
   {
     "module": "pitch_sequencing.py",
     "status": "PASS",
-    "seconds": 1.81,
-    "as_of": "2026-07-24T18:46:39.481723+00:00"
+    "seconds": 1.57,
+    "as_of": "2026-07-24T20:10:53.161809+00:00"
   },
   {
     "module": "player_metric_landscape.py",
     "status": "PASS",
-    "seconds": 0.96,
-    "as_of": "2026-07-24T18:46:40.439263+00:00"
+    "seconds": 0.73,
+    "as_of": "2026-07-24T20:10:53.893932+00:00"
   },
   {
     "module": "qa_coverage_stats.py",
     "status": "PASS",
-    "seconds": 0.11,
-    "as_of": "2026-07-24T18:46:40.553389+00:00"
+    "seconds": 0.06,
+    "as_of": "2026-07-24T20:10:53.955337+00:00"
   },
   {
     "module": "reject_graveyard.py",
     "status": "PASS",
-    "seconds": 0.16,
-    "as_of": "2026-07-24T18:46:40.713365+00:00"
+    "seconds": 0.08,
+    "as_of": "2026-07-24T20:10:54.037309+00:00"
   },
   {
     "module": "residual_anatomy.py",
     "status": "PASS",
-    "seconds": 1.56,
-    "as_of": "2026-07-24T18:46:42.270258+00:00"
+    "seconds": 1.48,
+    "as_of": "2026-07-24T20:10:55.512148+00:00"
   },
   {
     "module": "residual_autocorrelation.py",
     "status": "PASS",
-    "seconds": 1.76,
-    "as_of": "2026-07-24T18:46:44.030909+00:00"
+    "seconds": 1.57,
+    "as_of": "2026-07-24T20:10:57.084434+00:00"
   },
   {
     "module": "schedule_density.py",
     "status": "PASS",
-    "seconds": 0.98,
-    "as_of": "2026-07-24T18:46:45.011621+00:00"
+    "seconds": 0.73,
+    "as_of": "2026-07-24T20:10:57.809741+00:00"
   },
   {
     "module": "share_chart.py",
     "status": "PASS",
-    "seconds": 0.1,
-    "as_of": "2026-07-24T18:46:45.114329+00:00"
+    "seconds": 0.07,
+    "as_of": "2026-07-24T20:10:57.877790+00:00"
   },
   {
     "module": "soccer_calibration_pack.py",
     "status": "PASS",
-    "seconds": 0.09,
-    "as_of": "2026-07-24T18:46:45.205534+00:00"
+    "seconds": 0.06,
+    "as_of": "2026-07-24T20:10:57.940615+00:00"
   },
   {
     "module": "soccer_form_stability.py",
     "status": "PASS",
-    "seconds": 0.08,
-    "as_of": "2026-07-24T18:46:45.282329+00:00"
+    "seconds": 0.06,
+    "as_of": "2026-07-24T20:10:57.998618+00:00"
   },
   {
     "module": "stage_webapp_assets.py",
     "status": "PASS",
     "seconds": 0.32,
-    "as_of": "2026-07-24T18:46:45.606992+00:00"
+    "as_of": "2026-07-24T20:10:58.316068+00:00"
   },
   {
     "module": "statcast_showcase.py",
     "status": "PASS",
-    "seconds": 1.26,
-    "as_of": "2026-07-24T18:46:46.866804+00:00"
+    "seconds": 0.94,
+    "as_of": "2026-07-24T20:10:59.259425+00:00"
   },
   {
     "module": "state_conditioned_calibration.py",
     "status": "PASS",
-    "seconds": 1.64,
-    "as_of": "2026-07-24T18:46:48.505670+00:00"
+    "seconds": 1.58,
+    "as_of": "2026-07-24T20:11:00.835767+00:00"
   },
   {
     "module": "tennis_showcase.py",
     "status": "PASS",
-    "seconds": 0.61,
-    "as_of": "2026-07-24T18:46:49.117194+00:00"
+    "seconds": 0.45,
+    "as_of": "2026-07-24T20:11:01.282926+00:00"
   },
   {
     "module": "tennis_soccer_atlas.py",
     "status": "PASS",
-    "seconds": 0.58,
-    "as_of": "2026-07-24T18:46:49.696857+00:00"
+    "seconds": 0.45,
+    "as_of": "2026-07-24T20:11:01.733157+00:00"
   },
   {
     "module": "tennis_surface_transfer.py",
     "status": "PASS",
-    "seconds": 1.08,
-    "as_of": "2026-07-24T18:46:50.776149+00:00"
+    "seconds": 0.8,
+    "as_of": "2026-07-24T20:11:02.529247+00:00"
   },
   {
     "module": "tick_microstructure.py",
     "status": "PASS",
-    "seconds": 0.09,
-    "as_of": "2026-07-24T18:46:50.867174+00:00"
+    "seconds": 0.06,
+    "as_of": "2026-07-24T20:11:02.594145+00:00"
   },
   {
     "module": "why_attribution.py",
     "status": "PASS",
-    "seconds": 0.95,
-    "as_of": "2026-07-24T18:46:51.819767+00:00"
+    "seconds": 0.86,
+    "as_of": "2026-07-24T20:11:03.458021+00:00"
   },
   {
     "module": "xsport_structure.py",
     "status": "PASS",
-    "seconds": 0.83,
-    "as_of": "2026-07-24T18:46:52.650225+00:00"
+    "seconds": 0.65,
+    "as_of": "2026-07-24T20:11:04.107819+00:00"
   }
 ]
