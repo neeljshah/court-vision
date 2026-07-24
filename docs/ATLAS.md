@@ -59,6 +59,13 @@ supplies `card_figure` (the multi-panel matplotlib renderer), `write_manifest`, 
 Each manifest header carries `"descriptive_only": true` and an `n_entries` count. The floor text
 travels *with every entry* so a card can never be read without its sample caveat.
 
+> **Clone-portability:** every `card_path` is stored **repo-relative** (e.g.
+> `docs/img/atlas/nba/nikola_jokic.png`), never an absolute machine path, so the manifests resolve
+> identically on any clone. The `atlas_card` resolver returns that repo-relative `card_path`
+> verbatim and adds a runtime-rejoined `card_path_abs` for file access
+> (`scripts/platformkit/analytics_showcase/atlas_manifest_relpath.py --check` fails closed on any
+> absolute or unresolvable path).
+
 ---
 
 ## NBA players -- 482 cards

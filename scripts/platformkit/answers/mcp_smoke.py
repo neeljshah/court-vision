@@ -121,6 +121,12 @@ _CASES: List[Tuple[str, Dict[str, Any], Dict[str, Any]]] = [
     ("ask",
      {"query": "Stephen Curry three point percentage", "sport": "nba"},
      {"query": "what is my roi edge over the market", "sport": "nba"}),
+    # streaks route (via the ask resolver): a real team streak query resolves ok
+    # where the calendar is present, no_data (with reason) in a bare clone; a
+    # nonexistent team must fail CLOSED, never fabricate a streak.
+    ("ask",
+     {"query": "longest win streak for the Lakers this season", "sport": "nba"},
+     {"query": "current streak for %s" % _NOBODY, "sport": "nba"}),
     ("scouting_report",
      {"sport": "nba", "player": "Stephen Curry"},
      {"sport": "nba", "player": _NOBODY}),

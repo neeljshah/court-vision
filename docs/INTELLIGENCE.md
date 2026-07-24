@@ -17,6 +17,13 @@ doc is the public-facing **manifest**: what exists, what's in each file, how it 
 10-section inventory below documents the original 80-artifact core in full; later additions are
 not yet individually catalogued.
 
+> **Local-only research layer — not part of the public clone.** The 151 artifact files live under
+> `data/intelligence/` (gitignored) and are **absent from a fresh clone**; they are not rendered by
+> the site and cannot be regenerated without the local raw-tracking + NBA-Stats corpus. What ships
+> publicly is this manifest (schema + counts) plus the derived **summaries that appear on the
+> evidence pages**. Treat every row count and scale figure below as a description of the local
+> research corpus, not something the clone can reproduce on its own.
+
 > **Status (2026-07-15):** 151 artifact files populated (80-artifact core + growth). Coverage is uneven — some layers (lineup
 > chemistry, similarity index) span thousands of rows; others (officials player-sensitivity,
 > absence-effects) are early and small. Per-artifact row counts are listed so maturity of each
@@ -407,7 +414,9 @@ Regeneration takes ~25 min on the dev box for the full 80-artifact pass. The art
 out of git both because they're large and because they encode the proprietary derivation; the
 **schema and counts on this page are the public commitment**.
 
-*Last verified: 2026-07-07.*
+*Manifest last reviewed 2026-07-23. Underlying artifacts were last built 2026-06-02 (all 151 files
+carry that mtime) and have not been regenerated since; the schema/counts above describe that local
+build. This is a local-only research layer — not shipped in the public clone.*
 
 **Siblings:** [PLAYER_INTELLIGENCE.md](PLAYER_INTELLIGENCE.md) (dossier showcase + scope) ·
 [MEMORY_GRAPH.md](MEMORY_GRAPH.md) (person-free knowledge graph) ·

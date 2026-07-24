@@ -50,6 +50,18 @@ def parse_entity(text: str) -> str | None:
     return entity or None
 
 
+def _abs_card_path(card_path):
+    """Rejoin a repo-relative card_path against the repo root for runtime use.
+    Backward-compatible: an already-absolute stored path (Windows drive or
+    posix-absolute) is returned unchanged, so both manifest forms resolve."""
+    if not card_path:
+        return card_path
+    s = str(card_path).replace("\\", "/")
+    if s.startswith("/") or (len(s) >= 2 and s[1] == ":"):  # already absolute
+        return s
+    return str((_REPO / s)).replace("\\", "/")
+
+
 def _norm(s) -> str:
     s = str(s or "").lower()
     s = unicodedata.normalize("NFKD", s)
@@ -103,6 +115,8 @@ def resolve(entity: str, sport_filter: str | None = None) -> dict:
                 "candidates": [{"entity": e.get("entity"), "manifest": rel, "sport": sp} for rel, sp, e in uniq]}
     rel, sport, e = uniq[0]
     return {"status": "ok", "category": CATEGORY, "sport": sport, "source_artifact": rel,
-            "as_of": e.get("as_of"), "entity": e.get("entity"), "card_path": e.get("card_path"),
+            "as_of": e.get("as_of"), "entity": e.get("entity"),
+            "card_path": e.get("card_path"),  # stored value, verbatim (repo-relative)
+            "card_path_abs": _abs_card_path(e.get("card_path")),  # rejoined for runtime file access
             "key_numbers": e.get("key_numbers"), "floors": e.get("floors"),
             "descriptive_only": True, "edge_claimed": False}

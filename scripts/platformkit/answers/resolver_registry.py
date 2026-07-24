@@ -74,6 +74,7 @@ from scripts.platformkit.answers import h2h_history_resolver as _h2h_history
 from scripts.platformkit.answers import leaderboard_resolver as _lb
 from scripts.platformkit.answers import player_compare as _pc
 from scripts.platformkit.answers import schedule_context_resolver as _schedule
+from scripts.platformkit.answers import streaks_resolver as _streaks
 from scripts.platformkit.answers import winprob_dispatch as _winprob
 from scripts.platformkit.answers.registry_loader import SPORTS as _CONCEPT_SPORTS
 from scripts.platformkit.intel_query import compose_comparables as _comparables
@@ -299,6 +300,15 @@ RESOLVERS: dict[str, dict] = {
                         "calibration language only, never a market edge or an invented conditional probability",
         "units": "probability 0-1 + integer n per cell", "rounding": "4 decimals",
     },
+    "streaks": {
+        "resolver": "scripts.platformkit.answers.streaks_resolver.resolve",
+        "source_artifact": "data/domains/basketball_nba/linescores.parquet | data/domains/mlb/games.parquet | "
+                            "data/domains/soccer/matches.parquet",
+        "computation": "per-team season game-log streaks off the public games calendar -- longest win streak, "
+                        "longest loss streak, and current (trailing) streak, scoped to one season (as_of's season "
+                        "or the most recent on file, leak-free truncation to games before as_of); descriptive only",
+        "units": "consecutive-game counts (integers); draws break both streaks", "rounding": "none -- integer counts",
+    },
     "atlas_card": {
         "resolver": "scripts.platformkit.answers.atlas_resolver.resolve",
         "source_artifact": "scripts/platformkit/analytics_showcase/out/atlas_*_manifest.json",
@@ -337,6 +347,13 @@ _H2H_HISTORY_KEYWORDS = ("run differential", "goal differential", "point differe
                          "historical h2h", "historical head-to-head", "historical head to head",
                          "all-time record", "all time record", "head-to-head record", "h2h record",
                          "leads the series", "series record", "historical record")
+# streaks (NEW) -- per-team season win/loss streak off the games calendar.
+# The word "streak" appears in no other keyword list in this file (grepped), so
+# this is unambiguous; checked right after h2h_history (both are descriptive
+# game-log lookups) and BEFORE is_ranking_query's "longest"/"most" cues so
+# "longest win streak" reaches the streaks resolver, not the leaderboard.
+_STREAK_KEYWORDS = ("streak", "win streak", "winning streak", "losing streak",
+                    "loss streak", "won in a row", "lost in a row", "games in a row")
 # conditional_winprob (Family 2, NEW) -- descriptive rest-conditioned win-rate
 # delta ("how does win prob change on a back-to-back/short rest"). Checked
 # BEFORE _PREDICTION_KEYWORDS (a literal "win probability" naming a rest
@@ -484,6 +501,8 @@ def classify(query: str) -> str | None:
         return "historical_result"
     if any(k in low for k in _H2H_HISTORY_KEYWORDS):
         return "h2h_history"
+    if any(k in low for k in _STREAK_KEYWORDS):
+        return "streaks"
     if _REFEREE_RE.search(low):
         return "verified_claims"
     if _CLAIMS_REROUTE_RE.search(low):
@@ -985,6 +1004,12 @@ def resolve(query: str, sport: str = "nba", category: str | None = None, **kwarg
             return {"status": "no_data", "category": "h2h_history", "sport": sport,
                     "note": "could not parse two teams from query -- pass team_a=/team_b= or 'TEAM_A vs TEAM_B'"}
         return _h2h_history.resolve(sport, team_a, team_b, as_of=kwargs.get("as_of") or kwargs.get("date"))
+    if cat == "streaks":
+        team = kwargs.get("team") or _streaks.parse_team(query)
+        if not team:
+            return {"status": "no_data", "category": "streaks", "sport": sport,
+                    "note": "could not parse a team from query -- pass team= explicitly"}
+        return _streaks.resolve(sport, team, as_of=kwargs.get("as_of") or kwargs.get("date"))
     if cat == "conditional_winprob":
         return _conditional_winprob.resolve(sport, as_of=kwargs.get("as_of") or kwargs.get("date"),
                                             team=kwargs.get("team"))

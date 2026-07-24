@@ -1,706 +1,706 @@
 {
-  "sport": "calibration",
-  "generated_at": "2026-07-23T01:39:25.800230+00:00",
-  "descriptive_only": true,
-  "n_entries": 26,
-  "entries": [
-    {
-      "entity": "mlb inning 1",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_inning_1.png",
-      "key_numbers": {
-        "n": 7646,
-        "model_ece": 0.1329,
-        "market_ece": 0.0903
-      },
-      "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
-      "as_of": "2026-07-23T01:39:22.086535+00:00",
-      "card_type": "time_checkpoint",
-      "sport": "mlb"
-    },
-    {
-      "entity": "mlb inning 2",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_inning_2.png",
-      "key_numbers": {
-        "n": 5921,
-        "model_ece": 0.0446,
-        "market_ece": 0.0525
-      },
-      "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
-      "as_of": "2026-07-23T01:39:22.086535+00:00",
-      "card_type": "time_checkpoint",
-      "sport": "mlb"
-    },
-    {
-      "entity": "mlb inning 3",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_inning_3.png",
-      "key_numbers": {
-        "n": 6333,
-        "model_ece": 0.0476,
-        "market_ece": 0.0648
-      },
-      "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
-      "as_of": "2026-07-23T01:39:22.086535+00:00",
-      "card_type": "time_checkpoint",
-      "sport": "mlb"
-    },
-    {
-      "entity": "mlb inning 4",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_inning_4.png",
-      "key_numbers": {
-        "n": 6266,
-        "model_ece": 0.0379,
-        "market_ece": 0.0468
-      },
-      "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
-      "as_of": "2026-07-23T01:39:22.086535+00:00",
-      "card_type": "time_checkpoint",
-      "sport": "mlb"
-    },
-    {
-      "entity": "mlb inning 5",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_inning_5.png",
-      "key_numbers": {
-        "n": 6021,
-        "model_ece": 0.0363,
-        "market_ece": 0.0486
-      },
-      "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
-      "as_of": "2026-07-23T01:39:22.086535+00:00",
-      "card_type": "time_checkpoint",
-      "sport": "mlb"
-    },
-    {
-      "entity": "mlb inning 6",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_inning_6.png",
-      "key_numbers": {
-        "n": 6478,
-        "model_ece": 0.0679,
-        "market_ece": 0.0503
-      },
-      "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
-      "as_of": "2026-07-23T01:39:22.086535+00:00",
-      "card_type": "time_checkpoint",
-      "sport": "mlb"
-    },
-    {
-      "entity": "mlb inning 7",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_inning_7.png",
-      "key_numbers": {
-        "n": 6311,
-        "model_ece": 0.137,
-        "market_ece": 0.0522
-      },
-      "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
-      "as_of": "2026-07-23T01:39:22.086535+00:00",
-      "card_type": "time_checkpoint",
-      "sport": "mlb"
-    },
-    {
-      "entity": "mlb inning 8",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_inning_8.png",
-      "key_numbers": {
-        "n": 5276,
-        "model_ece": 0.1656,
-        "market_ece": 0.0623
-      },
-      "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
-      "as_of": "2026-07-23T01:39:22.086535+00:00",
-      "card_type": "time_checkpoint",
-      "sport": "mlb"
-    },
-    {
-      "entity": "mlb inning 9",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_inning_9.png",
-      "key_numbers": {
-        "n": 2282,
-        "model_ece": 0.2034,
-        "market_ece": 0.071
-      },
-      "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
-      "as_of": "2026-07-23T01:39:22.086535+00:00",
-      "card_type": "time_checkpoint",
-      "sport": "mlb"
-    },
-    {
-      "entity": "mlb inning 10+",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_inning_10.png",
-      "key_numbers": {
-        "n": 112,
-        "model_ece": 0.1602,
-        "market_ece": 0.1558
-      },
-      "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
-      "as_of": "2026-07-23T01:39:22.086535+00:00",
-      "card_type": "time_checkpoint",
-      "sport": "mlb"
-    },
-    {
-      "entity": "mlb band 0-.2",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_band_0_2.png",
-      "key_numbers": {
-        "n": 7510,
-        "mean_y_overall": 0.2217,
-        "band_reference": 0.1,
-        "n_time_buckets_with_data": 7,
-        "by_time_bucket": [
-          {
-            "bucket": "4",
-            "n": 4,
-            "mean_y": 0.0
-          },
-          {
-            "bucket": "5",
-            "n": 859,
-            "mean_y": 0.1793
-          },
-          {
-            "bucket": "6",
-            "n": 1216,
-            "mean_y": 0.2262
-          },
-          {
-            "bucket": "7",
-            "n": 2124,
-            "mean_y": 0.2665
-          },
-          {
-            "bucket": "8",
-            "n": 2083,
-            "mean_y": 0.1901
-          },
-          {
-            "bucket": "9",
-            "n": 1178,
-            "mean_y": 0.2182
-          },
-          {
-            "bucket": "10+",
-            "n": 46,
-            "mean_y": 0.3696
-          }
-        ]
-      },
-      "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
-      "as_of": "2026-07-23T01:39:22.086535+00:00",
-      "card_type": "prob_band",
-      "sport": "mlb"
-    },
-    {
-      "entity": "mlb band .2-.4",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_band_2_4.png",
-      "key_numbers": {
-        "n": 7822,
-        "mean_y_overall": 0.293,
-        "band_reference": 0.3,
-        "n_time_buckets_with_data": 8,
-        "by_time_bucket": [
-          {
-            "bucket": "1",
-            "n": 641,
-            "mean_y": 0.6708
-          },
-          {
-            "bucket": "2",
-            "n": 399,
-            "mean_y": 0.411
-          },
-          {
-            "bucket": "3",
-            "n": 1418,
-            "mean_y": 0.2045
-          },
-          {
-            "bucket": "4",
-            "n": 1342,
-            "mean_y": 0.2235
-          },
-          {
-            "bucket": "5",
-            "n": 1522,
-            "mean_y": 0.2799
-          },
-          {
-            "bucket": "6",
-            "n": 1549,
-            "mean_y": 0.2983
-          },
-          {
-            "bucket": "7",
-            "n": 790,
-            "mean_y": 0.2139
-          },
-          {
-            "bucket": "8",
-            "n": 161,
-            "mean_y": 0.3168
-          }
-        ]
-      },
-      "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
-      "as_of": "2026-07-23T01:39:22.086535+00:00",
-      "card_type": "prob_band",
-      "sport": "mlb"
-    },
-    {
-      "entity": "mlb band .4-.6",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_band_4_6.png",
-      "key_numbers": {
-        "n": 18611,
-        "mean_y_overall": 0.4642,
-        "band_reference": 0.5,
-        "n_time_buckets_with_data": 10,
-        "by_time_bucket": [
-          {
-            "bucket": "1",
-            "n": 5367,
-            "mean_y": 0.4062
-          },
-          {
-            "bucket": "2",
-            "n": 4106,
-            "mean_y": 0.491
-          },
-          {
-            "bucket": "3",
-            "n": 2871,
-            "mean_y": 0.4991
-          },
-          {
-            "bucket": "4",
-            "n": 2821,
-            "mean_y": 0.4956
-          },
-          {
-            "bucket": "5",
-            "n": 1044,
-            "mean_y": 0.4914
-          },
-          {
-            "bucket": "6",
-            "n": 1007,
-            "mean_y": 0.4201
-          },
-          {
-            "bucket": "7",
-            "n": 654,
-            "mean_y": 0.4526
-          },
-          {
-            "bucket": "8",
-            "n": 439,
-            "mean_y": 0.5444
-          },
-          {
-            "bucket": "9",
-            "n": 236,
-            "mean_y": 0.4364
-          },
-          {
-            "bucket": "10+",
-            "n": 66,
-            "mean_y": 0.5758
-          }
-        ]
-      },
-      "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
-      "as_of": "2026-07-23T01:39:22.086535+00:00",
-      "card_type": "prob_band",
-      "sport": "mlb"
-    },
-    {
-      "entity": "mlb band .6-.8",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_band_6_8.png",
-      "key_numbers": {
-        "n": 10948,
-        "mean_y_overall": 0.5972,
-        "band_reference": 0.7,
-        "n_time_buckets_with_data": 9,
-        "by_time_bucket": [
-          {
-            "bucket": "1",
-            "n": 1638,
-            "mean_y": 0.4463
-          },
-          {
-            "bucket": "2",
-            "n": 1416,
-            "mean_y": 0.5205
-          },
-          {
-            "bucket": "3",
-            "n": 2044,
-            "mean_y": 0.6243
-          },
-          {
-            "bucket": "4",
-            "n": 2037,
-            "mean_y": 0.647
-          },
-          {
-            "bucket": "5",
-            "n": 1399,
-            "mean_y": 0.6147
-          },
-          {
-            "bucket": "6",
-            "n": 1247,
-            "mean_y": 0.6632
-          },
-          {
-            "bucket": "7",
-            "n": 822,
-            "mean_y": 0.6715
-          },
-          {
-            "bucket": "8",
-            "n": 343,
-            "mean_y": 0.688
-          },
-          {
-            "bucket": "9",
-            "n": 2,
-            "mean_y": 0.5
-          }
-        ]
-      },
-      "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
-      "as_of": "2026-07-23T01:39:22.086535+00:00",
-      "card_type": "prob_band",
-      "sport": "mlb"
-    },
-    {
-      "entity": "mlb band .8-1",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\mlb_band_8_1.png",
-      "key_numbers": {
-        "n": 7755,
-        "mean_y_overall": 0.714,
-        "band_reference": 0.9,
-        "n_time_buckets_with_data": 6,
-        "by_time_bucket": [
-          {
-            "bucket": "4",
-            "n": 62,
-            "mean_y": 0.7903
-          },
-          {
-            "bucket": "5",
-            "n": 1197,
-            "mean_y": 0.7911
-          },
-          {
-            "bucket": "6",
-            "n": 1459,
-            "mean_y": 0.7464
-          },
-          {
-            "bucket": "7",
-            "n": 1921,
-            "mean_y": 0.7028
-          },
-          {
-            "bucket": "8",
-            "n": 2250,
-            "mean_y": 0.6836
-          },
-          {
-            "bucket": "9",
-            "n": 866,
-            "mean_y": 0.6513
-          }
-        ]
-      },
-      "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
-      "as_of": "2026-07-23T01:39:22.086535+00:00",
-      "card_type": "prob_band",
-      "sport": "mlb"
-    },
-    {
-      "entity": "soccer_intl minute 0-15",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\soccer_intl_minute_0_15.png",
-      "key_numbers": {
-        "n": 627,
-        "model_ece": 0.3065,
-        "market_ece": 0.2204
-      },
-      "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
-      "as_of": "2026-07-23T01:39:22.086535+00:00",
-      "card_type": "time_checkpoint",
-      "sport": "soccer_intl"
-    },
-    {
-      "entity": "soccer_intl minute 15-30",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\soccer_intl_minute_15_30.png",
-      "key_numbers": {
-        "n": 666,
-        "model_ece": 0.3205,
-        "market_ece": 0.2051
-      },
-      "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
-      "as_of": "2026-07-23T01:39:22.086535+00:00",
-      "card_type": "time_checkpoint",
-      "sport": "soccer_intl"
-    },
-    {
-      "entity": "soccer_intl minute 30-45",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\soccer_intl_minute_30_45.png",
-      "key_numbers": {
-        "n": 628,
-        "model_ece": 0.3421,
-        "market_ece": 0.2134
-      },
-      "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
-      "as_of": "2026-07-23T01:39:22.086535+00:00",
-      "card_type": "time_checkpoint",
-      "sport": "soccer_intl"
-    },
-    {
-      "entity": "soccer_intl minute 45-60",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\soccer_intl_minute_45_60.png",
-      "key_numbers": {
-        "n": 828,
-        "model_ece": 0.3313,
-        "market_ece": 0.2303
-      },
-      "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
-      "as_of": "2026-07-23T01:39:22.086535+00:00",
-      "card_type": "time_checkpoint",
-      "sport": "soccer_intl"
-    },
-    {
-      "entity": "soccer_intl minute 60-75",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\soccer_intl_minute_60_75.png",
-      "key_numbers": {
-        "n": 504,
-        "model_ece": 0.4439,
-        "market_ece": 0.3431
-      },
-      "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
-      "as_of": "2026-07-23T01:39:22.086535+00:00",
-      "card_type": "time_checkpoint",
-      "sport": "soccer_intl"
-    },
-    {
-      "entity": "soccer_intl minute 75-91",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\soccer_intl_minute_75_91.png",
-      "key_numbers": {
-        "n": 405,
-        "model_ece": 0.4978,
-        "market_ece": 0.3606
-      },
-      "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
-      "as_of": "2026-07-23T01:39:22.086535+00:00",
-      "card_type": "time_checkpoint",
-      "sport": "soccer_intl"
-    },
-    {
-      "entity": "soccer_intl band 0-.2",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\soccer_intl_band_0_2.png",
-      "key_numbers": {
-        "n": 1687,
-        "mean_y_overall": 0.5702,
-        "band_reference": 0.1,
-        "n_time_buckets_with_data": 6,
-        "by_time_bucket": [
-          {
-            "bucket": "0-15",
-            "n": 109,
-            "mean_y": 0.3899
-          },
-          {
-            "bucket": "15-30",
-            "n": 176,
-            "mean_y": 0.5682
-          },
-          {
-            "bucket": "30-45",
-            "n": 264,
-            "mean_y": 0.6534
-          },
-          {
-            "bucket": "45-60",
-            "n": 416,
-            "mean_y": 0.5721
-          },
-          {
-            "bucket": "60-75",
-            "n": 343,
-            "mean_y": 0.5583
-          },
-          {
-            "bucket": "75-91",
-            "n": 379,
-            "mean_y": 0.5739
-          }
-        ]
-      },
-      "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
-      "as_of": "2026-07-23T01:39:22.086535+00:00",
-      "card_type": "prob_band",
-      "sport": "soccer_intl"
-    },
-    {
-      "entity": "soccer_intl band .2-.4",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\soccer_intl_band_2_4.png",
-      "key_numbers": {
-        "n": 998,
-        "mean_y_overall": 0.5235,
-        "band_reference": 0.3,
-        "n_time_buckets_with_data": 6,
-        "by_time_bucket": [
-          {
-            "bucket": "0-15",
-            "n": 288,
-            "mean_y": 0.5677
-          },
-          {
-            "bucket": "15-30",
-            "n": 255,
-            "mean_y": 0.5353
-          },
-          {
-            "bucket": "30-45",
-            "n": 123,
-            "mean_y": 0.2317
-          },
-          {
-            "bucket": "45-60",
-            "n": 232,
-            "mean_y": 0.4698
-          },
-          {
-            "bucket": "60-75",
-            "n": 90,
-            "mean_y": 0.8333
-          },
-          {
-            "bucket": "75-91",
-            "n": 10,
-            "mean_y": 1.0
-          }
-        ]
-      },
-      "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
-      "as_of": "2026-07-23T01:39:22.086535+00:00",
-      "card_type": "prob_band",
-      "sport": "soccer_intl"
-    },
-    {
-      "entity": "soccer_intl band .4-.6",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\soccer_intl_band_4_6.png",
-      "key_numbers": {
-        "n": 408,
-        "mean_y_overall": 0.9681,
-        "band_reference": 0.5,
-        "n_time_buckets_with_data": 3,
-        "by_time_bucket": [
-          {
-            "bucket": "0-15",
-            "n": 158,
-            "mean_y": 1.0
-          },
-          {
-            "bucket": "15-30",
-            "n": 120,
-            "mean_y": 1.0
-          },
-          {
-            "bucket": "30-45",
-            "n": 130,
-            "mean_y": 0.9
-          }
-        ]
-      },
-      "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
-      "as_of": "2026-07-23T01:39:22.086535+00:00",
-      "card_type": "prob_band",
-      "sport": "soccer_intl"
-    },
-    {
-      "entity": "soccer_intl band .6-.8",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\soccer_intl_band_6_8.png",
-      "key_numbers": {
-        "n": 256,
-        "mean_y_overall": 0.8555,
-        "band_reference": 0.7,
-        "n_time_buckets_with_data": 5,
-        "by_time_bucket": [
-          {
-            "bucket": "0-15",
-            "n": 69,
-            "mean_y": 0.8043
-          },
-          {
-            "bucket": "15-30",
-            "n": 74,
-            "mean_y": 0.7905
-          },
-          {
-            "bucket": "30-45",
-            "n": 36,
-            "mean_y": 0.8056
-          },
-          {
-            "bucket": "45-60",
-            "n": 57,
-            "mean_y": 0.9825
-          },
-          {
-            "bucket": "60-75",
-            "n": 20,
-            "mean_y": 1.0
-          }
-        ]
-      },
-      "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
-      "as_of": "2026-07-23T01:39:22.086535+00:00",
-      "card_type": "prob_band",
-      "sport": "soccer_intl"
-    },
-    {
-      "entity": "soccer_intl band .8-1",
-      "card_path": "C:\\Users\\neelj\\nba-ai-system\\docs\\img\\atlas\\calibration\\soccer_intl_band_8_1.png",
-      "key_numbers": {
-        "n": 309,
-        "mean_y_overall": 1.0,
-        "band_reference": 0.9,
-        "n_time_buckets_with_data": 6,
-        "by_time_bucket": [
-          {
-            "bucket": "0-15",
-            "n": 3,
-            "mean_y": 1.0
-          },
-          {
-            "bucket": "15-30",
-            "n": 41,
-            "mean_y": 1.0
-          },
-          {
-            "bucket": "30-45",
-            "n": 75,
-            "mean_y": 1.0
-          },
-          {
-            "bucket": "45-60",
-            "n": 123,
-            "mean_y": 1.0
-          },
-          {
-            "bucket": "60-75",
-            "n": 51,
-            "mean_y": 1.0
-          },
-          {
-            "bucket": "75-91",
-            "n": 16,
-            "mean_y": 1.0
-          }
-        ]
-      },
-      "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
-      "as_of": "2026-07-23T01:39:22.086535+00:00",
-      "card_type": "prob_band",
-      "sport": "soccer_intl"
-    }
-  ]
+ "sport": "calibration",
+ "generated_at": "2026-07-23T01:39:25.800230+00:00",
+ "descriptive_only": true,
+ "n_entries": 26,
+ "entries": [
+  {
+   "entity": "mlb inning 1",
+   "card_path": "docs/img/atlas/calibration/mlb_inning_1.png",
+   "key_numbers": {
+    "n": 7646,
+    "model_ece": 0.1329,
+    "market_ece": 0.0903
+   },
+   "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
+   "as_of": "2026-07-23T01:39:22.086535+00:00",
+   "card_type": "time_checkpoint",
+   "sport": "mlb"
+  },
+  {
+   "entity": "mlb inning 2",
+   "card_path": "docs/img/atlas/calibration/mlb_inning_2.png",
+   "key_numbers": {
+    "n": 5921,
+    "model_ece": 0.0446,
+    "market_ece": 0.0525
+   },
+   "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
+   "as_of": "2026-07-23T01:39:22.086535+00:00",
+   "card_type": "time_checkpoint",
+   "sport": "mlb"
+  },
+  {
+   "entity": "mlb inning 3",
+   "card_path": "docs/img/atlas/calibration/mlb_inning_3.png",
+   "key_numbers": {
+    "n": 6333,
+    "model_ece": 0.0476,
+    "market_ece": 0.0648
+   },
+   "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
+   "as_of": "2026-07-23T01:39:22.086535+00:00",
+   "card_type": "time_checkpoint",
+   "sport": "mlb"
+  },
+  {
+   "entity": "mlb inning 4",
+   "card_path": "docs/img/atlas/calibration/mlb_inning_4.png",
+   "key_numbers": {
+    "n": 6266,
+    "model_ece": 0.0379,
+    "market_ece": 0.0468
+   },
+   "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
+   "as_of": "2026-07-23T01:39:22.086535+00:00",
+   "card_type": "time_checkpoint",
+   "sport": "mlb"
+  },
+  {
+   "entity": "mlb inning 5",
+   "card_path": "docs/img/atlas/calibration/mlb_inning_5.png",
+   "key_numbers": {
+    "n": 6021,
+    "model_ece": 0.0363,
+    "market_ece": 0.0486
+   },
+   "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
+   "as_of": "2026-07-23T01:39:22.086535+00:00",
+   "card_type": "time_checkpoint",
+   "sport": "mlb"
+  },
+  {
+   "entity": "mlb inning 6",
+   "card_path": "docs/img/atlas/calibration/mlb_inning_6.png",
+   "key_numbers": {
+    "n": 6478,
+    "model_ece": 0.0679,
+    "market_ece": 0.0503
+   },
+   "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
+   "as_of": "2026-07-23T01:39:22.086535+00:00",
+   "card_type": "time_checkpoint",
+   "sport": "mlb"
+  },
+  {
+   "entity": "mlb inning 7",
+   "card_path": "docs/img/atlas/calibration/mlb_inning_7.png",
+   "key_numbers": {
+    "n": 6311,
+    "model_ece": 0.137,
+    "market_ece": 0.0522
+   },
+   "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
+   "as_of": "2026-07-23T01:39:22.086535+00:00",
+   "card_type": "time_checkpoint",
+   "sport": "mlb"
+  },
+  {
+   "entity": "mlb inning 8",
+   "card_path": "docs/img/atlas/calibration/mlb_inning_8.png",
+   "key_numbers": {
+    "n": 5276,
+    "model_ece": 0.1656,
+    "market_ece": 0.0623
+   },
+   "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
+   "as_of": "2026-07-23T01:39:22.086535+00:00",
+   "card_type": "time_checkpoint",
+   "sport": "mlb"
+  },
+  {
+   "entity": "mlb inning 9",
+   "card_path": "docs/img/atlas/calibration/mlb_inning_9.png",
+   "key_numbers": {
+    "n": 2282,
+    "model_ece": 0.2034,
+    "market_ece": 0.071
+   },
+   "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
+   "as_of": "2026-07-23T01:39:22.086535+00:00",
+   "card_type": "time_checkpoint",
+   "sport": "mlb"
+  },
+  {
+   "entity": "mlb inning 10+",
+   "card_path": "docs/img/atlas/calibration/mlb_inning_10.png",
+   "key_numbers": {
+    "n": 112,
+    "model_ece": 0.1602,
+    "market_ece": 0.1558
+   },
+   "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
+   "as_of": "2026-07-23T01:39:22.086535+00:00",
+   "card_type": "time_checkpoint",
+   "sport": "mlb"
+  },
+  {
+   "entity": "mlb band 0-.2",
+   "card_path": "docs/img/atlas/calibration/mlb_band_0_2.png",
+   "key_numbers": {
+    "n": 7510,
+    "mean_y_overall": 0.2217,
+    "band_reference": 0.1,
+    "n_time_buckets_with_data": 7,
+    "by_time_bucket": [
+     {
+      "bucket": "4",
+      "n": 4,
+      "mean_y": 0.0
+     },
+     {
+      "bucket": "5",
+      "n": 859,
+      "mean_y": 0.1793
+     },
+     {
+      "bucket": "6",
+      "n": 1216,
+      "mean_y": 0.2262
+     },
+     {
+      "bucket": "7",
+      "n": 2124,
+      "mean_y": 0.2665
+     },
+     {
+      "bucket": "8",
+      "n": 2083,
+      "mean_y": 0.1901
+     },
+     {
+      "bucket": "9",
+      "n": 1178,
+      "mean_y": 0.2182
+     },
+     {
+      "bucket": "10+",
+      "n": 46,
+      "mean_y": 0.3696
+     }
+    ]
+   },
+   "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
+   "as_of": "2026-07-23T01:39:22.086535+00:00",
+   "card_type": "prob_band",
+   "sport": "mlb"
+  },
+  {
+   "entity": "mlb band .2-.4",
+   "card_path": "docs/img/atlas/calibration/mlb_band_2_4.png",
+   "key_numbers": {
+    "n": 7822,
+    "mean_y_overall": 0.293,
+    "band_reference": 0.3,
+    "n_time_buckets_with_data": 8,
+    "by_time_bucket": [
+     {
+      "bucket": "1",
+      "n": 641,
+      "mean_y": 0.6708
+     },
+     {
+      "bucket": "2",
+      "n": 399,
+      "mean_y": 0.411
+     },
+     {
+      "bucket": "3",
+      "n": 1418,
+      "mean_y": 0.2045
+     },
+     {
+      "bucket": "4",
+      "n": 1342,
+      "mean_y": 0.2235
+     },
+     {
+      "bucket": "5",
+      "n": 1522,
+      "mean_y": 0.2799
+     },
+     {
+      "bucket": "6",
+      "n": 1549,
+      "mean_y": 0.2983
+     },
+     {
+      "bucket": "7",
+      "n": 790,
+      "mean_y": 0.2139
+     },
+     {
+      "bucket": "8",
+      "n": 161,
+      "mean_y": 0.3168
+     }
+    ]
+   },
+   "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
+   "as_of": "2026-07-23T01:39:22.086535+00:00",
+   "card_type": "prob_band",
+   "sport": "mlb"
+  },
+  {
+   "entity": "mlb band .4-.6",
+   "card_path": "docs/img/atlas/calibration/mlb_band_4_6.png",
+   "key_numbers": {
+    "n": 18611,
+    "mean_y_overall": 0.4642,
+    "band_reference": 0.5,
+    "n_time_buckets_with_data": 10,
+    "by_time_bucket": [
+     {
+      "bucket": "1",
+      "n": 5367,
+      "mean_y": 0.4062
+     },
+     {
+      "bucket": "2",
+      "n": 4106,
+      "mean_y": 0.491
+     },
+     {
+      "bucket": "3",
+      "n": 2871,
+      "mean_y": 0.4991
+     },
+     {
+      "bucket": "4",
+      "n": 2821,
+      "mean_y": 0.4956
+     },
+     {
+      "bucket": "5",
+      "n": 1044,
+      "mean_y": 0.4914
+     },
+     {
+      "bucket": "6",
+      "n": 1007,
+      "mean_y": 0.4201
+     },
+     {
+      "bucket": "7",
+      "n": 654,
+      "mean_y": 0.4526
+     },
+     {
+      "bucket": "8",
+      "n": 439,
+      "mean_y": 0.5444
+     },
+     {
+      "bucket": "9",
+      "n": 236,
+      "mean_y": 0.4364
+     },
+     {
+      "bucket": "10+",
+      "n": 66,
+      "mean_y": 0.5758
+     }
+    ]
+   },
+   "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
+   "as_of": "2026-07-23T01:39:22.086535+00:00",
+   "card_type": "prob_band",
+   "sport": "mlb"
+  },
+  {
+   "entity": "mlb band .6-.8",
+   "card_path": "docs/img/atlas/calibration/mlb_band_6_8.png",
+   "key_numbers": {
+    "n": 10948,
+    "mean_y_overall": 0.5972,
+    "band_reference": 0.7,
+    "n_time_buckets_with_data": 9,
+    "by_time_bucket": [
+     {
+      "bucket": "1",
+      "n": 1638,
+      "mean_y": 0.4463
+     },
+     {
+      "bucket": "2",
+      "n": 1416,
+      "mean_y": 0.5205
+     },
+     {
+      "bucket": "3",
+      "n": 2044,
+      "mean_y": 0.6243
+     },
+     {
+      "bucket": "4",
+      "n": 2037,
+      "mean_y": 0.647
+     },
+     {
+      "bucket": "5",
+      "n": 1399,
+      "mean_y": 0.6147
+     },
+     {
+      "bucket": "6",
+      "n": 1247,
+      "mean_y": 0.6632
+     },
+     {
+      "bucket": "7",
+      "n": 822,
+      "mean_y": 0.6715
+     },
+     {
+      "bucket": "8",
+      "n": 343,
+      "mean_y": 0.688
+     },
+     {
+      "bucket": "9",
+      "n": 2,
+      "mean_y": 0.5
+     }
+    ]
+   },
+   "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
+   "as_of": "2026-07-23T01:39:22.086535+00:00",
+   "card_type": "prob_band",
+   "sport": "mlb"
+  },
+  {
+   "entity": "mlb band .8-1",
+   "card_path": "docs/img/atlas/calibration/mlb_band_8_1.png",
+   "key_numbers": {
+    "n": 7755,
+    "mean_y_overall": 0.714,
+    "band_reference": 0.9,
+    "n_time_buckets_with_data": 6,
+    "by_time_bucket": [
+     {
+      "bucket": "4",
+      "n": 62,
+      "mean_y": 0.7903
+     },
+     {
+      "bucket": "5",
+      "n": 1197,
+      "mean_y": 0.7911
+     },
+     {
+      "bucket": "6",
+      "n": 1459,
+      "mean_y": 0.7464
+     },
+     {
+      "bucket": "7",
+      "n": 1921,
+      "mean_y": 0.7028
+     },
+     {
+      "bucket": "8",
+      "n": 2250,
+      "mean_y": 0.6836
+     },
+     {
+      "bucket": "9",
+      "n": 866,
+      "mean_y": 0.6513
+     }
+    ]
+   },
+   "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
+   "as_of": "2026-07-23T01:39:22.086535+00:00",
+   "card_type": "prob_band",
+   "sport": "mlb"
+  },
+  {
+   "entity": "soccer_intl minute 0-15",
+   "card_path": "docs/img/atlas/calibration/soccer_intl_minute_0_15.png",
+   "key_numbers": {
+    "n": 627,
+    "model_ece": 0.3065,
+    "market_ece": 0.2204
+   },
+   "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
+   "as_of": "2026-07-23T01:39:22.086535+00:00",
+   "card_type": "time_checkpoint",
+   "sport": "soccer_intl"
+  },
+  {
+   "entity": "soccer_intl minute 15-30",
+   "card_path": "docs/img/atlas/calibration/soccer_intl_minute_15_30.png",
+   "key_numbers": {
+    "n": 666,
+    "model_ece": 0.3205,
+    "market_ece": 0.2051
+   },
+   "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
+   "as_of": "2026-07-23T01:39:22.086535+00:00",
+   "card_type": "time_checkpoint",
+   "sport": "soccer_intl"
+  },
+  {
+   "entity": "soccer_intl minute 30-45",
+   "card_path": "docs/img/atlas/calibration/soccer_intl_minute_30_45.png",
+   "key_numbers": {
+    "n": 628,
+    "model_ece": 0.3421,
+    "market_ece": 0.2134
+   },
+   "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
+   "as_of": "2026-07-23T01:39:22.086535+00:00",
+   "card_type": "time_checkpoint",
+   "sport": "soccer_intl"
+  },
+  {
+   "entity": "soccer_intl minute 45-60",
+   "card_path": "docs/img/atlas/calibration/soccer_intl_minute_45_60.png",
+   "key_numbers": {
+    "n": 828,
+    "model_ece": 0.3313,
+    "market_ece": 0.2303
+   },
+   "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
+   "as_of": "2026-07-23T01:39:22.086535+00:00",
+   "card_type": "time_checkpoint",
+   "sport": "soccer_intl"
+  },
+  {
+   "entity": "soccer_intl minute 60-75",
+   "card_path": "docs/img/atlas/calibration/soccer_intl_minute_60_75.png",
+   "key_numbers": {
+    "n": 504,
+    "model_ece": 0.4439,
+    "market_ece": 0.3431
+   },
+   "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
+   "as_of": "2026-07-23T01:39:22.086535+00:00",
+   "card_type": "time_checkpoint",
+   "sport": "soccer_intl"
+  },
+  {
+   "entity": "soccer_intl minute 75-91",
+   "card_path": "docs/img/atlas/calibration/soccer_intl_minute_75_91.png",
+   "key_numbers": {
+    "n": 405,
+    "model_ece": 0.4978,
+    "market_ece": 0.3606
+   },
+   "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
+   "as_of": "2026-07-23T01:39:22.086535+00:00",
+   "card_type": "time_checkpoint",
+   "sport": "soccer_intl"
+  },
+  {
+   "entity": "soccer_intl band 0-.2",
+   "card_path": "docs/img/atlas/calibration/soccer_intl_band_0_2.png",
+   "key_numbers": {
+    "n": 1687,
+    "mean_y_overall": 0.5702,
+    "band_reference": 0.1,
+    "n_time_buckets_with_data": 6,
+    "by_time_bucket": [
+     {
+      "bucket": "0-15",
+      "n": 109,
+      "mean_y": 0.3899
+     },
+     {
+      "bucket": "15-30",
+      "n": 176,
+      "mean_y": 0.5682
+     },
+     {
+      "bucket": "30-45",
+      "n": 264,
+      "mean_y": 0.6534
+     },
+     {
+      "bucket": "45-60",
+      "n": 416,
+      "mean_y": 0.5721
+     },
+     {
+      "bucket": "60-75",
+      "n": 343,
+      "mean_y": 0.5583
+     },
+     {
+      "bucket": "75-91",
+      "n": 379,
+      "mean_y": 0.5739
+     }
+    ]
+   },
+   "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
+   "as_of": "2026-07-23T01:39:22.086535+00:00",
+   "card_type": "prob_band",
+   "sport": "soccer_intl"
+  },
+  {
+   "entity": "soccer_intl band .2-.4",
+   "card_path": "docs/img/atlas/calibration/soccer_intl_band_2_4.png",
+   "key_numbers": {
+    "n": 998,
+    "mean_y_overall": 0.5235,
+    "band_reference": 0.3,
+    "n_time_buckets_with_data": 6,
+    "by_time_bucket": [
+     {
+      "bucket": "0-15",
+      "n": 288,
+      "mean_y": 0.5677
+     },
+     {
+      "bucket": "15-30",
+      "n": 255,
+      "mean_y": 0.5353
+     },
+     {
+      "bucket": "30-45",
+      "n": 123,
+      "mean_y": 0.2317
+     },
+     {
+      "bucket": "45-60",
+      "n": 232,
+      "mean_y": 0.4698
+     },
+     {
+      "bucket": "60-75",
+      "n": 90,
+      "mean_y": 0.8333
+     },
+     {
+      "bucket": "75-91",
+      "n": 10,
+      "mean_y": 1.0
+     }
+    ]
+   },
+   "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
+   "as_of": "2026-07-23T01:39:22.086535+00:00",
+   "card_type": "prob_band",
+   "sport": "soccer_intl"
+  },
+  {
+   "entity": "soccer_intl band .4-.6",
+   "card_path": "docs/img/atlas/calibration/soccer_intl_band_4_6.png",
+   "key_numbers": {
+    "n": 408,
+    "mean_y_overall": 0.9681,
+    "band_reference": 0.5,
+    "n_time_buckets_with_data": 3,
+    "by_time_bucket": [
+     {
+      "bucket": "0-15",
+      "n": 158,
+      "mean_y": 1.0
+     },
+     {
+      "bucket": "15-30",
+      "n": 120,
+      "mean_y": 1.0
+     },
+     {
+      "bucket": "30-45",
+      "n": 130,
+      "mean_y": 0.9
+     }
+    ]
+   },
+   "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
+   "as_of": "2026-07-23T01:39:22.086535+00:00",
+   "card_type": "prob_band",
+   "sport": "soccer_intl"
+  },
+  {
+   "entity": "soccer_intl band .6-.8",
+   "card_path": "docs/img/atlas/calibration/soccer_intl_band_6_8.png",
+   "key_numbers": {
+    "n": 256,
+    "mean_y_overall": 0.8555,
+    "band_reference": 0.7,
+    "n_time_buckets_with_data": 5,
+    "by_time_bucket": [
+     {
+      "bucket": "0-15",
+      "n": 69,
+      "mean_y": 0.8043
+     },
+     {
+      "bucket": "15-30",
+      "n": 74,
+      "mean_y": 0.7905
+     },
+     {
+      "bucket": "30-45",
+      "n": 36,
+      "mean_y": 0.8056
+     },
+     {
+      "bucket": "45-60",
+      "n": 57,
+      "mean_y": 0.9825
+     },
+     {
+      "bucket": "60-75",
+      "n": 20,
+      "mean_y": 1.0
+     }
+    ]
+   },
+   "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
+   "as_of": "2026-07-23T01:39:22.086535+00:00",
+   "card_type": "prob_band",
+   "sport": "soccer_intl"
+  },
+  {
+   "entity": "soccer_intl band .8-1",
+   "card_path": "docs/img/atlas/calibration/soccer_intl_band_8_1.png",
+   "key_numbers": {
+    "n": 309,
+    "mean_y_overall": 1.0,
+    "band_reference": 0.9,
+    "n_time_buckets_with_data": 6,
+    "by_time_bucket": [
+     {
+      "bucket": "0-15",
+      "n": 3,
+      "mean_y": 1.0
+     },
+     {
+      "bucket": "15-30",
+      "n": 41,
+      "mean_y": 1.0
+     },
+     {
+      "bucket": "30-45",
+      "n": 75,
+      "mean_y": 1.0
+     },
+     {
+      "bucket": "45-60",
+      "n": 123,
+      "mean_y": 1.0
+     },
+     {
+      "bucket": "60-75",
+      "n": 51,
+      "mean_y": 1.0
+     },
+     {
+      "bucket": "75-91",
+      "n": 16,
+      "mean_y": 1.0
+     }
+    ]
+   },
+   "floors": "n>=30 rows required for a checkpoint/band card to render (declared floor, not tuned to today's data)",
+   "as_of": "2026-07-23T01:39:22.086535+00:00",
+   "card_type": "prob_band",
+   "sport": "soccer_intl"
+  }
+ ]
 }

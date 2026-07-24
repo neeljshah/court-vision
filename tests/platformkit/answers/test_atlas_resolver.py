@@ -69,7 +69,12 @@ def test_ok_match_returns_manifest_fields_verbatim(out_dir):
     assert r["status"] == "ok"
     assert r["sport"] == "nba"
     assert r["source_artifact"] == "scripts/platformkit/analytics_showcase/out/atlas_nba_manifest.json"
-    assert r["card_path"] == entry["card_path"]
+    assert r["card_path"] == entry["card_path"]  # stored repo-relative value, verbatim
+    # rejoined at runtime against the (monkeypatched) repo root for file access
+    assert r["card_path_abs"] == str((atlas_resolver._REPO / entry["card_path"])).replace("\\", "/")
+    # backward compat: an already-absolute stored card_path is returned unchanged
+    assert atlas_resolver._abs_card_path("C:/x/y.png") == "C:/x/y.png"
+    assert atlas_resolver._abs_card_path("/x/y.png") == "/x/y.png"
     assert r["key_numbers"] == entry["key_numbers"]  # verbatim, not recomputed
     assert r["floors"] == entry["floors"]
     assert r["descriptive_only"] is True
