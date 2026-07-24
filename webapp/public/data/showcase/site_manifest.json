@@ -4,8 +4,8 @@
  "atlas_card_count": 1549,
  "checks_green": {
   "green": true,
-  "pass": 80,
-  "total": 80
+  "pass": 81,
+  "total": 81
  },
  "edge_claimed": false,
  "modules": [
@@ -61,7 +61,7 @@
    "chart_path": "docs/img/brier_skill_scores.png",
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T20:27:20.605272+00:00",
+   "as_of": "2026-07-24T20:42:30.132752+00:00",
    "evidence_page": null
   },
   {
@@ -358,7 +358,7 @@
    "chart_path": "docs/img/mlb_count_leverage.png",
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T20:28:03.268837+00:00",
+   "as_of": "2026-07-24T20:43:42.483008+00:00",
    "evidence_page": null
   },
   {
@@ -490,7 +490,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T20:28:12.635753+00:00",
+   "as_of": "2026-07-24T20:43:51.804080+00:00",
    "evidence_page": null
   },
   {
@@ -512,7 +512,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T20:28:13.157986+00:00",
+   "as_of": "2026-07-24T20:43:52.322232+00:00",
    "evidence_page": null
   },
   {
@@ -523,7 +523,7 @@
    "chart_path": "docs/img/pitch_sequencing.png",
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T20:28:13.958193+00:00",
+   "as_of": "2026-07-24T20:43:53.112703+00:00",
    "evidence_page": null
   },
   {

@@ -34,6 +34,8 @@ _SKIP = {
     "entity_percentiles.json",
     # Cross-module joins layered onto entity cards, not a catalog module.
     "entity_joins.json",
+    # Within-pack nearest-neighbour comparables layered onto entity cards, not a catalog module.
+    "entity_comparables.json",
 }
 
 # Fields, in priority order, whose value is an honest one-line summary of a module.

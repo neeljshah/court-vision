@@ -11,13 +11,14 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Comparables } from "@/components/analytics/Comparables";
 import { JoinedFindings } from "@/components/analytics/JoinedFindings";
 import { PercentileBar } from "@/components/analytics/PercentileBar";
 import { Receipt, type ReceiptData } from "@/components/analytics/Receipt";
 import { ScoutNote, type ScoutEnvelope } from "@/components/analytics/ScoutNote";
 import { ScoutQuestions } from "@/components/analytics/ScoutQuestions";
 import { asOfDate } from "@/lib/analytics/format";
-import { packJoins, packPercentiles } from "@/lib/analytics/showcaseData";
+import { packComparables, packJoins, packPercentiles } from "@/lib/analytics/showcaseData";
 
 type KN = Record<string, unknown>;
 type Entry = { entity: string; card_path: string; key_numbers: KN; floors?: string; as_of?: string };
@@ -175,6 +176,8 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
   // entity_joins.json: only nba_teams/nba_players carry any; 137 of 482 player cards legitimately have none.
   const joinPack = packJoins(params.pack);
   const joinItems = joinPack?.entities[params.slug]?.items || [];
+  // Comparables: mlb_pitch/tennis/calibration carry no pack here by design (too few shared fields).
+  const cmpPack = packComparables(params.pack);
 
   // The receipt popover header names WHAT this number cites (the field path), like
   // m/[id]/page.tsx does -- not the verdict token, which the dot + verdict already
@@ -240,7 +243,6 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
               );
             })}
           </div>
-
           {pctPack && cells.some(([k, v]) => typeof v === "number" && typeof entityPcts?.[k] === "number") ? (
             // Shown only when >=1 bar rendered above; direction-free by design (no good/bad).
             <div style={{ marginTop: 10, fontSize: 13, color: "var(--ink-3)" }}>
@@ -248,9 +250,7 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
               <Receipt sourceArtifact={`${REPO}/entity_percentiles.json`} asOf={asOf || undefined} verdict="descriptive_only" label="descriptive_only" />
             </div>
           ) : null}
-
           <ScoutNote envelope={envelope} />
-
           {insight?.three_things?.length ? (
             <section style={{ marginTop: 28 }}>
               <h2 className="serif" style={{ fontWeight: 500, fontSize: 20, marginBottom: 10 }}>What stands out</h2>
@@ -259,7 +259,6 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
               </ul>
             </section>
           ) : null}
-
           {insight?.context_note ? (
             <section style={{ marginTop: 24, background: "var(--paper-tint)", borderRadius: 10, padding: "16px 18px" }}>
               <div className="overline" style={{ marginBottom: 6 }}>Reading note</div>
@@ -271,6 +270,7 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
         </div>
 
         <aside style={{ flex: "1 1 240px" }}>
+          {cmpPack?.entities[params.slug] ? <Comparables pack={params.pack} fieldsUsed={cmpPack.fields_used} similar={cmpPack.entities[params.slug].similar} antipode={cmpPack.entities[params.slug].antipode} /> : null}
           {entry.floors ? (
             <div style={box}>
               <h3 className="serif" style={{ fontWeight: 500, fontSize: 20, marginBottom: 10 }}>Floors</h3>

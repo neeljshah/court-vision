@@ -48,3 +48,22 @@ export function packJoins(pack: string): JoinPack | null {
   if (!entry) return null;
   return { coverage: _joins.coverage?.[pack] || {}, entities: entry.entities };
 }
+
+// Within-pack nearest neighbours by cosine similarity on shared z-scored fields.
+// Only 4 of 7 packs are covered (nba_players, nba_teams, mlb_batters, soccer) --
+// mlb_pitch/tennis/calibration had too few common fields and carry no entry.
+// The linked slug is always within the SAME pack, so /analytics/players/{pack}/{slug}
+// resolves without a cross-pack lookup.
+export type ComparableItem = { slug: string; name: string; score: number };
+export type ComparablesPack = {
+  fields_used: string[];
+  entities: Record<string, { similar: ComparableItem[]; antipode: ComparableItem }>;
+};
+let _comparables: Record<string, ComparablesPack> | null = null;
+export function packComparables(pack: string): ComparablesPack | null {
+  if (!_comparables) {
+    try { _comparables = (JSON.parse(readFileSync(join(SHOWCASE, "entity_comparables.json"), "utf-8")) as { packs?: Record<string, ComparablesPack> }).packs || {}; }
+    catch { _comparables = {}; }
+  }
+  return _comparables[pack] || null;
+}
