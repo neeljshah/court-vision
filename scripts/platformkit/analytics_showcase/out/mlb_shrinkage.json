@@ -1,0 +1,530 @@
+{
+  "status": "ok",
+  "generated_at": "2026-07-24T23:02:15.164907+00:00",
+  "descriptive_only": true,
+  "edge_claimed": false,
+  "headline": "Small-sample rate leaders regress toward the group mean under empirical-Bayes shrinkage; the raw leaderboard overstates them.",
+  "method": "Beta-binomial prior fit per group by method of moments: pooled mean m = sum(k)/sum(n); kappa (=alpha+beta) solved from the Beta-Binomial moment identity Var(p_i) = m*(1-m)/kappa, i.e. kappa = m*(1-m) / max(Var(p_i) - mean(m*(1-m)/n_i), tiny) - 1, floored to 1.0 if the raw rates show no more spread than binomial sampling noise alone (non-finite or <=0 estimate). alpha=m*kappa, beta=(1-m)*kappa. shrunk_i = (k_i+alpha)/(n_i+alpha+beta) is the posterior mean; regression_i = p_i - shrunk_i.",
+  "observation_window": {
+    "seasons": "2022_2023",
+    "corpus_id": "statcast_fuller_v1",
+    "as_of": "2026-07-05T02:39:36.769430+00:00",
+    "note": "fixed 2022-2023 slice"
+  },
+  "groups": [
+    {
+      "label": "Catcher out-of-zone strike rate (NOT a framing/called-strike rate; descriptive)",
+      "n_entities": 113,
+      "pooled_mean": 0.2813,
+      "alpha": 234.91,
+      "beta": 600.02,
+      "kappa": 834.93,
+      "biggest_regressors": [
+        {
+          "name": "Drew Millas",
+          "n": 585,
+          "raw_rate": 0.212,
+          "shrunk_rate": 0.2528,
+          "regression": -0.0408
+        },
+        {
+          "name": "Cooper Hummel",
+          "n": 914,
+          "raw_rate": 0.2177,
+          "shrunk_rate": 0.2481,
+          "regression": -0.0304
+        },
+        {
+          "name": "Carlos P\u00e9rez",
+          "n": 1277,
+          "raw_rate": 0.2388,
+          "shrunk_rate": 0.2556,
+          "regression": -0.0168
+        },
+        {
+          "name": "David Fry",
+          "n": 882,
+          "raw_rate": 0.2528,
+          "shrunk_rate": 0.2667,
+          "regression": -0.0139
+        },
+        {
+          "name": "Logan Porter",
+          "n": 668,
+          "raw_rate": 0.262,
+          "shrunk_rate": 0.2727,
+          "regression": -0.0108
+        },
+        {
+          "name": "Brett Sullivan",
+          "n": 1708,
+          "raw_rate": 0.2512,
+          "shrunk_rate": 0.2611,
+          "regression": -0.0099
+        },
+        {
+          "name": "Manny Pi\u00f1a",
+          "n": 541,
+          "raw_rate": 0.2976,
+          "shrunk_rate": 0.2877,
+          "regression": 0.0099
+        },
+        {
+          "name": "P.J. Higgins",
+          "n": 1946,
+          "raw_rate": 0.2497,
+          "shrunk_rate": 0.2592,
+          "regression": -0.0095
+        },
+        {
+          "name": "Payton Henry",
+          "n": 731,
+          "raw_rate": 0.264,
+          "shrunk_rate": 0.2733,
+          "regression": -0.0092
+        },
+        {
+          "name": "Korey Lee",
+          "n": 2159,
+          "raw_rate": 0.2501,
+          "shrunk_rate": 0.2588,
+          "regression": -0.0087
+        },
+        {
+          "name": "Iv\u00e1n Herrera",
+          "n": 1208,
+          "raw_rate": 0.2624,
+          "shrunk_rate": 0.2702,
+          "regression": -0.0077
+        },
+        {
+          "name": "Carlos P\u00e9rez",
+          "n": 2234,
+          "raw_rate": 0.2534,
+          "shrunk_rate": 0.261,
+          "regression": -0.0076
+        }
+      ],
+      "top_by_shrunk": [
+        {
+          "name": "Ren\u00e9 Pinto",
+          "n": 3448,
+          "raw_rate": 0.3147,
+          "shrunk_rate": 0.3082
+        },
+        {
+          "name": "Alejandro Kirk",
+          "n": 10963,
+          "raw_rate": 0.3048,
+          "shrunk_rate": 0.3031
+        },
+        {
+          "name": "Austin Barnes",
+          "n": 6707,
+          "raw_rate": 0.3049,
+          "shrunk_rate": 0.3023
+        },
+        {
+          "name": "Patrick Bailey",
+          "n": 5657,
+          "raw_rate": 0.3035,
+          "shrunk_rate": 0.3007
+        },
+        {
+          "name": "Travis d'Arnaud",
+          "n": 11281,
+          "raw_rate": 0.2994,
+          "shrunk_rate": 0.2982
+        },
+        {
+          "name": "Cal Raleigh",
+          "n": 14504,
+          "raw_rate": 0.299,
+          "shrunk_rate": 0.2981
+        },
+        {
+          "name": "Jacob Stallings",
+          "n": 12090,
+          "raw_rate": 0.2979,
+          "shrunk_rate": 0.2969
+        },
+        {
+          "name": "Sandy Le\u00f3n",
+          "n": 2537,
+          "raw_rate": 0.3015,
+          "shrunk_rate": 0.2965
+        },
+        {
+          "name": "Curt Casali",
+          "n": 5068,
+          "raw_rate": 0.2985,
+          "shrunk_rate": 0.2961
+        },
+        {
+          "name": "Danny Jansen",
+          "n": 8461,
+          "raw_rate": 0.2975,
+          "shrunk_rate": 0.296
+        },
+        {
+          "name": "Jose Trevino",
+          "n": 9981,
+          "raw_rate": 0.2968,
+          "shrunk_rate": 0.2956
+        },
+        {
+          "name": "Kyle Higashioka",
+          "n": 9821,
+          "raw_rate": 0.2962,
+          "shrunk_rate": 0.295
+        }
+      ],
+      "key": "catcher_ooz"
+    },
+    {
+      "label": "Umpire out-of-zone strike rate (NOT a framing/called-strike rate; descriptive)",
+      "n_entities": 102,
+      "pooled_mean": 0.2813,
+      "alpha": 796.18,
+      "beta": 2034.32,
+      "kappa": 2830.5,
+      "biggest_regressors": [
+        {
+          "name": "Randy Rosenberg",
+          "n": 506,
+          "raw_rate": 0.3142,
+          "shrunk_rate": 0.2863,
+          "regression": 0.0279
+        },
+        {
+          "name": "David Arrieta",
+          "n": 754,
+          "raw_rate": 0.2586,
+          "shrunk_rate": 0.2765,
+          "regression": -0.0179
+        },
+        {
+          "name": "Derek Thomas",
+          "n": 2608,
+          "raw_rate": 0.2523,
+          "shrunk_rate": 0.2674,
+          "regression": -0.0151
+        },
+        {
+          "name": "Marty Foster",
+          "n": 1492,
+          "raw_rate": 0.2983,
+          "shrunk_rate": 0.2871,
+          "regression": 0.0111
+        },
+        {
+          "name": "Jacob Metz",
+          "n": 1735,
+          "raw_rate": 0.2986,
+          "shrunk_rate": 0.2878,
+          "regression": 0.0107
+        },
+        {
+          "name": "Brian Walsh",
+          "n": 1960,
+          "raw_rate": 0.298,
+          "shrunk_rate": 0.2881,
+          "regression": 0.0099
+        },
+        {
+          "name": "Greg Gibson",
+          "n": 1308,
+          "raw_rate": 0.2951,
+          "shrunk_rate": 0.2857,
+          "regression": 0.0095
+        },
+        {
+          "name": "John Bacon",
+          "n": 2933,
+          "raw_rate": 0.267,
+          "shrunk_rate": 0.274,
+          "regression": -0.007
+        },
+        {
+          "name": "Jerry Meals",
+          "n": 3759,
+          "raw_rate": 0.2974,
+          "shrunk_rate": 0.2905,
+          "regression": 0.0069
+        },
+        {
+          "name": "Bill Miller",
+          "n": 8815,
+          "raw_rate": 0.3077,
+          "shrunk_rate": 0.3012,
+          "regression": 0.0064
+        },
+        {
+          "name": "Laz Diaz",
+          "n": 7197,
+          "raw_rate": 0.3023,
+          "shrunk_rate": 0.2964,
+          "regression": 0.0059
+        },
+        {
+          "name": "Chris Conroy",
+          "n": 4251,
+          "raw_rate": 0.2955,
+          "shrunk_rate": 0.2898,
+          "regression": 0.0057
+        }
+      ],
+      "top_by_shrunk": [
+        {
+          "name": "Bill Miller",
+          "n": 8815,
+          "raw_rate": 0.3077,
+          "shrunk_rate": 0.3012
+        },
+        {
+          "name": "Doug Eddings",
+          "n": 8181,
+          "raw_rate": 0.3023,
+          "shrunk_rate": 0.2969
+        },
+        {
+          "name": "Laz Diaz",
+          "n": 7197,
+          "raw_rate": 0.3023,
+          "shrunk_rate": 0.2964
+        },
+        {
+          "name": "Andy Fletcher",
+          "n": 8328,
+          "raw_rate": 0.3004,
+          "shrunk_rate": 0.2956
+        },
+        {
+          "name": "Gabe Morales",
+          "n": 8409,
+          "raw_rate": 0.2988,
+          "shrunk_rate": 0.2944
+        },
+        {
+          "name": "Lance Barrett",
+          "n": 8184,
+          "raw_rate": 0.2989,
+          "shrunk_rate": 0.2944
+        },
+        {
+          "name": "CB Bucknor",
+          "n": 7915,
+          "raw_rate": 0.2972,
+          "shrunk_rate": 0.293
+        },
+        {
+          "name": "Phil Cuzzi",
+          "n": 8086,
+          "raw_rate": 0.2968,
+          "shrunk_rate": 0.2928
+        },
+        {
+          "name": "Rob Drake",
+          "n": 7028,
+          "raw_rate": 0.2951,
+          "shrunk_rate": 0.2911
+        },
+        {
+          "name": "Malachi Moore",
+          "n": 7700,
+          "raw_rate": 0.2939,
+          "shrunk_rate": 0.2905
+        },
+        {
+          "name": "Jerry Meals",
+          "n": 3759,
+          "raw_rate": 0.2974,
+          "shrunk_rate": 0.2905
+        },
+        {
+          "name": "Brian O'Nora",
+          "n": 7221,
+          "raw_rate": 0.2932,
+          "shrunk_rate": 0.2898
+        }
+      ],
+      "key": "umpire_ooz"
+    },
+    {
+      "label": "On-base rate vs LHP (descriptive)",
+      "n_entities": 394,
+      "pooled_mean": 0.3238,
+      "alpha": 73.29,
+      "beta": 153.01,
+      "kappa": 226.3,
+      "biggest_regressors": [
+        {
+          "name": "Jes\u00fas S\u00e1nchez",
+          "n": 105,
+          "raw_rate": 0.1905,
+          "shrunk_rate": 0.2816,
+          "regression": -0.0911
+        },
+        {
+          "name": "Nick Ahmed",
+          "n": 138,
+          "raw_rate": 0.1812,
+          "shrunk_rate": 0.2698,
+          "regression": -0.0886
+        },
+        {
+          "name": "Gabriel Arias",
+          "n": 144,
+          "raw_rate": 0.1806,
+          "shrunk_rate": 0.2681,
+          "regression": -0.0876
+        },
+        {
+          "name": "Brett Baty",
+          "n": 106,
+          "raw_rate": 0.1981,
+          "shrunk_rate": 0.2837,
+          "regression": -0.0856
+        },
+        {
+          "name": "Mitch Garver",
+          "n": 148,
+          "raw_rate": 0.4527,
+          "shrunk_rate": 0.3748,
+          "regression": 0.0779
+        },
+        {
+          "name": "Sheldon Neuse",
+          "n": 110,
+          "raw_rate": 0.2091,
+          "shrunk_rate": 0.2863,
+          "regression": -0.0772
+        },
+        {
+          "name": "JJ Bleday",
+          "n": 115,
+          "raw_rate": 0.2087,
+          "shrunk_rate": 0.285,
+          "regression": -0.0764
+        },
+        {
+          "name": "James McCann",
+          "n": 185,
+          "raw_rate": 0.1946,
+          "shrunk_rate": 0.2657,
+          "regression": -0.0711
+        },
+        {
+          "name": "Alek Thomas",
+          "n": 177,
+          "raw_rate": 0.2034,
+          "shrunk_rate": 0.271,
+          "regression": -0.0676
+        },
+        {
+          "name": "Jackie Bradley Jr.",
+          "n": 117,
+          "raw_rate": 0.2222,
+          "shrunk_rate": 0.2892,
+          "regression": -0.067
+        },
+        {
+          "name": "Jazz Chisholm Jr.",
+          "n": 133,
+          "raw_rate": 0.218,
+          "shrunk_rate": 0.2847,
+          "regression": -0.0666
+        },
+        {
+          "name": "Connor Wong",
+          "n": 126,
+          "raw_rate": 0.2222,
+          "shrunk_rate": 0.2875,
+          "regression": -0.0653
+        }
+      ],
+      "top_by_shrunk": [
+        {
+          "name": "Paul Goldschmidt",
+          "n": 308,
+          "raw_rate": 0.4383,
+          "shrunk_rate": 0.3898
+        },
+        {
+          "name": "William Contreras",
+          "n": 293,
+          "raw_rate": 0.4369,
+          "shrunk_rate": 0.3876
+        },
+        {
+          "name": "Robbie Grossman",
+          "n": 286,
+          "raw_rate": 0.4266,
+          "shrunk_rate": 0.3812
+        },
+        {
+          "name": "Yandy D\u00edaz",
+          "n": 284,
+          "raw_rate": 0.4155,
+          "shrunk_rate": 0.3749
+        },
+        {
+          "name": "Mitch Garver",
+          "n": 148,
+          "raw_rate": 0.4527,
+          "shrunk_rate": 0.3748
+        },
+        {
+          "name": "Mookie Betts",
+          "n": 359,
+          "raw_rate": 0.4011,
+          "shrunk_rate": 0.3712
+        },
+        {
+          "name": "Rob Refsnyder",
+          "n": 219,
+          "raw_rate": 0.4201,
+          "shrunk_rate": 0.3712
+        },
+        {
+          "name": "Yordan Alvarez",
+          "n": 367,
+          "raw_rate": 0.3978,
+          "shrunk_rate": 0.3696
+        },
+        {
+          "name": "Harold Ram\u00edrez",
+          "n": 246,
+          "raw_rate": 0.4106,
+          "shrunk_rate": 0.369
+        },
+        {
+          "name": "Jose Altuve",
+          "n": 275,
+          "raw_rate": 0.4036,
+          "shrunk_rate": 0.3676
+        },
+        {
+          "name": "Chas McCormick",
+          "n": 254,
+          "raw_rate": 0.4016,
+          "shrunk_rate": 0.365
+        },
+        {
+          "name": "Xander Bogaerts",
+          "n": 320,
+          "raw_rate": 0.3937,
+          "shrunk_rate": 0.3648
+        }
+      ],
+      "key": "platoon_vs_lhp",
+      "floor": "pa_vs_l>=20"
+    }
+  ],
+  "confounds": [
+    "shrinkage assumes the entities are exchangeable draws from one prior -- a modeling choice, not a fact;",
+    "the OOZ rate is descriptive, NOT a called-strike/framing skill and NOT predictive;",
+    "the raw vs shrunk gap is the point: it shows how much a small-sample rate should be discounted, it is not a new 'true skill' claim;",
+    "fixed 2022-2023 window."
+  ]
+}

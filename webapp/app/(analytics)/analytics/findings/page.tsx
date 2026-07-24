@@ -60,6 +60,12 @@ const FINDINGS: Array<{ href: string; title: string; blurb: string }> = [
     blurb:
       "The module that honestly refused a clutch number, turned into a descriptive one: per-player Q4-vs-earlier per-36 shifts over 1,231 games -- published with the blowout/garbage-time confound in plain sight, never as a clutch or predictive claim.",
   },
+  {
+    href: "/analytics/findings/shrinkage",
+    title: "When the leaderboard regresses",
+    blurb:
+      "Empirical-Bayes shrinkage on the MLB rate leaderboards: small-sample 'leaders' get pulled toward the group mean by how few trials back them, while a huge-sample rate barely moves. The raw-vs-shrunk gap is the honesty.",
+  },
 ];
 
 const h1: CSSProperties = {

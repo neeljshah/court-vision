@@ -1,11 +1,11 @@
 {
  "generated_from": "scripts/platformkit/analytics_showcase/out",
- "module_count": 68,
+ "module_count": 69,
  "atlas_card_count": 1549,
  "checks_green": {
   "green": true,
-  "pass": 87,
-  "total": 87
+  "pass": 88,
+  "total": 88
  },
  "edge_claimed": false,
  "modules": [
@@ -61,7 +61,7 @@
    "chart_path": "docs/img/brier_skill_scores.png",
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T22:44:00.836191+00:00",
+   "as_of": "2026-07-24T23:05:21.384450+00:00",
    "evidence_page": null
   },
   {
@@ -215,7 +215,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T22:44:07.695139+00:00",
+   "as_of": "2026-07-24T23:05:28.385205+00:00",
    "evidence_page": null
   },
   {
@@ -369,7 +369,7 @@
    "chart_path": "docs/img/mlb_count_leverage.png",
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T22:44:43.452557+00:00",
+   "as_of": "2026-07-24T23:06:04.180569+00:00",
    "evidence_page": null
   },
   {
@@ -381,6 +381,17 @@
    "status": "ok",
    "edge_claimed": false,
    "as_of": "2026-07-24T21:46:01.294251+00:00",
+   "evidence_page": null
+  },
+  {
+   "id": "mlb_shrinkage",
+   "title": "Mlb Shrinkage",
+   "one_line": "Small-sample rate leaders regress toward the group mean under empirical-Bayes shrinkage; the raw leaderboard overstates them.",
+   "out_path": "scripts/platformkit/analytics_showcase/out/mlb_shrinkage.json",
+   "chart_path": null,
+   "status": "ok",
+   "edge_claimed": false,
+   "as_of": "2026-07-24T23:02:15.164907+00:00",
    "evidence_page": null
   },
   {
@@ -446,7 +457,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T22:44:48.414846+00:00",
+   "as_of": "2026-07-24T23:06:09.593372+00:00",
    "evidence_page": null
   },
   {
@@ -534,7 +545,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T22:44:53.410465+00:00",
+   "as_of": "2026-07-24T23:06:14.807107+00:00",
    "evidence_page": null
   },
   {
@@ -556,7 +567,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T22:44:53.946412+00:00",
+   "as_of": "2026-07-24T23:06:15.343551+00:00",
    "evidence_page": null
   },
   {
@@ -567,7 +578,7 @@
    "chart_path": "docs/img/pitch_sequencing.png",
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T22:44:54.761673+00:00",
+   "as_of": "2026-07-24T23:06:16.158677+00:00",
    "evidence_page": null
   },
   {
@@ -688,7 +699,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T22:45:03.330389+00:00",
+   "as_of": "2026-07-24T23:06:24.817896+00:00",
    "evidence_page": null
   },
   {
@@ -732,7 +743,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T22:45:05.193595+00:00",
+   "as_of": "2026-07-24T23:06:26.659525+00:00",
    "evidence_page": null
   },
   {

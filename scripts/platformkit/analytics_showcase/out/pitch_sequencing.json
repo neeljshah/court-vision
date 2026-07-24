@@ -4,7 +4,7 @@
   "label": "DESCRIPTIVE_ONLY",
   "caveat": "DESCRIPTIVE_ONLY pitch-sequencing showcase over the local 2025 statcast pull: P(next pitch type | previous pitch type) within a plate appearance, one matrix per count-leverage class (leverage taken on the NEXT pitch). pitch_type is statcast's auto-classified code; matrix axes are the top-N league types (per-class coverage reported). Not a predictor; no edge/ROI/$ claim.",
   "source": "data/cache/statcast/statcast_fuller__2025.parquet",
-  "as_of": "2026-07-24T22:44:54.761673+00:00",
+  "as_of": "2026-07-24T23:06:16.158677+00:00",
   "n_pitches_total": 693037,
   "n_pitches_kept": 690493,
   "n_transitions": 512289,
