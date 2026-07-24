@@ -38,8 +38,20 @@ import argparse
 import json
 import os
 import re
+from pathlib import Path
 
 import pandas as pd
+
+_REPO = Path(__file__).resolve().parents[3]
+
+
+def _abs(rel: str) -> str:
+    """Rejoin a repo-relative source path against the runtime repo root so
+    reads never depend on the process cwd (the MCP server pins none). The
+    source_artifact fields keep the repo-relative string -- only the read
+    resolves to absolute."""
+    p = Path(rel)
+    return str(p) if p.is_absolute() else str(_REPO / p)
 
 from domains.basketball_nba import team_name_resolver as _nba_names
 from scripts.platformkit.odds_provider.team_resolver import canonical as _team_canonical
@@ -127,10 +139,10 @@ def _series_aggregate(sub: pd.DataFrame, home_col: str, away_col: str,
 
 def _resolve_team_sport(sport: str, team_a: str, team_b: str, as_of: str | None) -> dict:
     path, home_col, away_col, kind = _SOURCES[sport]
-    if not os.path.exists(path):
+    if not os.path.exists(_abs(path)):
         return {"status": "no_data", "category": "h2h_history", "sport": sport,
                 "source_artifact": path, "framing": FRAMING}
-    df = pd.read_parquet(path)
+    df = pd.read_parquet(_abs(path))
     df = df.assign(date=pd.to_datetime(df["date"]))
     candidates = set(df[home_col]) | set(df[away_col])
     code_a = _resolve_team_code(sport, team_a, candidates)
@@ -156,10 +168,10 @@ def _resolve_team_sport(sport: str, team_a: str, team_b: str, as_of: str | None)
 
 
 def _resolve_tennis(team_a: str, team_b: str, as_of: str | None) -> dict:
-    if not os.path.exists(_TENNIS_PATH):
+    if not os.path.exists(_abs(_TENNIS_PATH)):
         return {"status": "no_data", "category": "h2h_history", "sport": "tennis",
                 "source_artifact": _TENNIS_PATH, "framing": FRAMING}
-    df = pd.read_parquet(_TENNIS_PATH)
+    df = pd.read_parquet(_abs(_TENNIS_PATH))
     df = df.assign(date=pd.to_datetime(df["date"]))
     names = pd.unique(pd.concat([df["p1_name"], df["p2_name"]]))
 

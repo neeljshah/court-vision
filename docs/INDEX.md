@@ -164,6 +164,8 @@ reprice. Follow the links to go as deep as you want at any stage.
 ### Serving / API / front-end
 - [API](API.md) -- the FastAPI surface (endpoints, contracts)
 - [ASK_SURFACES](ASK_SURFACES.md) -- the question-answering layer: ask() families, composers, trait profiles, paper analytics (VERIFIED claims only, honest UNANSWERABLE)
+- [MCP_QUICKSTART](MCP_QUICKSTART.md) -- connect the fail-closed MCP server to Claude Code / Desktop in 5 min; what ships in a bare clone vs what returns NO_DATA
+- [MCP_TOOLS](MCP_TOOLS.md) -- per-tool reference for the 9 MCP tools + the envelope contract (ok / no_data / not_supported / refused)
 - [FRONTEND_OVERVIEW](FRONTEND_OVERVIEW.md) -- the dashboard surfaces
 
 ### Operations / deployment

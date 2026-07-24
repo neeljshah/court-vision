@@ -51,13 +51,18 @@ realized state, so this is forecaster *quality*, not a dollar edge. Full proof a
 
 ## Use it with YOUR Claude (2 minutes, any laptop)
 
-This repo ships a working **MCP server** — connect it to Claude Code or Claude
-Desktop and ask it anything: scouting reports, comparables, matchup previews,
-verified claim rankings, all fail-closed with receipts. One command downloads
-the latest descriptive-intelligence data pack (no betting data, no live feeds)
-and prints your exact Claude config.
+This repo ships a working **MCP server** — clone it, connect it to Claude Code
+or Claude Desktop, and ask in plain English: scouting reports, comparables,
+matchup previews, atlas cards, verified-claim receipts. Every answer is a typed
+envelope (`ok` / `no_data` / `not_supported` / `refused`) with a `source_artifact`
+and `as_of` — it reads a committed artifact or **fails closed**; it never answers
+from model memory and never claims a dollar edge. A fresh clone ships the **9
+fail-closed tools + JSON manifests** (atlas cards, mechanism ledgers, refusal
+rules all work bare); the private `data/` lake is gitignored, so the data-backed
+tools honestly return `NO_DATA` until you build it — an honest `NO_DATA` is the
+correct answer, not a failure.
 
-**Start here: [docs/USE_WITH_CLAUDE.md](docs/USE_WITH_CLAUDE.md)** · server details: [docs/MCP_SERVER.md](docs/MCP_SERVER.md)
+**Connect in 5 min: [docs/MCP_QUICKSTART.md](docs/MCP_QUICKSTART.md)** · per-tool reference: [docs/MCP_TOOLS.md](docs/MCP_TOOLS.md) · deeper start: [docs/USE_WITH_CLAUDE.md](docs/USE_WITH_CLAUDE.md)
 
 ---
 

@@ -35,6 +35,18 @@ from scripts.platformkit.odds_provider.team_resolver import canonical as _team_c
 
 STALE_DAYS = 7.0  # both injury and news facts churn weekly -- same bound for both categories
 _FUZZY_CUTOFF = 0.6
+_REPO = Path(__file__).resolve().parents[3]
+
+
+def _rel(p) -> str:
+    """Repo-relative POSIX string for the envelope -- never leak a box-local
+    absolute path (C:/Users/...) into source_artifact. Falls back to the raw
+    string only for paths outside the repo (e.g. a test tmp_path)."""
+    p = Path(p)
+    try:
+        return str(p.resolve().relative_to(_REPO)).replace("\\", "/")
+    except ValueError:
+        return str(p)
 
 
 def _parse_dt(raw) -> datetime | None:
@@ -118,13 +130,13 @@ def _gate_and_sort(rows: list[dict], category: str, sport: str, path: Path):
     dated = [(r, _parse_dt(_row_ts(r))) for r in rows]
     dated = [(r, dt) for r, dt in dated if dt is not None]
     if not dated:
-        return {"status": "no_data", "category": category, "sport": sport, "source_artifact": str(path),
+        return {"status": "no_data", "category": category, "sport": sport, "source_artifact": _rel(path),
                 "note": "matched rows carry no parseable timestamp"}, None
     dated.sort(key=lambda rd: rd[1], reverse=True)
     newest_dt = dated[0][1]
     age_days = (datetime.now(timezone.utc) - newest_dt).total_seconds() / 86400.0
     if age_days > STALE_DAYS:
-        return {"status": "refused", "category": category, "sport": sport, "source_artifact": str(path),
+        return {"status": "refused", "category": category, "sport": sport, "source_artifact": _rel(path),
                 "as_of": newest_dt.isoformat(),
                 "note": f"newest matched row is {age_days:.1f}d old, exceeds the {STALE_DAYS:.0f}d staleness bound"}, None
     return None, ([r for r, _ in dated], newest_dt.isoformat())
@@ -136,10 +148,10 @@ def injury_report(sport: str, team: str | None = None, player: str | None = None
     category = "edge_facts_injury_report"
     path = FS.path_for("injury", sport)
     if not path.is_file():
-        return {"status": "no_data", "category": category, "sport": sport, "source_artifact": str(path),
+        return {"status": "no_data", "category": category, "sport": sport, "source_artifact": _rel(path),
                 "note": "injury facts store not built in this clone"}
     if not team and not player:
-        return {"status": "no_data", "category": category, "sport": sport, "source_artifact": str(path),
+        return {"status": "no_data", "category": category, "sport": sport, "source_artifact": _rel(path),
                 "note": "supply team or player"}
     rows = FS.read_rows(path)
     matched, matched_value = rows, None
@@ -148,14 +160,14 @@ def injury_report(sport: str, team: str | None = None, player: str | None = None
     if team and matched:
         matched, matched_value = _match_rows(matched, "team", team, sport=sport)
     if not matched:
-        return {"status": "no_data", "category": category, "sport": sport, "source_artifact": str(path),
+        return {"status": "no_data", "category": category, "sport": sport, "source_artifact": _rel(path),
                 "note": f"no injury row matched team={team!r} player={player!r}"}
     fail, ctx = _gate_and_sort(matched, category, sport, path)
     if fail:
         return fail
     sorted_rows, as_of = ctx
     fields = ("player_name", "team", "status", "detail", "report_date", "source", "source_url", "fetched_at")
-    return {"status": "ok", "category": category, "sport": sport, "source_artifact": str(path), "as_of": as_of,
+    return {"status": "ok", "category": category, "sport": sport, "source_artifact": _rel(path), "as_of": as_of,
             "team": team, "player": player, "matched_entity": matched_value, "n": len(sorted_rows),
             "rows": [{k: r.get(k) for k in fields} for r in sorted_rows[:50]]}
 
@@ -166,10 +178,10 @@ def news_context(sport: str, team: str | None = None, player: str | None = None)
     category = "edge_facts_news_context"
     path = FS.path_for("news", sport)
     if not path.is_file():
-        return {"status": "no_data", "category": category, "sport": sport, "source_artifact": str(path),
+        return {"status": "no_data", "category": category, "sport": sport, "source_artifact": _rel(path),
                 "note": "news facts store not built in this clone"}
     if not team and not player:
-        return {"status": "no_data", "category": category, "sport": sport, "source_artifact": str(path),
+        return {"status": "no_data", "category": category, "sport": sport, "source_artifact": _rel(path),
                 "note": "supply team or player"}
     rows = FS.read_rows(path)
     matched, matched_value = rows, None
@@ -178,14 +190,14 @@ def news_context(sport: str, team: str | None = None, player: str | None = None)
     if team and matched:
         matched, matched_value = _match_list_field(matched, "teams", team, sport=sport)
     if not matched:
-        return {"status": "no_data", "category": category, "sport": sport, "source_artifact": str(path),
+        return {"status": "no_data", "category": category, "sport": sport, "source_artifact": _rel(path),
                 "note": f"no news row matched team={team!r} player={player!r}"}
     fail, ctx = _gate_and_sort(matched, category, sport, path)
     if fail:
         return fail
     sorted_rows, as_of = ctx
     fields = ("headline", "url", "published", "source", "categories", "teams", "players")
-    return {"status": "ok", "category": category, "sport": sport, "source_artifact": str(path), "as_of": as_of,
+    return {"status": "ok", "category": category, "sport": sport, "source_artifact": _rel(path), "as_of": as_of,
             "team": team, "player": player, "matched_entity": matched_value, "n": len(sorted_rows),
             "rows": [{k: r.get(k) for k in fields} for r in sorted_rows[:50]]}
 

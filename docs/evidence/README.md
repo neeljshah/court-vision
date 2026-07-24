@@ -55,6 +55,8 @@ Systems built from primitives -- CV, simulation, data, serving, and the AI-engin
 | [mcp-live-demo](mcp-live-demo.md) | Three real MCP envelopes captured live: receipt-backed answers, the caveat ladder, and the engine disclosing when the market is sharper. | Live in-game envelope discloses, unprompted, `model_brier 0.2328` > `market_brier 0.1985` over n=615 games in that state bucket, with `edge_claimed: false`. |
 | [agent-fleet-direction](agent-fleet-direction.md) | One human directing an agent fleet under fail-closed gates; the authorship split is recountable from `git`, not asserted. | ~91% agent-authored (packet); a fresh git-log recount reads 95.75% of 3,224 commits on the `GSD Executor` identity and 67.9% carrying a `Co-Authored-By: Claude` trailer (`agent_fleet_history.json`). |
 
+*Run the MCP demo yourself: [../MCP_QUICKSTART.md](../MCP_QUICKSTART.md) connects the 9 fail-closed tools to Claude in ~5 min; [../MCP_TOOLS.md](../MCP_TOOLS.md) is the per-tool reference.*
+
 ## Frontier measurements
 
 Uniquely-auditable analytics, each with its honest prior-art verdict attached.

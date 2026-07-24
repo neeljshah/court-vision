@@ -27,6 +27,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Optional
 
+from scripts.platformkit.odds_provider import team_resolver as _tr
+
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 _SOURCE_ARTIFACT = "scripts/platformkit/predict_matchup.py"
 _TIMEOUT_S = 60
@@ -65,6 +67,21 @@ def _build_args(sport: str, home: str, away: str,
     return args
 
 
+def _known_team(sport: str, name: str) -> bool:
+    """True if `name` resolves to a real roster team via team_resolver's own
+    30-team code map (nba/mlb -- the only sports with a hardcoded roster).
+    predict_matchup has no team validation of its own -- it happily fabricates
+    a generic-rating win probability for ANY string (fail-closed gap; see
+    mcp_smoke's win_probability bad-case). Sports with no code map (soccer/
+    tennis/...) have no roster to check against here, so they pass through
+    unvalidated -- same as before this fix, not a regression."""
+    code_map = _tr._CODE_TO_NICK.get(str(sport).lower())
+    if not code_map:
+        return True
+    nick = _tr.canonical(sport, name).split(":", 1)[-1]
+    return nick in set(code_map.values())
+
+
 def dispatch(sport: str, home: str, away: str,
             ingame_state: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """Run predict_matchup.py as a subprocess and return the standard envelope.
@@ -74,6 +91,9 @@ def dispatch(sport: str, home: str, away: str,
     """
     base = {"category": "winprob", "sport": sport, "source_artifact": _SOURCE_ARTIFACT,
             "as_of": _now_iso(), "home": home, "away": away}
+    if not (_known_team(sport, home) and _known_team(sport, away)):
+        return {**base, "status": "no_data",
+                "note": f"team not recognized in {sport} roster: home={home!r} away={away!r}"}
     args = _build_args(sport, home, away, ingame_state)
     cmd = [sys.executable, "-m", "scripts.platformkit.predict_matchup", *args]
     try:

@@ -37,6 +37,17 @@ import os
 import re
 from datetime import datetime, timezone
 from importlib import import_module
+from pathlib import Path
+
+_REPO = Path(__file__).resolve().parents[3]
+
+
+def _abs(rel: str) -> str:
+    """Rejoin a repo-relative artifact path against the runtime repo root so a
+    read never depends on the process cwd (the MCP server pins no cwd). Absolute
+    paths (e.g. a test tmp_path) pass through unchanged."""
+    p = Path(rel)
+    return str(p) if p.is_absolute() else str(_REPO / p)
 
 _LEDGER_PATHS = {
     "nba": "domains/basketball_nba/knowledge/validation_ledger.jsonl",
@@ -87,6 +98,7 @@ def _node_id(kind: str, sport: str, name: str) -> str:
 
 
 def _load_jsonl(path: str) -> list[dict]:
+    path = _abs(path)
     if not os.path.exists(path):
         return []
     rows = []
@@ -161,7 +173,7 @@ def _as_of_stamp() -> str:
     inputs (unlike datetime.now()), matching the pinned-artifact convention
     resolver_registry.py already uses for calibration_number/mechanism_effect."""
     paths = list(_LEDGER_PATHS.values()) + [_FACTORY_LEDGER]
-    mtimes = [os.path.getmtime(p) for p in paths if os.path.exists(p)]
+    mtimes = [os.path.getmtime(_abs(p)) for p in paths if os.path.exists(_abs(p))]
     ts = max(mtimes) if mtimes else 0.0
     return datetime.fromtimestamp(ts, tz=timezone.utc).isoformat()
 
@@ -192,7 +204,7 @@ def build_graph() -> dict:
 def load_graph(path: str | None = None) -> dict | None:
     """Reads the pinned artifact -- never recomputes. None if not built yet
     in this clone (data/ is gitignored)."""
-    path = path or _OUT_PATH
+    path = _abs(path or _OUT_PATH)
     if not os.path.exists(path):
         return None
     with open(path, encoding="utf-8") as fh:
@@ -219,6 +231,7 @@ def query_edges(sport: str, target_tokens: set[str], direction: str = "to", grap
 
 def write_graph(out_path: str = _OUT_PATH) -> dict:
     graph = build_graph()
+    out_path = _abs(out_path)
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     with open(out_path, "w", encoding="utf-8") as fh:
         json.dump(graph, fh, indent=2)
