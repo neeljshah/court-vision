@@ -112,7 +112,7 @@ Two things, and the second is the point. First, the CV engineering: implementing
 filtering, the Hungarian assignment, a classical-CV homography recovery, and an omni-scale
 re-ID architecture from primitives -- and hardening all of it against the silent-corruption
 failure modes broadcast footage is prone to -- is mid-level CV-engineer work done solo. Every
-guard in the feature layer traces to a specific artifact that was actually observed and
+guard in the feature layer traces to a specific broadcast artifact that was observed and
 diagnosed.
 
 Second, the honesty discipline. The easy version of this page would claim a re-ID accuracy, a

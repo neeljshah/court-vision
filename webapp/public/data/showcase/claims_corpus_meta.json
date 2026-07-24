@@ -1,0 +1,1700 @@
+{
+ "component": "claims_corpus_meta",
+ "status": "ok",
+ "generated_at": "2026-07-22T22:32:37.123787+00:00",
+ "corpus_dir": "data/cache/intel_claims",
+ "totals": {
+  "n_families": 103,
+  "n_claims_generated": 103048,
+  "n_families_with_validation_sidecar": 99,
+  "n_families_without_validation_sidecar": 4
+ },
+ "generated_vs_validated": {
+  "n_claims_generated": 103048,
+  "n_claims_sampled_for_validation": 101865,
+  "n_verified": 101864,
+  "n_mismatch": 0,
+  "n_unverifiable": 1,
+  "pct_of_generated_claims_covered_by_a_validation_sample": 98.85,
+  "note": "verified counts are sidecar SAMPLE counts, not full-corpus audits; 'generated' claims outnumber 'verified' claims by design -- see JOB_EVIDENCE_PACKET.md"
+ },
+ "sport_breakdown": [
+  {
+   "sport": "nba",
+   "n_families": 31,
+   "n_claims": 62227
+  },
+  {
+   "sport": "mlb",
+   "n_families": 18,
+   "n_claims": 21519
+  },
+  {
+   "sport": "tennis",
+   "n_families": 16,
+   "n_claims": 13709
+  },
+  {
+   "sport": "soccer",
+   "n_families": 15,
+   "n_claims": 4275
+  },
+  {
+   "sport": "unlabeled_cross_sport",
+   "n_families": 13,
+   "n_claims": 1236
+  },
+  {
+   "sport": "wnba",
+   "n_families": 6,
+   "n_claims": 57
+  },
+  {
+   "sport": "cross_sport",
+   "n_families": 1,
+   "n_claims": 12
+  },
+  {
+   "sport": "npb_kbo",
+   "n_families": 2,
+   "n_claims": 10
+  },
+  {
+   "sport": "baseball_intl",
+   "n_families": 1,
+   "n_claims": 3
+  }
+ ],
+ "kind_distribution_by_claim_count": {
+  "ranking": 101862,
+  "verdict": 17,
+  "gate_verdict": 5
+ },
+ "index_freshness": {
+  "oldest_family_mtime": "2026-07-05T00:20:11.675359+00:00",
+  "newest_family_mtime": "2026-07-19T14:33:38.236635+00:00",
+  "days_since_newest_update": 3
+ },
+ "families": [
+  {
+   "family": "nba_player_box_rate",
+   "sport": "nba",
+   "n_claims": 59706,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-18T16:06:37.562137+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 59706,
+    "n_verified": 59706,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-18T16:41:36.947924+00:00"
+   }
+  },
+  {
+   "family": "tennis_fatigue_schedule_density",
+   "sport": "tennis",
+   "n_claims": 10914,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-09T14:36:42.908110+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 10914,
+    "n_verified": 10914,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-09T17:13:25.981226+00:00"
+   }
+  },
+  {
+   "family": "mlb_bullpen_fatigue_chains",
+   "sport": "mlb",
+   "n_claims": 9060,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-09T14:36:22.069999+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 9060,
+    "n_verified": 9060,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-09T15:38:41.711360+00:00"
+   }
+  },
+  {
+   "family": "mlb_batter_rate",
+   "sport": "mlb",
+   "n_claims": 7452,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-09T14:35:47.484239+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 7452,
+    "n_verified": 7452,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-09T15:31:18.329118+00:00"
+   }
+  },
+  {
+   "family": "mlb_pitcher_rate",
+   "sport": "mlb",
+   "n_claims": 4434,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-09T14:36:05.056532+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 4434,
+    "n_verified": 4434,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-09T15:43:02.778089+00:00"
+   }
+  },
+  {
+   "family": "soccer_referee_card_foul_profiles",
+   "sport": "soccer",
+   "n_claims": 2736,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-09T14:36:27.175526+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 2736,
+    "n_verified": 2736,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-09T17:11:20.914831+00:00"
+   }
+  },
+  {
+   "family": "nba_team_box_rate",
+   "sport": "nba",
+   "n_claims": 2160,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-10T05:21:05.347277+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 2160,
+    "n_verified": 2160,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-10T05:34:32.833697+00:00"
+   }
+  },
+  {
+   "family": "soccer_intl_team_travel_rate",
+   "sport": "soccer",
+   "n_claims": 1458,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-06T03:04:00.696058+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1458,
+    "n_verified": 1458,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-06T03:04:28.002294+00:00"
+   }
+  },
+  {
+   "family": "tennis_p2_match_context",
+   "sport": "tennis",
+   "n_claims": 1346,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-19T14:33:38.236635+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1346,
+    "n_verified": 1346,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-19T14:37:45.926521+00:00"
+   }
+  },
+  {
+   "family": "tennis_p1_match_context",
+   "sport": "tennis",
+   "n_claims": 1312,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-19T14:32:36.066221+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1312,
+    "n_verified": 1312,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-19T14:37:10.392481+00:00"
+   }
+  },
+  {
+   "family": "interaction_factory_ledger",
+   "sport": "unlabeled_cross_sport",
+   "n_claims": 1003,
+   "kind_sample": null,
+   "mtime": "2026-07-17T22:00:48.554457+00:00",
+   "has_validation_sidecar": false,
+   "validation": null
+  },
+  {
+   "family": "mlb_profile_claims",
+   "sport": "mlb",
+   "n_claims": 328,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-18T05:58:09.211782+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 328,
+    "n_verified": 328,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-18T05:58:09.222781+00:00"
+   }
+  },
+  {
+   "family": "mlb_team_rate",
+   "sport": "mlb",
+   "n_claims": 186,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-09T14:36:06.548109+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 186,
+    "n_verified": 186,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-09T15:46:53.944257+00:00"
+   }
+  },
+  {
+   "family": "nba_profile_claims",
+   "sport": "nba",
+   "n_claims": 181,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-09T03:49:31.108747+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 181,
+    "n_verified": 181,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-09T03:49:31.945506+00:00"
+   }
+  },
+  {
+   "family": "prereg_hypothesis_ledger",
+   "sport": "unlabeled_cross_sport",
+   "n_claims": 129,
+   "kind_sample": null,
+   "mtime": "2026-07-10T12:54:39.100803+00:00",
+   "has_validation_sidecar": false,
+   "validation": null
+  },
+  {
+   "family": "nba_lineup_context_claims",
+   "sport": "nba",
+   "n_claims": 68,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-18T04:42:08.762622+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 68,
+    "n_verified": 68,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-18T04:42:09.383802+00:00"
+   }
+  },
+  {
+   "family": "tennis_profile_claims",
+   "sport": "tennis",
+   "n_claims": 63,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-09T03:57:47.113661+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 63,
+    "n_verified": 63,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-09T17:36:11.536495+00:00"
+   }
+  },
+  {
+   "family": "market_line_drift_descriptors",
+   "sport": "unlabeled_cross_sport",
+   "n_claims": 44,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-08T16:48:52.754864+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 44,
+    "n_verified": 44,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-08T16:48:59.675768+00:00"
+   }
+  },
+  {
+   "family": "ingame_distributional_crps_ledger",
+   "sport": "unlabeled_cross_sport",
+   "n_claims": 32,
+   "kind_sample": null,
+   "mtime": "2026-07-10T12:02:59.167899+00:00",
+   "has_validation_sidecar": false,
+   "validation": null
+  },
+  {
+   "family": "wnba_profile_claims",
+   "sport": "wnba",
+   "n_claims": 31,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-17T10:20:25.399529+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 31,
+    "n_verified": 31,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-17T10:20:25.408518+00:00"
+   }
+  },
+  {
+   "family": "soccer_profile_claims",
+   "sport": "soccer",
+   "n_claims": 25,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-09T03:27:25.769221+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 25,
+    "n_verified": 25,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-09T03:27:25.769220+00:00"
+   }
+  },
+  {
+   "family": "nba_shooting_claims",
+   "sport": "nba",
+   "n_claims": 20,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-18T06:14:59.942323+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 20,
+    "n_verified": 20,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-18T06:15:01.534407+00:00"
+   }
+  },
+  {
+   "family": "mlb_career_counting_leaders",
+   "sport": "mlb",
+   "n_claims": 18,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-18T17:21:20.313700+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 18,
+    "n_verified": 18,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-18T17:21:21.319674+00:00"
+   }
+  },
+  {
+   "family": "gate_verdict_claims",
+   "sport": "unlabeled_cross_sport",
+   "n_claims": 17,
+   "kind_sample": "verdict",
+   "mtime": "2026-07-05T07:29:28.491349+00:00",
+   "has_validation_sidecar": false,
+   "validation": null
+  },
+  {
+   "family": "soccer_style_matchup_claims",
+   "sport": "soccer",
+   "n_claims": 16,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-09T14:36:27.833512+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 16,
+    "n_verified": 16,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-09T17:13:24.300820+00:00"
+   }
+  },
+  {
+   "family": "tennis_pressure_point_claims",
+   "sport": "tennis",
+   "n_claims": 15,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-09T06:04:06.124496+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 15,
+    "n_verified": 15,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-09T06:04:11.079531+00:00"
+   }
+  },
+  {
+   "family": "tennis_ranking_claims",
+   "sport": "tennis",
+   "n_claims": 15,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-19T03:41:05.617840+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 15,
+    "n_verified": 15,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-18T17:51:02.819612+00:00"
+   }
+  },
+  {
+   "family": "cross_sport_market_depth_imbalance_descriptors",
+   "sport": "cross_sport",
+   "n_claims": 12,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-08T16:48:52.832578+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 12,
+    "n_verified": 12,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-08T16:48:59.805376+00:00"
+   }
+  },
+  {
+   "family": "mlb_batter_context_claims",
+   "sport": "mlb",
+   "n_claims": 12,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-18T13:39:32.032689+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 12,
+    "n_verified": 12,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-18T13:39:32.852936+00:00"
+   }
+  },
+  {
+   "family": "nba_player_intel_shooting_claims",
+   "sport": "nba",
+   "n_claims": 12,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-18T06:24:22.399055+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 12,
+    "n_verified": 12,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-18T06:24:23.165102+00:00"
+   }
+  },
+  {
+   "family": "tennis_surface_context_claims",
+   "sport": "tennis",
+   "n_claims": 12,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-19T03:41:37.136672+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 12,
+    "n_verified": 12,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-18T06:40:56.096879+00:00"
+   }
+  },
+  {
+   "family": "soccer_team_form_asof_claims",
+   "sport": "soccer",
+   "n_claims": 11,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-18T17:21:08.111325+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 11,
+    "n_verified": 11,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-18T17:21:09.065299+00:00"
+   }
+  },
+  {
+   "family": "mlb_batter_splits",
+   "sport": "mlb",
+   "n_claims": 10,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-18T17:40:16.101599+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 10,
+    "n_verified": 10,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-18T17:40:16.885637+00:00"
+   }
+  },
+  {
+   "family": "nba_schedule_claims",
+   "sport": "nba",
+   "n_claims": 10,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-18T04:29:45.238069+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 10,
+    "n_verified": 10,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-18T04:29:48.140607+00:00"
+   }
+  },
+  {
+   "family": "wnba_player_form_claims",
+   "sport": "wnba",
+   "n_claims": 10,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-08T23:06:57.815022+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 10,
+    "n_verified": 10,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-08T23:07:01.534950+00:00"
+   }
+  },
+  {
+   "family": "nba_player_interaction_claims",
+   "sport": "nba",
+   "n_claims": 9,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-08T23:30:52.827601+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 9,
+    "n_verified": 9,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-08T23:30:57.143011+00:00"
+   }
+  },
+  {
+   "family": "tennis_claims_v4",
+   "sport": "tennis",
+   "n_claims": 9,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-19T03:41:30.855556+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 9,
+    "n_verified": 9,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-05T10:17:35.435267+00:00"
+   }
+  },
+  {
+   "family": "nba_context_shooting_defadj_claims",
+   "sport": "nba",
+   "n_claims": 8,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-18T04:29:51.222338+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 8,
+    "n_verified": 8,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-18T04:29:51.895103+00:00"
+   }
+  },
+  {
+   "family": "nba_teammate_context_claims",
+   "sport": "nba",
+   "n_claims": 8,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-18T05:46:08.311965+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 8,
+    "n_verified": 8,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-18T05:46:08.976601+00:00"
+   }
+  },
+  {
+   "family": "npb_kbo_claims",
+   "sport": "npb_kbo",
+   "n_claims": 8,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-05T07:50:53.472507+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 8,
+    "n_verified": 8,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-05T07:50:54.256999+00:00"
+   }
+  },
+  {
+   "family": "tennis_claims_v3",
+   "sport": "tennis",
+   "n_claims": 8,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-19T03:41:29.715759+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 8,
+    "n_verified": 8,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-05T10:17:34.259788+00:00"
+   }
+  },
+  {
+   "family": "wnba_claims",
+   "sport": "wnba",
+   "n_claims": 8,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-05T06:40:56.266904+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 8,
+    "n_verified": 8,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-05T07:17:46.055231+00:00"
+   }
+  },
+  {
+   "family": "soccer_team_shot_asof_claims",
+   "sport": "soccer",
+   "n_claims": 7,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-18T17:21:11.395242+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 7,
+    "n_verified": 7,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-18T17:21:12.385216+00:00"
+   }
+  },
+  {
+   "family": "nba_context_shooting_claims",
+   "sport": "nba",
+   "n_claims": 6,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-18T04:29:46.076058+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 6,
+    "n_verified": 6,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-18T04:29:49.000082+00:00"
+   }
+  },
+  {
+   "family": "nba_rest_context_claims",
+   "sport": "nba",
+   "n_claims": 6,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-18T05:26:44.756356+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 6,
+    "n_verified": 6,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-18T05:26:45.383812+00:00"
+   }
+  },
+  {
+   "family": "nba_quality_claims",
+   "sport": "nba",
+   "n_claims": 5,
+   "kind_sample": "gate_verdict",
+   "mtime": "2026-07-18T17:21:04.885461+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 5,
+    "n_verified": 4,
+    "n_mismatch": 0,
+    "n_unverifiable": 1,
+    "edge_claimed": false,
+    "generated_at": "2026-07-18T17:21:06.441421+00:00"
+   }
+  },
+  {
+   "family": "soccer_team_discipline_asof_claims",
+   "sport": "soccer",
+   "n_claims": 5,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-18T17:21:14.807178+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 5,
+    "n_verified": 5,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-18T17:21:15.742160+00:00"
+   }
+  },
+  {
+   "family": "mlb_fielding_alignment_claims",
+   "sport": "mlb",
+   "n_claims": 4,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-08T22:16:47.423059+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 4,
+    "n_verified": 4,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-08T22:16:53.142410+00:00"
+   }
+  },
+  {
+   "family": "mlb_tto_claims",
+   "sport": "mlb",
+   "n_claims": 4,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-05T06:39:57.057987+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 4,
+    "n_verified": 4,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-08T20:57:40.024481+00:00"
+   }
+  },
+  {
+   "family": "soccer_team_oppstrength_form_claims",
+   "sport": "soccer",
+   "n_claims": 4,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-18T17:21:17.335751+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 4,
+    "n_verified": 4,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-18T17:21:18.303728+00:00"
+   }
+  },
+  {
+   "family": "tennis_serve_return_matchup_claims",
+   "sport": "tennis",
+   "n_claims": 4,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-09T14:36:43.186616+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 4,
+    "n_verified": 4,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-09T17:36:12.418483+00:00"
+   }
+  },
+  {
+   "family": "wnba_zone_context_claims",
+   "sport": "wnba",
+   "n_claims": 4,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-17T10:20:29.478373+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 4,
+    "n_verified": 4,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-17T10:20:33.582349+00:00"
+   }
+  },
+  {
+   "family": "baseball_intl_tie_rate_claims",
+   "sport": "baseball_intl",
+   "n_claims": 3,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-08T22:20:19.981671+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 3,
+    "n_verified": 3,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-08T22:20:20.920039+00:00"
+   }
+  },
+  {
+   "family": "nba_fit_ingredient_claims",
+   "sport": "nba",
+   "n_claims": 3,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-08T17:13:07.271513+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 3,
+    "n_verified": 3,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-08T17:14:53.708917+00:00"
+   }
+  },
+  {
+   "family": "soccer_formation_claims",
+   "sport": "soccer",
+   "n_claims": 3,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-08T22:18:26.454204+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 3,
+    "n_verified": 3,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-08T22:18:31.065655+00:00"
+   }
+  },
+  {
+   "family": "soccer_team_venue_split_claims",
+   "sport": "soccer",
+   "n_claims": 3,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-17T20:35:38.557523+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 3,
+    "n_verified": 3,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-17T20:35:46.505410+00:00"
+   }
+  },
+  {
+   "family": "tennis_serve_asof_claims",
+   "sport": "tennis",
+   "n_claims": 3,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-19T03:41:34.794653+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 3,
+    "n_verified": 3,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-18T17:51:04.779643+00:00"
+   }
+  },
+  {
+   "family": "wnba_lineup_claims",
+   "sport": "wnba",
+   "n_claims": 3,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-08T23:40:09.886251+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 3,
+    "n_verified": 3,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-08T23:40:13.044039+00:00"
+   }
+  },
+  {
+   "family": "kalshi_sportsbook_prob_gap_claims",
+   "sport": "unlabeled_cross_sport",
+   "n_claims": 2,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-18T06:01:52.093890+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 2,
+    "n_verified": 2,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-18T04:37:24.245379+00:00"
+   }
+  },
+  {
+   "family": "line_history_consensus_claims",
+   "sport": "unlabeled_cross_sport",
+   "n_claims": 2,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-17T10:54:44.140554+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 2,
+    "n_verified": 2,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-17T10:54:56.963225+00:00"
+   }
+  },
+  {
+   "family": "market_book_dispersion_claims",
+   "sport": "unlabeled_cross_sport",
+   "n_claims": 2,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-17T10:17:35.857801+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 2,
+    "n_verified": 2,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-17T10:17:36.479543+00:00"
+   }
+  },
+  {
+   "family": "mlb_framing_claims",
+   "sport": "mlb",
+   "n_claims": 2,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-08T23:19:48.003633+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 2,
+    "n_verified": 2,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-08T23:19:53.243822+00:00"
+   }
+  },
+  {
+   "family": "mlb_injury_recency_claims",
+   "sport": "mlb",
+   "n_claims": 2,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-17T09:51:41.083098+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 2,
+    "n_verified": 2,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-17T09:51:41.693113+00:00"
+   }
+  },
+  {
+   "family": "mlb_shift_vulnerability_claims",
+   "sport": "mlb",
+   "n_claims": 2,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-08T23:19:48.004633+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 2,
+    "n_verified": 2,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-08T23:19:53.352385+00:00"
+   }
+  },
+  {
+   "family": "nba_canonical_shooter_claims",
+   "sport": "nba",
+   "n_claims": 2,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-18T04:29:41.344370+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1,
+    "n_verified": 1,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-08T17:14:51.820393+00:00"
+   }
+  },
+  {
+   "family": "nba_concession_profile_claims",
+   "sport": "nba",
+   "n_claims": 2,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-08T18:18:34.089911+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 2,
+    "n_verified": 2,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-08T18:21:05.744688+00:00"
+   }
+  },
+  {
+   "family": "nba_gravity_proxy_claims",
+   "sport": "nba",
+   "n_claims": 2,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-08T21:04:47.118368+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 2,
+    "n_verified": 2,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-08T21:04:59.345699+00:00"
+   }
+  },
+  {
+   "family": "nba_lineup_spacing_claims",
+   "sport": "nba",
+   "n_claims": 2,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-08T21:04:47.938883+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 2,
+    "n_verified": 2,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-08T21:05:00.209213+00:00"
+   }
+  },
+  {
+   "family": "nba_lineup_synergy_claims",
+   "sport": "nba",
+   "n_claims": 2,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-08T23:33:15.286652+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 2,
+    "n_verified": 2,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-08T23:33:16.430996+00:00"
+   }
+  },
+  {
+   "family": "nba_on_off_claims",
+   "sport": "nba",
+   "n_claims": 2,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-08T21:04:46.317858+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 2,
+    "n_verified": 2,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-08T21:04:58.517700+00:00"
+   }
+  },
+  {
+   "family": "nba_referee_crew_ft_claims",
+   "sport": "nba",
+   "n_claims": 2,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-18T01:56:04.456285+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 2,
+    "n_verified": 2,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-18T01:56:04.460385+00:00"
+   }
+  },
+  {
+   "family": "nba_shooter_profile_claims",
+   "sport": "nba",
+   "n_claims": 2,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-18T04:29:42.241113+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1,
+    "n_verified": 1,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-08T01:24:39.340857+00:00"
+   }
+  },
+  {
+   "family": "npb_kbo_tie_claims",
+   "sport": "npb_kbo",
+   "n_claims": 2,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-10T06:45:16.909759+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 2,
+    "n_verified": 2,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-10T07:55:17.537798+00:00"
+   }
+  },
+  {
+   "family": "soccer_possession_chain_claims",
+   "sport": "soccer",
+   "n_claims": 2,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-08T23:10:57.656791+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 2,
+    "n_verified": 2,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-08T23:10:57.656791+00:00"
+   }
+  },
+  {
+   "family": "soccer_tournament_context_claims",
+   "sport": "soccer",
+   "n_claims": 2,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-08T22:19:11.444174+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 2,
+    "n_verified": 2,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-08T22:19:12.570688+00:00"
+   }
+  },
+  {
+   "family": "tennis_h2h_index_claims",
+   "sport": "tennis",
+   "n_claims": 2,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-05T00:20:11.675359+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 2,
+    "n_verified": 2,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-05T00:22:48.192772+00:00"
+   }
+  },
+  {
+   "family": "tennis_hold_claims",
+   "sport": "tennis",
+   "n_claims": 2,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-19T03:41:33.678137+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 2,
+    "n_verified": 2,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-05T05:47:02.658090+00:00"
+   }
+  },
+  {
+   "family": "tennis_playstyle_fit_claims",
+   "sport": "tennis",
+   "n_claims": 2,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-19T03:41:35.789683+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 2,
+    "n_verified": 2,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-17T09:57:30.653281+00:00"
+   }
+  },
+  {
+   "family": "catcher_framing_claims",
+   "sport": "mlb",
+   "n_claims": 1,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-05T05:43:30.710543+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1,
+    "n_verified": 1,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-08T20:57:39.955481+00:00"
+   }
+  },
+  {
+   "family": "mlb_pitcher_claims",
+   "sport": "mlb",
+   "n_claims": 1,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-05T05:43:35.238539+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1,
+    "n_verified": 1,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-08T20:57:39.995482+00:00"
+   }
+  },
+  {
+   "family": "mlb_pitcher_putaway_claims",
+   "sport": "mlb",
+   "n_claims": 1,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-08T18:16:01.926366+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1,
+    "n_verified": 1,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-08T18:17:40.613849+00:00"
+   }
+  },
+  {
+   "family": "mlb_plate_discipline_claims",
+   "sport": "mlb",
+   "n_claims": 1,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-05T06:56:01.736257+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1,
+    "n_verified": 1,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-05T07:15:11.171717+00:00"
+   }
+  },
+  {
+   "family": "nba_canonical_shooter_claims_2025_26",
+   "sport": "nba",
+   "n_claims": 1,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-08T17:12:59.275961+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1,
+    "n_verified": 1,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-08T17:14:52.729413+00:00"
+   }
+  },
+  {
+   "family": "nba_defender_v1_claims",
+   "sport": "nba",
+   "n_claims": 1,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-19T05:30:24.193460+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1,
+    "n_verified": 1,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-19T00:17:19.488411+00:00"
+   }
+  },
+  {
+   "family": "nba_defender_v2_context_claims",
+   "sport": "nba",
+   "n_claims": 1,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-19T05:30:25.759608+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1,
+    "n_verified": 1,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-19T00:25:57.248689+00:00"
+   }
+  },
+  {
+   "family": "nba_defender_v3_team_rel_claims",
+   "sport": "nba",
+   "n_claims": 1,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-19T05:30:26.969139+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1,
+    "n_verified": 1,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-19T00:55:32.374211+00:00"
+   }
+  },
+  {
+   "family": "nba_defender_v4_individual_claims",
+   "sport": "nba",
+   "n_claims": 1,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-19T05:30:28.251740+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1,
+    "n_verified": 1,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-19T01:04:58.940971+00:00"
+   }
+  },
+  {
+   "family": "nba_fit_sweep_claims",
+   "sport": "nba",
+   "n_claims": 1,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-05T18:02:22.237962+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1,
+    "n_verified": 1,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-05T18:02:29.015732+00:00"
+   }
+  },
+  {
+   "family": "nba_gravity_v2_claims",
+   "sport": "nba",
+   "n_claims": 1,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-19T05:30:40.235396+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1,
+    "n_verified": 1,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-19T00:12:25.969882+00:00"
+   }
+  },
+  {
+   "family": "nba_rest_adjusted_form_claims",
+   "sport": "nba",
+   "n_claims": 1,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-17T13:12:03.891661+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1,
+    "n_verified": 1,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-17T13:12:19.189412+00:00"
+   }
+  },
+  {
+   "family": "nba_venue_split_claims",
+   "sport": "nba",
+   "n_claims": 1,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-17T10:11:06.735735+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1,
+    "n_verified": 1,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-17T10:11:15.010643+00:00"
+   }
+  },
+  {
+   "family": "platoon_split_claims",
+   "sport": "unlabeled_cross_sport",
+   "n_claims": 1,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-05T05:43:27.682371+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1,
+    "n_verified": 1,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-09T00:11:46.087090+00:00"
+   }
+  },
+  {
+   "family": "shooter_composite_v2_asof_approx_claims",
+   "sport": "unlabeled_cross_sport",
+   "n_claims": 1,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-19T05:30:46.594651+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1,
+    "n_verified": 1,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-18T13:39:29.375260+00:00"
+   }
+  },
+  {
+   "family": "shooter_composite_v2_claims",
+   "sport": "unlabeled_cross_sport",
+   "n_claims": 1,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-19T05:30:45.427462+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1,
+    "n_verified": 1,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-18T13:39:28.524278+00:00"
+   }
+  },
+  {
+   "family": "shooter_composite_v3_total_claims",
+   "sport": "unlabeled_cross_sport",
+   "n_claims": 1,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-18T23:35:32.488090+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1,
+    "n_verified": 1,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-18T23:35:33.300207+00:00"
+   }
+  },
+  {
+   "family": "shooter_isolated_v4_claims",
+   "sport": "unlabeled_cross_sport",
+   "n_claims": 1,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-18T23:44:58.739977+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1,
+    "n_verified": 1,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-18T23:44:59.521803+00:00"
+   }
+  },
+  {
+   "family": "soccer_intl_form_claims",
+   "sport": "soccer",
+   "n_claims": 1,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-05T08:07:55.534495+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1,
+    "n_verified": 1,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-05T08:08:13.054806+00:00"
+   }
+  },
+  {
+   "family": "soccer_intl_h2h_claims",
+   "sport": "soccer",
+   "n_claims": 1,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-05T08:07:54.281208+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1,
+    "n_verified": 1,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-05T08:08:11.892806+00:00"
+   }
+  },
+  {
+   "family": "soccer_intl_strength_claims",
+   "sport": "soccer",
+   "n_claims": 1,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-05T06:57:55.913938+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1,
+    "n_verified": 1,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-05T06:58:00.545898+00:00"
+   }
+  },
+  {
+   "family": "tennis_h2h_claims",
+   "sport": "tennis",
+   "n_claims": 1,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-19T03:41:32.533541+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1,
+    "n_verified": 1,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-05T07:30:59.188202+00:00"
+   }
+  },
+  {
+   "family": "tennis_pressure_claims",
+   "sport": "tennis",
+   "n_claims": 1,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-09T03:54:29.938001+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1,
+    "n_verified": 1,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-09T17:36:11.486222+00:00"
+   }
+  },
+  {
+   "family": "umpire_zone_claims",
+   "sport": "mlb",
+   "n_claims": 1,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-05T05:43:33.827243+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1,
+    "n_verified": 1,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-09T00:11:46.161095+00:00"
+   }
+  },
+  {
+   "family": "wnba_lineup_exposure_claims",
+   "sport": "wnba",
+   "n_claims": 1,
+   "kind_sample": "ranking",
+   "mtime": "2026-07-09T06:11:57.613029+00:00",
+   "has_validation_sidecar": true,
+   "validation": {
+    "n_claims": 1,
+    "n_verified": 1,
+    "n_mismatch": 0,
+    "n_unverifiable": 0,
+    "edge_claimed": false,
+    "generated_at": "2026-07-09T17:36:12.541473+00:00"
+   }
+  }
+ ]
+}

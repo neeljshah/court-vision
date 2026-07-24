@@ -1,0 +1,120 @@
+{
+ "status": "ok",
+ "sport": "tennis",
+ "caveat": "CALIBRATION only (held-out Brier / Diebold-Mariano test) -- never a market edge or $ claim. vs_close comparison, if any, is stated explicitly per block.",
+ "note": "tennis has a served live model but no ingame_grade_joined corpus locally -- this showcase surfaces the two REAL preregistered gate receipts that ARE present (pregame cross-corpus + ingame surface-context detail layer), not a recomputed ingame_grade summary.",
+ "pregame_prior_cross_corpus": {
+  "status": "ok",
+  "source": "data/frontend/ingame/gate_tennis.json",
+  "layer": "pregame_prior",
+  "design": "true cross-corpus A<->B; DM clustered by game_id",
+  "base_model": "sigmoid((a+b*frac_elapsed)*state_diff); a,b FIT per corpus",
+  "verdict": "REPLICATED",
+  "vs_close": "UNPROVEN -- CALIBRATION only (held-out Brier), not a market edge",
+  "coverage": {
+   "a_games": 29572,
+   "a_states": 40516,
+   "b_games": 11016,
+   "b_states": 14559
+  },
+  "directions": {
+   "atp_train_wta_test": {
+    "n_train_states": 14559,
+    "n_test_states": 40516,
+    "brier_base": 0.1698,
+    "brier_prior": 0.1597,
+    "brier_delta": 0.01005,
+    "dm_p": 0.0,
+    "prior_beats_base": true
+   },
+   "wta_train_atp_test": {
+    "n_train_states": 40516,
+    "n_test_states": 14559,
+    "brier_base": 0.155,
+    "brier_prior": 0.1432,
+    "brier_delta": 0.01184,
+    "dm_p": 0.0,
+    "prior_beats_base": true
+   }
+  },
+  "caveats": [
+   "True cross-corpus: BASE slope (a,b) and blend surface w fit on the WHOLE train corpus, tested on the held-out OTHER corpus -- leak-free by construction.",
+   "BASE slope FIT per corpus (scale-normalized) -- works for run/goal/point-diff; NO basketball constant.",
+   "DM clustered by game_id -- per-state iid SE would over-state significance.",
+   "No in-play odds -> verdict is CALIBRATION (held-out Brier) vs a (state,time) BASE, never a market edge. No $ anywhere."
+  ]
+ },
+ "ingame_surface_context": {
+  "status": "ok",
+  "source": "data/frontend/ingame/surface_hold_verdict.json",
+  "layer": "ingame_detail",
+  "design": "surface-specific vs surface-blind hold prior",
+  "base_model": "sigmoid((a+b*frac_elapsed)*state_diff)",
+  "verdict": "REJECT",
+  "reason": "surface-specific hold prior does not beat surface-blind on either tour.",
+  "vs_close": "UNPROVEN -- CALIBRATION only (held-out Brier), not a market edge",
+  "planted_null_dies": true,
+  "tours": {
+   "atp": {
+    "n_states_joined": 40516,
+    "pooled_brier_h0_blind": 0.165397,
+    "pooled_brier_h1_surface": 0.165518,
+    "pooled_delta_h1_minus_h0": 0.000121,
+    "sign_holds_ge_2of3": false,
+    "n_folds": [
+     {
+      "fold": 0,
+      "n_test": 8780,
+      "brier_h0": 0.166648,
+      "brier_h1": 0.166744,
+      "dm_p": 0.839017
+     },
+     {
+      "fold": 1,
+      "n_test": 8780,
+      "brier_h0": 0.163305,
+      "brier_h1": 0.163347,
+      "dm_p": 0.92113
+     },
+     {
+      "fold": 2,
+      "n_test": 8780,
+      "brier_h0": 0.166239,
+      "brier_h1": 0.166463,
+      "dm_p": 0.607072
+     }
+    ]
+   },
+   "wta": {
+    "n_states_joined": 14559,
+    "pooled_brier_h0_blind": 0.150561,
+    "pooled_brier_h1_surface": 0.153053,
+    "pooled_delta_h1_minus_h0": 0.002492,
+    "sign_holds_ge_2of3": false,
+    "n_folds": [
+     {
+      "fold": 0,
+      "n_test": 2646,
+      "brier_h0": 0.148274,
+      "brier_h1": 0.149926,
+      "dm_p": 0.115565
+     },
+     {
+      "fold": 1,
+      "n_test": 2645,
+      "brier_h0": 0.151989,
+      "brier_h1": 0.15437,
+      "dm_p": 0.0117
+     },
+     {
+      "fold": 2,
+      "n_test": 2646,
+      "brier_h0": 0.151421,
+      "brier_h1": 0.154863,
+      "dm_p": 0.000188
+     }
+    ]
+   }
+  }
+ }
+}

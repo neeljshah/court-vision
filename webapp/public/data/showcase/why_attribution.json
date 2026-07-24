@@ -1,0 +1,2416 @@
+{
+ "edge_claimed": false,
+ "source_artifact": "out/state_conditioned_calibration.json",
+ "method": "For each adjacent-time state transition A->B (source==model buckets, n>=30), attribute win-prob impact as mean_y(B) - mean_y(A) where mean_y is the state's calibrated realized win rate.",
+ "assumptions": [
+  "mean_y (realized win rate per bucket) is the state's calibrated win prob.",
+  "Transitions restricted to consecutive time buckets; no skipping.",
+  "Not observed transition frequencies -- the win-prob DIFFERENCE between two states.",
+  "Buckets thinner than n=30 are dropped (noisy mean_y)."
+ ],
+ "sports": {
+  "mlb": {
+   "n_transitions": 40,
+   "transitions": [
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "early(inn1-3)",
+      "prob": ".2-.4",
+      "mean_y": 0.3596,
+      "n": 2458
+     },
+     "to": {
+      "time": "mid(inn4-6)",
+      "prob": "0-.2",
+      "mean_y": 0.2063,
+      "n": 2079
+     },
+     "winprob_delta": -0.1533,
+     "min_support_n": 2079
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "early(inn1-3)",
+      "prob": ".2-.4",
+      "mean_y": 0.3596,
+      "n": 2458
+     },
+     "to": {
+      "time": "mid(inn4-6)",
+      "prob": ".2-.4",
+      "mean_y": 0.2692,
+      "n": 4413
+     },
+     "winprob_delta": -0.0904,
+     "min_support_n": 2458
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "early(inn1-3)",
+      "prob": ".2-.4",
+      "mean_y": 0.3596,
+      "n": 2458
+     },
+     "to": {
+      "time": "mid(inn4-6)",
+      "prob": ".4-.6",
+      "mean_y": 0.4791,
+      "n": 4872
+     },
+     "winprob_delta": 0.1195,
+     "min_support_n": 2458
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "early(inn1-3)",
+      "prob": ".2-.4",
+      "mean_y": 0.3596,
+      "n": 2458
+     },
+     "to": {
+      "time": "mid(inn4-6)",
+      "prob": ".6-.8",
+      "mean_y": 0.6417,
+      "n": 4683
+     },
+     "winprob_delta": 0.2821,
+     "min_support_n": 2458
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "early(inn1-3)",
+      "prob": ".2-.4",
+      "mean_y": 0.3596,
+      "n": 2458
+     },
+     "to": {
+      "time": "mid(inn4-6)",
+      "prob": ".8-1",
+      "mean_y": 0.7671,
+      "n": 2718
+     },
+     "winprob_delta": 0.4075,
+     "min_support_n": 2458
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "early(inn1-3)",
+      "prob": ".4-.6",
+      "mean_y": 0.456,
+      "n": 12344
+     },
+     "to": {
+      "time": "mid(inn4-6)",
+      "prob": "0-.2",
+      "mean_y": 0.2063,
+      "n": 2079
+     },
+     "winprob_delta": -0.2497,
+     "min_support_n": 2079
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "early(inn1-3)",
+      "prob": ".4-.6",
+      "mean_y": 0.456,
+      "n": 12344
+     },
+     "to": {
+      "time": "mid(inn4-6)",
+      "prob": ".2-.4",
+      "mean_y": 0.2692,
+      "n": 4413
+     },
+     "winprob_delta": -0.1868,
+     "min_support_n": 4413
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "early(inn1-3)",
+      "prob": ".4-.6",
+      "mean_y": 0.456,
+      "n": 12344
+     },
+     "to": {
+      "time": "mid(inn4-6)",
+      "prob": ".4-.6",
+      "mean_y": 0.4791,
+      "n": 4872
+     },
+     "winprob_delta": 0.0231,
+     "min_support_n": 4872
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "early(inn1-3)",
+      "prob": ".4-.6",
+      "mean_y": 0.456,
+      "n": 12344
+     },
+     "to": {
+      "time": "mid(inn4-6)",
+      "prob": ".6-.8",
+      "mean_y": 0.6417,
+      "n": 4683
+     },
+     "winprob_delta": 0.1857,
+     "min_support_n": 4683
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "early(inn1-3)",
+      "prob": ".4-.6",
+      "mean_y": 0.456,
+      "n": 12344
+     },
+     "to": {
+      "time": "mid(inn4-6)",
+      "prob": ".8-1",
+      "mean_y": 0.7671,
+      "n": 2718
+     },
+     "winprob_delta": 0.3111,
+     "min_support_n": 2718
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "early(inn1-3)",
+      "prob": ".6-.8",
+      "mean_y": 0.5383,
+      "n": 5098
+     },
+     "to": {
+      "time": "mid(inn4-6)",
+      "prob": "0-.2",
+      "mean_y": 0.2063,
+      "n": 2079
+     },
+     "winprob_delta": -0.332,
+     "min_support_n": 2079
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "early(inn1-3)",
+      "prob": ".6-.8",
+      "mean_y": 0.5383,
+      "n": 5098
+     },
+     "to": {
+      "time": "mid(inn4-6)",
+      "prob": ".2-.4",
+      "mean_y": 0.2692,
+      "n": 4413
+     },
+     "winprob_delta": -0.2691,
+     "min_support_n": 4413
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "early(inn1-3)",
+      "prob": ".6-.8",
+      "mean_y": 0.5383,
+      "n": 5098
+     },
+     "to": {
+      "time": "mid(inn4-6)",
+      "prob": ".4-.6",
+      "mean_y": 0.4791,
+      "n": 4872
+     },
+     "winprob_delta": -0.0592,
+     "min_support_n": 4872
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "early(inn1-3)",
+      "prob": ".6-.8",
+      "mean_y": 0.5383,
+      "n": 5098
+     },
+     "to": {
+      "time": "mid(inn4-6)",
+      "prob": ".6-.8",
+      "mean_y": 0.6417,
+      "n": 4683
+     },
+     "winprob_delta": 0.1034,
+     "min_support_n": 4683
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "early(inn1-3)",
+      "prob": ".6-.8",
+      "mean_y": 0.5383,
+      "n": 5098
+     },
+     "to": {
+      "time": "mid(inn4-6)",
+      "prob": ".8-1",
+      "mean_y": 0.7671,
+      "n": 2718
+     },
+     "winprob_delta": 0.2288,
+     "min_support_n": 2718
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "mid(inn4-6)",
+      "prob": "0-.2",
+      "mean_y": 0.2063,
+      "n": 2079
+     },
+     "to": {
+      "time": "late(inn7+)",
+      "prob": "0-.2",
+      "mean_y": 0.2276,
+      "n": 5431
+     },
+     "winprob_delta": 0.0213,
+     "min_support_n": 2079
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "mid(inn4-6)",
+      "prob": "0-.2",
+      "mean_y": 0.2063,
+      "n": 2079
+     },
+     "to": {
+      "time": "late(inn7+)",
+      "prob": ".2-.4",
+      "mean_y": 0.2313,
+      "n": 951
+     },
+     "winprob_delta": 0.025,
+     "min_support_n": 951
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "mid(inn4-6)",
+      "prob": "0-.2",
+      "mean_y": 0.2063,
+      "n": 2079
+     },
+     "to": {
+      "time": "late(inn7+)",
+      "prob": ".4-.6",
+      "mean_y": 0.4846,
+      "n": 1395
+     },
+     "winprob_delta": 0.2783,
+     "min_support_n": 1395
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "mid(inn4-6)",
+      "prob": "0-.2",
+      "mean_y": 0.2063,
+      "n": 2079
+     },
+     "to": {
+      "time": "late(inn7+)",
+      "prob": ".6-.8",
+      "mean_y": 0.6761,
+      "n": 1167
+     },
+     "winprob_delta": 0.4698,
+     "min_support_n": 1167
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "mid(inn4-6)",
+      "prob": "0-.2",
+      "mean_y": 0.2063,
+      "n": 2079
+     },
+     "to": {
+      "time": "late(inn7+)",
+      "prob": ".8-1",
+      "mean_y": 0.6853,
+      "n": 5037
+     },
+     "winprob_delta": 0.479,
+     "min_support_n": 2079
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "mid(inn4-6)",
+      "prob": ".2-.4",
+      "mean_y": 0.2692,
+      "n": 4413
+     },
+     "to": {
+      "time": "late(inn7+)",
+      "prob": "0-.2",
+      "mean_y": 0.2276,
+      "n": 5431
+     },
+     "winprob_delta": -0.0416,
+     "min_support_n": 4413
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "mid(inn4-6)",
+      "prob": ".2-.4",
+      "mean_y": 0.2692,
+      "n": 4413
+     },
+     "to": {
+      "time": "late(inn7+)",
+      "prob": ".2-.4",
+      "mean_y": 0.2313,
+      "n": 951
+     },
+     "winprob_delta": -0.0379,
+     "min_support_n": 951
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "mid(inn4-6)",
+      "prob": ".2-.4",
+      "mean_y": 0.2692,
+      "n": 4413
+     },
+     "to": {
+      "time": "late(inn7+)",
+      "prob": ".4-.6",
+      "mean_y": 0.4846,
+      "n": 1395
+     },
+     "winprob_delta": 0.2154,
+     "min_support_n": 1395
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "mid(inn4-6)",
+      "prob": ".2-.4",
+      "mean_y": 0.2692,
+      "n": 4413
+     },
+     "to": {
+      "time": "late(inn7+)",
+      "prob": ".6-.8",
+      "mean_y": 0.6761,
+      "n": 1167
+     },
+     "winprob_delta": 0.4069,
+     "min_support_n": 1167
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "mid(inn4-6)",
+      "prob": ".2-.4",
+      "mean_y": 0.2692,
+      "n": 4413
+     },
+     "to": {
+      "time": "late(inn7+)",
+      "prob": ".8-1",
+      "mean_y": 0.6853,
+      "n": 5037
+     },
+     "winprob_delta": 0.4161,
+     "min_support_n": 4413
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "mid(inn4-6)",
+      "prob": ".4-.6",
+      "mean_y": 0.4791,
+      "n": 4872
+     },
+     "to": {
+      "time": "late(inn7+)",
+      "prob": "0-.2",
+      "mean_y": 0.2276,
+      "n": 5431
+     },
+     "winprob_delta": -0.2515,
+     "min_support_n": 4872
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "mid(inn4-6)",
+      "prob": ".4-.6",
+      "mean_y": 0.4791,
+      "n": 4872
+     },
+     "to": {
+      "time": "late(inn7+)",
+      "prob": ".2-.4",
+      "mean_y": 0.2313,
+      "n": 951
+     },
+     "winprob_delta": -0.2478,
+     "min_support_n": 951
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "mid(inn4-6)",
+      "prob": ".4-.6",
+      "mean_y": 0.4791,
+      "n": 4872
+     },
+     "to": {
+      "time": "late(inn7+)",
+      "prob": ".4-.6",
+      "mean_y": 0.4846,
+      "n": 1395
+     },
+     "winprob_delta": 0.0055,
+     "min_support_n": 1395
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "mid(inn4-6)",
+      "prob": ".4-.6",
+      "mean_y": 0.4791,
+      "n": 4872
+     },
+     "to": {
+      "time": "late(inn7+)",
+      "prob": ".6-.8",
+      "mean_y": 0.6761,
+      "n": 1167
+     },
+     "winprob_delta": 0.197,
+     "min_support_n": 1167
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "mid(inn4-6)",
+      "prob": ".4-.6",
+      "mean_y": 0.4791,
+      "n": 4872
+     },
+     "to": {
+      "time": "late(inn7+)",
+      "prob": ".8-1",
+      "mean_y": 0.6853,
+      "n": 5037
+     },
+     "winprob_delta": 0.2062,
+     "min_support_n": 4872
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "mid(inn4-6)",
+      "prob": ".6-.8",
+      "mean_y": 0.6417,
+      "n": 4683
+     },
+     "to": {
+      "time": "late(inn7+)",
+      "prob": "0-.2",
+      "mean_y": 0.2276,
+      "n": 5431
+     },
+     "winprob_delta": -0.4141,
+     "min_support_n": 4683
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "mid(inn4-6)",
+      "prob": ".6-.8",
+      "mean_y": 0.6417,
+      "n": 4683
+     },
+     "to": {
+      "time": "late(inn7+)",
+      "prob": ".2-.4",
+      "mean_y": 0.2313,
+      "n": 951
+     },
+     "winprob_delta": -0.4104,
+     "min_support_n": 951
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "mid(inn4-6)",
+      "prob": ".6-.8",
+      "mean_y": 0.6417,
+      "n": 4683
+     },
+     "to": {
+      "time": "late(inn7+)",
+      "prob": ".4-.6",
+      "mean_y": 0.4846,
+      "n": 1395
+     },
+     "winprob_delta": -0.1571,
+     "min_support_n": 1395
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "mid(inn4-6)",
+      "prob": ".6-.8",
+      "mean_y": 0.6417,
+      "n": 4683
+     },
+     "to": {
+      "time": "late(inn7+)",
+      "prob": ".6-.8",
+      "mean_y": 0.6761,
+      "n": 1167
+     },
+     "winprob_delta": 0.0344,
+     "min_support_n": 1167
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "mid(inn4-6)",
+      "prob": ".6-.8",
+      "mean_y": 0.6417,
+      "n": 4683
+     },
+     "to": {
+      "time": "late(inn7+)",
+      "prob": ".8-1",
+      "mean_y": 0.6853,
+      "n": 5037
+     },
+     "winprob_delta": 0.0436,
+     "min_support_n": 4683
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "mid(inn4-6)",
+      "prob": ".8-1",
+      "mean_y": 0.7671,
+      "n": 2718
+     },
+     "to": {
+      "time": "late(inn7+)",
+      "prob": "0-.2",
+      "mean_y": 0.2276,
+      "n": 5431
+     },
+     "winprob_delta": -0.5395,
+     "min_support_n": 2718
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "mid(inn4-6)",
+      "prob": ".8-1",
+      "mean_y": 0.7671,
+      "n": 2718
+     },
+     "to": {
+      "time": "late(inn7+)",
+      "prob": ".2-.4",
+      "mean_y": 0.2313,
+      "n": 951
+     },
+     "winprob_delta": -0.5358,
+     "min_support_n": 951
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "mid(inn4-6)",
+      "prob": ".8-1",
+      "mean_y": 0.7671,
+      "n": 2718
+     },
+     "to": {
+      "time": "late(inn7+)",
+      "prob": ".4-.6",
+      "mean_y": 0.4846,
+      "n": 1395
+     },
+     "winprob_delta": -0.2825,
+     "min_support_n": 1395
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "mid(inn4-6)",
+      "prob": ".8-1",
+      "mean_y": 0.7671,
+      "n": 2718
+     },
+     "to": {
+      "time": "late(inn7+)",
+      "prob": ".6-.8",
+      "mean_y": 0.6761,
+      "n": 1167
+     },
+     "winprob_delta": -0.091,
+     "min_support_n": 1167
+    },
+    {
+     "sport": "mlb",
+     "from": {
+      "time": "mid(inn4-6)",
+      "prob": ".8-1",
+      "mean_y": 0.7671,
+      "n": 2718
+     },
+     "to": {
+      "time": "late(inn7+)",
+      "prob": ".8-1",
+      "mean_y": 0.6853,
+      "n": 5037
+     },
+     "winprob_delta": -0.0818,
+     "min_support_n": 2718
+    }
+   ]
+  },
+  "soccer_intl": {
+   "n_transitions": 80,
+   "transitions": [
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "0-15",
+      "prob": "0-.2",
+      "mean_y": 0.3899,
+      "n": 109
+     },
+     "to": {
+      "time": "15-30",
+      "prob": "0-.2",
+      "mean_y": 0.5682,
+      "n": 176
+     },
+     "winprob_delta": 0.1783,
+     "min_support_n": 109
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "0-15",
+      "prob": "0-.2",
+      "mean_y": 0.3899,
+      "n": 109
+     },
+     "to": {
+      "time": "15-30",
+      "prob": ".2-.4",
+      "mean_y": 0.5353,
+      "n": 255
+     },
+     "winprob_delta": 0.1454,
+     "min_support_n": 109
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "0-15",
+      "prob": "0-.2",
+      "mean_y": 0.3899,
+      "n": 109
+     },
+     "to": {
+      "time": "15-30",
+      "prob": ".4-.6",
+      "mean_y": 1.0,
+      "n": 120
+     },
+     "winprob_delta": 0.6101,
+     "min_support_n": 109
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "0-15",
+      "prob": "0-.2",
+      "mean_y": 0.3899,
+      "n": 109
+     },
+     "to": {
+      "time": "15-30",
+      "prob": ".6-.8",
+      "mean_y": 0.7905,
+      "n": 74
+     },
+     "winprob_delta": 0.4006,
+     "min_support_n": 74
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "0-15",
+      "prob": "0-.2",
+      "mean_y": 0.3899,
+      "n": 109
+     },
+     "to": {
+      "time": "15-30",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 41
+     },
+     "winprob_delta": 0.6101,
+     "min_support_n": 41
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "0-15",
+      "prob": ".2-.4",
+      "mean_y": 0.5677,
+      "n": 288
+     },
+     "to": {
+      "time": "15-30",
+      "prob": "0-.2",
+      "mean_y": 0.5682,
+      "n": 176
+     },
+     "winprob_delta": 0.0005,
+     "min_support_n": 176
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "0-15",
+      "prob": ".2-.4",
+      "mean_y": 0.5677,
+      "n": 288
+     },
+     "to": {
+      "time": "15-30",
+      "prob": ".2-.4",
+      "mean_y": 0.5353,
+      "n": 255
+     },
+     "winprob_delta": -0.0324,
+     "min_support_n": 255
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "0-15",
+      "prob": ".2-.4",
+      "mean_y": 0.5677,
+      "n": 288
+     },
+     "to": {
+      "time": "15-30",
+      "prob": ".4-.6",
+      "mean_y": 1.0,
+      "n": 120
+     },
+     "winprob_delta": 0.4323,
+     "min_support_n": 120
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "0-15",
+      "prob": ".2-.4",
+      "mean_y": 0.5677,
+      "n": 288
+     },
+     "to": {
+      "time": "15-30",
+      "prob": ".6-.8",
+      "mean_y": 0.7905,
+      "n": 74
+     },
+     "winprob_delta": 0.2228,
+     "min_support_n": 74
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "0-15",
+      "prob": ".2-.4",
+      "mean_y": 0.5677,
+      "n": 288
+     },
+     "to": {
+      "time": "15-30",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 41
+     },
+     "winprob_delta": 0.4323,
+     "min_support_n": 41
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "0-15",
+      "prob": ".4-.6",
+      "mean_y": 1.0,
+      "n": 158
+     },
+     "to": {
+      "time": "15-30",
+      "prob": "0-.2",
+      "mean_y": 0.5682,
+      "n": 176
+     },
+     "winprob_delta": -0.4318,
+     "min_support_n": 158
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "0-15",
+      "prob": ".4-.6",
+      "mean_y": 1.0,
+      "n": 158
+     },
+     "to": {
+      "time": "15-30",
+      "prob": ".2-.4",
+      "mean_y": 0.5353,
+      "n": 255
+     },
+     "winprob_delta": -0.4647,
+     "min_support_n": 158
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "0-15",
+      "prob": ".4-.6",
+      "mean_y": 1.0,
+      "n": 158
+     },
+     "to": {
+      "time": "15-30",
+      "prob": ".4-.6",
+      "mean_y": 1.0,
+      "n": 120
+     },
+     "winprob_delta": 0.0,
+     "min_support_n": 120
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "0-15",
+      "prob": ".4-.6",
+      "mean_y": 1.0,
+      "n": 158
+     },
+     "to": {
+      "time": "15-30",
+      "prob": ".6-.8",
+      "mean_y": 0.7905,
+      "n": 74
+     },
+     "winprob_delta": -0.2095,
+     "min_support_n": 74
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "0-15",
+      "prob": ".4-.6",
+      "mean_y": 1.0,
+      "n": 158
+     },
+     "to": {
+      "time": "15-30",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 41
+     },
+     "winprob_delta": 0.0,
+     "min_support_n": 41
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "0-15",
+      "prob": ".6-.8",
+      "mean_y": 0.8043,
+      "n": 69
+     },
+     "to": {
+      "time": "15-30",
+      "prob": "0-.2",
+      "mean_y": 0.5682,
+      "n": 176
+     },
+     "winprob_delta": -0.2361,
+     "min_support_n": 69
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "0-15",
+      "prob": ".6-.8",
+      "mean_y": 0.8043,
+      "n": 69
+     },
+     "to": {
+      "time": "15-30",
+      "prob": ".2-.4",
+      "mean_y": 0.5353,
+      "n": 255
+     },
+     "winprob_delta": -0.269,
+     "min_support_n": 69
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "0-15",
+      "prob": ".6-.8",
+      "mean_y": 0.8043,
+      "n": 69
+     },
+     "to": {
+      "time": "15-30",
+      "prob": ".4-.6",
+      "mean_y": 1.0,
+      "n": 120
+     },
+     "winprob_delta": 0.1957,
+     "min_support_n": 69
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "0-15",
+      "prob": ".6-.8",
+      "mean_y": 0.8043,
+      "n": 69
+     },
+     "to": {
+      "time": "15-30",
+      "prob": ".6-.8",
+      "mean_y": 0.7905,
+      "n": 74
+     },
+     "winprob_delta": -0.0138,
+     "min_support_n": 69
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "0-15",
+      "prob": ".6-.8",
+      "mean_y": 0.8043,
+      "n": 69
+     },
+     "to": {
+      "time": "15-30",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 41
+     },
+     "winprob_delta": 0.1957,
+     "min_support_n": 41
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "15-30",
+      "prob": "0-.2",
+      "mean_y": 0.5682,
+      "n": 176
+     },
+     "to": {
+      "time": "30-45",
+      "prob": "0-.2",
+      "mean_y": 0.6534,
+      "n": 264
+     },
+     "winprob_delta": 0.0852,
+     "min_support_n": 176
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "15-30",
+      "prob": "0-.2",
+      "mean_y": 0.5682,
+      "n": 176
+     },
+     "to": {
+      "time": "30-45",
+      "prob": ".2-.4",
+      "mean_y": 0.2317,
+      "n": 123
+     },
+     "winprob_delta": -0.3365,
+     "min_support_n": 123
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "15-30",
+      "prob": "0-.2",
+      "mean_y": 0.5682,
+      "n": 176
+     },
+     "to": {
+      "time": "30-45",
+      "prob": ".4-.6",
+      "mean_y": 0.9,
+      "n": 130
+     },
+     "winprob_delta": 0.3318,
+     "min_support_n": 130
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "15-30",
+      "prob": "0-.2",
+      "mean_y": 0.5682,
+      "n": 176
+     },
+     "to": {
+      "time": "30-45",
+      "prob": ".6-.8",
+      "mean_y": 0.8056,
+      "n": 36
+     },
+     "winprob_delta": 0.2374,
+     "min_support_n": 36
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "15-30",
+      "prob": "0-.2",
+      "mean_y": 0.5682,
+      "n": 176
+     },
+     "to": {
+      "time": "30-45",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 75
+     },
+     "winprob_delta": 0.4318,
+     "min_support_n": 75
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "15-30",
+      "prob": ".2-.4",
+      "mean_y": 0.5353,
+      "n": 255
+     },
+     "to": {
+      "time": "30-45",
+      "prob": "0-.2",
+      "mean_y": 0.6534,
+      "n": 264
+     },
+     "winprob_delta": 0.1181,
+     "min_support_n": 255
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "15-30",
+      "prob": ".2-.4",
+      "mean_y": 0.5353,
+      "n": 255
+     },
+     "to": {
+      "time": "30-45",
+      "prob": ".2-.4",
+      "mean_y": 0.2317,
+      "n": 123
+     },
+     "winprob_delta": -0.3036,
+     "min_support_n": 123
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "15-30",
+      "prob": ".2-.4",
+      "mean_y": 0.5353,
+      "n": 255
+     },
+     "to": {
+      "time": "30-45",
+      "prob": ".4-.6",
+      "mean_y": 0.9,
+      "n": 130
+     },
+     "winprob_delta": 0.3647,
+     "min_support_n": 130
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "15-30",
+      "prob": ".2-.4",
+      "mean_y": 0.5353,
+      "n": 255
+     },
+     "to": {
+      "time": "30-45",
+      "prob": ".6-.8",
+      "mean_y": 0.8056,
+      "n": 36
+     },
+     "winprob_delta": 0.2703,
+     "min_support_n": 36
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "15-30",
+      "prob": ".2-.4",
+      "mean_y": 0.5353,
+      "n": 255
+     },
+     "to": {
+      "time": "30-45",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 75
+     },
+     "winprob_delta": 0.4647,
+     "min_support_n": 75
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "15-30",
+      "prob": ".4-.6",
+      "mean_y": 1.0,
+      "n": 120
+     },
+     "to": {
+      "time": "30-45",
+      "prob": "0-.2",
+      "mean_y": 0.6534,
+      "n": 264
+     },
+     "winprob_delta": -0.3466,
+     "min_support_n": 120
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "15-30",
+      "prob": ".4-.6",
+      "mean_y": 1.0,
+      "n": 120
+     },
+     "to": {
+      "time": "30-45",
+      "prob": ".2-.4",
+      "mean_y": 0.2317,
+      "n": 123
+     },
+     "winprob_delta": -0.7683,
+     "min_support_n": 120
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "15-30",
+      "prob": ".4-.6",
+      "mean_y": 1.0,
+      "n": 120
+     },
+     "to": {
+      "time": "30-45",
+      "prob": ".4-.6",
+      "mean_y": 0.9,
+      "n": 130
+     },
+     "winprob_delta": -0.1,
+     "min_support_n": 120
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "15-30",
+      "prob": ".4-.6",
+      "mean_y": 1.0,
+      "n": 120
+     },
+     "to": {
+      "time": "30-45",
+      "prob": ".6-.8",
+      "mean_y": 0.8056,
+      "n": 36
+     },
+     "winprob_delta": -0.1944,
+     "min_support_n": 36
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "15-30",
+      "prob": ".4-.6",
+      "mean_y": 1.0,
+      "n": 120
+     },
+     "to": {
+      "time": "30-45",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 75
+     },
+     "winprob_delta": 0.0,
+     "min_support_n": 75
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "15-30",
+      "prob": ".6-.8",
+      "mean_y": 0.7905,
+      "n": 74
+     },
+     "to": {
+      "time": "30-45",
+      "prob": "0-.2",
+      "mean_y": 0.6534,
+      "n": 264
+     },
+     "winprob_delta": -0.1371,
+     "min_support_n": 74
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "15-30",
+      "prob": ".6-.8",
+      "mean_y": 0.7905,
+      "n": 74
+     },
+     "to": {
+      "time": "30-45",
+      "prob": ".2-.4",
+      "mean_y": 0.2317,
+      "n": 123
+     },
+     "winprob_delta": -0.5588,
+     "min_support_n": 74
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "15-30",
+      "prob": ".6-.8",
+      "mean_y": 0.7905,
+      "n": 74
+     },
+     "to": {
+      "time": "30-45",
+      "prob": ".4-.6",
+      "mean_y": 0.9,
+      "n": 130
+     },
+     "winprob_delta": 0.1095,
+     "min_support_n": 74
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "15-30",
+      "prob": ".6-.8",
+      "mean_y": 0.7905,
+      "n": 74
+     },
+     "to": {
+      "time": "30-45",
+      "prob": ".6-.8",
+      "mean_y": 0.8056,
+      "n": 36
+     },
+     "winprob_delta": 0.0151,
+     "min_support_n": 36
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "15-30",
+      "prob": ".6-.8",
+      "mean_y": 0.7905,
+      "n": 74
+     },
+     "to": {
+      "time": "30-45",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 75
+     },
+     "winprob_delta": 0.2095,
+     "min_support_n": 74
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "15-30",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 41
+     },
+     "to": {
+      "time": "30-45",
+      "prob": "0-.2",
+      "mean_y": 0.6534,
+      "n": 264
+     },
+     "winprob_delta": -0.3466,
+     "min_support_n": 41
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "15-30",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 41
+     },
+     "to": {
+      "time": "30-45",
+      "prob": ".2-.4",
+      "mean_y": 0.2317,
+      "n": 123
+     },
+     "winprob_delta": -0.7683,
+     "min_support_n": 41
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "15-30",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 41
+     },
+     "to": {
+      "time": "30-45",
+      "prob": ".4-.6",
+      "mean_y": 0.9,
+      "n": 130
+     },
+     "winprob_delta": -0.1,
+     "min_support_n": 41
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "15-30",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 41
+     },
+     "to": {
+      "time": "30-45",
+      "prob": ".6-.8",
+      "mean_y": 0.8056,
+      "n": 36
+     },
+     "winprob_delta": -0.1944,
+     "min_support_n": 36
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "15-30",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 41
+     },
+     "to": {
+      "time": "30-45",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 75
+     },
+     "winprob_delta": 0.0,
+     "min_support_n": 41
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "30-45",
+      "prob": "0-.2",
+      "mean_y": 0.6534,
+      "n": 264
+     },
+     "to": {
+      "time": "45-60",
+      "prob": "0-.2",
+      "mean_y": 0.5721,
+      "n": 416
+     },
+     "winprob_delta": -0.0813,
+     "min_support_n": 264
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "30-45",
+      "prob": "0-.2",
+      "mean_y": 0.6534,
+      "n": 264
+     },
+     "to": {
+      "time": "45-60",
+      "prob": ".2-.4",
+      "mean_y": 0.4698,
+      "n": 232
+     },
+     "winprob_delta": -0.1836,
+     "min_support_n": 232
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "30-45",
+      "prob": "0-.2",
+      "mean_y": 0.6534,
+      "n": 264
+     },
+     "to": {
+      "time": "45-60",
+      "prob": ".6-.8",
+      "mean_y": 0.9825,
+      "n": 57
+     },
+     "winprob_delta": 0.3291,
+     "min_support_n": 57
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "30-45",
+      "prob": "0-.2",
+      "mean_y": 0.6534,
+      "n": 264
+     },
+     "to": {
+      "time": "45-60",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 123
+     },
+     "winprob_delta": 0.3466,
+     "min_support_n": 123
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "30-45",
+      "prob": ".2-.4",
+      "mean_y": 0.2317,
+      "n": 123
+     },
+     "to": {
+      "time": "45-60",
+      "prob": "0-.2",
+      "mean_y": 0.5721,
+      "n": 416
+     },
+     "winprob_delta": 0.3404,
+     "min_support_n": 123
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "30-45",
+      "prob": ".2-.4",
+      "mean_y": 0.2317,
+      "n": 123
+     },
+     "to": {
+      "time": "45-60",
+      "prob": ".2-.4",
+      "mean_y": 0.4698,
+      "n": 232
+     },
+     "winprob_delta": 0.2381,
+     "min_support_n": 123
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "30-45",
+      "prob": ".2-.4",
+      "mean_y": 0.2317,
+      "n": 123
+     },
+     "to": {
+      "time": "45-60",
+      "prob": ".6-.8",
+      "mean_y": 0.9825,
+      "n": 57
+     },
+     "winprob_delta": 0.7508,
+     "min_support_n": 57
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "30-45",
+      "prob": ".2-.4",
+      "mean_y": 0.2317,
+      "n": 123
+     },
+     "to": {
+      "time": "45-60",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 123
+     },
+     "winprob_delta": 0.7683,
+     "min_support_n": 123
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "30-45",
+      "prob": ".4-.6",
+      "mean_y": 0.9,
+      "n": 130
+     },
+     "to": {
+      "time": "45-60",
+      "prob": "0-.2",
+      "mean_y": 0.5721,
+      "n": 416
+     },
+     "winprob_delta": -0.3279,
+     "min_support_n": 130
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "30-45",
+      "prob": ".4-.6",
+      "mean_y": 0.9,
+      "n": 130
+     },
+     "to": {
+      "time": "45-60",
+      "prob": ".2-.4",
+      "mean_y": 0.4698,
+      "n": 232
+     },
+     "winprob_delta": -0.4302,
+     "min_support_n": 130
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "30-45",
+      "prob": ".4-.6",
+      "mean_y": 0.9,
+      "n": 130
+     },
+     "to": {
+      "time": "45-60",
+      "prob": ".6-.8",
+      "mean_y": 0.9825,
+      "n": 57
+     },
+     "winprob_delta": 0.0825,
+     "min_support_n": 57
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "30-45",
+      "prob": ".4-.6",
+      "mean_y": 0.9,
+      "n": 130
+     },
+     "to": {
+      "time": "45-60",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 123
+     },
+     "winprob_delta": 0.1,
+     "min_support_n": 123
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "30-45",
+      "prob": ".6-.8",
+      "mean_y": 0.8056,
+      "n": 36
+     },
+     "to": {
+      "time": "45-60",
+      "prob": "0-.2",
+      "mean_y": 0.5721,
+      "n": 416
+     },
+     "winprob_delta": -0.2335,
+     "min_support_n": 36
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "30-45",
+      "prob": ".6-.8",
+      "mean_y": 0.8056,
+      "n": 36
+     },
+     "to": {
+      "time": "45-60",
+      "prob": ".2-.4",
+      "mean_y": 0.4698,
+      "n": 232
+     },
+     "winprob_delta": -0.3358,
+     "min_support_n": 36
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "30-45",
+      "prob": ".6-.8",
+      "mean_y": 0.8056,
+      "n": 36
+     },
+     "to": {
+      "time": "45-60",
+      "prob": ".6-.8",
+      "mean_y": 0.9825,
+      "n": 57
+     },
+     "winprob_delta": 0.1769,
+     "min_support_n": 36
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "30-45",
+      "prob": ".6-.8",
+      "mean_y": 0.8056,
+      "n": 36
+     },
+     "to": {
+      "time": "45-60",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 123
+     },
+     "winprob_delta": 0.1944,
+     "min_support_n": 36
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "30-45",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 75
+     },
+     "to": {
+      "time": "45-60",
+      "prob": "0-.2",
+      "mean_y": 0.5721,
+      "n": 416
+     },
+     "winprob_delta": -0.4279,
+     "min_support_n": 75
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "30-45",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 75
+     },
+     "to": {
+      "time": "45-60",
+      "prob": ".2-.4",
+      "mean_y": 0.4698,
+      "n": 232
+     },
+     "winprob_delta": -0.5302,
+     "min_support_n": 75
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "30-45",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 75
+     },
+     "to": {
+      "time": "45-60",
+      "prob": ".6-.8",
+      "mean_y": 0.9825,
+      "n": 57
+     },
+     "winprob_delta": -0.0175,
+     "min_support_n": 57
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "30-45",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 75
+     },
+     "to": {
+      "time": "45-60",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 123
+     },
+     "winprob_delta": 0.0,
+     "min_support_n": 75
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "45-60",
+      "prob": "0-.2",
+      "mean_y": 0.5721,
+      "n": 416
+     },
+     "to": {
+      "time": "60-75",
+      "prob": "0-.2",
+      "mean_y": 0.5583,
+      "n": 343
+     },
+     "winprob_delta": -0.0138,
+     "min_support_n": 343
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "45-60",
+      "prob": "0-.2",
+      "mean_y": 0.5721,
+      "n": 416
+     },
+     "to": {
+      "time": "60-75",
+      "prob": ".2-.4",
+      "mean_y": 0.8333,
+      "n": 90
+     },
+     "winprob_delta": 0.2612,
+     "min_support_n": 90
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "45-60",
+      "prob": "0-.2",
+      "mean_y": 0.5721,
+      "n": 416
+     },
+     "to": {
+      "time": "60-75",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 51
+     },
+     "winprob_delta": 0.4279,
+     "min_support_n": 51
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "45-60",
+      "prob": ".2-.4",
+      "mean_y": 0.4698,
+      "n": 232
+     },
+     "to": {
+      "time": "60-75",
+      "prob": "0-.2",
+      "mean_y": 0.5583,
+      "n": 343
+     },
+     "winprob_delta": 0.0885,
+     "min_support_n": 232
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "45-60",
+      "prob": ".2-.4",
+      "mean_y": 0.4698,
+      "n": 232
+     },
+     "to": {
+      "time": "60-75",
+      "prob": ".2-.4",
+      "mean_y": 0.8333,
+      "n": 90
+     },
+     "winprob_delta": 0.3635,
+     "min_support_n": 90
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "45-60",
+      "prob": ".2-.4",
+      "mean_y": 0.4698,
+      "n": 232
+     },
+     "to": {
+      "time": "60-75",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 51
+     },
+     "winprob_delta": 0.5302,
+     "min_support_n": 51
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "45-60",
+      "prob": ".6-.8",
+      "mean_y": 0.9825,
+      "n": 57
+     },
+     "to": {
+      "time": "60-75",
+      "prob": "0-.2",
+      "mean_y": 0.5583,
+      "n": 343
+     },
+     "winprob_delta": -0.4242,
+     "min_support_n": 57
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "45-60",
+      "prob": ".6-.8",
+      "mean_y": 0.9825,
+      "n": 57
+     },
+     "to": {
+      "time": "60-75",
+      "prob": ".2-.4",
+      "mean_y": 0.8333,
+      "n": 90
+     },
+     "winprob_delta": -0.1492,
+     "min_support_n": 57
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "45-60",
+      "prob": ".6-.8",
+      "mean_y": 0.9825,
+      "n": 57
+     },
+     "to": {
+      "time": "60-75",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 51
+     },
+     "winprob_delta": 0.0175,
+     "min_support_n": 51
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "45-60",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 123
+     },
+     "to": {
+      "time": "60-75",
+      "prob": "0-.2",
+      "mean_y": 0.5583,
+      "n": 343
+     },
+     "winprob_delta": -0.4417,
+     "min_support_n": 123
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "45-60",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 123
+     },
+     "to": {
+      "time": "60-75",
+      "prob": ".2-.4",
+      "mean_y": 0.8333,
+      "n": 90
+     },
+     "winprob_delta": -0.1667,
+     "min_support_n": 90
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "45-60",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 123
+     },
+     "to": {
+      "time": "60-75",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 51
+     },
+     "winprob_delta": 0.0,
+     "min_support_n": 51
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "60-75",
+      "prob": "0-.2",
+      "mean_y": 0.5583,
+      "n": 343
+     },
+     "to": {
+      "time": "75-90+",
+      "prob": "0-.2",
+      "mean_y": 0.5739,
+      "n": 379
+     },
+     "winprob_delta": 0.0156,
+     "min_support_n": 343
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "60-75",
+      "prob": ".2-.4",
+      "mean_y": 0.8333,
+      "n": 90
+     },
+     "to": {
+      "time": "75-90+",
+      "prob": "0-.2",
+      "mean_y": 0.5739,
+      "n": 379
+     },
+     "winprob_delta": -0.2594,
+     "min_support_n": 90
+    },
+    {
+     "sport": "soccer_intl",
+     "from": {
+      "time": "60-75",
+      "prob": ".8-1",
+      "mean_y": 1.0,
+      "n": 51
+     },
+     "to": {
+      "time": "75-90+",
+      "prob": "0-.2",
+      "mean_y": 0.5739,
+      "n": 379
+     },
+     "winprob_delta": -0.4261,
+     "min_support_n": 51
+    }
+   ]
+  }
+ },
+ "skipped": [
+  {
+   "sport": "nba",
+   "reason": "only last_run_ingame_nba_winprob.json (checkpoint Brier) exists; no per-state-bucket realized win rate (mean_y) to attribute transitions"
+  }
+ ],
+ "source_as_of": null,
+ "biggest_drops": [
+  {
+   "sport": "soccer_intl",
+   "from": {
+    "time": "15-30",
+    "prob": ".4-.6",
+    "mean_y": 1.0,
+    "n": 120
+   },
+   "to": {
+    "time": "30-45",
+    "prob": ".2-.4",
+    "mean_y": 0.2317,
+    "n": 123
+   },
+   "winprob_delta": -0.7683,
+   "min_support_n": 120
+  },
+  {
+   "sport": "soccer_intl",
+   "from": {
+    "time": "15-30",
+    "prob": ".8-1",
+    "mean_y": 1.0,
+    "n": 41
+   },
+   "to": {
+    "time": "30-45",
+    "prob": ".2-.4",
+    "mean_y": 0.2317,
+    "n": 123
+   },
+   "winprob_delta": -0.7683,
+   "min_support_n": 41
+  },
+  {
+   "sport": "soccer_intl",
+   "from": {
+    "time": "15-30",
+    "prob": ".6-.8",
+    "mean_y": 0.7905,
+    "n": 74
+   },
+   "to": {
+    "time": "30-45",
+    "prob": ".2-.4",
+    "mean_y": 0.2317,
+    "n": 123
+   },
+   "winprob_delta": -0.5588,
+   "min_support_n": 74
+  },
+  {
+   "sport": "mlb",
+   "from": {
+    "time": "mid(inn4-6)",
+    "prob": ".8-1",
+    "mean_y": 0.7671,
+    "n": 2718
+   },
+   "to": {
+    "time": "late(inn7+)",
+    "prob": "0-.2",
+    "mean_y": 0.2276,
+    "n": 5431
+   },
+   "winprob_delta": -0.5395,
+   "min_support_n": 2718
+  },
+  {
+   "sport": "mlb",
+   "from": {
+    "time": "mid(inn4-6)",
+    "prob": ".8-1",
+    "mean_y": 0.7671,
+    "n": 2718
+   },
+   "to": {
+    "time": "late(inn7+)",
+    "prob": ".2-.4",
+    "mean_y": 0.2313,
+    "n": 951
+   },
+   "winprob_delta": -0.5358,
+   "min_support_n": 951
+  },
+  {
+   "sport": "soccer_intl",
+   "from": {
+    "time": "30-45",
+    "prob": ".8-1",
+    "mean_y": 1.0,
+    "n": 75
+   },
+   "to": {
+    "time": "45-60",
+    "prob": ".2-.4",
+    "mean_y": 0.4698,
+    "n": 232
+   },
+   "winprob_delta": -0.5302,
+   "min_support_n": 75
+  },
+  {
+   "sport": "soccer_intl",
+   "from": {
+    "time": "0-15",
+    "prob": ".4-.6",
+    "mean_y": 1.0,
+    "n": 158
+   },
+   "to": {
+    "time": "15-30",
+    "prob": ".2-.4",
+    "mean_y": 0.5353,
+    "n": 255
+   },
+   "winprob_delta": -0.4647,
+   "min_support_n": 158
+  },
+  {
+   "sport": "soccer_intl",
+   "from": {
+    "time": "45-60",
+    "prob": ".8-1",
+    "mean_y": 1.0,
+    "n": 123
+   },
+   "to": {
+    "time": "60-75",
+    "prob": "0-.2",
+    "mean_y": 0.5583,
+    "n": 343
+   },
+   "winprob_delta": -0.4417,
+   "min_support_n": 123
+  },
+  {
+   "sport": "soccer_intl",
+   "from": {
+    "time": "0-15",
+    "prob": ".4-.6",
+    "mean_y": 1.0,
+    "n": 158
+   },
+   "to": {
+    "time": "15-30",
+    "prob": "0-.2",
+    "mean_y": 0.5682,
+    "n": 176
+   },
+   "winprob_delta": -0.4318,
+   "min_support_n": 158
+  },
+  {
+   "sport": "soccer_intl",
+   "from": {
+    "time": "30-45",
+    "prob": ".4-.6",
+    "mean_y": 0.9,
+    "n": 130
+   },
+   "to": {
+    "time": "45-60",
+    "prob": ".2-.4",
+    "mean_y": 0.4698,
+    "n": 232
+   },
+   "winprob_delta": -0.4302,
+   "min_support_n": 130
+  }
+ ],
+ "biggest_gains": [
+  {
+   "sport": "soccer_intl",
+   "from": {
+    "time": "30-45",
+    "prob": ".2-.4",
+    "mean_y": 0.2317,
+    "n": 123
+   },
+   "to": {
+    "time": "45-60",
+    "prob": ".8-1",
+    "mean_y": 1.0,
+    "n": 123
+   },
+   "winprob_delta": 0.7683,
+   "min_support_n": 123
+  },
+  {
+   "sport": "soccer_intl",
+   "from": {
+    "time": "30-45",
+    "prob": ".2-.4",
+    "mean_y": 0.2317,
+    "n": 123
+   },
+   "to": {
+    "time": "45-60",
+    "prob": ".6-.8",
+    "mean_y": 0.9825,
+    "n": 57
+   },
+   "winprob_delta": 0.7508,
+   "min_support_n": 57
+  },
+  {
+   "sport": "soccer_intl",
+   "from": {
+    "time": "0-15",
+    "prob": "0-.2",
+    "mean_y": 0.3899,
+    "n": 109
+   },
+   "to": {
+    "time": "15-30",
+    "prob": ".4-.6",
+    "mean_y": 1.0,
+    "n": 120
+   },
+   "winprob_delta": 0.6101,
+   "min_support_n": 109
+  },
+  {
+   "sport": "soccer_intl",
+   "from": {
+    "time": "0-15",
+    "prob": "0-.2",
+    "mean_y": 0.3899,
+    "n": 109
+   },
+   "to": {
+    "time": "15-30",
+    "prob": ".8-1",
+    "mean_y": 1.0,
+    "n": 41
+   },
+   "winprob_delta": 0.6101,
+   "min_support_n": 41
+  },
+  {
+   "sport": "soccer_intl",
+   "from": {
+    "time": "45-60",
+    "prob": ".2-.4",
+    "mean_y": 0.4698,
+    "n": 232
+   },
+   "to": {
+    "time": "60-75",
+    "prob": ".8-1",
+    "mean_y": 1.0,
+    "n": 51
+   },
+   "winprob_delta": 0.5302,
+   "min_support_n": 51
+  },
+  {
+   "sport": "mlb",
+   "from": {
+    "time": "mid(inn4-6)",
+    "prob": "0-.2",
+    "mean_y": 0.2063,
+    "n": 2079
+   },
+   "to": {
+    "time": "late(inn7+)",
+    "prob": ".8-1",
+    "mean_y": 0.6853,
+    "n": 5037
+   },
+   "winprob_delta": 0.479,
+   "min_support_n": 2079
+  },
+  {
+   "sport": "mlb",
+   "from": {
+    "time": "mid(inn4-6)",
+    "prob": "0-.2",
+    "mean_y": 0.2063,
+    "n": 2079
+   },
+   "to": {
+    "time": "late(inn7+)",
+    "prob": ".6-.8",
+    "mean_y": 0.6761,
+    "n": 1167
+   },
+   "winprob_delta": 0.4698,
+   "min_support_n": 1167
+  },
+  {
+   "sport": "soccer_intl",
+   "from": {
+    "time": "15-30",
+    "prob": ".2-.4",
+    "mean_y": 0.5353,
+    "n": 255
+   },
+   "to": {
+    "time": "30-45",
+    "prob": ".8-1",
+    "mean_y": 1.0,
+    "n": 75
+   },
+   "winprob_delta": 0.4647,
+   "min_support_n": 75
+  },
+  {
+   "sport": "soccer_intl",
+   "from": {
+    "time": "0-15",
+    "prob": ".2-.4",
+    "mean_y": 0.5677,
+    "n": 288
+   },
+   "to": {
+    "time": "15-30",
+    "prob": ".4-.6",
+    "mean_y": 1.0,
+    "n": 120
+   },
+   "winprob_delta": 0.4323,
+   "min_support_n": 120
+  },
+  {
+   "sport": "soccer_intl",
+   "from": {
+    "time": "0-15",
+    "prob": ".2-.4",
+    "mean_y": 0.5677,
+    "n": 288
+   },
+   "to": {
+    "time": "15-30",
+    "prob": ".8-1",
+    "mean_y": 1.0,
+    "n": 41
+   },
+   "winprob_delta": 0.4323,
+   "min_support_n": 41
+  }
+ ],
+ "verdict": "Largest calibrated win-prob drop: soccer_intl 15-30:.4-.6 -> 30-45:.2-.4 = -0.7683 (min support n=120). Any in-game move decomposes into the adjacent-time bucket transition it crossed.",
+ "plot_written": true
+}

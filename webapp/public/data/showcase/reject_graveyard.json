@@ -1,0 +1,169 @@
+{
+ "source": "scripts/platformkit/reject_ledger.py (data/frontend/reject_ledger.jsonl)",
+ "note": "A REJECT/DEFER is honest market-efficiency evidence, not a failure. No $/edge/ROI claim.",
+ "full_history_row_count": 804,
+ "latest_per_signal_graveyard_count": 68,
+ "history_vs_latest_disclosure": "804 total recorded verdict rows across all reruns, vs 68 distinct (sport, signal) currently sitting on a REJECT-family verdict as of their latest test -- the gap is signals retested multiple times (asof-reclaim sweeps, re-gating) plus rows whose latest verdict flipped to SHIP.",
+ "reject_row_count": 628,
+ "verdicts_by_type": {
+  "REJECT": 627,
+  "SHIP": 95,
+  "SHIP_REVIEW": 45,
+  "NOT_TESTABLE": 14,
+  "WORSE": 6,
+  "INSUFFICIENT": 6,
+  "NOT-REPLICATED": 4,
+  "STANDING_BASELINE_SET": 3,
+  "DEFER": 1,
+  "TIER3_BLOCKED": 1,
+  "UNDERPOWERED": 1,
+  "NULL_UNDERPOWERED": 1
+ },
+ "rejects_by_reason_category": {
+  "asof_reclaim_sweep": 510,
+  "prescreen_delta": 20,
+  "wf_ablation": 18,
+  "seed_stability": 17,
+  "other": 14,
+  "calibration_only_unproven": 13,
+  "discovered_transform": 10,
+  "sealed_holdout": 8,
+  "conformal_width": 7,
+  "cross_corpus_adjudication": 6,
+  "planted_null": 5
+ },
+ "history_rows_by_sport": {
+  "nba": 426,
+  "soccer": 205,
+  "mlb": 118,
+  "tennis": 55
+ },
+ "cumulative_rejects_over_time": [
+  {
+   "date": "2026-06-09",
+   "rejects_that_day": 10,
+   "cumulative_rejects": 10
+  },
+  {
+   "date": "2026-06-18",
+   "rejects_that_day": 18,
+   "cumulative_rejects": 28
+  },
+  {
+   "date": "2026-06-21",
+   "rejects_that_day": 14,
+   "cumulative_rejects": 42
+  },
+  {
+   "date": "2026-06-27",
+   "rejects_that_day": 37,
+   "cumulative_rejects": 79
+  },
+  {
+   "date": "2026-06-28",
+   "rejects_that_day": 24,
+   "cumulative_rejects": 103
+  },
+  {
+   "date": "2026-06-29",
+   "rejects_that_day": 18,
+   "cumulative_rejects": 121
+  },
+  {
+   "date": "2026-06-30",
+   "rejects_that_day": 6,
+   "cumulative_rejects": 127
+  },
+  {
+   "date": "2026-07-01",
+   "rejects_that_day": 6,
+   "cumulative_rejects": 133
+  },
+  {
+   "date": "2026-07-02",
+   "rejects_that_day": 48,
+   "cumulative_rejects": 181
+  },
+  {
+   "date": "2026-07-03",
+   "rejects_that_day": 26,
+   "cumulative_rejects": 207
+  },
+  {
+   "date": "2026-07-04",
+   "rejects_that_day": 79,
+   "cumulative_rejects": 286
+  },
+  {
+   "date": "2026-07-05",
+   "rejects_that_day": 61,
+   "cumulative_rejects": 347
+  },
+  {
+   "date": "2026-07-06",
+   "rejects_that_day": 10,
+   "cumulative_rejects": 357
+  },
+  {
+   "date": "2026-07-07",
+   "rejects_that_day": 8,
+   "cumulative_rejects": 365
+  },
+  {
+   "date": "2026-07-08",
+   "rejects_that_day": 16,
+   "cumulative_rejects": 381
+  },
+  {
+   "date": "2026-07-09",
+   "rejects_that_day": 35,
+   "cumulative_rejects": 416
+  },
+  {
+   "date": "2026-07-10",
+   "rejects_that_day": 32,
+   "cumulative_rejects": 448
+  },
+  {
+   "date": "2026-07-11",
+   "rejects_that_day": 8,
+   "cumulative_rejects": 456
+  },
+  {
+   "date": "2026-07-12",
+   "rejects_that_day": 8,
+   "cumulative_rejects": 464
+  },
+  {
+   "date": "2026-07-13",
+   "rejects_that_day": 16,
+   "cumulative_rejects": 480
+  },
+  {
+   "date": "2026-07-14",
+   "rejects_that_day": 8,
+   "cumulative_rejects": 488
+  },
+  {
+   "date": "2026-07-15",
+   "rejects_that_day": 40,
+   "cumulative_rejects": 528
+  },
+  {
+   "date": "2026-07-16",
+   "rejects_that_day": 80,
+   "cumulative_rejects": 608
+  },
+  {
+   "date": "2026-07-17",
+   "rejects_that_day": 19,
+   "cumulative_rejects": 627
+  },
+  {
+   "date": "2026-07-18",
+   "rejects_that_day": 1,
+   "cumulative_rejects": 628
+  }
+ ],
+ "edge_claimed": false
+}

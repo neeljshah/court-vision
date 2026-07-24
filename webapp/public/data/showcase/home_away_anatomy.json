@@ -1,0 +1,767 @@
+{
+ "label": "DESCRIPTIVE_ONLY",
+ "edge_claimed": false,
+ "source": "data/domains/basketball_nba/player_boxscores.parquet + docs/JOB_EVIDENCE_PACKET.md",
+ "methodology": {
+  "grain": "player-game (each parquet row = one player in one game); venue = verified is_home flag (0/1), the column player_box_splits.py groups on.",
+  "league_delta": "home_mean(stat) - away_mean(stat), unweighted over player-game appearances; rel_delta_pct = 100*(home-away)/away.",
+  "player_delta": "per-player home_ppg - away_ppg on 'pts', floor 15 games EACH side.",
+  "shooting_pct": "pooled sum(makes)/sum(attempts) per side; delta in percentage points.",
+  "floors": {
+   "player_games_each_side": 15,
+   "league_min_side_rows": 500
+  },
+  "floors_tuned_to_output": false,
+  "not_this": [
+   "NOT a forecast / home-court betting edge -- games already played",
+   "NOT the team home-court margin (this is the smaller per-player-game bump)",
+   "NOT minutes-weighted / pace / rest / opponent / role adjusted (raw means)"
+  ],
+  "known_data_issue": "Diacritic-split player_ids (upstream name-join bug, same as box_value_index.py) can fragment one player across two ids; unfixed here (data-layer scope)."
+ },
+ "input_coverage": {
+  "rows_valid": 74450,
+  "seasons_with_venue_flag": [
+   "2023-24",
+   "2024-25",
+   "2025-26"
+  ],
+  "unique_players": 627,
+  "n_home_rows": 37401,
+  "n_away_rows": 37049,
+  "rows_raw": 77744,
+  "rows_dropped_invalid_venue_or_id": 3294
+ },
+ "by_season": {
+  "2023-24": {
+   "coverage": {
+    "n_rows": 23814,
+    "n_home": 11952,
+    "n_away": 11862,
+    "meets_league_floor": true
+   },
+   "league_deltas": {
+    "pts": {
+     "home_mean": 11.4014,
+     "away_mean": 11.2488,
+     "delta": 0.1526,
+     "rel_delta_pct": 1.356
+    },
+    "reb": {
+     "home_mean": 4.3046,
+     "away_mean": 4.2335,
+     "delta": 0.0711,
+     "rel_delta_pct": 1.68
+    },
+    "oreb": {
+     "home_mean": 1.0383,
+     "away_mean": 1.0289,
+     "delta": 0.0094,
+     "rel_delta_pct": 0.914
+    },
+    "dreb": {
+     "home_mean": 3.2663,
+     "away_mean": 3.2046,
+     "delta": 0.0617,
+     "rel_delta_pct": 1.926
+    },
+    "ast": {
+     "home_mean": 2.6652,
+     "away_mean": 2.59,
+     "delta": 0.0753,
+     "rel_delta_pct": 2.907
+    },
+    "stl": {
+     "home_mean": 0.7261,
+     "away_mean": 0.7296,
+     "delta": -0.0036,
+     "rel_delta_pct": -0.489
+    },
+    "blk": {
+     "home_mean": 0.509,
+     "away_mean": 0.5023,
+     "delta": 0.0067,
+     "rel_delta_pct": 1.329
+    },
+    "tov": {
+     "home_mean": 1.2663,
+     "away_mean": 1.2719,
+     "delta": -0.0056,
+     "rel_delta_pct": -0.437
+    },
+    "pf": {
+     "home_mean": 1.8084,
+     "away_mean": 1.8311,
+     "delta": -0.0227,
+     "rel_delta_pct": -1.242
+    },
+    "fga": {
+     "home_mean": 8.747,
+     "away_mean": 8.8091,
+     "delta": -0.0622,
+     "rel_delta_pct": -0.706
+    },
+    "fg3a": {
+     "home_mean": 3.4462,
+     "away_mean": 3.444,
+     "delta": 0.0022,
+     "rel_delta_pct": 0.063
+    },
+    "fta": {
+     "home_mean": 2.1727,
+     "away_mean": 2.1455,
+     "delta": 0.0272,
+     "rel_delta_pct": 1.267
+    },
+    "fgm": {
+     "home_mean": 4.2002,
+     "away_mean": 4.1624,
+     "delta": 0.0379,
+     "rel_delta_pct": 0.909
+    },
+    "fg3m": {
+     "home_mean": 1.2789,
+     "away_mean": 1.2539,
+     "delta": 0.0249,
+     "rel_delta_pct": 1.989
+    },
+    "ftm": {
+     "home_mean": 1.7221,
+     "away_mean": 1.6701,
+     "delta": 0.0519,
+     "rel_delta_pct": 3.109
+    },
+    "min": {
+     "home_mean": 23.5063,
+     "away_mean": 23.6656,
+     "delta": -0.1593,
+     "rel_delta_pct": -0.673
+    }
+   },
+   "league_shooting_pct": {
+    "fg_pct": {
+     "home_pct": 48.019,
+     "away_pct": 47.251,
+     "delta_pp": 0.768
+    },
+    "fg3_pct": {
+     "home_pct": 37.109,
+     "away_pct": 36.409,
+     "delta_pp": 0.701
+    },
+    "ft_pct": {
+     "home_pct": 79.259,
+     "away_pct": 77.843,
+     "delta_pp": 1.416
+    }
+   },
+   "player_distribution": {
+    "stat": "pts",
+    "n_players": 351,
+    "mean_delta": 0.2107,
+    "std_delta": 1.6527,
+    "min_delta": -4.7015,
+    "p10_delta": -1.7455,
+    "median_delta": 0.1958,
+    "p90_delta": 2.0852,
+    "max_delta": 6.1909,
+    "share_positive": 0.5385
+   }
+  },
+  "2024-25": {
+   "coverage": {
+    "n_rows": 26166,
+    "n_home": 13170,
+    "n_away": 12996,
+    "meets_league_floor": true
+   },
+   "league_deltas": {
+    "pts": {
+     "home_mean": 10.6643,
+     "away_mean": 10.6461,
+     "delta": 0.0182,
+     "rel_delta_pct": 0.171
+    },
+    "reb": {
+     "home_mean": 4.115,
+     "away_mean": 4.1373,
+     "delta": -0.0224,
+     "rel_delta_pct": -0.541
+    },
+    "oreb": {
+     "home_mean": 1.0302,
+     "away_mean": 1.0503,
+     "delta": -0.0201,
+     "rel_delta_pct": -1.914
+    },
+    "dreb": {
+     "home_mean": 3.0847,
+     "away_mean": 3.087,
+     "delta": -0.0023,
+     "rel_delta_pct": -0.074
+    },
+    "ast": {
+     "home_mean": 2.4982,
+     "away_mean": 2.4614,
+     "delta": 0.0368,
+     "rel_delta_pct": 1.495
+    },
+    "stl": {
+     "home_mean": 0.754,
+     "away_mean": 0.7802,
+     "delta": -0.0262,
+     "rel_delta_pct": -3.355
+    },
+    "blk": {
+     "home_mean": 0.4688,
+     "away_mean": 0.4424,
+     "delta": 0.0263,
+     "rel_delta_pct": 5.955
+    },
+    "tov": {
+     "home_mean": 1.25,
+     "away_mean": 1.2741,
+     "delta": -0.0241,
+     "rel_delta_pct": -1.893
+    },
+    "pf": {
+     "home_mean": 1.7251,
+     "away_mean": 1.754,
+     "delta": -0.0289,
+     "rel_delta_pct": -1.646
+    },
+    "fga": {
+     "home_mean": 8.2938,
+     "away_mean": 8.4071,
+     "delta": -0.1134,
+     "rel_delta_pct": -1.348
+    },
+    "fg3a": {
+     "home_mean": 3.5167,
+     "away_mean": 3.5215,
+     "delta": -0.0048,
+     "rel_delta_pct": -0.137
+    },
+    "fta": {
+     "home_mean": 2.0266,
+     "away_mean": 2.031,
+     "delta": -0.0044,
+     "rel_delta_pct": -0.218
+    },
+    "fgm": {
+     "home_mean": 3.9008,
+     "away_mean": 3.904,
+     "delta": -0.0033,
+     "rel_delta_pct": -0.084
+    },
+    "fg3m": {
+     "home_mean": 1.283,
+     "away_mean": 1.2526,
+     "delta": 0.0304,
+     "rel_delta_pct": 2.425
+    },
+    "ftm": {
+     "home_mean": 1.5798,
+     "away_mean": 1.5854,
+     "delta": -0.0056,
+     "rel_delta_pct": -0.354
+    },
+    "min": {
+     "home_mean": 22.4309,
+     "away_mean": 22.7218,
+     "delta": -0.2909,
+     "rel_delta_pct": -1.28
+    }
+   },
+   "league_shooting_pct": {
+    "fg_pct": {
+     "home_pct": 47.032,
+     "away_pct": 46.437,
+     "delta_pp": 0.595
+    },
+    "fg3_pct": {
+     "home_pct": 36.483,
+     "away_pct": 35.57,
+     "delta_pp": 0.913
+    },
+    "ft_pct": {
+     "home_pct": 77.954,
+     "away_pct": 78.06,
+     "delta_pp": -0.106
+    }
+   },
+   "player_distribution": {
+    "stat": "pts",
+    "n_players": 392,
+    "mean_delta": 0.0564,
+    "std_delta": 1.6365,
+    "min_delta": -5.0864,
+    "p10_delta": -1.9467,
+    "median_delta": 0.1227,
+    "p90_delta": 2.1592,
+    "max_delta": 5.0811,
+    "share_positive": 0.5434
+   }
+  },
+  "2025-26": {
+   "coverage": {
+    "n_rows": 24470,
+    "n_home": 12279,
+    "n_away": 12191,
+    "meets_league_floor": true
+   },
+   "league_deltas": {
+    "pts": {
+     "home_mean": 10.8141,
+     "away_mean": 10.734,
+     "delta": 0.0801,
+     "rel_delta_pct": 0.746
+    },
+    "reb": {
+     "home_mean": 4.0611,
+     "away_mean": 4.0858,
+     "delta": -0.0247,
+     "rel_delta_pct": -0.605
+    },
+    "oreb": {
+     "home_mean": 1.0388,
+     "away_mean": 1.0746,
+     "delta": -0.0357,
+     "rel_delta_pct": -3.324
+    },
+    "dreb": {
+     "home_mean": 3.0222,
+     "away_mean": 3.0112,
+     "delta": 0.011,
+     "rel_delta_pct": 0.365
+    },
+    "ast": {
+     "home_mean": 2.4946,
+     "away_mean": 2.4588,
+     "delta": 0.0358,
+     "rel_delta_pct": 1.456
+    },
+    "stl": {
+     "home_mean": 0.7738,
+     "away_mean": 0.7802,
+     "delta": -0.0063,
+     "rel_delta_pct": -0.811
+    },
+    "blk": {
+     "home_mean": 0.4589,
+     "away_mean": 0.4404,
+     "delta": 0.0185,
+     "rel_delta_pct": 4.202
+    },
+    "tov": {
+     "home_mean": 1.2653,
+     "away_mean": 1.2868,
+     "delta": -0.0214,
+     "rel_delta_pct": -1.666
+    },
+    "pf": {
+     "home_mean": 1.8124,
+     "away_mean": 1.8531,
+     "delta": -0.0406,
+     "rel_delta_pct": -2.193
+    },
+    "fga": {
+     "home_mean": 8.2503,
+     "away_mean": 8.3423,
+     "delta": -0.092,
+     "rel_delta_pct": -1.103
+    },
+    "fg3a": {
+     "home_mean": 3.4512,
+     "away_mean": 3.4396,
+     "delta": 0.0116,
+     "rel_delta_pct": 0.337
+    },
+    "fta": {
+     "home_mean": 2.2039,
+     "away_mean": 2.1756,
+     "delta": 0.0283,
+     "rel_delta_pct": 1.301
+    },
+    "fgm": {
+     "home_mean": 3.9109,
+     "away_mean": 3.9065,
+     "delta": 0.0044,
+     "rel_delta_pct": 0.113
+    },
+    "fg3m": {
+     "home_mean": 1.2538,
+     "away_mean": 1.2267,
+     "delta": 0.0271,
+     "rel_delta_pct": 2.211
+    },
+    "ftm": {
+     "home_mean": 1.7384,
+     "away_mean": 1.6943,
+     "delta": 0.0441,
+     "rel_delta_pct": 2.605
+    },
+    "min": {
+     "home_mean": 22.3409,
+     "away_mean": 22.4639,
+     "delta": -0.123,
+     "rel_delta_pct": -0.547
+    }
+   },
+   "league_shooting_pct": {
+    "fg_pct": {
+     "home_pct": 47.403,
+     "away_pct": 46.827,
+     "delta_pp": 0.576
+    },
+    "fg3_pct": {
+     "home_pct": 36.331,
+     "away_pct": 35.665,
+     "delta_pp": 0.666
+    },
+    "ft_pct": {
+     "home_pct": 78.878,
+     "away_pct": 77.876,
+     "delta_pp": 1.002
+    }
+   },
+   "player_distribution": {
+    "stat": "pts",
+    "n_players": 387,
+    "mean_delta": 0.0021,
+    "std_delta": 1.6352,
+    "min_delta": -4.164,
+    "p10_delta": -2.0684,
+    "median_delta": 0.0251,
+    "p90_delta": 1.831,
+    "max_delta": 6.8442,
+    "share_positive": 0.5065
+   }
+  }
+ },
+ "pooled": {
+  "league_deltas": {
+   "pts": {
+    "home_mean": 10.949,
+    "away_mean": 10.868,
+    "delta": 0.081,
+    "rel_delta_pct": 0.746
+   },
+   "reb": {
+    "home_mean": 4.1579,
+    "away_mean": 4.1512,
+    "delta": 0.0067,
+    "rel_delta_pct": 0.162
+   },
+   "oreb": {
+    "home_mean": 1.0356,
+    "away_mean": 1.0514,
+    "delta": -0.0158,
+    "rel_delta_pct": -1.503
+   },
+   "dreb": {
+    "home_mean": 3.1222,
+    "away_mean": 3.0997,
+    "delta": 0.0225,
+    "rel_delta_pct": 0.726
+   },
+   "ast": {
+    "home_mean": 2.5504,
+    "away_mean": 2.5017,
+    "delta": 0.0487,
+    "rel_delta_pct": 1.947
+   },
+   "stl": {
+    "home_mean": 0.7516,
+    "away_mean": 0.764,
+    "delta": -0.0124,
+    "rel_delta_pct": -1.624
+   },
+   "blk": {
+    "home_mean": 0.4784,
+    "away_mean": 0.4609,
+    "delta": 0.0175,
+    "rel_delta_pct": 3.786
+   },
+   "tov": {
+    "home_mean": 1.2602,
+    "away_mean": 1.2776,
+    "delta": -0.0173,
+    "rel_delta_pct": -1.356
+   },
+   "pf": {
+    "home_mean": 1.7804,
+    "away_mean": 1.8113,
+    "delta": -0.0309,
+    "rel_delta_pct": -1.706
+   },
+   "fga": {
+    "home_mean": 8.4243,
+    "away_mean": 8.5145,
+    "delta": -0.0902,
+    "rel_delta_pct": -1.059
+   },
+   "fg3a": {
+    "home_mean": 3.4727,
+    "away_mean": 3.4698,
+    "delta": 0.0029,
+    "rel_delta_pct": 0.084
+   },
+   "fta": {
+    "home_mean": 2.1315,
+    "away_mean": 2.1153,
+    "delta": 0.0162,
+    "rel_delta_pct": 0.768
+   },
+   "fgm": {
+    "home_mean": 3.9998,
+    "away_mean": 3.9876,
+    "delta": 0.0122,
+    "rel_delta_pct": 0.307
+   },
+   "fg3m": {
+    "home_mean": 1.2721,
+    "away_mean": 1.2445,
+    "delta": 0.0276,
+    "rel_delta_pct": 2.217
+   },
+   "ftm": {
+    "home_mean": 1.6773,
+    "away_mean": 1.6484,
+    "delta": 0.029,
+    "rel_delta_pct": 1.758
+   },
+   "min": {
+    "home_mean": 22.745,
+    "away_mean": 22.9391,
+    "delta": -0.1941,
+    "rel_delta_pct": -0.846
+   }
+  },
+  "league_shooting_pct": {
+   "fg_pct": {
+    "home_pct": 47.479,
+    "away_pct": 46.833,
+    "delta_pp": 0.647
+   },
+   "fg3_pct": {
+    "home_pct": 36.632,
+    "away_pct": 35.867,
+    "delta_pp": 0.765
+   },
+   "ft_pct": {
+    "home_pct": 78.693,
+    "away_pct": 77.927,
+    "delta_pp": 0.766
+   }
+  },
+  "player_distribution": {
+   "stat": "pts",
+   "n_players": 543,
+   "mean_delta": 0.0587,
+   "std_delta": 1.1591,
+   "min_delta": -3.8144,
+   "p10_delta": -1.297,
+   "median_delta": 0.0389,
+   "p90_delta": 1.4802,
+   "max_delta": 3.8076,
+   "share_positive": 0.5157
+  },
+  "top_home_boosters": [
+   {
+    "player_name": "Ace Bailey",
+    "home_minus_away_ppg": 3.808,
+    "home_ppg": 15.54,
+    "away_ppg": 11.74,
+    "n_home": 35,
+    "n_away": 34
+   },
+   {
+    "player_name": "Cedric Coward",
+    "home_minus_away_ppg": 3.653,
+    "home_ppg": 14.9,
+    "away_ppg": 11.25,
+    "n_home": 31,
+    "n_away": 28
+   },
+   {
+    "player_name": "Derik Queen",
+    "home_minus_away_ppg": 3.459,
+    "home_ppg": 13.24,
+    "away_ppg": 9.78,
+    "n_home": 38,
+    "n_away": 36
+   },
+   {
+    "player_name": "Brandon Ingram",
+    "home_minus_away_ppg": 3.258,
+    "home_ppg": 22.92,
+    "away_ppg": 19.66,
+    "n_home": 75,
+    "n_away": 77
+   },
+   {
+    "player_name": "Jerami Grant",
+    "home_minus_away_ppg": 3.212,
+    "home_ppg": 19.77,
+    "away_ppg": 16.56,
+    "n_home": 78,
+    "n_away": 79
+   },
+   {
+    "player_name": "Jared Rhoden",
+    "home_minus_away_ppg": 3.196,
+    "home_ppg": 8.13,
+    "away_ppg": 4.94,
+    "n_home": 15,
+    "n_away": 16
+   },
+   {
+    "player_name": "Asa Newell",
+    "home_minus_away_ppg": 3.05,
+    "home_ppg": 6.55,
+    "away_ppg": 3.5,
+    "n_home": 20,
+    "n_away": 20
+   },
+   {
+    "player_name": "Bones Hyland",
+    "home_minus_away_ppg": 2.966,
+    "home_ppg": 8.84,
+    "away_ppg": 5.87,
+    "n_home": 62,
+    "n_away": 63
+   },
+   {
+    "player_name": "Yanic Konan Niederh\u00e4user",
+    "home_minus_away_ppg": 2.845,
+    "home_ppg": 5.89,
+    "away_ppg": 3.04,
+    "n_home": 18,
+    "n_away": 23
+   },
+   {
+    "player_name": "Caleb Love",
+    "home_minus_away_ppg": 2.819,
+    "home_ppg": 12.17,
+    "away_ppg": 9.35,
+    "n_home": 24,
+    "n_away": 23
+   },
+   {
+    "player_name": "Scoot Henderson",
+    "home_minus_away_ppg": 2.788,
+    "home_ppg": 14.89,
+    "away_ppg": 12.1,
+    "n_home": 73,
+    "n_away": 78
+   },
+   {
+    "player_name": "Daniss Jenkins",
+    "home_minus_away_ppg": 2.743,
+    "home_ppg": 9.2,
+    "away_ppg": 6.46,
+    "n_home": 35,
+    "n_away": 35
+   }
+  ],
+  "top_road_boosters": [
+   {
+    "player_name": "Kon Knueppel",
+    "home_minus_away_ppg": -3.814,
+    "home_ppg": 17.05,
+    "away_ppg": 20.87,
+    "n_home": 37,
+    "n_away": 38
+   },
+   {
+    "player_name": "Malachi Flynn",
+    "home_minus_away_ppg": -3.334,
+    "home_ppg": 3.87,
+    "away_ppg": 7.21,
+    "n_home": 39,
+    "n_away": 34
+   },
+   {
+    "player_name": "Tyrese Proctor",
+    "home_minus_away_ppg": -2.979,
+    "home_ppg": 3.59,
+    "away_ppg": 6.57,
+    "n_home": 27,
+    "n_away": 21
+   },
+   {
+    "player_name": "Anthony Edwards",
+    "home_minus_away_ppg": -2.844,
+    "home_ppg": 26.03,
+    "away_ppg": 28.87,
+    "n_home": 108,
+    "n_away": 109
+   },
+   {
+    "player_name": "Mark Williams",
+    "home_minus_away_ppg": -2.837,
+    "home_ppg": 11.73,
+    "away_ppg": 14.57,
+    "n_home": 63,
+    "n_away": 60
+   },
+   {
+    "player_name": "Chuma Okeke",
+    "home_minus_away_ppg": -2.708,
+    "home_ppg": 1.55,
+    "away_ppg": 4.26,
+    "n_home": 29,
+    "n_away": 27
+   },
+   {
+    "player_name": "Jalen McDaniels",
+    "home_minus_away_ppg": -2.549,
+    "home_ppg": 1.81,
+    "away_ppg": 4.36,
+    "n_home": 26,
+    "n_away": 28
+   },
+   {
+    "player_name": "Tony Bradley",
+    "home_minus_away_ppg": -2.491,
+    "home_ppg": 2.78,
+    "away_ppg": 5.27,
+    "n_home": 27,
+    "n_away": 26
+   },
+   {
+    "player_name": "Devin Booker",
+    "home_minus_away_ppg": -2.421,
+    "home_ppg": 24.99,
+    "away_ppg": 27.41,
+    "n_home": 100,
+    "n_away": 107
+   },
+   {
+    "player_name": "Johnny Juzang",
+    "home_minus_away_ppg": -2.37,
+    "home_ppg": 6.0,
+    "away_ppg": 8.37,
+    "n_home": 51,
+    "n_away": 54
+   },
+   {
+    "player_name": "Moussa Cisse",
+    "home_minus_away_ppg": -2.352,
+    "home_ppg": 3.05,
+    "away_ppg": 5.4,
+    "n_home": 21,
+    "n_away": 15
+   },
+   {
+    "player_name": "Jamir Watkins",
+    "home_minus_away_ppg": -2.288,
+    "home_ppg": 5.46,
+    "away_ppg": 7.75,
+    "n_home": 26,
+    "n_away": 16
+   }
+  ]
+ }
+}

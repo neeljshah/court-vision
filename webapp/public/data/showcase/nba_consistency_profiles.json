@@ -1,0 +1,389 @@
+{
+ "label": "DESCRIPTIVE_ONLY",
+ "source": "docs/JOB_EVIDENCE_PACKET.md (truth source); input data/domains/basketball_nba/player_boxscores.parquet",
+ "as_of": "2026-04-12",
+ "methodology": {
+  "measure": "coefficient of variation (sample std / mean, ddof=1) of per-36 pts/reb/ast across a player's qualifying games; lower = steadier",
+  "stats": [
+   "pts",
+   "reb",
+   "ast"
+  ],
+  "per36": "stat * 36 / minutes, per game",
+  "shrinkage": "cv_shrunk = w*cv_raw + (1-w)*league_mean_cv, w = games/(games+shrink_k)",
+  "shrink_k_games": 20.0,
+  "shrink_k_tuned_to_output": false,
+  "min_game_minutes_floor": 10.0,
+  "min_qualifying_games_floor": 15,
+  "league_mean_cv_raw": {
+   "pts": 0.5242,
+   "reb": 0.5561,
+   "ast": 0.7825
+  },
+  "composite": "unweighted mean of the three shrunk per-stat CVs (declared choice)",
+  "caveat": "CV inflates mechanically for low-mean stats; reb/ast CVs are not on the same scale as pts CV across archetypes. Consistency is not skill/value.",
+  "seasons_pooled": [
+   "2023-24",
+   "2024-25",
+   "2025-26"
+  ]
+ },
+ "not_this": [
+  "NOT a skill/value metric -- a low-volume role player can be very consistent at low output",
+  "NOT opponent/rest/role/home-away adjusted -- raw game-to-game dispersion only",
+  "NOT predictive -- describes past games, does not forecast future variance"
+ ],
+ "input_coverage": {
+  "rows": 77744,
+  "unique_players": 807,
+  "seasons": [
+   "2023-24",
+   "2024-25",
+   "2025-26"
+  ],
+  "players_meeting_floor": 579
+ },
+ "composite_cv_distribution": {
+  "n": 579,
+  "min": 0.3448,
+  "p25": 0.5457,
+  "median": 0.6235,
+  "p75": 0.6778,
+  "max": 0.8849,
+  "mean": 0.6128
+ },
+ "most_consistent_top15": [
+  {
+   "player_name": "Luka Doncic",
+   "player_id": 1629029,
+   "games": 184,
+   "shrink_weight": 0.902,
+   "composite_cv_shrunk": 0.3448,
+   "pts_per36_mean": 31.87,
+   "pts_cv_shrunk": 0.2799,
+   "reb_cv_shrunk": 0.3569,
+   "ast_cv_shrunk": 0.3975
+  },
+  {
+   "player_name": "Nikola Jokic",
+   "player_id": 203999,
+   "games": 210,
+   "shrink_weight": 0.913,
+   "composite_cv_shrunk": 0.3456,
+   "pts_per36_mean": 28.35,
+   "pts_cv_shrunk": 0.3103,
+   "reb_cv_shrunk": 0.3194,
+   "ast_cv_shrunk": 0.4072
+  },
+  {
+   "player_name": "Domantas Sabonis",
+   "player_id": 1627734,
+   "games": 170,
+   "shrink_weight": 0.895,
+   "composite_cv_shrunk": 0.3712,
+   "pts_per36_mean": 19.68,
+   "pts_cv_shrunk": 0.3297,
+   "reb_cv_shrunk": 0.3129,
+   "ast_cv_shrunk": 0.471
+  },
+  {
+   "player_name": "Giannis Antetokounmpo",
+   "player_id": 203507,
+   "games": 173,
+   "shrink_weight": 0.896,
+   "composite_cv_shrunk": 0.3744,
+   "pts_per36_mean": 32.18,
+   "pts_cv_shrunk": 0.2666,
+   "reb_cv_shrunk": 0.3333,
+   "ast_cv_shrunk": 0.5232
+  },
+  {
+   "player_name": "Shai Gilgeous-Alexander",
+   "player_id": 1628983,
+   "games": 218,
+   "shrink_weight": 0.916,
+   "composite_cv_shrunk": 0.3783,
+   "pts_per36_mean": 33.44,
+   "pts_cv_shrunk": 0.2374,
+   "reb_cv_shrunk": 0.4722,
+   "ast_cv_shrunk": 0.4253
+  },
+  {
+   "player_name": "Cade Cunningham",
+   "player_id": 1630595,
+   "games": 192,
+   "shrink_weight": 0.906,
+   "composite_cv_shrunk": 0.3835,
+   "pts_per36_mean": 25.5,
+   "pts_cv_shrunk": 0.3074,
+   "reb_cv_shrunk": 0.4675,
+   "ast_cv_shrunk": 0.3756
+  },
+  {
+   "player_name": "LeBron James",
+   "player_id": 2544,
+   "games": 201,
+   "shrink_weight": 0.91,
+   "composite_cv_shrunk": 0.3857,
+   "pts_per36_mean": 24.9,
+   "pts_cv_shrunk": 0.2994,
+   "reb_cv_shrunk": 0.452,
+   "ast_cv_shrunk": 0.4055
+  },
+  {
+   "player_name": "Jayson Tatum",
+   "player_id": 1628369,
+   "games": 162,
+   "shrink_weight": 0.89,
+   "composite_cv_shrunk": 0.3905,
+   "pts_per36_mean": 26.66,
+   "pts_cv_shrunk": 0.293,
+   "reb_cv_shrunk": 0.387,
+   "ast_cv_shrunk": 0.4914
+  },
+  {
+   "player_name": "Paolo Banchero",
+   "player_id": 1631094,
+   "games": 190,
+   "shrink_weight": 0.905,
+   "composite_cv_shrunk": 0.3913,
+   "pts_per36_mean": 24.1,
+   "pts_cv_shrunk": 0.3316,
+   "reb_cv_shrunk": 0.3909,
+   "ast_cv_shrunk": 0.4515
+  },
+  {
+   "player_name": "Alperen Sengun",
+   "player_id": 1630578,
+   "games": 208,
+   "shrink_weight": 0.912,
+   "composite_cv_shrunk": 0.3939,
+   "pts_per36_mean": 22.28,
+   "pts_cv_shrunk": 0.3193,
+   "reb_cv_shrunk": 0.3856,
+   "ast_cv_shrunk": 0.4768
+  },
+  {
+   "player_name": "Kawhi Leonard",
+   "player_id": 202695,
+   "games": 164,
+   "shrink_weight": 0.891,
+   "composite_cv_shrunk": 0.4002,
+   "pts_per36_mean": 27.28,
+   "pts_cv_shrunk": 0.3237,
+   "reb_cv_shrunk": 0.3881,
+   "ast_cv_shrunk": 0.4889
+  },
+  {
+   "player_name": "Scottie Barnes",
+   "player_id": 1630567,
+   "games": 196,
+   "shrink_weight": 0.907,
+   "composite_cv_shrunk": 0.4016,
+   "pts_per36_mean": 20.32,
+   "pts_cv_shrunk": 0.3245,
+   "reb_cv_shrunk": 0.4367,
+   "ast_cv_shrunk": 0.4436
+  },
+  {
+   "player_name": "LaMelo Ball",
+   "player_id": 1630163,
+   "games": 134,
+   "shrink_weight": 0.87,
+   "composite_cv_shrunk": 0.4053,
+   "pts_per36_mean": 26.51,
+   "pts_cv_shrunk": 0.3212,
+   "reb_cv_shrunk": 0.4796,
+   "ast_cv_shrunk": 0.4152
+  },
+  {
+   "player_name": "Tyler Herro",
+   "player_id": 1629639,
+   "games": 145,
+   "shrink_weight": 0.879,
+   "composite_cv_shrunk": 0.4099,
+   "pts_per36_mean": 23.75,
+   "pts_cv_shrunk": 0.2973,
+   "reb_cv_shrunk": 0.4406,
+   "ast_cv_shrunk": 0.4917
+  },
+  {
+   "player_name": "Kevin Durant",
+   "player_id": 201142,
+   "games": 215,
+   "shrink_weight": 0.915,
+   "composite_cv_shrunk": 0.4111,
+   "pts_per36_mean": 26.11,
+   "pts_cv_shrunk": 0.2719,
+   "reb_cv_shrunk": 0.4029,
+   "ast_cv_shrunk": 0.5586
+  }
+ ],
+ "least_consistent_top15": [
+  {
+   "player_name": "P.J. Tucker",
+   "player_id": 200782,
+   "games": 26,
+   "shrink_weight": 0.565,
+   "composite_cv_shrunk": 0.8849,
+   "pts_per36_mean": 3.82,
+   "pts_cv_shrunk": 0.8862,
+   "reb_cv_shrunk": 0.5287,
+   "ast_cv_shrunk": 1.2398
+  },
+  {
+   "player_name": "Cam Reddish",
+   "player_id": 1629629,
+   "games": 71,
+   "shrink_weight": 0.78,
+   "composite_cv_shrunk": 0.8839,
+   "pts_per36_mean": 7.98,
+   "pts_cv_shrunk": 0.7481,
+   "reb_cv_shrunk": 0.7678,
+   "ast_cv_shrunk": 1.1359
+  },
+  {
+   "player_name": "Gary Harris",
+   "player_id": 203914,
+   "games": 125,
+   "shrink_weight": 0.862,
+   "composite_cv_shrunk": 0.8818,
+   "pts_per36_mean": 8.33,
+   "pts_cv_shrunk": 0.8043,
+   "reb_cv_shrunk": 0.7901,
+   "ast_cv_shrunk": 1.0511
+  },
+  {
+   "player_name": "Jaylen Clark",
+   "player_id": 1641740,
+   "games": 67,
+   "shrink_weight": 0.77,
+   "composite_cv_shrunk": 0.8446,
+   "pts_per36_mean": 11.37,
+   "pts_cv_shrunk": 0.6923,
+   "reb_cv_shrunk": 0.661,
+   "ast_cv_shrunk": 1.1805
+  },
+  {
+   "player_name": "Garrison Mathews",
+   "player_id": 1629726,
+   "games": 101,
+   "shrink_weight": 0.835,
+   "composite_cv_shrunk": 0.8376,
+   "pts_per36_mean": 13.35,
+   "pts_cv_shrunk": 0.6062,
+   "reb_cv_shrunk": 0.8175,
+   "ast_cv_shrunk": 1.0891
+  },
+  {
+   "player_name": "Adem Bona",
+   "player_id": 1641737,
+   "games": 98,
+   "shrink_weight": 0.831,
+   "composite_cv_shrunk": 0.8352,
+   "pts_per36_mean": 10.62,
+   "pts_cv_shrunk": 0.5633,
+   "reb_cv_shrunk": 0.4845,
+   "ast_cv_shrunk": 1.4579
+  },
+  {
+   "player_name": "Moussa Cisse",
+   "player_id": 1630619,
+   "games": 23,
+   "shrink_weight": 0.535,
+   "composite_cv_shrunk": 0.8338,
+   "pts_per36_mean": 12.63,
+   "pts_cv_shrunk": 0.5736,
+   "reb_cv_shrunk": 0.4701,
+   "ast_cv_shrunk": 1.4576
+  },
+  {
+   "player_name": "Khaman Maluach",
+   "player_id": 1642863,
+   "games": 19,
+   "shrink_weight": 0.487,
+   "composite_cv_shrunk": 0.8319,
+   "pts_per36_mean": 12.32,
+   "pts_cv_shrunk": 0.5153,
+   "reb_cv_shrunk": 0.5755,
+   "ast_cv_shrunk": 1.4049
+  },
+  {
+   "player_name": "Julian Phillips",
+   "player_id": 1641763,
+   "games": 90,
+   "shrink_weight": 0.818,
+   "composite_cv_shrunk": 0.8287,
+   "pts_per36_mean": 11.89,
+   "pts_cv_shrunk": 0.5651,
+   "reb_cv_shrunk": 0.6248,
+   "ast_cv_shrunk": 1.2963
+  },
+  {
+   "player_name": "Moses Brown",
+   "player_id": 1629650,
+   "games": 15,
+   "shrink_weight": 0.429,
+   "composite_cv_shrunk": 0.8254,
+   "pts_per36_mean": 17.62,
+   "pts_cv_shrunk": 0.5615,
+   "reb_cv_shrunk": 0.5071,
+   "ast_cv_shrunk": 1.4075
+  },
+  {
+   "player_name": "Gabe Vincent",
+   "player_id": 1629216,
+   "games": 127,
+   "shrink_weight": 0.864,
+   "composite_cv_shrunk": 0.8241,
+   "pts_per36_mean": 9.62,
+   "pts_cv_shrunk": 0.6845,
+   "reb_cv_shrunk": 0.8659,
+   "ast_cv_shrunk": 0.922
+  },
+  {
+   "player_name": "Rasheer Fleming",
+   "player_id": 1642853,
+   "games": 31,
+   "shrink_weight": 0.608,
+   "composite_cv_shrunk": 0.8203,
+   "pts_per36_mean": 13.31,
+   "pts_cv_shrunk": 0.537,
+   "reb_cv_shrunk": 0.6556,
+   "ast_cv_shrunk": 1.2683
+  },
+  {
+   "player_name": "Chris Boucher",
+   "player_id": 1628449,
+   "games": 98,
+   "shrink_weight": 0.831,
+   "composite_cv_shrunk": 0.813,
+   "pts_per36_mean": 17.41,
+   "pts_cv_shrunk": 0.5728,
+   "reb_cv_shrunk": 0.5492,
+   "ast_cv_shrunk": 1.3169
+  },
+  {
+   "player_name": "Terrence Shannon Jr.",
+   "player_id": 1630545,
+   "games": 33,
+   "shrink_weight": 0.623,
+   "composite_cv_shrunk": 0.8083,
+   "pts_per36_mean": 13.44,
+   "pts_cv_shrunk": 0.6395,
+   "reb_cv_shrunk": 0.7635,
+   "ast_cv_shrunk": 1.0218
+  },
+  {
+   "player_name": "Dalton Knecht",
+   "player_id": 1642261,
+   "games": 92,
+   "shrink_weight": 0.821,
+   "composite_cv_shrunk": 0.8052,
+   "pts_per36_mean": 15.17,
+   "pts_cv_shrunk": 0.6184,
+   "reb_cv_shrunk": 0.6557,
+   "ast_cv_shrunk": 1.1415
+  }
+ ]
+}

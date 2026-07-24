@@ -134,8 +134,8 @@ coverage number is honest *because* it refuses on purpose. Every one is a JSON f
 open and a module you can re-run. The full index with per-analytic caveats is
 [docs/ANALYTICS_CATALOG.md](../ANALYTICS_CATALOG.md). None of these four is a new proof, and
 each says so in its own output. The transferable thing is not any single number -- it is that
-the whole inventory is built to be audited number by number, and labelled so the honest
-reading is the only available one.
+the whole inventory is built to be audited row by row, each label written so a reader cannot
+come away with a rosier number than the file supports.
 
 ---
 <!-- nav-footer -->

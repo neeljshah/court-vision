@@ -1,0 +1,342 @@
+{
+ "generated_from": "docs/evidence",
+ "claim_count": 23,
+ "bucket_order": [
+  "Self-refutation & honesty",
+  "Calibration & market",
+  "Engineering depth",
+  "Frontier measurements"
+ ],
+ "edge_claimed": false,
+ "claims": [
+  {
+   "slug": "agent-fleet-direction",
+   "bucket": "Engineering depth",
+   "title": "Solo Human Architect, Directing an Agent Fleet -- how this system was actually built",
+   "claim": "One person -- Neel Shah -- directed a fleet of Claude agents to build and validate a production sports-forecasting system across 3,200+ commits (Mar-Jul 2026). He did not hand-type those commits, and he does not claim to have. The role is architect and director: a planner model orchestrates cheaper executor models under hard, automated ship gates that the agents cannot override. The load-bearin...",
+   "strongest_receipt": {
+    "source": "scripts/platformkit/analytics_showcase/out/reject_graveyard.json",
+    "label": "A REJECT/DEFER is honest market-efficiency evidence, not a failure. No $/edge/ROI claim."
+   },
+   "cited_artifacts": [
+    "scripts/platformkit/analytics_showcase/out/reject_graveyard.json",
+    "scripts/platformkit/analytics_showcase/out/agent_fleet_history.json"
+   ],
+   "edge_claimed": false
+  },
+  {
+   "slug": "ai-engineering",
+   "bucket": "Engineering depth",
+   "title": "AI Engineering at the Current Frontier -- the five skills 2026 teams hire for, each mapped to committed code",
+   "claim": "The current-era AI-engineering interview does not ask \"can you call an LLM API.\" It asks whether you can make an LLM system trustworthy in production: measure it against held-out truth, stop it from hallucinating, expose it as tooling other agents can call, guard it in code rather than in prompt text, and pay for it sensibly. Those five competencies are the job. This repo carries a working, com...",
+   "strongest_receipt": {
+    "source": null,
+    "label": "The current-era AI-engineering interview does not ask \"can you call an LLM API.\" It asks whether you can make an LLM system trustworthy in production: measure it against held-out truth, stop it from hallucinating, expose it as tooling other agents can call, guard it in code rather than in prompt text, and pay for it sensibly"
+   },
+   "cited_artifacts": [],
+   "edge_claimed": false
+  },
+  {
+   "slug": "analytical-depth",
+   "bucket": "Frontier measurements",
+   "title": "A Deeply Analytical System -- The Recorded-Analytics Inventory",
+   "claim": "\"Deeply analytical\" is easy to assert and hard to prove. So this page does not assert it -- it inventories it. There are 23 self-contained analytics modules under scripts/platformkit/analytics_showcase/, each of which runs once, reads real artifacts, writes a provenance-stamped JSON to out/, and renders a chart to docs/img/. Every one is catalogued with its artifact path and its honest caveat i...",
+   "strongest_receipt": {
+    "source": "scripts/platformkit/analytics_showcase/out/claims_corpus_meta.json",
+    "label": "\"Deeply analytical\" is easy to assert and hard to prove"
+   },
+   "cited_artifacts": [
+    "scripts/platformkit/analytics_showcase/out/claims_corpus_meta.json",
+    "scripts/platformkit/analytics_showcase/out/statcast_showcase.json",
+    "scripts/platformkit/analytics_showcase/out/tick_microstructure.json",
+    "scripts/platformkit/analytics_showcase/out/qa_coverage_stats.json"
+   ],
+   "edge_claimed": false
+  },
+  {
+   "slug": "answer-engine",
+   "bucket": "Engineering depth",
+   "title": "The Fail-Closed Answer Engine -- one deterministic resolver per question, refusal by default",
+   "claim": "Every question that can be asked of this system's data is answered by exactly one deterministic resolver, chosen by rule -- never improvised by a language model. Three failure modes are first-class outcomes, not bugs:",
+   "strongest_receipt": {
+    "source": "scripts/platformkit/analytics_showcase/out/qa_coverage_stats.json",
+    "label": "answer engine: 87/87 regression-bank checks pass (fail-closed statuses graded as PASS); honest coverage 36.6% of answerable questions -- refusals (no_data/not_supported/ambiguous/refused) are the fail-closed design, not a defect"
+   },
+   "cited_artifacts": [
+    "scripts/platformkit/analytics_showcase/out/qa_coverage_stats.json"
+   ],
+   "edge_claimed": false
+  },
+  {
+   "slug": "calibration-decomposition",
+   "bucket": "Calibration & market",
+   "title": "Decomposing my own Brier gap vs the market -- and publishing where the model is weakest",
+   "claim": "I don't just report that the market beats my in-game model -- I take my own Brier gap apart into its named components and publish the ranked list of exactly which game states my model handles worst. Two instruments do this:",
+   "strongest_receipt": {
+    "source": "scripts/platformkit/analytics_showcase/out/murphy_decomposition.json",
+    "label": "mlb: model Brier 0.2377 is worse than market 0.2067 (gap=+0.0310); driven mainly by resolution (information, not fixable by recalibration) (reliability_gap=+0.0066, resolution_gap=-0.0235). soccer_intl: model Brier 0.2279 is worse than m..."
+   },
+   "cited_artifacts": [
+    "scripts/platformkit/analytics_showcase/out/murphy_decomposition.json",
+    "scripts/platformkit/analytics_showcase/out/state_conditioned_calibration.json"
+   ],
+   "edge_claimed": false
+  },
+  {
+   "slug": "cross-corpus-replication",
+   "bucket": "Self-refutation & honesty",
+   "title": "Cross-Corpus Replication -- one corpus is an anecdote, two is a finding",
+   "claim": "A finding that shows up once, on one slice of one corpus, is indistinguishable from a lucky calendar window or an overfit grid search. The discipline in this repo is: a hypothesis is not \"confirmed\" until the same effect, at the same pre-declared bar, reproduces on a second corpus that is independent of the one it was discovered on -- a disjoint season, a disjoint competition group, a disjoint ...",
+   "strongest_receipt": {
+    "source": "scripts/platformkit/analytics_showcase/out/mechanism_survival.json",
+    "label": "Survival rate = share of TESTABLE hypotheses whose latest recorded verdict is CONFIRMED_LOCAL / CONFIRMED_LOCAL_incl_2026_OOS / REPLICATED. A NULL/REJECT is honest market-efficiency evidence, not a failure. No $/edge/ROI claim."
+   },
+   "cited_artifacts": [
+    "scripts/platformkit/analytics_showcase/out/mechanism_survival.json",
+    "scripts/platformkit/analytics_showcase/out/tennis_showcase.json"
+   ],
+   "edge_claimed": false
+  },
+  {
+   "slug": "cv-pipeline",
+   "bucket": "Engineering depth",
+   "title": "Broadcast Video to Court Coordinates on a Consumer GPU -- built from primitives",
+   "claim": "Broadcast video comes in; court coordinates and behavioral features come out. The pipeline runs end-to-end on one consumer GPU (RTX 4060, 8GB) and writes per-track court positions plus behavioral fields to data/tracking_data.csv. What makes it an engineering artifact rather than a library demo is that the load-bearing pieces are built from primitives:",
+   "strongest_receipt": {
+    "source": null,
+    "label": "Broadcast video comes in; court coordinates and behavioral features come out"
+   },
+   "cited_artifacts": [],
+   "edge_claimed": false
+  },
+  {
+   "slug": "data-layer",
+   "bucket": "Engineering depth",
+   "title": "The Data Layer -- a leak-safe, as-of-stamped, keyless multi-sport data platform that audits its own completeness",
+   "claim": "The platform ingests four sports from keyless-first public sources, folds them into point-in-time-correct feature corpora that are leak-safe by construction, and then audits its own completeness and publishes the audit. No number is presented without its provenance and an honesty label; a feed miss is logged and skipped, never filled with a guess. This is a calibration/measurement layer -- no d...",
+   "strongest_receipt": {
+    "source": "scripts/platformkit/analytics_showcase/out/statcast_showcase.json",
+    "label": "The platform ingests four sports from keyless-first public sources, folds them into point-in-time-correct feature corpora that are leak-safe by construction, and then audits its own completeness and publishes the audit"
+   },
+   "cited_artifacts": [
+    "scripts/platformkit/analytics_showcase/out/statcast_showcase.json",
+    "scripts/platformkit/analytics_showcase/out/claims_corpus_meta.json"
+   ],
+   "edge_claimed": false
+  },
+  {
+   "slug": "devig-stack",
+   "bucket": "Calibration & market",
+   "title": "The Devig Stack -- market math from scratch, used as the yardstick I grade against",
+   "claim": "A vigged sportsbook price is not a probability -- it carries the book's margin (the overround). To grade a forecaster against \"what the market really thinks\" you first have to strip that vig honestly, and the naive retail method (proportional / additive) is biased on favourite-longshot lines. So src/prediction/devig.py implements four methods from scratch and dispatches between them:",
+   "strongest_receipt": {
+    "source": null,
+    "label": "A vigged sportsbook price is not a probability -- it carries the book's margin (the overround)"
+   },
+   "cited_artifacts": [],
+   "edge_claimed": false
+  },
+  {
+   "slug": "entity-atlas",
+   "bucket": "Engineering depth",
+   "title": "Entity Atlas -- Per-Entity Analytics Coverage at Scale, Every Count Auditable",
+   "claim": "The atlas family renders one small analytics card per entity, at scale, across every sport this system holds -- and every card is traceable to a manifest count you can re-derive. Six builder modules wrote seven manifests holding 1,549 cards total: 1,523 per-entity cards across six sport/entity-type manifests, plus 26 calibration-checkpoint cards built on the same machinery. Each count below is ...",
+   "strongest_receipt": {
+    "source": null,
+    "label": "The atlas family renders one small analytics card per entity, at scale, across every sport this system holds -- and every card is traceable to a manifest count you can re-derive"
+   },
+   "cited_artifacts": [],
+   "edge_claimed": false
+  },
+  {
+   "slug": "execution-honesty",
+   "bucket": "Self-refutation & honesty",
+   "title": "Paper-Execution Discipline -- I built a full execution layer with no path to a real order",
+   "claim": "The execution layer is fully built and tested, and there is intentionally no code path from it to a live order -- not an unfinished feature, the design. And where the layer cannot honestly measure a number, its own audit publishes the null: realized CLV is unmeasurable here because no independent closing-price feed was captured, so the artifact records realized_clv_pct: null and says why. The h...",
+   "strongest_receipt": {
+    "source": null,
+    "label": "The execution layer is fully built and tested, and there is intentionally no code path from it to a live order -- not an unfinished feature, the design"
+   },
+   "cited_artifacts": [],
+   "edge_claimed": false
+  },
+  {
+   "slug": "industry-metrics",
+   "bucket": "Frontier measurements",
+   "title": "The industry's player-metric landscape -- mapped, approximated where honest, and a do-not-fake list for the rest",
+   "claim": "We mapped the industry's player-metric landscape, built honest approximations of the three families our data supports, and published a do-not-fake list for the rest. Concretely:",
+   "strongest_receipt": {
+    "source": "scripts/platformkit/analytics_showcase/out/player_metric_landscape.json",
+    "label": "Support = raw input-column coverage only, never a claim that a branded metric is reproduced."
+   },
+   "cited_artifacts": [
+    "scripts/platformkit/analytics_showcase/out/player_metric_landscape.json",
+    "scripts/platformkit/analytics_showcase/out/box_value_index.json",
+    "scripts/platformkit/analytics_showcase/out/on_off_showcase.json",
+    "scripts/platformkit/analytics_showcase/out/aging_curve_lite.json"
+   ],
+   "edge_claimed": false
+  },
+  {
+   "slug": "ingame-conditioning",
+   "bucket": "Calibration & market",
+   "title": "In-Game Conditioning -- the one measured calibration win",
+   "claim": "The honest question is not \"can I beat the close\" -- I proved against myself that I cannot, pregame -- but \"does the system's mid-game conditioning actually sharpen the forecast.\" It does, and the win is measured, not asserted: conditioning the win-probability forecaster on the realized in-game state improves calibration (Brier) on real out-of-sample corpora in two sports. This is forecaster qu...",
+   "strongest_receipt": {
+    "source": null,
+    "label": "The honest question is not \"can I beat the close\" -- I proved against myself that I cannot, pregame -- but \"does the system's mid-game conditioning actually sharpen the forecast.\" It does, and the win is measured, not asserted: conditioning the win-probability forecaster on the realized in-game state improves calibration (Brier) on real out-of-sample corpora in two sports"
+   },
+   "cited_artifacts": [],
+   "edge_claimed": false
+  },
+  {
+   "slug": "knowledge-engine",
+   "bucket": "Engineering depth",
+   "title": "The Hypothesis-to-Verdict Knowledge Engine -- folklore in, pre-registered verdicts out",
+   "claim": "\"Teams on a back-to-back shoot worse.\" \"Momentum is real.\" \"Home dogs cover.\" Sports is drowning in folklore, and almost none of it is tested against leak-free data. This system turns each belief into a pre-registered hypothesis, runs it through the same refutation gate every signal faces, and records the verdict -- CONFIRMED, NULL, REJECT, or NOT_TESTABLE -- in an append-only ledger, one per s...",
+   "strongest_receipt": {
+    "source": "scripts/platformkit/analytics_showcase/out/mechanism_survival.json",
+    "label": "Survival rate = share of TESTABLE hypotheses whose latest recorded verdict is CONFIRMED_LOCAL / CONFIRMED_LOCAL_incl_2026_OOS / REPLICATED. A NULL/REJECT is honest market-efficiency evidence, not a failure. No $/edge/ROI claim."
+   },
+   "cited_artifacts": [
+    "scripts/platformkit/analytics_showcase/out/mechanism_survival.json",
+    "scripts/platformkit/analytics_showcase/out/honesty_exhibit.json"
+   ],
+   "edge_claimed": false
+  },
+  {
+   "slug": "leak-instruments",
+   "bucket": "Self-refutation & honesty",
+   "title": "Leakage-Catching Instruments -- the harnesses built to refute my own results",
+   "claim": "In sports forecasting, a good-looking number is almost always a leak until proven otherwise: a feature that peeks at the future, a grader that reads the market instead of the model, a grid search that memorizes its holdout, a single lucky calendar window. So the machinery that matters is not any metric -- it is the set of instruments that assume every result is wrong and try to break it. This p...",
+   "strongest_receipt": {
+    "source": null,
+    "label": "In sports forecasting, a good-looking number is almost always a leak until proven otherwise: a feature that peeks at the future, a grader that reads the market instead of the model, a grid search that memorizes its holdout, a single lucky calendar window"
+   },
+   "cited_artifacts": [],
+   "edge_claimed": false
+  },
+  {
+   "slug": "market-disagreement",
+   "bucket": "Self-refutation & honesty",
+   "title": "When the market out-forecasts us -- measured, bucketed, and published",
+   "claim": "We do not hide the cases where the market beats us. We instrument them. Two published analytics answer two honest questions:",
+   "strongest_receipt": {
+    "source": "scripts/platformkit/analytics_showcase/out/market_disagreement_profile.json",
+    "label": "mlb: at largest disagreement (>=.10, n=33402), market usually right (model_closer_rate=0.377, model_brier=0.2827 vs market_brier=0.2103). soccer_intl: at largest disagreement (>=.10, n=4406), market usually right (model_closer_rate=0.215..."
+   },
+   "cited_artifacts": [
+    "scripts/platformkit/analytics_showcase/out/market_disagreement_profile.json",
+    "scripts/platformkit/analytics_showcase/out/calibration_over_time.json"
+   ],
+   "edge_claimed": false
+  },
+  {
+   "slug": "mcp-live-demo",
+   "bucket": "Engineering depth",
+   "title": "Connect Your Own Claude to My Forecaster -- Live MCP Demo",
+   "claim": "Any Claude -- Claude Code, Claude Desktop, or an SDK agent -- can connect to this system's MCP server and get receipt-backed answers. The server does not hand the model a paragraph to paraphrase. It hands back a structured envelope: a status the model must honor verbatim (ok / no_data / not_supported / refused / ambiguous), a verdict, sample sizes, p-values, the exact file the number came from,...",
+   "strongest_receipt": {
+    "source": null,
+    "label": "Any Claude -- Claude Code, Claude Desktop, or an SDK agent -- can connect to this system's MCP server and get receipt-backed answers"
+   },
+   "cited_artifacts": [],
+   "edge_claimed": false
+  },
+  {
+   "slug": "novel-analytics",
+   "bucket": "Frontier measurements",
+   "title": "Novel Analytics -- Uniquely Auditable Measurements",
+   "claim": "The honest claim on this page is not \"no one else can measure these.\" Every method below already exists in the literature, and each analytic ships with a prior-art receipt that says so -- two verdicts of INCREMENTAL, one ALREADY_DONE_ON_CORE_METHOD, and one N/A (an internal hygiene artifact that borrows no novelty). The word \"novel\" here means one thing only: uniquely auditable.",
+   "strongest_receipt": {
+    "source": "scripts/platformkit/analytics_showcase/out/info_arrival_curve.json",
+    "label": "The honest claim on this page is not \"no one else can measure these.\" Every method below already exists in the literature, and each analytic ships with a prior-art receipt that says so -- two verdicts of INCREMENTAL, one ALREADY_DONE_ON_CORE_METHOD, and one N/A (an internal hygiene artifact that borrows no novelty)"
+   },
+   "cited_artifacts": [
+    "scripts/platformkit/analytics_showcase/out/info_arrival_curve.json",
+    "scripts/platformkit/analytics_showcase/out/market_overreaction.json",
+    "scripts/platformkit/analytics_showcase/out/mechanism_survival.json",
+    "scripts/platformkit/analytics_showcase/out/comeback_atlas.json",
+    "scripts/platformkit/analytics_showcase/out/kernel_transfer.json",
+    "scripts/platformkit/analytics_showcase/out/murphy_decomposition.json",
+    "scripts/platformkit/analytics_showcase/out/soccer_calibration_pack.json",
+    "scripts/platformkit/analytics_showcase/out/tennis_showcase.json"
+   ],
+   "edge_claimed": false
+  },
+  {
+   "slug": "operations-reliability",
+   "bucket": "Engineering depth",
+   "title": "Unattended Systems That Fail Visibly -- the reliability stack behind an overnight agentic build",
+   "claim": "A system that runs overnight with no human watching has exactly one unacceptable failure mode: failing silently. A wedged loop, a full disk, a dropped alert, a corrupted ledger, or a dashboard that stays green over a dead subsystem are all worse than a crash, because a crash at least announces itself. So the reliability work on this platform is organized around a single principle -- an unattend...",
+   "strongest_receipt": {
+    "source": null,
+    "label": "A system that runs overnight with no human watching has exactly one unacceptable failure mode: failing silently"
+   },
+   "cited_artifacts": [],
+   "edge_claimed": false
+  },
+  {
+   "slug": "player-props",
+   "bucket": "Calibration & market",
+   "title": "The Player-Projection Stack -- one accuracy claim, published under two labeled measurements",
+   "claim": "A projection MAE is meaningless unless you say exactly which measurement produced it. The same stack scored two legitimate ways gives two legitimately different numbers (on the walk-forward OOF frame BLK reads 0.515; on the production holdout it reads 0.44), and quoting one number with the other's row-count is the single most common way projection accuracy gets accidentally inflated. So the acc...",
+   "strongest_receipt": {
+    "source": null,
+    "label": "A projection MAE is meaningless unless you say exactly which measurement produced it"
+   },
+   "cited_artifacts": [],
+   "edge_claimed": false
+  },
+  {
+   "slug": "possession-simulator",
+   "bucket": "Engineering depth",
+   "title": "Possession Monte Carlo -- correlation that EMERGES, and a sim that grades itself",
+   "claim": "Most projection tools regress to a summary statistic -- a mean, maybe a variance -- and then staple correlations on afterward with a hand-tuned matrix. I built the opposite: a player-level possession Monte Carlo where the joint structure between players is not an input at all. Two teammates compete for the same finite pile of possessions, so the correct slightly-negative teammate scoring correl...",
+   "strongest_receipt": {
+    "source": null,
+    "label": "Most projection tools regress to a summary statistic -- a mean, maybe a variance -- and then staple correlations on afterward with a hand-tuned matrix"
+   },
+   "cited_artifacts": [],
+   "edge_claimed": false
+  },
+  {
+   "slug": "retraction-story",
+   "bucket": "Self-refutation & honesty",
+   "title": "The Retraction Story -- I built the instruments that refuted my own headline numbers",
+   "claim": "The same person who built this system also built the instruments that refuted his own flagship numbers -- and documented the negative results in writing rather than quietly deleting them. The product is a calibrated predictor, not a betting-edge product. The strongest signal in the repo is not any metric; it is the self-refutation trail.",
+   "strongest_receipt": {
+    "source": "scripts/platformkit/analytics_showcase/out/honesty_exhibit.json",
+    "label": "nulls (351) outnumber confirms (168) 2.1x -- we publish our nulls"
+   },
+   "cited_artifacts": [
+    "scripts/platformkit/analytics_showcase/out/honesty_exhibit.json",
+    "scripts/platformkit/analytics_showcase/out/reject_graveyard.json"
+   ],
+   "edge_claimed": false
+  },
+  {
+   "slug": "true-intelligence",
+   "bucket": "Frontier measurements",
+   "title": "True intelligence -- counterfactual, context, microstructure, forward-graded, cross-sport",
+   "claim": "How many pregame win-prob points is each team's top player worth? Take the player's on/off net-rating, convert it to Elo with a single frozen constant, subtract it from the team's Elo, and re-price through the repo's own Elo->probability curve against a league-average opponent on a neutral floor.",
+   "strongest_receipt": {
+    "source": "scripts/platformkit/analytics_showcase/out/cf_star_removal.json",
+    "label": "DESCRIPTIVE_ONLY"
+   },
+   "cited_artifacts": [
+    "scripts/platformkit/analytics_showcase/out/cf_star_removal.json",
+    "scripts/platformkit/analytics_showcase/out/cf_pace_variance.json",
+    "scripts/platformkit/analytics_showcase/out/ctx_player_splits.json",
+    "scripts/platformkit/analytics_showcase/out/ctx_team_states.json",
+    "scripts/platformkit/analytics_showcase/out/ctx_lineup_proxy.json",
+    "scripts/platformkit/analytics_showcase/out/micro_absorption.json",
+    "scripts/platformkit/analytics_showcase/out/micro_closing_decay.json",
+    "scripts/platformkit/analytics_showcase/out/fwd_claim_scoreboard.json",
+    "scripts/platformkit/analytics_showcase/out/xsport_structure.json",
+    "scripts/platformkit/analytics_showcase/out/why_attribution.json"
+   ],
+   "edge_claimed": false
+  }
+ ]
+}

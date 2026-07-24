@@ -1,0 +1,46 @@
+{
+ "generated_from": "scripts/platformkit/analytics_showcase/out",
+ "module_count": 3,
+ "atlas_card_count": 1549,
+ "checks_green": {
+  "green": true,
+  "pass": 63,
+  "total": 63
+ },
+ "edge_claimed": false,
+ "modules": [
+  {
+   "id": "agent_fleet_history",
+   "title": "Agent Fleet History",
+   "one_line": "",
+   "out_path": "scripts/platformkit/analytics_showcase/out/agent_fleet_history.json",
+   "chart_path": "docs/img/agent_fleet_history.png",
+   "status": "ok",
+   "edge_claimed": false,
+   "as_of": "2026-07-22",
+   "evidence_page": "docs/evidence/agent-fleet-direction.md"
+  },
+  {
+   "id": "aging_curve_lite",
+   "title": "Aging Curve Lite",
+   "one_line": "",
+   "out_path": "scripts/platformkit/analytics_showcase/out/aging_curve_lite.json",
+   "chart_path": null,
+   "status": "ok",
+   "edge_claimed": false,
+   "as_of": null,
+   "evidence_page": "docs/evidence/industry-metrics.md"
+  },
+  {
+   "id": "blowout_dynamics",
+   "title": "Blowout Dynamics",
+   "one_line": "Per game, order score ticks by (game-clock, ts); a margin threshold's point of no return is the first tick from which |home_score-away_score| stays >= threshold to the end. Reads only the score path, not model/market prob.",
+   "out_path": "scripts/platformkit/analytics_showcase/out/blowout_dynamics.json",
+   "chart_path": "docs/img/blowout_dynamics.png",
+   "status": "partial",
+   "edge_claimed": false,
+   "as_of": null,
+   "evidence_page": null
+  }
+ ]
+}

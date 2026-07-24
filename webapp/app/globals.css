@@ -241,6 +241,66 @@
   .text-danger   { color: hsl(var(--danger));   }
   .text-info     { color: hsl(var(--info));     }
 
+  /* Reading column for long-form evidence/methodology copy (T0.4/T0.5).
+     Token-driven prose: no @tailwindcss/typography dep, just the measure +
+     rhythm this house style needs (headings, links, code, lists). */
+  .prose-console {
+    max-width: 68ch;
+    color: hsl(var(--foreground));
+    line-height: 1.65;
+  }
+  .prose-console h1,
+  .prose-console h2,
+  .prose-console h3 {
+    color: hsl(var(--foreground));
+    font-weight: 600;
+    margin-top: 1.75em;
+    margin-bottom: 0.5em;
+  }
+  .prose-console p,
+  .prose-console ul,
+  .prose-console ol {
+    margin-top: 0.9em;
+    margin-bottom: 0.9em;
+  }
+  .prose-console ul,
+  .prose-console ol {
+    padding-left: 1.4em;
+  }
+  .prose-console li {
+    margin-top: 0.3em;
+  }
+  .prose-console hr {
+    border: 0;
+    border-top: 1px solid hsl(var(--border));
+    margin: 1.4em 0;
+  }
+  .prose-console a {
+    color: hsl(var(--primary));
+    text-underline-offset: 2px;
+  }
+  .prose-console a:hover {
+    text-decoration: underline;
+  }
+  .prose-console code {
+    font-family: var(--font-data);
+    background: hsl(var(--surface-2));
+    padding: 0.1em 0.35em;
+    border-radius: calc(var(--radius) - 2px);
+    font-size: 0.9em;
+  }
+  .prose-console pre {
+    background: hsl(var(--surface-2));
+    border: 1px solid hsl(var(--border));
+    padding: 0.9em 1em;
+    overflow-x: auto;
+    border-radius: var(--radius);
+  }
+  .prose-console pre code {
+    background: none;
+    padding: 0;
+  }
+
   /* Surface background utilities */
   .bg-surface-0 { background-color: hsl(var(--surface-0)); }
   .bg-surface-1 { background-color: hsl(var(--surface-1)); }

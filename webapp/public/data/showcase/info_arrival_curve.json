@@ -1,0 +1,223 @@
+{
+ "checkpoints": {
+  "mlb": {
+   "1": {
+    "n": 7646,
+    "model_brier": 0.2582,
+    "market_brier": 0.2432,
+    "naive_brier": 0.2464,
+    "market_minus_model_brier": -0.015
+   },
+   "2": {
+    "n": 5921,
+    "model_brier": 0.2489,
+    "market_brier": 0.2273,
+    "naive_brier": 0.2423,
+    "market_minus_model_brier": -0.0217
+   },
+   "3": {
+    "n": 6333,
+    "model_brier": 0.229,
+    "market_brier": 0.2105,
+    "naive_brier": 0.2244,
+    "market_minus_model_brier": -0.0186
+   },
+   "4": {
+    "n": 6266,
+    "model_brier": 0.2277,
+    "market_brier": 0.2067,
+    "naive_brier": 0.2213,
+    "market_minus_model_brier": -0.021
+   },
+   "5": {
+    "n": 6021,
+    "model_brier": 0.2048,
+    "market_brier": 0.1795,
+    "naive_brier": 0.2011,
+    "market_minus_model_brier": -0.0253
+   },
+   "6": {
+    "n": 6478,
+    "model_brier": 0.2107,
+    "market_brier": 0.1713,
+    "naive_brier": 0.2055,
+    "market_minus_model_brier": -0.0394
+   },
+   "7": {
+    "n": 6311,
+    "model_brier": 0.2266,
+    "market_brier": 0.1626,
+    "naive_brier": 0.212,
+    "market_minus_model_brier": -0.0641
+   },
+   "8": {
+    "n": 5276,
+    "model_brier": 0.2343,
+    "market_brier": 0.1544,
+    "naive_brier": 0.2251,
+    "market_minus_model_brier": -0.0798
+   },
+   "9": {
+    "n": 2282,
+    "model_brier": 0.2515,
+    "market_brier": 0.1613,
+    "naive_brier": 0.2391,
+    "market_minus_model_brier": -0.0902
+   },
+   "10": {
+    "n": 94,
+    "model_brier": 0.2855,
+    "market_brier": 0.2359,
+    "naive_brier": 0.2394,
+    "market_minus_model_brier": -0.0496
+   },
+   "11": {
+    "n": 18,
+    "model_brier": 0.2428,
+    "market_brier": 0.2418,
+    "naive_brier": 0.25,
+    "market_minus_model_brier": -0.001
+   }
+  },
+  "soccer_intl": {
+   "0": {
+    "n": 165,
+    "model_brier": 0.2264,
+    "market_brier": 0.1143,
+    "naive_brier": 0.2136,
+    "market_minus_model_brier": -0.1122
+   },
+   "5": {
+    "n": 238,
+    "model_brier": 0.2511,
+    "market_brier": 0.1221,
+    "naive_brier": 0.2189,
+    "market_minus_model_brier": -0.129
+   },
+   "10": {
+    "n": 224,
+    "model_brier": 0.2522,
+    "market_brier": 0.1159,
+    "naive_brier": 0.2156,
+    "market_minus_model_brier": -0.1363
+   },
+   "15": {
+    "n": 233,
+    "model_brier": 0.2486,
+    "market_brier": 0.1189,
+    "naive_brier": 0.2047,
+    "market_minus_model_brier": -0.1297
+   },
+   "20": {
+    "n": 215,
+    "model_brier": 0.2425,
+    "market_brier": 0.1273,
+    "naive_brier": 0.203,
+    "market_minus_model_brier": -0.1152
+   },
+   "25": {
+    "n": 218,
+    "model_brier": 0.2643,
+    "market_brier": 0.1489,
+    "naive_brier": 0.2085,
+    "market_minus_model_brier": -0.1154
+   },
+   "30": {
+    "n": 219,
+    "model_brier": 0.2749,
+    "market_brier": 0.1519,
+    "naive_brier": 0.2005,
+    "market_minus_model_brier": -0.123
+   },
+   "35": {
+    "n": 198,
+    "model_brier": 0.267,
+    "market_brier": 0.1576,
+    "naive_brier": 0.2019,
+    "market_minus_model_brier": -0.1094
+   },
+   "40": {
+    "n": 211,
+    "model_brier": 0.2896,
+    "market_brier": 0.1622,
+    "naive_brier": 0.2032,
+    "market_minus_model_brier": -0.1274
+   },
+   "45": {
+    "n": 429,
+    "model_brier": 0.2675,
+    "market_brier": 0.1453,
+    "naive_brier": 0.2115,
+    "market_minus_model_brier": -0.1223
+   },
+   "50": {
+    "n": 197,
+    "model_brier": 0.3253,
+    "market_brier": 0.2073,
+    "naive_brier": 0.2017,
+    "market_minus_model_brier": -0.118
+   },
+   "55": {
+    "n": 202,
+    "model_brier": 0.3252,
+    "market_brier": 0.2268,
+    "naive_brier": 0.2116,
+    "market_minus_model_brier": -0.0984
+   },
+   "60": {
+    "n": 194,
+    "model_brier": 0.3218,
+    "market_brier": 0.219,
+    "naive_brier": 0.2105,
+    "market_minus_model_brier": -0.1028
+   },
+   "65": {
+    "n": 156,
+    "model_brier": 0.3839,
+    "market_brier": 0.2598,
+    "naive_brier": 0.2246,
+    "market_minus_model_brier": -0.1242
+   },
+   "70": {
+    "n": 154,
+    "model_brier": 0.4441,
+    "market_brier": 0.3034,
+    "naive_brier": 0.2244,
+    "market_minus_model_brier": -0.1407
+   },
+   "75": {
+    "n": 136,
+    "model_brier": 0.4079,
+    "market_brier": 0.2414,
+    "naive_brier": 0.2075,
+    "market_minus_model_brier": -0.1665
+   },
+   "80": {
+    "n": 131,
+    "model_brier": 0.4223,
+    "market_brier": 0.2436,
+    "naive_brier": 0.1924,
+    "market_minus_model_brier": -0.1787
+   },
+   "85": {
+    "n": 101,
+    "model_brier": 0.4585,
+    "market_brier": 0.2694,
+    "naive_brier": 0.177,
+    "market_minus_model_brier": -0.1891
+   },
+   "90": {
+    "n": 37,
+    "model_brier": 0.3986,
+    "market_brier": 0.2595,
+    "naive_brier": 0.1856,
+    "market_minus_model_brier": -0.1392
+   }
+  }
+ },
+ "novelty": {
+  "verdict": "INCREMENTAL",
+  "closest_prior_work": "arXiv 2606.07811 (~Jun 2026), 'When Do Markets Fully Process Public Information? Evidence from Real-Time Prediction Markets' -- Kalshi/NBA, contract-minute market vs state-only-model vs outcome join, 409,512 rows, finds 0.64-for-one contemporaneous absorption of a 1-minute state move.",
+  "how_ours_differs": "Same core instrument (paired model/market/outcome Brier by game-time checkpoint). Ours applies it to MLB (inning) and soccer_intl (5-min bucket) corpora we actually hold, with a naive score-only baseline included for context. Not a new method -- do not claim first-ever."
+ }
+}

@@ -12,6 +12,7 @@
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import Link from "next/link";
 import { PRODUCT_NAME } from "@/lib/api";
 import { Panel, PanelHead, Num } from "@/components/ui/terminal";
 
@@ -142,7 +143,14 @@ export default function ReceiptsPage() {
                 <tbody>
                   {data.rows.map((r, i) => (
                     <tr key={i} className="border-b border-border hover:bg-surface-2">
-                      <td className="px-3 py-1.5">{r.sport_market}</td>
+                      <td className="px-3 py-1.5">
+                        <Link
+                          href={`/receipts/${i}`}
+                          className="text-primary underline decoration-dotted underline-offset-2 hover:no-underline"
+                        >
+                          {r.sport_market}
+                        </Link>
+                      </td>
                       <td className="px-3 py-1.5">{r.checkpoint}</td>
                       <td className="px-3 py-1.5 font-data">{r.model}</td>
                       <td className="px-3 py-1.5 font-data">{r.market}</td>

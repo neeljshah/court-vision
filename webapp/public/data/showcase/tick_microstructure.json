@@ -1,0 +1,60 @@
+{
+ "label": "market-microstructure MEASUREMENT (latency/cadence) -- NOT a trading signal",
+ "generated_at": "2026-07-22T22:40:48.805496Z",
+ "paths_tried": [
+  "C:\\Users\\neelj\\nba-ai-system\\data\\pod_backup_2026_07_20\\ingame_grade_deriv\\mlb",
+  "C:\\Users\\neelj\\nba-ai-system\\data\\pod_backup_2026_07_20\\tip_capture\\wnba\\ingame_*.jsonl"
+ ],
+ "sports": {
+  "mlb": {
+   "source": "ingame_grade_deriv/mlb (Kalshi total-market quote tracks)",
+   "n_files": 5,
+   "n_rows": 2113,
+   "n_quote_tracks": 21,
+   "inter_tick_seconds": {
+    "n": 2092,
+    "median": 35.0,
+    "mean": 80.0,
+    "p50": 35.0,
+    "p90": 170.0
+   },
+   "price_move_size": {
+    "n": 1028,
+    "median": 0.02,
+    "mean": 0.0364,
+    "p50": 0.02,
+    "p90": 0.09,
+    "note": "abs delta in market_prob between consecutive ticks on same market line"
+   },
+   "model_vs_market_divergence": {
+    "n": 2113,
+    "median": 0.1161,
+    "mean": 0.1248,
+    "p50": 0.1161,
+    "p90": 0.2247,
+    "note": "abs(model_prob - market_prob) per tick; a calibration-gap MEASUREMENT, not an edge"
+   }
+  },
+  "wnba": {
+   "source": "tip_capture/wnba ingame_*.jsonl (Kalshi decimal-odds board snapshots)",
+   "n_files": 2,
+   "n_rows": 479,
+   "capture_cadence_seconds": {
+    "n": 334,
+    "median": 87.9,
+    "mean": 269.7,
+    "p50": 87.8548,
+    "p90": 136.0399
+   },
+   "kalshi_overround": {
+    "n": 3803,
+    "median": 0.01,
+    "mean": 0.0244,
+    "p50": 0.01,
+    "p90": 0.03,
+    "note": "1/home_decimal + 1/away_decimal - 1, per event snapshot (spread/vig measurement)"
+   }
+  }
+ },
+ "status": "ok"
+}

@@ -1,0 +1,73 @@
+{
+ "buckets": {
+  "mlb": {
+   "0-1pt": {
+    "n": 66697,
+    "moved_to_price": 0.5245,
+    "outcome_rate": 0.4556,
+    "moved_to_minus_outcome": 0.0689
+   },
+   "1-3pt": {
+    "n": 7339,
+    "moved_to_price": 0.525,
+    "outcome_rate": 0.4717,
+    "moved_to_minus_outcome": 0.0533
+   },
+   "3-6pt": {
+    "n": 2860,
+    "moved_to_price": 0.5154,
+    "outcome_rate": 0.4353,
+    "moved_to_minus_outcome": 0.0801
+   },
+   "6-10pt": {
+    "n": 1069,
+    "moved_to_price": 0.5193,
+    "outcome_rate": 0.4537,
+    "moved_to_minus_outcome": 0.0656
+   },
+   "10pt+": {
+    "n": 794,
+    "moved_to_price": 0.504,
+    "outcome_rate": 0.4521,
+    "moved_to_minus_outcome": 0.0518
+   }
+  },
+  "soccer_intl": {
+   "0-1pt": {
+    "n": 7791,
+    "moved_to_price": 0.4084,
+    "outcome_rate": 0.6029,
+    "moved_to_minus_outcome": -0.1945
+   },
+   "1-3pt": {
+    "n": 946,
+    "moved_to_price": 0.3659,
+    "outcome_rate": 0.6131,
+    "moved_to_minus_outcome": -0.2472
+   },
+   "3-6pt": {
+    "n": 103,
+    "moved_to_price": 0.3192,
+    "outcome_rate": 0.5971,
+    "moved_to_minus_outcome": -0.2779
+   },
+   "6-10pt": {
+    "n": 21,
+    "moved_to_price": 0.3495,
+    "outcome_rate": 0.7143,
+    "moved_to_minus_outcome": -0.3648
+   },
+   "10pt+": {
+    "n": 91,
+    "moved_to_price": 0.4768,
+    "outcome_rate": 0.7527,
+    "moved_to_minus_outcome": -0.276
+   }
+  }
+ },
+ "novelty": {
+  "verdict": "INCREMENTAL",
+  "closest_prior_work": "Moskowitz (2021, Journal of Finance), 'Asset Pricing and Sports Betting' -- cross-sport (NBA/NFL/MLB/NHL/soccer) magnitude-bucketed price-move-vs-outcome test, ~50% open-to-close reversion. Choi & Hui (2014, JEBO) run the in-play soccer version, event-triggered by goals, finding underreaction to moderate surprises and overreaction to extreme ones.",
+  "how_ours_differs": "Same bucketed-move-vs-outcome instrument, applied at consecutive-row (not event-triggered) grain in-game, to MLB + soccer_intl corpora we hold. Not a new method -- do not claim first-ever."
+ }
+}

@@ -1,0 +1,460 @@
+{
+ "edge_claimed": false,
+ "story": "Ranks (sport x game-state time bucket x model_prob band) segments by total absolute residual mass -- where fixing the model removes the most cumulative error, i.e. the improvement backlog.",
+ "sports": {
+  "mlb": {
+   "n_files": 227,
+   "n_records": 78986,
+   "n_skipped": 26340,
+   "segments": [
+    {
+     "sport": "mlb",
+     "time_bucket": "early(inn1-3)",
+     "prob_bucket": ".4-.6",
+     "n": 12344,
+     "mean_abs_residual": 0.4912,
+     "total_abs_residual_mass": 6063.25
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "early(inn1-3)",
+     "prob_bucket": ".6-.8",
+     "n": 5098,
+     "mean_abs_residual": 0.4864,
+     "total_abs_residual_mass": 2479.79
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "mid(inn4-6)",
+     "prob_bucket": ".4-.6",
+     "n": 4872,
+     "mean_abs_residual": 0.4908,
+     "total_abs_residual_mass": 2391.22
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "late(inn7+)",
+     "prob_bucket": ".4-.6",
+     "n": 1395,
+     "mean_abs_residual": 0.499,
+     "total_abs_residual_mass": 696.12
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "late(inn7+)",
+     "prob_bucket": ".2-.4",
+     "n": 951,
+     "mean_abs_residual": 0.3718,
+     "total_abs_residual_mass": 353.54
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "mid(inn4-6)",
+     "prob_bucket": ".6-.8",
+     "n": 4683,
+     "mean_abs_residual": 0.4453,
+     "total_abs_residual_mass": 2085.16
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "mid(inn4-6)",
+     "prob_bucket": ".8-1",
+     "n": 2718,
+     "mean_abs_residual": 0.3127,
+     "total_abs_residual_mass": 849.82
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "late(inn7+)",
+     "prob_bucket": ".6-.8",
+     "n": 1167,
+     "mean_abs_residual": 0.4141,
+     "total_abs_residual_mass": 483.24
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "late(inn7+)",
+     "prob_bucket": ".8-1",
+     "n": 5037,
+     "mean_abs_residual": 0.3493,
+     "total_abs_residual_mass": 1759.26
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "mid(inn4-6)",
+     "prob_bucket": ".2-.4",
+     "n": 4413,
+     "mean_abs_residual": 0.4048,
+     "total_abs_residual_mass": 1786.45
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "late(inn7+)",
+     "prob_bucket": "0-.2",
+     "n": 5431,
+     "mean_abs_residual": 0.2669,
+     "total_abs_residual_mass": 1449.65
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "mid(inn4-6)",
+     "prob_bucket": "0-.2",
+     "n": 2079,
+     "mean_abs_residual": 0.2996,
+     "total_abs_residual_mass": 622.78
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "early(inn1-3)",
+     "prob_bucket": ".2-.4",
+     "n": 2458,
+     "mean_abs_residual": 0.4529,
+     "total_abs_residual_mass": 1113.34
+    }
+   ]
+  },
+  "soccer_intl": {
+   "n_files": 51,
+   "n_records": 9003,
+   "n_skipped": 5345,
+   "segments": [
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "0-15",
+     "prob_bucket": ".4-.6",
+     "n": 158,
+     "mean_abs_residual": 0.4944,
+     "total_abs_residual_mass": 78.12
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "15-30",
+     "prob_bucket": ".4-.6",
+     "n": 120,
+     "mean_abs_residual": 0.5,
+     "total_abs_residual_mass": 60.0
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "15-30",
+     "prob_bucket": ".2-.4",
+     "n": 255,
+     "mean_abs_residual": 0.4452,
+     "total_abs_residual_mass": 113.52
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "15-30",
+     "prob_bucket": "0-.2",
+     "n": 176,
+     "mean_abs_residual": 0.5281,
+     "total_abs_residual_mass": 92.95
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "30-45",
+     "prob_bucket": "0-.2",
+     "n": 264,
+     "mean_abs_residual": 0.6077,
+     "total_abs_residual_mass": 160.44
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "45-60",
+     "prob_bucket": "0-.2",
+     "n": 416,
+     "mean_abs_residual": 0.5677,
+     "total_abs_residual_mass": 236.16
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "60-75",
+     "prob_bucket": "0-.2",
+     "n": 343,
+     "mean_abs_residual": 0.532,
+     "total_abs_residual_mass": 182.49
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "75-90+",
+     "prob_bucket": "0-.2",
+     "n": 379,
+     "mean_abs_residual": 0.5358,
+     "total_abs_residual_mass": 203.06
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "0-15",
+     "prob_bucket": "0-.2",
+     "n": 109,
+     "mean_abs_residual": 0.3978,
+     "total_abs_residual_mass": 43.36
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "0-15",
+     "prob_bucket": ".2-.4",
+     "n": 288,
+     "mean_abs_residual": 0.4588,
+     "total_abs_residual_mass": 132.14
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "30-45",
+     "prob_bucket": ".2-.4",
+     "n": 123,
+     "mean_abs_residual": 0.3168,
+     "total_abs_residual_mass": 38.97
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "30-45",
+     "prob_bucket": ".6-.8",
+     "n": 36,
+     "mean_abs_residual": 0.3353,
+     "total_abs_residual_mass": 12.07
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "45-60",
+     "prob_bucket": ".6-.8",
+     "n": 57,
+     "mean_abs_residual": 0.2574,
+     "total_abs_residual_mass": 14.67
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "60-75",
+     "prob_bucket": ".6-.8",
+     "n": 20,
+     "mean_abs_residual": 0.2384,
+     "total_abs_residual_mass": 4.77
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "30-45",
+     "prob_bucket": ".4-.6",
+     "n": 130,
+     "mean_abs_residual": 0.4149,
+     "total_abs_residual_mass": 53.94
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "45-60",
+     "prob_bucket": ".2-.4",
+     "n": 232,
+     "mean_abs_residual": 0.3664,
+     "total_abs_residual_mass": 85.0
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "60-75",
+     "prob_bucket": ".2-.4",
+     "n": 90,
+     "mean_abs_residual": 0.6134,
+     "total_abs_residual_mass": 55.2
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "75-90+",
+     "prob_bucket": ".2-.4",
+     "n": 10,
+     "mean_abs_residual": 0.7883,
+     "total_abs_residual_mass": 7.88
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "45-60",
+     "prob_bucket": ".8-1",
+     "n": 123,
+     "mean_abs_residual": 0.0896,
+     "total_abs_residual_mass": 11.02
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "60-75",
+     "prob_bucket": ".8-1",
+     "n": 51,
+     "mean_abs_residual": 0.1084,
+     "total_abs_residual_mass": 5.53
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "0-15",
+     "prob_bucket": ".6-.8",
+     "n": 69,
+     "mean_abs_residual": 0.2676,
+     "total_abs_residual_mass": 18.46
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "15-30",
+     "prob_bucket": ".6-.8",
+     "n": 74,
+     "mean_abs_residual": 0.2373,
+     "total_abs_residual_mass": 17.56
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "15-30",
+     "prob_bucket": ".8-1",
+     "n": 41,
+     "mean_abs_residual": 0.1614,
+     "total_abs_residual_mass": 6.62
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "30-45",
+     "prob_bucket": ".8-1",
+     "n": 75,
+     "mean_abs_residual": 0.1014,
+     "total_abs_residual_mass": 7.6
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "75-90+",
+     "prob_bucket": ".8-1",
+     "n": 16,
+     "mean_abs_residual": 0.0789,
+     "total_abs_residual_mass": 1.26
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "0-15",
+     "prob_bucket": ".8-1",
+     "n": 3,
+     "mean_abs_residual": 0.0971,
+     "total_abs_residual_mass": 0.29
+    }
+   ]
+  }
+ },
+ "skipped": [
+  {
+   "sport": "mlb_clean",
+   "reason": "byte-identical duplicate of mlb corpus -- excluded to avoid double counting"
+  }
+ ],
+ "ranked_worst_segments": [
+  {
+   "sport": "mlb",
+   "time_bucket": "early(inn1-3)",
+   "prob_bucket": ".4-.6",
+   "n": 12344,
+   "mean_abs_residual": 0.4912,
+   "total_abs_residual_mass": 6063.25
+  },
+  {
+   "sport": "mlb",
+   "time_bucket": "early(inn1-3)",
+   "prob_bucket": ".6-.8",
+   "n": 5098,
+   "mean_abs_residual": 0.4864,
+   "total_abs_residual_mass": 2479.79
+  },
+  {
+   "sport": "mlb",
+   "time_bucket": "mid(inn4-6)",
+   "prob_bucket": ".4-.6",
+   "n": 4872,
+   "mean_abs_residual": 0.4908,
+   "total_abs_residual_mass": 2391.22
+  },
+  {
+   "sport": "mlb",
+   "time_bucket": "mid(inn4-6)",
+   "prob_bucket": ".6-.8",
+   "n": 4683,
+   "mean_abs_residual": 0.4453,
+   "total_abs_residual_mass": 2085.16
+  },
+  {
+   "sport": "mlb",
+   "time_bucket": "mid(inn4-6)",
+   "prob_bucket": ".2-.4",
+   "n": 4413,
+   "mean_abs_residual": 0.4048,
+   "total_abs_residual_mass": 1786.45
+  },
+  {
+   "sport": "mlb",
+   "time_bucket": "late(inn7+)",
+   "prob_bucket": ".8-1",
+   "n": 5037,
+   "mean_abs_residual": 0.3493,
+   "total_abs_residual_mass": 1759.26
+  },
+  {
+   "sport": "mlb",
+   "time_bucket": "late(inn7+)",
+   "prob_bucket": "0-.2",
+   "n": 5431,
+   "mean_abs_residual": 0.2669,
+   "total_abs_residual_mass": 1449.65
+  },
+  {
+   "sport": "mlb",
+   "time_bucket": "early(inn1-3)",
+   "prob_bucket": ".2-.4",
+   "n": 2458,
+   "mean_abs_residual": 0.4529,
+   "total_abs_residual_mass": 1113.34
+  },
+  {
+   "sport": "mlb",
+   "time_bucket": "mid(inn4-6)",
+   "prob_bucket": ".8-1",
+   "n": 2718,
+   "mean_abs_residual": 0.3127,
+   "total_abs_residual_mass": 849.82
+  },
+  {
+   "sport": "mlb",
+   "time_bucket": "late(inn7+)",
+   "prob_bucket": ".4-.6",
+   "n": 1395,
+   "mean_abs_residual": 0.499,
+   "total_abs_residual_mass": 696.12
+  },
+  {
+   "sport": "mlb",
+   "time_bucket": "mid(inn4-6)",
+   "prob_bucket": "0-.2",
+   "n": 2079,
+   "mean_abs_residual": 0.2996,
+   "total_abs_residual_mass": 622.78
+  },
+  {
+   "sport": "mlb",
+   "time_bucket": "late(inn7+)",
+   "prob_bucket": ".6-.8",
+   "n": 1167,
+   "mean_abs_residual": 0.4141,
+   "total_abs_residual_mass": 483.24
+  },
+  {
+   "sport": "mlb",
+   "time_bucket": "late(inn7+)",
+   "prob_bucket": ".2-.4",
+   "n": 951,
+   "mean_abs_residual": 0.3718,
+   "total_abs_residual_mass": 353.54
+  },
+  {
+   "sport": "soccer_intl",
+   "time_bucket": "45-60",
+   "prob_bucket": "0-.2",
+   "n": 416,
+   "mean_abs_residual": 0.5677,
+   "total_abs_residual_mass": 236.16
+  },
+  {
+   "sport": "soccer_intl",
+   "time_bucket": "75-90+",
+   "prob_bucket": "0-.2",
+   "n": 379,
+   "mean_abs_residual": 0.5358,
+   "total_abs_residual_mass": 203.06
+  }
+ ]
+}

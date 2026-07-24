@@ -124,10 +124,10 @@ scripts.
 
 ## Why this matters to an employer
 
-The field standard for a forecaster is calibration, and the honest test of calibration is
-whether you publish your losses. These two analytics are built to surface exactly the cases
-where the market out-forecasts us -- the largest-disagreement bucket and the worst month --
-and they say so in plain numbers. That is the same discipline behind the rest of this repo:
+The field standard for a forecaster is calibration, and the honest test of calibration is whether you
+publish your losses. These two analytics are built to surface exactly the cases where the market
+out-forecasts us -- the largest-disagreement bucket and the worst month -- and they say so in
+plain numbers. That is the same discipline behind the rest of this repo:
 measure against a real market baseline, keep the negative result, and never convert
 prediction quality into an edge claim.
 

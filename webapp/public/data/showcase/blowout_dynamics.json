@@ -1,0 +1,123 @@
+{
+ "edge_claimed": false,
+ "descriptive_only": true,
+ "method": "Per game, order score ticks by (game-clock, ts); a margin threshold's point of no return is the first tick from which |home_score-away_score| stays >= threshold to the end. Reads only the score path, not model/market prob.",
+ "floors": {
+  "min_ticks_per_game": 10,
+  "min_games_per_threshold": 10,
+  "note": "declared once, not tuned to output; a (sport,threshold) cell below the game floor keeps its n but is masked from chart + headline."
+ },
+ "prior_art": "Descriptive 'point of no return' / clinch-time measurement, in the tradition of safe-lead heuristics (e.g. Bill James NBA safe-lead) and win-probability clinch points. Not a new method; do not claim first-ever.",
+ "sports": {
+  "mlb": {
+   "unit": "runs",
+   "clock_field": "inning",
+   "n_games_raw": 178,
+   "n_games_usable": 178,
+   "min_ticks_floor": 10,
+   "thresholds": [
+    {
+     "threshold": 2,
+     "n_games_total": 178,
+     "n_games_decided": 134,
+     "decided_frac_of_games": 0.7528,
+     "masked_below_floor": false,
+     "decided_clock_median": 6.0,
+     "decided_clock_p25": 4.0,
+     "decided_clock_p75": 8.0,
+     "decided_clock_mean": 5.877,
+     "decided_clockfrac_median": 0.6842,
+     "decided_clockfrac_p25": 0.451,
+     "decided_clockfrac_p75": 0.8889
+    },
+    {
+     "threshold": 3,
+     "n_games_total": 178,
+     "n_games_decided": 95,
+     "decided_frac_of_games": 0.5337,
+     "masked_below_floor": false,
+     "decided_clock_median": 7.0,
+     "decided_clock_p25": 5.0,
+     "decided_clock_p75": 8.5,
+     "decided_clock_mean": 6.5,
+     "decided_clockfrac_median": 0.8333,
+     "decided_clockfrac_p25": 0.559,
+     "decided_clockfrac_p75": 0.9444
+    },
+    {
+     "threshold": 4,
+     "n_games_total": 178,
+     "n_games_decided": 69,
+     "decided_frac_of_games": 0.3876,
+     "masked_below_floor": false,
+     "decided_clock_median": 7.5,
+     "decided_clock_p25": 6.0,
+     "decided_clock_p75": 8.5,
+     "decided_clock_mean": 6.913,
+     "decided_clockfrac_median": 0.8824,
+     "decided_clockfrac_p25": 0.6667,
+     "decided_clockfrac_p75": 0.9444
+    },
+    {
+     "threshold": 5,
+     "n_games_total": 178,
+     "n_games_decided": 48,
+     "decided_frac_of_games": 0.2697,
+     "masked_below_floor": false,
+     "decided_clock_median": 7.5,
+     "decided_clock_p25": 6.0,
+     "decided_clock_p75": 8.5,
+     "decided_clock_mean": 6.875,
+     "decided_clockfrac_median": 0.8889,
+     "decided_clockfrac_p25": 0.7332,
+     "decided_clockfrac_p75": 0.9444
+    }
+   ]
+  },
+  "soccer_intl": {
+   "unit": "goals",
+   "clock_field": "minute",
+   "n_games_raw": 29,
+   "n_games_usable": 29,
+   "min_ticks_floor": 10,
+   "thresholds": [
+    {
+     "threshold": 1,
+     "n_games_total": 29,
+     "n_games_decided": 14,
+     "decided_frac_of_games": 0.4828,
+     "masked_below_floor": false,
+     "decided_clock_median": 39.5,
+     "decided_clock_p25": 22.75,
+     "decided_clock_p75": 56.25,
+     "decided_clock_mean": 41.643,
+     "decided_clockfrac_median": 0.7475,
+     "decided_clockfrac_p25": 0.3824,
+     "decided_clockfrac_p75": 0.9633
+    },
+    {
+     "threshold": 2,
+     "n_games_total": 29,
+     "n_games_decided": 3,
+     "decided_frac_of_games": 0.1034,
+     "masked_below_floor": true
+    },
+    {
+     "threshold": 3,
+     "n_games_total": 29,
+     "n_games_decided": 0,
+     "decided_frac_of_games": 0.0,
+     "masked_below_floor": true
+    }
+   ]
+  }
+ },
+ "skipped": [
+  {
+   "sport": "mlb_clean",
+   "reason": "byte-identical duplicate of mlb (per state_conditioned_calibration); not loaded"
+  }
+ ],
+ "story": "mlb (178 games): a 2-runs gap becomes permanent by median inning 6.0 in 75% of games; a 5-runs gap becomes permanent by median inning 7.5 in 27% of games -- later and rarer as the gap grows. soccer_intl (29 games): a 1-goals gap becomes permanent by median minute 39.5 in 48% of games (only threshold above floor). Descriptive game-flow only; no edge/ROI/$ claim.",
+ "plot_written": true
+}

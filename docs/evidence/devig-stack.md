@@ -30,7 +30,7 @@ from scratch and dispatches between them:
 
 All four are pure functions over probabilities (with American-odds converters),
 production-wired behind `POST /api/devig` where `method` defaults to `shin`, and covered
-by tests. The point is not that the code exists; it is what the code is FOR.
+by tests. The point is not that the code exists; it is what it grades against.
 
 ---
 

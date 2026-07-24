@@ -1,0 +1,722 @@
+{
+ "generated_at": "2026-07-22",
+ "source": "git log, computed 2026-07-22",
+ "total_commits": 3224,
+ "date_range": [
+  "2026-03-09",
+  "2026-07-22"
+ ],
+ "agent_authored_pct": 0.9575,
+ "claude_coauthored_pct": 0.679,
+ "daily_commits": [
+  {
+   "date": "2026-03-09",
+   "commits": 64
+  },
+  {
+   "date": "2026-03-10",
+   "commits": 2
+  },
+  {
+   "date": "2026-03-12",
+   "commits": 19
+  },
+  {
+   "date": "2026-03-15",
+   "commits": 9
+  },
+  {
+   "date": "2026-03-16",
+   "commits": 9
+  },
+  {
+   "date": "2026-03-17",
+   "commits": 37
+  },
+  {
+   "date": "2026-03-18",
+   "commits": 36
+  },
+  {
+   "date": "2026-03-19",
+   "commits": 14
+  },
+  {
+   "date": "2026-03-20",
+   "commits": 2
+  },
+  {
+   "date": "2026-03-24",
+   "commits": 4
+  },
+  {
+   "date": "2026-03-25",
+   "commits": 2
+  },
+  {
+   "date": "2026-03-27",
+   "commits": 2
+  },
+  {
+   "date": "2026-04-02",
+   "commits": 4
+  },
+  {
+   "date": "2026-04-03",
+   "commits": 4
+  },
+  {
+   "date": "2026-04-07",
+   "commits": 32
+  },
+  {
+   "date": "2026-04-08",
+   "commits": 18
+  },
+  {
+   "date": "2026-04-09",
+   "commits": 6
+  },
+  {
+   "date": "2026-04-13",
+   "commits": 21
+  },
+  {
+   "date": "2026-04-14",
+   "commits": 1
+  },
+  {
+   "date": "2026-04-15",
+   "commits": 36
+  },
+  {
+   "date": "2026-04-16",
+   "commits": 3
+  },
+  {
+   "date": "2026-04-17",
+   "commits": 2
+  },
+  {
+   "date": "2026-04-21",
+   "commits": 13
+  },
+  {
+   "date": "2026-04-22",
+   "commits": 2
+  },
+  {
+   "date": "2026-04-23",
+   "commits": 27
+  },
+  {
+   "date": "2026-04-24",
+   "commits": 15
+  },
+  {
+   "date": "2026-04-30",
+   "commits": 2
+  },
+  {
+   "date": "2026-05-10",
+   "commits": 8
+  },
+  {
+   "date": "2026-05-13",
+   "commits": 2
+  },
+  {
+   "date": "2026-05-17",
+   "commits": 30
+  },
+  {
+   "date": "2026-05-18",
+   "commits": 2
+  },
+  {
+   "date": "2026-05-19",
+   "commits": 12
+  },
+  {
+   "date": "2026-05-20",
+   "commits": 2
+  },
+  {
+   "date": "2026-05-21",
+   "commits": 141
+  },
+  {
+   "date": "2026-05-22",
+   "commits": 18
+  },
+  {
+   "date": "2026-05-23",
+   "commits": 94
+  },
+  {
+   "date": "2026-05-24",
+   "commits": 233
+  },
+  {
+   "date": "2026-05-25",
+   "commits": 44
+  },
+  {
+   "date": "2026-05-26",
+   "commits": 275
+  },
+  {
+   "date": "2026-05-27",
+   "commits": 186
+  },
+  {
+   "date": "2026-05-28",
+   "commits": 23
+  },
+  {
+   "date": "2026-05-29",
+   "commits": 3
+  },
+  {
+   "date": "2026-05-31",
+   "commits": 13
+  },
+  {
+   "date": "2026-06-02",
+   "commits": 10
+  },
+  {
+   "date": "2026-06-07",
+   "commits": 14
+  },
+  {
+   "date": "2026-06-08",
+   "commits": 1
+  },
+  {
+   "date": "2026-06-09",
+   "commits": 4
+  },
+  {
+   "date": "2026-06-11",
+   "commits": 28
+  },
+  {
+   "date": "2026-06-12",
+   "commits": 111
+  },
+  {
+   "date": "2026-06-13",
+   "commits": 137
+  },
+  {
+   "date": "2026-06-14",
+   "commits": 43
+  },
+  {
+   "date": "2026-06-15",
+   "commits": 69
+  },
+  {
+   "date": "2026-06-16",
+   "commits": 35
+  },
+  {
+   "date": "2026-06-18",
+   "commits": 4
+  },
+  {
+   "date": "2026-06-20",
+   "commits": 2
+  },
+  {
+   "date": "2026-06-21",
+   "commits": 14
+  },
+  {
+   "date": "2026-06-22",
+   "commits": 10
+  },
+  {
+   "date": "2026-06-23",
+   "commits": 1
+  },
+  {
+   "date": "2026-06-26",
+   "commits": 23
+  },
+  {
+   "date": "2026-07-02",
+   "commits": 18
+  },
+  {
+   "date": "2026-07-03",
+   "commits": 84
+  },
+  {
+   "date": "2026-07-04",
+   "commits": 149
+  },
+  {
+   "date": "2026-07-05",
+   "commits": 149
+  },
+  {
+   "date": "2026-07-06",
+   "commits": 14
+  },
+  {
+   "date": "2026-07-07",
+   "commits": 41
+  },
+  {
+   "date": "2026-07-08",
+   "commits": 77
+  },
+  {
+   "date": "2026-07-09",
+   "commits": 155
+  },
+  {
+   "date": "2026-07-10",
+   "commits": 122
+  },
+  {
+   "date": "2026-07-11",
+   "commits": 8
+  },
+  {
+   "date": "2026-07-12",
+   "commits": 14
+  },
+  {
+   "date": "2026-07-13",
+   "commits": 77
+  },
+  {
+   "date": "2026-07-14",
+   "commits": 49
+  },
+  {
+   "date": "2026-07-15",
+   "commits": 65
+  },
+  {
+   "date": "2026-07-16",
+   "commits": 15
+  },
+  {
+   "date": "2026-07-17",
+   "commits": 87
+  },
+  {
+   "date": "2026-07-18",
+   "commits": 81
+  },
+  {
+   "date": "2026-07-19",
+   "commits": 23
+  },
+  {
+   "date": "2026-07-20",
+   "commits": 1
+  },
+  {
+   "date": "2026-07-21",
+   "commits": 8
+  },
+  {
+   "date": "2026-07-22",
+   "commits": 9
+  }
+ ],
+ "hour_x_weekday_heat": [
+  [
+   3,
+   0,
+   0,
+   1,
+   0,
+   0,
+   6,
+   5,
+   0,
+   6,
+   13,
+   25,
+   18,
+   42,
+   35,
+   31,
+   13,
+   16,
+   16,
+   16,
+   11,
+   19,
+   23,
+   13
+  ],
+  [
+   28,
+   4,
+   4,
+   4,
+   2,
+   3,
+   5,
+   17,
+   11,
+   24,
+   7,
+   38,
+   55,
+   77,
+   63,
+   17,
+   9,
+   32,
+   15,
+   28,
+   6,
+   19,
+   32,
+   24
+  ],
+  [
+   4,
+   4,
+   2,
+   4,
+   2,
+   5,
+   6,
+   8,
+   2,
+   10,
+   24,
+   32,
+   23,
+   21,
+   9,
+   30,
+   17,
+   45,
+   40,
+   26,
+   27,
+   15,
+   55,
+   24
+  ],
+  [
+   17,
+   21,
+   2,
+   0,
+   2,
+   0,
+   2,
+   1,
+   2,
+   18,
+   24,
+   32,
+   13,
+   42,
+   30,
+   30,
+   44,
+   34,
+   21,
+   45,
+   22,
+   19,
+   26,
+   12
+  ],
+  [
+   12,
+   13,
+   14,
+   11,
+   19,
+   11,
+   10,
+   12,
+   22,
+   9,
+   13,
+   15,
+   24,
+   30,
+   18,
+   20,
+   8,
+   17,
+   19,
+   23,
+   38,
+   44,
+   33,
+   38
+  ],
+  [
+   56,
+   28,
+   14,
+   5,
+   9,
+   24,
+   7,
+   3,
+   8,
+   13,
+   23,
+   26,
+   44,
+   21,
+   23,
+   21,
+   13,
+   21,
+   15,
+   21,
+   18,
+   13,
+   31,
+   14
+  ],
+  [
+   23,
+   30,
+   18,
+   9,
+   8,
+   6,
+   5,
+   7,
+   6,
+   13,
+   13,
+   30,
+   34,
+   44,
+   33,
+   34,
+   38,
+   30,
+   30,
+   39,
+   44,
+   35,
+   13,
+   8
+  ]
+ ],
+ "weekly_agent_share": [
+  {
+   "week": "2026-03-09",
+   "total": 94,
+   "agent_authored": 9,
+   "claude_coauthored": 6,
+   "agent_share": 0.0957,
+   "claude_share": 0.0638
+  },
+  {
+   "week": "2026-03-16",
+   "total": 98,
+   "agent_authored": 98,
+   "claude_coauthored": 56,
+   "agent_share": 1.0,
+   "claude_share": 0.5714
+  },
+  {
+   "week": "2026-03-23",
+   "total": 8,
+   "agent_authored": 6,
+   "claude_coauthored": 6,
+   "agent_share": 0.75,
+   "claude_share": 0.75
+  },
+  {
+   "week": "2026-03-30",
+   "total": 8,
+   "agent_authored": 8,
+   "claude_coauthored": 6,
+   "agent_share": 1.0,
+   "claude_share": 0.75
+  },
+  {
+   "week": "2026-04-06",
+   "total": 56,
+   "agent_authored": 56,
+   "claude_coauthored": 56,
+   "agent_share": 1.0,
+   "claude_share": 1.0
+  },
+  {
+   "week": "2026-04-13",
+   "total": 63,
+   "agent_authored": 60,
+   "claude_coauthored": 19,
+   "agent_share": 0.9524,
+   "claude_share": 0.3016
+  },
+  {
+   "week": "2026-04-20",
+   "total": 57,
+   "agent_authored": 57,
+   "claude_coauthored": 26,
+   "agent_share": 1.0,
+   "claude_share": 0.4561
+  },
+  {
+   "week": "2026-04-27",
+   "total": 2,
+   "agent_authored": 1,
+   "claude_coauthored": 1,
+   "agent_share": 0.5,
+   "claude_share": 0.5
+  },
+  {
+   "week": "2026-05-04",
+   "total": 8,
+   "agent_authored": 8,
+   "claude_coauthored": 8,
+   "agent_share": 1.0,
+   "claude_share": 1.0
+  },
+  {
+   "week": "2026-05-11",
+   "total": 32,
+   "agent_authored": 31,
+   "claude_coauthored": 25,
+   "agent_share": 0.9688,
+   "claude_share": 0.7812
+  },
+  {
+   "week": "2026-05-18",
+   "total": 502,
+   "agent_authored": 502,
+   "claude_coauthored": 307,
+   "agent_share": 1.0,
+   "claude_share": 0.6116
+  },
+  {
+   "week": "2026-05-25",
+   "total": 544,
+   "agent_authored": 504,
+   "claude_coauthored": 274,
+   "agent_share": 0.9265,
+   "claude_share": 0.5037
+  },
+  {
+   "week": "2026-06-01",
+   "total": 24,
+   "agent_authored": 21,
+   "claude_coauthored": 18,
+   "agent_share": 0.875,
+   "claude_share": 0.75
+  },
+  {
+   "week": "2026-06-08",
+   "total": 324,
+   "agent_authored": 324,
+   "claude_coauthored": 310,
+   "agent_share": 1.0,
+   "claude_share": 0.9568
+  },
+  {
+   "week": "2026-06-15",
+   "total": 124,
+   "agent_authored": 124,
+   "claude_coauthored": 124,
+   "agent_share": 1.0,
+   "claude_share": 1.0
+  },
+  {
+   "week": "2026-06-22",
+   "total": 34,
+   "agent_authored": 34,
+   "claude_coauthored": 31,
+   "agent_share": 1.0,
+   "claude_share": 0.9118
+  },
+  {
+   "week": "2026-06-29",
+   "total": 400,
+   "agent_authored": 400,
+   "claude_coauthored": 393,
+   "agent_share": 1.0,
+   "claude_share": 0.9825
+  },
+  {
+   "week": "2026-07-06",
+   "total": 431,
+   "agent_authored": 431,
+   "claude_coauthored": 292,
+   "agent_share": 1.0,
+   "claude_share": 0.6775
+  },
+  {
+   "week": "2026-07-13",
+   "total": 397,
+   "agent_authored": 395,
+   "claude_coauthored": 213,
+   "agent_share": 0.995,
+   "claude_share": 0.5365
+  },
+  {
+   "week": "2026-07-20",
+   "total": 18,
+   "agent_authored": 18,
+   "claude_coauthored": 18,
+   "agent_share": 1.0,
+   "claude_share": 1.0
+  }
+ ],
+ "busiest_days": [
+  {
+   "date": "2026-05-26",
+   "commits": 275
+  },
+  {
+   "date": "2026-05-24",
+   "commits": 233
+  },
+  {
+   "date": "2026-05-27",
+   "commits": 186
+  },
+  {
+   "date": "2026-07-09",
+   "commits": 155
+  },
+  {
+   "date": "2026-07-04",
+   "commits": 149
+  },
+  {
+   "date": "2026-07-05",
+   "commits": 149
+  },
+  {
+   "date": "2026-05-21",
+   "commits": 141
+  },
+  {
+   "date": "2026-06-13",
+   "commits": 137
+  },
+  {
+   "date": "2026-07-10",
+   "commits": 122
+  },
+  {
+   "date": "2026-06-12",
+   "commits": 111
+  }
+ ],
+ "edge_claimed": false
+}

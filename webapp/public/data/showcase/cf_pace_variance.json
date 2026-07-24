@@ -1,0 +1,225 @@
+{
+ "edge_claimed": false,
+ "label": "COUNTERFACTUAL / CALIBRATION -- pace as a variance lever",
+ "as_of": "2026-07-23",
+ "source_artifact": "data/domains/basketball_nba/{asof_team_adv,game_finals_corrected}.parquet",
+ "method": "Normal-margin possession model; win prob = Phi(z0*sqrt(N/N_ref)).",
+ "formula": "upset_prob(N) = 1 - Phi( Phi^-1(p_fav_at_N_ref) * sqrt(N / N_ref) )",
+ "why_it_holds": "margin=sum of ~N possessions; mu~N*delta_pp, var~2*N*v_pp, so z=mu/sigma scales as sqrt(N). delta_pp,v_pp cancel once the matchup is pinned at N_ref.",
+ "data_params": {
+  "source": "data/domains/basketball_nba/{asof_team_adv,game_finals_corrected}.parquet",
+  "n_ref": 99.77,
+  "pace_std": 1.72,
+  "pace_p5": 97.0,
+  "pace_p95": 102.2,
+  "pace_n": 7340,
+  "team_pts_per_game": 114.48,
+  "league_ppp": 1.1475,
+  "margin_std": 15.89,
+  "margin_n": 3616,
+  "v_pp_anchor": 1.2653,
+  "v_pp_note": "upper anchor: Var(margin)/(2*N_ref); conflates matchup dispersion, so slightly overstates pure within-game per-possession variance. Cancels in the headline formula."
+ },
+ "reference_pace_N_ref": 99.77,
+ "pace_grid": [
+  92.0,
+  94.0,
+  96.0,
+  98.0,
+  99.8,
+  100.0,
+  102.0,
+  104.0
+ ],
+ "fav_strengths_at_ref_pace": [
+  0.6,
+  0.7,
+  0.8
+ ],
+ "curves": [
+  {
+   "fav_strength_at_ref_pace": 0.6,
+   "upset_prob_at_ref_pace": 0.4,
+   "by_pace": [
+    {
+     "pace": 92.0,
+     "is_ref_pace": false,
+     "fav_win_prob": 0.5961,
+     "upset_prob": 0.4039
+    },
+    {
+     "pace": 94.0,
+     "is_ref_pace": false,
+     "fav_win_prob": 0.5971,
+     "upset_prob": 0.4029
+    },
+    {
+     "pace": 96.0,
+     "is_ref_pace": false,
+     "fav_win_prob": 0.5981,
+     "upset_prob": 0.4019
+    },
+    {
+     "pace": 98.0,
+     "is_ref_pace": false,
+     "fav_win_prob": 0.5991,
+     "upset_prob": 0.4009
+    },
+    {
+     "pace": 99.8,
+     "is_ref_pace": true,
+     "fav_win_prob": 0.6,
+     "upset_prob": 0.4
+    },
+    {
+     "pace": 100.0,
+     "is_ref_pace": false,
+     "fav_win_prob": 0.6001,
+     "upset_prob": 0.3999
+    },
+    {
+     "pace": 102.0,
+     "is_ref_pace": false,
+     "fav_win_prob": 0.6011,
+     "upset_prob": 0.3989
+    },
+    {
+     "pace": 104.0,
+     "is_ref_pace": false,
+     "fav_win_prob": 0.6021,
+     "upset_prob": 0.3979
+    }
+   ],
+   "upset_swing_slow_minus_fast": 0.0059
+  },
+  {
+   "fav_strength_at_ref_pace": 0.7,
+   "upset_prob_at_ref_pace": 0.3,
+   "by_pace": [
+    {
+     "pace": 92.0,
+     "is_ref_pace": false,
+     "fav_win_prob": 0.6927,
+     "upset_prob": 0.3073
+    },
+    {
+     "pace": 94.0,
+     "is_ref_pace": false,
+     "fav_win_prob": 0.6946,
+     "upset_prob": 0.3054
+    },
+    {
+     "pace": 96.0,
+     "is_ref_pace": false,
+     "fav_win_prob": 0.6965,
+     "upset_prob": 0.3035
+    },
+    {
+     "pace": 98.0,
+     "is_ref_pace": false,
+     "fav_win_prob": 0.6984,
+     "upset_prob": 0.3016
+    },
+    {
+     "pace": 99.8,
+     "is_ref_pace": true,
+     "fav_win_prob": 0.7,
+     "upset_prob": 0.3
+    },
+    {
+     "pace": 100.0,
+     "is_ref_pace": false,
+     "fav_win_prob": 0.7002,
+     "upset_prob": 0.2998
+    },
+    {
+     "pace": 102.0,
+     "is_ref_pace": false,
+     "fav_win_prob": 0.702,
+     "upset_prob": 0.298
+    },
+    {
+     "pace": 104.0,
+     "is_ref_pace": false,
+     "fav_win_prob": 0.7038,
+     "upset_prob": 0.2962
+    }
+   ],
+   "upset_swing_slow_minus_fast": 0.0111
+  },
+  {
+   "fav_strength_at_ref_pace": 0.8,
+   "upset_prob_at_ref_pace": 0.2,
+   "by_pace": [
+    {
+     "pace": 92.0,
+     "is_ref_pace": false,
+     "fav_win_prob": 0.7905,
+     "upset_prob": 0.2095
+    },
+    {
+     "pace": 94.0,
+     "is_ref_pace": false,
+     "fav_win_prob": 0.793,
+     "upset_prob": 0.207
+    },
+    {
+     "pace": 96.0,
+     "is_ref_pace": false,
+     "fav_win_prob": 0.7955,
+     "upset_prob": 0.2045
+    },
+    {
+     "pace": 98.0,
+     "is_ref_pace": false,
+     "fav_win_prob": 0.7979,
+     "upset_prob": 0.2021
+    },
+    {
+     "pace": 99.8,
+     "is_ref_pace": true,
+     "fav_win_prob": 0.8,
+     "upset_prob": 0.2
+    },
+    {
+     "pace": 100.0,
+     "is_ref_pace": false,
+     "fav_win_prob": 0.8003,
+     "upset_prob": 0.1997
+    },
+    {
+     "pace": 102.0,
+     "is_ref_pace": false,
+     "fav_win_prob": 0.8026,
+     "upset_prob": 0.1974
+    },
+    {
+     "pace": 104.0,
+     "is_ref_pace": false,
+     "fav_win_prob": 0.8049,
+     "upset_prob": 0.1951
+    }
+   ],
+   "upset_swing_slow_minus_fast": 0.0144
+  }
+ ],
+ "assumptions": [
+  "Margin ~ Normal (CLT over ~100 possessions; good for full games, weaker for short in-game windows).",
+  "COUNTERFACTUAL floor: per-possession edge and variance held pace-INVARIANT. Real teams that push pace may also change shot quality; this isolates the mechanical variance effect only, not behavioral pace changes.",
+  "Possessions independent; runs/autocorrelation would add variance and make the pace lever slightly STRONGER than shown.",
+  "v_pp anchor conflates matchup dispersion (upper bound); cancels in the headline formula, used only for MC validation/context. Two teams symmetric in variance."
+ ],
+ "mc_validation": {
+  "n_sim": 8000,
+  "declared_ppp_dist": {
+   "0": 0.487,
+   "2": 0.394,
+   "3": 0.12
+  },
+  "mc_fav_win_rate": 0.6957,
+  "formula_fav_win_prob": 0.7,
+  "abs_diff": 0.0042
+ },
+ "verdict": "Pace is a real but MODEST variance lever: across the observed NBA pace range (~92-104) the same matchup's upset prob shifts by only a few points -- fewer possessions favor the underdog (sqrt(N) scaling), but the effect is small because real pace varies little. A 60% favorite: upset prob 39.8% at pace 104 vs 40.4% at pace 92 (slow-minus-fast swing +0.6 pts). A 70% favorite: upset prob 29.6% at pace 104 vs 30.7% at pace 92 (slow-minus-fast swing +1.1 pts). A 80% favorite: upset prob 19.5% at pace 104 vs 20.9% at pace 92 (slow-minus-fast swing +1.4 pts).",
+ "plot_written": true
+}

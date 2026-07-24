@@ -1,0 +1,3748 @@
+{
+ "sport": "soccer",
+ "generated_at": "2026-07-23T01:57:24.440710+00:00",
+ "descriptive_only": true,
+ "n_entries": 187,
+ "entries": [
+  {
+   "entity": "Ajaccio",
+   "card_path": "docs/img/atlas/soccer/ajaccio.png",
+   "key_numbers": {
+    "ppg_l10": 0.2,
+    "ppg_home_l10": 0.5,
+    "ppg_away_l10": 0.3,
+    "gf_l10": 0.2,
+    "ga_l10": 2.6,
+    "gd_l10": -2.4,
+    "winrate_l10": 0.0,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.1351,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.0
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Ajaccio GFCO",
+   "card_path": "docs/img/atlas/soccer/ajaccio_gfco.png",
+   "key_numbers": {
+    "ppg_l10": 0.9,
+    "ppg_home_l10": 0.9,
+    "ppg_away_l10": 0.8,
+    "gf_l10": 0.9,
+    "ga_l10": 1.9,
+    "gd_l10": -1.0,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.1622,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Alaves",
+   "card_path": "docs/img/atlas/soccer/alaves.png",
+   "key_numbers": {
+    "ppg_l10": 1.6,
+    "ppg_home_l10": 1.3,
+    "ppg_away_l10": 1.2,
+    "gf_l10": 1.8,
+    "ga_l10": 1.7,
+    "gd_l10": 0.1,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.1351,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Almeria",
+   "card_path": "docs/img/atlas/soccer/almeria.png",
+   "key_numbers": {
+    "ppg_l10": 0.9,
+    "ppg_home_l10": 0.5,
+    "ppg_away_l10": 0.9,
+    "gf_l10": 1.2,
+    "ga_l10": 1.9,
+    "gd_l10": -0.7,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.1622,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Amiens",
+   "card_path": "docs/img/atlas/soccer/amiens.png",
+   "key_numbers": {
+    "ppg_l10": 0.5,
+    "ppg_home_l10": 1.0,
+    "ppg_away_l10": 0.5,
+    "gf_l10": 0.9,
+    "ga_l10": 1.6,
+    "gd_l10": -0.7,
+    "winrate_l10": 0.0,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.1852,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Angers",
+   "card_path": "docs/img/atlas/soccer/angers.png",
+   "key_numbers": {
+    "ppg_l10": 0.6,
+    "ppg_home_l10": 1.2,
+    "ppg_away_l10": 1.0,
+    "gf_l10": 0.6,
+    "ga_l10": 1.9,
+    "gd_l10": -1.3,
+    "winrate_l10": 0.1,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.303,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.4
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Arsenal",
+   "card_path": "docs/img/atlas/soccer/arsenal.png",
+   "key_numbers": {
+    "ppg_l10": 2.4,
+    "ppg_home_l10": 2.2,
+    "ppg_away_l10": 2.1,
+    "gf_l10": 1.7,
+    "ga_l10": 0.6,
+    "gd_l10": 1.1,
+    "winrate_l10": 0.8,
+    "clean_sheet_rate_l10": 0.6,
+    "clean_sheet_rate_season": 0.5135,
+    "clean_sheet_rate_home": 0.6,
+    "clean_sheet_rate_away": 0.5
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Aston Villa",
+   "card_path": "docs/img/atlas/soccer/aston_villa.png",
+   "key_numbers": {
+    "ppg_l10": 1.1,
+    "ppg_home_l10": 1.6,
+    "ppg_away_l10": 1.0,
+    "gf_l10": 1.6,
+    "ga_l10": 2.0,
+    "gd_l10": -0.4,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.2432,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Atalanta",
+   "card_path": "docs/img/atlas/soccer/atalanta.png",
+   "key_numbers": {
+    "ppg_l10": 1.3,
+    "ppg_home_l10": 2.0,
+    "ppg_away_l10": 1.6,
+    "gf_l10": 1.3,
+    "ga_l10": 1.1,
+    "gd_l10": 0.2,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.3514,
+    "clean_sheet_rate_home": 0.5,
+    "clean_sheet_rate_away": 0.4
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Ath Bilbao",
+   "card_path": "docs/img/atlas/soccer/ath_bilbao.png",
+   "key_numbers": {
+    "ppg_l10": 1.0,
+    "ppg_home_l10": 1.4,
+    "ppg_away_l10": 0.8,
+    "gf_l10": 1.1,
+    "ga_l10": 1.7,
+    "gd_l10": -0.6,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.1622,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.0
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Ath Madrid",
+   "card_path": "docs/img/atlas/soccer/ath_madrid.png",
+   "key_numbers": {
+    "ppg_l10": 1.5,
+    "ppg_home_l10": 2.1,
+    "ppg_away_l10": 1.4,
+    "gf_l10": 1.5,
+    "ga_l10": 1.4,
+    "gd_l10": 0.1,
+    "winrate_l10": 0.5,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.3784,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.4
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Augsburg",
+   "card_path": "docs/img/atlas/soccer/augsburg.png",
+   "key_numbers": {
+    "ppg_l10": 1.5,
+    "ppg_home_l10": 1.7,
+    "ppg_away_l10": 1.3,
+    "gf_l10": 1.7,
+    "ga_l10": 1.6,
+    "gd_l10": 0.1,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.1515,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.0
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Auxerre",
+   "card_path": "docs/img/atlas/soccer/auxerre.png",
+   "key_numbers": {
+    "ppg_l10": 1.4,
+    "ppg_home_l10": 1.5,
+    "ppg_away_l10": 0.8,
+    "gf_l10": 1.5,
+    "ga_l10": 1.1,
+    "gd_l10": 0.4,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.2424,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Barcelona",
+   "card_path": "docs/img/atlas/soccer/barcelona.png",
+   "key_numbers": {
+    "ppg_l10": 2.7,
+    "ppg_home_l10": 3.0,
+    "ppg_away_l10": 2.1,
+    "gf_l10": 2.2,
+    "ga_l10": 0.7,
+    "gd_l10": 1.5,
+    "winrate_l10": 0.9,
+    "clean_sheet_rate_l10": 0.4,
+    "clean_sheet_rate_season": 0.4054,
+    "clean_sheet_rate_home": 0.6,
+    "clean_sheet_rate_away": 0.4
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Barnsley",
+   "card_path": "docs/img/atlas/soccer/barnsley.png",
+   "key_numbers": {
+    "ppg_l10": 0.6,
+    "ppg_home_l10": 1.2,
+    "ppg_away_l10": 0.4,
+    "gf_l10": 0.8,
+    "ga_l10": 1.8,
+    "gd_l10": -1.0,
+    "winrate_l10": 0.1,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.1556,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Bastia",
+   "card_path": "docs/img/atlas/soccer/bastia.png",
+   "key_numbers": {
+    "ppg_l10": 1.0,
+    "ppg_home_l10": 1.1,
+    "ppg_away_l10": 0.6,
+    "gf_l10": 0.5,
+    "ga_l10": 1.8,
+    "gd_l10": -1.3,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.2162,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.0
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Bayern Munich",
+   "card_path": "docs/img/atlas/soccer/bayern_munich.png",
+   "key_numbers": {
+    "ppg_l10": 2.6,
+    "ppg_home_l10": 2.3,
+    "ppg_away_l10": 2.6,
+    "gf_l10": 3.2,
+    "ga_l10": 1.4,
+    "gd_l10": 1.8,
+    "winrate_l10": 0.8,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.3636,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.3
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Benevento",
+   "card_path": "docs/img/atlas/soccer/benevento.png",
+   "key_numbers": {
+    "ppg_l10": 0.6,
+    "ppg_home_l10": 0.5,
+    "ppg_away_l10": 0.6,
+    "gf_l10": 1.2,
+    "ga_l10": 2.2,
+    "gd_l10": -1.0,
+    "winrate_l10": 0.1,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.1892,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Betis",
+   "card_path": "docs/img/atlas/soccer/betis.png",
+   "key_numbers": {
+    "ppg_l10": 1.4,
+    "ppg_home_l10": 2.0,
+    "ppg_away_l10": 1.2,
+    "gf_l10": 1.5,
+    "ga_l10": 1.3,
+    "gd_l10": 0.2,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.2703,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Bielefeld",
+   "card_path": "docs/img/atlas/soccer/bielefeld.png",
+   "key_numbers": {
+    "ppg_l10": 0.2,
+    "ppg_home_l10": 1.2,
+    "ppg_away_l10": 0.7,
+    "gf_l10": 0.4,
+    "ga_l10": 2.3,
+    "gd_l10": -1.9,
+    "winrate_l10": 0.0,
+    "clean_sheet_rate_l10": 0.0,
+    "clean_sheet_rate_season": 0.2121,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Birmingham",
+   "card_path": "docs/img/atlas/soccer/birmingham.png",
+   "key_numbers": {
+    "ppg_l10": 1.4,
+    "ppg_home_l10": 1.8,
+    "ppg_away_l10": 1.1,
+    "gf_l10": 1.0,
+    "ga_l10": 0.9,
+    "gd_l10": 0.1,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.2222,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Blackburn",
+   "card_path": "docs/img/atlas/soccer/blackburn.png",
+   "key_numbers": {
+    "ppg_l10": 1.4,
+    "ppg_home_l10": 1.2,
+    "ppg_away_l10": 1.3,
+    "gf_l10": 0.9,
+    "ga_l10": 0.9,
+    "gd_l10": 0.0,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.2667,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Blackpool",
+   "card_path": "docs/img/atlas/soccer/blackpool.png",
+   "key_numbers": {
+    "ppg_l10": 0.9,
+    "ppg_home_l10": 1.2,
+    "ppg_away_l10": 0.4,
+    "gf_l10": 1.4,
+    "ga_l10": 2.1,
+    "gd_l10": -0.7,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.2222,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Bochum",
+   "card_path": "docs/img/atlas/soccer/bochum.png",
+   "key_numbers": {
+    "ppg_l10": 0.5,
+    "ppg_home_l10": 0.8,
+    "ppg_away_l10": 0.9,
+    "gf_l10": 0.8,
+    "ga_l10": 2.1,
+    "gd_l10": -1.3,
+    "winrate_l10": 0.1,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.1515,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Bologna",
+   "card_path": "docs/img/atlas/soccer/bologna.png",
+   "key_numbers": {
+    "ppg_l10": 1.6,
+    "ppg_home_l10": 0.7,
+    "ppg_away_l10": 2.2,
+    "gf_l10": 1.0,
+    "ga_l10": 1.1,
+    "gd_l10": -0.1,
+    "winrate_l10": 0.5,
+    "clean_sheet_rate_l10": 0.4,
+    "clean_sheet_rate_season": 0.3243,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.3
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Bolton",
+   "card_path": "docs/img/atlas/soccer/bolton.png",
+   "key_numbers": {
+    "ppg_l10": 0.6,
+    "ppg_home_l10": 0.4,
+    "ppg_away_l10": 0.6,
+    "gf_l10": 0.7,
+    "ga_l10": 2.2,
+    "gd_l10": -1.5,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.0,
+    "clean_sheet_rate_season": 0.1333,
+    "clean_sheet_rate_home": 0.0,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Bordeaux",
+   "card_path": "docs/img/atlas/soccer/bordeaux.png",
+   "key_numbers": {
+    "ppg_l10": 0.6,
+    "ppg_home_l10": 0.9,
+    "ppg_away_l10": 0.5,
+    "gf_l10": 1.0,
+    "ga_l10": 2.4,
+    "gd_l10": -1.4,
+    "winrate_l10": 0.1,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.0541,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Bournemouth",
+   "card_path": "docs/img/atlas/soccer/bournemouth.png",
+   "key_numbers": {
+    "ppg_l10": 1.8,
+    "ppg_home_l10": 1.5,
+    "ppg_away_l10": 1.9,
+    "gf_l10": 1.4,
+    "ga_l10": 0.8,
+    "gd_l10": 0.6,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.4,
+    "clean_sheet_rate_season": 0.2973,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.4
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Brentford",
+   "card_path": "docs/img/atlas/soccer/brentford.png",
+   "key_numbers": {
+    "ppg_l10": 1.2,
+    "ppg_home_l10": 1.2,
+    "ppg_away_l10": 1.7,
+    "gf_l10": 1.4,
+    "ga_l10": 1.4,
+    "gd_l10": 0.0,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.4,
+    "clean_sheet_rate_season": 0.2703,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.4
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Brescia",
+   "card_path": "docs/img/atlas/soccer/brescia.png",
+   "key_numbers": {
+    "ppg_l10": 0.7,
+    "ppg_home_l10": 0.9,
+    "ppg_away_l10": 0.1,
+    "gf_l10": 1.1,
+    "ga_l10": 2.8,
+    "gd_l10": -1.7,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.1622,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.0
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Brest",
+   "card_path": "docs/img/atlas/soccer/brest.png",
+   "key_numbers": {
+    "ppg_l10": 0.8,
+    "ppg_home_l10": 1.9,
+    "ppg_away_l10": 0.6,
+    "gf_l10": 1.1,
+    "ga_l10": 2.0,
+    "gd_l10": -0.9,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.2727,
+    "clean_sheet_rate_home": 0.5,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Brighton",
+   "card_path": "docs/img/atlas/soccer/brighton.png",
+   "key_numbers": {
+    "ppg_l10": 1.9,
+    "ppg_home_l10": 1.8,
+    "ppg_away_l10": 1.2,
+    "gf_l10": 1.6,
+    "ga_l10": 0.9,
+    "gd_l10": 0.7,
+    "winrate_l10": 0.6,
+    "clean_sheet_rate_l10": 0.4,
+    "clean_sheet_rate_season": 0.2703,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.3
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Bristol City",
+   "card_path": "docs/img/atlas/soccer/bristol_city.png",
+   "key_numbers": {
+    "ppg_l10": 0.9,
+    "ppg_home_l10": 1.0,
+    "ppg_away_l10": 1.2,
+    "gf_l10": 0.9,
+    "ga_l10": 1.5,
+    "gd_l10": -0.6,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.2889,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Burnley",
+   "card_path": "docs/img/atlas/soccer/burnley.png",
+   "key_numbers": {
+    "ppg_l10": 0.2,
+    "ppg_home_l10": 0.5,
+    "ppg_away_l10": 0.5,
+    "gf_l10": 0.8,
+    "ga_l10": 2.2,
+    "gd_l10": -1.4,
+    "winrate_l10": 0.0,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.1081,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.0
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Burton",
+   "card_path": "docs/img/atlas/soccer/burton.png",
+   "key_numbers": {
+    "ppg_l10": 1.2,
+    "ppg_home_l10": 0.9,
+    "ppg_away_l10": 1.1,
+    "gf_l10": 1.1,
+    "ga_l10": 1.7,
+    "gd_l10": -0.6,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.2444,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Cadiz",
+   "card_path": "docs/img/atlas/soccer/cadiz.png",
+   "key_numbers": {
+    "ppg_l10": 1.4,
+    "ppg_home_l10": 1.3,
+    "ppg_away_l10": 0.6,
+    "gf_l10": 0.7,
+    "ga_l10": 1.1,
+    "gd_l10": -0.4,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.5,
+    "clean_sheet_rate_season": 0.2703,
+    "clean_sheet_rate_home": 0.5,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Caen",
+   "card_path": "docs/img/atlas/soccer/caen.png",
+   "key_numbers": {
+    "ppg_l10": 1.3,
+    "ppg_home_l10": 1.0,
+    "ppg_away_l10": 0.9,
+    "gf_l10": 0.7,
+    "ga_l10": 1.7,
+    "gd_l10": -1.0,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.4,
+    "clean_sheet_rate_season": 0.2432,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.3
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Cagliari",
+   "card_path": "docs/img/atlas/soccer/cagliari.png",
+   "key_numbers": {
+    "ppg_l10": 1.0,
+    "ppg_home_l10": 1.6,
+    "ppg_away_l10": 0.9,
+    "gf_l10": 0.9,
+    "ga_l10": 1.6,
+    "gd_l10": -0.7,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.2162,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Cardiff",
+   "card_path": "docs/img/atlas/soccer/cardiff.png",
+   "key_numbers": {
+    "ppg_l10": 0.8,
+    "ppg_home_l10": 1.3,
+    "ppg_away_l10": 0.8,
+    "gf_l10": 0.8,
+    "ga_l10": 1.2,
+    "gd_l10": -0.4,
+    "winrate_l10": 0.1,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.1778,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Carpi",
+   "card_path": "docs/img/atlas/soccer/carpi.png",
+   "key_numbers": {
+    "ppg_l10": 1.4,
+    "ppg_home_l10": 1.7,
+    "ppg_away_l10": 0.8,
+    "gf_l10": 1.1,
+    "ga_l10": 1.2,
+    "gd_l10": -0.1,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.2162,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.4
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Celta",
+   "card_path": "docs/img/atlas/soccer/celta.png",
+   "key_numbers": {
+    "ppg_l10": 1.1,
+    "ppg_home_l10": 1.5,
+    "ppg_away_l10": 1.3,
+    "gf_l10": 1.5,
+    "ga_l10": 1.8,
+    "gd_l10": -0.3,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.2432,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Charlton",
+   "card_path": "docs/img/atlas/soccer/charlton.png",
+   "key_numbers": {
+    "ppg_l10": 1.2,
+    "ppg_home_l10": 1.0,
+    "ppg_away_l10": 1.2,
+    "gf_l10": 1.0,
+    "ga_l10": 1.1,
+    "gd_l10": -0.1,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.2889,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Chelsea",
+   "card_path": "docs/img/atlas/soccer/chelsea.png",
+   "key_numbers": {
+    "ppg_l10": 0.7,
+    "ppg_home_l10": 1.2,
+    "ppg_away_l10": 1.2,
+    "gf_l10": 0.9,
+    "ga_l10": 1.9,
+    "gd_l10": -1.0,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.0,
+    "clean_sheet_rate_season": 0.2432,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.0
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Chievo",
+   "card_path": "docs/img/atlas/soccer/chievo.png",
+   "key_numbers": {
+    "ppg_l10": 0.6,
+    "ppg_home_l10": 0.6,
+    "ppg_away_l10": 0.5,
+    "gf_l10": 0.5,
+    "ga_l10": 2.2,
+    "gd_l10": -1.7,
+    "winrate_l10": 0.1,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.1622,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.0
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Clermont",
+   "card_path": "docs/img/atlas/soccer/clermont.png",
+   "key_numbers": {
+    "ppg_l10": 0.8,
+    "ppg_home_l10": 1.0,
+    "ppg_away_l10": 0.5,
+    "gf_l10": 1.0,
+    "ga_l10": 1.9,
+    "gd_l10": -0.9,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.0,
+    "clean_sheet_rate_season": 0.1515,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Como",
+   "card_path": "docs/img/atlas/soccer/como.png",
+   "key_numbers": {
+    "ppg_l10": 2.0,
+    "ppg_home_l10": 1.7,
+    "ppg_away_l10": 2.3,
+    "gf_l10": 1.7,
+    "ga_l10": 0.8,
+    "gd_l10": 0.9,
+    "winrate_l10": 0.6,
+    "clean_sheet_rate_l10": 0.6,
+    "clean_sheet_rate_season": 0.5135,
+    "clean_sheet_rate_home": 0.5,
+    "clean_sheet_rate_away": 0.7
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Coventry",
+   "card_path": "docs/img/atlas/soccer/coventry.png",
+   "key_numbers": {
+    "ppg_l10": 2.1,
+    "ppg_home_l10": 2.3,
+    "ppg_away_l10": 1.5,
+    "gf_l10": 2.1,
+    "ga_l10": 0.7,
+    "gd_l10": 1.4,
+    "winrate_l10": 0.6,
+    "clean_sheet_rate_l10": 0.5,
+    "clean_sheet_rate_season": 0.3556,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.4
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Cremonese",
+   "card_path": "docs/img/atlas/soccer/cremonese.png",
+   "key_numbers": {
+    "ppg_l10": 1.0,
+    "ppg_home_l10": 0.7,
+    "ppg_away_l10": 0.6,
+    "gf_l10": 1.0,
+    "ga_l10": 1.5,
+    "gd_l10": -0.5,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.4,
+    "clean_sheet_rate_season": 0.2973,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Crotone",
+   "card_path": "docs/img/atlas/soccer/crotone.png",
+   "key_numbers": {
+    "ppg_l10": 0.7,
+    "ppg_home_l10": 0.9,
+    "ppg_away_l10": 0.4,
+    "gf_l10": 1.5,
+    "ga_l10": 2.5,
+    "gd_l10": -1.0,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.0,
+    "clean_sheet_rate_season": 0.0541,
+    "clean_sheet_rate_home": 0.0,
+    "clean_sheet_rate_away": 0.0
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Crystal Palace",
+   "card_path": "docs/img/atlas/soccer/crystal_palace.png",
+   "key_numbers": {
+    "ppg_l10": 1.0,
+    "ppg_home_l10": 1.1,
+    "ppg_away_l10": 0.8,
+    "gf_l10": 1.1,
+    "ga_l10": 1.7,
+    "gd_l10": -0.6,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.3243,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Darmstadt",
+   "card_path": "docs/img/atlas/soccer/darmstadt.png",
+   "key_numbers": {
+    "ppg_l10": 0.4,
+    "ppg_home_l10": 0.1,
+    "ppg_away_l10": 0.7,
+    "gf_l10": 0.6,
+    "ga_l10": 3.0,
+    "gd_l10": -2.4,
+    "winrate_l10": 0.1,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.0909,
+    "clean_sheet_rate_home": 0.0,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Derby",
+   "card_path": "docs/img/atlas/soccer/derby.png",
+   "key_numbers": {
+    "ppg_l10": 1.8,
+    "ppg_home_l10": 2.2,
+    "ppg_away_l10": 1.2,
+    "gf_l10": 1.4,
+    "ga_l10": 1.1,
+    "gd_l10": 0.3,
+    "winrate_l10": 0.6,
+    "clean_sheet_rate_l10": 0.4,
+    "clean_sheet_rate_season": 0.2667,
+    "clean_sheet_rate_home": 0.5,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Dijon",
+   "card_path": "docs/img/atlas/soccer/dijon.png",
+   "key_numbers": {
+    "ppg_l10": 0.3,
+    "ppg_home_l10": 0.5,
+    "ppg_away_l10": 0.1,
+    "gf_l10": 0.6,
+    "ga_l10": 2.9,
+    "gd_l10": -2.3,
+    "winrate_l10": 0.1,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.1351,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Dortmund",
+   "card_path": "docs/img/atlas/soccer/dortmund.png",
+   "key_numbers": {
+    "ppg_l10": 1.8,
+    "ppg_home_l10": 2.4,
+    "ppg_away_l10": 1.8,
+    "gf_l10": 1.9,
+    "ga_l10": 1.2,
+    "gd_l10": 0.7,
+    "winrate_l10": 0.6,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.4242,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Eibar",
+   "card_path": "docs/img/atlas/soccer/eibar.png",
+   "key_numbers": {
+    "ppg_l10": 0.8,
+    "ppg_home_l10": 0.9,
+    "ppg_away_l10": 0.5,
+    "gf_l10": 0.8,
+    "ga_l10": 1.9,
+    "gd_l10": -1.1,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.2432,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Ein Frankfurt",
+   "card_path": "docs/img/atlas/soccer/ein_frankfurt.png",
+   "key_numbers": {
+    "ppg_l10": 1.2,
+    "ppg_home_l10": 1.4,
+    "ppg_away_l10": 0.8,
+    "gf_l10": 1.3,
+    "ga_l10": 1.4,
+    "gd_l10": -0.1,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.2121,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Elche",
+   "card_path": "docs/img/atlas/soccer/elche.png",
+   "key_numbers": {
+    "ppg_l10": 1.6,
+    "ppg_home_l10": 1.6,
+    "ppg_away_l10": 0.4,
+    "gf_l10": 1.3,
+    "ga_l10": 1.5,
+    "gd_l10": -0.2,
+    "winrate_l10": 0.5,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.2162,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.0
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Empoli",
+   "card_path": "docs/img/atlas/soccer/empoli.png",
+   "key_numbers": {
+    "ppg_l10": 0.9,
+    "ppg_home_l10": 0.6,
+    "ppg_away_l10": 0.6,
+    "gf_l10": 0.9,
+    "ga_l10": 1.3,
+    "gd_l10": -0.4,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.1622,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.0
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Espanol",
+   "card_path": "docs/img/atlas/soccer/espanol.png",
+   "key_numbers": {
+    "ppg_l10": 0.8,
+    "ppg_home_l10": 0.9,
+    "ppg_away_l10": 0.5,
+    "gf_l10": 0.8,
+    "ga_l10": 1.4,
+    "gd_l10": -0.6,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.2703,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Everton",
+   "card_path": "docs/img/atlas/soccer/everton.png",
+   "key_numbers": {
+    "ppg_l10": 1.2,
+    "ppg_home_l10": 0.9,
+    "ppg_away_l10": 1.6,
+    "gf_l10": 1.8,
+    "ga_l10": 1.8,
+    "gd_l10": 0.0,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.2973,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.3
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "FC Koln",
+   "card_path": "docs/img/atlas/soccer/fc_koln.png",
+   "key_numbers": {
+    "ppg_l10": 0.8,
+    "ppg_home_l10": 1.1,
+    "ppg_away_l10": 0.6,
+    "gf_l10": 1.5,
+    "ga_l10": 1.9,
+    "gd_l10": -0.4,
+    "winrate_l10": 0.1,
+    "clean_sheet_rate_l10": 0.0,
+    "clean_sheet_rate_season": 0.0909,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.0
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Fiorentina",
+   "card_path": "docs/img/atlas/soccer/fiorentina.png",
+   "key_numbers": {
+    "ppg_l10": 1.7,
+    "ppg_home_l10": 1.5,
+    "ppg_away_l10": 1.7,
+    "gf_l10": 1.0,
+    "ga_l10": 0.7,
+    "gd_l10": 0.3,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.6,
+    "clean_sheet_rate_season": 0.2703,
+    "clean_sheet_rate_home": 0.6,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Fortuna Dusseldorf",
+   "card_path": "docs/img/atlas/soccer/fortuna_dusseldorf.png",
+   "key_numbers": {
+    "ppg_l10": 1.0,
+    "ppg_home_l10": 1.1,
+    "ppg_away_l10": 0.8,
+    "gf_l10": 1.3,
+    "ga_l10": 1.8,
+    "gd_l10": -0.5,
+    "winrate_l10": 0.1,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.1212,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Freiburg",
+   "card_path": "docs/img/atlas/soccer/freiburg.png",
+   "key_numbers": {
+    "ppg_l10": 1.1,
+    "ppg_home_l10": 1.8,
+    "ppg_away_l10": 1.0,
+    "gf_l10": 1.3,
+    "ga_l10": 1.9,
+    "gd_l10": -0.6,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.1818,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Frosinone",
+   "card_path": "docs/img/atlas/soccer/frosinone.png",
+   "key_numbers": {
+    "ppg_l10": 1.1,
+    "ppg_home_l10": 0.8,
+    "ppg_away_l10": 0.8,
+    "gf_l10": 0.9,
+    "ga_l10": 1.2,
+    "gd_l10": -0.3,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.5,
+    "clean_sheet_rate_season": 0.1892,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.3
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Fulham",
+   "card_path": "docs/img/atlas/soccer/fulham.png",
+   "key_numbers": {
+    "ppg_l10": 1.2,
+    "ppg_home_l10": 1.9,
+    "ppg_away_l10": 0.7,
+    "gf_l10": 0.7,
+    "ga_l10": 1.0,
+    "gd_l10": -0.3,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.2162,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Genoa",
+   "card_path": "docs/img/atlas/soccer/genoa.png",
+   "key_numbers": {
+    "ppg_l10": 1.4,
+    "ppg_home_l10": 1.6,
+    "ppg_away_l10": 1.1,
+    "gf_l10": 0.9,
+    "ga_l10": 1.1,
+    "gd_l10": -0.2,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.2432,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.5
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Getafe",
+   "card_path": "docs/img/atlas/soccer/getafe.png",
+   "key_numbers": {
+    "ppg_l10": 1.3,
+    "ppg_home_l10": 1.3,
+    "ppg_away_l10": 1.5,
+    "gf_l10": 0.8,
+    "ga_l10": 0.9,
+    "gd_l10": -0.1,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.2973,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.4
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Girona",
+   "card_path": "docs/img/atlas/soccer/girona.png",
+   "key_numbers": {
+    "ppg_l10": 0.9,
+    "ppg_home_l10": 1.4,
+    "ppg_away_l10": 0.8,
+    "gf_l10": 1.0,
+    "ga_l10": 1.1,
+    "gd_l10": -0.1,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.1622,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Granada",
+   "card_path": "docs/img/atlas/soccer/granada.png",
+   "key_numbers": {
+    "ppg_l10": 0.7,
+    "ppg_home_l10": 1.1,
+    "ppg_away_l10": 0.2,
+    "gf_l10": 0.8,
+    "ga_l10": 1.5,
+    "gd_l10": -0.7,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.0811,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.0
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Greuther Furth",
+   "card_path": "docs/img/atlas/soccer/greuther_furth.png",
+   "key_numbers": {
+    "ppg_l10": 0.5,
+    "ppg_home_l10": 1.0,
+    "ppg_away_l10": 0.4,
+    "gf_l10": 0.6,
+    "ga_l10": 1.9,
+    "gd_l10": -1.3,
+    "winrate_l10": 0.0,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.1818,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Guingamp",
+   "card_path": "docs/img/atlas/soccer/guingamp.png",
+   "key_numbers": {
+    "ppg_l10": 0.8,
+    "ppg_home_l10": 1.3,
+    "ppg_away_l10": 0.6,
+    "gf_l10": 0.9,
+    "ga_l10": 1.6,
+    "gd_l10": -0.7,
+    "winrate_l10": 0.1,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.2703,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Hamburg",
+   "card_path": "docs/img/atlas/soccer/hamburg.png",
+   "key_numbers": {
+    "ppg_l10": 1.1,
+    "ppg_home_l10": 1.1,
+    "ppg_away_l10": 1.1,
+    "gf_l10": 1.3,
+    "ga_l10": 1.9,
+    "gd_l10": -0.6,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.0,
+    "clean_sheet_rate_season": 0.1818,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Hannover",
+   "card_path": "docs/img/atlas/soccer/hannover.png",
+   "key_numbers": {
+    "ppg_l10": 0.7,
+    "ppg_home_l10": 0.9,
+    "ppg_away_l10": 0.3,
+    "gf_l10": 1.0,
+    "ga_l10": 1.9,
+    "gd_l10": -0.9,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.1515,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Heidenheim",
+   "card_path": "docs/img/atlas/soccer/heidenheim.png",
+   "key_numbers": {
+    "ppg_l10": 1.2,
+    "ppg_home_l10": 1.2,
+    "ppg_away_l10": 0.6,
+    "gf_l10": 1.9,
+    "ga_l10": 1.9,
+    "gd_l10": 0.0,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.0303,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.0
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Hertha",
+   "card_path": "docs/img/atlas/soccer/hertha.png",
+   "key_numbers": {
+    "ppg_l10": 0.6,
+    "ppg_home_l10": 1.4,
+    "ppg_away_l10": 0.1,
+    "gf_l10": 1.2,
+    "ga_l10": 2.4,
+    "gd_l10": -1.2,
+    "winrate_l10": 0.1,
+    "clean_sheet_rate_l10": 0.0,
+    "clean_sheet_rate_season": 0.0909,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.0
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Hoffenheim",
+   "card_path": "docs/img/atlas/soccer/hoffenheim.png",
+   "key_numbers": {
+    "ppg_l10": 1.5,
+    "ppg_home_l10": 2.0,
+    "ppg_away_l10": 1.5,
+    "gf_l10": 1.6,
+    "ga_l10": 1.8,
+    "gd_l10": -0.2,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.2121,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Holstein Kiel",
+   "card_path": "docs/img/atlas/soccer/holstein_kiel.png",
+   "key_numbers": {
+    "ppg_l10": 1.2,
+    "ppg_home_l10": 1.1,
+    "ppg_away_l10": 0.9,
+    "gf_l10": 1.5,
+    "ga_l10": 1.8,
+    "gd_l10": -0.3,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.0606,
+    "clean_sheet_rate_home": 0.0,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Huddersfield",
+   "card_path": "docs/img/atlas/soccer/huddersfield.png",
+   "key_numbers": {
+    "ppg_l10": 0.7,
+    "ppg_home_l10": 1.2,
+    "ppg_away_l10": 0.8,
+    "gf_l10": 0.7,
+    "ga_l10": 1.9,
+    "gd_l10": -1.2,
+    "winrate_l10": 0.1,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.1778,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Huesca",
+   "card_path": "docs/img/atlas/soccer/huesca.png",
+   "key_numbers": {
+    "ppg_l10": 1.3,
+    "ppg_home_l10": 1.4,
+    "ppg_away_l10": 0.7,
+    "gf_l10": 0.8,
+    "ga_l10": 0.9,
+    "gd_l10": -0.1,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.4,
+    "clean_sheet_rate_season": 0.2162,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Hull",
+   "card_path": "docs/img/atlas/soccer/hull.png",
+   "key_numbers": {
+    "ppg_l10": 1.0,
+    "ppg_home_l10": 1.2,
+    "ppg_away_l10": 1.4,
+    "gf_l10": 1.2,
+    "ga_l10": 1.6,
+    "gd_l10": -0.4,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.2444,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.3
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Ingolstadt",
+   "card_path": "docs/img/atlas/soccer/ingolstadt.png",
+   "key_numbers": {
+    "ppg_l10": 1.3,
+    "ppg_home_l10": 1.4,
+    "ppg_away_l10": 1.1,
+    "gf_l10": 1.4,
+    "ga_l10": 1.7,
+    "gd_l10": -0.3,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.1212,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Inter",
+   "card_path": "docs/img/atlas/soccer/inter.png",
+   "key_numbers": {
+    "ppg_l10": 1.9,
+    "ppg_home_l10": 2.4,
+    "ppg_away_l10": 2.3,
+    "gf_l10": 2.2,
+    "ga_l10": 1.1,
+    "gd_l10": 1.1,
+    "winrate_l10": 0.5,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.4865,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.6
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Ipswich",
+   "card_path": "docs/img/atlas/soccer/ipswich.png",
+   "key_numbers": {
+    "ppg_l10": 1.7,
+    "ppg_home_l10": 2.2,
+    "ppg_away_l10": 1.8,
+    "gf_l10": 1.6,
+    "ga_l10": 1.2,
+    "gd_l10": 0.4,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.3556,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.4
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Juventus",
+   "card_path": "docs/img/atlas/soccer/juventus.png",
+   "key_numbers": {
+    "ppg_l10": 2.1,
+    "ppg_home_l10": 1.8,
+    "ppg_away_l10": 2.0,
+    "gf_l10": 1.3,
+    "ga_l10": 0.4,
+    "gd_l10": 0.9,
+    "winrate_l10": 0.6,
+    "clean_sheet_rate_l10": 0.7,
+    "clean_sheet_rate_season": 0.4324,
+    "clean_sheet_rate_home": 0.5,
+    "clean_sheet_rate_away": 0.6
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "La Coruna",
+   "card_path": "docs/img/atlas/soccer/la_coruna.png",
+   "key_numbers": {
+    "ppg_l10": 1.0,
+    "ppg_home_l10": 0.8,
+    "ppg_away_l10": 0.6,
+    "gf_l10": 1.2,
+    "ga_l10": 1.7,
+    "gd_l10": -0.5,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.1622,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Las Palmas",
+   "card_path": "docs/img/atlas/soccer/las_palmas.png",
+   "key_numbers": {
+    "ppg_l10": 0.8,
+    "ppg_home_l10": 0.5,
+    "ppg_away_l10": 0.6,
+    "gf_l10": 1.0,
+    "ga_l10": 1.4,
+    "gd_l10": -0.4,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.1081,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Lazio",
+   "card_path": "docs/img/atlas/soccer/lazio.png",
+   "key_numbers": {
+    "ppg_l10": 1.7,
+    "ppg_home_l10": 1.2,
+    "ppg_away_l10": 1.5,
+    "gf_l10": 1.3,
+    "ga_l10": 1.2,
+    "gd_l10": 0.1,
+    "winrate_l10": 0.5,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.4054,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.5
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Le Havre",
+   "card_path": "docs/img/atlas/soccer/le_havre.png",
+   "key_numbers": {
+    "ppg_l10": 0.6,
+    "ppg_home_l10": 1.4,
+    "ppg_away_l10": 0.4,
+    "gf_l10": 1.0,
+    "ga_l10": 1.5,
+    "gd_l10": -0.5,
+    "winrate_l10": 0.0,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.2121,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.0
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Lecce",
+   "card_path": "docs/img/atlas/soccer/lecce.png",
+   "key_numbers": {
+    "ppg_l10": 1.1,
+    "ppg_home_l10": 0.8,
+    "ppg_away_l10": 1.0,
+    "gf_l10": 0.9,
+    "ga_l10": 1.4,
+    "gd_l10": -0.5,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.2432,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Leeds",
+   "card_path": "docs/img/atlas/soccer/leeds.png",
+   "key_numbers": {
+    "ppg_l10": 1.6,
+    "ppg_home_l10": 1.7,
+    "ppg_away_l10": 1.1,
+    "gf_l10": 1.2,
+    "ga_l10": 0.7,
+    "gd_l10": 0.5,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.4,
+    "clean_sheet_rate_season": 0.2162,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Leganes",
+   "card_path": "docs/img/atlas/soccer/leganes.png",
+   "key_numbers": {
+    "ppg_l10": 1.0,
+    "ppg_home_l10": 1.2,
+    "ppg_away_l10": 0.7,
+    "gf_l10": 1.2,
+    "ga_l10": 1.6,
+    "gd_l10": -0.4,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.2703,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.3
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Leicester",
+   "card_path": "docs/img/atlas/soccer/leicester.png",
+   "key_numbers": {
+    "ppg_l10": 0.9,
+    "ppg_home_l10": 0.6,
+    "ppg_away_l10": 0.6,
+    "gf_l10": 1.0,
+    "ga_l10": 1.2,
+    "gd_l10": -0.2,
+    "winrate_l10": 0.1,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.1111,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Lens",
+   "card_path": "docs/img/atlas/soccer/lens.png",
+   "key_numbers": {
+    "ppg_l10": 1.5,
+    "ppg_home_l10": 2.4,
+    "ppg_away_l10": 1.5,
+    "gf_l10": 1.8,
+    "ga_l10": 1.5,
+    "gd_l10": 0.3,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.3333,
+    "clean_sheet_rate_home": 0.5,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Levante",
+   "card_path": "docs/img/atlas/soccer/levante.png",
+   "key_numbers": {
+    "ppg_l10": 2.0,
+    "ppg_home_l10": 2.0,
+    "ppg_away_l10": 0.8,
+    "gf_l10": 1.7,
+    "ga_l10": 1.4,
+    "gd_l10": 0.3,
+    "winrate_l10": 0.6,
+    "clean_sheet_rate_l10": 0.4,
+    "clean_sheet_rate_season": 0.2432,
+    "clean_sheet_rate_home": 0.5,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Leverkusen",
+   "card_path": "docs/img/atlas/soccer/leverkusen.png",
+   "key_numbers": {
+    "ppg_l10": 1.8,
+    "ppg_home_l10": 1.7,
+    "ppg_away_l10": 1.5,
+    "gf_l10": 2.3,
+    "ga_l10": 1.7,
+    "gd_l10": 0.6,
+    "winrate_l10": 0.5,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.2424,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Lille",
+   "card_path": "docs/img/atlas/soccer/lille.png",
+   "key_numbers": {
+    "ppg_l10": 2.4,
+    "ppg_home_l10": 1.6,
+    "ppg_away_l10": 2.2,
+    "gf_l10": 1.6,
+    "ga_l10": 0.4,
+    "gd_l10": 1.2,
+    "winrate_l10": 0.7,
+    "clean_sheet_rate_l10": 0.6,
+    "clean_sheet_rate_season": 0.3939,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.5
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Liverpool",
+   "card_path": "docs/img/atlas/soccer/liverpool.png",
+   "key_numbers": {
+    "ppg_l10": 1.4,
+    "ppg_home_l10": 1.9,
+    "ppg_away_l10": 1.1,
+    "gf_l10": 2.0,
+    "ga_l10": 1.7,
+    "gd_l10": 0.3,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.2703,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.3
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Lorient",
+   "card_path": "docs/img/atlas/soccer/lorient.png",
+   "key_numbers": {
+    "ppg_l10": 1.3,
+    "ppg_home_l10": 2.1,
+    "ppg_away_l10": 1.3,
+    "gf_l10": 1.6,
+    "ga_l10": 1.3,
+    "gd_l10": 0.3,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.2121,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.3
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Luton",
+   "card_path": "docs/img/atlas/soccer/luton.png",
+   "key_numbers": {
+    "ppg_l10": 1.8,
+    "ppg_home_l10": 1.3,
+    "ppg_away_l10": 1.1,
+    "gf_l10": 1.0,
+    "ga_l10": 0.9,
+    "gd_l10": 0.1,
+    "winrate_l10": 0.5,
+    "clean_sheet_rate_l10": 0.4,
+    "clean_sheet_rate_season": 0.2444,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Lyon",
+   "card_path": "docs/img/atlas/soccer/lyon.png",
+   "key_numbers": {
+    "ppg_l10": 1.5,
+    "ppg_home_l10": 2.5,
+    "ppg_away_l10": 1.4,
+    "gf_l10": 1.6,
+    "ga_l10": 1.3,
+    "gd_l10": 0.3,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.4545,
+    "clean_sheet_rate_home": 0.5,
+    "clean_sheet_rate_away": 0.3
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "M'gladbach",
+   "card_path": "docs/img/atlas/soccer/m_gladbach.png",
+   "key_numbers": {
+    "ppg_l10": 1.3,
+    "ppg_home_l10": 1.6,
+    "ppg_away_l10": 0.4,
+    "gf_l10": 1.2,
+    "ga_l10": 1.4,
+    "gd_l10": -0.2,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.4,
+    "clean_sheet_rate_season": 0.3636,
+    "clean_sheet_rate_home": 0.5,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Mainz",
+   "card_path": "docs/img/atlas/soccer/mainz.png",
+   "key_numbers": {
+    "ppg_l10": 1.5,
+    "ppg_home_l10": 1.5,
+    "ppg_away_l10": 1.6,
+    "gf_l10": 1.6,
+    "ga_l10": 1.5,
+    "gd_l10": 0.1,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.0909,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Malaga",
+   "card_path": "docs/img/atlas/soccer/malaga.png",
+   "key_numbers": {
+    "ppg_l10": 0.7,
+    "ppg_home_l10": 0.7,
+    "ppg_away_l10": 0.2,
+    "gf_l10": 0.8,
+    "ga_l10": 1.7,
+    "gd_l10": -0.9,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.1622,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Mallorca",
+   "card_path": "docs/img/atlas/soccer/mallorca.png",
+   "key_numbers": {
+    "ppg_l10": 1.4,
+    "ppg_home_l10": 1.7,
+    "ppg_away_l10": 0.4,
+    "gf_l10": 1.3,
+    "ga_l10": 1.3,
+    "gd_l10": 0.0,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.1351,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Man City",
+   "card_path": "docs/img/atlas/soccer/man_city.png",
+   "key_numbers": {
+    "ppg_l10": 2.2,
+    "ppg_home_l10": 2.4,
+    "ppg_away_l10": 1.7,
+    "gf_l10": 2.0,
+    "ga_l10": 0.8,
+    "gd_l10": 1.2,
+    "winrate_l10": 0.6,
+    "clean_sheet_rate_l10": 0.5,
+    "clean_sheet_rate_season": 0.4324,
+    "clean_sheet_rate_home": 0.5,
+    "clean_sheet_rate_away": 0.4
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Man United",
+   "card_path": "docs/img/atlas/soccer/man_united.png",
+   "key_numbers": {
+    "ppg_l10": 2.0,
+    "ppg_home_l10": 2.5,
+    "ppg_away_l10": 1.4,
+    "gf_l10": 1.8,
+    "ga_l10": 1.3,
+    "gd_l10": 0.5,
+    "winrate_l10": 0.6,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.1892,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.3
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Marseille",
+   "card_path": "docs/img/atlas/soccer/marseille.png",
+   "key_numbers": {
+    "ppg_l10": 1.6,
+    "ppg_home_l10": 1.8,
+    "ppg_away_l10": 1.0,
+    "gf_l10": 1.2,
+    "ga_l10": 1.3,
+    "gd_l10": -0.1,
+    "winrate_l10": 0.5,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.2727,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Metz",
+   "card_path": "docs/img/atlas/soccer/metz.png",
+   "key_numbers": {
+    "ppg_l10": 0.3,
+    "ppg_home_l10": 0.2,
+    "ppg_away_l10": 0.3,
+    "gf_l10": 1.0,
+    "ga_l10": 2.4,
+    "gd_l10": -1.4,
+    "winrate_l10": 0.0,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.1818,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Middlesbrough",
+   "card_path": "docs/img/atlas/soccer/middlesbrough.png",
+   "key_numbers": {
+    "ppg_l10": 1.3,
+    "ppg_home_l10": 1.5,
+    "ppg_away_l10": 1.8,
+    "gf_l10": 1.6,
+    "ga_l10": 1.0,
+    "gd_l10": 0.6,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.2889,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Milan",
+   "card_path": "docs/img/atlas/soccer/milan.png",
+   "key_numbers": {
+    "ppg_l10": 1.3,
+    "ppg_home_l10": 1.5,
+    "ppg_away_l10": 1.9,
+    "gf_l10": 0.9,
+    "ga_l10": 1.3,
+    "gd_l10": -0.4,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.4054,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.3
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Millwall",
+   "card_path": "docs/img/atlas/soccer/millwall.png",
+   "key_numbers": {
+    "ppg_l10": 1.8,
+    "ppg_home_l10": 1.9,
+    "ppg_away_l10": 2.1,
+    "gf_l10": 1.5,
+    "ga_l10": 0.9,
+    "gd_l10": 0.6,
+    "winrate_l10": 0.5,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.3778,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.3
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Milton Keynes Dons",
+   "card_path": "docs/img/atlas/soccer/milton_keynes_dons.png",
+   "key_numbers": {
+    "ppg_l10": 0.4,
+    "ppg_home_l10": 0.8,
+    "ppg_away_l10": 0.8,
+    "gf_l10": 0.8,
+    "ga_l10": 1.9,
+    "gd_l10": -1.1,
+    "winrate_l10": 0.0,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.2444,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.4
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Monaco",
+   "card_path": "docs/img/atlas/soccer/monaco.png",
+   "key_numbers": {
+    "ppg_l10": 2.0,
+    "ppg_home_l10": 1.9,
+    "ppg_away_l10": 1.5,
+    "gf_l10": 1.8,
+    "ga_l10": 1.3,
+    "gd_l10": 0.5,
+    "winrate_l10": 0.6,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.2121,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Montpellier",
+   "card_path": "docs/img/atlas/soccer/montpellier.png",
+   "key_numbers": {
+    "ppg_l10": 0.1,
+    "ppg_home_l10": 0.5,
+    "ppg_away_l10": 0.3,
+    "gf_l10": 0.2,
+    "ga_l10": 2.2,
+    "gd_l10": -2.0,
+    "winrate_l10": 0.0,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.0303,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.0
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Monza",
+   "card_path": "docs/img/atlas/soccer/monza.png",
+   "key_numbers": {
+    "ppg_l10": 0.4,
+    "ppg_home_l10": 0.5,
+    "ppg_away_l10": 0.3,
+    "gf_l10": 0.7,
+    "ga_l10": 2.2,
+    "gd_l10": -1.5,
+    "winrate_l10": 0.1,
+    "clean_sheet_rate_l10": 0.0,
+    "clean_sheet_rate_season": 0.0811,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.0
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Nancy",
+   "card_path": "docs/img/atlas/soccer/nancy.png",
+   "key_numbers": {
+    "ppg_l10": 0.4,
+    "ppg_home_l10": 1.1,
+    "ppg_away_l10": 0.4,
+    "gf_l10": 0.8,
+    "ga_l10": 1.7,
+    "gd_l10": -0.9,
+    "winrate_l10": 0.1,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.3514,
+    "clean_sheet_rate_home": 0.5,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Nantes",
+   "card_path": "docs/img/atlas/soccer/nantes.png",
+   "key_numbers": {
+    "ppg_l10": 0.9,
+    "ppg_home_l10": 0.8,
+    "ppg_away_l10": 0.5,
+    "gf_l10": 0.9,
+    "ga_l10": 1.1,
+    "gd_l10": -0.2,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.4,
+    "clean_sheet_rate_season": 0.2188,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.3
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Napoli",
+   "card_path": "docs/img/atlas/soccer/napoli.png",
+   "key_numbers": {
+    "ppg_l10": 2.0,
+    "ppg_home_l10": 2.0,
+    "ppg_away_l10": 1.8,
+    "gf_l10": 1.6,
+    "ga_l10": 0.8,
+    "gd_l10": 0.8,
+    "winrate_l10": 0.6,
+    "clean_sheet_rate_l10": 0.5,
+    "clean_sheet_rate_season": 0.3784,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.4
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Newcastle",
+   "card_path": "docs/img/atlas/soccer/newcastle.png",
+   "key_numbers": {
+    "ppg_l10": 1.3,
+    "ppg_home_l10": 1.5,
+    "ppg_away_l10": 1.1,
+    "gf_l10": 1.5,
+    "ga_l10": 1.4,
+    "gd_l10": 0.1,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.2162,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Nice",
+   "card_path": "docs/img/atlas/soccer/nice.png",
+   "key_numbers": {
+    "ppg_l10": 0.7,
+    "ppg_home_l10": 0.6,
+    "ppg_away_l10": 0.8,
+    "gf_l10": 0.7,
+    "ga_l10": 1.7,
+    "gd_l10": -1.0,
+    "winrate_l10": 0.1,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.1515,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Nimes",
+   "card_path": "docs/img/atlas/soccer/nimes.png",
+   "key_numbers": {
+    "ppg_l10": 1.0,
+    "ppg_home_l10": 1.0,
+    "ppg_away_l10": 1.3,
+    "gf_l10": 1.4,
+    "ga_l10": 1.7,
+    "gd_l10": -0.3,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.2162,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Norwich",
+   "card_path": "docs/img/atlas/soccer/norwich.png",
+   "key_numbers": {
+    "ppg_l10": 2.0,
+    "ppg_home_l10": 2.0,
+    "ppg_away_l10": 2.4,
+    "gf_l10": 1.5,
+    "ga_l10": 1.0,
+    "gd_l10": 0.5,
+    "winrate_l10": 0.6,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.2,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.4
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Nott'm Forest",
+   "card_path": "docs/img/atlas/soccer/nott_m_forest.png",
+   "key_numbers": {
+    "ppg_l10": 1.6,
+    "ppg_home_l10": 0.9,
+    "ppg_away_l10": 1.6,
+    "gf_l10": 2.2,
+    "ga_l10": 1.1,
+    "gd_l10": 1.1,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.2432,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.3
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Nurnberg",
+   "card_path": "docs/img/atlas/soccer/nurnberg.png",
+   "key_numbers": {
+    "ppg_l10": 0.6,
+    "ppg_home_l10": 0.7,
+    "ppg_away_l10": 0.1,
+    "gf_l10": 0.7,
+    "ga_l10": 1.5,
+    "gd_l10": -0.8,
+    "winrate_l10": 0.1,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.1212,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.0
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Osasuna",
+   "card_path": "docs/img/atlas/soccer/osasuna.png",
+   "key_numbers": {
+    "ppg_l10": 0.8,
+    "ppg_home_l10": 1.5,
+    "ppg_away_l10": 0.8,
+    "gf_l10": 1.2,
+    "ga_l10": 1.7,
+    "gd_l10": -0.5,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.1892,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Oviedo",
+   "card_path": "docs/img/atlas/soccer/oviedo.png",
+   "key_numbers": {
+    "ppg_l10": 1.1,
+    "ppg_home_l10": 1.2,
+    "ppg_away_l10": 0.6,
+    "gf_l10": 0.9,
+    "ga_l10": 1.3,
+    "gd_l10": -0.4,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.4,
+    "clean_sheet_rate_season": 0.2703,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Oxford",
+   "card_path": "docs/img/atlas/soccer/oxford.png",
+   "key_numbers": {
+    "ppg_l10": 1.5,
+    "ppg_home_l10": 1.5,
+    "ppg_away_l10": 0.9,
+    "gf_l10": 1.4,
+    "ga_l10": 1.0,
+    "gd_l10": 0.4,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.1778,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Paderborn",
+   "card_path": "docs/img/atlas/soccer/paderborn.png",
+   "key_numbers": {
+    "ppg_l10": 0.4,
+    "ppg_home_l10": 0.5,
+    "ppg_away_l10": 1.0,
+    "gf_l10": 0.6,
+    "ga_l10": 2.1,
+    "gd_l10": -1.5,
+    "winrate_l10": 0.0,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.1515,
+    "clean_sheet_rate_home": 0.0,
+    "clean_sheet_rate_away": 0.4
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Palermo",
+   "card_path": "docs/img/atlas/soccer/palermo.png",
+   "key_numbers": {
+    "ppg_l10": 0.8,
+    "ppg_home_l10": 1.2,
+    "ppg_away_l10": 0.2,
+    "gf_l10": 0.8,
+    "ga_l10": 2.3,
+    "gd_l10": -1.5,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.1351,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.0
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Paris FC",
+   "card_path": "docs/img/atlas/soccer/paris_fc.png",
+   "key_numbers": {
+    "ppg_l10": 1.8,
+    "ppg_home_l10": 1.5,
+    "ppg_away_l10": 1.2,
+    "gf_l10": 1.8,
+    "ga_l10": 0.9,
+    "gd_l10": 0.9,
+    "winrate_l10": 0.5,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.2424,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.3
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Paris SG",
+   "card_path": "docs/img/atlas/soccer/paris_sg.png",
+   "key_numbers": {
+    "ppg_l10": 2.2,
+    "ppg_home_l10": 2.2,
+    "ppg_away_l10": 2.4,
+    "gf_l10": 2.1,
+    "ga_l10": 0.8,
+    "gd_l10": 1.3,
+    "winrate_l10": 0.7,
+    "clean_sheet_rate_l10": 0.6,
+    "clean_sheet_rate_season": 0.5455,
+    "clean_sheet_rate_home": 0.5,
+    "clean_sheet_rate_away": 0.5
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Parma",
+   "card_path": "docs/img/atlas/soccer/parma.png",
+   "key_numbers": {
+    "ppg_l10": 0.9,
+    "ppg_home_l10": 1.2,
+    "ppg_away_l10": 1.2,
+    "gf_l10": 0.7,
+    "ga_l10": 1.4,
+    "gd_l10": -0.7,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.3243,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.5
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Pescara",
+   "card_path": "docs/img/atlas/soccer/pescara.png",
+   "key_numbers": {
+    "ppg_l10": 0.5,
+    "ppg_home_l10": 0.7,
+    "ppg_away_l10": 0.2,
+    "gf_l10": 0.7,
+    "ga_l10": 1.9,
+    "gd_l10": -1.2,
+    "winrate_l10": 0.1,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.1081,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.0
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Peterboro",
+   "card_path": "docs/img/atlas/soccer/peterboro.png",
+   "key_numbers": {
+    "ppg_l10": 1.2,
+    "ppg_home_l10": 0.6,
+    "ppg_away_l10": 0.9,
+    "gf_l10": 1.3,
+    "ga_l10": 1.7,
+    "gd_l10": -0.4,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.1111,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Pisa",
+   "card_path": "docs/img/atlas/soccer/pisa.png",
+   "key_numbers": {
+    "ppg_l10": 0.3,
+    "ppg_home_l10": 0.4,
+    "ppg_away_l10": 0.3,
+    "gf_l10": 0.5,
+    "ga_l10": 2.5,
+    "gd_l10": -2.0,
+    "winrate_l10": 0.1,
+    "clean_sheet_rate_l10": 0.0,
+    "clean_sheet_rate_season": 0.1351,
+    "clean_sheet_rate_home": 0.0,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Plymouth",
+   "card_path": "docs/img/atlas/soccer/plymouth.png",
+   "key_numbers": {
+    "ppg_l10": 1.6,
+    "ppg_home_l10": 1.6,
+    "ppg_away_l10": 1.0,
+    "gf_l10": 1.4,
+    "ga_l10": 1.6,
+    "gd_l10": -0.2,
+    "winrate_l10": 0.5,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.0667,
+    "clean_sheet_rate_home": 0.0,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Portsmouth",
+   "card_path": "docs/img/atlas/soccer/portsmouth.png",
+   "key_numbers": {
+    "ppg_l10": 1.4,
+    "ppg_home_l10": 1.4,
+    "ppg_away_l10": 1.4,
+    "gf_l10": 1.3,
+    "ga_l10": 1.8,
+    "gd_l10": -0.5,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.2222,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Preston",
+   "card_path": "docs/img/atlas/soccer/preston.png",
+   "key_numbers": {
+    "ppg_l10": 1.1,
+    "ppg_home_l10": 1.1,
+    "ppg_away_l10": 0.9,
+    "gf_l10": 1.3,
+    "ga_l10": 1.9,
+    "gd_l10": -0.6,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.0,
+    "clean_sheet_rate_season": 0.2,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.0
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "QPR",
+   "card_path": "docs/img/atlas/soccer/qpr.png",
+   "key_numbers": {
+    "ppg_l10": 1.1,
+    "ppg_home_l10": 1.0,
+    "ppg_away_l10": 1.0,
+    "gf_l10": 1.5,
+    "ga_l10": 1.6,
+    "gd_l10": -0.1,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.2222,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.3
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "RB Leipzig",
+   "card_path": "docs/img/atlas/soccer/rb_leipzig.png",
+   "key_numbers": {
+    "ppg_l10": 2.4,
+    "ppg_home_l10": 2.0,
+    "ppg_away_l10": 1.7,
+    "gf_l10": 2.1,
+    "ga_l10": 1.1,
+    "gd_l10": 1.0,
+    "winrate_l10": 0.8,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.3333,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Reading",
+   "card_path": "docs/img/atlas/soccer/reading.png",
+   "key_numbers": {
+    "ppg_l10": 0.6,
+    "ppg_home_l10": 1.2,
+    "ppg_away_l10": 0.2,
+    "gf_l10": 0.8,
+    "ga_l10": 1.2,
+    "gd_l10": -0.4,
+    "winrate_l10": 0.0,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.1778,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.0
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Real Madrid",
+   "card_path": "docs/img/atlas/soccer/real_madrid.png",
+   "key_numbers": {
+    "ppg_l10": 2.0,
+    "ppg_home_l10": 2.5,
+    "ppg_away_l10": 1.9,
+    "gf_l10": 1.7,
+    "ga_l10": 1.0,
+    "gd_l10": 0.7,
+    "winrate_l10": 0.6,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.3784,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.4
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Reims",
+   "card_path": "docs/img/atlas/soccer/reims.png",
+   "key_numbers": {
+    "ppg_l10": 1.1,
+    "ppg_home_l10": 0.8,
+    "ppg_away_l10": 0.7,
+    "gf_l10": 0.6,
+    "ga_l10": 1.0,
+    "gd_l10": -0.4,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.4,
+    "clean_sheet_rate_season": 0.2121,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.4
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Rennes",
+   "card_path": "docs/img/atlas/soccer/rennes.png",
+   "key_numbers": {
+    "ppg_l10": 2.2,
+    "ppg_home_l10": 2.0,
+    "ppg_away_l10": 1.8,
+    "gf_l10": 2.1,
+    "ga_l10": 1.2,
+    "gd_l10": 0.9,
+    "winrate_l10": 0.7,
+    "clean_sheet_rate_l10": 0.4,
+    "clean_sheet_rate_season": 0.303,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.5
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Roma",
+   "card_path": "docs/img/atlas/soccer/roma.png",
+   "key_numbers": {
+    "ppg_l10": 1.9,
+    "ppg_home_l10": 2.4,
+    "ppg_away_l10": 1.3,
+    "gf_l10": 2.0,
+    "ga_l10": 1.2,
+    "gd_l10": 0.8,
+    "winrate_l10": 0.6,
+    "clean_sheet_rate_l10": 0.5,
+    "clean_sheet_rate_season": 0.4595,
+    "clean_sheet_rate_home": 0.7,
+    "clean_sheet_rate_away": 0.3
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Rotherham",
+   "card_path": "docs/img/atlas/soccer/rotherham.png",
+   "key_numbers": {
+    "ppg_l10": 0.5,
+    "ppg_home_l10": 0.6,
+    "ppg_away_l10": 0.1,
+    "gf_l10": 0.2,
+    "ga_l10": 2.0,
+    "gd_l10": -1.8,
+    "winrate_l10": 0.1,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.1111,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.0
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Salernitana",
+   "card_path": "docs/img/atlas/soccer/salernitana.png",
+   "key_numbers": {
+    "ppg_l10": 0.2,
+    "ppg_home_l10": 0.1,
+    "ppg_away_l10": 0.6,
+    "gf_l10": 0.8,
+    "ga_l10": 2.4,
+    "gd_l10": -1.6,
+    "winrate_l10": 0.0,
+    "clean_sheet_rate_l10": 0.0,
+    "clean_sheet_rate_season": 0.0541,
+    "clean_sheet_rate_home": 0.0,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Sampdoria",
+   "card_path": "docs/img/atlas/soccer/sampdoria.png",
+   "key_numbers": {
+    "ppg_l10": 0.4,
+    "ppg_home_l10": 0.8,
+    "ppg_away_l10": 0.2,
+    "gf_l10": 0.8,
+    "ga_l10": 2.5,
+    "gd_l10": -1.7,
+    "winrate_l10": 0.0,
+    "clean_sheet_rate_l10": 0.0,
+    "clean_sheet_rate_season": 0.1081,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.0
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Sassuolo",
+   "card_path": "docs/img/atlas/soccer/sassuolo.png",
+   "key_numbers": {
+    "ppg_l10": 1.1,
+    "ppg_home_l10": 1.8,
+    "ppg_away_l10": 0.9,
+    "gf_l10": 1.2,
+    "ga_l10": 1.3,
+    "gd_l10": -0.1,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.2162,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Schalke 04",
+   "card_path": "docs/img/atlas/soccer/schalke_04.png",
+   "key_numbers": {
+    "ppg_l10": 1.2,
+    "ppg_home_l10": 1.3,
+    "ppg_away_l10": 0.9,
+    "gf_l10": 1.5,
+    "ga_l10": 2.5,
+    "gd_l10": -1.0,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.0,
+    "clean_sheet_rate_season": 0.2121,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.3
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Sevilla",
+   "card_path": "docs/img/atlas/soccer/sevilla.png",
+   "key_numbers": {
+    "ppg_l10": 1.2,
+    "ppg_home_l10": 1.5,
+    "ppg_away_l10": 0.8,
+    "gf_l10": 1.1,
+    "ga_l10": 1.7,
+    "gd_l10": -0.6,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.1622,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Sheffield United",
+   "card_path": "docs/img/atlas/soccer/sheffield_united.png",
+   "key_numbers": {
+    "ppg_l10": 0.9,
+    "ppg_home_l10": 1.1,
+    "ppg_away_l10": 1.4,
+    "gf_l10": 1.4,
+    "ga_l10": 1.7,
+    "gd_l10": -0.3,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.2222,
+    "clean_sheet_rate_home": 0.0,
+    "clean_sheet_rate_away": 0.3
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Sheffield Weds",
+   "card_path": "docs/img/atlas/soccer/sheffield_weds.png",
+   "key_numbers": {
+    "ppg_l10": 0.4,
+    "ppg_home_l10": 0.4,
+    "ppg_away_l10": 0.1,
+    "gf_l10": 0.6,
+    "ga_l10": 1.7,
+    "gd_l10": -1.1,
+    "winrate_l10": 0.0,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.0889,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Sociedad",
+   "card_path": "docs/img/atlas/soccer/sociedad.png",
+   "key_numbers": {
+    "ppg_l10": 1.0,
+    "ppg_home_l10": 1.8,
+    "ppg_away_l10": 1.0,
+    "gf_l10": 1.8,
+    "ga_l10": 1.9,
+    "gd_l10": -0.1,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.0811,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Southampton",
+   "card_path": "docs/img/atlas/soccer/southampton.png",
+   "key_numbers": {
+    "ppg_l10": 2.4,
+    "ppg_home_l10": 2.4,
+    "ppg_away_l10": 2.1,
+    "gf_l10": 2.2,
+    "ga_l10": 0.9,
+    "gd_l10": 1.3,
+    "winrate_l10": 0.7,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.2444,
+    "clean_sheet_rate_home": 0.6,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Sp Gijon",
+   "card_path": "docs/img/atlas/soccer/sp_gijon.png",
+   "key_numbers": {
+    "ppg_l10": 1.2,
+    "ppg_home_l10": 0.8,
+    "ppg_away_l10": 1.0,
+    "gf_l10": 1.2,
+    "ga_l10": 1.4,
+    "gd_l10": -0.2,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.1892,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.4
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Spal",
+   "card_path": "docs/img/atlas/soccer/spal.png",
+   "key_numbers": {
+    "ppg_l10": 0.2,
+    "ppg_home_l10": 0.2,
+    "ppg_away_l10": 0.6,
+    "gf_l10": 0.6,
+    "ga_l10": 2.9,
+    "gd_l10": -2.3,
+    "winrate_l10": 0.0,
+    "clean_sheet_rate_l10": 0.0,
+    "clean_sheet_rate_season": 0.0811,
+    "clean_sheet_rate_home": 0.0,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Spezia",
+   "card_path": "docs/img/atlas/soccer/spezia.png",
+   "key_numbers": {
+    "ppg_l10": 0.7,
+    "ppg_home_l10": 0.8,
+    "ppg_away_l10": 0.8,
+    "gf_l10": 0.7,
+    "ga_l10": 1.7,
+    "gd_l10": -1.0,
+    "winrate_l10": 0.1,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.1622,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "St Etienne",
+   "card_path": "docs/img/atlas/soccer/st_etienne.png",
+   "key_numbers": {
+    "ppg_l10": 1.1,
+    "ppg_home_l10": 0.9,
+    "ppg_away_l10": 0.8,
+    "gf_l10": 1.4,
+    "ga_l10": 2.1,
+    "gd_l10": -0.7,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.1515,
+    "clean_sheet_rate_home": 0.0,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "St Pauli",
+   "card_path": "docs/img/atlas/soccer/st_pauli.png",
+   "key_numbers": {
+    "ppg_l10": 0.6,
+    "ppg_home_l10": 1.3,
+    "ppg_away_l10": 0.5,
+    "gf_l10": 0.6,
+    "ga_l10": 1.7,
+    "gd_l10": -1.1,
+    "winrate_l10": 0.1,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.1515,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Stoke",
+   "card_path": "docs/img/atlas/soccer/stoke.png",
+   "key_numbers": {
+    "ppg_l10": 0.8,
+    "ppg_home_l10": 1.2,
+    "ppg_away_l10": 0.8,
+    "gf_l10": 1.2,
+    "ga_l10": 2.0,
+    "gd_l10": -0.8,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.2889,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.3
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Strasbourg",
+   "card_path": "docs/img/atlas/soccer/strasbourg.png",
+   "key_numbers": {
+    "ppg_l10": 1.6,
+    "ppg_home_l10": 1.2,
+    "ppg_away_l10": 1.6,
+    "gf_l10": 1.4,
+    "ga_l10": 1.3,
+    "gd_l10": 0.1,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.2727,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Stuttgart",
+   "card_path": "docs/img/atlas/soccer/stuttgart.png",
+   "key_numbers": {
+    "ppg_l10": 1.8,
+    "ppg_home_l10": 2.3,
+    "ppg_away_l10": 1.5,
+    "gf_l10": 2.5,
+    "ga_l10": 1.5,
+    "gd_l10": 1.0,
+    "winrate_l10": 0.5,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.3333,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Sunderland",
+   "card_path": "docs/img/atlas/soccer/sunderland.png",
+   "key_numbers": {
+    "ppg_l10": 1.5,
+    "ppg_home_l10": 1.2,
+    "ppg_away_l10": 1.2,
+    "gf_l10": 1.2,
+    "ga_l10": 1.4,
+    "gd_l10": -0.2,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.2973,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Swansea",
+   "card_path": "docs/img/atlas/soccer/swansea.png",
+   "key_numbers": {
+    "ppg_l10": 1.5,
+    "ppg_home_l10": 1.8,
+    "ppg_away_l10": 1.4,
+    "gf_l10": 1.4,
+    "ga_l10": 1.5,
+    "gd_l10": -0.1,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.2667,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Torino",
+   "card_path": "docs/img/atlas/soccer/torino.png",
+   "key_numbers": {
+    "ppg_l10": 1.4,
+    "ppg_home_l10": 1.6,
+    "ppg_away_l10": 0.5,
+    "gf_l10": 1.5,
+    "ga_l10": 1.4,
+    "gd_l10": 0.1,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.3243,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Tottenham",
+   "card_path": "docs/img/atlas/soccer/tottenham.png",
+   "key_numbers": {
+    "ppg_l10": 0.9,
+    "ppg_home_l10": 0.4,
+    "ppg_away_l10": 0.9,
+    "gf_l10": 1.0,
+    "ga_l10": 1.6,
+    "gd_l10": -0.6,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.2162,
+    "clean_sheet_rate_home": 0.0,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Toulouse",
+   "card_path": "docs/img/atlas/soccer/toulouse.png",
+   "key_numbers": {
+    "ppg_l10": 1.1,
+    "ppg_home_l10": 1.2,
+    "ppg_away_l10": 1.3,
+    "gf_l10": 1.3,
+    "ga_l10": 1.9,
+    "gd_l10": -0.6,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.2812,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Troyes",
+   "card_path": "docs/img/atlas/soccer/troyes.png",
+   "key_numbers": {
+    "ppg_l10": 0.3,
+    "ppg_home_l10": 0.4,
+    "ppg_away_l10": 0.1,
+    "gf_l10": 0.8,
+    "ga_l10": 2.1,
+    "gd_l10": -1.3,
+    "winrate_l10": 0.0,
+    "clean_sheet_rate_l10": 0.0,
+    "clean_sheet_rate_season": 0.027,
+    "clean_sheet_rate_home": 0.0,
+    "clean_sheet_rate_away": 0.0
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Udinese",
+   "card_path": "docs/img/atlas/soccer/udinese.png",
+   "key_numbers": {
+    "ppg_l10": 1.5,
+    "ppg_home_l10": 1.1,
+    "ppg_away_l10": 1.7,
+    "gf_l10": 1.4,
+    "ga_l10": 0.8,
+    "gd_l10": 0.6,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.5,
+    "clean_sheet_rate_season": 0.2973,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.3
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Union Berlin",
+   "card_path": "docs/img/atlas/soccer/union_berlin.png",
+   "key_numbers": {
+    "ppg_l10": 0.8,
+    "ppg_home_l10": 1.0,
+    "ppg_away_l10": 0.8,
+    "gf_l10": 1.1,
+    "ga_l10": 2.1,
+    "gd_l10": -1.0,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.1818,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Valencia",
+   "card_path": "docs/img/atlas/soccer/valencia.png",
+   "key_numbers": {
+    "ppg_l10": 1.4,
+    "ppg_home_l10": 1.5,
+    "ppg_away_l10": 1.6,
+    "gf_l10": 1.3,
+    "ga_l10": 1.3,
+    "gd_l10": 0.0,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.2432,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.4
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Valladolid",
+   "card_path": "docs/img/atlas/soccer/valladolid.png",
+   "key_numbers": {
+    "ppg_l10": 0.0,
+    "ppg_home_l10": 0.4,
+    "ppg_away_l10": 0.0,
+    "gf_l10": 0.8,
+    "ga_l10": 2.5,
+    "gd_l10": -1.7,
+    "winrate_l10": 0.0,
+    "clean_sheet_rate_l10": 0.0,
+    "clean_sheet_rate_season": 0.1351,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.0
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Vallecano",
+   "card_path": "docs/img/atlas/soccer/vallecano.png",
+   "key_numbers": {
+    "ppg_l10": 1.6,
+    "ppg_home_l10": 1.9,
+    "ppg_away_l10": 0.6,
+    "gf_l10": 1.2,
+    "ga_l10": 1.0,
+    "gd_l10": 0.2,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.4,
+    "clean_sheet_rate_season": 0.3243,
+    "clean_sheet_rate_home": 0.5,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Venezia",
+   "card_path": "docs/img/atlas/soccer/venezia.png",
+   "key_numbers": {
+    "ppg_l10": 1.1,
+    "ppg_home_l10": 1.0,
+    "ppg_away_l10": 0.6,
+    "gf_l10": 0.8,
+    "ga_l10": 1.2,
+    "gd_l10": -0.4,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.1622,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Verona",
+   "card_path": "docs/img/atlas/soccer/verona.png",
+   "key_numbers": {
+    "ppg_l10": 0.6,
+    "ppg_home_l10": 0.2,
+    "ppg_away_l10": 0.7,
+    "gf_l10": 0.5,
+    "ga_l10": 1.1,
+    "gd_l10": -0.6,
+    "winrate_l10": 0.1,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.1622,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Villarreal",
+   "card_path": "docs/img/atlas/soccer/villarreal.png",
+   "key_numbers": {
+    "ppg_l10": 1.5,
+    "ppg_home_l10": 2.1,
+    "ppg_away_l10": 1.0,
+    "gf_l10": 1.7,
+    "ga_l10": 1.3,
+    "gd_l10": 0.4,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.0,
+    "clean_sheet_rate_season": 0.2162,
+    "clean_sheet_rate_home": 0.0,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Watford",
+   "card_path": "docs/img/atlas/soccer/watford.png",
+   "key_numbers": {
+    "ppg_l10": 0.6,
+    "ppg_home_l10": 1.2,
+    "ppg_away_l10": 0.6,
+    "gf_l10": 0.8,
+    "ga_l10": 2.0,
+    "gd_l10": -1.2,
+    "winrate_l10": 0.1,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.1556,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Werder Bremen",
+   "card_path": "docs/img/atlas/soccer/werder_bremen.png",
+   "key_numbers": {
+    "ppg_l10": 1.3,
+    "ppg_home_l10": 0.8,
+    "ppg_away_l10": 0.8,
+    "gf_l10": 1.4,
+    "ga_l10": 1.4,
+    "gd_l10": 0.0,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.1818,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "West Brom",
+   "card_path": "docs/img/atlas/soccer/west_brom.png",
+   "key_numbers": {
+    "ppg_l10": 1.8,
+    "ppg_home_l10": 1.2,
+    "ppg_away_l10": 1.0,
+    "gf_l10": 1.3,
+    "ga_l10": 0.4,
+    "gd_l10": 0.9,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.7,
+    "clean_sheet_rate_season": 0.3111,
+    "clean_sheet_rate_home": 0.5,
+    "clean_sheet_rate_away": 0.4
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "West Ham",
+   "card_path": "docs/img/atlas/soccer/west_ham.png",
+   "key_numbers": {
+    "ppg_l10": 1.1,
+    "ppg_home_l10": 1.3,
+    "ppg_away_l10": 1.0,
+    "gf_l10": 1.1,
+    "ga_l10": 1.6,
+    "gd_l10": -0.5,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.1622,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.3
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Wigan",
+   "card_path": "docs/img/atlas/soccer/wigan.png",
+   "key_numbers": {
+    "ppg_l10": 1.2,
+    "ppg_home_l10": 1.2,
+    "ppg_away_l10": 0.7,
+    "gf_l10": 0.7,
+    "ga_l10": 1.1,
+    "gd_l10": -0.4,
+    "winrate_l10": 0.3,
+    "clean_sheet_rate_l10": 0.2,
+    "clean_sheet_rate_season": 0.2,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.2
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Wolfsburg",
+   "card_path": "docs/img/atlas/soccer/wolfsburg.png",
+   "key_numbers": {
+    "ppg_l10": 0.6,
+    "ppg_home_l10": 0.5,
+    "ppg_away_l10": 0.9,
+    "gf_l10": 0.9,
+    "ga_l10": 1.9,
+    "gd_l10": -1.0,
+    "winrate_l10": 0.1,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.0606,
+    "clean_sheet_rate_home": 0.1,
+    "clean_sheet_rate_away": 0.0
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Wolves",
+   "card_path": "docs/img/atlas/soccer/wolves.png",
+   "key_numbers": {
+    "ppg_l10": 0.9,
+    "ppg_home_l10": 1.3,
+    "ppg_away_l10": 0.4,
+    "gf_l10": 0.8,
+    "ga_l10": 1.7,
+    "gd_l10": -0.9,
+    "winrate_l10": 0.2,
+    "clean_sheet_rate_l10": 0.1,
+    "clean_sheet_rate_season": 0.1081,
+    "clean_sheet_rate_home": 0.3,
+    "clean_sheet_rate_away": 0.1
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Wrexham",
+   "card_path": "docs/img/atlas/soccer/wrexham.png",
+   "key_numbers": {
+    "ppg_l10": 1.3,
+    "ppg_home_l10": 1.6,
+    "ppg_away_l10": 1.7,
+    "gf_l10": 1.3,
+    "ga_l10": 1.8,
+    "gd_l10": -0.5,
+    "winrate_l10": 0.4,
+    "clean_sheet_rate_l10": 0.3,
+    "clean_sheet_rate_season": 0.2667,
+    "clean_sheet_rate_home": 0.2,
+    "clean_sheet_rate_away": 0.3
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  },
+  {
+   "entity": "Wycombe",
+   "card_path": "docs/img/atlas/soccer/wycombe.png",
+   "key_numbers": {
+    "ppg_l10": 1.7,
+    "ppg_home_l10": 1.5,
+    "ppg_away_l10": 0.9,
+    "gf_l10": 1.3,
+    "ga_l10": 1.1,
+    "gd_l10": 0.2,
+    "winrate_l10": 0.5,
+    "clean_sheet_rate_l10": 0.5,
+    "clean_sheet_rate_season": 0.2444,
+    "clean_sheet_rate_home": 0.4,
+    "clean_sheet_rate_away": 0.3
+   },
+   "floors": "ppg_l10: n_prior>=10 | ppg_home_l10: n_prior_home>=10 | ppg_away_l10: n_prior_away>=10 | gf_l10: n_prior>=10 | ga_l10: n_prior>=10 | gd_l10: n_prior>=10 | winrate_l10: n_prior>=10 | clean_sheet_rate_l10: n_prior>=10 | clean_sheet_rate_season: n_prior_season>=5 | clean_sheet_rate_home: n_prior_home>=10 | clean_sheet_rate_away: n_prior_away>=10 (window=trailing10_asof_corpus_end; a metric a team doesn't clear shows n/a, never fabricated)",
+   "as_of": "2026-07-18T17:21:08.108324+00:00",
+   "status": "complete"
+  }
+ ]
+}

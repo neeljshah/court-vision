@@ -1,0 +1,488 @@
+{
+ "sport": "nba_teams",
+ "generated_at": "2026-07-23T01:05:13.133161+00:00",
+ "descriptive_only": true,
+ "n_entries": 30,
+ "entries": [
+  {
+   "entity": "ATL",
+   "card_path": "docs/img/atlas/nba_teams/atl.png",
+   "key_numbers": {
+    "team_full_name": "Atlanta Hawks",
+    "seasons_covered": 3,
+    "games_total": 239,
+    "ppg_latest_season": 117.9,
+    "pace_proxy_latest_season": 103.8,
+    "top_contributor": "Onyeka Okongwu",
+    "top_contributor_pra_per36": 29.7,
+    "top_contributor_minutes": 5630.6
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  },
+  {
+   "entity": "BKN",
+   "card_path": "docs/img/atlas/nba_teams/bkn.png",
+   "key_numbers": {
+    "team_full_name": "Brooklyn Nets",
+    "seasons_covered": 3,
+    "games_total": 238,
+    "ppg_latest_season": 106.2,
+    "pace_proxy_latest_season": 99.5,
+    "top_contributor": "Nic Claxton",
+    "top_contributor_pra_per36": 28.2,
+    "top_contributor_minutes": 5845.9
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  },
+  {
+   "entity": "BOS",
+   "card_path": "docs/img/atlas/nba_teams/bos.png",
+   "key_numbers": {
+    "team_full_name": "Boston Celtics",
+    "seasons_covered": 3,
+    "games_total": 246,
+    "ppg_latest_season": 114.9,
+    "pace_proxy_latest_season": 97.5,
+    "top_contributor": "Derrick White",
+    "top_contributor_pra_per36": 27.4,
+    "top_contributor_minutes": 7576.2
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  },
+  {
+   "entity": "CHA",
+   "card_path": "docs/img/atlas/nba_teams/cha.png",
+   "key_numbers": {
+    "team_full_name": "Charlotte Hornets",
+    "seasons_covered": 3,
+    "games_total": 240,
+    "ppg_latest_season": 116.1,
+    "pace_proxy_latest_season": 100.3,
+    "top_contributor": "Miles Bridges",
+    "top_contributor_pra_per36": 32.0,
+    "top_contributor_minutes": 6838.9
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  },
+  {
+   "entity": "CHI",
+   "card_path": "docs/img/atlas/nba_teams/chi.png",
+   "key_numbers": {
+    "team_full_name": "Chicago Bulls",
+    "seasons_covered": 3,
+    "games_total": 240,
+    "ppg_latest_season": 115.5,
+    "pace_proxy_latest_season": 103.7,
+    "top_contributor": "Nikola Vucevic",
+    "top_contributor_pra_per36": 35.0,
+    "top_contributor_minutes": 6370.4
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  },
+  {
+   "entity": "CLE",
+   "card_path": "docs/img/atlas/nba_teams/cle.png",
+   "key_numbers": {
+    "team_full_name": "Cleveland Cavaliers",
+    "seasons_covered": 3,
+    "games_total": 243,
+    "ppg_latest_season": 119.6,
+    "pace_proxy_latest_season": 102.1,
+    "top_contributor": "Donovan Mitchell",
+    "top_contributor_pra_per36": 39.3,
+    "top_contributor_minutes": 6482.5
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  },
+  {
+   "entity": "DAL",
+   "card_path": "docs/img/atlas/nba_teams/dal.png",
+   "key_numbers": {
+    "team_full_name": "Dallas Mavericks",
+    "seasons_covered": 3,
+    "games_total": 240,
+    "ppg_latest_season": 114.3,
+    "pace_proxy_latest_season": 104.4,
+    "top_contributor": "P.J. Washington",
+    "top_contributor_pra_per36": 26.1,
+    "top_contributor_minutes": 4474.1
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  },
+  {
+   "entity": "DEN",
+   "card_path": "docs/img/atlas/nba_teams/den.png",
+   "key_numbers": {
+    "team_full_name": "Denver Nuggets",
+    "seasons_covered": 3,
+    "games_total": 242,
+    "ppg_latest_season": 121.4,
+    "pace_proxy_latest_season": 101.3,
+    "top_contributor": "Nikola Jokic",
+    "top_contributor_pra_per36": 51.2,
+    "top_contributor_minutes": 7429.0
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  },
+  {
+   "entity": "DET",
+   "card_path": "docs/img/atlas/nba_teams/det.png",
+   "key_numbers": {
+    "team_full_name": "Detroit Pistons",
+    "seasons_covered": 3,
+    "games_total": 237,
+    "ppg_latest_season": 117.4,
+    "pace_proxy_latest_season": 102.5,
+    "top_contributor": "Cade Cunningham",
+    "top_contributor_pra_per36": 40.6,
+    "top_contributor_minutes": 6622.9
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  },
+  {
+   "entity": "GSW",
+   "card_path": "docs/img/atlas/nba_teams/gsw.png",
+   "key_numbers": {
+    "team_full_name": "Golden State Warriors",
+    "seasons_covered": 3,
+    "games_total": 246,
+    "ppg_latest_season": 114.6,
+    "pace_proxy_latest_season": 101.7,
+    "top_contributor": "Brandin Podziemski",
+    "top_contributor_pra_per36": 27.1,
+    "top_contributor_minutes": 6018.4
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  },
+  {
+   "entity": "HOU",
+   "card_path": "docs/img/atlas/nba_teams/hou.png",
+   "key_numbers": {
+    "team_full_name": "Houston Rockets",
+    "seasons_covered": 3,
+    "games_total": 245,
+    "ppg_latest_season": 115.2,
+    "pace_proxy_latest_season": 99.4,
+    "top_contributor": "Alperen Sengun",
+    "top_contributor_pra_per36": 38.9,
+    "top_contributor_minutes": 6814.2
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  },
+  {
+   "entity": "IND",
+   "card_path": "docs/img/atlas/nba_teams/ind.png",
+   "key_numbers": {
+    "team_full_name": "Indiana Pacers",
+    "seasons_covered": 3,
+    "games_total": 236,
+    "ppg_latest_season": 111.8,
+    "pace_proxy_latest_season": 102.8,
+    "top_contributor": "Pascal Siakam",
+    "top_contributor_pra_per36": 35.5,
+    "top_contributor_minutes": 5731.6
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  },
+  {
+   "entity": "LAC",
+   "card_path": "docs/img/atlas/nba_teams/lac.png",
+   "key_numbers": {
+    "team_full_name": "LA Clippers",
+    "seasons_covered": 3,
+    "games_total": 240,
+    "ppg_latest_season": 113.6,
+    "pace_proxy_latest_season": 98.4,
+    "top_contributor": "James Harden",
+    "top_contributor_pra_per36": 35.9,
+    "top_contributor_minutes": 6820.8
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  },
+  {
+   "entity": "LAL",
+   "card_path": "docs/img/atlas/nba_teams/lal.png",
+   "key_numbers": {
+    "team_full_name": "Los Angeles Lakers",
+    "seasons_covered": 3,
+    "games_total": 246,
+    "ppg_latest_season": 116.3,
+    "pace_proxy_latest_season": 99.8,
+    "top_contributor": "LeBron James",
+    "top_contributor_pra_per36": 40.5,
+    "top_contributor_minutes": 6940.9
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  },
+  {
+   "entity": "MEM",
+   "card_path": "docs/img/atlas/nba_teams/mem.png",
+   "key_numbers": {
+    "team_full_name": "Memphis Grizzlies",
+    "seasons_covered": 3,
+    "games_total": 241,
+    "ppg_latest_season": 114.9,
+    "pace_proxy_latest_season": 103.8,
+    "top_contributor": "Jaren Jackson Jr.",
+    "top_contributor_pra_per36": 34.1,
+    "top_contributor_minutes": 5714.5
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  },
+  {
+   "entity": "MIA",
+   "card_path": "docs/img/atlas/nba_teams/mia.png",
+   "key_numbers": {
+    "team_full_name": "Miami Heat",
+    "seasons_covered": 3,
+    "games_total": 238,
+    "ppg_latest_season": 120.4,
+    "pace_proxy_latest_season": 105.8,
+    "top_contributor": "Bam Adebayo",
+    "top_contributor_pra_per36": 35.2,
+    "top_contributor_minutes": 7181.5
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  },
+  {
+   "entity": "MIL",
+   "card_path": "docs/img/atlas/nba_teams/mil.png",
+   "key_numbers": {
+    "team_full_name": "Milwaukee Bucks",
+    "seasons_covered": 3,
+    "games_total": 238,
+    "ppg_latest_season": 109.3,
+    "pace_proxy_latest_season": 98.4,
+    "top_contributor": "Giannis Antetokounmpo",
+    "top_contributor_pra_per36": 50.9,
+    "top_contributor_minutes": 5841.1
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  },
+  {
+   "entity": "MIN",
+   "card_path": "docs/img/atlas/nba_teams/min.png",
+   "key_numbers": {
+    "team_full_name": "Minnesota Timberwolves",
+    "seasons_covered": 3,
+    "games_total": 238,
+    "ppg_latest_season": 118.5,
+    "pace_proxy_latest_season": 102.6,
+    "top_contributor": "Anthony Edwards",
+    "top_contributor_pra_per36": 37.8,
+    "top_contributor_minutes": 7730.4
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  },
+  {
+   "entity": "NOP",
+   "card_path": "docs/img/atlas/nba_teams/nop.png",
+   "key_numbers": {
+    "team_full_name": "New Orleans Pelicans",
+    "seasons_covered": 3,
+    "games_total": 239,
+    "ppg_latest_season": 115.3,
+    "pace_proxy_latest_season": 102.6,
+    "top_contributor": "Trey Murphy III",
+    "top_contributor_pra_per36": 29.8,
+    "top_contributor_minutes": 5819.1
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  },
+  {
+   "entity": "NYK",
+   "card_path": "docs/img/atlas/nba_teams/nyk.png",
+   "key_numbers": {
+    "team_full_name": "New York Knicks",
+    "seasons_covered": 3,
+    "games_total": 244,
+    "ppg_latest_season": 115.7,
+    "pace_proxy_latest_season": 98.2,
+    "top_contributor": "Jalen Brunson",
+    "top_contributor_pra_per36": 37.9,
+    "top_contributor_minutes": 7566.2
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  },
+  {
+   "entity": "OKC",
+   "card_path": "docs/img/atlas/nba_teams/okc.png",
+   "key_numbers": {
+    "team_full_name": "Oklahoma City Thunder",
+    "seasons_covered": 3,
+    "games_total": 245,
+    "ppg_latest_season": 119.0,
+    "pace_proxy_latest_season": 101.8,
+    "top_contributor": "Shai Gilgeous-Alexander",
+    "top_contributor_pra_per36": 45.4,
+    "top_contributor_minutes": 7375.7
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  },
+  {
+   "entity": "ORL",
+   "card_path": "docs/img/atlas/nba_teams/orl.png",
+   "key_numbers": {
+    "team_full_name": "Orlando Magic",
+    "seasons_covered": 3,
+    "games_total": 238,
+    "ppg_latest_season": 115.5,
+    "pace_proxy_latest_season": 102.9,
+    "top_contributor": "Paolo Banchero",
+    "top_contributor_pra_per36": 37.3,
+    "top_contributor_minutes": 6621.6
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  },
+  {
+   "entity": "PHI",
+   "card_path": "docs/img/atlas/nba_teams/phi.png",
+   "key_numbers": {
+    "team_full_name": "Philadelphia 76ers",
+    "seasons_covered": 3,
+    "games_total": 239,
+    "ppg_latest_season": 115.8,
+    "pace_proxy_latest_season": 102.5,
+    "top_contributor": "Tyrese Maxey",
+    "top_contributor_pra_per36": 35.3,
+    "top_contributor_minutes": 6991.8
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  },
+  {
+   "entity": "PHX",
+   "card_path": "docs/img/atlas/nba_teams/phx.png",
+   "key_numbers": {
+    "team_full_name": "Phoenix Suns",
+    "seasons_covered": 3,
+    "games_total": 246,
+    "ppg_latest_season": 112.6,
+    "pace_proxy_latest_season": 99.6,
+    "top_contributor": "Devin Booker",
+    "top_contributor_pra_per36": 37.4,
+    "top_contributor_minutes": 7387.8
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  },
+  {
+   "entity": "POR",
+   "card_path": "docs/img/atlas/nba_teams/por.png",
+   "key_numbers": {
+    "team_full_name": "Portland Trail Blazers",
+    "seasons_covered": 3,
+    "games_total": 239,
+    "ppg_latest_season": 115.3,
+    "pace_proxy_latest_season": 103.8,
+    "top_contributor": "Toumani Camara",
+    "top_contributor_pra_per36": 21.4,
+    "top_contributor_minutes": 6778.4
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  },
+  {
+   "entity": "SAC",
+   "card_path": "docs/img/atlas/nba_teams/sac.png",
+   "key_numbers": {
+    "team_full_name": "Sacramento Kings",
+    "seasons_covered": 3,
+    "games_total": 239,
+    "ppg_latest_season": 110.9,
+    "pace_proxy_latest_season": 101.5,
+    "top_contributor": "Keegan Murray",
+    "top_contributor_pra_per36": 22.6,
+    "top_contributor_minutes": 5996.7
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  },
+  {
+   "entity": "SAS",
+   "card_path": "docs/img/atlas/nba_teams/sas.png",
+   "key_numbers": {
+    "team_full_name": "San Antonio Spurs",
+    "seasons_covered": 3,
+    "games_total": 244,
+    "ppg_latest_season": 119.8,
+    "pace_proxy_latest_season": 102.0,
+    "top_contributor": "Devin Vassell",
+    "top_contributor_pra_per36": 27.0,
+    "top_contributor_minutes": 6213.1
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  },
+  {
+   "entity": "TOR",
+   "card_path": "docs/img/atlas/nba_teams/tor.png",
+   "key_numbers": {
+    "team_full_name": "Toronto Raptors",
+    "seasons_covered": 3,
+    "games_total": 237,
+    "ppg_latest_season": 113.7,
+    "pace_proxy_latest_season": 100.8,
+    "top_contributor": "Scottie Barnes",
+    "top_contributor_pra_per36": 34.9,
+    "top_contributor_minutes": 6640.0
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  },
+  {
+   "entity": "UTA",
+   "card_path": "docs/img/atlas/nba_teams/uta.png",
+   "key_numbers": {
+    "team_full_name": "Utah Jazz",
+    "seasons_covered": 3,
+    "games_total": 242,
+    "ppg_latest_season": 116.8,
+    "pace_proxy_latest_season": 104.8,
+    "top_contributor": "Keyonte George",
+    "top_contributor_pra_per36": 30.9,
+    "top_contributor_minutes": 5918.3
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  },
+  {
+   "entity": "WAS",
+   "card_path": "docs/img/atlas/nba_teams/was.png",
+   "key_numbers": {
+    "team_full_name": "Washington Wizards",
+    "seasons_covered": 3,
+    "games_total": 237,
+    "ppg_latest_season": 112.8,
+    "pace_proxy_latest_season": 103.7,
+    "top_contributor": "Bilal Coulibaly",
+    "top_contributor_pra_per36": 21.9,
+    "top_contributor_minutes": 4986.5
+   },
+   "floors": "all 30 teams included (each has >=200 team-games across 3 seasons in sample, verified, no exclusion floor); top-5 contributors = 5 players with most total minutes for that team (minutes-ranking already excludes small-sample per-36 noise)",
+   "as_of": "2026-04-12"
+  }
+ ]
+}

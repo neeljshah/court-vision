@@ -1,0 +1,34 @@
+{
+ "mlb": {
+  "2026-06": {
+   "n": 33290,
+   "model_brier": 0.2404,
+   "market_brier": 0.2243,
+   "model_ece": 0.1165,
+   "market_ece": 0.0944
+  },
+  "2026-07": {
+   "n": 45696,
+   "model_brier": 0.2357,
+   "market_brier": 0.1938,
+   "model_ece": 0.0834,
+   "market_ece": 0.0635
+  }
+ },
+ "soccer_intl": {
+  "2026-06": {
+   "n": 5874,
+   "model_brier": 0.1729,
+   "market_brier": 0.1156,
+   "model_ece": 0.2112,
+   "market_ece": 0.1517
+  },
+  "2026-07": {
+   "n": 3129,
+   "model_brier": 0.331,
+   "market_brier": 0.1936,
+   "model_ece": 0.421,
+   "market_ece": 0.2961
+  }
+ }
+}

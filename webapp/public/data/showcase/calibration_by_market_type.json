@@ -1,0 +1,71 @@
+{
+ "edge_claimed": false,
+ "descriptive_only": true,
+ "story": "Calibration comparison across market TYPES. Moneyline/game-winner corpora carry resolved outcomes -> model and market Brier scored per type. The rescued in-game TOTALS quote-tracks carry NO resolved outcome -> disclosed as unscorable (n + model-vs-market divergence only), never a fabricated Brier.",
+ "floors": "labeled market type needs n>=30 usable rows for a Brier/ECE; ECE=n-weighted |mean_p-mean_y| over 10 bins; mlb_clean byte-dup excluded; edge_claimed=False",
+ "min_n": 30,
+ "n_bins": 10,
+ "market_types": {
+  "mlb_moneyline": {
+   "has_outcome": true,
+   "n_files": 227,
+   "n_rows": 78986,
+   "n_usable_model": 78986,
+   "n_usable_market": 78986,
+   "n_rows_missing_outcome": 0,
+   "scored": true,
+   "model_brier": 0.237684,
+   "market_brier": 0.206653,
+   "model_ece": 0.097325,
+   "market_ece": 0.070965,
+   "brier_gap_model_minus_market": 0.031031,
+   "description": "MLB in-game moneyline (game winner)"
+  },
+  "soccer_match": {
+   "has_outcome": true,
+   "n_files": 51,
+   "n_rows": 9003,
+   "n_usable_model": 9003,
+   "n_usable_market": 9003,
+   "n_rows_missing_outcome": 0,
+   "scored": true,
+   "model_brier": 0.227887,
+   "market_brier": 0.142726,
+   "model_ece": 0.275568,
+   "market_ece": 0.201885,
+   "brier_gap_model_minus_market": 0.08516,
+   "description": "soccer in-game match result (2-way, as graded)"
+  },
+  "mlb_total": {
+   "has_outcome": false,
+   "description": "MLB in-game over/under run total (Kalshi KXMLBTOTAL quote-tracks)",
+   "scored": false,
+   "reason": "no resolved outcome label on rescued live quote-tracks (settlement join unavailable)",
+   "n_files": 5,
+   "n_rows": 2113,
+   "n_quote_tracks": 21,
+   "model_vs_market_divergence": {
+    "n": 2113,
+    "median": 0.116128,
+    "mean": 0.124782,
+    "p90": 0.224736,
+    "note": "abs(model_prob - market_prob) per tick -- a calibration-GAP MEASUREMENT, not an edge"
+   },
+   "brier": null,
+   "brier_disclosure": "Brier is NULL by design: these rows have no resolved outcome; scoring would require fabricating labels."
+  }
+ },
+ "skipped": [
+  {
+   "market_type": "mlb_clean_moneyline",
+   "reason": "mlb_clean is a byte-identical duplicate of mlb -- excluded to avoid double counting"
+  }
+ ],
+ "source_artifacts": {
+  "labeled": "data/cache/ingame_grade_joined/{mlb,soccer_intl}/*.jsonl",
+  "unlabeled": "data/pod_backup_2026_07_20/ingame_grade_deriv/mlb/*.jsonl"
+ },
+ "truth_source": "docs/JOB_EVIDENCE_PACKET.md",
+ "verdict": "Brier scored only for market types whose corpora carry resolved outcomes: mlb_moneyline: model Brier 0.2377 vs market 0.2067 (n=78986); soccer_match: model Brier 0.2279 vs market 0.1427 (n=9003). Unscorable market types (no resolved outcome, disclosed not fabricated): mlb_total.",
+ "plot_written": true
+}

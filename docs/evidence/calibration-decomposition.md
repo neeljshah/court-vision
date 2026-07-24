@@ -135,12 +135,11 @@ numbers on this page are copied from them verbatim.
 
 ## Why this matters to an employer
 
-Anyone can say "the market beat my model." The hire signal is decomposing that gap into
-reliability vs resolution to know whether it's *my* fault (recalibrate) or the market's
-*information advantage* (unavoidable given my snapshot freshness), and then publishing a
-ranked, honest backlog of the exact game states where my model is worst -- small-n flags and
-correlated-sample caveats included. I build the diagnostic that tells me where I'm losing and
-why, and I write it down instead of reporting the one number that looks good.
+Decomposing the gap into reliability vs resolution says whether the market's lead is *my*
+fault (recalibrate) or its *information advantage* (unavoidable given my snapshot freshness);
+the ranked backlog then names the exact game states where my model is worst, small-n flags
+and correlated-sample caveats included. The hire signal is building the diagnostic that
+locates the loss and writing it down instead of reporting the one number that looks good.
 
 ---
 <!-- nav-footer -->

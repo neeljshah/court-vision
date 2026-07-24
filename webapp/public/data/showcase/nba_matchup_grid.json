@@ -1,0 +1,6180 @@
+{
+ "label": "DESCRIPTIVE_ONLY",
+ "source": "data/domains/basketball_nba/player_boxscores.parquet + docs/JOB_EVIDENCE_PACKET.md",
+ "methodology": {
+  "unit": "team-game points = sum of a team's players' pts within one game_id",
+  "game_filter": "only game_ids with exactly 2 distinct teams",
+  "mean_total": "mean(row_pts + col_pts) over the pairing's meetings (symmetric)",
+  "mean_margin": "mean(row_pts - col_pts) over the pairing's meetings (anti-symmetric; pools home+away, NOT a home-court split)",
+  "seasons_pooled": [
+   "2023-24",
+   "2024-25",
+   "2025-26"
+  ],
+  "not_a_forecast": true,
+  "not_this": [
+   "NOT a prediction of any future matchup (describes games already played)",
+   "NOT a home/away split (per-player table carries no venue flag)",
+   "NOT opponent-adjusted / strength-of-schedule (raw pooled means only)"
+  ]
+ },
+ "mask": {
+  "min_meetings": 2,
+  "rule": "pairing reported only where n_meetings >= 2",
+  "pairings_before_mask": 870,
+  "pairings_kept": 870,
+  "pairings_masked_out": 0
+ },
+ "input_coverage": {
+  "rows": 77744,
+  "games_total": 3611,
+  "games_two_team": 3611,
+  "games_dropped_not_two_team": 0,
+  "teams": [
+   "ATL",
+   "BKN",
+   "BOS",
+   "CHA",
+   "CHI",
+   "CLE",
+   "DAL",
+   "DEN",
+   "DET",
+   "GSW",
+   "HOU",
+   "IND",
+   "LAC",
+   "LAL",
+   "MEM",
+   "MIA",
+   "MIL",
+   "MIN",
+   "NOP",
+   "NYK",
+   "OKC",
+   "ORL",
+   "PHI",
+   "PHX",
+   "POR",
+   "SAC",
+   "SAS",
+   "TOR",
+   "UTA",
+   "WAS"
+  ],
+  "seasons": [
+   "2023-24",
+   "2024-25",
+   "2025-26"
+  ],
+  "date_max": "2026-04-12"
+ },
+ "extremes_descriptive": {
+  "highest_scoring_pairing": {
+   "row": "ATL",
+   "col": "IND",
+   "n_meetings": 10,
+   "mean_total": 255.7,
+   "mean_margin": -6.5
+  },
+  "lowest_scoring_pairing": {
+   "row": "CHA",
+   "col": "POR",
+   "n_meetings": 6,
+   "mean_total": 197.0,
+   "mean_margin": -5.0
+  }
+ },
+ "pairings": [
+  {
+   "row": "ATL",
+   "col": "BKN",
+   "n_meetings": 10,
+   "mean_total": 232.3,
+   "mean_margin": 0.9
+  },
+  {
+   "row": "ATL",
+   "col": "BOS",
+   "n_meetings": 11,
+   "mean_total": 228.18,
+   "mean_margin": -4.73
+  },
+  {
+   "row": "ATL",
+   "col": "CHA",
+   "n_meetings": 12,
+   "mean_total": 230.67,
+   "mean_margin": 4.17
+  },
+  {
+   "row": "ATL",
+   "col": "CHI",
+   "n_meetings": 10,
+   "mean_total": 248.3,
+   "mean_margin": -1.5
+  },
+  {
+   "row": "ATL",
+   "col": "CLE",
+   "n_meetings": 9,
+   "mean_total": 234.56,
+   "mean_margin": -4.11
+  },
+  {
+   "row": "ATL",
+   "col": "DAL",
+   "n_meetings": 6,
+   "mean_total": 245.33,
+   "mean_margin": -0.67
+  },
+  {
+   "row": "ATL",
+   "col": "DEN",
+   "n_meetings": 6,
+   "mean_total": 246.33,
+   "mean_margin": -11.0
+  },
+  {
+   "row": "ATL",
+   "col": "DET",
+   "n_meetings": 11,
+   "mean_total": 244.82,
+   "mean_margin": -2.64
+  },
+  {
+   "row": "ATL",
+   "col": "GSW",
+   "n_meetings": 6,
+   "mean_total": 241.33,
+   "mean_margin": 0.0
+  },
+  {
+   "row": "ATL",
+   "col": "HOU",
+   "n_meetings": 6,
+   "mean_total": 221.5,
+   "mean_margin": -5.83
+  },
+  {
+   "row": "ATL",
+   "col": "IND",
+   "n_meetings": 10,
+   "mean_total": 255.7,
+   "mean_margin": -6.5
+  },
+  {
+   "row": "ATL",
+   "col": "LAC",
+   "n_meetings": 6,
+   "mean_total": 227.5,
+   "mean_margin": -9.5
+  },
+  {
+   "row": "ATL",
+   "col": "LAL",
+   "n_meetings": 6,
+   "mean_total": 244.83,
+   "mean_margin": -5.83
+  },
+  {
+   "row": "ATL",
+   "col": "MEM",
+   "n_meetings": 6,
+   "mean_total": 239.33,
+   "mean_margin": 4.67
+  },
+  {
+   "row": "ATL",
+   "col": "MIA",
+   "n_meetings": 11,
+   "mean_total": 227.09,
+   "mean_margin": -6.0
+  },
+  {
+   "row": "ATL",
+   "col": "MIL",
+   "n_meetings": 10,
+   "mean_total": 237.7,
+   "mean_margin": 7.1
+  },
+  {
+   "row": "ATL",
+   "col": "MIN",
+   "n_meetings": 6,
+   "mean_total": 225.0,
+   "mean_margin": 3.0
+  },
+  {
+   "row": "ATL",
+   "col": "NOP",
+   "n_meetings": 6,
+   "mean_total": 225.0,
+   "mean_margin": 11.0
+  },
+  {
+   "row": "ATL",
+   "col": "NYK",
+   "n_meetings": 11,
+   "mean_total": 233.18,
+   "mean_margin": 0.09
+  },
+  {
+   "row": "ATL",
+   "col": "OKC",
+   "n_meetings": 6,
+   "mean_total": 249.0,
+   "mean_margin": -12.33
+  },
+  {
+   "row": "ATL",
+   "col": "ORL",
+   "n_meetings": 11,
+   "mean_total": 223.91,
+   "mean_margin": 4.45
+  },
+  {
+   "row": "ATL",
+   "col": "PHI",
+   "n_meetings": 11,
+   "mean_total": 247.09,
+   "mean_margin": 5.27
+  },
+  {
+   "row": "ATL",
+   "col": "PHX",
+   "n_meetings": 6,
+   "mean_total": 238.0,
+   "mean_margin": 0.33
+  },
+  {
+   "row": "ATL",
+   "col": "POR",
+   "n_meetings": 6,
+   "mean_total": 225.33,
+   "mean_margin": 1.67
+  },
+  {
+   "row": "ATL",
+   "col": "SAC",
+   "n_meetings": 5,
+   "mean_total": 228.8,
+   "mean_margin": 0.8
+  },
+  {
+   "row": "ATL",
+   "col": "SAS",
+   "n_meetings": 6,
+   "mean_total": 245.83,
+   "mean_margin": -5.5
+  },
+  {
+   "row": "ATL",
+   "col": "TOR",
+   "n_meetings": 11,
+   "mean_total": 237.55,
+   "mean_margin": -4.64
+  },
+  {
+   "row": "ATL",
+   "col": "UTA",
+   "n_meetings": 6,
+   "mean_total": 247.83,
+   "mean_margin": 8.83
+  },
+  {
+   "row": "ATL",
+   "col": "WAS",
+   "n_meetings": 12,
+   "mean_total": 240.25,
+   "mean_margin": 5.92
+  },
+  {
+   "row": "BKN",
+   "col": "ATL",
+   "n_meetings": 10,
+   "mean_total": 232.3,
+   "mean_margin": -0.9
+  },
+  {
+   "row": "BKN",
+   "col": "BOS",
+   "n_meetings": 12,
+   "mean_total": 229.5,
+   "mean_margin": -14.0
+  },
+  {
+   "row": "BKN",
+   "col": "CHA",
+   "n_meetings": 9,
+   "mean_total": 222.56,
+   "mean_margin": 2.33
+  },
+  {
+   "row": "BKN",
+   "col": "CHI",
+   "n_meetings": 10,
+   "mean_total": 226.5,
+   "mean_margin": 0.3
+  },
+  {
+   "row": "BKN",
+   "col": "CLE",
+   "n_meetings": 11,
+   "mean_total": 217.18,
+   "mean_margin": -9.55
+  },
+  {
+   "row": "BKN",
+   "col": "DAL",
+   "n_meetings": 7,
+   "mean_total": 228.43,
+   "mean_margin": -8.14
+  },
+  {
+   "row": "BKN",
+   "col": "DEN",
+   "n_meetings": 6,
+   "mean_total": 238.0,
+   "mean_margin": -7.33
+  },
+  {
+   "row": "BKN",
+   "col": "DET",
+   "n_meetings": 11,
+   "mean_total": 220.36,
+   "mean_margin": -12.36
+  },
+  {
+   "row": "BKN",
+   "col": "GSW",
+   "n_meetings": 6,
+   "mean_total": 230.17,
+   "mean_margin": -4.17
+  },
+  {
+   "row": "BKN",
+   "col": "HOU",
+   "n_meetings": 6,
+   "mean_total": 214.83,
+   "mean_margin": -7.83
+  },
+  {
+   "row": "BKN",
+   "col": "IND",
+   "n_meetings": 9,
+   "mean_total": 216.33,
+   "mean_margin": -5.67
+  },
+  {
+   "row": "BKN",
+   "col": "LAC",
+   "n_meetings": 6,
+   "mean_total": 216.33,
+   "mean_margin": -24.67
+  },
+  {
+   "row": "BKN",
+   "col": "LAL",
+   "n_meetings": 6,
+   "mean_total": 222.17,
+   "mean_margin": -4.17
+  },
+  {
+   "row": "BKN",
+   "col": "MEM",
+   "n_meetings": 7,
+   "mean_total": 219.43,
+   "mean_margin": 3.71
+  },
+  {
+   "row": "BKN",
+   "col": "MIA",
+   "n_meetings": 10,
+   "mean_total": 210.6,
+   "mean_margin": -5.0
+  },
+  {
+   "row": "BKN",
+   "col": "MIL",
+   "n_meetings": 9,
+   "mean_total": 228.22,
+   "mean_margin": 1.33
+  },
+  {
+   "row": "BKN",
+   "col": "MIN",
+   "n_meetings": 6,
+   "mean_total": 207.33,
+   "mean_margin": -9.67
+  },
+  {
+   "row": "BKN",
+   "col": "NOP",
+   "n_meetings": 6,
+   "mean_total": 214.33,
+   "mean_margin": -3.0
+  },
+  {
+   "row": "BKN",
+   "col": "NYK",
+   "n_meetings": 12,
+   "mean_total": 211.83,
+   "mean_margin": -14.0
+  },
+  {
+   "row": "BKN",
+   "col": "OKC",
+   "n_meetings": 6,
+   "mean_total": 225.5,
+   "mean_margin": -14.83
+  },
+  {
+   "row": "BKN",
+   "col": "ORL",
+   "n_meetings": 11,
+   "mean_total": 211.64,
+   "mean_margin": -5.64
+  },
+  {
+   "row": "BKN",
+   "col": "PHI",
+   "n_meetings": 12,
+   "mean_total": 216.17,
+   "mean_margin": -8.0
+  },
+  {
+   "row": "BKN",
+   "col": "PHX",
+   "n_meetings": 6,
+   "mean_total": 228.5,
+   "mean_margin": -6.5
+  },
+  {
+   "row": "BKN",
+   "col": "POR",
+   "n_meetings": 6,
+   "mean_total": 230.0,
+   "mean_margin": -10.67
+  },
+  {
+   "row": "BKN",
+   "col": "SAC",
+   "n_meetings": 5,
+   "mean_total": 219.6,
+   "mean_margin": -11.2
+  },
+  {
+   "row": "BKN",
+   "col": "SAS",
+   "n_meetings": 6,
+   "mean_total": 224.5,
+   "mean_margin": -6.17
+  },
+  {
+   "row": "BKN",
+   "col": "TOR",
+   "n_meetings": 11,
+   "mean_total": 211.45,
+   "mean_margin": -5.45
+  },
+  {
+   "row": "BKN",
+   "col": "UTA",
+   "n_meetings": 6,
+   "mean_total": 226.17,
+   "mean_margin": 0.17
+  },
+  {
+   "row": "BKN",
+   "col": "WAS",
+   "n_meetings": 10,
+   "mean_total": 221.9,
+   "mean_margin": 2.7
+  },
+  {
+   "row": "BOS",
+   "col": "ATL",
+   "n_meetings": 11,
+   "mean_total": 228.18,
+   "mean_margin": 4.73
+  },
+  {
+   "row": "BOS",
+   "col": "BKN",
+   "n_meetings": 12,
+   "mean_total": 229.5,
+   "mean_margin": 14.0
+  },
+  {
+   "row": "BOS",
+   "col": "CHA",
+   "n_meetings": 10,
+   "mean_total": 217.7,
+   "mean_margin": 10.9
+  },
+  {
+   "row": "BOS",
+   "col": "CHI",
+   "n_meetings": 10,
+   "mean_total": 229.7,
+   "mean_margin": 13.9
+  },
+  {
+   "row": "BOS",
+   "col": "CLE",
+   "n_meetings": 10,
+   "mean_total": 225.3,
+   "mean_margin": 4.7
+  },
+  {
+   "row": "BOS",
+   "col": "DAL",
+   "n_meetings": 6,
+   "mean_total": 230.5,
+   "mean_margin": 12.5
+  },
+  {
+   "row": "BOS",
+   "col": "DEN",
+   "n_meetings": 6,
+   "mean_total": 212.33,
+   "mean_margin": -2.0
+  },
+  {
+   "row": "BOS",
+   "col": "DET",
+   "n_meetings": 11,
+   "mean_total": 228.09,
+   "mean_margin": 6.09
+  },
+  {
+   "row": "BOS",
+   "col": "GSW",
+   "n_meetings": 6,
+   "mean_total": 229.33,
+   "mean_margin": 18.67
+  },
+  {
+   "row": "BOS",
+   "col": "HOU",
+   "n_meetings": 6,
+   "mean_total": 223.0,
+   "mean_margin": 9.33
+  },
+  {
+   "row": "BOS",
+   "col": "IND",
+   "n_meetings": 12,
+   "mean_total": 238.08,
+   "mean_margin": 10.42
+  },
+  {
+   "row": "BOS",
+   "col": "LAC",
+   "n_meetings": 6,
+   "mean_total": 235.67,
+   "mean_margin": 14.67
+  },
+  {
+   "row": "BOS",
+   "col": "LAL",
+   "n_meetings": 6,
+   "mean_total": 219.33,
+   "mean_margin": 5.67
+  },
+  {
+   "row": "BOS",
+   "col": "MEM",
+   "n_meetings": 6,
+   "mean_total": 224.5,
+   "mean_margin": 15.17
+  },
+  {
+   "row": "BOS",
+   "col": "MIA",
+   "n_meetings": 11,
+   "mean_total": 223.0,
+   "mean_margin": 10.09
+  },
+  {
+   "row": "BOS",
+   "col": "MIL",
+   "n_meetings": 11,
+   "mean_total": 217.91,
+   "mean_margin": 5.0
+  },
+  {
+   "row": "BOS",
+   "col": "MIN",
+   "n_meetings": 6,
+   "mean_total": 223.83,
+   "mean_margin": -1.17
+  },
+  {
+   "row": "BOS",
+   "col": "NOP",
+   "n_meetings": 6,
+   "mean_total": 228.83,
+   "mean_margin": 13.17
+  },
+  {
+   "row": "BOS",
+   "col": "NYK",
+   "n_meetings": 13,
+   "mean_total": 224.46,
+   "mean_margin": 5.23
+  },
+  {
+   "row": "BOS",
+   "col": "OKC",
+   "n_meetings": 6,
+   "mean_total": 224.33,
+   "mean_margin": 3.33
+  },
+  {
+   "row": "BOS",
+   "col": "ORL",
+   "n_meetings": 10,
+   "mean_total": 219.7,
+   "mean_margin": 2.5
+  },
+  {
+   "row": "BOS",
+   "col": "PHI",
+   "n_meetings": 12,
+   "mean_total": 222.75,
+   "mean_margin": 7.25
+  },
+  {
+   "row": "BOS",
+   "col": "PHX",
+   "n_meetings": 6,
+   "mean_total": 222.17,
+   "mean_margin": 16.5
+  },
+  {
+   "row": "BOS",
+   "col": "POR",
+   "n_meetings": 6,
+   "mean_total": 226.67,
+   "mean_margin": 10.67
+  },
+  {
+   "row": "BOS",
+   "col": "SAC",
+   "n_meetings": 6,
+   "mean_total": 219.0,
+   "mean_margin": 10.0
+  },
+  {
+   "row": "BOS",
+   "col": "SAS",
+   "n_meetings": 6,
+   "mean_total": 222.83,
+   "mean_margin": 10.17
+  },
+  {
+   "row": "BOS",
+   "col": "TOR",
+   "n_meetings": 12,
+   "mean_total": 218.92,
+   "mean_margin": 11.42
+  },
+  {
+   "row": "BOS",
+   "col": "UTA",
+   "n_meetings": 6,
+   "mean_total": 225.17,
+   "mean_margin": 13.5
+  },
+  {
+   "row": "BOS",
+   "col": "WAS",
+   "n_meetings": 11,
+   "mean_total": 230.55,
+   "mean_margin": 20.36
+  },
+  {
+   "row": "CHA",
+   "col": "ATL",
+   "n_meetings": 12,
+   "mean_total": 230.67,
+   "mean_margin": -4.17
+  },
+  {
+   "row": "CHA",
+   "col": "BKN",
+   "n_meetings": 9,
+   "mean_total": 222.56,
+   "mean_margin": -2.33
+  },
+  {
+   "row": "CHA",
+   "col": "BOS",
+   "n_meetings": 10,
+   "mean_total": 217.7,
+   "mean_margin": -10.9
+  },
+  {
+   "row": "CHA",
+   "col": "CHI",
+   "n_meetings": 12,
+   "mean_total": 226.83,
+   "mean_margin": -1.83
+  },
+  {
+   "row": "CHA",
+   "col": "CLE",
+   "n_meetings": 11,
+   "mean_total": 226.73,
+   "mean_margin": -5.09
+  },
+  {
+   "row": "CHA",
+   "col": "DAL",
+   "n_meetings": 6,
+   "mean_total": 223.5,
+   "mean_margin": -0.83
+  },
+  {
+   "row": "CHA",
+   "col": "DEN",
+   "n_meetings": 6,
+   "mean_total": 212.33,
+   "mean_margin": -4.67
+  },
+  {
+   "row": "CHA",
+   "col": "DET",
+   "n_meetings": 9,
+   "mean_total": 213.0,
+   "mean_margin": -8.78
+  },
+  {
+   "row": "CHA",
+   "col": "GSW",
+   "n_meetings": 6,
+   "mean_total": 223.67,
+   "mean_margin": -18.67
+  },
+  {
+   "row": "CHA",
+   "col": "HOU",
+   "n_meetings": 6,
+   "mean_total": 222.17,
+   "mean_margin": -7.5
+  },
+  {
+   "row": "CHA",
+   "col": "IND",
+   "n_meetings": 10,
+   "mean_total": 227.8,
+   "mean_margin": -1.4
+  },
+  {
+   "row": "CHA",
+   "col": "LAC",
+   "n_meetings": 6,
+   "mean_total": 227.5,
+   "mean_margin": -14.5
+  },
+  {
+   "row": "CHA",
+   "col": "LAL",
+   "n_meetings": 6,
+   "mean_total": 231.17,
+   "mean_margin": -3.5
+  },
+  {
+   "row": "CHA",
+   "col": "MEM",
+   "n_meetings": 6,
+   "mean_total": 223.17,
+   "mean_margin": 3.83
+  },
+  {
+   "row": "CHA",
+   "col": "MIA",
+   "n_meetings": 12,
+   "mean_total": 223.92,
+   "mean_margin": -7.08
+  },
+  {
+   "row": "CHA",
+   "col": "MIL",
+   "n_meetings": 11,
+   "mean_total": 228.09,
+   "mean_margin": -13.18
+  },
+  {
+   "row": "CHA",
+   "col": "MIN",
+   "n_meetings": 5,
+   "mean_total": 232.4,
+   "mean_margin": -11.2
+  },
+  {
+   "row": "CHA",
+   "col": "NOP",
+   "n_meetings": 6,
+   "mean_total": 215.83,
+   "mean_margin": 0.83
+  },
+  {
+   "row": "CHA",
+   "col": "NYK",
+   "n_meetings": 10,
+   "mean_total": 218.3,
+   "mean_margin": -12.1
+  },
+  {
+   "row": "CHA",
+   "col": "OKC",
+   "n_meetings": 6,
+   "mean_total": 224.0,
+   "mean_margin": -9.33
+  },
+  {
+   "row": "CHA",
+   "col": "ORL",
+   "n_meetings": 12,
+   "mean_total": 215.17,
+   "mean_margin": -4.17
+  },
+  {
+   "row": "CHA",
+   "col": "PHI",
+   "n_meetings": 10,
+   "mean_total": 217.5,
+   "mean_margin": -7.7
+  },
+  {
+   "row": "CHA",
+   "col": "PHX",
+   "n_meetings": 6,
+   "mean_total": 225.17,
+   "mean_margin": -2.17
+  },
+  {
+   "row": "CHA",
+   "col": "POR",
+   "n_meetings": 6,
+   "mean_total": 197.0,
+   "mean_margin": -5.0
+  },
+  {
+   "row": "CHA",
+   "col": "SAC",
+   "n_meetings": 6,
+   "mean_total": 221.83,
+   "mean_margin": -5.17
+  },
+  {
+   "row": "CHA",
+   "col": "SAS",
+   "n_meetings": 6,
+   "mean_total": 237.33,
+   "mean_margin": -4.67
+  },
+  {
+   "row": "CHA",
+   "col": "TOR",
+   "n_meetings": 11,
+   "mean_total": 221.82,
+   "mean_margin": -2.73
+  },
+  {
+   "row": "CHA",
+   "col": "UTA",
+   "n_meetings": 6,
+   "mean_total": 232.83,
+   "mean_margin": 13.83
+  },
+  {
+   "row": "CHA",
+   "col": "WAS",
+   "n_meetings": 12,
+   "mean_total": 233.75,
+   "mean_margin": 0.92
+  },
+  {
+   "row": "CHI",
+   "col": "ATL",
+   "n_meetings": 10,
+   "mean_total": 248.3,
+   "mean_margin": 1.5
+  },
+  {
+   "row": "CHI",
+   "col": "BKN",
+   "n_meetings": 10,
+   "mean_total": 226.5,
+   "mean_margin": -0.3
+  },
+  {
+   "row": "CHI",
+   "col": "BOS",
+   "n_meetings": 10,
+   "mean_total": 229.7,
+   "mean_margin": -13.9
+  },
+  {
+   "row": "CHI",
+   "col": "CHA",
+   "n_meetings": 12,
+   "mean_total": 226.83,
+   "mean_margin": 1.83
+  },
+  {
+   "row": "CHI",
+   "col": "CLE",
+   "n_meetings": 12,
+   "mean_total": 237.67,
+   "mean_margin": -6.5
+  },
+  {
+   "row": "CHI",
+   "col": "DAL",
+   "n_meetings": 5,
+   "mean_total": 225.4,
+   "mean_margin": -9.4
+  },
+  {
+   "row": "CHI",
+   "col": "DEN",
+   "n_meetings": 6,
+   "mean_total": 242.5,
+   "mean_margin": -4.17
+  },
+  {
+   "row": "CHI",
+   "col": "DET",
+   "n_meetings": 12,
+   "mean_total": 226.58,
+   "mean_margin": -7.42
+  },
+  {
+   "row": "CHI",
+   "col": "GSW",
+   "n_meetings": 6,
+   "mean_total": 244.33,
+   "mean_margin": -13.0
+  },
+  {
+   "row": "CHI",
+   "col": "HOU",
+   "n_meetings": 6,
+   "mean_total": 242.67,
+   "mean_margin": -7.0
+  },
+  {
+   "row": "CHI",
+   "col": "IND",
+   "n_meetings": 11,
+   "mean_total": 230.55,
+   "mean_margin": -2.18
+  },
+  {
+   "row": "CHI",
+   "col": "LAC",
+   "n_meetings": 6,
+   "mean_total": 229.33,
+   "mean_margin": 0.0
+  },
+  {
+   "row": "CHI",
+   "col": "LAL",
+   "n_meetings": 6,
+   "mean_total": 253.5,
+   "mean_margin": 2.83
+  },
+  {
+   "row": "CHI",
+   "col": "MEM",
+   "n_meetings": 5,
+   "mean_total": 242.0,
+   "mean_margin": 10.8
+  },
+  {
+   "row": "CHI",
+   "col": "MIA",
+   "n_meetings": 11,
+   "mean_total": 230.64,
+   "mean_margin": -6.45
+  },
+  {
+   "row": "CHI",
+   "col": "MIL",
+   "n_meetings": 12,
+   "mean_total": 229.75,
+   "mean_margin": -5.25
+  },
+  {
+   "row": "CHI",
+   "col": "MIN",
+   "n_meetings": 6,
+   "mean_total": 237.17,
+   "mean_margin": -8.5
+  },
+  {
+   "row": "CHI",
+   "col": "NOP",
+   "n_meetings": 7,
+   "mean_total": 238.71,
+   "mean_margin": -1.57
+  },
+  {
+   "row": "CHI",
+   "col": "NYK",
+   "n_meetings": 11,
+   "mean_total": 234.91,
+   "mean_margin": -5.09
+  },
+  {
+   "row": "CHI",
+   "col": "OKC",
+   "n_meetings": 6,
+   "mean_total": 230.83,
+   "mean_margin": -17.83
+  },
+  {
+   "row": "CHI",
+   "col": "ORL",
+   "n_meetings": 10,
+   "mean_total": 221.2,
+   "mean_margin": -2.4
+  },
+  {
+   "row": "CHI",
+   "col": "PHI",
+   "n_meetings": 10,
+   "mean_total": 223.5,
+   "mean_margin": 2.5
+  },
+  {
+   "row": "CHI",
+   "col": "PHX",
+   "n_meetings": 6,
+   "mean_total": 229.83,
+   "mean_margin": -4.17
+  },
+  {
+   "row": "CHI",
+   "col": "POR",
+   "n_meetings": 6,
+   "mean_total": 223.17,
+   "mean_margin": -0.5
+  },
+  {
+   "row": "CHI",
+   "col": "SAC",
+   "n_meetings": 6,
+   "mean_total": 237.0,
+   "mean_margin": 0.0
+  },
+  {
+   "row": "CHI",
+   "col": "SAS",
+   "n_meetings": 7,
+   "mean_total": 235.43,
+   "mean_margin": 4.86
+  },
+  {
+   "row": "CHI",
+   "col": "TOR",
+   "n_meetings": 11,
+   "mean_total": 231.09,
+   "mean_margin": -2.36
+  },
+  {
+   "row": "CHI",
+   "col": "UTA",
+   "n_meetings": 6,
+   "mean_total": 249.83,
+   "mean_margin": 3.83
+  },
+  {
+   "row": "CHI",
+   "col": "WAS",
+   "n_meetings": 8,
+   "mean_total": 231.5,
+   "mean_margin": 11.75
+  },
+  {
+   "row": "CLE",
+   "col": "ATL",
+   "n_meetings": 9,
+   "mean_total": 234.56,
+   "mean_margin": 4.11
+  },
+  {
+   "row": "CLE",
+   "col": "BKN",
+   "n_meetings": 11,
+   "mean_total": 217.18,
+   "mean_margin": 9.55
+  },
+  {
+   "row": "CLE",
+   "col": "BOS",
+   "n_meetings": 10,
+   "mean_total": 225.3,
+   "mean_margin": -4.7
+  },
+  {
+   "row": "CLE",
+   "col": "CHA",
+   "n_meetings": 11,
+   "mean_total": 226.73,
+   "mean_margin": 5.09
+  },
+  {
+   "row": "CLE",
+   "col": "CHI",
+   "n_meetings": 12,
+   "mean_total": 237.67,
+   "mean_margin": 6.5
+  },
+  {
+   "row": "CLE",
+   "col": "DAL",
+   "n_meetings": 6,
+   "mean_total": 242.83,
+   "mean_margin": 13.83
+  },
+  {
+   "row": "CLE",
+   "col": "DEN",
+   "n_meetings": 6,
+   "mean_total": 240.33,
+   "mean_margin": 2.67
+  },
+  {
+   "row": "CLE",
+   "col": "DET",
+   "n_meetings": 12,
+   "mean_total": 223.25,
+   "mean_margin": 6.25
+  },
+  {
+   "row": "CLE",
+   "col": "GSW",
+   "n_meetings": 6,
+   "mean_total": 221.67,
+   "mean_margin": 9.67
+  },
+  {
+   "row": "CLE",
+   "col": "HOU",
+   "n_meetings": 6,
+   "mean_total": 233.83,
+   "mean_margin": -6.83
+  },
+  {
+   "row": "CLE",
+   "col": "IND",
+   "n_meetings": 12,
+   "mean_total": 232.83,
+   "mean_margin": 1.83
+  },
+  {
+   "row": "CLE",
+   "col": "LAC",
+   "n_meetings": 6,
+   "mean_total": 234.0,
+   "mean_margin": 8.0
+  },
+  {
+   "row": "CLE",
+   "col": "LAL",
+   "n_meetings": 6,
+   "mean_total": 232.17,
+   "mean_margin": 4.5
+  },
+  {
+   "row": "CLE",
+   "col": "MEM",
+   "n_meetings": 6,
+   "mean_total": 233.67,
+   "mean_margin": 9.67
+  },
+  {
+   "row": "CLE",
+   "col": "MIA",
+   "n_meetings": 11,
+   "mean_total": 232.82,
+   "mean_margin": -2.64
+  },
+  {
+   "row": "CLE",
+   "col": "MIL",
+   "n_meetings": 12,
+   "mean_total": 228.0,
+   "mean_margin": 7.83
+  },
+  {
+   "row": "CLE",
+   "col": "MIN",
+   "n_meetings": 6,
+   "mean_total": 236.83,
+   "mean_margin": 4.5
+  },
+  {
+   "row": "CLE",
+   "col": "NOP",
+   "n_meetings": 6,
+   "mean_total": 232.5,
+   "mean_margin": 11.17
+  },
+  {
+   "row": "CLE",
+   "col": "NYK",
+   "n_meetings": 10,
+   "mean_total": 217.2,
+   "mean_margin": 5.2
+  },
+  {
+   "row": "CLE",
+   "col": "OKC",
+   "n_meetings": 6,
+   "mean_total": 239.0,
+   "mean_margin": -10.67
+  },
+  {
+   "row": "CLE",
+   "col": "ORL",
+   "n_meetings": 11,
+   "mean_total": 225.18,
+   "mean_margin": 8.64
+  },
+  {
+   "row": "CLE",
+   "col": "PHI",
+   "n_meetings": 11,
+   "mean_total": 233.09,
+   "mean_margin": 7.45
+  },
+  {
+   "row": "CLE",
+   "col": "PHX",
+   "n_meetings": 6,
+   "mean_total": 229.5,
+   "mean_margin": -1.5
+  },
+  {
+   "row": "CLE",
+   "col": "POR",
+   "n_meetings": 6,
+   "mean_total": 228.33,
+   "mean_margin": 4.67
+  },
+  {
+   "row": "CLE",
+   "col": "SAC",
+   "n_meetings": 6,
+   "mean_total": 245.33,
+   "mean_margin": 2.33
+  },
+  {
+   "row": "CLE",
+   "col": "SAS",
+   "n_meetings": 6,
+   "mean_total": 229.67,
+   "mean_margin": 8.67
+  },
+  {
+   "row": "CLE",
+   "col": "TOR",
+   "n_meetings": 10,
+   "mean_total": 229.6,
+   "mean_margin": 6.2
+  },
+  {
+   "row": "CLE",
+   "col": "UTA",
+   "n_meetings": 6,
+   "mean_total": 233.33,
+   "mean_margin": 10.33
+  },
+  {
+   "row": "CLE",
+   "col": "WAS",
+   "n_meetings": 11,
+   "mean_total": 235.27,
+   "mean_margin": 19.27
+  },
+  {
+   "row": "DAL",
+   "col": "ATL",
+   "n_meetings": 6,
+   "mean_total": 245.33,
+   "mean_margin": 0.67
+  },
+  {
+   "row": "DAL",
+   "col": "BKN",
+   "n_meetings": 7,
+   "mean_total": 228.43,
+   "mean_margin": 8.14
+  },
+  {
+   "row": "DAL",
+   "col": "BOS",
+   "n_meetings": 6,
+   "mean_total": 230.5,
+   "mean_margin": -12.5
+  },
+  {
+   "row": "DAL",
+   "col": "CHA",
+   "n_meetings": 6,
+   "mean_total": 223.5,
+   "mean_margin": 0.83
+  },
+  {
+   "row": "DAL",
+   "col": "CHI",
+   "n_meetings": 5,
+   "mean_total": 225.4,
+   "mean_margin": 9.4
+  },
+  {
+   "row": "DAL",
+   "col": "CLE",
+   "n_meetings": 6,
+   "mean_total": 242.83,
+   "mean_margin": -13.83
+  },
+  {
+   "row": "DAL",
+   "col": "DEN",
+   "n_meetings": 11,
+   "mean_total": 237.91,
+   "mean_margin": -6.27
+  },
+  {
+   "row": "DAL",
+   "col": "DET",
+   "n_meetings": 6,
+   "mean_total": 230.5,
+   "mean_margin": -3.17
+  },
+  {
+   "row": "DAL",
+   "col": "GSW",
+   "n_meetings": 11,
+   "mean_total": 235.18,
+   "mean_margin": -0.27
+  },
+  {
+   "row": "DAL",
+   "col": "HOU",
+   "n_meetings": 12,
+   "mean_total": 226.08,
+   "mean_margin": -2.25
+  },
+  {
+   "row": "DAL",
+   "col": "IND",
+   "n_meetings": 6,
+   "mean_total": 250.67,
+   "mean_margin": -7.33
+  },
+  {
+   "row": "DAL",
+   "col": "LAC",
+   "n_meetings": 10,
+   "mean_total": 231.6,
+   "mean_margin": -8.0
+  },
+  {
+   "row": "DAL",
+   "col": "LAL",
+   "n_meetings": 10,
+   "mean_total": 228.8,
+   "mean_margin": -4.4
+  },
+  {
+   "row": "DAL",
+   "col": "MEM",
+   "n_meetings": 12,
+   "mean_total": 224.67,
+   "mean_margin": -8.0
+  },
+  {
+   "row": "DAL",
+   "col": "MIA",
+   "n_meetings": 6,
+   "mean_total": 221.83,
+   "mean_margin": 5.17
+  },
+  {
+   "row": "DAL",
+   "col": "MIL",
+   "n_meetings": 5,
+   "mean_total": 245.2,
+   "mean_margin": -13.2
+  },
+  {
+   "row": "DAL",
+   "col": "MIN",
+   "n_meetings": 10,
+   "mean_total": 221.8,
+   "mean_margin": -10.2
+  },
+  {
+   "row": "DAL",
+   "col": "NOP",
+   "n_meetings": 12,
+   "mean_total": 235.17,
+   "mean_margin": 0.83
+  },
+  {
+   "row": "DAL",
+   "col": "NYK",
+   "n_meetings": 6,
+   "mean_total": 233.5,
+   "mean_margin": 5.5
+  },
+  {
+   "row": "DAL",
+   "col": "OKC",
+   "n_meetings": 11,
+   "mean_total": 226.91,
+   "mean_margin": -6.0
+  },
+  {
+   "row": "DAL",
+   "col": "ORL",
+   "n_meetings": 5,
+   "mean_total": 218.8,
+   "mean_margin": 9.6
+  },
+  {
+   "row": "DAL",
+   "col": "PHI",
+   "n_meetings": 6,
+   "mean_total": 235.17,
+   "mean_margin": -2.83
+  },
+  {
+   "row": "DAL",
+   "col": "PHX",
+   "n_meetings": 10,
+   "mean_total": 227.7,
+   "mean_margin": -3.5
+  },
+  {
+   "row": "DAL",
+   "col": "POR",
+   "n_meetings": 10,
+   "mean_total": 245.5,
+   "mean_margin": 12.3
+  },
+  {
+   "row": "DAL",
+   "col": "SAC",
+   "n_meetings": 10,
+   "mean_total": 227.1,
+   "mean_margin": -2.9
+  },
+  {
+   "row": "DAL",
+   "col": "SAS",
+   "n_meetings": 12,
+   "mean_total": 239.17,
+   "mean_margin": 0.5
+  },
+  {
+   "row": "DAL",
+   "col": "TOR",
+   "n_meetings": 6,
+   "mean_total": 242.5,
+   "mean_margin": 1.5
+  },
+  {
+   "row": "DAL",
+   "col": "UTA",
+   "n_meetings": 11,
+   "mean_total": 232.55,
+   "mean_margin": 8.0
+  },
+  {
+   "row": "DAL",
+   "col": "WAS",
+   "n_meetings": 6,
+   "mean_total": 229.83,
+   "mean_margin": 12.5
+  },
+  {
+   "row": "DEN",
+   "col": "ATL",
+   "n_meetings": 6,
+   "mean_total": 246.33,
+   "mean_margin": 11.0
+  },
+  {
+   "row": "DEN",
+   "col": "BKN",
+   "n_meetings": 6,
+   "mean_total": 238.0,
+   "mean_margin": 7.33
+  },
+  {
+   "row": "DEN",
+   "col": "BOS",
+   "n_meetings": 6,
+   "mean_total": 212.33,
+   "mean_margin": 2.0
+  },
+  {
+   "row": "DEN",
+   "col": "CHA",
+   "n_meetings": 6,
+   "mean_total": 212.33,
+   "mean_margin": 4.67
+  },
+  {
+   "row": "DEN",
+   "col": "CHI",
+   "n_meetings": 6,
+   "mean_total": 242.5,
+   "mean_margin": 4.17
+  },
+  {
+   "row": "DEN",
+   "col": "CLE",
+   "n_meetings": 6,
+   "mean_total": 240.33,
+   "mean_margin": -2.67
+  },
+  {
+   "row": "DEN",
+   "col": "DAL",
+   "n_meetings": 11,
+   "mean_total": 237.91,
+   "mean_margin": 6.27
+  },
+  {
+   "row": "DEN",
+   "col": "DET",
+   "n_meetings": 6,
+   "mean_total": 237.33,
+   "mean_margin": 7.33
+  },
+  {
+   "row": "DEN",
+   "col": "GSW",
+   "n_meetings": 11,
+   "mean_total": 232.36,
+   "mean_margin": 5.27
+  },
+  {
+   "row": "DEN",
+   "col": "HOU",
+   "n_meetings": 11,
+   "mean_total": 226.55,
+   "mean_margin": 0.73
+  },
+  {
+   "row": "DEN",
+   "col": "IND",
+   "n_meetings": 6,
+   "mean_total": 234.5,
+   "mean_margin": 8.17
+  },
+  {
+   "row": "DEN",
+   "col": "LAC",
+   "n_meetings": 11,
+   "mean_total": 224.09,
+   "mean_margin": 5.73
+  },
+  {
+   "row": "DEN",
+   "col": "LAL",
+   "n_meetings": 10,
+   "mean_total": 232.8,
+   "mean_margin": 2.2
+  },
+  {
+   "row": "DEN",
+   "col": "MEM",
+   "n_meetings": 10,
+   "mean_total": 230.1,
+   "mean_margin": 9.5
+  },
+  {
+   "row": "DEN",
+   "col": "MIA",
+   "n_meetings": 6,
+   "mean_total": 232.5,
+   "mean_margin": 6.17
+  },
+  {
+   "row": "DEN",
+   "col": "MIL",
+   "n_meetings": 6,
+   "mean_total": 219.67,
+   "mean_margin": -0.67
+  },
+  {
+   "row": "DEN",
+   "col": "MIN",
+   "n_meetings": 12,
+   "mean_total": 233.33,
+   "mean_margin": -4.67
+  },
+  {
+   "row": "DEN",
+   "col": "NOP",
+   "n_meetings": 10,
+   "mean_total": 236.1,
+   "mean_margin": 10.5
+  },
+  {
+   "row": "DEN",
+   "col": "NYK",
+   "n_meetings": 6,
+   "mean_total": 237.0,
+   "mean_margin": -18.0
+  },
+  {
+   "row": "DEN",
+   "col": "OKC",
+   "n_meetings": 12,
+   "mean_total": 231.33,
+   "mean_margin": -1.83
+  },
+  {
+   "row": "DEN",
+   "col": "ORL",
+   "n_meetings": 6,
+   "mean_total": 232.33,
+   "mean_margin": 6.33
+  },
+  {
+   "row": "DEN",
+   "col": "PHI",
+   "n_meetings": 6,
+   "mean_total": 242.67,
+   "mean_margin": 11.33
+  },
+  {
+   "row": "DEN",
+   "col": "PHX",
+   "n_meetings": 10,
+   "mean_total": 232.3,
+   "mean_margin": 7.5
+  },
+  {
+   "row": "DEN",
+   "col": "POR",
+   "n_meetings": 11,
+   "mean_total": 238.73,
+   "mean_margin": 11.45
+  },
+  {
+   "row": "DEN",
+   "col": "SAC",
+   "n_meetings": 12,
+   "mean_total": 237.5,
+   "mean_margin": 4.33
+  },
+  {
+   "row": "DEN",
+   "col": "SAS",
+   "n_meetings": 11,
+   "mean_total": 242.18,
+   "mean_margin": 3.82
+  },
+  {
+   "row": "DEN",
+   "col": "TOR",
+   "n_meetings": 6,
+   "mean_total": 233.0,
+   "mean_margin": 4.67
+  },
+  {
+   "row": "DEN",
+   "col": "UTA",
+   "n_meetings": 10,
+   "mean_total": 234.8,
+   "mean_margin": 15.0
+  },
+  {
+   "row": "DEN",
+   "col": "WAS",
+   "n_meetings": 6,
+   "mean_total": 230.17,
+   "mean_margin": 5.5
+  },
+  {
+   "row": "DET",
+   "col": "ATL",
+   "n_meetings": 11,
+   "mean_total": 244.82,
+   "mean_margin": 2.64
+  },
+  {
+   "row": "DET",
+   "col": "BKN",
+   "n_meetings": 11,
+   "mean_total": 220.36,
+   "mean_margin": 12.36
+  },
+  {
+   "row": "DET",
+   "col": "BOS",
+   "n_meetings": 11,
+   "mean_total": 228.09,
+   "mean_margin": -6.09
+  },
+  {
+   "row": "DET",
+   "col": "CHA",
+   "n_meetings": 9,
+   "mean_total": 213.0,
+   "mean_margin": 8.78
+  },
+  {
+   "row": "DET",
+   "col": "CHI",
+   "n_meetings": 12,
+   "mean_total": 226.58,
+   "mean_margin": 7.42
+  },
+  {
+   "row": "DET",
+   "col": "CLE",
+   "n_meetings": 12,
+   "mean_total": 223.25,
+   "mean_margin": -6.25
+  },
+  {
+   "row": "DET",
+   "col": "DAL",
+   "n_meetings": 6,
+   "mean_total": 230.5,
+   "mean_margin": 3.17
+  },
+  {
+   "row": "DET",
+   "col": "DEN",
+   "n_meetings": 6,
+   "mean_total": 237.33,
+   "mean_margin": -7.33
+  },
+  {
+   "row": "DET",
+   "col": "GSW",
+   "n_meetings": 6,
+   "mean_total": 226.33,
+   "mean_margin": -0.33
+  },
+  {
+   "row": "DET",
+   "col": "HOU",
+   "n_meetings": 6,
+   "mean_total": 219.17,
+   "mean_margin": -3.17
+  },
+  {
+   "row": "DET",
+   "col": "IND",
+   "n_meetings": 11,
+   "mean_total": 233.82,
+   "mean_margin": -0.73
+  },
+  {
+   "row": "DET",
+   "col": "LAC",
+   "n_meetings": 6,
+   "mean_total": 220.17,
+   "mean_margin": -5.83
+  },
+  {
+   "row": "DET",
+   "col": "LAL",
+   "n_meetings": 6,
+   "mean_total": 230.33,
+   "mean_margin": 0.0
+  },
+  {
+   "row": "DET",
+   "col": "MEM",
+   "n_meetings": 7,
+   "mean_total": 220.57,
+   "mean_margin": -5.14
+  },
+  {
+   "row": "DET",
+   "col": "MIA",
+   "n_meetings": 11,
+   "mean_total": 227.36,
+   "mean_margin": -3.73
+  },
+  {
+   "row": "DET",
+   "col": "MIL",
+   "n_meetings": 11,
+   "mean_total": 246.45,
+   "mean_margin": -6.27
+  },
+  {
+   "row": "DET",
+   "col": "MIN",
+   "n_meetings": 4,
+   "mean_total": 222.25,
+   "mean_margin": -6.75
+  },
+  {
+   "row": "DET",
+   "col": "NOP",
+   "n_meetings": 5,
+   "mean_total": 229.2,
+   "mean_margin": 7.6
+  },
+  {
+   "row": "DET",
+   "col": "NYK",
+   "n_meetings": 10,
+   "mean_total": 224.4,
+   "mean_margin": 4.4
+  },
+  {
+   "row": "DET",
+   "col": "OKC",
+   "n_meetings": 6,
+   "mean_total": 227.67,
+   "mean_margin": -2.33
+  },
+  {
+   "row": "DET",
+   "col": "ORL",
+   "n_meetings": 10,
+   "mean_total": 216.5,
+   "mean_margin": -4.9
+  },
+  {
+   "row": "DET",
+   "col": "PHI",
+   "n_meetings": 10,
+   "mean_total": 222.0,
+   "mean_margin": -3.4
+  },
+  {
+   "row": "DET",
+   "col": "PHX",
+   "n_meetings": 6,
+   "mean_total": 228.17,
+   "mean_margin": -6.83
+  },
+  {
+   "row": "DET",
+   "col": "POR",
+   "n_meetings": 6,
+   "mean_total": 229.17,
+   "mean_margin": 3.5
+  },
+  {
+   "row": "DET",
+   "col": "SAC",
+   "n_meetings": 6,
+   "mean_total": 247.17,
+   "mean_margin": 2.5
+  },
+  {
+   "row": "DET",
+   "col": "SAS",
+   "n_meetings": 6,
+   "mean_total": 225.5,
+   "mean_margin": -5.83
+  },
+  {
+   "row": "DET",
+   "col": "TOR",
+   "n_meetings": 9,
+   "mean_total": 224.22,
+   "mean_margin": 1.78
+  },
+  {
+   "row": "DET",
+   "col": "UTA",
+   "n_meetings": 6,
+   "mean_total": 249.0,
+   "mean_margin": 2.67
+  },
+  {
+   "row": "DET",
+   "col": "WAS",
+   "n_meetings": 11,
+   "mean_total": 233.27,
+   "mean_margin": 4.73
+  },
+  {
+   "row": "GSW",
+   "col": "ATL",
+   "n_meetings": 6,
+   "mean_total": 241.33,
+   "mean_margin": 0.0
+  },
+  {
+   "row": "GSW",
+   "col": "BKN",
+   "n_meetings": 6,
+   "mean_total": 230.17,
+   "mean_margin": 4.17
+  },
+  {
+   "row": "GSW",
+   "col": "BOS",
+   "n_meetings": 6,
+   "mean_total": 229.33,
+   "mean_margin": -18.67
+  },
+  {
+   "row": "GSW",
+   "col": "CHA",
+   "n_meetings": 6,
+   "mean_total": 223.67,
+   "mean_margin": 18.67
+  },
+  {
+   "row": "GSW",
+   "col": "CHI",
+   "n_meetings": 6,
+   "mean_total": 244.33,
+   "mean_margin": 13.0
+  },
+  {
+   "row": "GSW",
+   "col": "CLE",
+   "n_meetings": 6,
+   "mean_total": 221.67,
+   "mean_margin": -9.67
+  },
+  {
+   "row": "GSW",
+   "col": "DAL",
+   "n_meetings": 11,
+   "mean_total": 235.18,
+   "mean_margin": 0.27
+  },
+  {
+   "row": "GSW",
+   "col": "DEN",
+   "n_meetings": 11,
+   "mean_total": 232.36,
+   "mean_margin": -5.27
+  },
+  {
+   "row": "GSW",
+   "col": "DET",
+   "n_meetings": 6,
+   "mean_total": 226.33,
+   "mean_margin": 0.33
+  },
+  {
+   "row": "GSW",
+   "col": "HOU",
+   "n_meetings": 11,
+   "mean_total": 215.64,
+   "mean_margin": 4.0
+  },
+  {
+   "row": "GSW",
+   "col": "IND",
+   "n_meetings": 6,
+   "mean_total": 219.0,
+   "mean_margin": 3.0
+  },
+  {
+   "row": "GSW",
+   "col": "LAC",
+   "n_meetings": 12,
+   "mean_total": 218.67,
+   "mean_margin": -2.83
+  },
+  {
+   "row": "GSW",
+   "col": "LAL",
+   "n_meetings": 12,
+   "mean_total": 236.58,
+   "mean_margin": -1.25
+  },
+  {
+   "row": "GSW",
+   "col": "MEM",
+   "n_meetings": 10,
+   "mean_total": 239.0,
+   "mean_margin": 3.8
+  },
+  {
+   "row": "GSW",
+   "col": "MIA",
+   "n_meetings": 6,
+   "mean_total": 214.0,
+   "mean_margin": -4.0
+  },
+  {
+   "row": "GSW",
+   "col": "MIL",
+   "n_meetings": 6,
+   "mean_total": 226.33,
+   "mean_margin": 7.67
+  },
+  {
+   "row": "GSW",
+   "col": "MIN",
+   "n_meetings": 11,
+   "mean_total": 217.91,
+   "mean_margin": -2.45
+  },
+  {
+   "row": "GSW",
+   "col": "NOP",
+   "n_meetings": 10,
+   "mean_total": 220.2,
+   "mean_margin": 6.2
+  },
+  {
+   "row": "GSW",
+   "col": "NYK",
+   "n_meetings": 6,
+   "mean_total": 217.17,
+   "mean_margin": 4.83
+  },
+  {
+   "row": "GSW",
+   "col": "OKC",
+   "n_meetings": 11,
+   "mean_total": 237.09,
+   "mean_margin": -8.36
+  },
+  {
+   "row": "GSW",
+   "col": "ORL",
+   "n_meetings": 6,
+   "mean_total": 220.0,
+   "mean_margin": 6.67
+  },
+  {
+   "row": "GSW",
+   "col": "PHI",
+   "n_meetings": 6,
+   "mean_total": 225.0,
+   "mean_margin": 7.0
+  },
+  {
+   "row": "GSW",
+   "col": "PHX",
+   "n_meetings": 12,
+   "mean_total": 221.67,
+   "mean_margin": 1.0
+  },
+  {
+   "row": "GSW",
+   "col": "POR",
+   "n_meetings": 11,
+   "mean_total": 231.45,
+   "mean_margin": 8.36
+  },
+  {
+   "row": "GSW",
+   "col": "SAC",
+   "n_meetings": 12,
+   "mean_total": 235.75,
+   "mean_margin": 4.08
+  },
+  {
+   "row": "GSW",
+   "col": "SAS",
+   "n_meetings": 11,
+   "mean_total": 230.09,
+   "mean_margin": 1.36
+  },
+  {
+   "row": "GSW",
+   "col": "TOR",
+   "n_meetings": 6,
+   "mean_total": 242.0,
+   "mean_margin": -5.33
+  },
+  {
+   "row": "GSW",
+   "col": "UTA",
+   "n_meetings": 11,
+   "mean_total": 241.45,
+   "mean_margin": 11.64
+  },
+  {
+   "row": "GSW",
+   "col": "WAS",
+   "n_meetings": 6,
+   "mean_total": 242.33,
+   "mean_margin": 9.33
+  },
+  {
+   "row": "HOU",
+   "col": "ATL",
+   "n_meetings": 6,
+   "mean_total": 221.5,
+   "mean_margin": 5.83
+  },
+  {
+   "row": "HOU",
+   "col": "BKN",
+   "n_meetings": 6,
+   "mean_total": 214.83,
+   "mean_margin": 7.83
+  },
+  {
+   "row": "HOU",
+   "col": "BOS",
+   "n_meetings": 6,
+   "mean_total": 223.0,
+   "mean_margin": -9.33
+  },
+  {
+   "row": "HOU",
+   "col": "CHA",
+   "n_meetings": 6,
+   "mean_total": 222.17,
+   "mean_margin": 7.5
+  },
+  {
+   "row": "HOU",
+   "col": "CHI",
+   "n_meetings": 6,
+   "mean_total": 242.67,
+   "mean_margin": 7.0
+  },
+  {
+   "row": "HOU",
+   "col": "CLE",
+   "n_meetings": 6,
+   "mean_total": 233.83,
+   "mean_margin": 6.83
+  },
+  {
+   "row": "HOU",
+   "col": "DAL",
+   "n_meetings": 12,
+   "mean_total": 226.08,
+   "mean_margin": 2.25
+  },
+  {
+   "row": "HOU",
+   "col": "DEN",
+   "n_meetings": 11,
+   "mean_total": 226.55,
+   "mean_margin": -0.73
+  },
+  {
+   "row": "HOU",
+   "col": "DET",
+   "n_meetings": 6,
+   "mean_total": 219.17,
+   "mean_margin": 3.17
+  },
+  {
+   "row": "HOU",
+   "col": "GSW",
+   "n_meetings": 11,
+   "mean_total": 215.64,
+   "mean_margin": -4.0
+  },
+  {
+   "row": "HOU",
+   "col": "IND",
+   "n_meetings": 6,
+   "mean_total": 239.67,
+   "mean_margin": 1.0
+  },
+  {
+   "row": "HOU",
+   "col": "LAC",
+   "n_meetings": 11,
+   "mean_total": 222.73,
+   "mean_margin": 0.73
+  },
+  {
+   "row": "HOU",
+   "col": "LAL",
+   "n_meetings": 10,
+   "mean_total": 222.1,
+   "mean_margin": 1.3
+  },
+  {
+   "row": "HOU",
+   "col": "MEM",
+   "n_meetings": 12,
+   "mean_total": 225.33,
+   "mean_margin": 10.17
+  },
+  {
+   "row": "HOU",
+   "col": "MIA",
+   "n_meetings": 6,
+   "mean_total": 220.83,
+   "mean_margin": -5.17
+  },
+  {
+   "row": "HOU",
+   "col": "MIL",
+   "n_meetings": 6,
+   "mean_total": 222.33,
+   "mean_margin": 1.67
+  },
+  {
+   "row": "HOU",
+   "col": "MIN",
+   "n_meetings": 10,
+   "mean_total": 226.8,
+   "mean_margin": -5.8
+  },
+  {
+   "row": "HOU",
+   "col": "NOP",
+   "n_meetings": 12,
+   "mean_total": 229.0,
+   "mean_margin": 7.33
+  },
+  {
+   "row": "HOU",
+   "col": "NYK",
+   "n_meetings": 6,
+   "mean_total": 213.0,
+   "mean_margin": 1.33
+  },
+  {
+   "row": "HOU",
+   "col": "OKC",
+   "n_meetings": 11,
+   "mean_total": 231.55,
+   "mean_margin": -3.73
+  },
+  {
+   "row": "HOU",
+   "col": "ORL",
+   "n_meetings": 6,
+   "mean_total": 213.67,
+   "mean_margin": 2.0
+  },
+  {
+   "row": "HOU",
+   "col": "PHI",
+   "n_meetings": 6,
+   "mean_total": 246.67,
+   "mean_margin": 1.0
+  },
+  {
+   "row": "HOU",
+   "col": "PHX",
+   "n_meetings": 11,
+   "mean_total": 222.91,
+   "mean_margin": 9.45
+  },
+  {
+   "row": "HOU",
+   "col": "POR",
+   "n_meetings": 11,
+   "mean_total": 221.73,
+   "mean_margin": 9.55
+  },
+  {
+   "row": "HOU",
+   "col": "SAC",
+   "n_meetings": 10,
+   "mean_total": 223.6,
+   "mean_margin": 7.0
+  },
+  {
+   "row": "HOU",
+   "col": "SAS",
+   "n_meetings": 12,
+   "mean_total": 219.83,
+   "mean_margin": 1.67
+  },
+  {
+   "row": "HOU",
+   "col": "TOR",
+   "n_meetings": 6,
+   "mean_total": 221.5,
+   "mean_margin": 11.5
+  },
+  {
+   "row": "HOU",
+   "col": "UTA",
+   "n_meetings": 11,
+   "mean_total": 240.64,
+   "mean_margin": 12.82
+  },
+  {
+   "row": "HOU",
+   "col": "WAS",
+   "n_meetings": 6,
+   "mean_total": 239.83,
+   "mean_margin": 17.5
+  },
+  {
+   "row": "IND",
+   "col": "ATL",
+   "n_meetings": 10,
+   "mean_total": 255.7,
+   "mean_margin": 6.5
+  },
+  {
+   "row": "IND",
+   "col": "BKN",
+   "n_meetings": 9,
+   "mean_total": 216.33,
+   "mean_margin": 5.67
+  },
+  {
+   "row": "IND",
+   "col": "BOS",
+   "n_meetings": 12,
+   "mean_total": 238.08,
+   "mean_margin": -10.42
+  },
+  {
+   "row": "IND",
+   "col": "CHA",
+   "n_meetings": 10,
+   "mean_total": 227.8,
+   "mean_margin": 1.4
+  },
+  {
+   "row": "IND",
+   "col": "CHI",
+   "n_meetings": 11,
+   "mean_total": 230.55,
+   "mean_margin": 2.18
+  },
+  {
+   "row": "IND",
+   "col": "CLE",
+   "n_meetings": 12,
+   "mean_total": 232.83,
+   "mean_margin": -1.83
+  },
+  {
+   "row": "IND",
+   "col": "DAL",
+   "n_meetings": 6,
+   "mean_total": 250.67,
+   "mean_margin": 7.33
+  },
+  {
+   "row": "IND",
+   "col": "DEN",
+   "n_meetings": 6,
+   "mean_total": 234.5,
+   "mean_margin": -8.17
+  },
+  {
+   "row": "IND",
+   "col": "DET",
+   "n_meetings": 11,
+   "mean_total": 233.82,
+   "mean_margin": 0.73
+  },
+  {
+   "row": "IND",
+   "col": "GSW",
+   "n_meetings": 6,
+   "mean_total": 219.0,
+   "mean_margin": -3.0
+  },
+  {
+   "row": "IND",
+   "col": "HOU",
+   "n_meetings": 6,
+   "mean_total": 239.67,
+   "mean_margin": -1.0
+  },
+  {
+   "row": "IND",
+   "col": "LAC",
+   "n_meetings": 5,
+   "mean_total": 247.0,
+   "mean_margin": -1.0
+  },
+  {
+   "row": "IND",
+   "col": "LAL",
+   "n_meetings": 6,
+   "mean_total": 247.67,
+   "mean_margin": -2.0
+  },
+  {
+   "row": "IND",
+   "col": "MEM",
+   "n_meetings": 6,
+   "mean_total": 234.0,
+   "mean_margin": -8.67
+  },
+  {
+   "row": "IND",
+   "col": "MIA",
+   "n_meetings": 9,
+   "mean_total": 245.67,
+   "mean_margin": 1.0
+  },
+  {
+   "row": "IND",
+   "col": "MIL",
+   "n_meetings": 13,
+   "mean_total": 240.0,
+   "mean_margin": -3.38
+  },
+  {
+   "row": "IND",
+   "col": "MIN",
+   "n_meetings": 5,
+   "mean_total": 233.6,
+   "mean_margin": -1.2
+  },
+  {
+   "row": "IND",
+   "col": "NOP",
+   "n_meetings": 7,
+   "mean_total": 234.43,
+   "mean_margin": -2.43
+  },
+  {
+   "row": "IND",
+   "col": "NYK",
+   "n_meetings": 10,
+   "mean_total": 237.0,
+   "mean_margin": -3.6
+  },
+  {
+   "row": "IND",
+   "col": "OKC",
+   "n_meetings": 6,
+   "mean_total": 242.33,
+   "mean_margin": -1.0
+  },
+  {
+   "row": "IND",
+   "col": "ORL",
+   "n_meetings": 10,
+   "mean_total": 230.8,
+   "mean_margin": -2.8
+  },
+  {
+   "row": "IND",
+   "col": "PHI",
+   "n_meetings": 10,
+   "mean_total": 235.2,
+   "mean_margin": 0.2
+  },
+  {
+   "row": "IND",
+   "col": "PHX",
+   "n_meetings": 6,
+   "mean_total": 236.33,
+   "mean_margin": -4.67
+  },
+  {
+   "row": "IND",
+   "col": "POR",
+   "n_meetings": 6,
+   "mean_total": 230.17,
+   "mean_margin": -8.5
+  },
+  {
+   "row": "IND",
+   "col": "SAC",
+   "n_meetings": 6,
+   "mean_total": 230.5,
+   "mean_margin": 4.83
+  },
+  {
+   "row": "IND",
+   "col": "SAS",
+   "n_meetings": 4,
+   "mean_total": 243.5,
+   "mean_margin": 1.0
+  },
+  {
+   "row": "IND",
+   "col": "TOR",
+   "n_meetings": 11,
+   "mean_total": 235.27,
+   "mean_margin": -4.0
+  },
+  {
+   "row": "IND",
+   "col": "UTA",
+   "n_meetings": 6,
+   "mean_total": 249.5,
+   "mean_margin": -2.5
+  },
+  {
+   "row": "IND",
+   "col": "WAS",
+   "n_meetings": 11,
+   "mean_total": 232.91,
+   "mean_margin": 7.82
+  },
+  {
+   "row": "LAC",
+   "col": "ATL",
+   "n_meetings": 6,
+   "mean_total": 227.5,
+   "mean_margin": 9.5
+  },
+  {
+   "row": "LAC",
+   "col": "BKN",
+   "n_meetings": 6,
+   "mean_total": 216.33,
+   "mean_margin": 24.67
+  },
+  {
+   "row": "LAC",
+   "col": "BOS",
+   "n_meetings": 6,
+   "mean_total": 235.67,
+   "mean_margin": -14.67
+  },
+  {
+   "row": "LAC",
+   "col": "CHA",
+   "n_meetings": 6,
+   "mean_total": 227.5,
+   "mean_margin": 14.5
+  },
+  {
+   "row": "LAC",
+   "col": "CHI",
+   "n_meetings": 6,
+   "mean_total": 229.33,
+   "mean_margin": 0.0
+  },
+  {
+   "row": "LAC",
+   "col": "CLE",
+   "n_meetings": 6,
+   "mean_total": 234.0,
+   "mean_margin": -8.0
+  },
+  {
+   "row": "LAC",
+   "col": "DAL",
+   "n_meetings": 10,
+   "mean_total": 231.6,
+   "mean_margin": 8.0
+  },
+  {
+   "row": "LAC",
+   "col": "DEN",
+   "n_meetings": 11,
+   "mean_total": 224.09,
+   "mean_margin": -5.73
+  },
+  {
+   "row": "LAC",
+   "col": "DET",
+   "n_meetings": 6,
+   "mean_total": 220.17,
+   "mean_margin": 5.83
+  },
+  {
+   "row": "LAC",
+   "col": "GSW",
+   "n_meetings": 12,
+   "mean_total": 218.67,
+   "mean_margin": 2.83
+  },
+  {
+   "row": "LAC",
+   "col": "HOU",
+   "n_meetings": 11,
+   "mean_total": 222.73,
+   "mean_margin": -0.73
+  },
+  {
+   "row": "LAC",
+   "col": "IND",
+   "n_meetings": 5,
+   "mean_total": 247.0,
+   "mean_margin": 1.0
+  },
+  {
+   "row": "LAC",
+   "col": "LAL",
+   "n_meetings": 12,
+   "mean_total": 224.75,
+   "mean_margin": -1.58
+  },
+  {
+   "row": "LAC",
+   "col": "MEM",
+   "n_meetings": 11,
+   "mean_total": 224.09,
+   "mean_margin": 2.82
+  },
+  {
+   "row": "LAC",
+   "col": "MIA",
+   "n_meetings": 6,
+   "mean_total": 225.83,
+   "mean_margin": 5.5
+  },
+  {
+   "row": "LAC",
+   "col": "MIL",
+   "n_meetings": 5,
+   "mean_total": 231.0,
+   "mean_margin": 4.6
+  },
+  {
+   "row": "LAC",
+   "col": "MIN",
+   "n_meetings": 11,
+   "mean_total": 209.64,
+   "mean_margin": -3.45
+  },
+  {
+   "row": "LAC",
+   "col": "NOP",
+   "n_meetings": 11,
+   "mean_total": 226.91,
+   "mean_margin": 0.0
+  },
+  {
+   "row": "LAC",
+   "col": "NYK",
+   "n_meetings": 6,
+   "mean_total": 231.83,
+   "mean_margin": 4.5
+  },
+  {
+   "row": "LAC",
+   "col": "OKC",
+   "n_meetings": 10,
+   "mean_total": 230.1,
+   "mean_margin": -12.7
+  },
+  {
+   "row": "LAC",
+   "col": "ORL",
+   "n_meetings": 6,
+   "mean_total": 207.83,
+   "mean_margin": 1.5
+  },
+  {
+   "row": "LAC",
+   "col": "PHI",
+   "n_meetings": 6,
+   "mean_total": 222.33,
+   "mean_margin": 1.33
+  },
+  {
+   "row": "LAC",
+   "col": "PHX",
+   "n_meetings": 12,
+   "mean_total": 227.92,
+   "mean_margin": 3.92
+  },
+  {
+   "row": "LAC",
+   "col": "POR",
+   "n_meetings": 9,
+   "mean_total": 227.44,
+   "mean_margin": 12.33
+  },
+  {
+   "row": "LAC",
+   "col": "SAC",
+   "n_meetings": 11,
+   "mean_total": 217.45,
+   "mean_margin": 6.0
+  },
+  {
+   "row": "LAC",
+   "col": "SAS",
+   "n_meetings": 10,
+   "mean_total": 222.7,
+   "mean_margin": 3.5
+  },
+  {
+   "row": "LAC",
+   "col": "TOR",
+   "n_meetings": 6,
+   "mean_total": 227.0,
+   "mean_margin": 8.33
+  },
+  {
+   "row": "LAC",
+   "col": "UTA",
+   "n_meetings": 11,
+   "mean_total": 230.18,
+   "mean_margin": 10.91
+  },
+  {
+   "row": "LAC",
+   "col": "WAS",
+   "n_meetings": 6,
+   "mean_total": 224.83,
+   "mean_margin": 16.83
+  },
+  {
+   "row": "LAL",
+   "col": "ATL",
+   "n_meetings": 6,
+   "mean_total": 244.83,
+   "mean_margin": 5.83
+  },
+  {
+   "row": "LAL",
+   "col": "BKN",
+   "n_meetings": 6,
+   "mean_total": 222.17,
+   "mean_margin": 4.17
+  },
+  {
+   "row": "LAL",
+   "col": "BOS",
+   "n_meetings": 6,
+   "mean_total": 219.33,
+   "mean_margin": -5.67
+  },
+  {
+   "row": "LAL",
+   "col": "CHA",
+   "n_meetings": 6,
+   "mean_total": 231.17,
+   "mean_margin": 3.5
+  },
+  {
+   "row": "LAL",
+   "col": "CHI",
+   "n_meetings": 6,
+   "mean_total": 253.5,
+   "mean_margin": -2.83
+  },
+  {
+   "row": "LAL",
+   "col": "CLE",
+   "n_meetings": 6,
+   "mean_total": 232.17,
+   "mean_margin": -4.5
+  },
+  {
+   "row": "LAL",
+   "col": "DAL",
+   "n_meetings": 10,
+   "mean_total": 228.8,
+   "mean_margin": 4.4
+  },
+  {
+   "row": "LAL",
+   "col": "DEN",
+   "n_meetings": 10,
+   "mean_total": 232.8,
+   "mean_margin": -2.2
+  },
+  {
+   "row": "LAL",
+   "col": "DET",
+   "n_meetings": 6,
+   "mean_total": 230.33,
+   "mean_margin": 0.0
+  },
+  {
+   "row": "LAL",
+   "col": "GSW",
+   "n_meetings": 12,
+   "mean_total": 236.58,
+   "mean_margin": 1.25
+  },
+  {
+   "row": "LAL",
+   "col": "HOU",
+   "n_meetings": 10,
+   "mean_total": 222.1,
+   "mean_margin": -1.3
+  },
+  {
+   "row": "LAL",
+   "col": "IND",
+   "n_meetings": 6,
+   "mean_total": 247.67,
+   "mean_margin": 2.0
+  },
+  {
+   "row": "LAL",
+   "col": "LAC",
+   "n_meetings": 12,
+   "mean_total": 224.75,
+   "mean_margin": 1.58
+  },
+  {
+   "row": "LAL",
+   "col": "MEM",
+   "n_meetings": 11,
+   "mean_total": 243.55,
+   "mean_margin": 4.27
+  },
+  {
+   "row": "LAL",
+   "col": "MIA",
+   "n_meetings": 6,
+   "mean_total": 230.5,
+   "mean_margin": -4.83
+  },
+  {
+   "row": "LAL",
+   "col": "MIL",
+   "n_meetings": 6,
+   "mean_total": 226.0,
+   "mean_margin": -4.0
+  },
+  {
+   "row": "LAL",
+   "col": "MIN",
+   "n_meetings": 11,
+   "mean_total": 219.09,
+   "mean_margin": 0.18
+  },
+  {
+   "row": "LAL",
+   "col": "NOP",
+   "n_meetings": 11,
+   "mean_total": 230.91,
+   "mean_margin": 12.91
+  },
+  {
+   "row": "LAL",
+   "col": "NYK",
+   "n_meetings": 6,
+   "mean_total": 220.33,
+   "mean_margin": 4.0
+  },
+  {
+   "row": "LAL",
+   "col": "OKC",
+   "n_meetings": 11,
+   "mean_total": 226.45,
+   "mean_margin": -9.91
+  },
+  {
+   "row": "LAL",
+   "col": "ORL",
+   "n_meetings": 6,
+   "mean_total": 219.83,
+   "mean_margin": -4.83
+  },
+  {
+   "row": "LAL",
+   "col": "PHI",
+   "n_meetings": 6,
+   "mean_total": 220.83,
+   "mean_margin": -5.5
+  },
+  {
+   "row": "LAL",
+   "col": "PHX",
+   "n_meetings": 14,
+   "mean_total": 221.43,
+   "mean_margin": -3.14
+  },
+  {
+   "row": "LAL",
+   "col": "POR",
+   "n_meetings": 10,
+   "mean_total": 221.5,
+   "mean_margin": 1.7
+  },
+  {
+   "row": "LAL",
+   "col": "SAC",
+   "n_meetings": 12,
+   "mean_total": 236.58,
+   "mean_margin": 2.58
+  },
+  {
+   "row": "LAL",
+   "col": "SAS",
+   "n_meetings": 11,
+   "mean_total": 233.64,
+   "mean_margin": -4.18
+  },
+  {
+   "row": "LAL",
+   "col": "TOR",
+   "n_meetings": 6,
+   "mean_total": 238.33,
+   "mean_margin": 10.67
+  },
+  {
+   "row": "LAL",
+   "col": "UTA",
+   "n_meetings": 11,
+   "mean_total": 244.45,
+   "mean_margin": 9.36
+  },
+  {
+   "row": "LAL",
+   "col": "WAS",
+   "n_meetings": 6,
+   "mean_total": 235.5,
+   "mean_margin": 19.83
+  },
+  {
+   "row": "MEM",
+   "col": "ATL",
+   "n_meetings": 6,
+   "mean_total": 239.33,
+   "mean_margin": -4.67
+  },
+  {
+   "row": "MEM",
+   "col": "BKN",
+   "n_meetings": 7,
+   "mean_total": 219.43,
+   "mean_margin": -3.71
+  },
+  {
+   "row": "MEM",
+   "col": "BOS",
+   "n_meetings": 6,
+   "mean_total": 224.5,
+   "mean_margin": -15.17
+  },
+  {
+   "row": "MEM",
+   "col": "CHA",
+   "n_meetings": 6,
+   "mean_total": 223.17,
+   "mean_margin": -3.83
+  },
+  {
+   "row": "MEM",
+   "col": "CHI",
+   "n_meetings": 5,
+   "mean_total": 242.0,
+   "mean_margin": -10.8
+  },
+  {
+   "row": "MEM",
+   "col": "CLE",
+   "n_meetings": 6,
+   "mean_total": 233.67,
+   "mean_margin": -9.67
+  },
+  {
+   "row": "MEM",
+   "col": "DAL",
+   "n_meetings": 12,
+   "mean_total": 224.67,
+   "mean_margin": 8.0
+  },
+  {
+   "row": "MEM",
+   "col": "DEN",
+   "n_meetings": 10,
+   "mean_total": 230.1,
+   "mean_margin": -9.5
+  },
+  {
+   "row": "MEM",
+   "col": "DET",
+   "n_meetings": 7,
+   "mean_total": 220.57,
+   "mean_margin": 5.14
+  },
+  {
+   "row": "MEM",
+   "col": "GSW",
+   "n_meetings": 10,
+   "mean_total": 239.0,
+   "mean_margin": -3.8
+  },
+  {
+   "row": "MEM",
+   "col": "HOU",
+   "n_meetings": 12,
+   "mean_total": 225.33,
+   "mean_margin": -10.17
+  },
+  {
+   "row": "MEM",
+   "col": "IND",
+   "n_meetings": 6,
+   "mean_total": 234.0,
+   "mean_margin": 8.67
+  },
+  {
+   "row": "MEM",
+   "col": "LAC",
+   "n_meetings": 11,
+   "mean_total": 224.09,
+   "mean_margin": -2.82
+  },
+  {
+   "row": "MEM",
+   "col": "LAL",
+   "n_meetings": 11,
+   "mean_total": 243.55,
+   "mean_margin": -4.27
+  },
+  {
+   "row": "MEM",
+   "col": "MIA",
+   "n_meetings": 6,
+   "mean_total": 226.83,
+   "mean_margin": -1.5
+  },
+  {
+   "row": "MEM",
+   "col": "MIL",
+   "n_meetings": 5,
+   "mean_total": 227.2,
+   "mean_margin": 14.0
+  },
+  {
+   "row": "MEM",
+   "col": "MIN",
+   "n_meetings": 11,
+   "mean_total": 233.91,
+   "mean_margin": -8.27
+  },
+  {
+   "row": "MEM",
+   "col": "NOP",
+   "n_meetings": 12,
+   "mean_total": 234.08,
+   "mean_margin": 1.58
+  },
+  {
+   "row": "MEM",
+   "col": "NYK",
+   "n_meetings": 6,
+   "mean_total": 235.67,
+   "mean_margin": -14.0
+  },
+  {
+   "row": "MEM",
+   "col": "OKC",
+   "n_meetings": 10,
+   "mean_total": 225.4,
+   "mean_margin": -16.2
+  },
+  {
+   "row": "MEM",
+   "col": "ORL",
+   "n_meetings": 6,
+   "mean_total": 221.17,
+   "mean_margin": -0.83
+  },
+  {
+   "row": "MEM",
+   "col": "PHI",
+   "n_meetings": 6,
+   "mean_total": 239.67,
+   "mean_margin": -0.67
+  },
+  {
+   "row": "MEM",
+   "col": "PHX",
+   "n_meetings": 10,
+   "mean_total": 233.5,
+   "mean_margin": -4.9
+  },
+  {
+   "row": "MEM",
+   "col": "POR",
+   "n_meetings": 11,
+   "mean_total": 223.36,
+   "mean_margin": 1.36
+  },
+  {
+   "row": "MEM",
+   "col": "SAC",
+   "n_meetings": 10,
+   "mean_total": 234.0,
+   "mean_margin": -1.6
+  },
+  {
+   "row": "MEM",
+   "col": "SAS",
+   "n_meetings": 12,
+   "mean_total": 224.75,
+   "mean_margin": 2.08
+  },
+  {
+   "row": "MEM",
+   "col": "TOR",
+   "n_meetings": 5,
+   "mean_total": 236.4,
+   "mean_margin": 10.0
+  },
+  {
+   "row": "MEM",
+   "col": "UTA",
+   "n_meetings": 10,
+   "mean_total": 240.2,
+   "mean_margin": 6.6
+  },
+  {
+   "row": "MEM",
+   "col": "WAS",
+   "n_meetings": 6,
+   "mean_total": 231.5,
+   "mean_margin": 7.5
+  },
+  {
+   "row": "MIA",
+   "col": "ATL",
+   "n_meetings": 11,
+   "mean_total": 227.09,
+   "mean_margin": 6.0
+  },
+  {
+   "row": "MIA",
+   "col": "BKN",
+   "n_meetings": 10,
+   "mean_total": 210.6,
+   "mean_margin": 5.0
+  },
+  {
+   "row": "MIA",
+   "col": "BOS",
+   "n_meetings": 11,
+   "mean_total": 223.0,
+   "mean_margin": -10.09
+  },
+  {
+   "row": "MIA",
+   "col": "CHA",
+   "n_meetings": 12,
+   "mean_total": 223.92,
+   "mean_margin": 7.08
+  },
+  {
+   "row": "MIA",
+   "col": "CHI",
+   "n_meetings": 11,
+   "mean_total": 230.64,
+   "mean_margin": 6.45
+  },
+  {
+   "row": "MIA",
+   "col": "CLE",
+   "n_meetings": 11,
+   "mean_total": 232.82,
+   "mean_margin": 2.64
+  },
+  {
+   "row": "MIA",
+   "col": "DAL",
+   "n_meetings": 6,
+   "mean_total": 221.83,
+   "mean_margin": -5.17
+  },
+  {
+   "row": "MIA",
+   "col": "DEN",
+   "n_meetings": 6,
+   "mean_total": 232.5,
+   "mean_margin": -6.17
+  },
+  {
+   "row": "MIA",
+   "col": "DET",
+   "n_meetings": 11,
+   "mean_total": 227.36,
+   "mean_margin": 3.73
+  },
+  {
+   "row": "MIA",
+   "col": "GSW",
+   "n_meetings": 6,
+   "mean_total": 214.0,
+   "mean_margin": 4.0
+  },
+  {
+   "row": "MIA",
+   "col": "HOU",
+   "n_meetings": 6,
+   "mean_total": 220.83,
+   "mean_margin": 5.17
+  },
+  {
+   "row": "MIA",
+   "col": "IND",
+   "n_meetings": 9,
+   "mean_total": 245.67,
+   "mean_margin": -1.0
+  },
+  {
+   "row": "MIA",
+   "col": "LAC",
+   "n_meetings": 6,
+   "mean_total": 225.83,
+   "mean_margin": -5.5
+  },
+  {
+   "row": "MIA",
+   "col": "LAL",
+   "n_meetings": 6,
+   "mean_total": 230.5,
+   "mean_margin": 4.83
+  },
+  {
+   "row": "MIA",
+   "col": "MEM",
+   "n_meetings": 6,
+   "mean_total": 226.83,
+   "mean_margin": 1.5
+  },
+  {
+   "row": "MIA",
+   "col": "MIL",
+   "n_meetings": 10,
+   "mean_total": 228.1,
+   "mean_margin": -3.5
+  },
+  {
+   "row": "MIA",
+   "col": "MIN",
+   "n_meetings": 6,
+   "mean_total": 211.83,
+   "mean_margin": -9.83
+  },
+  {
+   "row": "MIA",
+   "col": "NOP",
+   "n_meetings": 6,
+   "mean_total": 224.83,
+   "mean_margin": 13.17
+  },
+  {
+   "row": "MIA",
+   "col": "NYK",
+   "n_meetings": 10,
+   "mean_total": 228.1,
+   "mean_margin": -4.7
+  },
+  {
+   "row": "MIA",
+   "col": "OKC",
+   "n_meetings": 6,
+   "mean_total": 225.0,
+   "mean_margin": -7.67
+  },
+  {
+   "row": "MIA",
+   "col": "ORL",
+   "n_meetings": 13,
+   "mean_total": 220.77,
+   "mean_margin": -2.0
+  },
+  {
+   "row": "MIA",
+   "col": "PHI",
+   "n_meetings": 10,
+   "mean_total": 217.2,
+   "mean_margin": 6.2
+  },
+  {
+   "row": "MIA",
+   "col": "PHX",
+   "n_meetings": 6,
+   "mean_total": 225.5,
+   "mean_margin": -1.17
+  },
+  {
+   "row": "MIA",
+   "col": "POR",
+   "n_meetings": 6,
+   "mean_total": 228.33,
+   "mean_margin": 11.67
+  },
+  {
+   "row": "MIA",
+   "col": "SAC",
+   "n_meetings": 6,
+   "mean_total": 233.17,
+   "mean_margin": 1.83
+  },
+  {
+   "row": "MIA",
+   "col": "SAS",
+   "n_meetings": 6,
+   "mean_total": 224.83,
+   "mean_margin": 1.5
+  },
+  {
+   "row": "MIA",
+   "col": "TOR",
+   "n_meetings": 10,
+   "mean_total": 220.3,
+   "mean_margin": 1.7
+  },
+  {
+   "row": "MIA",
+   "col": "UTA",
+   "n_meetings": 6,
+   "mean_total": 231.0,
+   "mean_margin": -1.0
+  },
+  {
+   "row": "MIA",
+   "col": "WAS",
+   "n_meetings": 9,
+   "mean_total": 227.78,
+   "mean_margin": 13.11
+  },
+  {
+   "row": "MIL",
+   "col": "ATL",
+   "n_meetings": 10,
+   "mean_total": 237.7,
+   "mean_margin": -7.1
+  },
+  {
+   "row": "MIL",
+   "col": "BKN",
+   "n_meetings": 9,
+   "mean_total": 228.22,
+   "mean_margin": -1.33
+  },
+  {
+   "row": "MIL",
+   "col": "BOS",
+   "n_meetings": 11,
+   "mean_total": 217.91,
+   "mean_margin": -5.0
+  },
+  {
+   "row": "MIL",
+   "col": "CHA",
+   "n_meetings": 11,
+   "mean_total": 228.09,
+   "mean_margin": 13.18
+  },
+  {
+   "row": "MIL",
+   "col": "CHI",
+   "n_meetings": 12,
+   "mean_total": 229.75,
+   "mean_margin": 5.25
+  },
+  {
+   "row": "MIL",
+   "col": "CLE",
+   "n_meetings": 12,
+   "mean_total": 228.0,
+   "mean_margin": -7.83
+  },
+  {
+   "row": "MIL",
+   "col": "DAL",
+   "n_meetings": 5,
+   "mean_total": 245.2,
+   "mean_margin": 13.2
+  },
+  {
+   "row": "MIL",
+   "col": "DEN",
+   "n_meetings": 6,
+   "mean_total": 219.67,
+   "mean_margin": 0.67
+  },
+  {
+   "row": "MIL",
+   "col": "DET",
+   "n_meetings": 11,
+   "mean_total": 246.45,
+   "mean_margin": 6.27
+  },
+  {
+   "row": "MIL",
+   "col": "GSW",
+   "n_meetings": 6,
+   "mean_total": 226.33,
+   "mean_margin": -7.67
+  },
+  {
+   "row": "MIL",
+   "col": "HOU",
+   "n_meetings": 6,
+   "mean_total": 222.33,
+   "mean_margin": -1.67
+  },
+  {
+   "row": "MIL",
+   "col": "IND",
+   "n_meetings": 13,
+   "mean_total": 240.0,
+   "mean_margin": 3.38
+  },
+  {
+   "row": "MIL",
+   "col": "LAC",
+   "n_meetings": 5,
+   "mean_total": 231.0,
+   "mean_margin": -4.6
+  },
+  {
+   "row": "MIL",
+   "col": "LAL",
+   "n_meetings": 6,
+   "mean_total": 226.0,
+   "mean_margin": 4.0
+  },
+  {
+   "row": "MIL",
+   "col": "MEM",
+   "n_meetings": 5,
+   "mean_total": 227.2,
+   "mean_margin": -14.0
+  },
+  {
+   "row": "MIL",
+   "col": "MIA",
+   "n_meetings": 10,
+   "mean_total": 228.1,
+   "mean_margin": 3.5
+  },
+  {
+   "row": "MIL",
+   "col": "MIN",
+   "n_meetings": 6,
+   "mean_total": 219.67,
+   "mean_margin": -7.67
+  },
+  {
+   "row": "MIL",
+   "col": "NOP",
+   "n_meetings": 6,
+   "mean_total": 244.17,
+   "mean_margin": 11.83
+  },
+  {
+   "row": "MIL",
+   "col": "NYK",
+   "n_meetings": 11,
+   "mean_total": 219.27,
+   "mean_margin": -4.73
+  },
+  {
+   "row": "MIL",
+   "col": "OKC",
+   "n_meetings": 6,
+   "mean_total": 219.5,
+   "mean_margin": -6.83
+  },
+  {
+   "row": "MIL",
+   "col": "ORL",
+   "n_meetings": 11,
+   "mean_total": 217.55,
+   "mean_margin": -3.0
+  },
+  {
+   "row": "MIL",
+   "col": "PHI",
+   "n_meetings": 10,
+   "mean_total": 235.2,
+   "mean_margin": 4.0
+  },
+  {
+   "row": "MIL",
+   "col": "PHX",
+   "n_meetings": 6,
+   "mean_total": 235.83,
+   "mean_margin": -0.17
+  },
+  {
+   "row": "MIL",
+   "col": "POR",
+   "n_meetings": 6,
+   "mean_total": 222.67,
+   "mean_margin": -9.33
+  },
+  {
+   "row": "MIL",
+   "col": "SAC",
+   "n_meetings": 6,
+   "mean_total": 242.67,
+   "mean_margin": 0.33
+  },
+  {
+   "row": "MIL",
+   "col": "SAS",
+   "n_meetings": 6,
+   "mean_total": 237.83,
+   "mean_margin": -7.17
+  },
+  {
+   "row": "MIL",
+   "col": "TOR",
+   "n_meetings": 10,
+   "mean_total": 226.5,
+   "mean_margin": -0.9
+  },
+  {
+   "row": "MIL",
+   "col": "UTA",
+   "n_meetings": 6,
+   "mean_total": 228.83,
+   "mean_margin": -1.83
+  },
+  {
+   "row": "MIL",
+   "col": "WAS",
+   "n_meetings": 10,
+   "mean_total": 235.9,
+   "mean_margin": 3.5
+  },
+  {
+   "row": "MIN",
+   "col": "ATL",
+   "n_meetings": 6,
+   "mean_total": 225.0,
+   "mean_margin": -3.0
+  },
+  {
+   "row": "MIN",
+   "col": "BKN",
+   "n_meetings": 6,
+   "mean_total": 207.33,
+   "mean_margin": 9.67
+  },
+  {
+   "row": "MIN",
+   "col": "BOS",
+   "n_meetings": 6,
+   "mean_total": 223.83,
+   "mean_margin": 1.17
+  },
+  {
+   "row": "MIN",
+   "col": "CHA",
+   "n_meetings": 5,
+   "mean_total": 232.4,
+   "mean_margin": 11.2
+  },
+  {
+   "row": "MIN",
+   "col": "CHI",
+   "n_meetings": 6,
+   "mean_total": 237.17,
+   "mean_margin": 8.5
+  },
+  {
+   "row": "MIN",
+   "col": "CLE",
+   "n_meetings": 6,
+   "mean_total": 236.83,
+   "mean_margin": -4.5
+  },
+  {
+   "row": "MIN",
+   "col": "DAL",
+   "n_meetings": 10,
+   "mean_total": 221.8,
+   "mean_margin": 10.2
+  },
+  {
+   "row": "MIN",
+   "col": "DEN",
+   "n_meetings": 12,
+   "mean_total": 233.33,
+   "mean_margin": 4.67
+  },
+  {
+   "row": "MIN",
+   "col": "DET",
+   "n_meetings": 4,
+   "mean_total": 222.25,
+   "mean_margin": 6.75
+  },
+  {
+   "row": "MIN",
+   "col": "GSW",
+   "n_meetings": 11,
+   "mean_total": 217.91,
+   "mean_margin": 2.45
+  },
+  {
+   "row": "MIN",
+   "col": "HOU",
+   "n_meetings": 10,
+   "mean_total": 226.8,
+   "mean_margin": 5.8
+  },
+  {
+   "row": "MIN",
+   "col": "IND",
+   "n_meetings": 5,
+   "mean_total": 233.6,
+   "mean_margin": 1.2
+  },
+  {
+   "row": "MIN",
+   "col": "LAC",
+   "n_meetings": 11,
+   "mean_total": 209.64,
+   "mean_margin": 3.45
+  },
+  {
+   "row": "MIN",
+   "col": "LAL",
+   "n_meetings": 11,
+   "mean_total": 219.09,
+   "mean_margin": -0.18
+  },
+  {
+   "row": "MIN",
+   "col": "MEM",
+   "n_meetings": 11,
+   "mean_total": 233.91,
+   "mean_margin": 8.27
+  },
+  {
+   "row": "MIN",
+   "col": "MIA",
+   "n_meetings": 6,
+   "mean_total": 211.83,
+   "mean_margin": 9.83
+  },
+  {
+   "row": "MIN",
+   "col": "MIL",
+   "n_meetings": 6,
+   "mean_total": 219.67,
+   "mean_margin": 7.67
+  },
+  {
+   "row": "MIN",
+   "col": "NOP",
+   "n_meetings": 10,
+   "mean_total": 234.3,
+   "mean_margin": 5.3
+  },
+  {
+   "row": "MIN",
+   "col": "NYK",
+   "n_meetings": 6,
+   "mean_total": 226.67,
+   "mean_margin": -1.67
+  },
+  {
+   "row": "MIN",
+   "col": "OKC",
+   "n_meetings": 12,
+   "mean_total": 224.0,
+   "mean_margin": -1.67
+  },
+  {
+   "row": "MIN",
+   "col": "ORL",
+   "n_meetings": 5,
+   "mean_total": 210.4,
+   "mean_margin": 2.8
+  },
+  {
+   "row": "MIN",
+   "col": "PHI",
+   "n_meetings": 5,
+   "mean_total": 231.0,
+   "mean_margin": -1.8
+  },
+  {
+   "row": "MIN",
+   "col": "PHX",
+   "n_meetings": 10,
+   "mean_total": 224.1,
+   "mean_margin": 0.5
+  },
+  {
+   "row": "MIN",
+   "col": "POR",
+   "n_meetings": 12,
+   "mean_total": 224.75,
+   "mean_margin": 10.25
+  },
+  {
+   "row": "MIN",
+   "col": "SAC",
+   "n_meetings": 11,
+   "mean_total": 233.45,
+   "mean_margin": 3.45
+  },
+  {
+   "row": "MIN",
+   "col": "SAS",
+   "n_meetings": 11,
+   "mean_total": 223.73,
+   "mean_margin": 5.18
+  },
+  {
+   "row": "MIN",
+   "col": "TOR",
+   "n_meetings": 6,
+   "mean_total": 218.83,
+   "mean_margin": 10.17
+  },
+  {
+   "row": "MIN",
+   "col": "UTA",
+   "n_meetings": 12,
+   "mean_total": 229.58,
+   "mean_margin": 17.25
+  },
+  {
+   "row": "MIN",
+   "col": "WAS",
+   "n_meetings": 6,
+   "mean_total": 232.5,
+   "mean_margin": 11.5
+  },
+  {
+   "row": "NOP",
+   "col": "ATL",
+   "n_meetings": 6,
+   "mean_total": 225.0,
+   "mean_margin": -11.0
+  },
+  {
+   "row": "NOP",
+   "col": "BKN",
+   "n_meetings": 6,
+   "mean_total": 214.33,
+   "mean_margin": 3.0
+  },
+  {
+   "row": "NOP",
+   "col": "BOS",
+   "n_meetings": 6,
+   "mean_total": 228.83,
+   "mean_margin": -13.17
+  },
+  {
+   "row": "NOP",
+   "col": "CHA",
+   "n_meetings": 6,
+   "mean_total": 215.83,
+   "mean_margin": -0.83
+  },
+  {
+   "row": "NOP",
+   "col": "CHI",
+   "n_meetings": 7,
+   "mean_total": 238.71,
+   "mean_margin": 1.57
+  },
+  {
+   "row": "NOP",
+   "col": "CLE",
+   "n_meetings": 6,
+   "mean_total": 232.5,
+   "mean_margin": -11.17
+  },
+  {
+   "row": "NOP",
+   "col": "DAL",
+   "n_meetings": 12,
+   "mean_total": 235.17,
+   "mean_margin": -0.83
+  },
+  {
+   "row": "NOP",
+   "col": "DEN",
+   "n_meetings": 10,
+   "mean_total": 236.1,
+   "mean_margin": -10.5
+  },
+  {
+   "row": "NOP",
+   "col": "DET",
+   "n_meetings": 5,
+   "mean_total": 229.2,
+   "mean_margin": -7.6
+  },
+  {
+   "row": "NOP",
+   "col": "GSW",
+   "n_meetings": 10,
+   "mean_total": 220.2,
+   "mean_margin": -6.2
+  },
+  {
+   "row": "NOP",
+   "col": "HOU",
+   "n_meetings": 12,
+   "mean_total": 229.0,
+   "mean_margin": -7.33
+  },
+  {
+   "row": "NOP",
+   "col": "IND",
+   "n_meetings": 7,
+   "mean_total": 234.43,
+   "mean_margin": 2.43
+  },
+  {
+   "row": "NOP",
+   "col": "LAC",
+   "n_meetings": 11,
+   "mean_total": 226.91,
+   "mean_margin": 0.0
+  },
+  {
+   "row": "NOP",
+   "col": "LAL",
+   "n_meetings": 11,
+   "mean_total": 230.91,
+   "mean_margin": -12.91
+  },
+  {
+   "row": "NOP",
+   "col": "MEM",
+   "n_meetings": 12,
+   "mean_total": 234.08,
+   "mean_margin": -1.58
+  },
+  {
+   "row": "NOP",
+   "col": "MIA",
+   "n_meetings": 6,
+   "mean_total": 224.83,
+   "mean_margin": -13.17
+  },
+  {
+   "row": "NOP",
+   "col": "MIL",
+   "n_meetings": 6,
+   "mean_total": 244.17,
+   "mean_margin": -11.83
+  },
+  {
+   "row": "NOP",
+   "col": "MIN",
+   "n_meetings": 10,
+   "mean_total": 234.3,
+   "mean_margin": -5.3
+  },
+  {
+   "row": "NOP",
+   "col": "NYK",
+   "n_meetings": 6,
+   "mean_total": 213.67,
+   "mean_margin": -3.67
+  },
+  {
+   "row": "NOP",
+   "col": "OKC",
+   "n_meetings": 10,
+   "mean_total": 218.9,
+   "mean_margin": -16.3
+  },
+  {
+   "row": "NOP",
+   "col": "ORL",
+   "n_meetings": 5,
+   "mean_total": 221.4,
+   "mean_margin": -16.2
+  },
+  {
+   "row": "NOP",
+   "col": "PHI",
+   "n_meetings": 6,
+   "mean_total": 226.67,
+   "mean_margin": 7.33
+  },
+  {
+   "row": "NOP",
+   "col": "PHX",
+   "n_meetings": 10,
+   "mean_total": 232.1,
+   "mean_margin": -6.7
+  },
+  {
+   "row": "NOP",
+   "col": "POR",
+   "n_meetings": 10,
+   "mean_total": 222.9,
+   "mean_margin": -1.7
+  },
+  {
+   "row": "NOP",
+   "col": "SAC",
+   "n_meetings": 11,
+   "mean_total": 238.18,
+   "mean_margin": 11.27
+  },
+  {
+   "row": "NOP",
+   "col": "SAS",
+   "n_meetings": 12,
+   "mean_total": 230.83,
+   "mean_margin": 5.0
+  },
+  {
+   "row": "NOP",
+   "col": "TOR",
+   "n_meetings": 5,
+   "mean_total": 227.4,
+   "mean_margin": 11.0
+  },
+  {
+   "row": "NOP",
+   "col": "UTA",
+   "n_meetings": 9,
+   "mean_total": 238.0,
+   "mean_margin": 8.22
+  },
+  {
+   "row": "NOP",
+   "col": "WAS",
+   "n_meetings": 6,
+   "mean_total": 245.67,
+   "mean_margin": 15.33
+  },
+  {
+   "row": "NYK",
+   "col": "ATL",
+   "n_meetings": 11,
+   "mean_total": 233.18,
+   "mean_margin": -0.09
+  },
+  {
+   "row": "NYK",
+   "col": "BKN",
+   "n_meetings": 12,
+   "mean_total": 211.83,
+   "mean_margin": 14.0
+  },
+  {
+   "row": "NYK",
+   "col": "BOS",
+   "n_meetings": 13,
+   "mean_total": 224.46,
+   "mean_margin": -5.23
+  },
+  {
+   "row": "NYK",
+   "col": "CHA",
+   "n_meetings": 10,
+   "mean_total": 218.3,
+   "mean_margin": 12.1
+  },
+  {
+   "row": "NYK",
+   "col": "CHI",
+   "n_meetings": 11,
+   "mean_total": 234.91,
+   "mean_margin": 5.09
+  },
+  {
+   "row": "NYK",
+   "col": "CLE",
+   "n_meetings": 10,
+   "mean_total": 217.2,
+   "mean_margin": -5.2
+  },
+  {
+   "row": "NYK",
+   "col": "DAL",
+   "n_meetings": 6,
+   "mean_total": 233.5,
+   "mean_margin": -5.5
+  },
+  {
+   "row": "NYK",
+   "col": "DEN",
+   "n_meetings": 6,
+   "mean_total": 237.0,
+   "mean_margin": 18.0
+  },
+  {
+   "row": "NYK",
+   "col": "DET",
+   "n_meetings": 10,
+   "mean_total": 224.4,
+   "mean_margin": -4.4
+  },
+  {
+   "row": "NYK",
+   "col": "GSW",
+   "n_meetings": 6,
+   "mean_total": 217.17,
+   "mean_margin": -4.83
+  },
+  {
+   "row": "NYK",
+   "col": "HOU",
+   "n_meetings": 6,
+   "mean_total": 213.0,
+   "mean_margin": -1.33
+  },
+  {
+   "row": "NYK",
+   "col": "IND",
+   "n_meetings": 10,
+   "mean_total": 237.0,
+   "mean_margin": 3.6
+  },
+  {
+   "row": "NYK",
+   "col": "LAC",
+   "n_meetings": 6,
+   "mean_total": 231.83,
+   "mean_margin": -4.5
+  },
+  {
+   "row": "NYK",
+   "col": "LAL",
+   "n_meetings": 6,
+   "mean_total": 220.33,
+   "mean_margin": -4.0
+  },
+  {
+   "row": "NYK",
+   "col": "MEM",
+   "n_meetings": 6,
+   "mean_total": 235.67,
+   "mean_margin": 14.0
+  },
+  {
+   "row": "NYK",
+   "col": "MIA",
+   "n_meetings": 10,
+   "mean_total": 228.1,
+   "mean_margin": 4.7
+  },
+  {
+   "row": "NYK",
+   "col": "MIL",
+   "n_meetings": 11,
+   "mean_total": 219.27,
+   "mean_margin": 4.73
+  },
+  {
+   "row": "NYK",
+   "col": "MIN",
+   "n_meetings": 6,
+   "mean_total": 226.67,
+   "mean_margin": 1.67
+  },
+  {
+   "row": "NYK",
+   "col": "NOP",
+   "n_meetings": 6,
+   "mean_total": 213.67,
+   "mean_margin": 3.67
+  },
+  {
+   "row": "NYK",
+   "col": "OKC",
+   "n_meetings": 6,
+   "mean_total": 223.17,
+   "mean_margin": -9.83
+  },
+  {
+   "row": "NYK",
+   "col": "ORL",
+   "n_meetings": 12,
+   "mean_total": 213.17,
+   "mean_margin": 1.67
+  },
+  {
+   "row": "NYK",
+   "col": "PHI",
+   "n_meetings": 12,
+   "mean_total": 212.33,
+   "mean_margin": 11.67
+  },
+  {
+   "row": "NYK",
+   "col": "PHX",
+   "n_meetings": 6,
+   "mean_total": 230.67,
+   "mean_margin": 5.33
+  },
+  {
+   "row": "NYK",
+   "col": "POR",
+   "n_meetings": 6,
+   "mean_total": 214.17,
+   "mean_margin": 16.17
+  },
+  {
+   "row": "NYK",
+   "col": "SAC",
+   "n_meetings": 6,
+   "mean_total": 220.17,
+   "mean_margin": 12.5
+  },
+  {
+   "row": "NYK",
+   "col": "SAS",
+   "n_meetings": 6,
+   "mean_total": 235.33,
+   "mean_margin": 4.67
+  },
+  {
+   "row": "NYK",
+   "col": "TOR",
+   "n_meetings": 12,
+   "mean_total": 228.25,
+   "mean_margin": 17.42
+  },
+  {
+   "row": "NYK",
+   "col": "UTA",
+   "n_meetings": 6,
+   "mean_total": 234.83,
+   "mean_margin": 10.5
+  },
+  {
+   "row": "NYK",
+   "col": "WAS",
+   "n_meetings": 10,
+   "mean_total": 234.4,
+   "mean_margin": 19.2
+  },
+  {
+   "row": "OKC",
+   "col": "ATL",
+   "n_meetings": 6,
+   "mean_total": 249.0,
+   "mean_margin": 12.33
+  },
+  {
+   "row": "OKC",
+   "col": "BKN",
+   "n_meetings": 6,
+   "mean_total": 225.5,
+   "mean_margin": 14.83
+  },
+  {
+   "row": "OKC",
+   "col": "BOS",
+   "n_meetings": 6,
+   "mean_total": 224.33,
+   "mean_margin": -3.33
+  },
+  {
+   "row": "OKC",
+   "col": "CHA",
+   "n_meetings": 6,
+   "mean_total": 224.0,
+   "mean_margin": 9.33
+  },
+  {
+   "row": "OKC",
+   "col": "CHI",
+   "n_meetings": 6,
+   "mean_total": 230.83,
+   "mean_margin": 17.83
+  },
+  {
+   "row": "OKC",
+   "col": "CLE",
+   "n_meetings": 6,
+   "mean_total": 239.0,
+   "mean_margin": 10.67
+  },
+  {
+   "row": "OKC",
+   "col": "DAL",
+   "n_meetings": 11,
+   "mean_total": 226.91,
+   "mean_margin": 6.0
+  },
+  {
+   "row": "OKC",
+   "col": "DEN",
+   "n_meetings": 12,
+   "mean_total": 231.33,
+   "mean_margin": 1.83
+  },
+  {
+   "row": "OKC",
+   "col": "DET",
+   "n_meetings": 6,
+   "mean_total": 227.67,
+   "mean_margin": 2.33
+  },
+  {
+   "row": "OKC",
+   "col": "GSW",
+   "n_meetings": 11,
+   "mean_total": 237.09,
+   "mean_margin": 8.36
+  },
+  {
+   "row": "OKC",
+   "col": "HOU",
+   "n_meetings": 11,
+   "mean_total": 231.55,
+   "mean_margin": 3.73
+  },
+  {
+   "row": "OKC",
+   "col": "IND",
+   "n_meetings": 6,
+   "mean_total": 242.33,
+   "mean_margin": 1.0
+  },
+  {
+   "row": "OKC",
+   "col": "LAC",
+   "n_meetings": 10,
+   "mean_total": 230.1,
+   "mean_margin": 12.7
+  },
+  {
+   "row": "OKC",
+   "col": "LAL",
+   "n_meetings": 11,
+   "mean_total": 226.45,
+   "mean_margin": 9.91
+  },
+  {
+   "row": "OKC",
+   "col": "MEM",
+   "n_meetings": 10,
+   "mean_total": 225.4,
+   "mean_margin": 16.2
+  },
+  {
+   "row": "OKC",
+   "col": "MIA",
+   "n_meetings": 6,
+   "mean_total": 225.0,
+   "mean_margin": 7.67
+  },
+  {
+   "row": "OKC",
+   "col": "MIL",
+   "n_meetings": 6,
+   "mean_total": 219.5,
+   "mean_margin": 6.83
+  },
+  {
+   "row": "OKC",
+   "col": "MIN",
+   "n_meetings": 12,
+   "mean_total": 224.0,
+   "mean_margin": 1.67
+  },
+  {
+   "row": "OKC",
+   "col": "NOP",
+   "n_meetings": 10,
+   "mean_total": 218.9,
+   "mean_margin": 16.3
+  },
+  {
+   "row": "OKC",
+   "col": "NYK",
+   "n_meetings": 6,
+   "mean_total": 223.17,
+   "mean_margin": 9.83
+  },
+  {
+   "row": "OKC",
+   "col": "ORL",
+   "n_meetings": 6,
+   "mean_total": 214.17,
+   "mean_margin": 14.83
+  },
+  {
+   "row": "OKC",
+   "col": "PHI",
+   "n_meetings": 6,
+   "mean_total": 229.33,
+   "mean_margin": 14.33
+  },
+  {
+   "row": "OKC",
+   "col": "PHX",
+   "n_meetings": 11,
+   "mean_total": 227.45,
+   "mean_margin": 13.64
+  },
+  {
+   "row": "OKC",
+   "col": "POR",
+   "n_meetings": 12,
+   "mean_total": 225.33,
+   "mean_margin": 19.83
+  },
+  {
+   "row": "OKC",
+   "col": "SAC",
+   "n_meetings": 10,
+   "mean_total": 228.3,
+   "mean_margin": 13.1
+  },
+  {
+   "row": "OKC",
+   "col": "SAS",
+   "n_meetings": 12,
+   "mean_total": 228.17,
+   "mean_margin": 6.67
+  },
+  {
+   "row": "OKC",
+   "col": "TOR",
+   "n_meetings": 6,
+   "mean_total": 227.67,
+   "mean_margin": 14.0
+  },
+  {
+   "row": "OKC",
+   "col": "UTA",
+   "n_meetings": 12,
+   "mean_total": 246.0,
+   "mean_margin": 18.17
+  },
+  {
+   "row": "OKC",
+   "col": "WAS",
+   "n_meetings": 6,
+   "mean_total": 242.33,
+   "mean_margin": 24.67
+  },
+  {
+   "row": "ORL",
+   "col": "ATL",
+   "n_meetings": 11,
+   "mean_total": 223.91,
+   "mean_margin": -4.45
+  },
+  {
+   "row": "ORL",
+   "col": "BKN",
+   "n_meetings": 11,
+   "mean_total": 211.64,
+   "mean_margin": 5.64
+  },
+  {
+   "row": "ORL",
+   "col": "BOS",
+   "n_meetings": 10,
+   "mean_total": 219.7,
+   "mean_margin": -2.5
+  },
+  {
+   "row": "ORL",
+   "col": "CHA",
+   "n_meetings": 12,
+   "mean_total": 215.17,
+   "mean_margin": 4.17
+  },
+  {
+   "row": "ORL",
+   "col": "CHI",
+   "n_meetings": 10,
+   "mean_total": 221.2,
+   "mean_margin": 2.4
+  },
+  {
+   "row": "ORL",
+   "col": "CLE",
+   "n_meetings": 11,
+   "mean_total": 225.18,
+   "mean_margin": -8.64
+  },
+  {
+   "row": "ORL",
+   "col": "DAL",
+   "n_meetings": 5,
+   "mean_total": 218.8,
+   "mean_margin": -9.6
+  },
+  {
+   "row": "ORL",
+   "col": "DEN",
+   "n_meetings": 6,
+   "mean_total": 232.33,
+   "mean_margin": -6.33
+  },
+  {
+   "row": "ORL",
+   "col": "DET",
+   "n_meetings": 10,
+   "mean_total": 216.5,
+   "mean_margin": 4.9
+  },
+  {
+   "row": "ORL",
+   "col": "GSW",
+   "n_meetings": 6,
+   "mean_total": 220.0,
+   "mean_margin": -6.67
+  },
+  {
+   "row": "ORL",
+   "col": "HOU",
+   "n_meetings": 6,
+   "mean_total": 213.67,
+   "mean_margin": -2.0
+  },
+  {
+   "row": "ORL",
+   "col": "IND",
+   "n_meetings": 10,
+   "mean_total": 230.8,
+   "mean_margin": 2.8
+  },
+  {
+   "row": "ORL",
+   "col": "LAC",
+   "n_meetings": 6,
+   "mean_total": 207.83,
+   "mean_margin": -1.5
+  },
+  {
+   "row": "ORL",
+   "col": "LAL",
+   "n_meetings": 6,
+   "mean_total": 219.83,
+   "mean_margin": 4.83
+  },
+  {
+   "row": "ORL",
+   "col": "MEM",
+   "n_meetings": 6,
+   "mean_total": 221.17,
+   "mean_margin": 0.83
+  },
+  {
+   "row": "ORL",
+   "col": "MIA",
+   "n_meetings": 13,
+   "mean_total": 220.77,
+   "mean_margin": 2.0
+  },
+  {
+   "row": "ORL",
+   "col": "MIL",
+   "n_meetings": 11,
+   "mean_total": 217.55,
+   "mean_margin": 3.0
+  },
+  {
+   "row": "ORL",
+   "col": "MIN",
+   "n_meetings": 5,
+   "mean_total": 210.4,
+   "mean_margin": -2.8
+  },
+  {
+   "row": "ORL",
+   "col": "NOP",
+   "n_meetings": 5,
+   "mean_total": 221.4,
+   "mean_margin": 16.2
+  },
+  {
+   "row": "ORL",
+   "col": "NYK",
+   "n_meetings": 12,
+   "mean_total": 213.17,
+   "mean_margin": -1.67
+  },
+  {
+   "row": "ORL",
+   "col": "OKC",
+   "n_meetings": 6,
+   "mean_total": 214.17,
+   "mean_margin": -14.83
+  },
+  {
+   "row": "ORL",
+   "col": "PHI",
+   "n_meetings": 10,
+   "mean_total": 216.7,
+   "mean_margin": -1.7
+  },
+  {
+   "row": "ORL",
+   "col": "PHX",
+   "n_meetings": 6,
+   "mean_total": 218.67,
+   "mean_margin": 4.33
+  },
+  {
+   "row": "ORL",
+   "col": "POR",
+   "n_meetings": 6,
+   "mean_total": 206.33,
+   "mean_margin": -6.33
+  },
+  {
+   "row": "ORL",
+   "col": "SAC",
+   "n_meetings": 5,
+   "mean_total": 233.4,
+   "mean_margin": 16.2
+  },
+  {
+   "row": "ORL",
+   "col": "SAS",
+   "n_meetings": 6,
+   "mean_total": 221.5,
+   "mean_margin": 4.5
+  },
+  {
+   "row": "ORL",
+   "col": "TOR",
+   "n_meetings": 9,
+   "mean_total": 217.44,
+   "mean_margin": 4.78
+  },
+  {
+   "row": "ORL",
+   "col": "UTA",
+   "n_meetings": 6,
+   "mean_total": 225.17,
+   "mean_margin": -2.17
+  },
+  {
+   "row": "ORL",
+   "col": "WAS",
+   "n_meetings": 12,
+   "mean_total": 232.25,
+   "mean_margin": 13.42
+  },
+  {
+   "row": "PHI",
+   "col": "ATL",
+   "n_meetings": 11,
+   "mean_total": 247.09,
+   "mean_margin": -5.27
+  },
+  {
+   "row": "PHI",
+   "col": "BKN",
+   "n_meetings": 12,
+   "mean_total": 216.17,
+   "mean_margin": 8.0
+  },
+  {
+   "row": "PHI",
+   "col": "BOS",
+   "n_meetings": 12,
+   "mean_total": 222.75,
+   "mean_margin": -7.25
+  },
+  {
+   "row": "PHI",
+   "col": "CHA",
+   "n_meetings": 10,
+   "mean_total": 217.5,
+   "mean_margin": 7.7
+  },
+  {
+   "row": "PHI",
+   "col": "CHI",
+   "n_meetings": 10,
+   "mean_total": 223.5,
+   "mean_margin": -2.5
+  },
+  {
+   "row": "PHI",
+   "col": "CLE",
+   "n_meetings": 11,
+   "mean_total": 233.09,
+   "mean_margin": -7.45
+  },
+  {
+   "row": "PHI",
+   "col": "DAL",
+   "n_meetings": 6,
+   "mean_total": 235.17,
+   "mean_margin": 2.83
+  },
+  {
+   "row": "PHI",
+   "col": "DEN",
+   "n_meetings": 6,
+   "mean_total": 242.67,
+   "mean_margin": -11.33
+  },
+  {
+   "row": "PHI",
+   "col": "DET",
+   "n_meetings": 10,
+   "mean_total": 222.0,
+   "mean_margin": 3.4
+  },
+  {
+   "row": "PHI",
+   "col": "GSW",
+   "n_meetings": 6,
+   "mean_total": 225.0,
+   "mean_margin": -7.0
+  },
+  {
+   "row": "PHI",
+   "col": "HOU",
+   "n_meetings": 6,
+   "mean_total": 246.67,
+   "mean_margin": -1.0
+  },
+  {
+   "row": "PHI",
+   "col": "IND",
+   "n_meetings": 10,
+   "mean_total": 235.2,
+   "mean_margin": -0.2
+  },
+  {
+   "row": "PHI",
+   "col": "LAC",
+   "n_meetings": 6,
+   "mean_total": 222.33,
+   "mean_margin": -1.33
+  },
+  {
+   "row": "PHI",
+   "col": "LAL",
+   "n_meetings": 6,
+   "mean_total": 220.83,
+   "mean_margin": 5.5
+  },
+  {
+   "row": "PHI",
+   "col": "MEM",
+   "n_meetings": 6,
+   "mean_total": 239.67,
+   "mean_margin": 0.67
+  },
+  {
+   "row": "PHI",
+   "col": "MIA",
+   "n_meetings": 10,
+   "mean_total": 217.2,
+   "mean_margin": -6.2
+  },
+  {
+   "row": "PHI",
+   "col": "MIL",
+   "n_meetings": 10,
+   "mean_total": 235.2,
+   "mean_margin": -4.0
+  },
+  {
+   "row": "PHI",
+   "col": "MIN",
+   "n_meetings": 5,
+   "mean_total": 231.0,
+   "mean_margin": 1.8
+  },
+  {
+   "row": "PHI",
+   "col": "NOP",
+   "n_meetings": 6,
+   "mean_total": 226.67,
+   "mean_margin": -7.33
+  },
+  {
+   "row": "PHI",
+   "col": "NYK",
+   "n_meetings": 12,
+   "mean_total": 212.33,
+   "mean_margin": -11.67
+  },
+  {
+   "row": "PHI",
+   "col": "OKC",
+   "n_meetings": 6,
+   "mean_total": 229.33,
+   "mean_margin": -14.33
+  },
+  {
+   "row": "PHI",
+   "col": "ORL",
+   "n_meetings": 10,
+   "mean_total": 216.7,
+   "mean_margin": 1.7
+  },
+  {
+   "row": "PHI",
+   "col": "PHX",
+   "n_meetings": 6,
+   "mean_total": 218.17,
+   "mean_margin": -2.17
+  },
+  {
+   "row": "PHI",
+   "col": "POR",
+   "n_meetings": 6,
+   "mean_total": 228.67,
+   "mean_margin": -0.67
+  },
+  {
+   "row": "PHI",
+   "col": "SAC",
+   "n_meetings": 6,
+   "mean_total": 221.83,
+   "mean_margin": 6.17
+  },
+  {
+   "row": "PHI",
+   "col": "SAS",
+   "n_meetings": 6,
+   "mean_total": 236.5,
+   "mean_margin": -6.5
+  },
+  {
+   "row": "PHI",
+   "col": "TOR",
+   "n_meetings": 12,
+   "mean_total": 228.5,
+   "mean_margin": 1.5
+  },
+  {
+   "row": "PHI",
+   "col": "UTA",
+   "n_meetings": 6,
+   "mean_total": 233.83,
+   "mean_margin": 2.17
+  },
+  {
+   "row": "PHI",
+   "col": "WAS",
+   "n_meetings": 10,
+   "mean_total": 241.7,
+   "mean_margin": 13.9
+  },
+  {
+   "row": "PHX",
+   "col": "ATL",
+   "n_meetings": 6,
+   "mean_total": 238.0,
+   "mean_margin": -0.33
+  },
+  {
+   "row": "PHX",
+   "col": "BKN",
+   "n_meetings": 6,
+   "mean_total": 228.5,
+   "mean_margin": 6.5
+  },
+  {
+   "row": "PHX",
+   "col": "BOS",
+   "n_meetings": 6,
+   "mean_total": 222.17,
+   "mean_margin": -16.5
+  },
+  {
+   "row": "PHX",
+   "col": "CHA",
+   "n_meetings": 6,
+   "mean_total": 225.17,
+   "mean_margin": 2.17
+  },
+  {
+   "row": "PHX",
+   "col": "CHI",
+   "n_meetings": 6,
+   "mean_total": 229.83,
+   "mean_margin": 4.17
+  },
+  {
+   "row": "PHX",
+   "col": "CLE",
+   "n_meetings": 6,
+   "mean_total": 229.5,
+   "mean_margin": 1.5
+  },
+  {
+   "row": "PHX",
+   "col": "DAL",
+   "n_meetings": 10,
+   "mean_total": 227.7,
+   "mean_margin": 3.5
+  },
+  {
+   "row": "PHX",
+   "col": "DEN",
+   "n_meetings": 10,
+   "mean_total": 232.3,
+   "mean_margin": -7.5
+  },
+  {
+   "row": "PHX",
+   "col": "DET",
+   "n_meetings": 6,
+   "mean_total": 228.17,
+   "mean_margin": 6.83
+  },
+  {
+   "row": "PHX",
+   "col": "GSW",
+   "n_meetings": 12,
+   "mean_total": 221.67,
+   "mean_margin": -1.0
+  },
+  {
+   "row": "PHX",
+   "col": "HOU",
+   "n_meetings": 11,
+   "mean_total": 222.91,
+   "mean_margin": -9.45
+  },
+  {
+   "row": "PHX",
+   "col": "IND",
+   "n_meetings": 6,
+   "mean_total": 236.33,
+   "mean_margin": 4.67
+  },
+  {
+   "row": "PHX",
+   "col": "LAC",
+   "n_meetings": 12,
+   "mean_total": 227.92,
+   "mean_margin": -3.92
+  },
+  {
+   "row": "PHX",
+   "col": "LAL",
+   "n_meetings": 14,
+   "mean_total": 221.43,
+   "mean_margin": 3.14
+  },
+  {
+   "row": "PHX",
+   "col": "MEM",
+   "n_meetings": 10,
+   "mean_total": 233.5,
+   "mean_margin": 4.9
+  },
+  {
+   "row": "PHX",
+   "col": "MIA",
+   "n_meetings": 6,
+   "mean_total": 225.5,
+   "mean_margin": 1.17
+  },
+  {
+   "row": "PHX",
+   "col": "MIL",
+   "n_meetings": 6,
+   "mean_total": 235.83,
+   "mean_margin": 0.17
+  },
+  {
+   "row": "PHX",
+   "col": "MIN",
+   "n_meetings": 10,
+   "mean_total": 224.1,
+   "mean_margin": -0.5
+  },
+  {
+   "row": "PHX",
+   "col": "NOP",
+   "n_meetings": 10,
+   "mean_total": 232.1,
+   "mean_margin": 6.7
+  },
+  {
+   "row": "PHX",
+   "col": "NYK",
+   "n_meetings": 6,
+   "mean_total": 230.67,
+   "mean_margin": -5.33
+  },
+  {
+   "row": "PHX",
+   "col": "OKC",
+   "n_meetings": 11,
+   "mean_total": 227.45,
+   "mean_margin": -13.64
+  },
+  {
+   "row": "PHX",
+   "col": "ORL",
+   "n_meetings": 6,
+   "mean_total": 218.67,
+   "mean_margin": -4.33
+  },
+  {
+   "row": "PHX",
+   "col": "PHI",
+   "n_meetings": 6,
+   "mean_total": 218.17,
+   "mean_margin": 2.17
+  },
+  {
+   "row": "PHX",
+   "col": "POR",
+   "n_meetings": 11,
+   "mean_total": 221.91,
+   "mean_margin": 3.55
+  },
+  {
+   "row": "PHX",
+   "col": "SAC",
+   "n_meetings": 13,
+   "mean_total": 227.54,
+   "mean_margin": 0.92
+  },
+  {
+   "row": "PHX",
+   "col": "SAS",
+   "n_meetings": 11,
+   "mean_total": 222.09,
+   "mean_margin": 2.09
+  },
+  {
+   "row": "PHX",
+   "col": "TOR",
+   "n_meetings": 6,
+   "mean_total": 226.5,
+   "mean_margin": 6.17
+  },
+  {
+   "row": "PHX",
+   "col": "UTA",
+   "n_meetings": 11,
+   "mean_total": 246.64,
+   "mean_margin": 10.64
+  },
+  {
+   "row": "PHX",
+   "col": "WAS",
+   "n_meetings": 6,
+   "mean_total": 229.0,
+   "mean_margin": 13.67
+  },
+  {
+   "row": "POR",
+   "col": "ATL",
+   "n_meetings": 6,
+   "mean_total": 225.33,
+   "mean_margin": -1.67
+  },
+  {
+   "row": "POR",
+   "col": "BKN",
+   "n_meetings": 6,
+   "mean_total": 230.0,
+   "mean_margin": 10.67
+  },
+  {
+   "row": "POR",
+   "col": "BOS",
+   "n_meetings": 6,
+   "mean_total": 226.67,
+   "mean_margin": -10.67
+  },
+  {
+   "row": "POR",
+   "col": "CHA",
+   "n_meetings": 6,
+   "mean_total": 197.0,
+   "mean_margin": 5.0
+  },
+  {
+   "row": "POR",
+   "col": "CHI",
+   "n_meetings": 6,
+   "mean_total": 223.17,
+   "mean_margin": 0.5
+  },
+  {
+   "row": "POR",
+   "col": "CLE",
+   "n_meetings": 6,
+   "mean_total": 228.33,
+   "mean_margin": -4.67
+  },
+  {
+   "row": "POR",
+   "col": "DAL",
+   "n_meetings": 10,
+   "mean_total": 245.5,
+   "mean_margin": -12.3
+  },
+  {
+   "row": "POR",
+   "col": "DEN",
+   "n_meetings": 11,
+   "mean_total": 238.73,
+   "mean_margin": -11.45
+  },
+  {
+   "row": "POR",
+   "col": "DET",
+   "n_meetings": 6,
+   "mean_total": 229.17,
+   "mean_margin": -3.5
+  },
+  {
+   "row": "POR",
+   "col": "GSW",
+   "n_meetings": 11,
+   "mean_total": 231.45,
+   "mean_margin": -8.36
+  },
+  {
+   "row": "POR",
+   "col": "HOU",
+   "n_meetings": 11,
+   "mean_total": 221.73,
+   "mean_margin": -9.55
+  },
+  {
+   "row": "POR",
+   "col": "IND",
+   "n_meetings": 6,
+   "mean_total": 230.17,
+   "mean_margin": 8.5
+  },
+  {
+   "row": "POR",
+   "col": "LAC",
+   "n_meetings": 9,
+   "mean_total": 227.44,
+   "mean_margin": -12.33
+  },
+  {
+   "row": "POR",
+   "col": "LAL",
+   "n_meetings": 10,
+   "mean_total": 221.5,
+   "mean_margin": -1.7
+  },
+  {
+   "row": "POR",
+   "col": "MEM",
+   "n_meetings": 11,
+   "mean_total": 223.36,
+   "mean_margin": -1.36
+  },
+  {
+   "row": "POR",
+   "col": "MIA",
+   "n_meetings": 6,
+   "mean_total": 228.33,
+   "mean_margin": -11.67
+  },
+  {
+   "row": "POR",
+   "col": "MIL",
+   "n_meetings": 6,
+   "mean_total": 222.67,
+   "mean_margin": 9.33
+  },
+  {
+   "row": "POR",
+   "col": "MIN",
+   "n_meetings": 12,
+   "mean_total": 224.75,
+   "mean_margin": -10.25
+  },
+  {
+   "row": "POR",
+   "col": "NOP",
+   "n_meetings": 10,
+   "mean_total": 222.9,
+   "mean_margin": 1.7
+  },
+  {
+   "row": "POR",
+   "col": "NYK",
+   "n_meetings": 6,
+   "mean_total": 214.17,
+   "mean_margin": -16.17
+  },
+  {
+   "row": "POR",
+   "col": "OKC",
+   "n_meetings": 12,
+   "mean_total": 225.33,
+   "mean_margin": -19.83
+  },
+  {
+   "row": "POR",
+   "col": "ORL",
+   "n_meetings": 6,
+   "mean_total": 206.33,
+   "mean_margin": 6.33
+  },
+  {
+   "row": "POR",
+   "col": "PHI",
+   "n_meetings": 6,
+   "mean_total": 228.67,
+   "mean_margin": 0.67
+  },
+  {
+   "row": "POR",
+   "col": "PHX",
+   "n_meetings": 11,
+   "mean_total": 221.91,
+   "mean_margin": -3.55
+  },
+  {
+   "row": "POR",
+   "col": "SAC",
+   "n_meetings": 10,
+   "mean_total": 224.5,
+   "mean_margin": -3.1
+  },
+  {
+   "row": "POR",
+   "col": "SAS",
+   "n_meetings": 10,
+   "mean_total": 225.0,
+   "mean_margin": -6.6
+  },
+  {
+   "row": "POR",
+   "col": "TOR",
+   "n_meetings": 6,
+   "mean_total": 217.5,
+   "mean_margin": 2.5
+  },
+  {
+   "row": "POR",
+   "col": "UTA",
+   "n_meetings": 12,
+   "mean_total": 240.83,
+   "mean_margin": -0.83
+  },
+  {
+   "row": "POR",
+   "col": "WAS",
+   "n_meetings": 5,
+   "mean_total": 226.0,
+   "mean_margin": 4.8
+  },
+  {
+   "row": "SAC",
+   "col": "ATL",
+   "n_meetings": 5,
+   "mean_total": 228.8,
+   "mean_margin": -0.8
+  },
+  {
+   "row": "SAC",
+   "col": "BKN",
+   "n_meetings": 5,
+   "mean_total": 219.6,
+   "mean_margin": 11.2
+  },
+  {
+   "row": "SAC",
+   "col": "BOS",
+   "n_meetings": 6,
+   "mean_total": 219.0,
+   "mean_margin": -10.0
+  },
+  {
+   "row": "SAC",
+   "col": "CHA",
+   "n_meetings": 6,
+   "mean_total": 221.83,
+   "mean_margin": 5.17
+  },
+  {
+   "row": "SAC",
+   "col": "CHI",
+   "n_meetings": 6,
+   "mean_total": 237.0,
+   "mean_margin": 0.0
+  },
+  {
+   "row": "SAC",
+   "col": "CLE",
+   "n_meetings": 6,
+   "mean_total": 245.33,
+   "mean_margin": -2.33
+  },
+  {
+   "row": "SAC",
+   "col": "DAL",
+   "n_meetings": 10,
+   "mean_total": 227.1,
+   "mean_margin": 2.9
+  },
+  {
+   "row": "SAC",
+   "col": "DEN",
+   "n_meetings": 12,
+   "mean_total": 237.5,
+   "mean_margin": -4.33
+  },
+  {
+   "row": "SAC",
+   "col": "DET",
+   "n_meetings": 6,
+   "mean_total": 247.17,
+   "mean_margin": -2.5
+  },
+  {
+   "row": "SAC",
+   "col": "GSW",
+   "n_meetings": 12,
+   "mean_total": 235.75,
+   "mean_margin": -4.08
+  },
+  {
+   "row": "SAC",
+   "col": "HOU",
+   "n_meetings": 10,
+   "mean_total": 223.6,
+   "mean_margin": -7.0
+  },
+  {
+   "row": "SAC",
+   "col": "IND",
+   "n_meetings": 6,
+   "mean_total": 230.5,
+   "mean_margin": -4.83
+  },
+  {
+   "row": "SAC",
+   "col": "LAC",
+   "n_meetings": 11,
+   "mean_total": 217.45,
+   "mean_margin": -6.0
+  },
+  {
+   "row": "SAC",
+   "col": "LAL",
+   "n_meetings": 12,
+   "mean_total": 236.58,
+   "mean_margin": -2.58
+  },
+  {
+   "row": "SAC",
+   "col": "MEM",
+   "n_meetings": 10,
+   "mean_total": 234.0,
+   "mean_margin": 1.6
+  },
+  {
+   "row": "SAC",
+   "col": "MIA",
+   "n_meetings": 6,
+   "mean_total": 233.17,
+   "mean_margin": -1.83
+  },
+  {
+   "row": "SAC",
+   "col": "MIL",
+   "n_meetings": 6,
+   "mean_total": 242.67,
+   "mean_margin": -0.33
+  },
+  {
+   "row": "SAC",
+   "col": "MIN",
+   "n_meetings": 11,
+   "mean_total": 233.45,
+   "mean_margin": -3.45
+  },
+  {
+   "row": "SAC",
+   "col": "NOP",
+   "n_meetings": 11,
+   "mean_total": 238.18,
+   "mean_margin": -11.27
+  },
+  {
+   "row": "SAC",
+   "col": "NYK",
+   "n_meetings": 6,
+   "mean_total": 220.17,
+   "mean_margin": -12.5
+  },
+  {
+   "row": "SAC",
+   "col": "OKC",
+   "n_meetings": 10,
+   "mean_total": 228.3,
+   "mean_margin": -13.1
+  },
+  {
+   "row": "SAC",
+   "col": "ORL",
+   "n_meetings": 5,
+   "mean_total": 233.4,
+   "mean_margin": -16.2
+  },
+  {
+   "row": "SAC",
+   "col": "PHI",
+   "n_meetings": 6,
+   "mean_total": 221.83,
+   "mean_margin": -6.17
+  },
+  {
+   "row": "SAC",
+   "col": "PHX",
+   "n_meetings": 13,
+   "mean_total": 227.54,
+   "mean_margin": -0.92
+  },
+  {
+   "row": "SAC",
+   "col": "POR",
+   "n_meetings": 10,
+   "mean_total": 224.5,
+   "mean_margin": 3.1
+  },
+  {
+   "row": "SAC",
+   "col": "SAS",
+   "n_meetings": 10,
+   "mean_total": 244.1,
+   "mean_margin": -1.9
+  },
+  {
+   "row": "SAC",
+   "col": "TOR",
+   "n_meetings": 5,
+   "mean_total": 239.2,
+   "mean_margin": 7.6
+  },
+  {
+   "row": "SAC",
+   "col": "UTA",
+   "n_meetings": 11,
+   "mean_total": 227.91,
+   "mean_margin": 9.91
+  },
+  {
+   "row": "SAC",
+   "col": "WAS",
+   "n_meetings": 6,
+   "mean_total": 234.33,
+   "mean_margin": 5.33
+  },
+  {
+   "row": "SAS",
+   "col": "ATL",
+   "n_meetings": 6,
+   "mean_total": 245.83,
+   "mean_margin": 5.5
+  },
+  {
+   "row": "SAS",
+   "col": "BKN",
+   "n_meetings": 6,
+   "mean_total": 224.5,
+   "mean_margin": 6.17
+  },
+  {
+   "row": "SAS",
+   "col": "BOS",
+   "n_meetings": 6,
+   "mean_total": 222.83,
+   "mean_margin": -10.17
+  },
+  {
+   "row": "SAS",
+   "col": "CHA",
+   "n_meetings": 6,
+   "mean_total": 237.33,
+   "mean_margin": 4.67
+  },
+  {
+   "row": "SAS",
+   "col": "CHI",
+   "n_meetings": 7,
+   "mean_total": 235.43,
+   "mean_margin": -4.86
+  },
+  {
+   "row": "SAS",
+   "col": "CLE",
+   "n_meetings": 6,
+   "mean_total": 229.67,
+   "mean_margin": -8.67
+  },
+  {
+   "row": "SAS",
+   "col": "DAL",
+   "n_meetings": 12,
+   "mean_total": 239.17,
+   "mean_margin": -0.5
+  },
+  {
+   "row": "SAS",
+   "col": "DEN",
+   "n_meetings": 11,
+   "mean_total": 242.18,
+   "mean_margin": -3.82
+  },
+  {
+   "row": "SAS",
+   "col": "DET",
+   "n_meetings": 6,
+   "mean_total": 225.5,
+   "mean_margin": 5.83
+  },
+  {
+   "row": "SAS",
+   "col": "GSW",
+   "n_meetings": 11,
+   "mean_total": 230.09,
+   "mean_margin": -1.36
+  },
+  {
+   "row": "SAS",
+   "col": "HOU",
+   "n_meetings": 12,
+   "mean_total": 219.83,
+   "mean_margin": -1.67
+  },
+  {
+   "row": "SAS",
+   "col": "IND",
+   "n_meetings": 4,
+   "mean_total": 243.5,
+   "mean_margin": -1.0
+  },
+  {
+   "row": "SAS",
+   "col": "LAC",
+   "n_meetings": 10,
+   "mean_total": 222.7,
+   "mean_margin": -3.5
+  },
+  {
+   "row": "SAS",
+   "col": "LAL",
+   "n_meetings": 11,
+   "mean_total": 233.64,
+   "mean_margin": 4.18
+  },
+  {
+   "row": "SAS",
+   "col": "MEM",
+   "n_meetings": 12,
+   "mean_total": 224.75,
+   "mean_margin": -2.08
+  },
+  {
+   "row": "SAS",
+   "col": "MIA",
+   "n_meetings": 6,
+   "mean_total": 224.83,
+   "mean_margin": -1.5
+  },
+  {
+   "row": "SAS",
+   "col": "MIL",
+   "n_meetings": 6,
+   "mean_total": 237.83,
+   "mean_margin": 7.17
+  },
+  {
+   "row": "SAS",
+   "col": "MIN",
+   "n_meetings": 11,
+   "mean_total": 223.73,
+   "mean_margin": -5.18
+  },
+  {
+   "row": "SAS",
+   "col": "NOP",
+   "n_meetings": 12,
+   "mean_total": 230.83,
+   "mean_margin": -5.0
+  },
+  {
+   "row": "SAS",
+   "col": "NYK",
+   "n_meetings": 6,
+   "mean_total": 235.33,
+   "mean_margin": -4.67
+  },
+  {
+   "row": "SAS",
+   "col": "OKC",
+   "n_meetings": 12,
+   "mean_total": 228.17,
+   "mean_margin": -6.67
+  },
+  {
+   "row": "SAS",
+   "col": "ORL",
+   "n_meetings": 6,
+   "mean_total": 221.5,
+   "mean_margin": -4.5
+  },
+  {
+   "row": "SAS",
+   "col": "PHI",
+   "n_meetings": 6,
+   "mean_total": 236.5,
+   "mean_margin": 6.5
+  },
+  {
+   "row": "SAS",
+   "col": "PHX",
+   "n_meetings": 11,
+   "mean_total": 222.09,
+   "mean_margin": -2.09
+  },
+  {
+   "row": "SAS",
+   "col": "POR",
+   "n_meetings": 10,
+   "mean_total": 225.0,
+   "mean_margin": 6.6
+  },
+  {
+   "row": "SAS",
+   "col": "SAC",
+   "n_meetings": 10,
+   "mean_total": 244.1,
+   "mean_margin": 1.9
+  },
+  {
+   "row": "SAS",
+   "col": "TOR",
+   "n_meetings": 6,
+   "mean_total": 226.0,
+   "mean_margin": 13.0
+  },
+  {
+   "row": "SAS",
+   "col": "UTA",
+   "n_meetings": 10,
+   "mean_total": 232.5,
+   "mean_margin": 3.1
+  },
+  {
+   "row": "SAS",
+   "col": "WAS",
+   "n_meetings": 6,
+   "mean_total": 243.33,
+   "mean_margin": 9.0
+  },
+  {
+   "row": "TOR",
+   "col": "ATL",
+   "n_meetings": 11,
+   "mean_total": 237.55,
+   "mean_margin": 4.64
+  },
+  {
+   "row": "TOR",
+   "col": "BKN",
+   "n_meetings": 11,
+   "mean_total": 211.45,
+   "mean_margin": 5.45
+  },
+  {
+   "row": "TOR",
+   "col": "BOS",
+   "n_meetings": 12,
+   "mean_total": 218.92,
+   "mean_margin": -11.42
+  },
+  {
+   "row": "TOR",
+   "col": "CHA",
+   "n_meetings": 11,
+   "mean_total": 221.82,
+   "mean_margin": 2.73
+  },
+  {
+   "row": "TOR",
+   "col": "CHI",
+   "n_meetings": 11,
+   "mean_total": 231.09,
+   "mean_margin": 2.36
+  },
+  {
+   "row": "TOR",
+   "col": "CLE",
+   "n_meetings": 10,
+   "mean_total": 229.6,
+   "mean_margin": -6.2
+  },
+  {
+   "row": "TOR",
+   "col": "DAL",
+   "n_meetings": 6,
+   "mean_total": 242.5,
+   "mean_margin": -1.5
+  },
+  {
+   "row": "TOR",
+   "col": "DEN",
+   "n_meetings": 6,
+   "mean_total": 233.0,
+   "mean_margin": -4.67
+  },
+  {
+   "row": "TOR",
+   "col": "DET",
+   "n_meetings": 9,
+   "mean_total": 224.22,
+   "mean_margin": -1.78
+  },
+  {
+   "row": "TOR",
+   "col": "GSW",
+   "n_meetings": 6,
+   "mean_total": 242.0,
+   "mean_margin": 5.33
+  },
+  {
+   "row": "TOR",
+   "col": "HOU",
+   "n_meetings": 6,
+   "mean_total": 221.5,
+   "mean_margin": -11.5
+  },
+  {
+   "row": "TOR",
+   "col": "IND",
+   "n_meetings": 11,
+   "mean_total": 235.27,
+   "mean_margin": 4.0
+  },
+  {
+   "row": "TOR",
+   "col": "LAC",
+   "n_meetings": 6,
+   "mean_total": 227.0,
+   "mean_margin": -8.33
+  },
+  {
+   "row": "TOR",
+   "col": "LAL",
+   "n_meetings": 6,
+   "mean_total": 238.33,
+   "mean_margin": -10.67
+  },
+  {
+   "row": "TOR",
+   "col": "MEM",
+   "n_meetings": 5,
+   "mean_total": 236.4,
+   "mean_margin": -10.0
+  },
+  {
+   "row": "TOR",
+   "col": "MIA",
+   "n_meetings": 10,
+   "mean_total": 220.3,
+   "mean_margin": -1.7
+  },
+  {
+   "row": "TOR",
+   "col": "MIL",
+   "n_meetings": 10,
+   "mean_total": 226.5,
+   "mean_margin": 0.9
+  },
+  {
+   "row": "TOR",
+   "col": "MIN",
+   "n_meetings": 6,
+   "mean_total": 218.83,
+   "mean_margin": -10.17
+  },
+  {
+   "row": "TOR",
+   "col": "NOP",
+   "n_meetings": 5,
+   "mean_total": 227.4,
+   "mean_margin": -11.0
+  },
+  {
+   "row": "TOR",
+   "col": "NYK",
+   "n_meetings": 12,
+   "mean_total": 228.25,
+   "mean_margin": -17.42
+  },
+  {
+   "row": "TOR",
+   "col": "OKC",
+   "n_meetings": 6,
+   "mean_total": 227.67,
+   "mean_margin": -14.0
+  },
+  {
+   "row": "TOR",
+   "col": "ORL",
+   "n_meetings": 9,
+   "mean_total": 217.44,
+   "mean_margin": -4.78
+  },
+  {
+   "row": "TOR",
+   "col": "PHI",
+   "n_meetings": 12,
+   "mean_total": 228.5,
+   "mean_margin": -1.5
+  },
+  {
+   "row": "TOR",
+   "col": "PHX",
+   "n_meetings": 6,
+   "mean_total": 226.5,
+   "mean_margin": -6.17
+  },
+  {
+   "row": "TOR",
+   "col": "POR",
+   "n_meetings": 6,
+   "mean_total": 217.5,
+   "mean_margin": -2.5
+  },
+  {
+   "row": "TOR",
+   "col": "SAC",
+   "n_meetings": 5,
+   "mean_total": 239.2,
+   "mean_margin": -7.6
+  },
+  {
+   "row": "TOR",
+   "col": "SAS",
+   "n_meetings": 6,
+   "mean_total": 226.0,
+   "mean_margin": -13.0
+  },
+  {
+   "row": "TOR",
+   "col": "UTA",
+   "n_meetings": 6,
+   "mean_total": 241.83,
+   "mean_margin": 0.17
+  },
+  {
+   "row": "TOR",
+   "col": "WAS",
+   "n_meetings": 11,
+   "mean_total": 231.91,
+   "mean_margin": 9.36
+  },
+  {
+   "row": "UTA",
+   "col": "ATL",
+   "n_meetings": 6,
+   "mean_total": 247.83,
+   "mean_margin": -8.83
+  },
+  {
+   "row": "UTA",
+   "col": "BKN",
+   "n_meetings": 6,
+   "mean_total": 226.17,
+   "mean_margin": -0.17
+  },
+  {
+   "row": "UTA",
+   "col": "BOS",
+   "n_meetings": 6,
+   "mean_total": 225.17,
+   "mean_margin": -13.5
+  },
+  {
+   "row": "UTA",
+   "col": "CHA",
+   "n_meetings": 6,
+   "mean_total": 232.83,
+   "mean_margin": -13.83
+  },
+  {
+   "row": "UTA",
+   "col": "CHI",
+   "n_meetings": 6,
+   "mean_total": 249.83,
+   "mean_margin": -3.83
+  },
+  {
+   "row": "UTA",
+   "col": "CLE",
+   "n_meetings": 6,
+   "mean_total": 233.33,
+   "mean_margin": -10.33
+  },
+  {
+   "row": "UTA",
+   "col": "DAL",
+   "n_meetings": 11,
+   "mean_total": 232.55,
+   "mean_margin": -8.0
+  },
+  {
+   "row": "UTA",
+   "col": "DEN",
+   "n_meetings": 10,
+   "mean_total": 234.8,
+   "mean_margin": -15.0
+  },
+  {
+   "row": "UTA",
+   "col": "DET",
+   "n_meetings": 6,
+   "mean_total": 249.0,
+   "mean_margin": -2.67
+  },
+  {
+   "row": "UTA",
+   "col": "GSW",
+   "n_meetings": 11,
+   "mean_total": 241.45,
+   "mean_margin": -11.64
+  },
+  {
+   "row": "UTA",
+   "col": "HOU",
+   "n_meetings": 11,
+   "mean_total": 240.64,
+   "mean_margin": -12.82
+  },
+  {
+   "row": "UTA",
+   "col": "IND",
+   "n_meetings": 6,
+   "mean_total": 249.5,
+   "mean_margin": 2.5
+  },
+  {
+   "row": "UTA",
+   "col": "LAC",
+   "n_meetings": 11,
+   "mean_total": 230.18,
+   "mean_margin": -10.91
+  },
+  {
+   "row": "UTA",
+   "col": "LAL",
+   "n_meetings": 11,
+   "mean_total": 244.45,
+   "mean_margin": -9.36
+  },
+  {
+   "row": "UTA",
+   "col": "MEM",
+   "n_meetings": 10,
+   "mean_total": 240.2,
+   "mean_margin": -6.6
+  },
+  {
+   "row": "UTA",
+   "col": "MIA",
+   "n_meetings": 6,
+   "mean_total": 231.0,
+   "mean_margin": 1.0
+  },
+  {
+   "row": "UTA",
+   "col": "MIL",
+   "n_meetings": 6,
+   "mean_total": 228.83,
+   "mean_margin": 1.83
+  },
+  {
+   "row": "UTA",
+   "col": "MIN",
+   "n_meetings": 12,
+   "mean_total": 229.58,
+   "mean_margin": -17.25
+  },
+  {
+   "row": "UTA",
+   "col": "NOP",
+   "n_meetings": 9,
+   "mean_total": 238.0,
+   "mean_margin": -8.22
+  },
+  {
+   "row": "UTA",
+   "col": "NYK",
+   "n_meetings": 6,
+   "mean_total": 234.83,
+   "mean_margin": -10.5
+  },
+  {
+   "row": "UTA",
+   "col": "OKC",
+   "n_meetings": 12,
+   "mean_total": 246.0,
+   "mean_margin": -18.17
+  },
+  {
+   "row": "UTA",
+   "col": "ORL",
+   "n_meetings": 6,
+   "mean_total": 225.17,
+   "mean_margin": 2.17
+  },
+  {
+   "row": "UTA",
+   "col": "PHI",
+   "n_meetings": 6,
+   "mean_total": 233.83,
+   "mean_margin": -2.17
+  },
+  {
+   "row": "UTA",
+   "col": "PHX",
+   "n_meetings": 11,
+   "mean_total": 246.64,
+   "mean_margin": -10.64
+  },
+  {
+   "row": "UTA",
+   "col": "POR",
+   "n_meetings": 12,
+   "mean_total": 240.83,
+   "mean_margin": 0.83
+  },
+  {
+   "row": "UTA",
+   "col": "SAC",
+   "n_meetings": 11,
+   "mean_total": 227.91,
+   "mean_margin": -9.91
+  },
+  {
+   "row": "UTA",
+   "col": "SAS",
+   "n_meetings": 10,
+   "mean_total": 232.5,
+   "mean_margin": -3.1
+  },
+  {
+   "row": "UTA",
+   "col": "TOR",
+   "n_meetings": 6,
+   "mean_total": 241.83,
+   "mean_margin": -0.17
+  },
+  {
+   "row": "UTA",
+   "col": "WAS",
+   "n_meetings": 6,
+   "mean_total": 239.5,
+   "mean_margin": 4.5
+  },
+  {
+   "row": "WAS",
+   "col": "ATL",
+   "n_meetings": 12,
+   "mean_total": 240.25,
+   "mean_margin": -5.92
+  },
+  {
+   "row": "WAS",
+   "col": "BKN",
+   "n_meetings": 10,
+   "mean_total": 221.9,
+   "mean_margin": -2.7
+  },
+  {
+   "row": "WAS",
+   "col": "BOS",
+   "n_meetings": 11,
+   "mean_total": 230.55,
+   "mean_margin": -20.36
+  },
+  {
+   "row": "WAS",
+   "col": "CHA",
+   "n_meetings": 12,
+   "mean_total": 233.75,
+   "mean_margin": -0.92
+  },
+  {
+   "row": "WAS",
+   "col": "CHI",
+   "n_meetings": 8,
+   "mean_total": 231.5,
+   "mean_margin": -11.75
+  },
+  {
+   "row": "WAS",
+   "col": "CLE",
+   "n_meetings": 11,
+   "mean_total": 235.27,
+   "mean_margin": -19.27
+  },
+  {
+   "row": "WAS",
+   "col": "DAL",
+   "n_meetings": 6,
+   "mean_total": 229.83,
+   "mean_margin": -12.5
+  },
+  {
+   "row": "WAS",
+   "col": "DEN",
+   "n_meetings": 6,
+   "mean_total": 230.17,
+   "mean_margin": -5.5
+  },
+  {
+   "row": "WAS",
+   "col": "DET",
+   "n_meetings": 11,
+   "mean_total": 233.27,
+   "mean_margin": -4.73
+  },
+  {
+   "row": "WAS",
+   "col": "GSW",
+   "n_meetings": 6,
+   "mean_total": 242.33,
+   "mean_margin": -9.33
+  },
+  {
+   "row": "WAS",
+   "col": "HOU",
+   "n_meetings": 6,
+   "mean_total": 239.83,
+   "mean_margin": -17.5
+  },
+  {
+   "row": "WAS",
+   "col": "IND",
+   "n_meetings": 11,
+   "mean_total": 232.91,
+   "mean_margin": -7.82
+  },
+  {
+   "row": "WAS",
+   "col": "LAC",
+   "n_meetings": 6,
+   "mean_total": 224.83,
+   "mean_margin": -16.83
+  },
+  {
+   "row": "WAS",
+   "col": "LAL",
+   "n_meetings": 6,
+   "mean_total": 235.5,
+   "mean_margin": -19.83
+  },
+  {
+   "row": "WAS",
+   "col": "MEM",
+   "n_meetings": 6,
+   "mean_total": 231.5,
+   "mean_margin": -7.5
+  },
+  {
+   "row": "WAS",
+   "col": "MIA",
+   "n_meetings": 9,
+   "mean_total": 227.78,
+   "mean_margin": -13.11
+  },
+  {
+   "row": "WAS",
+   "col": "MIL",
+   "n_meetings": 10,
+   "mean_total": 235.9,
+   "mean_margin": -3.5
+  },
+  {
+   "row": "WAS",
+   "col": "MIN",
+   "n_meetings": 6,
+   "mean_total": 232.5,
+   "mean_margin": -11.5
+  },
+  {
+   "row": "WAS",
+   "col": "NOP",
+   "n_meetings": 6,
+   "mean_total": 245.67,
+   "mean_margin": -15.33
+  },
+  {
+   "row": "WAS",
+   "col": "NYK",
+   "n_meetings": 10,
+   "mean_total": 234.4,
+   "mean_margin": -19.2
+  },
+  {
+   "row": "WAS",
+   "col": "OKC",
+   "n_meetings": 6,
+   "mean_total": 242.33,
+   "mean_margin": -24.67
+  },
+  {
+   "row": "WAS",
+   "col": "ORL",
+   "n_meetings": 12,
+   "mean_total": 232.25,
+   "mean_margin": -13.42
+  },
+  {
+   "row": "WAS",
+   "col": "PHI",
+   "n_meetings": 10,
+   "mean_total": 241.7,
+   "mean_margin": -13.9
+  },
+  {
+   "row": "WAS",
+   "col": "PHX",
+   "n_meetings": 6,
+   "mean_total": 229.0,
+   "mean_margin": -13.67
+  },
+  {
+   "row": "WAS",
+   "col": "POR",
+   "n_meetings": 5,
+   "mean_total": 226.0,
+   "mean_margin": -4.8
+  },
+  {
+   "row": "WAS",
+   "col": "SAC",
+   "n_meetings": 6,
+   "mean_total": 234.33,
+   "mean_margin": -5.33
+  },
+  {
+   "row": "WAS",
+   "col": "SAS",
+   "n_meetings": 6,
+   "mean_total": 243.33,
+   "mean_margin": -9.0
+  },
+  {
+   "row": "WAS",
+   "col": "TOR",
+   "n_meetings": 11,
+   "mean_total": 231.91,
+   "mean_margin": -9.36
+  },
+  {
+   "row": "WAS",
+   "col": "UTA",
+   "n_meetings": 6,
+   "mean_total": 239.5,
+   "mean_margin": -4.5
+  }
+ ]
+}

@@ -162,9 +162,9 @@ data runs out and refusing to fake the rest. This page maps the full public metr
 builds only the three families the columns actually support (each labelled for what it is
 *not*), declares the RAPM family out of reach, and returns a `not_buildable` refusal for
 aging curves rather than inventing a curve from three seasons with no age field. It even
-surfaces a real upstream data bug (diacritic-split player ids) instead of hiding it. That is
-the same discipline behind the rest of this repo: approximate honestly, name every
-confound, keep the negative result, and never convert a descriptive metric into an edge claim.
+surfaces a real upstream data bug (diacritic-split player ids) instead of hiding it. The
+throughline: approximate only what the columns support, name every confound, and never dress a
+descriptive metric as an edge.
 
 ---
 <!-- nav-footer -->

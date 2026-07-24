@@ -7,9 +7,9 @@ on a bare clone -- committed-artifact verification only, no private data; it pro
 re-verify, not that any claim beats a market. Reproduce it yourself: [REPRODUCE.md](REPRODUCE.md).*
 
 **One calibrated AI brain that, across five sports, prices every market from a single coherent
-engine, drills all the way down to per-player prop distributions, reprices live as the game
-unfolds, and hunts for edge in the soft pockets where it can actually exist -- proving every
-claim leak-free and refusing to fabricate a dollar edge it has not earned.**
+engine, drills down to per-player prop distributions, reprices live, and hunts for edge only
+where it can plausibly exist -- proving every claim leak-free and refusing to fabricate a dollar
+edge it has not earned.**
 
 It is *wide*: NBA, MLB, club soccer, the World Cup, and tennis, every one of them speaking the
 same `predict / to_jd / predict_live` interface, every market (moneyline, totals, spreads, 1X2,
@@ -185,7 +185,7 @@ one by `leverage_rank` into a single cross-sport priority queue the autoloop rea
 to build next. The full per-sport breakdown (data on disk, claim counts, biggest gap, model vs
 close verdict) lives in [docs/SPORTS_COVERAGE.md](docs/SPORTS_COVERAGE.md).
 
-**Depth (every little detail).** Under each team number the brain goes all the way down:
+**Depth (every little detail).** Under each team number sits the individual-player layer:
 
 - **Per-player projected distributions.** Not a point estimate -- a full count distribution per
   player per stat (per-exposure rate x expected exposure -> Poisson/Negative-Binomial), so it

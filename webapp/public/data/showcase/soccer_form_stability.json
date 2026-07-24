@@ -1,0 +1,841 @@
+{
+ "component": "soccer_form_stability",
+ "mode": "DESCRIPTIVE_ONLY",
+ "edge_claimed": false,
+ "generated_at": "2026-07-23T03:22:16.322763+00:00",
+ "floors": {
+  "inherited_min_sample": "n_matches>=200 (per upstream claim; below-floor teams pre-excluded)",
+  "min_overlap": 30
+ },
+ "truth_source": "docs/JOB_EVIDENCE_PACKET.md",
+ "temporal_split_half": {
+  "status": "NOT_AVAILABLE_IN_STORE",
+  "reason": "each claim store holds ONE as-of ranking vector per metric (form=trailing_10_asof_corpus_end, strength=asof_2026-06-28); no within-season time series to cut into halves.",
+  "fields_needed": [
+   "per-team form at >=2 disjoint chronological windows in one season (e.g. first-half vs second-half), OR",
+   "a per-team match-level result series with dates so windows can be cut here (store exposes only one as-of ranking vector per metric)."
+  ]
+ },
+ "sources": {
+  "form": {
+   "claim_id": "soccer_intl_trailing10_form_win_rate_fullpop",
+   "metric": "form_win_rate",
+   "window": "trailing_10_asof_corpus_end",
+   "min_sample": {
+    "n_matches": 200
+   },
+   "n_considered": 336,
+   "n_excluded_below_floor": 157,
+   "n_ranked": 179,
+   "validation": {
+    "n_claims": 1,
+    "n_verified": 1,
+    "n_mismatch": 0,
+    "edge_claimed": false
+   }
+  },
+  "strength": {
+   "claim_id": "soccer_intl_strength_full_asof_2026-06-28",
+   "metric": "strength",
+   "window": "asof_2026-06-28",
+   "min_sample": {
+    "n_matches": 200
+   },
+   "n_considered": 326,
+   "n_excluded_below_floor": 173,
+   "n_ranked": 153,
+   "validation": {
+    "n_claims": 1,
+    "n_verified": 1,
+    "n_mismatch": 0,
+    "edge_claimed": false
+   }
+  }
+ },
+ "status": "ok",
+ "corpus_dir": "data/cache/intel_claims",
+ "concordance": {
+  "measure": "cross-lens rank stability (parallel-forms): trailing-10 form win-rate vs net-xG EW strength, shared above-floor national teams",
+  "n_overlap": 153,
+  "n_form_only": 26,
+  "n_strength_only": 0,
+  "spearman_rho": 0.6419,
+  "pearson_r": 0.6369,
+  "tie_fraction_form": 0.9346,
+  "tie_fraction_strength": 0.0,
+  "points": [
+   {
+    "team": "Albania",
+    "form": 0.5,
+    "strength": -0.0345
+   },
+   {
+    "team": "Algeria",
+    "form": 0.5,
+    "strength": 1.4128
+   },
+   {
+    "team": "Andorra",
+    "form": 0.1,
+    "strength": -1.2692
+   },
+   {
+    "team": "Angola",
+    "form": 0.3,
+    "strength": 0.3089
+   },
+   {
+    "team": "Argentina",
+    "form": 0.8,
+    "strength": 1.9769
+   },
+   {
+    "team": "Armenia",
+    "form": 0.1,
+    "strength": -1.4114
+   },
+   {
+    "team": "Australia",
+    "form": 0.3,
+    "strength": 0.9031
+   },
+   {
+    "team": "Austria",
+    "form": 0.6,
+    "strength": 1.4615
+   },
+   {
+    "team": "Azerbaijan",
+    "form": 0.2,
+    "strength": -0.9155
+   },
+   {
+    "team": "Bahrain",
+    "form": 0.2,
+    "strength": -0.4624
+   },
+   {
+    "team": "Bangladesh",
+    "form": 0.3,
+    "strength": -0.558
+   },
+   {
+    "team": "Barbados",
+    "form": 0.1,
+    "strength": -0.8577
+   },
+   {
+    "team": "Belarus",
+    "form": 0.3,
+    "strength": -0.3282
+   },
+   {
+    "team": "Belgium",
+    "form": 0.5,
+    "strength": 1.5989
+   },
+   {
+    "team": "Benin",
+    "form": 0.3,
+    "strength": -0.525
+   },
+   {
+    "team": "Bolivia",
+    "form": 0.2,
+    "strength": -1.1696
+   },
+   {
+    "team": "Bosnia and Herzegovina",
+    "form": 0.2,
+    "strength": -0.0952
+   },
+   {
+    "team": "Botswana",
+    "form": 0.2,
+    "strength": -0.7635
+   },
+   {
+    "team": "Brazil",
+    "form": 0.4,
+    "strength": 0.9214
+   },
+   {
+    "team": "Bulgaria",
+    "form": 0.3,
+    "strength": -0.5795
+   },
+   {
+    "team": "Burkina Faso",
+    "form": 0.5,
+    "strength": 0.5711
+   },
+   {
+    "team": "Burundi",
+    "form": 0.2,
+    "strength": -0.7533
+   },
+   {
+    "team": "Cambodia",
+    "form": 0.3,
+    "strength": -0.2756
+   },
+   {
+    "team": "Cameroon",
+    "form": 0.5,
+    "strength": 0.4952
+   },
+   {
+    "team": "Canada",
+    "form": 0.2,
+    "strength": 0.6352
+   },
+   {
+    "team": "Cape Verde",
+    "form": 0.2,
+    "strength": 0.2306
+   },
+   {
+    "team": "Chile",
+    "form": 0.5,
+    "strength": -0.1011
+   },
+   {
+    "team": "China",
+    "form": 0.3,
+    "strength": -0.2878
+   },
+   {
+    "team": "Colombia",
+    "form": 0.4,
+    "strength": 0.9745
+   },
+   {
+    "team": "Congo",
+    "form": 0.1,
+    "strength": -1.1047
+   },
+   {
+    "team": "Costa Rica",
+    "form": 0.1,
+    "strength": 0.058
+   },
+   {
+    "team": "Croatia",
+    "form": 0.5,
+    "strength": 0.8414
+   },
+   {
+    "team": "Cuba",
+    "form": 0.3,
+    "strength": -0.5698
+   },
+   {
+    "team": "Cyprus",
+    "form": 0.3,
+    "strength": -0.5808
+   },
+   {
+    "team": "Czech Republic",
+    "form": 0.4,
+    "strength": 0.8158
+   },
+   {
+    "team": "DR Congo",
+    "form": 0.3,
+    "strength": 0.6103
+   },
+   {
+    "team": "Denmark",
+    "form": 0.5,
+    "strength": 0.9364
+   },
+   {
+    "team": "Ecuador",
+    "form": 0.3,
+    "strength": 0.5105
+   },
+   {
+    "team": "Egypt",
+    "form": 0.3,
+    "strength": 0.5878
+   },
+   {
+    "team": "El Salvador",
+    "form": 0.2,
+    "strength": -0.481
+   },
+   {
+    "team": "England",
+    "form": 0.5,
+    "strength": 1.6286
+   },
+   {
+    "team": "Estonia",
+    "form": 0.3,
+    "strength": -0.8111
+   },
+   {
+    "team": "Eswatini",
+    "form": 0.0,
+    "strength": -0.9999
+   },
+   {
+    "team": "Ethiopia",
+    "form": 0.4,
+    "strength": -0.4299
+   },
+   {
+    "team": "Faroe Islands",
+    "form": 0.7,
+    "strength": -0.171
+   },
+   {
+    "team": "Finland",
+    "form": 0.3,
+    "strength": -0.5138
+   },
+   {
+    "team": "France",
+    "form": 0.6,
+    "strength": 1.2745
+   },
+   {
+    "team": "Gabon",
+    "form": 0.3,
+    "strength": -0.0536
+   },
+   {
+    "team": "Georgia",
+    "form": 0.3,
+    "strength": 0.2235
+   },
+   {
+    "team": "Germany",
+    "form": 0.8,
+    "strength": 1.6719
+   },
+   {
+    "team": "Ghana",
+    "form": 0.1,
+    "strength": -0.0185
+   },
+   {
+    "team": "Greece",
+    "form": 0.2,
+    "strength": 0.4363
+   },
+   {
+    "team": "Grenada",
+    "form": 0.5,
+    "strength": -0.8314
+   },
+   {
+    "team": "Guatemala",
+    "form": 0.2,
+    "strength": -0.657
+   },
+   {
+    "team": "Guinea",
+    "form": 0.3,
+    "strength": 0.3204
+   },
+   {
+    "team": "Haiti",
+    "form": 0.3,
+    "strength": 0.7884
+   },
+   {
+    "team": "Honduras",
+    "form": 0.2,
+    "strength": 0.068
+   },
+   {
+    "team": "Hong Kong",
+    "form": 0.4,
+    "strength": 0.5424
+   },
+   {
+    "team": "Hungary",
+    "form": 0.5,
+    "strength": 0.0896
+   },
+   {
+    "team": "Iceland",
+    "form": 0.1,
+    "strength": -0.5343
+   },
+   {
+    "team": "India",
+    "form": 0.0,
+    "strength": -0.5498
+   },
+   {
+    "team": "Indonesia",
+    "form": 0.5,
+    "strength": 0.1594
+   },
+   {
+    "team": "Iran",
+    "form": 0.4,
+    "strength": 1.2042
+   },
+   {
+    "team": "Iraq",
+    "form": 0.3,
+    "strength": -0.0055
+   },
+   {
+    "team": "Israel",
+    "form": 0.5,
+    "strength": -0.161
+   },
+   {
+    "team": "Italy",
+    "form": 0.8,
+    "strength": 0.758
+   },
+   {
+    "team": "Ivory Coast",
+    "form": 0.6,
+    "strength": 1.2155
+   },
+   {
+    "team": "Jamaica",
+    "form": 0.4,
+    "strength": 0.2554
+   },
+   {
+    "team": "Japan",
+    "form": 0.6,
+    "strength": 1.6339
+   },
+   {
+    "team": "Jordan",
+    "form": 0.2,
+    "strength": -0.0048
+   },
+   {
+    "team": "Kazakhstan",
+    "form": 0.3,
+    "strength": -0.6254
+   },
+   {
+    "team": "Kenya",
+    "form": 0.4,
+    "strength": -0.2028
+   },
+   {
+    "team": "Kuwait",
+    "form": 0.2,
+    "strength": -0.5206
+   },
+   {
+    "team": "Latvia",
+    "form": 0.0,
+    "strength": -0.8766
+   },
+   {
+    "team": "Lebanon",
+    "form": 0.5,
+    "strength": 0.5227
+   },
+   {
+    "team": "Lesotho",
+    "form": 0.2,
+    "strength": -0.7779
+   },
+   {
+    "team": "Liberia",
+    "form": 0.3,
+    "strength": -0.4936
+   },
+   {
+    "team": "Libya",
+    "form": 0.3,
+    "strength": 0.1551
+   },
+   {
+    "team": "Liechtenstein",
+    "form": 0.1,
+    "strength": -2.4266
+   },
+   {
+    "team": "Lithuania",
+    "form": 0.1,
+    "strength": -0.9371
+   },
+   {
+    "team": "Luxembourg",
+    "form": 0.1,
+    "strength": -0.9875
+   },
+   {
+    "team": "Madagascar",
+    "form": 0.5,
+    "strength": -0.1093
+   },
+   {
+    "team": "Malawi",
+    "form": 0.3,
+    "strength": -0.1812
+   },
+   {
+    "team": "Malaysia",
+    "form": 0.7,
+    "strength": 0.8205
+   },
+   {
+    "team": "Maldives",
+    "form": 0.1,
+    "strength": -1.0302
+   },
+   {
+    "team": "Mali",
+    "form": 0.3,
+    "strength": 0.6006
+   },
+   {
+    "team": "Malta",
+    "form": 0.3,
+    "strength": -0.9904
+   },
+   {
+    "team": "Martinique",
+    "form": 0.1,
+    "strength": -0.4373
+   },
+   {
+    "team": "Mauritania",
+    "form": 0.2,
+    "strength": -0.5059
+   },
+   {
+    "team": "Mauritius",
+    "form": 0.1,
+    "strength": -0.7359
+   },
+   {
+    "team": "Mexico",
+    "form": 0.6,
+    "strength": 0.8665
+   },
+   {
+    "team": "Moldova",
+    "form": 0.0,
+    "strength": -1.3873
+   },
+   {
+    "team": "Morocco",
+    "form": 0.4,
+    "strength": 1.7104
+   },
+   {
+    "team": "Mozambique",
+    "form": 0.3,
+    "strength": -0.5145
+   },
+   {
+    "team": "Myanmar",
+    "form": 0.4,
+    "strength": -1.2301
+   },
+   {
+    "team": "Namibia",
+    "form": 0.2,
+    "strength": -0.6803
+   },
+   {
+    "team": "Nepal",
+    "form": 0.2,
+    "strength": -1.0218
+   },
+   {
+    "team": "Netherlands",
+    "form": 0.4,
+    "strength": 1.3171
+   },
+   {
+    "team": "New Zealand",
+    "form": 0.1,
+    "strength": 0.4101
+   },
+   {
+    "team": "Nigeria",
+    "form": 0.5,
+    "strength": 0.929
+   },
+   {
+    "team": "North Korea",
+    "form": 0.0,
+    "strength": -0.5683
+   },
+   {
+    "team": "North Macedonia",
+    "form": 0.1,
+    "strength": -0.413
+   },
+   {
+    "team": "Northern Ireland",
+    "form": 0.4,
+    "strength": -0.1525
+   },
+   {
+    "team": "Norway",
+    "form": 0.4,
+    "strength": 1.7219
+   },
+   {
+    "team": "Oman",
+    "form": 0.2,
+    "strength": -0.178
+   },
+   {
+    "team": "Palestine",
+    "form": 0.1,
+    "strength": -0.2212
+   },
+   {
+    "team": "Panama",
+    "form": 0.2,
+    "strength": 0.3024
+   },
+   {
+    "team": "Paraguay",
+    "form": 0.3,
+    "strength": -0.0762
+   },
+   {
+    "team": "Peru",
+    "form": 0.1,
+    "strength": -0.5296
+   },
+   {
+    "team": "Philippines",
+    "form": 0.8,
+    "strength": 0.593
+   },
+   {
+    "team": "Poland",
+    "form": 0.5,
+    "strength": 0.1746
+   },
+   {
+    "team": "Portugal",
+    "form": 0.4,
+    "strength": 1.4671
+   },
+   {
+    "team": "Qatar",
+    "form": 0.1,
+    "strength": -0.3469
+   },
+   {
+    "team": "Republic of Ireland",
+    "form": 0.5,
+    "strength": 0.2692
+   },
+   {
+    "team": "Romania",
+    "form": 0.4,
+    "strength": 0.5225
+   },
+   {
+    "team": "Russia",
+    "form": 0.6,
+    "strength": 1.4867
+   },
+   {
+    "team": "Rwanda",
+    "form": 0.3,
+    "strength": -0.1395
+   },
+   {
+    "team": "Saint Kitts and Nevis",
+    "form": 0.4,
+    "strength": -0.5397
+   },
+   {
+    "team": "San Marino",
+    "form": 0.0,
+    "strength": -2.4524
+   },
+   {
+    "team": "Saudi Arabia",
+    "form": 0.2,
+    "strength": 0.0042
+   },
+   {
+    "team": "Scotland",
+    "form": 0.5,
+    "strength": 0.5158
+   },
+   {
+    "team": "Senegal",
+    "form": 0.4,
+    "strength": 1.0746
+   },
+   {
+    "team": "Serbia",
+    "form": 0.4,
+    "strength": -0.4044
+   },
+   {
+    "team": "Singapore",
+    "form": 0.5,
+    "strength": -0.1058
+   },
+   {
+    "team": "Slovakia",
+    "form": 0.6,
+    "strength": 0.085
+   },
+   {
+    "team": "Slovenia",
+    "form": 0.1,
+    "strength": -0.0582
+   },
+   {
+    "team": "South Africa",
+    "form": 0.2,
+    "strength": 0.4469
+   },
+   {
+    "team": "South Korea",
+    "form": 0.6,
+    "strength": 0.9084
+   },
+   {
+    "team": "Spain",
+    "form": 0.4,
+    "strength": 1.626
+   },
+   {
+    "team": "Sri Lanka",
+    "form": 0.4,
+    "strength": -0.8172
+   },
+   {
+    "team": "Sudan",
+    "form": 0.2,
+    "strength": -0.7529
+   },
+   {
+    "team": "Sweden",
+    "form": 0.3,
+    "strength": 0.4745
+   },
+   {
+    "team": "Switzerland",
+    "form": 0.2,
+    "strength": 0.7999
+   },
+   {
+    "team": "Syria",
+    "form": 0.5,
+    "strength": 0.3029
+   },
+   {
+    "team": "Tajikistan",
+    "form": 0.7,
+    "strength": 0.6137
+   },
+   {
+    "team": "Tanzania",
+    "form": 0.1,
+    "strength": -0.1863
+   },
+   {
+    "team": "Thailand",
+    "form": 0.6,
+    "strength": 1.0367
+   },
+   {
+    "team": "Togo",
+    "form": 0.3,
+    "strength": 0.0416
+   },
+   {
+    "team": "Trinidad and Tobago",
+    "form": 0.1,
+    "strength": -0.7587
+   },
+   {
+    "team": "Tunisia",
+    "form": 0.1,
+    "strength": 0.0353
+   },
+   {
+    "team": "Turkey",
+    "form": 0.6,
+    "strength": 0.6707
+   },
+   {
+    "team": "Uganda",
+    "form": 0.4,
+    "strength": -0.3341
+   },
+   {
+    "team": "Ukraine",
+    "form": 0.5,
+    "strength": 0.0169
+   },
+   {
+    "team": "United Arab Emirates",
+    "form": 0.3,
+    "strength": 0.1983
+   },
+   {
+    "team": "United States",
+    "form": 0.5,
+    "strength": 0.4681
+   },
+   {
+    "team": "Uruguay",
+    "form": 0.2,
+    "strength": 0.256
+   },
+   {
+    "team": "Uzbekistan",
+    "form": 0.2,
+    "strength": 0.5446
+   },
+   {
+    "team": "Venezuela",
+    "form": 0.3,
+    "strength": -0.2058
+   },
+   {
+    "team": "Vietnam",
+    "form": 0.9,
+    "strength": 0.7956
+   },
+   {
+    "team": "Wales",
+    "form": 0.3,
+    "strength": 0.2794
+   },
+   {
+    "team": "Yemen",
+    "form": 0.5,
+    "strength": 0.2964
+   },
+   {
+    "team": "Zambia",
+    "form": 0.1,
+    "strength": -0.6976
+   },
+   {
+    "team": "Zimbabwe",
+    "form": 0.3,
+    "strength": -0.2688
+   }
+  ]
+ },
+ "caveats": [
+  "DESCRIPTIVE cross-lens rank concordance only -- NOT a temporal split-half and NOT a predictor of any future match; soccer_intl PREDICTIVE gate is CLOSED upstream (NO_ADD_BEYOND_MARKET). No market/$/ROI edge claimed.",
+  "The two lenses differ in horizon (form=trailing 10 matches; strength=full EW history) -- read the correlation as convergent validity, not pure persistence.",
+  "Upstream form win-rate is quantized to 1 decimal (tie_fraction_form=0.9346) -> inflates ties + ATTENUATES rho toward 0; reported rho is tie-corrected (average-rank)."
+ ],
+ "honest_note": "n=153 shared national teams. Spearman rho=0.6419, Pearson r=0.6369 between trailing-10 form win-rate and net-xG strength -- a parallel-forms rank-stability read, NOT a temporal split-half (that series is absent from the store) and NOT a predictor. edge_claimed=False.",
+ "plot_written": true
+}

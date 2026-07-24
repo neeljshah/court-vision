@@ -1,0 +1,461 @@
+{
+ "label": "DESCRIPTIVE_ONLY",
+ "sport": "tennis",
+ "status": "ok",
+ "caveat": "Per-player surface-split transfer off the tennis surface-context snapshot store: the store's own clay_minus_hard (clay_wr - hard_wr) gap and grass_adapt (grass_wr - ov_wr) adaptability index, floored and summarized per tour x window. DESCRIPTIVE_ONLY -- describes matches already played, no forecast, no market/ROI/$ edge.",
+ "truth_source": "docs/JOB_EVIDENCE_PACKET.md",
+ "store": "tennis_surface_context snapshots (producer: scripts/platformkit/intel_validation/tennis_surface_context_claims.py)",
+ "store_fields_used": {
+  "clay_hard_gap": "clay_minus_hard = clay_wr - hard_wr (store's own gap field)",
+  "grass_adaptability": "grass_adapt = grass_wr - ov_wr (store's own adaptability field)"
+ },
+ "floors": {
+  "clay_hard_gap": "clay_n>=25 AND hard_n>=25",
+  "grass_adaptability": "grass_n>=15",
+  "note": "floors copied verbatim from the producer's prereg floors (MIN_GAP_FLOOR / MIN_GRASS_FLOOR), not retuned here"
+ },
+ "confounds": [
+  "opponent-strength NOT controlled -- surface draws are not random, a gap partly reflects scheduling/seeding, not surface skill alone",
+  "retirement rows counted as DECIDED matches (winner column authoritative) -- upstream store choice",
+  "Hard/Clay/Grass only; Unknown/Carpet excluded upstream",
+  "DESCRIPTIVE_ONLY -- describes matches already played; NOT a forecast, NO market/ROI/$ edge"
+ ],
+ "combos": {
+  "atp_career": {
+   "n_players_in_snapshot": 1261,
+   "clay_hard_gap": {
+    "field": "clay_minus_hard = clay_wr - hard_wr",
+    "floor": "clay_n>=25 AND hard_n>=25",
+    "n_qualifying": 184,
+    "distribution": {
+     "n": 184,
+     "mean": 0.0159,
+     "std": 0.1215,
+     "p10": -0.1249,
+     "p50": 0.0149,
+     "p90": 0.1655,
+     "min": -0.3099,
+     "max": 0.4603,
+     "share_positive": 0.5815
+    },
+    "most_clay_favoring": [
+     {
+      "player_name": "Luciano Darderi",
+      "clay_minus_hard": 0.4603,
+      "clay_wr": 0.6825,
+      "hard_wr": 0.2222,
+      "clay_n": 63,
+      "hard_n": 36
+     },
+     {
+      "player_name": "Sebastian Baez",
+      "clay_minus_hard": 0.3396,
+      "clay_wr": 0.6308,
+      "hard_wr": 0.2911,
+      "clay_n": 130,
+      "hard_n": 79
+     },
+     {
+      "player_name": "Victor Estrella",
+      "clay_minus_hard": 0.3347,
+      "clay_wr": 0.5918,
+      "hard_wr": 0.2571,
+      "clay_n": 49,
+      "hard_n": 35
+     },
+     {
+      "player_name": "Federico Coria",
+      "clay_minus_hard": 0.3227,
+      "clay_wr": 0.5102,
+      "hard_wr": 0.1875,
+      "clay_n": 98,
+      "hard_n": 32
+     },
+     {
+      "player_name": "Mariano Navone",
+      "clay_minus_hard": 0.2752,
+      "clay_wr": 0.551,
+      "hard_wr": 0.2759,
+      "clay_n": 49,
+      "hard_n": 29
+     }
+    ],
+    "most_hard_favoring": [
+     {
+      "player_name": "Marius Copil",
+      "clay_minus_hard": -0.3099,
+      "clay_wr": 0.16,
+      "hard_wr": 0.4699,
+      "clay_n": 25,
+      "hard_n": 83
+     },
+     {
+      "player_name": "Bernard Tomic",
+      "clay_minus_hard": -0.3076,
+      "clay_wr": 0.2424,
+      "hard_wr": 0.55,
+      "clay_n": 33,
+      "hard_n": 120
+     },
+     {
+      "player_name": "Lloyd Harris",
+      "clay_minus_hard": -0.2939,
+      "clay_wr": 0.24,
+      "hard_wr": 0.5339,
+      "clay_n": 25,
+      "hard_n": 118
+     },
+     {
+      "player_name": "Adrian Mannarino",
+      "clay_minus_hard": -0.2823,
+      "clay_wr": 0.2203,
+      "hard_wr": 0.5026,
+      "clay_n": 59,
+      "hard_n": 386
+     },
+     {
+      "player_name": "Ugo Humbert",
+      "clay_minus_hard": -0.2665,
+      "clay_wr": 0.3137,
+      "hard_wr": 0.5802,
+      "clay_n": 51,
+      "hard_n": 212
+     }
+    ]
+   },
+   "grass_adaptability": {
+    "field": "grass_adapt = grass_wr - ov_wr",
+    "floor": "grass_n>=15",
+    "n_qualifying": 153,
+    "distribution": {
+     "n": 153,
+     "mean": 0.0085,
+     "std": 0.0937,
+     "p10": -0.1197,
+     "p50": 0.0174,
+     "p90": 0.1177,
+     "min": -0.2514,
+     "max": 0.2941,
+     "share_positive": 0.5686
+    },
+    "most_adaptive": [
+     {
+      "player_name": "Ramkumar Ramanathan",
+      "grass_adapt": 0.2941,
+      "grass_wr": 0.6875,
+      "ov_wr": 0.3934,
+      "grass_n": 16
+     },
+     {
+      "player_name": "Florian Mayer",
+      "grass_adapt": 0.2225,
+      "grass_wr": 0.56,
+      "ov_wr": 0.3375,
+      "grass_n": 25
+     },
+     {
+      "player_name": "Billy Harris",
+      "grass_adapt": 0.2077,
+      "grass_wr": 0.5625,
+      "ov_wr": 0.3548,
+      "grass_n": 16
+     },
+     {
+      "player_name": "Christopher Eubanks",
+      "grass_adapt": 0.1841,
+      "grass_wr": 0.5769,
+      "ov_wr": 0.3929,
+      "grass_n": 26
+     },
+     {
+      "player_name": "Nicolas Mahut",
+      "grass_adapt": 0.1791,
+      "grass_wr": 0.6667,
+      "ov_wr": 0.4876,
+      "grass_n": 27
+     }
+    ],
+    "least_adaptive": [
+     {
+      "player_name": "Pablo Carreno Busta",
+      "grass_adapt": -0.2514,
+      "grass_wr": 0.3158,
+      "ov_wr": 0.5672,
+      "grass_n": 19
+     },
+     {
+      "player_name": "Yoshihito Nishioka",
+      "grass_adapt": -0.2262,
+      "grass_wr": 0.2353,
+      "ov_wr": 0.4615,
+      "grass_n": 17
+     },
+     {
+      "player_name": "Roberto Carballes Baena",
+      "grass_adapt": -0.2188,
+      "grass_wr": 0.2222,
+      "ov_wr": 0.441,
+      "grass_n": 18
+     },
+     {
+      "player_name": "Albert Ramos",
+      "grass_adapt": -0.2143,
+      "grass_wr": 0.25,
+      "ov_wr": 0.4643,
+      "grass_n": 20
+     },
+     {
+      "player_name": "Dusan Lajovic",
+      "grass_adapt": -0.2009,
+      "grass_wr": 0.2381,
+      "ov_wr": 0.439,
+      "grass_n": 21
+     }
+    ]
+   },
+   "status": "ok",
+   "source": "data/cache/intel_claims/tennis_surface_context_snapshot_atp_career.parquet"
+  },
+  "atp_recent_form": {
+   "n_players_in_snapshot": 663,
+   "clay_hard_gap": {
+    "field": "clay_minus_hard = clay_wr - hard_wr",
+    "floor": "clay_n>=25 AND hard_n>=25",
+    "n_qualifying": 69,
+    "distribution": {
+     "n": 69,
+     "mean": 0.0433,
+     "std": 0.1157,
+     "p10": -0.0617,
+     "p50": 0.0368,
+     "p90": 0.1649,
+     "min": -0.3381,
+     "max": 0.4603,
+     "share_positive": 0.6087
+    },
+    "most_clay_favoring": [
+     {
+      "player_name": "Luciano Darderi",
+      "clay_minus_hard": 0.4603,
+      "clay_wr": 0.6825,
+      "hard_wr": 0.2222,
+      "clay_n": 63,
+      "hard_n": 36
+     },
+     {
+      "player_name": "Sebastian Baez",
+      "clay_minus_hard": 0.3169,
+      "clay_wr": 0.6383,
+      "hard_wr": 0.3214,
+      "clay_n": 94,
+      "hard_n": 56
+     },
+     {
+      "player_name": "Mariano Navone",
+      "clay_minus_hard": 0.2752,
+      "clay_wr": 0.551,
+      "hard_wr": 0.2759,
+      "clay_n": 49,
+      "hard_n": 29
+     },
+     {
+      "player_name": "Matteo Berrettini",
+      "clay_minus_hard": 0.2622,
+      "clay_wr": 0.8077,
+      "hard_wr": 0.5455,
+      "clay_n": 26,
+      "hard_n": 66
+     },
+     {
+      "player_name": "Damir Dzumhur",
+      "clay_minus_hard": 0.2521,
+      "clay_wr": 0.5484,
+      "hard_wr": 0.2963,
+      "clay_n": 31,
+      "hard_n": 27
+     }
+    ],
+    "most_hard_favoring": [
+     {
+      "player_name": "Ugo Humbert",
+      "clay_minus_hard": -0.3381,
+      "clay_wr": 0.32,
+      "hard_wr": 0.6581,
+      "clay_n": 25,
+      "hard_n": 117
+     },
+     {
+      "player_name": "Jannik Sinner",
+      "clay_minus_hard": -0.1245,
+      "clay_wr": 0.7692,
+      "hard_wr": 0.8938,
+      "clay_n": 39,
+      "hard_n": 160
+     },
+     {
+      "player_name": "Jack Draper",
+      "clay_minus_hard": -0.0947,
+      "clay_wr": 0.5882,
+      "hard_wr": 0.6829,
+      "clay_n": 34,
+      "hard_n": 82
+     },
+     {
+      "player_name": "Ben Shelton",
+      "clay_minus_hard": -0.0946,
+      "clay_wr": 0.5294,
+      "hard_wr": 0.624,
+      "clay_n": 34,
+      "hard_n": 125
+     },
+     {
+      "player_name": "Felix Auger Aliassime",
+      "clay_minus_hard": -0.07,
+      "clay_wr": 0.5641,
+      "hard_wr": 0.6341,
+      "clay_n": 39,
+      "hard_n": 123
+     }
+    ]
+   },
+   "grass_adaptability": {
+    "field": "grass_adapt = grass_wr - ov_wr",
+    "floor": "grass_n>=15",
+    "n_qualifying": 44,
+    "distribution": {
+     "n": 44,
+     "mean": 0.0413,
+     "std": 0.0735,
+     "p10": -0.0345,
+     "p50": 0.0362,
+     "p90": 0.1329,
+     "min": -0.1797,
+     "max": 0.2077,
+     "share_positive": 0.75
+    },
+    "most_adaptive": [
+     {
+      "player_name": "Billy Harris",
+      "grass_adapt": 0.2077,
+      "grass_wr": 0.5625,
+      "ov_wr": 0.3548,
+      "grass_n": 16
+     },
+     {
+      "player_name": "Alexander Bublik",
+      "grass_adapt": 0.1858,
+      "grass_wr": 0.72,
+      "ov_wr": 0.5342,
+      "grass_n": 25
+     },
+     {
+      "player_name": "Tallon Griekspoor",
+      "grass_adapt": 0.1556,
+      "grass_wr": 0.7143,
+      "ov_wr": 0.5587,
+      "grass_n": 21
+     },
+     {
+      "player_name": "Christopher Eubanks",
+      "grass_adapt": 0.1534,
+      "grass_wr": 0.5909,
+      "ov_wr": 0.4375,
+      "grass_n": 22
+     },
+     {
+      "player_name": "Roberto Bautista Agut",
+      "grass_adapt": 0.1376,
+      "grass_wr": 0.6087,
+      "ov_wr": 0.4711,
+      "grass_n": 23
+     }
+    ],
+    "least_adaptive": [
+     {
+      "player_name": "Stefanos Tsitsipas",
+      "grass_adapt": -0.1797,
+      "grass_wr": 0.4667,
+      "ov_wr": 0.6464,
+      "grass_n": 15
+     },
+     {
+      "player_name": "Ugo Humbert",
+      "grass_adapt": -0.0843,
+      "grass_wr": 0.5,
+      "ov_wr": 0.5843,
+      "grass_n": 24
+     },
+     {
+      "player_name": "Ben Shelton",
+      "grass_adapt": -0.0717,
+      "grass_wr": 0.5217,
+      "ov_wr": 0.5934,
+      "grass_n": 23
+     },
+     {
+      "player_name": "Miomir Kecmanovic",
+      "grass_adapt": -0.0456,
+      "grass_wr": 0.4211,
+      "ov_wr": 0.4667,
+      "grass_n": 19
+     },
+     {
+      "player_name": "Cameron Norrie",
+      "grass_adapt": -0.0358,
+      "grass_wr": 0.5294,
+      "ov_wr": 0.5652,
+      "grass_n": 17
+     }
+    ]
+   },
+   "status": "ok",
+   "source": "data/cache/intel_claims/tennis_surface_context_snapshot_atp_recent_form.parquet"
+  },
+  "wta_career": {
+   "n_players_in_snapshot": 219,
+   "clay_hard_gap": {
+    "field": "clay_minus_hard = clay_wr - hard_wr",
+    "floor": "clay_n>=25 AND hard_n>=25",
+    "n_qualifying": 0,
+    "distribution": null,
+    "note": "floor eliminated every player in this combo -- nothing to rank (no empty ranking published)",
+    "most_clay_favoring": [],
+    "most_hard_favoring": []
+   },
+   "grass_adaptability": {
+    "field": "grass_adapt = grass_wr - ov_wr",
+    "floor": "grass_n>=15",
+    "n_qualifying": 0,
+    "distribution": null,
+    "note": "floor eliminated every player in this combo -- nothing to rank (no empty ranking published)",
+    "most_adaptive": [],
+    "least_adaptive": []
+   },
+   "status": "ok",
+   "source": "data/cache/intel_claims/tennis_surface_context_snapshot_wta_career.parquet"
+  },
+  "wta_recent_form": {
+   "n_players_in_snapshot": 219,
+   "clay_hard_gap": {
+    "field": "clay_minus_hard = clay_wr - hard_wr",
+    "floor": "clay_n>=25 AND hard_n>=25",
+    "n_qualifying": 0,
+    "distribution": null,
+    "note": "floor eliminated every player in this combo -- nothing to rank (no empty ranking published)",
+    "most_clay_favoring": [],
+    "most_hard_favoring": []
+   },
+   "grass_adaptability": {
+    "field": "grass_adapt = grass_wr - ov_wr",
+    "floor": "grass_n>=15",
+    "n_qualifying": 0,
+    "distribution": null,
+    "note": "floor eliminated every player in this combo -- nothing to rank (no empty ranking published)",
+    "most_adaptive": [],
+    "least_adaptive": []
+   },
+   "status": "ok",
+   "source": "data/cache/intel_claims/tennis_surface_context_snapshot_wta_recent_form.parquet"
+  }
+ }
+}

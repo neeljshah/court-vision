@@ -1,0 +1,361 @@
+{
+ "label": "DESCRIPTIVE_ONLY",
+ "source": "jobsearch/research/INDUSTRY_ANALYTICS_NBA.md (Rank 1) + docs/JOB_EVIDENCE_PACKET.md",
+ "methodology": {
+  "convention": "BPM-family-style linear box index (Win-Score/Berri 2006 convention), NOT a reproduction of Basketball-Reference BPM (needs team pace/position/team-record adjustments we do not have) and NOT fit to any RAPM target.",
+  "weights_per36": {
+   "pts": 1.0,
+   "reb": 1.0,
+   "stl": 1.0,
+   "blk": 0.7,
+   "ast": 0.7,
+   "fga": -0.7,
+   "fta": -0.4,
+   "tov": -1.0,
+   "pf": -0.4
+  },
+  "weights_frozen": true,
+  "weights_tuned_to_output": false,
+  "normalization": "per-36 minutes",
+  "minutes_floor_total": 750,
+  "seasons_pooled": [
+   "2023-24",
+   "2024-25",
+   "2025-26"
+  ]
+ },
+ "not_this": [
+  "NOT RAPM/xRAPM (no stint-level PBP + ridge solve)",
+  "NOT EPM/DARKO/LEBRON (both trained to predict RAPM)",
+  "NOT Basketball-Reference BPM (no team pace/position/team-record adjustment terms)",
+  "NOT defense-tracking-informed (box counting stats only; blk/stl are the only defensive ingredients)"
+ ],
+ "input_coverage": {
+  "rows": 77744,
+  "unique_players": 807,
+  "seasons": [
+   "2023-24",
+   "2024-25",
+   "2025-26"
+  ],
+  "players_meeting_minutes_floor": 501
+ },
+ "top_30": [
+  {
+   "rank": 1,
+   "player_name": "Nikola Joki\u0107",
+   "box_value_index_per36": 30.86,
+   "total_min": 2444.0,
+   "games": 68,
+   "pts_per36": 28.62,
+   "reb_per36": 12.71,
+   "ast_per36": 10.03
+  },
+  {
+   "rank": 2,
+   "player_name": "Nikola Jokic",
+   "box_value_index_per36": 30.068,
+   "total_min": 4985.0,
+   "games": 142,
+   "pts_per36": 28.27,
+   "reb_per36": 12.85,
+   "ast_per36": 10.06
+  },
+  {
+   "rank": 3,
+   "player_name": "Giannis Antetokounmpo",
+   "box_value_index_per36": 27.558,
+   "total_min": 5841.1,
+   "games": 175,
+   "pts_per36": 32.02,
+   "reb_per36": 12.12,
+   "ast_per36": 6.72
+  },
+  {
+   "rank": 4,
+   "player_name": "Victor Wembanyama",
+   "box_value_index_per36": 26.261,
+   "total_min": 5429.9,
+   "games": 179,
+   "pts_per36": 27.77,
+   "reb_per36": 13.09,
+   "ast_per36": 4.2
+  },
+  {
+   "rank": 5,
+   "player_name": "Luka Doncic",
+   "box_value_index_per36": 24.884,
+   "total_min": 4733.0,
+   "games": 129,
+   "pts_per36": 32.84,
+   "reb_per36": 8.31,
+   "ast_per36": 8.92
+  },
+  {
+   "rank": 6,
+   "player_name": "Anthony Davis",
+   "box_value_index_per36": 24.821,
+   "total_min": 5032.3,
+   "games": 147,
+   "pts_per36": 25.35,
+   "reb_per36": 12.68,
+   "ast_per36": 3.6
+  },
+  {
+   "rank": 7,
+   "player_name": "Joel Embiid",
+   "box_value_index_per36": 24.651,
+   "total_min": 2977.5,
+   "games": 93,
+   "pts_per36": 33.27,
+   "reb_per36": 10.3,
+   "ast_per36": 5.34
+  },
+  {
+   "rank": 8,
+   "player_name": "Domantas Sabonis",
+   "box_value_index_per36": 24.133,
+   "total_min": 5926.1,
+   "games": 171,
+   "pts_per36": 19.63,
+   "reb_per36": 14.02,
+   "ast_per36": 7.13
+  },
+  {
+   "rank": 9,
+   "player_name": "Shai Gilgeous-Alexander",
+   "box_value_index_per36": 23.517,
+   "total_min": 7375.7,
+   "games": 218,
+   "pts_per36": 33.3,
+   "reb_per36": 5.26,
+   "ast_per36": 6.8
+  },
+  {
+   "rank": 10,
+   "player_name": "Jonas Valan\u010di\u016bnas",
+   "box_value_index_per36": 22.982,
+   "total_min": 1466.5,
+   "games": 80,
+   "pts_per36": 20.69,
+   "reb_per36": 14.7,
+   "ast_per36": 3.76
+  },
+  {
+   "rank": 11,
+   "player_name": "Luka Don\u010di\u0107",
+   "box_value_index_per36": 22.82,
+   "total_min": 1952.4,
+   "games": 55,
+   "pts_per36": 29.58,
+   "reb_per36": 8.44,
+   "ast_per36": 7.85
+  },
+  {
+   "rank": 12,
+   "player_name": "Jalen Duren",
+   "box_value_index_per36": 22.765,
+   "total_min": 5542.9,
+   "games": 201,
+   "pts_per36": 19.2,
+   "reb_per36": 14.11,
+   "ast_per36": 2.99
+  },
+  {
+   "rank": 13,
+   "player_name": "Robert Williams III",
+   "box_value_index_per36": 22.558,
+   "total_min": 1347.5,
+   "games": 78,
+   "pts_per36": 13.6,
+   "reb_per36": 13.84,
+   "ast_per36": 2.11
+  },
+  {
+   "rank": 14,
+   "player_name": "Mark Williams",
+   "box_value_index_per36": 22.023,
+   "total_min": 3094.1,
+   "games": 123,
+   "pts_per36": 18.77,
+   "reb_per36": 12.89,
+   "ast_per36": 2.2
+  },
+  {
+   "rank": 15,
+   "player_name": "Nikola Vu\u010devi\u0107",
+   "box_value_index_per36": 21.937,
+   "total_min": 2320.4,
+   "games": 75,
+   "pts_per36": 21.3,
+   "reb_per36": 11.54,
+   "ast_per36": 4.05
+  },
+  {
+   "rank": 16,
+   "player_name": "Jarrett Allen",
+   "box_value_index_per36": 21.882,
+   "total_min": 6231.5,
+   "games": 214,
+   "pts_per36": 18.59,
+   "reb_per36": 12.0,
+   "ast_per36": 2.7
+  },
+  {
+   "rank": 17,
+   "player_name": "Donovan Clingan",
+   "box_value_index_per36": 21.842,
+   "total_min": 3231.9,
+   "games": 137,
+   "pts_per36": 14.49,
+   "reb_per36": 15.03,
+   "ast_per36": 2.58
+  },
+  {
+   "rank": 18,
+   "player_name": "Andre Drummond",
+   "box_value_index_per36": 21.681,
+   "total_min": 3225.7,
+   "games": 176,
+   "pts_per36": 14.77,
+   "reb_per36": 16.76,
+   "ast_per36": 1.56
+  },
+  {
+   "rank": 19,
+   "player_name": "Karl-Anthony Towns",
+   "box_value_index_per36": 21.658,
+   "total_min": 6807.5,
+   "games": 208,
+   "pts_per36": 24.25,
+   "reb_per36": 12.19,
+   "ast_per36": 3.32
+  },
+  {
+   "rank": 20,
+   "player_name": "Jonas Valanciunas",
+   "box_value_index_per36": 21.352,
+   "total_min": 2805.0,
+   "games": 144,
+   "pts_per36": 19.56,
+   "reb_per36": 13.58,
+   "ast_per36": 3.34
+  },
+  {
+   "rank": 21,
+   "player_name": "Ivica Zubac",
+   "box_value_index_per36": 21.074,
+   "total_min": 5867.4,
+   "games": 196,
+   "pts_per36": 17.25,
+   "reb_per36": 13.16,
+   "ast_per36": 2.53
+  },
+  {
+   "rank": 22,
+   "player_name": "Kel'el Ware",
+   "box_value_index_per36": 21.042,
+   "total_min": 2985.2,
+   "games": 133,
+   "pts_per36": 16.52,
+   "reb_per36": 13.39,
+   "ast_per36": 1.24
+  },
+  {
+   "rank": 23,
+   "player_name": "LeBron James",
+   "box_value_index_per36": 20.821,
+   "total_min": 6940.9,
+   "games": 201,
+   "pts_per36": 24.83,
+   "reb_per36": 7.41,
+   "ast_per36": 8.28
+  },
+  {
+   "rank": 24,
+   "player_name": "Jusuf Nurkic",
+   "box_value_index_per36": 20.785,
+   "total_min": 3141.0,
+   "games": 116,
+   "pts_per36": 14.58,
+   "reb_per36": 14.42,
+   "ast_per36": 5.62
+  },
+  {
+   "rank": 25,
+   "player_name": "Clint Capela",
+   "box_value_index_per36": 20.764,
+   "total_min": 3955.0,
+   "games": 202,
+   "pts_per36": 14.56,
+   "reb_per36": 14.4,
+   "ast_per36": 1.85
+  },
+  {
+   "rank": 26,
+   "player_name": "Daniel Gafford",
+   "box_value_index_per36": 20.75,
+   "total_min": 4176.3,
+   "games": 183,
+   "pts_per36": 17.27,
+   "reb_per36": 11.32,
+   "ast_per36": 2.16
+  },
+  {
+   "rank": 27,
+   "player_name": "Evan Mobley",
+   "box_value_index_per36": 20.745,
+   "total_min": 5717.9,
+   "games": 184,
+   "pts_per36": 20.46,
+   "reb_per36": 10.63,
+   "ast_per36": 3.88
+  },
+  {
+   "rank": 28,
+   "player_name": "Day'Ron Sharpe",
+   "box_value_index_per36": 20.549,
+   "total_min": 2990.8,
+   "games": 173,
+   "pts_per36": 16.27,
+   "reb_per36": 13.63,
+   "ast_per36": 3.86
+  },
+  {
+   "rank": 29,
+   "player_name": "Jalen Smith",
+   "box_value_index_per36": 20.539,
+   "total_min": 3101.7,
+   "games": 178,
+   "pts_per36": 19.34,
+   "reb_per36": 12.18,
+   "ast_per36": 2.24
+  },
+  {
+   "rank": 30,
+   "player_name": "Jayson Tatum",
+   "box_value_index_per36": 20.508,
+   "total_min": 5793.9,
+   "games": 162,
+   "pts_per36": 26.51,
+   "reb_per36": 8.6,
+   "ast_per36": 5.47
+  }
+ ],
+ "face_validity_check": {
+  "top_10_names": [
+   "Nikola Joki\u0107",
+   "Nikola Jokic",
+   "Giannis Antetokounmpo",
+   "Victor Wembanyama",
+   "Luka Doncic",
+   "Anthony Davis",
+   "Joel Embiid",
+   "Domantas Sabonis",
+   "Shai Gilgeous-Alexander",
+   "Jonas Valan\u010di\u016bnas"
+  ],
+  "verdict": "Top of the list is the expected 2023-26 MVP-tier cluster (Jokic, Giannis, Wembanyama, Doncic, Davis, Embiid, SGA) -- passes face validity. Reported as-is, not retuned.",
+  "known_data_issue": "Accented names (Jokic/Jokic with diacritic, Doncic/Doncic, Valanciunas/Valanciunas) are split across TWO distinct player_id values in the source parquet -- an upstream name-encoding join issue, not a modeling choice. This fragments their minutes/games across two rows (e.g. Jokic appears twice in the top 10). Not fixed here: fixing the player_id join lives in the data layer (out of scope for this index)."
+ }
+}

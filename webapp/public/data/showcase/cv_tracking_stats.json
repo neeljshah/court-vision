@@ -1,0 +1,106 @@
+{
+ "note": "volume/coverage stats only -- no accuracy/quality claims (MOT metrics unbenchmarked, see JOB_EVIDENCE_PACKET s4)",
+ "total_rows": 17254,
+ "n_games": 241,
+ "n_players": 252,
+ "n_distinct_feature_names": 29,
+ "created_at_range": {
+  "min": "2026-05-28 17:45:04",
+  "max": "2026-05-29 02:36:41"
+ },
+ "season_or_date_breakdown": "not available -- cv_features has no date/season column; box_scores join on (game_id, player_id) returns 0 matching rows",
+ "rows_per_game": {
+  "min": 25,
+  "max": 213,
+  "mean": 71.59,
+  "median": 56
+ },
+ "distinct_players_per_game": {
+  "min": 1,
+  "max": 8,
+  "mean": 2.63,
+  "median": 2
+ },
+ "top20_most_tracked_player_ids": [
+  {
+   "player_id": 1642264,
+   "row_count": 329
+  },
+  {
+   "player_id": 1629162,
+   "row_count": 295
+  },
+  {
+   "player_id": 1631128,
+   "row_count": 277
+  },
+  {
+   "player_id": 1627780,
+   "row_count": 273
+  },
+  {
+   "player_id": 1627739,
+   "row_count": 273
+  },
+  {
+   "player_id": 1630541,
+   "row_count": 221
+  },
+  {
+   "player_id": 1642261,
+   "row_count": 217
+  },
+  {
+   "player_id": 1642847,
+   "row_count": 216
+  },
+  {
+   "player_id": 203903,
+   "row_count": 195
+  },
+  {
+   "player_id": 1641705,
+   "row_count": 193
+  },
+  {
+   "player_id": 1630596,
+   "row_count": 193
+  },
+  {
+   "player_id": 1631108,
+   "row_count": 192
+  },
+  {
+   "player_id": 1631323,
+   "row_count": 191
+  },
+  {
+   "player_id": 1629020,
+   "row_count": 168
+  },
+  {
+   "player_id": 1628404,
+   "row_count": 166
+  },
+  {
+   "player_id": 1631124,
+   "row_count": 165
+  },
+  {
+   "player_id": 202695,
+   "row_count": 164
+  },
+  {
+   "player_id": 1628978,
+   "row_count": 162
+  },
+  {
+   "player_id": 1628970,
+   "row_count": 162
+  },
+  {
+   "player_id": 1630241,
+   "row_count": 160
+  }
+ ]
+}

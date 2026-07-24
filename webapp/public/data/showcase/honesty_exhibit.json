@@ -1,0 +1,64 @@
+{
+ "generated_at": "2026-07-22T20:26:10.307475+00:00",
+ "edge_claimed": false,
+ "bucket_order": [
+  "confirmed",
+  "null",
+  "not_testable",
+  "failed_replication",
+  "other"
+ ],
+ "headline": "nulls (351) outnumber confirms (168) 2.1x -- we publish our nulls",
+ "sports": [
+  {
+   "sport": "nba",
+   "source": "domains/basketball_nba/knowledge/validation_ledger.jsonl",
+   "total": 85,
+   "confirmed": 45,
+   "null": 31,
+   "not_testable": 7,
+   "failed_replication": 0,
+   "other": 2
+  },
+  {
+   "sport": "mlb",
+   "source": "domains/mlb/knowledge/validation_ledger.jsonl",
+   "total": 86,
+   "confirmed": 32,
+   "null": 37,
+   "not_testable": 8,
+   "failed_replication": 7,
+   "other": 2
+  },
+  {
+   "sport": "soccer",
+   "source": "domains/soccer/knowledge/validation_ledger.jsonl",
+   "total": 64,
+   "confirmed": 29,
+   "null": 24,
+   "not_testable": 8,
+   "failed_replication": 1,
+   "other": 2
+  },
+  {
+   "sport": "tennis",
+   "source": "domains/tennis/knowledge/validation_ledger.jsonl",
+   "total": 52,
+   "confirmed": 24,
+   "null": 20,
+   "not_testable": 8,
+   "failed_replication": 0,
+   "other": 0
+  },
+  {
+   "sport": "interaction_factory",
+   "source": "data/cache/intel_claims/interaction_factory_ledger.jsonl",
+   "total": 1003,
+   "confirmed": 38,
+   "null": 239,
+   "not_testable": 709,
+   "failed_replication": 17,
+   "other": 0
+  }
+ ]
+}

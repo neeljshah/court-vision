@@ -1,0 +1,2532 @@
+{
+ "label": "DESCRIPTIVE_ONLY",
+ "metric": "true_shooting_pct = pts / (2*(fga + 0.44*fta)), aggregated within each context cell",
+ "edge_claimed": false,
+ "method": {
+  "players": "top-50 by total minutes",
+  "contexts": [
+   "opponent defensive tier: top-10 vs bottom-10 defenses by points allowed/game, per season",
+   "home vs away (is_home)",
+   "rest: back-to-back (1 day) vs 2+ days rest, from game dates"
+  ],
+  "context_sensitivity_score": "mean of available absolute TS%-deltas across the 3 dimensions",
+  "cell_min_games": 10,
+  "def_tier_size": 10
+ },
+ "floors": {
+  "cells with n<10 player-games": "marked insufficient, dropped from sensitivity",
+  "players with <2 usable dimensions": "reported with context_sensitivity_score=null",
+  "first game of a team-season": "unknown rest, unlabeled"
+ },
+ "coverage": {
+  "input_rows": 77744,
+  "seasons": [
+   "2023-24",
+   "2024-25",
+   "2025-26"
+  ],
+  "players_analysed": 50
+ },
+ "players": [
+  {
+   "overall_ts_pct": 0.6037,
+   "total_games": 241,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0441,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 73,
+      "ts_pct": 0.563,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 84,
+      "ts_pct": 0.5934,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0304
+    },
+    "home_away": {
+     "home": {
+      "n": 122,
+      "ts_pct": 0.6247,
+      "insufficient": false
+     },
+     "away": {
+      "n": 119,
+      "ts_pct": 0.5824,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0423
+    },
+    "rest": {
+     "b2b": {
+      "n": 40,
+      "ts_pct": 0.6536,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 198,
+      "ts_pct": 0.5939,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0597
+    }
+   },
+   "player_id": 1630202,
+   "player_name": "Payton Pritchard",
+   "total_minutes": 6656.1
+  },
+  {
+   "overall_ts_pct": 0.5678,
+   "total_games": 209,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0422,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 69,
+      "ts_pct": 0.586,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 73,
+      "ts_pct": 0.5467,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0393
+    },
+    "home_away": {
+     "home": {
+      "n": 106,
+      "ts_pct": 0.5902,
+      "insufficient": false
+     },
+     "away": {
+      "n": 103,
+      "ts_pct": 0.5437,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0465
+    },
+    "rest": {
+     "b2b": {
+      "n": 37,
+      "ts_pct": 0.5354,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 169,
+      "ts_pct": 0.5762,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0408
+    }
+   },
+   "player_id": 1631095,
+   "player_name": "Jabari Smith Jr.",
+   "total_minutes": 6802.1
+  },
+  {
+   "overall_ts_pct": 0.6003,
+   "total_games": 220,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0419,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 65,
+      "ts_pct": 0.5515,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 79,
+      "ts_pct": 0.6171,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0656
+    },
+    "home_away": {
+     "home": {
+      "n": 108,
+      "ts_pct": 0.5962,
+      "insufficient": false
+     },
+     "away": {
+      "n": 112,
+      "ts_pct": 0.6041,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0079
+    },
+    "rest": {
+     "b2b": {
+      "n": 40,
+      "ts_pct": 0.5599,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 178,
+      "ts_pct": 0.612,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0521
+    }
+   },
+   "player_id": 201935,
+   "player_name": "James Harden",
+   "total_minutes": 7641.8
+  },
+  {
+   "overall_ts_pct": 0.539,
+   "total_games": 195,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0415,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 65,
+      "ts_pct": 0.5046,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 65,
+      "ts_pct": 0.5884,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0838
+    },
+    "home_away": {
+     "home": {
+      "n": 99,
+      "ts_pct": 0.5301,
+      "insufficient": false
+     },
+     "away": {
+      "n": 96,
+      "ts_pct": 0.5485,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0184
+    },
+    "rest": {
+     "b2b": {
+      "n": 40,
+      "ts_pct": 0.5214,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 153,
+      "ts_pct": 0.5437,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0223
+    }
+   },
+   "player_id": 1630224,
+   "player_name": "Jalen Green",
+   "total_minutes": 6091.8
+  },
+  {
+   "overall_ts_pct": 0.5486,
+   "total_games": 202,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.041,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 62,
+      "ts_pct": 0.563,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 69,
+      "ts_pct": 0.5419,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0211
+    },
+    "home_away": {
+     "home": {
+      "n": 101,
+      "ts_pct": 0.5729,
+      "insufficient": false
+     },
+     "away": {
+      "n": 101,
+      "ts_pct": 0.524,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0489
+    },
+    "rest": {
+     "b2b": {
+      "n": 38,
+      "ts_pct": 0.507,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 161,
+      "ts_pct": 0.5599,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0529
+    }
+   },
+   "player_id": 1628415,
+   "player_name": "Dillon Brooks",
+   "total_minutes": 6283.8
+  },
+  {
+   "overall_ts_pct": 0.6233,
+   "total_games": 239,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.038,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 80,
+      "ts_pct": 0.6483,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 79,
+      "ts_pct": 0.6405,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0078
+    },
+    "home_away": {
+     "home": {
+      "n": 117,
+      "ts_pct": 0.6426,
+      "insufficient": false
+     },
+     "away": {
+      "n": 122,
+      "ts_pct": 0.6036,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.039
+    },
+    "rest": {
+     "b2b": {
+      "n": 45,
+      "ts_pct": 0.6752,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 191,
+      "ts_pct": 0.608,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0672
+    }
+   },
+   "player_id": 203084,
+   "player_name": "Harrison Barnes",
+   "total_minutes": 6546.6
+  },
+  {
+   "overall_ts_pct": 0.578,
+   "total_games": 226,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.033,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 69,
+      "ts_pct": 0.5968,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 79,
+      "ts_pct": 0.5761,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0207
+    },
+    "home_away": {
+     "home": {
+      "n": 116,
+      "ts_pct": 0.5968,
+      "insufficient": false
+     },
+     "away": {
+      "n": 110,
+      "ts_pct": 0.5586,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0382
+    },
+    "rest": {
+     "b2b": {
+      "n": 35,
+      "ts_pct": 0.543,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 188,
+      "ts_pct": 0.5832,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0402
+    }
+   },
+   "player_id": 1628401,
+   "player_name": "Derrick White",
+   "total_minutes": 7576.2
+  },
+  {
+   "overall_ts_pct": 0.5827,
+   "total_games": 223,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0317,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 68,
+      "ts_pct": 0.5697,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 80,
+      "ts_pct": 0.5922,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0225
+    },
+    "home_away": {
+     "home": {
+      "n": 112,
+      "ts_pct": 0.5952,
+      "insufficient": false
+     },
+     "away": {
+      "n": 111,
+      "ts_pct": 0.5691,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0261
+    },
+    "rest": {
+     "b2b": {
+      "n": 37,
+      "ts_pct": 0.5429,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 184,
+      "ts_pct": 0.5894,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0465
+    }
+   },
+   "player_id": 1628404,
+   "player_name": "Josh Hart",
+   "total_minutes": 7536.8
+  },
+  {
+   "overall_ts_pct": 0.5973,
+   "total_games": 227,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0314,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 80,
+      "ts_pct": 0.6239,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 75,
+      "ts_pct": 0.5753,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0486
+    },
+    "home_away": {
+     "home": {
+      "n": 118,
+      "ts_pct": 0.6082,
+      "insufficient": false
+     },
+     "away": {
+      "n": 109,
+      "ts_pct": 0.5855,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0227
+    },
+    "rest": {
+     "b2b": {
+      "n": 41,
+      "ts_pct": 0.5785,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 183,
+      "ts_pct": 0.6014,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0229
+    }
+   },
+   "player_id": 201572,
+   "player_name": "Brook Lopez",
+   "total_minutes": 6385.8
+  },
+  {
+   "overall_ts_pct": 0.5674,
+   "total_games": 223,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0312,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 76,
+      "ts_pct": 0.5773,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 74,
+      "ts_pct": 0.5579,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0194
+    },
+    "home_away": {
+     "home": {
+      "n": 112,
+      "ts_pct": 0.5842,
+      "insufficient": false
+     },
+     "away": {
+      "n": 111,
+      "ts_pct": 0.5501,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0341
+    },
+    "rest": {
+     "b2b": {
+      "n": 39,
+      "ts_pct": 0.6009,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 181,
+      "ts_pct": 0.5609,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.04
+    }
+   },
+   "player_id": 1641739,
+   "player_name": "Toumani Camara",
+   "total_minutes": 6778.4
+  },
+  {
+   "overall_ts_pct": 0.6046,
+   "total_games": 210,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0309,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 75,
+      "ts_pct": 0.6008,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 62,
+      "ts_pct": 0.621,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0202
+    },
+    "home_away": {
+     "home": {
+      "n": 103,
+      "ts_pct": 0.62,
+      "insufficient": false
+     },
+     "away": {
+      "n": 107,
+      "ts_pct": 0.5894,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0306
+    },
+    "rest": {
+     "b2b": {
+      "n": 34,
+      "ts_pct": 0.6424,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 173,
+      "ts_pct": 0.6004,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.042
+    }
+   },
+   "player_id": 1629008,
+   "player_name": "Michael Porter Jr.",
+   "total_minutes": 6849.2
+  },
+  {
+   "overall_ts_pct": 0.6853,
+   "total_games": 214,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0305,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 70,
+      "ts_pct": 0.6702,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 73,
+      "ts_pct": 0.7097,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0395
+    },
+    "home_away": {
+     "home": {
+      "n": 103,
+      "ts_pct": 0.7109,
+      "insufficient": false
+     },
+     "away": {
+      "n": 111,
+      "ts_pct": 0.6628,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0481
+    },
+    "rest": {
+     "b2b": {
+      "n": 38,
+      "ts_pct": 0.6825,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 174,
+      "ts_pct": 0.6864,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0039
+    }
+   },
+   "player_id": 1628386,
+   "player_name": "Jarrett Allen",
+   "total_minutes": 6231.5
+  },
+  {
+   "overall_ts_pct": 0.541,
+   "total_games": 208,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0303,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 69,
+      "ts_pct": 0.5226,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 64,
+      "ts_pct": 0.5032,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0194
+    },
+    "home_away": {
+     "home": {
+      "n": 103,
+      "ts_pct": 0.5524,
+      "insufficient": false
+     },
+     "away": {
+      "n": 105,
+      "ts_pct": 0.5297,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0227
+    },
+    "rest": {
+     "b2b": {
+      "n": 36,
+      "ts_pct": 0.5021,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 169,
+      "ts_pct": 0.5508,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0487
+    }
+   },
+   "player_id": 1630700,
+   "player_name": "Dyson Daniels",
+   "total_minutes": 6293.8
+  },
+  {
+   "overall_ts_pct": 0.5708,
+   "total_games": 198,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0287,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 64,
+      "ts_pct": 0.5525,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 67,
+      "ts_pct": 0.5767,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0242
+    },
+    "home_away": {
+     "home": {
+      "n": 98,
+      "ts_pct": 0.5887,
+      "insufficient": false
+     },
+     "away": {
+      "n": 100,
+      "ts_pct": 0.5534,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0353
+    },
+    "rest": {
+     "b2b": {
+      "n": 33,
+      "ts_pct": 0.5921,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 162,
+      "ts_pct": 0.5656,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0265
+    }
+   },
+   "player_id": 202699,
+   "player_name": "Tobias Harris",
+   "total_minutes": 6234.8
+  },
+  {
+   "overall_ts_pct": 0.6025,
+   "total_games": 190,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0284,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 57,
+      "ts_pct": 0.5792,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 64,
+      "ts_pct": 0.6067,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0275
+    },
+    "home_away": {
+     "home": {
+      "n": 96,
+      "ts_pct": 0.6211,
+      "insufficient": false
+     },
+     "away": {
+      "n": 94,
+      "ts_pct": 0.5842,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0369
+    },
+    "rest": {
+     "b2b": {
+      "n": 32,
+      "ts_pct": 0.5854,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 155,
+      "ts_pct": 0.6062,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0208
+    }
+   },
+   "player_id": 1628384,
+   "player_name": "OG Anunoby",
+   "total_minutes": 6622.0
+  },
+  {
+   "overall_ts_pct": 0.5538,
+   "total_games": 204,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0283,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 68,
+      "ts_pct": 0.5264,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 73,
+      "ts_pct": 0.5674,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.041
+    },
+    "home_away": {
+     "home": {
+      "n": 100,
+      "ts_pct": 0.5646,
+      "insufficient": false
+     },
+     "away": {
+      "n": 104,
+      "ts_pct": 0.543,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0216
+    },
+    "rest": {
+     "b2b": {
+      "n": 39,
+      "ts_pct": 0.5716,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 163,
+      "ts_pct": 0.5493,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0223
+    }
+   },
+   "player_id": 1628970,
+   "player_name": "Miles Bridges",
+   "total_minutes": 6838.9
+  },
+  {
+   "overall_ts_pct": 0.5661,
+   "total_games": 210,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0268,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 68,
+      "ts_pct": 0.5421,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 73,
+      "ts_pct": 0.5968,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0547
+    },
+    "home_away": {
+     "home": {
+      "n": 106,
+      "ts_pct": 0.5761,
+      "insufficient": false
+     },
+     "away": {
+      "n": 104,
+      "ts_pct": 0.5564,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0197
+    },
+    "rest": {
+     "b2b": {
+      "n": 41,
+      "ts_pct": 0.5609,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 166,
+      "ts_pct": 0.5668,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0059
+    }
+   },
+   "player_id": 1630578,
+   "player_name": "Alperen Sengun",
+   "total_minutes": 6814.2
+  },
+  {
+   "overall_ts_pct": 0.5684,
+   "total_games": 193,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0267,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 59,
+      "ts_pct": 0.52,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 65,
+      "ts_pct": 0.5967,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0767
+    },
+    "home_away": {
+     "home": {
+      "n": 98,
+      "ts_pct": 0.5674,
+      "insufficient": false
+     },
+     "away": {
+      "n": 95,
+      "ts_pct": 0.5695,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0021
+    },
+    "rest": {
+     "b2b": {
+      "n": 25,
+      "ts_pct": 0.5698,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 165,
+      "ts_pct": 0.5684,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0014
+    }
+   },
+   "player_id": 203468,
+   "player_name": "CJ McCollum",
+   "total_minutes": 6106.9
+  },
+  {
+   "overall_ts_pct": 0.5821,
+   "total_games": 188,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0264,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 60,
+      "ts_pct": 0.5384,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 76,
+      "ts_pct": 0.599,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0606
+    },
+    "home_away": {
+     "home": {
+      "n": 92,
+      "ts_pct": 0.5798,
+      "insufficient": false
+     },
+     "away": {
+      "n": 96,
+      "ts_pct": 0.5844,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0046
+    },
+    "rest": {
+     "b2b": {
+      "n": 31,
+      "ts_pct": 0.5721,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 154,
+      "ts_pct": 0.5861,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.014
+    }
+   },
+   "player_id": 203944,
+   "player_name": "Julius Randle",
+   "total_minutes": 6272.4
+  },
+  {
+   "overall_ts_pct": 0.5675,
+   "total_games": 197,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0264,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 66,
+      "ts_pct": 0.5723,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 60,
+      "ts_pct": 0.5516,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0207
+    },
+    "home_away": {
+     "home": {
+      "n": 97,
+      "ts_pct": 0.5554,
+      "insufficient": false
+     },
+     "away": {
+      "n": 100,
+      "ts_pct": 0.5795,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0241
+    },
+    "rest": {
+     "b2b": {
+      "n": 31,
+      "ts_pct": 0.5387,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 164,
+      "ts_pct": 0.5732,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0345
+    }
+   },
+   "player_id": 1630170,
+   "player_name": "Devin Vassell",
+   "total_minutes": 6213.1
+  },
+  {
+   "overall_ts_pct": 0.598,
+   "total_games": 197,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0254,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 64,
+      "ts_pct": 0.5893,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 68,
+      "ts_pct": 0.614,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0247
+    },
+    "home_away": {
+     "home": {
+      "n": 97,
+      "ts_pct": 0.6115,
+      "insufficient": false
+     },
+     "away": {
+      "n": 100,
+      "ts_pct": 0.5864,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0251
+    },
+    "rest": {
+     "b2b": {
+      "n": 33,
+      "ts_pct": 0.62,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 161,
+      "ts_pct": 0.5936,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0264
+    }
+   },
+   "player_id": 1627750,
+   "player_name": "Jamal Murray",
+   "total_minutes": 6785.4
+  },
+  {
+   "overall_ts_pct": 0.57,
+   "total_games": 204,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0249,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 62,
+      "ts_pct": 0.5642,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 71,
+      "ts_pct": 0.5814,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0172
+    },
+    "home_away": {
+     "home": {
+      "n": 107,
+      "ts_pct": 0.5887,
+      "insufficient": false
+     },
+     "away": {
+      "n": 97,
+      "ts_pct": 0.5497,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.039
+    },
+    "rest": {
+     "b2b": {
+      "n": 28,
+      "ts_pct": 0.554,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 173,
+      "ts_pct": 0.5726,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0186
+    }
+   },
+   "player_id": 1627759,
+   "player_name": "Jaylen Brown",
+   "total_minutes": 6944.2
+  },
+  {
+   "overall_ts_pct": 0.5539,
+   "total_games": 190,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0242,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 58,
+      "ts_pct": 0.5311,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 71,
+      "ts_pct": 0.5621,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.031
+    },
+    "home_away": {
+     "home": {
+      "n": 96,
+      "ts_pct": 0.5663,
+      "insufficient": false
+     },
+     "away": {
+      "n": 94,
+      "ts_pct": 0.5427,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0236
+    },
+    "rest": {
+     "b2b": {
+      "n": 33,
+      "ts_pct": 0.5682,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 154,
+      "ts_pct": 0.5502,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.018
+    }
+   },
+   "player_id": 1631094,
+   "player_name": "Paolo Banchero",
+   "total_minutes": 6621.6
+  },
+  {
+   "overall_ts_pct": 0.5749,
+   "total_games": 185,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.024,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 63,
+      "ts_pct": 0.5585,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 59,
+      "ts_pct": 0.5948,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0363
+    },
+    "home_away": {
+     "home": {
+      "n": 96,
+      "ts_pct": 0.5685,
+      "insufficient": false
+     },
+     "away": {
+      "n": 89,
+      "ts_pct": 0.5817,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0132
+    },
+    "rest": {
+     "b2b": {
+      "n": 32,
+      "ts_pct": 0.5569,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 150,
+      "ts_pct": 0.5795,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0226
+    }
+   },
+   "player_id": 1630178,
+   "player_name": "Tyrese Maxey",
+   "total_minutes": 6991.8
+  },
+  {
+   "overall_ts_pct": 0.5907,
+   "total_games": 215,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0238,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 67,
+      "ts_pct": 0.5641,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 76,
+      "ts_pct": 0.6156,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0515
+    },
+    "home_away": {
+     "home": {
+      "n": 106,
+      "ts_pct": 0.5905,
+      "insufficient": false
+     },
+     "away": {
+      "n": 109,
+      "ts_pct": 0.591,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0005
+    },
+    "rest": {
+     "b2b": {
+      "n": 34,
+      "ts_pct": 0.5758,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 178,
+      "ts_pct": 0.5951,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0193
+    }
+   },
+   "player_id": 1628973,
+   "player_name": "Jalen Brunson",
+   "total_minutes": 7566.2
+  },
+  {
+   "overall_ts_pct": 0.6779,
+   "total_games": 218,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0237,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 65,
+      "ts_pct": 0.6462,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 79,
+      "ts_pct": 0.6875,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0413
+    },
+    "home_away": {
+     "home": {
+      "n": 114,
+      "ts_pct": 0.6875,
+      "insufficient": false
+     },
+     "away": {
+      "n": 104,
+      "ts_pct": 0.6666,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0209
+    },
+    "rest": {
+     "b2b": {
+      "n": 31,
+      "ts_pct": 0.6863,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 184,
+      "ts_pct": 0.6775,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0088
+    }
+   },
+   "player_id": 203497,
+   "player_name": "Rudy Gobert",
+   "total_minutes": 7177.2
+  },
+  {
+   "overall_ts_pct": 0.6247,
+   "total_games": 208,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0222,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 61,
+      "ts_pct": 0.6227,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 66,
+      "ts_pct": 0.6074,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0153
+    },
+    "home_away": {
+     "home": {
+      "n": 100,
+      "ts_pct": 0.6095,
+      "insufficient": false
+     },
+     "away": {
+      "n": 108,
+      "ts_pct": 0.6387,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0292
+    },
+    "rest": {
+     "b2b": {
+      "n": 36,
+      "ts_pct": 0.6443,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 169,
+      "ts_pct": 0.6223,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.022
+    }
+   },
+   "player_id": 1626157,
+   "player_name": "Karl-Anthony Towns",
+   "total_minutes": 6807.5
+  },
+  {
+   "overall_ts_pct": 0.5908,
+   "total_games": 237,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0221,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 79,
+      "ts_pct": 0.5962,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 79,
+      "ts_pct": 0.5763,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0199
+    },
+    "home_away": {
+     "home": {
+      "n": 119,
+      "ts_pct": 0.5797,
+      "insufficient": false
+     },
+     "away": {
+      "n": 118,
+      "ts_pct": 0.6021,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0224
+    },
+    "rest": {
+     "b2b": {
+      "n": 38,
+      "ts_pct": 0.6131,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 196,
+      "ts_pct": 0.589,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0241
+    }
+   },
+   "player_id": 1629638,
+   "player_name": "Nickeil Alexander-Walker",
+   "total_minutes": 6426.8
+  },
+  {
+   "overall_ts_pct": 0.6224,
+   "total_games": 206,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.022,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 68,
+      "ts_pct": 0.6163,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 65,
+      "ts_pct": 0.6376,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0213
+    },
+    "home_away": {
+     "home": {
+      "n": 107,
+      "ts_pct": 0.6376,
+      "insufficient": false
+     },
+     "away": {
+      "n": 99,
+      "ts_pct": 0.6063,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0313
+    },
+    "rest": {
+     "b2b": {
+      "n": 35,
+      "ts_pct": 0.6128,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 168,
+      "ts_pct": 0.6262,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0134
+    }
+   },
+   "player_id": 1630559,
+   "player_name": "Austin Reaves",
+   "total_minutes": 6937.0
+  },
+  {
+   "overall_ts_pct": 0.6005,
+   "total_games": 206,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0213,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 74,
+      "ts_pct": 0.5904,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 75,
+      "ts_pct": 0.6007,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0103
+    },
+    "home_away": {
+     "home": {
+      "n": 99,
+      "ts_pct": 0.6149,
+      "insufficient": false
+     },
+     "away": {
+      "n": 107,
+      "ts_pct": 0.5872,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0277
+    },
+    "rest": {
+     "b2b": {
+      "n": 35,
+      "ts_pct": 0.58,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 168,
+      "ts_pct": 0.606,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.026
+    }
+   },
+   "player_id": 1630166,
+   "player_name": "Deni Avdija",
+   "total_minutes": 6376.8
+  },
+  {
+   "overall_ts_pct": 0.5611,
+   "total_games": 214,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0211,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 68,
+      "ts_pct": 0.5665,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 69,
+      "ts_pct": 0.5691,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0026
+    },
+    "home_away": {
+     "home": {
+      "n": 107,
+      "ts_pct": 0.5718,
+      "insufficient": false
+     },
+     "away": {
+      "n": 107,
+      "ts_pct": 0.5505,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0213
+    },
+    "rest": {
+     "b2b": {
+      "n": 38,
+      "ts_pct": 0.5286,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 173,
+      "ts_pct": 0.5681,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0395
+    }
+   },
+   "player_id": 1628389,
+   "player_name": "Bam Adebayo",
+   "total_minutes": 7181.5
+  },
+  {
+   "overall_ts_pct": 0.586,
+   "total_games": 217,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.021,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 71,
+      "ts_pct": 0.5661,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 82,
+      "ts_pct": 0.6146,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0485
+    },
+    "home_away": {
+     "home": {
+      "n": 109,
+      "ts_pct": 0.5811,
+      "insufficient": false
+     },
+     "away": {
+      "n": 108,
+      "ts_pct": 0.5912,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0101
+    },
+    "rest": {
+     "b2b": {
+      "n": 34,
+      "ts_pct": 0.5915,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 180,
+      "ts_pct": 0.5872,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0043
+    }
+   },
+   "player_id": 1628978,
+   "player_name": "Donte DiVincenzo",
+   "total_minutes": 6257.7
+  },
+  {
+   "overall_ts_pct": 0.5698,
+   "total_games": 218,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0208,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 76,
+      "ts_pct": 0.5572,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 69,
+      "ts_pct": 0.5768,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0196
+    },
+    "home_away": {
+     "home": {
+      "n": 113,
+      "ts_pct": 0.5821,
+      "insufficient": false
+     },
+     "away": {
+      "n": 105,
+      "ts_pct": 0.5558,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0263
+    },
+    "rest": {
+     "b2b": {
+      "n": 36,
+      "ts_pct": 0.5871,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 179,
+      "ts_pct": 0.5705,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0166
+    }
+   },
+   "player_id": 1629652,
+   "player_name": "Luguentz Dort",
+   "total_minutes": 6139.4
+  },
+  {
+   "overall_ts_pct": 0.5826,
+   "total_games": 226,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0202,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 72,
+      "ts_pct": 0.5623,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 80,
+      "ts_pct": 0.6042,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0419
+    },
+    "home_away": {
+     "home": {
+      "n": 112,
+      "ts_pct": 0.5907,
+      "insufficient": false
+     },
+     "away": {
+      "n": 114,
+      "ts_pct": 0.5748,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0159
+    },
+    "rest": {
+     "b2b": {
+      "n": 39,
+      "ts_pct": 0.5805,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 185,
+      "ts_pct": 0.5834,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0029
+    }
+   },
+   "player_id": 1630183,
+   "player_name": "Jaden McDaniels",
+   "total_minutes": 7018.5
+  },
+  {
+   "overall_ts_pct": 0.5862,
+   "total_games": 197,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0201,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 63,
+      "ts_pct": 0.5809,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 72,
+      "ts_pct": 0.5697,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0112
+    },
+    "home_away": {
+     "home": {
+      "n": 99,
+      "ts_pct": 0.577,
+      "insufficient": false
+     },
+     "away": {
+      "n": 98,
+      "ts_pct": 0.5953,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0183
+    },
+    "rest": {
+     "b2b": {
+      "n": 32,
+      "ts_pct": 0.5618,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 163,
+      "ts_pct": 0.5927,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0309
+    }
+   },
+   "player_id": 1629632,
+   "player_name": "Coby White",
+   "total_minutes": 6474.7
+  },
+  {
+   "overall_ts_pct": 0.5942,
+   "total_games": 195,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0199,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 62,
+      "ts_pct": 0.5738,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 68,
+      "ts_pct": 0.5921,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0183
+    },
+    "home_away": {
+     "home": {
+      "n": 97,
+      "ts_pct": 0.61,
+      "insufficient": false
+     },
+     "away": {
+      "n": 98,
+      "ts_pct": 0.5783,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0317
+    },
+    "rest": {
+     "b2b": {
+      "n": 32,
+      "ts_pct": 0.6023,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 160,
+      "ts_pct": 0.5925,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0098
+    }
+   },
+   "player_id": 1628378,
+   "player_name": "Donovan Mitchell",
+   "total_minutes": 6482.5
+  },
+  {
+   "overall_ts_pct": 0.5677,
+   "total_games": 208,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.019,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 70,
+      "ts_pct": 0.5613,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 72,
+      "ts_pct": 0.5692,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0079
+    },
+    "home_away": {
+     "home": {
+      "n": 103,
+      "ts_pct": 0.5734,
+      "insufficient": false
+     },
+     "away": {
+      "n": 105,
+      "ts_pct": 0.5621,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0113
+    },
+    "rest": {
+     "b2b": {
+      "n": 42,
+      "ts_pct": 0.5385,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 164,
+      "ts_pct": 0.5762,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0377
+    }
+   },
+   "player_id": 1628368,
+   "player_name": "De'Aaron Fox",
+   "total_minutes": 7131.9
+  },
+  {
+   "overall_ts_pct": 0.5927,
+   "total_games": 209,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0186,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 64,
+      "ts_pct": 0.5963,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 77,
+      "ts_pct": 0.618,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0217
+    },
+    "home_away": {
+     "home": {
+      "n": 103,
+      "ts_pct": 0.5864,
+      "insufficient": false
+     },
+     "away": {
+      "n": 106,
+      "ts_pct": 0.5984,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.012
+    },
+    "rest": {
+     "b2b": {
+      "n": 40,
+      "ts_pct": 0.6127,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 166,
+      "ts_pct": 0.5907,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.022
+    }
+   },
+   "player_id": 1641708,
+   "player_name": "Amen Thompson",
+   "total_minutes": 6538.4
+  },
+  {
+   "overall_ts_pct": 0.5596,
+   "total_games": 193,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.018,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 68,
+      "ts_pct": 0.5519,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 61,
+      "ts_pct": 0.5599,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.008
+    },
+    "home_away": {
+     "home": {
+      "n": 93,
+      "ts_pct": 0.5454,
+      "insufficient": false
+     },
+     "away": {
+      "n": 100,
+      "ts_pct": 0.5728,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0274
+    },
+    "rest": {
+     "b2b": {
+      "n": 34,
+      "ts_pct": 0.5759,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 156,
+      "ts_pct": 0.5574,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0185
+    }
+   },
+   "player_id": 1630595,
+   "player_name": "Cade Cunningham",
+   "total_minutes": 6622.9
+  },
+  {
+   "overall_ts_pct": 0.5532,
+   "total_games": 196,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0176,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 67,
+      "ts_pct": 0.5336,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 66,
+      "ts_pct": 0.5733,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0397
+    },
+    "home_away": {
+     "home": {
+      "n": 99,
+      "ts_pct": 0.5587,
+      "insufficient": false
+     },
+     "away": {
+      "n": 97,
+      "ts_pct": 0.5477,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.011
+    },
+    "rest": {
+     "b2b": {
+      "n": 34,
+      "ts_pct": 0.556,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 159,
+      "ts_pct": 0.554,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.002
+    }
+   },
+   "player_id": 1630567,
+   "player_name": "Scottie Barnes",
+   "total_minutes": 6640.0
+  },
+  {
+   "overall_ts_pct": 0.6358,
+   "total_games": 215,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0157,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 65,
+      "ts_pct": 0.621,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 78,
+      "ts_pct": 0.6499,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0289
+    },
+    "home_away": {
+     "home": {
+      "n": 109,
+      "ts_pct": 0.6346,
+      "insufficient": false
+     },
+     "away": {
+      "n": 106,
+      "ts_pct": 0.6371,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0025
+    },
+    "rest": {
+     "b2b": {
+      "n": 38,
+      "ts_pct": 0.6247,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 174,
+      "ts_pct": 0.6404,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0157
+    }
+   },
+   "player_id": 201142,
+   "player_name": "Kevin Durant",
+   "total_minutes": 7896.8
+  },
+  {
+   "overall_ts_pct": 0.5953,
+   "total_games": 217,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0149,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 69,
+      "ts_pct": 0.5884,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 77,
+      "ts_pct": 0.6148,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0264
+    },
+    "home_away": {
+     "home": {
+      "n": 108,
+      "ts_pct": 0.5858,
+      "insufficient": false
+     },
+     "away": {
+      "n": 109,
+      "ts_pct": 0.604,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0182
+    },
+    "rest": {
+     "b2b": {
+      "n": 35,
+      "ts_pct": 0.5964,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 179,
+      "ts_pct": 0.5963,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0001
+    }
+   },
+   "player_id": 1630162,
+   "player_name": "Anthony Edwards",
+   "total_minutes": 7730.4
+  },
+  {
+   "overall_ts_pct": 0.581,
+   "total_games": 228,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0128,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 83,
+      "ts_pct": 0.5796,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 83,
+      "ts_pct": 0.5756,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.004
+    },
+    "home_away": {
+     "home": {
+      "n": 114,
+      "ts_pct": 0.5651,
+      "insufficient": false
+     },
+     "away": {
+      "n": 114,
+      "ts_pct": 0.5964,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0313
+    },
+    "rest": {
+     "b2b": {
+      "n": 41,
+      "ts_pct": 0.5788,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 184,
+      "ts_pct": 0.5818,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.003
+    }
+   },
+   "player_id": 201942,
+   "player_name": "DeMar DeRozan",
+   "total_minutes": 8037.7
+  },
+  {
+   "overall_ts_pct": 0.5985,
+   "total_games": 185,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0125,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 68,
+      "ts_pct": 0.5849,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 59,
+      "ts_pct": 0.616,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0311
+    },
+    "home_away": {
+     "home": {
+      "n": 91,
+      "ts_pct": 0.6017,
+      "insufficient": false
+     },
+     "away": {
+      "n": 94,
+      "ts_pct": 0.5956,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0061
+    },
+    "rest": {
+     "b2b": {
+      "n": 29,
+      "ts_pct": 0.5992,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 153,
+      "ts_pct": 0.5988,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0004
+    }
+   },
+   "player_id": 1630217,
+   "player_name": "Desmond Bane",
+   "total_minutes": 6167.5
+  },
+  {
+   "overall_ts_pct": 0.5755,
+   "total_games": 232,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0124,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 79,
+      "ts_pct": 0.5729,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 76,
+      "ts_pct": 0.5389,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.034
+    },
+    "home_away": {
+     "home": {
+      "n": 116,
+      "ts_pct": 0.5756,
+      "insufficient": false
+     },
+     "away": {
+      "n": 116,
+      "ts_pct": 0.5755,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0001
+    },
+    "rest": {
+     "b2b": {
+      "n": 42,
+      "ts_pct": 0.5777,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 187,
+      "ts_pct": 0.5745,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0032
+    }
+   },
+   "player_id": 203501,
+   "player_name": "Tim Hardaway Jr.",
+   "total_minutes": 6326.2
+  },
+  {
+   "overall_ts_pct": 0.5754,
+   "total_games": 244,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0106,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 79,
+      "ts_pct": 0.5737,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 86,
+      "ts_pct": 0.5842,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0105
+    },
+    "home_away": {
+     "home": {
+      "n": 120,
+      "ts_pct": 0.581,
+      "insufficient": false
+     },
+     "away": {
+      "n": 124,
+      "ts_pct": 0.5696,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0114
+    },
+    "rest": {
+     "b2b": {
+      "n": 42,
+      "ts_pct": 0.5831,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 199,
+      "ts_pct": 0.5733,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0098
+    }
+   },
+   "player_id": 1628969,
+   "player_name": "Mikal Bridges",
+   "total_minutes": 8529.0
+  },
+  {
+   "overall_ts_pct": 0.5878,
+   "total_games": 214,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0106,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 74,
+      "ts_pct": 0.5914,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 66,
+      "ts_pct": 0.602,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0106
+    },
+    "home_away": {
+     "home": {
+      "n": 107,
+      "ts_pct": 0.5849,
+      "insufficient": false
+     },
+     "away": {
+      "n": 107,
+      "ts_pct": 0.5907,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0058
+    },
+    "rest": {
+     "b2b": {
+      "n": 30,
+      "ts_pct": 0.5759,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 181,
+      "ts_pct": 0.5913,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0154
+    }
+   },
+   "player_id": 1627783,
+   "player_name": "Pascal Siakam",
+   "total_minutes": 7086.6
+  },
+  {
+   "overall_ts_pct": 0.6106,
+   "total_games": 201,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0105,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 70,
+      "ts_pct": 0.591,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 64,
+      "ts_pct": 0.6018,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0108
+    },
+    "home_away": {
+     "home": {
+      "n": 103,
+      "ts_pct": 0.6195,
+      "insufficient": false
+     },
+     "away": {
+      "n": 98,
+      "ts_pct": 0.6018,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0177
+    },
+    "rest": {
+     "b2b": {
+      "n": 29,
+      "ts_pct": 0.6086,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 170,
+      "ts_pct": 0.6115,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0029
+    }
+   },
+   "player_id": 2544,
+   "player_name": "LeBron James",
+   "total_minutes": 6940.9
+  },
+  {
+   "overall_ts_pct": 0.5949,
+   "total_games": 207,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0081,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 68,
+      "ts_pct": 0.5975,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 69,
+      "ts_pct": 0.5847,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0128
+    },
+    "home_away": {
+     "home": {
+      "n": 100,
+      "ts_pct": 0.5941,
+      "insufficient": false
+     },
+     "away": {
+      "n": 107,
+      "ts_pct": 0.5956,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0015
+    },
+    "rest": {
+     "b2b": {
+      "n": 39,
+      "ts_pct": 0.602,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 165,
+      "ts_pct": 0.592,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.01
+    }
+   },
+   "player_id": 1626164,
+   "player_name": "Devin Booker",
+   "total_minutes": 7387.8
+  },
+  {
+   "overall_ts_pct": 0.6453,
+   "total_games": 218,
+   "usable_dimensions": 3,
+   "context_sensitivity_score": 0.0077,
+   "splits": {
+    "opp_def_tier": {
+     "top10_def": {
+      "n": 70,
+      "ts_pct": 0.6335,
+      "insufficient": false
+     },
+     "bottom10_def": {
+      "n": 75,
+      "ts_pct": 0.6438,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0103
+    },
+    "home_away": {
+     "home": {
+      "n": 114,
+      "ts_pct": 0.6471,
+      "insufficient": false
+     },
+     "away": {
+      "n": 104,
+      "ts_pct": 0.6433,
+      "insufficient": false
+     },
+     "delta_ts_pct": 0.0038
+    },
+    "rest": {
+     "b2b": {
+      "n": 37,
+      "ts_pct": 0.6387,
+      "insufficient": false
+     },
+     "rest2plus": {
+      "n": 178,
+      "ts_pct": 0.6476,
+      "insufficient": false
+     },
+     "delta_ts_pct": -0.0089
+    }
+   },
+   "player_id": 1628983,
+   "player_name": "Shai Gilgeous-Alexander",
+   "total_minutes": 7375.7
+  }
+ ]
+}

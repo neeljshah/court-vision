@@ -138,12 +138,12 @@ number. `verify_winprob.py` falls back to a committed metrics copy when `data/` 
 
 ## Why this matters to an employer
 
-Anyone can report a number that looks good. The hire signal is the validation rigor that
-catches when a good-looking number is wrong -- walk-forward CV with assertion-level leak
-guards, truncation-invariance tests, a multi-corpus acceptance gate -- and the discipline to
-write down the negative result instead of shipping the hype. I build ambitious systems and
-then build the instruments to disprove my own claims. Here is exactly what works, and
-exactly what did not survive.
+The hire signal is not a number that looks good; it is the validation rigor that catches when
+a good-looking number is wrong: walk-forward CV with assertion-level leak guards,
+truncation-invariance tests, a multi-corpus acceptance gate, and the discipline to write the
+negative result down instead of shipping the hype. I build ambitious systems, then build the
+instruments to disprove my own claims. Here is exactly what works, and exactly what did not
+survive.
 
 ---
 <!-- nav-footer -->

@@ -1,0 +1,12 @@
+{
+ "status": "not_buildable",
+ "seasons_available": [
+  "2023-24",
+  "2024-25",
+  "2025-26"
+ ],
+ "n_seasons": 3,
+ "age_source_found": null,
+ "why": "No birthdate/age column exists in any table under data/domains/basketball_nba/ (scanned all parquets). Only 3 season snapshots of box scores exist (2023-24, 2024-25, 2025-26). Both the codebase's own prior audit (player_metric_landscape.py) and jobsearch/research/INDUSTRY_ANALYTICS_NBA.md independently reach the same verdict: aging curves need age-labeled player-seasons across MANY seasons (delta/GAM methods want thousands of paired seasons); 3 seasons with no age field is not honestly buildable -- the doc explicitly leans DEFER ('the honest move is to not pretend we have a curve').",
+ "source": "docs/JOB_EVIDENCE_PACKET.md, jobsearch/research/INDUSTRY_ANALYTICS_NBA.md"
+}

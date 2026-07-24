@@ -111,12 +111,12 @@ end-to-end.
 
 The in-game conditioning result is small, honest, and load-bearing for exactly that reason.
 The static -> conditional Brier improvement is a real calibration gain, most of it mechanical,
-with the model's own prior contributing a measured ~0.014 in NBA. And when I benchmarked the
-conditional forecaster against the live market, I reported that the market is sharper at the
-one powered checkpoint and indistinguishable elsewhere -- the loss stated as plainly as any
-win. The hire signal is not the metric. It is a forecaster whose author scores it against the
-market, publishes the checkpoint where the market wins, and refuses to convert a real
-calibration improvement into an edge claim it did not earn.
+with the model's own prior contributing a measured ~0.014 in NBA. Benchmarked against the
+live market, the conditional forecaster is sharper nowhere it is powered: the market wins the
+one resolvable checkpoint and ties everywhere else, the loss stated as plainly as any win. The
+hire signal is not the metric. It is a forecaster whose author scores it against the market,
+publishes the checkpoint where the market wins, and refuses to convert a real calibration
+improvement into an edge claim it did not earn.
 
 ---
 

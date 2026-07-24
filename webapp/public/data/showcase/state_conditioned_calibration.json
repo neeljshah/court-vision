@@ -1,0 +1,1012 @@
+{
+ "edge_claimed": false,
+ "story": "Buckets every graded ingame prediction by model_prob band x game-state time bucket; ranked_worst_buckets is where the model is furthest from outcomes relative to the market, i.e. the improvement backlog.",
+ "sports": {
+  "mlb": {
+   "n_files": 227,
+   "n_records": 78986,
+   "n_skipped_no_state_field": 26340,
+   "model_ece_n_weighted": 0.079,
+   "market_ece_n_weighted": 0.0591,
+   "buckets": [
+    {
+     "sport": "mlb",
+     "time_bucket": "early(inn1-3)",
+     "prob_bucket": ".4-.6",
+     "source": "model",
+     "n": 12344,
+     "mean_p": 0.5058,
+     "mean_y": 0.456,
+     "calibration_error": 0.0497
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "early(inn1-3)",
+     "prob_bucket": ".4-.6",
+     "source": "market",
+     "n": 11885,
+     "mean_p": 0.5119,
+     "mean_y": 0.4194,
+     "calibration_error": 0.0926
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "early(inn1-3)",
+     "prob_bucket": ".6-.8",
+     "source": "model",
+     "n": 5098,
+     "mean_p": 0.6528,
+     "mean_y": 0.5383,
+     "calibration_error": 0.1145
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "early(inn1-3)",
+     "prob_bucket": ".6-.8",
+     "source": "market",
+     "n": 4519,
+     "mean_p": 0.6729,
+     "mean_y": 0.6404,
+     "calibration_error": 0.0325
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "mid(inn4-6)",
+     "prob_bucket": ".4-.6",
+     "source": "model",
+     "n": 4872,
+     "mean_p": 0.5044,
+     "mean_y": 0.4791,
+     "calibration_error": 0.0253
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "mid(inn4-6)",
+     "prob_bucket": ".4-.6",
+     "source": "market",
+     "n": 8064,
+     "mean_p": 0.5077,
+     "mean_y": 0.4438,
+     "calibration_error": 0.0639
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "late(inn7+)",
+     "prob_bucket": ".4-.6",
+     "source": "model",
+     "n": 1395,
+     "mean_p": 0.506,
+     "mean_y": 0.4846,
+     "calibration_error": 0.0215
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "late(inn7+)",
+     "prob_bucket": ".4-.6",
+     "source": "market",
+     "n": 5581,
+     "mean_p": 0.5129,
+     "mean_y": 0.4216,
+     "calibration_error": 0.0913
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "late(inn7+)",
+     "prob_bucket": ".2-.4",
+     "source": "model",
+     "n": 951,
+     "mean_p": 0.2644,
+     "mean_y": 0.2313,
+     "calibration_error": 0.0331
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "late(inn7+)",
+     "prob_bucket": ".2-.4",
+     "source": "market",
+     "n": 838,
+     "mean_p": 0.2951,
+     "mean_y": 0.2518,
+     "calibration_error": 0.0433
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "early(inn1-3)",
+     "prob_bucket": ".8-1",
+     "source": "market",
+     "n": 946,
+     "mean_p": 0.8683,
+     "mean_y": 0.8742,
+     "calibration_error": 0.0059
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "mid(inn4-6)",
+     "prob_bucket": ".6-.8",
+     "source": "model",
+     "n": 4683,
+     "mean_p": 0.6946,
+     "mean_y": 0.6417,
+     "calibration_error": 0.0529
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "mid(inn4-6)",
+     "prob_bucket": ".6-.8",
+     "source": "market",
+     "n": 3441,
+     "mean_p": 0.6864,
+     "mean_y": 0.6521,
+     "calibration_error": 0.0343
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "mid(inn4-6)",
+     "prob_bucket": ".8-1",
+     "source": "model",
+     "n": 2718,
+     "mean_p": 0.8508,
+     "mean_y": 0.7671,
+     "calibration_error": 0.0837
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "mid(inn4-6)",
+     "prob_bucket": ".8-1",
+     "source": "market",
+     "n": 2919,
+     "mean_p": 0.9061,
+     "mean_y": 0.9137,
+     "calibration_error": 0.0076
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "late(inn7+)",
+     "prob_bucket": ".6-.8",
+     "source": "model",
+     "n": 1167,
+     "mean_p": 0.7361,
+     "mean_y": 0.6761,
+     "calibration_error": 0.06
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "late(inn7+)",
+     "prob_bucket": ".6-.8",
+     "source": "market",
+     "n": 1742,
+     "mean_p": 0.6751,
+     "mean_y": 0.6091,
+     "calibration_error": 0.066
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "late(inn7+)",
+     "prob_bucket": ".8-1",
+     "source": "model",
+     "n": 5037,
+     "mean_p": 0.9211,
+     "mean_y": 0.6853,
+     "calibration_error": 0.2357
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "late(inn7+)",
+     "prob_bucket": ".8-1",
+     "source": "market",
+     "n": 2771,
+     "mean_p": 0.9199,
+     "mean_y": 0.9405,
+     "calibration_error": 0.0206
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "mid(inn4-6)",
+     "prob_bucket": ".2-.4",
+     "source": "model",
+     "n": 4413,
+     "mean_p": 0.2966,
+     "mean_y": 0.2692,
+     "calibration_error": 0.0274
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "mid(inn4-6)",
+     "prob_bucket": ".2-.4",
+     "source": "market",
+     "n": 1846,
+     "mean_p": 0.3016,
+     "mean_y": 0.2059,
+     "calibration_error": 0.0957
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "late(inn7+)",
+     "prob_bucket": "0-.2",
+     "source": "model",
+     "n": 5431,
+     "mean_p": 0.0748,
+     "mean_y": 0.2276,
+     "calibration_error": 0.1528
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "late(inn7+)",
+     "prob_bucket": "0-.2",
+     "source": "market",
+     "n": 3049,
+     "mean_p": 0.0802,
+     "mean_y": 0.0466,
+     "calibration_error": 0.0336
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "early(inn1-3)",
+     "prob_bucket": ".2-.4",
+     "source": "model",
+     "n": 2458,
+     "mean_p": 0.36,
+     "mean_y": 0.3596,
+     "calibration_error": 0.0004
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "early(inn1-3)",
+     "prob_bucket": ".2-.4",
+     "source": "market",
+     "n": 1865,
+     "mean_p": 0.3152,
+     "mean_y": 0.252,
+     "calibration_error": 0.0632
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "mid(inn4-6)",
+     "prob_bucket": "0-.2",
+     "source": "model",
+     "n": 2079,
+     "mean_p": 0.1622,
+     "mean_y": 0.2063,
+     "calibration_error": 0.0442
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "mid(inn4-6)",
+     "prob_bucket": "0-.2",
+     "source": "market",
+     "n": 2495,
+     "mean_p": 0.1003,
+     "mean_y": 0.0685,
+     "calibration_error": 0.0318
+    },
+    {
+     "sport": "mlb",
+     "time_bucket": "early(inn1-3)",
+     "prob_bucket": "0-.2",
+     "source": "market",
+     "n": 685,
+     "mean_p": 0.1342,
+     "mean_y": 0.1197,
+     "calibration_error": 0.0145
+    }
+   ]
+  },
+  "soccer_intl": {
+   "n_files": 51,
+   "n_records": 9003,
+   "n_skipped_no_state_field": 5345,
+   "model_ece_n_weighted": 0.3609,
+   "market_ece_n_weighted": 0.2511,
+   "buckets": [
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "0-15",
+     "prob_bucket": ".4-.6",
+     "source": "model",
+     "n": 158,
+     "mean_p": 0.5056,
+     "mean_y": 1.0,
+     "calibration_error": 0.4944
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "0-15",
+     "prob_bucket": ".4-.6",
+     "source": "market",
+     "n": 191,
+     "mean_p": 0.5222,
+     "mean_y": 0.9372,
+     "calibration_error": 0.415
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "15-30",
+     "prob_bucket": ".4-.6",
+     "source": "model",
+     "n": 120,
+     "mean_p": 0.5,
+     "mean_y": 1.0,
+     "calibration_error": 0.5
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "15-30",
+     "prob_bucket": ".4-.6",
+     "source": "market",
+     "n": 182,
+     "mean_p": 0.5175,
+     "mean_y": 0.9011,
+     "calibration_error": 0.3836
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "15-30",
+     "prob_bucket": ".2-.4",
+     "source": "model",
+     "n": 255,
+     "mean_p": 0.3027,
+     "mean_y": 0.5353,
+     "calibration_error": 0.2326
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "15-30",
+     "prob_bucket": ".2-.4",
+     "source": "market",
+     "n": 151,
+     "mean_p": 0.2533,
+     "mean_y": 0.2384,
+     "calibration_error": 0.0149
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "15-30",
+     "prob_bucket": "0-.2",
+     "source": "model",
+     "n": 176,
+     "mean_p": 0.1248,
+     "mean_y": 0.5682,
+     "calibration_error": 0.4434
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "15-30",
+     "prob_bucket": "0-.2",
+     "source": "market",
+     "n": 82,
+     "mean_p": 0.0941,
+     "mean_y": 0.25,
+     "calibration_error": 0.1559
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "30-45",
+     "prob_bucket": "0-.2",
+     "source": "model",
+     "n": 264,
+     "mean_p": 0.0935,
+     "mean_y": 0.6534,
+     "calibration_error": 0.5599
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "30-45",
+     "prob_bucket": "0-.2",
+     "source": "market",
+     "n": 127,
+     "mean_p": 0.1059,
+     "mean_y": 0.2677,
+     "calibration_error": 0.1619
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "30-45",
+     "prob_bucket": ".2-.4",
+     "source": "model",
+     "n": 123,
+     "mean_p": 0.2748,
+     "mean_y": 0.2317,
+     "calibration_error": 0.0431
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "30-45",
+     "prob_bucket": ".2-.4",
+     "source": "market",
+     "n": 154,
+     "mean_p": 0.2574,
+     "mean_y": 0.5032,
+     "calibration_error": 0.2458
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "45-60",
+     "prob_bucket": "0-.2",
+     "source": "model",
+     "n": 416,
+     "mean_p": 0.0832,
+     "mean_y": 0.5721,
+     "calibration_error": 0.4889
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "45-60",
+     "prob_bucket": "0-.2",
+     "source": "market",
+     "n": 234,
+     "mean_p": 0.1126,
+     "mean_y": 0.3013,
+     "calibration_error": 0.1887
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "45-60",
+     "prob_bucket": ".2-.4",
+     "source": "model",
+     "n": 232,
+     "mean_p": 0.2693,
+     "mean_y": 0.4698,
+     "calibration_error": 0.2006
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "45-60",
+     "prob_bucket": ".2-.4",
+     "source": "market",
+     "n": 247,
+     "mean_p": 0.2563,
+     "mean_y": 0.5688,
+     "calibration_error": 0.3125
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "60-75",
+     "prob_bucket": "0-.2",
+     "source": "model",
+     "n": 343,
+     "mean_p": 0.0871,
+     "mean_y": 0.5583,
+     "calibration_error": 0.4712
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "60-75",
+     "prob_bucket": "0-.2",
+     "source": "market",
+     "n": 225,
+     "mean_p": 0.1072,
+     "mean_y": 0.4489,
+     "calibration_error": 0.3417
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "75-90+",
+     "prob_bucket": "0-.2",
+     "source": "model",
+     "n": 379,
+     "mean_p": 0.0661,
+     "mean_y": 0.5739,
+     "calibration_error": 0.5078
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "75-90+",
+     "prob_bucket": "0-.2",
+     "source": "market",
+     "n": 225,
+     "mean_p": 0.1123,
+     "mean_y": 0.3311,
+     "calibration_error": 0.2188
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "0-15",
+     "prob_bucket": ".6-.8",
+     "source": "model",
+     "n": 69,
+     "mean_p": 0.672,
+     "mean_y": 0.8043,
+     "calibration_error": 0.1323
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "0-15",
+     "prob_bucket": ".6-.8",
+     "source": "market",
+     "n": 194,
+     "mean_p": 0.6956,
+     "mean_y": 0.9149,
+     "calibration_error": 0.2194
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "0-15",
+     "prob_bucket": "0-.2",
+     "source": "model",
+     "n": 109,
+     "mean_p": 0.1238,
+     "mean_y": 0.3899,
+     "calibration_error": 0.2661
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "0-15",
+     "prob_bucket": "0-.2",
+     "source": "market",
+     "n": 60,
+     "mean_p": 0.0827,
+     "mean_y": 0.0333,
+     "calibration_error": 0.0493
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "30-45",
+     "prob_bucket": ".4-.6",
+     "source": "model",
+     "n": 130,
+     "mean_p": 0.5153,
+     "mean_y": 0.9,
+     "calibration_error": 0.3847
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "30-45",
+     "prob_bucket": ".4-.6",
+     "source": "market",
+     "n": 117,
+     "mean_p": 0.5109,
+     "mean_y": 0.8077,
+     "calibration_error": 0.2968
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "45-60",
+     "prob_bucket": ".4-.6",
+     "source": "market",
+     "n": 160,
+     "mean_p": 0.5234,
+     "mean_y": 0.8,
+     "calibration_error": 0.2766
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "60-75",
+     "prob_bucket": ".2-.4",
+     "source": "model",
+     "n": 90,
+     "mean_p": 0.2577,
+     "mean_y": 0.8333,
+     "calibration_error": 0.5756
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "60-75",
+     "prob_bucket": ".2-.4",
+     "source": "market",
+     "n": 117,
+     "mean_p": 0.2819,
+     "mean_y": 0.7222,
+     "calibration_error": 0.4403
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "75-90+",
+     "prob_bucket": ".2-.4",
+     "source": "model",
+     "n": 10,
+     "mean_p": 0.2117,
+     "mean_y": 1.0,
+     "calibration_error": 0.7883
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "75-90+",
+     "prob_bucket": ".2-.4",
+     "source": "market",
+     "n": 121,
+     "mean_p": 0.3121,
+     "mean_y": 0.9091,
+     "calibration_error": 0.597
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "75-90+",
+     "prob_bucket": ".4-.6",
+     "source": "market",
+     "n": 41,
+     "mean_p": 0.4635,
+     "mean_y": 1.0,
+     "calibration_error": 0.5365
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "75-90+",
+     "prob_bucket": ".8-1",
+     "source": "model",
+     "n": 16,
+     "mean_p": 0.9211,
+     "mean_y": 1.0,
+     "calibration_error": 0.0789
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "75-90+",
+     "prob_bucket": ".8-1",
+     "source": "market",
+     "n": 18,
+     "mean_p": 0.8583,
+     "mean_y": 1.0,
+     "calibration_error": 0.1417
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "0-15",
+     "prob_bucket": ".2-.4",
+     "source": "model",
+     "n": 288,
+     "mean_p": 0.3051,
+     "mean_y": 0.5677,
+     "calibration_error": 0.2626
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "0-15",
+     "prob_bucket": ".2-.4",
+     "source": "market",
+     "n": 147,
+     "mean_p": 0.2529,
+     "mean_y": 0.1973,
+     "calibration_error": 0.0556
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "15-30",
+     "prob_bucket": ".6-.8",
+     "source": "model",
+     "n": 74,
+     "mean_p": 0.662,
+     "mean_y": 0.7905,
+     "calibration_error": 0.1285
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "15-30",
+     "prob_bucket": ".6-.8",
+     "source": "market",
+     "n": 189,
+     "mean_p": 0.6961,
+     "mean_y": 0.918,
+     "calibration_error": 0.2219
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "30-45",
+     "prob_bucket": ".6-.8",
+     "source": "model",
+     "n": 36,
+     "mean_p": 0.6924,
+     "mean_y": 0.8056,
+     "calibration_error": 0.1132
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "30-45",
+     "prob_bucket": ".6-.8",
+     "source": "market",
+     "n": 143,
+     "mean_p": 0.6994,
+     "mean_y": 0.9021,
+     "calibration_error": 0.2027
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "30-45",
+     "prob_bucket": ".8-1",
+     "source": "model",
+     "n": 75,
+     "mean_p": 0.8986,
+     "mean_y": 1.0,
+     "calibration_error": 0.1014
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "30-45",
+     "prob_bucket": ".8-1",
+     "source": "market",
+     "n": 87,
+     "mean_p": 0.8631,
+     "mean_y": 1.0,
+     "calibration_error": 0.1369
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "45-60",
+     "prob_bucket": ".6-.8",
+     "source": "model",
+     "n": 57,
+     "mean_p": 0.7478,
+     "mean_y": 0.9825,
+     "calibration_error": 0.2347
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "45-60",
+     "prob_bucket": ".6-.8",
+     "source": "market",
+     "n": 29,
+     "mean_p": 0.7436,
+     "mean_y": 1.0,
+     "calibration_error": 0.2564
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "45-60",
+     "prob_bucket": ".8-1",
+     "source": "model",
+     "n": 123,
+     "mean_p": 0.9104,
+     "mean_y": 1.0,
+     "calibration_error": 0.0896
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "45-60",
+     "prob_bucket": ".8-1",
+     "source": "market",
+     "n": 158,
+     "mean_p": 0.8881,
+     "mean_y": 1.0,
+     "calibration_error": 0.1119
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "60-75",
+     "prob_bucket": ".6-.8",
+     "source": "model",
+     "n": 20,
+     "mean_p": 0.7616,
+     "mean_y": 1.0,
+     "calibration_error": 0.2384
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "60-75",
+     "prob_bucket": ".6-.8",
+     "source": "market",
+     "n": 26,
+     "mean_p": 0.6754,
+     "mean_y": 1.0,
+     "calibration_error": 0.3246
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "60-75",
+     "prob_bucket": ".8-1",
+     "source": "model",
+     "n": 51,
+     "mean_p": 0.8916,
+     "mean_y": 1.0,
+     "calibration_error": 0.1084
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "60-75",
+     "prob_bucket": ".8-1",
+     "source": "market",
+     "n": 65,
+     "mean_p": 0.8718,
+     "mean_y": 1.0,
+     "calibration_error": 0.1282
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "60-75",
+     "prob_bucket": ".4-.6",
+     "source": "market",
+     "n": 71,
+     "mean_p": 0.4682,
+     "mean_y": 0.8592,
+     "calibration_error": 0.3909
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "0-15",
+     "prob_bucket": ".8-1",
+     "source": "model",
+     "n": 3,
+     "mean_p": 0.9029,
+     "mean_y": 1.0,
+     "calibration_error": 0.0971
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "0-15",
+     "prob_bucket": ".8-1",
+     "source": "market",
+     "n": 35,
+     "mean_p": 0.8496,
+     "mean_y": 1.0,
+     "calibration_error": 0.1504
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "15-30",
+     "prob_bucket": ".8-1",
+     "source": "model",
+     "n": 41,
+     "mean_p": 0.8386,
+     "mean_y": 1.0,
+     "calibration_error": 0.1614
+    },
+    {
+     "sport": "soccer_intl",
+     "time_bucket": "15-30",
+     "prob_bucket": ".8-1",
+     "source": "market",
+     "n": 62,
+     "mean_p": 0.8417,
+     "mean_y": 1.0,
+     "calibration_error": 0.1583
+    }
+   ]
+  }
+ },
+ "skipped": [
+  {
+   "sport": "mlb_clean",
+   "reason": "byte-identical duplicate of mlb corpus (verified via filecmp) -- excluded to avoid double counting"
+  }
+ ],
+ "ranked_worst_buckets": [
+  {
+   "sport": "soccer_intl",
+   "time_bucket": "75-90+",
+   "prob_bucket": ".2-.4",
+   "source": "model",
+   "n": 10,
+   "mean_p": 0.2117,
+   "mean_y": 1.0,
+   "calibration_error": 0.7883
+  },
+  {
+   "sport": "soccer_intl",
+   "time_bucket": "60-75",
+   "prob_bucket": ".2-.4",
+   "source": "model",
+   "n": 90,
+   "mean_p": 0.2577,
+   "mean_y": 0.8333,
+   "calibration_error": 0.5756
+  },
+  {
+   "sport": "soccer_intl",
+   "time_bucket": "30-45",
+   "prob_bucket": "0-.2",
+   "source": "model",
+   "n": 264,
+   "mean_p": 0.0935,
+   "mean_y": 0.6534,
+   "calibration_error": 0.5599
+  },
+  {
+   "sport": "soccer_intl",
+   "time_bucket": "75-90+",
+   "prob_bucket": "0-.2",
+   "source": "model",
+   "n": 379,
+   "mean_p": 0.0661,
+   "mean_y": 0.5739,
+   "calibration_error": 0.5078
+  },
+  {
+   "sport": "soccer_intl",
+   "time_bucket": "15-30",
+   "prob_bucket": ".4-.6",
+   "source": "model",
+   "n": 120,
+   "mean_p": 0.5,
+   "mean_y": 1.0,
+   "calibration_error": 0.5
+  },
+  {
+   "sport": "soccer_intl",
+   "time_bucket": "0-15",
+   "prob_bucket": ".4-.6",
+   "source": "model",
+   "n": 158,
+   "mean_p": 0.5056,
+   "mean_y": 1.0,
+   "calibration_error": 0.4944
+  },
+  {
+   "sport": "soccer_intl",
+   "time_bucket": "45-60",
+   "prob_bucket": "0-.2",
+   "source": "model",
+   "n": 416,
+   "mean_p": 0.0832,
+   "mean_y": 0.5721,
+   "calibration_error": 0.4889
+  },
+  {
+   "sport": "soccer_intl",
+   "time_bucket": "60-75",
+   "prob_bucket": "0-.2",
+   "source": "model",
+   "n": 343,
+   "mean_p": 0.0871,
+   "mean_y": 0.5583,
+   "calibration_error": 0.4712
+  },
+  {
+   "sport": "soccer_intl",
+   "time_bucket": "15-30",
+   "prob_bucket": "0-.2",
+   "source": "model",
+   "n": 176,
+   "mean_p": 0.1248,
+   "mean_y": 0.5682,
+   "calibration_error": 0.4434
+  },
+  {
+   "sport": "soccer_intl",
+   "time_bucket": "30-45",
+   "prob_bucket": ".4-.6",
+   "source": "model",
+   "n": 130,
+   "mean_p": 0.5153,
+   "mean_y": 0.9,
+   "calibration_error": 0.3847
+  },
+  {
+   "sport": "soccer_intl",
+   "time_bucket": "0-15",
+   "prob_bucket": "0-.2",
+   "source": "model",
+   "n": 109,
+   "mean_p": 0.1238,
+   "mean_y": 0.3899,
+   "calibration_error": 0.2661
+  },
+  {
+   "sport": "soccer_intl",
+   "time_bucket": "0-15",
+   "prob_bucket": ".2-.4",
+   "source": "model",
+   "n": 288,
+   "mean_p": 0.3051,
+   "mean_y": 0.5677,
+   "calibration_error": 0.2626
+  },
+  {
+   "sport": "soccer_intl",
+   "time_bucket": "60-75",
+   "prob_bucket": ".6-.8",
+   "source": "model",
+   "n": 20,
+   "mean_p": 0.7616,
+   "mean_y": 1.0,
+   "calibration_error": 0.2384
+  },
+  {
+   "sport": "mlb",
+   "time_bucket": "late(inn7+)",
+   "prob_bucket": ".8-1",
+   "source": "model",
+   "n": 5037,
+   "mean_p": 0.9211,
+   "mean_y": 0.6853,
+   "calibration_error": 0.2357
+  },
+  {
+   "sport": "soccer_intl",
+   "time_bucket": "45-60",
+   "prob_bucket": ".6-.8",
+   "source": "model",
+   "n": 57,
+   "mean_p": 0.7478,
+   "mean_y": 0.9825,
+   "calibration_error": 0.2347
+  }
+ ]
+}

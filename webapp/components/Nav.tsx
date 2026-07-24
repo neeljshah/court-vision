@@ -11,35 +11,39 @@ import { cn } from "@/lib/utils";
 // (export mode) -- same landmine as lib/fetchHonest.ts's BASE_PATH.
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
-// Nav links -- the product areas of the cohesive product (FD: ONE nav).
-//   Home          /              -- the cohesive landing.
-//   Games         /games         -- slate-of-cards funnel (also /p6 dashboard).
-//   Bets          /bets          -- Best Bets board: Live/Pregame/Done sections.
-//   Models        /models        -- AI improvement: ratchet/Brier/ECE/BSS deltas.
-//   How it works  /how-it-works  -- DATA->...->VALIDATION funnel explainer.
-//   System        /system        -- parity / self-improve / honest findings.
+// Nav pillars (SITE_PLAN_v2.md S1: 6 top-level surfaces, Scoreboard = home).
+//   Scoreboard  /            -- cross-sport calibration scoreboard landing.
+//   Atlas       /atlas       -- 1,549 entity cards.
+//   Evidence    /evidence    -- 22 evidence pages.
+//   Labs        /lab         -- counterfactual + microstructure research.
+//   Receipts    /receipts    -- ledger + drill-down (already shipped).
+//   Use it      /use-it      -- MCP quickstart + tool table.
 //
 // Analytics / AI-Assistant / Settings: DO NOT exist; never add them.
-// Progress: replaced by Models (/models) which is the honest "getting better" view.
-// FIVE primary destinations on the bar; everything else lives in "More".
-// (User 2026-07-15: bar was overloaded -- keep the top simple.)
+// SIX pillars on the bar; the legacy live-app views (today/live/games/bets/
+// paper/models/records/system/how-it-works) collapse behind "More" so the
+// bar stays the honest research-product front door, not the old trading UI.
 const PRIMARY_LINKS = [
-  { href: "/today",         label: "Today",  short: "Today", exact: false, also: [] as string[] },
-  { href: "/live",          label: "Live",   short: "Live",  exact: false, also: [] as string[] },
-  { href: "/games",         label: "Games",  short: "Games", exact: false, also: ["/p6"] },
-  { href: "/paper-trading", label: "Paper",  short: "Paper", exact: false, also: ["/paper", "/records"] },
-  { href: "/bets",          label: "Bets",   short: "Bets",  exact: false, also: [] as string[] },
+  { href: "/",         label: "Scoreboard", short: "Board", exact: true,  also: [] as string[] },
+  { href: "/atlas",    label: "Atlas",      short: "Atlas", exact: false, also: [] as string[] },
+  { href: "/evidence", label: "Evidence",   short: "Evid",  exact: false, also: [] as string[] },
+  { href: "/lab",      label: "Labs",       short: "Labs",  exact: false, also: [] as string[] },
+  { href: "/receipts", label: "Receipts",   short: "Recpt", exact: false, also: [] as string[] },
+  { href: "/use-it",   label: "Use it",     short: "Use",   exact: false, also: [] as string[] },
 ] as const;
 
 const MORE_LINKS = [
-  { href: "/models",       label: "Models",       short: "Models", exact: false, also: ["/progress"] },
-  { href: "/records",      label: "Records",      short: "Rec",    exact: false, also: [] as string[] },
-  { href: "/system",       label: "System",       short: "System", exact: false, also: [] as string[] },
-  { href: "/how-it-works", label: "How it works", short: "How",    exact: false, also: [] as string[] },
+  { href: "/today",         label: "Today",        short: "Today",  exact: false, also: [] as string[] },
+  { href: "/live",          label: "Live",         short: "Live",   exact: false, also: [] as string[] },
+  { href: "/games",         label: "Games",        short: "Games",  exact: false, also: ["/p6"] },
+  { href: "/paper-trading", label: "Paper",        short: "Paper",  exact: false, also: ["/paper", "/records"] },
+  { href: "/bets",          label: "Bets",         short: "Bets",   exact: false, also: [] as string[] },
+  { href: "/models",        label: "Models",       short: "Models", exact: false, also: ["/progress"] },
+  { href: "/system",        label: "System",       short: "System", exact: false, also: [] as string[] },
+  { href: "/how-it-works",  label: "How it works", short: "How",    exact: false, also: [] as string[] },
 ] as const;
 
 const NAV_LINKS = [
-  { href: "/", label: "Home", short: "Home", exact: true, also: [] as string[] },
   ...PRIMARY_LINKS,
   ...MORE_LINKS,
 ] as const;

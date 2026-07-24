@@ -1,0 +1,2564 @@
+{
+ "sport": "mlb_pitch",
+ "generated_at": "2026-07-23T01:16:50.640645+00:00",
+ "descriptive_only": true,
+ "n_entries": 61,
+ "entries": [
+  {
+   "entity": "pitch_type:CH",
+   "card_path": "docs/img/atlas/mlb_pitch/by_type/ch.png",
+   "key_numbers": {
+    "n_pitches": 71270,
+    "pct_of_all_pitches": 10.28,
+    "velo_p10": 80.5,
+    "velo_p50": 86.3,
+    "velo_p90": 90.1,
+    "count_leverage_pct": {
+     "pitcher_ahead": 37.1,
+     "even": 40.0,
+     "pitcher_behind": 22.9
+    },
+    "count_state_pct": {
+     "0-0": 16.18,
+     "0-1": 17.04,
+     "0-2": 7.91,
+     "1-0": 9.86,
+     "1-1": 13.68,
+     "1-2": 12.11,
+     "2-0": 2.35,
+     "2-1": 5.52,
+     "2-2": 10.13,
+     "3-0": 0.13,
+     "3-1": 1.14,
+     "3-2": 3.93
+    },
+    "outcome_mix_pct": {
+     "ball": 40.7,
+     "strike": 40.1,
+     "in-play": 19.2
+    }
+   },
+   "floors": "all 19 pitch_type codes in the 2025 pull included, no exclusion (missing pitch_type kept as 'UNK'); smallest category n=7 (SC) -- small-n cards carry high sampling noise, shown for completeness not comparison. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "pitch_type:CS",
+   "card_path": "docs/img/atlas/mlb_pitch/by_type/cs.png",
+   "key_numbers": {
+    "n_pitches": 393,
+    "pct_of_all_pitches": 0.06,
+    "velo_p10": 52.3,
+    "velo_p50": 72.4,
+    "velo_p90": 74.9,
+    "count_leverage_pct": {
+     "pitcher_ahead": 35.6,
+     "even": 49.1,
+     "pitcher_behind": 15.3
+    },
+    "count_state_pct": {
+     "0-0": 31.04,
+     "0-1": 15.78,
+     "0-2": 5.85,
+     "1-0": 7.38,
+     "1-1": 8.65,
+     "1-2": 13.99,
+     "2-0": 1.02,
+     "2-1": 4.07,
+     "2-2": 9.41,
+     "3-1": 0.76,
+     "3-2": 2.04
+    },
+    "outcome_mix_pct": {
+     "ball": 42.7,
+     "strike": 41.0,
+     "in-play": 16.3
+    }
+   },
+   "floors": "all 19 pitch_type codes in the 2025 pull included, no exclusion (missing pitch_type kept as 'UNK'); smallest category n=7 (SC) -- small-n cards carry high sampling noise, shown for completeness not comparison. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "pitch_type:CU",
+   "card_path": "docs/img/atlas/mlb_pitch/by_type/cu.png",
+   "key_numbers": {
+    "n_pitches": 46489,
+    "pct_of_all_pitches": 6.71,
+    "velo_p10": 75.1,
+    "velo_p50": 79.9,
+    "velo_p90": 83.9,
+    "count_leverage_pct": {
+     "pitcher_ahead": 34.6,
+     "even": 48.5,
+     "pitcher_behind": 16.9
+    },
+    "count_state_pct": {
+     "0-0": 29.05,
+     "0-1": 12.74,
+     "0-2": 9.11,
+     "1-0": 7.49,
+     "1-1": 9.82,
+     "1-2": 12.74,
+     "2-0": 1.31,
+     "2-1": 3.84,
+     "2-2": 9.65,
+     "3-0": 0.04,
+     "3-1": 0.61,
+     "3-2": 3.6
+    },
+    "outcome_mix_pct": {
+     "strike": 44.7,
+     "ball": 40.4,
+     "in-play": 14.9
+    }
+   },
+   "floors": "all 19 pitch_type codes in the 2025 pull included, no exclusion (missing pitch_type kept as 'UNK'); smallest category n=7 (SC) -- small-n cards carry high sampling noise, shown for completeness not comparison. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "pitch_type:EP",
+   "card_path": "docs/img/atlas/mlb_pitch/by_type/ep.png",
+   "key_numbers": {
+    "n_pitches": 970,
+    "pct_of_all_pitches": 0.14,
+    "velo_p10": 38.9,
+    "velo_p50": 50.1,
+    "velo_p90": 60.3,
+    "count_leverage_pct": {
+     "pitcher_ahead": 16.9,
+     "even": 50.7,
+     "pitcher_behind": 32.4
+    },
+    "count_state_pct": {
+     "0-0": 40.31,
+     "0-1": 12.47,
+     "0-2": 1.75,
+     "1-0": 15.15,
+     "1-1": 8.45,
+     "1-2": 2.68,
+     "2-0": 6.39,
+     "2-1": 4.54,
+     "2-2": 1.96,
+     "3-0": 2.78,
+     "3-1": 2.37,
+     "3-2": 1.13
+    },
+    "outcome_mix_pct": {
+     "ball": 40.2,
+     "in-play": 33.9,
+     "strike": 25.9
+    }
+   },
+   "floors": "all 19 pitch_type codes in the 2025 pull included, no exclusion (missing pitch_type kept as 'UNK'); smallest category n=7 (SC) -- small-n cards carry high sampling noise, shown for completeness not comparison. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "pitch_type:FA",
+   "card_path": "docs/img/atlas/mlb_pitch/by_type/fa.png",
+   "key_numbers": {
+    "n_pitches": 854,
+    "pct_of_all_pitches": 0.12,
+    "velo_p10": 58.5,
+    "velo_p50": 67.9,
+    "velo_p90": 79.8,
+    "count_leverage_pct": {
+     "pitcher_ahead": 17.2,
+     "even": 43.2,
+     "pitcher_behind": 39.6
+    },
+    "count_state_pct": {
+     "0-0": 30.21,
+     "0-1": 9.95,
+     "0-2": 3.16,
+     "1-0": 16.04,
+     "1-1": 8.31,
+     "1-2": 4.1,
+     "2-0": 6.79,
+     "2-1": 7.61,
+     "2-2": 4.68,
+     "3-0": 1.76,
+     "3-1": 3.28,
+     "3-2": 4.1
+    },
+    "outcome_mix_pct": {
+     "ball": 38.8,
+     "strike": 33.4,
+     "in-play": 27.9
+    }
+   },
+   "floors": "all 19 pitch_type codes in the 2025 pull included, no exclusion (missing pitch_type kept as 'UNK'); smallest category n=7 (SC) -- small-n cards carry high sampling noise, shown for completeness not comparison. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "pitch_type:FC",
+   "card_path": "docs/img/atlas/mlb_pitch/by_type/fc.png",
+   "key_numbers": {
+    "n_pitches": 51867,
+    "pct_of_all_pitches": 7.48,
+    "velo_p10": 86.0,
+    "velo_p50": 89.6,
+    "velo_p90": 93.3,
+    "count_leverage_pct": {
+     "pitcher_ahead": 21.5,
+     "even": 45.9,
+     "pitcher_behind": 32.5
+    },
+    "count_state_pct": {
+     "0-0": 29.6,
+     "0-1": 12.6,
+     "0-2": 3.34,
+     "1-0": 12.36,
+     "1-1": 10.16,
+     "1-2": 5.6,
+     "2-0": 4.78,
+     "2-1": 6.35,
+     "2-2": 6.16,
+     "3-0": 0.72,
+     "3-1": 2.98,
+     "3-2": 5.34
+    },
+    "outcome_mix_pct": {
+     "strike": 47.5,
+     "ball": 34.2,
+     "in-play": 18.3
+    }
+   },
+   "floors": "all 19 pitch_type codes in the 2025 pull included, no exclusion (missing pitch_type kept as 'UNK'); smallest category n=7 (SC) -- small-n cards carry high sampling noise, shown for completeness not comparison. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "pitch_type:FF",
+   "card_path": "docs/img/atlas/mlb_pitch/by_type/ff.png",
+   "key_numbers": {
+    "n_pitches": 220235,
+    "pct_of_all_pitches": 31.78,
+    "velo_p10": 91.3,
+    "velo_p50": 94.5,
+    "velo_p90": 97.7,
+    "count_leverage_pct": {
+     "pitcher_ahead": 27.6,
+     "even": 43.3,
+     "pitcher_behind": 29.0
+    },
+    "count_state_pct": {
+     "0-0": 26.44,
+     "0-1": 11.51,
+     "0-2": 6.72,
+     "1-0": 9.45,
+     "1-1": 8.81,
+     "1-2": 9.38,
+     "2-0": 3.85,
+     "2-1": 5.04,
+     "2-2": 8.08,
+     "3-0": 2.05,
+     "3-1": 2.8,
+     "3-2": 5.85
+    },
+    "outcome_mix_pct": {
+     "strike": 49.6,
+     "ball": 34.0,
+     "in-play": 16.4
+    }
+   },
+   "floors": "all 19 pitch_type codes in the 2025 pull included, no exclusion (missing pitch_type kept as 'UNK'); smallest category n=7 (SC) -- small-n cards carry high sampling noise, shown for completeness not comparison. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "pitch_type:FO",
+   "card_path": "docs/img/atlas/mlb_pitch/by_type/fo.png",
+   "key_numbers": {
+    "n_pitches": 721,
+    "pct_of_all_pitches": 0.1,
+    "velo_p10": 80.9,
+    "velo_p50": 83.0,
+    "velo_p90": 85.6,
+    "count_leverage_pct": {
+     "pitcher_ahead": 47.0,
+     "even": 40.5,
+     "pitcher_behind": 12.5
+    },
+    "count_state_pct": {
+     "0-0": 10.96,
+     "0-1": 16.92,
+     "0-2": 12.62,
+     "1-0": 4.44,
+     "1-1": 13.59,
+     "1-2": 17.48,
+     "2-0": 0.69,
+     "2-1": 2.36,
+     "2-2": 15.95,
+     "3-0": 0.14,
+     "3-1": 0.55,
+     "3-2": 4.3
+    },
+    "outcome_mix_pct": {
+     "strike": 43.3,
+     "ball": 41.7,
+     "in-play": 15.0
+    }
+   },
+   "floors": "all 19 pitch_type codes in the 2025 pull included, no exclusion (missing pitch_type kept as 'UNK'); smallest category n=7 (SC) -- small-n cards carry high sampling noise, shown for completeness not comparison. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "pitch_type:FS",
+   "card_path": "docs/img/atlas/mlb_pitch/by_type/fs.png",
+   "key_numbers": {
+    "n_pitches": 22473,
+    "pct_of_all_pitches": 3.24,
+    "velo_p10": 82.2,
+    "velo_p50": 86.3,
+    "velo_p90": 90.9,
+    "count_leverage_pct": {
+     "pitcher_ahead": 42.7,
+     "even": 39.0,
+     "pitcher_behind": 18.4
+    },
+    "count_state_pct": {
+     "0-0": 14.29,
+     "0-1": 16.94,
+     "0-2": 10.52,
+     "1-0": 7.56,
+     "1-1": 13.01,
+     "1-2": 15.2,
+     "2-0": 1.66,
+     "2-1": 4.38,
+     "2-2": 11.67,
+     "3-0": 0.1,
+     "3-1": 0.85,
+     "3-2": 3.8
+    },
+    "outcome_mix_pct": {
+     "strike": 41.5,
+     "ball": 40.6,
+     "in-play": 18.0
+    }
+   },
+   "floors": "all 19 pitch_type codes in the 2025 pull included, no exclusion (missing pitch_type kept as 'UNK'); smallest category n=7 (SC) -- small-n cards carry high sampling noise, shown for completeness not comparison. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "pitch_type:KC",
+   "card_path": "docs/img/atlas/mlb_pitch/by_type/kc.png",
+   "key_numbers": {
+    "n_pitches": 12412,
+    "pct_of_all_pitches": 1.79,
+    "velo_p10": 77.6,
+    "velo_p50": 83.0,
+    "velo_p90": 87.5,
+    "count_leverage_pct": {
+     "pitcher_ahead": 37.1,
+     "even": 45.6,
+     "pitcher_behind": 17.3
+    },
+    "count_state_pct": {
+     "0-0": 24.69,
+     "0-1": 12.66,
+     "0-2": 10.14,
+     "1-0": 7.11,
+     "1-1": 10.33,
+     "1-2": 14.32,
+     "2-0": 1.51,
+     "2-1": 4.17,
+     "2-2": 10.57,
+     "3-0": 0.03,
+     "3-1": 0.72,
+     "3-2": 3.75
+    },
+    "outcome_mix_pct": {
+     "strike": 45.7,
+     "ball": 39.6,
+     "in-play": 14.7
+    }
+   },
+   "floors": "all 19 pitch_type codes in the 2025 pull included, no exclusion (missing pitch_type kept as 'UNK'); smallest category n=7 (SC) -- small-n cards carry high sampling noise, shown for completeness not comparison. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "pitch_type:KN",
+   "card_path": "docs/img/atlas/mlb_pitch/by_type/kn.png",
+   "key_numbers": {
+    "n_pitches": 135,
+    "pct_of_all_pitches": 0.02,
+    "velo_p10": 56.8,
+    "velo_p50": 77.4,
+    "velo_p90": 83.0,
+    "count_leverage_pct": {
+     "pitcher_ahead": 33.3,
+     "even": 47.4,
+     "pitcher_behind": 19.3
+    },
+    "count_state_pct": {
+     "0-0": 21.48,
+     "0-1": 11.85,
+     "0-2": 8.89,
+     "1-0": 8.89,
+     "1-1": 12.59,
+     "1-2": 12.59,
+     "2-0": 2.22,
+     "2-1": 4.44,
+     "2-2": 13.33,
+     "3-1": 1.48,
+     "3-2": 2.22
+    },
+    "outcome_mix_pct": {
+     "ball": 51.1,
+     "strike": 32.6,
+     "in-play": 16.3
+    }
+   },
+   "floors": "all 19 pitch_type codes in the 2025 pull included, no exclusion (missing pitch_type kept as 'UNK'); smallest category n=7 (SC) -- small-n cards carry high sampling noise, shown for completeness not comparison. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "pitch_type:PO",
+   "card_path": "docs/img/atlas/mlb_pitch/by_type/po.png",
+   "key_numbers": {
+    "n_pitches": 53,
+    "pct_of_all_pitches": 0.01,
+    "velo_p10": 85.7,
+    "velo_p50": 91.4,
+    "velo_p90": 94.9,
+    "count_leverage_pct": {
+     "pitcher_ahead": 54.7,
+     "even": 45.3,
+     "pitcher_behind": 0.0
+    },
+    "count_state_pct": {
+     "0-0": 39.62,
+     "0-1": 32.08,
+     "0-2": 16.98,
+     "1-1": 3.77,
+     "1-2": 5.66,
+     "2-2": 1.89
+    },
+    "outcome_mix_pct": {
+     "ball": 100.0
+    }
+   },
+   "floors": "all 19 pitch_type codes in the 2025 pull included, no exclusion (missing pitch_type kept as 'UNK'); smallest category n=7 (SC) -- small-n cards carry high sampling noise, shown for completeness not comparison. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "pitch_type:SC",
+   "card_path": "docs/img/atlas/mlb_pitch/by_type/sc.png",
+   "key_numbers": {
+    "n_pitches": 7,
+    "pct_of_all_pitches": 0.0,
+    "velo_p10": 85.3,
+    "velo_p50": 85.6,
+    "velo_p90": 86.5,
+    "count_leverage_pct": {
+     "pitcher_ahead": 42.9,
+     "even": 42.9,
+     "pitcher_behind": 14.3
+    },
+    "count_state_pct": {
+     "0-0": 28.57,
+     "0-1": 28.57,
+     "1-0": 14.29,
+     "1-2": 14.29,
+     "2-2": 14.29
+    },
+    "outcome_mix_pct": {
+     "ball": 57.1,
+     "in-play": 42.9
+    }
+   },
+   "floors": "all 19 pitch_type codes in the 2025 pull included, no exclusion (missing pitch_type kept as 'UNK'); smallest category n=7 (SC) -- small-n cards carry high sampling noise, shown for completeness not comparison. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "pitch_type:SI",
+   "card_path": "docs/img/atlas/mlb_pitch/by_type/si.png",
+   "key_numbers": {
+    "n_pitches": 107136,
+    "pct_of_all_pitches": 15.46,
+    "velo_p10": 90.3,
+    "velo_p50": 94.0,
+    "velo_p90": 97.2,
+    "count_leverage_pct": {
+     "pitcher_ahead": 20.3,
+     "even": 47.1,
+     "pitcher_behind": 32.7
+    },
+    "count_state_pct": {
+     "0-0": 31.3,
+     "0-1": 11.97,
+     "0-2": 2.84,
+     "1-0": 11.87,
+     "1-1": 9.4,
+     "1-2": 5.44,
+     "2-0": 4.61,
+     "2-1": 5.97,
+     "2-2": 6.39,
+     "3-0": 1.49,
+     "3-1": 3.15,
+     "3-2": 5.57
+    },
+    "outcome_mix_pct": {
+     "strike": 46.7,
+     "ball": 32.2,
+     "in-play": 21.1
+    }
+   },
+   "floors": "all 19 pitch_type codes in the 2025 pull included, no exclusion (missing pitch_type kept as 'UNK'); smallest category n=7 (SC) -- small-n cards carry high sampling noise, shown for completeness not comparison. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "pitch_type:SL",
+   "card_path": "docs/img/atlas/mlb_pitch/by_type/sl.png",
+   "key_numbers": {
+    "n_pitches": 99357,
+    "pct_of_all_pitches": 14.34,
+    "velo_p10": 82.7,
+    "velo_p50": 86.4,
+    "velo_p90": 89.7,
+    "count_leverage_pct": {
+     "pitcher_ahead": 32.4,
+     "even": 43.6,
+     "pitcher_behind": 24.0
+    },
+    "count_state_pct": {
+     "0-0": 24.81,
+     "0-1": 13.16,
+     "0-2": 7.99,
+     "1-0": 9.39,
+     "1-1": 10.05,
+     "1-2": 11.2,
+     "2-0": 2.72,
+     "2-1": 5.2,
+     "2-2": 8.78,
+     "3-0": 0.22,
+     "3-1": 1.52,
+     "3-2": 4.95
+    },
+    "outcome_mix_pct": {
+     "strike": 46.4,
+     "ball": 36.5,
+     "in-play": 17.1
+    }
+   },
+   "floors": "all 19 pitch_type codes in the 2025 pull included, no exclusion (missing pitch_type kept as 'UNK'); smallest category n=7 (SC) -- small-n cards carry high sampling noise, shown for completeness not comparison. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "pitch_type:ST",
+   "card_path": "docs/img/atlas/mlb_pitch/by_type/st.png",
+   "key_numbers": {
+    "n_pitches": 52681,
+    "pct_of_all_pitches": 7.6,
+    "velo_p10": 78.7,
+    "velo_p50": 82.7,
+    "velo_p90": 86.2,
+    "count_leverage_pct": {
+     "pitcher_ahead": 36.9,
+     "even": 44.4,
+     "pitcher_behind": 18.7
+    },
+    "count_state_pct": {
+     "0-0": 24.48,
+     "0-1": 14.53,
+     "0-2": 9.58,
+     "1-0": 7.7,
+     "1-1": 10.49,
+     "1-2": 12.74,
+     "2-0": 1.75,
+     "2-1": 4.12,
+     "2-2": 9.48,
+     "3-0": 0.09,
+     "3-1": 0.85,
+     "3-2": 4.19
+    },
+    "outcome_mix_pct": {
+     "strike": 45.6,
+     "ball": 38.4,
+     "in-play": 16.0
+    }
+   },
+   "floors": "all 19 pitch_type codes in the 2025 pull included, no exclusion (missing pitch_type kept as 'UNK'); smallest category n=7 (SC) -- small-n cards carry high sampling noise, shown for completeness not comparison. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "pitch_type:SV",
+   "card_path": "docs/img/atlas/mlb_pitch/by_type/sv.png",
+   "key_numbers": {
+    "n_pitches": 3427,
+    "pct_of_all_pitches": 0.49,
+    "velo_p10": 78.6,
+    "velo_p50": 81.8,
+    "velo_p90": 85.0,
+    "count_leverage_pct": {
+     "pitcher_ahead": 37.1,
+     "even": 44.8,
+     "pitcher_behind": 18.1
+    },
+    "count_state_pct": {
+     "0-0": 24.6,
+     "0-1": 13.22,
+     "0-2": 10.01,
+     "1-0": 8.0,
+     "1-1": 9.95,
+     "1-2": 13.86,
+     "2-0": 1.49,
+     "2-1": 3.85,
+     "2-2": 10.21,
+     "3-0": 0.12,
+     "3-1": 0.7,
+     "3-2": 4.0
+    },
+    "outcome_mix_pct": {
+     "strike": 45.3,
+     "ball": 39.8,
+     "in-play": 15.0
+    }
+   },
+   "floors": "all 19 pitch_type codes in the 2025 pull included, no exclusion (missing pitch_type kept as 'UNK'); smallest category n=7 (SC) -- small-n cards carry high sampling noise, shown for completeness not comparison. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "pitch_type:UN",
+   "card_path": "docs/img/atlas/mlb_pitch/by_type/un.png",
+   "key_numbers": {
+    "n_pitches": 13,
+    "pct_of_all_pitches": 0.0,
+    "velo_p10": 56.9,
+    "velo_p50": 71.3,
+    "velo_p90": 83.8,
+    "count_leverage_pct": {
+     "pitcher_ahead": 53.8,
+     "even": 46.2,
+     "pitcher_behind": 0.0
+    },
+    "count_state_pct": {
+     "0-0": 30.77,
+     "0-1": 30.77,
+     "0-2": 15.38,
+     "1-1": 7.69,
+     "1-2": 7.69,
+     "2-2": 7.69
+    },
+    "outcome_mix_pct": {
+     "ball": 92.3,
+     "strike": 7.7
+    }
+   },
+   "floors": "all 19 pitch_type codes in the 2025 pull included, no exclusion (missing pitch_type kept as 'UNK'); smallest category n=7 (SC) -- small-n cards carry high sampling noise, shown for completeness not comparison. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "pitch_type:UNK",
+   "card_path": "docs/img/atlas/mlb_pitch/by_type/unk.png",
+   "key_numbers": {
+    "n_pitches": 2544,
+    "pct_of_all_pitches": 0.37,
+    "velo_p10": 78.8,
+    "velo_p50": 88.8,
+    "velo_p90": 95.4,
+    "count_leverage_pct": {
+     "pitcher_ahead": 6.9,
+     "even": 31.0,
+     "pitcher_behind": 62.1
+    },
+    "count_state_pct": {
+     "0-0": 26.77,
+     "0-1": 1.77,
+     "0-2": 2.2,
+     "1-0": 18.36,
+     "1-1": 2.04,
+     "1-2": 2.95,
+     "2-0": 19.26,
+     "2-1": 1.3,
+     "2-2": 2.16,
+     "3-0": 20.28,
+     "3-1": 1.38,
+     "3-2": 1.53
+    },
+    "outcome_mix_pct": {
+     "ball": 91.6,
+     "strike": 7.1,
+     "in-play": 1.3
+    }
+   },
+   "floors": "all 19 pitch_type codes in the 2025 pull included, no exclusion (missing pitch_type kept as 'UNK'); smallest category n=7 (SC) -- small-n cards carry high sampling noise, shown for completeness not comparison. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:ATH",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/ath.png",
+   "key_numbers": {
+    "n_pitches": 24059,
+    "n_pitch_types_used": 13,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 34.8,
+    "outcome_mix_pct": {
+     "strike": 45.3,
+     "ball": 37.5,
+     "in-play": 17.2
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 8366,
+      "p10": 90.6,
+      "p50": 93.8,
+      "p90": 97.9
+     },
+     "SL": {
+      "n": 3580,
+      "p10": 78.8,
+      "p50": 84.8,
+      "p90": 88.7
+     },
+     "ST": {
+      "n": 2967,
+      "p10": 77.9,
+      "p50": 82.5,
+      "p90": 86.0
+     },
+     "SI": {
+      "n": 2924,
+      "p10": 90.4,
+      "p50": 93.9,
+      "p90": 96.5
+     },
+     "FC": {
+      "n": 2515,
+      "p10": 86.6,
+      "p50": 90.2,
+      "p90": 93.7
+     },
+     "CH": {
+      "n": 2444,
+      "p10": 78.7,
+      "p50": 83.5,
+      "p90": 89.3
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:ATL",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/atl.png",
+   "key_numbers": {
+    "n_pitches": 23350,
+    "n_pitch_types_used": 12,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 31.3,
+    "outcome_mix_pct": {
+     "strike": 46.6,
+     "ball": 36.4,
+     "in-play": 17.0
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 7314,
+      "p10": 92.3,
+      "p50": 95.0,
+      "p90": 97.2
+     },
+     "SL": {
+      "n": 6402,
+      "p10": 79.9,
+      "p50": 85.0,
+      "p90": 88.3
+     },
+     "SI": {
+      "n": 2597,
+      "p10": 90.0,
+      "p50": 92.3,
+      "p90": 95.7
+     },
+     "CU": {
+      "n": 2310,
+      "p10": 78.0,
+      "p50": 82.3,
+      "p90": 86.3
+     },
+     "FC": {
+      "n": 1479,
+      "p10": 86.8,
+      "p50": 91.6,
+      "p90": 94.1
+     },
+     "CH": {
+      "n": 1455,
+      "p10": 84.0,
+      "p50": 86.7,
+      "p90": 89.3
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:AZ",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/az.png",
+   "key_numbers": {
+    "n_pitches": 23347,
+    "n_pitch_types_used": 13,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 35.2,
+    "outcome_mix_pct": {
+     "strike": 45.1,
+     "ball": 36.8,
+     "in-play": 18.1
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 8212,
+      "p10": 91.1,
+      "p50": 93.9,
+      "p90": 96.5
+     },
+     "SI": {
+      "n": 3277,
+      "p10": 89.2,
+      "p50": 92.7,
+      "p90": 96.2
+     },
+     "CH": {
+      "n": 3135,
+      "p10": 82.3,
+      "p50": 87.1,
+      "p90": 89.6
+     },
+     "SL": {
+      "n": 2390,
+      "p10": 79.4,
+      "p50": 86.1,
+      "p90": 89.7
+     },
+     "FC": {
+      "n": 2257,
+      "p10": 88.2,
+      "p50": 90.7,
+      "p90": 94.4
+     },
+     "CU": {
+      "n": 1483,
+      "p10": 77.4,
+      "p50": 80.2,
+      "p90": 83.0
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:BAL",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/bal.png",
+   "key_numbers": {
+    "n_pitches": 23183,
+    "n_pitch_types_used": 14,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 27.7,
+    "outcome_mix_pct": {
+     "strike": 46.2,
+     "ball": 36.0,
+     "in-play": 17.8
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 6428,
+      "p10": 91.8,
+      "p50": 93.7,
+      "p90": 96.5
+     },
+     "SI": {
+      "n": 4284,
+      "p10": 91.3,
+      "p50": 94.2,
+      "p90": 97.2
+     },
+     "CU": {
+      "n": 2457,
+      "p10": 76.8,
+      "p50": 79.7,
+      "p90": 83.5
+     },
+     "SL": {
+      "n": 2131,
+      "p10": 83.5,
+      "p50": 86.7,
+      "p90": 89.6
+     },
+     "FC": {
+      "n": 1999,
+      "p10": 84.2,
+      "p50": 87.7,
+      "p90": 91.0
+     },
+     "CH": {
+      "n": 1956,
+      "p10": 83.6,
+      "p50": 86.2,
+      "p90": 88.5
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:BOS",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/bos.png",
+   "key_numbers": {
+    "n_pitches": 23126,
+    "n_pitch_types_used": 15,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 28.7,
+    "outcome_mix_pct": {
+     "strike": 46.7,
+     "ball": 35.8,
+     "in-play": 17.5
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 6644,
+      "p10": 92.6,
+      "p50": 95.0,
+      "p90": 97.6
+     },
+     "SI": {
+      "n": 4561,
+      "p10": 91.5,
+      "p50": 95.1,
+      "p90": 97.7
+     },
+     "SL": {
+      "n": 2891,
+      "p10": 84.0,
+      "p50": 86.5,
+      "p90": 89.1
+     },
+     "FC": {
+      "n": 2624,
+      "p10": 87.3,
+      "p50": 90.2,
+      "p90": 92.7
+     },
+     "ST": {
+      "n": 2142,
+      "p10": 80.6,
+      "p50": 83.5,
+      "p90": 86.1
+     },
+     "CH": {
+      "n": 2138,
+      "p10": 80.9,
+      "p50": 84.6,
+      "p90": 89.7
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:CHC",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/chc.png",
+   "key_numbers": {
+    "n_pitches": 21523,
+    "n_pitch_types_used": 14,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 44.5,
+    "outcome_mix_pct": {
+     "strike": 47.3,
+     "ball": 34.2,
+     "in-play": 18.5
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 9579,
+      "p10": 91.1,
+      "p50": 93.9,
+      "p90": 97.4
+     },
+     "ST": {
+      "n": 2186,
+      "p10": 78.7,
+      "p50": 81.8,
+      "p90": 85.2
+     },
+     "SL": {
+      "n": 2067,
+      "p10": 81.3,
+      "p50": 86.0,
+      "p90": 89.8
+     },
+     "CH": {
+      "n": 1739,
+      "p10": 77.9,
+      "p50": 84.4,
+      "p90": 90.2
+     },
+     "CU": {
+      "n": 1647,
+      "p10": 72.4,
+      "p50": 78.7,
+      "p90": 82.7
+     },
+     "SI": {
+      "n": 1571,
+      "p10": 91.2,
+      "p50": 93.2,
+      "p90": 96.3
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:CIN",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/cin.png",
+   "key_numbers": {
+    "n_pitches": 23266,
+    "n_pitch_types_used": 15,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 31.8,
+    "outcome_mix_pct": {
+     "strike": 46.9,
+     "ball": 35.9,
+     "in-play": 17.2
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 7402,
+      "p10": 90.9,
+      "p50": 94.1,
+      "p90": 99.3
+     },
+     "SI": {
+      "n": 3712,
+      "p10": 90.8,
+      "p50": 92.7,
+      "p90": 96.0
+     },
+     "SL": {
+      "n": 3386,
+      "p10": 81.9,
+      "p50": 86.7,
+      "p90": 91.1
+     },
+     "CH": {
+      "n": 2316,
+      "p10": 77.4,
+      "p50": 85.1,
+      "p90": 88.4
+     },
+     "ST": {
+      "n": 1981,
+      "p10": 78.5,
+      "p50": 81.8,
+      "p90": 84.9
+     },
+     "FC": {
+      "n": 1847,
+      "p10": 86.7,
+      "p50": 89.4,
+      "p90": 97.5
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:CLE",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/cle.png",
+   "key_numbers": {
+    "n_pitches": 23308,
+    "n_pitch_types_used": 11,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 36.1,
+    "outcome_mix_pct": {
+     "strike": 46.6,
+     "ball": 36.4,
+     "in-play": 17.1
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 8409,
+      "p10": 90.3,
+      "p50": 93.9,
+      "p90": 97.0
+     },
+     "ST": {
+      "n": 2715,
+      "p10": 77.4,
+      "p50": 83.0,
+      "p90": 86.7
+     },
+     "CH": {
+      "n": 2516,
+      "p10": 77.9,
+      "p50": 82.1,
+      "p90": 87.3
+     },
+     "FC": {
+      "n": 2411,
+      "p10": 84.4,
+      "p50": 89.2,
+      "p90": 99.0
+     },
+     "SI": {
+      "n": 2342,
+      "p10": 89.0,
+      "p50": 93.0,
+      "p90": 95.9
+     },
+     "SL": {
+      "n": 2329,
+      "p10": 83.6,
+      "p50": 86.2,
+      "p90": 89.5
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:COL",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/col.png",
+   "key_numbers": {
+    "n_pitches": 23531,
+    "n_pitch_types_used": 14,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 41.0,
+    "outcome_mix_pct": {
+     "strike": 43.8,
+     "ball": 37.0,
+     "in-play": 19.3
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 9648,
+      "p10": 91.1,
+      "p50": 95.0,
+      "p90": 98.4
+     },
+     "SL": {
+      "n": 3335,
+      "p10": 83.4,
+      "p50": 86.8,
+      "p90": 89.9
+     },
+     "CH": {
+      "n": 2094,
+      "p10": 82.1,
+      "p50": 87.1,
+      "p90": 91.0
+     },
+     "SI": {
+      "n": 1764,
+      "p10": 91.0,
+      "p50": 93.7,
+      "p90": 97.0
+     },
+     "ST": {
+      "n": 1763,
+      "p10": 74.8,
+      "p50": 82.7,
+      "p90": 84.9
+     },
+     "CU": {
+      "n": 1707,
+      "p10": 78.2,
+      "p50": 80.4,
+      "p90": 83.4
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:CWS",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/cws.png",
+   "key_numbers": {
+    "n_pitches": 23455,
+    "n_pitch_types_used": 15,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 30.9,
+    "outcome_mix_pct": {
+     "strike": 44.9,
+     "ball": 37.7,
+     "in-play": 17.4
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 7240,
+      "p10": 91.1,
+      "p50": 94.6,
+      "p90": 97.0
+     },
+     "SI": {
+      "n": 3683,
+      "p10": 89.9,
+      "p50": 93.3,
+      "p90": 95.7
+     },
+     "CH": {
+      "n": 3205,
+      "p10": 82.9,
+      "p50": 86.3,
+      "p90": 91.0
+     },
+     "SL": {
+      "n": 2745,
+      "p10": 84.2,
+      "p50": 87.1,
+      "p90": 89.9
+     },
+     "ST": {
+      "n": 2174,
+      "p10": 79.2,
+      "p50": 81.5,
+      "p90": 83.5
+     },
+     "FC": {
+      "n": 1877,
+      "p10": 85.9,
+      "p50": 88.6,
+      "p90": 90.8
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:DET",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/det.png",
+   "key_numbers": {
+    "n_pitches": 22819,
+    "n_pitch_types_used": 14,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 30.6,
+    "outcome_mix_pct": {
+     "strike": 46.7,
+     "ball": 35.7,
+     "in-play": 17.6
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 6981,
+      "p10": 91.9,
+      "p50": 94.6,
+      "p90": 97.5
+     },
+     "SI": {
+      "n": 4098,
+      "p10": 90.8,
+      "p50": 94.4,
+      "p90": 97.1
+     },
+     "SL": {
+      "n": 3492,
+      "p10": 82.8,
+      "p50": 86.0,
+      "p90": 89.9
+     },
+     "CH": {
+      "n": 3409,
+      "p10": 84.4,
+      "p50": 86.9,
+      "p90": 89.5
+     },
+     "FS": {
+      "n": 1114,
+      "p10": 86.0,
+      "p50": 88.1,
+      "p90": 89.8
+     },
+     "ST": {
+      "n": 919,
+      "p10": 79.5,
+      "p50": 81.8,
+      "p90": 84.4
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:HOU",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/hou.png",
+   "key_numbers": {
+    "n_pitches": 23009,
+    "n_pitch_types_used": 14,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 32.9,
+    "outcome_mix_pct": {
+     "strike": 46.8,
+     "ball": 36.4,
+     "in-play": 16.9
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 7569,
+      "p10": 91.1,
+      "p50": 93.9,
+      "p90": 97.3
+     },
+     "SI": {
+      "n": 3893,
+      "p10": 90.7,
+      "p50": 93.9,
+      "p90": 96.4
+     },
+     "SL": {
+      "n": 2777,
+      "p10": 80.6,
+      "p50": 85.1,
+      "p90": 89.0
+     },
+     "CH": {
+      "n": 2541,
+      "p10": 80.4,
+      "p50": 86.8,
+      "p90": 90.3
+     },
+     "ST": {
+      "n": 2459,
+      "p10": 78.5,
+      "p50": 81.2,
+      "p90": 84.2
+     },
+     "CU": {
+      "n": 1763,
+      "p10": 76.3,
+      "p50": 79.4,
+      "p90": 81.5
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:KC",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/kc.png",
+   "key_numbers": {
+    "n_pitches": 22717,
+    "n_pitch_types_used": 14,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 30.4,
+    "outcome_mix_pct": {
+     "strike": 45.8,
+     "ball": 36.2,
+     "in-play": 18.0
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 6902,
+      "p10": 91.3,
+      "p50": 93.9,
+      "p90": 97.2
+     },
+     "SL": {
+      "n": 3997,
+      "p10": 83.3,
+      "p50": 85.8,
+      "p90": 88.2
+     },
+     "CH": {
+      "n": 3302,
+      "p10": 79.4,
+      "p50": 84.7,
+      "p90": 89.3
+     },
+     "SI": {
+      "n": 2923,
+      "p10": 91.0,
+      "p50": 93.8,
+      "p90": 97.2
+     },
+     "FC": {
+      "n": 1919,
+      "p10": 86.8,
+      "p50": 89.0,
+      "p90": 92.0
+     },
+     "CU": {
+      "n": 1746,
+      "p10": 74.9,
+      "p50": 79.7,
+      "p90": 83.2
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:LAA",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/laa.png",
+   "key_numbers": {
+    "n_pitches": 23750,
+    "n_pitch_types_used": 14,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 26.1,
+    "outcome_mix_pct": {
+     "strike": 45.4,
+     "ball": 36.9,
+     "in-play": 17.7
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 6203,
+      "p10": 88.5,
+      "p50": 94.6,
+      "p90": 97.4
+     },
+     "SI": {
+      "n": 4599,
+      "p10": 86.1,
+      "p50": 95.2,
+      "p90": 97.9
+     },
+     "SL": {
+      "n": 3876,
+      "p10": 82.8,
+      "p50": 87.3,
+      "p90": 89.9
+     },
+     "CH": {
+      "n": 3715,
+      "p10": 78.1,
+      "p50": 81.1,
+      "p90": 89.1
+     },
+     "FC": {
+      "n": 1829,
+      "p10": 83.9,
+      "p50": 89.9,
+      "p90": 93.9
+     },
+     "CU": {
+      "n": 1131,
+      "p10": 71.3,
+      "p50": 77.2,
+      "p90": 81.8
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:LAD",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/lad.png",
+   "key_numbers": {
+    "n_pitches": 23174,
+    "n_pitch_types_used": 16,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 35.8,
+    "outcome_mix_pct": {
+     "strike": 46.7,
+     "ball": 36.8,
+     "in-play": 16.5
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 8290,
+      "p10": 91.5,
+      "p50": 95.0,
+      "p90": 97.6
+     },
+     "SL": {
+      "n": 4184,
+      "p10": 84.5,
+      "p50": 87.0,
+      "p90": 89.7
+     },
+     "SI": {
+      "n": 2329,
+      "p10": 93.7,
+      "p50": 95.3,
+      "p90": 97.4
+     },
+     "CU": {
+      "n": 2062,
+      "p10": 72.7,
+      "p50": 79.2,
+      "p90": 83.3
+     },
+     "ST": {
+      "n": 1975,
+      "p10": 81.1,
+      "p50": 84.8,
+      "p90": 86.6
+     },
+     "FC": {
+      "n": 1416,
+      "p10": 89.5,
+      "p50": 91.7,
+      "p90": 93.8
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:MIA",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/mia.png",
+   "key_numbers": {
+    "n_pitches": 23224,
+    "n_pitch_types_used": 12,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 23.5,
+    "outcome_mix_pct": {
+     "strike": 46.2,
+     "ball": 35.9,
+     "in-play": 18.0
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 5452,
+      "p10": 91.9,
+      "p50": 95.5,
+      "p90": 98.4
+     },
+     "SL": {
+      "n": 3713,
+      "p10": 84.3,
+      "p50": 87.1,
+      "p90": 89.9
+     },
+     "SI": {
+      "n": 3241,
+      "p10": 92.6,
+      "p50": 95.5,
+      "p90": 97.9
+     },
+     "ST": {
+      "n": 2983,
+      "p10": 79.7,
+      "p50": 83.8,
+      "p90": 87.1
+     },
+     "CH": {
+      "n": 2931,
+      "p10": 84.6,
+      "p50": 89.7,
+      "p90": 94.5
+     },
+     "CU": {
+      "n": 2085,
+      "p10": 78.2,
+      "p50": 82.2,
+      "p90": 85.6
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:MIL",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/mil.png",
+   "key_numbers": {
+    "n_pitches": 23108,
+    "n_pitch_types_used": 14,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 27.6,
+    "outcome_mix_pct": {
+     "strike": 46.8,
+     "ball": 36.4,
+     "in-play": 16.8
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 6377,
+      "p10": 91.2,
+      "p50": 94.5,
+      "p90": 99.1
+     },
+     "SI": {
+      "n": 5314,
+      "p10": 90.3,
+      "p50": 94.0,
+      "p90": 98.3
+     },
+     "SL": {
+      "n": 2653,
+      "p10": 83.5,
+      "p50": 86.3,
+      "p90": 91.8
+     },
+     "FC": {
+      "n": 2573,
+      "p10": 86.1,
+      "p50": 88.9,
+      "p90": 92.6
+     },
+     "CH": {
+      "n": 2358,
+      "p10": 82.1,
+      "p50": 86.7,
+      "p90": 90.3
+     },
+     "CU": {
+      "n": 1842,
+      "p10": 77.6,
+      "p50": 80.3,
+      "p90": 84.2
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:MIN",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/min.png",
+   "key_numbers": {
+    "n_pitches": 23338,
+    "n_pitch_types_used": 17,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 34.9,
+    "outcome_mix_pct": {
+     "strike": 46.9,
+     "ball": 35.5,
+     "in-play": 17.6
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 8134,
+      "p10": 90.9,
+      "p50": 94.2,
+      "p90": 97.3
+     },
+     "CH": {
+      "n": 2936,
+      "p10": 82.0,
+      "p50": 86.0,
+      "p90": 90.3
+     },
+     "SL": {
+      "n": 2570,
+      "p10": 83.4,
+      "p50": 86.2,
+      "p90": 89.3
+     },
+     "SI": {
+      "n": 2286,
+      "p10": 91.2,
+      "p50": 94.0,
+      "p90": 96.4
+     },
+     "FC": {
+      "n": 2075,
+      "p10": 85.5,
+      "p50": 89.7,
+      "p90": 92.4
+     },
+     "ST": {
+      "n": 1985,
+      "p10": 78.8,
+      "p50": 82.7,
+      "p90": 87.9
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:NYM",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/nym.png",
+   "key_numbers": {
+    "n_pitches": 23661,
+    "n_pitch_types_used": 15,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 26.5,
+    "outcome_mix_pct": {
+     "strike": 46.5,
+     "ball": 36.5,
+     "in-play": 17.1
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 6264,
+      "p10": 91.6,
+      "p50": 95.0,
+      "p90": 98.4
+     },
+     "SI": {
+      "n": 4713,
+      "p10": 89.6,
+      "p50": 93.6,
+      "p90": 96.7
+     },
+     "SL": {
+      "n": 3739,
+      "p10": 83.3,
+      "p50": 86.7,
+      "p90": 89.9
+     },
+     "ST": {
+      "n": 2512,
+      "p10": 77.7,
+      "p50": 82.2,
+      "p90": 85.9
+     },
+     "CH": {
+      "n": 2478,
+      "p10": 83.3,
+      "p50": 87.5,
+      "p90": 90.7
+     },
+     "FC": {
+      "n": 1765,
+      "p10": 86.8,
+      "p50": 89.9,
+      "p90": 92.7
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:NYY",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/nyy.png",
+   "key_numbers": {
+    "n_pitches": 23367,
+    "n_pitch_types_used": 14,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 28.4,
+    "outcome_mix_pct": {
+     "strike": 46.5,
+     "ball": 36.6,
+     "in-play": 16.9
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 6641,
+      "p10": 92.0,
+      "p50": 94.5,
+      "p90": 97.4
+     },
+     "SI": {
+      "n": 4656,
+      "p10": 88.1,
+      "p50": 93.0,
+      "p90": 96.2
+     },
+     "CH": {
+      "n": 2907,
+      "p10": 81.8,
+      "p50": 85.5,
+      "p90": 89.6
+     },
+     "FC": {
+      "n": 2395,
+      "p10": 84.6,
+      "p50": 92.3,
+      "p90": 95.5
+     },
+     "SL": {
+      "n": 2305,
+      "p10": 83.3,
+      "p50": 86.0,
+      "p90": 88.6
+     },
+     "CU": {
+      "n": 1620,
+      "p10": 73.6,
+      "p50": 77.7,
+      "p90": 83.5
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:PHI",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/phi.png",
+   "key_numbers": {
+    "n_pitches": 22677,
+    "n_pitch_types_used": 12,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 25.5,
+    "outcome_mix_pct": {
+     "strike": 47.3,
+     "ball": 35.2,
+     "in-play": 17.6
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 5787,
+      "p10": 91.6,
+      "p50": 95.4,
+      "p90": 97.9
+     },
+     "SI": {
+      "n": 4676,
+      "p10": 90.1,
+      "p50": 94.5,
+      "p90": 97.0
+     },
+     "SL": {
+      "n": 2616,
+      "p10": 82.1,
+      "p50": 85.9,
+      "p90": 88.1
+     },
+     "CH": {
+      "n": 2549,
+      "p10": 79.7,
+      "p50": 86.1,
+      "p90": 88.7
+     },
+     "ST": {
+      "n": 2197,
+      "p10": 82.3,
+      "p50": 85.6,
+      "p90": 87.7
+     },
+     "FC": {
+      "n": 2031,
+      "p10": 85.5,
+      "p50": 87.8,
+      "p90": 92.5
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:PIT",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/pit.png",
+   "key_numbers": {
+    "n_pitches": 22590,
+    "n_pitch_types_used": 13,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 38.3,
+    "outcome_mix_pct": {
+     "strike": 46.8,
+     "ball": 35.5,
+     "in-play": 17.7
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 8655,
+      "p10": 90.9,
+      "p50": 95.1,
+      "p90": 98.3
+     },
+     "SL": {
+      "n": 3547,
+      "p10": 82.5,
+      "p50": 86.7,
+      "p90": 91.0
+     },
+     "SI": {
+      "n": 2743,
+      "p10": 90.6,
+      "p50": 94.4,
+      "p90": 97.6
+     },
+     "CU": {
+      "n": 1960,
+      "p10": 76.4,
+      "p50": 79.4,
+      "p90": 85.2
+     },
+     "ST": {
+      "n": 1950,
+      "p10": 80.6,
+      "p50": 83.0,
+      "p90": 85.1
+     },
+     "CH": {
+      "n": 1615,
+      "p10": 82.0,
+      "p50": 87.8,
+      "p90": 90.7
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:SD",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/sd.png",
+   "key_numbers": {
+    "n_pitches": 22822,
+    "n_pitch_types_used": 15,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 34.1,
+    "outcome_mix_pct": {
+     "strike": 46.9,
+     "ball": 36.3,
+     "in-play": 16.8
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 7777,
+      "p10": 91.8,
+      "p50": 94.9,
+      "p90": 98.7
+     },
+     "SL": {
+      "n": 3672,
+      "p10": 84.1,
+      "p50": 87.7,
+      "p90": 89.9
+     },
+     "SI": {
+      "n": 3285,
+      "p10": 91.6,
+      "p50": 94.4,
+      "p90": 98.1
+     },
+     "CH": {
+      "n": 2103,
+      "p10": 81.0,
+      "p50": 87.7,
+      "p90": 90.5
+     },
+     "ST": {
+      "n": 2102,
+      "p10": 78.6,
+      "p50": 82.0,
+      "p90": 84.1
+     },
+     "FC": {
+      "n": 1356,
+      "p10": 87.3,
+      "p50": 90.2,
+      "p90": 92.0
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:SEA",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/sea.png",
+   "key_numbers": {
+    "n_pitches": 23026,
+    "n_pitch_types_used": 14,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 32.1,
+    "outcome_mix_pct": {
+     "strike": 47.4,
+     "ball": 35.0,
+     "in-play": 17.5
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 7382,
+      "p10": 93.4,
+      "p50": 95.3,
+      "p90": 97.1
+     },
+     "SI": {
+      "n": 5362,
+      "p10": 93.0,
+      "p50": 95.4,
+      "p90": 97.6
+     },
+     "SL": {
+      "n": 3689,
+      "p10": 83.1,
+      "p50": 86.2,
+      "p90": 89.0
+     },
+     "ST": {
+      "n": 2387,
+      "p10": 80.2,
+      "p50": 83.7,
+      "p90": 87.5
+     },
+     "CH": {
+      "n": 1399,
+      "p10": 85.0,
+      "p50": 87.5,
+      "p90": 90.4
+     },
+     "FC": {
+      "n": 902,
+      "p10": 86.1,
+      "p50": 88.9,
+      "p90": 94.6
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:SF",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/sf.png",
+   "key_numbers": {
+    "n_pitches": 23116,
+    "n_pitch_types_used": 14,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 25.3,
+    "outcome_mix_pct": {
+     "strike": 46.6,
+     "ball": 35.8,
+     "in-play": 17.6
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 5841,
+      "p10": 92.2,
+      "p50": 94.3,
+      "p90": 97.2
+     },
+     "SI": {
+      "n": 5118,
+      "p10": 90.9,
+      "p50": 93.5,
+      "p90": 97.0
+     },
+     "SL": {
+      "n": 3914,
+      "p10": 83.6,
+      "p50": 87.1,
+      "p90": 90.0
+     },
+     "CH": {
+      "n": 2637,
+      "p10": 83.6,
+      "p50": 86.4,
+      "p90": 88.7
+     },
+     "ST": {
+      "n": 1914,
+      "p10": 80.6,
+      "p50": 84.0,
+      "p90": 85.7
+     },
+     "CU": {
+      "n": 1649,
+      "p10": 75.8,
+      "p50": 77.9,
+      "p90": 81.8
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:STL",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/stl.png",
+   "key_numbers": {
+    "n_pitches": 22596,
+    "n_pitch_types_used": 12,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 22.7,
+    "outcome_mix_pct": {
+     "strike": 44.9,
+     "ball": 36.1,
+     "in-play": 19.0
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 5118,
+      "p10": 91.7,
+      "p50": 94.2,
+      "p90": 96.8
+     },
+     "SI": {
+      "n": 4963,
+      "p10": 91.6,
+      "p50": 93.9,
+      "p90": 97.2
+     },
+     "SL": {
+      "n": 3567,
+      "p10": 84.4,
+      "p50": 87.6,
+      "p90": 90.8
+     },
+     "ST": {
+      "n": 2467,
+      "p10": 81.6,
+      "p50": 84.2,
+      "p90": 87.1
+     },
+     "CU": {
+      "n": 2448,
+      "p10": 75.4,
+      "p50": 79.4,
+      "p90": 83.8
+     },
+     "CH": {
+      "n": 1850,
+      "p10": 84.2,
+      "p50": 87.0,
+      "p90": 89.6
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:TB",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/tb.png",
+   "key_numbers": {
+    "n_pitches": 22498,
+    "n_pitch_types_used": 14,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 35.5,
+    "outcome_mix_pct": {
+     "strike": 47.6,
+     "ball": 35.1,
+     "in-play": 17.4
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 7977,
+      "p10": 92.7,
+      "p50": 95.9,
+      "p90": 98.5
+     },
+     "SL": {
+      "n": 3400,
+      "p10": 85.3,
+      "p50": 88.3,
+      "p90": 90.7
+     },
+     "CH": {
+      "n": 2670,
+      "p10": 83.6,
+      "p50": 87.0,
+      "p90": 89.8
+     },
+     "SI": {
+      "n": 2596,
+      "p10": 90.8,
+      "p50": 94.8,
+      "p90": 96.9
+     },
+     "FC": {
+      "n": 2467,
+      "p10": 87.6,
+      "p50": 89.8,
+      "p90": 91.9
+     },
+     "FS": {
+      "n": 1263,
+      "p10": 82.7,
+      "p50": 84.4,
+      "p90": 92.6
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:TEX",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/tex.png",
+   "key_numbers": {
+    "n_pitches": 22244,
+    "n_pitch_types_used": 14,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 29.8,
+    "outcome_mix_pct": {
+     "strike": 46.7,
+     "ball": 35.5,
+     "in-play": 17.8
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 6627,
+      "p10": 91.5,
+      "p50": 94.8,
+      "p90": 98.0
+     },
+     "SL": {
+      "n": 4052,
+      "p10": 80.4,
+      "p50": 86.3,
+      "p90": 90.8
+     },
+     "SI": {
+      "n": 2765,
+      "p10": 88.1,
+      "p50": 92.6,
+      "p90": 96.1
+     },
+     "FC": {
+      "n": 2703,
+      "p10": 86.0,
+      "p50": 89.6,
+      "p90": 91.8
+     },
+     "CH": {
+      "n": 2535,
+      "p10": 81.7,
+      "p50": 87.0,
+      "p90": 90.9
+     },
+     "CU": {
+      "n": 1324,
+      "p10": 74.9,
+      "p50": 77.9,
+      "p90": 83.6
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:TOR",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/tor.png",
+   "key_numbers": {
+    "n_pitches": 23028,
+    "n_pitch_types_used": 16,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 31.2,
+    "outcome_mix_pct": {
+     "strike": 46.5,
+     "ball": 36.4,
+     "in-play": 17.1
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 7177,
+      "p10": 91.4,
+      "p50": 93.9,
+      "p90": 96.7
+     },
+     "SI": {
+      "n": 3305,
+      "p10": 90.4,
+      "p50": 92.4,
+      "p90": 95.0
+     },
+     "SL": {
+      "n": 3198,
+      "p10": 82.4,
+      "p50": 86.3,
+      "p90": 88.8
+     },
+     "FS": {
+      "n": 2073,
+      "p10": 82.2,
+      "p50": 84.8,
+      "p90": 89.7
+     },
+     "FC": {
+      "n": 1908,
+      "p10": 86.1,
+      "p50": 89.0,
+      "p90": 91.5
+     },
+     "CU": {
+      "n": 1520,
+      "p10": 70.9,
+      "p50": 75.5,
+      "p90": 84.4
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "team:WSH",
+   "card_path": "docs/img/atlas/mlb_pitch/by_team/wsh.png",
+   "key_numbers": {
+    "n_pitches": 23830,
+    "n_pitch_types_used": 15,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 40.6,
+    "outcome_mix_pct": {
+     "strike": 45.4,
+     "ball": 36.7,
+     "in-play": 17.9
+    },
+    "velo_percentiles_by_type": {
+     "FF": {
+      "n": 9679,
+      "p10": 90.5,
+      "p50": 94.2,
+      "p90": 96.4
+     },
+     "SI": {
+      "n": 3514,
+      "p10": 90.2,
+      "p50": 94.7,
+      "p90": 98.1
+     },
+     "SL": {
+      "n": 3098,
+      "p10": 81.3,
+      "p50": 85.5,
+      "p90": 88.1
+     },
+     "CU": {
+      "n": 2339,
+      "p10": 76.6,
+      "p50": 80.6,
+      "p90": 83.1
+     },
+     "CH": {
+      "n": 2143,
+      "p10": 80.9,
+      "p50": 85.9,
+      "p90": 88.9
+     },
+     "ST": {
+      "n": 981,
+      "p10": 76.1,
+      "p50": 79.1,
+      "p90": 84.4
+     }
+    }
+   },
+   "floors": "30 real MLB franchises; AL/NL All-Star-Game placeholder codes excluded from the 32 raw team codes in the pull. team = PITCHING team, derived as home_team when inning_topbot=='Top' else away_team (defense is whichever side is not currently batting). no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "count:0-0",
+   "card_path": "docs/img/atlas/mlb_pitch/by_count/0_0.png",
+   "key_numbers": {
+    "balls": 0,
+    "strikes": 0,
+    "n_pitches": 178407,
+    "pct_of_all_pitches": 25.74,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 32.6,
+    "outcome_mix_pct": {
+     "strike": 50.4,
+     "ball": 38.1,
+     "in-play": 11.5
+    }
+   },
+   "floors": "all 12 valid (balls 0-3) x (strikes 0-2) count states present in the pull included, no exclusion floor; smallest state has n=7,457 pitches league-wide, largest n=178,407. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "count:0-1",
+   "card_path": "docs/img/atlas/mlb_pitch/by_count/0_1.png",
+   "key_numbers": {
+    "balls": 0,
+    "strikes": 1,
+    "n_pitches": 89820,
+    "pct_of_all_pitches": 12.96,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 28.2,
+    "outcome_mix_pct": {
+     "strike": 42.3,
+     "ball": 40.2,
+     "in-play": 17.5
+    }
+   },
+   "floors": "all 12 valid (balls 0-3) x (strikes 0-2) count states present in the pull included, no exclusion floor; smallest state has n=7,457 pitches league-wide, largest n=178,407. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "count:0-2",
+   "card_path": "docs/img/atlas/mlb_pitch/by_count/0_2.png",
+   "key_numbers": {
+    "balls": 0,
+    "strikes": 2,
+    "n_pitches": 46656,
+    "pct_of_all_pitches": 6.73,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 31.7,
+    "outcome_mix_pct": {
+     "ball": 46.7,
+     "strike": 36.0,
+     "in-play": 17.3
+    }
+   },
+   "floors": "all 12 valid (balls 0-3) x (strikes 0-2) count states present in the pull included, no exclusion floor; smallest state has n=7,457 pitches league-wide, largest n=178,407. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "count:1-0",
+   "card_path": "docs/img/atlas/mlb_pitch/by_count/1_0.png",
+   "key_numbers": {
+    "balls": 1,
+    "strikes": 0,
+    "n_pitches": 67516,
+    "pct_of_all_pitches": 9.74,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 30.8,
+    "outcome_mix_pct": {
+     "strike": 49.9,
+     "ball": 34.4,
+     "in-play": 15.7
+    }
+   },
+   "floors": "all 12 valid (balls 0-3) x (strikes 0-2) count states present in the pull included, no exclusion floor; smallest state has n=7,457 pitches league-wide, largest n=178,407. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "count:1-1",
+   "card_path": "docs/img/atlas/mlb_pitch/by_count/1_1.png",
+   "key_numbers": {
+    "balls": 1,
+    "strikes": 1,
+    "n_pitches": 69473,
+    "pct_of_all_pitches": 10.02,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 27.9,
+    "outcome_mix_pct": {
+     "strike": 45.4,
+     "ball": 34.6,
+     "in-play": 20.0
+    }
+   },
+   "floors": "all 12 valid (balls 0-3) x (strikes 0-2) count states present in the pull included, no exclusion floor; smallest state has n=7,457 pitches league-wide, largest n=178,407. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "count:1-2",
+   "card_path": "docs/img/atlas/mlb_pitch/by_count/1_2.png",
+   "key_numbers": {
+    "balls": 1,
+    "strikes": 2,
+    "n_pitches": 67807,
+    "pct_of_all_pitches": 9.78,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 30.5,
+    "outcome_mix_pct": {
+     "strike": 40.7,
+     "ball": 39.1,
+     "in-play": 20.2
+    }
+   },
+   "floors": "all 12 valid (balls 0-3) x (strikes 0-2) count states present in the pull included, no exclusion floor; smallest state has n=7,457 pitches league-wide, largest n=178,407. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "count:2-0",
+   "card_path": "docs/img/atlas/mlb_pitch/by_count/2_0.png",
+   "key_numbers": {
+    "balls": 2,
+    "strikes": 0,
+    "n_pitches": 23053,
+    "pct_of_all_pitches": 3.33,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 36.8,
+    "outcome_mix_pct": {
+     "strike": 51.7,
+     "ball": 32.5,
+     "in-play": 15.8
+    }
+   },
+   "floors": "all 12 valid (balls 0-3) x (strikes 0-2) count states present in the pull included, no exclusion floor; smallest state has n=7,457 pitches league-wide, largest n=178,407. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "count:2-1",
+   "card_path": "docs/img/atlas/mlb_pitch/by_count/2_1.png",
+   "key_numbers": {
+    "balls": 2,
+    "strikes": 1,
+    "n_pitches": 35667,
+    "pct_of_all_pitches": 5.15,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 31.1,
+    "outcome_mix_pct": {
+     "strike": 48.3,
+     "ball": 29.1,
+     "in-play": 22.6
+    }
+   },
+   "floors": "all 12 valid (balls 0-3) x (strikes 0-2) count states present in the pull included, no exclusion floor; smallest state has n=7,457 pitches league-wide, largest n=178,407. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "count:2-2",
+   "card_path": "docs/img/atlas/mlb_pitch/by_count/2_2.png",
+   "key_numbers": {
+    "balls": 2,
+    "strikes": 2,
+    "n_pitches": 57832,
+    "pct_of_all_pitches": 8.34,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 30.8,
+    "outcome_mix_pct": {
+     "strike": 44.9,
+     "ball": 31.1,
+     "in-play": 24.0
+    }
+   },
+   "floors": "all 12 valid (balls 0-3) x (strikes 0-2) count states present in the pull included, no exclusion floor; smallest state has n=7,457 pitches league-wide, largest n=178,407. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "count:3-0",
+   "card_path": "docs/img/atlas/mlb_pitch/by_count/3_0.png",
+   "key_numbers": {
+    "balls": 3,
+    "strikes": 0,
+    "n_pitches": 7457,
+    "pct_of_all_pitches": 1.08,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 60.6,
+    "outcome_mix_pct": {
+     "strike": 57.2,
+     "ball": 39.3,
+     "in-play": 3.4
+    }
+   },
+   "floors": "all 12 valid (balls 0-3) x (strikes 0-2) count states present in the pull included, no exclusion floor; smallest state has n=7,457 pitches league-wide, largest n=178,407. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "count:3-1",
+   "card_path": "docs/img/atlas/mlb_pitch/by_count/3_1.png",
+   "key_numbers": {
+    "balls": 3,
+    "strikes": 1,
+    "n_pitches": 14543,
+    "pct_of_all_pitches": 2.1,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 42.4,
+    "outcome_mix_pct": {
+     "strike": 50.0,
+     "ball": 28.1,
+     "in-play": 21.8
+    }
+   },
+   "floors": "all 12 valid (balls 0-3) x (strikes 0-2) count states present in the pull included, no exclusion floor; smallest state has n=7,457 pitches league-wide, largest n=178,407. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  },
+  {
+   "entity": "count:3-2",
+   "card_path": "docs/img/atlas/mlb_pitch/by_count/3_2.png",
+   "key_numbers": {
+    "balls": 3,
+    "strikes": 2,
+    "n_pitches": 34806,
+    "pct_of_all_pitches": 5.02,
+    "top_pitch_type": "FF",
+    "top_pitch_type_pct": 37.0,
+    "outcome_mix_pct": {
+     "strike": 48.3,
+     "in-play": 28.8,
+     "ball": 23.0
+    }
+   },
+   "floors": "all 12 valid (balls 0-3) x (strikes 0-2) count states present in the pull included, no exclusion floor; smallest state has n=7,457 pitches league-wide, largest n=178,407. no per-pitch swing/miss field in this pull (no `description` column; `type` merges called+swinging+foul into one S bucket, `des` only fires on PA-ending pitches) -- outcome mix (ball/strike/in-play) substitutes",
+   "as_of": "2025-09-28"
+  }
+ ]
+}

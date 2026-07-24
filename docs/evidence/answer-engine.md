@@ -44,7 +44,7 @@ anything the gates have not already proven or disproven. Second, `contract_clien
 [AI Consumer Contract](../AI_CONSUMER_CONTRACT.md) made executable: it classifies, resolves,
 and formats with **no model call at all**, and the `test_answer_consistency_*` suite proves a
 direct resolver call and the contract client return byte-identical numbers for the same
-question. Mechanism answers are additionally capped as LOCAL, single-corpus findings by the
+question. Mechanism answers are capped as LOCAL, single-corpus findings by the
 envelope's own `framing` field -- confirmed effects are never inflated into a market or
 dollar claim.
 
