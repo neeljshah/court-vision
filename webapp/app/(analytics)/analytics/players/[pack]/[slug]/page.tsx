@@ -11,11 +11,13 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { JoinedFindings } from "@/components/analytics/JoinedFindings";
 import { PercentileBar } from "@/components/analytics/PercentileBar";
 import { Receipt, type ReceiptData } from "@/components/analytics/Receipt";
 import { ScoutNote, type ScoutEnvelope } from "@/components/analytics/ScoutNote";
 import { ScoutQuestions } from "@/components/analytics/ScoutQuestions";
 import { asOfDate } from "@/lib/analytics/format";
+import { packJoins, packPercentiles } from "@/lib/analytics/showcaseData";
 
 type KN = Record<string, unknown>;
 type Entry = { entity: string; card_path: string; key_numbers: KN; floors?: string; as_of?: string };
@@ -78,13 +80,6 @@ function moduleTitle(id: string): string {
     } catch { _modTitles = {}; }
   }
   return _modTitles[id] || id.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-}
-type PctPack = { n_in_pack: number; entities: Record<string, Record<string, number>> };
-// Parsed once per build, like _modTitles above; calibration (26 entities, under the artifact's min_n_ranked=30 floor) ships an empty entities map, so no bar renders there.
-let _percentiles: Record<string, PctPack> | null = null;
-function packPercentiles(pack: string): PctPack | null {
-  if (!_percentiles) { try { _percentiles = (JSON.parse(readFileSync(join(SHOWCASE, "entity_percentiles.json"), "utf-8")) as { packs?: Record<string, PctPack> }).packs || {}; } catch { _percentiles = {}; } }
-  return _percentiles[pack] || null;
 }
 // Only surface Scout pills whose answer actually lives in the committed corpus.
 // The corpus entry's source_artifact IS this entity's insight file, so match on
@@ -177,6 +172,9 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
   const cells = statCells(entry.key_numbers);
   const pctPack = packPercentiles(params.pack);
   const entityPcts = pctPack?.entities[params.slug];
+  // entity_joins.json: only nba_teams/nba_players carry any; 137 of 482 player cards legitimately have none.
+  const joinPack = packJoins(params.pack);
+  const joinItems = joinPack?.entities[params.slug]?.items || [];
 
   // The receipt popover header names WHAT this number cites (the field path), like
   // m/[id]/page.tsx does -- not the verdict token, which the dot + verdict already
@@ -268,6 +266,8 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
               <p style={{ margin: 0, color: "var(--ink-2)", fontSize: 14.5, lineHeight: 1.6 }}>{insight.context_note}</p>
             </section>
           ) : null}
+
+          {joinItems.length ? <JoinedFindings pack={params.pack} items={joinItems} coverage={joinPack?.coverage || { n_in_pack: 0 }} /> : null}
         </div>
 
         <aside style={{ flex: "1 1 240px" }}>

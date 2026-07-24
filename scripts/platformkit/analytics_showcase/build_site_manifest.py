@@ -32,6 +32,8 @@ _SKIP = {
     "share_ledger.json",
     # Per-entity percentile ranks feeding the entity-card bars, not a catalog module.
     "entity_percentiles.json",
+    # Cross-module joins layered onto entity cards, not a catalog module.
+    "entity_joins.json",
 }
 
 # Fields, in priority order, whose value is an honest one-line summary of a module.
