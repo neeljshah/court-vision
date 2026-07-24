@@ -66,6 +66,12 @@ const FINDINGS: Array<{ href: string; title: string; blurb: string }> = [
     blurb:
       "Empirical-Bayes shrinkage on the MLB rate leaderboards: small-sample 'leaders' get pulled toward the group mean by how few trials back them, while a huge-sample rate barely moves. The raw-vs-shrunk gap is the honesty.",
   },
+  {
+    href: "/analytics/findings/reliability",
+    title: "Are our probabilities honest?",
+    blurb:
+      "Calibration reliability diagrams and the Murphy Brier decomposition: our model's Brier trails the market's (0.2377 vs 0.2067 in MLB), and the gap is resolution -- information we don't have -- not miscalibration. We match or trail the close; we never claim to beat it.",
+  },
 ];
 
 const h1: CSSProperties = {
