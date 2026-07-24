@@ -1,0 +1,40 @@
+{
+  "slug": "dyson_daniels",
+  "pack": "nba_players",
+  "display_name": "Dyson Daniels",
+  "one_liner": "Dyson Daniels shoots 61.1 percent from the free-throw line -- the weakest line in this marquee set -- while contributing 6.7 rebounds and 5.2 assists per 36 minutes.",
+  "three_things": [
+    "61.1 percent from the stripe is a genuine constraint on the offensive role.",
+    "The value shows up elsewhere: 6.7 rebounds and 5.2 assists per 36 from a guard.",
+    "Scoring stays low at 13 points per 36 on 29.6 percent from three."
+  ],
+  "context_note": "Per-36-minute rates over a 3-season sample (seasons_played: 3), not per-game and not full-career figures. The manifest is descriptive_only: no adjustment for opponent, teammates, role, or shot difficulty, and a career_min_minutes>=800 inclusion floor applies. Games and minutes measure availability, not how well those minutes were used. This manifest has no defensive columns -- steals, deflections, and matchup data are simply absent, so nothing here speaks to the part of his game most often discussed.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Dyson Daniels].key_numbers.career_ft_pct",
+      "value": 61.1
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Dyson Daniels].key_numbers.career_reb_per36",
+      "value": 6.7
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Dyson Daniels].key_numbers.career_ast_per36",
+      "value": 5.2
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Dyson Daniels].key_numbers.career_pts_per36",
+      "value": 13
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Dyson Daniels].key_numbers.career_fg3_pct",
+      "value": 29.6
+    }
+  ],
+  "as_of": "2026-04-12"
+}

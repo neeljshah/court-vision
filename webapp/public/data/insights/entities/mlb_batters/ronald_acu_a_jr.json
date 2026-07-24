@@ -10,13 +10,13 @@
  ],
  "context_note": "Descriptive only, from a single 2025 Statcast pull (>=300 pitches-faced floor). His 1,766 pitches and 520 batted balls are the smallest sample in this group, so every rate here carries more sampling noise than the higher-volume hitters. Estimated wOBA on contact is a batted-ball model over those 520 balls and ignores walks and strikeouts. No swing/miss or launch-angle column in this pull. Not park- or opponent-adjusted; not a prediction. 'Fewest in this group' is scoped to these twelve hitters.",
  "cited": [
-  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Ronald Acuna Jr.].key_numbers.avg_estimated_woba_on_contact", "value": 0.397},
-  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Ronald Acuna Jr.].key_numbers.n_batted_balls", "value": 520},
-  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Ronald Acuna Jr.].key_numbers.pitches_faced", "value": 1766},
-  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Ronald Acuna Jr.].key_numbers.exit_velo_p90", "value": 106.1},
-  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Ronald Acuna Jr.].key_numbers.avg_exit_velo", "value": 83.4},
-  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Ronald Acuna Jr.].key_numbers.top_pitch_type_seen", "value": "FF"},
-  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Ronald Acuna Jr.].key_numbers.top_pitch_type_seen_pct", "value": 29.6}
+  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Ronald Acuña Jr.].key_numbers.avg_estimated_woba_on_contact", "value": 0.397},
+  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Ronald Acuña Jr.].key_numbers.n_batted_balls", "value": 520},
+  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Ronald Acuña Jr.].key_numbers.pitches_faced", "value": 1766},
+  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Ronald Acuña Jr.].key_numbers.exit_velo_p90", "value": 106.1},
+  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Ronald Acuña Jr.].key_numbers.avg_exit_velo", "value": 83.4},
+  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Ronald Acuña Jr.].key_numbers.top_pitch_type_seen", "value": "FF"},
+  {"path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json", "field": "entries[entity=Ronald Acuña Jr.].key_numbers.top_pitch_type_seen_pct", "value": 29.6}
  ],
  "as_of": "2025-09-28"
 }

@@ -1,0 +1,40 @@
+{
+  "slug": "sac",
+  "pack": "nba_teams",
+  "display_name": "Sacramento Kings",
+  "one_liner": "Sacramento scored 110.9 points per game in the latest season, third-lowest in this manifest, with a 22.6 PRA-per-36 rate from its minutes leader.",
+  "three_things": [
+    "110.9 points per game on a middling 101.5 pace proxy.",
+    "Keegan Murray led the team with 5,996.7 minutes.",
+    "His 22.6 PRA per 36 is one of the two lowest top-contributor rates in the league here."
+  ],
+  "context_note": "The 'top contributor' is the player with the most total minutes for that team across the 3-season sample, not necessarily its best or highest-scoring player. PRA-per-36 sums points, rebounds, and assists per 36 minutes -- a raw box rate, not an impact metric. ppg_latest_season and pace_proxy_latest_season are single-season figures while games_total spans three seasons, and pace_proxy is a proxy, not official possession-based pace. The manifest is descriptive_only, with no schedule, opponent, or roster-continuity adjustment. League-wide rank statements were computed by sorting all 30 teams in this manifest on the named field; the underlying values are read verbatim.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=SAC].key_numbers.ppg_latest_season",
+      "value": 110.9
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=SAC].key_numbers.pace_proxy_latest_season",
+      "value": 101.5
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=SAC].key_numbers.top_contributor",
+      "value": "Keegan Murray"
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=SAC].key_numbers.top_contributor_minutes",
+      "value": 5996.7
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=SAC].key_numbers.top_contributor_pra_per36",
+      "value": 22.6
+    }
+  ],
+  "as_of": "2026-04-12"
+}

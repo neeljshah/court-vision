@@ -1,0 +1,45 @@
+{
+  "slug": "chelsea",
+  "pack": "soccer",
+  "display_name": "Chelsea",
+  "one_liner": "Chelsea kept zero clean sheets in its last 10 matches (clean_sheet_rate_l10 0), conceding 1.9 goals per game over that span.",
+  "three_things": [
+    "Not one shutout in the trailing-10 window, against a 0.2432 clean-sheet rate across the season.",
+    "The defense is the whole story: ga_l10 1.9 against gf_l10 0.9.",
+    "Points followed -- ppg_l10 0.7 with a 0.2 win rate."
+  ],
+  "context_note": "Descriptive trailing-10 and season rates as of the corpus end -- not a prediction and not an edge claim. Ten-match windows are small: one hot or cold stretch moves ppg_l10, gd_l10, and the clean-sheet rates substantially. Home and away splits are five-match-scale samples inside that window. Nothing here adjusts for roster, injuries, competition, or fixture strength.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_soccer_manifest.json",
+      "field": "entries[entity=Chelsea].key_numbers.clean_sheet_rate_l10",
+      "value": 0
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_soccer_manifest.json",
+      "field": "entries[entity=Chelsea].key_numbers.ga_l10",
+      "value": 1.9
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_soccer_manifest.json",
+      "field": "entries[entity=Chelsea].key_numbers.clean_sheet_rate_season",
+      "value": 0.2432
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_soccer_manifest.json",
+      "field": "entries[entity=Chelsea].key_numbers.gf_l10",
+      "value": 0.9
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_soccer_manifest.json",
+      "field": "entries[entity=Chelsea].key_numbers.ppg_l10",
+      "value": 0.7
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_soccer_manifest.json",
+      "field": "entries[entity=Chelsea].key_numbers.winrate_l10",
+      "value": 0.2
+    }
+  ],
+  "as_of": "2026-07-18T17:21:08.108324+00:00"
+}

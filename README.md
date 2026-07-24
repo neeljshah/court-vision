@@ -1,41 +1,43 @@
 
-# CourtVision -- a multi-sport prediction + decision-support AI with deep per-player intelligence
+# CourtVision -- a receipt-cited multi-sport analytics product, on top of a calibrated prediction engine
 
 [![proof-harness](https://github.com/neeljshah/court-vision/actions/workflows/proof.yml/badge.svg)](https://github.com/neeljshah/court-vision/actions/workflows/proof.yml)
-*The badge re-runs every analytics module's own `--check` self-verification (`check_all.py`, 52 modules)
+*The badge re-runs every analytics module's own `--check` self-verification (`check_all.py`)
 on a bare clone -- committed-artifact verification only, no private data; it proves the receipts
-re-verify, not that any claim beats a market. Reproduce it yourself: [REPRODUCE.md](REPRODUCE.md).*
+re-verify, not that any claim beats a market. Latest committed run: **77/77 PASS**
+(`scripts/platformkit/analytics_showcase/out/check_all_report.json`). Reproduce it yourself:
+[REPRODUCE.md](REPRODUCE.md).*
 
-**One calibrated AI brain that, across five sports, prices every market from a single coherent
-engine, drills down to per-player prop distributions, reprices live, and hunts for edge only
-where it can plausibly exist -- proving every claim leak-free and refusing to fabricate a dollar
-edge it has not earned.**
+## Start here: CourtVision Analytics -- the Reading Room
 
-It is *wide*: NBA, MLB, club soccer, the World Cup, and tennis, every one of them speaking the
-same `predict / to_jd / predict_live` interface, every market (moneyline, totals, spreads, 1X2,
-BTTS, correct-score, player props, alt-line ladders, same-game-parlays) priced off one
-calibrated anchor. It is *deep*: under each team number sits a per-player projected
-distribution, a ~190-feature prop stack, 44 player/team "atlases", playstyle archetypes, a
-coherent possession-level Monte-Carlo simulator, and a ~100-file edge-intelligence corpus that
-catalogs -- per sport -- every data source, every market, every beatable pocket, and every
-modeling lever with an honest ship/reject verdict. And it is *honest*: pregame, the model
-tracks the devigged closing line within sampling noise on team-strength markets and never
-beats it (the close's Brier is a few thousandths lower on every row -- see the measured table
-in the thesis section); in-game -- where conditioning on the realized game state makes the
-model's own Brier much lower -- the distributional tests read slightly model-favorable at some
-checkpoints but are UNDERPOWERED/PROVISIONAL, so the honest read is "possibly slightly ahead,
-not enough to call an edge." **No dollar edge, ROI, or "beat the close" is ever claimed** --
-candidate edges are surfaced, tiered by evidence, and only ever proven by forward closing-line
-value (CLV), never asserted.
+**Live: [neeljshah.github.io/court-vision/analytics](https://neeljshah.github.io/court-vision/analytics)**
 
-Built by **[Neel Shah](https://github.com/neeljshah)** -- solo human architect and
-director of an agentic build pipeline. Engineering judgment, ship/reject decisions, and the
-validation methodology are mine. Open to **ML / data / quant / founding-engineer** roles ->
-[neeljshah22@gmail.com](mailto:neeljshah22@gmail.com)
+An editorial analytics publication for five sports where **every number on the page carries the
+artifact path it was read from**. Nothing is hand-typed, nothing is asserted, and a null result is
+printed as a finding rather than hidden. What is actually there:
+
+- **54 analytics modules and 1,549 entity atlas cards**, rendered as 1,618 static pages -- the
+  module catalog, per-entity cards, explainers, and the forecaster
+  (`analytics_showcase/out/site_manifest.json`: `module_count: 54`, `atlas_card_count: 1549`).
+- **6 novel stats, each gated against prior art before it is allowed a name**
+  (`novel_stats_index.json`): Line Half-Life (`NOVEL_PACKAGING`), Live-Clock Fraction
+  (`INCREMENTAL_NOVEL`), Overreaction Harvest Gap (`NOVEL_SELF_CRITICAL_CROSS`, published as an
+  **honest null**), plus Load-Bearing Index, Market Foresight Premium, and Schedule Fatigue Tax
+  (`INCREMENTAL`). Every card ships its formula, its source artifacts, and `edge_claimed: false`.
+- **Scout, the on-page AI, in three honest tiers.** (1) Scout notes attached to each module;
+  (2) Ask Scout -- a 236-entry precomputed corpus (`webapp/public/data/ask/corpus.json`) that
+  answers from receipts and returns a visible NO_DATA when it has none, rather than improvising;
+  (3) connect your own Claude to the MCP server for the live tools. No LLM sits on the page, and
+  no question leaves your machine.
+- **A self-grading claim ledger.** 259 claim families tracked forward: **121 verified, 99 null,
+  28 not-testable, 7 retracted, 4 provisional** across 287 ledger rows, with 5 families flagged as
+  having flipped verdict (`fwd_claim_scoreboard.json`). The mechanism ledger reads the same way --
+  **130 confirmed / 126 null / 31 not-testable of 287** (`mechanism_ledger_export.json`). Roughly
+  1.1 nulls per confirmation is the point: a system that only ever confirmed would not be credible.
 
 ---
 
-### The measured win: in-game conditioning
+### The measured win the product is built around: in-game conditioning
 
 Conditioning on the realized game state is the one calibration result that clears every honesty
 rail: Brier drops sharply and leak-free, out-of-sample, on real corpora -- **NBA 0.209 -> 0.159,
@@ -49,44 +51,24 @@ realized state, so this is forecaster *quality*, not a dollar edge. Full proof a
 
 ---
 
-## Use it with YOUR Claude (2 minutes, any laptop)
+## The engine underneath
 
-This repo ships a working **MCP server** — clone it, connect it to Claude Code
-or Claude Desktop, and ask in plain English: scouting reports, comparables,
-matchup previews, atlas cards, verified-claim receipts. Every answer is a typed
-envelope (`ok` / `no_data` / `not_supported` / `refused`) with a `source_artifact`
-and `as_of` — it reads a committed artifact or **fails closed**; it never answers
-from model memory and never claims a dollar edge. A fresh clone ships the **9
-fail-closed tools + JSON manifests** (atlas cards, mechanism ledgers, refusal
-rules all work bare); the private `data/` lake is gitignored, so the data-backed
-tools honestly return `NO_DATA` until you build it — an honest `NO_DATA` is the
-correct answer, not a failure.
+The publication is a read-out of one calibrated prediction engine. It is *wide*: NBA, MLB, club
+soccer, the World Cup, and tennis, every one speaking the same `predict / to_jd / predict_live`
+interface, every market (moneyline, totals, spreads, 1X2, BTTS, correct-score, player props,
+alt-line ladders, same-game-parlays) priced off one calibrated anchor. It is *deep*: under each
+team number sits a per-player projected distribution, a ~190-feature prop stack, 44 player/team
+"atlases", playstyle archetypes, and a coherent possession-level Monte-Carlo simulator. And it is
+*honest*: pregame it tracks the devigged closing line within sampling noise on team-strength
+markets and never beats it; in-game, conditioning on the realized state makes its own Brier much
+lower, while the distributional tests against the in-game market stay UNDERPOWERED / PROVISIONAL.
+**No dollar edge, ROI, or "beat the close" is ever claimed** -- candidates are tiered by evidence
+and proven only by forward closing-line value (CLV).
 
-**Connect in 5 min: [docs/MCP_QUICKSTART.md](docs/MCP_QUICKSTART.md)** · per-tool reference: [docs/MCP_TOOLS.md](docs/MCP_TOOLS.md) · deeper start: [docs/USE_WITH_CLAUDE.md](docs/USE_WITH_CLAUDE.md)
-
----
-
-## Explore the whole system, link by link
-
-This README is the front door. **[docs/INDEX.md](docs/INDEX.md) is the full map** -- every tracked
-document, organized by role and by funnel stage, so you can follow links from the raw data feeds
-all the way through the models, the simulator, the calibration gates, line-shopping and execution,
-the live in-game repricer, and the autonomous self-improvement loop. It is deep on purpose: a
-thorough read is a multi-day tour.
-
-- **New here?** -> [docs/INDEX.md](docs/INDEX.md) (the map) and the [GLOSSARY](docs/GLOSSARY.md)
-  (CLV, leak-free, walk-forward, Shin devig, Brier, Kelly, ...)
-- **Want the honest numbers first?** -> [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md)
-- **What's actually strong (in-game accuracy, calibration-only)?** -> [docs/IN_GAME_SHOWCASE.md](docs/IN_GAME_SHOWCASE.md)
-- **Want the guided demo path?** -> [docs/PRODUCT_DEMO.md](docs/PRODUCT_DEMO.md)
-  (system health -> a live prediction -> an oracle query with a receipt -> the honesty ledgers)
-- **How AI built it?** -> [docs/BUILT_WITH_CLAUDE.md](docs/BUILT_WITH_CLAUDE.md)
-
-**Deep-dive layer (new)** -> [DAEMONS](docs/DAEMONS.md) - [PLATFORM_HARNESS](docs/PLATFORM_HARNESS.md) -
-[PAPER_TRADING_STACK](docs/PAPER_TRADING_STACK.md) - [INGEST_PIPELINES](docs/INGEST_PIPELINES.md) -
-[DATA_DEPTH](docs/DATA_DEPTH.md) - [ASK_SURFACES](docs/ASK_SURFACES.md) -
-[SPORTS_COVERAGE](docs/SPORTS_COVERAGE.md). The system's depth is now documented subsystem by
-subsystem, not just at the funnel-stage level above.
+Built by **[Neel Shah](https://github.com/neeljshah)** -- solo human architect and director of an
+agentic build pipeline. Engineering judgment, ship/reject decisions, and the validation methodology
+are mine. Open to **ML / data / quant / founding-engineer** roles ->
+[neeljshah22@gmail.com](mailto:neeljshah22@gmail.com)
 
 ---
 
@@ -119,6 +101,55 @@ The cohesion is the point: **one win-probability anchors the moneyline, the spre
 and the in-game reprice** -- they are coherent reads off the same engine, not four independent
 models that can disagree. Pregame and in-game agree at tip-off by construction. Adding a sport
 is an adapter, not a kernel rewrite; adding a market is a read off the same anchor.
+
+---
+
+## Product 2: the quant terminal
+
+The original dark operator surface -- scoreboard, evidence spine, receipts drill, graveyard,
+counterfactual and microstructure labs -- is still live at its original URLs
+(**[neeljshah.github.io/court-vision](https://neeljshah.github.io/court-vision)**) and now serves
+the operator, not the visitor. Same artifacts, same honesty rails, denser presentation.
+
+---
+
+## Verify it, and use it with YOUR Claude
+
+The proof harness is the first thing to run: every analytics module carries its own `--check`
+self-verification and `check_all.py` runs all of them on a bare clone -- **77/77 PASS** in the
+committed report, committed artifacts only, no private data.
+
+This repo also ships a working **MCP server** — clone it, connect it to Claude Code
+or Claude Desktop, and ask in plain English: scouting reports, comparables,
+matchup previews, atlas cards, verified-claim receipts. Every answer is a typed
+envelope (`ok` / `no_data` / `not_supported` / `refused`) with a `source_artifact`
+and `as_of` — it reads a committed artifact or **fails closed**; it never answers
+from model memory and never claims a dollar edge. A fresh clone ships the **9
+fail-closed tools + JSON manifests** (atlas cards, mechanism ledgers, refusal
+rules all work bare); the private `data/` lake is gitignored, so the data-backed
+tools honestly return `NO_DATA` until you build it — an honest `NO_DATA` is the
+correct answer, not a failure.
+
+**Connect in 5 min: [docs/MCP_QUICKSTART.md](docs/MCP_QUICKSTART.md)** · per-tool reference: [docs/MCP_TOOLS.md](docs/MCP_TOOLS.md) · deeper start: [docs/USE_WITH_CLAUDE.md](docs/USE_WITH_CLAUDE.md) · reproduce the harness: [REPRODUCE.md](REPRODUCE.md)
+
+---
+
+## Explore the whole system, link by link
+
+**[docs/INDEX.md](docs/INDEX.md) is the full map** -- every tracked document, by role and by funnel
+stage, from the raw feeds through the models, the simulator, the calibration gates, execution, the
+live repricer, and the self-improvement loop. It is deep on purpose.
+
+- **New here?** -> [docs/INDEX.md](docs/INDEX.md) (the map) and the [GLOSSARY](docs/GLOSSARY.md)
+  (CLV, leak-free, walk-forward, Shin devig, Brier, Kelly, ...)
+- **Want the honest numbers first?** -> [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md)
+- **What's actually strong (in-game accuracy, calibration-only)?** -> [docs/IN_GAME_SHOWCASE.md](docs/IN_GAME_SHOWCASE.md)
+- **Want the guided demo path?** -> [docs/PRODUCT_DEMO.md](docs/PRODUCT_DEMO.md)
+- **How AI built it?** -> [docs/BUILT_WITH_CLAUDE.md](docs/BUILT_WITH_CLAUDE.md)
+- **Subsystem deep-dives** -> [DAEMONS](docs/DAEMONS.md) - [PLATFORM_HARNESS](docs/PLATFORM_HARNESS.md) -
+  [PAPER_TRADING_STACK](docs/PAPER_TRADING_STACK.md) - [INGEST_PIPELINES](docs/INGEST_PIPELINES.md) -
+  [DATA_DEPTH](docs/DATA_DEPTH.md) - [ASK_SURFACES](docs/ASK_SURFACES.md) -
+  [SPORTS_COVERAGE](docs/SPORTS_COVERAGE.md)
 
 ---
 
@@ -165,25 +196,20 @@ python -m scripts.platformkit.intel_query.paper_analytics "settlement backlog"
 
 ## Wide in knowledge -- and it knows every little detail
 
-**Breadth (wide).** Five domains share one interface and one validation gate, so the brain
-reasons about a Premier-League match, a World-Cup neutral-site game, an MLB pitching matchup, an
-ATP set, and an NBA quarter with the same machinery. A keyless, free, idempotent, leak-free data
-backbone refreshes all five (~93 MB of as-of parquet) -- MLB StatsAPI boxscores, ESPN
-per-player rosters + athlete season splits, Sackmann tennis, football-data, plus prediction
-markets (Kalshi / Polymarket) and DFS prop feeds (Underdog / PrizePicks). The opportunity surface
-is bounded by data breadth, not by model breadth: the same pure best-line / Shin-devig / EV /
-arbitrage core covers *every* event the feeds return.
+**Breadth (wide).** Five domains share one interface and one validation gate. A keyless, free,
+idempotent, leak-free backbone refreshes all five (~93 MB of as-of parquet) -- MLB StatsAPI
+boxscores, ESPN rosters + athlete season splits, Sackmann tennis, football-data, prediction
+markets (Kalshi / Polymarket), DFS prop feeds (Underdog / PrizePicks). The opportunity surface is
+bounded by data breadth, not model breadth: one best-line / Shin-devig / EV / arbitrage core
+covers *every* event the feeds return.
 
-**The claims scale.** Every derived stat the brain will answer a question from first has to pass
-an independent validator that marks it `VERIFIED`, `MISMATCH`, or `UNVERIFIABLE` -- **101,089
-VERIFIED claim rows** stand behind the ask surfaces today, tallied live from every
-`*_validation.json` summary under `data/cache/intel_claims/` (71 claim stores, 7 sports). A
-machine-readable **data census** (`data/frontend/ops/data_census.json`) inventories what's
-derivable from the corpus on disk per sport -- 67 derivable families across NBA, MLB, soccer,
-soccer_intl, tennis, WNBA, NPB, KBO, and cross-sport markets -- and ranks every still-`UNBUILT`
-one by `leverage_rank` into a single cross-sport priority queue the autoloop reads to decide what
-to build next. The full per-sport breakdown (data on disk, claim counts, biggest gap, model vs
-close verdict) lives in [docs/SPORTS_COVERAGE.md](docs/SPORTS_COVERAGE.md).
+**The claims scale.** Every derived stat the brain answers from must pass an independent validator
+that marks it `VERIFIED`, `MISMATCH`, or `UNVERIFIABLE` -- **101,089 VERIFIED claim rows** stand
+behind the ask surfaces today (71 claim stores, 7 sports, tallied from every `*_validation.json`
+under `data/cache/intel_claims/`). A machine-readable **data census** inventories 67 derivable
+families across NBA, MLB, soccer, soccer_intl, tennis, WNBA, NPB, KBO and cross-sport markets, and
+ranks every still-`UNBUILT` one by `leverage_rank` into the queue the autoloop builds from.
+Per-sport breakdown: [docs/SPORTS_COVERAGE.md](docs/SPORTS_COVERAGE.md).
 
 **Depth (every little detail).** Under each team number sits the individual-player layer:
 
@@ -213,35 +239,23 @@ The deepest, most actionable part of the brain is the **player-prop engine**, an
 search for *genuine* edge concentrates -- precisely because that is where edge can plausibly
 exist.
 
-**The thesis (load-bearing), with the measured numbers.** Sharp mainline markets (moneyline /
-spread / total on liquid sports) are efficient pregame. Leak-free, out-of-sample, vs the
-Shin-devigged close ([docs/MARKET_EFFICIENCY_PROOF.md](docs/MARKET_EFFICIENCY_PROOF.md)):
+**The thesis (load-bearing).** Sharp mainline markets (moneyline / spread / total on liquid
+sports) are efficient pregame: leak-free and out-of-sample, nothing beats the Shin-devigged close,
+which is a few thousandths sharper on every row (the measured table is in
+[the thesis section below](#the-thesis-in-numbers-calibration--sharpness----never-a-dollar-edge)
+and in [docs/MARKET_EFFICIENCY_PROOF.md](docs/MARKET_EFFICIENCY_PROOF.md)). That is the expected
+honest outcome, not a failure.
 
-| Market | n | Model Brier/RMSE | Close | Verdict |
-|---|---|---|---|---|
-| NBA moneyline | 372 | 0.1735 | 0.1672 | MATCH (within noise) |
-| MLB moneyline | 13,992 | 0.2429 | 0.2390 | MATCH (within noise) |
-| Soccer O/U 2.5 | 7,558 | 0.2465 | 0.2390 | MATCH (within noise) |
-| ATP match-win | 7,374 | 0.2177 | 0.2028 | BEHIND (freshness gap) |
-| NBA / MLB totals (RMSE) | 372 / 1,679 | 19.17 / 4.72 | 18.11 / 4.44 | BEHIND (freshness gap) |
-
-Nothing beats the close pregame; the close is a few thousandths sharper on every row. That is
-the expected honest outcome, not a failure.
-
-**In-game is different -- and honestly labelled.** Conditioning on the realized game state
-drops the model's own Brier sharply (NBA 0.209 -> 0.159, MLB 0.241 -> 0.126 vs the
-pregame-static baseline; calibration, not edge -- a live book sees the score too). Against the
-in-game *market*, the distributional (CRPS) checkpoint tests currently read slightly
-model-favorable at some late-game checkpoints but carry UNDERPOWERED / PROVISIONAL verdicts at
-today's sample sizes -- the honest read is "possibly slightly ahead in-game, not enough to
-claim an edge." Two things are explicitly **untested**: performance against
-instantly-updating live lines at real tick latency (all comparisons use captured price series,
-not live execution), and forward paper excess-vs-close, which at n=36 settled is NOT
-SIGNIFICANT (CI includes zero). The *beatable* pockets the brain hunts are different in kind:
-**lazily-priced soft / DFS player props**, **live / in-game lag**, **stale lines on slow
-books**, **prediction-market vs sportsbook divergence**, and **correlated SGPs a coherent sim
-can price but a book misprices**. The brain is built to surface and paper-trade exactly those
--- and to *cut* effort where it has proven there is no edge.
+**In-game is different -- and honestly labelled.** Against the in-game *market*, the
+distributional (CRPS) checkpoint tests read slightly model-favorable at some late-game
+checkpoints but carry UNDERPOWERED / PROVISIONAL verdicts at today's sample sizes. Two things are
+explicitly **untested**: performance against instantly-updating live lines at real tick latency
+(all comparisons use captured price series, not live execution), and forward paper
+excess-vs-close, which at n=36 settled is NOT SIGNIFICANT (CI includes zero). The *beatable*
+pockets the brain hunts are different in kind: **lazily-priced soft / DFS player props**, **live /
+in-game lag**, **stale lines on slow books**, **prediction-market vs sportsbook divergence**, and
+**correlated SGPs a coherent sim can price but a book misprices** -- and it *cuts* effort where it
+has proven there is no edge.
 
 **How a prop edge is found, end to end:** scrape the soft DFS / book line -> build the player's
 full distribution from leak-free history (empirical-Bayes shrunk to the role archetype, blended
@@ -272,21 +286,17 @@ push and where to stop:
 
 - **Per sport:** an edge-map (every market tagged beatable vs efficient, with evidence), a
   data-source ledger (have / missing / how-to-acquire), the full market + prop surface, an
-  inefficiency catalog (each pocket with an in-data detection recipe + a proof method), a
-  model-lever ledger (every lever with a SHIP / REJECT / PENDING verdict), and a prioritized
-  path-to-edge.
-- **Cross-cutting:** edge theory + the cut-list of efficient markets to stop spending on, proof
-  standards (the leak-free / OOS / CLV bar and the overfit traps that fake edges), per-source
-  scrape specs, per-inefficiency detection recipes, a reusable method library
-  (Poisson-vs-NegBinom, empirical-Bayes shrinkage, Shin devig, isotonic-when, Kelly + correlation
-  sizing, CLV computation, walk-forward leak guards), and a single living edge-ledger of every
-  candidate's evidence tier.
+  inefficiency catalog (detection recipe + proof method per pocket), and a model-lever ledger
+  (every lever with a SHIP / REJECT / PENDING verdict).
+- **Cross-cutting:** edge theory + the cut-list of markets to stop spending on, proof standards
+  (the leak-free / OOS / CLV bar and the overfit traps that fake edges), per-source scrape specs,
+  a reusable method library (Poisson-vs-NegBinom, empirical-Bayes shrinkage, Shin devig, Kelly +
+  correlation sizing, CLV computation, walk-forward leak guards), and one living edge-ledger of
+  every candidate's evidence tier.
 
-Honest scope: the descriptive/atlas intelligence is a deep *scouting + correlation* asset and a
-predict-time-input the funnel is still wiring in (measured point-accuracy lift on the served
-model is ~0 today and is reported as such, not oversold). The corpus's value is making the entire
-search for edge systematic, grounded, and honest. See
-[docs/INTELLIGENCE.md](docs/INTELLIGENCE.md).
+Honest scope: the descriptive/atlas intelligence is a scouting + correlation asset and a
+predict-time input the funnel is still wiring in -- measured point-accuracy lift on the served
+model is ~0 today and is reported as such. See [docs/INTELLIGENCE.md](docs/INTELLIGENCE.md).
 
 ---
 
@@ -309,10 +319,10 @@ graph** (555 nodes / 296 edges across NBA, MLB, soccer, and tennis) built entire
 rows the knowledge engine already adjudicated -- zero new statistics computed, only
 labeled and linked -- plus a **resolver registry** that maps every supported question
 type to exactly one deterministic source and REFUSES anything unregistered rather than
-improvising a plausible-sounding answer. The knowledge engine itself is now fully
-drained across all 4 sports: 197 mechanism hypotheses closed out (89 CONFIRMED_LOCAL, 74
-honest NULLs, 34 not locally testable/other) -- every "does X actually happen" question
-the oracle fields carries a verdict, sample size, p-value, and source file, not folklore.
+improvising a plausible-sounding answer. The knowledge engine is drained across all 4 sports:
+**287 mechanism rows closed out -- 130 confirmed, 126 null, 31 not locally testable**
+(`mechanism_ledger_export.json`) -- every "does X actually happen" question the oracle fields
+carries a verdict, sample size, p-value, and source file, not folklore.
 Full account: [docs/PRODUCT_DEMO.md](docs/PRODUCT_DEMO.md).
 
 ---
@@ -407,13 +417,11 @@ python -m scripts.platformkit.ingame_scoreboard        --corpus tests/fixtures/p
   gate** evaluates every channel against seven pre-registered criteria (sample size in both
   independent halves, both-halves profitability, CLV significance, after-cost units, trust +
   eval-gate honesty, excess win rate) and writes a fail-closed RED/AMBER/GREEN verdict nightly --
-  criteria on trust and eval-gate honesty report RED, never a bare pass, on any missing or stale
-  input. Fills are priced against real captured order-book depth (a VWAP walk of the opposite
-  side's bid ladder, honest partial fills, `fill_quality: no_book` rather than a fabricated fill
-  when the book is stale), and **STUCK detectors** turn a silent settlement stall into a visible
-  alert instead of an unread log line (the incident that motivated it: 63+ silent zero-settle
-  ticks). As of this writing every channel is RED or AMBER -- the gate reporting honestly that no
-  edge has been proven yet is the feature, not a gap to paper over. Full account:
+  RED, never a bare pass, on any missing or stale input. Fills are priced against real captured
+  order-book depth (a VWAP walk of the opposite side's bid ladder, honest partial fills,
+  `fill_quality: no_book` rather than a fabricated fill when the book is stale). As of this
+  writing every channel is RED or AMBER -- the gate reporting honestly that no edge has been
+  proven yet is the feature, not a gap to paper over. Full account:
   [docs/PAPER_TRADING_STACK.md](docs/PAPER_TRADING_STACK.md).
 
 **Honesty truth-source:** every number's provenance + every retracted over-claim live in

@@ -1,0 +1,699 @@
+{
+  "bucket": "methodology",
+  "note": "How the system is built, tested and graded: the leak-free gate, walk-forward validation, devigging, the claim ledger, the reject graveyard, the answer contract, and who wrote the code. Numbers are copied verbatim from committed artifacts. Measurement hygiene only -- no dollar, ROI or profit claim appears here, and honest nulls are counted as results.",
+  "entries": [
+    {
+      "q": "How do you decide whether a signal is real?",
+      "alt_phrasings": ["what's the signal gate", "how do you validate a signal", "ship criteria for a signal"],
+      "a": {
+        "status": "ok",
+        "answer": "A candidate must clear a conjunction, not any one test: BSS>0 AND Diebold-Mariano p<0.05 AND N>=200, replicated on at least two independent corpora, with Benjamini-Hochberg FDR applied across the family. A single-corpus or single-fold lift is treated as an artifact by default, not as evidence.",
+        "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
+        "as_of": "2026-07-07"
+      },
+      "tags": ["gate", "validation", "ship-criteria"]
+    },
+    {
+      "q": "What does leak-free mean here?",
+      "alt_phrasings": ["how do you prevent data leakage", "leak-free validation", "no lookahead"],
+      "a": {
+        "status": "ok",
+        "answer": "States are sorted by timestamp and the model trains only on rows strictly before the evaluation point, in an expanding walk-forward window with purge and embargo between train and test. Any fitted transform -- including slope fits -- happens inside the training window, never on the full sample.",
+        "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
+        "as_of": "2026-07-07"
+      },
+      "tags": ["gate", "leak-free", "walk-forward"]
+    },
+    {
+      "q": "Why walk-forward instead of random cross-validation?",
+      "alt_phrasings": ["why not k-fold", "walk forward vs cross validation", "why expanding window"],
+      "a": {
+        "status": "ok",
+        "answer": "Because random folds let the future train the past. Sports data is ordered and heavily autocorrelated within a season, so shuffled folds leak information backwards and produce lifts that vanish out of sample. The expanding walk-forward window with purge and embargo reproduces the only situation that matters: predicting a game with information that actually existed beforehand.",
+        "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
+        "as_of": "2026-07-07"
+      },
+      "tags": ["gate", "walk-forward"]
+    },
+    {
+      "q": "What does the walk-forward win probability model score?",
+      "alt_phrasings": ["walk forward results", "winprob walk forward brier", "how good is the walk forward model"],
+      "a": {
+        "status": "ok",
+        "answer": "Across 3 folds it averages 0.7094 accuracy (std 0.0252, range 0.6762 to 0.7373) and a mean Brier of 0.19301 (std 0.00841). Each fold is a 5-way non-negative-least-squares blend of XGBoost, LightGBM, logistic regression, an MLP and naive Bayes, and the weights move sharply between folds -- fold 2 leans XGBoost at 0.382, fold 3 leans logistic regression at 0.686.",
+        "source_artifact": "webapp/public/data/showcase/forecaster/winprob_walk_forward_results.json",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["walk-forward", "brier", "forecaster"]
+    },
+    {
+      "q": "Why do the model weights change so much between folds?",
+      "alt_phrasings": ["unstable blend weights", "why does the ensemble shift", "fold to fold weight variance"],
+      "a": {
+        "status": "ok",
+        "answer": "Because each fold refits the blend on its own validation slice, and with n_val=491 per fold the meta-learner has limited data to separate similar base models. Fold 2 puts 0.382 on XGBoost and 0.0 on logistic regression; fold 3 flips to 0.686 on logistic regression and 0.108 on XGBoost. The base-model Briers are close enough that the blend is nearly indifferent, which is itself a caution against reading any single fold's weights as a finding.",
+        "source_artifact": "webapp/public/data/showcase/forecaster/winprob_walk_forward_results.json",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["walk-forward", "ensemble", "stability"]
+    },
+    {
+      "q": "What is devigging and why does it matter?",
+      "alt_phrasings": ["what does devig mean", "removing the vig", "why devig the closing line"],
+      "a": {
+        "status": "ok",
+        "answer": "Posted odds include the book's margin, so the implied probabilities sum to more than one. Devigging strips that margin out to recover the market's actual probability estimate. Without it you would be comparing a calibrated forecast against a number that is deliberately biased, and any apparent skill would just be the vig.",
+        "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
+        "as_of": "2026-07-07"
+      },
+      "tags": ["devig", "market", "method"]
+    },
+    {
+      "q": "Which devigging method do you use?",
+      "alt_phrasings": ["shin devig", "how do you remove the vig", "devig method choice"],
+      "a": {
+        "status": "ok",
+        "answer": "Shin devigging. The benchmark is stated throughout as the Shin-devigged closing line, and the leak-free forecaster is scored against it on the same real outcomes rather than against raw posted prices.",
+        "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
+        "as_of": "2026-07-07"
+      },
+      "tags": ["devig", "shin", "method"]
+    },
+    {
+      "q": "What is the Diebold-Mariano test doing in the gate?",
+      "alt_phrasings": ["why diebold mariano", "dm test explanation", "how do you test forecast difference"],
+      "a": {
+        "status": "ok",
+        "answer": "It asks whether a loss difference between two forecasts is bigger than sampling noise. The gate forms d_t = loss_close - loss_model and runs a cluster-robust version of the test, so correlated observations inside a game or a day do not inflate significance. SHIP requires DM p<0.05 alongside BSS>0 and N>=200.",
+        "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
+        "as_of": "2026-07-07"
+      },
+      "tags": ["gate", "diebold-mariano", "statistics"]
+    },
+    {
+      "q": "What is the overfit signature you keep mentioning?",
+      "alt_phrasings": ["how do you detect overfitting", "sign reversal test", "what makes a lift fake"],
+      "a": {
+        "status": "ok",
+        "answer": "A positive full-sample lift that reverses sign on the held-out half. Every pregame candidate that looked promising showed it, and the documented example is an MLB CLV-capture signal worth +0.108pp on the National League slice and -0.017pp on the American League slice -- not replicable across independent corpora, so REJECT.",
+        "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
+        "as_of": "2026-07-07"
+      },
+      "tags": ["overfit", "gate", "rejection"]
+    },
+    {
+      "q": "Has anything ever passed the pregame gate?",
+      "alt_phrasings": ["did any signal ship pregame", "what survived the edge hunt", "any pregame edge found"],
+      "a": {
+        "status": "ok",
+        "answer": "No. Nothing survived the conjunction of two corpora, DM p<0.05 and N>=200 as a market-beating pregame signal, across six corpora and four sports. Every schedule, fatigue, form, head-to-head and totals candidate was rejected, and the NBA home-court probe came in at BSS 0.0000 with DM p=0.173 on N=1,156 because home-court advantage is already fully inside the devig.",
+        "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
+        "as_of": "2026-07-07"
+      },
+      "tags": ["gate", "efficiency", "rejection"]
+    },
+    {
+      "q": "What is the claim ledger?",
+      "alt_phrasings": ["what is the validation ledger", "mechanism ledger", "where do you record claims"],
+      "a": {
+        "status": "ok",
+        "answer": "A per-sport append-only record of every named mechanism the system has tested, with its verdict and an evidence pointer. Across four sports it holds 287 entries: 130 confirmed, 126 null and 31 not-testable. A null or not-testable is recorded as honest market-efficiency evidence, not deleted.",
+        "source_artifact": "webapp/public/data/showcase/mechanism_ledger_export.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["claim-ledger", "mechanisms", "honesty"]
+    },
+    {
+      "q": "How many claims have been confirmed versus rejected?",
+      "alt_phrasings": ["confirmed vs null claims", "ledger verdict counts", "how many nulls do you have"],
+      "a": {
+        "status": "ok",
+        "answer": "Counted across the five ledgers in the honesty exhibit, nulls outnumber confirms 351 to 168, a ratio of 2.1 to 1. The per-sport split is NBA 45 confirmed of 85, MLB 32 of 86, soccer 29 of 64 and tennis 24 of 52; the interaction factory contributes 1,003 entries of which 709 are not-testable.",
+        "source_artifact": "webapp/public/data/showcase/honesty_exhibit.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["claim-ledger", "honesty", "nulls"]
+    },
+    {
+      "q": "How do you bucket a verdict as confirmed?",
+      "alt_phrasings": ["what counts as confirmed", "verdict bucket definitions", "ledger verdict taxonomy"],
+      "a": {
+        "status": "ok",
+        "answer": "Confirmed covers exactly four labels: ARTIFACT_CONFIRMED, CONFIRMED_LOCAL, CONFIRMED_LOCAL_incl_2026_OOS and REPLICATED. Not-testable covers NOT_REPLICABLE_NO_CORPUS and NOT_TESTABLE. Everything else -- NULL, NULL_LOCAL, REJECT, PARTIAL, PROVISIONAL, FAILED_REPLICATION -- buckets to null, so the confirmed bucket cannot quietly absorb a weak result.",
+        "source_artifact": "webapp/public/data/showcase/mechanism_ledger_export.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["claim-ledger", "taxonomy"]
+    },
+    {
+      "q": "Do claims ever change verdict?",
+      "alt_phrasings": ["do you retract claims", "have any claims flipped", "claim status history"],
+      "a": {
+        "status": "ok",
+        "answer": "Yes, and the history is kept. Across 259 claim families the current statuses are 121 verified, 4 provisional, 99 null, 28 not-testable and 7 retracted, with families that changed status flagged as flipped. Six of the seven retractions are MLB.",
+        "source_artifact": "webapp/public/data/showcase/fwd_claim_scoreboard.json",
+        "as_of": "2026-07-11"
+      },
+      "tags": ["claim-ledger", "retraction", "flips"]
+    },
+    {
+      "q": "What is the ratio of nulls to confirmations?",
+      "alt_phrasings": ["honest ratio", "nulls per confirm", "how often are you wrong"],
+      "a": {
+        "status": "ok",
+        "answer": "1.107 nulls or worse per confirmation on the claim-family scoreboard: 121 confirms against 134 nulls-or-worse out of 259 families. That ratio is presented as the product, on the reasoning that a system that only ever confirmed would not be credible.",
+        "source_artifact": "webapp/public/data/showcase/fwd_claim_scoreboard.json",
+        "as_of": "2026-07-11"
+      },
+      "tags": ["claim-ledger", "honesty", "ratio"]
+    },
+    {
+      "q": "What is the reject graveyard?",
+      "alt_phrasings": ["signal graveyard", "where do failed signals go", "rejected signal ledger"],
+      "a": {
+        "status": "ok",
+        "answer": "The permanent record of signals that failed. It carries 804 total verdict rows across all reruns, of which 68 distinct sport-signal pairs currently sit on a REJECT-family verdict as of their latest test, and 628 rows are rejects. The gap between 804 and 68 is signals retested multiple times plus rows whose latest verdict flipped to SHIP.",
+        "source_artifact": "webapp/public/data/showcase/reject_graveyard.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["graveyard", "rejection", "honesty"]
+    },
+    {
+      "q": "What are the most common reasons a signal gets rejected?",
+      "alt_phrasings": ["why do signals fail", "reject reason categories", "common failure modes"],
+      "a": {
+        "status": "ok",
+        "answer": "By recorded reason category the largest is the as-of reclaim sweep at 510 rows -- signals killed when recomputed with strictly as-of information -- followed by prescreen delta 20, walk-forward ablation 18, seed stability 17, calibration-only-unproven 13, discovered transform 10, sealed holdout 8, conformal width 7 and cross-corpus adjudication 6.",
+        "source_artifact": "webapp/public/data/showcase/reject_graveyard.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["graveyard", "rejection", "reasons"]
+    },
+    {
+      "q": "How many signals have shipped versus been rejected?",
+      "alt_phrasings": ["ship vs reject counts", "verdict distribution graveyard", "how many signals passed"],
+      "a": {
+        "status": "ok",
+        "answer": "Across the full 804-row verdict history: 627 REJECT, 95 SHIP, 45 SHIP_REVIEW, 14 NOT_TESTABLE, 6 WORSE, 6 INSUFFICIENT, 4 NOT-REPLICATED, 3 STANDING_BASELINE_SET, and one each of DEFER, TIER3_BLOCKED, UNDERPOWERED and NULL_UNDERPOWERED. A SHIP here means the signal cleared the calibration gate, not that it beats a market price.",
+        "source_artifact": "webapp/public/data/showcase/reject_graveyard.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["graveyard", "ship", "rejection"]
+    },
+    {
+      "q": "What is the as-of reclaim sweep?",
+      "alt_phrasings": ["asof reclaim", "why do signals die on as-of recomputation", "point in time correctness"],
+      "a": {
+        "status": "ok",
+        "answer": "A re-test of existing signals using only information available at the moment of prediction rather than the season-complete tables they were first computed from. It is the single largest killer in the reject ledger, accounting for 510 of the recorded reject rows -- most apparent signal was subtle hindsight.",
+        "source_artifact": "webapp/public/data/showcase/reject_graveyard.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["graveyard", "as-of", "leakage"]
+    },
+    {
+      "q": "How big is the claims corpus?",
+      "alt_phrasings": ["how many claims do you have", "claims corpus size", "how many facts in the system"],
+      "a": {
+        "status": "ok",
+        "answer": "103 claim families holding 103,048 generated claims. 99 of the 103 families carry a validation sidecar, and 101,865 claims were sampled for validation, of which 101,864 verified and 1 was unverifiable -- 0 mismatches.",
+        "source_artifact": "webapp/public/data/showcase/claims_corpus_meta.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["claims-corpus", "scale", "validation"]
+    },
+    {
+      "q": "Are all the claims independently verified?",
+      "alt_phrasings": ["claim verification coverage", "how many claims are checked", "do you audit the claims"],
+      "a": {
+        "status": "ok",
+        "answer": "98.85% of generated claims are covered by a validation sample, with 0 recorded mismatches. The honest caveat is stated in the artifact itself: those verified counts are sidecar sample counts, not full-corpus audits, so 'generated' claims outnumber 'verified' claims by design.",
+        "source_artifact": "webapp/public/data/showcase/claims_corpus_meta.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["claims-corpus", "validation", "caveats"]
+    },
+    {
+      "q": "How are claims distributed across sports?",
+      "alt_phrasings": ["claims per sport", "which sport has the most claims", "claims corpus breakdown"],
+      "a": {
+        "status": "ok",
+        "answer": "NBA dominates with 31 families and 62,227 claims, ahead of MLB (18 families, 21,519), tennis (16 families, 13,709), soccer (15 families, 4,275) and an unlabeled cross-sport group (13 families, 1,236). Claim volume tracks corpus depth, not confidence -- soccer has fewer claims because it has less committed data, not because it is better understood.",
+        "source_artifact": "webapp/public/data/showcase/claims_corpus_meta.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["claims-corpus", "coverage", "per-sport"]
+    },
+    {
+      "q": "How do you test the answer layer itself?",
+      "alt_phrasings": ["qa regression bank", "do you test the ask ai", "answer quality testing"],
+      "a": {
+        "status": "ok",
+        "answer": "With a regression bank over the resolver: 87 entries, 87 passing, 0 failing, at the FULL tier. It checks fail-closed status and receipt correctness rather than prose quality -- and a correct no_data, not_supported or ambiguous is scored as a PASS, not a failure.",
+        "source_artifact": "webapp/public/data/showcase/qa_coverage_stats.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["qa", "answer-layer", "testing"]
+    },
+    {
+      "q": "How many questions can the system actually answer?",
+      "alt_phrasings": ["coverage rate", "what fraction of questions get an answer", "answer coverage"],
+      "a": {
+        "status": "ok",
+        "answer": "On a 1,307-row coverage stress test, 863 rows were expected to produce an answer and 316 did -- a coverage rate of 0.3662. The headline deliberately excludes rows where no answer was expected, because a correct no_data or refusal there is a design pass rather than coverage.",
+        "source_artifact": "webapp/public/data/showcase/qa_coverage_stats.json",
+        "as_of": "2026-07-18"
+      },
+      "tags": ["qa", "coverage", "honesty"]
+    },
+    {
+      "q": "What statuses can an answer come back with?",
+      "alt_phrasings": ["answer envelope statuses", "what does no_data mean", "response status codes"],
+      "a": {
+        "status": "ok",
+        "answer": "Five, and each has a mandated behavior: ok returns the value with its receipt; no_data means the artifact is absent or zero-row and the miss must be named; not_supported means the question is outside the registry and must not be improvised; ambiguous means several different mechanisms matched; refused means the question asked for edge, ROI or a retracted number.",
+        "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["contract", "statuses", "no-data"]
+    },
+    {
+      "q": "What does NO_DATA actually mean when you say it?",
+      "alt_phrasings": ["why do you say no data", "is no_data a failure", "meaning of no data"],
+      "a": {
+        "status": "ok",
+        "answer": "That the artifact behind the question is absent or has zero matching rows, so there is nothing to quote. It is a designed outcome, not an error: the contract requires naming the zero-row miss rather than substituting a plausible number, and the regression bank counts a correct no_data as a pass.",
+        "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["contract", "no-data", "honesty"]
+    },
+    {
+      "q": "How does the system distribute across those statuses in practice?",
+      "alt_phrasings": ["status totals", "how often does it say no data", "distribution of answer statuses"],
+      "a": {
+        "status": "ok",
+        "answer": "Over all 1,307 stress rows: 399 ok, 560 no_data, 42 not_supported, 181 ambiguous, 125 refused and 0 errors. More no_data than ok is the expected shape when the corpus is fixed and the question space is not.",
+        "source_artifact": "webapp/public/data/showcase/qa_coverage_stats.json",
+        "as_of": "2026-07-18"
+      },
+      "tags": ["qa", "statuses", "coverage"]
+    },
+    {
+      "q": "What happens if I ask a question about stale data?",
+      "alt_phrasings": ["staleness rules", "how old can the data be", "do you refuse stale answers"],
+      "a": {
+        "status": "ok",
+        "answer": "Some categories fail closed on age rather than answering. For injury and news context, if the newest matched row is older than the 7-day staleness bound the answer is refused, on the reasoning that injuries and news churn weekly and a stale row is worse than silence.",
+        "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["contract", "staleness", "refusal"]
+    },
+    {
+      "q": "Who wrote this code?",
+      "alt_phrasings": ["did ai build this", "how much is agent written", "who built the system"],
+      "a": {
+        "status": "ok",
+        "answer": "Overwhelmingly agents, under one human director. Of 3,224 commits between 2026-03-09 and 2026-07-22, 95.75% are agent-authored and 67.9% carry a Claude co-author trailer. The human decisions were architecture, direction and what may be claimed.",
+        "source_artifact": "webapp/public/data/showcase/agent_fleet_history.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["agents", "provenance", "build"]
+    },
+    {
+      "q": "How long did this take to build?",
+      "alt_phrasings": ["build timeline", "how many months", "development history"],
+      "a": {
+        "status": "ok",
+        "answer": "3,224 commits over roughly four and a half months, from 2026-03-09 to 2026-07-22, in bursts rather than a steady drip -- the opening day alone carries 64 commits. The daily commit series is published rather than summarized.",
+        "source_artifact": "webapp/public/data/showcase/agent_fleet_history.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["agents", "timeline", "build"]
+    },
+    {
+      "q": "If agents wrote the code, who is accountable for the claims?",
+      "alt_phrasings": ["human oversight", "who checks the agents", "accountability for ai written analysis"],
+      "a": {
+        "status": "ok",
+        "answer": "The gate is, and it is mechanical. Agents can propose and implement anything, but a claim only becomes publishable by clearing the leak-free gate on two corpora, and the reject ledger's 804 recorded verdict rows against 95 SHIPs shows how often the answer is no. Autonomy in writing code is not autonomy in asserting results.",
+        "source_artifact": "webapp/public/data/showcase/reject_graveyard.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["agents", "accountability", "gate"]
+    },
+    {
+      "q": "How do you know the published modules still run?",
+      "alt_phrasings": ["module health check", "is the pipeline green", "check all report"],
+      "a": {
+        "status": "ok",
+        "answer": "Every showcase module is re-executed in a single check run and its status recorded per module with a timestamp and a wall-clock duration -- for example brier_skill_scores.py PASS in 2.94s and aging_curve_lite.py PASS in 1.71s on the 2026-07-24 run. The site manifest carries the aggregate: 63 of 63 checks green.",
+        "source_artifact": "webapp/public/data/showcase/check_all_report.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["ci", "health", "modules"]
+    },
+    {
+      "q": "How many analysis modules are there?",
+      "alt_phrasings": ["module count", "how many showcase modules", "size of the analytics layer"],
+      "a": {
+        "status": "ok",
+        "answer": "54 modules and 1,549 atlas entity cards, all built from the same output directory and all carrying edge_claimed=false. The manifest records 63 of 63 checks green at build time.",
+        "source_artifact": "webapp/public/data/showcase/site_manifest.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["modules", "scale", "manifest"]
+    },
+    {
+      "q": "Why do some modules have a null as_of?",
+      "alt_phrasings": ["missing as_of", "why is the date blank", "module freshness gaps"],
+      "a": {
+        "status": "ok",
+        "answer": "Because their underlying computation does not stamp one, and the manifest records null rather than inventing a date. Others carry an as_of that is a corpus description rather than a timestamp -- cf_star_removal reads '2024-25 (Elo end-of-season) x 2024_25 on/off slice' and ctx_lineup_proxy reads '2025-26 regular season (through 2026-04-12)' -- which is more useful than a build time.",
+        "source_artifact": "webapp/public/data/showcase/site_manifest.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["modules", "freshness", "honesty"]
+    },
+    {
+      "q": "What is a Brier score?",
+      "alt_phrasings": ["explain brier", "how do you score probabilities", "brier score meaning"],
+      "a": {
+        "status": "ok",
+        "answer": "The mean squared error of a probability against a binary outcome: lower is better, and 0.25 is what you get by always saying 50%. It is the primary yardstick here because it punishes both miscalibration and vagueness, unlike accuracy which only asks whether you picked the right side.",
+        "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["brier", "definition", "scoring"]
+    },
+    {
+      "q": "What is a Brier skill score?",
+      "alt_phrasings": ["explain BSS", "brier skill score formula", "what is skill relative to a baseline"],
+      "a": {
+        "status": "ok",
+        "answer": "BSS = 1 - Brier/Brier_ref, the fractional improvement over a reference forecast. Two references are used here: climatology, meaning a constant sport-level base rate, and the market. A BSS above 0 against climatology is easy; against the market it is the only number that would matter, and it is negative everywhere measured.",
+        "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["bss", "definition", "scoring"]
+    },
+    {
+      "q": "What is ECE?",
+      "alt_phrasings": ["expected calibration error", "explain ece", "how do you measure calibration error"],
+      "a": {
+        "status": "ok",
+        "answer": "Expected calibration error: bin the forecasts, compare the mean predicted probability to the mean outcome inside each bin, and take the n-weighted mean absolute gap. This system computes it over 10 bins. It isolates calibration specifically -- a forecast can have a decent Brier and still be systematically overconfident.",
+        "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["ece", "calibration", "definition"]
+    },
+    {
+      "q": "What is the Murphy decomposition and why use it?",
+      "alt_phrasings": ["reliability vs resolution", "murphy decomposition explained", "why split brier into components"],
+      "a": {
+        "status": "ok",
+        "answer": "It splits a Brier score into reliability -- how miscalibrated you are -- and resolution -- how much genuine discrimination you have. That matters diagnostically: on MLB in-game moneyline the model's reliability gap versus the market is +0.0066 while the resolution gap is -0.0235, so the shortfall is mostly missing information, which recalibration cannot fix.",
+        "source_artifact": "webapp/public/data/showcase/kernel_transfer.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["murphy", "reliability", "resolution"]
+    },
+    {
+      "q": "Why does it matter whether a gap is reliability or resolution?",
+      "alt_phrasings": ["can recalibration fix the gap", "is the model fixable", "reliability vs resolution consequences"],
+      "a": {
+        "status": "ok",
+        "answer": "Because only one of them is cheap to fix. A reliability gap means the probabilities are systematically off and a recalibration map can close it; a resolution gap means the model does not know things the market knows, and no post-processing invents information. The MLB decomposition puts most of the gap in resolution, which is an honest statement about missing feeds rather than about the fitting procedure.",
+        "source_artifact": "webapp/public/data/showcase/kernel_transfer.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["murphy", "diagnosis", "limits"]
+    },
+    {
+      "q": "What floors do you apply before publishing a number?",
+      "alt_phrasings": ["minimum sample size", "n floors", "when do you refuse to report"],
+      "a": {
+        "status": "ok",
+        "answer": "They are per-module and always declared. The Brier skill module requires n>=30 rows per grain; calibration by market type requires n>=30 usable rows for a Brier or ECE over 10 bins; the count-leverage module uses a class minimum of 500 pitches; Line Half-Life requires at least 20 move pairs. Below the floor the cell is flagged rather than filled.",
+        "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["floors", "sample-size", "method"]
+    },
+    {
+      "q": "What do you do when a corpus has no resolved outcomes?",
+      "alt_phrasings": ["unscorable markets", "no outcome labels", "why is a brier null"],
+      "a": {
+        "status": "ok",
+        "answer": "Disclose it rather than score it. The MLB in-game totals quote-tracks -- 5 files, 2,113 rows, 21 quote-tracks -- carry no resolved outcome because the settlement join is unavailable, so their Brier is null by design and only the model-versus-market divergence is reported (median 0.116128, mean 0.124782, p90 0.224736). Scoring them would require fabricating labels.",
+        "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["unscorable", "honesty", "mlb"]
+    },
+    {
+      "q": "How do you avoid double-counting duplicate corpora?",
+      "alt_phrasings": ["duplicate data handling", "mlb_clean exclusion", "do you dedupe corpora"],
+      "a": {
+        "status": "ok",
+        "answer": "By identifying byte-identical duplicates and excluding them explicitly. The mlb_clean moneyline corpus is a byte-identical duplicate of mlb and is skipped with the reason recorded in the artifact, so the 78,986-row MLB moneyline sample is not silently counted twice.",
+        "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["dedupe", "hygiene", "mlb"]
+    },
+    {
+      "q": "What is the point of the honesty exhibit?",
+      "alt_phrasings": ["why publish nulls", "honesty exhibit purpose", "why show failures"],
+      "a": {
+        "status": "ok",
+        "answer": "To make the null rate a headline instead of a footnote. Its own summary line is that nulls (351) outnumber confirms (168) by 2.1x, published per sport with the source ledger path for each. A research surface that reports only its wins gives you no way to price its claims.",
+        "source_artifact": "webapp/public/data/showcase/honesty_exhibit.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["honesty", "nulls", "philosophy"]
+    },
+    {
+      "q": "Why do you compare against the market instead of just reporting accuracy?",
+      "alt_phrasings": ["why is the market the benchmark", "accuracy vs market", "why not report accuracy"],
+      "a": {
+        "status": "ok",
+        "answer": "Because accuracy has no scale. A 71% accurate NBA win-probability model sounds strong until you notice the closing line does at least as well on the same games. The devigged close is a live, adversarial, well-capitalized benchmark, so scoring against it is the only test that can distinguish a good model from an easy sample.",
+        "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
+        "as_of": "2026-07-07"
+      },
+      "tags": ["benchmark", "market", "philosophy"]
+    },
+    {
+      "q": "What is the difference between a confirmed mechanism and a shipped signal?",
+      "alt_phrasings": ["mechanism vs signal", "confirmed vs ship", "two different ledgers"],
+      "a": {
+        "status": "ok",
+        "answer": "Different bars entirely. A confirmed mechanism, like b2b_rest_penalty at -1.73 pts/100 ORtg (n=4,732, p=0.0056), is a described effect in one corpus, labeled CONFIRMED_LOCAL. A shipped signal has to clear the leak-free gate on two corpora against the devigged close. 130 mechanisms are confirmed; nothing has shipped as a market-beating pregame signal.",
+        "source_artifact": "webapp/public/data/showcase/mechanism_ledger_export.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["mechanisms", "gate", "taxonomy"]
+    },
+    {
+      "q": "What does CONFIRMED_LOCAL mean?",
+      "alt_phrasings": ["local confirmation", "confirmed local verdict", "what is a local effect"],
+      "a": {
+        "status": "ok",
+        "answer": "The effect held in the specific corpus it was tested on, and nowhere else has been checked. The back-to-back rest penalty carries it twice at different sample cuts -- -1.73 pts/100 at n=4,732, p=0.0056 and -1.955 at n=7,192, p=0.000117 -- both on the same 2024-25/2025-26 boxscore corpus. Anything derived from a CONFIRMED_LOCAL effect inherits its single-corpus limit.",
+        "source_artifact": "webapp/public/data/showcase/mechanism_ledger_export.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["mechanisms", "verdicts", "nba"]
+    },
+    {
+      "q": "How many mechanisms have been tested per sport?",
+      "alt_phrasings": ["mechanisms by sport", "ledger size by sport", "which sport is best covered"],
+      "a": {
+        "status": "ok",
+        "answer": "NBA leads at 85 tested mechanisms (45 confirmed, 33 null, 7 not-testable), with MLB at 86, soccer at 64 and tennis at 52 in the honesty exhibit's count. The four ledgers total 287 rows in the mechanism export.",
+        "source_artifact": "webapp/public/data/showcase/mechanism_ledger_export.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["mechanisms", "coverage", "per-sport"]
+    },
+    {
+      "q": "Why are so many claims not-testable?",
+      "alt_phrasings": ["not testable meaning", "why 709 not testable", "untestable claims"],
+      "a": {
+        "status": "ok",
+        "answer": "Almost all of them come from one place: the interaction factory, which generated 1,003 candidate claims of which 709 are not-testable. Machine-generated interaction hypotheses routinely reference slices with no corpus behind them, and marking them not-testable is more honest than testing them on a proxy and reporting the proxy's answer.",
+        "source_artifact": "webapp/public/data/showcase/honesty_exhibit.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["not-testable", "interaction-factory", "honesty"]
+    },
+    {
+      "q": "How many claims failed replication?",
+      "alt_phrasings": ["failed replication count", "claims that did not replicate", "replication failures"],
+      "a": {
+        "status": "ok",
+        "answer": "Failed replications are counted per ledger: 7 in MLB, 1 in soccer and 17 in the interaction factory, with none recorded in NBA or tennis. A failed replication is kept as its own category rather than folded back into the null bucket.",
+        "source_artifact": "webapp/public/data/showcase/honesty_exhibit.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["replication", "honesty", "ledger"]
+    },
+    {
+      "q": "What is the difference between the in-game and pregame validation?",
+      "alt_phrasings": ["ingame vs pregame testing", "how do you validate live models", "two validation tracks"],
+      "a": {
+        "status": "ok",
+        "answer": "Pregame is scored against the Shin-devigged closing line on completed games under the leak-free gate. In-game is scored tick by tick against the live market at recorded checkpoints, using Brier skill against both the market and a constant base rate -- 78,986 MLB rows and 9,003 soccer rows in the current pack. Neither uses a live feed; both read committed, settled corpora.",
+        "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["ingame", "pregame", "validation"]
+    },
+    {
+      "q": "What is the forecaster proof pack?",
+      "alt_phrasings": ["forecaster manifest", "what evidence backs the forecaster", "ingame proof"],
+      "a": {
+        "status": "ok",
+        "answer": "Six committed aggregates assembled behind the forecaster page: walk-forward win-probability results, state-conditioned calibration, the Murphy decomposition, calibration stability, Brier skill scores and the cross-sport scoreboard. The manifest also names what it could not include -- two uncommitted in-game grade-join caches -- rather than quietly citing them.",
+        "source_artifact": "webapp/public/data/showcase/forecaster/manifest.json",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["forecaster", "proof", "manifest"]
+    },
+    {
+      "q": "Do you ever cite a number you cannot show?",
+      "alt_phrasings": ["uncited headline", "missing receipt", "is every number backed"],
+      "a": {
+        "status": "ok",
+        "answer": "The forecaster manifest documents one such case explicitly: the in-game proof document cites source scripts and a raw settlement-join cache rather than a committed JSON receipt for its headline figure, so the pack substitutes already-verified committed aggregates over the same corpus. Naming the gap is the practice; papering over it is not.",
+        "source_artifact": "webapp/public/data/showcase/forecaster/manifest.json",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["receipts", "honesty", "gaps"]
+    },
+    {
+      "q": "What is the truth source for a number on this site?",
+      "alt_phrasings": ["where do the numbers come from", "single source of truth", "which document governs claims"],
+      "a": {
+        "status": "ok",
+        "answer": "The evidence packet governs what may be claimed, and every module points back to it. Modules that touch marketable ground -- calibration by market type, the Brier skill pack -- name it as truth_source in the artifact itself, and the answer contract requires quoting source_artifact and as_of with any number.",
+        "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["truth-source", "receipts", "governance"]
+    },
+    {
+      "q": "Why does every module say edge_claimed false?",
+      "alt_phrasings": ["what does edge_claimed mean", "why the edge_claimed flag", "no edge flag"],
+      "a": {
+        "status": "ok",
+        "answer": "It is a machine-checkable stamp that the module is a calibration or description artifact, not a profit claim. It appears on the showcase manifest, on every novel-stat card and on the Brier skill pack, and it is the reason a question phrased in ROI or bankroll terms comes back refused rather than answered.",
+        "source_artifact": "webapp/public/data/showcase/site_manifest.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["no-edge", "governance", "flags"]
+    },
+    {
+      "q": "What is the cross-sport structure check for?",
+      "alt_phrasings": ["one methodology across sports", "xsport structure purpose", "same method different sports"],
+      "a": {
+        "status": "ok",
+        "answer": "Running one reliability-map methodology across sports so their numbers are comparable, and refusing to produce a number where the floors are not met. It requires n_games>=30 per bucket with a non-null market mean probability; NBA passes with 1,593 games and 77 usable buckets, while MLB, soccer and tennis all come back not_buildable with the reason stated.",
+        "source_artifact": "webapp/public/data/showcase/xsport_structure.json",
+        "as_of": "2026-07-18"
+      },
+      "tags": ["cross-sport", "method", "not-buildable"]
+    },
+    {
+      "q": "What does 'not buildable' mean?",
+      "alt_phrasings": ["not_buildable status", "why is a sport missing", "unbuildable module"],
+      "a": {
+        "status": "ok",
+        "answer": "The inputs for that slice do not exist or do not clear the declared floor, so no number is produced at all. In the cross-sport structure module MLB and soccer are not_buildable because no bucket had both a market mean probability and n_games>=30, and tennis because its reliability map file is simply absent. Each reason is written into the artifact.",
+        "source_artifact": "webapp/public/data/showcase/xsport_structure.json",
+        "as_of": "2026-07-18"
+      },
+      "tags": ["not-buildable", "floors", "honesty"]
+    },
+    {
+      "q": "How do you handle overlapping categories in an analysis?",
+      "alt_phrasings": ["overlapping buckets", "non additive classes", "can I sum the categories"],
+      "a": {
+        "status": "ok",
+        "answer": "By labeling them and refusing to sum them. The MLB count-leverage module marks behind/even/ahead as a mutually exclusive, exhaustive partition while two_strike and three_ball are overlapping lenses whose counts are explicitly not additive with it; the schedule module makes the same declaration about back-to-backs, 3-in-4s and 4-in-6s.",
+        "source_artifact": "webapp/public/data/showcase/mlb_count_leverage.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["method", "partitions", "hygiene"]
+    },
+    {
+      "q": "How do you report rates so they are not misleading?",
+      "alt_phrasings": ["denominator discipline", "rate calculation method", "how do you compute percentages"],
+      "a": {
+        "status": "ok",
+        "answer": "Every rate is taken over its own non-null denominator rather than the raw class count, which is stated as a floor note in the artifacts that publish rates. In the count-leverage module that means strike and ball rates use n_type and in-zone rates use n_zone, which differ -- 183,042 versus 181,462 in the pitcher-behind class alone.",
+        "source_artifact": "webapp/public/data/showcase/mlb_count_leverage.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["method", "rates", "hygiene"]
+    },
+    {
+      "q": "Is any of this a live system?",
+      "alt_phrasings": ["do you have live data", "is this real time", "live feed"],
+      "a": {
+        "status": "no_data",
+        "answer": "No. Every answer here reads committed artifacts on disk -- settled games, historical odds snapshots, finished seasons -- and there is no live odds or live game-state feed behind the site. Questions about tonight's line, a current score or a live win probability come back as no_data by design rather than being estimated.",
+        "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["live", "no-data", "scope"]
+    },
+    {
+      "q": "What would it take to change the headline result?",
+      "alt_phrasings": ["what would prove an edge", "how could the conclusion change", "what evidence would you need"],
+      "a": {
+        "status": "ok",
+        "answer": "The same conjunction that has rejected everything so far: BSS>0 against the devigged close, Diebold-Mariano p<0.05, N>=200, replicated on at least two independent corpora and surviving Benjamini-Hochberg correction. Until a candidate clears all five simultaneously, the recorded verdict stays 'the market is efficient on every pregame slice measured'.",
+        "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
+        "as_of": "2026-07-07"
+      },
+      "tags": ["gate", "falsification", "philosophy"]
+    },
+    {
+      "q": "Do you publish the code that runs the gate?",
+      "alt_phrasings": ["is the gate code available", "where is the dm test", "can I rerun the gate"],
+      "a": {
+        "status": "ok",
+        "answer": "Yes -- the proof document names the modules directly, including the Diebold-Mariano implementation under the eval-gate package and the beat-the-close scoreboard entry point, and notes that when the real corpora are absent the harness prints VALIDATION_PENDING and falls back to recorded tables rather than silently reproducing them.",
+        "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
+        "as_of": "2026-07-07"
+      },
+      "tags": ["reproducibility", "gate", "code"]
+    },
+    {
+      "q": "What happens if the underlying data is missing when a page builds?",
+      "alt_phrasings": ["missing corpus at build time", "validation pending", "what if the data isn't there"],
+      "a": {
+        "status": "ok",
+        "answer": "The harness declares it. A re-run without the real local corpora prints VALIDATION_PENDING and falls back to the recorded tables rather than emitting a fresh-looking number, and modules whose inputs are absent record not_buildable with the reason. The failure mode is a visible gap, not a plausible fabrication.",
+        "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
+        "as_of": "2026-07-07"
+      },
+      "tags": ["reproducibility", "honesty", "failure-modes"]
+    },
+    {
+      "q": "How is calibration stability measured over time?",
+      "alt_phrasings": ["does calibration drift", "calibration over time", "stability testing"],
+      "a": {
+        "status": "ok",
+        "answer": "Through dedicated modules that re-score the same forecaster across time slices -- calibration_over_time and calibration_stability, both included in the forecaster proof pack, with calibration_stability last stamped 2026-07-23. Stability is treated as a separate question from average calibration, because a model can be well-calibrated on average and badly calibrated in every individual period.",
+        "source_artifact": "webapp/public/data/showcase/forecaster/manifest.json",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["calibration", "stability", "drift"]
+    }
+  ]
+}

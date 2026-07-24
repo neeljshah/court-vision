@@ -1,0 +1,45 @@
+{
+  "slug": "donovan_mitchell",
+  "pack": "nba_players",
+  "display_name": "Donovan Mitchell",
+  "one_liner": "Donovan Mitchell scores 28.2 points per 36 minutes on 36.7 percent three-point shooting across 195 games.",
+  "three_things": [
+    "28.2 points per 36 is among the top scoring rates in this set.",
+    "The shooting supports it: 36.7 percent from three, 85.1 percent from the line.",
+    "He adds 6 assists and 5.1 rebounds per 36."
+  ],
+  "context_note": "Per-36-minute rates over a 3-season sample (seasons_played: 3), not per-game and not full-career figures. The manifest is descriptive_only: no adjustment for opponent, teammates, role, or shot difficulty, and a career_min_minutes>=800 inclusion floor applies. Games and minutes measure availability, not how well those minutes were used.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Donovan Mitchell].key_numbers.career_pts_per36",
+      "value": 28.2
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Donovan Mitchell].key_numbers.career_fg3_pct",
+      "value": 36.7
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Donovan Mitchell].key_numbers.career_games",
+      "value": 195
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Donovan Mitchell].key_numbers.career_ft_pct",
+      "value": 85.1
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Donovan Mitchell].key_numbers.career_ast_per36",
+      "value": 6
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Donovan Mitchell].key_numbers.career_reb_per36",
+      "value": 5.1
+    }
+  ],
+  "as_of": "2026-04-12"
+}

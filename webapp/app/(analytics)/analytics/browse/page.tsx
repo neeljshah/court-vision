@@ -11,7 +11,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { VerdictDot, type Verdict } from "@/components/analytics/VerdictDot";
 import { VerdictLegend } from "@/components/analytics/VerdictLegend";
-import { asOfDate } from "@/lib/analytics/format";
+import { asOfDate, typeset } from "@/lib/analytics/format";
 
 export const metadata: Metadata = {
   title: "Browse the analytics",
@@ -37,7 +37,19 @@ interface Manifest {
 }
 interface Insight {
   headline_insight?: string;
+  as_of?: string;
   cited?: Array<{ field?: string; value?: unknown }>;
+}
+
+// Chip stamp: the manifest's as_of when present, else the insight's own as_of but
+// ONLY if it is an actual date (33/54 manifest rows carry as_of null, and the
+// insight fallback is often honest prose like "unknown (artifact carries no as_of
+// field)" -- too long for a chip and not a date). Otherwise say so plainly.
+function stampOf(mAsOf?: string, iAsOf?: string): string {
+  const m = asOfDate(mAsOf);
+  if (m) return m;
+  const i = asOfDate(iAsOf);
+  return i && /^\d{4}-\d{2}-\d{2}$/.test(i) ? i : "as-of not stamped";
 }
 
 function readInsight(id: string): Insight | null {
@@ -83,13 +95,24 @@ export default function BrowsePage() {
 
   const rows = man.modules.map((m) => {
     const ins = readInsight(m.id);
-    const summary = ins?.headline_insight || m.one_line || "";
+    // Every card must carry a sourced line. Priority: the committed insight
+    // headline, else the module's own one_line, else an honest status line --
+    // never a title-only card. (All 54 staged modules currently resolve at (a);
+    // the later rungs are the honest floor if a future module stages without one.)
+    const summary = ins?.headline_insight || m.one_line || "Recorded artifact -- no headline extracted.";
     // The big serif ".mc-stat" is a NUMERAL slot, so headline the first cited value
     // that is actually a NUMBER (mirrors players/page.tsx heroStat). cited[0] is a
     // player NAME on some cards (ctx_player_splits, cf_star_removal) -- typesetting
     // a name as a figure is a category error and overflows the card.
     const cnum = ins?.cited?.find((c) => typeof c.value === "number")?.value;
-    return { m, cat: category(m.id), summary, stat: cnum != null ? String(cnum) : "", s: score(m, summary.length) };
+    return {
+      m,
+      cat: category(m.id),
+      summary,
+      stamp: stampOf(m.as_of, ins?.as_of),
+      stat: cnum != null ? String(cnum) : "",
+      s: score(m, summary.length),
+    };
   });
   rows.sort((a, b) => b.s - a.s || b.summary.length - a.summary.length || a.m.id.localeCompare(b.m.id));
   const withSpan = rows.map((r, i) => ({ ...r, span: i < 6 ? "b22" : i < 18 ? "b21" : "b11" }));
@@ -121,15 +144,15 @@ export default function BrowsePage() {
           <Link key={r.m.id} href={`/analytics/m/${r.m.id}`} className={`mcard ${r.span}`} data-cat={r.cat}>
             <div className="mc-top">
               <span className="mc-cat">{r.cat}</span>
+              {r.m.status !== "ok" ? <span className="mc-flag mono">{r.m.status} cut</span> : null}
               <VerdictDot verdict={verdictOf(r.m.status)} />
             </div>
             <div className="mc-title">{r.m.title}</div>
-            {r.span !== "b11" && r.summary ? <div className="mc-sum">{r.summary}</div> : null}
+            <div className="mc-sum">{typeset(r.summary)}</div>
             <div className="mc-foot">
               {r.stat && r.span !== "b11" ? <div className="mc-stat tnum">{r.stat}</div> : null}
               <div className="mc-chip mono">
-                <VerdictDot verdict={verdictOf(r.m.status)} size={6} /> {asOfDate(r.m.as_of)}
-                {r.m.status !== "ok" ? " · partial" : ""}
+                <VerdictDot verdict={verdictOf(r.m.status)} size={6} /> {r.stamp}
               </div>
             </div>
           </Link>
@@ -147,16 +170,19 @@ export default function BrowsePage() {
           padding:6px 16px;cursor:pointer;transition:color var(--dur-fast) var(--ease-ui),border-color var(--dur-fast) var(--ease-ui)}
         .mfilter button:hover{color:var(--ink);border-color:var(--accent)}
         .mfilter button.on{color:var(--accent-ink-on);background:var(--accent);border-color:var(--accent)}
-        .mbento{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:158px;gap:16px}
+        .mbento{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:176px;gap:16px}
         .mcard{background:var(--paper-raised);border:1px solid var(--rule);border-radius:var(--radius-card);
-          padding:18px;box-shadow:var(--shadow-card);display:flex;flex-direction:column;position:relative;min-width:0;
+          padding:18px;box-shadow:var(--shadow-card);display:flex;flex-direction:column;position:relative;min-width:0;overflow:hidden;
           text-decoration:none;color:inherit;transition:box-shadow var(--dur-base) var(--ease-ui),border-color var(--dur-base) var(--ease-ui)}
         .mcard:hover{box-shadow:var(--shadow-raise);border-color:var(--accent);text-decoration:none}
         .mc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
         .mc-cat{font-weight:700;font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3)}
-        .mc-title{font-weight:600;font-size:16px;line-height:1.25;margin-top:8px;color:var(--ink)}
+        .mc-title{font-weight:600;font-size:16px;line-height:1.25;margin-top:8px;color:var(--ink);overflow:hidden;
+          display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+        .mc-flag{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);white-space:nowrap;
+          border:1px solid var(--rule-strong);border-radius:var(--radius-pill);padding:1px 7px;margin-left:auto}
         .mc-sum{font-size:13px;color:var(--ink-2);line-height:1.45;margin-top:6px;overflow:hidden;
-          display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}
+          display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
         .mc-foot{margin-top:auto;display:flex;align-items:flex-end;justify-content:space-between;gap:10px;padding-top:10px}
         .mc-stat{font-family:var(--font-display);font-weight:500;font-size:1.7rem;line-height:1;color:var(--ink)}
         .mc-chip{font-size:11.5px;color:var(--ink-3);display:inline-flex;align-items:center;gap:5px;min-width:0;

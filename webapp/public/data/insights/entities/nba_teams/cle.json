@@ -1,0 +1,40 @@
+{
+  "slug": "cle",
+  "pack": "nba_teams",
+  "display_name": "Cleveland Cavaliers",
+  "one_liner": "Cleveland put up 119.6 points per game in the latest season -- fourth in this 30-team manifest -- with Donovan Mitchell at a 39.3 PRA-per-36 rate.",
+  "three_things": [
+    "119.6 points per game ranks fourth league-wide here.",
+    "It came on a middling 102.1 pace proxy, so the scoring is not a tempo artifact.",
+    "Donovan Mitchell led in minutes (6,482.5) at 39.3 PRA per 36."
+  ],
+  "context_note": "The 'top contributor' is the player with the most total minutes for that team across the 3-season sample, not necessarily its best or highest-scoring player. PRA-per-36 sums points, rebounds, and assists per 36 minutes -- a raw box rate, not an impact metric. ppg_latest_season and pace_proxy_latest_season are single-season figures while games_total spans three seasons, and pace_proxy is a proxy, not official possession-based pace. The manifest is descriptive_only, with no schedule, opponent, or roster-continuity adjustment. League-wide rank statements were computed by sorting all 30 teams in this manifest on the named field; the underlying values are read verbatim.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=CLE].key_numbers.ppg_latest_season",
+      "value": 119.6
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=CLE].key_numbers.pace_proxy_latest_season",
+      "value": 102.1
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=CLE].key_numbers.top_contributor",
+      "value": "Donovan Mitchell"
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=CLE].key_numbers.top_contributor_minutes",
+      "value": 6482.5
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=CLE].key_numbers.top_contributor_pra_per36",
+      "value": 39.3
+    }
+  ],
+  "as_of": "2026-04-12"
+}

@@ -1,0 +1,40 @@
+{
+  "slug": "uta",
+  "pack": "nba_teams",
+  "display_name": "Utah Jazz",
+  "one_liner": "Utah ran a 104.8 pace proxy, second-fastest in this manifest, and its minutes leader is Keyonte George at 5,918.3 minutes.",
+  "three_things": [
+    "104.8 pace proxy with 116.8 points per game in the latest season.",
+    "Keyonte George led the roster in minutes -- 5,918.3 of them.",
+    "His 30.9 PRA-per-36 rate is a mid-tier top-contributor line."
+  ],
+  "context_note": "The 'top contributor' is the player with the most total minutes for that team across the 3-season sample, not necessarily its best or highest-scoring player. PRA-per-36 sums points, rebounds, and assists per 36 minutes -- a raw box rate, not an impact metric. ppg_latest_season and pace_proxy_latest_season are single-season figures while games_total spans three seasons, and pace_proxy is a proxy, not official possession-based pace. The manifest is descriptive_only, with no schedule, opponent, or roster-continuity adjustment. League-wide rank statements were computed by sorting all 30 teams in this manifest on the named field; the underlying values are read verbatim.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=UTA].key_numbers.pace_proxy_latest_season",
+      "value": 104.8
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=UTA].key_numbers.ppg_latest_season",
+      "value": 116.8
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=UTA].key_numbers.top_contributor",
+      "value": "Keyonte George"
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=UTA].key_numbers.top_contributor_minutes",
+      "value": 5918.3
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=UTA].key_numbers.top_contributor_pra_per36",
+      "value": 30.9
+    }
+  ],
+  "as_of": "2026-04-12"
+}

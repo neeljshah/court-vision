@@ -1,0 +1,40 @@
+{
+  "slug": "mia",
+  "pack": "nba_teams",
+  "display_name": "Miami Heat",
+  "one_liner": "Miami ran the fastest pace proxy in this manifest, 105.8, and scored 120.4 points per game -- second-highest in the league here.",
+  "three_things": [
+    "105.8 is the top pace-proxy figure among all 30 teams.",
+    "The scoring follows: 120.4 points per game, second only to one team here.",
+    "Bam Adebayo led in minutes at 7,181.5 with a 35.2 PRA-per-36 rate."
+  ],
+  "context_note": "The 'top contributor' is the player with the most total minutes for that team across the 3-season sample, not necessarily its best or highest-scoring player. PRA-per-36 sums points, rebounds, and assists per 36 minutes -- a raw box rate, not an impact metric. ppg_latest_season and pace_proxy_latest_season are single-season figures while games_total spans three seasons, and pace_proxy is a proxy, not official possession-based pace. The manifest is descriptive_only, with no schedule, opponent, or roster-continuity adjustment. League-wide rank statements were computed by sorting all 30 teams in this manifest on the named field; the underlying values are read verbatim.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=MIA].key_numbers.pace_proxy_latest_season",
+      "value": 105.8
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=MIA].key_numbers.ppg_latest_season",
+      "value": 120.4
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=MIA].key_numbers.top_contributor",
+      "value": "Bam Adebayo"
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=MIA].key_numbers.top_contributor_minutes",
+      "value": 7181.5
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=MIA].key_numbers.top_contributor_pra_per36",
+      "value": 35.2
+    }
+  ],
+  "as_of": "2026-04-12"
+}

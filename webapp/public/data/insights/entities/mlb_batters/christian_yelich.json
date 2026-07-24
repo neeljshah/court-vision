@@ -1,0 +1,40 @@
+{
+  "slug": "christian_yelich",
+  "pack": "mlb_batters",
+  "display_name": "Christian Yelich",
+  "one_liner": "Christian Yelich reached 104.7 mph at the 90th percentile of exit velocity but averaged only 83.7 mph -- a wide spread between his best contact and his typical contact.",
+  "three_things": [
+    "104.7 mph at the top end against an 83.7 mph average.",
+    "763 batted balls out of 2,558 pitches seen.",
+    "Estimated wOBA on contact settles at .332."
+  ],
+  "context_note": "Descriptive only, from a single 2025 Statcast pull (pitches_faced_2025>=300 floor, 485 of 671 batters). The contact numbers -- exit velocity and estimated wOBA on contact -- cover the batted balls only, not every pitch seen, and estimated wOBA on contact is a batted-ball model: it says nothing about walks, strikeouts, or actual results. This pull carries no swing/miss or launch-angle column, so there is no whiff rate and no barrel profile here. Not park-, role-, or opponent-adjusted, and not a prediction.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Christian Yelich].key_numbers.exit_velo_p90",
+      "value": 104.7
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Christian Yelich].key_numbers.avg_exit_velo",
+      "value": 83.7
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Christian Yelich].key_numbers.n_batted_balls",
+      "value": 763
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Christian Yelich].key_numbers.pitches_faced",
+      "value": 2558
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Christian Yelich].key_numbers.avg_estimated_woba_on_contact",
+      "value": 0.332
+    }
+  ],
+  "as_of": "2025-09-28"
+}

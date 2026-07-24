@@ -1,0 +1,35 @@
+{
+  "slug": "domantas_sabonis",
+  "pack": "nba_players",
+  "display_name": "Domantas Sabonis",
+  "one_liner": "Domantas Sabonis grabs 14 rebounds per 36 minutes and passes for 7.1 assists -- the rarest pairing in this player set.",
+  "three_things": [
+    "14 rebounds per 36 is the highest rebounding rate among the players profiled here.",
+    "7.1 assists per 36 from a center is the other half of the anomaly.",
+    "He converts 58.7 percent from the field and even 38.1 percent from three."
+  ],
+  "context_note": "Per-36-minute rates over a 3-season sample (seasons_played: 3), not per-game and not full-career figures. The manifest is descriptive_only: no adjustment for opponent, teammates, role, or shot difficulty, and a career_min_minutes>=800 inclusion floor applies. Games and minutes measure availability, not how well those minutes were used. Comparisons are scoped to the players with insight files in this set. Rebound rate carries no lineup or scheme adjustment.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Domantas Sabonis].key_numbers.career_reb_per36",
+      "value": 14
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Domantas Sabonis].key_numbers.career_ast_per36",
+      "value": 7.1
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Domantas Sabonis].key_numbers.career_fg_pct",
+      "value": 58.7
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Domantas Sabonis].key_numbers.career_fg3_pct",
+      "value": 38.1
+    }
+  ],
+  "as_of": "2026-04-12"
+}

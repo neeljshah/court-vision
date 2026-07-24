@@ -53,6 +53,8 @@ reprice. Follow the links to go as deep as you want at any stage.
 ## Full document tree
 
 ### Front door / orientation
+- **[CourtVision Analytics -- the Reading Room](https://neeljshah.github.io/court-vision/analytics)** -- **the flagship product** (live): 54 analytics modules, 1,549 entity atlas cards, 6 prior-art-gated novel stats, Scout AI in 3 honest tiers, every number carrying its artifact path
+- [The quant terminal](https://neeljshah.github.io/court-vision) -- product 2, the dense operator surface (scoreboard, evidence spine, receipts drill, labs)
 - [README](../README.md) -- the funnel narrative end-to-end with honest numbers
 - [ARCHITECTURE](../ARCHITECTURE.md) -- end-to-end technical map (root)
 - [VISION](../VISION.md) -- the long-form thesis: what it is, what it is not

@@ -1,0 +1,35 @@
+{
+  "slug": "jalen_green",
+  "pack": "nba_players",
+  "display_name": "Jalen Green",
+  "one_liner": "Jalen Green scores 23 points per 36 minutes on 42.3 percent shooting -- the widest volume-to-efficiency gap among the high-usage guards here.",
+  "three_things": [
+    "23 points per 36 on 42.3 percent from the field and 34 percent from three.",
+    "The line is generated from difficulty, not from easy looks -- but nothing here measures shot quality.",
+    "Free-throw accuracy of 80.1 percent is the steadiest number in the profile."
+  ],
+  "context_note": "Per-36-minute rates over a 3-season sample (seasons_played: 3), not per-game and not full-career figures. The manifest is descriptive_only: no adjustment for opponent, teammates, role, or shot difficulty, and a career_min_minutes>=800 inclusion floor applies. Games and minutes measure availability, not how well those minutes were used. The gap comparison is scoped to the guards with insight files in this set, and shot difficulty is not measured anywhere in this manifest.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Jalen Green].key_numbers.career_pts_per36",
+      "value": 23
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Jalen Green].key_numbers.career_fg_pct",
+      "value": 42.3
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Jalen Green].key_numbers.career_fg3_pct",
+      "value": 34
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Jalen Green].key_numbers.career_ft_pct",
+      "value": 80.1
+    }
+  ],
+  "as_of": "2026-04-12"
+}

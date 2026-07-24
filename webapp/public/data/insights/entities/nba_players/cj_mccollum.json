@@ -1,0 +1,35 @@
+{
+  "slug": "cj_mccollum",
+  "pack": "nba_players",
+  "display_name": "CJ McCollum",
+  "one_liner": "CJ McCollum shoots 39.3 percent from three while scoring 22.6 points per 36 minutes.",
+  "three_things": [
+    "39.3 percent from deep on a 22.6-point-per-36 scoring rate.",
+    "Overall field-goal percentage of 45.1 reflects a jumper-heavy shot diet.",
+    "Playmaking is a secondary duty at 4.7 assists per 36."
+  ],
+  "context_note": "Per-36-minute rates over a 3-season sample (seasons_played: 3), not per-game and not full-career figures. The manifest is descriptive_only: no adjustment for opponent, teammates, role, or shot difficulty, and a career_min_minutes>=800 inclusion floor applies. Games and minutes measure availability, not how well those minutes were used.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=CJ McCollum].key_numbers.career_fg3_pct",
+      "value": 39.3
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=CJ McCollum].key_numbers.career_pts_per36",
+      "value": 22.6
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=CJ McCollum].key_numbers.career_fg_pct",
+      "value": 45.1
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=CJ McCollum].key_numbers.career_ast_per36",
+      "value": 4.7
+    }
+  ],
+  "as_of": "2026-04-12"
+}

@@ -1,0 +1,55 @@
+{
+  "slug": "ben_shelton_atp",
+  "pack": "tennis",
+  "display_name": "Ben Shelton (ATP)",
+  "one_liner": "Ben Shelton's clay win rate is 0.5294 in both the career and recent windows -- the same number twice, with a -0.0946 recent gap to his hard-court form.",
+  "three_things": [
+    "Career and recent clay rates are identical at 0.5294.",
+    "Hard court is the better surface: 0.6183 career, 0.624 recent.",
+    "Grass rates are n/a in both windows; grass_adapt_career of -0.0687 is what exists."
+  ],
+  "context_note": "Descriptive career and recent-form surface win rates as of the corpus end -- not a prediction and not an edge claim. Per-surface floors apply (n>=30 career for a surface win rate, n>=25 each side for the clay-minus-hard gap, n>=15 for grass adaptation), evaluated independently for career and recent form; a metric below its floor shows n/a and is never fabricated. Nothing here adjusts for era, opponent quality, draw, or injury.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Ben Shelton (ATP)].key_numbers.clay_wr_career",
+      "value": 0.5294
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Ben Shelton (ATP)].key_numbers.clay_wr_recent",
+      "value": 0.5294
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Ben Shelton (ATP)].key_numbers.clay_minus_hard_recent",
+      "value": -0.0946
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Ben Shelton (ATP)].key_numbers.hard_wr_career",
+      "value": 0.6183
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Ben Shelton (ATP)].key_numbers.hard_wr_recent",
+      "value": 0.624
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Ben Shelton (ATP)].key_numbers.grass_wr_career",
+      "value": null
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Ben Shelton (ATP)].key_numbers.grass_wr_recent",
+      "value": null
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Ben Shelton (ATP)].key_numbers.grass_adapt_career",
+      "value": -0.0687
+    }
+  ],
+  "as_of": "2026-07-19T03:41:37.066640+00:00"
+}

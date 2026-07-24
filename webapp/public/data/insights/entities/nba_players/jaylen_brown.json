@@ -1,0 +1,40 @@
+{
+  "slug": "jaylen_brown",
+  "pack": "nba_players",
+  "display_name": "Jaylen Brown",
+  "one_liner": "Jaylen Brown scores 26.2 points per 36 minutes on 48 percent shooting but only 34.2 percent from three.",
+  "three_things": [
+    "The two-point game does the work: 48 percent overall against 34.2 percent from deep.",
+    "He rebounds well for a wing at 6.5 per 36.",
+    "Free-throw shooting lags the scoring role at 76.3 percent."
+  ],
+  "context_note": "Per-36-minute rates over a 3-season sample (seasons_played: 3), not per-game and not full-career figures. The manifest is descriptive_only: no adjustment for opponent, teammates, role, or shot difficulty, and a career_min_minutes>=800 inclusion floor applies. Games and minutes measure availability, not how well those minutes were used.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Jaylen Brown].key_numbers.career_pts_per36",
+      "value": 26.2
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Jaylen Brown].key_numbers.career_fg_pct",
+      "value": 48
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Jaylen Brown].key_numbers.career_fg3_pct",
+      "value": 34.2
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Jaylen Brown].key_numbers.career_reb_per36",
+      "value": 6.5
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Jaylen Brown].key_numbers.career_ft_pct",
+      "value": 76.3
+    }
+  ],
+  "as_of": "2026-04-12"
+}

@@ -1,0 +1,40 @@
+{
+  "slug": "mil",
+  "pack": "nba_teams",
+  "display_name": "Milwaukee Bucks",
+  "one_liner": "Milwaukee posted the second-lowest scoring in this manifest, 109.3 per game, while Giannis Antetokounmpo carried a 50.9 PRA-per-36 rate.",
+  "three_things": [
+    "109.3 points per game on a slow 98.4 pace proxy: both ends point the same way.",
+    "Giannis Antetokounmpo's 50.9 PRA per 36 is the second-highest top-contributor rate in the league here.",
+    "He logged 5,841.1 minutes as the team's minutes leader."
+  ],
+  "context_note": "The 'top contributor' is the player with the most total minutes for that team across the 3-season sample, not necessarily its best or highest-scoring player. PRA-per-36 sums points, rebounds, and assists per 36 minutes -- a raw box rate, not an impact metric. ppg_latest_season and pace_proxy_latest_season are single-season figures while games_total spans three seasons, and pace_proxy is a proxy, not official possession-based pace. The manifest is descriptive_only, with no schedule, opponent, or roster-continuity adjustment. League-wide rank statements were computed by sorting all 30 teams in this manifest on the named field; the underlying values are read verbatim.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=MIL].key_numbers.ppg_latest_season",
+      "value": 109.3
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=MIL].key_numbers.pace_proxy_latest_season",
+      "value": 98.4
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=MIL].key_numbers.top_contributor",
+      "value": "Giannis Antetokounmpo"
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=MIL].key_numbers.top_contributor_pra_per36",
+      "value": 50.9
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=MIL].key_numbers.top_contributor_minutes",
+      "value": 5841.1
+    }
+  ],
+  "as_of": "2026-04-12"
+}

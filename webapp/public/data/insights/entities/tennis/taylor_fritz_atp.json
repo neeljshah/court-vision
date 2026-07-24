@@ -1,0 +1,45 @@
+{
+  "slug": "taylor_fritz_atp",
+  "pack": "tennis",
+  "display_name": "Taylor Fritz (ATP)",
+  "one_liner": "Taylor Fritz's recent grass win rate of 0.7647 is his best surface number in either window, well above his 0.6479 career grass mark.",
+  "three_things": [
+    "Recent form is up across the board: 0.698 hard, 0.6304 clay, 0.7647 grass.",
+    "grass_adapt_recent of 0.0704 means grass now helps him rather than hurting.",
+    "Clay stays the weakest surface -- clay_minus_hard_recent -0.0676."
+  ],
+  "context_note": "Descriptive career and recent-form surface win rates as of the corpus end -- not a prediction and not an edge claim. Per-surface floors apply (n>=30 career for a surface win rate, n>=25 each side for the clay-minus-hard gap, n>=15 for grass adaptation), evaluated independently for career and recent form; a metric below its floor shows n/a and is never fabricated. Nothing here adjusts for era, opponent quality, draw, or injury.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Taylor Fritz (ATP)].key_numbers.grass_wr_recent",
+      "value": 0.7647
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Taylor Fritz (ATP)].key_numbers.grass_wr_career",
+      "value": 0.6479
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Taylor Fritz (ATP)].key_numbers.hard_wr_recent",
+      "value": 0.698
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Taylor Fritz (ATP)].key_numbers.clay_wr_recent",
+      "value": 0.6304
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Taylor Fritz (ATP)].key_numbers.grass_adapt_recent",
+      "value": 0.0704
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Taylor Fritz (ATP)].key_numbers.clay_minus_hard_recent",
+      "value": -0.0676
+    }
+  ],
+  "as_of": "2026-07-19T03:41:37.066640+00:00"
+}

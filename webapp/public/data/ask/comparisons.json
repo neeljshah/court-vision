@@ -1,0 +1,666 @@
+{
+  "bucket": "comparisons",
+  "note": "Head-to-head comparisons -- sport versus sport, team versus team, market versus market, count versus count -- built only from values that exist in committed artifacts. Where two things are measured on different corpora or different units, the entry says so instead of implying a clean ranking. Descriptive comparison only; no dollar, ROI or profit claim.",
+  "entries": [
+    {
+      "q": "Which sport is the most predictable?",
+      "alt_phrasings": ["easiest sport to forecast", "which sport is easiest to predict", "most predictable sport"],
+      "a": {
+        "status": "ok",
+        "answer": "Measured as in-game skill over a constant base rate, MLB is the only one of the two graded sports where the model adds anything: BSS versus climatology is +0.042 over 78,986 MLB rows and -0.3134 over 9,003 soccer_intl rows. The market tells a different story -- it scores 0.167 against climatology in MLB and 0.1774 in soccer -- so 'predictable' depends entirely on who is doing the predicting.",
+        "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["cross-sport", "bss", "predictability"]
+    },
+    {
+      "q": "Where is our model furthest behind the market?",
+      "alt_phrasings": ["worst model vs market gap", "biggest shortfall by sport", "where does the model lose most"],
+      "a": {
+        "status": "ok",
+        "answer": "Soccer, and it is not close: BSS versus market is -0.5967 across all soccer_intl rows against -0.1502 in MLB. The worst individual grain is the soccer 0-15 minute window at -1.0794 (n=627); the least bad is MLB's early innings at -0.0794 (n=19,900).",
+        "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["cross-sport", "bss", "model-vs-market"]
+    },
+    {
+      "q": "Does the model do better early or late in an MLB game?",
+      "alt_phrasings": ["mlb early vs late innings", "when is the model best in baseball", "mlb grain comparison"],
+      "a": {
+        "status": "ok",
+        "answer": "Relative to the market, much better early. In innings 1-3 the BSS versus market is -0.0794; in the middle innings it slips to -0.1547; by innings 7 and later it collapses to -0.4635. The market's own skill rises the other way, from 0.0837 to 0.3555 against climatology, because late-game information is exactly what it prices best.",
+        "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["mlb", "ingame", "bss"]
+    },
+    {
+      "q": "Which in-game market is best calibrated?",
+      "alt_phrasings": ["mlb vs soccer calibration", "which market has the lowest ece", "best calibrated market type"],
+      "a": {
+        "status": "ok",
+        "answer": "MLB in-game moneyline, on both sides of the comparison: model ECE 0.097325 and market ECE 0.070965 over 78,986 rows, against soccer match result at model ECE 0.275568 and market ECE 0.201885 over 9,003 rows. Even the soccer market is less well calibrated than the MLB model.",
+        "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["calibration", "ece", "cross-sport"]
+    },
+    {
+      "q": "How big is the Brier gap between the model and the market by sport?",
+      "alt_phrasings": ["brier gap by market type", "model minus market brier", "how far behind is the model"],
+      "a": {
+        "status": "ok",
+        "answer": "MLB in-game moneyline: model 0.237684 versus market 0.206653, a gap of 0.031031. Soccer match result: model 0.227887 versus market 0.142726, a gap of 0.085160 -- nearly three times wider. Lower is better in both cases, so the model trails in both.",
+        "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["calibration", "brier", "cross-sport"]
+    },
+    {
+      "q": "Which sport's market prices its games earliest?",
+      "alt_phrasings": ["earliest line settlement by sport", "which sport moves first", "line timing comparison"],
+      "a": {
+        "status": "ok",
+        "answer": "soccer_intl, at a 2.75-hour half-life, ahead of MLB at 3.67h and NBA at 4.76h. Tennis and WNBA both complete more than half their motion before the 6-hour mark, so they are reported as '>6.0' rather than assigned a number.",
+        "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["cross-sport", "lhl", "market-timing"]
+    },
+    {
+      "q": "Which sport has the most late line movement?",
+      "alt_phrasings": ["most last minute line moves", "final hour movement by sport", "which sport moves right before tip"],
+      "a": {
+        "status": "ok",
+        "answer": "NBA, at 32.47% of total absolute movement inside the final hour, ahead of soccer_intl at 26.10%, MLB at 18.13%, WNBA at 11.76% and tennis at 10.70%. Late-breaking lineup news is the obvious candidate explanation, but this measurement does not test it.",
+        "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["cross-sport", "lhl", "nba"]
+    },
+    {
+      "q": "Which sport has the deepest line-movement data?",
+      "alt_phrasings": ["move pairs by sport", "largest odds sample", "which sport has the most odds data"],
+      "a": {
+        "status": "ok",
+        "answer": "MLB by a wide margin: 1,307,128 pre-game move pairs, against 809,986 for tennis, 333,540 for WNBA, 182,054 for NBA and 164,072 for soccer_intl. Sample depth and result quality are not the same thing -- NBA has the thinnest odds sample of the five yet the cleanest reliability map.",
+        "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["cross-sport", "lhl", "sample-size"]
+    },
+    {
+      "q": "Which sport stays contested the longest?",
+      "alt_phrasings": ["mlb vs soccer competitiveness", "which sport is decided later", "live clock comparison"],
+      "a": {
+        "status": "ok",
+        "answer": "MLB, with a Live-Clock Fraction of 0.8333 against soccer_intl's 0.7475. The comparison is indicative rather than metric: 3 runs and 1 goal are not equated margins, and innings and minutes are not the same clock.",
+        "source_artifact": "webapp/public/data/showcase/novel_live_clock_fraction.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["cross-sport", "lcf", "competitiveness"]
+    },
+    {
+      "q": "Where does the in-game market know the most that the scoreboard doesn't?",
+      "alt_phrasings": ["mfp comparison by sport", "biggest information advantage", "which sport has the most in-game news"],
+      "a": {
+        "status": "ok",
+        "answer": "Soccer, on the Market Foresight Premium: mean 0.9211 across 19 checkpoints versus 0.2461 across 10 in MLB, ending at 1.7056 versus 0.2365. In both sports the premium grows through the game -- delta of +1.0663 in soccer and +0.1735 in MLB -- but soccer starts higher and climbs further.",
+        "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["cross-sport", "mfp", "information"]
+    },
+    {
+      "q": "Which market overshoots the most on big in-game moves?",
+      "alt_phrasings": ["overreaction comparison", "mlb vs soccer overshoot", "which sport overreacts"],
+      "a": {
+        "status": "ok",
+        "answer": "soccer_intl, at an overreaction magnitude of 0.2856 against MLB's 0.0721 -- roughly four times larger. Neither is harvestable: at maximum disagreement the model is closer than the market only 21.52% of the time in soccer and 37.73% in MLB, and the soccer buckets are thin (n=21 to 103), so its magnitude is flagged noisy.",
+        "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["cross-sport", "ohg", "overreaction"]
+    },
+    {
+      "q": "Which NBA team is most schedule-taxed?",
+      "alt_phrasings": ["hardest nba schedule", "most back to backs", "who has the worst travel schedule"],
+      "a": {
+        "status": "ok",
+        "answer": "Denver in 2025-26, with 17 back-to-backs (b2b_freq 0.218) and a season-averaged Schedule Fatigue Tax of -0.3771 pts/100 ORtg. Atlanta and Houston in 2024-25 tie for second at -0.3633, both also on 17 back-to-backs.",
+        "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["nba", "sft", "schedule"]
+    },
+    {
+      "q": "Which NBA teams have the lightest schedules?",
+      "alt_phrasings": ["easiest nba schedule", "fewest back to backs", "least schedule taxed teams"],
+      "a": {
+        "status": "ok",
+        "answer": "Memphis 2025-26 at -0.2699 pts/100 ORtg on 12 back-to-backs (b2b_freq 0.156), with Atlanta and Chicago in the same season just behind at -0.2733 each, also on 12. All three sit at the bottom of the 90 team-seasons measured.",
+        "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["nba", "sft", "schedule"]
+    },
+    {
+      "q": "How much does schedule difficulty actually vary between NBA teams?",
+      "alt_phrasings": ["is the nba schedule unfair", "schedule inequality size", "how different are nba schedules"],
+      "a": {
+        "status": "ok",
+        "answer": "Less than the complaints imply. Across 90 team-seasons the full range of the credible fatigue tax is 0.1072 pts/100 ORtg, from -0.3771 to -0.2699, with a standard deviation of 0.0252. The gap between the most and least taxed schedule is roughly a tenth of a point per hundred possessions.",
+        "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["nba", "sft", "inequality"]
+    },
+    {
+      "q": "Compare Denver and Memphis on schedule fatigue.",
+      "alt_phrasings": ["den vs mem schedule", "nuggets vs grizzlies back to backs", "denver memphis schedule comparison"],
+      "a": {
+        "status": "ok",
+        "answer": "In 2025-26 Denver played 17 back-to-backs to Memphis's 12 -- b2b_freq 0.218 against 0.156 -- giving fatigue taxes of -0.3771 and -0.2699 pts/100 ORtg respectively. They are the extremes of the entire 90 team-season set, and the whole distance between them is 0.1072 pts/100.",
+        "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["nba", "sft", "den", "mem"]
+    },
+    {
+      "q": "Which NBA team is most dependent on a single player?",
+      "alt_phrasings": ["most fragile roster", "biggest star dependence", "which team collapses without its star"],
+      "a": {
+        "status": "ok",
+        "answer": "Denver on the Elo on/off estimator, where Nikola Jokic carries a win-probability delta of 0.5822 and an on/off net-rating delta of 23.713 -- clear of Oklahoma City's Shai Gilgeous-Alexander at 0.5171. Both figures inherit a roster confound and are not causal player-impact estimates.",
+        "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["nba", "lbi", "star-dependence"]
+    },
+    {
+      "q": "Compare the top of the Load-Bearing Index across teams.",
+      "alt_phrasings": ["lbi leaderboard", "most star dependent teams ranked", "top load bearing teams"],
+      "a": {
+        "status": "ok",
+        "answer": "By Elo on/off win-probability delta: Denver 0.5822 (Jokic), Oklahoma City 0.5171 (Gilgeous-Alexander), the Lakers 0.4656 (Dorian Finney-Smith), Milwaukee 0.4441 (Giannis Antetokounmpo), the Clippers 0.4051 (Ivica Zubac) and Indiana 0.3872 (Pascal Siakam). Two of the six name a role player rather than the team's best player, which is the confound showing through.",
+        "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["nba", "lbi", "leaderboard"]
+    },
+    {
+      "q": "Which NBA season was the most competitive?",
+      "alt_phrasings": ["most balanced nba season", "league parity by season", "which season had the most parity"],
+      "a": {
+        "status": "ok",
+        "answer": "2023-24, with a win-share Gini of 0.177 -- the most balanced of the three seasons measured. 2025-26 is the least balanced at 0.2004. Both are low in absolute terms; the whole span between them is 0.023 of Gini.",
+        "source_artifact": "webapp/public/data/showcase/league_parity_index.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "parity", "seasons"]
+    },
+    {
+      "q": "How close are NBA games?",
+      "alt_phrasings": ["average nba margin", "how many nba games are close", "nba margin dispersion"],
+      "a": {
+        "status": "ok",
+        "answer": "In 2023-24 the mean absolute final margin was 12.58 points with a standard deviation of 9.53, and 23.3% of the 1,230 games finished within 5 points. Roughly three games in four are decided by more than a possession or two.",
+        "source_artifact": "webapp/public/data/showcase/league_parity_index.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "parity", "margins"]
+    },
+    {
+      "q": "What was the spread between the best and worst NBA team?",
+      "alt_phrasings": ["max wins min wins", "best and worst records", "nba win spread"],
+      "a": {
+        "status": "ok",
+        "answer": "In 2023-24 the top team won 64 games and the bottom team 14, across 30 teams and 1,230 decided games with no ties. The corpus pools any playoff games present, which inflates win concentration slightly and is disclosed as such.",
+        "source_artifact": "webapp/public/data/showcase/league_parity_index.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "parity", "records"]
+    },
+    {
+      "q": "Is the NBA getting less competitive?",
+      "alt_phrasings": ["parity trend", "is the league more top heavy", "nba parity over time"],
+      "a": {
+        "status": "ok",
+        "answer": "Slightly, on this measure: win-share Gini rises from 0.177 in 2023-24 to 0.2004 in 2025-26. Three seasons is far too short to call a trend, and the index is opponent-raw -- not strength-of-schedule adjusted -- so treat it as description of seasons already played, not a projection.",
+        "source_artifact": "webapp/public/data/showcase/league_parity_index.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["nba", "parity", "trend"]
+    },
+    {
+      "q": "Which pitch count gives the pitcher the most control?",
+      "alt_phrasings": ["best count for the pitcher", "count leverage comparison", "when does the pitcher have the advantage"],
+      "a": {
+        "status": "ok",
+        "answer": "Two-strike counts, on the putaway lens: a strike rate of 0.4827 with an in-zone rate of just 0.5787, meaning pitchers get strikes while throwing outside the zone more often. Pitcher-ahead counts show the same shape more strongly -- in-zone rate 0.4604 on 89,820 pitches -- because the hitter has to protect.",
+        "source_artifact": "webapp/public/data/showcase/mlb_count_leverage.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["mlb", "count-leverage", "pitching"]
+    },
+    {
+      "q": "How does pitch location change with the count?",
+      "alt_phrasings": ["in zone rate by count", "do pitchers throw strikes when behind", "zone rate leverage"],
+      "a": {
+        "status": "ok",
+        "answer": "Sharply and monotonically. In-zone rate runs 0.5855 when the pitcher is behind, 0.5503 when even, and 0.4604 when ahead; the three-ball must-throw lens pushes it up to 0.6106 and the two-strike putaway lens down to 0.5787. Leverage, not stuff, drives where the ball goes.",
+        "source_artifact": "webapp/public/data/showcase/mlb_count_leverage.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["mlb", "count-leverage", "location"]
+    },
+    {
+      "q": "Do hitters put more balls in play in hitter's counts?",
+      "alt_phrasings": ["in play rate by count", "contact rate hitter counts", "does the hitter benefit from being ahead"],
+      "a": {
+        "status": "ok",
+        "answer": "Yes, clearly. The in-play rate is 0.1954 when the pitcher is behind and 0.2367 on three-ball counts, against a 0.3065 ball rate behind versus 0.2643 on three-ball counts. Being ahead in the count buys the hitter a pitch he can actually drive, which is the whole point of the leverage framing.",
+        "source_artifact": "webapp/public/data/showcase/mlb_count_leverage.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["mlb", "count-leverage", "hitting"]
+    },
+    {
+      "q": "How does the pitch mix change when a pitcher falls behind?",
+      "alt_phrasings": ["fastball rate by count", "pitch mix behind in the count", "what do pitchers throw when behind"],
+      "a": {
+        "status": "ok",
+        "answer": "It gets much more fastball-heavy. In pitcher-behind counts the four-seamer is 35.25% of pitches and the sinker 19.28%, against 31.30% and 16.54% in even counts. Sliders move the other way -- 13.14% behind versus 14.22% even -- because a breaking ball is a luxury you cannot afford at 3-1.",
+        "source_artifact": "webapp/public/data/showcase/mlb_count_leverage.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["mlb", "count-leverage", "pitch-mix"]
+    },
+    {
+      "q": "Which pitch type is thrown most often?",
+      "alt_phrasings": ["most common pitch", "pitch type frequency", "what do pitchers throw most"],
+      "a": {
+        "status": "ok",
+        "answer": "The four-seam fastball, by a distance. Across 512,289 sequenced transitions in the 2025 pull, the four-seamer is the origin pitch 165,179 times, ahead of the sinker at 77,127, the slider at 73,567, the changeup at 51,941, the sweeper at 39,607, the cutter at 39,125, the curveball at 35,596 and the splitter at 16,141.",
+        "source_artifact": "webapp/public/data/showcase/pitch_sequencing.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["mlb", "pitch-sequencing", "mix"]
+    },
+    {
+      "q": "Do pitchers repeat the same pitch back to back?",
+      "alt_phrasings": ["pitch sequencing repeat rate", "back to back same pitch", "do pitchers double up"],
+      "a": {
+        "status": "ok",
+        "answer": "Often, and more with the fastball than anything else: of 165,179 transitions starting from a four-seamer, 71,414 are followed by another four-seamer -- about 43%. Sinker-to-sinker is 27,764 of 77,127, roughly 36%. Sequencing is far stickier than a randomized-mix story would suggest.",
+        "source_artifact": "webapp/public/data/showcase/pitch_sequencing.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["mlb", "pitch-sequencing", "repeat"]
+    },
+    {
+      "q": "How much of MLB pitch sequencing does your matrix actually cover?",
+      "alt_phrasings": ["pitch sequencing coverage", "what fraction of transitions", "sequencing matrix completeness"],
+      "a": {
+        "status": "ok",
+        "answer": "95.46% of the unconditional class: 489,035 of 512,289 transitions land inside the top-8 pitch-type axis, and the remaining rows fall off it. Every row is over its own denominator, so rows sum to at most 1 with the remainder explicitly attributed to types outside the axis.",
+        "source_artifact": "webapp/public/data/showcase/pitch_sequencing.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["mlb", "pitch-sequencing", "coverage"]
+    },
+    {
+      "q": "How large is the pitch-level corpus?",
+      "alt_phrasings": ["statcast sample size", "how many pitches do you have", "pitch data volume"],
+      "a": {
+        "status": "ok",
+        "answer": "693,037 pitches from the local 2025 Statcast pull, of which 690,493 are kept for sequencing and 512,289 form strictly adjacent transitions within a plate appearance. Both the count-leverage and sequencing modules read the same file, so their numbers are directly comparable.",
+        "source_artifact": "webapp/public/data/showcase/pitch_sequencing.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["mlb", "statcast", "sample-size"]
+    },
+    {
+      "q": "Which count class has the most pitches?",
+      "alt_phrasings": ["count class sample sizes", "how common is each count state", "even vs ahead vs behind frequency"],
+      "a": {
+        "status": "ok",
+        "answer": "Even counts dominate at 305,712 pitches, ahead of pitcher-behind at 183,042 and pitcher-ahead at 178,407. The overlapping lenses are smaller: 46,656 pitches on three-ball counts. Behind/even/ahead partition the data; the lenses do not, so their counts cannot be added to the partition.",
+        "source_artifact": "webapp/public/data/showcase/mlb_count_leverage.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["mlb", "count-leverage", "sample-size"]
+    },
+    {
+      "q": "Does the strike rate change much across counts?",
+      "alt_phrasings": ["strike rate by leverage", "is strike rate stable", "strike rate comparison"],
+      "a": {
+        "status": "ok",
+        "answer": "Less than the location does, which is the interesting part. Strike rate runs 0.4981 behind, 0.5038 ahead and 0.4990 on three-ball counts -- nearly flat -- while in-zone rate swings from 0.6106 to 0.4604 across the same states. Pitchers hold their strike rate by changing where they throw, not how often they hit the zone.",
+        "source_artifact": "webapp/public/data/showcase/mlb_count_leverage.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["mlb", "count-leverage", "strike-rate"]
+    },
+    {
+      "q": "Which sport has the sharpest market by calibration error?",
+      "alt_phrasings": ["market ece comparison", "sharpest market", "which market is best calibrated"],
+      "a": {
+        "status": "ok",
+        "answer": "NBA is the only sport with a buildable reliability map, and it is very sharp: market ECE 0.0064 and market Brier 0.0739 across 1,593 games and 77 usable buckets. MLB, soccer and tennis come back not_buildable under the same floors, so no cross-sport ranking is available -- the honest answer is one data point, not a leaderboard.",
+        "source_artifact": "webapp/public/data/showcase/xsport_structure.json",
+        "as_of": "2026-07-18"
+      },
+      "tags": ["cross-sport", "market", "ece"]
+    },
+    {
+      "q": "Is there a favorite-longshot bias in the NBA market?",
+      "alt_phrasings": ["favorite longshot bias", "are longshots overpriced", "nba favorite bias"],
+      "a": {
+        "status": "ok",
+        "answer": "Barely detectable in-game. Favorites at 0.60 or above show a mean market probability of 0.8948 against a mean outcome of 0.8997 -- a gap of +0.005 -- and longshots at 0.40 or below show 0.0694 against 0.0682, a gap of -0.0012, across 243,727 and 172,402 ticks respectively. Both gaps are consistent with the classic direction but tiny.",
+        "source_artifact": "webapp/public/data/showcase/xsport_structure.json",
+        "as_of": "2026-07-18"
+      },
+      "tags": ["nba", "market", "bias"]
+    },
+    {
+      "q": "Compare the model and the market on MLB in-game moneyline.",
+      "alt_phrasings": ["mlb moneyline model vs market", "how far behind on mlb", "mlb ingame comparison"],
+      "a": {
+        "status": "ok",
+        "answer": "Over 78,986 rows the model's Brier is 0.237684 against the market's 0.206653, a gap of +0.031031. The Murphy decomposition attributes most of that to resolution (-0.0235) rather than reliability (+0.0066), which means it is missing information rather than miscalibration -- recalibration will not close it.",
+        "source_artifact": "webapp/public/data/showcase/kernel_transfer.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["mlb", "model-vs-market", "murphy"]
+    },
+    {
+      "q": "Which sports can be compared on the same axis at all?",
+      "alt_phrasings": ["are cross sport comparisons valid", "comparable metrics across sports", "when can you compare sports"],
+      "a": {
+        "status": "ok",
+        "answer": "Only where both sides are the same kind of quantity. The kernel-transfer module marks the Murphy reliability component comparable across sports because both are Brier scores of a probability against a binary outcome, and explicitly marks the CRPS totals row not comparable, because CRPS scores a full run-count distribution and Murphy reliability is undefined for it. It is never forced onto the Brier axis.",
+        "source_artifact": "webapp/public/data/showcase/kernel_transfer.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["cross-sport", "comparability", "method"]
+    },
+    {
+      "q": "How do the MLB home-margin checkpoints compare to the market?",
+      "alt_phrasings": ["mlb home margin crps by inning", "mlb margin checkpoints vs market", "mlb crps comparison"],
+      "a": {
+        "status": "ok",
+        "answer": "The paired CRPS delta grows through the game -- 0.4499 at inning 3 (n=20), 0.8555 at inning 5 (n=26), 0.9583 at inning 6 (n=22), 1.066 at inning 7 (n=21) and 1.794 at inning 8 (n=21) -- but every one of those rows is labeled UNDERPOWERED. Sample sizes in the low twenties cannot carry a comparison, which is why no verdict is drawn from them.",
+        "source_artifact": "webapp/public/data/showcase/cross_sport_scoreboard.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["mlb", "model-vs-market", "provisional"]
+    },
+    {
+      "q": "How does the NBA in-game model compare to the market at each quarter?",
+      "alt_phrasings": ["nba checkpoint comparison", "nba by quarter model vs market", "nba ingame checkpoints"],
+      "a": {
+        "status": "ok",
+        "answer": "The market is measurably sharper at the first checkpoint and the rest are noise. End of Q1 gives a paired delta of -0.0084 with a 95% CI of [-0.0161, -0.0008] over 1,592 games, labeled MARKET_SHARPER_PROVISIONAL; halftime (-0.004), end of Q3 (+0.0011) and the final five minutes (+0.0019) all carry CIs spanning zero and are labeled UNDERPOWERED.",
+        "source_artifact": "webapp/public/data/showcase/cross_sport_scoreboard.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["nba", "model-vs-market", "checkpoints"]
+    },
+    {
+      "q": "Is the model better at win probability or at totals?",
+      "alt_phrasings": ["moneyline vs totals", "which market type suits the model", "winprob vs distributional"],
+      "a": {
+        "status": "ok",
+        "answer": "The only rows where the model is provisionally sharper are distributional MLB totals and margin checkpoints, not win probability -- 3 MODEL_SHARPER_PROVISIONAL out of 10 in-game checkpoints, with the other 7 underpowered, while pregame total_runs is underpowered at n=300. On binary win probability the market leads at every grain measured.",
+        "source_artifact": "webapp/public/data/showcase/kernel_transfer.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["model-vs-market", "totals", "mlb"]
+    },
+    {
+      "q": "How many head-to-head comparisons have you actually run?",
+      "alt_phrasings": ["scoreboard size", "how many checkpoints compared", "cross sport scoreboard rows"],
+      "a": {
+        "status": "ok",
+        "answer": "17 rows on the cross-sport scoreboard, each a paired comparison against the market at a specific sport, market and checkpoint, with the sample size, mean delta, 95% confidence interval, verdict and source file recorded per row. Most rows come back UNDERPOWERED, which is itself the finding.",
+        "source_artifact": "webapp/public/data/showcase/cross_sport_scoreboard.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["scoreboard", "model-vs-market", "coverage"]
+    },
+    {
+      "q": "Which sport has the most claims behind it?",
+      "alt_phrasings": ["claims by sport comparison", "deepest sport coverage", "which sport is best documented"],
+      "a": {
+        "status": "ok",
+        "answer": "NBA, at 31 claim families and 62,227 claims -- almost three times MLB's 21,519 across 18 families, and well ahead of tennis (13,709 over 16 families) and soccer (4,275 over 15). The ordering follows corpus depth, not confidence.",
+        "source_artifact": "webapp/public/data/showcase/claims_corpus_meta.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["claims-corpus", "cross-sport", "coverage"]
+    },
+    {
+      "q": "Which sport has the highest confirmation rate for mechanisms?",
+      "alt_phrasings": ["confirm rate by sport", "which sport confirms most", "mechanism success by sport"],
+      "a": {
+        "status": "ok",
+        "answer": "NBA and tennis lead: NBA confirms 45 of 85 tested mechanisms and tennis 24 of 52, against MLB's 32 of 86 and soccer's 29 of 64. MLB is also the only sport carrying failed replications in that count, at 7.",
+        "source_artifact": "webapp/public/data/showcase/honesty_exhibit.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["mechanisms", "cross-sport", "confirmation"]
+    },
+    {
+      "q": "Which sport produces the most retractions?",
+      "alt_phrasings": ["retractions by sport", "who retracts most", "retracted claims comparison"],
+      "a": {
+        "status": "ok",
+        "answer": "MLB, with 6 of the 7 retracted claim families; soccer has the remaining 1, and NBA and tennis have none recorded. MLB also carries the largest null count at 32 families, so the sport with the deepest in-game corpus is also the one that has retracted the most.",
+        "source_artifact": "webapp/public/data/showcase/fwd_claim_scoreboard.json",
+        "as_of": "2026-07-11"
+      },
+      "tags": ["retraction", "cross-sport", "honesty"]
+    },
+    {
+      "q": "Compare the verified-claim counts across sports.",
+      "alt_phrasings": ["verified families per sport", "claim families by sport", "which sport has most verified claims"],
+      "a": {
+        "status": "ok",
+        "answer": "NBA leads at 39 verified families, ahead of MLB's 31, soccer's 27 and tennis's 24. Nulls are close behind everywhere -- 26, 32, 21 and 20 respectively -- which is the shape you would expect from an honest gate rather than a curated highlight reel.",
+        "source_artifact": "webapp/public/data/showcase/fwd_claim_scoreboard.json",
+        "as_of": "2026-07-11"
+      },
+      "tags": ["claim-ledger", "cross-sport", "verified"]
+    },
+    {
+      "q": "Which sport is best covered by the answer layer?",
+      "alt_phrasings": ["coverage by sport", "which sport can you answer most about", "answer coverage comparison"],
+      "a": {
+        "status": "ok",
+        "answer": "On the coverage stress test NBA carries the largest slice at 352 rows, of which 126 return ok and 158 return no_data. The overall answerable rate across all sports is 0.3662 on rows where an answer was expected, so no sport is anywhere near fully covered.",
+        "source_artifact": "webapp/public/data/showcase/qa_coverage_stats.json",
+        "as_of": "2026-07-18"
+      },
+      "tags": ["coverage", "cross-sport", "answer-layer"]
+    },
+    {
+      "q": "Compare the in-game corpora by size.",
+      "alt_phrasings": ["how much ingame data per sport", "ingame rows by sport", "which sport has more live data"],
+      "a": {
+        "status": "ok",
+        "answer": "MLB is nearly nine times the size of soccer: 78,986 graded in-game rows across 227 files against 9,003 rows across 51 files. That gap is why the MLB results carry verdicts and the soccer ones carry caveats.",
+        "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["cross-sport", "ingame", "sample-size"]
+    },
+    {
+      "q": "Which sport has the highest base rate for the graded outcome?",
+      "alt_phrasings": ["base rate by sport", "outcome frequency comparison", "climatology base rates"],
+      "a": {
+        "status": "ok",
+        "answer": "Soccer, at a 0.6055 base rate against MLB's 0.4563. That difference matters for interpretation: a lopsided base rate makes the climatology baseline harder to beat, which is part of why the soccer model's BSS versus climatology is negative (-0.3134) while MLB's is positive (+0.042).",
+        "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["cross-sport", "base-rate", "bss"]
+    },
+    {
+      "q": "Does the model beat a coin flip?",
+      "alt_phrasings": ["model vs baseline", "is the model better than nothing", "model vs climatology"],
+      "a": {
+        "status": "ok",
+        "answer": "In MLB yes, modestly: BSS of +0.042 against a constant base rate over 78,986 rows, peaking at +0.1431 in the middle innings. In soccer no: -0.3134 overall, meaning the state-only model is worse than simply quoting the league base rate. Beating climatology is a low bar and is explicitly not an edge.",
+        "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["cross-sport", "bss", "baseline"]
+    },
+    {
+      "q": "Compare the market's skill to the model's skill.",
+      "alt_phrasings": ["market skill vs model skill", "how much better is the market", "market advantage size"],
+      "a": {
+        "status": "ok",
+        "answer": "Against climatology, the market scores 0.167 in MLB and 0.1774 in soccer while the model scores 0.042 and -0.3134. The MLB gap is roughly four to one in the market's favor; in soccer the model is on the wrong side of the baseline entirely.",
+        "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["cross-sport", "bss", "model-vs-market"]
+    },
+    {
+      "q": "In which soccer window is the market's advantage largest?",
+      "alt_phrasings": ["soccer worst window", "soccer bss by minute", "when is the soccer model worst"],
+      "a": {
+        "status": "ok",
+        "answer": "The opening 15 minutes, where BSS versus market is -1.0794 over 627 rows and the market's Brier is 0.117831 against the model's 0.245017. The market is more than twice as sharp before much has happened on the pitch, which points at pre-match information the state-only model never sees.",
+        "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["soccer", "bss", "ingame"]
+    },
+    {
+      "q": "Compare NBA and MLB on how much the market moves late.",
+      "alt_phrasings": ["nba vs mlb late line movement", "which moves more before game time", "late movement comparison"],
+      "a": {
+        "status": "ok",
+        "answer": "NBA is far more back-loaded: 32.47% of its absolute pre-game motion arrives in the final hour versus 18.13% for MLB, even though MLB's half-life (3.67h) is shorter than NBA's (4.76h). The two facts fit together because NBA is bimodal -- early motion plus a distinct final-hour spike -- which a single half-life hides.",
+        "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["nba", "mlb", "lhl", "comparison"]
+    },
+    {
+      "q": "Compare Indiana to the rest of the league on player dependence.",
+      "alt_phrasings": ["indiana load bearing index", "pacers star dependence", "ind lbi"],
+      "a": {
+        "status": "ok",
+        "answer": "Indiana is the only team of 30 where both estimators name the same player: Pascal Siakam, at an Elo on/off win-probability delta of 0.3872 and a raw with/without win-rate delta of 0.2075 over 62 active and 15 missed games. That agreement is the exception -- the league-wide agree rate is 0.0333.",
+        "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["nba", "lbi", "ind"]
+    },
+    {
+      "q": "Compare the two ways you measure player indispensability.",
+      "alt_phrasings": ["elo onoff vs raw with without", "two lbi estimators compared", "which estimator is better"],
+      "a": {
+        "status": "ok",
+        "answer": "They measure different things on different seasons and agree on 1 of 30 teams. Estimator (a) is Elo on/off win probability against a league-average opponent on a neutral floor, drawn from 2024-25; estimator (b) is raw team win rate active-versus-missed from 2025-26 through 2026-04-12. Neither is preferred -- their disagreement is published as the result.",
+        "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["nba", "lbi", "estimators"]
+    },
+    {
+      "q": "Compare how MLB and soccer markets converge during a game.",
+      "alt_phrasings": ["market convergence comparison", "how fast does uncertainty resolve", "entropy comparison"],
+      "a": {
+        "status": "ok",
+        "answer": "MLB resolves slowly and steadily: market entropy falls from 0.9669 bits at the first checkpoint to 0.6979 by inning 8. Soccer starts lower and drops further, from 0.8209 bits at kickoff to 0.4394 by minute 90. Soccer therefore ends far more decided, which is consistent with its lower Live-Clock Fraction.",
+        "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["cross-sport", "mfp", "entropy"]
+    },
+    {
+      "q": "Compare model performance at the very start versus the very end of a game.",
+      "alt_phrasings": ["first vs last checkpoint", "does the model degrade late", "early vs late model skill"],
+      "a": {
+        "status": "ok",
+        "answer": "It degrades in both sports. MLB model skill starts at -0.0479 and ends at -0.1926; soccer starts at -0.0599 and ends at -1.1476. The market moves the opposite way in MLB, from 0.013 up to 0.3254 by inning 9. Late-game state is where the model's blind spots cost the most.",
+        "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["cross-sport", "mfp", "degradation"]
+    },
+    {
+      "q": "Which is the bigger problem, miscalibration or missing information?",
+      "alt_phrasings": ["reliability vs resolution gap", "what limits the model", "calibration or information"],
+      "a": {
+        "status": "ok",
+        "answer": "Missing information, by roughly three to one on the MLB in-game moneyline: the reliability gap is +0.0066 while the resolution gap is -0.0235. Recalibration addresses the first and cannot touch the second, so the honest description of the shortfall is a feed problem rather than a fitting problem.",
+        "source_artifact": "webapp/public/data/showcase/kernel_transfer.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["murphy", "diagnosis", "mlb"]
+    },
+    {
+      "q": "Compare how many entity cards each sport has.",
+      "alt_phrasings": ["atlas coverage by sport", "entity card counts", "how many player pages per sport"],
+      "a": {
+        "status": "ok",
+        "answer": "The atlas holds 1,549 cards across seven packs. NBA players is the largest single pack at 482 entries, gated by a floor of at least 800 career minutes, which admits 482 of 807 eligible players. Cards are descriptive summaries, not projections.",
+        "source_artifact": "webapp/public/data/showcase/atlas_nba_manifest.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["atlas", "coverage", "cross-sport"]
+    },
+    {
+      "q": "Which is more informative, the score or the market price?",
+      "alt_phrasings": ["scoreboard vs market", "does the price know more than the score", "market vs state information"],
+      "a": {
+        "status": "ok",
+        "answer": "The price, consistently. The Market Foresight Premium is positive at every measured checkpoint in both sports -- 0.063 to 0.5208 across MLB innings, 0.6393 to 1.7056 across soccer minutes -- meaning the market resolves more per bit of remaining uncertainty than a scoreboard-only forecaster does. The measurement cannot separate genuine market news from model misspecification.",
+        "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["cross-sport", "mfp", "information"]
+    },
+    {
+      "q": "Which sport should I trust these numbers on most?",
+      "alt_phrasings": ["which sport is most reliable", "where is the evidence strongest", "best supported sport"],
+      "a": {
+        "status": "ok",
+        "answer": "MLB for in-game work and NBA for market structure. MLB carries 78,986 graded in-game rows and 693,037 pitches; NBA is the only sport with a buildable reliability map (1,593 games, 77 buckets, market ECE 0.0064). Soccer and tennis are consistently the thinnest -- soccer at 9,003 in-game rows, tennis with no reliability map at all.",
+        "source_artifact": "webapp/public/data/showcase/xsport_structure.json",
+        "as_of": "2026-07-18"
+      },
+      "tags": ["cross-sport", "reliability", "guidance"]
+    },
+    {
+      "q": "Which sport should I trust these numbers on least?",
+      "alt_phrasings": ["weakest sport coverage", "where is the evidence thinnest", "least reliable sport"],
+      "a": {
+        "status": "ok",
+        "answer": "Tennis, on coverage grounds: it has no reliability map so the cross-sport structure module records it not_buildable, no blowout corpus so Live-Clock Fraction is not buildable, and its line half-life cannot be pinned inside the 6h+ bucket. Soccer is next, with in-game samples in the hundreds per checkpoint and buckets as small as n=21 in the overreaction work.",
+        "source_artifact": "webapp/public/data/showcase/xsport_structure.json",
+        "as_of": "2026-07-18"
+      },
+      "tags": ["cross-sport", "limitations", "tennis"]
+    },
+    {
+      "q": "Is any sport's market beatable?",
+      "alt_phrasings": ["which market is weakest", "is any sport inefficient", "easiest market to beat"],
+      "a": {
+        "status": "refused",
+        "answer": "Nothing in the committed evidence supports naming one. Every pregame candidate across six corpora and four sports was rejected under the conjunction gate, and in-game the model's Brier trails the market's at every grain measured -- BSS versus market -0.1502 in MLB and -0.5967 in soccer. Three MLB late-inning distributional rows read provisionally sharper on samples of about twenty, which is not a basis for any claim.",
+        "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["cross-sport", "no-edge", "efficiency"]
+    }
+  ]
+}

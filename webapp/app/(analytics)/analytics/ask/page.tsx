@@ -106,7 +106,7 @@ const TIERS = [
   {
     n: "1",
     t: "Scout notes",
-    d: "A precomputed, cited insight on every module and every entity page. Zero runtime compute.",
+    d: "Precomputed, cited notes on all 54 analytics modules and 182 marquee entity cards. The other 1,367 entity cards carry their measured numbers and receipts, without a written note. Zero runtime compute.",
     active: false,
   },
   {

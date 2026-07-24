@@ -1,0 +1,40 @@
+{
+  "slug": "dal",
+  "pack": "nba_teams",
+  "display_name": "Dallas Mavericks",
+  "one_liner": "Dallas's minutes leader across the sample is P.J. Washington at 4,474.1 minutes -- the lightest top-contributor load of any team in this manifest.",
+  "three_things": [
+    "No player cleared 4,474.1 minutes, by far the most fragmented top-of-roster usage here.",
+    "The leader's PRA-per-36 rate, 26.1, is correspondingly modest.",
+    "Team scoring was 114.3 per game on a fast 104.4 pace proxy."
+  ],
+  "context_note": "The 'top contributor' is the player with the most total minutes for that team across the 3-season sample, not necessarily its best or highest-scoring player. PRA-per-36 sums points, rebounds, and assists per 36 minutes -- a raw box rate, not an impact metric. ppg_latest_season and pace_proxy_latest_season are single-season figures while games_total spans three seasons, and pace_proxy is a proxy, not official possession-based pace. The manifest is descriptive_only, with no schedule, opponent, or roster-continuity adjustment. League-wide rank statements were computed by sorting all 30 teams in this manifest on the named field; the underlying values are read verbatim. A low top-contributor minute total usually reflects injury churn or roster turnover, not a coaching philosophy -- this manifest cannot distinguish between them.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=DAL].key_numbers.top_contributor",
+      "value": "P.J. Washington"
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=DAL].key_numbers.top_contributor_minutes",
+      "value": 4474.1
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=DAL].key_numbers.top_contributor_pra_per36",
+      "value": 26.1
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=DAL].key_numbers.ppg_latest_season",
+      "value": 114.3
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=DAL].key_numbers.pace_proxy_latest_season",
+      "value": 104.4
+    }
+  ],
+  "as_of": "2026-04-12"
+}

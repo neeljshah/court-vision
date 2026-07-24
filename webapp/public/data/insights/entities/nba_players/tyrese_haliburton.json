@@ -1,0 +1,40 @@
+{
+  "slug": "tyrese_haliburton",
+  "pack": "nba_players",
+  "display_name": "Tyrese Haliburton",
+  "one_liner": "Tyrese Haliburton records 11 assists per 36 minutes on 47.4 percent shooting -- volume creation without the usual efficiency penalty.",
+  "three_things": [
+    "11 assists per 36 while still converting 47.4 percent of his own shots.",
+    "37.4 percent from three and 85.3 percent from the line.",
+    "The sample is two seasons and 140 games, thinner than most of this set."
+  ],
+  "context_note": "Per-36-minute rates over a 2-season sample (seasons_played: 2), so the floor is thinner than for the three-season players in this set. The manifest is descriptive_only: no adjustment for opponent, teammates, role, or shot difficulty, and a career_min_minutes>=800 inclusion floor applies. Games and minutes measure availability, not how well those minutes were used.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Tyrese Haliburton].key_numbers.career_ast_per36",
+      "value": 11
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Tyrese Haliburton].key_numbers.career_fg_pct",
+      "value": 47.4
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Tyrese Haliburton].key_numbers.career_fg3_pct",
+      "value": 37.4
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Tyrese Haliburton].key_numbers.career_ft_pct",
+      "value": 85.3
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Tyrese Haliburton].key_numbers.career_games",
+      "value": 140
+    }
+  ],
+  "as_of": "2026-04-12"
+}

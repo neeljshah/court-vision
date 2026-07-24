@@ -1,0 +1,35 @@
+{
+  "slug": "yordan_alvarez",
+  "pack": "mlb_batters",
+  "display_name": "Yordan Alvarez",
+  "one_liner": "Yordan Alvarez saw only 750 pitches in 2025 but hit the ball 107.7 mph at the 90th percentile -- eighth-hardest in this pull.",
+  "three_things": [
+    "107.7 mph at the 90th percentile, from a season a third the length of his peers'.",
+    "235 batted balls is the smallest contact sample of any hitter profiled here.",
+    "Estimated wOBA on contact of .399 held up anyway."
+  ],
+  "context_note": "Descriptive only, from a single 2025 Statcast pull (pitches_faced_2025>=300 floor, 485 of 671 batters). The contact numbers -- exit velocity and estimated wOBA on contact -- cover the batted balls only, not every pitch seen, and estimated wOBA on contact is a batted-ball model: it says nothing about walks, strikeouts, or actual results. This pull carries no swing/miss or launch-angle column, so there is no whiff rate and no barrel profile here. Not park-, role-, or opponent-adjusted, and not a prediction. League-wide ranks were computed by sorting all 485 batters in this manifest on the named field; every printed value is read verbatim. With 235 batted balls the contact-quality numbers carry wide uncertainty; treat the rank as a description of this season's sample, not a durable rating.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Yordan Alvarez].key_numbers.pitches_faced",
+      "value": 750
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Yordan Alvarez].key_numbers.exit_velo_p90",
+      "value": 107.7
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Yordan Alvarez].key_numbers.n_batted_balls",
+      "value": 235
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Yordan Alvarez].key_numbers.avg_estimated_woba_on_contact",
+      "value": 0.399
+    }
+  ],
+  "as_of": "2025-09-28"
+}

@@ -1,0 +1,40 @@
+{
+  "slug": "aston_villa",
+  "pack": "soccer",
+  "display_name": "Aston Villa",
+  "one_liner": "Aston Villa conceded 2 goals per game over its last 10 while scoring 1.6 -- the most open ten-match stretch in this set.",
+  "three_things": [
+    "ga_l10 2 alongside gf_l10 1.6: high-event matches in both directions.",
+    "The result is a -0.4 goal difference and 1.1 points per game.",
+    "Only one clean sheet in the window (clean_sheet_rate_l10 0.1)."
+  ],
+  "context_note": "Descriptive trailing-10 and season rates as of the corpus end -- not a prediction and not an edge claim. Ten-match windows are small: one hot or cold stretch moves ppg_l10, gd_l10, and the clean-sheet rates substantially. Home and away splits are five-match-scale samples inside that window. Nothing here adjusts for roster, injuries, competition, or fixture strength.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_soccer_manifest.json",
+      "field": "entries[entity=Aston Villa].key_numbers.ga_l10",
+      "value": 2
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_soccer_manifest.json",
+      "field": "entries[entity=Aston Villa].key_numbers.gf_l10",
+      "value": 1.6
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_soccer_manifest.json",
+      "field": "entries[entity=Aston Villa].key_numbers.gd_l10",
+      "value": -0.4
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_soccer_manifest.json",
+      "field": "entries[entity=Aston Villa].key_numbers.ppg_l10",
+      "value": 1.1
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_soccer_manifest.json",
+      "field": "entries[entity=Aston Villa].key_numbers.clean_sheet_rate_l10",
+      "value": 0.1
+    }
+  ],
+  "as_of": "2026-07-18T17:21:08.108324+00:00"
+}

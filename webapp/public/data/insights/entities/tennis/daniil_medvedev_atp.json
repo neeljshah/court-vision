@@ -1,0 +1,50 @@
+{
+  "slug": "daniil_medvedev_atp",
+  "pack": "tennis",
+  "display_name": "Daniil Medvedev (ATP)",
+  "one_liner": "Daniil Medvedev's career clay-minus-hard gap is -0.1653, one of the widest surface penalties in this set -- but his recent gap has narrowed to -0.0237.",
+  "three_things": [
+    "Career: 0.7332 on hard against 0.5679 on clay.",
+    "Recent form closes most of it -- clay_wr_recent 0.7 against hard_wr_recent 0.7237.",
+    "grass_wr_recent is n/a: the recent grass sample sits below the manifest floor."
+  ],
+  "context_note": "Descriptive career and recent-form surface win rates as of the corpus end -- not a prediction and not an edge claim. Per-surface floors apply (n>=30 career for a surface win rate, n>=25 each side for the clay-minus-hard gap, n>=15 for grass adaptation), evaluated independently for career and recent form; a metric below its floor shows n/a and is never fabricated. Nothing here adjusts for era, opponent quality, draw, or injury.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Daniil Medvedev (ATP)].key_numbers.clay_minus_hard_career",
+      "value": -0.1653
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Daniil Medvedev (ATP)].key_numbers.clay_minus_hard_recent",
+      "value": -0.0237
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Daniil Medvedev (ATP)].key_numbers.hard_wr_career",
+      "value": 0.7332
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Daniil Medvedev (ATP)].key_numbers.clay_wr_career",
+      "value": 0.5679
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Daniil Medvedev (ATP)].key_numbers.clay_wr_recent",
+      "value": 0.7
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Daniil Medvedev (ATP)].key_numbers.hard_wr_recent",
+      "value": 0.7237
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Daniil Medvedev (ATP)].key_numbers.grass_wr_recent",
+      "value": null
+    }
+  ],
+  "as_of": "2026-07-19T03:41:37.066640+00:00"
+}

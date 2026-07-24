@@ -1,0 +1,35 @@
+{
+  "slug": "det",
+  "pack": "nba_teams",
+  "display_name": "Detroit Pistons",
+  "one_liner": "Detroit's Cade Cunningham posts a 40.6 PRA-per-36 rate over 6,622.9 minutes -- the fourth-highest top-contributor box rate in the league here.",
+  "three_things": [
+    "40.6 combined points, rebounds and assists per 36 minutes is a full-engine workload.",
+    "He carried it over 6,622.9 minutes, so it is not a small-sample rate.",
+    "The team scored 117.4 per game in the latest season."
+  ],
+  "context_note": "The 'top contributor' is the player with the most total minutes for that team across the 3-season sample, not necessarily its best or highest-scoring player. PRA-per-36 sums points, rebounds, and assists per 36 minutes -- a raw box rate, not an impact metric. ppg_latest_season and pace_proxy_latest_season are single-season figures while games_total spans three seasons, and pace_proxy is a proxy, not official possession-based pace. The manifest is descriptive_only, with no schedule, opponent, or roster-continuity adjustment. League-wide rank statements were computed by sorting all 30 teams in this manifest on the named field; the underlying values are read verbatim.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=DET].key_numbers.top_contributor",
+      "value": "Cade Cunningham"
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=DET].key_numbers.top_contributor_pra_per36",
+      "value": 40.6
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=DET].key_numbers.top_contributor_minutes",
+      "value": 6622.9
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=DET].key_numbers.ppg_latest_season",
+      "value": 117.4
+    }
+  ],
+  "as_of": "2026-04-12"
+}

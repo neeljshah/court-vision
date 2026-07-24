@@ -1,0 +1,35 @@
+{
+  "slug": "franz_wagner",
+  "pack": "nba_players",
+  "display_name": "Franz Wagner",
+  "one_liner": "Franz Wagner scores 23.8 points per 36 minutes while shooting 30 percent from three -- scoring volume that comes from everywhere but the arc.",
+  "three_things": [
+    "23.8 points per 36 on just 30 percent three-point accuracy.",
+    "Overall efficiency stays at 47.2 percent, so the interior game is carrying it.",
+    "85.4 percent free-throw shooting suggests the mechanics are not the problem."
+  ],
+  "context_note": "Per-36-minute rates over a 3-season sample (seasons_played: 3), not per-game and not full-career figures. The manifest is descriptive_only: no adjustment for opponent, teammates, role, or shot difficulty, and a career_min_minutes>=800 inclusion floor applies. Games and minutes measure availability, not how well those minutes were used.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Franz Wagner].key_numbers.career_pts_per36",
+      "value": 23.8
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Franz Wagner].key_numbers.career_fg3_pct",
+      "value": 30
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Franz Wagner].key_numbers.career_fg_pct",
+      "value": 47.2
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Franz Wagner].key_numbers.career_ft_pct",
+      "value": 85.4
+    }
+  ],
+  "as_of": "2026-04-12"
+}

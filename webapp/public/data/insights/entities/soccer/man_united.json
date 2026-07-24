@@ -1,0 +1,50 @@
+{
+  "slug": "man_united",
+  "pack": "soccer",
+  "display_name": "Man United",
+  "one_liner": "Man United averaged 2 points per game over its last 10 while keeping clean sheets in under a fifth of season matches (clean_sheet_rate_season 0.1892).",
+  "three_things": [
+    "Winning without shutting teams out: ppg_l10 2 on a 0.1892 season clean-sheet rate.",
+    "The trailing-10 goal difference is a modest +0.5 (gf_l10 1.8, ga_l10 1.3).",
+    "Home form carries it -- ppg_home_l10 2.5 against ppg_away_l10 1.4."
+  ],
+  "context_note": "Descriptive trailing-10 and season rates as of the corpus end -- not a prediction and not an edge claim. Ten-match windows are small: one hot or cold stretch moves ppg_l10, gd_l10, and the clean-sheet rates substantially. Home and away splits are five-match-scale samples inside that window. Nothing here adjusts for roster, injuries, competition, or fixture strength.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_soccer_manifest.json",
+      "field": "entries[entity=Man United].key_numbers.ppg_l10",
+      "value": 2
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_soccer_manifest.json",
+      "field": "entries[entity=Man United].key_numbers.clean_sheet_rate_season",
+      "value": 0.1892
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_soccer_manifest.json",
+      "field": "entries[entity=Man United].key_numbers.gd_l10",
+      "value": 0.5
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_soccer_manifest.json",
+      "field": "entries[entity=Man United].key_numbers.gf_l10",
+      "value": 1.8
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_soccer_manifest.json",
+      "field": "entries[entity=Man United].key_numbers.ga_l10",
+      "value": 1.3
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_soccer_manifest.json",
+      "field": "entries[entity=Man United].key_numbers.ppg_home_l10",
+      "value": 2.5
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_soccer_manifest.json",
+      "field": "entries[entity=Man United].key_numbers.ppg_away_l10",
+      "value": 1.4
+    }
+  ],
+  "as_of": "2026-07-18T17:21:08.108324+00:00"
+}

@@ -1,0 +1,50 @@
+{
+  "slug": "nick_kyrgios_atp",
+  "pack": "tennis",
+  "display_name": "Nick Kyrgios (ATP)",
+  "one_liner": "Nick Kyrgios has no recent-form surface data in this atlas: all three recent win rates are n/a, and the career record is 0.6558 hard, 0.62 grass, 0.6 clay.",
+  "three_things": [
+    "The career surfaces are unusually flat: 0.6558, 0.62 and 0.6.",
+    "clay_minus_hard_career of -0.0558 is a mild hard-court preference, not a specialization.",
+    "Every recent-form metric is n/a -- a 5-of-10-metric profile, so nothing here describes current form."
+  ],
+  "context_note": "Descriptive career and recent-form surface win rates as of the corpus end -- not a prediction and not an edge claim. Per-surface floors apply (n>=30 career for a surface win rate, n>=25 each side for the clay-minus-hard gap, n>=15 for grass adaptation), evaluated independently for career and recent form; a metric below its floor shows n/a and is never fabricated. Nothing here adjusts for era, opponent quality, draw, or injury.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Nick Kyrgios (ATP)].key_numbers.hard_wr_career",
+      "value": 0.6558
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Nick Kyrgios (ATP)].key_numbers.grass_wr_career",
+      "value": 0.62
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Nick Kyrgios (ATP)].key_numbers.clay_wr_career",
+      "value": 0.6
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Nick Kyrgios (ATP)].key_numbers.clay_minus_hard_career",
+      "value": -0.0558
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Nick Kyrgios (ATP)].key_numbers.hard_wr_recent",
+      "value": null
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Nick Kyrgios (ATP)].key_numbers.clay_wr_recent",
+      "value": null
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Nick Kyrgios (ATP)].key_numbers.grass_wr_recent",
+      "value": null
+    }
+  ],
+  "as_of": "2026-07-19T03:41:37.066640+00:00"
+}

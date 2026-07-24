@@ -1,8 +1,16 @@
 # Public Evidence — 60-Second Funnel Scan
 
-> The fast scan of what CourtVision actually does and how well, organized by the funnel.
-> Every number here is the **leak-free, audited** version. For the full adversarial audit —
-> every claim's proof artifact plus the complete do-not-claim list — read
+> **See it first, then read this.** The flagship product is **CourtVision Analytics — the Reading
+> Room**, live at
+> **[neeljshah.github.io/court-vision/analytics](https://neeljshah.github.io/court-vision/analytics)**:
+> 54 analytics modules and 1,549 entity atlas cards, 6 prior-art-gated novel stats (one published
+> as an honest null), Scout AI in three honest tiers, and a self-grading claim ledger — every
+> number on the page carrying the artifact path it was read from. The dense quant terminal is
+> product 2, at **[neeljshah.github.io/court-vision](https://neeljshah.github.io/court-vision)**.
+>
+> This document is the fast scan of what the engine underneath actually does and how well,
+> organized by the funnel. Every number here is the **leak-free, audited** version. For the full
+> adversarial audit — every claim's proof artifact plus the complete do-not-claim list — read
 > **[JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md)**. For the ceiling analysis:
 > **[CEILING.md](CEILING.md)**. For open gaps: **[KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md)**.
 

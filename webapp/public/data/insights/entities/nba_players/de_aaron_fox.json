@@ -1,0 +1,40 @@
+{
+  "slug": "de_aaron_fox",
+  "pack": "nba_players",
+  "display_name": "De'Aaron Fox",
+  "one_liner": "De'Aaron Fox scores 24 points per 36 minutes on 47 percent shooting while hitting 34.1 percent of his threes.",
+  "three_things": [
+    "Interior scoring holds the efficiency up: 47 percent overall against 34.1 percent from deep.",
+    "Playmaking is real but secondary at 6.3 assists per 36.",
+    "Free-throw accuracy sits at 77.2 percent."
+  ],
+  "context_note": "Per-36-minute rates over a 3-season sample (seasons_played: 3), not per-game and not full-career figures. The manifest is descriptive_only: no adjustment for opponent, teammates, role, or shot difficulty, and a career_min_minutes>=800 inclusion floor applies. Games and minutes measure availability, not how well those minutes were used.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=De'Aaron Fox].key_numbers.career_pts_per36",
+      "value": 24
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=De'Aaron Fox].key_numbers.career_fg_pct",
+      "value": 47
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=De'Aaron Fox].key_numbers.career_fg3_pct",
+      "value": 34.1
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=De'Aaron Fox].key_numbers.career_ast_per36",
+      "value": 6.3
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=De'Aaron Fox].key_numbers.career_ft_pct",
+      "value": 77.2
+    }
+  ],
+  "as_of": "2026-04-12"
+}

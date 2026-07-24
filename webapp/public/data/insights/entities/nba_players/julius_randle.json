@@ -1,0 +1,40 @@
+{
+  "slug": "julius_randle",
+  "pack": "nba_players",
+  "display_name": "Julius Randle",
+  "one_liner": "Julius Randle produces 22.6 points, 8.1 rebounds and 5.3 assists per 36 minutes on 32.2 percent three-point shooting.",
+  "three_things": [
+    "A genuine three-category forward line: 22.6 / 8.1 / 5.3 per 36.",
+    "The outside shot drags: 32.2 percent from three.",
+    "Interior work keeps overall accuracy at 47.9 percent."
+  ],
+  "context_note": "Per-36-minute rates over a 3-season sample (seasons_played: 3), not per-game and not full-career figures. The manifest is descriptive_only: no adjustment for opponent, teammates, role, or shot difficulty, and a career_min_minutes>=800 inclusion floor applies. Games and minutes measure availability, not how well those minutes were used.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Julius Randle].key_numbers.career_pts_per36",
+      "value": 22.6
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Julius Randle].key_numbers.career_reb_per36",
+      "value": 8.1
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Julius Randle].key_numbers.career_ast_per36",
+      "value": 5.3
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Julius Randle].key_numbers.career_fg3_pct",
+      "value": 32.2
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Julius Randle].key_numbers.career_fg_pct",
+      "value": 47.9
+    }
+  ],
+  "as_of": "2026-04-12"
+}

@@ -1,0 +1,40 @@
+{
+  "slug": "phi",
+  "pack": "nba_teams",
+  "display_name": "Philadelphia 76ers",
+  "one_liner": "Philadelphia's minutes leader over the sample is Tyrese Maxey at 6,991.8 minutes, not either of the roster's more-discussed stars.",
+  "three_things": [
+    "6,991.8 minutes is one of the heavier single-player loads in the league here.",
+    "The attached rate is 35.3 PRA per 36.",
+    "The team scored 115.8 per game on a 102.5 pace proxy."
+  ],
+  "context_note": "The 'top contributor' is the player with the most total minutes for that team across the 3-season sample, not necessarily its best or highest-scoring player. PRA-per-36 sums points, rebounds, and assists per 36 minutes -- a raw box rate, not an impact metric. ppg_latest_season and pace_proxy_latest_season are single-season figures while games_total spans three seasons, and pace_proxy is a proxy, not official possession-based pace. The manifest is descriptive_only, with no schedule, opponent, or roster-continuity adjustment. Which player leads a team in minutes is often decided by who stayed healthy; this manifest carries no availability or injury column.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=PHI].key_numbers.top_contributor",
+      "value": "Tyrese Maxey"
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=PHI].key_numbers.top_contributor_minutes",
+      "value": 6991.8
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=PHI].key_numbers.top_contributor_pra_per36",
+      "value": 35.3
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=PHI].key_numbers.ppg_latest_season",
+      "value": 115.8
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=PHI].key_numbers.pace_proxy_latest_season",
+      "value": 102.5
+    }
+  ],
+  "as_of": "2026-04-12"
+}

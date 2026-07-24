@@ -1,0 +1,45 @@
+{
+  "slug": "casper_ruud_atp",
+  "pack": "tennis",
+  "display_name": "Casper Ruud (ATP)",
+  "one_liner": "Casper Ruud's clay-minus-hard gap is 0.1601 career and 0.1605 recent -- the most stable clay preference in this set, and his grass rates are n/a entirely.",
+  "three_things": [
+    "Clay 0.7385 career against hard 0.5785: a 0.1601 gap that recent form reproduces almost exactly.",
+    "grass_wr_career and grass_wr_recent are both n/a -- the grass sample never clears the floor.",
+    "This is a 6-of-10-metric profile; four surface numbers simply do not exist for him here."
+  ],
+  "context_note": "Descriptive career and recent-form surface win rates as of the corpus end -- not a prediction and not an edge claim. Per-surface floors apply (n>=30 career for a surface win rate, n>=25 each side for the clay-minus-hard gap, n>=15 for grass adaptation), evaluated independently for career and recent form; a metric below its floor shows n/a and is never fabricated. Nothing here adjusts for era, opponent quality, draw, or injury.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Casper Ruud (ATP)].key_numbers.clay_minus_hard_career",
+      "value": 0.1601
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Casper Ruud (ATP)].key_numbers.clay_minus_hard_recent",
+      "value": 0.1605
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Casper Ruud (ATP)].key_numbers.clay_wr_career",
+      "value": 0.7385
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Casper Ruud (ATP)].key_numbers.hard_wr_career",
+      "value": 0.5785
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Casper Ruud (ATP)].key_numbers.grass_wr_career",
+      "value": null
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Casper Ruud (ATP)].key_numbers.grass_wr_recent",
+      "value": null
+    }
+  ],
+  "as_of": "2026-07-19T03:41:37.066640+00:00"
+}

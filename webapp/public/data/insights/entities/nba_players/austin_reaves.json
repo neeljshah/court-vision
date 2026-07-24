@@ -1,0 +1,45 @@
+{
+  "slug": "austin_reaves",
+  "pack": "nba_players",
+  "display_name": "Austin Reaves",
+  "one_liner": "Austin Reaves posts 20.6 points, 6 assists and 4.8 rebounds per 36 minutes on 36.9 percent three-point shooting.",
+  "three_things": [
+    "The profile is balanced rather than specialized: 20.6 / 4.8 / 6 per 36.",
+    "Efficiency holds at 47.7 percent from the field.",
+    "He gets to the line and converts: 86.8 percent."
+  ],
+  "context_note": "Per-36-minute rates over a 3-season sample (seasons_played: 3), not per-game and not full-career figures. The manifest is descriptive_only: no adjustment for opponent, teammates, role, or shot difficulty, and a career_min_minutes>=800 inclusion floor applies. Games and minutes measure availability, not how well those minutes were used.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Austin Reaves].key_numbers.career_pts_per36",
+      "value": 20.6
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Austin Reaves].key_numbers.career_ast_per36",
+      "value": 6
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Austin Reaves].key_numbers.career_reb_per36",
+      "value": 4.8
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Austin Reaves].key_numbers.career_fg3_pct",
+      "value": 36.9
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Austin Reaves].key_numbers.career_fg_pct",
+      "value": 47.7
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Austin Reaves].key_numbers.career_ft_pct",
+      "value": 86.8
+    }
+  ],
+  "as_of": "2026-04-12"
+}

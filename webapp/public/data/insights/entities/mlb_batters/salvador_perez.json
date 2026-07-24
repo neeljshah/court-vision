@@ -1,0 +1,40 @@
+{
+  "slug": "salvador_perez",
+  "pack": "mlb_batters",
+  "display_name": "Salvador Perez",
+  "one_liner": "Salvador Perez put 871 balls in play out of 2,233 pitches seen -- one of the highest contact-per-pitch ratios among the hitters profiled here.",
+  "three_things": [
+    "871 batted balls on 2,233 pitches: very little of his plate time went unconverted.",
+    "Pitchers stayed out of the zone at a 46.4 percent rate and he swung anyway.",
+    "Estimated wOBA on contact of .356 at 84.1 mph average exit velocity."
+  ],
+  "context_note": "Descriptive only, from a single 2025 Statcast pull (pitches_faced_2025>=300 floor, 485 of 671 batters). The contact numbers -- exit velocity and estimated wOBA on contact -- cover the batted balls only, not every pitch seen, and estimated wOBA on contact is a batted-ball model: it says nothing about walks, strikeouts, or actual results. This pull carries no swing/miss or launch-angle column, so there is no whiff rate and no barrel profile here. Not park-, role-, or opponent-adjusted, and not a prediction. The contact-per-pitch comparison is scoped to the hitters with insight files in this set, and the ratio is computed from two manifest fields, not read from one.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Salvador Perez].key_numbers.n_batted_balls",
+      "value": 871
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Salvador Perez].key_numbers.pitches_faced",
+      "value": 2233
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Salvador Perez].key_numbers.pct_pitches_in_rulebook_zone",
+      "value": 46.4
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Salvador Perez].key_numbers.avg_estimated_woba_on_contact",
+      "value": 0.356
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Salvador Perez].key_numbers.avg_exit_velo",
+      "value": 84.1
+    }
+  ],
+  "as_of": "2025-09-28"
+}

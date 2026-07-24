@@ -1,0 +1,40 @@
+{
+  "slug": "paul_goldschmidt",
+  "pack": "mlb_batters",
+  "display_name": "Paul Goldschmidt",
+  "one_liner": "Pitchers attacked Paul Goldschmidt in the zone at a 52.7 percent rate, well above the norm in this pull, and he returned a .324 estimated wOBA on contact.",
+  "three_things": [
+    "52.7 percent of pitches in the rulebook zone: he was challenged, not avoided.",
+    "Contact quality came back at .324 estimated wOBA on 730 batted balls.",
+    "Average exit velocity of 85 mph with a 103.1 mph 90th percentile."
+  ],
+  "context_note": "Descriptive only, from a single 2025 Statcast pull (pitches_faced_2025>=300 floor, 485 of 671 batters). The contact numbers -- exit velocity and estimated wOBA on contact -- cover the batted balls only, not every pitch seen, and estimated wOBA on contact is a batted-ball model: it says nothing about walks, strikeouts, or actual results. This pull carries no swing/miss or launch-angle column, so there is no whiff rate and no barrel profile here. Not park-, role-, or opponent-adjusted, and not a prediction.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Paul Goldschmidt].key_numbers.pct_pitches_in_rulebook_zone",
+      "value": 52.7
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Paul Goldschmidt].key_numbers.avg_estimated_woba_on_contact",
+      "value": 0.324
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Paul Goldschmidt].key_numbers.n_batted_balls",
+      "value": 730
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Paul Goldschmidt].key_numbers.avg_exit_velo",
+      "value": 85
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Paul Goldschmidt].key_numbers.exit_velo_p90",
+      "value": 103.1
+    }
+  ],
+  "as_of": "2025-09-28"
+}

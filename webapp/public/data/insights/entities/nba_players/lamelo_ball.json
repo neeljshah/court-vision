@@ -1,0 +1,35 @@
+{
+  "slug": "lamelo_ball",
+  "pack": "nba_players",
+  "display_name": "LaMelo Ball",
+  "one_liner": "LaMelo Ball scores 26.9 points per 36 minutes on 41.1 percent shooting -- the lowest field-goal percentage of any high-usage scorer in this set.",
+  "three_things": [
+    "26.9 points and 8.8 assists per 36: enormous offensive responsibility.",
+    "41.1 percent from the field is the cost attached to it.",
+    "Availability compounds the question: 135 games across the window."
+  ],
+  "context_note": "Per-36-minute rates over a 3-season sample (seasons_played: 3), not per-game and not full-career figures. The manifest is descriptive_only: no adjustment for opponent, teammates, role, or shot difficulty, and a career_min_minutes>=800 inclusion floor applies. Games and minutes measure availability, not how well those minutes were used. The comparison is scoped to the players with insight files in this set; nothing here adjusts for shot difficulty or supporting cast.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=LaMelo Ball].key_numbers.career_pts_per36",
+      "value": 26.9
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=LaMelo Ball].key_numbers.career_fg_pct",
+      "value": 41.1
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=LaMelo Ball].key_numbers.career_ast_per36",
+      "value": 8.8
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=LaMelo Ball].key_numbers.career_games",
+      "value": 135
+    }
+  ],
+  "as_of": "2026-04-12"
+}

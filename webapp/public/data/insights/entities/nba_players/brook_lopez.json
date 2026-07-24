@@ -1,0 +1,35 @@
+{
+  "slug": "brook_lopez",
+  "pack": "nba_players",
+  "display_name": "Brook Lopez",
+  "one_liner": "Brook Lopez, a center, takes and makes threes at 36.6 percent while grabbing only 5.9 rebounds per 36 minutes.",
+  "three_things": [
+    "36.6 percent from three from the center spot -- the shot profile moved outside.",
+    "5.9 rebounds per 36 is low for the position, a direct consequence of that spacing role.",
+    "Durability is the other story: 227 games in the window."
+  ],
+  "context_note": "Per-36-minute rates over a 3-season sample (seasons_played: 3), not per-game and not full-career figures. The manifest is descriptive_only: no adjustment for opponent, teammates, role, or shot difficulty, and a career_min_minutes>=800 inclusion floor applies. Games and minutes measure availability, not how well those minutes were used.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Brook Lopez].key_numbers.career_fg3_pct",
+      "value": 36.6
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Brook Lopez].key_numbers.career_reb_per36",
+      "value": 5.9
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Brook Lopez].key_numbers.career_games",
+      "value": 227
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Brook Lopez].key_numbers.career_pts_per36",
+      "value": 14.5
+    }
+  ],
+  "as_of": "2026-04-12"
+}

@@ -1,0 +1,40 @@
+{
+  "slug": "bo_bichette",
+  "pack": "mlb_batters",
+  "display_name": "Bo Bichette",
+  "one_liner": "Bo Bichette put 917 balls in play from only 2,224 pitches seen -- the most contact-dense profile among the hitters covered here.",
+  "three_things": [
+    "917 batted balls on 2,224 pitches: almost nothing goes to waste.",
+    "The contact grades well too -- .349 estimated wOBA at 84.7 mph average.",
+    "The 90th-percentile exit velocity, 103 mph, is solid rather than elite."
+  ],
+  "context_note": "Descriptive only, from a single 2025 Statcast pull (pitches_faced_2025>=300 floor, 485 of 671 batters). The contact numbers -- exit velocity and estimated wOBA on contact -- cover the batted balls only, not every pitch seen, and estimated wOBA on contact is a batted-ball model: it says nothing about walks, strikeouts, or actual results. This pull carries no swing/miss or launch-angle column, so there is no whiff rate and no barrel profile here. Not park-, role-, or opponent-adjusted, and not a prediction. The contact-density comparison is scoped to the hitters with insight files in this set and is derived from two manifest fields rather than read from one.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Bo Bichette].key_numbers.n_batted_balls",
+      "value": 917
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Bo Bichette].key_numbers.pitches_faced",
+      "value": 2224
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Bo Bichette].key_numbers.avg_estimated_woba_on_contact",
+      "value": 0.349
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Bo Bichette].key_numbers.avg_exit_velo",
+      "value": 84.7
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Bo Bichette].key_numbers.exit_velo_p90",
+      "value": 103
+    }
+  ],
+  "as_of": "2025-09-28"
+}

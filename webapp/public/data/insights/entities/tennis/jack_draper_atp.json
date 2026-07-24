@@ -1,0 +1,55 @@
+{
+  "slug": "jack_draper_atp",
+  "pack": "tennis",
+  "display_name": "Jack Draper (ATP)",
+  "one_liner": "Jack Draper's recent hard-court rate of 0.6829 tops his career 0.6509, while his clay-minus-hard gap has widened to -0.0947.",
+  "three_things": [
+    "Hard is the strength and it is improving: 0.6829 recent against 0.6509 career.",
+    "Clay lags in both windows -- 0.5833 career, 0.5882 recent.",
+    "grass_wr_career and grass_wr_recent are both n/a, though grass_adapt_recent of 0.0833 clears its own lower floor."
+  ],
+  "context_note": "Descriptive career and recent-form surface win rates as of the corpus end -- not a prediction and not an edge claim. Per-surface floors apply (n>=30 career for a surface win rate, n>=25 each side for the clay-minus-hard gap, n>=15 for grass adaptation), evaluated independently for career and recent form; a metric below its floor shows n/a and is never fabricated. Nothing here adjusts for era, opponent quality, draw, or injury.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Jack Draper (ATP)].key_numbers.hard_wr_recent",
+      "value": 0.6829
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Jack Draper (ATP)].key_numbers.hard_wr_career",
+      "value": 0.6509
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Jack Draper (ATP)].key_numbers.clay_minus_hard_recent",
+      "value": -0.0947
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Jack Draper (ATP)].key_numbers.clay_wr_career",
+      "value": 0.5833
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Jack Draper (ATP)].key_numbers.clay_wr_recent",
+      "value": 0.5882
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Jack Draper (ATP)].key_numbers.grass_wr_career",
+      "value": null
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Jack Draper (ATP)].key_numbers.grass_wr_recent",
+      "value": null
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Jack Draper (ATP)].key_numbers.grass_adapt_recent",
+      "value": 0.0833
+    }
+  ],
+  "as_of": "2026-07-19T03:41:37.066640+00:00"
+}

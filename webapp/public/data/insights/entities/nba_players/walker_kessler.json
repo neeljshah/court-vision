@@ -1,0 +1,35 @@
+{
+  "slug": "walker_kessler",
+  "pack": "nba_players",
+  "display_name": "Walker Kessler",
+  "one_liner": "Walker Kessler converts 66.1 percent of his field goals and 56.2 percent of his free throws -- the widest split of its kind in this set.",
+  "three_things": [
+    "66.1 percent from the field: an entirely at-rim shot profile.",
+    "56.2 percent from the line is a real tactical liability late in games.",
+    "13.2 rebounds per 36 is the reason the minutes exist."
+  ],
+  "context_note": "Per-36-minute rates over a 3-season sample (seasons_played: 3), not per-game and not full-career figures. The manifest is descriptive_only: no adjustment for opponent, teammates, role, or shot difficulty, and a career_min_minutes>=800 inclusion floor applies. Games and minutes measure availability, not how well those minutes were used. The comparison is scoped to the players with insight files in this set. This manifest has no shot-blocking or rim-protection column, so the defensive half of his value is not represented here at all.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Walker Kessler].key_numbers.career_fg_pct",
+      "value": 66.1
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Walker Kessler].key_numbers.career_ft_pct",
+      "value": 56.2
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Walker Kessler].key_numbers.career_reb_per36",
+      "value": 13.2
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Walker Kessler].key_numbers.career_pts_per36",
+      "value": 13.1
+    }
+  ],
+  "as_of": "2026-04-12"
+}

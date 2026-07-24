@@ -37,7 +37,8 @@ type WF = { acc_mean: number; acc_std: number; brier_mean: number; brier_std: nu
 type Bucket = { time_bucket: string; prob_bucket: string; source: string; n: number; calibration_error: number; sport: string };
 type SCC = { sports: Record<string, { model_ece_n_weighted: number; market_ece_n_weighted: number; buckets: Bucket[] }>; ranked_worst_buckets: Bucket[] };
 type Row = { sport: string; market: string; checkpoint: string; n: number; paired_delta_mean: number; paired_delta_95ci: [number, number]; verdict: string };
-type Tr = { sport: string; from: { time: string; prob: string }; to: { time: string; prob: string }; winprob_delta: number; min_support_n: number };
+type TrState = { time: string; prob: string; mean_y: number; n: number };
+type Tr = { sport: string; from: TrState; to: TrState; winprob_delta: number; min_support_n: number };
 
 const wf = fc<WF>("winprob_walk_forward_results.json");
 const scc = fc<SCC>("state_conditioned_calibration.json");
@@ -61,22 +62,43 @@ const gridVals: (number | null)[][] = TIMES.map((t) =>
 const backlog: BarDatum[] = (scc?.ranked_worst_buckets ?? []).slice(0, 6).map((b) => ({
   label: `${sName(b.sport)} ${tShort(b.time_bucket)} ${b.prob_bucket}`, value: b.calibration_error, sub: `n=${b.n}`, color: "var(--signal)",
 }));
-const trans: BarDatum[] = why
-  ? [...why.biggest_drops.slice(0, 3), ...why.biggest_gains.slice(0, 3)].map((t) => ({
-      label: `${sName(t.sport)} ${tShort(t.from.time)}->${tShort(t.to.time)}`, value: t.winprob_delta,
-      sub: `${t.from.prob}->${t.to.prob}  n>=${t.min_support_n}`, color: "var(--accent)",
-    }))
-  : [];
+// A bucket whose realized rate is exactly 0 or 1 has no measurable swing -- every
+// game in it resolved the same way, so the "delta" is thin one-sided support, not a
+// move. Drop those, then keep one row per (sport, destination state) so a single
+// to-state can't render as twin identical bars.
+const isDegenerate = (s: TrState) => s.mean_y === 0 || s.mean_y === 1;
+const cleanTrans = (rows: Tr[]) => {
+  const seen = new Set<string>();
+  return rows.filter((t) => {
+    if (isDegenerate(t.from) || isDegenerate(t.to)) return false;
+    const k = `${t.sport}|${t.to.time}|${t.to.prob}`;
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
+};
+const allTrans: Tr[] = why ? [...why.biggest_drops, ...why.biggest_gains] : [];
+const keptTrans = cleanTrans(allTrans);
+const nDegenerate = allTrans.filter((t) => isDegenerate(t.from) || isDegenerate(t.to)).length;
+const nDeduped = allTrans.length - nDegenerate - keptTrans.length;
+const trans: BarDatum[] = [
+  ...keptTrans.filter((t) => t.winprob_delta < 0).slice(0, 3),
+  ...keptTrans.filter((t) => t.winprob_delta > 0).slice(0, 3),
+].map((t) => ({
+  label: `${sName(t.sport)} ${tShort(t.from.time)}->${tShort(t.to.time)}`, value: t.winprob_delta,
+  sub: `${t.from.prob}->${t.to.prob}  n>=${t.min_support_n}`, color: "var(--accent)",
+}));
 
 // In-game three-arm decomposition -- verbatim from committed docs/INGAME_PROOF.md
 // Sec. 2 + 2a. That doc is tracked, so the narrative renders on every clone; the
-// live re-run prints VALIDATION_PENDING (hence the pending receipt).
+// live re-run prints VALIDATION_PENDING off-corpus (private corpora absent on a
+// fresh clone), so the receipt is pending on RE-RUN, not on publication.
 const ARMS = [
   { sport: "NBA", stat: 0.209, score: 0.172, comb: 0.159, mech: "~73%", prior: "-0.014 (~27%)" },
   { sport: "MLB", stat: 0.241, score: 0.128, comb: 0.126, mech: "~99%", prior: "-0.001 (~1%)" },
 ];
 const SCOUT_CHIPS: Parameters<typeof Receipt>[0][] = [
-  { label: "CALIBRATION_OOS (VALIDATION_PENDING -- not yet published)", sourceArtifact: "docs/INGAME_PROOF.md", asOf: "2026-07-23", verdict: "pending" },
+  { label: "CALIBRATION_OOS -- receipt published in-repo; live re-run VALIDATION_PENDING without the private corpus", sourceArtifact: "docs/INGAME_PROOF.md", asOf: "2026-07-23", verdict: "pending" },
   { label: "BSS vs market -- null is the exhibit", sourceArtifact: "scripts/platformkit/analytics_showcase/out/brier_skill_scores.json", asOf: "2026-07-24", n: 78986, verdict: "null" },
   { label: "walk-forward, expanding window", sourceArtifact: "results/winprob_walk_forward_results.json", asOf: "2026-07-20", verdict: "confirmed" },
 ];
@@ -127,9 +149,10 @@ const BeforeAfter = ({ sport, a, b, src }: { sport: string; a: string; b: string
     <span style={{ ...num, fontSize: "1.8rem", color: "var(--ink-2)" }}>{b}</span>
     {/* The one number on the page that had a bare filename instead of a hover
         receipt. Give it the same Receipt every other figure wears -- verdict
-        pending, so it reads honestly as VALIDATION_PENDING, not a settled win. */}
+        pending on live RE-RUN (the private corpus is absent on a fresh clone),
+        not pending on publication -- the source doc is committed. */}
     <span style={{ marginLeft: "auto" }}>
-      <Receipt sourceArtifact={src} label="CALIBRATION_OOS (VALIDATION_PENDING -- not yet published)" asOf="2026-07-23" verdict="pending" />
+      <Receipt sourceArtifact={src} label="CALIBRATION_OOS -- receipt published in-repo; live re-run VALIDATION_PENDING without the private corpus" asOf="2026-07-23" verdict="pending" />
     </span>
   </div>
 );
@@ -214,7 +237,7 @@ export default function ForecasterPage() {
             ))}
           </tbody>
         </table></div>
-        <p className="mono" style={cap}>docs/INGAME_PROOF.md Sec. 2 + 2a &middot; real-corpus OOS &middot; each arm rounded independently to 3 dp; the share column is derived from full precision, so it will not reconcile to the 3-dp cells &middot; VALIDATION_PENDING (not yet published) &middot; edge_claimed: false</p>
+        <p className="mono" style={cap}>docs/INGAME_PROOF.md Sec. 2 + 2a &middot; real-corpus OOS &middot; each arm rounded independently to 3 dp; the share column is derived from full precision, so it will not reconcile to the 3-dp cells &middot; source doc committed in this repo; live re-run prints VALIDATION_PENDING without the private corpus and falls back to this recorded table &middot; edge_claimed: false</p>
         <ScoutNote envelope={{ status: "ok", prose: SCOUT_PROSE, chips: SCOUT_CHIPS }} />
       </section>
 
@@ -296,6 +319,11 @@ export default function ForecasterPage() {
           <div style={{ marginTop: 24 }}>
             <Bars bars={trans} source="scripts/platformkit/analytics_showcase/out/why_attribution.json" asOf="2026-07-23"
               title="Largest calibrated win-probability swings" valueFormat={(n) => sgn(n, 3)} unit="win-prob" verdict="descriptive_only" />
+            <p style={cap}>
+              Filtered: {nDegenerate} of {allTrans.length} candidate transitions are excluded because one end sits in a degenerate bucket &mdash; a realized rate of exactly 0.000 or 1.000, where every game in the bucket resolved the same way. Those buckets have no measurable swing to report; their apparent delta is thin one-sided support, not a move.
+              {nDeduped > 0 ? ` A further ${nDeduped} were collapsed so a single destination state renders one bar, not duplicates.` : " Rows are also de-duplicated by destination state so one to-state cannot render as twin bars."}
+              {" "}What remains is what the data actually supports, which is mostly MLB and soccer.
+            </p>
           </div>
         ) : (
           <Pending what="the transition explorer" src="scripts/platformkit/analytics_showcase (why_attribution)" />

@@ -177,9 +177,17 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
     value: fmt(c.value), label: c.field, sourceArtifact: c.path,
     asOf: asOf || undefined, verdict: "descriptive_only",
   }));
+  // Written Scout notes cover 182 marquee cards of 1,549. For the rest, say what
+  // this card DOES have (its own measured cells, its receipts, the pack's sample
+  // floors) instead of the bare "no verified read" negative. Status stays no_data
+  // -- the neutral glyph is the honest signal that no note was written here.
+  const uncovered =
+    `No written Scout note on this card yet -- those cover 182 marquee entities of 1,549. ` +
+    `What is here is measured: ${cells.length} ${pack.noun}, each wearing its own receipt` +
+    (entry.floors ? ", with the sample floors for this pack in the sidebar." : ".");
   const envelope: ScoutEnvelope = insight
     ? { status: "descriptive_only", prose: insight.one_liner, chips }
-    : { status: "no_data", prose: "" };
+    : { status: "no_data", prose: uncovered };
 
   // Draw the Scout pills from real corpus hits for this entity (verbatim questions
   // that phrase-resolve), never templated strings that dead-end. Empty for the thin

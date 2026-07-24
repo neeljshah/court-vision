@@ -1,0 +1,40 @@
+{
+  "slug": "leverkusen",
+  "pack": "soccer",
+  "display_name": "Leverkusen",
+  "one_liner": "Leverkusen scored 2.3 goals per game over its last 10, second only to one club in this set, while conceding 1.7.",
+  "three_things": [
+    "gf_l10 2.3 is the second-highest scoring rate among the clubs profiled here.",
+    "The defense does not match it: ga_l10 1.7 and a 0.2424 season clean-sheet rate.",
+    "Net effect is a +0.6 goal difference and 1.8 points per game."
+  ],
+  "context_note": "Descriptive trailing-10 and season rates as of the corpus end -- not a prediction and not an edge claim. Ten-match windows are small: one hot or cold stretch moves ppg_l10, gd_l10, and the clean-sheet rates substantially. Home and away splits are five-match-scale samples inside that window. Nothing here adjusts for roster, injuries, competition, or fixture strength.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_soccer_manifest.json",
+      "field": "entries[entity=Leverkusen].key_numbers.gf_l10",
+      "value": 2.3
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_soccer_manifest.json",
+      "field": "entries[entity=Leverkusen].key_numbers.ga_l10",
+      "value": 1.7
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_soccer_manifest.json",
+      "field": "entries[entity=Leverkusen].key_numbers.clean_sheet_rate_season",
+      "value": 0.2424
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_soccer_manifest.json",
+      "field": "entries[entity=Leverkusen].key_numbers.gd_l10",
+      "value": 0.6
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_soccer_manifest.json",
+      "field": "entries[entity=Leverkusen].key_numbers.ppg_l10",
+      "value": 1.8
+    }
+  ],
+  "as_of": "2026-07-18T17:21:08.108324+00:00"
+}

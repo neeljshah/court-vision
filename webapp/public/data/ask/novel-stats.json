@@ -1,0 +1,721 @@
+{
+  "bucket": "novel-stats",
+  "note": "The six prior-art-gated stats built on top of the committed showcase modules. Every number is copied verbatim from the module's own novel_*.json (path in source_artifact). Each stat carries edge_claimed=false and declared confounds; one of the six (Overreaction Harvest Gap) is an honest null by construction. Descriptive measurement only -- none of these is a forecast or a betting signal.",
+  "entries": [
+    {
+      "q": "What are the novel stats?",
+      "alt_phrasings": ["what new metrics did you invent", "list the novel stats", "what original stats do you have"],
+      "a": {
+        "status": "ok",
+        "answer": "Six, each composed only from committed module output and each gated against prior art before publication: Line Half-Life (LHL), Live-Clock Fraction (LCF), Load-Bearing Index (LBI), Market Foresight Premium (MFP), Overreaction Harvest Gap (OHG) and Schedule Fatigue Tax (SFT). All six carry edge_claimed=false. One, OHG, is flagged is_honest_null -- it measures a failure, not a finding.",
+        "source_artifact": "webapp/public/data/showcase/novel_stats_index.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "index"]
+    },
+    {
+      "q": "What does the prior-art verdict on each novel stat mean?",
+      "alt_phrasings": ["are these stats actually new", "how do you know nobody invented this already", "prior art check"],
+      "a": {
+        "status": "ok",
+        "answer": "Each stat is labeled by how much of it is genuinely fresh, and the label is deliberately conservative: LHL is NOVEL_PACKAGING, LCF is INCREMENTAL_NOVEL, LBI / MFP / SFT are INCREMENTAL, and OHG is NOVEL_SELF_CRITICAL_CROSS. Every card names the existing literature it sits on top of and instructs the reader not to claim first-ever on the components.",
+        "source_artifact": "webapp/public/data/showcase/novel_stats_index.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "prior-art"]
+    },
+    {
+      "q": "Do any of the novel stats claim a betting edge?",
+      "alt_phrasings": ["can I bet these novel stats", "are the new metrics profitable", "do these give an edge"],
+      "a": {
+        "status": "refused",
+        "answer": "No, and none of them is built to. All six cards are stamped edge_claimed=false and descriptive_only=true, and the one that comes closest to a market angle -- the Overreaction Harvest Gap -- exists precisely to record that the model cannot cash the overshoot it measures. There is no dollar, ROI or profit figure attached to any of these stats.",
+        "source_artifact": "webapp/public/data/showcase/novel_stats_index.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "no-edge"]
+    },
+    {
+      "q": "Which novel stat is an honest null?",
+      "alt_phrasings": ["which new stat found nothing", "did any of the novel stats fail", "honest null novel stat"],
+      "a": {
+        "status": "ok",
+        "answer": "The Overreaction Harvest Gap, flagged is_honest_null=true in the index. It measures real market overshoot at large in-game moves and then measures how badly the model fails to convert it: at maximum disagreement the model is closer than the market only 21.52% of the time in soccer_intl and 37.73% in MLB. Publishing that is the point.",
+        "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "ohg", "honest-null"]
+    },
+    {
+      "q": "What is Line Half-Life?",
+      "alt_phrasings": ["explain LHL", "what does line half life measure", "line half life definition"],
+      "a": {
+        "status": "ok",
+        "answer": "Per sport, the number of hours before tip by which half of the pre-game absolute line motion is complete. It answers a plain question -- when does a sport's price actually get made -- with a single constant per sport instead of a hand-wave about early sharp money.",
+        "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "lhl", "definition"]
+    },
+    {
+      "q": "How is Line Half-Life calculated?",
+      "alt_phrasings": ["LHL formula", "how do you compute line half life", "line half life method"],
+      "a": {
+        "status": "ok",
+        "answer": "bucket_move = n * mean_abs_move per horizon bucket; G(h) = cumulative far-to-near movement divided by total; the half-life is the h where G(h) = 0.50, linearly interpolated. The inputs come from the micro_absorption module, not from a separate fit.",
+        "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "lhl", "formula"]
+    },
+    {
+      "q": "Which sport's betting line settles earliest?",
+      "alt_phrasings": ["which sport moves its line first", "fastest line half life", "which market prices earliest"],
+      "a": {
+        "status": "ok",
+        "answer": "Of the five sports measured, soccer_intl settles fastest: half its pre-game line motion is done 2.75 hours before kickoff (half_life_hours 2.7461, n_move_pairs 164,072). MLB follows at 3.67h and NBA at 4.76h.",
+        "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "lhl", "cross-sport"]
+    },
+    {
+      "q": "What is the NBA's line half-life?",
+      "alt_phrasings": ["nba line half life", "when does the nba line settle", "nba line movement timing"],
+      "a": {
+        "status": "ok",
+        "answer": "4.76 hours (half_life_hours 4.7567) over 182,054 pre-game move pairs -- the slowest of the three sports whose crossing can be pinned. NBA is also the most back-loaded: 32.47% of its total absolute motion lands in the final hour before tip, so the single constant hides a bimodal shape.",
+        "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "lhl", "nba"]
+    },
+    {
+      "q": "What is MLB's line half-life?",
+      "alt_phrasings": ["mlb line half life", "when does the mlb line settle", "baseball line movement timing"],
+      "a": {
+        "status": "ok",
+        "answer": "3.67 hours (half_life_hours 3.6709), measured over 1,307,128 pre-game move pairs -- by far the largest sample of the five. Only 18.13% of MLB's absolute motion arrives in the final hour, the steadiest profile in the set.",
+        "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "lhl", "mlb"]
+    },
+    {
+      "q": "Which sports have no measurable line half-life?",
+      "alt_phrasings": ["which sports move their line more than 6 hours out", "tennis line half life", "wnba line half life"],
+      "a": {
+        "status": "ok",
+        "answer": "Tennis and WNBA both cross the 50% mark inside the open-ended 6h+ bucket, so their half-life is reported as '>6.0' with half_life_hours=null rather than guessed. By 6 hours out tennis has already completed 54.26% of its motion and WNBA 64.41%.",
+        "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "lhl", "tennis", "wnba"]
+    },
+    {
+      "q": "Why is soccer excluded from Line Half-Life?",
+      "alt_phrasings": ["why no soccer line half life", "soccer excluded lhl", "which sports were dropped from lhl"],
+      "a": {
+        "status": "ok",
+        "answer": "Domestic soccer is excluded as a timestamp-coverage artifact: all its mass sits in the 6h+ bucket with mean_abs_move 0.0, which is a data defect rather than a finding. KBO and NPB are excluded too, both with 0 pre-game move pairs against a MIN_MOVES floor of 20. soccer_intl, a separate corpus, does qualify.",
+        "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "lhl", "exclusions"]
+    },
+    {
+      "q": "Is Line Half-Life actually a new idea?",
+      "alt_phrasings": ["lhl prior art", "has line half life been done before", "is lhl novel"],
+      "a": {
+        "status": "ok",
+        "answer": "Only the packaging. The card is labeled NOVEL_PACKAGING and cites the existing work directly: opening-versus-closing line timing is discussed everywhere in the betting press, and price-impact half-life is a securities-microstructure staple (Kyle 1985; Amihud 2002). What is fresh is the single per-sport half-life constant, not the underlying concept.",
+        "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "lhl", "prior-art"]
+    },
+    {
+      "q": "What are the weaknesses of Line Half-Life?",
+      "alt_phrasings": ["lhl confounds", "what's wrong with line half life", "lhl caveats"],
+      "a": {
+        "status": "ok",
+        "answer": "Five are declared on the card. bucket_move sums absolute per-tick moves, so it is churn rather than net price travel and correlated books inflate it; there are only four coarse horizon buckets so the 0.50 crossing is interpolated; soccer is a coverage artifact; NBA is bimodal and a single half-life hides that; and any sport crossing inside the open 6h+ bucket cannot be pinned at all.",
+        "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "lhl", "confounds"]
+    },
+    {
+      "q": "How much line movement happens in the final hour before a game?",
+      "alt_phrasings": ["final hour line movement share", "late line movement by sport", "how much moves right before tip"],
+      "a": {
+        "status": "ok",
+        "answer": "It varies more than three-fold across sports: NBA 32.47%, soccer_intl 26.10%, MLB 18.13%, WNBA 11.76%, tennis 10.70%. NBA being the most back-loaded is the reason its single half-life reads misleadingly slow.",
+        "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "lhl", "cross-sport"]
+    },
+    {
+      "q": "What is the Live-Clock Fraction?",
+      "alt_phrasings": ["explain LCF", "what does live clock fraction measure", "live clock fraction definition"],
+      "a": {
+        "status": "ok",
+        "answer": "The 0-to-1 share of a sport's game clock that stays genuinely contested before the score gap crosses a point of no return, taken at a near-median margin threshold. Higher means the sport stays live later.",
+        "source_artifact": "webapp/public/data/showcase/novel_live_clock_fraction.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "lcf", "definition"]
+    },
+    {
+      "q": "Which sport stays competitive the longest?",
+      "alt_phrasings": ["mlb vs soccer live clock fraction", "which sport is decided latest", "lcf comparison"],
+      "a": {
+        "status": "ok",
+        "answer": "Of the two sports that could be built, MLB stays contested later: LCF 0.8333 versus soccer_intl 0.7475. The ranking is indicative rather than metric -- a 3-run threshold in baseball and a 1-goal threshold in soccer are not equated quantities, and innings and minutes are different clock units.",
+        "source_artifact": "webapp/public/data/showcase/novel_live_clock_fraction.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "lcf", "cross-sport"]
+    },
+    {
+      "q": "Why is there no NBA Live-Clock Fraction?",
+      "alt_phrasings": ["nba lcf missing", "why no basketball live clock fraction", "which sports lack lcf"],
+      "a": {
+        "status": "no_data",
+        "answer": "NBA and tennis have no blowout corpus, so LCF is not buildable for them and the card records that as an explicit not_buildable rather than filling a number. NBA does get an independent decisiveness cross-check from a different module: a comeback rate of 0.0146 and a favorite hold rate of 0.9854.",
+        "source_artifact": "webapp/public/data/showcase/novel_live_clock_fraction.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "lcf", "nba", "not-buildable"]
+    },
+    {
+      "q": "How often do NBA favorites blow a near-decided game?",
+      "alt_phrasings": ["nba comeback rate", "how often does the nba favorite hold", "nba favorite hold rate"],
+      "a": {
+        "status": "ok",
+        "answer": "Once the in-game market price crosses 0.85, the favorite holds 98.54% of the time and the comeback rate is 1.46%, measured over 23 usable buckets, 171,220 ticks and 5,578 games. This is a market-price-conditioned rate, not a score-margin rule.",
+        "source_artifact": "webapp/public/data/showcase/xsport_structure.json",
+        "as_of": "2026-07-18"
+      },
+      "tags": ["novel-stats", "lcf", "nba", "comeback"]
+    },
+    {
+      "q": "How is the Live-Clock Fraction threshold chosen?",
+      "alt_phrasings": ["lcf method", "how do you pick the lcf margin threshold", "lcf formula"],
+      "a": {
+        "status": "ok",
+        "answer": "LCF is the decided_clockfrac_median at the non-masked threshold whose decided_frac_of_games is closest to 0.50. In MLB that lands on a 3-run threshold (decided_frac 0.5337, 95 of 178 games); soccer_intl has only one non-masked threshold, 1 goal (decided_frac 0.4828, 14 of 29 games), so no choice is actually exercised there.",
+        "source_artifact": "webapp/public/data/showcase/novel_live_clock_fraction.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "lcf", "formula"]
+    },
+    {
+      "q": "Is the Live-Clock Fraction a new method?",
+      "alt_phrasings": ["lcf prior art", "has live clock fraction been done", "is lcf original"],
+      "a": {
+        "status": "ok",
+        "answer": "Partly, and the card says so: it is labeled INCREMENTAL_NOVEL, citing Bill James safe-lead heuristics and win-probability clinch points as existing within-sport method. Only the normalized cross-sport live-clock axis is claimed as the contribution.",
+        "source_artifact": "webapp/public/data/showcase/novel_live_clock_fraction.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "lcf", "prior-art"]
+    },
+    {
+      "q": "How small are the Live-Clock Fraction samples?",
+      "alt_phrasings": ["lcf sample size", "how many games in the lcf measurement", "is lcf underpowered"],
+      "a": {
+        "status": "ok",
+        "answer": "Small enough to read carefully: MLB is 178 total games with 95 decided at the near-median threshold, and soccer_intl is 29 total games with 14 decided. The cross-sport ranking should be treated as indicative on those counts.",
+        "source_artifact": "webapp/public/data/showcase/novel_live_clock_fraction.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "lcf", "sample-size"]
+    },
+    {
+      "q": "What is the Load-Bearing Index?",
+      "alt_phrasings": ["explain LBI", "what does load bearing index measure", "load bearing index definition"],
+      "a": {
+        "status": "ok",
+        "answer": "Per NBA team, how much of its win probability rides on its single most indispensable player, estimated two independent ways and flagged for whether the two agree. Estimator (a) is the max player-level Elo on/off win-prob delta; estimator (b) is the max raw win-rate gap between games a player was active and games he missed.",
+        "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "lbi", "definition"]
+    },
+    {
+      "q": "Which NBA team is most dependent on one player?",
+      "alt_phrasings": ["most star-dependent team", "which team is most fragile without its star", "highest load bearing index"],
+      "a": {
+        "status": "ok",
+        "answer": "Denver, on the Elo on/off estimator: Nikola Jokic carries a delta_winprob of 0.5822 with an on/off net-rating delta of 23.713 -- the largest single-player figure among the 30 teams. Read it as a dependence description, not a causal player-impact estimate.",
+        "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "lbi", "nba", "den"]
+    },
+    {
+      "q": "What is Oklahoma City's Load-Bearing Index?",
+      "alt_phrasings": ["okc load bearing index", "how dependent is okc on sga", "thunder star dependence"],
+      "a": {
+        "status": "ok",
+        "answer": "Shai Gilgeous-Alexander leads the Elo on/off estimator at delta_winprob 0.5171 with an on/off net-rating delta of 15.763, second-highest among the 30 teams. The raw with/without estimator names a different player for OKC (Ajay Mitchell, delta_win_rate 0.2685 over 57 active and 23 missed games), which is the norm rather than the exception here.",
+        "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "lbi", "nba", "okc"]
+    },
+    {
+      "q": "Do the two Load-Bearing Index estimators agree?",
+      "alt_phrasings": ["lbi agreement rate", "do both methods name the same player", "how consistent is the load bearing index"],
+      "a": {
+        "status": "ok",
+        "answer": "Almost never. Across the 30 teams covered by both estimators, only 1 agrees on the same #1 player -- an agree_rate of 0.0333. That team is Indiana, where both name Pascal Siakam (Elo delta_winprob 0.3872; raw delta_win_rate 0.2075 over 62 active and 15 missed games).",
+        "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "lbi", "agreement"]
+    },
+    {
+      "q": "Why do the Load-Bearing Index estimators disagree so much?",
+      "alt_phrasings": ["why does lbi disagree", "lbi cross-method disagreement explanation", "is the load bearing index unreliable"],
+      "a": {
+        "status": "ok",
+        "answer": "Mostly because they are not measuring the same season or the same quantity. Estimator (a) uses 2024-25 Elo end-of-season on/off, estimator (b) uses the 2025-26 regular season through 2026-04-12, so agreement is directional corroboration and not a paired estimate. On top of that, (a) is win probability against a league-average opponent on a neutral floor while (b) is raw team win rate active-versus-missed -- related axes, different scales.",
+        "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "lbi", "confounds"]
+    },
+    {
+      "q": "Is the Load-Bearing Index a causal measure of player impact?",
+      "alt_phrasings": ["does lbi prove a player's value", "is load bearing index causal", "lbi roster confound"],
+      "a": {
+        "status": "ok",
+        "answer": "No, and the card labels this the first declared confound. Both estimators inherit the roster confound their source files flag: why a player missed is entangled with injury clustering, rest, blowout pulls and replacement lineup quality, none of which is controlled. It is a fragility description, not a causal player-impact estimate.",
+        "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "lbi", "causality"]
+    },
+    {
+      "q": "Is the Load-Bearing Index original?",
+      "alt_phrasings": ["lbi prior art", "has on off fragility been published", "is load bearing index new"],
+      "a": {
+        "status": "ok",
+        "answer": "Incremental, per its own label. The card cites inpredictable's On/Off Win Probability tables, standard record-without-star splits and arXiv 1604.03186 on player impact on win chances, and states plainly that single-method fragility is not new. The claimed twist is a league-wide fragility ranking cross-validated by two independent estimators with an agreement flag.",
+        "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "lbi", "prior-art"]
+    },
+    {
+      "q": "Which teams show the biggest raw with-without swing?",
+      "alt_phrasings": ["largest with without win rate gap", "lbi estimator b leaders", "biggest raw win rate gap nba"],
+      "a": {
+        "status": "ok",
+        "answer": "On the raw estimator the largest gaps come with small missed-game samples, which is the warning label. Milwaukee's Kyle Kuzma shows delta_win_rate 0.3659 on 69 active and 12 missed games, and the Clippers' Brook Lopez 0.4038 on 75 active and just 7 missed. Seven-game denominators do not support a strong reading.",
+        "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "lbi", "sample-size"]
+    },
+    {
+      "q": "What is the Lakers' load-bearing player?",
+      "alt_phrasings": ["lal load bearing index", "lakers most indispensable player", "lakers on off leader"],
+      "a": {
+        "status": "ok",
+        "answer": "The two estimators disagree, and the Elo one names a role player rather than a star: Dorian Finney-Smith at delta_winprob 0.4656 with an on/off net-rating delta of 14.944, while the raw with/without estimator names Rui Hachimura at delta_win_rate 0.2626 over 68 active and 14 missed games. Neither is a causal claim about who matters most.",
+        "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "lbi", "nba", "lal"]
+    },
+    {
+      "q": "What is the Market Foresight Premium?",
+      "alt_phrasings": ["explain MFP", "what does market foresight premium measure", "market foresight premium definition"],
+      "a": {
+        "status": "ok",
+        "answer": "The market's excess resolving power over a scoreboard-only model, per bit of uncertainty still left in the game, measured checkpoint by checkpoint. It is a way of asking how much the market knows that the score alone does not, normalized so late-game checkpoints do not automatically dominate.",
+        "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "mfp", "definition"]
+    },
+    {
+      "q": "How is the Market Foresight Premium computed?",
+      "alt_phrasings": ["mfp formula", "market foresight premium method", "how do you normalize mfp"],
+      "a": {
+        "status": "ok",
+        "answer": "MFP(t) = ((naive - market)/naive - (naive - model)/naive) / max(entropy_market_bits, 0.15). The 0.15-bit entropy floor exists because entropy heading to zero late in a game would otherwise explode the ratio.",
+        "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "mfp", "formula"]
+    },
+    {
+      "q": "How does the Market Foresight Premium behave in MLB?",
+      "alt_phrasings": ["mlb mfp curve", "market foresight premium baseball", "does the market's edge grow during a game"],
+      "a": {
+        "status": "ok",
+        "answer": "It rises steadily through the game: 0.063 at the first inning checkpoint (n=7,646), 0.2513 by inning 6, 0.4182 at inning 7 and peaking at 0.5208 at inning 9 (n=2,282), with a mean of 0.2461 across 10 checkpoints. The last checkpoint drops back to 0.2365 on only 94 rows.",
+        "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "mfp", "mlb"]
+    },
+    {
+      "q": "How does the Market Foresight Premium behave in soccer?",
+      "alt_phrasings": ["soccer mfp curve", "market foresight premium soccer", "soccer in-game market advantage"],
+      "a": {
+        "status": "ok",
+        "answer": "Much higher throughout and still rising: 0.6393 at kickoff, 0.7877 by minute 30, and 1.7056 at the minute-90 checkpoint, with a mean of 0.9211 over 19 checkpoints and a first-to-last delta of 1.0663. Soccer checkpoint samples are thin -- the 90-minute row is n=37.",
+        "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "mfp", "soccer"]
+    },
+    {
+      "q": "In which sport does the market have the biggest in-game information advantage?",
+      "alt_phrasings": ["mfp mlb vs soccer", "where is the market sharpest in game", "which sport has the highest market foresight premium"],
+      "a": {
+        "status": "ok",
+        "answer": "Soccer, by a wide margin: mean MFP 0.9211 versus 0.2461 in MLB, and a final-checkpoint value of 1.7056 versus 0.2365. The two are not strictly equated -- MLB is measured per inning and soccer per 5-minute bucket -- so read the gap as large but not a precise multiple.",
+        "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "mfp", "cross-sport"]
+    },
+    {
+      "q": "Does a high Market Foresight Premium mean our model is bad?",
+      "alt_phrasings": ["mfp model misspecification", "is mfp measuring market news or model error", "what does a high mfp really mean"],
+      "a": {
+        "status": "ok",
+        "answer": "It cannot separate the two, and the card says so. The 'model' side is one specific state-only forecaster, so MFP conflates genuine news the market prices -- lineups, momentum, injuries -- with plain model misspecification. The honest reading is that the market resolves more per bit than a scoreboard-only view, not that any particular cause has been isolated.",
+        "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "mfp", "confounds"]
+    },
+    {
+      "q": "What prior work does the Market Foresight Premium build on?",
+      "alt_phrasings": ["mfp prior art", "is market foresight premium new", "mfp citations"],
+      "a": {
+        "status": "ok",
+        "answer": "Two established literatures. The absorption instrument -- paired model/market/naive Brier by game-time -- is arXiv 2606.07811 on when markets fully process public information, which the source module already flags INCREMENTAL, and entropy decay is textbook Shannon. Only the skill-gap-per-bit normalization crossing the two is claimed.",
+        "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "mfp", "prior-art"]
+    },
+    {
+      "q": "What is the model's in-game skill score at each MLB checkpoint?",
+      "alt_phrasings": ["mlb model skill by inning", "mfp model skill column", "is the model negative skill in game"],
+      "a": {
+        "status": "ok",
+        "answer": "Negative at every one of the 10 MLB checkpoints in this module, ranging from -0.0184 at inning 5 to -0.1926 at the final checkpoint, while market skill runs from 0.013 up to 0.3254. Against a naive baseline the market resolves the game and this state-only model does not.",
+        "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "mfp", "mlb", "model-vs-market"]
+    },
+    {
+      "q": "What is the Overreaction Harvest Gap?",
+      "alt_phrasings": ["explain OHG", "what does overreaction harvest gap measure", "overreaction harvest gap definition"],
+      "a": {
+        "status": "ok",
+        "answer": "Structural market overshoot at large in-game moves, scaled by how far short the model falls of beating the market when the two disagree most. It is deliberately a measured failure diagnostic: the market moves too far, and we still cannot exploit it.",
+        "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "ohg", "definition"]
+    },
+    {
+      "q": "What is the Overreaction Harvest Gap in soccer?",
+      "alt_phrasings": ["soccer ohg", "soccer market overshoot", "overreaction harvest gap soccer numbers"],
+      "a": {
+        "status": "ok",
+        "answer": "soccer_intl shows an overreaction magnitude of 0.2856 but a model_closer_rate of only 0.2152 at maximum disagreement (n=4,406), giving an OHG of 0.0813. Read literally: the market overshoots and is still right about four times in five when we disagree hardest with it.",
+        "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "ohg", "soccer"]
+    },
+    {
+      "q": "What is the Overreaction Harvest Gap in MLB?",
+      "alt_phrasings": ["mlb ohg", "mlb market overshoot", "overreaction harvest gap baseball numbers"],
+      "a": {
+        "status": "ok",
+        "answer": "MLB overshoots much less -- overreaction magnitude 0.0721 -- and the model_closer_rate at maximum disagreement is 0.3773 over 33,402 rows, giving an OHG of 0.0088. Smaller overshoot, still no harvest.",
+        "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "ohg", "mlb"]
+    },
+    {
+      "q": "When the model and the market disagree most, who is right?",
+      "alt_phrasings": ["max disagreement who wins", "model closer rate at high disagreement", "is the model right when it disagrees"],
+      "a": {
+        "status": "ok",
+        "answer": "The market, in both sports measured. At the >=.10 disagreement bucket the model's Brier is 0.282705 against the market's 0.210258 in MLB (n=33,402), and 0.330582 against 0.172027 in soccer_intl (n=4,406). Both rows carry market_usually_right_at_max_disagree=true.",
+        "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "ohg", "model-vs-market"]
+    },
+    {
+      "q": "Doesn't market overreaction mean there's money on the table?",
+      "alt_phrasings": ["can you exploit market overreaction", "is overshoot an edge", "trade the overreaction"],
+      "a": {
+        "status": "refused",
+        "answer": "Not on this evidence, and that is exactly why the stat exists. The card's first declared confound is mandatory language: OHG is an honest null, and at maximum disagreement the market is usually right (model_closer_rate 0.38 in MLB, 0.22 in soccer). Overshoot that we cannot identify in advance is not a tradable quantity, and no dollar figure is attached anywhere.",
+        "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "ohg", "no-edge"]
+    },
+    {
+      "q": "How large are the overreaction buckets?",
+      "alt_phrasings": ["ohg bucket sample sizes", "overreaction bucket n", "how noisy is the overreaction measurement"],
+      "a": {
+        "status": "ok",
+        "answer": "MLB is reasonably sized -- 2,860 rows in the 3-6pt bucket, 1,069 in 6-10pt, 794 in 10pt+ -- with overshoot falling from 0.0801 to 0.0518 as moves get bigger. Soccer is thin: 103, 21 and 91 rows respectively, so its 0.2856 magnitude is explicitly flagged noisy.",
+        "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "ohg", "sample-size"]
+    },
+    {
+      "q": "What prior work does the Overreaction Harvest Gap build on?",
+      "alt_phrasings": ["ohg prior art", "overreaction literature", "is ohg novel"],
+      "a": {
+        "status": "ok",
+        "answer": "Overreaction and reversion are Moskowitz (2021, Journal of Finance) and Choi & Hui (2014, JEBO), and disagreement skill is standard forecast verification -- the card flags both components as not new. Its verdict, NOVEL_SELF_CRITICAL_CROSS, claims only the crossing: 'the market is wrong and we still cannot cash it' is a confession, and papers publish edges rather than confessions.",
+        "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "ohg", "prior-art"]
+    },
+    {
+      "q": "What is the Schedule Fatigue Tax?",
+      "alt_phrasings": ["explain SFT", "what does schedule fatigue tax measure", "schedule fatigue tax definition"],
+      "a": {
+        "status": "ok",
+        "answer": "Per team-season, the points tax from back-to-back congestion: the team's back-to-back frequency multiplied by the tested back-to-back performance penalty. It converts a schedule quirk into a season-averaged points figure so teams can be compared on the same axis.",
+        "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "sft", "definition"]
+    },
+    {
+      "q": "How is the Schedule Fatigue Tax calculated?",
+      "alt_phrasings": ["sft formula", "schedule fatigue tax method", "what anchor does sft use"],
+      "a": {
+        "status": "ok",
+        "answer": "SFT_credible = b2b_freq * (-1.73 pts/100 ORtg), with a descriptive companion SFT_descriptive = b2b_freq * (-0.315 composite per 36). The -1.73 anchor is not invented here; it is copied from the repo's own tested b2b_rest_penalty mechanism receipt.",
+        "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "sft", "formula"]
+    },
+    {
+      "q": "Which NBA team has the most punishing schedule?",
+      "alt_phrasings": ["most schedule taxed team", "worst back to back schedule nba", "highest schedule fatigue tax"],
+      "a": {
+        "status": "ok",
+        "answer": "Denver in 2025-26: 17 back-to-backs, a b2b_freq of 0.218, and a season-averaged SFT of -0.3771 pts/100 ORtg -- the largest of 90 team-seasons. Atlanta and Houston in 2024-25 follow at -0.3633 each.",
+        "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "sft", "nba", "den"]
+    },
+    {
+      "q": "Which NBA team has the easiest schedule by fatigue?",
+      "alt_phrasings": ["least schedule taxed team", "fewest back to backs", "lowest schedule fatigue tax"],
+      "a": {
+        "status": "ok",
+        "answer": "Memphis in 2025-26: 12 back-to-backs, b2b_freq 0.156, SFT -0.2699 pts/100 ORtg -- the smallest tax in the 90 team-seasons measured. Atlanta and Chicago in 2025-26 sit just above it at -0.2733.",
+        "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "sft", "nba", "mem"]
+    },
+    {
+      "q": "How unequal are NBA schedules?",
+      "alt_phrasings": ["schedule inequality nba", "how much do back to back counts vary", "sft league spread"],
+      "a": {
+        "status": "ok",
+        "answer": "Less than the discourse suggests. Across 90 team-seasons the credible tax spans only 0.1072 pts/100 ORtg end to end (-0.3771 to -0.2699), with a standard deviation of 0.0252. Back-to-back frequency itself ranges from 0.156 to 0.218.",
+        "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "sft", "inequality"]
+    },
+    {
+      "q": "Have back-to-backs gotten more common?",
+      "alt_phrasings": ["b2b frequency by season", "is the nba schedule getting harder", "back to back trend"],
+      "a": {
+        "status": "ok",
+        "answer": "The within-season spread in back-to-back frequency has widened across the three seasons in the corpus: 0.048 in 2023-24, 0.051 in 2024-25, 0.062 in 2025-26. That is a dispersion figure -- teams differing more from each other -- not a league-wide level increase.",
+        "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "sft", "trend"]
+    },
+    {
+      "q": "What evidence backs the back-to-back penalty?",
+      "alt_phrasings": ["b2b rest penalty receipt", "is the fatigue effect tested", "sft mechanism receipt"],
+      "a": {
+        "status": "ok",
+        "answer": "A recorded mechanism verdict of CONFIRMED_LOCAL on the claim b2b_rest_penalty: -1.73 pts/100 team ORtg (rested minus back-to-back), n=4,732, p=0.0056. It is a single-corpus local confirmation, which is why the derived tax is labeled descriptive rather than predictive.",
+        "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "sft", "mechanism"]
+    },
+    {
+      "q": "Is the Schedule Fatigue Tax a new discovery?",
+      "alt_phrasings": ["sft prior art", "is back to back fatigue new", "has schedule congestion been studied"],
+      "a": {
+        "status": "ok",
+        "answer": "No, and the card is emphatic about it. The back-to-back fatigue effect is heavily documented -- scoring drops, win-rate drops, standard spread adjustments, and academic work on schedule congestion (ResearchGate 339933590) -- and the instruction is to cite that as prior art. Only the per-team-season aggregation into a points tax plus a league inequality spread is fresh packaging.",
+        "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "sft", "prior-art"]
+    },
+    {
+      "q": "Can I add up back-to-backs, 3-in-4s and 4-in-6s to get total schedule fatigue?",
+      "alt_phrasings": ["sft density classes additive", "can I sum congestion penalties", "why only b2b in the tax"],
+      "a": {
+        "status": "ok",
+        "answer": "No. The three density classes overlap and are explicitly non-additive, which is why the formula deliberately uses back-to-backs alone -- summing them would double-count the same congested stretches. The card lists this as a declared confound rather than leaving it to the reader.",
+        "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "sft", "confounds"]
+    },
+    {
+      "q": "Can I use the Schedule Fatigue Tax to predict games?",
+      "alt_phrasings": ["is sft predictive", "does schedule fatigue tax forecast", "sft for handicapping"],
+      "a": {
+        "status": "refused",
+        "answer": "No. SFT is marked descriptive_only with edge_claimed=false, and its own confound list calls the -1.73 anchor a single-corpus CONFIRMED_LOCAL effect that is 'a descriptive tax, not a forecast, and not re-tested here'. It describes seasons already played; nothing about it has been gated as a forward-looking signal.",
+        "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "sft", "no-edge"]
+    },
+    {
+      "q": "What are the per-36 numbers behind the Schedule Fatigue Tax?",
+      "alt_phrasings": ["sft descriptive composite", "per 36 fatigue delta", "composite per36 back to back"],
+      "a": {
+        "status": "ok",
+        "answer": "The descriptive companion uses a -0.315 composite-per-36 delta versus rested games, giving team-season values such as -0.0687 for Denver 2025-26 and -0.0491 for Memphis 2025-26. Those per-36 deltas are raw pooled means, not adjusted for roster, opponent, minutes or home-away.",
+        "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "sft", "per36"]
+    },
+    {
+      "q": "How many team-seasons are in the Schedule Fatigue Tax?",
+      "alt_phrasings": ["sft coverage", "how many teams in schedule fatigue tax", "sft n"],
+      "a": {
+        "status": "ok",
+        "answer": "90 team-seasons, covering 30 teams across three seasons. Every one gets both a credible pts/100 ORtg tax and a descriptive per-36 companion.",
+        "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "sft", "coverage"]
+    },
+    {
+      "q": "How were the novel stats built -- are they new models?",
+      "alt_phrasings": ["how are the novel stats computed", "did you train a model for the novel stats", "novel stat method"],
+      "a": {
+        "status": "ok",
+        "answer": "None of them is a model. The index states the method plainly: composition only, each card copied from its own module's novel_*.json output, which in turn reads existing committed showcase artifacts. Nothing is refit, and every card names the source artifacts it composed.",
+        "source_artifact": "webapp/public/data/showcase/novel_stats_index.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "method"]
+    },
+    {
+      "q": "Which novel stat covers the most entities?",
+      "alt_phrasings": ["novel stat coverage comparison", "which novel stat has the most rows", "n_results by novel stat"],
+      "a": {
+        "status": "ok",
+        "answer": "Schedule Fatigue Tax, with 90 team-season rows, followed by Load-Bearing Index at 30 teams. The market-structure stats are the thinnest by row count -- Line Half-Life covers 5 sports, and LCF, MFP and OHG cover 2 each -- because they are per-sport rather than per-entity.",
+        "source_artifact": "webapp/public/data/showcase/novel_stats_index.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "coverage"]
+    },
+    {
+      "q": "Which novel stats are about the market rather than the teams?",
+      "alt_phrasings": ["market structure novel stats", "which novel stats use odds", "novel stats about pricing"],
+      "a": {
+        "status": "ok",
+        "answer": "Three of six: Line Half-Life (when the pre-game price gets made), Market Foresight Premium (how much the in-game market knows per bit of remaining uncertainty) and Overreaction Harvest Gap (overshoot we cannot harvest). Load-Bearing Index and Schedule Fatigue Tax are team-side; Live-Clock Fraction is game-structure only and reads the score path, not any price.",
+        "source_artifact": "webapp/public/data/showcase/novel_stats_index.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "taxonomy"]
+    },
+    {
+      "q": "Do the novel stats agree with each other about which sports are hardest to read?",
+      "alt_phrasings": ["do the novel stats corroborate", "cross-check between novel stats", "soccer across novel stats"],
+      "a": {
+        "status": "ok",
+        "answer": "Partly, and the disagreements are informative. Soccer_intl prices earliest (LHL 2.75h), carries the largest in-game market advantage (MFP mean 0.9211) and the largest unharvestable overshoot (OHG 0.0813), while MLB is slower to price (3.67h), has a much smaller market premium (MFP mean 0.2461) and stays contested later (LCF 0.8333). These are separate corpora and different units, so treat the pattern as directional.",
+        "source_artifact": "webapp/public/data/showcase/novel_stats_index.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "cross-sport", "corroboration"]
+    },
+    {
+      "q": "Which novel stat is the weakest?",
+      "alt_phrasings": ["least reliable novel stat", "which new metric should I trust least", "weakest novel stat"],
+      "a": {
+        "status": "ok",
+        "answer": "Live-Clock Fraction, on coverage grounds: it is buildable for only two sports, rests on 178 MLB and 29 soccer_intl games, and its thresholds are not equated across sports, so the ranking is indicative rather than metric. Load-Bearing Index is a close second, since its two estimators agree on only 1 of 30 teams and cover different seasons.",
+        "source_artifact": "webapp/public/data/showcase/novel_live_clock_fraction.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "limitations"]
+    },
+    {
+      "q": "Is there a novel stat for tennis?",
+      "alt_phrasings": ["tennis novel stats", "do the new metrics cover tennis", "novel stat tennis coverage"],
+      "a": {
+        "status": "no_data",
+        "answer": "Only partially. Tennis appears in Line Half-Life -- where its crossing falls inside the open 6h+ bucket, so it is reported as '>6.0' with a null half-life over 809,986 move pairs -- and is recorded as not_buildable for Live-Clock Fraction because there is no tennis blowout corpus. The other four novel stats do not cover tennis at all.",
+        "source_artifact": "webapp/public/data/showcase/novel_live_clock_fraction.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "tennis", "coverage"]
+    },
+    {
+      "q": "What would make you retract a novel stat?",
+      "alt_phrasings": ["how do you retire a novel stat", "would you pull a new metric", "novel stat retraction policy"],
+      "a": {
+        "status": "ok",
+        "answer": "Two things it is already designed to catch. Each card carries an explicit prior-art citation, so a credible earlier publication of the same construction downgrades or removes it; and each carries declared confounds, so a confound turning out to be the whole effect kills it. Line Half-Life already excludes three sports on data-quality grounds rather than reporting them.",
+        "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "policy"]
+    },
+    {
+      "q": "Where can I see the novel stats on the site?",
+      "alt_phrasings": ["novel stats page", "where are the new metrics published", "show me the novel stat cards"],
+      "a": {
+        "status": "ok",
+        "answer": "Each novel stat is composed from modules you can open directly in the browse surface: micro_absorption behind Line Half-Life, blowout_dynamics and xsport_structure behind Live-Clock Fraction, cf_star_removal and ctx_lineup_proxy behind Load-Bearing Index, info_arrival_curve and market_convergence behind Market Foresight Premium, market_overreaction and market_disagreement_profile behind the Overreaction Harvest Gap, and schedule_density behind the Schedule Fatigue Tax.",
+        "source_artifact": "webapp/public/data/showcase/novel_stats_index.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["novel-stats", "navigation"]
+    }
+  ]
+}

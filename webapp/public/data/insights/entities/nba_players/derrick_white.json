@@ -1,0 +1,50 @@
+{
+  "slug": "derrick_white",
+  "pack": "nba_players",
+  "display_name": "Derrick White",
+  "one_liner": "Derrick White shoots 88.2 percent from the free-throw line while scoring 17.2 points per 36 minutes -- elite touch attached to a modest scoring role.",
+  "three_things": [
+    "The touch is real: 88.2 percent at the line and 36.7 percent from three.",
+    "The role is not scoring-first -- 5.5 assists and 4.7 rebounds per 36 next to the 17.2 points.",
+    "Opportunity was not the constraint: 7,576.2 minutes over 226 games."
+  ],
+  "context_note": "Per-36-minute rates over a 3-season sample (seasons_played: 3), not per-game and not full-career figures. The manifest is descriptive_only: no adjustment for opponent, teammates, role, or shot difficulty, and a career_min_minutes>=800 inclusion floor applies. Games and minutes measure availability, not how well those minutes were used.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Derrick White].key_numbers.career_ft_pct",
+      "value": 88.2
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Derrick White].key_numbers.career_fg3_pct",
+      "value": 36.7
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Derrick White].key_numbers.career_pts_per36",
+      "value": 17.2
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Derrick White].key_numbers.career_ast_per36",
+      "value": 5.5
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Derrick White].key_numbers.career_reb_per36",
+      "value": 4.7
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Derrick White].key_numbers.career_minutes",
+      "value": 7576.2
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Derrick White].key_numbers.career_games",
+      "value": 226
+    }
+  ],
+  "as_of": "2026-04-12"
+}

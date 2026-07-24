@@ -1,0 +1,45 @@
+{
+  "slug": "jalen_williams",
+  "pack": "nba_players",
+  "display_name": "Jalen Williams",
+  "one_liner": "Jalen Williams shoots 50.6 percent from the field and 38 percent from three at 22.8 points per 36 minutes.",
+  "three_things": [
+    "Both efficiency numbers are high at once: 50.6 percent overall, 38 percent from deep.",
+    "He splits duties evenly, 5.4 rebounds and 5.7 assists per 36.",
+    "Free-throw accuracy is 80.7 percent."
+  ],
+  "context_note": "Per-36-minute rates over a 3-season sample (seasons_played: 3), not per-game and not full-career figures. The manifest is descriptive_only: no adjustment for opponent, teammates, role, or shot difficulty, and a career_min_minutes>=800 inclusion floor applies. Games and minutes measure availability, not how well those minutes were used.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Jalen Williams].key_numbers.career_fg_pct",
+      "value": 50.6
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Jalen Williams].key_numbers.career_fg3_pct",
+      "value": 38
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Jalen Williams].key_numbers.career_pts_per36",
+      "value": 22.8
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Jalen Williams].key_numbers.career_reb_per36",
+      "value": 5.4
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Jalen Williams].key_numbers.career_ast_per36",
+      "value": 5.7
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_manifest.json",
+      "field": "entries[entity=Jalen Williams].key_numbers.career_ft_pct",
+      "value": 80.7
+    }
+  ],
+  "as_of": "2026-04-12"
+}

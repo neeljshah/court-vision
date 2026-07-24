@@ -1,0 +1,40 @@
+{
+  "slug": "jannik_sinner_atp",
+  "pack": "tennis",
+  "display_name": "Jannik Sinner (ATP)",
+  "one_liner": "Jannik Sinner's recent hard-court win rate is 0.8938, nearly nine points above his 0.8084 career mark on the surface.",
+  "three_things": [
+    "hard_wr_recent 0.8938 versus hard_wr_career 0.8084: the recent window is markedly better.",
+    "Clay is the relative weakness -- clay_minus_hard_recent -0.1245.",
+    "Grass has come along too: grass_wr_recent 0.8333 against 0.7436 career."
+  ],
+  "context_note": "Descriptive career and recent-form surface win rates as of the corpus end -- not a prediction and not an edge claim. Per-surface floors apply (n>=30 career for a surface win rate, n>=25 each side for the clay-minus-hard gap, n>=15 for grass adaptation), evaluated independently for career and recent form; a metric below its floor shows n/a and is never fabricated. Nothing here adjusts for era, opponent quality, draw, or injury.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Jannik Sinner (ATP)].key_numbers.hard_wr_recent",
+      "value": 0.8938
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Jannik Sinner (ATP)].key_numbers.hard_wr_career",
+      "value": 0.8084
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Jannik Sinner (ATP)].key_numbers.clay_minus_hard_recent",
+      "value": -0.1245
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Jannik Sinner (ATP)].key_numbers.grass_wr_recent",
+      "value": 0.8333
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Jannik Sinner (ATP)].key_numbers.grass_wr_career",
+      "value": 0.7436
+    }
+  ],
+  "as_of": "2026-07-19T03:41:37.066640+00:00"
+}

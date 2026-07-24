@@ -1,0 +1,40 @@
+{
+  "slug": "hou",
+  "pack": "nba_teams",
+  "display_name": "Houston Rockets",
+  "one_liner": "Houston ran a 99.4 pace proxy -- fifth-slowest in this manifest -- while still scoring 115.2 points per game.",
+  "three_things": [
+    "Slow tempo, healthy scoring: 99.4 pace proxy against 115.2 points per game.",
+    "Alperen Sengun led the team in minutes (6,814.2) at a 38.9 PRA-per-36 rate.",
+    "That rate is a full primary-option box line, produced from the center position."
+  ],
+  "context_note": "The 'top contributor' is the player with the most total minutes for that team across the 3-season sample, not necessarily its best or highest-scoring player. PRA-per-36 sums points, rebounds, and assists per 36 minutes -- a raw box rate, not an impact metric. ppg_latest_season and pace_proxy_latest_season are single-season figures while games_total spans three seasons, and pace_proxy is a proxy, not official possession-based pace. The manifest is descriptive_only, with no schedule, opponent, or roster-continuity adjustment. League-wide rank statements were computed by sorting all 30 teams in this manifest on the named field; the underlying values are read verbatim.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=HOU].key_numbers.pace_proxy_latest_season",
+      "value": 99.4
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=HOU].key_numbers.ppg_latest_season",
+      "value": 115.2
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=HOU].key_numbers.top_contributor",
+      "value": "Alperen Sengun"
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=HOU].key_numbers.top_contributor_minutes",
+      "value": 6814.2
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=HOU].key_numbers.top_contributor_pra_per36",
+      "value": 38.9
+    }
+  ],
+  "as_of": "2026-04-12"
+}

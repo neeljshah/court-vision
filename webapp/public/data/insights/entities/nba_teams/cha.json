@@ -1,0 +1,40 @@
+{
+  "slug": "cha",
+  "pack": "nba_teams",
+  "display_name": "Charlotte Hornets",
+  "one_liner": "Charlotte's minutes leader, Miles Bridges, logged 6,838.9 minutes at a 32 PRA-per-36 rate across the three-season sample.",
+  "three_things": [
+    "6,838.9 minutes from one player is a heavy single-player concentration.",
+    "The production rate attached to it is 32 points, rebounds and assists per 36.",
+    "Team scoring sat at 116.1 points per game in the latest season on a 100.3 pace proxy."
+  ],
+  "context_note": "The 'top contributor' is the player with the most total minutes for that team across the 3-season sample, not necessarily its best or highest-scoring player. PRA-per-36 sums points, rebounds, and assists per 36 minutes -- a raw box rate, not an impact metric. ppg_latest_season and pace_proxy_latest_season are single-season figures while games_total spans three seasons, and pace_proxy is a proxy, not official possession-based pace. The manifest is descriptive_only, with no schedule, opponent, or roster-continuity adjustment.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=CHA].key_numbers.top_contributor",
+      "value": "Miles Bridges"
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=CHA].key_numbers.top_contributor_minutes",
+      "value": 6838.9
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=CHA].key_numbers.top_contributor_pra_per36",
+      "value": 32
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=CHA].key_numbers.ppg_latest_season",
+      "value": 116.1
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=CHA].key_numbers.pace_proxy_latest_season",
+      "value": 100.3
+    }
+  ],
+  "as_of": "2026-04-12"
+}

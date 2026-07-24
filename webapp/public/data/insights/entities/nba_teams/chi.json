@@ -1,0 +1,40 @@
+{
+  "slug": "chi",
+  "pack": "nba_teams",
+  "display_name": "Chicago Bulls",
+  "one_liner": "Chicago's most-used player over the sample is Nikola Vucevic at a 35 PRA-per-36 rate, on a roster running a 103.7 pace proxy.",
+  "three_things": [
+    "A center leads the team in minutes -- 6,370.4 of them.",
+    "The 35 PRA-per-36 rate is a genuine primary-option box line.",
+    "Team pace proxy of 103.7 and 115.5 points per game in the latest season."
+  ],
+  "context_note": "The 'top contributor' is the player with the most total minutes for that team across the 3-season sample, not necessarily its best or highest-scoring player. PRA-per-36 sums points, rebounds, and assists per 36 minutes -- a raw box rate, not an impact metric. ppg_latest_season and pace_proxy_latest_season are single-season figures while games_total spans three seasons, and pace_proxy is a proxy, not official possession-based pace. The manifest is descriptive_only, with no schedule, opponent, or roster-continuity adjustment.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=CHI].key_numbers.top_contributor",
+      "value": "Nikola Vucevic"
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=CHI].key_numbers.top_contributor_pra_per36",
+      "value": 35
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=CHI].key_numbers.pace_proxy_latest_season",
+      "value": 103.7
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=CHI].key_numbers.top_contributor_minutes",
+      "value": 6370.4
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=CHI].key_numbers.ppg_latest_season",
+      "value": 115.5
+    }
+  ],
+  "as_of": "2026-04-12"
+}

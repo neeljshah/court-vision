@@ -1,0 +1,40 @@
+{
+  "slug": "tor",
+  "pack": "nba_teams",
+  "display_name": "Toronto Raptors",
+  "one_liner": "Toronto's Scottie Barnes logged 6,640 minutes at a 34.9 PRA-per-36 rate as the team's clear minutes leader.",
+  "three_things": [
+    "6,640 minutes, a full three-season workload with no interruption large enough to change the leader.",
+    "34.9 combined points, rebounds and assists per 36 minutes.",
+    "The team scored 113.7 per game on a 100.8 pace proxy."
+  ],
+  "context_note": "The 'top contributor' is the player with the most total minutes for that team across the 3-season sample, not necessarily its best or highest-scoring player. PRA-per-36 sums points, rebounds, and assists per 36 minutes -- a raw box rate, not an impact metric. ppg_latest_season and pace_proxy_latest_season are single-season figures while games_total spans three seasons, and pace_proxy is a proxy, not official possession-based pace. The manifest is descriptive_only, with no schedule, opponent, or roster-continuity adjustment.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=TOR].key_numbers.top_contributor",
+      "value": "Scottie Barnes"
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=TOR].key_numbers.top_contributor_minutes",
+      "value": 6640
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=TOR].key_numbers.top_contributor_pra_per36",
+      "value": 34.9
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=TOR].key_numbers.ppg_latest_season",
+      "value": 113.7
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_nba_teams_manifest.json",
+      "field": "entries[entity=TOR].key_numbers.pace_proxy_latest_season",
+      "value": 100.8
+    }
+  ],
+  "as_of": "2026-04-12"
+}

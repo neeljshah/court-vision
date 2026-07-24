@@ -1,0 +1,55 @@
+{
+  "slug": "alex_de_minaur_atp",
+  "pack": "tennis",
+  "display_name": "Alex De Minaur (ATP)",
+  "one_liner": "Alex De Minaur's career clay-minus-hard gap is -0.1369, and recent form has cut it to -0.0644.",
+  "three_things": [
+    "Career: 0.6564 on hard against 0.5195 on clay.",
+    "clay_wr_recent has climbed to 0.625 while hard sits at 0.6894 -- the gap is closing.",
+    "grass_wr_recent is n/a; only the career grass rate, 0.6429, clears the floor."
+  ],
+  "context_note": "Descriptive career and recent-form surface win rates as of the corpus end -- not a prediction and not an edge claim. Per-surface floors apply (n>=30 career for a surface win rate, n>=25 each side for the clay-minus-hard gap, n>=15 for grass adaptation), evaluated independently for career and recent form; a metric below its floor shows n/a and is never fabricated. Nothing here adjusts for era, opponent quality, draw, or injury.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Alex De Minaur (ATP)].key_numbers.clay_minus_hard_career",
+      "value": -0.1369
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Alex De Minaur (ATP)].key_numbers.clay_minus_hard_recent",
+      "value": -0.0644
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Alex De Minaur (ATP)].key_numbers.hard_wr_career",
+      "value": 0.6564
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Alex De Minaur (ATP)].key_numbers.clay_wr_career",
+      "value": 0.5195
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Alex De Minaur (ATP)].key_numbers.clay_wr_recent",
+      "value": 0.625
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Alex De Minaur (ATP)].key_numbers.hard_wr_recent",
+      "value": 0.6894
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Alex De Minaur (ATP)].key_numbers.grass_wr_career",
+      "value": 0.6429
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_tennis_manifest.json",
+      "field": "entries[entity=Alex De Minaur (ATP)].key_numbers.grass_wr_recent",
+      "value": null
+    }
+  ],
+  "as_of": "2026-07-19T03:41:37.066640+00:00"
+}

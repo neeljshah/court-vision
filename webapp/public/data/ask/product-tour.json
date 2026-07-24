@@ -1,0 +1,468 @@
+{
+  "bucket": "product-tour",
+  "note": "Routing answers: what exists on this site and where to look for it. Every route named here is a real page in the analytics route tree, and every module id maps to an entry in the showcase manifest. Where a topic has no page, the entry says so rather than inventing one.",
+  "entries": [
+    {
+      "q": "What can you show me?",
+      "alt_phrasings": ["what's on this site", "what is this", "give me a tour"],
+      "a": {
+        "status": "ok",
+        "answer": "Five surfaces. /analytics/forecaster is the calibration proof for the prediction engine; /analytics/the-loop shows how a claim is proposed, tested and killed; /analytics/browse opens all 54 analysis modules; /analytics/players opens 1,549 entity cards across seven packs; and /analytics/explainers is the plain-language layer. The retraction story sits at /analytics/findings/retraction.",
+        "source_artifact": "webapp/public/data/showcase/site_manifest.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["tour", "navigation"]
+    },
+    {
+      "q": "Where do I start?",
+      "alt_phrasings": ["what should I look at first", "best entry point", "where to begin"],
+      "a": {
+        "status": "ok",
+        "answer": "Start at /analytics/forecaster if you want to know whether the predictions are any good, or /analytics/the-loop if you want to know how the system decides what to believe. Both are short, both end in a number you can trace to a committed artifact, and both are honest about where the model loses.",
+        "source_artifact": "webapp/public/data/showcase/forecaster/manifest.json",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["tour", "navigation"]
+    },
+    {
+      "q": "What can you show me about how good the predictions are?",
+      "alt_phrasings": ["show me the forecaster", "prediction quality page", "how accurate is the model"],
+      "a": {
+        "status": "ok",
+        "answer": "/analytics/forecaster assembles six committed aggregates: walk-forward win-probability results, state-conditioned calibration, the Murphy decomposition, calibration stability, Brier skill scores and the cross-sport scoreboard. The headline it supports is calibration, not profit -- the model matches the devigged close pregame and trails the market in-game.",
+        "source_artifact": "webapp/public/data/showcase/forecaster/manifest.json",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["tour", "forecaster"]
+    },
+    {
+      "q": "What can you show me about how the system works?",
+      "alt_phrasings": ["show me the loop", "how does the process work", "the loop page"],
+      "a": {
+        "status": "ok",
+        "answer": "/analytics/the-loop walks the cycle from claim to verdict: propose, gate, record, retract. The ledgers behind it are public too -- 287 tested mechanisms at /analytics/m/mechanism_survival and /analytics/m/fwd_claim_scoreboard, and the failures at /analytics/m/reject_graveyard.",
+        "source_artifact": "webapp/public/data/showcase/mechanism_ledger_export.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["tour", "the-loop", "method"]
+    },
+    {
+      "q": "What can you show me about failed signals?",
+      "alt_phrasings": ["show me the graveyard", "what didn't work", "failed experiments page"],
+      "a": {
+        "status": "ok",
+        "answer": "/analytics/m/reject_graveyard holds 804 recorded verdict rows, 68 distinct signals currently sitting on a REJECT-family verdict, and the reason categories behind them. The explainer at /analytics/explainers/the-graveyard makes the case for why publishing failures is the point.",
+        "source_artifact": "webapp/public/data/showcase/reject_graveyard.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["tour", "graveyard", "honesty"]
+    },
+    {
+      "q": "What can you show me about a specific NBA player?",
+      "alt_phrasings": ["player pages", "show me a player card", "individual player analytics"],
+      "a": {
+        "status": "ok",
+        "answer": "/analytics/players is the atlas front door, and NBA players live under /analytics/players/nba_players/<slug>. The pack holds 482 players who clear a floor of 800 career minutes out of 807 eligible. Each card is a descriptive career summary -- per-36 rates, shooting percentages, games and minutes -- not a projection.",
+        "source_artifact": "webapp/public/data/showcase/atlas_nba_manifest.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["tour", "players", "nba"]
+    },
+    {
+      "q": "What can you show me about NBA teams?",
+      "alt_phrasings": ["team pages", "show me team cards", "nba team analytics"],
+      "a": {
+        "status": "ok",
+        "answer": "Team cards are their own atlas pack under /analytics/players/nba_teams/<slug>. For team-level analysis rather than cards, /analytics/m/ctx_team_states, /analytics/m/nba_matchup_grid and /analytics/m/home_away_anatomy are the relevant modules.",
+        "source_artifact": "webapp/public/data/showcase/site_manifest.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["tour", "players", "nba", "teams"]
+    },
+    {
+      "q": "What can you show me about baseball?",
+      "alt_phrasings": ["mlb pages", "show me baseball analytics", "what do you have on mlb"],
+      "a": {
+        "status": "ok",
+        "answer": "The deepest sport here. /analytics/m/mlb_count_leverage and /analytics/m/pitch_sequencing cover 693,037 pitches from the 2025 Statcast pull; /analytics/m/mlb_velo_bands and /analytics/m/statcast_showcase cover the pitch-level detail; and batters and pitch types have their own atlas packs at /analytics/players/mlb_batters and /analytics/players/mlb_pitch.",
+        "source_artifact": "webapp/public/data/showcase/pitch_sequencing.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["tour", "mlb", "modules"]
+    },
+    {
+      "q": "What can you show me about soccer?",
+      "alt_phrasings": ["soccer pages", "football analytics", "what do you have on soccer"],
+      "a": {
+        "status": "ok",
+        "answer": "/analytics/m/soccer_calibration_pack and /analytics/m/soccer_form_stability are the two dedicated modules, and soccer teams have an atlas pack at /analytics/players/soccer. Be aware of the sample: the graded in-game soccer corpus is 9,003 rows against MLB's 78,986, and the model's Brier skill versus the market there is -0.5967.",
+        "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["tour", "soccer", "modules"]
+    },
+    {
+      "q": "What can you show me about tennis?",
+      "alt_phrasings": ["tennis pages", "what do you have on tennis", "tennis analytics"],
+      "a": {
+        "status": "ok",
+        "answer": "/analytics/m/tennis_showcase and /analytics/m/tennis_surface_transfer, plus a tennis atlas pack at /analytics/players/tennis. Tennis is the thinnest sport on market structure: no reliability map, so /analytics/m/xsport_structure records it not_buildable rather than estimating.",
+        "source_artifact": "webapp/public/data/showcase/xsport_structure.json",
+        "as_of": "2026-07-18"
+      },
+      "tags": ["tour", "tennis", "modules"]
+    },
+    {
+      "q": "What can you show me about calibration?",
+      "alt_phrasings": ["calibration pages", "where do I see calibration", "show me calibration work"],
+      "a": {
+        "status": "ok",
+        "answer": "Four modules and an explainer. /analytics/m/calibration_by_market_type splits it by market, /analytics/m/calibration_over_time and /analytics/m/calibration_stability cover drift, /analytics/m/state_conditioned_calibration conditions on game state, and /analytics/explainers/what-calibration-means explains why the market is the benchmark. Calibration checkpoints also have their own atlas pack at /analytics/players/calibration.",
+        "source_artifact": "webapp/public/data/showcase/calibration_by_market_type.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["tour", "calibration", "modules"]
+    },
+    {
+      "q": "What can you show me about the model versus the market?",
+      "alt_phrasings": ["model vs market page", "head to head with the market", "where do you compare to the odds"],
+      "a": {
+        "status": "ok",
+        "answer": "/analytics/m/cross_sport_scoreboard carries the 17 paired head-to-head rows with sample sizes, confidence intervals and verdicts; /analytics/m/brier_skill_scores gives the skill-score view; and /analytics/m/kernel_transfer explains which comparisons are even legitimate across sports. All three are stamped edge_claimed=false.",
+        "source_artifact": "webapp/public/data/showcase/cross_sport_scoreboard.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["tour", "model-vs-market", "modules"]
+    },
+    {
+      "q": "What can you show me about how betting lines move?",
+      "alt_phrasings": ["line movement pages", "market microstructure", "odds movement analysis"],
+      "a": {
+        "status": "ok",
+        "answer": "Four modules: /analytics/m/micro_absorption for how motion distributes across the pre-game window, /analytics/m/micro_closing_decay for the run-up to close, /analytics/m/tick_microstructure for tick-level behavior and /analytics/m/market_convergence for how prices tighten in-game. The Line Half-Life stat sits on top of the first of these.",
+        "source_artifact": "webapp/public/data/showcase/novel_line_half_life.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["tour", "microstructure", "modules"]
+    },
+    {
+      "q": "What can you show me about market overreaction?",
+      "alt_phrasings": ["overreaction page", "does the market overshoot", "market disagreement module"],
+      "a": {
+        "status": "ok",
+        "answer": "/analytics/m/market_overreaction measures the overshoot and /analytics/m/market_disagreement_profile measures who is right when the model and market disagree. Read them together: the overshoot is real, and at maximum disagreement the model is the closer of the two only 37.73% of the time in MLB and 21.52% in soccer.",
+        "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["tour", "overreaction", "modules"]
+    },
+    {
+      "q": "What can you show me about schedule and rest?",
+      "alt_phrasings": ["fatigue analysis page", "back to back module", "rest effects"],
+      "a": {
+        "status": "ok",
+        "answer": "/analytics/m/schedule_density holds the back-to-back, 3-in-4 and 4-in-6 congestion counts across 90 team-seasons, and it is the sole input to the Schedule Fatigue Tax. The underlying effect is a recorded CONFIRMED_LOCAL mechanism: -1.73 pts/100 team ORtg, n=4,732, p=0.0056.",
+        "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["tour", "schedule", "nba"]
+    },
+    {
+      "q": "What can you show me about what happens when a star sits?",
+      "alt_phrasings": ["star removal page", "on off analysis", "player absence impact"],
+      "a": {
+        "status": "ok",
+        "answer": "Two modules that disagree with each other, which is the interesting part: /analytics/m/cf_star_removal is the Elo on/off counterfactual and /analytics/m/ctx_lineup_proxy is the raw with/without split. Across 30 teams they name the same most-indispensable player only once, at an agree rate of 0.0333. /analytics/m/on_off_showcase covers the underlying on/off data.",
+        "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["tour", "on-off", "nba"]
+    },
+    {
+      "q": "What can you show me about blowouts and comebacks?",
+      "alt_phrasings": ["comeback analysis", "blowout module", "when is a game decided"],
+      "a": {
+        "status": "ok",
+        "answer": "/analytics/m/blowout_dynamics finds the point of no return from the score path alone, and /analytics/m/comeback_atlas catalogs the comebacks themselves. The market-side companion is /analytics/m/xsport_structure, where NBA favorites past a 0.85 in-game price hold 98.54% of the time across 5,578 games.",
+        "source_artifact": "webapp/public/data/showcase/xsport_structure.json",
+        "as_of": "2026-07-18"
+      },
+      "tags": ["tour", "blowouts", "modules"]
+    },
+    {
+      "q": "What can you show me about clutch performance?",
+      "alt_phrasings": ["clutch module", "late game performance", "is clutch real"],
+      "a": {
+        "status": "ok",
+        "answer": "/analytics/m/clutch_context is the module, and it is context-conditioned rather than a raw late-game split. Pair it with /analytics/m/ctx_player_splits and /analytics/m/nba_consistency_profiles if you want the same player viewed through different context axes.",
+        "source_artifact": "webapp/public/data/showcase/site_manifest.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["tour", "clutch", "nba"]
+    },
+    {
+      "q": "What can you show me about player aging?",
+      "alt_phrasings": ["aging curve page", "how do players decline", "age effects"],
+      "a": {
+        "status": "ok",
+        "answer": "/analytics/m/aging_curve_lite, which is deliberately labeled 'lite' -- it is a descriptive curve over the local boxscore corpus, not a projection system. /analytics/m/player_metric_landscape and /analytics/m/box_value_index cover the broader player-metric surface.",
+        "source_artifact": "webapp/public/data/showcase/site_manifest.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["tour", "aging", "players"]
+    },
+    {
+      "q": "What can you show me about the computer vision work?",
+      "alt_phrasings": ["tracking page", "video analysis", "cv module"],
+      "a": {
+        "status": "ok",
+        "answer": "/analytics/m/cv_tracking_stats is the committed summary of the tracking pipeline's output. It is a measurement artifact from the vision layer, not a live video feed, and the analytics on this site do not depend on it.",
+        "source_artifact": "webapp/public/data/showcase/site_manifest.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["tour", "computer-vision", "modules"]
+    },
+    {
+      "q": "What can you show me about the retraction?",
+      "alt_phrasings": ["what did you retract", "retraction page", "the retracted numbers"],
+      "a": {
+        "status": "ok",
+        "answer": "/analytics/findings/retraction is the full account of the numbers that were withdrawn and why. The claim ledger backs it up: 7 claim families currently sit on a retracted status, 6 of them MLB.",
+        "source_artifact": "webapp/public/data/showcase/fwd_claim_scoreboard.json",
+        "as_of": "2026-07-11"
+      },
+      "tags": ["tour", "retraction", "honesty"]
+    },
+    {
+      "q": "What can you show me about who built this?",
+      "alt_phrasings": ["about page", "who made this", "team behind the site"],
+      "a": {
+        "status": "ok",
+        "answer": "/analytics/about covers the project and the person directing it, and /analytics/m/agent_fleet_history has the numbers: 3,224 commits between 2026-03-09 and 2026-07-22, 95.75% agent-authored. The narrative version is at /analytics/explainers/how-ai-agents-built-this.",
+        "source_artifact": "webapp/public/data/showcase/agent_fleet_history.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["tour", "about", "agents"]
+    },
+    {
+      "q": "What can you show me about the simulator?",
+      "alt_phrasings": ["possession simulator", "how does the sim work", "monte carlo explanation"],
+      "a": {
+        "status": "ok",
+        "answer": "/analytics/explainers/how-a-possession-simulator-thinks is the plain-language walkthrough of how possession-level simulation produces a distribution rather than a single number. The scored output of that machinery is what /analytics/forecaster grades.",
+        "source_artifact": "webapp/public/data/explainers/explainers.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["tour", "explainers", "simulation"]
+    },
+    {
+      "q": "What explainers are available?",
+      "alt_phrasings": ["list the explainers", "plain language articles", "reading list"],
+      "a": {
+        "status": "ok",
+        "answer": "Six, at /analytics/explainers: how a possession simulator thinks, what calibration means and why we grade against the market, the graveyard and why we publish what failed, how AI agents built this and what a human decided, reading an entity card without fooling yourself, and what the Ask AI can and cannot tell you.",
+        "source_artifact": "webapp/public/data/explainers/explainers.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["tour", "explainers"]
+    },
+    {
+      "q": "How do I read an entity card properly?",
+      "alt_phrasings": ["how to read a player card", "entity card guide", "interpreting the atlas"],
+      "a": {
+        "status": "ok",
+        "answer": "/analytics/explainers/reading-an-entity-card is written for exactly that. The short version: the cards are descriptive career summaries behind declared floors -- NBA players need 800 career minutes, which admits 482 of 807 -- and nothing on them is a forecast.",
+        "source_artifact": "webapp/public/data/showcase/atlas_nba_manifest.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["tour", "explainers", "atlas"]
+    },
+    {
+      "q": "What can this Ask feature actually do?",
+      "alt_phrasings": ["what can the ai answer", "ask ai limits", "how does ask work"],
+      "a": {
+        "status": "ok",
+        "answer": "It answers from committed artifacts only, and returns one of five statuses -- ok, no_data, not_supported, ambiguous or refused -- with a source artifact and an as-of date on anything it does answer. /analytics/explainers/what-the-ask-ai-can-and-cannot-tell-you is the honest scope statement; the coverage numbers are at /analytics/m/qa_coverage_stats.",
+        "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["tour", "ask", "scope"]
+    },
+    {
+      "q": "Where do I find a specific module?",
+      "alt_phrasings": ["module index", "list all modules", "browse the analysis"],
+      "a": {
+        "status": "ok",
+        "answer": "/analytics/browse lists all 54 modules, and each one opens at /analytics/m/<id> where the id is the module name -- /analytics/m/murphy_decomposition, /analytics/m/residual_anatomy, /analytics/m/why_attribution and so on. Every module page carries its own source path, floors and as-of.",
+        "source_artifact": "webapp/public/data/showcase/site_manifest.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["tour", "browse", "navigation"]
+    },
+    {
+      "q": "What can you show me about how many claims you've tested?",
+      "alt_phrasings": ["claim ledger page", "show me the ledger", "tested hypotheses"],
+      "a": {
+        "status": "ok",
+        "answer": "/analytics/m/mechanism_survival and /analytics/m/fwd_claim_scoreboard between them cover 287 tested mechanisms and 259 claim families -- 121 verified, 99 null, 28 not-testable, 7 retracted and 4 provisional. /analytics/m/honesty_exhibit is the summary view, where nulls outnumber confirms 2.1 to 1.",
+        "source_artifact": "webapp/public/data/showcase/fwd_claim_scoreboard.json",
+        "as_of": "2026-07-11"
+      },
+      "tags": ["tour", "claim-ledger", "modules"]
+    },
+    {
+      "q": "What can you show me about the size of the knowledge base?",
+      "alt_phrasings": ["how much data", "corpus size page", "scale of the system"],
+      "a": {
+        "status": "ok",
+        "answer": "/analytics/m/claims_corpus_meta has the counts: 103 claim families and 103,048 generated claims, with 98.85% covered by a validation sample and 0 mismatches. /analytics/m/dossier_completeness covers how complete the per-entity dossiers are.",
+        "source_artifact": "webapp/public/data/showcase/claims_corpus_meta.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["tour", "scale", "modules"]
+    },
+    {
+      "q": "What can you show me about where the model goes wrong?",
+      "alt_phrasings": ["error analysis page", "residual analysis", "model failure modes"],
+      "a": {
+        "status": "ok",
+        "answer": "Three modules aimed squarely at that: /analytics/m/residual_anatomy dissects the errors, /analytics/m/residual_autocorrelation checks whether they cluster, and /analytics/m/why_attribution attributes them. /analytics/m/murphy_decomposition then splits the gap into miscalibration versus missing information.",
+        "source_artifact": "webapp/public/data/showcase/site_manifest.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["tour", "errors", "modules"]
+    },
+    {
+      "q": "What can you show me about paper trading?",
+      "alt_phrasings": ["execution audit", "paper trading page", "do you track fills"],
+      "a": {
+        "status": "ok",
+        "answer": "/analytics/m/paper_execution_audit is an execution-quality measurement -- how orders would have filled and how state lag affects that -- not a returns ledger. No profit, ROI or bankroll figure is published anywhere on this site, and questions phrased that way are refused rather than answered.",
+        "source_artifact": "webapp/public/data/showcase/site_manifest.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["tour", "execution", "no-edge"]
+    },
+    {
+      "q": "What can you show me about league parity?",
+      "alt_phrasings": ["competitive balance page", "parity module", "is the league balanced"],
+      "a": {
+        "status": "ok",
+        "answer": "/analytics/m/league_parity_index, covering three NBA seasons and 3,611 games with win-share Gini, HHI, win-percentage dispersion and margin dispersion. The most balanced season measured is 2023-24 at a Gini of 0.177; the least is 2025-26 at 0.2004.",
+        "source_artifact": "webapp/public/data/showcase/league_parity_index.json",
+        "as_of": "2026-04-12"
+      },
+      "tags": ["tour", "parity", "nba"]
+    },
+    {
+      "q": "What can you show me about in-game information arrival?",
+      "alt_phrasings": ["how does information arrive", "info arrival curve", "when does the market learn"],
+      "a": {
+        "status": "ok",
+        "answer": "/analytics/m/info_arrival_curve pairs model, market and naive Brier by game time, and /analytics/m/market_convergence tracks how the price tightens. Together they are the input to the Market Foresight Premium, which finds the market's per-bit advantage rising through the game in both sports measured.",
+        "source_artifact": "webapp/public/data/showcase/novel_market_foresight_premium.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["tour", "information", "modules"]
+    },
+    {
+      "q": "What can you show me about form and momentum?",
+      "alt_phrasings": ["hot streak analysis", "form module", "is momentum real"],
+      "a": {
+        "status": "ok",
+        "answer": "/analytics/m/nba_form_curves and /analytics/m/soccer_form_stability are the two form modules. Bear in mind the gate result before reading them as signals: every form candidate tested against the devigged close was rejected across independent corpora.",
+        "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
+        "as_of": "2026-07-07"
+      },
+      "tags": ["tour", "form", "modules"]
+    },
+    {
+      "q": "What can you show me about counterfactuals?",
+      "alt_phrasings": ["what if analysis", "counterfactual modules", "simulated scenarios"],
+      "a": {
+        "status": "ok",
+        "answer": "/analytics/m/cf_star_removal simulates a team without its most important player and /analytics/m/cf_pace_variance varies pace. Both are counterfactuals over a model, so they inherit the model's assumptions -- the star-removal one explicitly carries a roster confound and is not a causal impact estimate.",
+        "source_artifact": "webapp/public/data/showcase/novel_load_bearing_index.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["tour", "counterfactual", "modules"]
+    },
+    {
+      "q": "Can you show me tonight's games or predictions?",
+      "alt_phrasings": ["today's picks", "upcoming games", "predictions for tonight"],
+      "a": {
+        "status": "no_data",
+        "answer": "No. There is no live schedule, live odds or live game-state feed behind this site -- every page reads committed artifacts from completed games. What exists instead is the graded record: /analytics/forecaster for how the predictions scored, and /analytics/m/cross_sport_scoreboard for the head-to-head against the market.",
+        "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
+        "as_of": "2026-07-23"
+      },
+      "tags": ["tour", "live", "no-data"]
+    },
+    {
+      "q": "Can you show me which bets to make?",
+      "alt_phrasings": ["betting picks", "what should I bet", "give me a play"],
+      "a": {
+        "status": "refused",
+        "answer": "No. This is a calibration product and every module carries edge_claimed=false; no pick, stake, ROI or bankroll figure is published anywhere. If you want the honest reason, /analytics/m/cross_sport_scoreboard and /analytics/m/brier_skill_scores show the model trailing the market at every in-game grain measured.",
+        "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["tour", "no-edge", "refusal"]
+    },
+    {
+      "q": "Is there a page comparing the sports directly?",
+      "alt_phrasings": ["cross sport page", "sport comparison page", "compare sports"],
+      "a": {
+        "status": "ok",
+        "answer": "Two. /analytics/m/xsport_structure applies one reliability methodology across sports and honestly records three of four as not_buildable, and /analytics/m/kernel_transfer states which cross-sport axes are legitimate at all -- the Murphy reliability component is comparable, CRPS on run totals is not.",
+        "source_artifact": "webapp/public/data/showcase/kernel_transfer.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["tour", "cross-sport", "modules"]
+    },
+    {
+      "q": "Where can I see the raw numbers behind a chart?",
+      "alt_phrasings": ["source data for a chart", "underlying artifact", "can I see the data"],
+      "a": {
+        "status": "ok",
+        "answer": "On the module page itself. Each of the 54 entries in the manifest records its output path, chart path, status, edge_claimed flag and as-of, so /analytics/m/<id> can name the exact artifact a number came from. Modules whose computation does not stamp a date record a null as-of rather than inventing one.",
+        "source_artifact": "webapp/public/data/showcase/site_manifest.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["tour", "receipts", "navigation"]
+    },
+    {
+      "q": "Which modules are incomplete?",
+      "alt_phrasings": ["partial modules", "what isn't finished", "module status"],
+      "a": {
+        "status": "ok",
+        "answer": "The manifest flags them by status rather than hiding them -- blowout_dynamics, for instance, is marked partial. Aggregate health is published too: 63 of 63 checks green at build time, with per-module pass status and timing in the check report.",
+        "source_artifact": "webapp/public/data/showcase/site_manifest.json",
+        "as_of": "2026-07-24"
+      },
+      "tags": ["tour", "status", "honesty"]
+    },
+    {
+      "q": "What's the most interesting thing on this site?",
+      "alt_phrasings": ["best page", "what should I read", "highlight"],
+      "a": {
+        "status": "ok",
+        "answer": "Subjectively, the parts where the system argues against itself. /analytics/m/reject_graveyard has 804 recorded verdicts against 95 SHIPs; /analytics/m/honesty_exhibit reports nulls outnumbering confirms 2.1 to 1; and the Overreaction Harvest Gap measures a real market overshoot and then records that the model cannot harvest it. Those are harder to fake than a leaderboard.",
+        "source_artifact": "webapp/public/data/showcase/honesty_exhibit.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["tour", "honesty", "highlights"]
+    },
+    {
+      "q": "Is there anything here about hockey or football?",
+      "alt_phrasings": ["nfl analytics", "nhl pages", "other sports"],
+      "a": {
+        "status": "no_data",
+        "answer": "No. The covered sports are NBA, MLB, soccer and tennis, with WNBA appearing only in the line-movement measurement. There are no NFL or NHL corpora behind this site, so there is nothing to show rather than something thin.",
+        "source_artifact": "webapp/public/data/showcase/honesty_exhibit.json",
+        "as_of": "2026-07-22"
+      },
+      "tags": ["tour", "scope", "no-data"]
+    }
+  ]
+}

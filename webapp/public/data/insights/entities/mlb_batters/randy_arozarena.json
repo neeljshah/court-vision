@@ -1,0 +1,40 @@
+{
+  "slug": "randy_arozarena",
+  "pack": "mlb_batters",
+  "display_name": "Randy Arozarena",
+  "one_liner": "Randy Arozarena saw 2,806 pitches at a 50.6 percent zone rate and converted 819 of them into batted balls.",
+  "three_things": [
+    "2,806 pitches seen is full-season exposure with no gaps.",
+    "The 50.6 percent zone rate means he was challenged rather than avoided.",
+    "Contact graded to .32 estimated wOBA at 84.6 mph average exit velocity."
+  ],
+  "context_note": "Descriptive only, from a single 2025 Statcast pull (pitches_faced_2025>=300 floor, 485 of 671 batters). The contact numbers -- exit velocity and estimated wOBA on contact -- cover the batted balls only, not every pitch seen, and estimated wOBA on contact is a batted-ball model: it says nothing about walks, strikeouts, or actual results. This pull carries no swing/miss or launch-angle column, so there is no whiff rate and no barrel profile here. Not park-, role-, or opponent-adjusted, and not a prediction.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Randy Arozarena].key_numbers.pitches_faced",
+      "value": 2806
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Randy Arozarena].key_numbers.pct_pitches_in_rulebook_zone",
+      "value": 50.6
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Randy Arozarena].key_numbers.n_batted_balls",
+      "value": 819
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Randy Arozarena].key_numbers.avg_estimated_woba_on_contact",
+      "value": 0.32
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Randy Arozarena].key_numbers.avg_exit_velo",
+      "value": 84.6
+    }
+  ],
+  "as_of": "2025-09-28"
+}

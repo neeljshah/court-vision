@@ -1,0 +1,40 @@
+{
+  "slug": "elly_de_la_cruz",
+  "pack": "mlb_batters",
+  "display_name": "Elly De La Cruz",
+  "one_liner": "Elly De La Cruz hit 105.2 mph at the 90th percentile yet graded to only a .314 estimated wOBA on contact -- power that the batted-ball model did not reward.",
+  "three_things": [
+    "105.2 mph top-end exit velocity, but a .314 contact grade that sits below the sample median.",
+    "760 batted balls from 2,655 pitches seen.",
+    "The zone rate against him was 47.9 percent: pitchers stayed off the plate."
+  ],
+  "context_note": "Descriptive only, from a single 2025 Statcast pull (pitches_faced_2025>=300 floor, 485 of 671 batters). The contact numbers -- exit velocity and estimated wOBA on contact -- cover the batted balls only, not every pitch seen, and estimated wOBA on contact is a batted-ball model: it says nothing about walks, strikeouts, or actual results. This pull carries no swing/miss or launch-angle column, so there is no whiff rate and no barrel profile here. Not park-, role-, or opponent-adjusted, and not a prediction. League-wide ranks were computed by sorting all 485 batters in this manifest on the named field; every printed value is read verbatim. Hard contact that does not convert usually means launch angle or spray, and this pull has no launch-angle column -- so the mechanism behind the gap is not established here.",
+  "cited": [
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Elly De La Cruz].key_numbers.exit_velo_p90",
+      "value": 105.2
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Elly De La Cruz].key_numbers.avg_estimated_woba_on_contact",
+      "value": 0.314
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Elly De La Cruz].key_numbers.n_batted_balls",
+      "value": 760
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Elly De La Cruz].key_numbers.pitches_faced",
+      "value": 2655
+    },
+    {
+      "path": "webapp/public/data/showcase/atlas_mlb_batters_manifest.json",
+      "field": "entries[entity=Elly De La Cruz].key_numbers.pct_pitches_in_rulebook_zone",
+      "value": 47.9
+    }
+  ],
+  "as_of": "2025-09-28"
+}
