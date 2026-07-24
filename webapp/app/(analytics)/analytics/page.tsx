@@ -231,7 +231,9 @@ export default function AnalyticsHome() {
           The market is efficient; we aim to match the devigged close within noise. No dollar
           edge is claimed, anywhere. Every number links to the artifact that produced it, and
           the six retracted figures live only inside{" "}
-          <a href={`${BP}/analytics/findings/retraction`}>their retraction</a>.
+          <a href={`${BP}/analytics/findings/retraction`}>their retraction</a>. We even{" "}
+          <a href={`${BP}/analytics/findings/effective-sample-size`}>deflate our own sample sizes</a>{" "}
+          down to the honest count of independent games.
         </span>
       </div>
 

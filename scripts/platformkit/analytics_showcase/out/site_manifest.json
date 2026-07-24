@@ -1,11 +1,11 @@
 {
   "generated_from": "scripts/platformkit/analytics_showcase/out",
-  "module_count": 62,
+  "module_count": 63,
   "atlas_card_count": 1549,
   "checks_green": {
     "green": true,
-    "pass": 81,
-    "total": 81
+    "pass": 82,
+    "total": 82
   },
   "edge_claimed": false,
   "modules": [
@@ -61,7 +61,7 @@
       "chart_path": "docs/img/brier_skill_scores.png",
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-24T20:42:30.132752+00:00",
+      "as_of": "2026-07-24T21:18:00.409639+00:00",
       "evidence_page": null
     },
     {
@@ -205,6 +205,17 @@
       "status": "ok",
       "edge_claimed": false,
       "as_of": null,
+      "evidence_page": null
+    },
+    {
+      "id": "ess_ledger",
+      "title": "Ess Ledger",
+      "one_line": "mlb: 78,986 residual rows carry the independent information of at most ~227 games.",
+      "out_path": "scripts/platformkit/analytics_showcase/out/ess_ledger.json",
+      "chart_path": null,
+      "status": "ok",
+      "edge_claimed": false,
+      "as_of": "2026-07-24T21:18:07.446022+00:00",
       "evidence_page": null
     },
     {
@@ -358,7 +369,7 @@
       "chart_path": "docs/img/mlb_count_leverage.png",
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-24T20:43:42.483008+00:00",
+      "as_of": "2026-07-24T21:18:43.653864+00:00",
       "evidence_page": null
     },
     {
@@ -490,7 +501,7 @@
       "chart_path": null,
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-24T20:43:51.804080+00:00",
+      "as_of": "2026-07-24T21:18:53.144997+00:00",
       "evidence_page": null
     },
     {
@@ -512,7 +523,7 @@
       "chart_path": null,
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-24T20:43:52.322232+00:00",
+      "as_of": "2026-07-24T21:18:53.681490+00:00",
       "evidence_page": null
     },
     {
@@ -523,7 +534,7 @@
       "chart_path": "docs/img/pitch_sequencing.png",
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-24T20:43:53.112703+00:00",
+      "as_of": "2026-07-24T21:18:54.467738+00:00",
       "evidence_page": null
     },
     {

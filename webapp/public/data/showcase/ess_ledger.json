@@ -1,0 +1,34 @@
+{
+ "generated_at": "2026-07-24T21:18:07.446022+00:00",
+ "descriptive_only": true,
+ "edge_claimed": false,
+ "headline": "mlb: 78,986 residual rows carry the independent information of at most ~227 games.",
+ "method": "ESS from the already-committed lag-1 within-game residual autocorrelation (rho); because the game outcome is terminal-constant the probability path is smooth, so consecutive rows are near-duplicates rather than independent draws. The distinct-game count is the conservative anchor and the AR(1) figure is an approximation, so the reported ess_anchor takes the minimum of the two.",
+ "formula": "ESS_AR1 = n_rows * (1 - rho) / (1 + rho); CI inflation = sqrt(n_rows / ESS)",
+ "source_artifact": "scripts/platformkit/analytics_showcase/out/residual_autocorrelation.json",
+ "confound": "AR(1) is a first-order approximation of a smooth terminal-constant path, not a full independence model; the distinct-game count is the conservative anchor. DESCRIPTIVE_ONLY -- this deflates our OWN sample sizes and makes no edge or ROI claim.",
+ "corpora": [
+  {
+   "sport": "mlb",
+   "n_rows": 78986,
+   "n_games": 227,
+   "rho_model": 0.9809,
+   "rho_market": 0.9799,
+   "ess_ar1": 761,
+   "ess_anchor": 227,
+   "infl_ar1": 10.2,
+   "infl_anchor": 18.7
+  },
+  {
+   "sport": "soccer_intl",
+   "n_rows": 9003,
+   "n_games": 51,
+   "rho_model": 0.9624,
+   "rho_market": 0.9489,
+   "ess_ar1": 172,
+   "ess_anchor": 51,
+   "infl_ar1": 7.2,
+   "infl_anchor": 13.3
+  }
+ ]
+}
