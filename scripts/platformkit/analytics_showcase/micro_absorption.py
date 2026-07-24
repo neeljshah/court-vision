@@ -27,6 +27,13 @@ SCOPE / FLOORS (declared, not tuned):
   * Single June-July 2026 corpus, single read, no CIs -- descriptive only.
   * Absolute movement is in devigged-probability units, not price/line units.
 
+OBSERVATION WINDOW (declared, not assumed): this feed is a SHORT window, not a
+season or a multi-season history. The `observation_window` field (top level, plus
+per-sport) reports the exact span of daily files consumed -- start, end, distinct
+days, file count -- computed from the `<date>.jsonl` filenames actually globbed.
+Large move-pair counts here come from snapshot density inside that window, NOT
+from a long history; read every n alongside the window.
+
 Usage:
     python -m scripts.platformkit.analytics_showcase.micro_absorption
     python -m scripts.platformkit.analytics_showcase.micro_absorption --check
@@ -79,6 +86,24 @@ def _percentile(sorted_vals, q: float) -> float:
         return float("nan")
     idx = min(len(sorted_vals) - 1, int(round(q * (len(sorted_vals) - 1))))
     return sorted_vals[idx]
+
+
+def _sport_files(sport: str):
+    """The exact daily files load_series() consumes for one sport (same glob)."""
+    return sorted(glob.glob(os.path.join(IN_DIR, sport, "*.jsonl")))
+
+
+def _window(paths):
+    """Observation window from daily `<date>.jsonl` filenames: start/end date,
+    distinct days, file count. ponytail: filename dates, not a re-scan of every
+    row -- the file grain IS the day grain of this feed."""
+    days = sorted({os.path.splitext(os.path.basename(p))[0] for p in paths})
+    return {
+        "start": days[0] if days else None,
+        "end": days[-1] if days else None,
+        "days": len(days),
+        "files": len(paths),
+    }
 
 
 def load_series(sport: str):
@@ -211,8 +236,10 @@ def make_plot(result) -> bool:
     ax.set_title("Pregame price-absorption curves (market microstructure)")
     ax.legend(fontsize=8)
     ax.grid(True, alpha=0.3)
+    w = result.get("observation_window") or {}
     fig.text(0.5, 0.005,
              f"Source: data/cache/line_history/<sport>/*.jsonl (own scraped feed). "
+             f"Observation window {w.get('start')} .. {w.get('end')} ({w.get('days')} days). "
              f"as_of={result['as_of']}. Descriptive market science, edge_claimed=False.",
              ha="center", fontsize=7, color="gray")
     fig.tight_layout(rect=(0, 0.03, 1, 1))
@@ -238,6 +265,7 @@ def run():
         "as_of": datetime.utcnow().strftime("%Y-%m-%d"),
         "source": "data/cache/line_history/<sport>/*.jsonl",
         "min_moves_floor": MIN_MOVES,
+        "observation_window": _window([]),
         "buckets_minutes": [{"label": b[0], "lo": b[1], "hi": None if b[2] == float("inf") else b[2]} for b in BUCKETS],
         "sports": {},
     }
@@ -245,8 +273,20 @@ def run():
         result["status"] = "not_buildable"
         result["reason"] = f"no line_history sport dirs under {IN_DIR}"
     else:
+        all_paths = []
         for sport in sports:
             result["sports"][sport] = analyze_sport(sport)
+            paths = _sport_files(sport)
+            all_paths.extend(paths)
+            result["sports"][sport]["observation_window"] = _window(paths)
+        result["observation_window"] = _window(all_paths)
+        result["observation_window"]["per_sport"] = {
+            s: result["sports"][s]["observation_window"] for s in sports
+        }
+        result["observation_window"]["note"] = (
+            "Span of daily line_history files actually consumed. Counts (n_move_pairs, "
+            "snapshots) are dense sampling INSIDE this window, not a long history."
+        )
         reportable = [s for s, v in result["sports"].items() if v.get("status") == "ok"]
         result["status"] = "ok" if reportable else "not_buildable"
         if not reportable:
@@ -263,8 +303,16 @@ def _validate_artifact(data) -> None:
     assert "sports" in data and isinstance(data["sports"], dict), "missing sports map"
     assert data.get("edge_claimed") is False, "edge_claimed must be False"
     assert data.get("status") in ("ok", "not_buildable"), "bad top-level status"
+    w = data.get("observation_window")
+    assert isinstance(w, dict) and w, "missing observation_window"
+    if data["status"] == "ok":
+        assert w.get("start") and w.get("end"), "observation_window start/end empty"
+        assert w.get("days", 0) > 0 and w.get("files", 0) > 0, "observation_window empty"
+        assert w.get("per_sport"), "observation_window missing per_sport"
     for sport, s in data["sports"].items():
         assert "status" in s, f"{sport}: missing status"
+        sw = s.get("observation_window")
+        assert isinstance(sw, dict) and sw, f"{sport}: missing observation_window"
         if s["status"] == "ok":
             share = s.get("final_hour_movement_share")
             assert share is None or 0.0 <= share <= 1.0, f"{sport}: share out of range"
@@ -280,10 +328,15 @@ def check() -> None:
     assert _parse_ts("garbage") is None
     assert _percentile([1.0, 2.0, 3.0, 4.0], 0.5) in (2.0, 3.0)
     assert _percentile([], 0.5) != _percentile([], 0.5)  # nan
+    assert _window([]) == {"start": None, "end": None, "days": 0, "files": 0}
+    assert _window(["x/2026-06-18.jsonl", "x/2026-07-17.jsonl", "x/2026-06-18.jsonl"]) == {
+        "start": "2026-06-18", "end": "2026-07-17", "days": 2, "files": 3}
     if os.path.isdir(IN_DIR) and discover_sports():
         res = run()
         _validate_artifact(res)
-        print(f"micro_absorption self-check OK -- status={res['status']}, "
+        w = res["observation_window"]
+        print(f"micro_absorption self-check OK -- window={w['start']}..{w['end']} "
+              f"({w['days']} days, {w['files']} files), status={res['status']}, "
               f"sports={ {s: v.get('status') for s, v in res['sports'].items()} }")
     else:
         verify_recorded_artifact(OUT_JSON, _validate_artifact, "micro_absorption")
@@ -300,6 +353,8 @@ if __name__ == "__main__":
         print(json.dumps({
             "status": res["status"],
             "as_of": res["as_of"],
+            "observation_window": {k: res["observation_window"].get(k)
+                                   for k in ("start", "end", "days", "files")},
             "plot_written": res.get("plot_written"),
             "sports": {s: {k: v.get(k) for k in ("status", "n_move_pairs", "final_hour_movement_share")}
                        for s, v in res["sports"].items()},

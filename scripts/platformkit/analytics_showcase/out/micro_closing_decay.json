@@ -44,6 +44,14 @@
   "sports": {
     "wnba": {
       "as_of": "2026-07-17",
+      "observation_window": {
+        "source": "data/cache/line_history/wnba/*.jsonl (captured_at of every snapshot read)",
+        "first_captured_at": "2026-07-04",
+        "last_captured_at": "2026-07-17",
+        "span_days": 13.0,
+        "n_daily_files": 14,
+        "note": "This is the FULL local capture window, not a season. Counts below are large because capture is dense (many books x many ticks per game), not because the history is long."
+      },
       "n_games_joined": 30,
       "buckets": {
         "T-24h": {
@@ -77,6 +85,14 @@
     },
     "soccer_intl": {
       "as_of": "2026-07-17",
+      "observation_window": {
+        "source": "data/cache/line_history/soccer_intl/*.jsonl (captured_at of every snapshot read)",
+        "first_captured_at": "2026-06-19",
+        "last_captured_at": "2026-07-17",
+        "span_days": 28.0,
+        "n_daily_files": 29,
+        "note": "This is the FULL local capture window, not a season. Counts below are large because capture is dense (many books x many ticks per game), not because the history is long."
+      },
       "n_games_joined": 13,
       "buckets": {
         "T-24h": {
@@ -125,6 +141,13 @@
     "tennis": "player-hashed match ids; no ESPN-keyed match-outcome table on disk.",
     "kbo": "line_history rows carry no commence_time (game_id=0) -- hours-to-start is undefined.",
     "npb": "line_history rows carry no commence_time (game_id=0) -- hours-to-start is undefined."
+  },
+  "observation_window": {
+    "corpus": "data/cache/line_history/<sport>/*.jsonl",
+    "first_captured_at": "2026-06-19",
+    "last_captured_at": "2026-07-17",
+    "span_days": 28.0,
+    "note": "Union of the per-sport capture windows below. This is a single short capture window, not a season or multi-season history -- every Brier here is provisional and describes only these dates."
   },
   "verdict": "wnba: Brier sharpens toward the close -- T-6h=0.2454 -> close=0.2280 (delta=+0.0174, n_games=30). soccer_intl: Brier does NOT sharpen toward the close -- T-24h=0.1355 -> close=0.1374 (delta=-0.0019, n_games=13) (UNDERPOWERED).",
   "plot_written": true

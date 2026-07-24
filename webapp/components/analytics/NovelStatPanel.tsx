@@ -67,12 +67,33 @@ function fmt(v: unknown): string {
   return String(v);
 }
 
+// The observation window an artifact was measured over. Three committed shapes
+// (start/end/days/files, first_captured_at/last_captured_at/span_days, and bare
+// first/last ISO timestamps), so read all three rather than special-casing a
+// module. Returns "" when the artifact carries no window -- nothing is invented.
+export function windowText(w: unknown): string {
+  if (!isObj(w)) return "";
+  const d10 = (v: unknown) => (v == null ? "" : String(v).slice(0, 10));
+  const start = d10(w.start ?? w.first_captured_at ?? w.first);
+  const end = d10(w.end ?? w.last_captured_at ?? w.last);
+  if (!start || !end) return "";
+  const days = w.days ?? w.span_days;
+  const bits = [
+    days == null ? "" : `${fmtNum(Number(days))} days`,
+    w.files == null ? "" : `${fmtNum(Number(w.files))} daily files`,
+  ].filter(Boolean);
+  return `observed ${start} to ${end}${bits.length ? ` (${bits.join(", ")})` : ""}`;
+}
+
 // One level of object flattening: {estimator_a: {player_name, delta}} becomes
 // two real columns, which is what makes the LBI / half-life tables legible.
+// observation_window is the exception -- it collapses to ONE "observed" column
+// sitting beside the row's n, so a large count is never read as a long history.
 function flatten(row: Row): Row {
   const out: Row = {};
   for (const [k, v] of Object.entries(row)) {
-    if (isObj(v)) for (const [k2, v2] of Object.entries(v)) out[`${k}.${k2}`] = v2;
+    if (k === "observation_window") out.observed = windowText(v) || fmt(v);
+    else if (isObj(v)) for (const [k2, v2] of Object.entries(v)) out[`${k}.${k2}`] = v2;
     else out[k] = v;
   }
   return out;
@@ -172,6 +193,7 @@ export function NovelStatPanel({ stat }: { stat: NovelStat }) {
   const sources = Array.isArray(stat.source_artifacts) ? (stat.source_artifacts as unknown[]).map(String) : [];
   const asOfPairs = isObj(stat.as_of) ? Object.entries(stat.as_of) : [];
   const asOfStr = typeof stat.as_of === "string" ? asOfDate(stat.as_of) || stat.as_of : "";
+  const win = windowText(stat.observation_window);
 
   return (
     <section className="np">
@@ -183,6 +205,13 @@ export function NovelStatPanel({ stat }: { stat: NovelStat }) {
         {stat.is_honest_null ? <span className="np-null mono">HONEST NULL</span> : null}
       </div>
       {stat.headline ? <p className="np-headline">{stat.headline}</p> : null}
+      {win ? (
+        <p className="np-window mono">
+          {typeof stat.window_caption === "string" && stat.window_caption
+            ? stat.window_caption
+            : `Measured over a single capture window -- ${win}. Every count below is dense sampling inside that window, not a long history.`}
+        </p>
+      ) : null}
 
       {stat.metric_definition ? (
         <div className="np-sec">
@@ -251,6 +280,7 @@ export function NovelStatPanel({ stat }: { stat: NovelStat }) {
           <div key={s}>{s}</div>
         ))}
         {asOfStr ? <div>as_of {asOfStr}</div> : null}
+        {win ? <div>observation window: {win}</div> : null}
         {asOfPairs.map(([k, v]) => (
           <div key={k}>
             as_of {label(k)}: {fmt(v)}
@@ -268,6 +298,8 @@ export function NovelStatPanel({ stat }: { stat: NovelStat }) {
         .np-null{font-size:10.5px;letter-spacing:.1em;color:var(--ink-3);border:1px solid var(--rule-strong);
           border-radius:var(--radius-chip);padding:3px 8px;white-space:nowrap}
         .np-headline{margin-top:10px;font-size:17px;line-height:1.55;color:var(--ink)}
+        .np-window{margin-top:10px;font-size:12px;line-height:1.6;color:var(--ink-3);
+          border-left:2px solid var(--rule-strong);padding-left:12px}
         .np-sec{margin-top:22px}
         .np-sec p{font-size:14.5px;line-height:1.6;color:var(--ink-2);margin-top:8px}
         .np-formula{margin-top:8px;background:var(--paper-tint);border:1px solid var(--rule);border-radius:8px;

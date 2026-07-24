@@ -10,6 +10,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { windowText } from "@/components/analytics/NovelStatPanel";
 
 export const metadata: Metadata = {
   title: "Novel statistics",
@@ -41,6 +42,7 @@ interface Novel {
   declared_confounds?: string[];
   prior_art_citation?: string;
   results?: unknown;
+  observation_window?: unknown;
 }
 
 const readJson = <T,>(f: string): T | null => {
@@ -57,6 +59,9 @@ interface Lead {
   value: string;
   unit: string;
   caption: string;
+  // The window the leading ROW was measured over, when the row carries its own
+  // (per-sport windows differ). Falls back to the artifact's window at render.
+  window?: string;
 }
 
 // One picker per stat: which committed row leads the card. Values are printed as
@@ -71,10 +76,14 @@ function leadOf(mod: string, d: Novel): Lead | null {
   if (mod === "novel_line_half_life") {
     const r = top((x) => Number(x.n_move_pairs) || 0);
     if (!r) return null;
+    const w = windowText(r.observation_window);
     return {
       value: s(r.half_life_label),
       unit: "hours before tip",
-      caption: `${s(r.sport)} -- half of all pre-game line motion is complete by then; n=${n0(r.n_move_pairs)} move pairs, final-hour share ${s(r.final_hour_movement_share)}`,
+      // The n sits INSIDE a short capture window; the two are printed together so
+      // a six-figure count is never read as a season of history.
+      caption: `${s(r.sport)} -- half of all pre-game line motion is complete by then; n=${n0(r.n_move_pairs)} move pairs ${w}, final-hour share ${s(r.final_hour_movement_share)}`,
+      window: w,
     };
   }
   if (mod === "novel_live_clock_fraction") {
@@ -185,6 +194,9 @@ export default function NovelStatsPage() {
               <div className="nv-figure">
                 <div className="nv-value tnum">{lead.value}</div>
                 <div className="nv-unit">{lead.unit}</div>
+                {lead.window || windowText(d.observation_window) ? (
+                  <div className="mono nv-window">{lead.window || windowText(d.observation_window)}</div>
+                ) : null}
                 <p className="nv-cap">{lead.caption}</p>
               </div>
             ) : null}
@@ -258,6 +270,7 @@ export default function NovelStatsPage() {
         .nv-value{font-family:var(--font-display);font-weight:500;font-size:clamp(3rem,6.5vw,4.1rem);
           line-height:.98;letter-spacing:-.03em;color:var(--ink)}
         .nv-unit{margin-top:6px;font-size:13.5px;color:var(--ink-2)}
+        .nv-window{margin-top:7px;font-size:11.5px;letter-spacing:.02em;color:var(--ink-2)}
         .nv-cap{margin-top:10px;font-size:13px;line-height:1.55;color:var(--ink-3)}
         .nv-nullnote{margin-top:16px;background:var(--paper-tint);border-left:2px solid var(--null);
           border-radius:0 8px 8px 0;padding:12px 14px;font-size:13.5px;line-height:1.58;color:var(--ink-2)}

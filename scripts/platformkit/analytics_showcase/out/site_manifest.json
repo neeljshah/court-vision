@@ -490,7 +490,7 @@
       "chart_path": null,
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-24T03:18:51.879510+00:00",
+      "as_of": "2026-07-24T18:45:25.625535+00:00",
       "evidence_page": null
     },
     {
@@ -666,7 +666,7 @@
       "chart_path": "docs/img/tick_microstructure.png",
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-22T22:40:48.805496Z",
+      "as_of": "2026-07-24T18:45:18.178097Z",
       "evidence_page": "docs/evidence/analytical-depth.md"
     },
     {

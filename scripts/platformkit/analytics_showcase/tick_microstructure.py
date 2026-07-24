@@ -31,6 +31,24 @@ def parse_ts(s):
     return datetime.fromisoformat(s.replace("Z", "+00:00"))
 
 
+def window_of(timestamps, source, ts_field):
+    """Honest observation window: min/max of the timestamps actually read."""
+    if not timestamps:
+        return {"source": source, "ts_field": ts_field, "first": None, "last": None,
+                "span_days": None, "note": "no parseable timestamps in this corpus"}
+    lo, hi = min(timestamps), max(timestamps)
+    return {
+        "source": source,
+        "ts_field": ts_field,
+        "first": lo.isoformat(),
+        "last": hi.isoformat(),
+        "span_days": round((hi - lo).total_seconds() / 86400.0, 2),
+        "note": ("Rescued pod capture snapshot -- a single short window, NOT a season. "
+                 "Row/tick counts are large because capture is dense, not because the "
+                 "history is long."),
+    }
+
+
 def quantiles(vals, qs=(0.5, 0.9)):
     if not vals:
         return {}
@@ -85,8 +103,11 @@ def measure_mlb_deriv():
             if mp0 is not None and mp1 is not None and mp1 != mp0:
                 price_moves.append(abs(mp1 - mp0))
 
+    all_ts = [r[0] for rows in tracks.values() for r in rows]
     return {
         "source": "ingame_grade_deriv/mlb (Kalshi total-market quote tracks)",
+        "observation_window": window_of(
+            all_ts, "data/pod_backup_2026_07_20/ingame_grade_deriv/mlb/*.jsonl", "ts"),
         "n_files": len(list(d.glob("*.jsonl"))),
         "n_rows": n_rows,
         "n_quote_tracks": len(tracks),
@@ -156,6 +177,8 @@ def measure_wnba_kalshi():
 
     return {
         "source": "tip_capture/wnba ingame_*.jsonl (Kalshi decimal-odds board snapshots)",
+        "observation_window": window_of(
+            capture_ts, "data/pod_backup_2026_07_20/tip_capture/wnba/ingame_*.jsonl", "capture_ts"),
         "n_files": len(files),
         "n_rows": n_rows,
         "capture_cadence_seconds": {
@@ -227,6 +250,17 @@ def main():
         stat, wnba_ticks = wnba_out
         result["sports"]["wnba"] = stat
 
+    wins = [s["observation_window"] for s in result["sports"].values()]
+    firsts = [w["first"] for w in wins if w.get("first")]
+    lasts = [w["last"] for w in wins if w.get("last")]
+    result["observation_window"] = {
+        "corpus": "data/pod_backup_2026_07_20/ (rescued pod tick capture -- NOT data/cache/line_history)",
+        "first": min(firsts) if firsts else None,
+        "last": max(lasts) if lasts else None,
+        "note": ("Union of the per-sport windows below. Everything here describes one short "
+                 "rescued capture window, not a season."),
+    }
+
     if not result["sports"]:
         result["status"] = "no_data"
 
@@ -242,6 +276,12 @@ def main():
 def check():
     assert OUT_JSON.exists() and OUT_JSON.stat().st_size > 0, OUT_JSON
     assert OUT_PNG.exists() and OUT_PNG.stat().st_size > 0, OUT_PNG
+    d = json.loads(OUT_JSON.read_text(encoding="utf-8"))
+    ow = d.get("observation_window") or {}
+    assert ow.get("first") and ow.get("last"), "observation_window must declare first/last"
+    for sport, s in d.get("sports", {}).items():
+        sw = s.get("observation_window") or {}
+        assert sw.get("first") and sw.get("last"), f"{sport}: per-sport observation_window missing"
     print("OK: tick_microstructure self-check passed")
 
 

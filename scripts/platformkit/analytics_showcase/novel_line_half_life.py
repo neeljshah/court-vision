@@ -17,6 +17,12 @@ FORMULA:
 Reads only micro_absorption.json (a committed artifact); computes the derived
 half-life. edge_claimed=False -- descriptive line-timing, no $/ROI claim.
 
+OBSERVATION WINDOW: propagated verbatim from micro_absorption as
+`observation_window` (top level, and per row as `observation_window_*`). This
+stat is measured over a SHORT span of daily line-history files -- weeks, not
+seasons. The large n_move_pairs are dense snapshots inside that window; the
+half-life must never be quoted without it.
+
 Usage:
     python -m scripts.platformkit.analytics_showcase.novel_line_half_life
     python -m scripts.platformkit.analytics_showcase.novel_line_half_life --check
@@ -58,6 +64,9 @@ DECLARED_CONFOUNDS = [
     "single half-life hides -- read alongside the final_hour_movement_share column.",
     "Sports whose crossing falls inside the open-ended 6h+ bucket cannot be pinned "
     "(reported as '>6h', half_life_hours=null).",
+    "Measured over the short observation_window of the scraped line-history feed "
+    "(see observation_window); the large n_move_pairs are dense snapshots inside that "
+    "window, NOT a season or multi-season history.",
 ]
 
 
@@ -120,6 +129,7 @@ def build():
             "total_abs_move": s.get("total_abs_move"),
             "cumulative_fraction_by_boundary_h": cum,
             "n_move_pairs": s.get("n_move_pairs"),
+            "observation_window": s.get("observation_window"),
         })
     # rank: pinnable (finite) half-lives first ascending, then open-bucket (>6h) sports
     rows.sort(key=lambda r: (r["crossing_in_open_bucket"], r["half_life_hours"] if r["half_life_hours"] is not None else 999))
@@ -133,12 +143,14 @@ def build():
         "formula": "bucket_move=n*mean_abs_move per horizon bucket; G(h)=cum far->near / total; half_life = h where G(h)=0.50 (interpolated).",
         "source_artifacts": [os.path.relpath(IN_JSON, ROOT).replace("\\", "/")],
         "as_of": src.get("as_of"),
+        "observation_window": src.get("observation_window"),
         "prior_art_verdict": PRIOR_ART_VERDICT,
         "prior_art_citation": PRIOR_ART_CITATION,
         "declared_confounds": DECLARED_CONFOUNDS,
         "results": rows,
         "excluded": excluded,
         "headline": _headline(rows),
+        "window_caption": _window_caption(src.get("observation_window")),
         "index_card": None,  # filled below
         "plot_written": False,
     }
@@ -161,11 +173,23 @@ def _headline(rows):
             f"before tip; {slow['sport']} not until {slow['half_life_hours']:.1f}h.{tail}")
 
 
+def _window_caption(w):
+    """One plain sentence a reader can trust: what span these numbers cover."""
+    w = w or {}
+    if not w.get("start") or not w.get("end"):
+        return "Observation window not recorded in the source artifact."
+    return (f"Measured over {w['start']} to {w['end']} ({w.get('days')} days of scraped "
+            f"line history, {w.get('files')} daily files) -- a short window, not a season. "
+            f"The move-pair counts are dense snapshots inside it.")
+
+
 def _card(p):
     return {
         "stat_name": p["stat_name"], "abbrev": p["abbrev"], "module": "novel_line_half_life",
         "formula": p["formula"], "prior_art_verdict": p["prior_art_verdict"],
         "headline": p["headline"], "edge_claimed": False,
+        "observation_window": p["observation_window"],
+        "window_caption": p["window_caption"],
         "source_artifacts": p["source_artifacts"],
         "chart": os.path.relpath(OUT_PNG, ROOT).replace("\\", "/"),
         "n_results": len(p["results"]),
@@ -201,7 +225,8 @@ def plot(payload):
     ax.set_xlim(0, 7.4)
     ax.set_xlabel("hours before tip when half the pre-game line motion is done (higher = moves earlier)")
     ax.set_title("Line Half-Life by sport\nred = crossing in open 6h+ bucket (>6h). edge_claimed=False", fontsize=10)
-    fig.tight_layout()
+    fig.text(0.5, 0.005, payload.get("window_caption", ""), ha="center", fontsize=7, color="gray")
+    fig.tight_layout(rect=(0, 0.05, 1, 1))
     os.makedirs(os.path.dirname(OUT_PNG), exist_ok=True)
     fig.savefig(OUT_PNG, dpi=150)
     plt.close(fig)
@@ -211,8 +236,15 @@ def plot(payload):
 def _validate(d):
     assert d["edge_claimed"] is False
     assert d["results"], "no half-life rows"
+    w = d.get("observation_window")
+    assert isinstance(w, dict) and w.get("start") and w.get("end") and w.get("days"), \
+        "missing/empty observation_window (must be propagated from micro_absorption)"
+    assert d.get("window_caption"), "missing window_caption"
+    assert d["index_card"].get("observation_window"), "index_card missing observation_window"
     for r in d["results"]:
         assert r["crossing_in_open_bucket"] or r["half_life_hours"] is not None
+        assert (r.get("observation_window") or {}).get("start"), \
+            f"{r['sport']}: missing per-sport observation_window"
 
 
 def check():
@@ -227,8 +259,10 @@ def check():
     payload["plot_written"] = plot(payload)
     with open(OUT_JSON, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2)
+    w = payload["observation_window"]
     print(f"OK: novel_line_half_life ({len(payload['results'])} sports, mlb half-life "
-          f"{mlb['half_life_hours']:.2f}h, plot={payload['plot_written']})")
+          f"{mlb['half_life_hours']:.2f}h, window {w['start']}..{w['end']} {w['days']}d, "
+          f"plot={payload['plot_written']})")
 
 
 if __name__ == "__main__":

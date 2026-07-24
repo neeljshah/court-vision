@@ -15,7 +15,7 @@ import { ScoutNote, type ScoutEnvelope } from "@/components/analytics/ScoutNote"
 import { ScoutQuestions } from "@/components/analytics/ScoutQuestions";
 import type { ReceiptData } from "@/components/analytics/Receipt";
 import { VerdictLegend } from "@/components/analytics/VerdictLegend";
-import { NovelStatPanel, type NovelStat } from "@/components/analytics/NovelStatPanel";
+import { NovelStatPanel, type NovelStat, windowText } from "@/components/analytics/NovelStatPanel";
 import { asOfDate } from "@/lib/analytics/format";
 
 const DATA = join(process.cwd(), "public", "data");
@@ -150,6 +150,10 @@ export default function ModulePage({ params }: { params: { id: string } }) {
   // to the raw value so it stays a non-empty string for the required Figure asOf.
   const asOf = asOfDate(m.as_of) || m.as_of;
   const sub = subtitleOf(m, ins);
+  // as_of says when the artifact was built; it does NOT say what span of data it
+  // saw. Any module whose out JSON declares observation_window prints that span
+  // in the provenance line -- schema-driven, no module list.
+  const win = windowText(out.observation_window);
 
   const chips: ReceiptData[] = cited.slice(0, 4).map((c) => ({
     value: str(c.value),
@@ -189,7 +193,10 @@ export default function ModulePage({ params }: { params: { id: string } }) {
 
       <div className="mv-head">
         <div>
-          <div className="overline">Analytics module &middot; as of {asOf}</div>
+          <div className="overline">
+            Analytics module &middot; as of {asOf}
+            {win ? <> &middot; data {win}</> : null}
+          </div>
           <h1 className="serif">{ins?.title || m.title}</h1>
           {sub ? <div className="mv-sub">{sub}</div> : null}
         </div>
@@ -301,6 +308,7 @@ export default function ModulePage({ params }: { params: { id: string } }) {
               <p className="mono" style={{ fontSize: 12, color: "var(--ink-3)" }}>No cited facts staged.</p>
             )}
             <div className="mv-src mono">{cited[0]?.path || m.out_path}</div>
+            {win ? <div className="mv-src mono">observation window: {win}</div> : null}
           </Box>
 
           {ins?.how_to_read ? (

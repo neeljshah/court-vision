@@ -74,12 +74,16 @@ def _parse_dt(s: Optional[str]) -> Optional[datetime]:
     except ValueError:
         return None
 
-def load_home_snapshots(sport: str) -> Tuple[Dict[str, List[Tuple[float, float]]], Optional[str]]:
+def load_home_snapshots(sport: str) -> Tuple[Dict[str, List[Tuple[float, float]]], Optional[str], Dict[str, Any]]:
     """Return {game_id: [(horizon_hours, devigged_home_prob), ...]} for pregame
-    home-side moneyline snapshots, plus the max captured-at date seen (as_of)."""
+    home-side moneyline snapshots, the max captured-at date seen (as_of), and the
+    observation window (min/max captured_at actually read from line_history)."""
     by_game: Dict[str, List[Tuple[float, float]]] = {}
     max_cap: Optional[datetime] = None
+    min_cap: Optional[datetime] = None
+    n_files = 0
     for path in glob.glob(os.path.join(LH_DIR, sport, "*.jsonl")):
+        n_files += 1
         with open(path, encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
@@ -98,12 +102,25 @@ def load_home_snapshots(sport: str) -> Tuple[Dict[str, List[Tuple[float, float]]
                     continue
                 if max_cap is None or cap > max_cap:
                     max_cap = cap
+                if min_cap is None or cap < min_cap:
+                    min_cap = cap
                 horizon = (ct - cap).total_seconds() / 3600.0
                 if horizon < 0.0 or horizon > MAX_HORIZON_H:
                     continue
                 by_game.setdefault(str(gid), []).append((horizon, float(p)))
     as_of = max_cap.date().isoformat() if max_cap else None
-    return by_game, as_of
+    window: Dict[str, Any] = {
+        "source": "data/cache/line_history/%s/*.jsonl (captured_at of every snapshot read)" % sport,
+        "first_captured_at": min_cap.date().isoformat() if min_cap else None,
+        "last_captured_at": as_of,
+        "span_days": (round((max_cap - min_cap).total_seconds() / 86400.0, 1)
+                      if (min_cap and max_cap) else None),
+        "n_daily_files": n_files,
+        "note": ("This is the FULL local capture window, not a season. Counts below are large "
+                 "because capture is dense (many books x many ticks per game), not because the "
+                 "history is long."),
+    }
+    return by_game, as_of, window
 
 def load_outcomes(sport: str) -> Dict[str, int]:
     """{ESPN event_id (str): home_win 0/1} for the sport's outcome table."""
@@ -152,7 +169,7 @@ def score_bucket(pairs: List[Tuple[float, int]]) -> Dict[str, Any]:
     }
 
 def analyze_sport(sport: str) -> Dict[str, Any]:
-    by_game, as_of = load_home_snapshots(sport)
+    by_game, as_of, window = load_home_snapshots(sport)
     outcomes = load_outcomes(sport)
     # per-anchor (prob, outcome) pairs, plus per-game close & T-24h for pairing.
     per_anchor: Dict[str, List[Tuple[float, int]]] = {a: [] for a in _ANCHOR_LABELS}
@@ -164,8 +181,8 @@ def analyze_sport(sport: str) -> Dict[str, Any]:
         joined_games += 1
         y = outcomes[gid]
         probs: Dict[str, Optional[float]] = {}
-        for label, _tgt, window in ANCHORS:
-            p = bucket_prob(snaps, window)
+        for label, _tgt, accept_window in ANCHORS:
+            p = bucket_prob(snaps, accept_window)
             probs[label] = p
             if p is not None:
                 per_anchor[label].append((p, y))
@@ -183,7 +200,8 @@ def analyze_sport(sport: str) -> Dict[str, Any]:
             "close_sharper": b_cl < b_t24,
             "underpowered": len(paired) < MIN_N_POWERED,
         })
-    return {"as_of": as_of, "n_games_joined": joined_games, "buckets": buckets, "close_vs_t24h_paired": pair_out}
+    return {"as_of": as_of, "observation_window": window, "n_games_joined": joined_games,
+            "buckets": buckets, "close_vs_t24h_paired": pair_out}
 
 def build_verdict(sports: Dict[str, Any]) -> str:
     lines: List[str] = []
@@ -232,9 +250,12 @@ def make_plot(result: Dict[str, Any]) -> bool:
     if plotted:
         ax.legend(fontsize=8)
     aos = {s: r.get("as_of") for s, r in result["sports"].items()}
+    ow = result.get("observation_window", {})
     fig.text(0.5, 0.005,
              "Source: data/cache/line_history/{wnba,soccer_intl} devigged moneyline snapshots joined "
-             f"to ESPN-keyed outcomes. as_of={aos}. Calibration-only, edge_claimed=False.",
+             f"to ESPN-keyed outcomes. Observation window {ow.get('first_captured_at')} .. "
+             f"{ow.get('last_captured_at')} (capture window, not a season). as_of={aos}. "
+             "Calibration-only, edge_claimed=False.",
              ha="center", fontsize=6.5, color="gray")
     fig.tight_layout(rect=(0, 0.04, 1, 1))
     os.makedirs(os.path.dirname(OUT_PNG), exist_ok=True)
@@ -260,6 +281,18 @@ def run() -> Dict[str, Any]:
     }
     for sport in JOINABLE:
         result["sports"][sport] = analyze_sport(sport)
+    wins = [r["observation_window"] for r in result["sports"].values()]
+    firsts = [w["first_captured_at"] for w in wins if w.get("first_captured_at")]
+    lasts = [w["last_captured_at"] for w in wins if w.get("last_captured_at")]
+    result["observation_window"] = {
+        "corpus": "data/cache/line_history/<sport>/*.jsonl",
+        "first_captured_at": min(firsts) if firsts else None,
+        "last_captured_at": max(lasts) if lasts else None,
+        "span_days": max([w["span_days"] for w in wins if w.get("span_days") is not None] or [None]),
+        "note": ("Union of the per-sport capture windows below. This is a single short capture "
+                 "window, not a season or multi-season history -- every Brier here is provisional "
+                 "and describes only these dates."),
+    }
     result["verdict"] = build_verdict(result["sports"])
     os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
     with open(OUT_JSON, "w", encoding="utf-8") as f:
@@ -279,7 +312,13 @@ def check() -> None:
         assert d.get("edge_claimed") is False, "edge_claimed must be False"
         assert d.get("sports"), "no sports in artifact"
         assert d.get("not_joinable"), "not_joinable list missing"
+        ow = d.get("observation_window") or {}
+        assert ow.get("first_captured_at") and ow.get("last_captured_at"), \
+            "observation_window must declare first/last captured_at"
         for sport, res in d["sports"].items():
+            sw = res.get("observation_window") or {}
+            assert sw.get("first_captured_at") and sw.get("last_captured_at"), \
+                f"{sport}: per-sport observation_window missing"
             for lbl, bk in res["buckets"].items():
                 if bk.get("n"):
                     assert 0.0 <= bk["brier"] <= 1.0, f"{sport}/{lbl} Brier out of [0,1]: {bk['brier']}"

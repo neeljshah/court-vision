@@ -1,6 +1,6 @@
 {
   "edge_claimed": false,
-  "generated_at": "2026-07-24T03:18:51.879510+00:00",
+  "generated_at": "2026-07-24T18:46:36.937024+00:00",
   "method": "composition only -- each card copied from its module's own novel_*.json output",
   "n_stats": 6,
   "stats": [
@@ -12,6 +12,64 @@
       "prior_art_verdict": "NOVEL_PACKAGING",
       "headline": "soccer_intl completes half its pre-game line motion by 2.7h before tip; nba not until 4.8h. tennis, wnba move most of their line >6h before tip.",
       "edge_claimed": false,
+      "observation_window": {
+        "start": "2026-06-18",
+        "end": "2026-07-17",
+        "days": 30,
+        "files": 175,
+        "per_sport": {
+          "kbo": {
+            "start": "2026-07-04",
+            "end": "2026-07-17",
+            "days": 13,
+            "files": 13
+          },
+          "mlb": {
+            "start": "2026-06-18",
+            "end": "2026-07-17",
+            "days": 30,
+            "files": 30
+          },
+          "nba": {
+            "start": "2026-06-18",
+            "end": "2026-07-17",
+            "days": 30,
+            "files": 30
+          },
+          "npb": {
+            "start": "2026-07-04",
+            "end": "2026-07-17",
+            "days": 14,
+            "files": 14
+          },
+          "soccer": {
+            "start": "2026-06-18",
+            "end": "2026-07-17",
+            "days": 30,
+            "files": 30
+          },
+          "soccer_intl": {
+            "start": "2026-06-19",
+            "end": "2026-07-17",
+            "days": 29,
+            "files": 29
+          },
+          "tennis": {
+            "start": "2026-07-03",
+            "end": "2026-07-17",
+            "days": 15,
+            "files": 15
+          },
+          "wnba": {
+            "start": "2026-07-04",
+            "end": "2026-07-17",
+            "days": 14,
+            "files": 14
+          }
+        },
+        "note": "Span of daily line_history files actually consumed. Counts (n_move_pairs, snapshots) are dense sampling INSIDE this window, not a long history."
+      },
+      "window_caption": "Measured over 2026-06-18 to 2026-07-17 (30 days of scraped line history, 175 daily files) -- a short window, not a season. The move-pair counts are dense snapshots inside it.",
       "source_artifacts": [
         "scripts/platformkit/analytics_showcase/out/micro_absorption.json"
       ],

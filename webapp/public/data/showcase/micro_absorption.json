@@ -5,6 +5,63 @@
  "as_of": "2026-07-24",
  "source": "data/cache/line_history/<sport>/*.jsonl",
  "min_moves_floor": 20,
+ "observation_window": {
+  "start": "2026-06-18",
+  "end": "2026-07-17",
+  "days": 30,
+  "files": 175,
+  "per_sport": {
+   "kbo": {
+    "start": "2026-07-04",
+    "end": "2026-07-17",
+    "days": 13,
+    "files": 13
+   },
+   "mlb": {
+    "start": "2026-06-18",
+    "end": "2026-07-17",
+    "days": 30,
+    "files": 30
+   },
+   "nba": {
+    "start": "2026-06-18",
+    "end": "2026-07-17",
+    "days": 30,
+    "files": 30
+   },
+   "npb": {
+    "start": "2026-07-04",
+    "end": "2026-07-17",
+    "days": 14,
+    "files": 14
+   },
+   "soccer": {
+    "start": "2026-06-18",
+    "end": "2026-07-17",
+    "days": 30,
+    "files": 30
+   },
+   "soccer_intl": {
+    "start": "2026-06-19",
+    "end": "2026-07-17",
+    "days": 29,
+    "files": 29
+   },
+   "tennis": {
+    "start": "2026-07-03",
+    "end": "2026-07-17",
+    "days": 15,
+    "files": 15
+   },
+   "wnba": {
+    "start": "2026-07-04",
+    "end": "2026-07-17",
+    "days": 14,
+    "files": 14
+   }
+  },
+  "note": "Span of daily line_history files actually consumed. Counts (n_move_pairs, snapshots) are dense sampling INSIDE this window, not a long history."
+ },
  "buckets_minutes": [
   {
    "label": "6h+",
@@ -33,7 +90,13 @@
    "n_pregame_snapshots": 0,
    "n_move_pairs": 0,
    "status": "insufficient_data",
-   "reason": "only 0 pregame move pairs (< MIN_MOVES=20)"
+   "reason": "only 0 pregame move pairs (< MIN_MOVES=20)",
+   "observation_window": {
+    "start": "2026-07-04",
+    "end": "2026-07-17",
+    "days": 13,
+    "files": 13
+   }
   },
   "mlb": {
    "n_series_used": 5794,
@@ -65,7 +128,13 @@
    },
    "total_abs_move": 168.48331,
    "final_hour_abs_move": 30.5383,
-   "final_hour_movement_share": 0.1813
+   "final_hour_movement_share": 0.1813,
+   "observation_window": {
+    "start": "2026-06-18",
+    "end": "2026-07-17",
+    "days": 30,
+    "files": 30
+   }
   },
   "nba": {
    "n_series_used": 160,
@@ -97,14 +166,26 @@
    },
    "total_abs_move": 23.28469,
    "final_hour_abs_move": 7.56165,
-   "final_hour_movement_share": 0.3247
+   "final_hour_movement_share": 0.3247,
+   "observation_window": {
+    "start": "2026-06-18",
+    "end": "2026-07-17",
+    "days": 30,
+    "files": 30
+   }
   },
   "npb": {
    "n_series_used": 0,
    "n_pregame_snapshots": 0,
    "n_move_pairs": 0,
    "status": "insufficient_data",
-   "reason": "only 0 pregame move pairs (< MIN_MOVES=20)"
+   "reason": "only 0 pregame move pairs (< MIN_MOVES=20)",
+   "observation_window": {
+    "start": "2026-07-04",
+    "end": "2026-07-17",
+    "days": 14,
+    "files": 14
+   }
   },
   "soccer": {
    "n_series_used": 66,
@@ -136,7 +217,13 @@
    },
    "total_abs_move": 1.65892,
    "final_hour_abs_move": 0.0,
-   "final_hour_movement_share": 0.0
+   "final_hour_movement_share": 0.0,
+   "observation_window": {
+    "start": "2026-06-18",
+    "end": "2026-07-17",
+    "days": 30,
+    "files": 30
+   }
   },
   "soccer_intl": {
    "n_series_used": 494,
@@ -168,7 +255,13 @@
    },
    "total_abs_move": 49.34988,
    "final_hour_abs_move": 12.88173,
-   "final_hour_movement_share": 0.261
+   "final_hour_movement_share": 0.261,
+   "observation_window": {
+    "start": "2026-06-19",
+    "end": "2026-07-17",
+    "days": 29,
+    "files": 29
+   }
   },
   "tennis": {
    "n_series_used": 2510,
@@ -200,7 +293,13 @@
    },
    "total_abs_move": 83.16391,
    "final_hour_abs_move": 8.90167,
-   "final_hour_movement_share": 0.107
+   "final_hour_movement_share": 0.107,
+   "observation_window": {
+    "start": "2026-07-03",
+    "end": "2026-07-17",
+    "days": 15,
+    "files": 15
+   }
   },
   "wnba": {
    "n_series_used": 920,
@@ -232,7 +331,13 @@
    },
    "total_abs_move": 80.65411,
    "final_hour_abs_move": 9.48613,
-   "final_hour_movement_share": 0.1176
+   "final_hour_movement_share": 0.1176,
+   "observation_window": {
+    "start": "2026-07-04",
+    "end": "2026-07-17",
+    "days": 14,
+    "files": 14
+   }
   }
  },
  "status": "ok",

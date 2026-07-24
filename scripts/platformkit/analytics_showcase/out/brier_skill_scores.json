@@ -4,7 +4,7 @@
   "method": "standard BSS = 1 - Brier/Brier_ref; refs = climatology (const sport base rate) and market",
   "floors": "n>=30 rows/grain for a BSS; climatology=const sport base rate; edge_claimed=False",
   "source_artifact": "data/cache/ingame_grade_joined/{mlb,soccer_intl}/*.jsonl (mlb_clean dup excluded)",
-  "generated_at": "2026-07-24T01:08:43.969532+00:00",
+  "generated_at": "2026-07-24T18:45:35.765746+00:00",
   "honest_note": "BSS vs market is near or below 0 across sports and checkpoints -- the model does not beat the market's Brier. That null result is the POINT of this exhibit, not a defect. BSS vs climatology is strongly positive (model and market both crush the base-rate baseline), which is expected for in-game win-prob and is NOT an edge. Truth source: docs/JOB_EVIDENCE_PACKET.md.",
   "sports": {
     "mlb": {

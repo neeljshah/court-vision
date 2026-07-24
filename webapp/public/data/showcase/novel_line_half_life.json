@@ -9,6 +9,63 @@
   "scripts/platformkit/analytics_showcase/out/micro_absorption.json"
  ],
  "as_of": "2026-07-24",
+ "observation_window": {
+  "start": "2026-06-18",
+  "end": "2026-07-17",
+  "days": 30,
+  "files": 175,
+  "per_sport": {
+   "kbo": {
+    "start": "2026-07-04",
+    "end": "2026-07-17",
+    "days": 13,
+    "files": 13
+   },
+   "mlb": {
+    "start": "2026-06-18",
+    "end": "2026-07-17",
+    "days": 30,
+    "files": 30
+   },
+   "nba": {
+    "start": "2026-06-18",
+    "end": "2026-07-17",
+    "days": 30,
+    "files": 30
+   },
+   "npb": {
+    "start": "2026-07-04",
+    "end": "2026-07-17",
+    "days": 14,
+    "files": 14
+   },
+   "soccer": {
+    "start": "2026-06-18",
+    "end": "2026-07-17",
+    "days": 30,
+    "files": 30
+   },
+   "soccer_intl": {
+    "start": "2026-06-19",
+    "end": "2026-07-17",
+    "days": 29,
+    "files": 29
+   },
+   "tennis": {
+    "start": "2026-07-03",
+    "end": "2026-07-17",
+    "days": 15,
+    "files": 15
+   },
+   "wnba": {
+    "start": "2026-07-04",
+    "end": "2026-07-17",
+    "days": 14,
+    "files": 14
+   }
+  },
+  "note": "Span of daily line_history files actually consumed. Counts (n_move_pairs, snapshots) are dense sampling INSIDE this window, not a long history."
+ },
  "prior_art_verdict": "NOVEL_PACKAGING",
  "prior_art_citation": "Line-movement timing (early-sharp vs late-injury/public money) is discussed qualitatively everywhere (Boyd's Bets opening-vs-closing; PicksOffice; GamingToday); price-impact half-life is a securities-microstructure staple (Kyle 1985; Amihud 2002). The underlying line-movement concept is NOT new; only the single per-sport half-life constant is the fresh packaging.",
  "declared_confounds": [
@@ -16,7 +73,8 @@
   "Only 4 coarse horizon buckets, so the 0.50 crossing is linearly interpolated.",
   "soccer EXCLUDED: all mass in the 6h+ bucket with mean_abs_move 0.0 (timestamp-coverage artifact).",
   "nba is bimodal (early motion + a real 0-1h spike, final_hour_share 0.3247) which a single half-life hides -- read alongside the final_hour_movement_share column.",
-  "Sports whose crossing falls inside the open-ended 6h+ bucket cannot be pinned (reported as '>6h', half_life_hours=null)."
+  "Sports whose crossing falls inside the open-ended 6h+ bucket cannot be pinned (reported as '>6h', half_life_hours=null).",
+  "Measured over the short observation_window of the scraped line-history feed (see observation_window); the large n_move_pairs are dense snapshots inside that window, NOT a season or multi-season history."
  ],
  "results": [
   {
@@ -32,7 +90,13 @@
     "1.0": 0.7365,
     "0.0": 1.0
    },
-   "n_move_pairs": 164072
+   "n_move_pairs": 164072,
+   "observation_window": {
+    "start": "2026-06-19",
+    "end": "2026-07-17",
+    "days": 29,
+    "files": 29
+   }
   },
   {
    "sport": "mlb",
@@ -47,7 +111,13 @@
     "1.0": 0.8143,
     "0.0": 1.0
    },
-   "n_move_pairs": 1307128
+   "n_move_pairs": 1307128,
+   "observation_window": {
+    "start": "2026-06-18",
+    "end": "2026-07-17",
+    "days": 30,
+    "files": 30
+   }
   },
   {
    "sport": "nba",
@@ -62,7 +132,13 @@
     "1.0": 0.6794,
     "0.0": 1.0
    },
-   "n_move_pairs": 182054
+   "n_move_pairs": 182054,
+   "observation_window": {
+    "start": "2026-06-18",
+    "end": "2026-07-17",
+    "days": 30,
+    "files": 30
+   }
   },
   {
    "sport": "tennis",
@@ -77,7 +153,13 @@
     "1.0": 0.8902,
     "0.0": 1.0
    },
-   "n_move_pairs": 809986
+   "n_move_pairs": 809986,
+   "observation_window": {
+    "start": "2026-07-03",
+    "end": "2026-07-17",
+    "days": 15,
+    "files": 15
+   }
   },
   {
    "sport": "wnba",
@@ -92,7 +174,13 @@
     "1.0": 0.8827,
     "0.0": 1.0
    },
-   "n_move_pairs": 333540
+   "n_move_pairs": 333540,
+   "observation_window": {
+    "start": "2026-07-04",
+    "end": "2026-07-17",
+    "days": 14,
+    "files": 14
+   }
   }
  ],
  "excluded": [
@@ -110,6 +198,7 @@
   }
  ],
  "headline": "soccer_intl completes half its pre-game line motion by 2.7h before tip; nba not until 4.8h. tennis, wnba move most of their line >6h before tip.",
+ "window_caption": "Measured over 2026-06-18 to 2026-07-17 (30 days of scraped line history, 175 daily files) -- a short window, not a season. The move-pair counts are dense snapshots inside it.",
  "index_card": {
   "stat_name": "Line Half-Life",
   "abbrev": "LHL",
@@ -118,6 +207,64 @@
   "prior_art_verdict": "NOVEL_PACKAGING",
   "headline": "soccer_intl completes half its pre-game line motion by 2.7h before tip; nba not until 4.8h. tennis, wnba move most of their line >6h before tip.",
   "edge_claimed": false,
+  "observation_window": {
+   "start": "2026-06-18",
+   "end": "2026-07-17",
+   "days": 30,
+   "files": 175,
+   "per_sport": {
+    "kbo": {
+     "start": "2026-07-04",
+     "end": "2026-07-17",
+     "days": 13,
+     "files": 13
+    },
+    "mlb": {
+     "start": "2026-06-18",
+     "end": "2026-07-17",
+     "days": 30,
+     "files": 30
+    },
+    "nba": {
+     "start": "2026-06-18",
+     "end": "2026-07-17",
+     "days": 30,
+     "files": 30
+    },
+    "npb": {
+     "start": "2026-07-04",
+     "end": "2026-07-17",
+     "days": 14,
+     "files": 14
+    },
+    "soccer": {
+     "start": "2026-06-18",
+     "end": "2026-07-17",
+     "days": 30,
+     "files": 30
+    },
+    "soccer_intl": {
+     "start": "2026-06-19",
+     "end": "2026-07-17",
+     "days": 29,
+     "files": 29
+    },
+    "tennis": {
+     "start": "2026-07-03",
+     "end": "2026-07-17",
+     "days": 15,
+     "files": 15
+    },
+    "wnba": {
+     "start": "2026-07-04",
+     "end": "2026-07-17",
+     "days": 14,
+     "files": 14
+    }
+   },
+   "note": "Span of daily line_history files actually consumed. Counts (n_move_pairs, snapshots) are dense sampling INSIDE this window, not a long history."
+  },
+  "window_caption": "Measured over 2026-06-18 to 2026-07-17 (30 days of scraped line history, 175 daily files) -- a short window, not a season. The move-pair counts are dense snapshots inside it.",
   "source_artifacts": [
    "scripts/platformkit/analytics_showcase/out/micro_absorption.json"
   ],
