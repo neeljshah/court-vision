@@ -1,11 +1,11 @@
 {
  "generated_from": "scripts/platformkit/analytics_showcase/out",
- "module_count": 63,
+ "module_count": 65,
  "atlas_card_count": 1549,
  "checks_green": {
   "green": true,
-  "pass": 82,
-  "total": 82
+  "pass": 84,
+  "total": 84
  },
  "edge_claimed": false,
  "modules": [
@@ -61,7 +61,7 @@
    "chart_path": "docs/img/brier_skill_scores.png",
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T21:18:00.409639+00:00",
+   "as_of": "2026-07-24T21:50:54.354647+00:00",
    "evidence_page": null
   },
   {
@@ -215,7 +215,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T21:18:07.446022+00:00",
+   "as_of": "2026-07-24T21:51:01.332543+00:00",
    "evidence_page": null
   },
   {
@@ -369,7 +369,18 @@
    "chart_path": "docs/img/mlb_count_leverage.png",
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T21:18:43.653864+00:00",
+   "as_of": "2026-07-24T21:51:37.616868+00:00",
+   "evidence_page": null
+  },
+  {
+   "id": "mlb_descriptive_leaderboards",
+   "title": "Mlb Descriptive Leaderboards",
+   "one_line": "Descriptive MLB Statcast-derived leaderboards (catcher/umpire out-of-zone strike rate, platoon on-base splits) for a fixed 2022-2023 corpus slice, shown beside two honest nulls -- an unstable park-factor read and a REJECTed umpire-totals...",
+   "out_path": "scripts/platformkit/analytics_showcase/out/mlb_descriptive_leaderboards.json",
+   "chart_path": null,
+   "status": "ok",
+   "edge_claimed": false,
+   "as_of": "2026-07-24T21:46:01.294251+00:00",
    "evidence_page": null
   },
   {
@@ -501,7 +512,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T21:18:53.144997+00:00",
+   "as_of": "2026-07-24T21:51:47.488747+00:00",
    "evidence_page": null
   },
   {
@@ -523,7 +534,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T21:18:53.681490+00:00",
+   "as_of": "2026-07-24T21:51:48.024287+00:00",
    "evidence_page": null
   },
   {
@@ -534,7 +545,7 @@
    "chart_path": "docs/img/pitch_sequencing.png",
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T21:18:54.467738+00:00",
+   "as_of": "2026-07-24T21:51:48.814967+00:00",
    "evidence_page": null
   },
   {
@@ -679,6 +690,17 @@
    "edge_claimed": false,
    "as_of": "2026-07-24T18:45:18.178097Z",
    "evidence_page": "docs/evidence/analytical-depth.md"
+  },
+  {
+   "id": "verdict_flip_anatomy",
+   "title": "Verdict Flip Anatomy",
+   "one_line": "5 claim families changed their verdict as more data arrived; here is each mind-change, in sequence.",
+   "out_path": "scripts/platformkit/analytics_showcase/out/verdict_flip_anatomy.json",
+   "chart_path": null,
+   "status": "ok",
+   "edge_claimed": false,
+   "as_of": "2026-07-24T21:51:59.204394+00:00",
+   "evidence_page": null
   },
   {
    "id": "why_attribution",

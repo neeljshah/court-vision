@@ -1,0 +1,251 @@
+{
+  "generated_at": "2026-07-24T21:51:59.204394+00:00",
+  "descriptive_only": true,
+  "edge_claimed": false,
+  "headline": "5 claim families changed their verdict as more data arrived; here is each mind-change, in sequence.",
+  "method": "These are our own preregistered re-tests: verdict history per claim family (sport x hypothesis) ordered by run_ts, current status = last entry. A verdict flip means the system re-tested and updated its own earlier claim as more or re-cleaned data arrived -- that is the process working, not a bug.",
+  "source_artifact": "scripts/platformkit/analytics_showcase/out/fwd_claim_scoreboard.json",
+  "summary": {
+    "n_families": 259,
+    "verified": 121,
+    "null": 99,
+    "retracted": 7,
+    "not_testable": 28,
+    "provisional": 4
+  },
+  "flips": [
+    {
+      "sport": "basketball_nba",
+      "hypothesis": "three_in_four_fatigue",
+      "current_status": "verified",
+      "verdict_sequence": [
+        "NULL_LOCAL",
+        "CONFIRMED_LOCAL"
+      ],
+      "steps": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "corpus": "player_boxscores_2024_25_2025_26",
+          "n": 4762,
+          "effect": -0.916,
+          "run_ts": null
+        },
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "corpus": "player_boxscores_2024_25_2025_26",
+          "n": 7222,
+          "effect": -1.213,
+          "run_ts": null
+        }
+      ],
+      "one_line": "First NULL_LOCAL on n=4762 (player_boxscores_2024_25_2025_26), then CONFIRMED_LOCAL on n=7222 (player_boxscores_2024_25_2025_26)."
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "reliever_3in3d_fatigue",
+      "current_status": "verified",
+      "verdict_sequence": [
+        "NULL_LOCAL",
+        "NULL_LOCAL",
+        "CONFIRMED_LOCAL"
+      ],
+      "steps": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "corpus": "bullpen_relief_chains+savant_full__2023-2025",
+          "n": 9054,
+          "effect": 0.01839,
+          "run_ts": null
+        },
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "corpus": "bullpen_relief_chains+savant_full__2023-2025",
+          "n": 8897,
+          "effect": -0.03538,
+          "run_ts": null
+        },
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "corpus": "bullpen_relief_chains+savant_full__2023-2025",
+          "n": 8927,
+          "effect": -0.04412,
+          "run_ts": null
+        }
+      ],
+      "one_line": "First NULL_LOCAL on n=9054 (bullpen_relief_chains+savant_full__2023-2025), then CONFIRMED_LOCAL on n=8927 (bullpen_relief_chains+savant_full__2023-2025)."
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "reliever_3in3d_fatigue__combined",
+      "current_status": "null",
+      "verdict_sequence": [
+        "PROVISIONAL",
+        "NULL_LOCAL"
+      ],
+      "steps": [
+        {
+          "verdict": "PROVISIONAL",
+          "status": "provisional",
+          "corpus": "bullpen_relief_chains+savant_full__2023-2025",
+          "n": 26878,
+          "effect": null,
+          "run_ts": null
+        },
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "corpus": "bullpen_relief_chains+savant_full__2023-2025",
+          "n": 26878,
+          "effect": null,
+          "run_ts": null
+        }
+      ],
+      "one_line": "First PROVISIONAL on n=26878 (bullpen_relief_chains+savant_full__2023-2025), then NULL_LOCAL on n=26878 (bullpen_relief_chains+savant_full__2023-2025)."
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "staff_dayafter_fatigue_chain",
+      "current_status": "null",
+      "verdict_sequence": [
+        "NULL_LOCAL",
+        "CONFIRMED_LOCAL",
+        "NULL_LOCAL"
+      ],
+      "steps": [
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "corpus": "savant_full__2023-2025_team_day_pitchcount",
+          "n": 2087,
+          "effect": 0.0789,
+          "run_ts": "2026-07-10T08:23:40Z"
+        },
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "corpus": "savant_full__2023-2025_team_day_pitchcount",
+          "n": 2160,
+          "effect": 0.3915,
+          "run_ts": "2026-07-10T08:23:40Z"
+        },
+        {
+          "verdict": "NULL_LOCAL",
+          "status": "null",
+          "corpus": "savant_full__2023-2025_team_day_pitchcount",
+          "n": 2078,
+          "effect": 0.3266,
+          "run_ts": "2026-07-10T08:23:40Z"
+        }
+      ],
+      "one_line": "First NULL_LOCAL on n=2087 (savant_full__2023-2025_team_day_pitchcount), then NULL_LOCAL on n=2078 (savant_full__2023-2025_team_day_pitchcount)."
+    },
+    {
+      "sport": "tennis",
+      "hypothesis": "break_point_conversion_by_set_number",
+      "current_status": "verified",
+      "verdict_sequence": [
+        "NOT_TESTABLE",
+        "CONFIRMED_LOCAL"
+      ],
+      "steps": [
+        {
+          "verdict": "NOT_TESTABLE",
+          "status": "not_testable",
+          "corpus": "slam_points_2011_2015",
+          "n": 34145,
+          "effect": -0.017,
+          "run_ts": null
+        },
+        {
+          "verdict": "CONFIRMED_LOCAL",
+          "status": "verified",
+          "corpus": "slam_points_2011_2015",
+          "n": 34145,
+          "effect": -0.017,
+          "run_ts": null
+        }
+      ],
+      "one_line": "First NOT_TESTABLE on n=34145 (slam_points_2011_2015), then CONFIRMED_LOCAL on n=34145 (slam_points_2011_2015)."
+    }
+  ],
+  "retracted": [
+    {
+      "sport": "mlb",
+      "hypothesis": "meta_label_divergence_bucket_Q1",
+      "first_run_ts": "undated",
+      "last_run_ts": "undated",
+      "days_lived": null,
+      "n_history_rows": 1,
+      "what_killed_it": "FAILED_REPLICATION on corpus 'ingame_grade_joined_mlb_synthetic_checkpoints_disjoint' (n=20, effect=0.45)"
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "meta_label_divergence_bucket_Q2",
+      "first_run_ts": "undated",
+      "last_run_ts": "undated",
+      "days_lived": null,
+      "n_history_rows": 1,
+      "what_killed_it": "FAILED_REPLICATION on corpus 'ingame_grade_joined_mlb_synthetic_checkpoints_disjoint' (n=19, effect=0.3158)"
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "meta_label_divergence_bucket_Q3",
+      "first_run_ts": "undated",
+      "last_run_ts": "undated",
+      "days_lived": null,
+      "n_history_rows": 1,
+      "what_killed_it": "FAILED_REPLICATION on corpus 'ingame_grade_joined_mlb_synthetic_checkpoints_disjoint' (n=19, effect=0.3158)"
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "meta_label_divergence_bucket_Q4",
+      "first_run_ts": "undated",
+      "last_run_ts": "undated",
+      "days_lived": null,
+      "n_history_rows": 1,
+      "what_killed_it": "FAILED_REPLICATION on corpus 'ingame_grade_joined_mlb_synthetic_checkpoints_disjoint' (n=18, effect=0.3333)"
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "milb_debut_freshness_flag",
+      "first_run_ts": "undated",
+      "last_run_ts": "undated",
+      "days_lived": null,
+      "n_history_rows": 1,
+      "what_killed_it": "REJECT on corpus 'games_current_season_2026__savant_debut_proxy' (n=39, effect=0.000394)"
+    },
+    {
+      "sport": "mlb",
+      "hypothesis": "oaa_trailing_fielding_quality_babip_conversion",
+      "first_run_ts": "undated",
+      "last_run_ts": "undated",
+      "days_lived": null,
+      "n_history_rows": 2,
+      "what_killed_it": "REJECT on corpus 'savant_playlevel__2025_2026' (n=55063, effect=None)"
+    },
+    {
+      "sport": "soccer",
+      "hypothesis": "substitution_timing_moderates_shift__replication_big4_2015_16",
+      "first_run_ts": "2026-07-10T13:55:32Z",
+      "last_run_ts": "2026-07-10T13:55:32Z",
+      "days_lived": 0,
+      "n_history_rows": 1,
+      "what_killed_it": "FAILED_REPLICATION on corpus 'disjoint_competition_group' (n=1691, effect=0.01861)"
+    }
+  ],
+  "dating_coverage": {
+    "n_history_rows_total": 287,
+    "n_with_run_ts": 145,
+    "note": "run_ts is present on only some rows; undated flips show sequence without dates."
+  },
+  "confounds": [
+    "5 flips is a small, anecdotal set -- this is qualitative case study, not a rate.",
+    "run_ts is missing on many history rows, so 'days-lived' is a lower bound and some flips are undated.",
+    "a flip reflects more/re-cleaned data arriving, NOT that the earlier verdict was careless."
+  ]
+}

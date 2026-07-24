@@ -89,7 +89,7 @@ const PILLARS: Array<{ href: string; label: string }> = [
 const FOOT_LINKS: Array<{ href: string; label: string }> = [
   { href: "/analytics/about", label: "About" },
   { href: "/analytics/explainers", label: "Explainers" },
-  { href: "/analytics/findings/retraction", label: "Retractions" },
+  { href: "/analytics/findings", label: "Findings" },
 ];
 
 export default function AnalyticsRootLayout({ children }: { children: ReactNode }) {

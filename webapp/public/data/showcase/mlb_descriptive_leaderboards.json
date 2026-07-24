@@ -1,0 +1,484 @@
+{
+ "status": "ok",
+ "generated_at": "2026-07-24T21:46:01.294251+00:00",
+ "descriptive_only": true,
+ "edge_claimed": false,
+ "headline": "Descriptive MLB Statcast-derived leaderboards (catcher/umpire out-of-zone strike rate, platoon on-base splits) for a fixed 2022-2023 corpus slice, shown beside two honest nulls -- an unstable park-factor read and a REJECTed umpire-totals gate -- with no predictive or edge claim anywhere.",
+ "observation_window": {
+  "seasons": "2022_2023",
+  "corpus_id": "statcast_fuller_v1",
+  "as_of": "2026-07-05T02:39:36.769430+00:00",
+  "note": "a fixed 2022-2023 Statcast slice, not the current season"
+ },
+ "source_note": "Leaderboards derived from LOCAL Statcast-derived parquets (gitignored); this committed JSON is the recorded artifact. edge_claimed:false.",
+ "catcher_ooz": {
+  "label": "Out-of-zone called/swung-strike rate -- a DESCRIPTIVE catcher stat, cruder than model-based framing; NOT a called-strike or framing rate, NOT predictive.",
+  "floor": "n_ooz_called>=500",
+  "n_qualified": 113,
+  "top": [
+   {
+    "name": "Ren\u00e9 Pinto",
+    "n_ooz_called": 3448,
+    "ooz_strike_rate": 0.315
+   },
+   {
+    "name": "Austin Barnes",
+    "n_ooz_called": 6707,
+    "ooz_strike_rate": 0.305
+   },
+   {
+    "name": "Alejandro Kirk",
+    "n_ooz_called": 10963,
+    "ooz_strike_rate": 0.305
+   },
+   {
+    "name": "Patrick Bailey",
+    "n_ooz_called": 5657,
+    "ooz_strike_rate": 0.304
+   },
+   {
+    "name": "Roberto P\u00e9rez",
+    "n_ooz_called": 1637,
+    "ooz_strike_rate": 0.302
+   },
+   {
+    "name": "Sandy Le\u00f3n",
+    "n_ooz_called": 2537,
+    "ooz_strike_rate": 0.302
+   },
+   {
+    "name": "Travis d'Arnaud",
+    "n_ooz_called": 11281,
+    "ooz_strike_rate": 0.299
+   },
+   {
+    "name": "Cal Raleigh",
+    "n_ooz_called": 14504,
+    "ooz_strike_rate": 0.299
+   },
+   {
+    "name": "Curt Casali",
+    "n_ooz_called": 5068,
+    "ooz_strike_rate": 0.299
+   },
+   {
+    "name": "Jacob Stallings",
+    "n_ooz_called": 12090,
+    "ooz_strike_rate": 0.298
+   },
+   {
+    "name": "Austin Wells",
+    "n_ooz_called": 1276,
+    "ooz_strike_rate": 0.298
+   },
+   {
+    "name": "Manny Pi\u00f1a",
+    "n_ooz_called": 541,
+    "ooz_strike_rate": 0.298
+   },
+   {
+    "name": "Danny Jansen",
+    "n_ooz_called": 8461,
+    "ooz_strike_rate": 0.297
+   },
+   {
+    "name": "Meibrys Viloria",
+    "n_ooz_called": 1543,
+    "ooz_strike_rate": 0.297
+   },
+   {
+    "name": "Tom Murphy",
+    "n_ooz_called": 3167,
+    "ooz_strike_rate": 0.297
+   }
+  ],
+  "bottom": [
+   {
+    "name": "Logan O'Hoppe",
+    "n_ooz_called": 3921,
+    "ooz_strike_rate": 0.255
+   },
+   {
+    "name": "Tyler Stephenson",
+    "n_ooz_called": 8674,
+    "ooz_strike_rate": 0.254
+   },
+   {
+    "name": "Carlos P\u00e9rez",
+    "n_ooz_called": 2234,
+    "ooz_strike_rate": 0.253
+   },
+   {
+    "name": "David Fry",
+    "n_ooz_called": 882,
+    "ooz_strike_rate": 0.253
+   },
+   {
+    "name": "Andrew Knizner",
+    "n_ooz_called": 9652,
+    "ooz_strike_rate": 0.253
+   },
+   {
+    "name": "Shea Langeliers",
+    "n_ooz_called": 9839,
+    "ooz_strike_rate": 0.252
+   },
+   {
+    "name": "Brett Sullivan",
+    "n_ooz_called": 1708,
+    "ooz_strike_rate": 0.251
+   },
+   {
+    "name": "Korey Lee",
+    "n_ooz_called": 2159,
+    "ooz_strike_rate": 0.25
+   },
+   {
+    "name": "Riley Adams",
+    "n_ooz_called": 5437,
+    "ooz_strike_rate": 0.25
+   },
+   {
+    "name": "P.J. Higgins",
+    "n_ooz_called": 1946,
+    "ooz_strike_rate": 0.25
+   },
+   {
+    "name": "Elias D\u00edaz",
+    "n_ooz_called": 14540,
+    "ooz_strike_rate": 0.25
+   },
+   {
+    "name": "Robinson Chirinos",
+    "n_ooz_called": 3989,
+    "ooz_strike_rate": 0.246
+   },
+   {
+    "name": "Carlos P\u00e9rez",
+    "n_ooz_called": 1277,
+    "ooz_strike_rate": 0.239
+   },
+   {
+    "name": "Cooper Hummel",
+    "n_ooz_called": 914,
+    "ooz_strike_rate": 0.218
+   },
+   {
+    "name": "Drew Millas",
+    "n_ooz_called": 585,
+    "ooz_strike_rate": 0.212
+   }
+  ]
+ },
+ "platoon_splits": {
+  "label": "Raw on-base-rate gap vs LHP minus vs RHP -- not park/quality adjusted, descriptive only.",
+  "floor": "pa_vs_l>=50 and pa_vs_r>=50",
+  "n_qualified": 394,
+  "top": [
+   {
+    "name": "Mitch Garver",
+    "rate_vs_l": 0.453,
+    "rate_vs_r": 0.3,
+    "platoon_delta": 0.152,
+    "pa_vs_l": 148,
+    "pa_vs_r": 413
+   },
+   {
+    "name": "Robbie Grossman",
+    "rate_vs_l": 0.427,
+    "rate_vs_r": 0.276,
+    "platoon_delta": 0.151,
+    "pa_vs_l": 286,
+    "pa_vs_r": 613
+   },
+   {
+    "name": "Cristian Pache",
+    "rate_vs_l": 0.315,
+    "rate_vs_r": 0.191,
+    "platoon_delta": 0.124,
+    "pa_vs_l": 146,
+    "pa_vs_r": 209
+   },
+   {
+    "name": "Bobby Dalbec",
+    "rate_vs_l": 0.358,
+    "rate_vs_r": 0.243,
+    "platoon_delta": 0.116,
+    "pa_vs_l": 134,
+    "pa_vs_r": 272
+   },
+   {
+    "name": "Sam Haggerty",
+    "rate_vs_l": 0.396,
+    "rate_vs_r": 0.288,
+    "platoon_delta": 0.108,
+    "pa_vs_l": 154,
+    "pa_vs_r": 156
+   },
+   {
+    "name": "William Contreras",
+    "rate_vs_l": 0.437,
+    "rate_vs_r": 0.329,
+    "platoon_delta": 0.107,
+    "pa_vs_l": 293,
+    "pa_vs_r": 695
+   },
+   {
+    "name": "Kevin Smith",
+    "rate_vs_l": 0.279,
+    "rate_vs_r": 0.175,
+    "platoon_delta": 0.104,
+    "pa_vs_l": 104,
+    "pa_vs_r": 194
+   },
+   {
+    "name": "Rob Refsnyder",
+    "rate_vs_l": 0.42,
+    "rate_vs_r": 0.317,
+    "platoon_delta": 0.103,
+    "pa_vs_l": 219,
+    "pa_vs_r": 202
+   },
+   {
+    "name": "Kevin Newman",
+    "rate_vs_l": 0.374,
+    "rate_vs_r": 0.273,
+    "platoon_delta": 0.101,
+    "pa_vs_l": 214,
+    "pa_vs_r": 348
+   },
+   {
+    "name": "Albert Pujols",
+    "rate_vs_l": 0.405,
+    "rate_vs_r": 0.308,
+    "platoon_delta": 0.097,
+    "pa_vs_l": 131,
+    "pa_vs_r": 221
+   },
+   {
+    "name": "TJ Friedl",
+    "rate_vs_l": 0.417,
+    "rate_vs_r": 0.321,
+    "platoon_delta": 0.096,
+    "pa_vs_l": 132,
+    "pa_vs_r": 682
+   },
+   {
+    "name": "Jos\u00e9 Caballero",
+    "rate_vs_l": 0.395,
+    "rate_vs_r": 0.301,
+    "platoon_delta": 0.094,
+    "pa_vs_l": 124,
+    "pa_vs_r": 156
+   },
+   {
+    "name": "Patrick Bailey",
+    "rate_vs_l": 0.345,
+    "rate_vs_r": 0.254,
+    "platoon_delta": 0.091,
+    "pa_vs_l": 113,
+    "pa_vs_r": 240
+   },
+   {
+    "name": "Jose Trevino",
+    "rate_vs_l": 0.345,
+    "rate_vs_r": 0.254,
+    "platoon_delta": 0.09,
+    "pa_vs_l": 119,
+    "pa_vs_r": 405
+   },
+   {
+    "name": "Harold Ram\u00edrez",
+    "rate_vs_l": 0.411,
+    "rate_vs_r": 0.322,
+    "platoon_delta": 0.088,
+    "pa_vs_l": 246,
+    "pa_vs_r": 624
+   }
+  ]
+ },
+ "umpire_ooz": {
+  "label": "Out-of-zone called/swung-strike rate -- a DESCRIPTIVE umpire-zone stat, cruder than model-based framing; NOT a called-strike or framing rate, NOT predictive.",
+  "corpus_id": "statcast_fuller_v1_x_probables",
+  "n_qualified": 102,
+  "top": [
+   {
+    "name": "Randy Rosenberg",
+    "n_ooz_called": 506,
+    "ooz_strike_rate": 0.314
+   },
+   {
+    "name": "Bill Miller",
+    "n_ooz_called": 8815,
+    "ooz_strike_rate": 0.308
+   },
+   {
+    "name": "Laz Diaz",
+    "n_ooz_called": 7197,
+    "ooz_strike_rate": 0.302
+   },
+   {
+    "name": "Doug Eddings",
+    "n_ooz_called": 8181,
+    "ooz_strike_rate": 0.302
+   },
+   {
+    "name": "Andy Fletcher",
+    "n_ooz_called": 8328,
+    "ooz_strike_rate": 0.3
+   },
+   {
+    "name": "Lance Barrett",
+    "n_ooz_called": 8184,
+    "ooz_strike_rate": 0.299
+   },
+   {
+    "name": "Gabe Morales",
+    "n_ooz_called": 8409,
+    "ooz_strike_rate": 0.299
+   },
+   {
+    "name": "Jacob Metz",
+    "n_ooz_called": 1735,
+    "ooz_strike_rate": 0.299
+   },
+   {
+    "name": "Marty Foster",
+    "n_ooz_called": 1492,
+    "ooz_strike_rate": 0.298
+   },
+   {
+    "name": "Brian Walsh",
+    "n_ooz_called": 1960,
+    "ooz_strike_rate": 0.298
+   },
+   {
+    "name": "Jerry Meals",
+    "n_ooz_called": 3759,
+    "ooz_strike_rate": 0.297
+   },
+   {
+    "name": "CB Bucknor",
+    "n_ooz_called": 7915,
+    "ooz_strike_rate": 0.297
+   },
+   {
+    "name": "Phil Cuzzi",
+    "n_ooz_called": 8086,
+    "ooz_strike_rate": 0.297
+   },
+   {
+    "name": "Chris Conroy",
+    "n_ooz_called": 4251,
+    "ooz_strike_rate": 0.295
+   },
+   {
+    "name": "Greg Gibson",
+    "n_ooz_called": 1308,
+    "ooz_strike_rate": 0.295
+   }
+  ],
+  "bottom": [
+   {
+    "name": "Jansen Visconti",
+    "n_ooz_called": 8248,
+    "ooz_strike_rate": 0.272
+   },
+   {
+    "name": "Alan Porter",
+    "n_ooz_called": 8451,
+    "ooz_strike_rate": 0.271
+   },
+   {
+    "name": "Adrian Johnson",
+    "n_ooz_called": 8422,
+    "ooz_strike_rate": 0.27
+   },
+   {
+    "name": "Shane Livensparger",
+    "n_ooz_called": 8920,
+    "ooz_strike_rate": 0.27
+   },
+   {
+    "name": "Paul Emmel",
+    "n_ooz_called": 5062,
+    "ooz_strike_rate": 0.27
+   },
+   {
+    "name": "Jordan Baker",
+    "n_ooz_called": 8319,
+    "ooz_strike_rate": 0.27
+   },
+   {
+    "name": "Nate Tomlinson",
+    "n_ooz_called": 7223,
+    "ooz_strike_rate": 0.269
+   },
+   {
+    "name": "Tripp Gibson",
+    "n_ooz_called": 8399,
+    "ooz_strike_rate": 0.268
+   },
+   {
+    "name": "Alex Tosi",
+    "n_ooz_called": 7715,
+    "ooz_strike_rate": 0.268
+   },
+   {
+    "name": "John Bacon",
+    "n_ooz_called": 2933,
+    "ooz_strike_rate": 0.267
+   },
+   {
+    "name": "Pat Hoberg",
+    "n_ooz_called": 8269,
+    "ooz_strike_rate": 0.266
+   },
+   {
+    "name": "Mark Wegner",
+    "n_ooz_called": 6755,
+    "ooz_strike_rate": 0.263
+   },
+   {
+    "name": "Carlos Torres",
+    "n_ooz_called": 8472,
+    "ooz_strike_rate": 0.26
+   },
+   {
+    "name": "David Arrieta",
+    "n_ooz_called": 754,
+    "ooz_strike_rate": 0.259
+   },
+   {
+    "name": "Derek Thomas",
+    "n_ooz_called": 2608,
+    "ooz_strike_rate": 0.252
+   }
+  ]
+ },
+ "park_factor_null": {
+  "headline": "asof_park.parquet's park_factor is mostly NaN in this corpus -- too unstable/sparse to publish as a ranking, so we report the null instead.",
+  "n_rows": 29,
+  "n_finite_park_factor": 0,
+  "n_nan": 29,
+  "verdict": "too unstable/sparse to publish as a ranking"
+ },
+ "umpire_totals_gate": {
+  "hypothesis": "home-plate umpire out-of-zone strike-rate tendency (expanding, as-of within this gate) predicts game total runs beyond an internal league+park baseline",
+  "verdict": "REJECT",
+  "verdict_reason": "planted null (shuffled umpire assignment) shows an equal-or-larger RMSE improvement than the real assignment -- added-flexibility artifact, not umpire signal",
+  "n_umpires": 103,
+  "fold_rmse_deltas": [
+   -0.0004073594731606178,
+   -0.0013339270705401418,
+   -0.0004909086061335444
+  ],
+  "reading": "ump identity did not move game totals -- a REJECT, published honestly"
+ },
+ "confounds": [
+  "OOZ strike rate is cruder than mixed-model framing and is NOT a called-strike/framing rate.",
+  "2022-2023 fixed window; not current-season.",
+  "platoon delta is raw on-base rate difference, not park/quality adjusted.",
+  "these are DESCRIPTIVE leaderboards; no predictive or edge claim is made."
+ ]
+}
