@@ -48,6 +48,9 @@ export default function AnalyticsHome() {
   const xsport = readJson("cross_sport_scoreboard.json");
   const honesty = readJson("honesty_exhibit.json");
   const fwd = readJson("fwd_claim_scoreboard.json");
+  const novelIdx = readJson("novel_stats_index.json");
+  const novelStats: Array<{ stat_name: string; abbrev: string; headline: string; prior_art_verdict: string }> =
+    novelIdx?.stats ?? [];
 
   const moduleCount = manifest?.module_count ?? 54;
   const cardCount = manifest?.atlas_card_count ?? 1549;
@@ -193,6 +196,27 @@ export default function AnalyticsHome() {
         ))}
       </div>
 
+      {novelStats.length ? (
+        <>
+          <div className="a-shead">
+            <h2>Six novel stats</h2>
+            <a href={`${BP}/analytics/novel`}>{"See all six →"}</a>
+          </div>
+          <div className="a-novelrow">
+            {novelStats.map((s) => (
+              <div key={s.abbrev} className="a-novelcard">
+                <div className="a-novelhead">
+                  <span className="ab mono">{s.abbrev}</span>
+                  <span className="vd mono">{s.prior_art_verdict.replace(/_/g, " ").toLowerCase()}</span>
+                </div>
+                <div className="tl">{s.stat_name}</div>
+                <p className="hl">{s.headline}</p>
+              </div>
+            ))}
+          </div>
+        </>
+      ) : null}
+
       <div className="a-shead">
         <h2>Explore the analytics</h2>
         <a href={`${BP}/analytics/browse`}>{`All ${moduleCount} modules \u2192`}</a>
@@ -248,6 +272,14 @@ const CSS = `
 .a-door .k::after{content:"";position:absolute;inset:0}
 .a-door .d{font-size:13.5px;line-height:1.5;color:var(--ink-2);margin:8px 0 0;flex:1 1 auto}
 .a-door .m{font-family:var(--font-mono);font-size:11.5px;color:var(--ink-3);margin-top:14px}
+.a-novelrow{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.a-novelcard{padding:18px;background:var(--paper-raised);border:1px solid var(--rule);border-top:3px solid var(--signal);border-radius:var(--radius-card);box-shadow:var(--shadow-card)}
+.a-novelhead{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.a-novelhead .ab{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--signal-ink)}
+.a-novelhead .vd{font-size:10.5px;color:var(--ink-3)}
+.a-novelcard .tl{font-family:var(--font-display);font-weight:500;font-size:16px;color:var(--ink);margin-top:8px}
+.a-novelcard .hl{font-size:12.5px;line-height:1.5;color:var(--ink-2);margin-top:6px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}
+@media(max-width:820px){.a-novelrow{grid-template-columns:1fr}}
 .a-strip{border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:22px 0;margin:48px 0 8px;display:flex;gap:16px;align-items:baseline}
 .a-strip .k{font-weight:700;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--signal-ink);white-space:nowrap}
 .a-strip .t{color:var(--ink-2);font-size:14.5px;line-height:1.6;max-width:78ch}

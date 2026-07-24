@@ -15,6 +15,7 @@ import { ScoutNote, type ScoutEnvelope } from "@/components/analytics/ScoutNote"
 import { ScoutQuestions } from "@/components/analytics/ScoutQuestions";
 import type { ReceiptData } from "@/components/analytics/Receipt";
 import { VerdictLegend } from "@/components/analytics/VerdictLegend";
+import { NovelStatPanel, type NovelStat } from "@/components/analytics/NovelStatPanel";
 import { asOfDate } from "@/lib/analytics/format";
 
 const DATA = join(process.cwd(), "public", "data");
@@ -164,7 +165,14 @@ export default function ModulePage({ params }: { params: { id: string } }) {
   const chartSrc = m.chart_path ? `${BASE}/img/showcase/${base(m.chart_path)}` : null;
   const confounds = out.declared_confounds;
   const confoundList = Array.isArray(confounds) ? (confounds as string[]) : confounds ? [str(confounds)] : [];
-  const hasNovelty = !!(out.prior_art_verdict || out.formula || out.prior_art || out.prior_art_citation || out.metric_definition);
+  // The six novel_* modules carry a full paper-shaped artifact (headline, metric
+  // definition, formula, results rows, prior art, confounds, exclusions). The old
+  // inline mv-novel block rendered only the verdict + formula and dropped the rest,
+  // so those modules get the dedicated panel instead -- and the caveat block stops
+  // repeating the confound list the panel already prints.
+  const isNovel = m.id.startsWith("novel_") && typeof out.stat_name === "string" && typeof out.formula === "string";
+  const hasNovelty =
+    !isNovel && !!(out.prior_art_verdict || out.formula || out.prior_art || out.prior_art_citation || out.metric_definition);
 
   const questions = corpusQuestions(m.id);
 
@@ -226,7 +234,7 @@ export default function ModulePage({ params }: { params: { id: string } }) {
             </div>
           ) : null}
 
-          {(ins?.caveat || methodStr || methodPairs.length || confoundList.length) ? (
+          {(ins?.caveat || methodStr || methodPairs.length || (!isNovel && confoundList.length)) ? (
             <div className="mv-caveat">
               <h2 className="overline" style={{ color: "var(--signal-ink)", marginBottom: 8 }}>Caveats &amp; confounds</h2>
               {ins?.caveat ? <p>{ins.caveat}</p> : null}
@@ -247,7 +255,7 @@ export default function ModulePage({ params }: { params: { id: string } }) {
                   </dl>
                 </div>
               ) : null}
-              {confoundList.length ? (
+              {!isNovel && confoundList.length ? (
                 <ul>
                   {confoundList.map((c, i) => (
                     <li key={i}>{c}</li>
@@ -256,6 +264,8 @@ export default function ModulePage({ params }: { params: { id: string } }) {
               ) : null}
             </div>
           ) : null}
+
+          {isNovel ? <NovelStatPanel stat={out as NovelStat} /> : null}
 
           {hasNovelty ? (
             <div className="mv-novel">

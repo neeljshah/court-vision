@@ -62,6 +62,7 @@ function readInsight(id: string): Insight | null {
 
 // Editorial category from the id -- a magazine "section", derived not curated.
 function category(id: string): string {
+  if (id.startsWith("novel_")) return "Novel stats";
   if (id.startsWith("ctx_")) return "Context";
   if (id.startsWith("cf_")) return "Counterfactual";
   if (id.startsWith("mlb_") || id.startsWith("statcast") || id === "pitch_sequencing") return "Baseball";
@@ -144,6 +145,7 @@ export default function BrowsePage() {
           <Link key={r.m.id} href={`/analytics/m/${r.m.id}`} className={`mcard ${r.span}`} data-cat={r.cat}>
             <div className="mc-top">
               <span className="mc-cat">{r.cat}</span>
+              {r.m.id.startsWith("novel_") ? <span className="mc-novel mono">novel</span> : null}
               {r.m.status !== "ok" ? <span className="mc-flag mono">{r.m.status} cut</span> : null}
               <VerdictDot verdict={verdictOf(r.m.status)} />
             </div>
@@ -181,6 +183,8 @@ export default function BrowsePage() {
           display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
         .mc-flag{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);white-space:nowrap;
           border:1px solid var(--rule-strong);border-radius:var(--radius-pill);padding:1px 7px;margin-left:auto}
+        .mc-novel{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--signal-ink);white-space:nowrap;
+          border:1px solid var(--signal);border-radius:var(--radius-pill);padding:1px 7px;margin-left:auto}
         .mc-sum{font-size:13px;color:var(--ink-2);line-height:1.45;margin-top:6px;overflow:hidden;
           display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
         .mc-foot{margin-top:auto;display:flex;align-items:flex-end;justify-content:space-between;gap:10px;padding-top:10px}

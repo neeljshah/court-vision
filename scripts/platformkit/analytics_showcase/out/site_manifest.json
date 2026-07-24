@@ -1,11 +1,11 @@
 {
   "generated_from": "scripts/platformkit/analytics_showcase/out",
-  "module_count": 54,
+  "module_count": 62,
   "atlas_card_count": 1549,
   "checks_green": {
     "green": true,
-    "pass": 63,
-    "total": 63
+    "pass": 77,
+    "total": 77
   },
   "edge_claimed": false,
   "modules": [
@@ -61,7 +61,7 @@
       "chart_path": "docs/img/brier_skill_scores.png",
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-24T00:18:11.535624+00:00",
+      "as_of": "2026-07-24T03:17:51.439562+00:00",
       "evidence_page": null
     },
     {
@@ -307,6 +307,17 @@
       "evidence_page": "docs/evidence/novel-analytics.md"
     },
     {
+      "id": "mechanism_ledger_export",
+      "title": "Mechanism Ledger Export",
+      "one_line": "Every named mechanism we have tested, with its recorded verdict and evidence pointer. A NULL/REJECT/NOT_TESTABLE is honest market-efficiency evidence, not a failure. Measurement-hygiene artifact -- no $/edge/ROI claim. as_of is the recor...",
+      "out_path": "scripts/platformkit/analytics_showcase/out/mechanism_ledger_export.json",
+      "chart_path": "docs/img/mechanism_ledger_export.png",
+      "status": "ok",
+      "edge_claimed": false,
+      "as_of": null,
+      "evidence_page": null
+    },
+    {
       "id": "mechanism_survival",
       "title": "Mechanism Survival",
       "one_line": "Survival rate = share of TESTABLE hypotheses whose latest recorded verdict is CONFIRMED_LOCAL / CONFIRMED_LOCAL_incl_2026_OOS / REPLICATED. A NULL/REJECT is honest market-efficiency evidence, not a failure. No $/edge/ROI claim.",
@@ -315,7 +326,7 @@
       "status": "ok",
       "edge_claimed": false,
       "as_of": null,
-      "evidence_page": "docs/evidence/knowledge-engine.md"
+      "evidence_page": "docs/evidence/cross-corpus-replication.md"
     },
     {
       "id": "micro_absorption",
@@ -347,7 +358,7 @@
       "chart_path": "docs/img/mlb_count_leverage.png",
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-24T00:19:03.077431+00:00",
+      "as_of": "2026-07-24T03:18:41.381428+00:00",
       "evidence_page": null
     },
     {
@@ -406,6 +417,83 @@
       "evidence_page": null
     },
     {
+      "id": "novel_line_half_life",
+      "title": "Novel Line Half Life",
+      "one_line": "soccer_intl completes half its pre-game line motion by 2.7h before tip; nba not until 4.8h. tennis, wnba move most of their line >6h before tip.",
+      "out_path": "scripts/platformkit/analytics_showcase/out/novel_line_half_life.json",
+      "chart_path": "docs/img/novel_line_half_life.png",
+      "status": "ok",
+      "edge_claimed": false,
+      "as_of": "2026-07-24",
+      "evidence_page": null
+    },
+    {
+      "id": "novel_live_clock_fraction",
+      "title": "Novel Live Clock Fraction",
+      "one_line": "mlb stays contested later (LCF 0.833) than soccer_intl (LCF 0.748). (nba comeback-rate cross-check 0.0146)",
+      "out_path": "scripts/platformkit/analytics_showcase/out/novel_live_clock_fraction.json",
+      "chart_path": "docs/img/novel_live_clock_fraction.png",
+      "status": "ok",
+      "edge_claimed": false,
+      "as_of": null,
+      "evidence_page": null
+    },
+    {
+      "id": "novel_load_bearing_index",
+      "title": "Novel Load Bearing Index",
+      "one_line": "Most one-star-fragile: DEN (Nikola Joki\u0107, delta_winprob 0.5822). Two estimators name the same #1 player for 1/30 teams (directional cross-check, different seasons).",
+      "out_path": "scripts/platformkit/analytics_showcase/out/novel_load_bearing_index.json",
+      "chart_path": "docs/img/novel_load_bearing_index.png",
+      "status": "ok",
+      "edge_claimed": false,
+      "as_of": null,
+      "evidence_page": null
+    },
+    {
+      "id": "novel_market_foresight_premium",
+      "title": "Novel Market Foresight Premium",
+      "one_line": "mlb: MFP rises from 0.06 to 0.24 over the game (mean 0.25); soccer_intl: MFP rises from 0.64 to 1.71 over the game (mean 0.92)",
+      "out_path": "scripts/platformkit/analytics_showcase/out/novel_market_foresight_premium.json",
+      "chart_path": "docs/img/novel_market_foresight_premium.png",
+      "status": "ok",
+      "edge_claimed": false,
+      "as_of": null,
+      "evidence_page": null
+    },
+    {
+      "id": "novel_overreaction_harvest_gap",
+      "title": "Novel Overreaction Harvest Gap",
+      "one_line": "soccer_intl: overshoot 0.286 but model beats market only 22% of the time at max disagreement -> OHG 0.081 (a failure to harvest, not an edge); mlb: overshoot 0.072 but model beats market only 38% of the time at max disagreement -> OHG 0....",
+      "out_path": "scripts/platformkit/analytics_showcase/out/novel_overreaction_harvest_gap.json",
+      "chart_path": "docs/img/novel_overreaction_harvest_gap.png",
+      "status": "ok",
+      "edge_claimed": false,
+      "as_of": null,
+      "evidence_page": null
+    },
+    {
+      "id": "novel_schedule_fatigue_tax",
+      "title": "Novel Schedule Fatigue Tax",
+      "one_line": "Most-taxed schedule: DEN 2025-26 (-0.38 pts/100 ORtg season-averaged); least: MEM 2025-26 (-0.27). League schedule-inequality range 0.11 pts/100 across 90 team-seasons.",
+      "out_path": "scripts/platformkit/analytics_showcase/out/novel_schedule_fatigue_tax.json",
+      "chart_path": "docs/img/novel_schedule_fatigue_tax.png",
+      "status": "ok",
+      "edge_claimed": false,
+      "as_of": null,
+      "evidence_page": null
+    },
+    {
+      "id": "novel_stats_index",
+      "title": "Novel Stats Index",
+      "one_line": "composition only -- each card copied from its module's own novel_*.json output",
+      "out_path": "scripts/platformkit/analytics_showcase/out/novel_stats_index.json",
+      "chart_path": null,
+      "status": "ok",
+      "edge_claimed": false,
+      "as_of": "2026-07-24T03:18:51.879510+00:00",
+      "evidence_page": null
+    },
+    {
       "id": "on_off_showcase",
       "title": "On Off Showcase",
       "one_line": "",
@@ -424,7 +512,7 @@
       "chart_path": null,
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-24T00:19:11.454119+00:00",
+      "as_of": "2026-07-24T03:18:52.499629+00:00",
       "evidence_page": null
     },
     {
@@ -435,7 +523,7 @@
       "chart_path": "docs/img/pitch_sequencing.png",
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-24T00:19:12.684500+00:00",
+      "as_of": "2026-07-24T03:18:53.436923+00:00",
       "evidence_page": null
     },
     {
@@ -557,7 +645,7 @@
       "status": "ok",
       "edge_claimed": false,
       "as_of": null,
-      "evidence_page": "docs/evidence/novel-analytics.md"
+      "evidence_page": "docs/evidence/cross-corpus-replication.md"
     },
     {
       "id": "tennis_surface_transfer",

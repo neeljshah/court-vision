@@ -21,7 +21,16 @@ _EVID = _REPO / "docs" / "evidence"
 _MANIFEST = _OUT / "site_manifest.json"
 
 # Not analytics modules: atlas manifests feed atlas_card_count; these are meta.
-_SKIP = {"site_manifest.json", "check_all_report.json", "claims_corpus_meta.json"}
+# Artifacts that live in out/ but are not analytics modules: build tooling
+# output, indexes, and render ledgers. They would render as empty catalog cards.
+_SKIP = {
+    "site_manifest.json",
+    "check_all_report.json",
+    "claims_corpus_meta.json",
+    "brand_logo_variants.json",
+    "evidence_index.json",
+    "share_ledger.json",
+}
 
 # Fields, in priority order, whose value is an honest one-line summary of a module.
 # Short verdict/headline/label first; longer notes as fallback.

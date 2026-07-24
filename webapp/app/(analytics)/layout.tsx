@@ -78,6 +78,7 @@ const PILLARS: Array<{ href: string; label: string }> = [
   { href: "/analytics", label: "Home" },
   { href: "/analytics/forecaster", label: "Forecaster" },
   { href: "/analytics/the-loop", label: "The Loop" },
+  { href: "/analytics/novel", label: "Novel Stats" },
   { href: "/analytics/browse", label: "Explore" },
   { href: "/analytics/players", label: "Entities" },
   { href: "/analytics/ask", label: "Ask Scout" },
