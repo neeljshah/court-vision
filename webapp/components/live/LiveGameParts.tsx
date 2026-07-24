@@ -11,7 +11,7 @@
  */
 
 import { Num } from "@/components/ui/terminal";
-import type { LiveGameEntry } from "@/app/live/liveSections";
+import type { LiveGameEntry } from "@/app/(terminal)/live/liveSections";
 
 export function LiveChip() {
   return (

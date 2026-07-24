@@ -18,7 +18,7 @@ import { useLiveData } from "@/lib/useLiveData";
 import { Panel, PanelHead, Num } from "@/components/ui/terminal";
 import { Sparkline } from "@/components/Sparkline";
 import { EMPTY_CELL } from "@/lib/tokens";
-import type { EvidenceResponse } from "@/app/api/evidence/_lib";
+import type { EvidenceResponse } from "@/app/(terminal)/api/evidence/_lib";
 
 const MIN_TREND_POINTS = 3;
 

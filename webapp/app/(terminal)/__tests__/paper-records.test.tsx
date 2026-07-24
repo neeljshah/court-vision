@@ -29,7 +29,7 @@ vi.mock("@/components/paper_pm/PmTrailTable", () => ({
   PmTrailTable: () => <div data-testid="pm-trail-stub" />,
 }));
 
-import PaperPage from "@/app/paper/page";
+import PaperPage from "@/app/(terminal)/paper/page";
 import type { PaperPredictions } from "@/lib/p5api";
 import type { Unavailable } from "@/lib/types";
 

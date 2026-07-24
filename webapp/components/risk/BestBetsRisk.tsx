@@ -17,7 +17,7 @@ import {
   type BestBetsEnvelope,
   type GameEdge,
 } from "@/lib/api";
-import { GAME_SPORTS, sportLabel } from "@/app/games/card-utils";
+import { GAME_SPORTS, sportLabel } from "@/app/(terminal)/games/card-utils";
 import { Panel, Unavailable, Badge } from "@/components/p6/Primitives";
 import { InfoTip } from "@/components/depth";
 import { BestBetRiskCard } from "./BestBetRiskCard";

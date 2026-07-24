@@ -682,7 +682,7 @@ function makeBoardResponse(cards: BestBetsCard[]): BestBetsBoardType {
 
 // Import the default export (SportBetsPage) after navigation mock is set up.
 // We test SportBetsBoard behavior indirectly through the page render.
-const SportBetsPage = (await import("@/app/bets/[sport]/page")).default;
+const SportBetsPage = (await import("@/app/(terminal)/bets/[sport]/page")).default;
 
 describe("Sport bets board (/bets/[sport]) -- P0 acceptance tests", () => {
   let originalBestbetsBoard: typeof import("@/lib/p5api").api.bestbetsBoard;

@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { LiveChip, ModelMarketBar, BestBetLine } from "@/components/live/LiveGameParts";
 import { SideProb } from "@/components/live/SideProb";
 import { humanizeMatchup } from "@/lib/betdesc";
-import type { LiveGameEntry, LiveState } from "@/app/live/liveSections";
+import type { LiveGameEntry, LiveState } from "@/app/(terminal)/live/liveSections";
 
 export function gameStateLabel(liveState: LiveState | null): string {
   if (!liveState) return "";

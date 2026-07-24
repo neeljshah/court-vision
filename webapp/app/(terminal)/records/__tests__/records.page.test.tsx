@@ -24,7 +24,7 @@ vi.mock("next/navigation", () => ({
   usePathname: () => "/records",
 }));
 
-import RecordsPage from "@/app/records/page";
+import RecordsPage from "@/app/(terminal)/records/page";
 import type { PaperPredictions, PaperPredictionRow } from "@/lib/p5api";
 import type { Unavailable } from "@/lib/types";
 

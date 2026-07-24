@@ -2,8 +2,8 @@
  "label": "market-microstructure MEASUREMENT (latency/cadence) -- NOT a trading signal",
  "generated_at": "2026-07-22T22:40:48.805496Z",
  "paths_tried": [
-  "C:\\Users\\neelj\\nba-ai-system\\data\\pod_backup_2026_07_20\\ingame_grade_deriv\\mlb",
-  "C:\\Users\\neelj\\nba-ai-system\\data\\pod_backup_2026_07_20\\tip_capture\\wnba\\ingame_*.jsonl"
+  "data/pod_backup_2026_07_20/ingame_grade_deriv/mlb",
+  "data/pod_backup_2026_07_20/tip_capture/wnba/ingame_*.jsonl"
  ],
  "sports": {
   "mlb": {

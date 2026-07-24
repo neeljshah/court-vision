@@ -270,7 +270,7 @@ describe("QA #3 / iter10-P2 -- unit-convention note text on /paper (static)", ()
         json: async () => ({ status: "unavailable", reason: "test" }),
       }) as unknown as typeof fetch;
 
-    const { default: PaperPage } = await import("@/app/paper/page");
+    const { default: PaperPage } = await import("@/app/(terminal)/paper/page");
     render(<PaperPage />);
 
     const note = screen.getByTestId("paper-unit-convention-note");
