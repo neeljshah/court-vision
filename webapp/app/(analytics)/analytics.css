@@ -68,6 +68,16 @@ img, svg { max-width: 100%; }
 .d-desc { background: var(--ink-3); }
 .d-prov { background: var(--not-testable); }
 .d-reject { background: var(--reject); }
+/* screen-reader-only + loading skeleton (used by loading.tsx) */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+/* skip-to-content: off-screen until keyboard focus, then drops in above the sticky
+   nav (z 20). Target is <main id="analytics-main"> in the root layout. */
+.a-skip { position: fixed; top: 8px; left: 8px; z-index: 60; transform: translateY(-150%);
+  background: var(--accent); color: var(--accent-ink-on); padding: 10px 16px; border-radius: var(--radius-btn);
+  font-size: 14px; font-weight: 600; transition: transform var(--dur-fast) var(--ease-ui); }
+.a-skip:focus { transform: translateY(0); text-decoration: none; }
+.a-skel { background: var(--paper-tint); border-radius: 8px; animation: a-pulse 1.4s var(--ease-ui) infinite; }
+@keyframes a-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
 
 /* ================= NAV (product pillars + subtle terminal cross-link) ================= */
 .a-nav { border-bottom: 1px solid var(--rule); background: var(--paper); position: sticky; top: 0; z-index: 20; }
@@ -113,7 +123,13 @@ img, svg { max-width: 100%; }
 .a-foot-links { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 18px; font-size: 14px; font-weight: 500; }
 .a-foot-links a { color: var(--ink-2); }
 .a-foot-links a:hover { color: var(--ink); }
-.a-xlink { margin-top: 16px; font-size: 14px; font-weight: 600; color: var(--accent); display: inline-block; }
+/* the six pillars read as the primary onward nav; the secondary links below sit lighter */
+.a-foot-pillars { margin-top: 24px; }
+.a-foot-pillars a { color: var(--ink); font-weight: 600; }
+/* Cross-product jump to the terminal is deliberately secondary: smaller + muted, and
+   it opens in a new tab so the Reading Room is never lost behind the dark terminal. */
+.a-xlink { margin-top: 18px; font-size: 13px; font-weight: 500; color: var(--ink-3); display: inline-block; }
+.a-xlink:hover { color: var(--ink-2); }
 
 /* ---- motion discipline: honor reduced-motion everywhere ---- */
 @media (prefers-reduced-motion: reduce) {
@@ -121,6 +137,47 @@ img, svg { max-width: 100%; }
 }
 
 @media (max-width: 720px) {
-  .a-navrow { gap: 14px; }
+  /* Wrap the pillars onto their own full-width row so every section is visible
+     (no hidden horizontal-scroll strip). Lockup stays on row 1; the theme toggle
+     is pinned to the corner (below). */
+  .a-navrow { gap: 14px; height: auto; flex-wrap: wrap; row-gap: 12px; padding: 10px 0; }
+  /* The wrapped bar is ~115px tall; pinned, it would eat ~15% of a phone viewport
+     on the long Entities/Forecaster/Loop pages. Let it scroll away on mobile
+     (desktop keeps the sticky pillar bar). */
+  .a-nav { position: static; }
   .a-kicker { display: none; }
+  /* Keep the theme toggle in normal flow, flush-right on the lockup row, so it
+     scrolls away with the nav. Pinned fixed it floated over the top-right corner and
+     covered/blocked right-flush tap targets during scroll (the module page's "View
+     full size", the home page's "All N modules") -- a chip obscuring a real control
+     reads as broken. Theme persists once set, so top-of-page reach is enough. */
+  .a-theme { margin-left: auto; }
+  .navlinks { order: 3; flex-basis: 100%; margin-left: 0; overflow-x: visible; flex-wrap: wrap; gap: 14px 18px; }
+  /* Match the product's 44px touch standard (Ask pills, jump chips): give each
+     wrapped pillar a comfortable target instead of a ~24px text-only hit-slop. */
+  .navlinks a { min-height: 40px; display: inline-flex; align-items: center; padding: 4px 2px; }
+}
+
+/* ---- print: a clean, toner-friendly module handout ----
+   Neutralize the ivory ground to white, drop interactive chrome + shadows, linearize
+   the module grid, and keep each evidence block whole. The receipt SOURCE path stays
+   dark and readable -- on paper the artifact path IS the citation. The footer honesty
+   line ("edge_claimed: false") is deliberately kept; nav, theme toggle, cross-links,
+   and download/why links are dropped (dead on paper). */
+@media print {
+  :root, :root[data-theme="light"], :root[data-theme="dark"] {
+    --paper: #fff; --paper-raised: #fff; --paper-tint: #f3f1ec;
+    --ink: #111; --ink-2: #222; --ink-3: #555; --rule: #ccc; --rule-strong: #999;
+  }
+  body { background: #fff; }
+  * { box-shadow: none !important; }
+  a { color: #111; }
+  .a-nav, .a-theme, .mv-dl, .mv-links,
+  .a-foot-top, .a-foot-links, .a-xlink { display: none !important; }
+  .a-footer { margin-top: 32px; border-top: 1px solid #ccc; padding: 16px 0; }
+  .mv-grid { display: block !important; }
+  .mv-side { margin-top: 24px; }
+  .mv-box, .mv-caveat, .mv-novel, .mv-banner, figure { break-inside: avoid; page-break-inside: avoid; }
+  .mv-src, .mv-crumbs, .mv-crumbs a { color: #111 !important; }
+  h1, h2, h3, .mv-head h1 { break-after: avoid; page-break-after: avoid; }
 }

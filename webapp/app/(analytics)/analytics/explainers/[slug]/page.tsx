@@ -16,6 +16,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ScoutQuestions } from "@/components/analytics/ScoutQuestions";
+import { typeset } from "@/lib/analytics/format";
 
 type Essay = {
   slug: string;
@@ -108,7 +109,7 @@ function renderInline(text: string): ReactNode[] {
       if (seg.startsWith("*") && seg.endsWith("*")) {
         return <em key={i}>{seg.slice(1, -1)}</em>;
       }
-      return <span key={i}>{seg}</span>;
+      return <span key={i}>{typeset(seg)}</span>;
     })
     .filter(Boolean);
 }

@@ -48,6 +48,7 @@ const CSS = `
 .lp-up .lp-token{background:var(--confirmed);animation-duration:2.9s}
 .lp-dn .lp-token{background:var(--null);animation-duration:3.2s;animation-delay:.6s}
 .lp-out{flex:1.05 1 0;display:flex;flex-direction:column;justify-content:space-between;gap:16px}
+.lp-mfork{display:none}
 .lp-outbox{background:var(--paper-raised);border:1px solid var(--rule);border-left-width:3px;
   border-radius:var(--radius-card);box-shadow:var(--shadow-card);padding:13px 16px}
 .lp-outbox.v{border-left-color:var(--confirmed)}
@@ -67,6 +68,10 @@ const CSS = `
     background:repeating-linear-gradient(0deg,var(--rule-strong) 0 5px,transparent 5px 11px);animation:lp-flowv .9s linear infinite}
   .lp-token,.lp-emit,.lp-brace{display:none}
   .lp-out{flex:none}
+  .lp-mfork{display:flex;flex-direction:column;align-items:center;gap:6px;margin:2px 0}
+  .lp-mfork-stem{width:2px;height:16px;
+    background:repeating-linear-gradient(0deg,var(--rule-strong) 0 5px,transparent 5px 11px)}
+  .lp-mfork-lbl{font-weight:700;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
   @keyframes lp-flowv{from{background-position:0 0}to{background-position:0 11px}}
 }`;
 
@@ -76,10 +81,15 @@ function Node({ k, h, sub, stat, unit }: { k: string; h: string; sub: string; st
       <span className="lp-k">{k}</span>
       <span className="lp-h">{h}</span>
       <span className="lp-sub">{sub}</span>
-      <span className="lp-stat">
-        {stat}
-        {unit ? <u>{unit}</u> : null}
-      </span>
+      {/* Only the Propose node carries a stat; render the slot only when there is a
+          number, else the gate/verdict nodes showed an empty number box (a bare
+          margin) -- most visible stacked on mobile. Row stretch keeps heights even. */}
+      {stat ? (
+        <span className="lp-stat">
+          {stat}
+          {unit ? <u>{unit}</u> : null}
+        </span>
+      ) : null}
     </div>
   );
 }
@@ -108,6 +118,13 @@ export function LoopDiagram({ stats }: { stats: LoopStats }) {
           <i className="lp-arm lp-dn">
             <span className="lp-token" />
           </i>
+        </div>
+        {/* Desktop draws the fork in .lp-brace; on mobile the row stacks and .lp-brace
+            is hidden, so this connector + label keeps the verdict -> (Verified /
+            Graveyard) split legible instead of a flat run of boxes. Hidden on desktop. */}
+        <div className="lp-mfork" aria-hidden>
+          <span className="lp-mfork-stem" />
+          <span className="lp-mfork-lbl">verdict splits into</span>
         </div>
         <div className="lp-out">
           <div className="lp-outbox v">

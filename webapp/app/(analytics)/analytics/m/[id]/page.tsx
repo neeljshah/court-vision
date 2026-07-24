@@ -14,6 +14,8 @@ import { Figure } from "@/components/analytics/charts/Figure";
 import { ScoutNote, type ScoutEnvelope } from "@/components/analytics/ScoutNote";
 import { ScoutQuestions } from "@/components/analytics/ScoutQuestions";
 import type { ReceiptData } from "@/components/analytics/Receipt";
+import { VerdictLegend } from "@/components/analytics/VerdictLegend";
+import { asOfDate } from "@/lib/analytics/format";
 
 const DATA = join(process.cwd(), "public", "data");
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
@@ -49,10 +51,49 @@ const readJson = <T,>(p: string): T | null => {
 };
 const base = (p: string) => p.split(/[\\/]/).pop() || p;
 const str = (v: unknown) => (v == null ? "" : String(v));
+// A cited row is a real receipt fact only if its value is a scalar/non-empty
+// array that is not a build-status placeholder. Keeps numbers, booleans, non-
+// empty strings, and non-empty arrays; drops null/empty and the not_buildable
+// family of sentinels that render as blank or unfinished in the receipts table.
+const SENTINEL = /^(not_buildable|not_available|not_testable|unavailable|no_data)$/i;
+const isFact = (v: unknown): boolean => {
+  if (v == null) return false;
+  if (Array.isArray(v)) return v.length > 0;
+  if (typeof v === "string") return v.trim() !== "" && !SENTINEL.test(v.trim());
+  return typeof v === "number" || typeof v === "boolean";
+};
 
 function getMod(id: string): Mod | undefined {
   const man = readJson<{ modules: Mod[] }>(join(DATA, "showcase", "site_manifest.json"));
   return man?.modules.find((m) => m.id === id);
+}
+
+// one_line is the fan-facing subtitle -- it surfaces as the on-page mv-sub, the
+// <meta name="description">/link-preview text, and the chart alt. Some manifest
+// rows carry the raw build token "DESCRIPTIVE_ONLY" (or are blank), which must
+// never leak to any of those. Treat those as absent and fall back to the committed
+// headline_insight (the same field the page already reads).
+const subtitleOf = (m: Mod, ins: Insight | null): string => {
+  const ol = (m.one_line || "").trim();
+  if (ol && !/^descriptive_only$/i.test(ol)) return ol;
+  return (ins?.headline_insight || "").trim();
+};
+
+// Only surface Scout pills whose answer actually lives in the committed corpus.
+// Match ask entries to this module by its source artifact (basename == id), keep
+// the answerable (status ok) ones, and use their VERBATIM corpus question -- so the
+// pill is guaranteed to phrase-resolve, never dead-end. Mirrors the entity page's
+// insight gate; the old templated "What does X measure?" strings hit NO_DATA (or a
+// mismatched closest cite) for ~96% of modules. No hit -> no pills (honest).
+function corpusQuestions(id: string): string[] {
+  const c = readJson<{ entries?: Array<{ q: string; a?: { source_artifact?: string; status?: string } }> }>(
+    join(DATA, "ask", "corpus.json")
+  );
+  const stem = (p?: string) => (p || "").split(/[\\/]/).pop()?.replace(/\.[a-z0-9]+$/i, "") || "";
+  const hits = (c?.entries || []).filter(
+    (e) => e.a?.status === "ok" && (stem(e.a?.source_artifact) === id || (e.a?.source_artifact || "").includes(`/${id}.`))
+  );
+  return Array.from(new Set(hits.map((e) => e.q))).slice(0, 3);
 }
 
 export function generateStaticParams() {
@@ -62,7 +103,14 @@ export function generateStaticParams() {
 
 export function generateMetadata({ params }: { params: { id: string } }): Metadata {
   const m = getMod(params.id);
-  return { title: m ? m.title : "Module", description: m?.one_line || "A measured, receipt-cited analytics module." };
+  if (!m) return { title: "Module", description: "A measured, receipt-cited analytics module." };
+  // Title mirrors the page's own H1 (ins?.title || m.title), so the browser tab and
+  // link preview no longer read a raw machine string the H1 already rescued.
+  const ins = readJson<Insight>(join(DATA, "insights", `${m.id}.json`));
+  return {
+    title: ins?.title || m.title,
+    description: subtitleOf(m, ins) || "A measured, receipt-cited analytics module.",
+  };
 }
 
 function Box({ title, children }: { title: string; children: React.ReactNode }) {
@@ -80,14 +128,33 @@ export default function ModulePage({ params }: { params: { id: string } }) {
 
   const out = readJson<Out>(join(DATA, "showcase", `${m.id}.json`)) || {};
   const ins = readJson<Insight>(join(DATA, "insights", `${m.id}.json`));
-  const cited = ins?.cited || [];
+  // The receipts panel IS the honesty proof, so it must never show a fact-less
+  // row: drop cited entries whose value is empty/null or a build-status sentinel
+  // (a "not_buildable" string or blank cell reads as unfinished). Filter once, so
+  // both the receipt chips and the table below inherit the clean set. Non-empty
+  // arrays (e.g. seasons_available) stay -- String() renders them as "a,b,c".
+  const cited = (ins?.cited || []).filter((c) => isFact(c.value));
+  // out.method is a string on most modules but a nested methodology object on a
+  // few (cf_star_removal, ctx_player_splits). String({}) prints "[object Object]",
+  // so render a plain string as prose and an object as a key/value definition list
+  // (below) -- never String() the dict, never silently drop it.
+  const methodStr = typeof out.method === "string" ? out.method.trim() : "";
+  const methodPairs =
+    out.method && typeof out.method === "object" && !Array.isArray(out.method)
+      ? Object.entries(out.method as Record<string, unknown>)
+      : [];
   const descriptive = out.descriptive_only === true || /descriptive/i.test(ins?.caveat || "");
+  // Machine timestamps in the manifest as_of collapse to a clean date; descriptive
+  // corpus labels ("2025-26 regular season ...") pass through untouched. Falls back
+  // to the raw value so it stays a non-empty string for the required Figure asOf.
+  const asOf = asOfDate(m.as_of) || m.as_of;
+  const sub = subtitleOf(m, ins);
 
   const chips: ReceiptData[] = cited.slice(0, 4).map((c) => ({
     value: str(c.value),
     label: c.field,
     sourceArtifact: c.path || m.out_path,
-    asOf: m.as_of,
+    asOf,
     verdict: "descriptive_only",
   }));
   const envelope: ScoutEnvelope = ins
@@ -99,11 +166,7 @@ export default function ModulePage({ params }: { params: { id: string } }) {
   const confoundList = Array.isArray(confounds) ? (confounds as string[]) : confounds ? [str(confounds)] : [];
   const hasNovelty = !!(out.prior_art_verdict || out.formula || out.prior_art || out.prior_art_citation || out.metric_definition);
 
-  const questions = [
-    `What does ${m.title} measure?`,
-    `Which sports does ${m.title} cover?`,
-    `How is ${m.title} calculated?`,
-  ];
+  const questions = corpusQuestions(m.id);
 
   return (
     <div className="wrap" style={{ paddingTop: 8 }}>
@@ -118,24 +181,37 @@ export default function ModulePage({ params }: { params: { id: string } }) {
 
       <div className="mv-head">
         <div>
-          <div className="overline">Analytics module &middot; as of {m.as_of}</div>
+          <div className="overline">Analytics module &middot; as of {asOf}</div>
           <h1 className="serif">{ins?.title || m.title}</h1>
-          {m.one_line ? <div className="mv-sub">{m.one_line}</div> : null}
+          {sub ? <div className="mv-sub">{sub}</div> : null}
         </div>
         {chartSrc ? (
-          <a className="mv-dl" href={chartSrc} download>
-            Download chart PNG &darr;
+          // Open the native-resolution PNG in a new tab (not a file download) so a
+          // phone reader can pinch-zoom the baked-in axis ticks / n= labels instead of
+          // squinting at the shrunk inline figure.
+          <a className="mv-dl" href={chartSrc} target="_blank" rel="noopener">
+            View full size &#8599;
           </a>
         ) : null}
       </div>
 
+      <VerdictLegend style={{ margin: "0 0 24px" }} />
+
       <div className="mv-grid">
         <div style={{ minWidth: 0 }}>
           {chartSrc ? (
-            <Figure source={m.out_path} asOf={m.as_of} title={m.title} verdict="descriptive_only">
-              {/* committed module chart; basePath prefixed manually (not a next/image) */}
+            <Figure source={m.out_path} asOf={asOf} title={m.title} verdict="descriptive_only">
+              {/* committed module chart; basePath prefixed manually (not a next/image).
+                  The PNG is baked on a white ground, so seat it on a CONSTANT light mat
+                  (a hardcoded ivory, never a theme token -- --paper-tint flips dark) so it
+                  never sits as a glaring white block in dark mode. The mat also carries a
+                  min-width so the figure scrolls at a legible size on a phone inside the
+                  Figure frame (like the SVG charts) instead of shrinking its baked labels
+                  to microtype; "View full size" above pinch-zooms the native-res PNG. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={chartSrc} alt={`${m.title} chart`} style={{ width: "100%", height: "auto", display: "block", borderRadius: 8, border: "1px solid var(--rule)" }} />
+              <div style={{ minWidth: 560, background: "#FBF7EF", padding: 8, borderRadius: 8, border: "1px solid var(--rule)" }}>
+                <img src={chartSrc} alt={sub ? `Chart: ${m.title} -- ${sub}` : `${m.title} chart`} style={{ width: "100%", height: "auto", display: "block", borderRadius: 4 }} />
+              </div>
             </Figure>
           ) : (
             <div className="mv-nochart mono">No committed chart for this module &mdash; the receipts below are the evidence.</div>
@@ -145,19 +221,31 @@ export default function ModulePage({ params }: { params: { id: string } }) {
 
           {ins?.what_it_means ? (
             <div className="mv-prose">
-              <div className="overline" style={{ marginBottom: 8 }}>What it means</div>
+              <h2 className="overline" style={{ marginBottom: 8 }}>What it means</h2>
               <p>{ins.what_it_means}</p>
             </div>
           ) : null}
 
-          {(ins?.caveat || str(out.method) || confoundList.length) ? (
+          {(ins?.caveat || methodStr || methodPairs.length || confoundList.length) ? (
             <div className="mv-caveat">
-              <div className="overline" style={{ color: "var(--signal-ink)", marginBottom: 8 }}>Caveats &amp; confounds</div>
+              <h2 className="overline" style={{ color: "var(--signal-ink)", marginBottom: 8 }}>Caveats &amp; confounds</h2>
               {ins?.caveat ? <p>{ins.caveat}</p> : null}
-              {str(out.method) ? (
+              {methodStr ? (
                 <p style={{ marginTop: 8 }}>
-                  <b>Method.</b> {str(out.method)}
+                  <b>Method.</b> {methodStr}
                 </p>
+              ) : methodPairs.length ? (
+                <div style={{ marginTop: 8 }}>
+                  <p style={{ margin: 0 }}><b>Method.</b></p>
+                  <dl className="mv-method">
+                    {methodPairs.map(([k, v]) => (
+                      <div key={k}>
+                        <dt>{k.replace(/_/g, " ")}</dt>
+                        <dd className="mono">{str(v)}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
               ) : null}
               {confoundList.length ? (
                 <ul>
@@ -172,7 +260,7 @@ export default function ModulePage({ params }: { params: { id: string } }) {
           {hasNovelty ? (
             <div className="mv-novel">
               <div className="mv-novel-top">
-                <span className="overline">Novelty &amp; prior art</span>
+                <h2 className="overline">Novelty &amp; prior art</h2>
                 {out.prior_art_verdict ? <span className="mv-verdict">{str(out.prior_art_verdict)}</span> : null}
               </div>
               {out.metric_definition ? <p>{str(out.metric_definition)}</p> : null}
@@ -213,11 +301,10 @@ export default function ModulePage({ params }: { params: { id: string } }) {
 
           <Box title="Where it appears">
             <div className="mv-links">
-              {m.evidence_page ? (
-                <span>
-                  Evidence page <span className="why mono">{base(m.evidence_page)}</span>
-                </span>
-              ) : null}
+              {/* The evidence pages live in the separate terminal product (docs/
+                  evidence/*.md, no in-Reading-Room route), so a bare filename here
+                  read as a broken link. Dropped -- the receipts above already cite
+                  this module's source artifact. */}
               <Link href="/analytics/browse">Back to the catalog</Link>
               <Link href="/analytics/the-loop">Mechanism ledger</Link>
             </div>
@@ -237,7 +324,7 @@ export default function ModulePage({ params }: { params: { id: string } }) {
         .mv-head h1{font-family:var(--font-display);font-weight:500;font-size:clamp(2.2rem,4.6vw,3.2rem);line-height:1.06;letter-spacing:-.02em;margin-top:4px}
         .mv-sub{color:var(--ink-2);margin-top:8px;font-size:16px;max-width:60ch}
         .mv-dl{border:1px solid var(--rule-strong);border-radius:8px;padding:9px 15px;font-size:13px;font-weight:600;color:var(--accent);white-space:nowrap}
-        .mv-grid{display:grid;grid-template-columns:1fr 320px;gap:40px;align-items:start}
+        .mv-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:40px;align-items:start}
         .mv-prose{margin-top:28px;max-width:680px}
         .mv-prose p{font-size:16.5px;line-height:1.62;color:var(--ink-2)}
         .mv-caveat{margin-top:24px;background:var(--paper-tint);border:1px solid var(--rule);border-radius:var(--radius-card);padding:18px 20px;max-width:680px}
@@ -245,6 +332,11 @@ export default function ModulePage({ params }: { params: { id: string } }) {
         .mv-caveat b{color:var(--ink)}
         .mv-caveat ul{margin:8px 0 0 18px}
         .mv-caveat li{font-size:14px;color:var(--ink-2);line-height:1.5;margin-top:4px}
+        .mv-method{margin:6px 0 0;font-size:13.5px}
+        .mv-method>div{display:flex;gap:12px;padding:5px 0;border-bottom:1px solid var(--rule)}
+        .mv-method>div:last-child{border-bottom:0}
+        .mv-method dt{color:var(--ink-3);flex:0 0 42%;line-height:1.45}
+        .mv-method dd{margin:0;color:var(--ink);flex:1 1 0;min-width:0;overflow-wrap:anywhere;line-height:1.45}
         .mv-novel{margin-top:24px;border:1px solid var(--rule-strong);border-radius:var(--radius-card);
           padding:18px 20px;max-width:680px;border-top:3px solid var(--signal)}
         .mv-novel-top{display:flex;align-items:center;gap:12px;margin-bottom:10px}
@@ -264,12 +356,15 @@ export default function ModulePage({ params }: { params: { id: string } }) {
         .mv-rtable td{padding:7px 0;border-bottom:1px solid var(--rule);vertical-align:top;font-size:13px}
         .mv-rtable tr:last-child td{border-bottom:0}
         .mv-rf{color:var(--ink-3);padding-right:12px;line-height:1.4}
-        .mv-rv{font-family:var(--font-mono);color:var(--ink);text-align:right;white-space:nowrap}
+        /* wrap long cited values (some reasons/raw_cache run 90-170 chars): nowrap
+           forced a ~1000px cell that blew the fixed 320px receipts rail past the
+           viewport (horizontal scroll on phones, broken 2-col grid on desktop).
+           Short numbers -- the common case -- still sit on one line. */
+        .mv-rv{font-family:var(--font-mono);color:var(--ink);text-align:right;white-space:normal;overflow-wrap:anywhere}
         .mv-src{font-size:11px;color:var(--ink-3);margin-top:12px;word-break:break-all;line-height:1.5}
         .mv-links{display:flex;flex-direction:column;gap:9px;font-size:14px}
         .mv-links a{color:var(--accent)}
-        .mv-links .why{color:var(--ink-3);font-size:11px}
-        @media(max-width:820px){.mv-grid{grid-template-columns:1fr}.mv-head{flex-wrap:wrap}}
+        @media(max-width:820px){.mv-grid{grid-template-columns:minmax(0,1fr)}.mv-head{flex-wrap:wrap}}
       `}</style>
     </div>
   );

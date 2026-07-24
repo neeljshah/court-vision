@@ -12,6 +12,8 @@ import { Receipt, type ReceiptData } from "@/components/analytics/Receipt";
 import { ScoutNote, type ScoutEnvelope } from "@/components/analytics/ScoutNote";
 import { ScoutQuestions } from "@/components/analytics/ScoutQuestions";
 import { VerdictDot, type Verdict } from "@/components/analytics/VerdictDot";
+import { VerdictLegend } from "@/components/analytics/VerdictLegend";
+import { pickQuestions } from "@/lib/analytics/askPicks";
 
 export const metadata: Metadata = {
   title: "The Loop",
@@ -26,7 +28,10 @@ const DIR = join(process.cwd(), "public", "data", "showcase");
 const OUT = "scripts/platformkit/analytics_showcase/out"; // canonical producer path, for receipts
 function readJson<T>(name: string): T | null {
   try {
-    return JSON.parse(readFileSync(join(DIR, `${name}.json`), "utf-8")) as T;
+    // Strip bare NaN (some ledgers carry a p-value NaN) before parse -- matches the
+    // Home page guard. Without it JSON.parse throws, is swallowed, and the census
+    // silently falls back to hardcoded counts while Home shows the live ones.
+    return JSON.parse(readFileSync(join(DIR, `${name}.json`), "utf-8").replace(/\bNaN\b/g, "null")) as T;
   } catch {
     return null;
   }
@@ -126,11 +131,13 @@ export default function TheLoopPage() {
     ],
   };
 
-  const questions = [
-    "how does CourtVision grade its own signals?",
-    "how many mechanisms have been rejected?",
-    "what does back-to-back rest cost an NBA team?",
-  ];
+  // Verbatim corpus questions (status ok) so each pill phrase-resolves to a real
+  // Scout answer instead of dead-ending on "No verified answer."
+  const questions = pickQuestions([
+    "how system grade itself self-grading",
+    "candidate signals rejected reject",
+    "findings flip verdict re-test",
+  ]);
 
   return (
     <div style={{ ...wrap, paddingTop: 56, paddingBottom: 24 }}>
@@ -144,6 +151,7 @@ export default function TheLoopPage() {
           retraction in the same ledger it confirms from. A system that only ever confirmed would not be
           credible &mdash; so it counts what it could not prove, and changes its own mind on new evidence.
         </p>
+        <VerdictLegend style={{ marginTop: 22 }} />
       </header>
 
       <section aria-label="The loop" style={{ marginBottom: 56 }}>
@@ -151,8 +159,8 @@ export default function TheLoopPage() {
       </section>
 
       <section aria-label="Scoreboard" style={{ marginBottom: 56 }}>
-        <div style={{ ...h2, marginBottom: 18 }}>The scoreboard grades every claim</div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 1, background: "var(--rule)", border: "1px solid var(--rule)", borderRadius: 12, overflow: "hidden" }}>
+        <h2 style={{ ...h2, marginBottom: 18 }}>The scoreboard grades every claim</h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 1, background: "var(--rule)", border: "1px solid var(--rule)", borderRadius: 12 }}>
           <StatCell num={families.toLocaleString("en-US")} label="claim families tracked" chip={fwdChip({ value: String(families), label: "self-grading scoreboard" })} />
           <StatCell num={String(verified)} label="verified (confirmed)" chip={fwdChip({ value: String(verified), label: "verified families", verdict: "confirmed" })} />
           <StatCell num={String(graveyard)} label="null, not-testable, or retracted" chip={fwdChip({ value: String(graveyard), label: "kept in the ledger", verdict: "null" })} />
@@ -160,7 +168,7 @@ export default function TheLoopPage() {
         </div>
         <p style={{ ...lede, marginTop: 18, display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: "4px 10px" }}>
           <span>
-            Across <strong style={{ color: "var(--ink)" }}>{oc.total ?? 287}</strong> named mechanisms:{" "}
+            The scoreboard above grades forward-tested claim families; the mechanism ledger is a separate, wider census of every named mechanism. Across <strong style={{ color: "var(--ink)" }}>{oc.total ?? 287}</strong> named mechanisms:{" "}
             <strong style={{ color: "var(--ink)" }}>{oc.confirmed ?? 130}</strong> confirmed,{" "}
             <strong style={{ color: "var(--ink)" }}>{oc.null ?? 126}</strong> null,{" "}
             <strong style={{ color: "var(--ink)" }}>{oc.not_testable ?? 31}</strong> not-testable.
@@ -174,7 +182,7 @@ export default function TheLoopPage() {
       </section>
 
       <section aria-label="Verdict flips" style={{ marginBottom: 56 }}>
-        <div style={{ ...h2, marginBottom: 8 }}>The system changes its own mind</div>
+        <h2 style={{ ...h2, marginBottom: 8 }}>The system changes its own mind</h2>
         <p style={{ ...lede, marginBottom: 20 }}>
           These families carried more than one verdict across reruns. The ledger keeps the whole sequence, not
           just the last word &mdash; the trail of a system re-testing itself as corpora grow.
@@ -216,12 +224,12 @@ export default function TheLoopPage() {
       </section>
 
       <section aria-label="The graveyard" style={{ marginBottom: 56 }}>
-        <div style={{ ...h2, marginBottom: 8 }}>The graveyard is a feature</div>
+        <h2 style={{ ...h2, marginBottom: 8 }}>The graveyard is a feature</h2>
         <p style={{ ...lede, marginBottom: 20 }}>
           Every reject and defer is recorded, categorized, and counted. A discarded signal is honest
           market-efficiency evidence, not a failure to bury.
         </p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 1, background: "var(--rule)", border: "1px solid var(--rule)", borderRadius: 12, overflow: "hidden" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 1, background: "var(--rule)", border: "1px solid var(--rule)", borderRadius: 12 }}>
           <StatCell num={(gv?.reject_row_count ?? 628).toLocaleString("en-US")} label="reject rows recorded" chip={{ sourceArtifact: `${OUT}/reject_graveyard.json`, label: "reject ledger", value: String(gv?.reject_row_count ?? 628), verdict: "null" }} />
           <StatCell num={String(gv?.latest_per_signal_graveyard_count ?? 68)} label="distinct signals on a reject verdict now" chip={{ sourceArtifact: `${OUT}/reject_graveyard.json`, label: "latest-verdict graveyard", value: String(gv?.latest_per_signal_graveyard_count ?? 68), verdict: "null" }} />
           <StatCell num={(gv?.full_history_row_count ?? 804).toLocaleString("en-US")} label="total verdict rows across all reruns" chip={{ sourceArtifact: `${OUT}/reject_graveyard.json`, label: "full verdict history", value: String(gv?.full_history_row_count ?? 804), verdict: "descriptive_only" }} />

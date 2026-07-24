@@ -33,6 +33,25 @@ const cap: CSSProperties = {
   flexWrap: "wrap",
 };
 
+// CSS-only scroll affordance: a paper fade + soft shadow at each edge, shown ONLY
+// when the child actually overflows -- the local vs scroll background-attachment
+// mix self-hides the cue at the start/end and when nothing overflows. So a
+// min-width SVG (Grid/Bars) gets a right-edge "more this way" hint on a phone,
+// while a width:100% <img> never triggers a false shadow. Warm tone, never a glow.
+export const scrollFrame: CSSProperties = {
+  overflowX: "auto",
+  backgroundColor: "var(--paper)",
+  backgroundImage:
+    "linear-gradient(to right, var(--paper), rgba(0,0,0,0)), " +
+    "linear-gradient(to left, var(--paper), rgba(0,0,0,0)), " +
+    "radial-gradient(farthest-side at 0 50%, rgba(40,30,20,.16), rgba(0,0,0,0)), " +
+    "radial-gradient(farthest-side at 100% 50%, rgba(40,30,20,.16), rgba(0,0,0,0))",
+  backgroundPosition: "left center, right center, left center, right center",
+  backgroundRepeat: "no-repeat",
+  backgroundSize: "36px 100%, 36px 100%, 14px 100%, 14px 100%",
+  backgroundAttachment: "local, local, scroll, scroll",
+};
+
 export function Figure({
   source,
   asOf,
@@ -88,7 +107,10 @@ export function Figure({
           {subtitle}
         </div>
       )}
-      <div style={{ marginTop: title || subtitle || eyebrow ? 16 : 0 }}>{children}</div>
+      {/* overflow-x: charts are fixed-viewBox SVGs; on a narrow screen let them
+          scroll at a legible min-width (Grid/Bars set it) instead of scaling
+          their own text down to microtype. */}
+      <div style={{ ...scrollFrame, marginTop: title || subtitle || eyebrow ? 16 : 0 }}>{children}</div>
       {note && (
         <div
           style={{

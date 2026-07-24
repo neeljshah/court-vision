@@ -86,7 +86,7 @@ export default function ExplainersIndexPage() {
         Six essays on how the possession simulator thinks, what calibration actually
         means, why the graveyard of null results is the point, and what the on-page
         AI can and cannot tell you. Every number inside traces back to a committed
-        artifact -- see each essay&rsquo;s sources at the bottom of the page.
+        artifact &mdash; see each essay&rsquo;s sources at the bottom of the page.
       </p>
 
       <div style={{ marginTop: 28 }}>

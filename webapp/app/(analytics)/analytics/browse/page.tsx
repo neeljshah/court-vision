@@ -10,6 +10,8 @@ import { join } from "node:path";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { VerdictDot, type Verdict } from "@/components/analytics/VerdictDot";
+import { VerdictLegend } from "@/components/analytics/VerdictLegend";
+import { asOfDate } from "@/lib/analytics/format";
 
 export const metadata: Metadata = {
   title: "Browse the analytics",
@@ -82,8 +84,12 @@ export default function BrowsePage() {
   const rows = man.modules.map((m) => {
     const ins = readInsight(m.id);
     const summary = ins?.headline_insight || m.one_line || "";
-    const c0 = ins?.cited?.[0]?.value;
-    return { m, cat: category(m.id), summary, stat: c0 != null ? String(c0) : "", s: score(m, summary.length) };
+    // The big serif ".mc-stat" is a NUMERAL slot, so headline the first cited value
+    // that is actually a NUMBER (mirrors players/page.tsx heroStat). cited[0] is a
+    // player NAME on some cards (ctx_player_splits, cf_star_removal) -- typesetting
+    // a name as a figure is a category error and overflows the card.
+    const cnum = ins?.cited?.find((c) => typeof c.value === "number")?.value;
+    return { m, cat: category(m.id), summary, stat: cnum != null ? String(cnum) : "", s: score(m, summary.length) };
   });
   rows.sort((a, b) => b.s - a.s || b.summary.length - a.summary.length || a.m.id.localeCompare(b.m.id));
   const withSpan = rows.map((r, i) => ({ ...r, span: i < 6 ? "b22" : i < 18 ? "b21" : "b11" }));
@@ -108,6 +114,8 @@ export default function BrowsePage() {
         ))}
       </div>
 
+      <VerdictLegend style={{ margin: "0 0 20px" }} />
+
       <div id="mbento" className="mbento">
         {withSpan.map((r) => (
           <Link key={r.m.id} href={`/analytics/m/${r.m.id}`} className={`mcard ${r.span}`} data-cat={r.cat}>
@@ -120,7 +128,7 @@ export default function BrowsePage() {
             <div className="mc-foot">
               {r.stat && r.span !== "b11" ? <div className="mc-stat tnum">{r.stat}</div> : null}
               <div className="mc-chip mono">
-                <VerdictDot verdict={verdictOf(r.m.status)} size={6} /> {r.m.as_of}
+                <VerdictDot verdict={verdictOf(r.m.status)} size={6} /> {asOfDate(r.m.as_of)}
                 {r.m.status !== "ok" ? " · partial" : ""}
               </div>
             </div>
@@ -135,12 +143,13 @@ export default function BrowsePage() {
         .mfilter{display:flex;flex-wrap:wrap;gap:8px;margin:26px 0 22px}
         .mfilter button{font-family:var(--font-sans);font-size:13px;font-weight:500;color:var(--ink-2);
           background:var(--paper-raised);border:1px solid var(--rule-strong);border-radius:var(--radius-pill);
-          padding:6px 14px;cursor:pointer;transition:color var(--dur-fast) var(--ease-ui),border-color var(--dur-fast) var(--ease-ui)}
+          display:inline-flex;align-items:center;min-height:44px;
+          padding:6px 16px;cursor:pointer;transition:color var(--dur-fast) var(--ease-ui),border-color var(--dur-fast) var(--ease-ui)}
         .mfilter button:hover{color:var(--ink);border-color:var(--accent)}
         .mfilter button.on{color:var(--accent-ink-on);background:var(--accent);border-color:var(--accent)}
         .mbento{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:158px;gap:16px}
         .mcard{background:var(--paper-raised);border:1px solid var(--rule);border-radius:var(--radius-card);
-          padding:18px;box-shadow:var(--shadow-card);display:flex;flex-direction:column;position:relative;
+          padding:18px;box-shadow:var(--shadow-card);display:flex;flex-direction:column;position:relative;min-width:0;
           text-decoration:none;color:inherit;transition:box-shadow var(--dur-base) var(--ease-ui),border-color var(--dur-base) var(--ease-ui)}
         .mcard:hover{box-shadow:var(--shadow-raise);border-color:var(--accent);text-decoration:none}
         .mc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
@@ -150,7 +159,8 @@ export default function BrowsePage() {
           display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}
         .mc-foot{margin-top:auto;display:flex;align-items:flex-end;justify-content:space-between;gap:10px;padding-top:10px}
         .mc-stat{font-family:var(--font-display);font-weight:500;font-size:1.7rem;line-height:1;color:var(--ink)}
-        .mc-chip{font-size:11.5px;color:var(--ink-3);display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+        .mc-chip{font-size:11.5px;color:var(--ink-3);display:inline-flex;align-items:center;gap:5px;min-width:0;
+          white-space:normal;overflow-wrap:anywhere}
         .b22{grid-column:span 2;grid-row:span 2}
         .b21{grid-column:span 2}
         .b22 .mc-title{font-size:20px}

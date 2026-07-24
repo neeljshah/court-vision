@@ -128,6 +128,23 @@ const card: CSSProperties = {
   boxShadow: "var(--shadow-card)",
   maxWidth: 680,
 };
+// Strikethrough + red alone is a hairline a fast scroll can miss, misreading a
+// retracted figure as an achievement. Pair every struck line with an explicit
+// RETRACTED badge so the status survives the skim (no number changes).
+const retractHead: CSSProperties = { display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" };
+const retractTag: CSSProperties = {
+  fontFamily: "var(--font-mono)",
+  fontSize: 10.5,
+  fontWeight: 700,
+  letterSpacing: "0.1em",
+  color: "var(--reject)",
+  border: "1px solid var(--reject)",
+  borderRadius: "var(--radius-chip)",
+  padding: "2px 7px",
+  textTransform: "uppercase",
+  whiteSpace: "nowrap",
+  flex: "0 0 auto",
+};
 const retractedLine: CSSProperties = {
   fontFamily: "var(--font-display)",
   fontSize: 18,
@@ -135,6 +152,7 @@ const retractedLine: CSSProperties = {
   color: "var(--reject)",
   textDecoration: "line-through",
   textDecorationThickness: "1.5px",
+  margin: 0,
 };
 const rowLabel: CSSProperties = {
   fontWeight: 700,
@@ -163,7 +181,7 @@ export default function RetractionPage() {
       <p className="overline">Findings / Retraction</p>
       <h1 style={h1}>The Retraction Story</h1>
       <p style={lede}>
-        The most persuasive thing on this site is not a winning number -- it is the
+        The most persuasive thing on this site is not a winning number &mdash; it is the
         pile of losing ones, kept on purpose. These six headline figures were each
         published once, then taken apart by the same instruments that built the
         system, and every replacement below is calibration-only: no dollar, ROI, or
@@ -172,7 +190,7 @@ export default function RetractionPage() {
       <p style={truthBanner}>
         The single truth-source for every figure below is docs/JOB_EVIDENCE_PACKET.md
         (packet as_of {PACKET_ASOF}). These six numbers appear here, and only here,
-        inside this retraction framing -- see{" "}
+        inside this retraction framing &mdash; see{" "}
         <Link href="/analytics/the-loop">What verified means</Link> for the discipline
         that produced this table.
       </p>
@@ -180,7 +198,10 @@ export default function RetractionPage() {
       <div style={{ marginTop: 8 }}>
         {RETRACTIONS.map((r) => (
           <article key={r.retracted} style={card}>
-            <p style={retractedLine}>{r.retracted}</p>
+            <div style={retractHead}>
+              <span style={retractTag}>Retracted</span>
+              <p style={retractedLine}>{r.retracted}</p>
+            </div>
             <p style={rowLabel}>What was wrong</p>
             <p style={rowBody}>{r.whatWasWrong}</p>
             <p style={rowLabel}>Proof artifact</p>
@@ -195,7 +216,7 @@ export default function RetractionPage() {
         The through-line: against real closing lines the market is efficient, the
         model is break-even-minus-vig, and every candidate edge, including the
         strongest one, was rejected or retracted by its own gates. That is the
-        honest, correct result for an efficient market -- and the harnesses that
+        honest, correct result for an efficient market &mdash; and the harnesses that
         prove it are the same ones that took these six numbers apart.
       </p>
 

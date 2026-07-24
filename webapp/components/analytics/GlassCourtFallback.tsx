@@ -54,11 +54,11 @@ export default function GlassCourtFallback({
         aria-hidden="true"
       >
         {/* slate wireframe etched into the glass */}
-        <g style={{ stroke: "var(--accent)" }} fill="none" strokeWidth={1.2}>
-          <polygon points="70,250 330,250 300,90 100,90" strokeOpacity={0.5} />
-          <ellipse cx={200} cy={90} rx={70} ry={16} strokeOpacity={0.32} />
-          <line x1={200} y1={90} x2={200} y2={250} strokeOpacity={0.32} />
-          <ellipse cx={200} cy={170} rx={38} ry={9} strokeOpacity={0.32} />
+        <g style={{ stroke: "var(--accent)" }} fill="none" strokeWidth={1.4}>
+          <polygon points="70,250 330,250 300,90 100,90" strokeOpacity={0.7} />
+          <ellipse cx={200} cy={90} rx={70} ry={16} strokeOpacity={0.5} />
+          <line x1={200} y1={90} x2={200} y2={250} strokeOpacity={0.5} />
+          <ellipse cx={200} cy={170} rx={38} ry={9} strokeOpacity={0.5} />
         </g>
         {/* the single amber rising-line arc (the logo motif) */}
         <path
@@ -70,23 +70,6 @@ export default function GlassCourtFallback({
         />
         <circle cx={300} cy={90} r={3.2} style={{ fill: "var(--signal)" }} />
       </svg>
-
-      <span
-        style={{
-          position: "absolute",
-          right: 12,
-          bottom: 12,
-          font: "500 11px/1.3 var(--font-mono)",
-          color: "var(--ink-3)",
-          background:
-            "color-mix(in srgb, var(--paper-raised) 82%, transparent)",
-          padding: "4px 8px",
-          borderRadius: 6,
-          border: "1px solid var(--rule)",
-        }}
-      >
-        3D lazy-loaded -- reduced-motion shows this still
-      </span>
     </div>
   );
 }

@@ -3,6 +3,7 @@
 // JSON. NO_DATA is first-class -- shown, never hidden. Server component.
 import type { CSSProperties, ReactNode } from "react";
 import { Receipt, type ReceiptData } from "./Receipt";
+import { typeset } from "@/lib/analytics/format";
 
 export type ScoutStatus = "ok" | "descriptive_only" | "no_data";
 
@@ -24,7 +25,7 @@ function renderProse(text: string): ReactNode[] {
         {seg}
       </strong>
     ) : (
-      <span key={i}>{seg}</span>
+      <span key={i}>{typeset(seg)}</span>
     )
   );
 }

@@ -12,7 +12,7 @@ import { AskBox, type AskEntry, type AskTour } from "@/components/analytics/AskB
 export const metadata: Metadata = {
   title: "Ask Scout",
   description:
-    "Ask about any player, team, or metric across four sports. Scout answers only from precomputed, receipt-cited data -- and says NO_DATA plainly when it has none.",
+    "Ask about the players, teams, and metrics Scout has already studied across four sports. Scout answers only from precomputed, receipt-cited data -- and says NO_DATA plainly when it has none.",
 };
 
 // Clone-safe, repo-relative read (mirrors lib/showcase.server.ts). Fresh clones
@@ -84,14 +84,22 @@ const tierCard = (active: boolean): CSSProperties => ({
 const codeBlock: CSSProperties = {
   background: "#241f1a",
   color: "#e9e0d2",
+  // A token border separates the block from the panel in BOTH themes -- its dark
+  // #241f1a ground is nearly identical to --paper-raised (#24201C) in dark mode, so
+  // without this it lost its boundary and read as loose floating text.
+  border: "1px solid var(--rule-strong)",
   borderRadius: "var(--radius-card, 10px)",
   padding: 16,
   fontFamily: "var(--font-mono)",
   fontSize: 12.5,
   lineHeight: 1.6,
+  // pre-wrap (not pre) so the longest line ("args": [...server"]) wraps into view on
+  // a narrow phone instead of scrolling off with no edge-fade cue. Soft-wrap only --
+  // the copied text keeps its real newlines/spaces, so the config stays valid JSON.
   overflowX: "auto",
   margin: 0,
-  whiteSpace: "pre",
+  whiteSpace: "pre-wrap",
+  wordBreak: "break-word",
 };
 
 const TIERS = [
@@ -126,8 +134,9 @@ export default function AskPage() {
       </p>
       <h1 style={h1S}>Ask Scout</h1>
       <p style={lede}>
-        Ask about any player, team, or metric across four sports. Scout answers only
-        from precomputed, receipt-cited data -- and says so plainly when it has none.
+        Ask about the players, teams, and metrics Scout has already studied across four
+        sports. Scout answers only from precomputed, receipt-cited data &mdash; and says
+        NO_DATA plainly when it has none.
       </p>
 
       <AskBox entries={entries} tours={tours} />
@@ -181,7 +190,7 @@ export default function AskPage() {
               id="connect-h"
               style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 24, color: "var(--ink)", margin: "6px 0 8px" }}
             >
-              Go deeper -- connect your own Claude
+              Go deeper &mdash; connect your own Claude
             </h2>
             <p style={{ fontSize: 14.5, color: "var(--ink-2)", lineHeight: 1.6 }}>
               Point Claude at the CourtVision MCP and ask anything the data supports --
@@ -228,10 +237,13 @@ export default function AskPage() {
             </ol>
             <p style={{ fontSize: 13, color: "var(--signal-ink)", fontWeight: 500, marginTop: 14, lineHeight: 1.5 }}>
               This runs inside YOUR Claude session using our open MCP server. We don't
-              host an LLM -- your questions never touch our servers.
+              host an LLM &mdash; your questions never touch our servers.
             </p>
             <p style={{ fontSize: 14, marginTop: 12 }}>
-              <Link href="/use-it">Full MCP quickstart &amp; tool reference &rarr;</Link>
+              {/* /use-it lives in the terminal product (own theme, full reload) --
+                  the up-right glyph + label mark this as a cross-product jump, not
+                  an in-Reading-Room docs link. */}
+              <Link href="/use-it" target="_blank" rel="noopener">Full MCP quickstart &amp; tool reference &mdash; opens in the terminal &#8599;</Link>
             </p>
           </div>
           <div>

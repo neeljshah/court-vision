@@ -24,7 +24,7 @@ const LABEL: Record<Verdict, string> = {
   confirmed: "verdict: confirmed",
   null: "verdict: null result (a finding, not a failure)",
   not_testable: "verdict: not testable",
-  descriptive_only: "descriptive only -- no edge claimed",
+  descriptive_only: "descriptive only \u2014 no edge claimed",
   pending: "validation pending",
 };
 

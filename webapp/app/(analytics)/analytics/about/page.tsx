@@ -63,7 +63,7 @@ export default function AboutPage() {
         CourtVision is an AI-native sports intelligence platform: computer-vision tracking,
         official box-score APIs, and a library of trained signals feed a possession-level Monte
         Carlo simulator, producing calibrated forecasts across NBA, MLB, soccer, and tennis. This
-        site is the honest read-out of that pipeline -- every number on it carries the artifact
+        site is the honest read-out of that pipeline &mdash; every number on it carries the artifact
         that produced it. The product is a <em>calibrated predictor</em>, not a betting-edge
         service; an honest null result is a success here, not a failure. Full discipline and
         proof harness: <Link href="/analytics/the-loop">What verified means &rarr;</Link>
@@ -88,7 +88,7 @@ export default function AboutPage() {
           ))}
         </div>
         <p style={{ ...lede, marginTop: 20, fontSize: 14.5 }}>
-          Quickstart for tier 3 (clone, `pip install pandas numpy`, run the server -- stdlib-only
+          Quickstart for tier 3 (clone, <code className="mono">pip install pandas numpy</code>, run the server &mdash; stdlib-only
           at boot): <code className="mono">docs/MCP_QUICKSTART.md</code> in this repo, or go
           straight to <Link href="/analytics/ask">Ask Scout &rarr;</Link>
         </p>
@@ -126,7 +126,7 @@ export default function AboutPage() {
           <a href="https://neelshahportfolio.netlify.app" target="_blank" rel="noreferrer noopener">
             Neel Shah
           </a>{" "}
-          -- solo human architect/director of an agentic build pipeline (Claude agents write,
+          &mdash; solo human architect/director of an agentic build pipeline (Claude agents write,
           test, and ship or reject every signal on this site). Contact:{" "}
           <a href="mailto:neeljshah22@gmail.com">neeljshah22@gmail.com</a>.
         </p>

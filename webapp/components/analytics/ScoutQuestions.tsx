@@ -11,7 +11,12 @@ const pill: CSSProperties = {
   color: "var(--accent)",
   border: "1px solid var(--rule-strong)",
   borderRadius: "var(--radius-pill, 999px)",
-  padding: "6px 13px",
+  // min-height:44 (box-sizing:border-box globally) meets the 44px touch target;
+  // inline-flex + center so the label sits mid-pill.
+  display: "inline-flex",
+  alignItems: "center",
+  minHeight: 44,
+  padding: "6px 14px",
   background: "var(--paper-raised)",
   textDecoration: "none",
   lineHeight: 1.35,

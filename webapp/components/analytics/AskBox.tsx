@@ -8,6 +8,7 @@
 import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import { Receipt, type ReceiptData } from "./Receipt";
 import type { Verdict } from "./VerdictDot";
+import { typeset } from "@/lib/analytics/format";
 
 export type AskStatus = "ok" | "no_data" | "refused";
 export interface AskAnswer {
@@ -54,35 +55,51 @@ function buildIndex(entries: AskEntry[]): Idx[] {
 }
 // ponytail: linear scan over ~236 entries per submit is trivially fast; no worker
 // or prebuilt search index until the corpus is 100x larger.
-function score(q: string, ix: Idx): number {
+interface Score {
+  total: number; // ranking weight (picks the nearest entry)
+  phrase: boolean; // a real signal: the query exactly is, or contains/is-contained
+  // by, one of the entry's phrasings -- NOT a bare token overlap.
+}
+function score(q: string, ix: Idx): Score {
   const qn = norm(q);
-  let s = 0;
-  for (const t of toks(q)) if (ix.terms.has(t)) s += 1;
+  let total = 0;
+  let phrase = false;
+  for (const t of toks(q)) if (ix.terms.has(t)) total += 1;
   for (const n of ix.norms) {
     if (!n) continue;
-    if (n === qn) s += 5;
-    else if (qn.length > 3 && (n.includes(qn) || qn.includes(n))) s += 2;
+    if (n === qn) { total += 5; phrase = true; }
+    else if (qn.length > 3 && (n.includes(qn) || qn.includes(n))) { total += 2; phrase = true; }
   }
-  return s;
+  return { total, phrase };
 }
-const THRESHOLD = 2;
 export interface Resolved {
   entry: AskEntry;
   matched: boolean;
+  // true = the query shared ZERO tokens with every entry, so `bi` fell to
+  // entries[0] by default -- it is NOT a real nearest and must not be presented
+  // as "the closest thing Scout can cite" (that would fake a similarity it never
+  // computed). Render a pure NO_DATA instead.
+  noMatch: boolean;
 }
 export function resolveQuestion(q: string, entries: AskEntry[], index: Idx[]): Resolved | null {
   if (!toks(q).length) return null;
-  let best = -1;
+  let best: Score = { total: -1, phrase: false };
   let bi = -1;
   index.forEach((ix, i) => {
     const s = score(q, ix);
-    if (s > best) {
+    if (s.total > best.total) {
       best = s;
       bi = i;
     }
   });
   if (bi < 0) return null;
-  return { entry: entries[bi], matched: best >= THRESHOLD };
+  // A DIRECT answer requires a phrase-level hit (the exact question, or one that
+  // contains / is contained by an entry phrasing) -- never a bare token overlap.
+  // Two shared generic tokens ("points", "score", "tonight") must NOT let a
+  // different question or entity ("Luka" vs "LeBron") masquerade as the answer.
+  // Token-only nearest entries fall to the "closest thing Scout can cite" framing,
+  // which shows the cited question so any mismatch is transparent, not hidden.
+  return { entry: entries[bi], matched: best.phrase, noMatch: best.total <= 0 };
 }
 
 // ---- verdict / receipt mapping (honest defaults: ok never over-claims green) --
@@ -124,7 +141,8 @@ const inputS: CSSProperties = {
   fontFamily: "var(--font-sans)",
   fontSize: 16,
   color: "var(--ink)",
-  outline: "none",
+  // No outline override: keyboard focus falls through to the global
+  // :focus-visible ring (analytics.css) so the field is never a silent focus.
 };
 const askBtn: CSSProperties = {
   border: 0,
@@ -134,6 +152,8 @@ const askBtn: CSSProperties = {
   fontWeight: 600,
   fontSize: 15,
   padding: "10px 20px",
+  // Match the product's 44px touch standard (nav/pills/chips already enforce it).
+  minHeight: 44,
   borderRadius: "var(--radius-pill, 999px)",
   cursor: "pointer",
 };
@@ -142,7 +162,12 @@ const pill: CSSProperties = {
   color: "var(--accent)",
   border: "1px solid var(--rule-strong)",
   borderRadius: "var(--radius-pill, 999px)",
-  padding: "6px 13px",
+  // 44px min touch target (box-sizing:border-box globally); inline-flex centers
+  // the label, incl. when a long suggestion wraps to two lines.
+  display: "inline-flex",
+  alignItems: "center",
+  minHeight: 44,
+  padding: "6px 14px",
   background: "var(--paper-raised)",
   cursor: "pointer",
   fontFamily: "var(--font-sans)",
@@ -180,13 +205,19 @@ function Envelope({ r, query }: { r: Resolved; query: string }): ReactNode {
         <div style={qLabel}>{query}</div>
         {r.matched ? (
           <div style={answerS}>
-            {a.answer}
+            {typeset(a.answer)}
             <div style={chipRow}>{chip}</div>
+          </div>
+        ) : r.noMatch ? (
+          <div style={answerS}>
+            <strong style={{ color: "var(--ink)", fontWeight: 600 }}>No verified answer. </strong>
+            Nothing in Scout&rsquo;s corpus is close to that. Try naming a player, team,
+            metric, or sport.
           </div>
         ) : (
           <div style={answerS}>
             <strong style={{ color: "var(--ink)", fontWeight: 600 }}>No verified answer. </strong>
-            Scout has no verified answer for that. The closest thing it can cite:
+            Here is the closest thing Scout can cite:
             <div
               style={{
                 marginTop: 10,
@@ -195,7 +226,7 @@ function Envelope({ r, query }: { r: Resolved; query: string }): ReactNode {
               }}
             >
               <div style={{ ...qLabel, fontStyle: "italic" }}>{r.entry.q}</div>
-              {a.answer}
+              {typeset(a.answer)}
               <div style={chipRow}>{chip}</div>
             </div>
           </div>
@@ -246,6 +277,12 @@ export function AskBox({ entries, tours }: { entries: AskEntry[]; tours: AskTour
         </button>
       </form>
 
+      {/* Answer lands directly under the input so submitting gives immediate,
+          in-view feedback (was below the tall tours block, off-screen). */}
+      <div aria-live="polite" style={result ? { marginTop: 16 } : undefined}>
+        {result ? <Envelope r={result} query={query} /> : null}
+      </div>
+
       <div style={{ margin: "16px 0 10px" }}>
         {tours.map((t) => (
           <div key={t.label} style={{ marginBottom: 12 }}>
@@ -270,10 +307,6 @@ export function AskBox({ entries, tours }: { entries: AskEntry[]; tours: AskTour
         No LLM runs here. This is a router over a committed answers corpus -- exact
         numbers, exact sources, honest NO_DATA.
       </p>
-
-      <div aria-live="polite">
-        {result ? <Envelope r={result} query={query} /> : null}
-      </div>
     </div>
   );
 }

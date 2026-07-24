@@ -15,6 +15,7 @@ import { notFound } from "next/navigation";
 import { Receipt, type ReceiptData } from "@/components/analytics/Receipt";
 import { ScoutNote, type ScoutEnvelope } from "@/components/analytics/ScoutNote";
 import { ScoutQuestions } from "@/components/analytics/ScoutQuestions";
+import { asOfDate } from "@/lib/analytics/format";
 
 type KN = Record<string, unknown>;
 type Entry = { entity: string; card_path: string; key_numbers: KN; floors?: string; as_of?: string };
@@ -64,6 +65,38 @@ function readInsight(pack: string, slug: string): Insight | null {
   try { return JSON.parse(readFileSync(join(INSIGHTS, pack, `${slug}.json`), "utf-8")) as Insight; }
   catch { return null; }
 }
+// "Where this appears" links render module titles from the SAME manifest Browse
+// uses, so they read as titles ("Player Metric Landscape") not raw lowercased slugs
+// ("player metric landscape", which looked like leftover debug text). Built once per
+// build; Title-Case fallback if an id is ever missing from the manifest.
+let _modTitles: Record<string, string> | null = null;
+function moduleTitle(id: string): string {
+  if (!_modTitles) {
+    try {
+      const man = JSON.parse(readFileSync(join(SHOWCASE, "site_manifest.json"), "utf-8")) as { modules?: Array<{ id: string; title: string }> };
+      _modTitles = Object.fromEntries((man.modules || []).map((m) => [m.id, m.title]));
+    } catch { _modTitles = {}; }
+  }
+  return _modTitles[id] || id.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+// Only surface Scout pills whose answer actually lives in the committed corpus.
+// The corpus entry's source_artifact IS this entity's insight file, so match on
+// it, keep the answerable (status ok) ones, and use their VERBATIM question -- so
+// each pill phrase-resolves in the router instead of dead-ending in "No verified
+// answer". Mirrors m/[id]/page.tsx corpusQuestions; the old name-templated pills
+// ("How does {name} profile in {sport}?") matched no phrasing and fell to the
+// closest-cite fallback. No hit (the ~1,489 thin cards) -> no pills (honest).
+function corpusQuestions(pack: string, slug: string): string[] {
+  let entries: Array<{ q: string; a?: { source_artifact?: string; status?: string } }> = [];
+  try {
+    entries = (JSON.parse(readFileSync(join(process.cwd(), "public", "data", "ask", "corpus.json"), "utf-8")) as { entries?: typeof entries }).entries || [];
+  } catch { return []; }
+  const needle = `/entities/${pack}/${slug}.`;
+  const hits = entries.filter(
+    (e) => e.a?.status === "ok" && (e.a?.source_artifact || "").replace(/\\/g, "/").includes(needle)
+  );
+  return Array.from(new Set(hits.map((e) => e.q))).slice(0, 3);
+}
 
 function fmt(v: unknown): string {
   if (v === null || v === undefined) return "--";
@@ -71,16 +104,26 @@ function fmt(v: unknown): string {
   if (typeof v === "number") return Number.isInteger(v) ? String(v) : String(parseFloat(v.toFixed(3)));
   return String(v);
 }
+// Rate/percent cells read as a set (fg% next to 3p% next to ft%), so a whole
+// number stripped to "31" looks like a typo beside "42.5". Pad integer-valued
+// pct/per36 cells to one decimal -- lossless (never rounds; fractional values
+// keep their own precision, e.g. mlb 10.28 stays "10.28").
+function fmtCell(k: string, v: unknown): string {
+  if (typeof v === "number" && Number.isInteger(v) && /pct|per36/i.test(k)) return v.toFixed(1);
+  return fmt(v);
+}
 function label(k: string): string {
   return k.replace(/^career_/, "").replace(/_/g, " ")
     .replace(/\bpct\b/g, "%").replace(/per36/g, "/36")
     .replace(/\bfg3\b/g, "3P").replace(/\bfg\b/g, "FG").replace(/\bft\b/g, "FT")
     .replace(/\bpts\b/g, "PTS").replace(/\breb\b/g, "REB").replace(/\bast\b/g, "AST").trim();
 }
-// scalar key_numbers only (skip ids + nested dicts) -> stat cells.
+// scalar key_numbers only (skip ids + nested dicts) -> stat cells. team_full_name
+// is excluded to match the atlas index's colKeys: it is the entity's own name
+// (already the <h1>), not a measured figure to typeset in the numeric style.
 function statCells(kn: KN): Array<[string, unknown]> {
   return Object.entries(kn).filter(([k, v]) =>
-    !/_id$/.test(k) && (typeof v === "number" || typeof v === "string" || typeof v === "boolean"));
+    !/_id$/.test(k) && k !== "team_full_name" && (typeof v === "number" || typeof v === "string" || typeof v === "boolean"));
 }
 function nameFor(entry: Entry): string {
   const full = entry.key_numbers.team_full_name;
@@ -121,22 +164,27 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
   const entry = hit.entry;
   const insight = readInsight(params.pack, params.slug);
   const name = insight?.display_name || nameFor(entry);
-  const asOf = insight?.as_of || entry.as_of || null;
+  // Machine timestamps (tennis cards carry ISO "2026-07-19T03:41:37...+00:00")
+  // collapse to a clean date; descriptive labels pass through.
+  const asOf = asOfDate(insight?.as_of || entry.as_of) || null;
   const cells = statCells(entry.key_numbers);
 
+  // The receipt popover header names WHAT this number cites (the field path), like
+  // m/[id]/page.tsx does -- not the verdict token, which the dot + verdict already
+  // encode. Verdict stays descriptive_only (the dot color). c.field is optional; the
+  // Receipt omits the header cleanly when it is absent.
   const chips: ReceiptData[] = (insight?.cited || []).slice(0, 4).map((c) => ({
-    value: fmt(c.value), label: "descriptive_only", sourceArtifact: c.path,
-    asOf: insight?.as_of, verdict: "descriptive_only",
+    value: fmt(c.value), label: c.field, sourceArtifact: c.path,
+    asOf: asOf || undefined, verdict: "descriptive_only",
   }));
   const envelope: ScoutEnvelope = insight
     ? { status: "descriptive_only", prose: insight.one_liner, chips }
     : { status: "no_data", prose: "" };
 
-  const questions = [
-    `How does ${name} profile in ${pack.sport}?`,
-    `What sample sits behind ${name}'s numbers?`,
-    `Where else does ${name} appear across CourtVision?`,
-  ];
+  // Draw the Scout pills from real corpus hits for this entity (verbatim questions
+  // that phrase-resolve), never templated strings that dead-end. Empty for the thin
+  // cards -> ScoutQuestions renders nothing.
+  const questions = corpusQuestions(params.pack, params.slug);
 
   return (
     <div className="wrap" style={{ paddingBottom: 8 }}>
@@ -149,25 +197,32 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
 
       <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "var(--paper-tint)", border: "1px solid var(--rule-strong)", borderRadius: 8, padding: "8px 14px", fontSize: 13, color: "var(--ink-2)", margin: "8px 0 26px" }}>
         <span className="dot d-desc" style={{ width: 8, height: 8 }} />
-        Descriptive only -- no edge claimed. These are {pack.noun}, not projections.
+        Descriptive only &mdash; no edge claimed. These are {pack.noun}, not projections.
       </div>
 
       <header style={{ borderBottom: "1px solid var(--rule-strong)", paddingBottom: 22, marginBottom: 30 }}>
         <div className="overline">{pack.label} &middot; {pack.sport}{asOf ? ` \u00B7 as of ${asOf}` : ""}</div>
         <h1 className="serif" style={{ fontWeight: 500, fontSize: "clamp(2.4rem,5vw,3.4rem)", lineHeight: 1.05, letterSpacing: "-.02em", marginTop: 4 }}>{name}</h1>
-        <div style={{ color: "var(--ink-2)", marginTop: 6, fontSize: 15 }}>Descriptive card &middot; floors-gated &middot; the HTML card, not a PNG.</div>
+        <div style={{ color: "var(--ink-2)", marginTop: 6, fontSize: 15 }}>Descriptive card &middot; conservative measured rates.</div>
       </header>
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: 40, alignItems: "flex-start" }}>
         <div style={{ flex: "3 1 440px", minWidth: 0 }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 1, background: "var(--rule)", border: "1px solid var(--rule)", borderRadius: 12, overflow: "hidden" }}>
-            {cells.map(([k, v]) => (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 1, background: "var(--rule)", border: "1px solid var(--rule)", borderRadius: 12 }}>
+            {cells.map(([k, v]) => {
+              // The big serif tabular-figure tile is a NUMERAL slot; a categorical
+              // string (e.g. an NBA team's top_contributor player name) typeset that
+              // way reads as a category error and rags/overflows. Render non-numeric
+              // values as normal text instead, reserving the numeral style for numbers.
+              const isNum = typeof v === "number";
+              return (
               <div key={k} style={{ background: "var(--paper-raised)", padding: "18px 16px" }}>
                 <div style={{ fontSize: 12, color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: ".06em", fontWeight: 600 }}>{label(k)}</div>
-                <div className="serif tnum" style={{ fontWeight: 500, fontSize: "2.1rem", lineHeight: 1, margin: "8px 0 10px" }}>{fmt(v)}</div>
-                <Receipt sourceArtifact={`${REPO}/${pack.manifest}`} asOf={asOf || undefined} verdict="descriptive_only" label="descriptive_only" value={fmt(v)} />
+                <div className={isNum ? "serif tnum" : undefined} style={isNum ? { fontWeight: 500, fontSize: "2.1rem", lineHeight: 1, margin: "8px 0 10px" } : { fontWeight: 600, fontSize: "1.05rem", lineHeight: 1.3, margin: "8px 0 10px", color: "var(--ink)" }}>{fmtCell(k, v)}</div>
+                <Receipt sourceArtifact={`${REPO}/${pack.manifest}`} asOf={asOf || undefined} verdict="descriptive_only" label="descriptive_only" value={fmtCell(k, v)} />
               </div>
-            ))}
+              );
+            })}
           </div>
 
           <ScoutNote envelope={envelope} />
@@ -197,10 +252,13 @@ export default function EntityPage({ params }: { params: { pack: string; slug: s
             </div>
           ) : null}
           <div style={box}>
-            <h3 className="serif" style={{ fontWeight: 500, fontSize: 20, marginBottom: 8 }}>Where this appears</h3>
+            {/* Pack-scoped, not entity-specific: pack.related is a fixed list shared
+                by every entity in the pack. "Related analytics" reads honestly;
+                "Where this appears" over-promised per-entity placement. */}
+            <h3 className="serif" style={{ fontWeight: 500, fontSize: 20, marginBottom: 8 }}>Related analytics</h3>
             {pack.related.map((id) => (
               <Link key={id} href={`/analytics/m/${id}`} style={{ display: "block", padding: "9px 0", borderBottom: "1px solid var(--rule)", fontSize: 14 }}>
-                {id.replace(/_/g, " ")}
+                {moduleTitle(id)}
               </Link>
             ))}
             <Link href={`/analytics/players#${pack.slug}`} style={{ display: "block", padding: "9px 0", fontSize: 14 }}>

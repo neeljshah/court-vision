@@ -15,6 +15,9 @@ const nextConfig = {
         output: 'export',
         basePath: '/court-vision',
         assetPrefix: '/court-vision/',
+        // Pages serves foo/index.html at both /foo and /foo/ -- without this,
+        // shared links with a trailing slash 404 (foo.html only maps to /foo).
+        trailingSlash: true,
         images: { unoptimized: true },
       }
     : {

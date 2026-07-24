@@ -98,7 +98,7 @@ export function Bars(props: BarsProps) {
       <svg
         viewBox={`0 0 ${width} ${height}`}
         width="100%"
-        style={{ height: "auto", display: "block", fontVariantNumeric: "tabular-nums" }}
+        style={{ height: "auto", minWidth: 560, display: "block", fontVariantNumeric: "tabular-nums" }}
         role="img"
         aria-label={title || "bar chart"}
       >

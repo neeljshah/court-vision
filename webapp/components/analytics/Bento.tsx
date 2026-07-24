@@ -29,7 +29,7 @@ const CSS = `
 .a-bento{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:158px;gap:16px}
 .a-cell{position:relative;display:flex;flex-direction:column;padding:18px 18px 16px;
   background:var(--paper-raised);border:1px solid var(--rule);border-radius:var(--radius-card);
-  box-shadow:var(--shadow-card);overflow:hidden;
+  box-shadow:var(--shadow-card);
   transition:box-shadow var(--dur-base) var(--ease-ui),border-color var(--dur-base) var(--ease-ui),transform var(--dur-base) var(--ease-ui)}
 .a-cell:hover,.a-cell:focus-within{box-shadow:var(--shadow-raise);border-color:var(--accent);transform:translateY(-2px)}
 .a-cell.w-2x2{grid-column:span 2;grid-row:span 2}

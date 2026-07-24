@@ -8,13 +8,21 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { CSSProperties } from "react";
 import { Grid } from "@/components/analytics/charts/Grid";
+import { scrollFrame } from "@/components/analytics/charts/Figure";
 import { Bars, type BarDatum } from "@/components/analytics/charts/Bars";
 import { ScoutNote } from "@/components/analytics/ScoutNote";
 import { ScoutQuestions } from "@/components/analytics/ScoutQuestions";
 import { Receipt } from "@/components/analytics/Receipt";
-import type { Verdict } from "@/components/analytics/VerdictDot";
+import { VerdictDot } from "@/components/analytics/VerdictDot";
+import { VerdictLegend } from "@/components/analytics/VerdictLegend";
+import { vtok } from "@/lib/analytics/verdict";
+import { pickQuestions } from "@/lib/analytics/askPicks";
 
-export const metadata = { title: "The Forecaster" };
+export const metadata = {
+  title: "The Forecaster",
+  description:
+    "The calibrated prediction engine: walk-forward, leak-free scoring across three sports, with the in-game static-to-conditional Brier improvement as the centerpiece. Matched against the devigged close; no dollar edge is claimed.",
+};
 
 // staged-artifact reader (forecaster subdir; null on a fresh clone -> pending)
 function fc<T>(name: string): T | null {
@@ -41,8 +49,8 @@ const sgn = (n: number, d = 4) => `${n >= 0 ? "+" : ""}${n.toFixed(d)}`;
 const SPORT: Record<string, string> = { nba: "NBA", mlb: "MLB", mlb_ingame: "MLB (in-game)", mlb_pregame: "MLB (pregame)", soccer_intl: "Soccer" };
 const sName = (s: string) => SPORT[s] || s;
 const tShort = (t: string) => t.split("(")[0];
-const vtok = (v: string): Verdict => (v.startsWith("MODEL_SHARPER") ? "confirmed" : v.startsWith("MARKET_SHARPER") ? "not_testable" : "null");
-const dotVar = (v: Verdict) => (v === "confirmed" ? "confirmed" : v === "not_testable" ? "not-testable" : "null");
+// vtok (verdict-string -> honesty token) lives in lib/analytics/verdict so the Home
+// bento cell and this table map the SAME scoreboard row to the SAME dot.
 
 // "what the model sees": pivot MLB model buckets into a time x prob-band grid
 const TIMES = ["early(inn1-3)", "mid(inn4-6)", "late(inn7+)"];
@@ -68,17 +76,19 @@ const ARMS = [
   { sport: "MLB", stat: 0.241, score: 0.128, comb: 0.126, mech: "~99%", prior: "-0.001 (~1%)" },
 ];
 const SCOUT_CHIPS: Parameters<typeof Receipt>[0][] = [
-  { label: "CALIBRATION_OOS (VALIDATION_PENDING on fresh clone)", sourceArtifact: "docs/INGAME_PROOF.md", asOf: "2026-07-23", verdict: "pending" },
+  { label: "CALIBRATION_OOS (VALIDATION_PENDING -- not yet published)", sourceArtifact: "docs/INGAME_PROOF.md", asOf: "2026-07-23", verdict: "pending" },
   { label: "BSS vs market -- null is the exhibit", sourceArtifact: "scripts/platformkit/analytics_showcase/out/brier_skill_scores.json", asOf: "2026-07-24", n: 78986, verdict: "null" },
   { label: "walk-forward, expanding window", sourceArtifact: "results/winprob_walk_forward_results.json", asOf: "2026-07-20", verdict: "confirmed" },
 ];
 const SCOUT_PROSE =
-  "Pregame, the forecaster **matches** the devigged close within noise and beats nothing. The one measured win is **in-game**: conditioning NBA win-probability on the realized state sharpens calibration to Brier **0.159** -- but most of that lift is the scoreboard itself, and the model's own prior adds only the last **~0.014**. Against the market's Brier, skill is **near or below zero** across sports; that null is the point, not a defect.";
-const QUESTIONS = [
-  "How well calibrated is the NBA in-game win probability model?",
-  "Does the forecaster beat the market pregame?",
-  "Where is the forecaster's calibration weakest?",
-];
+  "Pregame, the forecaster **matches** the devigged close within noise and beats nothing. The one measured win is **in-game**: conditioning NBA win-probability on the realized state sharpens calibration to Brier **0.159** \u2014 but most of that lift is the scoreboard itself, and the model's own prior adds only the last **~0.014**. Against the market's Brier, skill is **near or below zero** across sports; that null is the point, not a defect.";
+// Verbatim corpus questions (status ok) so each pill phrase-resolves to a real
+// Scout answer instead of the "No verified answer" closest-cite fallback.
+const QUESTIONS = pickQuestions([
+  "in-game conditioning sharpen calibration",
+  "beat market pregame closing-line",
+  "widest calibration gap weakest",
+]);
 
 // styles
 const sec: CSSProperties = { marginTop: 64 };
@@ -88,8 +98,10 @@ const lede: CSSProperties = { fontSize: 16, lineHeight: 1.62, color: "var(--ink-
 const num: CSSProperties = { fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "2.6rem", lineHeight: 1, fontFeatureSettings: "'tnum' 1", color: "var(--ink)" };
 const cell: CSSProperties = { background: "var(--paper-raised)", padding: "22px 20px" };
 const board: CSSProperties = { display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 1, background: "var(--rule)", border: "1px solid var(--rule)", borderRadius: 12, overflow: "hidden", marginTop: 24 };
-const th: CSSProperties = { textAlign: "left", fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--ink-3)", padding: "8px 12px", borderBottom: "1px solid var(--rule-strong)" };
-const td: CSSProperties = { padding: "9px 12px", fontSize: 13.5, color: "var(--ink-2)", borderBottom: "1px solid var(--rule)", fontVariantNumeric: "tabular-nums" };
+// nowrap so the overflowX:auto wrappers actually scroll on a phone (a width:100%
+// table with wrapping cells never overflows -- it just crams into a lattice).
+const th: CSSProperties = { textAlign: "left", fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--ink-3)", padding: "8px 12px", borderBottom: "1px solid var(--rule-strong)", whiteSpace: "nowrap" };
+const td: CSSProperties = { padding: "9px 12px", fontSize: 13.5, color: "var(--ink-2)", borderBottom: "1px solid var(--rule)", fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" };
 const cap: CSSProperties = { fontSize: 11.5, color: "var(--ink-3)", marginTop: 12 };
 
 const Stat = ({ n, l, s }: { n: string; l: string; s?: string }) => (
@@ -101,16 +113,24 @@ const Stat = ({ n, l, s }: { n: string; l: string; s?: string }) => (
 );
 const Pending = ({ what, src }: { what: string; src: string }) => (
   <p className="mono" style={{ fontSize: 12.5, color: "var(--ink-3)", marginTop: 20, padding: "14px 16px", border: "1px dashed var(--rule-strong)", borderRadius: 10 }}>
-    VALIDATION_PENDING &middot; {what} is staged on the pod, absent from this build. Reproduce from {src}.
+    VALIDATION_PENDING &middot; {what} is a live exhibit we haven&rsquo;t published yet. Source: {src}.
   </p>
 );
+// Numbers are deliberately restrained (not a triumphal hero size) and the arrow is
+// neutral ink, not amber -- a Brier drop that is mostly the scoreboard must not read
+// as a big model "win" ahead of the decomposition that qualifies it.
 const BeforeAfter = ({ sport, a, b, src }: { sport: string; a: string; b: string; src: string }) => (
   <div style={{ ...cell, display: "flex", alignItems: "baseline", gap: 16, flexWrap: "wrap" }}>
     <span style={{ fontSize: 13, color: "var(--ink-2)", width: 84 }}>{sport}</span>
-    <span style={{ ...num, fontSize: "2.1rem", color: "var(--ink-3)" }}>{a}</span>
-    <span style={{ color: "var(--signal-ink)", fontSize: 20 }}>{"\u2192"}</span>
-    <span style={{ ...num, fontSize: "2.4rem" }}>{b}</span>
-    <span className="mono" style={{ fontSize: 11, color: "var(--ink-3)", marginLeft: "auto" }}>{src}</span>
+    <span style={{ ...num, fontSize: "1.6rem", color: "var(--ink-3)" }}>{a}</span>
+    <span style={{ color: "var(--ink-3)", fontSize: 17 }}>{"\u2192"}</span>
+    <span style={{ ...num, fontSize: "1.8rem", color: "var(--ink-2)" }}>{b}</span>
+    {/* The one number on the page that had a bare filename instead of a hover
+        receipt. Give it the same Receipt every other figure wears -- verdict
+        pending, so it reads honestly as VALIDATION_PENDING, not a settled win. */}
+    <span style={{ marginLeft: "auto" }}>
+      <Receipt sourceArtifact={src} label="CALIBRATION_OOS (VALIDATION_PENDING -- not yet published)" asOf="2026-07-23" verdict="pending" />
+    </span>
   </div>
 );
 
@@ -123,15 +143,16 @@ export default function ForecasterPage() {
           A calibrated engine, measured against itself.
         </h1>
         <p style={{ ...lede, fontSize: 18 }}>
-          The market is efficient on price -- we proved it by rejecting our own pregame signals across four sports. So the honest question is not &ldquo;can we beat the close&rdquo; but &ldquo;does the machinery sharpen the forecast.&rdquo; It does, in one measured place: mid-game. Every number below wears its receipt, and no dollar edge is claimed.
+          The market is efficient on price &mdash; we proved it by rejecting our own pregame signals across three sports. So the honest question is not &ldquo;can we beat the close&rdquo; but &ldquo;does the machinery sharpen the forecast.&rdquo; It does, in one measured place: mid-game. Every number below wears its receipt, and no dollar edge is claimed.
         </p>
+        <VerdictLegend style={{ marginTop: 22 }} />
       </header>
 
       <section style={sec}>
         <div style={eye}>Walk-forward proof</div>
         <h2 style={h2}>Trained only on the past, scored on the future.</h2>
         <p style={lede}>
-          An expanding-window backtest: every fold asserts <span className="mono">max_train_date &lt; min_test_date</span> or fails -- no K-fold on time-ordered games. The NBA win-probability ensemble across {wf ? wf.folds.length : 3} folds and {wf ? wf.seasons.join(" + ") : "two"} seasons; the widening train column is the walk forward itself.
+          An expanding-window backtest: every fold asserts <span className="mono">max_train_date &lt; min_test_date</span> or fails &mdash; no K-fold on time-ordered games. The NBA win-probability ensemble across {wf ? wf.folds.length : 3} folds and {wf ? wf.seasons.join(" + ") : "two"} seasons; the widening train column is the walk forward itself.
         </p>
         {wf ? (
           <>
@@ -141,8 +162,8 @@ export default function ForecasterPage() {
               <Stat n={`${wf.folds.length}`} l="Expanding folds" s={wf.seasons.join(" + ")} />
               <Stat n={`${wf.n_features}`} l="Leak-checked features" s="truncation-invariant" />
             </div>
-            <table style={{ width: "100%", borderCollapse: "collapse", marginTop: 20, maxWidth: 560 }}>
-              <thead><tr><th style={th}>Train frac</th><th style={th}>Train n</th><th style={th}>Val n</th><th style={th}>Acc</th><th style={th}>Brier</th></tr></thead>
+            <div style={scrollFrame}><table className="fc-tbl" style={{ width: "100%", borderCollapse: "collapse", marginTop: 20, maxWidth: 560 }}>
+              <thead><tr><th scope="col" style={th}>Train frac</th><th scope="col" style={th}>Train n</th><th scope="col" style={th}>Val n</th><th scope="col" style={th}>Acc</th><th scope="col" style={th}>Brier</th></tr></thead>
               <tbody>
                 {wf.folds.map((f, i) => (
                   <tr key={i}>
@@ -150,7 +171,7 @@ export default function ForecasterPage() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
             <p className="mono" style={cap}>results/winprob_walk_forward_results.json &middot; 2026-07-20 &middot; edge_claimed: false</p>
           </>
         ) : (
@@ -162,18 +183,24 @@ export default function ForecasterPage() {
         <div style={{ ...eye, color: "var(--signal-ink)" }}>The one measured win</div>
         <h2 style={h2}>In-game conditioning sharpens the forecast.</h2>
         <p style={lede}>
-          Fusing the pregame rating prior with the realized mid-game state improves win-probability calibration on a real out-of-sample corpus. A live book also sees the score -- so this is calibration, not a claim of beating anyone.
+          Fusing the pregame rating prior with the realized mid-game state improves win-probability calibration on a real out-of-sample corpus. A live book also sees the score &mdash; so this is calibration, not a claim of beating anyone.
         </p>
-        <div style={{ ...board, gridTemplateColumns: "1fr" }}>
+        {/* overflow:visible (board defaults to hidden to clip its 12px corners) so the
+            BeforeAfter receipts' top:100% popover isn't sliced off; Receipt self-flips
+            to stay on-screen, so no page scroll. */}
+        <div style={{ ...board, gridTemplateColumns: "1fr", overflow: "visible" }}>
           <BeforeAfter sport="NBA Brier" a="0.209" b="0.159" src="proof_nba/ingame_accuracy.py" />
           <BeforeAfter sport="MLB Brier" a="0.241" b="0.126" src="proof_mlb/ingame_accuracy.py" />
         </div>
-        <p style={{ ...lede, marginTop: 28 }}>
-          <strong style={{ color: "var(--ink)" }}>But how much of that is skill?</strong> A rating-blind third arm -- conditioning on the score alone, no model prior -- splits the lift. Most of it is the scoreboard itself, free to anyone watching. The model&rsquo;s own contribution is the last column.
+        <p style={{ ...cap, marginTop: 10 }}>
+          Read this as calibration, not a win: most of the drop is the scoreboard state itself, free to anyone watching &mdash; the model&rsquo;s own prior adds only the last sliver, decomposed below.
         </p>
-        <table style={{ width: "100%", borderCollapse: "collapse", marginTop: 16 }}>
+        <p style={{ ...lede, marginTop: 28 }}>
+          <strong style={{ color: "var(--ink)" }}>But how much of that is skill?</strong> A rating-blind third arm &mdash; conditioning on the score alone, no model prior &mdash; splits the lift. Most of it is the scoreboard itself, free to anyone watching. The model&rsquo;s own contribution is the last column.
+        </p>
+        <div style={scrollFrame}><table className="fc-tbl" style={{ width: "100%", borderCollapse: "collapse", marginTop: 16 }}>
           <thead><tr>
-            <th style={th}>Sport</th><th style={th}>static (prior only)</th><th style={th}>score-only</th><th style={th}>combined</th><th style={th}>mechanical share</th><th style={th}>model-prior share</th>
+            <th scope="col" style={th}>Sport</th><th scope="col" style={th}>static (prior only)</th><th scope="col" style={th}>score-only</th><th scope="col" style={th}>combined</th><th scope="col" style={th}>mechanical share</th><th scope="col" style={th}>model-prior share</th>
           </tr></thead>
           <tbody>
             {ARMS.map((a) => (
@@ -186,8 +213,8 @@ export default function ForecasterPage() {
               </tr>
             ))}
           </tbody>
-        </table>
-        <p className="mono" style={cap}>docs/INGAME_PROOF.md Sec. 2 + 2a &middot; real-corpus OOS &middot; VALIDATION_PENDING on a fresh clone &middot; edge_claimed: false</p>
+        </table></div>
+        <p className="mono" style={cap}>docs/INGAME_PROOF.md Sec. 2 + 2a &middot; real-corpus OOS &middot; each arm rounded independently to 3 dp; the share column is derived from full precision, so it will not reconcile to the 3-dp cells &middot; VALIDATION_PENDING (not yet published) &middot; edge_claimed: false</p>
         <ScoutNote envelope={{ status: "ok", prose: SCOUT_PROSE, chips: SCOUT_CHIPS }} />
       </section>
 
@@ -195,7 +222,7 @@ export default function ForecasterPage() {
         <div style={eye}>What the model sees</div>
         <h2 style={h2}>Its own eyes: calibration by game state.</h2>
         <p style={lede}>
-          Every graded in-game MLB prediction, bucketed by the model&rsquo;s probability band and the inning. Each cell is the calibration error -- how far the stated probability sits from what actually happened. Darker is a bigger gap: the improvement backlog, in the model&rsquo;s own view.
+          Every graded in-game MLB prediction, bucketed by the model&rsquo;s probability band and the inning. Each cell is the calibration error &mdash; how far the stated probability sits from what actually happened. Darker is a bigger gap: the improvement backlog, in the model&rsquo;s own view.
         </p>
         {scc ? (
           <>
@@ -203,6 +230,14 @@ export default function ForecasterPage() {
               <Grid rows={["Early (1-3)", "Mid (4-6)", "Late (7+)"]} cols={PROBS} values={gridVals}
                 source="scripts/platformkit/analytics_showcase/out/state_conditioned_calibration.json" asOf="2026-07-23"
                 title="MLB in-game calibration error (model)" valueFormat={(n) => n.toFixed(3)} verdict="descriptive_only"
+                /* Scroll at the product-standard 560 min-width (like every other chart)
+                   so the cell values stay legible on a phone. At the earlier fit-to-phone
+                   ~340 the SVG scaled ~0.47 and the cell numbers rendered at ~5.7px,
+                   unreadable without pinch-zoom. Trade-off: swiping right to the .6-.8/.8-1
+                   columns briefly scrolls the Early/Mid/Late row labels off the left (SVG
+                   can't sticky a column) -- a smaller harm across only 3 fixed-order rows
+                   than microtype in every cell; the colour ramp stays the primary read. */
+                minWidth={560}
                 meta={`model ECE ${scc.sports.mlb.model_ece_n_weighted} vs market ${scc.sports.mlb.market_ece_n_weighted}`} />
             </div>
             <div style={{ marginTop: 40 }}>
@@ -221,9 +256,9 @@ export default function ForecasterPage() {
         <h2 style={h2}>Model vs market, every checkpoint, reported as-is.</h2>
         {cs ? (
           <>
-            <table style={{ width: "100%", borderCollapse: "collapse", marginTop: 20 }}>
+            <div style={scrollFrame}><table className="fc-tbl" style={{ width: "100%", borderCollapse: "collapse", marginTop: 20 }}>
               <thead><tr>
-                <th style={th}>Sport</th><th style={th}>Market @ checkpoint</th><th style={th}>n</th><th style={th}>paired &Delta;</th><th style={th}>95% CI</th><th style={th}>verdict</th>
+                <th scope="col" style={th}>Sport</th><th scope="col" style={th}>Market @ checkpoint</th><th scope="col" style={th}>n</th><th scope="col" style={th}>model vs market (paired)</th><th scope="col" style={th}>95% CI</th><th scope="col" style={th}>verdict</th>
               </tr></thead>
               <tbody>
                 {cs.rows.map((r, i) => {
@@ -236,15 +271,15 @@ export default function ForecasterPage() {
                       <td style={td}>{sgn(r.paired_delta_mean)}</td>
                       <td style={{ ...td, color: "var(--ink-3)" }}>[{f3(r.paired_delta_95ci[0])}, {f3(r.paired_delta_95ci[1])}]</td>
                       <td style={td}><span className="mono" style={{ fontSize: 11.5, display: "inline-flex", alignItems: "center", gap: 6 }}>
-                        <span className="dot" style={{ background: `var(--${dotVar(v)})` }} />{r.verdict.toLowerCase()}
+                        <VerdictDot verdict={v} />{r.verdict.replace(/_/g, " ").toLowerCase()}
                       </span></td>
                     </tr>
                   );
                 })}
               </tbody>
-            </table>
+            </table></div>
             <p style={{ ...lede, fontSize: 14.5, marginTop: 16 }}>{cs.honest_note}</p>
-            <p className="mono" style={cap}>forecaster/cross_sport_scoreboard.json &middot; positive &Delta; = model sharper (paired) &middot; CI excluding 0 = a real gap &middot; edge_claimed: false</p>
+            <p className="mono" style={cap}>forecaster/cross_sport_scoreboard.json &middot; positive &Delta; = model sharper (paired) &middot; a sharper verdict needs the CI clear of 0 AND enough n &middot; edge_claimed: false</p>
           </>
         ) : (
           <Pending what="the cross-sport scoreboard" src="scripts/platformkit/benchmarks/crps_market/*" />
@@ -268,15 +303,24 @@ export default function ForecasterPage() {
         <div style={{ marginTop: 28, padding: "18px 20px", border: "1px dashed var(--rule-strong)", borderRadius: 12, background: "var(--paper-tint)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
             <span className="dot" style={{ boxShadow: "inset 0 0 0 1.5px var(--null)", background: "transparent" }} />
-            <span style={eye}>Future exhibit &middot; pod-only</span>
+            <span style={eye}>Future exhibit &middot; not yet published</span>
           </div>
           <p style={{ fontSize: 15, lineHeight: 1.6, color: "var(--ink-2)", margin: 0 }}>
-            <strong style={{ color: "var(--ink)" }}>Replay: watch the model think.</strong> Step through one real game&rsquo;s states with the win probability and its attribution at every tick, receipts attached. This needs committed per-game trajectory data, which lives only on the pod today -- so it is marked pending rather than mocked up. We never fabricate a trajectory.
+            <strong style={{ color: "var(--ink)" }}>Replay: watch the model think.</strong> Step through one real game&rsquo;s states with the win probability and its attribution at every tick, receipts attached. This needs committed per-game trajectory data, which we haven&rsquo;t published yet &mdash; so it is marked pending rather than mocked up. We never fabricate a trajectory.
           </p>
         </div>
       </section>
 
       <ScoutQuestions questions={QUESTIONS} heading="Ask Scout about the forecaster" />
+
+      {/* Pin the first column so scrolling right to reach the off-screen verdict /
+          CI columns on a phone never loses the row's Sport/label anchor (matches
+          players/page.tsx .pl-tbl). The scrollFrame wrappers add the edge-fade cue
+          that the scroll exists. --paper bg blends with the page under the pin. */}
+      <style>{`
+        .fc-tbl th:first-child,.fc-tbl td:first-child{position:sticky;left:0;z-index:1;background:var(--paper);box-shadow:1px 0 0 var(--rule-strong)}
+        .fc-tbl thead th:first-child{z-index:2}
+      `}</style>
     </div>
   );
 }

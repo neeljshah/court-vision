@@ -5,7 +5,7 @@
 // path, n, corpus, and a "what does verified mean?" link to /analytics/the-loop
 // (the shipped discipline surface -- leak-free gate, ledger, honesty exhibit; the
 // standalone /analytics/method page in the spec was never built).
-import { useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { VerdictDot, type Verdict } from "./VerdictDot";
 
@@ -27,8 +27,12 @@ function basename(p: string): string {
 const stamp: CSSProperties = {
   border: 0,
   background: "transparent",
-  padding: 0,
-  margin: 0,
+  // Enlarge the touch target without shifting layout: the padding grows the hit
+  // box to ~44px wide / ~24px tall, the matching negative margin cancels the
+  // occupied space so neighbours don't move (DESIGN core interaction, mobile).
+  padding: "6px 3px",
+  margin: "-6px -3px",
+  borderRadius: 4,
   font: "inherit",
   fontFamily: "var(--font-mono)",
   fontSize: "11.5px",
@@ -47,7 +51,7 @@ const pop: CSSProperties = {
   top: "calc(100% + 6px)",
   zIndex: 40,
   minWidth: 220,
-  maxWidth: 300,
+  maxWidth: "min(300px, calc(100vw - 24px))",
   background: "var(--paper-raised)",
   border: "1px solid var(--rule-strong)",
   borderRadius: "var(--radius-card, 10px)",
@@ -72,36 +76,92 @@ const path: CSSProperties = {
 
 export function Receipt(r: ReceiptData) {
   const [open, setOpen] = useState(false);
+  // right-anchor the popover when it would run off the right screen edge.
+  const [flip, setFlip] = useState(false);
+  // open upward when it would drop off the bottom (receipts low in the viewport).
+  const [up, setUp] = useState(false);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const wrapRef = useRef<HTMLSpanElement>(null);
+
+  // Dismiss on any tap/click outside the wrapper. iOS Safari never focuses a
+  // <button> on tap, so onBlur/focusout never fires there -- without this, a
+  // touch user's popover has no way to close but re-tapping the same stamp, and
+  // tapping a different receipt would stack a second popover on top. pointerdown
+  // covers mouse + touch + pen; the hover/keyboard paths above are untouched.
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: PointerEvent) => {
+      if (!wrapRef.current?.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("pointerdown", onDown);
+    return () => document.removeEventListener("pointerdown", onDown);
+  }, [open]);
   // Quiet resting token: prefer as_of, else value, else the artifact basename.
   const resting = r.asOf || r.value || basename(r.sourceArtifact);
   const dashed = r.verdict === "not_testable";
 
+  // ponytail: decide the anchor side/vertical from the trigger's viewport rect on
+  // open. 312 = maxWidth 300 + 12px gutter; ~200 = the popover's tallest realistic
+  // height. No live measure of the popover itself.
+  function openPop() {
+    const r = btnRef.current?.getBoundingClientRect();
+    setFlip(!!r && r.left + 312 > window.innerWidth);
+    // flip up only when it would overflow the bottom AND there is room above, so a
+    // receipt near the top of the page never opens off the top.
+    setUp(!!r && r.bottom + 200 > window.innerHeight && r.top > 200);
+    setOpen(true);
+  }
+
   return (
-    <span style={{ position: "relative", display: "inline-block" }}>
+    <span
+      ref={wrapRef}
+      style={{ position: "relative", display: "inline-block" }}
+      // Handlers live on the wrapper (owns both trigger and popover) so keyboard
+      // focus can move INTO the popover's link without the blur closing it first.
+      // No onFocus opener: a pointer tap focuses the button (Android), which an
+      // onFocus-open would then have the button's onClick toggle straight shut
+      // (first-tap-dead). Keyboard opens via Enter/Space -> the button's onClick.
+      onMouseEnter={openPop}
+      onMouseLeave={() => setOpen(false)}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node)) setOpen(false);
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Escape") setOpen(false);
+      }}
+    >
       <button
+        ref={btnRef}
         type="button"
         style={{
           ...stamp,
+          // text-decoration (not border-bottom) so the hint stays tight to the text
+          // now that the button carries 6px of hit-slop padding. Every stamp gets a
+          // quiet dotted underline so it reads as tappable on touch (no hover to
+          // reveal it); not_testable keeps its louder caution-colored DASHED rule so
+          // the two stay distinguishable.
           ...(dashed
-            ? { borderBottom: "1px dashed var(--not-testable)", paddingBottom: 1 }
-            : null),
+            ? { textDecoration: "underline dashed", textDecorationColor: "var(--not-testable)", textUnderlineOffset: 2 }
+            : { textDecoration: "underline dotted", textDecorationColor: "var(--rule-strong)", textUnderlineOffset: 2 }),
         }}
         aria-expanded={open}
         aria-label={`Receipt: ${r.label || r.verdict} for ${resting}`}
-        onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => setOpen(false)}
-        onFocus={() => setOpen(true)}
-        onBlur={() => setOpen(false)}
-        onClick={() => setOpen((o) => !o)}
-        onKeyDown={(e) => {
-          if (e.key === "Escape") setOpen(false);
-        }}
+        onClick={() => (open ? setOpen(false) : openPop())}
       >
         <VerdictDot verdict={r.verdict} />
         {resting}
       </button>
       {open ? (
-        <span role="tooltip" style={pop}>
+        <span
+          // Not role="tooltip": this popover is a toggletip/disclosure -- it holds
+          // an interactive link (below), which an ARIA tooltip must never contain.
+          // The trigger's aria-expanded carries the open/closed state instead.
+          style={{
+            ...pop,
+            ...(flip ? { left: "auto", right: 0 } : null),
+            ...(up ? { top: "auto", bottom: "calc(100% + 6px)" } : null),
+          }}
+        >
           {r.label ? (
             <strong
               style={{

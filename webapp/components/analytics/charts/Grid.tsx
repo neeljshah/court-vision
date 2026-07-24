@@ -29,6 +29,10 @@ export interface GridProps {
   cellHeight?: number;
   verdict?: string;
   meta?: string;
+  /** SVG min render width before the Figure frame scrolls it. Default 560 keeps
+   *  wide grids legible; a small few-column grid can pass a phone-fitting value
+   *  (~340) so its row labels never scroll off-screen. */
+  minWidth?: number;
 }
 
 const PAD = { l: 128, r: 16, t: 30, b: 8 };
@@ -52,6 +56,7 @@ export function Grid(props: GridProps) {
     cellHeight = 40,
     verdict,
     meta,
+    minWidth = 560,
   } = props;
 
   const flat = values.flat().filter((v): v is number => v != null && Number.isFinite(v));
@@ -80,7 +85,7 @@ export function Grid(props: GridProps) {
       <svg
         viewBox={`0 0 ${width} ${height}`}
         width="100%"
-        style={{ height: "auto", display: "block", fontVariantNumeric: "tabular-nums" }}
+        style={{ height: "auto", minWidth, display: "block", fontVariantNumeric: "tabular-nums" }}
         role="img"
         aria-label={title || "heatmap"}
       >
@@ -141,7 +146,9 @@ export function Grid(props: GridProps) {
                 );
               }
               const bg = fill(v);
-              const ink = luminance(bg) > 0.62 ? "var(--ink)" : "#FBF7EF";
+              // Cell fills are FIXED hex (theme-blind ramp), so the label ink must be
+              // too: var(--ink) flips near-white in dark and vanishes on the light cells.
+              const ink = luminance(bg) > 0.62 ? "#1A1714" : "#FBF7EF";
               return (
                 <g key={j}>
                   <rect x={x} y={y} width={w} height={h} rx={3} fill={bg}>
