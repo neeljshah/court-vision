@@ -42,6 +42,12 @@ const FINDINGS: Array<{ href: string; title: string; blurb: string }> = [
     blurb:
       "Descriptive Statcast-derived leaderboards from a fixed 2022-2023 window, published beside the gate nulls that failed -- park factor too unstable to rank, umpire tendency does not move totals.",
   },
+  {
+    href: "/analytics/findings/tennis",
+    title: "Tennis: momentum's grain limit",
+    blurb:
+      "Momentum is real point-to-point (n=456,383, confirmed) but dies at the game grain; two tiebreak myths come back null; altitude and travel effects are confirmed, altitude replicated across two disjoint year slices.",
+  },
 ];
 
 const h1: CSSProperties = {

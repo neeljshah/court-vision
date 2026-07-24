@@ -1,0 +1,116 @@
+{
+  "generated_at": "2026-07-24T22:04:15.234359+00:00",
+  "descriptive_only": true,
+  "edge_claimed": false,
+  "headline": "Tennis momentum is real point-to-point but dies at the game grain; two tiebreak myths are null; altitude and travel effects are confirmed (altitude replicated across two disjoint year slices).",
+  "method": "These are our own preregistered tennis tests, surfaced verbatim from the committed forward-claim scoreboard. A CONFIRMED_LOCAL/REPLICATED/NULL_LOCAL verdict is an accuracy/effect finding, not a betting edge.",
+  "source_artifact": "scripts/platformkit/analytics_showcase/out/fwd_claim_scoreboard.json",
+  "stories": [
+    {
+      "key": "momentum_grain",
+      "title": "Momentum has a grain limit",
+      "summary": "Momentum is real at the point grain (CONFIRMED_LOCAL, n=456383) but the same idea dies once you zoom out to game grain: whether a player holds serve after breaking is NULL_LOCAL, confirmed null on both split halves.",
+      "claims": [
+        {
+          "hypothesis": "point_to_point_momentum",
+          "verdict": "CONFIRMED_LOCAL",
+          "n": 456383,
+          "effect": 0.0216,
+          "corpus": "slam_points_2011_2015",
+          "reading": "Real, small effect: winning the last point raises win probability on the very next point."
+        },
+        {
+          "hypothesis": "post_break_hold_rate",
+          "verdict": "NULL_LOCAL",
+          "n": 21208,
+          "effect": 0.0051,
+          "corpus": "slam_points",
+          "reading": "Dead at game grain: no detectable effect on whether a player holds serve after breaking."
+        },
+        {
+          "hypothesis": "post_break_hold_rate__split_A",
+          "verdict": "NULL_LOCAL",
+          "n": 10522,
+          "effect": 0.0067,
+          "corpus": "slam_points__split_half",
+          "reading": "Split-half corroboration (first half): still null."
+        },
+        {
+          "hypothesis": "post_break_hold_rate__split_B",
+          "verdict": "NULL_LOCAL",
+          "n": 10686,
+          "effect": 0.0036,
+          "corpus": "slam_points__split_half",
+          "reading": "Split-half corroboration (second half): still null."
+        }
+      ]
+    },
+    {
+      "key": "tiebreak_myths",
+      "title": "Two tiebreak myths, both null",
+      "summary": "Two popular tiebreak beliefs -- that some players have a persistent tiebreak-clutch skill, and that serving first in the breaker matters -- both come back NULL_LOCAL.",
+      "claims": [
+        {
+          "hypothesis": "tiebreak_skill_persistence_partial",
+          "verdict": "NULL_LOCAL",
+          "n": 206,
+          "effect": 0.0745,
+          "corpus": "matches_asof_setdetail_schedule_density_atp_wta",
+          "reading": "No evidence that tiebreak skill persists as a stable player trait."
+        },
+        {
+          "hypothesis": "tiebreak_serve_order_win_rate",
+          "verdict": "NULL_LOCAL",
+          "n": 1281,
+          "effect": 0.0035,
+          "corpus": "slam_points",
+          "reading": "The 'serve first in the breaker' myth: no detectable edge from serve order."
+        }
+      ]
+    },
+    {
+      "key": "altitude_travel",
+      "title": "Altitude and travel, confirmed",
+      "summary": "Altitude suppresses serve ace rate and long travel suppresses win probability, both CONFIRMED_LOCAL; the altitude effect was independently REPLICATED on two disjoint year slices (2015-2020 and 2021-2025).",
+      "claims": [
+        {
+          "hypothesis": "altitude_effect_on_serve_ace_rate",
+          "verdict": "CONFIRMED_LOCAL",
+          "n": 27463,
+          "effect": -0.0083,
+          "corpus": "travel_scouting_matches_atp_wta_2015_2025",
+          "reading": "Altitude lowers ace rate (thinner air behaves differently than folklore predicts)."
+        },
+        {
+          "hypothesis": "altitude_effect_on_serve_ace_rate__replication_years_2015_2020",
+          "verdict": "REPLICATED",
+          "n": 14329,
+          "effect": -0.0078,
+          "corpus": "travel_scouting_disjoint_year_slice",
+          "reading": "Replicates on the 2015-2020 year slice."
+        },
+        {
+          "hypothesis": "altitude_effect_on_serve_ace_rate__replication_years_2021_2025",
+          "verdict": "REPLICATED",
+          "n": 13134,
+          "effect": -0.0089,
+          "corpus": "travel_scouting_disjoint_year_slice",
+          "reading": "Replicates independently on the 2021-2025 year slice too."
+        },
+        {
+          "hypothesis": "long_travel_effect_on_win_prob_partial",
+          "verdict": "CONFIRMED_LOCAL",
+          "n": 26950,
+          "effect": -0.0699,
+          "corpus": "travel_scouting_matches_atp_wta_2015_2025",
+          "reading": "Long travel measurably lowers win probability."
+        }
+      ]
+    }
+  ],
+  "confounds": [
+    "effect signs are raw directional effects on the stated metric, not opponent/surface-adjusted;",
+    "corpora differ (slam point-level 2011-2015 vs match-level 2015-2025); each claim shows its own corpus;",
+    "CONFIRMED/NULL are OUR preregistered leak-free verdicts vs an internal baseline -- descriptive accuracy findings, never a dollar-edge claim."
+  ]
+}

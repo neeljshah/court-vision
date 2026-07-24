@@ -1,11 +1,11 @@
 {
  "generated_from": "scripts/platformkit/analytics_showcase/out",
- "module_count": 65,
+ "module_count": 66,
  "atlas_card_count": 1549,
  "checks_green": {
   "green": true,
-  "pass": 84,
-  "total": 84
+  "pass": 85,
+  "total": 85
  },
  "edge_claimed": false,
  "modules": [
@@ -61,7 +61,7 @@
    "chart_path": "docs/img/brier_skill_scores.png",
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T21:50:54.354647+00:00",
+   "as_of": "2026-07-24T22:03:12.528233+00:00",
    "evidence_page": null
   },
   {
@@ -215,7 +215,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T21:51:01.332543+00:00",
+   "as_of": "2026-07-24T22:03:19.508223+00:00",
    "evidence_page": null
   },
   {
@@ -369,7 +369,7 @@
    "chart_path": "docs/img/mlb_count_leverage.png",
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T21:51:37.616868+00:00",
+   "as_of": "2026-07-24T22:03:55.462615+00:00",
    "evidence_page": null
   },
   {
@@ -512,7 +512,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T21:51:47.488747+00:00",
+   "as_of": "2026-07-24T22:04:05.285552+00:00",
    "evidence_page": null
   },
   {
@@ -534,7 +534,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T21:51:48.024287+00:00",
+   "as_of": "2026-07-24T22:04:05.811155+00:00",
    "evidence_page": null
   },
   {
@@ -545,7 +545,7 @@
    "chart_path": "docs/img/pitch_sequencing.png",
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T21:51:48.814967+00:00",
+   "as_of": "2026-07-24T22:04:06.605644+00:00",
    "evidence_page": null
   },
   {
@@ -659,6 +659,17 @@
    "evidence_page": "docs/evidence/calibration-decomposition.md"
   },
   {
+   "id": "tennis_grain_and_myths",
+   "title": "Tennis Grain And Myths",
+   "one_line": "Tennis momentum is real point-to-point but dies at the game grain; two tiebreak myths are null; altitude and travel effects are confirmed (altitude replicated across two disjoint year slices).",
+   "out_path": "scripts/platformkit/analytics_showcase/out/tennis_grain_and_myths.json",
+   "chart_path": null,
+   "status": "ok",
+   "edge_claimed": false,
+   "as_of": "2026-07-24T22:04:15.234359+00:00",
+   "evidence_page": null
+  },
+  {
    "id": "tennis_showcase",
    "title": "Tennis Showcase",
    "one_line": "tennis has a served live model but no ingame_grade_joined corpus locally -- this showcase surfaces the two REAL preregistered gate receipts that ARE present (pregame cross-corpus + ingame surface-context detail layer), not a recomputed i...",
@@ -699,7 +710,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T21:51:59.204394+00:00",
+   "as_of": "2026-07-24T22:04:17.046758+00:00",
    "evidence_page": null
   },
   {
